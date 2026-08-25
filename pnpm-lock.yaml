@@ -20642,8 +20642,8 @@ snapshots:
 
   '@typescript-eslint/project-service@8.56.1(supports-color@8.1.1)(typescript@7.0.2)':
     dependencies:
-      '@typescript-eslint/tsconfig-utils': 8.56.1(typescript@7.0.2)
-      '@typescript-eslint/types': 8.56.1
+      '@typescript-eslint/tsconfig-utils': 8.67.0(typescript@7.0.2)
+      '@typescript-eslint/types': 8.67.0
       debug: 4.4.3(supports-color@8.1.1)
       typescript: 7.0.2
     transitivePeerDependencies:
@@ -23537,7 +23537,7 @@ snapshots:
     dependencies:
       base64-js: 1.5.1
       ecdsa-sig-formatter: 1.0.11
-      gaxios: 7.1.3(supports-color@8.1.1)
+      gaxios: 7.3.1(supports-color@8.1.1)
       gcp-metadata: 8.1.4(supports-color@8.1.1)
       google-logging-utils: 1.1.3
       gtoken: 8.0.0(supports-color@8.1.1)
@@ -23605,7 +23605,7 @@ snapshots:
 
   gtoken@8.0.0(supports-color@8.1.1):
     dependencies:
-      gaxios: 7.1.3(supports-color@8.1.1)
+      gaxios: 7.3.1(supports-color@8.1.1)
       jws: 4.0.1
     transitivePeerDependencies:
       - supports-color
