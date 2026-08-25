@@ -141,7 +141,7 @@
     "@mux/mux-player-react": "^3.13.2",
     "@portabletext/editor": "^7.12.1",
     "@portabletext/html": "^1.2.0",
-    "@portabletext/patches": "^2.0.6",
+    "@portabletext/patches": "^3.0.0",
     "@portabletext/plugin-dnd": "^1.0.34",
     "@portabletext/plugin-list-index": "^1.0.34",
     "@portabletext/plugin-markdown-shortcuts": "^8.0.50",

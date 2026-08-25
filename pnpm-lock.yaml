@@ -93,7 +93,7 @@ catalogs:
       version: 7.0.2
     ui5:
       specifier: npm:@sanity/ui@alpha
-      version: 5.0.0-alpha.4
+      version: 5.0.0-alpha.5
     vite:
       specifier: ^8.2.2
       version: 8.2.2
@@ -396,7 +396,7 @@ importers:
         version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.4(react-dom@19.2.8)(react@19.2.8)'
+        version: '@sanity/ui@5.0.0-alpha.5(react-dom@19.2.8)(react@19.2.8)'
       vite:
         specifier: 'catalog:'
         version: 8.2.2(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
@@ -491,7 +491,7 @@ importers:
         version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.4(react-dom@19.2.8)(react@19.2.8)'
+        version: '@sanity/ui@5.0.0-alpha.5(react-dom@19.2.8)(react@19.2.8)'
     devDependencies:
       '@types/react':
         specifier: 'catalog:'
@@ -584,7 +584,7 @@ importers:
         version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
       ui5:
         specifier: npm:@sanity/ui@alpha
-        version: '@sanity/ui@5.0.0-alpha.4(react-dom@19.2.8)(react@19.2.8)'
+        version: '@sanity/ui@5.0.0-alpha.5(react-dom@19.2.8)(react@19.2.8)'
     devDependencies:
       '@chromatic-com/storybook':
         specifier: ^5.3.0
@@ -675,7 +675,7 @@ importers:
         version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.4(react-dom@19.2.8)(react@19.2.8)'
+        version: '@sanity/ui@5.0.0-alpha.5(react-dom@19.2.8)(react@19.2.8)'
     devDependencies:
       '@types/react':
         specifier: 'catalog:'
@@ -833,7 +833,7 @@ importers:
         version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.4(react-dom@19.2.8)(react@19.2.8)'
+        version: '@sanity/ui@5.0.0-alpha.5(react-dom@19.2.8)(react@19.2.8)'
     devDependencies:
       '@sanity/vanilla-extract-vite-plugin':
         specifier: 'catalog:'
@@ -1280,7 +1280,7 @@ importers:
         version: 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.4(react-dom@19.2.8)(react@19.2.8)'
+        version: '@sanity/ui@5.0.0-alpha.5(react-dom@19.2.8)(react@19.2.8)'
     devDependencies:
       '@repo/test-config':
         specifier: workspace:*
@@ -1634,7 +1634,7 @@ importers:
         version: 7.8.2
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.4(react-dom@19.2.8)(react@19.2.8)'
+        version: '@sanity/ui@5.0.0-alpha.5(react-dom@19.2.8)(react@19.2.8)'
       use-effect-event:
         specifier: ^2.0.3
         version: 2.0.3(react@19.2.8)
@@ -1735,8 +1735,8 @@ importers:
         specifier: ^1.2.0
         version: 1.2.0
       '@portabletext/patches':
-        specifier: ^2.0.6
-        version: 2.0.6
+        specifier: ^3.0.0
+        version: 3.0.0
       '@portabletext/plugin-dnd':
         specifier: ^1.0.34
         version: 1.0.34(@portabletext/editor@7.12.1)(react@19.2.8)
@@ -2006,7 +2006,7 @@ importers:
         version: 2.5.1(react@19.2.8)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.4(react-dom@19.2.8)(react@19.2.8)'
+        version: '@sanity/ui@5.0.0-alpha.5(react-dom@19.2.8)(react@19.2.8)'
       urlpattern-polyfill:
         specifier: 10.1.0
         version: 10.1.0
@@ -6251,6 +6251,10 @@ packages:
     resolution: {integrity: sha512-qki7QMrZz3FJ60XNPFDMQgn8RerfKPaLWAyNJ/wg83gpoNlPFevwYxwCsH8OahVDmaCy30QZrPgj7k0tWb97uA==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
+  '@portabletext/patches@3.0.0':
+    resolution: {integrity: sha512-3RbeVhdQRThYSMbP8v2jjVxAumB5I/tE8W6g8nMvW7epjWAkmRXQcSHr6MEQXWbSbLZJAAjBCKIkWzvlv2lLUw==}
+    engines: {node: '>=22.12'}
+
   '@portabletext/plugin-character-pair-decorator@8.0.50':
     resolution: {integrity: sha512-ANKAcTIKXds807Bfbw1n0e2kcFnklzuYaf7Wq78CRA5D+tgS8qQMt/xmcYAbMQhVgRMyPoWDefJp4xZ3el6R7w==}
     engines: {node: '>=20.19 <22 || >=22.12'}
@@ -6950,8 +6954,8 @@ packages:
       react-dom: ^19.2
       styled-components: ^6.1
 
-  '@sanity/ui@5.0.0-alpha.4':
-    resolution: {integrity: sha512-+YGO6vlZUOBqQ+2+UTkbutxiRhnM4EE0JKVfnsNDcye3JYNGf4ZcapdSCW6QKMOwIbBnLSjan+2th14whRLgWg==}
+  '@sanity/ui@5.0.0-alpha.5':
+    resolution: {integrity: sha512-wNVAxvbs9td//7Yth1tq1WNz19YyFZrSZQKt9cp703Yvy9/O56uVIz2SBIeBET9EjWBv2FMmRrCAetZRMYrqDQ==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     hasBin: true
     peerDependencies:
@@ -18380,6 +18384,10 @@ snapshots:
     dependencies:
       '@sanity/diff-match-patch': 3.2.0
 
+  '@portabletext/patches@3.0.0':
+    dependencies:
+      '@sanity/diff-match-patch': 3.2.0
+
   '@portabletext/plugin-character-pair-decorator@8.0.50(@portabletext/editor@7.12.1)(@types/react@19.2.18)(react@19.2.8)':
     dependencies:
       '@portabletext/editor': 7.12.1(@types/react@19.2.18)(react@19.2.8)(supports-color@8.1.1)
@@ -19488,7 +19496,7 @@ snapshots:
       styled-components: 6.5.3(react-dom@19.2.8)(react@19.2.8)
       use-effect-event: 2.0.3(react@19.2.8)
 
-  '@sanity/ui@5.0.0-alpha.4(react-dom@19.2.8)(react@19.2.8)':
+  '@sanity/ui@5.0.0-alpha.5(react-dom@19.2.8)(react@19.2.8)':
     dependencies:
       '@sanity-labs/design-tokens': 0.0.2-alpha.4
       '@sanity/icons': 3.8.0(react@19.2.8)
