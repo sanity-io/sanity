@@ -68,6 +68,33 @@ describe('createConcurrencyLimitedClient', () => {
     expect(mockClient.observable.fetch).toHaveBeenCalledTimes(2)
   })
 
+  it('does not acquire an observable slot before subscription', async () => {
+    const mockClient = {
+      observable: {fetch: vi.fn(() => of('result'))},
+    } as unknown as SanityClient
+    const client = createClientConcurrencyLimiter(1)(mockClient)
+    const controller = new AbortController()
+
+    void client.observable.fetch('unused')
+    const active = firstValueFrom(
+      client.observable.fetch('active', {}, {signal: controller.signal}),
+    )
+    const outcome = await Promise.race([active, tick().then(() => 'timed out')])
+
+    controller.abort()
+    await active.catch(() => undefined)
+
+    expect(outcome).toBe('result')
+    expect(mockClient.observable.fetch).toHaveBeenCalledOnce()
+    expect(mockClient.observable.fetch).toHaveBeenCalledWith(
+      'active',
+      {},
+      {
+        signal: controller.signal,
+      },
+    )
+  })
+
   it('returns a wrapped client that limits the observable client fetch', () => {
     const mockClient = createClient({
       projectId: 'project-id',
