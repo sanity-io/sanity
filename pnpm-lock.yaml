@@ -1610,7 +1610,7 @@ importers:
     dependencies:
       '@sanity/client':
         specifier: 'catalog:'
-        version: 8.1.0(vitest@4.1.10)
+        version: 8.2.0(vitest@4.1.11)
       '@sanity/id-utils':
         specifier: ^1.0.0
         version: 1.0.0
@@ -1625,7 +1625,7 @@ importers:
         version: link:../util
       i18next:
         specifier: ^26.2.0
-        version: 26.3.6(typescript@7.0.2)
+        version: 26.4.0(typescript@7.0.2)
       lodash-es:
         specifier: ^4.18.1
         version: 4.18.1
@@ -1650,16 +1650,16 @@ importers:
         version: 19.2.18
       tsdown:
         specifier: 'catalog:'
-        version: 0.22.14(@vitejs/devtools@0.4.12)(oxc-resolver@11.24.2)(publint@0.3.23)(tsx@4.23.12)(typescript@7.0.2)
+        version: 0.22.14(@vitejs/devtools@0.5.1)(oxc-resolver@11.24.2)(publint@0.3.23)(tsx@4.23.12)(typescript@7.0.2)
       typescript:
         specifier: 'catalog:'
         version: 7.0.2
       vite:
         specifier: 'catalog:'
-        version: 8.2.1(@types/node@24.13.3)(@vitejs/devtools@0.4.12)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
+        version: 8.2.2(@types/node@24.13.3)(@vitejs/devtools@0.5.1)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
       vitest:
-        specifier: ^4.1.10
-        version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/browser-playwright@4.1.10)(@vitest/coverage-v8@4.1.10)(jsdom@29.1.1)(vite@8.2.1)
+        specifier: ^4.1.11
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/browser-playwright@4.1.11)(@vitest/coverage-v8@4.1.11)(jsdom@29.1.1)(vite@8.2.2)
 
   packages/@sanity/vision:
     dependencies:
