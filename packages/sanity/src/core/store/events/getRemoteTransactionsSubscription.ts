@@ -18,6 +18,27 @@ interface GetRemoteTransactionsSubscriptionOptions {
   onRefetch: () => void
 }
 
+/**
+ * Sets up the real-time side of the events store: listens to remote mutations on the document
+ * pair (draft + published + version when applicable) and routes each mutation into one of three
+ * outcomes, depending on the variant being viewed:
+ *
+ * - Mutation for a *different* variant than the one being viewed → ignored.
+ * - Mutation on the published document (non-liveEdit) → `onRefetch()` (publishes/unpublishes are
+ *   lifecycle events the API must provide).
+ * - Effect state `'created'` or `'deleted'` → `onRefetch()` and the accumulated transactions are
+ *   cleared (the event list changed shape; local edit synthesis is stale).
+ * - Effect state `'modified'` → the mutation is converted via `remoteMutationToTransaction` and
+ *   appended to `remoteTransactions$`; `remoteEdits$` maps the accumulated transactions through
+ *   `getEditEvents` so they render as (live) edit events without refetching.
+ *
+ * Returns `remoteTransactions$` (consumed by `getDocumentChanges` for diffing while viewing the
+ * latest version), `remoteEdits$` (merged into the events list), and `subscribe` which activates
+ * the listener and returns the rxjs subscription.
+ *
+ * Known quirk: `remoteTransactions$` only resets on created/deleted effects, so it accumulates
+ * without bound during long editing sessions (tracked as a known issue).
+ */
 export function getRemoteTransactionsSubscription({
   client,
   isLiveEdit,

@@ -34,6 +34,36 @@ const INITIAL_VALUE: EventsObservableValue = {
 }
 
 /**
+ * React entry point of the events store: creates a `createEventsStore` instance for the document
+ * (recreated when client/document/releases/liveEdit change), subscribes the remote-transactions
+ * listener for the component lifetime, and resolves the `rev`/`since` selection against the
+ * loaded events.
+ *
+ * `rev` resolution (→ `revisionId`):
+ * - `@lastPublished`: id of the newest publish event, `null` when none.
+ * - `@lastEdited`: `revisionId` of the newest edit event; falls through to the raw value if none.
+ * - `@release:<releaseId>`: id of the publish event for that release. While unresolved it keeps
+ *   calling `loadMoreEvents()` (side effect inside `useMemo` — known issue) and falls through to
+ *   the raw `@release:` string.
+ * - `undefined`: latest state; except when the newest event is a publish (its id is used) or a
+ *   delete-version (the newest edit event's `revisionId` is used — the delete's
+ *   `versionRevisionId` is unreliable).
+ *
+ * `since` resolution (→ `sinceId`), only meaningful with a revision to compare against:
+ * - explicit revision id: used as-is.
+ * - `@lastPublished` or `undefined`: the first publish event *older* than the current revision;
+ *   falls back to the creation event; then to the event right after the revision (or `events[1]`
+ *   when no revision is selected).
+ *
+ * `findRangeForRevision(nextRev)` / `findRangeForSince(nextSince)` compute the `[since, rev]` pair
+ * to write to the URL when the user picks a new revision/since in the timeline, clearing whichever
+ * side would make the range inverted (since must be older than rev).
+ *
+ * Also exposes per-revision document fetching (`getDocumentAtRevision`, plus resolved `revision` /
+ * `sinceRevision` snapshots), `getChangesList` (diff between the resolved revisions),
+ * `expandEvent`, `loadMoreEvents` and `lastNonDeletedRevId` (newest event that isn't a delete —
+ * used to restore deleted documents).
+ *
  * @internal
  */
 export function useEventsStore({
