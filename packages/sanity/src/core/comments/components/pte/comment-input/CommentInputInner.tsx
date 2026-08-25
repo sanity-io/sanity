@@ -1,10 +1,10 @@
 import {type CurrentUser} from '@sanity/types'
-import {type AvatarSize, Card, Flex, Stack} from '@sanity/ui'
+import {type AvatarSize, Card, Stack} from '@sanity/ui'
 import {MenuDivider} from '@sanity/ui/menu'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback} from 'react'
 import {css, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
@@ -161,7 +161,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
   )
 
   return (
-    <Flex align="flex-start" gap={2}>
+    <Flex alignItems="flex-start" gap={2}>
       {avatar}
 
       <RootCard
@@ -185,7 +185,13 @@ export function CommentInputInner(props: CommentInputInnerProps) {
             />
           </EditableWrap>
 
-          <Flex align="center" data-ui="CommentInputActions" gap={1} justify="flex-end" padding={1}>
+          <Flex
+            alignItems="center"
+            data-ui="CommentInputActions"
+            gap={1}
+            justifyContent="flex-end"
+            padding={1}
+          >
             <TooltipDelayGroupProvider>
               {!mentionOptions.disabled && (
                 <Button

@@ -1,6 +1,6 @@
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {type SanityDocumentLike} from '@sanity/types'
-import {Box, Grid, Stack, Text} from '@sanity/ui'
+import {Grid, Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservableEvent} from 'react-rx'
@@ -23,6 +23,7 @@ import {
   useSource,
   useTranslation,
 } from 'sanity'
+import {Box} from 'ui5'
 
 import {structureLocaleNamespace} from '../../i18n'
 import {CreateNewIncomingReference} from './CreateNewIncomingReference'

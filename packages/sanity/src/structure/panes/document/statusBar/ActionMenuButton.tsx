@@ -1,5 +1,5 @@
 import {Menu} from '@sanity/ui/menu'
-import {memo, type ReactNode, useCallback, useId, useMemo, useState} from 'react'
+import {memo, type ReactNode, useCallback, useEffect, useId, useMemo, useRef, useState} from 'react'
 import {
   ContextMenuButton,
   type DocumentActionDescription,
@@ -31,7 +31,20 @@ export const ActionDialogWrapper = memo(function ActionDialogWrapper({
   referenceElement?: HTMLElement | null
 }) {
   const [actionIndex, setActionIndex] = useState(-1)
-  const currentAction = useMemo(() => actionStates[actionIndex], [actionIndex, actionStates])
+  const currentAction = actionStates[actionIndex]
+  const hasDialog = Boolean(currentAction?.dialog)
+  const hadDialogRef = useRef(false)
+
+  useEffect(() => {
+    if (hasDialog) {
+      hadDialogRef.current = true
+      return
+    }
+    if (actionIndex !== -1 && hadDialogRef.current) {
+      hadDialogRef.current = false
+      setActionIndex(-1)
+    }
+  }, [hasDialog, actionIndex])
 
   const handleAction = useCallback((idx: number) => {
     setActionIndex(idx)

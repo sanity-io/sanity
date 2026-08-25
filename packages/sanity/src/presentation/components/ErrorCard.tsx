@@ -1,6 +1,7 @@
-import {Box, Card, type CardProps, Container, Flex, Inline, Stack, Text} from '@sanity/ui'
+import {Card, type CardProps, Container, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {type ReactNode} from 'react'
 import {useTranslation} from 'sanity'
+import {Box} from 'ui5'
 
 import {Button} from '../../ui-components/button/Button'
 import {presentationLocaleNamespace} from '../i18n'

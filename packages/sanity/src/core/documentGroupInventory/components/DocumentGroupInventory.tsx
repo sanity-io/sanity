@@ -4,7 +4,7 @@ import {FeedbackIcon} from '@sanity/icons/Feedback'
 import {SearchIcon} from '@sanity/icons/Search'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type SanityDocumentLike} from '@sanity/types'
-import {Flex, PortalProvider, Stack, Text, TextInput} from '@sanity/ui'
+import {PortalProvider, Stack, Text, TextInput} from '@sanity/ui'
 import {useActorRef, useSelector} from '@xstate/react'
 import {
   type ChangeEvent,
@@ -26,6 +26,7 @@ import {
   Subject,
   timeout,
 } from 'rxjs'
+import {Flex} from 'ui5'
 import {type ActorRefFromLogic, fromObservable, fromPromise} from 'xstate'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -324,7 +325,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
           <>
             <Header>
               <Stack gap={4}>
-                <Flex gap={4} align="center" justify="flex-end">
+                <Flex gap={4} alignItems="center" justifyContent="flex-end">
                   <TextButton
                     onClick={() => inventoryRef.send({type: 'feedback.begin'})}
                     title={feedbackT('feedback.menu-item')}

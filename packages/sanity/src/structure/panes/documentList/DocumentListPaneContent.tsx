@@ -1,5 +1,5 @@
 import {type SanityDocument} from '@sanity/types'
-import {Box, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {Container, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {Activity, useCallback, useMemo} from 'react'
 import {
   CommandList,
@@ -16,6 +16,7 @@ import {
   useTranslation,
 } from 'sanity'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {PaneContent} from '../../components/pane/PaneContent'
 import {usePane} from '../../components/pane/usePane'
@@ -262,7 +263,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     }
 
     return (
-      <RootBox overflow="hidden" height="fill" $opacity={muted ? 0.8 : 1}>
+      <RootBox overflow="hidden" height="100%" $opacity={muted ? 0.8 : 1}>
         <CommandListBox>
           <CommandList
             key={index}

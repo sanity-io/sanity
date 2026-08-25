@@ -96,13 +96,14 @@ export const ReleaseMenu = ({
     unarchive,
     archive,
     deleteRelease,
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
     release.metadata.releaseType,
     publishRelease,
     schedule,
     createRelease,
   ])
 
-  const handleOnInitiateAction = useCallback<MouseEventHandler<HTMLDivElement>>(
+  const handleOnInitiateAction = useCallback<MouseEventHandler<HTMLButtonElement>>(
     (event) => {
       const action = event.currentTarget.getAttribute('data-value') as ReleaseAction
 

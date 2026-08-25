@@ -1,16 +1,23 @@
 /// <reference types="vite/client" />
+import {ActivityIcon} from '@sanity/icons/Activity'
+import {BoltIcon} from '@sanity/icons/Bolt'
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {ClockIcon} from '@sanity/icons/Clock'
+import {ControlsIcon} from '@sanity/icons/Controls'
+import {DropIcon} from '@sanity/icons/Drop'
 import {EllipsisVerticalIcon} from '@sanity/icons/EllipsisVertical'
+import {ExpandIcon} from '@sanity/icons/Expand'
 import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {LaunchIcon} from '@sanity/icons/Launch'
+import {PackageIcon} from '@sanity/icons/Package'
 import {
   Badge,
-  Box,
   Button,
   Card,
   Container,
+  Dialog,
   Flex,
   Grid,
   PortalProvider,
@@ -26,34 +33,40 @@ import {
 import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
 import {Popover} from '@sanity/ui/popover'
 import {ParentSize} from '@visx/responsive'
-import {useEffect, useMemo, useRef, useState} from 'react'
+import {type ComponentType, useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useDocumentStore} from 'sanity'
+import {Box} from 'ui5'
 
 import {idSlug} from './acks'
 import {ChartLegend} from './ChartLegend'
 import {
   availableBranches,
   buildSeries,
+  CALIBRATION_EXPLAINER,
   latestSoakCharts,
   soakSlopeSeries,
   soakLatestValueSeries,
   calibrationSeries,
   filterByRange,
   formatValue,
+  TAGS_QUERY,
   TREND_QUERY,
   TREND_GROUPS,
   type TrendGroup,
   type TrendRun,
   type TrendSeries,
+  type TrendTag,
+  vitalSections,
 } from './data'
-import {DEBUG_SOURCES, type DebugSource, generateDebugRuns} from './debugData'
-import {type DriftResult, worstBySeries, worstOf} from './drift'
+import {DEBUG_SOURCES, type DebugSource, generateDebugRuns, generateDebugTags} from './debugData'
+import {type DriftResult, worstBySeries} from './drift'
 import {DriftFeed} from './DriftFeed'
-import {efpsSourceUrl, sourceFileUrl, webVitalDocUrl} from './links'
+import {type LayerState, useLayerState} from './layers'
+import {sourceFileUrl, webVitalDocUrl} from './links'
 import {MAX_COMPARE_BRANCHES} from './palette'
-import {TrendChart} from './TrendChart'
+import {seriesHasCalibration, TrendChart} from './TrendChart'
 import {type DriftState, useDriftState} from './useDriftState'
 import {useUrlState} from './useUrlState'
 
@@ -62,6 +75,16 @@ const RANGES = [
   {label: 'Last 90 days', days: 90},
   {label: 'All time', days: null},
 ] as const
+
+/** One glanceable glyph per metric-group tab; titles stay the identifier. */
+const GROUP_ICONS: Record<TrendGroup, ComponentType> = {
+  vitals: ActivityIcon,
+  responsiveness: BoltIcon,
+  load: ClockIcon,
+  bundle: PackageIcon,
+  soak: DropIcon,
+  environment: ControlsIcon,
+}
 
 type DataSource = 'live' | DebugSource
 
@@ -91,7 +114,14 @@ interface LiveState {
   error: string | null
 }
 
-function InfoButton(props: {text: string; label: string; sourceFile?: string; vitalDoc?: string}) {
+function InfoButton(props: {
+  text: string
+  label: string
+  sourceFile?: string
+  vitalDoc?: string
+  /** Shown as a second paragraph on charts that draw the calibration line. */
+  calibrationNote?: string
+}) {
   const [open, setOpen] = useState(false)
   // Popover has no onClickOutside prop (passing it logs an "unknown event
   // handler" error and never closes); useClickOutsideEvent is the @sanity/ui
@@ -113,6 +143,11 @@ function InfoButton(props: {text: string; label: string; sourceFile?: string; vi
             <Text size={1} muted>
               {props.text}
             </Text>
+            {props.calibrationNote && (
+              <Text size={1} muted>
+                {props.calibrationNote}
+              </Text>
+            )}
             {(props.vitalDoc || props.sourceFile) && (
               <Stack gap={2}>
                 {/* Reference doc for the Web Vital itself (web.dev) */}
@@ -141,25 +176,6 @@ function InfoButton(props: {text: string; label: string; sourceFile?: string; vi
                     <Flex align="center" gap={1}>
                       <LaunchIcon />
                       <Text size={1}>View scenario source</Text>
-                    </Flex>
-                  </Box>
-                )}
-                {/* Cross-reference the legacy eFPS scenario this was ported
-                    from, while dev/efps burns down (omitted for bench-only
-                    scenarios with no eFPS counterpart) */}
-                {props.sourceFile && efpsSourceUrl(props.sourceFile) && (
-                  <Box
-                    as="a"
-                    href={efpsSourceUrl(props.sourceFile)}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label="View the legacy eFPS scenario (opens in a new tab)"
-                  >
-                    <Flex align="center" gap={1}>
-                      <LaunchIcon />
-                      <Text size={1} muted>
-                        Legacy eFPS scenario
-                      </Text>
                     </Flex>
                   </Box>
                 )}
@@ -284,11 +300,11 @@ function AckMenu(props: {
       menu={
         <Menu>
           {props.acked ? (
-            <MenuItem text="Un-ack" onClick={props.onUnack} />
+            <MenuItem text="Reopen" onClick={props.onUnack} />
           ) : (
             <>
               <MenuItem text="Silence" onClick={() => props.onAck('silenced')} />
-              <MenuItem text="Snooze 7d" onClick={() => props.onAck('snoozed')} />
+              <MenuItem text="Snooze 7 days" onClick={() => props.onAck('snoozed')} />
               {/* "Mark fixed" only makes sense for a regression — an improvement
                   has nothing to fix */}
               {props.direction === 'regression' && (
@@ -309,7 +325,7 @@ function chartDomId(seriesKey: string): string {
 }
 
 function driftBadge(entry: DriftResult): {tone: 'caution' | 'positive'; label: string} {
-  const worst = worstOf(entry)
+  const worst = entry.baseline
   const sign = worst.deltaFraction > 0 ? '+' : ''
   const arrow = entry.direction === 'regression' ? '↑' : '↓'
   return {
@@ -323,12 +339,43 @@ function SeriesCard(props: {
   height: number
   drift?: DriftResult
   silenced?: DriftResult
+  /** The baseline to draw, flagged or not. Falls back to the flagged one. */
+  baseline?: DriftResult
   focused?: boolean
   onFocus?: () => void
   onAck?: (state: 'silenced' | 'snoozed' | 'fixed') => void
   onUnack?: () => void
+  layers?: LayerState
+  /** Release tags for the chart's markers. */
+  tags?: TrendTag[]
+  /** Open this chart in the maximized dialog. Absent = not expandable. */
+  onExpand?: () => void
+  /**
+   * Rendered inside the maximize dialog. The card is then the superset view:
+   * no expand button (it's already expanded), the description reads as visible
+   * text instead of hiding behind ⓘ, and the release markers carry labels —
+   * all things there is room for at dialog width and not in a grid cell.
+   */
+  expanded?: boolean
 }) {
-  const {series, height, drift, silenced, focused, onFocus, onAck, onUnack} = props
+  const {
+    series,
+    height,
+    drift,
+    silenced,
+    baseline,
+    focused,
+    onFocus,
+    onAck,
+    onUnack,
+    layers,
+    tags,
+    onExpand,
+    expanded,
+  } = props
+  // The overlay draws from any computed baseline; the badge and tint only from a
+  // flagged one
+  const overlay = baseline ?? drift ?? silenced
   // Latest value of the first line — a headline number only when not comparing
   const latest = series.lines.length === 1 ? series.lines[0].points.at(-1) : undefined
   const badge = drift ? driftBadge(drift) : null
@@ -349,17 +396,24 @@ function SeriesCard(props: {
       className={focused ? 'chart-focus-pulse' : undefined}
     >
       <Stack gap={3}>
-        {/* Center-aligned: the title + badge co-center with the value/menu/info
-            cluster on the common single-line case, and the title wraps (no
-            ellipsis) within its flex-1 box when it's too long to fit */}
+        {/* Two header rows: the title owns the first (with the menu/info
+            controls right-aligned), and the stat row beneath pairs the drift
+            badge with the latest value — the number sits next to the
+            percentage it contextualizes instead of floating top-right while
+            the badge wraps under a long title. */}
         <Flex align="center" justify="space-between" gap={3}>
-          <Flex align="center" gap={2} flex={1} style={{minWidth: 0, flexWrap: 'wrap'}}>
-            {/* Clicking the title deep-links to this chart (shareable focus) */}
-            {onFocus ? (
+          {/* flexBasis/flexGrow rather than `flex`: this is ui5's Box, which
+              (unlike @sanity/ui's) has no `flex` prop — same pair
+              RunDetailPopover's header uses. */}
+          <Box flexBasis="0%" flexGrow={1} style={{minWidth: 0}}>
+            {/* In the dialog the title lives in the dialog header — repeating it
+                here would only push the plot down. Clicking the grid card's
+                title deep-links to that chart (shareable focus). */}
+            {expanded ? null : onFocus ? (
               <Box
                 as="button"
                 onClick={onFocus}
-                title="Focus this chart"
+                title="Go to chart"
                 style={{
                   background: 'none',
                   border: 0,
@@ -380,6 +434,67 @@ function SeriesCard(props: {
                 {series.title}
               </Text>
             )}
+          </Box>
+          <Flex align="center" gap={2} style={{flexShrink: 0}}>
+            {(drift || silenced) && (onAck || onUnack) && (
+              <AckMenu
+                seriesKey={(drift ?? silenced)!.seriesKey}
+                branch={(drift ?? silenced)!.branch}
+                direction={(drift ?? silenced)!.direction}
+                acked={!drift && Boolean(silenced)}
+                onAck={onAck ?? (() => {})}
+                onUnack={onUnack ?? (() => {})}
+              />
+            )}
+            {onExpand && (
+              <Button
+                mode="bleed"
+                padding={2}
+                fontSize={1}
+                icon={ExpandIcon}
+                tone="default"
+                aria-label={`Expand ${series.title}`}
+                onClick={onExpand}
+              />
+            )}
+            {/* Context hidden behind the info button so the grid stays
+                scannable — one click, not a paragraph per card. In the dialog
+                it's redundant: the description is already visible text there. */}
+            {!expanded && (
+              <InfoButton
+                text={series.description}
+                label={`About ${series.title}`}
+                sourceFile={series.sourceFile}
+                vitalDoc={webVitalDocUrl(series.title)}
+                // Explain the dotted context line where the chart is explained —
+                // "calibration of what?" shouldn't require the Calibration tab
+                calibrationNote={seriesHasCalibration(series) ? CALIBRATION_EXPLAINER : undefined}
+              />
+            )}
+          </Flex>
+        </Flex>
+        {/* The dialog has room for the paragraph the grid cannot afford — the
+            whole point of maximizing is more context per chart, not just a
+            bigger plot. */}
+        {expanded && (
+          <Text size={1} muted>
+            {series.description}
+            {seriesHasCalibration(series) ? ` ${CALIBRATION_EXPLAINER}` : ''}
+          </Text>
+        )}
+        {(badge || silenced || latest) && (
+          // Value first, badge after — "64ms ↓ -22%" reads as a statement
+          // qualified by its move, where badge-first read as two stats
+          <Flex align="center" gap={2} style={{flexWrap: 'wrap'}}>
+            {latest && (
+              <Text
+                size={1}
+                muted
+                aria-label={`Latest run: ${formatValue(latest.value, series.unit)}`}
+              >
+                {formatValue(latest.value, series.unit)}
+              </Text>
+            )}
             {badge && (
               <Badge tone={badge.tone} fontSize={0} style={{flexShrink: 0}}>
                 {badge.label}
@@ -391,43 +506,25 @@ function SeriesCard(props: {
               </Badge>
             )}
           </Flex>
-          <Flex align="center" gap={2} style={{flexShrink: 0}}>
-            {latest && (
-              <Text
-                size={1}
-                muted
-                aria-label={`Latest run: ${formatValue(latest.value, series.unit)}`}
-              >
-                {formatValue(latest.value, series.unit)}
-              </Text>
-            )}
-            {(drift || silenced) && (onAck || onUnack) && (
-              <AckMenu
-                seriesKey={(drift ?? silenced)!.seriesKey}
-                branch={(drift ?? silenced)!.branch}
-                direction={(drift ?? silenced)!.direction}
-                acked={!drift && Boolean(silenced)}
-                onAck={onAck ?? (() => {})}
-                onUnack={onUnack ?? (() => {})}
-              />
-            )}
-            {/* Context hidden behind the info button so the grid stays
-                scannable — one click, not a paragraph per card */}
-            <InfoButton
-              text={series.description}
-              label={`About ${series.title}`}
-              sourceFile={series.sourceFile}
-              vitalDoc={webVitalDocUrl(series.title)}
-            />
-          </Flex>
-        </Flex>
+        )}
         {/* Explicit height: ParentSize's default height:100% collapses to 0
             inside an auto-height Stack row, and a 0-sized parent means no
             chart gets rendered at all */}
         <ParentSize debounceTime={50} style={{height}}>
-          {({width}) => <TrendChart series={series} width={width} height={height} />}
+          {({width}) => (
+            <TrendChart
+              series={series}
+              width={width}
+              height={height}
+              drift={overlay}
+              layers={layers}
+              tags={tags}
+              // Resting marker labels need ~40px per marker; only the dialog has it
+              showTagLabels={expanded}
+            />
+          )}
         </ParentSize>
-        <ChartLegend series={series} />
+        <ChartLegend series={series} drift={overlay} layers={layers} tags={tags} />
       </Stack>
     </Card>
   )
@@ -438,15 +535,22 @@ function ChartGrid(props: {
   series: TrendSeries[]
   driftBySeries?: Map<string, DriftResult>
   silencedBySeries?: Map<string, DriftResult>
+  /** Baselines for the chart overlay, including sub-threshold ones. */
+  baselineBySeries?: Map<string, DriftResult>
   drift?: DriftState
   focusedKey?: string | null
   onFocusMetric?: (seriesKey: string) => void
+  layers?: LayerState
+  /** Release tags for the charts' markers. */
+  tags?: TrendTag[]
+  onExpand?: (seriesKey: string) => void
 }) {
   return (
     <Grid gridTemplateColumns={[1, 1, 2, 3]} gap={3}>
       {props.series.map((entry) => {
         const entryDrift = props.driftBySeries?.get(entry.key)
         const entrySilenced = props.silencedBySeries?.get(entry.key)
+        const entryBaseline = props.baselineBySeries?.get(entry.key)
         return (
           <SeriesCard
             key={entry.key}
@@ -454,6 +558,7 @@ function ChartGrid(props: {
             height={128}
             drift={entryDrift}
             silenced={entrySilenced}
+            baseline={entryBaseline}
             focused={props.focusedKey === entry.key}
             onFocus={props.onFocusMetric ? () => props.onFocusMetric!(entry.key) : undefined}
             onAck={
@@ -462,6 +567,9 @@ function ChartGrid(props: {
             onUnack={
               entrySilenced && props.drift ? () => props.drift!.clear(entrySilenced) : undefined
             }
+            layers={props.layers}
+            tags={props.tags}
+            onExpand={props.onExpand ? () => props.onExpand!(entry.key) : undefined}
           />
         )
       })}
@@ -477,6 +585,9 @@ function ChartGrid(props: {
 function SoakPanel(props: {
   slopes: TrendSeries[]
   endValues: TrendSeries[]
+  layers?: LayerState
+  tags?: TrendTag[]
+  onExpand?: (seriesKey: string) => void
   latest: {run: TrendRun; charts: TrendSeries[]} | null
 }) {
   const {slopes, endValues, latest} = props
@@ -484,20 +595,20 @@ function SoakPanel(props: {
     slopes.length > 0 && {
       id: 'slope',
       label: 'Slope over runs',
-      hint: 'Per-minute slope, across runs — is a leak or degradation worsening release over release?',
+      hint: 'Per-minute slope, across runs. Is a leak or degradation worsening release over release?',
       charts: slopes,
     },
     endValues.length > 0 && {
       id: 'end',
       label: 'End of run',
-      hint: 'End-of-run value, across runs — where each metric landed by the end of the soak.',
+      hint: 'End-of-run value, across runs: where each metric landed by the end of the soak.',
       charts: endValues,
     },
     latest &&
       latest.charts.length > 0 && {
         id: 'latest',
         label: 'Latest run',
-        hint: `Latest soak run — ${latest.run.git?.branch ?? 'unknown'} @ ${latest.run.git?.sha?.slice(0, 10) ?? '?'} · minute-by-minute.`,
+        hint: `Latest soak run: ${latest.run.git?.branch ?? 'unknown'} @ ${latest.run.git?.sha?.slice(0, 10) ?? '?'}, minute by minute.`,
         charts: latest.charts,
       },
   ].filter(Boolean) as {id: string; label: string; hint: string; charts: TrendSeries[]}[]
@@ -525,10 +636,64 @@ function SoakPanel(props: {
           <Text size={1} muted>
             {active.hint}
           </Text>
-          <ChartGrid series={active.charts} />
+          <ChartGrid
+            series={active.charts}
+            layers={props.layers}
+            tags={props.tags}
+            onExpand={props.onExpand}
+          />
         </Stack>
       </TabPanel>
     </Stack>
+  )
+}
+
+/**
+ * One chart, maximized. The grid is 40+ small multiples — great for scanning,
+ * too cramped for reading: at ~330px a 90-day window puts a release marker every
+ * ~15px and the metric's own description has to hide behind an ⓘ. This is the
+ * same `SeriesCard`, not a second implementation of it, given room to draw
+ * labelled markers and show its description.
+ *
+ * State lives in `?max=<series key>` (see TrendsTool) so a maximized chart is
+ * shareable and reloadable like every other view state, and opening it pushes a
+ * history entry so Back closes it.
+ */
+function MaximizedChartDialog(props: {
+  series: TrendSeries
+  drift?: DriftResult
+  silenced?: DriftResult
+  baseline?: DriftResult
+  layers?: LayerState
+  tags?: TrendTag[]
+  onAck?: (state: 'silenced' | 'snoozed' | 'fixed') => void
+  onUnack?: () => void
+  onClose: () => void
+}) {
+  const {series, onClose, ...rest} = props
+  return (
+    // width={4} rather than "fill": on a very wide monitor a full-viewport plot
+    // stretches ~90 days across 2500px, which reads as a flat line no matter
+    // what the metric did. Dialog owns Escape and the focus trap.
+    <Dialog
+      id="chart-maximize"
+      header={series.title}
+      width={4}
+      onClose={onClose}
+      onClickOutside={onClose}
+    >
+      <Box padding={3}>
+        {/* No border/padding duplication: the card renders inside the dialog's
+            own content box.
+
+            560 rather than 460: the label gutter grew to ~112px once markers
+            carried rotated '(latest)' labels, and at 460 that left the plot
+            itself only ~320px — the labels had room but the data no longer did.
+            This keeps ~420px of plot, which is what the original 460 was chosen
+            to give, while still fitting the legend without scrolling. */}
+        <SeriesCard series={series} height={560} expanded {...rest} />
+      </Box>
+    </Dialog>
   )
 }
 
@@ -542,6 +707,10 @@ export function TrendsTool() {
   // is shareable and the tool is explorable before real runs exist.
   const [rangeParam, setRangeParam] = useUrlState('range', '90')
   const [sourceParam, setSourceParam] = useUrlState('source', 'live')
+  // Encoding layers (median / band / baseline overlay), toggled from any chart
+  // legend and applied to the whole grid — see layers.ts
+  const [layersParam, setLayersParam] = useUrlState('layers', '')
+  const layers = useLayerState(layersParam, setLayersParam)
   const source: DataSource =
     sourceParam === 'live' || DEBUG_SOURCES.includes(sourceParam as DebugSource)
       ? (sourceParam as DataSource)
@@ -566,8 +735,27 @@ export function TrendsTool() {
   )
   const live = useObservable(live$, {runs: null, error: null})
 
+  // Release tags, for the chart markers. Its own stream, and its own error
+  // handling: markers are annotation, so a tag query that fails degrades to
+  // "no markers" rather than poisoning the runs stream into an error card.
+  // Realtime like everything else — a new release appears without a reload
+  // (the daily cron re-upserts tags, and dist-tags re-point between releases).
+  const liveTags$ = useMemo(
+    () =>
+      documentStore.listenQuery(TAGS_QUERY, {}, {tag: 'metrics.trends.tags'}).pipe(
+        map((result) => result as TrendTag[]),
+        catchError(() => of<TrendTag[]>([])),
+      ),
+    [documentStore],
+  )
+  const liveTags = useObservable(liveTags$, [])
+
   const debugRuns = useMemo(() => (source === 'live' ? null : generateDebugRuns(source)), [source])
   const runs = source === 'live' ? live.runs : debugRuns
+  // Debug sources get synthetic tags too, so the marker layer (including label
+  // collision) is testable offline like every other layer — see SPEC
+  const debugTags = useMemo(() => (source === 'live' ? [] : generateDebugTags(source)), [source])
+  const tags = source === 'live' ? liveTags : debugTags
   const error = source === 'live' ? live.error : null
   const loading = source === 'live' && live.runs === null && live.error === null
 
@@ -596,6 +784,22 @@ export function TrendsTool() {
     [inRange, selectedBranches],
   )
   const series = useMemo(() => buildSeries(filtered), [filtered])
+  /**
+   * Drift is computed over *all* history for the selected branches, never the
+   * range-filtered view. Its baseline is defined in runs (last 7 vs prior 21),
+   * so feeding it a 30-day slice would leave the baseline drawing on ~23 of 30
+   * visible runs and — worse — make the verdict a function of the range picker:
+   * the same metric could flag at 90d and not at 30d. The charts still render
+   * `series` (the range the user chose); only the drift math reads the full
+   * history.
+   */
+  const driftSeries = useMemo(
+    () =>
+      buildSeries(
+        (runs ?? []).filter((run) => run.git && selectedBranches.includes(run.git.branch)),
+      ),
+    [runs, selectedBranches],
+  )
   const soakSlopes = useMemo(() => soakSlopeSeries(filtered), [filtered])
   // End-of-run soak values across runs — the "where did it land" history that
   // complements the slope view
@@ -635,6 +839,23 @@ export function TrendsTool() {
     return map
   }, [series, calibration])
 
+  // Every chart the tool can show, by key — what `?max=` resolves against.
+  // The soak views and the environment tab build their series outside `series`,
+  // so a maximize link into one of those has to find them here.
+  const seriesByKey = useMemo(() => {
+    const map = new Map<string, TrendSeries>()
+    for (const entry of [
+      ...series,
+      ...environmentSeries,
+      ...soakSlopes,
+      ...soakEndValues,
+      ...(latestSoak?.charts ?? []),
+    ]) {
+      map.set(entry.key, entry)
+    }
+    return map
+  }, [series, environmentSeries, soakSlopes, soakEndValues, latestSoak])
+
   // Deep-linkable focused chart: the `chart` URL param names the series to
   // jump to (shareable). Jumping from a drift-feed row or a chart header writes
   // it (pushState, so Back returns) and flashes a focus ring; the URL param
@@ -654,7 +875,7 @@ export function TrendsTool() {
 
   // Shared drift state (feeds both the pinned feed and the per-tab badges, so
   // they can't disagree). Badge = active regressions in that group.
-  const drift = useDriftState(series)
+  const drift = useDriftState(driftSeries)
   const showBranch = series.some((s) => s.lines.length > 1)
   const [focusedKey, setFocusedKey] = useState<string | null>(null)
   // A deep-linked (?chart=) focus arms only once data is in: at mount the
@@ -696,6 +917,38 @@ export function TrendsTool() {
     }
   }, [focusedKey])
 
+  // Which chart is maximized, as a URL param — same vocabulary as `?chart=`, so
+  // a maximized chart is shareable and survives reload. Resolved by key at
+  // render: a stale link (or a chart filtered out by the current branch/range)
+  // resolves to nothing and simply shows no dialog.
+  const [maximizedParam, setMaximizedParam] = useUrlState('max', '')
+  const maximized = maximizedParam ? seriesByKey.get(maximizedParam) : undefined
+  const expandMetric = (seriesKey: string) => {
+    // 'push' so Back closes the dialog — the same precedent focusMetric sets,
+    // and the behaviour a Back press means once something modal is open
+    setMaximizedParam(seriesKey, 'push')
+  }
+  const closeMaximized = () => setMaximizedParam('')
+  // Return focus to the expand button that opened the dialog, rather than
+  // dropping the keyboard user at the top of the document.
+  //
+  // Keyed on the param clearing rather than done in the close handler, because
+  // the dialog also closes via Back (popstate updates the param without going
+  // through any handler) — an effect covers every route out. Deferred a frame
+  // so it lands after the dialog's own focus restoration.
+  const previousMaximized = useRef('')
+  useEffect(() => {
+    const justClosed = previousMaximized.current && !maximizedParam
+    const key = previousMaximized.current
+    previousMaximized.current = maximizedParam
+    if (!justClosed) return undefined
+    const raf = requestAnimationFrame(() => {
+      const card = document.getElementById(chartDomId(key))
+      card?.querySelector<HTMLButtonElement>('button[aria-label^="Expand "]')?.focus()
+    })
+    return () => cancelAnimationFrame(raf)
+  }, [maximizedParam])
+
   const regressionsByGroup = useMemo(() => {
     const counts = new Map<TrendGroup, number>()
     for (const entry of drift.active) {
@@ -709,6 +962,10 @@ export function TrendsTool() {
   // on more than one branch; keep the worst so the card shows the biggest move,
   // regressions winning over improvements.
   const driftBySeries = useMemo(() => worstBySeries(drift.active), [drift.active])
+  // Every series' baseline, flagged or not — the charts draw an overlay from this
+  // so the reference lines don't appear and disappear as metrics cross the
+  // threshold. Badge, card tint and the ack menu still key off `drift.active`.
+  const baselineBySeries = useMemo(() => worstBySeries(drift.all), [drift.all])
   // Silenced/snoozed per series — the card keeps a muted "acknowledged" marker
   // with an Un-ack, so you can reverse it without opening the feed. Active
   // drift takes precedence, so drop any series that's also active.
@@ -788,13 +1045,13 @@ export function TrendsTool() {
                 <Stack gap={3}>
                   <Text size={1} muted>
                     One benchmark run per day of the studio built from <code>main</code>, measured
-                    against a local API mock (no network, no real project) — see{' '}
-                    <code>perf/bench</code>. Each chart tracks one metric over time; each dot is one
-                    run — click it for the run details and links to the PR, commit, and CI run.
+                    against a local API mock (no network, no real project); see{' '}
+                    <code>perf/bench</code>. Each chart tracks one metric over time. Click anywhere
+                    in a chart to open the nearest run, with links to the PR, commit, and CI run.
                   </Text>
                   <Text size={1} muted>
-                    Because the CI machine varies day to day, absolute numbers are host-relative:
-                    before trusting a spike, check the host calibration in the Calibration tab — if
+                    Because the CI machine varies day to day, absolute numbers depend on the host:
+                    before trusting a spike, check the host calibration in the Calibration tab. If
                     it spikes on the same day, suspect the runner, not the studio. Flat lines are
                     the goal; the ⓘ on each chart explains what it measures.
                   </Text>
@@ -804,7 +1061,9 @@ export function TrendsTool() {
 
             {error && (
               <Card tone="critical" border padding={3} radius={2}>
-                <Text size={1}>Failed to load runs: {error}</Text>
+                <Text size={1}>
+                  Couldn't load benchmark runs: {error}. Reload the page to try again.
+                </Text>
               </Card>
             )}
             {loading && (
@@ -815,8 +1074,8 @@ export function TrendsTool() {
             {!error && !loading && series.length === 0 && (
               <Card tone="transparent" border padding={4} radius={2}>
                 <Text size={1} muted>
-                  No benchmark runs in this range yet. The daily track-main cron stores one run per
-                  day once perf/bench is on the main branch.
+                  No benchmark runs in this range. Try a longer range, or wait for the daily
+                  benchmark (one run per day from main).
                 </Text>
               </Card>
             )}
@@ -838,6 +1097,7 @@ export function TrendsTool() {
                         key={tab.id}
                         id={`group-tab-${tab.id}`}
                         aria-controls={`group-panel-${tab.id}`}
+                        icon={GROUP_ICONS[tab.id]}
                         label={
                           <Flex align="center" gap={2}>
                             <span>{tab.title}</span>
@@ -876,9 +1136,48 @@ export function TrendsTool() {
                         slopes={soakSlopes}
                         endValues={soakEndValues}
                         latest={latestSoak}
+                        layers={layers}
+                        tags={tags}
+                        onExpand={expandMetric}
                       />
+                    ) : activeTab.id === 'vitals' ? (
+                      // One section per vital, so the overview reads by metric
+                      // ("how is LCP doing, everywhere?") — see vitalSections.
+                      // The extra top padding separates the first section
+                      // header from the tab description it would otherwise hug.
+                      <Stack gap={6} paddingTop={3}>
+                        {vitalSections(series.filter((entry) => entry.group === 'vitals')).map(
+                          (section) => (
+                            <Stack key={section.vital} gap={4}>
+                              <Flex align="baseline" gap={2}>
+                                <Text size={1} weight="semibold">
+                                  {section.vital}
+                                </Text>
+                                {section.name && (
+                                  <Text size={1} muted>
+                                    {section.name}
+                                  </Text>
+                                )}
+                              </Flex>
+                              <ChartGrid
+                                layers={layers}
+                                series={section.series}
+                                driftBySeries={driftBySeries}
+                                silencedBySeries={silencedBySeries}
+                                baselineBySeries={baselineBySeries}
+                                drift={drift}
+                                focusedKey={focusedKey}
+                                onFocusMetric={focusMetric}
+                                tags={tags}
+                                onExpand={expandMetric}
+                              />
+                            </Stack>
+                          ),
+                        )}
+                      </Stack>
                     ) : (
                       <ChartGrid
+                        layers={layers}
                         series={
                           activeTab.id === 'environment'
                             ? environmentSeries
@@ -886,9 +1185,12 @@ export function TrendsTool() {
                         }
                         driftBySeries={driftBySeries}
                         silencedBySeries={silencedBySeries}
+                        baselineBySeries={baselineBySeries}
                         drift={drift}
                         focusedKey={focusedKey}
                         onFocusMetric={focusMetric}
+                        tags={tags}
+                        onExpand={expandMetric}
                       />
                     )}
                   </Stack>
@@ -898,6 +1200,29 @@ export function TrendsTool() {
           </Stack>
         </Container>
       </Card>
+      {/* The maximized chart. Rendered last, outside the scroll container: it's
+          a Dialog, and it gets the same per-series drift/baseline/ack props the
+          grid card gets, so maximizing is always a superset of the card and
+          never a downgrade. */}
+      {maximized && (
+        <MaximizedChartDialog
+          series={maximized}
+          drift={driftBySeries.get(maximized.key)}
+          silenced={silencedBySeries.get(maximized.key)}
+          baseline={baselineBySeries.get(maximized.key)}
+          layers={layers}
+          tags={tags}
+          onAck={(state) => {
+            const entry = driftBySeries.get(maximized.key)
+            if (entry) drift.ack(entry, state)
+          }}
+          onUnack={() => {
+            const entry = silencedBySeries.get(maximized.key)
+            if (entry) drift.clear(entry)
+          }}
+          onClose={closeMaximized}
+        />
+      )}
     </PortalProvider>
   )
 }

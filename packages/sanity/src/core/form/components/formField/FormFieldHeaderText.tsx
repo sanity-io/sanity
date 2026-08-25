@@ -1,7 +1,8 @@
 import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
-import {Badge, Box, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, Flex, Stack, Text} from '@sanity/ui'
 import {memo, type ReactNode} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'

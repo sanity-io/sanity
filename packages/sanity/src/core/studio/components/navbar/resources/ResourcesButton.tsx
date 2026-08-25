@@ -1,5 +1,5 @@
 import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
-import {Menu} from '@sanity/ui/menu'
+import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useState} from 'react'
 import semver from 'semver'
 import {styled} from 'styled-components'
@@ -14,6 +14,8 @@ import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useRenderingContext} from '../../../../store/renderingContext/useRenderingContext'
 import {useLiveUserApplication} from '../../../liveUserApplication/useLiveUserApplication'
 import {usePackageVersionStatus} from '../../../packageVersionStatus/usePackageVersionStatus'
+import {DiagnosticsDialog} from './DiagnosticsDialog'
+import {DiagnosticsMenuItem} from './DiagnosticsMenuItem'
 import {FeedbackMenuItem} from './FeedbackMenuItem'
 import {useGetHelpResources} from './helper-functions/hooks'
 import {ResourcesMenuItems} from './ResourcesMenuItems'
@@ -69,9 +71,14 @@ export function ResourcesButton() {
   }, [feedbackDialogOpened])
   const handleCloseFeedback = useCallback(() => setFeedbackDialogOpen(false), [])
 
+  const [diagnosticsDialogOpen, setDiagnosticsDialogOpen] = useState(false)
+  const handleOpenDiagnostics = useCallback(() => setDiagnosticsDialogOpen(true), [])
+  const handleCloseDiagnostics = useCallback(() => setDiagnosticsDialogOpen(false), [])
+
   return (
     <>
       {studioInfoDialogOpen && <StudioInfoDialog onClose={handleStudioInfoDialogClose} />}
+      {diagnosticsDialogOpen && <DiagnosticsDialog onClose={handleCloseDiagnostics} />}
       {feedbackDialogOpen && (
         <StudioFeedbackDialog
           dsn={STUDIO_DSN}
@@ -94,8 +101,12 @@ export function ResourcesButton() {
         id="menu-button-resources"
         menu={
           <StyledMenu data-testid="menu-button-resources">
-            {!isInDashboard && feedbackAvailable && (
-              <FeedbackMenuItem onClick={handleOpenFeedback} />
+            {!isInDashboard && (
+              <>
+                {feedbackAvailable && <FeedbackMenuItem onClick={handleOpenFeedback} />}
+                <DiagnosticsMenuItem onClick={handleOpenDiagnostics} />
+                <MenuDivider />
+              </>
             )}
             <ResourcesMenuItems
               currentVersion={currentVersion}

@@ -5,7 +5,7 @@ import {
   type DeprecatedProperty,
   type FormNodeValidation,
 } from '@sanity/types'
-import {Badge, Box, Flex, Stack, Text, type Theme} from '@sanity/ui'
+import {Badge, Flex, Stack, Text, type Theme} from '@sanity/ui'
 import {
   type FocusEvent,
   type HTMLProps,
@@ -16,6 +16,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {LazyActivity} from '../../../components/lazyActivity/LazyActivity'
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
@@ -25,7 +26,7 @@ import {type FormNodePresence} from '../../../presence/types'
 import {useFieldActions} from '../../field/actions/useFieldActions'
 import {createDescriptionId} from '../../members/common/createDescriptionId'
 import {type FieldCommentsProps} from '../../types/fieldProps'
-import {FormDivergenceIndicator} from '../FormDivergenceIndicator'
+import {FormFieldGutter} from '../FormFieldGutter'
 import {FormNodeDivergenceCollectionIndicator} from '../FormNodeDivergenceCollectionIndicator'
 import {FormNodeDivergenceDetail} from '../FormNodeDivergenceDetail'
 import {FormRow} from '../layout/FormRow'
@@ -216,7 +217,7 @@ export function FormFieldSet(
   )
 
   return (
-    <FormRow gutterStartCell={<FormDivergenceIndicator path={path} />}>
+    <FormRow gutterStartCell={<FormFieldGutter path={path} />}>
       <FormNodeDivergenceDetail path={path} readOnly={readOnly}>
         <Root
           data-level={level}

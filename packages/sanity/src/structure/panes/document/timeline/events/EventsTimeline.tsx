@@ -1,4 +1,4 @@
-import {Box, Flex, Spinner, Stack, Text} from '@sanity/ui'
+import {Flex, Spinner, Stack, Text} from '@sanity/ui'
 import {motion, type Variants} from 'motion/react'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
@@ -13,6 +13,7 @@ import {
   LoadingBlock,
   useTranslation,
 } from 'sanity'
+import {Box} from 'ui5'
 
 import {ExpandableTimelineItemButton} from '../expandableTimelineItemButton'
 import {ListWrapper, Root} from '../timeline.styled'
@@ -216,7 +217,7 @@ export const EventsTimeline = ({
     ],
   )
 
-  // oxlint-disable-next-line react/react-compiler
+  // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
   useEffect(() => setMounted(true), [])
   const selectedIndex = events.findIndex((event) => event.id === selectedEventId)
 

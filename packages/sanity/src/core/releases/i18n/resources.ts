@@ -299,6 +299,8 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   /** Tooltip text for when one user is editing a document in a release */
   'presence.tooltip.one':
     '{{displayName}} is editing this document in the "{{releaseTitle}}" release right now',
+  /** Tooltip text for when one user is editing a published or draft document */
+  'presence.tooltip.one-without-release': '{{displayName}} is editing this document right now',
   /** Tooltip text for when multiple users are editing a document in a release */
   'presence.tooltip.other': '{{count}} people are editing this document right now',
 

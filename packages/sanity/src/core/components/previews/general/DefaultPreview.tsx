@@ -1,6 +1,7 @@
-import {Box, Flex, rem, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {Flex, rem, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -76,7 +77,7 @@ export function DefaultPreview(props: DefaultPreviewProps) {
       >
         <Flex align="center" flex={1} gap={2}>
           {media && (
-            <Box flex="none">
+            <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
               <Skeleton
                 animated
                 delay={SKELETON_DELAY}
@@ -91,7 +92,7 @@ export function DefaultPreview(props: DefaultPreviewProps) {
             <SubtitleSkeleton delay={SKELETON_DELAY} />
           </Stack>
 
-          <Box flex="none" padding={1}>
+          <Box flexBasis="auto" flexGrow={0} flexShrink={0} padding={1}>
             {statusNode}
           </Box>
         </Flex>
@@ -109,7 +110,7 @@ export function DefaultPreview(props: DefaultPreviewProps) {
     >
       <Flex align="center" flex={1} gap={2}>
         {media && (
-          <Box flex="none">
+          <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
             <Media
               dimensions={DEFAULT_MEDIA_DIMENSIONS}
               layout="default"
@@ -147,7 +148,7 @@ export function DefaultPreview(props: DefaultPreviewProps) {
           )}
         </Stack>
 
-        <Box flex="none" padding={1}>
+        <Box flexBasis="auto" flexGrow={0} flexShrink={0} padding={1}>
           {statusNode}
         </Box>
 

@@ -1,5 +1,6 @@
-import {Flex, Text, TextSkeleton} from '@sanity/ui'
+import {Text, TextSkeleton} from '@sanity/ui'
 import {css, styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useCurrentUser, useUser} from '../../../../store/user/hooks'
@@ -53,7 +54,7 @@ export function MentionInlineBlock(props: MentionInlineBlockProps) {
     <Tooltip
       portal
       content={
-        <Flex align="center" gap={2}>
+        <Flex alignItems="center" gap={2}>
           <Flex>
             <CommentsAvatar user={user} />
           </Flex>

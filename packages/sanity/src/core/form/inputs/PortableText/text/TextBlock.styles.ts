@@ -1,7 +1,8 @@
 import {hues} from '@sanity/color'
-import {Box, Flex, type Theme} from '@sanity/ui'
+import {Flex, type Theme} from '@sanity/ui'
 import {getTheme_v2, rgba} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {DEBUG} from '../../../../changeIndicators/constants'
 import {TEXT_BULLET_MARKERS, TEXT_NUMBER_FORMATS} from './constants'
@@ -103,12 +104,8 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
 
 export const TextRoot = styled.div<TextBlockStyleProps>(textBlockStyle)
 
-// Because of a weird bug in Google Chrome regarding the @sanity/ui Flex component and spellchecking,
-// this is set to be a Box with 'display: flex'. Using the Flex component here results in Chrome
-// using 20% CPU when idle when spellchecking is on for some reason.
-export const TextBlockFlexWrapper = styled(Box)`
+export const TextBlockWrapper = styled(Box)`
   position: relative;
-  display: flex;
 `
 
 export const ListPrefixWrapper = styled.div`

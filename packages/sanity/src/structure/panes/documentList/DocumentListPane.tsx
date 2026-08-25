@@ -1,7 +1,7 @@
 import {SearchIcon} from '@sanity/icons/Search'
 import {SpinnerIcon} from '@sanity/icons/Spinner'
-import {Box, Stack, TextInput} from '@sanity/ui'
-import {memo, useCallback, useEffect, useMemo, useState} from 'react'
+import {Stack, TextInput} from '@sanity/ui'
+import {Activity, memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {useObservableEvent} from 'react-rx'
 import {debounce, map, type Observable, of, tap, timer} from 'rxjs'
 import {
@@ -18,7 +18,9 @@ import {
   useUnique,
 } from 'sanity'
 import {keyframes, styled} from 'styled-components'
+import {Box} from 'ui5'
 
+import {usePane} from '../../components/pane/usePane'
 import {structureLocaleNamespace} from '../../i18n'
 import {type BaseStructureToolPaneProps} from '../types'
 import {DEFAULT_ORDERING, EMPTY_RECORD, FULL_LIST_LIMIT} from './constants'
@@ -102,6 +104,10 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
 
   const {t} = useTranslation(structureLocaleNamespace)
   const {title} = useI18nText(pane)
+  // A collapsed pane is only wide enough for the rotated header. Keep the pane
+  // body mounted so its state survives a collapse, but hide it to prevent its
+  // contents from bleeding into the neighbouring pane.
+  const {collapsed} = usePane()
 
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [searchInputValue, setSearchInputValue] = useState<string>('')
@@ -227,7 +233,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
 
   useEffect(() => {
     if (!enableSearchSpinner && !isLoading) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setEnableSearchSpinner(paneKey)
     }
   }, [enableSearchSpinner, isLoading, paneKey])
@@ -235,9 +241,10 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   useEffect(() => {
     // Clear search field and disable search spinner
     // when switching between panes (i.e. when paneKey changes).
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     handleClearSearch()
     setEnableSearchSpinner()
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [paneKey, handleClearSearch])
 
   useEffect(() => {
@@ -246,7 +253,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     // applied ordering back to relevance.
     if (!trimmedSearchQuery) {
       // TODO: Refactor search ordering reset to avoid effect state updates.
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setSearchOrderingId(RELEVANCE_ORDERING_ID)
     }
   }, [trimmedSearchQuery])
@@ -275,8 +282,8 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   useReconnectingToast(!connected)
 
   return (
-    <>
-      <Box paddingX={3} paddingBottom={3}>
+    <Activity mode={collapsed ? 'hidden' : 'visible'}>
+      <Box data-testid="document-list-search" paddingX={3} paddingBottom={3}>
         <Stack gap={3}>
           <TextInput
             aria-label={t('panes.document-list-pane.search-input.aria-label')}
@@ -335,6 +342,6 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
         showIcons={showIcons}
         sortOrder={orderByIdsParam ? DEFAULT_ORDERING : sortOrder}
       />
-    </>
+    </Activity>
   )
 })

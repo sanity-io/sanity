@@ -1,8 +1,9 @@
 import {LinkIcon} from '@sanity/icons/Link'
-import {Box, Button, Flex} from '@sanity/ui'
+import {Button, Flex} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback} from 'react'
 import {type ObjectItemProps, type Slug, useFormValue} from 'sanity'
+import {Box} from 'ui5'
 
 export function PageBlockAnchor(props: ObjectItemProps) {
   const slug = useFormValue(['slug']) as Slug | undefined
@@ -34,7 +35,9 @@ export function PageBlockAnchor(props: ObjectItemProps) {
 
   return (
     <Flex gap={3} paddingRight={2} align="center">
-      <Box flex={1}>{props.renderDefault(props)}</Box>
+      <Box flexBasis="0%" flexGrow={1}>
+        {props.renderDefault(props)}
+      </Box>
       <Button mode="bleed" icon={LinkIcon} onClick={handleCopy} title="Copy anchor link" />
     </Flex>
   )

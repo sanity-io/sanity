@@ -4,7 +4,7 @@ import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {LinkIcon} from '@sanity/icons/Link'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {isReference, type PortableTextBlock} from '@sanity/types'
-import {Box, Flex, useGlobalKeyDown} from '@sanity/ui'
+import {Flex, useGlobalKeyDown} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {
   type ComponentPropsWithoutRef,
@@ -18,6 +18,7 @@ import {
   useRef,
 } from 'react'
 import {IntentLink} from 'sanity/router'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
@@ -87,7 +88,7 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
   )
 
   const handleDelete = useCallback(
-    (event: MouseEvent<HTMLDivElement>) => {
+    (event: MouseEvent<HTMLButtonElement>) => {
       event.preventDefault()
       event.stopPropagation()
       onRemove()
@@ -97,7 +98,9 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
 
   return (
     <Flex>
-      <Box flex={1}>{children}</Box>
+      <Box flexBasis="0%" flexGrow={1}>
+        {children}
+      </Box>
       <Box>
         <MenuButton
           button={

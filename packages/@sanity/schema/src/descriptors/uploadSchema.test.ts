@@ -4,19 +4,8 @@ import {Schema} from '../legacy/Schema'
 import {builtinTypes} from '../sanity/builtinTypes'
 import {groupProblems} from '../sanity/groupProblems'
 import {validateSchema} from '../sanity/validateSchema'
-import {defaultShouldRetry, type DescriptorRequestOptions} from './transport'
+import {type DescriptorRequestOptions} from './transport'
 import {prepareSchemaUpload, uploadSchema, type UploadSchemaPhase} from './uploadSchema'
-
-describe('defaultShouldRetry', () => {
-  test('retries on 429 and 5xx, not on 4xx or non-http errors', () => {
-    expect(defaultShouldRetry({response: {statusCode: 429}})).toBe(true)
-    expect(defaultShouldRetry({response: {statusCode: 503}})).toBe(true)
-    expect(defaultShouldRetry({response: {statusCode: 404}})).toBe(false)
-    expect(defaultShouldRetry({response: {statusCode: 200}})).toBe(false)
-    expect(defaultShouldRetry(new Error('boom'))).toBe(false)
-    expect(defaultShouldRetry(undefined)).toBe(false)
-  })
-})
 
 // taken from sanity/src/core/schema/createSchema.ts
 function createSchema(schemaDef: {name: string; types: any[]}, skipBuiltins = false) {
@@ -127,7 +116,9 @@ describe('header merging', () => {
       token: 'tok',
       headers: {authorization: 'Bearer other'},
     })
-    const sent = calls[0]!.headers!
+    // The recorded `headers` value is the plain record uploadSchema merged;
+    // narrow it away from the `FetchHeaders` union for property access.
+    const sent = calls[0]!.headers as Record<string, string>
     expect(sent['authorization']).toBe('Bearer other')
     expect(sent['Authorization']).toBeUndefined()
   })

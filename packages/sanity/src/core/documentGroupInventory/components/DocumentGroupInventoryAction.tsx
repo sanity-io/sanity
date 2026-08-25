@@ -6,9 +6,9 @@ import {styled} from 'styled-components'
 
 import {Button as BaseButton} from '../../../ui-components/button/Button'
 import {Popover} from '../../../ui-components/popover/Popover'
+import {RhombusIcon} from '../../components/temporary-icons/Rhombus'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useDocumentVersionsObservable} from '../../releases/hooks/useDocumentVersions'
-import {RhombusIcon} from '../../variants/plugin/components/PersonalizationIcons'
 
 export const DocumentGroupInventoryAction: ComponentType<
   PropsWithChildren<{

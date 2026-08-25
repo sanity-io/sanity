@@ -1,4 +1,4 @@
-import {BoundaryElementProvider, Box, Flex, PortalProvider, usePortal} from '@sanity/ui'
+import {BoundaryElementProvider, Flex, PortalProvider, usePortal} from '@sanity/ui'
 import {Activity, useEffect, useMemo, useRef, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
@@ -23,6 +23,7 @@ import {
   VirtualizerScrollInstanceProvider,
 } from 'sanity'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {PaneContent} from '../../../components/pane/PaneContent'
 import {usePane} from '../../../components/pane/usePane'
@@ -421,7 +422,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
               {banners}
               <DocumentPanelSubHeader />
             </LegacyLayerProvider>
-            <DocumentBox flex={2}>
+            <DocumentBox flexBasis="0%" flexGrow={2}>
               <PortalProvider element={portalElement} __unstable_elements={portalElements}>
                 <BoundaryElementProvider element={documentScrollElement}>
                   <VirtualizerScrollInstanceProvider

@@ -6,7 +6,7 @@ import {
   type PortableTextBlock,
   type UploadState,
 } from '@sanity/types'
-import {Box, Flex, type ResponsivePaddingProps} from '@sanity/ui'
+import {Flex, type ResponsivePaddingProps} from '@sanity/ui'
 import {isEqual} from '@sanity/util/paths'
 import {
   type MouseEvent,
@@ -17,6 +17,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import {Box} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useHoveredChange} from '../../../../changeIndicators/useHoveredChange'
@@ -321,7 +322,7 @@ export function BlockObject(props: BlockObjectProps) {
     <Box ref={setRef} contentEditable={false}>
       <Flex paddingBottom={1} marginY={3} style={debugRender()}>
         <PreviewContainer {...innerPaddingProps}>
-          <Box flex={1}>
+          <Box flexBasis="0%" flexGrow={1}>
             <Tooltip
               placement="top"
               portal="editor"

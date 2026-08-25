@@ -4,7 +4,7 @@ import {CollapseIcon} from '@sanity/icons/Collapse'
 import {ExpandIcon} from '@sanity/icons/Expand'
 import {SplitVerticalIcon} from '@sanity/icons/SplitVertical'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Box, Card, Flex} from '@sanity/ui'
+import {Card, Flex} from '@sanity/ui'
 import {getTheme_v2, rgba} from '@sanity/ui/theme'
 import {
   memo,
@@ -25,6 +25,7 @@ import {
   useWorkspace,
 } from 'sanity'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
@@ -246,17 +247,17 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
                   data-testid="document-target-badges"
                   style={{minWidth: 0}}
                 >
-                  <Box flex="none">
+                  <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
                     <DocumentTargetBadges />
                   </Box>
-                  <Box flex="none">
+                  <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
                     <DocumentGroupInventoryHint />
                   </Box>
                 </Flex>
               </HorizontalScroller>
             )}
 
-            <Box flex="none" paddingRight={3}>
+            <Box flexBasis="auto" flexGrow={0} flexShrink={0} paddingRight={3}>
               <Flex align="center" gap={1}>
                 {documentLevelPresence.length > 0 && (
                   <Box data-testid="document-level-presence" marginRight={2}>

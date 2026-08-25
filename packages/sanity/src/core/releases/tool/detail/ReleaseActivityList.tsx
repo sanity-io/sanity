@@ -77,6 +77,7 @@ export const ReleaseActivityList = ({
     })
   }, [events, hasMore, isLoading])
 
+  // oxlint-disable-next-line react/incompatible-library -- pre-existing violation, to be fixed in a follow-up
   const virtualizer = useVirtualizer({
     // If we have more events, or the events are loading, we add a loader row at the end
     count: hasMore || isLoading ? listEvents.length + 1 : listEvents.length,

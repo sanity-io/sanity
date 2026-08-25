@@ -7,7 +7,7 @@
  * actually stores: both load conditions (boot-cold + open-doc-warm),
  * main-thread blocking, INP, soak, and the PR/CI backlink fields.
  */
-import {type TrendRun} from './data'
+import {type TrendRun, type TrendTag} from './data'
 
 /** mulberry32 — same tiny PRNG the bench fixtures use. */
 function mulberry32(seed: number): () => number {
@@ -25,6 +25,41 @@ export type DebugSource = (typeof DEBUG_SOURCES)[number]
 
 const DAYS = 90
 const DAY_MS = 24 * 60 * 60 * 1000
+
+/**
+ * Synthetic release schedule: day offset within the window and the version cut
+ * that day. Shared by `generateDebugTags` (which turns these into `gitTag`-ish
+ * markers) and `generateDemo` (which adds a release *run* for most of them), so
+ * the debug data exercises both marker kinds — anchored to a measured run, and
+ * placed by tag date where no run measured it.
+ *
+ * Deliberately awkward: the cadence is uneven, the 54/56 pair collides at
+ * card width so label thinning gets hit, and day 70 is a major cutover.
+ */
+const RELEASE_SCHEDULE: {day: number; major: number; minor: number; patch: number}[] = [
+  {day: 3, major: 6, minor: 8, patch: 0},
+  {day: 14, major: 6, minor: 8, patch: 1},
+  {day: 21, major: 6, minor: 8, patch: 2},
+  {day: 30, major: 6, minor: 9, patch: 0},
+  {day: 41, major: 6, minor: 9, patch: 1},
+  {day: 54, major: 6, minor: 9, patch: 2},
+  {day: 56, major: 6, minor: 10, patch: 0},
+  {day: 70, major: 7, minor: 0, patch: 0},
+  {day: 83, major: 7, minor: 1, patch: 0},
+]
+
+const versionOf = (entry: (typeof RELEASE_SCHEDULE)[number]) =>
+  `v${entry.major}.${entry.minor}.${entry.patch}`
+
+/**
+ * The releases that got a benchmark run, keyed by day. The two oldest are left
+ * unmeasured on purpose: release runs started partway through the real history
+ * too, so a chart has to render both kinds side by side without looking
+ * inconsistent.
+ */
+const MEASURED_RELEASES = new Map(
+  RELEASE_SCHEDULE.slice(2).map((entry) => [entry.day, versionOf(entry)]),
+)
 
 function fakeSha(rng: () => number): string {
   return Array.from({length: 40}, () => '0123456789abcdef'[Math.floor(rng() * 16)]).join('')
@@ -61,10 +96,17 @@ function generateDemo(branch = 'main', shift = 0): TrendRun[] {
     const calibration = 11 + 2 * Math.sin(day / 9) + (rng() - 0.5)
     const hostFactor = calibration / 11
 
+    // Release runs exist on main only (releases are cut from main) and land a
+    // few hours after the tag, as a dispatched CI run does — so the anchored
+    // marker visibly sits on the run rather than on the tag's own timestamp
+    const releaseTag = branch === 'main' ? MEASURED_RELEASES.get(day) : undefined
+    const releaseOffsetMs = releaseTag ? 14 * 60 * 60 * 1000 : 0
+
     runs.push({
       _id: `debug-run-${branch}-${day}`,
-      startedAt: new Date(start + day * DAY_MS).toISOString(),
+      startedAt: new Date(start + day * DAY_MS + releaseOffsetMs).toISOString(),
       mode: 'absolute',
+      ...(releaseTag ? {trigger: 'release' as const, releaseTag} : {trigger: 'cron' as const}),
       // Every ~9th run is a labeled PR run (has a PR number) so the run-detail
       // popover's PR backlink is exercised; all runs carry a CI run id/attempt.
       git: {sha: fakeSha(rng), branch, ...(day % 9 === 0 ? {prNumber: 13000 + day} : {})},
@@ -112,7 +154,6 @@ function generateDemo(branch = 'main', shift = 0): TrendRun[] {
           // open-doc-warm (cached) — so demo both. Warm is faster (cache hits).
           metrics: [
             metric(rng, 'boot-cold · time to editable', day < 70 ? 4200 : 4600),
-            metric(rng, 'boot-cold · TTFB', 90 + (rng() - 0.5) * 20),
             metric(rng, 'boot-cold · FCP', 1200 + (rng() - 0.5) * 200),
             metric(rng, 'boot-cold · LCP', 1800 + (rng() - 0.5) * 300),
             metric(rng, 'boot-cold · CLS', 0.04 + rng() * 0.03, 'cls'),
@@ -121,7 +162,6 @@ function generateDemo(branch = 'main', shift = 0): TrendRun[] {
             metric(rng, 'boot-cold · auth round trips', day < 50 ? 2 : 1, 'count'),
             metric(rng, 'boot-cold · auth in flight', day < 50 ? 84 : 42),
             metric(rng, 'open-doc-warm · time to editable', day < 70 ? 1900 : 2100),
-            metric(rng, 'open-doc-warm · TTFB', 40 + (rng() - 0.5) * 12),
             metric(rng, 'open-doc-warm · FCP', 520 + (rng() - 0.5) * 90),
             metric(rng, 'open-doc-warm · LCP', 780 + (rng() - 0.5) * 140),
             metric(rng, 'open-doc-warm · CLS', 0.01 + rng() * 0.015, 'cls'),
@@ -172,6 +212,44 @@ function generateDemo(branch = 'main', shift = 0): TrendRun[] {
     })
   }
   return runs
+}
+
+/**
+ * Synthetic release tags spanning the same 90 days the demo runs cover, so the
+ * release markers are exercisable offline like every other layer.
+ *
+ * Deliberately awkward: the cadence is uneven and one pair lands two days apart
+ * so label collision handling actually gets hit rather than only appearing
+ * against live data.
+ *
+ * All main-line tags, like the live query returns — `TAGS_QUERY` excludes
+ * releases cut off main, so synthetic maintenance-branch tags here would model a
+ * case the charts never actually receive. The major still steps (6 → 7) so the
+ * cutover a long-range chart spans is represented.
+ */
+export function generateDebugTags(source: DebugSource): TrendTag[] {
+  if (source === 'empty') return []
+  const start = Date.now() - DAYS * DAY_MS
+  const tagAt = (day: number) =>
+    // Mid-morning, so a marker never coincides exactly with a run's timestamp
+    new Date(start + day * DAY_MS + 10 * 60 * 60 * 1000).toISOString()
+
+  // `single-run` plots one run, so its domain is a two-day pad around the last
+  // day of the window — the 90-day schedule below falls entirely outside it.
+  // One tag on that day instead, so the case exercises "marker on a lone run"
+  // rather than looking like markers are broken.
+  if (source === 'single-run') {
+    return [{tag: 'v6.11.0', taggedAt: tagAt(DAYS - 1), major: 6, distTags: ['latest']}]
+  }
+
+  // The newest tag is what npm serves as `latest` — its label says so
+  const latestDay = RELEASE_SCHEDULE.at(-1)?.day
+  return RELEASE_SCHEDULE.map((entry) => ({
+    tag: versionOf(entry),
+    taggedAt: tagAt(entry.day),
+    major: entry.major,
+    distTags: entry.day === latestDay ? ['latest'] : null,
+  }))
 }
 
 export function generateDebugRuns(source: DebugSource): TrendRun[] {

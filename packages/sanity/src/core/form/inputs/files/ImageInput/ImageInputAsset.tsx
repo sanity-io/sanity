@@ -1,7 +1,7 @@
 import {getImageDimensions} from '@sanity/asset-utils'
 import {type AssetSource, type UploadState} from '@sanity/types'
-import {Box} from '@sanity/ui'
 import {type CSSProperties, type FocusEvent, memo, useCallback, useMemo} from 'react'
+import {Box} from 'ui5'
 
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {type InputOnSelectFileFunctionProps, type InputProps} from '../../../types/inputProps'
@@ -62,22 +62,16 @@ function ImageInputAssetComponent(props: {
     [onSelectFile],
   )
 
-  const handleFileTargetFocus = useCallback(
-    (event: FocusEvent) => {
-      // We want to handle focus when the file target element *itself* receives
-      // focus, not when an interactive child element receives focus. Since React has decided
-      // to let focus bubble, so this workaround is needed
-      // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
-      if (
-        event.currentTarget === event.target &&
-        event.currentTarget === elementProps.ref?.current
-      ) {
-        inputProps.elementProps.onFocus(event)
-      }
-    },
-    // oxlint-disable-next-line react-hooks/exhaustive-deps
-    [inputProps, elementProps.ref?.current],
-  )
+  // Plain function: useCallback deps conflict between exhaustive-deps and react-compiler.
+  const handleFileTargetFocus = (event: FocusEvent) => {
+    // We want to handle focus when the file target element *itself* receives
+    // focus, not when an interactive child element receives focus. Since React has decided
+    // to let focus bubble, so this workaround is needed
+    // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
+    if (event.currentTarget === event.target && event.currentTarget === elementProps.ref?.current) {
+      inputProps.elementProps.onFocus(event)
+    }
+  }
 
   return (
     <div style={customProperties}>

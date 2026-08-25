@@ -1,6 +1,6 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {Menu} from '@sanity/ui/menu'
-import {type ComponentProps, type ReactNode, type Ref, useMemo} from 'react'
+import {useMemo} from 'react'
 import {
   type InitialValueTemplateItem,
   type ReleaseId,
@@ -11,18 +11,16 @@ import {
   useTemplatePermissions,
   useTemplates,
   useTranslation,
+  IntentButton,
 } from 'sanity'
-import {IntentLink} from 'sanity/router'
+import {IntentLink, type IntentLinkProps} from 'sanity/router'
 
 import {Button} from '../../../ui-components/button/Button'
 import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {type PopoverProps} from '../../../ui-components/popover/Popover'
 import {structureLocaleNamespace} from '../../i18n'
-import {IntentButton} from '../IntentButton'
 import {InsufficientPermissionsMessageTooltip} from './InsufficientPermissionsMessageTooltip'
-
-export type PaneHeaderIntentProps = ComponentProps<typeof IntentButton>['intent']
 
 const POPOVER_PROPS: PopoverProps = {
   constrainSize: true,
@@ -30,11 +28,11 @@ const POPOVER_PROPS: PopoverProps = {
   portal: true,
 }
 
-const getIntent = (
+const getIntentProps = (
   templates: Template[],
   item: InitialValueTemplateItem,
   version?: ReleaseId,
-): PaneHeaderIntentProps | null => {
+): IntentLinkProps | null => {
   const typeName = templates.find((t) => t.id === item.templateId)?.schemaType
   if (!typeName) return null
 
@@ -46,7 +44,7 @@ const getIntent = (
   }
 
   return {
-    type: 'create',
+    intent: 'create',
     params: item.parameters ? [baseParams, item.parameters] : baseParams,
     searchParams: version ? [['perspective', version]] : undefined,
   }
@@ -112,7 +110,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
     const firstItem = templateItems[0]
     const permissions = permissionsById[firstItem.id]
     const disabled = !permissions?.granted
-    const intent = getIntent(templates, firstItem, selectedReleaseId)
+    const intent = getIntentProps(templates, firstItem, selectedReleaseId)
     if (!intent) return null
 
     return (
@@ -122,9 +120,9 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
         context="create-document-type"
       >
         <IntentButton
+          {...intent}
           aria-label={getI18nText(firstItem).title}
           icon={AddIcon}
-          intent={intent}
           mode="bleed"
           disabled={disabled}
           data-testid="action-intent-button"
@@ -150,28 +148,9 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
           {templateItems.map((item, itemIndex) => {
             const permissions = permissionsById[item.id]
             const disabled = !permissions?.granted
-            const intent = getIntent(templates, item, selectedReleaseId)
+            const intent = getIntentProps(templates, item, selectedReleaseId)
             const template = templates.find((i) => i.id === item.templateId)
             if (!template || !intent) return null
-
-            const resolvedIntent = intent
-            const Link = (linkProps: {children?: ReactNode; ref?: Ref<HTMLElement>}) => {
-              const {ref: linkRef, ...rest} = linkProps
-              return disabled ? (
-                <button type="button" disabled {...rest} ref={linkRef as Ref<HTMLButtonElement>} />
-              ) : (
-                <IntentLink
-                  {...rest}
-                  intent={resolvedIntent.type}
-                  params={resolvedIntent.params}
-                  searchParams={resolvedIntent.searchParams}
-                  ref={linkRef as Ref<HTMLAnchorElement>}
-                />
-              )
-            }
-
-            // oxlint-disable-next-line react/react-compiler -- displayName assignment on render-local component
-            Link.displayName = 'Link'
 
             const {title} = getI18nText({
               ...item,
@@ -186,17 +165,27 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
                 reveal={disabled}
                 loading={isTemplatePermissionsLoading}
               >
-                <MenuItem
-                  as={Link}
-                  data-as={disabled ? 'button' : 'a'}
-                  icon={item.icon}
-                  text={title}
-                  aria-label={
-                    disabled ? t('pane-header.disabled-created-button.aria-label') : title
-                  }
-                  disabled={disabled}
-                  data-testid={`action-intent-button-${itemIndex}`}
-                />
+                {disabled ? (
+                  <MenuItem
+                    as="button"
+                    data-as="button"
+                    icon={item.icon}
+                    text={title}
+                    aria-label={t('pane-header.disabled-created-button.aria-label')}
+                    disabled
+                    data-testid={`action-intent-button-${itemIndex}`}
+                  />
+                ) : (
+                  <MenuItem
+                    as={IntentLink}
+                    {...intent}
+                    data-as="a"
+                    icon={item.icon}
+                    text={title}
+                    aria-label={title}
+                    data-testid={`action-intent-button-${itemIndex}`}
+                  />
+                )}
               </InsufficientPermissionsMessageTooltip>
             )
           })}
