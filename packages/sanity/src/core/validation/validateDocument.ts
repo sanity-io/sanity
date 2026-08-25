@@ -166,9 +166,9 @@ export interface ValidateDocumentOptions {
   maxCustomValidationConcurrency?: number
 
   /**
-   * The amount of allowed inflight fetch requests at once for validations using
-   * the same configured client and concurrency value. You may need to up this
-   * value if you have complex custom validations that require many
+   * The amount of allowed inflight fetch requests at once across validations in
+   * this process using the same concurrency value. You may need to up this value
+   * if you have complex custom validations that require many
    * `client.fetch` requests at once. It's possible for a custom validator to
    * stall if there are not enough concurrent fetch requests available to fulfill
    * the custom validation. Must be a positive integer. This is 25 by default.
