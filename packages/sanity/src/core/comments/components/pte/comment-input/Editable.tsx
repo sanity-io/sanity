@@ -272,4 +272,3 @@ export function Editable(props: EditableProps) {
     </div>
   )
 }
-Editable.displayName = 'Editable'

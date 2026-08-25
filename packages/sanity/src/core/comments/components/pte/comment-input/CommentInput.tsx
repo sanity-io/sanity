@@ -44,7 +44,6 @@ function EditorRefPlugin(props: RefAttributes<Editor | null>) {
 
   return null
 }
-EditorRefPlugin.displayName = 'EditorRefPlugin'
 
 const EMPTY_ARRAY: [] = []
 

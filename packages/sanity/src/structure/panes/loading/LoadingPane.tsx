@@ -108,5 +108,3 @@ export const LoadingPane = memo((props: LoadingPaneProps) => {
     </Pane>
   )
 })
-
-LoadingPane.displayName = 'Memo(LoadingPane)'

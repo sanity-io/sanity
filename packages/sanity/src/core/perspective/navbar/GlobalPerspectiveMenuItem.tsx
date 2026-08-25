@@ -4,12 +4,12 @@ import {EyeClosedIcon} from '@sanity/icons/EyeClosed'
 import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {LockIcon} from '@sanity/icons/Lock'
 // oxlint-disable-next-line no-restricted-imports -- custom use for Button not supported by ui-components
-import {Button, Flex, Stack, Text} from '@sanity/ui'
+import {Button, Stack, Text} from '@sanity/ui'
 // oxlint-disable-next-line no-restricted-imports -- custom use for MenuItem not supported by ui-components
 import {MenuItem} from '@sanity/ui/menu'
 import {type MouseEvent, useCallback, useMemo, type RefAttributes} from 'react'
 import {css, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {ToneIcon} from '../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
@@ -154,7 +154,7 @@ export function GlobalPerspectiveMenuItem(
         data-testid={`release-${releaseId}`}
         {...props.menuItemProps?.({perspective: release})}
       >
-        <Flex align="flex-start" gap={1}>
+        <Flex alignItems="flex-start" gap={1}>
           <IconWrapperBox
             $isExcluded={isReleasePerspectiveExcluded}
             flexBasis="auto"
@@ -179,7 +179,7 @@ export function GlobalPerspectiveMenuItem(
               minWidth: 0,
             }}
           >
-            <Flex gap={3} align="center" style={{minWidth: 0}}>
+            <Flex gap={3} alignItems="center">
               {isReleaseDocument(release) ? (
                 <ReleaseTitle
                   title={release.metadata.title}

@@ -1,6 +1,7 @@
 import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
-import {Card, Flex, Label, Stack} from '@sanity/ui'
+import {Card, Label, Stack} from '@sanity/ui'
 import {useCallback} from 'react'
+import {Flex} from 'ui5'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {usePerspective} from '../../perspective/usePerspective'
@@ -62,7 +63,7 @@ export function ReleaseTypeMenuSection({
             {t(RELEASE_TYPE_LABELS[releaseType])}
           </Label>
         </GlobalPerspectiveMenuLabelIndicator>
-        <Flex direction="column" gap={1}>
+        <Flex flexDirection="column" gap={1}>
           {releases.map((release, index) => (
             <GlobalPerspectiveMenuItem
               key={release._id}

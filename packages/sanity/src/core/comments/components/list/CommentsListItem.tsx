@@ -360,4 +360,3 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
     </StyledThreadCard>
   )
 })
-CommentsListItem.displayName = 'Memo(CommentsListItem)'
