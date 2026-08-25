@@ -13,8 +13,6 @@ import {
   switchMap,
 } from 'rxjs'
 
-import {getAbortReason, throwIfAborted} from '../abortSignal'
-
 interface AvailabilityResponse {
   omitted: {id: string; reason: 'existence' | 'permission'}[]
 }
@@ -61,7 +59,7 @@ export function createBatchedGetDocumentExists(
       from(limiter.ready(signal)).pipe(
         switchMap(() =>
           defer(() => {
-            throwIfAborted(signal)
+            signal?.throwIfAborted()
             return client.observable.request<AvailabilityResponse>({
               url: client.getDataUrl('doc', ids.join(',')),
               query: {excludeContent: 'true'},
@@ -102,7 +100,7 @@ export function createBatchedGetDocumentExists(
       const onAbort = () => {
         if (!signal) return
         subscription.unsubscribe()
-        reject(getAbortReason(signal))
+        reject(signal.reason)
       }
       const subscription = existence$
         .pipe(filter(({id, signal: resultSignal}) => id === options.id && resultSignal === signal))

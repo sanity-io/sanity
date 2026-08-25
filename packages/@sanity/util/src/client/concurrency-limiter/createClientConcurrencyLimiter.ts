@@ -1,7 +1,7 @@
 import {type ObservableSanityClient, type SanityClient} from '@sanity/client'
 import {defer, finalize, from, switchMap} from 'rxjs'
 
-import {ConcurrencyLimiter, throwIfAborted} from '../../concurrency-limiter'
+import {ConcurrencyLimiter} from '../../concurrency-limiter'
 
 /**
  * Decorates a sanity client to limit the concurrency of `client.fetch`
@@ -22,7 +22,7 @@ export function createClientConcurrencyLimiter(
               const signal = args[2]?.signal
               await limiter.ready(signal)
               try {
-                throwIfAborted(signal)
+                signal?.throwIfAborted()
                 // note we want to await before we return so the finally block
                 // will run after the promise has been fulfilled or rejected
                 return await target.fetch(...args)
@@ -73,7 +73,7 @@ export function createClientConcurrencyLimiter(
               return from(limiter.ready(signal)).pipe(
                 switchMap(() =>
                   defer(() => {
-                    throwIfAborted(signal)
+                    signal?.throwIfAborted()
                     return target.fetch(...args)
                   }).pipe(finalize(() => limiter.release())),
                 ),
