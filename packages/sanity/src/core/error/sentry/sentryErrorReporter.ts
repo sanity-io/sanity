@@ -280,16 +280,63 @@ function setAsUnhandled(event: ErrorEvent) {
 }
 
 /**
- * "Before send" event handler, which sets the error as unhandled.
- * @see setAsUnhandled for a clearer rationale.
+ * "Before send" event handler, which drops teardown aborts and sets the error as unhandled.
+ * @see isTeardownAbort and setAsUnhandled for clearer rationales.
  *
  * @param event - The event to be sent
- * @returns The event to be sent
+ * @returns The event to be sent, or `null` to drop it
  * @internal
  */
-function beforeSend(event: ErrorEvent): ErrorEvent {
+export function beforeSend(event: ErrorEvent): ErrorEvent | null {
+  if (isTeardownAbort(event)) {
+    return null
+  }
+
   setAsUnhandled(event)
   return scrubPii(event)
+}
+
+/**
+ * Aborting an in-flight request on teardown is routine, not a crash: `AbortController.abort()`
+ * rejects the pending fetch with an `AbortError`, and our abort sites handle it. Chrome still
+ * fires `unhandledrejection` at the microtask checkpoint and only retracts it afterwards with
+ * `rejectionhandled`, which the Sentry SDK never listens for, so the rejection gets reported
+ * even though it was handled. These reports have no user impact and drown out real errors.
+ *
+ * Matched on the mechanism and the `DOMException.code` tag rather than the message, because
+ * the message is engine-specific: "signal is aborted without reason" (Chromium), "The operation
+ * was aborted." (Firefox), "Fetch is aborted" (WebKit).
+ *
+ * @param event - The event to check
+ * @returns True if the event is an abort surfaced as an unhandled rejection, false otherwise
+ * @internal
+ */
+function isTeardownAbort(event: ErrorEvent): boolean {
+  const exceptions = event.exception?.values || []
+
+  // Suffix match because the mechanism has been renamed across SDK majors (`onunhandledrejection`
+  // in v8, `auto.browser.global_handlers.onunhandledrejection` in v10). Checking every entry
+  // because `linkedErrors` splits a cause chain across several of them. Deliberate reports go
+  // through `captureException` with a `generic` mechanism and are intentionally left alone.
+  const fromUnhandledRejection = exceptions.some((exception) =>
+    exception.mechanism?.type?.endsWith('onunhandledrejection'),
+  )
+
+  if (!fromUnhandledRejection) {
+    return false
+  }
+
+  // `DOMException.code` 20 is `ABORT_ERR`. Sentry tags it for both shapes an abort takes: the
+  // DOMException that `abort()` creates carries a stack and is typed `AbortError`, while one
+  // without a stack is flattened into `Error` with the name folded into the value. The type and
+  // value checks are a fallback in case the tag ever stops being set.
+  return (
+    event.tags?.['DOMException.code'] === '20' ||
+    exceptions.some(
+      (exception) =>
+        exception.type === 'AbortError' || (exception.value || '').startsWith('AbortError:'),
+    )
+  )
 }
 
 /**
