@@ -37,6 +37,8 @@ import {
  *   only the first one survives unless their types differ.
  * - The synthetic `${id}-${type}` key only disambiguates one extra event per id; a third event
  *   with the same id and same type as the second overwrites it.
+ * - The edit-replacement and different-type branches both run: an edit + non-edit pair sharing an
+ *   id stores the non-edit event under *both* keys, so it appears twice in the output.
  */
 export function removeDupes(
   events: DocumentGroupEvent[],

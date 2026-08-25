@@ -1,11 +1,39 @@
 import {describe, expect, it} from 'vitest'
 
+import {activeASAPRelease} from '../../releases/__fixtures__/release.fixture'
+import {type ReleasesReducerState} from '../../releases/store/reducer'
+import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
+import {
+  BASE_TIME,
+  createDocumentVersionEvent,
+  createLiveDocumentEvent,
+  deleteDocumentGroupEvent,
+  deleteDocumentVersionEvent,
+  editDocumentVersionEvent,
+  minutesAfterBase,
+  publishDocumentVersionEvent,
+  scheduleDocumentVersionEvent,
+  unpublishDocumentEvent,
+  unscheduleDocumentVersionEvent,
+  updateLiveDocumentEvent,
+} from './__fixtures__/events.fixture'
+import {remoteMutationEvent} from './__fixtures__/transactions.fixture'
 import {
   type DocumentGroupEvent,
   type EditDocumentVersionEvent,
   type UpdateLiveDocumentEvent,
 } from './types'
-import {addParentToEvents, sortEvents} from './utils'
+import {
+  addEventId,
+  addParentToEvents,
+  isWithinMergeWindow,
+  remoteMutationToTransaction,
+  removeDupes,
+  sortEvents,
+  squashLiveEditEvents,
+  updatePublishedEvents,
+  updateVersionEvents,
+} from './utils'
 
 describe('addParentToEvents', () => {
   it('should add the correct parentId to the events', () => {})
@@ -392,5 +420,248 @@ describe('addParentToEvents', () => {
         parentId: '577b6fa4-ceba-40bd-babd-9ffbcfff682d',
       },
     ])
+  })
+})
+
+describe('sortEvents (paired publish/edit)', () => {
+  it('sorts a publish before its paired edit even when the edit timestamp is newer', () => {
+    const edit = editDocumentVersionEvent({
+      revisionId: 'edit-rev',
+      id: 'edit-rev',
+      timestamp: minutesAfterBase(1),
+    })
+    const publish = publishDocumentVersionEvent({
+      versionRevisionId: 'edit-rev',
+      timestamp: BASE_TIME,
+    })
+
+    const result = sortEvents({remoteEdits: [edit], events: [publish], expandedEvents: []})
+    expect(result.map((event) => event.type)).toEqual([
+      'publishDocumentVersion',
+      'editDocumentVersion',
+    ])
+  })
+})
+
+describe('removeDupes', () => {
+  it('appends events with unseen ids in encounter order', () => {
+    const create = createDocumentVersionEvent({id: 'a'})
+    const edit = editDocumentVersionEvent({id: 'b'})
+    const publish = publishDocumentVersionEvent({id: 'c'})
+
+    expect(removeDupes([create, edit], [publish])).toEqual([create, edit, publish])
+    expect(removeDupes([create], [create])).toEqual([create])
+  })
+
+  it('replaces an existing edit event with a non-edit event sharing the same id', () => {
+    // A publish event and the last edit before that publish share the same id.
+    const edit = editDocumentVersionEvent({id: 'shared', revisionId: 'shared'})
+    const publish = publishDocumentVersionEvent({id: 'shared'})
+
+    const result = removeDupes([edit], [publish])
+    // Known quirk: because the types also differ, the publish is stored under both the plain id
+    // key and the synthetic `${id}-${type}` key, so it appears twice in the output.
+    expect(result).toEqual([publish, publish])
+  })
+
+  it('keeps both events when two non-edit events share an id but differ in type', () => {
+    const create = createDocumentVersionEvent({id: 'shared'})
+    const publish = publishDocumentVersionEvent({id: 'shared'})
+
+    expect(removeDupes([create], [publish])).toEqual([create, publish])
+  })
+
+  it('keeps only the first event when two events share id and type', () => {
+    const first = createDocumentVersionEvent({id: 'shared', author: 'author-1'})
+    const second = createDocumentVersionEvent({id: 'shared', author: 'author-2'})
+
+    expect(removeDupes([first], [second])).toEqual([first])
+  })
+
+  it('collides all empty-string ids onto one key (known quirk)', () => {
+    // addEventId produces empty ids e.g. for unpublish events on non-published variants.
+    const first = unpublishDocumentEvent({id: '', timestamp: BASE_TIME})
+    const second = unpublishDocumentEvent({id: '', timestamp: minutesAfterBase(1)})
+
+    expect(removeDupes([], [first, second])).toEqual([first])
+  })
+})
+
+describe('addEventId', () => {
+  it('createDocumentVersion: published uses revisionId, falling back to a synthetic id', () => {
+    const withRevision = createDocumentVersionEvent({revisionId: 'pub-rev'})
+    expect(addEventId(withRevision, 'published').id).toBe('pub-rev')
+
+    const withoutRevision = createDocumentVersionEvent({timestamp: BASE_TIME})
+    expect(addEventId(withoutRevision, 'published').id).toBe(`publishCreation--${BASE_TIME}`)
+
+    expect(addEventId(createDocumentVersionEvent(), 'draft').id).toBe(
+      createDocumentVersionEvent().versionRevisionId,
+    )
+  })
+
+  it('deleteDocumentVersion: published gets a synthetic deleteAt id, versions use versionRevisionId', () => {
+    const event = deleteDocumentVersionEvent({timestamp: BASE_TIME})
+    expect(addEventId(event, 'published').id).toBe(`deleteAt-${BASE_TIME}`)
+    expect(addEventId(event, 'draft').id).toBe(event.versionRevisionId)
+  })
+
+  it('publishDocumentVersion: published uses revisionId, versions prefer versionRevisionId', () => {
+    const event = publishDocumentVersionEvent({
+      revisionId: 'published-rev',
+      versionRevisionId: 'version-rev',
+    })
+    expect(addEventId(event, 'published').id).toBe('published-rev')
+    expect(addEventId(event, 'draft').id).toBe('version-rev')
+
+    // Release publishes have no versionRevisionId: falls back to revisionId.
+    const releasePublish = publishDocumentVersionEvent({
+      revisionId: 'published-rev',
+      versionRevisionId: undefined,
+      publishCause: 'release.publish',
+    })
+    expect(addEventId(releasePublish, 'version').id).toBe('published-rev')
+  })
+
+  it('unpublishDocument: synthetic id on published, empty string otherwise (known quirk)', () => {
+    const event = unpublishDocumentEvent({timestamp: BASE_TIME})
+    expect(addEventId(event, 'published').id).toBe(`unpublishAt-${BASE_TIME}`)
+    expect(addEventId(event, 'draft').id).toBe('')
+  })
+
+  it('schedule/unschedule: versionRevisionId on versions, empty string on published (known quirk)', () => {
+    const schedule = scheduleDocumentVersionEvent()
+    expect(addEventId(schedule, 'version').id).toBe(schedule.versionRevisionId)
+    expect(addEventId(schedule, 'published').id).toBe('')
+
+    const unschedule = unscheduleDocumentVersionEvent()
+    expect(addEventId(unschedule, 'version').id).toBe(unschedule.versionRevisionId)
+    expect(addEventId(unschedule, 'published').id).toBe('')
+  })
+
+  it('deleteDocumentGroup gets a synthetic deleted-<timestamp> id on every variant', () => {
+    const event = deleteDocumentGroupEvent({timestamp: BASE_TIME})
+    expect(addEventId(event, 'published').id).toBe(`deleted-${BASE_TIME}`)
+    expect(addEventId(event, 'draft').id).toBe(`deleted-${BASE_TIME}`)
+  })
+
+  it('live and edit events use their revisionId', () => {
+    const createLive = createLiveDocumentEvent({revisionId: 'live-rev'})
+    expect(addEventId(createLive, 'published').id).toBe('live-rev')
+
+    const updateLive = updateLiveDocumentEvent({revisionId: 'live-rev-2'})
+    expect(addEventId(updateLive, 'published').id).toBe('live-rev-2')
+
+    const edit = editDocumentVersionEvent({revisionId: 'edit-rev'})
+    expect(addEventId(edit, 'draft').id).toBe('edit-rev')
+  })
+})
+
+describe('isWithinMergeWindow', () => {
+  it('is true below 5 minutes, false at exactly 5 minutes, regardless of argument order', () => {
+    expect(isWithinMergeWindow(BASE_TIME, minutesAfterBase(4))).toBe(true)
+    expect(isWithinMergeWindow(minutesAfterBase(4), BASE_TIME)).toBe(true)
+    expect(isWithinMergeWindow(BASE_TIME, minutesAfterBase(5))).toBe(false)
+    expect(isWithinMergeWindow(BASE_TIME, minutesAfterBase(6))).toBe(false)
+  })
+})
+
+describe('squashLiveEditEvents', () => {
+  it('squashes adjacent same-author live edits within the merge window, keeping the first in list order', () => {
+    const newest = updateLiveDocumentEvent({id: 'live-2', timestamp: minutesAfterBase(4)})
+    const oldest = updateLiveDocumentEvent({id: 'live-1', timestamp: BASE_TIME})
+
+    expect(squashLiveEditEvents([newest, oldest])).toEqual([newest])
+  })
+
+  it('does not squash live edits by different authors', () => {
+    const a = updateLiveDocumentEvent({id: 'live-2', timestamp: minutesAfterBase(4)})
+    const b = updateLiveDocumentEvent({id: 'live-1', timestamp: BASE_TIME, author: 'author-2'})
+
+    expect(squashLiveEditEvents([a, b])).toEqual([a, b])
+  })
+
+  it('does not squash live edits outside the merge window', () => {
+    const a = updateLiveDocumentEvent({id: 'live-2', timestamp: minutesAfterBase(10)})
+    const b = updateLiveDocumentEvent({id: 'live-1', timestamp: BASE_TIME})
+
+    expect(squashLiveEditEvents([a, b])).toEqual([a, b])
+  })
+
+  it('breaks the run when another event type sits between live edits', () => {
+    const a = updateLiveDocumentEvent({id: 'live-2', timestamp: minutesAfterBase(2)})
+    const between = deleteDocumentGroupEvent({timestamp: minutesAfterBase(1)})
+    const b = updateLiveDocumentEvent({id: 'live-1', timestamp: BASE_TIME})
+
+    expect(squashLiveEditEvents([a, between, b])).toEqual([a, between, b])
+  })
+})
+
+describe('remoteMutationToTransaction', () => {
+  it('maps a remote mutation into the translog transaction shape', () => {
+    const mutation = remoteMutationEvent()
+    const transaction = remoteMutationToTransaction(mutation)
+
+    expect(transaction).toEqual({
+      id: mutation.transactionId,
+      author: mutation.author,
+      timestamp: mutation.timestamp.toISOString(),
+      documentIDs: [],
+      effects: {
+        [mutation.head._id]: {
+          apply: mutation.effects.apply,
+          revert: mutation.effects.revert,
+        },
+      },
+    })
+  })
+})
+
+describe('updateVersionEvents', () => {
+  it('rewrites documentId to versionId on publish events only', () => {
+    const publish = publishDocumentVersionEvent({versionId: 'versions.rX.doc-1'})
+    const edit = editDocumentVersionEvent()
+
+    const result = updateVersionEvents([publish, edit])
+    expect(result[0]).toEqual({...publish, documentId: 'versions.rX.doc-1'})
+    expect(result[1]).toBe(edit)
+  })
+})
+
+const releasesState = (releases: Map<string, typeof activeASAPRelease>): ReleasesReducerState => ({
+  releases,
+  state: 'loaded',
+})
+
+describe('updatePublishedEvents', () => {
+  it('attaches the release document when it exists in the releases store', () => {
+    const publish = publishDocumentVersionEvent({
+      versionId: `versions.${activeASAPRelease.name}.doc-1`,
+    })
+    const state = releasesState(new Map([[activeASAPRelease._id, activeASAPRelease]]))
+
+    const [result] = updatePublishedEvents([publish], state)
+    expect(result).toEqual({...publish, release: activeASAPRelease})
+  })
+
+  it('attaches a stub {_id} when the release is not in the store (e.g. deleted release)', () => {
+    const publish = publishDocumentVersionEvent({versionId: 'versions.rGone.doc-1'})
+    const state = releasesState(new Map())
+
+    const [result] = updatePublishedEvents([publish], state)
+    expect(result).toEqual({
+      ...publish,
+      release: {_id: getReleaseDocumentIdFromReleaseId('rGone')},
+    })
+  })
+
+  it('leaves draft publishes and other event types untouched', () => {
+    const draftPublish = publishDocumentVersionEvent({versionId: 'drafts.doc-1'})
+    const edit = editDocumentVersionEvent()
+    const state = releasesState(new Map())
+
+    const result = updatePublishedEvents([draftPublish, edit], state)
+    expect(result[0]).toBe(draftPublish)
+    expect(result[1]).toBe(edit)
   })
 })
