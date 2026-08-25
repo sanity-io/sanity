@@ -135,6 +135,39 @@ describe('validateDocument', () => {
     expect(customValidator).not.toHaveBeenCalled()
   })
 
+  it('deduplicates skipped checks from field rules', async () => {
+    const customValidator = vi.fn(() => true as const)
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [{name: 'title', type: 'string'}],
+        validation: (rule: Rule) =>
+          rule.fields({title: (fieldRule) => fieldRule.custom(customValidator)}),
+      },
+    ])
+
+    const result = await validateDocument({
+      customValidation: false,
+      document: createDocument({_type: 'article', title: 'Hello'}),
+      schema,
+    })
+
+    expect(result).toEqual({
+      status: 'notEvaluated',
+      markers: [],
+      skipped: [
+        {
+          check: 'custom',
+          level: 'warning',
+          path: ['title'],
+          reason: 'customValidationDisabled',
+        },
+      ],
+    })
+    expect(customValidator).not.toHaveBeenCalled()
+  })
+
   it('runs pure custom validators without a client and skips client-dependent validators', async () => {
     const pureValidator = vi.fn(() => true as const)
     const schema = createSchema([
