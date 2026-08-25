@@ -313,11 +313,22 @@ export function SessionView(props: {
 
           {state?.kind === 'inconsistent' && (
             <Card padding={4} radius={3} tone="caution">
-              <Text size={1}>
-                Conflicting marks: <code>{state.goodMarkSha.slice(0, 10)}</code> is marked good but
-                is newer than bad-marked <code>{state.badMarkSha.slice(0, 10)}</code>. Undo a mark
-                to resolve.
-              </Text>
+              {/* The timeline (and its undo control) doesn't render for an
+                  inconsistent session, so the resolution the copy asks for has
+                  to be offered right here. Undo peels the newest mark; repeat
+                  until the conflicting one is gone. */}
+              <Flex align="center" gap={3}>
+                <Box flex={1}>
+                  <Text size={1}>
+                    Conflicting marks: <code>{state.goodMarkSha.slice(0, 10)}</code> is marked good
+                    but is newer than bad-marked <code>{state.badMarkSha.slice(0, 10)}</code>. Undo
+                    a mark to resolve.
+                  </Text>
+                </Box>
+                {marks.length > 0 && (
+                  <Button mode="ghost" fontSize={1} text="Undo last mark" onClick={undo} />
+                )}
+              </Flex>
             </Card>
           )}
 

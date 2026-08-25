@@ -1,3 +1,4 @@
+import {type Patch} from '@sanity/client'
 import {type SanityClient} from 'sanity'
 
 import {type Verdict} from './bisect'
@@ -111,11 +112,23 @@ export function appendMark(
     .append('marks', [
       {_key: crypto.randomUUID().slice(0, 8), ...mark, markedAt: new Date().toISOString()},
     ])
-  return (
-    result
-      ? patch.set({result: {...result, concludedAt: new Date().toISOString()}})
-      : patch.unset(['result'])
-  ).commit()
+  return (result ? withResult(patch, result) : patch.unset(['result'])).commit()
+}
+
+/**
+ * Set the verdict fields WITHOUT replacing the `result` object: annotations
+ * (regression, description, linearIssue) are human-owned, and a whole-object
+ * `set` racing a concurrent `updateResult` would silently destroy typed text.
+ * The machine writes only the fields it derives; a stale annotation on a
+ * re-derived verdict is visible and editable, a wiped one is just gone.
+ */
+function withResult(patch: Patch, result: SessionResult): Patch {
+  return patch.setIfMissing({result: {}}).set({
+    'result.firstBadSha': result.firstBadSha,
+    'result.lastGoodSha': result.lastGoodSha,
+    'result.suspectShas': result.suspectShas,
+    'result.concludedAt': new Date().toISOString(),
+  })
 }
 
 /**
@@ -128,10 +141,7 @@ export function setResult(
   sessionId: string,
   result: SessionResult,
 ): Promise<unknown> {
-  return client
-    .patch(sessionId)
-    .set({result: {...result, concludedAt: new Date().toISOString()}})
-    .commit()
+  return withResult(client.patch(sessionId), result).commit()
 }
 
 /** Clear a stale verdict (live-derived state no longer converged). */

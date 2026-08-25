@@ -25,6 +25,15 @@ export function npmxUrl(version: string): string {
  * The previous release on the first-parent chain — the tag NAME (e.g.
  * "v6.10.0"). Undefined when the walk leaves the synced set (off-mainline
  * tags) or hits the sync cutoff before another tag.
+ *
+ * Prerelease tags are deliberately NOT skipped. This mirrors release
+ * automation's base-version computation (`git describe --first-parent
+ * --match "v*"` in @repo/release-notes bump.ts, which matches rc tags too),
+ * and the changelog URL derived from this value must reproduce the id that
+ * automation generated — filtering here would break the link whenever an rc
+ * ever lands on mainline. It also matches the blame model: releases are
+ * blamed for the commits they FIRST shipped, and an rc that shipped them
+ * first is the correct base for the span that follows it.
  */
 export function baseTagOf(
   commitsBySha: Map<string, BisectCommit>,
