@@ -10,7 +10,7 @@ import {
 } from '@sanity/types'
 import get from 'lodash-es/get.js'
 
-import {isClientUnavailableError} from './clientUnavailable'
+import {ClientUnavailableError} from './clientUnavailable'
 import {validationMarkerCodes} from './codes'
 import {convertToValidationMarker} from './util/convertToValidationMarker'
 import {isLocalizedMessages, localizeMessage} from './util/localizeMessage'
@@ -182,7 +182,10 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
             code: fallbackCodeForRule(curr.flag),
           })
         } catch (err) {
-          if (isClientUnavailableError(err) && (curr.flag === 'custom' || curr.flag === 'media')) {
+          if (
+            err instanceof ClientUnavailableError &&
+            (curr.flag === 'custom' || curr.flag === 'media')
+          ) {
             __internal.onSkipped?.({
               check: curr.flag,
               level: this._level || 'error',

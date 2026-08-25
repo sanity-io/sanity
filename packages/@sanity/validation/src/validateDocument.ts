@@ -309,10 +309,19 @@ function createDocumentValidationResult(
   skipped: SkippedValidation[],
 ): DocumentValidationResult {
   return {
-    status: markers.length > 0 ? 'failed' : skipped.length > 0 ? 'notEvaluated' : 'passed',
+    status: getDocumentValidationStatus(markers, skipped),
     markers: markers.map(toDocumentValidationMarker),
     skipped,
   }
+}
+
+function getDocumentValidationStatus(
+  markers: ValidationMarker[],
+  skipped: SkippedValidation[],
+): DocumentValidationResult['status'] {
+  if (markers.length > 0) return 'failed'
+  if (skipped.length > 0) return 'notEvaluated'
+  return 'passed'
 }
 
 /** @internal */

@@ -11,7 +11,7 @@ import {
 } from '@sanity/types'
 import memoize from 'lodash-es/memoize.js'
 
-import {isClientUnavailableError} from '../clientUnavailable'
+import {ClientUnavailableError} from '../clientUnavailable'
 import {validationMarkerCodes} from '../codes'
 import {typeString} from '../util/typeString'
 
@@ -139,7 +139,7 @@ export const slugValidator: CustomValidator = async (value, context) => {
   try {
     wasUnique = await isUnique(value.current, slugContext)
   } catch (error) {
-    if (!isClientUnavailableError(error)) throw error
+    if (!(error instanceof ClientUnavailableError)) throw error
     context.__internal?.onSkipped?.({
       check: 'slugUniqueness',
       level: context.__internal?.validationLevel || 'error',
