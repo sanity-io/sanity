@@ -635,6 +635,46 @@ importers:
         specifier: ^4.1.11
         version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/browser-playwright@4.1.11)(@vitest/coverage-v8@4.1.11)(jsdom@29.1.1)(vite@8.2.2)
 
+  dev/studio-diagnostics-viewer:
+    dependencies:
+      '@sanity/ui':
+        specifier: 'catalog:'
+        version: 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+      react:
+        specifier: 'catalog:'
+        version: 19.2.8
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.2.8(react@19.2.8)
+      sanity:
+        specifier: workspace:*
+        version: link:../../packages/sanity
+      styled-components:
+        specifier: 'catalog:'
+        version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
+      ui5:
+        specifier: 'catalog:'
+        version: '@sanity/ui@5.0.0-alpha.5(react-dom@19.2.8)(react@19.2.8)'
+    devDependencies:
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: 'catalog:'
+        version: 19.2.5(@types/react@19.2.18)
+      '@vitejs/plugin-react':
+        specifier: 'catalog:'
+        version: 6.1.0(@rolldown/plugin-babel@0.2.3)(oxc-transform-react@0.147.0)(vite@8.2.2)
+      oxc-transform-react:
+        specifier: 'catalog:'
+        version: 0.147.0
+      rimraf:
+        specifier: 'catalog:'
+        version: 6.1.3
+      vite:
+        specifier: 'catalog:'
+        version: 8.2.2(@types/node@24.13.3)(@vitejs/devtools@0.5.2)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
+
   dev/studio-e2e-testing:
     dependencies:
       '@repo/utils':

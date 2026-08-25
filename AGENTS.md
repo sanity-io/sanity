@@ -81,6 +81,7 @@ sanity/
 │   └── @repo/            # Internal tooling (test-config, tsconfig, etc.)
 ├── dev/                  # Development studios for testing
 │   ├── test-studio/      # Primary dev studio (pnpm dev runs this)
+│   ├── studio-diagnostics-viewer/ # Standalone viewer for pasted diagnostics JSON
 │   └── preview-iframe/   # Presentation preview iframe (vanilla Vite, port 3334)
 ├── e2e/                  # End-to-end Playwright tests
 ├── perf/                 # Performance testing
@@ -114,6 +115,20 @@ pnpm dev                # Starts dev studio at http://localhost:3333
 ```
 
 **Note:** The dev studio requires Sanity user authentication in the browser. It's a Vite application that communicates with Sanity API endpoints, so you'll need to log in with a Sanity account when you access `http://localhost:3333` to use the studio.
+
+### Running the Studio diagnostics viewer
+
+The standalone, client-only diagnostics viewer does not require authentication:
+
+```bash
+pnpm dev:studio-diagnostics
+pnpm build:studio-diagnostics
+```
+
+Its `vercel.json` configures builds and SPA routing but does not create a Vercel project. A
+maintainer must create and connect a project under the `sanity-sandbox` team once, with
+`dev/studio-diagnostics-viewer` as its Root Directory. The Vercel Git integration then provides
+automatic PR previews and production deploys from `main`.
 
 ## Local Development
 
