@@ -479,7 +479,6 @@ function EditorChangePlugin(
 ) {
   const handleEditorEvent = useCallback(
     (event: EditorEmittedEvent) => {
-      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       switch (event.type) {
         case 'blurred':
           props.onChange({
@@ -487,30 +486,10 @@ function EditorChangePlugin(
             event: event.event,
           })
           break
-        case 'error':
-          props.onChange({
-            type: 'error',
-            name: event.name,
-            level: 'warning',
-            description: event.description,
-          })
-          break
         case 'focused':
           props.onChange({
             type: 'focus',
             event: event.event,
-          })
-          break
-        case 'loading':
-          props.onChange({
-            type: 'loading',
-            isLoading: true,
-          })
-          break
-        case 'done loading':
-          props.onChange({
-            type: 'loading',
-            isLoading: false,
           })
           break
         case 'invalid value':

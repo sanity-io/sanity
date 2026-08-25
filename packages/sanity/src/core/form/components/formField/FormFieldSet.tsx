@@ -26,7 +26,7 @@ import {type FormNodePresence} from '../../../presence/types'
 import {useFieldActions} from '../../field/actions/useFieldActions'
 import {createDescriptionId} from '../../members/common/createDescriptionId'
 import {type FieldCommentsProps} from '../../types/fieldProps'
-import {FormDivergenceIndicator} from '../FormDivergenceIndicator'
+import {FormFieldGutter} from '../FormFieldGutter'
 import {FormNodeDivergenceCollectionIndicator} from '../FormNodeDivergenceCollectionIndicator'
 import {FormNodeDivergenceDetail} from '../FormNodeDivergenceDetail'
 import {FormRow} from '../layout/FormRow'
@@ -212,7 +212,7 @@ export function FormFieldSet(
   }, [children, collapsed, columns])
 
   return (
-    <FormRow gutterStartCell={<FormDivergenceIndicator path={path} />}>
+    <FormRow gutterStartCell={<FormFieldGutter path={path} />}>
       <FormNodeDivergenceDetail path={path} readOnly={readOnly}>
         <Root
           data-level={level}

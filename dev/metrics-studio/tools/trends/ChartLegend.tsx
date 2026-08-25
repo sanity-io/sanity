@@ -1,10 +1,16 @@
 import {Flex, Text} from '@sanity/ui'
 
-import {formatValue, type TrendSeries} from './data'
+import {CALIBRATION_EXPLAINER, formatValue, type TrendSeries, type TrendTag} from './data'
 import {baselineDetail, baselineLabel, type DriftResult} from './drift'
 import {ALL_LAYERS_VISIBLE, type Layer, type LayerState} from './layers'
 import {categoricalColor} from './palette'
-import {baselineToDraw, COLOR, seriesHasBand} from './TrendChart'
+import {
+  baselineToDraw,
+  COLOR,
+  seriesHasBand,
+  seriesHasCalibration,
+  seriesHasReleases,
+} from './TrendChart'
 
 function Swatch(props: {children: React.ReactNode; dimmed?: boolean}) {
   return (
@@ -77,8 +83,10 @@ export function ChartLegend(props: {
   series: TrendSeries
   drift?: DriftResult
   layers?: LayerState
+  /** Release tags available to this chart — gates the `releases` entry. */
+  tags?: TrendTag[]
 }) {
-  const {series, drift, layers = ALL_LAYERS_VISIBLE} = props
+  const {series, drift, layers = ALL_LAYERS_VISIBLE, tags = []} = props
   const comparing = series.lines.length > 1
   // Whether this chart *has* a baseline to explain — independent of whether the
   // layer is currently visible, so toggling it off doesn't remove the control
@@ -118,6 +126,37 @@ export function ChartLegend(props: {
     </Flex>
   )
 
+  // Releases are global context — identical for every line — so unlike the band
+  // and the baseline overlay the entry survives branch comparison. Gated on the
+  // same predicate the plot uses, so the legend never offers a layer that isn't
+  // drawn (see seriesHasReleases: minute-axis soak charts don't qualify).
+  const releasesItem = seriesHasReleases(series, tags) && (
+    <LegendItem
+      layer="releases"
+      layers={layers}
+      label="releases"
+      hint="Stable sanity release tags cut from main. A release that was benchmarked sits on the run that measured it; the rest are placed by tag date, where a marker near a run does not mean that run measured it. Hover a run to name the releases around it"
+      swatch={
+        // A short vertical tick sitting on a baseline — the same construction as
+        // the plot (a tick above the plot's top edge), and the only vertical
+        // glyph in the legend
+        <>
+          <line
+            x1={8}
+            y1={1}
+            x2={8}
+            y2={7}
+            stroke={COLOR.release}
+            strokeWidth={1.5}
+            strokeLinecap="round"
+            opacity={0.75}
+          />
+          <line x1={2} y1={7} x2={14} y2={7} stroke={COLOR.axis} strokeWidth={1} opacity={0.3} />
+        </>
+      }
+    />
+  )
+
   if (comparing) {
     return (
       <Flex gap={3} wrap="wrap" align="center">
@@ -131,6 +170,7 @@ export function ChartLegend(props: {
             </Text>
           </Flex>
         ))}
+        {releasesItem}
         {goodItem}
         {series.goal === 'lower' && (
           <Text size={0} muted>
@@ -163,7 +203,8 @@ export function ChartLegend(props: {
               y2={5}
               stroke={color}
               strokeWidth={2}
-              strokeDasharray={series.goal === 'context' ? '3 2' : undefined}
+              strokeDasharray={series.goal === 'context' ? '1 3' : undefined}
+              strokeLinecap={series.goal === 'context' ? 'round' : undefined}
             />
           }
         />
@@ -181,6 +222,27 @@ export function ChartLegend(props: {
               <line x1={0} y1={2} x2={16} y2={2} stroke={color} strokeWidth={1} opacity={0.5} />
               <line x1={0} y1={8} x2={16} y2={8} stroke={color} strokeWidth={1} opacity={0.5} />
             </>
+          }
+        />
+      )}
+      {seriesHasCalibration(series) && (
+        <LegendItem
+          layer="calibration"
+          layers={layers}
+          label="host calibration"
+          hint={`${CALIBRATION_EXPLAINER} Drawn on its own zero-based scale — when it moves where the metric moves, suspect the runner, not the studio`}
+          swatch={
+            <line
+              x1={0}
+              y1={5}
+              x2={16}
+              y2={5}
+              stroke={COLOR.context}
+              strokeWidth={1.5}
+              strokeDasharray="1 3"
+              strokeLinecap="round"
+              opacity={0.6}
+            />
           }
         />
       )}
@@ -217,6 +279,7 @@ export function ChartLegend(props: {
           }
         />
       )}
+      {releasesItem}
       {goodItem}
       {series.goal === 'lower' && (
         <Text size={0} muted>

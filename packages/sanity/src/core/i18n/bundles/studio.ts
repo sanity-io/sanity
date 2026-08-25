@@ -496,6 +496,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for the default ordering/SortOrder if no orderings are provided and the title field is found */
   'default-orderings.title': 'Sort by Title',
 
+  /** Menu item that opens Studio diagnostics */
+  'diagnostics.menu-item': 'Diagnostics',
+
   /** Label for action that closes divergence inspector */
   'divergence.action.close.label': 'Close',
   /** Label for action that marks divergence as resolved */

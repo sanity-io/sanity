@@ -24,12 +24,59 @@ function git(args: string[]): string {
   }
 }
 
+const TRIGGERS = new Set(['cron', 'release', 'backfill', 'dispatch', 'pr'])
+
+/**
+ * Why this run happened, and (for release runs) which tag it measured.
+ *
+ * `BENCH_TRIGGER` is set by the workflow, but it is not trusted blindly: an
+ * unrecognized value falls back to inference rather than being stored, so a typo
+ * in a workflow edit cannot invent a trigger kind that consumers then filter on.
+ * Inference covers every path that does not set it — notably the daily schedule,
+ * which predates this field and must keep producing `cron`.
+ *
+ * `releaseTag` is only kept for `release` runs: a tag on a cron run would claim
+ * that run measured a release, which is exactly the false attribution this
+ * field exists to eliminate.
+ */
+function triggerFields(
+  prNumber: number,
+  mode: 'ab' | 'absolute',
+): {
+  trigger?: BenchRunDocument['trigger']
+  releaseTag?: string
+} {
+  const declared = process.env.BENCH_TRIGGER
+  const trigger: BenchRunDocument['trigger'] =
+    declared && TRIGGERS.has(declared)
+      ? (declared as BenchRunDocument['trigger'])
+      : !Number.isNaN(prNumber)
+        ? 'pr'
+        : process.env.GITHUB_EVENT_NAME === 'schedule'
+          ? 'cron'
+          : // A dispatch measuring a historical commit is a backfill — but only
+            // in absolute mode. An A/B dispatch also sets BENCH_GIT_SHA (to
+            // ab_to), and calling that a backfill would misdescribe it: it
+            // measures two commits against each other rather than repairing a
+            // hole in the series.
+            mode === 'absolute' && process.env.BENCH_GIT_SHA
+            ? 'backfill'
+            : 'dispatch'
+  const releaseTag = process.env.BENCH_RELEASE_TAG
+  return {
+    trigger,
+    ...(trigger === 'release' && releaseTag ? {releaseTag} : {}),
+  }
+}
+
 export function collectRunMetadata(options: {
   mode: 'ab' | 'absolute'
   calibrationMs: number
   cpuThrottleRate: number
   seed: number
   startedAt: string
+  /** Chromium version the sessions run in (`browser.version()`). */
+  browserVersion?: string
 }): Omit<BenchRunDocument, 'scenarios' | 'completedAt' | 'bundle'> {
   const prNumber = Number(
     (process.env.GITHUB_REF ?? '').match(/refs\/pull\/(\d+)\//)?.[1] ?? Number.NaN,
@@ -46,10 +93,13 @@ export function collectRunMetadata(options: {
   // repo, and a malformed workflow override must not poison the time axis
   // consumers sort and filter on
   const committedAt = Number.isNaN(Date.parse(committedAtRaw)) ? undefined : committedAtRaw
+  const triggerInfo = triggerFields(prNumber, options.mode)
+
   return {
     _type: 'benchRun',
     schemaVersion: 1,
     mode: options.mode,
+    ...triggerInfo,
     git: {
       // BENCH_GIT_SHA: the commit the measured dist was actually built from,
       // when that differs from the checkout — backfill runs build a
@@ -57,10 +107,18 @@ export function collectRunMetadata(options: {
       // cli/commands/prepareBackfill.ts) and must be stored under that
       // commit, not the workflow's HEAD
       sha: process.env.BENCH_GIT_SHA || process.env.GITHUB_SHA || git(['rev-parse', 'HEAD']),
+      // A release run is dispatched at its tag, so GITHUB_REF_NAME is the tag
+      // name ('v6.11.0'). The commit it measures is a main commit, and the
+      // dashboards group runs into per-branch lines and default to main — a run
+      // filed under a tag name would sit outside the main series it belongs to.
+      // The ref names how the run was dispatched; the branch names where the
+      // measured commit lives, which for a release is always main.
+      //
       // GITHUB_HEAD_REF is empty (not unset) outside pull_request events, and
       // schedule runs are detached checkouts where rev-parse answers "HEAD" —
       // prefer GITHUB_REF_NAME there
       branch:
+        (triggerInfo.trigger === 'release' ? 'main' : '') ||
         process.env.GITHUB_HEAD_REF ||
         process.env.GITHUB_REF_NAME ||
         git(['rev-parse', '--abbrev-ref', 'HEAD']),
@@ -77,6 +135,17 @@ export function collectRunMetadata(options: {
       cpus: os.cpus().length,
       memGb: Math.round(os.totalmem() / 1024 ** 3),
       nodeVersion: process.version,
+      // The hardware discriminator: GitHub rotates CPU generations under the
+      // same vCPU shape, so cpus/memGb can't explain a host-speed step but
+      // the model string can. Empty on platforms where Node reports none.
+      ...(os.cpus()[0]?.model.trim() ? {cpuModel: os.cpus()[0].model.trim()} : {}),
+      // GitHub runner image identity — pins when the image (toolchain, libs)
+      // rolled, which tends to coincide with host-speed regime changes
+      ...(process.env.ImageOS ? {imageOs: process.env.ImageOS} : {}),
+      ...(process.env.ImageVersion ? {imageVersion: process.env.ImageVersion} : {}),
+      // The measuring instrument: a Playwright bump moves INP/vitals with no
+      // studio change, and this is what makes that visible after the fact
+      ...(options.browserVersion ? {browserVersion: options.browserVersion} : {}),
       ci: process.env.CI === 'true',
       ...(process.env.GITHUB_RUN_ID ? {runId: process.env.GITHUB_RUN_ID} : {}),
       ...(process.env.GITHUB_RUN_ATTEMPT

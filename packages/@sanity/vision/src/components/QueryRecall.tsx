@@ -4,19 +4,7 @@ import {SearchIcon} from '@sanity/icons/Search'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
 import {UsersIcon} from '@sanity/icons/Users'
-import {
-  Badge,
-  Box,
-  Button,
-  Card,
-  Dialog,
-  Flex,
-  Stack,
-  Tab,
-  TabList,
-  Text,
-  TextInput,
-} from '@sanity/ui'
+import {Badge, Button, Card, Dialog, Flex, Stack, Tab, TabList, Text, TextInput} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
@@ -24,6 +12,7 @@ import {Tooltip} from '@sanity/ui/tooltip'
 import isEqual from 'lodash-es/isEqual.js'
 import {type ComponentProps, type ReactElement, useCallback, useState} from 'react'
 import {ContextMenuButton, UserAvatar, useDateTimeFormat, useTranslation} from 'sanity'
+import {Box} from 'ui5'
 
 import {type QueryConfig, useSavedQueries} from '../hooks/useSavedQueries'
 import {visionLocaleNamespace} from '../i18n'
@@ -42,7 +31,7 @@ function ScrollContainer(props: ComponentProps<typeof Flex>) {
 }
 
 function QueryList(props: ComponentProps<typeof Box>) {
-  return <Box {...props} flex={1} overflow="auto" className={queryList} />
+  return <Box {...props} flexBasis="0%" flexGrow={1} overflow="auto" className={queryList} />
 }
 
 export function QueryRecall({

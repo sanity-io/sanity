@@ -58,7 +58,10 @@ describe('Portable Text Input', () => {
       await getFocusedPortableTextEditor('field-body')
 
       // Drag and drop the 'Hello world' block to the position of 'Baz'
-      await dragAndDrop('.pt-editable [draggable="true"]', '[data-pt-block="text"]:nth-child(3)')
+      await dragAndDrop(
+        '[data-pt-editor] [draggable="true"]',
+        '[data-pt-block="text"]:nth-child(3)',
+      )
 
       // NOTE: `document` is shadowed by the SanityDocument fixture above, so
       // reach for the DOM via `window.document`.
@@ -80,7 +83,7 @@ describe('Portable Text Input', () => {
 
       // Drag and drop the 'Hello world' block to the position of 'Baz' without dropping it
       await dragWithoutDrop(
-        '.pt-editable [draggable="true"]',
+        '[data-pt-editor] [draggable="true"]',
         '[data-pt-block="text"]:nth-child(3)',
       )
 
