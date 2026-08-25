@@ -131,7 +131,7 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
 
         if (curr.flag === 'custom' || curr.flag === 'media') {
           const validationCallback = specConstraint as CustomValidator | MediaValidator
-          const metadata = validationCallback.__sanityValidation
+          const metadata = validationCallback?.__sanityValidation
 
           if (metadata === 'unavailable') {
             __internal.onSkipped?.({
