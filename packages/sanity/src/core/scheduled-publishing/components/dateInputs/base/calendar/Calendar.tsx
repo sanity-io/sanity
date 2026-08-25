@@ -3,7 +3,6 @@ import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {
   // oxlint-disable-next-line no-restricted-imports
   Button,
-  Flex,
   Select,
   Text,
 } from '@sanity/ui'
@@ -25,7 +24,7 @@ import {
   useRef,
   type RefAttributes,
 } from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {type TimeZoneScope, useTimeZone} from '../../../../../hooks/useTimeZone'
 import {CalendarMonth} from './CalendarMonth'
@@ -236,8 +235,8 @@ export function Calendar(props: CalendarProps & RefAttributes<HTMLDivElement>) {
       {/* Select time */}
       {selectTime && (
         <Box padding={2} style={{borderTop: '1px solid var(--card-border-color)'}}>
-          <Flex align="center">
-            <Flex align="center" flex={1}>
+          <Flex alignItems="center">
+            <Flex alignItems="center" flexBasis="0%" flexGrow={1}>
               <Box>
                 <Select
                   aria-label="Select hour"
@@ -277,7 +276,12 @@ export function Calendar(props: CalendarProps & RefAttributes<HTMLDivElement>) {
           </Flex>
 
           {features.timePresets && (
-            <Flex direction="row" justify="center" align="center" style={{marginTop: 5}}>
+            <Flex
+              flexDirection="row"
+              justifyContent="center"
+              alignItems="center"
+              style={{marginTop: 5}}
+            >
               {DEFAULT_TIME_PRESETS.map(([hours, minutes]) => {
                 return (
                   <CalendarTimePresetButton
@@ -334,7 +338,7 @@ function CalendarMonthSelect(props: {
   const handleNextMonthClick = useCallback(() => moveFocusedDate(1), [moveFocusedDate])
 
   return (
-    <Flex flex={1}>
+    <Flex flexBasis="0%" flexGrow={1}>
       <Button
         aria-label="Go to previous month"
         onClick={handlePrevMonthClick}
