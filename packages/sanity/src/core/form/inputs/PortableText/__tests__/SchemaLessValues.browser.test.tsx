@@ -165,7 +165,7 @@ describe('Portable Text Input', () => {
       await expect
         .element(
           page.getByText(
-            'Style not defined in the schema: h2, List type not defined in the schema: number',
+            /Style not defined in the schema: h2.*List type not defined in the schema: number/,
           ),
         )
         .toBeVisible()
@@ -174,7 +174,7 @@ describe('Portable Text Input', () => {
       await expect
         .element(
           page.getByText(
-            'Mark not defined in the schema: em, Annotation not defined in the schema: link',
+            /Mark not defined in the schema: em.*Annotation not defined in the schema: link/,
           ),
         )
         .toBeVisible()

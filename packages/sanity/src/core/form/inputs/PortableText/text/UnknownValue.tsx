@@ -20,7 +20,7 @@ const Root = styled.span`
 type UnknownMarksProps = SpanRenderProps & {portableTextPath: Path}
 
 export function UnknownValue(props: {labels: string[]; block?: boolean; children: ReactNode}) {
-  const listFormat = useListFormat({style: 'narrow', type: 'unit'})
+  const listFormat = useListFormat({style: 'short', type: 'unit'})
 
   return (
     <Tooltip content={listFormat.format(props.labels)} placement="top" portal>
