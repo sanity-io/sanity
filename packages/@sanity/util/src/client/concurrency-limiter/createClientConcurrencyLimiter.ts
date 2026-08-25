@@ -1,7 +1,7 @@
 import {type ObservableSanityClient, type SanityClient} from '@sanity/client'
-import {finalize, from, switchMap} from 'rxjs'
+import {defer, finalize, from, switchMap} from 'rxjs'
 
-import {ConcurrencyLimiter} from '../../concurrency-limiter'
+import {ConcurrencyLimiter, throwIfAborted} from '../../concurrency-limiter'
 
 /**
  * Decorates a sanity client to limit the concurrency of `client.fetch`
@@ -19,8 +19,10 @@ export function createClientConcurrencyLimiter(
         switch (property) {
           case 'fetch': {
             return async (...args: Parameters<SanityClient['fetch']>) => {
-              await limiter.ready()
+              const signal = args[2]?.signal
+              await limiter.ready(signal)
               try {
+                throwIfAborted(signal)
                 // note we want to await before we return so the finally block
                 // will run after the promise has been fulfilled or rejected
                 return await target.fetch(...args)
@@ -66,11 +68,17 @@ export function createClientConcurrencyLimiter(
       get: (target, property) => {
         switch (property) {
           case 'fetch': {
-            return (...args: Parameters<ObservableSanityClient['fetch']>) =>
-              from(limiter.ready()).pipe(
-                switchMap(() => target.fetch(...args)),
-                finalize(() => limiter.release()),
+            return (...args: Parameters<ObservableSanityClient['fetch']>) => {
+              const signal = args[2]?.signal
+              return from(limiter.ready(signal)).pipe(
+                switchMap(() =>
+                  defer(() => {
+                    throwIfAborted(signal)
+                    return target.fetch(...args)
+                  }).pipe(finalize(() => limiter.release())),
+                ),
               )
+            }
           }
           case 'clone': {
             return (...args: Parameters<ObservableSanityClient['clone']>) => {

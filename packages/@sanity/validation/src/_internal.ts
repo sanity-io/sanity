@@ -18,6 +18,7 @@ export {
   resolveTypeForArrayItem,
   validateDocumentInternal,
   type ValidateDocumentInternalOptions,
+  type ValidateItemOptions,
   validateDocumentObservable,
   type ValidateDocumentObservableOptions,
   validateItem,

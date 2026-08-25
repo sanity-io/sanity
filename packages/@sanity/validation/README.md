@@ -36,6 +36,17 @@ Checks that cannot run are returned in `result.skipped`. Pass `customValidation:
 user-defined callbacks. Omitting `client` skips built-in network checks. Using both options provides
 a no-network validation path.
 
+Pass an `AbortSignal` to cancel validation and its pending network work. Cancellation rejects with
+the signal's reason (an `AbortError` when no custom reason was supplied).
+
+```ts
+const controller = new AbortController()
+const validation = validateDocument({document, schema, client, signal: controller.signal})
+
+controller.abort()
+await validation
+```
+
 The package does not apply mutations or decide whether a document may be edited or published.
 
 ## Migrating from `sanity`

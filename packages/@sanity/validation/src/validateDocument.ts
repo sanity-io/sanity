@@ -16,9 +16,10 @@ import {ConcurrencyLimiter} from '@sanity/util/concurrency-limiter'
 import flatten from 'lodash-es/flatten.js'
 import isEqual from 'lodash-es/isEqual.js'
 import uniqWith from 'lodash-es/uniqWith.js'
-import {concat, defer, from, lastValueFrom, merge, Observable, of} from 'rxjs'
-import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
+import {concat, defer, from, lastValueFrom, merge, Observable, of, throwError} from 'rxjs'
+import {catchError, map, mergeAll, mergeMap, raceWith, switchMap, toArray} from 'rxjs/operators'
 
+import {abortSignalAsObservable, getAbortReason, throwIfAborted} from './abortSignal'
 import {ClientUnavailableError} from './clientUnavailable'
 import {type DocumentValidationMarker, validationMarkerCodes} from './codes'
 import {getFallbackLocaleSource} from './i18n/fallback'
@@ -124,6 +125,9 @@ export interface ValidateDocumentOptions {
   /** Whether to run user-defined custom validators. Defaults to `true`. */
   customValidation?: boolean
 
+  /** Signal used to cancel validation and any work it starts. */
+  signal?: AbortSignal
+
   /**
    * Function used to check if referenced documents exists (and is published).
    *
@@ -133,7 +137,7 @@ export interface ValidateDocumentOptions {
    * If no function is provided a default one will be provided that will batch
    * call the `doc` endpoint to check for document existence.
    */
-  getDocumentExists?: (options: {id: string}) => Promise<boolean>
+  getDocumentExists?: (options: {id: string; signal?: AbortSignal}) => Promise<boolean>
 
   /**
    * The maximum amount of custom validation functions to be running
@@ -250,6 +254,7 @@ export function validateDocumentWithWorkspace({
   maxFetchConcurrency,
   currentUser,
   customValidation,
+  signal,
 }: ValidateDocumentWorkspaceOptions): Promise<DocumentValidationMarker[]> {
   return validateDocumentInternal({
     currentUser,
@@ -262,6 +267,7 @@ export function validateDocumentWithWorkspace({
     maxCustomValidationConcurrency,
     maxFetchConcurrency,
     schema: workspace.schema,
+    signal,
   })
 }
 
@@ -299,13 +305,14 @@ export interface ValidateDocumentInternalOptions {
   document: SanityDocument
   schema: Schema
   getClient: (clientOptions: {apiVersion: string}) => SanityClient
-  getDocumentExists?: (options: {id: string}) => Promise<boolean>
+  getDocumentExists?: (options: {id: string; signal?: AbortSignal}) => Promise<boolean>
   i18n?: LocaleSource
   environment: 'cli' | 'studio'
   maxCustomValidationConcurrency?: number
   maxFetchConcurrency?: number
   currentUser?: Omit<CurrentUser, 'role'> | null
   customValidation?: boolean
+  signal?: AbortSignal
 }
 
 function createDocumentValidationResult(
@@ -347,7 +354,9 @@ export function evaluateDocumentInternal({
   maxFetchConcurrency,
   currentUser,
   customValidation = true,
+  signal,
 }: ValidateDocumentInternalOptions): Promise<DocumentValidationResult> {
+  if (signal?.aborted) return Promise.reject(getAbortReason(signal))
   const limitConcurrency = createClientConcurrencyLimiter(
     maxFetchConcurrency ?? DEFAULT_MAX_FETCH_CONCURRENCY,
   )
@@ -362,11 +371,12 @@ export function evaluateDocumentInternal({
       schema,
       getDocumentExists:
         getDocumentExists ||
-        createBatchedGetDocumentExists(getClient(DEFAULT_VALIDATION_CLIENT_OPTIONS)),
+        createBatchedGetDocumentExists(getClient(DEFAULT_VALIDATION_CLIENT_OPTIONS), signal),
       environment,
       maxCustomValidationConcurrency,
       currentUser,
       customValidation,
+      signal,
     }),
   )
 }
@@ -376,7 +386,7 @@ export function evaluateDocumentInternal({
  */
 export interface ValidateDocumentObservableOptions extends Pick<
   ValidationContext,
-  'getDocumentExists' | 'i18n'
+  'getDocumentExists' | 'i18n' | 'signal'
 > {
   getClient: (options: {apiVersion: string}) => SanityClient
   document: SanityDocument
@@ -403,7 +413,18 @@ export function validateDocumentObservable(
  * Validates a document against the given schema, returning failed and skipped checks.
  * @internal
  */
-export function evaluateDocumentObservable({
+export function evaluateDocumentObservable(
+  options: ValidateDocumentObservableOptions,
+): Observable<DocumentValidationResult> {
+  const {signal} = options
+  return defer(() => {
+    throwIfAborted(signal)
+    const validation$ = evaluateDocumentObservableWithoutCancellation(options)
+    return signal ? validation$.pipe(raceWith(abortSignalAsObservable(signal))) : validation$
+  })
+}
+
+function evaluateDocumentObservableWithoutCancellation({
   document,
   getClient,
   i18n = getFallbackLocaleSource(),
@@ -413,6 +434,7 @@ export function evaluateDocumentObservable({
   maxCustomValidationConcurrency,
   currentUser,
   customValidation = true,
+  signal,
 }: ValidateDocumentObservableOptions): Observable<DocumentValidationResult> {
   if (typeof document?._type !== 'string') {
     throw new Error(`Tried to validate a value without a '_type'`)
@@ -471,6 +493,7 @@ export function evaluateDocumentObservable({
       customValidationConcurrencyLimiter,
       currentUser,
       customValidation,
+      signal,
       __internal: {
         onSkipped: (value) => {
           skipped.push(value)
@@ -482,6 +505,7 @@ export function evaluateDocumentObservable({
       switchMap(() => validateItemObservable(validationOptions)),
       map((markers) => createDocumentValidationResult(markers, skipped)),
       catchError((err) => {
+        if (signal?.aborted) return throwError(() => getAbortReason(signal))
         console.error(err)
 
         const message = err?.message || 'Unknown error'
@@ -510,7 +534,7 @@ type ExplicitUndefined<T> = {
   [P in keyof Required<T>]: Pick<T, P> extends Required<Pick<T, P>> ? T[P] : T[P] | undefined
 }
 
-type ValidateItemOptions = {
+export type ValidateItemOptions = {
   value: unknown
   customValidationConcurrencyLimiter?: ConcurrencyLimiter
   hidden?: boolean
@@ -520,7 +544,15 @@ type ValidateItemOptions = {
 } & ExplicitUndefined<Omit<ValidationContext, 'hidden' | '__internal'>>
 
 export function validateItem(opts: ValidateItemOptions): Promise<ValidationMarker[]> {
-  return lastValueFrom(validateItemObservable(opts))
+  return lastValueFrom(
+    defer(() => {
+      throwIfAborted(opts.signal)
+      const validation$ = validateItemObservable(opts)
+      return opts.signal
+        ? validation$.pipe(raceWith(abortSignalAsObservable(opts.signal)))
+        : validation$
+    }),
+  )
 }
 
 function validateItemObservable({

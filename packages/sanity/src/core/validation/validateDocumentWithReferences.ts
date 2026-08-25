@@ -8,7 +8,7 @@ import {
   type ValidationMarker,
   type CurrentUser,
 } from '@sanity/types'
-import {validateDocumentObservable} from '@sanity/validation/_internal'
+import {evaluateDocumentObservable} from '@sanity/validation/_internal'
 import {reduce as reduceJSON} from 'json-reduce'
 import {
   asyncScheduler,
@@ -179,7 +179,7 @@ export function validateDocumentWithReferences(
         }
         return concat(
           of({isValidating: true, revision: document._rev}),
-          validateDocumentObservable({
+          evaluateDocumentObservable({
             document,
             getClient: ctx.getClient,
             getDocumentExists,
@@ -187,9 +187,7 @@ export function validateDocumentWithReferences(
             schema: ctx.schema,
             environment: 'studio',
             currentUser: ctx.currentUser,
-          }).pipe(
-            map((validationMarkers) => ({validation: validationMarkers, isValidating: false})),
-          ),
+          }).pipe(map((result) => ({validation: result.markers, isValidating: false}))),
         )
       })
     }),

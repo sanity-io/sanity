@@ -12,6 +12,7 @@ import {
 } from '@sanity/types'
 import get from 'lodash-es/get.js'
 
+import {getAbortReason} from './abortSignal'
 import {ClientUnavailableError} from './clientUnavailable'
 import {validationMarkerCodes} from './codes'
 import {convertToValidationMarker} from './util/convertToValidationMarker'
@@ -172,8 +173,9 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
         ) {
           const customValidator = specConstraint as CustomValidator
           specConstraint = async (...args: Parameters<CustomValidator>) => {
-            await customValidationConcurrencyLimiter.ready()
+            await customValidationConcurrencyLimiter.ready(context.signal)
             try {
+              if (context.signal?.aborted) throw getAbortReason(context.signal)
               return await customValidator(...args)
             } finally {
               customValidationConcurrencyLimiter.release()
@@ -215,6 +217,7 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
             code: fallbackCodeForRule(curr.flag),
           })
         } catch (err) {
+          if (context.signal?.aborted) throw getAbortReason(context.signal)
           if (err instanceof ClientUnavailableError && validationCheck) {
             reportSkipped('clientUnavailable')
             return []

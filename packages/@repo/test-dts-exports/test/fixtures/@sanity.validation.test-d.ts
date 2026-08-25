@@ -38,12 +38,16 @@ describe('@sanity/validation', () => {
   })
   test('ValidateDocumentOptions', () => {
     expectTypeOf<ValidateDocumentOptions>().toBeObject()
+    expectTypeOf<ValidateDocumentOptions['signal']>().toEqualTypeOf<AbortSignal | undefined>()
   })
   test('validateDocumentWithWorkspace', () => {
     expectTypeOf<typeof validateDocumentWithWorkspace>().toBeFunction()
   })
   test('ValidateDocumentWorkspaceOptions', () => {
     expectTypeOf<ValidateDocumentWorkspaceOptions>().toBeObject()
+    expectTypeOf<ValidateDocumentWorkspaceOptions['signal']>().toEqualTypeOf<
+      AbortSignal | undefined
+    >()
   })
   test('ValidationClient', () => {
     expectTypeOf<ValidationClient>().toBeObject()
