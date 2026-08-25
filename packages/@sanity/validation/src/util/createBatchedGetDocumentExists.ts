@@ -2,9 +2,9 @@ import {type SanityClient} from '@sanity/client'
 import {ConcurrencyLimiter} from '@sanity/util/concurrency-limiter'
 import {
   bufferTime,
+  defer,
   filter,
   finalize,
-  firstValueFrom,
   from,
   map,
   mergeMap,
@@ -12,6 +12,8 @@ import {
   Subject,
   switchMap,
 } from 'rxjs'
+
+import {getAbortReason, throwIfAborted} from '../abortSignal'
 
 interface AvailabilityResponse {
   omitted: {id: string; reason: 'existence' | 'permission'}[]
@@ -39,28 +41,41 @@ export const MAX_REQUEST_CONCURRENCY = 1
 
 export function createBatchedGetDocumentExists(
   client: SanityClient,
-): (options: {id: string}) => Promise<boolean> {
-  const id$ = new Subject<string>()
+  defaultSignal?: AbortSignal,
+): (options: {id: string; signal?: AbortSignal}) => Promise<boolean> {
+  const id$ = new Subject<{id: string; signal?: AbortSignal}>()
   const limiter = new ConcurrencyLimiter(MAX_REQUEST_CONCURRENCY)
 
   const existence$ = id$.pipe(
     bufferTime(BUFFER_TIME, null, MAX_BUFFER_SIZE),
-    map((ids) => Array.from(new Set(ids))),
-    mergeMap((ids) =>
-      from(limiter.ready()).pipe(
+    mergeMap((entries) => {
+      const groups = new Map<AbortSignal | undefined, Set<string>>()
+      for (const {id, signal} of entries) {
+        const ids = groups.get(signal) || new Set<string>()
+        ids.add(id)
+        groups.set(signal, ids)
+      }
+      return from(Array.from(groups, ([signal, ids]) => ({ids: Array.from(ids), signal})))
+    }),
+    mergeMap(({ids, signal}) =>
+      from(limiter.ready(signal)).pipe(
         switchMap(() =>
-          client.observable
-            .request<AvailabilityResponse>({
+          defer(() => {
+            throwIfAborted(signal)
+            return client.observable.request<AvailabilityResponse>({
               url: client.getDataUrl('doc', ids.join(',')),
               query: {excludeContent: 'true'},
+              signal,
               tag: 'documents-availability',
             })
-            .pipe(map((availability) => ({availability, ids}))),
+          }).pipe(
+            map((availability) => ({availability, ids, signal})),
+            finalize(limiter.release),
+          ),
         ),
-        finalize(limiter.release),
       ),
     ),
-    mergeMap(({availability, ids}) =>
+    mergeMap(({availability, ids, signal}) =>
       ids.map((id) => {
         const omittedIds = availability.omitted.reduce<Record<string, 'existence' | 'permission'>>(
           (acc, next) => {
@@ -71,23 +86,44 @@ export function createBatchedGetDocumentExists(
         )
 
         // if not in the `omitted`, then it exists
-        if (!omittedIds[id]) return {id, exists: true}
+        if (!omittedIds[id]) return {id, exists: true, signal}
         // if in the `omitted` due to existence, then it does not exist
-        if (omittedIds[id] === 'existence') return {id, exists: false}
+        if (omittedIds[id] === 'existence') return {id, exists: false, signal}
         // otherwise, it must exist
-        return {id, exists: true}
+        return {id, exists: true, signal}
       }),
     ),
     share(),
   )
 
-  return async function getDocumentExists(options) {
-    // set up a promise/listener that waits for the result
-    const result = firstValueFrom(existence$.pipe(filter(({id}) => id === options.id)))
-    // send off the request to the stream for batching
-    id$.next(options.id)
+  return function getDocumentExists(options) {
+    const signal = options.signal || defaultSignal
+    return new Promise<boolean>((resolve, reject) => {
+      const onAbort = () => {
+        if (!signal) return
+        subscription.unsubscribe()
+        reject(getAbortReason(signal))
+      }
+      const subscription = existence$
+        .pipe(filter(({id, signal: resultSignal}) => id === options.id && resultSignal === signal))
+        .subscribe({
+          error: (error) => {
+            signal?.removeEventListener('abort', onAbort)
+            reject(error)
+          },
+          next: ({exists}) => {
+            signal?.removeEventListener('abort', onAbort)
+            subscription.unsubscribe()
+            resolve(exists)
+          },
+        })
 
-    const {exists} = await result
-    return exists
+      if (signal?.aborted) {
+        onAbort()
+        return
+      }
+      signal?.addEventListener('abort', onAbort, {once: true})
+      id$.next({id: options.id, signal})
+    })
   }
 }

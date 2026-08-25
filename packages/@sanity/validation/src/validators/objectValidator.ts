@@ -66,7 +66,7 @@ export const objectValidators: Validators = {
       // a document should be able to reference itself without first being published
       return true
     }
-    const exists = await getDocumentExists({id: value._ref})
+    const exists = await getDocumentExists({id: value._ref, signal: context.signal})
     if (!exists) {
       return {
         code: validationMarkerCodes.referenceNotPublished,

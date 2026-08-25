@@ -88,4 +88,26 @@ describe('createConcurrencyLimitedClient', () => {
     expect(types.isProxy(client.observable.withConfig().withConfig()))
     expect(types.isProxy(client.observable.config({}).config({})))
   })
+
+  it('does not start a queued fetch after its signal is aborted', async () => {
+    const deferredPromise = (() => {
+      let resolve!: () => void
+      const promise = new Promise<void>((thisResolve) => (resolve = thisResolve))
+      return Object.assign(promise, {resolve})
+    })()
+    const mockClient = {fetch: vi.fn(() => deferredPromise)} as unknown as SanityClient
+    const client = createClientConcurrencyLimiter(1)(mockClient)
+    const controller = new AbortController()
+    const reason = new Error('cancelled')
+
+    const active = client.fetch('active')
+    const queued = client.fetch('queued', {}, {signal: controller.signal})
+    await tick()
+    controller.abort(reason)
+
+    await expect(queued).rejects.toBe(reason)
+    deferredPromise.resolve()
+    await active
+    expect(mockClient.fetch).toHaveBeenCalledTimes(1)
+  })
 })

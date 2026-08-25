@@ -39,4 +39,20 @@ describe('ConcurrencyLimiter', () => {
 
     await allDone
   })
+
+  it('removes aborted waiters without consuming a concurrency slot', async () => {
+    const limiter = new ConcurrencyLimiter(1)
+    const controller = new AbortController()
+    const reason = new Error('cancelled')
+
+    await limiter.ready()
+    const queued = limiter.ready(controller.signal)
+    controller.abort(reason)
+
+    await expect(queued).rejects.toBe(reason)
+    limiter.release()
+
+    await expect(limiter.ready()).resolves.toBeUndefined()
+    limiter.release()
+  })
 })

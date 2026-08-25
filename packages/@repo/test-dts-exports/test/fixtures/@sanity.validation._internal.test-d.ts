@@ -4,6 +4,8 @@
 
 import type {
   convertToValidationMarker,
+  evaluateDocumentInternal,
+  evaluateDocumentObservable,
   getFallbackLocaleSource,
   getTypeChain,
   hasValidationContext,
@@ -20,6 +22,7 @@ import type {
   validateDocumentObservable,
   ValidateDocumentObservableOptions,
   validateItem,
+  ValidateItemOptions,
   ValidationContext,
   validationLocaleStrings,
 } from '@sanity/validation/_internal'
@@ -28,6 +31,12 @@ import {describe, expectTypeOf, test} from 'vitest'
 describe('@sanity/validation/_internal', () => {
   test('convertToValidationMarker', () => {
     expectTypeOf<typeof convertToValidationMarker>().toBeFunction()
+  })
+  test('evaluateDocumentInternal', () => {
+    expectTypeOf<typeof evaluateDocumentInternal>().toBeFunction()
+  })
+  test('evaluateDocumentObservable', () => {
+    expectTypeOf<typeof evaluateDocumentObservable>().toBeFunction()
   })
   test('getFallbackLocaleSource', () => {
     expectTypeOf<typeof getFallbackLocaleSource>().toBeFunction()
@@ -68,15 +77,24 @@ describe('@sanity/validation/_internal', () => {
   })
   test('ValidateDocumentInternalOptions', () => {
     expectTypeOf<ValidateDocumentInternalOptions>().toBeObject()
+    expectTypeOf<ValidateDocumentInternalOptions['signal']>().toEqualTypeOf<
+      AbortSignal | undefined
+    >()
   })
   test('validateDocumentObservable', () => {
     expectTypeOf<typeof validateDocumentObservable>().toBeFunction()
   })
   test('ValidateDocumentObservableOptions', () => {
     expectTypeOf<ValidateDocumentObservableOptions>().toBeObject()
+    expectTypeOf<ValidateDocumentObservableOptions['signal']>().toEqualTypeOf<
+      AbortSignal | undefined
+    >()
   })
   test('validateItem', () => {
     expectTypeOf<typeof validateItem>().toBeFunction()
+  })
+  test('ValidateItemOptions', () => {
+    expectTypeOf<ValidateItemOptions['signal']>().toEqualTypeOf<AbortSignal | undefined>()
   })
   test('ValidationContext', () => {
     // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from

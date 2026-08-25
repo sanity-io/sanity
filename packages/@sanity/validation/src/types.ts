@@ -33,7 +33,7 @@ export interface InternalValidationContext extends BaseValidationContext {
   __internal?: {
     customValidation?: boolean
     customValidationConcurrencyLimiter?: {
-      ready: () => Promise<void>
+      ready: (signal?: AbortSignal) => Promise<void>
       release: () => void
     }
     markIncomplete?: () => void
