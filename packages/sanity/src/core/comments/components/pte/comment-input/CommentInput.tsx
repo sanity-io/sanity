@@ -163,25 +163,21 @@ export function CommentInput(props: CommentInputProps & RefAttributes<CommentInp
   const handleEvent = useCallback(
     (event: EditorEmittedEvent) => {
       // Focus the editor when ready if focusOnMount is true
-      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       if (event.type === 'ready') {
         resetInstanceRef.current = false
         if (focusOnMount) {
           requestFocus()
         }
       }
-      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       if (event.type === 'focused') {
         setFocused(true)
       }
 
-      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       if (event.type === 'blurred') {
         setFocused(false)
       }
 
       // Update the comment value whenever the comment is edited by the user.
-      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       if (event.type === 'mutation' && !resetInstanceRef.current) {
         onChange(event.value || EMPTY_ARRAY)
       }

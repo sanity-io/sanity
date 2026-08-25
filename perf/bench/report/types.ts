@@ -11,6 +11,24 @@ export interface BenchRunDocument {
   _type: 'benchRun'
   schemaVersion: 1
   mode: 'ab' | 'absolute'
+  /**
+   * Why this run happened.
+   *
+   * `release` is the load-bearing one: those runs measure a tagged release
+   * commit, and are the only runs whose numbers can be attributed to a shipped
+   * version. Everything else measures whatever main happened to be — the daily
+   * `cron`, a `backfill` repairing history, a manual `dispatch`, or a `pr` run.
+   *
+   * Absent on documents stored before this field existed; consumers treat that
+   * as `cron`, which is what the schedule wrote for all of them.
+   */
+  trigger?: 'cron' | 'release' | 'backfill' | 'dispatch' | 'pr'
+  /**
+   * Release runs only: the tag whose commit this run measured, e.g. `v6.10.1`.
+   * Lets a chart anchor a release marker on this exact run instead of guessing
+   * by date, and lets the run popover name the release outright.
+   */
+  releaseTag?: string
   git: {
     sha: string
     branch: string

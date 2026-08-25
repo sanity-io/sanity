@@ -21,7 +21,6 @@ import {
 import {isValidElementType} from 'react-is'
 import {Flex} from 'ui5'
 
-import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {resolveBlockImageDimensions} from '../../components/previews/helpers'
 import {type PreviewMediaDimensions, type PreviewProps} from '../../components/previews/types'
 import {useAccessPolicy} from '../../form/inputs/files/ImageInput/useAccessPolicy'
@@ -30,6 +29,7 @@ import {useClient} from '../../hooks/useClient'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {isString} from '../../util/isString'
 import {_previewComponents} from './_previewComponents'
+import {PreviewTooltip} from './PreviewTooltip'
 
 function FallbackIcon() {
   return <DocumentIcon className="sanity-studio__preview-fallback-icon" />
@@ -222,17 +222,7 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
   const children = <LayoutComponent {...previewProps} />
 
   if (tooltip) {
-    return (
-      <Tooltip
-        content={tooltip}
-        disabled={!tooltip}
-        fallbackPlacements={['top-end', 'bottom-end']}
-        placement="right"
-      >
-        {/* Currently tooltips won't trigger without a wrapping element */}
-        <div>{children}</div>
-      </Tooltip>
-    )
+    return <PreviewTooltip content={tooltip}>{children}</PreviewTooltip>
   }
 
   return children

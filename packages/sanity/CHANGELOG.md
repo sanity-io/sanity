@@ -2,6 +2,55 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.11.0](https://github.com/sanity-io/sanity/compare/v6.10.1...v6.11.0) (2026-08-25)
+
+### Features
+
+* **core:** redesign perspective bar filters as pills ([#14176](https://github.com/sanity-io/sanity/issues/14176)) ([6435792](https://github.com/sanity-io/sanity/commit/643579266ee52e1693a512fa123cbdf8d5d53e20))
+* **form:** make the useFormValue path optional ([#14302](https://github.com/sanity-io/sanity/issues/14302)) ([9b5a099](https://github.com/sanity-io/sanity/commit/9b5a0993915e8f7fc43f7b354a33d539925db4ae))
+* **structure:** support custom component pane widths ([#13538](https://github.com/sanity-io/sanity/issues/13538)) ([901e91c](https://github.com/sanity-io/sanity/commit/901e91cd237d2de5455ac79726a2336a9d99b4ca))
+* **studio:** diagnostics panel ([#14264](https://github.com/sanity-io/sanity/issues/14264)) ([8335e1d](https://github.com/sanity-io/sanity/commit/8335e1d00044761251c62101ad0542e28dff564f))
+
+### Bug Fixes
+
+* **@sanity/schema:** allow i18nTitleKey on portable-text styles/lists and export defaults ([#13494](https://github.com/sanity-io/sanity/issues/13494)) ([#13831](https://github.com/sanity-io/sanity/issues/13831)) ([8bbe6c7](https://github.com/sanity-io/sanity/commit/8bbe6c795422b650974cbab0df5f6a5b411406c3))
+* **core:** apply the selected style to every block in the selection, not only the focus block ([3379eaf](https://github.com/sanity-io/sanity/commit/3379eaf7d203579cd974ec2341b8e35ed344eb24))
+* **core:** bump bifur-client to v2 to stop closing its websocket mid-handshake ([#14152](https://github.com/sanity-io/sanity/issues/14152)) ([f140e4e](https://github.com/sanity-io/sanity/commit/f140e4e5e84d933fce7340fbb3b5820852b6d819))
+* **core:** declare sideEffects true to silence publint suggestion ([#14129](https://github.com/sanity-io/sanity/issues/14129)) ([0a8ed7a](https://github.com/sanity-io/sanity/commit/0a8ed7a9b91d591e248331d4637766c2f421b508))
+* **core:** defer workspace menu boot requests via react-rx warm-up skip ([#14234](https://github.com/sanity-io/sanity/issues/14234)) ([1d95a40](https://github.com/sanity-io/sanity/commit/1d95a40bcf226e8cba1542349f2597c977cb350f))
+* **core:** hide agent versions from the document versions tooltip ([#14235](https://github.com/sanity-io/sanity/issues/14235)) ([2ac6440](https://github.com/sanity-io/sanity/commit/2ac64400c265bf49d8c55b45b47d8cccd3839dfd))
+* **core:** hide default variant label when variants are disabled ([#14216](https://github.com/sanity-io/sanity/issues/14216)) ([9eee0d6](https://github.com/sanity-io/sanity/commit/9eee0d6261ce1f813ba180ddd1d22010793542ef))
+* **core:** only deprecate useClient when called without options ([#14202](https://github.com/sanity-io/sanity/issues/14202)) ([1f167b3](https://github.com/sanity-io/sanity/commit/1f167b3eebc6e82202d17e92ae25b80d2985dff8))
+* **core:** update variants nav ([#14125](https://github.com/sanity-io/sanity/issues/14125)) ([f53bc43](https://github.com/sanity-io/sanity/commit/f53bc43453cba34315e680c9d481f6279ff705ef))
+* deliver document presence synchronously via useObservablePromise ([#14171](https://github.com/sanity-io/sanity/issues/14171)) ([6e61079](https://github.com/sanity-io/sanity/commit/6e610796e6b6d9b83b945462b9b7bba6cafe3d78))
+* **deps:** update dependency @portabletext/react to ^8.0.1 ([#14256](https://github.com/sanity-io/sanity/issues/14256)) ([f6b568c](https://github.com/sanity-io/sanity/commit/f6b568ca18d27f4481a1a33c66104c2307df228f))
+* **deps:** update dependency @sanity/cli to ^8.0.3 ([#14158](https://github.com/sanity-io/sanity/issues/14158)) ([5083a18](https://github.com/sanity-io/sanity/commit/5083a18afa7fb47edc99df8818ba2c74e36885ee))
+* **deps:** update dependency @sanity/cli to ^8.2.1 ([#14257](https://github.com/sanity-io/sanity/issues/14257)) ([2de8a6b](https://github.com/sanity-io/sanity/commit/2de8a6bf579868c8148acbc63619a374baeba57b))
+* **deps:** update dependency @sanity/cli to ^8.3.0 ([#14292](https://github.com/sanity-io/sanity/issues/14292)) ([706f3be](https://github.com/sanity-io/sanity/commit/706f3be38419885920175872d18072f58611fede))
+* **deps:** update dependency @sanity/preview-url-secret to ^4.1.5 ([#14258](https://github.com/sanity-io/sanity/issues/14258)) ([607ea57](https://github.com/sanity-io/sanity/commit/607ea5712fecd2fbaf299c01a661d3d1afd00403))
+* **deps:** update dependency motion to ^13.1.1 ([#14288](https://github.com/sanity-io/sanity/issues/14288)) ([e58cc4b](https://github.com/sanity-io/sanity/commit/e58cc4bc9fdc4a730fc0433170f542a0b4df48c0))
+* **deps:** update portabletext ([#14173](https://github.com/sanity-io/sanity/issues/14173)) ([00136c3](https://github.com/sanity-io/sanity/commit/00136c3f94c32d96e50a2b75868715064f4a5acc))
+* **deps:** update portabletext ([#14296](https://github.com/sanity-io/sanity/issues/14296)) ([9d3ba5d](https://github.com/sanity-io/sanity/commit/9d3ba5d96fa60b71b71836dc8f2b0d29e991651e))
+* **deps:** update portabletext ([#14314](https://github.com/sanity-io/sanity/issues/14314)) ([77e0869](https://github.com/sanity-io/sanity/commit/77e08697ff71e3e53ed131673cb0c8166a007a8e))
+* **deps:** update vitest monorepo to ^4.1.11 ([#14205](https://github.com/sanity-io/sanity/issues/14205)) ([7f2e291](https://github.com/sanity-io/sanity/commit/7f2e291b2e01fced8f30ed9cf4e26c1966307c4f))
+* **deps:** upgrade portabletext packages to latest majors ([#14317](https://github.com/sanity-io/sanity/issues/14317)) ([930bb00](https://github.com/sanity-io/sanity/commit/930bb00b6bbeadcb5eaf3d0844349278d2e9314e))
+* **form:** make field actions menu title translatable ([#14151](https://github.com/sanity-io/sanity/issues/14151)) ([3659e03](https://github.com/sanity-io/sanity/commit/3659e038effc524ee3e3510810cbb3268223ce1f))
+* **form:** pass real document id to field actions ([#14145](https://github.com/sanity-io/sanity/issues/14145)) ([dddabc4](https://github.com/sanity-io/sanity/commit/dddabc4cd78c28847175c047e46b8b9b151ef1e3))
+* key useDocumentValues memo on path contents to prevent render loops ([#14241](https://github.com/sanity-io/sanity/issues/14241)) ([e089afd](https://github.com/sanity-io/sanity/commit/e089afde2646ed4c649e81bebf5e4af4ba0b6188))
+* **portable-text:** stop annotation and comment popovers from flashing while the annotation editor opens ([#14240](https://github.com/sanity-io/sanity/issues/14240)) ([22a5e33](https://github.com/sanity-io/sanity/commit/22a5e3345e35adc5f841259442750fecae11ea31))
+* **releases:** honour document action filters in version and release menus ([#14244](https://github.com/sanity-io/sanity/issues/14244)) ([8c8d1b7](https://github.com/sanity-io/sanity/commit/8c8d1b75c8860b1b2241929a14d5134230295120))
+* **sanity:** stop labelling live-edit presence as untitled release ([#14119](https://github.com/sanity-io/sanity/issues/14119)) ([c59a700](https://github.com/sanity-io/sanity/commit/c59a70009115917638100f79248d7335af050bee))
+* **structure:** centre document pane back button on narrow viewports ([#14133](https://github.com/sanity-io/sanity/issues/14133)) ([d341e99](https://github.com/sanity-io/sanity/commit/d341e995b04ebd5c355204d5015e52aac87ac758))
+* **structure:** drop stale help url from missing child warning ([#14139](https://github.com/sanity-io/sanity/issues/14139)) ([0f9c38b](https://github.com/sanity-io/sanity/commit/0f9c38bf3ba72aa63e10f97c74f46cb67fa20818))
+* **structure:** hide collapsed pane search controls ([#14140](https://github.com/sanity-io/sanity/issues/14140)) ([d3fa2ef](https://github.com/sanity-io/sanity/commit/d3fa2ef73a8e5165194209e9a0db0319a268d10a))
+* **structure:** keep inspect search input responsive ([#14136](https://github.com/sanity-io/sanity/issues/14136)) ([a8709ca](https://github.com/sanity-io/sanity/commit/a8709ca6c34624d463000bab1bca2056fbcb54d7))
+* **structure:** prevent stacked delete dialogs after keyboard shortcut ([#14110](https://github.com/sanity-io/sanity/issues/14110)) ([572a4ba](https://github.com/sanity-io/sanity/commit/572a4ba4d35ab01c7b4aa56895fe7b3483ff3178))
+* **studio:** keep navbar tool overflow menu visible with long release names ([#14149](https://github.com/sanity-io/sanity/issues/14149)) ([d9d08f6](https://github.com/sanity-io/sanity/commit/d9d08f6b6adddbf0aaf43e69ed97be79d3fe6789))
+
+### Performance Improvements
+
+* **build:** run react compiler on oxc instead of babel ([#14199](https://github.com/sanity-io/sanity/issues/14199)) ([822c6ad](https://github.com/sanity-io/sanity/commit/822c6ad446de99e60d13af37fe7652273774c871))
+* **compiler:** allow compilation of displayName and try/finally sites ([#14226](https://github.com/sanity-io/sanity/issues/14226)) ([a113baa](https://github.com/sanity-io/sanity/commit/a113baa0ac9c47cfa9bbd9a60325b3619fff9098))
 ## [6.10.1](https://github.com/sanity-io/sanity/compare/v6.10.0...v6.10.1) (2026-08-18)
 
 ### Bug Fixes
