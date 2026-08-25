@@ -27,7 +27,8 @@ import {type EventsStore, INITIAL_EVENTS_VALUE} from './types'
  * The resolution logic lives in `resolveRevisions.ts`:
  * - `rev` → `revisionId` via {@link resolveRevisionId}, which receives `loadMoreEvents` as its
  *   `onLoadMore` callback: unresolved `@release:` revs keep paginating until the release's
- *   publish event is loaded — with no termination if it never appears (known issue).
+ *   publish event is loaded (resolving to `null` — latest version — in the meantime, and staying
+ *   `null` if the cursor is exhausted before the event appears).
  * - `since` → `sinceId` via {@link resolveSinceId}, only meaningful with a revision to compare
  *   against.
  * - `findRangeForRevision(nextRev)` / `findRangeForSince(nextSince)` compute the `[since, rev]`
