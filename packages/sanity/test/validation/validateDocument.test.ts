@@ -212,6 +212,7 @@ describe('validateDocument', () => {
           document: {_type: 'simpleDoc'} as SanityDocument,
           maxFetchConcurrency,
           workspace: {
+            getClient,
             schema: createSchema({
               name: 'default',
               types: [{name: 'simpleDoc', type: 'document', fields: []}],
