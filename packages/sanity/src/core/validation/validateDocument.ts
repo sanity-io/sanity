@@ -41,10 +41,6 @@ const DEFAULT_MAX_CUSTOM_VALIDATION_CONCURRENCY = 5
 
 const concurrencyLimiters = new Map<number, ReturnType<typeof createClientConcurrencyLimiter>>()
 const getConcurrencyLimiter = (maxConcurrency: number) => {
-  if (!Number.isInteger(maxConcurrency) || maxConcurrency <= 0) {
-    throw new RangeError('`maxFetchConcurrency` must be a positive integer')
-  }
-
   let limiter = concurrencyLimiters.get(maxConcurrency)
   if (!limiter) {
     limiter = createClientConcurrencyLimiter(maxConcurrency)
@@ -171,7 +167,7 @@ export interface ValidateDocumentOptions {
    * if you have complex custom validations that require many
    * `client.fetch` requests at once. It's possible for a custom validator to
    * stall if there are not enough concurrent fetch requests available to fulfill
-   * the custom validation. Must be a positive integer. This is 25 by default.
+   * the custom validation. This is 25 by default.
    */
   maxFetchConcurrency?: number
 

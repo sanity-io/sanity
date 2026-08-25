@@ -203,27 +203,6 @@ describe('validateDocument', () => {
     await expect(validateWithConcurrency(1)).resolves.toBe(1)
     await expect(validateWithConcurrency(2)).resolves.toBe(2)
   })
-
-  it.each([0, -1, NaN, 1.5, Infinity])(
-    'rejects invalid maxFetchConcurrency value %s',
-    (maxFetchConcurrency) => {
-      const validate = () =>
-        validateDocument({
-          document: {_type: 'simpleDoc'} as SanityDocument,
-          maxFetchConcurrency,
-          workspace: {
-            getClient,
-            schema: createSchema({
-              name: 'default',
-              types: [{name: 'simpleDoc', type: 'document', fields: []}],
-            }),
-          } as Workspace,
-        })
-
-      expect(validate).toThrow(RangeError)
-      expect(validate).toThrow('`maxFetchConcurrency` must be a positive integer')
-    },
-  )
 })
 
 describe('validateItem', () => {
