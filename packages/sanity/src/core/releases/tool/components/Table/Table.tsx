@@ -189,10 +189,10 @@ const TableInner = <TableData, AdditionalRowTableData>({
               left: 0,
               right: 0,
               transform: `translateY(${datum.virtualRow.start}px)`,
-              paddingInline: `max(
-                calc((100% - var(--maxInlineSize)) / 2),
-                var(--paddingInline)
-              )`,
+              // Centering gutter lives in --tableInlinePadding. A 12px *minimum* here overflowed
+              // the row-action … by exactly that amount whenever the table was already full-bleed
+              // (SAPP-3249).
+              paddingInline: 'var(--tableInlinePadding)',
               // Consumer-supplied row styles are merged (not clobbered) so they can tint/flag a row
               // without dropping the virtualization layout (height/position/transform).
               ...rowPropsStyle,
@@ -235,8 +235,12 @@ const TableInner = <TableData, AdditionalRowTableData>({
   )
 
   const theme = useTheme()
-
   const maxInlineSize = (!hideTableInlinePadding && theme.sanity.v2?.container[3]) || 0
+  // Full-bleed tables (hideTableInlinePadding) must not keep a leftover gutter — it clips the
+  // trailing … . Otherwise only pad when the row is wider than the max inline size (centering).
+  const tableInlinePadding = hideTableInlinePadding
+    ? '0px'
+    : `max(0px, calc((100% - var(--maxInlineSize)) / 2))`
 
   const renderLoadingRows = (
     rowRenderer: (
@@ -297,7 +301,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
             'height': '100%',
             'position': 'relative',
             '--maxInlineSize': rem(maxInlineSize),
-            '--paddingInline': rem(theme.sanity.v2?.space[3] ?? 0),
+            '--tableInlinePadding': tableInlinePadding,
           } as CSSProperties
         }
       >

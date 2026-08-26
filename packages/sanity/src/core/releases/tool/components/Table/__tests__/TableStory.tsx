@@ -116,6 +116,7 @@ export function TableStory({containerWidth, showRowActions = false}: TableStoryP
           rowId="id"
           columnDefs={columns}
           scrollContainerRef={scrollContainer}
+          hideTableInlinePadding={showRowActions}
           rowActions={
             showRowActions
               ? () => (
