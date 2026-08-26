@@ -95,13 +95,14 @@ export function useSearch({
     [schema, client, strategy, maxFieldDepth],
   )
 
-  // The callbacks are props that can change identity every render. Rebuilding
-  // the pipeline on them instead would cancel in-flight searches and reset the
-  // debounce, dedupe, and accumulated search state on every caller render.
-  const callbacksRef = useRef({onComplete, onError, onStart})
+  // The callbacks are props that can change identity every render, and
+  // `search` changes with workspace config / maxFieldDepth. Rebuilding the
+  // pipeline on them instead would cancel in-flight searches and reset the
+  // debounce, dedupe, and accumulated search state.
+  const latestRef = useRef({onComplete, onError, onStart, search})
   useEffect(() => {
-    callbacksRef.current = {onComplete, onError, onStart}
-  }, [onComplete, onError, onStart])
+    latestRef.current = {onComplete, onError, onStart, search}
+  }, [onComplete, onError, onStart, search])
 
   const searchState$ = useMemo(
     () =>
@@ -116,8 +117,8 @@ export function useSearch({
         debounce((request) => timer(request?.debounceTime || DEFAULT_DEBOUNCE_TIME)),
         // oxlint-disable-next-line react/refs -- the ref is read at subscription time inside the memoized pipeline, never during render
         switchMap((request) => {
-          const callbacks = callbacksRef.current
-          callbacks.onStart?.()
+          const latest = latestRef.current
+          latest.onStart?.()
           return concat(
             // Emit loading start
             of({
@@ -133,10 +134,10 @@ export function useSearch({
             iif(
               () => hasSearchableTerms({allowEmptyQueries, terms: request.terms}),
               // If we have a valid search, run async fetch, map results and trigger `onComplete` / `onError` callbacks
-              search(request.terms, request.options).pipe(
-                tap(({hits, nextCursor}) => callbacks.onComplete?.({hits, nextCursor})),
+              latest.search(request.terms, request.options).pipe(
+                tap(({hits, nextCursor}) => latest.onComplete?.({hits, nextCursor})),
                 catchError((error) => {
-                  callbacks.onError?.(error)
+                  latest.onError?.(error)
                   return of({
                     ...INITIAL_SEARCH_STATE,
                     error,
@@ -147,7 +148,7 @@ export function useSearch({
                 }),
               ),
               // If there is no valid search, emit an empty update and trigger `onComplete`
-              of({}).pipe(tap(() => callbacks.onComplete?.({hits: [], nextCursor: undefined}))),
+              of({}).pipe(tap(() => latest.onComplete?.({hits: [], nextCursor: undefined}))),
             ),
             // Emit loading completed
             of({loading: false}),
@@ -157,7 +158,7 @@ export function useSearch({
           return {...prevState, ...nextState}
         }, INITIAL_SEARCH_STATE),
       ),
-    [allowEmptyQueries, search, searchRequests$],
+    [allowEmptyQueries, searchRequests$],
   )
   // Captured once, like the `useState(initialState)` mirror it replaces: both
   // callers rebuild the object every render, and react-rx re-reads an unstable
