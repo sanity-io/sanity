@@ -44,10 +44,11 @@ export function useConfiguredDocumentActionIds(
   }, [schemaType, documentId, versionType, releaseId, resolveDocumentActions])
 }
 
-// Callers pass isScheduledDraft. Do not look the release up here: the chip's
-// `releases` prop is notCurrentReleases and the chip's own release is absent.
 /**
  * Resolves the document-actions version type from pane or chip flags.
+ *
+ * Callers pass `isScheduledDraft`. Do not look the release up here: the chip's
+ * `releases` prop is notCurrentReleases and the chip's own release is absent from it.
  *
  * @internal
  */
@@ -98,7 +99,7 @@ export function getVersionContextMenuActionsContext(options: {
 
   const versionType = getDocumentVersionType({
     isScheduledDraft,
-    isVersionDocument: isScheduledDraft || !isDraftOrPublishedBundleId(fromRelease),
+    isVersionDocument: !isDraftOrPublishedBundleId(fromRelease),
     perspectiveName: fromRelease,
     draftsEnabled: true,
   })
