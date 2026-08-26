@@ -26,8 +26,8 @@ catalogs:
       specifier: ^1.1.0
       version: 1.1.0
     '@sanity/tsdown-config':
-      specifier: ^0.26.1
-      version: 0.26.1
+      specifier: ^0.26.2
+      version: 0.26.2
     '@sanity/ui':
       specifier: ^4.0.6
       version: 4.0.6
@@ -1230,7 +1230,7 @@ importers:
         version: link:../tsconfig
       '@sanity/tsdown-config':
         specifier: 'catalog:'
-        version: 0.26.1(@babel/runtime@7.29.7)(@types/node@24.13.3)(supports-color@8.1.1)(tsdown@0.22.14)(typescript@7.0.2)(vite@8.2.2)
+        version: 0.26.2(@babel/runtime@7.29.7)(@types/node@24.13.3)(supports-color@8.1.1)(tsdown@0.22.14)(typescript@7.0.2)(vite@8.2.2)
       '@types/node':
         specifier: 'catalog:'
         version: 24.13.3
@@ -7108,8 +7108,8 @@ packages:
       styled-components:
         optional: true
 
-  '@sanity/tsdown-config@0.26.1':
-    resolution: {integrity: sha512-Hot2sRDPRBTe0erAWC7pOiuHB2+d2uxWVIWe/DcErCjuEOWbnTzcItbcOL28ktLfakFrybZle7MXNZ4ae+9fHQ==}
+  '@sanity/tsdown-config@0.26.2':
+    resolution: {integrity: sha512-bFKrbGsCE3zgOeBonc6MxQuo2p0MPnQr8tJXyBdixQPN6WAwvMJqR7ilPjis8Xg+6MtFd792TjrCDEDLi4TQiQ==}
     engines: {node: ^22.18.0 || >=24.11.0}
     peerDependencies:
       '@tsdown/css': '*'
@@ -7144,16 +7144,12 @@ packages:
   '@sanity/uuid@3.0.3':
     resolution: {integrity: sha512-aJvKuFwzcZKRwuIjrRPfXfXKpSdnLF4CnedV5WcX1n5SzhufvRNHIot5lkx1+Y1DwiMVQOZ5gDSPJH+P6Ao70A==}
 
-  '@sanity/vanilla-extract-integration@0.1.14':
-    resolution: {integrity: sha512-+uXbRVjUoCXucUfwxIQeteu3hND6+tcxGJK2kivt5Ft61H9/mztJhgRLuwRG0Groa5HWzwaHaaTwEA4QBnFEsQ==}
-    engines: {node: '>=20.19 <22 || >=22.12'}
-
   '@sanity/vanilla-extract-integration@0.1.15':
     resolution: {integrity: sha512-fmTGTMpDkSZbLMPbNzGZB9rCdgPdTJ5fTTeysgL5hJ62oaOi2ZM3c1D/kkHKQzn1hYwabr8obiPrrlYv1PIriQ==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
-  '@sanity/vanilla-extract-rolldown-plugin@0.4.3':
-    resolution: {integrity: sha512-42HAPRvmZDWeKg3nScMLOBtVki/6Qu8a0NIjlkX/poYurOMmPt8ZLxIktmzqISnI1e1zeq4Ixef19iWF8/jtrQ==}
+  '@sanity/vanilla-extract-rolldown-plugin@0.4.4':
+    resolution: {integrity: sha512-7fGN4uawU2CHyfnZ/U8jTCemvKOK74nfKtc+LhMZFbAyoPQEkW4LLrJi9qFmTqlV5lSstXjJmBDoOEWleegKsg==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       rolldown: ^1.0.0
@@ -7161,8 +7157,8 @@ packages:
       rolldown:
         optional: true
 
-  '@sanity/vanilla-extract-tsdown-plugin@0.3.3':
-    resolution: {integrity: sha512-VhG+Eg2TDWanuDkn/pnJ3DIF9ictfPhsnmOwdEA9HcA0dP393gTxNWtgWVO/C2Iruwxz3FDbsOPA75BOsoKsVQ==}
+  '@sanity/vanilla-extract-tsdown-plugin@0.3.4':
+    resolution: {integrity: sha512-sAndhPN29VU7BH/OtdCDPqixetCni9YKTkZsVcM3Wt8CzPZl8789VFpnZ923yQsfak/rtFxLb/6IpMpTOOGq8Q==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       tsdown: ^0.22.5
@@ -19790,14 +19786,14 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@sanity/tsdown-config@0.26.1(@babel/runtime@7.29.7)(@types/node@24.13.3)(supports-color@8.1.1)(tsdown@0.22.14)(typescript@7.0.2)(vite@8.2.2)':
+  '@sanity/tsdown-config@0.26.2(@babel/runtime@7.29.7)(@types/node@24.13.3)(supports-color@8.1.1)(tsdown@0.22.14)(typescript@7.0.2)(vite@8.2.2)':
     dependencies:
       '@babel/core': 7.29.7(supports-color@8.1.1)
       '@microsoft/api-extractor': 7.59.0(@types/node@24.13.3)
       '@microsoft/tsdoc-config': 0.18.1
       '@rolldown/plugin-babel': 0.2.3(@babel/core@7.29.7)(@babel/runtime@7.29.7)(rolldown@1.2.5)(vite@8.2.2)
       '@sanity/browserslist-config': 1.0.5
-      '@sanity/vanilla-extract-tsdown-plugin': 0.3.3(rolldown@1.2.5)(tsdown@0.22.14)
+      '@sanity/vanilla-extract-tsdown-plugin': 0.3.4(rolldown@1.2.5)(tsdown@0.22.14)
       '@typescript/typescript6': 6.0.2
       '@vitejs/plugin-react': 6.1.0(@rolldown/plugin-babel@0.2.3)(oxc-transform-react@0.147.0)(vite@8.2.2)
       browserslist: 4.28.8
@@ -19846,15 +19842,6 @@ snapshots:
     dependencies:
       uuid: 11.1.1
 
-  '@sanity/vanilla-extract-integration@0.1.14':
-    dependencies:
-      '@vanilla-extract/css': 1.21.2(babel-plugin-macros@3.1.0)
-      javascript-stringify: 2.1.0
-      rolldown: 1.2.5
-      yuku-parser: 0.9.1
-    transitivePeerDependencies:
-      - babel-plugin-macros
-
   '@sanity/vanilla-extract-integration@0.1.15(babel-plugin-macros@3.1.0)':
     dependencies:
       '@vanilla-extract/css': 1.21.2(babel-plugin-macros@3.1.0)
@@ -19864,18 +19851,18 @@ snapshots:
     transitivePeerDependencies:
       - babel-plugin-macros
 
-  '@sanity/vanilla-extract-rolldown-plugin@0.4.3(rolldown@1.2.5)':
+  '@sanity/vanilla-extract-rolldown-plugin@0.4.4(rolldown@1.2.5)':
     dependencies:
-      '@sanity/vanilla-extract-integration': 0.1.14
+      '@sanity/vanilla-extract-integration': 0.1.15(babel-plugin-macros@3.1.0)
       lightningcss: 1.33.0
     optionalDependencies:
       rolldown: 1.2.5
     transitivePeerDependencies:
       - babel-plugin-macros
 
-  '@sanity/vanilla-extract-tsdown-plugin@0.3.3(rolldown@1.2.5)(tsdown@0.22.14)':
+  '@sanity/vanilla-extract-tsdown-plugin@0.3.4(rolldown@1.2.5)(tsdown@0.22.14)':
     dependencies:
-      '@sanity/vanilla-extract-rolldown-plugin': 0.4.3(rolldown@1.2.5)
+      '@sanity/vanilla-extract-rolldown-plugin': 0.4.4(rolldown@1.2.5)
       tsdown: 0.22.14(@vitejs/devtools@0.5.2)(oxc-resolver@11.24.2)(publint@0.3.24)(tsx@4.23.12)(typescript@7.0.2)
     transitivePeerDependencies:
       - babel-plugin-macros
