@@ -2,7 +2,8 @@ import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {type SanityDocumentLike} from '@sanity/types'
 import {Grid, Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
+import {useObservable} from 'react-rx'
 import {catchError, concat, filter, map, type Observable, of, scan, Subject, switchMap} from 'rxjs'
 import {
   createSearch,
@@ -23,7 +24,6 @@ import {
   useTranslation,
 } from 'sanity'
 import {Box} from 'ui5'
-import {useEffectEvent} from 'use-effect-event'
 
 import {structureLocaleNamespace} from '../../i18n'
 import {CreateNewIncomingReference} from './CreateNewIncomingReference'
@@ -129,45 +129,38 @@ export function AddIncomingReference({
     [client, schemaType, searchStrategy],
   )
 
-  const [searchState, setSearchState] = useState(INITIAL_SEARCH_STATE)
   const [searchInput$] = useState(() => new Subject<string | null>())
 
-  // Effect event so each search reads the render-current `handleSearch`
-  // without resubscribing the pipeline.
-  const runSearch = useEffectEvent((searchString: string) =>
-    concat(
-      of({isLoading: true, hits: []}),
-      handleSearch(searchString).pipe(
-        map((hits) => ({hits, searchString, isLoading: false})),
-        catchError((error) => {
-          push({
-            title: 'Reference search failed',
-            description: error.message,
-            status: 'error',
-            id: `reference-search-fail-${type}`,
-          })
-          console.error(error)
-          return of({hits: [], isLoading: false})
-        }),
-      ),
-    ),
-  )
-
-  useEffect(() => {
-    const subscription = searchInput$
-      .pipe(
+  const searchState$ = useMemo(
+    () =>
+      searchInput$.pipe(
         filter(isNonNullable),
-        switchMap((searchString) => runSearch(searchString)),
+        switchMap((searchString) =>
+          concat(
+            of({isLoading: true, hits: []}),
+            handleSearch(searchString).pipe(
+              map((hits) => ({hits, searchString, isLoading: false})),
+              catchError((error) => {
+                push({
+                  title: 'Reference search failed',
+                  description: error.message,
+                  status: 'error',
+                  id: `reference-search-fail-${type}`,
+                })
+                console.error(error)
+                return of({hits: [], isLoading: false})
+              }),
+            ),
+          ),
+        ),
         scan(
           (prevState, nextState: ReferenceSearchState) => ({...prevState, ...nextState}),
           INITIAL_SEARCH_STATE,
         ),
-      )
-      .subscribe(setSearchState)
-
-    return () => subscription.unsubscribe()
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- runSearch is an effect event; react-hooks/exhaustive-deps forbids listing it
-  }, [searchInput$])
+      ),
+    [handleSearch, push, searchInput$, type],
+  )
+  const searchState = useObservable(searchState$, INITIAL_SEARCH_STATE)
 
   const handleQueryChange = useCallback(
     (searchString: string | null) => searchInput$.next(searchString),

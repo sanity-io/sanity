@@ -1,6 +1,7 @@
 import {type Schema} from '@sanity/types'
 import isEqual from 'lodash-es/isEqual.js'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
+import {useObservable} from 'react-rx'
 import {concat, iif, of, Subject, timer} from 'rxjs'
 import {
   catchError,
@@ -12,7 +13,6 @@ import {
   switchMap,
   tap,
 } from 'rxjs/operators'
-import {useEffectEvent} from 'use-effect-event'
 
 import {useClient} from '../../../../../hooks/useClient'
 import {
@@ -22,6 +22,7 @@ import {
 } from '../../../../../search/common/types'
 import {createSearch} from '../../../../../search/search'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
+import {useLatest} from '../../../../../util/useLatest'
 import {useWorkspace} from '../../../../workspace'
 import {type SearchState} from '../types'
 import {hasSearchableTerms} from '../utils/hasSearchableTerms'
@@ -79,7 +80,6 @@ export function useSearch({
   handleSearch: (request: SearchRequest) => void
   searchState: SearchState
 } {
-  const [searchState, setSearchState] = useState(initialState)
   const [searchRequests$] = useState(() => new Subject<SearchRequest | null>())
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const maxFieldDepth = useSearchMaxFieldDepth()
@@ -96,50 +96,15 @@ export function useSearch({
     [schema, client, strategy, maxFieldDepth],
   )
 
-  // Effect event so each search reads the render-current `search` and
-  // callbacks without resubscribing the pipeline. Also triggers `onStart`,
-  // which the debounced pipeline can't call directly without going stale.
-  const runSearch = useEffectEvent((request: SearchRequest) => {
-    onStart?.()
-    return concat(
-      // Emit loading start
-      of({
-        ...INITIAL_SEARCH_STATE,
-        loading: true,
-        options: request.options,
-        terms: request.terms,
-      }),
-      // Conditionally trigger search ONLY if we have valid searchable terms.
-      // Typically, search terms are valid if either query, filter or selected types is non-empty.
-      // There are exceptions (e.g. searching within <AutoComplete> components) where empty queries are permitted,
-      // which is what `allowEmptyQueries` is used for.
-      iif(
-        () => hasSearchableTerms({allowEmptyQueries, terms: request.terms}),
-        // If we have a valid search, run async fetch, map results and trigger `onComplete` / `onError` callbacks
-        search(request.terms, request.options).pipe(
-          tap(({hits, nextCursor}) => onComplete?.({hits, nextCursor})),
-          catchError((error) => {
-            onError?.(error)
-            return of({
-              ...INITIAL_SEARCH_STATE,
-              error,
-              loading: false,
-              options: request.options,
-              terms: request.terms,
-            })
-          }),
-        ),
-        // If there is no valid search, emit an empty update and trigger `onComplete`
-        of({}).pipe(tap(() => onComplete?.({hits: [], nextCursor: undefined}))),
-      ),
-      // Emit loading completed
-      of({loading: false}),
-    )
-  })
+  // The callbacks are props that can change identity every render, and
+  // `search` changes with the workspace config. Rebuilding the pipeline on
+  // them instead would cancel in-flight searches and reset the debounce,
+  // dedupe, and accumulated search state on every caller render.
+  const latest = useLatest({allowEmptyQueries, onComplete, onError, onStart, search})
 
-  useEffect(() => {
-    const subscription = searchRequests$
-      .pipe(
+  const searchState$ = useMemo(
+    () =>
+      searchRequests$.pipe(
         // Ignore null values
         filter(nonNullable),
         // Sanitize request (trim query and filter)
@@ -148,16 +113,59 @@ export function useSearch({
         distinctUntilChanged(isEqual),
         // Debounce requests
         debounce((request) => timer(request?.debounceTime || DEFAULT_DEBOUNCE_TIME)),
-        switchMap((request) => runSearch(request)),
+        switchMap((request) => {
+          const current = latest.current
+          current.onStart?.()
+          return concat(
+            // Emit loading start
+            of({
+              ...INITIAL_SEARCH_STATE,
+              loading: true,
+              options: request.options,
+              terms: request.terms,
+            }),
+            // Conditionally trigger search ONLY if we have valid searchable terms.
+            // Typically, search terms are valid if either query, filter or selected types is non-empty.
+            // There are exceptions (e.g. searching within <AutoComplete> components) where empty queries are permitted,
+            // which is what `allowEmptyQueries` is used for.
+            iif(
+              () =>
+                hasSearchableTerms({
+                  allowEmptyQueries: current.allowEmptyQueries,
+                  terms: request.terms,
+                }),
+              // If we have a valid search, run async fetch, map results and trigger `onComplete` / `onError` callbacks
+              current.search(request.terms, request.options).pipe(
+                tap(({hits, nextCursor}) => current.onComplete?.({hits, nextCursor})),
+                catchError((error) => {
+                  current.onError?.(error)
+                  return of({
+                    ...INITIAL_SEARCH_STATE,
+                    error,
+                    loading: false,
+                    options: request.options,
+                    terms: request.terms,
+                  })
+                }),
+              ),
+              // If there is no valid search, emit an empty update and trigger `onComplete`
+              of({}).pipe(tap(() => current.onComplete?.({hits: [], nextCursor: undefined}))),
+            ),
+            // Emit loading completed
+            of({loading: false}),
+          )
+        }),
         scan((prevState, nextState): SearchState => {
           return {...prevState, ...nextState}
         }, INITIAL_SEARCH_STATE),
-      )
-      .subscribe(setSearchState)
-
-    return () => subscription.unsubscribe()
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- runSearch is an effect event; react-hooks/exhaustive-deps forbids listing it
-  }, [searchRequests$])
+      ),
+    [latest, searchRequests$],
+  )
+  // Captured once, like the `useState(initialState)` mirror it replaces: both
+  // callers rebuild the object every render, and react-rx re-reads an unstable
+  // initial value on every snapshot until the first emission.
+  const [initialSearchState] = useState(initialState)
+  const searchState = useObservable(searchState$, initialSearchState)
 
   const handleSearch = useCallback(
     (searchRequest: SearchRequest) => searchRequests$.next(searchRequest),

@@ -1,18 +1,10 @@
 import {Stack, Text, useClickOutsideEvent} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {uuid} from '@sanity/uuid'
-import {
-  type FocusEvent,
-  type KeyboardEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import {type FocusEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
+import {useObservable} from 'react-rx'
 import {concat, of, Subject} from 'rxjs'
 import {catchError, filter, map, scan, switchMap} from 'rxjs/operators'
-import {useEffectEvent} from 'use-effect-event'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {ReferenceInputPreviewCard} from '../../../components/previewCard/PreviewCard'
@@ -21,6 +13,7 @@ import {Translate} from '../../../i18n/Translate'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {getPublishedId} from '../../../util/draftUtils'
 import {isNonNullable} from '../../../util/isNonNullable'
+import {useLatest} from '../../../util/useLatest'
 import {Alert} from '../../components/Alert'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {set, setIfMissing, unset} from '../../patch/patch'
@@ -85,46 +78,44 @@ export function ReferenceInput(props: ReferenceInputProps) {
   const {push} = useToast()
   const {t} = useTranslation()
 
-  const [searchState, setSearchState] = useState<ReferenceSearchState>(INITIAL_SEARCH_STATE)
   const [searchInput$] = useState(() => new Subject<string | null>())
 
-  // Effect event so each search reads the render-current `onSearch` (rebuilt
-  // every render by StudioReferenceInput) without resubscribing the pipeline.
-  const runSearch = useEffectEvent((searchString: string) =>
-    concat(
-      of({isLoading: true}),
-      onSearch(searchString).pipe(
-        map((hits) => ({hits, searchString, isLoading: false})),
-        catchError((error) => {
-          push({
-            title: t('inputs.reference.error.search-failed-title'),
-            description: error.message,
-            status: 'error',
-            id: `reference-search-fail-${id}`,
-          })
+  // `onSearch` changes identity every render (StudioReferenceInput passes a
+  // plain function). Rebuilding the pipeline on it instead would cancel
+  // in-flight searches and reset accumulated search state.
+  const latestOnSearch = useLatest(onSearch)
 
-          console.error(error)
-          return of({hits: [], searchString, isLoading: false})
-        }),
-      ),
-    ),
-  )
-
-  useEffect(() => {
-    const subscription = searchInput$
-      .pipe(
+  const searchState$ = useMemo(
+    () =>
+      searchInput$.pipe(
         filter(nonNullable),
-        switchMap((searchString) => runSearch(searchString)),
+        switchMap((searchString) =>
+          concat(
+            of({isLoading: true}),
+            latestOnSearch.current(searchString).pipe(
+              map((hits) => ({hits, searchString, isLoading: false})),
+              catchError((error) => {
+                push({
+                  title: t('inputs.reference.error.search-failed-title'),
+                  description: error.message,
+                  status: 'error',
+                  id: `reference-search-fail-${id}`,
+                })
+
+                console.error(error)
+                return of({hits: [], searchString, isLoading: false})
+              }),
+            ),
+          ),
+        ),
         scan(
           (prevState, nextState): ReferenceSearchState => ({...prevState, ...nextState}),
           INITIAL_SEARCH_STATE,
         ),
-      )
-      .subscribe(setSearchState)
-
-    return () => subscription.unsubscribe()
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- runSearch is an effect event; react-hooks/exhaustive-deps forbids listing it
-  }, [searchInput$])
+      ),
+    [id, latestOnSearch, push, searchInput$, t],
+  )
+  const searchState = useObservable(searchState$, INITIAL_SEARCH_STATE)
 
   const handleQueryChange = useCallback(
     (searchString: string | null) => searchInput$.next(searchString),
