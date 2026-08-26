@@ -2,9 +2,8 @@ import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {type SanityDocumentLike} from '@sanity/types'
 import {Grid, Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {useCallback, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
-import {catchError, concat, map, type Observable, of, scan, Subject, switchMap} from 'rxjs'
+import {useCallback, useEffect, useMemo, useState} from 'react'
+import {catchError, concat, filter, map, type Observable, of, scan, Subject, switchMap} from 'rxjs'
 import {
   createSearch,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
@@ -24,6 +23,7 @@ import {
   useTranslation,
 } from 'sanity'
 import {Box} from 'ui5'
+import {useEffectEvent} from 'use-effect-event'
 
 import {structureLocaleNamespace} from '../../i18n'
 import {CreateNewIncomingReference} from './CreateNewIncomingReference'
@@ -43,10 +43,6 @@ interface ReferenceOption {
 interface ReferenceSearchHit {
   _id: string
   _type: string
-}
-
-interface ReferenceSearchEvent {
-  run: () => Observable<Partial<ReferenceSearchState>>
 }
 
 const INITIAL_SEARCH_STATE: ReferenceSearchState = {
@@ -133,44 +129,49 @@ export function AddIncomingReference({
     [client, schemaType, searchStrategy],
   )
 
-  const [searchInput$] = useState(() => new Subject<ReferenceSearchEvent>())
-  const searchState$ = useMemo(
-    () =>
-      searchInput$.pipe(
-        switchMap(({run}) => run()),
+  const [searchState, setSearchState] = useState(INITIAL_SEARCH_STATE)
+  const [searchInput$] = useState(() => new Subject<string | null>())
+
+  // Effect event so each search reads the render-current `handleSearch`
+  // without resubscribing the pipeline.
+  const runSearch = useEffectEvent((searchString: string) =>
+    concat(
+      of({isLoading: true, hits: []}),
+      handleSearch(searchString).pipe(
+        map((hits) => ({hits, searchString, isLoading: false})),
+        catchError((error) => {
+          push({
+            title: 'Reference search failed',
+            description: error.message,
+            status: 'error',
+            id: `reference-search-fail-${type}`,
+          })
+          console.error(error)
+          return of({hits: [], isLoading: false})
+        }),
+      ),
+    ),
+  )
+
+  useEffect(() => {
+    const subscription = searchInput$
+      .pipe(
+        filter(isNonNullable),
+        switchMap((searchString) => runSearch(searchString)),
         scan(
-          (prevState, nextState: Partial<ReferenceSearchState>) => ({...prevState, ...nextState}),
+          (prevState, nextState: ReferenceSearchState) => ({...prevState, ...nextState}),
           INITIAL_SEARCH_STATE,
         ),
-      ),
-    [searchInput$],
-  )
-  const searchState = useObservable(searchState$, INITIAL_SEARCH_STATE)
-  const handleQueryChange = useCallback(
-    (searchString: string | null) => {
-      if (searchString === null) return
+      )
+      .subscribe(setSearchState)
 
-      searchInput$.next({
-        run: () =>
-          concat(
-            of({isLoading: true, hits: []}),
-            handleSearch(searchString).pipe(
-              map((hits) => ({hits, searchString, isLoading: false})),
-              catchError((error) => {
-                push({
-                  title: 'Reference search failed',
-                  description: error.message,
-                  status: 'error',
-                  id: `reference-search-fail-${type}`,
-                })
-                console.error(error)
-                return of({hits: [], isLoading: false})
-              }),
-            ),
-          ),
-      })
-    },
-    [handleSearch, push, searchInput$, type],
+    return () => subscription.unsubscribe()
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- runSearch is an effect event; react-hooks/exhaustive-deps forbids listing it
+  }, [searchInput$])
+
+  const handleQueryChange = useCallback(
+    (searchString: string | null) => searchInput$.next(searchString),
+    [searchInput$],
   )
 
   const options: ReferenceOption[] = useMemo(() => {

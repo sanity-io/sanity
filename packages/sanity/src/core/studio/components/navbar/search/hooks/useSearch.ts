@@ -1,9 +1,18 @@
 import {type Schema} from '@sanity/types'
 import isEqual from 'lodash-es/isEqual.js'
-import {useCallback, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
-import {concat, iif, type Observable, of, Subject, timer} from 'rxjs'
-import {catchError, debounce, distinctUntilChanged, map, scan, switchMap, tap} from 'rxjs/operators'
+import {useCallback, useEffect, useMemo, useState} from 'react'
+import {concat, iif, of, Subject, timer} from 'rxjs'
+import {
+  catchError,
+  debounce,
+  distinctUntilChanged,
+  filter,
+  map,
+  scan,
+  switchMap,
+  tap,
+} from 'rxjs/operators'
+import {useEffectEvent} from 'use-effect-event'
 
 import {useClient} from '../../../../../hooks/useClient'
 import {
@@ -25,12 +34,6 @@ interface SearchRequest {
   terms: SearchTerms
 }
 
-interface SearchEvent {
-  onStart?: () => void
-  request: SearchRequest
-  run: (request: SearchRequest) => Observable<Partial<SearchState>>
-}
-
 const DEFAULT_DEBOUNCE_TIME = 300 // ms
 
 const INITIAL_SEARCH_STATE: SearchState = {
@@ -41,6 +44,10 @@ const INITIAL_SEARCH_STATE: SearchState = {
     query: '',
     types: [],
   },
+}
+
+function nonNullable<T>(v: T): v is NonNullable<T> {
+  return v !== null
 }
 
 function sanitizeRequest(request: SearchRequest) {
@@ -72,7 +79,8 @@ export function useSearch({
   handleSearch: (request: SearchRequest) => void
   searchState: SearchState
 } {
-  const [searchRequests$] = useState(() => new Subject<SearchEvent>())
+  const [searchState, setSearchState] = useState(initialState)
+  const [searchRequests$] = useState(() => new Subject<SearchRequest | null>())
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const maxFieldDepth = useSearchMaxFieldDepth()
   const {strategy} = useWorkspace().search
@@ -88,69 +96,72 @@ export function useSearch({
     [schema, client, strategy, maxFieldDepth],
   )
 
-  const searchState$ = useMemo(
-    () =>
-      searchRequests$.pipe(
+  // Effect event so each search reads the render-current `search` and
+  // callbacks without resubscribing the pipeline. Also triggers `onStart`,
+  // which the debounced pipeline can't call directly without going stale.
+  const runSearch = useEffectEvent((request: SearchRequest) => {
+    onStart?.()
+    return concat(
+      // Emit loading start
+      of({
+        ...INITIAL_SEARCH_STATE,
+        loading: true,
+        options: request.options,
+        terms: request.terms,
+      }),
+      // Conditionally trigger search ONLY if we have valid searchable terms.
+      // Typically, search terms are valid if either query, filter or selected types is non-empty.
+      // There are exceptions (e.g. searching within <AutoComplete> components) where empty queries are permitted,
+      // which is what `allowEmptyQueries` is used for.
+      iif(
+        () => hasSearchableTerms({allowEmptyQueries, terms: request.terms}),
+        // If we have a valid search, run async fetch, map results and trigger `onComplete` / `onError` callbacks
+        search(request.terms, request.options).pipe(
+          tap(({hits, nextCursor}) => onComplete?.({hits, nextCursor})),
+          catchError((error) => {
+            onError?.(error)
+            return of({
+              ...INITIAL_SEARCH_STATE,
+              error,
+              loading: false,
+              options: request.options,
+              terms: request.terms,
+            })
+          }),
+        ),
+        // If there is no valid search, emit an empty update and trigger `onComplete`
+        of({}).pipe(tap(() => onComplete?.({hits: [], nextCursor: undefined}))),
+      ),
+      // Emit loading completed
+      of({loading: false}),
+    )
+  })
+
+  useEffect(() => {
+    const subscription = searchRequests$
+      .pipe(
+        // Ignore null values
+        filter(nonNullable),
         // Sanitize request (trim query and filter)
-        map((event) => ({...event, request: sanitizeRequest(event.request)})),
+        map(sanitizeRequest),
         // Only emit when values have changed
-        distinctUntilChanged((previous, current) => isEqual(previous.request, current.request)),
+        distinctUntilChanged(isEqual),
         // Debounce requests
-        debounce(({request}) => timer(request.debounceTime || DEFAULT_DEBOUNCE_TIME)),
-        // Trigger `onStart` callback
-        tap(({onStart: handleStart}) => handleStart?.()),
-        switchMap(({request, run}) => run(request)),
+        debounce((request) => timer(request?.debounceTime || DEFAULT_DEBOUNCE_TIME)),
+        switchMap((request) => runSearch(request)),
         scan((prevState, nextState): SearchState => {
           return {...prevState, ...nextState}
         }, INITIAL_SEARCH_STATE),
-      ),
-    [searchRequests$],
-  )
-  const searchState = useObservable(searchState$, initialState)
+      )
+      .subscribe(setSearchState)
+
+    return () => subscription.unsubscribe()
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- runSearch is an effect event; react-hooks/exhaustive-deps forbids listing it
+  }, [searchRequests$])
 
   const handleSearch = useCallback(
-    (request: SearchRequest) => {
-      searchRequests$.next({
-        onStart,
-        request,
-        run: (sanitizedRequest) =>
-          concat(
-            // Emit loading start
-            of({
-              ...INITIAL_SEARCH_STATE,
-              loading: true,
-              options: sanitizedRequest.options,
-              terms: sanitizedRequest.terms,
-            }),
-            // Conditionally trigger search ONLY if we have valid searchable terms.
-            // Typically, search terms are valid if either query, filter or selected types is non-empty.
-            // There are exceptions (e.g. searching within <AutoComplete> components) where empty queries are permitted,
-            // which is what `allowEmptyQueries` is used for.
-            iif(
-              () => hasSearchableTerms({allowEmptyQueries, terms: sanitizedRequest.terms}),
-              // If we have a valid search, run async fetch, map results and trigger `onComplete` / `onError` callbacks
-              search(sanitizedRequest.terms, sanitizedRequest.options).pipe(
-                tap(({hits, nextCursor}) => onComplete?.({hits, nextCursor})),
-                catchError((error) => {
-                  onError?.(error)
-                  return of({
-                    ...INITIAL_SEARCH_STATE,
-                    error,
-                    loading: false,
-                    options: sanitizedRequest.options,
-                    terms: sanitizedRequest.terms,
-                  })
-                }),
-              ),
-              // If there is no valid search, emit an empty update and trigger `onComplete`
-              of({}).pipe(tap(() => onComplete?.({hits: [], nextCursor: undefined}))),
-            ),
-            // Emit loading completed
-            of({loading: false}),
-          ),
-      })
-    },
-    [allowEmptyQueries, onComplete, onError, onStart, search, searchRequests$],
+    (searchRequest: SearchRequest) => searchRequests$.next(searchRequest),
+    [searchRequests$],
   )
 
   return {handleSearch, searchState}

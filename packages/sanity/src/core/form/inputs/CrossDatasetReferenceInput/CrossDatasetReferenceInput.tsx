@@ -8,15 +8,16 @@ import {
   type FocusEvent,
   type KeyboardEvent,
   useCallback,
+  useEffect,
   useId,
   useImperativeHandle,
   useMemo,
   useRef,
   useState,
 } from 'react'
-import {useObservable} from 'react-rx'
 import {concat, type Observable, of, Subject} from 'rxjs'
-import {catchError, distinctUntilChanged, map, scan, switchMap} from 'rxjs/operators'
+import {catchError, distinctUntilChanged, filter, map, scan, switchMap} from 'rxjs/operators'
+import {useEffectEvent} from 'use-effect-event'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
@@ -64,11 +65,6 @@ const NO_FILTER = () => true
 const REF_PATH = ['_ref']
 const CROSS_DATASET_FEATUREKEY = 'crossDatasetReferences'
 
-interface ReferenceSearchEvent {
-  run: () => Observable<Partial<SearchState>>
-  searchString: string
-}
-
 /** @internal */
 export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProps) {
   const {
@@ -92,51 +88,56 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
 
   const {push} = useToast()
   const inputId = useId()
-  const [searchInput$] = useState(() => new Subject<ReferenceSearchEvent>())
-  const searchState$ = useMemo(
-    () =>
-      searchInput$.pipe(
-        distinctUntilChanged((previous, current) => previous.searchString === current.searchString),
-        switchMap(({run}) => run()),
+
+  const [searchState, setSearchState] = useState<SearchState>(INITIAL_SEARCH_STATE)
+  const [searchInput$] = useState(() => new Subject<string | null>())
+
+  // Effect event so each search reads the render-current `onSearch` without
+  // resubscribing the pipeline.
+  const runSearch = useEffectEvent((searchString: string) =>
+    concat(
+      of({isLoading: true}),
+      onSearch(searchString).pipe(
+        map((hits) => ({
+          hits,
+          searchString,
+          isLoading: false,
+        })),
+        catchError((error) => {
+          push({
+            title: 'Reference search failed',
+            description: error.message,
+            status: 'error',
+            id: `reference-search-fail-${inputId}`,
+          })
+
+          console.error(error)
+          return of({hits: []})
+        }),
+      ),
+    ),
+  )
+
+  useEffect(() => {
+    const subscription = searchInput$
+      .pipe(
+        filter(isNonNullable),
+        distinctUntilChanged(),
+        switchMap((searchString) => runSearch(searchString)),
         scan(
           (prevState, nextState): SearchState => ({...prevState, ...nextState}),
           INITIAL_SEARCH_STATE,
         ),
-      ),
-    [searchInput$],
-  )
-  const searchState = useObservable(searchState$, INITIAL_SEARCH_STATE)
+      )
+      .subscribe(setSearchState)
+
+    return () => subscription.unsubscribe()
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- runSearch is an effect event; react-hooks/exhaustive-deps forbids listing it
+  }, [searchInput$])
+
   const handleQueryChange = useCallback(
-    (searchString: string | null) => {
-      if (searchString === null) return
-
-      searchInput$.next({
-        searchString,
-        run: () =>
-          concat(
-            of({isLoading: true}),
-            onSearch(searchString).pipe(
-              map((hits) => ({
-                hits,
-                searchString,
-                isLoading: false,
-              })),
-              catchError((error) => {
-                push({
-                  title: 'Reference search failed',
-                  description: error.message,
-                  status: 'error',
-                  id: `reference-search-fail-${inputId}`,
-                })
-
-                console.error(error)
-                return of({hits: []})
-              }),
-            ),
-          ),
-      })
-    },
-    [inputId, onSearch, push, searchInput$],
+    (searchString: string | null) => searchInput$.next(searchString),
+    [searchInput$],
   )
 
   const handleChange = useCallback(

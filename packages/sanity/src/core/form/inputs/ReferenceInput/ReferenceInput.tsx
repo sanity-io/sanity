@@ -1,10 +1,18 @@
 import {Stack, Text, useClickOutsideEvent} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {uuid} from '@sanity/uuid'
-import {type FocusEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
-import {useObservable} from 'react-rx'
-import {concat, type Observable, of, Subject} from 'rxjs'
-import {catchError, map, scan, switchMap} from 'rxjs/operators'
+import {
+  type FocusEvent,
+  type KeyboardEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import {concat, of, Subject} from 'rxjs'
+import {catchError, filter, map, scan, switchMap} from 'rxjs/operators'
+import {useEffectEvent} from 'use-effect-event'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {ReferenceInputPreviewCard} from '../../../components/previewCard/PreviewCard'
@@ -47,11 +55,6 @@ interface AutocompleteOption {
   hit: ReferenceSearchHit
   value: string
 }
-
-interface ReferenceSearchEvent {
-  run: () => Observable<Partial<ReferenceSearchState>>
-}
-
 export function ReferenceInput(props: ReferenceInputProps) {
   const {
     createOptions,
@@ -81,45 +84,51 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
   const {push} = useToast()
   const {t} = useTranslation()
-  const [searchInput$] = useState(() => new Subject<ReferenceSearchEvent>())
-  const searchState$ = useMemo(
-    () =>
-      searchInput$.pipe(
-        switchMap(({run}) => run()),
+
+  const [searchState, setSearchState] = useState<ReferenceSearchState>(INITIAL_SEARCH_STATE)
+  const [searchInput$] = useState(() => new Subject<string | null>())
+
+  // Effect event so each search reads the render-current `onSearch` (rebuilt
+  // every render by StudioReferenceInput) without resubscribing the pipeline.
+  const runSearch = useEffectEvent((searchString: string) =>
+    concat(
+      of({isLoading: true}),
+      onSearch(searchString).pipe(
+        map((hits) => ({hits, searchString, isLoading: false})),
+        catchError((error) => {
+          push({
+            title: t('inputs.reference.error.search-failed-title'),
+            description: error.message,
+            status: 'error',
+            id: `reference-search-fail-${id}`,
+          })
+
+          console.error(error)
+          return of({hits: [], searchString, isLoading: false})
+        }),
+      ),
+    ),
+  )
+
+  useEffect(() => {
+    const subscription = searchInput$
+      .pipe(
+        filter(nonNullable),
+        switchMap((searchString) => runSearch(searchString)),
         scan(
           (prevState, nextState): ReferenceSearchState => ({...prevState, ...nextState}),
           INITIAL_SEARCH_STATE,
         ),
-      ),
-    [searchInput$],
-  )
-  const searchState = useObservable(searchState$, INITIAL_SEARCH_STATE)
+      )
+      .subscribe(setSearchState)
+
+    return () => subscription.unsubscribe()
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- runSearch is an effect event; react-hooks/exhaustive-deps forbids listing it
+  }, [searchInput$])
+
   const handleQueryChange = useCallback(
-    (searchString: string | null) => {
-      if (searchString === null) return
-
-      searchInput$.next({
-        run: () =>
-          concat(
-            of({isLoading: true}),
-            onSearch(searchString).pipe(
-              map((hits) => ({hits, searchString, isLoading: false})),
-              catchError((error) => {
-                push({
-                  title: t('inputs.reference.error.search-failed-title'),
-                  description: error.message,
-                  status: 'error',
-                  id: `reference-search-fail-${id}`,
-                })
-
-                console.error(error)
-                return of({hits: [], searchString, isLoading: false})
-              }),
-            ),
-          ),
-      })
-    },
-    [id, onSearch, push, searchInput$, t],
+    (searchString: string | null) => searchInput$.next(searchString),
+    [searchInput$],
   )
 
   const handleCreateNew = useCallback(
