@@ -2,8 +2,8 @@ import {SearchIcon} from '@sanity/icons/Search'
 import {SpinnerIcon} from '@sanity/icons/Spinner'
 import {Stack, TextInput} from '@sanity/ui'
 import {Activity, memo, useCallback, useEffect, useMemo, useState} from 'react'
-import {useObservableEvent} from 'react-rx'
-import {debounce, map, type Observable, of, tap, timer} from 'rxjs'
+import {useObservable} from 'react-rx'
+import {debounce, of, Subject, timer} from 'rxjs'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   EMPTY_ARRAY,
@@ -109,8 +109,13 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   // contents from bleeding into the neighbouring pane.
   const {collapsed} = usePane()
 
-  const [searchQuery, setSearchQuery] = useState<string>('')
-  const [searchInputValue, setSearchInputValue] = useState<string>('')
+  const [searchInput$] = useState(() => new Subject<string>())
+  const searchQuery$ = useMemo(
+    () => searchInput$.pipe(debounce((value) => (value === '' ? of('') : timer(300)))),
+    [searchInput$],
+  )
+  const searchInputValue = useObservable(searchInput$, '')
+  const searchQuery = useObservable(searchQuery$, '')
   const [searchInputElement, setSearchInputElement] = useState<HTMLInputElement | null>(null)
   // The ordering applied while a search term is present. Defaults to relevance
   // ranking, and resets back to relevance whenever the search is cleared.
@@ -204,21 +209,16 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
 
   const isLoading = documentListIsLoading || releases.loading
 
-  const handleQueryChange = useObservableEvent(
-    (event$: Observable<React.ChangeEvent<HTMLInputElement>>) => {
-      return event$.pipe(
-        map((event) => event.target.value),
-        tap(setSearchInputValue),
-        debounce((value) => (value === '' ? of('') : timer(300))),
-        tap(setSearchQuery),
-      )
+  const handleQueryChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      searchInput$.next(event.currentTarget.value)
     },
+    [searchInput$],
   )
 
   const handleClearSearch = useCallback(() => {
-    setSearchQuery('')
-    setSearchInputValue('')
-  }, [])
+    searchInput$.next('')
+  }, [searchInput$])
 
   const handleSearchKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -241,8 +241,8 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   useEffect(() => {
     // Clear search field and disable search spinner
     // when switching between panes (i.e. when paneKey changes).
-    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     handleClearSearch()
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setEnableSearchSpinner()
     // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [paneKey, handleClearSearch])

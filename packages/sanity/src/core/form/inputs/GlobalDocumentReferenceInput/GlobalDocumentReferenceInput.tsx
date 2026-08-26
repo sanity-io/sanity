@@ -19,9 +19,9 @@ import {
   useRef,
   useState,
 } from 'react'
-import {useObservableEvent} from 'react-rx'
-import {concat, type Observable, of} from 'rxjs'
-import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
+import {useObservable} from 'react-rx'
+import {concat, type Observable, of, Subject} from 'rxjs'
+import {catchError, distinctUntilChanged, map, scan, switchMap} from 'rxjs/operators'
 import {Box} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
@@ -66,6 +66,11 @@ const NO_FILTER = () => true
 
 const REF_PATH = ['_ref']
 
+interface ReferenceSearchEvent {
+  run: () => Observable<Partial<SearchState>>
+  searchString: string
+}
+
 /** @internal */
 export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInputProps): ReactNode {
   const {
@@ -86,7 +91,50 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
 
   const {t} = useTranslation()
 
-  const [searchState, setSearchState] = useState<SearchState>(INITIAL_SEARCH_STATE)
+  const {push} = useToast()
+  const inputId = useId()
+  const [searchInput$] = useState(() => new Subject<ReferenceSearchEvent>())
+  const searchState$ = useMemo(
+    () =>
+      searchInput$.pipe(
+        distinctUntilChanged((previous, current) => previous.searchString === current.searchString),
+        switchMap(({run}) => run()),
+        scan(
+          (prevState, nextState): SearchState => ({...prevState, ...nextState}),
+          INITIAL_SEARCH_STATE,
+        ),
+      ),
+    [searchInput$],
+  )
+  const searchState = useObservable(searchState$, INITIAL_SEARCH_STATE)
+  const handleQueryChange = useCallback(
+    (searchString: string | null) => {
+      if (searchString === null) return
+
+      searchInput$.next({
+        searchString,
+        run: () =>
+          concat(
+            of({isLoading: true}),
+            onSearch(searchString).pipe(
+              map((hits) => ({hits, searchString, isLoading: false})),
+              catchError((error) => {
+                push({
+                  title: 'Reference search failed',
+                  description: error.message,
+                  status: 'error',
+                  id: `reference-search-fail-${inputId}`,
+                })
+
+                console.error(error)
+                return of({hits: []})
+              }),
+            ),
+          ),
+      })
+    },
+    [inputId, onSearch, push, searchInput$],
+  )
 
   const handleChange = useCallback(
     (id: string) => {
@@ -183,8 +231,6 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
     onChange(schemaType.weak === true ? set(true, ['_weak']) : unset(['_weak']))
   }, [onChange, schemaType])
 
-  const {push} = useToast()
-
   const errors = useMemo(() => validation.filter((item) => item.level === 'error'), [validation])
 
   const handleFocus = useCallback(
@@ -207,41 +253,6 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
   const handleReplace = useCallback(() => {
     onPathFocus?.(REF_PATH)
   }, [onPathFocus])
-
-  const inputId = useId()
-
-  const handleQueryChange = useObservableEvent((inputValue$: Observable<string | null>) => {
-    return inputValue$.pipe(
-      filter(isNonNullable),
-      distinctUntilChanged(),
-      switchMap((searchString) =>
-        concat(
-          of({isLoading: true}),
-          onSearch(searchString).pipe(
-            map((hits) => ({hits, searchString, isLoading: false})),
-            catchError((error) => {
-              push({
-                title: 'Reference search failed',
-                description: error.message,
-                status: 'error',
-                id: `reference-search-fail-${inputId}`,
-              })
-
-              console.error(error)
-              return of({hits: []})
-            }),
-          ),
-        ),
-      ),
-
-      scan(
-        (prevState, nextState): SearchState => ({...prevState, ...nextState}),
-        INITIAL_SEARCH_STATE,
-      ),
-
-      tap(setSearchState),
-    )
-  })
 
   const handleAutocompleteOpenButtonClick = useCallback(() => {
     handleQueryChange('')

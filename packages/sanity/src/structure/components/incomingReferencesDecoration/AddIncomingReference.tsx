@@ -3,8 +3,8 @@ import {type SanityDocumentLike} from '@sanity/types'
 import {Grid, Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo, useState} from 'react'
-import {useObservableEvent} from 'react-rx'
-import {catchError, concat, filter, map, type Observable, of, scan, switchMap, tap} from 'rxjs'
+import {useObservable} from 'react-rx'
+import {catchError, concat, map, type Observable, of, scan, Subject, switchMap} from 'rxjs'
 import {
   createSearch,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
@@ -43,6 +43,10 @@ interface ReferenceOption {
 interface ReferenceSearchHit {
   _id: string
   _type: string
+}
+
+interface ReferenceSearchEvent {
+  run: () => Observable<Partial<ReferenceSearchState>>
 }
 
 const INITIAL_SEARCH_STATE: ReferenceSearchState = {
@@ -129,37 +133,45 @@ export function AddIncomingReference({
     [client, schemaType, searchStrategy],
   )
 
-  const [searchState, setSearchState] = useState(INITIAL_SEARCH_STATE)
-  const handleQueryChange = useObservableEvent((inputValue$: Observable<string | null>) => {
-    return inputValue$.pipe(
-      filter(isNonNullable),
-      switchMap((searchString) =>
-        concat(
-          of({isLoading: true, hits: []}),
-          handleSearch(searchString).pipe(
-            map((hits) => ({hits, searchString, isLoading: false})),
-            catchError((error) => {
-              push({
-                title: 'Reference search failed',
-                description: error.message,
-                status: 'error',
-                id: `reference-search-fail-${type}`,
-              })
-              console.error(error)
-              return of({hits: [], isLoading: false})
-            }),
-          ),
+  const [searchInput$] = useState(() => new Subject<ReferenceSearchEvent>())
+  const searchState$ = useMemo(
+    () =>
+      searchInput$.pipe(
+        switchMap(({run}) => run()),
+        scan(
+          (prevState, nextState: Partial<ReferenceSearchState>) => ({...prevState, ...nextState}),
+          INITIAL_SEARCH_STATE,
         ),
       ),
+    [searchInput$],
+  )
+  const searchState = useObservable(searchState$, INITIAL_SEARCH_STATE)
+  const handleQueryChange = useCallback(
+    (searchString: string | null) => {
+      if (searchString === null) return
 
-      scan(
-        (prevState, nextState: ReferenceSearchState) => ({...prevState, ...nextState}),
-        INITIAL_SEARCH_STATE,
-      ),
-
-      tap(setSearchState),
-    )
-  })
+      searchInput$.next({
+        run: () =>
+          concat(
+            of({isLoading: true, hits: []}),
+            handleSearch(searchString).pipe(
+              map((hits) => ({hits, searchString, isLoading: false})),
+              catchError((error) => {
+                push({
+                  title: 'Reference search failed',
+                  description: error.message,
+                  status: 'error',
+                  id: `reference-search-fail-${type}`,
+                })
+                console.error(error)
+                return of({hits: [], isLoading: false})
+              }),
+            ),
+          ),
+      })
+    },
+    [handleSearch, push, searchInput$, type],
+  )
 
   const options: ReferenceOption[] = useMemo(() => {
     return searchState.hits.map((hit) => ({
