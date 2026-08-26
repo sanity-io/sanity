@@ -89,10 +89,14 @@ export function resolveTypeForArrayItem(
   item: unknown,
   candidates: SchemaType[],
 ): SchemaType | undefined {
-  // if there is only one type available, assume that it's the correct one
-  if (candidates.length === 1) return candidates[0]
-
   const itemType = isTypedObject(item) && item._type
+
+  // Infer the sole candidate only when the item does not declare a type of its own.
+  // An explicit `_type` still has to match a candidate: inferring it here would
+  // validate the item's remaining fields against a type the array does not allow,
+  // and report nothing at all.
+  if (candidates.length === 1 && !itemType) return candidates[0]
+
   const primitive =
     item === undefined || item === null || (!itemType && typeString(item).toLowerCase())
 
@@ -490,18 +494,36 @@ function validateItemObservable({
 
   if (shouldRunNestedValidationForArrays) {
     nestedChecks = nestedChecks.concat(
-      value.map((item, index) =>
-        validateItemObservable({
+      value.map((item, index) => {
+        const itemPath = path.concat(isKeyedObject(item) ? {_key: item._key} : index)
+        const itemType = resolveTypeForArrayItem(item, type.of)
+
+        // An item declaring a `_type` that no candidate matches cannot be validated
+        // against anything: an unresolved type normalizes to zero rules, so without a
+        // marker here the item would pass validation silently.
+        if (!itemType && isTypedObject(item)) {
+          return of([
+            {
+              level: 'error' as const,
+              message: `Array item type "${item._type}" is not allowed here. Allowed types: ${type.of
+                .map((candidate) => `"${candidate.name}"`)
+                .join(', ')}`,
+              path: itemPath,
+            },
+          ])
+        }
+
+        return validateItemObservable({
           ...restOfContext,
           hidden,
           parent: value,
           value: item,
-          path: path.concat(isKeyedObject(item) ? {_key: item._key} : index),
-          type: resolveTypeForArrayItem(item, type.of),
+          path: itemPath,
+          type: itemType,
           environment,
           customValidationConcurrencyLimiter,
-        }),
-      ),
+        })
+      }),
     )
   }
 
