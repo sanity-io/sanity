@@ -2,7 +2,7 @@ import {type ReleaseDocument} from '@sanity/client'
 import {ClockIcon} from '@sanity/icons/Clock'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {format} from 'date-fns/format'
 import {isBefore} from 'date-fns/isBefore'
@@ -11,6 +11,7 @@ import {parse} from 'date-fns/parse'
 import {startOfMinute} from 'date-fns/startOfMinute'
 import isEqual from 'lodash-es/isEqual.js'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -245,7 +246,7 @@ export const ReleaseScheduleButton = ({
             </Card>
           )}
           <Stack gap={3}>
-            <Flex align="center" justify="space-between" gap={2}>
+            <Flex alignItems="center" justifyContent="space-between" gap={2}>
               <label>
                 <Text size={1} weight="semibold">
                   {tCore('release.schedule-dialog.select-publish-date-label')}
@@ -360,7 +361,7 @@ export const ReleaseScheduleButton = ({
   const scheduleTooltipContent = useMemo(() => {
     return (
       <Text muted size={1}>
-        <Flex align="center" gap={3} padding={1}>
+        <Flex alignItems="center" gap={3} padding={1}>
           <ToneIcon icon={ErrorOutlineIcon} tone={isValidatingDocuments ? 'default' : 'critical'} />
           {tooltipText}
         </Flex>

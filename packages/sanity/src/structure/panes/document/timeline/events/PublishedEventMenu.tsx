@@ -1,4 +1,4 @@
-import {Flex, Text, usePortal} from '@sanity/ui'
+import {type BadgeTone, Flex, Text, usePortal} from '@sanity/ui'
 import {
   Menu,
   // oxlint-disable-next-line no-restricted-imports
@@ -26,6 +26,10 @@ import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {TIMELINE_MENU_PORTAL} from '../timelineMenu'
+
+function VersionBadge({children, tone}: {children?: React.ReactNode; tone?: BadgeTone}) {
+  return <VersionInlineBadge $tone={tone}>{children}</VersionInlineBadge>
+}
 
 export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}) {
   const {t} = useTranslation(structureLocaleNamespace)
@@ -65,21 +69,11 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
   const releaseTitle = event.release?.metadata?.title
   const releaseFallback = tCore('release.placeholder-untitled-release')
 
-  const VersionBadge = ({children}: {children: React.ReactNode}) => {
-    return (
-      <VersionInlineBadge
-        $tone={
-          event.release
-            ? isReleaseDocument(event.release)
-              ? getReleaseTone(event.release)
-              : 'default'
-            : undefined
-        }
-      >
-        {children}
-      </VersionInlineBadge>
-    )
-  }
+  const releaseBadgeTone = event.release
+    ? isReleaseDocument(event.release)
+      ? getReleaseTone(event.release)
+      : 'default'
+    : undefined
   const isMenuDisabled = event.release && !isReleaseDocument(event.release)
   return (
     <MenuButton
@@ -114,9 +108,8 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
                       <ReleaseTitle title={releaseTitle} fallback={releaseFallback}>
                         {({displayTitle}) => (
                           <Translate
-                            components={{
-                              VersionBadge: ({children}) => <VersionBadge>{children}</VersionBadge>,
-                            }}
+                            components={{VersionBadge}}
+                            componentProps={{tone: releaseBadgeTone}}
                             i18nKey="events.open.release"
                             values={{
                               releaseTitle: displayTitle,
@@ -135,9 +128,8 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
                     <ReleaseTitle title={releaseTitle} fallback={releaseFallback}>
                       {({displayTitle}) => (
                         <Translate
-                          components={{
-                            VersionBadge: ({children}) => <VersionBadge>{children}</VersionBadge>,
-                          }}
+                          components={{VersionBadge}}
+                          componentProps={{tone: releaseBadgeTone}}
                           i18nKey="events.inspect.release"
                           values={{
                             releaseTitle: displayTitle,
@@ -155,11 +147,8 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
               <Flex align={'center'}>
                 <Text size={1}>
                   <Translate
-                    components={{
-                      VersionBadge: ({children}) => (
-                        <VersionInlineBadge $tone="caution">{children}</VersionInlineBadge>
-                      ),
-                    }}
+                    components={{VersionBadge}}
+                    componentProps={{tone: 'caution' as const}}
                     i18nKey="events.open.draft"
                     t={t}
                   />

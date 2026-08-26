@@ -1,8 +1,8 @@
 import {DocumentIcon} from '@sanity/icons/Document'
-import {Card, Flex, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {useUnitFormatter} from '../../../../hooks/useUnitFormatter'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -78,7 +78,7 @@ export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType
         title={next.originalFilename || t('changes.file.meta-info-fallback-title')}
         icon={DocumentIcon}
       >
-        <Flex align="center">
+        <Flex alignItems="center">
           <Text size={0} style={{color: 'inherit'}}>
             {nextSize}
           </Text>

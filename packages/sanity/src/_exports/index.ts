@@ -104,6 +104,7 @@ export {ContextMenuButton} from '../core/components/contextMenuButton/ContextMen
 export {Delay} from '../core/components/Delay'
 // oxlint-disable-next-line no-deprecated -- preserved for backwards compatibility
 export {DocumentStatus} from '../core/components/documentStatus/DocumentStatus'
+export {DocumentVersionIcons} from '../core/components/documentStatus/DocumentVersionIcons'
 export {DocumentVersionsStatus} from '../core/components/documentStatus/DocumentVersionsStatus'
 // oxlint-disable-next-line no-deprecated -- preserved for backwards compatibility
 export {DocumentStatusIndicator} from '../core/components/documentStatusIndicator/DocumentStatusIndicator'
@@ -370,7 +371,9 @@ export {
   type DocumentGroupInventoryProps,
 } from '../core/documentGroupInventory/components/DocumentGroupInventory'
 export {DocumentGroupInventoryAction} from '../core/documentGroupInventory/components/DocumentGroupInventoryAction'
+export {useDocumentVersionTitle} from '../core/hooks/useDocumentVersionTitle'
 export {
+  type DocumentGroupInventoryComponents,
   type DocumentGroupInventoryPerspectiveList,
   type DocumentGroupInventoryReferencePreviewLinkProps,
 } from '../core/documentGroupInventory/types'
@@ -1742,7 +1745,7 @@ export {useVariantDocumentOperations} from '../core/variants/hooks/useVariantDoc
 export {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../core/variants/store/constants'
 export {useAllVariants} from '../core/variants/store/useAllVariants'
 export {getVariantTitle} from '../core/variants/tool/util'
-export {type SystemVariant} from '../core/variants/types'
+export {isVariantId, type SystemVariant} from '../core/variants/types'
 export {SANITY_VERSION} from '../core/version'
 export {
   type ReconnectEvent,

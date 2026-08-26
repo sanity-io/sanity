@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Avatar, Box, Button, Card, Flex, Spinner, Stack, Text, TextArea} from '@sanity/ui'
+import {Avatar, Button, Card, Flex, Spinner, Stack, Text, TextArea} from '@sanity/ui'
 import {
   type ReactNode,
   type SubmitEvent,
@@ -10,6 +10,7 @@ import {
   useState,
   useTransition,
 } from 'react'
+import {Box} from 'ui5'
 
 import {
   listMyAccessRequests,

@@ -1,8 +1,9 @@
-import {Flex, Layer, useClickOutsideEvent, useLayer} from '@sanity/ui'
+import {Layer, useClickOutsideEvent, useLayer} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import * as PathUtils from '@sanity/util/paths'
 import {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {type DocumentInspectorProps} from '../../../config/document/inspector'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -408,9 +409,10 @@ function CommentsInspectorInner(
       )}
 
       <Flex
-        direction="column"
-        flex={1}
-        height="fill"
+        flexDirection="column"
+        flexBasis="0%"
+        flexGrow={1}
+        height="100%"
         onClick={handleDeselectPath}
         overflow="hidden"
         ref={setRootRef}

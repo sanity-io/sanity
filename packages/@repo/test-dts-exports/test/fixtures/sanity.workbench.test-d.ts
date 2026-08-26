@@ -5,7 +5,6 @@
 import type {
   AssetSource,
   AssetSourceComponentProps,
-  renderWorkbench,
   unstable_defineService,
   unstable_defineView,
 } from 'sanity/workbench'
@@ -17,9 +16,6 @@ describe('sanity/workbench', () => {
   })
   test('AssetSourceComponentProps', () => {
     expectTypeOf<AssetSourceComponentProps>().toBeObject()
-  })
-  test('renderWorkbench', () => {
-    expectTypeOf<typeof renderWorkbench>().toBeFunction()
   })
   test('unstable_defineService', () => {
     expectTypeOf<typeof unstable_defineService>().toBeFunction()

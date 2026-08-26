@@ -1,13 +1,5 @@
 import {style} from '@vanilla-extract/css'
 
-export const variantIconCard = style({
-  selectors: {
-    '&&': {
-      backgroundColor: 'transparent',
-    },
-  },
-})
-
 export const titleStack = style({
   minWidth: 0,
   width: '100%',

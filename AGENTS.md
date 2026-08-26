@@ -200,7 +200,7 @@ The `sanity` package tsdown build can emit a Rolldown [bundle analyzer](https://
 pnpm analyze:sanity
 ```
 
-The report is written to `packages/sanity/lib/analyze-data.md` (gitignored with `lib/`). The flag is opt-in because analysis adds work to the package build; it is declared in `packages/sanity/turbo.json` so turbo-cached builds are invalidated when it changes. Wiring is `@sanity/tsdown-config`'s `bundleAnalyzer` option (`true` selects markdown). `pnpm-workspace.yaml` pins `tsdown>rolldown` to the same rolldown that `@sanity/tsdown-config` uses, so the analyzer BuiltinPlugin actually runs.
+The report is written to `packages/sanity/lib/analyze-data.md` (gitignored with `lib/`). The flag is opt-in because analysis adds work to the package build; it is declared in `packages/sanity/turbo.json` so turbo-cached builds are invalidated when it changes. Wiring is `@sanity/tsdown-config`'s `bundleAnalyzer` option (`true` selects markdown).
 
 ### Studio performance benchmarks (perf/bench — No Auth Required)
 
@@ -298,6 +298,17 @@ returns first-render values when the calling component is wrapped in `forwardRef
 wraps the native hook, so check the implementation before trusting one — `react-rx` is safe on both
 v4 and v5 because `useObservableEvent` builds on the same `use-effect-event` ponyfill.
 
+### Translate: never define `components` inline
+
+Components passed to `<Translate>`'s `components` map must be stable, module-scope components —
+defining them inline during render creates a new component identity every render and remounts
+the subtree. Pass render-scoped data through the `componentProps` prop instead, and map plain
+HTML wrappers as strings (eg `{Code: 'code'}`). The in-repo oxlint rule
+`@repo/i18n/no-inline-translate-components` (see `packages/@repo/oxlint-plugin-i18n`) enforces
+this for object literals in the JSX attribute; maps built during render via `useMemo` or factory
+functions are equally wrong even though the rule cannot see them. See the `sanity-i18n-translate`
+skill (`.agents/skills/sanity-i18n-translate/SKILL.md`) for the full conversion patterns.
+
 ### Refs: use `props.ref`, not `forwardRef`
 
 React 19 passes `ref` as a regular prop. Do not use `forwardRef` — destructure `ref` from props
@@ -324,6 +335,12 @@ When wrapping with `memo`, declare the component as a function first, then memoi
 function MyComponent(props: …) { … }
 export const MyComponentMemo = memo(MyComponent)
 ```
+
+Do not assign `.displayName` on components, HOCs, styled components, or `createContext`
+results. That property write is a module-level side effect and keeps the export from being
+tree-shaken. Named function declarations already give React DevTools a name via
+`function.name`. Exception (temporary): document/badge hooks prefixed with `use` and the
+HookState collection still set `displayName` — leave those until that API is reworked.
 
 For typings, include `ref` on the props type: stop omitting `'ref'` from `HTMLProps` /
 `ComponentProps`, or intersect with `RefAttributes<T>`. Avoid `PropsWithRef` — in `@types/react`
@@ -736,6 +753,7 @@ No Docker, databases, or other local services are required for unit tests, lint,
 - **Node version:** the VM runs Node 22.x, which satisfies the repo engine range (`>=22.12`). A couple of internal tooling packages print a harmless `Unsupported engine` warning wanting Node `>=22.18`; it does not affect testing or running the studio. However, **`pnpm build` requires Node >= 22.18**: the packages build with `tsdown`, which loads its `tsdown.config.ts` through Node's native TypeScript support and fails on older Node 22.x (e.g. the VM default `v22.14.0`) with `Failed to import module "unrun"`. A new enough runtime is available via nvm: `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH"`.
 - **`pnpm build` may dirty `packages/sanity/package.json`.** tsdown auto-generates the `inlinedDependencies` field on every build, and in this VM the computed set can differ from what is committed (e.g. `@sanity/sdk` and `zustand` get dropped) even on a clean checkout of `main`. That churn is an environment artifact, not part of your change — revert it with `git checkout -- packages/sanity/package.json` (re-applying any edits of your own) instead of committing it.
 - **Do not run oxlint type checking (`pnpm check:oxlint`) while the dev studio is running.** Both are memory-hungry and running them concurrently has exhausted the VM's memory and frozen it for hours (unkillable thrashing). Stop `sanity dev` first (Ctrl-C in its tmux session), run the checks, then restart the studio.
+- **Simulating Presentation preview failure states.** The `/test` workspace's presentation tool allows any localhost origin (`allowOrigins: ['https://*.sanity.dev', 'http://localhost:*']`), so failure UIs can be triggered deterministically by pointing the preview at a throwaway local server via the `?preview=` search param, e.g. `http://localhost:3333/test/presentation?preview=http%3A%2F%2Flocalhost%3A3398%2F`. A plain HTML page that never runs `@sanity/visual-editing` exercises the overlays connection timeout path (loading overlay → "connecting" status card after 5s → caution card with "Continue anyway" after 3s more); a server that accepts connections but never responds (`createServer(() => {})`) keeps the iframe `load` event from firing and exercises the 15s load timeout → error card → "Retry" path. Note the demo screen recordings are time-compressed, so verify real timings from the `sanity dev` terminal log — the studio pipes browser `console.error` output there with timestamps.
 - **Verifying a production studio build (`sanity build`) must happen on an allow-listed origin.** `sanity build` for `dev/test-studio` bundles the _built_ `sanity` package (run `pnpm build` first — only `sanity dev` resolves monorepo sources via the `monorepo` export condition). Serve `dev/test-studio/dist` statically on **port 3333** (e.g. `python3 -m http.server 3333`, after stopping the dev server): project `ppsg7ml5` only allow-lists `http://localhost:3333`, so from any other port API requests fail CORS and the bifur `/socket/` WebSocket is rejected during its handshake (close code 1006 + retry loop). The static server has no SPA fallback, so load `http://localhost:3333/#token=…` (root path) and let the client-side router redirect, rather than deep-linking to a workspace path.
 
 ### Running e2e (Playwright) tests in the VM

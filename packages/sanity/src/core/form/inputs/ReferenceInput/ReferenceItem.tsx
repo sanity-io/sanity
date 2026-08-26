@@ -87,6 +87,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
     validation,
     inputId,
     changed,
+    changedFromBaseVariant,
     focused,
     children,
     inputProps: {onChange, focusPath, onPathFocus, renderPreview, elementProps},
@@ -307,7 +308,6 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
                 as={IntentLink}
                 data-as="a"
                 icon={OpenInNewTabIcon}
-                // @ts-expect-error - these are valid types but there's an issue in `@sanity/ui@3` where type inference is not working on `as` props
                 intent="edit"
                 params={{id: value?._ref, type: refType?.name}}
                 rel="noopener noreferrer"
@@ -356,6 +356,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
               deprecated={schemaType.deprecated}
               schemaType={schemaType}
               path={path}
+              changedFromBaseVariant={changedFromBaseVariant}
               readOnly={readOnly}
             >
               {children}

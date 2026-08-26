@@ -341,6 +341,13 @@ const rootFormNodeOptions: Partial<{
       }
     },
   },
+  baseVariantValue: {
+    deriveInput: (path) => updateDocumentAtPath(path, documentValue),
+    assertOutput: ([node]) => {
+      expect(node.changedFromBaseVariant).toBe(true)
+      expect(node.baseVariantValue).toBe('CHANGED')
+    },
+  },
   readOnly: {
     deriveInput: (path) => setAtPath(path),
     assertOutput: ([node]) => expect(node.readOnly).toBe(true),
@@ -449,6 +456,8 @@ const defaultOptions: RootFormStateOptions = {
   collapsedPaths: {},
   documentValue,
   comparisonValue: documentValue,
+  baseVariantValue: documentValue,
+  hasBaseVariant: true,
   fieldGroupState: {},
   hidden: undefined,
   readOnly: undefined,

@@ -361,6 +361,9 @@ export function ArrayOfPrimitivesField(props: {
       changed: member.field.changed,
       __unstable_computeDiff: member.field.__unstable_computeDiff,
       hasUpstreamVersion: member.field.hasUpstreamVersion,
+      changedFromBaseVariant: member.field.changedFromBaseVariant,
+      baseVariantValue: member.field.baseVariantValue,
+      hasBaseVariant: member.field.hasBaseVariant,
       id: member.field.id,
       elementProps,
       path: member.field.path,
@@ -395,6 +398,9 @@ export function ArrayOfPrimitivesField(props: {
     member.field.changed,
     member.field.__unstable_computeDiff,
     member.field.hasUpstreamVersion,
+    member.field.changedFromBaseVariant,
+    member.field.baseVariantValue,
+    member.field.hasBaseVariant,
     member.field.id,
     member.field.path,
     member.field.focusPath,
@@ -443,6 +449,7 @@ export function ArrayOfPrimitivesField(props: {
         collapsed={member.collapsed}
         onExpand={handleExpand}
         changed={member.field.changed}
+        changedFromBaseVariant={member.field.changedFromBaseVariant}
         onCollapse={handleCollapse}
         schemaType={member.field.schemaType}
         inputId={member.field.id}

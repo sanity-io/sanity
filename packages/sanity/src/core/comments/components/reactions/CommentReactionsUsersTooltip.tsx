@@ -1,8 +1,7 @@
 import {type CurrentUser} from '@sanity/types'
-import {Flex, Stack, Text} from '@sanity/ui'
-import {useCallback} from 'react'
+import {Stack, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useListFormat} from '../../../hooks/useListFormat'
@@ -137,20 +136,38 @@ function FormattedUserList({currentUserId, userIds}: {currentUserId: string; use
   return elements
 }
 
+interface ReactionTooltipComponentProps {
+  children?: React.ReactNode
+  currentUserId: string
+  reactionName: CommentReactionShortNames
+  userIds: string[]
+}
+
+function UserList({currentUserId, userIds}: ReactionTooltipComponentProps) {
+  return <FormattedUserList currentUserId={currentUserId} userIds={userIds} />
+}
+
+function ReactionName({reactionName}: ReactionTooltipComponentProps) {
+  return <InlineText muted>{reactionName}</InlineText>
+}
+
+function ReactionText({children}: ReactionTooltipComponentProps) {
+  return (
+    <>
+      <InlineText muted>{children}</InlineText> <wbr />{' '}
+    </>
+  )
+}
+
 function CommentReactionsUsersTooltipContent(
   props: Omit<CommentReactionsUsersTooltipProps, 'children'>,
 ) {
   const {currentUser, reactionName, userIds} = props
   const {t} = useTranslation(commentsLocaleNamespace)
 
-  const UserList = useCallback(() => {
-    if (!currentUser) return null
-    return <FormattedUserList currentUserId={currentUser.id} userIds={userIds} />
-  }, [currentUser, userIds])
-
   return (
     <ContentStack padding={1}>
-      <Flex justify="center" paddingBottom={2} paddingTop={1}>
+      <Flex justifyContent="center" paddingBottom={2} paddingTop={1}>
         <EmojiText size={4}>{COMMENT_REACTION_EMOJIS[reactionName]}</EmojiText>
       </Flex>
 
@@ -159,15 +176,8 @@ function CommentReactionsUsersTooltipContent(
           t={t}
           i18nKey="reactions.users-reacted-with-reaction"
           values={{reactionName}}
-          components={{
-            UserList,
-            ReactionName: () => <InlineText muted>{reactionName}</InlineText>,
-            Text: ({children}) => (
-              <>
-                <InlineText muted>{children}</InlineText> <wbr />{' '}
-              </>
-            ),
-          }}
+          components={{UserList, ReactionName, Text: ReactionText}}
+          componentProps={{currentUserId: currentUser.id, reactionName, userIds}}
         />
       </TextBox>
     </ContentStack>

@@ -367,6 +367,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Value error: Value is of type "<code>{{actualType}}</code>", expected "<code>{{expectedType}}</code>"',
   /** File diff: Fallback title for the meta info section when there is no original filename to use  */
   'changes.file.meta-info-fallback-title': 'Untitled',
+  /** The label displayed to indicate a document's value is different to its base variant. */
+  'changes.from-base-variant.label': 'Changed from base variant',
   /** Image diff: Text shown in tooltip when hovering hotspot that has changed in diff view */
   'changes.image.crop-changed': 'Crop changed',
   /** Image diff: Text shown if the previous image asset was deleted (shouldn't theoretically happen) */
@@ -465,6 +467,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Default text for dialog confirm button */
   'common.dialog.confirm-button.text': 'Confirm',
 
+  /** Default text in shared error text */
+  'common.error': 'Error',
+
   /** Default text in shared loader text / spinner lockup */
   'common.loading': 'Loading',
 
@@ -495,6 +500,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'default-orderings.name': 'Sort by Name',
   /** Title for the default ordering/SortOrder if no orderings are provided and the title field is found */
   'default-orderings.title': 'Sort by Title',
+
+  /** Menu item that opens Studio diagnostics */
+  'diagnostics.menu-item': 'Diagnostics',
 
   /** Label for action that closes divergence inspector */
   'divergence.action.close.label': 'Close',
