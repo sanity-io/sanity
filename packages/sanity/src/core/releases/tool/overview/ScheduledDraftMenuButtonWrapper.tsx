@@ -56,9 +56,9 @@ export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocu
         })
       : null,
   )
+  // `publish`, `schedule` and `discardVersion` are each claimed by more than one action,
+  // so a config that removes only one claimant still leaves these gates open.
   const showPublishNow = configuredActionIds.has('publish')
-  // Both EditScheduledDraftAction and useSchedulePublishAction claim the `schedule`
-  // action id, so a config that removes only one of them still leaves this gate open.
   const showSchedule = configuredActionIds.has('schedule')
   const showDeleteSchedule = configuredActionIds.has('discardVersion')
 
