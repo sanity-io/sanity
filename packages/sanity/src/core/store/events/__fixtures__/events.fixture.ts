@@ -4,7 +4,6 @@ import {
   type DeleteDocumentGroupEvent,
   type DeleteDocumentVersionEvent,
   type EditDocumentVersionEvent,
-  type HistoryClearedEvent,
   type PublishDocumentVersionEvent,
   type ScheduleDocumentVersionEvent,
   type UnpublishDocumentEvent,

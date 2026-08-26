@@ -5,7 +5,6 @@ import {of} from 'rxjs'
 
 import {useClient} from '../../hooks/useClient'
 import {useSchema} from '../../hooks/useSchema'
-import {useReleasesStore} from '../../releases/store/useReleasesStore'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases/util/releasesClient'
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {createEventsStore} from './createEventsStore'
@@ -35,7 +34,7 @@ const INITIAL_VALUE: EventsObservableValue = {
 
 /**
  * React entry point of the events store: creates a `createEventsStore` instance for the document
- * (recreated when client/document/releases/liveEdit change), subscribes the remote-transactions
+ * (recreated when client/document/liveEdit change), subscribes the remote-transactions
  * listener for the component lifetime, and resolves the `rev`/`since` selection against the
  * loaded events.
  *
@@ -78,7 +77,6 @@ export function useEventsStore({
   since?: string | '@lastPublished'
 }): EventsStore {
   const client = useClient(RELEASES_STUDIO_CLIENT_OPTIONS)
-  const {state$: releases$} = useReleasesStore()
 
   const schema = useSchema()
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
@@ -90,10 +88,9 @@ export function useEventsStore({
         client,
         documentId,
         documentType,
-        releases$,
         isLiveEdit,
       }),
-    [client, documentId, documentType, releases$, isLiveEdit],
+    [client, documentId, documentType, isLiveEdit],
   )
   // Deferred (per review): these events drive the review-changes list, which
   // users don't expect to update synchronously on every edit. `revisionId` /

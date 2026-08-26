@@ -12,6 +12,8 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {ReleaseTitle} from '../../../releases/components/ReleaseTitle'
 import {VersionInlineBadge} from '../../../releases/components/VersionInlineBadge'
 import {isReleaseDocument} from '../../../releases/store/types'
+import {useAllReleases} from '../../../releases/store/useAllReleases'
+import {getReleaseDocumentIdFromReleaseId} from '../../../releases/util/getReleaseDocumentIdFromReleaseId'
 import {getReleaseTone} from '../../../releases/util/getReleaseTone'
 import {
   type DocumentGroupEvent,
@@ -146,6 +148,15 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
 
   const userIds = isEditDocumentVersionEvent(event) ? event.contributors : [event.author]
 
+  // Resolve the release behind a release publish. When the release is missing from the store
+  // (e.g. it was deleted) a stub {_id} keeps the badge rendered; draft publishes have no releaseId.
+  const {map: releasesMap} = useAllReleases()
+  const releaseId = isPublishDocumentVersionEvent(event) ? event.releaseId : undefined
+  const releaseDocumentId = releaseId ? getReleaseDocumentIdFromReleaseId(releaseId) : undefined
+  const publishEventRelease = releaseDocumentId
+    ? releasesMap.get(releaseDocumentId) || {_id: releaseDocumentId, metadata: undefined}
+    : undefined
+
   return (
     <>
       <Flex align="center" gap={3}>
@@ -161,16 +172,16 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
             {isPublishDocumentVersionEvent(event) && documentVariantType === 'published' && (
               <>
                 {' '}
-                {event.release ? (
+                {publishEventRelease ? (
                   <ReleaseTitle
-                    title={event.release.metadata?.title}
+                    title={publishEventRelease.metadata?.title}
                     fallback={t('release.placeholder-untitled-release')}
                   >
                     {({displayTitle}) => (
                       <VersionInlineBadge
                         $tone={
-                          isReleaseDocument(event.release!)
-                            ? getReleaseTone(event.release)
+                          isReleaseDocument(publishEventRelease)
+                            ? getReleaseTone(publishEventRelease)
                             : 'default'
                         }
                       >

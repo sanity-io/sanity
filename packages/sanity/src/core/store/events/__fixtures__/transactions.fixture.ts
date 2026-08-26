@@ -6,7 +6,7 @@ import {
 
 import {type DocumentRemoteMutationEvent} from '../../document/buffered-doc/types'
 import {type WithVersion} from '../../document/document-pair/checkoutPair'
-import {BASE_TIME, DOCUMENT_ID, DRAFT_ID} from './events.fixture'
+import {BASE_TIME, DRAFT_ID} from './events.fixture'
 
 export type TranslogEntry = TransactionLogEventWithEffects & TransactionLogEventWithMutations
 
