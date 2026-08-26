@@ -495,6 +495,44 @@ describe('documentGroupInventoryMachine', () => {
     expect(deletionRef.getSnapshot().context.error).toBe(failure)
   })
 
+  it('allows retrying a failed deletion that includes a published id', async () => {
+    const deleteVariants = vi
+      .fn<() => Promise<unknown>>()
+      .mockRejectedValueOnce(new Error('first attempt failed'))
+      .mockResolvedValueOnce(undefined)
+
+    const {selectionRef, deletionRef, references$} = createTestActor(loading, {deleteVariants})
+
+    // A published id keeps `selectionExcludesPublished` false, so the first
+    // confirmation depends on the incoming reference check having completed.
+    selectionRef.send({type: 'selection.toggle', variantId: 'foo'})
+    deletionRef.send({type: 'delete.request'})
+    references$.next(emission(withInternalReferences([bookReference])))
+
+    const referencesChecked = {
+      active: {deletion: {preparing: {checkingIncomingReferences: 'checked'}}},
+    } as const
+    expect(deletionRef.getSnapshot().matches(referencesChecked)).toBe(true)
+
+    deletionRef.send({type: 'delete.confirm'})
+    await vi.waitFor(() =>
+      expect(deletionRef.getSnapshot().matches({active: {deletion: 'error'}})).toBe(true),
+    )
+
+    // `active.deletion` is a compound state, so reaching `error` exited
+    // `preparing` along with the `checked` state that records the reference
+    // check. The retry cannot depend on that state still being active.
+    expect(deletionRef.getSnapshot().matches(referencesChecked)).toBe(false)
+
+    expect(deletionRef.getSnapshot().can({type: 'delete.confirm'})).toBe(true)
+
+    deletionRef.send({type: 'delete.confirm'})
+    expect(deletionRef.getSnapshot().matches({active: {deletion: 'deleting'}})).toBe(true)
+
+    await vi.waitFor(() => expect(deletionRef.getSnapshot().matches('idle')).toBe(true))
+    expect(deleteVariants).toHaveBeenCalledTimes(2)
+  })
+
   it('forwards the meta observable down to the selection machine', () => {
     const {selectionRef} = createTestActor(loading)
 
