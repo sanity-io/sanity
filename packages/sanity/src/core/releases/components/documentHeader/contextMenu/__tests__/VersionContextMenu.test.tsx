@@ -45,13 +45,13 @@ const createScheduledDraftMenuActions = () => ({
       'disabled': false,
       'data-testid': 'publish-now-menu-item',
     },
-    editSchedule: {
+    pauseToEdit: {
       'icon': undefined,
-      'text': 'Edit schedule',
+      'text': 'Pause to edit',
       'tone': 'default' as const,
       'onClick': vi.fn(),
       'disabled': false,
-      'data-testid': 'edit-schedule-menu-item',
+      'data-testid': 'pause-to-edit-menu-item',
     },
     schedulePublish: {
       'icon': undefined,
