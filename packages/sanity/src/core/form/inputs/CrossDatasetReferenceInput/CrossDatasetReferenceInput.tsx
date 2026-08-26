@@ -1,7 +1,7 @@
 import {ResetIcon as ClearIcon} from '@sanity/icons/Reset'
 import {SyncIcon as ReplaceIcon} from '@sanity/icons/Sync'
 import {type CrossDatasetReferenceSchemaType, type CrossDatasetReferenceValue} from '@sanity/types'
-import {Card, Flex, Inline, Stack, useClickOutsideEvent} from '@sanity/ui'
+import {Card, Inline, Stack, useClickOutsideEvent} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
 import {
@@ -17,6 +17,7 @@ import {
 import {useObservableEvent} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
+import {Flex} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
@@ -340,7 +341,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                       : 'default'
                 }
               >
-                <Flex align="center" padding={1}>
+                <Flex alignItems="center" padding={1}>
                   {studioUrl ? (
                     <PreviewCard
                       as="a"

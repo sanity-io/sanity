@@ -1,7 +1,7 @@
-import {Card, type CardTone, Flex} from '@sanity/ui'
+import {Card, type CardTone} from '@sanity/ui'
 import {type ComponentProps, type ReactNode} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {DragHandle} from '../common/DragHandle'
 import {MOVING_ITEM_CLASS_NAME} from '../common/list'
@@ -106,12 +106,12 @@ export function CellLayout(props: RowLayoutProps & ComponentProps<typeof Root>) 
       )}
 
       {presence && (
-        <PresenceFlex align="center" marginX={1}>
+        <PresenceFlex alignItems="center" marginX={1}>
           {presence}
         </PresenceFlex>
       )}
 
-      <FooterFlex align="center" paddingX={1} sizing="border" justify="space-between">
+      <FooterFlex alignItems="center" paddingX={1} justifyContent="space-between">
         <Flex>{validation}</Flex>
         <Box>{footer}</Box>
         {menu}
