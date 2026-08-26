@@ -213,8 +213,9 @@ describe('DocumentActions', () => {
       ).toBeInTheDocument()
     })
 
+    // The sibling is present, so the readiness gate is the only thing disabling the item.
     it('disables unpublish while the variant publish state resolves', async () => {
-      setDocumentVersions([], true)
+      setDocumentVersions([variantPublishedSibling], true)
       await renderDocumentActions({document: variantDocumentRow})
 
       expect(getUnpublishMenuItem()).toBeDisabled()

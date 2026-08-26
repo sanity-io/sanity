@@ -83,16 +83,15 @@ function UnpublishMenuItem({
         !isPublished ||
         isAlreadyUnpublished
       }
-      tooltipProps={tooltipContent ? {content: tooltipContent} : null}
+      tooltipProps={{content: tooltipContent, disabled: !tooltipContent}}
       onClick={onClick}
     />
   )
 }
 
 /**
- * For a variant version, "is there something published to unpublish" is answered by the
- * variant-of-published sibling. `publishedDocumentExists` on the row addresses the base published
- * document, which says nothing about the variant.
+ * A variant's publish state is answered by its variant-of-published sibling; the row's
+ * `publishedDocumentExists` addresses the base published document.
  */
 function VariantUnpublishMenuItem({
   publishedId,
@@ -161,6 +160,9 @@ const DocumentActionsInner = memo(
     const hasUnpublishPermission = Boolean(unpublishPermission?.granted)
     const insufficientDiscardPermissions =
       !isDiscardVersionPermissionsLoading && !hasDiscardVersionPermission
+    const discardTooltipContent = insufficientDiscardPermissions ? (
+      <InsufficientPermissionsMessage context="discard-changes" currentUser={currentUser} />
+    ) : null
 
     const configuredActionIds = useConfiguredDocumentActionIds({
       schemaType: type,
@@ -195,18 +197,10 @@ const DocumentActionsInner = memo(
                     icon={CloseIcon}
                     onClick={() => setShowDiscardDialog(true)}
                     disabled={isDiscardVersionPermissionsLoading || !hasDiscardVersionPermission}
-                    tooltipProps={
-                      insufficientDiscardPermissions
-                        ? {
-                            content: (
-                              <InsufficientPermissionsMessage
-                                context="discard-changes"
-                                currentUser={currentUser}
-                              />
-                            ),
-                          }
-                        : null
-                    }
+                    tooltipProps={{
+                      content: discardTooltipContent,
+                      disabled: !discardTooltipContent,
+                    }}
                   />
                 )}
                 {showUnpublish && (

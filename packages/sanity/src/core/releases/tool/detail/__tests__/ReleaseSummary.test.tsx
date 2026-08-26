@@ -177,6 +177,7 @@ const variantRow = {
   ...releaseDocuments[0],
   document: {
     ...releaseDocuments[0].document,
+    _id: 'versions.k7fh2qzs9m.123',
     publishedDocumentExists: false,
     _system: {
       bundleId: 'activeASAPRelease',
@@ -256,6 +257,7 @@ describe('ReleaseSummary', () => {
   setupVirtualListEnv()
 
   beforeEach(() => {
+    mockUseDocumentPairPermissions.mockReturnValue(useDocumentPairPermissionsMockReturn)
     setDocumentVersions([])
   })
 
@@ -446,7 +448,6 @@ describe('ReleaseSummary', () => {
     {tableShape: 'variants DocumentTable', variantsEnabled: true},
   ])('row action menu in the $tableShape', ({variantsEnabled}) => {
     beforeEach(() => {
-      mockUseDocumentPairPermissions.mockReturnValue(useDocumentPairPermissionsMockReturn)
       setDocumentVersions([variantPublishedSibling])
     })
 
@@ -507,8 +508,9 @@ describe('ReleaseSummary', () => {
       ).toBeDisabled()
     })
 
+    // The sibling is present, so the readiness gate is the only thing disabling the item.
     it('disables unpublish while the variant publish state resolves', async () => {
-      setDocumentVersions([], true)
+      setDocumentVersions([variantPublishedSibling], true)
 
       expect(
         getUnpublishMenuItem(await openFirstRowMenu({documents: [publishedBaseVariantRow]})),
