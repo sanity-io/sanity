@@ -4,7 +4,6 @@ import {
   type BadgeTone,
   Box,
   Card,
-  Flex,
   Grid,
   Heading,
   Stack,
@@ -14,6 +13,7 @@ import {
 } from '@sanity/ui'
 import {type ReactNode, useState} from 'react'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {type StudioDiagnostics} from '../../../diagnostics/gatherStudioDiagnostics'
@@ -65,7 +65,7 @@ export function DiagnosticsReport({diagnostics, onRunAgain}: DiagnosticsReportPr
   return (
     <Stack gap={5}>
       <Card padding={3} radius={2} tone="transparent">
-        <Flex align="stretch" direction={['column', 'row']} gap={5}>
+        <Flex alignItems="stretch" flexDirection={['column', 'row']} gap={5}>
           <Box flex={1}>
             <MetricGrid
               metrics={[
@@ -84,7 +84,7 @@ export function DiagnosticsReport({diagnostics, onRunAgain}: DiagnosticsReportPr
               ]}
             />
           </Box>
-          <Flex align="stretch" direction={['column', 'row']} gap={4}>
+          <Flex alignItems="stretch" flexDirection={['column', 'row']} gap={4}>
             <Stack gap={2}>
               <Text muted size={1}>
                 UTC time
@@ -188,10 +188,10 @@ export function DiagnosticsReport({diagnostics, onRunAgain}: DiagnosticsReportPr
             {network.requests.map((request) => (
               <Card border key={request.path} padding={3} radius={2}>
                 <Flex
-                  align={['flex-start', 'center']}
-                  direction={['column', 'row']}
+                  alignItems={['flex-start', 'center']}
+                  flexDirection={['column', 'row']}
                   gap={3}
-                  justify="space-between"
+                  justifyContent="space-between"
                 >
                   <Stack flex={1} gap={2}>
                     <Text size={1} weight="semibold">
@@ -203,7 +203,7 @@ export function DiagnosticsReport({diagnostics, onRunAgain}: DiagnosticsReportPr
                       </Text>
                     ) : null}
                   </Stack>
-                  <Flex align="center" gap={3}>
+                  <Flex alignItems="center" gap={3}>
                     <Text muted size={1}>
                       {formatMilliseconds(request.durationMs)}
                     </Text>
@@ -254,7 +254,7 @@ function DetailRow({
   const displayValue = value === undefined || value === '' ? 'Unknown' : value
 
   return (
-    <Flex align="flex-start" gap={3} justify="space-between">
+    <Flex alignItems="flex-start" gap={3} justifyContent="space-between">
       <Box flex={1}>
         <Text muted size={1}>
           {label}
@@ -325,7 +325,7 @@ function ListenReport({
 }) {
   return (
     <Stack gap={4}>
-      <Flex align="center" gap={2} wrap="wrap">
+      <Flex alignItems="center" gap={2} flexWrap="wrap">
         <Text size={1} weight="semibold">
           {title}
         </Text>
