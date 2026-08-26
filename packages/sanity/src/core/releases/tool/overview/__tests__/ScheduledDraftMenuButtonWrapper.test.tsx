@@ -38,6 +38,9 @@ const mockUseDocumentPairPermissions = useDocumentPairPermissions as MockedFunct
   typeof useDocumentPairPermissions
 >
 
+const grantEveryPermission = () =>
+  mockUseDocumentPairPermissions.mockImplementation(() => [{granted: true, reason: ''}, false])
+
 const withholdPermission = (withheld?: DocumentPermission) =>
   mockUseDocumentPairPermissions.mockImplementation(({permission}) => [
     {granted: permission !== withheld, reason: ''},
@@ -62,7 +65,7 @@ const openMenu = async () => {
 describe('ScheduledDraftMenuButtonWrapper', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    withholdPermission()
+    grantEveryPermission()
   })
 
   it('renders the menu button while the scheduled draft actions are configured', async () => {
