@@ -31,6 +31,21 @@ const addDocumentVariantTypeToEvents = (
   return events.map((event) => ({...event, documentVariantType}))
 }
 
+/**
+ * Combines the four event sources (fetched events, live remote edits, user-expanded edit events,
+ * releases state) into the final event list the UI consumes.
+ *
+ * Per emission:
+ * 1. Merge and sort all events newest-first ({@link sortEvents}).
+ * 2. Apply the variant-specific transform:
+ *    - published: attach release metadata to publish events ({@link updatePublishedEvents})
+ *    - draft: link edits/creates to their publish events ({@link addParentToEvents})
+ *    - version: re-point publish events at the version id ({@link updateVersionEvents})
+ * 3. Stamp every event with the `documentVariantType` of the viewed document.
+ * 4. Squash same-author live-edit events within the merge window
+ *    ({@link squashLiveEditEvents}; temporary until the API squashes them).
+ *
+ */
 export function createEventsObservable({
   releases$,
   events$,
