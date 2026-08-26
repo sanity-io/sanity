@@ -1,7 +1,7 @@
 import {describe, expect, it} from 'vitest'
 
-import {minutesAfterBase} from './__fixtures__/events.fixture'
-import {DRAFT_ID, editTransaction} from './__fixtures__/transactions.fixture'
+import {DRAFT_ID, minutesAfterBase} from './__fixtures__/events.fixture'
+import {editTransaction} from './__fixtures__/transactions.fixture'
 import {getEditEvents, getEffectState} from './getEditEvents'
 import {type EditDocumentVersionEvent, type UpdateLiveDocumentEvent} from './types'
 

@@ -3,11 +3,11 @@ import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {getTransactionsLogs} from '../../translog/getTransactionsLogs'
 import {getEffectState} from '../getEditEvents'
+import {DRAFT_ID} from './events.fixture'
 import {createMockClient, createTranslogFetchStub} from './mockClient'
 import {
   createTransaction,
   deleteTransaction,
-  DRAFT_ID,
   editTransaction,
   effectPair,
 } from './transactions.fixture'

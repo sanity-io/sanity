@@ -3,8 +3,12 @@ import {incremental} from 'mendoza'
 import {describe, expect, it} from 'vitest'
 
 import {type Annotation, type ObjectDiff} from '../../field/types'
-import {minutesAfterBase, publishDocumentVersionEvent} from './__fixtures__/events.fixture'
-import {DRAFT_ID, editTransaction} from './__fixtures__/transactions.fixture'
+import {
+  DRAFT_ID,
+  minutesAfterBase,
+  publishDocumentVersionEvent,
+} from './__fixtures__/events.fixture'
+import {editTransaction} from './__fixtures__/transactions.fixture'
 import {type AnnotationExtractor, diffValue, type EventMeta, wrapValue} from './diffValue'
 
 describe('diffValue', () => {
