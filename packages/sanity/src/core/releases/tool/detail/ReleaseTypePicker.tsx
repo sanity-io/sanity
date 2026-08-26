@@ -1,12 +1,13 @@
 import {type ReleaseType} from '@sanity/client'
 import {PublishIcon} from '@sanity/icons/Publish'
-import {Card, Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Card, Spinner, Stack, TabList, Text, useClickOutsideEvent} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {isBefore} from 'date-fns/isBefore'
 import {startOfMinute} from 'date-fns/startOfMinute'
 import isEqual from 'lodash-es/isEqual.js'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Popover} from '../../../../ui-components/popover/Popover'
@@ -207,7 +208,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
 
   const productionLabelContent = useMemo(
     () => (
-      <Flex flex={1} gap={2} align={'center'}>
+      <Flex flexBasis="0%" flexGrow={1} gap={2} alignItems={'center'}>
         {releaseTypeIcon}
         <span data-testid="release-type-label">{publishDateLabel}</span>
       </Flex>

@@ -1,5 +1,6 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Flex, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
+import {Flex} from 'ui5'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
@@ -19,11 +20,10 @@ export const ScheduledDraftWarningCell: VisibleColumn<TableRelease>['cell'] = ({
   return (
     <Flex
       {...cellProps}
-      align="center"
+      alignItems="center"
       gap={2}
       paddingX={2}
       paddingY={3}
-      sizing="border"
       data-testid="warning-indicator"
     >
       {hasWarning && (
