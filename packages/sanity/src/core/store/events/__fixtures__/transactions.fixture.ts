@@ -134,4 +134,4 @@ export function remoteMutationEvent(
   }
 }
 
-export {DOCUMENT_ID, DRAFT_ID}
+export {DRAFT_ID}

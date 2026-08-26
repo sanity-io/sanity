@@ -24,7 +24,7 @@ export function minutesAfterBase(minutes: number, time: string = BASE_TIME): str
 
 export const DOCUMENT_ID = 'doc-1'
 export const DRAFT_ID = `drafts.${DOCUMENT_ID}`
-export const RELEASE_ID = 'rSomeRelease'
+const RELEASE_ID = 'rSomeRelease'
 export const VERSION_ID = `versions.${RELEASE_ID}.${DOCUMENT_ID}`
 
 export function createDocumentVersionEvent(
@@ -194,20 +194,6 @@ export function editDocumentVersionEvent(
         revisionId,
       },
     ],
-    ...overrides,
-  }
-}
-
-export function historyClearedEvent(
-  overrides: Partial<HistoryClearedEvent> = {},
-): HistoryClearedEvent {
-  return {
-    type: 'historyCleared',
-    id: 'history-cleared',
-    timestamp: BASE_TIME,
-    author: 'author-1',
-    documentVariantType: 'draft',
-    documentId: DOCUMENT_ID,
     ...overrides,
   }
 }
