@@ -136,6 +136,32 @@ describe('createTransactionsCache', () => {
     ).toEqual([tx1, tx2])
   })
 
+  it('viewing latest: refetches when the remote buffer shrank (cleared at its cap)', () => {
+    const cache = createTransactionsCache()
+    cache.set({sinceRev: 'rev-a', toRev: undefined, transactions: [tx1]})
+
+    // Remote buffer grows: cached transactions are reused.
+    expect(
+      cache.get({
+        sinceRev: 'rev-a',
+        toRev: undefined,
+        viewingLatest: true,
+        remoteTransactions: [tx2],
+      }),
+    ).toEqual([tx1, tx2])
+
+    // Buffer cleared (shrank): the cleared transactions only exist in the translog now — refetch.
+    expect(
+      cache.get({sinceRev: 'rev-a', toRev: undefined, viewingLatest: true, remoteTransactions: []}),
+    ).toBeNull()
+
+    // Once the refetched range is cached, the empty buffer is served from cache again.
+    cache.set({sinceRev: 'rev-a', toRev: undefined, transactions: [tx1, tx2]})
+    expect(
+      cache.get({sinceRev: 'rev-a', toRev: undefined, viewingLatest: true, remoteTransactions: []}),
+    ).toEqual([tx1, tx2])
+  })
+
   it('reuses transactions when neither since nor to changed', () => {
     const cache = createTransactionsCache()
     cache.set({sinceRev: 'rev-a', toRev: 'rev-b', transactions: [tx1]})
@@ -328,6 +354,37 @@ describe('getDocumentChanges', () => {
       }),
     )
     expect(mockGetDocumentTransactions).toHaveBeenCalledTimes(1)
+    subscription.unsubscribe()
+  })
+
+  it('viewing latest: refetches from the translog when the remote buffer is cleared', async () => {
+    const {client} = createMockClient()
+    const {_rev: sinceRev, ...sinceContent} = sinceDoc
+    mockGetDocumentTransactions.mockResolvedValue([
+      editTransaction({id: 'tx-1', author: 'author-1', before: sinceContent, after: sinceContent}),
+    ])
+    const remoteTransactions$ = new BehaviorSubject([] as ReturnType<typeof editTransaction>[])
+
+    const changes$ = getDocumentChanges({
+      client,
+      documentId: DRAFT_ID,
+      eventsObservable$: noEvents,
+      to$: of(null),
+      since$: of(revision('rev-since', sinceDoc)),
+      remoteTransactions$,
+    })
+    const {values, subscription} = collectEmissions(changes$)
+    await vi.waitFor(() => expect(values.at(-1)?.loading).toBe(false))
+    expect(mockGetDocumentTransactions).toHaveBeenCalledTimes(1)
+
+    // Remote edits accumulate, then the buffer hits its cap and is cleared: the cleared
+    // transactions are only in the translog, so the range is refetched once.
+    remoteTransactions$.next([editTransaction({id: 'tx-remote', timestamp: minutesAfterBase(1)})])
+    remoteTransactions$.next([])
+    await vi.waitFor(() => expect(mockGetDocumentTransactions).toHaveBeenCalledTimes(2))
+    expect(mockGetDocumentTransactions).toHaveBeenLastCalledWith(
+      expect.objectContaining({fromTransaction: 'rev-since', toTransaction: undefined}),
+    )
     subscription.unsubscribe()
   })
 })

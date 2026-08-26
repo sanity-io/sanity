@@ -123,47 +123,54 @@ export function addEventId(
  * Draft-variant post-processing: links publish/delete events to the edit and create events that
  * produced them, so the UI can render those as an expandable group under the publish event.
  *
- * For every `publishDocumentVersion` / `deleteDocumentVersion` event (scanning newest → oldest):
- * - Rewrites its `documentId` to the `versionId` (the draft id).
- * - Walks the *older* events: every `editDocumentVersion` on the way gets `parentId` set to the
- *   publish/delete event id; the first `createDocumentVersion` found is attached as
- *   `creationEvent` (and gets `parentId` too), then the walk stops.
+ * Single newest → oldest pass (assumes `events` is sorted newest-first, as produced by
+ * {@link sortEvents}):
+ * - `publishDocumentVersion` / `deleteDocumentVersion`: `documentId` is rewritten to the
+ *   `versionId` (the draft id), and the event becomes the active parent for the edits below it.
+ * - `editDocumentVersion`: gets `parentId` set to the nearest publish/delete event above it
+ *   (with no creation event in between). If its id equals that `parentId` (the last edit before
+ *   a publish shares the publish event's id), the id is re-pointed at the second transaction's
+ *   revision so the edit remains individually selectable.
+ * - `createDocumentVersion`: attached as `creationEvent` (and given `parentId`) to every
+ *   publish/delete event above it that hasn't found its creation event yet, then closes the
+ *   current group — older edits belong to the next publish.
  *
- * For `editDocumentVersion` events whose id equals their own `parentId` (the last edit before a
- * publish shares the publish event's id), the id is re-pointed at the second transaction's
- * revision so the edit remains individually selectable.
- *
- * Notes on current behavior:
- * - Operates on a `JSON.parse(JSON.stringify(...))` deep clone (runs on every pipeline emission
- *   for drafts — known perf cost, tracked as a known issue).
- * - Assumes `events` is sorted newest-first (as produced by {@link sortEvents}).
+ * Events are shallow-copied; the input list and its events are not mutated.
  */
 export function addParentToEvents(events: DocumentGroupEvent[]): DocumentGroupEvent[] {
-  const eventsWithParent = JSON.parse(JSON.stringify(events)) as DocumentGroupEvent[]
-  eventsWithParent.forEach((event, index) => {
+  type ParentEvent = Extract<
+    DocumentGroupEvent,
+    {type: 'publishDocumentVersion' | 'deleteDocumentVersion'}
+  >
+  const eventsWithParent = events.map((event) => ({...event})) as DocumentGroupEvent[]
+
+  /** The publish/delete event whose group the walk is currently inside. */
+  let activeParent: ParentEvent | null = null
+  /** Publish/delete events that haven't found their creation event yet. */
+  let awaitingCreationEvent: ParentEvent[] = []
+
+  for (const event of eventsWithParent) {
     if (isPublishDocumentVersionEvent(event) || isDeleteDocumentVersionEvent(event)) {
       event.documentId = event.versionId
-      // Find the creation event and edit events for this published event
-      for (let i = index; i < eventsWithParent.length; i++) {
-        const nextEvent = eventsWithParent[i]
-        if (isEditDocumentVersionEvent(nextEvent)) {
-          nextEvent.parentId = event.id
-        }
-        if (isCreateDocumentVersionEvent(nextEvent)) {
-          event.creationEvent = nextEvent
-          nextEvent.parentId = event.id
-          // When we find the create event we should stop the loop. Events are ordered
-          break
-        }
+      activeParent = event
+      awaitingCreationEvent.push(event)
+    } else if (isEditDocumentVersionEvent(event)) {
+      if (activeParent) {
+        event.parentId = activeParent.id
       }
-    }
-    if (isEditDocumentVersionEvent(event)) {
       // If it's the first edit event after expanding a publish, the id of this event will be shared with the id of the published event, we need to use the following transaction id.
       if (event.parentId === event.id && event.transactions[1]?.revisionId) {
         event.id = event.transactions[1].revisionId
       }
+    } else if (isCreateDocumentVersionEvent(event)) {
+      for (const parent of awaitingCreationEvent) {
+        parent.creationEvent = event
+        event.parentId = parent.id
+      }
+      awaitingCreationEvent = []
+      activeParent = null
     }
-  })
+  }
   return eventsWithParent
 }
 
@@ -247,15 +254,12 @@ export function updateVersionEvents(events: DocumentGroupEvent[]) {
  * Merges remote edits, API events and expanded edit events into one list sorted newest-first.
  *
  * Sorting rules:
- * - Primary: timestamp descending.
- * - Special case: a `publishDocumentVersion` event always sorts *before* the `editDocumentVersion`
- *   event it published (`publish.versionRevisionId === edit.revisionId`), regardless of their
- *   timestamps — the publish's API timestamp has seconds granularity and can tie with or trail the
- *   edit's transaction timestamp.
- *
- * Known quirk: the special case makes the comparator non-transitive (the publish sorts before its
- * paired edit while both compare by timestamp against everything else), so ordering around such
- * pairs can depend on input order — tracked as a known issue.
+ * - Primary: timestamp descending (stable sort, so input order breaks ties).
+ * - Special case, applied as a post-pass: a `publishDocumentVersion` event always sorts *before*
+ *   the `editDocumentVersion` event it published (`publish.versionRevisionId ===
+ *   edit.revisionId`), regardless of their timestamps — the publish's API timestamp has seconds
+ *   granularity and can tie with or trail the edit's transaction timestamp. The post-pass (rather
+ *   than a comparator branch) keeps the sort transitive, so ordering never depends on input order.
  */
 export function sortEvents({
   remoteEdits,
@@ -266,26 +270,23 @@ export function sortEvents({
   events: DocumentGroupEvent[]
   expandedEvents: EditDocumentVersionEvent[]
 }): DocumentGroupEvent[] {
-  const eventsWithRemoteEdits = [...remoteEdits, ...events, ...expandedEvents].sort(
-    // Sort by timestamp, newest first unless is an edit event that has a corresponding publish event
-    (a, b) => {
-      if (
-        isPublishDocumentVersionEvent(a) &&
-        isEditDocumentVersionEvent(b) &&
-        a.versionRevisionId === b.revisionId
-      ) {
-        return -1
-      }
-      if (
-        isPublishDocumentVersionEvent(b) &&
-        isEditDocumentVersionEvent(a) &&
-        b.versionRevisionId === a.revisionId
-      ) {
-        return +1
-      }
-
-      return Date.parse(b.timestamp) - Date.parse(a.timestamp)
-    },
+  const sorted = [...remoteEdits, ...events, ...expandedEvents].sort(
+    (a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp),
   )
-  return eventsWithRemoteEdits
+
+  // Post-pass: move each publish event directly above the edit event it published when the
+  // timestamp sort placed the edit first.
+  for (let publishIndex = 0; publishIndex < sorted.length; publishIndex++) {
+    const publish = sorted[publishIndex]
+    if (!isPublishDocumentVersionEvent(publish) || !publish.versionRevisionId) continue
+    const editIndex = sorted.findIndex(
+      (event) =>
+        isEditDocumentVersionEvent(event) && event.revisionId === publish.versionRevisionId,
+    )
+    if (editIndex !== -1 && editIndex < publishIndex) {
+      sorted.splice(publishIndex, 1)
+      sorted.splice(editIndex, 0, publish)
+    }
+  }
+  return sorted
 }

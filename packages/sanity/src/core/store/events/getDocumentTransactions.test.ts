@@ -3,7 +3,11 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {getTransactionsLogs} from '../translog/getTransactionsLogs'
 import {createMockClient} from './__fixtures__/mockClient'
 import {editTransaction, type TranslogEntry} from './__fixtures__/transactions.fixture'
-import {clearDocumentTransactionsCache, getDocumentTransactions} from './getDocumentTransactions'
+import {
+  clearDocumentTransactionsCache,
+  getDocumentTransactions,
+  TRANSACTIONS_CACHE_MAX_ENTRIES,
+} from './getDocumentTransactions'
 
 vi.mock('../translog/getTransactionsLogs', () => ({
   getTransactionsLogs: vi.fn(),
@@ -127,6 +131,37 @@ describe('getDocumentTransactions', () => {
 
     expect(mockGetTransactionsLogs).toHaveBeenCalledTimes(1)
     expect(second).toBe(first)
+  })
+
+  it('evicts the least recently used entry beyond the cache cap', async () => {
+    const {client} = createMockClient()
+    mockGetTransactionsLogs.mockResolvedValue([editTransaction({id: 'tx-1'})])
+
+    const range = (toTransaction: string) =>
+      getDocumentTransactions({
+        documentId: 'doc-lru',
+        client,
+        fromTransaction: 'from-tx',
+        toTransaction,
+      })
+
+    await range('to-0')
+    expect(mockGetTransactionsLogs).toHaveBeenCalledTimes(1)
+
+    // Fill the cache up to its cap; re-reading to-0 refreshes its recency.
+    for (let i = 1; i < TRANSACTIONS_CACHE_MAX_ENTRIES; i++) {
+      await range(`to-${i}`)
+    }
+    await range('to-0')
+    expect(mockGetTransactionsLogs).toHaveBeenCalledTimes(TRANSACTIONS_CACHE_MAX_ENTRIES)
+
+    // Exceeding the cap evicts the oldest entry (to-1, never re-read); to-0 survives.
+    await range(`to-${TRANSACTIONS_CACHE_MAX_ENTRIES}`)
+    await range('to-0')
+    expect(mockGetTransactionsLogs).toHaveBeenCalledTimes(TRANSACTIONS_CACHE_MAX_ENTRIES + 1)
+
+    await range('to-1')
+    expect(mockGetTransactionsLogs).toHaveBeenCalledTimes(TRANSACTIONS_CACHE_MAX_ENTRIES + 2)
   })
 
   it('never reads the cache for open ranges — they are written but refetched (known quirk)', async () => {

@@ -144,13 +144,14 @@ describe('useEventsStore', () => {
       expect(store.loadMoreEvents).not.toHaveBeenCalled()
     })
 
-    it('@release:<id> unresolved keeps loading more events and leaks the raw string (known issue)', () => {
+    it('@release:<id> unresolved keeps loading more events and resolves to null meanwhile', () => {
       const {result, store} = setup({rev: '@release:missing'})
       // While unresolved, resolveRevisionId keeps requesting the next events page.
       expect(store.loadMoreEvents).toHaveBeenCalled()
-      // Bonus bug: while unresolved, the raw @release: string is used as the revision id.
-      expect(result.current.revision?.revisionId).toBe('@release:missing')
-      expect(mockGetDocumentAtRevision).toHaveBeenCalledWith(
+      // While unresolved the revision is null (latest version): the raw @release: string never
+      // reaches the history API.
+      expect(result.current.revision).toBeNull()
+      expect(mockGetDocumentAtRevision).not.toHaveBeenCalledWith(
         expect.objectContaining({revisionId: '@release:missing'}),
       )
     })
