@@ -15,9 +15,9 @@ import {ConcurrencyLimiter} from '@sanity/util/concurrency-limiter'
 import {dequal as isEqual} from 'dequal/lite'
 import flatten from 'lodash-es/flatten.js'
 import {concat, defer, from, lastValueFrom, merge, Observable, of, throwError} from 'rxjs'
-import {catchError, map, mergeAll, mergeMap, raceWith, switchMap, toArray} from 'rxjs/operators'
+import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
 
-import {abortSignalAsObservable} from './abortSignal'
+import {cancelWith} from './abortSignal'
 import {ClientUnavailableError} from './clientUnavailable'
 import {type DocumentValidationMarker, validationMarkerCodes} from './codes'
 import {getFallbackLocaleSource} from './i18n/fallback'
@@ -434,9 +434,8 @@ export function evaluateDocumentObservable(
   const {signal} = options
   return defer(() => {
     signal?.throwIfAborted()
-    const validation$ = evaluateDocumentObservableWithoutCancellation(options)
-    return signal ? validation$.pipe(raceWith(abortSignalAsObservable(signal))) : validation$
-  })
+    return evaluateDocumentObservableWithoutCancellation(options)
+  }).pipe(cancelWith(signal))
 }
 
 function evaluateDocumentObservableWithoutCancellation({
@@ -562,11 +561,8 @@ export function validateItem(opts: ValidateItemOptions): Promise<ValidationMarke
   return lastValueFrom(
     defer(() => {
       opts.signal?.throwIfAborted()
-      const validation$ = validateItemObservable(opts)
-      return opts.signal
-        ? validation$.pipe(raceWith(abortSignalAsObservable(opts.signal)))
-        : validation$
-    }),
+      return validateItemObservable(opts)
+    }).pipe(cancelWith(opts.signal)),
   )
 }
 

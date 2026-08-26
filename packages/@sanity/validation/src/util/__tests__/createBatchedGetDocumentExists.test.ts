@@ -92,6 +92,24 @@ describe('createBatchedGetDocumentExists', () => {
     expect(mockClient.observable.request).toHaveBeenCalledTimes(MAX_REQUEST_CONCURRENCY + 1)
   })
 
+  it('does not request an already-aborted check', async () => {
+    const reason = new Error('cancelled')
+    const mockClient = {
+      getDataUrl: (operation: string, path?: string) => `https://example.com/${operation}/${path}`,
+      observable: {
+        request: vi.fn(() => of({omitted: []})),
+      },
+    }
+    const getDocumentExists = createBatchedGetDocumentExists(mockClient as unknown as SanityClient)
+
+    await expect(
+      getDocumentExists({id: 'cancelled', signal: AbortSignal.abort(reason)}),
+    ).rejects.toBe(reason)
+    await timeout(300)
+
+    expect(mockClient.observable.request).not.toHaveBeenCalled()
+  })
+
   it('does not abort unrelated checks before their requests start', async () => {
     const controller = new AbortController()
     const reason = new Error('cancelled')
