@@ -33,6 +33,7 @@ import {validateWorkspaces} from '../studio/workspaces/validateWorkspaces'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates/types'
 import {canonicalHash} from '../util/canonicalHash'
+import {isPublishedId} from '../util/draftUtils'
 import {EMPTY_ARRAY} from '../util/empty'
 import {isNonNullable} from '../util/isNonNullable'
 import {
@@ -65,6 +66,7 @@ import {
   scheduledDraftsEnabledReducer,
   schemaTemplatesReducer,
   searchStrategyReducer,
+  singletonsReducer,
   toolsReducer,
   variantsEnabledReducer,
 } from './configPropertyReducers'
@@ -83,6 +85,7 @@ import {
   type MissingConfigFile,
   type PluginOptions,
   type PreparedConfig,
+  type SingletonDefinition,
   type SingleWorkspace,
   type Source,
   type SourceClientOptions,
@@ -550,6 +553,24 @@ function resolveSource({
   const defaultAssetSources = createDatasetAssetSources(config, client)
   const mediaLibraryAssetSources = createMediaLibraryAssetSources(config)
 
+  // Resolve and validate the singleton registry before templates, so later
+  // steps can rely on a known-valid set of singleton definitions. Validation
+  // errors accumulate on the shared `errors` array and surface together via
+  // the ConfigResolutionError thrown further down.
+  let singletons: SingletonDefinition[] = []
+  try {
+    singletons = resolveConfigProperty({
+      config,
+      context,
+      initialValue: [],
+      propertyName: 'document.singletons',
+      reducer: singletonsReducer,
+    })
+  } catch (e) {
+    errors.push(e)
+  }
+  validateSingletons(singletons, schema, errors)
+
   let templates!: Source['templates']
   try {
     templates = resolveConfigProperty({
@@ -806,6 +827,7 @@ function resolveSource({
           asyncReducer: resolveProductionUrlReducer,
         }),
       resolveNewDocumentOptions,
+      singletons,
       unstable_languageFilter: (partialContext) =>
         resolveConfigProperty({
           config,
@@ -1022,4 +1044,95 @@ function joinBasePath(rootPath: string, basePath?: string) {
     .join('/')
 
   return `/${joined}`
+}
+
+// Sanity document ids are limited to this character set. Validated alongside
+// `isPublishedId` to reject `drafts.` and `versions.` prefixes.
+// TODO: extract to @sanity/util alongside other id helpers.
+const SINGLETON_DOCUMENT_ID_PATTERN = /^[a-zA-Z0-9._-]+$/
+
+/**
+ * Validates the resolved singleton definitions, pushing every problem onto the
+ * shared `errors` array so they surface together via `ConfigResolutionError`.
+ *
+ * Uniqueness violations are aggregated into a single error per rule (listing
+ * every offending value) so users can fix everything in one pass.
+ */
+function validateSingletons(
+  singletons: SingletonDefinition[],
+  schema: Schema,
+  errors: unknown[],
+): void {
+  const idCounts = new Map<string, number>()
+  const documentIdCounts = new Map<string, number>()
+
+  for (const singleton of singletons) {
+    const {id, documentId, schemaType} = singleton
+
+    if (typeof id !== 'string' || id.length === 0) {
+      errors.push(
+        new Error(
+          `Singleton definitions must have a non-empty string \`id\`, but found ${JSON.stringify(id)}.`,
+        ),
+      )
+    } else {
+      idCounts.set(id, (idCounts.get(id) ?? 0) + 1)
+    }
+
+    if (typeof documentId !== 'string' || documentId.length === 0) {
+      errors.push(
+        new Error(
+          `Singleton definition "${id}" must have a non-empty string \`documentId\`, but found ${JSON.stringify(documentId)}.`,
+        ),
+      )
+    } else if (!isPublishedId(documentId) || !SINGLETON_DOCUMENT_ID_PATTERN.test(documentId)) {
+      errors.push(
+        new Error(
+          `Singleton definition "${id}" has invalid \`documentId\` "${documentId}". ` +
+            `It must be a published document id (no "drafts." or "versions." prefix) using only [a-zA-Z0-9._-].`,
+        ),
+      )
+    } else {
+      documentIdCounts.set(documentId, (documentIdCounts.get(documentId) ?? 0) + 1)
+    }
+
+    const resolvedSchemaType = typeof schemaType === 'string' ? schema.get(schemaType) : undefined
+    if (!resolvedSchemaType) {
+      errors.push(
+        new Error(
+          `Singleton definition "${id}" references schema type "${schemaType}", which does not exist in the schema.`,
+        ),
+      )
+    } else if (resolvedSchemaType.type?.name !== 'document') {
+      errors.push(
+        new Error(
+          `Singleton definition "${id}" references schema type "${schemaType}", which is not a document type.`,
+        ),
+      )
+    }
+  }
+
+  const duplicateIds = [...idCounts]
+    .filter(([, count]) => count > 1)
+    .map(([duplicateId]) => duplicateId)
+  if (duplicateIds.length > 0) {
+    errors.push(
+      new Error(
+        `Duplicate singleton definition ids found: ${duplicateIds.join(', ')}. ` +
+          `Each singleton \`id\` must be unique.`,
+      ),
+    )
+  }
+
+  const duplicateDocumentIds = [...documentIdCounts]
+    .filter(([, count]) => count > 1)
+    .map(([duplicateDocumentId]) => duplicateDocumentId)
+  if (duplicateDocumentIds.length > 0) {
+    errors.push(
+      new Error(
+        `Multiple singleton definitions claim the same document id: ${duplicateDocumentIds.join(', ')}. ` +
+          `Each singleton \`documentId\` must be unique.`,
+      ),
+    )
+  }
 }
