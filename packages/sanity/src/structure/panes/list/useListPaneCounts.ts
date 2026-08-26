@@ -30,7 +30,12 @@ interface CountsInput {
   active: boolean
   descriptors: CountDescriptor[]
   perspectiveStack: PerspectiveStack
-  identityKey: string
+  countsKey: string
+}
+
+interface TaggedCounts {
+  countsKey: string
+  counts: ListPaneCounts
 }
 
 function isCountableItem(
@@ -64,25 +69,36 @@ function observePaneCounts(
 }
 
 /**
- * While inactive this emits an empty result, which `scan` merges over the previous counts: the
- * subscriptions drop out of the shared batch while the resolved badges stay on screen.
+ * Retention is scoped to `countsKey` (descriptor set and perspective), not to `active`: going
+ * inactive keeps resolved badges on screen, a changed descriptor set drops what it no longer covers.
  */
 function getListPaneCounts(
   documentPreviewStore: DocumentPreviewStore,
   input$: Observable<CountsInput>,
 ): Observable<ListPaneCounts> {
   return input$.pipe(
-    distinctUntilChanged((previous, next) => previous.identityKey === next.identityKey),
-    switchMap((input) =>
-      input.active
+    distinctUntilChanged(
+      (previous, next) => previous.active === next.active && previous.countsKey === next.countsKey,
+    ),
+    switchMap((input) => {
+      const counts$ = input.active
         ? observePaneCounts(documentPreviewStore, input.descriptors, input.perspectiveStack).pipe(
             // catchError stays on this inner stream so the outer pipe keeps reacting to
             // descriptor-set and perspective changes after a failed fetch.
             catchError(() => of<ListPaneCounts>(EMPTY_COUNTS)),
           )
-        : of<ListPaneCounts>(EMPTY_COUNTS),
+        : of<ListPaneCounts>(EMPTY_COUNTS)
+
+      return counts$.pipe(map((counts): TaggedCounts => ({countsKey: input.countsKey, counts})))
+    }),
+    scan(
+      (previous, next) =>
+        previous.countsKey === next.countsKey
+          ? {...next, counts: {...previous.counts, ...next.counts}}
+          : next,
+      {countsKey: '', counts: EMPTY_COUNTS},
     ),
-    scan((previous, next) => ({...previous, ...next}), EMPTY_COUNTS),
+    map(({counts}) => counts),
   )
 }
 
@@ -123,8 +139,7 @@ export function useListPaneCounts(
   const active = ready && enabled && tabVisible && descriptors.length > 0
 
   const perspectiveKey = perspectiveStack.join(',')
-  const identityKey = [
-    active,
+  const countsKey = [
     perspectiveKey,
     ...descriptors.map((descriptor) => `${descriptor.id}:${descriptor.typeName}`).toSorted(),
   ].join('|')
@@ -135,13 +150,13 @@ export function useListPaneCounts(
         active: false,
         descriptors: [],
         perspectiveStack: [],
-        identityKey: '',
+        countsKey: '',
       }),
     [],
   )
   useEffect(() => {
-    input$.next({active, descriptors, perspectiveStack, identityKey})
-  }, [input$, active, descriptors, perspectiveStack, identityKey])
+    input$.next({active, descriptors, perspectiveStack, countsKey})
+  }, [input$, active, descriptors, perspectiveStack, countsKey])
 
   const counts$ = useMemo(
     () => getListPaneCounts(documentPreviewStore, input$),

@@ -122,4 +122,23 @@ describe('useListPaneCounts', () => {
 
     expect(result.current).toEqual({author: 5})
   })
+
+  it('drops a resolved count once the item stops carrying a count descriptor', async () => {
+    const withCount = [listItem('author')]
+    const {result, rerender} = renderHook(({items}) => useListPaneCounts(items, true), {
+      initialProps: {items: withCount},
+    })
+
+    await waitFor(() => expect(observeDocumentCount).toHaveBeenCalled())
+    act(() => {
+      countSubjects.get('author')?.next(5)
+    })
+    await waitFor(() => expect(result.current).toEqual({author: 5}))
+
+    const withoutCount: PaneListItem[] = [{type: 'listItem', id: 'author', title: 'author'}]
+    rerender({items: withoutCount})
+    await flushTimers()
+
+    expect(result.current).toEqual({})
+  })
 })
