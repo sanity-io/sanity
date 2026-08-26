@@ -1,4 +1,5 @@
 import {type SchemaType} from '@sanity/types'
+import startCase from 'lodash-es/startCase.js'
 import {type Observable} from 'rxjs'
 import {type I18nTextRecord} from 'sanity'
 
@@ -11,6 +12,7 @@ import {
   type SerializeOptions,
 } from './StructureNodes'
 import {type StructureContext} from './types'
+import {getSingletonDefinition} from './util/getSingletonDefinition'
 import {getStructureNodeId} from './util/getStructureNodeId'
 import {isSerializable, serializableMarker} from './util/isSerializable'
 import {validateId} from './util/validateId'
@@ -257,6 +259,51 @@ export class ListItemBuilder implements Serializable<ListItem> {
    */
   schemaType(schemaType: SchemaType | string): ListItemBuilder {
     return this.clone({schemaType})
+  }
+
+  /**
+   * Configure the list item to render a singleton.
+   *
+   * Sugar for declaring a list item with sensible defaults derived from the
+   * singleton definition registered under the provided singleton definition
+   * id in the `document.singletons` configuration:
+   *
+   * - `id` defaults to the singleton definition id.
+   * - `title` defaults to the definition's `title`. When the definition has
+   *   none, the schema type's title is used if the definition id and schema
+   *   type name are identical (the string-shorthand case); otherwise the
+   *   definition id is start-cased, since the schema type title would collide
+   *   when multiple singletons share a schema type.
+   * - `icon` defaults to the definition's `icon`, falling back to the schema
+   *   type's icon.
+   * - `child` defaults to a `S.document().singleton(<id>)` node.
+   * - `schemaType` is set to the definition's schema type.
+   *
+   * Each default can be overridden via the standard list-item chain
+   * (`.title(...)`, `.icon(...)`, `.id(...)`, `.child(...)`) — before or
+   * after this call.
+   *
+   * A `SerializeError` is thrown immediately when no singleton definition
+   * exists for the provided id.
+   *
+   * @param singletonId - the singleton definition id
+   * @returns list item builder configured for the singleton
+   */
+  singleton(singletonId: string): ListItemBuilder {
+    const definition = getSingletonDefinition(this._context, singletonId)
+    const schemaType = this._context.schema.get(definition.schemaType)
+    const fallbackTitle =
+      definition.id === definition.schemaType
+        ? schemaType?.title || startCase(definition.id)
+        : startCase(definition.id)
+    return this.clone({
+      id: this.spec.id ?? definition.id,
+      title: this.spec.title ?? definition.title ?? fallbackTitle,
+      icon: this.spec.icon ?? definition.icon ?? schemaType?.icon,
+      schemaType: definition.schemaType,
+      child:
+        this.spec.child ?? this._context.getStructureBuilder().document().singleton(definition.id),
+    })
   }
 
   /**
