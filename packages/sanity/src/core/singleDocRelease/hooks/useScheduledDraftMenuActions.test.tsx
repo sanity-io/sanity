@@ -471,6 +471,43 @@ describe('useScheduledDraftMenuActions', () => {
       expect(screen.getByTestId('publish-now-disabled')).toHaveTextContent('true')
       expect(screen.getByTestId('delete-schedule-disabled')).toHaveTextContent('true')
       expect(screen.getByTestId('publish-now-reason')).toBeEmptyDOMElement()
+      expect(screen.getByTestId('delete-schedule-reason')).toBeEmptyDOMElement()
+    })
+
+    it('asks for a type that denies without a lookup until the release resolves', () => {
+      render(
+        <TestProvider>
+          <TestComponent options={{...baseOptions, release: undefined}} />
+        </TestProvider>,
+      )
+
+      expect(mockUseDocumentPairPermissions).toHaveBeenCalledWith({
+        id: 'doc1',
+        type: '*',
+        version: undefined,
+        permission: 'publish',
+      })
+      expect(mockUseDocumentPairPermissions).toHaveBeenCalledWith({
+        id: 'doc1',
+        type: '*',
+        version: undefined,
+        permission: 'discardVersion',
+      })
+    })
+
+    it('asks for a type that denies without a lookup when the document id is missing', () => {
+      render(
+        <TestProvider>
+          <TestComponent options={{...baseOptions, documentId: undefined}} />
+        </TestProvider>,
+      )
+
+      expect(mockUseDocumentPairPermissions).toHaveBeenCalledWith({
+        id: '',
+        type: '*',
+        version: 'rScheduled',
+        permission: 'publish',
+      })
     })
   })
 })
