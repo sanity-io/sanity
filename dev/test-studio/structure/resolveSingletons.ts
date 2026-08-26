@@ -21,4 +21,26 @@ export const singletons: UnresolvedSingletonDefinition[] = [
       headline: 'Summer 🌞',
     },
   }),
+  defineSingleton({
+    id: 'validation',
+    documentId: 'validation',
+    schemaType: 'allTypes',
+    // Without a title, the list item would inherit the schema type's
+    // ("All schema types").
+    title: 'Validation',
+  }),
+  defineSingleton({
+    documentId: 'circular',
+    schemaType: 'referenceTest',
+  }),
+  defineSingleton({
+    documentId: 'grrm',
+    schemaType: 'author',
+    title: 'GRRM',
+  }),
+  defineSingleton({
+    documentId: 'jrr-tolkien',
+    schemaType: 'author',
+    title: 'JRR Tolkien',
+  }),
 ]

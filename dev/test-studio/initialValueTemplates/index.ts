@@ -3,7 +3,26 @@ import {CogIcon} from '@sanity/icons/Cog'
 import {RocketIcon} from '@sanity/icons/Rocket'
 import {type Template} from 'sanity'
 
+import author from '../schema/author'
+
 export const resolveInitialValueTemplates: Template[] = [
+  // `author` and `referenceTest` back singleton definitions, so their
+  // plain per-type templates are replaced by singleton-tagged templates,
+  // which are never offered as "create new" options. These explicit untagged
+  // templates utilise the documented escape hatch: they allow non-signleton
+  // documents of the shared schema types to be created.
+  {
+    id: 'author-non-singleton',
+    title: 'Author',
+    schemaType: 'author',
+    value: author.initialValue,
+  },
+  {
+    id: 'referenceTest-non-singleton',
+    title: 'Reference test',
+    schemaType: 'referenceTest',
+    value: {},
+  },
   {
     id: 'author-developer',
     title: 'Developer',
