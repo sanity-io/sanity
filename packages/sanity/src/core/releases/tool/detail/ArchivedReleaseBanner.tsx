@@ -12,6 +12,18 @@ import {Translate} from '../../../i18n/Translate'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import {releasesLocaleNamespace} from '../../i18n'
 
+function HistoryExperienceLink({children}: {children?: React.ReactNode}) {
+  return (
+    <a
+      href="https://www.sanity.io/docs/user-guides/history-experience"
+      target="_blank"
+      rel="noreferrer"
+    >
+      {children}
+    </a>
+  )
+}
+
 export function ArchivedReleaseBanner({release}: {release: ReleaseDocument}) {
   const {state} = release
   const {t: tRelease} = useTranslation(releasesLocaleNamespace)
@@ -44,17 +56,7 @@ export function ArchivedReleaseBanner({release}: {release: ReleaseDocument}) {
                 t={tRelease}
                 i18nKey="archive-info.description"
                 values={{retentionDays, removalDate: removalDate || ''}}
-                components={{
-                  Link: ({children}) => (
-                    <a
-                      href="https://www.sanity.io/docs/user-guides/history-experience"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {children}
-                    </a>
-                  ),
-                }}
+                components={{Link: HistoryExperienceLink}}
               />
             </Text>
           )}

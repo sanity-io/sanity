@@ -14,6 +14,14 @@ type Props = {
   onClearValue?: () => void
 }
 
+function DocumentationLink({children}: {children?: React.ReactNode}) {
+  return (
+    <a href="https://www.sanity.io/docs/cross-dataset-references" target="_blank" rel="noreferrer">
+      {children}
+    </a>
+  )
+}
+
 export function DisabledFeatureWarning({value, onClearValue}: Props) {
   const hasRef = useMemo(() => Boolean(value?._ref), [value?._ref])
   const {t} = useTranslation()
@@ -22,17 +30,7 @@ export function DisabledFeatureWarning({value, onClearValue}: Props) {
     <Translate
       t={t}
       i18nKey="inputs.reference.cross-dataset.feature-disabled-description"
-      components={{
-        DocumentationLink: ({children}) => (
-          <a
-            href="https://www.sanity.io/docs/cross-dataset-references"
-            target="_blank"
-            rel="noreferrer"
-          >
-            {children}
-          </a>
-        ),
-      }}
+      components={{DocumentationLink}}
     />
   )
 

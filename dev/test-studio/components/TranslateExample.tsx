@@ -1,5 +1,6 @@
 import {InfoFilledIcon} from '@sanity/icons/InfoFilled'
 import {Card, Stack, Text} from '@sanity/ui'
+import {type ReactNode} from 'react'
 import {Translate, useTranslation} from 'sanity'
 
 export function TranslateExample() {
@@ -26,11 +27,7 @@ export function TranslateExample() {
           <Translate
             t={t}
             i18nKey="translate.example"
-            components={{
-              Icon: () => <InfoFilledIcon />,
-              Red: ({children}) => <span style={{color: 'red'}}>{children}</span>,
-              Bold: ({children}) => <b>{children}</b>,
-            }}
+            components={{Icon: InfoFilledIcon, Red, Bold}}
             values={{
               keyword: 'something',
               duration: '30',
@@ -72,13 +69,21 @@ export function TranslateExample() {
           <Translate
             t={t}
             i18nKey="translate.mismatched-component"
-            components={{
-              VersionBadge: ({children}) => <span style={{fontWeight: 'bold'}}>{children}</span>,
-            }}
+            components={{VersionBadge}}
             values={{title: 'My Release'}}
           />
         </Text>
       </Stack>
     </Card>
   )
+}
+
+function VersionBadge({children}: {children?: ReactNode}) {
+  return <span style={{fontWeight: 'bold'}}>{children}</span>
+}
+function Red({children}: {children?: ReactNode}) {
+  return <span style={{color: 'red'}}>{children}</span>
+}
+function Bold({children}: {children?: ReactNode}) {
+  return <b>{children}</b>
 }

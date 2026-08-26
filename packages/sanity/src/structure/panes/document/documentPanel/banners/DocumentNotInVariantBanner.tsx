@@ -135,10 +135,7 @@ export function DocumentNotInVariantBanner() {
               variantTitle,
               perspectiveTitle,
             }}
-            components={{
-              VariantBadge: ({children}) => <strong>{children}</strong>,
-              PerspectiveTitle: ({children}) => <strong>{children}</strong>,
-            }}
+            components={{VariantBadge: 'strong', PerspectiveTitle: 'strong'}}
           />
         </Text>
       }

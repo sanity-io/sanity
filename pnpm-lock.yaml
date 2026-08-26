@@ -111,6 +111,9 @@ importers:
       '@repo/bundle-manager':
         specifier: workspace:*
         version: link:packages/@repo/bundle-manager
+      '@repo/oxlint-plugin-i18n':
+        specifier: workspace:*
+        version: link:packages/@repo/oxlint-plugin-i18n
       '@repo/release-notes':
         specifier: workspace:*
         version: link:packages/@repo/release-notes
@@ -996,6 +999,8 @@ importers:
       vitest:
         specifier: ^4.1.11
         version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/browser-playwright@4.1.11)(@vitest/coverage-v8@4.1.11)(jsdom@29.1.1)(vite@8.2.2)
+
+  packages/@repo/oxlint-plugin-i18n: {}
 
   packages/@repo/package.bundle:
     devDependencies:

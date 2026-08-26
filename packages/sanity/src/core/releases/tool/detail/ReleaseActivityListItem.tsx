@@ -61,7 +61,7 @@ const ReleaseEventDocumentPreview = ({
   )
 }
 
-const ScheduleTarget = ({children, event}: {children: ReactNode; event: ReleaseEvent}) => {
+const ScheduleTarget = ({children, event}: {children?: ReactNode; event: ReleaseEvent}) => {
   const dateTimeFormat = useDateTimeFormat({dateStyle: 'full', timeStyle: 'medium'})
   const {t} = useTranslation(releasesLocaleNamespace)
 
@@ -141,11 +141,8 @@ export const ReleaseActivityListItem = memo(
               <StatusText muted size={1}>
                 <Translate
                   t={t}
-                  components={{
-                    ScheduleTarget: ({children}) => (
-                      <ScheduleTarget event={event}>{children}</ScheduleTarget>
-                    ),
-                  }}
+                  components={{ScheduleTarget}}
+                  componentProps={{event}}
                   values={{releaseTitle}}
                   i18nKey={ACTIVITY_TEXT_118N[event.type]}
                 />{' '}
