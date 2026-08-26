@@ -3,7 +3,7 @@ import {structureTool} from 'sanity/structure'
 
 export default defineConfig({
   name: 'default',
-  title: 'Blog',
+  title: 'Company website',
   projectId: 'xxxxxxxx',
   dataset: 'production',
   plugins: [
@@ -12,20 +12,22 @@ export default defineConfig({
         S.list()
           .title('Content')
           .items([
-            S.listItem().singleton('siteSettings'),
+            S.listItem()
+              .id('settings')
+              .title('Settings')
+              .child(
+                S.list()
+                  .id('settings')
+                  .title('Settings')
+                  .singletons(['siteSettings', 'seoSettings', 'socialLinks']),
+              ),
             S.divider(),
-            // Registered singleton schema types are excluded from the default
-            // type list automatically — no manual filtering needed.
             ...S.documentTypeListItems(),
           ]),
     }),
   ],
   document: {
-    // The string shorthand expands to
-    // {id: 'siteSettings', documentId: 'siteSettings', schemaType: 'siteSettings'}.
-    // Registering the singleton also removes the "create new" option and the
-    // "duplicate" action for it automatically.
-    singletons: ['siteSettings'],
+    singletons: ['siteSettings', 'seoSettings', 'socialLinks'],
   },
   schema: {
     types: [
@@ -42,25 +44,38 @@ export default defineConfig({
         ],
       }),
       defineType({
-        name: 'post',
-        title: 'Post',
+        name: 'seoSettings',
+        title: 'SEO defaults',
+        type: 'document',
+        fields: [
+          defineField({
+            name: 'metaDescription',
+            title: 'Meta description',
+            type: 'text',
+          }),
+        ],
+      }),
+      defineType({
+        name: 'socialLinks',
+        title: 'Social links',
+        type: 'document',
+        fields: [
+          defineField({
+            name: 'links',
+            title: 'Links',
+            type: 'array',
+            of: [{type: 'url'}],
+          }),
+        ],
+      }),
+      defineType({
+        name: 'article',
+        title: 'Article',
         type: 'document',
         fields: [
           defineField({
             name: 'title',
             title: 'Title',
-            type: 'string',
-          }),
-        ],
-      }),
-      defineType({
-        name: 'author',
-        title: 'Author',
-        type: 'document',
-        fields: [
-          defineField({
-            name: 'name',
-            title: 'Name',
             type: 'string',
           }),
         ],

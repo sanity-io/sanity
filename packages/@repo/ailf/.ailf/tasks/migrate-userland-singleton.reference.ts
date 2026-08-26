@@ -21,10 +21,9 @@ export default defineConfig({
     }),
   ],
   document: {
-    // The string shorthand expands to
-    // {id: 'siteSettings', documentId: 'siteSettings', schemaType: 'siteSettings'}.
-    // Registering the singleton also removes the "create new" option and the
-    // "duplicate" action for it automatically.
+    // Registering the singleton replaces the manual `newDocumentOptions` and
+    // duplicate-action filtering: Studio removes the create option and the
+    // "duplicate" action automatically.
     singletons: ['siteSettings'],
   },
   schema: {
