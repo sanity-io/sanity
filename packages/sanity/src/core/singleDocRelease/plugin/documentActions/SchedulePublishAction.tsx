@@ -3,6 +3,7 @@ import {isValidationErrorMarker} from '@sanity/types'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo, useState} from 'react'
 
+import {InsufficientPermissionsMessage} from '../../../components/InsufficientPermissionsMessage'
 import {
   type DocumentActionComponent,
   type DocumentActionDescription,
@@ -14,6 +15,8 @@ import {getDefaultVariant} from '../../../perspective/getDefaultVariant'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useActiveReleases} from '../../../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {useDocumentPairPermissions} from '../../../store/grants/documentPairPermissions'
+import {useCurrentUser} from '../../../store/user/hooks'
 import {getDraftId} from '../../../util/draftUtils'
 import {isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
 import {ScheduleDraftDialog} from '../../components/ScheduleDraftDialog'
@@ -67,6 +70,20 @@ export const useSchedulePublishAction: DocumentActionComponent = (
   )
 
   const isPaused = isPausedCardinalityOneRelease(currentRelease)
+
+  const [publishPermission, isPublishPermissionLoading] = useDocumentPairPermissions({
+    id,
+    type,
+    version:
+      isPaused && currentRelease
+        ? getReleaseIdFromReleaseDocumentId(currentRelease._id)
+        : undefined,
+    permission: 'publish',
+  })
+  const isPublishGranted = Boolean(publishPermission?.granted)
+  const isPublishDenied = !isPublishPermissionLoading && !isPublishGranted
+  const currentUser = useCurrentUser()
+
   const initialDate =
     isPaused && currentRelease?.metadata.intendedPublishAt
       ? new Date(currentRelease.metadata.intendedPublishAt)
@@ -126,12 +143,18 @@ export const useSchedulePublishAction: DocumentActionComponent = (
   )
 
   const disabled =
+    isPublishPermissionLoading ||
+    !isPublishGranted ||
     isVariantSelected ||
     (isPaused
       ? hasValidationErrors // Only check validation errors for paused drafts
       : hasCardinalityOneReleaseVersions || hasValidationErrors) // Full check for regular drafts
 
   const title = useMemo(() => {
+    if (isPublishDenied) {
+      return <InsufficientPermissionsMessage context="edit-schedules" currentUser={currentUser} />
+    }
+
     if (isVariantSelected) {
       return t('action.schedule-publish.disabled.variant')
     }
@@ -149,7 +172,15 @@ export const useSchedulePublishAction: DocumentActionComponent = (
     }
 
     return t('action.schedule-publish')
-  }, [isVariantSelected, isPaused, hasValidationErrors, hasCardinalityOneReleaseVersions, t])
+  }, [
+    isPublishDenied,
+    currentUser,
+    isVariantSelected,
+    isPaused,
+    hasValidationErrors,
+    hasCardinalityOneReleaseVersions,
+    t,
+  ])
 
   if (!singleDocReleaseEnabled) {
     return null
