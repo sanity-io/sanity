@@ -33,6 +33,11 @@ const DragHandleCard = styled(Card)`
   left: 0;
 `
 const Root = styled(Card)`
+  /* Until Card is migrated, this is needed to keep its display styling from overriding Flex */
+  &&:not([hidden]) {
+    display: flex;
+  }
+
   transition: border-color 250ms;
   box-sizing: border-box;
   position: relative;
