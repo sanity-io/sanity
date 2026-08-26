@@ -27,7 +27,7 @@ import {type TableRelease} from './ReleasesOverview'
  */
 export const RELEASES_OVERVIEW_TITLE_COLUMN_MIN_WIDTH = 200
 
-export const RELEASES_OVERVIEW_TITLE_COLUMN_STYLE = {
+const RELEASES_OVERVIEW_TITLE_COLUMN_STYLE = {
   minWidth: RELEASES_OVERVIEW_TITLE_COLUMN_MIN_WIDTH,
 } as const
 
