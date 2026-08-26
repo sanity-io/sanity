@@ -208,24 +208,24 @@ export const ReleasePublishAllButton = ({
             }
           </Text>
           {showUpdateDraftsOption && (
-            <Stack gap={3}>
-              <Flex align="center" gap={3} as="label">
-                <Checkbox
-                  checked={shouldUpdateDrafts}
-                  onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                    setShouldUpdateDrafts(event.currentTarget.checked)
-                  }
-                  data-testid="update-drafts-checkbox"
-                />
+            <Flex align="flex-start" gap={3} as="label">
+              <Checkbox
+                checked={shouldUpdateDrafts}
+                onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                  setShouldUpdateDrafts(event.currentTarget.checked)
+                }
+                data-testid="update-drafts-checkbox"
+              />
+              <Stack flex={1} gap={2}>
                 <Text size={1}>{t('publish-dialog.confirm-publish.update-drafts-checkbox')}</Text>
-              </Flex>
-              <Text muted size={1}>
-                {t('publish-dialog.confirm-publish.update-drafts-description', {
-                  count: draftDocumentsCount,
-                  draftDocumentsLength: draftDocumentsCount,
-                })}
-              </Text>
-            </Stack>
+                <Text muted size={1}>
+                  {t('publish-dialog.confirm-publish.update-drafts-description', {
+                    count: draftDocumentsCount,
+                    draftDocumentsLength: draftDocumentsCount,
+                  })}
+                </Text>
+              </Stack>
+            </Flex>
           )}
         </Stack>
       </Dialog>
