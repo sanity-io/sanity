@@ -75,11 +75,12 @@ export function getDocumentVersionType(options: {
   return 'published'
 }
 
-function isDraftBundleId(bundleId: string | undefined): boolean {
-  return bundleId === 'draft' || bundleId === 'drafts' || bundleId === undefined
+// The chip layer says `draft`; the data layer says `drafts` (`systemBundles`).
+function isDraftBundleId(bundleId: string): boolean {
+  return bundleId === 'draft' || bundleId === 'drafts'
 }
 
-function isDraftOrPublishedBundleId(bundleId: string | undefined): boolean {
+function isDraftOrPublishedBundleId(bundleId: string): boolean {
   return bundleId === 'published' || isDraftBundleId(bundleId)
 }
 

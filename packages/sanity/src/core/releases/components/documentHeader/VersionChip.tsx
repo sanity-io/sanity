@@ -186,7 +186,6 @@ export const VersionChip = memo(function VersionChip(props: {
         onCopyToDrafts={handleCopyToDrafts}
         isGoingToUnpublish={isGoingToUnpublish}
         scheduledDraftDialogs={isScheduledDraft && scheduledDraftMenuActions.dialogs}
-        isDiscardable={true}
       />
     </>
   )

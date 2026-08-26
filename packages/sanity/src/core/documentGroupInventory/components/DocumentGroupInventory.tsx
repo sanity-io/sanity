@@ -711,7 +711,6 @@ const ManagedVariantRow: ComponentType<{
         onCreateVersion={handleAddVersion}
         onCopyToDrafts={handleCopyToDrafts}
         scheduledDraftDialogs={isScheduledDraft && scheduledDraftMenuActions.dialogs}
-        isDiscardable={false}
       />
     </>
   )

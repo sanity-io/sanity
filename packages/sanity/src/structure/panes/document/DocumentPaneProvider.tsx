@@ -347,17 +347,13 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     isVersionDocument && selectedRelease && isCardinalityOneRelease(selectedRelease),
   )
 
-  const actionsVersionType = useMemo(
-    () =>
-      getDocumentVersionType({
-        isRevision: Boolean(params?.rev),
-        isScheduledDraft,
-        isVersionDocument,
-        perspectiveName: selectedPerspectiveName,
-        draftsEnabled,
-      }),
-    [params?.rev, isScheduledDraft, isVersionDocument, selectedPerspectiveName, draftsEnabled],
-  )
+  const actionsVersionType = getDocumentVersionType({
+    isRevision: Boolean(params.rev),
+    isScheduledDraft,
+    isVersionDocument,
+    perspectiveName: selectedPerspectiveName,
+    draftsEnabled,
+  })
 
   const documentActionsContext: PartialContext<DocumentActionsContext> = useMemo(
     () => ({
