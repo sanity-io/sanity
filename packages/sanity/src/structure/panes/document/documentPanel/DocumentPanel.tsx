@@ -410,11 +410,18 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     () => ({documentScrollElement: documentScrollElement}),
     [documentScrollElement],
   )
+  // Keep the form mounted when the inspector takes over a collapsed layout.
+  // Unmounting FormBuilder resets FullscreenPTEProvider, so a PTE that was in
+  // full-pane mode comes back inline after the window is widened again.
   const showFormView = features.resizablePanes || !showInspector
   return (
     <PaneContent>
       <Flex height="fill">
-        {showFormView && (
+        <div
+          data-testid="document-panel-form-view"
+          hidden={!showFormView}
+          style={{display: showFormView ? 'contents' : 'none'}}
+        >
           <Flex height="fill" direction="column" flex={2}>
             <LegacyLayerProvider zOffset="paneHeader">
               {banners}
@@ -450,7 +457,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
             {footer}
           </Flex>
-        )}
+        </div>
         {showInspector && (
           <BoundaryElementProvider element={rootElement}>
             <DocumentInspectorPanel
