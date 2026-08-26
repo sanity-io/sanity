@@ -7,8 +7,6 @@ import {
 
 import {type SourceClientOptions, type Workspace} from '../config/types'
 
-export {validateDocumentObservable, validateItem} from '@sanity/validation/_internal'
-
 /** @beta */
 export interface ValidateDocumentOptions {
   /** The document to be validated. */
