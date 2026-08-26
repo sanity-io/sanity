@@ -77,8 +77,8 @@ catalogs:
       specifier: ^19.2.8
       version: 19.2.8
     react-rx:
-      specifier: 7.0.0-next.4
-      version: 7.0.0-next.4
+      specifier: 7.0.0-next.5
+      version: 7.0.0-next.5
     rimraf:
       specifier: ^6.1.3
       version: 6.1.3
@@ -387,7 +387,7 @@ importers:
         version: 19.2.8(react@19.2.8)
       react-rx:
         specifier: 'catalog:'
-        version: 7.0.0-next.4(react@19.2.8)(rxjs@7.8.2)
+        version: 7.0.0-next.5(react@19.2.8)(rxjs@7.8.2)
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -812,7 +812,7 @@ importers:
         version: 4.0.0(react@19.2.8)
       react-rx:
         specifier: 'catalog:'
-        version: 7.0.0-next.4(react@19.2.8)(rxjs@7.8.2)
+        version: 7.0.0-next.5(react@19.2.8)(rxjs@7.8.2)
       refractor:
         specifier: ^5.0.0
         version: 5.0.0
@@ -1633,7 +1633,7 @@ importers:
         version: 7.3.0
       react-rx:
         specifier: 'catalog:'
-        version: 7.0.0-next.4(react@19.2.8)(rxjs@7.8.2)
+        version: 7.0.0-next.5(react@19.2.8)(rxjs@7.8.2)
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -1978,7 +1978,7 @@ importers:
         version: 4.0.0(react@19.2.8)
       react-rx:
         specifier: 'catalog:'
-        version: 7.0.0-next.4(react@19.2.8)(rxjs@7.8.2)
+        version: 7.0.0-next.5(react@19.2.8)(rxjs@7.8.2)
       refractor:
         specifier: ^5.0.0
         version: 5.0.0
@@ -12952,8 +12952,8 @@ packages:
       react: ^18.3 || >=19.0.0-0
       rxjs: ^7
 
-  react-rx@7.0.0-next.4:
-    resolution: {integrity: sha512-QRBBtKOKwf55ExTqdmf5IKQGqBI2GswQQZcxzgXE2p7BDBIVTqHcjWIQgi8Dd3iWPoKS15ngq+hQPdOw0m/8Ag==}
+  react-rx@7.0.0-next.5:
+    resolution: {integrity: sha512-RRzgusT98bzLJSGeFpltgIf5vYA+ObW1msbYM9nUGolgVLTrZsYakDdSFE8Zvxvcv5KKqIOzIAhC6YRYI8UBNQ==}
     engines: {node: '>=22.12'}
     peerDependencies:
       react: ^19.2
@@ -19136,7 +19136,7 @@ snapshots:
   '@sanity/assist@6.1.21(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)(vitest@4.1.11)':
     dependencies:
       '@portabletext/types': 4.0.2
-      '@sanity/client': 8.2.0(vitest@4.1.11)
+      '@sanity/client': 8.3.0(vitest@4.1.11)
       '@sanity/color': 3.0.8
       '@sanity/icons': 5.2.1(react@19.2.8)
       '@sanity/mutator': link:packages/@sanity/mutator
@@ -26116,7 +26116,7 @@ snapshots:
       rxjs: 7.8.2
       use-effect-event: 2.0.3(react@19.2.8)
 
-  react-rx@7.0.0-next.4(react@19.2.8)(rxjs@7.8.2):
+  react-rx@7.0.0-next.5(react@19.2.8)(rxjs@7.8.2):
     dependencies:
       react: 19.2.8
       rxjs: 7.8.2
