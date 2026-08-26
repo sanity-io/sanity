@@ -90,7 +90,7 @@ export function useScheduledDraftMenuActions(
 
   const currentUser = useCurrentUser()
   // '*' denies without a lookup; every surface hides these items until the release and its document resolve.
-  const permissionType = release && documentType ? documentType : '*'
+  const permissionType = release && documentType && documentId ? documentType : '*'
   const permissionVersion = release ? getReleaseIdFromReleaseDocumentId(release._id) : undefined
 
   const [publishPermission, publishPermissionLoading] = useDocumentPairPermissions({
