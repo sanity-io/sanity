@@ -3,7 +3,7 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {startTransition, useCallback, useEffect, useState} from 'react'
 import {css, styled} from 'styled-components'
 
-import {CommentInput} from '../../../../../comments/components/pte/comment-input/CommentInput'
+import {CommentInput} from '../../../../../comments-current/components/pte/comment-input/CommentInput'
 import {set} from '../../../../../form/patch/patch'
 import {type ArrayFieldProps} from '../../../../../form/types/fieldProps'
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'

@@ -4,7 +4,7 @@ import {css, styled} from 'styled-components'
 import {
   CommentsListItem,
   type CommentsListItemProps,
-} from '../../../comments/components/list/CommentsListItem'
+} from '../../../comments-current/components/list/CommentsListItem'
 import {useTasksEnabled} from '../../context/enabled/useTasksEnabled'
 import {ActivityItem} from './TasksActivityItem'
 
