@@ -2,7 +2,7 @@ import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {type SanityDocumentLike} from '@sanity/types'
 import {Grid, Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {useCallback, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, concat, filter, map, type Observable, of, scan, Subject, switchMap} from 'rxjs'
 import {
@@ -50,6 +50,15 @@ const INITIAL_SEARCH_STATE: ReferenceSearchState = {
   isLoading: false,
 }
 const NO_FILTER = () => true
+
+// Local copy of core `useLatest`: structure cannot import core internals.
+function useLatest<T>(value: T): {readonly current: T} {
+  const ref = useRef(value)
+  useEffect(() => {
+    ref.current = value
+  }, [value])
+  return ref
+}
 
 const incomingReferenceSearch = (
   client: SanityClient,
@@ -131,34 +140,39 @@ export function AddIncomingReference({
 
   const [searchInput$] = useState(() => new Subject<string | null>())
 
+  // `handleSearch` and `push` can change identity. Rebuilding the pipeline on
+  // them would cancel in-flight searches and reset accumulated search state.
+  const latest = useLatest({handleSearch, push, type})
+
   const searchState$ = useMemo(
     () =>
       searchInput$.pipe(
         filter(isNonNullable),
-        switchMap((searchString) =>
-          concat(
+        switchMap((searchString) => {
+          const current = latest.current
+          return concat(
             of({isLoading: true, hits: []}),
-            handleSearch(searchString).pipe(
+            current.handleSearch(searchString).pipe(
               map((hits) => ({hits, searchString, isLoading: false})),
               catchError((error) => {
-                push({
+                current.push({
                   title: 'Reference search failed',
                   description: error.message,
                   status: 'error',
-                  id: `reference-search-fail-${type}`,
+                  id: `reference-search-fail-${current.type}`,
                 })
                 console.error(error)
                 return of({hits: [], isLoading: false})
               }),
             ),
-          ),
-        ),
+          )
+        }),
         scan(
           (prevState, nextState: ReferenceSearchState) => ({...prevState, ...nextState}),
           INITIAL_SEARCH_STATE,
         ),
       ),
-    [handleSearch, push, searchInput$, type],
+    [latest, searchInput$],
   )
   const searchState = useObservable(searchState$, INITIAL_SEARCH_STATE)
 

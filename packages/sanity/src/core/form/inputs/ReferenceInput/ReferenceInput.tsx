@@ -81,39 +81,41 @@ export function ReferenceInput(props: ReferenceInputProps) {
   const [searchInput$] = useState(() => new Subject<string | null>())
 
   // `onSearch` changes identity every render (StudioReferenceInput passes a
-  // plain function). Rebuilding the pipeline on it instead would cancel
-  // in-flight searches and reset accumulated search state.
-  const latestOnSearch = useLatest(onSearch)
+  // plain function). `push` and `t` are also not guaranteed stable. Rebuilding
+  // the pipeline on them would cancel in-flight searches and reset accumulated
+  // search state.
+  const latest = useLatest({id, onSearch, push, t})
 
   const searchState$ = useMemo(
     () =>
       searchInput$.pipe(
         filter(nonNullable),
-        switchMap((searchString) =>
-          concat(
+        switchMap((searchString) => {
+          const current = latest.current
+          return concat(
             of({isLoading: true}),
-            latestOnSearch.current(searchString).pipe(
+            current.onSearch(searchString).pipe(
               map((hits) => ({hits, searchString, isLoading: false})),
               catchError((error) => {
-                push({
-                  title: t('inputs.reference.error.search-failed-title'),
+                current.push({
+                  title: current.t('inputs.reference.error.search-failed-title'),
                   description: error.message,
                   status: 'error',
-                  id: `reference-search-fail-${id}`,
+                  id: `reference-search-fail-${current.id}`,
                 })
 
                 console.error(error)
                 return of({hits: [], searchString, isLoading: false})
               }),
             ),
-          ),
-        ),
+          )
+        }),
         scan(
           (prevState, nextState): ReferenceSearchState => ({...prevState, ...nextState}),
           INITIAL_SEARCH_STATE,
         ),
       ),
-    [id, latestOnSearch, push, searchInput$, t],
+    [latest, searchInput$],
   )
   const searchState = useObservable(searchState$, INITIAL_SEARCH_STATE)
 

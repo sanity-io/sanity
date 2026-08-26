@@ -91,44 +91,46 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
 
   const [searchInput$] = useState(() => new Subject<string | null>())
 
-  // `onSearch` can change identity every render. Rebuilding the pipeline on it
-  // instead would cancel in-flight searches and reset accumulated search state.
-  const latestOnSearch = useLatest(onSearch)
+  // `onSearch` can change identity every render. `push` is also not guaranteed
+  // stable. Rebuilding the pipeline on them would cancel in-flight searches
+  // and reset accumulated search state.
+  const latest = useLatest({inputId, onSearch, push})
 
   const searchState$ = useMemo(
     () =>
       searchInput$.pipe(
         filter(isNonNullable),
         distinctUntilChanged(),
-        switchMap((searchString) =>
-          concat(
+        switchMap((searchString) => {
+          const current = latest.current
+          return concat(
             of({isLoading: true}),
-            latestOnSearch.current(searchString).pipe(
+            current.onSearch(searchString).pipe(
               map((hits) => ({
                 hits,
                 searchString,
                 isLoading: false,
               })),
               catchError((error) => {
-                push({
+                current.push({
                   title: 'Reference search failed',
                   description: error.message,
                   status: 'error',
-                  id: `reference-search-fail-${inputId}`,
+                  id: `reference-search-fail-${current.inputId}`,
                 })
 
                 console.error(error)
                 return of({hits: []})
               }),
             ),
-          ),
-        ),
+          )
+        }),
         scan(
           (prevState, nextState): SearchState => ({...prevState, ...nextState}),
           INITIAL_SEARCH_STATE,
         ),
       ),
-    [inputId, latestOnSearch, push, searchInput$],
+    [latest, searchInput$],
   )
   const searchState = useObservable(searchState$, INITIAL_SEARCH_STATE)
 
