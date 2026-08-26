@@ -135,6 +135,7 @@ import type {
   SerializeOptions,
   SerializePath,
   shallowIntentChecker,
+  SingletonListBuilder,
   SortMenuItem,
   StrictVersionLayeringOptions,
   StructureBuilder,
@@ -565,6 +566,9 @@ describe('sanity/structure', () => {
   })
   test('shallowIntentChecker', () => {
     expectTypeOf<typeof shallowIntentChecker>().not.toBeNever()
+  })
+  test('SingletonListBuilder', () => {
+    expectTypeOf<SingletonListBuilder>().not.toBeNever()
   })
   test('SortMenuItem', () => {
     expectTypeOf<SortMenuItem>().toBeObject()
