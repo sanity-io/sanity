@@ -677,6 +677,7 @@ exports[`exports snapshot 1`] = `
     "useOnlyHasVersions": "function",
     "useParseErrorForPath": "function",
     "useParseErrors": "function",
+    "usePauseToEditScheduledDraft": "function",
     "usePausedScheduledDraft": "function",
     "usePerspective": "function",
     "usePresenceStore": "function",
