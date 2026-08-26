@@ -5,6 +5,6 @@ import {RELEASE_DOCUMENTS_PATH} from '../store/constants'
  *
  * @internal
  */
-export function getReleaseDocumentIdFromReleaseId(name: string) {
-  return `${RELEASE_DOCUMENTS_PATH}.${name}`
+export function getReleaseDocumentIdFromReleaseId(releaseId: string) {
+  return `${RELEASE_DOCUMENTS_PATH}.${releaseId}`
 }
