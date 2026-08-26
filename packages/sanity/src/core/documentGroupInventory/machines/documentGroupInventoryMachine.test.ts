@@ -520,9 +520,10 @@ describe('documentGroupInventoryMachine', () => {
     )
 
     // `active.deletion` is a compound state, so reaching `error` exited
-    // `preparing` along with the `checked` state that records the reference
-    // check. The retry cannot depend on that state still being active.
+    // `preparing` along with the `checked` state. The completed check survives
+    // in context, which is what keeps the retry confirmable.
     expect(deletionRef.getSnapshot().matches(referencesChecked)).toBe(false)
+    expect(deletionRef.getSnapshot().context.incomingReferencesChecked).toBe(true)
 
     expect(deletionRef.getSnapshot().can({type: 'delete.confirm'})).toBe(true)
 
@@ -531,6 +532,30 @@ describe('documentGroupInventoryMachine', () => {
 
     await vi.waitFor(() => expect(deletionRef.getSnapshot().matches('idle')).toBe(true))
     expect(deleteVariants).toHaveBeenCalledTimes(2)
+  })
+
+  it('re-checks incoming references when a new deletion flow starts', () => {
+    const {selectionRef, deletionRef, references$} = createTestActor(loading)
+
+    selectionRef.send({type: 'selection.toggle', variantId: 'foo'})
+    deletionRef.send({type: 'delete.request'})
+    references$.next(emission(withInternalReferences([bookReference])))
+    expect(deletionRef.getSnapshot().context.incomingReferencesChecked).toBe(true)
+
+    deletionRef.send({type: 'delete.cancel'})
+
+    // Keep the next flow's check in flight, so a lingering `true` would be
+    // attributable to the abandoned flow rather than to this one.
+    references$.next(loading)
+    deletionRef.send({type: 'delete.request'})
+
+    expect(deletionRef.getSnapshot().context.incomingReferencesChecked).toBe(false)
+    expect(deletionRef.getSnapshot().can({type: 'delete.confirm'})).toBe(false)
+
+    // Once this flow's own check lands, confirmation is permitted again.
+    references$.next(emission(withInternalReferences([bookReference])))
+    expect(deletionRef.getSnapshot().context.incomingReferencesChecked).toBe(true)
+    expect(deletionRef.getSnapshot().can({type: 'delete.confirm'})).toBe(true)
   })
 
   it('forwards the meta observable down to the selection machine', () => {

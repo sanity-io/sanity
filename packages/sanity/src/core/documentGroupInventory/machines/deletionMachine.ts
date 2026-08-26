@@ -1,6 +1,6 @@
 import {type MultipleMutationResult} from '@sanity/client'
 import {EMPTY} from 'rxjs'
-import {and, assign, fromObservable, fromPromise, not, or, sendParent, setup, stateIn} from 'xstate'
+import {and, assign, fromObservable, fromPromise, not, or, sendParent, setup} from 'xstate'
 
 import {isPublishedId} from '../../util/draftUtils'
 
@@ -58,6 +58,7 @@ interface DeletionContext {
   datasetNames: string[]
   hasUnknownDatasetNames: boolean
   error?: unknown
+  incomingReferencesChecked: boolean
   /** Whether this instance may never delete anything. */
   readOnly: boolean
 }
@@ -90,13 +91,13 @@ export const deletionMachine = setup({
     hasSelection: ({context}) => context.ids.length !== 0,
     isMutable: ({context}) => !context.readOnly,
     selectionExcludesPublished: ({context}) => !context.ids.some(isPublishedId),
+    hasCheckedIncomingReferences: ({context}) => context.incomingReferencesChecked,
     canRequestDeletion: and(['hasSelection', 'isMutable']),
     canConfirmDeletion: and([
       'hasSelection',
       'isMutable',
-      or(['selectionExcludesPublished', stateIn('#incomingReferencesChecked')]),
+      or(['selectionExcludesPublished', 'hasCheckedIncomingReferences']),
     ]),
-    canRetryDeletion: and(['hasSelection', 'isMutable']),
     shouldWarnIncomingReferences: ({context}) =>
       context.ids.some(isPublishedId) &&
       ((context.internalReferences?.references.length ?? 0) > 0 ||
@@ -112,6 +113,7 @@ export const deletionMachine = setup({
     datasetNames: [],
     hasUnknownDatasetNames: false,
     error: undefined,
+    incomingReferencesChecked: false,
     readOnly: input?.readOnly ?? false,
   }),
   on: {
@@ -131,7 +133,9 @@ export const deletionMachine = setup({
     },
     active: {
       type: 'parallel',
-      entry: sendParent({type: 'deletion.activated'}),
+      // Each flow re-runs the check, so the previous flow's result must not
+      // carry over into this one.
+      entry: [sendParent({type: 'deletion.activated'}), assign({incomingReferencesChecked: false})],
       exit: sendParent({type: 'deletion.deactivated'}),
       on: {
         'delete.cancel': {
@@ -163,6 +167,7 @@ export const deletionMachine = setup({
                             datasetNames: ({event}) => event.snapshot.context?.datasetNames ?? [],
                             hasUnknownDatasetNames: ({event}) =>
                               event.snapshot.context?.hasUnknownDatasetNames ?? false,
+                            incomingReferencesChecked: true,
                           }),
                         },
                         onError: {
@@ -171,9 +176,7 @@ export const deletionMachine = setup({
                         },
                       },
                     },
-                    checked: {
-                      id: 'incomingReferencesChecked',
-                    },
+                    checked: {},
                   },
                 },
                 awaitingDeletionConfirmation: {
@@ -204,7 +207,7 @@ export const deletionMachine = setup({
             error: {
               on: {
                 'delete.confirm': {
-                  guard: 'canRetryDeletion',
+                  guard: 'canConfirmDeletion',
                   target: '#deletion.active.deletion.deleting',
                 },
               },
