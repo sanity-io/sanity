@@ -113,11 +113,10 @@ const TableInner = <TableData, AdditionalRowTableData>({
     () => ({
       id: 'actions',
       sorting: false,
-      // Header and body rows are independent flexboxes: this trailing gutter must be the SAME width
-      // in both, otherwise the flex:1 "Document" column absorbs the difference in the body only and
-      // every column to its right (Last edited, Edited by) drifts out of alignment with its header.
-      // The body cell below is content-box (width:25px + padding:3 => ~50px actual), so reserve 50
-      // here and size the header (border-box) to 50px to match — under-reserving clips the ⋯.
+      // Header and body are independent flexboxes, so this trailing gutter must be the same
+      // width in both. The cell is border-box: padding 3 (12px) + a 25px bleed button needs
+      // 50px. A 25px width (the old content-box assumption) overflowed by 12px and clipped
+      // the … (SAPP-3249).
       width: 50,
       header: ({headerProps: {id}}) => (
         <Flex
@@ -143,7 +142,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
           flexGrow={0}
           flexShrink={0}
           padding={3}
-          style={{width: '25px'}}
+          style={{width: '50px'}}
         >
           {(!datum.isLoading && rowActions?.({datum})) || <Box style={{width: '25px'}} />}
         </Flex>
