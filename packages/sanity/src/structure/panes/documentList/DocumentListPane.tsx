@@ -2,7 +2,7 @@ import {SearchIcon} from '@sanity/icons/Search'
 import {SpinnerIcon} from '@sanity/icons/Spinner'
 import {Stack, TextInput} from '@sanity/ui'
 import {Activity, memo, useCallback, useEffect, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
+import {useObservable, useSyncObservable} from 'react-rx'
 import {debounce, of, Subject, timer} from 'rxjs'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
@@ -114,7 +114,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     () => searchInput$.pipe(debounce((value) => (value === '' ? of('') : timer(300)))),
     [searchInput$],
   )
-  const searchInputValue = useObservable(searchInput$, '')
+  const searchInputValue = useSyncObservable(searchInput$, '')
   const searchQuery = useObservable(searchQuery$, '')
   const [searchInputElement, setSearchInputElement] = useState<HTMLInputElement | null>(null)
   // The ordering applied while a search term is present. Defaults to relevance

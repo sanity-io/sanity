@@ -28,7 +28,7 @@ interface SearchRequest {
 interface SearchEvent {
   onStart?: () => void
   request: SearchRequest
-  run: () => Observable<Partial<SearchState>>
+  run: (request: SearchRequest) => Observable<Partial<SearchState>>
 }
 
 const DEFAULT_DEBOUNCE_TIME = 300 // ms
@@ -99,7 +99,7 @@ export function useSearch({
         debounce(({request}) => timer(request.debounceTime || DEFAULT_DEBOUNCE_TIME)),
         // Trigger `onStart` callback
         tap(({onStart: handleStart}) => handleStart?.()),
-        switchMap(({run}) => run()),
+        switchMap(({run, request}) => run(request)),
         scan((prevState, nextState): SearchState => {
           return {...prevState, ...nextState}
         }, INITIAL_SEARCH_STATE),
@@ -113,23 +113,23 @@ export function useSearch({
       searchRequests$.next({
         onStart,
         request,
-        run: () =>
+        run: (sanitizedRequest) =>
           concat(
             // Emit loading start
             of({
               ...INITIAL_SEARCH_STATE,
               loading: true,
-              options: request.options,
-              terms: request.terms,
+              options: sanitizedRequest.options,
+              terms: sanitizedRequest.terms,
             }),
             // Conditionally trigger search ONLY if we have valid searchable terms.
             // Typically, search terms are valid if either query, filter or selected types is non-empty.
             // There are exceptions (e.g. searching within <AutoComplete> components) where empty queries are permitted,
             // which is what `allowEmptyQueries` is used for.
             iif(
-              () => hasSearchableTerms({allowEmptyQueries, terms: request.terms}),
+              () => hasSearchableTerms({allowEmptyQueries, terms: sanitizedRequest.terms}),
               // If we have a valid search, run async fetch, map results and trigger `onComplete` / `onError` callbacks
-              search(request.terms, request.options).pipe(
+              search(sanitizedRequest.terms, sanitizedRequest.options).pipe(
                 tap(({hits, nextCursor}) => onComplete?.({hits, nextCursor})),
                 catchError((error) => {
                   onError?.(error)
@@ -137,8 +137,8 @@ export function useSearch({
                     ...INITIAL_SEARCH_STATE,
                     error,
                     loading: false,
-                    options: request.options,
-                    terms: request.terms,
+                    options: sanitizedRequest.options,
+                    terms: sanitizedRequest.terms,
                   })
                 }),
               ),
