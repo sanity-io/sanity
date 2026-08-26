@@ -356,6 +356,69 @@ describe('validateItem', () => {
       },
     ])
   })
+
+  it('passes currentUser to schema validation and custom validator contexts', async () => {
+    const currentUser: ValidationContext['currentUser'] = {
+      id: 'user-id',
+      name: 'Test User',
+      email: 'test@example.com',
+      roles: [{name: 'administrator', title: 'Administrator'}],
+    }
+
+    const schemaContexts: Array<ValidationContext['currentUser']> = []
+    const customContexts: Array<ValidationContext['currentUser']> = []
+
+    const schema = createSchema({
+      name: 'default',
+      types: [
+        {
+          name: 'currentUserDoc',
+          type: 'document',
+          fields: [
+            {
+              name: 'title',
+              type: 'string',
+              validation: (rule: Rule, context?: ValidationContext) => {
+                schemaContexts.push(context?.currentUser)
+                return rule.custom((_value, customContext: ValidationContext) => {
+                  customContexts.push(customContext.currentUser)
+                  return true
+                })
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    const document: SanityDocument = {
+      _id: 'current-user-doc-id',
+      _type: 'currentUserDoc',
+      _createdAt: '2024-01-01T00:00:00.000Z',
+      _updatedAt: '2024-01-01T00:00:00.000Z',
+      _rev: 'current-user-doc-rev',
+      title: 'hello',
+    }
+
+    const result = await validateItem({
+      getClient,
+      schema,
+      value: document,
+      document,
+      parent: undefined,
+      path: [],
+      type: schema.get('currentUserDoc'),
+      i18n: getFallbackLocaleSource(),
+      environment: 'studio',
+      getDocumentExists: undefined,
+      currentUser,
+    })
+
+    expect(result).toHaveLength(0)
+    expect(schemaContexts).toEqual([currentUser])
+    expect(customContexts).toEqual([currentUser])
+  })
+
   it("runs nested validation on an undefined value for object types if it's required", async () => {
     const validation = (rule: Rule) => [
       rule.required().error('This is required!'),

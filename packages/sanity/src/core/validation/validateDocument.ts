@@ -325,7 +325,7 @@ type ValidateItemOptions = {
   customValidationConcurrencyLimiter?: ConcurrencyLimiter
   hidden?: boolean
   currentUser?: Omit<CurrentUser, 'role'> | null
-} & ExplicitUndefined<Omit<ValidationContext, 'hidden'>>
+} & ExplicitUndefined<Omit<ValidationContext, 'hidden' | 'currentUser'>>
 
 export function validateItem(opts: ValidateItemOptions): Promise<ValidationMarker[]> {
   return lastValueFrom(validateItemObservable(opts))
