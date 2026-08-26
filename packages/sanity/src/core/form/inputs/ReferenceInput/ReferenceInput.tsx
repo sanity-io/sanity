@@ -87,27 +87,29 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
   const [searchInput$] = useState(() => new Subject<string | null>())
 
-  // `onSearch` changes identity every render (StudioReferenceInput passes a
-  // plain function). Rebuilding the pipeline on it instead would cancel
-  // in-flight searches and reset accumulated search state.
-  const onSearchRef = useRef(onSearch)
+  // These are read only when a search event fires, and `onSearch` changes
+  // identity every render (StudioReferenceInput passes a plain function).
+  // Rebuilding the pipeline on them instead would cancel in-flight searches
+  // and reset accumulated search state.
+  const callbacksRef = useRef({onSearch, push, t})
   useEffect(() => {
-    onSearchRef.current = onSearch
-  }, [onSearch])
+    callbacksRef.current = {onSearch, push, t}
+  }, [onSearch, push, t])
 
   const searchState$ = useMemo(
     () =>
       searchInput$.pipe(
         filter(nonNullable),
-        // oxlint-disable-next-line react/refs -- the ref is read at subscription time inside the memoized pipeline, never during render
-        switchMap((searchString) =>
-          concat(
+        // oxlint-disable-next-line react/refs -- the ref is read when the subject emits, never during render
+        switchMap((searchString) => {
+          const callbacks = callbacksRef.current
+          return concat(
             of({isLoading: true}),
-            onSearchRef.current(searchString).pipe(
+            callbacks.onSearch(searchString).pipe(
               map((hits) => ({hits, searchString, isLoading: false})),
               catchError((error) => {
-                push({
-                  title: t('inputs.reference.error.search-failed-title'),
+                callbacks.push({
+                  title: callbacks.t('inputs.reference.error.search-failed-title'),
                   description: error.message,
                   status: 'error',
                   id: `reference-search-fail-${id}`,
@@ -117,14 +119,14 @@ export function ReferenceInput(props: ReferenceInputProps) {
                 return of({hits: [], searchString, isLoading: false})
               }),
             ),
-          ),
-        ),
+          )
+        }),
         scan(
           (prevState, nextState): ReferenceSearchState => ({...prevState, ...nextState}),
           INITIAL_SEARCH_STATE,
         ),
       ),
-    [id, push, searchInput$, t],
+    [id, searchInput$],
   )
   const searchState = useObservable(searchState$, INITIAL_SEARCH_STATE)
 

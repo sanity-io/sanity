@@ -3,16 +3,7 @@ import isEqual from 'lodash-es/isEqual.js'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {concat, iif, of, Subject, timer} from 'rxjs'
-import {
-  catchError,
-  debounce,
-  distinctUntilChanged,
-  filter,
-  map,
-  scan,
-  switchMap,
-  tap,
-} from 'rxjs/operators'
+import {catchError, debounce, distinctUntilChanged, map, scan, switchMap, tap} from 'rxjs/operators'
 
 import {useClient} from '../../../../../hooks/useClient'
 import {
@@ -46,10 +37,6 @@ const INITIAL_SEARCH_STATE: SearchState = {
   },
 }
 
-function nonNullable<T>(v: T): v is NonNullable<T> {
-  return v !== null
-}
-
 function sanitizeRequest(request: SearchRequest) {
   return {
     ...request,
@@ -79,7 +66,7 @@ export function useSearch({
   handleSearch: (request: SearchRequest) => void
   searchState: SearchState
 } {
-  const [searchRequests$] = useState(() => new Subject<SearchRequest | null>())
+  const [searchRequests$] = useState(() => new Subject<SearchRequest>())
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const maxFieldDepth = useSearchMaxFieldDepth()
   const {strategy} = useWorkspace().search
@@ -98,6 +85,8 @@ export function useSearch({
   // The callbacks are props that can change identity every render. Rebuilding
   // the pipeline on them instead would cancel in-flight searches and reset the
   // debounce, dedupe, and accumulated search state on every caller render.
+  // `search` and `allowEmptyQueries` stay as pipeline dependencies on purpose:
+  // a workspace-config change should cancel in-flight searches.
   const callbacksRef = useRef({onComplete, onError, onStart})
   useEffect(() => {
     callbacksRef.current = {onComplete, onError, onStart}
@@ -106,15 +95,13 @@ export function useSearch({
   const searchState$ = useMemo(
     () =>
       searchRequests$.pipe(
-        // Ignore null values
-        filter(nonNullable),
         // Sanitize request (trim query and filter)
         map(sanitizeRequest),
         // Only emit when values have changed
         distinctUntilChanged(isEqual),
         // Debounce requests
-        debounce((request) => timer(request?.debounceTime || DEFAULT_DEBOUNCE_TIME)),
-        // oxlint-disable-next-line react/refs -- the ref is read at subscription time inside the memoized pipeline, never during render
+        debounce((request) => timer(request.debounceTime || DEFAULT_DEBOUNCE_TIME)),
+        // oxlint-disable-next-line react/refs -- the ref is read when the subject emits, never during render
         switchMap((request) => {
           const callbacks = callbacksRef.current
           callbacks.onStart?.()

@@ -92,26 +92,28 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
 
   const [searchInput$] = useState(() => new Subject<string | null>())
 
-  // `onSearch` can change identity every render. Rebuilding the pipeline on it
-  // instead would cancel in-flight searches and reset accumulated search state.
-  const onSearchRef = useRef(onSearch)
+  // These are read only when a search event fires, and `onSearch` can change
+  // identity every render. Rebuilding the pipeline on them instead would
+  // cancel in-flight searches and reset accumulated search state.
+  const callbacksRef = useRef({onSearch, push})
   useEffect(() => {
-    onSearchRef.current = onSearch
-  }, [onSearch])
+    callbacksRef.current = {onSearch, push}
+  }, [onSearch, push])
 
   const searchState$ = useMemo(
     () =>
       searchInput$.pipe(
         filter(isNonNullable),
         distinctUntilChanged(),
-        // oxlint-disable-next-line react/refs -- the ref is read at subscription time inside the memoized pipeline, never during render
-        switchMap((searchString) =>
-          concat(
+        // oxlint-disable-next-line react/refs -- the ref is read when the subject emits, never during render
+        switchMap((searchString) => {
+          const callbacks = callbacksRef.current
+          return concat(
             of({isLoading: true}),
-            onSearchRef.current(searchString).pipe(
+            callbacks.onSearch(searchString).pipe(
               map((hits) => ({hits, searchString, isLoading: false})),
               catchError((error) => {
-                push({
+                callbacks.push({
                   title: 'Reference search failed',
                   description: error.message,
                   status: 'error',
@@ -122,14 +124,14 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
                 return of({hits: []})
               }),
             ),
-          ),
-        ),
+          )
+        }),
         scan(
           (prevState, nextState): SearchState => ({...prevState, ...nextState}),
           INITIAL_SEARCH_STATE,
         ),
       ),
-    [inputId, push, searchInput$],
+    [inputId, searchInput$],
   )
   const searchState = useObservable(searchState$, INITIAL_SEARCH_STATE)
 

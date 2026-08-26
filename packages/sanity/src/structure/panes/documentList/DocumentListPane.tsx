@@ -242,6 +242,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   useEffect(() => {
     // Clear search field and disable search spinner
     // when switching between panes (i.e. when paneKey changes).
+    // TODO: still a state update from an effect (through the search subject); to be fixed in a follow-up
     handleClearSearch()
     // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setEnableSearchSpinner()
