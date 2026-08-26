@@ -75,13 +75,8 @@ export function getDocumentVersionType(options: {
   return 'published'
 }
 
-// The chip layer says `draft`; the data layer says `drafts` (`systemBundles`).
-function isDraftBundleId(bundleId: string): boolean {
-  return bundleId === 'draft' || bundleId === 'drafts'
-}
-
-function isDraftOrPublishedBundleId(bundleId: string): boolean {
-  return bundleId === 'published' || isDraftBundleId(bundleId)
+function isReleaseBundleId(bundleId: string): boolean {
+  return bundleId !== 'published' && bundleId !== 'draft'
 }
 
 /**
@@ -98,14 +93,16 @@ export function getVersionContextMenuActionsContext(options: {
 }): PartialContext<DocumentActionsContext> {
   const {schemaType, documentGroupId, fromRelease, isScheduledDraft = false} = options
 
+  const isRelease = isReleaseBundleId(fromRelease)
+
   const versionType = getDocumentVersionType({
     isScheduledDraft,
-    isVersionDocument: !isDraftOrPublishedBundleId(fromRelease),
+    isVersionDocument: isRelease,
     perspectiveName: fromRelease,
     draftsEnabled: true,
   })
 
-  const releaseId = isDraftOrPublishedBundleId(fromRelease) ? undefined : fromRelease
+  const releaseId = isRelease ? fromRelease : undefined
 
   return {schemaType, documentId: documentGroupId, versionType, releaseId}
 }
@@ -123,7 +120,7 @@ export function getDiscardDocumentActionId(options: {
   const {fromRelease, isScheduledDraft = false} = options
 
   if (fromRelease === 'published') return null
-  if (isDraftBundleId(fromRelease)) {
+  if (fromRelease === 'draft') {
     return isScheduledDraft ? 'discardVersion' : 'discardChanges'
   }
   return 'discardVersion'

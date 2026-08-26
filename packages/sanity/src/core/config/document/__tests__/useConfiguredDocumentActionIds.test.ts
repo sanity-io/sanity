@@ -36,6 +36,12 @@ describe('getDocumentVersionType', () => {
     expect(getDocumentVersionType({isVersionDocument: true})).toEqual('version')
   })
 
+  it('prefers version over published', () => {
+    expect(getDocumentVersionType({isVersionDocument: true, perspectiveName: 'published'})).toEqual(
+      'version',
+    )
+  })
+
   it('resolves published when perspectiveName is published', () => {
     expect(
       getDocumentVersionType({
@@ -140,21 +146,6 @@ describe('getVersionContextMenuActionsContext', () => {
       releaseId: undefined,
     })
   })
-
-  it('resolves draft context when fromRelease is drafts', () => {
-    expect(
-      getVersionContextMenuActionsContext({
-        schemaType: 'article',
-        documentGroupId: 'doc-1',
-        fromRelease: 'drafts',
-      }),
-    ).toEqual({
-      schemaType: 'article',
-      documentId: 'doc-1',
-      versionType: 'draft',
-      releaseId: undefined,
-    })
-  })
 })
 
 describe('getDiscardDocumentActionId', () => {
@@ -168,9 +159,5 @@ describe('getDiscardDocumentActionId', () => {
 
   it('returns null for published chips', () => {
     expect(getDiscardDocumentActionId({fromRelease: 'published'})).toBeNull()
-  })
-
-  it('maps drafts bundle chips to discardChanges', () => {
-    expect(getDiscardDocumentActionId({fromRelease: 'drafts'})).toBe('discardChanges')
   })
 })
