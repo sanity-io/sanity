@@ -1,9 +1,9 @@
-import {Text, TextInput, Flex} from '@sanity/ui'
+import {Text, TextInput} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useMemo, useState, type JSX} from 'react'
 import {useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'

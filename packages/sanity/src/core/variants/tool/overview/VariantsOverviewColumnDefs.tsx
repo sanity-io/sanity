@@ -1,7 +1,7 @@
-import {Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
+import {Card, Skeleton, Stack, Text} from '@sanity/ui'
 import {type HTMLProps, useMemo, type RefAttributes} from 'react'
 import {StateLink} from 'sanity/router'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {useTranslation, type UseTranslationResponse} from '../../../i18n/hooks/useTranslation'
 import {Headers} from '../../../releases/tool/components/Table/TableHeader'
@@ -25,7 +25,7 @@ export interface TableVariant extends SystemVariant {
 const VariantDocumentsCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum}) => {
   if (datum.isLoading || datum.documentCount === undefined) {
     return (
-      <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
+      <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3}>
         <Text size={1}>
           <Skeleton animated radius={1} style={{width: '4ch'}} />
         </Text>
@@ -34,7 +34,7 @@ const VariantDocumentsCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, d
   }
 
   return (
-    <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
+    <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3}>
       <Text muted size={1}>
         {datum.documentCount === null ? '-' : datum.documentCount}
       </Text>
@@ -77,9 +77,9 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
 
   return (
     <Box {...cellProps} flexBasis="0%" flexGrow={1} paddingLeft={3} paddingRight={2} paddingY={1}>
-      <Flex align="center" gap={3}>
+      <Flex alignItems="center" gap={3}>
         <Card as={VariantLink} data-as="a" flex={1} padding={2} radius={2} tone="inherit">
-          <Flex align="center" gap={3}>
+          <Flex alignItems="center" gap={3}>
             {/* min-width: 0 lets the flex child shrink below its content width so a long name
                 truncates with a trailing ellipsis instead of overflowing on narrow viewports. */}
             <Stack flex={1} gap={2} style={{minWidth: 0}}>
@@ -109,11 +109,11 @@ export function variantsOverviewColumnDefs(
       header: (props) => (
         <Flex
           {...props.headerProps}
-          flex={1}
+          flexBasis="0%"
+          flexGrow={1}
           paddingLeft={3}
           paddingRight={2}
           paddingY={3}
-          sizing="border"
         >
           <Headers.SortHeaderButton {...props} text={t('overview.table.variant')} />
         </Flex>
@@ -126,7 +126,7 @@ export function variantsOverviewColumnDefs(
       sorting: false,
       width: 120,
       header: ({headerProps}) => (
-        <Flex {...headerProps} paddingY={3} sizing="border">
+        <Flex {...headerProps} paddingY={3}>
           <Headers.BasicHeader text={t('overview.table.documents')} />
         </Flex>
       ),

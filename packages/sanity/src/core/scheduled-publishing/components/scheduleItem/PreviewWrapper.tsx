@@ -1,8 +1,8 @@
 import {type SchemaType} from '@sanity/types'
-import {Badge, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, Card, Stack, Text} from '@sanity/ui'
 import {type ComponentPropsWithoutRef, type ElementType, type ReactNode, useState} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {DocumentVersionsStatus} from '../../../components/documentStatus/DocumentVersionsStatus'
@@ -69,7 +69,7 @@ function PreviewWrapper<TLink extends ElementType | undefined = undefined>(props
       tone={validationTone}
       style={mode === 'upsell' && schedule.state === 'scheduled' ? {opacity: 0.7} : undefined}
     >
-      <Flex align="center" gap={1} justify="space-between">
+      <Flex alignItems="center" gap={1} justifyContent="space-between">
         <Tooltip
           delay={{open: 400}}
           placement="bottom-end"
@@ -92,7 +92,12 @@ function PreviewWrapper<TLink extends ElementType | undefined = undefined>(props
             tabIndex={0}
             tone={validationTone}
           >
-            <Flex align="center" gap={3} justify="flex-start" paddingLeft={children ? 0 : [1, 2]}>
+            <Flex
+              alignItems="center"
+              gap={3}
+              justifyContent="flex-start"
+              paddingLeft={children ? 0 : [1, 2]}
+            >
               {children && <Box style={{flexBasis: 'auto', flexGrow: 1}}>{children}</Box>}
 
               {/* Badge */}
@@ -141,7 +146,7 @@ function PreviewWrapper<TLink extends ElementType | undefined = undefined>(props
                 </Box>
               )}
 
-              <Flex align="center" style={{flexShrink: 0, marginLeft: 'auto'}}>
+              <Flex alignItems="center" style={{flexShrink: 0, marginLeft: 'auto'}}>
                 {/* Avatar */}
                 <Box display={['none', 'none', 'block']} marginX={3} style={{flexShrink: 0}}>
                   <User id={schedule?.author} />
@@ -160,7 +165,7 @@ function PreviewWrapper<TLink extends ElementType | undefined = undefined>(props
           </Card>
         </Tooltip>
 
-        <Flex justify="center" style={{width: '38px'}}>
+        <Flex justifyContent="center" style={{width: '38px'}}>
           {/* Validation status (only displayed on upcoming schedules) */}
           {schedule.state === 'scheduled' && (
             <Box>
