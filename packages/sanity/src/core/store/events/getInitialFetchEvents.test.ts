@@ -3,6 +3,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {collectEmissions} from './__fixtures__/collect.fixture'
 import {
   createDocumentVersionEvent,
+  deleteDocumentVersionEvent,
   DOCUMENT_ID,
   DRAFT_ID,
   minutesAfterBase,
@@ -65,6 +66,46 @@ describe('getInitialFetchEvents', () => {
     // Ids are (re)assigned client-side per variant.
     expect(result.events[1].id).toBe(apiCreate.versionRevisionId)
     expect(result.error).toBeNull()
+  })
+
+  it('version: does not duplicate a delete that shares its id with a synthesized edit', async () => {
+    // Delete events often reuse the last edit's revision as versionRevisionId, so the
+    // synthesized edit and the delete get the same client-side id.
+    const lastEditRevision = '6bffe811-d5cc-4c73-995f-8b742d3a77f9'
+    const apiDelete = deleteDocumentVersionEvent({
+      versionId: VERSION_ID,
+      versionRevisionId: lastEditRevision,
+      timestamp: '2026-08-26T09:51:12Z',
+      documentVariantType: 'version',
+    })
+    const apiCreate = createDocumentVersionEvent({
+      versionId: VERSION_ID,
+      versionRevisionId: 'HyFGxFe6HLdujEBXb2YLpb',
+      timestamp: '2026-08-26T09:47:08Z',
+      documentVariantType: 'version',
+    })
+    const {client} = createMockClient({
+      respond: eventsResponse(VERSION_ID, [apiDelete, apiCreate]),
+    })
+    mockGetDocumentTransactions.mockResolvedValue([
+      editTransaction({
+        id: lastEditRevision,
+        documentId: VERSION_ID,
+        timestamp: '2026-08-26T09:50:00Z',
+      }),
+    ])
+
+    const {events$} = getInitialFetchEvents({client, documentId: VERSION_ID})
+    const {values, subscription} = collectEmissions(events$)
+    await vi.waitFor(() => expect(values.at(-1)?.loading).toBe(false))
+    subscription.unsubscribe()
+
+    const events = values.at(-1)!.events
+    expect(events.filter((event) => event.type === 'deleteDocumentVersion')).toHaveLength(1)
+    expect(events.map((event) => event.type)).toEqual([
+      'deleteDocumentVersion',
+      'createDocumentVersion',
+    ])
   })
 
   it('version: uses the creation event as the baseline for edit synthesis', async () => {
