@@ -1290,6 +1290,7 @@ import type {
   resolveConditionalProperty,
   resolveConfig,
   resolveDiffComponent,
+  ResolvedTemplate,
   ResolvedUploader,
   resolveInitialObjectValue,
   resolveInitialValue,
@@ -5703,6 +5704,9 @@ describe('sanity', () => {
   })
   test('resolveDiffComponent', () => {
     expectTypeOf<typeof resolveDiffComponent>().toBeFunction()
+  })
+  test('ResolvedTemplate', () => {
+    expectTypeOf<ResolvedTemplate>().not.toBeNever()
   })
   test('ResolvedUploader', () => {
     expectTypeOf<ResolvedUploader>().not.toBeNever()

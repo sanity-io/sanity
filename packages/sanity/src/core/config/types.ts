@@ -26,7 +26,12 @@ import {type LocalePluginOptions, type LocaleSource} from '../i18n/types'
 import {type AuthStore} from '../store/authStore/types'
 import {type SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
 import {type SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
-import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates/types'
+import {
+  type InitialValueTemplateItem,
+  type ResolvedTemplate,
+  type Template,
+  type TemplateItem,
+} from '../templates/types'
 import {type StudioTheme} from '../theme'
 import {type AuthConfig} from './auth/types'
 import {type DocumentActionComponent} from './document/actions'
@@ -966,7 +971,7 @@ export interface Source {
   /** The schema of the source. */
   schema: Schema
   /** The templates of the source. */
-  templates: Template[]
+  templates: ResolvedTemplate[]
   /** The tools of the source. */
   tools: Tool[]
   /** The current user of the source. */
