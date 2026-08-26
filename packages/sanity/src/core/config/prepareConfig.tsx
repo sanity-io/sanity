@@ -33,8 +33,13 @@ import {validateWorkspaces} from '../studio/workspaces/validateWorkspaces'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates/types'
 import {canonicalHash} from '../util/canonicalHash'
+import {isPublishedId} from '../util/draftUtils'
 import {EMPTY_ARRAY} from '../util/empty'
 import {isNonNullable} from '../util/isNonNullable'
+import {
+  type StructureNodeIdValidationResult,
+  validateStructureNodeId,
+} from '../util/validateStructureNodeId'
 import {
   advancedVersionControlEnabledReducer,
   announcementsEnabledReducer,
@@ -68,6 +73,7 @@ import {
   scheduledDraftsEnabledReducer,
   schemaTemplatesReducer,
   searchStrategyReducer,
+  singletonsReducer,
   toolsReducer,
   variantsTypesReducer,
   variantsEnabledReducer,
@@ -87,6 +93,7 @@ import {
   type MissingConfigFile,
   type PluginOptions,
   type PreparedConfig,
+  type SingletonDefinition,
   type SingleWorkspace,
   type Source,
   type SourceClientOptions,
@@ -554,6 +561,22 @@ function resolveSource({
   const defaultAssetSources = createDatasetAssetSources(config, client)
   const mediaLibraryAssetSources = createMediaLibraryAssetSources(config)
 
+  let singletons: SingletonDefinition[] = []
+
+  try {
+    singletons = resolveConfigProperty({
+      config,
+      context,
+      initialValue: [],
+      propertyName: 'document.singletons',
+      reducer: singletonsReducer,
+    })
+  } catch (error) {
+    errors.push(error)
+  }
+
+  validateSingletons(singletons, schema, errors)
+
   let templates!: Source['templates']
   try {
     templates = resolveConfigProperty({
@@ -811,6 +834,7 @@ function resolveSource({
           asyncReducer: resolveProductionUrlReducer,
         }),
       resolveNewDocumentOptions,
+      singletons,
       unstable_languageFilter: (partialContext) =>
         resolveConfigProperty({
           config,
@@ -1037,4 +1061,167 @@ function joinBasePath(rootPath: string, basePath?: string) {
     .join('/')
 
   return `/${joined}`
+}
+
+/**
+ * Validates the resolved singleton definitions, pushing every problem onto the
+ * shared `errors` array.
+ */
+function validateSingletons(
+  singletons: SingletonDefinition[],
+  schema: Schema,
+  errors: unknown[],
+): void {
+  const validations = singletons.map((singleton) => ({
+    singleton,
+    idError: getSingletonIdError(singleton),
+    documentIdError: getSingletonDocumentIdError(singleton),
+    schemaTypeError: getSingletonSchemaTypeError(singleton, schema),
+  }))
+
+  errors.push(
+    ...validations.flatMap(({idError, documentIdError, schemaTypeError}) =>
+      [idError, documentIdError, schemaTypeError].filter((error) => error !== undefined),
+    ),
+  )
+
+  const ids = validations
+    .filter(({idError}) => idError === undefined)
+    .map(({singleton}) => singleton.id)
+
+  const documentIds = validations
+    .filter(({documentIdError}) => documentIdError === undefined)
+    .map(({singleton}) => singleton.documentId)
+
+  const duplicateIds = findDuplicates(ids)
+
+  if (duplicateIds.length > 0) {
+    errors.push(
+      new Error(
+        `Duplicate singleton definition ids found: ${duplicateIds.join(', ')}. ` +
+          `Each singleton \`id\` must be unique.`,
+      ),
+    )
+  }
+
+  const duplicateDocumentIds = findDuplicates(documentIds)
+
+  if (duplicateDocumentIds.length > 0) {
+    errors.push(
+      new Error(
+        `Multiple singleton definitions use the same document id: ${duplicateDocumentIds.join(', ')}. ` +
+          `Each singleton \`documentId\` must be unique.`,
+      ),
+    )
+  }
+
+  const singletonSchemaTypeNames = new Set(singletons.map((singleton) => singleton.schemaType))
+
+  const typeNameCollisions = [...new Set(ids)].filter(
+    (id) => !singletonSchemaTypeNames.has(id) && schema.get(id)?.type?.name === 'document',
+  )
+
+  if (typeNameCollisions.length !== 0) {
+    errors.push(
+      new Error(
+        `Singleton definition ids collide with document type names: ${typeNameCollisions.join(', ')}. ` +
+          `Those document types appear in the default content list alongside the singletons, ` +
+          `where ids must be unique. Rename the singleton \`id\`.`,
+      ),
+    )
+  }
+}
+
+function findDuplicates<Type>(values: Iterable<Type>): Type[] {
+  const seen = new Set<Type>()
+  const duplicates = new Set<Type>()
+
+  for (const value of values) {
+    if (seen.has(value)) {
+      duplicates.add(value)
+      continue
+    }
+
+    seen.add(value)
+  }
+
+  return [...seen].filter((value) => duplicates.has(value))
+}
+
+function getSingletonIdError({id}: SingletonDefinition): Error | undefined {
+  if (typeof id !== 'string' || id.length === 0) {
+    return new Error(
+      `Singleton definitions must have a non-empty string \`id\`, but found ${JSON.stringify(id)}.`,
+    )
+  }
+
+  const result = validateStructureNodeId(id)
+
+  if (!result.isValid) {
+    return new Error(
+      `Singleton definition "${id}" has an invalid \`id\`: ${getStructureNodeIdProblem(result)}.`,
+    )
+  }
+
+  return undefined
+}
+
+function getStructureNodeIdProblem(
+  result: Exclude<StructureNodeIdValidationResult, {isValid: true}>,
+): string {
+  switch (result.reason) {
+    case 'invalidType':
+      return `expected a string, but found ${result.type}`
+    case 'disallowedCharacter':
+      return `it contains "${result.character}", but Structure Tool node ids may only contain [a-zA-Z0-9._-]`
+    case 'reservedPrefix':
+      return `it starts with "${result.prefix}", which Structure Tool reserves for its own panes`
+    default: {
+      const unknownResult: never = result
+      throw new Error(
+        `Unknown structure node id validation result: ${JSON.stringify(unknownResult)}`,
+      )
+    }
+  }
+}
+
+function getSingletonDocumentIdError({id, documentId}: SingletonDefinition): Error | undefined {
+  if (typeof documentId !== 'string' || documentId.length === 0) {
+    return new Error(
+      `Singleton definition "${id}" must have a non-empty string \`documentId\`, but found ${JSON.stringify(documentId)}.`,
+    )
+  }
+
+  const result = validateStructureNodeId(documentId)
+  const hasDisallowedCharacter = !result.isValid && result.reason === 'disallowedCharacter'
+
+  if (!isPublishedId(documentId) || hasDisallowedCharacter) {
+    return new Error(
+      `Singleton definition "${id}" has invalid \`documentId\` "${documentId}". ` +
+        `It must be a document group id (no "drafts." or "versions." prefix) using only [a-zA-Z0-9._-].`,
+    )
+  }
+
+  return undefined
+}
+
+function getSingletonSchemaTypeError(
+  {id, schemaType}: SingletonDefinition,
+  schema: Schema,
+): Error | undefined {
+  const resolvedSchemaType = typeof schemaType === 'string' ? schema.get(schemaType) : undefined
+
+  if (!resolvedSchemaType) {
+    return new Error(
+      `Singleton definition "${id}" references schema type "${schemaType}", which does not exist in the schema.`,
+    )
+  }
+
+  if (resolvedSchemaType.type?.name !== 'document') {
+    return new Error(
+      `Singleton definition "${id}" references schema type "${schemaType}", which is not a document type.`,
+    )
+  }
+
+  return undefined
 }
