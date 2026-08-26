@@ -459,6 +459,7 @@ import type {
   DocumentGroupEvent,
   DocumentGroupInventory,
   DocumentGroupInventoryAction,
+  DocumentGroupInventoryComponents,
   DocumentGroupInventoryPerspectiveList,
   DocumentGroupInventoryProps,
   DocumentGroupInventoryReferencePreviewLinkProps,
@@ -510,6 +511,7 @@ import type {
   DocumentVersion,
   DocumentVersionEvent,
   DocumentVersionEventType,
+  DocumentVersionIcons,
   DocumentVersionSnapshots,
   DocumentVersionsStatus,
   DocumentVersionsStatusIndicator,
@@ -951,6 +953,7 @@ import type {
   isValidationInfoMarker,
   isValidationWarning,
   isValidationWarningMarker,
+  isVariantId,
   isVariantVersion,
   isVersionId,
   ItemDiff,
@@ -1618,6 +1621,7 @@ import type {
   useDocumentValues,
   useDocumentVersionInfo,
   useDocumentVersions,
+  useDocumentVersionTitle,
   useDocumentVersionTypeSortedList,
   useEditState,
   useEnhancedObjectDialog,
@@ -3193,11 +3197,14 @@ describe('sanity', () => {
   test('DocumentGroupInventoryAction', () => {
     expectTypeOf<typeof DocumentGroupInventoryAction>().not.toBeNever()
   })
+  test('DocumentGroupInventoryComponents', () => {
+    expectTypeOf<DocumentGroupInventoryComponents>().toBeObject()
+  })
   test('DocumentGroupInventoryPerspectiveList', () => {
     expectTypeOf<DocumentGroupInventoryPerspectiveList>().toBeObject()
   })
   test('DocumentGroupInventoryProps', () => {
-    expectTypeOf<DocumentGroupInventoryProps>().toBeObject()
+    expectTypeOf<DocumentGroupInventoryProps>().not.toBeNever()
   })
   test('DocumentGroupInventoryReferencePreviewLinkProps', () => {
     expectTypeOf<DocumentGroupInventoryReferencePreviewLinkProps>().toBeObject()
@@ -3345,6 +3352,9 @@ describe('sanity', () => {
   })
   test('DocumentVersionEventType', () => {
     expectTypeOf<DocumentVersionEventType>().not.toBeNever()
+  })
+  test('DocumentVersionIcons', () => {
+    expectTypeOf<typeof DocumentVersionIcons>().toBeFunction()
   })
   test('DocumentVersionSnapshots', () => {
     expectTypeOf<DocumentVersionSnapshots>().toBeObject()
@@ -4673,6 +4683,9 @@ describe('sanity', () => {
   })
   test('isValidationWarningMarker', () => {
     expectTypeOf<typeof isValidationWarningMarker>().toBeFunction()
+  })
+  test('isVariantId', () => {
+    expectTypeOf<typeof isVariantId>().toBeFunction()
   })
   test('isVariantVersion', () => {
     expectTypeOf<typeof isVariantVersion>().toBeFunction()
@@ -6390,10 +6403,10 @@ describe('sanity', () => {
     expectTypeOf<typeof Translate>().toBeFunction()
   })
   test('TranslateComponentMap', () => {
-    expectTypeOf<TranslateComponentMap>().not.toBeNever()
+    expectTypeOf<TranslateComponentMap<any>>().not.toBeNever()
   })
   test('TranslationProps', () => {
-    expectTypeOf<TranslationProps>().toBeObject()
+    expectTypeOf<TranslationProps<any>>().toBeObject()
   })
   test('truncateString', () => {
     expectTypeOf<typeof truncateString>().toBeFunction()
@@ -6684,6 +6697,9 @@ describe('sanity', () => {
   })
   test('useDocumentVersions', () => {
     expectTypeOf<typeof useDocumentVersions>().toBeFunction()
+  })
+  test('useDocumentVersionTitle', () => {
+    expectTypeOf<typeof useDocumentVersionTitle>().toBeFunction()
   })
   test('useDocumentVersionTypeSortedList', () => {
     expectTypeOf<typeof useDocumentVersionTypeSortedList>().not.toBeNever()
