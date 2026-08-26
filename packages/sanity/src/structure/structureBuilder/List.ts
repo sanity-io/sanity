@@ -128,6 +128,29 @@ export interface BuildableList extends BuildableGenericList {
 }
 
 /**
+ * A `ListBuilder` with the `items` method removed at the type level.
+ *
+ * Returned by `ListBuilder.singletons()`: calling `.items()` afterwards would
+ * replace the whole items array and silently discard the singleton items, so
+ * the type prevents it. Call `.items()` before `.singletons()`, or use
+ * `S.listItem().singleton()` inside a regular `.items()` array, when mixing
+ * singletons with other items.
+ *
+ * The runtime object is a plain {@link ListBuilder}; only the declared type
+ * narrows. Chainable methods keep returning `SingletonListBuilder` so the
+ * omission cannot be undone by further chaining.
+ *
+ * @public
+ */
+export type SingletonListBuilder = {
+  [Key in keyof Omit<ListBuilder, 'items'>]: ListBuilder[Key] extends (
+    ...args: infer Args
+  ) => ListBuilder
+    ? (...args: Args) => SingletonListBuilder
+    : ListBuilder[Key]
+}
+
+/**
  * A `ListBuilder` is used to build a list of items in the structure tool.
  *
  * @public */
@@ -157,6 +180,39 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
    */
   items(items: (ListItemBuilder | ListItem | Divider | DividerBuilder)[]): ListBuilder {
     return this.clone({items})
+  }
+
+  /**
+   * Append an item for each provided singleton definition id to the list.
+   *
+   * Sugar for `.items(singletonIds.map((id) => S.listItem().singleton(id)))`,
+   * but additive: any items previously declared via `.items(...)` are
+   * preserved and the singleton items are appended. Repeated `.singletons()`
+   * calls keep appending.
+   *
+   * Called without arguments, every singleton registered in
+   * `document.singletons` is appended, in registration order.
+   *
+   * Like every other `S.list()` chain, the caller must still set `.id(...)`
+   * and `.title(...)` themselves; this helper does not produce a complete
+   * list on its own.
+   *
+   * The returned builder omits the `items` method at the type level, because
+   * calling `.items()` afterwards would replace the whole items array and
+   * silently discard the singleton items. See {@link SingletonListBuilder}.
+   *
+   * Every id in `singletonIds` must refer to a registered singleton
+   * definition, or a `SerializeError` is thrown immediately.
+   *
+   * @param singletonIds - the singleton definition ids to render as list
+   *   items. Defaults to every registered singleton definition id.
+   * @returns list builder with the singleton list items appended
+   */
+  singletons(singletonIds?: string[]): SingletonListBuilder {
+    const builder = this._context.getStructureBuilder()
+    const ids = singletonIds ?? this._context.document.singletons.map(({id}) => id)
+    const singletonItems = ids.map((singletonId) => builder.listItem().singleton(singletonId))
+    return this.items([...(this.spec.items ?? []), ...singletonItems])
   }
 
   /** Get list builder items
@@ -196,8 +252,14 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
     if (dupes.length > 0) {
       const dupeIds = dupes.map((item) => item.id).slice(0, 5)
       const dupeDesc = dupes.length > 5 ? `${dupeIds.join(', ')}...` : dupeIds.join(', ')
+      const singletonIds = new Set(this._context.document.singletons.map(({id}) => id))
+
+      const singletonHint = dupes.some((item) => singletonIds.has(item.id))
+        ? '. Some of these are singleton definition ids. Check whether `singletons()` added a singleton that is already in `items()`.'
+        : ''
+
       throw new SerializeError(
-        `List items with same ID found (${dupeDesc})`,
+        `List items with same ID found (${dupeDesc})${singletonHint}`,
         options.path,
         options.index,
       ).withHelpUrl(HELP_URL.LIST_ITEM_IDS_MUST_BE_UNIQUE)
