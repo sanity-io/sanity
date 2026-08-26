@@ -22,7 +22,8 @@ describe('_getModalOption', () => {
   })
 
   it('returns an undefined width (not an empty array) for an explicit empty width array', () => {
-    // An empty responsive array still falls through to the edit dialog width defaults.
+    // An empty responsive array still falls through to the edit dialog width defaults
+    // (container index 1, ~640px — matching the PTE column).
     const result = _getModalOption(withModal({type: 'popover', width: []}))
     expect(result?.width).toBeUndefined()
   })

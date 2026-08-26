@@ -9,9 +9,9 @@ import type {EditDialogOuterBoundaryContextValue} from '../../core/form/componen
  *
  * Edit dialogs constrain descendant popovers to their own scroll container through a generic
  * `BoundaryElementProvider` (see #12721). Popovers that should be allowed to overflow the dialog
- * (currently only the array insert menu) can read this context to constrain themselves to the
- * boundary the dialog itself sits in, instead of the dialog. `null` means "not inside an edit
- * dialog".
+ * (the array insert menu, and reference autocomplete results) can read this context to constrain
+ * themselves to the boundary the dialog itself sits in, instead of the dialog. `null` means "not
+ * inside an edit dialog".
  *
  * @internal
  */
