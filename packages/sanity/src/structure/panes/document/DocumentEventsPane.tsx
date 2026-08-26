@@ -68,6 +68,11 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
     ) {
       return targetDocumentState.targetDocument._id
     }
+    if (targetDocumentState.status === 'variant-missing' && targetDocumentState.creatableTarget) {
+      // When it's a creatable target (viewing a published document on a draft perspective), we need to use the id of the creatable target
+      // Which is the draft that will be created when the user edits the variant.
+      return targetDocumentState.creatableTarget.id
+    }
     if (typeof selectedPerspectiveName === 'undefined') {
       return getDraftId(options.id)
     }
