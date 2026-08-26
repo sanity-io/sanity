@@ -83,7 +83,7 @@ export function CellLayout(props: RowLayoutProps & ComponentProps<typeof Root>) 
   return (
     <Root
       forwardedAs={Flex}
-      direction="column"
+      flexDirection="column"
       border
       selected={selected}
       aria-selected={selected}
