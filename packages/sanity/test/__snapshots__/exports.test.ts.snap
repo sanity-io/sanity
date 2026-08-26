@@ -763,6 +763,7 @@ exports[`exports snapshot 1`] = `
     "CommentInputContext": "object",
     "CommentsAuthoringPathContext": "object",
     "CommentsContext": "object",
+    "CommentsContextCurrent": "object",
     "CommentsEnabledContext": "object",
     "CommentsIntentContext": "object",
     "CommentsOnboardingContext": "object",

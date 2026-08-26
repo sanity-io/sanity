@@ -17,6 +17,7 @@ export {ColorSchemeValueContext} from '../_singletons/context/ColorSchemeValueCo
 export {CommentInputContext} from '../_singletons/context/CommentInputContext'
 export {CommentsAuthoringPathContext} from '../_singletons/context/CommentsAuthoringPathContext'
 export {CommentsContext} from '../_singletons/context/CommentsContext'
+export {CommentsContextCurrent} from '../_singletons/context/CommentsContextCurrent'
 export {CommentsEnabledContext} from '../_singletons/context/CommentsEnabledContext'
 export {CommentsIntentContext} from '../_singletons/context/CommentsIntentContext'
 export {CommentsOnboardingContext} from '../_singletons/context/CommentsOnboardingContext'
