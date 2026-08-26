@@ -24,7 +24,10 @@ import {
   type InternalReferences,
 } from '../machines/deletionMachine'
 import {type selectionMachine} from '../machines/selectionMachine'
-import {type DocumentGroupInventoryReferencePreviewLinkProps} from '../types'
+import {
+  type DocumentGroupInventoryComponents,
+  type DocumentGroupInventoryReferencePreviewLinkProps,
+} from '../types'
 import {
   ChevronWrapper,
   CrossDatasetReferencesDetails,
@@ -33,7 +36,6 @@ import {
   OtherReferenceCount,
   Table,
 } from './ConfirmDeleteDialog.styles'
-import {type DocumentGroupInventoryProps} from './DocumentGroupInventory'
 
 const EMPTY_INTERNAL_REFERENCES: InternalReferences = {totalCount: 0, references: []}
 const EMPTY_CROSS_DATASET_REFERENCES: CrossDatasetReferences = {totalCount: 0, references: []}
@@ -44,7 +46,7 @@ interface Props {
   deletionRef: ActorRefFromLogic<typeof deletionMachine>
   selectionRef: ActorRefFromLogic<typeof selectionMachine>
   portalElementName: string
-  components: DocumentGroupInventoryProps['components']
+  components: DocumentGroupInventoryComponents
 }
 
 export const ConfirmDeleteDialog: ComponentType<Props> = ({
