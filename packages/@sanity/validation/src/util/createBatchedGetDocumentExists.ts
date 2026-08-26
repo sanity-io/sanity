@@ -7,6 +7,7 @@ import {
   EMPTY,
   filter,
   finalize,
+  firstValueFrom,
   from,
   map,
   mergeMap,
@@ -16,6 +17,8 @@ import {
   tap,
   throwError,
 } from 'rxjs'
+
+import {cancelWith} from '../abortSignal'
 
 interface AvailabilityResponse {
   omitted: {id: string; reason: 'existence' | 'permission'}[]
@@ -110,34 +113,19 @@ export function createBatchedGetDocumentExists(
     share(),
   )
 
-  return function getDocumentExists(options) {
+  return async function getDocumentExists(options) {
     const signal = options.signal || defaultSignal
-    return new Promise<boolean>((resolve, reject) => {
-      const onAbort = () => {
-        if (!signal) return
-        subscription.unsubscribe()
-        reject(signal.reason)
-      }
-      const subscription = existence$
-        .pipe(filter(({id, signal: resultSignal}) => id === options.id && resultSignal === signal))
-        .subscribe({
-          error: (error) => {
-            signal?.removeEventListener('abort', onAbort)
-            reject(error)
-          },
-          next: ({exists}) => {
-            signal?.removeEventListener('abort', onAbort)
-            subscription.unsubscribe()
-            resolve(exists)
-          },
-        })
+    signal?.throwIfAborted()
 
-      if (signal?.aborted) {
-        onAbort()
-        return
-      }
-      signal?.addEventListener('abort', onAbort, {once: true})
-      id$.next({id: options.id, signal})
-    })
+    const result = firstValueFrom(
+      existence$.pipe(
+        filter(({id, signal: resultSignal}) => id === options.id && resultSignal === signal),
+        map(({exists}) => exists),
+        cancelWith(signal),
+      ),
+    )
+
+    id$.next({id: options.id, signal})
+    return result
   }
 }
