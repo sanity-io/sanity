@@ -491,3 +491,26 @@ export interface EventsStore {
  * @internal
  **/
 export type DocumentVersionEventType = DocumentGroupEvent['type']
+
+/**
+ * Shape of the accumulated events state emitted by the events observable pipeline
+ * (see `getInitialFetchEvents` and `createEventsObservable`).
+ * @internal
+ */
+export interface EventsObservableValue {
+  events: DocumentGroupEvent[]
+  nextCursor: string
+  loading: boolean
+  error: null | Error
+}
+
+/**
+ * Initial (loading) state of the events observable pipeline.
+ * @internal
+ */
+export const INITIAL_EVENTS_VALUE: EventsObservableValue = {
+  events: [],
+  nextCursor: '',
+  loading: true,
+  error: null,
+}
