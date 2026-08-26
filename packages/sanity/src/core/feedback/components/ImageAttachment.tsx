@@ -1,6 +1,7 @@
 import {BinaryDocumentIcon} from '@sanity/icons/BinaryDocument'
 import {UploadIcon} from '@sanity/icons/Upload'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {FileInputButton} from '../../form/inputs/files/common/FileInputButton/FileInputButton'
@@ -59,7 +60,7 @@ export function ImageAttachment(props: ImageAttachmentProps) {
           {t('feedback.attachment.label')}
         </Text>
         <Card padding={3} radius={2} border>
-          <Flex align="center" justify="space-between">
+          <Flex alignItems="center" justifyContent="space-between">
             <Text size={1} muted>
               {imageFile.name}
             </Text>
@@ -89,8 +90,8 @@ export function ImageAttachment(props: ImageAttachmentProps) {
         onFilesOver={onFilesOver}
         onFilesOut={onFilesOut}
       >
-        <Flex align="center" justify="space-between">
-          <Flex align="center" gap={2}>
+        <Flex alignItems="center" justifyContent="space-between">
+          <Flex alignItems="center" gap={2}>
             <Text size={1} muted>
               <BinaryDocumentIcon />
             </Text>

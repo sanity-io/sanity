@@ -180,7 +180,10 @@ export default function PresentationTool(props: {
     variant,
   })
 
-  const [overlaysConnection, setOverlaysConnection] = useStatus()
+  const overlaysConnection = useSelector(
+    presentationRef,
+    (state) => state.context.overlaysConnection,
+  )
   const [loadersConnection, setLoadersConnection] = useStatus()
   const [previewKitConnection, setPreviewKitConnection] = useStatus()
   const [_handlesPerspectiveChange, setHandlesPerspectiveChange] = useState(false)
@@ -309,7 +312,9 @@ export default function PresentationTool(props: {
       presentationRef.send({type: 'iframe loaded'})
     })
 
-    comlink.onStatus(setOverlaysConnection)
+    comlink.onStatus((statusEvent) => {
+      presentationRef.send({type: 'overlays status', statusEvent})
+    })
 
     const stop = comlink.start()
     // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
@@ -319,7 +324,7 @@ export default function PresentationTool(props: {
       setVisualEditingComlink(null)
     }
     // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
-  }, [controller, presentationRef, setDocumentsOnPage, setOverlaysConnection, targetOrigin])
+  }, [controller, presentationRef, setDocumentsOnPage, targetOrigin])
 
   useEffect(() => {
     if (!controller) return undefined

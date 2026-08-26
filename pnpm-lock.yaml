@@ -17,8 +17,8 @@ catalogs:
       specifier: 1.62.1
       version: 1.62.1
     '@sanity/client':
-      specifier: ^8.2.0
-      version: 8.2.0
+      specifier: ^8.3.0
+      version: 8.3.0
     '@sanity/migrate':
       specifier: ^8.0.2
       version: 8.0.2
@@ -26,14 +26,14 @@ catalogs:
       specifier: ^1.1.0
       version: 1.1.0
     '@sanity/tsdown-config':
-      specifier: ^0.26.1
-      version: 0.26.1
+      specifier: ^0.26.2
+      version: 0.26.2
     '@sanity/ui':
       specifier: ^4.0.6
       version: 4.0.6
     '@sanity/vanilla-extract-vite-plugin':
-      specifier: ^0.2.13
-      version: 0.2.14
+      specifier: ^0.2.15
+      version: 0.2.15
     '@types/node':
       specifier: ^24.13.3
       version: 24.13.3
@@ -93,7 +93,7 @@ catalogs:
       version: 7.0.2
     ui5:
       specifier: npm:@sanity/ui@alpha
-      version: 5.0.0-alpha.5
+      version: 5.0.0-alpha.6
     vite:
       specifier: ^8.2.2
       version: 8.2.2
@@ -111,6 +111,9 @@ importers:
       '@repo/bundle-manager':
         specifier: workspace:*
         version: link:packages/@repo/bundle-manager
+      '@repo/oxlint-plugin-i18n':
+        specifier: workspace:*
+        version: link:packages/@repo/oxlint-plugin-i18n
       '@repo/release-notes':
         specifier: workspace:*
         version: link:packages/@repo/release-notes
@@ -216,7 +219,7 @@ importers:
     devDependencies:
       '@sanity/vanilla-extract-vite-plugin':
         specifier: 'catalog:'
-        version: 0.2.14(babel-plugin-macros@3.1.0)(vite@8.2.2)
+        version: 0.2.15(babel-plugin-macros@3.1.0)(vite@8.2.2)
       rimraf:
         specifier: 'catalog:'
         version: 6.1.3
@@ -265,7 +268,7 @@ importers:
     devDependencies:
       '@sanity/vanilla-extract-vite-plugin':
         specifier: 'catalog:'
-        version: 0.2.14(babel-plugin-macros@3.1.0)(vite@8.2.2)
+        version: 0.2.15(babel-plugin-macros@3.1.0)(vite@8.2.2)
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.18
@@ -351,7 +354,7 @@ importers:
         version: link:../../packages/@repo/utils
       '@sanity/client':
         specifier: 'catalog:'
-        version: 8.2.0(vitest@4.1.11)
+        version: 8.3.0(vitest@4.1.11)
       '@sanity/icons':
         specifier: ^5.2.1
         version: 5.2.1(react@19.2.8)
@@ -396,7 +399,7 @@ importers:
         version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.5(react-dom@19.2.8)(react@19.2.8)'
+        version: '@sanity/ui@5.0.0-alpha.6(react-dom@19.2.8)(react@19.2.8)'
       vite:
         specifier: 'catalog:'
         version: 8.2.2(@types/node@24.13.3)(@vitejs/devtools@0.5.2)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
@@ -406,7 +409,7 @@ importers:
         version: link:../../packages/@repo/test-config
       '@sanity/vanilla-extract-vite-plugin':
         specifier: 'catalog:'
-        version: 0.2.14(babel-plugin-macros@3.1.0)(vite@8.2.2)
+        version: 0.2.15(babel-plugin-macros@3.1.0)(vite@8.2.2)
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.18
@@ -458,7 +461,7 @@ importers:
         version: 8.0.1(react@19.2.8)
       '@sanity/client':
         specifier: 'catalog:'
-        version: 8.2.0(vitest@4.1.11)
+        version: 8.3.0(vitest@4.1.11)
       '@sanity/image-url':
         specifier: ^2.1.1
         version: 2.1.1
@@ -473,7 +476,7 @@ importers:
         version: 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@sanity/visual-editing':
         specifier: ^6.1.1
-        version: 6.1.1(@sanity/client@8.2.0)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)(typescript@7.0.2)
+        version: 6.1.1(@sanity/client@8.3.0)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)(typescript@7.0.2)
       react:
         specifier: 'catalog:'
         version: 19.2.8
@@ -491,7 +494,7 @@ importers:
         version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.5(react-dom@19.2.8)(react@19.2.8)'
+        version: '@sanity/ui@5.0.0-alpha.6(react-dom@19.2.8)(react@19.2.8)'
     devDependencies:
       '@types/react':
         specifier: 'catalog:'
@@ -584,14 +587,14 @@ importers:
         version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
       ui5:
         specifier: npm:@sanity/ui@alpha
-        version: '@sanity/ui@5.0.0-alpha.5(react-dom@19.2.8)(react@19.2.8)'
+        version: '@sanity/ui@5.0.0-alpha.6(react-dom@19.2.8)(react@19.2.8)'
     devDependencies:
       '@chromatic-com/storybook':
         specifier: ^5.3.0
         version: 5.3.0(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@0.1.9)(storybook@10.5.10)
       '@sanity/vanilla-extract-vite-plugin':
         specifier: 'catalog:'
-        version: 0.2.14(babel-plugin-macros@3.1.0)(vite@8.2.2)
+        version: 0.2.15(babel-plugin-macros@3.1.0)(vite@8.2.2)
       '@storybook/addon-vitest':
         specifier: ^10.5.10
         version: 10.5.10(@vitest/browser-playwright@4.1.11)(@vitest/browser@4.1.11)(@vitest/runner@4.1.11)(react@19.2.8)(storybook@10.5.10)(vitest@4.1.11)
@@ -675,7 +678,7 @@ importers:
         version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.5(react-dom@19.2.8)(react@19.2.8)'
+        version: '@sanity/ui@5.0.0-alpha.6(react-dom@19.2.8)(react@19.2.8)'
     devDependencies:
       '@types/react':
         specifier: 'catalog:'
@@ -725,13 +728,13 @@ importers:
         version: 6.1.21(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)(vitest@4.1.11)
       '@sanity/client':
         specifier: 'catalog:'
-        version: 8.2.0(vitest@4.1.11)
+        version: 8.3.0(vitest@4.1.11)
       '@sanity/color':
         specifier: ^3.0.8
         version: 3.0.8
       '@sanity/debug-preview-url-secret-plugin':
         specifier: ^2.0.21
-        version: 2.0.21(@sanity/client@8.2.0)(react@19.2.8)(sanity@packages+sanity)
+        version: 2.0.21(@sanity/client@8.3.0)(react@19.2.8)(sanity@packages+sanity)
       '@sanity/document-internationalization':
         specifier: ^6.2.33
         version: 6.2.33(react-dom@19.2.8)(react@19.2.8)(sanity-plugin-internationalized-array@5.2.2)(sanity@packages+sanity)(styled-components@6.5.3)
@@ -752,7 +755,7 @@ importers:
         version: 8.0.2(supports-color@8.1.1)(xstate@5.32.5)
       '@sanity/preview-url-secret':
         specifier: ^4.1.5
-        version: 4.1.5(@sanity/client@8.2.0)
+        version: 4.1.5(@sanity/client@8.3.0)
       '@sanity/react-loader':
         specifier: ^2.2.1
         version: 2.2.1(@sanity/types@packages+@sanity+types)(react@19.2.8)(typescript@7.0.2)
@@ -776,7 +779,7 @@ importers:
         version: link:../../packages/@sanity/vision
       '@sanity/visual-editing':
         specifier: ^6.1.1
-        version: 6.1.1(@sanity/client@8.2.0)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)(typescript@7.0.2)
+        version: 6.1.1(@sanity/client@8.3.0)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)(typescript@7.0.2)
       '@turf/helpers':
         specifier: ^7.4.0
         version: 7.4.0
@@ -833,11 +836,11 @@ importers:
         version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.5(react-dom@19.2.8)(react@19.2.8)'
+        version: '@sanity/ui@5.0.0-alpha.6(react-dom@19.2.8)(react@19.2.8)'
     devDependencies:
       '@sanity/vanilla-extract-vite-plugin':
         specifier: 'catalog:'
-        version: 0.2.14(babel-plugin-macros@3.1.0)(vite@8.2.2)
+        version: 0.2.15(babel-plugin-macros@3.1.0)(vite@8.2.2)
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12
@@ -891,7 +894,7 @@ importers:
         version: link:../packages/@repo/utils
       '@sanity/client':
         specifier: 'catalog:'
-        version: 8.2.0(vitest@4.1.11)
+        version: 8.3.0(vitest@4.1.11)
       '@sanity/uuid':
         specifier: ^3.0.3
         version: 3.0.3
@@ -997,6 +1000,8 @@ importers:
         specifier: ^4.1.11
         version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/browser-playwright@4.1.11)(@vitest/coverage-v8@4.1.11)(jsdom@29.1.1)(vite@8.2.2)
 
+  packages/@repo/oxlint-plugin-i18n: {}
+
   packages/@repo/package.bundle:
     devDependencies:
       '@repo/test-config':
@@ -1007,7 +1012,7 @@ importers:
         version: link:../tsconfig
       '@sanity/vanilla-extract-vite-plugin':
         specifier: 'catalog:'
-        version: 0.2.14(babel-plugin-macros@3.1.0)(vite@8.2.2)
+        version: 0.2.15(babel-plugin-macros@3.1.0)(vite@8.2.2)
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12
@@ -1052,7 +1057,7 @@ importers:
         version: 6.0.0
       '@sanity/client':
         specifier: 'catalog:'
-        version: 8.2.0(vitest@4.1.11)
+        version: 8.3.0(vitest@4.1.11)
       '@sanity/id-utils':
         specifier: ^1.0.0
         version: 1.0.0
@@ -1225,7 +1230,7 @@ importers:
         version: link:../tsconfig
       '@sanity/tsdown-config':
         specifier: 'catalog:'
-        version: 0.26.1(@babel/runtime@7.29.7)(@types/node@24.13.3)(supports-color@8.1.1)(tsdown@0.22.14)(typescript@7.0.2)(vite@8.2.2)
+        version: 0.26.2(@babel/runtime@7.29.7)(@types/node@24.13.3)(supports-color@8.1.1)(tsdown@0.22.14)(typescript@7.0.2)(vite@8.2.2)
       '@types/node':
         specifier: 'catalog:'
         version: 24.13.3
@@ -1271,7 +1276,7 @@ importers:
     dependencies:
       '@sanity/client':
         specifier: 'catalog:'
-        version: 8.2.0(vitest@4.1.11)
+        version: 8.3.0(vitest@4.1.11)
       '@sanity/icons':
         specifier: ^5.2.1
         version: 5.2.1(react@19.2.8)
@@ -1280,7 +1285,7 @@ importers:
         version: 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.5(react-dom@19.2.8)(react@19.2.8)'
+        version: '@sanity/ui@5.0.0-alpha.6(react-dom@19.2.8)(react@19.2.8)'
     devDependencies:
       '@repo/test-config':
         specifier: workspace:*
@@ -1473,7 +1478,7 @@ importers:
     dependencies:
       '@sanity/client':
         specifier: 'catalog:'
-        version: 8.2.0(vitest@4.1.11)
+        version: 8.3.0(vitest@4.1.11)
       '@sanity/media-library-types':
         specifier: ^1.6.0
         version: 1.6.0
@@ -1519,7 +1524,7 @@ importers:
         version: 2.1.1
       '@sanity/client':
         specifier: 'catalog:'
-        version: 8.2.0(vitest@4.1.11)
+        version: 8.3.0(vitest@4.1.11)
       '@sanity/types':
         specifier: workspace:*
         version: link:../types
@@ -1589,7 +1594,7 @@ importers:
         version: 1.0.0(react-dom@19.2.8)(react@19.2.8)
       '@sanity/client':
         specifier: 'catalog:'
-        version: 8.2.0(vitest@4.1.11)
+        version: 8.3.0(vitest@4.1.11)
       '@sanity/color':
         specifier: ^3.0.8
         version: 3.0.8
@@ -1634,7 +1639,7 @@ importers:
         version: 7.8.2
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.5(react-dom@19.2.8)(react@19.2.8)'
+        version: '@sanity/ui@5.0.0-alpha.6(react-dom@19.2.8)(react@19.2.8)'
       use-effect-event:
         specifier: ^2.0.3
         version: 2.0.3(react@19.2.8)
@@ -1653,7 +1658,7 @@ importers:
         version: link:../../@repo/tsdown.config
       '@sanity/vanilla-extract-vite-plugin':
         specifier: 'catalog:'
-        version: 0.2.14(babel-plugin-macros@3.1.0)(vite@8.2.2)
+        version: 0.2.15(babel-plugin-macros@3.1.0)(vite@8.2.2)
       '@testing-library/react':
         specifier: ^16.3.2
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.5)(@types/react@19.2.18)(react-dom@19.2.8)(react@19.2.8)
@@ -1787,7 +1792,7 @@ importers:
         version: 8.3.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.3.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(@vitejs/devtools@0.5.2)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.147.0)(oxfmt@0.65.0)(rolldown@1.2.5)(supports-color@8.1.1)(typescript@7.0.2)(vitest@4.1.11)(xstate@5.32.5)
       '@sanity/client':
         specifier: 'catalog:'
-        version: 8.2.0(vitest@4.1.11)
+        version: 8.3.0(vitest@4.1.11)
       '@sanity/color':
         specifier: ^3.0.8
         version: 3.0.8
@@ -1841,7 +1846,7 @@ importers:
         version: 2.2.3(@sanity/types@packages+@sanity+types)
       '@sanity/preview-url-secret':
         specifier: ^4.1.5
-        version: 4.1.5(@sanity/client@8.2.0)
+        version: 4.1.5(@sanity/client@8.3.0)
       '@sanity/prism-groq':
         specifier: ^1.1.2
         version: 1.1.2
@@ -2006,7 +2011,7 @@ importers:
         version: 2.5.1(react@19.2.8)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.5(react-dom@19.2.8)(react@19.2.8)'
+        version: '@sanity/ui@5.0.0-alpha.6(react-dom@19.2.8)(react@19.2.8)'
       urlpattern-polyfill:
         specifier: 10.1.0
         version: 10.1.0
@@ -2052,10 +2057,10 @@ importers:
         version: 2.20.1(@types/react@19.2.18)(immer@11.1.18)(react@19.2.8)(use-sync-external-store@1.6.0)(xstate@5.32.5)
       '@sanity/vanilla-extract-vite-plugin':
         specifier: 'catalog:'
-        version: 0.2.14(babel-plugin-macros@3.1.0)(vite@8.2.2)
+        version: 0.2.15(babel-plugin-macros@3.1.0)(vite@8.2.2)
       '@sanity/visual-editing-csm':
         specifier: ^3.0.17
-        version: 3.0.17(@sanity/client@8.2.0)(@sanity/types@packages+@sanity+types)(typescript@7.0.2)
+        version: 3.0.17(@sanity/client@8.3.0)(@sanity/types@packages+@sanity+types)(typescript@7.0.2)
       '@storybook/react-vite':
         specifier: ^10.5.10
         version: 10.5.10(@types/react-dom@19.2.5)(@types/react@19.2.18)(esbuild@0.28.2)(react-dom@19.2.8)(react@19.2.8)(storybook@10.5.10)(supports-color@8.1.1)(typescript@7.0.2)(vite@8.2.2)
@@ -2190,7 +2195,7 @@ importers:
         version: link:../../packages/@repo/utils
       '@sanity/client':
         specifier: 'catalog:'
-        version: 8.2.0(vitest@4.1.11)
+        version: 8.3.0(vitest@4.1.11)
       '@sanity/mutator':
         specifier: workspace:*
         version: link:../../packages/@sanity/mutator
@@ -2288,7 +2293,7 @@ importers:
         version: 1.62.1
       '@sanity/client':
         specifier: 'catalog:'
-        version: 8.2.0(vitest@4.1.11)
+        version: 8.3.0(vitest@4.1.11)
       '@sanity/uuid':
         specifier: ^3.0.3
         version: 3.0.3
@@ -2346,7 +2351,7 @@ importers:
         version: link:../packages/@repo/utils
       '@sanity/client':
         specifier: 'catalog:'
-        version: 8.2.0(vitest@4.1.11)
+        version: 8.3.0(vitest@4.1.11)
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12
@@ -6886,6 +6891,10 @@ packages:
     resolution: {integrity: sha512-SK2o8uh9ayAYAHJtKvd3r78Y5QHlV6RA1H249rYXtm71rdvp4dVvQyf3E/QtYVaeIhrWufK1Mh7sbX6FDVLtWQ==}
     engines: {node: '>=22.12.0'}
 
+  '@sanity/client@8.3.0':
+    resolution: {integrity: sha512-h4Xk8Xb91vbBpgbLNqQ8Wc37W4rFE4Rc9lcsC01XaEb2dDVp/B5EtvgKCRR5HmVfVcMVyiw4+r+Qmrr+wtjJ/g==}
+    engines: {node: '>=22.12.0'}
+
   '@sanity/code-input@7.3.7':
     resolution: {integrity: sha512-6+lr6O7BNinZD2GwwbhjQkvS1wili0jDIJfFE1rjPJo9PcH/j6l0/t1BU+5BxyWU73o6kwGmnTxSnPuS0KfQxQ==}
     engines: {node: '>=20.19 <22 || >=22.12'}
@@ -7103,8 +7112,8 @@ packages:
       styled-components:
         optional: true
 
-  '@sanity/tsdown-config@0.26.1':
-    resolution: {integrity: sha512-Hot2sRDPRBTe0erAWC7pOiuHB2+d2uxWVIWe/DcErCjuEOWbnTzcItbcOL28ktLfakFrybZle7MXNZ4ae+9fHQ==}
+  '@sanity/tsdown-config@0.26.2':
+    resolution: {integrity: sha512-bFKrbGsCE3zgOeBonc6MxQuo2p0MPnQr8tJXyBdixQPN6WAwvMJqR7ilPjis8Xg+6MtFd792TjrCDEDLi4TQiQ==}
     engines: {node: ^22.18.0 || >=24.11.0}
     peerDependencies:
       '@tsdown/css': '*'
@@ -7128,8 +7137,8 @@ packages:
       react-dom: ^19.2
       styled-components: ^6.1
 
-  '@sanity/ui@5.0.0-alpha.5':
-    resolution: {integrity: sha512-wNVAxvbs9td//7Yth1tq1WNz19YyFZrSZQKt9cp703Yvy9/O56uVIz2SBIeBET9EjWBv2FMmRrCAetZRMYrqDQ==}
+  '@sanity/ui@5.0.0-alpha.6':
+    resolution: {integrity: sha512-o03jAkIlWTVTnf2xCFD99z9xwqZ2ZFQMcYwLdid5WMJhL6isJNblgyBrIrd+BGfySc1kxfW2l5GtW3Z1f5F56A==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     hasBin: true
     peerDependencies:
@@ -7139,12 +7148,12 @@ packages:
   '@sanity/uuid@3.0.3':
     resolution: {integrity: sha512-aJvKuFwzcZKRwuIjrRPfXfXKpSdnLF4CnedV5WcX1n5SzhufvRNHIot5lkx1+Y1DwiMVQOZ5gDSPJH+P6Ao70A==}
 
-  '@sanity/vanilla-extract-integration@0.1.14':
-    resolution: {integrity: sha512-+uXbRVjUoCXucUfwxIQeteu3hND6+tcxGJK2kivt5Ft61H9/mztJhgRLuwRG0Groa5HWzwaHaaTwEA4QBnFEsQ==}
+  '@sanity/vanilla-extract-integration@0.1.15':
+    resolution: {integrity: sha512-fmTGTMpDkSZbLMPbNzGZB9rCdgPdTJ5fTTeysgL5hJ62oaOi2ZM3c1D/kkHKQzn1hYwabr8obiPrrlYv1PIriQ==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
-  '@sanity/vanilla-extract-rolldown-plugin@0.4.3':
-    resolution: {integrity: sha512-42HAPRvmZDWeKg3nScMLOBtVki/6Qu8a0NIjlkX/poYurOMmPt8ZLxIktmzqISnI1e1zeq4Ixef19iWF8/jtrQ==}
+  '@sanity/vanilla-extract-rolldown-plugin@0.4.4':
+    resolution: {integrity: sha512-7fGN4uawU2CHyfnZ/U8jTCemvKOK74nfKtc+LhMZFbAyoPQEkW4LLrJi9qFmTqlV5lSstXjJmBDoOEWleegKsg==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       rolldown: ^1.0.0
@@ -7152,14 +7161,14 @@ packages:
       rolldown:
         optional: true
 
-  '@sanity/vanilla-extract-tsdown-plugin@0.3.3':
-    resolution: {integrity: sha512-VhG+Eg2TDWanuDkn/pnJ3DIF9ictfPhsnmOwdEA9HcA0dP393gTxNWtgWVO/C2Iruwxz3FDbsOPA75BOsoKsVQ==}
+  '@sanity/vanilla-extract-tsdown-plugin@0.3.4':
+    resolution: {integrity: sha512-sAndhPN29VU7BH/OtdCDPqixetCni9YKTkZsVcM3Wt8CzPZl8789VFpnZ923yQsfak/rtFxLb/6IpMpTOOGq8Q==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       tsdown: ^0.22.5
 
-  '@sanity/vanilla-extract-vite-plugin@0.2.14':
-    resolution: {integrity: sha512-qDT8u+GS+mtCyHqSY3mgAy9oAuvmgENPxkHpwh7oQwq8hupYMe4p1Xir+FecTVW2NZwlS9y9Zr4V+IUdNTTx5A==}
+  '@sanity/vanilla-extract-vite-plugin@0.2.15':
+    resolution: {integrity: sha512-pkRzoUrsBqSTIwww8dJuA9YPkIFVngMYf7cyPegM+nrDnieGh1nftoO8wyVuP1ULNMh/72GBxdAnJpwhHLX1FQ==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       vite: ^8.0.0
@@ -9782,6 +9791,9 @@ packages:
       cac:
         optional: true
 
+  dialog-closedby-polyfill@1.3.0:
+    resolution: {integrity: sha512-II3pxe/zr5OLhbqrkjQgXDFp61ICPlGZspNIgERwUUCLLHgQzPjv3VTStGD4W+ujwR5zMCZAdcWgu5nTmOIUYQ==}
+
   diff@8.0.4:
     resolution: {integrity: sha512-DPi0FmjiSU5EvQV0++GFDOJ9ASQUVFh5kD+OzOnYdi7n3Wpm9hWWGfB/O2blfHcMVTL5WkQXSnRiK9makhrcnw==}
     engines: {node: '>=0.3.1'}
@@ -10988,6 +11000,9 @@ packages:
         optional: true
       react-devtools-core:
         optional: true
+
+  interestfor@1.0.8:
+    resolution: {integrity: sha512-qYwTmxzDnrosGZX/1lDEOsAv73aYiFKLniN20SS78588WhRMHj8z7u2uFe9QZPIVmkCyIbJwiMQ/85Up7hrseQ==}
 
   internmap@2.0.3:
     resolution: {integrity: sha512-5Hh7Y1wQbvY5ooGgPbDaL5iYLAPzMTUrjMulskHLH6wnv/A+1q5rgEaiuqEjB+oxGXIVZs1FF+R/KPN3ZSQYYg==}
@@ -19212,7 +19227,7 @@ snapshots:
     dependencies:
       '@inquirer/prompts': 8.6.0(@types/node@24.13.3)
       '@oclif/core': 4.14.0
-      '@sanity/client': 8.2.0(vitest@4.1.11)
+      '@sanity/client': 8.3.0(vitest@4.1.11)
       boxen: 8.0.1
       empathic: 2.0.1
       get-it: 9.5.1(vitest@4.1.11)
@@ -19254,13 +19269,13 @@ snapshots:
       '@oclif/plugin-not-found': 3.2.93(@types/node@24.13.3)
       '@sanity/cli-build': 5.3.1(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.3.0)(@types/node@24.13.3)(@vitejs/devtools@0.5.2)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.147.0)(rolldown@1.2.5)(tsx@4.23.12)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)
       '@sanity/cli-core': 3.3.0(@noble/hashes@2.3.0)(@types/node@24.13.3)(@vitejs/devtools@0.5.2)(esbuild@0.28.2)(oxc-transform-react@0.147.0)(vitest@4.1.11)(yaml@2.9.0)
-      '@sanity/client': 8.2.0(vitest@4.1.11)
+      '@sanity/client': 8.3.0(vitest@4.1.11)
       '@sanity/codegen': 8.0.0(oxfmt@0.65.0)(react@19.2.8)(supports-color@8.1.1)
       '@sanity/descriptors': 1.3.0
       '@sanity/export': 6.2.1(supports-color@8.1.1)
       '@sanity/generate-help-url': 4.0.0
       '@sanity/id-utils': 1.0.0
-      '@sanity/import': 6.0.4(@sanity/client@8.2.0)(supports-color@8.1.1)
+      '@sanity/import': 6.0.4(@sanity/client@8.3.0)(supports-color@8.1.1)
       '@sanity/migrate': 8.0.2(supports-color@8.1.1)(xstate@5.32.5)
       '@sanity/runtime-cli': 17.9.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.3.0)(@types/node@24.13.3)(@vitejs/devtools@0.5.2)(esbuild@0.28.2)(oxc-transform-react@0.147.0)(rolldown@1.2.5)(tsx@4.23.12)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)
       '@sanity/schema': link:packages/@sanity/schema
@@ -19362,6 +19377,15 @@ snapshots:
     transitivePeerDependencies:
       - vitest
 
+  '@sanity/client@8.3.0(vitest@4.1.11)':
+    dependencies:
+      eventsource: 5.1.1
+      get-it: 9.5.1(vitest@4.1.11)
+      obug: 2.1.4
+      rxjs: 7.8.2
+    transitivePeerDependencies:
+      - vitest
+
   '@sanity/code-input@7.3.7(@babel/runtime@7.29.7)(@codemirror/theme-one-dark@6.1.3)(codemirror@6.0.2)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)':
     dependencies:
       '@codemirror/lang-html': 6.4.12
@@ -19441,10 +19465,10 @@ snapshots:
       - '@sanity/types'
       - typescript
 
-  '@sanity/debug-preview-url-secret-plugin@2.0.21(@sanity/client@8.2.0)(react@19.2.8)(sanity@packages+sanity)':
+  '@sanity/debug-preview-url-secret-plugin@2.0.21(@sanity/client@8.3.0)(react@19.2.8)(sanity@packages+sanity)':
     dependencies:
       '@sanity/icons': 5.2.1(react@19.2.8)
-      '@sanity/preview-url-secret': 4.1.5(@sanity/client@8.2.0)
+      '@sanity/preview-url-secret': 4.1.5(@sanity/client@8.3.0)
       react: 19.2.8
       sanity: link:packages/sanity
     transitivePeerDependencies:
@@ -19534,10 +19558,10 @@ snapshots:
     dependencies:
       '@sanity/signed-urls': 2.0.5
 
-  '@sanity/import@6.0.4(@sanity/client@8.2.0)(supports-color@8.1.1)':
+  '@sanity/import@6.0.4(@sanity/client@8.3.0)(supports-color@8.1.1)':
     dependencies:
       '@sanity/asset-utils': 2.3.0
-      '@sanity/client': 8.2.0(vitest@4.1.11)
+      '@sanity/client': 8.3.0(vitest@4.1.11)
       '@sanity/generate-help-url': 4.0.0
       '@sanity/mutator': link:packages/@sanity/mutator
       debug: 4.4.3(supports-color@8.1.1)
@@ -19622,9 +19646,9 @@ snapshots:
     transitivePeerDependencies:
       - '@sanity/types'
 
-  '@sanity/preview-url-secret@4.1.5(@sanity/client@8.2.0)':
+  '@sanity/preview-url-secret@4.1.5(@sanity/client@8.3.0)':
     dependencies:
-      '@sanity/client': 8.2.0(vitest@4.1.11)
+      '@sanity/client': 8.3.0(vitest@4.1.11)
       '@sanity/uuid': 3.0.3
 
   '@sanity/prism-groq@1.1.2': {}
@@ -19652,7 +19676,7 @@ snapshots:
       '@sanity/blueprints-parser': 0.5.0
       '@sanity/cli-build': 5.3.1(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.3.0)(@types/node@24.13.3)(@vitejs/devtools@0.5.2)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.147.0)(rolldown@1.2.5)(tsx@4.23.12)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)
       '@sanity/cli-core': 3.3.0(@noble/hashes@2.3.0)(@types/node@24.13.3)(@vitejs/devtools@0.5.2)(esbuild@0.28.2)(oxc-transform-react@0.147.0)(vitest@4.1.11)(yaml@2.9.0)
-      '@sanity/client': 8.2.0(vitest@4.1.11)
+      '@sanity/client': 8.3.0(vitest@4.1.11)
       adm-zip: 0.6.0
       array-treeify: 0.2.0
       cardinal: 2.1.1
@@ -19775,14 +19799,14 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@sanity/tsdown-config@0.26.1(@babel/runtime@7.29.7)(@types/node@24.13.3)(supports-color@8.1.1)(tsdown@0.22.14)(typescript@7.0.2)(vite@8.2.2)':
+  '@sanity/tsdown-config@0.26.2(@babel/runtime@7.29.7)(@types/node@24.13.3)(supports-color@8.1.1)(tsdown@0.22.14)(typescript@7.0.2)(vite@8.2.2)':
     dependencies:
       '@babel/core': 7.29.7(supports-color@8.1.1)
       '@microsoft/api-extractor': 7.59.0(@types/node@24.13.3)
       '@microsoft/tsdoc-config': 0.18.1
       '@rolldown/plugin-babel': 0.2.3(@babel/core@7.29.7)(@babel/runtime@7.29.7)(rolldown@1.2.5)(vite@8.2.2)
       '@sanity/browserslist-config': 1.0.5
-      '@sanity/vanilla-extract-tsdown-plugin': 0.3.3(rolldown@1.2.5)(tsdown@0.22.14)
+      '@sanity/vanilla-extract-tsdown-plugin': 0.3.4(rolldown@1.2.5)(tsdown@0.22.14)
       '@typescript/typescript6': 6.0.2
       '@vitejs/plugin-react': 6.1.0(@rolldown/plugin-babel@0.2.3)(oxc-transform-react@0.147.0)(vite@8.2.2)
       browserslist: 4.28.8
@@ -19815,12 +19839,14 @@ snapshots:
       styled-components: 6.5.3(react-dom@19.2.8)(react@19.2.8)
       use-effect-event: 2.0.3(react@19.2.8)
 
-  '@sanity/ui@5.0.0-alpha.5(react-dom@19.2.8)(react@19.2.8)':
+  '@sanity/ui@5.0.0-alpha.6(react-dom@19.2.8)(react@19.2.8)':
     dependencies:
       '@sanity-labs/design-tokens': 0.0.2-alpha.4
       '@sanity/icons': 3.8.0(react@19.2.8)
       clsx: 2.1.1
       comment-json: 5.0.0
+      dialog-closedby-polyfill: 1.3.0
+      interestfor: 1.0.8
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
       react-refractor: 4.0.0(react@19.2.8)
@@ -19829,7 +19855,7 @@ snapshots:
     dependencies:
       uuid: 11.1.1
 
-  '@sanity/vanilla-extract-integration@0.1.14(babel-plugin-macros@3.1.0)':
+  '@sanity/vanilla-extract-integration@0.1.15(babel-plugin-macros@3.1.0)':
     dependencies:
       '@vanilla-extract/css': 1.21.2(babel-plugin-macros@3.1.0)
       javascript-stringify: 2.1.0
@@ -19838,26 +19864,26 @@ snapshots:
     transitivePeerDependencies:
       - babel-plugin-macros
 
-  '@sanity/vanilla-extract-rolldown-plugin@0.4.3(rolldown@1.2.5)':
+  '@sanity/vanilla-extract-rolldown-plugin@0.4.4(rolldown@1.2.5)':
     dependencies:
-      '@sanity/vanilla-extract-integration': 0.1.14(babel-plugin-macros@3.1.0)
+      '@sanity/vanilla-extract-integration': 0.1.15(babel-plugin-macros@3.1.0)
       lightningcss: 1.33.0
     optionalDependencies:
       rolldown: 1.2.5
     transitivePeerDependencies:
       - babel-plugin-macros
 
-  '@sanity/vanilla-extract-tsdown-plugin@0.3.3(rolldown@1.2.5)(tsdown@0.22.14)':
+  '@sanity/vanilla-extract-tsdown-plugin@0.3.4(rolldown@1.2.5)(tsdown@0.22.14)':
     dependencies:
-      '@sanity/vanilla-extract-rolldown-plugin': 0.4.3(rolldown@1.2.5)
+      '@sanity/vanilla-extract-rolldown-plugin': 0.4.4(rolldown@1.2.5)
       tsdown: 0.22.14(@vitejs/devtools@0.5.2)(oxc-resolver@11.24.2)(publint@0.3.24)(tsx@4.23.12)(typescript@7.0.2)
     transitivePeerDependencies:
       - babel-plugin-macros
       - rolldown
 
-  '@sanity/vanilla-extract-vite-plugin@0.2.14(babel-plugin-macros@3.1.0)(vite@8.2.2)':
+  '@sanity/vanilla-extract-vite-plugin@0.2.15(babel-plugin-macros@3.1.0)(vite@8.2.2)':
     dependencies:
-      '@sanity/vanilla-extract-integration': 0.1.14(babel-plugin-macros@3.1.0)
+      '@sanity/vanilla-extract-integration': 0.1.15(babel-plugin-macros@3.1.0)
       '@vanilla-extract/css': 1.21.2(babel-plugin-macros@3.1.0)
       vite: 8.2.2(@types/node@24.13.3)(@vitejs/devtools@0.5.2)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
     transitivePeerDependencies:
@@ -19872,10 +19898,10 @@ snapshots:
       - '@sanity/types'
       - typescript
 
-  '@sanity/visual-editing-csm@3.0.17(@sanity/client@8.2.0)(@sanity/types@packages+@sanity+types)(typescript@7.0.2)':
+  '@sanity/visual-editing-csm@3.0.17(@sanity/client@8.3.0)(@sanity/types@packages+@sanity+types)(typescript@7.0.2)':
     dependencies:
-      '@sanity/client': 8.2.0(vitest@4.1.11)
-      '@sanity/visual-editing-types': 2.1.1(@sanity/client@8.2.0)(@sanity/types@packages+@sanity+types)
+      '@sanity/client': 8.3.0(vitest@4.1.11)
+      '@sanity/visual-editing-types': 2.1.1(@sanity/client@8.3.0)(@sanity/types@packages+@sanity+types)
       valibot: 1.4.2(typescript@7.0.2)
     transitivePeerDependencies:
       - '@sanity/types'
@@ -19887,23 +19913,23 @@ snapshots:
     optionalDependencies:
       '@sanity/types': link:packages/@sanity/types
 
-  '@sanity/visual-editing-types@2.1.1(@sanity/client@8.2.0)(@sanity/types@packages+@sanity+types)':
+  '@sanity/visual-editing-types@2.1.1(@sanity/client@8.3.0)(@sanity/types@packages+@sanity+types)':
     dependencies:
-      '@sanity/client': 8.2.0(vitest@4.1.11)
+      '@sanity/client': 8.3.0(vitest@4.1.11)
     optionalDependencies:
       '@sanity/types': link:packages/@sanity/types
 
-  '@sanity/visual-editing@6.1.1(@sanity/client@8.2.0)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)(typescript@7.0.2)':
+  '@sanity/visual-editing@6.1.1(@sanity/client@8.3.0)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)(typescript@7.0.2)':
     dependencies:
       '@sanity/comlink': 4.0.3
       '@sanity/icons': 5.2.1(react@19.2.8)
       '@sanity/mutate': 0.18.1(xstate@5.32.5)
       '@sanity/presentation-comlink': 2.2.3(@sanity/types@packages+@sanity+types)
-      '@sanity/preview-url-secret': 4.1.5(@sanity/client@8.2.0)
+      '@sanity/preview-url-secret': 4.1.5(@sanity/client@8.3.0)
       '@sanity/types': link:packages/@sanity/types
       '@sanity/ui': 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
-      '@sanity/visual-editing-csm': 3.0.17(@sanity/client@8.2.0)(@sanity/types@packages+@sanity+types)(typescript@7.0.2)
-      '@sanity/visual-editing-types': 2.1.1(@sanity/client@8.2.0)(@sanity/types@packages+@sanity+types)
+      '@sanity/visual-editing-csm': 3.0.17(@sanity/client@8.3.0)(@sanity/types@packages+@sanity+types)(typescript@7.0.2)
+      '@sanity/visual-editing-types': 2.1.1(@sanity/client@8.3.0)(@sanity/types@packages+@sanity+types)
       '@vercel/stega': 1.1.0
       dequal: 2.0.3
       lodash-es: 4.18.1
@@ -19915,7 +19941,7 @@ snapshots:
       styled-components: 6.5.3(react-dom@19.2.8)(react@19.2.8)
       xstate: 5.32.5
     optionalDependencies:
-      '@sanity/client': 8.2.0(vitest@4.1.11)
+      '@sanity/client': 8.3.0(vitest@4.1.11)
     transitivePeerDependencies:
       - typescript
 
@@ -22499,6 +22525,8 @@ snapshots:
       - ocache
       - srvx
 
+  dialog-closedby-polyfill@1.3.0: {}
+
   diff@8.0.4: {}
 
   diff@9.0.0: {}
@@ -23870,6 +23898,8 @@ snapshots:
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
+
+  interestfor@1.0.8: {}
 
   internmap@2.0.3: {}
 

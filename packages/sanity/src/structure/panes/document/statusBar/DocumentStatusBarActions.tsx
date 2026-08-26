@@ -4,15 +4,20 @@ import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   DocumentGroupInventory,
   DocumentGroupInventoryAction,
-  type DocumentGroupInventoryProps,
+  type DocumentGroupInventoryComponents,
+  getReleaseIdFromReleaseDocumentId,
   Hotkeys,
   isGoingToUnpublish,
   isSanityDefinedAction,
+  isVariantId,
+  readVersionType,
   useClient,
   useDocumentStore,
   usePausedScheduledDraft,
   usePerspective,
+  useSetVariant,
   useSource,
+  type VersionInfoDocumentStub,
 } from 'sanity'
 
 import {Button} from '../../../../ui-components/button/Button'
@@ -34,7 +39,7 @@ import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'
 
-const documentGroupInventoryComponents: DocumentGroupInventoryProps['components'] = {
+const documentGroupInventoryComponents: DocumentGroupInventoryComponents = {
   DocTitle,
   ReferencePreviewLink,
   VersionsPreviewList,
@@ -75,6 +80,36 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
   const requestDocumentGroupInventoryClose = useCallback(
     () => setIsDocumentGroupInventoryActive(false),
     [setIsDocumentGroupInventoryActive],
+  )
+
+  const setVariant = useSetVariant()
+
+  // Picking a version in the inventory switches the pane to it.
+  const selectDocumentGroupVariant = useCallback(
+    (document: VersionInfoDocumentStub) => {
+      let bundle
+
+      switch (readVersionType(document)) {
+        case 'release':
+          bundle = getReleaseIdFromReleaseDocumentId(document._system.release?._ref ?? '')
+          break
+        case 'published':
+          bundle = 'published'
+          break
+        case 'draft':
+          bundle = 'drafts'
+          break
+        case 'agent':
+          bundle = document._system.bundleId
+      }
+
+      const variantId = isVariantId(document._system.variant?._ref)
+        ? document._system.variant._ref
+        : undefined
+
+      setVariant({variantId, perspective: bundle})
+    },
+    [setVariant],
   )
 
   const {selectedReleaseId} = usePerspective()
@@ -146,6 +181,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
           setIsDocumentGroupInventoryActive={setIsDocumentGroupInventoryActive}
         >
           <DocumentGroupInventory
+            mode="manage"
             documentId={targetDocumentId}
             documentType={documentType}
             portalElementName={DOCUMENT_PANEL_PORTAL_ELEMENT}
@@ -153,6 +189,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
             referringDocuments$={referringDocuments$}
             requestClose={requestDocumentGroupInventoryClose}
             components={documentGroupInventoryComponents}
+            onSelect={selectDocumentGroupVariant}
           />
         </DocumentGroupInventoryAction>
       )}

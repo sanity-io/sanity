@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Stack, Text} from '@sanity/ui'
+import {type BadgeTone, Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {type CSSProperties, useCallback, useEffect, useRef, useState} from 'react'
 
@@ -18,6 +18,25 @@ import {useActiveReleases} from '../../store/useActiveReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../util/getReleaseTone'
+
+function ToneLabel({children, tone}: {children?: React.ReactNode; tone?: BadgeTone}) {
+  return (
+    <span
+      style={
+        {
+          color: `var(--card-badge-${tone ?? 'default'}-fg-color)`,
+          backgroundColor: `var(--card-badge-${tone ?? 'default'}-bg-color)`,
+          borderRadius: 3,
+          textDecoration: 'none',
+          padding: '0px 2px',
+          fontWeight: 500,
+        } as CSSProperties
+      }
+    >
+      {children}
+    </span>
+  )
+}
 
 export function UnpublishVersionDialog(props: {
   onClose: () => void
@@ -145,26 +164,8 @@ export function UnpublishVersionDialog(props: {
             values={{
               title: release?.metadata.title || coreT('release.placeholder-untitled-release'),
             }}
-            components={{
-              Label: ({children}) => {
-                return (
-                  <span
-                    style={
-                      {
-                        color: `var(--card-badge-${tone ?? 'default'}-fg-color)`,
-                        backgroundColor: `var(--card-badge-${tone ?? 'default'}-bg-color)`,
-                        borderRadius: 3,
-                        textDecoration: 'none',
-                        padding: '0px 2px',
-                        fontWeight: 500,
-                      } as CSSProperties
-                    }
-                  >
-                    {children}
-                  </span>
-                )
-              },
-            }}
+            components={{Label: ToneLabel}}
+            componentProps={{tone}}
           />
         </Text>
         <Text muted size={1}>

@@ -1,15 +1,15 @@
 import {Flex} from '@sanity/ui'
-import {useMemo} from 'react'
+import {type ReactNode} from 'react'
 import {styled} from 'styled-components'
 import {Box} from 'ui5'
 
 import {TextWithTone} from '../../../../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../../../../i18n/hooks/useTranslation'
-import {Translate, type TranslateComponentMap} from '../../../../../../i18n/Translate'
+import {Translate} from '../../../../../../i18n/Translate'
 import {type TFunction} from '../../../../../../i18n/types'
 import {isRecord} from '../../../../../../util/isRecord'
 import {useSearchState} from '../../contexts/search/useSearchState'
-import {getOperatorDefinition} from '../../definitions/operators'
+import {getOperatorDefinition, type SearchOperatorDefinition} from '../../definitions/operators'
 import {type SearchFilter, type SearchFilterValues} from '../../types'
 import {FilterTitle} from './FilterTitle'
 
@@ -23,6 +23,54 @@ const CustomBox = styled(Box)<{$flexShrink?: number}>`
   flex-shrink: ${({$flexShrink = 0}) => $flexShrink};
 `
 
+interface FilterLabelComponentProps {
+  children?: ReactNode
+  buttonValueComponent?: SearchOperatorDefinition['buttonValueComponent']
+  filter: SearchFilter
+  filterValue?: SearchFilter['value']
+  fontSize: number
+  fullscreen?: boolean
+  showContent?: boolean
+}
+
+function Field({filter, fontSize, fullscreen}: FilterLabelComponentProps) {
+  return (
+    <CustomBox $flexShrink={fullscreen ? 1 : 0}>
+      <TextWithTone tone="default" size={fontSize} textOverflow="ellipsis" weight="medium">
+        <FilterTitle filter={filter} maxLength={fullscreen ? 25 : 40} />
+      </TextWithTone>
+    </CustomBox>
+  )
+}
+
+function Operator({children, fontSize, showContent}: FilterLabelComponentProps) {
+  if (!showContent) return null
+  return (
+    <CustomBox $flexShrink={0}>
+      <TextWithTone tone="default" size={fontSize} textOverflow="ellipsis" weight="regular">
+        {children}
+      </TextWithTone>
+    </CustomBox>
+  )
+}
+
+function Value({
+  buttonValueComponent: ButtonValue,
+  children,
+  filterValue,
+  fontSize,
+  showContent,
+}: FilterLabelComponentProps) {
+  if (!showContent) return null
+  return (
+    <CustomBox $flexShrink={1}>
+      <TextWithTone tone="default" size={fontSize} textOverflow="ellipsis" weight="medium">
+        {ButtonValue ? <ButtonValue value={filterValue} /> : children}
+      </TextWithTone>
+    </CustomBox>
+  )
+}
+
 export function FilterLabel({filter, fontSize = 1, showContent = true}: FilterLabelProps) {
   const {t} = useTranslation()
   const {
@@ -31,47 +79,23 @@ export function FilterLabel({filter, fontSize = 1, showContent = true}: FilterLa
 
   const operator = getOperatorDefinition(definitions.operators, filter.operatorType)
 
-  const ButtonValue = operator?.buttonValueComponent
-  const filterValue = filter.value
-
-  const components: TranslateComponentMap = useMemo(
-    () => ({
-      Field: () => (
-        <CustomBox $flexShrink={fullscreen ? 1 : 0}>
-          <TextWithTone tone="default" size={fontSize} textOverflow="ellipsis" weight="medium">
-            <FilterTitle filter={filter} maxLength={fullscreen ? 25 : 40} />
-          </TextWithTone>
-        </CustomBox>
-      ),
-      Operator: ({children}) =>
-        showContent ? (
-          <CustomBox $flexShrink={0}>
-            <TextWithTone tone="default" size={fontSize} textOverflow="ellipsis" weight="regular">
-              {children}
-            </TextWithTone>
-          </CustomBox>
-        ) : null,
-      Value: ({children}) =>
-        showContent ? (
-          <CustomBox $flexShrink={1}>
-            <TextWithTone tone="default" size={fontSize} textOverflow="ellipsis" weight="medium">
-              {ButtonValue ? <ButtonValue value={filterValue} /> : children}
-            </TextWithTone>
-          </CustomBox>
-        ) : null,
-    }),
-    [filter, fontSize, fullscreen, showContent, ButtonValue, filterValue],
-  )
+  const componentProps: FilterLabelComponentProps = {
+    buttonValueComponent: operator?.buttonValueComponent,
+    filter,
+    filterValue: filter.value,
+    fontSize,
+    fullscreen,
+    showContent,
+  }
 
   if (!operator?.descriptionKey) {
     console.warn('Missing `descriptionKey` for operator `%s`', filter.operatorType)
   }
 
   if (!showContent || !operator?.descriptionKey) {
-    const Field = components.Field
     return (
       <Flex align="center" gap={1}>
-        <Field />
+        <Field {...componentProps} />
       </Flex>
     )
   }
@@ -81,7 +105,8 @@ export function FilterLabel({filter, fontSize = 1, showContent = true}: FilterLa
       <Translate
         t={t}
         i18nKey={operator?.descriptionKey}
-        components={components}
+        components={{Field, Operator, Value}}
+        componentProps={componentProps}
         values={getFilterValues(filter, t)}
       />
     </Flex>

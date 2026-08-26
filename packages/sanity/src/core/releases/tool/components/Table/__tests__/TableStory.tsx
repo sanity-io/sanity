@@ -1,6 +1,7 @@
-import {Flex, Text, ThemeProvider} from '@sanity/ui'
+import {Text, ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {useState} from 'react'
+import {Flex} from 'ui5'
 
 import {Table} from '../Table'
 import {Headers} from '../TableHeader'
@@ -21,12 +22,12 @@ const columns: Column<Datum>[] = [
     id: 'title',
     width: null,
     header: (props) => (
-      <Flex {...props.headerProps} paddingY={3} sizing="border">
+      <Flex {...props.headerProps} paddingY={3}>
         <Headers.BasicHeader text="Title" />
       </Flex>
     ),
     cell: ({cellProps, datum}) => (
-      <Flex align="center" paddingX={2} {...cellProps}>
+      <Flex alignItems="center" paddingX={2} {...cellProps}>
         <Text size={1}>{datum.title}</Text>
       </Flex>
     ),

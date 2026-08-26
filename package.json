@@ -108,6 +108,7 @@
   },
   "devDependencies": {
     "@repo/bundle-manager": "workspace:*",
+    "@repo/oxlint-plugin-i18n": "workspace:*",
     "@repo/release-notes": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@sanity/eslint-plugin-i18n": "^1.1.0",

@@ -1,7 +1,8 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {memo, type ReactNode, useMemo} from 'react'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
 import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
@@ -61,7 +62,7 @@ const ReleaseEventDocumentPreview = ({
   )
 }
 
-const ScheduleTarget = ({children, event}: {children: ReactNode; event: ReleaseEvent}) => {
+const ScheduleTarget = ({children, event}: {children?: ReactNode; event: ReleaseEvent}) => {
   const dateTimeFormat = useDateTimeFormat({dateStyle: 'full', timeStyle: 'medium'})
   const {t} = useTranslation(releasesLocaleNamespace)
 
@@ -134,18 +135,15 @@ export const ReleaseActivityListItem = memo(
         animate={{opacity: 1}}
         transition={{type: 'spring', bounce: 0, duration: 0.4}}
       >
-        <Flex align="center" gap={2}>
+        <Flex alignItems="center" gap={2}>
           <UserAvatar user={event.author} />
           <Stack flex={1}>
-            <Flex gap={2} align="center">
+            <Flex gap={2} alignItems="center">
               <StatusText muted size={1}>
                 <Translate
                   t={t}
-                  components={{
-                    ScheduleTarget: ({children}) => (
-                      <ScheduleTarget event={event}>{children}</ScheduleTarget>
-                    ),
-                  }}
+                  components={{ScheduleTarget}}
+                  componentProps={{event}}
                   values={{releaseTitle}}
                   i18nKey={ACTIVITY_TEXT_118N[event.type]}
                 />{' '}

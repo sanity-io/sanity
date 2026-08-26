@@ -32,6 +32,24 @@ type DeletionConfirmationDialogBodyProps = Required<ReferringDocuments> & {
   documentVersions: string[]
 }
 
+function DocumentTitle({
+  documentTitle,
+}: {
+  children?: React.ReactNode
+  documentTitle?: React.ReactNode
+}) {
+  return documentTitle
+}
+
+function StrongDocumentTitle({
+  documentTitle,
+}: {
+  children?: React.ReactNode
+  documentTitle?: React.ReactNode
+}) {
+  return <strong>{documentTitle}</strong>
+}
+
 /**
  * The inner part of the `ConfirmDeleteDialog`. This is ran when both the
  * `crossDatasetReferences` and `internalReferences` are loaded.
@@ -85,7 +103,8 @@ export function ConfirmDeleteDialogBody({
             i18nKey="confirm-delete-dialog.confirmation.text"
             context={action}
             values={{count: documentVersions.length}}
-            components={{DocumentTitle: () => <strong>{documentTitle}</strong>}}
+            components={{DocumentTitle: StrongDocumentTitle}}
+            componentProps={{documentTitle}}
           />
         </Text>
         {action === 'delete' && (
@@ -129,7 +148,8 @@ export function ConfirmDeleteDialogBody({
               <Text size={1}>
                 <Translate
                   i18nKey="confirm-delete-dialog.referring-document-count.text"
-                  components={{DocumentTitle: () => documentTitle}}
+                  components={{DocumentTitle}}
+                  componentProps={{documentTitle}}
                   t={t}
                   values={{count: totalCount}}
                 />
@@ -145,7 +165,8 @@ export function ConfirmDeleteDialogBody({
             i18nKey="confirm-delete-dialog.referring-documents-descriptor.text"
             t={t}
             context={action}
-            components={{DocumentTitle: () => documentTitle}}
+            components={{DocumentTitle}}
+            componentProps={{documentTitle}}
           />
         </Text>
       </Box>
@@ -291,7 +312,8 @@ export function ConfirmDeleteDialogBody({
             i18nKey="confirm-delete-dialog.referential-integrity-disclaimer.text"
             t={t}
             context={action}
-            components={{DocumentTitle: () => documentTitle}}
+            components={{DocumentTitle}}
+            componentProps={{documentTitle}}
           />
         </Text>
       </Box>

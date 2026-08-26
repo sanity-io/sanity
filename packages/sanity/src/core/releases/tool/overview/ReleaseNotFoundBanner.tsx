@@ -1,7 +1,7 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Flex, Text} from '@sanity/ui'
-import {Box} from 'ui5'
+import {Card, Text} from '@sanity/ui'
+import {Box, Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -17,7 +17,7 @@ export function ReleaseNotFoundBanner({onDismiss}: ReleaseNotFoundBannerProps) {
   return (
     <Box flexBasis="auto" flexGrow={0} flexShrink={0} padding={1} marginBottom={4}>
       <Card radius={3} paddingX={2} paddingY={2} tone="caution">
-        <Flex align="center" gap={3} paddingX={2}>
+        <Flex alignItems="center" gap={3} paddingX={2}>
           <Text size={0}>
             <WarningOutlineIcon />
           </Text>

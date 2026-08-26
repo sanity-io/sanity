@@ -1,9 +1,9 @@
-import {Card, type CardProps, Flex, rem, Text, useTheme} from '@sanity/ui'
+import {Card, type CardProps, rem, Text, useTheme} from '@sanity/ui'
 import {useVirtualizer, type VirtualItem} from '@tanstack/react-virtual'
 import {isValid} from 'date-fns/isValid'
 import get from 'lodash-es/get.js'
 import {type CSSProperties, type ElementType, Fragment, useMemo} from 'react'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {TableEmptyState} from './TableEmptyState'
@@ -120,14 +120,31 @@ const TableInner = <TableData, AdditionalRowTableData>({
       // here and size the header (border-box) to 50px to match — under-reserving clips the ⋯.
       width: 50,
       header: ({headerProps: {id}}) => (
-        <Flex as="th" id={id} paddingY={3} paddingX={3} sizing="border" style={{width: '50px'}}>
+        <Flex
+          as="th"
+          id={id}
+          paddingY={3}
+          paddingX={3}
+          style={{
+            width: '50px',
+          }}
+        >
           <Text muted size={1} weight="medium">
             &nbsp;
           </Text>
         </Flex>
       ),
       cell: ({datum, cellProps: {id}}) => (
-        <Flex as="td" id={id} align="center" flex="none" padding={3} style={{width: '25px'}}>
+        <Flex
+          as="td"
+          id={id}
+          alignItems="center"
+          flexBasis="auto"
+          flexGrow={0}
+          flexShrink={0}
+          padding={3}
+          style={{width: '25px'}}
+        >
           {(!datum.isLoading && rowActions?.({datum})) || <Box style={{width: '25px'}} />}
         </Flex>
       ),
