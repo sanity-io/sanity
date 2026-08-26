@@ -118,7 +118,7 @@ export function ListPaneContent(props: ListPaneContentProps) {
       return (
         <PaneItem
           key={item.id}
-          count={counts[item.id]}
+          count={item.count ? counts[item.id] : undefined}
           icon={shouldShowIconForItem(item) ? item.icon : false}
           id={item.id}
           layout={layout}
