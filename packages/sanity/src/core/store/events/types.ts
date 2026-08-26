@@ -435,6 +435,10 @@ export interface EditDocumentVersionEvent extends BaseEvent {
   documentId: string
   // Given this event could be a result of multiple edits, we could have more than one author.
   contributors: string[]
+  /**
+   * @deprecated No longer populated by the events store. Resolve membership from the version document's
+   * `_system.release` instead. Will be removed in the next major.
+   */
   releaseId?: string
   /**
    * One edit event could contain multiple transactions that are merged together.
