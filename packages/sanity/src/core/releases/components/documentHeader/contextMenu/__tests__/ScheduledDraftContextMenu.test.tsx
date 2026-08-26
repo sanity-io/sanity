@@ -30,13 +30,15 @@ const mockUseDocumentPairPermissions = useDocumentPairPermissions as MockedFunct
   typeof useDocumentPairPermissions
 >
 
+const grantEveryPermission = () =>
+  mockUseDocumentPairPermissions.mockImplementation(() => [{granted: true, reason: ''}, false])
+
 const withholdPermission = (withheld?: DocumentPermission) =>
   mockUseDocumentPairPermissions.mockImplementation(({permission}) => [
     {granted: permission !== withheld, reason: ''},
     false,
   ])
 
-// `activeCardinalityOneRelease` is paused, which hides the edit schedule item.
 const scheduledDraftRelease = {
   ...activeCardinalityOneRelease,
   state: 'scheduled' as const,
@@ -77,7 +79,7 @@ const renderMenu = async () => {
 describe('ScheduledDraftContextMenu', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    withholdPermission()
+    grantEveryPermission()
   })
 
   it('enables every scheduled draft item when both grants are present', async () => {
