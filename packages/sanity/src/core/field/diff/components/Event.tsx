@@ -120,6 +120,40 @@ const ChangesBy = ({collaborators}: {collaborators: string[]}) => {
   )
 }
 
+/**
+ * Resolves and renders the release badge behind a release publish. Kept as a separate component
+ * so only publish-event rows subscribe to the releases store — a releases-store emission should
+ * not re-render every timeline row. When the release is missing from the store (e.g. it was
+ * deleted) a stub `{_id}` keeps the badge rendered; draft publishes (no `releaseId`) show the
+ * draft badge.
+ */
+function PublishEventReleaseBadge({releaseId}: {releaseId: string | undefined}) {
+  const {t} = useTranslation('studio')
+  const {map: releasesMap} = useAllReleases()
+  const releaseDocumentId = releaseId ? getReleaseDocumentIdFromReleaseId(releaseId) : undefined
+  const release = releaseDocumentId
+    ? releasesMap.get(releaseDocumentId) || {_id: releaseDocumentId, metadata: undefined}
+    : undefined
+
+  if (!release) {
+    return <VersionInlineBadge $tone="caution">{t('changes.versions.draft')}</VersionInlineBadge>
+  }
+  return (
+    <ReleaseTitle
+      title={release.metadata?.title}
+      fallback={t('release.placeholder-untitled-release')}
+    >
+      {({displayTitle}) => (
+        <VersionInlineBadge
+          $tone={isReleaseDocument(release) ? getReleaseTone(release) : 'default'}
+        >
+          {displayTitle}
+        </VersionInlineBadge>
+      )}
+    </ReleaseTitle>
+  )
+}
+
 interface TimelineItemProps {
   event: DocumentGroupEvent
   showChangesBy: 'tooltip' | 'inline' | 'hidden'
@@ -148,15 +182,6 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
 
   const userIds = isEditDocumentVersionEvent(event) ? event.contributors : [event.author]
 
-  // Resolve the release behind a release publish. When the release is missing from the store
-  // (e.g. it was deleted) a stub {_id} keeps the badge rendered; draft publishes have no releaseId.
-  const {map: releasesMap} = useAllReleases()
-  const releaseId = isPublishDocumentVersionEvent(event) ? event.releaseId : undefined
-  const releaseDocumentId = releaseId ? getReleaseDocumentIdFromReleaseId(releaseId) : undefined
-  const publishEventRelease = releaseDocumentId
-    ? releasesMap.get(releaseDocumentId) || {_id: releaseDocumentId, metadata: undefined}
-    : undefined
-
   return (
     <>
       <Flex alignItems="center" gap={3}>
@@ -176,28 +201,7 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
             {isPublishDocumentVersionEvent(event) && documentVariantType === 'published' && (
               <>
                 {' '}
-                {publishEventRelease ? (
-                  <ReleaseTitle
-                    title={publishEventRelease.metadata?.title}
-                    fallback={t('release.placeholder-untitled-release')}
-                  >
-                    {({displayTitle}) => (
-                      <VersionInlineBadge
-                        $tone={
-                          isReleaseDocument(publishEventRelease)
-                            ? getReleaseTone(publishEventRelease)
-                            : 'default'
-                        }
-                      >
-                        {displayTitle}
-                      </VersionInlineBadge>
-                    )}
-                  </ReleaseTitle>
-                ) : (
-                  <VersionInlineBadge $tone="caution">
-                    {t('changes.versions.draft')}
-                  </VersionInlineBadge>
-                )}
+                <PublishEventReleaseBadge releaseId={event.releaseId} />
               </>
             )}
           </Text>
