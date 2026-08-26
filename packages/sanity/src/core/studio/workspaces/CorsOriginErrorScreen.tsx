@@ -1,9 +1,9 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Card, Flex, Grid, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Grid, Heading, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {isProd} from '../../environment'
@@ -125,7 +125,7 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
   if (allowed && !withCredentials) {
     return (
       <Card data-testid="studio-error-screen" data-error="CORS credentials disabled" height="fill">
-        <CenteredContainer align="center" justify="center" padding={4}>
+        <CenteredContainer alignItems="center" justifyContent="center" padding={4}>
           <ContentWrapper paddingBottom={5}>
             <Stack gap={5}>
               <Heading as="h1" size={2}>
@@ -151,7 +151,7 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
                 />
               </Flex>
 
-              <Flex justify="flex-end">
+              <Flex justifyContent="flex-end">
                 <Text size={1}>
                   <HelpLink
                     href="https://www.sanity.io/docs/cors"
@@ -172,7 +172,7 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
 
   return (
     <Card data-testid="studio-error-screen" data-error="CORS origin error" height="fill">
-      <CenteredContainer align="center" justify="center" padding={4}>
+      <CenteredContainer alignItems="center" justifyContent="center" padding={4}>
         <ContentWrapper paddingBottom={5}>
           <Stack gap={5}>
             <Heading as="h1" size={2}>
@@ -188,7 +188,7 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
               {/* Register Studio Option */}
               {showRegisterOption && (
                 <Card border padding={4} radius={4}>
-                  <Flex direction="column" gap={4} height="fill">
+                  <Flex flexDirection="column" gap={4} height="100%">
                     <Stack gap={4} flex={1}>
                       <Text size={2} weight="medium">
                         Register Studio
@@ -219,7 +219,7 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
 
               {/* Add CORS origin */}
               <Card border padding={4} radius={4}>
-                <Flex direction="column" gap={4} height="fill">
+                <Flex flexDirection="column" gap={4} height="100%">
                   <Stack gap={4} flex={1}>
                     <Text size={2} weight="medium">
                       Add CORS origin
@@ -246,7 +246,7 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
               </Card>
             </Grid>
 
-            <Flex justify="flex-end">
+            <Flex justifyContent="flex-end">
               <Text size={1}>
                 <HelpLink
                   href="https://www.sanity.io/docs/cors"
