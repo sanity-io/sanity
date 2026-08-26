@@ -331,6 +331,7 @@ exports[`exports snapshot 1`] = `
     "defineSearchFilterOperators": "function",
     "defineSearchMachine": "function",
     "defineSearchOperator": "function",
+    "defineSingleton": "function",
     "defineType": "function",
     "deriveDocumentSyncState": "function",
     "diffMatchPatch": "function",

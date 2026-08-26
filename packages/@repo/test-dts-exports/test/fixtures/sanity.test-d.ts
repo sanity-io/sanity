@@ -388,6 +388,7 @@ import type {
   defineSearchFilterOperators,
   defineSearchMachine,
   defineSearchOperator,
+  defineSingleton,
   defineType,
   Delay,
   DeleteDocumentGroupEvent,
@@ -1397,6 +1398,8 @@ import type {
   SingleDocReleaseProvider,
   SingleFieldSet,
   SingleMutationResult,
+  SingletonDefinition,
+  SingletonsResolver,
   SingleWorkspace,
   Size,
   sliceString,
@@ -1556,6 +1559,7 @@ import type {
   UnitFormatter,
   UniversalArrayInput,
   UnpublishDocumentEvent,
+  UnresolvedSingletonDefinition,
   UnscheduleDocumentVersionEvent,
   unset,
   unstable_useObserveDocument,
@@ -3006,6 +3010,9 @@ describe('sanity', () => {
   })
   test('defineSearchOperator', () => {
     expectTypeOf<typeof defineSearchOperator>().toBeFunction()
+  })
+  test('defineSingleton', () => {
+    expectTypeOf<typeof defineSingleton>().toBeFunction()
   })
   test('defineType', () => {
     expectTypeOf<typeof defineType>().toBeFunction()
@@ -6045,6 +6052,12 @@ describe('sanity', () => {
   test('SingleMutationResult', () => {
     expectTypeOf<SingleMutationResult>().toBeObject()
   })
+  test('SingletonDefinition', () => {
+    expectTypeOf<SingletonDefinition>().toBeObject()
+  })
+  test('SingletonsResolver', () => {
+    expectTypeOf<SingletonsResolver>().not.toBeNever()
+  })
   test('SingleWorkspace', () => {
     expectTypeOf<SingleWorkspace>().not.toBeNever()
   })
@@ -6524,6 +6537,9 @@ describe('sanity', () => {
   })
   test('UnpublishDocumentEvent', () => {
     expectTypeOf<UnpublishDocumentEvent>().toBeObject()
+  })
+  test('UnresolvedSingletonDefinition', () => {
+    expectTypeOf<UnresolvedSingletonDefinition>().not.toBeNever()
   })
   test('UnscheduleDocumentVersionEvent', () => {
     expectTypeOf<UnscheduleDocumentVersionEvent>().toBeObject()
