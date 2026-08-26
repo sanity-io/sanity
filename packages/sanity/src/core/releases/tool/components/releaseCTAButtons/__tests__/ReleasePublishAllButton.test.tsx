@@ -87,7 +87,7 @@ describe('ReleasePublishAllButton', () => {
   describe('when no document in the release has an existing draft', () => {
     const documents = [createDocumentInRelease('versions.rASAP.doc1')]
 
-    test('does not show the update drafts option', async () => {
+    test('does not show the remove overlaid drafts option', async () => {
       await openConfirmPublishDialog(documents)
 
       expect(screen.queryByTestId('update-drafts-checkbox')).not.toBeInTheDocument()
@@ -114,10 +114,28 @@ describe('ReleasePublishAllButton', () => {
       createDocumentInRelease('versions.rASAP.doc3', {draftDocumentExists: true}),
     ]
 
-    test('shows the update drafts option, unchecked by default', async () => {
+    test('shows the remove overlaid drafts option, unchecked by default', async () => {
       await openConfirmPublishDialog(documents)
 
       expect(screen.getByTestId('update-drafts-checkbox')).not.toBeChecked()
+      expect(screen.getByText('Remove overlaid drafts')).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          'The existing drafts of 2 documents will be discarded so that drafts match the published release. Unpublished draft changes will be lost.',
+        ),
+      ).toBeInTheDocument()
+    })
+
+    test('checks the option when the helper text is clicked', async () => {
+      await openConfirmPublishDialog(documents)
+
+      await userEvent.click(
+        screen.getByText(
+          'The existing drafts of 2 documents will be discarded so that drafts match the published release. Unpublished draft changes will be lost.',
+        ),
+      )
+
+      expect(screen.getByTestId('update-drafts-checkbox')).toBeChecked()
     })
 
     test('publishes the release without discarding drafts when the option is left unchecked', async () => {
@@ -179,7 +197,7 @@ describe('ReleasePublishAllButton', () => {
       createDocumentInRelease('versions.rASAP.doc2'),
     ]
 
-    test('does not show the update drafts option', async () => {
+    test('does not show the remove overlaid drafts option', async () => {
       await openConfirmPublishDialog(documents)
 
       expect(screen.queryByTestId('update-drafts-checkbox')).not.toBeInTheDocument()
