@@ -64,6 +64,29 @@ export type SubmitAccessRequestResult =
   | {type: 'error'; error: unknown}
 
 /**
+ * Why the Access API says the caller may not request access to a resource.
+ * - `saml-enforced` — the organization only admits members through its SSO
+ *   login flow, so no admin could ever approve a request.
+ * - `resource-not-available` — the target project or organization is gone.
+ *
+ * @public
+ */
+export type AccessRequestIneligibleReason = 'saml-enforced' | 'resource-not-available'
+
+/**
+ * Whether the caller may usefully request access
+ * (`GET /access/{resourceType}/{resourceId}/requests/eligibility`).
+ *
+ * Answered before the user writes anything, so a futile form is never offered.
+ * `redirectUrl` is the org's SSO login page when the API can resolve one.
+ *
+ * @public
+ */
+export type AccessRequestEligibility =
+  | {eligible: true}
+  | {eligible: false; reason: AccessRequestIneligibleReason; redirectUrl?: string}
+
+/**
  * The current user rendered in the request-access screen. A structural subset of
  * `CurrentUser` from `@sanity/types`, so both studio and app callers can pass
  * their own user object without an extra dependency.

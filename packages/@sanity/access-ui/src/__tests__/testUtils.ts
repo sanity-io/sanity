@@ -4,22 +4,27 @@ import {vi} from 'vitest'
 import {type AccessRequest} from '../types'
 
 /**
- * Client stub routing by URL: `/access/requests/me` hits `list`, everything
- * else hits `submit`. `withConfig` returns itself so the Access API version
- * pinning is transparent.
+ * Client stub routing by URL: `/access/requests/me` hits `list`, an
+ * `/eligibility` path hits `eligibility`, everything else hits `submit`.
+ * `withConfig` returns itself so the Access API version pinning is transparent.
  */
 export function createClientStub(
   handlers: {
     list?: () => Promise<AccessRequest[] | null>
     submit?: () => Promise<unknown>
+    eligibility?: () => Promise<unknown>
   } = {},
 ): SanityClient {
   const client = {
-    request: vi.fn((options: {url: string}) =>
-      options.url === '/access/requests/me'
-        ? (handlers.list ?? (() => Promise.resolve([])))()
-        : (handlers.submit ?? (() => Promise.resolve(null)))(),
-    ),
+    request: vi.fn((options: {url: string}) => {
+      if (options.url === '/access/requests/me') {
+        return (handlers.list ?? (() => Promise.resolve([])))()
+      }
+      if (options.url.endsWith('/eligibility')) {
+        return (handlers.eligibility ?? (() => Promise.resolve({eligible: true})))()
+      }
+      return (handlers.submit ?? (() => Promise.resolve(null)))()
+    }),
     withConfig: vi.fn((): unknown => client),
   }
   // oxlint-disable-next-line no-unsafe-type-assertion -- test double; the rule is off for *.test.* files and this helper only feeds them

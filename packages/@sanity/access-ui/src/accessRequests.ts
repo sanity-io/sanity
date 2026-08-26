@@ -1,6 +1,11 @@
 import {type SanityClient} from '@sanity/client'
 
-import {type AccessRequest, type AccessResourceType, type SubmitAccessRequestResult} from './types'
+import {
+  type AccessRequest,
+  type AccessRequestEligibility,
+  type AccessResourceType,
+  type SubmitAccessRequestResult,
+} from './types'
 
 /**
  * The Access API only accepts notes up to this length.
@@ -33,6 +38,40 @@ export async function listMyAccessRequests(client: SanityClient): Promise<Access
     tag: 'access-ui.list-requests',
   })
   return requests ?? []
+}
+
+/**
+ * Asks whether requesting access could ever succeed
+ * (`GET /access/{resourceType}/{resourceId}/requests/eligibility`).
+ *
+ * Runs before the form is offered, so a user in a SAML-enforced organization is
+ * pointed at SSO instead of writing a note no admin can action.
+ *
+ * `origin` is carried opaquely to the SSO login page so the user returns where
+ * they started. Never throws: an unreachable or older API answers `eligible`,
+ * leaving the form in place and the submit-time 403 as the backstop.
+ *
+ * @public
+ */
+export async function checkAccessRequestEligibility(options: {
+  client: SanityClient
+  resourceType: AccessResourceType
+  resourceId: string
+  origin?: string
+}): Promise<AccessRequestEligibility> {
+  const {client, resourceType, resourceId, origin} = options
+  try {
+    const eligibility = await withAccessApiVersion(client).request<AccessRequestEligibility | null>(
+      {
+        url: `/access/${resourceType}/${resourceId}/requests/eligibility`,
+        tag: 'access-ui.check-eligibility',
+        query: origin ? {q: new URLSearchParams({origin}).toString()} : undefined,
+      },
+    )
+    return eligibility ?? {eligible: true}
+  } catch {
+    return {eligible: true}
+  }
 }
 
 interface ErrorResponseDetails {

@@ -108,6 +108,69 @@ describe('RequestAccessForm', () => {
     )
   })
 
+  const ssoEnforced = (redirectUrl?: string) => ({
+    eligibility: () =>
+      Promise.resolve({
+        eligible: false,
+        reason: 'saml-enforced',
+        ...(redirectUrl && {redirectUrl}),
+      }),
+  })
+
+  it('offers no form at all when the preflight says the org enforces SSO', async () => {
+    const client = createClientStub(ssoEnforced('https://idp.example.com/login'))
+    await renderForm({client})
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/requires signing in with SSO/)
+    expect(screen.getByRole('link', {name: 'Sign in with SSO'})).toHaveAttribute(
+      'href',
+      'https://idp.example.com/login',
+    )
+    // The whole point of the preflight: no note field, no futile submit.
+    expect(screen.queryByRole('form')).not.toBeInTheDocument()
+    expect(screen.queryByRole('textbox', {name: 'Message'})).not.toBeInTheDocument()
+  })
+
+  it('names the provider the user is actually signed in with', async () => {
+    const client = createClientStub(ssoEnforced())
+    await renderForm({client})
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/signed in with Google/)
+  })
+
+  it('omits the CTA when the API resolves no login URL', async () => {
+    const client = createClientStub(ssoEnforced())
+    await renderForm({client})
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument()
+    expect(screen.queryByRole('link', {name: 'Sign in with SSO'})).not.toBeInTheDocument()
+  })
+
+  it('shows SSO over a pending request, which an enforced org can never approve', async () => {
+    const client = createClientStub({
+      ...ssoEnforced(),
+      list: () => Promise.resolve([createAccessRequest()]),
+    })
+    await renderForm({client})
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/requires signing in with SSO/)
+    expect(screen.queryByText(/pending approval/)).not.toBeInTheDocument()
+  })
+
+  it('keeps the form when the preflight says eligible', async () => {
+    const client = createClientStub({eligibility: () => Promise.resolve({eligible: true})})
+    await renderForm({client})
+
+    expect(await screen.findByRole('form', {name: 'Request access'})).toBeInTheDocument()
+  })
+
+  it('keeps the form when the preflight fails, leaving the submit gate as the backstop', async () => {
+    const client = createClientStub({eligibility: () => Promise.reject(new Error('offline'))})
+    await renderForm({client})
+
+    expect(await screen.findByRole('form', {name: 'Request access'})).toBeInTheDocument()
+  })
+
   it('renders the sent state and reports the submission after a successful submit', async () => {
     const onRequestSubmitted = vi.fn()
     const client = createClientStub({

@@ -13,6 +13,7 @@ import {
 import {Box} from 'ui5'
 
 import {
+  checkAccessRequestEligibility,
   listMyAccessRequests,
   MAX_ACCESS_REQUEST_NOTE_LENGTH,
   submitAccessRequest,
@@ -22,6 +23,7 @@ import {defaultLabels, type RequestAccessLabels} from './labels'
 import {getProviderTitle} from './providerTitle'
 import {
   type AccessRequest,
+  type AccessRequestEligibility,
   type AccessResourceType,
   type AccessUser,
   type SubmitAccessRequestResult,
@@ -68,12 +70,20 @@ export interface RequestAccessFormProps {
  * @public
  */
 export function RequestAccessForm(props: RequestAccessFormProps) {
-  const {client} = props
+  const {client, resourceType = 'project', resourceId} = props
 
   // Created once (lazy init): recreating the promise per render would refetch
   // and re-suspend forever. Callers remount with `key` to reset.
   const [requestsPromise] = useState(() =>
     listMyAccessRequests(client).catch((): AccessRequest[] | null => null),
+  )
+  const [eligibilityPromise] = useState(() =>
+    checkAccessRequestEligibility({
+      client,
+      resourceType,
+      resourceId,
+      origin: getRequestUrl(),
+    }),
   )
 
   return (
@@ -85,7 +95,11 @@ export function RequestAccessForm(props: RequestAccessFormProps) {
           </Flex>
         }
       >
-        <RequestAccessFormContent {...props} requestsPromise={requestsPromise} />
+        <RequestAccessFormContent
+          {...props}
+          eligibilityPromise={eligibilityPromise}
+          requestsPromise={requestsPromise}
+        />
       </Suspense>
     </Card>
   )
@@ -107,11 +121,12 @@ type ViewState =
 
 function deriveViewState(options: {
   fetchedRequests: AccessRequest[] | null
+  eligibility: AccessRequestEligibility
   resourceId: string
   submitResult: SubmitAccessRequestResult | null
   labels: RequestAccessLabels
 }): ViewState {
-  const {fetchedRequests, resourceId, submitResult, labels} = options
+  const {fetchedRequests, eligibility, resourceId, submitResult, labels} = options
 
   if (submitResult) {
     switch (submitResult.type) {
@@ -141,6 +156,12 @@ function deriveViewState(options: {
     }
   }
 
+  // Preflight outranks the request history: a pending request in an enforced org
+  // is already dead, so showing "pending approval" would be a false promise.
+  if (!eligibility.eligible && eligibility.reason === 'saml-enforced') {
+    return {view: 'sso-enforced', redirectUrl: eligibility.redirectUrl}
+  }
+
   const state = deriveAccessRequestState(fetchedRequests, resourceId)
   if (state === 'pending') return {view: 'pending'}
   // Derived from prefetch: the user hasn't submitted anything this session,
@@ -154,6 +175,7 @@ function deriveViewState(options: {
 function RequestAccessFormContent(
   props: RequestAccessFormProps & {
     requestsPromise: Promise<AccessRequest[] | null>
+    eligibilityPromise: Promise<AccessRequestEligibility>
   },
 ) {
   const {
@@ -166,10 +188,12 @@ function RequestAccessFormContent(
     preview,
     renderAction,
     requestsPromise,
+    eligibilityPromise,
   } = props
 
   const labels = {...defaultLabels, ...props.labels}
   const fetchedRequests = use(requestsPromise)
+  const eligibility = use(eligibilityPromise)
   const titleId = useId()
 
   const [note, setNote] = useState('')
@@ -178,6 +202,7 @@ function RequestAccessFormContent(
 
   const state = deriveViewState({
     fetchedRequests,
+    eligibility,
     resourceId,
     submitResult,
     labels,

@@ -1,6 +1,10 @@
 import {describe, expect, it} from 'vitest'
 
-import {listMyAccessRequests, submitAccessRequest} from '../accessRequests'
+import {
+  checkAccessRequestEligibility,
+  listMyAccessRequests,
+  submitAccessRequest,
+} from '../accessRequests'
 import {type SubmitAccessRequestResult} from '../types'
 import {createApiError, createClientStub} from './testUtils'
 
@@ -103,5 +107,68 @@ describe('submitAccessRequest', () => {
   ])('passes $given through as error', async ({error}) => {
     const client = createClientStub({submit: () => Promise.reject(error)})
     await expect(submit(client)).resolves.toEqual({type: 'error', error})
+  })
+})
+
+const check = (client: ReturnType<typeof createClientStub>, origin?: string) =>
+  checkAccessRequestEligibility({
+    client,
+    resourceType: 'project',
+    resourceId: 'project-a',
+    origin,
+  })
+
+describe('checkAccessRequestEligibility', () => {
+  it('gets the eligibility endpoint for the resource', async () => {
+    const client = createClientStub()
+
+    await expect(check(client)).resolves.toEqual({eligible: true})
+    expect(client.request).toHaveBeenCalledWith(
+      expect.objectContaining({url: '/access/project/project-a/requests/eligibility'}),
+    )
+  })
+
+  it('returns the ineligible verdict with its redirect URL', async () => {
+    const verdict = {
+      eligible: false,
+      reason: 'saml-enforced',
+      redirectUrl: 'https://www.sanity.io/login/error/saml-required?orgName=acme',
+    }
+    const client = createClientStub({eligibility: () => Promise.resolve(verdict)})
+
+    await expect(check(client)).resolves.toEqual(verdict)
+  })
+
+  it('packs the origin as an opaque q param so the user returns after SSO', async () => {
+    const client = createClientStub()
+
+    await check(client, 'https://example.test/resource')
+
+    expect(client.request).toHaveBeenCalledWith(
+      expect.objectContaining({query: {q: 'origin=https%3A%2F%2Fexample.test%2Fresource'}}),
+    )
+  })
+
+  it('sends no query when there is no origin', async () => {
+    const client = createClientStub()
+
+    await check(client)
+
+    expect(client.request).toHaveBeenCalledWith(expect.objectContaining({query: undefined}))
+  })
+
+  it.each([
+    {given: 'the endpoint is missing', error: createApiError(404, {})},
+    {given: 'the request fails', error: new Error('network down')},
+  ])('fails open when $given, leaving the submit-time gate as the backstop', async ({error}) => {
+    const client = createClientStub({eligibility: () => Promise.reject(error)})
+
+    await expect(check(client)).resolves.toEqual({eligible: true})
+  })
+
+  it('treats a null body as eligible', async () => {
+    const client = createClientStub({eligibility: () => Promise.resolve(null)})
+
+    await expect(check(client)).resolves.toEqual({eligible: true})
   })
 })
