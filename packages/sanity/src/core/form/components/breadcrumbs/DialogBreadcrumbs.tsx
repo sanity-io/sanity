@@ -1,11 +1,11 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isKeySegment, isObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
 // oxlint-disable-next-line no-restricted-imports
-import {Badge, Button, Flex, Inline, Text, useElementSize} from '@sanity/ui'
+import {Badge, Button, Inline, Text, useElementSize} from '@sanity/ui'
 // oxlint-disable-next-line no-restricted-imports
 import {Menu, MenuItem} from '@sanity/ui/menu'
 import {type PropsWithChildren, useCallback, useMemo, useState, type RefAttributes} from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {resolveSchemaTypeForPath} from '../../../studio/copyPaste/resolveSchemaTypeForPath'
@@ -107,7 +107,7 @@ function BreadcrumbButton({
       aria-current={isSelected ? 'location' : false}
       data-testid={`breadcrumb-item-${title?.toLowerCase().replace(/ /g, '-')}`}
     >
-      <Flex align="center" style={{minWidth: 0}}>
+      <Flex alignItems="center">
         {siblingInfo && (
           <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
             <Badge>#{siblingInfo.index}</Badge>
@@ -116,7 +116,6 @@ function BreadcrumbButton({
         <Box
           padding={1}
           style={{
-            minWidth: 0,
             overflow: 'hidden',
           }}
         >
@@ -161,7 +160,7 @@ function BreadcrumbMenuItem({
 
   return (
     <MenuItem padding={1} onClick={handleClick}>
-      <Flex align="center" style={{minWidth: 0, maxWidth: '250px'}}>
+      <Flex alignItems="center" style={{maxWidth: '250px'}}>
         {siblingInfo && <Badge>#{siblingInfo.index}</Badge>}
         <Box
           paddingLeft={siblingInfo?.index ? 1 : 0}
