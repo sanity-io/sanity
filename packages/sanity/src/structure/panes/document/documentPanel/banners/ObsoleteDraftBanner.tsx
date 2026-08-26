@@ -45,6 +45,8 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
   // No `getTargetScopeId(useTargetDocumentState())` here: resolving an obsolete draft deliberately operates on
   // the draft/published pair, so no version scope applies.
   const {publish, discardChanges} = useDocumentOperation(documentId, displayed?._type || '')
+  // Gate on the context this button acts on rather than the pane's: both banner buttons target the
+  // obsolete draft, while the pane resolves as `published` whenever the draft model is inactive.
   const configuredActionIds = useConfiguredDocumentActionIds({
     schemaType: schemaType.name,
     documentId,
@@ -104,7 +106,9 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
             mode="ghost"
             onClick={compareDraft}
           />
-          {/* Deliberately ungated: `usePublishAction` returns null for live-edit types, so this is the only way to resolve an obsolete draft. */}
+          {/* Deliberately ungated: `usePublishAction` resolves to null in both states that render this
+              banner, so the status bar never offers Publish here and gating would leave no way to
+              clear the draft forward. */}
           <Button
             onClick={handlePublish}
             text={t('banners.obsolete-draft.actions.publish-draft.text')}

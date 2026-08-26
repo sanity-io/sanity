@@ -40,16 +40,14 @@ function DeletedDocumentBanner() {
   // the draft/published pair, so no version scope applies.
   const {restore} = useDocumentOperation(documentId, documentType)
   const {navigateIntent} = useRouter()
-  const configuredActionIds = useConfiguredDocumentActionIds(
-    documentType
-      ? {
-          schemaType: documentType,
-          documentId,
-          versionType: schemaType?.liveEdit ? 'published' : 'draft',
-          releaseId: undefined,
-        }
-      : null,
-  )
+  // Gate on the context this button acts on rather than the pane's: undeleting targets the
+  // draft/published pair, so a pane showing a version or revision would ask the wrong question.
+  const configuredActionIds = useConfiguredDocumentActionIds({
+    schemaType: documentType,
+    documentId,
+    versionType: schemaType?.liveEdit ? 'published' : 'draft',
+    releaseId: undefined,
+  })
   const canRestore = configuredActionIds.has('restore')
 
   const handleRestore = useCallback(() => {
