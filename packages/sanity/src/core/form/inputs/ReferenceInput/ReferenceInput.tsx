@@ -1,7 +1,15 @@
 import {Stack, Text, useClickOutsideEvent} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {uuid} from '@sanity/uuid'
-import {type FocusEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
+import {
+  type FocusEvent,
+  type KeyboardEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {useObservable} from 'react-rx'
 import {concat, of, Subject} from 'rxjs'
 import {catchError, filter, map, scan, switchMap} from 'rxjs/operators'
@@ -13,7 +21,6 @@ import {Translate} from '../../../i18n/Translate'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {getPublishedId} from '../../../util/draftUtils'
 import {isNonNullable} from '../../../util/isNonNullable'
-import {useLatest} from '../../../util/useLatest'
 import {Alert} from '../../components/Alert'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {set, setIfMissing, unset} from '../../patch/patch'
@@ -83,16 +90,20 @@ export function ReferenceInput(props: ReferenceInputProps) {
   // `onSearch` changes identity every render (StudioReferenceInput passes a
   // plain function). Rebuilding the pipeline on it instead would cancel
   // in-flight searches and reset accumulated search state.
-  const latestOnSearch = useLatest(onSearch)
+  const onSearchRef = useRef(onSearch)
+  useEffect(() => {
+    onSearchRef.current = onSearch
+  }, [onSearch])
 
   const searchState$ = useMemo(
     () =>
       searchInput$.pipe(
         filter(nonNullable),
+        // oxlint-disable-next-line react/refs -- the ref is read at subscription time inside the memoized pipeline, never during render
         switchMap((searchString) =>
           concat(
             of({isLoading: true}),
-            latestOnSearch.current(searchString).pipe(
+            onSearchRef.current(searchString).pipe(
               map((hits) => ({hits, searchString, isLoading: false})),
               catchError((error) => {
                 push({
@@ -113,7 +124,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
           INITIAL_SEARCH_STATE,
         ),
       ),
-    [id, latestOnSearch, push, searchInput$, t],
+    [id, push, searchInput$, t],
   )
   const searchState = useObservable(searchState$, INITIAL_SEARCH_STATE)
 

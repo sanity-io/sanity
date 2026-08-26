@@ -8,6 +8,7 @@ import {
   type FocusEvent,
   type KeyboardEvent,
   useCallback,
+  useEffect,
   useId,
   useImperativeHandle,
   useMemo,
@@ -28,7 +29,6 @@ import {useFeatureEnabled, FEATURES} from '../../../hooks/useFeatureEnabled'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getPublishedId} from '../../../util/draftUtils'
 import {isNonNullable} from '../../../util/isNonNullable'
-import {useLatest} from '../../../util/useLatest'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {set, unset} from '../../patch/patch'
 import {type ObjectInputProps} from '../../types/inputProps'
@@ -93,17 +93,21 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
 
   // `onSearch` can change identity every render. Rebuilding the pipeline on it
   // instead would cancel in-flight searches and reset accumulated search state.
-  const latestOnSearch = useLatest(onSearch)
+  const onSearchRef = useRef(onSearch)
+  useEffect(() => {
+    onSearchRef.current = onSearch
+  }, [onSearch])
 
   const searchState$ = useMemo(
     () =>
       searchInput$.pipe(
         filter(isNonNullable),
         distinctUntilChanged(),
+        // oxlint-disable-next-line react/refs -- the ref is read at subscription time inside the memoized pipeline, never during render
         switchMap((searchString) =>
           concat(
             of({isLoading: true}),
-            latestOnSearch.current(searchString).pipe(
+            onSearchRef.current(searchString).pipe(
               map((hits) => ({
                 hits,
                 searchString,
@@ -128,7 +132,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
           INITIAL_SEARCH_STATE,
         ),
       ),
-    [inputId, latestOnSearch, push, searchInput$],
+    [inputId, push, searchInput$],
   )
   const searchState = useObservable(searchState$, INITIAL_SEARCH_STATE)
 

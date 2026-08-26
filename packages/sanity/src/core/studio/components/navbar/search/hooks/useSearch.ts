@@ -1,6 +1,6 @@
 import {type Schema} from '@sanity/types'
 import isEqual from 'lodash-es/isEqual.js'
-import {useCallback, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {concat, iif, of, Subject, timer} from 'rxjs'
 import {
@@ -22,7 +22,6 @@ import {
 } from '../../../../../search/common/types'
 import {createSearch} from '../../../../../search/search'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
-import {useLatest} from '../../../../../util/useLatest'
 import {useWorkspace} from '../../../../workspace'
 import {type SearchState} from '../types'
 import {hasSearchableTerms} from '../utils/hasSearchableTerms'
@@ -96,11 +95,13 @@ export function useSearch({
     [schema, client, strategy, maxFieldDepth],
   )
 
-  // The callbacks are props that can change identity every render, and
-  // `search` changes with the workspace config. Rebuilding the pipeline on
-  // them instead would cancel in-flight searches and reset the debounce,
-  // dedupe, and accumulated search state on every caller render.
-  const latest = useLatest({allowEmptyQueries, onComplete, onError, onStart, search})
+  // The callbacks are props that can change identity every render. Rebuilding
+  // the pipeline on them instead would cancel in-flight searches and reset the
+  // debounce, dedupe, and accumulated search state on every caller render.
+  const callbacksRef = useRef({onComplete, onError, onStart})
+  useEffect(() => {
+    callbacksRef.current = {onComplete, onError, onStart}
+  }, [onComplete, onError, onStart])
 
   const searchState$ = useMemo(
     () =>
@@ -113,9 +114,10 @@ export function useSearch({
         distinctUntilChanged(isEqual),
         // Debounce requests
         debounce((request) => timer(request?.debounceTime || DEFAULT_DEBOUNCE_TIME)),
+        // oxlint-disable-next-line react/refs -- the ref is read at subscription time inside the memoized pipeline, never during render
         switchMap((request) => {
-          const current = latest.current
-          current.onStart?.()
+          const callbacks = callbacksRef.current
+          callbacks.onStart?.()
           return concat(
             // Emit loading start
             of({
@@ -129,16 +131,12 @@ export function useSearch({
             // There are exceptions (e.g. searching within <AutoComplete> components) where empty queries are permitted,
             // which is what `allowEmptyQueries` is used for.
             iif(
-              () =>
-                hasSearchableTerms({
-                  allowEmptyQueries: current.allowEmptyQueries,
-                  terms: request.terms,
-                }),
+              () => hasSearchableTerms({allowEmptyQueries, terms: request.terms}),
               // If we have a valid search, run async fetch, map results and trigger `onComplete` / `onError` callbacks
-              current.search(request.terms, request.options).pipe(
-                tap(({hits, nextCursor}) => current.onComplete?.({hits, nextCursor})),
+              search(request.terms, request.options).pipe(
+                tap(({hits, nextCursor}) => callbacks.onComplete?.({hits, nextCursor})),
                 catchError((error) => {
-                  current.onError?.(error)
+                  callbacks.onError?.(error)
                   return of({
                     ...INITIAL_SEARCH_STATE,
                     error,
@@ -149,7 +147,7 @@ export function useSearch({
                 }),
               ),
               // If there is no valid search, emit an empty update and trigger `onComplete`
-              of({}).pipe(tap(() => current.onComplete?.({hits: [], nextCursor: undefined}))),
+              of({}).pipe(tap(() => callbacks.onComplete?.({hits: [], nextCursor: undefined}))),
             ),
             // Emit loading completed
             of({loading: false}),
@@ -159,7 +157,7 @@ export function useSearch({
           return {...prevState, ...nextState}
         }, INITIAL_SEARCH_STATE),
       ),
-    [latest, searchRequests$],
+    [allowEmptyQueries, search, searchRequests$],
   )
   // Captured once, like the `useState(initialState)` mirror it replaces: both
   // callers rebuild the object every render, and react-rx re-reads an unstable
