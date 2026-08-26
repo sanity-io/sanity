@@ -1657,6 +1657,7 @@ export {
 } from '../core/templates/resolve'
 export {
   type InitialValueTemplateItem,
+  type ResolvedTemplate,
   type Template,
   type TemplateArrayFieldDefinition,
   type TemplateFieldDefinition,
