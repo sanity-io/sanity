@@ -126,6 +126,7 @@ minimumReleaseAgeExclude:
   - 'web-vitals'
   # covers yuku-ast/yuku-codegen/yuku-parser, which ship together with rolldown-plugin-dts
   - 'yuku-*'
+  - '@oxc-project/types@0.147.0'
 
 overrides:
   vitest: 'catalog:'
