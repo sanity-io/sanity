@@ -2142,6 +2142,9 @@ importers:
       rxjs-etc:
         specifier: ^10.6.2
         version: 10.6.2(rxjs@7.8.2)
+      storybook:
+        specifier: ^10.5.10
+        version: 10.5.10(@types/react@19.2.18)(prettier@3.9.6)(react@19.2.8)
       styled-components:
         specifier: 'catalog:'
         version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
@@ -19136,7 +19139,7 @@ snapshots:
   '@sanity/assist@6.1.21(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)(vitest@4.1.11)':
     dependencies:
       '@portabletext/types': 4.0.2
-      '@sanity/client': 8.2.0(vitest@4.1.11)
+      '@sanity/client': 8.3.0(vitest@4.1.11)
       '@sanity/color': 3.0.8
       '@sanity/icons': 5.2.1(react@19.2.8)
       '@sanity/mutator': link:packages/@sanity/mutator
