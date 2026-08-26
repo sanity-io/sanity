@@ -180,6 +180,29 @@ describe('DeletedDocumentBanners', () => {
     ).not.toBeInTheDocument()
   })
 
+  it('hides restore on a non-live-edit type when restore is only configured for published', async () => {
+    mockDraftPerspective()
+    mockUseDocumentPane.mockReturnValue({
+      isDeleted: true,
+      isDeleting: false,
+      ready: true,
+      documentId: 'test-document',
+      documentType: 'author',
+      schemaType: {name: 'author', liveEdit: false},
+    } as ReturnType<typeof useDocumentPane>)
+
+    await renderTest((prev, ctx) =>
+      ctx.versionType === 'published' ? [...prev, restoreAction] : prev,
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('deleted-document-banner')).toBeInTheDocument()
+    })
+    expect(
+      screen.queryByRole('button', {name: 'Restore most recent revision'}),
+    ).not.toBeInTheDocument()
+  })
+
   it('shows restore for a live-edit schema type when restore is configured', async () => {
     mockDraftPerspective()
     mockUseDocumentPane.mockReturnValue({
