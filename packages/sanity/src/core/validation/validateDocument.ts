@@ -39,16 +39,6 @@ const DEFAULT_MAX_FETCH_CONCURRENCY = 25
 // NOTE: ensure to update the TSDoc and CLI help test if this is changed
 const DEFAULT_MAX_CUSTOM_VALIDATION_CONCURRENCY = 5
 
-const concurrencyLimiters = new Map<number, ReturnType<typeof createClientConcurrencyLimiter>>()
-const getConcurrencyLimiter = (maxConcurrency: number) => {
-  let limiter = concurrencyLimiters.get(maxConcurrency)
-  if (!limiter) {
-    limiter = createClientConcurrencyLimiter(maxConcurrency)
-    concurrencyLimiters.set(maxConcurrency, limiter)
-  }
-  return limiter
-}
-
 const isRecord = (maybeRecord: unknown): maybeRecord is Record<string, unknown> =>
   typeof maybeRecord === 'object' && maybeRecord !== null && !Array.isArray(maybeRecord)
 
@@ -162,9 +152,8 @@ export interface ValidateDocumentOptions {
   maxCustomValidationConcurrency?: number
 
   /**
-   * The amount of allowed inflight fetch requests at once across validations in
-   * this process using the same concurrency value. You may need to up this value
-   * if you have complex custom validations that require many
+   * The amount of allowed inflight fetch requests at once for this validation.
+   * You may need to up this value if you have complex custom validations that require many
    * `client.fetch` requests at once. It's possible for a custom validator to
    * stall if there are not enough concurrent fetch requests available to fulfill
    * the custom validation. This is 25 by default.
@@ -195,7 +184,7 @@ export function validateDocument({
 }: ValidateDocumentOptions): Promise<ValidationMarker[]> {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const getClient = options.getClient || workspace.getClient
-  const limitConcurrency = getConcurrencyLimiter(
+  const limitConcurrency = createClientConcurrencyLimiter(
     maxFetchConcurrency ?? DEFAULT_MAX_FETCH_CONCURRENCY,
   )
   const getConcurrencyLimitedClient = (clientOptions: SourceClientOptions) =>
