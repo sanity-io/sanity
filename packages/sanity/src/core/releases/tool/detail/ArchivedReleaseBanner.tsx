@@ -1,9 +1,10 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {addDays} from 'date-fns/addDays'
 import {format} from 'date-fns/format'
 import {useMemo} from 'react'
+import {Flex} from 'ui5'
 
 import {useProjectSubscriptions} from '../../../hooks/useProjectSubscriptions'
 import {useTimeZone} from '../../../hooks/useTimeZone'

@@ -1,9 +1,10 @@
 import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons/Add'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Container, Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {type CSSProperties, useCallback, useEffect, useMemo, useState} from 'react'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {type DocumentActionsVersionType} from '../../../config/types'
@@ -220,9 +221,9 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   if (isCardinalityOne && hasNoDocuments) {
     return (
       <Flex
-        direction="column"
-        align="center"
-        justify="center"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
         padding={5}
         style={FULL_HEIGHT_STYLE}
         data-testid="cardinality-one-empty-state"
@@ -281,7 +282,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     (isLoading || tableData.length > 0)
 
   return (
-    <Flex direction="column" style={FULL_HEIGHT_STYLE}>
+    <Flex flexDirection="column" style={FULL_HEIGHT_STYLE}>
       {variantsEnabled ? (
         <DocumentTable<DocumentInReleaseDetail>
           alwaysShowCommandLane
