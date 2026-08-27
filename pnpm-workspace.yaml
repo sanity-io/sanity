@@ -119,6 +119,8 @@ minimumReleaseAgeExclude:
   - 'styled-components@6.5.3'
   - 'tsx'
   - 'tsdown'
+  # Fresh patch; exclude so 2.0.4 can install before the age gate
+  - 'use-effect-event@2.0.4'
   # verkit is part of the tsdown toolchain (tsdown dependency since 0.22.12)
   - 'verkit'
   - 'vitest'

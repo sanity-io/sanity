@@ -1745,8 +1745,8 @@ importers:
         specifier: 'catalog:'
         version: '@sanity/ui@5.0.0-alpha.7(react-dom@19.2.8)(react@19.2.8)'
       use-effect-event:
-        specifier: ^2.0.3
-        version: 2.0.3(react@19.2.8)
+        specifier: ^2.0.4
+        version: 2.0.4(react@19.2.8)
     devDependencies:
       '@repo/package.bundle':
         specifier: workspace:*
@@ -2126,8 +2126,8 @@ importers:
         specifier: ^1.1.2
         version: 1.1.2(react@19.2.8)
       use-effect-event:
-        specifier: ^2.0.3
-        version: 2.0.3(react@19.2.8)
+        specifier: ^2.0.4
+        version: 2.0.4(react@19.2.8)
       use-hot-module-reload:
         specifier: ^2.0.0
         version: 2.0.0(react@19.2.8)
@@ -14287,6 +14287,11 @@ packages:
 
   use-effect-event@2.0.3:
     resolution: {integrity: sha512-fz1en+z3fYXCXx3nMB8hXDMuygBltifNKZq29zDx+xNJ+1vEs6oJlYd9sK31vxJ0YI534VUsHEBY0k2BATsmBQ==}
+    peerDependencies:
+      react: ^18.3 || ^19.0.0-0
+
+  use-effect-event@2.0.4:
+    resolution: {integrity: sha512-il5ezAwTIxg1dr+eXP+1SS1EpXe6IFy1oADvGxmiCNGCDX1X+ygERRDOFoCyzc+r6ktqag3VITmrw1ZPfoig1g==}
     peerDependencies:
       react: ^18.3 || ^19.0.0-0
 
@@ -27703,6 +27708,10 @@ snapshots:
       react: 19.2.8
 
   use-effect-event@2.0.3(react@19.2.8):
+    dependencies:
+      react: 19.2.8
+
+  use-effect-event@2.0.4(react@19.2.8):
     dependencies:
       react: 19.2.8
 
