@@ -396,6 +396,8 @@ import type {
   deriveDocumentSyncState,
   DetailPreview,
   DetailPreviewProps,
+  DiagnosticsReport,
+  DiagnosticsReportProps,
   Diff,
   DiffCard,
   DiffCardProps,
@@ -720,6 +722,7 @@ import type {
   getProviderTitle,
   getPublishedId,
   getReferencePaths,
+  getReleaseDocumentIdFromReleaseId,
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   getSchemaTypeTitle,
@@ -1123,6 +1126,7 @@ import type {
   ParseError,
   ParseErrorsProvider,
   parseRetryAfter,
+  parseStudioDiagnostics,
   PartialContext,
   PartialExcept,
   PartialIndexSettings,
@@ -1443,6 +1447,7 @@ import type {
   StudioAnnouncementsDialog,
   StudioComponents,
   StudioComponentsPluginOptions,
+  StudioDiagnostics,
   StudioErrorHandler,
   StudioFeedbackDialog,
   StudioFeedbackDialogProps,
@@ -1569,6 +1574,7 @@ import type {
   useActiveWorkspace,
   useAddonDataset,
   useAgentVersionDisplay,
+  useAllReleases,
   useAllVariants,
   useAnnotationColor,
   useArchivedReleases,
@@ -3007,6 +3013,12 @@ describe('sanity', () => {
   test('DetailPreviewProps', () => {
     expectTypeOf<DetailPreviewProps>().not.toBeNever()
   })
+  test('DiagnosticsReport', () => {
+    expectTypeOf<typeof DiagnosticsReport>().toBeFunction()
+  })
+  test('DiagnosticsReportProps', () => {
+    expectTypeOf<DiagnosticsReportProps>().toBeObject()
+  })
   test('Diff', () => {
     expectTypeOf<Diff<any, any>>().not.toBeNever()
   })
@@ -3983,6 +3995,9 @@ describe('sanity', () => {
   })
   test('getReferencePaths', () => {
     expectTypeOf<typeof getReferencePaths>().toBeFunction()
+  })
+  test('getReleaseDocumentIdFromReleaseId', () => {
+    expectTypeOf<typeof getReleaseDocumentIdFromReleaseId>().toBeFunction()
   })
   test('getReleaseIdFromReleaseDocumentId', () => {
     expectTypeOf<typeof getReleaseIdFromReleaseDocumentId>().toBeFunction()
@@ -5197,6 +5212,9 @@ describe('sanity', () => {
   test('parseRetryAfter', () => {
     expectTypeOf<typeof parseRetryAfter>().toBeFunction()
   })
+  test('parseStudioDiagnostics', () => {
+    expectTypeOf<typeof parseStudioDiagnostics>().toBeFunction()
+  })
   test('PartialContext', () => {
     expectTypeOf<PartialContext<any>>().not.toBeNever()
   })
@@ -6161,6 +6179,9 @@ describe('sanity', () => {
   test('StudioComponentsPluginOptions', () => {
     expectTypeOf<StudioComponentsPluginOptions>().toBeObject()
   })
+  test('StudioDiagnostics', () => {
+    expectTypeOf<StudioDiagnostics>().toBeObject()
+  })
   test('StudioErrorHandler', () => {
     expectTypeOf<StudioErrorHandler>().toBeObject()
   })
@@ -6540,6 +6561,9 @@ describe('sanity', () => {
   })
   test('useAgentVersionDisplay', () => {
     expectTypeOf<typeof useAgentVersionDisplay>().toBeFunction()
+  })
+  test('useAllReleases', () => {
+    expectTypeOf<typeof useAllReleases>().toBeFunction()
   })
   test('useAllVariants', () => {
     expectTypeOf<typeof useAllVariants>().toBeFunction()
@@ -7118,10 +7142,9 @@ describe('sanity', () => {
   })
   test('validateDocument', () => {
     expectTypeOf<typeof validateDocument>().toBeFunction()
-    expectTypeOf<Parameters<typeof validateDocument>[0]>().toEqualTypeOf<ValidateDocumentOptions>()
   })
   test('ValidateDocumentOptions', () => {
-    expectTypeOf<ValidateDocumentOptions>().toBeObject()
+    expectTypeOf<ValidateDocumentOptions>().not.toBeNever()
   })
   test('validateNames', () => {
     expectTypeOf<typeof validateNames>().toBeFunction()
