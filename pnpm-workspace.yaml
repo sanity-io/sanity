@@ -58,7 +58,8 @@ catalog:
 dedupePeers: true
 linkWorkspacePackages: deep
 
-minimumReleaseAge: 4320
+minimumReleaseAge: 1440
+minimumReleaseAgeExcludePrune: true
 minimumReleaseAgeExclude:
   - '@boundaries/elements'
   - '@oxfmt/*'
