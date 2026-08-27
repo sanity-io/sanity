@@ -7,6 +7,8 @@ import {
   getPairTarget,
   getTargetDocumentState,
   getTargetScopeId,
+  getTargetSiblings,
+  type TargetDocumentSiblings,
 } from '../useTargetDocumentState'
 
 const PUBLISHED_ID = 'article-1'
@@ -88,6 +90,15 @@ const variantOptions = {
   selectedVariantName: 'alpha-audience',
 }
 
+function siblings(partial: Partial<TargetDocumentSiblings> = {}): TargetDocumentSiblings {
+  return {
+    published: undefined,
+    draft: undefined,
+    version: undefined,
+    ...partial,
+  }
+}
+
 describe('getTargetDocumentState', () => {
   describe('without a requested variant', () => {
     it('resolves while version stubs are loading', () => {
@@ -102,7 +113,7 @@ describe('getTargetDocumentState', () => {
         targetDocument: draftBase,
         scopeId: undefined,
         variant: undefined,
-        publishedSibling: undefined,
+        siblings: siblings({published: publishedBase, draft: draftBase}),
       })
     })
 
@@ -112,7 +123,11 @@ describe('getTargetDocumentState', () => {
         targetDocument: releaseVersion,
         scopeId: RELEASE_ID,
         variant: undefined,
-        publishedSibling: undefined,
+        siblings: siblings({
+          published: publishedBase,
+          draft: draftBase,
+          version: releaseVersion,
+        }),
       })
     })
 
@@ -124,7 +139,7 @@ describe('getTargetDocumentState', () => {
         targetDocument: undefined,
         scopeId: undefined,
         variant: undefined,
-        publishedSibling: undefined,
+        siblings: siblings({published: publishedBase}),
       })
     })
   })
@@ -159,7 +174,7 @@ describe('getTargetDocumentState', () => {
         targetDocument: draftAlphaVariant,
         scopeId: 'varscope',
         variant: variantAlphaAudience,
-        publishedSibling: undefined,
+        siblings: siblings({draft: draftAlphaVariant}),
       })
     })
 
@@ -169,7 +184,7 @@ describe('getTargetDocumentState', () => {
         status: 'variant-missing',
         variant: variantAlphaAudience,
         bundle: 'published',
-        publishedSibling: undefined,
+        siblings: siblings({draft: draftAlphaVariant}),
       })
     })
 
@@ -182,7 +197,7 @@ describe('getTargetDocumentState', () => {
         targetDocument: draftAlphaVariant,
         scopeId: 'varscope',
         variant: variantAlphaAudience,
-        publishedSibling: publishedAlphaVariant,
+        siblings: siblings({published: publishedAlphaVariant, draft: draftAlphaVariant}),
       })
 
       // Published bundle: the target IS the sibling.
@@ -191,7 +206,38 @@ describe('getTargetDocumentState', () => {
         targetDocument: publishedAlphaVariant,
         scopeId: 'varscopePub',
         variant: variantAlphaAudience,
-        publishedSibling: publishedAlphaVariant,
+        siblings: siblings({published: publishedAlphaVariant, draft: draftAlphaVariant}),
+      })
+    })
+
+    it('reports the release-scoped variant as siblings.version', () => {
+      const releaseAlphaVariant = versionStub({
+        _id: `versions.varscopeRel.${PUBLISHED_ID}`,
+        _system: {
+          bundleId: RELEASE_ID,
+          variant: variantRef(variantAlphaAudience._id),
+          group: groupRef,
+          scopeId: 'varscopeRel',
+        },
+      })
+      const versions = [
+        publishedBase,
+        draftBase,
+        publishedAlphaVariant,
+        draftAlphaVariant,
+        releaseAlphaVariant,
+      ]
+
+      expect(getTargetDocumentState({...variantOptions, versions, bundle: RELEASE_ID})).toEqual({
+        status: 'ready',
+        targetDocument: releaseAlphaVariant,
+        scopeId: 'varscopeRel',
+        variant: variantAlphaAudience,
+        siblings: siblings({
+          published: publishedAlphaVariant,
+          draft: draftAlphaVariant,
+          version: releaseAlphaVariant,
+        }),
       })
     })
 
@@ -203,7 +249,7 @@ describe('getTargetDocumentState', () => {
         status: 'variant-missing',
         variant: variantAlphaAudience,
         bundle: 'drafts',
-        publishedSibling: publishedAlphaVariant,
+        siblings: siblings({published: publishedAlphaVariant}),
       })
     })
 
@@ -216,7 +262,7 @@ describe('getTargetDocumentState', () => {
           status: 'variant-missing',
           variant: variantAlphaAudience,
           bundle: 'drafts',
-          publishedSibling: publishedAlphaVariantAdvertisingDraft,
+          siblings: siblings({published: publishedAlphaVariantAdvertisingDraft}),
           creatableTarget: {id: DRAFT_SIBLING_ID, scopeId: 'varscopeDraft'},
         })
       })
@@ -252,7 +298,10 @@ describe('getTargetDocumentState', () => {
           targetDocument: draftAlphaVariant,
           scopeId: 'varscope',
           variant: variantAlphaAudience,
-          publishedSibling: publishedAlphaVariantAdvertisingDraft,
+          siblings: siblings({
+            published: publishedAlphaVariantAdvertisingDraft,
+            draft: draftAlphaVariant,
+          }),
         })
       })
     })
@@ -308,6 +357,29 @@ describe('getCreatableVariantTarget', () => {
           versions: [publishedBase, draftBase, publishedAlphaVariant],
         }),
       ),
+    ).toBeUndefined()
+  })
+})
+
+describe('getTargetSiblings', () => {
+  it('returns siblings for ready and variant-missing states', () => {
+    expect(getTargetSiblings(getTargetDocumentState(baseOptions))).toEqual(
+      siblings({published: publishedBase, draft: draftBase}),
+    )
+    expect(getTargetSiblings(getTargetDocumentState(variantOptions))).toEqual(
+      siblings({draft: draftAlphaVariant}),
+    )
+    expect(
+      getTargetSiblings(getTargetDocumentState({...variantOptions, bundle: 'published'})),
+    ).toEqual(siblings({draft: draftAlphaVariant}))
+  })
+
+  it('returns undefined while resolving or when the variant definition is missing', () => {
+    expect(
+      getTargetSiblings(getTargetDocumentState({...baseOptions, versionsLoading: true})),
+    ).toBeUndefined()
+    expect(
+      getTargetSiblings(getTargetDocumentState({...variantOptions, selectedVariant: undefined})),
     ).toBeUndefined()
   })
 })
