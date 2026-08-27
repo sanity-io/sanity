@@ -5,7 +5,8 @@ import {type Rule, type SanityDocument, type SchemaTypeDefinition} from '@sanity
 import {of} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 
-import {validateDocument} from '../src'
+import {validateDocument, validateDocumentWithWorkspace} from '../src'
+import {getFallbackLocaleSource} from '../src/_internal'
 
 const builtinSchema = SchemaBuilder.compile({name: 'studio', types: builtinTypes})
 
@@ -41,6 +42,66 @@ function createMockClient(omitted: {id: string; reason: 'existence' | 'permissio
 }
 
 describe('validateDocument', () => {
+  it('preserves workspace validation behavior through the compatibility overload', async () => {
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {
+            name: 'title',
+            type: 'string',
+            validation: (rule: Rule) => rule.required().min(10),
+          },
+        ],
+      },
+    ])
+    const document = createDocument({_type: 'article', title: 'Short'})
+    const {client} = createMockClient()
+    const fallbackI18n = getFallbackLocaleSource()
+    const i18n = {...fallbackI18n, t: vi.fn(fallbackI18n.t)}
+    const workspace = {getClient: () => client, i18n, schema}
+
+    const [headlessMarkers, workspaceMarkers, namedHelperMarkers] = await Promise.all([
+      validateDocument({client, document, schema}),
+      validateDocument({document, workspace}),
+      // oxlint-disable-next-line typescript/no-deprecated -- explicitly covers compatibility API
+      validateDocumentWithWorkspace({document, workspace}),
+    ])
+
+    expect(workspaceMarkers).toEqual(headlessMarkers)
+    expect(namedHelperMarkers).toEqual(headlessMarkers)
+    expect(i18n.t).toHaveBeenCalledWith('validation:string.minimum-length', {minLength: 10})
+  })
+
+  it('defaults workspace validation to the studio environment', async () => {
+    const schema = createSchema([])
+    const document = createDocument({_type: 'missing'})
+    const {client} = createMockClient()
+    const workspace = {
+      getClient: () => client,
+      i18n: getFallbackLocaleSource(),
+      schema,
+    }
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+
+    try {
+      await expect(validateDocument({document, workspace})).resolves.toEqual([])
+      await expect(validateDocument({client, document, schema})).resolves.toEqual([
+        expect.objectContaining({
+          level: 'warning',
+          message: "Could not find schema type for type 'missing', skipping validation",
+        }),
+      ])
+      expect(warnSpy).toHaveBeenCalledWith(
+        'Schema type for object type "%s" not found, skipping validation',
+        'missing',
+      )
+    } finally {
+      warnSpy.mockRestore()
+    }
+  })
+
   it('returns validation and unknown-field markers without mutating the document', async () => {
     const schema = createSchema([
       {
