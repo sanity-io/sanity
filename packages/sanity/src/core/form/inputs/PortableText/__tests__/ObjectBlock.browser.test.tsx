@@ -33,6 +33,92 @@ describe('Portable Text Input', () => {
       await expect.element(page.getByText('Custom preview block:')).toBeVisible()
     })
 
+    it(
+      'Does not flash the inline object toolbar while the edit popover is opening',
+      {timeout: 30_000},
+      async () => {
+        const {getFocusedPortableTextEditor} = testHelpers()
+        void render(<ObjectBlockStory />)
+        await getFocusedPortableTextEditor('field-body')
+
+        const toolbarPopover = {appeared: false}
+        const observer = new MutationObserver(() => {
+          const popover = document.querySelector<HTMLElement>(
+            '[data-testid="inline-object-toolbar-popover"]',
+          )
+          if (popover?.checkVisibility()) {
+            toolbarPopover.appeared = true
+          }
+        })
+        observer.observe(document.body, {
+          attributes: true,
+          childList: true,
+          subtree: true,
+        })
+
+        try {
+          await page.getByRole('button', {name: 'Insert Inline Object (inline)'}).first().click()
+          await expect.element(page.getByTestId('popover-edit-dialog')).toBeVisible()
+        } finally {
+          observer.disconnect()
+        }
+
+        expect(toolbarPopover.appeared).toBe(false)
+      },
+    )
+
+    it(
+      'Does not show the inline object toolbar while the edit popover is open',
+      {timeout: 30_000},
+      async () => {
+        const {getFocusedPortableTextEditor} = testHelpers()
+        void render(<ObjectBlockStory />)
+        await getFocusedPortableTextEditor('field-body')
+
+        await page.getByRole('button', {name: 'Insert Inline Object (inline)'}).first().click()
+        await expect.element(page.getByTestId('popover-edit-dialog')).toBeVisible()
+        await page.getByTestId('close-popover-edit-dialog-button').click()
+        await expect.element(page.getByTestId('popover-edit-dialog')).not.toBeInTheDocument()
+
+        await page.getByText('Custom preview block:').click()
+        await expect.element(page.getByTestId('inline-object-toolbar-popover')).toBeVisible()
+
+        await page.getByTestId('edit-inline-object-button').click()
+        await expect
+          .poll(() => {
+            const popover = document.querySelector<HTMLElement>(
+              '[data-testid="inline-object-toolbar-popover"]',
+            )
+            return !popover || !popover.checkVisibility()
+          })
+          .toBe(true)
+
+        const toolbarPopover = {appeared: false}
+        const observer = new MutationObserver(() => {
+          const popover = document.querySelector<HTMLElement>(
+            '[data-testid="inline-object-toolbar-popover"]',
+          )
+          if (popover?.checkVisibility()) {
+            toolbarPopover.appeared = true
+          }
+        })
+        observer.observe(document.body, {
+          attributes: true,
+          childList: true,
+          subtree: true,
+        })
+
+        try {
+          await expect.element(page.getByTestId('popover-edit-dialog')).toBeVisible()
+          await new Promise((resolve) => setTimeout(resolve, 1_000))
+        } finally {
+          observer.disconnect()
+        }
+
+        expect(toolbarPopover.appeared).toBe(false)
+      },
+    )
+
     it('Inline object toolbars works as expected after opening and closing the edit dialog', async () => {
       const {getFocusedPortableTextEditor} = testHelpers()
       void render(<ObjectBlockStory />)
