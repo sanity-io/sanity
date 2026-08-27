@@ -347,82 +347,6 @@ importers:
         specifier: workspace:^
         version: link:../../packages/sanity
 
-  dev/metrics-studio:
-    dependencies:
-      '@repo/utils':
-        specifier: workspace:*
-        version: link:../../packages/@repo/utils
-      '@sanity/client':
-        specifier: 'catalog:'
-        version: 8.3.0(vitest@4.1.11)
-      '@sanity/icons':
-        specifier: ^5.2.1
-        version: 5.2.1(react@19.2.8)
-      '@sanity/ui':
-        specifier: 'catalog:'
-        version: 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
-      '@visx/axis':
-        specifier: ^4.0.0
-        version: 4.0.0(@types/react@19.2.18)(react@19.2.8)
-      '@visx/group':
-        specifier: ^4.0.0
-        version: 4.0.0(@types/react@19.2.18)(react@19.2.8)
-      '@visx/responsive':
-        specifier: ^4.0.0
-        version: 4.0.0(@types/react@19.2.18)(react@19.2.8)
-      '@visx/scale':
-        specifier: ^4.0.0
-        version: 4.0.0
-      '@visx/shape':
-        specifier: ^4.0.0
-        version: 4.0.0(@types/react@19.2.18)(react@19.2.8)
-      oxc-transform-react:
-        specifier: 'catalog:'
-        version: 0.147.0
-      react:
-        specifier: 'catalog:'
-        version: 19.2.8
-      react-dom:
-        specifier: 'catalog:'
-        version: 19.2.8(react@19.2.8)
-      react-rx:
-        specifier: 'catalog:'
-        version: 6.0.0(react@19.2.8)(rxjs@7.8.2)
-      rxjs:
-        specifier: ^7.8.2
-        version: 7.8.2
-      sanity:
-        specifier: workspace:*
-        version: link:../../packages/sanity
-      styled-components:
-        specifier: 'catalog:'
-        version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
-      ui5:
-        specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.6(react-dom@19.2.8)(react@19.2.8)'
-      vite:
-        specifier: 'catalog:'
-        version: 8.2.2(@types/node@24.13.3)(@vitejs/devtools@0.5.2)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
-    devDependencies:
-      '@repo/test-config':
-        specifier: workspace:*
-        version: link:../../packages/@repo/test-config
-      '@sanity/vanilla-extract-vite-plugin':
-        specifier: 'catalog:'
-        version: 0.2.15(babel-plugin-macros@3.1.0)(vite@8.2.2)
-      '@types/react':
-        specifier: 'catalog:'
-        version: 19.2.18
-      rimraf:
-        specifier: 'catalog:'
-        version: 6.1.3
-      tsx:
-        specifier: ^4.23.12
-        version: 4.23.12
-      vitest:
-        specifier: ^4.1.11
-        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/browser-playwright@4.1.11)(@vitest/coverage-v8@4.1.11)(jsdom@29.1.1)(vite@8.2.2)
-
   dev/page-building-studio:
     dependencies:
       '@sanity/vision':
@@ -514,6 +438,82 @@ importers:
       vite:
         specifier: 'catalog:'
         version: 8.2.2(@types/node@24.13.3)(@vitejs/devtools@0.5.2)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
+
+  dev/radar:
+    dependencies:
+      '@repo/utils':
+        specifier: workspace:*
+        version: link:../../packages/@repo/utils
+      '@sanity/client':
+        specifier: 'catalog:'
+        version: 8.3.0(vitest@4.1.11)
+      '@sanity/icons':
+        specifier: ^5.2.1
+        version: 5.2.1(react@19.2.8)
+      '@sanity/ui':
+        specifier: 'catalog:'
+        version: 4.0.6(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+      '@visx/axis':
+        specifier: ^4.0.0
+        version: 4.0.0(@types/react@19.2.18)(react@19.2.8)
+      '@visx/group':
+        specifier: ^4.0.0
+        version: 4.0.0(@types/react@19.2.18)(react@19.2.8)
+      '@visx/responsive':
+        specifier: ^4.0.0
+        version: 4.0.0(@types/react@19.2.18)(react@19.2.8)
+      '@visx/scale':
+        specifier: ^4.0.0
+        version: 4.0.0
+      '@visx/shape':
+        specifier: ^4.0.0
+        version: 4.0.0(@types/react@19.2.18)(react@19.2.8)
+      oxc-transform-react:
+        specifier: 'catalog:'
+        version: 0.147.0
+      react:
+        specifier: 'catalog:'
+        version: 19.2.8
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.2.8(react@19.2.8)
+      react-rx:
+        specifier: 'catalog:'
+        version: 6.0.0(react@19.2.8)(rxjs@7.8.2)
+      rxjs:
+        specifier: ^7.8.2
+        version: 7.8.2
+      sanity:
+        specifier: workspace:*
+        version: link:../../packages/sanity
+      styled-components:
+        specifier: 'catalog:'
+        version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
+      ui5:
+        specifier: 'catalog:'
+        version: '@sanity/ui@5.0.0-alpha.6(react-dom@19.2.8)(react@19.2.8)'
+      vite:
+        specifier: 'catalog:'
+        version: 8.2.2(@types/node@24.13.3)(@vitejs/devtools@0.5.2)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
+    devDependencies:
+      '@repo/test-config':
+        specifier: workspace:*
+        version: link:../../packages/@repo/test-config
+      '@sanity/vanilla-extract-vite-plugin':
+        specifier: 'catalog:'
+        version: 0.2.15(babel-plugin-macros@3.1.0)(vite@8.2.2)
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.2.18
+      rimraf:
+        specifier: 'catalog:'
+        version: 6.1.3
+      tsx:
+        specifier: ^4.23.12
+        version: 4.23.12
+      vitest:
+        specifier: ^4.1.11
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/browser-playwright@4.1.11)(@vitest/coverage-v8@4.1.11)(jsdom@29.1.1)(vite@8.2.2)
 
   dev/sdk-app:
     dependencies:

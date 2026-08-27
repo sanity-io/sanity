@@ -5,9 +5,9 @@
  * store time. Idempotent — only touches docs missing the field. Run via the
  * sync-git-metrics.yml `patch_bench_run_refs` dispatch input, or locally:
  *
- *   pnpm --filter metrics-studio backfill-benchrun-refs --dry-run
+ *   pnpm --filter radar backfill-benchrun-refs --dry-run
  *
- * --dry-run still needs BENCH_METRICS_WRITE_TOKEN — finding the docs to
+ * --dry-run still needs RADAR_SANITY_WRITE_TOKEN — finding the docs to
  * patch requires querying the dataset. Docs without a full 40-char sha are
  * skipped; PR-branch shas get the reference and dangle by design, both
  * matching the write-time rules.
@@ -34,7 +34,7 @@ async function main(): Promise<void> {
     projectId: METRICS_PROJECT_ID,
     dataset: METRICS_DATASET,
     apiVersion: '2025-02-19',
-    token: readEnv('BENCH_METRICS_WRITE_TOKEN'),
+    token: readEnv('RADAR_SANITY_WRITE_TOKEN'),
     useCdn: false,
   })
 
