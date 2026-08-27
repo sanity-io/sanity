@@ -32,10 +32,10 @@ const formatValidationErrors = (options: {
         ? validationMarkerCodes.ruleAllFailed
         : validationMarkerCodes.ruleEitherFailed,
     details: {
-      causes: options.results.map(({code, details, message: causeMessage, path}) => ({
+      causes: options.results.map(({code, details, item, message: causeMessage, path}) => ({
         code: code || validationMarkerCodes.validationFailed,
         details,
-        message: causeMessage,
+        message: causeMessage || item?.message,
         path,
       })),
     },
