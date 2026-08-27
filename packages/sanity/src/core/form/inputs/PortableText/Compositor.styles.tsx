@@ -23,6 +23,9 @@ export const Root = styled.div((props) => {
       overflow: clip;
       position: relative;
       z-index: 1;
+      /* Contain mix-blend-mode text blocks so they cannot composite over
+         portaled popovers rendered outside this wrapper. */
+      isolation: isolate;
       padding: ${input.border.width}px;
     }
 
