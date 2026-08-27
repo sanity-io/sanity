@@ -1,8 +1,5 @@
 import {type MendozaPatch, type TransactionLogEventWithEffects} from '@sanity/types'
 
-import {type ReleasesReducerState} from '../../releases/store/reducer'
-import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
-import {getVersionFromId} from '../../util/draftUtils'
 import {type DocumentVariantType} from '../../util/getDocumentVariantType'
 import {type DocumentRemoteMutationEvent} from '../document/buffered-doc/types'
 import {
@@ -247,34 +244,6 @@ export function updateVersionEvents(events: DocumentGroupEvent[]) {
 }
 
 /**
- * Published-variant post-processing: attaches release metadata to `publishDocumentVersion` events
- * whose `versionId` belongs to a release. When the release document is in the releases store it is
- * attached as `release`; otherwise a stub `{_id: <releaseDocumentId>}` is attached so the UI can
- * still show that a (e.g. deleted/archived) release caused the publish. Draft publishes and all
- * other events pass through untouched.
- */
-export function updatePublishedEvents(
-  events: DocumentGroupEvent[],
-  releases: ReleasesReducerState,
-) {
-  return events.map((event) => {
-    if (isPublishDocumentVersionEvent(event)) {
-      const releaseId = getVersionFromId(event.versionId)
-      if (releaseId) {
-        const releaseDocumentId = getReleaseDocumentIdFromReleaseId(releaseId)
-        const release = releases.releases.get(releaseDocumentId)
-        return {
-          ...event,
-          release: release || {_id: releaseDocumentId},
-        }
-      }
-      return event
-    }
-    return event
-  })
-}
-
-/**
  * Merges remote edits, API events and expanded edit events into one list sorted newest-first.
  *
  * Sorting rules:
@@ -284,9 +253,9 @@ export function updatePublishedEvents(
  *   timestamps — the publish's API timestamp has seconds granularity and can tie with or trail the
  *   edit's transaction timestamp.
  *
- * Known quirk: the special case makes the comparator non-transitive (publish < paired edit while
- * both compare by timestamp against everything else), so ordering around such pairs can depend on
- * input order — tracked as a known issue.
+ * Known quirk: the special case makes the comparator non-transitive (the publish sorts before its
+ * paired edit while both compare by timestamp against everything else), so ordering around such
+ * pairs can depend on input order — tracked as a known issue.
  */
 export function sortEvents({
   remoteEdits,
