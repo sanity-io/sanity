@@ -911,10 +911,14 @@ exports[`exports snapshot 1`] = `
   },
   "./cli": {
     "createCliConfig": "function",
+    "defineApplication": "function",
     "defineCliConfig": "function",
+    "definePanelView": "function",
+    "defineTileView": "function",
+    "defineWebWorker": "function",
+    "defineWindowView": "function",
     "getCliClient": "function",
     "getStudioEnvironmentVariables": "function",
-    "unstable_defineApp": "function",
     "unstable_defineMediaLibrary": "function",
   },
   "./desk": {
