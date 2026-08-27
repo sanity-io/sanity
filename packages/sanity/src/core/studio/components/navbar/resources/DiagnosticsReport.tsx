@@ -33,7 +33,8 @@ const CodeValue = styled.span`
   overflow-wrap: anywhere;
 `
 
-interface DiagnosticsReportProps {
+/** @internal */
+export interface DiagnosticsReportProps {
   diagnostics: StudioDiagnostics
   onRunAgain: () => void
   runAgainLabel?: string
