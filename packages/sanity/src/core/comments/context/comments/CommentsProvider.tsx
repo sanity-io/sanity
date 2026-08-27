@@ -333,7 +333,12 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       ],
     ),
   )
-  const readOnly = !commentsClient || !currentUser?.sanityUserId
+
+  // Comments stay read-only until we can call the API:
+  // - commentsClient: null while org id / project / dataset are still resolving
+  // - sanityUserId: required as the acting user
+  // - commentsReady: false in a version perspective until sourceDocumentId is a version id
+  const readOnly = !commentsClient || !currentUser?.sanityUserId || !commentsReady
 
   const ctxValue = useMemo(
     (): CommentsContextValue => ({

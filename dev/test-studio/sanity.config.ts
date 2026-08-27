@@ -340,6 +340,9 @@ const defaultWorkspace = defineConfig({
     variants: {
       enabled: true,
     },
+    comments: {
+      v2: true,
+    },
   },
 })
 
