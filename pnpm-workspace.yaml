@@ -142,7 +142,8 @@ trustPolicyExclude:
   - '@reduxjs/toolkit@2.9.0 || 2.10.1 || 2.11.0'
   - '@sanity/cli'
   - '@sanity/mutate@0.11.0-canary.4'
-  - '@sanity/sdk-react@2.15.0'
+  - '@sanity/sdk@3.0.0'
+  - '@sanity/sdk-react@3.0.0'
   - '@swc/core@1.13.5'
   - chokidar@4.0.3
   # 5.24.0 got accidental trust-downgrade
