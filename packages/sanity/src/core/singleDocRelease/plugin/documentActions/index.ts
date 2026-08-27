@@ -2,7 +2,7 @@ import {type DocumentActionComponent} from '../../../config/document/actions'
 import {type DocumentActionsContext} from '../../../config/types'
 import {
   DeleteScheduledDraftAction,
-  EditScheduledDraftAction,
+  PauseToEditScheduledDraftAction,
   PublishScheduledDraftAction,
 } from './ScheduledDraftDocumentActions'
 import {useSchedulePublishAction} from './SchedulePublishAction'
@@ -17,7 +17,7 @@ export default function resolveDocumentActions(
     return [
       useSchedulePublishAction, // Shows only when paused
       PublishScheduledDraftAction, // Always shows
-      EditScheduledDraftAction, // Shows only when NOT paused
+      PauseToEditScheduledDraftAction, // Shows only when NOT paused
       DeleteScheduledDraftAction, // Always shows
     ]
   }
