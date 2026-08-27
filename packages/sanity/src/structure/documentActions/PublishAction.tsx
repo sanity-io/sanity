@@ -224,6 +224,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     validationStatus.revision,
     revision,
     doPublish,
+    setPublishScheduled,
   ])
 
   return useMemo(() => {
