@@ -41,7 +41,7 @@ describe('isUsingLegacyHttp', () => {
         responseStart: 0,
         secureConnectionStart: 0,
         serverTiming: [],
-        startTime: performance.now() + 1,
+        startTime: performance.now() + 60_000,
         transferSize: 0,
       }
 
@@ -130,7 +130,7 @@ describe('isUsingLegacyHttp', () => {
         responseStart: 40,
         secureConnectionStart: 20,
         serverTiming: [],
-        startTime: performance.now() + 1,
+        startTime: performance.now() + 60_000,
         transferSize: 304,
       }
       const mockObserve = vi.fn()
@@ -210,7 +210,7 @@ describe('isUsingLegacyHttp', () => {
         responseStart: 0,
         secureConnectionStart: 0,
         serverTiming: [],
-        startTime: performance.now() + 1,
+        startTime: performance.now() + 60_000,
         transferSize: 0,
       }
 
