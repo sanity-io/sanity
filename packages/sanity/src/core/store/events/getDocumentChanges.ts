@@ -38,6 +38,12 @@ function removeDuplicatedTransactions(transactions: TransactionLogEventWithEffec
   })
 }
 
+/**
+ * Raised (as an emitted `error` value, not thrown) by {@link getDocumentChanges} when the "since"
+ * document can't be fetched from the history API — typically because history retention expired the
+ * revision even though the events API still lists an event for it. The UI shows a dedicated
+ * message for this error (see `ChangesError`).
+ */
 export class MissingSinceDocumentError extends Error {
   revisionId: string
 
@@ -48,6 +54,29 @@ export class MissingSinceDocumentError extends Error {
   }
 }
 
+/**
+ * Emits the annotated diff `{loading, diff, error}` between the "since" and "to" revisions,
+ * recomputing when either revision, the event list, or the remote transactions change.
+ *
+ * Since-document resolution:
+ * - Uses `since$`'s document when present.
+ * - Otherwise, when "to" points at a `createDocumentVersion` event, synthesizes an empty since
+ *   document (`_id`/`_type`/`_rev` only) so the diff shows everything as added.
+ * - Otherwise emits `MissingSinceDocumentError` when a since revision was requested but its
+ *   document couldn't be fetched (history retention); `null` error while still loading.
+ *
+ * Transaction fetching (for attribution):
+ * - A synthetic `historyCleared` since-revision yields no transactions.
+ * - When viewing the latest version (no `to._rev`) and the since revision is unchanged, previously
+ *   fetched transactions are reused and concatenated with live `remoteTransactions$` (deduped by
+ *   id) instead of refetching.
+ * - When both since and to are unchanged, transactions are fully reused.
+ * - Otherwise transactions are fetched from the translog for the since→to range.
+ *
+ * Emits a fast, annotation-less preview diff (`startWith`) while transactions load. Errors from
+ * the pipeline are logged and emitted as `{diff: null, error}`.
+ *
+ */
 export function getDocumentChanges({
   eventsObservable$,
   documentId,

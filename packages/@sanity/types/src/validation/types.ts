@@ -293,7 +293,7 @@ export interface ValidationContext {
  * `RuleSpec`'s constraint, the value to check, an optional override message,
  * and the validation context.
  *
- * @see Rule.validate from `sanity/src/core/validation/Rule`
+ * @see Rule.validate from `@sanity/validation`
  *
  * @internal
  */

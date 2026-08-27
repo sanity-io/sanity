@@ -183,7 +183,7 @@ jobs:
       deployments: read
     uses: ./.github/workflows/sync-git-metrics.yml
     secrets:
-      BENCH_METRICS_WRITE_TOKEN: ${{ secrets.BENCH_METRICS_WRITE_TOKEN }}
+      RADAR_SANITY_WRITE_TOKEN: ${{ secrets.RADAR_SANITY_WRITE_TOKEN }}
       SLACK_WEBHOOK_URL_CI_ALERTS: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
 
   bench-release:
