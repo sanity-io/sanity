@@ -123,10 +123,18 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     [activeViewId, views],
   )
 
-  // Use a local portal container when split panes is supported
-  const portalElement: HTMLElement | null = features.splitPanes
-    ? _portalElement || parentPortal.element
-    : parentPortal.element
+  const showInspector = Boolean(!collapsed && inspector)
+  // Keep the form mounted when the inspector takes over a collapsed layout.
+  // Unmounting FormBuilder resets FullscreenPTEProvider, so a PTE that was in
+  // full-pane mode comes back inline after the window is widened again.
+  const showFormView = features.resizablePanes || !showInspector
+
+  // Fullscreen PTE portals to this element. When the form is hidden, keep that
+  // target inside the hidden subtree so the editor cannot cover the inspector.
+  const portalElement: HTMLElement | null =
+    features.splitPanes || !showFormView
+      ? _portalElement || parentPortal.element
+      : parentPortal.element
 
   // Calculate the height of the header
   const margins: [number, number, number, number] = useMemo(() => {
@@ -193,7 +201,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     ) : null
   }, [isInspectOpen, displayed, value])
 
-  const showInspector = Boolean(!collapsed && inspector)
   const {selectedReleaseId, selectedPerspectiveName, selectedPerspective} = usePerspective()
 
   const hasDocumentInRelease =
@@ -410,10 +417,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     () => ({documentScrollElement: documentScrollElement}),
     [documentScrollElement],
   )
-  // Keep the form mounted when the inspector takes over a collapsed layout.
-  // Unmounting FormBuilder resets FullscreenPTEProvider, so a PTE that was in
-  // full-pane mode comes back inline after the window is widened again.
-  const showFormView = features.resizablePanes || !showInspector
   return (
     <PaneContent>
       <Flex height="fill">

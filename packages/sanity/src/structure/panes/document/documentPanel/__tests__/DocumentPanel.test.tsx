@@ -1,6 +1,5 @@
 import {render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {useState} from 'react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -22,7 +21,7 @@ vi.mock('../../../../components/paneRouter/usePaneRouter', () => ({
 }))
 
 vi.mock('../../../../useStructureTool', () => ({
-  useStructureTool: vi.fn(() => ({features: {resizablePanes: true}})),
+  useStructureTool: vi.fn(() => ({features: {resizablePanes: true, splitPanes: true}})),
 }))
 
 vi.mock('../../useDocumentPane', () => ({
@@ -41,22 +40,32 @@ vi.mock('../header/DocumentPanelSubHeader', () => ({
   DocumentPanelSubHeader: () => null,
 }))
 
-vi.mock('../documentViews/FormView', () => ({
-  FormView: function MockFormView() {
-    const [count, setCount] = useState(0)
-    return (
-      <div data-testid="document-panel-scroller">
-        <button
-          type="button"
-          data-testid="form-state"
-          onClick={() => setCount((value) => value + 1)}
-        >
-          {count}
-        </button>
-      </div>
-    )
-  },
-}))
+vi.mock('../documentViews/FormView', async () => {
+  const {useState} = await import('react')
+  const {createPortal} = await import('react-dom')
+  const {usePortal} = await import('@sanity/ui')
+
+  return {
+    FormView: function MockFormView() {
+      const [count, setCount] = useState(0)
+      const portal = usePortal()
+      return (
+        <div data-testid="document-panel-scroller">
+          <button
+            type="button"
+            data-testid="form-state"
+            onClick={() => setCount((value) => value + 1)}
+          >
+            {count}
+          </button>
+          {portal.element
+            ? createPortal(<div data-testid="fullscreen-pte">fullscreen</div>, portal.element)
+            : null}
+        </div>
+      )
+    },
+  }
+})
 
 vi.mock('../../documentInspector/DocumentInspectorPanel', () => ({
   DocumentInspectorPanel: () => <aside data-ui="DocumentInspectorPanel">Inspector</aside>,
@@ -71,6 +80,9 @@ vi.mock('sanity', async (importOriginal) => ({
 
 const mockUseDocumentPane = vi.mocked(useDocumentPane)
 const mockUseStructureTool = vi.mocked(useStructureTool)
+
+const splitPanesFeatures = {resizablePanes: true, splitPanes: true}
+const collapsedLayoutFeatures = {resizablePanes: false, splitPanes: false}
 
 function documentPaneValue() {
   return {
@@ -112,7 +124,7 @@ describe('DocumentPanel form persistence', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockUseStructureTool.mockReturnValue({
-      features: {resizablePanes: true},
+      features: splitPanesFeatures,
     } as ReturnType<typeof useStructureTool>)
   })
 
@@ -124,7 +136,7 @@ describe('DocumentPanel form persistence', () => {
     expect(screen.getByTestId('document-panel-form-view')).toBeVisible()
 
     mockUseStructureTool.mockReturnValue({
-      features: {resizablePanes: false},
+      features: collapsedLayoutFeatures,
     } as ReturnType<typeof useStructureTool>)
     rerender(renderDocumentPanel())
 
@@ -132,14 +144,19 @@ describe('DocumentPanel form persistence', () => {
     expect(formView).not.toBeVisible()
     expect(formView).toHaveAttribute('hidden')
     expect(screen.getByTestId('form-state')).toHaveTextContent('1')
-    expect(screen.getByText('Inspector')).toBeInTheDocument()
+    expect(screen.getByText('Inspector')).toBeVisible()
+
+    const fullscreenPte = screen.getByTestId('fullscreen-pte')
+    expect(formView).toContainElement(fullscreenPte)
+    expect(fullscreenPte).not.toBeVisible()
 
     mockUseStructureTool.mockReturnValue({
-      features: {resizablePanes: true},
+      features: splitPanesFeatures,
     } as ReturnType<typeof useStructureTool>)
     rerender(renderDocumentPanel())
 
     expect(screen.getByTestId('document-panel-form-view')).toBeVisible()
     expect(screen.getByTestId('form-state')).toHaveTextContent('1')
+    expect(screen.getByTestId('fullscreen-pte')).toBeVisible()
   })
 })
