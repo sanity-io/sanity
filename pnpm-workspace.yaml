@@ -22,19 +22,19 @@ allowBuilds:
   unrs-resolver: false
 
 catalog:
-  '@optique/core': ^1.1.1
-  '@optique/run': ^1.1.1
+  '@optique/core': ^1.2.3
+  '@optique/run': ^1.2.3
   '@playwright/test': 1.62.1
-  '@sanity/client': ^8.3.0
+  '@sanity/client': ^8.4.0
   '@sanity/migrate': ^8.0.2
   '@sanity/telemetry': ^1.1.0
-  '@sanity/tsdown-config': ^0.26.2
-  '@sanity/ui': ^4.0.6
+  '@sanity/tsdown-config': ^0.27.0
+  '@sanity/ui': ^4.0.7
   '@types/node': ^24.13.3
   '@types/react': ^19.2.18
-  '@types/react-dom': ^19.2.4
+  '@types/react-dom': ^19.2.5
   '@types/react-is': ^19.2.0
-  '@sanity/vanilla-extract-vite-plugin': ^0.2.15
+  '@sanity/vanilla-extract-vite-plugin': ^0.2.16
   '@vanilla-extract/css': ^1.21.2
   '@vanilla-extract/dynamic': ^2.1.5
   '@vitejs/plugin-react': ^6.1.0
@@ -71,6 +71,9 @@ minimumReleaseAgeExclude:
   - '@vitejs/plugin-react'
   - '@portabletext/*'
   - '@sanity/*'
+  # Fresh @sanity/cli transitives used by @sanity/cli@8.4.2
+  - '@sanity/cli-build@6.0.1'
+  - '@sanity/workbench-cli@2.2.2'
   - '@yuku-codegen/*'
   - '@yuku-parser/*'
   - '@yuku-toolchain/types'
@@ -80,7 +83,6 @@ minimumReleaseAgeExclude:
   - '@vercel/stega'
   - '@yuku-toolchain/*'
   - 'csstype'
-  - 'data-uri-to-buffer@7.0.0'
   - 'eslint-plugin-boundaries'
   - 'get-it'
   - 'groq-js'
@@ -143,6 +145,8 @@ trustPolicyExclude:
   - '@octokit/plugin-paginate-rest@9.2.2'
   - '@reduxjs/toolkit@2.9.0 || 2.10.1 || 2.11.0'
   - '@sanity/cli'
+  - '@sanity/cli-build@6.0.1'
+  - '@sanity/workbench-cli@2.2.2'
   - '@sanity/mutate@0.11.0-canary.4'
   - '@sanity/sdk@3.0.0'
   - '@sanity/sdk-react@3.0.0'
