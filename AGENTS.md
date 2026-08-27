@@ -81,6 +81,7 @@ sanity/
 │   └── @repo/            # Internal tooling (test-config, tsconfig, etc.)
 ├── dev/                  # Development studios for testing
 │   ├── test-studio/      # Primary dev studio (pnpm dev runs this)
+│   ├── studio-diagnostics-viewer/ # Standalone viewer for pasted diagnostics JSON
 │   └── preview-iframe/   # Presentation preview iframe (vanilla Vite, port 3334)
 ├── e2e/                  # End-to-end Playwright tests
 ├── perf/                 # Performance testing
