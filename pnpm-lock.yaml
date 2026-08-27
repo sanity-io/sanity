@@ -1627,7 +1627,7 @@ importers:
         specifier: workspace:*
         version: link:../util
       i18next:
-        specifier: ^26.2.0
+        specifier: ^26.4.0
         version: 26.4.0(typescript@7.0.2)
       lodash-es:
         specifier: ^4.18.1
@@ -26268,7 +26268,7 @@ snapshots:
       react: 19.2.8
       react-compiler-runtime: 1.0.0(react@19.2.8)
       rxjs: 7.8.2
-      use-effect-event: 2.0.3(react@19.2.8)
+      use-effect-event: 2.0.4(react@19.2.8)
 
   react-rx@6.0.0(react@19.2.8)(rxjs@7.8.2):
     dependencies:
