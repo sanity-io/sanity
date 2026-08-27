@@ -113,10 +113,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
     () => ({
       id: 'actions',
       sorting: false,
-      // Header and body are independent flexboxes, so this trailing gutter must be the same
-      // width in both. The cell is border-box: padding 3 (12px) + a 25px bleed button needs
-      // 50px. A 25px width (the old content-box assumption) overflowed by 12px and clipped
-      // the … (SAPP-3249).
+      // Header and body are independent flexboxes — keep this gutter the same width in both.
       width: 50,
       header: ({headerProps: {id}}) => (
         <Flex
@@ -188,9 +185,6 @@ const TableInner = <TableData, AdditionalRowTableData>({
               left: 0,
               right: 0,
               transform: `translateY(${datum.virtualRow.start}px)`,
-              // Centering gutter lives in --tableInlinePadding. A 12px *minimum* here overflowed
-              // the row-action … by exactly that amount whenever the table was already full-bleed
-              // (SAPP-3249).
               paddingInline: 'var(--tableInlinePadding)',
               // Consumer-supplied row styles are merged (not clobbered) so they can tint/flag a row
               // without dropping the virtualization layout (height/position/transform).
@@ -235,8 +229,6 @@ const TableInner = <TableData, AdditionalRowTableData>({
 
   const theme = useTheme()
   const maxInlineSize = (!hideTableInlinePadding && theme.sanity.v2?.container[3]) || 0
-  // Full-bleed tables (hideTableInlinePadding) must not keep a leftover gutter — it clips the
-  // trailing … . Otherwise only pad when the row is wider than the max inline size (centering).
   const tableInlinePadding = hideTableInlinePadding
     ? '0px'
     : `max(0px, calc((100% - var(--maxInlineSize)) / 2))`

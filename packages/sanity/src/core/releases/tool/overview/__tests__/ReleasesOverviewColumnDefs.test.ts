@@ -34,7 +34,6 @@ describe('releasesOverviewColumnDefs', () => {
         120 +
         RELEASES_OVERVIEW_ROW_ACTIONS_WIDTH,
     )
-    // 1280 viewport minus calendar (~280px) and studio chrome still has ~1000px for the table.
     expect(minContentWidth).toBeLessThan(1000)
   })
 

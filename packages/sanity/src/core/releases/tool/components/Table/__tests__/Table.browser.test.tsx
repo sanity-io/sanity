@@ -29,9 +29,6 @@ describe('Table (virtualized)', () => {
     expect(firstRow.contains(hit)).toBe(true)
   })
 
-  // Regression for SAPP-3249: a viewport-locked title column overflowed the table
-  // and clipped the row-action … . With a shrinkable title min-width the button
-  // stays fully inside a 1100px table area (1280 window minus calendar chrome).
   it('keeps the row-action button fully visible at a constrained desktop width', async () => {
     void render(<TableStory containerWidth={1100} showRowActions />)
 

@@ -20,25 +20,14 @@ import {ReleaseNameCell} from './columnCells/ReleaseName'
 import {type Mode} from './queryParamUtils'
 import {type TableRelease} from './ReleasesOverview'
 
-/**
- * Title fills leftover space via flexGrow, but must be allowed to shrink. Locking it to 50% of
- * the viewport (`min(50%, calc(100vw - 80px))`) plus the fixed When/Edited/Documents/actions
- * columns overflowed the table below ~1491px and clipped the row-action … (SAPP-3249).
- */
 export const RELEASES_OVERVIEW_TITLE_COLUMN_MIN_WIDTH = 200
 
 const RELEASES_OVERVIEW_TITLE_COLUMN_STYLE = {
   minWidth: RELEASES_OVERVIEW_TITLE_COLUMN_MIN_WIDTH,
 } as const
 
-/** Trailing actions column reserved by `Table` when `rowActions` is set. */
 export const RELEASES_OVERVIEW_ROW_ACTIONS_WIDTH = 50
 
-/**
- * Minimum width the overview table needs for its columns plus the row-action … .
- * Kept below the table area available at 1280px with the calendar sidebar mounted
- * so the action button is not the first thing clipped.
- */
 export function getReleasesOverviewMinContentWidth(columns: Column<TableRelease>[]): number {
   const columnWidth = columns
     .filter((column) => !column.hidden)
