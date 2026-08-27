@@ -128,8 +128,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   // AnnotationObjectEditModal once the modal renders (or on item close).
   const annotationOpeningRef = useRef(false)
 
-  // Track the full inline object edit lifecycle, including the window before
-  // `member.open` propagates, so inline object toolbars remain suppressed.
+  // Covers the window before `member.open` propagates, during which the inline
+  // object is already focused and would otherwise surface its toolbar.
   const [inlineObjectEditModalActive, setInlineObjectEditModalActive] = useState(false)
 
   const handleItemOpen = useCallback(
@@ -152,15 +152,12 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     onItemClose()
   }, [onItemClose])
 
-  const handleInlineObjectEditModalActiveChange = useCallback((active: boolean) => {
-    setInlineObjectEditModalActive(active)
-  }, [])
   const inlineObjectEditModalContext = useMemo(
     () => ({
       active: inlineObjectEditModalActive,
-      setActive: handleInlineObjectEditModalActiveChange,
+      setActive: setInlineObjectEditModalActive,
     }),
-    [handleInlineObjectEditModalActiveChange, inlineObjectEditModalActive],
+    [inlineObjectEditModalActive],
   )
 
   // Wrap the consumer's onPaste to enrich PasteData.schemaTypes with

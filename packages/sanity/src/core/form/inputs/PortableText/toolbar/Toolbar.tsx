@@ -236,8 +236,8 @@ export function Toolbar(props: ToolbarProps) {
 
   const handleInsertInline = useCallback(
     async (type: ObjectSchemaType) => {
-      // Set before insertChild so the inline object toolbar stays closed in the
-      // window before `member.open` propagates (SAPP-4408).
+      // Must be set before insertChild: that call focuses the new inline object,
+      // which surfaces its toolbar before `member.open` propagates.
       setInlineObjectEditModalActive(true)
       try {
         const initialValue = await resolveInitialValue(type)
