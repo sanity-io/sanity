@@ -1,3 +1,5 @@
+import {ThemeProvider} from '@sanity/ui'
+import {buildTheme} from '@sanity/ui/theme'
 import {render, screen} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -15,6 +17,7 @@ vi.mock('../../../../../i18n/hooks/useLocale', () => ({
 }))
 
 const useCurrentLocaleMock = vi.mocked(useCurrentLocale)
+const theme = buildTheme()
 
 const renderCalendarDay = ({date}: CalendarDayProps) => (
   <span data-testid="calendar-day">{date.getDay()}</span>
@@ -31,12 +34,14 @@ describe('CalendarMonth', () => {
 
   it('aligns weekday headers and dates with the locale week start', () => {
     const {container} = render(
-      <CalendarMonth
-        date={new Date('2026-08-01T12:00:00Z')}
-        onSelect={vi.fn()}
-        renderCalendarDay={renderCalendarDay}
-        timeZoneScope={{type: 'contentReleases'}}
-      />,
+      <ThemeProvider theme={theme}>
+        <CalendarMonth
+          date={new Date('2026-08-01T12:00:00Z')}
+          onSelect={vi.fn()}
+          renderCalendarDay={renderCalendarDay}
+          timeZoneScope={{type: 'contentReleases'}}
+        />
+      </ThemeProvider>,
     )
 
     expect(getAllByDataUi(container, 'Label').map((label) => label.textContent)).toEqual([
