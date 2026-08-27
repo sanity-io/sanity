@@ -1738,9 +1738,9 @@ export {
   readVersionType,
   type VersionType,
 } from '../core/util/versionsUtils'
-export {Rule as ConcreteRuleClass} from '../core/validation/Rule'
-export {type ValidationContext} from '../core/validation/types'
-export {validateDocument, type ValidateDocumentOptions} from '../core/validation/validateDocument'
+export {Rule as ConcreteRuleClass} from '@sanity/validation/_internal'
+export {type ValidateDocumentOptions, validateDocument} from '../core/validation'
+export {type ValidationContext} from '@sanity/validation/_internal'
 export {isDocumentInSelectedVariant} from '../core/variants/documents/isDocumentInSelectedVariant'
 export {useCreatableVariantInitialValue} from '../core/variants/hooks/useCreatableVariantInitialValue'
 export {useVariantDocumentOperations} from '../core/variants/hooks/useVariantDocumentOperations'

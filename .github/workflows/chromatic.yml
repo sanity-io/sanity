@@ -5,9 +5,9 @@ permissions: {}
 #
 # Two jobs, one per Chromatic project:
 #
-# - `storybook`: builds dev/storybook (whose stories reuse the vitest
-#   browser-mode test harnesses) and uploads it to the `sanity` Chromatic
-#   project for snapshotting.
+# - `storybook`: builds the Storybook host in `dev/storybook` (stories are
+#   package-owned and co-located; most reuse vitest browser-mode harnesses)
+#   and uploads it to the `sanity` Chromatic project for snapshotting.
 # - `vitest-visual`: re-runs the vitest browser-mode suite (chromium only)
 #   with the @chromatic-com/vitest plugin enabled, archiving each test's end
 #   state, and uploads the archives to the Chromatic Vitest project.

@@ -18,6 +18,7 @@ import {type Path, type PortableTextBlock} from '@sanity/types'
 import {useToast} from '@sanity/ui/toast'
 import {randomKey} from '@sanity/util/content'
 import {fromString, startsWith} from '@sanity/util/paths'
+import {pathToString} from '@sanity/validation/_internal'
 import {
   type ReactNode,
   startTransition,
@@ -34,7 +35,6 @@ import {useEffectEvent} from 'use-effect-event'
 
 import {usePerspective} from '../../../perspective/usePerspective'
 import {EMPTY_ARRAY} from '../../../util/empty'
-import {pathToString} from '../../../validation/util/pathToString'
 import {
   PortableTextInputCollapsed,
   PortableTextInputExpanded,
