@@ -9,7 +9,7 @@ on:
     types: [opened, synchronize, reopened, labeled]
   schedule:
     # Daily main-branch tracking: absolute-mode run stored to the
-    # studio-metrics project (time series / drift detection)
+    # Studio Radar project (time series / drift detection)
     - cron: "0 5 * * *"
     # Weekly self-test: compare a build against itself - every metric must
     # report neutral, anything else is a harness bug (flake resistance rule 6)
@@ -651,7 +651,7 @@ jobs:
       # same trust level as track-main.
       - name: Store comparison document
         env:
-          BENCH_METRICS_WRITE_TOKEN: ${{ secrets.BENCH_METRICS_WRITE_TOKEN }}
+          RADAR_SANITY_WRITE_TOKEN: ${{ secrets.RADAR_SANITY_WRITE_TOKEN }}
         run: pnpm bench store --ab "$GITHUB_WORKSPACE/perf/bench/results/merged.json"
 
       - uses: actions/upload-artifact@v7
@@ -679,7 +679,7 @@ jobs:
       contents: read
     steps:
       # Deliberately check out BASE-branch code, not the PR merge commit: this
-      # job holds BENCH_METRICS_WRITE_TOKEN, and the trigger:perf-bench label persists
+      # job holds RADAR_SANITY_WRITE_TOKEN, and the trigger:perf-bench label persists
       # across pushes — checking out PR code would let any later push on a
       # labeled PR run arbitrary code with the token. The PR's benchmark
       # output is consumed purely as data via the artifact below. Do not
@@ -702,7 +702,7 @@ jobs:
       - name: Store PR run
         if: steps.absolute.outcome == 'success'
         env:
-          BENCH_METRICS_WRITE_TOKEN: ${{ secrets.BENCH_METRICS_WRITE_TOKEN }}
+          RADAR_SANITY_WRITE_TOKEN: ${{ secrets.RADAR_SANITY_WRITE_TOKEN }}
         run: pnpm bench store "$GITHUB_WORKSPACE/perf/bench/results/merged-absolute.json"
 
   self-test:
@@ -810,7 +810,7 @@ jobs:
     # and INP run here (daily-only modes), then this job gathers the interaction
     # and pageLoad shard results (bench-interaction / bench-pageload, which run
     # absolute on this trigger) and stores one merged benchRun doc to the
-    # studio-metrics project. Interaction/pageLoad moved to the sharded jobs so
+    # Studio Radar project. Interaction/pageLoad moved to the sharded jobs so
     # the daily run is parallel (was a single ~90-minute sequential job); soak
     # (~10m) + INP (~10m) are cheap and stay together here.
     #
@@ -912,7 +912,7 @@ jobs:
 
       - name: Store benchRun document
         env:
-          BENCH_METRICS_WRITE_TOKEN: ${{ secrets.BENCH_METRICS_WRITE_TOKEN }}
+          RADAR_SANITY_WRITE_TOKEN: ${{ secrets.RADAR_SANITY_WRITE_TOKEN }}
         run: pnpm bench store
 
       - uses: actions/upload-artifact@v7
