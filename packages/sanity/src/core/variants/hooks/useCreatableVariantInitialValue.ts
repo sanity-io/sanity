@@ -3,11 +3,7 @@ import {useMemo} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {map, of} from 'rxjs'
 
-import {
-  type CreatableTargetDocument,
-  getCreatableVariantTarget,
-  type TargetDocumentState,
-} from '../../hooks/useTargetDocumentState'
+import {getTargetSiblings, type TargetDocumentState} from '../../hooks/useTargetDocumentState'
 import {useDocumentPreviewStore} from '../../store/datastores'
 import {type InitialValueState} from '../../store/document/initialValue/types'
 import {getPublishedId} from '../../util/draftUtils'
@@ -30,7 +26,7 @@ import {getPublishedId} from '../../util/draftUtils'
  */
 export function buildCreatableVariantInitialValue(options: {
   publishedSibling: SanityDocumentLike
-  target: CreatableTargetDocument
+  target: {scopeId: string; id: string}
   variantId: string
 }): SanityDocumentLike {
   const {publishedSibling, target, variantId} = options
@@ -69,14 +65,14 @@ export function useCreatableVariantInitialValue(
   fallback: InitialValueState,
 ): InitialValueState {
   const documentPreviewStore = useDocumentPreviewStore()
-  const creatableTarget = getCreatableVariantTarget(targetDocumentState)
   const isVariantMissing = targetDocumentState.status === 'variant-missing'
   const variantId = isVariantMissing ? targetDocumentState.variant._id : undefined
-  const publishedSiblingId = isVariantMissing
-    ? targetDocumentState.publishedSibling?._id
-    : undefined
-  const targetId = creatableTarget?.id
-  const targetScopeId = creatableTarget?.scopeId
+  const siblings = getTargetSiblings(targetDocumentState)
+
+  const publishedSiblingVersionStub = siblings?.published
+  const publishedSiblingId = publishedSiblingVersionStub?._id
+  const targetId = publishedSiblingVersionStub?._system.draft?._ref
+  const targetScopeId = publishedSiblingVersionStub?._system.scopeId
 
   const publishedSibling$ = useMemo(() => {
     if (!targetId || !publishedSiblingId) {

@@ -381,6 +381,7 @@ exports[`exports snapshot 1`] = `
     "getSelectedVariant": "function",
     "getTargetDocument": "function",
     "getTargetScopeId": "function",
+    "getTargetSiblings": "function",
     "getTemplatePermissions": "function",
     "getValueAtPath": "function",
     "getValueError": "function",

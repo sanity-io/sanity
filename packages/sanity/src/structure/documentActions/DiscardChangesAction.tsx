@@ -4,6 +4,7 @@ import {
   type DocumentActionComponent,
   getPairTarget,
   getTargetScopeId,
+  getTargetSiblings,
   InsufficientPermissionsMessage,
   isPublishedId,
   useCurrentUser,
@@ -25,27 +26,18 @@ const DISABLED_REASON_KEY = {
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
-export const useDiscardChangesAction: DocumentActionComponent = ({
-  id,
-  type,
-  published,
-  liveEdit,
-  version,
-  draft,
-}) => {
+export const useDiscardChangesAction: DocumentActionComponent = ({id, type, version, draft}) => {
   const {displayed, targetDocumentState} = useDocumentPane()
   // The scope of the document targeted by the selected perspective (undefined when the target is
   // still resolving or the draft/published pair applies). While resolving, the action is disabled
   // below instead of silently operating on the base pair.
   const isTargetReady = targetDocumentState.status === 'ready'
   const scopeId = getTargetScopeId(targetDocumentState)
-  const isVariantTarget = isTargetReady && targetDocumentState.variant !== undefined
-  // The discard confirmation copy depends on whether a published counterpart exists ("revert to
-  // published" vs "delete document"). For variant targets that counterpart is the
-  // variant-of-published sibling, not the base published document.
-  const publishedCounterpartExists = isVariantTarget
-    ? targetDocumentState.publishedSibling !== undefined
-    : Boolean(published)
+  // Confirmation copy depends on whether a published counterpart exists in the current lane
+  // ("revert to published" vs "delete document").
+  const siblings = getTargetSiblings(targetDocumentState)
+  const publishedCounterpartExists = Boolean(siblings?.published)
+
   const {discardChanges} = useDocumentOperation(id, type, getPairTarget(targetDocumentState))
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({

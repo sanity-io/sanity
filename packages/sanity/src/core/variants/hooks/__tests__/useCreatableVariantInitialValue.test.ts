@@ -60,8 +60,7 @@ const creatableState: TargetDocumentState = {
   status: 'variant-missing',
   variant: variantAlphaAudience,
   bundle: 'drafts',
-  publishedSibling: siblingStub,
-  creatableTarget: DRAFT_TARGET,
+  siblings: {published: siblingStub, draft: undefined, version: undefined},
 }
 
 const fallback: InitialValueState = {
@@ -124,7 +123,7 @@ describe('useCreatableVariantInitialValue', () => {
       targetDocument: undefined,
       scopeId: undefined,
       variant: undefined,
-      publishedSibling: undefined,
+      siblings: {published: undefined, draft: undefined, version: undefined},
     }
 
     const {result} = renderHook(() => useCreatableVariantInitialValue(readyState, fallback), {
@@ -141,7 +140,7 @@ describe('useCreatableVariantInitialValue', () => {
       status: 'variant-missing',
       variant: variantAlphaAudience,
       bundle: 'drafts',
-      publishedSibling: siblingStub,
+      siblings: {published: siblingStub, draft: undefined, version: undefined},
     }
 
     const {result} = renderHook(() => useCreatableVariantInitialValue(missingState, fallback), {
