@@ -1,5 +1,5 @@
-import {Container, Stack, Text} from '@sanity/ui'
-import {Flex} from 'ui5'
+import {Stack, Text} from '@sanity/ui'
+import {Container,Flex} from 'ui5'
 
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -56,7 +56,7 @@ export function CommentsListStatus(props: CommentsListStatusProps) {
   if (hasNoComments) {
     return (
       <Flex alignItems="center" justifyContent="center" flexBasis="0%" flexGrow={1}>
-        <Container width={0} padding={4}>
+        <Container size={0} padding={4}>
           <Stack gap={3}>
             <Text align="center" size={1} muted weight="medium">
               {emptyStateMessages[status].title}
