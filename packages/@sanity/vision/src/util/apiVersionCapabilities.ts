@@ -42,6 +42,8 @@ export const API_VERSION_CAPABILITIES: readonly ApiVersionCapabilityRequirement[
   },
   {
     id: 'releases',
+    // Matches any stacked perspective, including scheduled drafts and agent bundles, so the copy
+    // stays generic rather than naming releases.
     requiredApiVersion: RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion,
     explanationKey: 'query.error.unsupported-release-perspective',
     applies: ({perspective}) => hasReleaseInPerspective(perspective),
