@@ -25,6 +25,12 @@ interface Props {
   schemaType: SchemaType
 }
 
+/**
+ * Edit, Delete and Clear stay ungated by `document.actions`: they call the schedules HTTP API, the
+ * document survives a delete, and legacy schedules are not versions, so none of them has an honest
+ * action id. Edit's in-pane call site is already behind `useScheduleAction.action = 'schedule'`.
+ * Publish now is a document publish, so its call site gates it on `publish`.
+ */
 const ContextMenuItems = (props: Props) => {
   const {actions, onDelete, onEdit, schedule, schemaType} = props
   const {mode} = useScheduledPublishingEnabled()

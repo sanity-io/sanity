@@ -2,13 +2,14 @@ import {type SchemaType} from '@sanity/types'
 import {type ComponentType} from 'react'
 import {IntentLink} from 'sanity/router'
 
+import {useConfiguredDocumentActionIds} from '../../../config/document/useConfiguredDocumentActionIds'
 import {Preview} from '../../../preview/components/Preview'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
 import {getPublishedId} from '../../../util/draftUtils'
 import {SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE} from '../../constants'
 import useDialogScheduleEdit from '../../hooks/useDialogScheduleEdit'
 import {type Schedule} from '../../types'
-import {type PaneItemPreviewState} from '../../utils/paneItemHelpers'
+import {getScheduledDocumentId, type PaneItemPreviewState} from '../../utils/paneItemHelpers'
 import {ScheduleContextMenu} from '../scheduleContextMenu'
 import PreviewWrapper from './PreviewWrapper'
 
@@ -32,6 +33,14 @@ const ToolPreview = (props: Props) => {
   )
   const publishedDocId = visibleDocument ? getPublishedId(visibleDocument._id) : undefined
 
+  // Publish now publishes this document's draft, the context the footer Publish resolves under.
+  const configuredActionIds = useConfiguredDocumentActionIds({
+    schemaType: schemaType.name,
+    documentId: getScheduledDocumentId(schedule),
+    versionType: 'draft',
+    releaseId: undefined,
+  })
+
   return (
     <>
       {/* Dialogs (rendered outside of cards so they don't infer card colors) */}
@@ -43,7 +52,7 @@ const ToolPreview = (props: Props) => {
               clear: isCompleted,
               delete: !isCompleted,
               edit: isScheduled,
-              execute: isScheduled,
+              execute: isScheduled && configuredActionIds.has('publish'),
             }}
             onEdit={dialogScheduleEditShow}
             schedule={schedule}
