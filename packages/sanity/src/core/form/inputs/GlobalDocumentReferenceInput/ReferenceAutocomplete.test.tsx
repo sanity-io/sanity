@@ -8,10 +8,9 @@
  *  - In portaled dialogs (e.g. the Media Library) where the reference element is not inside the
  *    inherited boundary element, we fall back to `document.documentElement` so the popover is
  *    positioned against the viewport (avoids `referenceHidden` / misalignment).
- *  - Inside an edit dialog / PTE annotation popover (`EditDialogOuterBoundaryContext` is set) we
- *    must not use the dialog's own scroll box: it only has ~one row of height for results
- *    (SAPP-4329). Prefer the captured outer boundary when it contains the input; otherwise the
- *    document root (portaled annotation popovers).
+ *  - Inside an edit dialog, prefer the captured outer boundary over the dialog scroll box so
+ *    results can overflow the dialog; fall back to the document root when that outer boundary
+ *    does not contain the input.
  *
  * `ReferenceInput/ReferenceAutocomplete` (same-dataset), GDR, and Cross-dataset
  * `CrossDatasetReferenceInput/ReferenceAutocomplete` share this Popover wiring. Same-dataset needs
@@ -316,7 +315,7 @@ describe('ReferenceAutocomplete popover boundaries', () => {
     })
   })
 
-  describe('inside an edit dialog, prefers the captured outer boundary over the dialog scroll box (SAPP-4329)', () => {
+  describe('inside an edit dialog, prefers the captured outer boundary over the dialog scroll box', () => {
     test('uses the outer boundary when it contains the reference', async () => {
       const {boundary: innerBoundary, referenceElement} = setupContainedBoundary()
       const outerBoundary = document.createElement('div')

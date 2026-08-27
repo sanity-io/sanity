@@ -48,9 +48,6 @@ const NoopContainer = ({children, ...props}: ComponentProps<'div'>) => (
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
 export function PopoverEditDialog(props: PopoverEditDialogProps): ReactNode {
-  // Container index 1 (~640px) matches the PTE column (`container[1]`) and the
-  // dialog default. Index 2 (~960px) overshoots the form and leaves the nested
-  // reference autocomplete with almost no vertical room (SAPP-4329).
   const {floatingBoundary, referenceBoundary, referenceElement, width = 1} = props
   return (
     <RootPopover
