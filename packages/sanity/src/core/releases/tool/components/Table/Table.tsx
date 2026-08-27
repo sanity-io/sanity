@@ -219,9 +219,10 @@ const TableInner = <TableData, AdditionalRowTableData>({
 
   const theme = useTheme()
   const maxInlineSize = (!hideTableInlinePadding && theme.sanity.v2?.container[3]) || 0
+  const paddingInline = rem(theme.sanity.v2?.space[3] ?? 0)
   const tableInlinePadding = hideTableInlinePadding
     ? '0px'
-    : `max(0px, calc((100% - var(--maxInlineSize)) / 2))`
+    : `max(${paddingInline}, calc((100% - var(--maxInlineSize)) / 2))`
 
   const renderLoadingRows = (
     rowRenderer: (
