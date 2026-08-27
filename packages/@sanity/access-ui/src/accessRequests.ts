@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 
 import {
   type AccessRequest,
-  type AccessRequestEligibility,
+  type AccessRequestStatus,
   type AccessResourceType,
   type SubmitAccessRequestResult,
 } from './types'
@@ -41,36 +41,34 @@ export async function listMyAccessRequests(client: SanityClient): Promise<Access
 }
 
 /**
- * Asks whether requesting access could ever succeed
- * (`GET /access/{resourceType}/{resourceId}/requests/eligibility`).
+ * Asks what the request-access screen should show
+ * (`GET /access/{resourceType}/{resourceId}/requests/state`).
  *
  * Runs before the form is offered, so a user in a SAML-enforced organization is
- * pointed at SSO instead of writing a note no admin can action.
+ * pointed at SSO instead of writing a note no administrator can action.
  *
- * `origin` is carried opaquely to the SSO login page so the user returns where
- * they started. Never throws: an unreachable or older API answers `eligible`,
+ * `origin` is carried opaquely to the login page so the user returns where they
+ * started. Never throws: an unreachable or older API answers `eligible`,
  * leaving the form in place and the submit-time 403 as the backstop.
  *
  * @public
  */
-export async function checkAccessRequestEligibility(options: {
+export async function fetchAccessRequestStatus(options: {
   client: SanityClient
   resourceType: AccessResourceType
   resourceId: string
   origin?: string
-}): Promise<AccessRequestEligibility> {
+}): Promise<AccessRequestStatus> {
   const {client, resourceType, resourceId, origin} = options
   try {
-    const eligibility = await withAccessApiVersion(client).request<AccessRequestEligibility | null>(
-      {
-        url: `/access/${resourceType}/${resourceId}/requests/eligibility`,
-        tag: 'access-ui.check-eligibility',
-        query: origin ? {q: new URLSearchParams({origin}).toString()} : undefined,
-      },
-    )
-    return eligibility ?? {eligible: true}
+    const status = await withAccessApiVersion(client).request<AccessRequestStatus | null>({
+      url: `/access/${resourceType}/${resourceId}/requests/state`,
+      tag: 'access-ui.request-state',
+      query: origin ? {q: new URLSearchParams({origin}).toString()} : undefined,
+    })
+    return status ?? {state: 'eligible'}
   } catch {
-    return {eligible: true}
+    return {state: 'eligible'}
   }
 }
 

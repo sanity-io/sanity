@@ -1,5 +1,5 @@
 export {
-  checkAccessRequestEligibility,
+  fetchAccessRequestStatus,
   listMyAccessRequests,
   MAX_ACCESS_REQUEST_NOTE_LENGTH,
   submitAccessRequest,
@@ -14,9 +14,8 @@ export {
 } from './RequestAccessForm'
 export {
   type AccessRequest,
-  type AccessRequestEligibility,
-  type AccessRequestIneligibleReason,
   type AccessRequestState,
+  type AccessRequestStatus,
   type AccessResourceType,
   type AccessUser,
   type SubmitAccessRequestResult,

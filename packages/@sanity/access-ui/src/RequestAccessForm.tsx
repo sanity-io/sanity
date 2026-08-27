@@ -13,7 +13,7 @@ import {
 import {Box} from 'ui5'
 
 import {
-  checkAccessRequestEligibility,
+  fetchAccessRequestStatus,
   listMyAccessRequests,
   MAX_ACCESS_REQUEST_NOTE_LENGTH,
   submitAccessRequest,
@@ -23,7 +23,7 @@ import {defaultLabels, type RequestAccessLabels} from './labels'
 import {getProviderTitle} from './providerTitle'
 import {
   type AccessRequest,
-  type AccessRequestEligibility,
+  type AccessRequestStatus,
   type AccessResourceType,
   type AccessUser,
   type SubmitAccessRequestResult,
@@ -77,8 +77,8 @@ export function RequestAccessForm(props: RequestAccessFormProps) {
   const [requestsPromise] = useState(() =>
     listMyAccessRequests(client).catch((): AccessRequest[] | null => null),
   )
-  const [eligibilityPromise] = useState(() =>
-    checkAccessRequestEligibility({
+  const [statusPromise] = useState(() =>
+    fetchAccessRequestStatus({
       client,
       resourceType,
       resourceId,
@@ -97,8 +97,8 @@ export function RequestAccessForm(props: RequestAccessFormProps) {
       >
         <RequestAccessFormContent
           {...props}
-          eligibilityPromise={eligibilityPromise}
           requestsPromise={requestsPromise}
+          statusPromise={statusPromise}
         />
       </Suspense>
     </Card>
@@ -119,14 +119,47 @@ type ViewState =
   | {view: 'blocked'; title: ReactNode; message: ReactNode}
   | {view: 'sso-enforced'; redirectUrl?: string}
 
+/**
+ * The server's verdict, for the states it already resolves. `null` hands the
+ * decision back to the caller's own request history.
+ *
+ * The API declares more states than it returns, so the unreturned ones are
+ * mapped here rather than ignored: when the server starts producing them the
+ * card already renders something honest. `requests-disabled` and
+ * `email-domain-blocked` reuse the submit-time copy for the same conditions,
+ * and `pending` and `recently-declined` land on the views the request history
+ * derives today.
+ */
+function deriveServerViewState(
+  status: AccessRequestStatus,
+  labels: RequestAccessLabels,
+): ViewState | null {
+  switch (status.state) {
+    case 'saml-required':
+      return {view: 'sso-enforced', redirectUrl: status.redirectUrl}
+    case 'pending':
+      return {view: 'pending'}
+    case 'recently-declined':
+      return {view: 'blocked', title: labels.deniedTitle, message: labels.deniedMessage({})}
+    case 'requests-disabled':
+    case 'email-domain-blocked':
+    case 'resource-not-available':
+      return {view: 'blocked', title: labels.errorTitle, message: labels.submitFailedMessage}
+    case 'eligible':
+      return null
+    default:
+      return null
+  }
+}
+
 function deriveViewState(options: {
   fetchedRequests: AccessRequest[] | null
-  eligibility: AccessRequestEligibility
+  status: AccessRequestStatus
   resourceId: string
   submitResult: SubmitAccessRequestResult | null
   labels: RequestAccessLabels
 }): ViewState {
-  const {fetchedRequests, eligibility, resourceId, submitResult, labels} = options
+  const {fetchedRequests, status, resourceId, submitResult, labels} = options
 
   if (submitResult) {
     switch (submitResult.type) {
@@ -156,11 +189,11 @@ function deriveViewState(options: {
     }
   }
 
-  // Preflight outranks the request history: a pending request in an enforced org
-  // is already dead, so showing "pending approval" would be a false promise.
-  if (!eligibility.eligible && eligibility.reason === 'saml-enforced') {
-    return {view: 'sso-enforced', redirectUrl: eligibility.redirectUrl}
-  }
+  // The server's verdict outranks the request history: a pending request in an
+  // enforced org is already dead, so "pending approval" would be a false
+  // promise. It answers `eligible` when it has nothing to say.
+  const serverState = deriveServerViewState(status, labels)
+  if (serverState) return serverState
 
   const state = deriveAccessRequestState(fetchedRequests, resourceId)
   if (state === 'pending') return {view: 'pending'}
@@ -175,7 +208,7 @@ function deriveViewState(options: {
 function RequestAccessFormContent(
   props: RequestAccessFormProps & {
     requestsPromise: Promise<AccessRequest[] | null>
-    eligibilityPromise: Promise<AccessRequestEligibility>
+    statusPromise: Promise<AccessRequestStatus>
   },
 ) {
   const {
@@ -188,12 +221,12 @@ function RequestAccessFormContent(
     preview,
     renderAction,
     requestsPromise,
-    eligibilityPromise,
+    statusPromise,
   } = props
 
   const labels = {...defaultLabels, ...props.labels}
   const fetchedRequests = use(requestsPromise)
-  const eligibility = use(eligibilityPromise)
+  const status = use(statusPromise)
   const titleId = useId()
 
   const [note, setNote] = useState('')
@@ -202,7 +235,7 @@ function RequestAccessFormContent(
 
   const state = deriveViewState({
     fetchedRequests,
-    eligibility,
+    status,
     resourceId,
     submitResult,
     labels,
