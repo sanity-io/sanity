@@ -81,7 +81,7 @@ export function useSearchMachine<THit>(options: UseSearchMachineOptions<THit>): 
     actorRef,
     (state): SearchMachineState<THit> => ({
       hits: state.context.result ?? EMPTY_HITS,
-      isLoading: state.matches('debouncing') || state.matches('searching'),
+      isLoading: state.matches('debouncing') || state.matches({searching: 'pending'}),
       searchString: state.context.settledQuery ?? undefined,
     }),
     shallowEqual,

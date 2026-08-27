@@ -44,8 +44,11 @@ export interface SearchMachineInput {
  *
  * Cancellation is structural: a new `search` event exits the `searching`
  * state, which stops the invoked actor and unsubscribes its observable, so
- * only the latest query's result can ever land. Consumers parameterize
- * behavior through implementations rather than configuration:
+ * only the latest query's result can ever land. Search observables do not
+ * have to complete: the first emission moves `searching.pending` to
+ * `searching.streaming` while the subscription stays open, so live sources
+ * keep updating `result` until the next query replaces them. Consumers
+ * parameterize behavior through implementations rather than configuration:
  *
  * - `search` (actor): the fetch, given `{query}`. Provided per consumer, and
  *   `@xstate/react` keeps provided implementations render-fresh, so closures
@@ -109,14 +112,26 @@ export function defineSearchMachine<TQuery, TResult>() {
       },
       searching: {
         entry: [assign({error: null}), emit({type: 'search started'})],
+        // The invoke lives on this compound state rather than a child so that
+        // long-lived search observables (e.g. reference search, which streams
+        // live published-state updates and never completes) keep feeding
+        // `result` after the first emission moves us to `streaming`.
         invoke: {
           src: 'search',
           input: ({context}) => ({query: context.query as TQuery}),
           onSnapshot: {
-            actions: assign({
-              result: ({context, event}) =>
-                event.snapshot.context === undefined ? context.result : event.snapshot.context,
-            }),
+            guard: ({event}) => event.snapshot.context !== undefined,
+            target: '.streaming',
+            actions: [
+              assign({
+                result: ({event}) => event.snapshot.context as TResult,
+                settledQuery: ({context}) => context.query,
+              }),
+              emit(({event}) => ({
+                type: 'search completed',
+                result: event.snapshot.context as TResult,
+              })),
+            ],
           },
           onDone: {target: 'success'},
           onError: {
@@ -128,14 +143,14 @@ export function defineSearchMachine<TQuery, TResult>() {
             }),
           },
         },
+        initial: 'pending',
+        states: {
+          pending: {},
+          streaming: {},
+        },
       },
       success: {
-        entry: [
-          assign({settledQuery: ({context}) => context.query}),
-          // The search actor emits at least once before completing, so
-          // `result` is set by the time this state is entered.
-          emit(({context}) => ({type: 'search completed', result: context.result as TResult})),
-        ],
+        entry: assign({settledQuery: ({context}) => context.query}),
       },
       failure: {
         entry: [

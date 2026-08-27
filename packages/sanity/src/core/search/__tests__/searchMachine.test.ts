@@ -84,6 +84,32 @@ describe('searchMachine', () => {
     ])
   })
 
+  it('keeps streaming results from a live search observable that never completes', () => {
+    const harness = createHarness()
+
+    harness.search('foo')
+    harness.clock.increment(0)
+    const subject = harness.subjects.get('foo')!
+
+    subject.next(['first'])
+    expect(harness.actor.getSnapshot().matches({searching: 'streaming'})).toBe(true)
+    expect(harness.actor.getSnapshot().context.result).toEqual(['first'])
+    expect(harness.actor.getSnapshot().context.settledQuery).toBe('foo')
+
+    subject.next(['first', 'second'])
+    expect(harness.actor.getSnapshot().matches({searching: 'streaming'})).toBe(true)
+    expect(harness.actor.getSnapshot().context.result).toEqual(['first', 'second'])
+    expect(harness.emitted).toEqual([
+      {type: 'search started'},
+      {type: 'search completed', result: ['first']},
+      {type: 'search completed', result: ['first', 'second']},
+    ])
+
+    harness.search('bar')
+    harness.clock.increment(0)
+    expect(subject.observed).toBe(false)
+  })
+
   it('cancels the in-flight search when a new query arrives', () => {
     const harness = createHarness()
 

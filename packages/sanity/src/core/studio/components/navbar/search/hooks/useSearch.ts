@@ -138,7 +138,7 @@ export function useSearch({
 
       return {
         error,
-        hits: state.matches('searching') ? [] : (result?.hits ?? []),
+        hits: state.matches({searching: 'pending'}) ? [] : (result?.hits ?? []),
         loading: state.matches('searching'),
         options: activeQuery.options,
         terms: activeQuery.terms,
