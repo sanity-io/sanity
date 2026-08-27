@@ -178,7 +178,27 @@ describe('searchMachine', () => {
     expect(snapshot.context.result).toBeNull()
     expect(snapshot.context.settledQuery).toBe('')
     expect(harness.started).toEqual([])
-    expect(harness.emitted).toEqual([{type: 'search skipped'}])
+    expect(harness.emitted).toEqual([{type: 'search started'}, {type: 'search skipped'}])
+  })
+
+  it('marks a debounce that interrupts a running search', () => {
+    const harness = createHarness({debounceMs: 300})
+
+    harness.search('first')
+    harness.clock.increment(300)
+    expect(harness.actor.getSnapshot().matches('searching')).toBe(true)
+
+    harness.search('second')
+    let snapshot = harness.actor.getSnapshot()
+    expect(snapshot.matches('debouncing')).toBe(true)
+    expect(snapshot.context.searchInterrupted).toBe(true)
+
+    harness.clock.increment(300)
+    harness.resolve('second', ['hit'])
+    harness.search('third')
+    snapshot = harness.actor.getSnapshot()
+    expect(snapshot.matches('debouncing')).toBe(true)
+    expect(snapshot.context.searchInterrupted).toBe(false)
   })
 
   it('reports failures and clears the result', () => {

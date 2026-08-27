@@ -10,6 +10,8 @@ export interface SearchMachineContext<TQuery, TResult> {
   error: Error | null
   query: TQuery | null
   result: TResult | null
+  /** Whether the currently debounced query interrupted a running search. */
+  searchInterrupted: boolean
   /** The query of the last search that settled (succeeded, failed, or was skipped). */
   settledQuery: TQuery | null
 }
@@ -94,24 +96,43 @@ export function defineSearchMachine<TQuery, TResult>() {
       error: null,
       query: null,
       result: null,
+      searchInterrupted: false,
       settledQuery: null,
     }),
     initial: 'idle',
     on: {
       search: [
         {guard: 'is same query'},
-        {target: '.debouncing', actions: assign({query: ({event}) => event.query})},
+        {
+          target: '.debouncing',
+          actions: assign({query: ({event}) => event.query, searchInterrupted: false}),
+        },
       ],
     },
     states: {
       idle: {},
       debouncing: {
         after: {
-          debounce: [{guard: 'should search', target: 'searching'}, {target: 'skipped'}],
+          debounce: [
+            {guard: 'should search', target: 'searching', actions: emit({type: 'search started'})},
+            {target: 'skipped', actions: emit({type: 'search started'})},
+          ],
         },
       },
       searching: {
-        entry: [assign({error: null}), emit({type: 'search started'})],
+        // Overrides the root transition so consumers can tell a debounce that
+        // interrupted a running search apart from one following a settled one:
+        // the old pipelines kept reporting loading through the former.
+        on: {
+          search: [
+            {guard: 'is same query'},
+            {
+              target: 'debouncing',
+              actions: assign({query: ({event}) => event.query, searchInterrupted: true}),
+            },
+          ],
+        },
+        entry: assign({error: null}),
         // The invoke lives on this compound state rather than a child so that
         // long-lived search observables (e.g. reference search, which streams
         // live published-state updates and never completes) keep feeding

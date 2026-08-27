@@ -124,11 +124,14 @@ export function useSearch({
   const searchState = useSelector(
     actorRef,
     (state): SearchState => {
-      const {error, query, result, settledQuery} = state.context
+      const {error, query, result, searchInterrupted, settledQuery} = state.context
 
       // Nothing has cleared the debounce yet, so callers still see the state
       // they seeded the hook with.
-      if (query === null || (state.matches('debouncing') && settledQuery === null)) {
+      if (
+        query === null ||
+        (state.matches('debouncing') && settledQuery === null && !searchInterrupted)
+      ) {
         return initialSearchState
       }
 
@@ -139,7 +142,9 @@ export function useSearch({
       return {
         error,
         hits: state.matches({searching: 'pending'}) ? [] : (result?.hits ?? []),
-        loading: state.matches('searching'),
+        // A debounce that interrupted a running search keeps reporting
+        // loading, like the interrupted request would have.
+        loading: state.matches('searching') || (state.matches('debouncing') && searchInterrupted),
         options: activeQuery.options,
         terms: activeQuery.terms,
       }
