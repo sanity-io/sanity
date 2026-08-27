@@ -51,7 +51,7 @@ export default defineConfig({
       // they must run on every PR, not only label-gated bench runs
       'perf/bench',
       // The dashboard's drift/ack math — pure modules, plain node environment
-      'dev/metrics-studio',
+      'dev/radar',
       'packages/@repo/debug-proxy',
       'packages/@repo/release-notes',
       'packages/@repo/bundle-manager',

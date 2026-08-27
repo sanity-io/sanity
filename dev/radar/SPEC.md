@@ -1,4 +1,4 @@
-# Metrics-studio dashboard
+# Studio Radar dashboard
 
 One place to answer repo-health questions without opening CI logs: **is
 studio performance drifting on main?** (Trends), **what did a specific run

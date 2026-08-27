@@ -18,7 +18,7 @@ export default defineCliConfig({
     // By default the compiler runs on all workspace files, even sanity/lib/structure.js which is
     // pre-compiled with `tsdown`, and so we filter by just studio files (substring filters; the
     // `monorepo` condition resolves workspace sources under `src/` during `sanity dev`)
-    sources: ['dev/metrics-studio', '/sanity/src/'],
+    sources: ['dev/radar', '/sanity/src/'],
   },
   vite(viteConfig: UserConfig, {command, mode}): UserConfig {
     const nextConfig = mergeConfig(viteConfig, {

@@ -11,11 +11,11 @@
  * alerts Slack). Documents are replaced whole, so a run never writes what it
  * could not collect — see assembleSyncDocuments for the rules.
  *
- *   pnpm --filter metrics-studio sync-git -- --dry-run        # preview, nothing written
- *   pnpm --filter metrics-studio sync-git -- --all --dry-run  # backfill preview
- *   pnpm --filter metrics-studio sync-git                     # last 50 commits
+ *   pnpm --filter radar sync-git -- --dry-run        # preview, nothing written
+ *   pnpm --filter radar sync-git -- --all --dry-run  # backfill preview
+ *   pnpm --filter radar sync-git                     # last 50 commits
  *
- * Requires BENCH_METRICS_WRITE_TOKEN (same secret `bench store` uses) unless
+ * Requires RADAR_SANITY_WRITE_TOKEN (same secret `bench store` uses) unless
  * --dry-run. Without GITHUB_TOKEN even a preview assembles zero commits —
  * every commit the GitHub lookup did not cover is filtered out.
  */
@@ -48,7 +48,7 @@ import {
 } from './githubDeployments'
 import {npmInfoForTags, type NpmVersionInfo} from './npmVersions'
 
-/** The metrics-studio project — same constants as perf/bench/report/storeToSanity.ts. */
+/** The Studio Radar project — same constants as perf/bench/report/storeToSanity.ts. */
 const METRICS_PROJECT_ID = 'mhfozd0z'
 const METRICS_DATASET = 'bench'
 
@@ -222,7 +222,7 @@ async function main(): Promise<void> {
     projectId: METRICS_PROJECT_ID,
     dataset: METRICS_DATASET,
     apiVersion: '2025-02-19',
-    token: readEnv('BENCH_METRICS_WRITE_TOKEN'),
+    token: readEnv('RADAR_SANITY_WRITE_TOKEN'),
     useCdn: false,
   })
 

@@ -1,9 +1,9 @@
 name: Sync git metrics
 permissions: {}
 
-# Mirror git history into the metrics-studio dataset as gitCommit / gitTag
+# Mirror git history into the Studio Radar dataset as gitCommit / gitTag
 # documents — the join surface for repo-health metrics (see
-# dev/metrics-studio/SPEC.md). Every push upserts a trailing window
+# dev/radar/SPEC.md). Every push upserts a trailing window
 # idempotently; a gap larger than the window needs one backfill dispatch.
 # The sync fails loudly on API errors, before anything is written, and
 # alerts Slack — "Re-run failed jobs" is always safe.
@@ -26,7 +26,7 @@ on:
         type: boolean
         default: true
     secrets:
-      BENCH_METRICS_WRITE_TOKEN:
+      RADAR_SANITY_WRITE_TOKEN:
         required: true
       SLACK_WEBHOOK_URL_CI_ALERTS:
         required: true
@@ -79,7 +79,7 @@ jobs:
 
       - name: Sync git history to metrics dataset
         env:
-          BENCH_METRICS_WRITE_TOKEN: ${{ secrets.BENCH_METRICS_WRITE_TOKEN }}
+          RADAR_SANITY_WRITE_TOKEN: ${{ secrets.RADAR_SANITY_WRITE_TOKEN }}
           # For deploy URL collection. A push-triggered run usually precedes
           # its own Vercel build; that commit's URL lands on the next sync.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -93,15 +93,15 @@ jobs:
           ARGS=""
           if [ "$BACKFILL" = "true" ]; then ARGS="--all"; fi
           if [ "$COLLECT_NPM" = "true" ]; then ARGS="$ARGS --npm"; fi
-          pnpm --filter metrics-studio sync-git $ARGS
+          pnpm --filter radar sync-git $ARGS
 
       # One-off migration (idempotent): links pre-existing benchRun docs to
       # their gitCommit docs. Runs after the sync so the commit docs exist.
       - name: Patch benchRun git.commit references
         if: inputs.patch_bench_run_refs
         env:
-          BENCH_METRICS_WRITE_TOKEN: ${{ secrets.BENCH_METRICS_WRITE_TOKEN }}
-        run: pnpm --filter metrics-studio backfill-benchrun-refs
+          RADAR_SANITY_WRITE_TOKEN: ${{ secrets.RADAR_SANITY_WRITE_TOKEN }}
+        run: pnpm --filter radar backfill-benchrun-refs
 
   # Nothing goes red on a PR for this workflow and nobody watches its runs —
   # alert the CI channel instead (same pattern as bench.yml). `cancelled`
