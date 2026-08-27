@@ -111,7 +111,7 @@ function assertKeyedArrayItems(value: unknown, path: string): void {
 }
 
 describe('toStorableRun', () => {
-  it('produces no directly nested arrays (matches the metrics-studio schema)', () => {
+  it('produces no directly nested arrays (matches the Studio Radar schema)', () => {
     assertNoNestedArrays(toStorableRun(RUN), 'run')
   })
 

@@ -1,7 +1,7 @@
 /**
  * Backlinks from a benchmark point to the GitHub artifacts that produced it —
  * so a drifted metric leads straight to the PR / commit / CI run responsible.
- * The metrics studio only ever tracks this one repo.
+ * Studio Radar only ever tracks this one repo.
  */
 import {type TrendPoint} from './data'
 

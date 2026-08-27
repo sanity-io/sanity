@@ -6,8 +6,8 @@ import {
 } from './types'
 
 /**
- * Reshape a BenchRunDocument for storage so the metrics studio
- * (dev/metrics-studio) can declare and render it:
+ * Reshape a BenchRunDocument for storage so Studio Radar
+ * (dev/radar) can declare and render it:
  * - each per-session sample array is wrapped in a keyed `{samples}` object —
  *   nested arrays survive the API round-trip (verified), but a studio schema
  *   cannot declare an array-of-arrays and unkeyed items render with warnings
@@ -21,7 +21,7 @@ import {
  *   source of truth.
  *
  * The artifact/report JSON keeps the raw shape; only the stored document
- * differs. The metrics-studio schema mirrors THIS shape — keep them in sync.
+ * differs. The Studio Radar schema mirrors THIS shape — keep them in sync.
  */
 export function toStorableRun(document: BenchRunDocument) {
   const isFullSha = /^[0-9a-f]{40}$/.test(document.git.sha)

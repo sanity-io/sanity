@@ -81,7 +81,7 @@ export function buildInvestigationPrompt(
     series.sourceFile
       ? `- Scenario source at the measured commit: ${sourceFileUrl(series.sourceFile, point.sha)}`
       : undefined,
-    `- benchRun document: ${point.runId} (metrics studio, dataset "bench")`,
+    `- benchRun document: ${point.runId} (Studio Radar, dataset "bench")`,
     point.interactions !== undefined && point.interactions < INP_MIN_INTERACTIONS
       ? `- Caution: this INP came from only ${point.interactions} interactions (a reliable INP needs ${INP_MIN_INTERACTIONS}) — treat the value as low confidence.`
       : undefined,
@@ -93,7 +93,7 @@ export function buildInvestigationPrompt(
 
    gh workflow run bench.yml -f ab_from=${previousPoint.sha} -f ab_to=${point.sha}
 
-   The verdict table lands on that workflow run's summary page, and the comparison is stored as a mode:"ab" benchRun document (Comparisons tool in the metrics studio).`,
+   The verdict table lands on that workflow run's summary page, and the comparison is stored as a mode:"ab" benchRun document (Comparisons tool in Studio Radar).`,
     `3. If the range is long, bisect it with further A/B dispatches (log2(N) runs find the culprit commit).`,
     repro
       ? `4. To iterate locally: pnpm build:bench && ${repro} — see perf/bench/README.md. Absolute numbers are host-relative; trust the A/B verdicts over point-to-point deltas.`

@@ -1,8 +1,8 @@
 {
-  "name": "metrics-studio",
+  "name": "radar",
   "version": "6.9.2",
   "private": true,
-  "description": "Studio presenting repo health metrics (perf benchmark runs from perf/bench, and friends)",
+  "description": "Studio Radar — operational intelligence for this repo (perf benchmark trends from perf/bench, drift triage, bisect, releases)",
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "type": "module",
