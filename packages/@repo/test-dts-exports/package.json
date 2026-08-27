@@ -28,7 +28,6 @@
     "ts-morph": "^28.0.0",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
     "vite": "catalog:",
-    "vitest": "catalog:",
-    "zod": "^4.4.3"
+    "vitest": "catalog:"
   }
 }
