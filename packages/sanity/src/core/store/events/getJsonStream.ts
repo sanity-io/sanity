@@ -3,7 +3,7 @@ import {
   type TransactionLogEventWithEffects,
 } from '@sanity/types'
 
-import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../../studioClient'
+import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../studioClient'
 
 type StreamResult =
   | (TransactionLogEventWithEffects & TransactionLogEventWithMutations)
