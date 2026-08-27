@@ -6,11 +6,12 @@ import {
   type KeyboardEvent,
   useCallback,
   useEffect,
+  // oxlint-disable-next-line no-restricted-imports -- ReferenceInput is not memo/forwardRef-wrapped, so facebook/react#34818 does not apply
+  useEffectEvent,
   useMemo,
   useRef,
   useState,
 } from 'react'
-import {useObservable} from 'react-rx'
 import {concat, of, Subject} from 'rxjs'
 import {catchError, filter, map, scan, switchMap} from 'rxjs/operators'
 
@@ -85,50 +86,46 @@ export function ReferenceInput(props: ReferenceInputProps) {
   const {push} = useToast()
   const {t} = useTranslation()
 
+  const [searchState, setSearchState] = useState<ReferenceSearchState>(INITIAL_SEARCH_STATE)
   const [searchInput$] = useState(() => new Subject<string | null>())
 
-  // `onSearch` changes identity every render (StudioReferenceInput passes a
-  // plain function), and so does `t` under SANITY_STUDIO_DEBUG_I18N (the debug
-  // wrapper returns a fresh function per render). Rebuilding the pipeline on
-  // them instead would cancel in-flight searches and reset accumulated state.
-  const callbacksRef = useRef({onSearch, t})
-  useEffect(() => {
-    callbacksRef.current = {onSearch, t}
-  }, [onSearch, t])
+  // Effect event so each search reads the render-current `onSearch` (rebuilt
+  // every render by StudioReferenceInput, which closes over the document
+  // value) without resubscribing the pipeline.
+  const runSearch = useEffectEvent((searchString: string) =>
+    concat(
+      of({isLoading: true}),
+      onSearch(searchString).pipe(
+        map((hits) => ({hits, searchString, isLoading: false})),
+        catchError((error) => {
+          push({
+            title: t('inputs.reference.error.search-failed-title'),
+            description: error.message,
+            status: 'error',
+            id: `reference-search-fail-${id}`,
+          })
 
-  const searchState$ = useMemo(
-    () =>
-      searchInput$.pipe(
-        filter(nonNullable),
-        // oxlint-disable-next-line react/refs -- the ref is read when the subject emits, never during render
-        switchMap((searchString) => {
-          const callbacks = callbacksRef.current
-          return concat(
-            of({isLoading: true}),
-            callbacks.onSearch(searchString).pipe(
-              map((hits) => ({hits, searchString, isLoading: false})),
-              catchError((error) => {
-                push({
-                  title: callbacks.t('inputs.reference.error.search-failed-title'),
-                  description: error.message,
-                  status: 'error',
-                  id: `reference-search-fail-${id}`,
-                })
-
-                console.error(error)
-                return of({hits: [], searchString, isLoading: false})
-              }),
-            ),
-          )
+          console.error(error)
+          return of({hits: [], searchString, isLoading: false})
         }),
+      ),
+    ),
+  )
+
+  useEffect(() => {
+    const subscription = searchInput$
+      .pipe(
+        filter(nonNullable),
+        switchMap((searchString) => runSearch(searchString)),
         scan(
           (prevState, nextState): ReferenceSearchState => ({...prevState, ...nextState}),
           INITIAL_SEARCH_STATE,
         ),
-      ),
-    [id, push, searchInput$],
-  )
-  const searchState = useObservable(searchState$, INITIAL_SEARCH_STATE)
+      )
+      .subscribe(setSearchState)
+
+    return () => subscription.unsubscribe()
+  }, [searchInput$])
 
   const handleQueryChange = useCallback(
     (searchString: string | null) => searchInput$.next(searchString),
