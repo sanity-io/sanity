@@ -44,8 +44,8 @@ export function removeDupes(
     if (acc.has(event.id)) {
       const existingEvent = acc.get(event.id) as DocumentGroupEvent
       if (isEditDocumentVersionEvent(existingEvent) && !isEditDocumentVersionEvent(event)) {
-        // Replaces the edit event with the none edit event, the publish/delete event and the last
-        // edit event before it have the same id.
+        // Replaces the edit event with the non-edit event; the publish/delete event and the last
+        // edit event before it has the same id.
         acc.set(event.id, event)
         return acc
       }
