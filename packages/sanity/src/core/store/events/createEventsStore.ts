@@ -18,10 +18,20 @@ interface EventsStoreOptions {
 }
 
 /**
- * Creates an event store for a document.
- * If you want to use this in a React component, consider using `useEventsStore` instead.
+ * Creates the (non-React) events store for a document variant, wiring together:
+ * - `getInitialFetchEvents`: fetching/paginating events + synthesizing edit events,
+ * - `getExpandEvents`: on-demand expansion of publish/delete events,
+ * - `getRemoteTransactionsSubscription`: real-time remote mutations (append or trigger refetch),
+ * - `createEventsObservable`: merge, sort and per-variant post-processing.
  *
- * Consider subscribing the remoteEventsListener to get updates on remote transactions.
+ * Returns:
+ * - `eventsObservable$`: the final `{events, nextCursor, loading, error}` stream for the UI.
+ * - `getDocumentChanges(revision$, since$)`: annotated diff stream between two revisions.
+ * - `handleExpandEvent`, `loadMoreEvents`, `reloadEvents`: imperative actions.
+ * - `remoteTransactionsListener`: call to activate the remote listener; returns the subscription
+ *   (the caller owns unsubscription — `useEventsStore` ties it to the component lifecycle).
+ *
+ * If you want to use this in a React component, use `useEventsStore` instead.
  */
 export function createEventsStore({
   client,
