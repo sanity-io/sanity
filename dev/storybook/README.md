@@ -34,6 +34,24 @@ pnpm chromatic           # publish + snapshot manually (needs CHROMATIC_PROJECT_
   `ui-components` wrapper variants (the `@sanity/ui` → `ui5` surface, with card/tone coverage
   prioritized) and vanilla-extract-migrated components.
 
+## Composed Storybooks
+
+[.storybook/main.ts](.storybook/main.ts) composes the upstream
+[`@sanity/ui` Storybook](https://sanity-ui-storybook.sanity.dev) (deployed from
+[sanity-io/ui](https://github.com/sanity-io/ui)) through Storybook's `refs`, so the design system
+the studio builds on is browsable from the same sidebar — it appears as a separate "Sanity UI" tree
+below the local stories.
+
+- Composition is a **runtime** link: the manager fetches `index.json` from the remote Storybook and
+  renders its stories in the remote `iframe.html`. Nothing is bundled here, so it costs the local
+  build nothing and never fails it — a ref that is unreachable degrades to an error inside its own
+  sidebar tree.
+- Composed stories are **not** snapshotted by Chromatic and are not picked up by
+  `@storybook/addon-vitest`; both only see the local `stories` globs.
+- The remote tracks `sanity-io/ui` `main`, which is the same `@sanity/ui` major this repo depends on
+  (catalog `@sanity/ui`). It does **not** cover `ui5` (`@sanity/ui@alpha`), the other side of the
+  ongoing migration.
+
 The Vite config in [.storybook/main.ts](.storybook/main.ts) mirrors
 `packages/sanity/vitest.browser.config.mts`: the `monorepo` exports condition resolves workspace
 packages to TypeScript source, plus the vanilla-extract plugin and the React Compiler transform,
