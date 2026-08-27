@@ -2,20 +2,33 @@ import {type ListenEvent, type ListenOptions, type SanityClient} from '@sanity/c
 import {useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'react'
 import {catchError, of} from 'rxjs'
 
-import {type ReleaseId} from '../../perspective/types'
-import {getPublishedId} from '../../util/draftUtils'
 import {type CommentDocument, type Loadable} from '../types'
+import {buildCommentsQuery} from './buildCommentsQuery'
 import {commentsReducer, type CommentsReducerAction, type CommentsReducerState} from './reducer'
 
 type DocumentId = string
 type TransactionId = string
 
 export interface CommentsStoreOptions {
+  /**
+   * Sanity client configured with `collaboration.organizationId` for the Comments API.
+   */
   client: SanityClient | null
+  /**
+   * Published / group id. Used for the comments GDR.
+   */
   documentId: string
+  /**
+   * Exact document in the editor. Drives which comments are listed.
+   */
+  sourceDocumentId: string
   onLatestTransactionIdReceived: (documentId: DocumentId) => void
   transactionsIdMap: Map<DocumentId, TransactionId>
-  releaseId?: ReleaseId
+  /**
+   * When false, skip listen/fetch (version/variant scope still resolving).
+   * Defaults to true.
+   */
+  ready?: boolean
 }
 
 interface CommentsStoreReturnType extends Loadable<CommentDocument[]> {
@@ -34,69 +47,61 @@ const LISTEN_OPTIONS: ListenOptions = {
   tag: 'comments-store',
 }
 
-const SORT_FIELD = '_createdAt'
-
-const SORT_ORDER = 'desc'
-
-const QUERY_FILTERS = [`_type == "comment"`, `target.document._ref == $documentId`]
-const VERSION_FILTER = `target.documentVersionId==$documentVersionId`
-const NO_VERSION_FILTER = `!defined(target.documentVersionId)`
-
-const QUERY_PROJECTION = `{
-  _createdAt,
-  _id,
-  authorId,
-  contentSnapshot,
-  context,
-  lastEditedAt,
-  message,
-  parentCommentId,
-  reactions,
-  status,
-  target,
-  threadId
-}`
-
-// Newest comments first
-const QUERY_SORT_ORDER = `order(${SORT_FIELD} ${SORT_ORDER})`
-
 export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreReturnType {
-  const {client, documentId, onLatestTransactionIdReceived, transactionsIdMap, releaseId} = opts
-
-  const filters = [...QUERY_FILTERS, releaseId ? VERSION_FILTER : NO_VERSION_FILTER].join(' && ')
-  const query = useMemo(() => `*[${filters}] ${QUERY_PROJECTION} | ${QUERY_SORT_ORDER}`, [filters])
+  const {
+    client,
+    documentId,
+    sourceDocumentId,
+    onLatestTransactionIdReceived,
+    transactionsIdMap,
+    ready = true,
+  } = opts
 
   const [state, dispatch] = useReducer(commentsReducer, INITIAL_STATE)
-  const [loading, setLoading] = useState<boolean>(client !== null)
+  const [loading, setLoading] = useState<boolean>(client !== null && ready)
   const [error, setError] = useState<Error | null>(null)
 
   const didInitialFetch = useRef<boolean>(false)
 
-  const params = useMemo(
-    () => ({
-      documentId: getPublishedId(documentId),
-      ...(releaseId ? {documentVersionId: releaseId} : {}),
-    }),
-    [documentId, releaseId],
+  const gdr = useMemo(
+    () => client?.collaboration.comments.getTargetDocumentRef(documentId) ?? null,
+    [client, documentId],
   )
 
+  const {query, params} = useMemo(
+    () => buildCommentsQuery({gdr, sourceDocumentId}),
+    [gdr, sourceDocumentId],
+  )
+
+  // When the query scope changes (e.g. draft+published → version), drop stale
+  // results during render. The listen effect below resets fetch tracking when
+  // it resubscribes.
+  const queryKey = `${query}:${JSON.stringify(params)}:${ready}`
+  const [activeQueryKey, setActiveQueryKey] = useState(queryKey)
+
+  if (activeQueryKey !== queryKey) {
+    setActiveQueryKey(queryKey)
+    dispatch({type: 'COMMENTS_SET', comments: []})
+    setLoading(Boolean(client && gdr && ready))
+  }
+
   const initialFetch = useCallback(async () => {
-    if (!client) {
+    if (!client || !gdr || !ready) {
       setLoading(false)
       return
     }
 
     try {
-      const res = await client.fetch(query, params)
+      const res = await client.collaboration.comments.fetch<CommentDocument[]>(query, params)
       dispatch({type: 'COMMENTS_SET', comments: res})
       setLoading(false)
     } catch (err) {
       setError(err)
     }
-  }, [client, params, query])
+  }, [client, gdr, ready, params, query])
 
   const handleListenerEvent = useCallback(
-    async (event: ListenEvent<Record<string, CommentDocument>>) => {
+    async (event: ListenEvent<Record<string, unknown>>) => {
       // Fetch all comments on initial connection
       if (event.type === 'welcome' && !didInitialFetch.current) {
         setLoading(true)
@@ -119,13 +124,21 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
       if (event.type === 'mutation') {
         if (event.transition === 'appear') {
           const nextComment = event.result as CommentDocument | undefined
+          if (!nextComment) return
 
-          if (nextComment) {
-            dispatch({
-              type: 'COMMENT_RECEIVED',
-              payload: nextComment,
-            })
-          }
+          // A registered transaction for this comment means a local update was
+          // issued after it was created (e.g. re-anchoring an inline comment
+          // right after creating it). This create echo predates that update, so
+          // applying it would clobber the optimistic state with a stale
+          // snapshot. Skip it — the update echo carries the fresh one.
+          const latestTransactionId = transactionsIdMap.get(nextComment._id)
+          const isStale = latestTransactionId && event.transactionId !== latestTransactionId
+          if (isStale) return
+
+          dispatch({
+            type: 'COMMENT_RECEIVED',
+            payload: nextComment,
+          })
         }
 
         if (event.transition === 'disappear') {
@@ -166,19 +179,20 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
   )
 
   const listener$ = useMemo(() => {
-    if (!client) return of()
+    if (!client || !gdr || !ready) return of()
 
-    const events$ = client.observable.listen(`*[${filters}]`, params, LISTEN_OPTIONS).pipe(
+    const events$ = client.collaboration.comments.listen(query, params, LISTEN_OPTIONS).pipe(
       catchError((err) => {
         setError(err)
-        return of(err)
+        return of()
       }),
     )
 
     return events$
-  }, [client, filters, params])
+  }, [client, gdr, ready, query, params])
 
   useEffect(() => {
+    didInitialFetch.current = false
     const sub = listener$.subscribe(handleListenerEvent)
 
     return () => {

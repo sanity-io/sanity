@@ -273,8 +273,8 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
         <Stack as="li" {...applyCommentIdAttr(parentComment._id)}>
           <CommentsListItemLayout
             avatarSize={avatarConfig.avatarSize}
-            canDelete={parentComment.authorId === currentUser.id}
-            canEdit={parentComment.authorId === currentUser.id}
+            canDelete={parentComment._system.createdBy === currentUser.sanityUserId}
+            canEdit={parentComment._system.createdBy === currentUser.sanityUserId}
             comment={parentComment}
             currentUser={currentUser}
             hasError={parentComment._state?.type === 'createError'}
@@ -313,8 +313,8 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
           <Stack key={reply._id} as="li" {...applyCommentIdAttr(reply._id)}>
             <CommentsListItemLayout
               avatarSize={avatarConfig.avatarSize}
-              canDelete={reply.authorId === currentUser.id}
-              canEdit={reply.authorId === currentUser.id}
+              canDelete={reply._system.createdBy === currentUser.sanityUserId}
+              canEdit={reply._system.createdBy === currentUser.sanityUserId}
               comment={reply}
               currentUser={currentUser}
               hasError={reply._state?.type === 'createError'}

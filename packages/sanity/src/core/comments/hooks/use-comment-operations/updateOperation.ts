@@ -1,4 +1,5 @@
 import {type SanityClient} from '@sanity/client'
+import {isPortableTextTextBlock} from '@sanity/types'
 import {uuid} from '@sanity/uuid'
 import throttle, {type ThrottleSettings} from 'lodash-es/throttle.js'
 
@@ -45,26 +46,21 @@ async function postCommentUpdate(props: UpdateOperationProps) {
 
   // Fall back to generating a new transaction id if none is provided
   const transactionId = transactionIdProp || uuid()
-  const patch = client?.patch(id).set(comment)
-  const transaction = client.transaction().transactionId(transactionId).patch(patch)
 
   onUpdate?.(id, comment)
 
-  // If the update contains a status, we'll update the status of all replies
-  // to the comment as well.
-  if (comment.status) {
-    await transaction.commit()
-
-    await client
-      .patch({query: `*[_type == "comment" && parentCommentId == "${id}"]`})
-      .set({
-        status: comment.status,
-      })
-      .commit()
-  } else {
-    // Else we'll just update the comment itself
-    await transaction.commit()
-  }
+  // Comments API handles status cascading to replies automatically
+  const {message, status} = comment
+  await client.collaboration.comments.update(
+    id,
+    {
+      // The Comments API only accepts text blocks; comment messages never hold
+      // block-level inline objects.
+      ...(message && {message: message.filter(isPortableTextTextBlock)}),
+      ...(status && {status}),
+    },
+    {transactionId},
+  )
 
   // Remove the throttled function from the map when the operation is complete
   // to prevent memory leaks.
