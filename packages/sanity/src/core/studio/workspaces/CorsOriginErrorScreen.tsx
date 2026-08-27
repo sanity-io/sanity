@@ -3,7 +3,7 @@ import {LaunchIcon} from '@sanity/icons/Launch'
 import {Card, Grid, Heading, Stack, Text} from '@sanity/ui'
 import {type ReactNode, useMemo} from 'react'
 import {styled} from 'styled-components'
-import {Flex,Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {isProd} from '../../environment'
