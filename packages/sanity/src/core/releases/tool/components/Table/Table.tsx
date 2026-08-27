@@ -10,7 +10,7 @@ import {TableEmptyState} from './TableEmptyState'
 import {TableHeader} from './TableHeader'
 import {TableLayout} from './TableLayout'
 import {TableProvider, type TableSort, useTableContext} from './TableProvider'
-import {type Column} from './types'
+import {TABLE_ROW_ACTIONS_WIDTH, type Column} from './types'
 
 type RowDatum<TableData, AdditionalRowTableData> = (AdditionalRowTableData extends undefined
   ? TableData
@@ -47,8 +47,6 @@ export interface TableProps<TableData, AdditionalRowTableData> {
 
 const ITEM_HEIGHT = 59
 const LOADING_ROW_COUNT = 3
-
-export const TABLE_ROW_ACTIONS_WIDTH = 50
 
 const TableInner = <TableData, AdditionalRowTableData>({
   columnDefs,
