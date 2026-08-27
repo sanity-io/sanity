@@ -38,6 +38,7 @@ import {isNonNullable} from '../util/isNonNullable'
 import {
   advancedVersionControlEnabledReducer,
   announcementsEnabledReducer,
+  commentsV2EnabledReducer,
   directUploadsReducer,
   documentActionsReducer,
   documentAskToEditEnabledReducer,
@@ -717,6 +718,7 @@ function resolveSource({
     })
   }
 
+  const commentsV2Enabled = commentsV2EnabledReducer({config, initialValue: false})
   const variantsEnabled = variantsEnabledReducer({config, initialValue: false})
 
   // Upload the schema descriptor to Content Lake, but only when the user is
@@ -920,6 +922,9 @@ function resolveSource({
     },
 
     beta: {
+      comments: {
+        v2: commentsV2Enabled,
+      },
       eventsAPI: {
         // oxlint-disable-next-line no-deprecated -- still resolved so the legacy timeline opt-out keeps working until the next major
         documents: eventsAPIReducer({config, initialValue: true, key: 'documents'}),

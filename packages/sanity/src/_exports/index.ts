@@ -35,6 +35,7 @@ export {CommentInlineHighlightSpan} from '../core/comments-current/components/pt
 export {COMMENTS_INSPECTOR_NAME} from '../core/comments-current/constants'
 export {CommentsAuthoringPathProvider} from '../core/comments-current/context/authoring-path/CommentsAuthoringPathProvider'
 export {CommentsProvider} from '../core/comments-current/context/comments/CommentsProvider'
+export {CommentsProvider as CommentsProviderV2} from '../core/comments/context/comments/CommentsProvider'
 export {CommentsEnabledProvider} from '../core/comments-current/context/enabled/CommentsEnabledProvider'
 export {
   CommentsIntentProvider,

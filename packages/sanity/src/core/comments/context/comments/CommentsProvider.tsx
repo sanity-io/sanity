@@ -333,7 +333,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       ],
     ),
   )
-  const readOnly = !commentsClient || !currentUser?.sanityUserId
+  const readOnly = !commentsClient || !currentUser?.sanityUserId || !commentsReady
 
   const ctxValue = useMemo(
     (): CommentsContextValue => ({

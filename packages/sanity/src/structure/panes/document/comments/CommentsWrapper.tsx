@@ -2,10 +2,15 @@ import {useCallback, useLayoutEffect, useRef} from 'react'
 import {
   COMMENTS_INSPECTOR_NAME,
   CommentsEnabledProvider,
-  CommentsProvider,
-  useCommentsEnabled,
+  CommentsProvider as CommentsProviderCurrent,
+  CommentsProviderV2,
+  getDraftId,
+  getPublishedId,
   getTargetScopeId,
+  getVersionId,
+  useCommentsEnabled,
   usePerspective,
+  useWorkspace,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 
@@ -39,9 +44,11 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
   const {children, documentId, documentType} = props
 
   const {enabled} = useCommentsEnabled()
-  const {connectionState, onPathOpen, inspector, openInspector, targetDocumentState} =
+  const {beta} = useWorkspace()
+  const commentsV2 = Boolean(beta?.comments?.v2)
+  const {connectionState, onPathOpen, inspector, openInspector, targetDocumentState, value} =
     useDocumentPane()
-  const {selectedReleaseId, selectedVariantName} = usePerspective()
+  const {selectedPerspectiveName, selectedReleaseId, selectedVariantName} = usePerspective()
   const {params, setParams} = usePaneRouter()
   const {resolveIntentLink} = useRouter()
 
@@ -105,22 +112,48 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
     return <>{children}</>
   }
 
+  const sharedProps = {
+    documentId,
+    documentType,
+    getCommentLink,
+    isCommentsOpen: inspector?.name === COMMENTS_INSPECTOR_NAME,
+    isConnecting: connectionState === 'connecting',
+    onClearSelectedComment: handleClearSelectedComment,
+    onCommentsOpen: handleOpenCommentsInspector,
+    onPathOpen,
+    selectedCommentId,
+    sortOrder: 'desc' as const,
+    type: 'field' as const,
+  }
+
+  if (commentsV2) {
+    // The comment target follows the selected perspective rather than whichever document happens to
+    // exist. Drafts / published / release version ids are deterministic from the published id
+    // (`drafts.<id>`, `<id>`, `versions.<releaseId>.<id>`), so we can target them before that
+    // document exists — same as commenting on a draft that has not been created yet.
+    // Variant scope ids are opaque and server-assigned, so we take the resolved `value._id` and
+    // rely on the provider to treat a non-version id in a variant perspective as not ready.
+    let sourceDocumentId: string
+    if (selectedReleaseId) {
+      sourceDocumentId = getVersionId(value._id, selectedReleaseId)
+    } else if (selectedVariantName) {
+      sourceDocumentId = value._id
+    } else if (selectedPerspectiveName === 'published') {
+      sourceDocumentId = getPublishedId(value._id)
+    } else {
+      sourceDocumentId = getDraftId(value._id)
+    }
+
+    return (
+      <CommentsProviderV2 {...sharedProps} sourceDocumentId={sourceDocumentId}>
+        {children}
+      </CommentsProviderV2>
+    )
+  }
+
   return (
-    <CommentsProvider
-      documentId={documentId}
-      documentType={documentType}
-      getCommentLink={getCommentLink}
-      isCommentsOpen={inspector?.name === COMMENTS_INSPECTOR_NAME}
-      isConnecting={connectionState === 'connecting'}
-      onClearSelectedComment={handleClearSelectedComment}
-      onCommentsOpen={handleOpenCommentsInspector}
-      onPathOpen={onPathOpen}
-      selectedCommentId={selectedCommentId}
-      sortOrder="desc"
-      type="field"
-      releaseId={scopeId}
-    >
+    <CommentsProviderCurrent {...sharedProps} releaseId={scopeId}>
       {children}
-    </CommentsProvider>
+    </CommentsProviderCurrent>
   )
 }
