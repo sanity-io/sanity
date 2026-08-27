@@ -193,8 +193,14 @@ describe('searchMachine', () => {
     expect(snapshot.matches('debouncing')).toBe(true)
     expect(snapshot.context.searchInterrupted).toBe(true)
 
+    harness.search('second again')
+    snapshot = harness.actor.getSnapshot()
+    expect(snapshot.matches('debouncing')).toBe(true)
+    expect(snapshot.context.searchInterrupted).toBe(true)
+
     harness.clock.increment(300)
-    harness.resolve('second', ['hit'])
+    expect(harness.started).toEqual(['first', 'second again'])
+    harness.resolve('second again', ['hit'])
     harness.search('third')
     snapshot = harness.actor.getSnapshot()
     expect(snapshot.matches('debouncing')).toBe(true)

@@ -112,6 +112,19 @@ export function defineSearchMachine<TQuery, TResult>() {
     states: {
       idle: {},
       debouncing: {
+        // Overrides the root transition to preserve `searchInterrupted`:
+        // follow-up keystrokes inside the window still owe their existence to
+        // the same cancelled search. `reenter` restarts the debounce timer.
+        on: {
+          search: [
+            {guard: 'is same query'},
+            {
+              target: 'debouncing',
+              reenter: true,
+              actions: assign({query: ({event}) => event.query}),
+            },
+          ],
+        },
         after: {
           debounce: [
             {guard: 'should search', target: 'searching', actions: emit({type: 'search started'})},
