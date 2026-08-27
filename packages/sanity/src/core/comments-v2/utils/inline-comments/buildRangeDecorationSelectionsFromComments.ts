@@ -105,15 +105,16 @@ export function buildRangeDecorationSelectionsFromComments(
     }
 
     comment.target.path?.selection?.value.forEach((selectionMember) => {
+      // The block content must come from the editor `value`: decorations are
+      // rendered against it, and persisted ranges must be computed against the
+      // same text. The form `documentValue` (used above for path scoping) lags
+      // the editor while typing, so reading text through it would produce
+      // offsets that are stale relative to the rendered/persisted value.
       const matchedBlock =
-        documentValue !== undefined && basePath
-          ? (getValueAtPath(documentValue, [
-              ...basePath,
-              ...relative,
-              {_key: selectionMember._key},
-            ]) as PortableTextBlock | undefined)
+        relative.length > 0
+          ? getValueAtPath(value, [...relative, {_key: selectionMember._key}])
           : value.find((block) => block._key === selectionMember._key)
-      if (!matchedBlock || !isPortableTextTextBlock(matchedBlock)) {
+      if (!isPortableTextTextBlock(matchedBlock)) {
         return
       }
       const selectionText = selectionMember.text.replaceAll(COMMENT_INDICATORS_REGEX, '')

@@ -7,6 +7,8 @@ import {IntentLink} from 'sanity/router'
 import {css, styled} from 'styled-components'
 import {Box, Flex} from 'ui5'
 
+import {CircleSmallIcon} from '../../../components/temporary-icons/CircleSmall'
+import {RingIcon} from '../../../components/temporary-icons/Ring'
 import {useDidUpdate} from '../../../form/hooks/useDidUpdate'
 import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
 import {type RelativeTimeOptions, useRelativeTime} from '../../../hooks/useRelativeTime'
@@ -14,7 +16,9 @@ import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListW
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
 import {useUser} from '../../../store/user/hooks'
+import {isDraftId, isPublishedId} from '../../../util/draftUtils'
 import {hasCommentMessageValue, isTextSelectionComment, useCommentHasChanged} from '../../helpers'
+import {useComments} from '../../hooks/useComments'
 import {commentsLocaleNamespace} from '../../i18n'
 import {
   type CommentContext,
@@ -151,6 +155,20 @@ const RootStack = styled(Stack)(({theme}) => {
   `
 })
 
+const IconSlotRoot = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  &[data-status='published'] {
+    --card-icon-color: var(--card-badge-positive-dot-color);
+  }
+  &[data-status='draft'] {
+    --card-icon-color: var(--card-badge-caution-dot-color);
+  }
+`
+
 interface CommentsListItemLayoutProps {
   avatarSize?: AvatarSize
   canDelete?: boolean
@@ -173,6 +191,32 @@ interface CommentsListItemLayoutProps {
   onStatusChange?: (id: string, status: CommentStatus) => void
   readOnly?: boolean
   withAvatar?: boolean
+}
+
+type CommentOrigin = 'draft' | 'published'
+
+/**
+ * The document a comment was made on, when that isn't the document being viewed.
+ * Only draft vs published: versions and other ids return `null`.
+ */
+export function getForeignCommentOrigin(
+  comment: CommentDocument,
+  documentId: string | undefined,
+): CommentOrigin | null {
+  const source = comment.target?.sourceDocumentId
+  if (!source || !documentId || source === documentId) return null
+  if (!(isDraftId(source) || isPublishedId(source))) return null
+  if (!(isDraftId(documentId) || isPublishedId(documentId))) return null
+  return isDraftId(source) ? 'draft' : 'published'
+}
+
+function getOriginI18nKey(origin: CommentOrigin) {
+  switch (origin) {
+    case 'draft':
+      return 'list-item.origin.draft'
+    case 'published':
+      return 'list-item.origin.published'
+  }
 }
 
 const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {useTemporalPhrase: true}
@@ -201,9 +245,12 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     readOnly,
     withAvatar = true,
   } = props
-  const {_createdAt, authorId, message, _id, lastEditedAt} = comment
+  const {_createdAt, message, _id, lastEditedAt} = comment
+  const authorId = comment._system.createdBy
   const [user] = useUser(authorId)
   const {t} = useTranslation(commentsLocaleNamespace)
+  const {sourceDocumentId} = useComments()
+  const foreignOrigin = isParent ? getForeignCommentOrigin(comment, sourceDocumentId) : null
 
   const [value, setValue] = useState<CommentMessage>(message)
   const [isEditing, setIsEditing] = useState<boolean>(false)
@@ -229,7 +276,10 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   const createdDate = _createdAt ? new Date(_createdAt) : new Date()
   const editedDate = lastEditedAt ? new Date(lastEditedAt) : null
   const createdTimeAgo = useRelativeTime(createdDate, RELATIVE_TIME_OPTIONS)
-  const dateTimeFormat = useDateTimeFormat({dateStyle: 'full', timeStyle: 'medium'})
+  const dateTimeFormat = useDateTimeFormat({
+    dateStyle: 'full',
+    timeStyle: 'medium',
+  })
   const formattedCreatedAt = dateTimeFormat.format(createdDate)
   const formattedLastEditAt = editedDate ? dateTimeFormat.format(editedDate) : null
   const displayError = hasError || isRetrying
@@ -352,6 +402,24 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
       gap={4}
     >
       <InnerStack gap={1} data-muted={displayError}>
+        {foreignOrigin && (
+          <Flex marginBottom={2}>
+            <Card border padding={1} radius={3}>
+              <Flex alignItems="center" gap={1} paddingRight={1}>
+                <IconSlotRoot data-status={foreignOrigin}>
+                  <Text size={2}>
+                    {foreignOrigin === 'draft' ? <RingIcon /> : <CircleSmallIcon />}
+                  </Text>
+                </IconSlotRoot>
+
+                <Text size={0} muted weight="medium">
+                  {t(getOriginI18nKey(foreignOrigin))}
+                </Text>
+              </Flex>
+            </Card>
+          </Flex>
+        )}
+
         <HeaderFlex
           alignItems="center"
           gap={FLEX_GAP}

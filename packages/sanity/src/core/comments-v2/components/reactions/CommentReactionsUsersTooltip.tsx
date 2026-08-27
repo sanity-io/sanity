@@ -177,7 +177,11 @@ function CommentReactionsUsersTooltipContent(
           i18nKey="reactions.users-reacted-with-reaction"
           values={{reactionName}}
           components={{UserList, ReactionName, Text: ReactionText}}
-          componentProps={{currentUserId: currentUser.id, reactionName, userIds}}
+          componentProps={{
+            currentUserId: currentUser.sanityUserId || '',
+            reactionName,
+            userIds,
+          }}
         />
       </TextBox>
     </ContentStack>
