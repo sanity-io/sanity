@@ -3,7 +3,6 @@ import {buildTheme} from '@sanity/ui/theme'
 import {useState} from 'react'
 import {Flex} from 'ui5'
 
-import {RELEASES_OVERVIEW_TITLE_COLUMN_MIN_WIDTH} from '../../../overview/ReleasesOverviewColumnDefs'
 import {Table} from '../Table'
 import {Headers} from '../TableHeader'
 import {type Column} from '../types'
@@ -27,7 +26,7 @@ function createColumns(showRowActions: boolean): Column<Datum>[] {
   const titleColumn: Column<Datum> = {
     id: 'title',
     width: null,
-    style: showRowActions ? {minWidth: RELEASES_OVERVIEW_TITLE_COLUMN_MIN_WIDTH} : undefined,
+    style: showRowActions ? {minWidth: 200} : undefined,
     header: (props) => (
       <Flex {...props.headerProps} flexBasis="0%" flexGrow={1} paddingY={3}>
         <Headers.BasicHeader text="Title" />
