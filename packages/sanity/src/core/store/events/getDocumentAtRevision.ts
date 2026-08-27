@@ -33,6 +33,22 @@ type Context = {client: SanityClient; documentId: string} & (
     }
 )
 
+/**
+ * Fetches a document snapshot from the history API, either at a specific `revisionId` or at a
+ * point in `time`. Emits `{loading: true}` first, then the result.
+ *
+ * Main cases covered:
+ * - `revisionId === HISTORY_CLEARED_EVENT_ID` short-circuits to `{document: null, loading: false}`
+ *   without a request (that id is synthetic and has no revision behind it).
+ * - The revision may be missing (history retention): the API returns no documents and `document`
+ *   is `undefined`; callers like `getDocumentChanges` translate that into
+ *   `MissingSinceDocumentError`.
+ * - Errors are logged and emitted as `{document: null, loading: false}` — never thrown.
+ *
+ * Results are cached module-level per `documentId@<revisionId|time>` observable
+ * (`shareReplay(1)`), so concurrent and repeated subscribers share one request.
+ * Known quirks:  error results are cached forever, and the cache never evicts (tracked as known issues).
+ */
 export function getDocumentAtRevision<InputContext extends Context>({
   client,
   documentId,

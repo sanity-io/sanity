@@ -10,6 +10,24 @@ import {
   isPublishDocumentVersionEvent,
 } from './types'
 
+/**
+ * Provides the "expand event" capability of the events store: turning a publish or delete event
+ * into the list of edit events that led up to it.
+ *
+ * `handleExpandEvent(event)`:
+ * - Only `publishDocumentVersion` / `deleteDocumentVersion` events that carry both a
+ *   `versionRevisionId` and a `creationEvent` can be expanded (the creation event is attached by
+ *   `addParentToEvents` for drafts); anything else logs an error and is ignored.
+ * - Fetches the transactions between the creation revision and the published/deleted revision,
+ *   maps them to edit events (`getEditEvents`) and stamps each with `parentId: event.id` so the UI
+ *   can nest them under the expanded event.
+ * - Expanding the same event twice is a no-op (results are kept in a map keyed by event id).
+ * - Known quirk: the returned promise is not error-handled by callers and `getDocumentTransactions`
+ *   failures surface as unhandled rejections (tracked as a known issue).
+ *
+ * `expandedEvents$` emits the flattened list of all expanded edit events, consumed by
+ * `createEventsObservable` to merge them into the main list.
+ */
 export function getExpandEvents({documentId, client}: {client: SanityClient; documentId: string}) {
   const expandedEventsMap$ = new BehaviorSubject<Map<string, EditDocumentVersionEvent[]>>(new Map())
   const expandedEvents$ = expandedEventsMap$.pipe(

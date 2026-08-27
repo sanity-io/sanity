@@ -2,6 +2,10 @@
 
 ## Architecture and rationale
 
+- **Why stories are co-located:** each package owns its CSF files and keeps component, fixture,
+  test-harness, and test-only imports within the same workspace boundary. `dev/storybook` is only
+  the shared host; its discovery globs target workspace package `src` roots without traversing
+  dependency symlinks under nested `node_modules` directories.
 - **Why harness reuse instead of moving tests into Storybook:** the 25 `*.browser.test.tsx`
   files use `vitest-browser-react`, custom server commands (`readFileAsBase64`), clipboard/PTE
   helpers and mid-test `page.viewport()` mutations — none of which map onto Storybook `play()`
@@ -13,10 +17,6 @@
   condition resolves `sanity` (and other workspace packages) to TypeScript source; the
   vanilla-extract plugin compiles `.css.ts`; the React Compiler babel preset matches what the
   studio ships. Divergence here would make snapshots render differently from production.
-- **Why stories are co-located:** each package owns its CSF files and keeps component, fixture,
-  test-harness, and test-only imports within the same workspace boundary. `dev/storybook` is only
-  the shared host; its discovery globs target workspace package `src` roots without traversing
-  dependency symlinks under nested `node_modules` directories.
 - **Why preview imports both `ui5/styles.css` and `@sanity/ui/styles.css`:** the studio entry
   side-effect-imports both. Storybook must too — colocated sentinel stories import source files
   directly and never hit the `sanity` package entry, so they would otherwise snapshot without

@@ -81,6 +81,7 @@ sanity/
 │   └── @repo/            # Internal tooling (test-config, tsconfig, etc.)
 ├── dev/                  # Development studios for testing
 │   ├── test-studio/      # Primary dev studio (pnpm dev runs this)
+│   ├── studio-diagnostics-viewer/ # Standalone viewer for pasted diagnostics JSON
 │   └── preview-iframe/   # Presentation preview iframe (vanilla Vite, port 3334)
 ├── e2e/                  # End-to-end Playwright tests
 ├── perf/                 # Performance testing
@@ -731,6 +732,10 @@ See `turbo.json` for full list of environment variables that affect builds.
 
 These notes cover non-obvious gotchas for running in the Cursor Cloud VM. The startup update script already runs `pnpm install`.
 
+### Git branch naming
+
+When a Linear issue is provided during the session, include its lowercased id in the branch name: `cursor/<linear-id>-<descriptive-name>-<hash>` (e.g. `cursor/sapp-1234-some-thing-hash`).
+
 ### Services
 
 | Service                                           | Port | Purpose                                          |
@@ -750,6 +755,15 @@ No Docker, databases, or other local services are required for unit tests, lint,
   - Most changes should still be verified with `pnpm build && pnpm test` (no auth needed); only use the studio for visual/manual verification.
 - **Seeding test documents for the `/test` workspace via API.** In local dev (non-staging), the `/test` workspace talks to the production API host, so `STUDIO_AUTH_TOKEN` works as a Bearer token against `https://ppsg7ml5.api.sanity.io/v2024-01-01/data/mutate/test` (it returns 401 "Session not found" on `api.sanity.work`). Caveat when testing history/review-changes features: documents created by raw API mutations (e.g. `createOrReplace` of a published id) do not produce publish events, so the Review changes inspector shows "There are no changes" / "Same revision selected". Instead, create only the draft (`drafts.<id>`) via the API, click Publish in the studio UI to create a real publish event, then edit fields in the form to create draft changes.
 - **Seeding releases for the `/test` workspace via API.** Releases and document versions are created through the actions endpoint (`POST https://ppsg7ml5.api.sanity.io/v2025-02-19/data/actions/test` with `{"actions": [...]}`, same Bearer token). Useful action types: `sanity.action.release.create`, `sanity.action.document.version.create` (pass `publishedId` plus a `document` with `_id: versions.<releaseId>.<publishedId>`), `sanity.action.document.version.unpublish`, `sanity.action.document.version.discard`, `sanity.action.release.archive`, `sanity.action.release.delete`. Note that a version created by the unpublish action alone is an empty tombstone carrying only `_system.delete: true` — to get a version with content, create the version first and then unpublish it. `/test` is a shared dataset, so archive and delete any release you seed once you are done.
+- **Install agent skills with `pnpm dlx skills`, not `npx skills`.** This repo is pnpm-only, and the Cloud VM's `npx` wrapper often fails with `sh: 1: skills: not found`. Use the pnpm equivalent and skip prompts:
+
+  ```bash
+  export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH"
+  pnpm dlx skills add <owner/repo> --skill <name> -y
+  pnpm dlx skills add <owner/repo> -y   # all skills in the repo
+  pnpm dlx skills list
+  ```
+
 - **Node version:** the VM runs Node 22.x, which satisfies the repo engine range (`>=22.12`). A couple of internal tooling packages print a harmless `Unsupported engine` warning wanting Node `>=22.18`; it does not affect testing or running the studio. However, **`pnpm build` requires Node >= 22.18**: the packages build with `tsdown`, which loads its `tsdown.config.ts` through Node's native TypeScript support and fails on older Node 22.x (e.g. the VM default `v22.14.0`) with `Failed to import module "unrun"`. A new enough runtime is available via nvm: `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH"`.
 - **`pnpm build` may dirty `packages/sanity/package.json`.** tsdown auto-generates the `inlinedDependencies` field on every build, and in this VM the computed set can differ from what is committed (e.g. `@sanity/sdk` and `zustand` get dropped) even on a clean checkout of `main`. That churn is an environment artifact, not part of your change — revert it with `git checkout -- packages/sanity/package.json` (re-applying any edits of your own) instead of committing it.
 - **Do not run oxlint type checking (`pnpm check:oxlint`) while the dev studio is running.** Both are memory-hungry and running them concurrently has exhausted the VM's memory and frozen it for hours (unkillable thrashing). Stop `sanity dev` first (Ctrl-C in its tmux session), run the checks, then restart the studio.

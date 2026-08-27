@@ -33,13 +33,19 @@ const CodeValue = styled.span`
   overflow-wrap: anywhere;
 `
 
-interface DiagnosticsReportProps {
+/** @internal */
+export interface DiagnosticsReportProps {
   diagnostics: StudioDiagnostics
   onRunAgain: () => void
+  runAgainLabel?: string
 }
 
 /** @internal */
-export function DiagnosticsReport({diagnostics, onRunAgain}: DiagnosticsReportProps) {
+export function DiagnosticsReport({
+  diagnostics,
+  onRunAgain,
+  runAgainLabel = 'Run again',
+}: DiagnosticsReportProps) {
   const [useUtc, setUseUtc] = useState(true)
   const {browser, network, schema, studio, user} = diagnostics
 
@@ -97,9 +103,9 @@ export function DiagnosticsReport({diagnostics, onRunAgain}: DiagnosticsReportPr
             </Stack>
             <Stack gap={2}>
               <Text aria-hidden="true" muted size={1} style={{visibility: 'hidden'}}>
-                Run again
+                {runAgainLabel}
               </Text>
-              <Button mode="default" onClick={onRunAgain} text="Run again" />
+              <Button mode="default" onClick={onRunAgain} text={runAgainLabel} />
             </Stack>
           </Flex>
         </Flex>
