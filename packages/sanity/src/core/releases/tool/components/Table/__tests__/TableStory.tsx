@@ -120,7 +120,11 @@ export function TableStory({containerWidth, showRowActions = false}: TableStoryP
           rowActions={
             showRowActions
               ? () => (
-                  <button type="button" data-testid="release-menu-button">
+                  <button
+                    type="button"
+                    data-testid="release-menu-button"
+                    style={{width: 25, height: 25, padding: 0, border: 0, boxSizing: 'border-box'}}
+                  >
                     ...
                   </button>
                 )
