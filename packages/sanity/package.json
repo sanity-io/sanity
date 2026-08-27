@@ -59,6 +59,10 @@
       "monorepo": "./src/_exports/cli.ts",
       "default": "./lib/cli.js"
     },
+    "./dashboard": {
+      "monorepo": "./src/_exports/dashboard.ts",
+      "default": "./lib/dashboard.js"
+    },
     "./desk": {
       "monorepo": "./src/_exports/desk.ts",
       "default": "./lib/desk.js"
@@ -83,10 +87,6 @@
       "monorepo": "./src/_exports/structure.ts",
       "default": "./lib/structure.js"
     },
-    "./workbench": {
-      "monorepo": "./src/_exports/workbench.ts",
-      "default": "./lib/workbench.js"
-    },
     "./bundle.css": {
       "types": "./lib/bundle-css.d.ts",
       "browser": "./lib/bundle.css",
@@ -104,13 +104,13 @@
       "./_singletons": "./lib/_singletons.js",
       "./_unstable-embedded": "./lib/_unstable-embedded.js",
       "./cli": "./lib/cli.js",
+      "./dashboard": "./lib/dashboard.js",
       "./desk": "./lib/desk.js",
       "./media-library": "./lib/media-library.js",
       "./migrate": "./lib/migrate.js",
       "./presentation": "./lib/presentation.js",
       "./router": "./lib/router.js",
       "./structure": "./lib/structure.js",
-      "./workbench": "./lib/workbench.js",
       "./bundle.css": {
         "types": "./lib/bundle-css.d.ts",
         "browser": "./lib/bundle.css",

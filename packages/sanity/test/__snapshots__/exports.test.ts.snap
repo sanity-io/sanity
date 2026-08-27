@@ -922,6 +922,10 @@ exports[`exports snapshot 1`] = `
     "getStudioEnvironmentVariables": "function",
     "unstable_defineMediaLibrary": "function",
   },
+  "./dashboard": {
+    "unstable_defineService": "function",
+    "unstable_defineView": "function",
+  },
   "./desk": {
     "ComponentBuilder": "function",
     "ComponentViewBuilder": "function",
@@ -1103,10 +1107,6 @@ exports[`exports snapshot 1`] = `
     "usePaneOptions": "function",
     "usePaneRouter": "function",
     "useStructureTool": "function",
-  },
-  "./workbench": {
-    "unstable_defineService": "function",
-    "unstable_defineView": "function",
   },
 }
 `;
