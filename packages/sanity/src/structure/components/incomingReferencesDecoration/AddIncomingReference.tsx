@@ -2,9 +2,21 @@ import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {type SanityDocumentLike} from '@sanity/types'
 import {Grid, Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {useCallback, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
-import {catchError, concat, filter, map, type Observable, of, scan, Subject, switchMap} from 'rxjs'
+import {
+  BehaviorSubject,
+  catchError,
+  concat,
+  filter,
+  map,
+  type Observable,
+  of,
+  scan,
+  Subject,
+  switchMap,
+  withLatestFrom,
+} from 'rxjs'
 import {
   createSearch,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
@@ -131,14 +143,23 @@ export function AddIncomingReference({
 
   const [searchInput$] = useState(() => new Subject<string | null>())
 
+  // The latest render's search function, carried by a subject so the memoized
+  // pipeline reads it at event time without rebuilding, which would cancel
+  // in-flight searches and reset accumulated results.
+  const [handleSearch$] = useState(() => new BehaviorSubject(handleSearch))
+  useEffect(() => {
+    handleSearch$.next(handleSearch)
+  }, [handleSearch, handleSearch$])
+
   const searchState$ = useMemo(
     () =>
       searchInput$.pipe(
         filter(isNonNullable),
-        switchMap((searchString) =>
+        withLatestFrom(handleSearch$),
+        switchMap(([searchString, search]) =>
           concat(
             of({isLoading: true, hits: []}),
-            handleSearch(searchString).pipe(
+            search(searchString).pipe(
               map((hits) => ({hits, searchString, isLoading: false})),
               catchError((error) => {
                 push({
@@ -158,7 +179,7 @@ export function AddIncomingReference({
           INITIAL_SEARCH_STATE,
         ),
       ),
-    [handleSearch, push, searchInput$, type],
+    [handleSearch$, push, searchInput$, type],
   )
   const searchState = useObservable(searchState$, INITIAL_SEARCH_STATE)
 
