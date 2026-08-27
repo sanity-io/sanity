@@ -14,6 +14,7 @@ import {
   type SlugSchemaType,
 } from '../schema/types'
 import {type SlugParent} from '../slug/types'
+import {type CurrentUser} from '../user/types'
 
 /** @public */
 export type RuleTypeConstraint = 'Array' | 'Boolean' | 'Date' | 'Number' | 'Object' | 'String'
@@ -286,6 +287,10 @@ export interface ValidationContext {
    * Whether this field is hidden for any reason (either itself or any of its ancestors).
    */
   hidden?: boolean
+  /**
+   * The current user, when available. Absent outside the Studio, eg CLI or headless validation.
+   */
+  currentUser?: Omit<CurrentUser, 'role'> | null
 }
 
 /**
