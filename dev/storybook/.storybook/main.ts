@@ -10,10 +10,11 @@ const config: StorybookConfig = {
   // own sidebar tree, so the design system the studio builds on is browsable
   // from here. The manager fetches the remote `index.json` and renders its
   // stories from the remote `iframe.html` at runtime — nothing is bundled, and
-  // Chromatic does not snapshot composed refs.
+  // Chromatic does not snapshot composed refs. "(upstream)" keeps the tree
+  // apart from the local `Sanity UI/` tone sentinels in `src/ui-components`.
   refs: {
     'sanity-ui': {
-      title: 'Sanity UI',
+      title: 'Sanity UI (upstream)',
       url: 'https://sanity-ui-storybook.sanity.dev',
     },
   },

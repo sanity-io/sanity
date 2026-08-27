@@ -39,8 +39,9 @@ pnpm chromatic           # publish + snapshot manually (needs CHROMATIC_PROJECT_
 [.storybook/main.ts](.storybook/main.ts) composes the upstream
 [`@sanity/ui` Storybook](https://sanity-ui-storybook.sanity.dev) (deployed from
 [sanity-io/ui](https://github.com/sanity-io/ui)) through Storybook's `refs`, so the design system
-the studio builds on is browsable from the same sidebar — it appears as a separate "Sanity UI" tree
-below the local stories.
+the studio builds on is browsable from the same sidebar — it appears as a separate
+"Sanity UI (upstream)" tree below the local stories. The suffix keeps it apart from the local
+`Sanity UI/` tone sentinels in `packages/sanity/src/ui-components`.
 
 - Composition is a **runtime** link: the manager fetches `index.json` from the remote Storybook and
   renders its stories in the remote `iframe.html`. Nothing is bundled here, so it costs the local
