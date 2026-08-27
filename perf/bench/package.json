@@ -2,7 +2,7 @@
   "name": "bench",
   "version": "6.3.0",
   "private": true,
-  "description": "Hermetic studio performance benchmark suite (eFPS replacement)",
+  "description": "Hermetic studio performance benchmark suite",
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "type": "module",
@@ -34,7 +34,7 @@
     "react-dom": "catalog:",
     "rxjs": "^7.8.2",
     "sanity": "workspace:*",
-    "sanity-plugin-internationalized-array": "^5.1.27",
+    "sanity-plugin-internationalized-array": "^5.2.2",
     "styled-components": "catalog:",
     "tsx": "^4.23.12"
   },

@@ -26,7 +26,7 @@ import {type FormNodePresence} from '../../../presence/types'
 import {useFieldActions} from '../../field/actions/useFieldActions'
 import {createDescriptionId} from '../../members/common/createDescriptionId'
 import {type FieldCommentsProps} from '../../types/fieldProps'
-import {FormDivergenceIndicator} from '../FormDivergenceIndicator'
+import {FormFieldGutter} from '../FormFieldGutter'
 import {FormNodeDivergenceCollectionIndicator} from '../FormNodeDivergenceCollectionIndicator'
 import {FormNodeDivergenceDetail} from '../FormNodeDivergenceDetail'
 import {FormRow} from '../layout/FormRow'
@@ -76,6 +76,10 @@ export interface FormFieldSetProps {
 
   path: Path
   readOnly?: boolean
+  /**
+   * Whether the value differs to the document's base variant.
+   */
+  changedFromBaseVariant?: boolean
 }
 
 function getChildren(children: ReactNode | (() => ReactNode)): ReactNode {
@@ -156,6 +160,7 @@ export function FormFieldSet(
     __internal_slot: slot = null,
     __unstable_headerActions: actions = EMPTY_ARRAY,
     __unstable_presence: presence = EMPTY_ARRAY,
+    changedFromBaseVariant = false,
     children,
     collapsed,
     collapsible,
@@ -212,7 +217,11 @@ export function FormFieldSet(
   }, [children, collapsed, columns])
 
   return (
-    <FormRow gutterStartCell={<FormDivergenceIndicator path={path} />}>
+    <FormRow
+      gutterStartCell={
+        <FormFieldGutter path={path} changedFromBaseVariant={changedFromBaseVariant} />
+      }
+    >
       <FormNodeDivergenceDetail path={path} readOnly={readOnly}>
         <Root
           data-level={level}

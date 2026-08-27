@@ -1,9 +1,10 @@
 import {DocumentIcon} from '@sanity/icons/Document'
-import {Flex, Text, TextSkeleton} from '@sanity/ui'
+import {Text, TextSkeleton} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useMemo, type RefAttributes} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {useSchema} from '../../../hooks/useSchema'
 import {usePerspective} from '../../../perspective/usePerspective'
@@ -58,7 +59,7 @@ export function DocumentPreview({
   }
 
   return (
-    <Flex align="center" gap={2}>
+    <Flex alignItems="center" gap={2}>
       <Text size={1}>
         <DocumentIcon />
       </Text>

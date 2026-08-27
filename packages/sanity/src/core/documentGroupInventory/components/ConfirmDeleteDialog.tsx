@@ -4,11 +4,11 @@ import {DocumentsIcon} from '@sanity/icons/Documents'
 import {UnknownIcon} from '@sanity/icons/Unknown'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {getPublishedId} from '@sanity/id-utils'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
 import {type ComponentType, type ReactNode, useCallback, useMemo} from 'react'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 import {type ActorRefFromLogic} from 'xstate'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -24,7 +24,10 @@ import {
   type InternalReferences,
 } from '../machines/deletionMachine'
 import {type selectionMachine} from '../machines/selectionMachine'
-import {type DocumentGroupInventoryReferencePreviewLinkProps} from '../types'
+import {
+  type DocumentGroupInventoryComponents,
+  type DocumentGroupInventoryReferencePreviewLinkProps,
+} from '../types'
 import {
   ChevronWrapper,
   CrossDatasetReferencesDetails,
@@ -33,10 +36,13 @@ import {
   OtherReferenceCount,
   Table,
 } from './ConfirmDeleteDialog.styles'
-import {type DocumentGroupInventoryProps} from './DocumentGroupInventory'
 
 const EMPTY_INTERNAL_REFERENCES: InternalReferences = {totalCount: 0, references: []}
 const EMPTY_CROSS_DATASET_REFERENCES: CrossDatasetReferences = {totalCount: 0, references: []}
+
+function DocumentTitle({documentTitle}: {children?: ReactNode; documentTitle?: ReactNode}) {
+  return documentTitle
+}
 
 interface Props {
   documentId: string
@@ -44,7 +50,7 @@ interface Props {
   deletionRef: ActorRefFromLogic<typeof deletionMachine>
   selectionRef: ActorRefFromLogic<typeof selectionMachine>
   portalElementName: string
-  components: DocumentGroupInventoryProps['components']
+  components: DocumentGroupInventoryComponents
 }
 
 export const ConfirmDeleteDialog: ComponentType<Props> = ({
@@ -141,7 +147,8 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
                   <Text size={1}>
                     <Translate
                       i18nKey="document-group.delete.referring-document-count.text"
-                      components={{DocumentTitle: () => documentTitle}}
+                      components={{DocumentTitle}}
+                      componentProps={{documentTitle}}
                       t={t}
                       values={{count: totalCount}}
                     />
@@ -238,12 +245,13 @@ const References: ComponentType<ReferencesProps> = ({
           <Translate
             i18nKey="document-group.delete.referring-documents-descriptor.text"
             t={t}
-            components={{DocumentTitle: () => documentTitle}}
+            components={{DocumentTitle}}
+            componentProps={{documentTitle}}
           />
         </Text>
       </Box>
       <Card radius={2} shadow={1} flex="auto" padding={1}>
-        <Flex direction="column">
+        <Flex flexDirection="column">
           {internalReferences.totalCount > 0 && (
             <Stack as="ul" gap={2} data-testid="internal-references">
               {internalReferences.references.map((item) => (
@@ -277,7 +285,7 @@ const References: ComponentType<ReferencesProps> = ({
                   shadow={1}
                   paddingY={1}
                 >
-                  <Flex align="center" gap={3} paddingX={3} paddingY={1}>
+                  <Flex alignItems="center" gap={3} paddingX={3} paddingY={1}>
                     <Text size={1}>
                       <DocumentsIcon />
                     </Text>
@@ -337,7 +345,7 @@ const References: ComponentType<ReferencesProps> = ({
                             <Text size={1}>{datasetName || 'unavailable'}</Text>
                           </td>
                           <td>
-                            <DocumentIdFlex align="center" gap={2} justify="flex-end">
+                            <DocumentIdFlex alignItems="center" gap={2} justifyContent="flex-end">
                               <Text textOverflow="ellipsis" size={1}>
                                 {referenceId || 'unavailable'}
                               </Text>

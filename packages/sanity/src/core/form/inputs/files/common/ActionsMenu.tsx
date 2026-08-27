@@ -12,7 +12,7 @@ import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 interface Props {
   browse: ReactNode
   readOnly?: boolean
-  onReset: MouseEventHandler<HTMLDivElement>
+  onReset: MouseEventHandler<HTMLButtonElement>
   downloadUrl?: string
   copyUrl?: string
   openInSource?: () => void

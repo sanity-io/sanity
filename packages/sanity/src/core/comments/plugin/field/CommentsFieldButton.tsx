@@ -4,13 +4,13 @@ import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import {
   // oxlint-disable-next-line no-restricted-imports
   Button as SanityUIButton,
-  Flex,
   Stack,
   Text,
   useClickOutsideEvent,
 } from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Popover} from '../../../../ui-components/popover/Popover'
@@ -201,7 +201,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
         padding={2}
         gap={2}
       >
-        <Flex align="center" gap={2}>
+        <Flex alignItems="center" gap={2}>
           <Text size={1}>
             <CommentIcon />
           </Text>

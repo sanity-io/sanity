@@ -60,12 +60,14 @@ import {getSafeDomId} from './utils/getSafeDomId'
 
 type PrimitiveSchemaType = BooleanSchemaType | NumberSchemaType | StringSchemaType
 
-interface FormStateOptions<TSchemaType, T> extends Pick<NodeChronologyProps, 'hasUpstreamVersion'> {
+interface FormStateOptions<TSchemaType, T> extends NodeChronologyProps {
   schemaType: TSchemaType
   path: Path
   value?: T
   comparisonValue?: T | null
   changed?: boolean
+  baseVariantValue?: T | null
+  changedFromBaseVariant?: boolean
   currentUser: Omit<CurrentUser, 'role'> | null
   hidden?: true | StateTree<boolean> | undefined
   readOnly?: true | StateTree<boolean> | undefined
@@ -203,6 +205,28 @@ function isChangedValue(value: any, comparisonValue: any) {
   return !_isEqual(value, comparisonValue)
 }
 
+function isChangedFromBaseVariant(
+  hasBaseVariant: boolean,
+  value: unknown,
+  baseVariantValue: unknown,
+) {
+  return hasBaseVariant && isChangedValue(value, baseVariantValue)
+}
+
+function membersChangedFromBaseVariant(members: readonly (ObjectMember | HiddenField)[]): boolean {
+  return members.some((member) => {
+    if (member.kind === 'field') {
+      return member.field.changedFromBaseVariant
+    }
+
+    if (member.kind === 'fieldSet') {
+      return membersChangedFromBaseVariant(member.fieldSet.members)
+    }
+
+    return false
+  })
+}
+
 export interface CreatePrepareFormStateOptions {
   decorators?: {
     prepareFieldMember?: FunctionDecorator<PrepareFieldMember>
@@ -215,10 +239,11 @@ export interface CreatePrepareFormStateOptions {
   }
 }
 
-export interface RootFormStateOptions extends Pick<NodeChronologyProps, 'hasUpstreamVersion'> {
+export interface RootFormStateOptions extends NodeChronologyProps {
   schemaType: ObjectSchemaType
   documentValue: unknown
   comparisonValue: unknown
+  baseVariantValue: unknown
   currentUser: Omit<CurrentUser, 'role'> | null
   hidden: boolean | StateTree<boolean> | undefined
   readOnly: boolean | StateTree<boolean> | undefined
@@ -269,6 +294,8 @@ export function createPrepareFormState({
         openPath: startsWith(path, parent.openPath) ? parent.openPath : [],
         value: getId((parent.value as any)?.[field.name]),
         comparisonValue: getId((parent.comparisonValue as any)?.[field.name]),
+        baseVariantValue: getId((parent.baseVariantValue as any)?.[field.name]),
+        hasBaseVariant: parent.hasBaseVariant,
         collapsedFieldSets: getId(parent.collapsedFieldSets?.children?.[field.name]),
         collapsedPaths: getId(parent.collapsedPaths?.children?.[field.name]),
         currentUser: getId(parent.currentUser),
@@ -299,6 +326,8 @@ export function createPrepareFormState({
       openPath: startsWith(state.path, state.openPath) ? state.openPath : [],
       value: getId(state.value),
       comparisonValue: getId(state.comparisonValue),
+      baseVariantValue: getId(state.baseVariantValue),
+      hasBaseVariant: state.hasBaseVariant,
       collapsedFieldSets: getId(state.collapsedFieldSets),
       collapsedPaths: state.collapsedPaths,
       currentUser: getId(state.currentUser),
@@ -324,6 +353,8 @@ export function createPrepareFormState({
         openPath: startsWith(state.path, state.openPath) ? state.openPath : [],
         value: getId(state.value),
         comparisonValue: getId(state.comparisonValue),
+        baseVariantValue: getId(state.baseVariantValue),
+        hasBaseVariant: state.hasBaseVariant,
         collapsedFieldSets: getId(state.collapsedFieldSets),
         collapsedPaths: state.collapsedPaths,
         currentUser: getId(state.currentUser),
@@ -348,6 +379,8 @@ export function createPrepareFormState({
       openPath: startsWith(state.path, state.openPath) ? state.openPath : [],
       value: getId(state.value),
       comparisonValue: getId(state.comparisonValue),
+      baseVariantValue: getId(state.baseVariantValue),
+      hasBaseVariant: state.hasBaseVariant,
       collapsedFieldSets: getId(state.collapsedFieldSets),
       collapsedPaths: state.collapsedPaths,
       currentUser: getId(state.currentUser),
@@ -369,6 +402,12 @@ export function createPrepareFormState({
         ? parent.comparisonValue.find((item) => isKeyedObject(item) && item._key === arrayItem._key)
         : undefined
 
+      const baseVariantValue = Array.isArray(parent.baseVariantValue)
+        ? parent.baseVariantValue.find(
+            (item) => isKeyedObject(item) && item._key === arrayItem._key,
+          )
+        : undefined
+
       const key = arrayItem._key
       const path: Path = [...parent.path, {_key: key}]
 
@@ -380,6 +419,8 @@ export function createPrepareFormState({
         openPath: startsWith(path, parent.openPath) ? parent.openPath : [],
         value: getId(arrayItem),
         comparisonValue: getId(comparisonValue),
+        baseVariantValue: getId(baseVariantValue),
+        hasBaseVariant: parent.hasBaseVariant,
         collapsedFieldSets: getId(parent.collapsedFieldSets?.children?.[key]),
         collapsedPaths: getId(parent.collapsedPaths?.children?.[key]),
         currentUser: getId(parent.currentUser),
@@ -406,6 +447,10 @@ export function createPrepareFormState({
         ? parent.comparisonValue[index]
         : undefined
 
+      const baseVariantValue = Array.isArray(parent.baseVariantValue)
+        ? parent.baseVariantValue[index]
+        : undefined
+
       const path: Path = [...parent.path, index]
 
       return {
@@ -427,6 +472,8 @@ export function createPrepareFormState({
         schemaType: getId(parent.schemaType),
         value: `${arrayItem}`,
         comparisonValue: `${comparisonValue}`,
+        baseVariantValue: `${baseVariantValue}`,
+        hasBaseVariant: parent.hasBaseVariant,
         perspective: getId(parent.perspective),
         hasUpstreamVersion: parent.hasUpstreamVersion,
         displayInlineChanges: parent.displayInlineChanges,
@@ -445,6 +492,8 @@ export function createPrepareFormState({
       openPath: startsWith(state.path, state.openPath) ? state.openPath : [],
       value: getId(state.value),
       comparisonValue: getId(state.comparisonValue),
+      baseVariantValue: getId(state.baseVariantValue),
+      hasBaseVariant: state.hasBaseVariant,
       collapsedFieldSets: getId(state.collapsedFieldSets),
       collapsedPaths: state.collapsedPaths,
       currentUser: getId(state.currentUser),
@@ -468,6 +517,7 @@ export function createPrepareFormState({
 
     const parentValue = parent.value
     const parentComparisonValue = parent.comparisonValue
+    const parentBaseVariantValue = parent.baseVariantValue
     if (!isAcceptedObjectValue(parentValue)) {
       // Note: we validate each field, before passing it recursively to this function so getting this error means that the
       // ´prepareFormState´ function itself has been called with a non-object value
@@ -485,6 +535,9 @@ export function createPrepareFormState({
       const fieldValue = parentValue?.[field.name]
       const fieldComparisonValue = isRecord(parentComparisonValue)
         ? parentComparisonValue?.[field.name]
+        : undefined
+      const fieldBaseVariantValue = isRecord(parentBaseVariantValue)
+        ? parentBaseVariantValue?.[field.name]
         : undefined
 
       if (!isAcceptedObjectValue(fieldValue)) {
@@ -546,6 +599,8 @@ export function createPrepareFormState({
         value: fieldValue,
         changed: isChangedValue(fieldValue, fieldComparisonValue),
         comparisonValue: fieldComparisonValue,
+        baseVariantValue: fieldBaseVariantValue,
+        hasBaseVariant: parent.hasBaseVariant,
         perspective: parent.perspective,
         hasUpstreamVersion: parent.hasUpstreamVersion,
         presence: parent.presence,
@@ -592,6 +647,9 @@ export function createPrepareFormState({
       const fieldValue = parentValue?.[field.name] as unknown[] | undefined
       const fieldComparisonValue = isRecord(parentComparisonValue)
         ? parentComparisonValue?.[field.name]
+        : undefined
+      const fieldBaseVariantValue = isRecord(parentBaseVariantValue)
+        ? parentBaseVariantValue?.[field.name]
         : undefined
       if (isArrayOfObjectsSchemaType(field.type)) {
         const hasValue = typeof fieldValue !== 'undefined'
@@ -671,6 +729,13 @@ export function createPrepareFormState({
           value: fieldValue,
           changed: isChangedValue(fieldValue, fieldComparisonValue),
           comparisonValue: fieldComparisonValue as FIXME,
+          changedFromBaseVariant: isChangedFromBaseVariant(
+            parent.hasBaseVariant,
+            fieldValue,
+            fieldBaseVariantValue,
+          ),
+          baseVariantValue: fieldBaseVariantValue as FIXME,
+          hasBaseVariant: parent.hasBaseVariant,
           fieldGroupState,
           focusPath: parent.focusPath,
           openPath: parent.openPath,
@@ -741,6 +806,13 @@ export function createPrepareFormState({
         const fieldState = prepareArrayOfPrimitivesInputState({
           changed: isChangedValue(fieldValue, fieldComparisonValue),
           comparisonValue: fieldComparisonValue as FIXME,
+          changedFromBaseVariant: isChangedFromBaseVariant(
+            parent.hasBaseVariant,
+            fieldValue,
+            fieldBaseVariantValue,
+          ),
+          baseVariantValue: fieldBaseVariantValue as FIXME,
+          hasBaseVariant: parent.hasBaseVariant,
           schemaType: field.type,
           currentUser: parent.currentUser,
           value: fieldValue,
@@ -791,6 +863,9 @@ export function createPrepareFormState({
       const fieldComparisonValue = isRecord(parentComparisonValue)
         ? parentComparisonValue?.[field.name]
         : undefined
+      const fieldBaseVariantValue = isRecord(parentBaseVariantValue)
+        ? parentBaseVariantValue?.[field.name]
+        : undefined
 
       // note: we *only* want to call the conditional props here, as it's handled by the prepare<Object|Array>InputProps otherwise
       const hidden =
@@ -812,6 +887,7 @@ export function createPrepareFormState({
       const fieldState = preparePrimitiveInputState({
         ...parent,
         comparisonValue: fieldComparisonValue,
+        baseVariantValue: fieldBaseVariantValue,
         value: fieldValue,
         schemaType: field.type as PrimitiveSchemaType,
         path: fieldPath,
@@ -1084,6 +1160,9 @@ export function createPrepareFormState({
       __unstable_computeDiff: diffProps.__unstable_computeDiff,
       changed: isChangedValue(props.value, props.comparisonValue),
       hasUpstreamVersion: diffProps.hasUpstreamVersion,
+      changedFromBaseVariant: membersChangedFromBaseVariant(members),
+      baseVariantValue: props.baseVariantValue ?? undefined,
+      hasBaseVariant: diffProps.hasBaseVariant,
       displayInlineChanges: props.displayInlineChanges,
     }
     Object.defineProperty(node, '_allMembers', {
@@ -1134,6 +1213,11 @@ export function createPrepareFormState({
         // checks for changes not only on the array itself, but also on any of its items
         changed: props.changed || members.some((m) => m.kind === 'item' && m.item.changed),
         hasUpstreamVersion: diffProps.hasUpstreamVersion,
+        changedFromBaseVariant:
+          props.changedFromBaseVariant ||
+          members.some((m) => m.kind === 'item' && m.item.changedFromBaseVariant),
+        baseVariantValue: diffProps.baseVariantValue,
+        hasBaseVariant: diffProps.hasBaseVariant,
         displayInlineChanges: props.displayInlineChanges,
       }
     },
@@ -1186,6 +1270,11 @@ export function createPrepareFormState({
         changed: props.changed || members.some((m) => m.kind === 'item' && m.item.changed),
         compareValue: diffProps.compareValue,
         hasUpstreamVersion: diffProps.hasUpstreamVersion,
+        changedFromBaseVariant:
+          props.changedFromBaseVariant ||
+          members.some((m) => m.kind === 'item' && m.item.changedFromBaseVariant),
+        baseVariantValue: diffProps.baseVariantValue,
+        hasBaseVariant: diffProps.hasBaseVariant,
         displayInlineChanges: props.displayInlineChanges,
       }
     },
@@ -1234,6 +1323,11 @@ export function createPrepareFormState({
           parent.comparisonValue.find((i) => i._key === arrayItem._key)) ||
         undefined
 
+      const baseVariantValue =
+        (Array.isArray(parent.baseVariantValue) &&
+          parent.baseVariantValue.find((i) => i._key === arrayItem._key)) ||
+        undefined
+
       const itemState = prepareObjectInputState(
         {
           schemaType: itemType,
@@ -1241,6 +1335,8 @@ export function createPrepareFormState({
           value: arrayItem,
           comparisonValue,
           changed: isChangedValue(arrayItem, comparisonValue),
+          baseVariantValue,
+          hasBaseVariant: parent.hasBaseVariant,
           path: itemPath,
           perspective: parent.perspective,
           hasUpstreamVersion: parent.hasUpstreamVersion,
@@ -1291,6 +1387,10 @@ export function createPrepareFormState({
         | string
         | boolean
         | number
+      const itemBaseVariantValue = (parent.baseVariantValue as unknown[] | undefined)?.[index] as
+        | string
+        | boolean
+        | number
       const itemLevel = parent.level + 1
 
       // Best effort attempt to make a stable key for each item in the array
@@ -1325,6 +1425,7 @@ export function createPrepareFormState({
         level: itemLevel,
         value: itemValue,
         comparisonValue: itemComparisonValue,
+        baseVariantValue: itemBaseVariantValue,
         readOnly: scopedReadOnly,
       })
 
@@ -1364,6 +1465,13 @@ export function createPrepareFormState({
         __unstable_computeDiff: diffProps.__unstable_computeDiff,
         changed: isChangedValue(props.value, props.comparisonValue),
         hasUpstreamVersion: diffProps.hasUpstreamVersion,
+        changedFromBaseVariant: isChangedFromBaseVariant(
+          props.hasBaseVariant,
+          props.value,
+          props.baseVariantValue,
+        ),
+        baseVariantValue: diffProps.baseVariantValue,
+        hasBaseVariant: diffProps.hasBaseVariant,
         displayInlineChanges: props.displayInlineChanges,
       } as PrimitiveFormNode
     },
@@ -1373,6 +1481,8 @@ export function createPrepareFormState({
     collapsedFieldSets,
     collapsedPaths,
     comparisonValue,
+    baseVariantValue,
+    hasBaseVariant,
     currentUser,
     documentValue,
     fieldGroupState,
@@ -1392,6 +1502,8 @@ export function createPrepareFormState({
       collapsedFieldSets,
       collapsedPaths,
       comparisonValue,
+      baseVariantValue,
+      hasBaseVariant,
       currentUser,
       value: documentValue,
       fieldGroupState,
@@ -1434,10 +1546,18 @@ export function prepareDiffProps<Value = unknown>({
   schemaType,
   perspective,
   hasUpstreamVersion,
+  baseVariantValue,
+  hasBaseVariant,
 }: Pick<
   FormStateOptions<unknown, Value>,
-  'comparisonValue' | 'value' | 'schemaType' | 'perspective' | 'hasUpstreamVersion'
->): Omit<NodeDiffProps<ProvenanceDiffAnnotation, Value>, 'changed'> {
+  | 'comparisonValue'
+  | 'value'
+  | 'schemaType'
+  | 'perspective'
+  | 'hasUpstreamVersion'
+  | 'baseVariantValue'
+  | 'hasBaseVariant'
+>): Omit<NodeDiffProps<ProvenanceDiffAnnotation, Value>, 'changed' | 'changedFromBaseVariant'> {
   const jsonType =
     typeof schemaType === 'object' &&
     schemaType !== null &&
@@ -1472,5 +1592,7 @@ export function prepareDiffProps<Value = unknown>({
     // TODO: Establish consistent naming.
     compareValue: comparisonValue ?? undefined,
     hasUpstreamVersion,
+    baseVariantValue: baseVariantValue ?? undefined,
+    hasBaseVariant,
   }
 }

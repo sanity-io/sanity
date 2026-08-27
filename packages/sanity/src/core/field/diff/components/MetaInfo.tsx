@@ -1,7 +1,7 @@
-import {Flex, Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 import {type ComponentType, type ReactNode} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 /** @internal */
 export interface MetaInfoProps {
@@ -21,7 +21,7 @@ export function MetaInfo(props: MetaInfoProps) {
   const {title, action, icon: Icon, children, markRemoved} = props
 
   return (
-    <Flex padding={2} align="center">
+    <Flex padding={2} alignItems="center">
       {Icon && (
         <Box padding={2}>
           <MetaText size={4} forwardedAs={markRemoved ? 'del' : 'div'}>

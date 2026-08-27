@@ -53,7 +53,7 @@ describe('Portable Text Input - ImageArrayDrag', () => {
     await expect.element(page.getByTestId('pte-block-object')).toBeVisible()
 
     // Drag the block to a different position
-    await dragAndDrop('.pt-editable [draggable="true"]', '[data-testid="text-block"]')
+    await dragAndDrop('[data-pt-editor] [draggable="true"]', '[data-testid="text-block"]')
 
     // Check that no error toast appeared (the range-out-of-bounds toast)
     await expect.element(page.getByRole('alert')).not.toBeInTheDocument()

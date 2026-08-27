@@ -1,8 +1,7 @@
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
-import {Flex} from '@sanity/ui'
 import {useVirtualizer} from '@tanstack/react-virtual'
 import {useEffect, useMemo, useRef} from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import useScheduleOperation from '../../hooks/useScheduleOperation'
@@ -52,7 +51,7 @@ const VirtualList = () => {
       </Box>
       {/* Clear completed schedules */}
       {scheduleState === 'succeeded' && (
-        <Flex justify="center" marginTop={6}>
+        <Flex justifyContent="center" marginTop={6}>
           <Button
             icon={CheckmarkCircleIcon}
             mode="ghost"

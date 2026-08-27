@@ -1,9 +1,9 @@
 'use client'
-
 import {EditIcon} from '@sanity/icons/Edit'
-import {Box, Button, Card, Dialog, Stack, Text} from '@sanity/ui'
+import {Button, Card, Dialog, Stack, Text} from '@sanity/ui'
 import {useState} from 'react'
 import {type InputProps} from 'sanity'
+import {Box} from 'ui5'
 
 export function ModalObjectInput(props: InputProps) {
   const {value, renderDefault, schemaType, readOnly} = props

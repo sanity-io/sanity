@@ -115,11 +115,12 @@
       "schedule": ["every weekday"]
     },
     {
-      "description": "Upgrade @portabletext/* packages together",
+      "description": "Upgrade @portabletext/* packages together, majors included: the editor monorepo versions its packages independently but releases them in lockstep (plugins peer-depend on the editor), so a new major line must land as one PR instead of one per major number",
       "matchPackageNames": ["@portabletext/*"],
       "dependencyDashboardApproval": false,
       "schedule": ["every weekday"],
-      "groupName": "portabletext"
+      "groupName": "portabletext",
+      "separateMajorMinor": false
     },
     {
       "description": "Group TypeScript related deps in a single PR, as they often have to update together",

@@ -1,11 +1,11 @@
 import {type SchemaType} from '@sanity/types'
-import {Badge, Card, Flex, Stack, Text} from '@sanity/ui'
-import {type ElementType, type ReactNode, useState} from 'react'
+import {Badge, Card, Stack, Text} from '@sanity/ui'
+import {type ComponentPropsWithoutRef, type ElementType, type ReactNode, useState} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
-import {DocumentStatus} from '../../../components/documentStatus/DocumentStatus'
+import {DocumentVersionsStatus} from '../../../components/documentStatus/DocumentVersionsStatus'
 import {DocumentVersionsStatusIndicator} from '../../../components/documentStatusIndicator/DocumentVersionsStatusIndicator'
 import {useTimeZone} from '../../../hooks/useTimeZone'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
@@ -17,7 +17,6 @@ import {
   SCHEDULE_ACTION_DICTIONARY,
 } from '../../constants'
 import {type Schedule} from '../../types'
-import {type PaneItemPreviewState} from '../../utils/paneItemHelpers'
 import {getLastExecuteDate} from '../../utils/scheduleUtils'
 import {EMPTY_VALIDATION_STATUS, useValidationState} from '../../utils/validationUtils'
 import {ValidateScheduleDoc} from '../validation/SchedulesValidation'
@@ -29,25 +28,25 @@ import User from './User'
 const StatusDotPlaceholder = styled(Box)`
   width: 9px;
 `
-interface Props {
+interface Props<TLink extends ElementType | undefined = undefined> {
   children?: ReactNode
   contextMenu?: ReactNode
-  linkComponent?: ElementType | keyof React.JSX.IntrinsicElements
+  linkComponent?: TLink
+  linkProps?: TLink extends ElementType ? ComponentPropsWithoutRef<TLink> : undefined
   onClick?: () => void
-  previewState?: PaneItemPreviewState
   publishedDocumentId?: string
   schedule: Schedule
   schemaType?: SchemaType
   useElementQueries?: boolean
 }
 
-const PreviewWrapper = (props: Props) => {
+function PreviewWrapper<TLink extends ElementType | undefined = undefined>(props: Props<TLink>) {
   const {
     children,
     contextMenu,
     linkComponent,
+    linkProps,
     onClick,
-    previewState,
     publishedDocumentId,
     schedule,
     schemaType,
@@ -70,18 +69,21 @@ const PreviewWrapper = (props: Props) => {
       tone={validationTone}
       style={mode === 'upsell' && schedule.state === 'scheduled' ? {opacity: 0.7} : undefined}
     >
-      <Flex align="center" gap={1} justify="space-between">
+      <Flex alignItems="center" gap={1} justifyContent="space-between">
         <Tooltip
           delay={{open: 400}}
           placement="bottom-end"
           content={
-            <DocumentStatus draft={previewState?.draft} published={previewState?.published} />
+            publishedDocumentId ? (
+              <DocumentVersionsStatus documentGroupId={publishedDocumentId} />
+            ) : null
           }
-          disabled={!previewState?.draft && !previewState?.published}
+          disabled={!publishedDocumentId}
         >
           <Card
+            {...(linkProps as object | undefined)}
             __unstable_focusRing
-            as={linkComponent ? linkComponent : undefined}
+            as={linkComponent ? (linkComponent as ElementType) : undefined}
             data-as={onClick || linkComponent ? 'a' : undefined}
             flex={1}
             onClick={onClick}
@@ -90,7 +92,12 @@ const PreviewWrapper = (props: Props) => {
             tabIndex={0}
             tone={validationTone}
           >
-            <Flex align="center" gap={3} justify="flex-start" paddingLeft={children ? 0 : [1, 2]}>
+            <Flex
+              alignItems="center"
+              gap={3}
+              justifyContent="flex-start"
+              paddingLeft={children ? 0 : [1, 2]}
+            >
               {children && <Box style={{flexBasis: 'auto', flexGrow: 1}}>{children}</Box>}
 
               {/* Badge */}
@@ -139,7 +146,7 @@ const PreviewWrapper = (props: Props) => {
                 </Box>
               )}
 
-              <Flex align="center" style={{flexShrink: 0, marginLeft: 'auto'}}>
+              <Flex alignItems="center" style={{flexShrink: 0, marginLeft: 'auto'}}>
                 {/* Avatar */}
                 <Box display={['none', 'none', 'block']} marginX={3} style={{flexShrink: 0}}>
                   <User id={schedule?.author} />
@@ -148,7 +155,7 @@ const PreviewWrapper = (props: Props) => {
                 {/* Document status */}
                 <Box display={['none', 'block']} marginX={[2, 2, 3]} style={{flexShrink: 0}}>
                   {publishedDocumentId ? (
-                    <DocumentVersionsStatus publishedDocumentId={publishedDocumentId} />
+                    <ScheduleItemStatusIndicator publishedDocumentId={publishedDocumentId} />
                   ) : (
                     <StatusDotPlaceholder />
                   )}
@@ -158,7 +165,7 @@ const PreviewWrapper = (props: Props) => {
           </Card>
         </Tooltip>
 
-        <Flex justify="center" style={{width: '38px'}}>
+        <Flex justifyContent="center" style={{width: '38px'}}>
           {/* Validation status (only displayed on upcoming schedules) */}
           {schedule.state === 'scheduled' && (
             <Box>
@@ -202,7 +209,7 @@ const PreviewWrapper = (props: Props) => {
 
 export default PreviewWrapper
 
-function DocumentVersionsStatus({publishedDocumentId}: {publishedDocumentId: string}) {
+function ScheduleItemStatusIndicator({publishedDocumentId}: {publishedDocumentId: string}) {
   const {versions} = useDocumentVersions({documentId: publishedDocumentId})
   return <DocumentVersionsStatusIndicator documentVersions={versions} />
 }

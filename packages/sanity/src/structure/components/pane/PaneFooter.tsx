@@ -1,13 +1,13 @@
-import {Box} from '@sanity/ui'
 import {type ReactNode, type RefAttributes} from 'react'
 import {LegacyLayerProvider} from 'sanity'
+import {Box, type PaddingProps} from 'ui5'
 
 import {Root, RootCard} from './PaneFooter.styles'
 import {usePane} from './usePane'
 
 interface PaneFooterProps {
   children?: ReactNode
-  padding?: number | number[]
+  padding?: PaddingProps['padding']
 }
 
 /**

@@ -16,7 +16,7 @@ import {
 } from 'sanity'
 import {DocumentChangeContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, Grid} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {TimelineError} from '../../timeline/TimelineError'
@@ -28,15 +28,6 @@ const Scroller = styled(ScrollContainer)`
   overflow: auto;
   position: relative;
   scroll-behavior: smooth;
-`
-
-const Grid = styled(Box)`
-  &:not([hidden]) {
-    display: grid;
-  }
-  grid-template-columns: 48px 1fr;
-  align-items: center;
-  gap: 0.25em;
 `
 
 export function ChangesInspector({showChanges}: {showChanges: boolean}): React.JSX.Element {
@@ -83,7 +74,12 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): React.J
   return (
     <Flex data-testid="review-changes-pane" direction="column" height="fill" overflow="hidden">
       <Box padding={3}>
-        <Grid paddingX={2} paddingBottom={2}>
+        <Grid
+          paddingX={2}
+          paddingBottom={2}
+          gridTemplateColumns="48px 1fr"
+          style={{alignItems: 'center', gap: '0.25em'}}
+        >
           <Text size={1} muted>
             {structureT('changes.from.label')}
           </Text>

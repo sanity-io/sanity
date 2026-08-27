@@ -3,10 +3,11 @@ import {CopyIcon} from '@sanity/icons/Copy'
 import {DocumentsIcon} from '@sanity/icons/Documents'
 import {UnknownIcon} from '@sanity/icons/Unknown'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback} from 'react'
 import {SanityDefaultPreview, Translate, useSchema, useTranslation} from 'sanity'
+import {Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../i18n'
@@ -29,6 +30,24 @@ type DeletionConfirmationDialogBodyProps = Required<ReferringDocuments> & {
   documentId: string
   documentType: string
   documentVersions: string[]
+}
+
+function DocumentTitle({
+  documentTitle,
+}: {
+  children?: React.ReactNode
+  documentTitle?: React.ReactNode
+}) {
+  return documentTitle
+}
+
+function StrongDocumentTitle({
+  documentTitle,
+}: {
+  children?: React.ReactNode
+  documentTitle?: React.ReactNode
+}) {
+  return <strong>{documentTitle}</strong>
 }
 
 /**
@@ -84,7 +103,8 @@ export function ConfirmDeleteDialogBody({
             i18nKey="confirm-delete-dialog.confirmation.text"
             context={action}
             values={{count: documentVersions.length}}
-            components={{DocumentTitle: () => <strong>{documentTitle}</strong>}}
+            components={{DocumentTitle: StrongDocumentTitle}}
+            componentProps={{documentTitle}}
           />
         </Text>
         {action === 'delete' && (
@@ -124,11 +144,12 @@ export function ConfirmDeleteDialogBody({
             <Text aria-hidden="true" size={1}>
               <WarningOutlineIcon />
             </Text>
-            <Box flex={1} marginLeft={3}>
+            <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
               <Text size={1}>
                 <Translate
                   i18nKey="confirm-delete-dialog.referring-document-count.text"
-                  components={{DocumentTitle: () => documentTitle}}
+                  components={{DocumentTitle}}
+                  componentProps={{documentTitle}}
                   t={t}
                   values={{count: totalCount}}
                 />
@@ -138,13 +159,14 @@ export function ConfirmDeleteDialogBody({
         </Card>
       </div>
 
-      <Box flex="none">
+      <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
         <Text size={1}>
           <Translate
             i18nKey="confirm-delete-dialog.referring-documents-descriptor.text"
             t={t}
             context={action}
-            components={{DocumentTitle: () => documentTitle}}
+            components={{DocumentTitle}}
+            componentProps={{documentTitle}}
           />
         </Text>
       </Box>
@@ -284,13 +306,14 @@ export function ConfirmDeleteDialogBody({
           )}
         </Flex>
       </Card>
-      <Box flex="none">
+      <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
         <Text size={1}>
           <Translate
             i18nKey="confirm-delete-dialog.referential-integrity-disclaimer.text"
             t={t}
             context={action}
-            components={{DocumentTitle: () => documentTitle}}
+            components={{DocumentTitle}}
+            componentProps={{documentTitle}}
           />
         </Text>
       </Box>

@@ -10,7 +10,6 @@ import * as PathUtils from '@sanity/util/paths'
 import {type ComponentProps, useCallback, useMemo, type RefAttributes} from 'react'
 import {combineLatest, from, of, throwError} from 'rxjs'
 import {catchError, map, mergeMap, switchMap} from 'rxjs/operators'
-import {useEffectEvent} from 'use-effect-event'
 
 import {useSchema} from '../../../../hooks/useSchema'
 import {usePerspective} from '../../../../perspective/usePerspective'
@@ -93,7 +92,9 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
   const disableNew = inheritedOptions.disableNew ?? schemaType.options?.disableNew === true
   const getClient = source.getClient
 
-  const handleSearch = useEffectEvent((searchString: string) =>
+  // Plain function: ReferenceInput reads onSearch via useObservableEvent (latest each call).
+  // oxlint's react-hooks/rules-of-hooks flags passing a useEffectEvent result as a prop.
+  const handleSearch = (searchString: string) =>
     from(
       resolveUserDefinedFilter({
         options: schemaType.options,
@@ -174,8 +175,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
         }
         return throwError(() => err)
       }),
-    ),
-  )
+    )
 
   const template = props.value?._strengthenOnPublish?.template
   const EditReferenceLink = useMemo(
@@ -267,12 +267,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
   return (
     <ReferenceInput
       {...props}
-      onSearch={
-        // TODO(oxlint): remove this suppression in a follow-up once useEffectEvent support is fixed
-        // oxlint-disable-next-line react/rule-suppression -- pre-existing violation, to be fixed in a follow-up
-        // oxlint-disable-next-line react-hooks/rules-of-hooks
-        handleSearch
-      }
+      onSearch={handleSearch}
       liveEdit={isDocumentLiveEdit}
       getReferenceInfo={getReferenceInfo}
       selectedState={selectedState}

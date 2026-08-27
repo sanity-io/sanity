@@ -147,4 +147,3 @@ export const RouteScope = function RouteScope(props: RouteScopeProps): React.JSX
 
   return <RouterContext.Provider value={childRouter}>{children}</RouterContext.Provider>
 }
-RouteScope.displayName = 'RouteScope'

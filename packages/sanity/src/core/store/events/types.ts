@@ -338,7 +338,9 @@ export interface PublishDocumentVersionEvent extends BaseEvent {
   contributors?: string[]
 
   /**
-   * This is added client side to enhance the UI.
+   * @deprecated No longer populated by the events store — resolve the release from the
+   * releases store (`useAllReleases`) using `event.releaseId` instead. Will be removed in the
+   * next major.
    */
   release?: ReleaseDocument | {_id: string; metadata?: undefined}
 

@@ -1,6 +1,7 @@
 import {RemoveIcon} from '@sanity/icons/Remove'
-import {Box, Card, Flex, Text, type CardTone} from '@sanity/ui'
+import {Card, Text, type CardTone} from '@sanity/ui'
 import {type ReactNode} from 'react'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {AnimatedTextWidth} from '../../../perspective/navbar/AnimatedTextWidth'
@@ -37,12 +38,12 @@ export function PerspectiveFilter({
   label,
 }: PerspectiveFilterProps): React.JSX.Element {
   return (
-    <Flex align="center" data-ui="PerspectiveFilter">
+    <Flex alignItems="center" data-ui="PerspectiveFilter">
       <Box paddingX={2}>
         <Text size={1}>{prefix}</Text>
       </Box>
       <Card tone={tone} radius={2} border>
-        <Flex align="center">
+        <Flex alignItems="center">
           {label ? <AnimatedTextWidth text={label}>{children}</AnimatedTextWidth> : children}
           {onRemove && removeLabel ? (
             <>

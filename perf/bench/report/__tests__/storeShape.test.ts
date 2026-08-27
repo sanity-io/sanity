@@ -111,7 +111,7 @@ function assertKeyedArrayItems(value: unknown, path: string): void {
 }
 
 describe('toStorableRun', () => {
-  it('produces no directly nested arrays (matches the metrics-studio schema)', () => {
+  it('produces no directly nested arrays (matches the Studio Radar schema)', () => {
     assertNoNestedArrays(toStorableRun(RUN), 'run')
   })
 
@@ -144,5 +144,24 @@ describe('toStorableRun', () => {
     const before = JSON.parse(JSON.stringify(RUN))
     toStorableRun(RUN)
     expect(RUN).toEqual(before)
+  })
+
+  it('adds a weak gitCommit reference for a full sha', () => {
+    const sha = 'a'.repeat(40)
+    const stored = toStorableRun({...RUN, git: {...RUN.git, sha}})
+    expect(stored.git.commit).toEqual({
+      _type: 'reference',
+      _ref: `gitCommit-${sha}`,
+      _weak: true,
+    })
+    expect(stored.git.sha).toBe(sha)
+  })
+
+  it('omits the commit reference when the sha is not a full sha', () => {
+    // RUN's sha is 16 chars; collect.ts also emits 'unknown' outside a repo
+    expect(toStorableRun(RUN).git).not.toHaveProperty('commit')
+    expect(toStorableRun({...RUN, git: {...RUN.git, sha: 'unknown'}}).git).not.toHaveProperty(
+      'commit',
+    )
   })
 })

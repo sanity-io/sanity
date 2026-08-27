@@ -86,7 +86,6 @@ const CommentRangeDecoration = memo(function CommentRangeDecoration(
     </CommentInlineHighlightSpan>
   )
 })
-CommentRangeDecoration.displayName = 'Memo(CommentRangeDecoration)'
 
 interface BuildRangeDecorationsProps {
   comments: CommentDocument[]

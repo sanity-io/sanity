@@ -464,4 +464,3 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     </PaneContent>
   )
 }
-DocumentPanel.displayName = 'DocumentPanel'

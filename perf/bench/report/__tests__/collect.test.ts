@@ -1,4 +1,5 @@
 // @vitest-environment node
+import os from 'node:os'
 import process from 'node:process'
 
 import {afterEach, beforeEach, describe, expect, it} from 'vitest'
@@ -15,6 +16,11 @@ const ENV_KEYS = [
   'BENCH_MERGE_BASE',
   'BENCH_GIT_SHA',
   'BENCH_GIT_COMMITTED_AT',
+  'BENCH_TRIGGER',
+  'BENCH_RELEASE_TAG',
+  'GITHUB_EVENT_NAME',
+  'ImageOS',
+  'ImageVersion',
 ] as const
 let savedEnv: Record<string, string | undefined>
 
@@ -41,7 +47,48 @@ function metadata() {
   })
 }
 
+/** The stored-to-metrics shape: only absolute-mode runs reach the dashboards. */
+function absoluteMetadata() {
+  return collectRunMetadata({
+    mode: 'absolute',
+    calibrationMs: 10,
+    cpuThrottleRate: 4,
+    seed: 1,
+    startedAt: '2026-07-10T05:00:00.000Z',
+  })
+}
+
 describe('collectRunMetadata', () => {
+  it('records producer metadata: cpu model, runner image, browser version', () => {
+    process.env.ImageOS = 'ubuntu24'
+    process.env.ImageVersion = '20260810.1.0'
+    const runner = collectRunMetadata({
+      mode: 'ab',
+      calibrationMs: 10,
+      cpuThrottleRate: 4,
+      seed: 1,
+      startedAt: '2026-07-10T05:00:00.000Z',
+      browserVersion: '140.0.7339.16',
+    }).runner
+    expect(runner).toMatchObject({
+      imageOs: 'ubuntu24',
+      imageVersion: '20260810.1.0',
+      browserVersion: '140.0.7339.16',
+    })
+    // Machine-dependent — assert against the same source the code reads so
+    // the test is exact everywhere Node reports a model at all
+    const expectedModel = os.cpus()[0]?.model.trim()
+    if (expectedModel) expect(runner.cpuModel).toBe(expectedModel)
+    else expect(runner.cpuModel).toBeUndefined()
+  })
+
+  it('omits runner image and browser fields when not provided', () => {
+    const runner = metadata().runner
+    expect(runner.imageOs).toBeUndefined()
+    expect(runner.imageVersion).toBeUndefined()
+    expect(runner.browserVersion).toBeUndefined()
+  })
+
   it('extracts the PR number from GITHUB_REF', () => {
     process.env.GITHUB_SHA = 'abc'
     process.env.GITHUB_REF = 'refs/pull/13442/merge'
@@ -92,6 +139,76 @@ describe('collectRunMetadata', () => {
     // poison the trend axis ordering/filtering built on this field
     process.env.BENCH_GIT_COMMITTED_AT = 'not-a-date'
     expect(metadata().git.committedAt).toBeUndefined()
+  })
+
+  it('records a release run and the tag it measured', () => {
+    process.env.BENCH_TRIGGER = 'release'
+    process.env.BENCH_RELEASE_TAG = 'v6.10.1'
+    expect(metadata()).toMatchObject({trigger: 'release', releaseTag: 'v6.10.1'})
+  })
+
+  // A release run is dispatched at its tag, so GITHUB_REF_NAME is the tag name.
+  // The measured commit is a main commit, and the dashboards group runs into
+  // per-branch lines defaulting to main — filing it under the tag would drop the
+  // run out of the series it belongs to.
+  it('files a release run on main, not on its tag ref', () => {
+    process.env.BENCH_TRIGGER = 'release'
+    process.env.BENCH_RELEASE_TAG = 'v6.10.1'
+    process.env.GITHUB_REF_NAME = 'v6.10.1'
+    expect(metadata().git.branch).toBe('main')
+  })
+
+  // ...but nothing else is rewritten: a PR or cron run keeps the ref it ran on
+  it('leaves the branch alone for non-release runs', () => {
+    process.env.GITHUB_REF_NAME = 'some-branch'
+    expect(metadata().git.branch).toBe('some-branch')
+    process.env.GITHUB_HEAD_REF = 'pr-branch'
+    expect(metadata().git.branch).toBe('pr-branch')
+  })
+
+  // A tag on a non-release run would assert that the run measured that release,
+  // which is the false attribution the field exists to remove
+  it('keeps the release tag only on release runs', () => {
+    process.env.BENCH_TRIGGER = 'cron'
+    process.env.BENCH_RELEASE_TAG = 'v6.10.1'
+    expect(metadata().releaseTag).toBeUndefined()
+  })
+
+  it('infers cron for the daily schedule', () => {
+    process.env.GITHUB_EVENT_NAME = 'schedule'
+    expect(metadata().trigger).toBe('cron')
+  })
+
+  // The daily cron predates this field; documents it wrote have no trigger and
+  // consumers read them as cron, so the inference must agree with that
+  it('infers pr, backfill and dispatch from the run shape', () => {
+    process.env.GITHUB_REF = 'refs/pull/14234/merge'
+    expect(metadata().trigger).toBe('pr')
+    delete process.env.GITHUB_REF
+
+    // An absolute-mode dispatch measuring a historical commit is a backfill
+    process.env.BENCH_GIT_SHA = 'a'.repeat(40)
+    expect(absoluteMetadata().trigger).toBe('backfill')
+    delete process.env.BENCH_GIT_SHA
+
+    expect(metadata().trigger).toBe('dispatch')
+  })
+
+  // An A/B dispatch also sets BENCH_GIT_SHA (to ab_to), but it compares two
+  // commits rather than repairing a hole in the series — calling it a backfill
+  // would misdescribe it. Harmless today (consumers filter mode == 'absolute'),
+  // but the provenance should still be honest.
+  it('does not call an A/B dispatch a backfill', () => {
+    process.env.BENCH_GIT_SHA = 'a'.repeat(40)
+    expect(metadata().trigger).toBe('dispatch')
+  })
+
+  // A typo in a workflow edit must not invent a trigger kind that consumers
+  // then filter on — fall back to inference instead of storing the garbage
+  it('ignores an unrecognized declared trigger', () => {
+    process.env.BENCH_TRIGGER = 'relase'
+    process.env.GITHUB_EVENT_NAME = 'schedule'
+    expect(metadata().trigger).toBe('cron')
   })
 })
 

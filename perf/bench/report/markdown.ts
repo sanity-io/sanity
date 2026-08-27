@@ -37,8 +37,8 @@ export interface MissingScenario {
   kind: ScenarioReport['kind']
 }
 
-/** Deployed metrics studio; the Trends tool reads branches/range from the URL. */
-const DASHBOARD_BASE_URL = 'https://studio-metrics.sanity.dev'
+/** Deployed Studio Radar; the Trends tool reads branches/range from the URL. */
+const DASHBOARD_BASE_URL = 'https://radar.sanity.dev'
 
 /**
  * Deep link to the Trends dashboard with this run's branch preselected

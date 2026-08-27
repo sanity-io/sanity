@@ -23,6 +23,7 @@ describe('getOrCreateDocumentVersionsObservable', () => {
         of({
           _id: 'drafts.article-1',
           _rev: 'rev-1',
+          _type: 'article',
           _createdAt: '2024-01-01T00:00:00.000Z',
           _updatedAt: '2024-01-02T00:00:00.000Z',
           _system: {
@@ -64,6 +65,7 @@ describe('getOrCreateDocumentVersionsObservable', () => {
           {
             _id: 'drafts.article-1',
             _rev: 'rev-1',
+            _type: 'article',
             _createdAt: '2024-01-01T00:00:00.000Z',
             _updatedAt: '2024-01-02T00:00:00.000Z',
             _system: {
@@ -91,6 +93,7 @@ function createSystemlessPreviewStore(versionIds: string[]) {
       of({
         _id: '_id' in value ? value._id : '',
         _rev: '',
+        _type: 'article',
         _createdAt: '',
         _updatedAt: '',
       }),

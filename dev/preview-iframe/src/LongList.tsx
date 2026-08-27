@@ -1,4 +1,5 @@
-import {Box, Card, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {Box} from 'ui5'
 
 import {useQuery} from './loader'
 

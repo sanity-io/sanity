@@ -1,7 +1,8 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {Card, Flex} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
@@ -55,7 +56,7 @@ export function VariantsStudioNavbar(props: NavbarProps) {
   }, [setVariant])
 
   return (
-    <Flex direction="column">
+    <Flex flexDirection="column">
       {props.renderDefault(props)}
       <Card
         tone={hasVariantSelection ? 'suggest' : 'neutral'}
@@ -63,7 +64,7 @@ export function VariantsStudioNavbar(props: NavbarProps) {
         paddingX={3}
         borderBottom
       >
-        <Flex align="center" justify="center" gap={2} wrap="wrap">
+        <Flex alignItems="center" justifyContent="center" gap={2} flexWrap="wrap">
           <PerspectiveFilter
             prefix={t('navbar.version')}
             tone={getReleaseTone(selectedPerspective)}

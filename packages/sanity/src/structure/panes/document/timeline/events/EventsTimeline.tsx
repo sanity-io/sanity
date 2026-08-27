@@ -264,5 +264,3 @@ export const EventsTimeline = ({
     </Root>
   )
 }
-
-EventsTimeline.displayName = 'EventsTimeline'

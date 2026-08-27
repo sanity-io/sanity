@@ -1,9 +1,9 @@
 import {at, set} from '@sanity/mutate'
 import {applyPatches} from '@sanity/mutate/_unstable_apply'
-import {Card, Flex} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {type FormEvent, useCallback, useState} from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
@@ -102,7 +102,7 @@ export function VariantDialog(props: VariantDialogProps): React.JSX.Element {
               value={variant}
             />
           </Box>
-          <Flex gap={2} justify="flex-end" paddingTop={5}>
+          <Flex gap={2} justifyContent="flex-end" paddingTop={5}>
             {renderCancelButton && (
               <Button
                 disabled={isSubmitting}

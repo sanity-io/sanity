@@ -218,13 +218,13 @@ describe('renderMarkdownReport', () => {
 
   it('deep-links to the dashboard with the PR branch and main preselected', () => {
     expect(renderMarkdownReport(RUN)).toContain(
-      'https://studio-metrics.sanity.dev/trends?branches=main%2Cperf-bench',
+      'https://radar.sanity.dev/trends?branches=main%2Cperf-bench',
     )
   })
 
   it('omits the dashboard link for main-branch runs (nothing to compare)', () => {
     const onMain: BenchRunDocument = {...RUN, git: {...RUN.git, branch: 'main'}}
-    expect(renderMarkdownReport(onMain)).not.toContain('studio-metrics.sanity.dev')
+    expect(renderMarkdownReport(onMain)).not.toContain('radar.sanity.dev')
   })
 
   it('calls out scenarios whose shards delivered no results', () => {
@@ -293,6 +293,23 @@ describe('mergeShards', () => {
     expect(merged.scenarios.at(-1)?.runner).toEqual({calibrationMs: 19})
     // The document-level runner block stays (first shard's) for compatibility
     expect(merged.runner).toEqual(RUN.runner)
+  })
+
+  it('stamps every scenario with its own shard cpu model', () => {
+    // The CPU model is what stops a scenario being attributed to the first
+    // shard's machine — the calibration assertion above would still pass if
+    // this propagation were dropped.
+    const merged = mergeShards([
+      {...RUN, runner: {...RUN.runner, cpuModel: 'AMD EPYC 7763'}},
+      {...shardTwo, runner: {...shardTwo.runner, cpuModel: 'Intel Xeon 8370C'}},
+    ])
+    for (const scenario of merged.scenarios.slice(0, -1)) {
+      expect(scenario.runner?.cpuModel).toBe('AMD EPYC 7763')
+    }
+    expect(merged.scenarios.at(-1)?.runner).toEqual({
+      calibrationMs: 19,
+      cpuModel: 'Intel Xeon 8370C',
+    })
   })
 
   it('fails loudly on duplicate scenario reports (they would collide as stored _keys)', () => {

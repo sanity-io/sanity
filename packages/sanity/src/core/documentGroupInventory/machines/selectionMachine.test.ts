@@ -18,6 +18,7 @@ function variant(id: string, name: string): Variant {
       _rev: 'rev',
       _createdAt: '2026-01-01T00:00:00.000Z',
       _updatedAt: '2026-01-01T00:00:00.000Z',
+      _type: 'article',
       _system: isDraftId(id) ? {bundleId: 'drafts', group} : {group},
     },
   }
@@ -45,6 +46,7 @@ function createSelectionActor({
       // covered in documentGroupInventoryMachine.test.ts.
       actions: {notifySelectionChanged: () => {}},
     }),
+    {input: undefined},
   )
   actor.start()
   if (variants) {
@@ -141,7 +143,7 @@ describe('selectionMachine', () => {
 
     selection.send({type: 'selection.add', variantId: 'drafts.foo'})
     selection.send({type: 'selection.lock'})
-    expect(selection.getSnapshot().matches('readonly')).toBe(true)
+    expect(selection.getSnapshot().matches('locked')).toBe(true)
 
     // Selection mutations are dropped while locked.
     selection.send({type: 'selection.add', variantId: 'foo'})
