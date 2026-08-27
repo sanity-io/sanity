@@ -1,8 +1,8 @@
 import {describe, expect, it} from 'vitest'
 
+import {TABLE_ROW_ACTIONS_WIDTH} from '../../components/Table/Table'
 import {
   getReleasesOverviewMinContentWidth,
-  RELEASES_OVERVIEW_ROW_ACTIONS_WIDTH,
   RELEASES_OVERVIEW_TITLE_COLUMN_MIN_WIDTH,
   releasesOverviewColumnDefs,
 } from '../ReleasesOverviewColumnDefs'
@@ -27,12 +27,7 @@ describe('releasesOverviewColumnDefs', () => {
     )
 
     expect(minContentWidth).toBe(
-      RELEASES_OVERVIEW_TITLE_COLUMN_MIN_WIDTH +
-        280 +
-        150 +
-        40 +
-        120 +
-        RELEASES_OVERVIEW_ROW_ACTIONS_WIDTH,
+      RELEASES_OVERVIEW_TITLE_COLUMN_MIN_WIDTH + 280 + 150 + 40 + 120 + TABLE_ROW_ACTIONS_WIDTH,
     )
     expect(minContentWidth).toBeLessThan(1000)
   })

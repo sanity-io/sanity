@@ -12,6 +12,7 @@ import {RelativeTime} from '../../../components/RelativeTime'
 import {getIsScheduledDateInPast} from '../../util/getIsScheduledDateInPast'
 import {getPublishDateFromRelease} from '../../util/util'
 import {ReleaseTime} from '../components/ReleaseTime'
+import {TABLE_ROW_ACTIONS_WIDTH} from '../components/Table/Table'
 import {Headers} from '../components/Table/TableHeader'
 import {type Column} from '../components/Table/types'
 import {ReleaseColumnValidationLoading} from './columnCells/ReleaseColumnValidationLoading'
@@ -26,8 +27,6 @@ const RELEASES_OVERVIEW_TITLE_COLUMN_STYLE = {
   minWidth: RELEASES_OVERVIEW_TITLE_COLUMN_MIN_WIDTH,
 } as const
 
-export const RELEASES_OVERVIEW_ROW_ACTIONS_WIDTH = 50
-
 export function getReleasesOverviewMinContentWidth(columns: Column<TableRelease>[]): number {
   const columnWidth = columns
     .filter((column) => !column.hidden)
@@ -37,7 +36,7 @@ export function getReleasesOverviewMinContentWidth(columns: Column<TableRelease>
       return sum + (typeof minWidth === 'number' ? minWidth : 0)
     }, 0)
 
-  return columnWidth + RELEASES_OVERVIEW_ROW_ACTIONS_WIDTH
+  return columnWidth + TABLE_ROW_ACTIONS_WIDTH
 }
 
 const enableColumnFormMode =

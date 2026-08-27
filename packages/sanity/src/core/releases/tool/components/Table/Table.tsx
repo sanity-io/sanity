@@ -48,6 +48,8 @@ export interface TableProps<TableData, AdditionalRowTableData> {
 const ITEM_HEIGHT = 59
 const LOADING_ROW_COUNT = 3
 
+export const TABLE_ROW_ACTIONS_WIDTH = 50
+
 const TableInner = <TableData, AdditionalRowTableData>({
   columnDefs,
   data,
@@ -114,32 +116,22 @@ const TableInner = <TableData, AdditionalRowTableData>({
       id: 'actions',
       sorting: false,
       // Header and body are independent flexboxes — keep this gutter the same width in both.
-      width: 50,
-      header: ({headerProps: {id}}) => (
-        <Flex
-          as="th"
-          id={id}
-          paddingY={3}
-          paddingX={3}
-          style={{
-            width: '50px',
-          }}
-        >
+      width: TABLE_ROW_ACTIONS_WIDTH,
+      header: ({headerProps}) => (
+        <Flex {...headerProps} paddingY={3} paddingX={3}>
           <Text muted size={1} weight="medium">
             &nbsp;
           </Text>
         </Flex>
       ),
-      cell: ({datum, cellProps: {id}}) => (
+      cell: ({datum, cellProps}) => (
         <Flex
-          as="td"
-          id={id}
+          {...cellProps}
           alignItems="center"
           flexBasis="auto"
           flexGrow={0}
           flexShrink={0}
           padding={3}
-          style={{width: '50px'}}
         >
           {(!datum.isLoading && rowActions?.({datum})) || <Box style={{width: '25px'}} />}
         </Flex>
