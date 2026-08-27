@@ -2,6 +2,7 @@ import {useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {type MouseEvent, type RefObject, useCallback, useMemo, useRef, useState} from 'react'
 
+import {useSchema} from '../../hooks/useSchema'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {type TargetPerspective} from '../../perspective/types'
 import {useSetPerspective} from '../../perspective/useSetPerspective'
@@ -162,6 +163,7 @@ export function useVersionContextMenu(
   }
 
   const {createVariantDocument} = useVariantDocumentOperations()
+  const liveEdit = Boolean(useSchema().get(documentType)?.liveEdit)
 
   const stubVariantRef = documentVersionInfoStub?._system.variant?._ref
   const variantRef = isVariantId(stubVariantRef) ? stubVariantRef : undefined
@@ -250,6 +252,7 @@ export function useVersionContextMenu(
             documentGroupId,
             variant: {_id: variantRef},
             selectedPerspective: perspective,
+            ...(liveEdit ? {liveEdit: true} : {}),
           })
         } else {
           // Skip navigation here — the hook navigates once after creation so we
@@ -292,6 +295,7 @@ export function useVersionContextMenu(
       toast,
       createVariantDocument,
       documentVersionInfoStub,
+      liveEdit,
     ],
   )
 

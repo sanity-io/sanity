@@ -4,6 +4,7 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {Flex, Text} from '@sanity/ui'
 import {type ComponentType, useCallback, useEffect, useState} from 'react'
 import {
+  type DocumentPairTarget,
   getDraftId,
   getPublishedId,
   type ObjectSchemaType,
@@ -27,6 +28,15 @@ interface ObsoleteDraftBannerProps {
    * Whether the user is blocked from editing the document while an obsolete draft exists.
    */
   isEditBlocking?: boolean
+  /**
+   * When the obsolete draft is a variant-scoped document, operations must target that version
+   * rather than the base draft/published pair.
+   */
+  pairTarget?: DocumentPairTarget | string
+  /** Document id to compare as the draft side. Defaults to `drafts.<displayed._id>`. */
+  compareDraftId?: string
+  /** Document id to compare as the published side. Defaults to the published id of `displayed`. */
+  comparePublishedId?: string
 }
 
 export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
@@ -35,15 +45,22 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
   schemaType,
   i18nKey,
   isEditBlocking,
+  pairTarget,
+  compareDraftId,
+  comparePublishedId,
 }) => {
   const {t} = useTranslation(structureLocaleNamespace)
   const [isPublishing, setPublishing] = useState(false)
   const [isDiscarding, setDiscarding] = useState(false)
   const telemetry = useTelemetry()
 
-  // No `getTargetScopeId(useTargetDocumentState())` here: resolving an obsolete draft deliberately operates on
-  // the draft/published pair, so no version scope applies.
-  const {publish, discardChanges} = useDocumentOperation(documentId, displayed?._type || '')
+  // Variant leftover drafts pass `pairTarget` so publish/discard hit the variant draft. Base
+  // live-edit leftovers omit it and operate on the draft/published pair.
+  const {publish, discardChanges} = useDocumentOperation(
+    documentId,
+    displayed?._type || '',
+    pairTarget,
+  )
 
   const handlePublish = useCallback(() => {
     publish.execute()
@@ -75,14 +92,14 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
       mode: 'version',
       previousDocument: {
         type: schemaType.name,
-        id: getPublishedId(displayed?._id),
+        id: comparePublishedId ?? getPublishedId(displayed?._id),
       },
       nextDocument: {
         type: schemaType.name,
-        id: getDraftId(displayed?._id),
+        id: compareDraftId ?? getDraftId(displayed?._id),
       },
     })
-  }, [diffViewRouter, displayed?._id, schemaType.name])
+  }, [diffViewRouter, displayed?._id, schemaType.name, compareDraftId, comparePublishedId])
 
   return (
     <Banner

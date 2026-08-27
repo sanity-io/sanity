@@ -176,6 +176,51 @@ describe('createVariantScopedDocument', () => {
     )
   })
 
+  it('omits bundleId for live-edit creates from the drafts perspective', async () => {
+    const client = mockClient()
+
+    await createVariantScopedDocument({
+      client: client as unknown as SanityClient,
+      baseId: 'article-1',
+      documentGroupId: 'article-1',
+      variant: VARIANT,
+      selectedPerspective: 'drafts',
+      liveEdit: true,
+    })
+
+    expect(client.action.mock.calls[0][0]).toMatchObject({
+      actionType: 'sanity.action.document.variant.create',
+      publishedId: 'article-1',
+      variantId: 'Ab12cd34',
+      baseId: 'article-1',
+    })
+    expect(client.action.mock.calls[0][0]).not.toHaveProperty('bundleId')
+  })
+
+  it('still passes release bundleId for live-edit creates from a release', async () => {
+    const client = mockClient()
+
+    await createVariantScopedDocument({
+      client: client as unknown as SanityClient,
+      baseId: 'article-1',
+      documentGroupId: 'article-1',
+      variant: VARIANT,
+      selectedPerspective: releaseDocument,
+      liveEdit: true,
+    })
+
+    expect(client.action).toHaveBeenCalledWith(
+      {
+        actionType: 'sanity.action.document.variant.create',
+        publishedId: 'article-1',
+        variantId: 'Ab12cd34',
+        baseId: 'article-1',
+        bundleId: 'rSummer123',
+      },
+      {tag: 'variants.document.create'},
+    )
+  })
+
   it('forwards the abort signal to the action request when creating from a base document', async () => {
     const client = mockClient()
     const controller = new AbortController()

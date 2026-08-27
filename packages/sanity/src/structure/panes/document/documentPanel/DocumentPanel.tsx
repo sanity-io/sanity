@@ -2,6 +2,7 @@ import {BoundaryElementProvider, Flex, PortalProvider, usePortal} from '@sanity/
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
+  getTargetSiblings,
   getVersionFromId,
   isCardinalityOneRelease,
   isDraftId,
@@ -327,11 +328,26 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       )
     }
 
+    const siblings = getTargetSiblings(targetDocumentState)
+
     const displayedHasObsoleteDraft = hasObsoleteDraft({
-      editState,
+      ready: targetDocumentState.status !== 'resolving',
+      draftExists: Boolean(siblings?.draft),
       workspace,
       schemaType,
     })
+
+    const obsoleteDraftPairTarget =
+      siblings?.draft?._system.scopeId &&
+      (targetDocumentState.status === 'ready' ||
+        targetDocumentState.status === 'variant-missing') &&
+      targetDocumentState.variant
+        ? {
+            kind: 'variant' as const,
+            scopeId: siblings.draft._system.scopeId,
+            variantId: targetDocumentState.variant._id,
+          }
+        : undefined
 
     if (activeView.type === 'form' && !selectedReleaseId && displayedHasObsoleteDraft.result) {
       if (displayedHasObsoleteDraft.reason === 'DRAFT_MODEL_INACTIVE') {
@@ -353,6 +369,9 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
             schemaType={schemaType}
             i18nKey="banners.live-edit-draft-banner.text"
             isEditBlocking
+            pairTarget={obsoleteDraftPairTarget}
+            compareDraftId={siblings?.draft?._id}
+            comparePublishedId={siblings?.published?._id}
           />
         )
       }

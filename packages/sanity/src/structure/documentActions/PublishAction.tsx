@@ -219,6 +219,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     telemetry,
     draft?._createdAt,
     publishedInfo,
+    setPublishScheduled,
     syncState.isSyncing,
     validationStatus.isValidating,
     validationStatus.revision,

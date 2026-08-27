@@ -365,6 +365,32 @@ describe('DocumentNotInVariantBanner', () => {
       })
     })
 
+    it('marks live-edit creates so they land as published variants', async () => {
+      mockUseDocumentPane.mockReturnValue({
+        documentId: DOCUMENT_ID,
+        value: existingDocumentValue,
+        schemaType: {liveEdit: true},
+      } as unknown as ReturnType<typeof useDocumentPane>)
+
+      await renderBanner()
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', {name: 'Create variant'})).toBeInTheDocument()
+      })
+      await userEvent.click(screen.getByRole('button', {name: 'Create variant'}))
+
+      await waitFor(() => {
+        expect(createVariantDocument).toHaveBeenCalledWith({
+          baseId: existingDocumentValue._id,
+          ifBaseRevisionId: existingDocumentValue._rev,
+          documentGroupId: DOCUMENT_ID,
+          variant: variantAlphaAudience,
+          selectedPerspective: 'drafts',
+          liveEdit: true,
+        })
+      })
+    })
+
     it('prefers a drafts variant sibling as the create base when one exists', async () => {
       const siblingDraft = versionStub({
         _id: 'versions.alpha-scope.article-1',

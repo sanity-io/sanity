@@ -13,10 +13,13 @@ import {getBundleIdFromPerspective} from './getBundleIdFromPerspective'
 
 function getSupportedBundleId(
   selectedPerspective: TargetPerspective,
+  liveEdit?: boolean,
 ): Exclude<PerspectiveBundle, 'published'> | undefined {
   const bundleId = getBundleIdFromPerspective(selectedPerspective)
 
-  if (bundleId === 'published') {
+  // Live-edit documents have no drafts sibling: create the variant-of-published even when the
+  // studio is pinned to drafts, matching how a live-edit base document is created.
+  if (bundleId === 'published' || (liveEdit && bundleId === 'drafts')) {
     return undefined
   }
 
@@ -28,6 +31,11 @@ type BaseOptions = {
   variant: Pick<SystemVariant, '_id'>
   selectedPerspective: TargetPerspective
   documentGroupId: string
+  /**
+   * When true, system-bundle creates (`drafts` / `published`) omit `bundleId` so the new document
+   * is the variant-of-published. Release perspectives still send the release id.
+   */
+  liveEdit?: boolean
   signal?: AbortSignal
 }
 
@@ -55,10 +63,11 @@ export async function createVariantScopedDocument({
   variant,
   selectedPerspective,
   documentGroupId,
+  liveEdit,
   signal,
   ...options
 }: CreateVariantScopedDocumentOptions): Promise<SingleActionResult> {
-  const bundleId = getSupportedBundleId(selectedPerspective)
+  const bundleId = getSupportedBundleId(selectedPerspective, liveEdit)
 
   const action: Pick<CreateVariantAction, 'actionType' | 'variantId' | 'publishedId' | 'bundleId'> =
     {

@@ -265,6 +265,8 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                         timeout({first: 30_000}),
                       )
 
+                    const isLiveEdit = Boolean(schema?.liveEdit)
+
                     const targetPair = await firstValueFrom(readTargetPair)
                     const baseVariant =
                       editStateSlot === 'draft'
@@ -280,6 +282,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                         },
                         variant: input.variantDefinition,
                         selectedPerspective: input.bundle,
+                        ...(isLiveEdit ? {liveEdit: true} : {}),
                         signal,
                       })
                     }
@@ -291,6 +294,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                         baseId: baseVariant._id,
                         variant: input.variantDefinition,
                         selectedPerspective: input.bundle,
+                        ...(isLiveEdit ? {liveEdit: true} : {}),
                         signal,
                       })
                     }
@@ -315,6 +319,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
           documentType,
           documentId,
           documentStore.pair,
+          schema,
         ],
       ),
     },

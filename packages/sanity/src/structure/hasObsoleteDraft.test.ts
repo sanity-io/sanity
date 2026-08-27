@@ -1,15 +1,6 @@
-import {type SanityDocument} from '@sanity/types'
 import {expect, it} from 'vitest'
 
 import {type Context, hasObsoleteDraft} from './hasObsoleteDraft'
-
-const stubDocument: SanityDocument = {
-  _id: 'x',
-  _rev: 'x',
-  _type: 'x',
-  _createdAt: '2025-06-23',
-  _updatedAt: '2025-06-23',
-}
 
 const workspaceWithDraftModelActive: Context['workspace'] = {
   document: {
@@ -30,12 +21,8 @@ const workspaceWithDraftModelInactive: Context['workspace'] = {
 it('produces `undefined` result while the state is indeterminate', () => {
   expect(
     hasObsoleteDraft({
-      editState: {
-        ready: false,
-        draft: null,
-        version: null,
-        published: null,
-      },
+      ready: false,
+      draftExists: false,
       workspace: workspaceWithDraftModelActive,
       schemaType: {},
     }).result,
@@ -45,27 +32,8 @@ it('produces `undefined` result while the state is indeterminate', () => {
 it('produces `false` result if there is no draft', () => {
   expect(
     hasObsoleteDraft({
-      editState: {
-        ready: true,
-        draft: null,
-        version: null,
-        published: null,
-      },
-      workspace: workspaceWithDraftModelActive,
-      schemaType: {},
-    }),
-  ).toEqual({
-    result: false,
-  })
-
-  expect(
-    hasObsoleteDraft({
-      editState: {
-        ready: true,
-        draft: null,
-        version: null,
-        published: stubDocument,
-      },
+      ready: true,
+      draftExists: false,
       workspace: workspaceWithDraftModelActive,
       schemaType: {},
     }),
@@ -77,12 +45,8 @@ it('produces `false` result if there is no draft', () => {
 it('produces `false` result if there is a draft, but there are no factors making it obsolete', () => {
   expect(
     hasObsoleteDraft({
-      editState: {
-        ready: true,
-        draft: stubDocument,
-        version: null,
-        published: null,
-      },
+      ready: true,
+      draftExists: true,
       workspace: workspaceWithDraftModelActive,
       schemaType: {},
     }),
@@ -94,12 +58,8 @@ it('produces `false` result if there is a draft, but there are no factors making
 it('produces `true` result if there is a draft, but the draft model is inactive', () => {
   expect(
     hasObsoleteDraft({
-      editState: {
-        ready: true,
-        draft: stubDocument,
-        version: null,
-        published: null,
-      },
+      ready: true,
+      draftExists: true,
       workspace: workspaceWithDraftModelInactive,
       schemaType: {},
     }),
@@ -112,12 +72,8 @@ it('produces `true` result if there is a draft, but the draft model is inactive'
 it('produces `true` result if there is a draft, but live-edit is active', () => {
   expect(
     hasObsoleteDraft({
-      editState: {
-        ready: true,
-        draft: stubDocument,
-        version: null,
-        published: null,
-      },
+      ready: true,
+      draftExists: true,
       workspace: workspaceWithDraftModelActive,
       schemaType: {
         liveEdit: true,
@@ -129,15 +85,26 @@ it('produces `true` result if there is a draft, but live-edit is active', () => 
   })
 })
 
+it('produces `false` result if live-edit is active but no draft exists', () => {
+  expect(
+    hasObsoleteDraft({
+      ready: true,
+      draftExists: false,
+      workspace: workspaceWithDraftModelActive,
+      schemaType: {
+        liveEdit: true,
+      },
+    }),
+  ).toEqual({
+    result: false,
+  })
+})
+
 it('follows the precedence of `DRAFT_MODEL_INACTIVE`, `LIVE_EDIT_ACTIVE`', () => {
   expect(
     hasObsoleteDraft({
-      editState: {
-        ready: true,
-        draft: stubDocument,
-        version: null,
-        published: null,
-      },
+      ready: true,
+      draftExists: true,
       workspace: workspaceWithDraftModelInactive,
       schemaType: {
         liveEdit: true,

@@ -29,7 +29,7 @@ type VariantDocumentCreateStatus = 'idle' | 'in-progress' | 'success' | 'failed'
 export function DocumentNotInVariantBanner() {
   const {t} = useTranslation(structureLocaleNamespace)
   const {t: tCore} = useTranslation()
-  const {value, documentId} = useDocumentPane()
+  const {value, documentId, schemaType} = useDocumentPane()
   const {selectedPerspective, selectedVariant, selectedReleaseId} = usePerspective()
   const {versions} = useDocumentVersions({documentId})
 
@@ -72,6 +72,7 @@ export function DocumentNotInVariantBanner() {
           documentGroupId: documentId,
           variant: selectedVariant,
           selectedPerspective,
+          ...(schemaType?.liveEdit ? {liveEdit: true} : {}),
         })
       } else {
         const baseDocument = findVariantCreateBaseDocument({
@@ -86,6 +87,7 @@ export function DocumentNotInVariantBanner() {
           documentGroupId: documentId,
           variant: selectedVariant,
           selectedPerspective,
+          ...(schemaType?.liveEdit ? {liveEdit: true} : {}),
         })
       }
       setStatus('success')
@@ -106,6 +108,7 @@ export function DocumentNotInVariantBanner() {
     value,
     selectedVariant,
     selectedPerspective,
+    schemaType,
     t,
     toast,
     versions,
