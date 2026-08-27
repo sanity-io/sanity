@@ -25,6 +25,10 @@ export function ciRunUrl(runId: string, attempt?: number): string {
   return attempt && attempt > 1 ? `${base}/attempts/${attempt}` : base
 }
 
+export function releaseUrl(tag: string): string {
+  return `https://github.com/${REPO}/releases/tag/${encodeURIComponent(tag)}`
+}
+
 /**
  * GitHub compare view listing every commit between two runs' commits — the
  * question a suspicious step in a chart raises is "what landed between these
