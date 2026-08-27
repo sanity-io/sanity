@@ -8,11 +8,13 @@ import {Box} from 'ui5'
 import {Button} from '../../../../../ui-components/button/Button'
 import {Popover, type PopoverProps} from '../../../../../ui-components/popover/Popover'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {usePortableTextMemberItems} from '../hooks/usePortableTextMembers'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
 interface InlineObjectToolbarPopoverProps {
   floatingBoundary: HTMLElement | null
+  inlineObjectEditModalActive: boolean
   inlineObjectFocused: boolean
   inlineObjectOpen: boolean
   onOpenInlineObject: () => void
@@ -25,6 +27,7 @@ interface InlineObjectToolbarPopoverProps {
 export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProps): ReactNode {
   const {
     floatingBoundary,
+    inlineObjectEditModalActive,
     inlineObjectFocused,
     inlineObjectOpen,
     onOpenInlineObject,
@@ -34,6 +37,10 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
     title,
   } = props
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
+  const portableTextMemberItems = usePortableTextMemberItems()
+  const hasOpenInlineObject = portableTextMemberItems.some(
+    (member) => member.kind === 'inlineObject' && member.member.open,
+  )
   const {sanity} = useTheme()
   const {t} = useTranslation()
   const editButtonRef = useRef<HTMLButtonElement | null>(null)
@@ -115,7 +122,9 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
 
   return (
     <Popover
-      open={!inlineObjectOpen && popoverOpen}
+      open={
+        popoverOpen && !inlineObjectEditModalActive && !inlineObjectOpen && !hasOpenInlineObject
+      }
       floatingBoundary={floatingBoundary}
       constrainSize
       content={

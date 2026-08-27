@@ -31,6 +31,7 @@ import {
   usePortal,
 } from '@sanity/ui'
 import {type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
+import {InlineObjectEditModalContext} from 'sanity/_singletons'
 import {Box} from 'ui5'
 
 import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
@@ -127,11 +128,18 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   // AnnotationObjectEditModal once the modal renders (or on item close).
   const annotationOpeningRef = useRef(false)
 
+  // Track the full inline object edit lifecycle, including the window before
+  // `member.open` propagates, so inline object toolbars remain suppressed.
+  const [inlineObjectEditModalActive, setInlineObjectEditModalActive] = useState(false)
+
   const handleItemOpen = useCallback(
     (itemPath: Path) => {
       const relativePath = itemPath.slice(path.length)
       if (relativePath.some((segment) => segment === 'markDefs')) {
         annotationOpeningRef.current = true
+      }
+      if (relativePath.some((segment) => segment === 'children')) {
+        setInlineObjectEditModalActive(true)
       }
       onItemOpen(itemPath)
     },
@@ -140,8 +148,20 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
 
   const handleItemClose = useCallback(() => {
     annotationOpeningRef.current = false
+    setInlineObjectEditModalActive(false)
     onItemClose()
   }, [onItemClose])
+
+  const handleInlineObjectEditModalActiveChange = useCallback((active: boolean) => {
+    setInlineObjectEditModalActive(active)
+  }, [])
+  const inlineObjectEditModalContext = useMemo(
+    () => ({
+      active: inlineObjectEditModalActive,
+      setActive: handleInlineObjectEditModalActiveChange,
+    }),
+    [handleInlineObjectEditModalActiveChange, inlineObjectEditModalActive],
+  )
 
   // Wrap the consumer's onPaste to enrich PasteData.schemaTypes with
   // Sanity-specific PortableTextMemberSchemaTypes instead of the editor's
@@ -614,7 +634,11 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   // or focus is pointing directly to a node inside the editor
   // (as opposed to focus on fields inside object nodes like annotations, inline blocks etc.)
   const editorFocused = focused || hasFocusWithin
-
+  const editorNodeWithInlineObjectEditModal = (
+    <InlineObjectEditModalContext.Provider value={inlineObjectEditModalContext}>
+      {editorNode}
+    </InlineObjectEditModalContext.Provider>
+  )
   return (
     <SelectedAnnotationsProvider>
       <DndProvider>
@@ -635,7 +659,11 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
                   >
                     <Box data-wrapper="" ref={setWrapperElement}>
                       <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
-                        {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
+                        {isFullscreen ? (
+                          <ExpandedLayer>{editorNodeWithInlineObjectEditModal}</ExpandedLayer>
+                        ) : (
+                          editorNodeWithInlineObjectEditModal
+                        )}
                         <AnnotationObjectEditModal
                           annotationOpeningRef={annotationOpeningRef}
                           focused={focused}

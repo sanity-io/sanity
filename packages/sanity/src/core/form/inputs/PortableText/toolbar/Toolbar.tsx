@@ -17,6 +17,7 @@ import {Button} from '../../../../../ui-components/button/Button'
 import {useRovingFocus} from '../../../../components/rovingFocus/useRovingFocus'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useResolveInitialValueForType} from '../../../../store/document/useResolveInitialValueForType'
+import {useInlineObjectEditModal} from '../contexts/InlineObjectEditModalContext'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {ActionMenu} from './ActionMenu'
 import {BlockStyleSelect} from './BlockStyleSelect'
@@ -170,6 +171,7 @@ const InnerToolbar = memo(function InnerToolbar({
 
 export function Toolbar(props: ToolbarProps) {
   const {collapsible, hotkeys, isFullscreen, readOnly, onMemberOpen, onToggleFullscreen} = props
+  const {setActive: setInlineObjectEditModalActive} = useInlineObjectEditModal()
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
   const schemaTypes = usePortableTextMemberSchemaTypes()
@@ -234,14 +236,24 @@ export function Toolbar(props: ToolbarProps) {
 
   const handleInsertInline = useCallback(
     async (type: ObjectSchemaType) => {
-      const initialValue = await resolveInitialValue(type)
-      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-      const path = PortableTextEditor.insertChild(editor, type, initialValue)
-      if (path) {
-        onMemberOpen(path)
+      // Set before insertChild so the inline object toolbar stays closed in the
+      // window before `member.open` propagates (SAPP-4408).
+      setInlineObjectEditModalActive(true)
+      try {
+        const initialValue = await resolveInitialValue(type)
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+        const path = PortableTextEditor.insertChild(editor, type, initialValue)
+        if (path) {
+          onMemberOpen(path)
+        } else {
+          setInlineObjectEditModalActive(false)
+        }
+      } catch (error) {
+        setInlineObjectEditModalActive(false)
+        throw error
       }
     },
-    [editor, onMemberOpen, resolveInitialValue],
+    [editor, onMemberOpen, resolveInitialValue, setInlineObjectEditModalActive],
   )
 
   const actionGroups = useActionGroups({

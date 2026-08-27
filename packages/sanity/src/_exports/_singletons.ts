@@ -74,6 +74,10 @@ export {
   HoveredFieldContext,
   type HoveredFieldContextValue,
 } from '../_singletons/context/HoveredFieldContext'
+export {
+  InlineObjectEditModalContext,
+  type InlineObjectEditModalContextValue,
+} from '../_singletons/context/InlineObjectEditModalContext'
 export {IsLastPaneContext} from '../_singletons/context/IsLastPaneContext'
 export {
   LiveUserApplicationContext,
