@@ -91,7 +91,7 @@
     "react-rx": "catalog:",
     "rxjs": "^7.8.2",
     "ui5": "catalog:",
-    "use-effect-event": "^2.0.3"
+    "use-effect-event": "1.0.2"
   },
   "devDependencies": {
     "@repo/package.bundle": "workspace:*",

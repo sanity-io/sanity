@@ -299,6 +299,14 @@ returns first-render values when the calling component is wrapped in `forwardRef
 wraps the native hook, so check the implementation before trusting one — `react-rx` is safe on both
 v4 and v5 because `useObservableEvent` builds on the same `use-effect-event` ponyfill.
 
+The dependency is pinned to exactly `1.0.2` in `packages/sanity` and `@sanity/vision`: version 2
+returns a new function identity on every render, so any `useEffect` dependency array containing the
+event re-fires its effect on each render, and React Compiler inserts the event into the dependency
+arrays it generates. `packages/sanity/src/core/hooks/useEffectEvent.test.tsx` enforces the pin: it
+fails on any bump attempt, asserts the installed React is a 19.2.x affected by facebook/react#34818,
+and carries a canary that fails once React fixes that bug. Update the pin, those tests, and this
+section together.
+
 ### Translate: never define `components` inline
 
 Components passed to `<Translate>`'s `components` map must be stable, module-scope components —

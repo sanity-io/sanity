@@ -234,7 +234,7 @@
     "ui5": "catalog:",
     "urlpattern-polyfill": "10.1.0",
     "use-device-pixel-ratio": "^1.1.2",
-    "use-effect-event": "^2.0.3",
+    "use-effect-event": "1.0.2",
     "use-hot-module-reload": "^2.0.0",
     "use-sync-external-store": "^1.6.0",
     "uuid": "^14.0.2",
