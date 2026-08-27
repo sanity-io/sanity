@@ -1,5 +1,12 @@
-import {type StudioDiagnostics} from '../../../packages/sanity/src/core/studio/diagnostics/gatherStudioDiagnostics'
+import {type StudioDiagnostics} from './gatherStudioDiagnostics'
 
+/**
+ * Parse and validate JSON copied from the studio diagnostics panel — the
+ * counterpart to {@link gatherStudioDiagnostics} for viewers that receive the
+ * report as pasted text (dev/studio-diagnostics-viewer, Studio Radar).
+ *
+ * @internal
+ */
 export function parseStudioDiagnostics(input: string): StudioDiagnostics {
   if (!input.trim()) throw new Error('Paste diagnostics JSON first.')
 
