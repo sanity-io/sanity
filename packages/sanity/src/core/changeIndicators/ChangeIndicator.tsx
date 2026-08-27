@@ -1,6 +1,7 @@
 import {type Path} from '@sanity/types'
 import {Text, useLayer} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
+import {pathToString} from '@sanity/validation/_internal'
 import {
   type ComponentProps,
   type HTMLProps,
@@ -15,7 +16,6 @@ import deepCompare from 'react-fast-compare'
 import {ReviewChangesContext} from 'sanity/_singletons'
 
 import {EMPTY_ARRAY} from '../util/empty'
-import {pathToString} from '../validation/util/pathToString'
 import {DEBUG} from './constants'
 import {ElementWithChangeBar} from './ElementWithChangeBar'
 import {useChangeIndicatorsReporter} from './tracker'

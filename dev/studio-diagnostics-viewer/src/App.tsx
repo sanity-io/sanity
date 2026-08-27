@@ -1,13 +1,14 @@
 import {Box, Button, Card, Flex, Heading, Stack, Text, TextArea} from '@sanity/ui'
 import {lazy, Suspense, type SyntheticEvent, useCallback, useId, useRef, useState} from 'react'
+import {type StudioDiagnostics} from 'sanity'
 
-import {type StudioDiagnostics} from '../../../packages/sanity/src/core/studio/diagnostics/gatherStudioDiagnostics'
-import {parseStudioDiagnostics} from './parseStudioDiagnostics'
+// Loaded on demand so the initial paste screen doesn't carry the sanity
+// package; the report and the parser share the same lazy chunk. Module-scope
+// because React Compiler cannot lower import() inside a component body.
+const loadSanityModule = () => import('sanity')
 
 const DiagnosticsReport = lazy(() =>
-  import('../../../packages/sanity/src/core/studio/components/navbar/resources/DiagnosticsReport').then(
-    (module) => ({default: module.DiagnosticsReport}),
-  ),
+  loadSanityModule().then((module) => ({default: module.DiagnosticsReport})),
 )
 
 export function App() {
@@ -15,11 +16,14 @@ export function App() {
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const [diagnostics, setDiagnostics] = useState<StudioDiagnostics>()
   const [error, setError] = useState<string>()
+  const [parsing, setParsing] = useState(false)
 
-  const handleSubmit = useCallback((event: SyntheticEvent<HTMLFormElement>) => {
+  const handleSubmit = useCallback(async (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault()
 
+    setParsing(true)
     try {
+      const {parseStudioDiagnostics} = await loadSanityModule()
       const parsed = parseStudioDiagnostics(inputRef.current?.value ?? '')
       setDiagnostics(parsed)
       setError(undefined)
@@ -27,6 +31,7 @@ export function App() {
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : String(cause))
     }
+    setParsing(false)
   }, [])
 
   const handleReset = useCallback(() => {
@@ -95,7 +100,13 @@ export function App() {
                 ) : null}
 
                 <Flex justify="flex-end">
-                  <Button mode="default" text="View diagnostics" tone="primary" type="submit" />
+                  <Button
+                    loading={parsing}
+                    mode="default"
+                    text="View diagnostics"
+                    tone="primary"
+                    type="submit"
+                  />
                 </Flex>
               </Stack>
             </form>

@@ -266,8 +266,11 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                       )
 
                     const targetPair = await firstValueFrom(readTargetPair)
-                    const baseVariant = targetPair[editStateSlot]
-
+                    const baseVariant =
+                      editStateSlot === 'draft'
+                        ? // in drafts fallback to published, the ui shows the published when seeing a "non existent" draft
+                          targetPair[editStateSlot] || targetPair.published
+                        : targetPair[editStateSlot]
                     // If there is no base variant, create an empty variant.
                     if (baseVariant === null) {
                       await createVariantDocument({

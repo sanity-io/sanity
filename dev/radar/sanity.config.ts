@@ -5,6 +5,7 @@ import {RadarIcon} from './RadarIcon'
 import {schemaTypes} from './schemaTypes'
 import {bisectTool} from './tools/bisect'
 import {comparisonsTool} from './tools/comparisons'
+import {diagnosticsTool} from './tools/diagnostics'
 import {releasesTool} from './tools/releases'
 import {trendsTool} from './tools/trends'
 
@@ -15,12 +16,20 @@ export default defineConfig({
   projectId: 'mhfozd0z',
   dataset: 'bench',
   // Trends first (the dashboard and default view), then the investigation
-  // tools (releases, bisect), then raw document access — comparisons last,
-  // it's the least visited
+  // tools (releases, bisect, pasted diagnostics), then raw document access —
+  // comparisons last, it's the least visited
   tools: (prev) => {
     const structure = prev.filter((tool) => tool.name === 'structure')
     const rest = prev.filter((tool) => tool.name !== 'structure')
-    return [trendsTool, releasesTool, bisectTool, ...structure, ...rest, comparisonsTool]
+    return [
+      trendsTool,
+      releasesTool,
+      bisectTool,
+      diagnosticsTool,
+      ...structure,
+      ...rest,
+      comparisonsTool,
+    ]
   },
   releases: {enabled: false},
   scheduledDrafts: {enabled: false},

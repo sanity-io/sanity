@@ -1466,6 +1466,10 @@ export {
   useColorSchemeSetValue,
   useColorSchemeValue,
 } from '../core/studio/colorScheme'
+export {
+  DiagnosticsReport,
+  type DiagnosticsReportProps,
+} from '../core/studio/components/navbar/resources/DiagnosticsReport'
 export {Filters} from '../core/studio/components/navbar/search/components/filters/Filters'
 export {SearchHeader} from '../core/studio/components/navbar/search/components/SearchHeader'
 export {
@@ -1519,6 +1523,8 @@ export {
   type PasteOptions,
   type SanityClipboardItem,
 } from '../core/studio/copyPaste/types'
+export {type StudioDiagnostics} from '../core/studio/diagnostics/gatherStudioDiagnostics'
+export {parseStudioDiagnostics} from '../core/studio/diagnostics/parseStudioDiagnostics'
 export {StudioFeedbackProvider} from '../core/studio/feedback/StudioFeedbackProvider'
 export {
   generateStudioManifest,
@@ -1750,9 +1756,9 @@ export {
   readVersionType,
   type VersionType,
 } from '../core/util/versionsUtils'
-export {Rule as ConcreteRuleClass} from '../core/validation/Rule'
-export {type ValidationContext} from '../core/validation/types'
-export {validateDocument, type ValidateDocumentOptions} from '../core/validation/validateDocument'
+export {Rule as ConcreteRuleClass} from '@sanity/validation/_internal'
+export {type ValidateDocumentOptions, validateDocument} from '../core/validation'
+export {type ValidationContext} from '@sanity/validation/_internal'
 export {isDocumentInSelectedVariant} from '../core/variants/documents/isDocumentInSelectedVariant'
 export {useCreatableVariantInitialValue} from '../core/variants/hooks/useCreatableVariantInitialValue'
 export {useVariantDocumentOperations} from '../core/variants/hooks/useVariantDocumentOperations'
