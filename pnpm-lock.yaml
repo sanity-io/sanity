@@ -1192,6 +1192,9 @@ importers:
       '@sanity/util':
         specifier: workspace:*
         version: link:../../@sanity/util
+      '@sanity/validation':
+        specifier: workspace:*
+        version: link:../../@sanity/validation
       '@sanity/vision':
         specifier: workspace:*
         version: link:../../@sanity/vision
@@ -1241,6 +1244,9 @@ importers:
       '@sanity/util':
         specifier: workspace:*
         version: link:../../@sanity/util
+      '@sanity/validation':
+        specifier: workspace:*
+        version: link:../../@sanity/validation
       '@sanity/vision':
         specifier: workspace:*
         version: link:../../@sanity/vision
@@ -1600,6 +1606,61 @@ importers:
         specifier: ^4.1.11
         version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/browser-playwright@4.1.11)(@vitest/coverage-v8@4.1.11)(jsdom@29.1.1)(vite@8.2.2)
 
+  packages/@sanity/validation:
+    dependencies:
+      '@sanity/client':
+        specifier: 'catalog:'
+        version: 8.3.0(vitest@4.1.11)
+      '@sanity/id-utils':
+        specifier: ^1.0.0
+        version: 1.0.0
+      '@sanity/schema':
+        specifier: workspace:*
+        version: link:../schema
+      '@sanity/types':
+        specifier: workspace:*
+        version: link:../types
+      '@sanity/util':
+        specifier: workspace:*
+        version: link:../util
+      i18next:
+        specifier: ^26.2.0
+        version: 26.4.0(typescript@7.0.2)
+      lodash-es:
+        specifier: ^4.18.1
+        version: 4.18.1
+      rxjs:
+        specifier: ^7.8.2
+        version: 7.8.2
+    devDependencies:
+      '@repo/test-config':
+        specifier: workspace:*
+        version: link:../../@repo/test-config
+      '@repo/tsconfig':
+        specifier: workspace:*
+        version: link:../../@repo/tsconfig
+      '@repo/tsdown.config':
+        specifier: workspace:*
+        version: link:../../@repo/tsdown.config
+      '@types/lodash-es':
+        specifier: ^4.17.12
+        version: 4.17.12
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.2.18
+      tsdown:
+        specifier: 'catalog:'
+        version: 0.22.14(@vitejs/devtools@0.5.2)(oxc-resolver@11.24.2)(publint@0.3.24)(tsx@4.23.12)(typescript@7.0.2)
+      typescript:
+        specifier: 'catalog:'
+        version: 7.0.2
+      vite:
+        specifier: 'catalog:'
+        version: 8.2.2(@types/node@24.13.3)(@vitejs/devtools@0.5.2)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
+      vitest:
+        specifier: ^4.1.11
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/browser-playwright@4.1.11)(@vitest/coverage-v8@4.1.11)(jsdom@29.1.1)(vite@8.2.2)
+
   packages/@sanity/vision:
     dependencies:
       '@codemirror/autocomplete':
@@ -1911,6 +1972,9 @@ importers:
       '@sanity/uuid':
         specifier: ^3.0.3
         version: 3.0.3
+      '@sanity/validation':
+        specifier: workspace:*
+        version: link:../@sanity/validation
       '@sanity/workbench':
         specifier: 0.1.0-alpha.42
         version: 0.1.0-alpha.42(@sanity/sdk@2.20.1)(react@19.2.8)(xstate@5.32.5)

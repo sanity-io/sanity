@@ -185,6 +185,7 @@
     "@sanity/ui": "catalog:",
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.3",
+    "@sanity/validation": "workspace:*",
     "@sanity/workbench": "0.1.0-alpha.42",
     "@sentry/react": "^10.70.0",
     "@tanstack/react-virtual": "^3.14.10",
