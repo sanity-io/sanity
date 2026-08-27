@@ -4,7 +4,7 @@ import {type SummaryStats} from '../stats/quantiles'
 /**
  * The result document: written as the CI artifact (one per shard, merged by
  * mergeShards.ts), rendered to the PR comment (markdown.ts), and — with
- * `_id` assigned — stored as a `benchRun` document in the studio-metrics
+ * `_id` assigned — stored as a `benchRun` document in the Studio Radar
  * project for main-branch time-series tracking.
  */
 export interface BenchRunDocument {

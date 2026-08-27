@@ -126,6 +126,7 @@ minimumReleaseAgeExclude:
   - 'web-vitals'
   # covers yuku-ast/yuku-codegen/yuku-parser, which ship together with rolldown-plugin-dts
   - 'yuku-*'
+  - '@oxc-project/types@0.147.0'
 
 overrides:
   vitest: 'catalog:'
@@ -140,7 +141,8 @@ trustPolicyExclude:
   - '@reduxjs/toolkit@2.9.0 || 2.10.1 || 2.11.0'
   - '@sanity/cli'
   - '@sanity/mutate@0.11.0-canary.4'
-  - '@sanity/sdk-react@2.15.0'
+  - '@sanity/sdk@3.0.0'
+  - '@sanity/sdk-react@3.0.0'
   - '@swc/core@1.13.5'
   - chokidar@4.0.3
   # 5.24.0 got accidental trust-downgrade
