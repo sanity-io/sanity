@@ -87,14 +87,14 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
   const [searchInput$] = useState(() => new Subject<string | null>())
 
-  // These are read only when a search event fires, and `onSearch` changes
-  // identity every render (StudioReferenceInput passes a plain function).
-  // Rebuilding the pipeline on them instead would cancel in-flight searches
-  // and reset accumulated search state.
-  const callbacksRef = useRef({onSearch, push, t})
+  // `onSearch` changes identity every render (StudioReferenceInput passes a
+  // plain function), and so does `t` under SANITY_STUDIO_DEBUG_I18N (the debug
+  // wrapper returns a fresh function per render). Rebuilding the pipeline on
+  // them instead would cancel in-flight searches and reset accumulated state.
+  const callbacksRef = useRef({onSearch, t})
   useEffect(() => {
-    callbacksRef.current = {onSearch, push, t}
-  }, [onSearch, push, t])
+    callbacksRef.current = {onSearch, t}
+  }, [onSearch, t])
 
   const searchState$ = useMemo(
     () =>
@@ -108,7 +108,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
             callbacks.onSearch(searchString).pipe(
               map((hits) => ({hits, searchString, isLoading: false})),
               catchError((error) => {
-                callbacks.push({
+                push({
                   title: callbacks.t('inputs.reference.error.search-failed-title'),
                   description: error.message,
                   status: 'error',
@@ -126,7 +126,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
           INITIAL_SEARCH_STATE,
         ),
       ),
-    [id, searchInput$],
+    [id, push, searchInput$],
   )
   const searchState = useObservable(searchState$, INITIAL_SEARCH_STATE)
 

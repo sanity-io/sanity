@@ -82,16 +82,15 @@ export function useSearch({
     [schema, client, strategy, maxFieldDepth],
   )
 
-  // Everything the pipeline needs beyond the request itself is read when a
-  // search event fires: the callbacks are props that can change identity every
-  // render, and `search` settles asynchronously (`useSearchMaxFieldDepth`).
-  // Rebuilding the pipeline on them instead would cancel in-flight searches
-  // without replay, stranding the loading state, and reset the debounce,
-  // dedupe, and accumulated search state.
-  const latestRef = useRef({allowEmptyQueries, onComplete, onError, onStart, search})
+  // The callbacks are props that can change identity every render, and
+  // `search` settles asynchronously (`useSearchMaxFieldDepth`). Rebuilding the
+  // pipeline on them instead would cancel in-flight searches without replay,
+  // stranding the loading state, and reset the debounce, dedupe, and
+  // accumulated search state.
+  const latestRef = useRef({onComplete, onError, onStart, search})
   useEffect(() => {
-    latestRef.current = {allowEmptyQueries, onComplete, onError, onStart, search}
-  }, [allowEmptyQueries, onComplete, onError, onStart, search])
+    latestRef.current = {onComplete, onError, onStart, search}
+  }, [onComplete, onError, onStart, search])
 
   const searchState$ = useMemo(
     () =>
@@ -119,11 +118,7 @@ export function useSearch({
             // There are exceptions (e.g. searching within <AutoComplete> components) where empty queries are permitted,
             // which is what `allowEmptyQueries` is used for.
             iif(
-              () =>
-                hasSearchableTerms({
-                  allowEmptyQueries: latest.allowEmptyQueries,
-                  terms: request.terms,
-                }),
+              () => hasSearchableTerms({allowEmptyQueries, terms: request.terms}),
               // If we have a valid search, run async fetch, map results and trigger `onComplete` / `onError` callbacks
               latest.search(request.terms, request.options).pipe(
                 tap(({hits, nextCursor}) => latest.onComplete?.({hits, nextCursor})),
@@ -149,7 +144,7 @@ export function useSearch({
           return {...prevState, ...nextState}
         }, INITIAL_SEARCH_STATE),
       ),
-    [searchRequests$],
+    [allowEmptyQueries, searchRequests$],
   )
   // Captured once, like the `useState(initialState)` mirror it replaces: both
   // callers rebuild the object every render, and react-rx re-reads an unstable
