@@ -160,7 +160,14 @@ export interface ValidationSchema {
   get(name: string): unknown
 }
 
-/** A configured Sanity client accepted across compatible client versions. @beta */
+/**
+ * A configured Sanity client accepted across compatible client versions.
+ *
+ * This structural type describes the capabilities used internally by validation.
+ * The configured client is exposed to custom validators as a `SanityClient`, so it must be compatible with the full client API.
+ *
+ * @beta
+ */
 export interface ValidationClient {
   fetch: SanityClient['fetch']
   getDataUrl: SanityClient['getDataUrl']
