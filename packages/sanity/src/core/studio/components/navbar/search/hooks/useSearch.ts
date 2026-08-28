@@ -1,17 +1,17 @@
 import {type Schema} from '@sanity/types'
 import isEqual from 'lodash-es/isEqual.js'
-import {useCallback, useMemo, useState} from 'react'
-import {useObservableEvent} from 'react-rx'
-import {concat, EMPTY, iif, type Observable, of, timer} from 'rxjs'
+import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useObservable} from 'react-rx'
+import {BehaviorSubject, concat, iif, of, Subject, timer} from 'rxjs'
 import {
   catchError,
   debounce,
   distinctUntilChanged,
-  filter,
   map,
   scan,
   switchMap,
   tap,
+  withLatestFrom,
 } from 'rxjs/operators'
 
 import {useClient} from '../../../../../hooks/useClient'
@@ -46,10 +46,6 @@ const INITIAL_SEARCH_STATE: SearchState = {
   },
 }
 
-function nonNullable<T>(v: T): v is NonNullable<T> {
-  return v !== null
-}
-
 function sanitizeRequest(request: SearchRequest) {
   return {
     ...request,
@@ -79,7 +75,7 @@ export function useSearch({
   handleSearch: (request: SearchRequest) => void
   searchState: SearchState
 } {
-  const [searchState, setSearchState] = useState(initialState)
+  const [searchRequests$] = useState(() => new Subject<SearchRequest>())
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const maxFieldDepth = useSearchMaxFieldDepth()
   const {strategy} = useWorkspace().search
@@ -95,65 +91,79 @@ export function useSearch({
     [schema, client, strategy, maxFieldDepth],
   )
 
-  const handleQueryChange = useObservableEvent((inputValue$: Observable<SearchRequest | null>) => {
-    return inputValue$.pipe(
-      // Ignore null values
-      filter(nonNullable),
-      // Sanitize request (trim query and filter)
-      map(sanitizeRequest),
-      // Only emit when values have changed
-      distinctUntilChanged(isEqual),
-      // Debounce requests
-      debounce((request) => timer(request?.debounceTime || DEFAULT_DEBOUNCE_TIME)),
-      // Trigger `onStart` callback
-      tap(onStart),
-      switchMap((request) => {
-        return concat(
-          // Emit loading start
-          of({
-            ...INITIAL_SEARCH_STATE,
-            loading: true,
-            options: request.options,
-            terms: request.terms,
-          }),
-          // Conditionally trigger search ONLY if we have valid searchable terms.
-          // Typically, search terms are valid if either query, filter or selected types is non-empty.
-          // There are exceptions (e.g. searching within <AutoComplete> components) where empty queries are permitted,
-          // which is what `allowEmptyQueries` is used for.
-          iif(
-            () => hasSearchableTerms({allowEmptyQueries, terms: request.terms}),
-            // If we have a valid search, run async fetch, map results and trigger `onComplete` / `onError` callbacks
-            search(request.terms, request.options).pipe(
-              tap(({hits, nextCursor}) => onComplete?.({hits, nextCursor})),
-              catchError((error) => {
-                onError?.(error)
-                return of({
-                  ...INITIAL_SEARCH_STATE,
-                  error,
-                  loading: false,
-                  options: request.options,
-                  terms: request.terms,
-                })
-              }),
+  // The latest render's unstable values: the callbacks are props that can
+  // change identity every render, and `search` settles asynchronously
+  // (`useSearchMaxFieldDepth`). Carried by a subject so the memoized pipeline
+  // reads them at event time without rebuilding, which would cancel in-flight
+  // searches without replay, stranding the loading state, and reset the
+  // debounce, dedupe, and accumulated search state.
+  const [latest$] = useState(() => new BehaviorSubject({onComplete, onError, onStart, search}))
+  useEffect(() => {
+    latest$.next({onComplete, onError, onStart, search})
+  }, [latest$, onComplete, onError, onStart, search])
+
+  const searchState$ = useMemo(
+    () =>
+      searchRequests$.pipe(
+        // Sanitize request (trim query and filter)
+        map(sanitizeRequest),
+        // Only emit when values have changed
+        distinctUntilChanged(isEqual),
+        // Debounce requests
+        debounce((request) => timer(request.debounceTime || DEFAULT_DEBOUNCE_TIME)),
+        withLatestFrom(latest$),
+        switchMap(([request, latest]) => {
+          latest.onStart?.()
+          return concat(
+            // Emit loading start
+            of({
+              ...INITIAL_SEARCH_STATE,
+              loading: true,
+              options: request.options,
+              terms: request.terms,
+            }),
+            // Conditionally trigger search ONLY if we have valid searchable terms.
+            // Typically, search terms are valid if either query, filter or selected types is non-empty.
+            // There are exceptions (e.g. searching within <AutoComplete> components) where empty queries are permitted,
+            // which is what `allowEmptyQueries` is used for.
+            iif(
+              () => hasSearchableTerms({allowEmptyQueries, terms: request.terms}),
+              // If we have a valid search, run async fetch, map results and trigger `onComplete` / `onError` callbacks
+              latest.search(request.terms, request.options).pipe(
+                tap(({hits, nextCursor}) => latest.onComplete?.({hits, nextCursor})),
+                catchError((error) => {
+                  latest.onError?.(error)
+                  return of({
+                    ...INITIAL_SEARCH_STATE,
+                    error,
+                    loading: false,
+                    options: request.options,
+                    terms: request.terms,
+                  })
+                }),
+              ),
+              // If there is no valid search, emit an empty update and trigger `onComplete`
+              of({}).pipe(tap(() => latest.onComplete?.({hits: [], nextCursor: undefined}))),
             ),
-            // If there is no valid search, emit an empty observable and trigger `onComplete` event
-            of(EMPTY).pipe(tap(() => onComplete?.({hits: [], nextCursor: undefined}))),
-          ),
-          // Emit loading completed
-          of({loading: false}),
-        )
-      }),
-      scan((prevState, nextState): SearchState => {
-        return {...prevState, ...nextState}
-      }, INITIAL_SEARCH_STATE),
-      // Update local search state
-      tap(setSearchState),
-    )
-  })
+            // Emit loading completed
+            of({loading: false}),
+          )
+        }),
+        scan((prevState, nextState): SearchState => {
+          return {...prevState, ...nextState}
+        }, INITIAL_SEARCH_STATE),
+      ),
+    [allowEmptyQueries, latest$, searchRequests$],
+  )
+  // Captured once, like the `useState(initialState)` mirror it replaces: both
+  // callers rebuild the object every render, and react-rx re-reads an unstable
+  // initial value on every snapshot until the first emission.
+  const [initialSearchState] = useState(initialState)
+  const searchState = useObservable(searchState$, initialSearchState)
 
   const handleSearch = useCallback(
-    (searchRequest: SearchRequest) => handleQueryChange(searchRequest),
-    [handleQueryChange],
+    (searchRequest: SearchRequest) => searchRequests$.next(searchRequest),
+    [searchRequests$],
   )
 
   return {handleSearch, searchState}

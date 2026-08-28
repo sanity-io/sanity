@@ -1,10 +1,18 @@
 import {Stack, Text, useClickOutsideEvent} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {uuid} from '@sanity/uuid'
-import {type FocusEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
-import {useObservableEvent} from 'react-rx'
-import {concat, type Observable, of} from 'rxjs'
-import {catchError, filter, map, scan, switchMap, tap} from 'rxjs/operators'
+import {
+  type FocusEvent,
+  type KeyboardEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import {useObservable} from 'react-rx'
+import {BehaviorSubject, concat, of, Subject} from 'rxjs'
+import {catchError, filter, map, scan, switchMap, withLatestFrom} from 'rxjs/operators'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {ReferenceInputPreviewCard} from '../../../components/previewCard/PreviewCard'
@@ -39,10 +47,6 @@ const INITIAL_SEARCH_STATE: ReferenceSearchState = {
 
 const NO_FILTER = () => true
 
-function nonNullable<T>(v: T): v is NonNullable<T> {
-  return v !== null
-}
-
 interface AutocompleteOption {
   hit: ReferenceSearchHit
   value: string
@@ -74,7 +78,57 @@ export function ReferenceInput(props: ReferenceInputProps) {
     value,
   })
 
-  const [searchState, setSearchState] = useState<ReferenceSearchState>(INITIAL_SEARCH_STATE)
+  const {push} = useToast()
+  const {t} = useTranslation()
+
+  const [searchInput$] = useState(() => new Subject<string | null>())
+
+  // The latest render's unstable values (`onSearch` is rebuilt every render by
+  // StudioReferenceInput; `t` per render under SANITY_STUDIO_DEBUG_I18N),
+  // carried by a subject so the memoized pipeline reads them at event time
+  // without rebuilding, which would cancel in-flight searches.
+  const [callbacks$] = useState(() => new BehaviorSubject({onSearch, t}))
+  useEffect(() => {
+    callbacks$.next({onSearch, t})
+  }, [callbacks$, onSearch, t])
+
+  const searchState$ = useMemo(
+    () =>
+      searchInput$.pipe(
+        filter(isNonNullable),
+        withLatestFrom(callbacks$),
+        switchMap(([searchString, callbacks]) =>
+          concat(
+            of({isLoading: true}),
+            callbacks.onSearch(searchString).pipe(
+              map((hits) => ({hits, searchString, isLoading: false})),
+              catchError((error) => {
+                push({
+                  title: callbacks.t('inputs.reference.error.search-failed-title'),
+                  description: error.message,
+                  status: 'error',
+                  id: `reference-search-fail-${id}`,
+                })
+
+                console.error(error)
+                return of({hits: [], searchString, isLoading: false})
+              }),
+            ),
+          ),
+        ),
+        scan(
+          (prevState, nextState): ReferenceSearchState => ({...prevState, ...nextState}),
+          INITIAL_SEARCH_STATE,
+        ),
+      ),
+    [callbacks$, id, push, searchInput$],
+  )
+  const searchState = useObservable(searchState$, INITIAL_SEARCH_STATE)
+
+  const handleQueryChange = useCallback(
+    (searchString: string | null) => searchInput$.next(searchString),
+    [searchInput$],
+  )
 
   const handleCreateNew = useCallback(
     (option: CreateReferenceOption) => {
@@ -182,41 +236,6 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
   const [autocompletePopoverReferenceElement, setAutocompletePopoverReferenceElement] =
     useState<HTMLDivElement | null>(null)
-
-  const {push} = useToast()
-  const {t} = useTranslation()
-
-  const handleQueryChange = useObservableEvent((inputValue$: Observable<string | null>) => {
-    return inputValue$.pipe(
-      filter(nonNullable),
-      switchMap((searchString) =>
-        concat(
-          of({isLoading: true}),
-          onSearch(searchString).pipe(
-            map((hits) => ({hits, searchString, isLoading: false})),
-            catchError((error) => {
-              push({
-                title: t('inputs.reference.error.search-failed-title'),
-                description: error.message,
-                status: 'error',
-                id: `reference-search-fail-${id}`,
-              })
-
-              console.error(error)
-              return of({hits: [], searchString, isLoading: false})
-            }),
-          ),
-        ),
-      ),
-
-      scan(
-        (prevState, nextState): ReferenceSearchState => ({...prevState, ...nextState}),
-        INITIAL_SEARCH_STATE,
-      ),
-
-      tap(setSearchState),
-    )
-  })
 
   const handleAutocompleteOpenButtonClick = useCallback(() => {
     handleQueryChange('')

@@ -92,8 +92,9 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
   const disableNew = inheritedOptions.disableNew ?? schemaType.options?.disableNew === true
   const getClient = source.getClient
 
-  // Plain function: ReferenceInput reads onSearch via useObservableEvent (latest each call).
-  // oxlint's react-hooks/rules-of-hooks flags passing a useEffectEvent result as a prop.
+  // Plain function, rebuilt every render: ReferenceInput carries the latest
+  // onSearch on a subject and reads it at event time, so no memoization is
+  // needed here.
   const handleSearch = (searchString: string) =>
     from(
       resolveUserDefinedFilter({
