@@ -151,6 +151,40 @@ describe('CopyDocumentActions', () => {
       ])
     })
 
+    it('copies URL with variant search param when a variant is selected', async () => {
+      mockUsePerspective.mockReturnValue({
+        ...DEFAULT_PERSPECTIVE,
+        selectedVariantName: 'alpha-audience',
+      })
+
+      render(<CopyDocumentActions />, {wrapper})
+      await clickMenuItem('copy-link-to-document')
+
+      expect(mockResolveIntentLink).toHaveBeenCalledWith('edit', {id: 'doc-123', type: 'article'}, [
+        ['variant', 'alpha-audience'],
+      ])
+    })
+
+    it('copies URL with perspective and variant params for a release with a variant', async () => {
+      mockUsePerspective.mockReturnValue({
+        ...DEFAULT_PERSPECTIVE,
+        selectedPerspectiveName: 'rMyRelease',
+        selectedReleaseId: 'rMyRelease',
+        selectedVariantName: 'alpha-audience',
+        selectedPerspective: 'rMyRelease',
+        perspectiveStack: ['rMyRelease', 'drafts'],
+      })
+      mockUseTargetDocumentState.mockReturnValue(readyTarget({version: RELEASE_SIBLING}))
+
+      render(<CopyDocumentActions />, {wrapper})
+      await clickMenuItem('copy-link-to-document')
+
+      expect(mockResolveIntentLink).toHaveBeenCalledWith('edit', {id: 'doc-123', type: 'article'}, [
+        ['perspective', 'rMyRelease'],
+        ['variant', 'alpha-audience'],
+      ])
+    })
+
     it('copies URL with scheduledDraft intent param for scheduled drafts', async () => {
       mockUsePerspective.mockReturnValue({
         ...DEFAULT_PERSPECTIVE,
@@ -172,6 +206,31 @@ describe('CopyDocumentActions', () => {
         'edit',
         {id: 'doc-123', type: 'article', scheduledDraft: 'rScheduled'},
         [],
+      )
+    })
+
+    it('copies URL with variant search param and scheduledDraft intent param', async () => {
+      mockUsePerspective.mockReturnValue({
+        ...DEFAULT_PERSPECTIVE,
+        selectedPerspectiveName: 'rScheduled',
+        selectedReleaseId: 'rScheduled',
+        selectedVariantName: 'alpha-audience',
+        selectedPerspective: 'rScheduled',
+        perspectiveStack: ['rScheduled', 'drafts'],
+      })
+      mockUsePaneRouter.mockReturnValue({
+        params: {scheduledDraft: 'rScheduled'},
+        setParams: vi.fn(),
+      })
+      mockUseTargetDocumentState.mockReturnValue(readyTarget({version: SCHEDULED_SIBLING}))
+
+      render(<CopyDocumentActions />, {wrapper})
+      await clickMenuItem('copy-link-to-document')
+
+      expect(mockResolveIntentLink).toHaveBeenCalledWith(
+        'edit',
+        {id: 'doc-123', type: 'article', scheduledDraft: 'rScheduled'},
+        [['variant', 'alpha-audience']],
       )
     })
 

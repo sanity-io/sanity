@@ -34,7 +34,7 @@ export function CopyDocumentActions() {
   const {documentId, documentType, schemaType} = useDocumentPaneInfo()
   const targetDocumentState = useTargetDocumentState(documentId)
   const siblings = getTargetSiblings(targetDocumentState)
-  const {selectedReleaseId, selectedPerspectiveName} = usePerspective()
+  const {selectedReleaseId, selectedPerspectiveName, selectedVariantName} = usePerspective()
   const {params} = usePaneRouter()
   const {resolveIntentLink} = useRouter()
   const {buildIntentUrl} = useStudioUrl()
@@ -78,6 +78,10 @@ export function CopyDocumentActions() {
     const searchParams: [string, string][] =
       selectedReleaseId && !scheduledDraft ? [['perspective', selectedReleaseId]] : []
 
+    if (selectedVariantName) {
+      searchParams.push(['variant', selectedVariantName])
+    }
+
     const intentParams = {
       id: documentId,
       type: documentType,
@@ -101,6 +105,7 @@ export function CopyDocumentActions() {
     resolveIntentLink,
     scheduledDraft,
     selectedReleaseId,
+    selectedVariantName,
     t,
     telemetry,
   ])
