@@ -9,6 +9,7 @@ import {useHistoryRestoreAction} from './documentActions/HistoryRestoreAction'
 import {usePublishAction} from './documentActions/PublishAction'
 import {useUnpublishAction} from './documentActions/UnpublishAction'
 import {useLiveEditBadge} from './documentBadges/LiveEditBadge'
+import {useSingletonBadge} from './documentBadges/SingletonBadge'
 import {getIntentState} from './getIntentState'
 import {structureUsEnglishLocaleBundle} from './i18n'
 import {changesInspector} from './panes/document/inspectors/changes'
@@ -109,10 +110,12 @@ export const structureTool = definePlugin<StructureToolOptions | void>((options)
         // we need to check whether the document actions already exist in the Studio config
         return [...otherActions, ...destructiveActions]
       },
-      badges: (prevBadges) => {
+      badges: (prevBadges, {singleton}) => {
+        const singletonBadge = singleton ? [useSingletonBadge] : []
+
         // NOTE: since it's possible to have several structure tools in one Studio,
         // we need to check whether the document badges already exist in the Studio config
-        return Array.from(new Set([...prevBadges, ...documentBadges]))
+        return Array.from(new Set([...prevBadges, ...documentBadges, ...singletonBadge]))
       },
       inspectors: (prevInspectors) => {
         // NOTE: since it's possible to have several structure tools in one Studio,
