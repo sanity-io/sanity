@@ -358,6 +358,7 @@ exports[`exports snapshot 1`] = `
     "getDocumentPairPermissions": "function",
     "getDocumentValuePermissions": "function",
     "getDocumentVariantType": "function",
+    "getDocumentVersionType": "function",
     "getDraftId": "function",
     "getErrorMessage": "function",
     "getExpandOperations": "function",
