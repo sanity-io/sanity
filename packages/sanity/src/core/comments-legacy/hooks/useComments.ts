@@ -1,5 +1,5 @@
 import {useContext} from 'react'
-import {CommentsContext} from 'sanity/_singletons'
+import {CommentsLegacyContext} from 'sanity/_singletons'
 
 import {type CommentsContextValue} from '../context/comments/types'
 
@@ -8,7 +8,7 @@ import {type CommentsContextValue} from '../context/comments/types'
  * @hidden
  */
 export function useComments(): CommentsContextValue {
-  const value = useContext(CommentsContext)
+  const value = useContext(CommentsLegacyContext)
 
   if (!value) {
     throw new Error('useComments must be used within a CommentsProvider')

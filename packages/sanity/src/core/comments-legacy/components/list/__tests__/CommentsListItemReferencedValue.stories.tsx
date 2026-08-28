@@ -20,7 +20,7 @@ const QUOTE: PortableTextBlock[] = [
  * text is a static portable-text fixture (no timestamps).
  */
 const meta = {
-  title: 'Comments/Referenced Value',
+  title: 'Comments (legacy)/Referenced Value',
   component: CommentsListItemReferencedValue,
   decorators: [
     (Story) => (

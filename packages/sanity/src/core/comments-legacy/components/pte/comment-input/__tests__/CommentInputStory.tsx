@@ -1,10 +1,10 @@
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import noop from 'lodash-es/noop.js'
 import {useCallback, useState} from 'react'
+import {CommentInput} from 'sanity'
 
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
 import {type UserListWithPermissionsHookValue} from '../../../../../hooks/useUserListWithPermissions'
-import {CommentInput} from '../CommentInput'
 
 const currentUser: CurrentUser = {
   email: '',

@@ -1,7 +1,7 @@
 import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {isPortableTextSpan, type Path} from '@sanity/types'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
-import {CommentInputContext} from 'sanity/_singletons'
+import {CommentInputLegacyContext} from 'sanity/_singletons'
 
 import {useDidUpdate} from '../../../../form/hooks/useDidUpdate'
 import {type UserListWithPermissionsHookValue} from '../../../../hooks/useUserListWithPermissions'
@@ -240,5 +240,9 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
     ],
   )
 
-  return <CommentInputContext.Provider value={ctxValue}>{children}</CommentInputContext.Provider>
+  return (
+    <CommentInputLegacyContext.Provider value={ctxValue}>
+      {children}
+    </CommentInputLegacyContext.Provider>
+  )
 }

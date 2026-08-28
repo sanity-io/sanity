@@ -8,7 +8,7 @@ import {CommentBreadcrumbsStory} from './CommentBreadcrumbsStory'
  * moving off `@sanity/ui` Box. Paths are static — no timestamps or live data.
  */
 const meta = {
-  title: 'Comments/Comment Breadcrumbs',
+  title: 'Comments (legacy)/Comment Breadcrumbs',
   component: CommentBreadcrumbsStory,
 } satisfies Meta<typeof CommentBreadcrumbsStory>
 

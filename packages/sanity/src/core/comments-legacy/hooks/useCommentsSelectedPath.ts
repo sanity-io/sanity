@@ -1,5 +1,5 @@
 import {useContext} from 'react'
-import {CommentsSelectedPathContext} from 'sanity/_singletons'
+import {CommentsSelectedPathLegacyContext} from 'sanity/_singletons'
 
 import {type CommentsSelectedPathContextValue} from '../context/selected-path/types'
 
@@ -7,7 +7,7 @@ import {type CommentsSelectedPathContextValue} from '../context/selected-path/ty
  * @internal
  */
 export function useCommentsSelectedPath(): CommentsSelectedPathContextValue {
-  const ctx = useContext(CommentsSelectedPathContext)
+  const ctx = useContext(CommentsSelectedPathLegacyContext)
 
   if (!ctx) {
     throw new Error('useCommentsSelectedPath: missing context value')

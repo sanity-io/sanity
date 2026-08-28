@@ -1,5 +1,5 @@
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
-import {CommentsAuthoringPathContext} from 'sanity/_singletons'
+import {CommentsAuthoringPathLegacyContext} from 'sanity/_singletons'
 
 import {type CommentsAuthoringPathContextValue} from './types'
 
@@ -34,8 +34,8 @@ export function CommentsAuthoringPathProvider(props: CommentsAuthoringPathProvid
   )
 
   return (
-    <CommentsAuthoringPathContext.Provider value={value}>
+    <CommentsAuthoringPathLegacyContext.Provider value={value}>
       {children}
-    </CommentsAuthoringPathContext.Provider>
+    </CommentsAuthoringPathLegacyContext.Provider>
   )
 }

@@ -1,7 +1,7 @@
 import {type Path} from '@sanity/types'
 import orderBy from 'lodash-es/orderBy.js'
 import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
-import {CommentsContext} from 'sanity/_singletons'
+import {CommentsLegacyContext} from 'sanity/_singletons'
 
 import {useEditState} from '../../../hooks/useEditState'
 import {useSchema} from '../../../hooks/useSchema'
@@ -364,5 +364,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     ],
   )
 
-  return <CommentsContext.Provider value={ctxValue}>{children}</CommentsContext.Provider>
+  return (
+    <CommentsLegacyContext.Provider value={ctxValue}>{children}</CommentsLegacyContext.Provider>
+  )
 })

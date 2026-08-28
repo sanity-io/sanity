@@ -15,13 +15,25 @@ export {
 export {ColorSchemeSetValueContext} from '../_singletons/context/ColorSchemeSetValueContext'
 export {ColorSchemeValueContext} from '../_singletons/context/ColorSchemeValueContext'
 export {CommentInputContext} from '../_singletons/context/CommentInputContext'
+export {CommentInputLegacyContext} from '../_singletons/context/CommentInputLegacyContext'
 export {CommentsAuthoringPathContext} from '../_singletons/context/CommentsAuthoringPathContext'
+export {CommentsAuthoringPathLegacyContext} from '../_singletons/context/CommentsAuthoringPathLegacyContext'
 export {CommentsContext} from '../_singletons/context/CommentsContext'
-export {CommentsEnabledContext} from '../_singletons/context/CommentsEnabledContext'
-export {CommentsIntentContext} from '../_singletons/context/CommentsIntentContext'
+export {
+  CommentsEnabledContext,
+  type CommentsEnabledContextValue,
+} from '../_singletons/context/CommentsEnabledContext'
+export {
+  CommentsIntentContext,
+  type CommentsIntentContextValue,
+} from '../_singletons/context/CommentsIntentContext'
+export {CommentsLegacyContext} from '../_singletons/context/CommentsLegacyContext'
 export {CommentsOnboardingContext} from '../_singletons/context/CommentsOnboardingContext'
+export {CommentsOnboardingLegacyContext} from '../_singletons/context/CommentsOnboardingLegacyContext'
 export {CommentsSelectedPathContext} from '../_singletons/context/CommentsSelectedPathContext'
+export {CommentsSelectedPathLegacyContext} from '../_singletons/context/CommentsSelectedPathLegacyContext'
 export {CommentsUpsellContext} from '../_singletons/context/CommentsUpsellContext'
+export {CommentsUpsellLegacyContext} from '../_singletons/context/CommentsUpsellLegacyContext'
 export {ConfigErrorContext, type ConfigErrorValue} from '../_singletons/context/ConfigErrorContext'
 export {CopyPasteContext} from '../_singletons/context/CopyPasteContext'
 export {

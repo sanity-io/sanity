@@ -1287,7 +1287,7 @@
       // the public API and test-only deps freely
       "files": [
         "packages/sanity/**/*.browser.test.{ts,tsx}",
-        "packages/sanity/src/core/comments/components/pte/comment-input/__tests__/*Story.tsx",
+        "packages/sanity/src/core/comments{,-legacy}/components/pte/comment-input/__tests__/*Story.tsx",
         "packages/sanity/src/core/form/inputs/arrays/__tests__/*Story.tsx",
         "packages/sanity/src/core/form/inputs/PortableText/__tests__/**/*Story.tsx"
       ],

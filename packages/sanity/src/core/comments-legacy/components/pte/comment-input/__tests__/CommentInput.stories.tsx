@@ -8,7 +8,7 @@ import {CommentsInputStory} from './CommentInputStory'
  * state deterministically).
  */
 const meta = {
-  title: 'Comments/Comment Input',
+  title: 'Comments (legacy)/Comment Input',
   component: CommentsInputStory,
   parameters: {chromatic: {delay: 300}},
 } satisfies Meta<typeof CommentsInputStory>

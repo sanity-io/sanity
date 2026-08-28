@@ -1,6 +1,6 @@
 import isEqual from 'lodash-es/isEqual.js'
 import {memo, useCallback, useMemo, useState} from 'react'
-import {CommentsSelectedPathContext} from 'sanity/_singletons'
+import {CommentsSelectedPathLegacyContext} from 'sanity/_singletons'
 
 import {type CommentsSelectedPath, type CommentsSelectedPathContextValue} from './types'
 
@@ -35,8 +35,8 @@ export const CommentsSelectedPathProvider = memo(function CommentsSelectedPathPr
   )
 
   return (
-    <CommentsSelectedPathContext.Provider value={ctxValue}>
+    <CommentsSelectedPathLegacyContext.Provider value={ctxValue}>
       {children}
-    </CommentsSelectedPathContext.Provider>
+    </CommentsSelectedPathLegacyContext.Provider>
   )
 })

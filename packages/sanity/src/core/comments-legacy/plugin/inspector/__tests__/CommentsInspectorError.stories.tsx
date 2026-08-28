@@ -9,7 +9,7 @@ import {CommentsInspectorErrorStory} from './CommentsInspectorErrorStory'
  * the title string. The error message is a fixed fixture (no stack/time).
  */
 const meta = {
-  title: 'Comments/Inspector Error',
+  title: 'Comments (legacy)/Inspector Error',
   component: CommentsInspectorErrorStory,
 } satisfies Meta<typeof CommentsInspectorErrorStory>
 

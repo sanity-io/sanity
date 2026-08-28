@@ -17,13 +17,21 @@ import type {
   ColorSchemeSetValueContext,
   ColorSchemeValueContext,
   CommentInputContext,
+  CommentInputLegacyContext,
   CommentsAuthoringPathContext,
+  CommentsAuthoringPathLegacyContext,
   CommentsContext,
   CommentsEnabledContext,
+  CommentsEnabledContextValue,
   CommentsIntentContext,
+  CommentsIntentContextValue,
+  CommentsLegacyContext,
   CommentsOnboardingContext,
+  CommentsOnboardingLegacyContext,
   CommentsSelectedPathContext,
+  CommentsSelectedPathLegacyContext,
   CommentsUpsellContext,
+  CommentsUpsellLegacyContext,
   ConfigErrorContext,
   ConfigErrorValue,
   CopyPasteContext,
@@ -188,8 +196,14 @@ describe('sanity/_singletons', () => {
   test('CommentInputContext', () => {
     expectTypeOf<typeof CommentInputContext>().not.toBeNever()
   })
+  test('CommentInputLegacyContext', () => {
+    expectTypeOf<typeof CommentInputLegacyContext>().not.toBeNever()
+  })
   test('CommentsAuthoringPathContext', () => {
     expectTypeOf<typeof CommentsAuthoringPathContext>().not.toBeNever()
+  })
+  test('CommentsAuthoringPathLegacyContext', () => {
+    expectTypeOf<typeof CommentsAuthoringPathLegacyContext>().not.toBeNever()
   })
   test('CommentsContext', () => {
     expectTypeOf<typeof CommentsContext>().not.toBeNever()
@@ -197,17 +211,35 @@ describe('sanity/_singletons', () => {
   test('CommentsEnabledContext', () => {
     expectTypeOf<typeof CommentsEnabledContext>().not.toBeNever()
   })
+  test('CommentsEnabledContextValue', () => {
+    expectTypeOf<CommentsEnabledContextValue>().not.toBeNever()
+  })
   test('CommentsIntentContext', () => {
     expectTypeOf<typeof CommentsIntentContext>().not.toBeNever()
+  })
+  test('CommentsIntentContextValue', () => {
+    expectTypeOf<CommentsIntentContextValue>().not.toBeNever()
+  })
+  test('CommentsLegacyContext', () => {
+    expectTypeOf<typeof CommentsLegacyContext>().not.toBeNever()
   })
   test('CommentsOnboardingContext', () => {
     expectTypeOf<typeof CommentsOnboardingContext>().not.toBeNever()
   })
+  test('CommentsOnboardingLegacyContext', () => {
+    expectTypeOf<typeof CommentsOnboardingLegacyContext>().not.toBeNever()
+  })
   test('CommentsSelectedPathContext', () => {
     expectTypeOf<typeof CommentsSelectedPathContext>().not.toBeNever()
   })
+  test('CommentsSelectedPathLegacyContext', () => {
+    expectTypeOf<typeof CommentsSelectedPathLegacyContext>().not.toBeNever()
+  })
   test('CommentsUpsellContext', () => {
     expectTypeOf<typeof CommentsUpsellContext>().not.toBeNever()
+  })
+  test('CommentsUpsellLegacyContext', () => {
+    expectTypeOf<typeof CommentsUpsellLegacyContext>().not.toBeNever()
   })
   test('ConfigErrorContext', () => {
     expectTypeOf<typeof ConfigErrorContext>().not.toBeNever()

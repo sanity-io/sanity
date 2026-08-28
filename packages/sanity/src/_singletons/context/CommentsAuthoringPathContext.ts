@@ -1,6 +1,6 @@
 import {createContext} from 'sanity/_createContext'
 
-import type {CommentsAuthoringPathContextValue} from '../../core/comments-legacy/context/authoring-path/types'
+import type {CommentsAuthoringPathContextValue} from '../../core/comments/context/authoring-path/types'
 
 /**
  * @beta

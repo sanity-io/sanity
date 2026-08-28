@@ -1,5 +1,5 @@
 import {useContext} from 'react'
-import {CommentsAuthoringPathContext} from 'sanity/_singletons'
+import {CommentsAuthoringPathLegacyContext} from 'sanity/_singletons'
 
 import {type CommentsAuthoringPathContextValue} from '../context/authoring-path/types'
 
@@ -8,7 +8,7 @@ import {type CommentsAuthoringPathContextValue} from '../context/authoring-path/
  * @hidden
  */
 export function useCommentsAuthoringPath(): CommentsAuthoringPathContextValue {
-  const value = useContext(CommentsAuthoringPathContext)
+  const value = useContext(CommentsAuthoringPathLegacyContext)
 
   if (!value) {
     throw new Error('useCommentsAuthoringPath: missing context value')

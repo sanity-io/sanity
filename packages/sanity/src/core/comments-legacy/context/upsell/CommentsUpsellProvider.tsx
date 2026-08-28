@@ -1,4 +1,4 @@
-import {CommentsUpsellContext} from 'sanity/_singletons'
+import {CommentsUpsellLegacyContext} from 'sanity/_singletons'
 
 import {getDialogPropsFromContext, useUpsellContext} from '../../../hooks/useUpsellContext'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
@@ -14,9 +14,9 @@ export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
   })
 
   return (
-    <CommentsUpsellContext.Provider value={contextValue}>
+    <CommentsUpsellLegacyContext.Provider value={contextValue}>
       {props.children}
       <UpsellDialog {...getDialogPropsFromContext(contextValue)} />
-    </CommentsUpsellContext.Provider>
+    </CommentsUpsellLegacyContext.Provider>
   )
 }

@@ -1,5 +1,5 @@
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
-import {CommentsOnboardingContext} from 'sanity/_singletons'
+import {CommentsOnboardingLegacyContext} from 'sanity/_singletons'
 
 import {type CommentsOnboardingContextValue} from './types'
 
@@ -45,8 +45,8 @@ export function CommentsOnboardingProvider(props: CommentsOnboardingProviderProp
   )
 
   return (
-    <CommentsOnboardingContext.Provider value={ctxValue}>
+    <CommentsOnboardingLegacyContext.Provider value={ctxValue}>
       {children}
-    </CommentsOnboardingContext.Provider>
+    </CommentsOnboardingLegacyContext.Provider>
   )
 }
