@@ -29,6 +29,7 @@ import {Flex, Box, Grid} from 'ui5'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {EventsTimelineMenu} from '../../timeline/events/EventsTimelineMenu'
 import {useDocumentPane} from '../../useDocumentPane'
+import {getPublishedComparisonBase, getPublishedSiblingScopeId} from './getPublishedComparisonBase'
 
 const Scroller = styled(ScrollContainer)`
   height: 100%;
@@ -49,24 +50,21 @@ const DIFF_INITIAL_VALUE = {
   error: null,
 }
 
-const CompareWithPublishedView = () => {
+function CompareWithPublishedView() {
   const {documentId, documentType, schemaType, editState, displayed, targetDocumentState} =
     useDocumentPane()
   const {selectedPerspective, selectedPerspectiveName, selectedReleaseId} = usePerspective()
   const {t} = useTranslation(structureLocaleNamespace)
 
   // "Published" means this lane's published sibling, not the group's published document.
-  // A scoped stub (variant-of-published) is checked out as a pair whose document arrives in
-  // `version`; a default published (no scope id) is `editState.published`.
   const siblings = getTargetSiblings(targetDocumentState)
-  const publishedStub = siblings?.published
-  const siblingScopeId = publishedStub?._system.scopeId
+  const siblingScopeId = getPublishedSiblingScopeId(siblings)
   const siblingEditState = useEditState(documentId, documentType, 'default', siblingScopeId)
-  const publishedComparisonBase = siblingScopeId
-    ? (siblingEditState.version ?? null)
-    : publishedStub || siblings === undefined
-      ? (editState?.published ?? null)
-      : null
+  const publishedComparisonBase = getPublishedComparisonBase({
+    siblings,
+    siblingVersion: siblingEditState.version,
+    published: editState?.published,
+  })
 
   const rootDiff = useMemo(() => {
     const diff = diffInput(
@@ -91,7 +89,7 @@ const CompareWithPublishedView = () => {
     return null
   }
   return (
-    <Stack gap={2} marginBottom={3}>
+    <Stack gap={2} marginBottom={3} data-testid="compare-with-published">
       <Card borderBottom paddingBottom={3}>
         <Stack gap={3} paddingTop={1}>
           <Text size={1} weight="medium">
@@ -128,6 +126,7 @@ const CompareWithPublishedView = () => {
     </Stack>
   )
 }
+
 export function EventsInspector({showChanges}: {showChanges: boolean}): ReactElement {
   const {documentId, schemaType, timelineError, value, formState} = useDocumentPane()
   const [scrollRef, setScrollRef] = useState<HTMLDivElement | null>(null)
