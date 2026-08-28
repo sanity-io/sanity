@@ -78,7 +78,7 @@ export function defineSearchMachine<TQuery, TResult>() {
         throwError(
           () =>
             new Error(
-              "The 'search' actor is not implemented. Add it to searchMachine.provide({actors: {search: fromObservable(({input}) => ...)}})",
+              "The 'search' actor is not implemented. Add it to defineSearchMachine().provide({actors: {search: fromObservable(({input}) => ...)}})",
             ),
         ),
       ),

@@ -1,12 +1,7 @@
 import {shallowEqual, useActorRef, useSelector} from '@xstate/react'
-import {
-  useCallback,
-  useEffect,
-  // oxlint-disable-next-line no-restricted-imports -- useSearchMachine is only called from plain function components, so facebook/react#34818 does not apply
-  useEffectEvent,
-  useState,
-} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {type Observable} from 'rxjs'
+import {useEffectEvent} from 'use-effect-event'
 import {fromObservable} from 'xstate'
 
 import {defineSearchMachine} from './searchMachine'
@@ -67,6 +62,7 @@ export function useSearchMachine<THit>(options: UseSearchMachineOptions<THit>): 
   useEffect(() => {
     const subscription = actorRef.on('search failed', (event) => handleSearchFailed(event.error))
     return () => subscription.unsubscribe()
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- use-effect-event handlers are stable, and react-hooks/exhaustive-deps requires excluding them
   }, [actorRef])
 
   const handleQueryChange = useCallback(
