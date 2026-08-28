@@ -47,10 +47,6 @@ const INITIAL_SEARCH_STATE: ReferenceSearchState = {
 
 const NO_FILTER = () => true
 
-function nonNullable<T>(v: T): v is NonNullable<T> {
-  return v !== null
-}
-
 interface AutocompleteOption {
   hit: ReferenceSearchHit
   value: string
@@ -99,7 +95,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
   const searchState$ = useMemo(
     () =>
       searchInput$.pipe(
-        filter(nonNullable),
+        filter(isNonNullable),
         withLatestFrom(callbacks$),
         switchMap(([searchString, callbacks]) =>
           concat(
