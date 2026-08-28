@@ -1143,6 +1143,18 @@ export {
 } from '../core/search/common/types'
 export {createSearch} from '../core/search/search'
 export {
+  defineSearchMachine,
+  type SearchMachineContext,
+  type SearchMachineEmitted,
+  type SearchMachineEvent,
+  type SearchMachineInput,
+} from '../core/search/searchMachine'
+export {
+  type SearchMachineState,
+  useSearchMachine,
+  type UseSearchMachineOptions,
+} from '../core/search/useSearchMachine'
+export {
   SingleDocReleaseProvider,
   useSingleDocRelease,
 } from '../core/singleDocRelease/context/SingleDocReleaseProvider'
