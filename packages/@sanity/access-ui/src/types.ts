@@ -75,8 +75,10 @@ export type SubmitAccessRequestResult =
  *   its own gates, which this endpoint does not resolve.
  * - `saml-required` — the organization only admits members through its SSO
  *   login flow, so no administrator could ever approve a request. `redirectUrl`
- *   is the organization's SSO login page, which sends the user straight to
- *   their identity provider. It is absent when there is nowhere to send them.
+ *   is where to send them to log in: normally the organization's SSO form,
+ *   which submits itself, but a confirmation page for an organization with no
+ *   slug. Both end at the identity provider, so the card treats them alike. It
+ *   is absent only when neither resolves, leaving no way forward.
  * - `resource-not-available` — the target project or organization is gone.
  *
  * @public
