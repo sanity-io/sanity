@@ -77,8 +77,8 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const scopeId = getTargetScopeId(targetDocumentState)
   const isVariantTarget = isTargetReady && targetDocumentState.variant !== undefined
   const siblings = getTargetSiblings(targetDocumentState)
-  // Publish-state timestamps and completion tracking live on the current lane's published
-  // sibling. Fall back to the pair snapshot while the target is still resolving.
+  // Publish-state timestamps and completion tracking live on the current lane's published sibling.
+  // (While the target is resolving, the action is disabled below.)
   const publishedInfo = siblings?.published
 
   const {publish} = useDocumentOperation(id, type, getPairTarget(targetDocumentState))
