@@ -1,6 +1,7 @@
-import {Flex, Stack} from '@sanity/ui'
+import {Stack} from '@sanity/ui'
 import {addDays} from 'date-fns/addDays'
 import {useCallback, useState} from 'react'
+import {Flex} from 'ui5'
 
 import {useTranslation} from '../../../../../../../../../i18n/hooks/useTranslation'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
@@ -83,7 +84,7 @@ export function CommonDateRangeInput({
   return (
     <div>
       <Stack gap={3}>
-        <Flex direction="column" gap={3}>
+        <Flex flexDirection="column" gap={3}>
           {/* Start date */}
           <ParsedDateTextInput
             aria-label={t('search.filter-date-range-start-date-aria-label')}
