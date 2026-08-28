@@ -55,18 +55,18 @@ const CompareWithPublishedView = () => {
   const {selectedPerspective, selectedPerspectiveName, selectedReleaseId} = usePerspective()
   const {t} = useTranslation(structureLocaleNamespace)
 
-  // For variant targets, "published" means the variant-of-published sibling, not the base
-  // published document. Its scope id checks out the sibling pair; the sibling document arrives
-  // in the `version` slot of that edit state.
-  const isVariantTarget =
-    targetDocumentState.status === 'ready' && targetDocumentState.variant !== undefined
-  const siblingScopeId = isVariantTarget
-    ? getTargetSiblings(targetDocumentState)?.published?._system.scopeId
-    : undefined
+  // "Published" means this lane's published sibling, not the group's published document.
+  // A scoped stub (variant-of-published) is checked out as a pair whose document arrives in
+  // `version`; a default published (no scope id) is `editState.published`.
+  const siblings = getTargetSiblings(targetDocumentState)
+  const publishedStub = siblings?.published
+  const siblingScopeId = publishedStub?._system.scopeId
   const siblingEditState = useEditState(documentId, documentType, 'default', siblingScopeId)
-  const publishedComparisonBase = isVariantTarget
-    ? (siblingScopeId && siblingEditState.version) || null
-    : editState?.published
+  const publishedComparisonBase = siblingScopeId
+    ? (siblingEditState.version ?? null)
+    : publishedStub || siblings === undefined
+      ? (editState?.published ?? null)
+      : null
 
   const rootDiff = useMemo(() => {
     const diff = diffInput(
@@ -77,8 +77,8 @@ const CompareWithPublishedView = () => {
     return diff
   }, [publishedComparisonBase, displayed])
 
-  if (isVariantTarget && !publishedComparisonBase) {
-    // The variant has never been published — there is nothing to compare against.
+  if (!publishedComparisonBase) {
+    // This lane has never been published — there is nothing to compare against.
     return null
   }
   if (selectedReleaseId && !editState?.version) {
