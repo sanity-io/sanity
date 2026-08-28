@@ -2,7 +2,6 @@ import {Suspense, useCallback} from 'react'
 import {Resizable} from 'sanity'
 import {Box} from 'ui5'
 
-import {usePane} from '../../../components/pane/usePane'
 import {useStructureTool} from '../../../useStructureTool'
 import {DOCUMENT_INSPECTOR_MAX_WIDTH, DOCUMENT_INSPECTOR_MIN_WIDTH} from '../constants'
 import {useDocumentPane} from '../useDocumentPane'
@@ -18,7 +17,6 @@ export function DocumentInspectorPanel(
   props: DocumentInspectorPanelProps,
 ): React.JSX.Element | null {
   const {documentId, documentType, flex} = props
-  const {collapsed} = usePane()
   const {closeInspector, inspector} = useDocumentPane()
   const {features} = useStructureTool()
 
@@ -26,7 +24,7 @@ export function DocumentInspectorPanel(
     if (inspector) closeInspector(inspector.name)
   }, [closeInspector, inspector])
 
-  if (collapsed || !inspector) return null
+  if (!inspector) return null
 
   const Component = inspector.component
   const element = (

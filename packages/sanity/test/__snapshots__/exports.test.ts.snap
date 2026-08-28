@@ -143,6 +143,7 @@ exports[`exports snapshot 1`] = `
     "IntentButton": "function",
     "IsLastPaneProvider": "function",
     "LATEST": "string",
+    "LazyActivity": "function",
     "LegacyLayerProvider": "function",
     "LinearProgress": "function",
     "LiveManifestRegisterProvider": "function",

@@ -1,5 +1,5 @@
 import {Card, Flex, LayerProvider, useElementSize} from '@sanity/ui'
-import {type ReactNode, type RefAttributes, useCallback, useMemo} from 'react'
+import {Activity, type ReactNode, type RefAttributes, useCallback, useMemo} from 'react'
 import {LegacyLayerProvider} from 'sanity'
 import {Box} from 'ui5'
 
@@ -61,7 +61,7 @@ export function PaneHeader(props: PaneHeaderProps & RefAttributes<HTMLDivElement
     expand()
   }, [collapsed, expand])
 
-  const showTabsOrSubActions = Boolean(!collapsed && (tabs || subActions))
+  const hasTabsOrSubActions = Boolean(tabs || subActions)
 
   return (
     <LayerProvider zOffset={100}>
@@ -118,18 +118,22 @@ export function PaneHeader(props: PaneHeaderProps & RefAttributes<HTMLDivElement
                 )}
               </Flex>
 
-              {showTabsOrSubActions && (
-                <Flex align="center" hidden={collapsed} overflow="auto">
-                  <Box flexBasis="0%" flexGrow={1} marginRight={subActions ? 3 : 0}>
-                    {tabs}
-                  </Box>
+              {hasTabsOrSubActions && (
+                <Activity mode={collapsed ? 'hidden' : 'visible'}>
+                  <Flex align="center" overflow="auto">
+                    <Box flexBasis="0%" flexGrow={1} marginRight={subActions ? 3 : 0}>
+                      {tabs}
+                    </Box>
 
-                  {subActions}
-                </Flex>
+                    {subActions}
+                  </Flex>
+                </Activity>
               )}
             </Layout>
 
-            {!collapsed && contentAfter}
+            {contentAfter && (
+              <Activity mode={collapsed ? 'hidden' : 'visible'}>{contentAfter}</Activity>
+            )}
           </Card>
         </LegacyLayerProvider>
       </Root>

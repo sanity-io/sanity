@@ -126,6 +126,7 @@ export {
   type InsufficientPermissionsMessageProps,
 } from '../core/components/InsufficientPermissionsMessage'
 export {IntentButton} from '../core/components/IntentButton'
+export {LazyActivity, type LazyActivityProps} from '../core/components/lazyActivity/LazyActivity'
 export {LoadingBlock} from '../core/components/loadingBlock/LoadingBlock'
 export {PopoverDialog} from '../core/components/popoverDialog/PopoverDialog'
 export {

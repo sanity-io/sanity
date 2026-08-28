@@ -1,5 +1,5 @@
 import {BoundaryElementProvider, Flex, PortalProvider, usePortal} from '@sanity/ui'
-import {useEffect, useMemo, useRef, useState} from 'react'
+import {Activity, useEffect, useMemo, useRef, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   getVersionFromId,
@@ -193,7 +193,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     ) : null
   }, [isInspectOpen, displayed, value])
 
-  const showInspector = Boolean(!collapsed && inspector)
+  const showInspector = Boolean(inspector)
   const {selectedReleaseId, selectedPerspectiveName, selectedPerspective} = usePerspective()
 
   const hasDocumentInRelease =
@@ -414,7 +414,9 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   return (
     <PaneContent>
       <Flex height="fill">
-        {showFormView && (
+        {/* When an inspector replaces the form view (non-resizable layouts), keep the form
+            mounted but hidden so its state survives toggling the inspector. */}
+        <Activity mode={showFormView ? 'visible' : 'hidden'}>
           <Flex height="fill" direction="column" flex={2}>
             <LegacyLayerProvider zOffset="paneHeader">
               {banners}
@@ -450,15 +452,19 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
             {footer}
           </Flex>
-        )}
+        </Activity>
+        {/* Keep the open inspector mounted while the pane is collapsed (e.g. when opening a
+            reference in a new pane) so its state survives expanding the pane again. */}
         {showInspector && (
-          <BoundaryElementProvider element={rootElement}>
-            <DocumentInspectorPanel
-              documentId={documentId}
-              documentType={schemaType.name}
-              flex={1}
-            />
-          </BoundaryElementProvider>
+          <Activity mode={collapsed ? 'hidden' : 'visible'}>
+            <BoundaryElementProvider element={rootElement}>
+              <DocumentInspectorPanel
+                documentId={documentId}
+                documentType={schemaType.name}
+                flex={1}
+              />
+            </BoundaryElementProvider>
+          </Activity>
         )}
       </Flex>
     </PaneContent>

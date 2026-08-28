@@ -12,13 +12,13 @@ import {
   type ReactNode,
   useCallback,
   useImperativeHandle,
-  useMemo,
   useRef,
   type RefAttributes,
 } from 'react'
 import {css, styled} from 'styled-components'
 import {Box} from 'ui5'
 
+import {LazyActivity} from '../../../components/lazyActivity/LazyActivity'
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -84,6 +84,22 @@ export interface FormFieldSetProps {
 
 function getChildren(children: ReactNode | (() => ReactNode)): ReactNode {
   return typeof children === 'function' ? children() : children
+}
+
+/**
+ * Defers evaluating function children until this component actually renders, so collapsed
+ * fieldsets that were never expanded do not pay for creating their child elements.
+ */
+function FieldSetContent(props: {
+  children: ReactNode | (() => ReactNode)
+  columns?: number | number[]
+}) {
+  const {children, columns} = props
+  return (
+    <ColumnarGrid gridTemplateColumns={columns} gapX={4} gapY={5}>
+      {getChildren(children)}
+    </ColumnarGrid>
+  )
 }
 
 const Root = styled(Stack).attrs({forwardedAs: 'fieldset'})`
@@ -205,17 +221,6 @@ export function FormFieldSet(
     [collapsed, onCollapse, onExpand],
   )
 
-  const content = useMemo(() => {
-    if (collapsed) {
-      return null
-    }
-    return (
-      <ColumnarGrid gridTemplateColumns={columns} gapX={4} gapY={5}>
-        {getChildren(children)}
-      </ColumnarGrid>
-    )
-  }, [children, collapsed, columns])
-
   return (
     <FormRow
       gutterStartCell={
@@ -295,7 +300,12 @@ export function FormFieldSet(
             ref={ref}
             tabIndex={tabIndex}
           >
-            {!collapsed && content}
+            {/* Once expanded, collapsing keeps the children mounted (hidden) so nested input
+                state survives collapse/expand cycles. Initially collapsed fieldsets render
+                nothing until first expanded. */}
+            <LazyActivity visible={!collapsed}>
+              <FieldSetContent columns={columns}>{children}</FieldSetContent>
+            </LazyActivity>
           </Content>
         </Root>
       </FormNodeDivergenceDetail>
