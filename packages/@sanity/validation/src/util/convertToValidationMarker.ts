@@ -5,10 +5,6 @@ import {type ValidationMarkerCode, validationMarkerCodes} from '../codes'
 import {type ValidationContext} from '../types'
 import {pathToString} from '../util/pathToString'
 
-function isNonNullable<T>(t: T): t is NonNullable<T> {
-  return t !== null || t !== undefined
-}
-
 export function convertToValidationMarker(
   validatorResult: true | true[] | string | string[] | ValidationError | ValidationError[],
   level: 'error' | 'warning' | 'info' | undefined,
@@ -24,9 +20,9 @@ export function convertToValidationMarker(
   if (validatorResult === true) return []
 
   if (Array.isArray(validatorResult)) {
-    return validatorResult
-      .flatMap((child) => convertToValidationMarker(child, level, context, fallback))
-      .filter(isNonNullable)
+    return validatorResult.flatMap((child) =>
+      convertToValidationMarker(child, level, context, fallback),
+    )
   }
 
   if (typeof validatorResult === 'string') {
