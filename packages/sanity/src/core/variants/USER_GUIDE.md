@@ -62,7 +62,7 @@ If the selected variant name doesn't match any existing variant definition (for 
 
 ### Publishing
 
-**Publish** on a variant draft publishes it as the **published variant** — the content the API serves for matching conditions. The base published document is not touched.
+**Publish variant** on a variant draft publishes it as the **published variant** — the content the API serves for matching conditions. The base published document is not touched.
 
 - If the variant has been published before, the new publish replaces the published variant's content.
 - Variant documents in a **release** are not published individually: they're disabled with _"This version is published as part of its release"_ and go live when the release is published, like any other release content.
