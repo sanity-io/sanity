@@ -165,20 +165,6 @@ describe('RequestAccessForm', () => {
     expect(screen.queryByRole('form')).not.toBeInTheDocument()
   })
 
-  // Declared by the API but not returned yet. Mapped so the card stays honest
-  // the day the server starts producing them.
-  it.each([
-    {state: 'pending', expect: /pending approval/},
-    {state: 'requests-disabled', expect: /problem submitting/},
-    {state: 'email-domain-blocked', expect: /problem submitting/},
-  ])('renders a non-form view for the declared-only $state', async ({state, expect: pattern}) => {
-    const client = createClientStub({status: () => Promise.resolve({state})})
-    await renderForm({client})
-
-    expect(await screen.findByText(pattern)).toBeInTheDocument()
-    expect(screen.queryByRole('form')).not.toBeInTheDocument()
-  })
-
   it('keeps the form when the server says eligible', async () => {
     const client = createClientStub({status: () => Promise.resolve({state: 'eligible'})})
     await renderForm({client})

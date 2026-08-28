@@ -71,18 +71,13 @@ export type SubmitAccessRequestResult =
  * Distinct from {@link AccessRequestState}, which this package derives from the
  * caller's own request history: this one is the server's verdict.
  *
- * - `eligible` — offer the form. Creating can still fail for one of the reasons
- *   below, because those gates run on the create path today.
+ * - `eligible` — offer the form. Creating can still fail: the create path has
+ *   its own gates, which this endpoint does not resolve.
  * - `saml-required` — the organization only admits members through its SSO
  *   login flow, so no administrator could ever approve a request. `redirectUrl`
  *   is the organization's SSO login page, which sends the user straight to
  *   their identity provider. It is absent when there is nowhere to send them.
  * - `resource-not-available` — the target project or organization is gone.
- *
- * The remaining members are declared by the API but not yet returned. They name
- * gates that still live on the create path alone, so their absence is not a
- * negative answer. They are listed here so a `switch` stays exhaustive as the
- * server starts producing them.
  *
  * @public
  */
@@ -90,10 +85,6 @@ export type AccessRequestStatus =
   | {state: 'eligible'}
   | {state: 'saml-required'; redirectUrl?: string}
   | {state: 'resource-not-available'}
-  | {state: 'pending'}
-  | {state: 'recently-declined'; retryAt: string}
-  | {state: 'requests-disabled'}
-  | {state: 'email-domain-blocked'}
 
 /**
  * The current user rendered in the request-access screen. A structural subset of

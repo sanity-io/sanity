@@ -120,15 +120,8 @@ type ViewState =
   | {view: 'sso-enforced'; redirectUrl?: string}
 
 /**
- * The server's verdict, for the states it already resolves. `null` hands the
- * decision back to the caller's own request history.
- *
- * The API declares more states than it returns, so the unreturned ones are
- * mapped here rather than ignored: when the server starts producing them the
- * card already renders something honest. `requests-disabled` and
- * `email-domain-blocked` reuse the submit-time copy for the same conditions,
- * and `pending` and `recently-declined` land on the views the request history
- * derives today.
+ * The server's verdict. `null` hands the decision back to the caller's own
+ * request history, which resolves the states this endpoint does not.
  */
 function deriveServerViewState(
   status: AccessRequestStatus,
@@ -137,12 +130,6 @@ function deriveServerViewState(
   switch (status.state) {
     case 'saml-required':
       return {view: 'sso-enforced', redirectUrl: status.redirectUrl}
-    case 'pending':
-      return {view: 'pending'}
-    case 'recently-declined':
-      return {view: 'blocked', title: labels.deniedTitle, message: labels.deniedMessage({})}
-    case 'requests-disabled':
-    case 'email-domain-blocked':
     case 'resource-not-available':
       return {view: 'blocked', title: labels.errorTitle, message: labels.submitFailedMessage}
     case 'eligible':
