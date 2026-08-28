@@ -10,6 +10,8 @@ import {SearchError} from '../SearchError'
  * Box. Critical SearchError/FilterError and caution AssetSourceError all
  * pair Box padding with TextWithTone — a mix a type-check will not catch.
  * Copy comes from the default studio locale bundle (no timestamps).
+ * Padding matches production: FilterError in FilterForm (4), AssetSourceError
+ * in Asset (2). SearchError hardcodes its own padding.
  */
 export function SearchErrorStatesStory() {
   return (
@@ -26,13 +28,13 @@ export function SearchErrorStatesStory() {
             <Text muted size={1} weight="medium">
               filter error
             </Text>
-            <FilterError padding={3} />
+            <FilterError padding={4} />
           </Stack>
           <Stack gap={2}>
             <Text muted size={1} weight="medium">
               asset source error
             </Text>
-            <AssetSourceError padding={3} />
+            <AssetSourceError padding={2} />
           </Stack>
         </Stack>
       </Card>
