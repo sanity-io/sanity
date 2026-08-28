@@ -124,6 +124,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
         scheduledDraftMenuActions={scheduledDraftMenuActions}
         documentType={type}
         showPublishNow={configuredActionIds.has('publish')}
+        // EditScheduledDraftAction and useSchedulePublishAction both claim `schedule`, so removing one leaves this gate open.
         showEditSchedule={configuredActionIds.has('schedule')}
         showDeleteSchedule={configuredActionIds.has('discardVersion')}
       />
