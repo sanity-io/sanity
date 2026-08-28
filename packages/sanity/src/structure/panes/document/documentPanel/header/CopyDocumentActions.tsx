@@ -7,10 +7,7 @@ import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo} from 'react'
 import {
   getDraftId,
-  getVersionId,
-  isNewDocument,
-  isVersionId,
-  useDocumentVersions,
+  getTargetSiblings,
   usePerspective,
   useStudioUrl,
   useTargetDocumentState,
@@ -24,7 +21,6 @@ import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {DocumentIDCopied, DocumentURLCopied} from '../../__telemetry__/documentPanes.telemetry'
-import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentPaneInfo} from '../../useDocumentPaneInfo'
 
 /**
@@ -36,11 +32,8 @@ import {useDocumentPaneInfo} from '../../useDocumentPaneInfo'
  */
 export function CopyDocumentActions() {
   const {documentId, documentType, schemaType} = useDocumentPaneInfo()
-  const {editState} = useDocumentPane()
   const targetDocumentState = useTargetDocumentState(documentId)
-  const {data: existingDocumentIds, loading: documentVersionsLoading} = useDocumentVersions({
-    documentId,
-  })
+  const siblings = getTargetSiblings(targetDocumentState)
   const {selectedReleaseId, selectedPerspectiveName} = usePerspective()
   const {params} = usePaneRouter()
   const {resolveIntentLink} = useRouter()
@@ -54,29 +47,30 @@ export function CopyDocumentActions() {
   const contextAwareDocumentId = useMemo(() => {
     const versionReleaseId = scheduledDraft || selectedReleaseId
     if (versionReleaseId) {
-      return getVersionId(documentId, versionReleaseId)
+      return siblings?.version?._id
     }
-
     if (selectedPerspectiveName === 'published' || schemaType?.liveEdit) {
-      return documentId
+      return siblings?.published?._id
     }
+    if (siblings?.draft) {
+      return siblings.draft._id
+    }
+    // Published shown on the draft perspective: a creatable draft (default pseudo-draft, or a
+    // missing variant whose published sibling advertises the draft id).
+    if (!siblings?.published) {
+      return undefined
+    }
+    const advertisedDraftId = siblings.published._system?.draft?._ref
 
-    return getDraftId(documentId)
-  }, [documentId, scheduledDraft, schemaType?.liveEdit, selectedPerspectiveName, selectedReleaseId])
-
-  const selectedVariantMissing =
-    targetDocumentState.status === 'variant-missing' ||
-    targetDocumentState.status === 'variant-definition-document-not-found'
-
-  const existenceCheckReady = Boolean(editState?.ready) && !documentVersionsLoading
-
-  const copiedVersionMissing =
-    existenceCheckReady &&
-    isVersionId(contextAwareDocumentId) &&
-    !isNewDocument(editState) &&
-    !existingDocumentIds.includes(contextAwareDocumentId)
-
-  const documentExists = !selectedVariantMissing && !copiedVersionMissing
+    return siblings.published._system?.variant ? advertisedDraftId : getDraftId(documentId)
+  }, [
+    documentId,
+    scheduledDraft,
+    schemaType?.liveEdit,
+    selectedPerspectiveName,
+    selectedReleaseId,
+    siblings,
+  ])
 
   const handleCopyLink = useCallback(async () => {
     telemetry.log(DocumentURLCopied)
@@ -112,6 +106,9 @@ export function CopyDocumentActions() {
   ])
 
   const handleCopyId = useCallback(async () => {
+    if (!contextAwareDocumentId) {
+      return
+    }
     telemetry.log(DocumentIDCopied)
     await navigator.clipboard.writeText(contextAwareDocumentId)
     pushToast({
@@ -121,7 +118,7 @@ export function CopyDocumentActions() {
     })
   }, [contextAwareDocumentId, pushToast, t, telemetry])
 
-  if (!documentExists) {
+  if (!contextAwareDocumentId) {
     return null
   }
 
