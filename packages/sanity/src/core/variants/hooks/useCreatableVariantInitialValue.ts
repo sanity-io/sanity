@@ -6,7 +6,7 @@ import {map, of} from 'rxjs'
 import {getTargetSiblings, type TargetDocumentState} from '../../hooks/useTargetDocumentState'
 import {useDocumentPreviewStore} from '../../store/datastores'
 import {type InitialValueState} from '../../store/document/initialValue/types'
-import {getPublishedId} from '../../util/draftUtils'
+import {getPublishedId, getVersionFromId} from '../../util/draftUtils'
 
 /**
  * Builds the initial value for a creatable missing draft variant from its published sibling: the
@@ -26,7 +26,7 @@ import {getPublishedId} from '../../util/draftUtils'
  */
 export function buildCreatableVariantInitialValue(options: {
   publishedSibling: SanityDocumentLike
-  target: {scopeId: string; id: string}
+  target: {id: string}
   variantId: string
 }): SanityDocumentLike {
   const {publishedSibling, target, variantId} = options
@@ -41,7 +41,7 @@ export function buildCreatableVariantInitialValue(options: {
       },
       variant: {_ref: variantId, _weak: true as const},
       bundleId: 'drafts',
-      scopeId: target.scopeId,
+      scopeId: getVersionFromId(target.id),
     },
   }
 }
@@ -72,7 +72,6 @@ export function useCreatableVariantInitialValue(
   const publishedSiblingVersionStub = siblings?.published
   const publishedSiblingId = publishedSiblingVersionStub?._id
   const targetId = publishedSiblingVersionStub?._system.draft?._ref
-  const targetScopeId = publishedSiblingVersionStub?._system.scopeId
 
   const publishedSibling$ = useMemo(() => {
     if (!targetId || !publishedSiblingId) {
@@ -88,7 +87,7 @@ export function useCreatableVariantInitialValue(
   const publishedSibling = useSyncObservable(publishedSibling$, null)
 
   return useMemo(() => {
-    if (!targetId || !targetScopeId || !variantId) {
+    if (!targetId || !variantId) {
       return fallback
     }
     if (!publishedSibling) {
@@ -99,9 +98,9 @@ export function useCreatableVariantInitialValue(
       error: null,
       value: buildCreatableVariantInitialValue({
         publishedSibling,
-        target: {id: targetId, scopeId: targetScopeId},
+        target: {id: targetId},
         variantId,
       }),
     }
-  }, [targetId, targetScopeId, variantId, publishedSibling, fallback])
+  }, [targetId, variantId, publishedSibling, fallback])
 }

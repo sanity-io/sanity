@@ -134,13 +134,13 @@ describe('useCreatableVariantInitialValue', () => {
     expect(documentPreviewStoreMock.unstable_observeDocument).not.toHaveBeenCalled()
   })
 
-  it('passes the fallback through for a variant-missing state without a creatable target', async () => {
+  it('passes the fallback through for a variant-missing state without a published sibling', async () => {
     const wrapper = await createTestProvider()
     const missingState: TargetDocumentState = {
       status: 'variant-missing',
       variant: variantAlphaAudience,
       bundle: 'drafts',
-      siblings: {published: siblingStub, draft: undefined, version: undefined},
+      siblings: {published: undefined, draft: undefined, version: undefined},
     }
 
     const {result} = renderHook(() => useCreatableVariantInitialValue(missingState, fallback), {
