@@ -164,4 +164,41 @@ describe('toStorableRun', () => {
       'commit',
     )
   })
+
+  it('keys a settle report distinctly from a pageload report of the same scenario', () => {
+    const settleScenario: BenchRunDocument['scenarios'][number] = {
+      scenario: 'singleString',
+      kind: 'pageload',
+      mode: 'settle',
+      settleExpectation: {expectedToSettle: true},
+      metrics: [
+        {
+          label: 'settled sessions',
+          unit: 'count',
+          presentAsEfps: false,
+          experiment: {
+            sessions: [[1], [1]],
+            summary: {n: 2, median: 1, p75: 1, p90: 1, p99: 1, min: 1, max: 1},
+          },
+        },
+      ],
+      failures: [],
+      interruptions: {experiment: {count: 0, totalMs: 0}},
+      loafAttribution: [],
+    }
+    const pageloadScenario: BenchRunDocument['scenarios'][number] = {
+      ...settleScenario,
+      mode: undefined,
+      settleExpectation: undefined,
+    }
+    const stored = toStorableRun({...RUN, scenarios: [settleScenario, pageloadScenario]})
+    expect(stored.scenarios.map((scenario) => scenario._key)).toEqual([
+      'settle-singleString',
+      'pageload-singleString',
+    ])
+    // The expectation object passes through untouched (no arrays inside).
+    expect(stored.scenarios[0].settleExpectation).toEqual({expectedToSettle: true})
+    assertNoNestedArrays(stored, 'run')
+    assertKeyedArrayItems(stored, 'run')
+  })
 })

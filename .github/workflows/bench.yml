@@ -209,6 +209,29 @@ jobs:
           path: perf/bench/dist
           retention-days: 7
 
+      # Settle mode measures the customization workspaces, which live in a
+      # separate studio build so the pristine dist above stays untouched
+      # (see perf/bench/README.md). On the PR path only track-main consumes
+      # this artifact — running the build here anyway is deliberate: it is
+      # the compile check for the customization workspaces on PRs. Skipped
+      # for historical builds (backfill/ab_to): build:customizations would
+      # build against HEAD's packages rather than the requested commit's,
+      # and settle has no pre-existing series to repair.
+      - name: Build customization studio (settle mode)
+        if: >-
+          (steps.changes.outputs.has_changes == 'true' || github.event_name != 'pull_request') &&
+          inputs.backfill_sha == '' && inputs.ab_to == ''
+        run: pnpm --filter bench build:customizations
+
+      - uses: actions/upload-artifact@v7
+        if: >-
+          (steps.changes.outputs.has_changes == 'true' || github.event_name != 'pull_request') &&
+          inputs.backfill_sha == '' && inputs.ab_to == ''
+        with:
+          name: bench-dist-customizations
+          path: perf/bench/dist-customizations
+          retention-days: 7
+
   build-reference:
     # PR path (label-gated, merge-base reference) or A/B dispatch (explicit
     # reference commit via ab_from)
@@ -828,7 +851,9 @@ jobs:
        (github.event_name == 'workflow_dispatch' && inputs.run_suite && inputs.ab_to == ''))
     needs: [build, bench-interaction, bench-pageload]
     runs-on: ubuntu-8core
-    timeout-minutes: 45
+    # Soak (~10m) + INP (~10m) + settle (8 scenarios × 4 sessions, the two
+    # red-by-design ones costing the 30s cap per session — ~20m)
+    timeout-minutes: 60
     permissions:
       contents: read
     env:
@@ -908,6 +933,30 @@ jobs:
         run: |
           pnpm bench run --mode inp --scenario singleString --scenario article --sessions 4 \
             --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__inp.json"
+
+      # Settle: the render-loop detector — customization scenarios plus two
+      # vanilla controls (core-surface loops show on any workspace). It runs
+      # against the customization dist; documentActions and listenQueryPane
+      # are red by design (expectedToSettle: false) and report settled: false
+      # as data with exit 0 — only a mismatch against a scenario's declared
+      # expectation fails the step. Skipped for backfills (no customization
+      # build is produced for historical commits, and settle has no series to
+      # repair).
+      - uses: actions/download-artifact@v8
+        if: inputs.backfill_sha == ''
+        with:
+          name: bench-dist-customizations
+          path: perf/bench/dist-customizations
+
+      - name: Run settle benchmarks
+        if: inputs.backfill_sha == ''
+        run: |
+          pnpm bench run --mode settle --sessions 4 \
+            --dist perf/bench/dist-customizations \
+            --scenario singleString --scenario article \
+            --scenario previewHeavy --scenario customInputs --scenario wrappedForm \
+            --scenario structurePane --scenario documentActions --scenario listenQueryPane \
+            --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__settle.json"
 
       - name: Merge report
         run: pnpm bench report

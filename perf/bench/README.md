@@ -44,6 +44,28 @@ runner (tsx CLI, runs from HEAD)
 | Resources (report-only) | request count/bytes per endpoint class (exact), main-thread CPU-ms (TaskDuration etc.), post-GC heap/DOM-nodes/listeners                                                                                                                                                                        | not yet          |
 | Read-only interruptions | count + duration of transient `data-read-only` flips mid-typing                                                                                                                                                                                                                                 | reported         |
 
+### Settle mode (render-loop detector)
+
+`--mode settle` targets the render-loop bug class (per-render observable identity churn — react-rx v5 turned it into self-sustaining loops, e.g. `useDocumentValues` with an inline `paths` array, fixed in #14241): open the scenario, wait for readiness, then measure **time to quiescence** — and whether the page ever gets there. No typing. Activity signals, all on the page clock:
+
+- **React commits** (primary): a settle-only init script (`instrumentation/settle.ts`) installs a minimal React DevTools hook stub before React loads; production react-dom reports every commit to it, so a loop is visible even when each frame is cheap. This script is injected by settle sessions ONLY — `instrumentation/index.ts` stays byte-identical for every other mode, by design.
+- **Long Animation Frames** with script attribution (expensive loops name their culprit).
+- **`bench:render:<component>` marks** emitted by instrumented workspace components (per-component attribution).
+- CPU (CDP TaskDuration) is sampled per poll and reported but kept out of the quiescence predicate (GC/background-timer noise).
+
+Settled = one full quiet window (default 3s, polled at 500ms) with no activity; capped at 30s. **"Did not settle" and "never became ready" are reported outcomes, not session failures** — a genuine loop must not be retried as a flake. Scenarios declare `expectedToSettle` (default true); `false` marks a red-by-design scenario exercising a known, unfixed footgun — its numbers are evidence, exit code stays 0, and the report warns on any expected-vs-observed mismatch in either direction (a red scenario that starts settling means a hardening landed: flip the flag in the same PR). A mismatch on a green scenario exits non-zero after the result JSON is written.
+
+Caveat: the mock always emits `visibility: 'transaction'`, which routes the preview store down its slow-fetch path — settle time is a bench-internal trend number, not a UX claim.
+
+**Customization scenarios** (`previewHeavy`, `customInputs`, `documentActions`, `structurePane`, `listenQueryPane`, `wrappedForm`) exercise the public customization API — custom previews/inputs, document actions/badges, `S.component` panes, config-level `form.components` — in natural customer call shapes; `documentActions` and `listenQueryPane` are red by design (known unfixed footguns: `useTemplatePermissions` inline `templateItems`, inline-observable `useLoadable`). Like every bench scenario, each has its own workspace at its own basePath; these workspaces exist only in the **customization build**:
+
+```bash
+pnpm --filter bench build:customizations   # → perf/bench/dist-customizations (+ bench-build-flags.json)
+pnpm bench run --mode settle --scenario previewHeavy --dist perf/bench/dist-customizations
+```
+
+The default `pnpm build:bench` dist never includes them (the studio eagerly compiles every workspace's schema at boot, and bundle size is a reported metric — the pristine dist all gated numbers measure stays byte-identical). The runner skips customization scenarios with a pointer to the command above when the target dist lacks the flag.
+
 The **read-only interruption** metric tracks a real studio bug this suite characterized: `editState.ts` derives `ready: !fromCache` and the editState observable is `publishReplay(1)+refCount()` — subscriber churn around a commit tears it down, the SWR cache re-emits with `ready: false`, and the form silently swallows keystrokes for ~1s. The typing loop pauses (and counts) instead of typing into the void.
 
 ## Running locally
@@ -69,11 +91,16 @@ pnpm bench run --mode pageload --scenario singleString
 # soak check (degradation + leak slope over a long session)
 pnpm bench run --mode soak --scenario singleString --minutes 5
 
+# settle: open the document and measure quiescence (render-loop detector)
+pnpm bench run --mode settle --scenario singleString --sessions 5
+
 # INP (Core Web Vital) under a realistic interaction mix — needs >=50 interactions
 pnpm bench run --mode inp --scenario singleString --sessions 3
 
 # interactive debugging: mock + `sanity dev`, type into a seeded doc yourself
 pnpm bench dev
+# same, serving the customization studio with every customization scenario seeded
+pnpm bench dev --customizations
 
 pnpm bench:unit                                   # mock contract + stats unit tests
 ```
@@ -100,8 +127,8 @@ Useful `bench run` flags: `--headed`, `--throttle 1` (disable CPU throttle), `--
 - **Sharding**: one job per scenario + one pageLoad job; wall-clock = build + slowest scenario. Budgets are caps — the stopping rule exits early when the CI converges.
 - **PR comment**: always posted/updated in place (`bench-report` tag). Non-gating during burn-in.
 - **Self-test** (weekly cron / `workflow_dispatch` with `self_test`): compares a build against itself with `--fail-on-verdict` — a decided verdict (regression or improvement) on identical builds is a harness bug, not a product change. Runs the same five scenarios as the `bench-interaction` matrix, serially; `syntheticLarge` is excluded because it alone would roughly double the job's wall-clock. Inconclusive metrics do not fail the job (§2: a noisy run must not read as a coin-flip).
-- **track-main** (daily cron, or `workflow_dispatch` with `run_suite`): absolute-mode run with fixed session counts + soak, stored as a `benchRun` document in the Studio Radar project (`mhfozd0z`/`bench`, browse at [radar.sanity.dev](https://radar.sanity.dev)) via `RADAR_SANITY_WRITE_TOKEN` — the only real secret in the suite. The dispatch path lets a maintainer run the full suite + store on demand without waiting for the 5am cron.
-- **Backfill** (`workflow_dispatch` with `backfill_sha`): repairs holes in the daily series after a harness outage. Builds the experiment dist from the historical commit's packages with HEAD's committed `perf/bench/` harness (the reference-build recipe pointed at `perf/bench/dist`), runs the full suite, and stores the document under that sha (`BENCH_GIT_SHA`). One dispatch per missing day, e.g. `gh workflow run bench.yml -f backfill_sha=$(git rev-list -1 --before=<day>T05:00Z origin/main)`. `startedAt` remains the actual run time — order by sha/commit date, not wall-clock, when reading a backfilled range. Backfill builds fail loudly (no absolute-mode fallback): the measured commit is the point.
+- **track-main** (daily cron, or `workflow_dispatch` with `run_suite`): absolute-mode run with fixed session counts + soak + INP + settle (the customization scenarios plus `singleString`/`article` as vanilla controls and `debugLoop` as the detector's daily self-test, against the customization dist; skipped for backfills; a settle expectation mismatch is raised after the run is stored, never instead of it), stored as a `benchRun` document in the Studio Radar project (`mhfozd0z`/`bench`, browse at [radar.sanity.dev](https://radar.sanity.dev)) via `RADAR_SANITY_WRITE_TOKEN` — the only real secret in the suite. The dispatch path lets a maintainer run the full suite + store on demand without waiting for the 5am cron.
+- **Backfill** (`workflow_dispatch` with `backfill_sha`): repairs holes in the daily series after a harness outage. Builds the experiment dist from the historical commit's packages with HEAD's committed `perf/bench/` harness (the reference-build recipe pointed at `perf/bench/dist`, plus the customization studio at `perf/bench/dist-customizations` so settle is covered too), runs the full suite, and stores the document under that sha (`BENCH_GIT_SHA`). Settle backfills can reach back before the mode existed: a commit without a given hazard simply settles, and an expected-red scenario that settles is reported as a mismatch, not a failure. One dispatch per missing day, e.g. `gh workflow run bench.yml -f backfill_sha=$(git rev-list -1 --before=<day>T05:00Z origin/main)`. `startedAt` remains the actual run time — order by sha/commit date, not wall-clock, when reading a backfilled range. Backfill builds fail loudly (no absolute-mode fallback): the measured commit is the point.
 - **A/B dispatch** (`workflow_dispatch` with `ab_from` + `ab_to`, full shas): the regression-hunting tool. Builds the reference at `ab_from` and the experiment at `ab_to` (both via the tarball recipe below, HEAD's harness) and runs the interleaved comparison with bootstrap-gated verdicts — the same machinery as a labeled PR run, pointed at two arbitrary commits. The verdict table lands on the run's summary page (no PR to comment on), and the comparison is stored as a `mode: 'ab'` benchRun document (`git.sha` = experiment, `mergeBaseSha` = reference) — an investigation record the trends dashboard deliberately does not plot. Bisect a suspected regression between two trend points in log₂(N) dispatches: `gh workflow run bench.yml -f ab_from=<sha> -f ab_to=<sha>` — or click a point in the trends dashboard and use "Copy investigation prompt", which assembles the command (GitHub has no URL that prefills dispatch inputs) inside a paste-ready brief for a coding agent. Both builds fail loudly; there is no absolute-mode fallback on this path.
 - **Historical builds** (backfill, A/B, and the PR reference at the merge-base) all use one recipe (`perf/bench/cli/commands/buildDistAtCommit.ts`): the historical commit is checked out into a throwaway worktree, installed with `--frozen-lockfile` (a replay of its own CI install), built, and `sanity` together with the workspace packages it depends on (`@sanity/types`, `@sanity/schema`, …) is packed into tarballs as `npm publish` would. HEAD's committed `perf/bench` is then sparse-checked out into a second throwaway worktree, the tarballs are wired in as pnpm `overrides`, and `sanity build` runs there — the studio's own peers (react, styled-components) keep HEAD's lockfile pins, while the historical `sanity`'s third-party dependencies resolve fresh (newest in range that day) rather than from the commit's lockfile. That is deliberate: the series tracks regressions in our code surface, and re-measuring an old sha after an upstream fix lands answers "does the old studio still regress with the fixed dependency". The invoking checkout is never modified, so the recipe runs locally too (`pnpm bench prepare-backfill --sha <sha>`); absolute numbers from a laptop are host-relative and must not be stored into the daily series.
 - **Scheduled-failure alert**: any failed (or timeout-cancelled) job on a cron trigger posts to the CI alerts Slack channel via `SLACK_WEBHOOK_URL_CI_ALERTS` — a red cron has no PR to surface on, and a silent one leaves holes in the time series.
