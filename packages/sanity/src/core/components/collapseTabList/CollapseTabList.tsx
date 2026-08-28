@@ -64,12 +64,29 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
     ...rest
   } = props
   const [rootEl, setRootEl] = useState<HTMLDivElement | null>(null)
-  const [hiddenElements, setHiddenElements] = useState<React.JSX.Element[]>([])
-  const [showChildren, setShowChildren] = useState(false)
+  // Whether the measured clone of each child key currently fits in the hidden row,
+  // or undefined for keys not measured yet. Entries for keys that have left
+  // `children` linger here, so everything rendered must be derived through the
+  // current `children` array.
+  const [intersections, setIntersections] = useState<Record<string, boolean | undefined>>({})
 
   const children = useMemo(
     () => Children.toArray(childrenProp).filter(_isReactElement),
     [childrenProp],
+  )
+
+  // Nothing is shown until the first measurement arrives, to avoid flashing
+  // children that may not fit.
+  const hasMeasured = Object.keys(intersections).length > 0
+
+  /**
+   * The children that do not fit and therefore belong in the overflow menu.
+   * The single source for the menu button, its options and the inline children,
+   * so the menu button can never render without menu items.
+   */
+  const hiddenChildren = useMemo(
+    () => children.filter((child) => child.key !== null && intersections[child.key] === false),
+    [children, intersections],
   )
 
   /**
@@ -77,9 +94,9 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
    */
   const displayChildren = useMemo(() => {
     if (collapsed) return null // If collapsed, we don't want to show any children
-    if (!showChildren) return null // If we haven't run the intersection observer yet, we don't want to show any children
-    return children.filter((c) => !hiddenElements.some((h) => h.key === c.key))
-  }, [children, collapsed, hiddenElements, showChildren])
+    if (!hasMeasured) return null // If we haven't run the intersection observer yet, we don't want to show any children
+    return children.filter((child) => !hiddenChildren.includes(child))
+  }, [children, collapsed, hasMeasured, hiddenChildren])
 
   const intersectionOptions = useMemo(
     () => ({
@@ -96,24 +113,19 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
   )
 
   const menuOptionsArray = useMemo(
-    () =>
-      collapsed
-        ? children
-        : children.filter(({key}) => hiddenElements.find((o: React.JSX.Element) => o.key === key)),
-    [children, hiddenElements, collapsed],
+    () => (collapsed ? children : hiddenChildren),
+    [children, hiddenChildren, collapsed],
   )
 
   const handleIntersection = useCallback(
-    (e: IntersectionObserverEntry, child: React.JSX.Element) => {
-      const isHidden = hiddenElements.some((el) => el.key === child.key)
-
-      if (!showChildren) setShowChildren(true)
-      const isIntersecting = e.isIntersecting
-      if (!isHidden && !isIntersecting) setHiddenElements((prev) => [...prev, child])
-      if (isHidden && isIntersecting)
-        setHiddenElements((prev) => prev.filter((el) => el.key !== child.key))
+    (entry: IntersectionObserverEntry, child: React.JSX.Element) => {
+      const {key} = child
+      if (key === null) return
+      setIntersections((prev) =>
+        prev[key] === entry.isIntersecting ? prev : {...prev, [key]: entry.isIntersecting},
+      )
     },
-    [hiddenElements, showChildren, setShowChildren, setHiddenElements],
+    [],
   )
 
   return (
@@ -126,7 +138,7 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
     >
       <Flex justify="center" gap={gap} flex={1}>
         {displayChildren}
-        {(hiddenElements.length > 0 || collapsed) && (
+        {(hiddenChildren.length > 0 || collapsed) && (
           <CollapseOverflowMenu
             disableRestoreFocusOnClose={disableRestoreFocusOnClose}
             menuButton={menuButton}
@@ -147,7 +159,8 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
           <OptionObserveElement
             key={`${child.key}_observer`}
             options={intersectionOptions}
-            onIntersectionChange={(e) => handleIntersection(e[0], child)}
+            // Entries are delivered oldest first, so the last one is current
+            onIntersectionChange={(e) => handleIntersection(e[e.length - 1], child)}
           >
             {cloneElement(child, {
               'disabled': true,
