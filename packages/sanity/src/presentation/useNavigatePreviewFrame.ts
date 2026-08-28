@@ -7,6 +7,11 @@ import {type ConnectionStatus, type FrameState, type VisualEditingConnection} fr
  * `preview` search param diverges from the URL the frame last reported
  * (`frameStateRef.current.url`), e.g. after a URL is typed into the preview
  * toolbar location bar.
+ *
+ * The frame is only marked as navigated when the message is actually posted:
+ * while the overlays connection is down the divergence is left in place, so
+ * the effect re-runs once the connection (re)establishes and delivers the
+ * navigation then, instead of silently swallowing it.
  * @internal
  */
 export function useNavigatePreviewFrame(options: {
@@ -32,24 +37,26 @@ export function useNavigatePreviewFrame(options: {
       // ignore
     }
 
-    frameStateRef.current.url = preview
-    if (overlaysConnection === 'connected') {
-      /**
-       * Translate the possibly absolute params url back to a relative URL
-       */
-      let url = preview
-      if (url.startsWith('http')) {
-        try {
-          const newUrl = new URL(preview, targetOrigin)
-          url = newUrl.pathname + newUrl.search + newUrl.hash
-        } catch {
-          // ignore
-        }
-      }
-      visualEditingComlink?.post('presentation/navigate', {
-        url,
-        type: 'replace',
-      })
+    if (overlaysConnection !== 'connected') {
+      return
     }
+
+    frameStateRef.current.url = preview
+    /**
+     * Translate the possibly absolute params url back to a relative URL
+     */
+    let url = preview
+    if (url.startsWith('http')) {
+      try {
+        const newUrl = new URL(preview, targetOrigin)
+        url = newUrl.pathname + newUrl.search + newUrl.hash
+      } catch {
+        // ignore
+      }
+    }
+    visualEditingComlink?.post('presentation/navigate', {
+      url,
+      type: 'replace',
+    })
   }, [frameStateRef, overlaysConnection, preview, targetOrigin, visualEditingComlink])
 }
