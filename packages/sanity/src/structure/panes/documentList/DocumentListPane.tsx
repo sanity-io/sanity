@@ -235,15 +235,17 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     [searchActorRef],
   )
 
+  // One sensor forwards both external facts, so a pane change disarms the
+  // spinner and an already-settled list (e.g. served from cache without an
+  // `isLoading` cycle) re-arms it in the same pass. Re-sends are no-ops: the
+  // machine swallows `pane changed` for the current pane, and `list settled`
+  // assigns idempotently.
   useEffect(() => {
     searchActorRef.send({type: 'pane changed', paneKey})
-  }, [paneKey, searchActorRef])
-
-  useEffect(() => {
     if (!isLoading) {
       searchActorRef.send({type: 'list settled'})
     }
-  }, [isLoading, searchActorRef])
+  }, [isLoading, paneKey, searchActorRef])
 
   const loadingVariant: LoadingVariant = useMemo(() => {
     if (connected && isLoading && searchSpinnerEnabled) {

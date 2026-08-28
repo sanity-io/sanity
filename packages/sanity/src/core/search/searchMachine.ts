@@ -154,6 +154,9 @@ export function defineSearchMachine<TQuery, TResult>() {
           src: 'search',
           input: ({context}) => ({query: context.query as TQuery}),
           onSnapshot: {
+            // `fromObservable` snapshots hold the latest emission in `context`,
+            // `undefined` until the first one — so a search observable must not
+            // emit `undefined` as a result value.
             guard: ({event}) => event.snapshot.context !== undefined,
             target: '.streaming',
             actions: [
