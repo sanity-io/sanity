@@ -31,6 +31,19 @@ export interface BenchScenario {
    * when several scenarios share one workspace (e.g. syntheticLarge).
    */
   workspace?: string
+  /**
+   * Workspace-relative route to open instead of the edit intent for the
+   * document under test — e.g. a custom structure pane (`structure/<itemId>`).
+   * The document fixture is still seeded; `documentId`/`documentType` keep
+   * identifying it.
+   */
+  path?: string
+  /**
+   * Readiness selector to wait for after navigation. Defaults to the editable
+   * document form (`DEFAULT_READY_SELECTOR` in runner/session/navigation.ts);
+   * set it for routes that don't render a document form, e.g. custom panes.
+   */
+  readySelector?: string
   documentType: string
   /** Published id of the document under test (draft is `drafts.<id>`). */
   documentId: string

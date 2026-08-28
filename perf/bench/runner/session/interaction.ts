@@ -7,6 +7,8 @@ import {type BenchScenario, type InteractionTarget} from '../../scenarios/types'
 import {median} from '../../stats/quantiles'
 import {createSessionContext, type SessionContext} from '../browser'
 import {type RunningSide} from '../servers'
+import {SessionError} from './errors'
+import {awaitReadiness, gotoScenario} from './navigation'
 
 /** Characters cycled through while typing (letters + digits only). */
 export const CHARACTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
@@ -102,26 +104,7 @@ export interface InteractionSessionResult {
   memory: SessionMemory | null
 }
 
-export type SessionFailureReason =
-  | 'readiness-timeout'
-  | 'probe-timeout'
-  | 'page-error'
-  | 'console-error'
-  | 'hermeticity-violation'
-  | 'sample-count-mismatch'
-  | 'readback-mismatch'
-  | 'unexpected-endpoint'
-
-export class SessionError extends Error {
-  constructor(
-    public reason: SessionFailureReason,
-    message: string,
-    public diagnostics: string[] = [],
-  ) {
-    super(`[${reason}] ${message}`)
-    this.name = 'SessionError'
-  }
-}
+export {SessionError, type SessionFailureReason} from './errors'
 
 /**
  * How-to-resolve instructions attached as diagnostics to the two failure
@@ -416,21 +399,13 @@ export async function runInteractionSession(options: {
   try {
     await page.addInitScript(instrumentation)
 
-    await page.goto(
-      `${running.studioUrl}/${scenario.workspace ?? scenario.name}/intent/edit/id=${encodeURIComponent(scenario.documentId)};type=${encodeURIComponent(scenario.documentType)}`,
-      {waitUntil: 'domcontentloaded', timeout: config.readinessTimeoutMs},
-    )
+    await gotoScenario(page, running.studioUrl, scenario, config.readinessTimeoutMs)
 
     // Readiness: the form claims to be editable…
-    await page
-      .locator('[data-testid="form-view"]:not([data-read-only="true"])')
-      .waitFor({state: 'visible', timeout: config.readinessTimeoutMs})
-      .catch(() => {
-        throw new SessionError('readiness-timeout', 'form-view never became editable', [
-          ...session.consoleErrors,
-          ...session.pageErrors,
-        ])
-      })
+    await awaitReadiness(page, scenario, {
+      timeoutMs: config.readinessTimeoutMs,
+      diagnostics: () => [...session.consoleErrors, ...session.pageErrors],
+    })
 
     // …and a probe keystroke actually lands (the editability oracle). The
     // time-to-editable measure is emitted from inside the page on the input event, so
@@ -732,13 +707,11 @@ export async function runSoakSession(options: {
 
   try {
     await page.addInitScript(instrumentation)
-    await page.goto(
-      `${running.studioUrl}/${scenario.workspace ?? scenario.name}/intent/edit/id=${encodeURIComponent(scenario.documentId)};type=${encodeURIComponent(scenario.documentType)}`,
-      {waitUntil: 'domcontentloaded', timeout: config.readinessTimeoutMs},
-    )
-    await page
-      .locator('[data-testid="form-view"]:not([data-read-only="true"])')
-      .waitFor({state: 'visible', timeout: config.readinessTimeoutMs})
+    await gotoScenario(page, running.studioUrl, scenario, config.readinessTimeoutMs)
+    await awaitReadiness(page, scenario, {
+      timeoutMs: config.readinessTimeoutMs,
+      diagnostics: () => [...session.consoleErrors, ...session.pageErrors],
+    })
 
     const target = scenario.interactions[0]
     await focusField(page, target, config.readinessTimeoutMs)
