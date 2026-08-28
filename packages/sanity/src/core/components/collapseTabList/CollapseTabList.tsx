@@ -34,6 +34,11 @@ const HiddenRow = styled(Flex)`
   overflow: hidden;
 `
 
+const MenuButtonPlaceholder = styled.div`
+  display: flex;
+  visibility: hidden;
+`
+
 interface CollapseTabListProps {
   children: ReactNode
   gap?: number | number[]
@@ -138,7 +143,7 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
     >
       <Flex justify="center" gap={gap} flex={1}>
         {displayChildren}
-        {(hiddenChildren.length > 0 || collapsed) && (
+        {hiddenChildren.length > 0 || collapsed ? (
           <CollapseOverflowMenu
             disableRestoreFocusOnClose={disableRestoreFocusOnClose}
             menuButton={menuButton}
@@ -146,6 +151,20 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
             menuOptions={menuOptionsArray}
             onMenuClose={onMenuClose}
           />
+        ) : (
+          // The hidden row below prepends a menu button clone before the child
+          // clones, so children only measure as fitting when the container is at
+          // least a menu button wider than the children themselves. Reserving
+          // that footprint here keeps a content-sized container (the navbar's
+          // wide-regime `auto` grid track) wide enough on its own, and makes the
+          // swap with the real menu button layout-stable.
+          <MenuButtonPlaceholder aria-hidden="true">
+            {cloneElement(menuButton, {
+              'disabled': true,
+              'aria-hidden': true,
+              'tabIndex': -1,
+            })}
+          </MenuButtonPlaceholder>
         )}
       </Flex>
 
