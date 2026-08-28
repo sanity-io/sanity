@@ -4,17 +4,20 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {Flex, Text} from '@sanity/ui'
 import {type ComponentType, useCallback, useEffect, useState} from 'react'
 import {
-  getDraftId,
-  getPublishedId,
+  type DocumentPairTarget,
+  getPairTarget,
+  getTargetSiblings,
   type ObjectSchemaType,
   Translate,
   useDocumentOperation,
+  usePerspective,
   useTranslation,
 } from 'sanity'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {useDiffViewRouter} from '../../../../diffView/hooks/useDiffViewRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
+import {useDocumentPane} from '../../useDocumentPane'
 import {ResolvedLiveEdit} from './__telemetry__/DraftLiveEditBanner.telemetry'
 import {Banner} from './Banner'
 
@@ -27,6 +30,15 @@ interface ObsoleteDraftBannerProps {
    * Whether the user is blocked from editing the document while an obsolete draft exists.
    */
   isEditBlocking?: boolean
+  /**
+   * When the obsolete draft is a variant-scoped document, operations must target that version
+   * rather than the base draft/published pair.
+   */
+  pairTarget?: DocumentPairTarget | string
+  /** Document id to compare as the draft side. Defaults to `drafts.<displayed._id>`. */
+  compareDraftId?: string
+  /** Document id to compare as the published side. Defaults to the published id of `displayed`. */
+  comparePublishedId?: string
 }
 
 export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
@@ -40,10 +52,13 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
   const [isPublishing, setPublishing] = useState(false)
   const [isDiscarding, setDiscarding] = useState(false)
   const telemetry = useTelemetry()
-
-  // No `getTargetScopeId(useTargetDocumentState())` here: resolving an obsolete draft deliberately operates on
-  // the draft/published pair, so no version scope applies.
-  const {publish, discardChanges} = useDocumentOperation(documentId, displayed?._type || '')
+  const {selectedVariantName} = usePerspective()
+  const {targetDocumentState} = useDocumentPane()
+  // Variant leftover drafts pass `pairTarget` so publish/discard hit the variant draft. Base
+  // live-edit leftovers omit it and operate on the draft/published pair.
+  const target = selectedVariantName ? getPairTarget(targetDocumentState) : undefined
+  const {publish, discardChanges} = useDocumentOperation(documentId, displayed?._type || '', target)
+  const siblings = getTargetSiblings(targetDocumentState)
 
   const handlePublish = useCallback(() => {
     publish.execute()
@@ -65,24 +80,22 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
   })
 
   const diffViewRouter = useDiffViewRouter()
+  const publishedId = siblings?.published?._id
+  const draftId = siblings?.draft?._id
+  if (!draftId) {
+    return null
+  }
 
-  const compareDraft = useCallback(() => {
-    if (typeof displayed?._id === 'undefined') {
+  const compareDraft = () => {
+    if (!publishedId) {
       return
     }
-
     diffViewRouter.navigateDiffView({
       mode: 'version',
-      previousDocument: {
-        type: schemaType.name,
-        id: getPublishedId(displayed?._id),
-      },
-      nextDocument: {
-        type: schemaType.name,
-        id: getDraftId(displayed?._id),
-      },
+      previousDocument: {type: schemaType.name, id: publishedId},
+      nextDocument: {type: schemaType.name, id: draftId},
     })
-  }, [diffViewRouter, displayed?._id, schemaType.name])
+  }
 
   return (
     <Banner
@@ -94,6 +107,11 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
           <Button
             text={t('banners.obsolete-draft.actions.compare-draft.text')}
             mode="ghost"
+            disabled={!publishedId}
+            tooltipProps={{
+              content: t('banners.obsolete-draft.actions.compare-draft.tooltip'),
+              disabled: Boolean(publishedId),
+            }}
             onClick={compareDraft}
           />
           <Button
