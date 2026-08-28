@@ -157,7 +157,7 @@
     "@sanity/access-ui": "workspace:*",
     "@sanity/asset-utils": "^2.3.0",
     "@sanity/bifur-client": "^2.0.2",
-    "@sanity/cli": "^8.3.0",
+    "@sanity/cli": "^8.5.0",
     "@sanity/client": "catalog:",
     "@sanity/color": "^3.0.8",
     "@sanity/comlink": "^4.0.3",
@@ -186,7 +186,7 @@
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.3",
     "@sanity/validation": "workspace:*",
-    "@sanity/workbench": "0.1.0-alpha.42",
+    "@sanity/workbench": "0.1.0-alpha.44",
     "@sentry/react": "^10.70.0",
     "@tanstack/react-virtual": "^3.14.10",
     "@vanilla-extract/dynamic": "catalog:",
@@ -235,12 +235,12 @@
     "ui5": "catalog:",
     "urlpattern-polyfill": "10.1.0",
     "use-device-pixel-ratio": "^1.1.2",
-    "use-effect-event": "^2.0.3",
+    "use-effect-event": "^2.0.4",
     "use-hot-module-reload": "^2.0.0",
     "use-sync-external-store": "^1.6.0",
     "uuid": "^14.0.2",
-    "web-vitals": "^6.1.1",
-    "xstate": "^5.32.5"
+    "web-vitals": "^6.2.1",
+    "xstate": "^5.32.6"
   },
   "devDependencies": {
     "@chromatic-com/vitest": "0.1.9",

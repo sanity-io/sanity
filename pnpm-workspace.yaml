@@ -29,7 +29,7 @@ catalog:
   '@sanity/migrate': ^8.0.2
   '@sanity/telemetry': ^1.1.0
   '@sanity/tsdown-config': ^0.26.2
-  '@sanity/ui': ^4.0.6
+  '@sanity/ui': ^4.0.7
   '@types/node': ^24.13.3
   '@types/react': ^19.2.18
   '@types/react-dom': ^19.2.4
@@ -58,7 +58,8 @@ catalog:
 dedupePeers: true
 linkWorkspacePackages: deep
 
-minimumReleaseAge: 4320
+minimumReleaseAge: 1440
+minimumReleaseAgeExcludePrune: true
 minimumReleaseAgeExclude:
   - '@boundaries/elements'
   - '@oxfmt/*'
@@ -79,7 +80,6 @@ minimumReleaseAgeExclude:
   - '@vercel/stega'
   - '@yuku-toolchain/*'
   - 'csstype'
-  - 'data-uri-to-buffer@7.0.0'
   - 'eslint-plugin-boundaries'
   - 'get-it'
   - 'groq-js'
@@ -118,6 +118,8 @@ minimumReleaseAgeExclude:
   - 'styled-components@6.5.3'
   - 'tsx'
   - 'tsdown'
+  # Fresh patch; exclude so 2.0.4 can install before the age gate
+  - 'use-effect-event@2.0.4'
   # verkit is part of the tsdown toolchain (tsdown dependency since 0.22.12)
   - 'verkit'
   - 'vitest'

@@ -57,6 +57,9 @@ const TargetBadge = styled(Card)`
   display: inline-flex;
   align-items: center;
   flex: none;
+  /* Drawn as an inset shadow instead of the Card border prop so the 1px border
+     does not make the badge taller than the box-shadow-bordered VersionChip pills. */
+  box-shadow: inset 0 0 0 1px var(--card-border-color);
 `
 const BadgeContainer = styled(Flex)`
   user-select: none;
@@ -107,8 +110,10 @@ const PerspectiveBadgeLabel = memo(function PerspectiveBadgeLabel({
 
   if (isReleaseDocument(selectedPerspective)) {
     return (
-      <BadgeContainer gap={2} paddingY={1} paddingRight={2} align="center">
-        <ReleaseAvatarIcon release={selectedPerspective} />
+      <BadgeContainer gap={2} padding={2} align="center">
+        <Text size={1}>
+          <ReleaseAvatarIcon release={selectedPerspective} />
+        </Text>
 
         <ReleaseTitle
           title={selectedPerspective.metadata?.title}
@@ -168,7 +173,6 @@ export const DocumentTargetBadges = memo(function DocumentTargetBadges() {
         <BadgeMotionWrapper animate={{opacity: badgeOpacity}} transition={{duration: 0.2}}>
           <TargetBadge
             tone={getPerspectiveBadgeTone(badgePerspective)}
-            border
             radius={4}
             data-ui="DocumentTargetPerspectiveBadge"
           >
@@ -177,7 +181,7 @@ export const DocumentTargetBadges = memo(function DocumentTargetBadges() {
         </BadgeMotionWrapper>
         {selectedVariantBadge ? (
           <BadgeMotionWrapper animate={{opacity: badgeOpacity}} transition={{duration: 0.2}}>
-            <TargetBadge tone="suggest" border radius={4} data-ui="DocumentTargetVariantBadge">
+            <TargetBadge tone="suggest" radius={4} data-ui="DocumentTargetVariantBadge">
               <VariantBadgeLabel variant={selectedVariantBadge} />
             </TargetBadge>
           </BadgeMotionWrapper>
