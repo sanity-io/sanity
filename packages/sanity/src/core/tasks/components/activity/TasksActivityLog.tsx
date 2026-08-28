@@ -6,16 +6,16 @@ import {useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
-import {CommentDeleteDialog} from '../../../comments/components/CommentDeleteDialog'
-import {type CommentInputProps} from '../../../comments/components/pte/comment-input/CommentInput'
-import {useComments} from '../../../comments/hooks/useComments'
+import {CommentDeleteDialog} from '../../../comments-legacy/components/CommentDeleteDialog'
+import {type CommentInputProps} from '../../../comments-legacy/components/pte/comment-input/CommentInput'
+import {useComments} from '../../../comments-legacy/hooks/useComments'
 import {
   type CommentBaseCreatePayload,
   type CommentCreatePayload,
   type CommentReactionOption,
   type CommentThreadItem,
   type CommentUpdatePayload,
-} from '../../../comments/types'
+} from '../../../comments-legacy/types'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {set} from '../../../form/patch/patch'
 import {type PatchEvent} from '../../../form/patch/PatchEvent'

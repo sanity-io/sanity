@@ -1,6 +1,6 @@
 import {createContext} from 'sanity/_createContext'
 
-import type {CommentInputContextValue} from '../../core/comments/components/pte/comment-input/CommentInputProvider'
+import type {CommentInputContextValue} from '../../core/comments-legacy/components/pte/comment-input/CommentInputProvider'
 
 /**
  * @internal

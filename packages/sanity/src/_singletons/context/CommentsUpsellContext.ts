@@ -1,6 +1,6 @@
 import {createContext} from 'sanity/_createContext'
 
-import type {CommentsUpsellContextValue} from '../../core/comments/context/upsell/types'
+import type {CommentsUpsellContextValue} from '../../core/comments-legacy/context/upsell/types'
 
 /**
  * @internal

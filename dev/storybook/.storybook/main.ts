@@ -4,7 +4,17 @@ import viteReact from '@vitejs/plugin-react'
 import {defaultClientConditions, mergeConfig} from 'vite'
 
 const config: StorybookConfig = {
-  stories: ['../../../packages/{sanity,groq,@repo/*,@sanity/*}/src/**/*.stories.@(ts|tsx)'],
+  stories: [
+    '../../../packages/{groq,@repo/*,@sanity/*}/src/**/*.stories.@(ts|tsx)',
+    // src/core/comments is an unmodified duplicate of src/core/comments-legacy (the plugin the
+    // studio loads), including story titles. Only one copy can be indexed or the story ids
+    // collide, and the indexer does not support negated entries, so `!(comments)` (which the
+    // indexer treats as "does not start with comments") skips both trees and comments-legacy is
+    // re-included explicitly.
+    '../../../packages/sanity/src/!(core)/**/*.stories.@(ts|tsx)',
+    '../../../packages/sanity/src/core/!(comments)/**/*.stories.@(ts|tsx)',
+    '../../../packages/sanity/src/core/comments-legacy/**/*.stories.@(ts|tsx)',
+  ],
   addons: ['@chromatic-com/storybook', '@storybook/addon-vitest'],
   framework: {
     name: '@storybook/react-vite',

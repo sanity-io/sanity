@@ -1,6 +1,6 @@
 import {createContext} from 'sanity/_createContext'
 
-import type {CommentsOnboardingContextValue} from '../../core/comments/context/onboarding/types'
+import type {CommentsOnboardingContextValue} from '../../core/comments-legacy/context/onboarding/types'
 
 /**
  * @internal

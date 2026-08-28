@@ -60,6 +60,13 @@
         "src/**/*.{ts,tsx}",
         "!src/**/__test{,s}__", // These files might actually be safe to delete?
       ],
+      // src/core/comments-legacy is the plugin the studio loads. src/core/comments is an
+      // unmodified duplicate of it, kept in place as the target for the comments rewrite, so
+      // nothing imports it yet.
+      "ignoreFiles": ["src/core/comments/**"],
+      "ignoreIssues": {
+        "src/core/comments/**": ["exports"],
+      },
       "ignoreBinaries": ["tzutil"],
       "ignoreDependencies": [
         "@vitest/expect",
