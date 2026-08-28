@@ -21,12 +21,12 @@ import {measureBundleSize} from '../../runner/bundleSize'
 import {bundleInstrumentation} from '../../runner/inject'
 import {runAbScenario} from '../../runner/orchestrator'
 import {startSide} from '../../runner/servers'
+import {SessionError} from '../../runner/session/errors'
 import {type InpSessionResult, runInpSession} from '../../runner/session/inp'
 import {
   type InteractionSessionResult,
   runInteractionSession,
   runSoakSession,
-  SessionError,
 } from '../../runner/session/interaction'
 import {
   type LoadCondition,
