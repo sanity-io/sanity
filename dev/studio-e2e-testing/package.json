@@ -23,8 +23,8 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "sanity": "workspace:*",
-    "sanity-plugin-internationalized-array": "^5.2.2",
-    "sanity-plugin-media": "^6.1.6",
+    "sanity-plugin-internationalized-array": "^5.2.3",
+    "sanity-plugin-media": "^6.1.7",
     "sanity-test-studio": "workspace:*",
     "styled-components": "catalog:",
     "ui5": "catalog:"

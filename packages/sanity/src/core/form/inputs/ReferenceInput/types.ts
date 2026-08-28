@@ -55,12 +55,6 @@ export interface CreateReferenceOption {
   }
 }
 
-export interface ReferenceSearchState {
-  hits: ReferenceSearchHit[]
-  searchString?: string
-  isLoading: boolean
-}
-
 export type ReferenceSearchFunction = (query: string) => Observable<ReferenceSearchHit[]>
 
 export interface ReferenceSearchHit {
