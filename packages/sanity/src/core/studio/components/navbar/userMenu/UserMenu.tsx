@@ -4,14 +4,13 @@ import {
   Button,
   // Button with specific styling, user avatar.
   Card,
-  Flex,
   Stack,
   Text,
 } from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
@@ -67,7 +66,7 @@ export function UserMenu() {
       menu={
         <StyledMenu data-testid="user-menu">
           <Card padding={2}>
-            <Flex align="center">
+            <Flex alignItems="center">
               <Tooltip
                 disabled={!providerTitle}
                 portal

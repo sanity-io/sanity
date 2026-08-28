@@ -1,8 +1,8 @@
 /* eslint-disable i18next/no-literal-string */
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {type ReactNode, startTransition, useCallback, useEffect, useState} from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {type RequestErrorClaim} from './types'
@@ -165,7 +165,7 @@ export function RequestErrorDialog(props: {
               style={{color: 'var(--card-link-fg-color)'}}
               target="_blank"
             >
-              <Flex as="span" align="center" gap={2}>
+              <Flex as="span" alignItems="center" gap={2}>
                 <span>Check Sanity Status</span>
                 <LaunchIcon />
               </Flex>
