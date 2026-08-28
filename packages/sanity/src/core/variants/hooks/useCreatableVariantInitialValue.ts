@@ -67,6 +67,9 @@ export function useCreatableVariantInitialValue(
   const documentPreviewStore = useDocumentPreviewStore()
   const isVariantMissing = targetDocumentState.status === 'variant-missing'
   const variantId = isVariantMissing ? targetDocumentState.variant._id : undefined
+  const isCreatableBundle =
+    // Only drafts bundle are created while typing, releases and agents have a creation button
+    targetDocumentState.status === 'variant-missing' && targetDocumentState.bundle === 'drafts'
   const siblings = getTargetSiblings(targetDocumentState)
 
   const publishedSiblingVersionStub = siblings?.published
@@ -74,20 +77,20 @@ export function useCreatableVariantInitialValue(
   const targetId = publishedSiblingVersionStub?._system.draft?._ref
 
   const publishedSibling$ = useMemo(() => {
-    if (!targetId || !publishedSiblingId) {
+    if (!targetId || !publishedSiblingId || !isCreatableBundle) {
       return of(null)
     }
     return documentPreviewStore
       .unstable_observeDocument(publishedSiblingId)
       .pipe(map((doc) => doc ?? null))
-  }, [targetId, publishedSiblingId, documentPreviewStore])
+  }, [targetId, publishedSiblingId, documentPreviewStore, isCreatableBundle])
   // Kept synchronous: the sibling snapshot feeds the initial value used when
   // creating the variant document, so a deferred read could seed the new
   // document from a stale sibling.
   const publishedSibling = useSyncObservable(publishedSibling$, null)
 
   return useMemo(() => {
-    if (!targetId || !variantId) {
+    if (!targetId || !variantId || !isCreatableBundle) {
       return fallback
     }
     if (!publishedSibling) {
@@ -102,5 +105,5 @@ export function useCreatableVariantInitialValue(
         variantId,
       }),
     }
-  }, [targetId, variantId, publishedSibling, fallback])
+  }, [targetId, variantId, publishedSibling, fallback, isCreatableBundle])
 }

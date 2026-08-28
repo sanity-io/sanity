@@ -151,6 +151,23 @@ describe('useCreatableVariantInitialValue', () => {
     expect(documentPreviewStoreMock.unstable_observeDocument).not.toHaveBeenCalled()
   })
 
+  it('passes the fallback through for a missing variant on a release, even when the published sibling advertises a draft id', async () => {
+    const wrapper = await createTestProvider()
+    const missingOnRelease: TargetDocumentState = {
+      status: 'variant-missing',
+      variant: variantAlphaAudience,
+      bundle: 'rSummer',
+      siblings: {published: siblingStub, draft: undefined, version: undefined},
+    }
+
+    const {result} = renderHook(() => useCreatableVariantInitialValue(missingOnRelease, fallback), {
+      wrapper,
+    })
+
+    expect(result.current).toBe(fallback)
+    expect(documentPreviewStoreMock.unstable_observeDocument).not.toHaveBeenCalled()
+  })
+
   it('stays loading (with the draft target id) until the published sibling arrives', async () => {
     const wrapper = await createTestProvider()
 

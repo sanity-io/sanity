@@ -9,7 +9,6 @@ import {getVersionFromId, isSystemBundle} from '../util/draftUtils'
 import {getTargetDocument} from '../util/getTargetDocument'
 import {useAllVariants} from '../variants/store/useAllVariants'
 import {type SystemVariant} from '../variants/types'
-import {useSchema} from './useSchema'
 
 /**
  * The id and scope of a missing draft variant that can be created by typing: the id is known
@@ -56,12 +55,7 @@ export interface TargetDocumentSiblings {
  * - `variant-missing` — a variant is selected but the document has no variant-scoped version
  *   for the current bundle. When `creatableTarget` is set (drafts bundle, published variant
  *   advertising its draft sibling id), the document is editable: typing creates the draft
- *   variant at the advertised id, seeded from the published sibling. **Live-edit exception:**
- *   if a published sibling exists, the state is `ready` on that sibling instead (Drafts checks
- *   out published); if only a leftover drafts sibling exists, that leftover is the target.
- *   `creatableTarget` is never set. Otherwise consumers must treat the document as read-only
- *   and offer creation. Never fall back to the base pair. `siblings` still lists whatever
- *   published/draft/release documents exist in the selected variant's lane.
+ *   variant at the advertised id, seeded from the published sibling.
  * - `variant-definition-document-not-found` — the requested variant name matches no
  *   `system.variant` definition. An error state, never silently treated as "no variant".
  *
