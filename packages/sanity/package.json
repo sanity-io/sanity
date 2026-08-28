@@ -240,7 +240,7 @@
     "use-sync-external-store": "^1.6.0",
     "uuid": "^14.0.2",
     "web-vitals": "^6.1.1",
-    "xstate": "^5.32.5"
+    "xstate": "^5.32.6"
   },
   "devDependencies": {
     "@chromatic-com/vitest": "0.1.9",
