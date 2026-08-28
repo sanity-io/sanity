@@ -102,4 +102,40 @@ describe('CollapseTabList', () => {
     await expect.element(page.getByRole('button', {name: 'Delta'})).toBeVisible()
     await expect.element(overflowMenuButton).not.toBeInTheDocument()
   })
+
+  it('keeps all children inline and reserves the menu button footprint in a content-sized container', async () => {
+    // A flex wrapper sizes the list to its own content, mirroring the navbar's
+    // wide-regime NavGrid (`1fr auto 1fr`) where the tools column is an `auto`
+    // track sized to the toolbar's content. The measurement row prepends a menu
+    // button clone before the child clones, so the container must always be at
+    // least a menu button wider than the children themselves or the last child
+    // is measured as overflowing on every mount.
+    await render(
+      <ThemeProvider theme={theme}>
+        <div style={{display: 'flex'}}>
+          <CollapseTabList
+            data-testid="collapse-tab-list"
+            menuButtonProps={{button: overflowButton}}
+          >
+            {makeTabs(['Alpha', 'Beta', 'Gamma', 'Delta', 'Echo'])}
+          </CollapseTabList>
+        </div>
+      </ThemeProvider>,
+    )
+
+    // All tabs stay inline and no interactive overflow button appears.
+    await expect.element(page.getByRole('button', {name: 'Echo'})).toBeVisible()
+    await expect.element(overflowMenuButton).not.toBeInTheDocument()
+
+    // The footprint reservation must be a real element in the visible row so the
+    // container's content size covers the measurement row's menu button clone
+    // regardless of how the measurement row is laid out. It must occupy layout
+    // space while staying invisible and out of the accessibility tree (the role
+    // query above already proves the latter).
+    const visibleRow = document.querySelector('[data-testid="collapse-tab-list"]')!.children[0]!
+    const placeholder = visibleRow.querySelector('[aria-label="More tools"]')
+    expect(placeholder).not.toBeNull()
+    expect(placeholder!.getBoundingClientRect().width).toBeGreaterThan(0)
+    expect(getComputedStyle(placeholder!).visibility).toBe('hidden')
+  })
 })
