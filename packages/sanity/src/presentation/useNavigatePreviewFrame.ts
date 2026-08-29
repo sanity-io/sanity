@@ -37,7 +37,7 @@ export function useNavigatePreviewFrame(options: {
       // ignore
     }
 
-    if (overlaysConnection !== 'connected') {
+    if (overlaysConnection !== 'connected' || !visualEditingComlink) {
       return
     }
 
@@ -54,7 +54,7 @@ export function useNavigatePreviewFrame(options: {
         // ignore
       }
     }
-    visualEditingComlink?.post('presentation/navigate', {
+    visualEditingComlink.post('presentation/navigate', {
       url,
       type: 'replace',
     })

@@ -16,23 +16,34 @@ function renderNavigateHook(initial: {
   frameUrl: string | undefined
   overlaysConnection: ConnectionStatus
   preview: string | undefined
+  comlink?: VisualEditingConnection | null
 }) {
   const frameStateRef: RefObject<FrameState> = {
     current: {title: undefined, url: initial.frameUrl},
   }
   const {comlink, post} = createComlink()
   const {rerender} = renderHook(
-    (props: {overlaysConnection: ConnectionStatus; preview: string | undefined}) =>
+    (props: {
+      overlaysConnection: ConnectionStatus
+      preview: string | undefined
+      comlink?: VisualEditingConnection | null
+    }) =>
       useNavigatePreviewFrame({
         frameStateRef,
         overlaysConnection: props.overlaysConnection,
         preview: props.preview,
         targetOrigin: TARGET_ORIGIN,
-        visualEditingComlink: comlink,
+        visualEditingComlink: props.comlink === undefined ? comlink : props.comlink,
       }),
-    {initialProps: {overlaysConnection: initial.overlaysConnection, preview: initial.preview}},
+    {
+      initialProps: {
+        overlaysConnection: initial.overlaysConnection,
+        preview: initial.preview,
+        comlink: initial.comlink,
+      },
+    },
   )
-  return {frameStateRef, post, rerender}
+  return {frameStateRef, post, comlink, rerender}
 }
 
 describe('useNavigatePreviewFrame', () => {
@@ -85,7 +96,11 @@ describe('useNavigatePreviewFrame', () => {
     expect(post).not.toHaveBeenCalled()
     expect(frameStateRef.current.url).toBe(`${TARGET_ORIGIN}/alpha`)
 
-    rerender({overlaysConnection: 'connected', preview: `${TARGET_ORIGIN}/beta`})
+    rerender({
+      overlaysConnection: 'connected',
+      preview: `${TARGET_ORIGIN}/beta`,
+      comlink: undefined,
+    })
 
     expect(post).toHaveBeenCalledExactlyOnceWith('presentation/navigate', {
       url: '/beta',
@@ -103,12 +118,39 @@ describe('useNavigatePreviewFrame', () => {
 
     expect(post).not.toHaveBeenCalled()
 
-    rerender({overlaysConnection: 'connected', preview: `${TARGET_ORIGIN}/beta`})
+    rerender({
+      overlaysConnection: 'connected',
+      preview: `${TARGET_ORIGIN}/beta`,
+      comlink: undefined,
+    })
 
     expect(post).toHaveBeenCalledExactlyOnceWith('presentation/navigate', {
       url: '/beta',
       type: 'replace',
     })
+  })
+
+  it('holds a navigation while the comlink handle is unavailable and delivers it once set', () => {
+    const {frameStateRef, post, comlink, rerender} = renderNavigateHook({
+      frameUrl: `${TARGET_ORIGIN}/alpha`,
+      overlaysConnection: 'connected',
+      preview: `${TARGET_ORIGIN}/beta`,
+      comlink: null,
+    })
+
+    // The channel can be torn down (comlink null) before the machine has
+    // processed the disconnect, so the connection still reads 'connected'.
+    // Nothing can be posted: the frame's reported url must not be overwritten.
+    expect(post).not.toHaveBeenCalled()
+    expect(frameStateRef.current.url).toBe(`${TARGET_ORIGIN}/alpha`)
+
+    rerender({overlaysConnection: 'connected', preview: `${TARGET_ORIGIN}/beta`, comlink})
+
+    expect(post).toHaveBeenCalledExactlyOnceWith('presentation/navigate', {
+      url: '/beta',
+      type: 'replace',
+    })
+    expect(frameStateRef.current.url).toBe(`${TARGET_ORIGIN}/beta`)
   })
 
   it('does not re-post when the connection cycles after a delivered navigation', () => {
@@ -120,8 +162,16 @@ describe('useNavigatePreviewFrame', () => {
 
     expect(post).toHaveBeenCalledTimes(1)
 
-    rerender({overlaysConnection: 'reconnecting', preview: `${TARGET_ORIGIN}/beta`})
-    rerender({overlaysConnection: 'connected', preview: `${TARGET_ORIGIN}/beta`})
+    rerender({
+      overlaysConnection: 'reconnecting',
+      preview: `${TARGET_ORIGIN}/beta`,
+      comlink: undefined,
+    })
+    rerender({
+      overlaysConnection: 'connected',
+      preview: `${TARGET_ORIGIN}/beta`,
+      comlink: undefined,
+    })
 
     expect(post).toHaveBeenCalledTimes(1)
   })
