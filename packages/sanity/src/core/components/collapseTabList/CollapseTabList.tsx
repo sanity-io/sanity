@@ -80,9 +80,12 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
     [childrenProp],
   )
 
-  // Nothing is shown until the first measurement arrives, to avoid flashing
-  // children that may not fit.
-  const hasMeasured = Object.keys(intersections).length > 0
+  // Nothing is shown until a measurement arrives for the current children, to
+  // avoid flashing children that may not fit. Derived from the current children
+  // rather than the map as a whole, which retains entries for departed keys.
+  const hasMeasured = children.some(
+    (child) => child.key !== null && intersections[child.key] !== undefined,
+  )
 
   /**
    * The children that do not fit and therefore belong in the overflow menu.
