@@ -288,3 +288,58 @@ test('remotely created documents has _rev', () => {
     })
     .assertHEAD('_rev', '2')
 })
+
+test('remote patch touching an out-of-range index arrives while local edits are pending', () => {
+  new BufferedDocumentTester({
+    _id: 'a',
+    _type: 't',
+    _rev: '1',
+    body: [{_key: 'a', _type: 'block', children: [{_key: 'a1', _type: 'span', text: 'hello'}]}],
+  })
+    .stage('when applying local edit')
+    .localPatch({
+      id: 'a',
+      set: {'body[0].children[0].text': 'hello world'},
+    })
+    .hasLocalEdits()
+    .stage('when remote patch touching an out-of-range index arrives')
+    .remotePatch('1', '2', {
+      id: 'a',
+      set: {'body[4].children[0].text': 'x'},
+    })
+    .assertLOCAL('body[0].children[0].text', 'hello world')
+    .assert((doc) => {
+      expect(doc?.document.HEAD?._rev).toBe('2')
+    })
+    .stage('when the next remote patch arrives')
+    .remotePatch('2', '3', {
+      id: 'a',
+      set: {title: 'still alive'},
+    })
+    .assertHEAD('title', 'still alive')
+    .assertLOCAL('title', 'still alive')
+    .assertLOCAL('body[0].children[0].text', 'hello world')
+})
+
+test('pending local patch on an array index removed by a remote patch rebases cleanly', () => {
+  new BufferedDocumentTester({
+    _id: 'a',
+    _type: 't',
+    _rev: '1',
+    items: [{title: 'one'}, {title: 'two'}, {title: 'three'}],
+  })
+    .stage('when applying local edit to the third item')
+    .localPatch({
+      id: 'a',
+      set: {'items[2].title': 'three edited'},
+    })
+    .hasLocalEdits()
+    .assertLOCAL('items[2].title', 'three edited')
+    .stage('when a remote patch removes the last two items')
+    .remotePatch('1', '2', {
+      id: 'a',
+      unset: ['items[1:3]'],
+    })
+    .didRebase()
+    .assertLOCAL('items', [{title: 'one'}])
+})

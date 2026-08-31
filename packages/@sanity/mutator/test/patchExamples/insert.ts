@@ -113,6 +113,22 @@ const examples: PatchExample[] = [
       scores: [{a: 1}, {a: 'hello'}, {a: 3}],
     },
   },
+  {
+    name: 'Insert anchored to an index of a non-array',
+    before: {
+      a: 'string',
+    },
+    patch: {
+      id: 'a',
+      insert: {
+        after: 'a[-1]',
+        items: [1],
+      },
+    },
+    after: {
+      a: 'string',
+    },
+  },
 ]
 
 export default examples

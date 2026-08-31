@@ -305,6 +305,102 @@ const examples: PatchExample[] = [
       a: 3,
     },
   },
+  {
+    name: 'Set descending past an out-of-range array index',
+    before: {
+      body: [{_key: 'a', _type: 'block', children: [{_key: 'a1', _type: 'span', text: 'hello'}]}],
+    },
+    patch: {
+      id: 'a',
+      set: {
+        'body[4].children[0].text': 'x',
+      },
+    },
+    after: {
+      body: [{_key: 'a', _type: 'block', children: [{_key: 'a1', _type: 'span', text: 'hello'}]}],
+    },
+  },
+  {
+    name: 'Set descending an index into a non-array',
+    before: {
+      a: 'string',
+    },
+    patch: {
+      id: 'a',
+      set: {
+        'a[0].b': 1,
+      },
+    },
+    after: {
+      a: 'string',
+    },
+  },
+  {
+    name: 'Set at an out-of-range array index',
+    before: {
+      body: [
+        {_key: 'a', _type: 'block'},
+        {_key: 'b', _type: 'block'},
+      ],
+    },
+    patch: {
+      id: 'a',
+      set: {
+        'body[5]': {_key: 'z', _type: 'block'},
+      },
+    },
+    after: {
+      body: [
+        {_key: 'a', _type: 'block'},
+        {_key: 'b', _type: 'block'},
+      ],
+    },
+  },
+  {
+    name: 'Set at exactly the array length appends',
+    before: {
+      a: [1, 2],
+    },
+    patch: {
+      id: 'a',
+      set: {
+        'a[2]': 3,
+      },
+    },
+    after: {
+      a: [1, 2, 3],
+    },
+  },
+  {
+    name: 'Set at a negative index resolving out of range',
+    before: {
+      a: [1, 2],
+    },
+    patch: {
+      id: 'a',
+      set: {
+        'a[-5]': 9,
+      },
+    },
+    after: {
+      a: [1, 2],
+    },
+  },
+  {
+    name: 'Set at an index of a non-array',
+    before: {
+      a: 'string',
+    },
+    patch: {
+      id: 'a',
+      set: {
+        'a[0]': 1,
+      },
+    },
+    after: {
+      a: 'string',
+    },
+  },
 ]
 
 export default examples
