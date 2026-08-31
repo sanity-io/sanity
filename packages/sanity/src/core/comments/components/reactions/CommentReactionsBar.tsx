@@ -1,11 +1,8 @@
 import {type CurrentUser} from '@sanity/types'
-import {
-  // oxlint-disable-next-line no-restricted-imports
-  Button as UIButton,
-  Text,
-} from '@sanity/ui'
+// oxlint-disable-next-line no-restricted-imports
+import {Button as UIButton} from '@sanity/ui'
 import {memo, useCallback, useMemo, useState} from 'react'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
@@ -66,7 +63,7 @@ const renderMenuButton = ({open, tooltipContent}: {open: boolean; tooltipContent
     <UIButton fontSize={1} mode="ghost" padding={0} radius="full" selected={open}>
       <Flex paddingX={3} paddingY={2}>
         <Tooltip animate content={tooltipContent} disabled={open}>
-          <Text size={1}>
+          <Text size={1} as="div" trim={true}>
             <ReactionIcon />
           </Text>
         </Tooltip>
@@ -172,9 +169,11 @@ export const CommentReactionsBar = memo(function CommentReactionsBar(
                   tone={hasReacted ? 'primary' : 'default'}
                 >
                   <Flex alignItems="center" gap={1}>
-                    <EmojiText size={1}>{emoji}</EmojiText>
+                    <EmojiText size={1} forwardedAs="div" trim={true}>
+                      {emoji}
+                    </EmojiText>
 
-                    <Text size={0} weight={hasReacted ? 'semibold' : 'medium'}>
+                    <Text size={0} weight={hasReacted ? 'semibold' : 'medium'} as="div" trim={true}>
                       {reactionsList?.length}
                     </Text>
                   </Flex>

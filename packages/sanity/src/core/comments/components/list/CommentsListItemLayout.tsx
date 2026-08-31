@@ -1,11 +1,11 @@
 import {hues} from '@sanity/color'
 import {type CurrentUser} from '@sanity/types'
-import {type AvatarSize, Card, Text, TextSkeleton, useClickOutsideEvent} from '@sanity/ui'
+import {type AvatarSize, Card, TextSkeleton, useClickOutsideEvent} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {css, styled} from 'styled-components'
-import {Box, Flex, VStack} from 'ui5'
+import {Text, Box, Flex, VStack} from 'ui5'
 
 import {useDidUpdate} from '../../../form/hooks/useDidUpdate'
 import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
@@ -336,7 +336,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   useClickOutsideEvent(!hasChanges && cancelEdit, () => [rootElementRef.current])
 
   const name = user?.displayName ? (
-    <Text size={1} weight="medium" textOverflow="ellipsis" title={user.displayName}>
+    <Text size={1} weight="medium" truncate={1} title={user.displayName} as="div" trim={true}>
       {user.displayName}
     </Text>
   ) : (
@@ -375,14 +375,20 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
                 {!displayError && (
                   <Flex alignItems="center" gap={1}>
-                    <TimeText muted size={0}>
+                    <TimeText muted size={0} forwardedAs="div" trim={true}>
                       <time dateTime={createdDate.toISOString()} title={formattedCreatedAt}>
                         {createdTimeAgo}
                       </time>
                     </TimeText>
 
                     {formattedLastEditAt && editedDate && (
-                      <TimeText muted size={0} title={formattedLastEditAt}>
+                      <TimeText
+                        muted
+                        size={0}
+                        title={formattedLastEditAt}
+                        forwardedAs="div"
+                        trim={true}
+                      >
                         <time dateTime={editedDate.toISOString()} title={formattedLastEditAt}>
                           ({t('list-item.layout-edited')})
                         </time>
@@ -395,7 +401,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
             {intent && (
               <Box flexBasis="0%" flexGrow={1}>
-                <IntentText muted size={0} textOverflow="ellipsis">
+                <IntentText muted size={0} truncate={1} forwardedAs="div" trim={true}>
                   <Translate
                     t={t}
                     i18nKey="list-item.layout-context"
@@ -493,7 +499,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
           {withAvatar && <SpacerAvatar $size={avatarSize} />}
 
           <Flex alignItems="center" gap={1} flexBasis="0%" flexGrow={1}>
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               {hasError && t('list-item.layout-failed-sent')}
               {isRetrying && t('list-item.layout-posting')}
             </Text>
@@ -508,7 +514,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                 radius={2}
                 tone="primary"
               >
-                <Text size={1} muted>
+                <Text size={1} muted as="div" trim={true}>
                   {t('list-item.layout-retry')}
                 </Text>
               </RetryCardButton>

@@ -1,5 +1,4 @@
-import {Text} from '@sanity/ui'
-import {Container, Flex, VStack} from 'ui5'
+import {Text, Container, Flex, VStack} from 'ui5'
 
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -41,7 +40,7 @@ export function CommentsListStatus(props: CommentsListStatusProps) {
     return (
       <Flex alignItems="center" justifyContent="center" flexBasis="0%" flexGrow={1} padding={4}>
         <Flex alignItems="center">
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             {t('list-status.error')}
           </Text>
         </Flex>
@@ -58,11 +57,11 @@ export function CommentsListStatus(props: CommentsListStatusProps) {
       <Flex alignItems="center" justifyContent="center" flexBasis="0%" flexGrow={1}>
         <Container size={0} padding={4}>
           <VStack gap={3}>
-            <Text align="center" size={1} muted weight="medium">
+            <Text align="center" size={1} muted weight="medium" as="div" trim={true}>
               {emptyStateMessages[status].title}
             </Text>
 
-            <Text align="center" size={1} muted>
+            <Text align="center" size={1} muted as="div" trim={true}>
               {emptyStateMessages[status].message}
             </Text>
           </VStack>

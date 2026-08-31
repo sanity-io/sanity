@@ -4,12 +4,11 @@ import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import {
   // oxlint-disable-next-line no-restricted-imports
   Button as SanityUIButton,
-  Text,
   useClickOutsideEvent,
 } from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Popover} from '../../../../ui-components/popover/Popover'
@@ -201,10 +200,12 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
         gap={2}
       >
         <Flex alignItems="center" gap={2}>
-          <Text size={1}>
+          <Text size={1} as="div" trim={true}>
             <CommentIcon />
           </Text>
-          <Text size={0}>{count > 9 ? '9+' : count}</Text>
+          <Text size={0} as="div" trim={true}>
+            {count > 9 ? '9+' : count}
+          </Text>
         </Flex>
       </SanityUIButton>
     </Tooltip>

@@ -1,6 +1,5 @@
-import {Text} from '@sanity/ui'
 import {useCallback} from 'react'
-import {VStack} from 'ui5'
+import {Text, VStack} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {TextWithTone} from '../../components/textWithTone/TextWithTone'
@@ -71,7 +70,9 @@ export function CommentDeleteDialog(props: CommentDeleteDialogProps) {
       width={0}
     >
       <VStack gap={4}>
-        <Text size={1}>{body}</Text>
+        <Text size={1} as="div" trim={true}>
+          {body}
+        </Text>
 
         {error && <TextWithTone tone="critical">{t('delete-dialog.error')}</TextWithTone>}
       </VStack>

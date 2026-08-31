@@ -83,7 +83,7 @@ export function CommentReactionsMenu(props: CommentReactionsMenuProps) {
             role="menuitem"
             tabIndex={-1}
           >
-            <EmojiText align="center" size={2}>
+            <EmojiText align="center" size={2} forwardedAs="div" trim={true}>
               {emoji}
             </EmojiText>
           </UIButton>

@@ -1,7 +1,6 @@
 import {type CurrentUser} from '@sanity/types'
-import {Text} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Box, Flex} from 'ui5'
+import {type TextProps, Text, Box, Flex} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useListFormat} from '../../../hooks/useListFormat'
@@ -13,7 +12,7 @@ import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentReactionShortNames} from '../../types'
 import {EmojiText} from './EmojiText.styled'
 
-const TEXT_SIZE: number | number[] = 1
+const TEXT_SIZE: TextProps['size'] = 1
 
 const ContentStack = styled(Flex)`
   max-width: 180px;
@@ -96,7 +95,11 @@ function FormattedUserList({currentUserId, userIds}: {currentUserId: string; use
 
     if (item.type === 'literal') {
       // Add literals as-is - the next case will rewrite literals to exclude leading non-whitespace
-      elements.push(<InlineText key={`literal-${i}`}>{item.value}</InlineText>)
+      elements.push(
+        <InlineText key={`literal-${i}`} forwardedAs="div" trim={true}>
+          {item.value}
+        </InlineText>,
+      )
       continue
     }
 
@@ -111,10 +114,12 @@ function FormattedUserList({currentUserId, userIds}: {currentUserId: string; use
       elements.push(
         // Key (value) is user ID, thus unique
         <TextGroup key={item.value}>
-          <InlineText weight="medium">
+          <InlineText weight="medium" forwardedAs="div" trim={true}>
             <UserDisplayName currentUserId={currentUserId} isFirst={i === 0} userId={item.value} />
           </InlineText>
-          <InlineText>{nonWhitespace}</InlineText>
+          <InlineText forwardedAs="div" trim={true}>
+            {nonWhitespace}
+          </InlineText>
         </TextGroup>,
       )
 
@@ -127,7 +132,7 @@ function FormattedUserList({currentUserId, userIds}: {currentUserId: string; use
     // in an element that does _not_ have a leading non-whitespace literal following it.
     elements.push(
       // Key (value) is user ID, thus unique
-      <InlineText key={item.value} weight="medium">
+      <InlineText key={item.value} weight="medium" forwardedAs="div" trim={true}>
         <UserDisplayName currentUserId={currentUserId} isFirst={i === 0} userId={item.value} />
       </InlineText>,
     )
@@ -148,13 +153,20 @@ function UserList({currentUserId, userIds}: ReactionTooltipComponentProps) {
 }
 
 function ReactionName({reactionName}: ReactionTooltipComponentProps) {
-  return <InlineText muted>{reactionName}</InlineText>
+  return (
+    <InlineText muted forwardedAs="div" trim={true}>
+      {reactionName}
+    </InlineText>
+  )
 }
 
 function ReactionText({children}: ReactionTooltipComponentProps) {
   return (
     <>
-      <InlineText muted>{children}</InlineText> <wbr />{' '}
+      <InlineText muted forwardedAs="div" trim={true}>
+        {children}
+      </InlineText>{' '}
+      <wbr />{' '}
     </>
   )
 }
@@ -168,7 +180,9 @@ function CommentReactionsUsersTooltipContent(
   return (
     <ContentStack padding={1} flexDirection="column">
       <Flex justifyContent="center" paddingBottom={2} paddingTop={1}>
-        <EmojiText size={4}>{COMMENT_REACTION_EMOJIS[reactionName]}</EmojiText>
+        <EmojiText size={4} forwardedAs="div" trim={true}>
+          {COMMENT_REACTION_EMOJIS[reactionName]}
+        </EmojiText>
       </Flex>
 
       <TextBox>

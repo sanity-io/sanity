@@ -1,4 +1,3 @@
-import {Text} from '@sanity/ui'
 import deburr from 'lodash-es/deburr.js'
 import {
   type Ref,
@@ -10,7 +9,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {styled} from 'styled-components'
-import {Box, Flex, VStack} from 'ui5'
+import {Text, Box, Flex, VStack} from 'ui5'
 
 import {CommandList} from '../../../components/commandList/CommandList'
 import {type CommandListHandle} from '../../../components/commandList/types'
@@ -118,7 +117,7 @@ export function MentionsMenu(props: MentionsMenuProps & RefAttributes<MentionsMe
     <Flex flexDirection="column" height="100%" data-testid="comments-mentions-menu">
       {filteredOptions.length === 0 && (
         <Box padding={5}>
-          <Text align="center" size={1} muted>
+          <Text align="center" size={1} muted as="div" trim={true}>
             {t('mentions.no-users-found')}
           </Text>
         </Box>
