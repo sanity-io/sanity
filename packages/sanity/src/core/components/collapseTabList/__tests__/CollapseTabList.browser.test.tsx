@@ -132,10 +132,19 @@ describe('CollapseTabList', () => {
     // regardless of how the measurement row is laid out. It must occupy layout
     // space while staying invisible and out of the accessibility tree (the role
     // query above already proves the latter).
-    const visibleRow = document.querySelector('[data-testid="collapse-tab-list"]')!.children[0]!
-    const placeholder = visibleRow.querySelector('[aria-label="More tools"]')
+    const placeholder = document.querySelector('[data-testid="collapse-tab-list-placeholder"]')
     expect(placeholder).not.toBeNull()
-    expect(placeholder!.getBoundingClientRect().width).toBeGreaterThan(0)
+    const placeholderWidth = placeholder!.getBoundingClientRect().width
+    expect(placeholderWidth).toBeGreaterThan(0)
     expect(getComputedStyle(placeholder!).visibility).toBe('hidden')
+
+    // The placeholder-to-menu-button swap must be width-neutral: the interactive
+    // button rendered once children collapse occupies exactly the reserved footprint.
+    await render(
+      <TestList width={NARROW}>{makeTabs(['Alpha', 'Beta', 'Gamma', 'Delta'])}</TestList>,
+    )
+    await expect.element(overflowMenuButton).toBeVisible()
+    const kebabWidth = overflowMenuButton.element().getBoundingClientRect().width
+    expect(kebabWidth).toBeCloseTo(placeholderWidth, 1)
   })
 })

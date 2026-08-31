@@ -141,7 +141,7 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
           // that footprint here keeps a content-sized container (the navbar's
           // wide-regime `auto` grid track) wide enough on its own, and makes the
           // swap with the real menu button layout-stable.
-          <MenuButtonPlaceholder aria-hidden="true">
+          <MenuButtonPlaceholder aria-hidden="true" data-testid="collapse-tab-list-placeholder">
             {cloneElement(menuButton, {
               'disabled': true,
               'aria-hidden': true,
