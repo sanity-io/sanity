@@ -9,3 +9,12 @@ test('basic extraction', () => {
   expect(extract('[@ > 7]', [10, null, 2])).toEqual([10])
   expect(extract('..kazoo', {kazoo: 'fneh', zip: null})).toEqual(['fneh'])
 })
+
+test('resolves negative-index and open-ended-range descends against the value', () => {
+  // These path shapes previously threw ("must have a probe") because the lead
+  // count was resolved without the value in scope.
+  expect(extract('a[-1].b', {a: [{b: 1}, {b: 2}]})).toEqual([2])
+  expect(extract('a[0:].b', {a: [{b: 1}]})).toEqual([1])
+  // Out of range descends resolve to nothing rather than throwing.
+  expect(extract('a[5].b', {a: [{b: 1}]})).toEqual([])
+})
