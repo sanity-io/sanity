@@ -21,10 +21,8 @@ export class InsertPatch {
   apply(targets: Expression[], accessor: ImmutableAccessor): ImmutableAccessor {
     let result = accessor
     if (accessor.containerType() !== 'array') {
-      const valueType = accessor.valueType()
-      throw new Error(
-        `Attempt to apply insert patch to value of type "${valueType}" at path "${accessor.path.join(' → ')}"`,
-      )
+      // Insert targets only exist for arrays
+      return result
     }
 
     switch (this.location) {
