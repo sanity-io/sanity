@@ -135,7 +135,7 @@ export class Matcher {
       if (descender.tail) {
         // Not arrived yet
         const matcher = new Matcher(descender.descend(), this)
-        descenderHead.toFieldReferences().forEach(() => {
+        descenderHead.toFieldReferences(probe).forEach(() => {
           leads.push({
             target: descenderHead,
             matcher: matcher,
