@@ -161,7 +161,10 @@ describe('RequestAccessForm', () => {
     })
     await renderForm({client})
 
-    expect(await screen.findByRole('alert')).toBeInTheDocument()
+    // Not the submit-failure copy: nothing was submitted.
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'The resource currently being requested is no longer available.',
+    )
     expect(screen.queryByRole('form')).not.toBeInTheDocument()
   })
 

@@ -131,7 +131,12 @@ function deriveServerViewState(
     case 'saml-required':
       return {view: 'sso-enforced', redirectUrl: status.redirectUrl}
     case 'resource-not-available':
-      return {view: 'blocked', title: labels.errorTitle, message: labels.submitFailedMessage}
+      // Nothing was submitted, so the submit-failure copy would misdescribe it.
+      return {
+        view: 'blocked',
+        title: labels.resourceNotAvailableTitle,
+        message: labels.resourceNotAvailableMessage,
+      }
     case 'eligible':
       return null
     default:

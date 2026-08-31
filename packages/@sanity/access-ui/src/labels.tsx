@@ -25,6 +25,8 @@ export interface RequestAccessLabels {
   expiredMessage: ReactNode
   ssoEnforcedMessage: (context: {providerTitle?: string}) => ReactNode
   ssoSignInCta: ReactNode
+  resourceNotAvailableTitle: ReactNode
+  resourceNotAvailableMessage: ReactNode
   submitFailedMessage: ReactNode
   wrongAccount: ReactNode
   signOut: ReactNode
@@ -69,6 +71,8 @@ export const defaultLabels: RequestAccessLabels = {
       </>
     ),
   ssoSignInCta: 'Sign in with SSO',
+  resourceNotAvailableTitle: 'Access can’t be requested',
+  resourceNotAvailableMessage: 'The resource currently being requested is no longer available.',
   submitFailedMessage: 'There was a problem submitting your request. Please try again.',
   wrongAccount: 'Wrong account?',
   signOut: 'Sign out',
