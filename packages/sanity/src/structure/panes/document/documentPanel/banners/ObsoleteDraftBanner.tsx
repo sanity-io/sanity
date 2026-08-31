@@ -2,10 +2,9 @@ import {type SanityDocument} from '@sanity/client'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Flex, Text} from '@sanity/ui'
-import {type ComponentType, useCallback, useEffect, useState} from 'react'
+import {type ComponentType, useCallback, useState} from 'react'
 import {
   type DocumentPairTarget,
-  getPairTarget,
   getTargetSiblings,
   type ObjectSchemaType,
   Translate,
@@ -49,12 +48,15 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
   isEditBlocking,
 }) => {
   const {t} = useTranslation(structureLocaleNamespace)
-  const [isPublishing, setPublishing] = useState(false)
-  const [isDiscarding, setDiscarding] = useState(false)
+  const [actionRequested, setActionRequested] = useState<'publish' | 'discard'>()
   const telemetry = useTelemetry()
   const {selectedVariant} = usePerspective()
   const {targetDocumentState} = useDocumentPane()
   const siblings = getTargetSiblings(targetDocumentState)
+  const publishedId = siblings?.published?._id
+  const draftId = siblings?.draft?._id
+  const isPublishing = actionRequested === 'publish' && Boolean(draftId)
+  const isDiscarding = actionRequested === 'discard' && Boolean(draftId)
   // Variant leftover drafts pass `pairTarget` so publish/discard hit the variant draft. Base
   // live-edit leftovers omit it and operate on the draft/published pair.
   const target = selectedVariant
@@ -71,26 +73,17 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
 
   const handlePublish = useCallback(() => {
     publish.execute()
-    setPublishing(true)
+    setActionRequested('publish')
     telemetry.log(ResolvedLiveEdit, {liveEditResolveType: 'publish'})
   }, [publish, telemetry])
 
   const handleDiscard = useCallback(() => {
     discardChanges.execute()
-    setDiscarding(true)
+    setActionRequested('discard')
     telemetry.log(ResolvedLiveEdit, {liveEditResolveType: 'discard'})
   }, [discardChanges, telemetry])
 
-  useEffect(() => {
-    return () => {
-      setPublishing(false)
-      setDiscarding(false)
-    }
-  })
-
   const diffViewRouter = useDiffViewRouter()
-  const publishedId = siblings?.published?._id
-  const draftId = siblings?.draft?._id
   if (!draftId) {
     return null
   }
@@ -116,7 +109,7 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
           <Button
             text={t('banners.obsolete-draft.actions.compare-draft.text')}
             mode="ghost"
-            disabled={!publishedId}
+            disabled={!publishedId || Boolean(actionRequested)}
             tooltipProps={{
               content: t('banners.obsolete-draft.actions.compare-draft.tooltip'),
               disabled: Boolean(publishedId),
@@ -126,6 +119,7 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
           <Button
             onClick={handlePublish}
             text={t('banners.obsolete-draft.actions.publish-draft.text')}
+            disabled={Boolean(actionRequested)}
             tooltipProps={
               isEditBlocking
                 ? {
@@ -138,6 +132,7 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
           />
           <Button
             onClick={handleDiscard}
+            disabled={!draftId || Boolean(actionRequested)}
             text={t('banners.obsolete-draft.actions.discard-draft.text')}
             tooltipProps={
               isEditBlocking
