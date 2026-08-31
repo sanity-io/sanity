@@ -1,11 +1,11 @@
 import {hues} from '@sanity/color'
 import {type CurrentUser} from '@sanity/types'
-import {type AvatarSize, Card, Stack, Text, TextSkeleton, useClickOutsideEvent} from '@sanity/ui'
+import {type AvatarSize, Card, Text, TextSkeleton, useClickOutsideEvent} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {css, styled} from 'styled-components'
-import {Box, Flex} from 'ui5'
+import {Box, Flex, VStack} from 'ui5'
 
 import {useDidUpdate} from '../../../form/hooks/useDidUpdate'
 import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
@@ -88,7 +88,7 @@ const IntentText = styled(Text)(({theme}) => {
   `
 })
 
-const InnerStack = styled(Stack)`
+const InnerStack = styled(VStack)`
   transition: opacity 200ms ease;
 
   &[data-muted='true'] {
@@ -112,7 +112,7 @@ const RetryCardButton = styled(Card)`
   }
 `
 
-const RootStack = styled(Stack)(({theme}) => {
+const RootStack = styled(VStack)(({theme}) => {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {space} = theme.sanity
 
@@ -444,7 +444,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
           <Flex alignItems="flex-start" gap={2}>
             {withAvatar && <SpacerAvatar $size={avatarSize} />}
 
-            <Stack flex={1}>
+            <Flex flexBasis="0%" flexGrow={1} flexDirection="column">
               <CommentInput
                 currentUser={currentUser}
                 focusOnMount
@@ -459,7 +459,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                 value={value}
                 withAvatar={false}
               />
-            </Stack>
+            </Flex>
           </Flex>
         )}
 

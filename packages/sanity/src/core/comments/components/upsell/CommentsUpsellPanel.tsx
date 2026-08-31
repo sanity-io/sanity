@@ -1,4 +1,4 @@
-import {Container,Box} from 'ui5'
+import {Container, Box} from 'ui5'
 
 import {type UpsellData} from '../../../studio/upsell/types'
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'

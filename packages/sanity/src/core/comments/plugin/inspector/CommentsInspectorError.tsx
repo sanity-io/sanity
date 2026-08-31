@@ -1,5 +1,5 @@
-import {Card, Stack, Text} from '@sanity/ui'
-import {Box} from 'ui5'
+import {Card, Text} from '@sanity/ui'
+import {Box, VStack} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {commentsLocaleNamespace} from '../../i18n'
@@ -10,14 +10,14 @@ export function CommentsInspectorError({error}: {error: Error}) {
   return (
     <Box padding={2}>
       <Card paddingX={2} paddingY={3} tone="critical" border radius={3}>
-        <Stack gap={3}>
+        <VStack gap={3}>
           <Text size={1} weight="medium">
             {t('inspector-error.title')}
           </Text>
           <Text size={1} muted>
             {error.message}
           </Text>
-        </Stack>
+        </VStack>
       </Card>
     </Box>
   )

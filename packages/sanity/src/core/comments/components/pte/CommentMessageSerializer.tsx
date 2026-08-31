@@ -1,14 +1,14 @@
 import {PortableText, type PortableTextComponents} from '@portabletext/react'
-import {Stack} from '@sanity/ui'
 import {Fragment, type PropsWithChildren, useMemo} from 'react'
 import {css, styled} from 'styled-components'
+import {VStack} from 'ui5'
 
 import {type CommentMessage} from '../../types'
 import {transformChildren} from '../../utils/transform-children'
 import {MentionInlineBlock} from './blocks/MentionInlineBlock'
 import {NormalBlock} from './blocks/NormalBlock'
 
-const PortableTextWrap = styled(Stack)(() => {
+const PortableTextWrap = styled(VStack)(() => {
   return css`
     & > [data-ui='Text']:not(:first-child) {
       margin-top: 1em; // todo: improve

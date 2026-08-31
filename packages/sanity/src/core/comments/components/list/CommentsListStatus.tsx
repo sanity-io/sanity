@@ -1,5 +1,5 @@
-import {Stack, Text} from '@sanity/ui'
-import {Container,Flex} from 'ui5'
+import {Text} from '@sanity/ui'
+import {Container, Flex, VStack} from 'ui5'
 
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -57,7 +57,7 @@ export function CommentsListStatus(props: CommentsListStatusProps) {
     return (
       <Flex alignItems="center" justifyContent="center" flexBasis="0%" flexGrow={1}>
         <Container size={0} padding={4}>
-          <Stack gap={3}>
+          <VStack gap={3}>
             <Text align="center" size={1} muted weight="medium">
               {emptyStateMessages[status].title}
             </Text>
@@ -65,7 +65,7 @@ export function CommentsListStatus(props: CommentsListStatusProps) {
             <Text align="center" size={1} muted>
               {emptyStateMessages[status].message}
             </Text>
-          </Stack>
+          </VStack>
         </Container>
       </Flex>
     )

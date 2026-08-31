@@ -1,5 +1,5 @@
 import {type CurrentUser} from '@sanity/types'
-import {Stack, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {styled} from 'styled-components'
 import {Box, Flex} from 'ui5'
 
@@ -15,7 +15,7 @@ import {EmojiText} from './EmojiText.styled'
 
 const TEXT_SIZE: number | number[] = 1
 
-const ContentStack = styled(Stack)`
+const ContentStack = styled(Flex)`
   max-width: 180px;
 `
 
@@ -166,7 +166,7 @@ function CommentReactionsUsersTooltipContent(
   const {t} = useTranslation(commentsLocaleNamespace)
 
   return (
-    <ContentStack padding={1}>
+    <ContentStack padding={1} flexDirection="column">
       <Flex justifyContent="center" paddingBottom={2} paddingTop={1}>
         <EmojiText size={4}>{COMMENT_REACTION_EMOJIS[reactionName]}</EmojiText>
       </Flex>

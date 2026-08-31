@@ -1,6 +1,7 @@
 import {type PortableTextBlock} from '@sanity/types'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
+import {VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {CommentsListItemReferencedValue} from '../CommentsListItemReferencedValue'
@@ -38,20 +39,20 @@ export const States: Story = {
   args: {hasReferencedValue: true, value: QUOTE},
   render: () => (
     <Card padding={4} style={{maxWidth: 420}}>
-      <Stack gap={5}>
-        <Stack gap={2}>
+      <VStack gap={5}>
+        <VStack gap={2}>
           <Text muted size={1} weight="medium">
             referenced
           </Text>
           <CommentsListItemReferencedValue hasReferencedValue value={QUOTE} />
-        </Stack>
-        <Stack gap={2}>
+        </VStack>
+        <VStack gap={2}>
           <Text muted size={1} weight="medium">
             missing referenced value
           </Text>
           <CommentsListItemReferencedValue hasReferencedValue={false} value={QUOTE} />
-        </Stack>
-      </Stack>
+        </VStack>
+      </VStack>
     </Card>
   ),
 }

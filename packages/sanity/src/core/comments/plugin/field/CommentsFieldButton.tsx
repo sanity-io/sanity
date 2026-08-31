@@ -4,7 +4,6 @@ import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import {
   // oxlint-disable-next-line no-restricted-imports
   Button as SanityUIButton,
-  Stack,
   Text,
   useClickOutsideEvent,
 } from '@sanity/ui'
@@ -27,7 +26,7 @@ import {hasCommentMessageValue} from '../../helpers'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentMessage} from '../../types'
 
-const ContentStack = styled(Stack)`
+const ContentStack = styled(Flex)`
   width: 320px;
 `
 
@@ -143,7 +142,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
     )
 
     const content = (
-      <ContentStack padding={2} gap={4}>
+      <ContentStack padding={2} gap={4} flexDirection="column">
         <CommentInput
           currentUser={currentUser}
           focusLock
