@@ -7,10 +7,10 @@ import type {
   AssetSourceComponentProps,
   unstable_defineService,
   unstable_defineView,
-} from 'sanity/workbench'
+} from 'sanity/dashboard'
 import {describe, expectTypeOf, test} from 'vitest'
 
-describe('sanity/workbench', () => {
+describe('sanity/dashboard', () => {
   test('AssetSource', () => {
     expectTypeOf<AssetSource>().toBeObject()
   })

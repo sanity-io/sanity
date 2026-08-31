@@ -1,9 +1,9 @@
 import {type SchemaType} from '@sanity/types'
-import {Badge, Flex} from '@sanity/ui'
+import {Badge} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {DocumentVersionsStatus} from '../../../../../../../components/documentStatus/DocumentVersionsStatus'
 import {DocumentVersionsStatusIndicator} from '../../../../../../../components/documentStatusIndicator/DocumentVersionsStatusIndicator'
@@ -90,7 +90,7 @@ export function SearchResultItemPreview({
   const status = useMemo(() => {
     if (isLoading) return null
     return (
-      <Flex align="center" gap={3}>
+      <Flex alignItems="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
         {showBadge && <Badge>{schemaType.title}</Badge>}
         <DocumentVersionsStatusIndicator documentVersions={versions} />

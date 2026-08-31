@@ -912,11 +912,19 @@ exports[`exports snapshot 1`] = `
   },
   "./cli": {
     "createCliConfig": "function",
+    "defineApplication": "function",
     "defineCliConfig": "function",
+    "definePanelView": "function",
+    "defineTileView": "function",
+    "defineWebWorker": "function",
+    "defineWindowView": "function",
     "getCliClient": "function",
     "getStudioEnvironmentVariables": "function",
-    "unstable_defineApp": "function",
     "unstable_defineMediaLibrary": "function",
+  },
+  "./dashboard": {
+    "unstable_defineService": "function",
+    "unstable_defineView": "function",
   },
   "./desk": {
     "ComponentBuilder": "function",
@@ -1099,10 +1107,6 @@ exports[`exports snapshot 1`] = `
     "usePaneOptions": "function",
     "usePaneRouter": "function",
     "useStructureTool": "function",
-  },
-  "./workbench": {
-    "unstable_defineService": "function",
-    "unstable_defineView": "function",
   },
 }
 `;
