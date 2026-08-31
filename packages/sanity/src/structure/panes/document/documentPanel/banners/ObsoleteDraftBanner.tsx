@@ -1,7 +1,7 @@
 import {type SanityDocument} from '@sanity/client'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Flex, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {type ComponentType, useCallback, useEffect, useState} from 'react'
 import {
   getDraftId,
@@ -11,6 +11,7 @@ import {
   useDocumentOperation,
   useTranslation,
 } from 'sanity'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {useDiffViewRouter} from '../../../../diffView/hooks/useDiffViewRouter'
@@ -87,7 +88,7 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
   return (
     <Banner
       content={
-        <Flex align="center" justify="space-between" gap={2}>
+        <Flex alignItems="center" justifyContent="space-between" gap={2}>
           <Text size={1} weight="medium">
             <Translate t={t} i18nKey={i18nKey} values={{schemaType: schemaType.title}} />
           </Text>

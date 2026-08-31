@@ -1,4 +1,4 @@
-import {Flex, focusFirstDescendant, Spinner, Text} from '@sanity/ui'
+import {focusFirstDescendant, Spinner, Text} from '@sanity/ui'
 import {type FormEvent, useCallback, useEffect, useMemo, useState, type RefAttributes} from 'react'
 import {tap} from 'rxjs/operators'
 import {
@@ -20,7 +20,7 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -225,7 +225,12 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
           {connectionState === 'connecting' && !editState?.draft && !editState?.published ? (
             <Delay ms={300}>
               {/* TODO: replace with loading block */}
-              <Flex align="center" direction="column" height="fill" justify="center">
+              <Flex
+                alignItems="center"
+                flexDirection="column"
+                height="100%"
+                justifyContent="center"
+              >
                 <Spinner muted />
                 <Box marginTop={3}>
                   <Text align="center" muted size={1}>
