@@ -58,7 +58,7 @@ function minIndex(targets: Expression[], accessor: ImmutableAccessor): number {
   // Ranges may be zero-length and not turn up in indices
   targets.forEach((target) => {
     if (target.isRange()) {
-      const {start} = target.expandRange()
+      const {start} = target.expandRange(accessor)
       if (start < result) {
         result = start
       }
@@ -73,7 +73,7 @@ function maxIndex(targets: Expression[], accessor: ImmutableAccessor): number {
   // Ranges may be zero-length and not turn up in indices
   targets.forEach((target) => {
     if (target.isRange()) {
-      const {end} = target.expandRange()
+      const {end} = target.expandRange(accessor)
       if (end > result) {
         result = end
       }
