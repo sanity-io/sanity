@@ -64,7 +64,7 @@ export async function fetchAccessRequestStatus(options: {
     const status = await withAccessApiVersion(client).request<AccessRequestStatus | null>({
       url: `/access/${resourceType}/${resourceId}/requests/state`,
       tag: 'access-ui.request-state',
-      query: origin ? {q: new URLSearchParams({origin}).toString()} : undefined,
+      query: origin ? {returnQuery: new URLSearchParams({origin}).toString()} : undefined,
     })
     return status ?? {state: 'eligible'}
   } catch {

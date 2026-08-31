@@ -138,13 +138,15 @@ describe('fetchAccessRequestStatus', () => {
     await expect(fetchStatus(client)).resolves.toEqual(verdict)
   })
 
-  it('packs the origin as an opaque q param so the user returns after SSO', async () => {
+  it('packs the origin into returnQuery so the user returns after SSO', async () => {
     const client = createClientStub()
 
     await fetchStatus(client, 'https://example.test/resource')
 
     expect(client.request).toHaveBeenCalledWith(
-      expect.objectContaining({query: {q: 'origin=https%3A%2F%2Fexample.test%2Fresource'}}),
+      expect.objectContaining({
+        query: {returnQuery: 'origin=https%3A%2F%2Fexample.test%2Fresource'},
+      }),
     )
   })
 
