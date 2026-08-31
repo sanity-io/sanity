@@ -1,17 +1,17 @@
 /* oxlint-disable typescript/no-deprecated -- marker compatibility requires legacy fields */
 import {type Path, type ValidationError, type ValidationMarker} from '@sanity/types'
 
+import {type ValidationMarkerCode, validationMarkerCodes} from '../codes'
 import {type ValidationContext} from '../types'
 import {pathToString} from '../util/pathToString'
-
-function isNonNullable<T>(t: T): t is NonNullable<T> {
-  return t !== null || t !== undefined
-}
 
 export function convertToValidationMarker(
   validatorResult: true | true[] | string | string[] | ValidationError | ValidationError[],
   level: 'error' | 'warning' | 'info' | undefined,
   context: ValidationContext,
+  fallback: {code: ValidationMarkerCode; details?: Record<string, unknown>} = {
+    code: validationMarkerCodes.validationFailed,
+  },
 ): ValidationMarker[] {
   if (!context) {
     throw new Error('missing context')
@@ -20,13 +20,13 @@ export function convertToValidationMarker(
   if (validatorResult === true) return []
 
   if (Array.isArray(validatorResult)) {
-    return validatorResult
-      .flatMap((child) => convertToValidationMarker(child, level, context))
-      .filter(isNonNullable)
+    return validatorResult.flatMap((child) =>
+      convertToValidationMarker(child, level, context, fallback),
+    )
   }
 
   if (typeof validatorResult === 'string') {
-    return convertToValidationMarker({message: validatorResult}, level, context)
+    return convertToValidationMarker({message: validatorResult}, level, context, fallback)
   }
 
   if (typeof validatorResult.message !== 'string') {
@@ -40,6 +40,8 @@ export function convertToValidationMarker(
   }
 
   const {message, __internal_metadata} = validatorResult
+  const code = validatorResult.code || fallback.code
+  const details = validatorResult.details || fallback.details
 
   const normalizedPaths: Path[] = []
   if (validatorResult.path) {
@@ -56,6 +58,8 @@ export function convertToValidationMarker(
   if (!normalizedPaths.length) {
     return [
       {
+        code,
+        ...(details && {details}),
         level: level || 'error',
         item: {message},
         message,
@@ -69,6 +73,8 @@ export function convertToValidationMarker(
   // each item-level relative path, create a validation marker that concatenates
   // the relative path with the path from the validation context
   return normalizedPaths.map((path) => ({
+    code,
+    ...(details && {details}),
     path: (context.path || []).concat(path),
     level: level || 'error',
     item: {message},
