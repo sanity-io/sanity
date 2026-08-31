@@ -336,6 +336,102 @@ describe('getTargetDocumentState', () => {
         })
       })
     })
+
+    describe('live-edit', () => {
+      it('resolves the published variant instead of a creatable draft', () => {
+        const versions = [publishedBase, draftBase, publishedAlphaVariantAdvertisingDraft]
+
+        expect(getTargetDocumentState({...variantOptions, versions, liveEdit: true})).toEqual({
+          status: 'ready',
+          targetDocument: publishedAlphaVariantAdvertisingDraft,
+          scopeId: 'varscopePub',
+          variant: variantAlphaAudience,
+          siblings: siblings({published: publishedAlphaVariantAdvertisingDraft}),
+        })
+      })
+
+      it('keeps the leftover draft as the target so obsolete-draft handling can address it', () => {
+        const versions = [
+          publishedBase,
+          draftBase,
+          publishedAlphaVariantAdvertisingDraft,
+          draftAlphaVariant,
+        ]
+
+        expect(getTargetDocumentState({...variantOptions, versions, liveEdit: true})).toEqual({
+          status: 'ready',
+          targetDocument: draftAlphaVariant,
+          scopeId: 'varscope',
+          variant: variantAlphaAudience,
+          siblings: siblings({
+            published: publishedAlphaVariantAdvertisingDraft,
+            draft: draftAlphaVariant,
+          }),
+        })
+      })
+
+      it('keeps the leftover draft when the published variant is missing', () => {
+        expect(
+          getTargetDocumentState({
+            ...variantOptions,
+            versions: [publishedBase, draftBase, draftAlphaVariant],
+            liveEdit: true,
+          }),
+        ).toEqual({
+          status: 'ready',
+          targetDocument: draftAlphaVariant,
+          scopeId: 'varscope',
+          variant: variantAlphaAudience,
+          siblings: siblings({draft: draftAlphaVariant}),
+        })
+      })
+
+      it('does not offer a creatable draft when the published variant is missing', () => {
+        const state = getTargetDocumentState({
+          ...variantOptions,
+          versions: [publishedBase, draftBase],
+          liveEdit: true,
+        })
+
+        expect(state).toEqual({
+          status: 'variant-missing',
+          variant: variantAlphaAudience,
+          bundle: 'drafts',
+          siblings: siblings(),
+        })
+        expect(state.status === 'variant-missing' && state.creatableTarget).toBeUndefined()
+      })
+
+      it('does not remap a release bundle', () => {
+        const releaseAlphaVariant = versionStub({
+          _id: `versions.varscopeRel.${PUBLISHED_ID}`,
+          _system: {
+            bundleId: RELEASE_ID,
+            variant: variantRef(variantAlphaAudience._id),
+            group: groupRef,
+            scopeId: 'varscopeRel',
+          },
+        })
+
+        expect(
+          getTargetDocumentState({
+            ...variantOptions,
+            versions: [publishedBase, draftBase, publishedAlphaVariant, releaseAlphaVariant],
+            bundle: RELEASE_ID,
+            liveEdit: true,
+          }),
+        ).toEqual({
+          status: 'ready',
+          targetDocument: releaseAlphaVariant,
+          scopeId: 'varscopeRel',
+          variant: variantAlphaAudience,
+          siblings: siblings({
+            published: publishedAlphaVariant,
+            version: releaseAlphaVariant,
+          }),
+        })
+      })
+    })
   })
 
   describe('sibling isolation across a mixed inventory', () => {
@@ -495,6 +591,20 @@ describe('getTargetScopeId', () => {
     })
     expect(getTargetScopeId(state)).toBeUndefined()
   })
+
+  it('returns the leftover draft scope for live-edit when a draft sibling exists', () => {
+    const state = getTargetDocumentState({
+      ...variantOptions,
+      versions: [
+        publishedBase,
+        draftBase,
+        publishedAlphaVariantAdvertisingDraft,
+        draftAlphaVariant,
+      ],
+      liveEdit: true,
+    })
+    expect(getTargetScopeId(state)).toBe('varscope')
+  })
 })
 
 describe('getCreatableVariantTarget', () => {
@@ -587,6 +697,43 @@ describe('getPairTarget', () => {
       scopeId: 'varscopeDraft',
       variantId: variantAlphaAudience._id,
       allowCreate: true,
+    })
+  })
+
+  it('maps a live-edit drafts variant to the published sibling without allowCreate', () => {
+    expect(
+      getPairTarget(
+        getTargetDocumentState({
+          ...variantOptions,
+          versions: [publishedBase, draftBase, publishedAlphaVariantAdvertisingDraft],
+          liveEdit: true,
+        }),
+      ),
+    ).toEqual({
+      kind: 'variant',
+      scopeId: 'varscopePub',
+      variantId: variantAlphaAudience._id,
+    })
+  })
+
+  it('maps a live-edit leftover draft to the draft sibling without allowCreate', () => {
+    expect(
+      getPairTarget(
+        getTargetDocumentState({
+          ...variantOptions,
+          versions: [
+            publishedBase,
+            draftBase,
+            publishedAlphaVariantAdvertisingDraft,
+            draftAlphaVariant,
+          ],
+          liveEdit: true,
+        }),
+      ),
+    ).toEqual({
+      kind: 'variant',
+      scopeId: 'varscope',
+      variantId: variantAlphaAudience._id,
     })
   })
 
