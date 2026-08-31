@@ -113,6 +113,121 @@ describe('getDocumentAtRevision', () => {
     expect(emissions.at(-1)).toEqual({document: undefined, loading: false, revisionId: undefined})
   })
 
+  describe('includeGroupDocuments', () => {
+    it('resolves a published revision while viewing the draft (group query)', async () => {
+      // Regression: history entries on the drafts perspective can point at revisions of the
+      // published document; querying only `drafts.<id>` returned no documents and the studio
+      // showed the revision-not-found banner (issue #14346).
+      const publishedDoc = document('doc-group', 'rev-published')
+      const {client, requests} = createMockClient({respond: () => ({documents: [publishedDoc]})})
+
+      const emissions = await firstValueFrom(
+        getDocumentAtRevision({
+          client,
+          documentId: 'drafts.doc-group',
+          revisionId: 'rev-published',
+          includeGroupDocuments: true,
+        }).pipe(toArray()),
+      )
+
+      expect(requests).toEqual([
+        {
+          url: '/data/history/test-dataset/documents/doc-group,drafts.doc-group?revision=rev-published',
+          tag: 'get-document-revision',
+        },
+      ])
+      expect(emissions.at(-1)).toEqual({
+        document: publishedDoc,
+        loading: false,
+        revisionId: 'rev-published',
+      })
+    })
+
+    it('prefers the requested document when several group documents share the revision', async () => {
+      const publishedDoc = document('doc-preferred', 'rev-shared')
+      const draftDoc = document('drafts.doc-preferred', 'rev-shared')
+      const {client} = createMockClient({respond: () => ({documents: [publishedDoc, draftDoc]})})
+
+      const emissions = await firstValueFrom(
+        getDocumentAtRevision({
+          client,
+          documentId: 'drafts.doc-preferred',
+          revisionId: 'rev-shared',
+          includeGroupDocuments: true,
+        }).pipe(toArray()),
+      )
+
+      expect(emissions.at(-1)).toEqual({
+        document: draftDoc,
+        loading: false,
+        revisionId: 'rev-shared',
+      })
+    })
+
+    it('ignores group documents returned at a different revision', async () => {
+      // The history API returns each queried document's state as of the requested transaction,
+      // so a group member untouched by that transaction comes back with an older `_rev`.
+      const olderPublishedDoc = document('doc-stale', 'rev-older')
+      const {client} = createMockClient({respond: () => ({documents: [olderPublishedDoc]})})
+
+      const emissions = await firstValueFrom(
+        getDocumentAtRevision({
+          client,
+          documentId: 'drafts.doc-stale',
+          revisionId: 'rev-requested',
+          includeGroupDocuments: true,
+        }).pipe(toArray()),
+      )
+
+      expect(emissions.at(-1)).toEqual({document: undefined, loading: false, revisionId: undefined})
+    })
+
+    it('queries published, draft and version ids for a version document', async () => {
+      const versionId = 'versions.release-a.doc-versioned'
+      const versionDoc = document(versionId, 'rev-version')
+      const {client, requests} = createMockClient({respond: () => ({documents: [versionDoc]})})
+
+      const emissions = await firstValueFrom(
+        getDocumentAtRevision({
+          client,
+          documentId: versionId,
+          revisionId: 'rev-version',
+          includeGroupDocuments: true,
+        }).pipe(toArray()),
+      )
+
+      expect(requests[0].url).toBe(
+        `/data/history/test-dataset/documents/doc-versioned,drafts.doc-versioned,${versionId}?revision=rev-version`,
+      )
+      expect(emissions.at(-1)).toEqual({
+        document: versionDoc,
+        loading: false,
+        revisionId: 'rev-version',
+      })
+    })
+
+    it('picks the requested document when fetching the group by time', async () => {
+      const publishedDoc = document('doc-group-time', 'rev-pub')
+      const draftDoc = document('drafts.doc-group-time', 'rev-draft')
+      const {client} = createMockClient({respond: () => ({documents: [publishedDoc, draftDoc]})})
+
+      const emissions = await firstValueFrom(
+        getDocumentAtRevision({
+          client,
+          documentId: 'drafts.doc-group-time',
+          time: '2024-01-01T00:00:00Z',
+          includeGroupDocuments: true,
+        }).pipe(toArray()),
+      )
+
+      expect(emissions.at(-1)).toEqual({
+        document: draftDoc,
+        loading: false,
+        revisionId: 'rev-draft',
+      })
+    })
+  })
+
   it('logs and emits null on errors — and caches the failure forever (known quirk)', async () => {
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     const {client, requests} = createMockClient({

@@ -151,10 +151,14 @@ export function useEventsStore({
 
   const getDocumentAtRevision = useCallback(
     (revision: string) => {
+      // Timeline event ids can point at revisions of other documents in the group — e.g. a
+      // publish event selected while viewing the draft resolves to a revision of the published
+      // document — so the whole group is queried and the revision matched against it.
       return getDocumentAtRevisionFunction({
         client,
         documentId,
         revisionId: revision,
+        includeGroupDocuments: true,
       })
     },
     [client, documentId],
