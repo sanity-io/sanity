@@ -384,6 +384,7 @@ import type {
   DefineSchemaType,
   defineSearchFilter,
   defineSearchFilterOperators,
+  defineSearchMachine,
   defineSearchOperator,
   defineType,
   Delay,
@@ -702,6 +703,7 @@ import type {
   getDocumentPairPermissions,
   getDocumentValuePermissions,
   getDocumentVariantType,
+  getDocumentVersionType,
   getDraftId,
   getErrorMessage,
   getExpandOperations,
@@ -1353,6 +1355,11 @@ import type {
   SearchFactoryOptions,
   SearchFilterDefinition,
   SearchHeader,
+  SearchMachineContext,
+  SearchMachineEmitted,
+  SearchMachineEvent,
+  SearchMachineInput,
+  SearchMachineState,
   SearchOperatorBase,
   SearchOperatorBuilder,
   SearchOperatorButtonValue,
@@ -1719,6 +1726,8 @@ import type {
   useScheduledDraftDocument,
   useScheduledDraftsEnabled,
   useSchema,
+  useSearchMachine,
+  UseSearchMachineOptions,
   useSearchMaxFieldDepth,
   useSearchState,
   useSetPerspective,
@@ -2977,6 +2986,9 @@ describe('sanity', () => {
   test('defineSearchFilterOperators', () => {
     expectTypeOf<typeof defineSearchFilterOperators>().toBeFunction()
   })
+  test('defineSearchMachine', () => {
+    expectTypeOf<typeof defineSearchMachine>().toBeFunction()
+  })
   test('defineSearchOperator', () => {
     expectTypeOf<typeof defineSearchOperator>().toBeFunction()
   })
@@ -3935,6 +3947,9 @@ describe('sanity', () => {
   })
   test('getDocumentVariantType', () => {
     expectTypeOf<typeof getDocumentVariantType>().toBeFunction()
+  })
+  test('getDocumentVersionType', () => {
+    expectTypeOf<typeof getDocumentVersionType>().toBeFunction()
   })
   test('getDraftId', () => {
     expectTypeOf<typeof getDraftId>().toBeFunction()
@@ -5895,6 +5910,21 @@ describe('sanity', () => {
   test('SearchHeader', () => {
     expectTypeOf<typeof SearchHeader>().toBeFunction()
   })
+  test('SearchMachineContext', () => {
+    expectTypeOf<SearchMachineContext<any, any>>().toBeObject()
+  })
+  test('SearchMachineEmitted', () => {
+    expectTypeOf<SearchMachineEmitted<any>>().not.toBeNever()
+  })
+  test('SearchMachineEvent', () => {
+    expectTypeOf<SearchMachineEvent<any>>().not.toBeNever()
+  })
+  test('SearchMachineInput', () => {
+    expectTypeOf<SearchMachineInput>().toBeObject()
+  })
+  test('SearchMachineState', () => {
+    expectTypeOf<SearchMachineState<any>>().toBeObject()
+  })
   test('SearchOperatorBase', () => {
     expectTypeOf<SearchOperatorBase>().toBeObject()
   })
@@ -6998,6 +7028,12 @@ describe('sanity', () => {
   })
   test('useSchema', () => {
     expectTypeOf<typeof useSchema>().toBeFunction()
+  })
+  test('useSearchMachine', () => {
+    expectTypeOf<typeof useSearchMachine>().toBeFunction()
+  })
+  test('UseSearchMachineOptions', () => {
+    expectTypeOf<UseSearchMachineOptions<any>>().toBeObject()
   })
   test('useSearchMaxFieldDepth', () => {
     expectTypeOf<typeof useSearchMaxFieldDepth>().toBeFunction()
