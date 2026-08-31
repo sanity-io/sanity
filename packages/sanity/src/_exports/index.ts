@@ -77,6 +77,9 @@ export {
 export {buildCommentRangeDecorations} from '../core/comments/utils/inline-comments/buildCommentRangeDecorations'
 export {buildRangeDecorationSelectionsFromComments} from '../core/comments/utils/inline-comments/buildRangeDecorationSelectionsFromComments'
 export {buildTextSelectionFromFragment} from '../core/comments/utils/inline-comments/buildTextSelectionFromFragment'
+export {CommentsProvider as CommentsProviderV2} from '../core/comments-v2/context/comments/CommentsProvider'
+export {CommentsEnabledProvider as CommentsEnabledProviderV2} from '../core/comments-v2/context/enabled/CommentsEnabledProvider'
+export {useCommentsEnabled as useCommentsEnabledV2} from '../core/comments-v2/hooks/useCommentsEnabled'
 export {BetaBadge, type BetaBadgeProps} from '../core/components/BetaBadge'
 export {CapabilityGate} from '../core/components/CapabilityGate'
 export {

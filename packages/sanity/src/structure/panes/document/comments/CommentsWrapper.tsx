@@ -2,10 +2,17 @@ import {useCallback, useLayoutEffect, useRef} from 'react'
 import {
   COMMENTS_INSPECTOR_NAME,
   CommentsEnabledProvider,
+  CommentsEnabledProviderV2,
   CommentsProvider,
-  useCommentsEnabled,
+  CommentsProviderV2,
+  getDraftId,
+  getPublishedId,
   getTargetScopeId,
+  getVersionId,
+  useCommentsEnabled,
+  useCommentsEnabledV2,
   usePerspective,
+  useWorkspace,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 
@@ -26,6 +33,20 @@ interface CommentsWrapperProps {
 export function CommentsWrapper(props: CommentsWrapperProps) {
   const {children, documentId, documentType} = props
 
+  const {beta} = useWorkspace()
+  const commentsV2 = Boolean(beta?.comments?.v2)
+
+  // Each implementation owns its own enablement context, so the flag selects which one is mounted.
+  if (commentsV2) {
+    return (
+      <CommentsEnabledProviderV2 documentId={documentId} documentType={documentType}>
+        <CommentsProviderWrapper documentId={documentId} documentType={documentType}>
+          {children}
+        </CommentsProviderWrapper>
+      </CommentsEnabledProviderV2>
+    )
+  }
+
   return (
     <CommentsEnabledProvider documentId={documentId} documentType={documentType}>
       <CommentsProviderWrapper documentId={documentId} documentType={documentType}>
@@ -38,10 +59,14 @@ export function CommentsWrapper(props: CommentsWrapperProps) {
 function CommentsProviderWrapper(props: CommentsWrapperProps) {
   const {children, documentId, documentType} = props
 
-  const {enabled} = useCommentsEnabled()
-  const {connectionState, onPathOpen, inspector, openInspector, targetDocumentState} =
+  const {beta} = useWorkspace()
+  const commentsV2 = Boolean(beta?.comments?.v2)
+  const enabledV1 = useCommentsEnabled()
+  const enabledV2 = useCommentsEnabledV2()
+  const {enabled} = commentsV2 ? enabledV2 : enabledV1
+  const {connectionState, onPathOpen, inspector, openInspector, targetDocumentState, value} =
     useDocumentPane()
-  const {selectedReleaseId, selectedVariantName} = usePerspective()
+  const {selectedPerspectiveName, selectedReleaseId, selectedVariantName} = usePerspective()
   const {params, setParams} = usePaneRouter()
   const {resolveIntentLink} = useRouter()
 
@@ -105,21 +130,51 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
     return <>{children}</>
   }
 
+  const sharedProps = {
+    documentId,
+    documentType,
+    getCommentLink,
+    isCommentsOpen: inspector?.name === COMMENTS_INSPECTOR_NAME,
+    isConnecting: connectionState === 'connecting',
+    onClearSelectedComment: handleClearSelectedComment,
+    onCommentsOpen: handleOpenCommentsInspector,
+    onPathOpen,
+    selectedCommentId,
+    sortOrder: 'desc' as const,
+    type: 'field' as const,
+  }
+
+  if (commentsV2) {
+    // The comment target follows the selected perspective rather than whichever document happens to
+    // exist. Drafts / published / release version ids are deterministic from the published id
+    // (`drafts.<id>`, `<id>`, `versions.<releaseId>.<id>`), so we can target them before that
+    // document exists — same as commenting on a draft that has not been created yet.
+    // Variant scope ids are opaque and server-assigned, so we take the resolved `value._id` and
+    // rely on the provider to treat a non-version id in a variant perspective as not ready.
+    let sourceDocumentId: string
+    // Variant before release: when both sticky params are set the document on
+    // screen is the variant-scoped version (opaque id), not
+    // `versions.<releaseId>.<id>`. Same precedence as legacy
+    // `releaseId={scopeId}` when a variant is active.
+    if (selectedVariantName) {
+      sourceDocumentId = value._id
+    } else if (selectedReleaseId) {
+      sourceDocumentId = getVersionId(value._id, selectedReleaseId)
+    } else if (selectedPerspectiveName === 'published') {
+      sourceDocumentId = getPublishedId(value._id)
+    } else {
+      sourceDocumentId = getDraftId(value._id)
+    }
+
+    return (
+      <CommentsProviderV2 {...sharedProps} sourceDocumentId={sourceDocumentId}>
+        {children}
+      </CommentsProviderV2>
+    )
+  }
+
   return (
-    <CommentsProvider
-      documentId={documentId}
-      documentType={documentType}
-      getCommentLink={getCommentLink}
-      isCommentsOpen={inspector?.name === COMMENTS_INSPECTOR_NAME}
-      isConnecting={connectionState === 'connecting'}
-      onClearSelectedComment={handleClearSelectedComment}
-      onCommentsOpen={handleOpenCommentsInspector}
-      onPathOpen={onPathOpen}
-      selectedCommentId={selectedCommentId}
-      sortOrder="desc"
-      type="field"
-      releaseId={scopeId}
-    >
+    <CommentsProvider {...sharedProps} releaseId={scopeId}>
       {children}
     </CommentsProvider>
   )
