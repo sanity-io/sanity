@@ -10,6 +10,7 @@ import {
 } from '@sanity/types'
 import {describe, expect, it, vi} from 'vitest'
 
+import {validationMarkerCodes} from '../src'
 import {
   getFallbackLocaleSource,
   inferFromSchema,
@@ -547,6 +548,40 @@ describe('validateItem', () => {
         path: ['bar'],
       },
     ])
+  })
+
+  it('deduplicates field-rule markers with non-serializable details', async () => {
+    const details: Record<string, unknown> = {count: 1n}
+    details.self = details
+    const schema = createSchema({
+      name: 'default',
+      types: [
+        {
+          name: 'testObj',
+          type: 'object',
+          fields: [{name: 'foo', type: 'string'}],
+          validation: (rule: Rule) =>
+            rule.fields({
+              foo: (fieldRule) => fieldRule.custom(() => ({details, message: 'Invalid field'})),
+            }),
+        },
+      ],
+    })
+
+    await expect(
+      validateItem({
+        getClient,
+        schema,
+        document: undefined,
+        parent: undefined,
+        path: undefined,
+        type: schema.get('testObj'),
+        value: {foo: 'value'},
+        getDocumentExists: undefined,
+        i18n: getFallbackLocaleSource(),
+        environment: 'studio',
+      }),
+    ).resolves.toEqual([expect.objectContaining({code: validationMarkerCodes.custom, details})])
   })
 
   it('runs nested validation for Rule.fields() inside Rule.all() (issue #8290)', async () => {

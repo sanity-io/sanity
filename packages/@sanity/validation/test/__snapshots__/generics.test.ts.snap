@@ -4,6 +4,11 @@ exports[`generics > can customize error messages 1`] = `
 [
   {
     "__internal_metadata": undefined,
+    "code": "value.type-mismatch",
+    "details": {
+      "actualType": "Number",
+      "expectedType": "String",
+    },
     "item": {
       "message": "Dude it needs to be a string",
     },
@@ -18,6 +23,11 @@ exports[`generics > can customize info messages 1`] = `
 [
   {
     "__internal_metadata": undefined,
+    "code": "value.type-mismatch",
+    "details": {
+      "actualType": "Number",
+      "expectedType": "String",
+    },
     "item": {
       "message": "Dude it should probably be a string",
     },
@@ -32,6 +42,11 @@ exports[`generics > can customize warning messages 1`] = `
 [
   {
     "__internal_metadata": undefined,
+    "code": "value.type-mismatch",
+    "details": {
+      "actualType": "Number",
+      "expectedType": "String",
+    },
     "item": {
       "message": "Dude it should probably be a string",
     },
@@ -46,6 +61,11 @@ exports[`generics > can demote errors to warnings 1`] = `
 [
   {
     "__internal_metadata": undefined,
+    "code": "value.type-mismatch",
+    "details": {
+      "actualType": "Number",
+      "expectedType": "String",
+    },
     "item": {
       "message": "Expected type "String", got "Number"",
     },
@@ -60,6 +80,11 @@ exports[`generics > can merge rules 1`] = `
 [
   {
     "__internal_metadata": undefined,
+    "code": "string.minimum-length",
+    "details": {
+      "actualLength": 3,
+      "minimumLength": 5,
+    },
     "item": {
       "message": "Must be at least 5 characters long",
     },
@@ -74,6 +99,11 @@ exports[`generics > returns arrays of errors/warnings by default 1`] = `
 [
   {
     "__internal_metadata": undefined,
+    "code": "value.type-mismatch",
+    "details": {
+      "actualType": "Number",
+      "expectedType": "String",
+    },
     "item": {
       "message": "Expected type "String", got "Number"",
     },

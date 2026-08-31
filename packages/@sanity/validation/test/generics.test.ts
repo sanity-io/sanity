@@ -58,6 +58,15 @@ describe('generics', () => {
     expect(result).toMatchSnapshot()
   })
 
+  test('reports the allowed value count without retaining all values', async () => {
+    await expect(Rule.string().valid(['one', 'two']).validate('three', context)).resolves.toEqual([
+      expect.objectContaining({
+        code: 'value.not-allowed',
+        details: {allowedValuesCount: 2},
+      }),
+    ])
+  })
+
   test('can merge rules', async () => {
     const rule = new Rule().required()
     const stringRule = Rule.string().min(5)

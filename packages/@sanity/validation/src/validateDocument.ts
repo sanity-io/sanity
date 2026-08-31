@@ -13,10 +13,11 @@ import {
 import {createClientConcurrencyLimiter} from '@sanity/util/client'
 import {ConcurrencyLimiter} from '@sanity/util/concurrency-limiter'
 import flatten from 'lodash-es/flatten.js'
-import uniqBy from 'lodash-es/uniqBy.js'
+import isEqual from 'lodash-es/isEqual.js'
 import {concat, defer, from, lastValueFrom, merge, Observable, of} from 'rxjs'
 import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
 
+import {type DocumentValidationMarker, validationMarkerCodes} from './codes'
 import {getFallbackLocaleSource} from './i18n/fallback'
 import {type LocaleSource} from './i18n/types'
 import {resolveConditionalProperty} from './resolveConditionalProperty'
@@ -108,10 +109,10 @@ export interface ValidateDocumentOptions {
    */
   document: SanityDocument
   /** The compiled schema to validate against. */
-  schema: Schema
+  schema: ValidationSchema
 
   /** A configured client used for reference checks and custom validators. */
-  client: SanityClient
+  client: ValidationClient
 
   /**
    * Function used to check if referenced documents exists (and is published).
@@ -152,6 +153,26 @@ export interface ValidateDocumentOptions {
    * is resolved with no user (e.g. CLI or headless validation).
    */
   currentUser?: Omit<CurrentUser, 'role'> | null
+}
+
+/** A compiled schema accepted across compatible `@sanity/types` versions. @beta */
+export interface ValidationSchema {
+  get(name: string): unknown
+}
+
+/**
+ * A configured Sanity client accepted across compatible client versions.
+ *
+ * This structural type describes the capabilities used internally by validation.
+ * The configured client is exposed to custom validators as a `SanityClient`, so it must be compatible with the full client API.
+ *
+ * @beta
+ */
+export interface ValidationClient {
+  fetch: SanityClient['fetch']
+  getDataUrl: SanityClient['getDataUrl']
+  observable: Pick<SanityClient['observable'], 'fetch' | 'request'>
+  withConfig(config: Parameters<SanityClient['withConfig']>[0]): ValidationClient
 }
 
 /**
@@ -208,7 +229,7 @@ export function validateDocumentWithWorkspace({
   maxCustomValidationConcurrency,
   maxFetchConcurrency,
   currentUser,
-}: ValidateDocumentWorkspaceOptions): Promise<ValidationMarker[]> {
+}: ValidateDocumentWorkspaceOptions): Promise<DocumentValidationMarker[]> {
   return validateDocumentInternal({
     currentUser,
     document,
@@ -232,17 +253,19 @@ export function validateDocumentWithWorkspace({
  */
 export function validateDocument(
   options: ValidateDocumentWorkspaceOptions,
-): Promise<ValidationMarker[]>
+): Promise<DocumentValidationMarker[]>
 /**
  * Validates a document against a compiled schema. Returns validation markers
  * without deciding whether the document may be edited or published.
  *
  * @beta
  */
-export function validateDocument(options: ValidateDocumentOptions): Promise<ValidationMarker[]>
+export function validateDocument(
+  options: ValidateDocumentOptions,
+): Promise<DocumentValidationMarker[]>
 export function validateDocument(
   options: ValidateDocumentOptions | ValidateDocumentWorkspaceOptions,
-): Promise<ValidationMarker[]> {
+): Promise<DocumentValidationMarker[]> {
   if ('workspace' in options) {
     return validateDocumentWithWorkspace(options)
   }
@@ -252,9 +275,11 @@ export function validateDocument(
     ...internalOptions,
     document,
     environment: 'cli',
-    getClient: ({apiVersion}) => client.withConfig({apiVersion}),
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- runtime-compatible clients may come from another major
+    getClient: ({apiVersion}) => client.withConfig({apiVersion}) as SanityClient,
     i18n: getFallbackLocaleSource(),
-    schema,
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- compiled schemas may come from another compatible package version
+    schema: schema as Schema,
   })
 }
 
@@ -282,7 +307,7 @@ export function validateDocumentInternal({
   maxCustomValidationConcurrency,
   maxFetchConcurrency,
   currentUser,
-}: ValidateDocumentInternalOptions): Promise<ValidationMarker[]> {
+}: ValidateDocumentInternalOptions): Promise<DocumentValidationMarker[]> {
   const limitConcurrency = createClientConcurrencyLimiter(
     maxFetchConcurrency ?? DEFAULT_MAX_FETCH_CONCURRENCY,
   )
@@ -335,7 +360,7 @@ export function validateDocumentObservable({
   environment,
   maxCustomValidationConcurrency,
   currentUser,
-}: ValidateDocumentObservableOptions): Observable<ValidationMarker[]> {
+}: ValidateDocumentObservableOptions): Observable<DocumentValidationMarker[]> {
   if (typeof document?._type !== 'string') {
     throw new Error(`Tried to validate a value without a '_type'`)
   }
@@ -353,6 +378,8 @@ export function validateDocumentObservable({
 
     return of([
       {
+        code: validationMarkerCodes.documentUnknownType,
+        details: {documentType: document._type},
         level: 'warning',
         message: `Could not find schema type for type '${document._type}', skipping validation`,
         path: [],
@@ -385,11 +412,13 @@ export function validateDocumentObservable({
 
   return from(i18n.loadNamespaces(['validation'])).pipe(
     switchMap(() => validateItemObservable(validationOptions)),
+    map((markers) => markers.map(toDocumentValidationMarker)),
     catchError((err) => {
       console.error(err)
 
       const message = err?.message || 'Unknown error'
-      const errorMarker: ValidationMarker = {
+      const errorMarker: DocumentValidationMarker = {
+        code: validationMarkerCodes.validationException,
         level: 'error',
         message,
         item: {message},
@@ -601,14 +630,45 @@ function validateItemObservable({
     toArray(),
     map(flatten),
     map((results) => {
-      // run `uniqBy` if `_fieldRules` are present because they can
+      // Deduplicate markers when `_fieldRules` are present because they can
       // cause repeat markers (check recursively for nested rules)
       if (rules.some((rule) => extractFieldRulesFromRule(rule).length > 0)) {
-        return uniqBy(results, (rule) => JSON.stringify(rule))
+        return deduplicateMarkers(results)
       }
       return results
     }),
   )
+}
+
+function deduplicateMarkers(markers: ValidationMarker[]): ValidationMarker[] {
+  const buckets = new Map<string, ValidationMarker[]>()
+
+  return markers.filter((marker) => {
+    const key = JSON.stringify([marker.level, marker.code, marker.message, marker.path])
+    const bucket = buckets.get(key)
+    if (!bucket) {
+      buckets.set(key, [marker])
+      return true
+    }
+
+    if (bucket.some((existing) => isEqual(existing, marker))) return false
+
+    bucket.push(marker)
+    return true
+  })
+}
+
+function hasValidationMarkerCode(marker: ValidationMarker): marker is DocumentValidationMarker {
+  return typeof marker.code === 'string'
+}
+
+function toDocumentValidationMarker(marker: ValidationMarker): DocumentValidationMarker {
+  if (hasValidationMarkerCode(marker)) return marker
+
+  return {
+    ...marker,
+    code: validationMarkerCodes.validationFailed,
+  }
 }
 
 function idle(timeout?: number): Observable<never> {

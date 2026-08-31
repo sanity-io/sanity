@@ -28,4 +28,22 @@ describe('Table (virtualized)', () => {
     const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2)
     expect(firstRow.contains(hit)).toBe(true)
   })
+
+  it('keeps the row-action button fully visible at a constrained desktop width', async () => {
+    void render(<TableStory containerWidth={1100} showRowActions />)
+
+    await expect.poll(() => document.querySelectorAll('[data-testid="table-row"]').length).toBe(4)
+
+    const container = document.querySelector('[data-testid="table-scroll-container"]')
+    const button = document.querySelector('[data-testid="release-menu-button"]')
+    expect(container).toBeTruthy()
+    expect(button).toBeTruthy()
+
+    const containerRect = container!.getBoundingClientRect()
+    const buttonRect = button!.getBoundingClientRect()
+
+    expect(buttonRect.right).toBeLessThanOrEqual(containerRect.right + 1)
+    expect(buttonRect.left).toBeGreaterThanOrEqual(containerRect.left - 1)
+    expect(container!.scrollWidth).toBeLessThanOrEqual(container!.clientWidth + 1)
+  })
 })
