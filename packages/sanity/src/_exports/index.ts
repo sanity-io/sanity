@@ -1526,6 +1526,10 @@ export {
 } from '../core/studio/copyPaste/types'
 export {type StudioDiagnostics} from '../core/studio/diagnostics/gatherStudioDiagnostics'
 export {parseStudioDiagnostics} from '../core/studio/diagnostics/parseStudioDiagnostics'
+export {
+  StudioDiagnosticsBridge,
+  type StudioDiagnosticsBridgeApi,
+} from '../core/studio/diagnostics/StudioDiagnosticsBridge'
 export {StudioFeedbackProvider} from '../core/studio/feedback/StudioFeedbackProvider'
 export {
   generateStudioManifest,
