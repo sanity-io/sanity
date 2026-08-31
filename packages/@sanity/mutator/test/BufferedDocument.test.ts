@@ -308,9 +308,7 @@ test('remote patch touching an out-of-range index arrives while local edits are 
       set: {'body[4].children[0].text': 'x'},
     })
     .assertLOCAL('body[0].children[0].text', 'hello world')
-    .assert((doc) => {
-      expect(doc?.document.HEAD?._rev).toBe('2')
-    })
+    .assertHEAD('_rev', '2')
     .stage('when the next remote patch arrives')
     .remotePatch('2', '3', {
       id: 'a',

@@ -3,7 +3,7 @@ import {Subject} from 'rxjs'
 import {expect, test} from 'vitest'
 
 import {type ListenerEvent} from '../getPairListener'
-import {type MutationEvent} from '../types'
+import {mutationEvent} from '../utils/__test__/test-utils'
 import {createObservableBufferedDocument} from './createObservableBufferedDocument'
 
 const INITIAL: SanityDocument = {
@@ -13,27 +13,6 @@ const INITIAL: SanityDocument = {
   _createdAt: '2026-01-01T00:00:00.000Z',
   _updatedAt: '2026-01-01T00:00:00.000Z',
   body: [{_key: 'a', _type: 'block', children: [{_key: 'a1', _type: 'span', text: 'hello'}]}],
-}
-
-function mutationEvent(
-  previousRev: string,
-  resultRev: string,
-  mutations: MutationEvent['mutations'],
-): MutationEvent {
-  return {
-    type: 'mutation',
-    documentId: 'drafts.doc-1',
-    transactionId: resultRev,
-    mutations,
-    effects: {apply: [], revert: []},
-    previousRev,
-    resultRev,
-    transactionTotalEvents: 1,
-    transactionCurrentEvent: 1,
-    messageReceivedAt: new Date().toISOString(),
-    visibility: 'transaction',
-    transition: 'update',
-  }
 }
 
 test('a remote patch that cannot apply to the local document does not error the snapshot stream', () => {
@@ -62,9 +41,12 @@ test('a remote patch that cannot apply to the local document does not error the 
 
   // a client whose copy of `body` is longer than ours patches the fifth block
   listenerEvent$.next(
-    mutationEvent('r0', 'r1', [
-      {patch: {id: 'drafts.doc-1', set: {'body[4].children[0].text': 'x'}}},
-    ]),
+    mutationEvent({
+      documentId: 'drafts.doc-1',
+      previousRev: 'r0',
+      resultRev: 'r1',
+      mutations: [{patch: {id: 'drafts.doc-1', set: {'body[4].children[0].text': 'x'}}}],
+    }),
   )
 
   expect(streamError).toBeNull()
@@ -77,7 +59,12 @@ test('a remote patch that cannot apply to the local document does not error the 
 
   // subsequent remote mutations still come through
   listenerEvent$.next(
-    mutationEvent('r1', 'r2', [{patch: {id: 'drafts.doc-1', set: {title: 'still alive'}}}]),
+    mutationEvent({
+      documentId: 'drafts.doc-1',
+      previousRev: 'r1',
+      resultRev: 'r2',
+      mutations: [{patch: {id: 'drafts.doc-1', set: {title: 'still alive'}}}],
+    }),
   )
 
   const afterHealthy = snapshots.at(-1)
