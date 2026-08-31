@@ -52,13 +52,22 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
   const [isPublishing, setPublishing] = useState(false)
   const [isDiscarding, setDiscarding] = useState(false)
   const telemetry = useTelemetry()
-  const {selectedVariantName} = usePerspective()
+  const {selectedVariant} = usePerspective()
   const {targetDocumentState} = useDocumentPane()
+  const siblings = getTargetSiblings(targetDocumentState)
   // Variant leftover drafts pass `pairTarget` so publish/discard hit the variant draft. Base
   // live-edit leftovers omit it and operate on the draft/published pair.
-  const target = selectedVariantName ? getPairTarget(targetDocumentState) : undefined
+  const target = selectedVariant
+    ? siblings?.draft?._system.scopeId
+      ? ({
+          kind: 'variant',
+          scopeId: siblings.draft._system.scopeId,
+          variantId: selectedVariant._id,
+        } as const)
+      : ({kind: 'target-missing', variantId: selectedVariant._id} as const)
+    : undefined
+
   const {publish, discardChanges} = useDocumentOperation(documentId, displayed?._type || '', target)
-  const siblings = getTargetSiblings(targetDocumentState)
 
   const handlePublish = useCallback(() => {
     publish.execute()
