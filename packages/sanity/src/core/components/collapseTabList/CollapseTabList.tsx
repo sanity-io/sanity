@@ -46,9 +46,6 @@ interface CollapseTabListProps {
     id?: string
     button?: React.JSX.Element
   }
-  onMenuClose?: () => void
-  collapsed?: boolean
-  disableRestoreFocusOnClose?: boolean
   style?: CSSProperties
 }
 
@@ -57,17 +54,7 @@ interface CollapseTabListProps {
  * it shows the items that fit, and the rest are rendered in a menu.
  * @internal */
 export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTMLDivElement>) {
-  const {
-    ref,
-    children: childrenProp,
-    gap,
-    menuButtonProps,
-    disableRestoreFocusOnClose,
-    onMenuClose,
-    collapsed,
-    style,
-    ...rest
-  } = props
+  const {ref, children: childrenProp, gap, menuButtonProps, style, ...rest} = props
   const [rootEl, setRootEl] = useState<HTMLDivElement | null>(null)
   // Whether the measured clone of each child key currently fits in the hidden row,
   // or undefined for keys not measured yet. Entries for keys that have left
@@ -88,23 +75,23 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
   )
 
   /**
-   * The children that do not fit and therefore belong in the overflow menu.
-   * The single source for the menu button, its options and the inline children,
-   * so the menu button can never render without menu items.
+   * Partition of the current children: those measured as not fitting belong in
+   * the overflow menu, the rest render inline. `hiddenChildren` is the single
+   * source for the menu button and its options, so the menu button can never
+   * render without menu items.
    */
-  const hiddenChildren = useMemo(
-    () => children.filter((child) => child.key !== null && intersections[child.key] === false),
-    [children, intersections],
-  )
-
-  /**
-   * Keeps track of the children that will be shown in place and not in the menu.
-   */
-  const displayChildren = useMemo(() => {
-    if (collapsed) return null // If collapsed, we don't want to show any children
-    if (!hasMeasured) return null // If we haven't run the intersection observer yet, we don't want to show any children
-    return children.filter((child) => !hiddenChildren.includes(child))
-  }, [children, collapsed, hasMeasured, hiddenChildren])
+  const {displayChildren, hiddenChildren} = useMemo(() => {
+    const display: React.JSX.Element[] = []
+    const hidden: React.JSX.Element[] = []
+    for (const child of children) {
+      if (child.key !== null && intersections[child.key] === false) {
+        hidden.push(child)
+      } else {
+        display.push(child)
+      }
+    }
+    return {displayChildren: display, hiddenChildren: hidden}
+  }, [children, intersections])
 
   const intersectionOptions = useMemo(
     () => ({
@@ -118,11 +105,6 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
   const menuButton = useMemo(
     () => menuButtonProps?.button || <ContextMenuButton />,
     [menuButtonProps],
-  )
-
-  const menuOptionsArray = useMemo(
-    () => (collapsed ? children : hiddenChildren),
-    [children, hiddenChildren, collapsed],
   )
 
   const handleIntersection = useCallback(
@@ -145,14 +127,12 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
       style={{position: 'relative', minWidth: 0, ...style}}
     >
       <Flex justify="center" gap={gap} flex={1}>
-        {displayChildren}
-        {hiddenChildren.length > 0 || collapsed ? (
+        {hasMeasured ? displayChildren : null}
+        {hiddenChildren.length > 0 ? (
           <CollapseOverflowMenu
-            disableRestoreFocusOnClose={disableRestoreFocusOnClose}
             menuButton={menuButton}
             menuButtonProps={menuButtonProps}
-            menuOptions={menuOptionsArray}
-            onMenuClose={onMenuClose}
+            menuOptions={hiddenChildren}
           />
         ) : (
           // The hidden row below prepends a menu button clone before the child
