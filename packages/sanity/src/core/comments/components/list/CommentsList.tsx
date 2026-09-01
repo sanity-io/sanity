@@ -162,6 +162,7 @@ function CommentsListInner(props: CommentsListProps & RefAttributes<HTMLUListEle
                   paddingTop={3}
                   {...applyCommentsGroupAttr(firstThreadId)}
                   flexDirection="column"
+                  flexShrink={0}
                 >
                   <CommentThreadLayout
                     key={fieldPath}
