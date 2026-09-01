@@ -385,6 +385,32 @@ describe('validateDocument', () => {
     expect(i18n.t).toHaveBeenCalledWith('validation:string.minimum-length', {minLength: 10})
   })
 
+  it('disables user validators through the workspace compatibility helper', async () => {
+    const customValidator = vi.fn(() => 'Failed')
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {name: 'title', type: 'string', validation: (rule: Rule) => rule.custom(customValidator)},
+        ],
+      },
+    ])
+    const document = createDocument({_type: 'article', title: 'Title'})
+    const {client} = createMockClient()
+    const workspace = {
+      getClient: () => client,
+      i18n: getFallbackLocaleSource(),
+      schema,
+    }
+
+    await expect(
+      // oxlint-disable-next-line typescript/no-deprecated -- explicitly covers compatibility API
+      validateDocumentWithWorkspace({customValidation: false, document, workspace}),
+    ).resolves.toEqual([])
+    expect(customValidator).not.toHaveBeenCalled()
+  })
+
   it('defaults workspace validation to the studio environment', async () => {
     const schema = createSchema([])
     const document = createDocument({_type: 'missing'})
