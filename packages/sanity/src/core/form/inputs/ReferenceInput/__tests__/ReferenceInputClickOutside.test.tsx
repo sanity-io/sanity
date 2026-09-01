@@ -110,7 +110,6 @@ async function renderEmptyReferenceInputInArrayItem() {
   const props = {
     changed: false,
     createOptions: [],
-    editReferenceLinkComponent: () => null,
     elementProps,
     // Focus is at the search input of the empty reference, i.e. `isEditing`.
     // Clicks outside then clear the empty value, which removes the array item.
