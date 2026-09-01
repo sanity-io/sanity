@@ -6,8 +6,9 @@ import {createMockClient} from './__fixtures__/mockClient'
 import {getDocumentAtRevision} from './getDocumentAtRevision'
 import {HISTORY_CLEARED_EVENT_ID} from './getInitialFetchEvents'
 
-// The module keeps a cache keyed by `${documentId}@<revision|time>` that survives between tests,
-// so every test uses its own document id.
+// The module keeps a cache keyed by the queried ids + `<revision|time>` (group requests are
+// additionally scoped by the preferring document id) that survives between tests, so every test
+// uses its own document id.
 
 const document = (id: string, rev = 'rev-1'): SanityDocument => ({
   _id: id,
@@ -225,6 +226,37 @@ describe('getDocumentAtRevision', () => {
         loading: false,
         revisionId: 'rev-draft',
       })
+    })
+
+    it('does not share cache entries between variants preferring different documents', async () => {
+      // Both variants of a group query the same id list, but resolve to different documents.
+      // A shared cache entry would let whichever variant fetches first decide for both.
+      const publishedDoc = document('doc-collide', 'rev-pub')
+      const draftDoc = document('drafts.doc-collide', 'rev-draft')
+      const {client, requests} = createMockClient({
+        respond: () => ({documents: [publishedDoc, draftDoc]}),
+      })
+
+      const draftResult = await firstValueFrom(
+        getDocumentAtRevision({
+          client,
+          documentId: 'drafts.doc-collide',
+          time: '2024-01-01T00:00:00Z',
+          includeGroupDocuments: true,
+        }).pipe(toArray()),
+      )
+      const publishedResult = await firstValueFrom(
+        getDocumentAtRevision({
+          client,
+          documentId: 'doc-collide',
+          time: '2024-01-01T00:00:00Z',
+          includeGroupDocuments: true,
+        }).pipe(toArray()),
+      )
+
+      expect(requests).toHaveLength(2)
+      expect(draftResult.at(-1)?.document).toEqual(draftDoc)
+      expect(publishedResult.at(-1)?.document).toEqual(publishedDoc)
     })
   })
 

@@ -89,7 +89,9 @@ function pickDocument(
  * - Errors are logged and emitted as `{document: null, loading: false}` — never thrown.
  *
  * Results are cached module-level per queried ids + `<revisionId|time>` observable
- * (`shareReplay(1)`), so concurrent and repeated subscribers share one request.
+ * (`shareReplay(1)`), so concurrent and repeated subscribers share one request. Group requests
+ * are additionally scoped by the preferring `documentId`, since the same queried ids can
+ * resolve to different documents depending on which variant is asking.
  * Known quirks:  error results are cached forever, and the cache never evicts (tracked as known issues).
  */
 export function getDocumentAtRevision<InputContext extends Context>({
@@ -109,7 +111,10 @@ export function getDocumentAtRevision<InputContext extends Context>({
         ...(isVersionId(documentId) ? [documentId] : []),
       ]
     : [documentId]
-  const cacheKey = `${idsToQuery.join(',')}@${revisionId ? ['revisionId', revisionId].join('.') : ['time', time].join('.')}`
+  // Group results are selected relative to `documentId` (see `pickDocument`), and the same id
+  // list is queried for every member of a group — so group cache entries must also be scoped to
+  // the preferring id, or the first variant to fetch would decide the result for all of them.
+  const cacheKey = `${includeGroupDocuments ? `${documentId}:` : ''}${idsToQuery.join(',')}@${revisionId ? ['revisionId', revisionId].join('.') : ['time', time].join('.')}`
   const dataset = client.config().dataset
   if (!documentRevisionCache[cacheKey]) {
     const searchParams = new URLSearchParams(
