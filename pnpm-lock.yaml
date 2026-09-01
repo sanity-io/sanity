@@ -92,7 +92,7 @@ catalogs:
       specifier: ^7.0.2
       version: 7.0.2
     ui5:
-      specifier: npm:@sanity/ui@alpha
+      specifier: npm:@sanity/ui@5.0.0-alpha.8
       version: 5.0.0-alpha.8
     vite:
       specifier: ^8.2.2
@@ -586,7 +586,7 @@ importers:
         specifier: 'catalog:'
         version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
       ui5:
-        specifier: npm:@sanity/ui@alpha
+        specifier: 'catalog:'
         version: '@sanity/ui@5.0.0-alpha.8(react-dom@19.2.8)(react@19.2.8)'
     devDependencies:
       '@chromatic-com/storybook':
