@@ -85,20 +85,4 @@ describe('@sanity/validation/_internal', () => {
   test('validationLocaleStrings', () => {
     expectTypeOf<typeof validationLocaleStrings>().not.toBeNever()
   })
-  test('validateDocumentObservable', () => {
-    expectTypeOf<typeof validateDocumentObservable>().toBeFunction()
-  })
-  test('ValidateDocumentObservableOptions', () => {
-    expectTypeOf<ValidateDocumentObservableOptions>().toBeObject()
-  })
-  test('validateItem', () => {
-    expectTypeOf<typeof validateItem>().toBeFunction()
-  })
-  test('ValidationContext', () => {
-    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
-    expectTypeOf<ValidationContext>().toBeObject()
-  })
-  test('validationLocaleStrings', () => {
-    expectTypeOf<typeof validationLocaleStrings>().not.toBeNever()
-  })
 })
