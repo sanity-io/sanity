@@ -110,6 +110,7 @@ minimumReleaseAgeExclude:
   - 'react-hook-form'
   - 'react-is'
   - 'react-rx'
+  - 'i18next@26.4.1'
   # tsdown and its rolldown/rolldown-plugin-dts/yuku toolchain release frequently and in
   # lockstep, so new releases are often younger than minimumReleaseAge
   - 'rolldown'
