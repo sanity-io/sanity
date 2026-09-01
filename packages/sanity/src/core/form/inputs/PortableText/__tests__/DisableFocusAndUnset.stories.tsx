@@ -9,6 +9,7 @@ import DisableFocusAndUnsetStory from './DisableFocusAndUnsetStory'
 const meta = {
   title: 'Portable Text/Disable Focus And Unset',
   component: DisableFocusAndUnsetStory,
+  tags: ['!dev', '!autodocs', 'vrt-only'],
   parameters: {chromatic: {delay: 300}},
 } satisfies Meta<typeof DisableFocusAndUnsetStory>
 

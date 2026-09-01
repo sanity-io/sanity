@@ -1,6 +1,7 @@
 import {AddUserIcon} from '@sanity/icons/AddUser'
 import {CogIcon} from '@sanity/icons/Cog'
-import {Flex, Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -23,7 +24,7 @@ export function ManageMenu({multipleWorkspaces}: {multipleWorkspaces: boolean}) 
 
   return (
     <Stack paddingX={4} paddingTop={4} paddingBottom={multipleWorkspaces ? 3 : 4}>
-      <Flex align="center">
+      <Flex alignItems="center">
         <WorkspacePreviewIcon icon={activeWorkspace.icon} size="large" />
         <Stack marginLeft={2} gap={2}>
           <Text size={0}>{project?.displayName}</Text>
@@ -33,7 +34,7 @@ export function ManageMenu({multipleWorkspaces}: {multipleWorkspaces: boolean}) 
         </Stack>
       </Flex>
 
-      <Flex justify="flex-start" gap={3} paddingTop={4}>
+      <Flex justifyContent="flex-start" gap={3} paddingTop={4}>
         <Button
           mode="bleed"
           as="a"

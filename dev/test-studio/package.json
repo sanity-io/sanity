@@ -15,9 +15,9 @@
     "start": "sanity preview"
   },
   "dependencies": {
-    "@portabletext/editor": "^8.0.2",
+    "@portabletext/editor": "^8.1.1",
     "@portabletext/html": "^2.0.0",
-    "@portabletext/plugin-character-pair-decorator": "^9.0.2",
+    "@portabletext/plugin-character-pair-decorator": "^9.0.5",
     "@portabletext/react": "^8.0.1",
     "@portabletext/toolkit": "^6.0.0",
     "@sanity/assist": "^6.1.21",
@@ -45,7 +45,7 @@
     "chokidar": "^5.0.0",
     "history": "^5.3.0",
     "lodash-es": "^4.18.1",
-    "qs": "^6.15.3",
+    "qs": "^6.16.0",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-refractor": "^4.0.0",
@@ -65,14 +65,14 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vanilla-extract/css": "catalog:",
-    "@vitejs/devtools": "^0.6.1",
-    "@vitejs/devtools-oxc": "^0.6.1",
-    "@vitejs/devtools-rolldown": "^0.6.1",
-    "@vitejs/devtools-vite": "^0.6.1",
+    "@vitejs/devtools": "^0.6.2",
+    "@vitejs/devtools-oxc": "^0.6.2",
+    "@vitejs/devtools-rolldown": "^0.6.2",
+    "@vitejs/devtools-vite": "^0.6.2",
     "chokidar": "^5.0.0",
     "oxc-transform-react": "catalog:",
     "rimraf": "catalog:",
-    "tsx": "^4.23.12",
+    "tsx": "^4.23.13",
     "vite": "catalog:"
   }
 }

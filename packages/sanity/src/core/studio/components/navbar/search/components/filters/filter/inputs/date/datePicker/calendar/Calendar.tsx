@@ -1,4 +1,3 @@
-import {Flex} from '@sanity/ui'
 import {addDays} from 'date-fns/addDays'
 import {addMonths} from 'date-fns/addMonths'
 import {isAfter} from 'date-fns/isAfter'
@@ -14,7 +13,7 @@ import {
   useState,
 } from 'react'
 import {CalendarContext} from 'sanity/_singletons'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {useCurrentLocale} from '../../../../../../../../../../../i18n/hooks/useLocale'
 import {CalendarHeader} from './CalendarHeader'

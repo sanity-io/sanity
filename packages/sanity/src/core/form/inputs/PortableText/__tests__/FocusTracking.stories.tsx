@@ -9,6 +9,7 @@ import FocusTrackingStory from './FocusTrackingStory'
 const meta = {
   title: 'Portable Text/Focus Tracking',
   component: FocusTrackingStory,
+  tags: ['!dev', '!autodocs', 'vrt-only'],
   parameters: {chromatic: {delay: 300}},
 } satisfies Meta<typeof FocusTrackingStory>
 

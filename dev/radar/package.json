@@ -39,7 +39,7 @@
     "@sanity/vanilla-extract-vite-plugin": "catalog:",
     "@types/react": "catalog:",
     "rimraf": "catalog:",
-    "tsx": "^4.23.12",
+    "tsx": "^4.23.13",
     "vitest": "catalog:"
   }
 }

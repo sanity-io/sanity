@@ -1,6 +1,7 @@
 import {type Validators} from '@sanity/types'
 import * as legacyDateFormat from '@sanity/util/legacyDateFormat'
 
+import {validationMarkerCodes} from '../codes'
 import {genericValidators} from './genericValidator'
 
 function isRecord(obj: unknown): obj is Record<string, unknown> {
@@ -55,7 +56,11 @@ export const dateValidators: Validators = {
       return true
     }
 
-    return message || i18n.t('validation:date.invalid-format')
+    return {
+      code: validationMarkerCodes.dateInvalidFormat,
+      details: {actualValue: value},
+      message: message || i18n.t('validation:date.invalid-format'),
+    }
   },
 
   min: (minDate, value, message, {type, i18n}) => {
@@ -78,16 +83,19 @@ export const dateValidators: Validators = {
       ? (type.options as DateTimeOptions)
       : {}
 
-    return (
-      message ||
-      // Note that the `minDate` passed here is _formatted_, while the raw value provided to the
-      // validator is available as `providedMinDate`. This because the formatted date is likely
-      // what the developer wants to present to the user
-      i18n.t('validation:date.minimum', {
-        minDate: getFormattedDate(type.name, minDateVal, dateTimeOptions),
-        providedMinDate: minDate,
-      })
-    )
+    return {
+      code: validationMarkerCodes.dateMinimum,
+      details: {actualValue: value, minimum: minDate},
+      message:
+        message ||
+        // Note that the `minDate` passed here is _formatted_, while the raw value provided to the
+        // validator is available as `providedMinDate`. This because the formatted date is likely
+        // what the developer wants to present to the user
+        i18n.t('validation:date.minimum', {
+          minDate: getFormattedDate(type.name, minDateVal, dateTimeOptions),
+          providedMinDate: minDate,
+        }),
+    }
   },
 
   max: (maxDate, value, message, {type, i18n}) => {
@@ -110,15 +118,18 @@ export const dateValidators: Validators = {
       ? (type.options as DateTimeOptions)
       : {}
 
-    return (
-      message ||
-      // Note that the `maxDate` passed here is _formatted_, while the raw value provided to the
-      // validator is available as `providedMaxDate`. This because the formatted date is likely
-      // what the developer wants to present to the user
-      i18n.t('validation:date.maximum', {
-        maxDate: getFormattedDate(type.name, maxDateVal, dateTimeOptions),
-        providedMaxDate: maxDate,
-      })
-    )
+    return {
+      code: validationMarkerCodes.dateMaximum,
+      details: {actualValue: value, maximum: maxDate},
+      message:
+        message ||
+        // Note that the `maxDate` passed here is _formatted_, while the raw value provided to the
+        // validator is available as `providedMaxDate`. This because the formatted date is likely
+        // what the developer wants to present to the user
+        i18n.t('validation:date.maximum', {
+          maxDate: getFormattedDate(type.name, maxDateVal, dateTimeOptions),
+          providedMaxDate: maxDate,
+        }),
+    }
   },
 }
