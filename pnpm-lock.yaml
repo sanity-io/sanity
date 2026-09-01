@@ -1982,7 +1982,7 @@ importers:
         specifier: 0.1.0-alpha.44
         version: 0.1.0-alpha.44(@sanity/sdk@3.0.0)(react@19.2.8)(xstate@5.32.6)
       '@sentry/react':
-        specifier: ^10.70.0
+        specifier: ^10.72.0
         version: 10.72.0(react@19.2.8)
       '@tanstack/react-virtual':
         specifier: ^3.14.10
