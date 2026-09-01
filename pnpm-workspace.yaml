@@ -105,6 +105,8 @@ minimumReleaseAgeExclude:
   - 'react'
   - 'react-dom'
   - 'react-hook-form'
+  # Fresh patch; exclude so 17.0.13 can install before the age gate
+  - 'react-i18next@17.0.13'
   - 'react-is'
   - 'react-rx'
   # tsdown and its rolldown/rolldown-plugin-dts/yuku toolchain release frequently and in
