@@ -1,7 +1,7 @@
-import {type ObjectSchemaType, type SanityDocument} from '@sanity/types'
+import {type ObjectSchemaType} from '@sanity/types'
 import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {usePerspective, useSetPerspective} from 'sanity'
+import {type TargetDocumentState, usePerspective, useSetPerspective} from 'sanity'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
@@ -38,12 +38,40 @@ const mockUsePerspective = usePerspective as Mock<typeof usePerspective>
 const mockUseSetPerspective = useSetPerspective as Mock<typeof useSetPerspective>
 const setPerspective = vi.fn()
 
-const publishedDocument: SanityDocument = {
+const publishedSibling = {
   _id: 'author-1',
   _rev: 'rev-1',
   _type: 'author',
   _createdAt: '2025-06-23T00:00:00Z',
   _updatedAt: '2025-06-23T00:00:00Z',
+  _system: {
+    bundleId: 'published',
+    group: {_ref: 'author-1', _weak: true},
+  },
+} as const
+
+const draftSibling = {
+  _id: 'drafts.author-1',
+  _rev: 'rev-2',
+  _type: 'author',
+  _createdAt: '2025-06-23T00:00:00Z',
+  _updatedAt: '2025-06-24T00:00:00Z',
+  _system: {
+    bundleId: 'drafts',
+    group: {_ref: 'author-1', _weak: true},
+  },
+} as const
+
+function readyState(
+  siblings: Extract<TargetDocumentState, {status: 'ready'}>['siblings'],
+): Extract<TargetDocumentState, {status: 'ready'}> {
+  return {
+    status: 'ready',
+    targetDocument: siblings.published,
+    scopeId: undefined,
+    variant: undefined,
+    siblings,
+  }
 }
 
 function publishedPerspective() {
@@ -72,14 +100,19 @@ function draftsPerspective() {
   }
 }
 
-function mockPublishedOnlyDocument({liveEdit = false}: {liveEdit?: boolean} = {}) {
+function mockDocumentPane({
+  liveEdit = false,
+  targetDocumentState = readyState({
+    published: publishedSibling,
+    draft: undefined,
+    version: undefined,
+  }),
+}: {
+  liveEdit?: boolean
+  targetDocumentState?: TargetDocumentState
+} = {}) {
   mockUseDocumentPane.mockReturnValue({
-    editState: {
-      ready: true,
-      draft: null,
-      published: publishedDocument,
-      version: null,
-    },
+    targetDocumentState,
     schemaType: {name: 'author', liveEdit} as ObjectSchemaType,
   } as unknown as ReturnType<typeof useDocumentPane>)
 }
@@ -97,14 +130,14 @@ describe('SeeDraftBanner', () => {
     vi.clearAllMocks()
     mockUseSetPerspective.mockReturnValue(setPerspective)
     mockUsePerspective.mockReturnValue(publishedPerspective())
-    mockPublishedOnlyDocument()
+    mockDocumentPane()
     usePaneRouter.mockReturnValue({
       params: {},
       setParams: vi.fn(),
     } as unknown as ReturnType<typeof usePaneRouter>)
   })
 
-  it('renders the see-draft banner for a published-only document in the published perspective', async () => {
+  it('renders the see-draft banner when a published sibling exists in the published perspective', async () => {
     await renderBanner()
 
     await waitFor(() => {
@@ -113,6 +146,23 @@ describe('SeeDraftBanner', () => {
     expect(
       screen.getByText('This is a published document. Switch to drafts to edit it.'),
     ).toBeInTheDocument()
+    expect(screen.getByRole('button', {name: 'See draft'})).toBeInTheDocument()
+  })
+
+  it('renders when a draft already exists so the user can switch into it', async () => {
+    mockDocumentPane({
+      targetDocumentState: readyState({
+        published: publishedSibling,
+        draft: draftSibling,
+        version: undefined,
+      }),
+    })
+
+    await renderBanner()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('see-draft-banner')).toBeInTheDocument()
+    })
     expect(screen.getByRole('button', {name: 'See draft'})).toBeInTheDocument()
   })
 
@@ -129,7 +179,7 @@ describe('SeeDraftBanner', () => {
   })
 
   it('does not render for live-edit documents', async () => {
-    mockPublishedOnlyDocument({liveEdit: true})
+    mockDocumentPane({liveEdit: true})
 
     await renderBanner()
 
@@ -145,16 +195,24 @@ describe('SeeDraftBanner', () => {
     expect(screen.queryByTestId('see-draft-banner')).not.toBeInTheDocument()
   })
 
-  it('does not render when a draft already exists', async () => {
-    mockUseDocumentPane.mockReturnValue({
-      editState: {
-        ready: true,
-        draft: {...publishedDocument, _id: 'drafts.author-1'},
-        published: publishedDocument,
-        version: null,
-      },
-      schemaType: {name: 'author', liveEdit: false} as ObjectSchemaType,
-    } as unknown as ReturnType<typeof useDocumentPane>)
+  it('does not render when there is no published sibling', async () => {
+    mockDocumentPane({
+      targetDocumentState: readyState({
+        published: undefined,
+        draft: draftSibling,
+        version: undefined,
+      }),
+    })
+
+    await renderBanner()
+
+    expect(screen.queryByTestId('see-draft-banner')).not.toBeInTheDocument()
+  })
+
+  it('does not render while the target is still resolving', async () => {
+    mockDocumentPane({
+      targetDocumentState: {status: 'resolving'},
+    })
 
     await renderBanner()
 

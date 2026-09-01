@@ -1,4 +1,4 @@
-import {type SanityDocument} from '@sanity/types'
+import {type VersionInfoDocumentStub} from 'sanity'
 import {expect, it} from 'vitest'
 
 import {
@@ -6,12 +6,16 @@ import {
   shouldShowSeeDraftBanner,
 } from './shouldShowSeeDraftBanner'
 
-const stubDocument: SanityDocument = {
+const publishedSibling: VersionInfoDocumentStub = {
   _id: 'author-1',
   _rev: 'rev-1',
+  _createdAt: '2025-06-23T00:00:00Z',
+  _updatedAt: '2025-06-23T00:00:00Z',
   _type: 'author',
-  _createdAt: '2025-06-23',
-  _updatedAt: '2025-06-23',
+  _system: {
+    bundleId: 'published',
+    group: {_ref: 'author-1', _weak: true},
+  },
 }
 
 const workspaceWithDraftsEnabled: ShouldShowSeeDraftBannerContext['workspace'] = {
@@ -30,19 +34,40 @@ const workspaceWithDraftsDisabled: ShouldShowSeeDraftBannerContext['workspace'] 
   },
 }
 
-const publishedOnlyEditState: ShouldShowSeeDraftBannerContext['editState'] = {
-  ready: true,
-  draft: null,
-  published: stubDocument,
+const publishedSiblings: ShouldShowSeeDraftBannerContext['siblings'] = {
+  published: publishedSibling,
 }
 
-it('shows the banner for a published-only non-live-edit document in the published perspective', () => {
+const publishedAndDraftSiblings = {
+  published: publishedSibling,
+  draft: {
+    ...publishedSibling,
+    _id: 'drafts.author-1',
+    _system: {
+      bundleId: 'drafts',
+      group: {_ref: 'author-1', _weak: true},
+    },
+  } satisfies VersionInfoDocumentStub,
+}
+
+it('shows the banner when a published sibling exists in the published perspective', () => {
   expect(
     shouldShowSeeDraftBanner({
       selectedPerspective: 'published',
       schemaType: {liveEdit: false},
       workspace: workspaceWithDraftsEnabled,
-      editState: publishedOnlyEditState,
+      siblings: publishedSiblings,
+    }),
+  ).toBe(true)
+})
+
+it('shows the banner when a draft already exists if a published sibling is present', () => {
+  expect(
+    shouldShowSeeDraftBanner({
+      selectedPerspective: 'published',
+      schemaType: {liveEdit: false},
+      workspace: workspaceWithDraftsEnabled,
+      siblings: publishedAndDraftSiblings,
     }),
   ).toBe(true)
 })
@@ -53,37 +78,29 @@ it('does not show the banner for live-edit documents', () => {
       selectedPerspective: 'published',
       schemaType: {liveEdit: true},
       workspace: workspaceWithDraftsEnabled,
-      editState: publishedOnlyEditState,
+      siblings: publishedSiblings,
     }),
   ).toBe(false)
 })
 
-it('does not show the banner when a draft already exists', () => {
+it('does not show the banner when there is no published sibling', () => {
   expect(
     shouldShowSeeDraftBanner({
       selectedPerspective: 'published',
       schemaType: {liveEdit: false},
       workspace: workspaceWithDraftsEnabled,
-      editState: {
-        ready: true,
-        draft: stubDocument,
-        published: stubDocument,
-      },
+      siblings: {published: undefined},
     }),
   ).toBe(false)
 })
 
-it('does not show the banner when there is no published document', () => {
+it('does not show the banner while siblings are unresolved', () => {
   expect(
     shouldShowSeeDraftBanner({
       selectedPerspective: 'published',
       schemaType: {liveEdit: false},
       workspace: workspaceWithDraftsEnabled,
-      editState: {
-        ready: true,
-        draft: null,
-        published: null,
-      },
+      siblings: undefined,
     }),
   ).toBe(false)
 })
@@ -94,7 +111,7 @@ it('does not show the banner outside the published perspective', () => {
       selectedPerspective: 'drafts',
       schemaType: {liveEdit: false},
       workspace: workspaceWithDraftsEnabled,
-      editState: publishedOnlyEditState,
+      siblings: publishedSiblings,
     }),
   ).toBe(false)
 })
@@ -105,22 +122,7 @@ it('does not show the banner when drafts are disabled', () => {
       selectedPerspective: 'published',
       schemaType: {liveEdit: false},
       workspace: workspaceWithDraftsDisabled,
-      editState: publishedOnlyEditState,
-    }),
-  ).toBe(false)
-})
-
-it('does not show the banner while edit state is not ready', () => {
-  expect(
-    shouldShowSeeDraftBanner({
-      selectedPerspective: 'published',
-      schemaType: {liveEdit: false},
-      workspace: workspaceWithDraftsEnabled,
-      editState: {
-        ready: false,
-        draft: null,
-        published: stubDocument,
-      },
+      siblings: publishedSiblings,
     }),
   ).toBe(false)
 })
@@ -131,7 +133,7 @@ it('does not show the banner when viewing a history revision', () => {
       selectedPerspective: 'published',
       schemaType: {liveEdit: false},
       workspace: workspaceWithDraftsEnabled,
-      editState: publishedOnlyEditState,
+      siblings: publishedSiblings,
       isHistoryRevision: true,
     }),
   ).toBe(false)
@@ -142,7 +144,7 @@ it('does not show the banner when schema type is missing', () => {
     shouldShowSeeDraftBanner({
       selectedPerspective: 'published',
       workspace: workspaceWithDraftsEnabled,
-      editState: publishedOnlyEditState,
+      siblings: publishedSiblings,
     }),
   ).toBe(false)
 })
