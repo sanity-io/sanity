@@ -1,5 +1,5 @@
 import {act, renderHook, waitFor} from '@testing-library/react'
-import {describe, expect, it} from 'vitest'
+import {describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {type VariantConditionsContext} from '../../../config/types'
@@ -96,5 +96,29 @@ describe('useVariantConditions', () => {
         ],
       })
     })
+  })
+
+  it('shares one async resolve across consumers', async () => {
+    const conditions = vi.fn().mockResolvedValue([{name: 'locale', values: ['en-US']}])
+    const wrapper = await createTestProvider({
+      config: {
+        beta: {
+          variants: {
+            enabled: true,
+            conditions,
+          },
+        },
+      },
+    })
+
+    const {result: first} = renderHook(() => useVariantConditions(), {wrapper})
+    const {result: second} = renderHook(() => useVariantConditions(), {wrapper})
+
+    await waitFor(() => {
+      expect(first.current).toMatchObject({mode: 'mapped', status: 'ready'})
+      expect(second.current).toMatchObject({mode: 'mapped', status: 'ready'})
+    })
+
+    expect(conditions).toHaveBeenCalledTimes(1)
   })
 })

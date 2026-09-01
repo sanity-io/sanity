@@ -223,7 +223,74 @@ describe('VariantDialog', () => {
     expect(screen.getByTestId('variant-form-condition-value-selected')).toHaveTextContent(
       'old-value',
     )
+    expect(screen.getByTestId('variant-form-condition-mismatch')).toHaveTextContent(
+      'The condition "legacy" is not in the configured list.',
+    )
     expect(screen.queryByTestId('variant-form-condition-key')).not.toBeInTheDocument()
-    expect(screen.getByRole('button', {name: 'Add condition'})).toBeEnabled()
+    expect(screen.getByRole('button', {name: 'Add condition'})).toBeDisabled()
+
+    await userEvent.setup().click(screen.getByTestId('save-variant-button'))
+
+    expect(onSubmit).not.toHaveBeenCalled()
+  })
+
+  it('marks an unknown value as an error and blocks save', async () => {
+    await renderDialog({
+      config: {
+        beta: {
+          variants: {
+            enabled: true,
+            conditions: [
+              {
+                name: 'audience',
+                title: 'Audience',
+                values: [{value: 'loyal', title: 'Loyal customers'}],
+              },
+            ],
+          },
+        },
+      },
+      initialValue: {
+        ...getVariantDefaults(),
+        metadata: {title: 'Legacy audience', description: []},
+        conditions: {audience: 'old-value'},
+      },
+    })
+
+    expect(screen.getByTestId('variant-form-condition-key-selected')).toHaveTextContent('Audience')
+    expect(screen.getByTestId('variant-form-condition-value-selected')).toHaveTextContent(
+      'old-value',
+    )
+    expect(screen.getByTestId('variant-form-condition-mismatch')).toHaveTextContent(
+      'The value "old-value" is not valid for "audience".',
+    )
+
+    await userEvent.setup().click(screen.getByTestId('save-variant-button'))
+
+    expect(onSubmit).not.toHaveBeenCalled()
+  })
+
+  it('blocks save while configured conditions are loading', async () => {
+    await renderDialog({
+      config: {
+        beta: {
+          variants: {
+            enabled: true,
+            conditions: () => new Promise(() => undefined),
+          },
+        },
+      },
+      initialValue: {
+        ...getVariantDefaults(),
+        metadata: {title: 'Loyal audience', description: []},
+        conditions: {audience: 'loyal'},
+      },
+    })
+
+    expect(screen.getByTestId('variant-form-conditions-loading')).toBeInTheDocument()
+
+    await userEvent.setup().click(screen.getByTestId('save-variant-button'))
+
+    expect(onSubmit).not.toHaveBeenCalled()
   })
 })

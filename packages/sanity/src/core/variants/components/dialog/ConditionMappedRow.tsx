@@ -3,6 +3,7 @@ import {Stack, Text} from '@sanity/ui'
 import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
+import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {variantsLocaleNamespace} from '../../i18n'
 import {getVariantConditionIcon} from '../../tool/detail/variantConditionIcons'
@@ -15,6 +16,7 @@ import {ConditionOptionCard} from './ConditionOptionCard'
 interface ConditionMappedRowProps {
   definitions: NormalizedVariantConditionMap[]
   disableRemove: boolean
+  keyError?: string | null
   onClearKey: () => void
   onClearValue: () => void
   onRemove: () => void
@@ -23,6 +25,7 @@ interface ConditionMappedRowProps {
   selectedKey: string
   selectedValue: string
   usedKeys: ReadonlySet<string>
+  valueError?: string | null
 }
 
 function getUnknownOption(value: string): NormalizedVariantConditionValue {
@@ -33,6 +36,7 @@ export function ConditionMappedRow(props: ConditionMappedRowProps): React.JSX.El
   const {
     definitions,
     disableRemove,
+    keyError,
     onClearKey,
     onClearValue,
     onRemove,
@@ -41,6 +45,7 @@ export function ConditionMappedRow(props: ConditionMappedRowProps): React.JSX.El
     selectedKey,
     selectedValue,
     usedKeys,
+    valueError,
   } = props
   const {t} = useTranslation(variantsLocaleNamespace)
   const definition = definitions.find((item) => item.name === selectedKey)
@@ -50,7 +55,8 @@ export function ConditionMappedRow(props: ConditionMappedRowProps): React.JSX.El
       ? {title: selectedKey}
       : undefined
   const selectedValueOption = definition
-    ? definition.values.find((item) => item.value === selectedValue)
+    ? (definition.values.find((item) => item.value === selectedValue) ??
+      (selectedValue ? getUnknownOption(selectedValue) : undefined))
     : selectedValue
       ? getUnknownOption(selectedValue)
       : undefined
@@ -70,28 +76,39 @@ export function ConditionMappedRow(props: ConditionMappedRowProps): React.JSX.El
     />
   )
 
+  const mappedError = keyError || valueError
+
   if (selectedKey && selectedValue && selectedKeyOption && selectedValueOption) {
     return (
-      <Flex alignItems="center" gap={2}>
-        <Box flexBasis="0%" flexGrow={1}>
-          <ConditionOptionCard
-            description={selectedKeyOption.description}
-            icon={getVariantConditionIcon(selectedKey)}
-            onClick={onClearKey}
-            testId="variant-form-condition-key-selected"
-            title={selectedKeyOption.title}
-          />
-        </Box>
-        <Box flexBasis="0%" flexGrow={1}>
-          <ConditionOptionCard
-            description={selectedValueOption.description}
-            onClick={definition ? onClearValue : onClearKey}
-            testId="variant-form-condition-value-selected"
-            title={selectedValueOption.title}
-          />
-        </Box>
-        {removeButton}
-      </Flex>
+      <Stack gap={2}>
+        <Flex alignItems="center" gap={2}>
+          <Box flexBasis="0%" flexGrow={1}>
+            <ConditionOptionCard
+              description={selectedKeyOption.description}
+              icon={getVariantConditionIcon(selectedKey)}
+              invalid={Boolean(keyError)}
+              onClick={onClearKey}
+              testId="variant-form-condition-key-selected"
+              title={selectedKeyOption.title}
+            />
+          </Box>
+          <Box flexBasis="0%" flexGrow={1}>
+            <ConditionOptionCard
+              description={selectedValueOption.description}
+              invalid={Boolean(valueError)}
+              onClick={definition ? onClearValue : onClearKey}
+              testId="variant-form-condition-value-selected"
+              title={selectedValueOption.title}
+            />
+          </Box>
+          {removeButton}
+        </Flex>
+        {mappedError ? (
+          <TextWithTone data-testid="variant-form-condition-mismatch" size={1} tone="critical">
+            {mappedError}
+          </TextWithTone>
+        ) : null}
+      </Stack>
     )
   }
 
@@ -103,6 +120,7 @@ export function ConditionMappedRow(props: ConditionMappedRowProps): React.JSX.El
             <ConditionOptionCard
               description={selectedKeyOption.description}
               icon={getVariantConditionIcon(selectedKey)}
+              invalid={Boolean(keyError)}
               onClick={onClearKey}
               selected
               testId="variant-form-condition-key-selected"
@@ -111,6 +129,11 @@ export function ConditionMappedRow(props: ConditionMappedRowProps): React.JSX.El
           </Box>
           {removeButton}
         </Flex>
+        {keyError ? (
+          <TextWithTone data-testid="variant-form-condition-mismatch" size={1} tone="critical">
+            {keyError}
+          </TextWithTone>
+        ) : null}
         {definition ? (
           <Stack gap={2}>
             <Text muted size={1}>
