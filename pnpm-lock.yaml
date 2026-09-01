@@ -53,7 +53,7 @@ catalogs:
       specifier: ^2.1.5
       version: 2.1.5
     '@vitejs/plugin-react':
-      specifier: ^6.1.0
+      specifier: ^6.1.1
       version: 6.1.1
     '@vitest/browser-playwright':
       specifier: ^4.1.11

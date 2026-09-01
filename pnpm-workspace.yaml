@@ -37,7 +37,7 @@ catalog:
   '@sanity/vanilla-extract-vite-plugin': ^0.2.17
   '@vanilla-extract/css': ^1.21.2
   '@vanilla-extract/dynamic': ^2.1.5
-  '@vitejs/plugin-react': ^6.1.0
+  '@vitejs/plugin-react': ^6.1.1
   '@vitest/browser-playwright': ^4.1.11
   jsdom: ^29.1.1
   oxc-transform-react: ^0.147.0
