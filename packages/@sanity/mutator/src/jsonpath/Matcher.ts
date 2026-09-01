@@ -132,6 +132,12 @@ export class Matcher {
         return
       }
 
+      if (probe.containerType() === 'primitive' && descenderHead.isIndexReference()) {
+        // An index reference never matches a primitive value, and resolving
+        // it would require a length the value does not have
+        return
+      }
+
       if (descender.tail) {
         // Not arrived yet
         const matcher = new Matcher(descender.descend(), this)
