@@ -30,6 +30,7 @@ const READY_TARGET_STATE = {
   targetDocument: undefined,
   scopeId: undefined,
   variant: undefined,
+  siblings: {published: undefined, draft: undefined, version: undefined},
 }
 
 const EXISTING_DOCUMENT_VERSIONS = {
@@ -386,6 +387,7 @@ describe('CopyDocumentActions', () => {
         status: 'variant-missing',
         variant: {_id: 'variant-1'},
         bundle: 'published',
+        siblings: {published: undefined, draft: undefined, version: undefined},
       })
 
       render(<CopyDocumentActions />, {wrapper})
@@ -410,6 +412,7 @@ describe('CopyDocumentActions', () => {
         targetDocument: {_id: 'versions.v1a2b3c4.doc-123'},
         scopeId: 'v1a2b3c4',
         variant: {_id: 'variant-1'},
+        siblings: {published: undefined, draft: undefined, version: undefined},
       })
 
       render(<CopyDocumentActions />, {wrapper})
