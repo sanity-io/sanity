@@ -135,6 +135,18 @@ const variantsLocaleStrings = {
   /** Tooltip when add condition is disabled because the current row is incomplete. */
   'dialog.create.action.add-condition.disabled-hint':
     'Complete the current condition key and value before adding another.',
+  /** Tooltip when add condition is disabled because every mapped condition is already used. */
+  'dialog.create.action.add-condition.none-remaining': 'Every available condition is already used.',
+  /** Heading shown while the user picks a condition key from the configured list. */
+  'dialog.create.conditions.choose-key': 'Choose a condition',
+  /** Heading shown while the user picks a value for the selected condition. */
+  'dialog.create.conditions.choose-value': 'Choose a value',
+  /** Loading message while configured conditions are resolving. */
+  'dialog.create.conditions.loading': 'Loading conditions',
+  /** Error message when configured conditions fail to load. */
+  'dialog.create.conditions.error': 'Unable to load conditions',
+  /** Retry action when configured conditions fail to load. */
+  'dialog.create.conditions.retry': 'Retry',
   /** Remove condition action for the create variant dialog. */
   'dialog.create.remove-condition': 'Remove condition',
   /** Label for the variant title field in the create variant dialog. */

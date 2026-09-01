@@ -1,4 +1,4 @@
-import {render, screen, waitFor, within} from '@testing-library/react'
+import {act, render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {type HTMLProps, type Ref} from 'react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
@@ -492,5 +492,136 @@ describe('CreateVariantDialog', () => {
     expect(screen.getByRole('dialog', {name: 'Create variant definition'})).toBeInTheDocument()
 
     consoleError.mockRestore()
+  })
+})
+
+const mappedConditions = [
+  {
+    name: 'audience',
+    title: 'Audience',
+    description: 'Who this content is for.',
+    values: [
+      {value: 'loyal', title: 'Loyal customers', description: 'Repeat purchasers and members.'},
+      {value: 'new', title: 'New visitors'},
+    ],
+  },
+  {
+    name: 'locale',
+    title: 'Locale',
+    values: ['en-US', 'nb-NO'],
+  },
+]
+
+describe('CreateVariantDialog mapped conditions', () => {
+  const onCancel = vi.fn()
+  const onSubmit = vi.fn()
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    variantsMock.data = []
+    variantsMock.byId = new Map()
+    variantsMock.loading = false
+    variantsMock.error = undefined
+    variantOperationsMock.createVariant.mockResolvedValue(undefined)
+  })
+
+  const renderMappedDialog = async (
+    conditions:
+      | typeof mappedConditions
+      | (() => Promise<typeof mappedConditions>) = mappedConditions,
+  ) => {
+    const wrapper = await createTestProvider({
+      config: {
+        beta: {
+          variants: {
+            enabled: true,
+            conditions,
+          },
+        },
+      },
+      resources: [variantsUsEnglishLocaleBundle],
+    })
+    const result = render(<CreateVariantDialog onCancel={onCancel} onSubmit={onSubmit} />, {
+      wrapper,
+    })
+    await screen.findByRole('dialog', {name: 'Create variant definition'})
+    return result
+  }
+
+  it('picks a mapped condition key and value instead of free-text inputs', async () => {
+    const user = userEvent.setup()
+
+    await renderMappedDialog()
+
+    expect(screen.queryByTestId('variant-form-condition-key')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('variant-form-condition-value')).not.toBeInTheDocument()
+    expect(screen.getByText('Who this content is for.')).toBeInTheDocument()
+    expect(screen.getByRole('button', {name: 'Add condition'})).toBeDisabled()
+
+    await user.click(screen.getByRole('button', {name: 'Audience'}))
+
+    expect(screen.getByText('Repeat purchasers and members.')).toBeInTheDocument()
+    expect(screen.queryByRole('button', {name: 'Locale'})).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', {name: 'Loyal customers'}))
+    await user.type(screen.getByTestId('variant-form-title'), 'Loyal customers')
+    await user.click(screen.getByTestId('submit-variant-button'))
+
+    await waitFor(() => {
+      expect(variantOperationsMock.createVariant).toHaveBeenCalledTimes(1)
+    })
+
+    const createdVariant = variantOperationsMock.createVariant.mock.calls[0]![0]
+
+    expect(createdVariant.conditions).toEqual({audience: 'loyal'})
+  })
+
+  it('hides already used mapped keys when adding another condition', async () => {
+    const user = userEvent.setup()
+
+    await renderMappedDialog()
+
+    await user.click(screen.getByRole('button', {name: 'Audience'}))
+    await user.click(screen.getByRole('button', {name: 'Loyal customers'}))
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', {name: 'Add condition'})).toBeEnabled()
+    })
+
+    await user.click(screen.getByRole('button', {name: 'Add condition'}))
+
+    expect(
+      screen.queryByTestId('variant-form-condition-key-option-audience'),
+    ).not.toBeInTheDocument()
+    expect(screen.getByTestId('variant-form-condition-key-option-locale')).toBeInTheDocument()
+  })
+
+  it('shows loading and error states for async conditions', async () => {
+    const user = userEvent.setup()
+    const loadControl: {reject: (error: Error) => void} = {
+      reject() {
+        throw new Error('conditions were not requested')
+      },
+    }
+    const conditions = () =>
+      new Promise<typeof mappedConditions>((_resolve, reject) => {
+        loadControl.reject = reject
+      })
+
+    await renderMappedDialog(conditions)
+
+    expect(screen.getByTestId('variant-form-conditions-loading')).toBeInTheDocument()
+    expect(screen.queryByRole('button', {name: 'Audience'})).not.toBeInTheDocument()
+
+    await act(async () => {
+      loadControl.reject(new Error('cdp unavailable'))
+    })
+
+    expect(await screen.findByTestId('variant-form-conditions-error')).toBeInTheDocument()
+    expect(screen.queryByTestId('variant-form-condition-key')).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', {name: 'Retry'}))
+
+    expect(screen.getByTestId('variant-form-conditions-loading')).toBeInTheDocument()
   })
 })

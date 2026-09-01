@@ -67,6 +67,7 @@ import {
   schemaTemplatesReducer,
   searchStrategyReducer,
   toolsReducer,
+  variantsConditionsReducer,
   variantsEnabledReducer,
 } from './configPropertyReducers'
 import {ConfigResolutionError} from './ConfigResolutionError'
@@ -720,6 +721,7 @@ function resolveSource({
 
   const commentsV2Enabled = commentsV2EnabledReducer({config, initialValue: false})
   const variantsEnabled = variantsEnabledReducer({config, initialValue: false})
+  const variantsConditions = variantsConditionsReducer({config, initialValue: undefined})
 
   // Upload the schema descriptor to Content Lake, but only when the user is
   // authenticated and actually holds the `deployStudio` grant. Checking the
@@ -932,6 +934,7 @@ function resolveSource({
       },
       variants: {
         enabled: variantsEnabled,
+        conditions: variantsConditions,
       },
       documentGroupInventory: {
         // The document group inventory is an inherent part of the variants experience.

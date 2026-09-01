@@ -111,7 +111,7 @@ Covered behavior:
 
 ## Condition Autocomplete
 
-Condition key/value autocomplete is intentionally data-driven. We do not maintain a separate list of allowed keys or values.
+When `beta.variants.conditions` is **not** set, condition key/value autocomplete is data-driven. We do not maintain a separate list of allowed keys or values.
 
 `components/dialog/conditionSuggestions.ts` derives suggestions from existing variants:
 
@@ -131,6 +131,18 @@ Important behavior:
 - while the input is focused, the wrapper avoids forcing the current row value back into `Autocomplete.value`, because doing so closes the suggestion popover while typing
 
 The autocomplete is a consistency aid, not a schema constraint. Users can still introduce new condition patterns when needed.
+
+## Configured conditions picker
+
+When `beta.variants.conditions` is set (a static array or a function that may return a promise), the form switches to an exclusive card picker. The function is resolved when the dialog opens, not during studio boot.
+
+- key cards come from the configured list (title + optional description)
+- after a key is chosen, value cards for that key are shown
+- already-used keys are omitted from later rows
+- existing conditions that are not in the list stay visible so edits do not break
+- a load failure shows an error and retry; the form does not fall back to free-text
+
+`useVariantConditions` reads the resolved config from the workspace. Invalid keys and values are dropped by `normalizeVariantConditions` so the picker never offers them.
 
 ## Detail Page
 
@@ -189,6 +201,7 @@ Covered areas include:
 - create/edit dialog validation and submit behavior
 - condition row validation and partial-edit regressions
 - condition suggestion helpers
+- conditions config reduction, normalization, and mapped card-picker form flow
 - detail page rendering, edit dialog, footer, and detail delete menu
 
 Focused command:
