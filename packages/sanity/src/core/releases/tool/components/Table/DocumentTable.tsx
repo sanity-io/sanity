@@ -1,12 +1,26 @@
 import {SearchIcon} from '@sanity/icons/Search'
 import {Badge, Card, Checkbox, Container, TextInput, useMediaIndex} from '@sanity/ui'
-import {type CSSProperties, type ReactNode, useCallback, useMemo, useState} from 'react'
+import {
+  type CSSProperties,
+  type MouseEvent,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from 'react'
+import {DocumentTableSelectionContext} from 'sanity/_singletons'
 import {Box, Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Table} from './Table'
 import {type TableSort} from './TableProvider'
-import {type Column} from './types'
+import {
+  type Column,
+  type DocumentTableSelectionContextValue,
+  type HeaderProps,
+  type InjectedTableProps,
+} from './types'
 
 const TABLE_CARD_STYLE: CSSProperties = {
   height: '100%',
@@ -32,6 +46,69 @@ const FILTER_TABS_STYLE: CSSProperties = {
   overflowX: 'auto',
   maskImage: 'linear-gradient(to right, #000 0, #000 calc(100% - 24px), transparent 100%)',
   WebkitMaskImage: 'linear-gradient(to right, #000 0, #000 calc(100% - 24px), transparent 100%)',
+}
+
+function useDocumentTableSelection(): DocumentTableSelectionContextValue {
+  const value = useContext(DocumentTableSelectionContext)
+  if (!value) {
+    throw new Error('DocumentTable: missing selection context')
+  }
+  return value
+}
+
+// Select-all lives in the column-header row (above the row checkboxes it governs), not the
+// command lane. Doubles as clear.
+function SelectHeader({headerProps}: HeaderProps) {
+  const {labels, selectAllTestId, allSelected, someSelected, toggleAll} =
+    useDocumentTableSelection()
+
+  return (
+    <Flex {...headerProps} alignItems="center" justifyContent="center" paddingY={3}>
+      <Checkbox
+        aria-label={labels.selectAll}
+        checked={allSelected}
+        data-testid={selectAllTestId}
+        indeterminate={someSelected && !allSelected}
+        onChange={toggleAll}
+      />
+    </Flex>
+  )
+}
+
+function stopPropagation(event: MouseEvent<HTMLInputElement>) {
+  event.stopPropagation()
+}
+
+function SelectCell(props: {
+  datum: {isLoading?: boolean}
+  cellProps: InjectedTableProps
+  sorting: boolean
+}) {
+  const {datum, cellProps} = props
+  const {labels, selectedKeys, selectableKeys, toggleRow, rowKey} = useDocumentTableSelection()
+  const key = datum.isLoading ? null : rowKey(datum)
+
+  return (
+    <Flex {...cellProps} alignItems="center" justifyContent="center" paddingX={2}>
+      {key !== null && selectableKeys.has(key) && (
+        <Checkbox
+          aria-label={labels.selectRow}
+          checked={selectedKeys.has(key)}
+          onChange={() => toggleRow(key)}
+          onClick={stopPropagation}
+        />
+      )}
+    </Flex>
+  )
+}
+
+const SELECT_COLUMN_DEF: Column = {
+  id: 'select',
+  width: 44,
+  style: {minWidth: 44, maxWidth: 44},
+  sorting: false,
+  header: SelectHeader,
+  cell: SelectCell,
 }
 
 /**
@@ -179,45 +256,33 @@ export function DocumentTable<Row extends object>({
 
   const clearSelection = useCallback(() => setSelectedKeys(new Set()), [])
 
-  const selectColumn = useMemo<Column<Row> | null>(() => {
+  const selectionContext = useMemo<DocumentTableSelectionContextValue | null>(() => {
     if (!selection) return null
-    const {labels, selectAllTestId} = selection
     return {
-      id: 'select',
-      width: 44,
-      style: {minWidth: 44, maxWidth: 44},
-      sorting: false,
-      // Select-all lives in the column-header row (above the row checkboxes it governs), not the
-      // command lane. Doubles as clear.
-      header: ({headerProps}) => (
-        <Flex {...headerProps} alignItems="center" justifyContent="center" paddingY={3}>
-          <Checkbox
-            aria-label={labels.selectAll}
-            checked={allSelected}
-            data-testid={selectAllTestId}
-            indeterminate={someSelected && !allSelected}
-            onChange={toggleAll}
-          />
-        </Flex>
-      ),
-      cell: ({cellProps, datum}) => (
-        <Flex {...cellProps} alignItems="center" justifyContent="center" paddingX={2}>
-          {!datum.isLoading && (selection?.isRowSelectable?.(datum) ?? true) && (
-            <Checkbox
-              aria-label={labels.selectRow}
-              checked={selectedKeys.has(getRowKey(datum))}
-              onChange={() => toggleRow(getRowKey(datum))}
-              onClick={(event) => event.stopPropagation()}
-            />
-          )}
-        </Flex>
-      ),
+      labels: selection.labels,
+      selectAllTestId: selection.selectAllTestId,
+      allSelected,
+      someSelected,
+      toggleAll,
+      selectedKeys,
+      selectableKeys,
+      toggleRow,
+      rowKey: getRowKey,
     }
-  }, [selection, allSelected, someSelected, toggleAll, selectedKeys, getRowKey, toggleRow])
+  }, [
+    selection,
+    allSelected,
+    someSelected,
+    toggleAll,
+    selectedKeys,
+    selectableKeys,
+    toggleRow,
+    getRowKey,
+  ])
 
   const amalgamatedColumnDefs = useMemo(
-    () => (selectColumn ? [selectColumn, ...columnDefs] : columnDefs),
-    [selectColumn, columnDefs],
+    () => (selection ? [SELECT_COLUMN_DEF, ...columnDefs] : columnDefs),
+    [selection, columnDefs],
   )
 
   const selectedKeyList = useMemo(
@@ -307,16 +372,18 @@ export function DocumentTable<Row extends object>({
         </Card>
       )}
       <Card data-testid={id} flex={1} id={id} ref={setScrollContainerRef} style={TABLE_CARD_STYLE}>
-        <Table<Row>
-          columnDefs={amalgamatedColumnDefs}
-          data={displayRows}
-          defaultSort={defaultSort}
-          emptyState={emptyState}
-          loading={loading}
-          rowActions={rowActions}
-          rowId={rowId}
-          scrollContainerRef={scrollContainerRef}
-        />
+        <DocumentTableSelectionContext.Provider value={selectionContext}>
+          <Table<Row>
+            columnDefs={amalgamatedColumnDefs}
+            data={displayRows}
+            defaultSort={defaultSort}
+            emptyState={emptyState}
+            loading={loading}
+            rowActions={rowActions}
+            rowId={rowId}
+            scrollContainerRef={scrollContainerRef}
+          />
+        </DocumentTableSelectionContext.Provider>
       </Card>
     </Flex>
   )

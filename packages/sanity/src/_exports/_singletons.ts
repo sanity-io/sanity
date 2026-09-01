@@ -58,6 +58,7 @@ export {
 } from '../_singletons/context/DocumentLimitContext'
 export {DocumentPaneContext} from '../_singletons/context/DocumentPaneContext'
 export {DocumentPaneInfoContext} from '../_singletons/context/DocumentPaneInfoContext'
+export {DocumentTableSelectionContext} from '../_singletons/context/DocumentTableSelectionContext'
 export {EditDialogOuterBoundaryContext} from '../_singletons/context/EditDialogOuterBoundaryContext'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {EnhancedObjectDialogContext} from '../_singletons/context/EnhancedObjectDialogContext'
