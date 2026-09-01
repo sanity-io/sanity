@@ -539,8 +539,9 @@ export type ValidateItemOptions = {
   hidden?: boolean
   currentUser?: Omit<CurrentUser, 'role'> | null
   customValidation?: boolean
+  signal?: AbortSignal
   __internal?: ValidationContext['__internal']
-} & ExplicitUndefined<Omit<ValidationContext, 'hidden' | '__internal'>>
+} & ExplicitUndefined<Omit<ValidationContext, 'hidden' | 'signal' | '__internal'>>
 
 export function validateItem(opts: ValidateItemOptions): Promise<ValidationMarker[]> {
   return lastValueFrom(
