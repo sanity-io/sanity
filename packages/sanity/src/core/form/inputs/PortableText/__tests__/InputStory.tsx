@@ -1,6 +1,6 @@
 import {type PortableTextEditor} from '@portabletext/editor'
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
-import {useMemo} from 'react'
+import {createContext, useContext, useMemo} from 'react'
 import {type InputProps, type PortableTextInputProps} from 'sanity'
 
 import {TestForm} from '../../../../../../test/browser/TestForm'
@@ -12,48 +12,49 @@ interface InputStoryProps {
   ptInputProps?: Partial<PortableTextInputProps>
 }
 
-export function InputStory(props: InputStoryProps) {
-  const {editorRef, ptInputProps} = props
+const InputStoryContext = createContext<InputStoryProps>({})
 
-  const schemaTypes = useMemo(
-    () => [
-      defineType({
-        type: 'document',
-        name: 'test',
-        title: 'Test',
-        fields: [
-          defineField({
-            type: 'array',
-            name: 'body',
-            of: [
-              defineArrayMember({
-                type: 'block',
-              }),
-            ],
-            components: {
-              input: (inputProps: InputProps) => {
-                const editorProps = {
-                  ...inputProps,
-                  ...ptInputProps,
-                  editorRef,
-                } as PortableTextInputProps
-                return (
-                  <div data-testid="pt-input-with-editor-ref">
-                    {inputProps.renderDefault(editorProps)}
-                  </div>
-                )
-              },
-            },
+function PTInputWithEditorRef(inputProps: InputProps) {
+  const {editorRef, ptInputProps} = useContext(InputStoryContext)
+  const editorProps = {
+    ...inputProps,
+    ...ptInputProps,
+    editorRef,
+  } as PortableTextInputProps
+  return <div data-testid="pt-input-with-editor-ref">{inputProps.renderDefault(editorProps)}</div>
+}
+
+const schemaTypes = [
+  defineType({
+    type: 'document',
+    name: 'test',
+    title: 'Test',
+    fields: [
+      defineField({
+        type: 'array',
+        name: 'body',
+        of: [
+          defineArrayMember({
+            type: 'block',
           }),
         ],
+        components: {
+          input: PTInputWithEditorRef,
+        },
       }),
     ],
-    [ptInputProps, editorRef],
-  )
+  }),
+]
+
+export function InputStory(props: InputStoryProps) {
+  const {editorRef, ptInputProps} = props
+  const contextValue = useMemo(() => ({editorRef, ptInputProps}), [editorRef, ptInputProps])
 
   return (
-    <TestWrapper schemaTypes={schemaTypes}>
-      <TestForm />
-    </TestWrapper>
+    <InputStoryContext.Provider value={contextValue}>
+      <TestWrapper schemaTypes={schemaTypes}>
+        <TestForm />
+      </TestWrapper>
+    </InputStoryContext.Provider>
   )
 }
