@@ -2,7 +2,7 @@ import {type CurrentUser} from '@sanity/types'
 // oxlint-disable-next-line no-restricted-imports
 import {Button as UIButton} from '@sanity/ui'
 import {memo, useCallback, useMemo, useState} from 'react'
-import {Text, Flex} from 'ui5'
+import {Text, Flex, Icon} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
@@ -63,9 +63,7 @@ const renderMenuButton = ({open, tooltipContent}: {open: boolean; tooltipContent
     <UIButton fontSize={1} mode="ghost" padding={0} radius="full" selected={open}>
       <Flex paddingX={3} paddingY={2}>
         <Tooltip animate content={tooltipContent} disabled={open}>
-          <Text size={1} as="div" trim={true}>
-            <ReactionIcon />
-          </Text>
+          <Icon size={1} icon={ReactionIcon} />
         </Tooltip>
       </Flex>
     </UIButton>
