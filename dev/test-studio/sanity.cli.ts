@@ -8,6 +8,12 @@ const isStaging = process.env.SANITY_INTERNAL_ENV == 'staging'
 // the DevTools dock in a running `sanity dev` server without restarting it.
 // Usage: `pnpm devtools:test-studio` from the repo root (see AGENTS.md).
 const isViteDevToolsEnabled = process.env.ENABLE_VITE_DEVTOOLS === 'true'
+// Injects the agent-react-devtools connect script so the studio registers with a local
+// React DevTools daemon (`agent-react-devtools start`) for component inspection and render
+// profiling — used by AI agents via the react-devtools skill (.agents/skills/react-devtools).
+// Dev-server only (the plugin is `apply: 'serve'`), so it can never leak into builds.
+// Usage: `pnpm react-devtools:test-studio` from the repo root (see AGENTS.md).
+const isReactDevtoolsEnabled = process.env.ENABLE_REACT_DEVTOOLS === 'true'
 
 export default defineCliConfig({
   api: isStaging
@@ -28,7 +34,10 @@ export default defineCliConfig({
   // trigger the monorepo "waterfall of reload doom", which previously required
   // server.warmup.clientFiles workarounds.
   // {@link https://vite.dev/guide/rolldown#full-bundle-mode}
-  unstable_bundledDev: true,
+  // Disabled while profiling with agent-react-devtools: the injected connect script must run
+  // before the app bundle, and classic dev mode keeps the module graph closer to what the
+  // React DevTools hook expects.
+  unstable_bundledDev: process.env.ENABLE_REACT_DEVTOOLS !== 'true',
   reactCompiler: {
     // `transform: 'oxc'` runs React Compiler through `oxc-transform-react` (the native Rust
     // port): one native pass handles React Compiler, TypeScript/JSX and Fast Refresh — no babel
@@ -59,6 +68,12 @@ export default defineCliConfig({
         // `devtools: {}` makes `sanity build` emit a Rolldown build session that the DevTools dock can inspect
         build: {rolldownOptions: {devtools: {}}},
       })
+    }
+
+    if (isReactDevtoolsEnabled) {
+      // Lazy import so the devtools package is only loaded when the flag is enabled
+      const {reactDevtools} = await import('agent-react-devtools/vite')
+      nextConfig = mergeConfig(nextConfig, {plugins: [reactDevtools()]})
     }
 
     // Support React Production Profiling on deployed studios

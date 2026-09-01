@@ -193,6 +193,35 @@ How it works:
 - The flag is declared in `dev/test-studio/turbo.json` so turbo-cached builds are invalidated when it changes
 - Enabling devtools makes `sanity build` noticeably slower; that's why it's opt-in via the env flag
 
+### Profiling studio re-renders with React DevTools (agent-react-devtools)
+
+The test studio can register with a local [agent-react-devtools](https://github.com/callstackincubator/agent-react-devtools) daemon, which exposes the React component tree and render profiling over a CLI — made for AI agents to inspect props/state/hooks and hunt unnecessary re-renders. The `react-devtools` skill (`.agents/skills/react-devtools/SKILL.md`) documents the CLI; read it before profiling.
+
+```bash
+# 1. Start the daemon (port 8097)
+pnpm --filter sanity-test-studio exec agent-react-devtools start
+
+# 2. Start the studio with the connect script injected (implies ENABLE_REACT_DEVTOOLS=true)
+pnpm react-devtools:test-studio
+
+# 3. Open http://localhost:3333 in a browser, then verify the app registered
+pnpm --filter sanity-test-studio exec agent-react-devtools status
+
+# 4. Profile an interaction
+pnpm --filter sanity-test-studio exec agent-react-devtools profile start
+# ... interact with the studio ...
+pnpm --filter sanity-test-studio exec agent-react-devtools profile stop
+pnpm --filter sanity-test-studio exec agent-react-devtools profile rerenders --limit 10
+```
+
+How it works and gotchas:
+
+- `ENABLE_REACT_DEVTOOLS=true` makes `dev/test-studio/sanity.cli.ts` add the `reactDevtools()` Vite plugin, which injects an `agent-react-devtools/connect` script that wires `react-devtools-core` to the daemon's WebSocket. Dev-server only (`apply: 'serve'`) — it can never reach `sanity build` output.
+- The flag also disables `unstable_bundledDev` so the connect script runs before the app bundle in a plain module graph. Expect one or two "Outdated Optimize Dep" reloads on first navigation after a restart (the classic dev-mode waterfall).
+- **The browser must be headed.** Headless Chromium does not execute the injected module script properly, so the app never registers with the daemon. On the Cloud VM, drive system Chrome via Playwright with `headless: false` (a display is available), and authenticate by appending `#token=$STUDIO_AUTH_TOKEN` to the URL from inside the script (keeps the secret out of logs).
+- Profile with StrictMode off (`SANITY_STUDIO_REACT_STRICT_MODE=false`) so dev double-rendering doesn't inflate durations — production studios don't run StrictMode.
+- Do not run `pnpm check:oxlint` while the dev studio and daemon are running (same memory constraint as noted in the Cursor Cloud gotchas).
+
 ### Analyzing the `sanity` package bundle
 
 The `sanity` package tsdown build can emit a Rolldown [bundle analyzer](https://rolldown.rs/builtin-plugins/bundle-analyzer) markdown report (module/chunk breakdown for humans and coding agents) when `ENABLE_BUNDLE_ANALYZER=true`:

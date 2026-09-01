@@ -69,8 +69,10 @@
     "@vitejs/devtools-oxc": "^0.6.2",
     "@vitejs/devtools-rolldown": "^0.6.2",
     "@vitejs/devtools-vite": "^0.6.2",
+    "agent-react-devtools": "^0.4.0",
     "chokidar": "^5.0.0",
     "oxc-transform-react": "catalog:",
+    "react-devtools-core": "^7.0.1",
     "rimraf": "catalog:",
     "tsx": "^4.23.13",
     "vite": "catalog:"
