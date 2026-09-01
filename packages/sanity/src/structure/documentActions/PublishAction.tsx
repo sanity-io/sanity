@@ -8,6 +8,7 @@ import {
   type DocumentActionComponent,
   getPairTarget,
   getTargetScopeId,
+  getTargetSiblings,
   InsufficientPermissionsMessage,
   isPublishedPerspective,
   type TFunction,
@@ -75,15 +76,10 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const isTargetReady = targetDocumentState.status === 'ready'
   const scopeId = getTargetScopeId(targetDocumentState)
   const isVariantTarget = isTargetReady && targetDocumentState.variant !== undefined
-  // For variant targets, publish state (already-published timestamps, publish-completion revision
-  // tracking) lives on the variant-of-published sibling — the base `published` document says
-  // nothing about whether the *variant* is published.
-  const publishedInfo = isVariantTarget ? targetDocumentState.publishedSibling : published
-  // Variant publish locks need the sibling revision (not in any pair snapshot). Base draft
-  // publish omits this and keeps using `snapshots.published._rev` inside the operation.
-  const publishedRevisionId = isVariantTarget
-    ? targetDocumentState.publishedSibling?._rev
-    : undefined
+  const siblings = getTargetSiblings(targetDocumentState)
+  // Publish-state timestamps and completion tracking live on the current lane's published sibling.
+  // (While the target is resolving, the action is disabled below.)
+  const publishedInfo = siblings?.published
 
   const {publish} = useDocumentOperation(id, type, getPairTarget(targetDocumentState))
   const validationStatus = useValidationStatus(value._id, type, !release)
@@ -119,10 +115,10 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const telemetry = useTelemetry()
 
   const doPublish = useCallback(() => {
-    publish.execute(isVariantTarget ? {publishedRevisionId} : undefined)
+    publish.execute(isVariantTarget ? {publishedRevisionId: currentPublishRevision} : undefined)
     telemetry.log(PublishButtonClicked, {documentId: id, stage: 'started'})
     setPublishState({status: 'publishing', publishRevision: currentPublishRevision})
-  }, [publish, isVariantTarget, publishedRevisionId, currentPublishRevision, telemetry, id])
+  }, [publish, isVariantTarget, currentPublishRevision, telemetry, id])
 
   useEffect(() => {
     // make sure the validation status is about the current revision and not an earlier one
@@ -228,6 +224,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     validationStatus.revision,
     revision,
     doPublish,
+    setPublishScheduled,
   ])
 
   return useMemo(() => {

@@ -34,6 +34,7 @@ import {
   getCreatableVariantTarget,
   getPairTarget,
   getTargetScopeId,
+  getTargetSiblings,
   useTargetDocumentState,
 } from '../hooks/useTargetDocumentState'
 import {useValidationStatus} from '../hooks/useValidationStatus'
@@ -540,7 +541,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     }
 
     // in cases where the document has drafts but the schema is live edit, there is a risk of data loss, so we disable editing in this case
-    if (liveEdit && editState.draft?._id) {
+    if (liveEdit && getTargetSiblings(targetDocumentState)?.draft) {
       return true
     }
 
