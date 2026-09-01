@@ -1,6 +1,35 @@
-import {type CSSProperties} from 'react'
+import {type CSSProperties, type ReactNode} from 'react'
 
 export const TABLE_ROW_ACTIONS_WIDTH = 50
+
+/**
+ * Render callback for the trailing row-actions gutter, invoked per row by the
+ * row-actions cell.
+ */
+export type TableRowActions = (props: {datum: unknown}) => ReactNode
+
+/**
+ * Selection state and callbacks for {@link DocumentTable}'s select column, provided through
+ * `DocumentTableSelectionContext` so the column's header and cell components can be defined at
+ * module scope with stable identities (defining them during render would remount every checkbox
+ * whenever the selection changes).
+ */
+export interface DocumentTableSelectionContextValue {
+  labels: {selectAll: string; selectRow: string}
+  selectAllTestId?: string
+  allSelected: boolean
+  someSelected: boolean
+  toggleAll: () => void
+  selectedKeys: ReadonlySet<string>
+  /** Keys of the currently visible rows that can be selected. */
+  selectableKeys: ReadonlySet<string>
+  toggleRow: (key: string) => void
+  /**
+   * Method syntax on purpose: rows are typed per table instance, and method parameters are
+   * bivariant, so the table's `getRowKey` can be stored here without casts.
+   */
+  rowKey(datum: unknown): string
+}
 
 export interface InjectedTableProps {
   as?: React.ElementType | keyof React.JSX.IntrinsicElements
