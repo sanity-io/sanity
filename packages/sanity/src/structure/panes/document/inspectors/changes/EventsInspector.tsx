@@ -1,7 +1,8 @@
 import {diffInput, wrap} from '@sanity/diff'
+import {type Path} from '@sanity/types'
 import {BoundaryElementProvider, Card, Flex, Spinner, Stack, Text} from '@sanity/ui'
 import {motion} from 'motion/react'
-import {type ReactElement, useMemo, useState} from 'react'
+import {type ReactElement, type ReactNode, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {
   ChangeFieldWrapper,
@@ -46,6 +47,20 @@ const DIFF_INITIAL_VALUE = {
   diff: null,
   loading: true,
   error: null,
+}
+
+interface FieldWrapperProps {
+  path: Path
+  children: ReactNode
+  hasRevertHover: boolean
+}
+
+function PassThroughFieldWrapper(props: FieldWrapperProps) {
+  return props.children
+}
+
+function EventsFieldWrapper(props: FieldWrapperProps) {
+  return props.path.length > 0 ? <ChangeFieldWrapper {...props} /> : props.children
 }
 
 const CompareWithPublishedView = () => {
@@ -115,7 +130,7 @@ const CompareWithPublishedView = () => {
           schemaType,
           rootDiff,
           isComparingCurrent: true,
-          FieldWrapper: (props) => props.children,
+          FieldWrapper: PassThroughFieldWrapper,
           value: displayed,
           showFromValue: true,
         }}
@@ -151,8 +166,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
     return {
       documentId,
       schemaType,
-      FieldWrapper: (props) =>
-        props.path.length > 0 ? <ChangeFieldWrapper {...props} /> : props.children,
+      FieldWrapper: EventsFieldWrapper,
       rootDiff: diff,
       isComparingCurrent: isComparingCurrent && !formState?.readOnly,
       value,
