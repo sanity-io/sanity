@@ -9,6 +9,7 @@ import {
   SourceProvider,
   useI18nText,
   useSchema,
+  useShallowUnique,
   useSource,
   useTranslation,
 } from 'sanity'
@@ -30,8 +31,6 @@ import {
 } from './helpers'
 import {PaneHeader} from './PaneHeader'
 import {type SortOrder, type StaticSortOrder} from './types'
-import {useShallowUnique} from './useShallowUnique'
-
 /**
  * Type for custom menu item state storage.
  * Maps menu item IDs to their current state values.

@@ -1,9 +1,9 @@
 /**
- * Shallow equality for plain objects and arrays: entries are compared with `===`, one level deep.
+ * Shallow equality for plain objects and arrays, comparing entries with `===` one level deep.
  *
- * Replaces the `shallow-equals` package. The object branch iterates with `for..in` instead of
- * `Object.keys` on purpose: it avoids two array allocations per call and benchmarks ~2x faster
- * on the flat records this is used for (permission results, pane params, document top levels).
+ * The object branch iterates with `for..in` instead of `Object.keys` on purpose: it avoids two
+ * array allocations per call and benchmarks ~2x faster on the flat records this compares
+ * (permission results, pane params, document top levels).
  *
  * @internal
  */

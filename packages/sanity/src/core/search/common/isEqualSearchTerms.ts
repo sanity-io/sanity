@@ -17,7 +17,7 @@ export function isEqualSearchTerms(a: SearchTerms, b: SearchTerms): boolean {
   const {types: bTypes, ...bRest} = b
   return (
     aTypes.length === bTypes.length &&
-    aTypes.every((type, index) => type === bTypes[index] || type.name === bTypes[index].name) &&
+    aTypes.every((type, index) => type.name === bTypes[index].name) &&
     dequal(aRest, bRest)
   )
 }

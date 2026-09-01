@@ -3,9 +3,8 @@ import {isEqual} from '@sanity/util/paths'
 import {type TrackedChange} from './types'
 
 /**
- * Compares change indicator tracker snapshots field by field: the element by reference, the
- * path with path equality, everything else with `===`. Runs after every render of every
- * change bar, so it avoids a generic deep-compare walk.
+ * Runs after every render of every change bar, so it compares the fixed snapshot shape directly
+ * instead of paying for a generic deep-compare walk.
  *
  * @internal
  */

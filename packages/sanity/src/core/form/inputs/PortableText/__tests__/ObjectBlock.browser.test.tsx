@@ -103,7 +103,7 @@ describe('Portable Text Input', () => {
       await expect.element(page.getByTestId('nested-object-dialog')).toBeVisible()
 
       // We close the dialog first so we can test that we can open it again by double clicking
-      await userEvent.keyboard('{Escape}')
+      await page.getByTestId('nested-object-dialog').getByRole('button', {name: 'Close'}).click()
 
       // Dialog should now be gone
       await expect.element(page.getByTestId('nested-object-dialog')).not.toBeInTheDocument()
@@ -149,7 +149,6 @@ describe('Portable Text Input', () => {
       // Assertion: Object edit dialog should be visible
       await expect.element(page.getByTestId('nested-object-dialog')).toBeVisible()
 
-      // Close via the close button again, for the same cross-browser reason as above
       await page.getByTestId('nested-object-dialog').getByRole('button', {name: 'Close'}).click()
       await expect.element(page.getByTestId('nested-object-dialog')).not.toBeInTheDocument()
 

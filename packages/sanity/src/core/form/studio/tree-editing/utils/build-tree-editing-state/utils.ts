@@ -16,11 +16,8 @@ export function isArrayItemSelected(
   itemPath: Path | PathSegment,
   path: Path | PathSegment,
 ): boolean {
-  const itemPathIsArray = Array.isArray(itemPath)
-  const pathIsArray = Array.isArray(path)
-  if (itemPathIsArray || pathIsArray) {
-    return itemPathIsArray && pathIsArray && isEqual(itemPath, path)
-  }
+  if (Array.isArray(itemPath) && Array.isArray(path)) return isEqual(itemPath, path)
+  if (Array.isArray(itemPath) || Array.isArray(path)) return false
   return isSegmentEqual(itemPath, path)
 }
 
