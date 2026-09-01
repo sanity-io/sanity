@@ -209,6 +209,68 @@ describe('validateDocument', () => {
     expect(pureValidator).toHaveBeenCalledOnce()
   })
 
+  it('records client access as skipped when a custom validator handles the error', async () => {
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {
+            name: 'client',
+            type: 'string',
+            validation: (rule: Rule) =>
+              rule.custom((_value, context) => {
+                try {
+                  context.getClient({apiVersion: '2026-01-01'})
+                } catch {
+                  return true as const
+                }
+                return true as const
+              }),
+          },
+          {
+            name: 'reference',
+            type: 'string',
+            validation: (rule: Rule) =>
+              rule.custom(async (_value, context) => {
+                try {
+                  await context.getDocumentExists?.({id: 'author-id'})
+                } catch {
+                  return true as const
+                }
+                return true as const
+              }),
+          },
+        ],
+      },
+    ])
+
+    const result = await validateDocument({
+      document: createDocument({_type: 'article', client: 'yes', reference: 'yes'}),
+      schema,
+    })
+
+    expect(result.status).toBe('notEvaluated')
+    expect(result.markers).toEqual([])
+    expect(result.skipped).toHaveLength(2)
+    expect(result.skipped).toEqual(
+      expect.arrayContaining([
+        {
+          check: 'custom',
+          level: 'error',
+          path: ['client'],
+          reason: 'clientUnavailable',
+        },
+        {
+          check: 'custom',
+          level: 'error',
+          path: ['reference'],
+          reason: 'clientUnavailable',
+        },
+      ]),
+    )
+  })
+
   it('reports client-dependent media validation as not evaluated without a client', async () => {
     const mediaValidator = vi.fn(() => true as const)
     const schema = createSchema([
