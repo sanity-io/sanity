@@ -361,6 +361,7 @@ export {
   type Tool,
   type VariantConditionMap,
   type VariantConditions,
+  type VariantConditionsContext,
   type VariantConditionValue,
   type Workspace,
   type WorkspaceHiddenContext,

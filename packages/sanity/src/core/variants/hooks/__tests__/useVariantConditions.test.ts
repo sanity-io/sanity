@@ -2,7 +2,7 @@ import {act, renderHook, waitFor} from '@testing-library/react'
 import {describe, expect, it} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
-import {type ConfigContext} from '../../../config/types'
+import {type VariantConditionsContext} from '../../../config/types'
 import {useVariantConditions} from '../useVariantConditions'
 
 describe('useVariantConditions', () => {
@@ -45,7 +45,7 @@ describe('useVariantConditions', () => {
 
   it('resolves an async function and can retry after an error', async () => {
     let shouldFail = true
-    const conditions = async (context: ConfigContext) => {
+    const conditions = async (context: VariantConditionsContext) => {
       if (shouldFail) {
         throw new Error(`unavailable in ${context.dataset}`)
       }
