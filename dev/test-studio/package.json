@@ -45,7 +45,7 @@
     "chokidar": "^5.0.0",
     "history": "^5.3.0",
     "lodash-es": "^4.18.1",
-    "qs": "^6.15.3",
+    "qs": "^6.16.0",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-refractor": "^4.0.0",
@@ -65,14 +65,14 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vanilla-extract/css": "catalog:",
-    "@vitejs/devtools": "^0.6.1",
-    "@vitejs/devtools-oxc": "^0.6.1",
-    "@vitejs/devtools-rolldown": "^0.6.1",
-    "@vitejs/devtools-vite": "^0.6.1",
+    "@vitejs/devtools": "^0.6.2",
+    "@vitejs/devtools-oxc": "^0.6.2",
+    "@vitejs/devtools-rolldown": "^0.6.2",
+    "@vitejs/devtools-vite": "^0.6.2",
     "chokidar": "^5.0.0",
     "oxc-transform-react": "catalog:",
     "rimraf": "catalog:",
-    "tsx": "^4.23.12",
+    "tsx": "^4.23.13",
     "vite": "catalog:"
   }
 }
