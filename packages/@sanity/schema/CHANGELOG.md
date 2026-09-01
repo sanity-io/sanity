@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.12.0](https://github.com/sanity-io/sanity/compare/v6.11.0...v6.12.0) (2026-09-01)
+
+### Features
+
+* **validation:** add headless document validation package ([#14093](https://github.com/sanity-io/sanity/issues/14093)) ([51f4486](https://github.com/sanity-io/sanity/commit/51f448658213df354afb61746b459dc94f7c10b8))
+
+### Bug Fixes
+
+* **deps:** update dependency get-it to ^9.5.2 ([#14430](https://github.com/sanity-io/sanity/issues/14430)) ([b47dc98](https://github.com/sanity-io/sanity/commit/b47dc980db00fe666b09e76df111376d26518f7e))
 ## [6.11.0](https://github.com/sanity-io/sanity/compare/v6.10.1...v6.11.0) (2026-08-25)
 
 ### Bug Fixes
