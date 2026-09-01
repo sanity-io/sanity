@@ -82,6 +82,9 @@ catalogs:
     rimraf:
       specifier: ^6.1.3
       version: 6.1.3
+    storybook:
+      specifier: ^10.5.10
+      version: 10.5.10
     styled-components:
       specifier: ^6.5.3
       version: 6.5.3
@@ -626,7 +629,7 @@ importers:
         specifier: 'catalog:'
         version: 6.1.3
       storybook:
-        specifier: ^10.5.10
+        specifier: 'catalog:'
         version: 10.5.10(@types/react@19.2.18)(prettier@3.9.6)(react@19.2.8)
       vite:
         specifier: 'catalog:'
@@ -2250,7 +2253,7 @@ importers:
         specifier: ^10.6.2
         version: 10.6.2(rxjs@7.8.2)
       storybook:
-        specifier: ^10.5.10
+        specifier: 'catalog:'
         version: 10.5.10(@types/react@19.2.18)(prettier@3.9.6)(react@19.2.8)
       styled-components:
         specifier: 'catalog:'
