@@ -9,6 +9,7 @@ import {
   ChangesError,
   type DocumentChangeContextInstance,
   type DocumentGroupEvent,
+  getTargetSiblings,
   isReleaseDocument,
   LoadingBlock,
   NoChanges,
@@ -60,7 +61,7 @@ const CompareWithPublishedView = () => {
   const isVariantTarget =
     targetDocumentState.status === 'ready' && targetDocumentState.variant !== undefined
   const siblingScopeId = isVariantTarget
-    ? targetDocumentState.publishedSibling?._system.scopeId
+    ? getTargetSiblings(targetDocumentState)?.published?._system.scopeId
     : undefined
   const siblingEditState = useEditState(documentId, documentType, 'default', siblingScopeId)
   const publishedComparisonBase = isVariantTarget

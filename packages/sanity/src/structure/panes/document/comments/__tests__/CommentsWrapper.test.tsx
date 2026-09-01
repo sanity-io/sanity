@@ -49,7 +49,13 @@ vi.mock('../../useDocumentPane', () => ({
     onPathOpen: vi.fn(),
     inspector: null,
     openInspector: vi.fn(),
-    targetDocumentState: {status: 'ready', scopeId: undefined},
+    targetDocumentState: {
+      status: 'ready',
+      scopeId: undefined,
+      targetDocument: undefined,
+      variant: undefined,
+      siblings: {published: undefined, draft: undefined, version: undefined},
+    },
   })),
 }))
 
@@ -82,7 +88,13 @@ describe('CommentsWrapper', () => {
       onPathOpen: vi.fn(),
       inspector: null,
       openInspector: vi.fn(),
-      targetDocumentState: {status: 'ready', scopeId: undefined},
+      targetDocumentState: {
+        status: 'ready',
+        scopeId: undefined,
+        targetDocument: undefined,
+        variant: undefined,
+        siblings: {published: undefined, draft: undefined, version: undefined},
+      },
     })
 
     mockGetTargetScopeId.mockReturnValue(undefined)
@@ -291,7 +303,7 @@ describe('CommentsWrapper', () => {
         scopeId: 'varscope',
         targetDocument: undefined,
         variant: undefined,
-        publishedSibling: undefined,
+        siblings: {published: undefined, draft: undefined, version: undefined},
       }
 
       mockUseDocumentPane.mockReturnValue({
@@ -359,7 +371,7 @@ describe('CommentsWrapper', () => {
         scopeId: 'varscope',
         targetDocument: undefined,
         variant: {_id: 'system.variant.alpha-audience', name: 'alpha-audience'},
-        publishedSibling: undefined,
+        siblings: {published: undefined, draft: undefined, version: undefined},
       }
 
       mockUseDocumentPane.mockReturnValue({
