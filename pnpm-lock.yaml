@@ -731,7 +731,7 @@ importers:
     dependencies:
       '@sanity/code-input':
         specifier: ^7.3.7
-        version: 7.3.7(@babel/runtime@7.29.7)(@codemirror/theme-one-dark@6.1.3)(codemirror@6.0.2)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)
+        version: 7.3.8(@babel/runtime@7.29.7)(@codemirror/theme-one-dark@6.1.3)(codemirror@6.0.2)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)
       react:
         specifier: 'catalog:'
         version: 19.2.8
@@ -1085,7 +1085,7 @@ importers:
         version: 2.7.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.4.0)
       '@octokit/plugin-throttling':
         specifier: ^11.0.5
-        version: 11.0.5(@octokit/core@7.0.7)
+        version: 11.0.5(@octokit/core@7.0.8)
       '@octokit/rest':
         specifier: ^22.0.1
         version: 22.0.1
@@ -3570,8 +3570,8 @@ packages:
       '@csstools/css-parser-algorithms': ^4.0.0
       '@csstools/css-tokenizer': ^4.0.0
 
-  '@csstools/css-color-parser@4.2.1':
-    resolution: {integrity: sha512-YpAJZhaHplYQkG8ib+/Fx5Y0eF2lVWi3tIvMJA6i39TLyUNp2439cifzW8VMjhlqrBjHzK5hVGugRRm2zTKI/A==}
+  '@csstools/css-color-parser@4.2.2':
+    resolution: {integrity: sha512-3QKjR/vxyjcSXBLgb6lP0S3MGdvwbmqSsvLPbYdVORqPDc8FX1HAJ0Spk38bxaRXgvENTA47tlhhbb5Z2e8hEg==}
     engines: {node: '>=20.19.0'}
     peerDependencies:
       '@csstools/css-parser-algorithms': ^4.0.0
@@ -3583,8 +3583,8 @@ packages:
     peerDependencies:
       '@csstools/css-tokenizer': ^4.0.0
 
-  '@csstools/css-syntax-patches-for-csstree@1.1.9':
-    resolution: {integrity: sha512-iGGw4OsAYsS6pD29MdJ2bX/nJx65a04ZZiw6x+VwWlP2DdXf6f++Zmuv/OzALpdyfVhjbduIIF2cXM7HWBIe9A==}
+  '@csstools/css-syntax-patches-for-csstree@1.1.10':
+    resolution: {integrity: sha512-xBja6gaAaH2R2c7eNyl0TY4dhnnZ2uhj+KXpLdEQ6M/wuk9bYFZM8wY0ykw3VO4TgEJ56KGlerXS/9KBKVR/Cg==}
     peerDependencies:
       css-tree: ^3.2.1
     peerDependenciesMeta:
@@ -5272,16 +5272,16 @@ packages:
     resolution: {integrity: sha512-P4YJBPdPSpWTQ1NU4XYdvHvXJJDxM6YwpS0FZHRgP7YFkdVxsWcpWGy/NVqlAA7PcPCnMacXlRm1y2PFZRWL/w==}
     engines: {node: '>= 20'}
 
-  '@octokit/core@7.0.7':
-    resolution: {integrity: sha512-DcB0M3KFgr9ECI328lhBMVsyFT2DnmNucSBTqEN3exyNKUzkkpUSCHmTRcunF41Eou2TIQKW4seewri8ON9bSA==}
+  '@octokit/core@7.0.8':
+    resolution: {integrity: sha512-L7y8eYc+AwxGr2PWI4WFt1VG4TiJ66c26BD16mXpYIlXxG0SMigM1+m4aTSlYyBr5BlQsGAlz8uDCoZN4SEMcg==}
     engines: {node: '>= 20'}
 
   '@octokit/endpoint@11.0.5':
     resolution: {integrity: sha512-iXa654H3yFafF/ieHkukfbgWo2rmXD2ceD0ZOtrPhw1bc3FDch1d9N/TNs0FQ1/cIbwb7kspUX8jzIs8nzb9DQ==}
     engines: {node: '>= 20'}
 
-  '@octokit/graphql@9.0.4':
-    resolution: {integrity: sha512-5s15CCiY8XXQ+FG+b1YQcl6Z2FA++nwAz/tg2VUrTmnMncP+2nnGUEYANImdnxsA2Fnq+Mbl7hDjUTw7cFAwcg==}
+  '@octokit/graphql@9.0.5':
+    resolution: {integrity: sha512-bt/hm03LeU6Vy7FwTrkkC9p3XGT/lBwClglMqxBSe5/q0E5CdJTXeAqEI0vlw89/LF/G6tryTIH8HirZ3prMVg==}
     engines: {node: '>= 20'}
 
   '@octokit/openapi-types@27.0.0':
@@ -5317,12 +5317,12 @@ packages:
     peerDependencies:
       '@octokit/core': ^7.0.0
 
-  '@octokit/request-error@7.1.1':
-    resolution: {integrity: sha512-+eaY7G2VVpSf2pc5Gn1+mph837V/d/TYTJAgWL9Tb0ogGYcpN3IlAVFgjL+Vv93F/sevrxkvsYCedtpLdcFLzA==}
+  '@octokit/request-error@7.1.2':
+    resolution: {integrity: sha512-XZRuT3xZ84D3gYErI1DZvhJ33dCWVV6uzBtWkaBB4TvA/L6eOeTZodxLFVB44bBEEo3vEx7y00UfX1tBLrtLRg==}
     engines: {node: '>= 20'}
 
-  '@octokit/request@10.0.15':
-    resolution: {integrity: sha512-3CBg9aJ0hO9Pjyij8LbK/xYtEaPws9SW7xKz67daPNxQB1q5Y9OMA7DDOG0A6Hwf9ygGu3tvzusg0LXQ8/wAjA==}
+  '@octokit/request@10.0.16':
+    resolution: {integrity: sha512-A0zWGjHzISIb+9ccG8s0dq7LKO5zVpJLRICjgUb+sJxEWqn8RUHB1rD3AE51+PECvXHIxqZ1VVvs4fHTSD9nUQ==}
     engines: {node: '>= 20'}
 
   '@octokit/rest@22.0.1':
@@ -6964,8 +6964,8 @@ packages:
     resolution: {integrity: sha512-wlfpO5gbYLPU5K6i7gaRBuZHGOnyEsuPOe8XMfEklLi1pE0PhRl9WgdLRwwt+M+aGguAuOpISjEcFSf2I5N3lA==}
     engines: {node: '>=22.12'}
 
-  '@sanity/blueprints@0.23.6':
-    resolution: {integrity: sha512-wZHwl/wOaCqAbZ3O1ZwNpPrLT6Cpemb5hdeGWbUGGD7qp39WAfB+xzHYmmeXo8fhs93hhc7KEHQK2dEPr4xQag==}
+  '@sanity/blueprints@0.24.0':
+    resolution: {integrity: sha512-xhbpKrjcfowl7M1hm4C2E5x+IxMTpRMylWPLlK86bUImqhgdNMjI+AFHxJa8H7FvIl5byAhGvGRMJvWdvljviw==}
     engines: {node: '>=22'}
     peerDependencies:
       vite: '>= 8'
@@ -7045,8 +7045,8 @@ packages:
     resolution: {integrity: sha512-rwMtDxH3x9dc8ZiCMRDLStZoCr6MSPrH2LH4NIxWTCZ9Vz5OSgg0RolZy+ccM8p4yzK5lgC9XMF8tF6zsje0gQ==}
     engines: {node: '>=22.12.0'}
 
-  '@sanity/code-input@7.3.7':
-    resolution: {integrity: sha512-6+lr6O7BNinZD2GwwbhjQkvS1wili0jDIJfFE1rjPJo9PcH/j6l0/t1BU+5BxyWU73o6kwGmnTxSnPuS0KfQxQ==}
+  '@sanity/code-input@7.3.8':
+    resolution: {integrity: sha512-Tqf/OpatSUTUkUeM1y37ncXY6cbL+cMV6y0b0WpWDFQ10oCnXnT1vo+jBk2oOCzjtAwwM/fdH49P/pYGUuzqPg==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       react: ^19.2
@@ -7220,8 +7220,8 @@ packages:
     peerDependencies:
       react: ^18.3 || ^19
 
-  '@sanity/runtime-cli@17.10.0':
-    resolution: {integrity: sha512-ZM06gmP2asaa2aYCYz6FehsdR8q9L0AXIJXfpP+lbRy7ih3tGfamlKSOwFLgJTuPEd8GqOjs7fyTwzfH12x6rw==}
+  '@sanity/runtime-cli@17.11.0':
+    resolution: {integrity: sha512-3jD+fe0ptvNZ6tOzxfnfwluMn5iEZuuTdA1xcivzawoLFTFxP44BBIj73tbr8nneP1LNxVPe/WM3ttD4HSFVxg==}
     engines: {node: '>=22.12'}
     hasBin: true
 
@@ -7937,8 +7937,8 @@ packages:
   '@types/geojson@7946.0.16':
     resolution: {integrity: sha512-6C8nqWur3j98U6+lXDfTUWIfgvZU+EumvpHKcYjujKH7woYyLj2sUmff0tRhrqM7BohUw7Pz3ZB1jj2gW9Fvmg==}
 
-  '@types/google.maps@3.66.0':
-    resolution: {integrity: sha512-HOvl5nXOBazgI9rgG79mWm4sNuA08ig+AMvdCQ/rEAzXJQFfKj/LqjaP+fHLM5JFa68+VKiN15NWFBos8/Kr9w==}
+  '@types/google.maps@3.66.1':
+    resolution: {integrity: sha512-UtnC1f4l6jSfw1WZD8nwP2XTLm5GKsL95Yk1a3etzFpKxJL4ZzO53k96IRipedIJGRLhV1z4lGlTTrP6FMyGww==}
 
   '@types/google_interactive_media_ads_types@3.697.1':
     resolution: {integrity: sha512-gRjJoPKQRjjTuySHqZe8Pnu6a5B0bKbTUD2ioDLPSWlEuBaAc2p1mzUzy42SCeWkyYffo2Mnv+blUGuvVvx3dQ==}
@@ -9066,8 +9066,8 @@ packages:
     resolution: {integrity: sha512-x1FCFnFifvYDDzTaLII71vG5uvDwgtmDTEVWAxrgeiR8VjMONcCXJx7E+USjDtHlwFmt9MysbqgF9b9Vjr6w+w==}
     engines: {node: '>=4'}
 
-  ast-types@0.16.1:
-    resolution: {integrity: sha512-6t10qk83GOG8p0vKmaCr8eiilZwO171AvbROMtvvNiwrTly62t+7XkA8RdIIVbpMhCASAsxgAzdRSwh6nw/5Dg==}
+  ast-types@0.16.3:
+    resolution: {integrity: sha512-FvWoWYfSCM6kRxCSH+MGLHIKKGRL6A6AW7Zek2O32REPQRdg131428uRTKMBYAeRd3XXAaHDS60Wpri7CdKDrA==}
     engines: {node: '>=4'}
 
   ast-v8-to-istanbul@1.0.5:
@@ -10180,8 +10180,8 @@ packages:
     engines: {node: '>=0.12.18'}
     hasBin: true
 
-  electron-to-chromium@1.5.416:
-    resolution: {integrity: sha512-K6bvB2BjnNrugtIih6ewlbBI9DXa976jIdiIlRLHhBoEI9a4JaQjjHyF+A1IQI543aQYR4LnmOrT/K5fZj0aPA==}
+  electron-to-chromium@1.5.417:
+    resolution: {integrity: sha512-4T+DTDWuMPM4aHlHwWdAVCVWwp7LDilnhzkj+c/Lbj91XSQrLuOmZSLtS9Q4iIqjlPUbPOnC624zDVVHCHaolQ==}
 
   emoji-regex@10.6.0:
     resolution: {integrity: sha512-toUI84YS5YmxW219erniWD0CIVOo46xGKColeNQRgOzDorgBi1v4D71/OFzgD9GO2UGKIv1C3Sp8DAn0+j5w7A==}
@@ -13031,8 +13031,8 @@ packages:
     peerDependencies:
       react: '>= 16.8'
 
-  react-error-boundary@6.1.3:
-    resolution: {integrity: sha512-GnSKpCohFi2nQmJCWwP8O8wub7zexlePvpsejvQr35vS5RTouS1+utTNOmyc540yw5vyOXnSL1rBWsCQDmkyUA==}
+  react-error-boundary@6.1.4:
+    resolution: {integrity: sha512-7FgvbyjCFhu4dtKSZu807cW1MWG2nWAM4bwGqUByAtHVJXtlzoCJX0SSyZRyFrb+aBd7wtJkcOR4DsxXVEuDsA==}
     peerDependencies:
       '@types/react': ^18.0.0 || ^19.0.0
       react: ^18.0.0 || ^19.0.0
@@ -14164,8 +14164,8 @@ packages:
     resolution: {integrity: sha512-TeTSQ6H5YHvpqVwBRcnLDCBnDOHWYu7IvGbHT6N8AOymcr9PJGjc1GTtiWZTYg0NCgYwvnYWEkVChQAr9bjfwA==}
     engines: {node: '>=16'}
 
-  type-fest@5.8.0:
-    resolution: {integrity: sha512-YGYEVz3Fm5iy/AybuA0oyNFq7H4CgQNfRp/qfe8nurE1kuCeNm3/vfm9X4Mtl+qLyaKJUh5xrFZwogr41SMjYA==}
+  type-fest@5.9.0:
+    resolution: {integrity: sha512-yANm3Jr3GiJ1qgJlxGAVxTOIcEOk1rhQHamlXtnrCK7EHP4HeM9OGxtMg/W7HFdrVzw/ZWJKGVIJusVH85sLtw==}
     engines: {node: '>=20'}
 
   type-is@2.1.0:
@@ -14910,11 +14910,11 @@ snapshots:
   '@actions/github@9.1.1':
     dependencies:
       '@actions/http-client': 3.0.2
-      '@octokit/core': 7.0.7
-      '@octokit/plugin-paginate-rest': 14.0.0(@octokit/core@7.0.7)
-      '@octokit/plugin-rest-endpoint-methods': 17.0.0(@octokit/core@7.0.7)
-      '@octokit/request': 10.0.15
-      '@octokit/request-error': 7.1.1
+      '@octokit/core': 7.0.8
+      '@octokit/plugin-paginate-rest': 14.0.0(@octokit/core@7.0.8)
+      '@octokit/plugin-rest-endpoint-methods': 17.0.0(@octokit/core@7.0.8)
+      '@octokit/request': 10.0.16
+      '@octokit/request-error': 7.1.2
       undici: 6.28.0
 
   '@actions/http-client@3.0.2':
@@ -15072,7 +15072,7 @@ snapshots:
     dependencies:
       '@asamuzakjp/generational-cache': 1.0.1
       '@csstools/css-calc': 3.3.0(@csstools/css-parser-algorithms@4.0.0)(@csstools/css-tokenizer@4.0.0)
-      '@csstools/css-color-parser': 4.2.1(@csstools/css-parser-algorithms@4.0.0)(@csstools/css-tokenizer@4.0.0)
+      '@csstools/css-color-parser': 4.2.2(@csstools/css-parser-algorithms@4.0.0)(@csstools/css-tokenizer@4.0.0)
       '@csstools/css-parser-algorithms': 4.0.0(@csstools/css-tokenizer@4.0.0)
       '@csstools/css-tokenizer': 4.0.0
 
@@ -16591,7 +16591,7 @@ snapshots:
       '@csstools/css-parser-algorithms': 4.0.0(@csstools/css-tokenizer@4.0.0)
       '@csstools/css-tokenizer': 4.0.0
 
-  '@csstools/css-color-parser@4.2.1(@csstools/css-parser-algorithms@4.0.0)(@csstools/css-tokenizer@4.0.0)':
+  '@csstools/css-color-parser@4.2.2(@csstools/css-parser-algorithms@4.0.0)(@csstools/css-tokenizer@4.0.0)':
     dependencies:
       '@csstools/color-helpers': 6.1.1
       '@csstools/css-calc': 3.3.0(@csstools/css-parser-algorithms@4.0.0)(@csstools/css-tokenizer@4.0.0)
@@ -16602,7 +16602,7 @@ snapshots:
     dependencies:
       '@csstools/css-tokenizer': 4.0.0
 
-  '@csstools/css-syntax-patches-for-csstree@1.1.9(css-tree@3.2.1)':
+  '@csstools/css-syntax-patches-for-csstree@1.1.10(css-tree@3.2.1)':
     optionalDependencies:
       css-tree: 3.2.1
 
@@ -17239,7 +17239,7 @@ snapshots:
 
   '@googlemaps/js-api-loader@2.1.1':
     dependencies:
-      '@types/google.maps': 3.66.0
+      '@types/google.maps': 3.66.1
 
   '@hono/node-server@2.1.1(hono@4.13.5)':
     dependencies:
@@ -18118,13 +18118,13 @@ snapshots:
 
   '@octokit/auth-token@6.0.0': {}
 
-  '@octokit/core@7.0.7':
+  '@octokit/core@7.0.8':
     dependencies:
       '@octokit/auth-token': 6.0.0
-      '@octokit/graphql': 9.0.4
-      '@octokit/request': 10.0.15
-      '@octokit/request-error': 7.1.1
-      '@octokit/types': 17.0.0
+      '@octokit/graphql': 9.0.5
+      '@octokit/request': 10.0.16
+      '@octokit/request-error': 7.1.2
+      '@octokit/types': 18.0.0
       before-after-hook: 4.0.0
       universal-user-agent: 7.0.3
 
@@ -18133,10 +18133,10 @@ snapshots:
       '@octokit/types': 18.0.0
       universal-user-agent: 7.0.3
 
-  '@octokit/graphql@9.0.4':
+  '@octokit/graphql@9.0.5':
     dependencies:
-      '@octokit/request': 10.0.15
-      '@octokit/types': 17.0.0
+      '@octokit/request': 10.0.16
+      '@octokit/types': 18.0.0
       universal-user-agent: 7.0.3
 
   '@octokit/openapi-types@27.0.0': {}
@@ -18145,45 +18145,45 @@ snapshots:
 
   '@octokit/openapi-types@29.0.1': {}
 
-  '@octokit/plugin-paginate-rest@14.0.0(@octokit/core@7.0.7)':
+  '@octokit/plugin-paginate-rest@14.0.0(@octokit/core@7.0.8)':
     dependencies:
-      '@octokit/core': 7.0.7
+      '@octokit/core': 7.0.8
       '@octokit/types': 16.0.0
 
-  '@octokit/plugin-request-log@6.0.0(@octokit/core@7.0.7)':
+  '@octokit/plugin-request-log@6.0.0(@octokit/core@7.0.8)':
     dependencies:
-      '@octokit/core': 7.0.7
+      '@octokit/core': 7.0.8
 
-  '@octokit/plugin-rest-endpoint-methods@17.0.0(@octokit/core@7.0.7)':
+  '@octokit/plugin-rest-endpoint-methods@17.0.0(@octokit/core@7.0.8)':
     dependencies:
-      '@octokit/core': 7.0.7
+      '@octokit/core': 7.0.8
       '@octokit/types': 16.0.0
 
-  '@octokit/plugin-throttling@11.0.5(@octokit/core@7.0.7)':
+  '@octokit/plugin-throttling@11.0.5(@octokit/core@7.0.8)':
     dependencies:
-      '@octokit/core': 7.0.7
+      '@octokit/core': 7.0.8
       '@octokit/types': 17.0.0
       bottleneck: 2.19.5
 
-  '@octokit/request-error@7.1.1':
+  '@octokit/request-error@7.1.2':
     dependencies:
-      '@octokit/types': 17.0.0
+      '@octokit/types': 18.0.0
 
-  '@octokit/request@10.0.15':
+  '@octokit/request@10.0.16':
     dependencies:
       '@octokit/endpoint': 11.0.5
-      '@octokit/request-error': 7.1.1
-      '@octokit/types': 17.0.0
+      '@octokit/request-error': 7.1.2
+      '@octokit/types': 18.0.0
       content-type: 3.0.0
       json-with-bigint: 3.5.12
       universal-user-agent: 7.0.3
 
   '@octokit/rest@22.0.1':
     dependencies:
-      '@octokit/core': 7.0.7
-      '@octokit/plugin-paginate-rest': 14.0.0(@octokit/core@7.0.7)
-      '@octokit/plugin-request-log': 6.0.0(@octokit/core@7.0.7)
-      '@octokit/plugin-rest-endpoint-methods': 17.0.0(@octokit/core@7.0.7)
+      '@octokit/core': 7.0.8
+      '@octokit/plugin-paginate-rest': 14.0.0(@octokit/core@7.0.8)
+      '@octokit/plugin-request-log': 6.0.0(@octokit/core@7.0.8)
+      '@octokit/plugin-rest-endpoint-methods': 17.0.0(@octokit/core@7.0.8)
 
   '@octokit/types@16.0.0':
     dependencies:
@@ -19385,7 +19385,7 @@ snapshots:
 
   '@sanity/blueprints-parser@0.5.0': {}
 
-  '@sanity/blueprints@0.23.6(vite@8.2.2)':
+  '@sanity/blueprints@0.24.0(vite@8.2.2)':
     optionalDependencies:
       vite: 8.2.2(@types/node@24.13.3)(@vitejs/devtools@0.6.2)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0)
 
@@ -19590,7 +19590,7 @@ snapshots:
       '@sanity/id-utils': 1.0.0
       '@sanity/import': 6.0.4(@sanity/client@8.4.0)(supports-color@8.1.1)
       '@sanity/migrate': 8.0.2(supports-color@8.1.1)(xstate@5.32.6)
-      '@sanity/runtime-cli': 17.10.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.4.0)(@types/node@24.13.3)(esbuild@0.28.2)(oxc-transform-react@0.148.0)(rolldown@1.2.6)(tsx@4.23.13)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)
+      '@sanity/runtime-cli': 17.11.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.4.0)(@types/node@24.13.3)(esbuild@0.28.2)(oxc-transform-react@0.148.0)(rolldown@1.2.6)(tsx@4.23.13)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/telemetry': 1.1.0(react@19.2.8)
       '@sanity/template-validator': 3.1.0
@@ -19692,7 +19692,7 @@ snapshots:
     transitivePeerDependencies:
       - vitest
 
-  '@sanity/code-input@7.3.7(@babel/runtime@7.29.7)(@codemirror/theme-one-dark@6.1.3)(codemirror@6.0.2)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)':
+  '@sanity/code-input@7.3.8(@babel/runtime@7.29.7)(@codemirror/theme-one-dark@6.1.3)(codemirror@6.0.2)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)':
     dependencies:
       '@codemirror/lang-html': 6.4.12
       '@codemirror/lang-java': 6.0.2
@@ -19975,16 +19975,15 @@ snapshots:
       - '@sanity/types'
       - typescript
 
-  '@sanity/runtime-cli@17.10.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.4.0)(@types/node@24.13.3)(esbuild@0.28.2)(oxc-transform-react@0.148.0)(rolldown@1.2.6)(tsx@4.23.13)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)':
+  '@sanity/runtime-cli@17.11.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.4.0)(@types/node@24.13.3)(esbuild@0.28.2)(oxc-transform-react@0.148.0)(rolldown@1.2.6)(tsx@4.23.13)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)':
     dependencies:
       '@architect/hydrate': 6.0.2
       '@architect/inventory': 6.1.0
       '@inquirer/prompts': 8.7.0(@types/node@24.13.3)
       '@oclif/core': 4.14.0
       '@oclif/plugin-help': 6.3.0
-      '@sanity-labs/design-tokens': 0.0.2-alpha.4
       '@sanity-labs/oclif-plugin-skills-flag': 0.2.1(@oclif/core@4.14.0)
-      '@sanity/blueprints': 0.23.6(vite@8.2.2)
+      '@sanity/blueprints': 0.24.0(vite@8.2.2)
       '@sanity/blueprints-parser': 0.5.0
       '@sanity/cli-build': 5.3.1(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.4.0)(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.148.0)(rolldown@1.2.6)(tsx@4.23.13)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)
       '@sanity/cli-core': 3.5.0(@noble/hashes@2.4.0)(@types/node@24.13.3)(esbuild@0.28.2)(oxc-transform-react@0.148.0)(vitest@4.1.11)(yaml@2.9.0)
@@ -20045,7 +20044,7 @@ snapshots:
       react: 19.2.8
       react-compiler-runtime: 1.0.0(react@19.2.8)
       react-dom: 19.2.8(react@19.2.8)
-      react-error-boundary: 6.1.3(@types/react@19.2.18)(react@19.2.8)
+      react-error-boundary: 6.1.4(@types/react@19.2.18)(react@19.2.8)
       rxjs: 7.8.2
       xstate: 5.32.6
     transitivePeerDependencies:
@@ -20923,7 +20922,7 @@ snapshots:
 
   '@types/geojson@7946.0.16': {}
 
-  '@types/google.maps@3.66.0': {}
+  '@types/google.maps@3.66.1': {}
 
   '@types/google_interactive_media_ads_types@3.697.1': {}
 
@@ -21042,8 +21041,8 @@ snapshots:
 
   '@typescript-eslint/project-service@8.56.1(supports-color@8.1.1)(typescript@7.0.2)':
     dependencies:
-      '@typescript-eslint/tsconfig-utils': 8.68.0(typescript@7.0.2)
-      '@typescript-eslint/types': 8.68.0
+      '@typescript-eslint/tsconfig-utils': 8.56.1(typescript@7.0.2)
+      '@typescript-eslint/types': 8.56.1
       debug: 4.4.3(supports-color@8.1.1)
       typescript: 7.0.2
     transitivePeerDependencies:
@@ -21437,7 +21436,7 @@ snapshots:
   '@vis.gl/react-google-maps@1.9.0(react-dom@19.2.8)(react@19.2.8)':
     dependencies:
       '@googlemaps/js-api-loader': 2.1.1
-      '@types/google.maps': 3.66.0
+      '@types/google.maps': 3.66.1
       fast-equals: 6.0.2
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
@@ -22040,7 +22039,7 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  ast-types@0.16.1:
+  ast-types@0.16.3:
     dependencies:
       tslib: 2.8.1
 
@@ -22269,7 +22268,7 @@ snapshots:
     dependencies:
       baseline-browser-mapping: 2.11.20
       caniuse-lite: 1.0.30001810
-      electron-to-chromium: 1.5.416
+      electron-to-chromium: 1.5.417
       node-releases: 2.0.54
       update-browserslist-db: 1.3.2(browserslist@4.28.8)
 
@@ -22701,7 +22700,7 @@ snapshots:
   cssstyle@6.2.0:
     dependencies:
       '@asamuzakjp/css-color': 5.1.11
-      '@csstools/css-syntax-patches-for-csstree': 1.1.9(css-tree@3.2.1)
+      '@csstools/css-syntax-patches-for-csstree': 1.1.10(css-tree@3.2.1)
       css-tree: 3.2.1
       lru-cache: 11.5.2
 
@@ -23021,7 +23020,7 @@ snapshots:
 
   ejs@6.0.1: {}
 
-  electron-to-chromium@1.5.416: {}
+  electron-to-chromium@1.5.417: {}
 
   emoji-regex@10.6.0: {}
 
@@ -23936,7 +23935,7 @@ snapshots:
     dependencies:
       base64-js: 1.5.1
       ecdsa-sig-formatter: 1.0.11
-      gaxios: 7.3.1(supports-color@8.1.1)
+      gaxios: 7.1.3(supports-color@8.1.1)
       gcp-metadata: 8.1.4(supports-color@8.1.1)
       google-logging-utils: 1.1.3
       gtoken: 8.0.0(supports-color@8.1.1)
@@ -24010,7 +24009,7 @@ snapshots:
 
   gtoken@8.0.0(supports-color@8.1.1):
     dependencies:
-      gaxios: 7.3.1(supports-color@8.1.1)
+      gaxios: 7.1.3(supports-color@8.1.1)
       jws: 4.0.1
     transitivePeerDependencies:
       - supports-color
@@ -24265,7 +24264,7 @@ snapshots:
       stack-utils: 2.0.6
       string-width: 8.2.2
       terminal-size: 4.0.1
-      type-fest: 5.8.0
+      type-fest: 5.9.0
       widest-line: 6.0.0
       wrap-ansi: 9.0.2
       ws: 8.21.3
@@ -24524,7 +24523,7 @@ snapshots:
       '@asamuzakjp/css-color': 5.1.11
       '@asamuzakjp/dom-selector': 7.1.1
       '@bramus/specificity': 2.4.2
-      '@csstools/css-syntax-patches-for-csstree': 1.1.9(css-tree@3.2.1)
+      '@csstools/css-syntax-patches-for-csstree': 1.1.10(css-tree@3.2.1)
       '@exodus/bytes': 1.15.1(@noble/hashes@2.4.0)
       css-tree: 3.2.1
       data-urls: 7.0.0(@noble/hashes@2.4.0)
@@ -26406,7 +26405,7 @@ snapshots:
       prop-types: 15.8.1
       react: 19.2.8
 
-  react-error-boundary@6.1.3(@types/react@19.2.18)(react@19.2.8):
+  react-error-boundary@6.1.4(@types/react@19.2.18)(react@19.2.8):
     dependencies:
       react: 19.2.8
     optionalDependencies:
@@ -26548,14 +26547,14 @@ snapshots:
     dependencies:
       find-up-simple: 1.0.1
       read-pkg: 10.1.0
-      type-fest: 5.8.0
+      type-fest: 5.9.0
 
   read-pkg@10.1.0:
     dependencies:
       '@types/normalize-package-data': 2.4.4
       normalize-package-data: 8.0.0
       parse-json: 8.3.0
-      type-fest: 5.8.0
+      type-fest: 5.9.0
       unicorn-magic: 0.4.0
 
   readable-stream@2.3.8:
@@ -26584,7 +26583,7 @@ snapshots:
 
   recast@0.23.21:
     dependencies:
-      ast-types: 0.16.1
+      ast-types: 0.16.3
       esprima: 4.0.1
       source-map: 0.6.1
       tiny-invariant: 1.3.3
@@ -27726,7 +27725,7 @@ snapshots:
 
   type-fest@4.41.0: {}
 
-  type-fest@5.8.0:
+  type-fest@5.9.0:
     dependencies:
       tagged-tag: 1.0.0
 
