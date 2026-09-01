@@ -66,17 +66,28 @@ function process(matcher: Matcher, accessor: ImmutableAccessor) {
   const {leads, delivery} = matcher.match(accessor)
   leads.forEach((lead) => {
     if (lead.target.isIndexReference()) {
-      lead.target.toIndicies().forEach((i) => {
+      if (result.containerType() !== 'array') {
+        // Don't follow lead, only arrays have indices
+        return
+      }
+
+      lead.target.toIndicies(result).forEach((i) => {
         const item = result.getIndex(i)
         if (!item) {
-          throw new Error('Index out of bounds')
+          // Don't follow lead, no such index
+          return
         }
 
         result = result.setIndexAccessor(i, process(lead.matcher, item))
       })
     } else if (lead.target.isAttributeReference()) {
-      // `set`/`setIfMissing` on a primitive value overwrites it
-      if (isSetPatch && result.containerType() === 'primitive') {
+      if (result.containerType() === 'primitive') {
+        if (!isSetPatch) {
+          // Don't follow lead, a primitive value has no attributes
+          return
+        }
+
+        // `set`/`setIfMissing` on a primitive value overwrites it
         result = result.set({})
       }
 

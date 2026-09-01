@@ -54,7 +54,7 @@ export interface ManualRegressionInput {
 }
 
 /**
- * A regression reported by hand from the Studio Releases tool — no bisect was
+ * A regression reported by hand from the Studio releases tool — no bisect was
  * run, only the introducing release is known. Stored as a bisectSession that
  * is converged from birth: releases-only endpoints at the blamed release and
  * its base, no marks, and the verdict written at creation. That keeps one

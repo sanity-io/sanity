@@ -4,7 +4,6 @@ import {
   type TransactionLogEventWithEffects,
 } from '@sanity/types'
 
-import {getVersionFromId} from '../../util/draftUtils'
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {
   type EditDocumentVersionEvent,
@@ -130,7 +129,6 @@ export function getEditEvents(
           timestamp: transaction.timestamp,
           author: transaction.author,
           contributors: [transaction.author],
-          releaseId: getVersionFromId(documentId),
           revisionId: transaction.id,
           transactions: [getEditTransaction(transaction)],
           documentVariantType: getDocumentVariantType(documentId),

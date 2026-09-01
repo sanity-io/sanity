@@ -9,6 +9,7 @@ import {ToolbarApplicableSchemaStory} from './ToolbarApplicableSchemaStory'
 const meta = {
   title: 'Portable Text/Toolbar Applicable Schema',
   component: ToolbarApplicableSchemaStory,
+  tags: ['!dev', '!autodocs', 'vrt-only'],
   parameters: {chromatic: {delay: 300}},
 } satisfies Meta<typeof ToolbarApplicableSchemaStory>
 

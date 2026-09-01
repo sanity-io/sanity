@@ -9,6 +9,7 @@ import ImageArrayDragStory from './ImageArrayDragStory'
 const meta = {
   title: 'Portable Text/Image Array Drag',
   component: ImageArrayDragStory,
+  tags: ['!dev', '!autodocs', 'vrt-only'],
   parameters: {chromatic: {delay: 300}},
 } satisfies Meta<typeof ImageArrayDragStory>
 
