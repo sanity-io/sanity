@@ -25,7 +25,7 @@ catalog:
   '@optique/core': ^1.1.1
   '@optique/run': ^1.1.1
   '@playwright/test': 1.62.1
-  '@sanity/client': ^8.3.0
+  '@sanity/client': ^8.4.0
   '@sanity/migrate': ^8.0.2
   '@sanity/telemetry': ^1.1.0
   '@sanity/tsdown-config': ^0.27.1
@@ -37,10 +37,10 @@ catalog:
   '@sanity/vanilla-extract-vite-plugin': ^0.2.17
   '@vanilla-extract/css': ^1.21.2
   '@vanilla-extract/dynamic': ^2.1.5
-  '@vitejs/plugin-react': ^6.1.0
+  '@vitejs/plugin-react': ^6.1.1
   '@vitest/browser-playwright': ^4.1.11
   jsdom: ^29.1.1
-  oxc-transform-react: ^0.147.0
+  oxc-transform-react: ^0.148.0
   playwright: 1.62.1
   react: ^19.2.8
   react-dom: ^19.2.8
@@ -81,6 +81,9 @@ minimumReleaseAgeExclude:
   - '@vanilla-extract/*'
   - '@vercel/stega'
   - '@yuku-toolchain/*'
+  - '@codemirror/search'
+  - '@codemirror/state'
+  - '@codemirror/view'
   - 'csstype'
   - 'eslint-plugin-boundaries'
   - 'get-it'
@@ -109,6 +112,7 @@ minimumReleaseAgeExclude:
   - 'react-i18next@17.0.13'
   - 'react-is'
   - 'react-rx'
+  - 'i18next@26.4.1'
   # tsdown and its rolldown/rolldown-plugin-dts/yuku toolchain release frequently and in
   # lockstep, so new releases are often younger than minimumReleaseAge
   - 'rolldown'
