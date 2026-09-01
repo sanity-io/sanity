@@ -11,6 +11,12 @@
       "sourceType": "github",
       "computedHash": "7973e746e8e2ea5004d520da970c15a106824b8d6be1bcff48908aec021f3677"
     },
+    "deslop": {
+      "source": "cursor/plugins",
+      "sourceType": "github",
+      "skillPath": "cursor-team-kit/skills/deslop/SKILL.md",
+      "computedHash": "8883a7d459c07a0b2ee06972e79baa634009aa3bab969a6650acbefac394ad41"
+    },
     "grill-me": {
       "source": "mattpocock/skills",
       "sourceType": "github",
@@ -40,6 +46,30 @@
       "source": "bjoerge/rxjs-skills",
       "sourceType": "github",
       "computedHash": "139717d9d0f9f128d83ea8b4bf1f26c6ff1f2b13df8b7c55e8877635127e1266"
+    },
+    "stories": {
+      "source": "storybookjs/mcp",
+      "sourceType": "github",
+      "skillPath": "packages/claude-plugin/skills/stories/SKILL.md",
+      "computedHash": "0b56c8ef1f2d6df827c70ff2bbccc8b63ac35010f8c1685b5130d75c7f5747fc"
+    },
+    "storybook-init": {
+      "source": "storybookjs/mcp",
+      "sourceType": "github",
+      "skillPath": "packages/claude-plugin/skills/storybook-init/SKILL.md",
+      "computedHash": "0496ed0e8a3dac63832b592b27b2e9d239cf682d6e42c6fb1ac78762974fb897"
+    },
+    "storybook-setup": {
+      "source": "storybookjs/mcp",
+      "sourceType": "github",
+      "skillPath": "packages/claude-plugin/skills/storybook-setup/SKILL.md",
+      "computedHash": "385b4025a7d06e93bac71fe250df689385584d165a1baf2c146595db9c191742"
+    },
+    "storybook-upgrade": {
+      "source": "storybookjs/mcp",
+      "sourceType": "github",
+      "skillPath": "packages/claude-plugin/skills/storybook-upgrade/SKILL.md",
+      "computedHash": "4561acb46bf2e3537393e925c58122d8cc940a45a51906173212e2cf40f1c882"
     },
     "tdd": {
       "source": "mattpocock/skills",

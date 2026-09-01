@@ -250,6 +250,7 @@ export {
   isSanityDefinedAction,
   type SanityDefinedAction,
 } from '../core/config/document/actions'
+export {getDocumentVersionType} from '../core/config/document/useConfiguredDocumentActionIds'
 export {
   type DocumentBadgeComponent,
   type DocumentBadgeDescription,
@@ -1100,11 +1101,13 @@ export {sortReleases} from '../core/releases/hooks/utils'
 export {RELEASES_INTENT} from '../core/releases/plugin'
 export {isReleaseDocument, type VersionInfoDocumentStub} from '../core/releases/store/types'
 export {useActiveReleases} from '../core/releases/store/useActiveReleases'
+export {useAllReleases} from '../core/releases/store/useAllReleases'
 export {useArchivedReleases} from '../core/releases/store/useArchivedReleases'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {useDocumentVersionInfo} from '../core/releases/store/useDocumentVersionInfo'
 export {useReleasesIds} from '../core/releases/store/useReleasesIds'
 export {LATEST, PUBLISHED} from '../core/releases/util/const'
+export {getReleaseDocumentIdFromReleaseId} from '../core/releases/util/getReleaseDocumentIdFromReleaseId'
 export {getReleaseIdFromReleaseDocumentId} from '../core/releases/util/getReleaseIdFromReleaseDocumentId'
 export {getReleaseTone} from '../core/releases/util/getReleaseTone'
 export {isGoingToUnpublish} from '../core/releases/util/isGoingToUnpublish'
@@ -1140,6 +1143,18 @@ export {
   type SearchTerms,
 } from '../core/search/common/types'
 export {createSearch} from '../core/search/search'
+export {
+  defineSearchMachine,
+  type SearchMachineContext,
+  type SearchMachineEmitted,
+  type SearchMachineEvent,
+  type SearchMachineInput,
+} from '../core/search/searchMachine'
+export {
+  type SearchMachineState,
+  useSearchMachine,
+  type UseSearchMachineOptions,
+} from '../core/search/useSearchMachine'
 export {
   SingleDocReleaseProvider,
   useSingleDocRelease,
@@ -1452,6 +1467,10 @@ export {
   useColorSchemeSetValue,
   useColorSchemeValue,
 } from '../core/studio/colorScheme'
+export {
+  DiagnosticsReport,
+  type DiagnosticsReportProps,
+} from '../core/studio/components/navbar/resources/DiagnosticsReport'
 export {Filters} from '../core/studio/components/navbar/search/components/filters/Filters'
 export {SearchHeader} from '../core/studio/components/navbar/search/components/SearchHeader'
 export {
@@ -1505,6 +1524,8 @@ export {
   type PasteOptions,
   type SanityClipboardItem,
 } from '../core/studio/copyPaste/types'
+export {type StudioDiagnostics} from '../core/studio/diagnostics/gatherStudioDiagnostics'
+export {parseStudioDiagnostics} from '../core/studio/diagnostics/parseStudioDiagnostics'
 export {StudioFeedbackProvider} from '../core/studio/feedback/StudioFeedbackProvider'
 export {
   generateStudioManifest,
@@ -1736,9 +1757,9 @@ export {
   readVersionType,
   type VersionType,
 } from '../core/util/versionsUtils'
-export {Rule as ConcreteRuleClass} from '../core/validation/Rule'
-export {type ValidationContext} from '../core/validation/types'
-export {validateDocument, type ValidateDocumentOptions} from '../core/validation/validateDocument'
+export {Rule as ConcreteRuleClass} from '@sanity/validation/_internal'
+export {type ValidateDocumentOptions, validateDocument} from '../core/validation'
+export {type ValidationContext} from '@sanity/validation/_internal'
 export {isDocumentInSelectedVariant} from '../core/variants/documents/isDocumentInSelectedVariant'
 export {useCreatableVariantInitialValue} from '../core/variants/hooks/useCreatableVariantInitialValue'
 export {useVariantDocumentOperations} from '../core/variants/hooks/useVariantDocumentOperations'

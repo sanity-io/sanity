@@ -1,8 +1,7 @@
 import {SearchIcon} from '@sanity/icons/Search'
-import {Flex} from '@sanity/ui'
 import {type ChangeEvent, type RefAttributes} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
 import {useSearchState} from '../../../contexts/search/useSearchState'
@@ -39,7 +38,7 @@ export function FilterPopoverContentHeader({
 
   return (
     <SearchHeaderBox>
-      <SearchHeaderContentFlex align="center" flex={1} padding={1}>
+      <SearchHeaderContentFlex alignItems="center" flexBasis="0%" flexGrow={1} padding={1}>
         <CustomTextInput
           __unstable_disableFocusRing
           $smallClearButton

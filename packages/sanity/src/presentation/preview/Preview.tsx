@@ -100,6 +100,7 @@ export const Preview = memo(function PreviewComponent(
     previewUrlRef,
     handlesPerspectiveChange,
     handlesVariantChange,
+    targetOrigin,
   } = props
 
   const [stablePerspective, setStablePerspective] = useState<typeof perspective | null>(null)
@@ -277,6 +278,15 @@ export const Preview = memo(function PreviewComponent(
   const [checkOrigin, setCheckOrigin] = useState<false | string>(false)
   const [reportedMismatches] = useState(new Set<string>())
   const reportMismatchingOrigin = useEffectEvent((reportedOrigin: string) => {
+    if (reportedOrigin === targetOrigin) {
+      // The reported origin is the one the visual editing channel already
+      // targets, so there is no misconfiguration to recover from — the
+      // pending handshake can complete on its own. Connecting the recovery
+      // channel here would open a second `presentation` channel to the same
+      // node, and the two channels would fight over the node's single
+      // connection (#14344).
+      return
+    }
     if (allowOrigins.some((allow) => allow.test(reportedOrigin))) {
       setCheckOrigin(reportedOrigin)
       return
