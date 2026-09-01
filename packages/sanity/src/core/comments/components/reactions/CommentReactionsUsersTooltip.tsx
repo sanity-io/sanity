@@ -24,10 +24,7 @@ const TextGroup = styled.div`
 
 const InlineText = styled(Text).attrs({size: TEXT_SIZE})`
   display: inline-block !important;
-
-  & > span {
-    white-space: break-spaces;
-  }
+  white-space: break-spaces;
 `
 
 const TextBox = styled(Box)`
