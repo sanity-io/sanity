@@ -249,9 +249,11 @@ export function validateDocumentWithWorkspace({
   maxCustomValidationConcurrency,
   maxFetchConcurrency,
   currentUser,
+  customValidation,
 }: ValidateDocumentWorkspaceOptions): Promise<DocumentValidationMarker[]> {
   return validateDocumentInternal({
     currentUser,
+    customValidation,
     document,
     environment,
     getClient,
