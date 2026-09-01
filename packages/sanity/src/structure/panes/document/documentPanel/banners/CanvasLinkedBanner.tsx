@@ -6,6 +6,7 @@ import {useCallback, useMemo, useRef, useState} from 'react'
 import {
   getDocumentVariantType,
   useCanvasCompanionDoc,
+  useConfiguredDocumentActionIds,
   useNavigateToCanvasDoc,
   useTranslation,
 } from 'sanity'
@@ -136,11 +137,20 @@ const CanvasLinkedBannerContent = ({documentId}: {documentId: string}) => {
 }
 
 export function CanvasLinkedBanner() {
-  const {documentId, displayed} = useDocumentPane()
+  const {documentId, documentType, displayed} = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
   const id = displayed?._id || documentId
   const {companionDoc} = useCanvasCompanionDoc(id)
   const navigateToCanvas = useNavigateToCanvasDoc(companionDoc?.canvasDocumentId, 'banner')
+  // `canvasIntegration` only contributes `editInCanvas` for draft and version contexts, so asking
+  // with the pane's own context would hide the button on published, revision and scheduled-draft
+  // panes, where this banner is the only route to Canvas.
+  const configuredActionIds = useConfiguredDocumentActionIds(
+    companionDoc
+      ? {schemaType: documentType, documentId, versionType: 'draft', releaseId: undefined}
+      : null,
+  )
+  const showEditInCanvas = configuredActionIds.has('editInCanvas')
 
   if (!companionDoc) return null
 
@@ -150,11 +160,15 @@ export function CanvasLinkedBanner() {
       data-test-id="canvas-linked-banner"
       paddingY={0}
       content={<CanvasLinkedBannerContent documentId={id} />}
-      action={{
-        mode: 'ghost',
-        text: t('canvas.banner.edit-in-canvas-action'),
-        onClick: navigateToCanvas,
-      }}
+      action={
+        showEditInCanvas
+          ? {
+              mode: 'ghost',
+              text: t('canvas.banner.edit-in-canvas-action'),
+              onClick: navigateToCanvas,
+            }
+          : undefined
+      }
     />
   )
 }

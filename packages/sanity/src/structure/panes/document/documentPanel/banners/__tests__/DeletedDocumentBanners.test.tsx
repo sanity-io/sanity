@@ -1,5 +1,7 @@
 import {render, screen, waitFor} from '@testing-library/react'
 import {
+  type DocumentActionComponent,
+  type DocumentActionsResolver,
   LATEST,
   type ReleaseDocument,
   useActiveReleases,
@@ -33,10 +35,32 @@ const mockUseReleasesIds = useReleasesIds as Mock<typeof useReleasesIds>
 const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
 const mockUsePerspective = usePerspective as Mock<typeof usePerspective>
 
-const renderTest = async () => {
-  const wrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
+const restoreAction: DocumentActionComponent = Object.assign(() => null, {
+  action: 'restore' as const,
+})
+
+const renderTest = async (documentActions?: DocumentActionsResolver) => {
+  const wrapper = await createTestProvider({
+    resources: [structureUsEnglishLocaleBundle],
+    config: documentActions ? {document: {actions: documentActions}} : undefined,
+  })
 
   return render(<DeletedDocumentBanners />, {wrapper})
+}
+
+const mockDraftPerspective = () => {
+  mockUsePerspective.mockReturnValue({
+    selectedPerspective: LATEST,
+  } as unknown as ReturnType<typeof usePerspective>)
+  mockUseActiveReleases.mockReturnValue({
+    data: [],
+    byId: new Map(),
+    dispatch: vi.fn(),
+    loading: false,
+  })
+  mockUseReleasesIds.mockReturnValue({
+    releasesIds: [],
+  })
 }
 
 describe('DeletedDocumentBanners', () => {
@@ -56,7 +80,9 @@ describe('DeletedDocumentBanners', () => {
     mockUseDocumentPane.mockReturnValue({
       isDeleted: false,
       isDeleting: false,
+      ready: true,
       documentId: 'test',
+      documentType: 'author',
     } as ReturnType<typeof useDocumentPane>)
 
     await renderTest()
@@ -84,6 +110,7 @@ describe('DeletedDocumentBanners', () => {
     })
     mockUseDocumentPane.mockReturnValue({
       documentId: 'foo',
+      documentType: 'author',
       isDeleted: true,
       isDeleting: false,
       ready: true,
@@ -91,46 +118,138 @@ describe('DeletedDocumentBanners', () => {
 
     await renderTest()
 
-    const fallbackBanner = screen.queryByTestId('deleted-document-banner')
-    const bundleBanner = screen.queryByTestId('deleted-release-banner')
-    expect(fallbackBanner).toBeNull()
-    expect(bundleBanner).toBeInTheDocument()
+    expect(screen.queryByTestId('deleted-document-banner')).toBeNull()
+    expect(screen.getByTestId('deleted-release-banner')).toBeInTheDocument()
   })
 
   it('shows the fallback document deleted banner when document was not in a release', async () => {
-    const mockBundleDocument: ReleaseDocument = {_id: 'test', state: 'archived'} as ReleaseDocument
-
-    mockUsePerspective.mockReturnValue({
-      selectedPerspective: LATEST,
-    } as unknown as ReturnType<typeof usePerspective>)
-
-    mockUseActiveReleases.mockReturnValue({
-      data: [mockBundleDocument],
-      byId: new Map([[mockBundleDocument._id, mockBundleDocument]]),
-      dispatch: vi.fn(),
-      loading: false,
-    })
-
-    mockUseReleasesIds.mockReturnValue({
-      releasesIds: [mockBundleDocument._id],
-    })
-
+    mockDraftPerspective()
     mockUseDocumentPane.mockReturnValue({
       isDeleted: true,
       isDeleting: false,
+      ready: true,
       documentId: 'test-document',
+      documentType: 'author',
     } as ReturnType<typeof useDocumentPane>)
 
     await renderTest()
 
-    const fallbackBanner = screen.queryByTestId('deleted-document-banner')
-    const bundleBanner = screen.queryByTestId('deleted-release-banner')
-
-    expect(bundleBanner).toBeNull()
     await waitFor(() => {
-      if (fallbackBanner) {
-        expect(fallbackBanner).toBeInTheDocument()
-      }
+      expect(screen.getByTestId('deleted-document-banner')).toBeInTheDocument()
     })
+    expect(screen.queryByTestId('deleted-release-banner')).toBeNull()
+    expect(screen.getByText('This document has been deleted.')).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', {name: 'Restore most recent revision'}),
+    ).not.toBeInTheDocument()
+  })
+
+  it('shows restore when a restore stub is injected', async () => {
+    mockDraftPerspective()
+    mockUseDocumentPane.mockReturnValue({
+      isDeleted: true,
+      isDeleting: false,
+      ready: true,
+      documentId: 'test-document',
+      documentType: 'author',
+    } as ReturnType<typeof useDocumentPane>)
+
+    await renderTest((prev) => [...prev, restoreAction])
+
+    expect(screen.getByRole('button', {name: 'Restore most recent revision'})).toBeInTheDocument()
+  })
+
+  it('hides restore on a live-edit type when restore is only configured for draft', async () => {
+    mockDraftPerspective()
+    mockUseDocumentPane.mockReturnValue({
+      isDeleted: true,
+      isDeleting: false,
+      ready: true,
+      documentId: 'test-document',
+      documentType: 'author',
+      schemaType: {name: 'author', liveEdit: true},
+    } as ReturnType<typeof useDocumentPane>)
+
+    await renderTest((prev, ctx) => (ctx.versionType === 'draft' ? [...prev, restoreAction] : prev))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('deleted-document-banner')).toBeInTheDocument()
+    })
+    expect(
+      screen.queryByRole('button', {name: 'Restore most recent revision'}),
+    ).not.toBeInTheDocument()
+  })
+
+  it('hides restore on a non-live-edit type when restore is only configured for published', async () => {
+    mockDraftPerspective()
+    mockUseDocumentPane.mockReturnValue({
+      isDeleted: true,
+      isDeleting: false,
+      ready: true,
+      documentId: 'test-document',
+      documentType: 'author',
+      schemaType: {name: 'author', liveEdit: false},
+    } as ReturnType<typeof useDocumentPane>)
+
+    await renderTest((prev, ctx) =>
+      ctx.versionType === 'published' ? [...prev, restoreAction] : prev,
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('deleted-document-banner')).toBeInTheDocument()
+    })
+    expect(
+      screen.queryByRole('button', {name: 'Restore most recent revision'}),
+    ).not.toBeInTheDocument()
+  })
+
+  it('shows restore for a live-edit schema type when restore is configured', async () => {
+    mockDraftPerspective()
+    mockUseDocumentPane.mockReturnValue({
+      isDeleted: true,
+      isDeleting: false,
+      ready: true,
+      documentId: 'test-document',
+      documentType: 'author',
+      schemaType: {name: 'author', liveEdit: true},
+    } as ReturnType<typeof useDocumentPane>)
+
+    await renderTest((prev) => [...prev, restoreAction])
+
+    expect(screen.getByRole('button', {name: 'Restore most recent revision'})).toBeInTheDocument()
+  })
+
+  it('leaves the archived release banner ungated when document.actions is empty', async () => {
+    const mockReleaseDocument = {
+      _id: '_.releases.rtest',
+      _type: 'system.release',
+      state: 'archived',
+    } as ReleaseDocument
+    mockUsePerspective.mockReturnValue({selectedPerspective: mockReleaseDocument} as ReturnType<
+      typeof usePerspective
+    >)
+    mockUseActiveReleases.mockReturnValue({
+      data: [mockReleaseDocument],
+      byId: new Map([[mockReleaseDocument._id, mockReleaseDocument]]),
+      dispatch: vi.fn(),
+      loading: false,
+    })
+    mockUseReleasesIds.mockReturnValue({
+      releasesIds: [mockReleaseDocument._id],
+    })
+    mockUseDocumentPane.mockReturnValue({
+      documentId: 'foo',
+      documentType: 'author',
+      isDeleted: true,
+      isDeleting: false,
+      ready: true,
+    } as ReturnType<typeof useDocumentPane>)
+
+    await renderTest(() => [])
+
+    expect(screen.getByTestId('deleted-release-banner')).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', {name: 'Restore most recent revision'}),
+    ).not.toBeInTheDocument()
   })
 })
