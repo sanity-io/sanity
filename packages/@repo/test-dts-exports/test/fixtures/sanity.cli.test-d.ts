@@ -8,6 +8,7 @@ import type {
   createCliConfig,
   DefineAppInput,
   defineApplication,
+  defineAssetSourceView,
   defineCliConfig,
   DefineMediaLibraryInput,
   definePanelView,
@@ -37,6 +38,9 @@ describe('sanity/cli', () => {
   })
   test('defineApplication', () => {
     expectTypeOf<typeof defineApplication>().toBeFunction()
+  })
+  test('defineAssetSourceView', () => {
+    expectTypeOf<typeof defineAssetSourceView>().toBeFunction()
   })
   test('defineCliConfig', () => {
     expectTypeOf<typeof defineCliConfig>().toBeFunction()
