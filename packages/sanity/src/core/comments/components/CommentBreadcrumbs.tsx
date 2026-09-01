@@ -1,6 +1,6 @@
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {Fragment, useMemo} from 'react'
-import {Text, Box, Flex} from 'ui5'
+import {Text, Box, Flex, Icon} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 
@@ -11,11 +11,7 @@ export interface CommentBreadcrumbsProps {
 
 type Item = string | string[]
 
-const separator = (
-  <Text muted as="div" trim={true}>
-    <ChevronRightIcon />
-  </Text>
-)
+const separator = <Icon muted icon={ChevronRightIcon} style={{margin: '-0.4375rem'}} />
 
 const renderItem = (item: string, index: number) => {
   return (

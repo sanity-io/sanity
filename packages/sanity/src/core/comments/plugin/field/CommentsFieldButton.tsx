@@ -8,7 +8,7 @@ import {
 } from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
-import {Text, Flex} from 'ui5'
+import {Text, Flex, Icon} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Popover} from '../../../../ui-components/popover/Popover'
@@ -200,9 +200,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
         gap={2}
       >
         <Flex alignItems="center" gap={2}>
-          <Text size={1} as="div" trim={true}>
-            <CommentIcon />
-          </Text>
+          <Icon muted size={1} icon={CommentIcon} style={{margin: '-0.375rem'}} />
           <Text size={0} as="div" trim={true}>
             {count > 9 ? '9+' : count}
           </Text>
