@@ -3,11 +3,11 @@ import {CopyIcon} from '@sanity/icons/Copy'
 import {DocumentsIcon} from '@sanity/icons/Documents'
 import {UnknownIcon} from '@sanity/icons/Unknown'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback} from 'react'
 import {SanityDefaultPreview, Translate, useSchema, useTranslation} from 'sanity'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../i18n'
@@ -135,7 +135,7 @@ export function ConfirmDeleteDialogBody({
   })
 
   return (
-    <Flex direction="column" gap={4}>
+    <Flex flexDirection="column" gap={4}>
       {confirmationMessage()}
       <div>
         <Card borderTop padding={1} />
@@ -171,7 +171,7 @@ export function ConfirmDeleteDialogBody({
         </Text>
       </Box>
       <Card radius={2} shadow={1} flex="auto" padding={1}>
-        <Flex direction="column">
+        <Flex flexDirection="column">
           {internalReferences.totalCount > 0 && (
             <Stack as="ul" gap={2} data-testid="internal-references">
               {internalReferences?.references.map((item) => (
@@ -207,7 +207,7 @@ export function ConfirmDeleteDialogBody({
                   shadow={1}
                   paddingY={1}
                 >
-                  <Flex align="center" gap={3} paddingX={3} paddingY={1}>
+                  <Flex alignItems="center" gap={3} paddingX={3} paddingY={1}>
                     <Text size={1}>
                       <DocumentsIcon />
                     </Text>
@@ -268,7 +268,7 @@ export function ConfirmDeleteDialogBody({
                             <Text size={1}>{datasetName || 'unavailable'}</Text>
                           </td>
                           <td>
-                            <DocumentIdFlex align="center" gap={2} justify="flex-end">
+                            <DocumentIdFlex alignItems="center" gap={2} justifyContent="flex-end">
                               <Text textOverflow="ellipsis" size={1}>
                                 {referenceId || 'unavailable'}
                               </Text>
