@@ -178,3 +178,4 @@ Migration steps:
 - Config types & validation: `packages/sanity/src/core/config/types.ts`, `packages/sanity/src/core/config/prepareConfig.tsx`
 - Structure helpers: `packages/sanity/src/structure/structureBuilder/{Document,ListItem,List}.ts`
 - Working example: `dev/test-studio/schema/singletons.ts`, `dev/test-studio/structure/resolveSingletons.ts` (registry shared with `dev/studio-e2e-testing`, which reuses the structure), `dev/test-studio/structure/resolveStructure.ts`
+- Worked migration of userland singletons over _shared_ schema types (escape-hatch templates in `dev/test-studio/initialValueTemplates/index.ts`, explicit `S.documentTypeListItem()` opt-back-ins): the `circular`, `grrm`, and `jrr-tolkien` definitions in `dev/test-studio/structure/resolveSingletons.ts`

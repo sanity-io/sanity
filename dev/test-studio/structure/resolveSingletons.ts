@@ -15,4 +15,23 @@ export const singletons: UnresolvedSingletonDefinition[] = [
     schemaType: 'singletonCampaign',
     title: 'Summer campaign',
   }),
+  defineSingleton({
+    id: 'validation',
+    documentId: 'validation',
+    schemaType: 'allTypes',
+  }),
+  defineSingleton({
+    documentId: 'circular',
+    schemaType: 'referenceTest',
+  }),
+  defineSingleton({
+    documentId: 'grrm',
+    schemaType: 'author',
+    title: 'GRRM',
+  }),
+  defineSingleton({
+    documentId: 'jrr-tolkien',
+    schemaType: 'author',
+    title: 'JRR Tolkien',
+  }),
 ]
