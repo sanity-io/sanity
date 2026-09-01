@@ -1314,13 +1314,20 @@ export interface VariantConditionMap {
 }
 
 /**
+ * Context passed to a `beta.variants.conditions` resolver.
+ *
+ * @internal
+ */
+export type VariantConditionsContext = Pick<ConfigContext, 'projectId' | 'dataset' | 'getClient'>
+
+/**
  * Static or resolved list of known variant conditions.
  *
  * @internal
  */
 export type VariantConditions =
   | VariantConditionMap[]
-  | ((context: ConfigContext) => VariantConditionMap[] | Promise<VariantConditionMap[]>)
+  | ((context: VariantConditionsContext) => VariantConditionMap[] | Promise<VariantConditionMap[]>)
 
 /**
  * @internal
@@ -1392,8 +1399,8 @@ export interface BetaFeatures {
      * Optional list of known variant condition keys and values.
      * When set, the create/edit form shows a card picker instead of free-text fields.
      * Accepts a static array or a function that may return a promise (for example to
-     * load conditions from a CDP). The function is called when the form opens, not at
-     * studio boot.
+     * load conditions from a CDP). The function receives project id, dataset, and
+     * `getClient`, and is called when the form opens, not at studio boot.
      */
     conditions?: VariantConditions
   }

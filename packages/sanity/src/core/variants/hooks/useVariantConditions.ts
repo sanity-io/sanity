@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
 
-import {type ConfigContext} from '../../config/types'
+import {type VariantConditionsContext} from '../../config/types'
 import {useWorkspace} from '../../studio/workspace'
 import {
   type NormalizedVariantConditionMap,
@@ -32,23 +32,13 @@ function toError(error: unknown): Error {
 export function useVariantConditions(): UseVariantConditionsResult {
   const workspace = useWorkspace()
   const conditions = workspace.beta?.variants?.conditions
-  const context = useMemo((): ConfigContext => {
+  const context = useMemo((): VariantConditionsContext => {
     return {
       projectId: workspace.projectId,
       dataset: workspace.dataset,
-      schema: workspace.schema,
-      currentUser: workspace.currentUser,
       getClient: workspace.getClient,
-      i18n: workspace.i18n,
     }
-  }, [
-    workspace.currentUser,
-    workspace.dataset,
-    workspace.getClient,
-    workspace.i18n,
-    workspace.projectId,
-    workspace.schema,
-  ])
+  }, [workspace.dataset, workspace.getClient, workspace.projectId])
   const [generation, setGeneration] = useState(0)
   const [asyncState, setAsyncState] = useState<AsyncLoadState | null>(null)
   const retry = useCallback(() => {
