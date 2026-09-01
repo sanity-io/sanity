@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import isEqual from 'lodash-es/isEqual.js'
+import {dequal as isEqual} from 'dequal/lite'
 import {concat, from, type Observable, of, type OperatorFunction, retry, Subject, timer} from 'rxjs'
 import {
   bufferWhen,

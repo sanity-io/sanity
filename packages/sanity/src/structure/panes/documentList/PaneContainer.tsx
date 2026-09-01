@@ -1,6 +1,6 @@
 import {Card} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
-import isEqual from 'lodash-es/isEqual.js'
+import {dequal as isEqual} from 'dequal/lite'
 import {memo, useCallback, useMemo, useState} from 'react'
 import {
   EMPTY_ARRAY,
