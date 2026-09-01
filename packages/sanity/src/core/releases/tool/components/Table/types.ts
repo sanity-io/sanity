@@ -2,10 +2,7 @@ import {type CSSProperties, type ReactNode} from 'react'
 
 export const TABLE_ROW_ACTIONS_WIDTH = 50
 
-/**
- * Render callback for the trailing row-actions gutter, invoked per row by the
- * row-actions cell.
- */
+/** Invoked as a plain render callback per row by the row-actions cell, never mounted. */
 export type TableRowActions = (props: {datum: unknown}) => ReactNode
 
 /**

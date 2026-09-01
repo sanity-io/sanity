@@ -12,9 +12,9 @@ type EditReferenceLinkProps = ComponentProps<
 
 /**
  * Renders the `EditReferenceLinkComponent` provided through the reference input options context,
- * or nothing when none is configured. Defined at module scope so the component identity is stable
- * across renders (rendering a component type defined during render would remount the link on every
- * render). Render-scoped data (`parentRefPath`, `template`) is passed as props by the render site.
+ * or nothing when none is configured. Render-scoped data (`parentRefPath`, `template`) must be
+ * passed as props by the render site; closing over it here would recreate the component type and
+ * remount the link.
  */
 export function EditReferenceLink(props: EditReferenceLinkProps) {
   const {EditReferenceLinkComponent} = useReferenceInputOptions()
