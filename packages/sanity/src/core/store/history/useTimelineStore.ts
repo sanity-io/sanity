@@ -1,6 +1,6 @@
 /* oxlint-disable no-deprecated -- this module implements the deprecated legacy document timeline */
 import {type ObjectDiff} from '@sanity/diff'
-import {dequal as deepEquals} from 'dequal/lite'
+import {dequal as deepEquals} from 'dequal'
 import {useEffect, useMemo, useRef} from 'react'
 import {
   BehaviorSubject,
