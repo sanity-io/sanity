@@ -6,17 +6,7 @@ import {TrashIcon} from '@sanity/icons/Trash'
 import {isReference, type PortableTextBlock} from '@sanity/types'
 import {Flex, useGlobalKeyDown} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
-import {
-  type ComponentPropsWithoutRef,
-  type MouseEvent,
-  type PropsWithChildren,
-  type RefAttributes,
-  useCallback,
-  useEffect,
-  useId,
-  useMemo,
-  useRef,
-} from 'react'
+import {type MouseEvent, type PropsWithChildren, useCallback, useEffect, useId, useRef} from 'react'
 import {IntentLink} from 'sanity/router'
 import {Box} from 'ui5'
 
@@ -47,19 +37,6 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
   const menuButtonId = useId()
   const menuButton = useRef<HTMLButtonElement | null>(null)
   const isTabbing = useRef<boolean>(false)
-
-  const referenceLink = useMemo(
-    () =>
-      isReference(value)
-        ? function ReferenceLink(
-            linkProps: ComponentPropsWithoutRef<'a'> & RefAttributes<HTMLAnchorElement>,
-          ) {
-            const {ref, ...rest} = linkProps
-            return <IntentLink {...rest} intent="edit" params={{id: value._ref}} ref={ref} />
-          }
-        : undefined,
-    [value],
-  )
 
   useEffect(() => {
     if (isOpen) {
@@ -118,11 +95,13 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
           menu={
             <Menu>
               <>
-                {'_ref' in value && !!value._ref && (
+                {isReference(value) && !!value._ref && (
                   <MenuItem
-                    as={referenceLink}
+                    as={IntentLink}
                     data-as="a"
                     icon={LinkIcon}
+                    intent="edit"
+                    params={{id: value._ref}}
                     text={t('inputs.portable-text.block.open-reference')}
                   />
                 )}

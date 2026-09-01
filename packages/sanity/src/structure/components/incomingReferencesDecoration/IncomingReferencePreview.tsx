@@ -1,5 +1,4 @@
 import {type Path, type SanityDocument, type SchemaType} from '@sanity/types'
-import {type ReactNode, useCallback} from 'react'
 import {
   getPublishedId,
   pathToString,
@@ -29,24 +28,18 @@ export function IncomingReferencePreview(props: IncomingReferencePreviewProps) {
   const documentPreviewStore = useDocumentPreviewStore()
   const {ChildLink} = usePaneRouter()
 
-  const Link = useCallback(
-    function LinkComponent(linkProps: {children: ReactNode}) {
-      return (
-        <ChildLink
-          childId={publishedId}
-          childParameters={{
-            type: type.name,
-            ...(Array.isArray(path) && path.length > 0 ? {path: pathToString(path)} : {}),
-          }}
-          {...linkProps}
-        />
-      )
-    },
-    [ChildLink, publishedId, type.name, path],
-  )
-
   return (
-    <PreviewCard __unstable_focusRing as={Link} data-as="a" radius={2}>
+    <PreviewCard
+      __unstable_focusRing
+      as={ChildLink}
+      childId={publishedId}
+      childParameters={{
+        type: type.name,
+        ...(Array.isArray(path) && path.length > 0 ? {path: pathToString(path)} : {}),
+      }}
+      data-as="a"
+      radius={2}
+    >
       <PaneItemPreview
         documentPreviewStore={documentPreviewStore}
         icon={type.icon || false}
