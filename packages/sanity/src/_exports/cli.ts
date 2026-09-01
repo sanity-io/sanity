@@ -4,6 +4,7 @@ export {
   createCliConfig,
   type DefineAppInput,
   defineApplication,
+  defineAssetSourceView,
   defineCliConfig,
   type DefineMediaLibraryInput,
   definePanelView,

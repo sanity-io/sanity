@@ -24,18 +24,17 @@ import {
  * Main cases covered:
  * - Events with unseen ids are appended in encounter order.
  * - If an existing *edit* event shares its id with an incoming *non-edit* event, the non-edit event
- *   replaces it — a publish event and the last edit before that publish share the same id.
- * - If two events share an id but have *different* types, both are kept: the second one is stored
- *   under a synthetic `${id}-${type}` map key (can happen when a document is created and published
- *   with the same revision id, e.g. in e2e tests).
+ *   replaces it — a publish or delete event and the last edit before that event share the same id
+ *   (delete events reuse the last edit's `versionRevisionId`).
+ * - If two *non-edit* events share an id but have *different* types, both are kept: the second one
+ *   is stored under a synthetic `${id}-${type}` map key (can happen when a document is created and
+ *   published with the same revision id, e.g. in e2e tests).
  *
  * Known quirks (current behavior, relied upon by tests):
  * - Events with an empty-string id (see {@link addEventId}) all collide on the same map key, so
  *   only the first one survives unless their types differ.
  * - The synthetic `${id}-${type}` key only disambiguates one extra event per id; a third event
  *   with the same id and same type as the second overwrites it.
- * - The edit-replacement and different-type branches both run: an edit + non-edit pair sharing an
- *   id stores the non-edit event under *both* keys, so it appears twice in the output.
  */
 export function removeDupes(
   events: DocumentGroupEvent[],
@@ -45,8 +44,10 @@ export function removeDupes(
     if (acc.has(event.id)) {
       const existingEvent = acc.get(event.id) as DocumentGroupEvent
       if (isEditDocumentVersionEvent(existingEvent) && !isEditDocumentVersionEvent(event)) {
-        // Replaces the edit event with the none edit event, the publish event and the last edit event before the publish have the same id.
+        // Replaces the edit event with the non-edit event; the publish/delete event and the last
+        // edit event before it has the same id.
         acc.set(event.id, event)
+        return acc
       }
 
       if (existingEvent.type !== event.type) {

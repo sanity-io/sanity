@@ -60,6 +60,12 @@
         "src/**/*.{ts,tsx}",
         "!src/**/__test{,s}__", // These files might actually be safe to delete?
       ],
+      // The v2 tree is intentionally unused until the follow-up PR wires the
+      // Comments API implementation behind beta.comments.v2.
+      "ignoreFiles": ["src/core/comments-v2/**"],
+      "ignoreIssues": {
+        "src/core/comments-v2/**": ["exports"],
+      },
       "ignoreBinaries": ["tzutil"],
       "ignoreDependencies": [
         "@vitest/expect",
