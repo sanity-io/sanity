@@ -1979,8 +1979,8 @@ importers:
         specifier: workspace:*
         version: link:../@sanity/validation
       '@sanity/workbench':
-        specifier: 0.1.0-alpha.44
-        version: 0.1.0-alpha.44(@sanity/sdk@3.0.0)(react@19.2.8)(xstate@5.32.6)
+        specifier: 0.1.0-alpha.45
+        version: 0.1.0-alpha.45(@sanity/sdk@3.0.0)(react@19.2.8)(vitest@4.1.11)(xstate@5.32.6)
       '@sentry/react':
         specifier: ^10.72.0
         version: 10.72.0(react@19.2.8)
@@ -7387,11 +7387,11 @@ packages:
       '@sanity/sdk': ^2.9.0
       xstate: ^5.31.0
 
-  '@sanity/workbench@0.1.0-alpha.44':
-    resolution: {integrity: sha512-horWxaGOX+ze/X+MTa9lSfiiING8adFmHtvBG/Wek8tJazQb08uSqdixuT6/Ta88xsmXVuDpIV08DqQnV+uQig==}
+  '@sanity/workbench@0.1.0-alpha.45':
+    resolution: {integrity: sha512-rvRR0moauHmzXIVZzVhLdENDAsQcVvngmx9sOpAaZEx8gYjP5Z4ofj6dpWZ0ZVz2bVOFqJuFTgVtbU7IN0jKEw==}
     engines: {node: '>=20.19.1 <22 || >=22.12'}
     peerDependencies:
-      '@sanity/sdk': ^3.0.0-rc.2
+      '@sanity/sdk': ^3.0.0
       xstate: ^5.31.0
 
   '@sanity/worker-channels@2.0.0':
@@ -14487,6 +14487,10 @@ packages:
     resolution: {integrity: sha512-zj/ob3UsvJGN0whEAKFp53REA5X66hvffVqoCtVQAakJKnKlH+/PcOfMoFwIG/o4rElqLv/ycAFlx8ZlXUorCg==}
     engines: {node: '>=18.12.0'}
 
+  verkit@0.4.0:
+    resolution: {integrity: sha512-sXMwN6DMHeouPfCxkxWkKAmxphWKEenHYY5H1nIBzU3PmDsmJp6kBXJdshjVdpMZuWCmL9SH7KFRx29AylpP6g==}
+    engines: {node: '>=18.12.0'}
+
   version-range@4.15.0:
     resolution: {integrity: sha512-Ck0EJbAGxHwprkzFO966t4/5QkRuzh+/I1RxhLgUKKwEn+Cd8NwM60mE3AqBZg5gYODoXW0EFsQvbZjRlvdqbg==}
     engines: {node: '>=4'}
@@ -20310,20 +20314,21 @@ snapshots:
     transitivePeerDependencies:
       - react
 
-  '@sanity/workbench@0.1.0-alpha.44(@sanity/sdk@3.0.0)(react@19.2.8)(xstate@5.32.6)':
+  '@sanity/workbench@0.1.0-alpha.45(@sanity/sdk@3.0.0)(react@19.2.8)(vitest@4.1.11)(xstate@5.32.6)':
     dependencies:
       '@module-federation/runtime': 2.9.0
-      '@sanity/client': 7.26.2
+      '@sanity/client': 8.4.0(vitest@4.1.11)
       '@sanity/color': 3.0.8
       '@sanity/sdk': 3.0.0(@types/react@19.2.18)(immer@11.1.18)(react@19.2.8)(use-sync-external-store@1.6.0)(xstate@5.32.6)
       '@sanity/telemetry': 1.1.0(react@19.2.8)
       es-toolkit: 1.52.0
       rxjs: 7.8.2
-      verkit: 0.3.2
+      verkit: 0.4.0
       xstate: 5.32.6
       zod: 4.5.4
     transitivePeerDependencies:
       - react
+      - vitest
 
   '@sanity/worker-channels@2.0.0': {}
 
@@ -28004,6 +28009,8 @@ snapshots:
       - utf-8-validate
 
   verkit@0.3.2: {}
+
+  verkit@0.4.0: {}
 
   version-range@4.15.0: {}
 
