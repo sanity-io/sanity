@@ -509,7 +509,7 @@ importers:
         specifier: 'catalog:'
         version: 6.1.3
       tsx:
-        specifier: ^4.23.12
+        specifier: ^4.23.13
         version: 4.23.13
       vitest:
         specifier: ^4.1.11
@@ -614,7 +614,7 @@ importers:
         specifier: 'catalog:'
         version: 4.1.11(playwright@1.62.1)(vite@8.2.2)(vitest@4.1.11)
       chromatic:
-        specifier: ^18.6.0
+        specifier: ^18.7.1
         version: 18.7.1(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@0.1.10)
       oxc-transform-react:
         specifier: 'catalog:'
@@ -730,7 +730,7 @@ importers:
   dev/test-create-integration-studio:
     dependencies:
       '@sanity/code-input':
-        specifier: ^7.3.7
+        specifier: ^7.3.8
         version: 7.3.8(@babel/runtime@7.29.7)(@codemirror/theme-one-dark@6.1.3)(codemirror@6.0.2)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)
       react:
         specifier: 'catalog:'
@@ -842,7 +842,7 @@ importers:
         specifier: ^4.18.1
         version: 4.18.1
       qs:
-        specifier: ^6.15.3
+        specifier: ^6.16.0
         version: 6.16.0
       react:
         specifier: 'catalog:'
@@ -897,16 +897,16 @@ importers:
         specifier: 'catalog:'
         version: 1.21.2(babel-plugin-macros@3.1.0)
       '@vitejs/devtools':
-        specifier: ^0.6.1
+        specifier: ^0.6.2
         version: 0.6.2(@devframes/json-render@0.9.7)(@vitejs/devtools-oxc@0.6.2)(@vitejs/devtools-rolldown@0.6.2)(@vitejs/devtools-vite@0.6.2)(crossws@0.4.12)(srvx@0.12.7)(vite@8.2.2)
       '@vitejs/devtools-oxc':
-        specifier: ^0.6.1
+        specifier: ^0.6.2
         version: 0.6.2(crossws@0.4.12)(srvx@0.12.7)(typescript@7.0.2)(vite@8.2.2)
       '@vitejs/devtools-rolldown':
-        specifier: ^0.6.1
+        specifier: ^0.6.2
         version: 0.6.2(cac@7.0.0)(crossws@0.4.12)(srvx@0.12.7)(vite@8.2.2)
       '@vitejs/devtools-vite':
-        specifier: ^0.6.1
+        specifier: ^0.6.2
         version: 0.6.2(cac@7.0.0)(crossws@0.4.12)(srvx@0.12.7)(vite@8.2.2)
       oxc-transform-react:
         specifier: 'catalog:'
@@ -915,7 +915,7 @@ importers:
         specifier: 'catalog:'
         version: 6.1.3
       tsx:
-        specifier: ^4.23.12
+        specifier: ^4.23.13
         version: 4.23.13
       vite:
         specifier: 'catalog:'
