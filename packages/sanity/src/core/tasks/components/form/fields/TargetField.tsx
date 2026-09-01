@@ -97,11 +97,12 @@ function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
   const schemaType = schema.get(value.documentType)
   const documentPresence = useDocumentPresence(documentId)
   const {t} = useTranslation(tasksLocaleNamespace)
-  const versionId = getVersionFromId(documentId)
 
   if (!schemaType) {
     return <Text>{t('form.input.target.error.schema-not-found')}</Text>
   }
+
+  const versionId = getVersionFromId(documentId)
 
   return (
     <TargetRoot border radius={2} data-testid="task-target-field-preview">
