@@ -9,6 +9,7 @@ import {ReferenceItemCustomCreateButtonStory} from './ReferenceItemCustomCreateB
 const meta = {
   title: 'Inputs/Reference Item Custom Create Button',
   component: ReferenceItemCustomCreateButtonStory,
+  tags: ['!dev', '!autodocs', 'vrt-only'],
   parameters: {chromatic: {delay: 300}},
 } satisfies Meta<typeof ReferenceItemCustomCreateButtonStory>
 

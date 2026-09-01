@@ -33,6 +33,12 @@ pnpm chromatic           # publish + snapshot manually (needs CHROMATIC_PROJECT_
 - **Authored migration sentinels:** component-local stories cover states the tests don't capture —
   `ui-components` wrapper variants (the `@sanity/ui` → `ui5` surface, with card/tone coverage
   prioritized) and vanilla-extract-migrated components.
+- **Curated sidebar via tags:** documented stories (default tags) are written to be read — they
+  form a living document of how the components are used. Pure regression fixtures carry
+  `tags: ['!dev', '!autodocs', 'vrt-only']`: hidden from the sidebar and docs, still present in
+  the story index, so Chromatic keeps snapshotting them and addon-vitest keeps rendering them.
+  See the [`sanity-visual-regression` skill](../../.agents/skills/sanity-visual-regression/SKILL.md)
+  for the full convention.
 
 The Vite config in [.storybook/main.ts](.storybook/main.ts) mirrors
 `packages/sanity/vitest.browser.config.mts`: the `monorepo` exports condition resolves workspace

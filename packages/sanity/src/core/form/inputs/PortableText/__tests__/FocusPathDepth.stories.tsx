@@ -9,6 +9,7 @@ import {FocusPathDepthStory} from './FocusPathDepthStory'
 const meta = {
   title: 'Portable Text/Focus Path Depth',
   component: FocusPathDepthStory,
+  tags: ['!dev', '!autodocs', 'vrt-only'],
   parameters: {chromatic: {delay: 300}},
 } satisfies Meta<typeof FocusPathDepthStory>
 

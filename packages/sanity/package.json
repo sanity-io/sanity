@@ -278,6 +278,7 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "rxjs-etc": "^10.6.2",
+    "storybook": "catalog:",
     "styled-components": "catalog:",
     "tsdown": "catalog:",
     "tsx": "^4.23.13",

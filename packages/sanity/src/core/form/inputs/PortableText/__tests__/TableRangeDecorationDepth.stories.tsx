@@ -10,6 +10,7 @@ import {TableRangeDecorationDepthStory} from './TableRangeDecorationDepthStory'
 const meta = {
   title: 'Portable Text/Table Range Decoration Depth',
   component: TableRangeDecorationDepthStory,
+  tags: ['!dev', '!autodocs', 'vrt-only'],
   parameters: {chromatic: {delay: 300}},
 } satisfies Meta<typeof TableRangeDecorationDepthStory>
 

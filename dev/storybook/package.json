@@ -35,7 +35,7 @@
     "oxc-transform-react": "catalog:",
     "playwright": "catalog:",
     "rimraf": "catalog:",
-    "storybook": "^10.5.10",
+    "storybook": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
   }
