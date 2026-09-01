@@ -108,6 +108,8 @@ minimumReleaseAgeExclude:
   - 'react'
   - 'react-dom'
   - 'react-hook-form'
+  # Fresh patch; exclude so 17.0.13 can install before the age gate
+  - 'react-i18next@17.0.13'
   - 'react-is'
   - 'react-rx'
   - 'i18next@26.4.1'
