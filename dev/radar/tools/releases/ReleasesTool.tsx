@@ -31,9 +31,10 @@ interface LiveState<T> {
 
 /**
  * Every release, newest first: when it shipped (npm publish time when known),
- * which dist-tags point at it, weekly downloads, links out (GitHub release,
- * sanity.io changelog, npmx.dev), and how many confirmed regressions bisect
- * sessions have attributed to it (blamed on the INTRODUCING release). The
+ * which dist-tags point at it, weekly downloads, links out (Vercel preview
+ * build of dev/test-studio at the tagged commit, GitHub release, sanity.io
+ * changelog, npmx.dev), and how many confirmed regressions bisect sessions
+ * have attributed to it (blamed on the INTRODUCING release). The
  * changelog link needs the release's base version — the previous release on
  * the first-parent chain — so off-mainline releases (maintenance lines) may
  * lack it. Regressions found outside a bisect are added by hand via
@@ -151,7 +152,7 @@ export function ReleasesTool() {
             <Box flex={1}>
               <Stack gap={3}>
                 <Text size={3} weight="semibold">
-                  Studio Releases
+                  Studio releases
                 </Text>
                 <Text size={1} muted>
                   Every synced release tag with its npm state and the regressions bisect sessions
@@ -192,6 +193,7 @@ export function ReleasesTool() {
               tag={tag}
               baseVersion={baseVersions.get(tag.tag)}
               regressions={regressionCounts.get(tag.tag) ?? 0}
+              previewUrl={commitsBySha.get(tag.sha)?.testStudioUrl}
             />
           ))}
         </Stack>
@@ -210,8 +212,13 @@ export function ReleasesTool() {
   )
 }
 
-function ReleaseRow(props: {tag: TagSlice; baseVersion: string | undefined; regressions: number}) {
-  const {tag, baseVersion, regressions} = props
+function ReleaseRow(props: {
+  tag: TagSlice
+  baseVersion: string | undefined
+  regressions: number
+  previewUrl: string | undefined
+}) {
+  const {tag, baseVersion, regressions, previewUrl} = props
   const version = tag.tag.replace(/^v/, '')
   // The version opens the gitTag document in the structure tool — the raw
   // synced record behind the row
@@ -245,6 +252,13 @@ function ReleaseRow(props: {tag: TagSlice; baseVersion: string | undefined; regr
         )}
         <RelativeDate dateTime={tag.npm?.publishedAt ?? tag.taggedAt} size={0} muted />
         <Flex gap={3}>
+          {previewUrl && (
+            <Text size={1}>
+              <a href={previewUrl} target="_blank" rel="noreferrer">
+                Preview
+              </a>
+            </Text>
+          )}
           <Text size={1}>
             <a href={releaseUrl(tag.tag)} target="_blank" rel="noreferrer">
               GitHub

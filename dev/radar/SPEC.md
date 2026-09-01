@@ -4,7 +4,7 @@ One place to answer repo-health questions without opening CI logs: **is
 studio performance drifting on main?** (Trends), **what did a specific run
 look like?** (run detail), **did anything change that needs a human?**
 (drift feed), **which commit broke it?** (Bisect), **what shipped when, and
-what regressed?** (Studio Releases). Primary users: studio engineers checking the
+what regressed?** (Studio releases). Primary users: studio engineers checking the
 effect of merged work; secondary: leads scanning health weekly.
 
 ## Data reality
@@ -261,7 +261,7 @@ effect of merged work; secondary: leads scanning health weekly.
    view (hard delete behind a confirm — they're the only user-owned documents
    here).
 
-8. **Studio Releases** — every synced release tag, newest first: current
+8. **Studio releases** — every synced release tag, newest first: current
    dist-tags, weekly downloads, publish time, links out (GitHub release,
    sanity.io changelog, npmx.dev), and the version linking to the gitTag
    document in the structure tool. The changelog link is derived from the
