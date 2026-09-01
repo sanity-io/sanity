@@ -537,6 +537,11 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The description for the document unfavorite action */
   'document.favorites.remove-from-favorites': 'Remove from favorites',
 
+  /** Details about a singleton document */
+  'document.singleton.details': 'This is a singleton document with id {{documentGroupId}}',
+  /** The label describing singleton documents */
+  'document.singleton.label': 'Singleton',
+
   /** The description for the events inspector when we can't load the document so we default to compare with published */
   'events.compare-with-published.description':
     "We're unable to load the changes for this document, probably due to history retention policy of your plan, this shows you how the <strong>{{version}}</strong> version compares to the <strong>published</strong> version.",
