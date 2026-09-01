@@ -14,7 +14,7 @@ const PortableTextWrap = styled(VStack)(() => {
       margin-top: 1em; // todo: improve
     }
 
-    & > [data-ui='Text']:has(> span:empty) {
+    & > [data-ui='Text']:empty {
       display: none;
     }
   `
