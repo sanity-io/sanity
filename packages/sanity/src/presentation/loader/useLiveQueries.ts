@@ -93,7 +93,7 @@ function queryListen(state: State, {payload}: QueryListenAction): State {
    * The data comes from a postMessage event, which uses the structured clone algorithm to serialize state (https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage#message).
    * This impacts `params`, which is an object, as it will be a new object every time even if the sender is sending the same object instance on their end.
    * It also impacts `perspective`, as it's no longer just a string, but can also be an array of strings.
-   * Both cases are handled by the deep comparison, which is used to compare the data before deciding wether the state should be updated.
+   * Both cases are handled by the deep comparison, which is used to compare the data before deciding whether the state should be updated.
    */
   if (!state.queries.has(key) || !isEqual(state.queries.get(key), data)) {
     nextQueries = new Map(state.queries)
