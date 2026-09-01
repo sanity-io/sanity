@@ -78,16 +78,24 @@ const DivergencesProviderEnabled: ComponentType<PropsEnabled> = ({
     ? editState.published
     : (editState.version ?? editState.draft)
 
-  const collatedDivergences =
-    !hasUpstreamVersion || typeof upstreamId === 'undefined' || typeof subjectId === 'undefined'
-      ? {
-          context: new Subject<FindDivergencesContext>(),
-          observable: of(collateDocumentDivergencesInitialState),
-        }
-      : collateDocumentDivergences({
-          subjectId: subjectId,
-          upstreamId: upstreamId,
-        })
+  // Memoized because the no-upstream branch constructs a fresh Subject/observable pair, which
+  // React Compiler cannot memoize (constructor call). Without this, every render — e.g. each
+  // keystroke updating `editState`/`formState` — hands `useDivergenceNavigator` a new
+  // `divergences` observable, rebuilding and resubscribing its whole state pipeline (including
+  // a `transposeSchema` pass) and pushing a new context value to every divergence consumer.
+  const collatedDivergences = useMemo(
+    () =>
+      !hasUpstreamVersion || typeof upstreamId === 'undefined' || typeof subjectId === 'undefined'
+        ? {
+            context: new Subject<FindDivergencesContext>(),
+            observable: of(collateDocumentDivergencesInitialState),
+          }
+        : collateDocumentDivergences({
+            subjectId: subjectId,
+            upstreamId: upstreamId,
+          }),
+    [hasUpstreamVersion, upstreamId, subjectId],
+  )
 
   useCollateDivergencesContext({
     upstreamHead,
