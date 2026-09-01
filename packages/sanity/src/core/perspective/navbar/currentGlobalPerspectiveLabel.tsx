@@ -1,7 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
 // oxlint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
 import {Button, Text} from '@sanity/ui'
-import {useMemo, type RefAttributes} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 import {Box} from 'ui5'
@@ -25,27 +24,6 @@ const OversizedButton = styled(IntentLink)`
 const ReleasesLink = ({selectedPerspective}: {selectedPerspective: ReleaseDocument}) => {
   const {t} = useTranslation()
 
-  const ReleasesIntentLink = useMemo(
-    () =>
-      function ReleasesIntentLink({
-        ref,
-        children,
-        ...intentProps
-      }: React.ComponentPropsWithoutRef<'a'> & RefAttributes<HTMLAnchorElement>) {
-        return (
-          <OversizedButton
-            {...intentProps}
-            ref={ref}
-            intent={RELEASES_INTENT}
-            params={{id: getReleaseIdFromReleaseDocumentId(selectedPerspective._id)}}
-          >
-            {children}
-          </OversizedButton>
-        )
-      },
-    [selectedPerspective],
-  )
-
   return (
     <ReleaseTitle
       title={selectedPerspective.metadata?.title}
@@ -53,9 +31,11 @@ const ReleasesLink = ({selectedPerspective}: {selectedPerspective: ReleaseDocume
     >
       {({displayTitle}) => (
         <Button
-          as={ReleasesIntentLink}
+          as={OversizedButton}
           data-as="a"
           rel="noopener noreferrer"
+          intent={RELEASES_INTENT}
+          params={{id: getReleaseIdFromReleaseDocumentId(selectedPerspective._id)}}
           mode="bleed"
           padding={2}
           radius="full"

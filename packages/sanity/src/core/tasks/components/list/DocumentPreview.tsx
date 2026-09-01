@@ -1,7 +1,6 @@
 import {DocumentIcon} from '@sanity/icons/Document'
 import {Text, TextSkeleton} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
-import {useMemo, type RefAttributes} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'
@@ -36,24 +35,6 @@ export function DocumentPreview({
     variant: selectedVariantName,
   })
 
-  const Link = useMemo(
-    () =>
-      function LinkComponent(
-        linkProps: React.ComponentPropsWithoutRef<'a'> & RefAttributes<HTMLAnchorElement>,
-      ) {
-        const {ref, ...rest} = linkProps
-        return (
-          <StyledIntentLink
-            {...rest}
-            intent="edit"
-            params={{id: documentId, type: documentType}}
-            ref={ref}
-          />
-        )
-      },
-    [documentId, documentType],
-  )
-
   if (!documentSchema) {
     return null
   }
@@ -66,7 +47,15 @@ export function DocumentPreview({
       {isLoading ? (
         <TextSkeleton size={1} muted />
       ) : (
-        <Text size={1} as={Link} weight="medium" style={{maxWidth: '20ch'}} textOverflow="ellipsis">
+        <Text
+          size={1}
+          as={StyledIntentLink}
+          intent="edit"
+          params={{id: documentId, type: documentType}}
+          weight="medium"
+          style={{maxWidth: '20ch'}}
+          textOverflow="ellipsis"
+        >
           {value?.title || 'Untitled'}
         </Text>
       )}

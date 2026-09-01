@@ -1,5 +1,4 @@
 import {Card, Skeleton, Stack, Text} from '@sanity/ui'
-import {type HTMLProps, useMemo, type RefAttributes} from 'react'
 import {StateLink} from 'sanity/router'
 import {Flex, Box} from 'ui5'
 
@@ -47,17 +46,6 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
 
   const encodedVariantId = getVariantId(variant._id)
 
-  const VariantLink = useMemo(
-    () =>
-      function VariantLinkComponent(
-        linkProps: HTMLProps<HTMLAnchorElement> & RefAttributes<HTMLAnchorElement>,
-      ) {
-        const {ref, ...rest} = linkProps
-        return <StateLink {...rest} ref={ref} state={{variantId: encodedVariantId}} />
-      },
-    [encodedVariantId],
-  )
-
   if (variant.isLoading) {
     return (
       <Box {...cellProps} flexBasis="0%" flexGrow={1} paddingLeft={3} paddingRight={2} paddingY={2}>
@@ -78,7 +66,15 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
   return (
     <Box {...cellProps} flexBasis="0%" flexGrow={1} paddingLeft={3} paddingRight={2} paddingY={1}>
       <Flex alignItems="center" gap={3}>
-        <Card as={VariantLink} data-as="a" flex={1} padding={2} radius={2} tone="inherit">
+        <Card
+          as={StateLink}
+          state={{variantId: encodedVariantId}}
+          data-as="a"
+          flex={1}
+          padding={2}
+          radius={2}
+          tone="inherit"
+        >
           <Flex alignItems="center" gap={3}>
             {/* min-width: 0 lets the flex child shrink below its content width so a long name
                 truncates with a trailing ellipsis instead of overflowing on narrow viewports. */}
