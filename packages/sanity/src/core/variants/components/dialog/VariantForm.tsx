@@ -6,7 +6,7 @@ import {type Path} from '@sanity/mutate'
 import {type PortableTextBlock} from '@sanity/types'
 import {Inline, Skeleton, Stack, Text, TextArea, TextInput} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
-import {type ChangeEvent, useCallback, useId, useMemo, useState} from 'react'
+import {type ChangeEvent, useCallback, useEffect, useId, useMemo, useState} from 'react'
 import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
@@ -22,6 +22,7 @@ import {
   getConditionValueValidationError,
 } from '../../util/conditionValidation'
 import {getVariantTitleValue} from '../../util/getIsVariantInvalid'
+import {type NormalizedVariantConditionMap} from '../../util/normalizeVariantConditions'
 import {getPriorityInputValidationError} from '../../util/priorityValidation'
 import {createPortableTextDescription} from '../../util/variantDefaults'
 import {ConditionAutocompleteInput} from './ConditionAutocompleteInput'
@@ -74,7 +75,10 @@ function getEmptyConditionRowValidation(): ConditionRowValidation {
   return {key: null, value: null}
 }
 
-function getConditionRowsValidation(rows: ConditionRow[]): Map<number, ConditionRowValidation> {
+function getConditionRowsValidation(
+  rows: ConditionRow[],
+  definitions?: readonly NormalizedVariantConditionMap[],
+): Map<number, ConditionRowValidation> {
   const conditionRowsValidation = new Map<number, ConditionRowValidation>()
   const seenKeys = new Set<string>()
 
@@ -107,6 +111,20 @@ function getConditionRowsValidation(rows: ConditionRow[]): Map<number, Condition
       validation.value = 'dialog.create.condition-value.required'
     } else if (valueError === 'invalid') {
       validation.value = 'dialog.create.condition-value.invalid'
+    }
+
+    if (definitions && key && !validation.key) {
+      const definition = definitions.find((item) => item.name === key)
+
+      if (!definition) {
+        validation.key = 'conditions.mismatch.unknown-key'
+      } else if (
+        value &&
+        !validation.value &&
+        !definition.values.some((item) => item.value === value)
+      ) {
+        validation.value = 'conditions.mismatch.unknown-value'
+      }
     }
 
     conditionRowsValidation.set(index, validation)
@@ -152,7 +170,7 @@ export function VariantForm(props: {
   const mappedDefinitions =
     conditionsConfig.mode === 'mapped' && conditionsConfig.status === 'ready'
       ? conditionsConfig.definitions
-      : []
+      : undefined
   const titleId = useId()
   const descriptionId = useId()
   const priorityId = useId()
@@ -161,15 +179,18 @@ export function VariantForm(props: {
   // Keep rows locally while editing, then commit back once they serialize cleanly.
   const [conditionRows, setConditionRows] = useState(() => getConditionRows(value.conditions))
   const [priorityInput, setPriorityInput] = useState(() => String(value.priority))
+  const mappedNotReady = conditionsConfig.mode === 'mapped' && conditionsConfig.status !== 'ready'
   const conditionsValidation = useMemo(
-    () => getConditionRowsValidation(conditionRows),
-    [conditionRows],
+    () => getConditionRowsValidation(conditionRows, mappedDefinitions),
+    [conditionRows, mappedDefinitions],
   )
   const usedConditionKeys = useMemo(
     () => new Set(conditionRows.map((row) => row.key.trim()).filter(Boolean)),
     [conditionRows],
   )
-  const hasUnusedMappedKeys = mappedDefinitions.some((item) => !usedConditionKeys.has(item.name))
+  const hasUnusedMappedKeys = Boolean(
+    mappedDefinitions?.some((item) => !usedConditionKeys.has(item.name)),
+  )
 
   const hasTitle = Boolean(getVariantTitleValue(value))
   const showTitleError = showValidation && !hasTitle
@@ -180,8 +201,11 @@ export function VariantForm(props: {
   const lastConditionComplete = Boolean(
     lastConditionRow && !hasConditionRowsValidationErrors(conditionsValidation),
   )
+  const conditionsInvalid = mappedNotReady || hasConditionRowsValidationErrors(conditionsValidation)
   const canAddCondition =
-    lastConditionComplete && (conditionsConfig.mode === 'freeform' || hasUnusedMappedKeys)
+    lastConditionComplete &&
+    !mappedNotReady &&
+    (conditionsConfig.mode === 'freeform' || hasUnusedMappedKeys)
   const addConditionDisabledHint =
     lastConditionComplete && conditionsConfig.mode === 'mapped' && !hasUnusedMappedKeys
       ? t('dialog.create.action.add-condition.none-remaining')
@@ -193,16 +217,19 @@ export function VariantForm(props: {
 
       setConditionRows(rows)
 
-      const nextRowsValidation = getConditionRowsValidation(rows)
-      const nextRowsInvalid = hasConditionRowsValidationErrors(nextRowsValidation)
-      onConditionValidityChange(nextRowsInvalid)
+      const nextRowsValidation = getConditionRowsValidation(rows, mappedDefinitions)
+      const nextRowsInvalid = mappedNotReady || hasConditionRowsValidationErrors(nextRowsValidation)
 
       if (nextRows.length === 0 || !nextRowsInvalid) {
         onChange(['conditions'], getConditionsFromRows(nextRows))
       }
     },
-    [onChange, onConditionValidityChange],
+    [mappedDefinitions, mappedNotReady, onChange],
   )
+
+  useEffect(() => {
+    onConditionValidityChange(conditionsInvalid)
+  }, [conditionsInvalid, onConditionValidityChange])
 
   const handleTitleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -382,23 +409,45 @@ export function VariantForm(props: {
           </Stack>
         ) : null}
 
-        {conditionsConfig.mode === 'mapped' && conditionsConfig.status === 'ready' ? (
+        {mappedDefinitions ? (
           <Stack gap={3}>
-            {conditionRows.map((row, index) => (
-              <ConditionMappedRow
-                definitions={mappedDefinitions}
-                disableRemove={isConditionRowEmpty(row) && conditionRows.length === 1}
-                key={row.id}
-                onClearKey={() => handleMappedKeyChange(index, '')}
-                onClearValue={() => handleConditionChange(index, 'value', '')}
-                onRemove={() => handleRemoveCondition(index)}
-                onSelectKey={(nextKey) => handleMappedKeyChange(index, nextKey)}
-                onSelectValue={(nextValue) => handleConditionChange(index, 'value', nextValue)}
-                selectedKey={row.key}
-                selectedValue={row.value}
-                usedKeys={usedConditionKeys}
-              />
-            ))}
+            {conditionRows.map((row, index) => {
+              const validation = conditionsValidation.get(index) ?? getEmptyConditionRowValidation()
+              const key = row.key.trim()
+              const rowValue = row.value.trim()
+              const showKeyError =
+                validation.key === 'conditions.mismatch.unknown-key' ||
+                (showValidation && validation.key)
+              const showValueError =
+                validation.value === 'conditions.mismatch.unknown-value' ||
+                (showValidation && validation.value)
+
+              return (
+                <ConditionMappedRow
+                  definitions={mappedDefinitions}
+                  disableRemove={isConditionRowEmpty(row) && conditionRows.length === 1}
+                  key={row.id}
+                  keyError={
+                    showKeyError && validation.key
+                      ? t(validation.key, {key, value: rowValue})
+                      : null
+                  }
+                  onClearKey={() => handleMappedKeyChange(index, '')}
+                  onClearValue={() => handleConditionChange(index, 'value', '')}
+                  onRemove={() => handleRemoveCondition(index)}
+                  onSelectKey={(nextKey) => handleMappedKeyChange(index, nextKey)}
+                  onSelectValue={(nextValue) => handleConditionChange(index, 'value', nextValue)}
+                  selectedKey={row.key}
+                  selectedValue={row.value}
+                  usedKeys={usedConditionKeys}
+                  valueError={
+                    showValueError && validation.value
+                      ? t(validation.value, {key, value: rowValue})
+                      : null
+                  }
+                />
+              )
+            })}
           </Stack>
         ) : null}
 

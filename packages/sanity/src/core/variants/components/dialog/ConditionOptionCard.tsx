@@ -5,6 +5,7 @@ import {Flex, Box} from 'ui5'
 interface ConditionOptionCardProps {
   description?: string
   icon?: ComponentType
+  invalid?: boolean
   onClick: () => void
   selected?: boolean
   testId?: string
@@ -12,10 +13,11 @@ interface ConditionOptionCardProps {
 }
 
 export function ConditionOptionCard(props: ConditionOptionCardProps): React.JSX.Element {
-  const {description, icon: Icon, onClick, selected = false, testId, title} = props
+  const {description, icon: Icon, invalid = false, onClick, selected = false, testId, title} = props
 
   return (
     <Card
+      aria-invalid={invalid || undefined}
       aria-label={title}
       aria-pressed={selected}
       as="button"
@@ -26,7 +28,7 @@ export function ConditionOptionCard(props: ConditionOptionCardProps): React.JSX.
       radius={2}
       selected={selected}
       style={{textAlign: 'left', width: '100%'}}
-      tone={selected ? 'primary' : undefined}
+      tone={invalid ? 'critical' : selected ? 'primary' : undefined}
     >
       <Flex alignItems="flex-start" gap={3}>
         {Icon ? (

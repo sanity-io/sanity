@@ -42,7 +42,7 @@ export function VariantDialog(props: VariantDialogProps): React.JSX.Element {
   const [variant, setVariant] = useState(initialValue)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showValidation, setShowValidation] = useState(false)
-  const [conditionsInvalid, setConditionsInvalid] = useState(false)
+  const [conditionsInvalid, setConditionsInvalid] = useState(true)
   const [priorityInvalid, setPriorityInvalid] = useState(false)
   const invalid = getIsVariantInvalid(variant) || conditionsInvalid || priorityInvalid
 

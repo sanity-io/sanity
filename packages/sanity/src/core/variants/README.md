@@ -134,13 +134,14 @@ The autocomplete is a consistency aid, not a schema constraint. Users can still 
 
 ## Configured conditions picker
 
-When `beta.variants.conditions` is set (a static array or a function that may return a promise), the form switches to an exclusive card picker. The function receives `projectId`, `dataset`, and `getClient`, and is resolved when the dialog opens, not during studio boot.
+When `beta.variants.conditions` is set (a static array or a function that may return a promise), the form switches to an exclusive card picker. The function receives `projectId`, `dataset`, and `getClient`, and is resolved when a surface needs the list, not during studio boot.
 
 - key cards come from the configured list (title + optional description)
 - after a key is chosen, value cards for that key are shown
 - already-used keys are omitted from later rows
-- existing conditions that are not in the list stay visible so edits do not break
+- existing conditions that are not in the list stay visible, are marked as errors, and block save
 - a load failure shows an error and retry; the form does not fall back to free-text
+- overview rows, detail condition rows, and navbar menu items show the same mismatch error after the list is ready
 
 `useVariantConditions` reads the resolved config from the workspace. Invalid keys and values are dropped by `normalizeVariantConditions` so the picker never offers them.
 
@@ -201,7 +202,7 @@ Covered areas include:
 - create/edit dialog validation and submit behavior
 - condition row validation and partial-edit regressions
 - condition suggestion helpers
-- conditions config reduction, normalization, and mapped card-picker form flow
+- conditions config reduction, normalization, mapped card-picker form flow, and condition mismatch errors
 - detail page rendering, edit dialog, footer, and detail delete menu
 
 Focused command:

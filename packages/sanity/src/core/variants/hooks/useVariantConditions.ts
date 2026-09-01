@@ -1,11 +1,21 @@
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useMemo, useSyncExternalStore} from 'react'
 
 import {type VariantConditionsContext} from '../../config/types'
 import {useWorkspace} from '../../studio/workspace'
 import {
+  type ConditionMismatch,
+  getVariantConditionMismatches,
+} from '../util/getVariantConditionMismatches'
+import {
   type NormalizedVariantConditionMap,
   normalizeVariantConditions,
 } from '../util/normalizeVariantConditions'
+import {
+  getVariantConditionsSnapshot,
+  type MappedConditionsSnapshot,
+  retryVariantConditions,
+  subscribeVariantConditions,
+} from './variantConditionsCache'
 
 /**
  * @internal
@@ -16,16 +26,14 @@ export type UseVariantConditionsResult =
   | {mode: 'mapped'; status: 'error'; error: Error; retry: () => void}
   | {mode: 'mapped'; status: 'ready'; definitions: NormalizedVariantConditionMap[]}
 
-type AsyncLoadState =
-  | {generation: number; status: 'ready'; definitions: NormalizedVariantConditionMap[]}
-  | {generation: number; status: 'error'; error: Error}
-
-function toError(error: unknown): Error {
-  return error instanceof Error ? error : new Error(String(error))
-}
+const FREEFORM_RESULT: UseVariantConditionsResult = {mode: 'freeform'}
+const IDLE_SNAPSHOT: MappedConditionsSnapshot = {status: 'loading'}
+const INVALID_CONDITIONS_ERROR = new Error('Expected conditions to be an array or a function')
+const NO_MISMATCHES: ConditionMismatch[] = []
 
 /**
- * Resolves `beta.variants.conditions` when the variant form opens.
+ * Resolves `beta.variants.conditions` when a variant surface needs the configured list.
+ * Async resolvers share one in-flight request per workspace until `retry()`.
  *
  * @internal
  */
@@ -39,50 +47,35 @@ export function useVariantConditions(): UseVariantConditionsResult {
       getClient: workspace.getClient,
     }
   }, [workspace.dataset, workspace.getClient, workspace.projectId])
-  const [generation, setGeneration] = useState(0)
-  const [asyncState, setAsyncState] = useState<AsyncLoadState | null>(null)
+  const resolver = typeof conditions === 'function' ? conditions : undefined
+  const subscribe = useCallback(
+    (onStoreChange: () => void) => {
+      if (!resolver) {
+        return () => undefined
+      }
+
+      return subscribeVariantConditions(resolver, context, onStoreChange)
+    },
+    [context, resolver],
+  )
+  const getSnapshot = useCallback((): MappedConditionsSnapshot => {
+    if (!resolver) {
+      return IDLE_SNAPSHOT
+    }
+
+    return getVariantConditionsSnapshot(resolver, context)
+  }, [context, resolver])
+  const asyncSnapshot = useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
   const retry = useCallback(() => {
-    setGeneration((current) => current + 1)
-  }, [])
-
-  const resolve = typeof conditions === 'function' ? conditions : undefined
-
-  useEffect(() => {
-    if (!resolve) {
-      return undefined
+    if (!resolver) {
+      return
     }
 
-    const loadGeneration = generation
-    let cancelled = false
-
-    Promise.resolve()
-      .then(() => resolve(context))
-      .then((value) => {
-        if (cancelled) {
-          return
-        }
-
-        setAsyncState({
-          generation: loadGeneration,
-          status: 'ready',
-          definitions: normalizeVariantConditions(value),
-        })
-      })
-      .catch((error) => {
-        if (cancelled) {
-          return
-        }
-
-        setAsyncState({generation: loadGeneration, status: 'error', error: toError(error)})
-      })
-
-    return () => {
-      cancelled = true
-    }
-  }, [context, generation, resolve])
+    retryVariantConditions(resolver, context)
+  }, [context, resolver])
 
   if (typeof conditions === 'undefined') {
-    return {mode: 'freeform'}
+    return FREEFORM_RESULT
   }
 
   if (Array.isArray(conditions)) {
@@ -93,22 +86,42 @@ export function useVariantConditions(): UseVariantConditionsResult {
     }
   }
 
-  if (typeof conditions !== 'function') {
+  if (!resolver) {
     return {
       mode: 'mapped',
       status: 'error',
-      error: new Error('Expected conditions to be an array or a function'),
+      error: INVALID_CONDITIONS_ERROR,
       retry,
     }
   }
 
-  if (asyncState?.generation === generation && asyncState.status === 'ready') {
-    return {mode: 'mapped', status: 'ready', definitions: asyncState.definitions}
+  if (asyncSnapshot.status === 'error') {
+    return {mode: 'mapped', status: 'error', error: asyncSnapshot.error, retry}
   }
 
-  if (asyncState?.generation === generation && asyncState.status === 'error') {
-    return {mode: 'mapped', status: 'error', error: asyncState.error, retry}
+  if (asyncSnapshot.status === 'ready') {
+    return {mode: 'mapped', status: 'ready', definitions: asyncSnapshot.definitions}
   }
 
   return {mode: 'mapped', status: 'loading'}
+}
+
+/**
+ * Stored condition pairs that do not match the configured list.
+ * Empty while the list is unset, loading, or failed.
+ *
+ * @internal
+ */
+export function useVariantConditionMismatches(
+  conditions: Record<string, string> | undefined,
+): ConditionMismatch[] {
+  const config = useVariantConditions()
+
+  return useMemo(() => {
+    if (!conditions || config.mode !== 'mapped' || config.status !== 'ready') {
+      return NO_MISMATCHES
+    }
+
+    return getVariantConditionMismatches(conditions, config.definitions)
+  }, [conditions, config])
 }

@@ -68,6 +68,15 @@ const variantsLocaleStrings = {
   'overview.table.documents': 'Documents',
   /** Fallback text when a variant has no conditions. */
   'overview.table.no-conditions': 'No conditions',
+  /** Tooltip when a stored condition key is not in the configured list. */
+  'conditions.mismatch.unknown-key':
+    'The condition "{{key}}" is not in the configured list. Edit the variant to fix it.',
+  /** Tooltip when a stored condition value is not in the configured list for that key. */
+  'conditions.mismatch.unknown-value':
+    'The value "{{value}}" is not valid for "{{key}}". Edit the variant to fix it.',
+  /** Tooltip when a variant has more than one condition that is not in the configured list. */
+  'conditions.mismatch.multiple':
+    'This variant uses conditions that are no longer configured. Edit the variant to fix it.',
   /** Title for the Variants overview. */
   'overview.title': 'Variant definitions',
   /** Primary action label on the Variant detail action rail. */
