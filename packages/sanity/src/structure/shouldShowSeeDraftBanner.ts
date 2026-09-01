@@ -1,5 +1,5 @@
 import {type SchemaType} from '@sanity/types'
-import {type EditStateFor, type TargetPerspective, type Workspace} from 'sanity'
+import {type TargetPerspective, type VersionInfoDocumentStub, type Workspace} from 'sanity'
 
 import {isLiveEditEnabled} from './components/paneItem/helpers'
 
@@ -11,14 +11,14 @@ export interface ShouldShowSeeDraftBannerContext {
       drafts: Pick<Workspace['document']['drafts'], 'enabled'>
     }
   }
-  editState: Pick<EditStateFor, 'ready' | 'draft' | 'published'> | null
+  siblings: {published: VersionInfoDocumentStub | undefined} | undefined
   isHistoryRevision?: boolean
 }
 
 /**
- * Show the "See draft" banner when a published-only, non-live-edit document is
- * viewed in the published perspective. The banner switches to the drafts
- * perspective; it does not create a draft document.
+ * Show the "See draft" banner when a non-live-edit document with a published sibling
+ * is viewed in the published perspective. The banner switches to the drafts
+ * perspective so the user can edit there (whether a draft already exists or not).
  *
  * Live-edit documents are editable in published and must never show this banner.
  */
@@ -26,10 +26,10 @@ export function shouldShowSeeDraftBanner({
   selectedPerspective,
   schemaType,
   workspace,
-  editState,
+  siblings,
   isHistoryRevision = false,
 }: ShouldShowSeeDraftBannerContext): boolean {
-  if (!editState?.ready || isHistoryRevision) {
+  if (!siblings || isHistoryRevision) {
     return false
   }
 
@@ -45,6 +45,5 @@ export function shouldShowSeeDraftBanner({
     return false
   }
 
-  // Published-only: a published document exists and there is no draft to open.
-  return Boolean(editState.published) && !editState.draft
+  return Boolean(siblings.published)
 }

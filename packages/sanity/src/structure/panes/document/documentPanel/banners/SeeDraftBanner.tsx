@@ -1,6 +1,12 @@
 import {Text} from '@sanity/ui'
 import {useCallback} from 'react'
-import {usePerspective, useSetPerspective, useTranslation, useWorkspace} from 'sanity'
+import {
+  getTargetSiblings,
+  usePerspective,
+  useSetPerspective,
+  useTranslation,
+  useWorkspace,
+} from 'sanity'
 
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -10,11 +16,12 @@ import {Banner} from './Banner'
 
 export function SeeDraftBanner() {
   const {t} = useTranslation(structureLocaleNamespace)
-  const {editState, schemaType} = useDocumentPane()
+  const {schemaType, targetDocumentState} = useDocumentPane()
   const {selectedPerspective} = usePerspective()
   const setPerspective = useSetPerspective()
   const workspace = useWorkspace()
   const {params} = usePaneRouter()
+  const siblings = getTargetSiblings(targetDocumentState)
 
   const handleSeeDraft = useCallback(() => {
     setPerspective('drafts')
@@ -25,7 +32,7 @@ export function SeeDraftBanner() {
       selectedPerspective,
       schemaType,
       workspace,
-      editState,
+      siblings,
       isHistoryRevision: Boolean(params?.rev),
     })
   ) {
