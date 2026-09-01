@@ -416,6 +416,13 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
       // range from the wrong document's text.
       if (comment.target?.sourceDocumentId !== sourceDocumentId) return
 
+      // Comments on a nested PTE field are decorated here too, since `textComments`
+      // matches on path prefix. Their decoration paths start at the container block,
+      // not at the text block, so `selectionsToRange` resolves to null and any edit in
+      // this editor would de-anchor them. Let the nested editor persist its own ranges.
+      const commentFieldPath = parseCommentFieldPath(comment.target.path?.field)
+      if (!commentFieldPath || !PathUtils.isEqual(commentFieldPath, props.path)) return
+
       // The below code will update the comment object to reflect the new selection
       if (!editorRef.current) return
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
