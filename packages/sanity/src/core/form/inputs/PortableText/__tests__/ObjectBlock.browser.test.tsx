@@ -129,8 +129,10 @@ describe('Portable Text Input', () => {
       // Assertion: Object edit dialog should be visible
       await expect.element(page.getByTestId('nested-object-dialog')).toBeVisible()
 
-      // We close the dialog first so we can test that we can open it again by double clicking
-      await userEvent.keyboard('{Escape}')
+      // We close the dialog first so we can test that we can open it again by double clicking.
+      // Close via the dialog's close button rather than Escape: Escape delivery depends on
+      // where focus landed, which differs across browsers, notably Firefox.
+      await page.getByTestId('nested-object-dialog').getByRole('button', {name: 'Close'}).click()
 
       // Dialog should now be gone
       await expect.element(page.getByTestId('nested-object-dialog')).not.toBeInTheDocument()
@@ -147,8 +149,8 @@ describe('Portable Text Input', () => {
       // Assertion: Object edit dialog should be visible
       await expect.element(page.getByTestId('nested-object-dialog')).toBeVisible()
 
-      // Close dialog
-      await userEvent.keyboard('{Escape}')
+      // Close via the close button again, for the same cross-browser reason as above
+      await page.getByTestId('nested-object-dialog').getByRole('button', {name: 'Close'}).click()
       await expect.element(page.getByTestId('nested-object-dialog')).not.toBeInTheDocument()
 
       // Reopen the context menu and delete the block. Click the controls
