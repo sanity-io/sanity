@@ -36,7 +36,7 @@
     "sanity": "workspace:*",
     "sanity-plugin-internationalized-array": "^5.2.3",
     "styled-components": "catalog:",
-    "tsx": "^4.23.12"
+    "tsx": "^4.23.13"
   },
   "devDependencies": {
     "@repo/test-config": "workspace:*",
