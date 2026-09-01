@@ -440,6 +440,18 @@ export interface PresentationSearchParams {
 }
 
 /**
+ * Data needed by the pane link components (`ChildLink`, `BackLink`,
+ * `ReferenceChildLink`) that Presentation provides through the pane router
+ * context. Provided via context so the link components can be defined at
+ * module scope with stable identities.
+ * @internal
+ */
+export interface PresentationPaneLinksContextValue {
+  refs: {_id: string; _type: string}[] | undefined
+  searchParams: PresentationSearchParams
+}
+
+/**
  * Document Pane specific URL search parameters, they should not persist when
  * navigating between the document pane and document list pane
  * @public
