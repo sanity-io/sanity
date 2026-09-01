@@ -2,7 +2,10 @@ import {AddUserIcon} from '@sanity/icons/AddUser'
 import {UsersIcon} from '@sanity/icons/Users'
 import {Stack, Text} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
+import isEqual from 'lodash-es/isEqual.js'
 import {useCallback, useMemo, useState} from 'react'
+import {useObservable} from 'react-rx'
+import {distinctUntilChanged, map} from 'rxjs'
 import {styled} from 'styled-components'
 import {Box} from 'ui5'
 
@@ -10,7 +13,8 @@ import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/men
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {StatusButton} from '../../../../components/StatusButton'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import {useGlobalPresence} from '../../../../store/presence/useGlobalPresence'
+import {usePresenceStore} from '../../../../store/datastores'
+import {type GlobalPresence} from '../../../../store/presence/types'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {useWorkspace} from '../../../workspace'
@@ -27,8 +31,27 @@ const FooterStack = styled(Stack)`
   background-color: var(--card-bg-color);
 `
 
+type PresenceMenuEntry = Pick<GlobalPresence, 'user' | 'locations'>
+
+const EMPTY_PRESENCE: PresenceMenuEntry[] = []
+
 export function PresenceMenu() {
-  const presence = useGlobalPresence()
+  const presenceStore = usePresenceStore()
+  // `globalPresence$` re-emits — with only a fresh session-level `lastActiveAt` — for every
+  // presence heartbeat any other studio session sends (every few seconds on busy projects).
+  // Project the stream down to the fields this menu renders and drop identical emissions so
+  // heartbeats don't re-render the menu and its (mounted-while-closed) popover subtree.
+  const presence$ = useMemo(
+    () =>
+      presenceStore.globalPresence$.pipe(
+        map((presenceList) =>
+          presenceList.map(({user, locations}): PresenceMenuEntry => ({user, locations})),
+        ),
+        distinctUntilChanged<PresenceMenuEntry[]>(isEqual),
+      ),
+    [presenceStore],
+  )
+  const presence = useObservable(presence$, EMPTY_PRESENCE)
   const {projectId} = useWorkspace()
   const scheme = useColorSchemeValue()
   const {t} = useTranslation()
