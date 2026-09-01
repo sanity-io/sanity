@@ -134,7 +134,7 @@
     "pkg-pr-new": "^0.0.87",
     "playwright": "catalog:",
     "sanity": "workspace:*",
-    "tsx": "^4.23.12",
+    "tsx": "^4.23.13",
     "turbo": "^2.10.12",
     "typescript": "catalog:",
     "vercel": "^57.0.0",
