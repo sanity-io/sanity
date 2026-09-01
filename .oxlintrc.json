@@ -206,6 +206,8 @@
     "react/rules-of-hooks": "error",
     // Prefer function components; allow class-based error boundaries (no hook equivalent yet)
     "react/prefer-function-component": ["error", {"allowErrorBoundary": true}],
+    // Components defined during render get a new identity every render, remounting their subtree
+    "react/no-unstable-nested-components": "error",
     // React Compiler rules (https://oxc.rs/blog/2026-08-18-react-compiler-support.html#oxlint).
     // The old nursery `react/react-compiler` rule was replaced by 22 category-specific rules.
     // The `correctness`, `suspicious`, and `perf` rules are already enabled via `categories`
@@ -326,7 +328,6 @@
     "restrict-template-expressions": "warn",
     "unbound-method": "warn",
     // TODO(oxlint): Fix violations and set these back to error.
-    "react/no-unstable-nested-components": "warn",
     "typescript/no-unnecessary-type-conversion": "off",
     "typescript/no-useless-default-assignment": "off",
     "typescript/no-unnecessary-type-parameters": "off",
