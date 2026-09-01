@@ -8,6 +8,7 @@ import {
   isReleaseDocument,
   type ReleaseDocument,
   Translate,
+  useConfiguredDocumentActionIds,
   useDocumentOperation,
   usePerspective,
   useTranslation,
@@ -34,11 +35,20 @@ export function DeletedDocumentBanners() {
 }
 
 function DeletedDocumentBanner() {
-  const {documentId, documentType} = useDocumentPane()
+  const {documentId, documentType, schemaType} = useDocumentPane()
   // No `getTargetScopeId(useTargetDocumentState())` here: restoring a deleted document deliberately operates on
   // the draft/published pair, so no version scope applies.
   const {restore} = useDocumentOperation(documentId, documentType)
   const {navigateIntent} = useRouter()
+  // Gate on the context this button acts on rather than the pane's: undeleting targets the
+  // draft/published pair, so a pane showing a version or revision would ask the wrong question.
+  const configuredActionIds = useConfiguredDocumentActionIds({
+    schemaType: documentType,
+    documentId,
+    versionType: schemaType?.liveEdit ? 'published' : 'draft',
+    releaseId: undefined,
+  })
+  const canRestore = configuredActionIds.has('restore')
 
   const handleRestore = useCallback(() => {
     restore.execute('lastRevision')
@@ -49,10 +59,14 @@ function DeletedDocumentBanner() {
 
   return (
     <Banner
-      action={{
-        onClick: handleRestore,
-        text: t('banners.deleted-document-banner.restore-button.text'),
-      }}
+      action={
+        canRestore
+          ? {
+              onClick: handleRestore,
+              text: t('banners.deleted-document-banner.restore-button.text'),
+            }
+          : undefined
+      }
       content={
         <Text size={1} weight="medium">
           {t('banners.deleted-document-banner.text')}
