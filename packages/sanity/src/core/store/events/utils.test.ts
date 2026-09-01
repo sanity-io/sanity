@@ -450,14 +450,13 @@ describe('removeDupes', () => {
   })
 
   it('replaces an existing edit event with a non-edit event sharing the same id', () => {
-    // A publish event and the last edit before that publish share the same id.
+    // A publish/delete event and the last edit before it share the same id.
     const edit = editDocumentVersionEvent({id: 'shared', revisionId: 'shared'})
     const publish = publishDocumentVersionEvent({id: 'shared'})
+    const deleted = deleteDocumentVersionEvent({id: 'shared'})
 
-    const result = removeDupes([edit], [publish])
-    // Known quirk: because the types also differ, the publish is stored under both the plain id
-    // key and the synthetic `${id}-${type}` key, so it appears twice in the output.
-    expect(result).toEqual([publish, publish])
+    expect(removeDupes([edit], [publish])).toEqual([publish])
+    expect(removeDupes([edit], [deleted])).toEqual([deleted])
   })
 
   it('keeps both events when two non-edit events share an id but differ in type', () => {

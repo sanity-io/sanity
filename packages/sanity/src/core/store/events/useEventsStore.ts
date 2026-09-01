@@ -71,7 +71,7 @@ export function useEventsStore({
   rev,
   since,
 }: {
-  documentId: string
+  documentId: string | undefined
   documentType: string
   rev?: string | '@lastEdited' | '@lastPublished'
   since?: string | '@lastPublished'
@@ -151,6 +151,7 @@ export function useEventsStore({
 
   const getDocumentAtRevision = useCallback(
     (revision: string) => {
+      if (!documentId) return of(null)
       // Timeline event ids can point at revisions of other documents in the group — e.g. a
       // publish event selected while viewing the draft resolves to a revision of the published
       // document — so the whole group is queried and the revision matched against it.
@@ -209,7 +210,7 @@ export function useEventsStore({
 
   const sinceRevision = useSyncObservable(since$, null)
 
-  const documentVariantType = getDocumentVariantType(documentId)
+  const documentVariantType = documentId ? getDocumentVariantType(documentId) : undefined
   const findRangeForRevision = useCallback(
     (nextRev: string): [string | null, string | null] => {
       if (!events) return [null, null]
