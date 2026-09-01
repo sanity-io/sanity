@@ -151,7 +151,7 @@ importers:
         specifier: ^0.5.2
         version: 0.5.2(eslint@10.9.1)(supports-color@8.1.1)(typescript@7.0.2)
       knip:
-        specifier: ^6.32.2
+        specifier: ^6.33.0
         version: 6.33.0
       lefthook:
         specifier: ^2.1.10
