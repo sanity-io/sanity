@@ -274,7 +274,11 @@ export function validateDocumentWithWorkspace({
 export function validateDocument(
   options: ValidateDocumentOptions,
 ): Promise<DocumentValidationResult> {
-  const {client, document, schema, ...internalOptions} = options
+  const {client, document, getDocumentExists, schema, ...internalOptions} = options
+  const unavailable = () => {
+    throw new ClientUnavailableError()
+  }
+
   return evaluateDocumentInternal({
     ...internalOptions,
     document,
@@ -282,10 +286,8 @@ export function validateDocument(
     getClient: client
       ? // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- runtime-compatible clients may come from another major
         ({apiVersion}) => client.withConfig({apiVersion}) as SanityClient
-      : () => {
-          throw new ClientUnavailableError()
-        },
-    hasClient: Boolean(client),
+      : unavailable,
+    getDocumentExists: getDocumentExists || (client ? undefined : async () => unavailable()),
     i18n: getFallbackLocaleSource(),
     // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- compiled schemas may come from another compatible package version
     schema: schema as Schema,
@@ -304,7 +306,6 @@ export interface ValidateDocumentInternalOptions {
   maxFetchConcurrency?: number
   currentUser?: Omit<CurrentUser, 'role'> | null
   customValidation?: boolean
-  hasClient?: boolean
 }
 
 function createDocumentValidationResult(
@@ -346,7 +347,6 @@ export function evaluateDocumentInternal({
   maxFetchConcurrency,
   currentUser,
   customValidation = true,
-  hasClient = true,
 }: ValidateDocumentInternalOptions): Promise<DocumentValidationResult> {
   const limitConcurrency = createClientConcurrencyLimiter(
     maxFetchConcurrency ?? DEFAULT_MAX_FETCH_CONCURRENCY,
@@ -362,14 +362,11 @@ export function evaluateDocumentInternal({
       schema,
       getDocumentExists:
         getDocumentExists ||
-        (hasClient
-          ? createBatchedGetDocumentExists(getClient(DEFAULT_VALIDATION_CLIENT_OPTIONS))
-          : undefined),
+        createBatchedGetDocumentExists(getClient(DEFAULT_VALIDATION_CLIENT_OPTIONS)),
       environment,
       maxCustomValidationConcurrency,
       currentUser,
       customValidation,
-      hasClient,
     }),
   )
 }
@@ -388,7 +385,6 @@ export interface ValidateDocumentObservableOptions extends Pick<
   maxCustomValidationConcurrency?: number
   currentUser?: Omit<CurrentUser, 'role'> | null
   customValidation?: boolean
-  hasClient?: boolean
 }
 
 const customValidationConcurrencyLimiters = new WeakMap<Schema, ConcurrencyLimiter>()
@@ -417,7 +413,6 @@ export function evaluateDocumentObservable({
   maxCustomValidationConcurrency,
   currentUser,
   customValidation = true,
-  hasClient = true,
 }: ValidateDocumentObservableOptions): Observable<DocumentValidationResult> {
   if (typeof document?._type !== 'string') {
     throw new Error(`Tried to validate a value without a '_type'`)
@@ -458,6 +453,8 @@ export function evaluateDocumentObservable({
     customValidationConcurrencyLimiters.set(schema, customValidationConcurrencyLimiter)
   }
 
+  // `Rule.validate()` returns markers only, so skipped checks are collected through
+  // the validation context while the marker pipeline keeps its stable public shape.
   return defer(() => {
     const skipped: SkippedValidation[] = []
     const validationOptions: ValidateItemOptions = {
@@ -474,10 +471,10 @@ export function evaluateDocumentObservable({
       customValidationConcurrencyLimiter,
       currentUser,
       customValidation,
-      hasClient,
-      __internal: undefined,
-      onSkipped: (value) => {
-        skipped.push(value)
+      __internal: {
+        onSkipped: (value) => {
+          skipped.push(value)
+        },
       },
     }
 
@@ -519,8 +516,6 @@ type ValidateItemOptions = {
   hidden?: boolean
   currentUser?: Omit<CurrentUser, 'role'> | null
   customValidation?: boolean
-  hasClient?: boolean
-  onSkipped?: (skipped: SkippedValidation) => void
 } & ExplicitUndefined<Omit<ValidationContext, 'hidden'>>
 
 export function validateItem(opts: ValidateItemOptions): Promise<ValidationMarker[]> {
@@ -535,8 +530,6 @@ function validateItemObservable({
   customValidationConcurrencyLimiter,
   environment,
   customValidation = true,
-  hasClient = true,
-  onSkipped,
   ...restOfContext
 }: ValidateItemOptions): Observable<ValidationMarker[]> {
   // Track whether any ancestor in the tree is hidden.
@@ -581,7 +574,7 @@ function validateItemObservable({
     ) {
       // then add the validator for unknown fields
       return rule
-        .custom(markValidator(unknownFieldsValidator(type), 'internal'), {
+        .custom(markValidator(unknownFieldsValidator(type), {kind: 'internal'}), {
           bypassConcurrencyLimit: true,
         })
         .warning()
@@ -610,10 +603,9 @@ function validateItemObservable({
         path,
         type,
         __internal: {
+          ...restOfContext.__internal,
           customValidation,
           customValidationConcurrencyLimiter,
-          hasClient,
-          onSkipped,
         },
       }),
     ),
@@ -665,10 +657,9 @@ function validateItemObservable({
                   environment,
                   hidden: nestedHidden,
                   __internal: {
+                    ...restOfContext.__internal,
                     customValidation,
                     customValidationConcurrencyLimiter,
-                    hasClient,
-                    onSkipped,
                   },
                 }),
               )
@@ -689,8 +680,6 @@ function validateItemObservable({
           environment,
           customValidationConcurrencyLimiter,
           customValidation,
-          hasClient,
-          onSkipped,
         }),
       ),
     )
@@ -715,8 +704,6 @@ function validateItemObservable({
           environment,
           customValidationConcurrencyLimiter,
           customValidation,
-          hasClient,
-          onSkipped,
         }),
       ),
     )

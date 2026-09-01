@@ -279,7 +279,6 @@ export interface ValidationContext {
       release: () => void
     }
     customValidation?: boolean
-    hasClient?: boolean
     onSkipped?: (skipped: SkippedValidation) => void
     validationLevel?: ValidationMarker['level']
   }
@@ -437,12 +436,17 @@ export type CustomValidatorResult =
   | ValidationError[]
   | LocalizedValidationMessages
 
+interface ValidatorMetadata {
+  kind: 'internal' | 'unavailable'
+  check?: SkippedValidation['check']
+}
+
 /** @public */
 export interface CustomValidator<T = unknown> {
   (value: T, context: ValidationContext): CustomValidatorResult | Promise<CustomValidatorResult>
   bypassConcurrencyLimit?: boolean
   /** @internal */
-  __sanityValidation?: 'internal' | 'unavailable'
+  __sanityValidation?: ValidatorMetadata
 }
 
 /** @public */
@@ -455,7 +459,7 @@ export interface MediaValidator<T extends MediaAssetTypes = MediaAssetTypes> {
     context: ValidationContext,
   ): CustomValidatorResult | Promise<CustomValidatorResult>
   /** @internal */
-  __sanityValidation?: 'internal' | 'unavailable'
+  __sanityValidation?: ValidatorMetadata
 }
 
 /** @public */

@@ -21,7 +21,7 @@ const builtinSchema = Schema.compile({
 })
 
 function markUnavailableValidator<T extends CustomValidator | MediaValidator>(validator: T): T {
-  validator.__sanityValidation = 'unavailable'
+  validator.__sanityValidation = {kind: 'unavailable'}
   return validator
 }
 

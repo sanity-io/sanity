@@ -4,8 +4,8 @@ type ValidationCallback = CustomValidator | MediaValidator
 
 export function markValidator<T extends ValidationCallback>(
   validator: T,
-  kind: NonNullable<ValidationCallback['__sanityValidation']>,
+  metadata: NonNullable<ValidationCallback['__sanityValidation']>,
 ): T {
-  validator.__sanityValidation = kind
+  validator.__sanityValidation = metadata
   return validator
 }

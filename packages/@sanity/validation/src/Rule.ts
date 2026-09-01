@@ -6,6 +6,7 @@ import {
   type Rule as IRule,
   type RuleClass,
   type SchemaType,
+  type SkippedValidation,
   type ValidationMarker,
   type Validator,
 } from '@sanity/types'
@@ -129,27 +130,37 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
           specConstraint = get(context.parent, specConstraint.path)
         }
 
-        if (curr.flag === 'custom' || curr.flag === 'media') {
-          const validationCallback = specConstraint as CustomValidator | MediaValidator
-          const metadata = validationCallback?.__sanityValidation
+        const validationCallback = specConstraint as CustomValidator | MediaValidator | undefined
+        const metadata = validationCallback?.__sanityValidation
+        let validationCheck: SkippedValidation['check'] | undefined = metadata?.check
+        if (!validationCheck && (curr.flag === 'custom' || curr.flag === 'media')) {
+          validationCheck = curr.flag
+        } else if (!validationCheck && curr.flag === 'reference') {
+          validationCheck = 'referenceExistence'
+        }
+        let clientUnavailableReported = false
+        const reportSkipped = (reason: SkippedValidation['reason']) => {
+          if (!validationCheck) return
+          if (reason === 'clientUnavailable') {
+            if (clientUnavailableReported) return
+            clientUnavailableReported = true
+          }
+          __internal.onSkipped?.({
+            check: validationCheck,
+            level: this._level || 'error',
+            path: context.path || [],
+            reason,
+          })
+        }
 
-          if (metadata === 'unavailable') {
-            __internal.onSkipped?.({
-              check: curr.flag,
-              level: this._level || 'error',
-              path: context.path || [],
-              reason: 'validatorUnavailable',
-            })
+        if (curr.flag === 'custom' || curr.flag === 'media') {
+          if (metadata?.kind === 'unavailable') {
+            reportSkipped('validatorUnavailable')
             return []
           }
 
-          if (metadata !== 'internal' && __internal.customValidation === false) {
-            __internal.onSkipped?.({
-              check: curr.flag,
-              level: this._level || 'error',
-              path: context.path || [],
-              reason: 'customValidationDisabled',
-            })
+          if (metadata?.kind !== 'internal' && __internal.customValidation === false) {
+            reportSkipped('customValidationDisabled')
             return []
           }
         }
@@ -174,25 +185,38 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
           ? localizeMessage(this._message, context.i18n)
           : this._message
 
+        const getDocumentExists = context.getDocumentExists
+        const validatorContext = {
+          ...context,
+          getClient: (options: Parameters<typeof context.getClient>[0]) => {
+            try {
+              return context.getClient(options)
+            } catch (error) {
+              if (error instanceof ClientUnavailableError) reportSkipped('clientUnavailable')
+              throw error
+            }
+          },
+          getDocumentExists: getDocumentExists
+            ? async (options: Parameters<typeof getDocumentExists>[0]) => {
+                try {
+                  return await getDocumentExists(options)
+                } catch (error) {
+                  if (error instanceof ClientUnavailableError) reportSkipped('clientUnavailable')
+                  throw error
+                }
+              }
+            : undefined,
+          __internal: {...__internal, validationLevel: this._level || 'error'},
+        }
+
         try {
-          const result = await validator(specConstraint, value, message, {
-            ...context,
-            __internal: {...__internal, validationLevel: this._level || 'error'},
-          })
+          const result = await validator(specConstraint, value, message, validatorContext)
           return convertToValidationMarker(result, this._level, context, {
             code: fallbackCodeForRule(curr.flag),
           })
         } catch (err) {
-          if (
-            err instanceof ClientUnavailableError &&
-            (curr.flag === 'custom' || curr.flag === 'media')
-          ) {
-            __internal.onSkipped?.({
-              check: curr.flag,
-              level: this._level || 'error',
-              path: context.path || [],
-              reason: 'clientUnavailable',
-            })
+          if (err instanceof ClientUnavailableError && validationCheck) {
+            reportSkipped('clientUnavailable')
             return []
           }
 
