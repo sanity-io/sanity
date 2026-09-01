@@ -431,6 +431,36 @@ const examples: PatchExample[] = [
       a: [{b: 9}],
     },
   },
+  {
+    name: 'Set descending through a negative index into a non-array',
+    before: {
+      a: 'string',
+    },
+    patch: {
+      id: 'a',
+      set: {
+        'a[-1].b': 9,
+      },
+    },
+    after: {
+      a: 'string',
+    },
+  },
+  {
+    name: 'Set descending through an open-ended range into a non-array',
+    before: {
+      a: 'string',
+    },
+    patch: {
+      id: 'a',
+      set: {
+        'a[0:].b': 9,
+      },
+    },
+    after: {
+      a: 'string',
+    },
+  },
 ]
 
 export default examples
