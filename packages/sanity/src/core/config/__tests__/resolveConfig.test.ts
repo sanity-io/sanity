@@ -426,6 +426,10 @@ describe('createSourceFromConfig', () => {
   })
 })
 
+const rootConditions = (context: {dataset: string}) => [
+  {name: 'audience', values: [context.dataset]},
+]
+
 describe('beta variants config', () => {
   const projectId = 'ppsg7ml5'
   const dataset = 'production'
@@ -503,6 +507,77 @@ describe('beta variants config', () => {
         },
       }),
     ).rejects.toThrow('Expected `beta.variants.enabled` to be a boolean, but received string')
+  })
+
+  it('defaults conditions to undefined', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      beta: {variants: {enabled: true}},
+    })
+
+    expect(source.beta?.variants?.conditions).toBeUndefined()
+  })
+
+  it('resolves conditions from root config', async () => {
+    const conditions = [{name: 'audience', values: ['loyal']}]
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      beta: {variants: {enabled: true, conditions}},
+    })
+
+    expect(source.beta?.variants?.conditions).toEqual(conditions)
+  })
+
+  it('resolves conditions from plugin config', async () => {
+    const conditions = [{name: 'locale', values: ['en-US']}]
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        definePlugin({
+          name: 'sanity/beta-variants-conditions',
+          beta: {variants: {conditions}},
+        })(),
+      ],
+    })
+
+    expect(source.beta?.variants?.conditions).toEqual(conditions)
+  })
+
+  it('lets root config override plugin conditions', async () => {
+    const pluginConditions = [{name: 'audience', values: ['plugin']}]
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        definePlugin({
+          name: 'sanity/beta-variants-conditions',
+          beta: {variants: {conditions: pluginConditions}},
+        })(),
+      ],
+      beta: {variants: {conditions: rootConditions}},
+    })
+
+    expect(source.beta?.variants?.conditions).toBe(rootConditions)
+  })
+
+  it('throws when conditions is not an array or a function', async () => {
+    await expect(
+      createSourceFromConfig({
+        projectId,
+        dataset,
+        beta: {
+          variants: {
+            // @ts-expect-error should be an array or a function
+            conditions: 'audience',
+          },
+        },
+      }),
+    ).rejects.toThrow(
+      'Expected `beta.variants.conditions` to be an array or a function, but received string',
+    )
   })
 })
 

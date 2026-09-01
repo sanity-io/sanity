@@ -1289,6 +1289,40 @@ export interface MediaLibraryConfig {
 }
 
 /**
+ * A selectable value for a known variant condition key.
+ *
+ * @internal
+ */
+export interface VariantConditionValue {
+  value: string
+  title?: string
+  description?: string
+}
+
+/**
+ * A known variant condition key and the values it may take.
+ *
+ * @internal
+ */
+export interface VariantConditionMap {
+  /** Persisted condition key. */
+  name: string
+  /** Picker heading; falls back to {@link VariantConditionMap.name}. */
+  title?: string
+  description?: string
+  values: string[] | VariantConditionValue[]
+}
+
+/**
+ * Static or resolved list of known variant conditions.
+ *
+ * @internal
+ */
+export type VariantConditions =
+  | VariantConditionMap[]
+  | ((context: ConfigContext) => VariantConditionMap[] | Promise<VariantConditionMap[]>)
+
+/**
  * @internal
  * Configuration for studio beta features.
  * */
@@ -1354,6 +1388,14 @@ export interface BetaFeatures {
    */
   variants?: {
     enabled?: boolean
+    /**
+     * Optional list of known variant condition keys and values.
+     * When set, the create/edit form shows a card picker instead of free-text fields.
+     * Accepts a static array or a function that may return a promise (for example to
+     * load conditions from a CDP). The function is called when the form opens, not at
+     * studio boot.
+     */
+    conditions?: VariantConditions
   }
   /**
    * Control whether the preview of the new document group inventory is

@@ -3,6 +3,7 @@ import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {type SingleWorkspace} from '../../../../config/types'
 import {variantsUsEnglishLocaleBundle} from '../../../i18n'
 import {type EditableSystemVariant} from '../../../types'
 import {getVariantDefaults} from '../../../util/variantDefaults'
@@ -27,10 +28,12 @@ describe('VariantDialog', () => {
   })
 
   const renderDialog = async (props?: {
+    config?: Partial<SingleWorkspace>
     initialValue?: EditableSystemVariant
     renderCancelButton?: boolean
   }) => {
     const wrapper = await createTestProvider({
+      config: props?.config,
       resources: [variantsUsEnglishLocaleBundle],
     })
     const result = render(
@@ -150,5 +153,36 @@ describe('VariantDialog', () => {
     expect(onCancel).not.toHaveBeenCalled()
 
     consoleError.mockRestore()
+  })
+
+  it('keeps unknown existing conditions when configured conditions are set', async () => {
+    await renderDialog({
+      config: {
+        beta: {
+          variants: {
+            enabled: true,
+            conditions: [
+              {
+                name: 'audience',
+                title: 'Audience',
+                values: [{value: 'loyal', title: 'Loyal customers'}],
+              },
+            ],
+          },
+        },
+      },
+      initialValue: {
+        ...getVariantDefaults(),
+        metadata: {title: 'Legacy audience', description: []},
+        conditions: {legacy: 'old-value'},
+      },
+    })
+
+    expect(screen.getByTestId('variant-form-condition-key-selected')).toHaveTextContent('legacy')
+    expect(screen.getByTestId('variant-form-condition-value-selected')).toHaveTextContent(
+      'old-value',
+    )
+    expect(screen.queryByTestId('variant-form-condition-key')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', {name: 'Add condition'})).toBeEnabled()
   })
 })

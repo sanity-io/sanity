@@ -4,7 +4,7 @@ import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type Path} from '@sanity/mutate'
 import {type PortableTextBlock} from '@sanity/types'
-import {Inline, Stack, Text, TextArea, TextInput} from '@sanity/ui'
+import {Inline, Skeleton, Stack, Text, TextArea, TextInput} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
 import {type ChangeEvent, useCallback, useId, useMemo, useState} from 'react'
 import {Flex, Box} from 'ui5'
@@ -13,6 +13,7 @@ import {Button} from '../../../../ui-components/button/Button'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useVariantConditions} from '../../hooks/useVariantConditions'
 import {type VariantsLocaleResourceKeys, variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
 import {type EditableSystemVariant} from '../../types'
@@ -24,6 +25,7 @@ import {getVariantTitleValue} from '../../util/getIsVariantInvalid'
 import {getPriorityInputValidationError} from '../../util/priorityValidation'
 import {createPortableTextDescription} from '../../util/variantDefaults'
 import {ConditionAutocompleteInput} from './ConditionAutocompleteInput'
+import {ConditionMappedRow} from './ConditionMappedRow'
 import {
   buildConditionSuggestionIndex,
   getConditionKeyOptions,
@@ -145,7 +147,12 @@ export function VariantForm(props: {
   } = props
   const {t} = useTranslation(variantsLocaleNamespace)
   const {data: variants} = useAllVariants()
+  const conditionsConfig = useVariantConditions()
   const suggestionIndex = useMemo(() => buildConditionSuggestionIndex(variants), [variants])
+  const mappedDefinitions =
+    conditionsConfig.mode === 'mapped' && conditionsConfig.status === 'ready'
+      ? conditionsConfig.definitions
+      : []
   const titleId = useId()
   const descriptionId = useId()
   const priorityId = useId()
@@ -158,6 +165,11 @@ export function VariantForm(props: {
     () => getConditionRowsValidation(conditionRows),
     [conditionRows],
   )
+  const usedConditionKeys = useMemo(
+    () => new Set(conditionRows.map((row) => row.key.trim()).filter(Boolean)),
+    [conditionRows],
+  )
+  const hasUnusedMappedKeys = mappedDefinitions.some((item) => !usedConditionKeys.has(item.name))
 
   const hasTitle = Boolean(getVariantTitleValue(value))
   const showTitleError = showValidation && !hasTitle
@@ -165,9 +177,15 @@ export function VariantForm(props: {
   const showPriorityError = showValidation && priorityValidationError
 
   const lastConditionRow = conditionRows[conditionRows.length - 1]
-  const canAddCondition = Boolean(
+  const lastConditionComplete = Boolean(
     lastConditionRow && !hasConditionRowsValidationErrors(conditionsValidation),
   )
+  const canAddCondition =
+    lastConditionComplete && (conditionsConfig.mode === 'freeform' || hasUnusedMappedKeys)
+  const addConditionDisabledHint =
+    lastConditionComplete && conditionsConfig.mode === 'mapped' && !hasUnusedMappedKeys
+      ? t('dialog.create.action.add-condition.none-remaining')
+      : t('dialog.create.action.add-condition.disabled-hint')
 
   const updateConditionRows = useCallback(
     (nextRows: ConditionRow[]) => {
@@ -223,6 +241,17 @@ export function VariantForm(props: {
     (index: number, field: 'key' | 'value', nextValue: string) => {
       const nextRows = conditionRows.map((row, rowIndex) =>
         rowIndex === index ? {...row, [field]: nextValue} : row,
+      )
+
+      updateConditionRows(nextRows)
+    },
+    [conditionRows, updateConditionRows],
+  )
+
+  const handleMappedKeyChange = useCallback(
+    (index: number, nextKey: string) => {
+      const nextRows = conditionRows.map((row, rowIndex) =>
+        rowIndex === index ? {...row, key: nextKey, value: ''} : row,
       )
 
       updateConditionRows(nextRows)
@@ -327,67 +356,115 @@ export function VariantForm(props: {
           </Text>
         </Stack>
 
-        <Stack gap={2}>
-          {conditionRows.map((row, index) => {
-            const validation = conditionsValidation.get(index) ?? getEmptyConditionRowValidation()
-            const valueValidation = showValidation ? validation.value : null
-            const conditionValidationError = validation.key || valueValidation
+        {conditionsConfig.mode === 'mapped' && conditionsConfig.status === 'loading' ? (
+          <Stack data-testid="variant-form-conditions-loading" gap={2}>
+            <Text muted size={1}>
+              {t('dialog.create.conditions.loading')}
+            </Text>
+            <Skeleton animated radius={2} style={{height: 52}} />
+            <Skeleton animated radius={2} style={{height: 52}} />
+          </Stack>
+        ) : null}
 
-            return (
-              <Stack key={row.id} gap={2}>
-                <Flex alignItems="center" gap={2}>
-                  <Box flexBasis="0%" flexGrow={1}>
-                    <ConditionAutocompleteInput
-                      autoFocus={index > 0}
-                      ariaLabel={t('dialog.create.condition-key.label')}
-                      customValidity={validation.key ? t(validation.key) : undefined}
-                      invalid={Boolean(validation.key)}
-                      onChange={(nextValue) => handleConditionChange(index, 'key', nextValue)}
-                      options={getConditionKeyOptions(suggestionIndex, conditionRows, index)}
-                      placeholder={t('dialog.create.condition-key.placeholder')}
-                      testId="variant-form-condition-key"
-                      value={row.key}
+        {conditionsConfig.mode === 'mapped' && conditionsConfig.status === 'error' ? (
+          <Stack data-testid="variant-form-conditions-error" gap={3}>
+            <TextWithTone size={1} tone="critical">
+              {t('dialog.create.conditions.error')}
+            </TextWithTone>
+            <Flex>
+              <Button
+                mode="ghost"
+                onClick={conditionsConfig.retry}
+                text={t('dialog.create.conditions.retry')}
+                type="button"
+              />
+            </Flex>
+          </Stack>
+        ) : null}
+
+        {conditionsConfig.mode === 'mapped' && conditionsConfig.status === 'ready' ? (
+          <Stack gap={3}>
+            {conditionRows.map((row, index) => (
+              <ConditionMappedRow
+                definitions={mappedDefinitions}
+                disableRemove={isConditionRowEmpty(row) && conditionRows.length === 1}
+                key={row.id}
+                onClearKey={() => handleMappedKeyChange(index, '')}
+                onClearValue={() => handleConditionChange(index, 'value', '')}
+                onRemove={() => handleRemoveCondition(index)}
+                onSelectKey={(nextKey) => handleMappedKeyChange(index, nextKey)}
+                onSelectValue={(nextValue) => handleConditionChange(index, 'value', nextValue)}
+                selectedKey={row.key}
+                selectedValue={row.value}
+                usedKeys={usedConditionKeys}
+              />
+            ))}
+          </Stack>
+        ) : null}
+
+        {conditionsConfig.mode === 'freeform' ? (
+          <Stack gap={2}>
+            {conditionRows.map((row, index) => {
+              const validation = conditionsValidation.get(index) ?? getEmptyConditionRowValidation()
+              const valueValidation = showValidation ? validation.value : null
+              const conditionValidationError = validation.key || valueValidation
+
+              return (
+                <Stack key={row.id} gap={2}>
+                  <Flex alignItems="center" gap={2}>
+                    <Box flexBasis="0%" flexGrow={1}>
+                      <ConditionAutocompleteInput
+                        autoFocus={index > 0}
+                        ariaLabel={t('dialog.create.condition-key.label')}
+                        customValidity={validation.key ? t(validation.key) : undefined}
+                        invalid={Boolean(validation.key)}
+                        onChange={(nextValue) => handleConditionChange(index, 'key', nextValue)}
+                        options={getConditionKeyOptions(suggestionIndex, conditionRows, index)}
+                        placeholder={t('dialog.create.condition-key.placeholder')}
+                        testId="variant-form-condition-key"
+                        value={row.key}
+                      />
+                    </Box>
+                    <Box flexBasis="0%" flexGrow={1}>
+                      <ConditionAutocompleteInput
+                        ariaLabel={t('dialog.create.condition-value.label')}
+                        customValidity={valueValidation ? t(valueValidation) : undefined}
+                        invalid={Boolean(valueValidation)}
+                        onChange={(nextValue) => handleConditionChange(index, 'value', nextValue)}
+                        options={getConditionValueOptions(suggestionIndex, row.key)}
+                        placeholder={t('dialog.create.condition-value.placeholder')}
+                        testId="variant-form-condition-value"
+                        value={row.value}
+                      />
+                    </Box>
+                    <Button
+                      disabled={isConditionRowEmpty(row) && conditionRows.length === 1}
+                      icon={TrashIcon}
+                      mode="bleed"
+                      onClick={() => handleRemoveCondition(index)}
+                      tone="critical"
+                      tooltipProps={{content: t('dialog.create.remove-condition')}}
+                      type="button"
                     />
-                  </Box>
-                  <Box flexBasis="0%" flexGrow={1}>
-                    <ConditionAutocompleteInput
-                      ariaLabel={t('dialog.create.condition-value.label')}
-                      customValidity={valueValidation ? t(valueValidation) : undefined}
-                      invalid={Boolean(valueValidation)}
-                      onChange={(nextValue) => handleConditionChange(index, 'value', nextValue)}
-                      options={getConditionValueOptions(suggestionIndex, row.key)}
-                      placeholder={t('dialog.create.condition-value.placeholder')}
-                      testId="variant-form-condition-value"
-                      value={row.value}
-                    />
-                  </Box>
-                  <Button
-                    disabled={isConditionRowEmpty(row) && conditionRows.length === 1}
-                    icon={TrashIcon}
-                    mode="bleed"
-                    onClick={() => handleRemoveCondition(index)}
-                    tone="critical"
-                    tooltipProps={{content: t('dialog.create.remove-condition')}}
-                    type="button"
-                  />
-                </Flex>
-                {conditionValidationError && (
-                  <TextWithTone
-                    data-testid={
-                      validation.key
-                        ? 'variant-form-condition-key-error'
-                        : 'variant-form-condition-value-error'
-                    }
-                    size={1}
-                    tone="critical"
-                  >
-                    {t(conditionValidationError)}
-                  </TextWithTone>
-                )}
-              </Stack>
-            )
-          })}
-        </Stack>
+                  </Flex>
+                  {conditionValidationError ? (
+                    <TextWithTone
+                      data-testid={
+                        validation.key
+                          ? 'variant-form-condition-key-error'
+                          : 'variant-form-condition-value-error'
+                      }
+                      size={1}
+                      tone="critical"
+                    >
+                      {t(conditionValidationError)}
+                    </TextWithTone>
+                  ) : null}
+                </Stack>
+              )
+            })}
+          </Stack>
+        ) : null}
 
         <Flex>
           <Button
@@ -396,11 +473,7 @@ export function VariantForm(props: {
             mode="ghost"
             onClick={handleAddCondition}
             text={t('dialog.create.action.add-condition')}
-            tooltipProps={
-              canAddCondition
-                ? null
-                : {content: t('dialog.create.action.add-condition.disabled-hint')}
-            }
+            tooltipProps={canAddCondition ? null : {content: addConditionDisabledHint}}
             type="button"
           />
         </Flex>
