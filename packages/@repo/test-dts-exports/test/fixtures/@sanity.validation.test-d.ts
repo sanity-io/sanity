@@ -31,6 +31,12 @@ describe('@sanity/validation', () => {
   test('ValidateDocumentOptions', () => {
     expectTypeOf<ValidateDocumentOptions>().toBeObject()
   })
+  test('validateDocumentWithWorkspace', () => {
+    expectTypeOf<typeof validateDocumentWithWorkspace>().toBeFunction()
+  })
+  test('ValidateDocumentWorkspaceOptions', () => {
+    expectTypeOf<ValidateDocumentWorkspaceOptions>().toBeObject()
+  })
   test('ValidationClient', () => {
     expectTypeOf<ValidationClient>().toBeObject()
   })
@@ -40,16 +46,10 @@ describe('@sanity/validation', () => {
   test('validationMarkerCodes', () => {
     expectTypeOf<typeof validationMarkerCodes>().not.toBeNever()
   })
-  test('validateDocumentWithWorkspace', () => {
-    expectTypeOf<typeof validateDocumentWithWorkspace>().toBeFunction()
-  })
-  test('ValidateDocumentWorkspaceOptions', () => {
-    expectTypeOf<ValidateDocumentWorkspaceOptions>().toBeObject()
+  test('ValidationSchema', () => {
+    expectTypeOf<ValidationSchema>().toBeObject()
   })
   test('ValidationSource', () => {
     expectTypeOf<ValidationSource>().toBeObject()
-  })
-  test('ValidationSchema', () => {
-    expectTypeOf<ValidationSchema>().toBeObject()
   })
 })
