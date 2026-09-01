@@ -2125,9 +2125,6 @@ importers:
       semver:
         specifier: ^7.8.5
         version: 7.8.5
-      shallow-equals:
-        specifier: ^1.0.0
-        version: 1.0.0
       speakingurl:
         specifier: ^14.0.1
         version: 14.0.1
@@ -2222,9 +2219,6 @@ importers:
       '@types/semver':
         specifier: ^7.7.1
         version: 7.8.0
-      '@types/shallow-equals':
-        specifier: ^1.0.3
-        version: 1.0.3
       '@types/speakingurl':
         specifier: ^13.0.6
         version: 13.0.6
@@ -8028,9 +8022,6 @@ packages:
   '@types/semver@7.8.0':
     resolution: {integrity: sha512-1mAINjtQCXXeLkJ9ehXkwOcBpqtLxiVtKhpUf83DdRNdQKV0iXZpaHYqRr7nj+wvxuJzoAmAwXI+sCNMv1CzLQ==}
 
-  '@types/shallow-equals@1.0.3':
-    resolution: {integrity: sha512-xZx/hZsf1p9J5lGN/nGTsuW/chJCdlyGxilwg1TS78rygBCU5bpY50zZiFcIimlnl0p41kAyaASsy0bqU7WyBA==}
-
   '@types/speakingurl@13.0.6':
     resolution: {integrity: sha512-ywkRHNHBwq0mFs/2HRgW6TEBAzH66G8f2Txzh1aGR0UC9ZoAUHfHxLZGDhwMpck4BpSnB61eNFIFmlV+TJ+KUA==}
 
@@ -13549,9 +13540,6 @@ packages:
   shallow-clone@3.0.1:
     resolution: {integrity: sha512-/6KqX+GVUdqPuPPd2LxDDxzX6CAbjJehAAOKlNpqqUpAqPM6HeL8f+o3a+JsyGjn2lv0WY8UsTgUJjU9Ok55NA==}
     engines: {node: '>=8'}
-
-  shallow-equals@1.0.0:
-    resolution: {integrity: sha512-xd/FKcdmfmMbyYCca3QTVEJtqUOGuajNzvAX6nt8dXILwjAIEkfHc4hI8/JMGApAmb7VeULO0Q30NTxnbH/15g==}
 
   sharp@0.34.5:
     resolution: {integrity: sha512-Ou9I5Ft9WNcCbXrU9cMgPBcCK8LiwLqcbywW3t4oDV37n1pzpuNLsYiAV8eODnjbtQlSDwZ2cUEeQz4E54Hltg==}
@@ -20999,8 +20987,6 @@ snapshots:
 
   '@types/semver@7.8.0': {}
 
-  '@types/shallow-equals@1.0.3': {}
-
   '@types/speakingurl@13.0.6': {}
 
   '@types/tough-cookie@4.0.0':
@@ -27019,8 +27005,6 @@ snapshots:
   shallow-clone@3.0.1:
     dependencies:
       kind-of: 6.0.3
-
-  shallow-equals@1.0.0: {}
 
   sharp@0.34.5:
     dependencies:
