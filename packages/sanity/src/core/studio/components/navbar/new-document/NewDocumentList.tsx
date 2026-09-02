@@ -1,7 +1,8 @@
 import {type CurrentUser} from '@sanity/types'
-import {Flex, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {CommandList} from '../../../../components/commandList/CommandList'
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
@@ -64,12 +65,12 @@ export function NewDocumentList(props: NewDocumentListProps) {
   if (!hasOptions && searchQuery) {
     return (
       <ContentFlex
-        align="center"
-        flex={1}
-        height="fill"
-        justify="center"
+        alignItems="center"
+        flexBasis="0%"
+        flexGrow={1}
+        height="100%"
+        justifyContent="center"
         padding={4}
-        sizing="border"
       >
         <Text align="center" muted size={1}>
           <Translate t={t} i18nKey="new-document.no-results" values={{searchQuery}} />
@@ -82,12 +83,12 @@ export function NewDocumentList(props: NewDocumentListProps) {
   if (!hasOptions) {
     return (
       <ContentFlex
-        align="center"
-        flex={1}
-        height="fill"
-        justify="center"
+        alignItems="center"
+        flexBasis="0%"
+        flexGrow={1}
+        height="100%"
+        justifyContent="center"
         padding={4}
-        sizing="border"
       >
         <Text align="center" muted size={1}>
           {t('new-document.no-document-types-found')}

@@ -10,6 +10,7 @@ import {InputStory} from './InputStory'
 const meta = {
   title: 'Portable Text/Input',
   component: InputStory,
+  tags: ['!dev', '!autodocs', 'vrt-only'],
   parameters: {chromatic: {delay: 300}},
 } satisfies Meta<typeof InputStory>
 

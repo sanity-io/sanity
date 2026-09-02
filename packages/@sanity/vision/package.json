@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "6.11.0",
+  "version": "6.12.0",
   "description": "Sanity plugin for running/debugging GROQ-queries against Sanity datasets",
   "keywords": [
     "admin",
@@ -69,9 +69,9 @@
     "@codemirror/commands": "^6.11.0",
     "@codemirror/lang-javascript": "^6.2.5",
     "@codemirror/language": "^6.12.4",
-    "@codemirror/search": "^6.7.1",
-    "@codemirror/state": "^6.7.1",
-    "@codemirror/view": "^6.43.9",
+    "@codemirror/search": "^6.7.2",
+    "@codemirror/state": "^6.7.2",
+    "@codemirror/view": "^6.43.10",
     "@lezer/highlight": "^1.2.3",
     "@rexxars/react-json-inspector": "^9.0.1",
     "@rexxars/react-split-pane": "^1.0.0",
@@ -91,7 +91,7 @@
     "react-rx": "catalog:",
     "rxjs": "^7.8.2",
     "ui5": "catalog:",
-    "use-effect-event": "^2.0.3"
+    "use-effect-event": "^2.0.4"
   },
   "devDependencies": {
     "@repo/package.bundle": "workspace:*",
@@ -99,7 +99,7 @@
     "@repo/tsconfig": "workspace:*",
     "@repo/tsdown.config": "workspace:*",
     "@sanity/vanilla-extract-vite-plugin": "catalog:",
-    "@testing-library/react": "^16.3.2",
+    "@testing-library/react": "^16.3.3",
     "@types/lodash-es": "^4.17.12",
     "@types/react": "catalog:",
     "@vanilla-extract/css": "catalog:",

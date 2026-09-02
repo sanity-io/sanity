@@ -1,0 +1,45 @@
+{
+  "name": "radar",
+  "version": "6.9.2",
+  "private": true,
+  "description": "Studio Radar — operational intelligence for this repo (perf benchmark trends from perf/bench, drift triage, bisect, releases)",
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "type": "module",
+  "scripts": {
+    "backfill-benchrun-refs": "node --conditions=monorepo --import tsx scripts/backfillBenchRunCommitRefs.ts",
+    "build": "sanity build",
+    "clean": "rimraf .sanity dist",
+    "dev": "sanity dev --port 3399",
+    "start": "sanity preview --port 3399",
+    "sync-git": "node --conditions=monorepo --import tsx scripts/syncGitHistory.ts"
+  },
+  "dependencies": {
+    "@repo/utils": "workspace:*",
+    "@sanity/client": "catalog:",
+    "@sanity/icons": "^5.2.1",
+    "@sanity/ui": "catalog:",
+    "@visx/axis": "^4.0.0",
+    "@visx/group": "^4.0.0",
+    "@visx/responsive": "^4.0.0",
+    "@visx/scale": "^4.0.0",
+    "@visx/shape": "^4.0.0",
+    "oxc-transform-react": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "react-rx": "catalog:",
+    "rxjs": "^7.8.2",
+    "sanity": "workspace:*",
+    "styled-components": "catalog:",
+    "ui5": "catalog:",
+    "vite": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/test-config": "workspace:*",
+    "@sanity/vanilla-extract-vite-plugin": "catalog:",
+    "@types/react": "catalog:",
+    "rimraf": "catalog:",
+    "tsx": "^4.23.13",
+    "vitest": "catalog:"
+  }
+}

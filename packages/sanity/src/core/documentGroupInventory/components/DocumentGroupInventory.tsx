@@ -265,9 +265,19 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                         timeout({first: 30_000}),
                       )
 
-                    const targetPair = await firstValueFrom(readTargetPair)
-                    const baseVariant = targetPair[editStateSlot]
+                    // Live-edit documents have no drafts sibling: create the variant-of-published
+                    // even when the selected bundle is drafts. Release bundles still target the release.
+                    const createPerspective =
+                      schema?.liveEdit && input.bundle === ('drafts' satisfies SystemBundle)
+                        ? 'published'
+                        : input.bundle
 
+                    const targetPair = await firstValueFrom(readTargetPair)
+                    const baseVariant =
+                      editStateSlot === 'draft'
+                        ? // in drafts fallback to published, the ui shows the published when seeing a "non existent" draft
+                          targetPair[editStateSlot] || targetPair.published
+                        : targetPair[editStateSlot]
                     // If there is no base variant, create an empty variant.
                     if (baseVariant === null) {
                       await createVariantDocument({
@@ -276,7 +286,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                           _type: documentType,
                         },
                         variant: input.variantDefinition,
-                        selectedPerspective: input.bundle,
+                        selectedPerspective: createPerspective,
                         signal,
                       })
                     }
@@ -287,7 +297,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                         documentGroupId: getPublishedId(documentId),
                         baseId: baseVariant._id,
                         variant: input.variantDefinition,
-                        selectedPerspective: input.bundle,
+                        selectedPerspective: createPerspective,
                         signal,
                       })
                     }
@@ -312,6 +322,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
           documentType,
           documentId,
           documentStore.pair,
+          schema,
         ],
       ),
     },

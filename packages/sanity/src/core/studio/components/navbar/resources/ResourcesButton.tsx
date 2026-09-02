@@ -101,13 +101,11 @@ export function ResourcesButton() {
         id="menu-button-resources"
         menu={
           <StyledMenu data-testid="menu-button-resources">
-            {!isInDashboard && (
-              <>
-                {feedbackAvailable && <FeedbackMenuItem onClick={handleOpenFeedback} />}
-                <DiagnosticsMenuItem onClick={handleOpenDiagnostics} />
-                <MenuDivider />
-              </>
+            {!isInDashboard && feedbackAvailable && (
+              <FeedbackMenuItem onClick={handleOpenFeedback} />
             )}
+            <DiagnosticsMenuItem onClick={handleOpenDiagnostics} />
+            <MenuDivider />
             <ResourcesMenuItems
               currentVersion={currentVersion}
               latestTaggedVersion={latestTaggedVersion}

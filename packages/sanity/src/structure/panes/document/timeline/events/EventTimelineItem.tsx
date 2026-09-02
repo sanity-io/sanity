@@ -1,4 +1,4 @@
-import {Card, Flex} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
 import {
   type DocumentGroupEvent,
@@ -10,6 +10,7 @@ import {
   isUnscheduleDocumentVersionEvent,
   useTranslation,
 } from 'sanity'
+import {Flex} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 

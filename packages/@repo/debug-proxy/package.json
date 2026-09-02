@@ -26,15 +26,15 @@
     "@optique/core": "catalog:",
     "@optique/run": "catalog:",
     "@vitejs/plugin-basic-ssl": "^2.3.0",
-    "es-toolkit": "^1.51.0",
-    "eventsource-parser": "^3.1.1",
+    "es-toolkit": "^1.52.0",
+    "eventsource-parser": "^4.1.0",
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@types/node": "catalog:",
-    "tsx": "^4.23.12",
+    "tsx": "^4.23.13",
     "vite": "catalog:",
     "vitest": "catalog:"
   },

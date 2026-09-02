@@ -33,6 +33,31 @@ interface InitialFetchEventsOptions {
   client: SanityClient
   documentId: string
 }
+
+/**
+ * Creates the events-fetching pipeline for a document: an `events$` observable plus `loadMore` /
+ * `reloadEvents` triggers, all driven by a single refetch subject.
+ *
+ * Fetching:
+ * - Events come from `/data/history/<dataset>/events/documents/<id>` with `limit` 100 for
+ *   initial/loadMore fetches and 10 for reloads; each event gets a client-side id via `addEventId`.
+ * - For draft/version variants (not published, not loadMore), edit events are synthesized for the
+ *   fetched batch: the "baseline" event is the creation event (version) or the newest
+ *   revision-bearing non-delete event (draft), and transactions from that revision to the present
+ *   are fetched and mapped through `getEditEvents`. Known quirk: when the batch has no baseline
+ *   (e.g. reload's 10-event window misses it, or history was cleared), transactions are fetched
+ *   with `fromTransaction: ''` — the entire translog (tracked as a known issue).
+ * - A synthetic `historyCleared` event (id `history-cleared`, timestamped 1ms before the oldest
+ *   edit event) is prepended when the API returns no events but edit transactions exist.
+ *
+ * Accumulation (`scan`):
+ * - New batches merge into the previous list via `removeDupes` (existing events are kept).
+ * - Reloads keep the previous `nextCursor`; initial/loadMore fetches take the response cursor.
+ * - Errors are logged, emitted on `error`, and keep previously accumulated events (but reset the
+ *   emitted cursor for non-reload origins, which disables further pagination — known issue).
+ *
+ * `loadMore` is a no-op unless a cursor exists and differs from the last cursor requested.
+ */
 export function getInitialFetchEvents({client, documentId}: InitialFetchEventsOptions) {
   const documentVariantType = getDocumentVariantType(documentId)
   const refetchEventsTrigger$ = new BehaviorSubject<{

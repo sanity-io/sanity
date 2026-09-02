@@ -1,7 +1,8 @@
 /* oxlint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-string-literals, @sanity/i18n/no-attribute-template-literals -- Diagnostics uses fixed English terminology so support and users see the same technical labels. */
-import {Card, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Heading, Stack, Text} from '@sanity/ui'
 import {memo, type PointerEvent as ReactPointerEvent, useCallback, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {
@@ -237,7 +238,7 @@ export function RequestPerformanceReport({
 
   return (
     <Stack gap={2}>
-      <Flex align="center" gap={3} justify="space-between" wrap="wrap">
+      <Flex alignItems="center" gap={3} justifyContent="space-between" flexWrap="wrap">
         <Heading as="h2" size={1}>
           Recent request timings
         </Heading>
@@ -265,7 +266,7 @@ export function RequestPerformanceReport({
               useUtc={useUtc}
             />
 
-            <Flex align="center" gap={3} justify="space-between" wrap="wrap">
+            <Flex alignItems="center" gap={3} justifyContent="space-between" flexWrap="wrap">
               <Text muted size={1}>
                 {timeRange
                   ? `${formatTime(timeRange.start, useUtc)} to ${formatTime(timeRange.end, useUtc)}`
@@ -540,7 +541,7 @@ function PointTooltip({point, useUtc}: {point: ChartPoint; useUtc: boolean}) {
     <PointTooltipPositioner $x={x} $y={y} role="tooltip">
       <Card border padding={3} radius={2} shadow={2}>
         <Stack gap={3}>
-          <Flex align="center" gap={2}>
+          <Flex alignItems="center" gap={2}>
             <SeriesMarker aria-hidden="true" viewBox="-6 -6 12 12">
               <g fill={style.color} stroke="none">
                 <PointMarker shape={style.marker} />
@@ -562,7 +563,7 @@ function PointTooltip({point, useUtc}: {point: ChartPoint; useUtc: boolean}) {
 
 function TooltipDetail({label, value}: {label: string; value: string}) {
   return (
-    <Flex align="baseline" gap={3} justify="space-between">
+    <Flex alignItems="baseline" gap={3} justifyContent="space-between">
       <Text muted size={1}>
         {label}
       </Text>

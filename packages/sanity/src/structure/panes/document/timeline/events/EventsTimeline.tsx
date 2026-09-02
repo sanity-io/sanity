@@ -1,4 +1,4 @@
-import {Flex, Spinner, Stack, Text} from '@sanity/ui'
+import {Spinner, Stack, Text} from '@sanity/ui'
 import {motion, type Variants} from 'motion/react'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
@@ -13,7 +13,7 @@ import {
   LoadingBlock,
   useTranslation,
 } from 'sanity'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {ExpandableTimelineItemButton} from '../expandableTimelineItemButton'
 import {ListWrapper, Root} from '../timeline.styled'
@@ -173,7 +173,7 @@ export const EventsTimeline = ({
             transition={{duration: 0.2, delay: 0.2}}
           >
             {/* We need this item to match the same height as the rest of the list items, which is 57px */}
-            <Flex align="center" justify="center" style={{height: ITEM_HEIGHT}}>
+            <Flex alignItems="center" justifyContent="center" style={{height: ITEM_HEIGHT}}>
               <Spinner />
             </Flex>
           </TimelineItemWrapper>
@@ -235,7 +235,11 @@ export const EventsTimeline = ({
       data-ui="timeline"
     >
       {events.length > 0 ? (
-        <ListWrapper direction="column" $maxHeight={listMaxHeight} id={TIMELINE_LIST_WRAPPER_ID}>
+        <ListWrapper
+          flexDirection="column"
+          $maxHeight={listMaxHeight}
+          id={TIMELINE_LIST_WRAPPER_ID}
+        >
           <CommandList
             activeItemDataAttr="data-hovered"
             ariaLabel={t('timeline.list.aria-label')}

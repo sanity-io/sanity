@@ -14,8 +14,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import {concat, type Observable, of} from 'rxjs'
-import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
+import {type Observable} from 'rxjs'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
@@ -25,9 +24,8 @@ import {PreviewCard, ReferenceInputPreviewCard} from '../../../components/previe
 import {type FIXME} from '../../../FIXME'
 import {useFeatureEnabled, FEATURES} from '../../../hooks/useFeatureEnabled'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useSearchMachine} from '../../../search/useSearchMachine'
 import {getPublishedId} from '../../../util/draftUtils'
-import {isNonNullable} from '../../../util/isNonNullable'
-import {useObservableEvent} from '../../../util/useObservableEvent'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {set, unset} from '../../patch/patch'
 import {type ObjectInputProps} from '../../types/inputProps'
@@ -38,14 +36,9 @@ import {DisabledFeatureWarning} from './DisabledFeatureWarning'
 import {OptionPreview} from './OptionPreview'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
 import {ReferenceAutocomplete} from './ReferenceAutocomplete'
-import {type CrossDatasetReferenceInfo, type CrossDatasetSearchHit, type SearchState} from './types'
+import {type CrossDatasetReferenceInfo, type CrossDatasetSearchHit} from './types'
 import {type GetReferenceInfoFn, useReferenceInfo} from './useReferenceInfo'
 import {useProjectId} from './utils/useProjectId'
-
-const INITIAL_SEARCH_STATE: SearchState = {
-  hits: [],
-  isLoading: false,
-}
 
 /** @internal */
 export interface CrossDatasetReferenceInputProps extends ObjectInputProps<
@@ -85,7 +78,23 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   const {t} = useTranslation()
   const projectId = useProjectId()
 
-  const [searchState, setSearchState] = useState<SearchState>(INITIAL_SEARCH_STATE)
+  const {push} = useToast()
+  const inputId = useId()
+
+  const {searchState, handleQueryChange} = useSearchMachine<CrossDatasetSearchHit>({
+    search: onSearch,
+    distinct: true,
+    onSearchFailed: (error) => {
+      push({
+        title: 'Reference search failed',
+        description: error.message,
+        status: 'error',
+        id: `reference-search-fail-${inputId}`,
+      })
+
+      console.error(error)
+    },
+  })
 
   const handleChange = useCallback(
     (id: string) => {
@@ -178,8 +187,6 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
     onChange(schemaType.weak === true ? set(true, ['_weak']) : unset(['_weak']))
   }, [onChange, schemaType])
 
-  const {push} = useToast()
-
   const errors = useMemo(() => validation.filter((item) => item.level === 'error'), [validation])
 
   const handleFocus = useCallback(
@@ -202,45 +209,6 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   const handleReplace = useCallback(() => {
     onPathFocus?.(REF_PATH)
   }, [onPathFocus])
-
-  const inputId = useId()
-
-  const handleQueryChange = useObservableEvent((inputValue$: Observable<string | null>) => {
-    return inputValue$.pipe(
-      filter(isNonNullable),
-      distinctUntilChanged(),
-      switchMap((searchString) =>
-        concat(
-          of({isLoading: true}),
-          onSearch(searchString).pipe(
-            map((hits) => ({
-              hits,
-              searchString,
-              isLoading: false,
-            })),
-            catchError((error) => {
-              push({
-                title: 'Reference search failed',
-                description: error.message,
-                status: 'error',
-                id: `reference-search-fail-${inputId}`,
-              })
-
-              console.error(error)
-              return of({hits: []})
-            }),
-          ),
-        ),
-      ),
-
-      scan(
-        (prevState, nextState): SearchState => ({...prevState, ...nextState}),
-        INITIAL_SEARCH_STATE,
-      ),
-
-      tap(setSearchState),
-    )
-  })
 
   const handleAutocompleteOpenButtonClick = useCallback(() => {
     handleQueryChange('')

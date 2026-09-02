@@ -10,6 +10,7 @@ import {ToolbarStory} from './ToolbarStory'
 const meta = {
   title: 'Portable Text/Toolbar',
   component: ToolbarStory,
+  tags: ['!dev', '!autodocs', 'vrt-only'],
   parameters: {chromatic: {delay: 300}},
 } satisfies Meta<typeof ToolbarStory>
 

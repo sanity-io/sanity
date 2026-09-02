@@ -1,0 +1,508 @@
+import {type SanityClient} from '@sanity/client'
+import {Schema as SchemaBuilder} from '@sanity/schema'
+import {builtinTypes} from '@sanity/schema/_internal'
+import {type Rule, type SanityDocument, type SchemaTypeDefinition} from '@sanity/types'
+import {of} from 'rxjs'
+import {describe, expect, it, vi} from 'vitest'
+
+import {validateDocument, validateDocumentWithWorkspace, validationMarkerCodes} from '../src'
+import {getFallbackLocaleSource} from '../src/_internal'
+
+const builtinSchema = SchemaBuilder.compile({name: 'studio', types: builtinTypes})
+
+function createSchema(types: SchemaTypeDefinition[]) {
+  return SchemaBuilder.compile({
+    name: 'test',
+    parent: builtinSchema,
+    types,
+  })
+}
+
+function createDocument(value: Record<string, unknown>): SanityDocument {
+  return {
+    _createdAt: '2026-01-01T00:00:00.000Z',
+    _id: 'test-document',
+    _rev: 'revision',
+    _updatedAt: '2026-01-01T00:00:00.000Z',
+    ...value,
+  } as SanityDocument
+}
+
+function createMockClient(omitted: {id: string; reason: 'existence' | 'permission'}[] = []) {
+  const fetch = vi.fn(async () => null)
+  const request = vi.fn(() => of({omitted}))
+  const client = {
+    fetch,
+    getDataUrl: vi.fn(() => '/doc'),
+    observable: {request},
+    withConfig: vi.fn(() => client),
+  } as unknown as SanityClient
+
+  return {client, fetch, request}
+}
+
+describe('validateDocument', () => {
+  it('preserves workspace validation behavior through the compatibility overload', async () => {
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {
+            name: 'title',
+            type: 'string',
+            validation: (rule: Rule) => rule.required().min(10),
+          },
+        ],
+      },
+    ])
+    const document = createDocument({_type: 'article', title: 'Short'})
+    const {client} = createMockClient()
+    const fallbackI18n = getFallbackLocaleSource()
+    const i18n = {...fallbackI18n, t: vi.fn(fallbackI18n.t)}
+    const workspace = {getClient: () => client, i18n, schema}
+
+    const [headlessMarkers, workspaceMarkers, namedHelperMarkers] = await Promise.all([
+      validateDocument({client, document, schema}),
+      validateDocument({document, workspace}),
+      // oxlint-disable-next-line typescript/no-deprecated -- explicitly covers compatibility API
+      validateDocumentWithWorkspace({document, workspace}),
+    ])
+
+    expect(workspaceMarkers).toEqual(headlessMarkers)
+    expect(namedHelperMarkers).toEqual(headlessMarkers)
+    expect(i18n.t).toHaveBeenCalledWith('validation:string.minimum-length', {minLength: 10})
+  })
+
+  it('defaults workspace validation to the studio environment', async () => {
+    const schema = createSchema([])
+    const document = createDocument({_type: 'missing'})
+    const {client} = createMockClient()
+    const workspace = {
+      getClient: () => client,
+      i18n: getFallbackLocaleSource(),
+      schema,
+    }
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+
+    try {
+      await expect(validateDocument({document, workspace})).resolves.toEqual([])
+      await expect(validateDocument({client, document, schema})).resolves.toEqual([
+        expect.objectContaining({
+          level: 'warning',
+          message: "Could not find schema type for type 'missing', skipping validation",
+        }),
+      ])
+      expect(warnSpy).toHaveBeenCalledWith(
+        'Schema type for object type "%s" not found, skipping validation',
+        'missing',
+      )
+    } finally {
+      warnSpy.mockRestore()
+    }
+  })
+
+  it('returns validation and unknown-field markers without mutating the document', async () => {
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {
+            name: 'title',
+            type: 'string',
+            validation: (rule: Rule) => rule.min(80),
+          },
+        ],
+      },
+    ])
+    const document = createDocument({_type: 'article', title: 'Short', unexpected: true})
+    const before = structuredClone(document)
+    const {client} = createMockClient()
+
+    const markers = await validateDocument({client, document, schema})
+
+    expect(markers).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          code: validationMarkerCodes.stringMinimumLength,
+          details: {actualLength: 5, minimumLength: 80},
+          level: 'error',
+          message: 'Must be at least 80 characters long',
+          path: ['title'],
+        }),
+        expect.objectContaining({
+          code: validationMarkerCodes.objectUnknownField,
+          details: {fieldName: 'unexpected', typeName: 'article'},
+          level: 'warning',
+          message: "Field 'unexpected' does not exist on type 'article'",
+          path: ['unexpected'],
+        }),
+      ]),
+    )
+    expect(document).toEqual(before)
+    expect(markers.every((marker) => typeof marker.code === 'string')).toBe(true)
+  })
+
+  it('preserves custom codes and details and defaults uncoded custom failures', async () => {
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {
+            name: 'coded',
+            type: 'string',
+            validation: (rule: Rule) =>
+              rule.custom(() => ({
+                code: 'custom.reserved-title',
+                details: {reservedTitle: 'Reserved'},
+                message: 'This title is reserved',
+              })),
+          },
+          {
+            name: 'uncoded',
+            type: 'string',
+            validation: (rule: Rule) => rule.custom(() => 'Custom failure'),
+          },
+          {
+            name: 'localized',
+            type: 'string',
+            validation: (rule: Rule) => rule.custom(() => ({'en-US': 'Localized custom failure'})),
+          },
+        ],
+      },
+    ])
+    const {client} = createMockClient()
+
+    const markers = await validateDocument({
+      client,
+      document: createDocument({
+        _type: 'article',
+        coded: 'Reserved',
+        localized: 'invalid',
+        uncoded: 'invalid',
+      }),
+      schema,
+    })
+
+    expect(markers).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          code: 'custom.reserved-title',
+          details: {reservedTitle: 'Reserved'},
+          message: 'This title is reserved',
+          path: ['coded'],
+        }),
+        expect.objectContaining({
+          code: validationMarkerCodes.custom,
+          message: 'Custom failure',
+          path: ['uncoded'],
+        }),
+        expect.objectContaining({
+          code: validationMarkerCodes.custom,
+          message: 'Localized custom failure',
+          path: ['localized'],
+        }),
+      ]),
+    )
+  })
+
+  it('adds a fallback code to markers from legacy compiled rules', async () => {
+    const message = 'Legacy failure'
+    const legacyRule = {
+      _fieldRules: undefined,
+      _rules: [],
+      isRequired: () => false,
+      validate: async () => [{item: {message}, level: 'error' as const, message, path: ['title']}],
+    } as unknown as Rule
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [{name: 'title', type: 'string', validation: legacyRule}],
+      },
+    ])
+    const {client} = createMockClient()
+
+    await expect(
+      validateDocument({
+        client,
+        document: createDocument({_type: 'article', title: 'Title'}),
+        schema,
+      }),
+    ).resolves.toEqual([
+      expect.objectContaining({code: validationMarkerCodes.validationFailed, message}),
+    ])
+  })
+
+  it('codes exceptions thrown by custom validators', async () => {
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {
+            name: 'title',
+            type: 'string',
+            validation: (rule: Rule) =>
+              rule.custom(() => {
+                throw new Error('Custom validator failed')
+              }),
+          },
+        ],
+      },
+    ])
+    const {client} = createMockClient()
+
+    await expect(
+      validateDocument({
+        client,
+        document: createDocument({_type: 'article', title: 'Title'}),
+        schema,
+      }),
+    ).resolves.toEqual([
+      expect.objectContaining({
+        code: validationMarkerCodes.validationException,
+        message: expect.stringContaining('Custom validator failed'),
+        path: ['title'],
+      }),
+    ])
+  })
+
+  it('keeps built-in metadata when a rule overrides the message', async () => {
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {
+            name: 'title',
+            type: 'string',
+            validation: (rule: Rule) => rule.min(10).error('Use a longer title'),
+          },
+        ],
+      },
+    ])
+    const {client} = createMockClient()
+
+    await expect(
+      validateDocument({
+        client,
+        document: createDocument({_type: 'article', title: 'Short'}),
+        schema,
+      }),
+    ).resolves.toEqual([
+      expect.objectContaining({
+        code: validationMarkerCodes.stringMinimumLength,
+        details: {actualLength: 5, minimumLength: 10},
+        message: 'Use a longer title',
+      }),
+    ])
+  })
+
+  it('returns a coded marker for an unknown document type', async () => {
+    const schema = createSchema([])
+    const {client} = createMockClient()
+
+    await expect(
+      validateDocument({
+        client,
+        document: createDocument({_type: 'missing'}),
+        schema,
+      }),
+    ).resolves.toEqual([
+      expect.objectContaining({
+        code: validationMarkerCodes.documentUnknownType,
+        details: {documentType: 'missing'},
+        level: 'warning',
+      }),
+    ])
+  })
+
+  it('provides the configured client to executable custom validators', async () => {
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {
+            name: 'title',
+            type: 'string',
+            validation: (rule: Rule) =>
+              rule.custom(async (_value, context) => {
+                await context.getClient({apiVersion: '2026-01-01'}).fetch('*[]')
+                return true as const
+              }),
+          },
+        ],
+      },
+    ])
+    const {client, fetch} = createMockClient()
+
+    await expect(
+      validateDocument({
+        client,
+        document: createDocument({_type: 'article', title: 'Hello'}),
+        schema,
+      }),
+    ).resolves.toEqual([])
+    expect(client.withConfig).toHaveBeenCalledWith({apiVersion: '2026-01-01'})
+    expect(fetch).toHaveBeenCalledWith('*[]')
+  })
+
+  it('honors maxFetchConcurrency values across validation calls', async () => {
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: ['first', 'second', 'third'].map((name) => ({
+          name,
+          type: 'string',
+          validation: (rule: Rule) =>
+            rule.custom(async (_value, context) => {
+              await context.getClient({apiVersion: '2026-01-01'}).fetch('*[]')
+              return true as const
+            }),
+        })),
+      },
+    ])
+    const document = createDocument({
+      _type: 'article',
+      first: 'one',
+      second: 'two',
+      third: 'three',
+    })
+
+    const validateWithConcurrency = async (maxFetchConcurrency: number) => {
+      let active = 0
+      let peak = 0
+      const client = {
+        fetch: async () => {
+          active += 1
+          peak = Math.max(peak, active)
+          await new Promise((resolve) => setTimeout(resolve, 5))
+          active -= 1
+          return null
+        },
+        withConfig: () => client,
+      } as unknown as SanityClient
+
+      await validateDocument({
+        client,
+        document,
+        getDocumentExists: async () => true,
+        maxFetchConcurrency,
+        schema,
+      })
+
+      return peak
+    }
+
+    await expect(validateWithConcurrency(1)).resolves.toBe(1)
+    await expect(validateWithConcurrency(2)).resolves.toBe(2)
+  })
+
+  it('uses an explicit reference existence lookup when provided', async () => {
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [{name: 'author', type: 'reference', to: [{type: 'author'}]}],
+      },
+      {name: 'author', type: 'document', fields: [{name: 'name', type: 'string'}]},
+    ])
+    const getDocumentExists = vi.fn(async () => false)
+    const {client, request} = createMockClient()
+
+    const markers = await validateDocument({
+      client,
+      document: createDocument({_type: 'article', author: {_ref: 'author-id', _type: 'reference'}}),
+      getDocumentExists,
+      schema,
+    })
+
+    expect(markers).toEqual([
+      expect.objectContaining({
+        code: validationMarkerCodes.referenceNotPublished,
+        details: {referenceId: 'author-id'},
+        level: 'error',
+        message: 'Referenced document must be published',
+        path: ['author'],
+      }),
+    ])
+    expect(getDocumentExists).toHaveBeenCalledWith({id: 'author-id'})
+    expect(request).not.toHaveBeenCalled()
+  })
+
+  it('batches reference existence checks through the configured client by default', async () => {
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [{name: 'author', type: 'reference', to: [{type: 'author'}]}],
+      },
+      {name: 'author', type: 'document', fields: [{name: 'name', type: 'string'}]},
+    ])
+    const {client, request} = createMockClient()
+
+    await expect(
+      validateDocument({
+        client,
+        document: createDocument({
+          _type: 'article',
+          author: {_ref: 'author-id', _type: 'reference'},
+        }),
+        schema,
+      }),
+    ).resolves.toEqual([])
+    expect(request).toHaveBeenCalledOnce()
+  })
+
+  it('limits concurrent custom validators', async () => {
+    let active = 0
+    let peak = 0
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [{name: 'items', type: 'array', of: [{type: 'item'}]}],
+      },
+      {
+        name: 'item',
+        type: 'object',
+        fields: [
+          {
+            name: 'value',
+            type: 'string',
+            validation: (rule: Rule) =>
+              rule.custom(async () => {
+                active += 1
+                peak = Math.max(peak, active)
+                await new Promise((resolve) => setTimeout(resolve, 5))
+                active -= 1
+                return true as const
+              }),
+          },
+        ],
+      },
+    ])
+    const {client} = createMockClient()
+
+    await validateDocument({
+      client,
+      document: createDocument({
+        _type: 'article',
+        items: Array.from({length: 6}, (_, index) => ({
+          _key: String(index),
+          _type: 'item',
+          value: String(index),
+        })),
+      }),
+      maxCustomValidationConcurrency: 2,
+      schema,
+    })
+
+    expect(peak).toBe(2)
+  })
+})
