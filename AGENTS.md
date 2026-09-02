@@ -249,6 +249,8 @@ pnpm test:e2e --ui          # Interactive mode
 
 **Note:** E2E tests are typically run in CI, not locally during development. Most changes can be verified with unit tests.
 
+When CI e2e fails, the hosted Playwright report also serves a machine-readable digest at `<report-url>/agent-report.md` (error messages, code snippets, and Playwright `error-context` page snapshots). The PR comment includes a **Share with an AI agent** fenced prompt pointing at that URL (GitHub's copy button copies the whole prompt).
+
 ### Important Note for AI Agents
 
 **What requires authentication:**
@@ -818,4 +820,5 @@ Debugging notes:
 
 - A fresh dataset is empty. Specs that need content seed it themselves; if one assumes documents exist, that is a bug in the spec, not a reason to point at the shared `staging` dataset.
 - The failure video is written to `e2e/results/<test>/video.webm`; extract frames with the bundled ffmpeg: `~/.cache/ms-playwright/ffmpeg-*/ffmpeg-linux -i video.webm -r 1 /tmp/frame_%03d.png` (this build has no `-vf fps=` filter).
+- CI e2e failures publish a plain-markdown digest at `<report-url>/agent-report.md` (same Vercel deployment as the HTML report). Fetch that URL instead of the HTML report — it includes the error, code snippet, `error-context` page snapshot, and a local repro command. The PR comment's **Share with an AI agent** fenced prompt is the paste-ready prompt (one-click copy).
 - To reproduce load-related flakiness, throttle the browser from within the spec: `const cdp = await page.context().newCDPSession(page); await cdp.send('Emulation.setCPUThrottlingRate', {rate: 8})` (chromium only). Stub a slow or eventually-consistent backend with `page.route('**/data/query/**', …)`; the global search query is identifiable by its `findability-source: global` GROQ comment.
