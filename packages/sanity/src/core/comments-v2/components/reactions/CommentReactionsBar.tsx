@@ -100,8 +100,8 @@ export const CommentReactionsBar = memo(function CommentReactionsBar(
 
   // The list of the current user's reactions, e.g. [':+1:', ':heart:']
   const currentUserReactionNames = useMemo(() => {
-    return reactions.filter((r) => r.userId === currentUser?.id).map((r) => r.shortName)
-  }, [currentUser?.id, reactions])
+    return reactions.filter((r) => r.userId === currentUser?.sanityUserId).map((r) => r.shortName)
+  }, [currentUser?.sanityUserId, reactions])
 
   // Reactions grouped by name, e.g. [ [':+1:', [{shortName: ':+1:', userId: 'user1'}] ] ]
   const groupedReactions = useMemo(() => {

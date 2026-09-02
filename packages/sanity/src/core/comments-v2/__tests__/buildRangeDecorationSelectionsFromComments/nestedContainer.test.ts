@@ -31,16 +31,17 @@ const documentValue = {
 
 const comment = (): CommentDocument => ({
   _id: 'c1',
-  _type: 'comment',
+  _type: 'sanity.comment',
   _createdAt: '',
   _rev: '',
-  authorId: '',
+  _system: {createdBy: ''},
   message: null,
   threadId: '',
   status: 'open',
   reactions: null,
   target: {
     documentRevisionId: '',
+    sourceDocumentId: '',
     path: {
       field: 'body[_key=="callout"].content',
       selection: {
@@ -52,11 +53,9 @@ const comment = (): CommentDocument => ({
     },
     documentType: '',
     document: {
-      _dataset: '',
-      _projectId: '',
-      _ref: '',
-      _type: 'crossDatasetReference',
-      _weak: false,
+      _ref: 'dataset:projectId:documentId',
+      _type: 'globalDocumentReference',
+      _weak: true,
     },
   },
 })

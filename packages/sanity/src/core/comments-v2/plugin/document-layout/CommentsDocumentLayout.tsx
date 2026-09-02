@@ -20,7 +20,7 @@ export function CommentsDocumentLayout(props: DocumentLayoutProps) {
   }
 
   return (
-    <CommentsEnabledProvider documentId={documentId} documentType={documentType}>
+    <CommentsEnabledProvider groupId={documentId} documentType={documentType}>
       <CommentsDocumentLayoutInner {...props} />
     </CommentsEnabledProvider>
   )

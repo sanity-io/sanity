@@ -932,6 +932,9 @@ importers:
       '@playwright/test':
         specifier: 'catalog:'
         version: 1.62.1
+      '@repo/test-config':
+        specifier: workspace:*
+        version: link:../packages/@repo/test-config
       '@repo/tsconfig':
         specifier: workspace:*
         version: link:../packages/@repo/tsconfig
@@ -950,6 +953,9 @@ importers:
       tsx:
         specifier: ^4.23.13
         version: 4.23.13
+      vitest:
+        specifier: ^4.1.11
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/browser-playwright@4.1.11)(@vitest/coverage-v8@4.1.11)(jsdom@29.1.1)(vite@8.2.2)
 
   packages/@repo/ailf:
     devDependencies:
@@ -1018,7 +1024,7 @@ importers:
         specifier: ^2.3.0
         version: 2.3.0(vite@8.2.2)
       es-toolkit:
-        specifier: ^1.51.0
+        specifier: ^1.52.0
         version: 1.52.0
       eventsource-parser:
         specifier: ^4.1.0
@@ -1230,7 +1236,7 @@ importers:
         specifier: ^4.1.11
         version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/browser-playwright@4.1.11)(@vitest/coverage-v8@4.1.11)(jsdom@29.1.1)(vite@8.2.2)
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.5.4
         version: 4.5.4
 
   packages/@repo/test-exports:

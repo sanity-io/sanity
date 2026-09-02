@@ -26,7 +26,7 @@
     "@optique/core": "catalog:",
     "@optique/run": "catalog:",
     "@vitejs/plugin-basic-ssl": "^2.3.0",
-    "es-toolkit": "^1.51.0",
+    "es-toolkit": "^1.52.0",
     "eventsource-parser": "^4.1.0",
     "rxjs": "^7.8.2"
   },

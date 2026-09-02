@@ -98,10 +98,10 @@ function CommentFieldInner(
   const {
     comments,
     isCommentsOpen,
-    isCreatingDataset,
     mentionOptions,
     onCommentsOpen,
     operation,
+    readOnly,
     setStatus,
     status,
   } = useComments()
@@ -294,7 +294,6 @@ function CommentFieldInner(
           count={Number(count)}
           currentUser={currentUser}
           fieldTitle={fieldTitle}
-          isCreatingDataset={isCreatingDataset}
           mentionOptions={mentionOptions}
           onChange={handleOnChange}
           onClick={handleClick}
@@ -302,6 +301,7 @@ function CommentFieldInner(
           onCommentAdd={handleCommentAdd}
           onDiscard={resetMessageValue}
           open={isOpen}
+          readOnly={readOnly}
           value={value}
         />
       ),
@@ -312,7 +312,6 @@ function CommentFieldInner(
       currentUser,
       count,
       fieldTitle,
-      isCreatingDataset,
       mentionOptions,
       handleOnChange,
       handleClick,
@@ -320,6 +319,7 @@ function CommentFieldInner(
       handleCommentAdd,
       resetMessageValue,
       isOpen,
+      readOnly,
       value,
       hasComments,
     ],

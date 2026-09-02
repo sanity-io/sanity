@@ -9,6 +9,7 @@ import {getVersionFromId, isSystemBundle} from '../util/draftUtils'
 import {getTargetDocument} from '../util/getTargetDocument'
 import {useAllVariants} from '../variants/store/useAllVariants'
 import {type SystemVariant} from '../variants/types'
+import {useSchema} from './useSchema'
 
 /**
  * The id and scope of a missing draft variant that can be created by typing: the id is known
@@ -53,9 +54,11 @@ export interface TargetDocumentSiblings {
  *   base pair). `siblings` always lists the published, draft, and non system bundle scoped documents in
  *   the current lane (base pair or variant), each `undefined` when that document does not exist.
  * - `variant-missing` — a variant is selected but the document has no variant-scoped version
- *   for the current bundle. When `creatableTarget` is set (drafts bundle, published variant
- *   advertising its draft sibling id), the document is editable: typing creates the draft
- *   variant at the advertised id, seeded from the published sibling.
+ *   for the current bundle. When `creatableTarget` is set (drafts bundle, non-live-edit,
+ *   published variant advertising its draft sibling id), the document is editable: typing
+ *   creates the draft variant at the advertised id, seeded from the published sibling.
+ *   Live-edit documents pinned to drafts never take this path: they resolve as the published
+ *   sibling (`ready`) instead of a creatable draft.
  * - `variant-definition-document-not-found` — the requested variant name matches no
  *   `system.variant` definition. An error state, never silently treated as "no variant".
  *
@@ -249,9 +252,22 @@ export function getTargetDocumentState(options: {
   variantsLoading: boolean
   versions: VersionInfoDocumentStub[]
   versionsLoading: boolean
+  /**
+   * Derived by {@link useTargetDocumentState} from the schema. When set, a drafts-bundle
+   * lookup remaps to published: live-edit types have no drafts lane, so the
+   * variant-of-published is the edit target (never a type-to-create draft).
+   */
+  liveEdit?: boolean
 }): TargetDocumentState {
-  const {bundle, selectedVariant, selectedVariantName, variantsLoading, versions, versionsLoading} =
-    options
+  const {
+    bundle,
+    selectedVariant,
+    selectedVariantName,
+    variantsLoading,
+    versions,
+    versionsLoading,
+    liveEdit,
+  } = options
 
   if (!selectedVariantName) {
     if (versionsLoading) {
@@ -286,13 +302,18 @@ export function getTargetDocumentState(options: {
     return RESOLVING
   }
 
+  const siblings = getDocumentSiblings(versions, selectedVariant._id, bundle)
+  // Live-edit documents are edited in place on the published sibling. The studio is often
+  // pinned to drafts, but live-edit types have no drafts lane — looking that up would miss
+  // the published variant and offer a creatable draft (patches then create `bundleId: 'drafts'`).
+  const targetBundle =
+    liveEdit && bundle === 'drafts' && !siblings.draft?._id ? 'published' : bundle
+
   const targetDocument = getTargetDocument({
-    bundle,
+    bundle: targetBundle,
     variant: selectedVariant._id,
     documentVersions: versions,
   })
-
-  const siblings = getDocumentSiblings(versions, selectedVariant._id, bundle)
 
   if (!targetDocument) {
     return {
@@ -300,7 +321,10 @@ export function getTargetDocumentState(options: {
       variant: selectedVariant,
       bundle,
       siblings,
-      creatableTarget: getCreatableTarget(bundle, siblings.published),
+      creatableTarget:
+        liveEdit && bundle === 'drafts'
+          ? undefined
+          : getCreatableTarget(bundle, siblings.published),
     }
   }
 
@@ -324,6 +348,8 @@ export function getTargetDocumentState(options: {
  * (`ready` without a target document). Consumers must switch on `status` instead of treating
  * `undefined` as "no variant".
  *
+ * Live-edit is read from the schema via version stubs (`_type`)
+ *
  * @internal
  * @beta
  */
@@ -331,6 +357,11 @@ export function useTargetDocumentState(documentGroupId: string): TargetDocumentS
   const {versions, loading: versionsLoading} = useDocumentVersions({documentId: documentGroupId})
   const {bundle, selectedVariant, selectedVariantName} = usePerspective()
   const {loading: variantsLoading} = useAllVariants()
+  const schema = useSchema()
+  const liveEdit = useMemo(
+    () => versions.some((version) => schema.get(version._type)?.liveEdit === true),
+    [versions, schema],
+  )
 
   return useMemo(
     () =>
@@ -341,7 +372,16 @@ export function useTargetDocumentState(documentGroupId: string): TargetDocumentS
         variantsLoading,
         versions,
         versionsLoading,
+        liveEdit,
       }),
-    [bundle, selectedVariant, selectedVariantName, variantsLoading, versions, versionsLoading],
+    [
+      bundle,
+      selectedVariant,
+      selectedVariantName,
+      variantsLoading,
+      versions,
+      versionsLoading,
+      liveEdit,
+    ],
   )
 }

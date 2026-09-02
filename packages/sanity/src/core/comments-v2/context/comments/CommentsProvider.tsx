@@ -6,15 +6,16 @@ import {CommentsContextV2} from 'sanity/_singletons'
 import {useEditState} from '../../../hooks/useEditState'
 import {useSchema} from '../../../hooks/useSchema'
 import {useUserListWithPermissions} from '../../../hooks/useUserListWithPermissions'
-import {type ReleaseId} from '../../../perspective/types'
+import {usePerspective} from '../../../perspective/usePerspective'
 import {useCurrentUser} from '../../../store/user/hooks'
 import {useAddonDataset} from '../../../studio/addonDataset/useAddonDataset'
 import {useWorkspace} from '../../../studio/workspace'
-import {getPublishedId} from '../../../util/draftUtils'
+import {getPublishedId, getVersionFromId, isVersionId} from '../../../util/draftUtils'
 import {
   type CommentOperationsHookOptions,
   useCommentOperations,
 } from '../../hooks/use-comment-operations/useCommentOperations'
+import {useCommentsClient} from '../../hooks/useCommentsClient'
 import {useCommentsEnabled} from '../../hooks/useCommentsEnabled'
 import {useCommentsStore} from '../../store/useCommentsStore'
 import {
@@ -45,12 +46,16 @@ interface ThreadItemsByStatus {
  */
 export interface CommentsProviderProps {
   children: ReactNode
-  documentId: string
-  documentType: string
   /**
-   * This acts as the scopeId for the document.
+   * Published / group id. Used for the comments GDR and edit state.
    */
-  releaseId?: ReleaseId
+  groupId: string
+  /**
+   * Exact document in the editor (draft, published, or version id).
+   * Drives listing, create, range ownership, and version edit state.
+   */
+  versionId: string
+  documentType: string
   type: CommentsType
   sortOrder: 'asc' | 'desc'
 
@@ -77,7 +82,8 @@ type TransactionId = string
 export const CommentsProvider = memo(function CommentsProvider(props: CommentsProviderProps) {
   const {
     children,
-    documentId,
+    groupId,
+    versionId,
     documentType,
     isCommentsOpen,
     onCommentsOpen,
@@ -88,19 +94,39 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     selectedCommentId,
     isConnecting,
     onPathOpen,
-    releaseId: scopeId,
     mentionsDisabled,
   } = props
   const commentsEnabled = useCommentsEnabled()
+  const {selectedReleaseId, selectedVariantName} = usePerspective()
   const [status, setStatus] = useState<CommentStatus>('open')
-  const {client, createAddonDataset, isCreatingDataset} = useAddonDataset()
-  const publishedId = getPublishedId(documentId)
+  const publishedId = getPublishedId(groupId)
+  const scopeId = isVersionId(versionId) ? getVersionFromId(versionId) : undefined
+
+  // Opening a release/variant resolves the target document asynchronously. Until
+  // `versionId` is a `versions.*` id, it can still be a draft or published id,
+  // and `buildCommentsQuery` would treat that as the shared draft+published set —
+  // briefly showing those comments on a version view. Wait until we have a
+  // version id before listening/fetching.
+  const isVersionPerspective = Boolean(selectedReleaseId || selectedVariantName)
+  const commentsReady = !isVersionPerspective || isVersionId(versionId)
 
   const editState = useEditState(publishedId, documentType, 'low', scopeId)
   const schemaType = useSchema().get(documentType)
   const currentUser = useCurrentUser()
 
-  const {name: workspaceName, dataset, projectId} = useWorkspace()
+  const {name: workspaceName} = useWorkspace()
+
+  // Task documents (and their comments) live in the addon dataset, not the
+  // workspace content dataset. Configure the Comments API client accordingly:
+  // - Field comments: workspace content dataset (default)
+  // - Task comments: addon dataset
+  const addonDataset = useAddonDataset()
+  const addonDatasetName = addonDataset.client?.config().dataset
+  const commentsClientDataset = type === 'task' ? (addonDatasetName ?? null) : undefined
+  const {client: commentsClient, loading: isCommentsClientLoading} = useCommentsClient({
+    dataset: commentsClientDataset,
+    loading: type === 'task' && !addonDataset.ready,
+  })
 
   const documentValue = useMemo(() => {
     if (scopeId) return editState.version
@@ -126,11 +152,12 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     error,
     loading,
   } = useCommentsStore({
-    documentId,
-    releaseId: scopeId,
-    client,
+    groupId,
+    versionId,
+    client: commentsClient,
     transactionsIdMap,
     onLatestTransactionIdReceived: handleOnLatestTransactionIdReceived,
+    ready: commentsReady,
   })
 
   // When a comment update is started, we store the transaction id in a map.
@@ -157,9 +184,24 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     [setStatus, commentsEnabled],
   )
 
-  const mentionOptions = useUserListWithPermissions(
+  const projectMentionOptions = useUserListWithPermissions(
     useMemo(() => ({documentValue, permission: 'read'}), [documentValue]),
   )
+
+  // Read access is resolved from the project user, but comments store mentions as
+  // global user ids, so the options expose the global id. Members without one
+  // (e.g. third-party login) cannot be mentioned.
+  const mentionOptions = useMemo(() => {
+    const data = projectMentionOptions.data?.flatMap((user) =>
+      user.sanityUserId ? [{...user, id: user.sanityUserId, projectUserId: user.id}] : [],
+    )
+
+    return {
+      ...projectMentionOptions,
+      data: data ?? null,
+      disabled: mentionsDisabled,
+    }
+  }, [projectMentionOptions, mentionsDisabled])
 
   const threadItemsByStatus: ThreadItemsByStatus = useMemo(() => {
     if (!currentUser) {
@@ -249,23 +291,17 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   const {operation} = useCommentOperations(
     useMemo(
       (): CommentOperationsHookOptions => ({
-        client,
+        client: commentsClient,
         currentUser,
-        dataset,
-        documentId: publishedId,
-        // use the current release id as document version id of the target
+        versionId,
+        // Used to resolve the document title for notifications in the current release
         documentVersionId: scopeId,
         documentRevisionId,
         documentType,
         getComment,
         getThreadLength,
-        projectId,
         schemaType,
         workspace: workspaceName,
-        // This function runs when the first comment creation is executed.
-        // It is used to create the addon dataset and configure a client for
-        // the addon dataset.
-        createAddonDataset,
         // The following callbacks runs when the comment operation are executed.
         // They are used to update the local state of the comments immediately after
         // a comment operation has been executed. This is done to avoid waiting for
@@ -279,19 +315,16 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         getCommentLink,
       }),
       [
-        client,
+        commentsClient,
         currentUser,
-        dataset,
-        publishedId,
+        versionId,
         scopeId,
         documentRevisionId,
         documentType,
         getComment,
         getThreadLength,
-        projectId,
         schemaType,
         workspaceName,
-        createAddonDataset,
         handleOnCreate,
         handleOnCreateError,
         handleOnUpdate,
@@ -301,12 +334,18 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     ),
   )
 
+  // Comments stay read-only until we can call the API:
+  // - commentsClient: null while org id / project / dataset are still resolving
+  // - sanityUserId: required as the acting user
+  // - commentsReady: false in a version perspective until versionId is a version id
+  const readOnly = !commentsClient || !currentUser?.sanityUserId || !commentsReady
+
   const ctxValue = useMemo(
     (): CommentsContextValue => ({
-      documentId,
+      groupId,
       documentType,
+      versionId,
 
-      isCreatingDataset,
       status,
       setStatus: handleSetStatus,
       getComment,
@@ -324,7 +363,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       comments: {
         data: threadItemsByStatus,
         error,
-        loading: loading || isCreatingDataset || isConnecting || false,
+        loading: loading || isCommentsClientLoading || isConnecting || false,
       },
 
       operation: {
@@ -332,16 +371,16 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         react: operation.react,
         remove: operation.remove,
         update: operation.update,
+        updateRange: operation.updateRange,
       },
-      mentionOptions: {
-        ...mentionOptions,
-        disabled: mentionsDisabled,
-      },
+      mentionOptions,
+      readOnly,
     }),
     [
-      documentId,
+      groupId,
+      versionId,
       documentType,
-      isCreatingDataset,
+      isCommentsClientLoading,
       status,
       handleSetStatus,
       getComment,
@@ -359,8 +398,9 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       operation.react,
       operation.remove,
       operation.update,
+      operation.updateRange,
       mentionOptions,
-      mentionsDisabled,
+      readOnly,
     ],
   )
 
