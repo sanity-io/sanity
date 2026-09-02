@@ -1,10 +1,10 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Badge, Button, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, Button, Card, Stack, Text} from '@sanity/ui'
 import {MenuButton, Menu, MenuItem} from '@sanity/ui/menu'
 import {useState} from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {idSlug, SNOOZE_DAYS} from './acks'
 import {formatValue} from './data'
@@ -28,7 +28,7 @@ function DriftRow(props: {
   const {entry, showBranch, acked, onAck, onClear, onFocus} = props
   const worst = entry.baseline
   return (
-    <Flex align="center" gap={2} wrap="wrap">
+    <Flex alignItems="center" gap={2} flexWrap="wrap">
       <Badge tone={entry.direction === 'regression' ? 'critical' : 'positive'} fontSize={0}>
         {entry.direction === 'regression' ? '↑ regression' : '↓ improvement'}
       </Badge>
@@ -56,7 +56,7 @@ function DriftRow(props: {
           aria-label={`${link.label} (opens in a new tab)`}
         >
           <Badge fontSize={0} tone="primary">
-            <Flex align="center" gap={1}>
+            <Flex alignItems="center" gap={1}>
               <LaunchIcon />
               {link.label}
             </Flex>
@@ -134,7 +134,7 @@ export function DriftFeed(props: {
           aria-expanded={expanded}
           title={expanded ? 'Collapse' : 'Expand'}
         >
-          <Flex align="center" gap={2} paddingY={1}>
+          <Flex alignItems="center" gap={2} paddingY={1}>
             {expanded ? <ChevronDownIcon /> : <ChevronRightIcon />}
             <Text size={1} weight="semibold">
               {summary}

@@ -1,6 +1,7 @@
-import {Card, Container, Flex, Text} from '@sanity/ui'
+import {Card, Container, Text} from '@sanity/ui'
 import {useObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
+import {Flex} from 'ui5'
 
 interface Document {
   string?: string

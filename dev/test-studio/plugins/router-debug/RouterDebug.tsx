@@ -1,8 +1,9 @@
 import {createPreviewSecret} from '@sanity/preview-url-secret/create-secret'
-import {Button, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Button, Card, Stack, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useClient} from 'sanity'
 import {IntentLink, RouteScope, StateLink, useRouter, useStateLink} from 'sanity/router'
+import {Flex} from 'ui5'
 
 export function RouterDebug() {
   const {navigate} = useRouter()
