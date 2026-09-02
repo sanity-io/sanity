@@ -4,7 +4,6 @@ import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
 import {ToastProvider} from '@sanity/ui/toast'
 import {render, screen} from '@testing-library/react'
 import noop from 'lodash-es/noop.js'
-import {useImperativeHandle, type RefAttributes} from 'react'
 import {of} from 'rxjs'
 import {route, RouterProvider} from 'sanity/router'
 import {describe, expect, test, vi} from 'vitest'
@@ -26,19 +25,6 @@ const UNAVAILABLE_PERMISSION_DENIED = {
   available: false,
   reason: 'PERMISSION_DENIED',
 } as const
-
-const infinityNoop: any = new Proxy<any>(() => infinityNoop, {get: () => infinityNoop})
-function StubComponent({
-  ref,
-  documentId,
-  documentType,
-}: {
-  documentId: string
-  documentType: string
-} & RefAttributes<any>) {
-  useImperativeHandle(ref, () => infinityNoop, [])
-  return null
-}
 
 type PartialExcept<T, K extends keyof T> = Partial<T> & Pick<T, K>
 
@@ -64,7 +50,6 @@ function ReferenceInputTester(
               presence={[]}
               onSearch={EMPTY_SEARCH}
               createOptions={[]}
-              editReferenceLinkComponent={StubComponent}
               onEditReference={noop}
               {...(props as any)}
             />

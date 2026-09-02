@@ -1,6 +1,6 @@
-import {type Path, type Reference, type ReferenceSchemaType} from '@sanity/types'
+import {type Path, type ReferenceSchemaType} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
-import {type ComponentProps, useCallback, useMemo, type RefAttributes} from 'react'
+import {useCallback, useMemo} from 'react'
 
 import {type FIXME} from '../../../FIXME'
 import {useSchema} from '../../../hooks/useSchema'
@@ -15,7 +15,6 @@ import {type EditReferenceEvent} from './types'
 interface Options {
   path: Path
   schemaType: ReferenceSchemaType
-  value?: Reference
 }
 
 export function useReferenceInput(options: Options) {
@@ -23,13 +22,8 @@ export function useReferenceInput(options: Options) {
   const schema = useSchema()
   const perspective = usePerspective()
   const documentPreviewStore = useDocumentPreviewStore()
-  const {
-    EditReferenceLinkComponent,
-    onEditReference,
-    activePath,
-    initialValueTemplateItems,
-    ...inheritedOptions
-  } = useReferenceInputOptions()
+  const {onEditReference, activePath, initialValueTemplateItems, ...inheritedOptions} =
+    useReferenceInputOptions()
 
   const documentValue = useFormValue([]) as FIXME
 
@@ -40,26 +34,6 @@ export function useReferenceInput(options: Options) {
   }, [documentTypeName, schema])
 
   const disableNew = inheritedOptions.disableNew ?? schemaType.options?.disableNew === true
-
-  const template = options.value?._strengthenOnPublish?.template
-  const EditReferenceLink = useMemo(
-    () =>
-      function EditReferenceLink_(
-        _props: ComponentProps<NonNullable<typeof EditReferenceLinkComponent>> &
-          RefAttributes<HTMLAnchorElement>,
-      ) {
-        const {ref: forwardedRef, ...rest} = _props
-        return EditReferenceLinkComponent ? (
-          <EditReferenceLinkComponent
-            {...rest}
-            ref={forwardedRef}
-            parentRefPath={path}
-            template={template}
-          />
-        ) : null
-      },
-    [EditReferenceLinkComponent, path, template],
-  )
 
   const handleEditReference = useCallback(
     (event: EditReferenceEvent) => {
@@ -124,7 +98,6 @@ export function useReferenceInput(options: Options) {
     selectedState,
     isCurrentDocumentLiveEdit,
     handleEditReference,
-    EditReferenceLink,
     createOptions,
     getReferenceInfo,
   }

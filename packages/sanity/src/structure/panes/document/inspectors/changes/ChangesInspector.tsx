@@ -1,7 +1,8 @@
 /* oxlint-disable no-deprecated -- this module implements the deprecated legacy document timeline */
 import {type ObjectDiff} from '@sanity/diff'
+import {type Path} from '@sanity/types'
 import {BoundaryElementProvider, Card, Flex, Text} from '@sanity/ui'
-import {useMemo, useState} from 'react'
+import {type ReactNode, useMemo, useState} from 'react'
 import {
   ChangeFieldWrapper,
   ChangeList,
@@ -30,6 +31,10 @@ const Scroller = styled(ScrollContainer)`
   scroll-behavior: smooth;
 `
 
+function ChangesFieldWrapper(props: {path: Path; children: ReactNode; hasRevertHover: boolean}) {
+  return <ChangeFieldWrapper {...props} hasRevertHover={false} />
+}
+
 export function ChangesInspector({showChanges}: {showChanges: boolean}): React.JSX.Element {
   const {documentId, schemaType, timelineError, timelineStore, value} = useDocumentPane()
   const {selectedReleaseId} = usePerspective()
@@ -52,7 +57,7 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): React.J
     () => ({
       documentId,
       schemaType,
-      FieldWrapper: (props) => <ChangeFieldWrapper {...props} hasRevertHover={false} />,
+      FieldWrapper: ChangesFieldWrapper,
       rootDiff: diff,
       isComparingCurrent,
       value,

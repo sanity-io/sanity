@@ -98,6 +98,16 @@ function createColumns(showRowActions: boolean): Column<Datum>[] {
 
 const theme = buildTheme()
 
+const renderRowActions = () => (
+  <button
+    type="button"
+    data-testid="release-menu-button"
+    style={{width: 25, height: 25, padding: 0, border: 0, boxSizing: 'border-box'}}
+  >
+    ...
+  </button>
+)
+
 export function TableStory({containerWidth, showRowActions = false}: TableStoryProps = {}) {
   const [scrollContainer, setScrollContainer] = useState<HTMLDivElement | null>(null)
   const columns = createColumns(showRowActions)
@@ -116,19 +126,7 @@ export function TableStory({containerWidth, showRowActions = false}: TableStoryP
           columnDefs={columns}
           scrollContainerRef={scrollContainer}
           hideTableInlinePadding={showRowActions}
-          rowActions={
-            showRowActions
-              ? () => (
-                  <button
-                    type="button"
-                    data-testid="release-menu-button"
-                    style={{width: 25, height: 25, padding: 0, border: 0, boxSizing: 'border-box'}}
-                  >
-                    ...
-                  </button>
-                )
-              : undefined
-          }
+          rowActions={showRowActions ? renderRowActions : undefined}
         />
       </div>
     </ThemeProvider>

@@ -1,5 +1,5 @@
 import startCase from 'lodash-es/startCase.js'
-import {useMemo, useState, type RefAttributes} from 'react'
+import {useMemo, useState} from 'react'
 import {Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
@@ -8,7 +8,7 @@ import {CollapseTabList} from '../../../../components/collapseTabList/CollapseTa
 import {useRovingFocus} from '../../../../components/rovingFocus/useRovingFocus'
 import {type Tool} from '../../../../config/types'
 import {useColorSchemeValue} from '../../../colorScheme'
-import {ToolLink, type ToolLinkProps} from './ToolLink'
+import {ToolLink} from './ToolLink'
 
 const TOOL_COLLAPSE_MENU_STYLE = {minWidth: 0} as const
 
@@ -43,19 +43,11 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
       tools.map((tool, index) => {
         const title = tool?.title || startCase(tool.name)
 
-        function Link(linkProps: ToolLinkProps & RefAttributes<HTMLAnchorElement>) {
-          const {ref, ...rest} = linkProps
-          return (
-            <ToolLink {...rest} ref={ref} name={tool.name}>
-              {linkProps.children}
-            </ToolLink>
-          )
-        }
-
         return (
           <Button
             key={`${tool.name}-${index}`}
-            as={Link}
+            as={ToolLink}
+            name={tool.name}
             data-as="a"
             mode="bleed"
             selected={activeToolName === tool.name}

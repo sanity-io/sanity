@@ -59,7 +59,6 @@ export function ReferenceInput(props: ReferenceInputProps) {
   const {getReferenceInfo} = useReferenceInput({
     path,
     schemaType,
-    value,
   })
 
   const {push} = useToast()
