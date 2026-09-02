@@ -1,8 +1,8 @@
 /**
  * Stamp a built dist with the flags it was built under, so the runner can
  * tell dist flavors apart (`bench-build-flags.json`). The pristine build
- * writes no marker — absence means "no customizations", which also covers
- * every historical dist.
+ * writes no marker — absence means "no customizations". Historical builds
+ * (buildDistAtCommit.ts) run this script too, via the same build scripts.
  *
  * Usage: node scripts/write-build-flags.mjs <dist-dir> <flag> [<flag> ...]
  */

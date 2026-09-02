@@ -2,7 +2,9 @@
  * `bench prepare-backfill` — build the *experiment* dist from an older
  * main-history commit's packages with HEAD's committed perf/bench harness: the same
  * recipe as `prepare-reference` (see buildDistAtCommit.ts), aimed at
- * `perf/bench/dist` instead of `.reference/dist`.
+ * `perf/bench/dist` instead of `.reference/dist` — plus the customization
+ * studio at `perf/bench/dist-customizations`, so the backfilled run covers
+ * settle mode too.
  *
  * Exists to repair holes in the daily main-branch time series after a
  * harness outage: dispatch the bench workflow with `backfill_sha` for each
@@ -56,5 +58,7 @@ export function prepareBackfill(argv: PrepareBackfillArgs): void {
   // Resolved here because this is the only job with full history; the shard
   // jobs are depth-1 checkouts of HEAD and cannot resolve the historical sha.
   setOutput('committed_at', git(['show', '-s', '--format=%cI', argv.sha], REPO_ROOT))
-  buildDistAtCommit(argv.sha, path.join(BENCH_ROOT, 'dist'))
+  buildDistAtCommit(argv.sha, path.join(BENCH_ROOT, 'dist'), {
+    customizationsDist: path.join(BENCH_ROOT, 'dist-customizations'),
+  })
 }

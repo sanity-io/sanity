@@ -222,9 +222,9 @@ jobs:
     # release that was already measured. The flip side: if the original run's
     # dispatch failed, a rerun will not retry it. Measuring it by hand later
     # needs the replay path, dispatched from main (a tag older than this
-    # workflow has no release_tag input of its own):
-    # `gh workflow run bench.yml --ref main -f run_suite=true
-    # -f backfill_sha=<tag's commit> -f release_tag=<tag>`.
+    # workflow has no release_tag input of its own) — bench.yml resolves the
+    # tag to its commit and replays that:
+    # `gh workflow run bench.yml --ref main -f run_suite=true -f release_tag=<tag>`.
     needs: [build-and-validate, git-operations]
     if: >
       always() && needs.build-and-validate.result == 'success' &&

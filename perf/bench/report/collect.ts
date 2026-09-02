@@ -114,13 +114,16 @@ export function collectRunMetadata(options: {
       // dashboards group runs into per-branch lines and default to main — a run
       // filed under a tag name would sit outside the main series it belongs to.
       // The ref names how the run was dispatched; the branch names where the
-      // measured commit lives, which for a release is always main.
+      // measured commit lives, which for a release is always main — and for a
+      // backfill too: it replays a main-history commit, wherever the workflow
+      // carrying the harness was dispatched from (a branch dispatch of a
+      // backfill must not file main's history under that branch).
       //
       // GITHUB_HEAD_REF is empty (not unset) outside pull_request events, and
       // schedule runs are detached checkouts where rev-parse answers "HEAD" —
       // prefer GITHUB_REF_NAME there
       branch:
-        (triggerInfo.trigger === 'release' ? 'main' : '') ||
+        (triggerInfo.trigger === 'release' || triggerInfo.trigger === 'backfill' ? 'main' : '') ||
         process.env.GITHUB_HEAD_REF ||
         process.env.GITHUB_REF_NAME ||
         git(['rev-parse', '--abbrev-ref', 'HEAD']),
