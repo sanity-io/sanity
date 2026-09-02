@@ -42,4 +42,31 @@ describe('getTaskURL', () => {
       'http://test-studio.com/anotherpath/structure/?sidebar=tasks&selectedTask=task-id-456&viewMode=edit',
     )
   })
+
+  it('builds on an explicit origin instead of window.location.origin', () => {
+    const url = getTaskURL(
+      'task-id-123',
+      '/basepath',
+      'structure',
+      'https://www.sanity.io/@org/studio/app-id/default',
+    )
+    expect(url).toBe(
+      'https://www.sanity.io/@org/studio/app-id/default/basepath/structure/?sidebar=tasks&selectedTask=task-id-123&viewMode=edit',
+    )
+  })
+
+  it('omits the basePath when the dashboard URL already identifies the workspace', () => {
+    // Regression test for SAPP-3134. In the dashboard the workspace is addressed by the
+    // dashboard path, so the caller passes no basePath — repeating it yields a path the
+    // dashboard cannot resolve, dropping the user on Structure instead of the task.
+    const url = getTaskURL(
+      'task-id-123',
+      undefined,
+      'structure',
+      'https://www.sanity.io/@org/studio/app-id/default',
+    )
+    expect(url).toBe(
+      'https://www.sanity.io/@org/studio/app-id/default/structure/?sidebar=tasks&selectedTask=task-id-123&viewMode=edit',
+    )
+  })
 })

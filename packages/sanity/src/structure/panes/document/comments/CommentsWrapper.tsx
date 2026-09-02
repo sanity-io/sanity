@@ -6,6 +6,7 @@ import {
   useCommentsEnabled,
   getTargetScopeId,
   usePerspective,
+  useStudioUrl,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 
@@ -44,6 +45,7 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
   const {selectedReleaseId, selectedVariantName} = usePerspective()
   const {params, setParams} = usePaneRouter()
   const {resolveIntentLink} = useRouter()
+  const {buildIntentUrl} = useStudioUrl()
 
   // The scope of the document targeted by the selected perspective (undefined when the target is
   // still resolving or the draft/published pair applies). While resolving, reverting is disabled
@@ -78,9 +80,15 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
         },
         searchParams,
       )
-      return `${window.location.origin}${intentLink}`
+      // Not `window.location.origin + intentLink`: when the Studio runs inside the
+      // dashboard, the workspace is identified by the dashboard path rather than the
+      // workspace basePath, so a link carrying the basePath cannot be resolved there.
+      // `buildIntentUrl` swaps the basePath for the dashboard path in that context and
+      // is a no-op in a standalone Studio.
+      return buildIntentUrl(intentLink)
     },
     [
+      buildIntentUrl,
       documentId,
       documentType,
       resolveIntentLink,
