@@ -1066,20 +1066,6 @@ function resolveSource({
           propertyName: 'document.unstable_languageFilter',
           reducer: documentLanguageFilterReducer,
         }),
-      /** @todo this is deprecated so it will eventually be removed */
-      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-      unstable_comments: {
-        enabled: (partialContext) => {
-          return documentCommentsEnabledReducer({
-            context: {
-              ...partialContext,
-              singleton: getSingletonId(partialContext.documentId, partialContext.documentType),
-            },
-            config,
-            initialValue: true,
-          })
-        },
-      },
       comments: {
         enabled: (partialContext) => {
           return documentCommentsEnabledReducer({
