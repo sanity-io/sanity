@@ -48,22 +48,15 @@ export function createBatchedGetDocumentExists(
   client: SanityClient,
   defaultSignal?: AbortSignal,
 ): (options: {id: string; signal?: AbortSignal}) => Promise<boolean> {
-  const id$ = new Subject<{id: string; signal?: AbortSignal}>()
+  const id$ = new Subject<string>()
   const limiter = new ConcurrencyLimiter(MAX_REQUEST_CONCURRENCY)
 
   const existence$ = id$.pipe(
     bufferTime(BUFFER_TIME, null, MAX_BUFFER_SIZE),
-    mergeMap((entries) => {
-      const groups = new Map<AbortSignal | undefined, Set<string>>()
-      for (const {id, signal} of entries) {
-        const ids = groups.get(signal) || new Set<string>()
-        ids.add(id)
-        groups.set(signal, ids)
-      }
-      return from(Array.from(groups, ([signal, ids]) => ({ids: Array.from(ids), signal})))
-    }),
-    mergeMap(({ids, signal}) => {
-      const ready = limiter.ready(signal)
+    map((ids) => Array.from(new Set(ids))),
+    filter((ids) => ids.length > 0),
+    mergeMap((ids) => {
+      const ready = limiter.ready(defaultSignal)
       let acquired = false
 
       return from(ready).pipe(
@@ -72,16 +65,16 @@ export function createBatchedGetDocumentExists(
         }),
         switchMap(() =>
           defer(() => {
-            signal?.throwIfAborted()
+            defaultSignal?.throwIfAborted()
             return client.observable.request<AvailabilityResponse>({
               url: client.getDataUrl('doc', ids.join(',')),
               query: {excludeContent: 'true'},
-              signal,
+              signal: defaultSignal,
               tag: 'documents-availability',
             })
-          }).pipe(map((availability) => ({availability, ids, signal}))),
+          }).pipe(map((availability) => ({availability, ids}))),
         ),
-        catchError((error) => (signal?.aborted ? EMPTY : throwError(() => error))),
+        catchError((error) => (defaultSignal?.aborted ? EMPTY : throwError(() => error))),
         finalize(() => {
           if (acquired) {
             limiter.release()
@@ -92,7 +85,7 @@ export function createBatchedGetDocumentExists(
         }),
       )
     }),
-    mergeMap(({availability, ids, signal}) =>
+    mergeMap(({availability, ids}) =>
       ids.map((id) => {
         const omittedIds = availability.omitted.reduce<Record<string, 'existence' | 'permission'>>(
           (acc, next) => {
@@ -103,11 +96,11 @@ export function createBatchedGetDocumentExists(
         )
 
         // if not in the `omitted`, then it exists
-        if (!omittedIds[id]) return {id, exists: true, signal}
+        if (!omittedIds[id]) return {id, exists: true}
         // if in the `omitted` due to existence, then it does not exist
-        if (omittedIds[id] === 'existence') return {id, exists: false, signal}
+        if (omittedIds[id] === 'existence') return {id, exists: false}
         // otherwise, it must exist
-        return {id, exists: true, signal}
+        return {id, exists: true}
       }),
     ),
     share(),
@@ -119,13 +112,13 @@ export function createBatchedGetDocumentExists(
 
     const result = firstValueFrom(
       existence$.pipe(
-        filter(({id, signal: resultSignal}) => id === options.id && resultSignal === signal),
+        filter(({id}) => id === options.id),
         map(({exists}) => exists),
         cancelWith(signal),
       ),
     )
 
-    id$.next({id: options.id, signal})
+    id$.next(options.id)
     return result
   }
 }
