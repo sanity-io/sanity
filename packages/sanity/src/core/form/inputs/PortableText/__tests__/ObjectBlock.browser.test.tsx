@@ -147,8 +147,16 @@ describe('Portable Text Input', () => {
       // Assertion: Object edit dialog should be visible
       await expect.element(page.getByTestId('nested-object-dialog')).toBeVisible()
 
-      // Close dialog
-      await userEvent.keyboard('{Escape}')
+      // Close the dialog by clicking its close button rather than pressing
+      // Escape. Escape-close depends on a global keydown listener that checks
+      // layer order and the currently focused element, and right after a menu
+      // interaction the closed menu still restores focus to its trigger
+      // (outside the dialog) — on a loaded Firefox runner a single Escape can
+      // land in that window and get ignored, leaving the dialog open.
+      await page
+        .getByTestId('nested-object-dialog')
+        .getByRole('button', {name: 'Close dialog'})
+        .click()
       await expect.element(page.getByTestId('nested-object-dialog')).not.toBeInTheDocument()
 
       // Reopen the context menu and delete the block. Click the controls
