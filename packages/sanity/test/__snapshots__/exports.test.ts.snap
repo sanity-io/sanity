@@ -590,6 +590,7 @@ exports[`exports snapshot 1`] = `
     "useAllVariants": "function",
     "useAnnotationColor": "function",
     "useArchivedReleases": "function",
+    "useAsyncOperation": "function",
     "useCanvasCompanionDoc": "function",
     "useChangeIndicatorsReportedValues": "function",
     "useChangeIndicatorsReporter": "function",

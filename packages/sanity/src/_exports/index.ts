@@ -902,6 +902,7 @@ export {useDataset} from '../core/hooks/useDataset'
 export {useDateTimeFormat, type UseDateTimeFormatOptions} from '../core/hooks/useDateTimeFormat'
 export {useDialogStack} from '../core/hooks/useDialogStack'
 export {type DocumentIdStack, useDocumentIdStack} from '../core/hooks/useDocumentIdStack'
+export {type AsyncOperation, useAsyncOperation} from '../core/hooks/useAsyncOperation'
 export {useDocumentOperation} from '../core/hooks/useDocumentOperation'
 export {useDocumentOperationEvent} from '../core/hooks/useDocumentOperationEvent'
 export {
@@ -1259,6 +1260,7 @@ export {
   type MapDocument,
   type Operation,
   type OperationArgs,
+  type OperationCallOutcome,
   type OperationImpl,
   type OperationsAPI,
 } from '../core/store/document/document-pair/operations/types'
