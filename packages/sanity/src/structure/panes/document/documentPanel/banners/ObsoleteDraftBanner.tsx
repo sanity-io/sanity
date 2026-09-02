@@ -14,6 +14,10 @@ import {
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {useDiffViewRouter} from '../../../../diffView/hooks/useDiffViewRouter'
+import {
+  DISCARD_CHANGES_DISABLED_REASON,
+  PUBLISH_DISABLED_REASON,
+} from '../../../../documentActions/operationDisabledReasons'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {ResolvedLiveEdit} from './__telemetry__/DraftLiveEditBanner.telemetry'
@@ -60,14 +64,26 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
     : undefined
 
   const {publish, discardChanges} = useDocumentOperation(documentId, displayed?._type || '', target)
+  const publishDisabledReason = publish.disabled
+    ? t(PUBLISH_DISABLED_REASON[publish.disabled])
+    : undefined
+  const discardDisabledReason = discardChanges.disabled
+    ? t(DISCARD_CHANGES_DISABLED_REASON[discardChanges.disabled])
+    : undefined
 
   const handlePublish = useCallback(() => {
+    if (publish.disabled) {
+      return
+    }
     publish.execute()
     setActionRequested('publish')
     telemetry.log(ResolvedLiveEdit, {liveEditResolveType: 'publish'})
   }, [publish, telemetry])
 
   const handleDiscard = useCallback(() => {
+    if (discardChanges.disabled) {
+      return
+    }
     discardChanges.execute()
     setActionRequested('discard')
     telemetry.log(ResolvedLiveEdit, {liveEditResolveType: 'discard'})
@@ -109,27 +125,27 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
           <Button
             onClick={handlePublish}
             text={t('banners.obsolete-draft.actions.publish-draft.text')}
-            disabled={Boolean(actionRequested)}
+            disabled={Boolean(actionRequested) || Boolean(publish.disabled)}
             tooltipProps={
-              isEditBlocking
-                ? {
-                    content: t('banners.live-edit-draft-banner.publish.tooltip'),
-                  }
-                : {}
+              publishDisabledReason
+                ? {content: publishDisabledReason}
+                : isEditBlocking
+                  ? {content: t('banners.live-edit-draft-banner.publish.tooltip')}
+                  : undefined
             }
             loading={isPublishing}
             tone="positive"
           />
           <Button
             onClick={handleDiscard}
-            disabled={!draftId || Boolean(actionRequested)}
+            disabled={!draftId || Boolean(actionRequested) || Boolean(discardChanges.disabled)}
             text={t('banners.obsolete-draft.actions.discard-draft.text')}
             tooltipProps={
-              isEditBlocking
-                ? {
-                    content: t('banners.live-edit-draft-banner.discard.tooltip'),
-                  }
-                : {}
+              discardDisabledReason
+                ? {content: discardDisabledReason}
+                : isEditBlocking
+                  ? {content: t('banners.live-edit-draft-banner.discard.tooltip')}
+                  : undefined
             }
             loading={isDiscarding}
             tone="caution"
