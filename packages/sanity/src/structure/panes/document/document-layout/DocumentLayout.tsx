@@ -1,4 +1,4 @@
-import {DialogProvider, type DialogProviderProps, Flex, useElementSize} from '@sanity/ui'
+import {DialogProvider, type DialogProviderProps, useElementSize} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {isHotkey} from 'is-hotkey-esm'
 import {type ComponentProps, useCallback, useMemo, useState} from 'react'
@@ -16,6 +16,7 @@ import {
   useZIndex,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
+import {Flex} from 'ui5'
 
 import {Pane} from '../../../components/pane/Pane'
 import {usePaneLayout} from '../../../components/pane/usePaneLayout'
@@ -220,7 +221,12 @@ export function DocumentLayout() {
           >
             <DocumentPanelHeader ref={setHeaderElement} menuItems={menuItems} />
             <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.paneDialog}>
-              <Flex direction="column" flex={1} height={layoutCollapsed ? undefined : 'fill'}>
+              <Flex
+                flexDirection="column"
+                flexBasis="0%"
+                flexGrow={1}
+                height={layoutCollapsed ? undefined : '100%'}
+              >
                 <StyledChangeConnectorRoot
                   data-testid="change-connector-root"
                   isReviewChangesOpen={changesOpen && paneParams?.changesInspectorTab === 'review'}
