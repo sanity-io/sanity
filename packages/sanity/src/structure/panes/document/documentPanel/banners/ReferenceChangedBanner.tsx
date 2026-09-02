@@ -1,155 +1,146 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {SyncIcon} from '@sanity/icons/Sync'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {type KeyedSegment, type Reference} from '@sanity/types'
+import {type Reference} from '@sanity/types'
 import {Text} from '@sanity/ui'
 import {fromString as pathFromString, get as pathGet} from '@sanity/util/paths'
-import {memo, useCallback, useMemo} from 'react'
+import {type ComponentType, memo, useCallback, useMemo} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
-import {debounceTime, map} from 'rxjs/operators'
+import {distinctUntilChanged, map} from 'rxjs/operators'
 import {
-  type DocumentAvailability,
   getPublishedId,
-  isSystemBundle,
-  useDocumentPreviewStore,
+  useDocumentStore,
   usePerspective,
+  useTargetScopeId,
   useTranslation,
 } from 'sanity'
 
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
-import {type RouterPaneGroup} from '../../../../types'
+import {useResolvedPanesList} from '../../../../structureResolvers/useResolvedPanesList'
+import {isDocumentPaneNode} from '../../../../utils'
 import {Banner} from './Banner'
 
 interface ParentReferenceInfo {
   loading: boolean
   result?: {
-    availability: {
-      draft: DocumentAvailability
-      published: DocumentAvailability
-      version?: DocumentAvailability
-    }
+    available: boolean
     refValue: string | undefined
   }
 }
 
-export const ReferenceChangedBanner = memo(() => {
-  const documentPreviewStore = useDocumentPreviewStore()
+const ReferenceChangedBannerComponent: ComponentType = () => {
+  const documentStore = useDocumentStore()
   const {selectedPerspectiveName} = usePerspective()
   const {params, groupIndex, routerPanesState, replaceCurrent, BackLink} = usePaneRouter()
-  const routerReferenceId = routerPanesState[groupIndex]?.[0].id
-  const parentGroup = routerPanesState[groupIndex - 1] as RouterPaneGroup | undefined
-  const parentSibling = parentGroup?.[0]
-  const parentId = parentSibling?.id
-  const hasHistoryOpen = Boolean(parentSibling?.params?.rev)
-  const parentRefPath = (params?.parentRefPath && pathFromString(params.parentRefPath)) || null
+  const {paneDataItems} = useResolvedPanesList()
+  const routerReferenceId = routerPanesState.at(groupIndex)?.at(0)?.id
+  const parentPath = params?.parentRefPath ? pathFromString(params.parentRefPath) : null
   const {t} = useTranslation(structureLocaleNamespace)
 
+  const parentPaneData = paneDataItems.find(
+    (item) => item.groupIndex === groupIndex && item.siblingIndex === 0,
+  )
+
+  const parentPane = parentPaneData?.pane
+  const parentId = parentPaneData?.itemId
+  const parentGroupId = getPublishedId(parentId ?? '')
+
+  const parentType =
+    parentPane && isDocumentPaneNode(parentPane) ? parentPane.options.type : undefined
+
+  const hasHistoryOpen = Boolean(parentPaneData?.params?.rev)
+
+  const targetScopeId = useTargetScopeId({
+    documentId: parentGroupId,
+    selectedPerspectiveName,
+  })
+
   /**
-   * Loads information regarding the reference field of the parent pane. This
-   * is only applicable to child references (aka references-in-place).
+   * Watches the reference field of the parent pane. This is only applicable to
+   * child references (aka references-in-place).
    *
    * It utilizes the pane ID of the parent pane (which is a document ID) along
    * with the `parentRefPath` router param on the current pane to find the
    * current value of the reference field on the parent document.
    *
    * This is used to compare with the current pane's document ID. If the IDs
-   * don't match then this banner should reveal itself
+   * don't match then this banner should reveal itself.
    */
-  const referenceInfoObservable = useMemo((): Observable<ParentReferenceInfo> => {
-    const parentRefPathSegment = parentRefPath?.[0] as string | undefined
-
+  const parentReferenceInfoObservable = useMemo((): Observable<ParentReferenceInfo> => {
     // short-circuit: this document pane is not a child reference pane
-    if (!parentId || !parentRefPathSegment || !parentRefPath) {
+    if (!parentId || !parentPath || !parentType) {
       return of({loading: false})
     }
-
-    const publishedId = getPublishedId(parentId)
-    const path = pathFromString(parentRefPathSegment)
-
-    // note: observePaths doesn't support keyed path segments, so we need to select the nearest parent
-    const keyedSegmentIndex = path.findIndex(
-      (p): p is KeyedSegment => typeof p == 'object' && '_key' in p,
-    )
 
     return concat(
       // emit a loading state instantly
       of({loading: true}),
-      // then emit the values from watching the published ID's path
-      documentPreviewStore
-        .unstable_observePathsDocumentPair(
-          publishedId,
-          (keyedSegmentIndex === -1 ? path : path.slice(0, keyedSegmentIndex)) as string[][],
-          {
-            version: isSystemBundle(selectedPerspectiveName) ? undefined : selectedPerspectiveName,
-          },
-        )
-        .pipe(
-          // this debounce time is needed to prevent flashing banners due to
-          // the router state updating faster than the content-lake state. we
-          // debounce to wait for more emissions because the value pulled
-          // initially could be stale.
-          debounceTime(750),
-          map(({draft, published, version}): ParentReferenceInfo => ({
+      documentStore.pair.editState(parentGroupId, parentType, targetScopeId).pipe(
+        map((editState): ParentReferenceInfo => {
+          if (!editState.ready) {
+            return {loading: true}
+          }
+
+          const parentDocument = editState.version ?? editState.draft ?? editState.published
+
+          return {
             loading: false,
             result: {
-              availability: {
-                draft: draft.availability,
-                published: published.availability,
-                ...(version?.availability
-                  ? {
-                      version: version.availability,
-                    }
-                  : {}),
-              },
-              refValue: pathGet<Reference>(
-                version?.snapshot || draft.snapshot || published.snapshot,
-                parentRefPath,
-              )?._ref,
+              available: parentDocument !== null,
+              refValue: pathGet<Reference>(parentDocument, parentPath)?._ref,
             },
-          })),
+          }
+        }),
+        distinctUntilChanged(
+          (a, b) =>
+            a.loading === b.loading &&
+            a.result?.available === b.result?.available &&
+            a.result?.refValue === b.result?.refValue,
         ),
+      ),
     )
-  }, [selectedPerspectiveName, documentPreviewStore, parentId, parentRefPath])
+  }, [documentStore, parentGroupId, parentId, parentPath, parentType, targetScopeId])
+
   // Kept synchronous: `handleReloadReference` navigates to `refValue` from
   // this snapshot, so a deferred value could point the reload action at a
   // stale parent reference.
-  const referenceInfo = useSyncObservable(referenceInfoObservable, {loading: true})
+  const parentReferenceInfo = useSyncObservable(parentReferenceInfoObservable, {loading: true})
 
   const handleReloadReference = useCallback(() => {
-    if (referenceInfo.loading) return
+    if (parentReferenceInfo.loading) return
 
-    if (referenceInfo.result?.refValue) {
+    if (parentReferenceInfo.result?.refValue) {
       replaceCurrent({
-        id: referenceInfo.result.refValue,
+        id: parentReferenceInfo.result.refValue,
         params: params as Record<string, string>,
       })
     }
-  }, [referenceInfo.loading, referenceInfo.result, replaceCurrent, params])
+  }, [parentReferenceInfo.loading, parentReferenceInfo.result, replaceCurrent, params])
 
   const shouldHide =
-    // if `parentId` or `parentRefPath` is not present then this banner is n/a
+    // if `parentId` or `parentPath` is not present then this banner is n/a
     !parentId ||
-    !parentRefPath ||
+    !parentPath ||
+    !routerReferenceId ||
     // if viewing this pane via history, then hide
     hasHistoryOpen ||
     // if loading, hide
-    referenceInfo.loading ||
+    parentReferenceInfo.loading ||
     // if the parent document is not available (e.g. due to permission denied or
     // not found) we don't want to display a warning here, but instead rely on the
     // parent view to display the appropriate message
-    (!referenceInfo.result?.availability.draft.available &&
-      !referenceInfo.result?.availability.published.available) ||
+    !parentReferenceInfo.result?.available ||
     // if the references are the same, then hide the reference changed banner
-    referenceInfo.result?.refValue === routerReferenceId
+    parentReferenceInfo.result?.refValue === routerReferenceId
 
   if (shouldHide) return null
 
   return (
     <Banner
       action={
-        referenceInfo.result?.refValue
+        parentReferenceInfo.result?.refValue
           ? {
               onClick: handleReloadReference,
               icon: SyncIcon,
@@ -164,7 +155,7 @@ export const ReferenceChangedBanner = memo(() => {
       data-testid="reference-changed-banner"
       content={
         <Text size={1} weight="medium">
-          {referenceInfo.result?.refValue
+          {parentReferenceInfo.result?.refValue
             ? t('banners.reference-changed-banner.reason-changed.text')
             : t('banners.reference-changed-banner.reason-removed.text')}
         </Text>
@@ -173,4 +164,6 @@ export const ReferenceChangedBanner = memo(() => {
       tone="caution"
     />
   )
-})
+}
+
+export const ReferenceChangedBanner = memo(ReferenceChangedBannerComponent)
