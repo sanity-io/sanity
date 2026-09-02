@@ -411,10 +411,15 @@ jobs:
             if (s.skipped) parts.push('([⚪ ' + s.skipped + ' skipped](' + u + '#?q=s%3Askipped))');
             console.log('text=' + parts.join(' • ') + ' • [view full report](' + u + ')');
             if (u && s.failed) {
+              // Fenced so GitHub shows a one-click copy button for the whole prompt.
+              // String.fromCharCode avoids bash interpreting backticks in this double-quoted node -e.
+              const fence = String.fromCharCode(96).repeat(3);
               const block = [
                 '🤖 **Share with an AI agent:**',
                 '',
-                '> Fix the failing e2e tests. The failure report with error messages and page snapshots is at ' + u + '/agent-report.md',
+                fence,
+                'Fix the failing e2e tests. The failure report with error messages and page snapshots is at ' + u + '/agent-report.md',
+                fence,
               ].join('\n');
               process.stdout.write('agent_block<<ENDOFAGENTBLOCK\n' + block + '\nENDOFAGENTBLOCK\n');
             } else {
