@@ -173,7 +173,7 @@ function deriveViewState(options: {
   accessRequestsHistory: AccessRequest[] | null
   accessRequestEligibilityState: AccessRequestEligibilityState
   resourceId: string
-  submitResult: SubmitAccessRequestResult | null
+  submitAccessRequestResult: SubmitAccessRequestResult | null
   currentUser?: AccessUser | null
   providerTitle?: string
   labels: RequestAccessLabels
@@ -182,7 +182,7 @@ function deriveViewState(options: {
     accessRequestsHistory,
     accessRequestEligibilityState,
     resourceId,
-    submitResult,
+    submitAccessRequestResult,
     currentUser,
     providerTitle,
     labels,
@@ -194,19 +194,23 @@ function deriveViewState(options: {
     message,
   })
 
-  if (submitResult) {
-    switch (submitResult.type) {
+  if (submitAccessRequestResult) {
+    switch (submitAccessRequestResult.type) {
       case 'submitted':
         return {view: 'sent', title: labels.sentTitle, description: labels.sentDescription}
       case 'sso-enforced':
-        return ssoEnforcedState({labels, providerTitle, redirectUrl: submitResult.redirectUrl})
+        return ssoEnforcedState({
+          labels,
+          providerTitle,
+          redirectUrl: submitAccessRequestResult.redirectUrl,
+        })
       case 'denied':
-        return submitFailure(labels.deniedMessage({message: submitResult.message}))
+        return submitFailure(labels.deniedMessage({message: submitAccessRequestResult.message}))
       case 'over-limit':
-        return submitFailure(labels.overLimitMessage({message: submitResult.message}))
+        return submitFailure(labels.overLimitMessage({message: submitAccessRequestResult.message}))
       case 'email-domain-blocked':
       case 'requests-disabled':
-        return submitFailure(submitResult.message)
+        return submitFailure(submitAccessRequestResult.message)
       case 'error':
         // Fall through to the fetched state; the form stays up with an inline error.
         break
@@ -220,6 +224,7 @@ function deriveViewState(options: {
   const serverState = deriveServerViewState(accessRequestEligibilityState, labels, providerTitle)
   if (serverState) return serverState
 
+  // TODO: `pending` and `denied` will be replaced by future content in `accessRequestEligibilityState`
   const state = deriveAccessRequestState(accessRequestsHistory, resourceId)
   if (state === 'pending') {
     return {view: 'pending', title: labels.sentTitle, description: labels.pendingMessage}
@@ -267,7 +272,8 @@ function RequestAccessFormContent(
   const titleId = useId()
 
   const [note, setNote] = useState('')
-  const [submitResult, setSubmitResult] = useState<SubmitAccessRequestResult | null>(null)
+  const [submitAccessRequestResult, setSubmitAccessRequestResult] =
+    useState<SubmitAccessRequestResult | null>(null)
   const [isSubmitting, startSubmit] = useTransition()
 
   const providerTitle = getProviderTitle(currentUser?.provider)
@@ -275,13 +281,13 @@ function RequestAccessFormContent(
     accessRequestsHistory,
     accessRequestEligibilityState,
     resourceId,
-    submitResult,
+    submitAccessRequestResult,
     currentUser,
     providerTitle,
     labels,
   })
 
-  const submitFailed = submitResult?.type === 'error'
+  const submitFailed = submitAccessRequestResult?.type === 'error'
 
   const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -295,7 +301,7 @@ function RequestAccessFormContent(
         note: trimmedNote,
         requestUrl: getRequestUrl(),
       })
-      setSubmitResult(result)
+      setSubmitAccessRequestResult(result)
       if (result.type === 'submitted') onRequestSubmitted?.({note: trimmedNote})
     })
   }
