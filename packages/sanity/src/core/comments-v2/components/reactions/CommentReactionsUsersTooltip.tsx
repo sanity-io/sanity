@@ -39,7 +39,7 @@ const TextBox = styled(Box)`
 const LEADING_NON_WHITESPACE_RE = /^\S+/
 
 interface UserDisplayNameProps {
-  currentUserId: string
+  currentUserId: string | null | undefined
   isFirst?: boolean
   userId: string
 }
@@ -49,7 +49,7 @@ function UserDisplayName(props: UserDisplayNameProps): string {
   const [user] = useUser(userId)
   const {t} = useTranslation(commentsLocaleNamespace)
 
-  const isCurrentUser = currentUserId === userId
+  const isCurrentUser = Boolean(currentUserId) && currentUserId === userId
   if (isCurrentUser) {
     const context = isFirst ? 'leading' : undefined
     return t('reactions.user-list.you', {context, replace: {name: user?.displayName}})
@@ -79,7 +79,13 @@ export function CommentReactionsUsersTooltip(props: CommentReactionsUsersTooltip
   )
 }
 
-function FormattedUserList({currentUserId, userIds}: {currentUserId: string; userIds: string[]}) {
+function FormattedUserList({
+  currentUserId,
+  userIds,
+}: {
+  currentUserId: string | null | undefined
+  userIds: string[]
+}) {
   const listFormat = useListFormat({style: 'long', type: 'conjunction'})
   if (userIds.length === 0) return null
 
@@ -138,7 +144,7 @@ function FormattedUserList({currentUserId, userIds}: {currentUserId: string; use
 
 interface ReactionTooltipComponentProps {
   children?: React.ReactNode
-  currentUserId: string
+  currentUserId: string | null | undefined
   reactionName: CommentReactionShortNames
   userIds: string[]
 }
@@ -178,7 +184,7 @@ function CommentReactionsUsersTooltipContent(
           values={{reactionName}}
           components={{UserList, ReactionName, Text: ReactionText}}
           componentProps={{
-            currentUserId: currentUser.sanityUserId || '',
+            currentUserId: currentUser.sanityUserId,
             reactionName,
             userIds,
           }}
