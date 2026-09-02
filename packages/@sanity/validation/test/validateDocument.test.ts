@@ -83,6 +83,7 @@ describe('validateDocument', () => {
   it('passes cancellation to custom validators without creating exception markers', async () => {
     const controller = new AbortController()
     const reason = new Error('cancelled')
+    const {client} = createMockClient()
     const customValidator = vi.fn(
       (_value: unknown, context: ValidationContext) =>
         new Promise<true>((_resolve, reject) => {
@@ -102,6 +103,7 @@ describe('validateDocument', () => {
     ])
 
     const validation = validateDocument({
+      client,
       document: createDocument({_type: 'article', title: 'Hello'}),
       schema,
       signal: controller.signal,
@@ -116,6 +118,7 @@ describe('validateDocument', () => {
   it('does not start queued custom validators after cancellation and releases their slots', async () => {
     const controller = new AbortController()
     const reason = new Error('cancelled')
+    const {client} = createMockClient()
     let waitForCancellation = true
     const firstValidator = vi.fn((_value: unknown, context: ValidationContext) => {
       if (!waitForCancellation) return true
@@ -144,6 +147,7 @@ describe('validateDocument', () => {
     const document = createDocument({_type: 'article', first: 'one', second: 'two'})
 
     const validation = validateDocument({
+      client,
       document,
       maxCustomValidationConcurrency: 1,
       schema,
@@ -156,7 +160,7 @@ describe('validateDocument', () => {
     expect(queuedValidator).not.toHaveBeenCalled()
 
     await expect(
-      validateDocument({document, maxCustomValidationConcurrency: 1, schema}),
+      validateDocument({client, document, maxCustomValidationConcurrency: 1, schema}),
     ).resolves.toMatchObject({status: 'passed'})
     expect(queuedValidator).toHaveBeenCalledOnce()
   })
