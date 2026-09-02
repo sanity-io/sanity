@@ -10,6 +10,7 @@ import {TableValidationDepthStory} from './TableValidationDepthStory'
 const meta = {
   title: 'Portable Text/Table Validation Depth',
   component: TableValidationDepthStory,
+  tags: ['!dev', '!autodocs', 'vrt-only'],
   parameters: {chromatic: {delay: 300}},
 } satisfies Meta<typeof TableValidationDepthStory>
 

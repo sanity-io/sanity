@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.12.0](https://github.com/sanity-io/sanity/compare/v6.11.0...v6.12.0) (2026-09-01)
+
+### Bug Fixes
+
+* **mutator:** drop patch paths that cannot apply to the local document ([#14458](https://github.com/sanity-io/sanity/issues/14458)) ([0bc142d](https://github.com/sanity-io/sanity/commit/0bc142d2086dc824bdcab403bf0c88ba58c066a2))
 ## [6.11.0](https://github.com/sanity-io/sanity/compare/v6.10.1...v6.11.0) (2026-08-25)
 
 ### Bug Fixes

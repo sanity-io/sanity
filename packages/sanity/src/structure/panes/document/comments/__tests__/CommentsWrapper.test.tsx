@@ -71,7 +71,13 @@ vi.mock('../../useDocumentPane', () => ({
     onPathOpen: vi.fn(),
     inspector: null,
     openInspector: vi.fn(),
-    targetDocumentState: {status: 'ready', scopeId: undefined},
+    targetDocumentState: {
+      status: 'ready',
+      scopeId: undefined,
+      targetDocument: undefined,
+      variant: undefined,
+      siblings: {published: undefined, draft: undefined, version: undefined},
+    },
     value: {_id: 'doc-1'},
   })),
 }))
@@ -88,7 +94,13 @@ function documentPane(overrides: Record<string, unknown> = {}) {
     onPathOpen: vi.fn(),
     inspector: null,
     openInspector: vi.fn(),
-    targetDocumentState: {status: 'ready', scopeId: undefined},
+    targetDocumentState: {
+      status: 'ready',
+      scopeId: undefined,
+      targetDocument: undefined,
+      variant: undefined,
+      siblings: {published: undefined, draft: undefined, version: undefined},
+    },
     value: {_id: 'doc-1'},
     ...overrides,
   }
@@ -331,7 +343,7 @@ describe('CommentsWrapper', () => {
         scopeId: 'varscope',
         targetDocument: undefined,
         variant: undefined,
-        publishedSibling: undefined,
+        siblings: {published: undefined, draft: undefined, version: undefined},
       }
 
       mockUseDocumentPane.mockReturnValue(documentPane({targetDocumentState}))
@@ -389,7 +401,7 @@ describe('CommentsWrapper', () => {
         scopeId: 'varscope',
         targetDocument: undefined,
         variant: {_id: 'system.variant.alpha-audience', name: 'alpha-audience'},
-        publishedSibling: undefined,
+        siblings: {published: undefined, draft: undefined, version: undefined},
       }
 
       mockUseDocumentPane.mockReturnValue(documentPane({targetDocumentState}))

@@ -937,6 +937,7 @@ export {
   getCreatableVariantTarget,
   getPairTarget,
   getTargetScopeId,
+  getTargetSiblings,
   type TargetDocumentState,
   useTargetDocumentState,
 } from '../core/hooks/useTargetDocumentState'
