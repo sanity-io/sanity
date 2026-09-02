@@ -61,7 +61,7 @@ export const useDuplicateAction: DuplicateDocumentActionComponent = ({id, type, 
         .operationEvents(id, type)
         .pipe(filter((e) => e.op === 'duplicate' && e.type === 'success')),
     )
-    duplicate.execute(dupeId, {mapDocument})
+    void duplicate.execute(dupeId, {mapDocument})
 
     // only navigate to the duplicated document when the operation is successful
     await duplicateSuccess

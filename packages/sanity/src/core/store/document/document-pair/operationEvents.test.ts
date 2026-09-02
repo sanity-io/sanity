@@ -1,8 +1,9 @@
 import {type SanityClient} from '@sanity/client'
-import {of} from 'rxjs'
+import {NEVER, of, throwError} from 'rxjs'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {createSchema} from '../../../schema/createSchema'
+import {type HistoryStore} from '../../history/createHistoryStore'
 import {editOperations} from './editOperations'
 import {type OperationsAPI} from './operations/types'
 
@@ -83,8 +84,8 @@ describe('operationEvents', () => {
     expect(operationsA?.patch.disabled).toBe(false)
     expect(operationsB?.patch.disabled).toBe(false)
 
-    operationsA?.patch.execute([{set: {title: 'hello'}}], {_id: 'task-1', _type: 'tasks.task'})
-    operationsA?.commit.execute()
+    void operationsA?.patch.execute([{set: {title: 'hello'}}], {_id: 'task-1', _type: 'tasks.task'})
+    void operationsA?.commit.execute()
 
     await new Promise((resolve) => setTimeout(resolve, 0))
 
@@ -94,5 +95,76 @@ describe('operationEvents', () => {
 
     subscriptionA.unsubscribe()
     subscriptionB.unsubscribe()
+  })
+
+  describe('execute() outcome promise', () => {
+    // Each test uses its own dataset so it gets its own memoized operationEvents pipeline.
+    async function setup(dataset: string, historyStore: Partial<HistoryStore>) {
+      const {client} = createDocumentClient(dataset)
+      const idPair = {publishedId: 'task-1', draftId: 'drafts.task-1'}
+
+      let operations: OperationsAPI | undefined
+      const subscription = editOperations(
+        {client, historyStore: historyStore as HistoryStore, schema},
+        idPair,
+        'tasks.task',
+      ).subscribe((value) => {
+        operations = value
+      })
+
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      expect(operations?.restore.disabled).toBe(false)
+
+      return {operations: operations!, subscription}
+    }
+
+    it('resolves with a success outcome when this call completes', async () => {
+      const {operations, subscription} = await setup('outcome-success', {
+        restore: vi.fn(() => of(undefined)),
+      })
+
+      await expect(operations.restore.execute('rev-1')).resolves.toEqual({type: 'success'})
+
+      subscription.unsubscribe()
+    })
+
+    it('resolves with an error outcome when this call fails', async () => {
+      const {operations, subscription} = await setup('outcome-error', {
+        restore: vi.fn(() => throwError(() => new Error('restore failed'))),
+      })
+
+      await expect(operations.restore.execute('rev-1')).resolves.toEqual({
+        type: 'error',
+        error: new Error('restore failed'),
+      })
+
+      subscription.unsubscribe()
+    })
+
+    it('resolves with a cancelled outcome when superseded by a newer operation', async () => {
+      const {operations, subscription} = await setup('outcome-cancelled', {
+        restore: vi.fn(() => NEVER),
+      })
+
+      const inFlight = operations.restore.execute('rev-1')
+      // A newer operation on the same document drops the in-flight restore (switchMap).
+      void operations.patch.execute([{set: {title: 'hello'}}], {_id: 'task-1', _type: 'tasks.task'})
+
+      await expect(inFlight).resolves.toEqual({type: 'cancelled'})
+
+      subscription.unsubscribe()
+    })
+
+    it('resolves with a cancelled outcome when the executor is torn down mid-flight', async () => {
+      const {operations, subscription} = await setup('outcome-teardown', {
+        restore: vi.fn(() => NEVER),
+      })
+
+      const inFlight = operations.restore.execute('rev-1')
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      subscription.unsubscribe()
+
+      await expect(inFlight).resolves.toEqual({type: 'cancelled'})
+    })
   })
 })

@@ -14,7 +14,7 @@ export const createCustomPublishAction = memoize(
         ...defaultPublishAction,
         label: 'Custom publish that sets publishedAt to now',
         onHandle: () => {
-          documentOperations.patch.execute([{set: {publishedAt: new Date().toISOString()}}])
+          void documentOperations.patch.execute([{set: {publishedAt: new Date().toISOString()}}])
           defaultPublishAction?.onHandle?.()
         },
       }
@@ -35,7 +35,7 @@ export const createNoopPatchPublishAction = memoize(
         ...defaultPublishAction,
         label: 'Custom publish that sets someBoolean to true',
         onHandle: () => {
-          documentOperations.patch.execute([{set: {someBoolean: true}}])
+          void documentOperations.patch.execute([{set: {someBoolean: true}}])
           defaultPublishAction?.onHandle?.()
         },
       }

@@ -142,7 +142,7 @@ function withComlinkEvent<OperationName extends keyof OperationsAPI>({
         execute: (...args: ExecuteParameters<OperationName>) => {
           const next = () => recordEvent(comlinkEventType)
           preRecordEvent(next)
-          api[operationName].execute(...args)
+          return api[operationName].execute(...args)
         },
       },
     }

@@ -67,7 +67,7 @@ export const useUnpublishAction: DocumentActionComponent = ({
 
   const handleConfirm = useCallback(() => {
     setConfirmDialogOpen(false)
-    unpublish.execute()
+    void unpublish.execute()
   }, [unpublish])
 
   const dialog: DocumentActionModalDialogProps | null = useMemo(() => {

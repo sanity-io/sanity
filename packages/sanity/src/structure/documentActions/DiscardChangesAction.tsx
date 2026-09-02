@@ -52,7 +52,7 @@ export const useDiscardChangesAction: DocumentActionComponent = ({id, type, vers
   const isPublished = displayed?._id && isPublishedId(displayed?._id)
 
   const handleConfirm = useCallback(() => {
-    discardChanges.execute()
+    void discardChanges.execute()
     setConfirmDialogOpen(false)
   }, [discardChanges])
 

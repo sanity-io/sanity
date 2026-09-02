@@ -627,7 +627,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
           telemetry.log(CreatedDraft)
         }
 
-        patch.execute(toMutationPatches(event.patches), initialValue?.value)
+        void patch.execute(toMutationPatches(event.patches), initialValue?.value)
       }
     }
   }, [editState.draft, editState.published, initialValue, patch, telemetry, readOnly])

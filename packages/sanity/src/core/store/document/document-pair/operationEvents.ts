@@ -5,6 +5,7 @@ import {
   catchError,
   concatMap,
   filter,
+  finalize,
   groupBy,
   last,
   map,
@@ -31,7 +32,7 @@ import {duplicate} from './operations/duplicate'
 import {patch} from './operations/patch'
 import {publish} from './operations/publish'
 import {restore} from './operations/restore'
-import {type OperationArgs, type OperationsAPI} from './operations/types'
+import {type OperationArgs, type OperationCallOutcome, type OperationsAPI} from './operations/types'
 import {unpublish} from './operations/unpublish'
 import {del as serverDel} from './serverOperations/delete'
 import {discardChanges as serverDiscardChanges} from './serverOperations/discardChanges'
@@ -46,6 +47,12 @@ interface ExecuteArgs {
   typeName: string
   storeKey?: string
   extraArgs: any[]
+  /**
+   * Resolves the outcome promise handed to the caller of this specific `execute()` call.
+   * Promise resolution is idempotent, so the `finalize`-based `cancelled` fallback is a no-op
+   * when a `success`/`error` outcome has already been settled.
+   */
+  settle?: (outcome: OperationCallOutcome) => void
 }
 
 function maybeObservable(v: void | Observable<any>) {
@@ -90,15 +97,30 @@ const execute = (
 
 const operationCalls$ = new Subject<ExecuteArgs>()
 
-/** @internal */
+/**
+ * Emits an operation call into the shared executor pipeline and returns a promise for the outcome
+ * of this specific call.
+ *
+ * The promise never rejects — errors resolve as `{type: 'error', error}` — so fire-and-forget
+ * callers that ignore the return value cannot cause unhandled rejections. Callers that need to
+ * await completion (e.g. {@link useAsyncOperation}) inspect the resolved outcome instead.
+ *
+ * Note: execution requires an active subscriber to the pair's operation pipeline (which
+ * `useDocumentOperation` guarantees while mounted, via `editOperations`). If the pipeline is torn
+ * down while this call is in flight, the promise resolves `cancelled`.
+ *
+ * @internal
+ */
 export function emitOperation(
   operationName: keyof OperationsAPI,
   idPair: IdPair,
   typeName: string,
   extraArgs: any[],
   storeKey?: string,
-): void {
-  operationCalls$.next({operationName, idPair, typeName, storeKey, extraArgs})
+): Promise<OperationCallOutcome> {
+  return new Promise<OperationCallOutcome>((settle) => {
+    operationCalls$.next({operationName, idPair, typeName, storeKey, extraArgs, settle})
+  })
 }
 
 // These are the operations that cannot be performed while the document is in an inconsistent state
@@ -185,6 +207,17 @@ export const operationEvents = memoize(
               catchError((err): Observable<IntermediaryError> =>
                 of({type: 'error', args, error: err}),
               ),
+              tap((result) => {
+                args.settle?.(
+                  result.type === 'success'
+                    ? {type: 'success'}
+                    : {type: 'error', error: result.error},
+                )
+              }),
+              // Runs on completion (already settled above — no-op) and on unsubscription:
+              // a newer operation on the same document cancelled this one via `switchMap`,
+              // or the executor was torn down while the call was in flight.
+              finalize(() => args.settle?.({type: 'cancelled'})),
             ),
           ),
         ),
@@ -201,7 +234,13 @@ export const operationEvents = memoize(
         (window as any).SLOW ? timer(10000).pipe(map(() => result)) : of(result),
       ),
       tap((result) => {
-        emitOperation('commit', result.args.idPair, result.args.typeName, [], result.args.storeKey)
+        void emitOperation(
+          'commit',
+          result.args.idPair,
+          result.args.typeName,
+          [],
+          result.args.storeKey,
+        )
       }),
     )
 

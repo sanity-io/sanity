@@ -41,7 +41,7 @@ function DeletedDocumentBanner() {
   const {navigateIntent} = useRouter()
 
   const handleRestore = useCallback(() => {
-    restore.execute('lastRevision')
+    void restore.execute('lastRevision')
     navigateIntent('edit', {id: documentId, type: documentType})
   }, [documentId, documentType, navigateIntent, restore])
 

@@ -115,7 +115,9 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const telemetry = useTelemetry()
 
   const doPublish = useCallback(() => {
-    publish.execute(isVariantTarget ? {publishedRevisionId: currentPublishRevision} : undefined)
+    void publish.execute(
+      isVariantTarget ? {publishedRevisionId: currentPublishRevision} : undefined,
+    )
     telemetry.log(PublishButtonClicked, {documentId: id, stage: 'started'})
     setPublishState({status: 'publishing', publishRevision: currentPublishRevision})
   }, [publish, isVariantTarget, currentPublishRevision, telemetry, id])

@@ -194,7 +194,7 @@ export function useDivergenceController(
     )
 
     const patches = createUpsertResolutionMarkerPatches(...markers)
-    patch.execute(patches.map(SanityEncoder.encodePatch))
+    void patch.execute(patches.map(SanityEncoder.encodePatch))
   }
 
   const takeUpstreamValue = async () => {
@@ -218,7 +218,7 @@ export function useDivergenceController(
       ).pipe(toArray()),
     )
 
-    patch.execute(patches.map(SanityEncoder.encodePatch))
+    void patch.execute(patches.map(SanityEncoder.encodePatch))
   }
 
   return {

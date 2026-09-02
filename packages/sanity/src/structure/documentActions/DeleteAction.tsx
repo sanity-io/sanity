@@ -96,7 +96,7 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft}) => {
         }
       })
 
-      deleteOp.execute(versions)
+      void deleteOp.execute(versions)
       setIsDeleting(false)
     },
     [deleteOp, documentStore.pair, id, telemetry, type],

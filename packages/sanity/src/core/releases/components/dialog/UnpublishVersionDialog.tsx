@@ -126,7 +126,7 @@ export function UnpublishVersionDialog(props: {
 
     setIsUnpublishing(true)
     awaitingUnpublishRef.current = true
-    unpublish.execute()
+    void unpublish.execute()
   }, [canUnpublish, unpublish])
 
   return (

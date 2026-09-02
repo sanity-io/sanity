@@ -8,6 +8,23 @@ import {type DocumentVersionSnapshots} from '../snapshotPair'
 /** @public */
 export type MapDocument = (document: SanityDocumentLike) => SanityDocumentLike
 
+/**
+ * The terminal outcome of a single `execute()` call, resolved by the promise returned from
+ * {@link Operation.execute}.
+ *
+ * - `success` / `error` mirror the corresponding operation events for this specific call.
+ * - `cancelled` means the call never produced an event: it was superseded by a newer operation on
+ *   the same document (the executor intentionally drops in-flight operations, e.g. typing after
+ *   publish cancels the publish), or the operation executor was torn down.
+ *
+ * @hidden
+ * @beta
+ */
+export type OperationCallOutcome =
+  | {type: 'success'}
+  | {type: 'error'; error: Error}
+  | {type: 'cancelled'}
+
 /** @internal */
 export interface OperationImpl<
   ExtraArgs extends any[] = [],
@@ -20,7 +37,15 @@ export interface OperationImpl<
 /** @internal */
 export interface Operation<ExtraArgs extends any[] = [], ErrorStrings extends string = string> {
   disabled: false | ErrorStrings | 'NOT_READY'
-  execute(...extra: ExtraArgs): void
+  /**
+   * Triggers the operation and returns a promise for the outcome of this specific call.
+   *
+   * The promise never rejects: failures resolve as `{type: 'error'}` and operations dropped by
+   * the executor (superseded by a newer operation on the same document) resolve as
+   * `{type: 'cancelled'}`, so existing fire-and-forget callers can keep ignoring the return
+   * value. Await it (e.g. via `useAsyncOperation`) to drive pending/error UI.
+   */
+  execute(...extra: ExtraArgs): Promise<OperationCallOutcome>
 }
 
 type GuardedOperation = Operation<any[], 'NOT_READY'>

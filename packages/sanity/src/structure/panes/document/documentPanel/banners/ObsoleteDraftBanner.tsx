@@ -46,13 +46,13 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
   const {publish, discardChanges} = useDocumentOperation(documentId, displayed?._type || '')
 
   const handlePublish = useCallback(() => {
-    publish.execute()
+    void publish.execute()
     setPublishing(true)
     telemetry.log(ResolvedLiveEdit, {liveEditResolveType: 'publish'})
   }, [publish, telemetry])
 
   const handleDiscard = useCallback(() => {
-    discardChanges.execute()
+    void discardChanges.execute()
     setDiscarding(true)
     telemetry.log(ResolvedLiveEdit, {liveEditResolveType: 'discard'})
   }, [discardChanges, telemetry])

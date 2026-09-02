@@ -119,7 +119,7 @@ export function DiscardVersionDialog(props: {
 
     setIsDiscarding(true)
     awaitingDiscardRef.current = true
-    discardChanges.execute()
+    void discardChanges.execute()
   }, [discardChanges])
 
   return (
