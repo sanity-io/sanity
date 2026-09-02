@@ -2,24 +2,26 @@ import {render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 // oxlint-disable-next-line eslint/no-restricted-imports -- intentional: regression coverage for facebook/react#34818 needs real forwardRef fibers and React's natively broken useEffectEvent
 import {forwardRef, memo, useEffect, useEffectEvent as nativeUseEffectEvent, version} from 'react'
+import {gte} from 'semver'
 import {useEffectEvent} from 'use-effect-event'
 import useEffectEventPkg from 'use-effect-event/package.json'
 import {describe, expect, test, vi} from 'vitest'
 
 /**
- * `use-effect-event` is intentionally pinned to 1.0.2. These tests fail on any attempt to bump
- * it, and on React upgrades that invalidate the assumptions behind the pin:
+ * Require `use-effect-event@2.0.4` or newer. These tests fail on a downgrade into the
+ * 2.0.0-2.0.3 range, and on React upgrades that invalidate the assumptions behind the ponyfill:
  *
- * - 1.0.2 wraps the event function in a stable `useCallback`, so it keeps the same identity
- *   across renders and is safe to list in `useEffect` dependency arrays. That matters because
- *   React Compiler inserts the event function into the dependency arrays it generates.
- *   `use-effect-event@2` returns a new function on every render, so every compiler-generated
- *   dependency array that contains one re-fires its effect on each render.
+ * - 2.0.4 wraps the event function in a stable `useState` initializer, so it keeps the same
+ *   identity across renders and is safe to list in `useEffect` dependency arrays. That matters
+ *   because React Compiler and oxlint's `react/exhaustive-effect-dependencies` insert the event
+ *   function into the dependency arrays they generate (they only exempt the native hook).
+ *   `use-effect-event@2.0.0` through `2.0.3` return a new function on every render, so every
+ *   compiler-generated dependency array that contains one re-fires its effect on each render.
  * - The ponyfill must not be replaced with React's native `useEffectEvent` either: on React 19.2
  *   the native hook never sees values past the first render when the calling component is
  *   wrapped in `forwardRef` or `memo` (https://github.com/facebook/react/issues/34818, fixed in
  *   19.3 canaries). The canary test below fails once the installed React fixes that bug, which
- *   is the signal to re-evaluate the pin, the oxlint ban, and this file.
+ *   is the signal to re-evaluate the oxlint ban and this file.
  *
  * Studio code must not use `forwardRef` (see oxlint ban); this file is the sole exception so we
  * keep covering that fiber.
@@ -86,7 +88,7 @@ describe('useEffectEvent', () => {
     // one entry means effects keyed on the event never re-fire, one entry per render means they
     // re-fire on every render. React Compiler inserts the event function into the dependency
     // arrays it generates (it cannot recognize the ponyfill as an effect event), which is why
-    // use-effect-event@2, which returns a new identity on every render, is not usable here.
+    // use-effect-event@2.0.0-2.0.3, which return a new identity on every render, are not usable.
     const identities = new Set<() => number>()
 
     function Counter({value}: {value: number}) {
@@ -166,8 +168,8 @@ describe('useEffectEvent', () => {
     expect(results.plain).toBe(2)
 
     // facebook/react#34818: forwardRef and memo fibers stay stuck on first-render values. When
-    // these assertions start failing, React fixed the bug. Re-evaluate the use-effect-event@1.0.2
-    // pin, the oxlint ban on importing useEffectEvent from react, and this file.
+    // these assertions start failing, React fixed the bug. Re-evaluate the oxlint ban on
+    // importing useEffectEvent from react, and this file.
     expect(
       results.forwardRef,
       'native useEffectEvent is no longer stale under forwardRef: facebook/react#34818 appears fixed in this React version',
@@ -181,14 +183,14 @@ describe('useEffectEvent', () => {
   test('runs against a React 19.2.x release, where facebook/react#34818 is unfixed', () => {
     expect(
       version,
-      'React is no longer 19.2.x. Check whether the native useEffectEvent still goes stale in forwardRef/memo components (facebook/react#34818) and re-evaluate the use-effect-event@1.0.2 pin, the oxlint ban on importing useEffectEvent from react, and this file.',
+      'React is no longer 19.2.x. Check whether the native useEffectEvent still goes stale in forwardRef/memo components (facebook/react#34818) and re-evaluate the oxlint ban on importing useEffectEvent from react, and this file.',
     ).toMatch(/^19\.2\./)
   })
 
-  test('stays pinned to use-effect-event@1.0.2', () => {
+  test('resolves use-effect-event 2.0.4 or newer', () => {
     expect(
-      useEffectEventPkg.version,
-      'use-effect-event@2 returns a new function identity on every render, which re-fires every effect that lists the event in its dependency array, including the dependency arrays React Compiler generates. Keep 1.0.2 (stable identity via useCallback) and see the other tests in this file before bumping.',
-    ).toBe('1.0.2')
+      gte(useEffectEventPkg.version, '2.0.4'),
+      'use-effect-event@2.0.0-2.0.3 return a new function identity on every render, which re-fires every effect that lists the event in its dependency array, including the dependency arrays React Compiler generates. 2.0.4 restored a stable identity via useState. See the other tests in this file before changing the floor.',
+    ).toBe(true)
   })
 })
