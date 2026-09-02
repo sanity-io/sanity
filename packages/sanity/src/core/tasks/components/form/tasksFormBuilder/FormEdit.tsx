@@ -13,6 +13,7 @@ import {Flex, Box} from 'ui5'
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {CommentsProvider as CommentsProviderV2} from '../../../../comments-v2/context/comments/CommentsProvider'
 import {CommentsProvider} from '../../../../comments/context/comments/CommentsProvider'
 import {ContextMenuButton} from '../../../../components/contextMenuButton/ContextMenuButton'
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
@@ -23,6 +24,8 @@ import {type ObjectInputProps} from '../../../../form/types/inputProps'
 import {TransformPatches} from '../../../../form/utils/TransformPatches'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useCurrentUser} from '../../../../store/user/hooks'
+import {useWorkspace} from '../../../../studio/workspace'
+import {getPublishedId} from '../../../../util/draftUtils'
 import {TaskDuplicated, TaskRemoved} from '../../../__telemetry__/tasks.telemetry'
 import {useTasksEnabled} from '../../../context/enabled/useTasksEnabled'
 import {useTasksNavigation} from '../../../context/navigation/useTasksNavigation'
@@ -176,23 +179,60 @@ function FormEditInner(props: ObjectInputProps) {
 
       {props.renderDefault(props)}
       <CurrentWorkspaceProvider>
-        <CommentsProvider
-          documentId={value._id}
-          documentType="tasks.task"
-          sortOrder="asc"
-          type="task"
-        >
-          <Card borderTop paddingTop={4} marginTop={4} paddingBottom={6}>
-            <TasksActivityLog
-              value={value}
-              onChange={props.onChange}
-              path={['subscribers']}
-              activityData={activityData}
-            />
-          </Card>
-        </CommentsProvider>
+        <TasksCommentsActivity
+          value={value}
+          onChange={props.onChange}
+          activityData={activityData}
+        />
       </CurrentWorkspaceProvider>
     </>
+  )
+}
+
+interface TasksCommentsActivityProps {
+  value: TaskDocument
+  onChange: ObjectInputProps['onChange']
+  activityData: ReturnType<typeof useActivityLog>['changes']
+}
+
+/**
+ * Activity log, in the comments context that the task's comments are read from
+ * and written to.
+ */
+export function TasksCommentsActivity(props: TasksCommentsActivityProps) {
+  const {value, onChange, activityData} = props
+  const {beta} = useWorkspace()
+  const taskId = value._id
+
+  const activityLog = (
+    <Card borderTop paddingTop={4} marginTop={4} paddingBottom={6}>
+      <TasksActivityLog
+        value={value}
+        onChange={onChange}
+        path={['subscribers']}
+        activityData={activityData}
+      />
+    </Card>
+  )
+
+  if (beta?.comments?.v2) {
+    return (
+      <CommentsProviderV2
+        groupId={getPublishedId(taskId)}
+        versionId={taskId}
+        documentType="tasks.task"
+        sortOrder="asc"
+        type="task"
+      >
+        {activityLog}
+      </CommentsProviderV2>
+    )
+  }
+
+  return (
+    <CommentsProvider documentId={taskId} documentType="tasks.task" sortOrder="asc" type="task">
+      {activityLog}
+    </CommentsProvider>
   )
 }
 
