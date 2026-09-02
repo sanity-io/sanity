@@ -15,7 +15,7 @@ export {
 export {
   type AccessRequest,
   type AccessRequestState,
-  type AccessRequestStatus,
+  type AccessRequestEligibilityState,
   type AccessResourceType,
   type AccessUser,
   type SubmitAccessRequestResult,

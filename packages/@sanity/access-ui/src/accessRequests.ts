@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 
 import {
   type AccessRequest,
-  type AccessRequestStatus,
+  type AccessRequestEligibilityState,
   type AccessResourceType,
   type SubmitAccessRequestResult,
 } from './types'
@@ -58,14 +58,16 @@ export async function fetchAccessRequestStatus(options: {
   resourceType: AccessResourceType
   resourceId: string
   origin?: string
-}): Promise<AccessRequestStatus> {
+}): Promise<AccessRequestEligibilityState> {
   const {client, resourceType, resourceId, origin} = options
   try {
-    const status = await withAccessApiVersion(client).request<AccessRequestStatus | null>({
-      url: `/access/${resourceType}/${resourceId}/requests/state`,
-      tag: 'access-ui.request-state',
-      query: origin ? {returnQuery: new URLSearchParams({origin}).toString()} : undefined,
-    })
+    const status = await withAccessApiVersion(client).request<AccessRequestEligibilityState | null>(
+      {
+        url: `/access/${resourceType}/${resourceId}/requests/state`,
+        tag: 'access-ui.request-state',
+        query: origin ? {returnQuery: new URLSearchParams({origin}).toString()} : undefined,
+      },
+    )
     return status ?? {state: 'eligible'}
   } catch {
     return {state: 'eligible'}

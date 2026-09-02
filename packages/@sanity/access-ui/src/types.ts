@@ -83,7 +83,7 @@ export type SubmitAccessRequestResult =
  *
  * @public
  */
-export type AccessRequestStatus =
+export type AccessRequestEligibilityState =
   | {state: 'eligible'}
   | {state: 'saml-required'; redirectUrl?: string}
   | {state: 'resource-not-available'}

@@ -23,7 +23,7 @@ import {defaultLabels, type RequestAccessLabels} from './labels'
 import {getProviderTitle} from './providerTitle'
 import {
   type AccessRequest,
-  type AccessRequestStatus,
+  type AccessRequestEligibilityState,
   type AccessResourceType,
   type AccessUser,
   type SubmitAccessRequestResult,
@@ -124,7 +124,7 @@ type ViewState =
  * request history, which resolves the states this endpoint does not.
  */
 function deriveServerViewState(
-  status: AccessRequestStatus,
+  status: AccessRequestEligibilityState,
   labels: RequestAccessLabels,
 ): ViewState | null {
   switch (status.state) {
@@ -146,7 +146,7 @@ function deriveServerViewState(
 
 function deriveViewState(options: {
   fetchedRequests: AccessRequest[] | null
-  status: AccessRequestStatus
+  status: AccessRequestEligibilityState
   resourceId: string
   submitResult: SubmitAccessRequestResult | null
   labels: RequestAccessLabels
@@ -200,7 +200,7 @@ function deriveViewState(options: {
 function RequestAccessFormContent(
   props: RequestAccessFormProps & {
     requestsPromise: Promise<AccessRequest[] | null>
-    statusPromise: Promise<AccessRequestStatus>
+    statusPromise: Promise<AccessRequestEligibilityState>
   },
 ) {
   const {
