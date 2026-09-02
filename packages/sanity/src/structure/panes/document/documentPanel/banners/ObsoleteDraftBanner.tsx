@@ -4,7 +4,6 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {Flex, Text} from '@sanity/ui'
 import {type ComponentType, useCallback, useState} from 'react'
 import {
-  type DocumentPairTarget,
   getTargetSiblings,
   type ObjectSchemaType,
   Translate,
@@ -29,15 +28,6 @@ interface ObsoleteDraftBannerProps {
    * Whether the user is blocked from editing the document while an obsolete draft exists.
    */
   isEditBlocking?: boolean
-  /**
-   * When the obsolete draft is a variant-scoped document, operations must target that version
-   * rather than the base draft/published pair.
-   */
-  pairTarget?: DocumentPairTarget | string
-  /** Document id to compare as the draft side. Defaults to `drafts.<displayed._id>`. */
-  compareDraftId?: string
-  /** Document id to compare as the published side. Defaults to the published id of `displayed`. */
-  comparePublishedId?: string
 }
 
 export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({

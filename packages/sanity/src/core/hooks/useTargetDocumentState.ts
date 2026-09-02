@@ -358,7 +358,10 @@ export function useTargetDocumentState(documentGroupId: string): TargetDocumentS
   const {bundle, selectedVariant, selectedVariantName} = usePerspective()
   const {loading: variantsLoading} = useAllVariants()
   const schema = useSchema()
-  const liveEdit = versions.some((version) => schema.get(version._type)?.liveEdit === true)
+  const liveEdit = useMemo(
+    () => versions.some((version) => schema.get(version._type)?.liveEdit === true),
+    [versions, schema],
+  )
 
   return useMemo(
     () =>
