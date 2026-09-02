@@ -9,7 +9,7 @@ import {useWorkspace} from '../../studio/workspace'
 import {type CommentContext} from '../types'
 
 interface NotificationTargetHookOptions {
-  documentId: string
+  versionId: string
   documentType: string
   getCommentLink?: (commentId: string) => string
   documentVersionId?: string
@@ -32,17 +32,17 @@ interface NotificationTargetHookValue {
 export function useNotificationTarget(
   opts: NotificationTargetHookOptions,
 ): NotificationTargetHookValue {
-  const {documentId, documentType, getCommentLink, documentVersionId} = opts || {}
+  const {versionId, documentType, getCommentLink, documentVersionId} = opts || {}
   const schemaType = useSchema().get(documentType)
   const {title: workspaceTitle, name: workspaceName} = useWorkspace()
 
   const documentPreviewStore = useDocumentPreviewStore()
 
   const previewStateObservable = useMemo(() => {
-    if (!documentId || !schemaType) return of(null)
+    if (!versionId || !schemaType) return of(null)
     const perspectiveStack = documentVersionId ? [documentVersionId, 'drafts'] : ['drafts']
-    return getPreviewStateObservable(documentPreviewStore, schemaType, documentId, perspectiveStack)
-  }, [documentId, documentPreviewStore, schemaType, documentVersionId])
+    return getPreviewStateObservable(documentPreviewStore, schemaType, versionId, perspectiveStack)
+  }, [versionId, documentPreviewStore, schemaType, documentVersionId])
   // Deferred (per review): `documentTitle` is only used in the notification
   // email body, where a briefly stale title is harmless (it can go stale
   // after send anyway). react-rx v5's identity-coherent deferral still falls

@@ -16,12 +16,12 @@ export interface CommentsContextValue {
   /**
    * Published / group id used to load comments for this pane.
    */
-  documentId: string
+  groupId: string
   documentType: string
   /**
    * Exact document in the editor. Compared to `target.sourceDocumentId`.
    */
-  sourceDocumentId: string
+  versionId: string
   getComment: (id: string) => CommentDocument | undefined
   getCommentLink?: (id: string) => string
 

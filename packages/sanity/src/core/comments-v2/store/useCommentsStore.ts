@@ -17,11 +17,11 @@ export interface CommentsStoreOptions {
   /**
    * Published / group id. Used for the comments GDR.
    */
-  documentId: string
+  groupId: string
   /**
    * Exact document in the editor. Drives which comments are listed.
    */
-  sourceDocumentId: string
+  versionId: string
   onLatestTransactionIdReceived: (documentId: DocumentId) => void
   transactionsIdMap: Map<DocumentId, TransactionId>
   /**
@@ -50,8 +50,8 @@ const LISTEN_OPTIONS: ListenOptions = {
 export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreReturnType {
   const {
     client,
-    documentId,
-    sourceDocumentId,
+    groupId,
+    versionId,
     onLatestTransactionIdReceived,
     transactionsIdMap,
     ready = true,
@@ -64,14 +64,11 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
   const didInitialFetch = useRef<boolean>(false)
 
   const gdr = useMemo(
-    () => client?.collaboration.comments.getTargetDocumentRef(documentId) ?? null,
-    [client, documentId],
+    () => client?.collaboration.comments.getTargetDocumentRef(groupId) ?? null,
+    [client, groupId],
   )
 
-  const {query, params} = useMemo(
-    () => buildCommentsQuery({gdr, sourceDocumentId}),
-    [gdr, sourceDocumentId],
-  )
+  const {query, params} = useMemo(() => buildCommentsQuery({gdr, versionId}), [gdr, versionId])
 
   // When the query scope changes (e.g. draft+published → version), drop stale
   // results during render. The listen effect below resets fetch tracking when

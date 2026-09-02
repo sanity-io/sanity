@@ -201,12 +201,12 @@ type CommentOrigin = 'draft' | 'published'
  */
 export function getForeignCommentOrigin(
   comment: CommentDocument,
-  documentId: string | undefined,
+  versionId: string | undefined,
 ): CommentOrigin | null {
   const source = comment.target?.sourceDocumentId
-  if (!source || !documentId || source === documentId) return null
+  if (!source || !versionId || source === versionId) return null
   if (!(isDraftId(source) || isPublishedId(source))) return null
-  if (!(isDraftId(documentId) || isPublishedId(documentId))) return null
+  if (!(isDraftId(versionId) || isPublishedId(versionId))) return null
   return isDraftId(source) ? 'draft' : 'published'
 }
 
@@ -249,8 +249,8 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   const authorId = comment._system.createdBy
   const [user] = useUser(authorId)
   const {t} = useTranslation(commentsLocaleNamespace)
-  const {sourceDocumentId} = useComments()
-  const foreignOrigin = isParent ? getForeignCommentOrigin(comment, sourceDocumentId) : null
+  const {versionId} = useComments()
+  const foreignOrigin = isParent ? getForeignCommentOrigin(comment, versionId) : null
 
   const [value, setValue] = useState<CommentMessage>(message)
   const [isEditing, setIsEditing] = useState<boolean>(false)

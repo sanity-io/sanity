@@ -17,7 +17,7 @@ interface CreateOperationProps {
   client: SanityClient | null
   comment: CommentCreatePayload
   currentUser: CurrentUser
-  sourceDocumentId: string
+  versionId: string
   documentRevisionId?: string
   documentType: string
   getComment?: (id: string) => CommentDocument | undefined
@@ -35,7 +35,7 @@ export async function createOperation(props: CreateOperationProps): Promise<void
     client,
     comment,
     currentUser,
-    sourceDocumentId,
+    versionId,
     documentRevisionId,
     documentType,
     getIntent,
@@ -61,7 +61,7 @@ export async function createOperation(props: CreateOperationProps): Promise<void
   // We add 1 to the length to account for the comment being added.
   const currentThreadLength = (getThreadLength?.(comment.threadId) || 0) + 1
 
-  const gdr = client.collaboration.comments.getTargetDocumentRef(sourceDocumentId)
+  const gdr = client.collaboration.comments.getTargetDocumentRef(versionId)
 
   // The Comments API only accepts text blocks; comment messages never hold
   // block-level inline objects.
@@ -96,7 +96,7 @@ export async function createOperation(props: CreateOperationProps): Promise<void
           _type: 'globalDocumentReference',
           _weak: true,
         },
-        sourceDocumentId,
+        sourceDocumentId: versionId,
         documentType,
       },
     }
@@ -113,7 +113,7 @@ export async function createOperation(props: CreateOperationProps): Promise<void
           message: apiMessage,
           threadId: comment.threadId,
           context: {...nextComment.context},
-          target: {documentId: sourceDocumentId, documentType},
+          target: {documentId: versionId, documentType},
         }
   }
 
@@ -134,7 +134,7 @@ export async function createOperation(props: CreateOperationProps): Promise<void
     }
 
     const intent = getIntent?.({
-      id: sourceDocumentId,
+      id: versionId,
       type: documentType,
       path: comment.fieldPath,
     })
@@ -180,12 +180,12 @@ export async function createOperation(props: CreateOperationProps): Promise<void
           _weak: true,
         },
         documentType,
-        sourceDocumentId,
+        sourceDocumentId: versionId,
       },
     }
 
     const target = {
-      documentId: sourceDocumentId,
+      documentId: versionId,
       documentType,
       documentRevisionId,
       path: comment.fieldPath,

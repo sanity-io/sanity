@@ -89,7 +89,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
 
   const {
     comments,
-    sourceDocumentId,
+    versionId,
     getComment,
     mentionOptions,
     onCommentsOpen,
@@ -414,7 +414,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
       // share a comment set, so foreign-origin comments (e.g. made on published while viewing
       // draft) can appear here. Rematching them against this editor would rewrite their stored
       // range from the wrong document's text.
-      if (comment.target?.sourceDocumentId !== sourceDocumentId) return
+      if (comment.target?.sourceDocumentId !== versionId) return
 
       // Comments on a nested PTE field are decorated here too, since `textComments`
       // matches on path prefix. Their decoration paths start at the container block,
@@ -499,7 +499,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
       })
       return next.filter((p) => p.selection !== null)
     })
-  }, [addedCommentsDecorations, sourceDocumentId, getComment, operation, props.path])
+  }, [addedCommentsDecorations, versionId, getComment, operation, props.path])
 
   const handleBuildRangeDecorations = useCallback(
     (commentsToDecorate: CommentDocument[]) => {

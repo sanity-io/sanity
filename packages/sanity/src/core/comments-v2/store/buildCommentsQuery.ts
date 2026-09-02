@@ -19,9 +19,9 @@ const QUERY_PROJECTION = `{
   threadId
 }`
 
-function buildSourceFilter(sourceDocumentId: string) {
-  if (isDraftId(sourceDocumentId) || isPublishedId(sourceDocumentId)) {
-    const publishedDocumentId = getPublishedId(sourceDocumentId)
+function buildSourceFilter(versionId: string) {
+  if (isDraftId(versionId) || isPublishedId(versionId)) {
+    const publishedDocumentId = getPublishedId(versionId)
     return {
       filter: 'target.sourceDocumentId in [$publishedDocumentId, $draftDocumentId]',
       params: {
@@ -32,8 +32,8 @@ function buildSourceFilter(sourceDocumentId: string) {
   }
 
   return {
-    filter: 'target.sourceDocumentId == $sourceDocumentId',
-    params: {sourceDocumentId},
+    filter: 'target.sourceDocumentId == $versionId',
+    params: {versionId},
   }
 }
 
@@ -44,9 +44,9 @@ function buildSourceFilter(sourceDocumentId: string) {
  *
  * @internal
  */
-export function buildCommentsQuery(options: {gdr: string | null; sourceDocumentId: string}) {
-  const {gdr, sourceDocumentId} = options
-  const source = buildSourceFilter(sourceDocumentId)
+export function buildCommentsQuery(options: {gdr: string | null; versionId: string}) {
+  const {gdr, versionId} = options
+  const source = buildSourceFilter(versionId)
   const filters = [...BASE_FILTERS, source.filter].join(' && ')
 
   return {

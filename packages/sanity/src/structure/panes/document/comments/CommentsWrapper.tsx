@@ -39,7 +39,7 @@ export function CommentsWrapper(props: CommentsWrapperProps) {
   // Each implementation owns its own enablement context, so the flag selects which one is mounted.
   if (commentsV2) {
     return (
-      <CommentsEnabledProviderV2 documentId={documentId} documentType={documentType}>
+      <CommentsEnabledProviderV2 groupId={documentId} documentType={documentType}>
         <CommentsProviderWrapper documentId={documentId} documentType={documentType}>
           {children}
         </CommentsProviderWrapper>
@@ -151,23 +151,25 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
     // document exists — same as commenting on a draft that has not been created yet.
     // Variant scope ids are opaque and server-assigned, so we take the resolved `value._id` and
     // rely on the provider to treat a non-version id in a variant perspective as not ready.
-    let sourceDocumentId: string
+    let versionId: string
     // Variant before release: when both sticky params are set the document on
     // screen is the variant-scoped version (opaque id), not
     // `versions.<releaseId>.<id>`. Same precedence as legacy
     // `releaseId={scopeId}` when a variant is active.
     if (selectedVariantName) {
-      sourceDocumentId = value._id
+      versionId = value._id
     } else if (selectedReleaseId) {
-      sourceDocumentId = getVersionId(value._id, selectedReleaseId)
+      versionId = getVersionId(value._id, selectedReleaseId)
     } else if (selectedPerspectiveName === 'published') {
-      sourceDocumentId = getPublishedId(value._id)
+      versionId = getPublishedId(value._id)
     } else {
-      sourceDocumentId = getDraftId(value._id)
+      versionId = getDraftId(value._id)
     }
 
+    const {documentId: groupId, ...v2SharedProps} = sharedProps
+
     return (
-      <CommentsProviderV2 {...sharedProps} sourceDocumentId={sourceDocumentId}>
+      <CommentsProviderV2 {...v2SharedProps} groupId={groupId} versionId={versionId}>
         {children}
       </CommentsProviderV2>
     )

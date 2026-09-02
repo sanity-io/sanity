@@ -31,7 +31,7 @@ export interface CommentOperationsHookOptions {
   client: SanityClient | null
   currentUser: CurrentUser | null
   /** Exact document in the editor (draft, published, or version id). */
-  sourceDocumentId: string
+  versionId: string
   documentRevisionId?: string
   documentType: string
   documentVersionId?: string
@@ -53,7 +53,7 @@ export function useCommentOperations(
   const {
     client,
     currentUser,
-    sourceDocumentId,
+    versionId,
     documentRevisionId,
     documentType,
     documentVersionId,
@@ -83,7 +83,7 @@ export function useCommentOperations(
     [activeToolName, tools],
   )
   const {getNotificationValue} = useNotificationTarget({
-    documentId: sourceDocumentId,
+    versionId,
     documentType,
     getCommentLink,
     documentVersionId,
@@ -98,7 +98,7 @@ export function useCommentOperations(
         client,
         comment,
         currentUser,
-        sourceDocumentId,
+        versionId,
         documentRevisionId,
         documentType,
         getIntent,
@@ -113,7 +113,7 @@ export function useCommentOperations(
       activeTool,
       client,
       currentUser,
-      sourceDocumentId,
+      versionId,
       documentRevisionId,
       documentType,
       getIntent,

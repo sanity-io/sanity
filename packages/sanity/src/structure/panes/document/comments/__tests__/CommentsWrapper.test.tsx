@@ -429,10 +429,10 @@ describe('CommentsWrapper', () => {
 
       expect(capturedCommentsProviderProps).toBeDefined()
       expect(capturedCommentsProviderV2Props).toBeUndefined()
-      expect(capturedCommentsProviderProps).not.toHaveProperty('sourceDocumentId')
+      expect(capturedCommentsProviderProps).not.toHaveProperty('versionId')
     })
 
-    it('mounts the v2 provider with sourceDocumentId when the flag is on', () => {
+    it('mounts the v2 provider with versionId when the flag is on', () => {
       mockUseWorkspace.mockReturnValue({
         beta: {comments: {v2: true}},
       })
@@ -445,12 +445,14 @@ describe('CommentsWrapper', () => {
       )
 
       expect(capturedCommentsProviderProps).toBeUndefined()
-      expect(capturedCommentsProviderV2Props?.sourceDocumentId).toBe('drafts.doc-v2')
+      expect(capturedCommentsProviderV2Props?.groupId).toBe('doc-v2')
+      expect(capturedCommentsProviderV2Props?.versionId).toBe('drafts.doc-v2')
+      expect(capturedCommentsProviderV2Props).not.toHaveProperty('documentId')
       expect(capturedCommentsProviderV2Props).not.toHaveProperty('releaseId')
     })
   })
 
-  describe('sourceDocumentId (v2)', () => {
+  describe('versionId (v2)', () => {
     beforeEach(() => {
       mockUseWorkspace.mockReturnValue({beta: {comments: {v2: true}}})
     })
@@ -461,7 +463,7 @@ describe('CommentsWrapper', () => {
           <div>children</div>
         </CommentsWrapper>,
       )
-      return capturedCommentsProviderV2Props?.sourceDocumentId
+      return capturedCommentsProviderV2Props?.versionId
     }
 
     it('targets the draft in the drafts perspective before the draft exists', () => {

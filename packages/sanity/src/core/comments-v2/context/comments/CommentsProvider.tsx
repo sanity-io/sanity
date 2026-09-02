@@ -49,12 +49,12 @@ export interface CommentsProviderProps {
   /**
    * Published / group id. Used for the comments GDR and edit state.
    */
-  documentId: string
+  groupId: string
   /**
    * Exact document in the editor (draft, published, or version id).
    * Drives listing, create, range ownership, and version edit state.
    */
-  sourceDocumentId: string
+  versionId: string
   documentType: string
   type: CommentsType
   sortOrder: 'asc' | 'desc'
@@ -82,8 +82,8 @@ type TransactionId = string
 export const CommentsProvider = memo(function CommentsProvider(props: CommentsProviderProps) {
   const {
     children,
-    documentId,
-    sourceDocumentId,
+    groupId,
+    versionId,
     documentType,
     isCommentsOpen,
     onCommentsOpen,
@@ -99,16 +99,16 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   const commentsEnabled = useCommentsEnabled()
   const {selectedReleaseId, selectedVariantName} = usePerspective()
   const [status, setStatus] = useState<CommentStatus>('open')
-  const publishedId = getPublishedId(documentId)
-  const scopeId = isVersionId(sourceDocumentId) ? getVersionFromId(sourceDocumentId) : undefined
+  const publishedId = getPublishedId(groupId)
+  const scopeId = isVersionId(versionId) ? getVersionFromId(versionId) : undefined
 
   // Opening a release/variant resolves the target document asynchronously. Until
-  // `sourceDocumentId` is the version id, it can still be a draft or published id,
+  // `versionId` is a `versions.*` id, it can still be a draft or published id,
   // and `buildCommentsQuery` would treat that as the shared draft+published set —
   // briefly showing those comments on a version view. Wait until we have a
   // version id before listening/fetching.
   const isVersionPerspective = Boolean(selectedReleaseId || selectedVariantName)
-  const commentsReady = !isVersionPerspective || isVersionId(sourceDocumentId)
+  const commentsReady = !isVersionPerspective || isVersionId(versionId)
 
   const editState = useEditState(publishedId, documentType, 'low', scopeId)
   const schemaType = useSchema().get(documentType)
@@ -152,8 +152,8 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     error,
     loading,
   } = useCommentsStore({
-    documentId,
-    sourceDocumentId,
+    groupId,
+    versionId,
     client: commentsClient,
     transactionsIdMap,
     onLatestTransactionIdReceived: handleOnLatestTransactionIdReceived,
@@ -293,7 +293,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       (): CommentOperationsHookOptions => ({
         client: commentsClient,
         currentUser,
-        sourceDocumentId,
+        versionId,
         // Used to resolve the document title for notifications in the current release
         documentVersionId: scopeId,
         documentRevisionId,
@@ -317,7 +317,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       [
         commentsClient,
         currentUser,
-        sourceDocumentId,
+        versionId,
         scopeId,
         documentRevisionId,
         documentType,
@@ -337,14 +337,14 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   // Comments stay read-only until we can call the API:
   // - commentsClient: null while org id / project / dataset are still resolving
   // - sanityUserId: required as the acting user
-  // - commentsReady: false in a version perspective until sourceDocumentId is a version id
+  // - commentsReady: false in a version perspective until versionId is a version id
   const readOnly = !commentsClient || !currentUser?.sanityUserId || !commentsReady
 
   const ctxValue = useMemo(
     (): CommentsContextValue => ({
-      documentId,
+      groupId,
       documentType,
-      sourceDocumentId,
+      versionId,
 
       status,
       setStatus: handleSetStatus,
@@ -377,8 +377,8 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       readOnly,
     }),
     [
-      documentId,
-      sourceDocumentId,
+      groupId,
+      versionId,
       documentType,
       isCommentsClientLoading,
       status,

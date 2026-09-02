@@ -8,7 +8,7 @@ describe('buildCommentsQuery', () => {
   test('loads draft and published comments for a draft id', () => {
     const {query, params} = buildCommentsQuery({
       gdr,
-      sourceDocumentId: 'drafts.doc-1',
+      versionId: 'drafts.doc-1',
     })
 
     expect(params).toEqual({
@@ -25,7 +25,7 @@ describe('buildCommentsQuery', () => {
   test('loads draft and published comments for a published id', () => {
     const {query, params} = buildCommentsQuery({
       gdr,
-      sourceDocumentId: 'doc-1',
+      versionId: 'doc-1',
     })
 
     expect(params).toEqual({
@@ -37,11 +37,11 @@ describe('buildCommentsQuery', () => {
   })
 
   test('loads only the matching source for a version id', () => {
-    const sourceDocumentId = 'versions.rSummer.doc-1'
-    const {query, params} = buildCommentsQuery({gdr, sourceDocumentId})
+    const versionId = 'versions.rSummer.doc-1'
+    const {query, params} = buildCommentsQuery({gdr, versionId})
 
-    expect(params).toEqual({gdr, sourceDocumentId})
-    expect(query).toContain('target.sourceDocumentId == $sourceDocumentId')
+    expect(params).toEqual({gdr, versionId})
+    expect(query).toContain('target.sourceDocumentId == $versionId')
     expect(query).not.toContain('$publishedDocumentId')
   })
 })

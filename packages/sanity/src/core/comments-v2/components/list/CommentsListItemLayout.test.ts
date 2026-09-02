@@ -3,8 +3,8 @@ import {describe, expect, test} from 'vitest'
 import {type CommentDocument} from '../../types'
 import {getForeignCommentOrigin} from './CommentsListItemLayout'
 
-function commentWithSource(sourceDocumentId: string | undefined) {
-  return {target: {sourceDocumentId}} as CommentDocument
+function commentWithSource(versionId: string | undefined) {
+  return {target: {sourceDocumentId: versionId}} as CommentDocument
 }
 
 describe('getForeignCommentOrigin', () => {
