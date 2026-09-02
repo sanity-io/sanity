@@ -5,7 +5,7 @@ import {isPortableTextTextBlock} from '@sanity/types'
 import {type Theme} from '@sanity/ui'
 import {useMemo} from 'react'
 import {css, styled} from 'styled-components'
-import {Text, Box, Flex} from 'ui5'
+import {Text, Box, Flex, Icon} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -82,7 +82,7 @@ export function CommentsListItemReferencedValue(props: CommentsListItemReference
           {!hasReferencedValue && (
             <Tooltip content={tooltipText}>
               <InlineBox>
-                <LinkRemovedIcon />
+                <Icon size={1} icon={LinkRemovedIcon} style={{margin: '-0.375rem'}} />
               </InlineBox>
             </Tooltip>
           )}

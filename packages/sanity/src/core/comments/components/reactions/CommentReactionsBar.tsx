@@ -63,7 +63,7 @@ const renderMenuButton = ({open, tooltipContent}: {open: boolean; tooltipContent
     <UIButton fontSize={1} mode="ghost" padding={0} radius="full" selected={open}>
       <Flex paddingX={3} paddingY={2}>
         <Tooltip animate content={tooltipContent} disabled={open}>
-          <Icon size={1} icon={ReactionIcon} />
+          <Icon size={1} icon={ReactionIcon} style={{margin: '-0.375rem'}} />
         </Tooltip>
       </Flex>
     </UIButton>
