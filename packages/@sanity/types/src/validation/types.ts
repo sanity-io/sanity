@@ -279,6 +279,7 @@ export interface ValidationContext {
     customValidationConcurrencyLimiter?: {
       ready: (signal?: AbortSignal) => Promise<void>
       release: () => void
+      run: <T>(work: () => PromiseLike<T> | T, signal?: AbortSignal) => Promise<T>
     }
     customValidation?: boolean
     onSkipped?: (skipped: SkippedValidation) => void

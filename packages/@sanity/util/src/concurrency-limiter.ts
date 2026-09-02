@@ -1,15 +1,17 @@
+type Pending = {
+  resolve: () => void
+  reject: (reason?: unknown) => void
+  signal?: AbortSignal
+  onAbort: () => void
+}
+
 /**
  * ConcurrencyLimiter manages the number of concurrent operations that can be performed.
  * It ensures that the number of operations does not exceed a specified maximum limit.
  */
 export class ConcurrencyLimiter {
   current = 0
-  resolvers: Array<{
-    resolve: () => void
-    reject: (reason?: unknown) => void
-    signal?: AbortSignal
-    onAbort: () => void
-  }> = []
+  resolvers = new Set<Pending>()
   public max: number
   constructor(max: number) {
     this.max = max
@@ -31,13 +33,22 @@ export class ConcurrencyLimiter {
     return new Promise<void>((resolve, reject) => {
       const pending = {resolve, reject, signal, onAbort: () => {}}
       pending.onAbort = () => {
-        const index = this.resolvers.indexOf(pending)
-        if (index !== -1) this.resolvers.splice(index, 1)
-        if (signal) reject(signal.reason)
+        if (this.resolvers.delete(pending) && signal) reject(signal.reason)
       }
       signal?.addEventListener('abort', pending.onAbort, {once: true})
-      this.resolvers.push(pending)
+      this.resolvers.add(pending)
     })
+  }
+
+  /** Runs an operation when a concurrency slot is available. */
+  run = async <T>(work: () => PromiseLike<T> | T, signal?: AbortSignal): Promise<T> => {
+    await this.ready(signal)
+    try {
+      signal?.throwIfAborted()
+      return await work()
+    } finally {
+      this.release()
+    }
   }
 
   /**
@@ -47,12 +58,13 @@ export class ConcurrencyLimiter {
   release = (): void => {
     if (this.max === Infinity) return
 
-    let next = this.resolvers.shift()
+    let next = this.resolvers.values().next().value
     while (next) {
+      this.resolvers.delete(next)
       next.signal?.removeEventListener('abort', next.onAbort)
       if (next.signal?.aborted) {
         next.reject(next.signal.reason)
-        next = this.resolvers.shift()
+        next = this.resolvers.values().next().value
         continue
       }
       next.resolve()

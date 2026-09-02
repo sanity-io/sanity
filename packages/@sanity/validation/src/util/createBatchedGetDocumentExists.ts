@@ -1,22 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {ConcurrencyLimiter} from '@sanity/util/concurrency-limiter'
-import {
-  bufferTime,
-  catchError,
-  defer,
-  EMPTY,
-  filter,
-  finalize,
-  firstValueFrom,
-  from,
-  map,
-  mergeMap,
-  share,
-  Subject,
-  switchMap,
-  tap,
-  throwError,
-} from 'rxjs'
+import {bufferTime, filter, firstValueFrom, map, mergeMap, share, Subject} from 'rxjs'
 
 import {cancelWith} from '../abortSignal'
 
@@ -48,68 +31,30 @@ export function createBatchedGetDocumentExists(
   client: SanityClient,
   defaultSignal?: AbortSignal,
 ): (options: {id: string; signal?: AbortSignal}) => Promise<boolean> {
-  const id$ = new Subject<{id: string; signal?: AbortSignal}>()
-  const limiter = new ConcurrencyLimiter(MAX_REQUEST_CONCURRENCY)
+  const id$ = new Subject<string>()
 
   const existence$ = id$.pipe(
     bufferTime(BUFFER_TIME, null, MAX_BUFFER_SIZE),
-    mergeMap((entries) => {
-      const groups = new Map<AbortSignal | undefined, Set<string>>()
-      for (const {id, signal} of entries) {
-        const ids = groups.get(signal) || new Set<string>()
-        ids.add(id)
-        groups.set(signal, ids)
-      }
-      return from(Array.from(groups, ([signal, ids]) => ({ids: Array.from(ids), signal})))
-    }),
-    mergeMap(({ids, signal}) => {
-      const ready = limiter.ready(signal)
-      let acquired = false
-
-      return from(ready).pipe(
-        tap(() => {
-          acquired = true
-        }),
-        switchMap(() =>
-          defer(() => {
-            signal?.throwIfAborted()
-            return client.observable.request<AvailabilityResponse>({
-              url: client.getDataUrl('doc', ids.join(',')),
-              query: {excludeContent: 'true'},
-              signal,
-              tag: 'documents-availability',
-            })
-          }).pipe(map((availability) => ({availability, ids, signal}))),
-        ),
-        catchError((error) => (signal?.aborted ? EMPTY : throwError(() => error))),
-        finalize(() => {
-          if (acquired) {
-            limiter.release()
-            return
-          }
-
-          void ready.then(limiter.release, () => undefined)
-        }),
-      )
-    }),
-    mergeMap(({availability, ids, signal}) =>
-      ids.map((id) => {
-        const omittedIds = availability.omitted.reduce<Record<string, 'existence' | 'permission'>>(
-          (acc, next) => {
-            acc[next.id] = next.reason
-            return acc
-          },
-          {},
-        )
-
-        // if not in the `omitted`, then it exists
-        if (!omittedIds[id]) return {id, exists: true, signal}
-        // if in the `omitted` due to existence, then it does not exist
-        if (omittedIds[id] === 'existence') return {id, exists: false, signal}
-        // otherwise, it must exist
-        return {id, exists: true, signal}
-      }),
+    map((ids) => Array.from(new Set(ids))),
+    filter((ids) => ids.length > 0),
+    mergeMap(
+      (ids) =>
+        client.observable
+          .request<AvailabilityResponse>({
+            url: client.getDataUrl('doc', ids.join(',')),
+            query: {excludeContent: 'true'},
+            signal: defaultSignal,
+            tag: 'documents-availability',
+          })
+          .pipe(map((availability) => ({availability, ids}))),
+      MAX_REQUEST_CONCURRENCY,
     ),
+    mergeMap(({availability, ids}) => {
+      const missingIds = new Set(
+        availability.omitted.filter(({reason}) => reason === 'existence').map(({id}) => id),
+      )
+      return ids.map((id) => ({id, exists: !missingIds.has(id)}))
+    }),
     share(),
   )
 
@@ -119,13 +64,13 @@ export function createBatchedGetDocumentExists(
 
     const result = firstValueFrom(
       existence$.pipe(
-        filter(({id, signal: resultSignal}) => id === options.id && resultSignal === signal),
+        filter(({id}) => id === options.id),
         map(({exists}) => exists),
         cancelWith(signal),
       ),
     )
 
-    id$.next({id: options.id, signal})
+    id$.next(options.id)
     return result
   }
 }

@@ -359,6 +359,7 @@ export function evaluateDocumentInternal({
   if (signal?.aborted) return Promise.reject(signal.reason)
   const limitConcurrency = createClientConcurrencyLimiter(
     maxFetchConcurrency ?? DEFAULT_MAX_FETCH_CONCURRENCY,
+    signal,
   )
   const getConcurrencyLimitedClient = (clientOptions: {apiVersion: string}) =>
     limitConcurrency(getClient(clientOptions))
