@@ -171,6 +171,31 @@ describe('resolveConfig', () => {
       {name: 'sanity/singleDocRelease'},
     ])
   })
+  it('still registers the comments plugin as sanity/comments when v2 is enabled', async () => {
+    const projectId = 'ppsg7ml5'
+    const dataset = 'production'
+    const client = createClient({
+      projectId,
+      apiVersion: '2021-06-07',
+      dataset,
+      useCdn: false,
+    })
+    const mockPlugin = definePlugin({name: 'sanity/mock-plugin'})
+    const [workspace] = await firstValueFrom(
+      resolveConfig({
+        name: 'default',
+        dataset,
+        projectId,
+        auth: createMockAuthStore({client, currentUser: null}),
+        plugins: [mockPlugin()],
+        beta: {comments: {v2: true}},
+      }),
+    )
+    const commentsPlugins =
+      workspace.__internal.options.plugins?.filter((plugin) => plugin.name === 'sanity/comments') ??
+      []
+    expect(commentsPlugins).toHaveLength(1)
+  })
   it('wont include variants default plugin by default', async () => {
     const projectId = 'ppsg7ml5'
     const dataset = 'production'
@@ -503,6 +528,86 @@ describe('beta variants config', () => {
         },
       }),
     ).rejects.toThrow('Expected `beta.variants.enabled` to be a boolean, but received string')
+  })
+})
+
+describe('beta comments config', () => {
+  const projectId = 'ppsg7ml5'
+  const dataset = 'production'
+
+  it('defaults comments v2 to false', async () => {
+    const source = await createSourceFromConfig({projectId, dataset})
+
+    expect(source.beta?.comments?.v2).toBe(false)
+  })
+
+  it('resolves comments v2 from root config', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      beta: {comments: {v2: true}},
+    })
+
+    expect(source.beta?.comments?.v2).toBe(true)
+  })
+
+  it('resolves comments v2 from plugin config', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        definePlugin({
+          name: 'sanity/beta-comments-v2',
+          beta: {comments: {v2: true}},
+        })(),
+      ],
+    })
+
+    expect(source.beta?.comments?.v2).toBe(true)
+  })
+
+  it('lets root config override plugin comments config', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        definePlugin({
+          name: 'sanity/beta-comments-v2',
+          beta: {comments: {v2: false}},
+        })(),
+      ],
+      beta: {comments: {v2: true}},
+    })
+
+    expect(source.beta?.comments?.v2).toBe(true)
+  })
+
+  it('throws when comments is not an object', async () => {
+    await expect(
+      createSourceFromConfig({
+        projectId,
+        dataset,
+        beta: {
+          // @ts-expect-error should be an object
+          comments: 'v2',
+        },
+      }),
+    ).rejects.toThrow('Expected `beta.comments` to be an object, but received string')
+  })
+
+  it('throws when comments v2 is not a boolean', async () => {
+    await expect(
+      createSourceFromConfig({
+        projectId,
+        dataset,
+        beta: {
+          comments: {
+            // @ts-expect-error should be a boolean
+            v2: 'enabled',
+          },
+        },
+      }),
+    ).rejects.toThrow('Expected `beta.comments.v2` to be a boolean, but received string')
   })
 })
 

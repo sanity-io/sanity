@@ -29,10 +29,14 @@ interface ReactOperationProps {
 export async function reactOperation(props: ReactOperationProps): Promise<void> {
   const {client, currentUser, id, reaction, getComment, onUpdate} = props
 
-  const reactions = getComment?.(id)?.reactions || []
-  const currentUserReactions = reactions.filter((r) => r.userId === currentUser.id)
+  // Reactions are keyed by the global user id, which some sessions don't have.
+  const authorId = currentUser.sanityUserId
+  if (!authorId) return
 
-  const _key = createReactionKey(currentUser.id, reaction.shortName)
+  const reactions = getComment?.(id)?.reactions || []
+  const currentUserReactions = reactions.filter((r) => r.userId === authorId)
+
+  const _key = createReactionKey(authorId, reaction.shortName)
 
   const currentReaction = currentUserReactions.find(
     (r) => r._key === _key && r._optimisticState !== 'removed',
@@ -55,10 +59,7 @@ export async function reactOperation(props: ReactOperationProps): Promise<void> 
     onUpdate?.(id, {reactions: next})
 
     // Unset the reaction
-    await client
-      .patch(id)
-      .unset([`reactions[_key=="${_key}"]`])
-      .commit()
+    await client.collaboration.comments.removeReaction(id, reaction.shortName)
 
     return
   }
@@ -69,7 +70,7 @@ export async function reactOperation(props: ReactOperationProps): Promise<void> 
       _key,
       addedAt: new Date().toISOString(),
       shortName: reaction.shortName,
-      userId: currentUser.id,
+      userId: authorId,
     }
 
     const optimisticReactionItem: CommentReactionItem = {...reactionItem, _optimisticState: 'added'}
@@ -83,10 +84,6 @@ export async function reactOperation(props: ReactOperationProps): Promise<void> 
     onUpdate?.(id, {reactions: next})
 
     // Append the new reaction to the comment
-    await client
-      .patch(id)
-      .setIfMissing({reactions: []})
-      .append('reactions', [reactionItem])
-      .commit()
+    await client.collaboration.comments.addReaction(id, reaction.shortName)
   }
 }

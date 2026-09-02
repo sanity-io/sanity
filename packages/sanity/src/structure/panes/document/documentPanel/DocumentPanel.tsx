@@ -334,11 +334,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       )
     }
 
-    const displayedHasObsoleteDraft = hasObsoleteDraft({
-      editState,
-      workspace,
-      schemaType,
-    })
+    const displayedHasObsoleteDraft = hasObsoleteDraft({targetDocumentState, workspace, schemaType})
 
     if (activeView.type === 'form' && !selectedReleaseId && displayedHasObsoleteDraft.result) {
       if (displayedHasObsoleteDraft.reason === 'DRAFT_MODEL_INACTIVE') {

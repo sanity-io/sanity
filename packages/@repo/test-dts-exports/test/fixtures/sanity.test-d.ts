@@ -220,11 +220,13 @@ import type {
   COMMENTS_INSPECTOR_NAME,
   CommentsAuthoringPathProvider,
   CommentsEnabledProvider,
+  CommentsEnabledProviderV2,
   CommentsIntentProvider,
   CommentsIntentProviderProps,
   CommentsList,
   CommentsListBreadcrumbItem,
   CommentsProvider,
+  CommentsProviderV2,
   CommentsSelectedPath,
   CommentsSelectedPathProvider,
   CommentStatus,
@@ -1597,6 +1599,7 @@ import type {
   useComlinkStore,
   useComments,
   useCommentsEnabled,
+  useCommentsEnabledV2,
   useCommentsSelectedPath,
   useCommentsTelemetry,
   useConditionalToast,
@@ -2490,6 +2493,9 @@ describe('sanity', () => {
   test('CommentsEnabledProvider', () => {
     expectTypeOf<typeof CommentsEnabledProvider>().not.toBeNever()
   })
+  test('CommentsEnabledProviderV2', () => {
+    expectTypeOf<typeof CommentsEnabledProviderV2>().not.toBeNever()
+  })
   test('CommentsIntentProvider', () => {
     expectTypeOf<typeof CommentsIntentProvider>().not.toBeNever()
   })
@@ -2504,6 +2510,9 @@ describe('sanity', () => {
   })
   test('CommentsProvider', () => {
     expectTypeOf<typeof CommentsProvider>().not.toBeNever()
+  })
+  test('CommentsProviderV2', () => {
+    expectTypeOf<typeof CommentsProviderV2>().not.toBeNever()
   })
   test('CommentsSelectedPath', () => {
     expectTypeOf<CommentsSelectedPath>().toBeObject()
@@ -6640,6 +6649,9 @@ describe('sanity', () => {
   })
   test('useCommentsEnabled', () => {
     expectTypeOf<typeof useCommentsEnabled>().toBeFunction()
+  })
+  test('useCommentsEnabledV2', () => {
+    expectTypeOf<typeof useCommentsEnabledV2>().toBeFunction()
   })
   test('useCommentsSelectedPath', () => {
     expectTypeOf<typeof useCommentsSelectedPath>().toBeFunction()

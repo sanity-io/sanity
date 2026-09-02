@@ -8,7 +8,6 @@ import {Flex} from 'ui5'
 import {type DocumentInspectorProps} from '../../../config/document/inspector'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useCurrentUser} from '../../../store/user/hooks'
-import {useAddonDataset} from '../../../studio/addonDataset/useAddonDataset'
 import {CommentDeleteDialog} from '../../components/CommentDeleteDialog'
 import {CommentsList} from '../../components/list/CommentsList'
 import {CommentsOnboardingPopover} from '../../components/onboarding/CommentsOnboardingPopover'
@@ -30,7 +29,6 @@ import {
   type CommentsUIMode,
   type CommentUpdatePayload,
 } from '../../types'
-import {CommentsInspectorError} from './CommentsInspectorError'
 import {CommentsInspectorHeader} from './CommentsInspectorHeader'
 
 interface CommentToDelete {
@@ -79,8 +77,8 @@ function CommentsInspectorInner(
   const {
     comments,
     getComment,
-    isCreatingDataset,
     mentionOptions,
+    readOnly,
     setStatus,
     status,
     operation,
@@ -90,7 +88,6 @@ function CommentsInspectorInner(
     onPathOpen,
   } = useComments()
   const commentIdParamRef = useRef<string | undefined>(selectedCommentId)
-  const {error: addonDatasetError} = useAddonDataset()
   const didScrollToCommentFromParam = useRef<boolean>(false)
 
   const pushToast = useToast().push
@@ -429,7 +426,6 @@ function CommentsInspectorInner(
             mode={mode}
           />
         </CommentsOnboardingPopover>
-        {addonDatasetError && <CommentsInspectorError error={addonDatasetError} />}
         {currentUser && (
           <CommentsList
             beforeListNode={beforeListNode}
@@ -448,7 +444,7 @@ function CommentsInspectorInner(
             onReactionSelect={handleReactionSelect}
             onReply={handleReply}
             onStatusChange={handleStatusChange}
-            readOnly={isCreatingDataset}
+            readOnly={readOnly}
             selectedPath={selectedPath}
             status={status}
           />

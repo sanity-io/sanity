@@ -5,7 +5,7 @@ import {useResolveCommentsEnabled} from '../../hooks/useResolveCommentsEnabled'
 
 interface CommentsEnabledProviderProps {
   children: ReactNode
-  documentId: string
+  groupId: string
   documentType: string
 }
 
@@ -16,9 +16,9 @@ interface CommentsEnabledProviderProps {
 export const CommentsEnabledProvider = memo(function CommentsEnabledProvider(
   props: CommentsEnabledProviderProps,
 ) {
-  const {children, documentId, documentType} = props
+  const {children, groupId, documentType} = props
 
-  const value = useResolveCommentsEnabled(documentId, documentType)
+  const value = useResolveCommentsEnabled(groupId, documentType)
 
   return (
     <CommentsEnabledContextV2.Provider value={value}>{children}</CommentsEnabledContextV2.Provider>
