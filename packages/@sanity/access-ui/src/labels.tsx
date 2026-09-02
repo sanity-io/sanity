@@ -23,6 +23,7 @@ export interface RequestAccessLabels {
   deniedMessage: (context: {message?: string}) => ReactNode
   overLimitMessage: (context: {message?: string}) => ReactNode
   expiredMessage: ReactNode
+  ssoEnforcedTitle: ReactNode
   ssoEnforcedMessage: (context: {providerTitle?: string}) => ReactNode
   ssoSignInCta: ReactNode
   resourceNotAvailableTitle: ReactNode
@@ -59,6 +60,8 @@ export const defaultLabels: RequestAccessLabels = {
     message ??
     'You’ve reached the limit for access requests across all projects. Please wait before submitting more requests, or contact an admin.',
   expiredMessage: 'Your previous request has expired. You may request access again below.',
+  // Reached both before and after a submit, so it must not claim a send failed.
+  ssoEnforcedTitle: 'Sign in with SSO required',
   ssoEnforcedMessage: ({providerTitle}) =>
     providerTitle ? (
       <>

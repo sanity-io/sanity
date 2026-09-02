@@ -106,6 +106,8 @@ describe('RequestAccessForm', () => {
       'href',
       'https://idp.example.com/login',
     )
+    // A send did fail here, but the wall is the point, not the failure.
+    expect(screen.getByRole('heading', {name: 'Sign in with SSO required'})).toBeInTheDocument()
   })
 
   const SSO_LOGIN_URL = 'https://www.sanity.io/login/sso/acme?origin=https%3A%2F%2Fexample.test%2F'
@@ -127,6 +129,16 @@ describe('RequestAccessForm', () => {
     // The whole point of asking first: no note field, no futile submit.
     expect(screen.queryByRole('form')).not.toBeInTheDocument()
     expect(screen.queryByRole('textbox', {name: 'Message'})).not.toBeInTheDocument()
+  })
+
+  it('does not claim a send failed when SSO blocks the form on mount', async () => {
+    const client = createClientStub(samlRequired(SSO_LOGIN_URL))
+    await renderForm({client})
+
+    expect(
+      await screen.findByRole('heading', {name: 'Sign in with SSO required'}),
+    ).toBeInTheDocument()
+    expect(screen.queryByText('Access request couldn’t be sent')).not.toBeInTheDocument()
   })
 
   it('names the provider the user is actually signed in with', async () => {
