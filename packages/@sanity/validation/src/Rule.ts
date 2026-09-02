@@ -10,7 +10,10 @@ import {
 } from '@sanity/types'
 import get from 'lodash-es/get.js'
 
+import {ClientUnavailableError} from './clientUnavailable'
 import {validationMarkerCodes} from './codes'
+import {isInternalValidator} from './internalValidators'
+import {type InternalValidationContext} from './types'
 import {convertToValidationMarker} from './util/convertToValidationMarker'
 import {isLocalizedMessages, localizeMessage} from './util/localizeMessage'
 import {pathToString} from './util/pathToString'
@@ -91,9 +94,10 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
 
   async validate(
     value: unknown,
-    {__internal = {}, ...context}: Parameters<IRule['validate']>[1],
+    options: Parameters<IRule['validate']>[1],
   ): Promise<ValidationMarker[]> {
-    const {customValidationConcurrencyLimiter} = __internal
+    const {__internal = {}, ...context} = options as InternalValidationContext
+    const {customValidation = true, customValidationConcurrencyLimiter, markIncomplete} = __internal
 
     const valueIsEmpty = value === null || value === undefined
 
@@ -127,6 +131,13 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
           specConstraint = get(context.parent, specConstraint.path)
         }
 
+        if (curr.flag === 'custom' || curr.flag === 'media') {
+          if (!isInternalValidator(specConstraint) && !customValidation) {
+            markIncomplete?.()
+            return []
+          }
+        }
+
         if (
           curr.flag === 'custom' &&
           customValidationConcurrencyLimiter &&
@@ -153,6 +164,11 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
             code: fallbackCodeForRule(curr.flag),
           })
         } catch (err) {
+          if (err instanceof ClientUnavailableError) {
+            markIncomplete?.()
+            return []
+          }
+
           const errorMessage = `${pathToString(
             context.path,
           )}: Exception occurred while validating value: ${err.message}`

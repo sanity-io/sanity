@@ -7,8 +7,14 @@ import {
 } from '@sanity/types'
 import {dequal as isEqual} from 'dequal/lite'
 
+import {markInternalValidator} from '../internalValidators'
 import {Rule as RuleClass} from '../Rule'
-import {slugValidator} from '../validators/slugValidator'
+import {
+  customSlugUniquenessValidator,
+  defaultSlugUniquenessValidator,
+  hasCustomSlugUniqueness,
+  slugStructureValidator,
+} from '../validators/slugValidator'
 
 const ruleConstraintTypes: {[P in Lowercase<RuleTypeConstraint>]: true} = {
   array: true,
@@ -61,7 +67,15 @@ function baseRuleReducer(inputRule: Rule, type: SchemaType) {
   if (type.name === 'datetime') return baseRule.type('Date')
   if (type.name === 'date') return baseRule.type('Date')
   if (type.name === 'url') return baseRule.uri()
-  if (type.name === 'slug') return baseRule.custom(slugValidator, {bypassConcurrencyLimit: true})
+  if (type.name === 'slug') {
+    const uniquenessValidator = hasCustomSlugUniqueness(type.options)
+      ? customSlugUniquenessValidator
+      : markInternalValidator(defaultSlugUniquenessValidator)
+
+    return baseRule
+      .custom(markInternalValidator(slugStructureValidator), {bypassConcurrencyLimit: true})
+      .custom(uniquenessValidator, {bypassConcurrencyLimit: true})
+  }
   if (type.name === 'reference') return baseRule.reference()
   if (type.name === 'email') return baseRule.email()
   return baseRule
