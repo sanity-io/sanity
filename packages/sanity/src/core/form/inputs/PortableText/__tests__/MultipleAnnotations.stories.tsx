@@ -9,6 +9,7 @@ import {MultipleAnnotationsStory} from './MultipleAnnotationsStory'
 const meta = {
   title: 'Portable Text/Multiple Annotations',
   component: MultipleAnnotationsStory,
+  tags: ['!dev', '!autodocs', 'vrt-only'],
   parameters: {chromatic: {delay: 300}},
 } satisfies Meta<typeof MultipleAnnotationsStory>
 

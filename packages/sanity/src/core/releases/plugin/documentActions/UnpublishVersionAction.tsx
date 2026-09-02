@@ -10,7 +10,11 @@ import {
   type DocumentActionDescription,
   type DocumentActionProps,
 } from '../../../config/document/actions'
-import {getTargetScopeId, useTargetDocumentState} from '../../../hooks/useTargetDocumentState'
+import {
+  getTargetScopeId,
+  getTargetSiblings,
+  useTargetDocumentState,
+} from '../../../hooks/useTargetDocumentState'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useDocumentPairPermissions} from '../../../store/grants/documentPairPermissions'
 import {useCurrentUser} from '../../../store/user/hooks'
@@ -24,7 +28,7 @@ import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
 export const useUnpublishVersionAction: DocumentActionComponent = (
   props: DocumentActionProps,
 ): DocumentActionDescription | null => {
-  const {id, type, release, published, version} = props
+  const {id, type, release, version} = props
   const currentUser = useCurrentUser()
   const {t} = useTranslation(releasesLocaleNamespace)
   const isAlreadyUnpublished = version ? isGoingToUnpublish(version) : false
@@ -38,12 +42,9 @@ export const useUnpublishVersionAction: DocumentActionComponent = (
   // below instead of silently operating on the base pair.
   const isTargetReady = targetDocumentState.status === 'ready'
   const scopeId = getTargetScopeId(targetDocumentState)
-  const isVariantTarget = isTargetReady && targetDocumentState.variant !== undefined
-  // For variant release versions, "is there something published to unpublish" is answered by the
-  // variant-of-published sibling — the base `published` document says nothing about the variant.
-  const isPublished = isVariantTarget
-    ? targetDocumentState.publishedSibling !== undefined
-    : published !== null
+  // "Is there something published to unpublish"
+  const siblings = getTargetSiblings(targetDocumentState)
+  const isPublished = Boolean(siblings?.published)
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,

@@ -1,11 +1,12 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import isEqual from 'lodash-es/isEqual.js'
+import {dequal} from 'dequal/lite'
 import {type ReactNode, useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'react'
 import {SearchContext} from 'sanity/_singletons'
 
 import {type CommandListHandle} from '../../../../../../components/commandList/types'
 import {useSchema} from '../../../../../../hooks/useSchema'
 import {useActiveReleases} from '../../../../../../releases/store/useActiveReleases'
+import {isEqualSearchTerms} from '../../../../../../search/common/isEqualSearchTerms'
 import {type SearchHit, type SearchTerms} from '../../../../../../search/common/types'
 import {useCurrentUser} from '../../../../../../store/user/hooks'
 import {useSource} from '../../../../../source'
@@ -203,9 +204,9 @@ export function SearchProvider({
    * There are cases were we may not run searches when terms change (e.g. when search terms are empty / invalid).
    */
   useEffect(() => {
-    const orderingChanged = !isEqual(ordering, previousOrderingRef.current)
+    const orderingChanged = !dequal(ordering, previousOrderingRef.current)
     const cursorChanged = cursor !== previousCursorRef.current
-    const termsChanged = !isEqual(terms, previousTermsRef.current)
+    const termsChanged = !isEqualSearchTerms(terms, previousTermsRef.current)
 
     if (orderingChanged || cursorChanged || termsChanged) {
       let sortLabel = 'findability-sort:'

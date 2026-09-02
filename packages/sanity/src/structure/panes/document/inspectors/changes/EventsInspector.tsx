@@ -1,5 +1,5 @@
 import {diffInput, wrap} from '@sanity/diff'
-import {BoundaryElementProvider, Card, Flex, Spinner, Stack, Text} from '@sanity/ui'
+import {BoundaryElementProvider, Card, Spinner, Stack, Text} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type ReactElement, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
@@ -9,6 +9,7 @@ import {
   ChangesError,
   type DocumentChangeContextInstance,
   type DocumentGroupEvent,
+  getTargetSiblings,
   isReleaseDocument,
   LoadingBlock,
   NoChanges,
@@ -23,7 +24,7 @@ import {
 } from 'sanity'
 import {DocumentChangeContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
-import {Box, Grid} from 'ui5'
+import {Flex, Box, Grid} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {EventsTimelineMenu} from '../../timeline/events/EventsTimelineMenu'
@@ -60,7 +61,7 @@ const CompareWithPublishedView = () => {
   const isVariantTarget =
     targetDocumentState.status === 'ready' && targetDocumentState.variant !== undefined
   const siblingScopeId = isVariantTarget
-    ? targetDocumentState.publishedSibling?._system.scopeId
+    ? getTargetSiblings(targetDocumentState)?.published?._system.scopeId
     : undefined
   const siblingEditState = useEditState(documentId, documentType, 'default', siblingScopeId)
   const publishedComparisonBase = isVariantTarget
@@ -197,7 +198,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
     )
   }
   return (
-    <Flex data-testid="review-changes-pane" direction="column" height="fill" overflow="hidden">
+    <Flex data-testid="review-changes-pane" flexDirection="column" height="100%" overflow="hidden">
       <Box padding={3} style={{position: 'relative'}}>
         <Grid
           paddingX={2}
@@ -230,7 +231,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
             initial={{opacity: 0}}
             transition={{delay: 0.2, duration: 0.2}}
           >
-            <SpinnerContainer justify="center" align="center" gap={2}>
+            <SpinnerContainer justifyContent="center" alignItems="center" gap={2}>
               <Text muted size={0}>
                 {t('changes.loading-changes')}
               </Text>

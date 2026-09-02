@@ -356,7 +356,8 @@ const RenderHidden = memo(function RenderHidden(props: {
 
             <OptionObserveElement
               options={intersectionOptions}
-              onIntersectionChange={(e) => onIntersectionChange(e[0], element)}
+              // Entries are delivered oldest first, so the last one is current
+              onIntersectionChange={(e) => onIntersectionChange(e[e.length - 1], element)}
             >
               <Flex>
                 {cloneElement(element, {

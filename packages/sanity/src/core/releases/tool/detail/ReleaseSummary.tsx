@@ -7,7 +7,7 @@ import {type CSSProperties, useCallback, useEffect, useMemo, useState} from 'rea
 import {Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
-import {type DocumentActionsVersionType} from '../../../config/types'
+import {getDocumentVersionType} from '../../../config/document/useConfiguredDocumentActionIds'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useWorkspace} from '../../../studio/workspace'
 import {getVersionId} from '../../../util/draftUtils'
@@ -87,9 +87,10 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
   // Rows of a cardinality-one release are scheduled drafts, and that plugin resolves a different
   // action list, so the row menu has to ask about the same version type the footer does.
-  const rowVersionType: DocumentActionsVersionType = isCardinalityOne
-    ? 'scheduled-draft'
-    : 'version'
+  const rowVersionType = getDocumentVersionType({
+    isScheduledDraft: isCardinalityOne,
+    isVersionDocument: true,
+  })
 
   const renderRowActions = useCallback(
     (rowProps: {datum: BundleDocumentRow | unknown}) => {

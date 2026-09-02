@@ -1,9 +1,10 @@
 import {SortIcon} from '@sanity/icons/Sort'
-import {Card, Flex} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
-import isEqual from 'lodash-es/isEqual.js'
+import {dequal as isEqual} from 'dequal/lite'
 import {useCallback, useId, useMemo} from 'react'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../../../ui-components/button/Button'
 import {MenuButton} from '../../../../../../ui-components/menuButton/MenuButton'
@@ -81,7 +82,7 @@ export function SortMenu() {
 
   return (
     <Card borderBottom>
-      <SortMenuContentFlex align="center" flex={1} padding={2}>
+      <SortMenuContentFlex alignItems="center" flexBasis="0%" flexGrow={1} padding={2}>
         <MenuButton
           button={<Button mode="bleed" icon={SortIcon} text={t(currentMenuItem.titleKey)} />}
           id={menuButtonId || ''}

@@ -4,8 +4,8 @@ import {evaluate, parse} from 'groq-js'
 import {defer, of} from 'rxjs'
 import {refCountDelay} from 'rxjs-etc/operators'
 import {distinctUntilChanged, publishReplay, switchMap} from 'rxjs/operators'
-import shallowEquals from 'shallow-equals'
 
+import {shallowEquals} from '../../util/shallowEquals'
 import {type StoreRequestErrorHandler} from '../requestErrorHandler'
 import {debugGrants$} from './debug'
 import {

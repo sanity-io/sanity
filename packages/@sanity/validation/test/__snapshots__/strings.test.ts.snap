@@ -4,6 +4,7 @@ exports[`string > custom async rule with string > not a palindrome 1`] = `
 [
   {
     "__internal_metadata": undefined,
+    "code": "custom",
     "item": {
       "message": "Must be a palindrome!",
     },
@@ -18,6 +19,7 @@ exports[`string > custom rule with string > not a palindrome 1`] = `
 [
   {
     "__internal_metadata": undefined,
+    "code": "custom",
     "item": {
       "message": "Must be a palindrome!",
     },
@@ -32,6 +34,11 @@ exports[`string > exact length constraint > exact length: too long 1`] = `
 [
   {
     "__internal_metadata": undefined,
+    "code": "string.exact-length",
+    "details": {
+      "actualLength": 8,
+      "expectedLength": 5,
+    },
     "item": {
       "message": "Must be exactly 5 characters long",
     },
@@ -46,6 +53,11 @@ exports[`string > exact length constraint > exact length: too short 1`] = `
 [
   {
     "__internal_metadata": undefined,
+    "code": "string.exact-length",
+    "details": {
+      "actualLength": 3,
+      "expectedLength": 5,
+    },
     "item": {
       "message": "Must be exactly 5 characters long",
     },
@@ -62,6 +74,7 @@ exports[`string > lowercase constraint > lowercase: all uppercase 1`] = `
 [
   {
     "__internal_metadata": undefined,
+    "code": "string.lowercase",
     "item": {
       "message": "Must be all lowercase characters",
     },
@@ -76,6 +89,7 @@ exports[`string > lowercase constraint > lowercase: locale characters 1`] = `
 [
   {
     "__internal_metadata": undefined,
+    "code": "string.lowercase",
     "item": {
       "message": "Must be all lowercase characters",
     },
@@ -90,6 +104,7 @@ exports[`string > lowercase constraint > lowercase: some uppercase 1`] = `
 [
   {
     "__internal_metadata": undefined,
+    "code": "string.lowercase",
     "item": {
       "message": "Must be all lowercase characters",
     },
@@ -106,6 +121,11 @@ exports[`string > max length constraint > max length: too long 1`] = `
 [
   {
     "__internal_metadata": undefined,
+    "code": "string.maximum-length",
+    "details": {
+      "actualLength": 7,
+      "maximumLength": 5,
+    },
     "item": {
       "message": "Must be at most 5 characters long",
     },
@@ -122,6 +142,11 @@ exports[`string > min length constraint > min length: too short 1`] = `
 [
   {
     "__internal_metadata": undefined,
+    "code": "string.minimum-length",
+    "details": {
+      "actualLength": 1,
+      "minimumLength": 2,
+    },
     "item": {
       "message": "Must be at least 2 characters long",
     },
@@ -140,6 +165,12 @@ exports[`string > regex constraint (custom pattern name) > regex: non-match w/ c
 [
   {
     "__internal_metadata": undefined,
+    "code": "string.regex-mismatch",
+    "details": {
+      "invert": false,
+      "name": "PascalCase",
+      "pattern": "^[A-Z][a-z]+$",
+    },
     "item": {
       "message": "Does not match "PascalCase"-pattern",
     },
@@ -156,6 +187,12 @@ exports[`string > regex constraint (custom pattern name, as options) > regex: no
 [
   {
     "__internal_metadata": undefined,
+    "code": "string.regex-mismatch",
+    "details": {
+      "invert": false,
+      "name": "PascalCase",
+      "pattern": "^[A-Z][a-z]+$",
+    },
     "item": {
       "message": "Does not match "PascalCase"-pattern",
     },
@@ -170,6 +207,12 @@ exports[`string > regex constraint (inverted) > regex: inverted match 1`] = `
 [
   {
     "__internal_metadata": undefined,
+    "code": "string.regex-match",
+    "details": {
+      "invert": true,
+      "name": "/^[A-Z][a-z]+$/",
+      "pattern": "^[A-Z][a-z]+$",
+    },
     "item": {
       "message": "Should not match "/^[A-Z][a-z]+$/"-pattern",
     },
@@ -188,6 +231,12 @@ exports[`string > regex constraint > regex: non-match 1`] = `
 [
   {
     "__internal_metadata": undefined,
+    "code": "string.regex-mismatch",
+    "details": {
+      "invert": false,
+      "name": "/^[A-Z][a-z]+$/",
+      "pattern": "^[A-Z][a-z]+$",
+    },
     "item": {
       "message": "Does not match "/^[A-Z][a-z]+$/"-pattern",
     },
@@ -202,6 +251,7 @@ exports[`string > required constraint > required: empty string 1`] = `
 [
   {
     "__internal_metadata": undefined,
+    "code": "value.required",
     "item": {
       "message": "Required",
     },
@@ -216,6 +266,11 @@ exports[`string > required constraint > required: null 1`] = `
 [
   {
     "__internal_metadata": undefined,
+    "code": "value.type-mismatch",
+    "details": {
+      "actualType": "null",
+      "expectedType": "String",
+    },
     "item": {
       "message": "Expected type "String", got "null"",
     },
@@ -225,6 +280,7 @@ exports[`string > required constraint > required: null 1`] = `
   },
   {
     "__internal_metadata": undefined,
+    "code": "value.required",
     "item": {
       "message": "Required",
     },
@@ -239,6 +295,7 @@ exports[`string > required constraint > required: undefined 1`] = `
 [
   {
     "__internal_metadata": undefined,
+    "code": "value.required",
     "item": {
       "message": "Required",
     },
@@ -255,6 +312,7 @@ exports[`string > uppercase constraint > uppercase: all lowercase 1`] = `
 [
   {
     "__internal_metadata": undefined,
+    "code": "string.uppercase",
     "item": {
       "message": "Must be all uppercase characters",
     },
@@ -269,6 +327,7 @@ exports[`string > uppercase constraint > uppercase: locale characters 1`] = `
 [
   {
     "__internal_metadata": undefined,
+    "code": "string.uppercase",
     "item": {
       "message": "Must be all uppercase characters",
     },
@@ -283,6 +342,7 @@ exports[`string > uppercase constraint > uppercase: some lowercase 1`] = `
 [
   {
     "__internal_metadata": undefined,
+    "code": "string.uppercase",
     "item": {
       "message": "Must be all uppercase characters",
     },
@@ -297,6 +357,7 @@ exports[`string > uppercase constraint > uppercase: some lowercase 2`] = `
 [
   {
     "__internal_metadata": undefined,
+    "code": "string.uppercase",
     "item": {
       "message": "Must be all uppercase characters",
     },
@@ -313,6 +374,10 @@ exports[`string > uri constraint (allowRelative with restrictive scheme) > uri: 
 [
   {
     "__internal_metadata": undefined,
+    "code": "string.url.scheme-not-allowed",
+    "details": {
+      "scheme": "http",
+    },
     "item": {
       "message": "Does not match allowed protocols/schemes",
     },
@@ -327,6 +392,7 @@ exports[`string > uri constraint (credentials) > uri: credentials specified but 
 [
   {
     "__internal_metadata": undefined,
+    "code": "string.url.credentials-not-allowed",
     "item": {
       "message": "Username/password not allowed",
     },
@@ -341,6 +407,7 @@ exports[`string > uri constraint (credentials) > uri: username specified but not
 [
   {
     "__internal_metadata": undefined,
+    "code": "string.url.credentials-not-allowed",
     "item": {
       "message": "Username/password not allowed",
     },
@@ -355,6 +422,10 @@ exports[`string > uri constraint (invalid protocol) > uri: protocol non-match 1`
 [
   {
     "__internal_metadata": undefined,
+    "code": "string.url.scheme-not-allowed",
+    "details": {
+      "scheme": "https",
+    },
     "item": {
       "message": "Does not match allowed protocols/schemes",
     },
@@ -369,6 +440,7 @@ exports[`string > uri constraint (with unicode chars) > uri: non-match 1`] = `
 [
   {
     "__internal_metadata": undefined,
+    "code": "string.url.invalid",
     "item": {
       "message": "Not a valid URL",
     },
@@ -383,6 +455,7 @@ exports[`string > uri constraint > uri: non-match 1`] = `
 [
   {
     "__internal_metadata": undefined,
+    "code": "string.url.invalid",
     "item": {
       "message": "Not a valid URL",
     },

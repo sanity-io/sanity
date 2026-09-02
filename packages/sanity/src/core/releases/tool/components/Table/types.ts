@@ -1,5 +1,7 @@
 import {type CSSProperties} from 'react'
 
+export const TABLE_ROW_ACTIONS_WIDTH = 50
+
 export interface InjectedTableProps {
   as?: React.ElementType | keyof React.JSX.IntrinsicElements
   id: string

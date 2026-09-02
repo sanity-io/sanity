@@ -1,6 +1,10 @@
 import {describe, expect, it} from 'vitest'
 
-import {listMyAccessRequests, submitAccessRequest} from '../accessRequests'
+import {
+  fetchAccessRequestStatus,
+  listMyAccessRequests,
+  submitAccessRequest,
+} from '../accessRequests'
 import {type SubmitAccessRequestResult} from '../types'
 import {createApiError, createClientStub} from './testUtils'
 
@@ -103,5 +107,69 @@ describe('submitAccessRequest', () => {
   ])('passes $given through as error', async ({error}) => {
     const client = createClientStub({submit: () => Promise.reject(error)})
     await expect(submit(client)).resolves.toEqual({type: 'error', error})
+  })
+})
+
+const fetchStatus = (client: ReturnType<typeof createClientStub>, origin?: string) =>
+  fetchAccessRequestStatus({
+    client,
+    resourceType: 'project',
+    resourceId: 'project-a',
+    origin,
+  })
+
+describe('fetchAccessRequestStatus', () => {
+  it('gets the request-state endpoint for the resource', async () => {
+    const client = createClientStub()
+
+    await expect(fetchStatus(client)).resolves.toEqual({state: 'eligible'})
+    expect(client.request).toHaveBeenCalledWith(
+      expect.objectContaining({url: '/access/project/project-a/requests/state'}),
+    )
+  })
+
+  it('returns the saml-required verdict with its SSO login URL', async () => {
+    const verdict = {
+      state: 'saml-required',
+      redirectUrl: 'https://www.sanity.io/login/sso/acme?origin=https%3A%2F%2Fexample.test%2F',
+    }
+    const client = createClientStub({status: () => Promise.resolve(verdict)})
+
+    await expect(fetchStatus(client)).resolves.toEqual(verdict)
+  })
+
+  it('packs the origin into returnQuery so the user returns after SSO', async () => {
+    const client = createClientStub()
+
+    await fetchStatus(client, 'https://example.test/resource')
+
+    expect(client.request).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: {returnQuery: 'origin=https%3A%2F%2Fexample.test%2Fresource'},
+      }),
+    )
+  })
+
+  it('sends no query when there is no origin', async () => {
+    const client = createClientStub()
+
+    await fetchStatus(client)
+
+    expect(client.request).toHaveBeenCalledWith(expect.objectContaining({query: undefined}))
+  })
+
+  it.each([
+    {given: 'the endpoint is missing', error: createApiError(404, {})},
+    {given: 'the request fails', error: new Error('network down')},
+  ])('fails open when $given, leaving the submit-time gate as the backstop', async ({error}) => {
+    const client = createClientStub({status: () => Promise.reject(error)})
+
+    await expect(fetchStatus(client)).resolves.toEqual({state: 'eligible'})
+  })
+
+  it('treats a null body as eligible', async () => {
+    const client = createClientStub({status: () => Promise.resolve(null)})
+
+    await expect(fetchStatus(client)).resolves.toEqual({state: 'eligible'})
   })
 })

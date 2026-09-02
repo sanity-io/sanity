@@ -1,5 +1,5 @@
 /* oxlint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-string-literals -- Diagnostics uses fixed English terminology so support and users see the same technical labels. */
-import {Card, Flex, Spinner, Stack, Text} from '@sanity/ui'
+import {Card, Spinner, Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {
   useCallback,
@@ -10,6 +10,7 @@ import {
   useState,
   version as reactVersion,
 } from 'react'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -144,7 +145,14 @@ export function DiagnosticsDialog({onClose}: DiagnosticsDialogProps) {
     >
       <Stack gap={4} height="fill">
         {!diagnostics && !error ? (
-          <Flex align="center" direction="column" flex={1} gap={3} justify="center">
+          <Flex
+            alignItems="center"
+            flexDirection="column"
+            flexBasis="0%"
+            flexGrow={1}
+            gap={3}
+            justifyContent="center"
+          >
             <Spinner />
             <Text muted size={1}>
               Gathering diagnostics…

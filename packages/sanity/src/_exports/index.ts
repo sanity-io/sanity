@@ -77,6 +77,9 @@ export {
 export {buildCommentRangeDecorations} from '../core/comments/utils/inline-comments/buildCommentRangeDecorations'
 export {buildRangeDecorationSelectionsFromComments} from '../core/comments/utils/inline-comments/buildRangeDecorationSelectionsFromComments'
 export {buildTextSelectionFromFragment} from '../core/comments/utils/inline-comments/buildTextSelectionFromFragment'
+export {CommentsProvider as CommentsProviderV2} from '../core/comments-v2/context/comments/CommentsProvider'
+export {CommentsEnabledProvider as CommentsEnabledProviderV2} from '../core/comments-v2/context/enabled/CommentsEnabledProvider'
+export {useCommentsEnabled as useCommentsEnabledV2} from '../core/comments-v2/hooks/useCommentsEnabled'
 export {BetaBadge, type BetaBadgeProps} from '../core/components/BetaBadge'
 export {CapabilityGate} from '../core/components/CapabilityGate'
 export {
@@ -250,6 +253,7 @@ export {
   isSanityDefinedAction,
   type SanityDefinedAction,
 } from '../core/config/document/actions'
+export {getDocumentVersionType} from '../core/config/document/useConfiguredDocumentActionIds'
 export {
   type DocumentBadgeComponent,
   type DocumentBadgeDescription,
@@ -933,6 +937,7 @@ export {
   getCreatableVariantTarget,
   getPairTarget,
   getTargetScopeId,
+  getTargetSiblings,
   type TargetDocumentState,
   useTargetDocumentState,
 } from '../core/hooks/useTargetDocumentState'
@@ -1142,6 +1147,18 @@ export {
   type SearchTerms,
 } from '../core/search/common/types'
 export {createSearch} from '../core/search/search'
+export {
+  defineSearchMachine,
+  type SearchMachineContext,
+  type SearchMachineEmitted,
+  type SearchMachineEvent,
+  type SearchMachineInput,
+} from '../core/search/searchMachine'
+export {
+  type SearchMachineState,
+  useSearchMachine,
+  type UseSearchMachineOptions,
+} from '../core/search/useSearchMachine'
 export {
   SingleDocReleaseProvider,
   useSingleDocRelease,
@@ -1454,6 +1471,10 @@ export {
   useColorSchemeSetValue,
   useColorSchemeValue,
 } from '../core/studio/colorScheme'
+export {
+  DiagnosticsReport,
+  type DiagnosticsReportProps,
+} from '../core/studio/components/navbar/resources/DiagnosticsReport'
 export {Filters} from '../core/studio/components/navbar/search/components/filters/Filters'
 export {SearchHeader} from '../core/studio/components/navbar/search/components/SearchHeader'
 export {
@@ -1507,6 +1528,8 @@ export {
   type PasteOptions,
   type SanityClipboardItem,
 } from '../core/studio/copyPaste/types'
+export {type StudioDiagnostics} from '../core/studio/diagnostics/gatherStudioDiagnostics'
+export {parseStudioDiagnostics} from '../core/studio/diagnostics/parseStudioDiagnostics'
 export {StudioFeedbackProvider} from '../core/studio/feedback/StudioFeedbackProvider'
 export {
   generateStudioManifest,
@@ -1727,6 +1750,7 @@ export {
   useLoadable,
 } from '../core/util/useLoadable'
 export {userHasRole} from '../core/util/userHasRole'
+export {useShallowUnique} from '../core/util/useShallowUnique'
 export {useThrottledCallback} from '../core/util/useThrottledCallback'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {useUnique} from '../core/util/useUnique'

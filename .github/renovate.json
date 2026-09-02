@@ -12,7 +12,7 @@
   ],
   "branchConcurrentLimit": 3,
   "prConcurrentLimit": 5,
-  "minimumReleaseAge": "3 days",
+  "minimumReleaseAge": "1 day",
   "packageRules": [
     {
       "description": "Exclude @sanity/* packages from minimumReleaseAge (no delay for internal packages)",
@@ -113,6 +113,11 @@
       ],
       "dependencyDashboardApproval": false,
       "schedule": ["every weekday"]
+    },
+    {
+      "description": "ui5 is the exact-pinned npm alias for the @sanity/ui v5 prerelease (pnpm catalog): strictly follow the alpha dist-tag so the pin is bumped whenever a new alpha is published, bypassing the default ignoreUnstable logic that would skip a rebased prerelease (e.g. a beta) and tracking tag rollbacks",
+      "matchDepNames": ["ui5"],
+      "followTag": "alpha"
     },
     {
       "description": "Upgrade @portabletext/* packages together, majors included: the editor monorepo versions its packages independently but releases them in lockstep (plugins peer-depend on the editor), so a new major line must land as one PR instead of one per major number",

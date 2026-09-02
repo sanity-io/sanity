@@ -265,6 +265,13 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                         timeout({first: 30_000}),
                       )
 
+                    // Live-edit documents have no drafts sibling: create the variant-of-published
+                    // even when the selected bundle is drafts. Release bundles still target the release.
+                    const createPerspective =
+                      schema?.liveEdit && input.bundle === ('drafts' satisfies SystemBundle)
+                        ? 'published'
+                        : input.bundle
+
                     const targetPair = await firstValueFrom(readTargetPair)
                     const baseVariant =
                       editStateSlot === 'draft'
@@ -279,7 +286,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                           _type: documentType,
                         },
                         variant: input.variantDefinition,
-                        selectedPerspective: input.bundle,
+                        selectedPerspective: createPerspective,
                         signal,
                       })
                     }
@@ -290,7 +297,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                         documentGroupId: getPublishedId(documentId),
                         baseId: baseVariant._id,
                         variant: input.variantDefinition,
-                        selectedPerspective: input.bundle,
+                        selectedPerspective: createPerspective,
                         signal,
                       })
                     }
@@ -315,6 +322,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
           documentType,
           documentId,
           documentStore.pair,
+          schema,
         ],
       ),
     },
