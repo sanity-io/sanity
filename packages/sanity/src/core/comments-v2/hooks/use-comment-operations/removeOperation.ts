@@ -10,8 +10,6 @@ export async function removeOperation(props: RemoveOperationProps): Promise<void
   const {client, id, onRemove} = props
   onRemove?.(id)
 
-  await Promise.all([
-    client.delete({query: `*[_type == "comment" && parentCommentId == "${id}"]`}),
-    client.delete(id),
-  ])
+  // Comments API cascades deletes to replies automatically
+  await client.collaboration.comments.delete(id)
 }

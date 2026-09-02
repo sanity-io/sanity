@@ -16,13 +16,7 @@ import {
 import {ConfirmDiscardDialog} from '../components/confirmDiscardDialog/ConfirmDiscardDialog'
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
-
-const DISABLED_REASON_KEY = {
-  NO_CHANGES: 'action.discard-changes.disabled.no-change',
-  NOT_PUBLISHED: 'action.discard-changes.disabled.not-published',
-  NOT_READY: 'action.discard-changes.disabled.not-ready',
-  TARGET_NOT_FOUND: 'action.discard-changes.disabled.target-not-found',
-} as const
+import {DISCARD_CHANGES_DISABLED_REASON} from './operationDisabledReasons'
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
@@ -90,7 +84,9 @@ export const useDiscardChangesAction: DocumentActionComponent = ({id, type, vers
       tone: 'critical',
       icon: ResetIcon,
       disabled: Boolean(discardChanges.disabled) || isPermissionsLoading || !isTargetReady,
-      title: t((discardChanges.disabled && DISABLED_REASON_KEY[discardChanges.disabled]) || ''),
+      title: t(
+        (discardChanges.disabled && DISCARD_CHANGES_DISABLED_REASON[discardChanges.disabled]) || '',
+      ),
       label: t('action.discard-changes.label'),
       onHandle: handle,
       dialog: isConfirmDialogOpen && {

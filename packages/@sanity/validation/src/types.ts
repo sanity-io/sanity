@@ -1,3 +1,5 @@
+import {type ValidationContext as BaseValidationContext} from '@sanity/types'
+
 import {type LocaleSource} from './i18n/types'
 
 declare module '@sanity/types' {
@@ -26,3 +28,14 @@ declare module '@sanity/types' {
 }
 
 export type {ValidationContext} from '@sanity/types'
+
+export interface InternalValidationContext extends BaseValidationContext {
+  __internal?: {
+    customValidation?: boolean
+    customValidationConcurrencyLimiter?: {
+      ready: () => Promise<void>
+      release: () => void
+    }
+    markIncomplete?: () => void
+  }
+}

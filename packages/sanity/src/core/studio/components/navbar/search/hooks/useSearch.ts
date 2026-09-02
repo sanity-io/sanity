@@ -1,6 +1,6 @@
 import {type Schema} from '@sanity/types'
 import {useActorRef, useSelector} from '@xstate/react'
-import isEqual from 'lodash-es/isEqual.js'
+import {dequal} from 'dequal/lite'
 import {
   useCallback,
   useEffect,
@@ -12,6 +12,7 @@ import {
 import {fromObservable} from 'xstate'
 
 import {useClient} from '../../../../../hooks/useClient'
+import {isEqualSearchTerms} from '../../../../../search/common/isEqualSearchTerms'
 import {
   type Groq2024SearchResults,
   type SearchHit,
@@ -47,6 +48,27 @@ function sanitizeRequest(request: SearchRequest) {
       query: request.terms.query.trim(),
     },
   }
+}
+
+function isEqualSearchRequest(a: SearchRequest | null, b: SearchRequest | null): boolean {
+  if (a === b) return true
+  if (!a || !b) return false
+  const {terms: aTerms, ...aRest} = a
+  const {terms: bTerms, ...bRest} = b
+  return isEqualSearchTerms(aTerms, bTerms) && dequal(aRest, bRest)
+}
+
+function isEqualSearchState(a: SearchState, b: SearchState): boolean {
+  if (a === b) return true
+  const {error: aError, terms: aTerms, ...aRest} = a
+  const {error: bError, terms: bTerms, ...bRest} = b
+  const errorsEqual =
+    aError === bError ||
+    (aError !== null &&
+      bError !== null &&
+      aError.name === bError.name &&
+      aError.message === bError.message)
+  return errorsEqual && isEqualSearchTerms(aTerms, bTerms) && dequal(aRest, bRest)
 }
 
 export function useSearch({
@@ -89,7 +111,7 @@ export function useSearch({
         search: fromObservable(({input}) => search(input.query.terms, input.query.options)),
       },
       guards: {
-        'is same query': ({context, event}) => isEqual(context.query, event.query),
+        'is same query': ({context, event}) => isEqualSearchRequest(context.query, event.query),
         'should search': ({context}) =>
           context.query !== null &&
           hasSearchableTerms({allowEmptyQueries, terms: context.query.terms}),
@@ -149,7 +171,7 @@ export function useSearch({
         terms: activeQuery.terms,
       }
     },
-    isEqual,
+    isEqualSearchState,
   )
 
   const handleSearch = useCallback(

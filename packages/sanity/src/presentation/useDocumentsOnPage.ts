@@ -1,5 +1,5 @@
 import {validateApiPerspective} from '@sanity/client'
-import isEqual from 'fast-deep-equal'
+import {dequal as isEqual} from 'dequal/lite'
 import {type RefObject, useCallback, useMemo, useRef, useState} from 'react'
 import {getPublishedId} from 'sanity'
 

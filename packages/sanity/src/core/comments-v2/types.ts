@@ -1,4 +1,9 @@
-import {type PortableTextBlock} from '@sanity/types'
+import {
+  type CollaborationCommentFieldValue,
+  type CollaborationCommentRange,
+  type CollaborationCommentReactionShortName,
+} from '@sanity/client'
+import {type PortableTextBlock, type WeakGlobalDocumentReferenceValue} from '@sanity/types'
 import {type IntentParameters} from 'sanity/router'
 
 /**
@@ -32,6 +37,11 @@ export interface CommentOperations {
     comment: CommentUpdatePayload,
     opts?: CommentUpdateOperationOptions,
   ) => Promise<void>
+  /**
+   * Re-anchors an inline comment after its text has moved.
+   * Non-null `range` requires `fieldValue` (editor PT covering the range).
+   */
+  updateRange: (id: string, payload: CommentUpdateRangePayload) => Promise<void>
 }
 
 /**
@@ -137,13 +147,7 @@ interface CommentCreateFailedState {
  * The short names for the comment reactions.
  * We follow the convention for short names outlined in https://projects.iamcal.com/emoji-data/table.htm.
  */
-export type CommentReactionShortNames =
-  | ':-1:'
-  | ':+1:'
-  | ':eyes:'
-  | ':heart:'
-  | ':heavy_plus_sign:'
-  | ':rocket:'
+export type CommentReactionShortNames = CollaborationCommentReactionShortName
 
 /**
  * @beta
@@ -178,6 +182,22 @@ export interface CommentReactionItem {
 export type CommentsType = 'field' | 'task'
 
 /**
+ * `updateRange` payload. Non-null `range` requires editor PT as `fieldValue`.
+ * `optimisticUpdate` is applied to the local comment while the request is in
+ * flight; the listener echo replaces it with the server-resolved state.
+ */
+export type CommentUpdateRangePayload =
+  | {
+      range: CollaborationCommentRange
+      fieldValue: CollaborationCommentFieldValue
+      optimisticUpdate: CommentUpdatePayload
+    }
+  | {
+      range: null
+      optimisticUpdate: CommentUpdatePayload
+    }
+
+/**
  * The state is used to track the state of the comment (e.g. if it failed to be created, etc.)
  * It is a local value and is not stored on the server.
  * When there's no state, the comment is considered to be in a "normal" state (e.g. created successfully).
@@ -187,18 +207,28 @@ export type CommentsType = 'field' | 'task'
 type CommentState = CommentCreateFailedState | CommentCreateRetryingState | undefined
 
 /**
+ * Comment document as stored by the Comments API (`sanity.comment`).
+ *
  * @beta
  * @hidden
  */
 export interface CommentDocument {
-  _type: 'comment'
+  _type: 'sanity.comment'
   _createdAt: string
   _id: string
   _rev: string
 
+  /**
+   * System metadata. Author is stored in `_system.createdBy`.
+   */
+  _system: {createdBy: string}
+
+  /**
+   * Local-only state used to track optimistic UI updates (e.g. create retrying/failed).
+   * Not stored on the server.
+   */
   _state?: CommentState
 
-  authorId: string
   message: CommentMessage
   threadId: string
   parentCommentId?: string
@@ -216,21 +246,15 @@ export interface CommentDocument {
     path?: CommentPath
 
     documentRevisionId?: string
-    documentVersionId?: string
+    /**
+     * The exact document ID the comment was created against (e.g. a draft or version ID).
+     */
+    sourceDocumentId: string
     documentType: string
-    document:
-      | {
-          _dataset: string
-          _projectId: string
-          _ref: string
-          _type: 'crossDatasetReference'
-          _weak: boolean
-        }
-      | {
-          _ref: string
-          _type: 'reference'
-          _weak: boolean
-        }
+    /**
+     * Global document reference. `_ref` format: `resourceType:resourceId:publishedDocumentId`
+     */
+    document: WeakGlobalDocumentReferenceValue
   }
 }
 
@@ -273,15 +297,29 @@ export interface CommentTaskCreatePayload extends CommentBaseCreatePayload {
  * @beta
  * @hidden
  */
-export interface CommentFieldCreatePayload extends CommentBaseCreatePayload {
+export type CommentFieldCreatePayload = CommentBaseCreatePayload & {
   type: 'field'
   contentSnapshot?: CommentDocument['contentSnapshot']
   /**
    * The stringified path to the field where the comment was created.
    */
   fieldPath: string
+  /**
+   * Text selection markers (used for UI rendering).
+   */
   selection?: CommentPathSelection
-}
+} & (
+    | {
+        /** Comments API range for an inline selection */
+        range: CollaborationCommentRange
+        /** Editor Portable Text covering `range` */
+        fieldValue: CollaborationCommentFieldValue
+      }
+    | {
+        range?: undefined
+        fieldValue?: undefined
+      }
+  )
 
 /**
  * @beta

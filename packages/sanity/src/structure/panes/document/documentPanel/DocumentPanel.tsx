@@ -1,4 +1,4 @@
-import {BoundaryElementProvider, Flex, PortalProvider, usePortal} from '@sanity/ui'
+import {BoundaryElementProvider, PortalProvider, usePortal} from '@sanity/ui'
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
@@ -23,7 +23,7 @@ import {
   VirtualizerScrollInstanceProvider,
 } from 'sanity'
 import {css, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {PaneContent} from '../../../components/pane/PaneContent'
 import {usePane} from '../../../components/pane/usePane'
@@ -334,11 +334,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       )
     }
 
-    const displayedHasObsoleteDraft = hasObsoleteDraft({
-      editState,
-      workspace,
-      schemaType,
-    })
+    const displayedHasObsoleteDraft = hasObsoleteDraft({targetDocumentState, workspace, schemaType})
 
     if (activeView.type === 'form' && !selectedReleaseId && displayedHasObsoleteDraft.result) {
       if (displayedHasObsoleteDraft.reason === 'DRAFT_MODEL_INACTIVE') {
@@ -419,13 +415,13 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   )
   return (
     <PaneContent>
-      <Flex height="fill">
+      <Flex height="100%">
         <div
           data-testid="document-panel-form-view"
           hidden={!showFormView}
           style={{display: showFormView ? 'contents' : 'none'}}
         >
-          <Flex height="fill" direction="column" flex={2}>
+          <Flex height="100%" flexDirection="column" flexBasis="0%" flexGrow={2}>
             <LegacyLayerProvider zOffset="paneHeader">
               {banners}
               <DocumentPanelSubHeader />

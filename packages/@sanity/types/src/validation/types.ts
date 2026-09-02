@@ -187,21 +187,7 @@ export interface Rule {
   reference(): Rule
   fields(rules: FieldRules): Rule
   assetRequired(): Rule
-  validate(
-    value: unknown,
-    options: ValidationContext & {
-      /**
-       * @deprecated Internal use only
-       * @internal
-       */
-      __internal?: {
-        customValidationConcurrencyLimiter?: {
-          ready: () => Promise<void>
-          release: () => void
-        }
-      }
-    },
-  ): Promise<ValidationMarker[]>
+  validate(value: unknown, options: ValidationContext): Promise<ValidationMarker[]>
 }
 
 /** @public */

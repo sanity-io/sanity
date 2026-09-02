@@ -4,7 +4,7 @@ import {Card, Spinner, Stack, TabList, Text, useClickOutsideEvent} from '@sanity
 import {useToast} from '@sanity/ui/toast'
 import {isBefore} from 'date-fns/isBefore'
 import {startOfMinute} from 'date-fns/startOfMinute'
-import isEqual from 'lodash-es/isEqual.js'
+import {dequal as isEqual} from 'dequal/lite'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'

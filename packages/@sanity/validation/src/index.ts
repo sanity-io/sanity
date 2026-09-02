@@ -8,6 +8,7 @@ export {
   validationMarkerCodes,
 } from './codes'
 export {
+  type DocumentValidationResult,
   validateDocument,
   type ValidateDocumentOptions,
   type ValidateDocumentWorkspaceOptions,

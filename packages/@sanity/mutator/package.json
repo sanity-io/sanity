@@ -52,6 +52,7 @@
     "@sanity/types": "workspace:*",
     "@sanity/uuid": "^3.0.3",
     "debug": "^4.4.3",
+    "dequal": "catalog:",
     "lodash-es": "^4.18.1"
   },
   "devDependencies": {

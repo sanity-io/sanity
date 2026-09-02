@@ -5,6 +5,7 @@ import {
   type Path,
   type PathSegment,
 } from '@sanity/types'
+import {isEqual, isSegmentEqual} from '@sanity/util/paths'
 
 import {getValueAtPath} from '../../../../../field/paths/helpers'
 
@@ -15,7 +16,9 @@ export function isArrayItemSelected(
   itemPath: Path | PathSegment,
   path: Path | PathSegment,
 ): boolean {
-  return JSON.stringify(itemPath) === JSON.stringify(path)
+  if (Array.isArray(itemPath) && Array.isArray(path)) return isEqual(itemPath, path)
+  if (Array.isArray(itemPath) || Array.isArray(path)) return false
+  return isSegmentEqual(itemPath, path)
 }
 
 /**

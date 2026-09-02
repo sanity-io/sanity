@@ -17,7 +17,7 @@ import {
   type LoaderControllerMsg,
   type LoaderNodeMsg,
 } from '@sanity/presentation-comlink'
-import isEqual from 'fast-deep-equal'
+import {dequal as isEqual} from 'dequal/lite'
 import {memo, startTransition, useDeferredValue, useEffect, useMemo, useState} from 'react'
 import {
   isReleasePerspective,

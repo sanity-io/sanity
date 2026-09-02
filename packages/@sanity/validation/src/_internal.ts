@@ -13,6 +13,8 @@ export {getTypeChain, normalizeValidationRules} from './util/normalizeValidation
 export {pathToString} from './util/pathToString'
 export {typeString} from './util/typeString'
 export {
+  evaluateDocumentInternal,
+  evaluateDocumentObservable,
   resolveTypeForArrayItem,
   validateDocumentInternal,
   type ValidateDocumentInternalOptions,

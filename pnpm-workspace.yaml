@@ -39,6 +39,7 @@ catalog:
   '@vanilla-extract/dynamic': ^2.1.5
   '@vitejs/plugin-react': ^6.1.1
   '@vitest/browser-playwright': ^4.1.11
+  dequal: ^2.0.3
   jsdom: ^29.1.1
   oxc-transform-react: ^0.148.0
   playwright: 1.62.1

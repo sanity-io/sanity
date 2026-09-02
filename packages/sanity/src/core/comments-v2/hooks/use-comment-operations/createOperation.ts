@@ -1,5 +1,5 @@
-import {type SanityClient} from '@sanity/client'
-import {type CurrentUser} from '@sanity/types'
+import {type CollaborationCommentCreate, type SanityClient} from '@sanity/client'
+import {type CurrentUser, isPortableTextTextBlock} from '@sanity/types'
 import {uuid} from '@sanity/uuid'
 
 import {type Tool} from '../../../config/types'
@@ -17,19 +17,15 @@ interface CreateOperationProps {
   client: SanityClient | null
   comment: CommentCreatePayload
   currentUser: CurrentUser
-  dataset: string
-  documentId: string
+  versionId: string
   documentRevisionId?: string
   documentType: string
-  documentVersionId?: string
   getComment?: (id: string) => CommentDocument | undefined
   getIntent?: CommentIntentGetter
   getNotificationValue: (comment: {commentId: string}) => CommentContext['notification']
   getThreadLength?: (threadId: string) => number
   onCreate?: (comment: CommentPostPayload) => void
   onCreateError: (id: string, error: Error) => void
-  projectId: string
-  createAddonDataset: () => Promise<SanityClient | null>
   workspace: string
 }
 
@@ -39,38 +35,46 @@ export async function createOperation(props: CreateOperationProps): Promise<void
     client,
     comment,
     currentUser,
-    dataset,
-    documentId,
+    versionId,
     documentRevisionId,
     documentType,
-    documentVersionId,
     getIntent,
     getNotificationValue,
     getThreadLength,
     onCreate,
     onCreateError,
-    projectId,
-    createAddonDataset,
     workspace,
   } = props
+
+  if (!client || !comment.message) return
+
+  // Comments are authored by the global user, which some sessions don't have.
+  const authorId = currentUser.sanityUserId
+  if (!authorId) return
 
   // The comment payload might already have an id if, for example, the comment was created
   // but the request failed. In that case, we'll reuse the id when retrying to
   // create the comment.
   const commentId = comment?.id || uuid()
-  const authorId = currentUser.id
 
   // Get the current thread length of the thread the comment is being added to.
   // We add 1 to the length to account for the comment being added.
   const currentThreadLength = (getThreadLength?.(comment.threadId) || 0) + 1
 
+  const gdr = client.collaboration.comments.getTargetDocumentRef(versionId)
+
+  // The Comments API only accepts text blocks; comment messages never hold
+  // block-level inline objects.
+  const apiMessage = comment.message.filter(isPortableTextTextBlock)
+
   let nextComment: CommentPostPayload | undefined
+  let apiPayload: CollaborationCommentCreate | undefined
 
   if (comment.type === 'task') {
     nextComment = {
       _id: commentId,
-      _type: 'comment',
-      authorId,
+      _type: 'sanity.comment',
+      _system: {createdBy: authorId},
       message: comment.message,
       lastEditedAt: undefined,
       parentCommentId: comment.parentCommentId,
@@ -88,14 +92,29 @@ export async function createOperation(props: CreateOperationProps): Promise<void
 
       target: {
         document: {
-          _ref: documentId,
-          _type: 'reference',
+          _ref: gdr,
+          _type: 'globalDocumentReference',
           _weak: true,
         },
-        documentVersionId,
+        sourceDocumentId: versionId,
         documentType,
       },
     }
+
+    apiPayload = comment.parentCommentId
+      ? {
+          _id: commentId,
+          message: apiMessage,
+          parentCommentId: comment.parentCommentId,
+          context: {...nextComment.context},
+        }
+      : {
+          _id: commentId,
+          message: apiMessage,
+          threadId: comment.threadId,
+          context: {...nextComment.context},
+          target: {documentId: versionId, documentType},
+        }
   }
 
   if (comment.type === 'field') {
@@ -114,7 +133,11 @@ export async function createOperation(props: CreateOperationProps): Promise<void
       workspaceName,
     }
 
-    const intent = getIntent?.({id: documentId, type: documentType, path: comment.fieldPath})
+    const intent = getIntent?.({
+      id: versionId,
+      type: documentType,
+      path: comment.fieldPath,
+    })
 
     // If the content snapshot contains a reference, we need to weaken it.
     // This prevents Content Lake from validating the references, which could,
@@ -124,8 +147,8 @@ export async function createOperation(props: CreateOperationProps): Promise<void
 
     nextComment = {
       _id: commentId,
-      _type: 'comment',
-      authorId,
+      _type: 'sanity.comment',
+      _system: {createdBy: authorId},
       message: comment.message,
       lastEditedAt: undefined,
       parentCommentId: comment.parentCommentId,
@@ -152,42 +175,46 @@ export async function createOperation(props: CreateOperationProps): Promise<void
           selection: comment.selection,
         },
         document: {
-          _dataset: dataset,
-          _projectId: projectId,
-          _ref: documentId,
-          _type: 'crossDatasetReference',
+          _ref: gdr,
+          _type: 'globalDocumentReference',
           _weak: true,
         },
         documentType,
-        documentVersionId,
+        sourceDocumentId: versionId,
       },
     }
+
+    const target = {
+      documentId: versionId,
+      documentType,
+      documentRevisionId,
+      path: comment.fieldPath,
+    }
+
+    apiPayload = comment.parentCommentId
+      ? {
+          _id: commentId,
+          message: apiMessage,
+          parentCommentId: comment.parentCommentId,
+          context: {...nextComment.context},
+        }
+      : {
+          _id: commentId,
+          message: apiMessage,
+          threadId: comment.threadId,
+          context: {...nextComment.context},
+          target: comment.range
+            ? {...target, range: comment.range, fieldValue: comment.fieldValue}
+            : target,
+        }
   }
 
-  if (!nextComment) return
+  if (!nextComment || !apiPayload) return
 
   onCreate?.(nextComment)
 
-  // If we don't have a client, that means that the dataset doesn't have an addon dataset.
-  // Therefore, when the first comment is created, we need to create the addon dataset and create
-  // a client for it and then post the comment. We do this here, since we know that we have a
-  // comment to create.
-  if (!client) {
-    try {
-      const newAddonClient = await createAddonDataset()
-      if (!newAddonClient) {
-        throw new Error('Failed to create addon dataset client')
-      }
-      await newAddonClient.create(nextComment)
-    } catch (err) {
-      onCreateError?.(nextComment._id, err)
-      throw err
-    }
-    return
-  }
-
   try {
-    await client.create(nextComment)
+    await client.collaboration.comments.create(apiPayload)
   } catch (err) {
     onCreateError?.(nextComment._id, err)
     throw err

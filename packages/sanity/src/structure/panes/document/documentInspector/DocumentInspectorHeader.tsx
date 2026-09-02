@@ -1,9 +1,9 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {Card, type CardProps, Flex, Text} from '@sanity/ui'
+import {Card, type CardProps, Text} from '@sanity/ui'
 import {type ElementType, type HTMLProps, type ReactNode} from 'react'
 import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../../i18n'
