@@ -83,6 +83,7 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
     setActiveQueryKey(queryKey)
     dispatch({type: 'COMMENTS_SET', comments: []})
     setLoading(Boolean(client && gdr && ready))
+    setError(null)
   }
 
   const initialFetch = useCallback(async () => {
@@ -94,6 +95,7 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
     try {
       const res = await client.collaboration.comments.fetch<CommentDocument[]>(query, params)
       dispatch({type: 'COMMENTS_SET', comments: res})
+      setError(null)
       setLoading(false)
     } catch (err) {
       setError(err)
