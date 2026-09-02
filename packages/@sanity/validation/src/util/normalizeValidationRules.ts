@@ -5,7 +5,7 @@ import {
   type SchemaType,
   type ValidationContext,
 } from '@sanity/types'
-import isEqual from 'lodash-es/isEqual.js'
+import {dequal as isEqual} from 'dequal/lite'
 
 import {Rule as RuleClass} from '../Rule'
 import {slugValidator} from '../validators/slugValidator'

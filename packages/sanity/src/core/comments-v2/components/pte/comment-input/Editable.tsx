@@ -9,7 +9,7 @@ import {NodePlugin} from '@portabletext/editor/plugins'
 import {isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
 import {useClickOutsideEvent} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
-import isEqual from 'lodash-es/isEqual.js'
+import {dequal as isEqual} from 'dequal/lite'
 import {type KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
 
