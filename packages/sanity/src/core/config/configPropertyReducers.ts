@@ -343,9 +343,7 @@ export const documentCommentsEnabledReducer = (opts: {
   // That is, if a plugin returns true, but the next plugin returns false, the result will be false.
   // The last plugin 'wins'.
   const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
-    const resolver =
-      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-      innerConfig.document?.comments?.enabled ?? innerConfig.document?.unstable_comments?.enabled
+    const resolver = innerConfig.document?.comments?.enabled
 
     if (!resolver && typeof resolver !== 'boolean') return acc
     if (typeof resolver === 'function') return resolver(context)

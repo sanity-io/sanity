@@ -697,6 +697,28 @@ describe('search strategy selection', () => {
   })
 })
 
+describe('document comments config', () => {
+  const projectId = 'ppsg7ml5'
+  const dataset = 'production'
+
+  it('resolves comments.enabled and does not expose unstable_comments', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      document: {
+        comments: {
+          enabled: false,
+        },
+      },
+    })
+
+    expect(source.document.comments.enabled({documentId: 'doc1', documentType: 'article'})).toBe(
+      false,
+    )
+    expect(source.document).not.toHaveProperty('unstable_comments')
+  })
+})
+
 function getSearchOptionsPlugin(options: PluginOptions['search']): PluginOptions {
   return definePlugin({
     name: 'sanity/search-options',
