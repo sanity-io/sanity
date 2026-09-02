@@ -1,7 +1,6 @@
 import {type DocumentId, getPublishedId} from '@sanity/id-utils'
 import {type CustomValidatorResult, isReference, type Validators} from '@sanity/types'
 
-import {ClientUnavailableError} from '../clientUnavailable'
 import {validationMarkerCodes} from '../codes'
 import {isLocalizedMessages, localizeMessage} from '../util/localizeMessage'
 import {pathToString} from '../util/pathToString'
@@ -157,8 +156,6 @@ export const objectValidators: Validators = {
         context,
       )
     } catch (err) {
-      if (err instanceof ClientUnavailableError) throw err
-
       const error = new Error(
         `Media validator at ${pathToString(
           context.path,

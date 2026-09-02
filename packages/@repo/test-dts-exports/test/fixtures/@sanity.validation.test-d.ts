@@ -6,7 +6,6 @@ import type {
   BuiltInValidationMarkerCode,
   DocumentValidationMarker,
   DocumentValidationResult,
-  SkippedValidation,
   validateDocument,
   ValidateDocumentOptions,
   validateDocumentWithWorkspace,
@@ -59,8 +58,5 @@ describe('@sanity/validation', () => {
   })
   test('ValidationSource', () => {
     expectTypeOf<ValidationSource>().toBeObject()
-  })
-  test('SkippedValidation', () => {
-    expectTypeOf<SkippedValidation>().toBeObject()
   })
 })

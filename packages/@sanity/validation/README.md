@@ -32,9 +32,9 @@ Every failed marker includes a stable machine-readable `code` alongside its loca
 return their own `code` and `details`; custom codes should be namespaced, for example
 `custom.seo-title`.
 
-Checks that cannot run are returned in `result.skipped`. Pass `customValidation: false` to skip
-user-defined callbacks. Omitting `client` skips built-in network checks. Using both options provides
-a no-network validation path.
+When a check cannot run, `result.status` is `notEvaluated`. Omitting `client` disables custom
+callbacks and skips network checks. Pass `customValidation: false` to disable custom callbacks while
+still providing a client.
 
 The package does not apply mutations or decide whether a document may be edited or published.
 

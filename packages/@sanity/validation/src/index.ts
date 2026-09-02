@@ -18,4 +18,3 @@ export {
   type ValidationSchema,
   type ValidationSource,
 } from './validateDocument'
-export type {SkippedValidation} from '@sanity/types'
