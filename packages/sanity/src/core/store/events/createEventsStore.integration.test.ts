@@ -227,13 +227,14 @@ describe('createEventsStore (integration)', () => {
       documentId: versionId,
       documentVariantType: 'version',
     })
-    // Synthesized edits carry the releaseId extracted from the version id.
+    // Synthesized edits do not populate releaseId: variant ids use an opaque scope hash,
+    // not a release id (see getEditEvents).
     expect(edit).toMatchObject({
       type: 'editDocumentVersion',
       id: 'tx-edit-v',
-      releaseId: 'rInt',
       documentVariantType: 'version',
     })
+    expect(edit).not.toHaveProperty('releaseId')
     expect(create).toMatchObject({type: 'createDocumentVersion', documentVariantType: 'version'})
   })
 

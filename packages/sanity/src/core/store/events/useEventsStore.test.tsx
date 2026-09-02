@@ -64,19 +64,18 @@ interface HookProps {
   since?: string
 }
 
-function setup({
-  events = EVENTS,
-  loading = false,
-  documentId = 'drafts.doc-1',
-  rev,
-  since,
-}: {
-  events?: DocumentGroupEvent[]
-  loading?: boolean
-  documentId?: string | undefined
-  rev?: string
-  since?: string
-} = {}) {
+function setup(
+  options: {
+    events?: DocumentGroupEvent[]
+    loading?: boolean
+    documentId?: string | undefined
+    rev?: string
+    since?: string
+  } = {},
+) {
+  const {events = EVENTS, loading = false, rev, since} = options
+  // Distinguish "omitted" from explicit `undefined` (missing variant target).
+  const documentId = Object.hasOwn(options, 'documentId') ? options.documentId : 'drafts.doc-1'
   const events$ = new BehaviorSubject<EventsObservableValue>({
     events,
     nextCursor: '',
