@@ -115,7 +115,8 @@ describe('Portable Text Input', () => {
       await expect.element(page.getByTestId('nested-object-dialog')).toBeVisible()
     })
 
-    it('Blocks should be accessible via block context menu', async () => {
+    // Two dialog round-trips plus two menu round-trips regularly exceed 30s on Firefox in CI
+    it('Blocks should be accessible via block context menu', {timeout: 60_000}, async () => {
       const {getFocusedPortableTextInput} = testHelpers()
       void render(<ObjectBlockStory />)
 
