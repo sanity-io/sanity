@@ -36,8 +36,12 @@ When a check cannot run, `result.status` is `notEvaluated`. Omitting `client` di
 callbacks and skips network checks. Pass `customValidation: false` to disable custom callbacks while
 still providing a client.
 
-Pass an `AbortSignal` to cancel validation and its pending network work. Cancellation rejects with
-the signal's reason (an `AbortError` when no custom reason was supplied).
+Pass one `AbortSignal` to cancel validation and its pending network work. Built-in checks and client
+requests made through a custom validator's `context.getClient()` inherit this signal. A custom
+`getDocumentExists` callback receives it as an argument; custom work using another API should pass
+`context.signal` to that API. Cancellation rejects with the signal's reason (an `AbortError` when
+no custom reason was supplied). Work that does not accept an abort signal cannot be stopped, even
+though validation itself rejects immediately.
 
 ```ts
 const controller = new AbortController()

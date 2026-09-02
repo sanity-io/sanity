@@ -40,6 +40,17 @@ export class ConcurrencyLimiter {
     })
   }
 
+  /** Runs an operation when a concurrency slot is available. */
+  run = async <T>(work: () => PromiseLike<T> | T, signal?: AbortSignal): Promise<T> => {
+    await this.ready(signal)
+    try {
+      signal?.throwIfAborted()
+      return await work()
+    } finally {
+      this.release()
+    }
+  }
+
   /**
    * Releases a slot, decrementing the current count of operations if nothing is in the queue.
    * If there are operations waiting, it allows the next one in the queue to proceed.

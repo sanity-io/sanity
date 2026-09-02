@@ -1,22 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {ConcurrencyLimiter} from '@sanity/util/concurrency-limiter'
-import {
-  bufferTime,
-  catchError,
-  defer,
-  EMPTY,
-  filter,
-  finalize,
-  firstValueFrom,
-  from,
-  map,
-  mergeMap,
-  share,
-  Subject,
-  switchMap,
-  tap,
-  throwError,
-} from 'rxjs'
+import {bufferTime, filter, firstValueFrom, map, mergeMap, share, Subject} from 'rxjs'
 
 import {cancelWith} from '../abortSignal'
 
@@ -49,60 +32,29 @@ export function createBatchedGetDocumentExists(
   defaultSignal?: AbortSignal,
 ): (options: {id: string; signal?: AbortSignal}) => Promise<boolean> {
   const id$ = new Subject<string>()
-  const limiter = new ConcurrencyLimiter(MAX_REQUEST_CONCURRENCY)
 
   const existence$ = id$.pipe(
     bufferTime(BUFFER_TIME, null, MAX_BUFFER_SIZE),
     map((ids) => Array.from(new Set(ids))),
     filter((ids) => ids.length > 0),
-    mergeMap((ids) => {
-      const ready = limiter.ready(defaultSignal)
-      let acquired = false
-
-      return from(ready).pipe(
-        tap(() => {
-          acquired = true
-        }),
-        switchMap(() =>
-          defer(() => {
-            defaultSignal?.throwIfAborted()
-            return client.observable.request<AvailabilityResponse>({
-              url: client.getDataUrl('doc', ids.join(',')),
-              query: {excludeContent: 'true'},
-              signal: defaultSignal,
-              tag: 'documents-availability',
-            })
-          }).pipe(map((availability) => ({availability, ids}))),
-        ),
-        catchError((error) => (defaultSignal?.aborted ? EMPTY : throwError(() => error))),
-        finalize(() => {
-          if (acquired) {
-            limiter.release()
-            return
-          }
-
-          void ready.then(limiter.release, () => undefined)
-        }),
-      )
-    }),
-    mergeMap(({availability, ids}) =>
-      ids.map((id) => {
-        const omittedIds = availability.omitted.reduce<Record<string, 'existence' | 'permission'>>(
-          (acc, next) => {
-            acc[next.id] = next.reason
-            return acc
-          },
-          {},
-        )
-
-        // if not in the `omitted`, then it exists
-        if (!omittedIds[id]) return {id, exists: true}
-        // if in the `omitted` due to existence, then it does not exist
-        if (omittedIds[id] === 'existence') return {id, exists: false}
-        // otherwise, it must exist
-        return {id, exists: true}
-      }),
+    mergeMap(
+      (ids) =>
+        client.observable
+          .request<AvailabilityResponse>({
+            url: client.getDataUrl('doc', ids.join(',')),
+            query: {excludeContent: 'true'},
+            signal: defaultSignal,
+            tag: 'documents-availability',
+          })
+          .pipe(map((availability) => ({availability, ids}))),
+      MAX_REQUEST_CONCURRENCY,
     ),
+    mergeMap(({availability, ids}) => {
+      const missingIds = new Set(
+        availability.omitted.filter(({reason}) => reason === 'existence').map(({id}) => id),
+      )
+      return ids.map((id) => ({id, exists: !missingIds.has(id)}))
+    }),
     share(),
   )
 

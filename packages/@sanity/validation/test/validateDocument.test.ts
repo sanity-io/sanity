@@ -115,6 +115,57 @@ describe('validateDocument', () => {
     await expect(validation).rejects.toBe(reason)
   })
 
+  it('adds cancellation to custom validator client fetches', async () => {
+    const controller = new AbortController()
+    const reason = new Error('cancelled')
+    const fetch = vi.fn(
+      (_query: string, _params: object, {signal}: {signal: AbortSignal}) =>
+        new Promise((_resolve, reject) => {
+          signal.addEventListener('abort', () => reject(signal.reason), {once: true})
+        }),
+    )
+    const client = {
+      fetch,
+      getDataUrl: () => '/doc',
+      observable: {request: vi.fn(() => of({omitted: []}))},
+      withConfig: vi.fn(() => client),
+    } as unknown as SanityClient
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {
+            name: 'title',
+            type: 'string',
+            validation: (rule: Rule) =>
+              rule.custom(async (_value, context) => {
+                await context.getClient({apiVersion: '2025-02-19'}).fetch('query')
+                return true as const
+              }),
+          },
+        ],
+      },
+    ])
+
+    const validation = validateDocument({
+      client,
+      document: createDocument({_type: 'article', title: 'Hello'}),
+      schema,
+      signal: controller.signal,
+    })
+    await vi.waitFor(() => expect(fetch).toHaveBeenCalledOnce())
+    expect(fetch).toHaveBeenCalledWith(
+      'query',
+      undefined,
+      expect.objectContaining({signal: controller.signal}),
+    )
+
+    controller.abort(reason)
+
+    await expect(validation).rejects.toBe(reason)
+  })
+
   it('does not start queued custom validators after cancellation and releases their slots', async () => {
     const controller = new AbortController()
     const reason = new Error('cancelled')
