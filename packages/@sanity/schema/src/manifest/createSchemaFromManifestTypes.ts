@@ -20,9 +20,10 @@ const builtinSchema = Schema.compile({
   types: builtinTypes,
 })
 
-function markUnavailableValidator<T extends CustomValidator | MediaValidator>(validator: T): T {
-  validator.__sanityValidation = {kind: 'unavailable'}
-  return validator
+const unavailableValidator: CustomValidator & MediaValidator = () => {
+  throw new Error(
+    'This validator is unavailable because it was reconstructed from a serialized schema manifest',
+  )
 }
 
 export function createSchemaFromManifestTypes(schemaDef: {name: string; types: unknown[]}) {
@@ -282,14 +283,14 @@ function applyRuleSpec(rule: IRule, ruleSpec: unknown): IRule {
     case 'custom':
       // When the manifest schema types are serialized, the custom function will be stripped. We add it back here to keep track that
       // a rule did exist at one point.
-      if (constraint === undefined) return rule.custom(markUnavailableValidator(() => true))
+      if (constraint === undefined) return rule.custom(unavailableValidator)
       if (typeof constraint === 'function') return rule.custom(constraint as CustomValidator)
       break
 
     case 'media':
       // When the manifest schema types are serialized, the custom function will be stripped. We add it back here to keep track that
       // a rule did exist at one point.
-      if (constraint === undefined) return rule.media(markUnavailableValidator(() => true))
+      if (constraint === undefined) return rule.media(unavailableValidator)
       if (typeof constraint === 'function') return rule.media(constraint as MediaValidator)
       break
 

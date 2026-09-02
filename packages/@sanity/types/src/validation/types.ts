@@ -272,28 +272,6 @@ export interface ValidationContext {
    * Whether this field is hidden for any reason (either itself or any of its ancestors).
    */
   hidden?: boolean
-  /** @internal */
-  __internal?: {
-    customValidationConcurrencyLimiter?: {
-      ready: () => Promise<void>
-      release: () => void
-    }
-    customValidation?: boolean
-    onSkipped?: (skipped: SkippedValidation) => void
-    validationLevel?: ValidationMarker['level']
-  }
-}
-
-/** A validation check that could not be evaluated. @beta */
-export interface SkippedValidation {
-  /** The kind of check that was skipped. */
-  check: 'custom' | 'media' | 'referenceExistence' | 'slugUniqueness'
-  /** The configured severity of the skipped check. */
-  level: ValidationMarker['level']
-  /** The document path where the skipped check applies. */
-  path: Path
-  /** Why the check could not be evaluated. */
-  reason: 'clientUnavailable' | 'customValidationDisabled' | 'validatorUnavailable'
 }
 
 /**
@@ -436,17 +414,10 @@ export type CustomValidatorResult =
   | ValidationError[]
   | LocalizedValidationMessages
 
-interface ValidatorMetadata {
-  kind: 'internal' | 'unavailable'
-  check?: SkippedValidation['check']
-}
-
 /** @public */
 export interface CustomValidator<T = unknown> {
   (value: T, context: ValidationContext): CustomValidatorResult | Promise<CustomValidatorResult>
   bypassConcurrencyLimit?: boolean
-  /** @internal */
-  __sanityValidation?: ValidatorMetadata
 }
 
 /** @public */
@@ -458,8 +429,6 @@ export interface MediaValidator<T extends MediaAssetTypes = MediaAssetTypes> {
     value: MediaValidationValue<T>,
     context: ValidationContext,
   ): CustomValidatorResult | Promise<CustomValidatorResult>
-  /** @internal */
-  __sanityValidation?: ValidatorMetadata
 }
 
 /** @public */

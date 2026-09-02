@@ -8,14 +8,12 @@ import {
   type SanityDocument,
   type Schema,
   type SchemaType,
-  type SkippedValidation,
   type ValidationMarker,
 } from '@sanity/types'
 import {createClientConcurrencyLimiter} from '@sanity/util/client'
 import {ConcurrencyLimiter} from '@sanity/util/concurrency-limiter'
 import {dequal as isEqual} from 'dequal/lite'
 import flatten from 'lodash-es/flatten.js'
-import uniqWith from 'lodash-es/uniqWith.js'
 import {concat, defer, from, lastValueFrom, merge, Observable, of} from 'rxjs'
 import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
 
@@ -23,13 +21,13 @@ import {ClientUnavailableError} from './clientUnavailable'
 import {type DocumentValidationMarker, validationMarkerCodes} from './codes'
 import {getFallbackLocaleSource} from './i18n/fallback'
 import {type LocaleSource} from './i18n/types'
+import {markInternalValidator} from './internalValidators'
 import {resolveConditionalProperty} from './resolveConditionalProperty'
-import {type ValidationContext} from './types'
+import {type InternalValidationContext, type ValidationContext} from './types'
 import {createBatchedGetDocumentExists} from './util/createBatchedGetDocumentExists'
 import {getTypeChain, normalizeValidationRules} from './util/normalizeValidationRules'
 import {cancelIdleCallback, requestIdleCallback} from './util/requestIdleCallback'
 import {typeString} from './util/typeString'
-import {markValidator} from './validatorMetadata'
 import {unknownFieldsValidator} from './validators/unknownFieldsValidator'
 
 // this is the number of requests allowed inflight at once. this is done to prevent
@@ -48,6 +46,10 @@ const DEFAULT_VALIDATION_CLIENT_OPTIONS = {apiVersion: '2025-02-19'} as const
 
 const isRecord = (maybeRecord: unknown): maybeRecord is Record<string, unknown> =>
   typeof maybeRecord === 'object' && maybeRecord !== null && !Array.isArray(maybeRecord)
+
+function throwClientUnavailable(): never {
+  throw new ClientUnavailableError()
+}
 
 /**
  * Recursively extracts all `_fieldRules` from a rule and its nested constraints.
@@ -104,25 +106,13 @@ export function resolveTypeForArrayItem(
   )
 }
 
-/**
- * @beta
- */
-export interface ValidateDocumentOptions {
+interface ValidateDocumentBaseOptions {
   /**
    * The document to be validated
    */
   document: SanityDocument
   /** The compiled schema to validate against. */
   schema: ValidationSchema
-
-  /**
-   * A configured client used for reference checks, slug uniqueness checks, and custom validators.
-   * When omitted, checks that need a client are reported as not evaluated.
-   */
-  client?: ValidationClient
-
-  /** Whether to run user-defined custom validators. Defaults to `true`. */
-  customValidation?: boolean
 
   /**
    * Function used to check if referenced documents exists (and is published).
@@ -165,6 +155,26 @@ export interface ValidateDocumentOptions {
   currentUser?: Omit<CurrentUser, 'role'> | null
 }
 
+/**
+ * Options for validating a document. Custom validation is disabled when no client is provided.
+ *
+ * @beta
+ */
+export type ValidateDocumentOptions = ValidateDocumentBaseOptions &
+  (
+    | {
+        /** A configured client used for reference checks and custom validators. */
+        client: ValidationClient
+        /** Whether to run custom validation callbacks. Defaults to `true`. */
+        customValidation?: boolean
+      }
+    | {
+        /** Omit the client to perform local validation without custom callbacks. */
+        client?: undefined
+        customValidation?: false
+      }
+  )
+
 /** A compiled schema accepted across compatible `@sanity/types` versions. @beta */
 export interface ValidationSchema {
   get(name: string): unknown
@@ -191,8 +201,6 @@ export interface DocumentValidationResult {
   status: 'passed' | 'failed' | 'notEvaluated'
   /** Validation rules that failed. */
   markers: DocumentValidationMarker[]
-  /** Validation checks that could not be evaluated. */
-  skipped: SkippedValidation[]
 }
 
 /**
@@ -217,8 +225,8 @@ export interface ValidationSource {
  * @beta
  */
 export interface ValidateDocumentWorkspaceOptions extends Omit<
-  ValidateDocumentOptions,
-  'client' | 'schema'
+  ValidateDocumentBaseOptions,
+  'schema'
 > {
   /** The resolved Studio workspace or source used for validation. */
   workspace: ValidationSource
@@ -232,6 +240,9 @@ export interface ValidateDocumentWorkspaceOptions extends Omit<
 
   /** Validation environment exposed to custom validators. */
   environment?: 'cli' | 'studio'
+
+  /** Whether to run custom validation callbacks. Defaults to `true`. */
+  customValidation?: boolean
 }
 
 /**
@@ -266,7 +277,8 @@ export function validateDocumentWithWorkspace({
 }
 
 /**
- * Validates a document against a compiled schema. Returns failed and skipped checks
+ * Validates a document against a compiled schema. Returns failures and whether
+ * validation completed
  * without deciding whether the document may be edited or published.
  *
  * @beta
@@ -274,20 +286,24 @@ export function validateDocumentWithWorkspace({
 export function validateDocument(
   options: ValidateDocumentOptions,
 ): Promise<DocumentValidationResult> {
-  const {client, document, getDocumentExists, schema, ...internalOptions} = options
-  const unavailable = () => {
-    throw new ClientUnavailableError()
-  }
-
+  const {
+    client,
+    customValidation = Boolean(options.client),
+    document,
+    getDocumentExists,
+    schema,
+    ...internalOptions
+  } = options
   return evaluateDocumentInternal({
     ...internalOptions,
+    customValidation,
     document,
     environment: 'cli',
     getClient: client
       ? // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- runtime-compatible clients may come from another major
         ({apiVersion}) => client.withConfig({apiVersion}) as SanityClient
-      : unavailable,
-    getDocumentExists: getDocumentExists || (client ? undefined : async () => unavailable()),
+      : throwClientUnavailable,
+    getDocumentExists: getDocumentExists || (client ? undefined : throwClientUnavailable),
     i18n: getFallbackLocaleSource(),
     // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- compiled schemas may come from another compatible package version
     schema: schema as Schema,
@@ -310,21 +326,20 @@ export interface ValidateDocumentInternalOptions {
 
 function createDocumentValidationResult(
   markers: ValidationMarker[],
-  skipped: SkippedValidation[],
+  complete: boolean,
 ): DocumentValidationResult {
   return {
-    status: getDocumentValidationStatus(markers, skipped),
+    status: getDocumentValidationStatus(markers, complete),
     markers: markers.map(toDocumentValidationMarker),
-    skipped: uniqWith(skipped, isEqual),
   }
 }
 
 function getDocumentValidationStatus(
   markers: ValidationMarker[],
-  skipped: SkippedValidation[],
+  complete: boolean,
 ): DocumentValidationResult['status'] {
   if (markers.length > 0) return 'failed'
-  if (skipped.length > 0) return 'notEvaluated'
+  if (!complete) return 'notEvaluated'
   return 'passed'
 }
 
@@ -400,7 +415,7 @@ export function validateDocumentObservable(
 }
 
 /**
- * Validates a document against the given schema, returning failed and skipped checks.
+ * Validates a document against the given schema, including completion status.
  * @internal
  */
 export function evaluateDocumentObservable({
@@ -426,7 +441,7 @@ export function evaluateDocumentObservable({
         'Schema type for object type "%s" not found, skipping validation',
         document._type,
       )
-      return of(createDocumentValidationResult([], []))
+      return of(createDocumentValidationResult([], true))
     }
 
     return of(
@@ -440,7 +455,7 @@ export function evaluateDocumentObservable({
             path: [],
           },
         ],
-        [],
+        true,
       ),
     )
   }
@@ -453,10 +468,10 @@ export function evaluateDocumentObservable({
     customValidationConcurrencyLimiters.set(schema, customValidationConcurrencyLimiter)
   }
 
-  // `Rule.validate()` returns markers only, so skipped checks are collected through
-  // the validation context while the marker pipeline keeps its stable public shape.
+  // `Rule.validate()` returns markers only, so completeness is tracked separately
+  // while preserving the existing marker pipeline.
   return defer(() => {
-    const skipped: SkippedValidation[] = []
+    let complete = true
     const validationOptions: ValidateItemOptions = {
       getClient,
       schema,
@@ -472,15 +487,15 @@ export function evaluateDocumentObservable({
       currentUser,
       customValidation,
       __internal: {
-        onSkipped: (value) => {
-          skipped.push(value)
+        markIncomplete: () => {
+          complete = false
         },
       },
     }
 
     return from(i18n.loadNamespaces(['validation'])).pipe(
       switchMap(() => validateItemObservable(validationOptions)),
-      map((markers) => createDocumentValidationResult(markers, skipped)),
+      map((markers) => createDocumentValidationResult(markers, complete)),
       catchError((err) => {
         console.error(err)
 
@@ -493,7 +508,7 @@ export function evaluateDocumentObservable({
           path: [],
         }
 
-        return of(createDocumentValidationResult([errorMarker], skipped))
+        return of(createDocumentValidationResult([errorMarker], complete))
       }),
     )
   })
@@ -516,11 +531,19 @@ type ValidateItemOptions = {
   hidden?: boolean
   currentUser?: Omit<CurrentUser, 'role'> | null
   customValidation?: boolean
-  __internal?: ValidationContext['__internal']
-} & ExplicitUndefined<Omit<ValidationContext, 'hidden' | '__internal'>>
+  __internal?: InternalValidationContext['__internal']
+} & ExplicitUndefined<Omit<ValidationContext, 'hidden'>>
 
 export function validateItem(opts: ValidateItemOptions): Promise<ValidationMarker[]> {
   return lastValueFrom(validateItemObservable(opts))
+}
+
+function validateRule(
+  rule: Rule,
+  value: unknown,
+  context: InternalValidationContext,
+): Promise<ValidationMarker[]> {
+  return rule.validate(value, context)
 }
 
 function validateItemObservable({
@@ -531,6 +554,7 @@ function validateItemObservable({
   customValidationConcurrencyLimiter,
   environment,
   customValidation = true,
+  __internal,
   ...restOfContext
 }: ValidateItemOptions): Observable<ValidationMarker[]> {
   // Track whether any ancestor in the tree is hidden.
@@ -575,7 +599,7 @@ function validateItemObservable({
     ) {
       // then add the validator for unknown fields
       return rule
-        .custom(markValidator(unknownFieldsValidator(type), {kind: 'internal'}), {
+        .custom(markInternalValidator(unknownFieldsValidator(type)), {
           bypassConcurrencyLimit: true,
         })
         .warning()
@@ -596,7 +620,7 @@ function validateItemObservable({
   // run validation for the current value
   const selfChecks = rules.map(addUnknownFieldsValidator).map((rule) =>
     defer(() =>
-      rule.validate(value, {
+      validateRule(rule, value, {
         ...restOfContext,
         environment,
         hidden,
@@ -604,7 +628,7 @@ function validateItemObservable({
         path,
         type,
         __internal: {
-          ...restOfContext.__internal,
+          ...__internal,
           customValidation,
           customValidationConcurrencyLimiter,
         },
@@ -650,7 +674,7 @@ function validateItemObservable({
                 hidden,
               )
               return defer(() =>
-                subRule.validate(nestedValue, {
+                validateRule(subRule, nestedValue, {
                   ...restOfContext,
                   parent: value,
                   path: path.concat(name),
@@ -658,7 +682,7 @@ function validateItemObservable({
                   environment,
                   hidden: nestedHidden,
                   __internal: {
-                    ...restOfContext.__internal,
+                    ...__internal,
                     customValidation,
                     customValidationConcurrencyLimiter,
                   },
@@ -681,6 +705,7 @@ function validateItemObservable({
           environment,
           customValidationConcurrencyLimiter,
           customValidation,
+          __internal,
         }),
       ),
     )
@@ -705,6 +730,7 @@ function validateItemObservable({
           environment,
           customValidationConcurrencyLimiter,
           customValidation,
+          __internal,
         }),
       ),
     )

@@ -2,11 +2,9 @@
 import {Rule as BaseRule} from '@sanity/schema'
 import {
   type CustomValidator,
-  type MediaValidator,
   type Rule as IRule,
   type RuleClass,
   type SchemaType,
-  type SkippedValidation,
   type ValidationMarker,
   type Validator,
 } from '@sanity/types'
@@ -14,6 +12,8 @@ import get from 'lodash-es/get.js'
 
 import {ClientUnavailableError} from './clientUnavailable'
 import {validationMarkerCodes} from './codes'
+import {isInternalValidator} from './internalValidators'
+import {type InternalValidationContext} from './types'
 import {convertToValidationMarker} from './util/convertToValidationMarker'
 import {isLocalizedMessages, localizeMessage} from './util/localizeMessage'
 import {pathToString} from './util/pathToString'
@@ -94,9 +94,10 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
 
   async validate(
     value: unknown,
-    {__internal = {}, ...context}: Parameters<IRule['validate']>[1],
+    options: Parameters<IRule['validate']>[1],
   ): Promise<ValidationMarker[]> {
-    const {customValidationConcurrencyLimiter} = __internal
+    const {__internal = {}, ...context} = options as InternalValidationContext
+    const {customValidation = true, customValidationConcurrencyLimiter, markIncomplete} = __internal
 
     const valueIsEmpty = value === null || value === undefined
 
@@ -130,37 +131,9 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
           specConstraint = get(context.parent, specConstraint.path)
         }
 
-        const validationCallback = specConstraint as CustomValidator | MediaValidator | undefined
-        const metadata = validationCallback?.__sanityValidation
-        let validationCheck: SkippedValidation['check'] | undefined = metadata?.check
-        if (!validationCheck && (curr.flag === 'custom' || curr.flag === 'media')) {
-          validationCheck = curr.flag
-        } else if (!validationCheck && curr.flag === 'reference') {
-          validationCheck = 'referenceExistence'
-        }
-        let clientUnavailableReported = false
-        const reportSkipped = (reason: SkippedValidation['reason']) => {
-          if (!validationCheck) return
-          if (reason === 'clientUnavailable') {
-            if (clientUnavailableReported) return
-            clientUnavailableReported = true
-          }
-          __internal.onSkipped?.({
-            check: validationCheck,
-            level: this._level || 'error',
-            path: context.path || [],
-            reason,
-          })
-        }
-
         if (curr.flag === 'custom' || curr.flag === 'media') {
-          if (metadata?.kind === 'unavailable') {
-            reportSkipped('validatorUnavailable')
-            return []
-          }
-
-          if (metadata?.kind !== 'internal' && __internal.customValidation === false) {
-            reportSkipped('customValidationDisabled')
+          if (!isInternalValidator(specConstraint) && !customValidation) {
+            markIncomplete?.()
             return []
           }
         }
@@ -185,38 +158,14 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
           ? localizeMessage(this._message, context.i18n)
           : this._message
 
-        const getDocumentExists = context.getDocumentExists
-        const validatorContext = {
-          ...context,
-          getClient: (options: Parameters<typeof context.getClient>[0]) => {
-            try {
-              return context.getClient(options)
-            } catch (error) {
-              if (error instanceof ClientUnavailableError) reportSkipped('clientUnavailable')
-              throw error
-            }
-          },
-          getDocumentExists: getDocumentExists
-            ? async (options: Parameters<typeof getDocumentExists>[0]) => {
-                try {
-                  return await getDocumentExists(options)
-                } catch (error) {
-                  if (error instanceof ClientUnavailableError) reportSkipped('clientUnavailable')
-                  throw error
-                }
-              }
-            : undefined,
-          __internal: {...__internal, validationLevel: this._level || 'error'},
-        }
-
         try {
-          const result = await validator(specConstraint, value, message, validatorContext)
+          const result = await validator(specConstraint, value, message, context)
           return convertToValidationMarker(result, this._level, context, {
             code: fallbackCodeForRule(curr.flag),
           })
         } catch (err) {
-          if (err instanceof ClientUnavailableError && validationCheck) {
-            reportSkipped('clientUnavailable')
+          if (err instanceof ClientUnavailableError) {
+            markIncomplete?.()
             return []
           }
 

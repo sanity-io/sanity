@@ -401,7 +401,6 @@ export {
   type RuleTypeConstraint,
   type SlugIsUniqueValidator,
   type SlugValidationContext,
-  type SkippedValidation,
   type UriValidationOptions,
   type ValidationContext,
   type ValidationError,

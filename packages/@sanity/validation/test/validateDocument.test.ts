@@ -1,7 +1,12 @@
 import {type SanityClient} from '@sanity/client'
 import {Schema as SchemaBuilder} from '@sanity/schema'
 import {builtinTypes, createSchemaFromManifestTypes} from '@sanity/schema/_internal'
-import {type Rule, type SanityDocument, type SchemaTypeDefinition} from '@sanity/types'
+import {
+  type Rule,
+  type SanityDocument,
+  type SchemaTypeDefinition,
+  type ValidationContext,
+} from '@sanity/types'
 import {of} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 
@@ -34,7 +39,7 @@ function createDocument(value: Record<string, unknown>): SanityDocument {
 }
 
 function createMockClient(omitted: {id: string; reason: 'existence' | 'permission'}[] = []) {
-  const fetch = vi.fn(async () => null)
+  const fetch = vi.fn(async (): Promise<unknown> => null)
   const request = vi.fn(() => of({omitted}))
   const client = {
     fetch,
@@ -73,11 +78,11 @@ describe('validateDocument', () => {
         document: createDocument({_type: 'article', title: 'Hello'}),
         schema,
       }),
-    ).resolves.toMatchObject({status: 'passed', markers: [], skipped: []})
+    ).resolves.toEqual({status: 'passed', markers: []})
 
     await expect(
       validateDocument({document: createDocument({_type: 'article'}), schema}),
-    ).resolves.toMatchObject({status: 'failed', markers: [expect.any(Object)], skipped: []})
+    ).resolves.toMatchObject({status: 'failed', markers: [expect.any(Object)]})
 
     await expect(
       validateDocument({
@@ -91,14 +96,6 @@ describe('validateDocument', () => {
     ).resolves.toEqual({
       status: 'notEvaluated',
       markers: [],
-      skipped: [
-        {
-          check: 'referenceExistence',
-          level: 'error',
-          path: ['author'],
-          reason: 'clientUnavailable',
-        },
-      ],
     })
   })
 
@@ -124,18 +121,10 @@ describe('validateDocument', () => {
     expect(result.markers).toEqual([
       expect.objectContaining({code: validationMarkerCodes.objectUnknownField}),
     ])
-    expect(result.skipped).toEqual([
-      {
-        check: 'custom',
-        level: 'error',
-        path: ['title'],
-        reason: 'customValidationDisabled',
-      },
-    ])
     expect(customValidator).not.toHaveBeenCalled()
   })
 
-  it('deduplicates skipped checks from field rules', async () => {
+  it('reports field rules as not evaluated when custom validation is disabled', async () => {
     const customValidator = vi.fn(() => true as const)
     const schema = createSchema([
       {
@@ -156,20 +145,16 @@ describe('validateDocument', () => {
     expect(result).toEqual({
       status: 'notEvaluated',
       markers: [],
-      skipped: [
-        {
-          check: 'custom',
-          level: 'warning',
-          path: ['title'],
-          reason: 'customValidationDisabled',
-        },
-      ],
     })
     expect(customValidator).not.toHaveBeenCalled()
   })
 
-  it('runs pure custom validators without a client and skips client-dependent validators', async () => {
+  it('disables custom validators when no client is provided', async () => {
     const pureValidator = vi.fn(() => true as const)
+    const clientValidator = vi.fn((_value: unknown, context: ValidationContext) => {
+      context.getClient({apiVersion: '2026-01-01'})
+      return true as const
+    })
     const schema = createSchema([
       {
         name: 'article',
@@ -179,11 +164,7 @@ describe('validateDocument', () => {
           {
             name: 'remote',
             type: 'string',
-            validation: (rule: Rule) =>
-              rule.custom((_value, context) => {
-                context.getClient({apiVersion: '2026-01-01'})
-                return true
-              }),
+            validation: (rule: Rule) => rule.custom(clientValidator),
           },
         ],
       },
@@ -197,78 +178,9 @@ describe('validateDocument', () => {
     expect(result).toEqual({
       status: 'notEvaluated',
       markers: [],
-      skipped: [
-        {
-          check: 'custom',
-          level: 'error',
-          path: ['remote'],
-          reason: 'clientUnavailable',
-        },
-      ],
     })
-    expect(pureValidator).toHaveBeenCalledOnce()
-  })
-
-  it('records client access as skipped when a custom validator handles the error', async () => {
-    const schema = createSchema([
-      {
-        name: 'article',
-        type: 'document',
-        fields: [
-          {
-            name: 'client',
-            type: 'string',
-            validation: (rule: Rule) =>
-              rule.custom((_value, context) => {
-                try {
-                  context.getClient({apiVersion: '2026-01-01'})
-                } catch {
-                  return true as const
-                }
-                return true as const
-              }),
-          },
-          {
-            name: 'reference',
-            type: 'string',
-            validation: (rule: Rule) =>
-              rule.custom(async (_value, context) => {
-                try {
-                  await context.getDocumentExists?.({id: 'author-id'})
-                } catch {
-                  return true as const
-                }
-                return true as const
-              }),
-          },
-        ],
-      },
-    ])
-
-    const result = await validateDocument({
-      document: createDocument({_type: 'article', client: 'yes', reference: 'yes'}),
-      schema,
-    })
-
-    expect(result.status).toBe('notEvaluated')
-    expect(result.markers).toEqual([])
-    expect(result.skipped).toHaveLength(2)
-    expect(result.skipped).toEqual(
-      expect.arrayContaining([
-        {
-          check: 'custom',
-          level: 'error',
-          path: ['client'],
-          reason: 'clientUnavailable',
-        },
-        {
-          check: 'custom',
-          level: 'error',
-          path: ['reference'],
-          reason: 'clientUnavailable',
-        },
-      ]),
-    )
+    expect(pureValidator).not.toHaveBeenCalled()
+    expect(clientValidator).not.toHaveBeenCalled()
   })
 
   it('reports client-dependent media validation as not evaluated without a client', async () => {
@@ -299,19 +211,11 @@ describe('validateDocument', () => {
     ).resolves.toEqual({
       status: 'notEvaluated',
       markers: [],
-      skipped: [
-        {
-          check: 'media',
-          level: 'warning',
-          path: [],
-          reason: 'clientUnavailable',
-        },
-      ],
     })
     expect(mediaValidator).not.toHaveBeenCalled()
   })
 
-  it('reports manifest-only custom validators as unavailable', async () => {
+  it('skips unavailable manifest validators when custom validation is disabled', async () => {
     const schema = createSchemaFromManifestTypes({
       name: 'test',
       types: [
@@ -328,23 +232,20 @@ describe('validateDocument', () => {
         },
       ],
     })
+    const {client} = createMockClient()
+
+    const document = createDocument({_type: 'article', title: 'Hello'})
 
     await expect(
-      validateDocument({
-        document: createDocument({_type: 'article', title: 'Hello'}),
-        schema,
-      }),
+      validateDocument({client, customValidation: false, document, schema}),
     ).resolves.toEqual({
       status: 'notEvaluated',
       markers: [],
-      skipped: [
-        {
-          check: 'custom',
-          level: 'warning',
-          path: ['title'],
-          reason: 'validatorUnavailable',
-        },
-      ],
+    })
+
+    await expect(validateDocument({client, document, schema})).resolves.toMatchObject({
+      status: 'failed',
+      markers: [expect.objectContaining({code: validationMarkerCodes.validationException})],
     })
   })
 
@@ -374,7 +275,37 @@ describe('validateDocument', () => {
         expect.objectContaining({code: validationMarkerCodes.slugMissingCurrent}),
       ]),
     )
-    expect(result.skipped).toEqual([])
+  })
+
+  it('runs default slug uniqueness without running a custom uniqueness callback', async () => {
+    const customIsUnique = vi.fn(async () => true)
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {name: 'defaultSlug', type: 'slug'},
+          {name: 'customSlug', type: 'slug', options: {isUnique: customIsUnique}},
+        ],
+      },
+    ])
+    const {client, fetch} = createMockClient()
+    fetch.mockResolvedValue(true)
+
+    const result = await validateDocument({
+      client,
+      customValidation: false,
+      document: createDocument({
+        _type: 'article',
+        defaultSlug: {current: 'default'},
+        customSlug: {current: 'custom'},
+      }),
+      schema,
+    })
+
+    expect(result).toEqual({status: 'notEvaluated', markers: []})
+    expect(fetch).toHaveBeenCalledOnce()
+    expect(customIsUnique).not.toHaveBeenCalled()
   })
 
   it('skips network checks while honoring an explicit reference existence callback', async () => {
@@ -406,14 +337,6 @@ describe('validateDocument', () => {
     expect(result).toEqual({
       status: 'notEvaluated',
       markers: [],
-      skipped: [
-        {
-          check: 'slugUniqueness',
-          level: 'warning',
-          path: ['slug'],
-          reason: 'clientUnavailable',
-        },
-      ],
     })
   })
 
@@ -731,6 +654,7 @@ describe('validateDocument', () => {
             type: 'string',
             validation: (rule: Rule) =>
               rule.custom(async (_value, context) => {
+                expect(context).not.toHaveProperty('__internal')
                 await context.getClient({apiVersion: '2026-01-01'}).fetch('*[]')
                 return true as const
               }),
