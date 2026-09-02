@@ -18,7 +18,6 @@ import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
-import {useAddonDataset} from '../../../studio/addonDataset/useAddonDataset'
 import {
   CommentInput,
   type CommentInputHandle,
@@ -35,7 +34,6 @@ interface CommentsFieldButtonProps {
   count: number
   currentUser: CurrentUser
   fieldTitle: string
-  isCreatingDataset: boolean
   mentionOptions: UserListWithPermissionsHookValue
   onChange: (value: PortableTextBlock[]) => void
   onClick?: () => void
@@ -44,6 +42,7 @@ interface CommentsFieldButtonProps {
   onDiscard: () => void
   onInputKeyDown?: (event: React.KeyboardEvent) => void
   open: boolean
+  readOnly: boolean
   value: CommentMessage
 }
 
@@ -52,7 +51,6 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
     count,
     currentUser,
     fieldTitle,
-    isCreatingDataset,
     mentionOptions,
     onChange,
     onClick,
@@ -61,10 +59,10 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
     onDiscard,
     onInputKeyDown,
     open,
+    readOnly,
     value,
   } = props
   const {t} = useTranslation(commentsLocaleNamespace)
-  const {error: addonDatasetError} = useAddonDataset()
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const [addCommentButtonElement, setAddCommentButtonElement] = useState<HTMLButtonElement | null>(
     null,
@@ -155,7 +153,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
           onKeyDown={handleInputKeyDown}
           onSubmit={handleSubmit}
           placeholder={placeholder}
-          readOnly={isCreatingDataset}
+          readOnly={readOnly}
           ref={commentInputHandle}
           value={value}
         />
@@ -176,7 +174,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
         <div>
           <Button
             aria-label={t('field-button.aria-label-add')}
-            disabled={isCreatingDataset || Boolean(addonDatasetError)}
+            disabled={readOnly}
             icon={AddCommentIcon}
             mode="bleed"
             onClick={onClick}

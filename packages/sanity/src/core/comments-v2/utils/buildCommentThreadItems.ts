@@ -4,6 +4,26 @@ import {type CurrentUser, type SchemaType} from '@sanity/types'
 import {isTextSelectionComment} from '../helpers'
 import {type CommentDocument, type CommentThreadItem} from '../types'
 import {buildCommentBreadcrumbs} from './buildCommentBreadcrumbs'
+import {COMMENT_INDICATORS} from './inline-comments/buildRangeDecorationSelectionsFromComments'
+
+/**
+ * Whether a stored selection item still marks a non-empty text fragment.
+ *
+ * Each item holds the block's full text with the selected fragment wrapped in
+ * marker characters (`before\uF000selected\uF001after`), so the string itself
+ * is non-empty even when the selection has collapsed to nothing — only the
+ * content *between* the markers tells us whether any text is still selected.
+ */
+function hasMarkedFragment(text: string): boolean {
+  const startIndex = text.indexOf(COMMENT_INDICATORS[0])
+  const endIndex = text.indexOf(COMMENT_INDICATORS[1])
+
+  // No markers present: fall back to treating any non-empty text as a
+  // selection (legacy comments stored an empty string when de-anchored).
+  if (startIndex === -1 || endIndex === -1) return Boolean(text)
+
+  return endIndex > startIndex + 1
+}
 
 const EMPTY_ARRAY: [] = []
 
@@ -68,15 +88,16 @@ export function buildCommentThreadItems(props: BuildCommentThreadItemsProps): Co
         schemaType,
       })
 
-      // NOTE: Keep this code commented out for now as we might want to use it later.
       let hasTextSelection = false
 
-      // If the comment is a text selection comment, we need to make sure that
-      // we can successfully build a range decoration selection from it.
+      // A text selection comment still references its value when at least one
+      // of its selection items marks a non-empty fragment. A comment whose
+      // selection was removed (`range: null`) is not a text selection comment
+      // at all and shows as unlinked via `hasReferencedValue: false`.
       if (isTextSelectionComment(parentComment)) {
         hasTextSelection = Boolean(
           parentComment.target.path?.selection &&
-          parentComment.target.path.selection.value.some((v) => v.text),
+          parentComment.target.path.selection.value.some((v) => hasMarkedFragment(v.text)),
         )
       }
 

@@ -82,9 +82,6 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   /** The text shown in the inline comment button */
   'inline-add-comment-button.title': 'Add comment',
 
-  /** The title of the error card shown in the comments inspector */
-  'inspector-error.title': 'Something went wrong while loading comments',
-
   /** Aria label for the breadcrumb button showing the field path. `{{field}}` is the last (most specific) field. */
   'list-item.breadcrumb-button-go-to-field-aria-label': 'Go to {{field}} field',
   /** The button tooltip content for the add reaction button */
@@ -121,6 +118,10 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   'list-item.missing-referenced-value-tooltip-content': 'The commented text has been deleted',
   /** The aria label for the comments menu button to open the actions menu */
   'list-item.open-menu-aria-label': 'Open comment actions menu',
+  /** Badge shown when a comment was created on the draft but is viewed elsewhere */
+  'list-item.origin.draft': 'From draft',
+  /** Badge shown when a comment was created on the published document but is viewed elsewhere */
+  'list-item.origin.published': 'From published',
   /** The button text to re-open a resolved comment  */
   'list-item.re-open-resolved': 'Re-open',
   /** The button aria label to re-open a comment that is resolved */

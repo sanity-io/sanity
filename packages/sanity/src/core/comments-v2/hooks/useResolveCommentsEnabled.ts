@@ -21,7 +21,7 @@ type ResolveCommentsEnabled =
  * and if the feature is enabled for the current project.
  */
 export function useResolveCommentsEnabled(
-  documentId: string,
+  groupId: string,
   documentType: string,
 ): ResolveCommentsEnabled {
   // Check if the projects plan has the feature enabled
@@ -31,8 +31,8 @@ export function useResolveCommentsEnabled(
   const {enabled} = useSource().document.comments
   // Check if the feature is enabled for the current document in the config
   const enabledFromConfig = useMemo(
-    () => enabled({documentType, documentId: getPublishedId(documentId)}),
-    [documentId, documentType, enabled],
+    () => enabled({documentType, documentId: getPublishedId(groupId)}),
+    [groupId, documentType, enabled],
   )
 
   const value: ResolveCommentsEnabled = useMemo(() => {

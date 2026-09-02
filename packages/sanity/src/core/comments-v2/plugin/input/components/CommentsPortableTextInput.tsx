@@ -27,7 +27,6 @@ import {useFormValue} from '../../../../form/contexts/FormValue'
 import {useFieldActions} from '../../../../form/field/actions/useFieldActions'
 import {type EditorChange, type PortableTextInputProps} from '../../../../form/types/inputProps'
 import {useCurrentUser} from '../../../../store/user/hooks'
-import {useAddonDataset} from '../../../../studio/addonDataset/useAddonDataset'
 import {CommentInlineHighlightSpan} from '../../../components/pte/CommentInlineHighlightSpan'
 import {isTextSelectionComment, parseCommentFieldPath} from '../../../helpers'
 import {useComments} from '../../../hooks/useComments'
@@ -37,6 +36,7 @@ import {useCommentsSelectedPath} from '../../../hooks/useCommentsSelectedPath'
 import {useCommentsUpsell} from '../../../hooks/useCommentsUpsell'
 import {
   type CommentDocument,
+  type CommentFieldCreatePayload,
   type CommentMessage,
   type CommentsTextSelectionItem,
   type CommentsUIMode,
@@ -48,6 +48,7 @@ import {
   buildTextSelectionFromFragment,
   getCommentFieldPath,
 } from '../../../utils/inline-comments/buildTextSelectionFromFragment'
+import {selectionsToRange, selectionToRange} from '../../../utils/inline-comments/selectionToRange'
 import {getSelectionBoundingRect, useAuthoringReferenceElement} from '../helpers'
 import {FloatingButtonPopover} from './FloatingButtonPopover'
 import {InlineCommentInputPopover} from './InlineCommentInputPopover'
@@ -86,9 +87,17 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
   const currentUser = useCurrentUser()
   const portal = usePortal()
 
-  const {comments, getComment, mentionOptions, onCommentsOpen, operation, setStatus, status} =
-    useComments()
-  const {error: addonDatasetError} = useAddonDataset()
+  const {
+    comments,
+    versionId,
+    getComment,
+    mentionOptions,
+    onCommentsOpen,
+    operation,
+    readOnly,
+    setStatus,
+    status,
+  } = useComments()
   const {setSelectedPath, selectedPath} = useCommentsSelectedPath()
   const {scrollToComment, scrollToGroup} = useCommentsScroll()
   const {handleOpenDialog} = useCommentsUpsell()
@@ -185,7 +194,11 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
       if (!nextCommentSelection || !editorRef.current) return
 
       const normalizedSelection = nextCommentSelection.backward
-        ? {backward: false, anchor: nextCommentSelection.focus, focus: nextCommentSelection.anchor}
+        ? {
+            backward: false,
+            anchor: nextCommentSelection.focus,
+            focus: nextCommentSelection.anchor,
+          }
         : nextCommentSelection
 
       const fieldPath = getCommentFieldPath(
@@ -202,9 +215,13 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
         basePath: props.path,
       })
 
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+      const editorValue = PortableTextEditor.getValue(editorRef.current) || EMPTY_ARRAY
+      const range = selectionToRange(normalizedSelection, editorValue) ?? undefined
+
       const threadId = uuid()
 
-      void operation.create({
+      const payload: Omit<CommentFieldCreatePayload, 'range' | 'fieldValue'> = {
         type: 'field',
         contentSnapshot: fragment,
         fieldPath,
@@ -214,7 +231,9 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
         selection: textSelection,
         status: 'open',
         threadId,
-      })
+      }
+
+      void operation.create(range ? {...payload, range, fieldValue: editorValue} : payload)
 
       // Open the inspector when a new comment is added
       onCommentsOpen?.()
@@ -354,7 +373,8 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
   const handleRangeDecorationMoved = useCallback((details: RangeDecorationOnMovedDetails) => {
     const {rangeDecoration, newSelection} = details
 
-    const commentId = rangeDecoration.payload?.commentId as undefined | string
+    const commentId = rangeDecoration.payload?.commentId
+    if (typeof commentId !== 'string') return
 
     // Update the range decoration with the new selection.
     setAddedCommentsDecorations((prev) => {
@@ -380,25 +400,41 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
     if (decoratorsToUpdate.length === 0) return
 
     decoratorsToUpdate.forEach((decorator) => {
-      const commentId = decorator.payload?.commentId as undefined | string
-      const comment = getComment(commentId || '')
+      const commentId = decorator.payload?.commentId
+      if (typeof commentId !== 'string') return
+
+      const comment = getComment(commentId)
 
       // If the comment no longer exists, remove the range decoration.
       if (!comment) {
         return
       }
 
+      // Only persist range updates for comments made on this document. Draft and published
+      // share a comment set, so foreign-origin comments (e.g. made on published while viewing
+      // draft) can appear here. Rematching them against this editor would rewrite their stored
+      // range from the wrong document's text.
+      if (comment.target?.sourceDocumentId !== versionId) return
+
+      // Comments on a nested PTE field are decorated here too, since `textComments`
+      // matches on path prefix. Their decoration paths start at the container block,
+      // not at the text block, so `selectionsToRange` resolves to null and any edit in
+      // this editor would de-anchor them. Let the nested editor persist its own ranges.
+      const commentFieldPath = parseCommentFieldPath(comment.target.path?.field)
+      if (!commentFieldPath || !PathUtils.isEqual(commentFieldPath, props.path)) return
+
       // The below code will update the comment object to reflect the new selection
       if (!editorRef.current) return
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       const editorValue = PortableTextEditor.getValue(editorRef.current) || EMPTY_ARRAY
 
-      const [updatedDecoration] = buildRangeDecorationSelectionsFromComments({
+      const updatedDecorations = buildRangeDecorationSelectionsFromComments({
         comments: [comment],
         value: editorValue,
         documentValue: documentValueRef.current,
         basePath: props.path,
       })
+      const [updatedDecoration] = updatedDecorations
 
       const nextRange = updatedDecoration?.range ? [updatedDecoration.range] : EMPTY_ARRAY
 
@@ -429,7 +465,19 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
       const hasChanged = !isEqual(comment.target, nextComment.target)
 
       if (hasChanged) {
-        void operation.update(comment._id, nextComment)
+        const range = selectionsToRange(
+          updatedDecorations.map((d) => d.selection),
+          editorValue,
+        )
+
+        // API gets range + fieldValue (or null to clear); optimisticUpdate patches the
+        // local comment immediately while that request is in flight.
+        void operation.updateRange(
+          comment._id,
+          range
+            ? {range, fieldValue: editorValue, optimisticUpdate: nextComment}
+            : {range: null, optimisticUpdate: nextComment},
+        )
       }
     })
 
@@ -451,7 +499,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
       })
       return next.filter((p) => p.selection !== null)
     })
-  }, [addedCommentsDecorations, getComment, operation, props.path])
+  }, [addedCommentsDecorations, versionId, getComment, operation, props.path])
 
   const handleBuildRangeDecorations = useCallback(
     (commentsToDecorate: CommentDocument[]) => {
@@ -610,7 +658,10 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
           if (prevDecoration?.payload?.dirty) {
             return {
               ...nextDecoration,
-              payload: {...nextDecoration.payload, dirty: prevDecoration.payload.dirty},
+              payload: {
+                ...nextDecoration.payload,
+                dirty: prevDecoration.payload.dirty,
+              },
             }
           }
 
@@ -628,7 +679,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
   return (
     <>
       <BoundaryElementProvider element={boundaryElement}>
-        {showFloatingInput && currentUser && (
+        {showFloatingInput && currentUser && !readOnly && (
           <InlineCommentInputPopover
             currentUser={currentUser}
             mentionOptions={mentionOptions}
@@ -643,7 +694,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
         <AnimatePresence>
           {showFloatingButton && !showFloatingInput && (
             <FloatingButtonPopover
-              disabled={currentSelectionIsOverlapping || Boolean(addonDatasetError)}
+              disabled={currentSelectionIsOverlapping || readOnly}
               onClick={handleSelectCurrentSelection}
               onClickOutside={resetStates}
               referenceElement={selectionReferenceElement}

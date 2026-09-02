@@ -63,7 +63,7 @@ export function MentionInlineBlock(props: MentionInlineBlockProps) {
         </Flex>
       }
     >
-      <Span data-selected={selected} data-active={currentUser?.id === userId}>
+      <Span data-selected={selected} data-active={currentUser?.sanityUserId === userId}>
         @{user.displayName}
       </Span>
     </Tooltip>

@@ -13,6 +13,7 @@ import {
   type CommentReactionOption,
   type CommentUpdateOperationOptions,
   type CommentUpdatePayload,
+  type CommentUpdateRangePayload,
 } from '../../types'
 import {useCommentsIntent} from '../useCommentsIntent'
 import {useNotificationTarget} from '../useNotificationTarget'
@@ -20,6 +21,7 @@ import {createOperation} from './createOperation'
 import {reactOperation} from './reactOperation'
 import {removeOperation} from './removeOperation'
 import {updateOperation} from './updateOperation'
+import {updateRangeOperation} from './updateRangeOperation'
 
 export interface CommentOperationsHookValue {
   operation: CommentOperations
@@ -28,8 +30,8 @@ export interface CommentOperationsHookValue {
 export interface CommentOperationsHookOptions {
   client: SanityClient | null
   currentUser: CurrentUser | null
-  dataset: string
-  documentId: string
+  /** Exact document in the editor (draft, published, or version id). */
+  versionId: string
   documentRevisionId?: string
   documentType: string
   documentVersionId?: string
@@ -40,8 +42,6 @@ export interface CommentOperationsHookOptions {
   onRemove?: (id: string) => void
   onTransactionStart: (commentDocumentId: string, transactionId: string) => void
   onUpdate?: (id: string, comment: CommentUpdatePayload) => void
-  projectId: string
-  createAddonDataset: () => Promise<SanityClient | null>
   schemaType: SchemaType | undefined
   workspace: string
   getCommentLink?: (commentId: string) => string
@@ -53,8 +53,7 @@ export function useCommentOperations(
   const {
     client,
     currentUser,
-    dataset,
-    documentId,
+    versionId,
     documentRevisionId,
     documentType,
     documentVersionId,
@@ -65,8 +64,6 @@ export function useCommentOperations(
     onRemove,
     onTransactionStart,
     onUpdate,
-    projectId,
-    createAddonDataset,
     workspace,
     getCommentLink,
   } = opts
@@ -86,7 +83,7 @@ export function useCommentOperations(
     [activeToolName, tools],
   )
   const {getNotificationValue} = useNotificationTarget({
-    documentId,
+    versionId,
     documentType,
     getCommentLink,
     documentVersionId,
@@ -94,29 +91,21 @@ export function useCommentOperations(
 
   const handleCreate = useCallback(
     async (comment: CommentCreatePayload) => {
-      // Unlike the other operations, we want to proceed with create operation even
-      // though there is no client available. This is because if there is no client for the
-      // comments addon dataset, it will be created in the `createOperation`, and the
-      // comment will be created in that dataset when the client is eventually created.
-      if (!currentUser?.id) return
+      if (!currentUser?.sanityUserId || !client) return
 
       await createOperation({
         activeTool,
         client,
         comment,
         currentUser,
-        dataset,
-        documentId,
+        versionId,
         documentRevisionId,
         documentType,
-        documentVersionId,
         getIntent,
         getNotificationValue,
         getThreadLength,
         onCreate,
         onCreateError,
-        projectId,
-        createAddonDataset,
         workspace,
       })
     },
@@ -124,18 +113,14 @@ export function useCommentOperations(
       activeTool,
       client,
       currentUser,
-      dataset,
-      documentId,
+      versionId,
       documentRevisionId,
       documentType,
-      documentVersionId,
       getIntent,
       getNotificationValue,
       getThreadLength,
       onCreate,
       onCreateError,
-      projectId,
-      createAddonDataset,
       workspace,
     ],
   )
@@ -186,9 +171,28 @@ export function useCommentOperations(
     [client, onTransactionStart, onUpdate],
   )
 
+  const handleUpdateRange = useCallback(
+    async (id: string, payload: CommentUpdateRangePayload) => {
+      if (!client) return
+
+      const nextTransactionId = uuid()
+
+      onTransactionStart(id, nextTransactionId)
+
+      await updateRangeOperation({
+        client,
+        id,
+        onUpdate,
+        transactionId: nextTransactionId,
+        ...payload,
+      })
+    },
+    [client, onTransactionStart, onUpdate],
+  )
+
   const handleReact = useCallback(
     async (id: string, reaction: CommentReactionOption) => {
-      if (!client || !currentUser?.id) return
+      if (!client || !currentUser?.sanityUserId) return
 
       await reactOperation({
         client,
@@ -209,8 +213,9 @@ export function useCommentOperations(
         react: handleReact,
         remove: handleRemove,
         update: handleUpdate,
+        updateRange: handleUpdateRange,
       } satisfies CommentOperations,
     }),
-    [handleCreate, handleRemove, handleUpdate, handleReact],
+    [handleCreate, handleRemove, handleUpdate, handleUpdateRange, handleReact],
   )
 }
