@@ -1,11 +1,11 @@
 import {RevertIcon} from '@sanity/icons/Revert'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
   type DocumentActionDialogProps,
   getPairTarget,
+  useAsyncOperation,
   useDocumentOperation,
-  useDocumentOperationEvent,
   useTranslation,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
@@ -22,33 +22,25 @@ export const useHistoryRestoreAction: DocumentActionComponent = ({id, type, revi
   // below instead of silently operating on the base pair.
   const isTargetReady = targetDocumentState.status === 'ready'
   const {restore} = useDocumentOperation(id, type, getPairTarget(targetDocumentState))
-  const event = useDocumentOperationEvent(id, type)
+  const restoreAsync = useAsyncOperation(restore)
   const {navigateIntent} = useRouter()
-  const prevEvent = useRef(event)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const {t} = useTranslation(structureLocaleNamespace)
 
   const handleConfirm = useCallback(() => {
-    restore.execute(revision!)
     setConfirmDialogOpen(false)
-  }, [restore, revision])
+    // Await the outcome of this specific restore call: navigate only when it succeeded
+    // (errors surface through the global operation-events toast).
+    void restoreAsync.execute(revision!).then((outcome) => {
+      if (outcome.type === 'success') {
+        navigateIntent('edit', {id, type})
+      }
+    })
+  }, [restoreAsync, revision, navigateIntent, id, type])
 
   const handleCancel = useCallback(() => {
     setConfirmDialogOpen(false)
   }, [])
-
-  /**
-   * If the restore operation is successful, navigate to the document edit view
-   */
-  useEffect(() => {
-    if (!event || event === prevEvent.current) return
-
-    if (event.type === 'success' && event.op === 'restore') {
-      navigateIntent('edit', {id, type})
-    }
-
-    prevEvent.current = event
-  }, [event, id, navigateIntent, type])
 
   const handle = useCallback(() => {
     setConfirmDialogOpen(true)
@@ -87,9 +79,18 @@ export const useHistoryRestoreAction: DocumentActionComponent = ({id, type, revi
       ),
       icon: RevertIcon,
       dialog,
-      disabled: isRevisionInitial || !isTargetReady,
+      disabled: isRevisionInitial || !isTargetReady || restoreAsync.isPending,
     }
-  }, [dialog, handle, isRevisionInitial, isRevisionLatest, isTargetReady, revisionNotFound, t])
+  }, [
+    dialog,
+    handle,
+    isRevisionInitial,
+    isRevisionLatest,
+    isTargetReady,
+    restoreAsync.isPending,
+    revisionNotFound,
+    t,
+  ])
 }
 
 useHistoryRestoreAction.action = 'restore'
