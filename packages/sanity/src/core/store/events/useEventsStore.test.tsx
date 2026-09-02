@@ -58,7 +58,7 @@ const created = createDocumentVersionEvent({id: 'e4', versionRevisionId: 'e4'})
 const EVENTS = [editNewest, publishNewest, editOlder, publishOlder, created]
 
 interface HookProps {
-  documentId: string
+  documentId: string | undefined
   documentType: string
   rev?: string
   since?: string
@@ -73,7 +73,7 @@ function setup({
 }: {
   events?: DocumentGroupEvent[]
   loading?: boolean
-  documentId?: string
+  documentId?: string | undefined
   rev?: string
   since?: string
 } = {}) {
@@ -326,6 +326,17 @@ describe('useEventsStore', () => {
       const deleted = deleteDocumentVersionEvent({id: 'e-del', versionRevisionId: 'e-del'})
       const {result} = setup({events: [deleted]})
       expect(result.current.lastNonDeletedRevId).toBeNull()
+    })
+
+    it('missing documentId: does not fetch a revision and treats newest as latest (not version)', () => {
+      const {result} = setup({documentId: undefined, rev: 'e2'})
+      expect(mockCreateEventsStore).toHaveBeenCalledWith(
+        expect.objectContaining({documentId: undefined}),
+      )
+      expect(mockGetDocumentAtRevision).not.toHaveBeenCalled()
+      expect(result.current.revision).toBeNull()
+      // Without a variant, selecting the newest event clears the revision (draft/published rule).
+      expect(result.current.findRangeForRevision('e0')).toEqual([null, null])
     })
   })
 })

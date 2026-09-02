@@ -135,7 +135,7 @@ export function findRangeForRevision(
     events: DocumentGroupEvent[]
     since: string | undefined
     revisionId: string | null | undefined
-    documentVariantType: DocumentVariantType
+    documentVariantType: DocumentVariantType | undefined
   },
 ): [since: string | null, rev: string | null] {
   if (!events) return [null, null]
