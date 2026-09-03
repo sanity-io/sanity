@@ -73,8 +73,9 @@ async function publishPaneDocument(page: Page, paneIndex: number) {
 
   // Only click once the button is actionable: a click that lands while the
   // document is still syncing/validating is queued behind validation, which
-  // can take tens of seconds on a slow backend.
-  await expect(publishButton).toBeEnabled()
+  // can take tens of seconds on a slow backend — give this wait the same
+  // budget as the completion gate below.
+  await expect(publishButton).toBeEnabled({timeout: 60_000})
   await publishButton.click()
 
   await expect(
