@@ -3,8 +3,15 @@ import {ControlsIcon} from '@sanity/icons/Controls'
 import {SearchIcon} from '@sanity/icons/Search'
 import {SpinnerIcon} from '@sanity/icons/Spinner'
 import {Card} from '@sanity/ui'
-import {type ChangeEvent, useCallback, useEffect, useRef, type RefAttributes} from 'react'
-import {keyframes, styled} from 'styled-components'
+import {clsx} from 'clsx'
+import {
+  type ChangeEvent,
+  type ComponentProps,
+  useCallback,
+  useEffect,
+  useRef,
+  type RefAttributes,
+} from 'react'
 import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../../ui-components/button/Button'
@@ -13,24 +20,12 @@ import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {useSearchState} from '../contexts/search/useSearchState'
 import {hasSearchableTerms} from '../utils/hasSearchableTerms'
 import {CustomTextInput} from './common/CustomTextInput'
+import {animatedSpinnerIcon, filterDiv} from './SearchHeader.css'
 
-const rotate = keyframes`
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-`
-
-const AnimatedSpinnerIcon = styled(SpinnerIcon)`
-  animation: ${rotate} 500ms linear infinite;
-`
-
-const FilterDiv = styled.div`
-  line-height: 0;
-  position: relative;
-`
+function AnimatedSpinnerIcon(props: ComponentProps<typeof SpinnerIcon>) {
+  const {className, ...rest} = props
+  return <SpinnerIcon {...rest} className={clsx(animatedSpinnerIcon, className)} />
+}
 
 interface SearchHeaderProps {
   ariaInputLabel?: string
@@ -139,7 +134,7 @@ export function SearchHeader({
 
         {/* Filter toggle */}
         {fullscreen && (
-          <FilterDiv>
+          <div className={filterDiv}>
             <StatusButton
               aria-expanded={filtersVisible}
               aria-label={t('search.action.toggle-filters-aria-label', {
@@ -157,7 +152,7 @@ export function SearchHeader({
                 }),
               }}
             />
-          </FilterDiv>
+          </div>
         )}
       </Flex>
     </Card>

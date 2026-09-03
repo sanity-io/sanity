@@ -1,11 +1,11 @@
 import {SearchIcon} from '@sanity/icons/Search'
 import {type ChangeEvent, type RefAttributes} from 'react'
-import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {CustomTextInput} from '../../common/CustomTextInput'
+import {searchHeaderBox, searchHeaderContentFlex} from './FilterPopoverContentHeader.css'
 
 interface FilterPopoverContentHeaderProps {
   ariaInputLabel: string
@@ -13,16 +13,6 @@ interface FilterPopoverContentHeaderProps {
   onClear: () => void
   typeFilter: string
 }
-
-const SearchHeaderBox = styled(Box)`
-  border-bottom: 1px solid
-    ${({theme}) => theme.sanity.color.base.border /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-  flex-shrink: 0;
-`
-
-const SearchHeaderContentFlex = styled(Flex)`
-  box-sizing: border-box;
-`
 
 export function FilterPopoverContentHeader({
   ref,
@@ -37,8 +27,14 @@ export function FilterPopoverContentHeader({
   const {t} = useTranslation()
 
   return (
-    <SearchHeaderBox>
-      <SearchHeaderContentFlex alignItems="center" flexBasis="0%" flexGrow={1} padding={1}>
+    <Box className={searchHeaderBox}>
+      <Flex
+        alignItems="center"
+        className={searchHeaderContentFlex}
+        flexBasis="0%"
+        flexGrow={1}
+        padding={1}
+      >
         <CustomTextInput
           __unstable_disableFocusRing
           $smallClearButton
@@ -57,7 +53,7 @@ export function FilterPopoverContentHeader({
           radius={2}
           value={typeFilter}
         />
-      </SearchHeaderContentFlex>
-    </SearchHeaderBox>
+      </Flex>
+    </Box>
   )
 }
