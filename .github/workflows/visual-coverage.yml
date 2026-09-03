@@ -1,0 +1,53 @@
+name: Visual coverage
+permissions: {}
+
+# Posts a sticky "Visual regression coverage" comment on PRs that touch Studio
+# UI files: for each changed component, which story or browser test renders it,
+# or which open PR is about to. Static import analysis, no Storybook build;
+# see scripts/visualCoverage.ts and .agents/skills/sanity-visual-coverage.
+# Informational only, like the Chromatic burn-in checks.
+
+on:
+  pull_request:
+    paths:
+      - "packages/**/src/**/*.tsx"
+      - "packages/**/src/**/*.css.ts"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  report:
+    name: Coverage report
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # On fork PRs GITHUB_TOKEN is read-only regardless of the permissions
+    # block, so the comment step would 403 (same guard as bench.yml).
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    permissions:
+      contents: read
+      pull-requests: write # for the sticky PR comment
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # The script diffs against the merge-base with the base branch.
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+
+      - name: Write report
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          pnpm --silent visual-coverage --format markdown --prs --changed "origin/$BASE_REF" \
+            > /tmp/visual-coverage.md
+          cat /tmp/visual-coverage.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: PR comment with report
+        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3
+        with:
+          comment-tag: "visual-coverage"
+          file-path: /tmp/visual-coverage.md
