@@ -11,7 +11,6 @@ import {
   useRef,
   useState,
 } from 'react'
-import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {type FIXME} from '../../../../../FIXME'
@@ -37,6 +36,7 @@ import {DropMessage} from '../DropMessage'
 import {type FileInfo, fileTarget} from '../fileTarget/fileTarget'
 import {UploadDestinationPicker} from '../UploadDestinationPicker'
 import {Overlay} from './styles'
+import {root} from './uploadTarget.css'
 
 type FileEntry = {
   file: File
@@ -64,10 +64,6 @@ export interface UploadTargetProps {
   tone?: CardTone
   children?: ReactNode
 }
-
-const Root = styled.div`
-  position: relative;
-`
 
 export function uploadTarget<Props>(
   Component: ComponentType<Props>,
@@ -343,7 +339,7 @@ export function uploadTarget<Props>(
     )
 
     return (
-      <Root>
+      <div className={root}>
         {showAssetSourceDestinationPicker && (
           <UploadDestinationPicker
             assetSources={assetSourcesWithUploadByName}
@@ -368,7 +364,7 @@ export function uploadTarget<Props>(
           )}
           {children}
         </FileTarget>
-      </Root>
+      </div>
     )
   }
 }
