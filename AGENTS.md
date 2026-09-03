@@ -217,7 +217,7 @@ pnpm --filter sanity-test-studio exec agent-react-devtools profile rerenders --l
 How it works and gotchas:
 
 - `ENABLE_REACT_DEVTOOLS=true` makes `dev/test-studio/sanity.cli.ts` add the `reactDevtools()` Vite plugin, which injects an `agent-react-devtools/connect` script that wires `react-devtools-core` to the daemon's WebSocket. Dev-server only (`apply: 'serve'`) — it can never reach `sanity build` output.
-- The flag also disables `unstable_bundledDev` so the connect script runs before the app bundle in a plain module graph. Expect one or two "Outdated Optimize Dep" reloads on first navigation after a restart (the classic dev-mode waterfall).
+- The flag currently also disables `unstable_bundledDev`, which crashes on load in this setup (being fixed separately). Expect one or two "Outdated Optimize Dep" reloads on first navigation after a restart (the classic dev-mode waterfall).
 - **The browser must be headed.** Headless Chromium does not execute the injected module script properly, so the app never registers with the daemon. On the Cloud VM, drive system Chrome via Playwright with `headless: false` (a display is available), and authenticate by appending `#token=$STUDIO_AUTH_TOKEN` to the URL from inside the script (keeps the secret out of logs).
 - Profile with StrictMode off (`SANITY_STUDIO_REACT_STRICT_MODE=false`) so dev double-rendering doesn't inflate durations — production studios don't run StrictMode.
 - Do not run `pnpm check:oxlint` while the dev studio and daemon are running (same memory constraint as noted in the Cursor Cloud gotchas).
