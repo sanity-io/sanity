@@ -743,7 +743,7 @@ function usePreserveIntrinsicBlockSize({
   // (`--intrinsic-block-size`) that preserves layout during activation, so a
   // deferred snapshot lagging the latest ResizeObserver measurement could
   // cause visible layout jumps.
-  const currentSize = useSyncObservable(size)
+  const currentSize = useSyncObservable(size, undefined)
 
   useEffect(() => {
     const resizeObserver = new ResizeObserver(([entry]) => {

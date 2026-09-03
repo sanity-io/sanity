@@ -17,7 +17,7 @@ export function useComlinkViewHistory({editState}: {editState: EditStateFor}): v
   const renderingContextStore = useRenderingContextStore()
   // Kept synchronous: capabilities emit once at boot and gate the history
   // recording effect below; deferring only delays it.
-  const capabilities = useSyncObservable(renderingContextStore.capabilities)
+  const capabilities = useSyncObservable(renderingContextStore.capabilities, undefined)
   const {activeWorkspace} = useActiveWorkspace()
   const displayed = editState.version ?? editState.draft ?? editState.published
 

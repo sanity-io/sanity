@@ -26,7 +26,12 @@ const QUERY_PROJECTION = `{
 
 const QUERY = `*[${QUERY_FILTER}] ${QUERY_PROJECTION} | ${QUERY_SORT_ORDER}`
 
-const INITIAL_STATE: VariantStoreState = {
+/**
+ * The synchronous `startWith` state of `state$` — also the `initialValue` consumers pass to
+ * react-rx hooks so their first render matches what the store emits on subscribe.
+ * @internal
+ */
+export const INITIAL_VARIANTS_STATE: VariantStoreState = {
   variants: new Map(),
   state: 'initialising' as const,
 }
@@ -95,8 +100,8 @@ export function createVariantsStore(context: {
   )
 
   const state$ = merge(listFetch$, dispatch$).pipe(
-    scan((state, action) => variantStoreReducer(state, action), INITIAL_STATE),
-    startWith(INITIAL_STATE),
+    scan((state, action) => variantStoreReducer(state, action), INITIAL_VARIANTS_STATE),
+    startWith(INITIAL_VARIANTS_STATE),
     shareReplay(1),
   )
 

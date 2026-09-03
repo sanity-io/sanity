@@ -47,7 +47,7 @@ export function useNotificationTarget(
   // email body, where a briefly stale title is harmless (it can go stale
   // after send anyway). react-rx v5's identity-coherent deferral still falls
   // back to the live value when the previewed document id changes.
-  const previewState = useObservable(previewStateObservable)
+  const previewState = useObservable(previewStateObservable, undefined)
 
   const {snapshot, original} = previewState || {}
   const documentTitle = (snapshot?.title || original?.title || 'Sanity document') as string

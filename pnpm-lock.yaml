@@ -80,8 +80,8 @@ catalogs:
       specifier: ^19.2.8
       version: 19.2.8
     react-rx:
-      specifier: ^6.0.0
-      version: 6.0.0
+      specifier: 7.0.0-next.6
+      version: 7.0.0-next.6
     rimraf:
       specifier: ^6.1.3
       version: 6.1.3
@@ -485,7 +485,7 @@ importers:
         version: 19.2.8(react@19.2.8)
       react-rx:
         specifier: 'catalog:'
-        version: 6.0.0(react@19.2.8)(rxjs@7.8.2)
+        version: 7.0.0-next.6(react@19.2.8)(rxjs@7.8.2)
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -861,7 +861,7 @@ importers:
         version: 4.0.0(react@19.2.8)
       react-rx:
         specifier: 'catalog:'
-        version: 6.0.0(react@19.2.8)(rxjs@7.8.2)
+        version: 7.0.0-next.6(react@19.2.8)(rxjs@7.8.2)
       refractor:
         specifier: ^5.0.0
         version: 5.0.0
@@ -1761,7 +1761,7 @@ importers:
         version: 7.3.0
       react-rx:
         specifier: 'catalog:'
-        version: 6.0.0(react@19.2.8)(rxjs@7.8.2)
+        version: 7.0.0-next.6(react@19.2.8)(rxjs@7.8.2)
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -2109,7 +2109,7 @@ importers:
         version: 4.0.0(react@19.2.8)
       react-rx:
         specifier: 'catalog:'
-        version: 6.0.0(react@19.2.8)(rxjs@7.8.2)
+        version: 7.0.0-next.6(react@19.2.8)(rxjs@7.8.2)
       refractor:
         specifier: ^5.0.0
         version: 5.0.0
@@ -13144,8 +13144,8 @@ packages:
       react: ^18.3 || >=19.0.0-0
       rxjs: ^7
 
-  react-rx@6.0.0:
-    resolution: {integrity: sha512-Zu11eDiWd9bshDhdt1ObjDEhJ1XVxZS5hJf4lzZ1jqj0v5iNiRmtIA0LNljUs5ePusPyPKnc/IoYP20D4Dj4+Q==}
+  react-rx@7.0.0-next.6:
+    resolution: {integrity: sha512-gwlrSyPiv8oY6t33qByxlreNC7CRv9s4btccXYpKVM/3E3AolZ2X0GLR083YANusA2ZoM9n/kYjpmxYh9nWHIQ==}
     engines: {node: '>=22.12'}
     peerDependencies:
       react: ^19.2
@@ -26491,11 +26491,10 @@ snapshots:
       rxjs: 7.8.2
       use-effect-event: 2.0.4(react@19.2.8)
 
-  react-rx@6.0.0(react@19.2.8)(rxjs@7.8.2):
+  react-rx@7.0.0-next.6(react@19.2.8)(rxjs@7.8.2):
     dependencies:
       react: 19.2.8
       rxjs: 7.8.2
-      use-effect-event: 2.0.4(react@19.2.8)
 
   react-select@5.10.2(@types/react@19.2.18)(react-dom@19.2.8)(react@19.2.8)(supports-color@8.1.1):
     dependencies:
