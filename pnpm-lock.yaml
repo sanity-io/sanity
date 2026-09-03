@@ -2187,8 +2187,8 @@ importers:
         specifier: 'catalog:'
         version: 0.2.17(babel-plugin-macros@3.1.0)(vite@8.2.2)
       '@sanity/visual-editing-csm':
-        specifier: ^3.0.17
-        version: 3.0.17(@sanity/client@8.4.0)(@sanity/types@packages+@sanity+types)(typescript@7.0.2)
+        specifier: ^3.0.18
+        version: 3.0.18(@sanity/client@8.4.0)(@sanity/types@packages+@sanity+types)(typescript@7.0.2)
       '@storybook/react-vite':
         specifier: ^10.5.10
         version: 10.5.10(@types/react-dom@19.2.5)(@types/react@19.2.18)(esbuild@0.28.2)(react-dom@19.2.8)(react@19.2.8)(storybook@10.5.10)(supports-color@8.1.1)(typescript@7.0.2)(vite@8.2.2)
@@ -7347,6 +7347,12 @@ packages:
 
   '@sanity/visual-editing-csm@3.0.17':
     resolution: {integrity: sha512-QE62zkJ388KlBbZiej7mYwmGKRYEe+NOnaTfIiVu8PJYbFBkyOEyttAxjclBYji0+utFmHIl77hZ6DxujtLlYg==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+    peerDependencies:
+      '@sanity/client': ^7.26.2 || ^8.0.0
+
+  '@sanity/visual-editing-csm@3.0.18':
+    resolution: {integrity: sha512-s+54hWA0g/YIVLP8Vq0JzQqRS34OP5tiV/m0AkF3ycBaaUX+9H1Lobc0lZv5w0rHc+FXwSy0Y55Kn1Rh0CvMOA==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       '@sanity/client': ^7.26.2 || ^8.0.0
@@ -20207,6 +20213,15 @@ snapshots:
       - typescript
 
   '@sanity/visual-editing-csm@3.0.17(@sanity/client@8.4.0)(@sanity/types@packages+@sanity+types)(typescript@7.0.2)':
+    dependencies:
+      '@sanity/client': 8.4.0(vitest@4.1.11)
+      '@sanity/visual-editing-types': 2.1.1(@sanity/client@8.4.0)(@sanity/types@packages+@sanity+types)
+      valibot: 1.4.2(typescript@7.0.2)
+    transitivePeerDependencies:
+      - '@sanity/types'
+      - typescript
+
+  '@sanity/visual-editing-csm@3.0.18(@sanity/client@8.4.0)(@sanity/types@packages+@sanity+types)(typescript@7.0.2)':
     dependencies:
       '@sanity/client': 8.4.0(vitest@4.1.11)
       '@sanity/visual-editing-types': 2.1.1(@sanity/client@8.4.0)(@sanity/types@packages+@sanity+types)
