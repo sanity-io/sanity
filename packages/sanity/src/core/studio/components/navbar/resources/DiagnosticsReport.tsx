@@ -47,9 +47,11 @@ export function DiagnosticsReport({
   runAgainLabel = 'Run again',
 }: DiagnosticsReportProps) {
   const [useUtc, setUseUtc] = useState(true)
-  const {browser, network, schema, studio, user} = diagnostics
+  const {browser, network, schema, studio, styles, user} = diagnostics
 
   const roles = user.roles.map((role) => role.title || role.name).join(', ')
+  const styleNodes = styles?.styledComponents.styleNodes
+  const styleRuleCount = styleNodes?.reduce((sum, node) => sum + node.ruleCount, 0)
   const localStorageResult = browser.localStorage
     ? formatStorageResult(browser.localStorage)
     : undefined
@@ -115,8 +117,30 @@ export function DiagnosticsReport({
         <ReportSection testId="diagnostics-studio" title="Studio">
           <DetailRow label="Studio version" monospace value={studio.version} />
           <DetailRow label="React version" monospace value={studio.reactVersion} />
+          <DetailRow
+            label="styled-components version"
+            monospace
+            value={styles?.styledComponents.version}
+          />
           <DetailRow label="Workspaces" value={studio.workspaceCount} />
           <DetailRow label="Unique targets" value={studio.uniqueTargetCount} />
+          <DetailRow label="Auto-updates" value={formatEnabled(studio.autoUpdates)} />
+          <DetailRow label="React strict mode" value={formatEnabled(studio.reactStrictMode)} />
+          <DetailRow
+            label="styled-components nodes"
+            value={styleNodes ? formatStyleNodeCount(styleNodes.length) : undefined}
+          />
+          <DetailRow label="styled-components rules" value={styleRuleCount?.toLocaleString()} />
+          {styleNodes && styleNodes.length > 1 ? (
+            <Text data-testid="diagnostics-styled-components-nodes" muted size={1}>
+              {styleNodes
+                .map(
+                  (node) =>
+                    `${node.version ?? 'unknown version'}: ${node.ruleCount.toLocaleString()} rules`,
+                )
+                .join(' · ')}
+            </Text>
+          ) : null}
         </ReportSection>
 
         <ReportSection testId="diagnostics-workspace" title="Workspace">
@@ -457,6 +481,25 @@ function formatDimensions(value?: {height: number; width: number}): string | und
 
 function formatBoolean(value: boolean | undefined): string | undefined {
   return value === undefined ? undefined : value ? 'Yes' : 'No'
+}
+
+function formatEnabled(value: boolean | undefined): string | undefined {
+  return value === undefined ? undefined : value ? 'Enabled' : 'Disabled'
+}
+
+// A running studio always injects exactly one styled-components sheet. Zero means styles are
+// missing; more than one means several styled-components runtimes are bundled.
+function formatStyleNodeCount(count: number): ReactNode {
+  if (count === 1) return count
+
+  return (
+    <Flex alignItems="center" gap={2} justifyContent="flex-end">
+      {count}
+      <Badge fontSize={0} tone="caution">
+        Expected 1
+      </Badge>
+    </Flex>
+  )
 }
 
 function formatStorageResult(
