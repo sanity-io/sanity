@@ -1,8 +1,9 @@
-import {render, screen} from '@testing-library/react'
+import {render, screen, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {defineConfig, type PerspectiveContextValue} from 'sanity'
 import {describe, expect, it, type Mock, vi} from 'vitest'
 
+import {getAllByDataUi} from '../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../i18n'
 import {
@@ -133,8 +134,11 @@ describe('PaneContainer', () => {
     expect(documentListPane).toHaveAttribute('data-active-filter-count', '0')
 
     await userEvent.click(screen.getByTestId('pane-context-menu-button'))
-    expect(await screen.findByText('Filter')).toBeVisible()
-    await userEvent.click(screen.getByText('Featured'))
+    const [openMenu] = getAllByDataUi(document.body, 'MenuButton__popover').filter(
+      (popover) => popover.style.display !== 'none',
+    )
+    expect(within(openMenu).getByText('Filter')).toBeInTheDocument()
+    await userEvent.click(within(openMenu).getByText('Featured'))
 
     expect(documentListPane).toHaveAttribute('data-active-filter-count', '1')
   })
