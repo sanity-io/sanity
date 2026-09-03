@@ -3,7 +3,7 @@
 import {AccessDeniedIcon} from '@sanity/icons/AccessDenied'
 import {UploadIcon} from '@sanity/icons/Upload'
 import {type SchemaType} from '@sanity/types'
-import {Card, Flex, Inline, Layer, Text} from '@sanity/ui'
+import {Card, Inline, Layer, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {clsx} from 'clsx'
 import sortBy from 'lodash-es/sortBy.js'
@@ -15,7 +15,7 @@ import {
   useCallback,
   useState,
 } from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {type FIXME} from '../../../../FIXME'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'

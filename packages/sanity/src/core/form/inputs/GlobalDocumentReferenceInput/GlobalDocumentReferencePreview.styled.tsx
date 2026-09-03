@@ -1,6 +1,6 @@
-import {Flex} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {type ComponentProps} from 'react'
+import {Flex} from 'ui5'
 
 import {previewFlex} from './GlobalDocumentReferencePreview.css'
 

@@ -84,8 +84,9 @@ export const root = style({
 })
 
 export const previewContainer = style({
-  // Copied from the styled(Flex) rule; Flex's own `&&:not([hidden]) {display: flex}` (0,3,0)
-  // outranked it before the migration too, so the element stays a flex container.
+  // Copied from the styled(Flex) rule; the Flex's own display rule (ui5's
+  // `.sui-display-flex:not([hidden])`, (0,2,0)) outranked it before the migration too, so the
+  // element stays a flex container.
   display: 'block',
   position: 'relative',
   width: '100%',

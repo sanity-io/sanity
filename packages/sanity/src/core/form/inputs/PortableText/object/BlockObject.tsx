@@ -6,7 +6,6 @@ import {
   type PortableTextBlock,
   type UploadState,
 } from '@sanity/types'
-import {Flex, type ResponsivePaddingProps} from '@sanity/ui'
 import {isEqual} from '@sanity/util/paths'
 import {
   type MouseEvent,
@@ -17,7 +16,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import {Box} from 'ui5'
+import {Flex, Box, type PaddingProps} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useHoveredChange} from '../../../../changeIndicators/useHoveredChange'
@@ -186,7 +185,7 @@ export function BlockObject(props: BlockObjectProps) {
     [editor],
   )
 
-  const innerPaddingProps: ResponsivePaddingProps = useMemo(() => {
+  const innerPaddingProps: PaddingProps = useMemo(() => {
     if (nested) {
       // A nested block sits inside a container that owns horizontal spacing
       // (e.g. a table cell's padding), so the root gutter is dropped.

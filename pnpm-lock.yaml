@@ -528,11 +528,11 @@ importers:
   dev/sdk-app:
     dependencies:
       '@sanity/sdk':
-        specifier: ^3.0.0
-        version: 3.0.0(@types/react@19.2.18)(immer@11.1.18)(react@19.2.8)(use-sync-external-store@1.6.0)(xstate@5.32.6)
+        specifier: ^3.1.0
+        version: 3.1.0(@types/react@19.2.18)(immer@11.1.18)(react@19.2.8)(use-sync-external-store@1.6.0)(vitest@4.1.11)(xstate@5.32.6)
       '@sanity/sdk-react':
-        specifier: ^3.0.0
-        version: 3.0.0(@types/react@19.2.18)(immer@11.1.18)(react-dom@19.2.8)(react@19.2.8)(use-sync-external-store@1.6.0)
+        specifier: ^3.1.0
+        version: 3.1.0(@types/react@19.2.18)(immer@11.1.18)(react-dom@19.2.8)(react@19.2.8)(use-sync-external-store@1.6.0)(vitest@4.1.11)
       react:
         specifier: 'catalog:'
         version: 19.2.8
@@ -963,6 +963,9 @@ importers:
       chromatic:
         specifier: ^18.7.1
         version: 18.7.1(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@0.1.10)
+      fflate:
+        specifier: ^0.8.3
+        version: 0.8.3
       tsx:
         specifier: ^4.23.13
         version: 4.23.13
@@ -1989,8 +1992,8 @@ importers:
         specifier: workspace:*
         version: link:../@sanity/schema
       '@sanity/sdk-react':
-        specifier: ^3.0.0
-        version: 3.0.0(@types/react@19.2.18)(immer@11.1.18)(react-dom@19.2.8)(react@19.2.8)(use-sync-external-store@1.6.0)
+        specifier: ^3.1.0
+        version: 3.1.0(@types/react@19.2.18)(immer@11.1.18)(react-dom@19.2.8)(react@19.2.8)(use-sync-external-store@1.6.0)(vitest@4.1.11)
       '@sanity/telemetry':
         specifier: 'catalog:'
         version: 1.1.0(react@19.2.8)
@@ -2011,7 +2014,7 @@ importers:
         version: link:../@sanity/validation
       '@sanity/workbench':
         specifier: 0.1.0-alpha.45
-        version: 0.1.0-alpha.45(@sanity/sdk@3.0.0)(react@19.2.8)(vitest@4.1.11)(xstate@5.32.6)
+        version: 0.1.0-alpha.45(@sanity/sdk@3.1.0)(react@19.2.8)(vitest@4.1.11)(xstate@5.32.6)
       '@sentry/react':
         specifier: ^10.73.0
         version: 10.73.0(react@19.2.8)
@@ -2188,8 +2191,8 @@ importers:
         specifier: workspace:*
         version: link:../@repo/tsdown.config
       '@sanity/sdk':
-        specifier: ^3.0.0
-        version: 3.0.0(@types/react@19.2.18)(immer@11.1.18)(react@19.2.8)(use-sync-external-store@1.6.0)(xstate@5.32.6)
+        specifier: ^3.1.0
+        version: 3.1.0(@types/react@19.2.18)(immer@11.1.18)(react@19.2.8)(use-sync-external-store@1.6.0)(vitest@4.1.11)(xstate@5.32.6)
       '@sanity/vanilla-extract-vite-plugin':
         specifier: 'catalog:'
         version: 0.2.17(babel-plugin-macros@3.1.0)(vite@8.2.2)
@@ -7282,10 +7285,6 @@ packages:
   '@sanity/media-library-types@1.6.0':
     resolution: {integrity: sha512-1Nqw8GSUr7E8AFue9luyTOM4Ev0ZlJ35SHcQrHZ6T68G5llfXw99e3GkLXzk6qYFk9r9fJaBTSpW5IyO2mObZQ==}
 
-  '@sanity/message-protocol@0.23.0':
-    resolution: {integrity: sha512-UfQDuWRzbK4dRTfLURGCZo7ZlR0sK+2lwT2QMAfqsM5kMq5GR31lbX4LMcSw27h7rwUv8ZSf1hBEbluVpgRmlg==}
-    engines: {node: '>=20.0.0'}
-
   '@sanity/message-protocol@0.24.0':
     resolution: {integrity: sha512-F/MwFVc3fN8uVvCIGuTxHN5EVo148wLhjL7h/u6wbShWJGMKgcGx0n6MwfCPyi6ftpdvRXsPZVDgZ1GMeeBf2Q==}
     engines: {node: '>=20.0.0'}
@@ -7331,14 +7330,14 @@ packages:
     engines: {node: '>=22.12'}
     hasBin: true
 
-  '@sanity/sdk-react@3.0.0':
-    resolution: {integrity: sha512-YAPk+IdHoaQasgHY/ZHgxsxOutD7uJFAp2aPzSWVJH10cmFEoMtEAy8nDetV+R1kEEd/g0pTlMgbb4HIJBDWKA==}
+  '@sanity/sdk-react@3.1.0':
+    resolution: {integrity: sha512-aAmAuNoAAV6VkZl9fNOputRHj/otMj19G+RotxZnwgHUAEgf1zShHXuyO2DtOQNzylADApGGIDIa6WWgqnfrsQ==}
     peerDependencies:
       react: ^19.2.0
       react-dom: ^19.2.0
 
-  '@sanity/sdk@3.0.0':
-    resolution: {integrity: sha512-RI7WOjgl8mFoj3NelcYq3WPUI9UCAyA76LDwZWQDmN+S+iqjhhQVmWFkTfS6Zij7Pr5rbNhIccYDsMKZb66Qfw==}
+  '@sanity/sdk@3.1.0':
+    resolution: {integrity: sha512-pDF5tU+TL7WxOUh+fyt8IDjyPhsm/YKsX0JCHTpPfOym8YqV1k+kCbYfozhvqJlvsSw69CenPqfvCBl/ebSR0Q==}
 
   '@sanity/signed-urls@2.0.5':
     resolution: {integrity: sha512-kg+LrXyk8tYNuCZnXrSRpTKR6dkbjkfBimGhqUs93VlfhSr56NkbS9N6zXqYRTg2mwbPYd/CAQHNX3SsXJgPcg==}
@@ -7489,13 +7488,6 @@ packages:
   '@sanity/workbench-cli@2.4.1':
     resolution: {integrity: sha512-CMgo+gbJ+P8yx4EoPkIlkC0J5zvPDKKE9j6iMF4wIGlk6R7yjM/21PAUV5yyknk+/UnRwpoF/u0FHEphqyLGxQ==}
     engines: {node: '>=22.12'}
-
-  '@sanity/workbench@0.1.0-alpha.24':
-    resolution: {integrity: sha512-235mR37+z8eg9OQqhUwgkQ4dZnveFHczUTgW2jk81qm1pP6vMlTdEAiKpz1Tq4zU9zRfg2xck51DP1VlkVzdWA==}
-    engines: {node: '>=20.19.1 <22 || >=22.12'}
-    peerDependencies:
-      '@sanity/sdk': ^2.9.0
-      xstate: ^5.31.0
 
   '@sanity/workbench@0.1.0-alpha.45':
     resolution: {integrity: sha512-rvRR0moauHmzXIVZzVhLdENDAsQcVvngmx9sOpAaZEx8gYjP5Z4ofj6dpWZ0ZVz2bVOFqJuFTgVtbU7IN0jKEw==}
@@ -20111,10 +20103,6 @@ snapshots:
 
   '@sanity/media-library-types@1.6.0': {}
 
-  '@sanity/message-protocol@0.23.0':
-    dependencies:
-      '@sanity/comlink': 4.0.3
-
   '@sanity/message-protocol@0.24.0':
     dependencies:
       '@sanity/comlink': 4.0.3
@@ -20232,13 +20220,13 @@ snapshots:
       - vue-tsc
       - yaml
 
-  '@sanity/sdk-react@3.0.0(@types/react@19.2.18)(immer@11.1.18)(react-dom@19.2.8)(react@19.2.8)(use-sync-external-store@1.6.0)':
+  '@sanity/sdk-react@3.1.0(@types/react@19.2.18)(immer@11.1.18)(react-dom@19.2.8)(react@19.2.8)(use-sync-external-store@1.6.0)(vitest@4.1.11)':
     dependencies:
-      '@sanity/client': 7.26.2
+      '@sanity/client': 8.4.0(vitest@4.1.11)
       '@sanity/message-protocol': 0.24.0
-      '@sanity/sdk': 3.0.0(@types/react@19.2.18)(immer@11.1.18)(react@19.2.8)(use-sync-external-store@1.6.0)(xstate@5.32.6)
+      '@sanity/sdk': 3.1.0(@types/react@19.2.18)(immer@11.1.18)(react@19.2.8)(use-sync-external-store@1.6.0)(vitest@4.1.11)(xstate@5.32.6)
       '@sanity/types': link:packages/@sanity/types
-      '@sanity/workbench': 0.1.0-alpha.24(@sanity/sdk@3.0.0)(react@19.2.8)(xstate@5.32.6)
+      '@sanity/workbench': 0.1.0-alpha.45(@sanity/sdk@3.1.0)(react@19.2.8)(vitest@4.1.11)(xstate@5.32.6)
       groq: 3.88.1-typegen-experimental.0
       react: 19.2.8
       react-compiler-runtime: 1.0.0(react@19.2.8)
@@ -20250,11 +20238,12 @@ snapshots:
       - '@types/react'
       - immer
       - use-sync-external-store
+      - vitest
 
-  '@sanity/sdk@3.0.0(@types/react@19.2.18)(immer@11.1.18)(react@19.2.8)(use-sync-external-store@1.6.0)(xstate@5.32.6)':
+  '@sanity/sdk@3.1.0(@types/react@19.2.18)(immer@11.1.18)(react@19.2.8)(use-sync-external-store@1.6.0)(vitest@4.1.11)(xstate@5.32.6)':
     dependencies:
       '@sanity/bifur-client': 1.0.0
-      '@sanity/client': 7.26.2
+      '@sanity/client': 8.4.0(vitest@4.1.11)
       '@sanity/comlink': 4.0.3
       '@sanity/diff-match-patch': 3.2.0
       '@sanity/diff-patch': 6.0.0
@@ -20275,6 +20264,7 @@ snapshots:
       - immer
       - react
       - use-sync-external-store
+      - vitest
       - xstate
 
   '@sanity/signed-urls@2.0.5':
@@ -20530,25 +20520,12 @@ snapshots:
       - vue-tsc
       - yaml
 
-  '@sanity/workbench@0.1.0-alpha.24(@sanity/sdk@3.0.0)(react@19.2.8)(xstate@5.32.6)':
-    dependencies:
-      '@module-federation/runtime': 2.9.0
-      '@sanity/message-protocol': 0.23.0
-      '@sanity/sdk': 3.0.0(@types/react@19.2.18)(immer@11.1.18)(react@19.2.8)(use-sync-external-store@1.6.0)(xstate@5.32.6)
-      '@sanity/telemetry': 1.1.0(react@19.2.8)
-      rxjs: 7.8.2
-      semver: 7.8.5
-      xstate: 5.32.6
-      zod: 4.5.4
-    transitivePeerDependencies:
-      - react
-
-  '@sanity/workbench@0.1.0-alpha.45(@sanity/sdk@3.0.0)(react@19.2.8)(vitest@4.1.11)(xstate@5.32.6)':
+  '@sanity/workbench@0.1.0-alpha.45(@sanity/sdk@3.1.0)(react@19.2.8)(vitest@4.1.11)(xstate@5.32.6)':
     dependencies:
       '@module-federation/runtime': 2.9.0
       '@sanity/client': 8.4.0(vitest@4.1.11)
       '@sanity/color': 3.0.8
-      '@sanity/sdk': 3.0.0(@types/react@19.2.18)(immer@11.1.18)(react@19.2.8)(use-sync-external-store@1.6.0)(xstate@5.32.6)
+      '@sanity/sdk': 3.1.0(@types/react@19.2.18)(immer@11.1.18)(react@19.2.8)(use-sync-external-store@1.6.0)(vitest@4.1.11)(xstate@5.32.6)
       '@sanity/telemetry': 1.1.0(react@19.2.8)
       es-toolkit: 1.52.0
       rxjs: 7.8.2
@@ -23837,8 +23814,7 @@ snapshots:
   fetch-retry@5.0.6:
     optional: true
 
-  fflate@0.8.3:
-    optional: true
+  fflate@0.8.3: {}
 
   figures@6.1.0:
     dependencies:

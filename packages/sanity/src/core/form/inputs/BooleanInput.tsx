@@ -1,5 +1,5 @@
-import {Card, type CardTone, Checkbox, Flex, Switch} from '@sanity/ui'
-import {Box} from 'ui5'
+import {Card, type CardTone, Checkbox, Switch} from '@sanity/ui'
+import {Flex, Box} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../i18n/hooks/useTranslation'

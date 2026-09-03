@@ -23,6 +23,12 @@ export const root = style({
   boxSizing: 'border-box',
   position: 'relative',
   selectors: {
+    // The Card renders as the ui5 Flex; until Card is migrated, its own `&:not([hidden])
+    // {display: block}` (0,2,0) would override the Flex, so the flex display is asserted one
+    // class higher.
+    '&&:not([hidden])': {
+      display: 'flex',
+    },
     [`.${MOVING_ITEM_CLASS_NAME} &`]: {
       boxShadow: [
         '0 0 0 0',

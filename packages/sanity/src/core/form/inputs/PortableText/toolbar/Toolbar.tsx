@@ -7,10 +7,10 @@ import {
 import {CollapseIcon} from '@sanity/icons/Collapse'
 import {ExpandIcon} from '@sanity/icons/Expand'
 import {type ObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
-import {Flex, useElementSize} from '@sanity/ui'
+import {useElementSize} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {memo, type MouseEvent, useCallback, useMemo, useState} from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {useRovingFocus} from '../../../../components/rovingFocus/useRovingFocus'
@@ -83,13 +83,16 @@ const InnerToolbar = memo(function InnerToolbar({
 
   return (
     <Flex
-      align="center"
+      alignItems="center"
       className={rootFlex}
       ref={setRootElement}
       onMouseDown={preventEditorBlurOnToolbarMouseDown}
     >
       {showBlockStyleSelect && (
-        <Flex className={styleSelectFlex} flex={collapsed ? 1 : undefined}>
+        <Flex
+          className={styleSelectFlex}
+          {...(collapsed ? {flexBasis: '0%', flexGrow: 1} : undefined)}
+        >
           <Box
             className={styleSelectBox}
             padding={isFullscreen ? 2 : 1}
@@ -105,7 +108,7 @@ const InnerToolbar = memo(function InnerToolbar({
         </Flex>
       )}
 
-      <Flex flex={1}>
+      <Flex flexBasis="0%" flexGrow={1}>
         {showActionMenu && (
           <Box
             {...(collapsed ? undefined : {flexBasis: '0%', flexGrow: 1})}

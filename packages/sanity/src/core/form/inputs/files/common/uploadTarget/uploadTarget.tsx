@@ -1,5 +1,5 @@
 import {type AssetSource, type SchemaType} from '@sanity/types'
-import {type CardTone, Flex, Text} from '@sanity/ui'
+import {type CardTone, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import uniqBy from 'lodash-es/uniqBy.js'
 import {
@@ -11,7 +11,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {type FIXME} from '../../../../../FIXME'
 import {useClient} from '../../../../../hooks/useClient'

@@ -1,5 +1,5 @@
 import {type HotspotPreview, type Image, type ImageSchemaType} from '@sanity/types'
-import {Card, Flex, Grid, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Grid, Heading, Stack, Text} from '@sanity/ui'
 import {
   type ReactNode,
   useCallback,
@@ -9,7 +9,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
@@ -63,7 +63,12 @@ const DEFAULT_VALUE: Partial<Image> = {
 
 function LoadStatus(props: {children: ReactNode}) {
   return (
-    <Flex align="center" justify="center" padding={4} style={{overflowWrap: 'break-word'}}>
+    <Flex
+      alignItems="center"
+      justifyContent="center"
+      padding={4}
+      style={{overflowWrap: 'break-word'}}
+    >
       {props.children}
     </Flex>
   )

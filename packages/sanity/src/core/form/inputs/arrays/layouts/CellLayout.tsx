@@ -1,7 +1,7 @@
-import {Card, type CardTone, Flex} from '@sanity/ui'
+import {Card, type CardTone} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {type ComponentProps, type ReactNode} from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {DragHandle} from '../common/DragHandle'
 import {dragHandleCard, footerFlex, presenceFlex, root} from './CellLayout.css'
@@ -38,7 +38,7 @@ export function CellLayout(props: RowLayoutProps & ComponentProps<typeof Card>) 
   return (
     <Card
       as={Flex}
-      direction="column"
+      flexDirection="column"
       border
       selected={selected}
       aria-selected={selected}
@@ -63,18 +63,12 @@ export function CellLayout(props: RowLayoutProps & ComponentProps<typeof Card>) 
       )}
 
       {presence && (
-        <Flex className={presenceFlex} align="center" marginX={1}>
+        <Flex className={presenceFlex} alignItems="center" marginX={1}>
           {presence}
         </Flex>
       )}
 
-      <Flex
-        className={footerFlex}
-        align="center"
-        paddingX={1}
-        sizing="border"
-        justify="space-between"
-      >
+      <Flex className={footerFlex} alignItems="center" paddingX={1} justifyContent="space-between">
         <Flex>{validation}</Flex>
         <Box>{footer}</Box>
         {menu}

@@ -1,7 +1,8 @@
-import {Flex, Stack} from '@sanity/ui'
+import {Stack} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {clsx} from 'clsx'
 import {type ComponentProps} from 'react'
+import {Flex} from 'ui5'
 
 import {RatioBox} from '../ImageInput/ImagePreview.styled'
 import {cardWrapper, codeWrapper, flexWrapper, leftSection} from './UploadProgress.css'

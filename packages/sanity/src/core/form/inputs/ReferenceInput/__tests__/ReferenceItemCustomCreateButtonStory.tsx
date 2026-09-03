@@ -1,7 +1,6 @@
 import {defineArrayMember, defineField, defineType, type ReferenceValue} from '@sanity/types'
-import {Flex} from '@sanity/ui'
 import {useCallback} from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {TestForm} from '../../../../../../test/browser/TestForm'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
@@ -30,7 +29,7 @@ function CustomReferenceItem(props: ObjectItemProps<ReferenceValue & ObjectItem>
   }, [onChange, schemaType.name])
 
   return (
-    <Flex align="center" data-testid="custom-reference-item" gap={3} paddingRight={3}>
+    <Flex alignItems="center" data-testid="custom-reference-item" gap={3} paddingRight={3}>
       <Box flexBasis="0%" flexGrow={1}>
         {props.renderDefault(props)}
       </Box>

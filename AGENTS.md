@@ -279,6 +279,22 @@ pnpm test:e2e --ui          # Interactive mode
 
 When CI e2e fails, the hosted Playwright report also serves a machine-readable digest at `<report-url>/agent-report.md` (error messages, code snippets, and Playwright `error-context` page snapshots). The PR comment includes a **Share with an AI agent** fenced prompt pointing at that URL (GitHub's copy button copies the whole prompt).
 
+#### Diagnosing e2e flake: failure diagnostics and the flake report
+
+Every failed or timed-out e2e test attempt attaches `studio-diagnostics.json` — the same JSON the Studio Diagnostics dialog's "Copy output" produces (API latency probes, listen tests, the `x-sanity-shard` id, and the request-timing history recorded while the test ran). It is captured by the `_failureDiagnostics` auto fixture in `e2e/studio-test.ts` through `window.__sanityStudioDiagnostics`, which the e2e studio installs via the `StudioDiagnosticsBridge` component (`dev/studio-e2e-testing/diagnosticsBridge.tsx`). When the studio shell never mounted, `studio-diagnostics-fallback.json` holds plain-fetch probes instead, and `studio-request-error.txt` records the studio's request error dialog ("Too many requests", server error, network error) when it is showing — the request history only covers `/data/*` traffic, so this is how a 429 on `/users/me` becomes visible. Attachments show up per test in the Playwright HTML report and paste straight into `dev/studio-diagnostics-viewer`.
+
+To turn those captures into numbers ("how many failed runs were platform-caused?"), run the flake report:
+
+```bash
+pnpm e2e:flake-report --days 7 --out flake-report.md   # needs GITHUB_TOKEN / GH_TOKEN or `gh auth login`
+pnpm e2e:flake-report --help
+pnpm --filter e2e test:unit                              # classifier unit tests
+```
+
+It lists recent `End-to-End Tests` runs, downloads the blob reports of failed shards (cached under the OS temp dir), classifies each failed attempt as degraded / healthy / unknown from its capture, attributes every failed run to `platform`, `test-side`, `mixed`, or `unknown`, reads failed setup-job logs for rate-limit and network signatures, and flags correlated failure windows across unrelated branches. Thresholds and the verdict rules live in `e2e/scripts/flakeReport/classify.ts` and are restated in the report's Method section. The `E2E flake report` workflow (`.github/workflows/e2e-flake-report.yml`) runs it weekly and on demand, publishing the markdown as the job summary plus an artifact.
+
+Staging rate-limits per IP, so `pnpm e2e:setup` retries 429/5xx responses with backoff (`e2e/scripts/rateLimitRetry.ts`, honoring `Retry-After`) and sends the `x-sanity-ratelimit-bypass` header when `SANITY_CLI_API_RATE_LIMIT_BYPASS` is set, as the `dataset-setup` CI job does.
+
 ### Important Note for AI Agents
 
 **What requires authentication:**

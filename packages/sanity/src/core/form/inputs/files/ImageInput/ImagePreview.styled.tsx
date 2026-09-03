@@ -1,6 +1,7 @@
-import {Card, Flex} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {type ComponentProps} from 'react'
+import {Flex} from 'ui5'
 
 import {errorIconWrapper, flexOverlay, overlay, ratioBox} from './ImagePreview.css'
 
