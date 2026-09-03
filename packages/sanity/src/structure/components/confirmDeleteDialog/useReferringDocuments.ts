@@ -1,5 +1,5 @@
 import {type ClientError, type SanityClient} from '@sanity/client'
-import isEqual from 'lodash-es/isEqual.js'
+import {dequal} from 'dequal/lite'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {combineLatest, concat, EMPTY, fromEvent, type Observable, of, timer} from 'rxjs'
@@ -157,10 +157,7 @@ export function fetchCrossDatasetReferences(
           }),
         )
     }),
-    // Every poll tick produces a fresh response object even when the references are unchanged.
-    // Drop identical results so consumers (e.g. the incoming-reference decorations, which turn
-    // each emission into a new promise and re-render their subtree) only update on real changes.
-    distinctUntilChanged(isEqual),
+    distinctUntilChanged(dequal),
   )
 }
 
