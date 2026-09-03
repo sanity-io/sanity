@@ -36,8 +36,6 @@ import {Box, type BoxProps} from 'ui5'
 import {restrictToParentElementWithMargins} from './dndkit-modifier/restrictToParentElementWithMargins'
 import {listItemMoving, MOVING_ITEM_CLASS_NAME} from './list.css'
 
-export {MOVING_ITEM_CLASS_NAME}
-
 function ListItem(props: ComponentProps<typeof Box> & {$moving?: boolean}) {
   const {$moving, className, ...rest} = props
   return <Box {...rest} className={clsx($moving && listItemMoving, className)} />
