@@ -5,12 +5,15 @@ import {DocumentInspectorHeader} from '../DocumentInspectorHeader'
 
 const NOOP = () => undefined
 
+const WRAPPING_TITLE =
+  'A wrapping inspector title that is long enough to wrap onto a second line in the header'
+
 /**
- * Chromatic sentinel for inspector header chrome. Main already migrated the
- * title/close gutters to ui5 Box; this snapshot pins title truncation, close
- * bleed-button alignment, and the optional children slot so a Box token
- * drift cannot hide the inspector title. Titles are fixtures (no live
- * inspector).
+ * Chromatic sentinel for the post-migration ui5 inspector header. The title
+ * is a wrapping `<Text as="h1">` (no textOverflow), so a long title grows
+ * the header taller rather than truncating. The children slot is unused
+ * in-repo but remains public on `sanity/structure`. Titles are fixtures
+ * (no live inspector).
  */
 export function DocumentInspectorHeaderStory() {
   return (
@@ -25,6 +28,16 @@ export function DocumentInspectorHeaderStory() {
               closeButtonLabel="Close inspector"
               onClose={NOOP}
               title="Validation"
+            />
+          </Stack>
+          <Stack gap={2}>
+            <Text muted size={1} weight="medium">
+              wrapping title
+            </Text>
+            <DocumentInspectorHeader
+              closeButtonLabel="Close inspector"
+              onClose={NOOP}
+              title={WRAPPING_TITLE}
             />
           </Stack>
           <Stack gap={2}>

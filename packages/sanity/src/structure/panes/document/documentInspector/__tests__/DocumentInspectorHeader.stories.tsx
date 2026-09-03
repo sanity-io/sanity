@@ -9,7 +9,7 @@ import {DocumentInspectorHeaderStory} from './DocumentInspectorHeaderStory'
 const meta = {
   title: 'Structure/Document Inspector Header',
   component: DocumentInspectorHeaderStory,
-  parameters: {chromatic: {delay: 500}},
+  tags: ['!dev', '!autodocs', 'vrt-only'],
 } satisfies Meta<typeof DocumentInspectorHeaderStory>
 
 export default meta

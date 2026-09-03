@@ -6,15 +6,21 @@ import {TestWrapper} from '../../../../../test/browser/TestWrapper'
 import {DetailIdentity} from '../DetailIdentity'
 import {DetailPropertiesPanel} from '../DetailPropertiesPanel'
 
-const LONG_DESCRIPTION =
-  'A summer editorial covering the coastal collection. Targeting the US storefront, the EU storefront, and the preview bundle so merchandisers can review copy before the scheduled publish.'
+// Six+ lines / ~450 chars so Chromatic captures the four-line clamp and
+// overflow:hidden, not a description that merely sits on the clamp boundary.
+const CLAMPED_DESCRIPTION =
+  'This description is long enough to overflow the four-line clamp on DetailIdentity. ' +
+  'The extra sentences exist so Chromatic captures overflow:hidden, not a description that merely ' +
+  'sits on the clamp boundary. Lorem ipsum dolor sit amet, consectetur adipiscing elit. ' +
+  'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, ' +
+  'quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ' +
+  'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.'
 
 /**
- * Chromatic sentinel for the shared releases/variants detail header band.
- * Main already migrated title truncation and property-value cells to ui5
- * Box; this snapshot pins placeholder opacity, four-line clamp, glyph
- * column alignment, and the properties card's title-leading offset — a
- * mix TypeScript will not catch. Copy is a fixture (no live releases).
+ * Chromatic sentinel for the post-migration ui5 detail layout: identity
+ * (placeholder opacity, four-line overflow clamp) and properties panel
+ * (glyph column alignment, title-leading offset). Copy is a fixture (no
+ * live releases).
  */
 export function DetailLayoutStory() {
   return (
@@ -27,7 +33,7 @@ export function DetailLayoutStory() {
             </Text>
             <Flex align="flex-start" gap={4} justify="space-between">
               <DetailIdentity
-                description={LONG_DESCRIPTION}
+                description={CLAMPED_DESCRIPTION}
                 title="Summer editorial"
                 titleAs="h1"
                 titlePlaceholder="Untitled release"
