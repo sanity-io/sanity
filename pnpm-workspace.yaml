@@ -46,7 +46,7 @@ catalog:
   react: ^19.2.8
   react-dom: ^19.2.8
   react-is: ^19.2.8
-  react-rx: ^6.0.0
+  react-rx: ^6.0.1
   rimraf: ^6.1.3
   storybook: ^10.5.10
   styled-components: ^6.5.3
