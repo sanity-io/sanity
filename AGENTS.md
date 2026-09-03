@@ -292,24 +292,18 @@ File-wide `/* oxlint-disable <rule> */` is reserved for files that are an except
 
 `options.reportUnusedDisableDirectives` is `error`, so a suppression that stops being necessary fails CI — drop suppressions when the code underneath them changes.
 
-### React Compiler vs oxlint `react/*` disables
+### React Compiler bail-outs are silent in `sanity dev`
 
-`// oxlint-disable-next-line react/…` silences `pnpm check:oxlint` only. The Vite React Compiler
-plugin (`vite:react-compiler` in `sanity dev`) still warns and skips that function.
+An `oxlint-disable-next-line react/…` suppression marks code the React Compiler cannot compile:
+the whole component or hook is skipped, not just that line. Since `oxc-transform-react` 0.148 the
+Vite plugin no longer logs those bail-outs, so a quiet `sanity dev` terminal is not evidence that a
+component compiles — the oxlint `react/*` diagnostics are the signal. Fix the code (no render-time
+`ref.current`, no `try/finally` around state updates, no hooks-rule suppressions) rather than
+suppressing it. Keep previous-value caches in a `useState` closure instead of a ref (see
+`useImmutableReconcile`).
 
-`'use no memo'` (first statement of the function) skips compilation, but `oxc-transform-react`
-still emits diagnostics for that function — Vite will still print `[plugin vite:react-compiler]`.
-Use the directive when compiling the function is unsafe (TanStack Virtual: compiling
-`useVirtualizer()` results can leave lists/scroll positions stale). To also silence Vite:
-
-- Prefer a compiler-safe rewrite (no render-time `ref.current`, no `try/finally`, no hooks-rule
-  suppressions).
-- For `useVirtualizer`, import it from `packages/sanity/src/core/util/tanstackVirtual.ts` instead
-  of `@tanstack/react-virtual`. The compiler matches the package specifier, not the local name.
-  Keep `'use no memo'` on the caller.
-
-Do not add `'use no memo'` just to hide a warning — fix the code so the compiler can compile it
-when that is safe.
+Do not add `'use no memo'` to TanStack Virtual callers: the compiler detects `useVirtualizer()`
+and opts those functions out on its own.
 
 ### Effect events: use `use-effect-event`, not React's native hook
 
