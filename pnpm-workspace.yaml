@@ -150,6 +150,16 @@ minimumReleaseAgeExclude:
 
 overrides:
   vitest: 'catalog:'
+  # vite 8.2.2 allows `rolldown: ~1.2.4` but its bundledDev browser runtime
+  # (dist/client/bundledDevClient.mjs) is compiled from rolldown 1.2.4. rolldown 1.2.6
+  # (rolldown/rolldown#10772) emits `registerModule(id)` without an exports holder for export-less
+  # modules (e.g. vanilla-extract `*.vanilla.css`) and relies on a matching runtime default, so
+  # `sanity dev` with `unstable_bundledDev: true` crashes with "Cannot read properties of
+  # undefined (reading 'exports')" as soon as a lazy chunk containing one is initialized.
+  # Pin vite's rolldown to the last version matching its inlined runtime; other consumers
+  # (tsdown, rolldown-plugin-dts) keep 1.2.6. Remove once the catalog has vite >= 8.3.0,
+  # which inlines the 1.2.6 runtime and pins `rolldown: ~1.2.6`.
+  'vite>rolldown': '1.2.5'
 
 preferWorkspacePackages: true
 
