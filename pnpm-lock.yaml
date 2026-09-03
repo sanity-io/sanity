@@ -1430,15 +1430,15 @@ importers:
       '@sanity/uuid':
         specifier: ^3.0.3
         version: 3.0.3
-      debug:
-        specifier: ^4.4.3
-        version: 4.4.3(supports-color@8.1.1)
       dequal:
         specifier: 'catalog:'
         version: 2.0.3
       lodash-es:
         specifier: ^4.18.1
         version: 4.18.1
+      obug:
+        specifier: ^2.1.4
+        version: 2.1.4
     devDependencies:
       '@repo/test-config':
         specifier: workspace:*
@@ -1449,9 +1449,6 @@ importers:
       '@repo/tsdown.config':
         specifier: workspace:*
         version: link:../../@repo/tsdown.config
-      '@types/debug':
-        specifier: ^4.1.13
-        version: 4.1.13
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12
@@ -2029,9 +2026,6 @@ importers:
       date-fns:
         specifier: ^4.4.0
         version: 4.4.0
-      debug:
-        specifier: ^4.4.3
-        version: 4.4.3(supports-color@8.1.1)
       dequal:
         specifier: 'catalog:'
         version: 2.0.3
@@ -2080,6 +2074,9 @@ importers:
       observable-callback:
         specifier: ^1.0.3
         version: 1.0.3(rxjs@7.8.2)
+      obug:
+        specifier: ^2.1.4
+        version: 2.1.4
       player.style:
         specifier: ^0.3.4
         version: 0.3.4(react@19.2.8)
@@ -2201,9 +2198,6 @@ importers:
       '@testing-library/user-event':
         specifier: ^14.6.6
         version: 14.6.6(@testing-library/dom@10.4.1)
-      '@types/debug':
-        specifier: ^4.1.13
-        version: 4.1.13
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12
@@ -20914,6 +20908,7 @@ snapshots:
   '@types/debug@4.1.13':
     dependencies:
       '@types/ms': 2.1.0
+    optional: true
 
   '@types/deep-eql@4.0.2': {}
 
@@ -20954,7 +20949,8 @@ snapshots:
 
   '@types/mdurl@2.0.0': {}
 
-  '@types/ms@2.1.0': {}
+  '@types/ms@2.1.0':
+    optional: true
 
   '@types/node@18.19.80':
     dependencies:
