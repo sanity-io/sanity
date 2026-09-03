@@ -2,7 +2,8 @@ import {SearchIcon} from '@sanity/icons/Search'
 import {SpinnerIcon} from '@sanity/icons/Spinner'
 import {Stack, TextInput} from '@sanity/ui'
 import {useActorRef, useSelector} from '@xstate/react'
-import {Activity, memo, useCallback, useEffect, useMemo, useState} from 'react'
+import {clsx} from 'clsx'
+import {Activity, type ComponentProps, memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   EMPTY_ARRAY,
@@ -17,13 +18,17 @@ import {
   useTranslation,
   useUnique,
 } from 'sanity'
-import {keyframes, styled} from 'styled-components'
 import {Box} from 'ui5'
 
 import {usePane} from '../../components/pane/usePane'
 import {structureLocaleNamespace} from '../../i18n'
 import {type BaseStructureToolPaneProps} from '../types'
 import {DEFAULT_ORDERING, EMPTY_RECORD, FULL_LIST_LIMIT} from './constants'
+import {
+  animatedSpinnerIcon,
+  delayedSubtleSpinnerIcon,
+  subtleSpinnerIcon,
+} from './DocumentListPane.css'
 import {DocumentListPaneContent} from './DocumentListPaneContent'
 import {
   DocumentListPaneSearchOrdering,
@@ -44,42 +49,20 @@ export type DocumentListPaneProps = BaseStructureToolPaneProps<'documentList'> &
   layout?: GeneralPreviewLayoutKey
 }
 
-const rotate = keyframes`
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-`
+function AnimatedSpinnerIcon(props: ComponentProps<typeof SpinnerIcon>) {
+  const {className, ...rest} = props
+  return <SpinnerIcon {...rest} className={clsx(animatedSpinnerIcon, className)} />
+}
 
-const fadeIn = keyframes`
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 0.1;
-  }
-  100% {
-    opacity: 0.4;
-  }
-`
+function SubtleSpinnerIcon(props: ComponentProps<typeof SpinnerIcon>) {
+  const {className, ...rest} = props
+  return <SpinnerIcon {...rest} className={clsx(subtleSpinnerIcon, className)} />
+}
 
-const AnimatedSpinnerIcon = styled(SpinnerIcon)`
-  animation: ${rotate} 500ms linear infinite;
-`
-
-const SubtleSpinnerIcon = styled(SpinnerIcon)`
-  animation: ${rotate} 1500ms linear infinite;
-  opacity: 0.4;
-`
-
-const DelayedSubtleSpinnerIcon = styled(SpinnerIcon)`
-  animation:
-    ${rotate} 1500ms linear infinite,
-    ${fadeIn} 1000ms linear;
-  opacity: 0.4;
-`
+function DelayedSubtleSpinnerIcon(props: ComponentProps<typeof SpinnerIcon>) {
+  const {className, ...rest} = props
+  return <SpinnerIcon {...rest} className={clsx(delayedSubtleSpinnerIcon, className)} />
+}
 
 /**
  * @internal
