@@ -12,12 +12,12 @@ import {
   useMemo,
   useState,
 } from 'react'
-import deepCompare from 'react-fast-compare'
 import {ReviewChangesContext} from 'sanity/_singletons'
 
 import {EMPTY_ARRAY} from '../util/empty'
 import {DEBUG} from './constants'
 import {ElementWithChangeBar} from './ElementWithChangeBar'
+import {isEqualTrackedChange} from './isEqualTrackedChange'
 import {useChangeIndicatorsReporter} from './tracker'
 
 const ChangeBarWrapper = memo(function ChangeBarWrapper(
@@ -76,11 +76,7 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
     }),
     [element, hasFocus, hasHover, isChanged, layer.zIndex, path],
   )
-  useChangeIndicatorsReporter(
-    reporterId,
-    reporterGetSnapshot,
-    deepCompare, // note: deepCompare should be ok here since we're not comparing deep values
-  )
+  useChangeIndicatorsReporter(reporterId, reporterGetSnapshot, isEqualTrackedChange)
 
   return (
     <div {...restProps} ref={setElement} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>

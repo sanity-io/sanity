@@ -1,11 +1,21 @@
 import {type SanityClient} from '@sanity/client'
 import {Schema as SchemaBuilder} from '@sanity/schema'
-import {builtinTypes} from '@sanity/schema/_internal'
-import {type Rule, type SanityDocument, type SchemaTypeDefinition} from '@sanity/types'
-import {of} from 'rxjs'
+import {builtinTypes, createSchemaFromManifestTypes} from '@sanity/schema/_internal'
+import {
+  type Rule,
+  type SanityDocument,
+  type SchemaTypeDefinition,
+  type ValidationContext,
+} from '@sanity/types'
+import {Observable, of} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 
-import {validateDocument, validateDocumentWithWorkspace, validationMarkerCodes} from '../src'
+import {
+  validateDocument,
+  type ValidateDocumentOptions,
+  validateDocumentWithWorkspace,
+  validationMarkerCodes,
+} from '../src'
 import {getFallbackLocaleSource} from '../src/_internal'
 
 const builtinSchema = SchemaBuilder.compile({name: 'studio', types: builtinTypes})
@@ -29,7 +39,7 @@ function createDocument(value: Record<string, unknown>): SanityDocument {
 }
 
 function createMockClient(omitted: {id: string; reason: 'existence' | 'permission'}[] = []) {
-  const fetch = vi.fn(async () => null)
+  const fetch = vi.fn(async (): Promise<unknown> => null)
   const request = vi.fn(() => of({omitted}))
   const client = {
     fetch,
@@ -41,8 +51,523 @@ function createMockClient(omitted: {id: string; reason: 'existence' | 'permissio
   return {client, fetch, request}
 }
 
+function validateMarkers(options: ValidateDocumentOptions) {
+  return validateDocument(options).then(({markers}) => markers)
+}
+
 describe('validateDocument', () => {
-  it('preserves workspace validation behavior through the compatibility overload', async () => {
+  it('rejects pre-aborted validation with the abort reason', async () => {
+    const schema = createSchema([{name: 'article', type: 'document', fields: []}])
+    const reason = new Error('cancelled')
+    const {client} = createMockClient()
+
+    await expect(
+      validateDocument({
+        client,
+        document: createDocument({_type: 'article'}),
+        schema,
+        signal: AbortSignal.abort(reason),
+      }),
+    ).rejects.toBe(reason)
+    expect(client.withConfig).not.toHaveBeenCalled()
+
+    await expect(
+      validateDocument({
+        document: createDocument({_type: 'article'}),
+        schema,
+        signal: AbortSignal.abort(),
+      }),
+    ).rejects.toMatchObject({name: 'AbortError'})
+  })
+
+  it('passes cancellation to custom validators without creating exception markers', async () => {
+    const controller = new AbortController()
+    const reason = new Error('cancelled')
+    const {client} = createMockClient()
+    const customValidator = vi.fn(
+      (_value: unknown, context: ValidationContext) =>
+        new Promise<true>((_resolve, reject) => {
+          const {signal} = context
+          if (!signal) throw new Error('Expected a validation signal')
+          signal.addEventListener('abort', () => reject(signal.reason), {once: true})
+        }),
+    )
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {name: 'title', type: 'string', validation: (rule: Rule) => rule.custom(customValidator)},
+        ],
+      },
+    ])
+
+    const validation = validateDocument({
+      client,
+      document: createDocument({_type: 'article', title: 'Hello'}),
+      schema,
+      signal: controller.signal,
+    })
+    await vi.waitFor(() => expect(customValidator).toHaveBeenCalledOnce())
+    expect(customValidator.mock.calls[0][1].signal).toBe(controller.signal)
+    controller.abort(reason)
+
+    await expect(validation).rejects.toBe(reason)
+  })
+
+  it('adds cancellation to custom validator client fetches', async () => {
+    const controller = new AbortController()
+    const reason = new Error('cancelled')
+    const fetch = vi.fn(
+      (_query: string, _params: object, {signal}: {signal: AbortSignal}) =>
+        new Promise((_resolve, reject) => {
+          signal.addEventListener('abort', () => reject(signal.reason), {once: true})
+        }),
+    )
+    const client = {
+      fetch,
+      getDataUrl: () => '/doc',
+      observable: {request: vi.fn(() => of({omitted: []}))},
+      withConfig: vi.fn(() => client),
+    } as unknown as SanityClient
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {
+            name: 'title',
+            type: 'string',
+            validation: (rule: Rule) =>
+              rule.custom(async (_value, context) => {
+                await context.getClient({apiVersion: '2025-02-19'}).fetch('query')
+                return true as const
+              }),
+          },
+        ],
+      },
+    ])
+
+    const validation = validateDocument({
+      client,
+      document: createDocument({_type: 'article', title: 'Hello'}),
+      schema,
+      signal: controller.signal,
+    })
+    await vi.waitFor(() => expect(fetch).toHaveBeenCalledOnce())
+    expect(fetch).toHaveBeenCalledWith(
+      'query',
+      undefined,
+      expect.objectContaining({signal: controller.signal}),
+    )
+
+    controller.abort(reason)
+
+    await expect(validation).rejects.toBe(reason)
+  })
+
+  it('does not start queued custom validators after cancellation and releases their slots', async () => {
+    const controller = new AbortController()
+    const reason = new Error('cancelled')
+    const {client} = createMockClient()
+    let waitForCancellation = true
+    const firstValidator = vi.fn((_value: unknown, context: ValidationContext) => {
+      if (!waitForCancellation) return true
+      waitForCancellation = false
+      return new Promise<true>((_resolve, reject) => {
+        context.signal?.addEventListener('abort', () => reject(context.signal?.reason), {
+          once: true,
+        })
+      })
+    })
+    const queuedValidator = vi.fn(() => true as const)
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {name: 'first', type: 'string', validation: (rule: Rule) => rule.custom(firstValidator)},
+          {
+            name: 'second',
+            type: 'string',
+            validation: (rule: Rule) => rule.custom(queuedValidator),
+          },
+        ],
+      },
+    ])
+    const document = createDocument({_type: 'article', first: 'one', second: 'two'})
+
+    const validation = validateDocument({
+      client,
+      document,
+      maxCustomValidationConcurrency: 1,
+      schema,
+      signal: controller.signal,
+    })
+    await vi.waitFor(() => expect(firstValidator).toHaveBeenCalledOnce())
+    controller.abort(reason)
+
+    await expect(validation).rejects.toBe(reason)
+    expect(queuedValidator).not.toHaveBeenCalled()
+
+    await expect(
+      validateDocument({client, document, maxCustomValidationConcurrency: 1, schema}),
+    ).resolves.toMatchObject({status: 'passed'})
+    expect(queuedValidator).toHaveBeenCalledOnce()
+  })
+
+  it('passes cancellation to slug uniqueness fetches', async () => {
+    const controller = new AbortController()
+    const {client, fetch} = createMockClient()
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [{name: 'slug', type: 'slug'}],
+      },
+    ])
+
+    await validateDocument({
+      client,
+      document: createDocument({_type: 'article', slug: {current: 'hello'}}),
+      schema,
+      signal: controller.signal,
+    })
+
+    expect(fetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.any(Object),
+      expect.objectContaining({signal: controller.signal}),
+    )
+  })
+
+  it('aborts and unsubscribes active reference availability requests', async () => {
+    const controller = new AbortController()
+    const reason = new Error('cancelled')
+    const teardown = vi.fn()
+    const request = vi.fn(
+      () =>
+        new Observable(() => {
+          return teardown
+        }),
+    )
+    const client = {
+      fetch: vi.fn(async () => null),
+      getDataUrl: () => '/data/doc',
+      observable: {request},
+      withConfig: () => client,
+    } as unknown as SanityClient
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [{name: 'author', type: 'reference', to: [{type: 'author'}]}],
+      },
+      {name: 'author', type: 'document', fields: []},
+    ])
+
+    const validation = validateDocument({
+      client,
+      document: createDocument({
+        _type: 'article',
+        author: {_ref: 'author-id', _type: 'reference'},
+      }),
+      schema,
+      signal: controller.signal,
+    })
+    await vi.waitFor(() => expect(request).toHaveBeenCalledOnce())
+    expect(request).toHaveBeenCalledWith(expect.objectContaining({signal: controller.signal}))
+    controller.abort(reason)
+
+    await expect(validation).rejects.toBe(reason)
+    expect(teardown).toHaveBeenCalledOnce()
+  })
+
+  it('reports passed, failed, and not-evaluated document outcomes', async () => {
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {
+            name: 'title',
+            type: 'string',
+            validation: (rule: Rule) => rule.required(),
+          },
+          {name: 'author', type: 'reference', to: [{type: 'author'}]},
+        ],
+      },
+      {name: 'author', type: 'document', fields: []},
+    ])
+
+    await expect(
+      validateDocument({
+        document: createDocument({_type: 'article', title: 'Hello'}),
+        schema,
+      }),
+    ).resolves.toEqual({status: 'passed', markers: []})
+
+    await expect(
+      validateDocument({document: createDocument({_type: 'article'}), schema}),
+    ).resolves.toMatchObject({status: 'failed', markers: [expect.any(Object)]})
+
+    await expect(
+      validateDocument({
+        document: createDocument({
+          _type: 'article',
+          title: 'Hello',
+          author: {_type: 'reference', _ref: 'author-id'},
+        }),
+        schema,
+      }),
+    ).resolves.toEqual({
+      status: 'notEvaluated',
+      markers: [],
+    })
+  })
+
+  it('skips user validators without skipping engine-provided validators', async () => {
+    const customValidator = vi.fn(() => true as const)
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {name: 'title', type: 'string', validation: (rule: Rule) => rule.custom(customValidator)},
+        ],
+      },
+    ])
+
+    const result = await validateDocument({
+      customValidation: false,
+      document: createDocument({_type: 'article', title: 'Hello', unexpected: true}),
+      schema,
+    })
+
+    expect(result.status).toBe('failed')
+    expect(result.markers).toEqual([
+      expect.objectContaining({code: validationMarkerCodes.objectUnknownField}),
+    ])
+    expect(customValidator).not.toHaveBeenCalled()
+  })
+
+  it('reports field rules as not evaluated when custom validation is disabled', async () => {
+    const customValidator = vi.fn(() => true as const)
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [{name: 'title', type: 'string'}],
+        validation: (rule: Rule) =>
+          rule.fields({title: (fieldRule) => fieldRule.custom(customValidator)}),
+      },
+    ])
+
+    const result = await validateDocument({
+      customValidation: false,
+      document: createDocument({_type: 'article', title: 'Hello'}),
+      schema,
+    })
+
+    expect(result).toEqual({
+      status: 'notEvaluated',
+      markers: [],
+    })
+    expect(customValidator).not.toHaveBeenCalled()
+  })
+
+  it('disables custom validators when no client is provided', async () => {
+    const pureValidator = vi.fn(() => true as const)
+    const clientValidator = vi.fn((_value: unknown, context: ValidationContext) => {
+      context.getClient({apiVersion: '2026-01-01'})
+      return true as const
+    })
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {name: 'pure', type: 'string', validation: (rule: Rule) => rule.custom(pureValidator)},
+          {
+            name: 'remote',
+            type: 'string',
+            validation: (rule: Rule) => rule.custom(clientValidator),
+          },
+        ],
+      },
+    ])
+
+    const result = await validateDocument({
+      document: createDocument({_type: 'article', pure: 'yes', remote: 'yes'}),
+      schema,
+    })
+
+    expect(result).toEqual({
+      status: 'notEvaluated',
+      markers: [],
+    })
+    expect(pureValidator).not.toHaveBeenCalled()
+    expect(clientValidator).not.toHaveBeenCalled()
+  })
+
+  it('reports client-dependent media validation as not evaluated without a client', async () => {
+    const mediaValidator = vi.fn(() => true as const)
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {
+            name: 'media',
+            type: 'object',
+            fields: [{name: '_ref', type: 'string'}],
+          },
+        ],
+        validation: (rule: Rule) => rule.media(mediaValidator),
+      },
+    ])
+
+    await expect(
+      validateDocument({
+        document: createDocument({
+          _type: 'article',
+          media: {_ref: 'media-library:library-id:asset-id'},
+        }),
+        schema,
+      }),
+    ).resolves.toEqual({
+      status: 'notEvaluated',
+      markers: [],
+    })
+    expect(mediaValidator).not.toHaveBeenCalled()
+  })
+
+  it('skips unavailable manifest validators when custom validation is disabled', async () => {
+    const schema = createSchemaFromManifestTypes({
+      name: 'test',
+      types: [
+        {
+          name: 'article',
+          type: 'document',
+          fields: [
+            {
+              name: 'title',
+              type: 'string',
+              validation: [{level: 'warning', rules: [{flag: 'custom'}]}],
+            },
+          ],
+        },
+      ],
+    })
+    const {client} = createMockClient()
+
+    const document = createDocument({_type: 'article', title: 'Hello'})
+
+    await expect(
+      validateDocument({client, customValidation: false, document, schema}),
+    ).resolves.toEqual({
+      status: 'notEvaluated',
+      markers: [],
+    })
+
+    await expect(validateDocument({client, document, schema})).resolves.toMatchObject({
+      status: 'failed',
+      markers: [expect.objectContaining({code: validationMarkerCodes.validationException})],
+    })
+  })
+
+  it('keeps local slug and reference checks in no-network mode', async () => {
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {name: 'author', type: 'reference', to: [{type: 'author'}]},
+          {name: 'slug', type: 'slug'},
+        ],
+      },
+      {name: 'author', type: 'document', fields: []},
+    ])
+
+    const result = await validateDocument({
+      customValidation: false,
+      document: createDocument({_type: 'article', author: 'invalid', slug: {current: ''}}),
+      schema,
+    })
+
+    expect(result.status).toBe('failed')
+    expect(result.markers).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({code: validationMarkerCodes.referenceInvalid}),
+        expect.objectContaining({code: validationMarkerCodes.slugMissingCurrent}),
+      ]),
+    )
+  })
+
+  it('runs default slug uniqueness without running a custom uniqueness callback', async () => {
+    const customIsUnique = vi.fn(async () => true)
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {name: 'defaultSlug', type: 'slug'},
+          {name: 'customSlug', type: 'slug', options: {isUnique: customIsUnique}},
+        ],
+      },
+    ])
+    const {client, fetch} = createMockClient()
+    fetch.mockResolvedValue(true)
+
+    const result = await validateDocument({
+      client,
+      customValidation: false,
+      document: createDocument({
+        _type: 'article',
+        defaultSlug: {current: 'default'},
+        customSlug: {current: 'custom'},
+      }),
+      schema,
+    })
+
+    expect(result).toEqual({status: 'notEvaluated', markers: []})
+    expect(fetch).toHaveBeenCalledOnce()
+    expect(customIsUnique).not.toHaveBeenCalled()
+  })
+
+  it('skips network checks while honoring an explicit reference existence callback', async () => {
+    const getDocumentExists = vi.fn(async () => true)
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {name: 'author', type: 'reference', to: [{type: 'author'}]},
+          {name: 'slug', type: 'slug'},
+        ],
+      },
+      {name: 'author', type: 'document', fields: []},
+    ])
+
+    const result = await validateDocument({
+      customValidation: false,
+      document: createDocument({
+        _type: 'article',
+        author: {_ref: 'author-id', _type: 'reference'},
+        slug: {current: 'hello'},
+      }),
+      getDocumentExists,
+      schema,
+    })
+
+    expect(getDocumentExists).toHaveBeenCalledWith(expect.objectContaining({id: 'author-id'}))
+    expect(result).toEqual({
+      status: 'notEvaluated',
+      markers: [],
+    })
+  })
+
+  it('preserves workspace validation behavior through the compatibility helper', async () => {
     const schema = createSchema([
       {
         name: 'article',
@@ -62,16 +587,40 @@ describe('validateDocument', () => {
     const i18n = {...fallbackI18n, t: vi.fn(fallbackI18n.t)}
     const workspace = {getClient: () => client, i18n, schema}
 
-    const [headlessMarkers, workspaceMarkers, namedHelperMarkers] = await Promise.all([
-      validateDocument({client, document, schema}),
-      validateDocument({document, workspace}),
+    const [headlessMarkers, workspaceMarkers] = await Promise.all([
+      validateMarkers({client, document, schema}),
       // oxlint-disable-next-line typescript/no-deprecated -- explicitly covers compatibility API
       validateDocumentWithWorkspace({document, workspace}),
     ])
 
     expect(workspaceMarkers).toEqual(headlessMarkers)
-    expect(namedHelperMarkers).toEqual(headlessMarkers)
     expect(i18n.t).toHaveBeenCalledWith('validation:string.minimum-length', {minLength: 10})
+  })
+
+  it('disables user validators through the workspace compatibility helper', async () => {
+    const customValidator = vi.fn(() => 'Failed')
+    const schema = createSchema([
+      {
+        name: 'article',
+        type: 'document',
+        fields: [
+          {name: 'title', type: 'string', validation: (rule: Rule) => rule.custom(customValidator)},
+        ],
+      },
+    ])
+    const document = createDocument({_type: 'article', title: 'Title'})
+    const {client} = createMockClient()
+    const workspace = {
+      getClient: () => client,
+      i18n: getFallbackLocaleSource(),
+      schema,
+    }
+
+    await expect(
+      // oxlint-disable-next-line typescript/no-deprecated -- explicitly covers compatibility API
+      validateDocumentWithWorkspace({customValidation: false, document, workspace}),
+    ).resolves.toEqual([])
+    expect(customValidator).not.toHaveBeenCalled()
   })
 
   it('defaults workspace validation to the studio environment', async () => {
@@ -86,8 +635,9 @@ describe('validateDocument', () => {
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 
     try {
-      await expect(validateDocument({document, workspace})).resolves.toEqual([])
-      await expect(validateDocument({client, document, schema})).resolves.toEqual([
+      // oxlint-disable-next-line typescript/no-deprecated -- explicitly covers compatibility API
+      await expect(validateDocumentWithWorkspace({document, workspace})).resolves.toEqual([])
+      await expect(validateMarkers({client, document, schema})).resolves.toEqual([
         expect.objectContaining({
           level: 'warning',
           message: "Could not find schema type for type 'missing', skipping validation",
@@ -120,7 +670,7 @@ describe('validateDocument', () => {
     const before = structuredClone(document)
     const {client} = createMockClient()
 
-    const markers = await validateDocument({client, document, schema})
+    const markers = await validateMarkers({client, document, schema})
 
     expect(markers).toEqual(
       expect.arrayContaining([
@@ -175,7 +725,7 @@ describe('validateDocument', () => {
     ])
     const {client} = createMockClient()
 
-    const markers = await validateDocument({
+    const markers = await validateMarkers({
       client,
       document: createDocument({
         _type: 'article',
@@ -226,7 +776,7 @@ describe('validateDocument', () => {
     const {client} = createMockClient()
 
     await expect(
-      validateDocument({
+      validateMarkers({
         client,
         document: createDocument({_type: 'article', title: 'Title'}),
         schema,
@@ -256,7 +806,7 @@ describe('validateDocument', () => {
     const {client} = createMockClient()
 
     await expect(
-      validateDocument({
+      validateMarkers({
         client,
         document: createDocument({_type: 'article', title: 'Title'}),
         schema,
@@ -287,7 +837,7 @@ describe('validateDocument', () => {
     const {client} = createMockClient()
 
     await expect(
-      validateDocument({
+      validateMarkers({
         client,
         document: createDocument({_type: 'article', title: 'Short'}),
         schema,
@@ -306,7 +856,7 @@ describe('validateDocument', () => {
     const {client} = createMockClient()
 
     await expect(
-      validateDocument({
+      validateMarkers({
         client,
         document: createDocument({_type: 'missing'}),
         schema,
@@ -331,6 +881,7 @@ describe('validateDocument', () => {
             type: 'string',
             validation: (rule: Rule) =>
               rule.custom(async (_value, context) => {
+                expect(context).not.toHaveProperty('__internal')
                 await context.getClient({apiVersion: '2026-01-01'}).fetch('*[]')
                 return true as const
               }),
@@ -341,7 +892,7 @@ describe('validateDocument', () => {
     const {client, fetch} = createMockClient()
 
     await expect(
-      validateDocument({
+      validateMarkers({
         client,
         document: createDocument({_type: 'article', title: 'Hello'}),
         schema,
@@ -388,7 +939,7 @@ describe('validateDocument', () => {
         withConfig: () => client,
       } as unknown as SanityClient
 
-      await validateDocument({
+      await validateMarkers({
         client,
         document,
         getDocumentExists: async () => true,
@@ -404,6 +955,7 @@ describe('validateDocument', () => {
   })
 
   it('uses an explicit reference existence lookup when provided', async () => {
+    const controller = new AbortController()
     const schema = createSchema([
       {
         name: 'article',
@@ -415,11 +967,12 @@ describe('validateDocument', () => {
     const getDocumentExists = vi.fn(async () => false)
     const {client, request} = createMockClient()
 
-    const markers = await validateDocument({
+    const markers = await validateMarkers({
       client,
       document: createDocument({_type: 'article', author: {_ref: 'author-id', _type: 'reference'}}),
       getDocumentExists,
       schema,
+      signal: controller.signal,
     })
 
     expect(markers).toEqual([
@@ -431,7 +984,10 @@ describe('validateDocument', () => {
         path: ['author'],
       }),
     ])
-    expect(getDocumentExists).toHaveBeenCalledWith({id: 'author-id'})
+    expect(getDocumentExists).toHaveBeenCalledWith({
+      id: 'author-id',
+      signal: controller.signal,
+    })
     expect(request).not.toHaveBeenCalled()
   })
 
@@ -447,7 +1003,7 @@ describe('validateDocument', () => {
     const {client, request} = createMockClient()
 
     await expect(
-      validateDocument({
+      validateMarkers({
         client,
         document: createDocument({
           _type: 'article',

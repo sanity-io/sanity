@@ -1750,6 +1750,7 @@ export {
   useLoadable,
 } from '../core/util/useLoadable'
 export {userHasRole} from '../core/util/userHasRole'
+export {useShallowUnique} from '../core/util/useShallowUnique'
 export {useThrottledCallback} from '../core/util/useThrottledCallback'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {useUnique} from '../core/util/useUnique'

@@ -1,12 +1,12 @@
 import {useRootTheme} from '@sanity/ui'
-import debugit from 'debug'
+import {createDebug} from 'obug'
 import {useEffect} from 'react'
 
 import {useLiveUserApplication} from '../liveUserApplication/useLiveUserApplication'
 import {useWorkspaces} from '../workspaces/useWorkspaces'
 import {registerStudioManifest} from './registerLiveStudioManifest'
 
-const debug = debugit('sanity:manifest')
+const debug = createDebug('sanity:manifest')
 
 /**
  * Provider that automatically uploads the studio manifest when the Studio loads.

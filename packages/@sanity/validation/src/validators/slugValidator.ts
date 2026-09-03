@@ -18,6 +18,17 @@ const DEFAULT_API_VERSION = '2025-02-19'
 
 const memoizedWarnOnArraySlug = memoize(warnOnArraySlug)
 
+export function hasCustomSlugUniqueness(
+  options: unknown,
+): options is {isUnique: SlugIsUniqueValidator} {
+  return (
+    typeof options === 'object' &&
+    options !== null &&
+    'isUnique' in options &&
+    typeof options.isUnique === 'function'
+  )
+}
+
 function serializePath(path: Path): string {
   return path.reduce<string>((target, part, i) => {
     const isIndex = typeof part === 'number'
@@ -62,7 +73,7 @@ const defaultIsUnique: SlugIsUniqueValidator = (slug, context) => {
         published: getPublishedId(document._id as DocumentId),
         slug,
       },
-      {tag: 'validation.slug-is-unique'},
+      {signal: context.signal, tag: 'validation.slug-is-unique'},
     )
 }
 
@@ -76,13 +87,7 @@ function warnOnArraySlug(serializedPath: string) {
   )
 }
 
-/**
- * Validates slugs values by querying for uniqueness from the client.
- *
- * This is a custom rule implementation (e.g. `Rule.custom(slugValidator)`)
- * that's populated in `inferFromSchemaType` when the type name is `slug`
- */
-export const slugValidator: CustomValidator = async (value, context) => {
+export const slugStructureValidator: CustomValidator = (value, context) => {
   if (!value) {
     return true
   }
@@ -104,9 +109,19 @@ export const slugValidator: CustomValidator = async (value, context) => {
     }
   }
 
-  const options = context?.type?.options as {isUnique?: SlugIsUniqueValidator} | undefined
-  const isUnique = options?.isUnique || defaultIsUnique
+  return true
+}
 
+async function validateSlugUniqueness(
+  value: unknown,
+  context: Parameters<CustomValidator>[1],
+  isUnique: SlugIsUniqueValidator,
+) {
+  if (!isSlug(value) || value.current.trim().length === 0) {
+    return true
+  }
+
+  const {i18n} = context
   const slugContext: SlugValidationContext = {
     ...context,
     parent: context.parent as SlugParent,
@@ -124,4 +139,14 @@ export const slugValidator: CustomValidator = async (value, context) => {
     details: {slug: value.current},
     message: i18n.t('validation:slug.not-unique', {slug: value.current}),
   }
+}
+
+export const defaultSlugUniquenessValidator: CustomValidator = (value, context) =>
+  validateSlugUniqueness(value, context, defaultIsUnique)
+
+export const customSlugUniquenessValidator: CustomValidator = (value, context) => {
+  const options = context.type?.options
+  return hasCustomSlugUniqueness(options)
+    ? validateSlugUniqueness(value, context, options.isUnique)
+    : true
 }

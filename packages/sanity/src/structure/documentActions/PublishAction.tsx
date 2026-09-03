@@ -23,7 +23,7 @@ import {
   useValidationStatus,
 } from 'sanity'
 
-import {structureLocaleNamespace, type StructureLocaleResourceKeys} from '../i18n'
+import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 import {
   DocumentPublished,
@@ -31,27 +31,19 @@ import {
   PublishButtonDisabledStart,
   PublishButtonClicked,
 } from './__telemetry__/documentActions.telemetry'
-
-const DISABLED_REASON_TITLE_KEY: Record<string, StructureLocaleResourceKeys> = {
-  LIVE_EDIT_ENABLED: 'action.publish.live-edit.publish-disabled',
-  ALREADY_PUBLISHED: 'action.publish.already-published.no-time-ago.tooltip',
-  NO_CHANGES: 'action.publish.no-changes.tooltip',
-  NOT_READY: 'action.publish.disabled.not-ready',
-  NOT_PUBLISHABLE: 'action.publish.disabled.not-publishable',
-  TARGET_NOT_FOUND: 'action.publish.disabled.target-not-found',
-} as const
+import {PUBLISH_DISABLED_REASON} from './operationDisabledReasons'
 
 const PUBLISHED_STATE = {status: 'published'} as const
 
 function getDisabledReason(
-  reason: keyof typeof DISABLED_REASON_TITLE_KEY,
+  reason: keyof typeof PUBLISH_DISABLED_REASON,
   publishedAt: string | undefined,
   t: TFunction,
 ) {
   if (reason === 'ALREADY_PUBLISHED' && publishedAt) {
     return <AlreadyPublished publishedAt={publishedAt} />
   }
-  return t(DISABLED_REASON_TITLE_KEY[reason])
+  return t(PUBLISH_DISABLED_REASON[reason])
 }
 
 function AlreadyPublished({publishedAt}: {publishedAt: string}) {
