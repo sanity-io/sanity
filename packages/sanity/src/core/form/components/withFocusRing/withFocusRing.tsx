@@ -6,7 +6,8 @@ import {type ComponentType, type CSSProperties} from 'react'
 import {focusRingBorderStyle, focusRingStyle} from './helpers'
 import {borderBoxShadowVar, focusBoxShadowVar, focusRing, radiusVar} from './withFocusRing.css'
 
-interface FocusRingProps {
+/** @internal */
+export interface FocusRingProps {
   $border?: boolean
   $radius?: number
   className?: string
