@@ -134,12 +134,15 @@ The autocomplete is a consistency aid, not a schema constraint. Users can still 
 
 ## Configured conditions picker
 
-When `beta.variants.conditions` is set (a static array or a function that may return a promise), the form switches to an exclusive card picker. The function receives `projectId`, `dataset`, and `getClient`, and is resolved when a surface needs the list, not during studio boot.
+When `beta.variants.conditions` is set (a static array or a function that may return a promise), the form switches to an exclusive dropdown picker. The function receives `projectId`, `dataset`, and `getClient`, and is resolved when a surface needs the list, not during studio boot.
 
-- key cards come from the configured list (title + optional description)
-- after a key is chosen, value cards for that key are shown
+- each row is two select-like `MenuButton`s (`ConditionMenuButton`): the key, then its value
+- menu rows follow the workspace switcher (`MenuItem` with icon, title, and description as subtitle); the current choice is checked
+- the trigger stays one line in every state and only takes the selected look while its menu is open, so picking never shifts the form
+- the value dropdown is disabled until a key is chosen; switching keys resets the value
 - already-used keys are omitted from later rows
-- existing conditions that are not in the list stay visible, are marked as errors, and block save
+- while the list loads, the rows render disabled with a spinner instead of a skeleton, so the ready state lands in place
+- existing conditions that are not in the list stay visible in a critical tone, are marked as errors, and block save
 - a load failure shows an error and retry; the form does not fall back to free-text
 - overview rows, detail condition rows, and navbar menu items show the same mismatch error after the list is ready
 
@@ -202,7 +205,7 @@ Covered areas include:
 - create/edit dialog validation and submit behavior
 - condition row validation and partial-edit regressions
 - condition suggestion helpers
-- conditions config reduction, normalization, mapped card-picker form flow, and condition mismatch errors
+- conditions config reduction, normalization, mapped dropdown-picker form flow, and condition mismatch errors
 - detail page rendering, edit dialog, footer, and detail delete menu
 
 Focused command:

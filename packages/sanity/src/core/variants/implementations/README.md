@@ -64,7 +64,7 @@ beta: {
 
 When `conditions` is set:
 
-- The create/edit dialog is a card picker. Keys and values must come from the list. You cannot type a new name.
+- The create/edit dialog is a dropdown picker: one select-like menu button for the key and one for its value, styled like the workspace switcher (icon, title, description; the current choice is checked). Keys and values must come from the list. You cannot type a new name.
 - The function runs when the form, overview, detail page, or navbar needs the list. Not at studio boot. One resolve is shared. A slow CDP does not stall the rest of the studio.
 - If the load fails, the form shows an error and Retry. It does not fall back to free text.
 - Stored pairs that are no longer in the list get flagged. [Mismatch validation](#mismatch-validation) has the copy and the screens.
@@ -111,19 +111,19 @@ The editor can still select an invalid variant and open it. We do not lock docum
 
 **Create / edit form.** Errors show as soon as the list is ready, not after Save.
 
-- Unknown key. The key card goes critical. `The condition "legacy" is not in the configured list. Edit the variant to fix it.`
-- Known key, unknown value. The value card goes critical. `The value "vip" is not valid for "audience". Edit the variant to fix it.`
-- The stale pair stays visible. Pick a configured pair or remove the row. You cannot type your way out.
+- Unknown key. The key dropdown goes critical and shows the raw key; the value dropdown is disabled. `The condition "legacy" is not in the configured list. Edit the variant to fix it.`
+- Known key, unknown value. The value dropdown goes critical and shows the raw value. `The value "vip" is not valid for "audience". Edit the variant to fix it.`
+- The stale pair stays visible. Pick a configured pair from the dropdowns or remove the row. You cannot type your way out.
 - Save stays blocked until every row is a configured pair.
 
 Save is also blocked while the list is not ready.
 
-| Form state                         | What shows                            | Save                                            |
-| ---------------------------------- | ------------------------------------- | ----------------------------------------------- |
-| List loading                       | `Loading conditions` and skeletons    | Blocked                                         |
-| List failed                        | `Unable to load conditions` and Retry | Blocked                                         |
-| List ready, stale pair             | Critical card and the mismatch line   | Blocked                                         |
-| List ready, every pair in the list | Normal selected cards                 | Allowed, if title and the other form rules pass |
+| Form state                         | What shows                                              | Save                                            |
+| ---------------------------------- | ------------------------------------------------------- | ----------------------------------------------- |
+| List loading                       | Disabled dropdowns, `Loading conditions` with a spinner | Blocked                                         |
+| List failed                        | `Unable to load conditions` and Retry                   | Blocked                                         |
+| List ready, stale pair             | Critical dropdown and the mismatch line                 | Blocked                                         |
+| List ready, every pair in the list | Normal dropdowns showing the configured titles          | Allowed, if title and the other form rules pass |
 
 ## Why this shape
 
