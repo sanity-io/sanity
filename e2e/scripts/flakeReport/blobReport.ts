@@ -129,40 +129,30 @@ export function keepTestsWithFailures(tests: TestCaptures[]): TestCaptures[] {
 
 /** Converts one attempt's attachments into the diagnostics capture the classifier reads. */
 export function toAttemptCapture(result: BlobResult, attempt: number): AttemptCapture {
-  const decode = (attachment: BlobAttachment) =>
-    attachment.base64 ? Buffer.from(attachment.base64, 'base64').toString('utf8') : undefined
+  const byName = (name: string) => {
+    const attachment = result.attachments.find((candidate) => candidate.name === name)
+    return attachment?.base64
+      ? Buffer.from(attachment.base64, 'base64').toString('utf8')
+      : undefined
+  }
 
-  const studio = result.attachments.find(
-    (attachment) => attachment.name === 'studio-diagnostics.json',
-  )
-  const fallback = result.attachments.find(
-    (attachment) => attachment.name === 'studio-diagnostics-fallback.json',
-  )
-  const error = result.attachments.find(
-    (attachment) => attachment.name === 'studio-diagnostics-error.txt',
-  )
+  const base = {
+    attempt,
+    requestErrorText: byName('studio-request-error.txt'),
+    status: result.status,
+  }
 
-  const studioBody = studio && decode(studio)
+  const studioBody = byName('studio-diagnostics.json')
   if (studioBody) {
-    return {
-      attempt,
-      diagnostics: JSON.parse(studioBody) as DiagnosticsReport,
-      kind: 'studio',
-      status: result.status,
-    }
+    return {...base, diagnostics: JSON.parse(studioBody) as DiagnosticsReport, kind: 'studio'}
   }
-  const fallbackBody = fallback && decode(fallback)
+  const fallbackBody = byName('studio-diagnostics-fallback.json')
   if (fallbackBody) {
-    return {
-      attempt,
-      fallback: JSON.parse(fallbackBody) as FallbackReport,
-      kind: 'fallback',
-      status: result.status,
-    }
+    return {...base, fallback: JSON.parse(fallbackBody) as FallbackReport, kind: 'fallback'}
   }
-  const errorBody = error && decode(error)
+  const errorBody = byName('studio-diagnostics-error.txt')
   if (errorBody) {
-    return {attempt, errorText: errorBody, kind: 'error', status: result.status}
+    return {...base, errorText: errorBody, kind: 'error'}
   }
-  return {attempt, kind: 'none', status: result.status}
+  return {...base, kind: 'none'}
 }
