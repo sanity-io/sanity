@@ -1,6 +1,6 @@
 {
   "name": "@sanity/validation",
-  "version": "6.11.0",
+  "version": "6.12.0",
   "description": "Document validation for Sanity schemas",
   "keywords": [
     "cms",
@@ -65,7 +65,8 @@
     "@sanity/schema": "workspace:*",
     "@sanity/types": "workspace:*",
     "@sanity/util": "workspace:*",
-    "i18next": "^26.4.0",
+    "dequal": "catalog:",
+    "i18next": "^26.4.1",
     "lodash-es": "^4.18.1",
     "rxjs": "^7.8.2"
   },

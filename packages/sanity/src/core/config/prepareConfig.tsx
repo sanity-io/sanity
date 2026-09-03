@@ -2,10 +2,10 @@ import {fromUrl} from '@sanity/bifur-client'
 import {createClient, type RequestHandler, type SanityClient} from '@sanity/client'
 import {type CurrentUser, type Schema, type SchemaValidationProblem} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
-import debugit from 'debug'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type i18n} from 'i18next'
 import startCase from 'lodash-es/startCase.js'
+import {createDebug} from 'obug'
 import {type ComponentType, type ElementType, type ErrorInfo, isValidElement} from 'react'
 import {isValidElementType} from 'react-is'
 import {map, shareReplay} from 'rxjs/operators'
@@ -38,6 +38,7 @@ import {isNonNullable} from '../util/isNonNullable'
 import {
   advancedVersionControlEnabledReducer,
   announcementsEnabledReducer,
+  commentsV2EnabledReducer,
   directUploadsReducer,
   documentActionsReducer,
   documentAskToEditEnabledReducer,
@@ -93,7 +94,7 @@ import {
 
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 
-const debug = debugit('sanity:config')
+const debug = createDebug('sanity:config')
 
 const isError = (p: SchemaValidationProblem) => p.severity === 'error'
 
@@ -717,6 +718,7 @@ function resolveSource({
     })
   }
 
+  const commentsV2Enabled = commentsV2EnabledReducer({config, initialValue: false})
   const variantsEnabled = variantsEnabledReducer({config, initialValue: false})
 
   // Upload the schema descriptor to Content Lake, but only when the user is
@@ -920,6 +922,9 @@ function resolveSource({
     },
 
     beta: {
+      comments: {
+        v2: commentsV2Enabled,
+      },
       eventsAPI: {
         // oxlint-disable-next-line no-deprecated -- still resolved so the legacy timeline opt-out keeps working until the next major
         documents: eventsAPIReducer({config, initialValue: true, key: 'documents'}),

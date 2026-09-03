@@ -220,11 +220,13 @@ import type {
   COMMENTS_INSPECTOR_NAME,
   CommentsAuthoringPathProvider,
   CommentsEnabledProvider,
+  CommentsEnabledProviderV2,
   CommentsIntentProvider,
   CommentsIntentProviderProps,
   CommentsList,
   CommentsListBreadcrumbItem,
   CommentsProvider,
+  CommentsProviderV2,
   CommentsSelectedPath,
   CommentsSelectedPathProvider,
   CommentStatus,
@@ -384,6 +386,7 @@ import type {
   DefineSchemaType,
   defineSearchFilter,
   defineSearchFilterOperators,
+  defineSearchMachine,
   defineSearchOperator,
   defineType,
   Delay,
@@ -702,6 +705,7 @@ import type {
   getDocumentPairPermissions,
   getDocumentValuePermissions,
   getDocumentVariantType,
+  getDocumentVersionType,
   getDraftId,
   getErrorMessage,
   getExpandOperations,
@@ -1353,6 +1357,11 @@ import type {
   SearchFactoryOptions,
   SearchFilterDefinition,
   SearchHeader,
+  SearchMachineContext,
+  SearchMachineEmitted,
+  SearchMachineEvent,
+  SearchMachineInput,
+  SearchMachineState,
   SearchOperatorBase,
   SearchOperatorBuilder,
   SearchOperatorButtonValue,
@@ -1590,6 +1599,7 @@ import type {
   useComlinkStore,
   useComments,
   useCommentsEnabled,
+  useCommentsEnabledV2,
   useCommentsSelectedPath,
   useCommentsTelemetry,
   useConditionalToast,
@@ -1719,6 +1729,8 @@ import type {
   useScheduledDraftDocument,
   useScheduledDraftsEnabled,
   useSchema,
+  useSearchMachine,
+  UseSearchMachineOptions,
   useSearchMaxFieldDepth,
   useSearchState,
   useSetPerspective,
@@ -2481,6 +2493,9 @@ describe('sanity', () => {
   test('CommentsEnabledProvider', () => {
     expectTypeOf<typeof CommentsEnabledProvider>().not.toBeNever()
   })
+  test('CommentsEnabledProviderV2', () => {
+    expectTypeOf<typeof CommentsEnabledProviderV2>().not.toBeNever()
+  })
   test('CommentsIntentProvider', () => {
     expectTypeOf<typeof CommentsIntentProvider>().not.toBeNever()
   })
@@ -2495,6 +2510,9 @@ describe('sanity', () => {
   })
   test('CommentsProvider', () => {
     expectTypeOf<typeof CommentsProvider>().not.toBeNever()
+  })
+  test('CommentsProviderV2', () => {
+    expectTypeOf<typeof CommentsProviderV2>().not.toBeNever()
   })
   test('CommentsSelectedPath', () => {
     expectTypeOf<CommentsSelectedPath>().toBeObject()
@@ -2976,6 +2994,9 @@ describe('sanity', () => {
   })
   test('defineSearchFilterOperators', () => {
     expectTypeOf<typeof defineSearchFilterOperators>().toBeFunction()
+  })
+  test('defineSearchMachine', () => {
+    expectTypeOf<typeof defineSearchMachine>().toBeFunction()
   })
   test('defineSearchOperator', () => {
     expectTypeOf<typeof defineSearchOperator>().toBeFunction()
@@ -3935,6 +3956,9 @@ describe('sanity', () => {
   })
   test('getDocumentVariantType', () => {
     expectTypeOf<typeof getDocumentVariantType>().toBeFunction()
+  })
+  test('getDocumentVersionType', () => {
+    expectTypeOf<typeof getDocumentVersionType>().toBeFunction()
   })
   test('getDraftId', () => {
     expectTypeOf<typeof getDraftId>().toBeFunction()
@@ -5895,6 +5919,21 @@ describe('sanity', () => {
   test('SearchHeader', () => {
     expectTypeOf<typeof SearchHeader>().toBeFunction()
   })
+  test('SearchMachineContext', () => {
+    expectTypeOf<SearchMachineContext<any, any>>().toBeObject()
+  })
+  test('SearchMachineEmitted', () => {
+    expectTypeOf<SearchMachineEmitted<any>>().not.toBeNever()
+  })
+  test('SearchMachineEvent', () => {
+    expectTypeOf<SearchMachineEvent<any>>().not.toBeNever()
+  })
+  test('SearchMachineInput', () => {
+    expectTypeOf<SearchMachineInput>().toBeObject()
+  })
+  test('SearchMachineState', () => {
+    expectTypeOf<SearchMachineState<any>>().toBeObject()
+  })
   test('SearchOperatorBase', () => {
     expectTypeOf<SearchOperatorBase>().toBeObject()
   })
@@ -6611,6 +6650,9 @@ describe('sanity', () => {
   test('useCommentsEnabled', () => {
     expectTypeOf<typeof useCommentsEnabled>().toBeFunction()
   })
+  test('useCommentsEnabledV2', () => {
+    expectTypeOf<typeof useCommentsEnabledV2>().toBeFunction()
+  })
   test('useCommentsSelectedPath', () => {
     expectTypeOf<typeof useCommentsSelectedPath>().toBeFunction()
   })
@@ -6998,6 +7040,12 @@ describe('sanity', () => {
   })
   test('useSchema', () => {
     expectTypeOf<typeof useSchema>().toBeFunction()
+  })
+  test('useSearchMachine', () => {
+    expectTypeOf<typeof useSearchMachine>().toBeFunction()
+  })
+  test('UseSearchMachineOptions', () => {
+    expectTypeOf<UseSearchMachineOptions<any>>().toBeObject()
   })
   test('useSearchMaxFieldDepth', () => {
     expectTypeOf<typeof useSearchMaxFieldDepth>().toBeFunction()

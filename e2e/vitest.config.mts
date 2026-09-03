@@ -2,9 +2,9 @@ import {defineConfig} from '@repo/test-config/vitest'
 
 export default defineConfig({
   test: {
-    // Unit tests for the flake-report tooling only. Playwright specs under ./tests
-    // run through `playwright test`, never through vitest.
-    include: ['./scripts/**/*.test.ts'],
-    exclude: ['./node_modules/**', './tests/**'],
+    // Unit tests for the reporters and the flake-report tooling. Playwright specs
+    // live in tests/*.spec.ts and run through `playwright test`, never vitest.
+    include: ['./reporters/**/*.test.ts', './scripts/**/*.test.ts'],
+    exclude: ['./node_modules/**', './results/**', './tests/**'],
   },
 })

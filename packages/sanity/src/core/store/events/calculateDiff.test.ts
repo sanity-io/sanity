@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
-import {publishDocumentVersionEvent, DRAFT_ID} from './__fixtures__/events.fixture'
+import {DRAFT_ID, publishDocumentVersionEvent} from './__fixtures__/events.fixture'
 import {editTransaction} from './__fixtures__/transactions.fixture'
 import {calculateDiff} from './calculateDiff'
 import {type DocumentGroupEvent} from './types'

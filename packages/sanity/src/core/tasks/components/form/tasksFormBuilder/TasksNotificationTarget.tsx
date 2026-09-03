@@ -1,7 +1,7 @@
 import {isImageSource} from '@sanity/asset-utils'
 import {createImageUrlBuilder} from '@sanity/image-url'
+import {dequal as deepEquals} from 'dequal/lite'
 import {useCallback, useEffect, useMemo} from 'react'
-import deepEquals from 'react-fast-compare'
 import {useRouterState} from 'sanity/router'
 
 import {isDev} from '../../../../environment'

@@ -9,6 +9,7 @@ import DragAndDropStory from './DragAndDropStory'
 const meta = {
   title: 'Portable Text/Drag And Drop',
   component: DragAndDropStory,
+  tags: ['!dev', '!autodocs', 'vrt-only'],
   parameters: {chromatic: {delay: 300}},
 } satisfies Meta<typeof DragAndDropStory>
 

@@ -9,6 +9,7 @@ import {AnnotationsStory} from './AnnotationsStory'
 const meta = {
   title: 'Portable Text/Annotations',
   component: AnnotationsStory,
+  tags: ['!dev', '!autodocs', 'vrt-only'],
   parameters: {chromatic: {delay: 300}},
 } satisfies Meta<typeof AnnotationsStory>
 

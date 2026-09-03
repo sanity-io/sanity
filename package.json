@@ -1,6 +1,6 @@
 {
   "name": "sanity-root",
-  "version": "6.11.0",
+  "version": "6.12.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -99,6 +99,7 @@
     "prepublishOnly": "pnpm build",
     "publish:tarball": "tsx scripts/publish/tarball.ts",
     "radar": "pnpm --filter radar dev",
+    "react-devtools:test-studio": "ENABLE_REACT_DEVTOOLS=true pnpm dev:test-studio:studio",
     "start": "pnpm dev",
     "test": "pnpm test:vitest",
     "test:changed": "vitest --changed",
@@ -108,6 +109,7 @@
     "test:vitest": "vitest --run",
     "test:vitest:watch": "vitest --watch",
     "tsdoc:dev": "sanity-tsdoc dev",
+    "visual-coverage": "tsx scripts/visualCoverage.ts",
     "watch": "pnpm --filter @sanity/* --filter sanity watch"
   },
   "devDependencies": {
@@ -116,7 +118,7 @@
     "@repo/release-notes": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@sanity/eslint-plugin-i18n": "^1.1.0",
-    "@types/node": "^24.13.2",
+    "@types/node": "^24.13.3",
     "@vitest/coverage-v8": "^4.1.11",
     "dotenv": "^17.4.2",
     "dotenv-flow": "^4.1.0",
@@ -125,23 +127,23 @@
     "eslint-plugin-i18next": "^6.1.5",
     "eslint-plugin-testing-library": "^7.16.2",
     "eslint-plugin-tsdoc": "^0.5.2",
-    "knip": "^6.32.2",
-    "lefthook": "^2.1.10",
+    "knip": "^6.34.0",
+    "lefthook": "^2.1.12",
     "npm-run-all2": "^9.0.2",
     "only-allow": "^1.2.2",
-    "oxfmt": "^0.65.0",
+    "oxfmt": "^0.66.0",
     "oxlint": "^1.80.0",
     "oxlint-tsgolint": "^7.0.2001",
     "pkg-pr-new": "^0.0.87",
     "playwright": "catalog:",
     "sanity": "workspace:*",
-    "tsx": "^4.23.12",
-    "turbo": "^2.10.9",
+    "tsx": "^4.23.13",
+    "turbo": "^2.10.12",
     "typescript": "catalog:",
     "vercel": "^57.0.0",
     "vite": "catalog:",
     "vitest": "catalog:"
   },
-  "packageManager": "pnpm@11.24.0",
+  "packageManager": "pnpm@11.25.0",
   "//": "pnpm settings moved to pnpm-workspace.yaml"
 }

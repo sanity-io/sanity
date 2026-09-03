@@ -52,14 +52,14 @@ export default defineConfig({
       'perf/bench',
       // The dashboard's drift/ack math — pure modules, plain node environment
       'dev/radar',
-      // The e2e flake-report classifier (scripts/flakeReport) — pure modules; the
-      // Playwright specs themselves are excluded by the project's include glob
-      'e2e',
       'packages/@repo/debug-proxy',
       'packages/@repo/release-notes',
       'packages/@repo/bundle-manager',
       'packages/@repo/package.bundle',
       'packages/@repo/utils',
+      // Reporter and flake-report unit tests only (see e2e/vitest.config.mts);
+      // Playwright specs stay out.
+      'e2e',
     ],
     coverage: {
       provider: 'v8',

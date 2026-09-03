@@ -10,6 +10,7 @@ import {CommentsInputStory} from './CommentInputStory'
 const meta = {
   title: 'Comments/Comment Input',
   component: CommentsInputStory,
+  tags: ['!dev', '!autodocs', 'vrt-only'],
   parameters: {chromatic: {delay: 300}},
 } satisfies Meta<typeof CommentsInputStory>
 

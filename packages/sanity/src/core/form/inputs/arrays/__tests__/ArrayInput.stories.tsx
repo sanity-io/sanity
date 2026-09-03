@@ -9,6 +9,7 @@ import ArrayInputStory from './ArrayInputStory'
 const meta = {
   title: 'Inputs/Array Input',
   component: ArrayInputStory,
+  tags: ['!dev', '!autodocs', 'vrt-only'],
   parameters: {chromatic: {delay: 300}},
 } satisfies Meta<typeof ArrayInputStory>
 
