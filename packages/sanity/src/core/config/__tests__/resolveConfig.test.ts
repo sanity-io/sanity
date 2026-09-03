@@ -765,6 +765,7 @@ describe('search filter configuration', () => {
     expect(workspace.search.filters).toEqual(
       expect.arrayContaining([pluginFilter, workspaceFilter]),
     )
+    expect(workspace.search.filters).toContainEqual(expect.objectContaining({name: 'updatedAt'}))
     expect(workspace.search.filters.indexOf(pluginFilter)).toBeLessThan(
       workspace.search.filters.indexOf(workspaceFilter),
     )

@@ -103,7 +103,7 @@ export const searchFilterReducer: ConfigPropertyReducer<SearchFilterDefinition[]
   )
 }
 
-// we will need this when we ressurect user config for search operators
+// we will need this when we resurrect user config for search operators
 /*
 export const searchOperatorsReducer: ConfigPropertyReducer<
   SearchOperatorDefinition[],
