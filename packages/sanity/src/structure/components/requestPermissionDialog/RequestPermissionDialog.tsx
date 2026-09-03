@@ -1,31 +1,19 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, DialogProvider, Flex, Stack, Text, TextInput} from '@sanity/ui'
+import {Card, DialogProvider, Stack, Text, TextInput} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useId, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {catchError, map, type Observable, of, startWith} from 'rxjs'
 import {type Role, useClient, useProjectId, useTranslation, useZIndex} from 'sanity'
-import {styled} from 'styled-components'
 import {Box} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {structureLocaleNamespace} from '../../i18n'
 import {AskToEditRequestSent} from './__telemetry__/RequestPermissionDialog.telemetry'
+import {dialogBody} from './RequestPermissionDialog.css'
 import {type AccessRequest} from './useRoleRequestsStatus'
 
 const MAX_NOTE_LENGTH = 150
-
-const DialogBody = styled(Box)`
-  box-sizing: border-box;
-`
-
-const LoadingContainer = styled(Flex).attrs({
-  align: 'center',
-  direction: 'column',
-  justify: 'center',
-})`
-  height: 110px;
-`
 
 /** @internal */
 export interface RequestPermissionDialogProps {
@@ -145,7 +133,7 @@ export function RequestPermissionDialog({
         onClose={onClose}
         onClickOutside={onClose}
       >
-        <DialogBody>
+        <Box className={dialogBody}>
           <Stack gap={4}>
             <Text>{t('request-permission-dialog.description.text')}</Text>
             {hasTooManyRequests || hasBeenDenied ? (
@@ -178,7 +166,7 @@ export function RequestPermissionDialog({
               </Stack>
             )}
           </Stack>
-        </DialogBody>
+        </Box>
       </Dialog>
     </DialogProvider>
   )

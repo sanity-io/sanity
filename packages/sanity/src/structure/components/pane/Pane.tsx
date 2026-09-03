@@ -1,5 +1,6 @@
 import {BoundaryElementProvider, Card, type CardProps, Flex} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
+import {clsx} from 'clsx'
 import {
   type HTMLProps,
   type ReactNode,
@@ -13,9 +14,9 @@ import {
 } from 'react'
 import {IsLastPaneProvider, LegacyLayerProvider} from 'sanity'
 import {PaneContext} from 'sanity/_singletons'
-import {styled} from 'styled-components'
 
 import {PANE_COLLAPSED_WIDTH, PANE_DEBUG, PANE_DEFAULT_MIN_WIDTH} from './constants'
+import {root} from './Pane.css'
 import {PaneDivider} from './PaneDivider'
 import {usePaneLayout} from './usePaneLayout'
 
@@ -30,14 +31,6 @@ interface PaneProps {
   selected?: boolean
 }
 
-const Root = styled(Card)`
-  outline: none;
-
-  // NOTE: This will render a border to the right side of each pane
-  // without taking up physical space.
-  box-shadow: 1px 0 0 var(--card-border-color);
-`
-
 /**
  * @hidden
  * @internal
@@ -51,6 +44,7 @@ export function Pane(
   const {
     ref: forwardedRef,
     children,
+    className,
     currentMinWidth: currentMinWidthProp,
     currentMaxWidth: currentMaxWidthProp,
     flex: flexProp = 1,
@@ -195,7 +189,7 @@ export function Pane(
       <LegacyLayerProvider zOffset="pane">
         <PaneContext.Provider value={contextValue}>
           <IsLastPaneProvider isLastPane={isLast}>
-            <Root
+            <Card
               data-testid="pane"
               data-ui="Pane"
               tone="inherit"
@@ -203,6 +197,7 @@ export function Pane(
               id={id}
               overflow={layoutCollapsed ? undefined : 'hidden'}
               {...restProps}
+              className={clsx(root, className)}
               data-pane-collapsed={collapsed ? '' : undefined}
               data-pane-index={paneIndex}
               data-pane-selected={selected ? '' : undefined}
@@ -232,7 +227,7 @@ export function Pane(
                   </Flex>
                 )}
               </BoundaryElementProvider>
-            </Root>
+            </Card>
           </IsLastPaneProvider>
         </PaneContext.Provider>
       </LegacyLayerProvider>
