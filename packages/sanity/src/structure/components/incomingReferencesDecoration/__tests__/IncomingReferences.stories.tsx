@@ -11,6 +11,9 @@ const meta = {
   title: 'Structure/Incoming References',
   component: IncomingReferencesStory,
   tags: ['!dev', '!autodocs', 'vrt-only'],
+  // Reference rows fade in through a JS-driven `motion` animation, which
+  // Chromatic cannot pause the way it pauses CSS animations.
+  parameters: {chromatic: {delay: 500}},
 } satisfies Meta<typeof IncomingReferencesStory>
 
 export default meta
