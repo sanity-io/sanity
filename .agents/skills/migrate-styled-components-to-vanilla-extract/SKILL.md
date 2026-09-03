@@ -116,6 +116,117 @@ export const transparentCard = style({
 Where styled-components silently won specificity battles via CSSOM insertion order, reach for
 `&&` rather than `!important`. Plain-element styles (`styled.div`) need no trick.
 
+### The cascade model (why order is not yours to rely on)
+
+Three stylesheets meet on a migrated element, and their order differs between `sanity dev` and
+`sanity build`:
+
+| Sheet                                     | `sanity build`                                 | `sanity dev`                                                                                                               |
+| ----------------------------------------- | ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| vanilla-extract (`bundle.css`)            | one static file, loaded first                  | one `<style>` per `.css.ts` module, injected when the module evaluates — lazy chunks land **after** styled-components' tag |
+| `@sanity/ui` (styled-components, runtime) | `<style data-styled>` appended on first render | same                                                                                                                       |
+| `ui5` (`styles.css`)                      | static file                                    | static file                                                                                                                |
+
+Consequences:
+
+- **Never rely on order against `@sanity/ui`.** On an equal-specificity tie the winner flips between
+  dev and prod. Beat the primitive's own rule by specificity: `&&` (0,2,0) beats a plain component
+  class (0,1,0). If the primitive rule you override already has two classes or a pseudo-class chain
+  (e.g. Card's `&[data-as='button']:not(:disabled)[data-selected]`), count its specificity and
+  exceed it — `&&&`, or `&&[data-as='button']`. Read the rule in
+  `node_modules/@sanity/ui/dist/*.js` when unsure. `!important` stays banned.
+- **styled-components gave you order for free; vanilla-extract does not.** A `styled(X)` wrapper
+  was always injected after `X`, so its equal-specificity declarations won. After migration, both
+  classes live in `bundle.css` in **module evaluation order**: within one `.css.ts` file, definition
+  order; across files, the importing file comes after the imported one. So for a
+  `styled(LocalStyledThing)` chain, define the override **below** the base in the same `.css.ts`
+  (or compose it with `style([base, {...}])`). For an override whose base lives in another
+  `.css.ts`, import that class into the overriding file — the import is what guarantees the
+  ordering — or use `&&`.
+- **Two classes on one element from unrelated files** (e.g. a `styled.div` root class plus a
+  parent-state selector `${parent}:hover &` defined elsewhere) are ordered by the same rule.
+  When a declaration must win regardless of file order, raise its specificity rather than
+  betting on order.
+- **`@media` blocks are hoisted.** vanilla-extract emits a file's media queries after that file's
+  base rules, which is what styled-components effectively did too. Media conditions cannot read
+  custom properties, so theme breakpoints are written as literals from the default theme (table
+  below) with a comment naming the theme key they mirror.
+
+#### What each `@sanity/ui` primitive sets on itself
+
+Use `&&` when the migrated rule overrides one of these; plain `style()` otherwise.
+
+| Primitive                                                                                         | Own declarations (via its props or defaults)                                                                                                                                                                                                                                        |
+| ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Box`                                                                                             | `display` (block, or the `display` prop), `box-sizing`, `flex`/`flex-shrink`/`flex-grow` props, `margin*`, `padding*`, `height`, `overflow`, `column`/`row` grid props, `list-style: none` for `as="ul"/"ol"`                                                                       |
+| `Flex`                                                                                            | Box + `display: flex`, `flex-direction`, `flex-wrap`, `align-items`, `justify-content`, `gap`                                                                                                                                                                                       |
+| `Stack`                                                                                           | Box + `display: grid`, `grid-template-columns`, `grid-auto-rows`, `gap`                                                                                                                                                                                                             |
+| `Grid`, `Inline`                                                                                  | Box + `display`, `gap`, `grid-*`, `align-items`                                                                                                                                                                                                                                     |
+| `Card`                                                                                            | Box + `background-color`, `color`, `color-scheme`, every `--card-*` variable, `border`/`border-color` (`border` prop), `border-radius` (`radius`), `box-shadow` (`shadow`, focus ring), `&[data-as='button'                                                                         | 'a']`hover/pressed/selected/disabled variants,`outline`, `font`, `text-align`, `appearance`, `width` (button) |
+| `Container`                                                                                       | Box + `max-width`, `margin: 0 auto`                                                                                                                                                                                                                                                 |
+| `Text`, `Label`, `Heading`, `Code`                                                                | `font-family`, `font-size`, `font-weight`, `line-height`, `letter-spacing`, `color` (`--card-fg-color` / muted / accent), `text-align`; descendant rules for `& code`, `& a` (color `--card-link-color`, focus ring), `& strong`, `& svg`; the inner `span` handles `text-overflow` |
+| `Button`                                                                                          | Card-like colors per `mode`/`tone`, `padding`, `border-radius`, `font`, `box-shadow`, `cursor`, `&:disabled`, `&:not(:disabled):hover`, `& [data-ui='Text']`                                                                                                                        |
+| `TextInput`, `TextArea`, `Select`                                                                 | wrapper `position: relative`; the inner `input`/`textarea`/`select` gets font, color, padding, border via presentation `span`; `--input-*` variables                                                                                                                                |
+| `Skeleton`, `TextSkeleton`, `LabelSkeleton`                                                       | `background-color`, `border-radius`, `animation`, `width`, `height`                                                                                                                                                                                                                 |
+| `Popover`, `Tooltip`, `Layer`, `Dialog`                                                           | `position`, `z-index`, `pointer-events`, `max-width`; Popover/Tooltip content Card colors                                                                                                                                                                                           |
+| `Badge`, `KBD`, `Spinner`, `Switch`, `Checkbox`, `Radio`, `Avatar`, `Tab`, `TreeItem`, `MenuItem` | fully self-styled — treat every declaration as an override (`&&`)                                                                                                                                                                                                                   |
+
+#### Theme reads → CSS variables
+
+`getTheme_v2(theme)` inside a styled template and `useTheme_v2()` inside the wrapper read the
+same context, including the nearest `Card`'s `tone` and `scheme`. Prefer a variable `@sanity/ui`
+already publishes on the nearest Card (they follow tone and scheme for free):
+
+| Theme read                                                        | CSS variable                                                                           |
+| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `color.bg`, `color.fg`, `color.border`, `color.icon`              | `--card-bg-color`, `--card-fg-color`, `--card-border-color`, `--card-icon-color`       |
+| `color.muted.bg`, `color.muted.fg`, `color.accent.fg`             | `--card-muted-bg-color`, `--card-muted-fg-color`, `--card-accent-fg-color`             |
+| `color.focusRing`, `color.backdrop`                               | `--card-focus-ring-color`, `--card-backdrop-color`                                     |
+| `color.badge.<tone>.{bg,fg,dot,icon}`                             | `--card-badge-<tone>-{bg,fg,dot,icon}-color`                                           |
+| `color.avatar.<hue>.{bg,fg}`                                      | `--card-avatar-<hue>-{bg,fg}-color`                                                    |
+| `color.link.fg`, `color.code.{bg,fg}`, `color.kbd.{bg,fg,border}` | `--card-link-fg-color`, `--card-code-{bg,fg}-color`, `--card-kbd-{bg,fg,border}-color` |
+| `color.shadow.{outline,umbra,penumbra,ambient}`                   | `--card-shadow-{outline,umbra,penumbra,ambient}-color`                                 |
+| `color.skeleton.{from,to}`                                        | `--card-skeleton-color-{from,to}`                                                      |
+| `color.hairline.{soft,hard}`                                      | `--card-hairline-{soft,hard}-color`                                                    |
+| card focus ring box-shadow (`focusRingStyle(...)`)                | `--card-focus-ring-box-shadow` (set by Card/Button on `:focus-visible`)                |
+
+Everything else — `color.selectable.*`, `color.solid.*`, `color.input.*`, `color.button.*`,
+`color.syntax.*`, `color._dark`, `space[n]`, `radius[n]`, `font.*`, `container[n]`,
+`avatar.sizes[n]`, `input.*`, `shadow[n]` — goes through Shape C: `createVar()` in the `.css.ts`,
+`useTheme_v2()` + `assignInlineVars()` in the wrapper. Keep the same theme key names in the var
+names (`space3Var`, `radius2Var`) so the intent survives. Do not hardcode scale values: a studio
+may build its own theme with different `space`, `radius`, or `font` scales.
+
+Only `@media` conditions get literals, mirrored from the default theme:
+
+| Key         | Default values                         |
+| ----------- | -------------------------------------- |
+| `media`     | `[360, 600, 900, 1200, 1800, 2400]` px |
+| `container` | `[320, 640, 960, 1280, 1600, 1920]` px |
+
+Write them as `'@media': {'screen and (min-width: 600px)': {...}}` with a comment such as
+`// media[1]`.
+
+### Wrapper contract
+
+A wrapper that replaces an exported styled component must keep call sites working without edits:
+
+- Same export name, same prop names — including transient `$props`, which become regular props
+  the wrapper consumes (do not rename them; callers in other directories still pass them).
+- `className` and `style` **merge** (`clsx`, spread) — never clobber.
+- `ref` flows through props (React 19). No `forwardRef`, no `displayName`.
+- `.attrs({...})` values become JSX props on the primitive inside the wrapper; `forwardedAs`
+  becomes `as`.
+- A prop-driven `css` branch becomes one `style()` per branch plus `clsx(cond && cls)`; a
+  prop-driven **value** becomes a `createVar()` set with `assignInlineVars`. Prefer
+  `styleVariants()` for a closed set of values.
+- Shared `css` mixins (`export const focusRingStyles = css\`...\``) become an exported
+`StyleRule`object or`style()`class in a`.css.ts`; importers compose it with
+`style([mixin, {...}])`.
+- A test that asserted a computed style of a migrated component (`toHaveStyle`) cannot pass in
+  jsdom anymore (runtime styles are disabled). Assert the state through a `data-*` attribute the
+  wrapper sets instead; add the attribute if none exists.
+
 ### Child and descendant selectors
 
 `style()` selectors **must target the current element**: `&` must be the subject. `'& img'` or
