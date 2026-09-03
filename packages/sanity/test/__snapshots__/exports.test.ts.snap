@@ -846,6 +846,7 @@ exports[`exports snapshot 1`] = `
     "ReferenceItemRefContext": "object",
     "ReleasesMetadataContext": "object",
     "ReleasesUpsellContext": "object",
+    "RenderStudioOptionsContext": "object",
     "ResolvedPanesContext": "object",
     "ResolvedPanesProvider": "function",
     "ResourceCacheContext": "object",

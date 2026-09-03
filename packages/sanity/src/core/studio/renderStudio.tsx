@@ -1,10 +1,12 @@
 import {StrictMode} from 'react'
 import {createRoot} from 'react-dom/client'
+import {RenderStudioOptionsContext} from 'sanity/_singletons'
 
 import {type Config} from '../config/types'
 import {Studio} from './Studio'
 
-interface RenderStudioOptions {
+/** @internal */
+export interface RenderStudioOptions {
   basePath?: string
   reactStrictMode?: boolean
 }
@@ -41,18 +43,17 @@ export function renderStudio(
 
   const opts = typeof options === 'boolean' ? {reactStrictMode: options} : options
   const {reactStrictMode = true, basePath} = opts
+  const renderOptions: RenderStudioOptions = {...opts, reactStrictMode}
 
   const root = createRoot(rootElement)
 
-  root.render(
-    reactStrictMode ? (
-      <StrictMode>
-        <Studio config={config} basePath={basePath} unstable_globalStyles />
-      </StrictMode>
-    ) : (
+  const studio = (
+    <RenderStudioOptionsContext.Provider value={renderOptions}>
       <Studio config={config} basePath={basePath} unstable_globalStyles />
-    ),
+    </RenderStudioOptionsContext.Provider>
   )
+
+  root.render(reactStrictMode ? <StrictMode>{studio}</StrictMode> : studio)
 
   return () => root.unmount()
 }

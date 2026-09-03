@@ -1547,7 +1547,7 @@ export {
 } from '../core/studio/manifest/types'
 export {uploadSchema} from '../core/studio/manifest/uploadSchema'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-export {renderStudio} from '../core/studio/renderStudio'
+export {renderStudio, type RenderStudioOptions} from '../core/studio/renderStudio'
 export {
   classifyConfigError,
   classifyRequestError,
