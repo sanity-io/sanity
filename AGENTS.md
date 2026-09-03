@@ -249,6 +249,20 @@ pnpm test:e2e --ui          # Interactive mode
 
 **Note:** E2E tests are typically run in CI, not locally during development. Most changes can be verified with unit tests.
 
+#### Diagnosing e2e flake: failure diagnostics and the flake report
+
+Every failed or timed-out e2e test attempt attaches `studio-diagnostics.json` — the same JSON the Studio Diagnostics dialog's "Copy output" produces (API latency probes, listen tests, the `x-sanity-shard` id, and the request-timing history recorded while the test ran). It is captured by the `_failureDiagnostics` auto fixture in `e2e/studio-test.ts` through `window.__sanityStudioDiagnostics`, which the e2e studio installs via the `StudioDiagnosticsBridge` component (`dev/studio-e2e-testing/diagnosticsBridge.tsx`). When the studio shell never mounted, `studio-diagnostics-fallback.json` holds plain-fetch probes instead. Attachments show up per test in the Playwright HTML report and paste straight into `dev/studio-diagnostics-viewer`.
+
+To turn those captures into numbers ("how many failed runs were platform-caused?"), run the flake report:
+
+```bash
+pnpm e2e:flake-report --days 7 --out flake-report.md   # needs GITHUB_TOKEN / GH_TOKEN or `gh auth login`
+pnpm e2e:flake-report --help
+pnpm --filter e2e test:unit                              # classifier unit tests
+```
+
+It lists recent `End-to-End Tests` runs, downloads the blob reports of failed shards (cached under the OS temp dir), classifies each failed attempt as degraded / healthy / unknown from its capture, attributes every failed run to `platform`, `test-side`, `mixed`, or `unknown`, reads failed setup-job logs for rate-limit and network signatures, and flags correlated failure windows across unrelated branches. Thresholds and the verdict rules live in `e2e/scripts/flakeReport/classify.ts` and are restated in the report's Method section. The `E2E flake report` workflow (`.github/workflows/e2e-flake-report.yml`) runs it weekly and on demand, publishing the markdown as the job summary plus an artifact.
+
 ### Important Note for AI Agents
 
 **What requires authentication:**

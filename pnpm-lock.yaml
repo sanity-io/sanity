@@ -929,6 +929,9 @@ importers:
       '@playwright/test':
         specifier: 'catalog:'
         version: 1.62.1
+      '@repo/test-config':
+        specifier: workspace:*
+        version: link:../packages/@repo/test-config
       '@repo/tsconfig':
         specifier: workspace:*
         version: link:../packages/@repo/tsconfig
@@ -944,9 +947,15 @@ importers:
       chromatic:
         specifier: ^18.5.0
         version: 18.7.1(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@0.1.10)
+      fflate:
+        specifier: ^0.8.3
+        version: 0.8.3
       tsx:
         specifier: ^4.23.12
         version: 4.23.13
+      vitest:
+        specifier: ^4.1.11
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/browser-playwright@4.1.11)(@vitest/coverage-v8@4.1.11)(jsdom@29.1.1)(vite@8.2.2)
 
   packages/@repo/ailf:
     devDependencies:
