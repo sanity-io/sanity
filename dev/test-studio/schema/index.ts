@@ -111,6 +111,7 @@ import {twoArgValidationRepro} from './debug/twoArgValidationRepro'
 import typeWithNoToplevelStrings from './debug/typeWithNoToplevelStrings'
 import uploads from './debug/uploads'
 import validation, {validationArraySuperType} from './debug/validation'
+import {variantConditionsSingleton} from './debug/variantConditionsSingleton'
 import {virtualizationDebug} from './debug/virtualizationDebug'
 import {virtualizationInObject} from './debug/virtualizationInObject'
 import {v3docs} from './docs/v3'
@@ -319,6 +320,7 @@ export function createSchemaTypes(projectId: string) {
     deepNestedRichContent,
     deepNestedRow,
     allFieldsGroupHidden,
+    variantConditionsSingleton,
     simpleReferences,
     reservedFieldNames,
     review,

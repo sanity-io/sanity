@@ -52,6 +52,17 @@ export const structure: StructureResolver = (
     .items([
       S.documentListItem().id('validation').schemaType('allTypes'),
       S.listItem()
+        .id('variant-conditions')
+        .title('Variant conditions')
+        .icon(FilterIcon)
+        .child(
+          S.document()
+            .id('variant-conditions')
+            .title('Variant conditions')
+            .schemaType('variantConditions')
+            .documentId('variant-conditions'),
+        ),
+      S.listItem()
         .title('Sections by perspective')
         .id('sections-by-perspective')
         .child(() => {
@@ -532,6 +543,7 @@ export const structure: StructureResolver = (
             !PLUGIN_INPUT_TYPES.includes(id) &&
             !EXTERNAL_PLUGIN_INPUT_TYPES.includes(id) &&
             !DEBUG_FIELD_GROUP_TYPES.includes(id) &&
+            id !== 'variantConditions' &&
             !typesInOptionGroup(S, schema, 'v3').includes(id)
           )
         })

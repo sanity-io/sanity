@@ -29,10 +29,10 @@ async function invokeConditionsFunction(
   context: VariantConditionsContext,
 ): Promise<VariantConditionMap[]> {
   const client = context.getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+
   const result = await client.functions.invoke<VariantConditionMap[]>(
     ref.function,
     {
-      event: {data: {projectId: context.projectId, dataset: context.dataset}},
       stackId: ref.stackId,
       organizationId: ref.organizationId,
       timeout: ref.timeout,
