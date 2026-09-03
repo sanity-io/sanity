@@ -150,6 +150,11 @@ minimumReleaseAgeExclude:
 
 overrides:
   vitest: 'catalog:'
+  # vite 8.2.2 inlines a bundledDev runtime whose `registerModule(id, exportsHolder)` has no default,
+  # while rolldown >= 1.2.6 emits `registerModule(id)` for export-less modules (rolldown#10772), so
+  # `unstable_bundledDev` crashes with "Cannot read properties of undefined (reading 'exports')" on the
+  # first lazy chunk containing one. Drop once the catalog vite ships a runtime that defaults the holder.
+  'vite>rolldown': '1.2.5'
 
 preferWorkspacePackages: true
 
