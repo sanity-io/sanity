@@ -80,6 +80,35 @@ describe('createProjectStore getOrganizationId', () => {
     subscription.unsubscribe()
   })
 
+  it('shares one request between getProject and getOrganizationId', async () => {
+    const project = createMockProjectData('org-shared')
+    const client = createMockClient({
+      projectId: 'shared-request-project',
+      requestImplementation: () => of(project),
+    })
+
+    const store = createProjectStore({client})
+
+    const projects: Array<ProjectData | null> = []
+    const organizationIds: Array<string | null> = []
+    const subscription = store.getProject().subscribe((value) => projects.push(value))
+    subscription.add(store.getOrganizationId().subscribe((value) => organizationIds.push(value)))
+
+    await vi.advanceTimersByTimeAsync(0)
+    expect(projects).toEqual([project])
+    expect(organizationIds).toEqual(['org-shared'])
+    expect(client.observable.request).toHaveBeenCalledTimes(1)
+
+    let replayed: ProjectData | null | undefined
+    subscription.add(store.getProject().subscribe((value) => (replayed = value)))
+    expect(replayed).toEqual(project)
+    expect(client.observable.request).toHaveBeenCalledTimes(1)
+    // Same instance every call, so react-rx caches one store entry for all consumers.
+    expect(store.getProject()).toBe(store.getProject())
+
+    subscription.unsubscribe()
+  })
+
   it('emits null only when no organization id has ever been resolved', async () => {
     const client = createMockClient({
       projectId: 'always-failing-project',

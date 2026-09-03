@@ -116,6 +116,7 @@ export function createProjectStore(context: {client: SanityClient}): ProjectStor
     get,
     getDatasets,
     getGrants: () => getProjectGrants(versionedClient),
+    getProject: () => projectOrgData$,
     getOrganizationData: () => projectOrgData$.pipe(map((res) => res?.organization ?? null)),
     getOrganizationId: () => projectOrgData$.pipe(map((res) => res?.organizationId ?? null)),
   }
