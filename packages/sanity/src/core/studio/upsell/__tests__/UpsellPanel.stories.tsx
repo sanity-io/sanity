@@ -3,8 +3,8 @@ import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {UpsellPanelStory} from './UpsellPanelStory'
 
 /**
- * Reuses the in-package harness: shared upsell card after the ui5 Box
- * migration. Static Portable Text fixture; no image or network.
+ * Chromatic sentinel: shared upsell card layouts after the ui5 Box
+ * migration. Static Portable Text fixture; inline SVG image; no network.
  */
 const meta = {
   title: 'Studio/Upsell Panel',

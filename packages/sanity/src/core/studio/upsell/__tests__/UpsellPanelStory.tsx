@@ -1,5 +1,6 @@
 import {type PortableTextBlock} from '@sanity/types'
 import {Card, Stack, Text} from '@sanity/ui'
+import noop from 'lodash-es/noop.js'
 
 import {type UpsellData} from '../types'
 import {UpsellPanel} from '../UpsellPanel'
@@ -41,13 +42,23 @@ const UPSELL_DATA: UpsellData = {
   secondaryButton: {text: 'Learn more', url: 'https://www.sanity.io/docs'},
 }
 
-const NOOP = () => undefined
+// Inline SVG data URI: keeps the story network-free while lighting up the
+// `_responsive` 50%-width image branch the horizontal layout depends on.
+const FIXTURE_IMAGE: UpsellData['image'] = {
+  asset: {
+    url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect width='100%25' height='100%25' fill='%23e3e4e8'/%3E%3C/svg%3E",
+    altText: 'Fixture illustration',
+  },
+}
 
 /**
  * Chromatic sentinel for the shared upsell card after the ui5 Box migration.
  * Vertical vs horizontal layout, bordered vs flush, and start vs center
  * alignment all depend on Box padding around Portable Text — a spacing
- * drift TypeScript will not catch. Copy is a fixture (no image fetch).
+ * drift TypeScript will not catch. The horizontal state carries an image
+ * because production's only horizontal caller (scheduled-publishing
+ * Schedules) always has one; the flush centered state mirrors the imageless
+ * releases SchedulesUpsell. Copy is a fixture (no network).
  */
 export function UpsellPanelStory() {
   return (
@@ -57,17 +68,17 @@ export function UpsellPanelStory() {
           <Text muted size={1} weight="medium">
             vertical bordered
           </Text>
-          <UpsellPanel data={UPSELL_DATA} onPrimaryClick={NOOP} onSecondaryClick={NOOP} />
+          <UpsellPanel data={UPSELL_DATA} onPrimaryClick={noop} onSecondaryClick={noop} />
         </Stack>
         <Stack gap={2}>
           <Text muted size={1} weight="medium">
-            horizontal bordered
+            horizontal bordered (image left, copy right)
           </Text>
           <UpsellPanel
-            data={UPSELL_DATA}
+            data={{...UPSELL_DATA, image: FIXTURE_IMAGE}}
             layout="horizontal"
-            onPrimaryClick={NOOP}
-            onSecondaryClick={NOOP}
+            onPrimaryClick={noop}
+            onSecondaryClick={noop}
           />
         </Stack>
         <Stack gap={2}>
@@ -78,8 +89,8 @@ export function UpsellPanelStory() {
             align="center"
             border={false}
             data={UPSELL_DATA}
-            onPrimaryClick={NOOP}
-            onSecondaryClick={NOOP}
+            onPrimaryClick={noop}
+            onSecondaryClick={noop}
           />
         </Stack>
       </Stack>

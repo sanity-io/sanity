@@ -1,4 +1,4 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Stack, Text} from '@sanity/ui'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {Button} from '../../../../../ui-components/button/Button'
@@ -9,7 +9,9 @@ import {VariantsEmptyState} from '../VariantsEmptyState'
  * Chromatic sentinel for the variants overview empty state after the ui5
  * Flex migration. Centered illustration, heading, muted copy, and the
  * optional create-button slot all depend on Flex gap/alignment — a spacing
- * drift TypeScript will not catch. Illustration is inline SVG (no network).
+ * drift TypeScript will not catch. Each state sits in a centered flex
+ * parent, matching the TableEmptyState cell that mounts it in production.
+ * Illustration is inline SVG (no network).
  */
 export function VariantsEmptyStateStory() {
   return (
@@ -20,13 +22,17 @@ export function VariantsEmptyStateStory() {
             <Text muted size={1} weight="medium">
               docs link only
             </Text>
-            <VariantsEmptyState />
+            <Flex justify="center">
+              <VariantsEmptyState />
+            </Flex>
           </Stack>
           <Stack gap={2}>
             <Text muted size={1} weight="medium">
               with create action
             </Text>
-            <VariantsEmptyState createVariantButton={<Button text="Create variant" />} />
+            <Flex justify="center">
+              <VariantsEmptyState createVariantButton={<Button text="Create variant" />} />
+            </Flex>
           </Stack>
         </Stack>
       </Card>

@@ -3,11 +3,12 @@ import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {IncompatibleItemTypeStory} from './IncompatibleItemTypeStory'
 
 /**
- * Reuses the in-package harness: incompatible array-item prompt after the
- * ui5 Box migration. Fixture values; popover stays closed.
+ * Chromatic sentinel: incompatible array-item prompt after the ui5 Box
+ * migration, including a narrowed state where the prompt truncates. Fixture
+ * values; popover stays closed.
  */
 const meta = {
-  title: 'Form/Incompatible Item Type',
+  title: 'Inputs/Incompatible Item Type',
   component: IncompatibleItemTypeStory,
 } satisfies Meta<typeof IncompatibleItemTypeStory>
 
