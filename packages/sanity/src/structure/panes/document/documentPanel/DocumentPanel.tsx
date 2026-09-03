@@ -1,4 +1,5 @@
 import {BoundaryElementProvider, PortalProvider, usePortal} from '@sanity/ui'
+import {clsx} from 'clsx'
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
@@ -22,7 +23,6 @@ import {
   useWorkspace,
   VirtualizerScrollInstanceProvider,
 } from 'sanity'
-import {css, styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {PaneContent} from '../../../components/pane/PaneContent'
@@ -52,6 +52,7 @@ import {ScheduledDraftOverrideBanner} from './banners/ScheduledDraftOverrideBann
 import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
 import {UnpublishedDocumentBanner} from './banners/UnpublishedDocumentBanner'
 import {VariantDefinitionNotFoundBanner} from './banners/VariantDefinitionNotFoundBanner'
+import {documentBox, scroller, scrollerEnabled} from './DocumentPanel.css'
 import {FormView} from './documentViews/FormView'
 import {DocumentPanelSubHeader} from './header/DocumentPanelSubHeader'
 
@@ -63,24 +64,6 @@ interface DocumentPanelProps {
   setDocumentPanelPortalElement: (el: HTMLElement | null) => void
   footer: React.ReactNode
 }
-
-const DocumentBox = styled(Box)({
-  position: 'relative',
-})
-
-const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => {
-  if ($disabled) {
-    return {height: '100%'}
-  }
-
-  return css`
-    height: 100%;
-    overflow: auto;
-    position: relative;
-    scroll-behavior: smooth;
-    outline: none;
-  `
-})
 
 export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {
@@ -426,15 +409,15 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
               {banners}
               <DocumentPanelSubHeader />
             </LegacyLayerProvider>
-            <DocumentBox flexBasis="0%" flexGrow={2}>
+            <Box className={documentBox} flexBasis="0%" flexGrow={2}>
               <PortalProvider element={portalElement} __unstable_elements={portalElements}>
                 <BoundaryElementProvider element={documentScrollElement}>
                   <VirtualizerScrollInstanceProvider
                     scrollElement={documentScrollElement}
                     containerElement={formContainerElement}
                   >
-                    <Scroller
-                      $disabled={layoutCollapsed || false}
+                    <ScrollContainer
+                      className={clsx(scroller, !layoutCollapsed && scrollerEnabled)}
                       data-testid="document-panel-scroller"
                       ref={setDocumentScrollElement}
                     >
@@ -444,7 +427,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                         ref={formContainerElement}
                       />
                       {activeViewNode}
-                    </Scroller>
+                    </ScrollContainer>
 
                     {inspectDialog}
 
@@ -452,7 +435,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                   </VirtualizerScrollInstanceProvider>
                 </BoundaryElementProvider>
               </PortalProvider>
-            </DocumentBox>
+            </Box>
 
             {footer}
           </Flex>
