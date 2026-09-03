@@ -1,7 +1,8 @@
 import {type PortableTextBlock} from '@sanity/types'
-import {getTheme_v2} from '@sanity/ui/theme'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
 import {startTransition, useCallback, useEffect, useState} from 'react'
-import {css, styled} from 'styled-components'
 
 import {CommentInput} from '../../../../../comments/components/pte/comment-input/CommentInput'
 import {set} from '../../../../../form/patch/patch'
@@ -11,31 +12,13 @@ import {useCurrentUser} from '../../../../../store/user/hooks'
 import {useMentionUser} from '../../../../context/mentionUser/useMentionUser'
 import {tasksLocaleNamespace} from '../../../../i18n'
 import {type FormMode} from '../../../../types'
+import {
+  descriptionInputRoot,
+  descriptionInputRootEdit,
+  editableWrapMinHeightVar,
+  editableWrapPaddingVar,
+} from './DescriptionInput.css'
 import {renderBlock} from './render/renderBlock'
-
-const DescriptionInputRoot = styled.div<{$mode: FormMode; $minHeight: number}>((props) => {
-  const theme = getTheme_v2(props.theme)
-  const verticalPadding = props.$mode === 'edit' ? theme.space[1] : theme.space[3]
-  const minHeight = props.$mode === 'edit' ? 120 : 200
-  return css`
-    /* select CommentInputEditableWrap and change the padding */
-    [data-ui='CommentInputEditableWrap'] {
-      overflow: hidden;
-      padding: ${
-        props.$mode === 'edit'
-          ? `${verticalPadding}px 0px`
-          : `${verticalPadding}px ${theme.space[2]}px`
-      };
-      min-height: ${Math.max(props.$minHeight + verticalPadding, minHeight)}px !important;
-    }
-    #comment-input-root {
-      box-shadow: ${props.$mode === 'edit' ? 'none' : ''};
-    }
-    [data-ui='CommentInputActions'] {
-      display: none !important;
-    }
-  `
-})
 
 export function DescriptionInput(props: ArrayFieldProps & {mode: FormMode}) {
   const {
@@ -46,6 +29,7 @@ export function DescriptionInput(props: ArrayFieldProps & {mode: FormMode}) {
   const value = _propValue as PortableTextBlock[] | undefined
   const currentUser = useCurrentUser()
   const {mentionOptions} = useMentionUser()
+  const {space} = useThemeV2()
 
   const handleChange = useCallback((next: PortableTextBlock[]) => onChange(set(next)), [onChange])
 
@@ -76,8 +60,20 @@ export function DescriptionInput(props: ArrayFieldProps & {mode: FormMode}) {
   }, [value, setTextboxHeight, rootRef])
 
   if (!currentUser) return null
+
+  const verticalPadding = mode === 'edit' ? space[1] : space[3]
+  const minHeight = mode === 'edit' ? 120 : 200
+
   return (
-    <DescriptionInputRoot $mode={mode} ref={handleSetRootRef} $minHeight={textBoxScrollHeight}>
+    <div
+      className={clsx(descriptionInputRoot, mode === 'edit' && descriptionInputRootEdit)}
+      ref={handleSetRootRef}
+      style={assignInlineVars({
+        [editableWrapPaddingVar]:
+          mode === 'edit' ? `${verticalPadding}px 0px` : `${verticalPadding}px ${space[2]}px`,
+        [editableWrapMinHeightVar]: `${Math.max(textBoxScrollHeight + verticalPadding, minHeight)}px`,
+      })}
+    >
       <CommentInput
         expandOnFocus={false}
         currentUser={currentUser}
@@ -89,6 +85,6 @@ export function DescriptionInput(props: ArrayFieldProps & {mode: FormMode}) {
         onDiscardConfirm={() => null}
         renderBlock={renderBlock}
       />
-    </DescriptionInputRoot>
+    </div>
   )
 }
