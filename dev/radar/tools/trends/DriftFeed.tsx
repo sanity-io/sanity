@@ -8,7 +8,7 @@ import {Box} from 'ui5'
 
 import {idSlug, SNOOZE_DAYS} from './acks'
 import {formatValue} from './data'
-import {baselineDetail, type DriftResult} from './drift'
+import {baselineDetail, type DriftResult, noiseLabel} from './drift'
 import {backlinksFor} from './links'
 import {type DriftState} from './useDriftState'
 
@@ -45,6 +45,8 @@ function DriftRow(props: {
         {formatValue(worst.baseline, entry.unit)} → {formatValue(worst.recent, entry.unit)}
         {' · '}
         {baselineDetail(worst)}
+        {' · '}
+        {noiseLabel(worst)}
       </Text>
       {backlinksFor(entry.latest).map((link) => (
         <Box
@@ -91,10 +93,11 @@ function DriftRow(props: {
 }
 
 /**
- * "Changes to review" — metrics that drifted past the gate thresholds.
- * Regressions first; entries can be silenced / snoozed / marked fixed
- * (shared driftAck docs, realtime, half-lived). Acked entries collapse into
- * a reveal footer. Renders nothing when everything is steady and unacked.
+ * "Changes to review" — metrics whose recent window moved past the gate's
+ * floors *and* past their own noise (see drift.ts). Regressions first;
+ * entries can be silenced / snoozed / marked fixed (shared driftAck docs,
+ * realtime, half-lived). Acked entries collapse into a reveal footer.
+ * Renders nothing when everything is steady and unacked.
  */
 export function DriftFeed(props: {
   drift: DriftState

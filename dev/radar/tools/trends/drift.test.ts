@@ -7,6 +7,8 @@ import {
   computeDrift,
   type DriftBaseline,
   type DriftResult,
+  NOISE_Z,
+  noiseLabel,
   worstBySeries,
 } from './drift'
 
@@ -41,30 +43,30 @@ function series(values: number[], overrides: Partial<TrendSeries> = {}): TrendSe
 }
 
 test('flat series does not fire', () => {
-  const drift = computeDrift([series(Array.from({length: 30}, () => 32))])
+  const drift = computeDrift([series(Array.from({length: 30}, () => 320))])
   expect(flagged(drift)).toHaveLength(0)
   // But a baseline is still computed, so the chart can draw the reference
   expect(drift).toHaveLength(1)
   expect(drift[0].direction).toBe('neutral')
 })
 
-// Prior ~32, last 7 jump to ~40 (25% > 5% and > 3ms)
+// Prior ~320, last 7 jump to ~400 (25% > 5%, 80ms > 16ms, and a flat prior has no noise)
 test('regression fires', () => {
-  const values = [...Array.from({length: 21}, () => 32), ...Array.from({length: 9}, () => 40)]
+  const values = [...Array.from({length: 21}, () => 320), ...Array.from({length: 9}, () => 400)]
   const drift = computeDrift([series(values)])
   expect(flagged(drift)).toHaveLength(1)
   expect(drift[0].direction).toBe('regression')
 })
 
 test('improvement fires as improvement', () => {
-  const values = [...Array.from({length: 21}, () => 40), ...Array.from({length: 9}, () => 30)]
+  const values = [...Array.from({length: 21}, () => 400), ...Array.from({length: 9}, () => 300)]
   const drift = computeDrift([series(values)])
   expect(drift[0].direction).toBe('improvement')
 })
 
-// Below the relative floor: 32 → 33 is ~3% < 5%
+// Below the relative floor: 320 → 330 is ~3% < 5%
 test('sub-threshold move stays quiet', () => {
-  const values = [...Array.from({length: 21}, () => 32), ...Array.from({length: 9}, () => 33)]
+  const values = [...Array.from({length: 21}, () => 320), ...Array.from({length: 9}, () => 330)]
   const drift = computeDrift([series(values)])
   expect(flagged(drift)).toHaveLength(0)
   expect(drift[0].direction).toBe('neutral')
@@ -111,22 +113,22 @@ test('context series is ignored', () => {
 // Too little history means no comparison exists at all — distinct from a
 // computed-but-quiet one, and the charts get no overlay either
 test('short history yields no baseline at all', () => {
-  expect(computeDrift([series([32, 33, 40])])).toHaveLength(0)
-  expect(computeDrift([series([32, 40])])).toHaveLength(0)
+  expect(computeDrift([series([320, 330, 400])])).toHaveLength(0)
+  expect(computeDrift([series([320, 400])])).toHaveLength(0)
 })
 
 // The whole point of neutral entries: a quiet chart still gets its reference
 // lines, so the overlay does not blink in and out as metrics cross the threshold.
 test('a quiet series still carries drawable windows', () => {
-  const drift = computeDrift([series(Array.from({length: 30}, () => 32))])
+  const drift = computeDrift([series(Array.from({length: 30}, () => 320))])
   expect(drift[0].direction).toBe('neutral')
   expect(drift[0].baseline.recentPointsMs).toHaveLength(7)
   expect(drift[0].baseline.baselinePointsMs).toHaveLength(21)
 })
 
 test('regressions sort first', () => {
-  const reg = series([...Array(21).fill(32), ...Array(9).fill(42)], {key: 'reg', title: 'reg'})
-  const imp = series([...Array(21).fill(42), ...Array(9).fill(30)], {key: 'imp', title: 'imp'})
+  const reg = series([...Array(21).fill(320), ...Array(9).fill(420)], {key: 'reg', title: 'reg'})
+  const imp = series([...Array(21).fill(420), ...Array(9).fill(300)], {key: 'imp', title: 'imp'})
   const drift = computeDrift([imp, reg])
   expect(drift[0].direction).toBe('regression')
 })
@@ -135,10 +137,10 @@ test('regressions sort first', () => {
 // a two-way "is it a regression" comparator answered improvement-vs-neutral
 // inconsistently, which makes Array.sort's output unspecified
 test('sorts regression, improvement, neutral in every input order', () => {
-  const reg = series([...Array(21).fill(32), ...Array(9).fill(42)], {key: 'reg', title: 'reg'})
-  const imp = series([...Array(21).fill(42), ...Array(9).fill(30)], {key: 'imp', title: 'imp'})
+  const reg = series([...Array(21).fill(320), ...Array(9).fill(420)], {key: 'reg', title: 'reg'})
+  const imp = series([...Array(21).fill(420), ...Array(9).fill(300)], {key: 'imp', title: 'imp'})
   const quiet = series(
-    Array.from({length: 30}, () => 32),
+    Array.from({length: 30}, () => 320),
     {key: 'quiet', title: 'quiet'},
   )
   for (const input of [
@@ -158,6 +160,9 @@ function baseline(overrides: Partial<DriftBaseline> = {}): DriftBaseline {
     delta: 8,
     deltaFraction: 0.25,
     direction: 'regression',
+    noiseSigma: 0,
+    standardError: 0,
+    zScore: Infinity,
     recentPointsMs: [START],
     baselinePointsMs: [START - DAY],
     ...overrides,
@@ -209,7 +214,7 @@ test('worstBySeries keeps the larger move within the same direction', () => {
 // The chart overlay draws these windows, so they must be exactly the windows
 // the medians came from — otherwise the picture and the percentage disagree.
 test('baseline carries its two window timestamps', () => {
-  const values = [...Array.from({length: 21}, () => 32), ...Array.from({length: 9}, () => 40)]
+  const values = [...Array.from({length: 21}, () => 320), ...Array.from({length: 9}, () => 400)]
   const [entry] = computeDrift([series(values)])
   const {baseline: fired} = entry
 
@@ -235,7 +240,7 @@ function medianOf(list: number[]): number {
 // A window that doesn't contain the runs producing its median would draw the
 // rule in the wrong place; recomputing the median from the window guards that.
 test('window timestamps reproduce the reported medians', () => {
-  const values = [...Array.from({length: 21}, () => 32), ...Array.from({length: 9}, () => 40)]
+  const values = [...Array.from({length: 21}, () => 320), ...Array.from({length: 9}, () => 400)]
   const trend = series(values)
   const points = trend.lines[0].points
   const valueAt = (ms: number) => points.find((point) => point.date.getTime() === ms)!.value
@@ -249,7 +254,7 @@ test('window timestamps reproduce the reported medians', () => {
 // silently leave the other behind. Both are stated in runs (never days) because
 // the cron misses days and sometimes runs twice.
 test('baseline labels match the windows the math uses', () => {
-  const values = [...Array.from({length: 21}, () => 32), ...Array.from({length: 9}, () => 40)]
+  const values = [...Array.from({length: 21}, () => 320), ...Array.from({length: 9}, () => 400)]
   const {baseline: fired} = computeDrift([series(values)])[0]
 
   expect(baselineLabel(fired)).toContain(`${fired.baselinePointsMs.length} runs`)
@@ -264,7 +269,7 @@ test('baseline labels match the windows the math uses', () => {
 // size, and the label must count the runs it actually has — "vs prior 21 runs"
 // over 5 runs of evidence would overstate it fourfold
 test('labels count the actual window on short history', () => {
-  const values = [...Array.from({length: 5}, () => 32), ...Array.from({length: 7}, () => 40)]
+  const values = [...Array.from({length: 5}, () => 320), ...Array.from({length: 7}, () => 400)]
   const {baseline: fired} = computeDrift([series(values)])[0]
 
   expect(fired.baselinePointsMs).toHaveLength(5)
@@ -303,4 +308,83 @@ test('worstBySeries prefers a regression over a larger neutral', () => {
   })
   expect(worstBySeries([bigNeutral, smallRegression]).get('test')?.direction).toBe('regression')
   expect(worstBySeries([smallRegression, bigNeutral]).get('test')?.direction).toBe('regression')
+})
+
+// --- the noise test -----------------------------------------------------------
+
+/** 21 prior + 7 recent, alternating high/low so the series carries real noise. */
+function noisy(priorLevel: number, recentLevel: number, spread: number): number[] {
+  const wobble = (index: number) => (index % 2 === 0 ? -spread : spread)
+  return [
+    ...Array.from({length: 21}, (_, index) => priorLevel + wobble(index)),
+    ...Array.from({length: 7}, (_, index) => recentLevel + wobble(index)),
+  ]
+}
+
+// The same +9% move (350 → 380, 30ms > 16ms) flags on a quiet series and stays
+// neutral on a series whose runs scatter ±100ms: the move is well inside what
+// that series does on its own. This is the difference between a review feed
+// and an alarm that is always on.
+test('a move inside the series own noise stays neutral', () => {
+  const quiet = computeDrift([series([...Array(21).fill(350), ...Array(7).fill(380)])])
+  expect(quiet[0].direction).toBe('regression')
+
+  const scattered = computeDrift([series(noisy(350, 380, 100))])
+  expect(scattered[0].direction).toBe('neutral')
+  // Still clears both gate floors — only the noise test held it back
+  expect(Math.abs(scattered[0].baseline.delta)).toBeGreaterThanOrEqual(16)
+  expect(Math.abs(scattered[0].baseline.deltaFraction)).toBeGreaterThanOrEqual(0.05)
+  expect(scattered[0].baseline.zScore).toBeLessThan(NOISE_Z)
+})
+
+// ...but a move that is large relative to that same scatter still fires
+test('a move well outside the noise fires', () => {
+  const drift = computeDrift([series(noisy(350, 800, 100))])
+  expect(drift[0].direction).toBe('regression')
+  expect(drift[0].baseline.zScore).toBeGreaterThanOrEqual(NOISE_Z)
+})
+
+// A flat prior has no noise at all: the standard error is 0 and any move past
+// the floors is real by definition — the label says so rather than dividing by 0
+test('a series that never varied reports infinite noise clearance', () => {
+  const drift = computeDrift([series([...Array(21).fill(320), ...Array(9).fill(400)])])
+  expect(drift[0].baseline.noiseSigma).toBe(0)
+  expect(drift[0].baseline.zScore).toBe(Infinity)
+  expect(noiseLabel(drift[0].baseline)).toBe('∞× noise')
+  // And a flat series that did not move is 0, not NaN
+  const flat = computeDrift([series(Array.from({length: 30}, () => 320))])
+  expect(flat[0].baseline.zScore).toBe(0)
+})
+
+test('noise label states the move as a multiple of the noise', () => {
+  const drift = computeDrift([series(noisy(350, 380, 100))])
+  expect(noiseLabel(drift[0].baseline)).toMatch(/^\d+\.\d× noise$/)
+})
+
+// A slow wander (each step small, the level drifting) must count as noise too:
+// consecutive differences alone would call this series quiet and flag the
+// window difference the wander produces.
+test('slow wander inside the prior window raises the noise estimate', () => {
+  // Prior 21 ramp 300 → 400 in 5ms steps; recent 7 sit at the top of the ramp
+  const ramp = Array.from({length: 21}, (_, index) => 300 + index * 5)
+  const drift = computeDrift([series([...ramp, ...Array(7).fill(400)])])
+  // Consecutive differences see 5ms steps (σ ≈ 5.2); the prior window's
+  // residuals around its median of 350 have a MAD of 25 (σ ≈ 37), and win
+  expect(drift[0].baseline.noiseSigma).toBeCloseTo(1.4826 * 25, 1)
+  // 350 → 400 is +14%, but against that wander it is z ≈ 2.47: a steady slope
+  // is absorbed as noise — the feed catches level shifts, not ramps (SPEC.md)
+  expect(drift[0].baseline.zScore).toBeLessThan(NOISE_Z)
+  expect(drift[0].direction).toBe('neutral')
+})
+
+// Scatter that only starts in the recent window: a flat prior, then seven
+// runs alternating 300/500 (a host change that made a stable series jittery).
+// The whole-window step MAD ignores 7 steps out of 27 and the prior residuals
+// are zero, so without the recent-window step estimate this reads as an
+// infinitely significant "improvement" to 300.
+test('scatter confined to the recent window counts as noise', () => {
+  const recent = [300, 500, 300, 500, 300, 500, 300]
+  const drift = computeDrift([series([...Array(21).fill(400), ...recent])])
+  expect(drift[0].baseline.noiseSigma).toBeGreaterThan(100)
+  expect(drift[0].direction).toBe('neutral')
 })
