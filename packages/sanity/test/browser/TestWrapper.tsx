@@ -28,6 +28,7 @@ import {RouterProvider} from '../../src/router/RouterProvider'
 import {Pane} from '../../src/structure/components/pane/Pane'
 import {PaneContent} from '../../src/structure/components/pane/PaneContent'
 import {PaneLayout} from '../../src/structure/components/pane/PaneLayout'
+import {structureUsEnglishLocaleBundle} from '../../src/structure/i18n'
 import {createMockSanityClient} from '../../test/mocks/mockSanityClient'
 import {getMockWorkspace} from '../../test/testUtils/getMockWorkspaceFromConfig'
 import {changeConnectorRoot} from './TestWrapper.css'
@@ -62,6 +63,9 @@ const getCachedMockWorkspace = memoize(
       schema: {
         types: schemaTypes,
       },
+      // The wrapper renders structure chrome (Pane/PaneLayout), so structure
+      // locale resources belong in the mock workspace by default.
+      i18n: {bundles: [structureUsEnglishLocaleBundle]},
       ...(betaFeatures ? {beta: betaFeatures} : {}),
     }) as SingleWorkspace
 
