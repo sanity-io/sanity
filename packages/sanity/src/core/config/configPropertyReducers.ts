@@ -86,10 +86,11 @@ export const toolsReducer: ConfigPropertyReducer<Tool[], ConfigContext> = (
   )
 }
 
-export const searchFilterReducer: ConfigPropertyReducer<
-  SearchFilterDefinition[],
-  ConfigContext
-> = (prev, {search}, context) => {
+export const searchFilterReducer: ConfigPropertyReducer<SearchFilterDefinition[], ConfigContext> = (
+  prev,
+  {search},
+  context,
+) => {
   const filters = search?.filters
   if (!filters) return prev
   if (typeof filters === 'function') return filters(prev, context)
