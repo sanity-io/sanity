@@ -1,6 +1,7 @@
 import {Card} from '@sanity/ui'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
+import {mediaLibraryUsEnglishLocaleBundle} from '../../i18n'
 import {InvalidVideoWarning} from '../InvalidVideoWarning'
 
 const NOOP = () => undefined
@@ -13,7 +14,7 @@ const NOOP = () => undefined
  */
 export function InvalidVideoWarningStory() {
   return (
-    <TestWrapper schemaTypes={[]}>
+    <TestWrapper i18nBundles={[mediaLibraryUsEnglishLocaleBundle]} schemaTypes={[]}>
       <Card padding={4} style={{maxWidth: 420}}>
         <InvalidVideoWarning onClearValue={NOOP} />
       </Card>
