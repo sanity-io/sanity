@@ -30,8 +30,7 @@ export default defineCliConfig({
   // trigger the monorepo "waterfall of reload doom", which previously required
   // server.warmup.clientFiles workarounds.
   // {@link https://vite.dev/guide/rolldown#full-bundle-mode}
-  // TODO(bundledDev): re-enable while profiling once bundledDev stops crashing on load.
-  unstable_bundledDev: process.env.ENABLE_REACT_DEVTOOLS !== 'true',
+  unstable_bundledDev: true,
   reactCompiler: {
     // `transform: 'oxc'` runs React Compiler through `oxc-transform-react` (the native Rust
     // port): one native pass handles React Compiler, TypeScript/JSX and Fast Refresh — no babel
