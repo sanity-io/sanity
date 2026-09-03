@@ -2,7 +2,6 @@ import {type SchemaType} from '@sanity/types'
 import {Badge} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {DocumentVersionsStatus} from '../../../../../../../components/documentStatus/DocumentVersionsStatus'
@@ -16,6 +15,7 @@ import {getPreviewValueWithFallback} from '../../../../../../../preview/utils/ge
 import {useDocumentVersions} from '../../../../../../../releases/hooks/useDocumentVersions'
 import {useDocumentPreviewStore} from '../../../../../../../store/datastores'
 import {type DocumentPresence} from '../../../../../../../store/presence/types'
+import {searchResultItemPreviewBox} from './SearchResultItemPreview.css'
 
 interface SearchResultItemPreviewProps {
   documentId: string
@@ -36,18 +36,6 @@ const INITIAL_PREVIEW_STATE = {
   isLoading: true,
   original: null,
 }
-
-/**
- * Temporary workaround: force all nested boxes on iOS to use `background-attachment: scroll`
- * to allow <Skeleton> components to render correctly within virtual lists.
- */
-const SearchResultItemPreviewBox = styled(Box)`
-  @supports (-webkit-overflow-scrolling: touch) {
-    * [data-ui='Box'] {
-      background-attachment: scroll;
-    }
-  }
-`
 
 /**
  * @internal
@@ -101,7 +89,7 @@ export function SearchResultItemPreview({
   const tooltip = <DocumentVersionsStatus documentGroupId={documentId} />
 
   return (
-    <SearchResultItemPreviewBox>
+    <Box className={searchResultItemPreviewBox}>
       <SanityDefaultPreview
         {...getPreviewValueWithFallback({snapshot, original, fallback: documentStub})}
         isPlaceholder={isLoading ?? true}
@@ -110,6 +98,6 @@ export function SearchResultItemPreview({
         status={status}
         tooltip={tooltip}
       />
-    </SearchResultItemPreviewBox>
+    </Box>
   )
 }
