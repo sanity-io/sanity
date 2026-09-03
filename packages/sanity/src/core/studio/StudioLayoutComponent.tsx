@@ -5,7 +5,6 @@ import startCase from 'lodash-es/startCase.js'
 import {lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {NavbarContext} from 'sanity/_singletons'
 import {RouteScope, useRouter, useRouterState} from 'sanity/router'
-import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
 import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
@@ -20,6 +19,7 @@ import {ToolNotFoundScreen} from './screens/ToolNotFoundScreen'
 import {useActiveToolLayoutComponent} from './studio-components-hooks/useActiveToolLayoutComponent'
 import {useNavbarComponent} from './studio-components-hooks/useNavbarComponent'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
+import {searchFullscreenPortalCard} from './StudioLayoutComponent.css'
 import {getPageVisibilitySnapshot} from './telemetry/pageVisibility'
 import {ToolMountTimer} from './ToolMountTimer'
 import {UnclaimedProjectNudge} from './unclaimedProject/UnclaimedProjectNudge'
@@ -32,17 +32,6 @@ const DetectViteDevServerStopped = lazy(() =>
 )
 
 const detectViteDevServerStopped = import.meta.hot && process.env.NODE_ENV === 'development'
-
-const SearchFullscreenPortalCard = styled(Card)`
-  height: 100%;
-  left: 0;
-  overflow: hidden;
-  overflow: clip;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 200;
-`
 
 // Module-level one-shot guard so the event fires once per page load, not
 // per-mount (StrictMode double-mounts in dev; re-mounting Studio shouldn't
@@ -197,7 +186,11 @@ export function StudioLayoutComponent() {
         <ToolNotFoundScreen toolName={activeToolName} />
       )}
       {searchFullscreenOpen && (
-        <SearchFullscreenPortalCard ref={setSearchFullscreenPortalEl} overflow="auto" />
+        <Card
+          ref={setSearchFullscreenPortalEl}
+          className={searchFullscreenPortalCard}
+          overflow="auto"
+        />
       )}
       {/* By using the tool name as the key on the error boundary, we force it to re-render
           when switching tools, which ensures we don't show the wrong tool having crashed */}
