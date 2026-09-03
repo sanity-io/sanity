@@ -8,14 +8,21 @@ import {
   type RangeDecoration,
 } from '@portabletext/editor'
 import {type Path} from '@sanity/types'
-import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
-import {getTheme_v2} from '@sanity/ui/theme'
-import {type ReactNode, useCallback, useMemo, useState} from 'react'
-import {css, styled} from 'styled-components'
+import {
+  BoundaryElementProvider,
+  useBoundaryElement,
+  useGlobalKeyDown,
+  useLayer,
+  useTheme_v2 as useThemeV2,
+} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
+import {type ComponentProps, type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useFormBuilder} from '../../useFormBuilder'
+import {placeholderColorVar, placeholderWrapper} from './Editor.css'
 import {EditableCard, EditableWrapper, Root, Scroller, ToolbarCard} from './Editor.styles'
 import {useScrollSelectionIntoView} from './hooks/useScrollSelectionIntoView'
 import {useSpellCheck} from './hooks/useSpellCheck'
@@ -27,12 +34,21 @@ const noOutlineStyle = {outline: 'none'} as const
 // This is used to determine whether this editor should apply document pane specific styling.
 const FORM_BUILDER_DEFAULT_ID = 'root'
 
-const PlaceholderWrapper = styled.span((props) => {
-  const {color} = getTheme_v2(props.theme)
-  return css`
-    color: ${color.input.default.enabled.placeholder};
-  `
-})
+function PlaceholderWrapper(props: ComponentProps<'span'>) {
+  const {className, style, ...rest} = props
+  const {color} = useThemeV2()
+
+  return (
+    <span
+      {...rest}
+      className={clsx(placeholderWrapper, className)}
+      style={{
+        ...assignInlineVars({[placeholderColorVar]: color.input.default.enabled.placeholder}),
+        ...style,
+      }}
+    />
+  )
+}
 
 interface EditorProps {
   elementRef: React.RefObject<HTMLDivElement | null>

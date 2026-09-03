@@ -1,22 +1,41 @@
-import {rgba} from '@sanity/ui'
-import {css, styled} from 'styled-components'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {rgba} from '@sanity/ui/theme'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 
-export const ReviewChangesHighlightBlock = styled.div<{
-  $fullScreen: boolean
-}>(({theme, $fullScreen}) => {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {radius, space, color} = theme.sanity
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const bg = rgba(color.spot.yellow, 0.2)
+import {
+  bgColorVar,
+  radius3Var,
+  root,
+  rootFullScreen,
+  space1Var,
+  space2Var,
+  space4Var,
+} from './ReviewChangesHighlightBlock.css'
 
-  return css`
-    position: absolute;
-    border-radius: ${radius[3]}px;
-    top: -${space[2]}px;
-    bottom: -${space[1] + space[1]}px;
-    left: ${$fullScreen ? space[4] + space[1] : space[1]}px;
-    right: ${space[1]}px;
-    background-color: ${bg};
-    pointer-events: none;
-  `
-})
+export function ReviewChangesHighlightBlock(
+  props: ComponentProps<'div'> & {
+    $fullScreen: boolean
+  },
+) {
+  const {$fullScreen, className, style, ...rest} = props
+  const {color, radius, space} = useThemeV2()
+
+  return (
+    <div
+      {...rest}
+      className={clsx(root, $fullScreen && rootFullScreen, className)}
+      style={{
+        ...assignInlineVars({
+          [radius3Var]: `${radius[3]}px`,
+          [space1Var]: `${space[1]}px`,
+          [space2Var]: `${space[2]}px`,
+          [space4Var]: `${space[4]}px`,
+          [bgColorVar]: rgba(color.avatar.yellow.bg, 0.2),
+        }),
+        ...style,
+      }}
+    />
+  )
+}

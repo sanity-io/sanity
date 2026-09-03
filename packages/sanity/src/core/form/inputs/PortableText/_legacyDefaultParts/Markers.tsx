@@ -2,12 +2,15 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type FormNodeValidation} from '@sanity/types'
-import {Flex, Stack, Text, type Theme} from '@sanity/ui'
-import {css, styled} from 'styled-components'
+import {Flex, Stack, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 import {Box} from 'ui5'
 
 import {type PortableTextMarker, type RenderCustomMarkers} from '../../../types/_transitional'
 import {useFormBuilder} from '../../../useFormBuilder'
+import {errorFgColorVar, iconText, infoFgColorVar, warningFgColorVar} from './Markers.css'
 
 export interface MarkersProps {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -29,22 +32,25 @@ const getIcon = (level: 'error' | 'warning' | 'info') => {
   return <InfoOutlineIcon />
 }
 
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-const IconText = styled(Text)(({theme}: {theme: Theme}) => {
-  return css`
-    &[data-info] {
-      color: ${theme.sanity.color.muted.primary.enabled.fg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-    }
+function IconText(props: ComponentProps<typeof Text>) {
+  const {className, style, ...rest} = props
+  const {color} = useThemeV2()
 
-    &[data-warning] {
-      color: ${theme.sanity.color.muted.caution.enabled.fg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-    }
-
-    &[data-error] {
-      color: ${theme.sanity.color.muted.critical.enabled.fg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-    }
-  `
-})
+  return (
+    <Text
+      {...rest}
+      className={clsx(iconText, className)}
+      style={{
+        ...assignInlineVars({
+          [infoFgColorVar]: color.button.ghost.primary.enabled.fg,
+          [warningFgColorVar]: color.button.ghost.caution.enabled.fg,
+          [errorFgColorVar]: color.button.ghost.critical.enabled.fg,
+        }),
+        ...style,
+      }}
+    />
+  )
+}
 
 export function DefaultMarkers(props: MarkersProps) {
   const {markers, validation, renderCustomMarkers} = props
