@@ -1,7 +1,7 @@
 import {Card, Stack, Text} from '@sanity/ui'
 
-import {type FilterMenuItemHeader} from '../../types'
-import {MenuItemHeader} from '../filters/addFilter/items/MenuItemHeader'
+import {type FilterMenuItemHeader} from '../../../../../types'
+import {MenuItemHeader} from '../MenuItemHeader'
 
 const DEFAULT_HEADER: FilterMenuItemHeader = {title: 'Document fields', type: 'header'}
 const CAUTION_HEADER: FilterMenuItemHeader = {

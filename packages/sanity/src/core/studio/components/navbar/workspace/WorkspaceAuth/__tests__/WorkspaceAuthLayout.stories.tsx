@@ -3,8 +3,8 @@ import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {WorkspaceAuthLayoutStory} from './WorkspaceAuthLayoutStory'
 
 /**
- * Reuses the in-package harness: workspace login Layout after the ui5
- * Box migration. Fixture copy only.
+ * Chromatic sentinel: workspace login Layout (string header, string header
+ * with footer, node header) after the ui5 Box migration. Fixture copy only.
  */
 const meta = {
   title: 'Studio/Workspace Auth Layout',
