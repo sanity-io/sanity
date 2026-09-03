@@ -1,11 +1,12 @@
 import {hues} from '@sanity/color'
 import {type Path, type PortableTextBlock} from '@sanity/types'
-import {Stack, useBoundaryElement} from '@sanity/ui'
+import {useBoundaryElement} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
 import {AnimatePresence, motion, type Variants} from 'motion/react'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {css, styled} from 'styled-components'
+import {VStack} from 'ui5'
 
 import {type FieldProps} from '../../../form/types/fieldProps'
 import {getSchemaTypeTitle} from '../../../schema/helpers'
@@ -72,7 +73,7 @@ const HighlightDiv = styled(motion.div)(({theme}) => {
   `
 })
 
-const FieldStack = styled(Stack)`
+const FieldStack = styled(VStack)`
   position: relative;
 
   // Hide when the field component renders nothing (e.g. a custom
