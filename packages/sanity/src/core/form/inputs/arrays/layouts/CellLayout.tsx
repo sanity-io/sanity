@@ -1,10 +1,10 @@
 import {Card, type CardTone} from '@sanity/ui'
+import {clsx} from 'clsx'
 import {type ComponentProps, type ReactNode} from 'react'
-import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {DragHandle} from '../common/DragHandle'
-import {MOVING_ITEM_CLASS_NAME} from '../common/list'
+import {dragHandleCard, footerFlex, presenceFlex, root} from './CellLayout.css'
 
 interface RowLayoutProps {
   tone?: CardTone
@@ -17,61 +17,10 @@ interface RowLayoutProps {
   children?: ReactNode
 }
 
-const FooterFlex = styled(Flex)`
-  min-height: 33px;
-`
-const PresenceFlex = styled(Flex)`
-  position: absolute;
-  top: 0;
-  right: 0;
-  height: 33px;
-`
-
-const DragHandleCard = styled(Card)`
-  position: absolute;
-  top: 0;
-  left: 0;
-`
-const Root = styled(Card)`
-  /* Until Card is migrated, this is needed to keep its display styling from overriding Flex */
-  &&:not([hidden]) {
-    display: flex;
-  }
-
-  transition: border-color 250ms;
-  box-sizing: border-box;
-  position: relative;
-
-  @media (hover: hover) {
-    ${DragHandleCard} {
-      opacity: 0;
-    }
-
-    &:hover,
-    &:focus-within {
-      ${DragHandleCard} {
-        opacity: 1;
-      }
-    }
-  }
-
-  .${MOVING_ITEM_CLASS_NAME} & {
-    box-shadow:
-      0 0 0 0,
-      0 8px 17px 2px var(--card-shadow-umbra-color),
-      0 3px 14px 2px var(--card-shadow-penumbra-color),
-      0 5px 5px -3px var(--card-shadow-ambient-color);
-  }
-
-  &[aria-selected='true'] {
-    box-shadow: 0 0 0 2px var(--card-focus-ring-color);
-  }
-`
-
 /**
  * Use this to get the layout for grid items
  */
-export function CellLayout(props: RowLayoutProps & ComponentProps<typeof Root>) {
+export function CellLayout(props: RowLayoutProps & ComponentProps<typeof Card>) {
   const {
     validation,
     selected,
@@ -82,12 +31,13 @@ export function CellLayout(props: RowLayoutProps & ComponentProps<typeof Root>) 
     menu,
     footer,
     readOnly,
+    className,
     ...rest
   } = props
 
   return (
-    <Root
-      forwardedAs={Flex}
+    <Card
+      as={Flex}
       flexDirection="column"
       border
       selected={selected}
@@ -95,11 +45,13 @@ export function CellLayout(props: RowLayoutProps & ComponentProps<typeof Root>) 
       radius={1}
       tone={tone}
       {...rest}
+      className={clsx(root, className)}
     >
       {children}
 
       {dragHandle && (
-        <DragHandleCard
+        <Card
+          className={dragHandleCard}
           margin={1}
           radius={2}
           display="flex"
@@ -107,20 +59,20 @@ export function CellLayout(props: RowLayoutProps & ComponentProps<typeof Root>) 
           data-ui="DragHandleCard"
         >
           <DragHandle $grid mode="ghost" readOnly={!!readOnly} />
-        </DragHandleCard>
+        </Card>
       )}
 
       {presence && (
-        <PresenceFlex alignItems="center" marginX={1}>
+        <Flex className={presenceFlex} alignItems="center" marginX={1}>
           {presence}
-        </PresenceFlex>
+        </Flex>
       )}
 
-      <FooterFlex alignItems="center" paddingX={1} justifyContent="space-between">
+      <Flex className={footerFlex} alignItems="center" paddingX={1} justifyContent="space-between">
         <Flex>{validation}</Flex>
         <Box>{footer}</Box>
         {menu}
-      </FooterFlex>
-    </Root>
+      </Flex>
+    </Card>
   )
 }
