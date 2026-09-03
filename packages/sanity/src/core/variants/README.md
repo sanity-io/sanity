@@ -173,7 +173,7 @@ Covered behavior:
 - detail-specific menu button
 - delete action navigates back to the overview after success
 
-The delete action currently does not confirm or check whether the variant has documents.
+Deleting a variant definition is validated server-side: `sanity.action.variant.definition.delete` fails while documents still reference the definition (see `ACTIONS.md`). In the Studio, both the overview row menu and the detail menu share `hooks/useVariantDeleteAction.ts`, which disables the delete action while the variant's document count is unknown or greater than zero, and asks for confirmation before deleting.
 
 ## Test Coverage
 
@@ -226,7 +226,5 @@ Local browser execution has previously hit `EMFILE: too many open files, watch` 
 ## Pending Work
 
 - Drop the local `SanityClientWithVariantsActions` typing wrapper once `@sanity/client` exports the variant definition action types.
-- Decide how document counts affect deleting variants.
-- Add a delete confirmation or disabled state once variants can have documents.
 - Expand the detail-specific actions menu independently from the overview row menu.
 - Reassess whether inline detail editing is needed after the dialog-based edit flow has been used.
