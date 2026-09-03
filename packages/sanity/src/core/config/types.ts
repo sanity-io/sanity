@@ -498,6 +498,15 @@ export interface PluginOptions {
      * @alpha
      */
     filters?: SearchFilterDefinition[] | ComposableOption<SearchFilterDefinition[], ConfigContext>
+    /**
+     * Configures the operators available to search filters.
+     * Register custom operators here before referencing them from a custom filter definition.
+     *
+     * @alpha
+     */
+    operators?:
+      | SearchOperatorDefinition[]
+      | ComposableOption<SearchOperatorDefinition[], ConfigContext>
     unstable_partialIndexing?: {
       enabled: boolean
     }

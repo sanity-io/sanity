@@ -66,6 +66,7 @@ import {
   scheduledDraftsEnabledReducer,
   schemaTemplatesReducer,
   searchFilterReducer,
+  searchOperatorsReducer,
   searchStrategyReducer,
   toolsReducer,
   variantsEnabledReducer,
@@ -883,7 +884,13 @@ function resolveSource({
         propertyName: 'search.filters',
         reducer: searchFilterReducer,
       }),
-      operators: operatorDefinitions,
+      operators: resolveConfigProperty({
+        config,
+        context,
+        initialValue: operatorDefinitions,
+        propertyName: 'search.operators',
+        reducer: searchOperatorsReducer,
+      }),
       unstable_partialIndexing: {
         enabled: partialIndexingEnabledReducer({
           config,
@@ -894,14 +901,6 @@ function resolveSource({
         config,
         initialValue: 'groq2024',
       }),
-      // we will use this when we add search operator config to PluginOptions
-      /*operators: resolveConfigProperty({
-        config,
-        context: context,
-        initialValue: operatorDefinitions as SearchOperatorDefinition[],
-        propertyName: 'search.operators',
-        reducer: searchOperatorsReducer,
-      }),*/
     },
 
     __internal: {

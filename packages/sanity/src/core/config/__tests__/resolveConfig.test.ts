@@ -6,6 +6,7 @@ import {describe, expect, it} from 'vitest'
 
 import {createMockAuthStore} from '../../store/authStore/createMockAuthStore'
 import {defineSearchFilter} from '../../studio/components/navbar/search/definitions/filters'
+import {defineSearchOperator} from '../../studio/components/navbar/search/definitions/operators/operatorTypes'
 import {VARIANTS_NAME} from '../../variants/plugin'
 import {definePlugin} from '../definePlugin'
 import {createSourceFromConfig, createWorkspaceFromConfig, resolveConfig} from '../resolveConfig'
@@ -739,14 +740,21 @@ describe('beta document group inventory config', () => {
 describe('search filter configuration', () => {
   const projectId = 'ppsg7ml5'
   const dataset = 'production'
+  const customOperator = defineSearchOperator({
+    descriptionKey: 'search.operator.is-draft.description',
+    groqFilter: () => '_id in path("drafts.**")',
+    nameKey: 'search.operator.is-draft.name',
+    type: 'isDraft',
+  })
   const pluginFilter = defineSearchFilter({
     icon: DocumentIcon,
     name: 'pluginFilter',
-    operators: [{name: 'defined', type: 'item'}],
+    operators: [{name: customOperator.type, type: 'item'}],
     title: 'Plugin filter',
     type: 'pinned',
   })
   const workspaceFilter = defineSearchFilter({
+    fieldPath: '_updatedAt',
     icon: DocumentIcon,
     name: 'workspaceFilter',
     operators: [{name: 'notDefined', type: 'item'}],
@@ -758,7 +766,7 @@ describe('search filter configuration', () => {
     const workspace = await createWorkspaceFromConfig({
       projectId,
       dataset,
-      plugins: [getSearchOptionsPlugin({filters: [pluginFilter]})],
+      plugins: [getSearchOptionsPlugin({filters: [pluginFilter], operators: [customOperator]})],
       search: {filters: [workspaceFilter]},
     })
 
@@ -766,6 +774,8 @@ describe('search filter configuration', () => {
       expect.arrayContaining([pluginFilter, workspaceFilter]),
     )
     expect(workspace.search.filters).toContainEqual(expect.objectContaining({name: 'updatedAt'}))
+    expect(workspace.search.operators).toContain(customOperator)
+    expect(workspace.search.operators).toContainEqual(expect.objectContaining({type: 'defined'}))
     expect(workspace.search.filters.indexOf(pluginFilter)).toBeLessThan(
       workspace.search.filters.indexOf(workspaceFilter),
     )
@@ -775,10 +785,14 @@ describe('search filter configuration', () => {
     const workspace = await createWorkspaceFromConfig({
       projectId,
       dataset,
-      search: {filters: () => [workspaceFilter]},
+      search: {
+        filters: () => [workspaceFilter],
+        operators: () => [customOperator],
+      },
     })
 
     expect(workspace.search.filters).toEqual([workspaceFilter])
+    expect(workspace.search.operators).toEqual([customOperator])
   })
 
   it('rejects invalid filter configuration', async () => {
@@ -792,6 +806,21 @@ describe('search filter configuration', () => {
         },
       }),
     ).rejects.toThrow('Expected `search.filters` to be an array or a function, but received object')
+  })
+
+  it('rejects invalid operator configuration', async () => {
+    await expect(
+      createWorkspaceFromConfig({
+        projectId,
+        dataset,
+        search: {
+          // @ts-expect-error operators must be an array or resolver
+          operators: {},
+        },
+      }),
+    ).rejects.toThrow(
+      'Expected `search.operators` to be an array or a function, but received object',
+    )
   })
 })
 
