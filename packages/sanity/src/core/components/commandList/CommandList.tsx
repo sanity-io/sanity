@@ -1,10 +1,11 @@
-import {rem, Stack} from '@sanity/ui'
+import {rem, Stack, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {
   measureElement,
   type ScrollToOptions,
   useVirtualizer,
   type Virtualizer,
 } from '@tanstack/react-virtual'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import throttle from 'lodash-es/throttle.js'
 import {
   cloneElement,
@@ -20,11 +21,19 @@ import {
   useState,
   type RefAttributes,
 } from 'react'
-import {css, styled} from 'styled-components'
 import {Box} from 'ui5'
 
 import {type FIXME} from '../../FIXME'
 import {focusRingStyle} from '../../form/components/formField/styles'
+import {
+  focusOverlay,
+  focusOverlayBoxShadowVar,
+  focusOverlayInsetVar,
+  focusOverlayRadiusVar,
+  pointerOverlay,
+  virtualListBox,
+  virtualListChildBox,
+} from './CommandList.css'
 import {
   type CommandListElementType,
   type CommandListGetItemDisabledCallback,
@@ -41,67 +50,24 @@ const LIST_ITEM_INTERACTIVE_SELECTOR = 'a,button'
 /**
  * Conditionally render a focus ring overlay over the command list, with adjustable offset
  */
-const FocusOverlayDiv = styled.div<{offset: number}>(({theme, offset}) => {
-  return css`
-    bottom: ${-offset}px;
-    border-radius: ${rem(theme.sanity.radius[1]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-    left: ${-offset}px;
-    pointer-events: none;
-    position: absolute;
-    right: ${-offset}px;
-    top: ${-offset}px;
-    z-index: 2;
+function FocusOverlayDiv(props: {offset: number}) {
+  const {offset} = props
+  const {color, input, radius} = useThemeV2()
 
-    ${VirtualListBox}:focus-visible & {
-      box-shadow: ${focusRingStyle({
-        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-        base: theme.sanity.color.base,
-        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-        focusRing: theme.sanity.focusRing,
-      })};
-    }
-  `
-})
-
-/*
- * Conditionally appears over command list items to cancel existing :hover states for all child elements.
- * It should only appear if hover capabilities are available (not on touch devices)
- */
-const PointerOverlayDiv = styled.div`
-  bottom: 0;
-  display: none;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-  z-index: 1;
-
-  @media (hover: hover) {
-    &[data-enabled='true'] {
-      display: block;
-    }
-  }
-`
-
-const VirtualListBox = styled(Box)`
-  height: 100%;
-  outline: none;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  width: 100%;
-`
-
-type VirtualListChildBoxProps = {
-  $height: number
+  return (
+    <div
+      className={focusOverlay}
+      style={assignInlineVars({
+        [focusOverlayInsetVar]: `${-offset}px`,
+        [focusOverlayRadiusVar]: `${rem(radius[1])}`,
+        [focusOverlayBoxShadowVar]: focusRingStyle({
+          base: {bg: color.bg},
+          focusRing: input.text.focusRing,
+        }),
+      })}
+    />
+  )
 }
-const VirtualListChildBox = styled(Box) //
-  .attrs<VirtualListChildBoxProps>(({$height}) => ({
-    style: {height: `${$height}px`},
-  }))<VirtualListChildBoxProps>`
-  position: relative;
-  width: 100%;
-`
 
 function CommandListComponent({
   ref,
@@ -570,7 +536,8 @@ function CommandListComponent({
   const rootTabIndex = canReceiveFocus ? 0 : -1
 
   return (
-    <VirtualListBox
+    <Box
+      className={virtualListBox}
       id={getCommandListChildrenId()}
       onMouseEnter={handleVirtualListMouseEnter}
       onMouseLeave={handleVirtualListMouseLeave}
@@ -580,11 +547,17 @@ function CommandListComponent({
       {...paddingProps}
     >
       {canReceiveFocus && <FocusOverlayDiv offset={focusRingOffset} />}
-      <PointerOverlayDiv aria-hidden="true" data-enabled="false" ref={setPointerOverlayElement} />
+      <div
+        className={pointerOverlay}
+        aria-hidden="true"
+        data-enabled="false"
+        ref={setPointerOverlayElement}
+      />
       {virtualizer && (
-        <VirtualListChildBox
-          forwardedAs="ul"
-          $height={virtualizer.getTotalSize()}
+        <Box
+          as="ul"
+          className={virtualListChildBox}
+          style={{height: `${virtualizer.getTotalSize()}px`}}
           aria-label={ariaLabel}
           aria-multiselectable={ariaMultiselectable}
           flexBasis="0%"
@@ -631,9 +604,9 @@ function CommandListComponent({
               </CommandListItem>
             )
           })}
-        </VirtualListChildBox>
+        </Box>
       )}
-    </VirtualListBox>
+    </Box>
   )
 }
 

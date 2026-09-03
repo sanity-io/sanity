@@ -1,7 +1,8 @@
+import {clsx} from 'clsx'
 import {type ElementType, type HTMLProps, useCallback, useMemo, useRef, useState} from 'react'
-import {styled} from 'styled-components'
 import {Box, type BoxProps} from 'ui5'
 
+import {root} from './Resizable.css'
 import {Resizer} from './Resizer'
 
 interface ResizableProps {
@@ -10,12 +11,6 @@ interface ResizableProps {
   initialWidth?: number
   resizerPosition?: 'left' | 'right'
 }
-
-const Root = styled(Box)`
-  position: relative;
-  flex: 1;
-  padding-left: 1px;
-`
 
 /**
  * @internal
@@ -29,6 +24,7 @@ export function Resizable(
   const {
     as: forwardedAs,
     children,
+    className,
     minWidth,
     maxWidth,
     initialWidth,
@@ -61,8 +57,12 @@ export function Resizable(
     [minWidth, maxWidth, targetWidth],
   )
 
+  // `styled(Box)` rendered whatever `as` named *instead of* the Box (it was `as`, not
+  // `forwardedAs`), and its own `style` replaced the caller's. Both are kept as they were.
+  const Root: ElementType = forwardedAs ?? Box
+
   return (
-    <Root as={forwardedAs} {...restProps} ref={setElement} style={style}>
+    <Root {...restProps} className={clsx(root, className)} ref={setElement} style={style}>
       {resizerPosition === 'left' && (
         <Resizer onResize={handleResize} onResizeStart={handleResizeStart} position="left" />
       )}
