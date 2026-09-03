@@ -6,7 +6,7 @@ import {
   type RangeDecorationOnMovedDetails,
 } from '@portabletext/editor'
 import {isPortableTextTextBlock, type Path} from '@sanity/types'
-import {BoundaryElementProvider, Stack, usePortal} from '@sanity/ui'
+import {BoundaryElementProvider, usePortal} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
 import {dequal as isEqual} from 'dequal/lite'
@@ -22,6 +22,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import {VStack} from 'ui5'
 
 import {useFormValue} from '../../../../form/contexts/FormValue'
 import {useFieldActions} from '../../../../form/field/actions/useFieldActions'
@@ -652,7 +653,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
         </AnimatePresence>
       </BoundaryElementProvider>
 
-      <Stack ref={setRootElement} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp}>
+      <VStack ref={setRootElement} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp}>
         <RenderDefaultCommentsPortableTextInputInner
           {...props}
           onEditorChange={onEditorChange}
@@ -662,7 +663,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
           rangeDecorations={rangeDecorations}
           onFullScreenChange={setIsFullScreen}
         />
-      </Stack>
+      </VStack>
     </>
   )
 })
