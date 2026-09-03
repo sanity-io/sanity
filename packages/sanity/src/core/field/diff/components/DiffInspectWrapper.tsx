@@ -1,31 +1,37 @@
 import {Card, Stack, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
-import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
-import {type ExecutionProps, styled} from 'styled-components'
+import {clsx} from 'clsx'
+import {
+  type ComponentProps,
+  type ElementType,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import {Box, type BoxProps} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {pathToString} from '../../paths/helpers'
 import {type FieldChangeNode} from '../../types'
+import {codeWrapper, meta} from './DiffInspectWrapper.css'
 import {FromToArrow} from './FromToArrow'
 
 /** @internal */
 export interface DiffInspectWrapperProps {
   children: ReactNode
   change: FieldChangeNode
-  as?: ExecutionProps['as']
+  as?: ElementType
 }
 
-const CodeWrapper = styled.pre`
-  overflow-x: auto;
-  position: relative;
-`
+// Kept as a component (rather than `as="pre"`) so Card does not see `data-as="pre"` and apply its
+// `font: inherit` rule, matching the previous styled.pre rendering.
+function CodeWrapper(props: ComponentProps<'pre'>) {
+  const {className, ...rest} = props
 
-const Meta = styled.div`
-  position: absolute;
-  top: 0;
-  right: 0;
-`
+  return <pre {...rest} className={clsx(codeWrapper, className)} />
+}
 
 /** @internal */
 export function DiffInspectWrapper(
@@ -59,7 +65,7 @@ export function DiffInspectWrapper(
 }
 
 const MetaLabel = ({title}: {title: string}) => (
-  <Box padding={3} display="inline-block" as={Meta}>
+  <Box padding={3} display="inline-block" className={meta}>
     <Text muted size={1} weight="medium">
       {title}
     </Text>

@@ -1,32 +1,38 @@
-import {rem} from '@sanity/ui'
-import {styled} from 'styled-components'
+import {rem, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 
-export const ChangeListWrapper = styled.div`
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-`
+import {
+  changeListWrapper,
+  diffInspectPaddingSmallVar,
+  diffInspectPaddingXSmallVar,
+  fieldChangeErrorVar,
+  groupChangeContainer,
+} from './GroupChange.css'
 
-export const GroupChangeContainer = styled.div`
-  --field-change-error: ${({theme}) => theme.sanity.color.solid.critical.enabled.bg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-  --diff-inspect-padding-xsmall: ${({theme}) => rem(theme.sanity.space[1]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-  --diff-inspect-padding-small: ${({theme}) => rem(theme.sanity.space[2]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
+export function ChangeListWrapper(props: ComponentProps<'div'>) {
+  const {className, ...rest} = props
 
-  position: relative;
-  padding: var(--diff-inspect-padding-xsmall) var(--diff-inspect-padding-small);
+  return <div {...rest} className={clsx(changeListWrapper, className)} />
+}
 
-  &::before {
-    content: '';
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    border-left: 1px solid var(--card-border-color);
-  }
+export function GroupChangeContainer(props: ComponentProps<'div'>) {
+  const {className, style, ...rest} = props
+  const {color, space} = useThemeV2()
 
-  &[data-error]:hover::before,
-  &[data-revert-group-hover]:hover::before,
-  &[data-revert-all-groups-hover]::before {
-    border-left: 2px solid var(--field-change-error);
-  }
-`
+  return (
+    <div
+      {...rest}
+      className={clsx(groupChangeContainer, className)}
+      style={{
+        ...assignInlineVars({
+          [fieldChangeErrorVar]: color.button.default.critical.enabled.bg,
+          [diffInspectPaddingXSmallVar]: `${rem(space[1])}`,
+          [diffInspectPaddingSmallVar]: `${rem(space[2])}`,
+        }),
+        ...style,
+      }}
+    />
+  )
+}

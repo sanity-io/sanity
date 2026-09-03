@@ -2,7 +2,9 @@ import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {isKeySegment, type ObjectSchemaType, type Path, type PortableTextChild} from '@sanity/types'
 import {Text, useClickOutsideEvent} from '@sanity/ui'
 import {toString} from '@sanity/util/paths'
+import {clsx} from 'clsx'
 import {
+  type ComponentProps,
   type MouseEvent,
   type ReactNode,
   useCallback,
@@ -13,7 +15,6 @@ import {
   useState,
 } from 'react'
 import {DiffContext, ReviewChangesContext} from 'sanity/_singletons'
-import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
 import {Popover} from '../../../../../../ui-components/popover/Popover'
@@ -24,6 +25,7 @@ import {ChangeList} from '../../../../diff/components/ChangeList'
 import {DiffTooltip} from '../../../../diff/components/DiffTooltip'
 import {type ObjectDiff} from '../../../../types'
 import {isEmptyObject} from '../helpers'
+import {annotationWrapper} from './Annotation.css'
 import {InlineBox, InlineText, PopoverContainer, PreviewContainer} from './styledComponents'
 
 interface AnnotationProps {
@@ -34,30 +36,11 @@ interface AnnotationProps {
   children: ReactNode
 }
 
-const AnnotationWrapper = styled.div`
-  text-decoration: none;
-  display: inline;
-  position: relative;
-  border: 0;
-  padding: 0;
-  border-bottom: 2px dotted currentColor;
-  box-shadow: inset 0 0 0 1px var(--card-border-color);
-  white-space: nowrap;
-  align-items: center;
-  background-color: color(var(--card-fg-color) a(10%));
+function AnnotationWrapper(props: ComponentProps<'div'>) {
+  const {className, ...rest} = props
 
-  &[data-changed] {
-    cursor: pointer;
-  }
-
-  &[data-removed] {
-    text-decoration: line-through;
-  }
-
-  &:hover ${PreviewContainer} {
-    opacity: 1;
-  }
-`
+  return <div {...rest} className={clsx(annotationWrapper, className)} />
+}
 
 export function Annotation({
   children,
