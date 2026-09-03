@@ -21,6 +21,7 @@ const SUFFIX = (
 const meta = {
   title: 'Form/Alerts',
   component: Alert,
+  tags: ['!dev', '!autodocs', 'vrt-only'],
 } satisfies Meta<typeof Alert>
 
 export default meta
