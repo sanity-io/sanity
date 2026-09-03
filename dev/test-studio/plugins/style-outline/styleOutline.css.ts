@@ -54,25 +54,18 @@ export const panel = style([
 ])
 
 export const header = style({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  gap: 10,
-  marginBottom: 4,
-})
-
-export const collapse = style({
+  'display': 'block',
+  'width': '100%',
   'font': 'inherit',
-  'fontSize': 16,
-  'lineHeight': 1,
-  'padding': '2px 6px',
+  'fontWeight': 600,
+  'textAlign': 'left',
+  'padding': '2px 0 8px',
   'border': 0,
-  'borderRadius': 6,
   'background': 'transparent',
   'color': 'inherit',
   'cursor': 'pointer',
   ':hover': {
-    background: 'rgba(255, 255, 255, 0.08)',
+    color: '#ffffff',
   },
 })
 
@@ -106,4 +99,5 @@ export const checkbox = style({
   height: 16,
   margin: 0,
   cursor: 'pointer',
+  accentColor: '#5e6ad2',
 })

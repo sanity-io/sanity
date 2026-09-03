@@ -2,7 +2,6 @@ import {useEffect, useState} from 'react'
 
 import {
   checkbox,
-  collapse,
   dot,
   header,
   panel,
@@ -133,18 +132,16 @@ export function StyleOutlinePanel() {
     <div className={root} data-testid="style-outline">
       {open ? (
         <fieldset className={panel} aria-label="Style outline" data-testid="style-outline-panel">
-          <div className={header}>
-            <span>Style outline</span>
-            <button
-              type="button"
-              className={collapse}
-              aria-label="Hide style outline"
-              onClick={toggleOpen}
-              data-testid="style-outline-collapse"
-            >
-              ×
-            </button>
-          </div>
+          <button
+            type="button"
+            className={header}
+            title="Collapse"
+            aria-expanded
+            onClick={toggleOpen}
+            data-testid="style-outline-collapse"
+          >
+            Style outline
+          </button>
           {STYLE_SYSTEMS.map((system) => (
             <label key={system.id} className={row}>
               <span className={dot} style={{background: system.color}} />
@@ -155,7 +152,6 @@ export function StyleOutlinePanel() {
                 className={checkbox}
                 checked={active.includes(system.id)}
                 onChange={() => toggleSystem(system.id)}
-                style={{accentColor: system.color}}
                 data-testid={`style-outline-toggle-${system.id}`}
               />
             </label>
@@ -166,7 +162,7 @@ export function StyleOutlinePanel() {
           type="button"
           className={trigger}
           title="Style outline"
-          aria-label="Show style outline"
+          aria-label="Style outline"
           aria-expanded={false}
           onClick={toggleOpen}
           data-testid="style-outline-trigger"
