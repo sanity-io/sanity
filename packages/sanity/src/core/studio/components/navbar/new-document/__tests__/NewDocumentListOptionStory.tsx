@@ -1,19 +1,10 @@
 import {DocumentIcon} from '@sanity/icons/Document'
-import {type CurrentUser} from '@sanity/types'
 import {Card, Stack, Text} from '@sanity/ui'
+import noop from 'lodash-es/noop.js'
 
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
 import {NewDocumentListOption} from '../NewDocumentListOption'
 import {type NewDocumentOption} from '../types'
-
-const CURRENT_USER: CurrentUser = {
-  id: 'user1',
-  name: 'Test User',
-  email: 'test@test.com',
-  // oxlint-disable-next-line no-deprecated -- CurrentUser still requires the legacy role field
-  role: '',
-  roles: [],
-}
 
 const AUTHOR_OPTION: NewDocumentOption = {
   hasPermission: true,
@@ -34,13 +25,12 @@ const DISABLED_OPTION: NewDocumentOption = {
   title: 'Article',
 }
 
-const NOOP = () => undefined
-
 /**
  * Chromatic sentinel for new-document list rows after the ui5 Box
  * migration. Inline vs default padding and permitted vs disabled cards
  * pair Box icon gutters with Card padding — a mix TypeScript will not
- * catch. Titles are fixtures (no live templates).
+ * catch. Titles are fixtures (no live templates). `currentUser` only feeds
+ * the insufficient-permissions tooltip, which never opens in a snapshot.
  */
 export function NewDocumentListOptionStory() {
   return (
@@ -52,8 +42,8 @@ export function NewDocumentListOptionStory() {
               default permitted
             </Text>
             <NewDocumentListOption
-              currentUser={CURRENT_USER}
-              onClick={NOOP}
+              currentUser={null}
+              onClick={noop}
               option={AUTHOR_OPTION}
               preview="default"
             />
@@ -63,8 +53,8 @@ export function NewDocumentListOptionStory() {
               inline permitted
             </Text>
             <NewDocumentListOption
-              currentUser={CURRENT_USER}
-              onClick={NOOP}
+              currentUser={null}
+              onClick={noop}
               option={AUTHOR_OPTION}
               preview="inline"
             />
@@ -74,8 +64,8 @@ export function NewDocumentListOptionStory() {
               inline disabled
             </Text>
             <NewDocumentListOption
-              currentUser={CURRENT_USER}
-              onClick={NOOP}
+              currentUser={null}
+              onClick={noop}
               option={DISABLED_OPTION}
               preview="inline"
             />

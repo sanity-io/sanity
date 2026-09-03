@@ -3,8 +3,8 @@ import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {SearchFilterMenuHeadersStory} from './SearchFilterMenuHeadersStory'
 
 /**
- * Reuses the in-package harness: search add-filter menu headers after
- * the ui5 Box migration. Fixture titles only.
+ * Chromatic sentinel: search add-filter menu section headers after the ui5
+ * Box migration. Fixture titles only.
  */
 const meta = {
   title: 'Studio/Search Filter Menu Headers',

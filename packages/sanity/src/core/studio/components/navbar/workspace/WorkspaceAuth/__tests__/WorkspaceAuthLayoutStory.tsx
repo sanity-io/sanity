@@ -1,5 +1,8 @@
+import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
 import {Card, Stack, Text} from '@sanity/ui'
+import {Box} from 'ui5'
 
+import {WorkspacePreview} from '../../WorkspacePreview'
 import {Layout} from '../Layout'
 
 const BODY = (
@@ -16,11 +19,21 @@ const FOOTER = (
   </Card>
 )
 
+// The login screen (WorkspaceAuth) passes the workspace preview as a node
+// header; this is the `typeof header === 'object'` Box branch.
+const NODE_HEADER = (
+  <Box padding={3}>
+    <WorkspacePreview icon={EarthGlobeIcon} title="Production" subtitle="blog" />
+  </Box>
+)
+
 /**
  * Chromatic sentinel for workspace login chrome after the ui5 Box
- * migration. String vs node headers change Box padding and Card border
- * seams; the footer slot does the same at the bottom. Copy is a fixture
- * (no live workspace titles, no timestamps).
+ * migration, mirroring both production callers: the workspace chooser
+ * (string header, footer) and the login screen (node header with
+ * WorkspacePreview). Header kind changes the Box padding and the borderTop
+ * seam on the body Card; the footer slot does the same at the bottom. Copy
+ * is a fixture (no live workspace titles, no timestamps).
  */
 export function WorkspaceAuthLayoutStory() {
   return (
@@ -34,7 +47,7 @@ export function WorkspaceAuthLayoutStory() {
         </Stack>
         <Stack gap={2}>
           <Text muted size={1} weight="medium">
-            header and footer
+            string header and footer (workspace chooser)
           </Text>
           <Layout footer={FOOTER} header="Staging">
             {BODY}
@@ -42,9 +55,9 @@ export function WorkspaceAuthLayoutStory() {
         </Stack>
         <Stack gap={2}>
           <Text muted size={1} weight="medium">
-            no header
+            node header (login screen)
           </Text>
-          <Layout>{BODY}</Layout>
+          <Layout header={NODE_HEADER}>{BODY}</Layout>
         </Stack>
       </Stack>
     </Card>
