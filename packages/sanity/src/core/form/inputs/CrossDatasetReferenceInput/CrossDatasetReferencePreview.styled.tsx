@@ -1,9 +1,11 @@
-import {styled} from 'styled-components'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 import {Flex} from 'ui5'
 
-export const StyledPreviewFlex = styled(Flex)`
-  /* this is a hack to avoid layout jumps while previews are loading
-      or the message is not tall enough to fill the card
-      there's probably better ways of solving this */
-  min-height: 36px;
-`
+import {previewFlex} from './CrossDatasetReferencePreview.css'
+
+export function StyledPreviewFlex(props: ComponentProps<typeof Flex>) {
+  const {className, ...rest} = props
+
+  return <Flex {...rest} className={clsx(previewFlex, className)} />
+}
