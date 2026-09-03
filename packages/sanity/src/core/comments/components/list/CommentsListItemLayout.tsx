@@ -1,10 +1,15 @@
 import {hues} from '@sanity/color'
 import {type CurrentUser} from '@sanity/types'
-import {type AvatarSize, Card, TextSkeleton, useClickOutsideEvent} from '@sanity/ui'
-import {getTheme_v2} from '@sanity/ui/theme'
+import {
+  type AvatarSize,
+  Card,
+  TextSkeleton,
+  useClickOutsideEvent,
+  useTheme_v2 as useThemeV2,
+} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
-import {css, styled} from 'styled-components'
 import {Text, Box, Flex, VStack} from 'ui5'
 
 import {useDidUpdate} from '../../../form/hooks/useDidUpdate'
@@ -32,6 +37,19 @@ import {CommentInput, type CommentInputHandle} from '../pte/comment-input/Commen
 import {CommentMessageSerializer} from '../pte/CommentMessageSerializer'
 import {CommentReactionsBar} from '../reactions/CommentReactionsBar'
 import {CommentsListItemContextMenu} from './CommentsListItemContextMenu'
+import {
+  avatarSizeVar,
+  contextMenuBox,
+  errorFlex,
+  grayFgVar,
+  headerFlex,
+  innerStack,
+  intentText,
+  retryCardButton,
+  rootStack,
+  space1Var,
+  timeText,
+} from './CommentsListItemLayout.css'
 import {CommentsListItemReferencedValue} from './CommentsListItemReferencedValue'
 
 const stopPropagation = (e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()
@@ -51,105 +69,9 @@ function CommentIntentLink({
   )
 }
 
-const ContextMenuBox = styled(Box)``
-
 const SKELETON_INLINE_STYLE: React.CSSProperties = {width: '50%'}
 
 const EMPTY_ARRAY: [] = []
-
-const TimeText = styled(Text)(({theme}) => {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const isDark = theme.sanity.color.dark
-  const fg = hues.gray[isDark ? 200 : 800].hex
-
-  return css`
-    min-width: max-content;
-    --card-fg-color: ${fg};
-    color: var(--card-fg-color);
-  `
-})
-
-const HeaderFlex = styled(Flex)<{$size: AvatarSize}>((props) => {
-  const theme = getTheme_v2(props.theme)
-
-  return css`
-    min-height: ${theme.avatar.sizes[props.$size]?.size}px;
-  `
-})
-
-const IntentText = styled(Text)(({theme}) => {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const isDark = theme.sanity.color.dark
-  const fg = hues.gray[isDark ? 200 : 800].hex
-
-  return css`
-    --card-fg-color: ${fg};
-    color: var(--card-fg-color);
-  `
-})
-
-const InnerStack = styled(VStack)`
-  transition: opacity 200ms ease;
-
-  &[data-muted='true'] {
-    transition: unset;
-    opacity: 0.5;
-  }
-`
-
-const ErrorFlex = styled(Flex)<{$size: AvatarSize}>((props) => {
-  const theme = getTheme_v2(props.theme)
-
-  return css`
-    min-height: ${theme.avatar.sizes[props.$size]?.size}px;
-  `
-})
-
-const RetryCardButton = styled(Card)`
-  /* Add not on hover */
-  &:not(:hover) {
-    background-color: transparent;
-  }
-`
-
-const RootStack = styled(VStack)(({theme}) => {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {space} = theme.sanity
-
-  return css`
-    position: relative;
-
-    /* Only show the floating layer on hover when hover is supported.
-    Else, the layer is always visible. */
-    @media (hover: hover) {
-      ${ContextMenuBox} {
-        opacity: 0;
-        position: absolute;
-        right: 0;
-        top: 0;
-        transform: translate(${space[1]}px, -${space[1]}px);
-      }
-
-      ${ContextMenuBox} {
-        &:focus-within {
-          opacity: 1;
-        }
-      }
-
-      &:hover {
-        ${ContextMenuBox} {
-          opacity: 1;
-        }
-      }
-    }
-
-    &[data-menu-open='true'] {
-      ${ContextMenuBox} {
-        opacity: 1;
-      }
-    }
-  `
-})
 
 interface CommentsListItemLayoutProps {
   avatarSize?: AvatarSize
@@ -204,6 +126,14 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   const {_createdAt, authorId, message, _id, lastEditedAt} = comment
   const [user] = useUser(authorId)
   const {t} = useTranslation(commentsLocaleNamespace)
+  const {avatar, color, space} = useThemeV2()
+
+  const grayFg = hues.gray[color._dark ? 200 : 800].hex
+  const textStyle = assignInlineVars({[grayFgVar]: grayFg})
+  const avatarSizePx = avatar.sizes[avatarSize]?.size
+  const avatarSizeStyle = assignInlineVars({
+    [avatarSizeVar]: avatarSizePx === undefined ? undefined : `${avatarSizePx}px`,
+  })
 
   const [value, setValue] = useState<CommentMessage>(message)
   const [isEditing, setIsEditing] = useState<boolean>(false)
@@ -344,20 +274,23 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   )
 
   return (
-    <RootStack
+    <VStack
+      className={rootStack}
       data-menu-open={menuOpen ? 'true' : 'false'}
       data-testid="comments-list-item-layout"
       onKeyDown={handleRootKeyDown}
       ref={rootElementRef}
       gap={4}
+      style={assignInlineVars({[space1Var]: `${space[1]}px`})}
     >
-      <InnerStack gap={1} data-muted={displayError}>
-        <HeaderFlex
+      <VStack className={innerStack} gap={1} data-muted={displayError}>
+        <Flex
+          className={headerFlex}
           alignItems="center"
           gap={FLEX_GAP}
           flexBasis="0%"
           flexGrow={1}
-          $size={avatarSize}
+          style={avatarSizeStyle}
         >
           {withAvatar && <CommentsAvatar user={user} size={avatarSize} />}
 
@@ -375,24 +308,33 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
                 {!displayError && (
                   <Flex alignItems="center" gap={1}>
-                    <TimeText muted size={0} forwardedAs="div" trim={true}>
+                    <Text
+                      className={timeText}
+                      muted
+                      size={0}
+                      as="div"
+                      trim={true}
+                      style={textStyle}
+                    >
                       <time dateTime={createdDate.toISOString()} title={formattedCreatedAt}>
                         {createdTimeAgo}
                       </time>
-                    </TimeText>
+                    </Text>
 
                     {formattedLastEditAt && editedDate && (
-                      <TimeText
+                      <Text
+                        className={timeText}
                         muted
                         size={0}
                         title={formattedLastEditAt}
-                        forwardedAs="div"
+                        as="div"
                         trim={true}
+                        style={textStyle}
                       >
                         <time dateTime={editedDate.toISOString()} title={formattedLastEditAt}>
                           ({t('list-item.layout-edited')})
                         </time>
-                      </TimeText>
+                      </Text>
                     )}
                   </Flex>
                 )}
@@ -401,7 +343,15 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
             {intent && (
               <Box flexBasis="0%" flexGrow={1}>
-                <IntentText muted size={0} truncate={1} forwardedAs="div" trim={true}>
+                <Text
+                  className={intentText}
+                  muted
+                  size={0}
+                  truncate={1}
+                  as="div"
+                  trim={true}
+                  style={textStyle}
+                >
                   <Translate
                     t={t}
                     i18nKey="list-item.layout-context"
@@ -409,13 +359,17 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                     components={{IntentLink: CommentIntentLink}}
                     componentProps={{intent}}
                   />
-                </IntentText>
+                </Text>
               </Box>
             )}
           </Flex>
 
           {!isEditing && !displayError && (
-            <ContextMenuBox data-root-menu={isParent ? 'true' : 'false'} onClick={stopPropagation}>
+            <Box
+              className={contextMenuBox}
+              data-root-menu={isParent ? 'true' : 'false'}
+              onClick={stopPropagation}
+            >
               <CommentsListItemContextMenu
                 canDelete={canDelete}
                 canEdit={canEdit}
@@ -431,9 +385,9 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                 readOnly={readOnly}
                 status={comment.status}
               />
-            </ContextMenuBox>
+            </Box>
           )}
-        </HeaderFlex>
+        </Flex>
 
         {isTextSelectionComment(comment) && Boolean(comment?.contentSnapshot) && (
           <Flex gap={FLEX_GAP} marginBottom={3}>
@@ -492,10 +446,10 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
             </Box>
           </Flex>
         )}
-      </InnerStack>
+      </VStack>
 
       {displayError && (
-        <ErrorFlex gap={FLEX_GAP} $size={avatarSize}>
+        <Flex className={errorFlex} gap={FLEX_GAP} style={avatarSizeStyle}>
           {withAvatar && <SpacerAvatar $size={avatarSize} />}
 
           <Flex alignItems="center" gap={1} flexBasis="0%" flexGrow={1}>
@@ -505,10 +459,11 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
             </Text>
 
             <Flex hidden={isRetrying}>
-              <RetryCardButton
+              <Card
                 __unstable_focusRing
+                className={retryCardButton}
                 display="flex"
-                forwardedAs="button"
+                as="button"
                 onClick={handleCreateRetry}
                 padding={1}
                 radius={2}
@@ -517,11 +472,11 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                 <Text size={1} muted as="div" trim={true}>
                   {t('list-item.layout-retry')}
                 </Text>
-              </RetryCardButton>
+              </Card>
             </Flex>
           </Flex>
-        </ErrorFlex>
+        </Flex>
       )}
-    </RootStack>
+    </VStack>
   )
 }
