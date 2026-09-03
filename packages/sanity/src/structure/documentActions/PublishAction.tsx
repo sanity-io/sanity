@@ -3,7 +3,7 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {isValidationErrorMarker} from '@sanity/types'
 import {Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react'
 import {
   type DocumentActionComponent,
   getPairTarget,
@@ -193,31 +193,23 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     }
   }, [isWaitingToPublish, telemetry, id, editState?.transactionSyncLock?.enabled])
 
-  const handle = useCallback(() => {
-    telemetry.log(DocumentPublished, {
-      publishedImmediately: !draft?._createdAt,
-      previouslyPublished: Boolean(publishedInfo),
-    })
-    if (
-      syncState.isSyncing ||
-      validationStatus.isValidating ||
-      validationStatus.revision !== revision
-    ) {
-      setPublishScheduled(true)
-    } else {
-      doPublish()
+  // The action description is deep-compared by the hook collection, so the handler must keep its
+  // identity while the sync and validation state it reads changes on every keystroke.
+  const publishRef = useRef<() => void>(() => {})
+  useLayoutEffect(() => {
+    publishRef.current = () => {
+      telemetry.log(DocumentPublished, {
+        publishedImmediately: !draft?._createdAt,
+        previouslyPublished: Boolean(publishedInfo),
+      })
+      if (isSyncing || isValidating || validationStatus.revision !== revision) {
+        setPublishScheduled(true)
+      } else {
+        doPublish()
+      }
     }
-  }, [
-    telemetry,
-    draft?._createdAt,
-    publishedInfo,
-    syncState.isSyncing,
-    validationStatus.isValidating,
-    validationStatus.revision,
-    revision,
-    doPublish,
-    setPublishScheduled,
-  ])
+  })
+  const handle = useCallback(() => publishRef.current(), [])
 
   return useMemo(() => {
     if (isPublishedPerspective(selectedPerspective)) {
