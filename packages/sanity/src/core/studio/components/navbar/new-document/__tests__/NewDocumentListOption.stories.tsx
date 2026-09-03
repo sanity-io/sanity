@@ -9,6 +9,7 @@ import {NewDocumentListOptionStory} from './NewDocumentListOptionStory'
 const meta = {
   title: 'Studio/New Document List Option',
   component: NewDocumentListOptionStory,
+  tags: ['!dev', '!autodocs', 'vrt-only'],
 } satisfies Meta<typeof NewDocumentListOptionStory>
 
 export default meta
