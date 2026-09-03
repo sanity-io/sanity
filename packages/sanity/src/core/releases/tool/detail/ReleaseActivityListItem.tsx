@@ -1,7 +1,6 @@
 import {Card, Stack, Text} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {memo, type ReactNode, useMemo} from 'react'
-import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
 import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
@@ -21,16 +20,8 @@ import {
   isScheduleReleaseEvent,
   type ReleaseEvent,
 } from './events/types'
+import {statusText} from './ReleaseActivityListItem.css'
 
-const StatusText = styled(Text)`
-  strong {
-    font-weight: 500;
-    color: var(--card-fg-color);
-  }
-  time {
-    white-space: nowrap;
-  }
-`
 const ACTIVITY_TEXT_118N: Record<ReleaseEvent['type'], string> = {
   addDocumentToRelease: 'activity.event.add-document',
   archiveRelease: 'activity.event.archive',
@@ -139,7 +130,7 @@ export const ReleaseActivityListItem = memo(
           <UserAvatar user={event.author} />
           <Stack flex={1}>
             <Flex gap={2} alignItems="center">
-              <StatusText muted size={1}>
+              <Text className={statusText} muted size={1}>
                 <Translate
                   t={t}
                   components={{ScheduleTarget}}
@@ -148,7 +139,7 @@ export const ReleaseActivityListItem = memo(
                   i18nKey={ACTIVITY_TEXT_118N[event.type]}
                 />{' '}
                 &middot; <ActivityTimestamp timestamp={event.timestamp} />
-              </StatusText>
+              </Text>
             </Flex>
             {isAddDocumentToReleaseEvent(event) || isDiscardDocumentFromReleaseEvent(event) ? (
               <ReleaseEventDocumentPreview event={event} releaseId={releaseId} />

@@ -1,10 +1,10 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {CloseIcon} from '@sanity/icons/Close'
 import {Card, Layer, Text, useLayer} from '@sanity/ui'
+import {clsx} from 'clsx'
 import {AnimatePresence, motion} from 'motion/react'
-import {useEffect} from 'react'
+import {type ComponentProps, useEffect} from 'react'
 import TrapFocus from 'react-focus-lock'
-import {styled} from 'styled-components'
 import {Box, Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
@@ -14,6 +14,7 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleaseEvents} from './events/useReleaseEvents'
 import {ReleaseActivityList} from './ReleaseActivityList'
+import {fillHeight} from './ReleaseDashboardActivityPanel.css'
 
 interface ReleaseDashboardActivityPanelProps {
   events: ReleaseEvents
@@ -29,12 +30,11 @@ interface ReleaseDashboardActivityPanelProps {
 }
 const MotionFlex = motion.create(Flex)
 const MotionCard = motion.create(Card)
-const FillHeight = styled.div`
-  --card-border-color: transparent;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-`
+
+function FillHeight(props: ComponentProps<'div'>) {
+  const {className, ...rest} = props
+  return <div {...rest} className={clsx(fillHeight, className)} />
+}
 // In overlay mode the panel is not part of the layout, so Escape is the keyboard escape hatch (in
 // addition to the header close button and the Activity toggle). It sits in its own Layer so it only
 // claims Escape when it is the top layer — when a dialog or popover (e.g. EditReleaseDialog or a

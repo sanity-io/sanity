@@ -1,22 +1,10 @@
 import {type BadgeTone} from '@sanity/ui'
 import {type FC, type PropsWithChildren} from 'react'
-import {css, styled} from 'styled-components'
 
 import {type TargetPerspective} from '../../perspective/types'
 import {LATEST} from '../util/const'
 import {getReleaseTone} from '../util/getReleaseTone'
-
-const StyledVersionInlineBadge = styled.span<{$tone?: BadgeTone}>((props) => {
-  const {$tone} = props
-  return css`
-    color: var(--card-badge-${$tone ?? 'default'}-fg-color);
-    background-color: var(--card-badge-${$tone ?? 'default'}-bg-color);
-    border-radius: 3px;
-    text-decoration: none;
-    padding: 0px 2px;
-    font-weight: 500;
-  `
-})
+import {versionInlineBadge} from './VersionInlineBadge.css'
 
 /**
  * @internal
@@ -26,7 +14,7 @@ export const VersionInlineBadge = ({
   $tone,
 }: PropsWithChildren<{
   $tone?: BadgeTone
-}>) => <StyledVersionInlineBadge $tone={$tone}>{children}</StyledVersionInlineBadge>
+}>) => <span className={versionInlineBadge[$tone ?? 'default']}>{children}</span>
 
 /**
  * @internal
