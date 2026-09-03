@@ -1,5 +1,6 @@
-import {render, screen, waitFor} from '@testing-library/react'
+import {render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
+import {type HTMLProps, type Ref} from 'react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -28,6 +29,25 @@ const variantsMock = vi.hoisted(() => ({
 vi.mock('@sanity/ui/toast', async (importOriginal) => ({
   ...(await importOriginal()),
   useToast: vi.fn(() => toastMock),
+}))
+
+// The test router has no `variantId` route, so resolve duplicate-error links to plain anchors.
+vi.mock('sanity/router', async (importOriginal) => ({
+  ...(await importOriginal()),
+  StateLink: function MockStateLink({
+    ref,
+    state,
+    ...rest
+  }: {state?: {variantId?: string}} & HTMLProps<HTMLAnchorElement>) {
+    return (
+      // oxlint-disable-next-line jsx_a11y/anchor-has-content
+      <a
+        {...rest}
+        ref={ref as Ref<HTMLAnchorElement>}
+        href={state?.variantId ? `/variants/${state.variantId}` : '/variants'}
+      />
+    )
+  },
 }))
 
 vi.mock('../../../store/useVariantOperations', () => ({
@@ -355,6 +375,93 @@ describe('CreateVariantDialog', () => {
 
     expect(onCancel).not.toHaveBeenCalled()
     expect(onSubmit).toHaveBeenCalledWith(createdVariant._id)
+  })
+
+  it('blocks submit and links to the duplicate when the title matches an existing variant', async () => {
+    const user = userEvent.setup()
+
+    await renderDialog()
+
+    await user.type(screen.getByTestId('variant-form-title'), 'alpha audience')
+    await user.type(screen.getByTestId('variant-form-condition-key'), 'audience')
+    await user.type(screen.getByTestId('variant-form-condition-value'), 'beta')
+    await user.click(screen.getByTestId('submit-variant-button'))
+
+    expect(variantOperationsMock.createVariant).not.toHaveBeenCalled()
+
+    const titleError = screen.getByTestId('variant-form-title-error')
+
+    expect(titleError).toHaveTextContent(
+      'A variant definition with this title already exists: Alpha audience',
+    )
+    expect(within(titleError).getByRole('link', {name: 'Alpha audience'})).toHaveAttribute(
+      'href',
+      '/variants/alpha-audience',
+    )
+
+    await user.type(screen.getByTestId('variant-form-title'), ' expanded')
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('variant-form-title-error')).not.toBeInTheDocument()
+    })
+
+    await user.click(screen.getByTestId('submit-variant-button'))
+
+    await waitFor(() => {
+      expect(variantOperationsMock.createVariant).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  it('blocks submit and links to the duplicate when the conditions match an existing variant', async () => {
+    const user = userEvent.setup()
+
+    await renderDialog()
+
+    await user.type(screen.getByTestId('variant-form-title'), 'Copy of alpha')
+    await user.type(screen.getByRole('combobox', {name: 'Key'}), 'audience')
+    await user.type(screen.getByRole('combobox', {name: 'Value'}), 'alpha')
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', {name: 'Add condition'})).toBeEnabled()
+    })
+
+    await user.click(screen.getByRole('button', {name: 'Add condition'}))
+
+    const conditionKeys = screen.getAllByTestId('variant-form-condition-key')
+    const conditionValues = screen.getAllByTestId('variant-form-condition-value')
+
+    await user.type(conditionKeys[1]!, 'locale')
+    await user.type(conditionValues[1]!, 'en-US')
+    await user.click(screen.getByTestId('submit-variant-button'))
+
+    expect(variantOperationsMock.createVariant).not.toHaveBeenCalled()
+
+    const conditionsError = screen.getByTestId('variant-form-conditions-duplicate-error')
+
+    expect(conditionsError).toHaveTextContent(
+      'A variant definition with the same conditions already exists: Alpha audience',
+    )
+    expect(within(conditionsError).getByRole('link', {name: 'Alpha audience'})).toHaveAttribute(
+      'href',
+      '/variants/alpha-audience',
+    )
+  })
+
+  it('allows a condition set that is a subset of an existing variant', async () => {
+    const user = userEvent.setup()
+
+    await renderDialog()
+
+    await user.type(screen.getByTestId('variant-form-title'), 'Alpha only')
+    await user.type(screen.getByTestId('variant-form-condition-key'), 'audience')
+    await user.type(screen.getByTestId('variant-form-condition-value'), 'alpha')
+    await user.click(screen.getByTestId('submit-variant-button'))
+
+    await waitFor(() => {
+      expect(variantOperationsMock.createVariant).toHaveBeenCalledTimes(1)
+    })
+
+    expect(screen.queryByTestId('variant-form-conditions-duplicate-error')).not.toBeInTheDocument()
   })
 
   it('keeps the dialog open when creation fails', async () => {

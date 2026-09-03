@@ -3,7 +3,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {getTransactionsLogs} from '../translog/getTransactionsLogs'
 import {createMockClient} from './__fixtures__/mockClient'
 import {editTransaction, type TranslogEntry} from './__fixtures__/transactions.fixture'
-import {getDocumentTransactions} from './getDocumentTransactions'
+import {clearDocumentTransactionsCache, getDocumentTransactions} from './getDocumentTransactions'
 
 vi.mock('../translog/getTransactionsLogs', () => ({
   getTransactionsLogs: vi.fn(),
@@ -11,12 +11,10 @@ vi.mock('../translog/getTransactionsLogs', () => ({
 
 const mockGetTransactionsLogs = vi.mocked(getTransactionsLogs)
 
-// The module keeps a cache keyed by `${documentId}-${toTransaction}-${fromTransaction}` that
-// survives between tests, so every test uses its own document id.
-
 describe('getDocumentTransactions', () => {
   beforeEach(() => {
     mockGetTransactionsLogs.mockReset()
+    clearDocumentTransactionsCache()
   })
 
   it('fetches the range and filters out the fromTransaction entry', async () => {
@@ -154,10 +152,12 @@ describe('getDocumentTransactions', () => {
     expect(second.map((tx) => tx.id)).toEqual(['tx-1', 'tx-2'])
   })
 
-  it('cache key ignores project/dataset: a different client gets the cached result (known quirk)', async () => {
+  it('caches per project/dataset: a client for a different dataset refetches', async () => {
     const {client: clientA} = createMockClient({projectId: 'project-a', dataset: 'dataset-a'})
     const {client: clientB} = createMockClient({projectId: 'project-b', dataset: 'dataset-b'})
-    mockGetTransactionsLogs.mockResolvedValueOnce([editTransaction({id: 'tx-a'})])
+    mockGetTransactionsLogs
+      .mockResolvedValueOnce([editTransaction({id: 'tx-a'})])
+      .mockResolvedValueOnce([editTransaction({id: 'tx-b'})])
 
     const first = await getDocumentTransactions({
       documentId: 'doc-workspace',
@@ -172,7 +172,8 @@ describe('getDocumentTransactions', () => {
       toTransaction: 'to-tx',
     })
 
-    expect(mockGetTransactionsLogs).toHaveBeenCalledTimes(1)
-    expect(second).toBe(first)
+    expect(mockGetTransactionsLogs).toHaveBeenCalledTimes(2)
+    expect(first.map((tx) => tx.id)).toEqual(['tx-a'])
+    expect(second.map((tx) => tx.id)).toEqual(['tx-b'])
   })
 })

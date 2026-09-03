@@ -144,14 +144,8 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
           !(specConstraint as CustomValidator)?.bypassConcurrencyLimit
         ) {
           const customValidator = specConstraint as CustomValidator
-          specConstraint = async (...args: Parameters<CustomValidator>) => {
-            await customValidationConcurrencyLimiter.ready()
-            try {
-              return await customValidator(...args)
-            } finally {
-              customValidationConcurrencyLimiter.release()
-            }
-          }
+          specConstraint = (...args: Parameters<CustomValidator>) =>
+            customValidationConcurrencyLimiter.run(() => customValidator(...args), context.signal)
         }
 
         const message = isLocalizedMessages(this._message)
@@ -164,6 +158,7 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
             code: fallbackCodeForRule(curr.flag),
           })
         } catch (err) {
+          context.signal?.throwIfAborted()
           if (err instanceof ClientUnavailableError) {
             markIncomplete?.()
             return []

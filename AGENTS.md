@@ -193,6 +193,34 @@ How it works:
 - The flag is declared in `dev/test-studio/turbo.json` so turbo-cached builds are invalidated when it changes
 - Enabling devtools makes `sanity build` noticeably slower; that's why it's opt-in via the env flag
 
+### Profiling studio re-renders with React DevTools (agent-react-devtools)
+
+The test studio can register with a local [agent-react-devtools](https://github.com/callstackincubator/agent-react-devtools) daemon, which exposes the React component tree and render profiling over a CLI — made for AI agents to inspect props/state/hooks and hunt unnecessary re-renders. The `react-devtools` skill (`.agents/skills/react-devtools/SKILL.md`) documents the CLI; read it before profiling.
+
+```bash
+# 1. Start the daemon (port 8097)
+pnpm --filter sanity-test-studio exec agent-react-devtools start
+
+# 2. Start the studio with the connect script injected (implies ENABLE_REACT_DEVTOOLS=true)
+pnpm react-devtools:test-studio
+
+# 3. Open http://localhost:3333 in a browser, then verify the app registered
+pnpm --filter sanity-test-studio exec agent-react-devtools status
+
+# 4. Profile an interaction
+pnpm --filter sanity-test-studio exec agent-react-devtools profile start
+# ... interact with the studio ...
+pnpm --filter sanity-test-studio exec agent-react-devtools profile stop
+pnpm --filter sanity-test-studio exec agent-react-devtools profile rerenders --limit 10
+```
+
+How it works and gotchas:
+
+- `ENABLE_REACT_DEVTOOLS=true` makes `dev/test-studio/sanity.cli.ts` add the `reactDevtools()` Vite plugin, which injects an `agent-react-devtools/connect` script that wires `react-devtools-core` to the daemon's WebSocket. Dev-server only (`apply: 'serve'`) — it can never reach `sanity build` output.
+- **The browser must be headed.** Headless Chromium does not execute the injected module script properly, so the app never registers with the daemon. On the Cloud VM, drive system Chrome via Playwright with `headless: false` (a display is available), and authenticate by appending `#token=$STUDIO_AUTH_TOKEN` to the URL from inside the script (keeps the secret out of logs).
+- Profile with StrictMode off (`SANITY_STUDIO_REACT_STRICT_MODE=false`) so dev double-rendering doesn't inflate durations — production studios don't run StrictMode.
+- Do not run `pnpm check:oxlint` while the dev studio and daemon are running (same memory constraint as noted in the Cursor Cloud gotchas).
+
 ### Analyzing the `sanity` package bundle
 
 The `sanity` package tsdown build can emit a Rolldown [bundle analyzer](https://rolldown.rs/builtin-plugins/bundle-analyzer) markdown report (module/chunk breakdown for humans and coding agents) when `ENABLE_BUNDLE_ANALYZER=true`:
@@ -474,7 +502,13 @@ pnpm dev:storybook                    # Storybook dev server at http://localhost
 pnpm build:storybook                  # Static build via turbo (dev/storybook/storybook-static)
 pnpm --filter sanity-storybook test   # Run every story as a vitest browser-mode test
 CHROMATIC=1 pnpm --filter sanity test:browser   # Chromatic archive capture run (chromium only)
+pnpm visual-coverage --changed --prs  # Which changed UI files a story renders (PR comment runs the same)
+pnpm visual-coverage --uncovered      # Whole-tree coverage by area, plus the uncovered files
 ```
+
+Before adding a story, run `pnpm visual-coverage` and follow the `sanity-visual-coverage` skill
+(`.agents/skills/sanity-visual-coverage/SKILL.md`): it tells covered from pending (claimed by an
+open PR) from uncovered, so coverage PRs do not duplicate the open `test(storybook)` stack.
 
 Repo secrets: `CHROMATIC_PROJECT_TOKEN_STORYBOOK` (active), `CHROMATIC_PROJECT_TOKEN_E2E`
 (active, used by e2e), `CHROMATIC_PROJECT_TOKEN_VITEST` (dormant until Chromatic's Vitest early
@@ -773,6 +807,7 @@ No Docker, databases, or other local services are required for unit tests, lint,
 - **`pnpm depcheck` fails on a clean checkout of `main` in the VM** (knip reports the root `lefthook` devDependency as unused, plus a `knip.jsonc` config hint). Baseline before blaming your change: `git stash push -u && pnpm depcheck; git stash pop`.
 - **Snapshot lockfile drift can fail `pnpm check:oxlint` in untouched files.** The VM image may have `node_modules` resolved to newer in-range versions than the committed `pnpm-lock.yaml` (e.g. `@sanity/client` 8.4.0 vs the locked 8.3.0), and `pnpm install` — even with `--frozen-lockfile` — keeps rewriting the lockfile to match instead of downgrading. Type errors in files you never touched (e.g. `@sanity/vision`'s `useDatasets.test.ts` missing a `description` field) are this drift, not your change: revert the churn with `git checkout -- pnpm-lock.yaml`, never commit it, and rely on CI (which installs from the committed lockfile) for the authoritative type check of those files.
 - **Do not run oxlint type checking (`pnpm check:oxlint`) while the dev studio is running.** Both are memory-hungry and running them concurrently has exhausted the VM's memory and frozen it for hours (unkillable thrashing). Stop `sanity dev` first (Ctrl-C in its tmux session), run the checks, then restart the studio.
+- **`sanity dev` in bundledDev mode (`unstable_bundledDev: true`, on by default in `dev/test-studio`, `dev/design-studio`, `dev/radar`, `dev/auth-test-studio`) grows by roughly 300 MB of RSS per distinct lazy chunk (`/@vite/lazy?id=...`) it compiles, on top of a ~2 GB baseline.** Page reloads, fresh client ids and re-requests of an already compiled chunk cost nothing, but a studio session that touches every plugin's lazy entry points can push the server past 10 GB (13.6 GB observed on vite 8.2.2, freezing the 16 GB VM). Classic mode sits at ~1 GB for the same actions. When you need a long-running studio or plan to exercise many tools, either flip `unstable_bundledDev` off locally or run the server with a PID watchdog (`while sleep 5; do r=$(ps -o rss= -p $PID) || break; [ "${r:-0}" -gt 5000000 ] && kill $PID; done`) and restart it when it trips. This is upstream vite/rolldown behavior, not something the studio config can tune.
 - **Simulating Presentation preview failure states.** The `/test` workspace's presentation tool allows any localhost origin (`allowOrigins: ['https://*.sanity.dev', 'http://localhost:*']`), so failure UIs can be triggered deterministically by pointing the preview at a throwaway local server via the `?preview=` search param, e.g. `http://localhost:3333/test/presentation?preview=http%3A%2F%2Flocalhost%3A3398%2F`. A plain HTML page that never runs `@sanity/visual-editing` exercises the overlays connection timeout path (loading overlay → "connecting" status card after 5s → caution card with "Continue anyway" after 3s more); a server that accepts connections but never responds (`createServer(() => {})`) keeps the iframe `load` event from firing and exercises the 15s load timeout → error card → "Retry" path. Note the demo screen recordings are time-compressed, so verify real timings from the `sanity dev` terminal log — the studio pipes browser `console.error` output there with timestamps.
 - **Verifying a production studio build (`sanity build`) must happen on an allow-listed origin.** `sanity build` for `dev/test-studio` bundles the _built_ `sanity` package (run `pnpm build` first — only `sanity dev` resolves monorepo sources via the `monorepo` export condition). Serve `dev/test-studio/dist` statically on **port 3333** (e.g. `python3 -m http.server 3333`, after stopping the dev server): project `ppsg7ml5` only allow-lists `http://localhost:3333`, so from any other port API requests fail CORS and the bifur `/socket/` WebSocket is rejected during its handshake (close code 1006 + retry loop). The static server has no SPA fallback, so load `http://localhost:3333/#token=…` (root path) and let the client-side router redirect, rather than deep-linking to a workspace path.
 

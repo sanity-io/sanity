@@ -73,7 +73,7 @@ const defaultIsUnique: SlugIsUniqueValidator = (slug, context) => {
         published: getPublishedId(document._id as DocumentId),
         slug,
       },
-      {tag: 'validation.slug-is-unique'},
+      {signal: context.signal, tag: 'validation.slug-is-unique'},
     )
 }
 

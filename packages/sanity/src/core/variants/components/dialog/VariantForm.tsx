@@ -6,16 +6,19 @@ import {type Path} from '@sanity/mutate'
 import {type PortableTextBlock} from '@sanity/types'
 import {Inline, Stack, Text, TextArea, TextInput} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
-import {type ChangeEvent, useCallback, useId, useMemo, useState} from 'react'
+import {type ChangeEvent, type ReactNode, useCallback, useId, useMemo, useState} from 'react'
+import {StateLink} from 'sanity/router'
 import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
 import {type VariantsLocaleResourceKeys, variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
-import {type EditableSystemVariant} from '../../types'
+import {getVariantId, getVariantTitle} from '../../tool/util'
+import {type EditableSystemVariant, type SystemVariant} from '../../types'
 import {
   getConditionKeyValidationError,
   getConditionValueValidationError,
@@ -127,9 +130,25 @@ function getPortableTextDescriptionValue(description?: PortableTextBlock[]): str
   return toPlainText(description)
 }
 
+function DuplicateVariantLink(props: {children?: ReactNode; variantId?: string}) {
+  return <StateLink state={{variantId: props.variantId}}>{props.children}</StateLink>
+}
+
+const DUPLICATE_MESSAGE_COMPONENTS = {VariantLink: DuplicateVariantLink}
+
+/**
+ * The duplicate messages embed a `<VariantLink>` tag for the rich inline error; the native
+ * `customValidity` message must be plain text, so the tags are stripped there.
+ */
+function stripVariantLinkTags(message: string): string {
+  return message.replace(/<\/?VariantLink>/g, '')
+}
+
 export type VariantFormChangeHandler = (path: Path, value: unknown) => void
 
 export function VariantForm(props: {
+  duplicateConditionsOf?: SystemVariant
+  duplicateTitleOf?: SystemVariant
   onChange: VariantFormChangeHandler
   onConditionValidityChange: (invalid: boolean) => void
   onPriorityValidityChange: (invalid: boolean) => void
@@ -137,6 +156,8 @@ export function VariantForm(props: {
   value: EditableSystemVariant
 }) {
   const {
+    duplicateConditionsOf,
+    duplicateTitleOf,
     onChange,
     onConditionValidityChange,
     onPriorityValidityChange,
@@ -160,7 +181,19 @@ export function VariantForm(props: {
   )
 
   const hasTitle = Boolean(getVariantTitleValue(value))
-  const showTitleError = showValidation && !hasTitle
+  const showTitleRequiredError = showValidation && !hasTitle
+  const duplicateTitleVariant = showValidation && hasTitle ? duplicateTitleOf : undefined
+  const showTitleError = showTitleRequiredError || Boolean(duplicateTitleVariant)
+  const titleCustomValidity = showTitleRequiredError
+    ? t('dialog.create.variant-title.required')
+    : duplicateTitleVariant
+      ? stripVariantLinkTags(
+          t('dialog.create.variant-title.duplicate', {
+            title: getVariantTitle(duplicateTitleVariant),
+          }),
+        )
+      : undefined
+  const duplicateConditionsVariant = showValidation ? duplicateConditionsOf : undefined
   const priorityValidationError = getPriorityInputValidationError(priorityInput)
   const showPriorityError = showValidation && priorityValidationError
 
@@ -256,7 +289,7 @@ export function VariantForm(props: {
         <TextInput
           autoFocus
           aria-invalid={showTitleError ? 'true' : undefined}
-          customValidity={showTitleError ? t('dialog.create.variant-title.required') : undefined}
+          customValidity={titleCustomValidity}
           data-testid="variant-form-title"
           fontSize={2}
           id={titleId}
@@ -266,7 +299,17 @@ export function VariantForm(props: {
         />
         {showTitleError && (
           <TextWithTone data-testid="variant-form-title-error" size={1} tone="critical">
-            {t('dialog.create.variant-title.required')}
+            {duplicateTitleVariant ? (
+              <Translate
+                t={t}
+                i18nKey="dialog.create.variant-title.duplicate"
+                components={DUPLICATE_MESSAGE_COMPONENTS}
+                componentProps={{variantId: getVariantId(duplicateTitleVariant._id)}}
+                values={{title: getVariantTitle(duplicateTitleVariant)}}
+              />
+            ) : (
+              t('dialog.create.variant-title.required')
+            )}
           </TextWithTone>
         )}
       </Stack>
@@ -388,6 +431,22 @@ export function VariantForm(props: {
             )
           })}
         </Stack>
+
+        {duplicateConditionsVariant && (
+          <TextWithTone
+            data-testid="variant-form-conditions-duplicate-error"
+            size={1}
+            tone="critical"
+          >
+            <Translate
+              t={t}
+              i18nKey="dialog.create.conditions.duplicate"
+              components={DUPLICATE_MESSAGE_COMPONENTS}
+              componentProps={{variantId: getVariantId(duplicateConditionsVariant._id)}}
+              values={{title: getVariantTitle(duplicateConditionsVariant)}}
+            />
+          </TextWithTone>
+        )}
 
         <Flex>
           <Button

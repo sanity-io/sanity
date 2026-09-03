@@ -234,6 +234,29 @@ describe('schema validation inference', () => {
         },
       ])
     })
+
+    test('passes cancellation to media asset fetches', async () => {
+      const controller = new AbortController()
+      client.fetch.mockResolvedValue({
+        _id: 'image-12345-67890-png',
+        assetType: 'sanity.imageAsset',
+        aspects: {season: 'summer'},
+      })
+
+      await validateDocument({
+        client: sanityClient,
+        document: mockDocument,
+        getDocumentExists: () => Promise.resolve(true),
+        schema,
+        signal: controller.signal,
+      })
+
+      expect(client.fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        {id: 'def'},
+        {signal: controller.signal},
+      )
+    })
   })
 
   describe('slug validation', () => {

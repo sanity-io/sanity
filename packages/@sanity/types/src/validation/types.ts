@@ -266,8 +266,10 @@ export interface ValidationContext {
   type?: SchemaType
   document?: SanityDocument
   path?: Path
-  getDocumentExists?: (options: {id: string}) => Promise<boolean>
+  getDocumentExists?: (options: {id: string; signal?: AbortSignal}) => Promise<boolean>
   environment: 'cli' | 'studio'
+  /** Signal used to cancel validation and any work it starts. */
+  signal?: AbortSignal
   /**
    * Whether this field is hidden for any reason (either itself or any of its ancestors).
    */
