@@ -1,9 +1,11 @@
 import {createClient} from '@sanity/client'
+import {DocumentIcon} from '@sanity/icons/Document'
 import {firstValueFrom, lastValueFrom, of} from 'rxjs'
 import {bufferTime} from 'rxjs/operators'
 import {describe, expect, it} from 'vitest'
 
 import {createMockAuthStore} from '../../store/authStore/createMockAuthStore'
+import {defineSearchFilter} from '../../studio/components/navbar/search/definitions/filters'
 import {VARIANTS_NAME} from '../../variants/plugin'
 import {definePlugin} from '../definePlugin'
 import {createSourceFromConfig, createWorkspaceFromConfig, resolveConfig} from '../resolveConfig'
@@ -731,6 +733,64 @@ describe('beta document group inventory config', () => {
     ).rejects.toThrow(
       'Expected `beta.documentGroupInventory.enabled` to be a boolean, but received string',
     )
+  })
+})
+
+describe('search filter configuration', () => {
+  const projectId = 'ppsg7ml5'
+  const dataset = 'production'
+  const pluginFilter = defineSearchFilter({
+    icon: DocumentIcon,
+    name: 'pluginFilter',
+    operators: [{name: 'defined', type: 'item'}],
+    title: 'Plugin filter',
+    type: 'pinned',
+  })
+  const workspaceFilter = defineSearchFilter({
+    icon: DocumentIcon,
+    name: 'workspaceFilter',
+    operators: [{name: 'notDefined', type: 'item'}],
+    title: 'Workspace filter',
+    type: 'pinned',
+  })
+
+  it('appends filters from plugins and the workspace', async () => {
+    const workspace = await createWorkspaceFromConfig({
+      projectId,
+      dataset,
+      plugins: [getSearchOptionsPlugin({filters: [pluginFilter]})],
+      search: {filters: [workspaceFilter]},
+    })
+
+    expect(workspace.search.filters).toEqual(
+      expect.arrayContaining([pluginFilter, workspaceFilter]),
+    )
+    expect(workspace.search.filters.indexOf(pluginFilter)).toBeLessThan(
+      workspace.search.filters.indexOf(workspaceFilter),
+    )
+  })
+
+  it('supports composing the available filters', async () => {
+    const workspace = await createWorkspaceFromConfig({
+      projectId,
+      dataset,
+      search: {filters: () => [workspaceFilter]},
+    })
+
+    expect(workspace.search.filters).toEqual([workspaceFilter])
+  })
+
+  it('rejects invalid filter configuration', async () => {
+    await expect(
+      createWorkspaceFromConfig({
+        projectId,
+        dataset,
+        search: {
+          // @ts-expect-error filters must be an array or resolver
+          filters: {},
+        },
+      }),
+    ).rejects.toThrow('Expected `search.filters` to be an array or a function, but received object')
   })
 })
 
