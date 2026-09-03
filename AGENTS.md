@@ -343,8 +343,11 @@ Component styles live in colocated `*.css.ts` files (`style`, `styleVariants`, `
 `eslint/no-restricted-imports` bans `styled-components` everywhere; the dependency only remains
 because `@sanity/ui@4` needs it as a peer and injects its own styles at runtime. That runtime sheet
 lands after the static `bundle.css`, so an override of a declaration an `@sanity/ui` primitive sets
-on itself must win by specificity (`&&`), not by order. The
-`migrate-styled-components-to-vanilla-extract` skill
+on itself must win by specificity (`&&`), not by order. Every dev studio registers
+`vanillaExtractPlugin()` in its `sanity.cli.ts`; a studio that imports another studio's modules
+(`dev/studio-e2e-testing` reuses `sanity-test-studio/schema`) needs it too, otherwise `sanity build`
+ships the `.css.ts` as plain JavaScript and the studio throws "Styles were unable to be assigned to
+a file" at boot. The `migrate-styled-components-to-vanilla-extract` skill
 (`.agents/skills/migrate-styled-components-to-vanilla-extract/SKILL.md`) has the cascade model, the
 per-primitive table of self-set declarations, the theme-read to `--card-*` variable table, and the
 wrapper contract.
