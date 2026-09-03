@@ -102,11 +102,16 @@ function parseOptions(): Options | undefined {
     : new Date(Date.now() - days * 24 * 60 * 60 * 1000)
   if (Number.isNaN(since.getTime())) throw new Error(`Invalid --since / --days value`)
 
+  const limit = values.limit === undefined ? undefined : Number(values.limit)
+  if (limit !== undefined && (!Number.isInteger(limit) || limit <= 0)) {
+    throw new Error(`Invalid --limit value "${values.limit}": expected a positive integer`)
+  }
+
   return {
     allShards: values['all-shards'],
     cacheDir: values['cache-dir'] ?? path.join(os.tmpdir(), 'sanity-e2e-flake-report'),
     json: values.json,
-    limit: values.limit ? Number(values.limit) : undefined,
+    limit,
     out: values.out,
     repo: values.repo,
     since,

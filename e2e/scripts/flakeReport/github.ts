@@ -166,6 +166,7 @@ export class GitHubClient {
       headers: {
         'Accept': 'application/vnd.github+json',
         'Authorization': `Bearer ${this.#token}`,
+        'User-Agent': 'sanity-e2e-flake-report',
         'X-GitHub-Api-Version': '2022-11-28',
       },
       redirect: 'follow',
