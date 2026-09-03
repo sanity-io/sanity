@@ -32,6 +32,7 @@ const versionStub = (
   _rev: '',
   _createdAt: '',
   _updatedAt: '',
+  _type: 'article',
   ...stub,
 })
 
@@ -84,7 +85,11 @@ const readyState = (
   targetDocument,
   scopeId: targetDocument?._system.scopeId,
   variant,
-  publishedSibling: variant ? publishedVariant : undefined,
+  siblings: {
+    published: variant ? publishedVariant : undefined,
+    draft: undefined,
+    version: undefined,
+  },
 })
 
 const DEFAULT_PERSPECTIVE = {
@@ -237,7 +242,7 @@ describe('DocumentTargetBadges', () => {
         status: 'variant-missing',
         variant: variantAlphaAudience,
         bundle: 'drafts',
-        publishedSibling: publishedVariant,
+        siblings: {published: publishedVariant, draft: undefined, version: undefined},
       },
     })
 

@@ -29,13 +29,16 @@ type FormatterFns = {list: (value: Iterable<string>) => string}
  * locale resources, eg a key of `SearchTerm` should be rendered as `<SearchTerm/>` or
  * `<SearchTerm>{{term}}</SearchTerm>` (no whitespace in tag, nor attributes).
  *
- * The components receives `children`, but no other props.
+ * Each component receives `children`, as well as any props provided through the `componentProps`
+ * prop of `<Translate>`. Note that `componentProps` are forwarded to every component in this map
+ * (including exotic ones like `memo` or `forwardRef` components) - intrinsic HTML tags
+ * (eg `{strong: 'strong'}`) never receive them.
  *
  * @public
  */
-export type TranslateComponentMap = Record<
+export type TranslateComponentMap<TComponentProps extends object = object> = Record<
   string,
-  ComponentType<{children?: ReactNode}> | keyof React.JSX.IntrinsicElements
+  ComponentType<{children?: ReactNode} & TComponentProps> | keyof React.JSX.IntrinsicElements
 >
 
 /**
@@ -43,7 +46,7 @@ export type TranslateComponentMap = Record<
  *
  * @public
  */
-export interface TranslationProps {
+export interface TranslationProps<TComponentProps extends object = object> {
   /**
    * The `t` function to use, from the `useTranslation` hook
    */
@@ -57,7 +60,16 @@ export interface TranslationProps {
   /**
    * A map of component names to React components, used to render more complex content
    */
-  components?: TranslateComponentMap
+  components?: TranslateComponentMap<NoInfer<TComponentProps>>
+
+  /**
+   * Props forwarded to every component declared in `components`. This makes it possible to
+   * pass data to the components without defining them inline during render (which creates a new
+   * component identity on every render, violating `react/no-unstable-nested-components`). Props are
+   * only forwarded to components - intrinsic HTML tags (eg `{strong: 'strong'}`) never
+   * receive them.
+   */
+  componentProps?: TComponentProps
 
   /**
    * A string representing the "context" of the resource key.
@@ -86,7 +98,9 @@ export interface TranslationProps {
  *
  * @public
  */
-export function Translate(props: TranslationProps) {
+export function Translate<TComponentProps extends object = object>(
+  props: TranslationProps<TComponentProps>,
+) {
   /**
    * The i18next API is kinda weird - the second parameter to `t` is a mixture of options and
    * replacement values. All of the following properties are options for the `t` function, at
@@ -117,7 +131,13 @@ export function Translate(props: TranslationProps) {
   const componentMap = props.components || {}
   let content: ReactNode
   try {
-    content = render(tokens, props.values, componentMap, formatters)
+    content = render(
+      tokens,
+      props.values,
+      componentMap as TranslateComponentMap,
+      props.componentProps,
+      formatters,
+    )
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
     console.warn(`Translate: Failed to render translation for key "${props.i18nKey}": ${message}`)
@@ -135,6 +155,7 @@ function render(
   tokens: Token[],
   values: TranslationProps['values'],
   componentMap: TranslateComponentMap,
+  componentProps: object | undefined,
   formatters: FormatterFns,
 ): ReactNode {
   const [head, ...tail] = tokens
@@ -152,7 +173,7 @@ function render(
     return (
       <>
         {formattedValue}
-        {render(tail, values, componentMap, formatters)}
+        {render(tail, values, componentMap, componentProps, formatters)}
       </>
     )
   }
@@ -160,7 +181,7 @@ function render(
     return (
       <>
         {head.text}
-        {render(tail, values, componentMap, formatters)}
+        {render(tail, values, componentMap, componentProps, formatters)}
       </>
     )
   }
@@ -170,10 +191,14 @@ function render(
     if (!Component) {
       throw new Error(`Component not found: ${head.name}`)
     }
+    // Only forward `componentProps` to components, never to intrinsic HTML tags (string values).
+    // Checking for strings (rather than functions) keeps exotic components like `memo`,
+    // `forwardRef` and `lazy` — which are objects, not functions — receiving props.
+    const extraProps = typeof Component !== 'string' ? componentProps : undefined
     return (
       <>
-        <Component />
-        {render(tail, values, componentMap, formatters)}
+        <Component {...extraProps} />
+        {render(tail, values, componentMap, componentProps, formatters)}
       </>
     )
   }
@@ -198,10 +223,16 @@ function render(
     const remaining = tail.slice(nextCloseIdx + 1)
 
     const As = Component ? Component : head.name
+    // Only forward `componentProps` to components, never to intrinsic HTML tags (string values).
+    // Checking for strings (rather than functions) keeps exotic components like `memo`,
+    // `forwardRef` and `lazy` — which are objects, not functions — receiving props.
+    const extraProps = typeof As !== 'string' ? componentProps : undefined
     return (
       <>
-        <As>{render(children, values, componentMap, formatters)}</As>
-        {render(remaining, values, componentMap, formatters)}
+        <As {...extraProps}>
+          {render(children, values, componentMap, componentProps, formatters)}
+        </As>
+        {render(remaining, values, componentMap, componentProps, formatters)}
       </>
     )
   }

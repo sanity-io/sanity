@@ -1,6 +1,6 @@
 {
   "name": "@sanity/schema",
-  "version": "6.10.1",
+  "version": "6.12.0",
   "description": "",
   "keywords": [
     "cms",
@@ -64,7 +64,8 @@
     "@sanity/generate-help-url": "^4.0.0",
     "@sanity/types": "workspace:*",
     "arrify": "^3.0.0",
-    "get-it": "^8.8.3",
+    "dequal": "catalog:",
+    "get-it": "^9.5.2",
     "groq-js": "^2.0.0",
     "humanize-list": "^1.0.1",
     "leven": "^4.1.0",
@@ -87,5 +88,8 @@
   "browserslist": [
     "node >=22.12",
     "baseline 2024"
-  ]
+  ],
+  "engines": {
+    "node": ">=22.12"
+  }
 }

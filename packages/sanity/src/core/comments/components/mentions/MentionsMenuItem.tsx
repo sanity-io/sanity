@@ -1,7 +1,7 @@
-import {Badge, Card, Flex, Text, TextSkeleton} from '@sanity/ui'
+import {Badge, Card, Text, TextSkeleton} from '@sanity/ui'
 import {type CSSProperties, useCallback} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {type UserWithPermission} from '../../../hooks/useUserListWithPermissions'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -39,8 +39,8 @@ export function MentionsMenuItem(props: MentionsItemProps) {
 
   return (
     <Card as="button" disabled={!user.granted} onClick={handleSelect} padding={2} radius={2}>
-      <Flex align="center" gap={3}>
-        <InnerFlex align="center" gap={2} flex={1}>
+      <Flex alignItems="center" gap={3}>
+        <InnerFlex alignItems="center" gap={2} flexBasis="0%" flexGrow={1}>
           {avatar}
           <Box>{text}</Box>
         </InnerFlex>

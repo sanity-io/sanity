@@ -5,12 +5,12 @@ import {
   type RangeDecoration,
   type RangeDecorationOnMovedDetails,
 } from '@portabletext/editor'
-import {isPortableTextTextBlock} from '@sanity/types'
+import {isPortableTextTextBlock, type Path} from '@sanity/types'
 import {BoundaryElementProvider, Stack, usePortal} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
+import {dequal as isEqual} from 'dequal/lite'
 import debounce from 'lodash-es/debounce.js'
-import isEqual from 'lodash-es/isEqual.js'
 import {AnimatePresence} from 'motion/react'
 import {
   memo,
@@ -82,7 +82,7 @@ export function CommentsPortableTextInput(props: PortableTextInputProps) {
 const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputInner(
   props: PortableTextInputProps & {mode: CommentsUIMode},
 ) {
-  const {mode} = props
+  const {mode, onItemClose, onItemOpen} = props
   const currentUser = useCurrentUser()
   const portal = usePortal()
 
@@ -270,8 +270,36 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
 
   const blurred = useRef<boolean>(false)
 
+  // Tracks whether an object edit modal inside the editor (e.g. the annotation
+  // edit popover) is opening or open. The editor still reports the text as
+  // selected while such a modal is opening, and without this guard the
+  // floating "Add comment" button would show (or linger) on top of it.
+  const objectEditModalOpenRef = useRef<boolean>(false)
+
+  const handleItemOpen = useCallback(
+    (itemPath: Path) => {
+      objectEditModalOpenRef.current = true
+      resetStates()
+      onItemOpen(itemPath)
+    },
+    [onItemOpen, resetStates],
+  )
+
+  const handleItemClose = useCallback(() => {
+    objectEditModalOpenRef.current = false
+    onItemClose()
+  }, [onItemClose])
+
   const handleSelectionChange = useCallback(
     (selection: EditorSelection | null) => {
+      // While an object edit modal is opening or open, the selection the
+      // editor reports isn't one the user just made — don't offer the
+      // floating "Add comment" button for it.
+      if (objectEditModalOpenRef.current) {
+        setCanSubmit(false)
+        return
+      }
+
       const isRangeSelected = selection?.anchor.offset !== selection?.focus.offset
 
       const selectedFragment = getFragment()
@@ -310,6 +338,9 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
     // made by the user, not restored by a re-focus, so the `blurred` guard
     // in `handleSelectionChange` must not swallow it.
     blurred.current = false
+    // It also means any open object edit modal is on its way out (it closes on
+    // outside clicks), so stop suppressing the floating "Add comment" button.
+    objectEditModalOpenRef.current = false
     startTransition(() => setMousePressed(true))
   }, [])
 
@@ -625,6 +656,8 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
         <RenderDefaultCommentsPortableTextInputInner
           {...props}
           onEditorChange={onEditorChange}
+          onItemClose={handleItemClose}
+          onItemOpen={handleItemOpen}
           editorRef={editorRef}
           rangeDecorations={rangeDecorations}
           onFullScreenChange={setIsFullScreen}

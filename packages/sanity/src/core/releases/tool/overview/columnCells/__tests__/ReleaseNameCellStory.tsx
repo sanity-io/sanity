@@ -7,21 +7,24 @@ import {
   archivedScheduledRelease,
   publishedASAPRelease,
 } from '../../../../__fixtures__/release.fixture'
+import {type InjectedTableProps} from '../../../components/Table/types'
 import {type TableRelease} from '../../ReleasesOverview'
 import {ReleaseNameCell} from '../ReleaseName'
 
-const CELL_PROPS = {id: 'name', style: {}}
+const CELL_PROPS: InjectedTableProps = {id: 'name', style: {}}
 
 const untitled: TableRelease = {
   ...activeASAPRelease,
   metadata: {...activeASAPRelease.metadata, title: ''},
 }
 
+const deleted: TableRelease = {...activeASAPRelease, isDeleted: true}
+
 /**
  * Chromatic sentinel for the releases-overview name cell: Box padding around
- * the pin button, ReleaseAvatar, and title. Pin tooltips stay closed. Loading
- * skeletons are omitted (animated). Shared with Storybook via a thin CSF
- * wrapper.
+ * the pin button, ReleaseAvatar, and title, plus the transparent deleted row.
+ * Pin / deleted tooltips stay closed. Loading skeletons are omitted
+ * (animated). Grid harness for the co-located Storybook CSF file.
  */
 export function ReleaseNameCellStory() {
   return (
@@ -55,6 +58,12 @@ export function ReleaseNameCellStory() {
               sorting={false}
             />
             <ReleaseNameCell cellProps={CELL_PROPS} datum={publishedASAPRelease} sorting={false} />
+          </Stack>
+          <Stack gap={2}>
+            <Text muted size={1} weight="medium">
+              deleted (transparent card)
+            </Text>
+            <ReleaseNameCell cellProps={CELL_PROPS} datum={deleted} sorting={false} />
           </Stack>
         </Stack>
       </Card>

@@ -1,16 +1,16 @@
-import {Card, type CardProps, Flex, rem, Text, useTheme} from '@sanity/ui'
+import {Card, type CardProps, rem, Text, useTheme} from '@sanity/ui'
 import {useVirtualizer, type VirtualItem} from '@tanstack/react-virtual'
 import {isValid} from 'date-fns/isValid'
 import get from 'lodash-es/get.js'
 import {type CSSProperties, type ElementType, Fragment, useMemo} from 'react'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {TableEmptyState} from './TableEmptyState'
 import {TableHeader} from './TableHeader'
 import {TableLayout} from './TableLayout'
 import {TableProvider, type TableSort, useTableContext} from './TableProvider'
-import {type Column} from './types'
+import {TABLE_ROW_ACTIONS_WIDTH, type Column} from './types'
 
 type RowDatum<TableData, AdditionalRowTableData> = (AdditionalRowTableData extends undefined
   ? TableData
@@ -101,6 +101,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
     })
   }, [columnDefs, data, searchFilter, searchTerm, sort])
 
+  // oxlint-disable-next-line react/incompatible-library -- pre-existing violation, to be fixed in a follow-up
   const rowVirtualizer = useVirtualizer({
     count: filteredData.length,
     getScrollElement: () => scrollContainerRef,
@@ -112,21 +113,24 @@ const TableInner = <TableData, AdditionalRowTableData>({
     () => ({
       id: 'actions',
       sorting: false,
-      // Header and body rows are independent flexboxes: this trailing gutter must be the SAME width
-      // in both, otherwise the flex:1 "Document" column absorbs the difference in the body only and
-      // every column to its right (Last edited, Edited by) drifts out of alignment with its header.
-      // The body cell below is content-box (width:25px + padding:3 => ~50px actual), so reserve 50
-      // here and size the header (border-box) to 50px to match — under-reserving clips the ⋯.
-      width: 50,
-      header: ({headerProps: {id}}) => (
-        <Flex as="th" id={id} paddingY={3} paddingX={3} sizing="border" style={{width: '50px'}}>
+      // Header and body are independent flexboxes — keep this gutter the same width in both.
+      width: TABLE_ROW_ACTIONS_WIDTH,
+      header: ({headerProps}) => (
+        <Flex {...headerProps} paddingY={3} paddingX={3}>
           <Text muted size={1} weight="medium">
             &nbsp;
           </Text>
         </Flex>
       ),
-      cell: ({datum, cellProps: {id}}) => (
-        <Flex as="td" id={id} align="center" flex="none" padding={3} style={{width: '25px'}}>
+      cell: ({datum, cellProps}) => (
+        <Flex
+          {...cellProps}
+          alignItems="center"
+          flexBasis="auto"
+          flexGrow={0}
+          flexShrink={0}
+          padding={3}
+        >
           {(!datum.isLoading && rowActions?.({datum})) || <Box style={{width: '25px'}} />}
         </Flex>
       ),
@@ -171,10 +175,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
               left: 0,
               right: 0,
               transform: `translateY(${datum.virtualRow.start}px)`,
-              paddingInline: `max(
-                calc((100% - var(--maxInlineSize)) / 2),
-                var(--paddingInline)
-              )`,
+              paddingInline: 'var(--tableInlinePadding)',
               // Consumer-supplied row styles are merged (not clobbered) so they can tint/flag a row
               // without dropping the virtualization layout (height/position/transform).
               ...rowPropsStyle,
@@ -217,8 +218,11 @@ const TableInner = <TableData, AdditionalRowTableData>({
   )
 
   const theme = useTheme()
-
   const maxInlineSize = (!hideTableInlinePadding && theme.sanity.v2?.container[3]) || 0
+  const paddingInline = rem(theme.sanity.v2?.space[3] ?? 0)
+  const tableInlinePadding = hideTableInlinePadding
+    ? '0px'
+    : `max(${paddingInline}, calc((100% - var(--maxInlineSize)) / 2))`
 
   const renderLoadingRows = (
     rowRenderer: (
@@ -279,7 +283,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
             'height': '100%',
             'position': 'relative',
             '--maxInlineSize': rem(maxInlineSize),
-            '--paddingInline': rem(theme.sanity.v2?.space[3] ?? 0),
+            '--tableInlinePadding': tableInlinePadding,
           } as CSSProperties
         }
       >

@@ -1,5 +1,5 @@
 import {type SanityDocument} from '@sanity/types'
-import {Box, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {Container, Heading, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   CommandList,
@@ -16,6 +16,7 @@ import {
   useTranslation,
 } from 'sanity'
 import {styled} from 'styled-components'
+import {Flex, Box} from 'ui5'
 
 import {PaneContent} from '../../components/pane/PaneContent'
 import {usePane} from '../../components/pane/usePane'
@@ -129,6 +130,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     return () => {
       clearTimeout(timer)
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [collapsed, items])
 
   const renderItem = useCallback<CommandListRenderItemCallback<SanityDocument>>(
@@ -184,7 +186,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
   const noDocumentsContent = useMemo(() => {
     if (hasSearchQuery) {
       return (
-        <Flex align="center" direction="column" height="fill" justify="center">
+        <Flex alignItems="center" flexDirection="column" height="100%" justifyContent="center">
           <Container width={1}>
             <Box paddingX={4} paddingY={5}>
               <Text align="center" muted>
@@ -197,7 +199,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     }
 
     return (
-      <Flex align="center" direction="column" height="fill" justify="center">
+      <Flex alignItems="center" flexDirection="column" height="100%" justifyContent="center">
         <Container width={1}>
           <Box paddingX={4} paddingY={5}>
             <Text align="center" muted>
@@ -219,7 +221,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     const isOnline = window.navigator.onLine
     if (error) {
       return (
-        <Flex align="center" direction="column" height="fill" justify="center">
+        <Flex alignItems="center" flexDirection="column" height="100%" justifyContent="center">
           <Container width={1}>
             <Stack paddingX={4} paddingY={5} gap={4}>
               <Heading as="h3">{t('panes.document-list-pane.error.title')}</Heading>
@@ -229,7 +231,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
                     t={t}
                     i18nKey="panes.document-list-pane.error.text.dev"
                     values={{error: error.message}}
-                    components={{Code: ({children}) => <code>{children}</code>}}
+                    components={{Code: 'code'}}
                   />
                 ) : isOnline ? (
                   t('panes.document-list-pane.error.text')
@@ -282,7 +284,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     const key = `${index}-${collapsed}`
 
     return (
-      <RootBox overflow="hidden" height="fill" $opacity={muted ? 0.8 : 1}>
+      <RootBox overflow="hidden" height="100%" $opacity={muted ? 0.8 : 1}>
         <CommandListBox>
           <CommandList
             key={key}

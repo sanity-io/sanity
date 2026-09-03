@@ -367,6 +367,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Value error: Value is of type "<code>{{actualType}}</code>", expected "<code>{{expectedType}}</code>"',
   /** File diff: Fallback title for the meta info section when there is no original filename to use  */
   'changes.file.meta-info-fallback-title': 'Untitled',
+  /** The label displayed to indicate a document's value is different to its base variant. */
+  'changes.from-base-variant.label': 'Changed from base variant',
   /** Image diff: Text shown in tooltip when hovering hotspot that has changed in diff view */
   'changes.image.crop-changed': 'Crop changed',
   /** Image diff: Text shown if the previous image asset was deleted (shouldn't theoretically happen) */
@@ -465,6 +467,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Default text for dialog confirm button */
   'common.dialog.confirm-button.text': 'Confirm',
 
+  /** Default text in shared error text */
+  'common.error': 'Error',
+
   /** Default text in shared loader text / spinner lockup */
   'common.loading': 'Loading',
 
@@ -495,6 +500,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'default-orderings.name': 'Sort by Name',
   /** Title for the default ordering/SortOrder if no orderings are provided and the title field is found */
   'default-orderings.title': 'Sort by Title',
+
+  /** Menu item that opens Studio diagnostics */
+  'diagnostics.menu-item': 'Diagnostics',
 
   /** Label for action that closes divergence inspector */
   'divergence.action.close.label': 'Close',
@@ -633,6 +641,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-status.not-published': 'Not published',
   /** Label to show in the document footer indicating the published date of the document */
   'document-status.published': 'Edited {{date}}',
+  /** Label to show in document versions status for a published (non-live-edit) document */
+  'document-status.published-at': 'Published {{date}}',
   /** Label to show in the document footer indicating the revision from date of the document */
   'document-status.revision-from': 'Revision from <em>{{date}}</em>',
 
@@ -718,6 +728,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'form.error.unhandled-runtime-error.error-message': 'Error: {{message}}',
   /** The title for the error card rendered inside a field in place of a crashing input */
   'form.error.unhandled-runtime-error.title': 'Unhandled Runtime Error',
+  /** Tooltip / accessible label for the field actions overflow menu button */
+  'form.field.actions-menu.title': 'Field actions',
   /** Form field deprecated label */
   'form.field.deprecated-label': 'deprecated',
   /** Fallback title shown above field if it has no defined title */

@@ -1,10 +1,11 @@
 import {type ColorTints} from '@sanity/color'
 import {type User} from '@sanity/types'
-import {Box, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {AnimatePresence, motion, type Transition, type Variants} from 'motion/react'
 import {useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {useUserColor} from '../../../../user-color/hooks'
 

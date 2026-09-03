@@ -1,5 +1,6 @@
-import {Box, type ButtonMode, type ButtonTone, Card, type CardTone, Flex, Text} from '@sanity/ui'
+import {type ButtonMode, type ButtonTone, Card, type CardTone, Text} from '@sanity/ui'
 import {type ComponentType, type ElementType, type ReactNode} from 'react'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 
@@ -25,14 +26,14 @@ export function Banner(props: BannerProps) {
   return (
     <Box padding={1}>
       <Card radius={3} paddingX={2} paddingY={paddingY} tone={tone} {...rest}>
-        <Flex align="center" gap={3} paddingX={2}>
+        <Flex alignItems="center" gap={3} paddingX={2}>
           {Icon && (
             <Text size={0}>
               <Icon />
             </Text>
           )}
 
-          <Flex align="center" flex={1} gap={2} paddingY={2}>
+          <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2} paddingY={2}>
             {content}
           </Flex>
 

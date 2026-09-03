@@ -9,6 +9,7 @@ import {ObjectBlockStory} from './ObjectBlockStory'
 const meta = {
   title: 'Portable Text/Object Block',
   component: ObjectBlockStory,
+  tags: ['!dev', '!autodocs', 'vrt-only'],
   parameters: {chromatic: {delay: 300}},
 } satisfies Meta<typeof ObjectBlockStory>
 

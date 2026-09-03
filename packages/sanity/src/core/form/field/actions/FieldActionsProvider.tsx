@@ -77,4 +77,3 @@ export const FieldActionsProvider = memo(function FieldActionsProvider(
 
   return <FieldActionsContext.Provider value={context}>{children}</FieldActionsContext.Provider>
 })
-FieldActionsProvider.displayName = 'Memo(FieldActionsProvider)'

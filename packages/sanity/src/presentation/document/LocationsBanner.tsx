@@ -3,12 +3,13 @@ import {DesktopIcon} from '@sanity/icons/Desktop'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Box, Card, Flex, Spinner, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Spinner, Stack, Text} from '@sanity/ui'
 import {type ComponentType, type ReactNode, useCallback, useContext, useState} from 'react'
 import {type ObjectSchemaType, useTranslation} from 'sanity'
 import {PresentationContext} from 'sanity/_singletons'
 import {useIntentLink} from 'sanity/router'
 import {usePaneRouter} from 'sanity/structure'
+import {Box} from 'ui5'
 
 import {DEFAULT_TOOL_NAME, DEFAULT_TOOL_TITLE} from '../constants'
 import {presentationLocaleNamespace} from '../i18n'
@@ -71,13 +72,13 @@ export function LocationsBanner(props: {
         {!locations && (
           <Flex align="flex-start" gap={3} padding={3}>
             {tone && ToneIcon && (
-              <Box flex="none">
+              <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
                 <Text size={1}>
                   <ToneIcon />
                 </Text>
               </Box>
             )}
-            <Box flex={1}>
+            <Box flexBasis="0%" flexGrow={1}>
               <Text size={1} weight="medium">
                 {showPresentationTitle && <>{options.title || DEFAULT_TOOL_TITLE} &middot; </>}
                 {title}
@@ -95,7 +96,7 @@ export function LocationsBanner(props: {
               tone="inherit"
             >
               <Flex gap={3}>
-                <Box flex="none">
+                <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
                   {isResolving ? (
                     <Spinner size={1} />
                   ) : (
@@ -113,7 +114,7 @@ export function LocationsBanner(props: {
                     </Text>
                   )}
                 </Box>
-                <Box flex={1}>
+                <Box flexBasis="0%" flexGrow={1}>
                   <Text size={1} weight="medium">
                     {showPresentationTitle && <>{options.title || DEFAULT_TOOL_TITLE} &middot; </>}
                     {title}
@@ -195,7 +196,7 @@ function LocationItem(props: {
       tone="inherit"
     >
       <Flex gap={3}>
-        <Box flex="none">
+        <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
           <Text size={1}>
             <Icon />
           </Text>

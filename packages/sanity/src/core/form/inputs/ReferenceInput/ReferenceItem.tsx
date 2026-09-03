@@ -5,10 +5,11 @@ import {LaunchIcon as OpenInNewTabIcon} from '@sanity/icons/Launch'
 import {SyncIcon as ReplaceIcon} from '@sanity/icons/Sync'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type Reference, type ReferenceSchemaType, type SchemaType} from '@sanity/types'
-import {Box, type CardTone} from '@sanity/ui'
+import {type CardTone} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
+import {Box} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
@@ -86,6 +87,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
     validation,
     inputId,
     changed,
+    changedFromBaseVariant,
     focused,
     children,
     inputProps: {onChange, focusPath, onPathFocus, renderPreview, elementProps},
@@ -306,7 +308,6 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
                 as={IntentLink}
                 data-as="a"
                 icon={OpenInNewTabIcon}
-                // @ts-expect-error - these are valid types but there's an issue in `@sanity/ui@3` where type inference is not working on `as` props
                 intent="edit"
                 params={{id: value?._ref, type: refType?.name}}
                 rel="noopener noreferrer"
@@ -355,6 +356,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
               deprecated={schemaType.deprecated}
               schemaType={schemaType}
               path={path}
+              changedFromBaseVariant={changedFromBaseVariant}
               readOnly={readOnly}
             >
               {children}

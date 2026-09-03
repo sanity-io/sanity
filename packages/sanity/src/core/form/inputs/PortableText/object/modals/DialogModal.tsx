@@ -1,5 +1,6 @@
-import {BoundaryElementProvider, Box} from '@sanity/ui'
+import {BoundaryElementProvider} from '@sanity/ui'
 import {type ReactNode, useId, useRef, useState} from 'react'
+import {Box} from 'ui5'
 
 import {Dialog} from '../../../../../../ui-components/dialog/Dialog'
 import {PresenceOverlay} from '../../../../../presence/overlay/PresenceOverlay'

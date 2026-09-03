@@ -1,10 +1,10 @@
 import {type Schema, type SchemaType} from '@sanity/types'
-import {Flex, Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 import {MenuDivider} from '@sanity/ui/menu'
 import partition from 'lodash-es/partition.js'
 import {type ChangeEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../../../../ui-components/button/Button'
 import {CommandList} from '../../../../../../../components/commandList/CommandList'
@@ -126,7 +126,7 @@ export function DocumentTypesPopoverContent() {
   )
 
   return (
-    <Flex direction="column" style={POPOVER_STYLES}>
+    <Flex flexDirection="column" style={POPOVER_STYLES}>
       {/* Search header */}
       <FilterPopoverContentHeader
         ariaInputLabel={t('search.action.filter-by-document-type-aria-label')}

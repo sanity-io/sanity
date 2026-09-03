@@ -1,9 +1,9 @@
 import {PinIcon} from '@sanity/icons/Pin'
 import {PinFilledIcon} from '@sanity/icons/PinFilled'
-import {Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
+import {Card, Skeleton, Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {useRouter} from 'sanity/router'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
@@ -51,7 +51,7 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
   if (release.isLoading) {
     return (
       <Box {...cellProps} paddingLeft={3} flexBasis="0%" flexGrow={1} paddingY={1} paddingRight={2}>
-        <Flex align="center" gap={2}>
+        <Flex alignItems="center" gap={2}>
           <Skeleton animated radius={1} style={PREVIEW_SIZES.default.media} />
           <TitleSkeleton />
         </Flex>
@@ -81,7 +81,7 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
           </Text>
         }
       >
-        <Flex align="center" gap={3}>
+        <Flex alignItems="center" gap={3}>
           <Button
             tooltipProps={{
               disabled: isArchived || release.state === 'published',
@@ -104,12 +104,12 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
             aria-live="assertive"
           />
           <Card {...cardProps} padding={2} radius={2} flex={1}>
-            <Flex align="center" gap={2}>
+            <Flex alignItems="center" gap={2}>
               <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
-                <ReleaseAvatar release={release} />
+                <ReleaseAvatar release={release} size="small" fontSize={2} />
               </Box>
               <Stack flex={1} gap={2}>
-                <Flex align="center" gap={2} style={{minWidth: 0}}>
+                <Flex alignItems="center" gap={2}>
                   <ReleaseTitle
                     title={release.metadata.title}
                     fallback={tCore('release.placeholder-untitled-release')}

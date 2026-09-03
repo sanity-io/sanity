@@ -66,6 +66,7 @@ const PRESENCE: FormNodePresence[] = [
 const meta = {
   title: 'Portable Text/Presence Cursors',
   component: PresenceCursorsStory,
+  tags: ['!dev', '!autodocs', 'vrt-only'],
   parameters: {chromatic: {delay: 300}},
 } satisfies Meta<typeof PresenceCursorsStory>
 

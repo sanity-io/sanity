@@ -8,6 +8,10 @@ import {useRouter} from 'sanity/router'
 import {Button} from '../../../../ui-components/button/Button'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {Popover} from '../../../../ui-components/popover/Popover'
+import {
+  getVersionContextMenuActionsContext,
+  useConfiguredDocumentActionIds,
+} from '../../../config/document/useConfiguredDocumentActionIds'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useScheduledDraftDocument} from '../../../singleDocRelease/hooks/useScheduledDraftDocument'
 import {useScheduledDraftMenuActions} from '../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
@@ -42,27 +46,51 @@ export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocu
     onActionComplete: handleActionComplete,
   })
 
+  const configuredActionIds = useConfiguredDocumentActionIds(
+    scheduledDraftDocument
+      ? getVersionContextMenuActionsContext({
+          schemaType: scheduledDraftDocument._type,
+          documentGroupId: getPublishedId(scheduledDraftDocument._id),
+          fromRelease: getReleaseIdFromReleaseDocumentId(release._id),
+          isScheduledDraft: true,
+        })
+      : null,
+  )
+  const showPublishNow = configuredActionIds.has('publish')
+  // EditScheduledDraftAction and useSchedulePublishAction both claim `schedule`, so removing one leaves this gate open.
+  const showSchedule = configuredActionIds.has('schedule')
+  const showDeleteSchedule = configuredActionIds.has('discardVersion')
+
   const displayedMenuItems = useMemo(() => {
+    const deleteSchedule = showDeleteSchedule
+      ? [<MenuItem key={'delete-schedule'} {...actions.deleteSchedule} />]
+      : []
+
     if (release.state === 'archived' || release.state === 'published') {
-      return [<MenuItem key={'delete-schedule'} {...actions.deleteSchedule} />]
+      return deleteSchedule
     }
+
+    const publishNow = showPublishNow
+      ? [<MenuItem key={'publish-now'} {...actions.publishNow} />]
+      : []
 
     if (isPausedCardinalityOneRelease(release)) {
-      return [
-        <MenuItem key={'publish-now'} {...actions.publishNow} />,
-        <MenuItem key={'schedule-publish'} {...actions.schedulePublish} />,
-        <MenuItem key={'delete-schedule'} {...actions.deleteSchedule} />,
-      ]
+      const schedulePublish = showSchedule
+        ? [<MenuItem key={'schedule-publish'} {...actions.schedulePublish} />]
+        : []
+
+      return [...publishNow, ...schedulePublish, ...deleteSchedule]
     }
 
-    return [
-      <MenuItem key={'publish-now'} {...actions.publishNow} />,
-      <MenuItem key={'edit-schedule'} {...actions.editSchedule} />,
-      <MenuItem key={'delete-schedule'} {...actions.deleteSchedule} />,
-    ]
-  }, [release, actions])
+    const editSchedule = showSchedule
+      ? [<MenuItem key={'edit-schedule'} {...actions.editSchedule} />]
+      : []
+
+    return [...publishNow, ...editSchedule, ...deleteSchedule]
+  }, [release, actions, showPublishNow, showSchedule, showDeleteSchedule])
 
   const canPerformActions = Boolean(scheduledDraftDocument)
+  const hasConfiguredMenuItems = displayedMenuItems.length > 0
 
   const handleOnButtonClick = useCallback(() => {
     setOpenPopover((prev) => !prev)
@@ -73,7 +101,7 @@ export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocu
     () => [popoverRef.current, scheduledDraftMenuRef.current],
   )
 
-  if (!canPerformActions) {
+  if (!canPerformActions || !hasConfiguredMenuItems) {
     return null
   }
 

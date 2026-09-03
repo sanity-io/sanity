@@ -1,5 +1,5 @@
-import {Flex} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../../../i18n/hooks/useTranslation'
@@ -37,7 +37,7 @@ export function Filters({showTypeFilter = true}: {showTypeFilter?: boolean}) {
   const clearFiltersButtonVisible = filters.length > 0 || (showTypeFilter && types.length > 0)
 
   useEffect(() => {
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setIsMounted(true)
   }, [])
 
@@ -55,8 +55,8 @@ export function Filters({showTypeFilter = true}: {showTypeFilter?: boolean}) {
 
   return (
     <>
-      <Flex align="flex-start" gap={3} justify="space-between" padding={2}>
-        <Flex flex={1} gap={2} wrap="wrap">
+      <Flex alignItems="flex-start" gap={3} justifyContent="space-between" padding={2}>
+        <Flex flexBasis="0%" flexGrow={1} gap={2} flexWrap="wrap">
           {showTypeFilter && <DocumentTypesButton />}
           {filters?.map((filter) => {
             const key = getFilterKey(filter)
@@ -74,7 +74,7 @@ export function Filters({showTypeFilter = true}: {showTypeFilter?: boolean}) {
       </Flex>
 
       {fullscreen && (
-        <Flex justify="space-between" paddingBottom={2} paddingX={2}>
+        <Flex justifyContent="space-between" paddingBottom={2} paddingX={2}>
           <AddFilterButton />
           {clearFiltersButtonVisible && clearFiltersButton}
         </Flex>

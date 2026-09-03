@@ -1,17 +1,11 @@
 import {ToggleArrowRightIcon} from '@sanity/icons/ToggleArrowRight'
-import {Box, Flex, Text} from '@sanity/ui'
+import {Flex, Text} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
 import {styled} from 'styled-components'
+import {Box, type MarginProps} from 'ui5'
 
-interface DetailsProps {
+interface DetailsProps extends MarginProps {
   children?: ReactNode
-  margin?: number | number[]
-  marginX?: number | number[]
-  marginY?: number | number[]
-  marginTop?: number | number[]
-  marginRight?: number | number[]
-  marginBottom?: number | number[]
-  marginLeft?: number | number[]
   open?: boolean
   icon?: ReactNode
   title?: ReactNode
@@ -57,7 +51,7 @@ export function Details(props: DetailsProps) {
 
   const handleToggle = useCallback(() => setOpen((v) => !v), [])
 
-  // oxlint-disable-next-line react/react-compiler
+  // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
   useEffect(() => setOpen(openProp || false), [openProp])
 
   return (
@@ -71,7 +65,7 @@ export function Details(props: DetailsProps) {
               </Text>
             </IconBox>
             {icon && <Box marginLeft={1}>{icon}</Box>}
-            <Box flex={1} marginLeft={1}>
+            <Box flexBasis="0%" flexGrow={1} marginLeft={1}>
               <Text textOverflow="ellipsis" size={1} weight="medium">
                 {title}
               </Text>

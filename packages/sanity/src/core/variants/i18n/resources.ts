@@ -4,6 +4,8 @@
  * @internal
  */
 const variantsLocaleStrings = {
+  /** Tooltip for the variants tool link in the navbar. */
+  'navbar.tooltip': 'View variants',
   /** Label for the variants navigation row. */
   'navbar.view-as': 'View as',
   /** Label for the version selector in the variants navigation row. */
@@ -16,10 +18,10 @@ const variantsLocaleStrings = {
   'navbar.variant.filter-placeholder': 'Filter variants…',
   /** Section header for non-default variants in the dropdown. */
   'navbar.variant.other': 'Other variants',
-  /** Label for clearing version and variant selections. */
-  'navbar.clear': 'Clear',
   /** Tooltip for clearing the selected variant. */
   'navbar.variant.clear': 'Clear variant selection',
+  /** Tooltip for the button that clears the selected version */
+  'navbar.version.clear': 'Clear version selection',
   /** Label for the Variants overview primary create action (mirrors "New release"). */
   'overview.action.new-variant': 'New variant definition',
   /** Label for the Variants overview row edit action. */
@@ -141,6 +143,9 @@ const variantsLocaleStrings = {
   'dialog.create.variant-title.placeholder': 'e.g. Loyal customers',
   /** Validation message when the variant title is missing. */
   'dialog.create.variant-title.required': 'Title is required',
+  /** Validation message when the variant title matches an existing variant definition. */
+  'dialog.create.variant-title.duplicate':
+    'A variant definition with this title already exists: <VariantLink>{{title}}</VariantLink>',
   /** Label for the description field in the create variant dialog. */
   'dialog.create.description.label': 'Description',
   /** Placeholder for the description field in the create variant dialog. */
@@ -157,6 +162,9 @@ const variantsLocaleStrings = {
   /** Description for the conditions section in the create variant dialog. */
   'dialog.create.conditions.description':
     'Add key/value pairs that define when this variant definition applies.',
+  /** Validation message when the conditions match an existing variant definition. */
+  'dialog.create.conditions.duplicate':
+    'A variant definition with the same conditions already exists: <VariantLink>{{title}}</VariantLink>',
   /** Label for the condition key field in the create variant dialog. */
   'dialog.create.condition-key.label': 'Key',
   /** Validation message when a condition key is repeated. */

@@ -86,8 +86,9 @@ export function DocumentPane(props: {
 
   // Reset error state when parameters change
   useEffect(() => {
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setErrorParams(null)
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [documentId, documentType, structureParams])
 
   if (errorParams) {

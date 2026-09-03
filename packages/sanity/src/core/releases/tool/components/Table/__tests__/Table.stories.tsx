@@ -9,6 +9,7 @@ import {TableStory} from './TableStory'
 const meta = {
   title: 'Releases/Table',
   component: TableStory,
+  tags: ['!dev', '!autodocs', 'vrt-only'],
 } satisfies Meta<typeof TableStory>
 
 export default meta

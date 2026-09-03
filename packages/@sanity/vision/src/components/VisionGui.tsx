@@ -8,7 +8,7 @@ import {
 } from '@sanity/client'
 import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
-import {Box, Button, Flex} from '@sanity/ui'
+import {Button, Flex} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {isHotkey} from 'is-hotkey-esm'
 import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
@@ -25,6 +25,7 @@ import {
   useWorkspace,
   VARIANTS_STUDIO_CLIENT_OPTIONS,
 } from 'sanity'
+import {Box} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
@@ -657,6 +658,7 @@ export function VisionGui(props: VisionGuiProps) {
       return
     }
     handleStudioVariantChange()
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [activeVariant])
 
   const handleStudioPerspectiveChange = useEffectEvent((stack: StackablePerspective[]) => {
@@ -667,6 +669,7 @@ export function VisionGui(props: VisionGuiProps) {
   // Handle pinned perspective changes
   useEffect(() => {
     handleStudioPerspectiveChange(perspectiveStack)
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [perspectiveStack])
 
   const generateUrl = useCallback(
@@ -712,7 +715,7 @@ export function VisionGui(props: VisionGuiProps) {
         isScheduledDraftsEnabled={isScheduledDraftsEnabled}
       />
 
-      <SplitpaneContainer flex="auto">
+      <SplitpaneContainer flexBasis="auto" flexGrow={1} flexShrink={1}>
         <SplitPane
           minSize={800}
           defaultSize={window.innerWidth - 275}
@@ -720,14 +723,14 @@ export function VisionGui(props: VisionGuiProps) {
           maxSize={-225}
           primary="first"
         >
-          <Box height="stretch" flex={1}>
+          <Box height="stretch" flexBasis="0%" flexGrow={1}>
             <SplitPane
               className="sidebarPanes"
               // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
               split={isNarrowBreakpoint ? 'vertical' : 'horizontal'}
               minSize={300}
             >
-              <Box height="stretch" flex={1}>
+              <Box height="stretch" flexBasis="0%" flexGrow={1}>
                 <SplitPane
                   className="sidebarPanes"
                   split="horizontal"
@@ -741,7 +744,7 @@ export function VisionGui(props: VisionGuiProps) {
                   primary="first"
                 >
                   <InputContainer display="flex" data-testid="vision-query-editor">
-                    <Box flex={1}>
+                    <Box flexBasis="0%" flexGrow={1}>
                       <InputBackgroundContainerLeft>
                         <Flex>
                           <StyledLabel muted>{t('query.label')}</StyledLabel>
@@ -776,6 +779,13 @@ export function VisionGui(props: VisionGuiProps) {
               </Box>
               <VisionGuiResult
                 error={error}
+                apiVersion={userApiVersion}
+                perspective={getActivePerspective({
+                  visionPerspective: perspective,
+                  perspectiveStack,
+                  scheduledDraftsStack,
+                })}
+                variant={activeVariant}
                 queryInProgress={queryInProgress}
                 queryResult={queryResult}
                 listenInProgress={listenInProgress}

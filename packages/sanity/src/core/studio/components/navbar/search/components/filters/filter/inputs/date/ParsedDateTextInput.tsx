@@ -144,12 +144,13 @@ export function ParsedDateTextInput({
   useEffect(() => {
     const updatedDate = value && new Date(value)
     if (updatedDate) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       processInputString({
         dateString: format(updatedDate, dateFormat),
         triggerOnChange: false,
       })
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [dateFormat, processInputString, isDateTimeFormat, value])
 
   return (

@@ -1,9 +1,9 @@
 import {TrashIcon} from '@sanity/icons/Trash'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Flex, Switch, Text} from '@sanity/ui'
+import {Switch, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useState} from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {Button} from '../../../../../ui-components/button/Button'
@@ -73,6 +73,7 @@ export function FormCreate(props: ObjectInputProps) {
     if (creating && savedTask?.createdByUser) {
       handleCreatingSuccess()
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [creating, savedTask?.createdByUser])
 
   const handleCreatingTimeout = useEffectEvent(() => {
@@ -93,6 +94,7 @@ export function FormCreate(props: ObjectInputProps) {
     return () => {
       if (timeoutId) clearTimeout(timeoutId)
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [creating])
 
   const handleCreate = useCallback(async () => {
@@ -130,7 +132,7 @@ export function FormCreate(props: ObjectInputProps) {
             />
           )}
 
-          <Flex align="center" gap={2} justify={'flex-end'} flex={1}>
+          <Flex alignItems="center" gap={2} justifyContent={'flex-end'} flexBasis="0%" flexGrow={1}>
             <Switch onChange={handleCreateMore} checked={createMore} />
             <Text size={1} muted>
               {t('form.input.create-more.text')}

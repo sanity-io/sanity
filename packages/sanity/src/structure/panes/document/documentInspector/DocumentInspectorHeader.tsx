@@ -1,8 +1,9 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {Box, Card, type CardProps, Flex, Text} from '@sanity/ui'
+import {Card, type CardProps, Text} from '@sanity/ui'
 import {type ElementType, type HTMLProps, type ReactNode} from 'react'
 import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../../i18n'
@@ -31,12 +32,12 @@ export function DocumentInspectorHeader(
   return (
     <Root {...restProps} as={forwardedAs}>
       <Flex padding={2}>
-        <Box flex={1} padding={3}>
+        <Box flexBasis="0%" flexGrow={1} padding={3}>
           <Text as="h1" size={1} weight="medium">
             {title}
           </Text>
         </Box>
-        <Box flex="none" padding={1}>
+        <Box flexBasis="auto" flexGrow={0} flexShrink={0} padding={1}>
           <Button
             aria-label={closeButtonLabel}
             icon={CloseIcon}

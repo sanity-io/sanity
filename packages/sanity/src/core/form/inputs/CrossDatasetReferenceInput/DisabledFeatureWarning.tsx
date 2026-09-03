@@ -1,8 +1,9 @@
 import {ResetIcon} from '@sanity/icons/Reset'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type CrossDatasetReferenceValue} from '@sanity/types'
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -13,6 +14,14 @@ type Props = {
   onClearValue?: () => void
 }
 
+function DocumentationLink({children}: {children?: React.ReactNode}) {
+  return (
+    <a href="https://www.sanity.io/docs/cross-dataset-references" target="_blank" rel="noreferrer">
+      {children}
+    </a>
+  )
+}
+
 export function DisabledFeatureWarning({value, onClearValue}: Props) {
   const hasRef = useMemo(() => Boolean(value?._ref), [value?._ref])
   const {t} = useTranslation()
@@ -21,17 +30,7 @@ export function DisabledFeatureWarning({value, onClearValue}: Props) {
     <Translate
       t={t}
       i18nKey="inputs.reference.cross-dataset.feature-disabled-description"
-      components={{
-        DocumentationLink: ({children}) => (
-          <a
-            href="https://www.sanity.io/docs/cross-dataset-references"
-            target="_blank"
-            rel="noreferrer"
-          >
-            {children}
-          </a>
-        ),
-      }}
+      components={{DocumentationLink}}
     />
   )
 

@@ -6,7 +6,7 @@ import {MentionsMenu} from '../MentionsMenu'
 /**
  * Chromatic sentinel for the ui5 Box empty-state padding on MentionsMenu.
  * The populated path renders MentionsMenuItem (useUser + skeleton) and is
- * skipped. Shared with the co-located Storybook CSF file.
+ * skipped. Grid harness for the co-located Storybook CSF file.
  */
 export function MentionsMenuStory() {
   return (

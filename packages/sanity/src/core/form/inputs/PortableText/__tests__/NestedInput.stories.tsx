@@ -9,6 +9,7 @@ import NestedInputStory from './NestedInputStory'
 const meta = {
   title: 'Portable Text/Nested Input',
   component: NestedInputStory,
+  tags: ['!dev', '!autodocs', 'vrt-only'],
   parameters: {chromatic: {delay: 300}},
 } satisfies Meta<typeof NestedInputStory>
 

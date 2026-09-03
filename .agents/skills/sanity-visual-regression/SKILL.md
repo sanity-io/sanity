@@ -20,6 +20,10 @@ baselines. Review diffs on the Chromatic build linked from the PR check.
 
 ## Quick start: add visual coverage for a component
 
+Before writing anything, run `pnpm visual-coverage <path> --prs` and follow
+[sanity-visual-coverage](../sanity-visual-coverage/SKILL.md). It reports whether a story already
+renders the component or an open PR is about to, so you only add what is missing.
+
 1. Add a co-located `*.stories.tsx` file to the owning package's `src` tree, usually in the same
    `__tests__` directory as the component or harness. Storybook discovers story files in workspace
    package `src` trees — do not add CSF under `dev/storybook/stories/`. Two patterns:
@@ -35,14 +39,41 @@ baselines. Review diffs on the Chromatic build linked from the PR check.
      test and the story. New coverage can also use a colocated `*Story.tsx` when the grid needs
      `TestWrapper` inside the harness — see
      [ConfirmPopover.stories.tsx](../../../packages/sanity/src/ui-components/confirmPopover/__tests__/ConfirmPopover.stories.tsx).
-2. Verify locally: `pnpm dev:storybook` (port 6006), then `pnpm --filter sanity-storybook test`
+2. Overlays that only exist after interaction (tooltips, menus, submenu flyouts) get a `play`
+   function using `storybook/test` (`userEvent` + `waitFor`/`expect(...).toBeVisible()`, querying
+   `within(document.body)` for portaled content). Chromatic and addon-vitest both run `play`
+   before capturing, so the snapshot shows the open overlay — see
+   [Tooltip.stories.tsx](../../../packages/sanity/src/ui-components/tooltip/__tests__/Tooltip.stories.tsx)
+   and
+   [MenuGroup.stories.tsx](../../../packages/sanity/src/ui-components/menuGroup/__tests__/MenuGroup.stories.tsx)
+   (the latter also documents an animation pitfall with nested popovers). Statically controllable
+   overlays (e.g. Popover's `open` prop) don't need `play`.
+3. Verify locally: `pnpm dev:storybook` (port 6006), then `pnpm --filter sanity-storybook test`
    (every story runs as a vitest browser-mode test via `@storybook/addon-vitest`).
-3. Push — the `Chromatic / Storybook visual tests` check snapshots only affected stories
+4. Push — the `Chromatic / Storybook visual tests` check snapshots only affected stories
    (TurboSnap) and links the build for review.
 
 Migration priority: card and tone-related components first (tones cascade through everything),
 box primitives later. Snapshot the _wrapper_ components in `packages/sanity/src/ui-components`
 and vanilla-extract-migrated components (change indicators, `DocumentLayout`) as sentinels.
+
+## Documented stories vs regression fixtures (tags)
+
+The Storybook is a living document of how reusable components look and behave, so the sidebar is
+curated: only stories written to be read by humans appear in it. Stories that exist purely as
+snapshot targets are tagged out of navigation but keep their test coverage:
+
+- **Documented stories** (default tags): authored variant grids and component states with a
+  concise JSDoc description. Held to a docs-quality bar — someone browsing the deployed Storybook
+  should learn how the component is used.
+- **Regression fixtures** (`tags: ['!dev', '!autodocs', 'vrt-only']`): harness dumps that reuse a
+  `*Story.tsx` browser-test harness, or states with no explanatory value. `!dev` removes the
+  story from the sidebar and `!autodocs` from any future docs pages, but the story stays in the
+  index — Chromatic still snapshots it and addon-vitest still renders it (the `test` tag is kept).
+  The `vrt-only` custom tag makes them greppable and filterable.
+
+The inverse also exists: a story that should be browsable but never snapshotted keeps default
+tags and sets `parameters: {chromatic: {disableSnapshot: true}}`.
 
 ## Determinism rules for stories
 

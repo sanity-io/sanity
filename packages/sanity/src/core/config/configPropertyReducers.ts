@@ -497,6 +497,34 @@ export const variantsEnabledReducer = (opts: {
   return result
 }
 
+export const commentsV2EnabledReducer = (opts: {
+  config: PluginOptions
+  initialValue: boolean
+}): boolean => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  return flattenedConfig.reduce((value: boolean, {config: innerConfig}) => {
+    const comments: unknown = innerConfig.beta?.comments
+
+    if (typeof comments === 'undefined') return value
+    if (!isRecord(comments)) {
+      throw new Error(
+        `Expected \`beta.comments\` to be an object, but received ${getPrintableType(comments)}`,
+      )
+    }
+
+    const v2 = comments.v2
+
+    if (typeof v2 === 'undefined') return value
+    if (typeof v2 === 'boolean') return v2
+
+    throw new Error(
+      `Expected \`beta.comments.v2\` to be a boolean, but received ${getPrintableType(v2)}`,
+    )
+  }, initialValue)
+}
+
 export const documentGroupInventoryEnabledReducer = ({
   config,
   initialValue,

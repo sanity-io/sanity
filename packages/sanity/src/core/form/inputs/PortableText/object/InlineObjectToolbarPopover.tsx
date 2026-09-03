@@ -1,8 +1,9 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {EditIcon} from '@sanity/icons/Edit'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Box, Flex, Text, useGlobalKeyDown, useTheme} from '@sanity/ui'
+import {Flex, Text, useGlobalKeyDown, useTheme} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Popover, type PopoverProps} from '../../../../../ui-components/popover/Popover'
@@ -91,7 +92,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
   useEffect(() => {
     focusTrappedRef.current = null
     if (inlineObjectOpen) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setPopoverOpen(false)
       return
     }

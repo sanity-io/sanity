@@ -1,24 +1,45 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {EditIcon} from '@sanity/icons/Edit'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Box, Flex, Text, useBoundaryElement, useGlobalKeyDown, useTheme} from '@sanity/ui'
-import {type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {Flex, Text, useBoundaryElement, useGlobalKeyDown, useTheme} from '@sanity/ui'
+import {
+  type ReactNode,
+  type RefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Popover, type PopoverProps} from '../../../../../ui-components/popover/Popover'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useSelectedAnnotations} from '../contexts/SelectedAnnotationsContext'
+import {usePortableTextMemberItems} from '../hooks/usePortableTextMembers'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
 interface CombinedAnnotationPopoverProps {
+  annotationOpeningRef: RefObject<boolean>
   referenceBoundary: HTMLElement | null
 }
 
 export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps): ReactNode {
-  const {referenceBoundary} = props
+  const {annotationOpeningRef, referenceBoundary} = props
   const {element: floatingBoundary} = useBoundaryElement()
   const {annotations} = useSelectedAnnotations()
+  const portableTextMemberItems = usePortableTextMemberItems()
+
+  // The popover must stay closed for the whole lifetime of the annotation
+  // edit modal, not only while it is opening: when multiple annotations cover
+  // the same text, the ones not being edited stay registered while the modal
+  // is open, and a selection re-check could otherwise reopen the popover on
+  // top of the modal.
+  const hasOpenAnnotation = portableTextMemberItems.some(
+    (m) => m.kind === 'annotation' && m.member.open,
+  )
   const [cursorRect, setCursorRect] = useState<DOMRect | null>(null)
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
   const rangeRef = useRef<Range | null>(null)
@@ -63,6 +84,18 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
 
   // Track selection changes to position popover
   const handleSelectionChange = useCallback(() => {
+    // Don't show the popover while an annotation object edit modal is opening
+    // or open. Right after inserting an annotation (or clicking "Edit" on
+    // one), the editor renders the annotated text as selected before the form
+    // state reflects the member as open (`annotationOpeningRef` covers that
+    // window), and the popover must stay closed while the modal is open
+    // (`hasOpenAnnotation`).
+    if (annotationOpeningRef.current || hasOpenAnnotation) {
+      setPopoverOpen(false)
+      setCursorRect(null)
+      return
+    }
+
     // Don't show popover if no annotations are selected
     if (annotations.length === 0) {
       setPopoverOpen(false)
@@ -91,7 +124,7 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
       setCursorRect(rect)
       setPopoverOpen(true)
     }
-  }, [annotations])
+  }, [annotations, annotationOpeningRef, hasOpenAnnotation])
 
   // Listen for selection changes
   useEffect(() => {
@@ -108,7 +141,7 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
   // misses the first click because annotations.length is still 0 when
   // selectionchange runs.
   useEffect(() => {
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     handleSelectionChange()
   }, [handleSelectionChange])
 
@@ -125,6 +158,7 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
     if (sel && sel.rangeCount > 0) {
       rangeRef.current = sel.getRangeAt(0)
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [popoverOpen])
 
   // Listen for scroll events
@@ -153,7 +187,7 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
         <Box padding={1} data-testid="annotation-toolbar-popover">
           {annotations.map((annotation, index) => (
             <Flex key={annotation.key} gap={1} align="center">
-              <Box padding={2} flex={1}>
+              <Box padding={2} flexBasis="0%" flexGrow={1}>
                 <Text weight="medium" size={1}>
                   {annotation.title}
                 </Text>

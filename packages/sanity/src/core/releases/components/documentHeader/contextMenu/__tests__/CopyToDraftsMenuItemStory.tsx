@@ -17,8 +17,8 @@ const ARTICLE_SCHEMA: SchemaTypeDefinition[] = [
 /**
  * Chromatic sentinel for the copy-to-drafts menu row: Box padding around
  * the drafts ReleaseAvatar inside a MenuItem. The live-edit / drafts-disabled
- * path renders nothing and is omitted. Shared with Storybook via a thin CSF
- * wrapper.
+ * path renders nothing and is omitted (the CSF `play` asserts the row is
+ * present). Grid harness for the co-located Storybook CSF file.
  */
 export function CopyToDraftsMenuItemStory() {
   return (

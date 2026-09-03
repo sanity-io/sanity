@@ -70,6 +70,7 @@ async function setupMocks({
             ? {
                 _id: id,
                 _rev: '',
+                _type: 'article',
                 _createdAt: '',
                 _updatedAt: '',
                 _system: {
@@ -81,6 +82,7 @@ async function setupMocks({
             : {
                 _id: id,
                 _rev: '',
+                _type: 'article',
                 _createdAt: '',
                 _updatedAt: '',
               },
@@ -136,6 +138,7 @@ describe('useDocumentVersions', () => {
       {
         _id: 'versions.rASAP.document-1',
         _rev: '',
+        _type: 'article',
         _createdAt: '',
         _updatedAt: '',
         _system: {
@@ -161,6 +164,7 @@ describe('useDocumentVersions', () => {
       {
         _id: 'versions.rASAP.document-1',
         _rev: '',
+        _type: 'article',
         _createdAt: '',
         _updatedAt: '',
         _system: {
@@ -188,6 +192,7 @@ describe('useDocumentVersions', () => {
       {
         _id: 'drafts.document-1',
         _rev: '',
+        _type: 'article',
         _createdAt: '',
         _updatedAt: '',
         _system: {
@@ -231,6 +236,7 @@ describe('getOrCreateDocumentVersionsObservable — subscriber churn', () => {
         of({
           _id: (value as {_id: string})._id,
           _rev: '',
+          _type: 'article',
           _createdAt: '',
           _updatedAt: '',
         }),
@@ -305,6 +311,7 @@ describe('getOrCreateDocumentVersionsObservable — subscriber churn', () => {
         of({
           _id: (value as {_id: string})._id,
           _rev: '',
+          _type: 'article',
           _createdAt: '',
           _updatedAt: '',
         }),

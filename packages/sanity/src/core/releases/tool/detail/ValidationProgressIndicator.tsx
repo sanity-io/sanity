@@ -1,7 +1,8 @@
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Card, type CardTone, Flex, Text} from '@sanity/ui'
+import {Card, type CardTone, Text} from '@sanity/ui'
 import {useEffect, useMemo, useState} from 'react'
+import {Flex} from 'ui5'
 
 import {ProgressIcon} from '../../../../ui-components/progressIcon/ProgressIcon'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -46,13 +47,14 @@ export function ValidationProgressIndicator({
       return () => clearTimeout(timer)
     }
     return undefined
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [isFinished, showCheckmark])
 
   useEffect(() => {
     // If it's not validating, we should not be showing the checkmark
     // it is only shown after a delay set by the previous useEffect
     if (isValidating) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setShowCheckmark(false)
     }
   }, [isValidating])

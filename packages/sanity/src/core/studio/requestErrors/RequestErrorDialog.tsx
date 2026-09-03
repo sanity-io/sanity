@@ -1,8 +1,8 @@
 /* eslint-disable i18next/no-literal-string */
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {type ReactNode, startTransition, useCallback, useEffect, useState} from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {type RequestErrorClaim} from './types'
@@ -165,7 +165,7 @@ export function RequestErrorDialog(props: {
               style={{color: 'var(--card-link-fg-color)'}}
               target="_blank"
             >
-              <Flex as="span" align="center" gap={2}>
+              <Flex as="span" alignItems="center" gap={2}>
                 <span>Check Sanity Status</span>
                 <LaunchIcon />
               </Flex>
@@ -194,6 +194,7 @@ function RateLimitedDialog(props: {
     // disabled state. Intentional sync to the external claim, not a cascade —
     // deferred via startTransition so React can schedule the re-render lazily.
     startTransition(() => setRetrying(false))
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [claim])
   const handleRetry = useCallback(() => {
     setRetrying(true)

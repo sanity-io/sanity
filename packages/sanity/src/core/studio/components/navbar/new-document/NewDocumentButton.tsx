@@ -1,17 +1,10 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {SearchIcon} from '@sanity/icons/Search'
 import {isDeprecatedSchemaType} from '@sanity/types'
-import {
-  Card,
-  Flex,
-  Stack,
-  Text,
-  TextInput,
-  type TextInputProps,
-  useClickOutsideEvent,
-} from '@sanity/ui'
+import {Card, Stack, Text, TextInput, type TextInputProps, useClickOutsideEvent} from '@sanity/ui'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import ReactFocusLock from 'react-focus-lock'
+import {Flex} from 'ui5'
 
 import {Button, type ButtonProps} from '../../../../../ui-components/button/Button'
 import {Tooltip, type TooltipProps} from '../../../../../ui-components/tooltip/Tooltip'
@@ -220,7 +213,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
             scheme={scheme}
             width={1}
           >
-            <RootFlex direction="column" flex={1} height="fill">
+            <RootFlex flexDirection="column" flexBasis="0%" flexGrow={1} height="100%">
               <DialogHeaderCard padding={2} borderBottom>
                 <TextInput
                   data-testid="new-document-button-search-input"
@@ -228,7 +221,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
                 />
               </DialogHeaderCard>
 
-              <Flex direction="column" overflow="hidden">
+              <Flex flexDirection="column" overflow="hidden">
                 <NewDocumentList {...sharedListProps} />
               </Flex>
             </RootFlex>
@@ -251,10 +244,11 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
       scheme={scheme}
       content={
         <RootFlex
-          direction="column"
-          flex={1}
+          flexDirection="column"
+          flexBasis="0%"
+          flexGrow={1}
           forwardedAs={ReactFocusLock}
-          height="fill"
+          height="100%"
           returnFocus
         >
           <PopoverHeaderCard sizing="border">
@@ -268,7 +262,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
           <PopoverListFlex
             $itemHeight={INLINE_PREVIEW_HEIGHT}
             $maxDisplayedItems={MAX_DISPLAYED_ITEMS}
-            direction="column"
+            flexDirection="column"
             overflow="hidden"
           >
             <NewDocumentList {...sharedListProps} />

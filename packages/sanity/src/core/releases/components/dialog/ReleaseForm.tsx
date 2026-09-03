@@ -4,7 +4,6 @@ import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {
   // oxlint-disable-next-line no-restricted-imports -- fine-grained control needed
   Button,
-  Flex,
   Stack,
   TabPanel,
   Text,
@@ -24,6 +23,7 @@ import {
   useId,
   useState,
 } from 'react'
+import {Flex} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -127,7 +127,7 @@ export function ReleaseForm(props: {
   return (
     <Stack gap={5}>
       <Stack gap={4}>
-        <Flex gap={2} align="center">
+        <Flex gap={2} alignItems="center">
           <Text as="label" htmlFor={menuButtonId}>
             {t('release.dialog.tooltip.title')}
           </Text>
@@ -155,7 +155,7 @@ export function ReleaseForm(props: {
             ref={setMenuButton}
             button={
               <Button mode="ghost">
-                <Flex justify="space-between" align="center">
+                <Flex justifyContent="space-between" alignItems="center">
                   <ReleaseTypeOption
                     text={t(`release.type.${releaseType}`)}
                     releaseType={releaseType}
@@ -212,7 +212,7 @@ const ReleaseTypeOption: ComponentType<{
   text: string
   releaseType: ReleaseType
 }> = ({releaseType, text}) => (
-  <Flex gap={3} align="center">
+  <Flex gap={3} alignItems="center">
     <ReleaseAvatar padding={1} releaseType={releaseType} />
     <Text>{text}</Text>
   </Flex>

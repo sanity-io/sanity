@@ -1,7 +1,7 @@
 import {type RangeDecoration, type RangeDecorationOnMovedDetails} from '@portabletext/editor'
 import {type Path} from '@sanity/types'
-import {startsWith} from '@sanity/util/paths'
-import isEqual from 'lodash-es/isEqual.js'
+import {isEqual, startsWith} from '@sanity/util/paths'
+import {dequal} from 'dequal/lite'
 import {useCallback, useEffect, useRef, useState} from 'react'
 
 import {type FormNodePresence} from '../../../../presence/types'
@@ -56,7 +56,7 @@ export function usePresenceCursorDecorations(
     }))
 
     // Only update the current presence state it has changed.
-    if (!isEqual(filteredNext, filteredPrevious)) {
+    if (!dequal(filteredNext, filteredPrevious)) {
       const value = nextPresence.length > 0 ? nextPresence : EMPTY_ARRAY
 
       setCurrentPresence(value)
@@ -84,7 +84,7 @@ export function usePresenceCursorDecorations(
       }
     }) as RangeDecoration[]
 
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setPresenceCursorDecorations(decorations.filter(Boolean))
   }, [currentPresence, handleRangeDecorationMoved])
 

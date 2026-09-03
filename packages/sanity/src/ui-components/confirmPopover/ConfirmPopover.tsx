@@ -1,6 +1,5 @@
 /* oxlint-disable no-restricted-imports, @sanity/i18n/no-i18next-import */
 import {
-  Box,
   Button as UIButton,
   Flex,
   Grid,
@@ -12,6 +11,7 @@ import {
 import {Popover as UIPopover, type PopoverProps as UIPopoverProps} from '@sanity/ui/popover'
 import {type ComponentType, type ReactNode, useCallback, useRef} from 'react'
 import {useTranslation} from 'react-i18next'
+import {Box} from 'ui5'
 
 export interface ConfirmPopoverProps {
   cancelButtonIcon?: ReactNode | ComponentType
@@ -101,7 +101,7 @@ function ConfirmPopoverContent({
 
   return (
     <Flex direction="column" ref={ref} style={{minWidth: 280, maxWidth: 350}}>
-      <Box flex={1} overflow="auto" padding={4}>
+      <Box flexBasis="0%" flexGrow={1} overflow="auto" padding={4}>
         <Text size={1}>{message}</Text>
       </Box>
       <Box paddingX={4} paddingY={3} style={{borderTop: '1px solid var(--card-border-color)'}}>

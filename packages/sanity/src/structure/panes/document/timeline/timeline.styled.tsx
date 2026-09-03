@@ -1,5 +1,6 @@
-import {Box, Flex, Stack} from '@sanity/ui'
+import {Stack} from '@sanity/ui'
 import {css, styled} from 'styled-components'
+import {Flex, Box} from 'ui5'
 
 export const StackWrapper = styled(Stack)`
   max-width: 200px;

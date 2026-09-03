@@ -3,8 +3,8 @@ import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {DocumentListPaneSearchOrderingStory} from './DocumentListPaneSearchOrderingStory'
 
 /**
- * Reuses the in-package harness: ui5 Box padding on the document-list search
- * ordering control. The sort menu stays closed.
+ * Chromatic sentinel: ui5 Box padding on the document-list search ordering
+ * control. The sort menu stays closed.
  */
 const meta = {
   title: 'Structure/Document List Search Ordering',

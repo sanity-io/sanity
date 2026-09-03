@@ -5,7 +5,7 @@ import {
   type ValidationContext,
   type ValidationMarker,
 } from '@sanity/types'
-import {BoundaryElementProvider, Box} from '@sanity/ui'
+import {BoundaryElementProvider} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   createPatchChannel,
@@ -29,6 +29,7 @@ import {
   type Workspace,
 } from 'sanity'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {applyAll} from '../../src/core/form/patch/applyPatch'
 import {PresenceProvider} from '../../src/core/form/studio/contexts/Presence'
@@ -44,6 +45,7 @@ const NOOP = () => null
 const windowWithDocumentState = window as Window & {documentState?: unknown}
 
 interface TestFormProps {
+  baseVariantDocument?: SanityDocument
   document?: SanityDocument
   focusPath?: Path
   id?: string
@@ -68,6 +70,7 @@ const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => 
 
 export function TestForm(props: TestFormProps) {
   const {
+    baseVariantDocument,
     document: documentFromProps,
     focusPath: focusPathFromProps,
     id: idFromProps = 'root',
@@ -107,7 +110,7 @@ export function TestForm(props: TestFormProps) {
 
   useEffect(() => {
     if (documentFromProps) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setDocument(documentFromProps)
       windowWithDocumentState.documentState = documentFromProps
     }
@@ -115,7 +118,7 @@ export function TestForm(props: TestFormProps) {
 
   useEffect(() => {
     if (focusPathFromProps) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setFocusPath(focusPathFromProps)
 
       const lastSegment = focusPathFromProps[focusPathFromProps.length - 1]
@@ -177,6 +180,8 @@ export function TestForm(props: TestFormProps) {
     documentValue: document,
     perspective: 'published',
     hasUpstreamVersion: false,
+    baseVariantValue: baseVariantDocument,
+    hasBaseVariant: Boolean(baseVariantDocument),
   })
 
   const formStateRef = useRef(formState)
@@ -262,23 +267,24 @@ export function TestForm(props: TestFormProps) {
     () => ({
       __internal_patchChannel: patchChannel,
       __internal_fieldActions: fieldActions,
+      baseVariantValue: baseVariantDocument,
       changed: false,
+      changedFromBaseVariant: formState?.changedFromBaseVariant,
       changesOpen: false,
       collapsedFieldSets: undefined,
       collapsedPaths: undefined,
       focused: formState?.focused,
       focusPath: formState?.focusPath || EMPTY_ARRAY,
       groups: formState?.groups || EMPTY_ARRAY,
+      hasBaseVariant: Boolean(baseVariantDocument),
       hasUpstreamVersion: false,
       id: idFromProps,
       level: formState?.level || 0,
       members: formState?.members || EMPTY_ARRAY,
-      // oxlint-disable-next-line react/react-compiler
       onChange: handleChange,
       onFieldGroupSelect: NOOP,
       onPathBlur: handleBlur,
       onPathFocus: handleFocus,
-      // oxlint-disable-next-line react/react-compiler
       onPathOpen: setOpenPath,
       onSelectFieldGroup: handleSetActiveFieldGroup,
       onSetFieldSetCollapsed: handleOnSetCollapsedFieldSet,
@@ -291,7 +297,9 @@ export function TestForm(props: TestFormProps) {
       value: formState?.value as FormDocumentValue,
     }),
     [
+      baseVariantDocument,
       fieldActions,
+      formState?.changedFromBaseVariant,
       formState?.focused,
       formState?.focusPath,
       formState?.groups,

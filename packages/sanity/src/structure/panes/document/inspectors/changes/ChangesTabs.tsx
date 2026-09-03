@@ -1,6 +1,6 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
-import {Box, Card, Flex, TabList, TabPanel, Text} from '@sanity/ui'
+import {Card, TabList, TabPanel, Text} from '@sanity/ui'
 import {useState} from 'react'
 import {
   type DocumentInspectorProps,
@@ -13,6 +13,7 @@ import {
   useTranslation,
 } from 'sanity'
 import {styled} from 'styled-components'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Tab} from '../../../../../ui-components/tab/Tab'
@@ -61,14 +62,14 @@ export function ChangesTabs(props: DocumentInspectorProps) {
 
   return (
     <FadeInFlex
-      direction="column"
+      flexDirection="column"
       padding={0}
-      height="fill"
+      height="100%"
       data-ready={isReady ? '' : undefined}
       ref={setParentRef}
     >
       <Card paddingBottom={1}>
-        <Flex align="center" padding={3} gap={2}>
+        <Flex alignItems="center" padding={3} gap={2}>
           <TabList gap={1} flex={1}>
             <Tab
               aria-controls="history-panel"
@@ -95,13 +96,13 @@ export function ChangesTabs(props: DocumentInspectorProps) {
         </Flex>
       </Card>
       <Card padding={2} marginBottom={3} marginX={3} tone="neutral" border radius={3}>
-        <Flex gap={2} align="flex-start">
+        <Flex gap={2} alignItems="flex-start">
           <Tooltip
             portal
             placement="bottom-end"
             boundaryElement={parentRef}
             content={
-              <Box flex={1} padding={1}>
+              <Box flexBasis="0%" flexGrow={1} padding={1}>
                 <Text size={1}>
                   <Translate t={t} i18nKey="changes.banner.tooltip" />
                 </Text>

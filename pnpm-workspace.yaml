@@ -25,40 +25,45 @@ catalog:
   '@optique/core': ^1.1.1
   '@optique/run': ^1.1.1
   '@playwright/test': 1.62.1
-  '@rolldown/plugin-babel': ^0.2.3
-  '@sanity/client': ^8.1.0
+  '@sanity/client': ^8.4.0
   '@sanity/migrate': ^8.0.2
   '@sanity/telemetry': ^1.1.0
-  '@sanity/tsdown-config': ^0.25.0
-  '@sanity/ui': ^4.0.3
+  '@sanity/tsdown-config': ^0.27.1
+  '@sanity/ui': ^4.0.7
   '@types/node': ^24.13.3
   '@types/react': ^19.2.18
   '@types/react-dom': ^19.2.4
   '@types/react-is': ^19.2.0
-  '@sanity/vanilla-extract-vite-plugin': ^0.2.13
+  '@sanity/vanilla-extract-vite-plugin': ^0.2.17
   '@vanilla-extract/css': ^1.21.2
   '@vanilla-extract/dynamic': ^2.1.5
-  '@vitejs/plugin-react': ^6.0.5
-  '@vitest/browser-playwright': ^4.1.10
-  babel-plugin-react-compiler: ^1.0.0
+  '@vitejs/plugin-react': ^6.1.1
+  '@vitest/browser-playwright': ^4.1.11
+  dequal: ^2.0.3
   jsdom: ^29.1.1
+  oxc-transform-react: ^0.148.0
   playwright: 1.62.1
   react: ^19.2.8
   react-dom: ^19.2.8
   react-is: ^19.2.8
-  react-rx: ^5.1.1
+  react-rx: ^6.0.1
   rimraf: ^6.1.3
+  storybook: ^10.5.10
   styled-components: ^6.5.3
+  # Exact version on purpose (like @sanity/workbench): bumps are explicit so published
+  # packages ship the version we validated instead of whatever the alpha dist-tag points to
+  ui5: npm:@sanity/ui@5.0.0-alpha.8
   tsdown: ^0.22.14
   typescript: ^7.0.2
-  vite: ^8.2.1
-  vitest: ^4.1.10
+  vite: ^8.2.2
+  vitest: ^4.1.11
   vitest-browser-react: ^2.2.0
 
 dedupePeers: true
 linkWorkspacePackages: deep
 
-minimumReleaseAge: 4320
+minimumReleaseAge: 1440
+minimumReleaseAgeExcludePrune: true
 minimumReleaseAgeExclude:
   - '@boundaries/elements'
   - '@oxfmt/*'
@@ -70,6 +75,14 @@ minimumReleaseAgeExclude:
   - '@vitejs/plugin-react'
   - '@portabletext/*'
   - '@sanity/*'
+  # @sentry/react and its SDK dependencies publish in lockstep
+  - '@sentry/browser-utils@10.73.0'
+  - '@sentry/browser@10.73.0'
+  - '@sentry/core@10.73.0'
+  - '@sentry/feedback@10.73.0'
+  - '@sentry/react@10.73.0'
+  - '@sentry/replay-canvas@10.73.0'
+  - '@sentry/replay@10.73.0'
   - '@yuku-codegen/*'
   - '@yuku-parser/*'
   - '@yuku-toolchain/types'
@@ -78,8 +91,10 @@ minimumReleaseAgeExclude:
   - '@vanilla-extract/*'
   - '@vercel/stega'
   - '@yuku-toolchain/*'
+  - '@codemirror/search'
+  - '@codemirror/state'
+  - '@codemirror/view'
   - 'csstype'
-  - 'data-uri-to-buffer@7.0.0'
   - 'eslint-plugin-boundaries'
   - 'get-it'
   - 'groq-js'
@@ -87,14 +102,27 @@ minimumReleaseAgeExclude:
   # in lockstep; @sanity/tsdown-config tracks its latest so builds pick up new bindings together
   - 'lightningcss'
   - 'lightningcss-*'
+  # Fresh motion patch pulled in by @sanity/ui@4.0.6; exclude so 13.1.1 can
+  # install before the 3-day age gate
+  - 'framer-motion@13.1.1'
+  - 'motion-dom@13.1.1'
+  - 'motion@13.1.1'
+  # oxc-transform-react and its per-platform native bindings (@oxc-transform-react/binding-*)
+  # release in lockstep with the oxc toolchain; @vitejs/plugin-react and
+  # @sanity/cli/@sanity/tsdown-config pin fresh versions as peers for the React Compiler oxc transform
+  - 'oxc-transform-react'
+  - '@oxc-transform-react/*'
   - 'oxfmt'
   - 'oxlint'
   - 'oxlint-tsgolint'
   - 'react'
   - 'react-dom'
   - 'react-hook-form'
+  # Fresh patch; exclude so 17.0.13 can install before the age gate
+  - 'react-i18next@17.0.13'
   - 'react-is'
   - 'react-rx'
+  - 'i18next@26.4.1'
   # tsdown and its rolldown/rolldown-plugin-dts/yuku toolchain release frequently and in
   # lockstep, so new releases are often younger than minimumReleaseAge
   - 'rolldown'
@@ -108,6 +136,8 @@ minimumReleaseAgeExclude:
   - 'styled-components@6.5.3'
   - 'tsx'
   - 'tsdown'
+  # Fresh patch; exclude so 2.0.4 can install before the age gate
+  - 'use-effect-event@2.0.4'
   # verkit is part of the tsdown toolchain (tsdown dependency since 0.22.12)
   - 'verkit'
   - 'vitest'
@@ -116,13 +146,10 @@ minimumReleaseAgeExclude:
   - 'web-vitals'
   # covers yuku-ast/yuku-codegen/yuku-parser, which ship together with rolldown-plugin-dts
   - 'yuku-*'
+  - '@oxc-project/types@0.147.0'
 
 overrides:
   vitest: 'catalog:'
-  # @sanity/tsdown-config's `bundleAnalyzer` constructs a Rolldown BuiltinPlugin from
-  # `rolldown/experimental`. That instance must be the same rolldown tsdown runs
-  # (`~1.2.0` currently resolves 1.2.3; tsdown-config depends on ~1.2.4).
-  'tsdown>rolldown': ~1.2.4
 
 preferWorkspacePackages: true
 
@@ -134,7 +161,8 @@ trustPolicyExclude:
   - '@reduxjs/toolkit@2.9.0 || 2.10.1 || 2.11.0'
   - '@sanity/cli'
   - '@sanity/mutate@0.11.0-canary.4'
-  - '@sanity/sdk-react@2.15.0'
+  - '@sanity/sdk@3.0.0'
+  - '@sanity/sdk-react@3.0.0'
   - '@swc/core@1.13.5'
   - chokidar@4.0.3
   # 5.24.0 got accidental trust-downgrade

@@ -32,8 +32,6 @@ export function withRouter<Props extends {router: RouterContextValue}>(
     return <Component {...(props as Props)} router={router} />
   }
 
-  WithRouter.displayName = `withRouter(${Component.displayName || Component.name})`
-
   return WithRouter
 }
 
