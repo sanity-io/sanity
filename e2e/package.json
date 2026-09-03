@@ -10,11 +10,14 @@
     "cleanup": "tsx -r dotenv-flow/config scripts/cleanupDatasets",
     "codegen": "node -r dotenv-flow/config ./node_modules/.bin/sanity-test codegen",
     "dev": "pnpm --filter studio-e2e-testing dev",
+    "extract-diagnostics": "tsx scripts/flakeReport/extractDiagnostics.ts",
+    "flake-report": "tsx scripts/flakeReport/index.ts",
     "preview": "pnpm e2e:build && pnpm --filter studio-e2e-testing preview",
     "setup": "tsx -r dotenv-flow/config scripts/setup",
     "start": "pnpm --filter studio-e2e-testing preview",
     "test": "playwright test",
-    "test:auth": "playwright test --config=playwright.auth.config.ts"
+    "test:auth": "playwright test --config=playwright.auth.config.ts",
+    "test:unit": "vitest run"
   },
   "devDependencies": {
     "@chromatic-com/playwright": "^0.14.12",
@@ -25,6 +28,7 @@
     "@sanity/client": "catalog:",
     "@sanity/uuid": "^3.0.3",
     "chromatic": "^18.7.1",
+    "fflate": "^0.8.3",
     "tsx": "^4.23.13",
     "vitest": "catalog:"
   },

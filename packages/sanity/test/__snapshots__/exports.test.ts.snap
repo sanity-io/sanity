@@ -216,6 +216,7 @@ exports[`exports snapshot 1`] = `
     "Studio": "function",
     "StudioAnnouncementsCard": "function",
     "StudioAnnouncementsDialog": "function",
+    "StudioDiagnosticsBridge": "function",
     "StudioFeedbackDialog": "function",
     "StudioFeedbackProvider": "function",
     "StudioLayout": "function",
