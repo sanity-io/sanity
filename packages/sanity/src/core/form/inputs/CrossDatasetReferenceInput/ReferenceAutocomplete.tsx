@@ -1,24 +1,13 @@
 import {Flex, type Placement, Text} from '@sanity/ui'
 import {Autocomplete} from '@sanity/ui/autocomplete'
 import {type ComponentProps, type Ref, type RefObject, useCallback, type RefAttributes} from 'react'
-import {styled} from 'styled-components'
 import {Box} from 'ui5'
 
 import {Popover} from '../../../../ui-components/popover/Popover'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
 import {useReferenceAutocompletePopoverBoundary} from '../../hooks/useReferenceAutocompletePopoverBoundary'
-
-const StyledPopover = styled(Popover)`
-  & > div {
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-`
-
-const StyledText = styled(Text)`
-  word-break: break-word;
-`
+import {noResultsText, popover} from './ReferenceAutocomplete.css'
 
 const FALLBACK_PLACEMENTS: Placement[] = ['top-start', 'bottom-start']
 
@@ -50,7 +39,8 @@ export function ReferenceAutocomplete(
       },
       contentRef: Ref<HTMLDivElement>,
     ) => (
-      <StyledPopover
+      <Popover
+        className={popover}
         data-testid="autocomplete-popover"
         placement="bottom-start"
         fallbackPlacements={FALLBACK_PLACEMENTS}
@@ -67,13 +57,13 @@ export function ReferenceAutocomplete(
             ) : (
               <Box padding={4}>
                 <Flex align="center" height="fill" justify="center">
-                  <StyledText align="center" muted>
+                  <Text align="center" className={noResultsText} muted>
                     <Translate
                       t={t}
                       i18nKey="inputs.reference.no-results-for-query"
                       values={{searchTerm: searchString || ''}}
                     />
-                  </StyledText>
+                  </Text>
                 </Flex>
               </Box>
             )}

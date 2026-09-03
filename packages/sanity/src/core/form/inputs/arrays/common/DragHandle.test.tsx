@@ -39,15 +39,19 @@ describe('DragHandle', () => {
   //
   // dnd-kit docs:
   // https://docs.dndkit.com/api-documentation/sensors/pointer#recommendations
+  //
+  // The `touch-action` declaration lives in a vanilla-extract class, which
+  // jsdom cannot compute (runtime styles are disabled in tests), so the button
+  // mirrors the applied value in a `data-touch-action` attribute.
   it('renders with touch-action: none so PointerSensor can receive touch input', () => {
     renderDragHandle()
-    expect(screen.getByRole('button')).toHaveStyle('touch-action: none')
+    expect(screen.getByRole('button')).toHaveAttribute('data-touch-action', 'none')
   })
 
   it('keeps touch-action: auto when readOnly', () => {
     // The handle is non-interactive when readOnly, so native scrolling should
     // remain enabled when a touch gesture starts on the handle area.
     renderDragHandle({readOnly: true})
-    expect(screen.getByRole('button')).toHaveStyle('touch-action: auto')
+    expect(screen.getByRole('button')).toHaveAttribute('data-touch-action', 'auto')
   })
 })

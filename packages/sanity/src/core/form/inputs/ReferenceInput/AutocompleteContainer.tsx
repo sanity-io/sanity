@@ -1,18 +1,7 @@
 import {Grid, useElementSize} from '@sanity/ui'
 import {type ReactNode, type Ref, useCallback, useState} from 'react'
-import {css, styled} from 'styled-components'
 
-const NARROW_LAYOUT = css`
-  grid-template-columns: minmax(0px, 1fr);
-`
-
-const WIDE_LAYOUT = css`
-  grid-template-columns: 1fr min-content;
-`
-
-const Root = styled(Grid)<{$narrow: boolean}>((props: {$narrow: boolean}) =>
-  props.$narrow ? NARROW_LAYOUT : WIDE_LAYOUT,
-)
+import {root} from './AutocompleteContainer.css'
 
 export function AutocompleteContainer(props: {children: ReactNode; ref?: Ref<HTMLDivElement>}) {
   const {children, ref: forwardedRef} = props
@@ -29,11 +18,12 @@ export function AutocompleteContainer(props: {children: ReactNode; ref?: Ref<HTM
   )
 
   const inputWrapperSize = useElementSize(rootElement)
+  const narrow = (inputWrapperSize?.border.width || 480) < 480
 
   return (
-    <Root ref={handleNewRef} gap={1} $narrow={(inputWrapperSize?.border.width || 480) < 480}>
+    <Grid ref={handleNewRef} gap={1} className={narrow ? root.narrow : root.wide}>
       {children}
-    </Root>
+    </Grid>
   )
 }
 

@@ -5,9 +5,16 @@ import {UploadIcon} from '@sanity/icons/Upload'
 import {type SchemaType} from '@sanity/types'
 import {Card, Flex, Inline, Layer, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
+import {clsx} from 'clsx'
 import sortBy from 'lodash-es/sortBy.js'
-import {type ComponentType, type ReactNode, type RefAttributes, useCallback, useState} from 'react'
-import {styled} from 'styled-components'
+import {
+  type ComponentProps,
+  type ComponentType,
+  type ReactNode,
+  type RefAttributes,
+  useCallback,
+  useState,
+} from 'react'
 import {Box} from 'ui5'
 
 import {type FIXME} from '../../../../FIXME'
@@ -20,6 +27,7 @@ import {
 } from '../../../studio/uploads/types'
 import {type UploadEvent} from '../../../types/event'
 import {type FileInfo, fileTarget} from '../../files/common/fileTarget/fileTarget'
+import {overlay, root, styledCard} from './arrayOfPrimitiveUploadTarget.css'
 
 export interface UploadTargetProps {
   types: SchemaType[]
@@ -32,10 +40,6 @@ interface UploadTask {
   file: File
   uploaderCandidates: ResolvedUploader[]
 }
-
-const Root = styled.div`
-  position: relative;
-`
 
 function getUploadCandidates(
   types: SchemaType[],
@@ -118,7 +122,7 @@ function uploadTarget<Props>(
     const handleFilesOut = useCallback(() => setHoveringFiles([]), [])
 
     return (
-      <Root>
+      <div className={root}>
         <FileTarget
           {...rest}
           ref={forwardedRef}
@@ -127,40 +131,27 @@ function uploadTarget<Props>(
           onFilesOut={handleFilesOut}
         >
           {resolveUploader && hoveringFiles.length > 0 && (
-            <Overlay zOffset={10}>
+            <Layer className={overlay} zOffset={10}>
               <DropMessage
                 hoveringFiles={hoveringFiles}
                 types={types}
                 resolveUploader={resolveUploader}
               />
-            </Overlay>
+            </Layer>
           )}
           {children}
         </FileTarget>
-      </Root>
+      </div>
     )
   }
 }
 
-const StyledCard = styled(Card)`
-  height: 100%;
-`
+function StyledCard(props: ComponentProps<typeof Card>) {
+  const {className, ...rest} = props
+  return <Card {...rest} className={clsx(styledCard, className)} />
+}
 
 export const UploadTargetCard = withFocusRing(uploadTarget(StyledCard))
-
-const Overlay = styled(Layer)`
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background-color: var(--card-bg-color);
-  opacity: 0.8;
-`
 
 interface DropMessageProps {
   hoveringFiles: FileLike[]
