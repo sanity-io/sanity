@@ -1,6 +1,5 @@
 import {Flex, Text} from '@sanity/ui'
 import {type ReactNode} from 'react'
-import {styled} from 'styled-components'
 
 import {type TargetPerspective} from '../../perspective/types'
 import {usePerspective} from '../../perspective/usePerspective'
@@ -9,29 +8,12 @@ import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {CircleSmallIcon} from '../temporary-icons/CircleSmall'
 import {RhombusIcon} from '../temporary-icons/Rhombus'
 import {RingIcon} from '../temporary-icons/Ring'
+import {iconSlotRoot} from './DocumentVersionsStatusIndicator.css'
 import {type DocumentStatusIconKind, resolveDocumentStatusIcons} from './resolveDocumentStatusIcons'
 
 interface DocumentStatusProps {
   documentVersions: VersionInfoDocumentStub[]
 }
-
-const IconSlotRoot = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 15px;
-  flex-shrink: 0;
-
-  &[data-status='published'] {
-    --card-icon-color: var(--card-badge-positive-dot-color);
-  }
-  &[data-status='draft'] {
-    --card-icon-color: var(--card-badge-caution-dot-color);
-  }
-  &[data-status='variant'] {
-    --card-icon-color: var(--card-badge-suggest-dot-color);
-  }
-`
 
 /**
  * The icons are `1em` boxes in a 25-unit viewBox, like everything in `@sanity/icons`, so a `Text` is
@@ -47,9 +29,9 @@ function IconSlot({
   children: ReactNode
 }) {
   return (
-    <IconSlotRoot data-status={status}>
+    <div className={iconSlotRoot} data-status={status}>
       <Text size={2}>{children}</Text>
-    </IconSlotRoot>
+    </div>
   )
 }
 

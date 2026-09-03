@@ -1,7 +1,8 @@
-import {type HTMLProps, type ReactNode, useMemo, type RefAttributes} from 'react'
-import {styled} from 'styled-components'
+import {clsx} from 'clsx'
+import {type HTMLProps, type ReactNode, type RefAttributes, useMemo} from 'react'
 
 import {Button, type ButtonProps} from '../../ui-components/button/Button'
+import {dot, statusButton} from './StatusButton.css'
 
 /** @hidden @beta */
 export type StatusButtonProps = ButtonProps & {
@@ -12,24 +13,6 @@ export type StatusButtonProps = ButtonProps & {
   'iconRight'?: undefined
 }
 
-const StyledButton = styled(Button)`
-  position: relative;
-  /* The children in button is rendered inside a span, we need to absolutely position it. */
-  & > span:nth-child(2) {
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    padding: 0;
-  }
-`
-
-const Dot = styled.div({
-  width: 4,
-  height: 4,
-  borderRadius: 3,
-  boxShadow: '0 0 0 1px var(--card-bg-color)',
-})
-
 /** @hidden @beta */
 export function StatusButton(
   props: StatusButtonProps &
@@ -38,12 +21,13 @@ export function StatusButton(
 ) {
   const {
     ref,
+    className,
     disabled: disabledProp,
     'aria-label': label,
     mode = 'bleed',
     tone,
     // `text` and `icon` stay in `restProps` so the ButtonWithText | IconButton
-    // union stays correlated when spread onto the styled component.
+    // union stays correlated when spread onto the button.
     ...restProps
   } = props
 
@@ -51,15 +35,16 @@ export function StatusButton(
   const disabled = Boolean(disabledProp)
 
   return (
-    <StyledButton
+    <Button
       data-ui="StatusButton"
       {...restProps}
       aria-label={label}
+      className={clsx(statusButton, className)}
       disabled={disabled}
       mode={mode}
       ref={ref}
     >
-      {tone && <Dot style={dotStyle} />}
-    </StyledButton>
+      {tone && <div className={dot} style={dotStyle} />}
+    </Button>
   )
 }
