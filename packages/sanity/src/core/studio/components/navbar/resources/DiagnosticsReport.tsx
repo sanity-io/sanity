@@ -117,20 +117,12 @@ export function DiagnosticsReport({
         <ReportSection testId="diagnostics-studio" title="Studio">
           <DetailRow label="Studio version" monospace value={studio.version} />
           <DetailRow label="React version" monospace value={studio.reactVersion} />
+          <DetailRow label="styled-components" monospace value={styles?.styledComponents.version} />
           <DetailRow
-            label="styled-components version"
-            monospace
-            value={styles?.styledComponents.version}
-          />
-          <DetailRow label="Workspaces" value={studio.workspaceCount} />
-          <DetailRow label="Unique targets" value={studio.uniqueTargetCount} />
-          <DetailRow label="Auto-updates" value={formatEnabled(studio.autoUpdates)} />
-          <DetailRow label="React strict mode" value={formatEnabled(studio.reactStrictMode)} />
-          <DetailRow
-            label="styled-components nodes"
+            label="Style nodes"
             value={styleNodes ? formatStyleNodeCount(styleNodes.length) : undefined}
           />
-          <DetailRow label="styled-components rules" value={styleRuleCount?.toLocaleString()} />
+          <DetailRow label="Style rules" value={styleRuleCount?.toLocaleString()} />
           {styleNodes && styleNodes.length > 1 ? (
             <Text data-testid="diagnostics-styled-components-nodes" muted size={1}>
               {styleNodes
@@ -141,6 +133,10 @@ export function DiagnosticsReport({
                 .join(' · ')}
             </Text>
           ) : null}
+          <DetailRow label="Workspaces" value={studio.workspaceCount} />
+          <DetailRow label="Unique targets" value={studio.uniqueTargetCount} />
+          <DetailRow label="Auto-updates" value={formatEnabled(studio.autoUpdates)} />
+          <DetailRow label="React strict mode" value={formatEnabled(studio.reactStrictMode)} />
         </ReportSection>
 
         <ReportSection testId="diagnostics-workspace" title="Workspace">
