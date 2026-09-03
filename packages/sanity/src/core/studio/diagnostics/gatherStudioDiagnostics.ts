@@ -13,8 +13,10 @@ import {
   timeout,
 } from 'rxjs'
 
+import {hasSanityPackageInImportMap} from '../../environment/importMap'
 import {type ApiNetworkDiagnostic, getApiNetworkDiagnostic} from '../../network/isUsingLegacyHttp'
 import {type SchemaDiagnostics} from './getStudioConfigurationDiagnostics'
+import {getStylesDiagnostics, type StylesDiagnostics} from './getStylesDiagnostics'
 import {
   DEFAULT_REQUEST_PERFORMANCE_CAPACITY,
   type RequestPerformanceSnapshot,
@@ -32,6 +34,8 @@ export interface StudioDiagnosticsOptions {
     basePath?: string
     dataset: string
     projectId: string
+    /** Undefined when the Studio was mounted without `renderStudio` */
+    reactStrictMode?: boolean
     reactVersion: string
     uniqueTargetCount: number
     version: string
@@ -109,8 +113,19 @@ export interface StudioDiagnostics {
   startedAt: string
   studio: StudioDiagnosticsOptions['studio'] & {
     apiHost?: string
+    /**
+     * Whether a `sanity` entry exists in an import map, the auto-updating studio signal. Always
+     * set by {@link gatherStudioDiagnostics}; optional only because reports from older studios
+     * lack it.
+     */
+    autoUpdates?: boolean
     location?: string
   }
+  /**
+   * Always set by {@link gatherStudioDiagnostics}; optional only because reports from older
+   * studios lack it.
+   */
+  styles?: StylesDiagnostics
   user: {
     id?: string
     provider?: string
@@ -203,8 +218,10 @@ async function runStudioDiagnostics({
     studio: {
       ...studio,
       apiHost: clientConfig.apiHost,
+      autoUpdates: hasSanityPackageInImportMap(),
       location: typeof location === 'undefined' ? undefined : location.href,
     },
+    styles: getStylesDiagnostics(),
     user: {
       id: user?.id,
       provider: user?.provider,

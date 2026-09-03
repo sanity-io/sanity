@@ -121,12 +121,16 @@ describe('gatherStudioDiagnostics', () => {
     expect(diagnostics.startedAt).toBeTypeOf('string')
     expect(diagnostics.studio).toMatchObject({
       apiHost: 'https://api.sanity.test',
+      autoUpdates: false,
       dataset: 'production',
       projectId: 'project-id',
+      reactStrictMode: false,
       uniqueTargetCount: 2,
       version: '4.0.0',
       workspaceCount: 2,
     })
+    expect(diagnostics.styles?.styledComponents.version).toBeTypeOf('string')
+    expect(diagnostics.styles?.styledComponents.styleNodes).toEqual([])
     expect(diagnostics.schema).toEqual({documentTypes: 2, objectTypes: 3, primitiveTypes: 4})
     expect(diagnostics.user).toEqual({
       id: 'user-1',
@@ -289,6 +293,24 @@ describe('gatherStudioDiagnostics', () => {
     ])
   })
 
+  it('reports auto-updates when an import map provides the sanity package', async () => {
+    mocks.getApiNetworkDiagnostic.mockReturnValue(of(protocolDiagnostic))
+    const importMap = document.createElement('script')
+    importMap.type = 'importmap'
+    importMap.textContent = JSON.stringify({
+      imports: {sanity: 'https://sanity-cdn.com/v1/modules/sanity/default/%5E4.0.0/t1'},
+    })
+    document.head.appendChild(importMap)
+    const {client} = createClient()
+
+    try {
+      const diagnostics = await gatherStudioDiagnostics(createOptions(client))
+      expect(diagnostics.studio.autoUpdates).toBe(true)
+    } finally {
+      importMap.remove()
+    }
+  })
+
   it('records a local storage failure without failing the report', async () => {
     mocks.getApiNetworkDiagnostic.mockReturnValue(of(protocolDiagnostic))
     vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
@@ -336,6 +358,7 @@ function createOptions(client: SanityClient): StudioDiagnosticsOptions {
       basePath: '/',
       dataset: 'production',
       projectId: 'project-id',
+      reactStrictMode: false,
       reactVersion: '19.2.0',
       uniqueTargetCount: 2,
       version: '4.0.0',

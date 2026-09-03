@@ -1,5 +1,6 @@
 import {render} from '@testing-library/react'
 import {StrictMode} from 'react'
+import {RenderStudioOptionsContext} from 'sanity/_singletons'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {studioRequestPerformance} from './requestPerformance'
@@ -48,6 +49,8 @@ vi.mock('../workspaces/useWorkspaces', () => ({
   ],
 }))
 
+const strictModeDisabled = {reactStrictMode: false}
+
 function getBridge(): StudioDiagnosticsBridgeApi | undefined {
   return (window as Window & {[STUDIO_DIAGNOSTICS_BRIDGE_KEY]?: StudioDiagnosticsBridgeApi})[
     STUDIO_DIAGNOSTICS_BRIDGE_KEY
@@ -85,11 +88,27 @@ describe('StudioDiagnosticsBridge', () => {
         studio: expect.objectContaining({
           dataset: 'production',
           projectId: 'project-id',
+          reactStrictMode: undefined,
           uniqueTargetCount: 2,
           workspaceCount: 3,
         }),
         user: null,
       }),
+    )
+
+    unmount()
+  })
+
+  it('reports the strict mode setting renderStudio was called with', async () => {
+    const {unmount} = render(
+      <RenderStudioOptionsContext.Provider value={strictModeDisabled}>
+        <StudioDiagnosticsBridge />
+      </RenderStudioOptionsContext.Provider>,
+    )
+
+    await getBridge()!.gather()
+    expect(mocks.gatherStudioDiagnostics).toHaveBeenCalledWith(
+      expect.objectContaining({studio: expect.objectContaining({reactStrictMode: false})}),
     )
 
     unmount()

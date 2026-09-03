@@ -28,7 +28,7 @@ export function parseStudioDiagnostics(input: string): StudioDiagnostics {
 function isStudioDiagnostics(value: unknown): value is StudioDiagnostics {
   if (!isRecord(value) || value.diagnosticVersion !== 1) return false
 
-  const {browser, network, schema, studio, user} = value
+  const {browser, network, schema, studio, styles, user} = value
   if (
     !isRecord(browser) ||
     !isRecord(network) ||
@@ -37,7 +37,8 @@ function isStudioDiagnostics(value: unknown): value is StudioDiagnostics {
     !isRecord(user) ||
     typeof value.durationMs !== 'number' ||
     typeof value.generatedAt !== 'string' ||
-    typeof value.startedAt !== 'string'
+    typeof value.startedAt !== 'string' ||
+    !isOptional(styles, isStylesDiagnostics)
   ) {
     return false
   }
@@ -59,8 +60,10 @@ function isStudioDiagnostics(value: unknown): value is StudioDiagnostics {
     typeof schema.documentTypes === 'number' &&
     typeof schema.objectTypes === 'number' &&
     typeof schema.primitiveTypes === 'number' &&
+    isOptional(studio.autoUpdates, isBoolean) &&
     typeof studio.dataset === 'string' &&
     typeof studio.projectId === 'string' &&
+    isOptional(studio.reactStrictMode, isBoolean) &&
     typeof studio.reactVersion === 'string' &&
     typeof studio.uniqueTargetCount === 'number' &&
     typeof studio.version === 'string' &&
@@ -146,8 +149,34 @@ function isBucketSummary(value: unknown): boolean {
   )
 }
 
+function isStylesDiagnostics(value: unknown): boolean {
+  if (!isRecord(value) || !isRecord(value.styledComponents)) return false
+
+  const {styleNodes, version} = value.styledComponents
+  return (
+    typeof version === 'string' &&
+    Array.isArray(styleNodes) &&
+    styleNodes.every(
+      (node) =>
+        isRecord(node) && typeof node.ruleCount === 'number' && isOptional(node.version, isString),
+    )
+  )
+}
+
 function isStatus(value: unknown): value is 'success' | 'timeout' | 'error' {
   return value === 'success' || value === 'timeout' || value === 'error'
+}
+
+function isOptional(value: unknown, check: (value: unknown) => boolean): boolean {
+  return value === undefined || check(value)
+}
+
+function isBoolean(value: unknown): boolean {
+  return typeof value === 'boolean'
+}
+
+function isString(value: unknown): boolean {
+  return typeof value === 'string'
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
