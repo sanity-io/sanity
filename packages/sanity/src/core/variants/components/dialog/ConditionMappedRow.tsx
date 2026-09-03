@@ -1,5 +1,5 @@
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Stack, Text} from '@sanity/ui'
+import {Stack} from '@sanity/ui'
 import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
@@ -7,18 +7,14 @@ import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {variantsLocaleNamespace} from '../../i18n'
 import {getVariantConditionIcon} from '../../tool/detail/variantConditionIcons'
-import {
-  type NormalizedVariantConditionMap,
-  type NormalizedVariantConditionValue,
-} from '../../util/normalizeVariantConditions'
-import {ConditionOptionCard} from './ConditionOptionCard'
+import {type NormalizedVariantConditionMap} from '../../util/normalizeVariantConditions'
+import {ConditionMenuButton, type ConditionMenuOption} from './ConditionMenuButton'
 
 interface ConditionMappedRowProps {
-  definitions: NormalizedVariantConditionMap[]
+  definitions: readonly NormalizedVariantConditionMap[]
   disableRemove: boolean
   keyError?: string | null
-  onClearKey: () => void
-  onClearValue: () => void
+  loading?: boolean
   onRemove: () => void
   onSelectKey: (key: string) => void
   onSelectValue: (value: string) => void
@@ -28,17 +24,12 @@ interface ConditionMappedRowProps {
   valueError?: string | null
 }
 
-function getUnknownOption(value: string): NormalizedVariantConditionValue {
-  return {value, title: value}
-}
-
 export function ConditionMappedRow(props: ConditionMappedRowProps): React.JSX.Element {
   const {
     definitions,
     disableRemove,
     keyError,
-    onClearKey,
-    onClearValue,
+    loading = false,
     onRemove,
     onSelectKey,
     onSelectValue,
@@ -49,131 +40,85 @@ export function ConditionMappedRow(props: ConditionMappedRowProps): React.JSX.El
   } = props
   const {t} = useTranslation(variantsLocaleNamespace)
   const definition = definitions.find((item) => item.name === selectedKey)
-  const selectedKeyOption = definition
-    ? {title: definition.title, description: definition.description}
-    : selectedKey
-      ? {title: selectedKey}
-      : undefined
-  const selectedValueOption = definition
-    ? (definition.values.find((item) => item.value === selectedValue) ??
-      (selectedValue ? getUnknownOption(selectedValue) : undefined))
-    : selectedValue
-      ? getUnknownOption(selectedValue)
-      : undefined
-  const availableDefinitions = definitions.filter(
-    (item) => item.name === selectedKey || !usedKeys.has(item.name),
-  )
 
-  const removeButton = (
-    <Button
-      disabled={disableRemove}
-      icon={TrashIcon}
-      mode="bleed"
-      onClick={onRemove}
-      tone="critical"
-      tooltipProps={{content: t('dialog.create.remove-condition')}}
-      type="button"
-    />
-  )
+  // Keys picked on other rows are hidden here, so one definition cannot target the same key twice.
+  const keyOptions: ConditionMenuOption[] = definitions
+    .filter((item) => item.name === selectedKey || !usedKeys.has(item.name))
+    .map((item) => ({
+      value: item.name,
+      title: item.title,
+      description: item.description,
+      icon: getVariantConditionIcon(item.name),
+    }))
+  const valueOptions: ConditionMenuOption[] =
+    definition?.values.map((item) => ({
+      value: item.value,
+      title: item.title,
+      description: item.description,
+    })) ?? []
+
+  // A stored pair that is no longer configured still renders as-is (in a critical tone) so the
+  // editor can see what to retarget, rather than silently disappearing from the form.
+  const selectedKeyOption = selectedKey
+    ? (keyOptions.find((item) => item.value === selectedKey) ?? {
+        value: selectedKey,
+        title: selectedKey,
+        icon: getVariantConditionIcon(selectedKey),
+      })
+    : undefined
+  const selectedValueOption = selectedValue
+    ? (valueOptions.find((item) => item.value === selectedValue) ?? {
+        value: selectedValue,
+        title: selectedValue,
+      })
+    : undefined
 
   const mappedError = keyError || valueError
 
-  if (selectedKey && selectedValue && selectedKeyOption && selectedValueOption) {
-    return (
-      <Stack gap={2}>
-        <Flex alignItems="center" gap={2}>
-          <Box flexBasis="0%" flexGrow={1}>
-            <ConditionOptionCard
-              description={selectedKeyOption.description}
-              icon={getVariantConditionIcon(selectedKey)}
-              invalid={Boolean(keyError)}
-              onClick={onClearKey}
-              testId="variant-form-condition-key-selected"
-              title={selectedKeyOption.title}
-            />
-          </Box>
-          <Box flexBasis="0%" flexGrow={1}>
-            <ConditionOptionCard
-              description={selectedValueOption.description}
-              invalid={Boolean(valueError)}
-              onClick={definition ? onClearValue : onClearKey}
-              testId="variant-form-condition-value-selected"
-              title={selectedValueOption.title}
-            />
-          </Box>
-          {removeButton}
-        </Flex>
-        {mappedError ? (
-          <TextWithTone data-testid="variant-form-condition-mismatch" size={1} tone="critical">
-            {mappedError}
-          </TextWithTone>
-        ) : null}
-      </Stack>
-    )
-  }
-
-  if (selectedKey && selectedKeyOption) {
-    return (
-      <Stack gap={3}>
-        <Flex alignItems="flex-start" gap={2}>
-          <Box flexGrow={1}>
-            <ConditionOptionCard
-              description={selectedKeyOption.description}
-              icon={getVariantConditionIcon(selectedKey)}
-              invalid={Boolean(keyError)}
-              onClick={onClearKey}
-              selected
-              testId="variant-form-condition-key-selected"
-              title={selectedKeyOption.title}
-            />
-          </Box>
-          {removeButton}
-        </Flex>
-        {keyError ? (
-          <TextWithTone data-testid="variant-form-condition-mismatch" size={1} tone="critical">
-            {keyError}
-          </TextWithTone>
-        ) : null}
-        {definition ? (
-          <Stack gap={2}>
-            <Text muted size={1}>
-              {t('dialog.create.conditions.choose-value')}
-            </Text>
-            {definition.values.map((item) => (
-              <ConditionOptionCard
-                description={item.description}
-                key={item.value}
-                onClick={() => onSelectValue(item.value)}
-                testId={`variant-form-condition-value-option-${item.value}`}
-                title={item.title}
-              />
-            ))}
-          </Stack>
-        ) : null}
-      </Stack>
-    )
-  }
-
   return (
-    <Stack gap={3}>
-      <Flex alignItems="center" gap={2} justifyContent="space-between">
-        <Text muted size={1}>
-          {t('dialog.create.conditions.choose-key')}
-        </Text>
-        {removeButton}
-      </Flex>
-      <Stack gap={2}>
-        {availableDefinitions.map((item) => (
-          <ConditionOptionCard
-            description={item.description}
-            icon={getVariantConditionIcon(item.name)}
-            key={item.name}
-            onClick={() => onSelectKey(item.name)}
-            testId={`variant-form-condition-key-option-${item.name}`}
-            title={item.title}
+    <Stack gap={2}>
+      <Flex alignItems="center" gap={2}>
+        <Box flexBasis="0%" flexGrow={1}>
+          <ConditionMenuButton
+            invalid={Boolean(keyError)}
+            loading={loading}
+            onSelect={onSelectKey}
+            options={keyOptions}
+            placeholder={
+              loading
+                ? t('dialog.create.conditions.loading')
+                : t('dialog.create.conditions.choose-key')
+            }
+            selected={selectedKeyOption}
+            testId="variant-form-condition-key"
           />
-        ))}
-      </Stack>
+        </Box>
+        <Box flexBasis="0%" flexGrow={1}>
+          <ConditionMenuButton
+            disabled={!definition}
+            invalid={Boolean(valueError)}
+            onSelect={onSelectValue}
+            options={valueOptions}
+            placeholder={t('dialog.create.conditions.choose-value')}
+            selected={selectedValueOption}
+            testId="variant-form-condition-value"
+          />
+        </Box>
+        <Button
+          disabled={disableRemove}
+          icon={TrashIcon}
+          mode="bleed"
+          onClick={onRemove}
+          tone="critical"
+          tooltipProps={{content: t('dialog.create.remove-condition')}}
+          type="button"
+        />
+      </Flex>
+      {mappedError ? (
+        <TextWithTone data-testid="variant-form-condition-mismatch" size={1} tone="critical">
+          {mappedError}
+        </TextWithTone>
+      ) : null}
     </Stack>
   )
 }

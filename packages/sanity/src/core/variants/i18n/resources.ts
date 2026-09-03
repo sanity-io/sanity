@@ -146,11 +146,11 @@ const variantsLocaleStrings = {
     'Complete the current condition key and value before adding another.',
   /** Tooltip when add condition is disabled because every mapped condition is already used. */
   'dialog.create.action.add-condition.none-remaining': 'Every available condition is already used.',
-  /** Heading shown while the user picks a condition key from the configured list. */
+  /** Placeholder on the condition key dropdown before a configured key is picked. */
   'dialog.create.conditions.choose-key': 'Choose a condition',
-  /** Heading shown while the user picks a value for the selected condition. */
+  /** Placeholder on the condition value dropdown before a value is picked for the selected key. */
   'dialog.create.conditions.choose-value': 'Choose a value',
-  /** Loading message while configured conditions are resolving. */
+  /** Placeholder on the condition key dropdown while configured conditions are resolving. */
   'dialog.create.conditions.loading': 'Loading conditions',
   /** Error message when configured conditions fail to load. */
   'dialog.create.conditions.error': 'Unable to load conditions',

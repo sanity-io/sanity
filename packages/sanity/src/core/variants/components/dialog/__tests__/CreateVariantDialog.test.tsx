@@ -512,6 +512,22 @@ const mappedConditions = [
   },
 ]
 
+/**
+ * Menus stay mounted while closed (`<Activity>`, @sanity/ui v4), so the list is resolved through
+ * the trigger it labels rather than by looking it up on the page.
+ */
+function getMenuFor(trigger: HTMLElement): HTMLElement {
+  const menu = screen
+    .getAllByRole('menu', {hidden: true})
+    .find((element) => element.getAttribute('aria-labelledby') === trigger.id)
+
+  if (!menu) {
+    throw new Error(`No menu is labelled by "${trigger.id}"`)
+  }
+
+  return menu
+}
+
 describe('CreateVariantDialog mapped conditions', () => {
   const onCancel = vi.fn()
   const onSubmit = vi.fn()
@@ -548,22 +564,68 @@ describe('CreateVariantDialog mapped conditions', () => {
     return result
   }
 
-  it('picks a mapped condition key and value instead of free-text inputs', async () => {
+  const pickCondition = async (
+    user: ReturnType<typeof userEvent.setup>,
+    key: string,
+    value: string,
+    row = 0,
+  ) => {
+    await user.click(screen.getAllByTestId('variant-form-condition-key-menu-button')[row]!)
+    await user.click(screen.getByTestId(`variant-form-condition-key-option-${key}`))
+    await user.click(screen.getAllByTestId('variant-form-condition-value-menu-button')[row]!)
+    await user.click(screen.getByTestId(`variant-form-condition-value-option-${value}`))
+  }
+
+  it('picks a mapped condition key and value from dropdowns instead of free-text inputs', async () => {
     const user = userEvent.setup()
 
     await renderMappedDialog()
 
     expect(screen.queryByTestId('variant-form-condition-key')).not.toBeInTheDocument()
     expect(screen.queryByTestId('variant-form-condition-value')).not.toBeInTheDocument()
-    expect(screen.getByText('Who this content is for.')).toBeInTheDocument()
+
+    const keyMenuButton = screen.getByTestId('variant-form-condition-key-menu-button')
+    const valueMenuButton = screen.getByTestId('variant-form-condition-value-menu-button')
+
+    expect(keyMenuButton).toHaveTextContent('Choose a condition')
+    expect(keyMenuButton).toHaveAttribute('aria-expanded', 'false')
+    expect(valueMenuButton).toHaveTextContent('Choose a value')
+    expect(valueMenuButton).toBeDisabled()
     expect(screen.getByRole('button', {name: 'Add condition'})).toBeDisabled()
 
-    await user.click(screen.getByRole('button', {name: 'Audience'}))
+    await user.click(keyMenuButton)
 
-    expect(screen.getByText('Repeat purchasers and members.')).toBeInTheDocument()
-    expect(screen.queryByRole('button', {name: 'Locale'})).not.toBeInTheDocument()
+    expect(keyMenuButton).toHaveAttribute('aria-expanded', 'true')
+    const keyMenu = getMenuFor(keyMenuButton)
+    const audienceOption = within(keyMenu).getByTestId('variant-form-condition-key-option-audience')
+    expect(audienceOption).toHaveTextContent('Audience')
+    expect(audienceOption).toHaveTextContent('Who this content is for.')
+    expect(
+      within(keyMenu).getByTestId('variant-form-condition-key-option-locale'),
+    ).toHaveTextContent('Locale')
 
-    await user.click(screen.getByRole('button', {name: 'Loyal customers'}))
+    await user.click(audienceOption)
+
+    expect(keyMenuButton).toHaveAttribute('aria-expanded', 'false')
+    expect(keyMenuButton).toHaveTextContent('Audience')
+    expect(valueMenuButton).toBeEnabled()
+    expect(screen.getByRole('button', {name: 'Add condition'})).toBeDisabled()
+
+    await user.click(valueMenuButton)
+
+    const valueMenu = getMenuFor(valueMenuButton)
+    const loyalOption = within(valueMenu).getByTestId('variant-form-condition-value-option-loyal')
+    expect(loyalOption).toHaveTextContent('Loyal customers')
+    expect(loyalOption).toHaveTextContent('Repeat purchasers and members.')
+    expect(
+      within(valueMenu).getByTestId('variant-form-condition-value-option-new'),
+    ).toHaveTextContent('New visitors')
+
+    await user.click(loyalOption)
+
+    expect(valueMenuButton).toHaveTextContent('Loyal customers')
+    expect(screen.getByRole('button', {name: 'Add condition'})).toBeEnabled()
+
     await user.type(screen.getByTestId('variant-form-title'), 'Loyal customers')
     await user.click(screen.getByTestId('submit-variant-button'))
 
@@ -576,13 +638,68 @@ describe('CreateVariantDialog mapped conditions', () => {
     expect(createdVariant.conditions).toEqual({audience: 'loyal'})
   })
 
+  it('shows the selected state on the trigger only while open, and checks the choice in the menu', async () => {
+    const user = userEvent.setup()
+
+    await renderMappedDialog()
+    await pickCondition(user, 'audience', 'loyal')
+
+    const keyMenuButton = screen.getByTestId('variant-form-condition-key-menu-button')
+
+    expect(keyMenuButton).toHaveTextContent('Audience')
+    expect(keyMenuButton).not.toHaveAttribute('data-selected')
+
+    await user.click(keyMenuButton)
+
+    expect(keyMenuButton).toHaveAttribute('data-selected', '')
+    const keyMenu = getMenuFor(keyMenuButton)
+    const audienceOption = within(keyMenu).getByTestId('variant-form-condition-key-option-audience')
+    const localeOption = within(keyMenu).getByTestId('variant-form-condition-key-option-locale')
+    expect(audienceOption.querySelector('[data-sanity-icon="checkmark"]')).not.toBeNull()
+    expect(localeOption.querySelector('[data-sanity-icon="checkmark"]')).toBeNull()
+
+    // Re-picking the current key closes the menu and keeps the value.
+    await user.click(audienceOption)
+
+    expect(keyMenuButton).toHaveAttribute('aria-expanded', 'false')
+    expect(keyMenuButton).not.toHaveAttribute('data-selected')
+    expect(screen.getByTestId('variant-form-condition-value-menu-button')).toHaveTextContent(
+      'Loyal customers',
+    )
+  })
+
+  it('resets the value when a different key is picked', async () => {
+    const user = userEvent.setup()
+
+    await renderMappedDialog()
+    await pickCondition(user, 'audience', 'loyal')
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', {name: 'Add condition'})).toBeEnabled()
+    })
+
+    await user.click(screen.getByTestId('variant-form-condition-key-menu-button'))
+    await user.click(screen.getByTestId('variant-form-condition-key-option-locale'))
+
+    expect(screen.getByTestId('variant-form-condition-key-menu-button')).toHaveTextContent('Locale')
+    expect(screen.getByTestId('variant-form-condition-value-menu-button')).toHaveTextContent(
+      'Choose a value',
+    )
+    expect(screen.getByRole('button', {name: 'Add condition'})).toBeDisabled()
+
+    await user.click(screen.getByTestId('variant-form-condition-value-menu-button'))
+
+    expect(
+      screen.queryByTestId('variant-form-condition-value-option-loyal'),
+    ).not.toBeInTheDocument()
+    expect(screen.getByTestId('variant-form-condition-value-option-en-US')).toBeInTheDocument()
+  })
+
   it('hides already used mapped keys when adding another condition', async () => {
     const user = userEvent.setup()
 
     await renderMappedDialog()
-
-    await user.click(screen.getByRole('button', {name: 'Audience'}))
-    await user.click(screen.getByRole('button', {name: 'Loyal customers'}))
+    await pickCondition(user, 'audience', 'loyal')
 
     await waitFor(() => {
       expect(screen.getByRole('button', {name: 'Add condition'})).toBeEnabled()
@@ -590,10 +707,24 @@ describe('CreateVariantDialog mapped conditions', () => {
 
     await user.click(screen.getByRole('button', {name: 'Add condition'}))
 
+    const keyMenuButtons = screen.getAllByTestId('variant-form-condition-key-menu-button')
+    expect(keyMenuButtons).toHaveLength(2)
+    expect(keyMenuButtons[1]).toHaveTextContent('Choose a condition')
+
+    await user.click(keyMenuButtons[1]!)
+
+    const secondKeyMenu = getMenuFor(keyMenuButtons[1]!)
     expect(
-      screen.queryByTestId('variant-form-condition-key-option-audience'),
+      within(secondKeyMenu).queryByTestId('variant-form-condition-key-option-audience'),
     ).not.toBeInTheDocument()
-    expect(screen.getByTestId('variant-form-condition-key-option-locale')).toBeInTheDocument()
+    expect(
+      within(secondKeyMenu).getByTestId('variant-form-condition-key-option-locale'),
+    ).toBeInTheDocument()
+
+    const firstKeyMenu = getMenuFor(keyMenuButtons[0]!)
+    expect(
+      within(firstKeyMenu).getByTestId('variant-form-condition-key-option-audience'),
+    ).toBeInTheDocument()
   })
 
   it('shows loading and error states for async conditions', async () => {
@@ -611,7 +742,13 @@ describe('CreateVariantDialog mapped conditions', () => {
     await renderMappedDialog(conditions)
 
     expect(screen.getByTestId('variant-form-conditions-loading')).toBeInTheDocument()
-    expect(screen.queryByRole('button', {name: 'Audience'})).not.toBeInTheDocument()
+    const keyMenuButton = screen.getByTestId('variant-form-condition-key-menu-button')
+    expect(keyMenuButton).toBeDisabled()
+    expect(keyMenuButton).toHaveTextContent('Loading conditions')
+    expect(screen.getByTestId('variant-form-condition-value-menu-button')).toBeDisabled()
+    expect(
+      screen.queryByTestId('variant-form-condition-key-option-audience'),
+    ).not.toBeInTheDocument()
 
     await act(async () => {
       loadControl.reject(new Error('cdp unavailable'))
@@ -619,6 +756,7 @@ describe('CreateVariantDialog mapped conditions', () => {
 
     expect(await screen.findByTestId('variant-form-conditions-error')).toBeInTheDocument()
     expect(screen.queryByTestId('variant-form-condition-key')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('variant-form-condition-key-menu-button')).not.toBeInTheDocument()
 
     await user.click(screen.getByRole('button', {name: 'Retry'}))
 

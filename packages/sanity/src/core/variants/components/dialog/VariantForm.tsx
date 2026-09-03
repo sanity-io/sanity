@@ -4,7 +4,7 @@ import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type Path} from '@sanity/mutate'
 import {type PortableTextBlock} from '@sanity/types'
-import {Inline, Skeleton, Stack, Text, TextArea, TextInput} from '@sanity/ui'
+import {Inline, Stack, Text, TextArea, TextInput} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
 import {
   type ChangeEvent,
@@ -54,6 +54,8 @@ interface ConditionRowValidation {
   key: VariantsLocaleResourceKeys | null
   value: VariantsLocaleResourceKeys | null
 }
+
+const EMPTY_DEFINITIONS: readonly NormalizedVariantConditionMap[] = []
 
 function getConditionRows(conditions: EditableSystemVariant['conditions']): ConditionRow[] {
   const rows = Object.entries(conditions).map(([key, value]) => ({
@@ -200,6 +202,7 @@ export function VariantForm(props: {
     conditionsConfig.mode === 'mapped' && conditionsConfig.status === 'ready'
       ? conditionsConfig.definitions
       : undefined
+  const mappedLoading = conditionsConfig.mode === 'mapped' && conditionsConfig.status === 'loading'
   const titleId = useId()
   const descriptionId = useId()
   const priorityId = useId()
@@ -318,8 +321,9 @@ export function VariantForm(props: {
 
   const handleMappedKeyChange = useCallback(
     (index: number, nextKey: string) => {
+      // A value only makes sense for the key it was picked under, so switching keys resets it.
       const nextRows = conditionRows.map((row, rowIndex) =>
-        rowIndex === index ? {...row, key: nextKey, value: ''} : row,
+        rowIndex === index && row.key !== nextKey ? {...row, key: nextKey, value: ''} : row,
       )
 
       updateConditionRows(nextRows)
@@ -434,16 +438,6 @@ export function VariantForm(props: {
           </Text>
         </Stack>
 
-        {conditionsConfig.mode === 'mapped' && conditionsConfig.status === 'loading' ? (
-          <Stack data-testid="variant-form-conditions-loading" gap={2}>
-            <Text muted size={1}>
-              {t('dialog.create.conditions.loading')}
-            </Text>
-            <Skeleton animated radius={2} style={{height: 52}} />
-            <Skeleton animated radius={2} style={{height: 52}} />
-          </Stack>
-        ) : null}
-
         {conditionsConfig.mode === 'mapped' && conditionsConfig.status === 'error' ? (
           <Stack data-testid="variant-form-conditions-error" gap={3}>
             <TextWithTone size={1} tone="critical">
@@ -460,8 +454,13 @@ export function VariantForm(props: {
           </Stack>
         ) : null}
 
-        {mappedDefinitions ? (
-          <Stack gap={3}>
+        {mappedDefinitions || mappedLoading ? (
+          // While the list loads, the rows already render (disabled) so the form does not jump
+          // once the definitions arrive.
+          <Stack
+            data-testid={mappedLoading ? 'variant-form-conditions-loading' : undefined}
+            gap={3}
+          >
             {conditionRows.map((row, index) => {
               const validation = conditionsValidation.get(index) ?? getEmptyConditionRowValidation()
               const key = row.key.trim()
@@ -475,7 +474,7 @@ export function VariantForm(props: {
 
               return (
                 <ConditionMappedRow
-                  definitions={mappedDefinitions}
+                  definitions={mappedDefinitions ?? EMPTY_DEFINITIONS}
                   disableRemove={isConditionRowEmpty(row) && conditionRows.length === 1}
                   key={row.id}
                   keyError={
@@ -483,8 +482,7 @@ export function VariantForm(props: {
                       ? t(validation.key, {key, value: rowValue})
                       : null
                   }
-                  onClearKey={() => handleMappedKeyChange(index, '')}
-                  onClearValue={() => handleConditionChange(index, 'value', '')}
+                  loading={mappedLoading}
                   onRemove={() => handleRemoveCondition(index)}
                   onSelectKey={(nextKey) => handleMappedKeyChange(index, nextKey)}
                   onSelectValue={(nextValue) => handleConditionChange(index, 'value', nextValue)}
