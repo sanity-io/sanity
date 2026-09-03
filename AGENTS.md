@@ -320,6 +320,19 @@ File-wide `/* oxlint-disable <rule> */` is reserved for files that are an except
 
 `options.reportUnusedDisableDirectives` is `error`, so a suppression that stops being necessary fails CI — drop suppressions when the code underneath them changes.
 
+### Styling: vanilla-extract `.css.ts`, never styled-components
+
+Component styles live in colocated `*.css.ts` files (`style`, `styleVariants`, `globalStyle`,
+`keyframes` from `@vanilla-extract/css`; dynamic values through `createVar` + `assignInlineVars`).
+`eslint/no-restricted-imports` bans `styled-components` everywhere; the dependency only remains
+because `@sanity/ui@4` needs it as a peer and injects its own styles at runtime. That runtime sheet
+lands after the static `bundle.css`, so an override of a declaration an `@sanity/ui` primitive sets
+on itself must win by specificity (`&&`), not by order. The
+`migrate-styled-components-to-vanilla-extract` skill
+(`.agents/skills/migrate-styled-components-to-vanilla-extract/SKILL.md`) has the cascade model, the
+per-primitive table of self-set declarations, the theme-read to `--card-*` variable table, and the
+wrapper contract.
+
 ### Effect events: use `use-effect-event`, not React's native hook
 
 Import `useEffectEvent` from `use-effect-event`, never from `react`. On React 19.2 the native hook

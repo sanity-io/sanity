@@ -102,13 +102,7 @@
         "paths": [
           {
             "name": "styled-components",
-            "importNames": ["default"],
-            "message": "Please use `import {styled} from 'styled-components'` instead."
-          },
-          {
-            "name": "styled-components",
-            "importNames": ["ServerStyleSheet"],
-            "message": "ServerStyleSheet from styled-components breaks compatibility with @sanity/css-in-js and is bad for performance."
+            "message": "styled-components is banned: the studio is styled with vanilla-extract (`@vanilla-extract/css` in a `.css.ts` file, see .agents/skills/migrate-styled-components-to-vanilla-extract). The dependency only remains because @sanity/ui@4 requires it."
           },
           {
             "name": "react",
@@ -493,80 +487,6 @@
       }
     },
     {
-      // @sanity/vision has been fully migrated off styled-components to vanilla-extract,
-      // so ban all styled-components imports here (oxlint overrides replace, rather than
-      // merge, the global no-restricted-imports rule, so the other restrictions are repeated)
-      "files": ["packages/@sanity/vision/**"],
-      "rules": {
-        "eslint/no-restricted-imports": [
-          "error",
-          {
-            "paths": [
-              {
-                "name": "styled-components",
-                "message": "styled-components is banned in @sanity/vision. Please use vanilla-extract (`@vanilla-extract/css`) in a `.css.ts` file instead."
-              },
-              {
-                "name": "react",
-                "importNames": ["default"],
-                "message": "Please use named imports, e.g. `import {useEffect, useMemo, type ComponentType} from 'react'` instead."
-              },
-              {
-                "name": "react",
-                "importNames": ["createElement"],
-                "message": "Please use JSX instead of createElement, for example `createElement(Icon)` should be `<Icon />`"
-              },
-              {
-                "name": "react",
-                "importNames": ["createRef"],
-                "message": "Please use useRef instead of createRef, unless it's for a legacy React.Component class"
-              },
-              {
-                "name": "react",
-                "importNames": ["forwardRef"],
-                "message": "React 19 passes ref as a regular prop. Destructure ref from props instead of using forwardRef. For typings, include ref on the props type (e.g. RefAttributes<T>); do not use the deprecated PropsWithRef alias."
-              },
-              {
-                "name": "react",
-                "importNames": ["useEffectEvent"],
-                "message": "React 19.2's native useEffectEvent returns first-render values in forwardRef/memo components (https://github.com/facebook/react/issues/34818). Please use `import {useEffectEvent} from 'use-effect-event'` instead."
-              },
-              {
-                "name": "react/jsx-runtime",
-                "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
-              },
-              {
-                "name": "react/jsx-dev-runtime",
-                "message": "Do not attempt importing from the jsx runtime manually, instead use JSX syntax and let the bundler transform it"
-              },
-              {
-                "name": "react/compiler-runtime",
-                "message": "Do not attempt importing from the compiler runtime manually, instead let react compiler transform it"
-              },
-              {
-                "name": "date-fns",
-                "message": "Import from individual modules instead, e.g. `import {startOfDay} from 'date-fns/startOfDay'`. Barrel imports are ~50% slower."
-              },
-              {
-                "name": "lodash-es",
-                "message": "Import from individual modules instead, e.g. `import debounce from 'lodash-es/debounce.js'`. Barrel imports are ~55% slower."
-              }
-            ],
-            "patterns": [
-              {
-                "group": ["lodash.*", "lodash/*", "lodash"],
-                "message": "Please use individual imports from 'lodash-es' instead, e.g. `import debounce from 'lodash-es/debounce.js'`."
-              },
-              {
-                "group": ["lodash-es/*", "!lodash-es/*.js"],
-                "message": "lodash-es submodule imports must include the .js extension, e.g. `import debounce from 'lodash-es/debounce.js'`."
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
       // No i18n enforcement in tests, debug tooling, or scheduled-publishing (being deprecated)
       "files": [
         "**/*/test/**/*",
@@ -815,13 +735,7 @@
             "paths": [
               {
                 "name": "styled-components",
-                "importNames": ["default"],
-                "message": "Please use `import {styled} from 'styled-components'` instead."
-              },
-              {
-                "name": "styled-components",
-                "importNames": ["ServerStyleSheet"],
-                "message": "ServerStyleSheet from styled-components breaks compatibility with @sanity/css-in-js and is bad for performance."
+                "message": "styled-components is banned: the studio is styled with vanilla-extract (`@vanilla-extract/css` in a `.css.ts` file, see .agents/skills/migrate-styled-components-to-vanilla-extract). The dependency only remains because @sanity/ui@4 requires it."
               },
               {
                 "name": "react",
@@ -951,13 +865,7 @@
               },
               {
                 "name": "styled-components",
-                "importNames": ["default"],
-                "message": "Please use `import {styled} from 'styled-components'` instead."
-              },
-              {
-                "name": "styled-components",
-                "importNames": ["ServerStyleSheet"],
-                "message": "ServerStyleSheet from styled-components breaks compatibility with @sanity/css-in-js and is bad for performance."
+                "message": "styled-components is banned: the studio is styled with vanilla-extract (`@vanilla-extract/css` in a `.css.ts` file, see .agents/skills/migrate-styled-components-to-vanilla-extract). The dependency only remains because @sanity/ui@4 requires it."
               },
               {
                 "name": "react",
@@ -1078,13 +986,7 @@
             "paths": [
               {
                 "name": "styled-components",
-                "importNames": ["default"],
-                "message": "Please use `import {styled} from 'styled-components'` instead."
-              },
-              {
-                "name": "styled-components",
-                "importNames": ["ServerStyleSheet"],
-                "message": "ServerStyleSheet from styled-components breaks compatibility with @sanity/css-in-js and is bad for performance."
+                "message": "styled-components is banned: the studio is styled with vanilla-extract (`@vanilla-extract/css` in a `.css.ts` file, see .agents/skills/migrate-styled-components-to-vanilla-extract). The dependency only remains because @sanity/ui@4 requires it."
               },
               {
                 "name": "react",
@@ -1201,13 +1103,7 @@
             "paths": [
               {
                 "name": "styled-components",
-                "importNames": ["default"],
-                "message": "Please use `import {styled} from 'styled-components'` instead."
-              },
-              {
-                "name": "styled-components",
-                "importNames": ["ServerStyleSheet"],
-                "message": "ServerStyleSheet from styled-components breaks compatibility with @sanity/css-in-js and is bad for performance."
+                "message": "styled-components is banned: the studio is styled with vanilla-extract (`@vanilla-extract/css` in a `.css.ts` file, see .agents/skills/migrate-styled-components-to-vanilla-extract). The dependency only remains because @sanity/ui@4 requires it."
               },
               {
                 "name": "react",
@@ -1310,8 +1206,7 @@
               },
               {
                 "name": "styled-components",
-                "importNames": ["default"],
-                "message": "Please use `import {styled} from 'styled-components'` instead."
+                "message": "styled-components is banned: the studio is styled with vanilla-extract (`@vanilla-extract/css` in a `.css.ts` file, see .agents/skills/migrate-styled-components-to-vanilla-extract). The dependency only remains because @sanity/ui@4 requires it."
               },
               {
                 "name": "react",
