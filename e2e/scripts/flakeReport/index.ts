@@ -107,12 +107,20 @@ function parseOptions(): Options | undefined {
     throw new Error(`Invalid --limit value "${values.limit}": expected a positive integer`)
   }
 
+  // `pnpm e2e:flake-report` runs this script inside e2e/, so relative paths are resolved
+  // against the directory pnpm was invoked from (INIT_CWD), which is what the caller means.
+  const invokedFrom = process.env.INIT_CWD || process.cwd()
+  const resolveFromInvocation = (file: string | undefined) =>
+    file === undefined ? undefined : path.resolve(invokedFrom, file)
+
   return {
     allShards: values['all-shards'],
-    cacheDir: values['cache-dir'] ?? path.join(os.tmpdir(), 'sanity-e2e-flake-report'),
-    json: values.json,
+    cacheDir:
+      resolveFromInvocation(values['cache-dir']) ??
+      path.join(os.tmpdir(), 'sanity-e2e-flake-report'),
+    json: resolveFromInvocation(values.json),
     limit,
-    out: values.out,
+    out: resolveFromInvocation(values.out),
     repo: values.repo,
     since,
     workflow: values.workflow,

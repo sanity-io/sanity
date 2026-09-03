@@ -32,15 +32,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPORT_DAYS: ${{ inputs.days || '7' }}
-        run: pnpm e2e:flake-report --days "$REPORT_DAYS" --out flake-report.md --json flake-report.json
+        # The script runs inside e2e/, so name the outputs by absolute path.
+        run: pnpm e2e:flake-report --days "$REPORT_DAYS" --out "$GITHUB_WORKSPACE/flake-report.md" --json "$GITHUB_WORKSPACE/flake-report.json"
 
       - name: Publish the report as the job summary
-        run: cat flake-report.md >> "$GITHUB_STEP_SUMMARY"
+        run: cat "$GITHUB_WORKSPACE/flake-report.md" >> "$GITHUB_STEP_SUMMARY"
 
       - uses: actions/upload-artifact@v7
         with:
           name: e2e-flake-report
           path: |
-            flake-report.md
-            flake-report.json
+            ${{ github.workspace }}/flake-report.md
+            ${{ github.workspace }}/flake-report.json
           retention-days: 90
