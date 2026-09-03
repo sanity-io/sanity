@@ -2,10 +2,10 @@ import {toPlainText} from '@portabletext/react'
 import {hues} from '@sanity/color'
 import {LinkRemovedIcon} from '@sanity/icons/LinkRemoved'
 import {isPortableTextTextBlock} from '@sanity/types'
-import {Flex, Stack, Text, type Theme} from '@sanity/ui'
+import {Stack, Text, type Theme} from '@sanity/ui'
 import {useMemo} from 'react'
 import {css, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -76,7 +76,7 @@ export function CommentsListItemReferencedValue(props: CommentsListItemReference
       paddingLeft={2}
       sizing="border"
     >
-      <Flex align="flex-start">
+      <Flex alignItems="flex-start">
         <Text size={1} muted>
           {!hasReferencedValue && (
             <Tooltip content={tooltipText}>

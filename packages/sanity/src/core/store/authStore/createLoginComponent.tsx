@@ -2,11 +2,11 @@
 import {type AuthProvider, type AuthProviderResponse, type SanityClient} from '@sanity/client'
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Badge, Card, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {Badge, Card, Heading, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {Button, type ButtonProps} from '../../../ui-components/button/Button'
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
@@ -39,7 +39,7 @@ export async function getProviders({
   // sidesteps that — anonymous callers get the public provider list.
   const credentiallessClient = client.withConfig({token: undefined, withCredentials: false})
   const {providers} = await credentiallessClient.request<AuthProviderResponse>({
-    uri: '/auth/providers',
+    url: '/auth/providers',
   })
 
   return customProviders
@@ -288,7 +288,7 @@ export function createLoginComponent({
 
 function LastUsedProviderButton(props: {href: string; provider: AuthProvider}) {
   return (
-    <Flex direction="column" style={{width: '100%'}}>
+    <Flex flexDirection="column" style={{width: '100%'}}>
       <Badge radius={2} tone="primary" style={{alignSelf: 'start', marginBottom: '8px'}}>
         Last used
       </Badge>

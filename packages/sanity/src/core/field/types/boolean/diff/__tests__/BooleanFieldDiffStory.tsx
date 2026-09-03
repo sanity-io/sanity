@@ -1,9 +1,9 @@
 import {type BooleanSchemaType} from '@sanity/types'
 import {Card, Stack, Text} from '@sanity/ui'
-import {Fragment} from 'react'
 import {DocumentChangeContext} from 'sanity/_singletons'
 
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
+import {type DocumentChangeContextInstance} from '../../../../diff/contexts/DocumentChangeContext'
 import {type BooleanDiff} from '../../../../types'
 import {BooleanFieldDiff} from '../BooleanFieldDiff'
 
@@ -38,12 +38,12 @@ const ADDED: BooleanDiff = {
   annotation: null,
 }
 
-const DOCUMENT_CHANGE = {
+const DOCUMENT_CHANGE: DocumentChangeContextInstance = {
   documentId: 'doc-boolean-diff',
   schemaType: SWITCH_SCHEMA,
   rootDiff: null,
   isComparingCurrent: true,
-  FieldWrapper: Fragment,
+  FieldWrapper: (props) => props.children,
   value: {},
   showFromValue: true,
 }
@@ -51,8 +51,8 @@ const DOCUMENT_CHANGE = {
 /**
  * Chromatic sentinel for review-changes boolean diffs: Box spacing around
  * the from/to arrow and field title, plus switch vs checkbox layouts.
- * Tooltips stay closed (no annotations). Shared with Storybook via a thin
- * CSF wrapper.
+ * Tooltips stay closed (no annotations). Grid harness for the co-located
+ * Storybook CSF file.
  */
 export function BooleanFieldDiffStory() {
   return (

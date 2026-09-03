@@ -1,4 +1,4 @@
-import {Flex, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
@@ -15,6 +15,7 @@ import {
   useTranslation,
   VersionInlineBadge,
 } from 'sanity'
+import {Flex} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
@@ -43,6 +44,15 @@ export function OpenReleaseToEditBanner({
   }
 
   return <OpenReleaseToEditBannerInner documentId={documentId} />
+}
+
+function VersionBadge({
+  displayTitle,
+}: {
+  children?: React.ReactNode
+  displayTitle?: React.ReactNode
+}) {
+  return <VersionInlineBadge>{displayTitle}</VersionInlineBadge>
 }
 
 function OpenReleaseToEditBannerInner({documentId}: {documentId: string}) {
@@ -88,25 +98,23 @@ function OpenReleaseToEditBannerInner({documentId}: {documentId: string}) {
       data-testid="open-release-to-edit-banner"
       content={
         <Text size={1}>
-          <Flex direction={'row'} gap={1} wrap="wrap">
+          <Flex flexDirection={'row'} gap={1} flexWrap="wrap">
             <ReleaseTitle title={firstRelease.metadata.title} fallback={fallback}>
               {({displayTitle}) =>
                 documentVersionReleases.length > 1 ? (
                   <Translate
                     t={t}
                     i18nKey="banners.release.navigate-to-edit-description-multiple"
-                    components={{
-                      VersionBadge: () => <VersionInlineBadge>{displayTitle}</VersionInlineBadge>,
-                    }}
+                    components={{VersionBadge}}
+                    componentProps={{displayTitle}}
                     values={{count: documentVersionReleases.length - 1}}
                   />
                 ) : (
                   <Translate
                     t={t}
                     i18nKey="banners.release.navigate-to-edit-description-single"
-                    components={{
-                      VersionBadge: () => <VersionInlineBadge>{displayTitle}</VersionInlineBadge>,
-                    }}
+                    components={{VersionBadge}}
+                    componentProps={{displayTitle}}
                   />
                 )
               }

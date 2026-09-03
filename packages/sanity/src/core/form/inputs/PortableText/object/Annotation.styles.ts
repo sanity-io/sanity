@@ -1,6 +1,7 @@
 import {hues} from '@sanity/color'
-import {Box, type Theme, type ThemeColorToneKey} from '@sanity/ui'
+import {type Theme, type ThemeColorToneKey} from '@sanity/ui'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export const Root = styled.span<{$toneKey?: Exclude<ThemeColorToneKey, 'transparent'>}>(

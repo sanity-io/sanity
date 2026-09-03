@@ -18,8 +18,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import deepEquals from 'react-fast-compare'
-import {useObservable} from 'react-rx'
+import {useSyncObservable} from 'react-rx'
 import {distinctUntilChanged} from 'rxjs/operators'
 import {useEffectEvent} from 'use-effect-event'
 
@@ -35,6 +34,7 @@ import {
   getCreatableVariantTarget,
   getPairTarget,
   getTargetScopeId,
+  getTargetSiblings,
   useTargetDocumentState,
 } from '../hooks/useTargetDocumentState'
 import {useValidationStatus} from '../hooks/useValidationStatus'
@@ -53,6 +53,7 @@ import {usePresenceStore} from '../store/datastores'
 import {type EditStateFor} from '../store/document/document-pair/editState'
 import {type InitialValueState} from '../store/document/initialValue/types'
 import {isNewDocument} from '../store/document/isNewDocument'
+import {selectBaseVariant} from '../store/document/selectBaseVariant'
 import {selectUpstreamVersion} from '../store/document/selectUpstreamVersion'
 import {useDocumentValuePermissions} from '../store/grants/documentValuePermissions'
 import {type PermissionCheckResult} from '../store/grants/types'
@@ -64,6 +65,7 @@ import {
   isSystemBundle,
 } from '../util/draftUtils'
 import {EMPTY_ARRAY} from '../util/empty'
+import {getTargetDocument} from '../util/getTargetDocument'
 import {useUnique} from '../util/useUnique'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
 import {type PatchEvent} from './patch/PatchEvent'
@@ -108,7 +110,7 @@ interface DocumentFormOptions {
    */
   isOlderRevision?: boolean
 }
-interface DocumentFormValue extends Pick<NodeChronologyProps, 'hasUpstreamVersion'> {
+interface DocumentFormValue extends NodeChronologyProps {
   /**
    * `EditStateFor` for the displayed document.
    * */
@@ -172,7 +174,11 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const schema = useSchema()
   const presenceStore = usePresenceStore()
   const {data: releases} = useActiveReleases()
-  const {data: documentVersions, loading: documentVersionsLoading} = useDocumentVersions({
+  const {
+    data: documentVersions,
+    versions: documentVersionStubs,
+    loading: documentVersionsLoading,
+  } = useDocumentVersions({
     documentId,
   })
   const {selectedVariantName, bundle} = usePerspective()
@@ -335,12 +341,31 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     getVersionFromId(upstreamId ?? ''),
   )
 
+  const shouldCompareBaseVariant = isVariantTarget && !isOlderRevision
+
+  const baseVariantTarget = useMemo(
+    () =>
+      shouldCompareBaseVariant
+        ? getTargetDocument({bundle, variant: undefined, documentVersions: documentVersionStubs})
+        : undefined,
+    [bundle, shouldCompareBaseVariant, documentVersionStubs],
+  )
+
+  const baseVariantEditState = useEditState(
+    documentId,
+    documentType,
+    'default',
+    shouldCompareBaseVariant ? baseVariantTarget?._system.scopeId : targetScopeId,
+  )
+
   const comparisonValue = useMemo(() => {
     if (typeof comparisonValueRaw === 'function') {
       return comparisonValueRaw(upstreamEditState)
     }
     return comparisonValueRaw
   }, [comparisonValueRaw, upstreamEditState])
+
+  const baseVariant = selectBaseVariant(baseVariantEditState, baseVariantTarget?._id)
 
   const presence$ = useMemo(
     () =>
@@ -360,7 +385,12 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
         ),
     [presenceStore, value._id],
   )
-  const presence = useObservable(presence$, [])
+  // Kept synchronous: presence emits per collaborator report with no incoming
+  // rate limit, and deferred delivery lets a sustained burst restart the
+  // in-flight render pass indefinitely — the pane never settles while the
+  // burst lasts. Synchronous delivery commits every update, so rendering
+  // always makes progress.
+  const presence = useSyncObservable(presence$, [])
 
   const [openPath, onSetOpenPath] = useState<Path>(initialFocusPath || EMPTY_ARRAY)
   // Mirrors `openPath` so `handleFocus` sees writes made earlier in the same tick,
@@ -511,7 +541,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     }
 
     // in cases where the document has drafts but the schema is live edit, there is a risk of data loss, so we disable editing in this case
-    if (liveEdit && editState.draft?._id) {
+    if (liveEdit && getTargetSiblings(targetDocumentState)?.draft) {
       return true
     }
 
@@ -607,12 +637,15 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   }, [getFormDocumentValue, value])
 
   const hasUpstreamVersion = selectUpstreamVersion(upstreamEditState) !== null
+  const hasBaseVariant = baseVariant !== null
 
   const formState = useFormState({
     schemaType,
     documentValue: formDocumentValue,
     readOnly,
     comparisonValue: comparisonValue || value,
+    baseVariantValue: baseVariant ?? undefined,
+    hasBaseVariant,
     focusPath,
     openPath,
     perspective: selectedPerspective,
@@ -720,7 +753,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const handleProgrammaticFocus = (nextPath: Path) => {
     // Supports changing the focus path not by a user interaction, but by a programmatic change, e.g. the url path changes.
 
-    if (!deepEquals(focusPathRef.current, nextPath)) {
+    if (!isEqual(focusPathRef.current, nextPath)) {
       setFocusPath(nextPath)
       handleSetOpenPath(nextPath)
       onFocusPath?.(nextPath)
@@ -754,6 +787,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     if (!ready || initialFocusPathAppliedRef.current) return
     initialFocusPathAppliedRef.current = true
     applyInitialFocusPath()
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [ready])
 
   return {
@@ -770,6 +804,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     isPermissionsLoading,
     formStateRef,
     hasUpstreamVersion,
+    hasBaseVariant,
 
     collapsedFieldSets,
     collapsedPaths,

@@ -1,6 +1,6 @@
 /* oxlint-disable no-deprecated -- this module implements the deprecated legacy document timeline */
 import {type ObjectDiff} from '@sanity/diff'
-import {BoundaryElementProvider, Box, Card, Flex, Text} from '@sanity/ui'
+import {BoundaryElementProvider, Card, Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {
   ChangeFieldWrapper,
@@ -16,6 +16,7 @@ import {
 } from 'sanity'
 import {DocumentChangeContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
+import {Flex, Box, Grid} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {TimelineError} from '../../timeline/TimelineError'
@@ -27,15 +28,6 @@ const Scroller = styled(ScrollContainer)`
   overflow: auto;
   position: relative;
   scroll-behavior: smooth;
-`
-
-const Grid = styled(Box)`
-  &:not([hidden]) {
-    display: grid;
-  }
-  grid-template-columns: 48px 1fr;
-  align-items: center;
-  gap: 0.25em;
 `
 
 export function ChangesInspector({showChanges}: {showChanges: boolean}): React.JSX.Element {
@@ -71,7 +63,7 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): React.J
 
   if (selectedReleaseId) {
     return (
-      <Flex data-testid="review-changes-pane" direction="column" height="fill">
+      <Flex data-testid="review-changes-pane" flexDirection="column" height="100%">
         <Card flex={1} padding={2} paddingTop={0}>
           <TimelineError versionError />
         </Card>
@@ -80,9 +72,14 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): React.J
   }
 
   return (
-    <Flex data-testid="review-changes-pane" direction="column" height="fill" overflow="hidden">
+    <Flex data-testid="review-changes-pane" flexDirection="column" height="100%" overflow="hidden">
       <Box padding={3}>
-        <Grid paddingX={2} paddingBottom={2}>
+        <Grid
+          paddingX={2}
+          paddingBottom={2}
+          gridTemplateColumns="48px 1fr"
+          style={{alignItems: 'center', gap: '0.25em'}}
+        >
           <Text size={1} muted>
             {structureT('changes.from.label')}
           </Text>
@@ -98,7 +95,7 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): React.J
       <Card flex={1} paddingX={2} paddingY={2}>
         <BoundaryElementProvider element={scrollRef}>
           <Scroller data-ui="Scroller" ref={setScrollRef}>
-            <Box flex={1} paddingX={3} height="fill">
+            <Box flexBasis="0%" flexGrow={1} paddingX={3} height="100%">
               {showChanges && (
                 <Content
                   diff={diff}

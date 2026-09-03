@@ -1,9 +1,10 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Box, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Container, Heading, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
@@ -144,7 +145,7 @@ function WorkspaceChooserScreen(props: {
       data-error="Config error workspace chooser"
       height="fill"
     >
-      <CenteredContainer align="center" justify="center" padding={4}>
+      <CenteredContainer alignItems="center" justifyContent="center" padding={4}>
         <Container width={1}>
           <Stack gap={2}>
             <Flex>
@@ -195,7 +196,7 @@ function ConfigErrorLayout(props: {
 }) {
   return (
     <Card data-testid="studio-error-screen" data-error={props.errorLabel} height="fill">
-      <CenteredContainer align="center" justify="center" padding={4}>
+      <CenteredContainer alignItems="center" justifyContent="center" padding={4}>
         <ContentWrapper paddingBottom={5}>
           <Stack gap={4}>
             <ChooseAnotherWorkspaceButton
@@ -339,7 +340,7 @@ function DatasetNotFoundScreen(props: {
 
 function DocsLink() {
   return (
-    <Flex justify="flex-end" paddingTop={2}>
+    <Flex justifyContent="flex-end" paddingTop={2}>
       <Text size={1}>
         <HelpLink
           href="https://www.sanity.io/docs/configuration"

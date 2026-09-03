@@ -4,7 +4,7 @@ import {CollapseIcon} from '@sanity/icons/Collapse'
 import {ExpandIcon} from '@sanity/icons/Expand'
 import {SplitVerticalIcon} from '@sanity/icons/SplitVertical'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Box, Card, Flex} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {getTheme_v2, rgba} from '@sanity/ui/theme'
 import {
   memo,
@@ -25,6 +25,7 @@ import {
   useWorkspace,
 } from 'sanity'
 import {css, styled} from 'styled-components'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
@@ -220,11 +221,12 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
           style={{lineHeight: 0, position: 'relative', zIndex: paneHeaderZIndex}}
           borderBottom
         >
-          <Flex gap={3} paddingY={3} justify="space-between" align="center">
+          <Flex gap={3} paddingY={3} justifyContent="space-between" alignItems="center">
             {!hasDocumentGroupInventory && (
               <HorizontalScroller $showGradient={showGradient}>
                 <Flex
-                  flex={1}
+                  flexBasis="0%"
+                  flexGrow={1}
                   gap={1}
                   overflow="auto"
                   paddingX={3}
@@ -238,26 +240,27 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
             {hasDocumentGroupInventory && (
               <HorizontalScroller $showGradient={false}>
                 <Flex
-                  flex={1}
+                  flexBasis="0%"
+                  flexGrow={1}
                   gap={2}
-                  align="center"
+                  alignItems="center"
                   overflow="auto"
                   paddingX={3}
                   data-testid="document-target-badges"
                   style={{minWidth: 0}}
                 >
-                  <Box flex="none">
+                  <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
                     <DocumentTargetBadges />
                   </Box>
-                  <Box flex="none">
+                  <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
                     <DocumentGroupInventoryHint />
                   </Box>
                 </Flex>
               </HorizontalScroller>
             )}
 
-            <Box flex="none" paddingRight={3}>
-              <Flex align="center" gap={1}>
+            <Box flexBasis="auto" flexGrow={0} flexShrink={0} paddingRight={3}>
+              <Flex alignItems="center" gap={1}>
                 {documentLevelPresence.length > 0 && (
                   <Box data-testid="document-level-presence" marginRight={2}>
                     <FieldPresenceInner presence={documentLevelPresence} stack />

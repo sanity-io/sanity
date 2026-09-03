@@ -2,18 +2,15 @@ import {ClockIcon} from '@sanity/icons/Clock'
 import {CloseIcon} from '@sanity/icons/Close'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {
-  Box,
   // oxlint-disable-next-line no-restricted-imports
   Button, // Button with specific styling and children behavior.
-  Flex,
   Inline,
   rem,
-  type ResponsiveMarginProps,
-  type ResponsivePaddingProps,
   Text,
 } from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
 import {styled} from 'styled-components'
+import {Box, Flex, type MarginProps, type PaddingProps} from 'ui5'
 
 import {RecentSearchClicked} from '../../../__telemetry__/search.telemetry'
 import {useSearchState} from '../../../contexts/search/useSearchState'
@@ -21,7 +18,7 @@ import {type RecentSearch, useRecentSearchesStore} from '../../../datastores/rec
 import {DocumentTypesPill} from '../../common/DocumentTypesPill'
 import {FilterPill} from '../../common/FilterPill'
 
-export interface RecentSearchesProps extends ResponsiveMarginProps, ResponsivePaddingProps {
+export interface RecentSearchesProps extends MarginProps, PaddingProps {
   index: number
   maxVisibleTypePillChars?: number
   value: RecentSearch
@@ -102,7 +99,7 @@ export function RecentSearchItem({
         paddingY={1}
         tabIndex={-1}
       >
-        <Flex align="stretch">
+        <Flex alignItems="stretch">
           {/* Combination of <Inline> and a zero-width character to ensure icon is optically aligned with adjacent text */}
           <Inline paddingY={2}>
             <Text muted size={1}>
@@ -110,10 +107,18 @@ export function RecentSearchItem({
             </Text>
             <Text>&#8203;</Text>
           </Inline>
-          <Flex align="stretch" flex={1} gap={2} justify="flex-start" marginLeft={3} wrap="wrap">
+          <Flex
+            alignItems="stretch"
+            flexBasis="0%"
+            flexGrow={1}
+            gap={2}
+            justifyContent="flex-start"
+            marginLeft={3}
+            flexWrap="wrap"
+          >
             {/* Text query */}
             {value.query && (
-              <SearchItemQueryFlex align="center" paddingY={2}>
+              <SearchItemQueryFlex alignItems="center" paddingY={2}>
                 <Text muted size={1} textOverflow="ellipsis" weight="medium">
                   {value.query}
                 </Text>
@@ -133,7 +138,7 @@ export function RecentSearchItem({
           </Flex>
 
           {/* TODO: this is neither semantic nor accessible, consider revising */}
-          <Flex align="center">
+          <Flex alignItems="center">
             <CloseButtonDiv onClick={handleDelete}>
               <Flex padding={2}>
                 <Text size={1}>

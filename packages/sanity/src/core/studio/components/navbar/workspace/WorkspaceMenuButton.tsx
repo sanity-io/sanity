@@ -1,15 +1,14 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {
-  Box,
   // oxlint-disable-next-line no-restricted-imports
   Button as UIButton,
-  Flex,
   Stack,
   Text,
 } from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useState} from 'react'
 import {take} from 'rxjs/operators'
+import {Box, Flex} from 'ui5'
 
 import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
@@ -61,7 +60,7 @@ export function WorkspaceMenuButton() {
         <Flex onPointerEnter={handlePreload} onFocus={handlePreload}>
           <Tooltip content={t('workspaces.select-workspace-tooltip')} portal>
             <UIButton mode="bleed" padding={2} width="fill">
-              <Flex align="center" gap={2}>
+              <Flex alignItems="center" gap={2}>
                 <Box>
                   <Text size={1} textOverflow="ellipsis" weight="medium">
                     {activeWorkspace.title}

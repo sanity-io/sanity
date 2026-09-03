@@ -14,5 +14,7 @@ const client = createClient({
   stega: {enabled: true, studioUrl},
 })
 
-export const {useQuery, useLiveMode} = createQueryStore({client})
+export const {useQuery, useLiveMode} = createQueryStore({
+  client,
+})
 export const imageBuilder: ImageUrlBuilder = createImageUrlBuilder(client)

@@ -1,5 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
+import {Flex} from 'ui5'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {ReleaseAvatar} from '../../../components/ReleaseAvatar'

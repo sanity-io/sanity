@@ -77,6 +77,12 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'query.error.column': 'Column',
   /** Label for 'Line' indicator when there is an error within the query */
   'query.error.line': 'Line',
+  /** Extra explanation when a 400 is returned for a release perspective on an old API version */
+  'query.error.unsupported-release-perspective':
+    'This API version does not support complex perspectives. Use {{apiVersion}} or later.',
+  /** Extra explanation when a 400 is returned for a variant on an incompatible API version */
+  'query.error.unsupported-variant':
+    'This API version does not support content variants. Use the experimental API version ({{apiVersion}}).',
   /** Label for "Query" editor/input */
   'query.label': 'Query',
   /** Label for the "Query URL" field, shown after executing a query, and allows for copying */
@@ -116,6 +122,9 @@ const visionLocaleStrings = defineLocalesResources('vision', {
 
   /** Label for the "API version" dropdown in settings */
   'settings.api-version-label': 'API version',
+  /** Tooltip shown when the API version selector is locked to vX because a variant is selected */
+  'settings.api-version-locked-for-variant':
+    'When a variant is selected, the API version needs to be vX.',
   /** Label for the "Custom API version" input in settings, shown when "other" is chosen as API version */
   'settings.custom-api-version-label': 'Custom API version',
   /** Label for the "Dataset" dropdown in vision settings */

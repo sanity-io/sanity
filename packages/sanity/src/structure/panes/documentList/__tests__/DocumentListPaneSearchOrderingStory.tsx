@@ -1,31 +1,17 @@
 import {Card, Stack, Text} from '@sanity/ui'
+import noop from 'lodash-es/noop.js'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
-import {type PaneMenuItem} from '../../../types'
 import {
   DocumentListPaneSearchOrdering,
   RELEVANCE_ORDERING_ID,
 } from '../DocumentListPaneSearchOrdering'
-
-const ORDERINGS: PaneMenuItem[] = [
-  {
-    id: 'updated-desc',
-    title: 'Last edited',
-    action: 'setSortOrder',
-    params: {by: [{field: '_updatedAt', direction: 'desc'}]},
-  },
-  {
-    id: 'title-asc',
-    title: 'Title',
-    action: 'setSortOrder',
-    params: {by: [{field: 'title', direction: 'asc'}]},
-  },
-]
+import {ORDERINGS} from './DocumentListPaneSearchOrdering.fixture'
 
 /**
  * Chromatic sentinel for ui5 Box padding on the document-list search
- * ordering control. The menu stays closed (MenuButton animates). Shared
- * with the co-located Storybook CSF file.
+ * ordering control. The menu stays closed (MenuButton animates). Grid
+ * harness for the co-located Storybook CSF file.
  */
 export function DocumentListPaneSearchOrderingStory() {
   return (
@@ -37,7 +23,7 @@ export function DocumentListPaneSearchOrderingStory() {
               no configured orderings
             </Text>
             <DocumentListPaneSearchOrdering
-              onChange={() => null}
+              onChange={noop}
               orderings={[]}
               value={RELEVANCE_ORDERING_ID}
             />
@@ -47,7 +33,7 @@ export function DocumentListPaneSearchOrderingStory() {
               relevance selected
             </Text>
             <DocumentListPaneSearchOrdering
-              onChange={() => null}
+              onChange={noop}
               orderings={ORDERINGS}
               value={RELEVANCE_ORDERING_ID}
             />
@@ -57,7 +43,7 @@ export function DocumentListPaneSearchOrderingStory() {
               configured ordering selected
             </Text>
             <DocumentListPaneSearchOrdering
-              onChange={() => null}
+              onChange={noop}
               orderings={ORDERINGS}
               value="updated-desc"
             />

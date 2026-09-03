@@ -1,5 +1,5 @@
 import {hues} from '@sanity/color'
-import {Box, Button, Flex, Grid, Heading, Inline, Stack, Text} from '@sanity/ui'
+import {Button, Flex, Grid, Heading, Inline, Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {
   type ArrayInputFunctionsProps,
@@ -11,6 +11,7 @@ import {
   type ItemProps,
   type PreviewProps,
 } from 'sanity'
+import {Box} from 'ui5'
 
 const COMPONENT_COLORS = {
   input: hues.blue[400].hex,

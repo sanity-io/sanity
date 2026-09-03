@@ -1,8 +1,9 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {SyncIcon} from '@sanity/icons/Sync'
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {type ReactNode, useCallback, useState} from 'react'
 import {useTranslation} from 'sanity'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {ErrorBoundary} from '../../../../ui-components/errorBoundary/ErrorBoundary'
@@ -35,7 +36,7 @@ export function DocumentInspectorErrorBoundary(props: DocumentInspectorErrorBoun
 
   if (error) {
     return (
-      <Flex direction="column" height="fill" overflow="hidden">
+      <Flex flexDirection="column" height="100%" overflow="hidden">
         <DocumentInspectorHeader
           as="header"
           closeButtonLabel={t('document-inspector.error.close-button.aria-label')}

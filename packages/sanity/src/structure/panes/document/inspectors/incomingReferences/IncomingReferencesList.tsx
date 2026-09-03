@@ -1,5 +1,5 @@
 import {type SanityDocument} from '@sanity/types'
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {Suspense, use, useCallback, useMemo} from 'react'
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
 import {map} from 'rxjs'
@@ -14,6 +14,7 @@ import {
   useSource,
   useTranslation,
 } from 'sanity'
+import {Flex, Box} from 'ui5'
 
 import {CrossDatasetIncomingReferenceDocumentPreview} from '../../../../components/incomingReferencesDecoration/CrossDatasetIncomingReference/CrossDatasetIncomingReferenceDocumentPreview'
 import {
@@ -51,7 +52,7 @@ function TypeSection<T>({
 
   return (
     <Stack key={type} padding={2} gap={1} marginBottom={2}>
-      <Flex align="center" justify="space-between" paddingBottom={2} gap={2}>
+      <Flex alignItems="center" justifyContent="space-between" paddingBottom={2} gap={2}>
         <Box padding={2}>
           <Text size={1} weight="medium">
             {title}

@@ -1,7 +1,8 @@
-import {Box, Flex} from '@sanity/ui'
+import {Flex} from '@sanity/ui'
 import {useCallback, useId, useMemo} from 'react'
 import {getPublishedId, LoadingBlock, useDocumentVersions, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {structureLocaleNamespace} from '../../i18n'

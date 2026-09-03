@@ -1,5 +1,5 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Box, Flex} from '@sanity/ui'
+import {Flex, Box} from 'ui5'
 
 import {TextWithTone} from '../../../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
@@ -9,10 +9,11 @@ export function SearchError() {
 
   return (
     <Flex
-      align="center"
+      alignItems="center"
       aria-live="assertive"
-      direction="column"
-      flex={1}
+      flexDirection="column"
+      flexBasis="0%"
+      flexGrow={1}
       gap={3}
       marginY={2}
       padding={4}

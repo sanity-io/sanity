@@ -1,4 +1,3 @@
-import {Box, Flex} from '@sanity/ui'
 import {addDays} from 'date-fns/addDays'
 import {addMonths} from 'date-fns/addMonths'
 import {isAfter} from 'date-fns/isAfter'
@@ -14,6 +13,7 @@ import {
   useState,
 } from 'react'
 import {CalendarContext} from 'sanity/_singletons'
+import {Flex, Box} from 'ui5'
 
 import {useCurrentLocale} from '../../../../../../../../../../../i18n/hooks/useLocale'
 import {CalendarHeader} from './CalendarHeader'
@@ -149,6 +149,7 @@ export function Calendar(props: CalendarProps) {
     ) {
       focusCurrentWeekDay()
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [focusCurrentWeekDay, focusedDate])
 
   useEffect(() => {
@@ -161,7 +162,7 @@ export function Calendar(props: CalendarProps) {
     // Only date has changed
     if (onlyDateChanged) {
       if (dateIsAfterEndDate) {
-        // oxlint-disable-next-line react/react-compiler
+        // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
         setSelectEndValue(true)
         onSelect({date, endDate: null})
       }
@@ -208,7 +209,7 @@ export function Calendar(props: CalendarProps) {
       <Box data-ui="Calendar" ref={setCalendarElement}>
         {/* Select month and year */}
         <Flex>
-          <Box flex={1}>
+          <Box flexBasis="0%" flexGrow={1}>
             <CalendarHeader moveFocusedDate={moveFocusedDate} onNowClick={handleNowClick} />
           </Box>
         </Flex>

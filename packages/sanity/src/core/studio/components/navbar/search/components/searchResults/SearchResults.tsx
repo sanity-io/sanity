@@ -1,7 +1,8 @@
 import {type StackablePerspective} from '@sanity/client'
-import {Card, Flex} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type MouseEvent, useCallback, useDeferredValue} from 'react'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {CommandList} from '../../../../../../components/commandList/CommandList'
 import {type CommandListRenderItemCallback} from '../../../../../../components/commandList/types'
@@ -117,7 +118,7 @@ export function SearchResults({
         borderTop={fullscreen || !!(hasError || hasSearchResults || hasNoSearchResults)}
         flex={1}
       >
-        <Flex direction="column" height="fill">
+        <Flex flexDirection="column" height="100%">
           {/* Sort menu */}
           {hasSearchResults && <SortMenu />}
 
@@ -125,7 +126,8 @@ export function SearchResults({
           <SearchResultsInnerFlex
             $loadingFirstPage={result.loading && cursor === null}
             aria-busy={result.loading || isPending}
-            flex={1}
+            flexBasis="0%"
+            flexGrow={1}
           >
             {hasError ? (
               <SearchError />

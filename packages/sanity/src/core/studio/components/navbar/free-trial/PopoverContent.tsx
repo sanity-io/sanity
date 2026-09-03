@@ -1,5 +1,6 @@
-import {Box, Card, Container, Flex, Heading} from '@sanity/ui'
+import {Card, Container, Heading} from '@sanity/ui'
 import {styled} from 'styled-components'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {UpsellDescriptionSerializer} from '../../../upsell/upsellDescriptionSerializer/UpsellDescriptionSerializer'
@@ -26,7 +27,7 @@ export function PopoverContent({content, handleClose, handleOpenNext}: PopoverCo
         {content.image && (
           <Image src={content.image.asset.url} alt={content.image.asset.altText ?? ''} />
         )}
-        <Flex padding={3} direction={'column'}>
+        <Flex padding={3} flexDirection={'column'}>
           <Box paddingX={2} marginTop={3}>
             <Heading size={1}>{content.headingText}</Heading>
           </Box>
@@ -34,7 +35,7 @@ export function PopoverContent({content, handleClose, handleOpenNext}: PopoverCo
             <UpsellDescriptionSerializer blocks={content.descriptionText} />
           </Box>
         </Flex>
-        <Flex gap={3} justify="flex-end" padding={3}>
+        <Flex gap={3} justifyContent="flex-end" padding={3}>
           {content.secondaryButton?.text && (
             <Button
               mode="bleed"

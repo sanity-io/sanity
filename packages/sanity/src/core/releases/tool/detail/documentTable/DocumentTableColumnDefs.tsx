@@ -2,23 +2,23 @@ import {type ReleaseState} from '@sanity/client'
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {ClockIcon} from '@sanity/icons/Clock'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Badge, Card, Flex, Skeleton, Text} from '@sanity/ui'
+import {Badge, Card, Skeleton, Text} from '@sanity/ui'
 import {toString as pathToString} from '@sanity/util/paths'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
 import {type CSSProperties, memo, useCallback, useEffect, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {EditedByAvatar} from '../../../../components/documentTable/EditedByCell'
 import {RelativeTime} from '../../../../components/RelativeTime'
+import {RhombusIcon} from '../../../../components/temporary-icons/Rhombus'
 import {AvatarSkeleton, UserAvatar} from '../../../../components/userAvatar/UserAvatar'
 import {useSchema} from '../../../../hooks/useSchema'
 import {SanityDefaultPreview} from '../../../../preview/components/SanityDefaultPreview'
-import {RhombusIcon} from '../../../../variants/plugin/components/PersonalizationIcons'
 import {
   getVariantConditionsText,
   getVariantIdFromDocument,
@@ -124,6 +124,7 @@ export function DocumentType({type}: {type: string}) {
   // A title change rewrites the text without resizing the box, so re-measure on title change.
   useEffect(() => {
     checkTruncation()
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [title, checkTruncation])
 
   const textElement = (
@@ -159,11 +160,11 @@ const documentActionColumn: (
   sortTransform: variantsEnabled ? (value) => getDocumentActionType(value) || '' : undefined,
   header: (props) =>
     variantsEnabled ? (
-      <Flex {...props.headerProps} paddingY={3} sizing="border">
+      <Flex {...props.headerProps} paddingY={3}>
         <Headers.SortHeaderButton text={t('table-header.action')} {...props} />
       </Flex>
     ) : (
-      <Flex {...props.headerProps} paddingY={3} sizing="border">
+      <Flex {...props.headerProps} paddingY={3}>
         <Headers.BasicHeader text={t('table-header.action')} />
       </Flex>
     ),
@@ -187,7 +188,7 @@ const documentActionColumn: (
     }
 
     return (
-      <Flex align="center" {...cellProps}>
+      <Flex alignItems="center" {...cellProps}>
         <Box paddingX={2}>{actionBadge()}</Box>
       </Flex>
     )
@@ -238,9 +239,9 @@ const VariantCell = memo(
           ) : undefined
         }
       >
-        <Flex align="center" gap={2} style={{minWidth: 0}}>
+        <Flex alignItems="center" gap={2}>
           <Card tone="suggest" padding={0} style={VARIANT_ICON_CARD_STYLE}>
-            <Text size={1} style={VARIANT_ICON_STYLE}>
+            <Text size={2} style={VARIANT_ICON_STYLE}>
               <RhombusIcon />
             </Text>
           </Card>
@@ -298,13 +299,13 @@ export const getDocumentTableColumnDefs: (
       width: variantsEnabled ? 120 : 150,
       sorting: true,
       header: (props) => (
-        <Flex {...props.headerProps} paddingY={3} sizing="border">
+        <Flex {...props.headerProps} paddingY={3}>
           <Headers.SortHeaderButton text={t('table-header.type')} {...props} />
         </Flex>
       ),
       cell: ({cellProps, datum}) => (
-        <Flex align="center" {...cellProps}>
-          <Box paddingX={2} style={{minWidth: 0}}>
+        <Flex alignItems="center" {...cellProps}>
+          <Box paddingX={2}>
             {!datum.isLoading && <MemoDocumentType type={datum.document._type} />}
           </Box>
         </Flex>
@@ -325,13 +326,13 @@ export const getDocumentTableColumnDefs: (
               return variant ? getVariantTitle(variant).toLowerCase() : ''
             },
             header: (props) => (
-              <Flex {...props.headerProps} paddingY={3} sizing="border">
+              <Flex {...props.headerProps} paddingY={3}>
                 <Headers.SortHeaderButton text={t('table-header.variant')} {...props} />
               </Flex>
             ),
             cell: ({cellProps, datum}) => (
-              <Flex align="center" {...cellProps}>
-                <Box paddingX={2} style={{minWidth: 0}}>
+              <Flex alignItems="center" {...cellProps}>
+                <Box paddingX={2}>
                   {!datum.isLoading &&
                     (variantsLoading ? (
                       <Skeleton animated radius={1} style={{width: 60, height: 11}} />
@@ -364,7 +365,7 @@ export const getDocumentTableColumnDefs: (
         options?.searchInCommandLane ? (
           // Search moved to the command lane; the header is a plain sortable "Document" label that
           // grows to fill (flex) in both header and body.
-          <Flex {...props.headerProps} flex={1} paddingY={3} sizing="border">
+          <Flex {...props.headerProps} flexBasis="0%" flexGrow={1} paddingY={3}>
             <Headers.SortHeaderButton text={t('table-header.document')} {...props} />
           </Flex>
         ) : (
@@ -398,7 +399,7 @@ export const getDocumentTableColumnDefs: (
             sorting: true,
             width: 130,
             header: (props) => (
-              <Flex {...props.headerProps} paddingY={3} sizing="border">
+              <Flex {...props.headerProps} paddingY={3}>
                 <Headers.SortHeaderButton
                   paddingLeft={2}
                   text={t('table-header.last-edited')}
@@ -409,11 +410,12 @@ export const getDocumentTableColumnDefs: (
             cell: ({cellProps, datum}) => (
               <Flex
                 {...cellProps}
-                align="center"
+                alignItems="center"
                 paddingX={2}
                 paddingY={3}
-                style={{minWidth: 130}}
-                sizing="border"
+                style={{
+                  minWidth: 130,
+                }}
               >
                 {!datum.isLoading && datum.document._updatedAt && (
                   <Text muted size={1}>
@@ -432,7 +434,7 @@ export const getDocumentTableColumnDefs: (
             width: 170,
             style: {minWidth: 44, maxWidth: 170},
             header: ({headerProps}) => (
-              <Flex {...headerProps} align="center" paddingX={2} paddingY={3} sizing="border">
+              <Flex {...headerProps} alignItems="center" paddingX={2} paddingY={3}>
                 <Text muted size={1} textOverflow="ellipsis" weight="medium">
                   {t('table-header.edited-by')}
                 </Text>
@@ -447,7 +449,7 @@ export const getDocumentTableColumnDefs: (
             sorting: true,
             width: 130,
             header: (props) => (
-              <Flex {...props.headerProps} paddingY={3} sizing="border">
+              <Flex {...props.headerProps} paddingY={3}>
                 <Headers.SortHeaderButton text={t('table-header.edited')} {...props} />
               </Flex>
             ),
@@ -460,7 +462,7 @@ export const getDocumentTableColumnDefs: (
       sorting: false,
       width: 50,
       header: ({headerProps}) => (
-        <Flex {...headerProps} paddingY={3} sizing="border">
+        <Flex {...headerProps} paddingY={3}>
           <Headers.BasicHeader text={''} />
         </Flex>
       ),
@@ -498,11 +500,10 @@ export const getDocumentTableColumnDefs: (
           // width (flex:1 here would split the free space with Document and misalign the header/body).
           <Flex
             {...cellProps}
-            flex={options?.searchInCommandLane ? undefined : 1}
+            {...(options?.searchInCommandLane ? {} : {flexBasis: '0%', flexGrow: 1})}
             padding={1}
-            justify="center"
-            align="center"
-            sizing="border"
+            justifyContent="center"
+            alignItems="center"
           >
             {datum.validation.hasError && (
               <Tooltip
@@ -510,7 +511,7 @@ export const getDocumentTableColumnDefs: (
                 placement="bottom-end"
                 content={
                   <Text muted size={1}>
-                    <Flex align={'center'} gap={3} padding={1}>
+                    <Flex alignItems={'center'} gap={3} padding={1}>
                       <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
                       {errorLabel}
                     </Flex>
@@ -590,13 +591,14 @@ function UpdatedAtCell({
   return (
     <Flex
       {...cellProps}
-      align="center"
+      alignItems="center"
       paddingX={2}
       paddingY={3}
-      style={{minWidth: 130}}
-      sizing="border"
+      style={{
+        minWidth: 130,
+      }}
     >
-      <Flex align="center" gap={2}>
+      <Flex alignItems="center" gap={2}>
         {/* Skeleton only while the history is actually loading — NOT whenever there is no editor.
             A settled-but-empty or failed history has loading:false and no lastEditedBy, and must
             render just the timestamp (or nothing) rather than an endless skeleton. */}
@@ -635,7 +637,7 @@ function EditedByReleaseCell({
   const {documentHistory, loading} = useReleaseHistory(historyDocumentId, bundleId, document?._rev)
 
   return (
-    <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
+    <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3}>
       <EditedByAvatar loading={isLoading || loading} userId={documentHistory?.lastEditedBy} />
     </Flex>
   )

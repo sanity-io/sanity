@@ -1,16 +1,18 @@
 import {at, set} from '@sanity/mutate'
 import {applyPatches} from '@sanity/mutate/_unstable_apply'
-import {Card, Flex} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {type FormEvent, useCallback, useState} from 'react'
-import {Box} from 'ui5'
+import {type FormEvent, useCallback, useMemo, useState} from 'react'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {variantsLocaleNamespace} from '../../i18n'
+import {useAllVariants} from '../../store/useAllVariants'
 import {type EditableSystemVariant} from '../../types'
 import {getIsVariantInvalid} from '../../util/getIsVariantInvalid'
+import {getVariantUniquenessValidation} from '../../util/uniquenessValidation'
 import {VariantForm, type VariantFormChangeHandler} from './VariantForm'
 
 interface VariantDialogProps {
@@ -44,7 +46,17 @@ export function VariantDialog(props: VariantDialogProps): React.JSX.Element {
   const [showValidation, setShowValidation] = useState(false)
   const [conditionsInvalid, setConditionsInvalid] = useState(false)
   const [priorityInvalid, setPriorityInvalid] = useState(false)
-  const invalid = getIsVariantInvalid(variant) || conditionsInvalid || priorityInvalid
+  const {data: allVariants} = useAllVariants()
+  const {duplicateTitleOf, duplicateConditionsOf} = useMemo(
+    () => getVariantUniquenessValidation(variant, allVariants),
+    [allVariants, variant],
+  )
+  const invalid =
+    getIsVariantInvalid(variant) ||
+    conditionsInvalid ||
+    priorityInvalid ||
+    Boolean(duplicateTitleOf) ||
+    Boolean(duplicateConditionsOf)
 
   const handleVariantChange = useCallback<VariantFormChangeHandler>((path, nextValue) => {
     setVariant(
@@ -95,6 +107,8 @@ export function VariantDialog(props: VariantDialogProps): React.JSX.Element {
         <form onSubmit={handleSubmit}>
           <Box paddingBottom={4}>
             <VariantForm
+              duplicateConditionsOf={duplicateConditionsOf}
+              duplicateTitleOf={duplicateTitleOf}
               onChange={handleVariantChange}
               onConditionValidityChange={setConditionsInvalid}
               onPriorityValidityChange={setPriorityInvalid}
@@ -102,7 +116,7 @@ export function VariantDialog(props: VariantDialogProps): React.JSX.Element {
               value={variant}
             />
           </Box>
-          <Flex gap={2} justify="flex-end" paddingTop={5}>
+          <Flex gap={2} justifyContent="flex-end" paddingTop={5}>
             {renderCancelButton && (
               <Button
                 disabled={isSubmitting}

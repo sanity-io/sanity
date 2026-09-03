@@ -1,9 +1,8 @@
 import {ClockIcon} from '@sanity/icons/Clock'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Badge, Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {useCallback, useEffect, useMemo, useState} from 'react'
-import {useObservable} from 'react-rx'
-import {EMPTY, fromEvent, map, merge, of, timer, timestamp} from 'rxjs'
+import {Badge, Card, Stack, Text} from '@sanity/ui'
+import {useCallback, useEffect, useState} from 'react'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {isDev} from '../../environment'
@@ -17,11 +16,9 @@ import {
 } from '../../store/authStore/unclaimedProjectStorage'
 import {interpolateTemplate} from '../../util/interpolateTemplate'
 import {useWorkspace} from '../workspace'
-import {
-  ROBOT_PROVIDER,
-  type UnclaimedProjectState,
-  useUnclaimedProject,
-} from './useUnclaimedProject'
+import {useUnclaimedProjectContext} from './UnclaimedProjectProvider'
+import {ROBOT_PROVIDER, type UnclaimedProjectState} from './useUnclaimedProject'
+import {useUnclaimedProjectClock} from './useUnclaimedProjectClock'
 import {useUnclaimedProjectCopy} from './useUnclaimedProjectCopy'
 
 /**
@@ -52,19 +49,11 @@ function UnclaimedProjectNudgeAuthCheck() {
 }
 
 function UnclaimedProjectNudgeStateCheck() {
-  const {projectId} = useWorkspace()
-  const [claimAttempt, setClaimAttempt] = useState<{projectId: string; startedAt: number}>()
-  const claimAttemptedAt =
-    claimAttempt?.projectId === projectId ? claimAttempt.startedAt : undefined
-  const state = useUnclaimedProject({claimAttemptedAt})
-  const handleClaim = useCallback(
-    () => setClaimAttempt({projectId, startedAt: Date.now()}),
-    [projectId],
-  )
+  const {onClaim, state} = useUnclaimedProjectContext()
 
   if (!state) return null
 
-  return <UnclaimedProjectNudgeInner onClaim={handleClaim} state={state} />
+  return <UnclaimedProjectNudgeInner onClaim={onClaim} state={state} />
 }
 
 function UnclaimedProjectNudgeInner({
@@ -177,9 +166,14 @@ function UnclaimedProjectNudgeInner({
       padding={3}
       borderBottom
     >
-      <Flex align="center" gap={3} justify="center" wrap="wrap">
-        <Flex align="center" gap={2}>
-          <Flex aria-hidden="true" align="center" justify="center" style={{lineHeight: 0}}>
+      <Flex alignItems="center" gap={3} justifyContent="center" flexWrap="wrap">
+        <Flex alignItems="center" gap={2}>
+          <Flex
+            aria-hidden="true"
+            alignItems="center"
+            justifyContent="center"
+            style={{lineHeight: 0}}
+          >
             <ClockIcon style={{display: 'block'}} />
           </Flex>
           <Text size={1} weight="medium">
@@ -260,26 +254,4 @@ export function formatCountdown(expiresAt: Date, now: number): string {
   const seconds = totalSeconds % 60
 
   return [hours, minutes, seconds].map((value) => String(value).padStart(2, '0')).join(':')
-}
-
-/** Keeps all time-based nudge state on one clock, including resume after timer throttling. */
-function useUnclaimedProjectClock(enabled: boolean, expiresAt: Date | undefined): number {
-  const [initialNow] = useState(() => Date.now())
-  const expiresAtTime = expiresAt?.getTime()
-  const clock$ = useMemo(() => {
-    if (!enabled) return EMPTY
-
-    return merge(
-      of(undefined),
-      timer(60_000, 60_000),
-      expiresAtTime === undefined ? EMPTY : timer(new Date(expiresAtTime)),
-      fromEvent(window, 'focus'),
-      fromEvent(document, 'visibilitychange'),
-    ).pipe(
-      timestamp(),
-      map(({timestamp: now}) => now),
-    )
-  }, [enabled, expiresAtTime])
-
-  return useObservable(clock$, initialNow)
 }

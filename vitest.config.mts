@@ -51,12 +51,14 @@ export default defineConfig({
       // they must run on every PR, not only label-gated bench runs
       'perf/bench',
       // The dashboard's drift/ack math — pure modules, plain node environment
-      'dev/metrics-studio',
+      'dev/radar',
       'packages/@repo/debug-proxy',
       'packages/@repo/release-notes',
       'packages/@repo/bundle-manager',
       'packages/@repo/package.bundle',
       'packages/@repo/utils',
+      // Reporter unit tests only (`reporters/**/*.test.ts`); Playwright specs stay out.
+      'e2e',
     ],
     coverage: {
       provider: 'v8',

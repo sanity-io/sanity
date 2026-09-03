@@ -10,16 +10,17 @@ import {
   type SanityDocument,
   type ValidationMarker,
 } from '@sanity/types'
-import {Box, Card, Flex, useTheme} from '@sanity/ui'
+import {Card, Flex, useTheme} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
+import {validateItem} from '@sanity/validation/_internal'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
+import {Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {useClient} from '../../../../hooks/useClient'
 import {useSchema} from '../../../../hooks/useSchema'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useWorkspace} from '../../../../studio/workspace'
-import {validateItem} from '../../../../validation/validateDocument'
 import {FormFieldValidationStatus} from '../../../components/formField/FormFieldValidationStatus'
 import {useFormValue} from '../../../contexts/FormValue'
 import {useAuthType} from '../hooks/useAuthType'

@@ -1,6 +1,6 @@
-import {Flex} from '@sanity/ui'
 import startCase from 'lodash-es/startCase.js'
 import {useMemo, useState, type RefAttributes} from 'react'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
@@ -9,6 +9,8 @@ import {useRovingFocus} from '../../../../components/rovingFocus/useRovingFocus'
 import {type Tool} from '../../../../config/types'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {ToolLink, type ToolLinkProps} from './ToolLink'
+
+const TOOL_COLLAPSE_MENU_STYLE = {minWidth: 0} as const
 
 interface ToolCollapseMenuProps {
   activeToolName?: string
@@ -65,7 +67,7 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
   )
 
   return (
-    <Flex justify="center" marginX={4}>
+    <Flex justifyContent="center" marginX={4} style={TOOL_COLLAPSE_MENU_STYLE}>
       <CollapseTabList
         data-testid="tool-collapse-menu"
         gap={1}

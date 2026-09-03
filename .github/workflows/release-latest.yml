@@ -169,6 +169,82 @@ jobs:
             sleep 15
           done
 
+  sync-git-metrics:
+    # Mirror the new tag + npm data into the metrics dataset. After
+    # npm-publish so the registry already knows the version. Nothing
+    # downstream depends on it; a failure alerts Slack via the called
+    # workflow's alert job.
+    needs: [git-operations, npm-publish]
+    # always(): also sync on publish-only dispatch runs, where
+    # git-operations is skipped
+    if: always() && needs.npm-publish.result == 'success'
+    permissions:
+      contents: read
+      deployments: read
+    uses: ./.github/workflows/sync-git-metrics.yml
+    secrets:
+      RADAR_SANITY_WRITE_TOKEN: ${{ secrets.RADAR_SANITY_WRITE_TOKEN }}
+      SLACK_WEBHOOK_URL_CI_ALERTS: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
+
+  bench-release:
+    name: Benchmark the released commit
+    # Measure the released commit. Without this, nothing in the metrics dataset
+    # ever measures a shipped version: the daily cron measures whatever main
+    # happens to be at 05:00, which landed on a release commit exactly once in
+    # the first 9 releases of the bench window. A release run is what makes
+    # "v6.10.1 regressed LCP" a statement about a release rather than an
+    # interpolation between two commits nobody shipped.
+    #
+    # Dispatched, not triggered by the tag push: git-operations pushes the tag
+    # with the default GITHUB_TOKEN, whose events never start workflows (the
+    # same reason sync-git-metrics is called rather than listening for tags).
+    #
+    # Dispatches an ordinary build of the release tag — `--ref` is the tag, so
+    # the checkout inside bench.yml lands exactly on the released commit and its
+    # normal build measures the right tree. `release_tag` labels the stored
+    # document, and bench.yml verifies the measured commit is the tag's.
+    #
+    # `--ref` is the tag rather than `main` on purpose: main moves every few
+    # minutes, and this job runs minutes after the release commit lands (behind
+    # build-and-validate and git-operations), so `main` is frequently no longer
+    # the release. The tag is immutable and cannot race.
+    #
+    # Deliberately no `backfill_sha`: that selects bench's historical replay
+    # path, which rebuilds a commit in its own worktree from that commit's
+    # lockfile. It is for trees that no longer match the checkout, which is not
+    # the case here.
+    #
+    # Non-blocking by construction: nothing depends on this job, so a failed
+    # benchmark can never fail or delay a release.
+    #
+    # Requires git-operations to have actually run (not 'skipped', which
+    # npm-publish tolerates), so a publish-only rerun does not re-measure a
+    # release that was already measured. The flip side: if the original run's
+    # dispatch failed, a rerun will not retry it. Measuring it by hand later
+    # needs the replay path, dispatched from main (a tag older than this
+    # workflow has no release_tag input of its own):
+    # `gh workflow run bench.yml --ref main -f run_suite=true
+    # -f backfill_sha=<tag's commit> -f release_tag=<tag>`.
+    needs: [build-and-validate, git-operations]
+    if: >
+      always() && needs.build-and-validate.result == 'success' &&
+      needs.git-operations.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Dispatch the bench suite for this release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ needs.build-and-validate.outputs.version }}
+        run: |
+          gh workflow run bench.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref "v$VERSION" \
+            -f run_suite=true \
+            -f release_tag="v$VERSION"
+
   publish-releases:
     # Publish sanity.io Changelog & github release
     needs: [build-and-validate, npm-publish]

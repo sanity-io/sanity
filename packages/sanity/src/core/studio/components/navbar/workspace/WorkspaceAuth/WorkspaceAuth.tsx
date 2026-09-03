@@ -1,9 +1,10 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
-import {Box, Container, Flex, rem, Stack} from '@sanity/ui'
+import {Container, rem, Stack} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useState} from 'react'
 import {styled} from 'styled-components'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'

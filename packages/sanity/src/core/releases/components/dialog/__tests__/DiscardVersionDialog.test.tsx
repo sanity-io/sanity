@@ -1,12 +1,21 @@
 import {defineType} from '@sanity/types'
-import {render, waitFor} from '@testing-library/react'
+import {render, screen, waitFor} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {defineConfig} from '../../../../config/defineConfig'
+import {useDocumentOperation} from '../../../../hooks/useDocumentOperation'
+import {useDocumentOperationEvent} from '../../../../hooks/useDocumentOperationEvent'
+import {useTargetDocumentState} from '../../../../hooks/useTargetDocumentState'
 import {DiscardVersionDialog} from '../DiscardVersionDialog'
 
-const {previewSpy} = vi.hoisted(() => ({previewSpy: vi.fn()}))
+const {previewSpy, toastPush} = vi.hoisted(() => ({previewSpy: vi.fn(), toastPush: vi.fn()}))
+
+vi.mock('@sanity/ui/toast', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useToast: vi.fn(() => ({push: toastPush})),
+}))
 
 // Capture the props the document preview is rendered with so we can assert the
 // perspective the dialog resolves it under.
@@ -18,30 +27,27 @@ vi.mock('../../../../preview/components/Preview', () => ({
 }))
 
 vi.mock('../../../../hooks/useDocumentOperation', () => ({
-  useDocumentOperation: vi.fn(() => ({discardChanges: {execute: vi.fn()}})),
+  useDocumentOperation: vi.fn(),
 }))
 
-// The target document lookup needs the document preview store (mocked away above); these tests
-// only assert the preview perspective, so the target resolves to a ready state with no document
-// (base draft/published pair semantics, no scopeId).
+vi.mock('../../../../hooks/useDocumentOperationEvent', () => ({
+  useDocumentOperationEvent: vi.fn(),
+}))
+
+// The target document lookup needs the document preview store (mocked away above), so it is
+// mocked per test. The default resolves to the base draft/published pair (no scopeId).
 vi.mock('../../../../hooks/useTargetDocumentState', async (importOriginal) => ({
   ...(await importOriginal()),
-  useTargetDocumentState: vi.fn(() => ({
-    status: 'ready',
-    targetDocument: undefined,
-    scopeId: undefined,
-    variant: undefined,
-    publishedSibling: undefined,
-  })),
+  useTargetDocumentState: vi.fn(),
 }))
 
-vi.mock('../../../hooks/useVersionOperations', () => ({
-  useVersionOperations: vi.fn(() => ({discardVersion: vi.fn()})),
-}))
-
-vi.mock('../../../../perspective/usePerspective', () => ({
-  usePerspective: vi.fn(() => ({selectedPerspective: 'drafts'})),
-}))
+const READY_BASE_TARGET = {
+  status: 'ready',
+  targetDocument: undefined,
+  scopeId: undefined,
+  variant: undefined,
+  siblings: {published: undefined, draft: undefined, version: undefined},
+} as const
 
 const config = defineConfig({
   projectId: 'test',
@@ -57,28 +63,71 @@ const config = defineConfig({
   },
 })
 
-async function renderDialog(props: {versionId: string; isGoingToUnpublish?: boolean}) {
-  const wrapper = await createTestProvider({config})
-  render(
+const CONFIRM_RELEASE = 'discard-version-dialog.title-release'
+const discardExecute = vi.fn()
+
+function mockDiscardOperation(disabled: false | 'NO_CHANGES' = false) {
+  vi.mocked(useDocumentOperation).mockReturnValue({
+    discardChanges: {disabled, execute: discardExecute},
+  } as unknown as ReturnType<typeof useDocumentOperation>)
+}
+
+function operationEvent(options: {
+  type: 'success' | 'error'
+  op?: string
+  versionId?: string
+}): ReturnType<typeof useDocumentOperationEvent> {
+  return {
+    type: options.type,
+    op: options.op ?? 'discardChanges',
+    id: 'my-doc',
+    ...(options.type === 'error' ? {error: new Error('nope')} : {}),
+    idPair: {
+      publishedId: 'my-doc',
+      draftId: 'drafts.my-doc',
+      versionId: options.versionId ?? 'versions.rSummer.my-doc',
+    },
+  } as unknown as ReturnType<typeof useDocumentOperationEvent>
+}
+
+async function renderDialog(props: {
+  versionId: string
+  isGoingToUnpublish?: boolean
+  onClose?: () => void
+  showCompletionToasts?: boolean
+}) {
+  const onClose = props.onClose ?? vi.fn()
+  // A fresh element per render: re-rendering the identical element lets React bail out of the
+  // subtree, so the component would never observe a newly mocked operation event.
+  const element = () => (
     <DiscardVersionDialog
-      onClose={vi.fn()}
+      onClose={onClose}
       versionId={props.versionId}
       documentType="testDoc"
       fromPerspective="drafts"
       isGoingToUnpublish={props.isGoingToUnpublish ?? false}
-    />,
-    {wrapper},
+      showCompletionToasts={props.showCompletionToasts}
+    />
   )
-  await waitFor(() => expect(previewSpy).toHaveBeenCalled())
+  const wrapper = await createTestProvider({config})
+  const result = render(element(), {wrapper})
+  return {...result, rerender: () => result.rerender(element())}
 }
 
-describe('DiscardVersionDialog preview perspective', () => {
-  beforeEach(() => {
-    previewSpy.mockClear()
-  })
+beforeEach(() => {
+  previewSpy.mockClear()
+  toastPush.mockClear()
+  discardExecute.mockClear()
+  vi.mocked(useDocumentOperation).mockReset()
+  vi.mocked(useDocumentOperationEvent).mockReturnValue(undefined)
+  vi.mocked(useTargetDocumentState).mockReturnValue(READY_BASE_TARGET)
+  mockDiscardOperation()
+})
 
+describe('DiscardVersionDialog preview perspective', () => {
   it('previews a discarded draft under the drafts perspective', async () => {
     await renderDialog({versionId: 'drafts.my-doc'})
+    await waitFor(() => expect(previewSpy).toHaveBeenCalled())
     expect(previewSpy).toHaveBeenLastCalledWith(
       expect.objectContaining({perspectiveStack: ['drafts']}),
     )
@@ -86,6 +135,7 @@ describe('DiscardVersionDialog preview perspective', () => {
 
   it('previews a discarded release version under its release perspective', async () => {
     await renderDialog({versionId: 'versions.rSummer.my-doc'})
+    await waitFor(() => expect(previewSpy).toHaveBeenCalled())
     expect(previewSpy).toHaveBeenLastCalledWith(
       expect.objectContaining({perspectiveStack: ['rSummer']}),
     )
@@ -93,6 +143,136 @@ describe('DiscardVersionDialog preview perspective', () => {
 
   it('previews the published document (empty perspective) when unpublishing', async () => {
     await renderDialog({versionId: 'drafts.my-doc', isGoingToUnpublish: true})
+    await waitFor(() => expect(previewSpy).toHaveBeenCalled())
     expect(previewSpy).toHaveBeenLastCalledWith(expect.objectContaining({perspectiveStack: []}))
+  })
+})
+
+describe('DiscardVersionDialog operation target', () => {
+  it('targets the release encoded in the version id, not the selected perspective', async () => {
+    // A variant of another bundle is selected while the dialog is opened for a release version.
+    vi.mocked(useTargetDocumentState).mockReturnValue({
+      status: 'ready',
+      targetDocument: undefined,
+      scopeId: 'someVariantScope',
+      variant: {_id: 'variant-doc'},
+      siblings: {published: undefined, draft: undefined, version: undefined},
+    } as unknown as ReturnType<typeof useTargetDocumentState>)
+
+    await renderDialog({versionId: 'versions.rSummer.my-doc'})
+
+    expect(useDocumentOperation).toHaveBeenCalledWith('my-doc', 'testDoc', 'rSummer')
+  })
+
+  it('follows the selected perspective when discarding a draft', async () => {
+    await renderDialog({versionId: 'drafts.my-doc'})
+
+    expect(useDocumentOperation).toHaveBeenCalledWith('my-doc', 'testDoc', undefined)
+  })
+
+  it('disables confirm while the perspective target is still resolving for a draft', async () => {
+    vi.mocked(useTargetDocumentState).mockReturnValue({status: 'resolving'})
+
+    await renderDialog({versionId: 'drafts.my-doc'})
+
+    expect(screen.getByRole('button', {name: 'discard-version-dialog.title-draft'})).toBeDisabled()
+  })
+
+  it('confirms a release version even while the perspective target is resolving', async () => {
+    vi.mocked(useTargetDocumentState).mockReturnValue({status: 'resolving'})
+
+    await renderDialog({versionId: 'versions.rSummer.my-doc'})
+
+    expect(screen.getByRole('button', {name: CONFIRM_RELEASE})).toBeEnabled()
+  })
+})
+
+describe('DiscardVersionDialog completion', () => {
+  it('does not execute and disables confirm when the operation is disabled', async () => {
+    mockDiscardOperation('NO_CHANGES')
+
+    await renderDialog({versionId: 'versions.rSummer.my-doc'})
+
+    expect(screen.getByRole('button', {name: CONFIRM_RELEASE})).toBeDisabled()
+    expect(discardExecute).not.toHaveBeenCalled()
+  })
+
+  it('stays open until the discard operation reports success', async () => {
+    const onClose = vi.fn()
+    const {rerender} = await renderDialog({versionId: 'versions.rSummer.my-doc', onClose})
+
+    await userEvent.click(screen.getByRole('button', {name: CONFIRM_RELEASE}))
+
+    expect(discardExecute).toHaveBeenCalledTimes(1)
+    expect(onClose).not.toHaveBeenCalled()
+
+    vi.mocked(useDocumentOperationEvent).mockReturnValue(operationEvent({type: 'success'}))
+    rerender()
+
+    await waitFor(() => expect(onClose).toHaveBeenCalled())
+    expect(toastPush).not.toHaveBeenCalled()
+  })
+
+  it('ignores operation events for another bundle of the same document', async () => {
+    const onClose = vi.fn()
+    const {rerender} = await renderDialog({versionId: 'versions.rSummer.my-doc', onClose})
+
+    await userEvent.click(screen.getByRole('button', {name: CONFIRM_RELEASE}))
+
+    vi.mocked(useDocumentOperationEvent).mockReturnValue(
+      operationEvent({type: 'success', versionId: 'versions.rWinter.my-doc'}),
+    )
+    rerender()
+
+    await waitFor(() => expect(screen.getByRole('button', {name: CONFIRM_RELEASE})).toBeDisabled())
+    expect(onClose).not.toHaveBeenCalled()
+  })
+
+  it('ignores operation events from a different operation on the same pair', async () => {
+    const onClose = vi.fn()
+    const {rerender} = await renderDialog({versionId: 'versions.rSummer.my-doc', onClose})
+
+    await userEvent.click(screen.getByRole('button', {name: CONFIRM_RELEASE}))
+
+    vi.mocked(useDocumentOperationEvent).mockReturnValue(
+      operationEvent({type: 'success', op: 'publish'}),
+    )
+    rerender()
+
+    await waitFor(() => expect(screen.getByRole('button', {name: CONFIRM_RELEASE})).toBeDisabled())
+    expect(onClose).not.toHaveBeenCalled()
+  })
+
+  it('reports a failed discard instead of closing silently', async () => {
+    const onClose = vi.fn()
+    const {rerender} = await renderDialog({versionId: 'versions.rSummer.my-doc', onClose})
+
+    await userEvent.click(screen.getByRole('button', {name: CONFIRM_RELEASE}))
+    expect(toastPush).not.toHaveBeenCalled()
+
+    vi.mocked(useDocumentOperationEvent).mockReturnValue(operationEvent({type: 'error'}))
+    rerender()
+
+    await waitFor(() =>
+      expect(toastPush).toHaveBeenCalledWith(expect.objectContaining({status: 'error'})),
+    )
+    expect(onClose).toHaveBeenCalled()
+  })
+
+  it('leaves the failure toast to DocumentOperationResults when opted out', async () => {
+    const onClose = vi.fn()
+    const {rerender} = await renderDialog({
+      versionId: 'versions.rSummer.my-doc',
+      onClose,
+      showCompletionToasts: false,
+    })
+
+    await userEvent.click(screen.getByRole('button', {name: CONFIRM_RELEASE}))
+
+    vi.mocked(useDocumentOperationEvent).mockReturnValue(operationEvent({type: 'error'}))
+    rerender()
+
+    await waitFor(() => expect(onClose).toHaveBeenCalled())
+    expect(toastPush).not.toHaveBeenCalled()
   })
 })

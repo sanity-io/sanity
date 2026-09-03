@@ -2,10 +2,10 @@ import {DocumentsIcon} from '@sanity/icons/Documents'
 import {EditIcon} from '@sanity/icons/Edit'
 import {SortIcon} from '@sanity/icons/Sort'
 import {UserIcon} from '@sanity/icons/User'
-import {Card, Container, Flex, Skeleton, Stack, Text} from '@sanity/ui'
+import {Card, Container, Skeleton, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useRouter} from 'sanity/router'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {
   DetailBackButton,
@@ -181,7 +181,7 @@ export function VariantDetail() {
 
   if (!variant) {
     return (
-      <Flex direction="column" flex={1} height="fill">
+      <Flex flexDirection="column" flexBasis="0%" flexGrow={1} height="100%">
         <Card borderBottom flex="none" padding={3}>
           <DetailBackButton onClick={() => router.navigate({})} text={t('detail.back')} />
         </Card>
@@ -204,7 +204,7 @@ export function VariantDetail() {
   const description = getVariantDescription(variant)
 
   return (
-    <Flex direction="column" flex={1} height="fill" overflow="hidden">
+    <Flex flexDirection="column" flexBasis="0%" flexGrow={1} height="100%" overflow="hidden">
       {/* Header region — the shared detail spine: a top rail (back on the left, action rail on the
           right), then a two-zone body (identity on the left, a bordered properties panel on the
           right). Matches the Releases detail page so the two read as one family. No borderBottom:
@@ -218,15 +218,20 @@ export function VariantDetail() {
               actions line up with the row content below. */}
           <Box paddingX={2}>
             <Stack gap={4}>
-              <Flex align="center" gap={3}>
-                <Flex align="center" flex={1} style={{minWidth: 0}}>
+              <Flex alignItems="center" gap={3}>
+                <Flex alignItems="center" flexBasis="0%" flexGrow={1}>
                   <DetailBackButton
                     onClick={() => router.navigate({})}
                     testId="back-to-variants-button"
                     text={t('detail.back')}
                   />
                 </Flex>
-                <Flex data-testid="variant-detail-actions" flex="none">
+                <Flex
+                  data-testid="variant-detail-actions"
+                  flexBasis="auto"
+                  flexGrow={0}
+                  flexShrink={0}
+                >
                   <VariantActionRail
                     documentCount={tableRows.length}
                     documentsLoading={documentsLoading}
@@ -234,7 +239,7 @@ export function VariantDetail() {
                   />
                 </Flex>
               </Flex>
-              <Flex align="flex-start" gap={4} wrap="wrap">
+              <Flex alignItems="flex-start" gap={4} flexWrap="wrap">
                 <Box flexBasis="0%" flexGrow={1} style={{minWidth: 280}}>
                   <DetailIdentity
                     description={description || undefined}
@@ -262,7 +267,7 @@ export function VariantDetail() {
           </Box>
         </Container>
       </Card>
-      <Flex direction="column" flex={1} height="fill" overflow="hidden" style={{minHeight: 0}}>
+      <Flex flexDirection="column" flexBasis="0%" flexGrow={1} height="100%" overflow="hidden">
         {variantDocumentsError ? (
           <Box padding={4}>
             <Text muted size={1}>

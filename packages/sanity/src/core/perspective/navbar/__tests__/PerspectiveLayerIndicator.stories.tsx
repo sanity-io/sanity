@@ -3,11 +3,13 @@ import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {PerspectiveLayerIndicatorStory} from './PerspectiveLayerIndicatorStory'
 
 /**
- * Reuses the in-package harness: perspective-menu Box label inset and the
- * in-range layer line on first / within / last items. Menus stay closed.
+ * Chromatic sentinel: the perspective releases menu with its layer line,
+ * rendered through the production menu items so the indicator offsets track
+ * the real ui5 Box paddings. Covers first / within / last items and
+ * release-type labels inside and outside the range. Menus stay closed.
  */
 const meta = {
-  title: 'Perspective/Layer Indicator',
+  title: 'Perspective/Releases Menu',
   component: PerspectiveLayerIndicatorStory,
 } satisfies Meta<typeof PerspectiveLayerIndicatorStory>
 

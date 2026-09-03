@@ -1,4 +1,4 @@
-import {Box, Card, Flex, Skeleton, Stack, Text} from '@sanity/ui'
+import {Card, Skeleton, Stack, Text} from '@sanity/ui'
 import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
 import {type MouseEvent, useCallback, useMemo} from 'react'
 import {
@@ -12,6 +12,7 @@ import {
   useUser,
 } from 'sanity'
 import {css, styled} from 'styled-components'
+import {Flex, Box} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {getTimelineEventIconComponent} from './helpers'
@@ -74,7 +75,7 @@ const UserLine = ({userId}: {userId: string}) => {
   const [user, loading] = useUser(userId)
 
   return (
-    <Flex key={userId} align="center" gap={2} padding={1}>
+    <Flex key={userId} alignItems="center" gap={2} padding={1}>
       <Box>{loading || !user ? <AvatarSkeleton animated /> : <UserAvatar user={user} />}</Box>
       <Box>
         {loading || !user?.displayName ? (
@@ -143,7 +144,7 @@ export function TimelineItem({
   )
 
   return (
-    <Flex align="center" gap={1}>
+    <Flex alignItems="center" gap={1}>
       <Card
         as="button"
         onClick={handleClick}
@@ -154,11 +155,15 @@ export function TimelineItem({
         data-testid="timeline-item-button"
         data-chunk-id={chunk.id}
       >
-        <Flex align="center" gap={3}>
+        <Flex alignItems="center" gap={3}>
           <div style={{position: 'relative'}}>
             <UserAvatarStack maxLength={3} userIds={authorUserIds} size={2} />
-            <IconBox align="center" justify="center" $color={TIMELINE_ITEM_EVENT_TONE[type]}>
-              {/* oxlint-disable-next-line react/react-compiler -- this is intentional and how the middleware components has to work */}
+            <IconBox
+              alignItems="center"
+              justifyContent="center"
+              $color={TIMELINE_ITEM_EVENT_TONE[type]}
+            >
+              {/* oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work */}
               <Text size={0}>{IconComponent && <IconComponent />}</Text>
             </IconBox>
           </div>
@@ -173,7 +178,7 @@ export function TimelineItem({
           </Stack>
 
           {collaboratorsUsersIds.length > 0 && (
-            <Flex flex={1} justify="flex-end" align="center">
+            <Flex flexBasis="0%" flexGrow={1} justifyContent="flex-end" alignItems="center">
               <Tooltip
                 placement="top"
                 content={<TooltipContent collaborators={collaboratorsUsersIds} />}

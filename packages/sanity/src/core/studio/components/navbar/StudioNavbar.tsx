@@ -1,9 +1,7 @@
 import {MenuIcon} from '@sanity/icons/Menu'
 import {
   BoundaryElementProvider,
-  Box,
   Card,
-  Flex,
   Grid,
   Layer,
   LayerProvider,
@@ -14,6 +12,7 @@ import {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'rea
 import {NavbarContext} from 'sanity/_singletons'
 import {type RouterState, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
@@ -44,6 +43,8 @@ import {WorkspaceMenuButton} from './workspace/WorkspaceMenuButton'
 
 const EMPTY_ARRAY: [] = []
 
+const CENTER_TOOLS_STYLE = {minWidth: 0, overflow: 'hidden'} as const
+
 const RootLayer = styled(Layer)`
   min-height: auto;
   position: relative;
@@ -59,7 +60,8 @@ const RootCard = styled(Card)`
 `
 
 const NavGrid = styled(Grid)`
-  grid-template-columns: auto auto auto;
+  /* Allow the tools column to shrink below its content so CollapseTabList can collapse into the overflow menu. */
+  grid-template-columns: auto minmax(0, 1fr) auto;
   @media screen and (min-width: ${({theme}) => `${theme.sanity.media[4] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px`}) {
     grid-template-columns: 1fr auto 1fr;
   }
@@ -201,8 +203,8 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
           <NavGrid gap={1}>
             {/** Left flex */}
             <TooltipDelayGroupProvider>
-              <Flex align="center" gap={2} justify="flex-start">
-                <Flex align="center" gap={2}>
+              <Flex alignItems="center" gap={2} justifyContent="flex-start">
+                <Flex alignItems="center" gap={2}>
                   {/* Menu button */}
                   {!shouldRender.tools && (
                     <Button
@@ -233,9 +235,9 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
             </TooltipDelayGroupProvider>
 
             {/** Center flex */}
-            <Flex align="center" justify="center">
+            <Flex alignItems="center" justifyContent="center" style={CENTER_TOOLS_STYLE}>
               {shouldRender.tools && (
-                // oxlint-disable-next-line react/react-compiler -- this is intentional and how the middleware components has to work
+                // oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work
                 <ToolMenu
                   activeToolName={activeToolName}
                   closeSidebar={handleCloseDrawer}
@@ -248,7 +250,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
 
             {/** Right flex */}
             <TooltipDelayGroupProvider>
-              <Flex align="center" gap={1} justify="flex-end">
+              <Flex alignItems="center" gap={1} justifyContent="flex-end">
                 {/* Search */}
                 <LayerProvider>
                   <SearchProvider fullscreen={shouldRender.searchFullscreen}>
@@ -290,7 +292,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
 
                 {shouldRender.tools && (
                   <CapabilityGate capability="globalUserMenu">
-                    <Box flex="none" marginLeft={1}>
+                    <Box flexBasis="auto" flexGrow={0} flexShrink={0} marginLeft={1}>
                       <UserMenu />
                     </Box>
                   </CapabilityGate>

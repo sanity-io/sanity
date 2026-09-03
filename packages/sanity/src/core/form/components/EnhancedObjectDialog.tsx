@@ -1,8 +1,9 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
-import {BoundaryElementProvider, Box, type ResponsiveWidthProps, useGlobalKeyDown} from '@sanity/ui'
+import {BoundaryElementProvider, type ResponsiveWidthProps, useGlobalKeyDown} from '@sanity/ui'
 import {type DragEvent, type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {PopoverDialog} from '../../components/popoverDialog/PopoverDialog'
@@ -133,7 +134,7 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
   // Update state when we have nested dialogs
   useEffect(() => {
     if (stack.length > 1 && !hasEverBeenNested) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setHasEverBeenNested(true)
     }
   }, [stack.length, hasEverBeenNested])

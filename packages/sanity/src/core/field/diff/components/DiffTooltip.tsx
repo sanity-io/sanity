@@ -1,6 +1,7 @@
 import {type Path} from '@sanity/types'
-import {Card, Flex, Inline, Stack, Text} from '@sanity/ui'
+import {Card, Inline, Stack, Text} from '@sanity/ui'
 import {type ReactNode} from 'react'
+import {Flex} from 'ui5'
 
 import {Tooltip, type TooltipProps} from '../../../../ui-components/tooltip/Tooltip'
 import {LegacyLayerProvider} from '../../../components/transitional/LegacyLayerProvider'
@@ -88,7 +89,7 @@ function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
       ) : (
         <Inline gap={2}>
           <Flex
-            align="center"
+            alignItems="center"
             paddingRight={3}
             style={{
               backgroundColor: color.background,

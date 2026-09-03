@@ -15,13 +15,20 @@ export {
 export {ColorSchemeSetValueContext} from '../_singletons/context/ColorSchemeSetValueContext'
 export {ColorSchemeValueContext} from '../_singletons/context/ColorSchemeValueContext'
 export {CommentInputContext} from '../_singletons/context/CommentInputContext'
+export {CommentInputContextV2} from '../_singletons/context/CommentInputContextV2'
 export {CommentsAuthoringPathContext} from '../_singletons/context/CommentsAuthoringPathContext'
+export {CommentsAuthoringPathContextV2} from '../_singletons/context/CommentsAuthoringPathContextV2'
 export {CommentsContext} from '../_singletons/context/CommentsContext'
+export {CommentsContextV2} from '../_singletons/context/CommentsContextV2'
 export {CommentsEnabledContext} from '../_singletons/context/CommentsEnabledContext'
+export {CommentsEnabledContextV2} from '../_singletons/context/CommentsEnabledContextV2'
 export {CommentsIntentContext} from '../_singletons/context/CommentsIntentContext'
 export {CommentsOnboardingContext} from '../_singletons/context/CommentsOnboardingContext'
+export {CommentsOnboardingContextV2} from '../_singletons/context/CommentsOnboardingContextV2'
 export {CommentsSelectedPathContext} from '../_singletons/context/CommentsSelectedPathContext'
+export {CommentsSelectedPathContextV2} from '../_singletons/context/CommentsSelectedPathContextV2'
 export {CommentsUpsellContext} from '../_singletons/context/CommentsUpsellContext'
+export {CommentsUpsellContextV2} from '../_singletons/context/CommentsUpsellContextV2'
 export {ConfigErrorContext, type ConfigErrorValue} from '../_singletons/context/ConfigErrorContext'
 export {CopyPasteContext} from '../_singletons/context/CopyPasteContext'
 export {
@@ -172,6 +179,10 @@ export {TasksNavigationContext} from '../_singletons/context/TasksNavigationCont
 export {TasksUpsellContext} from '../_singletons/context/TasksUpsellContext'
 export {UserApplicationCacheContext} from '../_singletons/context/UserApplicationCacheContext'
 export {UserColorManagerContext} from '../_singletons/context/UserColorManagerContext'
+export {
+  UnclaimedProjectContext,
+  type UnclaimedProjectContextValue,
+} from '../_singletons/context/UnclaimedProjectContext'
 export {ValidationContext} from '../_singletons/context/ValidationContext'
 export {VirtualizerScrollInstanceContext} from '../_singletons/context/VirtualizerScrollInstanceContext'
 export {VisibleWorkspacesContext} from '../_singletons/context/VisibleWorkspacesContext'

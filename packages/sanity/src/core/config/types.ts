@@ -1239,6 +1239,7 @@ export type {AuthConfig} from './auth/types'
 
 /** @beta */
 export type DefaultPluginsWorkspaceOptions = {
+  comments: {v2: boolean}
   tasks: {enabled: boolean}
   scheduledDrafts: {enabled: boolean}
   variants: {enabled: boolean}
@@ -1354,6 +1355,14 @@ export interface BetaFeatures {
    */
   variants?: {
     enabled?: boolean
+  }
+  /**
+   * Config for the opt-in Comments API implementation.
+   *
+   * @internal
+   */
+  comments?: {
+    v2?: boolean
   }
   /**
    * Control whether the preview of the new document group inventory is

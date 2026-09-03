@@ -1,13 +1,14 @@
 import ChevronLeftIcon from '@sanity/icons/ChevronLeft'
 // oxlint-disable-next-line no-restricted-imports -- `Button` requires fine-grained control.
-import {Button, Flex, Stack, Text} from '@sanity/ui'
+import {Button, Stack, Text} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
 import {type ComponentType} from 'react'
+import {Flex} from 'ui5'
 import {type ActorRefFromLogic} from 'xstate'
 
+import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
-import {RhombusIcon} from '../../../variants/plugin/components/PersonalizationIcons'
 import {getVariantTitle} from '../../../variants/tool/util'
 import {type SystemVariant} from '../../../variants/types'
 import {type variantCreationMachine} from '../../machines/variantCreationMachine'
@@ -35,7 +36,7 @@ export const SelectVariantDefinition: ComponentType<Props> = ({variantCreationRe
           onClick={() => variantCreationRef.send({type: 'createVariant.cancel'})}
         >
           <Text size={1} weight="medium">
-            <Flex gap={2} align="center">
+            <Flex gap={2} alignItems="center">
               <ChevronLeftIcon />
               {t('document-group.create-variant')}
             </Flex>

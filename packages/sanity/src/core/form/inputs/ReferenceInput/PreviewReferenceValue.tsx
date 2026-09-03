@@ -1,8 +1,9 @@
 import {AccessDeniedIcon} from '@sanity/icons/AccessDenied'
 import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {type Reference, type ReferenceSchemaType} from '@sanity/types'
-import {Badge, Box, Flex, Inline, Stack, Text} from '@sanity/ui'
+import {Badge, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {type ComponentType, Fragment, type ReactNode} from 'react'
+import {Box} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {type PreviewLayoutKey} from '../../../components/previews/types'
@@ -60,7 +61,7 @@ export function PreviewReferenceValue(props: {
 
     return (
       <Flex align="center">
-        <Box flex={1}>
+        <Box flexBasis="0%" flexGrow={1}>
           {renderPreview({
             layout,
             schemaType: refType,
@@ -84,7 +85,7 @@ export function PreviewReferenceValue(props: {
       <Inline gap={2}>
         <Box padding={1}>
           <Flex align="center">
-            <Box flex={1} paddingY={2}>
+            <Box flexBasis="0%" flexGrow={1} paddingY={2}>
               <Text muted>{t('inputs.reference.error.document-unavailable-title')}</Text>
             </Box>
           </Flex>
@@ -159,7 +160,7 @@ function UnavailableMessage(props: {icon: ComponentType; children: ReactNode; ti
       <Text size={1}>
         <Icon />
       </Text>
-      <Box flex={1} marginLeft={3}>
+      <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
         <Text size={1} weight="medium">
           {props.title}
         </Text>
@@ -189,7 +190,7 @@ function InvalidType({
     <Flex align="center" justify="flex-start">
       <Box padding={1}>
         <Flex align="center">
-          <Box flex={1} paddingY={2}>
+          <Box flexBasis="0%" flexGrow={1} paddingY={2}>
             <Text muted>{t('inputs.reference.error.invalid-type-title')}</Text>
           </Box>
         </Flex>
@@ -204,9 +205,8 @@ function InvalidType({
                   t={t}
                   i18nKey="inputs.reference.error.invalid-type-description"
                   values={{documentId, actualType}}
-                  components={{
-                    AllowedTypes: () => <HumanizedList values={declaredTypes} />,
-                  }}
+                  components={{AllowedTypes}}
+                  componentProps={{declaredTypes}}
                 />
               </Text>
             </Stack>
@@ -221,6 +221,10 @@ function InvalidType({
       </Box>
     </Flex>
   )
+}
+
+function AllowedTypes({declaredTypes}: {children?: ReactNode; declaredTypes?: string[]}) {
+  return <HumanizedList values={declaredTypes || []} />
 }
 
 function HumanizedList(props: {values: string[]}) {

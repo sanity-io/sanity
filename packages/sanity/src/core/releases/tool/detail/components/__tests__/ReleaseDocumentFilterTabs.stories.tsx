@@ -3,9 +3,9 @@ import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {ReleaseDocumentFilterTabsStory} from './ReleaseDocumentFilterTabsStory'
 
 /**
- * Reuses the in-package harness: Box padding around release-detail filter
- * tabs, including selected tones for all / added / errors. Counts are
- * static fixtures (no live data).
+ * Chromatic sentinel: Box padding around release-detail filter tabs, with
+ * each filter selected in turn so every selected tone is captured. Counts
+ * are static fixtures (no live data).
  */
 const meta = {
   title: 'Releases/Document Filter Tabs',

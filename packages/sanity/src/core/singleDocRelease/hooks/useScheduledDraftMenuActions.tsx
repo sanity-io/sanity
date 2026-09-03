@@ -220,7 +220,6 @@ export function useScheduledDraftMenuActions(
           <ScheduleDraftDialog
             onClose={handleDialogClose}
             onSchedule={handleSchedulePublish}
-            variant="schedule"
             loading={isScheduling}
             initialDate={release?.metadata?.intendedPublishAt}
           />

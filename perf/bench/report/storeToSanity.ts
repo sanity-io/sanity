@@ -1,6 +1,6 @@
 // oxlint-disable no-console
 /**
- * `bench store` — write a merged BenchRunDocument to the metrics-studio
+ * `bench store` — write a merged BenchRunDocument to the Studio Radar
  * Sanity project as a `benchRun` document for the trends dashboard.
  *
  * Three writers:
@@ -14,7 +14,7 @@
  *   an investigation record for the Comparisons tool, which the trends
  *   dashboard deliberately does not plot.
  *
- * Requires BENCH_METRICS_WRITE_TOKEN — the only real secret in the suite.
+ * Requires RADAR_SANITY_WRITE_TOKEN — the only real secret in the suite.
  */
 import fs from 'node:fs'
 import path from 'node:path'
@@ -27,7 +27,7 @@ import {createClient} from '@sanity/client'
 import {toStorableRun} from './storeShape'
 import {type BenchRunDocument} from './types'
 
-/** The metrics-studio project (browse the data with dev/metrics-studio). */
+/** The Studio Radar project (browse the data with dev/radar). */
 const METRICS_PROJECT_ID = 'mhfozd0z'
 const METRICS_DATASET = 'bench'
 
@@ -60,7 +60,7 @@ export async function storeRun(inputPathArg?: string, options: {ab?: boolean} = 
     projectId: METRICS_PROJECT_ID,
     dataset: METRICS_DATASET,
     apiVersion: '2025-02-19',
-    token: readEnv('BENCH_METRICS_WRITE_TOKEN'),
+    token: readEnv('RADAR_SANITY_WRITE_TOKEN'),
     useCdn: false,
   })
 

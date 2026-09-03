@@ -1,7 +1,8 @@
 import {SanityLogo} from '@sanity/logos'
-import {Box, Card, Flex, Heading, Stack, Text, usePrefersDark} from '@sanity/ui'
+import {Card, Heading, Stack, Text, usePrefersDark} from '@sanity/ui'
 import {Fragment, type ReactNode} from 'react'
 import {styled} from 'styled-components'
+import {Flex, Box} from 'ui5'
 
 const LINKS = [
   {
@@ -65,12 +66,18 @@ export function Layout(props: LayoutProps) {
         </Stack>
       </Card>
 
-      <Flex direction="column" gap={4} justify="center" align="center" paddingBottom={4}>
+      <Flex
+        flexDirection="column"
+        gap={4}
+        justifyContent="center"
+        alignItems="center"
+        paddingBottom={4}
+      >
         <Text size={3}>
           <SanityLogo dark={prefersDark} />
         </Text>
 
-        <Flex align="center" gap={2}>
+        <Flex alignItems="center" gap={2}>
           {LINKS.map((link, index) => (
             <Fragment key={link.title}>
               <StyledText muted size={1}>

@@ -1,18 +1,10 @@
-import babel from '@rolldown/plugin-babel'
 import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
 import {type StorybookConfig} from '@storybook/react-vite'
-import viteReact, {reactCompilerPreset} from '@vitejs/plugin-react'
+import viteReact from '@vitejs/plugin-react'
 import {defaultClientConditions, mergeConfig} from 'vite'
 
 const config: StorybookConfig = {
-  // Package-owned stories are the guideline (see #14104). The `../stories` glob
-  // stays until leftover CSF wrappers on stacked ui5-coverage branches are
-  // colocated. Do not use a recursive `packages/**` glob — it follows pnpm
-  // symlinks and duplicates stories.
-  stories: [
-    '../../../packages/{sanity,groq,@repo/*,@sanity/*}/src/**/*.stories.@(ts|tsx)',
-    '../stories/**/*.stories.@(ts|tsx)',
-  ],
+  stories: ['../../../packages/{sanity,groq,@repo/*,@sanity/*}/src/**/*.stories.@(ts|tsx)'],
   addons: ['@chromatic-com/storybook', '@storybook/addon-vitest'],
   framework: {
     name: '@storybook/react-vite',
@@ -26,13 +18,10 @@ const config: StorybookConfig = {
       // Mirrors packages/sanity/vitest.browser.config.mts so stories build the
       // `sanity` package from source exactly like the vitest browser-mode tests
       // do: vanilla-extract `.css.ts` support, the React Compiler transform the
-      // studio ships with, and the `monorepo` exports condition that resolves
-      // workspace packages to their TypeScript source.
-      plugins: [
-        vanillaExtractPlugin(),
-        viteReact(),
-        babel({presets: [reactCompilerPreset({target: '19'})]}),
-      ],
+      // studio ships with (via `oxc-transform-react`, no babel), and the
+      // `monorepo` exports condition that resolves workspace packages to their
+      // TypeScript source.
+      plugins: [vanillaExtractPlugin(), viteReact({compiler: {target: '19'}})],
       resolve: {
         conditions: ['monorepo', ...defaultClientConditions],
         dedupe: ['react', 'react-dom', 'sanity', 'styled-components', 'ui5'],

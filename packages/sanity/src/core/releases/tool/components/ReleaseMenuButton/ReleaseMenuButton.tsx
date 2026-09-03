@@ -40,11 +40,9 @@ export type ActionResult =
     }
 
 const toastActionComponents: Partial<
-  Record<ReleaseAction, (actionResult: ActionResult) => TranslateComponentMap>
+  Record<ReleaseAction, TranslateComponentMap<{actionResult: ActionResult}>>
 > = {
-  duplicate: (actionResult) => ({
-    Link: () => <DuplicateReleaseToastLink actionResult={actionResult} />,
-  }),
+  duplicate: {Link: DuplicateReleaseToastLink},
 }
 
 export type ReleaseMenuButtonProps = {
@@ -157,7 +155,7 @@ export const ReleaseMenuButton = ({
         telemetry.log(actionValues.telemetry)
 
         if (typeof actionValues.toastSuccessI18nKey !== 'undefined') {
-          const toastComponents = toastActionComponents[action]?.(actionResult)
+          const toastComponents = toastActionComponents[action]
 
           toast.push({
             closable: true,
@@ -169,6 +167,7 @@ export const ReleaseMenuButton = ({
                   <Translate
                     t={t}
                     components={toastComponents}
+                    componentProps={{actionResult}}
                     i18nKey={actionValues.toastSuccessI18nKey}
                     values={{title: releaseTitle}}
                   />
@@ -227,6 +226,7 @@ export const ReleaseMenuButton = ({
     if (!selectedAction || isActionPublishOrSchedule) return
 
     if (!RELEASE_ACTION_MAP[selectedAction].confirmDialog) void handleAction(selectedAction)
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [documentsCount, handleAction, isActionPublishOrSchedule, selectedAction])
 
   const confirmActionDialog = useMemo(() => {

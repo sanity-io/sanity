@@ -321,6 +321,9 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       changed: member.item.changed,
       __unstable_computeDiff: member.item.__unstable_computeDiff,
       hasUpstreamVersion: member.item.hasUpstreamVersion,
+      changedFromBaseVariant: member.item.changedFromBaseVariant,
+      baseVariantValue: member.item.baseVariantValue,
+      hasBaseVariant: member.item.hasBaseVariant,
       focusPath: member.item.focusPath,
       focused: member.item.focused,
       groups: member.item.groups,
@@ -356,6 +359,9 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   }, [
     elementProps,
     member.item.hasUpstreamVersion,
+    member.item.changedFromBaseVariant,
+    member.item.baseVariantValue,
+    member.item.hasBaseVariant,
     handleChange,
     handleCloseField,
     handleCollapseField,
@@ -408,6 +414,9 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
         compareValue={member.item.compareValue}
         __unstable_computeDiff={member.item.__unstable_computeDiff}
         hasUpstreamVersion={member.item.hasUpstreamVersion}
+        changedFromBaseVariant={member.item.changedFromBaseVariant}
+        baseVariantValue={member.item.baseVariantValue}
+        hasBaseVariant={member.item.hasBaseVariant}
         title={member.item.schemaType.title}
         description={member.item.schemaType.description}
         collapsible={member.collapsible}

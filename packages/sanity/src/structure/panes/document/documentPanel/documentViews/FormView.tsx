@@ -1,4 +1,4 @@
-import {Box, Flex, focusFirstDescendant, Spinner, Text} from '@sanity/ui'
+import {focusFirstDescendant, Spinner, Text} from '@sanity/ui'
 import {type FormEvent, useCallback, useEffect, useMemo, useState, type RefAttributes} from 'react'
 import {tap} from 'rxjs/operators'
 import {
@@ -20,6 +20,7 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
+import {Flex, Box} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -172,6 +173,7 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
       handleInitialValue()
     }
     // React to changes in hasRev only
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [hasRev])
 
   const [formRef, setFormRef] = useState<null | HTMLFormElement>(null)
@@ -191,7 +193,7 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
 
   useEffect(() => {
     if (focusPath.length !== 0) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setHasFocusedAnyPath(true)
     }
   }, [focusPath])
@@ -223,7 +225,12 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
           {connectionState === 'connecting' && !editState?.draft && !editState?.published ? (
             <Delay ms={300}>
               {/* TODO: replace with loading block */}
-              <Flex align="center" direction="column" height="fill" justify="center">
+              <Flex
+                alignItems="center"
+                flexDirection="column"
+                height="100%"
+                justifyContent="center"
+              >
                 <Spinner muted />
                 <Box marginTop={3}>
                   <Text align="center" muted size={1}>
@@ -268,6 +275,9 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
                 openPath={openPath}
                 perspective={selectedPerspective}
                 hasUpstreamVersion={hasUpstreamVersion}
+                changedFromBaseVariant={formState.changedFromBaseVariant}
+                baseVariantValue={formState.baseVariantValue}
+                hasBaseVariant={formState.hasBaseVariant}
                 presence={presence}
                 readOnly={isReadOnly}
                 schemaType={formState.schemaType}

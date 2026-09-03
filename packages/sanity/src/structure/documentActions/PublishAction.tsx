@@ -8,6 +8,7 @@ import {
   type DocumentActionComponent,
   getPairTarget,
   getTargetScopeId,
+  getTargetSiblings,
   InsufficientPermissionsMessage,
   isPublishedPerspective,
   type TFunction,
@@ -22,7 +23,7 @@ import {
   useValidationStatus,
 } from 'sanity'
 
-import {structureLocaleNamespace, type StructureLocaleResourceKeys} from '../i18n'
+import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 import {
   DocumentPublished,
@@ -30,27 +31,19 @@ import {
   PublishButtonDisabledStart,
   PublishButtonClicked,
 } from './__telemetry__/documentActions.telemetry'
-
-const DISABLED_REASON_TITLE_KEY: Record<string, StructureLocaleResourceKeys> = {
-  LIVE_EDIT_ENABLED: 'action.publish.live-edit.publish-disabled',
-  ALREADY_PUBLISHED: 'action.publish.already-published.no-time-ago.tooltip',
-  NO_CHANGES: 'action.publish.no-changes.tooltip',
-  NOT_READY: 'action.publish.disabled.not-ready',
-  NOT_PUBLISHABLE: 'action.publish.disabled.not-publishable',
-  TARGET_NOT_FOUND: 'action.publish.disabled.target-not-found',
-} as const
+import {PUBLISH_DISABLED_REASON} from './operationDisabledReasons'
 
 const PUBLISHED_STATE = {status: 'published'} as const
 
 function getDisabledReason(
-  reason: keyof typeof DISABLED_REASON_TITLE_KEY,
+  reason: keyof typeof PUBLISH_DISABLED_REASON,
   publishedAt: string | undefined,
   t: TFunction,
 ) {
   if (reason === 'ALREADY_PUBLISHED' && publishedAt) {
     return <AlreadyPublished publishedAt={publishedAt} />
   }
-  return t(DISABLED_REASON_TITLE_KEY[reason])
+  return t(PUBLISH_DISABLED_REASON[reason])
 }
 
 function AlreadyPublished({publishedAt}: {publishedAt: string}) {
@@ -75,15 +68,10 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const isTargetReady = targetDocumentState.status === 'ready'
   const scopeId = getTargetScopeId(targetDocumentState)
   const isVariantTarget = isTargetReady && targetDocumentState.variant !== undefined
-  // For variant targets, publish state (already-published timestamps, publish-completion revision
-  // tracking) lives on the variant-of-published sibling — the base `published` document says
-  // nothing about whether the *variant* is published.
-  const publishedInfo = isVariantTarget ? targetDocumentState.publishedSibling : published
-  // Variant publish locks need the sibling revision (not in any pair snapshot). Base draft
-  // publish omits this and keeps using `snapshots.published._rev` inside the operation.
-  const publishedRevisionId = isVariantTarget
-    ? targetDocumentState.publishedSibling?._rev
-    : undefined
+  const siblings = getTargetSiblings(targetDocumentState)
+  // Publish-state timestamps and completion tracking live on the current lane's published sibling.
+  // (While the target is resolving, the action is disabled below.)
+  const publishedInfo = siblings?.published
 
   const {publish} = useDocumentOperation(id, type, getPairTarget(targetDocumentState))
   const validationStatus = useValidationStatus(value._id, type, !release)
@@ -119,10 +107,10 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const telemetry = useTelemetry()
 
   const doPublish = useCallback(() => {
-    publish.execute(isVariantTarget ? {publishedRevisionId} : undefined)
+    publish.execute(isVariantTarget ? {publishedRevisionId: currentPublishRevision} : undefined)
     telemetry.log(PublishButtonClicked, {documentId: id, stage: 'started'})
     setPublishState({status: 'publishing', publishRevision: currentPublishRevision})
-  }, [publish, isVariantTarget, publishedRevisionId, currentPublishRevision, telemetry, id])
+  }, [publish, isVariantTarget, currentPublishRevision, telemetry, id])
 
   useEffect(() => {
     // make sure the validation status is about the current revision and not an earlier one
@@ -134,7 +122,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     }
 
     if (!hasValidationErrors) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       doPublish()
     } else {
       // User tried to publish before validation was complete
@@ -152,6 +140,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     publishScheduled,
     validationStatus.revision,
     revision,
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
     isValidating,
     validationStatus.isValidating,
     toast,
@@ -182,6 +171,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       setPublishState(nextState)
     }, delay)
     return () => clearTimeout(timer)
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [changesOpen, publishState, currentPublishRevision, telemetry, id])
 
   const isWaitingToPublish = Boolean(
@@ -226,6 +216,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     validationStatus.revision,
     revision,
     doPublish,
+    setPublishScheduled,
   ])
 
   return useMemo(() => {

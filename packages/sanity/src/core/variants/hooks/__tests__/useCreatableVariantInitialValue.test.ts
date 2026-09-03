@@ -32,6 +32,7 @@ const siblingStub: VersionInfoDocumentStub = {
   _rev: 'rev-pub',
   _createdAt: '2026-01-01T00:00:00Z',
   _updatedAt: '2026-01-02T00:00:00Z',
+  _type: 'article',
   _system: {
     group: {_ref: PUBLISHED_ID, _weak: true},
     variant: {_ref: variantAlphaAudience._id, _weak: true},
@@ -59,8 +60,7 @@ const creatableState: TargetDocumentState = {
   status: 'variant-missing',
   variant: variantAlphaAudience,
   bundle: 'drafts',
-  publishedSibling: siblingStub,
-  creatableTarget: DRAFT_TARGET,
+  siblings: {published: siblingStub, draft: undefined, version: undefined},
 }
 
 const fallback: InitialValueState = {
@@ -123,7 +123,7 @@ describe('useCreatableVariantInitialValue', () => {
       targetDocument: undefined,
       scopeId: undefined,
       variant: undefined,
-      publishedSibling: undefined,
+      siblings: {published: undefined, draft: undefined, version: undefined},
     }
 
     const {result} = renderHook(() => useCreatableVariantInitialValue(readyState, fallback), {
@@ -134,16 +134,33 @@ describe('useCreatableVariantInitialValue', () => {
     expect(documentPreviewStoreMock.unstable_observeDocument).not.toHaveBeenCalled()
   })
 
-  it('passes the fallback through for a variant-missing state without a creatable target', async () => {
+  it('passes the fallback through for a variant-missing state without a published sibling', async () => {
     const wrapper = await createTestProvider()
     const missingState: TargetDocumentState = {
       status: 'variant-missing',
       variant: variantAlphaAudience,
       bundle: 'drafts',
-      publishedSibling: siblingStub,
+      siblings: {published: undefined, draft: undefined, version: undefined},
     }
 
     const {result} = renderHook(() => useCreatableVariantInitialValue(missingState, fallback), {
+      wrapper,
+    })
+
+    expect(result.current).toBe(fallback)
+    expect(documentPreviewStoreMock.unstable_observeDocument).not.toHaveBeenCalled()
+  })
+
+  it('passes the fallback through for a missing variant on a release, even when the published sibling advertises a draft id', async () => {
+    const wrapper = await createTestProvider()
+    const missingOnRelease: TargetDocumentState = {
+      status: 'variant-missing',
+      variant: variantAlphaAudience,
+      bundle: 'rSummer',
+      siblings: {published: siblingStub, draft: undefined, version: undefined},
+    }
+
+    const {result} = renderHook(() => useCreatableVariantInitialValue(missingOnRelease, fallback), {
       wrapper,
     })
 

@@ -130,7 +130,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
               t={t}
               i18nKey="panes.document-pane.document-not-found.text"
               values={{id: options.id}}
-              components={{Code: ({children}) => <code>{children}</code>}}
+              components={{Code: 'code'}}
             />
           </Text>
         </Stack>
@@ -187,7 +187,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
       >
         <DiffViewDocumentLayout documentId={options.id} documentType={options.type}>
           <CommentsWrapper documentId={options.id} documentType={options.type}>
-            {/* oxlint-disable-next-line react/react-compiler -- this is intentional and how the middleware components has to work */}
+            {/* oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work */}
             <DocumentLayout documentId={options.id} documentType={options.type} />
           </CommentsWrapper>
         </DiffViewDocumentLayout>

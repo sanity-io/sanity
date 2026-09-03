@@ -9,7 +9,7 @@ on:
     types: [opened, synchronize, reopened, labeled]
   schedule:
     # Daily main-branch tracking: absolute-mode run stored to the
-    # studio-metrics project (time series / drift detection)
+    # Studio Radar project (time series / drift detection)
     - cron: "0 5 * * *"
     # Weekly self-test: compare a build against itself - every metric must
     # report neutral, anything else is a harness bug (flake resistance rule 6)
@@ -28,6 +28,10 @@ on:
         default: false
       backfill_sha:
         description: "Backfill: build and measure this main-history commit instead of HEAD (full 40-char sha; requires run_suite, incompatible with self_test and ab_from/ab_to; result is stored under this sha, harness/scenarios come from HEAD)"
+        required: false
+        type: string
+      release_tag:
+        description: "Release: the tag whose commit is being measured (e.g. v6.10.1). Set together with backfill_sha (the tag's dereferenced sha) by release-latest.yml; marks the stored run as the measurement of a shipped version"
         required: false
         type: string
       ab_from:
@@ -82,10 +86,12 @@ jobs:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
-          # Backfill and A/B builds add a worktree at a historical commit,
-          # which a depth-1 clone doesn't have (the inputs are empty on
-          # non-dispatch events)
-          fetch-depth: ${{ (inputs.backfill_sha != '' || inputs.ab_to != '') && '0' || '1' }}
+          # Backfill and A/B builds add a worktree at a historical commit, which
+          # a depth-1 clone doesn't have. A release run also needs history: the
+          # validation step resolves the tag to check the measured commit is the
+          # tagged one, and tags are not fetched at depth 1. (All inputs are
+          # empty on non-dispatch events, so the cron stays shallow.)
+          fetch-depth: ${{ (inputs.backfill_sha != '' || inputs.ab_to != '' || inputs.release_tag != '') && '0' || '1' }}
 
       - uses: ./.github/actions/detect-code-changes
         id: changes
@@ -104,11 +110,13 @@ jobs:
       - name: Validate dispatch inputs
         if: >-
           github.event_name == 'workflow_dispatch' &&
-          (inputs.backfill_sha != '' || inputs.ab_from != '' || inputs.ab_to != '')
+          (inputs.backfill_sha != '' || inputs.ab_from != '' || inputs.ab_to != ''
+           || inputs.release_tag != '')
         env:
           RUN_SUITE: ${{ inputs.run_suite }}
           SELF_TEST: ${{ inputs.self_test }}
           BACKFILL_SHA: ${{ inputs.backfill_sha }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
           AB_FROM: ${{ inputs.ab_from }}
           AB_TO: ${{ inputs.ab_to }}
         run: |
@@ -134,6 +142,41 @@ jobs:
             if [ "$SELF_TEST" = "true" ]; then
               echo "::error::backfill_sha cannot be combined with self_test"
               exit 1
+            fi
+          fi
+          # What a release run must guarantee: the measured commit IS the tagged
+          # one. There are two ways to get there.
+          #
+          # 1. No backfill_sha — the run measures the checkout, which is correct
+          #    when the workflow was dispatched at the tag itself (`--ref <tag>`,
+          #    what release-latest.yml does). An ordinary build of the right tree
+          #    is cheaper and more faithful than replaying it.
+          # 2. With backfill_sha — for a release whose commit is not the
+          #    checkout, i.e. measuring past releases from a main dispatch, where
+          #    the replay path is required.
+          #
+          # Either way the sha actually measured has to be the tag's, so both
+          # branches are checked rather than trusted. Dispatching `--ref main`
+          # without a backfill_sha is the realistic mistake: main has almost
+          # always moved past the release by then, so it would silently measure
+          # someone else's commit as the release.
+          if [ -n "$RELEASE_TAG" ]; then
+            TAG_SHA="$(git rev-parse "refs/tags/$RELEASE_TAG^{commit}" 2>/dev/null || true)"
+            if [ -z "$TAG_SHA" ]; then
+              echo "::error::release_tag $RELEASE_TAG does not exist"
+              exit 1
+            fi
+            if [ -n "$BACKFILL_SHA" ]; then
+              if [ "$TAG_SHA" != "$BACKFILL_SHA" ]; then
+                echo "::error::backfill_sha $BACKFILL_SHA is not the commit $RELEASE_TAG points at ($TAG_SHA)"
+                exit 1
+              fi
+            else
+              HEAD_SHA="$(git rev-parse HEAD)"
+              if [ "$TAG_SHA" != "$HEAD_SHA" ]; then
+                echo "::error::$RELEASE_TAG points at $TAG_SHA but this run checked out $HEAD_SHA. Dispatch at the tag (--ref $RELEASE_TAG), or pass backfill_sha=$TAG_SHA to replay that commit from a main dispatch."
+                exit 1
+              fi
             fi
           fi
 
@@ -282,6 +325,11 @@ jobs:
       # report/collect.ts)
       BENCH_GIT_SHA: ${{ inputs.backfill_sha || inputs.ab_to }}
       BENCH_GIT_COMMITTED_AT: ${{ needs.build.outputs.backfill_committed_at }}
+      # Why this run happened. A release_tag means release-latest.yml dispatched
+      # this to measure a shipped version; otherwise collect.ts infers it from
+      # the event (empty string is not a valid trigger, so it falls through).
+      BENCH_TRIGGER: ${{ inputs.release_tag != '' && 'release' || '' }}
+      BENCH_RELEASE_TAG: ${{ inputs.release_tag }}
     strategy:
       fail-fast: false
       matrix:
@@ -383,6 +431,9 @@ jobs:
       # See bench-interaction: stamps backfill runs with the measured sha
       BENCH_GIT_SHA: ${{ inputs.backfill_sha || inputs.ab_to }}
       BENCH_GIT_COMMITTED_AT: ${{ needs.build.outputs.backfill_committed_at }}
+      # See bench-interaction
+      BENCH_TRIGGER: ${{ inputs.release_tag != '' && 'release' || '' }}
+      BENCH_RELEASE_TAG: ${{ inputs.release_tag }}
     strategy:
       fail-fast: false
       matrix:
@@ -600,7 +651,7 @@ jobs:
       # same trust level as track-main.
       - name: Store comparison document
         env:
-          BENCH_METRICS_WRITE_TOKEN: ${{ secrets.BENCH_METRICS_WRITE_TOKEN }}
+          RADAR_SANITY_WRITE_TOKEN: ${{ secrets.RADAR_SANITY_WRITE_TOKEN }}
         run: pnpm bench store --ab "$GITHUB_WORKSPACE/perf/bench/results/merged.json"
 
       - uses: actions/upload-artifact@v7
@@ -628,7 +679,7 @@ jobs:
       contents: read
     steps:
       # Deliberately check out BASE-branch code, not the PR merge commit: this
-      # job holds BENCH_METRICS_WRITE_TOKEN, and the trigger:perf-bench label persists
+      # job holds RADAR_SANITY_WRITE_TOKEN, and the trigger:perf-bench label persists
       # across pushes — checking out PR code would let any later push on a
       # labeled PR run arbitrary code with the token. The PR's benchmark
       # output is consumed purely as data via the artifact below. Do not
@@ -651,18 +702,24 @@ jobs:
       - name: Store PR run
         if: steps.absolute.outcome == 'success'
         env:
-          BENCH_METRICS_WRITE_TOKEN: ${{ secrets.BENCH_METRICS_WRITE_TOKEN }}
+          RADAR_SANITY_WRITE_TOKEN: ${{ secrets.RADAR_SANITY_WRITE_TOKEN }}
         run: pnpm bench store "$GITHUB_WORKSPACE/perf/bench/results/merged-absolute.json"
 
   self-test:
-    # Same source on both sides - every metric must gate neutral; anything
-    # else is harness drift and fails this job loudly
+    # Same source on both sides, so no metric may gate as a regression or an
+    # improvement - a decided verdict here is harness drift and fails this job
+    # loudly. Inconclusive is not drift: it means the CI stayed too wide to
+    # decide within the budget, which is the designed response to a noisy run.
     if: >-
       (github.event_name == 'schedule' && github.event.schedule == '0 6 * * 1') ||
       (github.event_name == 'workflow_dispatch' && inputs.self_test)
     needs: [build]
     runs-on: ubuntu-8core
-    timeout-minutes: 45
+    # The five scenarios below take ~42 minutes serially on a typical 8-core
+    # runner, and per-scenario cost tracks host speed (see the run's host
+    # calibration line) — leave headroom for a slow runner rather than losing a
+    # whole run's signal to a cancellation in the last scenario
+    timeout-minutes: 60
     permissions:
       contents: read
     env:
@@ -719,9 +776,23 @@ jobs:
       - name: Build reference-config studio from the same source
         run: pnpm --filter bench build:reference-config
 
+      # Same five scenarios as the bench-interaction matrix, named explicitly:
+      # `bench run` otherwise defaults to every registered scenario, which adds
+      # syntheticLarge. That one needs ~55s per sample just to become editable,
+      # on both sides — and unlike bench-interaction, which shards one scenario
+      # per job, this job runs them serially, so it overran the timeout mid-
+      # syntheticLarge having already produced clean neutral results for the
+      # other five. Calibration cares that the instrument reads zero on
+      # identical builds, which five scenarios establish; the heaviest scenario
+      # is not worth doubling this job's wall-clock for.
       - name: Compare the build against itself
         run: |
           pnpm bench run --mode interaction \
+            --scenario singleString \
+            --scenario arrayI18n \
+            --scenario article \
+            --scenario recipe \
+            --scenario synthetic \
             --reference-dist "$GITHUB_WORKSPACE/perf/bench/.reference/dist" \
             --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__self-test.json" \
             --fail-on-verdict
@@ -739,7 +810,7 @@ jobs:
     # and INP run here (daily-only modes), then this job gathers the interaction
     # and pageLoad shard results (bench-interaction / bench-pageload, which run
     # absolute on this trigger) and stores one merged benchRun doc to the
-    # studio-metrics project. Interaction/pageLoad moved to the sharded jobs so
+    # Studio Radar project. Interaction/pageLoad moved to the sharded jobs so
     # the daily run is parallel (was a single ~90-minute sequential job); soak
     # (~10m) + INP (~10m) are cheap and stay together here.
     #
@@ -765,6 +836,10 @@ jobs:
       # measured sha
       BENCH_GIT_SHA: ${{ inputs.backfill_sha || inputs.ab_to }}
       BENCH_GIT_COMMITTED_AT: ${{ needs.build.outputs.backfill_committed_at }}
+      # See bench-interaction. This is the job that stores the absolute-mode
+      # document, so this is where the trigger actually reaches the dataset.
+      BENCH_TRIGGER: ${{ inputs.release_tag != '' && 'release' || '' }}
+      BENCH_RELEASE_TAG: ${{ inputs.release_tag }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -837,7 +912,7 @@ jobs:
 
       - name: Store benchRun document
         env:
-          BENCH_METRICS_WRITE_TOKEN: ${{ secrets.BENCH_METRICS_WRITE_TOKEN }}
+          RADAR_SANITY_WRITE_TOKEN: ${{ secrets.RADAR_SANITY_WRITE_TOKEN }}
         run: pnpm bench store
 
       - uses: actions/upload-artifact@v7

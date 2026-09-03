@@ -1,5 +1,5 @@
 import {CopyIcon} from '@sanity/icons/Copy'
-import {Box, Button, Card, Flex, Grid, Inline, Select, Stack, TextInput} from '@sanity/ui'
+import {Button, Card, Flex, Grid, Inline, Select, Stack, Text, TextInput} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {
   type ChangeEvent,
@@ -10,11 +10,19 @@ import {
   useMemo,
   useRef,
 } from 'react'
-import {type PerspectiveContextValue, type TFunction, usePerspective, useTranslation} from 'sanity'
+import {
+  getVariantTitle,
+  type PerspectiveContextValue,
+  type TFunction,
+  usePerspective,
+  useTranslation,
+} from 'sanity'
+import {Box} from 'ui5'
 
 import {API_VERSIONS} from '../apiVersions'
 import {visionLocaleNamespace} from '../i18n'
 import {
+  getActiveVariant,
   hasPinnedPerspective,
   SUPPORTED_PERSPECTIVES,
   type SupportedPerspective,
@@ -31,13 +39,20 @@ const PinnedReleasePerspectiveOption: ComponentType<{
       ? pinnedPerspective.selectedPerspective.metadata.title
       : pinnedPerspective.selectedPerspectiveName
 
+  const variantTitle = pinnedPerspective.selectedVariant
+    ? getVariantTitle(pinnedPerspective.selectedVariant)
+    : pinnedPerspective.selectedVariantName
+
   const label = hasPinnedPerspective(pinnedPerspective)
     ? `(${t('settings.perspectives.pinned-release-label')})`
     : t('settings.perspectives.pinned-release-label')
 
   const text = useMemo(
-    () => [name, label].filter((value) => typeof value !== 'undefined').join(' '),
-    [label, name],
+    () =>
+      [name, variantTitle ? `· ${variantTitle}` : undefined, label]
+        .filter((value) => typeof value !== 'undefined')
+        .join(' '),
+    [label, name, variantTitle],
   )
 
   return (
@@ -79,6 +94,9 @@ export function VisionGuiHeader({
   isScheduledDraftsEnabled,
 }: VisionGuiHeaderProps) {
   const pinnedPerspective = usePerspective()
+  const isApiVersionLocked = Boolean(
+    getActiveVariant(perspective, pinnedPerspective.selectedVariantName),
+  )
   const {t} = useTranslation(visionLocaleNamespace)
   const operationUrlElement = useRef<HTMLInputElement | null>(null)
   const handleCopyUrl = useCallback(() => {
@@ -98,7 +116,7 @@ export function VisionGuiHeader({
     <Header paddingX={3} paddingY={2}>
       <Grid gridTemplateColumns={[1, 4, 8, 12]}>
         {/* Dataset selector */}
-        <Box padding={1} gridColumn={[1, 2]}>
+        <Box padding={1} gridColumn={['span 1 / span 1', 'span 2 / span 2']}>
           <Stack>
             <Card paddingTop={2} paddingBottom={3}>
               <StyledLabel>{t('settings.dataset-label')}</StyledLabel>
@@ -112,29 +130,39 @@ export function VisionGuiHeader({
         </Box>
 
         {/* API version selector */}
-        <Box padding={1} gridColumn={[1, 2]}>
+        <Box padding={1} gridColumn={['span 1 / span 1', 'span 2 / span 2']}>
           <Stack>
             <Card paddingTop={2} paddingBottom={3}>
               <StyledLabel>{t('settings.api-version-label')}</StyledLabel>
             </Card>
-            <Select
-              data-testid="api-version-selector"
-              value={customApiVersion === false ? apiVersion : 'other'}
-              onChange={onChangeApiVersion}
+            <Tooltip
+              content={<Text size={1}>{t('settings.api-version-locked-for-variant')}</Text>}
+              disabled={!isApiVersionLocked}
+              placement="bottom"
+              portal
             >
-              {API_VERSIONS.map((version) => (
-                <option key={version}>{version}</option>
-              ))}
-              <option key="other" value="other">
-                {t('settings.other-api-version-label')}
-              </option>
-            </Select>
+              <Box data-testid="api-version-selector-wrap">
+                <Select
+                  data-testid="api-version-selector"
+                  value={customApiVersion === false ? apiVersion : 'other'}
+                  onChange={onChangeApiVersion}
+                  disabled={isApiVersionLocked}
+                >
+                  {API_VERSIONS.map((version) => (
+                    <option key={version}>{version}</option>
+                  ))}
+                  <option key="other" value="other">
+                    {t('settings.other-api-version-label')}
+                  </option>
+                </Select>
+              </Box>
+            </Tooltip>
           </Stack>
         </Box>
 
         {/* Custom API version input */}
-        {customApiVersion !== false && (
-          <Box padding={1} gridColumn={[1, 2]}>
+        {!isApiVersionLocked && customApiVersion !== false && (
+          <Box padding={1} gridColumn={['span 1 / span 1', 'span 2 / span 2']}>
             <Stack>
               <Card paddingTop={2} paddingBottom={3}>
                 <StyledLabel textOverflow="ellipsis">
@@ -156,7 +184,7 @@ export function VisionGuiHeader({
         )}
 
         {/* Perspective selector */}
-        <Box padding={1} gridColumn={[1, 2]}>
+        <Box padding={1} gridColumn={['span 1 / span 1', 'span 2 / span 2']}>
           <Stack>
             <Card paddingBottom={1}>
               <Inline gap={1}>
@@ -169,7 +197,11 @@ export function VisionGuiHeader({
                 </Box>
               </Inline>
             </Card>
-            <Select value={perspective || 'default'} onChange={onChangePerspective}>
+            <Select
+              data-testid="perspective-selector"
+              value={perspective || 'default'}
+              onChange={onChangePerspective}
+            >
               {SUPPORTED_PERSPECTIVES.map((perspectiveName) => {
                 if (perspectiveName === 'pinnedRelease') {
                   return (
@@ -198,7 +230,15 @@ export function VisionGuiHeader({
 
         {/* Query URL (for copying) */}
         {typeof url === 'string' ? (
-          <Box padding={1} flex={1} gridColumn={[1, customApiVersion === false ? 6 : 4]}>
+          <Box
+            padding={1}
+            flexBasis="0%"
+            flexGrow={1}
+            gridColumn={[
+              'span 1 / span 1',
+              customApiVersion === false ? 'span 6 / span 6' : 'span 4 / span 4',
+            ]}
+          >
             <Stack>
               <Card paddingTop={2} paddingBottom={3}>
                 <StyledLabel>
@@ -216,8 +256,14 @@ export function VisionGuiHeader({
                 </StyledLabel>
               </Card>
               <Flex flex={1} gap={1}>
-                <Box flex={1}>
-                  <TextInput readOnly type="url" ref={operationUrlElement} value={url} />
+                <Box flexBasis="0%" flexGrow={1}>
+                  <TextInput
+                    data-testid="vision-query-url"
+                    readOnly
+                    type="url"
+                    ref={operationUrlElement}
+                    value={url}
+                  />
                 </Box>
                 <Tooltip content={t('action.copy-url-to-clipboard')}>
                   <Button
@@ -232,7 +278,7 @@ export function VisionGuiHeader({
             </Stack>
           </Box>
         ) : (
-          <Box flex={1} />
+          <Box flexBasis="0%" flexGrow={1} />
         )}
       </Grid>
     </Header>

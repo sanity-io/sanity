@@ -4,14 +4,14 @@ import {
   type SchemaSynchronizationResult,
 } from '@sanity/schema/_internal'
 import {type Schema} from '@sanity/types'
-import debugit from 'debug'
 import max from 'lodash-es/max.js'
 import sum from 'lodash-es/sum.js'
+import {createDebug} from 'obug'
 
 import {isDev} from '../../environment'
 import {DESCRIPTOR_CONVERTER} from '../../schema/descriptors'
 
-const debug = debugit('sanity:manifest')
+const debug = createDebug('sanity:manifest')
 
 const MAX_SYNC_ITERATIONS = 5
 
@@ -110,7 +110,7 @@ export async function uploadSchema(
     }
 
     const claimResponse = await client.request<ClaimResponse>({
-      uri: '/descriptors/claim',
+      url: '/descriptors/claim',
       method: 'POST',
       body: claimRequest,
       headers: {
@@ -127,7 +127,7 @@ export async function uploadSchema(
       if (syncRequest === null) return descriptorId
 
       syncResult = await client.request<SchemaSynchronizationResult>({
-        uri: '/descriptors/synchronize',
+        url: '/descriptors/synchronize',
         method: 'POST',
         body: syncRequest,
       })

@@ -1,15 +1,16 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Box, Flex, type ResponsivePaddingProps, Stack} from '@sanity/ui'
+import {Stack} from '@sanity/ui'
+import {Flex, Box, type PaddingProps} from 'ui5'
 
 import {TextWithTone} from '../../../../../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
 
-export function FilterError(props: ResponsivePaddingProps) {
+export function FilterError(props: PaddingProps) {
   const {t} = useTranslation()
 
   return (
     <Box {...props}>
-      <Flex align="flex-start" gap={3}>
+      <Flex alignItems="flex-start" gap={3}>
         <TextWithTone tone="critical">
           <ErrorOutlineIcon />
         </TextWithTone>

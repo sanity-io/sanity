@@ -1,6 +1,7 @@
 import {type CurrentUser} from '@sanity/types'
-import {BoundaryElementProvider, Flex, Stack} from '@sanity/ui'
+import {BoundaryElementProvider, Stack} from '@sanity/ui'
 import {memo, useMemo, useState, type RefAttributes} from 'react'
+import {Flex} from 'ui5'
 
 import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
 import {type CommentsSelectedPath} from '../../context/selected-path/types'
@@ -107,12 +108,12 @@ function CommentsListInner(props: CommentsListProps & RefAttributes<HTMLUListEle
   return (
     <Flex
       data-testid="comments-list"
-      direction="column"
-      flex={1}
-      height="fill"
+      flexDirection="column"
+      flexBasis="0%"
+      flexGrow={1}
+      height="100%"
       overflow="hidden"
       ref={setBoundaryElement}
-      sizing="border"
     >
       {mode !== 'upsell' && (
         <CommentsListStatus

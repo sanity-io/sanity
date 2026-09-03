@@ -1,7 +1,7 @@
 import {SearchIcon} from '@sanity/icons/Search'
-import {Badge, Card, Checkbox, Container, Flex, TextInput, useMediaIndex} from '@sanity/ui'
+import {Badge, Card, Checkbox, Container, TextInput, useMediaIndex} from '@sanity/ui'
 import {type CSSProperties, type ReactNode, useCallback, useMemo, useState} from 'react'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Table} from './Table'
@@ -190,7 +190,7 @@ export function DocumentTable<Row extends object>({
       // Select-all lives in the column-header row (above the row checkboxes it governs), not the
       // command lane. Doubles as clear.
       header: ({headerProps}) => (
-        <Flex {...headerProps} align="center" justify="center" paddingY={3} sizing="border">
+        <Flex {...headerProps} alignItems="center" justifyContent="center" paddingY={3}>
           <Checkbox
             aria-label={labels.selectAll}
             checked={allSelected}
@@ -201,7 +201,7 @@ export function DocumentTable<Row extends object>({
         </Flex>
       ),
       cell: ({cellProps, datum}) => (
-        <Flex {...cellProps} align="center" justify="center" paddingX={2} sizing="border">
+        <Flex {...cellProps} alignItems="center" justifyContent="center" paddingX={2}>
           {!datum.isLoading && (selection?.isRowSelectable?.(datum) ?? true) && (
             <Checkbox
               aria-label={labels.selectRow}
@@ -234,7 +234,7 @@ export function DocumentTable<Row extends object>({
   const showBulkToolbar = Boolean(selection) && selectedVisibleCount > 0
 
   return (
-    <Flex direction="column" flex={1} height="fill" overflow="hidden" style={{minHeight: 0}}>
+    <Flex flexDirection="column" flexBasis="0%" flexGrow={1} height="100%" overflow="hidden">
       {/* Command lane (zone 1). Fixed height so the browse↔bulk swap never shifts the rows. Idle:
           filter tabs lead from the left (aligned with the columns), search is right-aligned. On
           selection: selected count + Clear on the left, caller's bulk actions on the right.
@@ -243,7 +243,7 @@ export function DocumentTable<Row extends object>({
         <Card flex="none" borderBottom paddingY={2}>
           <Container flex="none" width={3}>
             <Box paddingX={2}>
-              <Flex align="center" gap={3} style={{minHeight: commandLaneMinHeight}}>
+              <Flex alignItems="center" gap={3} style={{minHeight: commandLaneMinHeight}}>
                 {showBulkToolbar && selection ? (
                   <>
                     <Badge data-testid="document-table-selected-count" fontSize={1} tone="primary">

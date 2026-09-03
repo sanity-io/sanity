@@ -1,4 +1,4 @@
-import Debug from 'debug'
+import {createDebug} from 'obug'
 import {
   type CSSProperties,
   memo,
@@ -16,7 +16,7 @@ import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './constants'
 import {HotspotImageContainer} from './HotspotImage.styles'
 import {type Crop, type Hotspot} from './types'
 
-const debug = Debug('sanity-imagetool')
+const debug = createDebug('sanity-imagetool')
 
 function getCropAspect(crop: Crop, srcAspect: number) {
   const origHeight = 1 / srcAspect

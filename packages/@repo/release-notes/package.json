@@ -31,7 +31,7 @@
     "@octokit/rest": "^22.0.1",
     "@optique/core": "catalog:",
     "@optique/run": "catalog:",
-    "@portabletext/toolkit": "^5.0.2",
+    "@portabletext/toolkit": "^6.0.0",
     "@sanity/client": "catalog:",
     "@sanity/id-utils": "^1.0.0",
     "@sanity/mutate": "^0.18.1",
@@ -48,7 +48,7 @@
     "turndown": "^7.2.4"
   },
   "devDependencies": {
-    "@portabletext/markdown": "^1.4.6",
+    "@portabletext/markdown": "^2.0.0",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/utils": "workspace:*",
