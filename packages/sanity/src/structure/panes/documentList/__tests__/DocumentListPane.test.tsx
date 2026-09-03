@@ -8,7 +8,7 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../i18n'
 import {type DocumentListPaneNode} from '../../../types'
-import {DocumentListPane} from '../DocumentListPane'
+import {DocumentListPane, type DocumentListPaneProps} from '../DocumentListPane'
 import {useDocumentList} from '../useDocumentList'
 
 vi.mock('../useDocumentList', () => ({
@@ -88,7 +88,12 @@ function PaneProvider(props: {children: ReactNode; collapsed?: boolean}) {
   )
 }
 
-async function renderDocumentListPane(options: {collapsed?: boolean} = {}) {
+async function renderDocumentListPane(
+  options: {
+    activeFilterOptions?: DocumentListPaneProps['activeFilterOptions']
+    collapsed?: boolean
+  } = {},
+) {
   const wrapper = await createTestProvider({
     config: defineConfig({projectId: 'test', dataset: 'test'}),
     resources: [structureUsEnglishLocaleBundle],
@@ -96,7 +101,7 @@ async function renderDocumentListPane(options: {collapsed?: boolean} = {}) {
 
   return render(
     <PaneProvider collapsed={options.collapsed}>
-      <DocumentListPane {...getPaneProps()} />
+      <DocumentListPane {...getPaneProps()} activeFilterOptions={options.activeFilterOptions} />
     </PaneProvider>,
     {wrapper},
   )
@@ -144,6 +149,26 @@ describe('DocumentListPane search ordering indicator', () => {
     // appear. Allow time for the debounced query to settle before asserting.
     await new Promise((resolve) => setTimeout(resolve, 400))
     expect(screen.queryByTestId(ORDERING_TESTID)).toBeNull()
+  })
+
+  it('combines active menu filters with the base list filter', async () => {
+    await renderDocumentListPane({
+      activeFilterOptions: [
+        {
+          id: 'featured',
+          title: 'Featured',
+          filter: 'featured == $featured',
+          params: {featured: true},
+        },
+      ],
+    })
+
+    expect(mockUseDocumentList).toHaveBeenCalledWith(
+      expect.objectContaining({
+        filter: '(_type == "author") && (featured == $featured)',
+        params: {featured: true},
+      }),
+    )
   })
 })
 

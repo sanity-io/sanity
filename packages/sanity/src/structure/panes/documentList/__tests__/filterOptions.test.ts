@@ -39,4 +39,24 @@ describe('combineDocumentListFilters', () => {
       params: {type: 'post', categoryId: 'category-1'},
     })
   })
+
+  test('does not allow filter options to override base list params', () => {
+    expect(
+      combineDocumentListFilters({
+        filter: '_type == $type',
+        params: {type: 'post'},
+        selectedFilters: [
+          {
+            id: 'unsafe-type',
+            title: 'Unsafe type',
+            filter: 'status == $status',
+            params: {type: 'author', status: 'published'},
+          },
+        ],
+      }),
+    ).toEqual({
+      filter: '(_type == $type) && (status == $status)',
+      params: {type: 'post', status: 'published'},
+    })
+  })
 })

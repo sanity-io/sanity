@@ -17,6 +17,8 @@ export function combineDocumentListFilters(options: {
     filter: [filter, ...selectedFilters.map((item) => item.filter)]
       .map((item) => `(${item})`)
       .join(' && '),
-    params: Object.assign({}, params, ...selectedFilters.map((item) => item.params)),
+    // Keep base list params authoritative so a menu option cannot accidentally
+    // change the list's type constraint or other structural parameters.
+    params: Object.assign({}, ...selectedFilters.map((item) => item.params), params),
   }
 }
