@@ -1,5 +1,15 @@
-import {css, styled} from 'styled-components'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 
+import {
+  bottomRegionWrapper,
+  middleRegionWrapper,
+  overlayWrapper,
+  rootWrapper,
+  topRegionWrapper,
+  topVar,
+} from './RegionsWithIntersections.styled.css'
 import {WithIntersection} from './WithIntersection'
 
 interface StyleProps {
@@ -7,63 +17,51 @@ interface StyleProps {
   margins?: [number, number, number, number]
 }
 
-export const RootWrapper = styled.div`
-  position: relative;
-`
+type RegionWrapperProps = StyleProps & ComponentProps<typeof WithIntersection>
 
-export const OverlayWrapper = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  z-index: 13;
-`
+export function RootWrapper(props: ComponentProps<'div'>) {
+  const {className, ...rest} = props
+  return <div {...rest} className={clsx(rootWrapper, className)} />
+}
 
-const RegionWrapper = css`
-  overflow: hidden;
-  overflow: clip;
-  pointer-events: none;
-  position: absolute;
-`
+export function OverlayWrapper(props: ComponentProps<'div'>) {
+  const {className, ...rest} = props
+  return <div {...rest} className={clsx(overlayWrapper, className)} />
+}
 
-export const TopRegionWrapper = styled(WithIntersection)<StyleProps>(({$debug, margins}) => {
-  return css`
-    ${RegionWrapper}
+export function TopRegionWrapper(props: RegionWrapperProps) {
+  const {$debug, margins, className, style, ...rest} = props
 
-    z-index: 100;
-    position: sticky;
-    height: 1px;
-    top: ${margins ? `${margins[0] - 1}px` : undefined};
-    background-color: ${$debug ? 'red' : 'none'};
-  `
-})
+  return (
+    <WithIntersection
+      {...rest}
+      className={clsx(topRegionWrapper[$debug ? 'debug' : 'default'], className)}
+      style={{
+        ...assignInlineVars({[topVar]: margins ? `${margins[0] - 1}px` : undefined}),
+        ...style,
+      }}
+    />
+  )
+}
 
-export const MiddleRegionWrapper = styled(WithIntersection)<StyleProps>(({$debug}) => {
-  return css`
-    ${RegionWrapper}
+export function MiddleRegionWrapper(props: RegionWrapperProps) {
+  const {$debug, className, ...rest} = props
 
-    visibility: none;
+  return (
+    <WithIntersection
+      {...rest}
+      className={clsx(middleRegionWrapper[$debug ? 'debug' : 'default'], className)}
+    />
+  )
+}
 
-    ${
-      $debug &&
-      css`
-        background: rgba(255, 0, 0, 0.25);
-        outline: 1px solid #00b;
-        visibility: visible;
-      `
-    }
-  `
-})
+export function BottomRegionWrapper(props: RegionWrapperProps) {
+  const {$debug, className, ...rest} = props
 
-export const BottomRegionWrapper = styled(WithIntersection)<StyleProps>(({$debug}) => {
-  return css`
-    ${RegionWrapper}
-
-    position: sticky;
-    bottom: -1px;
-    height: 1px;
-    background-color: ${$debug ? 'blue' : 'transparent'};
-  `
-})
+  return (
+    <WithIntersection
+      {...rest}
+      className={clsx(bottomRegionWrapper[$debug ? 'debug' : 'default'], className)}
+    />
+  )
+}

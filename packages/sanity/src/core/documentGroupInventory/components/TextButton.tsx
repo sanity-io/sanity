@@ -1,27 +1,24 @@
-import {getTheme_v2 as getThemeV2} from '@sanity/ui/theme'
-import {css, styled} from 'styled-components'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 
-export const TextButton = styled.button(({theme}) => {
-  const {color} = getThemeV2(theme)
+import {ghostNeutralFgVar, textButton} from './TextButton.css'
 
-  return css`
-    all: unset;
-    display: inline-block;
-    max-inline-size: 100%;
-    white-space: nowrap;
-    appearance: none;
-    border: 0;
-    margin: 0;
-    padding: 0;
-    outline: none;
-    color: ${color.button.ghost.neutral.enabled.fg};
+export function TextButton(props: ComponentProps<'button'>) {
+  const {className, style, ...rest} = props
+  const {color} = useThemeV2()
 
-    * {
-      color: inherit;
-    }
-
-    svg[data-sanity-icon] {
-      color: currentColor;
-    }
-  `
-})
+  return (
+    <button
+      {...rest}
+      className={clsx(textButton, className)}
+      style={{
+        ...assignInlineVars({
+          [ghostNeutralFgVar]: color.button.ghost.neutral.enabled.fg,
+        }),
+        ...style,
+      }}
+    />
+  )
+}
