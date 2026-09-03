@@ -1,6 +1,8 @@
 import {Card, Stack, Text} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
+import noop from 'lodash-es/noop.js'
 
+import {NotFoundScreen} from '../NotFoundScreen'
 import {NoToolsScreen} from '../NoToolsScreen'
 import {RedirectingScreen} from '../RedirectingScreen'
 import {ToolNotFoundScreen} from '../ToolNotFoundScreen'
@@ -8,10 +10,10 @@ import {ToolNotFoundScreen} from '../ToolNotFoundScreen'
 const FRAME_STYLE = {height: 220}
 
 /**
- * Chromatic sentinel for studio boot/navigation cards after the ui5 Box
- * migration. These screens mix Box padding with caution/primary Card tones —
- * a combination TypeScript will not catch if Box tokens or icon alignment
- * drift. Copy is hardcoded (no i18n, no timestamps).
+ * Chromatic sentinel for studio boot/navigation cards after the ui5 Box/Flex
+ * migration. These screens mix Box padding with caution/primary Card tones
+ * and a ghost button — a combination TypeScript will not catch if Box tokens
+ * or icon alignment drift. Copy is hardcoded (no i18n, no timestamps).
  */
 const meta = {
   title: 'Studio/Boot Screens',
@@ -47,6 +49,14 @@ export const States: Story = {
           </Text>
           <div style={FRAME_STYLE}>
             <RedirectingScreen />
+          </div>
+        </Stack>
+        <Stack gap={2}>
+          <Text muted size={1} weight="medium">
+            workspace not found
+          </Text>
+          <div style={FRAME_STYLE}>
+            <NotFoundScreen onNavigateToDefaultWorkspace={noop} />
           </div>
         </Stack>
       </Stack>
