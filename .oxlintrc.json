@@ -1180,7 +1180,7 @@
     },
     {
       // Browser-mode tests and their story/helper files render real Studio inputs and may import
-      // the public API and test-only deps freely
+      // the public API and test-only deps freely; only the styled-components ban still applies
       "files": [
         "packages/sanity/**/*.browser.test.{ts,tsx}",
         "packages/sanity/src/core/comments/components/pte/comment-input/__tests__/*Story.tsx",
@@ -1188,7 +1188,17 @@
         "packages/sanity/src/core/form/inputs/PortableText/__tests__/**/*Story.tsx"
       ],
       "rules": {
-        "eslint/no-restricted-imports": "off"
+        "eslint/no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "styled-components",
+                "message": "styled-components is banned: the studio is styled with vanilla-extract (`@vanilla-extract/css` in a `.css.ts` file, see .agents/skills/migrate-styled-components-to-vanilla-extract). The dependency only remains because @sanity/ui@4 requires it."
+              }
+            ]
+          }
+        ]
       }
     },
     {
