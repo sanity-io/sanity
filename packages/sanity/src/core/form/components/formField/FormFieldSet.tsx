@@ -5,7 +5,9 @@ import {
   type DeprecatedProperty,
   type FormNodeValidation,
 } from '@sanity/types'
-import {Badge, Flex, Stack, Text, type Theme} from '@sanity/ui'
+import {Badge, Flex, Stack, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
 import {
   type FocusEvent,
   type HTMLProps,
@@ -16,7 +18,6 @@ import {
   useRef,
   type RefAttributes,
 } from 'react'
-import {css, styled} from 'styled-components'
 import {Box} from 'ui5'
 
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
@@ -31,6 +32,13 @@ import {FormNodeDivergenceCollectionIndicator} from '../FormNodeDivergenceCollec
 import {FormNodeDivergenceDetail} from '../FormNodeDivergenceDetail'
 import {FormRow} from '../layout/FormRow'
 import {FormFieldBaseHeader} from './FormFieldBaseHeader'
+import {
+  content as contentClass,
+  contentBorderLeft,
+  contentBorderLeftFocused,
+  contentFocusRingVar,
+  root,
+} from './FormFieldSet.css'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 import {ColumnarGrid, focusRingStyle} from './styles'
@@ -86,64 +94,6 @@ function getChildren(children: ReactNode | (() => ReactNode)): ReactNode {
   return typeof children === 'function' ? children() : children
 }
 
-const Root = styled(Stack).attrs({forwardedAs: 'fieldset'})`
-  border: none;
-
-  /* See: https://thatemil.com/blog/2015/01/03/reset-your-fieldset/ */
-  body:not(:-moz-handler-blocked) & {
-    display: table-cell;
-  }
-`
-
-const Content = styled(Box)<{
-  /*
-   * @note: The dollar sign ($) prefix is a `styled-components` convention for
-   * denoting transient props. See:
-   * https://styled-components.com/docs/api#transient-props
-   */
-  $borderLeft: boolean
-  $focused?: boolean
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  theme: Theme
-}>((props) => {
-  const {$borderLeft, $focused, theme} = props
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {focusRing} = theme.sanity
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {base} = theme.sanity.color
-
-  return css`
-    outline: none;
-    border-left: ${$borderLeft ? '1px solid var(--card-border-color)' : undefined};
-    transition:
-      border-color 0.2s ease-in-out,
-      box-shadow 0.2s ease-in-out;
-
-    ${
-      $borderLeft &&
-      $focused &&
-      `border-left: 1px solid var(--card-focus-ring-color);
-    box-shadow: inset 1px 0 0 var(--card-focus-ring-color);`
-    }
-
-    ${
-      $borderLeft &&
-      !$focused &&
-      `
-      box-shadow: inset 0 0 0 transparent;
-    `
-    }
-
-    &:focus {
-      box-shadow: ${focusRingStyle({base, focusRing: {...focusRing, offset: 2}})};
-    }
-
-    &:focus:not(:focus-visible) {
-      box-shadow: none;
-    }
-  `
-})
-
 const EMPTY_ARRAY: never[] = []
 
 /** @internal */
@@ -162,6 +112,7 @@ export function FormFieldSet(
     __unstable_presence: presence = EMPTY_ARRAY,
     changedFromBaseVariant = false,
     children,
+    className,
     collapsed,
     collapsible,
     columns,
@@ -182,6 +133,11 @@ export function FormFieldSet(
   } = props
 
   const {focused, hovered, onMouseEnter, onMouseLeave} = useFieldActions()
+  const {color, input} = useThemeV2()
+
+  // The rest props are typed for a `div` (public API) but rendered on a `fieldset`; widening to the
+  // shared `HTMLElement` base type is what `forwardedAs="fieldset"` used to paper over.
+  const rootProps: Omit<HTMLProps<HTMLElement>, 'as' | 'height' | 'ref'> = restProps
 
   const hasValidationMarkers = validation.length > 0
   const ref = useRef<HTMLDivElement | null>(null)
@@ -223,9 +179,11 @@ export function FormFieldSet(
       }
     >
       <FormNodeDivergenceDetail path={path} readOnly={readOnly}>
-        <Root
+        <Stack
+          as="fieldset"
+          className={clsx(root, className)}
           data-level={level}
-          {...restProps}
+          {...rootProps}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
           gap={2}
@@ -286,18 +244,26 @@ export function FormFieldSet(
               </Stack>
             }
           />
-          <Content
-            $borderLeft={level > 0}
-            $focused={Boolean(focused)}
+          <Box
+            className={clsx(
+              contentClass,
+              level > 0 && (focused ? contentBorderLeftFocused : contentBorderLeft),
+            )}
             hidden={collapsed}
             paddingLeft={level === 0 ? 0 : 3}
             onFocus={typeof tabIndex === 'number' && tabIndex > -1 ? handleFocus : undefined}
             ref={ref}
+            style={assignInlineVars({
+              [contentFocusRingVar]: focusRingStyle({
+                base: color,
+                focusRing: {...input.text.focusRing, offset: 2},
+              }),
+            })}
             tabIndex={tabIndex}
           >
             {!collapsed && content}
-          </Content>
-        </Root>
+          </Box>
+        </Stack>
       </FormNodeDivergenceDetail>
     </FormRow>
   )
