@@ -1,13 +1,17 @@
 import {Grid} from '@sanity/ui'
-import {styled} from 'styled-components'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
+
+import {columnarGrid} from './styles.css'
 
 export function focusRingBorderStyle(border: {color: string; width: number}): string {
   return `inset 0 0 0 ${border.width}px ${border.color}`
 }
 
-export const ColumnarGrid = styled(Grid)`
-  align-items: flex-start;
-`
+export function ColumnarGrid(props: ComponentProps<typeof Grid>) {
+  const {className, ...rest} = props
+  return <Grid {...rest} className={clsx(columnarGrid, className)} />
+}
 
 export function focusRingStyle(opts: {
   base?: {bg: string}
