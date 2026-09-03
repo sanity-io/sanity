@@ -247,7 +247,7 @@
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/tsdown.config": "workspace:*",
-    "@sanity/sdk": "^3.0.0",
+    "@sanity/sdk": "^3.1.0",
     "@sanity/vanilla-extract-vite-plugin": "catalog:",
     "@sanity/visual-editing-csm": "^3.0.18",
     "@storybook/react-vite": "^10.5.10",
