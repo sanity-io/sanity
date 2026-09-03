@@ -28,6 +28,10 @@ function escapeCell(text: string): string {
   return text.replaceAll('|', '\\|').replaceAll('\n', ' ')
 }
 
+function byNewest(left: RunAnalysis, right: RunAnalysis): number {
+  return right.run.createdAt.localeCompare(left.run.createdAt)
+}
+
 function runLink(analysis: RunAnalysis): string {
   const {run} = analysis
   const label = run.prNumber ? `#${run.prNumber}` : run.branch
@@ -117,8 +121,6 @@ export function renderMarkdown(report: FlakeReport): string {
   } else {
     const attributed = report.failed.filter((analysis) => analysis.verdict !== 'unknown')
     const unknown = report.failed.filter((analysis) => analysis.verdict === 'unknown')
-    const byNewest = (left: RunAnalysis, right: RunAnalysis) =>
-      right.run.createdAt.localeCompare(left.run.createdAt)
     const rows = [
       ...attributed.sort(byNewest),
       ...unknown.sort(byNewest).slice(0, UNKNOWN_RUN_ROWS),
