@@ -482,10 +482,10 @@ function formatEnabled(value: boolean | undefined): string | undefined {
   return value === undefined ? undefined : value ? 'Enabled' : 'Disabled'
 }
 
-// A running studio always injects exactly one styled-components sheet. Zero means styles are
-// missing; more than one means several styled-components runtimes are bundled.
+// One sheet per styled-components runtime, so more than one means several runtimes are bundled.
+// Zero is fine: it is the normal state once the Studio no longer uses styled-components.
 function formatStyleNodeCount(count: number): ReactNode {
-  if (count === 1) return count
+  if (count <= 1) return count
 
   return (
     <Flex alignItems="center" gap={2} justifyContent="flex-end">

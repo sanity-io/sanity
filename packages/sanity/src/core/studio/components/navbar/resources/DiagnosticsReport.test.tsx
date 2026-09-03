@@ -312,6 +312,25 @@ describe('DiagnosticsReport', () => {
     )
   })
 
+  it('treats a studio without styled-components as healthy', () => {
+    render(
+      <ThemeProvider theme={buildTheme()}>
+        <DiagnosticsReport
+          diagnostics={{
+            ...diagnostics,
+            styles: {styledComponents: {styleNodes: [], version: undefined}},
+          }}
+          onRunAgain={vi.fn()}
+        />
+      </ThemeProvider>,
+    )
+
+    const studio = within(screen.getByTestId('diagnostics-studio'))
+    expect(studio.getAllByText('0')).toHaveLength(2)
+    expect(studio.queryByText('Expected 1')).not.toBeInTheDocument()
+    expect(studio.queryByTestId('diagnostics-styled-components-nodes')).not.toBeInTheDocument()
+  })
+
   it('shows unknown styles and flags for reports from older studios', () => {
     render(
       <ThemeProvider theme={buildTheme()}>

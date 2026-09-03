@@ -13,11 +13,12 @@ export interface StylesDiagnostics {
   styledComponents: {
     /**
      * One entry per `style[data-styled]` element in the document. More than one means several
-     * styled-components runtimes are injecting styles.
+     * styled-components runtimes are injecting styles. Empty once the Studio no longer uses
+     * styled-components.
      */
     styleNodes: StyleSheetDiagnostic[]
-    /** The styled-components version bundled with this `sanity` package */
-    version: string
+    /** The styled-components version bundled with this `sanity` package, when it exposes one */
+    version?: string
   }
 }
 
@@ -27,9 +28,23 @@ export function getStylesDiagnostics(): StylesDiagnostics {
     typeof document === 'undefined'
       ? []
       : Array.from(document.querySelectorAll<HTMLStyleElement>('style[data-styled]'), (node) => ({
-          ruleCount: node.sheet?.cssRules.length ?? 0,
+          ruleCount: countRules(node.sheet),
           version: node.dataset.styledVersion || undefined,
         }))
 
-  return {styledComponents: {styleNodes, version: styledComponentsVersion}}
+  return {styledComponents: {styleNodes, version: getBundledVersion()}}
+}
+
+// Typed as string, but a bundle whose styled-components lacks the export yields undefined.
+function getBundledVersion(): string | undefined {
+  const version: unknown = styledComponentsVersion
+  return typeof version === 'string' ? version : undefined
+}
+
+function countRules(sheet: CSSStyleSheet | null): number {
+  try {
+    return sheet?.cssRules.length ?? 0
+  } catch {
+    return 0
+  }
 }

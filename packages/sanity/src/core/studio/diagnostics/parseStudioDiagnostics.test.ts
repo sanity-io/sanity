@@ -66,6 +66,15 @@ describe('parseStudioDiagnostics', () => {
     expect(parse(extended)).toEqual(extended)
   })
 
+  it('accepts a styles section without a bundled styled-components version', () => {
+    const withoutRuntime: StudioDiagnostics = {
+      ...report,
+      styles: {styledComponents: {styleNodes: []}},
+    }
+
+    expect(parse(withoutRuntime)).toEqual(withoutRuntime)
+  })
+
   it('rejects a styles section with the wrong shape', () => {
     expect(() => parse({...report, styles: {styledComponents: {version: 1}}})).toThrow(
       'not a supported Studio diagnostics report',

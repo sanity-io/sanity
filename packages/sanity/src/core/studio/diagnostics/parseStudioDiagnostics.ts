@@ -153,7 +153,7 @@ function isStylesDiagnostics(value: unknown): boolean {
 
   const {styleNodes, version} = value.styledComponents
   return (
-    typeof version === 'string' &&
+    isOptional(version, isString) &&
     Array.isArray(styleNodes) &&
     styleNodes.every(
       (node) =>
