@@ -23,6 +23,7 @@ const PROBLEM_GROUPS: SchemaValidationProblemGroup[] = [
       {
         severity: 'warning',
         message: 'Deprecated preview.select.subtitle — use preview.select.media instead.',
+        helpId: 'schema-deprecated-preview-subtitle',
       },
     ],
   },
@@ -31,8 +32,9 @@ const PROBLEM_GROUPS: SchemaValidationProblemGroup[] = [
 /**
  * Chromatic sentinel for schema validation cards after the ui5 Box
  * migration. Critical vs caution tones sit next to Box icon/path padding;
- * a token drift here would hide boot-blocking schema errors. Messages and
- * paths are fixtures (no generated help URLs, no timestamps).
+ * a token drift here would hide boot-blocking schema errors. One problem
+ * carries a `helpId` so the "View documentation" link row is captured too.
+ * Messages and paths are fixtures (no live schema compile, no timestamps).
  */
 export function SchemaProblemGroupsStory() {
   return (

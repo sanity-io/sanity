@@ -3,8 +3,9 @@ import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {SchemaProblemGroupsStory} from './SchemaProblemGroupsStory'
 
 /**
- * Reuses the in-package harness: schema error and warning cards after the
- * ui5 Box migration. Fixtures only — no live schema compile.
+ * Chromatic sentinel: schema error and warning cards after the ui5 Box
+ * migration, including the help-link row. Fixtures only — no live schema
+ * compile.
  */
 const meta = {
   title: 'Studio/Schema Problem Groups',
