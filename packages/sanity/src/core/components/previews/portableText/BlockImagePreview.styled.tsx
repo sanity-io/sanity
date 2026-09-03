@@ -1,30 +1,44 @@
-import {Card, Flex, rem} from '@sanity/ui'
-import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Card, Flex, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
+import {type ComponentProps, type ComponentPropsWithRef} from 'react'
+import {Box, type BoxProps} from 'ui5'
 
-import {PREVIEW_SIZES} from '../constants'
+import {
+  headerFlex,
+  mediaCard,
+  mediaCardRatioVar,
+  rootBox,
+  rootBoxRadiusVar,
+} from './BlockImagePreview.css'
 
-export const HeaderFlex = styled(Flex).attrs({align: 'center'})`
-  height: ${rem(PREVIEW_SIZES.block.media.height)};
-  white-space: nowrap;
-  position: relative;
-  z-index: 1;
-`
+export function HeaderFlex(props: ComponentProps<typeof Flex>) {
+  const {className, ...rest} = props
+  return <Flex {...rest} align="center" className={clsx(headerFlex, className)} />
+}
 
-export const MediaCard = styled(Card)<{$ratio: number}>`
-  overflow: hidden;
-  position: relative;
-  padding-bottom: ${({$ratio}) => $ratio}%;
+export function MediaCard(props: ComponentProps<typeof Card> & {$ratio: number}) {
+  const {$ratio, className, style, ...rest} = props
+  return (
+    <Card
+      {...rest}
+      className={clsx(mediaCard, className)}
+      style={{...assignInlineVars({[mediaCardRatioVar]: `${$ratio}%`}), ...style}}
+    />
+  )
+}
 
-  & > span {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-  }
-`
+type RootBoxProps = BoxProps & Omit<ComponentPropsWithRef<'div'>, keyof BoxProps>
 
-export const RootBox = styled(Box).attrs({overflow: 'hidden'})`
-  border-radius: ${({theme}) => theme.sanity.radius[1] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
-`
+export function RootBox(props: RootBoxProps) {
+  const {className, style, ...rest} = props
+  const {radius} = useThemeV2()
+  return (
+    <Box
+      {...rest}
+      overflow="hidden"
+      className={clsx(rootBox, className)}
+      style={{...assignInlineVars({[rootBoxRadiusVar]: `${radius[1]}px`}), ...style}}
+    />
+  )
+}
