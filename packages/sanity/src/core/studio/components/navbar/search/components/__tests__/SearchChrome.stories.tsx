@@ -9,7 +9,7 @@ import {SearchChromeStory} from './SearchChromeStory'
 const meta = {
   title: 'Studio/Search Chrome',
   component: SearchChromeStory,
-  parameters: {chromatic: {delay: 500}},
+  tags: ['!dev', '!autodocs', 'vrt-only'],
 } satisfies Meta<typeof SearchChromeStory>
 
 export default meta

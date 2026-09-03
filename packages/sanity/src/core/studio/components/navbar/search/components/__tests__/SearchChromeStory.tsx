@@ -7,11 +7,11 @@ import {Instructions} from '../Instructions'
 const NOOP = () => undefined
 
 /**
- * Chromatic sentinel for navbar search chrome that main already moved to
- * ui5 Flex: the empty-state instructions row (icon + muted copy) and the
- * calendar include-time footer (label + switch). Flex alignment against
- * muted Text/Switch is a mix TypeScript will not catch. Copy comes from
- * the studio locale bundle (no live queries, no dates).
+ * Chromatic sentinel for the post-migration ui5 search chrome: the empty-state
+ * instructions row (icon + muted copy) and the calendar include-time footer
+ * (label + switch). Flex alignment against muted Text/Switch is a mix TypeScript
+ * will not catch. Copy comes from the studio locale bundle (no live queries, no
+ * dates).
  */
 export function SearchChromeStory() {
   return (

@@ -9,7 +9,7 @@ import {DetailLayoutStory} from './DetailLayoutStory'
 const meta = {
   title: 'Studio/Detail Layout',
   component: DetailLayoutStory,
-  parameters: {chromatic: {delay: 500}},
+  tags: ['!dev', '!autodocs', 'vrt-only'],
 } satisfies Meta<typeof DetailLayoutStory>
 
 export default meta
