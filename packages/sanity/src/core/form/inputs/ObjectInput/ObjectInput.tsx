@@ -2,7 +2,6 @@ import {isKeySegment} from '@sanity/types'
 import {Stack} from '@sanity/ui'
 import last from 'lodash-es/last.js'
 import {type FocusEvent, Fragment, memo, useCallback, useMemo, useRef} from 'react'
-import {styled} from 'styled-components'
 
 import {EMPTY_ARRAY} from '../../../util/empty'
 import {FormRow} from '../../components/layout/FormRow'
@@ -10,16 +9,9 @@ import {ObjectInputMembers} from '../../members/object/ObjectInputMembers'
 import {useRenderMembers} from '../../members/object/useRenderMembers'
 import {type ObjectInputProps} from '../../types/inputProps'
 import {FieldGroupTabs} from './fieldGroups/FieldGroupTabs'
+import {rootStack} from './ObjectInput.css'
 import {AlignedBottomGrid, FieldGroupTabsWrapper} from './ObjectInput.styled'
 import {UnknownFields} from './UnknownFields'
-
-const RootStack = styled(Stack)`
-  /* Disable focus ring for the object block. We instead highlight the left border on the fieldset
-  for level > 0 to signal that you have focused on the object */
-  &:focus {
-    outline: none;
-  }
-`
 
 /**
  * @hidden
@@ -128,7 +120,8 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
   }
 
   return (
-    <RootStack
+    <Stack
+      className={rootStack}
       gap={6}
       tabIndex={isFocusable ? 0 : undefined}
       onFocus={handleFocus}
@@ -161,6 +154,6 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
         )}
       </Fragment>
       {renderedUnknownFields}
-    </RootStack>
+    </Stack>
   )
 })
