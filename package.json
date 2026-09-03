@@ -107,6 +107,7 @@
     "test:vitest": "vitest --run",
     "test:vitest:watch": "vitest --watch",
     "tsdoc:dev": "sanity-tsdoc dev",
+    "visual-coverage": "tsx scripts/visualCoverage.ts",
     "watch": "pnpm --filter @sanity/* --filter sanity watch"
   },
   "devDependencies": {
