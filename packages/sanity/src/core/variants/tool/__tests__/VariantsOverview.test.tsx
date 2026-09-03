@@ -30,6 +30,10 @@ const variantOperationsMock = vi.hoisted(() => ({
   deleteVariant: vi.fn(),
 }))
 
+const variantPermissionsMock = vi.hoisted(() => ({
+  checkWithPermissionGuard: vi.fn(),
+}))
+
 const documentCountsMock = vi.hoisted(() => ({
   data: null as Record<string, number> | null,
   loading: true,
@@ -79,6 +83,10 @@ vi.mock('../../store/useVariantOperations', () => ({
   useVariantOperations: vi.fn(() => variantOperationsMock),
 }))
 
+vi.mock('../../store/useVariantPermissions', () => ({
+  useVariantPermissions: vi.fn(() => variantPermissionsMock),
+}))
+
 vi.mock('../../hooks/useVariantsDocumentCounts', () => ({
   useVariantsDocumentCounts: vi.fn(() => ({
     data: documentCountsMock.data,
@@ -111,6 +119,7 @@ describe('VariantsOverview', () => {
       }),
     )
     variantOperationsMock.deleteVariant.mockResolvedValue(undefined)
+    variantPermissionsMock.checkWithPermissionGuard.mockResolvedValue(true)
   })
 
   afterEach(() => {

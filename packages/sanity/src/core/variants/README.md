@@ -173,7 +173,7 @@ Covered behavior:
 - detail-specific menu button
 - delete action navigates back to the overview after success
 
-Deleting a variant definition is validated server-side: `sanity.action.variant.definition.delete` fails while documents still reference the definition (see `ACTIONS.md`). In the Studio, both the overview row menu and the detail menu share `hooks/useVariantDeleteAction.ts`, which disables the delete action while the variant's document count is unknown or greater than zero, and asks for confirmation before deleting.
+Deleting a variant definition is validated server-side: `sanity.action.variant.definition.delete` fails while documents still reference the definition, and when the user lacks permission (see `ACTIONS.md`). In the Studio, both the overview row menu and the detail menu share `hooks/useVariantDeleteAction.ts`, which disables the delete action while the variant's document count is unknown or greater than zero, or while a dry run of the delete (`store/useVariantPermissions.ts`, mirroring the releases permission guard) reports missing permission, and asks for confirmation before deleting. If the server still refuses, the error toast reuses the same "contains documents" / "no permission" copy.
 
 ## Test Coverage
 

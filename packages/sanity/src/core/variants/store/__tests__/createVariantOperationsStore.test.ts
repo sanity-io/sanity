@@ -125,4 +125,21 @@ describe('createVariantOperationsStore', () => {
       {tag: 'variants.delete'},
     )
   })
+
+  it('forwards action options to the delete action so it can be dry-run', async () => {
+    const client = mockClient()
+
+    // @ts-expect-error -- pre-existing, fix later
+    const store = createVariantOperationsStore({client: client as SanityClient})
+
+    await expect(store.deleteVariant(DOCUMENT_ID, {dryRun: true})).resolves.toEqual(ACTION_RESULT)
+
+    expect(client.action).toHaveBeenCalledWith(
+      {
+        actionType: 'sanity.action.variant.definition.delete',
+        variantId: VARIANT_ID,
+      },
+      {tag: 'variants.delete', dryRun: true},
+    )
+  })
 })
