@@ -3,8 +3,8 @@ import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {DocumentInspectorHeaderStory} from './DocumentInspectorHeaderStory'
 
 /**
- * Reuses the in-package harness: document inspector header after the ui5
- * Box migration. Fixture titles only.
+ * Chromatic sentinel: post-migration ui5 document inspector header,
+ * including a wrapping title. Fixture titles only.
  */
 const meta = {
   title: 'Structure/Document Inspector Header',
