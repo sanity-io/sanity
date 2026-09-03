@@ -5,8 +5,8 @@ import {IncompatibleItemType} from '../ArrayOfObjectsInput/List/IncompatibleItem
 
 /**
  * Chromatic sentinel for incompatible array-item chrome after the ui5 Box
- * migration. The closed prompt pairs Box icon gutter with a `flexBasis="0%"
- * flexGrow={1}` Box holding ellipsis text — if the migrated Box loses its
+ * migration. The closed prompt pairs a Box icon gutter with a growing
+ * zero-basis Box holding ellipsis text — if the migrated Box loses its
  * min-width semantics the ellipsis silently turns into overflow, so one
  * state narrows the card until the prompt actually truncates. Values are
  * fixtures (popover stays closed; Menu/Popover animate).
