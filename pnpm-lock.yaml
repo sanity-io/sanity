@@ -2007,8 +2007,8 @@ importers:
         specifier: workspace:*
         version: link:../@sanity/validation
       '@sanity/workbench':
-        specifier: 0.1.0-alpha.45
-        version: 0.1.0-alpha.45(@sanity/sdk@3.0.0)(react@19.2.8)(vitest@4.1.11)(xstate@5.32.6)
+        specifier: 0.1.0-alpha.47
+        version: 0.1.0-alpha.47(@sanity/sdk@3.0.0)(react@19.2.8)(vitest@4.1.11)(xstate@5.32.6)
       '@sentry/react':
         specifier: ^10.73.0
         version: 10.73.0(react@19.2.8)
@@ -7494,8 +7494,8 @@ packages:
       '@sanity/sdk': ^2.9.0
       xstate: ^5.31.0
 
-  '@sanity/workbench@0.1.0-alpha.45':
-    resolution: {integrity: sha512-rvRR0moauHmzXIVZzVhLdENDAsQcVvngmx9sOpAaZEx8gYjP5Z4ofj6dpWZ0ZVz2bVOFqJuFTgVtbU7IN0jKEw==}
+  '@sanity/workbench@0.1.0-alpha.47':
+    resolution: {integrity: sha512-Uk3P41tlkKrPOPuHenAs923RSPxZ7XQhBsZcqDvKLkcj3RtSJabTFGgQvk09RCrGLuwGCHnTMtA4Om2TSVC20Q==}
     engines: {node: '>=20.19.1 <22 || >=22.12'}
     peerDependencies:
       '@sanity/sdk': ^3.0.0
@@ -20540,7 +20540,7 @@ snapshots:
     transitivePeerDependencies:
       - react
 
-  '@sanity/workbench@0.1.0-alpha.45(@sanity/sdk@3.0.0)(react@19.2.8)(vitest@4.1.11)(xstate@5.32.6)':
+  '@sanity/workbench@0.1.0-alpha.47(@sanity/sdk@3.0.0)(react@19.2.8)(vitest@4.1.11)(xstate@5.32.6)':
     dependencies:
       '@module-federation/runtime': 2.9.0
       '@sanity/client': 8.4.0(vitest@4.1.11)
