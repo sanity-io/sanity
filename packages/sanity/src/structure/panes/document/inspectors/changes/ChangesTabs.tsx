@@ -12,7 +12,6 @@ import {
   useSource,
   useTranslation,
 } from 'sanity'
-import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
@@ -22,17 +21,11 @@ import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {HISTORY_INSPECTOR_NAME} from '../../constants'
 import {ChangesInspector} from './ChangesInspector'
+import {fadeInFlex} from './ChangesTabs.css'
 import {EventsInspector} from './EventsInspector'
 import {EventsSelector} from './EventsSelector'
 import {HistorySelector} from './HistorySelector'
 
-const FadeInFlex = styled(Flex)`
-  opacity: 0;
-  transition: opacity 200ms;
-  &[data-ready] {
-    opacity: 1;
-  }
-`
 const TABS = ['history', 'review'] as const
 const isValidTab = (tab: string | undefined): tab is (typeof TABS)[number] =>
   // @ts-expect-error TS doesn't understand the type guard
@@ -61,7 +54,8 @@ export function ChangesTabs(props: DocumentInspectorProps) {
     })
 
   return (
-    <FadeInFlex
+    <Flex
+      className={fadeInFlex}
       flexDirection="column"
       padding={0}
       height="100%"
@@ -156,7 +150,7 @@ export function ChangesTabs(props: DocumentInspectorProps) {
           <ChangesInspector showChanges={paneRouterTab === 'review'} />
         )}
       </TabPanel>
-    </FadeInFlex>
+    </Flex>
   )
 }
 

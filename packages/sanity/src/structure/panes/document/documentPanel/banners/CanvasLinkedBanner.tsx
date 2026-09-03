@@ -9,7 +9,6 @@ import {
   useNavigateToCanvasDoc,
   useTranslation,
 } from 'sanity'
-import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
@@ -17,14 +16,8 @@ import {Popover} from '../../../../../ui-components/popover/Popover'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'
+import {image} from './CanvasLinkedBanner.css'
 
-const Image = styled.img`
-  object-fit: cover;
-  width: 100%;
-  height: 100%;
-  height: 180px;
-  display: flex;
-`
 const CANVAS_IMAGE_URL =
   'https://cdn.sanity.io/images/pyrmmpch/production/b47224e2f3a7d1747e43b9da1ac31739250e628b-632x376.png'
 
@@ -52,7 +45,7 @@ const CanvasPopoverContent = ({
   return (
     <Card radius={3} overflow={'hidden'} ref={ref}>
       <Container width={0}>
-        <Image src={CANVAS_IMAGE_URL} alt={'Canvas'} />
+        <img className={image} src={CANVAS_IMAGE_URL} alt={'Canvas'} />
         <Flex paddingX={4} paddingBottom={4} paddingTop={3} flexDirection={'column'}>
           <Flex paddingY={1} gap={2}>
             <Text size={1} weight="semibold">
