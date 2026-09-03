@@ -292,6 +292,19 @@ File-wide `/* oxlint-disable <rule> */` is reserved for files that are an except
 
 `options.reportUnusedDisableDirectives` is `error`, so a suppression that stops being necessary fails CI — drop suppressions when the code underneath them changes.
 
+### React Compiler bail-outs are silent in `sanity dev`
+
+An `oxlint-disable-next-line react/…` suppression marks code the React Compiler cannot compile:
+the whole component or hook is skipped, not just that line. Since `oxc-transform-react` 0.148 the
+Vite plugin no longer logs those bail-outs, so a quiet `sanity dev` terminal is not evidence that a
+component compiles — the oxlint `react/*` diagnostics are the signal. Fix the code (no render-time
+`ref.current`, no `try/finally` around state updates, no hooks-rule suppressions) rather than
+suppressing it. Keep previous-value caches in a `useState` closure instead of a ref (see
+`useImmutableReconcile`).
+
+Do not add `'use no memo'` to TanStack Virtual callers: the compiler detects `useVirtualizer()`
+and opts those functions out on its own.
+
 ### Effect events: use `use-effect-event`, not React's native hook
 
 Import `useEffectEvent` from `use-effect-event`, never from `react`. On React 19.2 the native hook

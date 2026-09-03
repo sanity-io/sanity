@@ -1,6 +1,6 @@
 import {type Path} from '@sanity/types'
 import {isEqual, pathFor} from '@sanity/util/paths'
-import {type ReactNode, type RefObject, useContext, useMemo, useRef} from 'react'
+import {type ReactNode, useContext, useMemo, useState} from 'react'
 import {PortableTextMemberItemsContext} from 'sanity/_singletons'
 
 import {pathToString} from '../../../../field/paths/helpers'
@@ -54,7 +54,21 @@ export function usePortableTextMemberItemsFromProps(
     onPathFocus,
   } = props
 
-  const portableTextMemberItemsRef: RefObject<PortableTextMemberItem[]> = useRef([])
+  // Keep previous member items (and their JSX) in a useState closure so identity
+  // is preserved without a render-time ref read the compiler would skip.
+  const [memberItemsCache] = useState(() => {
+    let previous: PortableTextMemberItem[] = []
+    return {
+      previous() {
+        return previous
+      },
+      commit(next: PortableTextMemberItem[]) {
+        previous = next
+        return next
+      },
+    }
+  })
+
   return useMemo(() => {
     const result: {
       kind: PortableTextMemberItem['kind']
@@ -128,10 +142,9 @@ export function usePortableTextMemberItemsFromProps(
       }
     }
 
-    // oxlint-disable-next-line react/refs -- @todo this should be fixed but it's difficult and needs research
     const items: PortableTextMemberItem[] = result.map((item) => {
       const key = pathToString(item.node.path)
-      const existingItem = portableTextMemberItemsRef.current.find((refItem) => refItem.key === key)
+      const existingItem = memberItemsCache.previous().find((refItem) => refItem.key === key)
       const isObject = item.kind !== 'textBlock'
       let input: ReactNode = null
 
@@ -217,12 +230,9 @@ export function usePortableTextMemberItemsFromProps(
       }
     })
 
-    // oxlint-disable-next-line react/refs -- @todo this should be fixed but it's difficult and needs research
-    portableTextMemberItemsRef.current = items
-
-    return items
-    // oxlint-disable-next-line react/memo-dependencies -- pre-existing violation, to be fixed in a follow-up
+    return memberItemsCache.commit(items)
   }, [
+    memberItemsCache,
     members,
     onPathFocus,
     path,

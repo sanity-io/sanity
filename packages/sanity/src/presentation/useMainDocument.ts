@@ -118,6 +118,13 @@ export function getRouteContext(
   return undefined
 }
 
+function ensureUrlPatternPolyfill(): Promise<unknown> | undefined {
+  if (typeof URLPattern === 'undefined' && urlPatternPolyfillPromise === undefined) {
+    urlPatternPolyfillPromise = import('urlpattern-polyfill')
+  }
+  return urlPatternPolyfillPromise
+}
+
 export function useMainDocument(props: {
   navigate?: PresentationNavigate
   navigationHistory: RouterState[]
@@ -145,15 +152,12 @@ export function useMainDocument(props: {
    * tool's own lazy chunk.
    */
   if (resolvers.length > 0) {
-    if (typeof URLPattern === 'undefined') {
-      // oxlint-disable-next-line react/todo -- pre-existing violation, to be fixed in a follow-up
-      urlPatternPolyfillPromise ??= import('urlpattern-polyfill')
-    }
+    const polyfillPromise = ensureUrlPatternPolyfill()
     // Once a load has started, keep unwrapping the same promise on every render: the resolved
     // import installs the `URLPattern` global, so gating `use()` on the `typeof` check alone
     // would change the hook sequence between the suspended attempt and React's replay of it
-    if (urlPatternPolyfillPromise !== undefined) {
-      use(urlPatternPolyfillPromise)
+    if (polyfillPromise !== undefined) {
+      use(polyfillPromise)
     }
   }
 
