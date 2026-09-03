@@ -5,10 +5,8 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {css, styled} from 'styled-components'
-import {Text, Box, Flex, VStack, Icon} from 'ui5'
+import {Text, Box, Flex, VStack} from 'ui5'
 
-import {CircleSmallIcon} from '../../../components/temporary-icons/CircleSmall'
-import {RingIcon} from '../../../components/temporary-icons/Ring'
 import {useDidUpdate} from '../../../form/hooks/useDidUpdate'
 import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
 import {type RelativeTimeOptions, useRelativeTime} from '../../../hooks/useRelativeTime'
@@ -35,6 +33,7 @@ import {FLEX_GAP} from '../constants'
 import {CommentInput, type CommentInputHandle} from '../pte/comment-input/CommentInput'
 import {CommentMessageSerializer} from '../pte/CommentMessageSerializer'
 import {CommentReactionsBar} from '../reactions/CommentReactionsBar'
+import {type CommentOrigin, CommentOriginBadge} from './CommentOriginBadge'
 import {CommentsListItemContextMenu} from './CommentsListItemContextMenu'
 import {CommentsListItemReferencedValue} from './CommentsListItemReferencedValue'
 
@@ -155,20 +154,6 @@ const RootStack = styled(VStack)(({theme}) => {
   `
 })
 
-const IconSlotRoot = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-
-  &[data-status='published'] {
-    --card-icon-color: var(--card-badge-positive-dot-color);
-  }
-  &[data-status='draft'] {
-    --card-icon-color: var(--card-badge-caution-dot-color);
-  }
-`
-
 interface CommentsListItemLayoutProps {
   avatarSize?: AvatarSize
   canDelete?: boolean
@@ -193,8 +178,6 @@ interface CommentsListItemLayoutProps {
   withAvatar?: boolean
 }
 
-type CommentOrigin = 'draft' | 'published'
-
 /**
  * The document a comment was made on, when that isn't the document being viewed.
  * Only draft vs published: versions and other ids return `null`.
@@ -208,15 +191,6 @@ export function getForeignCommentOrigin(
   if (!(isDraftId(source) || isPublishedId(source))) return null
   if (!(isDraftId(versionId) || isPublishedId(versionId))) return null
   return isDraftId(source) ? 'draft' : 'published'
-}
-
-function getOriginI18nKey(origin: CommentOrigin) {
-  switch (origin) {
-    case 'draft':
-      return 'list-item.origin.draft'
-    case 'published':
-      return 'list-item.origin.published'
-  }
 }
 
 const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {useTemporalPhrase: true}
@@ -402,25 +376,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
       gap={4}
     >
       <InnerStack gap={1} data-muted={displayError}>
-        {foreignOrigin && (
-          <Flex marginBottom={2}>
-            <Card border padding={1} radius={3}>
-              <Flex alignItems="center" gap={1} paddingRight={1}>
-                <IconSlotRoot data-status={foreignOrigin}>
-                  <Icon
-                    size={2}
-                    icon={foreignOrigin === 'draft' ? RingIcon : CircleSmallIcon}
-                    style={{margin: '-0.375rem'}}
-                  />
-                </IconSlotRoot>
-
-                <Text size={0} muted weight="medium" as="div" trim={true}>
-                  {t(getOriginI18nKey(foreignOrigin))}
-                </Text>
-              </Flex>
-            </Card>
-          </Flex>
-        )}
+        {foreignOrigin && <CommentOriginBadge origin={foreignOrigin} />}
 
         <HeaderFlex
           alignItems="center"
