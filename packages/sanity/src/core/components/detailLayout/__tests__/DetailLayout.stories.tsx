@@ -3,8 +3,8 @@ import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {DetailLayoutStory} from './DetailLayoutStory'
 
 /**
- * Reuses the in-package harness: releases/variants detail identity and
- * properties after the ui5 Box migration. Fixture copy only.
+ * Chromatic sentinel: post-migration ui5 releases/variants detail identity
+ * (four-line clamp) and properties panel. Fixture copy only.
  */
 const meta = {
   title: 'Studio/Detail Layout',
