@@ -136,7 +136,6 @@ export function DiagnosticsReport({
           <DetailRow label="Workspaces" value={studio.workspaceCount} />
           <DetailRow label="Unique targets" value={studio.uniqueTargetCount} />
           <DetailRow label="Auto-updates" value={formatEnabled(studio.autoUpdates)} />
-          <DetailRow label="React strict mode" value={formatEnabled(studio.reactStrictMode)} />
         </ReportSection>
 
         <ReportSection testId="diagnostics-workspace" title="Workspace">

@@ -1,5 +1,4 @@
-import {useContext, useEffect, useMemo, version as reactVersion} from 'react'
-import {RenderStudioOptionsContext} from 'sanity/_singletons'
+import {useEffect, useMemo, version as reactVersion} from 'react'
 
 import {useClient} from '../../hooks/useClient'
 import {SANITY_VERSION} from '../../version'
@@ -43,7 +42,6 @@ export function StudioDiagnosticsBridge(): null {
   const {basePath, currentUser, dataset, name, projectId, schema, title} = useWorkspace()
   const workspaces = useWorkspaces()
   const client = useClient({apiVersion: DIAGNOSTICS_API_VERSION})
-  const {reactStrictMode} = useContext(RenderStudioOptionsContext)
 
   const gather = useMemo(() => {
     const options: StudioDiagnosticsOptions = {
@@ -54,7 +52,6 @@ export function StudioDiagnosticsBridge(): null {
         basePath,
         dataset,
         projectId,
-        reactStrictMode,
         reactVersion,
         uniqueTargetCount: getUniqueTargetCount(workspaces),
         version: SANITY_VERSION,
@@ -67,18 +64,7 @@ export function StudioDiagnosticsBridge(): null {
 
     return (overrides?: {requestTimeout?: number}) =>
       gatherStudioDiagnostics({...options, requestTimeout: overrides?.requestTimeout})
-  }, [
-    basePath,
-    client,
-    currentUser,
-    dataset,
-    name,
-    projectId,
-    reactStrictMode,
-    schema,
-    title,
-    workspaces,
-  ])
+  }, [basePath, client, currentUser, dataset, name, projectId, schema, title, workspaces])
 
   useEffect(() => {
     const bridgeWindow = window as BridgeWindow

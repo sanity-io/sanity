@@ -54,7 +54,7 @@ describe('parseStudioDiagnostics', () => {
   it('accepts reports carrying styles, auto-update and strict mode fields', () => {
     const extended: StudioDiagnostics = {
       ...report,
-      studio: {...report.studio, autoUpdates: true, reactStrictMode: false},
+      studio: {...report.studio, autoUpdates: true},
       styles: {
         styledComponents: {
           styleNodes: [{ruleCount: 1234, version: '6.5.3'}, {ruleCount: 12}],

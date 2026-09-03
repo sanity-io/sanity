@@ -63,7 +63,6 @@ function isStudioDiagnostics(value: unknown): value is StudioDiagnostics {
     isOptional(studio.autoUpdates, isBoolean) &&
     typeof studio.dataset === 'string' &&
     typeof studio.projectId === 'string' &&
-    isOptional(studio.reactStrictMode, isBoolean) &&
     typeof studio.reactVersion === 'string' &&
     typeof studio.uniqueTargetCount === 'number' &&
     typeof studio.version === 'string' &&

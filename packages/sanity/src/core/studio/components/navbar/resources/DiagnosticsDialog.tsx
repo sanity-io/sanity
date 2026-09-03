@@ -3,7 +3,6 @@ import {Card, Spinner, Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {
   useCallback,
-  useContext,
   useEffect,
   useId,
   useMemo,
@@ -11,7 +10,6 @@ import {
   useState,
   version as reactVersion,
 } from 'react'
-import {RenderStudioOptionsContext} from 'sanity/_singletons'
 import {Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
@@ -45,7 +43,6 @@ export function DiagnosticsDialog({onClose}: DiagnosticsDialogProps) {
   const workspace = useWorkspace()
   const workspaces = useWorkspaces()
   const client = useClient({apiVersion: '2025-02-19'})
-  const {reactStrictMode} = useContext(RenderStudioOptionsContext)
   const [diagnostics, setDiagnostics] = useState<StudioDiagnostics>()
   const [error, setError] = useState<string>()
   const initialDiagnosticsStartedRef = useRef(false)
@@ -61,7 +58,6 @@ export function DiagnosticsDialog({onClose}: DiagnosticsDialogProps) {
         basePath: workspace.basePath,
         dataset: workspace.dataset,
         projectId: workspace.projectId,
-        reactStrictMode,
         reactVersion,
         uniqueTargetCount: getUniqueTargetCount(workspaces),
         version: SANITY_VERSION,
@@ -73,7 +69,6 @@ export function DiagnosticsDialog({onClose}: DiagnosticsDialogProps) {
     }),
     [
       client,
-      reactStrictMode,
       workspace.basePath,
       workspace.currentUser,
       workspace.dataset,

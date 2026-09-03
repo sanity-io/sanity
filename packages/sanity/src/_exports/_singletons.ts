@@ -131,7 +131,6 @@ export {
 export {ReleasesMetadataContext} from '../_singletons/context/ReleasesMetadataContext'
 export {TableContext} from '../_singletons/context/ReleasesTableContext'
 export {ReleasesUpsellContext} from '../_singletons/context/ReleasesUpsellContext'
-export {RenderStudioOptionsContext} from '../_singletons/context/RenderStudioOptionsContext'
 export {
   ResolvedPanesContext,
   ResolvedPanesProvider,

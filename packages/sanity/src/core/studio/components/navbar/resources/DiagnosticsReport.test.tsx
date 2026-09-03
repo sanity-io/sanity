@@ -158,7 +158,6 @@ const diagnostics: StudioDiagnostics = {
     dataset: 'production',
     location: 'http://localhost:3333/structure',
     projectId: 'test-project',
-    reactStrictMode: false,
     reactVersion: '19.2.0',
     uniqueTargetCount: 2,
     version: '4.0.0',
@@ -218,8 +217,6 @@ describe('DiagnosticsReport', () => {
     expect(studio.getByText('6.5.3')).toBeInTheDocument()
     expect(studio.getByText('Auto-updates')).toBeInTheDocument()
     expect(studio.getByText('Enabled')).toBeInTheDocument()
-    expect(studio.getByText('React strict mode')).toBeInTheDocument()
-    expect(studio.getByText('Disabled')).toBeInTheDocument()
     expect(studio.getByText('Style nodes')).toBeInTheDocument()
     expect(studio.getByText('1')).toBeInTheDocument()
     expect(studio.getByText('Style rules')).toBeInTheDocument()
@@ -321,7 +318,7 @@ describe('DiagnosticsReport', () => {
         <DiagnosticsReport
           diagnostics={{
             ...diagnostics,
-            studio: {...diagnostics.studio, autoUpdates: undefined, reactStrictMode: undefined},
+            studio: {...diagnostics.studio, autoUpdates: undefined},
             styles: undefined,
           }}
           onRunAgain={vi.fn()}
@@ -330,7 +327,7 @@ describe('DiagnosticsReport', () => {
     )
 
     const studio = within(screen.getByTestId('diagnostics-studio'))
-    expect(studio.getAllByText('Unknown')).toHaveLength(5)
+    expect(studio.getAllByText('Unknown')).toHaveLength(4)
     expect(studio.queryByText('Expected 1')).not.toBeInTheDocument()
   })
 

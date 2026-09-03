@@ -34,8 +34,6 @@ export interface StudioDiagnosticsOptions {
     basePath?: string
     dataset: string
     projectId: string
-    /** Undefined when the Studio was mounted without `renderStudio` */
-    reactStrictMode?: boolean
     reactVersion: string
     uniqueTargetCount: number
     version: string
