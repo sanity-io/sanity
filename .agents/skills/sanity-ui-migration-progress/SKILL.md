@@ -50,10 +50,10 @@ bash .agents/skills/sanity-ui-migration-progress/scripts/measure-progress.sh <di
 **Detect alias** when unsure:
 
 ```bash
-rg '"([^"]+)":\s*"npm:@sanity/ui@' package.json -r '$1'
+rg -o '"([^"]+)":\s*"npm:@sanity/ui@' package.json -r '$1'
 ```
 
-If the default `ui5` finds no imports, the script auto-detects the alias from the nearest `package.json`.
+If the default `ui5` finds no imports, the script auto-detects the alias from the nearest `package.json` at or above `<dir>`, then from any `package.json` below it.
 
 **Scope matters.** Counts depend on the directory passed — scanning a subdirectory vs repo root (`.`) can differ when ui5 imports exist in multiple packages or apps. Always state the directory used in the report.
 

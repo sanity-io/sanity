@@ -77,14 +77,43 @@ SEARCH_DIR="${SEARCH_DIR:-.}"
 
 command -v rg >/dev/null || { echo "ripgrep (rg) required" >&2; exit 1; }
 
-# Discover v5 alias from nearest package.json when default is used and ui5 imports are absent.
+# The nearest package.json at or above SEARCH_DIR, if any. A scanned subdirectory usually has
+# none of its own; the alias is declared by the package (or workspace root) that contains it.
+nearest_package_json() {
+  local dir
+  dir=$(cd "$SEARCH_DIR" && pwd -P) || return 1
+  while :; do
+    if [ -f "$dir/package.json" ]; then
+      echo "$dir/package.json"
+      return 0
+    fi
+    [ "$dir" = "/" ] && return 1
+    dir=$(dirname "$dir")
+  done
+}
+NEAREST_PKG_JSON=$(nearest_package_json || true)
+
+# Run rg with the given arguments over the package.json files that can declare the alias for
+# this tree: the nearest one at or above SEARCH_DIR, then any nested ones below it (monorepo
+# packages). Succeeds when either search matched.
+rg_package_json() {
+  local status=1
+  if [ -n "$NEAREST_PKG_JSON" ]; then
+    rg "$@" "$NEAREST_PKG_JSON" 2>/dev/null && status=0
+  fi
+  rg "$@" --glob 'package.json' "$SEARCH_DIR" 2>/dev/null && status=0
+  return $status
+}
+
+# Discover the v5 alias from package.json when the default is used and ui5 imports are absent.
+# -o --no-filename so only the captured alias is printed, not the path and the rest of the line.
 if [ "$V5_PKG" = "ui5" ] && ! rg -q "from ['\"]ui5['\"]" --glob '*.{ts,tsx}' "$SEARCH_DIR" 2>/dev/null; then
-  detected=$(rg '"([^"]+)":\s*"npm:@sanity/ui@' --glob 'package.json' "$SEARCH_DIR" -r '$1' 2>/dev/null | head -1)
+  detected=$(rg_package_json -o --no-filename '"([^"]+)":\s*"npm:@sanity/ui@' -r '$1' | head -1)
   [ -n "$detected" ] && V5_PKG="$detected"
 fi
 
 has_v5_alias() {
-  rg -q "\"${V5_PKG}\":" --glob 'package.json' "$SEARCH_DIR" 2>/dev/null
+  rg_package_json -q "\"${V5_PKG}\":"
 }
 
 # Collect exported component names from v5 value imports (skip `type` specifiers).
@@ -189,15 +218,15 @@ if [ -z "$components" ]; then
     echo "Migration may not have started yet, or the search directory may be too narrow."
   else
     echo "No migration progress to report under ${SEARCH_DIR}."
-    echo "No v5 side-by-side alias ('${V5_PKG}') found in package.json under this tree."
-    echo "This repo does not appear to have a v5 install — nothing to measure."
+    echo "No '${V5_PKG}' alias is declared in a package.json at or under ${SEARCH_DIR}."
+    echo "Either there is no v5 side-by-side install to measure, or the alias has another name: pass it as the second argument."
   fi
   echo "Pass a component to measure legacy usage before migration: measure-progress.sh <dir> --component Flex"
   exit 0
 fi
 
 if [ "$mode" = "component" ] && ! has_v5_alias; then
-  echo "Note: no '${V5_PKG}' alias in package.json — v5 counts will be zero." >&2
+  echo "Note: no '${V5_PKG}' alias is declared in a package.json at or under ${SEARCH_DIR}; only imports from '${V5_PKG}' count as migrated." >&2
 fi
 
 echo "Sanity UI migration progress"
