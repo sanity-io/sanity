@@ -576,7 +576,35 @@ describe('beta variants config', () => {
         },
       }),
     ).rejects.toThrow(
-      'Expected `beta.variants.conditions` to be an array or a function, but received string',
+      'Expected `beta.variants.conditions` to be an array, a function, or a `{function}` reference, but received string',
+    )
+  })
+
+  it('resolves a function reference', async () => {
+    const conditions = {function: 'audience-conditions', stackId: 'ST-123'}
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      beta: {variants: {enabled: true, conditions}},
+    })
+
+    expect(source.beta?.variants?.conditions).toBe(conditions)
+  })
+
+  it('throws when a function reference has no function name', async () => {
+    await expect(
+      createSourceFromConfig({
+        projectId,
+        dataset,
+        beta: {
+          variants: {
+            // @ts-expect-error function name is required
+            conditions: {stackId: 'ST-123'},
+          },
+        },
+      }),
+    ).rejects.toThrow(
+      'Expected `beta.variants.conditions` to be an array, a function, or a `{function}` reference, but received object',
     )
   })
 })

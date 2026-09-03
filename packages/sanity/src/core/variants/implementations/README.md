@@ -62,10 +62,25 @@ beta: {
 }
 ```
 
+Or point it at a deployed PubSub Sanity Function. The studio calls `client.functions.invoke(name, {event: {data: {projectId, dataset}}}, {sync: true})` with the editor's session and expects the handler to return the same array shape. Secrets stay on the server, and agents or the App SDK can call the same function.
+
+```ts
+beta: {
+  variants: {
+    enabled: true,
+    conditions: {function: 'audience-conditions', stackId: 'ST-xxxxxxxx'},
+  },
+}
+```
+
+`stackId` is optional if the studio client config already carries one. `organizationId` and `timeout` are also accepted and passed straight to `invoke`. If the handler returns something other than an array, the studio treats it as a load error.
+
+Functions are included on every plan, but Free has a hard monthly cap and no overage. The static array and the browser function stay supported; pick whichever fits the project.
+
 When `conditions` is set:
 
 - The create/edit dialog is a card picker. Keys and values must come from the list. You cannot type a new name.
-- The function runs when the form, overview, detail page, or navbar needs the list. Not at studio boot. One resolve is shared. A slow CDP does not stall the rest of the studio.
+- The function (browser or Sanity Function) runs when the form, overview, detail page, or navbar needs the list. Not at studio boot. One resolve is shared. A slow CDP does not stall the rest of the studio.
 - If the load fails, the form shows an error and Retry. It does not fall back to free text.
 - Stored pairs that are no longer in the list get flagged. [Mismatch validation](#mismatch-validation) has the copy and the screens.
 - `title` and `description` are optional. What we persist is still `name` + `value`, like `audience` / `loyal`.
@@ -73,7 +88,7 @@ When `conditions` is set:
 
 Leave `conditions` unset and you still get the old free-text autocomplete. Suggestions come from existing variant documents. We do not check those names against a list.
 
-The `/test` workspace in test-studio has the async path wired (`dev/test-studio/sanity.config.ts`).
+The `/test` workspace in test-studio points at the `audience-conditions` function (`dev/test-studio/sanity.config.ts`). Set `SANITY_STUDIO_VARIANT_CONDITIONS=browser` to use the in-browser resolver instead.
 
 ## Mismatch validation
 
@@ -153,7 +168,7 @@ Read this part if you are about to demo it.
 
 **Content agents cannot call this function.** The list lives in studio config and runs in the client. An agent that only sees documents and schema still cannot enumerate valid audiences unless you also store that list as documents. Do not sell this as "the agent now knows your CDP."
 
-**It is not a Sanity Function or blueprint proxy.** We talked about a helper that fetches external data so the studio and later agents do not each invent an HTTP client. That is a conversation with the functions team. Nothing here deploys or manages that proxy.
+**It is not a Sanity Function or blueprint proxy.** We talked about a helper that fetches external data so the studio and later agents do not each invent an HTTP client. Most of that primitive exists already as PubSub functions plus `client.functions.invoke()`. [proposal.md](./proposal.md) describes the general pattern (server-side resolvers for any studio config callback, variant conditions being the first) and what we are asking the functions team for. Nothing in this branch deploys or calls a function. When that lands, the studio still has to accept the static array and this config function. Functions are on Free with a hard monthly cap; not every project will deploy a blueprint.
 
 **Documents-as-the-list is a workaround.** If the agent must see the same values, keep a document the studio function reads. The agent can query it. You also get two writes, a sync job, and an argument about which document is canonical. Use it if you have to. Do not call it the model.
 

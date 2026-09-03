@@ -499,7 +499,8 @@ export const variantsEnabledReducer = (opts: {
 }
 
 function isVariantConditions(value: unknown): value is VariantConditions {
-  return Array.isArray(value) || typeof value === 'function'
+  if (Array.isArray(value) || typeof value === 'function') return true
+  return isRecord(value) && typeof value.function === 'string'
 }
 
 export const variantsConditionsReducer = (opts: {
@@ -527,7 +528,7 @@ export const variantsConditionsReducer = (opts: {
     }
 
     throw new Error(
-      `Expected \`beta.variants.conditions\` to be an array or a function, but received ${getPrintableType(
+      `Expected \`beta.variants.conditions\` to be an array, a function, or a \`{function}\` reference, but received ${getPrintableType(
         conditions,
       )}`,
     )

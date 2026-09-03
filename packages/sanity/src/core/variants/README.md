@@ -134,7 +134,7 @@ The autocomplete is a consistency aid, not a schema constraint. Users can still 
 
 ## Configured conditions picker
 
-When `beta.variants.conditions` is set (a static array or a function that may return a promise), the form switches to an exclusive card picker. The function receives `projectId`, `dataset`, and `getClient`, and is resolved when a surface needs the list, not during studio boot.
+When `beta.variants.conditions` is set (a static array, a function that may return a promise, or a `{function, stackId}` reference to a PubSub Sanity Function), the form switches to an exclusive card picker. The browser function receives `projectId`, `dataset`, and `getClient`. A function reference is invoked through `client.functions.invoke(..., {sync: true})` with `{projectId, dataset}` as `event.data`. Either is resolved when a surface needs the list, not during studio boot (`util/resolveVariantConditions.ts`).
 
 - key cards come from the configured list (title + optional description)
 - after a key is chosen, value cards for that key are shown

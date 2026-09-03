@@ -9,7 +9,13 @@ import {PresentationIcon} from '@sanity/icons/Presentation'
 import {SanityMonogram} from '@sanity/logos'
 import {themerTool} from '@sanity/themer/tool'
 import {visionTool} from '@sanity/vision'
-import {defineConfig, definePlugin, type AuthProvider, type WorkspaceOptions} from 'sanity'
+import {
+  type AuthProvider,
+  defineConfig,
+  definePlugin,
+  type VariantConditions,
+  type WorkspaceOptions,
+} from 'sanity'
 import {unsplashAssetSource, UnsplashIcon} from 'sanity-plugin-asset-source-unsplash'
 import {internationalizedArray} from 'sanity-plugin-internationalized-array'
 import {media} from 'sanity-plugin-media'
@@ -339,35 +345,7 @@ const defaultWorkspace = defineConfig({
   beta: {
     variants: {
       enabled: true,
-      conditions: async () => {
-        // Mimics an api call to get the conditions
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-        return [
-          {
-            name: 'audience',
-            title: 'Audience',
-            description: 'Who this content is for.',
-            values: [
-              {
-                value: 'loyal',
-                title: 'Loyal customers',
-                description: 'Repeat purchasers and members.',
-              },
-              {
-                value: 'new',
-                title: 'New visitors',
-                description: 'First-time visitors to the site.',
-              },
-            ],
-          },
-          {
-            name: 'locale',
-            title: 'Locale',
-            description: 'The visitor language and region.',
-            values: ['en-US', 'nb-NO', 'de-DE'],
-          },
-        ]
-      },
+      conditions: {function: 'audience-conditions', stackId: 'ST-ijsqtbf8au'},
     },
   },
 })

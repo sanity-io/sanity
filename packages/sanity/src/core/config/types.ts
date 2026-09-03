@@ -1321,6 +1321,28 @@ export interface VariantConditionMap {
 export type VariantConditionsContext = Pick<ConfigContext, 'projectId' | 'dataset' | 'getClient'>
 
 /**
+ * Points `beta.variants.conditions` at a deployed PubSub Sanity Function.
+ *
+ * The studio invokes it with `client.functions.invoke(function, {event: {data: {projectId, dataset}}}, {sync: true})`
+ * and expects the handler to return a {@link VariantConditionMap} array.
+ *
+ * @internal
+ */
+export interface VariantConditionsFunctionRef {
+  /** Function name as declared in the blueprint. */
+  function: string
+  /**
+   * Stack the function is deployed to. Function names are only unique within a stack.
+   * Falls back to `stackId` on the client config when omitted.
+   */
+  stackId?: string
+  /** Organization that owns the stack, for stacks deployed at organization scope. */
+  organizationId?: string
+  /** Milliseconds to wait for the function before failing. */
+  timeout?: number
+}
+
+/**
  * Static or resolved list of known variant conditions.
  *
  * @internal
@@ -1328,6 +1350,7 @@ export type VariantConditionsContext = Pick<ConfigContext, 'projectId' | 'datase
 export type VariantConditions =
   | VariantConditionMap[]
   | ((context: VariantConditionsContext) => VariantConditionMap[] | Promise<VariantConditionMap[]>)
+  | VariantConditionsFunctionRef
 
 /**
  * @internal
@@ -1398,9 +1421,11 @@ export interface BetaFeatures {
     /**
      * Optional list of known variant condition keys and values.
      * When set, the create/edit form shows a card picker instead of free-text fields.
-     * Accepts a static array or a function that may return a promise (for example to
-     * load conditions from a CDP). The function receives project id, dataset, and
-     * `getClient`, and is called when the form opens, not at studio boot.
+     * Accepts a static array, a function that may return a promise (for example to
+     * load conditions from a CDP), or a `{function, stackId}` reference to a deployed
+     * PubSub Sanity Function that returns the list. The browser function receives
+     * project id, dataset, and `getClient`. Either is resolved when a variant surface
+     * needs the list, not at studio boot.
      */
     conditions?: VariantConditions
   }

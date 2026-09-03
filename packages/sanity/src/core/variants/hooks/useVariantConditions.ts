@@ -10,6 +10,7 @@ import {
   type NormalizedVariantConditionMap,
   normalizeVariantConditions,
 } from '../util/normalizeVariantConditions'
+import {isVariantConditionsFunctionRef} from '../util/resolveVariantConditions'
 import {
   getVariantConditionsSnapshot,
   type MappedConditionsSnapshot,
@@ -28,12 +29,15 @@ export type UseVariantConditionsResult =
 
 const FREEFORM_RESULT: UseVariantConditionsResult = {mode: 'freeform'}
 const IDLE_SNAPSHOT: MappedConditionsSnapshot = {status: 'loading'}
-const INVALID_CONDITIONS_ERROR = new Error('Expected conditions to be an array or a function')
+const INVALID_CONDITIONS_ERROR = new Error(
+  'Expected conditions to be an array, a function, or a `{function}` reference',
+)
 const NO_MISMATCHES: ConditionMismatch[] = []
 
 /**
  * Resolves `beta.variants.conditions` when a variant surface needs the configured list.
- * Async resolvers share one in-flight request per workspace until `retry()`.
+ * Browser functions and Sanity Function references share one in-flight request per
+ * workspace until `retry()`.
  *
  * @internal
  */
@@ -47,7 +51,10 @@ export function useVariantConditions(): UseVariantConditionsResult {
       getClient: workspace.getClient,
     }
   }, [workspace.dataset, workspace.getClient, workspace.projectId])
-  const resolver = typeof conditions === 'function' ? conditions : undefined
+  const resolver =
+    typeof conditions === 'function' || isVariantConditionsFunctionRef(conditions)
+      ? conditions
+      : undefined
   const subscribe = useCallback(
     (onStoreChange: () => void) => {
       if (!resolver) {

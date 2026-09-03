@@ -359,6 +359,7 @@ export {
   type VariantConditionMap,
   type VariantConditions,
   type VariantConditionsContext,
+  type VariantConditionsFunctionRef,
   type VariantConditionValue,
   type Workspace,
   type WorkspaceHiddenContext,

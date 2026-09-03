@@ -1,8 +1,12 @@
-import {type VariantConditions, type VariantConditionsContext} from '../../config/types'
+import {type VariantConditionsContext} from '../../config/types'
 import {
   type NormalizedVariantConditionMap,
   normalizeVariantConditions,
 } from '../util/normalizeVariantConditions'
+import {
+  resolveVariantConditions,
+  type VariantConditionsSource,
+} from '../util/resolveVariantConditions'
 
 /**
  * @internal
@@ -12,7 +16,7 @@ export type MappedConditionsSnapshot =
   | {status: 'ready'; definitions: NormalizedVariantConditionMap[]}
   | {status: 'error'; error: Error}
 
-type ConditionsResolver = Exclude<VariantConditions, unknown[]>
+type ConditionsResolver = VariantConditionsSource
 
 interface CacheEntry {
   generation: number
@@ -24,6 +28,8 @@ interface CacheEntry {
 }
 
 const LOADING_SNAPSHOT: MappedConditionsSnapshot = {status: 'loading'}
+// Keyed by the config value itself (browser function or `{function}` ref object).
+// Both come from the resolved workspace config, so identity is stable per workspace.
 const cache = new WeakMap<ConditionsResolver, Map<string, CacheEntry>>()
 
 function workspaceKey(context: VariantConditionsContext): string {
@@ -79,8 +85,7 @@ function ensureLoad(entry: CacheEntry): void {
   const {resolver, context} = entry
   entry.inFlightGeneration = generation
 
-  Promise.resolve()
-    .then(() => resolver(context))
+  resolveVariantConditions(resolver, context)
     .then((value) => {
       if (entry.generation !== generation) {
         return
