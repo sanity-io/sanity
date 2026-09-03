@@ -87,7 +87,9 @@ has_v5_alias() {
 
 # Collect exported component names from v5 value imports (skip `type` specifiers).
 discover_components() {
-  rg -U --multiline -o "import \{([^}]+)\} from ['\"]${V5_PKG}['\"]" \
+  # --no-filename: when scanning a directory rg prefixes each match with its path, which would
+  # swallow the first specifier of every import in the sed/tr pipeline below.
+  rg -U --multiline -o --no-filename "import \{([^}]+)\} from ['\"]${V5_PKG}['\"]" \
     --glob '*.ts' --glob '*.tsx' "$SEARCH_DIR" 2>/dev/null \
     | sed 's/^import {//;s/} from.*//' \
     | tr ',' '\n' \
