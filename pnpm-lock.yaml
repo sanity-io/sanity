@@ -279,6 +279,9 @@ importers:
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.18
+      '@vanilla-extract/css':
+        specifier: 'catalog:'
+        version: 1.21.2(babel-plugin-macros@3.1.0)
       oxc-transform-react:
         specifier: 'catalog:'
         version: 0.148.0
