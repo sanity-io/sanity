@@ -1,4 +1,5 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Stack, Text} from '@sanity/ui'
+import noop from 'lodash-es/noop.js'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {AccessPolicyBadge} from '../common/AccessPolicyBadge'
@@ -8,9 +9,12 @@ import {InvalidImageWarning} from '../ImageInput/InvalidImageWarning'
 
 /**
  * Chromatic sentinel for file/image input warning chrome after the ui5 Box
- * migration. Caution InvalidImage/File/Upload cards and the private-access
- * badge all pair Box icon padding with Card tones — a mix a type-check will
- * not catch. Copy comes from the default studio locale (no timestamps).
+ * migration. The three caution cards share one chrome (Card tone → Flex →
+ * Box icon gutter → Stack → ghost Button) and differ only in copy, so they
+ * pin the same layout three times over different string lengths; the
+ * private-access badge is shrink-wrapped in a centered Flex the way
+ * FileActionsMenu renders it. Copy comes from the default studio locale
+ * (no timestamps).
  */
 export function FileInputWarningsStory() {
   return (
@@ -21,26 +25,27 @@ export function FileInputWarningsStory() {
             <Text muted size={1} weight="medium">
               invalid image
             </Text>
-            <InvalidImageWarning onClearValue={() => null} />
+            <InvalidImageWarning onClearValue={noop} />
           </Stack>
           <Stack gap={2}>
             <Text muted size={1} weight="medium">
               invalid file
             </Text>
-            <InvalidFileWarning onClearValue={() => null} />
+            <InvalidFileWarning onClearValue={noop} />
           </Stack>
           <Stack gap={2}>
             <Text muted size={1} weight="medium">
               stale upload
             </Text>
-            <UploadWarning onClearStale={() => null} />
+            <UploadWarning onClearStale={noop} />
           </Stack>
           <Stack gap={2}>
             <Text muted size={1} weight="medium">
-              access policy
+              access policy (FileActionsMenu row)
             </Text>
-            <AccessPolicyBadge />
-            <AccessPolicyBadge hideBackground />
+            <Flex justify="center" gap={2}>
+              <AccessPolicyBadge />
+            </Flex>
           </Stack>
         </Stack>
       </Card>

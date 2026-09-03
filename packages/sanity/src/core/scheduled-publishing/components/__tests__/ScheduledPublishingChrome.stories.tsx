@@ -3,8 +3,10 @@ import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {ScheduledPublishingChromeStory} from './ScheduledPublishingChromeStory'
 
 /**
- * Reuses the in-package harness: scheduled-publishing error/info callouts and
- * empty states after the ui5 Flex migration. No dates or live dataset rows.
+ * Chromatic sentinel: scheduled-publishing error/info callouts and empty
+ * states (including the fixed selected-date heading) after the ui5 Flex
+ * migration, framed in their production Container wrappers. No live dataset
+ * rows.
  */
 const meta = {
   title: 'Scheduled Publishing/Chrome',

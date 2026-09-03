@@ -3,8 +3,8 @@ import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {FileInputWarningsStory} from './FileInputWarningsStory'
 
 /**
- * Reuses the in-package harness: invalid image/file, stale upload, and
- * private-access badge after the ui5 Box migration. Studio i18n only.
+ * Chromatic sentinel: invalid image/file, stale upload, and private-access
+ * badge after the ui5 Box migration. Studio i18n only.
  */
 const meta = {
   title: 'Inputs/File Input Warnings',
