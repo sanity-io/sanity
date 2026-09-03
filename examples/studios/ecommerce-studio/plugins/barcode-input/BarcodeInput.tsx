@@ -1,31 +1,12 @@
 // Copied from `@sanity/cli` (templates/ecommerce/plugins/barcode-input/BarcodeInput.js)
 
+import './BarcodeInput.css'
+
 import {Text} from '@sanity/ui'
 import {useState} from 'react'
 import Barcode from 'react-barcode'
 import {type FieldMember, MemberField, type ObjectInputProps} from 'sanity'
-import {styled} from 'styled-components'
 import {Box} from 'ui5'
-
-const BarcodeRoot = styled(Box)`
-  svg {
-    display: block;
-    margin: 1em auto;
-    max-width: 100%;
-  }
-`
-
-const FieldWrapper = styled.div`
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  grid-gap: 1em;
-`
-
-const ErrorMessage = styled(Text)`
-  color: #e66666;
-  text-align: center;
-  padding: 1em;
-`
 
 interface BarcodeValue {
   barcode?: string
@@ -40,7 +21,7 @@ export const BarcodeInput = function BarcodeInput(props: ObjectInputProps<Barcod
 
   return (
     <>
-      <BarcodeRoot>
+      <Box className="barcode-root">
         {value && value.barcode && (
           <Barcode
             textAlign="center"
@@ -49,9 +30,9 @@ export const BarcodeInput = function BarcodeInput(props: ObjectInputProps<Barcod
             valid={setValid}
           />
         )}
-        {!valid && <ErrorMessage>Not a valid {value?.format}</ErrorMessage>}
-      </BarcodeRoot>
-      <FieldWrapper>
+        {!valid && <Text className="barcode-error">Not a valid {value?.format}</Text>}
+      </Box>
+      <div className="barcode-fields">
         {memberFields.map((member) => (
           <MemberField
             key={member.key}
@@ -62,7 +43,7 @@ export const BarcodeInput = function BarcodeInput(props: ObjectInputProps<Barcod
             renderPreview={renderPreview}
           />
         ))}
-      </FieldWrapper>
+      </div>
     </>
   )
 }
