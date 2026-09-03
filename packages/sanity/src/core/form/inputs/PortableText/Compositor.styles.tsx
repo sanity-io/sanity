@@ -1,67 +1,56 @@
-import {Layer} from '@sanity/ui'
-import {getTheme_v2} from '@sanity/ui/theme'
-import {css, styled} from 'styled-components'
+import {Layer, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 
 import {focusRingBorderStyle, focusRingStyle} from '../../components/withFocusRing/helpers'
-import {stringDiffContainerStyles} from '../common/diff/string/styles'
+import {
+  expandedLayer,
+  inputBorderBoxShadowVar,
+  inputBorderWidthVar,
+  inputFocusRingBoxShadowVar,
+  radius2Var,
+  root,
+  stringDiffContainer,
+} from './Compositor.styles.css'
 
-export const Root = styled.div((props) => {
-  const {color, input, radius} = getTheme_v2(props.theme)
+export function Root(props: ComponentProps<'div'>) {
+  const {className, style, ...rest} = props
+  const {color, input, radius} = useThemeV2()
 
   const border = {
     color: color.input.default.enabled.border,
     width: input.border.width,
   }
 
-  return css`
-    --input-box-shadow: ${focusRingBorderStyle(border)};
-
-    position: relative;
-
-    & [data-wrapper] {
-      overflow: hidden;
-      overflow: clip;
-      position: relative;
-      z-index: 1;
-      padding: ${input.border.width}px;
-    }
-
-    & [data-border] {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      box-shadow: var(--input-box-shadow);
-      z-index: 2;
-      border-radius: ${radius[2]}px;
-      pointer-events: none;
-    }
-
-    &:not([data-read-only])[data-focused] [data-border] {
-      --input-box-shadow: ${focusRingStyle({
-        base: color,
-        border,
-        focusRing: input.text.focusRing,
-      })};
-    }
-  `
-})
+  return (
+    <div
+      {...rest}
+      className={clsx(root, className)}
+      style={{
+        ...assignInlineVars({
+          [inputBorderBoxShadowVar]: focusRingBorderStyle(border),
+          [inputFocusRingBoxShadowVar]: focusRingStyle({
+            base: color,
+            border,
+            focusRing: input.text.focusRing,
+          }),
+          [inputBorderWidthVar]: `${input.border.width}px`,
+          [radius2Var]: `${radius[2]}px`,
+        }),
+        ...style,
+      }}
+    />
+  )
+}
 
 // This element only wraps the input when in "fullscreen" mode
-export const ExpandedLayer = styled(Layer)`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+export function ExpandedLayer(props: ComponentProps<typeof Layer>) {
+  const {className, ...rest} = props
+  return <Layer {...rest} className={clsx(expandedLayer, className)} />
+}
 
-  & > div {
-    height: 100%;
-  }
-`
-
-export const StringDiffContainer = styled.div`
-  height: 100%;
-  ${stringDiffContainerStyles}
-`
+export function StringDiffContainer(props: ComponentProps<'div'>) {
+  const {className, ...rest} = props
+  return <div {...rest} className={clsx(stringDiffContainer, className)} />
+}
