@@ -960,6 +960,9 @@ importers:
       chromatic:
         specifier: ^18.7.1
         version: 18.7.1(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@0.1.10)
+      fflate:
+        specifier: ^0.8.3
+        version: 0.8.3
       tsx:
         specifier: ^4.23.13
         version: 4.23.13

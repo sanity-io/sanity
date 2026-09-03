@@ -66,6 +66,7 @@
     "e2e:cleanup": "tsx -r dotenv-flow/config e2e/scripts/cleanupDatasets",
     "e2e:codegen": "node -r dotenv-flow/config ./node_modules/.bin/sanity-test codegen",
     "e2e:dev": "pnpm --filter studio-e2e-testing dev",
+    "e2e:flake-report": "pnpm --filter e2e flake-report",
     "e2e:preview": "pnpm --filter e2e build && pnpm --filter studio-e2e-testing preview",
     "e2e:setup": "pnpm --filter e2e run setup",
     "e2e:start": "pnpm --filter studio-e2e-testing preview",

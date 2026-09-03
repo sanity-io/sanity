@@ -1,0 +1,46 @@
+name: E2E flake report
+permissions: {}
+
+on:
+  schedule:
+    # Weekly on Monday morning (UTC), covering the previous week's runs
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+    inputs:
+      days:
+        description: "How many days of End-to-End Tests runs to analyze"
+        default: "7"
+        required: false
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    # Runs that predate the compact e2e-diagnostics artifacts fall back to the
+    # video-heavy shard artifacts; a week of those takes most of an hour.
+    timeout-minutes: 90
+    permissions:
+      actions: read # list runs and jobs, download shard artifacts and job logs
+      contents: read
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+
+      - name: Attribute failed e2e runs to platform vs test-side causes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPORT_DAYS: ${{ inputs.days || '7' }}
+        run: pnpm e2e:flake-report --days "$REPORT_DAYS" --out flake-report.md --json flake-report.json
+
+      - name: Publish the report as the job summary
+        run: cat flake-report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: e2e-flake-report
+          path: |
+            flake-report.md
+            flake-report.json
+          retention-days: 90

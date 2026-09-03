@@ -218,6 +218,20 @@ jobs:
             e2e/results
           retention-days: 30
 
+      # The studio diagnostics captured on failed attempts, without the videos and
+      # traces, so `pnpm e2e:flake-report` can aggregate weeks of runs cheaply.
+      - name: Extract failure diagnostics
+        if: always()
+        run: pnpm --filter e2e extract-diagnostics
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: e2e-diagnostics-${{ matrix.project }}-${{ matrix.shardIndex }}
+          path: e2e/diagnostics
+          if-no-files-found: ignore
+          retention-days: 90
+
   chromatic-e2e:
     name: Chromatic E2E visual tests
     timeout-minutes: 15
