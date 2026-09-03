@@ -1,6 +1,6 @@
-import {Card, Flex} from '@sanity/ui'
+import {Card, Flex, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
-import {css, styled} from 'styled-components'
 import {Box} from 'ui5'
 
 import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
@@ -10,128 +10,17 @@ import {type FormNodePresence} from '../../../presence/types'
 import {calcAvatarStackWidth} from '../../../presence/utils'
 import {FieldActionMenu} from '../../field/actions/FieldActionMenu'
 import {type FieldCommentsProps} from '../../types/fieldProps'
-
-const Root = styled(Flex)<{
-  $floatingCardWidth: number
-  $slotWidth: number
-  $floatingCardVisible: boolean
-}>(({theme, $floatingCardWidth, $slotWidth, $floatingCardVisible}) => {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {space} = theme.sanity
-  return css`
-    /* Prevent buttons from taking up extra vertical space */
-    line-height: 1;
-    width: 100%;
-    /* For floating actions menu */
-    position: relative;
-
-    [data-ui='PresenceBox'] {
-      position: absolute;
-      bottom: 0;
-      right: ${$slotWidth + $floatingCardWidth + space[1]}px;
-    }
-    @media (hover: hover) {
-      // If hover is supported, we hide the floating card by default, so only add space for it when it's visible.
-      [data-ui='PresenceBox'] {
-        position: absolute;
-        bottom: 0;
-        right: ${$slotWidth + ($floatingCardVisible ? $floatingCardWidth : 0) + space[1]}px;
-      }
-    }
-  `
-})
-
-const ContentBox = styled(Box)<{
-  $presenceMaxWidth: number
-}>(({theme, $presenceMaxWidth}) => {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {space} = theme.sanity
-  return css`
-    max-width: calc(100% - ${$presenceMaxWidth + space[1]}px);
-    min-width: 75%;
-  `
-})
-
-const SlotBox = styled(Box)<{
-  $right: number
-  $fieldActionsVisible: boolean
-}>(({theme, $right, $fieldActionsVisible}) => {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {space} = theme.sanity
-  const right = $fieldActionsVisible ? $right + space[1] : $right
-  return css`
-    position: absolute;
-    bottom: 0;
-    right: ${right}px;
-  `
-})
-
-const FieldActionsFloatingCard = styled(Card)`
-  align-items: center;
-  bottom: 0;
-  position: absolute;
-  right: 0;
-  transition: opacity 150ms ease;
-  line-height: 1;
-
-  @media (hover: hover) {
-    // If hover is supported, we hide the floating card by default
-    // and only show it when it has focus within or when the field is hovered or focused.
-    opacity: 0;
-    pointer-events: none;
-
-    [data-ui='FieldActionsFlex'] {
-      opacity: 0;
-    }
-
-    &[data-actions-visible='false']:not(:focus-within) {
-      // Remove the shadow when the field actions are not visible
-      box-shadow: none;
-
-      // Since the field actions always will be present in the DOM (to make them focusable) –
-      // they will always affect the width of the floating card, even when they are not visible.
-      // Therefore, we remove the background of the floating card when the field actions are not visible.
-      background: transparent;
-    }
-
-    // Remove the shadow when the field has comments but no actions
-    &[data-has-comments='true']:not([data-has-actions='true']) {
-      box-shadow: none;
-    }
-
-    // Show the floating card when it has focus within (ie when field actions are focused).
-    &:focus-within {
-      opacity: 1;
-      pointer-events: auto;
-      width: max-content;
-
-      [data-ui='FieldActionsFlex'] {
-        opacity: 1;
-        pointer-events: auto;
-        width: max-content;
-      }
-    }
-  }
-
-  &[data-visible='true'] {
-    opacity: 1;
-    pointer-events: auto;
-    width: max-content;
-  }
-
-  &[data-actions-visible='true'] {
-    [data-ui='FieldActionsFlex'] {
-      opacity: 1;
-      pointer-events: auto;
-      width: max-content;
-    }
-  }
-`
-
-const FieldActionsFlex = styled(Flex)`
-  gap: inherit;
-  transition: opacity 150ms ease;
-`
+import {
+  contentBox,
+  contentBoxPresenceOffsetVar,
+  fieldActionsFlex,
+  fieldActionsFloatingCard,
+  presenceBoxRightHoverVar,
+  presenceBoxRightVar,
+  root,
+  slotBox,
+  slotBoxRightVar,
+} from './FormFieldBaseHeader.css'
 
 const MAX_AVATARS = 4
 
@@ -158,6 +47,7 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
     presence,
     inputId,
   } = props
+  const {space} = useThemeV2()
   const [focused, setFocused] = useState<boolean>(false)
   // State for if an actions menu is open
   const [menuOpen, setMenuOpen] = useState<boolean>(false)
@@ -229,34 +119,42 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
   const slotEl = useMemo(() => {
     if (!slot) return null
 
+    const right = showFieldActions ? floatingCardWidth + space[1] : floatingCardWidth
+
     return (
-      <SlotBox
-        $fieldActionsVisible={Boolean(showFieldActions)}
-        $right={floatingCardWidth}
+      <Box
+        className={slotBox}
         ref={setSlotElement}
+        style={assignInlineVars({[slotBoxRightVar]: `${right}px`})}
       >
         {slot}
-      </SlotBox>
+      </Box>
     )
-  }, [floatingCardWidth, showFieldActions, slot])
+  }, [floatingCardWidth, showFieldActions, slot, space])
 
   return (
-    <Root
+    <Flex
       align="flex-end"
       justify="space-between"
-      $floatingCardVisible={shouldShowFloatingCard}
-      $floatingCardWidth={floatingCardWidth}
-      $slotWidth={slotWidth}
+      className={root}
+      style={assignInlineVars({
+        [presenceBoxRightVar]: `${slotWidth + floatingCardWidth + space[1]}px`,
+        // If hover is supported, we hide the floating card by default, so only add space for it when it's visible.
+        [presenceBoxRightHoverVar]: `${slotWidth + (shouldShowFloatingCard ? floatingCardWidth : 0) + space[1]}px`,
+      })}
     >
-      <ContentBox
+      <Box
+        className={contentBox}
         data-ui="fieldHeaderContentBox"
         flexBasis="0%"
         flexGrow={1}
         paddingY={2}
-        $presenceMaxWidth={calcAvatarStackWidth(MAX_AVATARS)}
+        style={assignInlineVars({
+          [contentBoxPresenceOffsetVar]: `${calcAvatarStackWidth(MAX_AVATARS) + space[1]}px`,
+        })}
       >
         {content}
-      </ContentBox>
+      </Box>
 
       {presence && presence.length > 0 && (
         <Box data-ui="PresenceBox" flexBasis="auto" flexGrow={0} flexShrink={0}>
@@ -268,7 +166,8 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
 
       {(hasCommentsButtonOrActions || hasComments) && (
         <TooltipDelayGroupProvider>
-          <FieldActionsFloatingCard
+          <Card
+            className={fieldActionsFloatingCard}
             data-actions-visible={showFieldActions ? 'true' : 'false'}
             data-has-actions={hasActions ? 'true' : 'false'}
             data-has-comments={hasComments ? 'true' : 'false'}
@@ -280,19 +179,20 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
             sizing="border"
           >
             {hasActions && (
-              <FieldActionsFlex
+              <Flex
                 align="center"
+                className={fieldActionsFlex}
                 data-ui="FieldActionsFlex"
                 data-testid={inputId ? `field-actions-menu-${inputId}` : `field-actions-menu`}
               >
                 <FieldActionMenu nodes={actions} onMenuOpenChange={setMenuOpen} />
-              </FieldActionsFlex>
+              </Flex>
             )}
 
             {commentButton}
-          </FieldActionsFloatingCard>
+          </Card>
         </TooltipDelayGroupProvider>
       )}
-    </Root>
+    </Flex>
   )
 }

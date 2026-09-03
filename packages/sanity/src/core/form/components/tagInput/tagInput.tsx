@@ -1,5 +1,7 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {Card, Flex, isHTMLElement, rem, Text, type Theme} from '@sanity/ui'
+import {Card, Flex, isHTMLElement, rem, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
 import {
   type ChangeEvent,
   type FocusEvent,
@@ -13,142 +15,38 @@ import {
   useState,
   type RefAttributes,
 } from 'react'
-import {css, type CSSObject, styled} from 'styled-components'
 import {Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 import {focusRingBorderStyle, focusRingStyle} from './styles'
-
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-const Root = styled(Card)((props: {theme: Theme}): CSSObject => {
-  const {theme} = props
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {focusRing, input, radius} = theme.sanity
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const color = theme.sanity.color.input
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const space = rem(theme.sanity.space[1])
-
-  return {
-    'position': 'relative',
-    'borderRadius': `${radius[1]}px`,
-    'color': color.default.enabled.fg,
-    'boxShadow': focusRingBorderStyle({
-      color: color.default.enabled.border,
-      width: input.border.width,
-    }),
-
-    '& > .content': {
-      position: 'relative',
-      lineHeight: '0',
-      margin: `-${space} 0 0 -${space}`,
-    },
-
-    '& > .content > div': {
-      display: 'inline-block',
-      verticalAlign: 'top',
-      padding: `${space} 0 0 ${space}`,
-    },
-
-    // enabled
-    '&:not([data-read-only])': {
-      cursor: 'text',
-    },
-
-    // hovered
-    '@media(hover:hover):not([data-disabled]):not([data-read-only]):hover': {
-      borderColor: color.default.hovered.border,
-    },
-
-    // focused
-    '&:not([data-disabled]):not([data-read-only])[data-focused]': {
-      boxShadow: focusRingStyle({
-        border: {
-          color: color.default.enabled.border,
-          width: input.border.width,
-        },
-        focusRing,
-      }),
-    },
-
-    // disabled
-    '*:disabled + &': {
-      color: color.default.disabled.fg,
-      backgroundColor: color.default.disabled.bg,
-      boxShadow: focusRingBorderStyle({
-        color: color.default.disabled.border,
-        width: input.border.width,
-      }),
-    },
-  }
-})
-
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-const Input = styled.input((props: {theme: Theme}): CSSObject => {
-  const {theme} = props
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const font = theme.sanity.fonts.text
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const color = theme.sanity.color.input
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const p = theme.sanity.space[2]
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const size = theme.sanity.fonts.text.sizes[2]
-
-  return {
-    'appearance': 'none',
-    'background': 'none',
-    'border': 0,
-    'borderRadius': 0,
-    'outline': 'none',
-    'fontSize': rem(size.fontSize),
-    'lineHeight': `${size.lineHeight / size.fontSize}`,
-    'fontFamily': font.family,
-    'fontWeight': `${font.weights.regular}`,
-    'margin': 0,
-    'display': 'block',
-    'minWidth': '1px',
-    'maxWidth': '100%',
-    'boxSizing': 'border-box',
-    'paddingTop': rem(p - size.ascenderHeight),
-    'paddingRight': rem(p),
-    'paddingBottom': rem(p - size.descenderHeight),
-    'paddingLeft': rem(p),
-
-    // enabled
-    '&:not(:invalid):not(:disabled)': {
-      color: color.default.enabled.fg,
-    },
-
-    // disabled
-    '&:not(:invalid):disabled': {
-      color: color.default.disabled.fg,
-    },
-  }
-})
-
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-const Placeholder = styled(Box)((props: {theme: Theme}) => {
-  const {theme} = props
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const color = theme.sanity.color.input
-
-  return css`
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    pointer-events: none;
-    --card-fg-color: ${color.default.enabled.placeholder};
-  `
-})
-
-const TagBox = styled(Box)`
-  // This is needed to make textOverflow="ellipsis" work properly for the Text primitive
-  max-width: 100%;
-`
+import {
+  content,
+  contentItem,
+  disabledBgVar,
+  disabledBoxShadowVar,
+  disabledFgVar,
+  enabledBoxShadowVar,
+  enabledFgVar,
+  focusedBoxShadowVar,
+  input,
+  inputDisabledFgVar,
+  inputEnabledFgVar,
+  inputFontFamilyVar,
+  inputFontSizeVar,
+  inputFontWeightVar,
+  inputLineHeightVar,
+  inputPaddingBottomVar,
+  inputPaddingTopVar,
+  inputPaddingXVar,
+  placeholder,
+  placeholderFgVar,
+  radius1Var,
+  root,
+  space1Var,
+  tagBox,
+} from './tagInput.css'
 
 export function TagInput(
   props: {
@@ -162,11 +60,13 @@ export function TagInput(
 ) {
   const {
     ref: forwardedRef,
+    className,
     disabled,
     onChange,
     onFocus,
     placeholder: placeholderProp,
     readOnly,
+    style,
     value = [],
     ...restProps
   } = props
@@ -177,6 +77,11 @@ export function TagInput(
   const [focused, setFocused] = useState(false)
   const ref = useRef<HTMLInputElement | null>(null)
   const rootRef = useRef<HTMLDivElement | null>(null)
+
+  const {color, font, input: inputTheme, radius, space} = useThemeV2()
+  const inputColor = color.input.default
+  const inputBorderWidth = inputTheme.border.width
+  const textSize = font.text.sizes[2]
 
   useImperativeHandle<HTMLInputElement | null, HTMLInputElement | null>(
     forwardedRef,
@@ -253,7 +158,8 @@ export function TagInput(
   }, [inputValue])
 
   return (
-    <Root
+    <Card
+      className={root}
       data-disabled={disabled ? '' : undefined}
       data-focused={focused ? '' : undefined}
       data-read-only={readOnly ? '' : undefined}
@@ -262,9 +168,36 @@ export function TagInput(
       overflow="auto"
       padding={1}
       ref={rootRef}
+      style={assignInlineVars({
+        [radius1Var]: `${radius[1]}px`,
+        [space1Var]: `${rem(space[1])}`,
+        [enabledFgVar]: inputColor.enabled.fg,
+        [enabledBoxShadowVar]: focusRingBorderStyle({
+          color: inputColor.enabled.border,
+          width: inputBorderWidth,
+        }),
+        [focusedBoxShadowVar]: focusRingStyle({
+          border: {
+            color: inputColor.enabled.border,
+            width: inputBorderWidth,
+          },
+          focusRing: inputTheme.text.focusRing,
+        }),
+        [disabledFgVar]: inputColor.disabled.fg,
+        [disabledBgVar]: inputColor.disabled.bg,
+        [disabledBoxShadowVar]: focusRingBorderStyle({
+          color: inputColor.disabled.border,
+          width: inputBorderWidth,
+        }),
+      })}
     >
       {enabled && (
-        <Placeholder hidden={Boolean(inputValue || value.length)} padding={3}>
+        <Box
+          className={placeholder}
+          hidden={Boolean(inputValue || value.length)}
+          padding={3}
+          style={assignInlineVars({[placeholderFgVar]: inputColor.enabled.placeholder})}
+        >
           <Text textOverflow="ellipsis">
             {placeholderProp
               ? placeholderProp
@@ -273,12 +206,12 @@ export function TagInput(
                     typeof window !== 'undefined' && 'ontouchstart' in window ? 'touch' : undefined,
                 })}
           </Text>
-        </Placeholder>
+        </Box>
       )}
 
-      <div className="content">
+      <div className={clsx('content', content)}>
         {value.map((tag, tagIndex) => (
-          <TagBox key={`tag-${tagIndex}`}>
+          <Box key={`tag-${tagIndex}`} className={clsx(contentItem, tagBox)}>
             <Tag
               enabled={enabled}
               index={tagIndex}
@@ -286,24 +219,39 @@ export function TagInput(
               onRemove={handleTagRemove}
               tag={tag}
             />
-          </TagBox>
+          </Box>
         ))}
 
-        <div key="tag-input">
-          <Input
+        <div key="tag-input" className={contentItem}>
+          <input
             {...restProps}
+            className={clsx(input, className)}
             disabled={!enabled}
             onBlur={handleInputBlur}
             onChange={handleInputChange}
             onFocus={handleInputFocus}
             onKeyDown={handleInputKeyDown}
             ref={ref}
+            style={{
+              ...assignInlineVars({
+                [inputFontSizeVar]: `${rem(textSize.fontSize)}`,
+                [inputLineHeightVar]: `${textSize.lineHeight / textSize.fontSize}`,
+                [inputFontFamilyVar]: font.text.family,
+                [inputFontWeightVar]: `${font.text.weights.regular}`,
+                [inputPaddingTopVar]: `${rem(space[2] - textSize.ascenderHeight)}`,
+                [inputPaddingXVar]: `${rem(space[2])}`,
+                [inputPaddingBottomVar]: `${rem(space[2] - textSize.descenderHeight)}`,
+                [inputEnabledFgVar]: inputColor.enabled.fg,
+                [inputDisabledFgVar]: inputColor.disabled.fg,
+              }),
+              ...style,
+            }}
             type="text"
             value={inputValue}
           />
         </div>
       </div>
-    </Root>
+    </Card>
   )
 }
 
