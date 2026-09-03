@@ -20,6 +20,7 @@ const ERROR = new Error('Unknown type: author')
 const meta = {
   title: 'Studio/Workspace Loader Error',
   component: ErrorMessage,
+  tags: ['!dev', '!autodocs', 'vrt-only'],
   args: {error: ERROR, message: ERROR.message, path: PATH},
   decorators: [
     (Story) => (
