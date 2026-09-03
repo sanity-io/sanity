@@ -1,11 +1,18 @@
-import {getTheme_v2, rgba} from '@sanity/ui/theme'
-import {type ComponentType} from 'react'
-import {createGlobalStyle, css} from 'styled-components'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {rgba} from '@sanity/ui/theme'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {useInsertionEffect} from 'react'
 
-import {useWorkspace} from './workspace'
-
-const SCROLLBAR_SIZE = 12 // px
-const SCROLLBAR_BORDER_SIZE = 4 // px
+import {
+  bgColorVar,
+  borderColorVar,
+  GLOBAL_STYLES_ATTRIBUTE,
+  mutedFgColorVar,
+  resizerImageVar,
+  selectionColorVar,
+  textFontFamilyVar,
+  textMediumWeightVar,
+} from './styles.css'
 
 // Construct a resize handle icon as a data URI, to be displayed in browsers that support the `::-webkit-resizer` selector.
 function buildResizeHandleDataUri(hexColor: string) {
@@ -14,73 +21,50 @@ function buildResizeHandleDataUri(hexColor: string) {
   return `url("data:image/svg+xml,${encodedSvg}")`
 }
 
-export const GlobalStyle: ComponentType = () => {
-  const {
-    advancedVersionControl: {enabled: advancedVersionControlEnabled},
-  } = useWorkspace()
+// Several studios on one page share the document root; the attribute stays while any is mounted.
+let mountedCount = 0
 
-  return <GlobalStyleSheet $documentEditorGutterEnabled={advancedVersionControlEnabled} />
+function markDocument(html: HTMLElement): () => void {
+  mountedCount += 1
+  html.setAttribute(GLOBAL_STYLES_ATTRIBUTE, '')
+  return () => {
+    mountedCount -= 1
+    if (mountedCount === 0) html.removeAttribute(GLOBAL_STYLES_ATTRIBUTE)
+  }
 }
 
-interface Props {
-  $documentEditorGutterEnabled: boolean
+/**
+ * Applies the studio's document-level styles (`styles.css.ts`) by marking `<html>` and feeding
+ * it the theme values those rules read through CSS variables.
+ */
+export function GlobalStyle(): null {
+  const {color, font} = useThemeV2()
+  const iconColor = color.icon
+  const borderColor = color.border
+  const mutedFgColor = color.muted.fg
+  const focusRingColor = color.focusRing
+  const bgColor = color.bg
+  const fontFamily = font.text.family
+  const mediumWeight = font.text.weights.medium
+
+  useInsertionEffect(() => markDocument(document.documentElement), [])
+
+  useInsertionEffect(() => {
+    const html = document.documentElement
+    const vars = assignInlineVars({
+      [resizerImageVar]: buildResizeHandleDataUri(iconColor),
+      [borderColorVar]: borderColor,
+      [mutedFgColorVar]: mutedFgColor,
+      [selectionColorVar]: rgba(focusRingColor, 0.3),
+      [bgColorVar]: bgColor,
+      [textFontFamilyVar]: fontFamily,
+      [textMediumWeightVar]: String(mediumWeight),
+    })
+    for (const [name, value] of Object.entries(vars)) html.style.setProperty(name, value)
+    return () => {
+      for (const name of Object.keys(vars)) html.style.removeProperty(name)
+    }
+  }, [iconColor, borderColor, mutedFgColor, focusRingColor, bgColor, fontFamily, mediumWeight])
+
+  return null
 }
-
-const GlobalStyleSheet = createGlobalStyle<Props>(({theme, $documentEditorGutterEnabled}) => {
-  const {color, font} = getTheme_v2(theme)
-
-  return css`
-    ::-webkit-resizer {
-      background-image: ${buildResizeHandleDataUri(color.icon)};
-      background-repeat: no-repeat;
-      background-position: bottom right;
-    }
-
-    ::-webkit-scrollbar {
-      width: ${SCROLLBAR_SIZE}px;
-      height: ${SCROLLBAR_SIZE}px;
-    }
-
-    ::-webkit-scrollbar-corner {
-      background-color: transparent;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background-clip: content-box;
-      background-color: var(--card-border-color, ${color.border});
-      border: ${SCROLLBAR_BORDER_SIZE}px solid transparent;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background-color: var(--card-muted-fg-color, ${color.muted.fg});
-    }
-
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    *::selection {
-      background-color: ${rgba(color.focusRing, 0.3)};
-    }
-
-    html {
-      background-color: ${color.bg};
-    }
-
-    body {
-      scrollbar-gutter: stable;
-    }
-
-    #sanity {
-      font-family: ${font.text.family};
-    }
-
-    b {
-      font-weight: ${font.text.weights.medium};
-    }
-
-    strong {
-      font-weight: ${font.text.weights.medium};
-    }
-  `
-})
