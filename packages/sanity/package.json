@@ -249,7 +249,7 @@
     "@repo/tsdown.config": "workspace:*",
     "@sanity/sdk": "^3.0.0",
     "@sanity/vanilla-extract-vite-plugin": "catalog:",
-    "@sanity/visual-editing-csm": "^3.0.17",
+    "@sanity/visual-editing-csm": "^3.0.18",
     "@storybook/react-vite": "^10.5.10",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
