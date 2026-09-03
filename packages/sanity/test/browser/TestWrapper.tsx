@@ -12,7 +12,6 @@ import {
   CopyPasteProvider,
   defineConfig,
   EMPTY_ARRAY,
-  type LocaleResourceBundle,
   ResourceCacheProvider,
   type SchemaTypeDefinition,
   type SingleWorkspace,
@@ -29,6 +28,7 @@ import {RouterProvider} from '../../src/router/RouterProvider'
 import {Pane} from '../../src/structure/components/pane/Pane'
 import {PaneContent} from '../../src/structure/components/pane/PaneContent'
 import {PaneLayout} from '../../src/structure/components/pane/PaneLayout'
+import {structureUsEnglishLocaleBundle} from '../../src/structure/i18n'
 import {createMockSanityClient} from '../../test/mocks/mockSanityClient'
 import {getMockWorkspace} from '../../test/testUtils/getMockWorkspaceFromConfig'
 import {changeConnectorRoot} from './TestWrapper.css'
@@ -37,7 +37,6 @@ interface TestWrapperProps {
   children?: ReactNode
   betaFeatures?: WorkspaceOptions['beta']
   schemaTypes: SchemaTypeDefinition[]
-  i18nBundles?: LocaleResourceBundle[]
 }
 const studioThemeConfig: RootTheme = buildTheme()
 
@@ -56,7 +55,6 @@ const getCachedMockWorkspace = memoize(
     client: SanityClient,
     schemaTypes: SchemaTypeDefinition[],
     betaFeatures: WorkspaceOptions['beta'] | undefined,
-    i18nBundles: LocaleResourceBundle[] | undefined,
   ) => {
     const config = defineConfig({
       name: 'default',
@@ -65,8 +63,10 @@ const getCachedMockWorkspace = memoize(
       schema: {
         types: schemaTypes,
       },
+      // The wrapper renders structure chrome (Pane/PaneLayout), so structure
+      // locale resources belong in the mock workspace by default.
+      i18n: {bundles: [structureUsEnglishLocaleBundle]},
       ...(betaFeatures ? {beta: betaFeatures} : {}),
-      ...(i18nBundles && i18nBundles.length > 0 ? {i18n: {bundles: i18nBundles}} : {}),
     }) as SingleWorkspace
 
     return getMockWorkspace({client, config})
@@ -78,17 +78,12 @@ const getCachedMockWorkspace = memoize(
  * Sanity client and a mock workspace.
  */
 export const TestWrapper = (props: TestWrapperProps): React.JSX.Element | null => {
-  const {children, schemaTypes, betaFeatures, i18nBundles} = props
+  const {children, schemaTypes, betaFeatures} = props
   const [client] = useState(() => createMockSanityClient() as unknown as SanityClient)
 
   return (
     <Suspense fallback={null}>
-      <TestWrapperContents
-        client={client}
-        schemaTypes={schemaTypes}
-        betaFeatures={betaFeatures}
-        i18nBundles={i18nBundles}
-      >
+      <TestWrapperContents client={client} schemaTypes={schemaTypes} betaFeatures={betaFeatures}>
         {children}
       </TestWrapperContents>
     </Suspense>
@@ -100,8 +95,8 @@ const TestWrapperContents = (
     client: SanityClient
   },
 ): React.JSX.Element | null => {
-  const {children, schemaTypes, betaFeatures, i18nBundles, client} = props
-  const mockWorkspace = use(getCachedMockWorkspace(client, schemaTypes, betaFeatures, i18nBundles))
+  const {children, schemaTypes, betaFeatures, client} = props
+  const mockWorkspace = use(getCachedMockWorkspace(client, schemaTypes, betaFeatures))
 
   if (!mockWorkspace) {
     return null

@@ -1,87 +1,45 @@
 import {Card, Stack, Text} from '@sanity/ui'
+import noop from 'lodash-es/noop.js'
 
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
+import {createMockDocument} from '../../../../__fixtures__/documentInRelease.fixture'
+import {FILTER_TAB_CONFIGS} from '../../releaseDocumentActions'
 import {type DocumentInRelease} from '../../types'
 import {ReleaseDocumentFilterTabs} from '../ReleaseDocumentFilterTabs'
 
-function createDocument(
-  overrides: Partial<{
-    hasError: boolean
-    publishedDocumentExists: boolean
-    systemDelete: boolean
-  }> = {},
-): DocumentInRelease {
-  const {hasError = false, publishedDocumentExists = false, systemDelete = false} = overrides
-
-  return {
-    memoKey: 'test-key',
-    document: {
-      _id: 'test-id',
-      _type: 'article',
-      _rev: 'test-rev',
-      _createdAt: '2024-01-01T00:00:00.000Z',
-      _updatedAt: '2024-01-01T00:00:00.000Z',
-      publishedDocumentExists,
-      ...(systemDelete ? {_system: {delete: true}} : {}),
-    },
-    validation: {
-      hasError,
-      isValidating: false,
-      validation: [],
-    },
-  }
-}
-
+// One document per action so every tab (added / changed / unpublished /
+// errors) has a non-zero count and stays rendered.
 const DOCUMENTS: DocumentInRelease[] = [
-  createDocument({publishedDocumentExists: false}),
-  createDocument({publishedDocumentExists: true}),
-  createDocument({publishedDocumentExists: true, systemDelete: true}),
-  createDocument({publishedDocumentExists: true, hasError: true}),
+  createMockDocument({publishedDocumentExists: false}),
+  createMockDocument({publishedDocumentExists: true}),
+  createMockDocument({publishedDocumentExists: true, systemDelete: true}),
+  createMockDocument({publishedDocumentExists: true, hasError: true}),
 ]
 
 /**
- * Chromatic sentinel for release-detail filter tabs: Box padding plus Tab
- * tones (default / positive / caution / critical). Loading skeletons are
- * omitted (animated). Shared with the co-located Storybook CSF file.
+ * Chromatic sentinel for release-detail filter tabs: Box padding plus the
+ * selected Tab tone for every filter (all → default, added → positive,
+ * changed → caution, unpublished → critical, errors → always critical).
+ * Loading skeletons are omitted (animated).
  */
 export function ReleaseDocumentFilterTabsStory() {
   return (
     <TestWrapper schemaTypes={[]}>
       <Card padding={4}>
         <Stack gap={5}>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
-              all selected
-            </Text>
-            <ReleaseDocumentFilterTabs
-              activeFilter="all"
-              documents={DOCUMENTS}
-              onFilterChange={() => null}
-              releaseState="active"
-            />
-          </Stack>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
-              added selected
-            </Text>
-            <ReleaseDocumentFilterTabs
-              activeFilter="added"
-              documents={DOCUMENTS}
-              onFilterChange={() => null}
-              releaseState="active"
-            />
-          </Stack>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
-              errors selected
-            </Text>
-            <ReleaseDocumentFilterTabs
-              activeFilter="errors"
-              documents={DOCUMENTS}
-              onFilterChange={() => null}
-              releaseState="active"
-            />
-          </Stack>
+          {FILTER_TAB_CONFIGS.map(({key}) => (
+            <Stack gap={2} key={key}>
+              <Text muted size={1} weight="medium">
+                {key} selected
+              </Text>
+              <ReleaseDocumentFilterTabs
+                activeFilter={key}
+                documents={DOCUMENTS}
+                onFilterChange={noop}
+                releaseState="active"
+              />
+            </Stack>
+          ))}
         </Stack>
       </Card>
     </TestWrapper>
