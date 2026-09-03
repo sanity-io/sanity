@@ -1,14 +1,12 @@
 import {hues} from '@sanity/color'
 import {type CurrentUser} from '@sanity/types'
-import {type AvatarSize, Card, Stack, Text, TextSkeleton, useClickOutsideEvent} from '@sanity/ui'
+import {type AvatarSize, Card, TextSkeleton, useClickOutsideEvent} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {css, styled} from 'styled-components'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex, VStack} from 'ui5'
 
-import {CircleSmallIcon} from '../../../components/temporary-icons/CircleSmall'
-import {RingIcon} from '../../../components/temporary-icons/Ring'
 import {useDidUpdate} from '../../../form/hooks/useDidUpdate'
 import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
 import {type RelativeTimeOptions, useRelativeTime} from '../../../hooks/useRelativeTime'
@@ -35,6 +33,7 @@ import {FLEX_GAP} from '../constants'
 import {CommentInput, type CommentInputHandle} from '../pte/comment-input/CommentInput'
 import {CommentMessageSerializer} from '../pte/CommentMessageSerializer'
 import {CommentReactionsBar} from '../reactions/CommentReactionsBar'
+import {type CommentOrigin, CommentOriginBadge} from './CommentOriginBadge'
 import {CommentsListItemContextMenu} from './CommentsListItemContextMenu'
 import {CommentsListItemReferencedValue} from './CommentsListItemReferencedValue'
 
@@ -92,7 +91,7 @@ const IntentText = styled(Text)(({theme}) => {
   `
 })
 
-const InnerStack = styled(Stack)`
+const InnerStack = styled(VStack)`
   transition: opacity 200ms ease;
 
   &[data-muted='true'] {
@@ -116,7 +115,7 @@ const RetryCardButton = styled(Card)`
   }
 `
 
-const RootStack = styled(Stack)(({theme}) => {
+const RootStack = styled(VStack)(({theme}) => {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {space} = theme.sanity
 
@@ -155,20 +154,6 @@ const RootStack = styled(Stack)(({theme}) => {
   `
 })
 
-const IconSlotRoot = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-
-  &[data-status='published'] {
-    --card-icon-color: var(--card-badge-positive-dot-color);
-  }
-  &[data-status='draft'] {
-    --card-icon-color: var(--card-badge-caution-dot-color);
-  }
-`
-
 interface CommentsListItemLayoutProps {
   avatarSize?: AvatarSize
   canDelete?: boolean
@@ -193,8 +178,6 @@ interface CommentsListItemLayoutProps {
   withAvatar?: boolean
 }
 
-type CommentOrigin = 'draft' | 'published'
-
 /**
  * The document a comment was made on, when that isn't the document being viewed.
  * Only draft vs published: versions and other ids return `null`.
@@ -208,15 +191,6 @@ export function getForeignCommentOrigin(
   if (!(isDraftId(source) || isPublishedId(source))) return null
   if (!(isDraftId(versionId) || isPublishedId(versionId))) return null
   return isDraftId(source) ? 'draft' : 'published'
-}
-
-function getOriginI18nKey(origin: CommentOrigin) {
-  switch (origin) {
-    case 'draft':
-      return 'list-item.origin.draft'
-    case 'published':
-      return 'list-item.origin.published'
-  }
 }
 
 const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {useTemporalPhrase: true}
@@ -386,7 +360,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   useClickOutsideEvent(!hasChanges && cancelEdit, () => [rootElementRef.current])
 
   const name = user?.displayName ? (
-    <Text size={1} weight="medium" textOverflow="ellipsis" title={user.displayName}>
+    <Text size={1} weight="medium" truncate={1} title={user.displayName} as="div" trim={true}>
       {user.displayName}
     </Text>
   ) : (
@@ -402,23 +376,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
       gap={4}
     >
       <InnerStack gap={1} data-muted={displayError}>
-        {foreignOrigin && (
-          <Flex marginBottom={2}>
-            <Card border padding={1} radius={3}>
-              <Flex alignItems="center" gap={1} paddingRight={1}>
-                <IconSlotRoot data-status={foreignOrigin}>
-                  <Text size={2}>
-                    {foreignOrigin === 'draft' ? <RingIcon /> : <CircleSmallIcon />}
-                  </Text>
-                </IconSlotRoot>
-
-                <Text size={0} muted weight="medium">
-                  {t(getOriginI18nKey(foreignOrigin))}
-                </Text>
-              </Flex>
-            </Card>
-          </Flex>
-        )}
+        {foreignOrigin && <CommentOriginBadge origin={foreignOrigin} />}
 
         <HeaderFlex
           alignItems="center"
@@ -443,14 +401,20 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
                 {!displayError && (
                   <Flex alignItems="center" gap={1}>
-                    <TimeText muted size={0}>
+                    <TimeText muted size={0} forwardedAs="div" trim={true}>
                       <time dateTime={createdDate.toISOString()} title={formattedCreatedAt}>
                         {createdTimeAgo}
                       </time>
                     </TimeText>
 
                     {formattedLastEditAt && editedDate && (
-                      <TimeText muted size={0} title={formattedLastEditAt}>
+                      <TimeText
+                        muted
+                        size={0}
+                        title={formattedLastEditAt}
+                        forwardedAs="div"
+                        trim={true}
+                      >
                         <time dateTime={editedDate.toISOString()} title={formattedLastEditAt}>
                           ({t('list-item.layout-edited')})
                         </time>
@@ -463,7 +427,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
             {intent && (
               <Box flexBasis="0%" flexGrow={1}>
-                <IntentText muted size={0} textOverflow="ellipsis">
+                <IntentText muted size={0} truncate={1} forwardedAs="div" trim={true}>
                   <Translate
                     t={t}
                     i18nKey="list-item.layout-context"
@@ -512,7 +476,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
           <Flex alignItems="flex-start" gap={2}>
             {withAvatar && <SpacerAvatar $size={avatarSize} />}
 
-            <Stack flex={1}>
+            <Flex flexBasis="0%" flexGrow={1} flexDirection="column">
               <CommentInput
                 currentUser={currentUser}
                 focusOnMount
@@ -527,7 +491,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                 value={value}
                 withAvatar={false}
               />
-            </Stack>
+            </Flex>
           </Flex>
         )}
 
@@ -561,7 +525,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
           {withAvatar && <SpacerAvatar $size={avatarSize} />}
 
           <Flex alignItems="center" gap={1} flexBasis="0%" flexGrow={1}>
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               {hasError && t('list-item.layout-failed-sent')}
               {isRetrying && t('list-item.layout-posting')}
             </Text>
@@ -576,7 +540,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                 radius={2}
                 tone="primary"
               >
-                <Text size={1} muted>
+                <Text size={1} muted as="div" trim={true}>
                   {t('list-item.layout-retry')}
                 </Text>
               </RetryCardButton>
