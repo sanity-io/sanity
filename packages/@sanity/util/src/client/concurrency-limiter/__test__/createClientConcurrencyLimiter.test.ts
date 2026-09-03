@@ -5,6 +5,7 @@ import {firstValueFrom, from, NEVER, Observable, of} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 
 import {createClientConcurrencyLimiter} from '../createClientConcurrencyLimiter'
+import {withoutAbortSignalAny} from './withoutAbortSignalAny'
 
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0))
 
@@ -281,5 +282,103 @@ describe('createConcurrencyLimitedClient', () => {
     await expect(result).rejects.toBe(reason)
     expect(fetchController.signal.aborted).toBe(false)
     expect(unsubscribe).toHaveBeenCalledOnce()
+  })
+
+  // Safari 17.3 and older browsers do not implement `AbortSignal.any`, which the limiter used to
+  // call whenever a fetch carried a signal.
+  describe('without a native AbortSignal.any', () => {
+    withoutAbortSignalAny()
+
+    it('runs an Observable fetch that carries a signal', async () => {
+      const controller = new AbortController()
+      const mockClient = {
+        observable: {fetch: vi.fn(() => of('result'))},
+      } as unknown as SanityClient
+      const client = createClientConcurrencyLimiter(1)(mockClient)
+
+      await expect(
+        firstValueFrom(client.observable.fetch('query', {}, {signal: controller.signal})),
+      ).resolves.toBe('result')
+      expect(mockClient.observable.fetch).toHaveBeenCalledExactlyOnceWith(
+        'query',
+        {},
+        {signal: controller.signal},
+      )
+    })
+
+    it('does not start a queued Observable fetch after its signal is aborted', async () => {
+      const mockClient = {
+        observable: {fetch: vi.fn(() => NEVER)},
+      } as unknown as SanityClient
+      const client = createClientConcurrencyLimiter(1)(mockClient)
+      const controller = new AbortController()
+      const reason = new Error('cancelled')
+
+      const active = client.observable.fetch('active').subscribe()
+      const queued = firstValueFrom(
+        client.observable.fetch('queued', {}, {signal: controller.signal}),
+      )
+      await tick()
+      controller.abort(reason)
+
+      await expect(queued).rejects.toBe(reason)
+      expect(mockClient.observable.fetch).toHaveBeenCalledExactlyOnceWith('active')
+      active.unsubscribe()
+    })
+
+    it('combines a default signal with a fetch signal', async () => {
+      const defaultController = new AbortController()
+      const fetchController = new AbortController()
+      const reason = new Error('validation cancelled')
+      const mockClient = {
+        fetch: vi.fn(
+          (_query: string, _params: object, {signal}: {signal: AbortSignal}) =>
+            new Promise((_resolve, reject) => {
+              signal.addEventListener('abort', () => reject(signal.reason), {once: true})
+            }),
+        ),
+      } as unknown as SanityClient
+      const client = createClientConcurrencyLimiter(1, defaultController.signal)(mockClient)
+      const result = client.fetch('query', {}, {signal: fetchController.signal})
+      await vi.waitFor(() => expect(mockClient.fetch).toHaveBeenCalledOnce())
+
+      fetchController.abort(reason)
+
+      await expect(result).rejects.toBe(reason)
+      expect(defaultController.signal.aborted).toBe(false)
+    })
+
+    it('combines a default signal with an Observable fetch signal', async () => {
+      const defaultController = new AbortController()
+      const fetchController = new AbortController()
+      const reason = new Error('validation cancelled')
+      const unsubscribe = vi.fn()
+      const mockClient = {
+        observable: {
+          fetch: vi.fn(
+            (_query: string, _params: object, {signal}: {signal: AbortSignal}) =>
+              new Observable((subscriber) => {
+                const onAbort = () => subscriber.error(signal.reason)
+                signal.addEventListener('abort', onAbort, {once: true})
+                return () => {
+                  signal.removeEventListener('abort', onAbort)
+                  unsubscribe()
+                }
+              }),
+          ),
+        },
+      } as unknown as SanityClient
+      const client = createClientConcurrencyLimiter(1, defaultController.signal)(mockClient)
+      const result = firstValueFrom(
+        client.observable.fetch('query', {}, {signal: fetchController.signal}),
+      )
+      await vi.waitFor(() => expect(mockClient.observable.fetch).toHaveBeenCalledOnce())
+
+      defaultController.abort(reason)
+
+      await expect(result).rejects.toBe(reason)
+      expect(fetchController.signal.aborted).toBe(false)
+      expect(unsubscribe).toHaveBeenCalledOnce()
+    })
   })
 })
