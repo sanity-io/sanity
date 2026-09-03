@@ -132,7 +132,10 @@ count_instances() {
   local jsx=0 styled=0 file local_name hits
   while IFS=$'\t' read -r file local_name; do
     if [ "$kind" = "jsx" ] || [ "$kind" = "both" ]; then
-      hits=$(rg "<${local_name}[\s/>]" --glob '*.tsx' --glob '*.jsx' "$file" 2>/dev/null | wc -l | tr -d ' ')
+      # Opening tags only (`</Name>` does not match). The tag name may be followed by a space,
+      # `/`, `>`, or end of line (`<Name` with props on the following lines), but not by more
+      # identifier characters or a `.`. -o counts every tag on a line, not just the line.
+      hits=$(rg -o "<${local_name}([^\w.]|\$)" --glob '*.tsx' --glob '*.jsx' "$file" 2>/dev/null | wc -l | tr -d ' ')
       jsx=$((jsx + hits))
     fi
     if [ "$kind" = "styled" ] || [ "$kind" = "both" ]; then
