@@ -34,7 +34,11 @@ vi.mock('../../../components/pane/usePaneLayout', () => ({
 vi.mock('../DocumentListPane', async () => {
   const {createElement} = await import('react')
   return {
-    DocumentListPane: () => createElement('div', {'data-testid': 'document-list-pane'}),
+    DocumentListPane: (props: {activeFilterOptions?: unknown[]}) =>
+      createElement('div', {
+        'data-testid': 'document-list-pane',
+        'data-active-filter-count': props.activeFilterOptions?.length || 0,
+      }),
   }
 })
 
@@ -87,6 +91,52 @@ describe('PaneContainer', () => {
     )
 
     await screen.findByTestId('document-list-pane')
+  })
+
+  it('adds configured filters to the menu and forwards selected filters to the list', async () => {
+    const config = defineConfig({projectId: 'test', dataset: 'test'})
+    const wrapper = await createTestProvider({
+      config,
+      resources: [structureUsEnglishLocaleBundle],
+    })
+    mockUseStructureToolSetting.mockImplementation(
+      (namespace: string) =>
+        (namespace === 'layout' ? ['default', vi.fn()] : [DEFAULT_ORDERING, vi.fn()]) as ReturnType<
+          typeof useStructureToolSetting
+        >,
+    )
+
+    render(
+      <PaneContainer
+        paneKey="paneKey"
+        index={1}
+        itemId="123"
+        pane={
+          {
+            id: 'posts',
+            type: 'documentList',
+            title: 'Posts',
+            options: {
+              filter: '_type == $type',
+              params: {type: 'post'},
+              filterOptions: [{id: 'featured', title: 'Featured', filter: 'featured == true'}],
+            },
+            menuItems: [],
+            menuItemGroups: [],
+          } as unknown as DocumentListPaneNode
+        }
+      />,
+      {wrapper},
+    )
+
+    const documentListPane = await screen.findByTestId('document-list-pane')
+    expect(documentListPane).toHaveAttribute('data-active-filter-count', '0')
+
+    await userEvent.click(screen.getByTestId('pane-context-menu-button'))
+    expect(await screen.findByText('Filter')).toBeVisible()
+    await userEvent.click(screen.getByText('Featured'))
+
+    expect(documentListPane).toHaveAttribute('data-active-filter-count', '1')
   })
 
   // Restoring must clear the shared per-type key, not write a concrete default

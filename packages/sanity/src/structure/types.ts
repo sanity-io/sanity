@@ -12,6 +12,7 @@ import {
 } from 'sanity'
 
 import {type _PaneMenuItem} from './components/pane/types'
+import {type DocumentListFilterOption} from './structureBuilder/DocumentList'
 import {type Intent} from './structureBuilder/Intent'
 import {type MenuItem as StructureToolMenuItem} from './structureBuilder/MenuItem'
 import {
@@ -334,6 +335,7 @@ export interface DocumentListPaneNode extends BaseResolvedPaneNode<'documentList
     defaultOrdering?: Array<{field: string; direction: 'asc' | 'desc'}>
     params?: Record<string, unknown>
     apiVersion?: string
+    filterOptions?: DocumentListFilterOption[]
   }
   /** Suppresses auto-injected restore-default sort/layout menu items for panes with a fixed ordering choice. */
   suppressRestoreDefaultMenuItems?: boolean

@@ -1,6 +1,11 @@
 import {type SchemaType} from '@sanity/types'
 
-import {DocumentListBuilder, type DocumentListInput, type PartialDocumentList} from './DocumentList'
+import {
+  DocumentListBuilder,
+  type DocumentListFilterOption,
+  type DocumentListInput,
+  type PartialDocumentList,
+} from './DocumentList'
 import {type GenericListInput} from './GenericList'
 import {DEFAULT_INTENT_HANDLER} from './Intent'
 import {type Child} from './StructureNodes'
@@ -14,6 +19,8 @@ import {type StructureContext} from './types'
 export interface DocumentTypeListInput extends Partial<GenericListInput> {
   /** Document type list input schema type. See {@link SchemaType} */
   schemaType: SchemaType | string
+  /** Filter options shown in the document list menu */
+  filterOptions?: DocumentListFilterOption[]
 }
 
 /**
