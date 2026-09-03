@@ -65,17 +65,6 @@ export function useVariantDeleteAction(
 
   const deleteDisabled = isDeleting || !canDelete
 
-  const formatContainsDocumentsHint = useCallback(
-    (count: number) =>
-      t(
-        count === 1
-          ? 'overview.action.delete-variant.disabled-hint_one'
-          : 'overview.action.delete-variant.disabled-hint_other',
-        {count},
-      ),
-    [t],
-  )
-
   const deleteDisabledTooltip = useMemo(() => {
     if (hasDeletePermission === false) {
       return t('overview.action.delete-variant.permission-error')
@@ -85,8 +74,8 @@ export function useVariantDeleteAction(
       return undefined
     }
 
-    return formatContainsDocumentsHint(documentCount)
-  }, [documentCount, formatContainsDocumentsHint, hasDeletePermission, hasDocuments, t])
+    return t('overview.action.delete-variant.disabled-hint', {count: documentCount})
+  }, [documentCount, hasDeletePermission, hasDocuments, t])
 
   const handleDelete = useCallback(() => {
     if (!canDelete) {
@@ -111,7 +100,7 @@ export function useVariantDeleteAction(
     (error: unknown): string | undefined => {
       const referencingDocumentCount = getReferencingDocumentCount(error)
       if (referencingDocumentCount !== undefined) {
-        return formatContainsDocumentsHint(referencingDocumentCount)
+        return t('overview.action.delete-variant.disabled-hint', {count: referencingDocumentCount})
       }
 
       if (isInsufficientPermissionsError(error)) {
@@ -120,7 +109,7 @@ export function useVariantDeleteAction(
 
       return undefined
     },
-    [formatContainsDocumentsHint, t],
+    [t],
   )
 
   const handleConfirmDelete = useCallback(async () => {
