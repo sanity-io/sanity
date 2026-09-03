@@ -1,7 +1,6 @@
-import {Badge, Card, Text, TextSkeleton} from '@sanity/ui'
-import {getTheme_v2} from '@sanity/ui/theme'
+import {Badge, Card, Text, TextSkeleton, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useCallback, useMemo} from 'react'
-import {css, styled} from 'styled-components'
 import {Flex} from 'ui5'
 
 import {set} from '../../../../../form/patch/patch'
@@ -10,23 +9,12 @@ import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {useMentionUser} from '../../../../context/mentionUser/useMentionUser'
 import {tasksLocaleNamespace} from '../../../../i18n'
 import {TasksUserAvatar} from '../../../TasksUserAvatar'
+import {focusableCard, inputPlaceholderColorVar} from './AssigneeCreateFormField.css'
 import {AssigneeSelectionMenu} from './AssigneeSelectionMenu'
-
-const FocusableCard = styled(Card)((props) => {
-  const theme = getTheme_v2(props.theme)
-  return css`
-    &[data-as='button'] {
-      border: 1px solid var(--card-border-color);
-      &:focus-within {
-        border: 1px solid var(--card-focus-ring-color);
-      }
-      --card-muted-fg-color: ${theme.color.input.default.enabled.placeholder};
-    }
-  `
-})
 
 export function AssigneeCreateFormField(props: StringInputProps) {
   const {value, onChange} = props
+  const {color} = useThemeV2()
   const {mentionOptions} = useMentionUser()
   const mentionedUser = useMemo(
     () => mentionOptions.data?.find((u) => u.id === value),
@@ -49,7 +37,16 @@ export function AssigneeCreateFormField(props: StringInputProps) {
       onSelect={onSelect}
       value={value}
       menuButton={
-        <FocusableCard data-as="button" padding={1} radius={2} tabIndex={0}>
+        <Card
+          className={focusableCard}
+          data-as="button"
+          padding={1}
+          radius={2}
+          style={assignInlineVars({
+            [inputPlaceholderColorVar]: color.input.default.enabled.placeholder,
+          })}
+          tabIndex={0}
+        >
           <Flex alignItems="center" gap={3}>
             <Flex alignItems="center" gap={1} flexBasis="0%" flexGrow={1}>
               <TasksUserAvatar user={mentionedUser} size={1} border={false} />
@@ -62,7 +59,7 @@ export function AssigneeCreateFormField(props: StringInputProps) {
               <Badge fontSize={1}>{t('form.input.assignee.unauthorized.text')}</Badge>
             )}
           </Flex>
-        </FocusableCard>
+        </Card>
       }
     />
   )
