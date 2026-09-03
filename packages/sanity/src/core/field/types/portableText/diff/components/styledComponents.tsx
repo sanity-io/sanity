@@ -1,38 +1,30 @@
 import {Text} from '@sanity/ui'
-import {styled} from 'styled-components'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 import {Box} from 'ui5'
 
-export const InlineBox = styled(Box)`
-  &:not([hidden]) {
-    display: inline;
-    align-items: center;
+import {inlineBox, inlineText, popoverContainer, previewContainer} from './styledComponents.css'
 
-    &[data-changed] {
-      cursor: pointer;
-    }
-  }
-`
+export function InlineBox(props: ComponentProps<typeof Box>) {
+  const {className, ...rest} = props
 
-export const InlineText = styled(Text)`
-  &:not([hidden]) {
-    display: inline;
-    color: inherit;
-  }
-`
+  return <Box {...rest} className={clsx(inlineBox, className)} />
+}
 
-export const PreviewContainer = styled(Box)`
-  &:not([hidden]) {
-    display: inline-flex;
-    align-items: center;
+export function InlineText(props: ComponentProps<typeof Text>) {
+  const {className, ...rest} = props
 
-    ${InlineBox} [data-ui="Text"] {
-      opacity: 0.5;
-    }
-  }
-`
+  return <Text {...rest} className={clsx(inlineText, className)} />
+}
 
-export const PopoverContainer = styled(Box)`
-  min-width: 160px;
-  max-height: 40vh;
-  overflow-y: auto;
-`
+export function PreviewContainer(props: ComponentProps<typeof Box>) {
+  const {className, ...rest} = props
+
+  return <Box {...rest} className={clsx(previewContainer, className)} />
+}
+
+export function PopoverContainer(props: ComponentProps<typeof Box>) {
+  const {className, ...rest} = props
+
+  return <Box {...rest} className={clsx(popoverContainer, className)} />
+}
