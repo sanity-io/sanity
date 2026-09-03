@@ -1,9 +1,8 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
-import {Container, rem, Stack} from '@sanity/ui'
-import {getTheme_v2} from '@sanity/ui/theme'
+import {Container, rem, Stack, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useCallback, useState} from 'react'
-import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../../ui-components/button/Button'
@@ -13,18 +12,11 @@ import {useVisibleWorkspaces} from '../../../../workspaces/useVisibleWorkspaces'
 import {WORKSPACES_DOCS_URL} from '../constants'
 import {WorkspacePreview} from '../WorkspacePreview'
 import {Layout} from './Layout'
+import {chooserContainer, container0Var} from './WorkspaceAuth.css'
 import {WorkspaceAuthCard} from './WorkspaceAuthCard'
 
-const StyledContainer = styled(Container)((props) => {
-  const theme = getTheme_v2(props.theme)
-  const {container} = theme
-  return {
-    width: 'auto',
-    minWidth: rem(container[0]),
-  }
-})
-
 export function WorkspaceAuth() {
+  const {container} = useThemeV2()
   const {visibleWorkspaces} = useVisibleWorkspaces()
   const {activeWorkspace, setActiveWorkspace} = useActiveWorkspace()
   // The workspace we show the login for is always the active one, so its URL
@@ -107,7 +99,12 @@ export function WorkspaceAuth() {
   }
 
   return (
-    <StyledContainer width={1}>
+    <Container
+      className={chooserContainer}
+      // `rem()` returns `0` for a zero width; the variable needs the string form
+      style={assignInlineVars({[container0Var]: `${rem(container[0])}`})}
+      width={1}
+    >
       <Layout
         header={t('workspaces.choose-your-workspace-label')}
         footer={
@@ -135,6 +132,6 @@ export function WorkspaceAuth() {
           ))}
         </Stack>
       </Layout>
-    </StyledContainer>
+    </Container>
   )
 }

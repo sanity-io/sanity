@@ -7,7 +7,6 @@ import {SanityMonogram} from '@sanity/logos'
 import {Badge, Card, Grid, Inline, Spinner, Stack, Text} from '@sanity/ui'
 import {useEffect, useId} from 'react'
 import semver, {type SemVer} from 'semver'
-import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
@@ -20,18 +19,11 @@ import {Translate} from '../../../../i18n/Translate'
 import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {usePackageVersionStatus} from '../../../packageVersionStatus/usePackageVersionStatus'
 import {useWorkspace} from '../../../workspace'
+import {monogramContainer, truncateBadge} from './StudioInfoDialog.css'
 
 interface StudioInfoDialogProps {
   onClose: () => void
 }
-
-const MonogramContainer = styled(Card).attrs({
-  overflow: 'hidden',
-  radius: 4,
-})`
-  height: ${75}px;
-  width: ${75}px;
-`
 
 function reload() {
   window.location.reload()
@@ -46,17 +38,6 @@ function getVersionType(ver: SemVer): 'development' | 'prerelease' | 'default' {
   }
   return 'prerelease'
 }
-
-const TruncateBadge = styled(Badge)`
-  display: block;
-
-  span {
-    display: block;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: clip;
-  }
-`
 
 const HEX_ONLY = /^[0-9a-fA-F]+$/i
 function resolveGithubURLFromVersion(ver: SemVer) {
@@ -167,9 +148,9 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
 
       <Stack gap={3} paddingY={3}>
         <Flex alignItems="center" justifyContent="center" paddingY={4}>
-          <MonogramContainer>
+          <Card className={monogramContainer} overflow="hidden" radius={4}>
             <SanityMonogram height={75} width={75} />
-          </MonogramContainer>
+          </Card>
         </Flex>
         <Grid gridTemplateColumns={2} gap={2}>
           <Flex justifyContent="flex-end" alignItems="center">
@@ -197,9 +178,9 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
             }
           >
             <Flex gap={2} alignItems="center" paddingRight={2}>
-              <TruncateBadge tone={versionBadgeTone}>
+              <Badge className={truncateBadge} tone={versionBadgeTone}>
                 {currentVersion ? ensureVersionPrefix(currentVersion.version) : 'unknown'}
-              </TruncateBadge>
+              </Badge>
               {githubUrl && (
                 <Button
                   as="a"

@@ -12,11 +12,11 @@ import {
   type TextAlign,
 } from '@sanity/ui'
 import {type ReactNode, useState} from 'react'
-import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {type StudioDiagnostics} from '../../../diagnostics/gatherStudioDiagnostics'
+import {codeValue} from './DiagnosticsReport.css'
 import {RequestPerformanceReport} from './RequestPerformanceReport'
 
 type DiagnosticStatus = StudioDiagnostics['network']['protocol']['status']
@@ -27,11 +27,6 @@ const DIAGNOSTIC_STATUS_LABELS: Record<DiagnosticStatus, string> = {
   timeout: 'Timed out',
   unsupported: 'Unsupported',
 }
-
-const CodeValue = styled.span`
-  font-family: var(--card-code-family, monospace);
-  overflow-wrap: anywhere;
-`
 
 /** @internal */
 export interface DiagnosticsReportProps {
@@ -201,7 +196,7 @@ export function DiagnosticsReport({
                 >
                   <Stack flex={1} gap={2}>
                     <Text size={1} weight="semibold">
-                      <CodeValue>{request.path}</CodeValue>
+                      <span className={codeValue}>{request.path}</span>
                     </Text>
                     {request.detail || request.error ? (
                       <Text muted size={1}>
@@ -272,7 +267,7 @@ function DetailRow({
           textOverflow={truncate ? 'ellipsis' : undefined}
           title={truncate && typeof displayValue === 'string' ? displayValue : undefined}
         >
-          {monospace ? <CodeValue>{displayValue}</CodeValue> : displayValue}
+          {monospace ? <span className={codeValue}>{displayValue}</span> : displayValue}
         </Text>
       </Box>
     </Flex>

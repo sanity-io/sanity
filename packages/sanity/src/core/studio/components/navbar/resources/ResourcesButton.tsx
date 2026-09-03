@@ -2,7 +2,6 @@ import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useState} from 'react'
 import semver from 'semver'
-import {styled} from 'styled-components'
 
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {StatusButton} from '../../../../components/StatusButton'
@@ -18,13 +17,9 @@ import {DiagnosticsDialog} from './DiagnosticsDialog'
 import {DiagnosticsMenuItem} from './DiagnosticsMenuItem'
 import {FeedbackMenuItem} from './FeedbackMenuItem'
 import {useGetHelpResources} from './helper-functions/hooks'
+import {menu} from './ResourcesButton.css'
 import {ResourcesMenuItems} from './ResourcesMenuItems'
 import {StudioInfoDialog} from './StudioInfoDialog'
-
-const StyledMenu = styled(Menu)`
-  max-width: 300px;
-  min-width: 200px;
-`
 
 export function ResourcesButton() {
   const {t} = useTranslation()
@@ -100,7 +95,7 @@ export function ResourcesButton() {
         }
         id="menu-button-resources"
         menu={
-          <StyledMenu data-testid="menu-button-resources">
+          <Menu className={menu} data-testid="menu-button-resources">
             {!isInDashboard && feedbackAvailable && (
               <FeedbackMenuItem onClick={handleOpenFeedback} />
             )}
@@ -115,7 +110,7 @@ export function ResourcesButton() {
               value={value}
               onOpenStudioVersionDialog={handleOpenVersionDialog}
             />
-          </StyledMenu>
+          </Menu>
         }
         popover={{constrainSize: true, tone: 'default'}}
       />
