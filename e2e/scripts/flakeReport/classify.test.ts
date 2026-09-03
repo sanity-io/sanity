@@ -189,6 +189,26 @@ describe('classifyAttempt', () => {
     expect(analysis.evidence[0]).toMatch(/^studio shell never mounted, but the API answered/)
   })
 
+  it('treats a visible request error dialog as degraded even when the history looks healthy', () => {
+    const dialog =
+      'Too many requests Too many requests at once. You can try again shortly. Reload Studio Try again'
+    const withStudioReport = classifyAttempt({
+      ...studioCapture(diagnostics()),
+      requestErrorText: dialog,
+    })
+    expect(withStudioReport.verdict).toBe('degraded')
+    expect(withStudioReport.evidence[0]).toBe(`studio showed its request error dialog: "${dialog}"`)
+    expect(withStudioReport.evidence[1]).toMatch(/^API healthy/)
+
+    const withoutCapture = classifyAttempt({
+      attempt: 1,
+      kind: 'none',
+      requestErrorText: "Network error Couldn't reach the Sanity servers.",
+      status: 'failed',
+    })
+    expect(withoutCapture.verdict).toBe('degraded')
+  })
+
   it('is unknown without an attachment', () => {
     expect(classifyAttempt({attempt: 1, kind: 'none', status: 'failed'})).toMatchObject({
       evidence: ['no diagnostics attachment'],
