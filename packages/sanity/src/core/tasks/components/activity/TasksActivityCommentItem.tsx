@@ -1,11 +1,12 @@
-import {getTheme_v2} from '@sanity/ui/theme'
-import {css, styled} from 'styled-components'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 
 import {
   CommentsListItem,
   type CommentsListItemProps,
 } from '../../../comments/components/list/CommentsListItem'
 import {useTasksEnabled} from '../../context/enabled/useTasksEnabled'
+import {commentListItemRoot, space2Var} from './TasksActivityCommentItem.css'
 import {ActivityItem} from './TasksActivityItem'
 
 const COMMENTS_LIST_ITEM_AVATAR_CONFIG: CommentsListItemProps['avatarConfig'] = {
@@ -19,26 +20,14 @@ interface TasksActivityCommentItemProps extends Omit<CommentsListItemProps, 'mod
   // ...
 }
 
-const CommentListItemRoot = styled.div((props) => {
-  const theme = getTheme_v2(props.theme)
-  return css`
-    [data-ui='CommentsListItem'] {
-      padding-right: ${theme.space[2]}px;
-    }
-
-    // Increase the padding when the comment input is focused
-    [data-ui='CommentInputEditableWrap']:focus-within {
-      padding-bottom: ${theme.space[2]}px;
-    }
-  `
-})
 export function TasksActivityCommentItem(props: TasksActivityCommentItemProps) {
   const {parentComment} = props
   const {mode} = useTasksEnabled()
+  const {space} = useThemeV2()
 
   return (
     <ActivityItem userId={parentComment.authorId} avatarPaddingTop={3}>
-      <CommentListItemRoot>
+      <div className={commentListItemRoot} style={assignInlineVars({[space2Var]: `${space[2]}px`})}>
         <CommentsListItem
           {...props}
           avatarConfig={COMMENTS_LIST_ITEM_AVATAR_CONFIG}
@@ -46,7 +35,7 @@ export function TasksActivityCommentItem(props: TasksActivityCommentItemProps) {
           isSelected={false}
           mode={mode ?? 'default'}
         />
-      </CommentListItemRoot>
+      </div>
     </ActivityItem>
   )
 }
