@@ -50,7 +50,7 @@ bash .agents/skills/sanity-ui-migration-progress/scripts/measure-progress.sh <di
 **Detect alias** when unsure:
 
 ```bash
-rg '"([^"]+)":\s*"npm:@sanity/ui@' package.json -r '$1'
+rg -o '"([^"]+)":\s*"npm:@sanity/ui@' package.json -r '$1'
 ```
 
 If the default `ui5` finds no imports, the script auto-detects the alias from the nearest `package.json`.

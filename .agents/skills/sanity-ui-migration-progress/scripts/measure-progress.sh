@@ -77,7 +77,7 @@ command -v rg >/dev/null || { echo "ripgrep (rg) required" >&2; exit 1; }
 
 # Discover v5 alias from nearest package.json when default is used and ui5 imports are absent.
 if [ "$V5_PKG" = "ui5" ] && ! rg -q "from ['\"]ui5['\"]" --glob '*.{ts,tsx}' "$SEARCH_DIR" 2>/dev/null; then
-  detected=$(rg '"([^"]+)":\s*"npm:@sanity/ui@' --glob 'package.json' "$SEARCH_DIR" -r '$1' 2>/dev/null | head -1)
+  detected=$(rg -o --no-filename '"([^"]+)":\s*"npm:@sanity/ui@' --glob 'package.json' "$SEARCH_DIR" -r '$1' 2>/dev/null | head -1)
   [ -n "$detected" ] && V5_PKG="$detected"
 fi
 
