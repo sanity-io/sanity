@@ -12,8 +12,8 @@ const WRAPPING_TITLE =
  * Chromatic sentinel for the post-migration ui5 inspector header. The title
  * is a wrapping `<Text as="h1">` (no textOverflow), so a long title grows
  * the header taller rather than truncating. The children slot is unused
- * in-repo but remains public on `sanity/structure`. Titles are fixtures
- * (no live inspector).
+ * in-repo; covered as public API on `sanity/structure` (plugins can fill
+ * it). Titles are fixtures (no live inspector).
  */
 export function DocumentInspectorHeaderStory() {
   return (
