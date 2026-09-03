@@ -1,7 +1,7 @@
 import {useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {rgba} from '@sanity/ui/theme'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
-import {useInsertionEffect} from 'react'
+import {useInsertionEffect, useState} from 'react'
 
 import {
   bgColorVar,
@@ -21,16 +21,52 @@ function buildResizeHandleDataUri(hexColor: string) {
   return `url("data:image/svg+xml,${encodedSvg}")`
 }
 
-// Several studios on one page share the document root; the attribute stays while any is mounted.
-let mountedCount = 0
+type Vars = Record<string, string>
 
-function markDocument(html: HTMLElement): () => void {
-  mountedCount += 1
-  html.setAttribute(GLOBAL_STYLES_ATTRIBUTE, '')
-  return () => {
-    mountedCount -= 1
-    if (mountedCount === 0) html.removeAttribute(GLOBAL_STYLES_ATTRIBUTE)
+const VAR_NAMES = Object.keys(
+  assignInlineVars({
+    [resizerImageVar]: '',
+    [borderColorVar]: '',
+    [mutedFgColorVar]: '',
+    [selectionColorVar]: '',
+    [bgColorVar]: '',
+    [textFontFamilyVar]: '',
+    [textMediumWeightVar]: '',
+  }),
+)
+
+/**
+ * Studios mounted in the same document share `<html>`. The most recently mounted instance's
+ * values win, like the last injected global stylesheet did, a theme change keeps an instance's
+ * position, and unmounting one instance hands the root back to the remaining ones instead of
+ * stripping their values. `Map` preserves insertion order on `set` for an existing key.
+ */
+const instances = new Map<symbol, Vars>()
+
+function applyLatest(html: HTMLElement) {
+  let latest: Vars | undefined
+  for (const vars of instances.values()) latest = vars
+  if (latest) {
+    html.setAttribute(GLOBAL_STYLES_ATTRIBUTE, '')
+    for (const [name, value] of Object.entries(latest)) html.style.setProperty(name, value)
+    return
   }
+  html.removeAttribute(GLOBAL_STYLES_ATTRIBUTE)
+  for (const name of VAR_NAMES) html.style.removeProperty(name)
+}
+
+function mountInstance(html: HTMLElement, id: symbol): () => void {
+  instances.set(id, {})
+  return () => {
+    instances.delete(id)
+    applyLatest(html)
+  }
+}
+
+function updateInstance(html: HTMLElement, id: symbol, vars: Vars) {
+  if (!instances.has(id)) return
+  instances.set(id, vars)
+  applyLatest(html)
 }
 
 /**
@@ -38,6 +74,7 @@ function markDocument(html: HTMLElement): () => void {
  * it the theme values those rules read through CSS variables.
  */
 export function GlobalStyle(): null {
+  const [id] = useState(() => Symbol('GlobalStyle'))
   const {color, font} = useThemeV2()
   const iconColor = color.icon
   const borderColor = color.border
@@ -47,24 +84,23 @@ export function GlobalStyle(): null {
   const fontFamily = font.text.family
   const mediumWeight = font.text.weights.medium
 
-  useInsertionEffect(() => markDocument(document.documentElement), [])
+  useInsertionEffect(() => mountInstance(document.documentElement, id), [id])
 
   useInsertionEffect(() => {
-    const html = document.documentElement
-    const vars = assignInlineVars({
-      [resizerImageVar]: buildResizeHandleDataUri(iconColor),
-      [borderColorVar]: borderColor,
-      [mutedFgColorVar]: mutedFgColor,
-      [selectionColorVar]: rgba(focusRingColor, 0.3),
-      [bgColorVar]: bgColor,
-      [textFontFamilyVar]: fontFamily,
-      [textMediumWeightVar]: String(mediumWeight),
-    })
-    for (const [name, value] of Object.entries(vars)) html.style.setProperty(name, value)
-    return () => {
-      for (const name of Object.keys(vars)) html.style.removeProperty(name)
-    }
-  }, [iconColor, borderColor, mutedFgColor, focusRingColor, bgColor, fontFamily, mediumWeight])
+    updateInstance(
+      document.documentElement,
+      id,
+      assignInlineVars({
+        [resizerImageVar]: buildResizeHandleDataUri(iconColor),
+        [borderColorVar]: borderColor,
+        [mutedFgColorVar]: mutedFgColor,
+        [selectionColorVar]: rgba(focusRingColor, 0.3),
+        [bgColorVar]: bgColor,
+        [textFontFamilyVar]: fontFamily,
+        [textMediumWeightVar]: String(mediumWeight),
+      }),
+    )
+  }, [id, iconColor, borderColor, mutedFgColor, focusRingColor, bgColor, fontFamily, mediumWeight])
 
   return null
 }
