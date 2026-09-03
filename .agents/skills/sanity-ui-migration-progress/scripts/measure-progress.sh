@@ -73,6 +73,8 @@ done
 
 SEARCH_DIR="${SEARCH_DIR:-.}"
 
+[ -d "$SEARCH_DIR" ] || { echo "error: not a directory: $SEARCH_DIR" >&2; exit 1; }
+
 command -v rg >/dev/null || { echo "ripgrep (rg) required" >&2; exit 1; }
 
 # Discover v5 alias from nearest package.json when default is used and ui5 imports are absent.
