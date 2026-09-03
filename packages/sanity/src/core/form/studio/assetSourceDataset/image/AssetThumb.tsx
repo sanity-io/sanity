@@ -5,9 +5,9 @@ import {
   Card,
 } from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {clsx} from 'clsx'
+import {type ComponentProps, memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
-import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
 import {useClient} from '../../../../hooks/useClient'
@@ -17,6 +17,7 @@ import {AssetDeleteDialog} from '../shared/AssetDeleteDialog'
 import {AssetMenu} from '../shared/AssetMenu'
 import {AssetUsageDialog} from '../shared/AssetUsageDialog'
 import {type AssetMenuAction} from '../types'
+import {container, image, menuContainer, root} from './AssetThumb.css'
 
 interface AssetProps {
   asset: Asset
@@ -26,64 +27,16 @@ interface AssetProps {
   onDeleteFinished: (assetId: string) => void
 }
 
+function Image(props: ComponentProps<'img'>) {
+  const {alt, className, ...rest} = props
+  return <img {...rest} alt={alt} className={clsx(image, className)} />
+}
+
 // Get pixel density of the current device
 const DPI =
   typeof window === 'undefined' || !window.devicePixelRatio
     ? 1
     : Math.round(window.devicePixelRatio)
-
-const Image = styled.img`
-  position: absolute;
-  z-index: 1;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: contain;
-`
-
-const Container = styled(Card)`
-  position: relative;
-  z-index: 1;
-  padding-bottom: 100%;
-`
-
-const Root = styled.div`
-  position: relative;
-  display: inherit;
-`
-const MenuContainer = styled.div`
-  box-sizing: border-box;
-  position: absolute;
-  z-index: 2;
-  top: 3px;
-  right: 3px;
-
-  & button[data-selected] {
-    display: block;
-  }
-
-  @media (hover: hover) {
-    // If hover is supported, hide the buttons until the user hovers or focuses the asset
-    // Use opacity to enable the buttons to still be focusable
-    & button {
-      opacity: 0;
-    }
-
-    ${Root}:hover & {
-      button {
-        opacity: 1;
-      }
-    }
-
-    ${Root}:focus-within & {
-      button {
-        opacity: 1;
-      }
-    }
-  }
-`
 
 export const AssetThumb = memo(function AssetThumb(props: AssetProps) {
   const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -206,7 +159,7 @@ export const AssetThumb = memo(function AssetThumb(props: AssetProps) {
     : `${url}?h=${imgH}&fit=max`
 
   return (
-    <Root>
+    <div className={root}>
       <Button
         selected={isSelected}
         tabIndex={0}
@@ -217,7 +170,7 @@ export const AssetThumb = memo(function AssetThumb(props: AssetProps) {
         padding={0}
         style={{padding: 2}}
       >
-        <Container __unstable_checkered>
+        <Card className={container} __unstable_checkered>
           <Image
             alt={originalFilename}
             src={imageUrl}
@@ -226,12 +179,12 @@ export const AssetThumb = memo(function AssetThumb(props: AssetProps) {
             referrerPolicy="strict-origin-when-cross-origin"
           />
           {isDeleting && <LoadingBlock />}
-        </Container>
+        </Card>
       </Button>
-      <MenuContainer>
+      <div className={menuContainer}>
         <AssetMenu isSelected={isSelected} onAction={handleMenuAction} />
-      </MenuContainer>
+      </div>
       {usageDialog || deleteDialog}
-    </Root>
+    </div>
   )
 })

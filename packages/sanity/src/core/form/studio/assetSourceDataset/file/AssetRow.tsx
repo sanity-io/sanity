@@ -9,14 +9,23 @@ import {
   Button,
   Card,
   Flex,
+  type FlexProps,
   Grid,
   Stack,
   Text,
 } from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {type KeyboardEvent, type MouseEvent, useCallback, useMemo, useRef, useState} from 'react'
+import {clsx} from 'clsx'
+import {
+  type ComponentProps,
+  type KeyboardEvent,
+  type MouseEvent,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {type Subscription} from 'rxjs'
-import {css, styled} from 'styled-components'
 import {Box} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
@@ -31,6 +40,15 @@ import {AssetMenu} from '../shared/AssetMenu'
 import {AssetUsageDialog} from '../shared/AssetUsageDialog'
 import {type AssetMenuAction} from '../types'
 import {formatMimeType} from '../utils/mimeType'
+import {
+  cardIconWrapper,
+  customCardSelected,
+  customFlex,
+  rowButton,
+  rowButtonSelected,
+  rowButtonUnselected,
+  typeText,
+} from './AssetRow.css'
 
 interface RowProps {
   isMobile?: boolean
@@ -41,86 +59,29 @@ interface RowProps {
   onDeleteFinished?: (assetId: string) => void
 }
 
-const CardIconWrapper = styled.span`
-  background-color: transparent;
-  flex-shrink: 0;
-`
+/**
+ * Both wrappers forward the row's own `onKeyPress` callback (declared on `RowProps`), so they take
+ * that prop from `RowProps` rather than from the primitive's DOM attributes.
+ */
+type CustomFlexProps = Omit<FlexProps, 'onKeyPress'> & Pick<RowProps, 'onKeyPress'>
 
-// These are here because using vanilla UI components caused a type issue inside of styled-components
-const CustomFlex = styled(Flex)``
+type RowButtonProps = Omit<ComponentProps<typeof Button<'button'>>, 'onKeyPress'> &
+  Pick<RowProps, 'isSelected' | 'onKeyPress'>
 
-const CustomCard = styled(Card)<RowProps>`
-  ${(props) =>
-    props.isSelected &&
-    css`
-      --card-muted-fg-color: var(--card-bg-color);
-      --card-fg-color: var(--card-bg-color);
-    `}
-`
+function CustomFlex(props: CustomFlexProps) {
+  const {className, ...rest} = props
+  return <Flex {...rest} className={clsx(customFlex, className)} />
+}
 
-const RowButton = styled(Button)<RowProps>`
-  box-shadow: none;
-  min-width: 0;
-  cursor: pointer;
-  position: initial;
-
-  &:before,
-  &:after {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 2;
-  }
-
-  &:before {
-    z-index: 0;
-    pointer-events: none;
-    border-radius: inherit;
-  }
-
-  ${(props) =>
-    props.isSelected &&
-    css`
-      --card-muted-fg-color: var(--card-bg-color);
-      --card-fg-color: var(--card-bg-color);
-
-      &:before {
-        background-color: var(--card-focus-ring-color);
-      }
-
-      ${CardIconWrapper} {
-        --card-muted-fg-color: var(--card-bg-color);
-      }
-
-      ${CustomFlex} {
-        --card-muted-fg-color: var(--card-bg-color);
-        --card-fg-color: var(--card-bg-color);
-      }
-    `}
-
-  ${(props) =>
-    !props.isSelected &&
-    css`
-      &:hover:before {
-        background-color: var(--card-bg-color);
-      }
-
-      &:focus:before {
-        background-color: var(--card-code-bg-color);
-      }
-
-      &:focus-within:before {
-        background-color: var(--card-bg-color);
-      }
-    `}
-`
-
-const TypeText = styled(Text)`
-  overflow-wrap: anywhere;
-`
+function RowButton(props: RowButtonProps) {
+  const {className, isSelected, ...rest} = props
+  return (
+    <Button
+      {...rest}
+      className={clsx(rowButton, isSelected ? rowButtonSelected : rowButtonUnselected, className)}
+    />
+  )
+}
 
 const STYLES_ROW_CARD = {
   position: 'relative',
@@ -262,7 +223,6 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
           }}
         >
           <RowButton
-            asset={asset}
             mode="bleed"
             padding={0}
             data-id={_id}
@@ -271,7 +231,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
             radius={2}
           >
             <Flex gap={2} flex={2} align="center">
-              <Card as={CardIconWrapper} padding={2} tone="transparent" radius={2}>
+              <Card as="span" className={cardIconWrapper} padding={2} tone="transparent" radius={2}>
                 <Text muted size={2} style={STYLES_ICON_CARD}>
                   <DocumentIcon />
                 </Text>
@@ -352,13 +312,12 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
   }
 
   return (
-    <CustomCard
-      asset={asset}
+    <Card
+      className={isSelected ? customCardSelected : undefined}
       paddingBottom={1}
       style={STYLES_ROW_CARD}
       radius={0}
       overflow={'hidden'}
-      isSelected={isSelected}
       aria-selected="true"
     >
       <Grid
@@ -373,7 +332,6 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
         }}
       >
         <RowButton
-          asset={asset}
           mode="bleed"
           data-id={_id}
           onClick={onClick}
@@ -395,7 +353,8 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
             data-id={_id}
           >
             <Card
-              as={CardIconWrapper}
+              as="span"
+              className={cardIconWrapper}
               padding={2}
               tone="transparent"
               radius={2}
@@ -427,9 +386,9 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
         </CustomFlex>
         <CustomFlex align="center">
           <Box>
-            <TypeText size={1} muted textOverflow="ellipsis">
+            <Text className={typeText} size={1} muted textOverflow="ellipsis">
               {formattedMimeType}
-            </TypeText>
+            </Text>
           </Box>
         </CustomFlex>
         <CustomFlex align="center">
@@ -448,6 +407,6 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
         </CustomFlex>
       </Grid>
       {usageDialog || deleteDialog}
-    </CustomCard>
+    </Card>
   )
 }
