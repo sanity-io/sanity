@@ -12,8 +12,6 @@ import {
   type LocaleDefinition,
   type LocaleResourceBundle,
 } from '../i18n/types'
-import {type SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
-import {type SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
 import {type Template, type TemplateItem} from '../templates/types'
 import {getPrintableType} from '../util/getPrintableType'
 import {isRecord} from '../util/isRecord'
@@ -87,20 +85,18 @@ export const toolsReducer: ConfigPropertyReducer<Tool[], ConfigContext> = (
   )
 }
 
-export const searchFilterReducer: ConfigPropertyReducer<SearchFilterDefinition[], ConfigContext> = (
-  prev,
-  {search},
-  context,
-) => {
+// we will need this when we ressurect user config for search
+/*export const searchFilterReducer: ConfigPropertyReducer<
+  SearchFilterDefinition<string>[],
+  ConfigContext
+> = (prev, {search}, context) => {
   const filters = search?.filters
   if (!filters) return prev
   if (typeof filters === 'function') return filters(prev, context)
   if (Array.isArray(filters)) return [...prev, ...filters]
 
   throw new Error(
-    `Expected \`search.filters\` to be an array or a function, but received ${getPrintableType(
-      filters,
-    )}`,
+    `Expected \`search.filters\` to be an array or a function, but received ${typeof filters}`
   )
 }
 
@@ -114,11 +110,9 @@ export const searchOperatorsReducer: ConfigPropertyReducer<
   if (Array.isArray(operators)) return [...prev, ...operators]
 
   throw new Error(
-    `Expected \`search.operators\` to be an array or a function, but received ${getPrintableType(
-      operators,
-    )}`,
+    `Expected \`operators\` to be be an array or a function, but received ${getPrintableType(operators)}`
   )
-}
+}*/
 
 export const schemaTemplatesReducer: ConfigPropertyReducer<Template[], ConfigContext> = (
   prev,

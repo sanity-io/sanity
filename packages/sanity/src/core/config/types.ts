@@ -491,22 +491,6 @@ export interface PluginOptions {
   /** @beta @hidden */
   i18n?: LocalePluginOptions
   search?: {
-    /**
-     * Configures the filters available in the global search filter menu.
-     * Filters can be appended directly or composed from the default and plugin-provided filters.
-     *
-     * @alpha
-     */
-    filters?: SearchFilterDefinition[] | ComposableOption<SearchFilterDefinition[], ConfigContext>
-    /**
-     * Configures the operators available to search filters.
-     * Register custom operators here before referencing them from a custom filter definition.
-     *
-     * @alpha
-     */
-    operators?:
-      | SearchOperatorDefinition[]
-      | ComposableOption<SearchOperatorDefinition[], ConfigContext>
     unstable_partialIndexing?: {
       enabled: boolean
     }
