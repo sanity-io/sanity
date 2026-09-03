@@ -1,26 +1,9 @@
 import {Flex, Text} from '@sanity/ui'
-import {styled} from 'styled-components'
 
 import {useDocumentLastEditedBy} from '../../store/translog/useDocumentLastEditedBy'
 import {useUser} from '../../store/user/hooks'
 import {AvatarSkeleton, UserAvatar} from '../userAvatar/UserAvatar'
-
-// container-query wrapper: show the editor's name when the cell has room, collapse to just the
-// avatar when the column is squeezed narrow. The avatar always carries the name in its tooltip, so
-// nothing is lost when the label is hidden. `width: 100%` is required: `container-type: inline-size`
-// imposes size containment, so without a definite width the element collapses to ~0 (a shrink-to-fit
-// flex item derives no intrinsic width once contained) and the query would report "narrow" always.
-const CellRoot = styled(Flex)`
-  container-type: inline-size;
-  width: 100%;
-  min-width: 0;
-`
-const NameText = styled(Text)`
-  min-width: 0;
-  @container (max-width: 108px) {
-    display: none;
-  }
-`
+import {cellRoot, nameText} from './EditedByCell.css'
 
 /**
  * Presentation for an "Edited by" cell: the avatar + display name of a resolved editor id. A
@@ -49,14 +32,14 @@ export function EditedByAvatar({
   }
 
   return (
-    <CellRoot align="center" gap={2}>
+    <Flex align="center" gap={2} className={cellRoot}>
       <UserAvatar size={0} user={userId} withTooltip />
       {user?.displayName && (
-        <NameText muted size={1} textOverflow="ellipsis">
+        <Text muted size={1} textOverflow="ellipsis" className={nameText}>
           {user.displayName}
-        </NameText>
+        </Text>
       )}
-    </CellRoot>
+    </Flex>
   )
 }
 
