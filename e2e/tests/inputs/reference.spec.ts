@@ -51,6 +51,37 @@ async function searchAndSelectReference(
   await option.click({force: true})
 }
 
+/**
+ * Click publish in the given document pane (0-based index) and wait for the
+ * publish to complete.
+ *
+ * Completion is asserted on the publish button settling into its disabled
+ * state with the plain "Publish" accessible name — the published,
+ * no-pending-changes state, derived from document state. While the document is
+ * still syncing or validating the button carries a different accessible name
+ * ("Syncing document…" / "Validating document…"), so this cannot match early.
+ *
+ * The pane-footer status text is deliberately not used as the completion
+ * signal: it renders the latest entry of the events API feed, which on a
+ * loaded backend can lag far behind the publish itself — CI traces show the
+ * footer still on "Draft created … ago" 15+ seconds after the publish landed
+ * (the button already showed "Published x seconds ago" at that point).
+ */
+async function publishPaneDocument(page: Page, paneIndex: number) {
+  const pane = page.getByTestId('document-pane').nth(paneIndex)
+  const publishButton = pane.getByTestId('action-publish')
+
+  // Only click once the button is actionable: a click that lands while the
+  // document is still syncing/validating is queued behind validation, which
+  // can take tens of seconds on a slow backend.
+  await expect(publishButton).toBeEnabled()
+  await publishButton.click()
+
+  await expect(
+    pane.getByRole('button', {name: 'Publish', exact: true, disabled: true}),
+  ).toBeVisible({timeout: 60_000})
+}
+
 withDefaultClient((context) => {
   test(`value can be changed after the document has been published`, async ({
     page,
@@ -279,7 +310,6 @@ withDefaultClient((context) => {
 
     test.slow()
     const originalTitle = 'Initial Doc'
-    const documentStatus = page.getByTestId('pane-footer-document-status')
 
     await createDraftDocument('/content/input-debug;simpleReferences')
     await expect(page.getByTestId('string-input')).toBeVisible()
@@ -303,15 +333,12 @@ withDefaultClient((context) => {
     await expect(page.getByTestId('document-panel-document-title').nth(1)).toContainText(
       'Reference test',
     )
-    await page.getByTestId('action-publish').nth(1).click() // publish reference
-    await expectPublishedStatus(documentStatus.nth(1))
+    await publishPaneDocument(page, 1) // publish reference
 
     /** --- IN ORIGINAL DOC --- */
     await page.locator('[data-testid="document-pane"]', {hasText: originalTitle}).click()
 
-    await page.getByTestId('action-publish').first().click() // publish reference
-
-    await expectPublishedStatus(documentStatus.first())
+    await publishPaneDocument(page, 0) // publish original document
 
     // open the context menu
     const documentPane = page.getByTestId('document-pane')
