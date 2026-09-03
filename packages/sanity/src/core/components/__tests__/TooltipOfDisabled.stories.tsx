@@ -16,7 +16,7 @@ import {TooltipOfDisabled} from '../TooltipOfDisabled'
  * captured.
  */
 const meta = {
-  title: 'Core Components/Tooltip Of Disabled',
+  title: 'Studio/Tooltip Of Disabled',
   component: TooltipOfDisabled,
   parameters: {chromatic: {delay: 300}},
 } satisfies Meta<typeof TooltipOfDisabled>

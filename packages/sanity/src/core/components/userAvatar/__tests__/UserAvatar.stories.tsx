@@ -48,7 +48,7 @@ function Labelled(props: {label: string; children: ReactNode}) {
  * the store is never hit.
  */
 const meta = {
-  title: 'Core Components/User Avatar',
+  title: 'Studio/User Avatar',
   component: UserAvatar,
   decorators: [
     (Story) => (
@@ -143,7 +143,9 @@ export const WithTooltip: Story = {
   ),
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement)
-    await userEvent.hover(canvas.getByText('KJ'))
+    // TestWrapper suspends until the mock workspace resolves, so wait for the
+    // avatar to mount rather than querying synchronously.
+    await userEvent.hover(await canvas.findByText('KJ', {}, {timeout: 10_000}))
     // The tooltip portals to document.body and opens after the shared delay
     const body = within(document.body)
     await waitFor(() => expect(body.getByText('Katherine Johnson')).toBeVisible(), {

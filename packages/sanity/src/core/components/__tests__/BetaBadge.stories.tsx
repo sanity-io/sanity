@@ -14,7 +14,7 @@ const FONT_SIZES = [0, 1, 2, 3]
  * `fontSize` is the only dial.
  */
 const meta = {
-  title: 'Core Components/Beta Badge',
+  title: 'Studio/Beta Badge',
   component: BetaBadge,
   args: {fontSize: 1},
 } satisfies Meta<typeof BetaBadge>

@@ -42,7 +42,7 @@ const documentMenu = (
  * tooltip label resolves through studio i18n.
  */
 const meta = {
-  title: 'Core Components/Context Menu Button',
+  title: 'Studio/Context Menu Button',
   component: ContextMenuButton,
   decorators: [
     (Story) => (
@@ -137,7 +137,9 @@ export const Open: Story = {
   ),
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement)
-    await userEvent.click(canvas.getByRole('button'))
+    // TestWrapper suspends until the mock workspace resolves, so wait for the
+    // trigger to mount rather than querying synchronously.
+    await userEvent.click(await canvas.findByRole('button', {}, {timeout: 10_000}))
     // The menu portals to document.body
     const body = within(document.body)
     await waitFor(() => expect(body.getByRole('menuitem', {name: 'Delete'})).toBeVisible(), {

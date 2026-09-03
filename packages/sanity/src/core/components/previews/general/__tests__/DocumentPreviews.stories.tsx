@@ -3,15 +3,16 @@ import {Card, Grid, Stack, Text} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {type ReactNode} from 'react'
 
-import {TestWrapper} from '../../../../../test/browser/TestWrapper'
-import {CompactPreview} from '../general/CompactPreview'
-import {DefaultPreview} from '../general/DefaultPreview'
-import {DetailPreview} from '../general/DetailPreview'
-import {MediaPreview} from '../general/MediaPreview'
-import {BlockImagePreview} from '../portableText/BlockImagePreview'
-import {BlockPreview} from '../portableText/BlockPreview'
-import {InlinePreview} from '../portableText/InlinePreview'
-import {type GeneralPreviewLayoutKey} from '../types'
+import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
+import {BlockImagePreview} from '../../portableText/BlockImagePreview'
+import {BlockPreview} from '../../portableText/BlockPreview'
+import {InlinePreview} from '../../portableText/InlinePreview'
+import {type GeneralPreviewLayoutKey} from '../../types'
+import {CompactPreview} from '../CompactPreview'
+import {DefaultPreview} from '../DefaultPreview'
+import {DetailPreview} from '../DetailPreview'
+import {MediaPreview} from '../MediaPreview'
+import {DocumentPreviewsStory} from './DocumentPreviewsStory'
 
 const GENERAL_LAYOUTS: GeneralPreviewLayoutKey[] = ['compact', 'default', 'media', 'detail']
 
@@ -92,19 +93,18 @@ function LayoutLabel(props: {children: ReactNode}) {
  * "Untitled" fallback resolves through.
  */
 const meta = {
-  title: 'Core Components/Previews',
-  component: DefaultPreview,
-  decorators: [
-    (Story) => (
-      <TestWrapper schemaTypes={[]}>
-        <Story />
-      </TestWrapper>
-    ),
-  ],
-} satisfies Meta<typeof DefaultPreview>
+  title: 'Studio/Document Previews',
+  component: DocumentPreviewsStory,
+} satisfies Meta<typeof DocumentPreviewsStory>
 
 export default meta
 type Story = StoryObj<typeof meta>
+
+/**
+ * Reuses the in-package harness: Box padding on default / compact / detail
+ * previews after the ui5 Box migration. Media vs no-media changes paddingLeft.
+ */
+export const States: Story = {}
 
 /**
  * Each general layout loaded with media, and the same layout without a
@@ -114,11 +114,52 @@ type Story = StoryObj<typeof meta>
  */
 export const Layouts: Story = {
   render: () => (
-    <Stack gap={5}>
-      <Grid gap={4} gridTemplateColumns={2} style={{maxWidth: 720}}>
+    <TestWrapper schemaTypes={[]}>
+      <Stack gap={5}>
+        <Grid gap={4} gridTemplateColumns={2} style={{maxWidth: 720}}>
+          {GENERAL_LAYOUTS.map((layout) => (
+            <Stack gap={3} key={layout}>
+              <LayoutLabel>{layout}</LayoutLabel>
+              <LayoutCard layout={layout}>
+                <PreviewByLayout
+                  layout={layout}
+                  media={GradientMedia}
+                  subtitle="Realism"
+                  title="Leo Tolstoy"
+                />
+              </LayoutCard>
+            </Stack>
+          ))}
+        </Grid>
+        <Grid gap={4} gridTemplateColumns={2} style={{maxWidth: 720}}>
+          {GENERAL_LAYOUTS.map((layout) => (
+            <Stack gap={3} key={layout}>
+              <LayoutLabel>{layout} · no media</LayoutLabel>
+              <LayoutCard layout={layout}>
+                <PreviewByLayout layout={layout} subtitle="Realism" title="Leo Tolstoy" />
+              </LayoutCard>
+            </Stack>
+          ))}
+        </Grid>
+      </Stack>
+    </TestWrapper>
+  ),
+}
+
+/**
+ * The `isPlaceholder` skeleton for every general layout beside its loaded
+ * twin. The skeleton occupies the same box the loaded row will.
+ */
+export const PlaceholderSkeletons: Story = {
+  render: () => (
+    <TestWrapper schemaTypes={[]}>
+      <Grid gap={5} gridTemplateColumns={2} style={{maxWidth: 720}}>
         {GENERAL_LAYOUTS.map((layout) => (
           <Stack gap={3} key={layout}>
             <LayoutLabel>{layout}</LayoutLabel>
+            <LayoutCard layout={layout}>
+              <PreviewByLayout isPlaceholder layout={layout} media={GradientMedia} />
+            </LayoutCard>
             <LayoutCard layout={layout}>
               <PreviewByLayout
                 layout={layout}
@@ -130,44 +171,7 @@ export const Layouts: Story = {
           </Stack>
         ))}
       </Grid>
-      <Grid gap={4} gridTemplateColumns={2} style={{maxWidth: 720}}>
-        {GENERAL_LAYOUTS.map((layout) => (
-          <Stack gap={3} key={layout}>
-            <LayoutLabel>{layout} · no media</LayoutLabel>
-            <LayoutCard layout={layout}>
-              <PreviewByLayout layout={layout} subtitle="Realism" title="Leo Tolstoy" />
-            </LayoutCard>
-          </Stack>
-        ))}
-      </Grid>
-    </Stack>
-  ),
-}
-
-/**
- * The `isPlaceholder` skeleton for every general layout beside its loaded
- * twin. The skeleton occupies the same box the loaded row will.
- */
-export const PlaceholderSkeletons: Story = {
-  render: () => (
-    <Grid gap={5} gridTemplateColumns={2} style={{maxWidth: 720}}>
-      {GENERAL_LAYOUTS.map((layout) => (
-        <Stack gap={3} key={layout}>
-          <LayoutLabel>{layout}</LayoutLabel>
-          <LayoutCard layout={layout}>
-            <PreviewByLayout isPlaceholder layout={layout} media={GradientMedia} />
-          </LayoutCard>
-          <LayoutCard layout={layout}>
-            <PreviewByLayout
-              layout={layout}
-              media={GradientMedia}
-              subtitle="Realism"
-              title="Leo Tolstoy"
-            />
-          </LayoutCard>
-        </Stack>
-      ))}
-    </Grid>
+    </TestWrapper>
   ),
 }
 
@@ -178,18 +182,20 @@ export const PlaceholderSkeletons: Story = {
  */
 export const LongText: Story = {
   render: () => (
-    <Stack gap={4} style={{maxWidth: 280}}>
-      {GENERAL_LAYOUTS.map((layout) => (
-        <LayoutCard key={layout} layout={layout}>
-          <PreviewByLayout
-            layout={layout}
-            media={GradientMedia}
-            subtitle={LONG_SUBTITLE}
-            title={LONG_TITLE}
-          />
-        </LayoutCard>
-      ))}
-    </Stack>
+    <TestWrapper schemaTypes={[]}>
+      <Stack gap={4} style={{maxWidth: 280}}>
+        {GENERAL_LAYOUTS.map((layout) => (
+          <LayoutCard key={layout} layout={layout}>
+            <PreviewByLayout
+              layout={layout}
+              media={GradientMedia}
+              subtitle={LONG_SUBTITLE}
+              title={LONG_TITLE}
+            />
+          </LayoutCard>
+        ))}
+      </Stack>
+    </TestWrapper>
   ),
 }
 
@@ -199,28 +205,30 @@ export const LongText: Story = {
  */
 export const PortableText: Story = {
   render: () => (
-    <Stack gap={5} style={{maxWidth: 420}}>
-      <Stack gap={3}>
-        <LayoutLabel>block</LayoutLabel>
-        <Card border padding={2} radius={2}>
-          <BlockPreview media={GradientMedia} subtitle="Leo Tolstoy" title="Anna Karenina" />
-        </Card>
+    <TestWrapper schemaTypes={[]}>
+      <Stack gap={5} style={{maxWidth: 420}}>
+        <Stack gap={3}>
+          <LayoutLabel>block</LayoutLabel>
+          <Card border padding={2} radius={2}>
+            <BlockPreview media={GradientMedia} subtitle="Leo Tolstoy" title="Anna Karenina" />
+          </Card>
+        </Stack>
+        <Stack gap={3}>
+          <LayoutLabel>blockImage</LayoutLabel>
+          <Card border padding={2} radius={2}>
+            <BlockImagePreview media={GradientMedia} subtitle="1600 × 900" title="Cover artwork" />
+          </Card>
+        </Stack>
+        <Stack gap={3}>
+          <LayoutLabel>inline</LayoutLabel>
+          <Card border padding={3} radius={2}>
+            <Text size={1}>
+              A sentence with an <InlinePreview media={<BookIcon />} title="inline reference" />{' '}
+              rendered mid-flow.
+            </Text>
+          </Card>
+        </Stack>
       </Stack>
-      <Stack gap={3}>
-        <LayoutLabel>blockImage</LayoutLabel>
-        <Card border padding={2} radius={2}>
-          <BlockImagePreview media={GradientMedia} subtitle="1600 × 900" title="Cover artwork" />
-        </Card>
-      </Stack>
-      <Stack gap={3}>
-        <LayoutLabel>inline</LayoutLabel>
-        <Card border padding={3} radius={2}>
-          <Text size={1}>
-            A sentence with an <InlinePreview media={<BookIcon />} title="inline reference" />{' '}
-            rendered mid-flow.
-          </Text>
-        </Card>
-      </Stack>
-    </Stack>
+    </TestWrapper>
   ),
 }

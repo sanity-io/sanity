@@ -21,7 +21,7 @@ const SHORTCUTS: {label: string; keys: string[]}[] = [
  * machine capturing them.
  */
 const meta = {
-  title: 'Core Components/Hotkeys',
+  title: 'Studio/Hotkeys',
   component: Hotkeys,
   args: {keys: ['Ctrl', 'Alt', 'K'], makePlatformAware: false},
 } satisfies Meta<typeof Hotkeys>

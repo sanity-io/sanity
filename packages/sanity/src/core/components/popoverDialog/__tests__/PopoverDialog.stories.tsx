@@ -55,7 +55,7 @@ function PopoverDialogStory(props: {width: ResponsiveWidthProps['width']}) {
  * width (`0` 320px, `1` 640px, `2` 960px), capped at the viewport.
  */
 const meta = {
-  title: 'Core Components/Popover Dialog',
+  title: 'Studio/Popover Dialog',
   component: PopoverDialogStory,
   args: {width: 1},
   parameters: {chromatic: {delay: 300}},

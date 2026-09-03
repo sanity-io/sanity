@@ -41,7 +41,7 @@ const LADDER: {label: string; time: Date}[] = [
  * the studio `LocaleProvider` on top of the mock source.
  */
 const meta = {
-  title: 'Core Components/Relative Time',
+  title: 'Studio/Relative Time',
   component: RelativeTime,
   decorators: [
     (Story) => (

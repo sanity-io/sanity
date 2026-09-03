@@ -44,7 +44,7 @@ function Row(props: {title: string; status?: string}) {
  * below carry a caution-toned status to show that override in effect.
  */
 const meta = {
-  title: 'Core Components/Preview Card',
+  title: 'Studio/Preview Card',
   component: PreviewCard,
   args: {padding: 1, radius: 2},
 } satisfies Meta<typeof PreviewCard>

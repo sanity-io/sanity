@@ -8,6 +8,8 @@ const isStaging = process.env.SANITY_INTERNAL_ENV == 'staging'
 // the DevTools dock in a running `sanity dev` server without restarting it.
 // Usage: `pnpm devtools:test-studio` from the repo root (see AGENTS.md).
 const isViteDevToolsEnabled = process.env.ENABLE_VITE_DEVTOOLS === 'true'
+// React DevTools profiling via agent-react-devtools. Usage: `pnpm react-devtools:test-studio` (see AGENTS.md).
+const isReactDevtoolsEnabled = process.env.ENABLE_REACT_DEVTOOLS === 'true'
 
 export default defineCliConfig({
   api: isStaging
@@ -28,7 +30,8 @@ export default defineCliConfig({
   // trigger the monorepo "waterfall of reload doom", which previously required
   // server.warmup.clientFiles workarounds.
   // {@link https://vite.dev/guide/rolldown#full-bundle-mode}
-  unstable_bundledDev: true,
+  // TODO(bundledDev): re-enable while profiling once bundledDev stops crashing on load.
+  unstable_bundledDev: process.env.ENABLE_REACT_DEVTOOLS !== 'true',
   reactCompiler: {
     // `transform: 'oxc'` runs React Compiler through `oxc-transform-react` (the native Rust
     // port): one native pass handles React Compiler, TypeScript/JSX and Fast Refresh — no babel
@@ -59,6 +62,11 @@ export default defineCliConfig({
         // `devtools: {}` makes `sanity build` emit a Rolldown build session that the DevTools dock can inspect
         build: {rolldownOptions: {devtools: {}}},
       })
+    }
+
+    if (isReactDevtoolsEnabled) {
+      const {reactDevtools} = await import('agent-react-devtools/vite')
+      nextConfig = mergeConfig(nextConfig, {plugins: [reactDevtools()]})
     }
 
     // Support React Production Profiling on deployed studios

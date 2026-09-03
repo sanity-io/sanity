@@ -82,7 +82,7 @@ const overflowButton = (
  * default overflow trigger's tooltip resolves through studio i18n.
  */
 const meta = {
-  title: 'Core Components/Collapse Menu',
+  title: 'Studio/Collapse Menu',
   component: CollapseMenu,
   decorators: [
     (Story) => (
@@ -141,7 +141,9 @@ export const OverflowMenuOpen: Story = {
   ),
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement)
-    await userEvent.click(canvas.getByRole('button', {name: 'Show more'}))
+    // TestWrapper suspends until the mock workspace resolves, so wait for the
+    // trigger to mount rather than querying synchronously.
+    await userEvent.click(await canvas.findByRole('button', {name: 'Show more'}, {timeout: 10_000}))
     // The menu portals to document.body
     const body = within(document.body)
     await waitFor(() => expect(body.getByRole('menuitem', {name: 'Delete'})).toBeVisible(), {

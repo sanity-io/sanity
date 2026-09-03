@@ -18,7 +18,7 @@ const PARAMS = {id: 'author-tolstoy', type: 'author'}
  * router (with an intents route) that `IntentLink` resolves against.
  */
 const meta = {
-  title: 'Core Components/Intent Button',
+  title: 'Studio/Intent Button',
   component: IntentButton,
   decorators: [
     (Story) => (

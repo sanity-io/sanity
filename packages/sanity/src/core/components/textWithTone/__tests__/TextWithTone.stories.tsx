@@ -27,7 +27,7 @@ const STATUS_ROWS: {tone: ButtonTone; icon: typeof ErrorOutlineIcon; text: strin
  * opacity to 0.3.
  */
 const meta = {
-  title: 'Core Components/Text With Tone',
+  title: 'Studio/Text With Tone',
   component: TextWithTone,
   args: {tone: 'critical', size: 1, children: 'Required, cannot be empty'},
 } satisfies Meta<typeof TextWithTone>

@@ -26,7 +26,7 @@ function Region(props: {children: ReactNode}) {
  * snapshot shows the settled spinner and label rather than the initial blank.
  */
 const meta = {
-  title: 'Core Components/Loading Block',
+  title: 'Studio/Loading Block',
   component: LoadingBlock,
   decorators: [
     (Story) => (

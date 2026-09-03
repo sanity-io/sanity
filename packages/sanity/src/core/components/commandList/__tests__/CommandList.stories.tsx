@@ -140,7 +140,7 @@ function getItemSelected(index: number) {
  * through `renderItem`; the list itself never assumes their shape.
  */
 const meta = {
-  title: 'Core Components/Command List',
+  title: 'Studio/Command List',
   component: CommandList,
   args: {
     ariaLabel: 'Documents',

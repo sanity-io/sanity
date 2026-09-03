@@ -20,6 +20,10 @@ baselines. Review diffs on the Chromatic build linked from the PR check.
 
 ## Quick start: add visual coverage for a component
 
+Before writing anything, run `pnpm visual-coverage <path> --prs` and follow
+[sanity-visual-coverage](../sanity-visual-coverage/SKILL.md). It reports whether a story already
+renders the component or an open PR is about to, so you only add what is missing.
+
 1. Add a co-located `*.stories.tsx` file to the owning package's `src` tree, usually in the same
    `__tests__` directory as the component or harness. Storybook discovers story files in workspace
    package `src` trees — do not add CSF under `dev/storybook/stories/`. Two patterns:

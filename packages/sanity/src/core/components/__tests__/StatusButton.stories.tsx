@@ -23,7 +23,7 @@ const STATES = [
  * prop so the state the dot conveys always has a programmatic name.
  */
 const meta = {
-  title: 'Core Components/Status Button',
+  title: 'Studio/Status Button',
   component: StatusButton,
   args: {'aria-label': 'Status', 'text': 'Status'},
 } satisfies Meta<typeof StatusButton>
