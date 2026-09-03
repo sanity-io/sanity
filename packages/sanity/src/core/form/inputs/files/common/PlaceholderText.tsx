@@ -2,9 +2,10 @@ import {AccessDeniedIcon} from '@sanity/icons/AccessDenied'
 import {BinaryDocumentIcon} from '@sanity/icons/BinaryDocument'
 import {ImageIcon} from '@sanity/icons/Image'
 import {ReadOnlyIcon} from '@sanity/icons/ReadOnly'
-import {Flex, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {type FileLike} from '../../../studio/uploads/types'
@@ -67,7 +68,7 @@ export function PlaceholderText(props: Props) {
   }, [acceptedFiles, directUploads, hoveringFiles, readOnly, rejectedFilesCount, t, type])
 
   return (
-    <RootFlex align="center" gap={3} justify="center" paddingLeft={1}>
+    <RootFlex alignItems="center" gap={3} justifyContent="center" paddingLeft={1}>
       <Text muted size={1}>
         {messageIcon}
       </Text>

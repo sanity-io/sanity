@@ -81,7 +81,7 @@ describe('VideoInput - local tests', () => {
     const browseButton = screen.getByTestId(videoBrowseTestId)
     const flexContainer = browseButton.closest('[data-ui="Flex"]')
     expect(flexContainer).toBeInTheDocument()
-    expect(flexContainer).toHaveStyle('justify-content: flex-end')
+    expect(flexContainer).toHaveClass('sui-justify-content-flex-end')
   })
 
   it('StudioVideoInput hides upload when disableNew is true', async () => {

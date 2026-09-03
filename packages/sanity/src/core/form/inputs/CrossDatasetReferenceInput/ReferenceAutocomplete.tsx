@@ -1,8 +1,8 @@
-import {Flex, type Placement, Text} from '@sanity/ui'
+import {type Placement, Text} from '@sanity/ui'
 import {Autocomplete} from '@sanity/ui/autocomplete'
 import {type ComponentProps, type Ref, type RefObject, useCallback, type RefAttributes} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Popover} from '../../../../ui-components/popover/Popover'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -66,7 +66,7 @@ export function ReferenceAutocomplete(
               content
             ) : (
               <Box padding={4}>
-                <Flex align="center" height="fill" justify="center">
+                <Flex alignItems="center" height="100%" justifyContent="center">
                   <StyledText align="center" muted>
                     <Translate
                       t={t}

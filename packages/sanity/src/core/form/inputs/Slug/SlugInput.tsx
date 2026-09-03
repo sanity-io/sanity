@@ -7,10 +7,10 @@ import {
   type SlugSourceFn,
   type SlugValue,
 } from '@sanity/types'
-import {Card, Flex, Stack, TextInput} from '@sanity/ui'
+import {Card, Stack, TextInput} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {type FormEvent, useCallback, useImperativeHandle, useMemo, useRef} from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
