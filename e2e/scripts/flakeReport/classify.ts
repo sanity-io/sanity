@@ -193,11 +193,17 @@ export function analyzeTests(
   return analyses
 }
 
+// Status codes are only trusted next to an HTTP/status marker: bare numbers show up in
+// unrelated places (`pnpm` progress lines like "added 429", `duration_ms=502`).
+const STATUS_MARKER = String.raw`(?:HTTP\/?[\d.]*\s*|status(?:Code)?\s*[:=]?\s*|\()`
 const LOG_SIGNATURES: [LogSignature, RegExp][] = [
-  ['rate-limit', /\b429\b|rate ?limit/i],
+  ['rate-limit', new RegExp(String.raw`rate ?limit|Too Many Requests|${STATUS_MARKER}429\b`, 'i')],
   [
     'network',
-    /ECONNRESET|ETIMEDOUT|EAI_AGAIN|ENOTFOUND|socket hang up|fetch failed|\b50[234]\b|Bad Gateway|Service Unavailable|Gateway Time-?out/i,
+    new RegExp(
+      String.raw`ECONNRESET|ETIMEDOUT|EAI_AGAIN|ENOTFOUND|socket hang up|fetch failed|Bad Gateway|Service Unavailable|Gateway Time-?out|${STATUS_MARKER}50[234]\b`,
+      'i',
+    ),
   ],
 ]
 

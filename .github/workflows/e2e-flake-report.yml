@@ -15,7 +15,9 @@ on:
 jobs:
   report:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    # Runs that predate the compact e2e-diagnostics artifacts fall back to the
+    # video-heavy shard artifacts; a week of those takes most of an hour.
+    timeout-minutes: 90
     permissions:
       actions: read # list runs and jobs, download shard artifacts and job logs
       contents: read

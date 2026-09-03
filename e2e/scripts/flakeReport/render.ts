@@ -6,6 +6,9 @@ import {
   type TestAnalysis,
 } from './types'
 
+const SPEC_TABLE_ROWS = 15
+const UNKNOWN_RUN_ROWS = 40
+
 const VERDICT_LABELS: Record<RunVerdict, string> = {
   'mixed': 'Mixed (platform + test-side)',
   'platform': 'Platform / network degraded',
@@ -112,11 +115,21 @@ export function renderMarkdown(report: FlakeReport): string {
   if (report.failed.length === 0) {
     lines.push('No failed runs in the window.')
   } else {
+    const attributed = report.failed.filter((analysis) => analysis.verdict !== 'unknown')
+    const unknown = report.failed.filter((analysis) => analysis.verdict === 'unknown')
+    const byNewest = (left: RunAnalysis, right: RunAnalysis) =>
+      right.run.createdAt.localeCompare(left.run.createdAt)
+    const rows = [
+      ...attributed.sort(byNewest),
+      ...unknown.sort(byNewest).slice(0, UNKNOWN_RUN_ROWS),
+    ]
+    lines.push(
+      `Attributed runs first, then the ${Math.min(unknown.length, UNKNOWN_RUN_ROWS)} newest of ${unknown.length} runs without diagnostics data${unknown.length > UNKNOWN_RUN_ROWS ? ' (the rest are in the JSON output)' : ''}.`,
+    )
+    lines.push('')
     lines.push('| When (UTC) | Run | Title | Failed jobs | Verdict | Evidence |')
     lines.push('| --- | --- | --- | --- | --- | --- |')
-    for (const analysis of [...report.failed].sort((left, right) =>
-      right.run.createdAt.localeCompare(left.run.createdAt),
-    )) {
+    for (const analysis of rows) {
       const jobs = analysis.failedJobs.map((job) => job.replace('playwright-test ', '')).join(', ')
       lines.push(
         `| ${formatTime(analysis.run.createdAt)} | ${runLink(analysis)} | ${escapeCell(analysis.run.title.slice(0, 60))} | ${escapeCell(jobs)} | ${analysis.verdict} | ${escapeCell(analysis.reasons.slice(0, 3).join(' • '))} |`,
@@ -213,13 +226,20 @@ export function renderMarkdown(report: FlakeReport): string {
     }
   }
   if (specCounts.size > 0) {
-    lines.push('## Specs involved in failed runs')
+    const ranked = [...specCounts.entries()].sort(
+      (left, right) => right[1].failed + right[1].flaky - (left[1].failed + left[1].flaky),
+    )
+    lines.push(
+      `## Specs involved in failed runs (top ${Math.min(SPEC_TABLE_ROWS, ranked.length)} of ${ranked.length})`,
+    )
+    lines.push('')
+    lines.push(
+      'Counts are test executions across all failed runs, so runs where the whole studio was broken dominate. "Saw degraded API" counts tests with at least one degraded capture.',
+    )
     lines.push('')
     lines.push('| Spec | Hard failures | Flaky | Saw degraded API |')
     lines.push('| --- | ---: | ---: | ---: |')
-    for (const [spec, entry] of [...specCounts.entries()].sort(
-      (left, right) => right[1].failed + right[1].flaky - (left[1].failed + left[1].flaky),
-    )) {
+    for (const [spec, entry] of ranked.slice(0, SPEC_TABLE_ROWS)) {
       lines.push(`| \`${spec}\` | ${entry.failed} | ${entry.flaky} | ${entry.degraded} |`)
     }
     lines.push('')

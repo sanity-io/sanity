@@ -251,6 +251,22 @@ describe('classifyJobLog', () => {
       signature: 'other',
     })
   })
+
+  it('does not mistake bare numbers for HTTP status codes', () => {
+    expect(
+      classifyJobLog(
+        'install\tProgress: resolved 2191, reused 2177, downloaded 12, added 429\n' +
+          'install\t##[end-action id=changes.filter;outcome=success;duration_ms=502]\n' +
+          'install\t##[error]Process completed with exit code 1.',
+      ).signature,
+    ).toBe('other')
+
+    expect(classifyJobLog('setup\tClientError: request failed with status 429').signature).toBe(
+      'rate-limit',
+    )
+    expect(classifyJobLog('deploy\tHTTP/1.1 503 Service Unavailable').signature).toBe('network')
+    expect(classifyJobLog("setup\t'ratelimit-limit': '120',").signature).toBe('rate-limit')
+  })
 })
 
 function run(overrides: Partial<WorkflowRun> = {}): WorkflowRun {
