@@ -2,13 +2,13 @@ import {LayerProvider, useClickOutsideEvent} from '@sanity/ui'
 import {type ComponentType, type PropsWithChildren, useMemo, useRef} from 'react'
 import {useObservable} from 'react-rx'
 import {map} from 'rxjs'
-import {styled} from 'styled-components'
 
-import {Button as BaseButton} from '../../../ui-components/button/Button'
+import {Button} from '../../../ui-components/button/Button'
 import {Popover} from '../../../ui-components/popover/Popover'
 import {RhombusIcon} from '../../components/temporary-icons/Rhombus'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useDocumentVersionsObservable} from '../../releases/hooks/useDocumentVersions'
+import {button} from './DocumentGroupInventoryAction.css'
 
 export const DocumentGroupInventoryAction: ComponentType<
   PropsWithChildren<{
@@ -68,6 +68,7 @@ export const DocumentGroupInventoryAction: ComponentType<
       >
         <Button
           ref={buttonElement}
+          className={button}
           data-testid="action-document-group-inventory"
           text={t('document-group-inventory.action.manage-versions')}
           tone="neutral"
@@ -79,9 +80,3 @@ export const DocumentGroupInventoryAction: ComponentType<
     </LayerProvider>
   )
 }
-
-const Button = styled(BaseButton)`
-  max-inline-size: 40ch;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`
