@@ -13,6 +13,7 @@ import {
   usePerspective,
   useReconnectingToast,
   useSchema,
+  useShallowUnique,
   useTranslation,
   useUnique,
 } from 'sanity'
@@ -35,8 +36,6 @@ import {applyOrderingFunctions, findStaticTypesInFilter} from './helpers'
 import {isOrderByIdsParam, reorderItemsByIdsParam} from './orderByIdsParam'
 import {type LoadingVariant, type SortOrder} from './types'
 import {useDocumentList} from './useDocumentList'
-import {useShallowUnique} from './useShallowUnique'
-
 /**
  * @internal
  */

@@ -5,6 +5,7 @@
 import type {
   BuiltInValidationMarkerCode,
   DocumentValidationMarker,
+  DocumentValidationResult,
   validateDocument,
   ValidateDocumentOptions,
   validateDocumentWithWorkspace,
@@ -24,18 +25,28 @@ describe('@sanity/validation', () => {
   test('DocumentValidationMarker', () => {
     expectTypeOf<DocumentValidationMarker>().not.toBeNever()
   })
+  test('DocumentValidationResult', () => {
+    expectTypeOf<DocumentValidationResult>().toBeObject()
+  })
   test('validateDocument', () => {
-    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<typeof validateDocument>().toBeFunction()
+    expectTypeOf<Parameters<typeof validateDocument>[0]>().toEqualTypeOf<ValidateDocumentOptions>()
+    expectTypeOf<ReturnType<typeof validateDocument>>().toEqualTypeOf<
+      Promise<DocumentValidationResult>
+    >()
   })
   test('ValidateDocumentOptions', () => {
     expectTypeOf<ValidateDocumentOptions>().toBeObject()
+    expectTypeOf<ValidateDocumentOptions['signal']>().toEqualTypeOf<AbortSignal | undefined>()
   })
   test('validateDocumentWithWorkspace', () => {
     expectTypeOf<typeof validateDocumentWithWorkspace>().toBeFunction()
   })
   test('ValidateDocumentWorkspaceOptions', () => {
     expectTypeOf<ValidateDocumentWorkspaceOptions>().toBeObject()
+    expectTypeOf<ValidateDocumentWorkspaceOptions['signal']>().toEqualTypeOf<
+      AbortSignal | undefined
+    >()
   })
   test('ValidationClient', () => {
     expectTypeOf<ValidationClient>().toBeObject()

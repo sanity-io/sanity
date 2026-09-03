@@ -1,5 +1,6 @@
 import {useEffect, useRef} from 'react'
-import shallowEquals from 'shallow-equals'
+
+import {shallowEquals} from '../../util/shallowEquals'
 
 /**
  * A hook for doing side effects as a response to a change in a hook value between renders

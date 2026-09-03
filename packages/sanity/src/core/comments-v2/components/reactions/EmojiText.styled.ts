@@ -1,5 +1,5 @@
-import {Text} from '@sanity/ui'
 import {styled} from 'styled-components'
+import {Text} from 'ui5'
 
 export const EmojiText = styled(Text)`
   font-family:

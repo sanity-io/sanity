@@ -18,7 +18,6 @@ import {
   useRef,
   useState,
 } from 'react'
-import deepEquals from 'react-fast-compare'
 import {useSyncObservable} from 'react-rx'
 import {distinctUntilChanged} from 'rxjs/operators'
 import {useEffectEvent} from 'use-effect-event'
@@ -754,7 +753,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const handleProgrammaticFocus = (nextPath: Path) => {
     // Supports changing the focus path not by a user interaction, but by a programmatic change, e.g. the url path changes.
 
-    if (!deepEquals(focusPathRef.current, nextPath)) {
+    if (!isEqual(focusPathRef.current, nextPath)) {
       setFocusPath(nextPath)
       handleSetOpenPath(nextPath)
       onFocusPath?.(nextPath)
