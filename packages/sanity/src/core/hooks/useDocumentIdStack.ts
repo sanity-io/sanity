@@ -60,40 +60,39 @@ export function useDocumentIdStack({
     strict,
   })
 
+  const displayedId = displayed?._id
+  const editStateId = editState?.id
+  const publishedId = editState?.published?._id
+  const draftId = editState?.draft?._id
+  const hasVersionCheckedOut = editState?.version !== null
+
   // In strict mode, only include the draft if it's the displayed version. This
   // ensures layering reflects only the known chronology of versions.
   //
   // For example, when viewing an ASAP version, it's impossible to know whether
   // the draft will be published first.
-  const shouldIncludeDraft =
-    isDraftModelEnabled && (strict ? isDraftId(displayed?._id ?? '') : true)
+  const shouldIncludeDraft = isDraftModelEnabled && (strict ? isDraftId(displayedId ?? '') : true)
 
-  const systemStack = [
-    editState?.published?._id,
-    shouldIncludeDraft ? editState?.draft?._id : [],
-  ].flat()
+  const systemStack = [publishedId, shouldIncludeDraft ? draftId : []].flat()
 
   const releaseStack = filteredReleases.currentReleases.map(
     (release) =>
-      editState?.id && getVersionId(editState.id, getReleaseIdFromReleaseDocumentId(release._id)),
+      editStateId && getVersionId(editStateId, getReleaseIdFromReleaseDocumentId(release._id)),
   )
 
   // Infer the subject is an anonymous version if:
   //
   //   1. The subject has a version checked out.
   //   2. *And* there is no release containing the checked-out version.
-  const isAnonymousVersion = editState?.version !== null && !releaseStack.includes(displayed?._id)
-  const anonymousVersionsStack = isAnonymousVersion ? [displayed?._id] : []
+  const isAnonymousVersion = hasVersionCheckedOut && !releaseStack.includes(displayedId)
+  const anonymousVersionsStack = isAnonymousVersion ? [displayedId] : []
 
   const stack = systemStack
     .concat(!isAnonymousVersion || !strict ? releaseStack : [])
     .concat(anonymousVersionsStack)
     .filter((id) => typeof id === 'string')
 
-  const position = useMemo(
-    () => stack.findIndex((id) => id === displayed?._id),
-    [displayed?._id, stack],
-  )
+  const position = useMemo(() => stack.findIndex((id) => id === displayedId), [displayedId, stack])
 
   const previousId = useMemo(() => stack[position - 1] ?? undefined, [position, stack])
   const nextId = useMemo(() => stack[position + 1] ?? undefined, [position, stack])
