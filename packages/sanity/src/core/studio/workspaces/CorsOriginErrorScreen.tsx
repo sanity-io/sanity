@@ -2,11 +2,11 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {Card, Grid, Heading, Stack, Text} from '@sanity/ui'
 import {type ReactNode, useMemo} from 'react'
-import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {isProd} from '../../environment'
+import {centeredContainer, contentWrapper, helpLink} from './CorsOriginErrorScreen.css'
 
 const CORS_DOCS_URL = 'https://www.sanity.io/docs/cors'
 const STUDIO_REGISTRATION_DOCS_URL = 'https://www.sanity.io/docs/dashboard/dashboard-configure'
@@ -41,28 +41,6 @@ interface CorsOriginErrorScreenProps {
   withCredentials?: boolean
 }
 
-const CenteredContainer = styled(Flex)`
-  min-height: 100vh;
-  box-sizing: border-box;
-`
-
-const ContentWrapper = styled(Box)`
-  width: 100%;
-  max-width: 640px;
-`
-
-const HelpLink = styled.a`
-  color: var(--card-link-fg-color);
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25em;
-
-  &:hover {
-    text-decoration: underline;
-  }
-`
-
 // Mirror of the manage-side validation for registering a Studio host. If
 // the user's origin would be rejected by the registration form, we hide
 // the "Register Studio" option so they don't get sent to a page where the
@@ -80,7 +58,8 @@ function DocsHelpLink(props: DocsHelpLinkProps) {
   const {children, href, testId} = props
   return (
     <Text size={1}>
-      <HelpLink
+      <a
+        className={helpLink}
         data-testid={testId}
         href={href}
         rel="noopener noreferrer"
@@ -88,7 +67,7 @@ function DocsHelpLink(props: DocsHelpLinkProps) {
         target="_blank"
       >
         {children}
-      </HelpLink>
+      </a>
     </Text>
   )
 }
@@ -151,8 +130,8 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
   if (allowed && !withCredentials) {
     return (
       <Card data-testid="studio-error-screen" data-error="CORS credentials disabled" height="fill">
-        <CenteredContainer alignItems="center" justifyContent="center" padding={4}>
-          <ContentWrapper paddingBottom={5}>
+        <Flex className={centeredContainer} alignItems="center" justifyContent="center" padding={4}>
+          <Box className={contentWrapper} paddingBottom={5}>
             <Stack gap={5}>
               <Heading as="h1" size={2}>
                 Enable credentials for this Studio
@@ -183,16 +162,16 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
                 </DocsHelpLink>
               </Flex>
             </Stack>
-          </ContentWrapper>
-        </CenteredContainer>
+          </Box>
+        </Flex>
       </Card>
     )
   }
 
   return (
     <Card data-testid="studio-error-screen" data-error="CORS origin error" height="fill">
-      <CenteredContainer alignItems="center" justifyContent="center" padding={4}>
-        <ContentWrapper paddingBottom={5}>
+      <Flex className={centeredContainer} alignItems="center" justifyContent="center" padding={4}>
+        <Box className={contentWrapper} paddingBottom={5}>
           <Stack gap={5}>
             <Heading as="h1" size={2}>
               Connect this Studio to your project
@@ -277,8 +256,8 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
               </DocsHelpLink>
             </Flex>
           </Stack>
-        </ContentWrapper>
-      </CenteredContainer>
+        </Box>
+      </Flex>
     </Card>
   )
 }
