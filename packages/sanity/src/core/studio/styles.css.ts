@@ -59,7 +59,7 @@ globalStyle(everyElement('::-webkit-scrollbar-track'), {
   background: 'transparent',
 })
 
-globalStyle(`${root} *::selection`, {
+globalStyle(everyElement('::selection'), {
   backgroundColor: selectionColorVar,
 })
 
