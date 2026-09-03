@@ -42,7 +42,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           BASE_REF: ${{ github.base_ref }}
         run: |
-          pnpm --silent visual-coverage --format markdown --prs --changed "origin/$BASE_REF" \
+          pnpm --silent visual-coverage --format markdown --prs --changed --base "origin/$BASE_REF" \
             > /tmp/visual-coverage.md
           cat /tmp/visual-coverage.md >> "$GITHUB_STEP_SUMMARY"
 
