@@ -474,7 +474,13 @@ pnpm dev:storybook                    # Storybook dev server at http://localhost
 pnpm build:storybook                  # Static build via turbo (dev/storybook/storybook-static)
 pnpm --filter sanity-storybook test   # Run every story as a vitest browser-mode test
 CHROMATIC=1 pnpm --filter sanity test:browser   # Chromatic archive capture run (chromium only)
+pnpm visual-coverage --changed --prs  # Which changed UI files a story renders (PR comment runs the same)
+pnpm visual-coverage --uncovered      # Whole-tree coverage by area, plus the uncovered files
 ```
+
+Before adding a story, run `pnpm visual-coverage` and follow the `sanity-visual-coverage` skill
+(`.agents/skills/sanity-visual-coverage/SKILL.md`): it tells covered from pending (claimed by an
+open PR) from uncovered, so coverage PRs do not duplicate the open `test(storybook)` stack.
 
 Repo secrets: `CHROMATIC_PROJECT_TOKEN_STORYBOOK` (active), `CHROMATIC_PROJECT_TOKEN_E2E`
 (active, used by e2e), `CHROMATIC_PROJECT_TOKEN_VITEST` (dormant until Chromatic's Vitest early
