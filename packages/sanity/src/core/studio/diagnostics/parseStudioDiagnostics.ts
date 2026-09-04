@@ -38,7 +38,7 @@ function isStudioDiagnostics(value: unknown): value is StudioDiagnostics {
     typeof value.durationMs !== 'number' ||
     typeof value.generatedAt !== 'string' ||
     typeof value.startedAt !== 'string' ||
-    !isOptional(styles, isStylesDiagnostics)
+    (styles !== undefined && !isStylesDiagnostics(styles))
   ) {
     return false
   }
@@ -60,7 +60,7 @@ function isStudioDiagnostics(value: unknown): value is StudioDiagnostics {
     typeof schema.documentTypes === 'number' &&
     typeof schema.objectTypes === 'number' &&
     typeof schema.primitiveTypes === 'number' &&
-    isOptional(studio.autoUpdates, isBoolean) &&
+    (studio.autoUpdates === undefined || typeof studio.autoUpdates === 'boolean') &&
     typeof studio.dataset === 'string' &&
     typeof studio.projectId === 'string' &&
     typeof studio.reactVersion === 'string' &&
@@ -153,24 +153,14 @@ function isStylesDiagnostics(value: unknown): boolean {
 
   return value.styledComponents.every(
     (node) =>
-      isRecord(node) && typeof node.ruleCount === 'number' && isOptional(node.version, isString),
+      isRecord(node) &&
+      typeof node.ruleCount === 'number' &&
+      (node.version === undefined || typeof node.version === 'string'),
   )
 }
 
 function isStatus(value: unknown): value is 'success' | 'timeout' | 'error' {
   return value === 'success' || value === 'timeout' || value === 'error'
-}
-
-function isOptional(value: unknown, check: (value: unknown) => boolean): boolean {
-  return value === undefined || check(value)
-}
-
-function isBoolean(value: unknown): boolean {
-  return typeof value === 'boolean'
-}
-
-function isString(value: unknown): boolean {
-  return typeof value === 'string'
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

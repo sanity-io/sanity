@@ -263,7 +263,6 @@ function DetailRow({
   monospace?: boolean
   truncate?: boolean
   value?: ReactNode
-  /** Give the label most of the row; for long labels paired with short values */
   wideLabel?: boolean
 }) {
   const displayValue = value === undefined || value === '' ? 'Unknown' : value

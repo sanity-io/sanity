@@ -24,17 +24,9 @@ export function getStylesDiagnostics(): StylesDiagnostics {
     styledComponents: Array.from(
       document.querySelectorAll<HTMLStyleElement>('style[data-styled]'),
       (node) => ({
-        ruleCount: countRules(node.sheet),
+        ruleCount: node.sheet?.cssRules.length ?? 0,
         version: node.dataset.styledVersion || undefined,
       }),
     ),
-  }
-}
-
-function countRules(sheet: CSSStyleSheet | null): number {
-  try {
-    return sheet?.cssRules.length ?? 0
-  } catch {
-    return 0
   }
 }

@@ -31,17 +31,4 @@ describe('getStylesDiagnostics', () => {
       {ruleCount: 1, version: undefined},
     ])
   })
-
-  it('counts zero rules for a sheet whose rules cannot be read', () => {
-    appendStyledSheet('.a{color:red}', '6.5.3')
-    Object.defineProperty(styleNodes[0], 'sheet', {
-      get: () => ({
-        get cssRules(): CSSRuleList {
-          throw new DOMException('Cannot access rules', 'SecurityError')
-        },
-      }),
-    })
-
-    expect(getStylesDiagnostics().styledComponents).toEqual([{ruleCount: 0, version: '6.5.3'}])
-  })
 })

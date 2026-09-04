@@ -227,8 +227,8 @@ async function runStudioDiagnostics({
   }
 }
 
-// A malformed import map makes hasSanityPackageInImportMap throw on JSON.parse; the report is a
-// triage tool, so that reads as unknown rather than aborting the run.
+// hasSanityPackageInImportMap JSON.parses the page's import maps; a malformed one must not abort
+// the report.
 function detectAutoUpdates(): boolean | undefined {
   try {
     return hasSanityPackageInImportMap()
