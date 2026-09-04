@@ -1,9 +1,10 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {
-  // oxlint-disable-next-line no-restricted-imports -- the trigger lays out icon + title + chevron as custom children, which the studio Button wrapper does not support (same as WorkspaceMenuButton)
+  // oxlint-disable-next-line no-restricted-imports -- the trigger lays out icon + title + description + chevron as custom children, which the studio Button wrapper does not support (same as WorkspaceMenuButton)
   Button as UIButton,
   Spinner,
+  Stack,
   Text,
 } from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
@@ -50,6 +51,8 @@ interface ConditionMenuButtonProps extends ConditionMenuOwnProps {
   placeholder: string
 }
 
+const NON_BREAKING_SPACE = '\u00A0'
+
 const POPOVER_PROPS: MenuButtonProps['popover'] = {
   constrainSize: true,
   fallbackPlacements: ['top-start'],
@@ -91,9 +94,10 @@ export function ConditionMenu(props: ConditionMenuProps): React.JSX.Element {
 }
 
 /**
- * A select-like dropdown for one half of a condition (the key or its value). The trigger keeps a
- * single line in every state so picking never shifts the surrounding form; the options open in a
- * popover the width of the trigger.
+ * A select-like dropdown for one half of a condition (the key or its value). The trigger mirrors
+ * the menu row it stands for (icon, title, description) and keeps that two-line footprint in every
+ * state, so picking never shifts the surrounding form; the options open in a popover the width of
+ * the trigger.
  *
  * @internal
  */
@@ -122,16 +126,23 @@ export function ConditionMenuButton(props: ConditionMenuButtonProps): React.JSX.
           tone={invalid ? 'critical' : 'default'}
           width="fill"
         >
-          <Flex alignItems="center" gap={3}>
+          <Flex alignItems="flex-start" gap={3}>
             {SelectedIcon ? (
               <Text size={1}>
                 <SelectedIcon />
               </Text>
             ) : null}
             <Box flexGrow={1} style={{minWidth: 0}}>
-              <Text muted={!selected} size={1} textOverflow="ellipsis" weight="medium">
-                {selected ? selected.title : placeholder}
-              </Text>
+              <Stack gap={1}>
+                <Text muted={!selected} size={1} textOverflow="ellipsis" weight="medium">
+                  {selected ? selected.title : placeholder}
+                </Text>
+                {/* The description line is always laid out (blank when there is none) so the
+                    trigger is the same height whether or not a choice with a description is made. */}
+                <Text muted size={0} textOverflow="ellipsis" weight="medium">
+                  {selected?.description ?? NON_BREAKING_SPACE}
+                </Text>
+              </Stack>
             </Box>
             <Text size={1}>{loading ? <Spinner /> : <ChevronDownIcon />}</Text>
           </Flex>

@@ -33,7 +33,8 @@ const noop = () => undefined
 /**
  * The condition picker in the variant dialog: a select-like trigger per key/value, opening a
  * menu styled like the workspace switcher (icon, title, description; the current choice pressed
- * and checked). The trigger stays one line in every state so choosing never shifts the form.
+ * and checked). The trigger mirrors the picked row and keeps its two-line footprint in every
+ * state, so choosing never shifts the form.
  */
 const meta = {
   title: 'Variants/Condition Menu Button',
@@ -54,7 +55,7 @@ function Labelled({caption, children}: {caption: string; children: ReactNode}) {
   )
 }
 
-/** Closed triggers: every state keeps the same single-line height. */
+/** Closed triggers: every state keeps the same two-line height, with or without a description. */
 export const Trigger: Story = {
   args: {
     onSelect: noop,
@@ -89,6 +90,15 @@ export const Trigger: Story = {
             placeholder="Choose a value"
             selected={VALUE_OPTIONS[0]}
             testId="story-selected-value"
+          />
+        </Labelled>
+        <Labelled caption="selected value without a description">
+          <ConditionMenuButton
+            onSelect={noop}
+            options={VALUE_OPTIONS}
+            placeholder="Choose a value"
+            selected={VALUE_OPTIONS[2]}
+            testId="story-selected-value-plain"
           />
         </Labelled>
         <Labelled caption="invalid (stored key no longer configured)">

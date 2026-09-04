@@ -588,6 +588,7 @@ describe('CreateVariantDialog mapped conditions', () => {
     const valueMenuButton = screen.getByTestId('variant-form-condition-value-menu-button')
 
     expect(keyMenuButton).toHaveTextContent('Choose a condition')
+    expect(keyMenuButton).not.toHaveTextContent('Who this content is for.')
     expect(keyMenuButton).toHaveAttribute('aria-expanded', 'false')
     expect(valueMenuButton).toHaveTextContent('Choose a value')
     expect(valueMenuButton).toBeDisabled()
@@ -607,7 +608,9 @@ describe('CreateVariantDialog mapped conditions', () => {
     await user.click(audienceOption)
 
     expect(keyMenuButton).toHaveAttribute('aria-expanded', 'false')
+    // The trigger mirrors the picked row: title plus its description.
     expect(keyMenuButton).toHaveTextContent('Audience')
+    expect(keyMenuButton).toHaveTextContent('Who this content is for.')
     expect(valueMenuButton).toBeEnabled()
     expect(screen.getByRole('button', {name: 'Add condition'})).toBeDisabled()
 
@@ -624,6 +627,7 @@ describe('CreateVariantDialog mapped conditions', () => {
     await user.click(loyalOption)
 
     expect(valueMenuButton).toHaveTextContent('Loyal customers')
+    expect(valueMenuButton).toHaveTextContent('Repeat purchasers and members.')
     expect(screen.getByRole('button', {name: 'Add condition'})).toBeEnabled()
 
     await user.type(screen.getByTestId('variant-form-title'), 'Loyal customers')
