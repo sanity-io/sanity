@@ -15,7 +15,7 @@ import {changesInspector} from './panes/document/inspectors/changes'
 import {incomingReferencesInspector} from './panes/document/inspectors/incomingReferences'
 import {validationInspector} from './panes/document/inspectors/validation'
 import {router} from './router'
-import {type StructureToolOptions} from './types'
+import {type RouterPanes, type StructureToolOptions} from './types'
 
 const documentActions = [
   usePublishAction,
@@ -132,7 +132,16 @@ export const structureTool = definePlugin<StructureToolOptions | void>((options)
           if (intent === 'edit') return canHandleEditIntent(params)
           return false
         },
-        getIntentState,
+        getIntentState: (intent, params, routerState, payload) =>
+          getIntentState(
+            intent,
+            params,
+            // `Tool['getIntentState']` types this as the whole `RouterState`;
+            // the structure tool's own router state is the panes state.
+            routerState as {panes?: RouterPanes} | undefined,
+            payload,
+            options?.keepPanesOnCreate,
+          ),
         // Controlled by sanity/src/structure/components/structureTool/StructureTitle.tsx
         controlsDocumentTitle: true,
         options,
