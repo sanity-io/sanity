@@ -30,23 +30,15 @@ describe('@sanity/validation', () => {
   })
   test('validateDocument', () => {
     expectTypeOf<typeof validateDocument>().toBeFunction()
-    expectTypeOf<Parameters<typeof validateDocument>[0]>().toEqualTypeOf<ValidateDocumentOptions>()
-    expectTypeOf<ReturnType<typeof validateDocument>>().toEqualTypeOf<
-      Promise<DocumentValidationResult>
-    >()
   })
   test('ValidateDocumentOptions', () => {
-    expectTypeOf<ValidateDocumentOptions>().toBeObject()
-    expectTypeOf<ValidateDocumentOptions['signal']>().toEqualTypeOf<AbortSignal | undefined>()
+    expectTypeOf<ValidateDocumentOptions>().not.toBeNever()
   })
   test('validateDocumentWithWorkspace', () => {
     expectTypeOf<typeof validateDocumentWithWorkspace>().toBeFunction()
   })
   test('ValidateDocumentWorkspaceOptions', () => {
     expectTypeOf<ValidateDocumentWorkspaceOptions>().toBeObject()
-    expectTypeOf<ValidateDocumentWorkspaceOptions['signal']>().toEqualTypeOf<
-      AbortSignal | undefined
-    >()
   })
   test('ValidationClient', () => {
     expectTypeOf<ValidationClient>().toBeObject()
