@@ -1,9 +1,7 @@
 import {lazy, Suspense} from 'react'
 import {definePlugin, type LayoutProps} from 'sanity'
 
-const StyleOutlinePanel = lazy(() =>
-  import('./StyleOutlinePanel').then((module) => ({default: module.StyleOutlinePanel})),
-)
+const StyleOutlinePanel = lazy(() => import('./StyleOutlinePanel'))
 
 function StyleOutlineLayout(props: LayoutProps) {
   return (
@@ -18,14 +16,9 @@ function StyleOutlineLayout(props: LayoutProps) {
 
 export const styleOutline = definePlugin({
   name: 'style-outline',
-  // Must stay this exact member expression so Sanity's env replace can see it.
-  ...(process.env.SANITY_STUDIO_STYLE_OUTLINE === 'true'
-    ? {
-        studio: {
-          components: {
-            layout: StyleOutlineLayout,
-          },
-        },
-      }
-    : {}),
+  studio: {
+    components: {
+      layout: StyleOutlineLayout,
+    },
+  },
 })
