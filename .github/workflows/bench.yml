@@ -31,7 +31,7 @@ on:
         required: false
         type: string
       release_tag:
-        description: "Release: the tag whose commit is being measured (e.g. v6.10.1). Set together with backfill_sha (the tag's dereferenced sha) by release-latest.yml; marks the stored run as the measurement of a shipped version"
+        description: "Release: the tag whose commit is being measured (e.g. v6.10.1); marks the stored run as the measurement of a shipped version. Sufficient on its own: dispatched at the tag it labels the normal build, from any other ref the tag's commit is replayed as a backfill (backfill_sha may also be given and must then match)"
         required: false
         type: string
       ab_from:
@@ -83,6 +83,10 @@ jobs:
       # resolved by prepare-backfill, consumed as BENCH_GIT_COMMITTED_AT by the
       # measuring jobs so stored documents land on the commit's date
       backfill_committed_at: ${{ steps.build.outputs.committed_at }}
+      # The historical commit to measure, if any: the backfill_sha input, or
+      # the commit release_tag resolves to when the checkout is not already
+      # that commit (see the validation step). Empty on every other run.
+      backfill_sha: ${{ steps.inputs.outputs.backfill_sha }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -110,6 +114,7 @@ jobs:
       # the historical build against HEAD's reference config, reporting
       # product diffs as harness drift
       - name: Validate dispatch inputs
+        id: inputs
         if: >-
           github.event_name == 'workflow_dispatch' &&
           (inputs.backfill_sha != '' || inputs.ab_from != '' || inputs.ab_to != ''
@@ -128,59 +133,55 @@ jobs:
             echo "::error::ab_from and ab_to must be set together"
             exit 1
           fi
-          if [ -n "$AB_TO" ] && [ -n "$BACKFILL_SHA" ]; then
-            echo "::error::ab_from/ab_to cannot be combined with backfill_sha"
-            exit 1
-          fi
           if [ -n "$AB_TO" ] && [ "$SELF_TEST" = "true" ]; then
             echo "::error::ab_from/ab_to cannot be combined with self_test"
             exit 1
           fi
-          if [ -n "$BACKFILL_SHA" ]; then
-            if [ "$RUN_SUITE" != "true" ]; then
-              echo "::error::backfill_sha requires run_suite"
-              exit 1
-            fi
-            if [ "$SELF_TEST" = "true" ]; then
-              echo "::error::backfill_sha cannot be combined with self_test"
-              exit 1
-            fi
-          fi
           # What a release run must guarantee: the measured commit IS the tagged
-          # one. There are two ways to get there.
+          # one. The tag alone says which commit that is, so release_tag is
+          # sufficient by itself:
           #
-          # 1. No backfill_sha — the run measures the checkout, which is correct
-          #    when the workflow was dispatched at the tag itself (`--ref <tag>`,
-          #    what release-latest.yml does). An ordinary build of the right tree
-          #    is cheaper and more faithful than replaying it.
-          # 2. With backfill_sha — for a release whose commit is not the
-          #    checkout, i.e. measuring past releases from a main dispatch, where
-          #    the replay path is required.
+          # 1. Dispatched at the tag (`--ref <tag>`, what release-latest.yml
+          #    does): the checkout is the release, and an ordinary build of it
+          #    is cheaper and more faithful than a replay.
+          # 2. Dispatched anywhere else (measuring a past release from main, or
+          #    from a branch carrying a newer harness): the tag's commit is
+          #    replayed through the backfill path — the same as passing its sha
+          #    as backfill_sha, which remains accepted and is cross-checked.
           #
-          # Either way the sha actually measured has to be the tag's, so both
-          # branches are checked rather than trusted. Dispatching `--ref main`
-          # without a backfill_sha is the realistic mistake: main has almost
-          # always moved past the release by then, so it would silently measure
-          # someone else's commit as the release.
+          # The derived sha is exported for every later step and job in place
+          # of the raw input, so "release_tag alone" and "backfill_sha alone"
+          # are the same run downstream.
           if [ -n "$RELEASE_TAG" ]; then
             TAG_SHA="$(git rev-parse "refs/tags/$RELEASE_TAG^{commit}" 2>/dev/null || true)"
             if [ -z "$TAG_SHA" ]; then
               echo "::error::release_tag $RELEASE_TAG does not exist"
               exit 1
             fi
-            if [ -n "$BACKFILL_SHA" ]; then
-              if [ "$TAG_SHA" != "$BACKFILL_SHA" ]; then
-                echo "::error::backfill_sha $BACKFILL_SHA is not the commit $RELEASE_TAG points at ($TAG_SHA)"
-                exit 1
-              fi
-            else
-              HEAD_SHA="$(git rev-parse HEAD)"
-              if [ "$TAG_SHA" != "$HEAD_SHA" ]; then
-                echo "::error::$RELEASE_TAG points at $TAG_SHA but this run checked out $HEAD_SHA. Dispatch at the tag (--ref $RELEASE_TAG), or pass backfill_sha=$TAG_SHA to replay that commit from a main dispatch."
-                exit 1
-              fi
+            if [ -n "$BACKFILL_SHA" ] && [ "$TAG_SHA" != "$BACKFILL_SHA" ]; then
+              echo "::error::backfill_sha $BACKFILL_SHA is not the commit $RELEASE_TAG points at ($TAG_SHA)"
+              exit 1
+            fi
+            if [ -z "$BACKFILL_SHA" ] && [ "$TAG_SHA" != "$(git rev-parse HEAD)" ]; then
+              echo "release_tag $RELEASE_TAG is not the checkout; replaying its commit $TAG_SHA"
+              BACKFILL_SHA="$TAG_SHA"
             fi
           fi
+          if [ -n "$AB_TO" ] && [ -n "$BACKFILL_SHA" ]; then
+            echo "::error::ab_from/ab_to cannot be combined with backfill_sha or release_tag"
+            exit 1
+          fi
+          if [ -n "$BACKFILL_SHA" ]; then
+            if [ "$RUN_SUITE" != "true" ]; then
+              echo "::error::backfill_sha/release_tag requires run_suite"
+              exit 1
+            fi
+            if [ "$SELF_TEST" = "true" ]; then
+              echo "::error::backfill_sha/release_tag cannot be combined with self_test"
+              exit 1
+            fi
+          fi
+          echo "backfill_sha=$BACKFILL_SHA" >> "$GITHUB_OUTPUT"
 
       # Backfill / A/B: build the experiment dist from the requested
       # historical commit's packages (with HEAD's harness) instead of
@@ -192,7 +193,7 @@ jobs:
         id: build
         if: steps.changes.outputs.has_changes == 'true' || github.event_name != 'pull_request'
         env:
-          BACKFILL_SHA: ${{ inputs.backfill_sha }}
+          BACKFILL_SHA: ${{ steps.inputs.outputs.backfill_sha }}
           AB_TO: ${{ inputs.ab_to }}
         run: |
           HISTORICAL_SHA="${BACKFILL_SHA:-$AB_TO}"
@@ -207,6 +208,32 @@ jobs:
         with:
           name: bench-dist-experiment
           path: perf/bench/dist
+          retention-days: 7
+
+      # Settle mode measures the customization workspaces, which live in a
+      # separate studio build so the pristine dist above stays untouched
+      # (see perf/bench/README.md). On the PR path only track-main consumes
+      # this artifact — running the build here anyway is deliberate: it is
+      # the compile check for the customization workspaces on PRs. For a
+      # backfill, prepare-backfill above already built it from the historical
+      # tarballs (HEAD's workspaces over that commit's sanity) — best effort:
+      # if HEAD's components don't compile against that commit's sanity, the
+      # dist is absent and only the upload's warning records it. ab_to has no
+      # settle side yet (settle A/B is a follow-up), so neither step runs.
+      - name: Build customization studio (settle mode)
+        if: >-
+          (steps.changes.outputs.has_changes == 'true' || github.event_name != 'pull_request') &&
+          steps.inputs.outputs.backfill_sha == '' && inputs.ab_to == ''
+        run: pnpm --filter bench build:customizations
+
+      - uses: actions/upload-artifact@v7
+        if: >-
+          (steps.changes.outputs.has_changes == 'true' || github.event_name != 'pull_request') &&
+          inputs.ab_to == ''
+        with:
+          name: bench-dist-customizations
+          path: perf/bench/dist-customizations
+          if-no-files-found: ${{ steps.inputs.outputs.backfill_sha != '' && 'warn' || 'error' }}
           retention-days: 7
 
   build-reference:
@@ -325,7 +352,7 @@ jobs:
       # Backfill runs measure a historical commit's build — stamp the run
       # documents with that sha (empty on non-backfill events; see
       # report/collect.ts)
-      BENCH_GIT_SHA: ${{ inputs.backfill_sha || inputs.ab_to }}
+      BENCH_GIT_SHA: ${{ needs.build.outputs.backfill_sha || inputs.ab_to }}
       BENCH_GIT_COMMITTED_AT: ${{ needs.build.outputs.backfill_committed_at }}
       # Why this run happened. A release_tag means release-latest.yml dispatched
       # this to measure a shipped version; otherwise collect.ts infers it from
@@ -431,7 +458,7 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
       # See bench-interaction: stamps backfill runs with the measured sha
-      BENCH_GIT_SHA: ${{ inputs.backfill_sha || inputs.ab_to }}
+      BENCH_GIT_SHA: ${{ needs.build.outputs.backfill_sha || inputs.ab_to }}
       BENCH_GIT_COMMITTED_AT: ${{ needs.build.outputs.backfill_committed_at }}
       # See bench-interaction
       BENCH_TRIGGER: ${{ inputs.release_tag != '' && 'release' || '' }}
@@ -828,7 +855,9 @@ jobs:
        (github.event_name == 'workflow_dispatch' && inputs.run_suite && inputs.ab_to == ''))
     needs: [build, bench-interaction, bench-pageload]
     runs-on: ubuntu-8core
-    timeout-minutes: 45
+    # Soak (~10m) + INP (~10m) + settle (9 scenarios × 4 sessions, the two
+    # red-by-design ones costing the 30s cap per session — ~20m)
+    timeout-minutes: 60
     permissions:
       contents: read
     env:
@@ -836,7 +865,7 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
       # See bench-interaction: stamps backfill runs (soak/INP here) with the
       # measured sha
-      BENCH_GIT_SHA: ${{ inputs.backfill_sha || inputs.ab_to }}
+      BENCH_GIT_SHA: ${{ needs.build.outputs.backfill_sha || inputs.ab_to }}
       BENCH_GIT_COMMITTED_AT: ${{ needs.build.outputs.backfill_committed_at }}
       # See bench-interaction. This is the job that stores the absolute-mode
       # document, so this is where the trigger actually reaches the dataset.
@@ -909,6 +938,44 @@ jobs:
           pnpm bench run --mode inp --scenario singleString --scenario article --sessions 4 \
             --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__inp.json"
 
+      # Settle: the render-loop detector — customization scenarios plus two
+      # vanilla controls (core-surface loops show on any workspace). It runs
+      # against the customization dist; documentActions and listenQueryPane
+      # are red by design (expectedToSettle: false) and report settled: false
+      # as data with exit 0 — only a mismatch against a scenario's declared
+      # expectation exits non-zero. debugLoop is the pipeline's self-test: a
+      # deliberate 6s render burst that must settle at ≈8s with its commit
+      # count and render-mark count agreeing — a dead commit counter shows
+      # here daily as the two diverging. The step never fails
+      # the job directly: the numbers are the evidence and the exit code is
+      # only the alarm, so the run is merged and stored first (the day a
+      # loop lands must not be the day Radar gets a hole) and the alarm is
+      # raised afterwards by the last step. Backfills run settle too —
+      # prepare-backfill builds the customization dist from the historical
+      # tarballs — but their expectations describe HEAD, not history (a
+      # commit inside a regression window legitimately fails a green
+      # scenario), so a backfill mismatch is annotated, not alarmed — and a
+      # backfill whose customization studio did not build (no artifact; see
+      # the build job) skips settle rather than failing the whole repair.
+      - uses: actions/download-artifact@v8
+        id: customizations_dist
+        continue-on-error: ${{ needs.build.outputs.backfill_sha != '' }}
+        with:
+          name: bench-dist-customizations
+          path: perf/bench/dist-customizations
+
+      - name: Run settle benchmarks
+        id: settle
+        if: steps.customizations_dist.outcome == 'success'
+        continue-on-error: true
+        run: |
+          pnpm bench run --mode settle --sessions 4 \
+            --dist perf/bench/dist-customizations \
+            --scenario singleString --scenario article --scenario debugLoop \
+            --scenario previewHeavy --scenario customInputs --scenario wrappedForm \
+            --scenario structurePane --scenario documentActions --scenario listenQueryPane \
+            --json-out "$GITHUB_WORKSPACE/perf/bench/results/bench-results__settle.json"
+
       - name: Merge report
         run: pnpm bench report
 
@@ -916,6 +983,12 @@ jobs:
         env:
           RADAR_SANITY_WRITE_TOKEN: ${{ secrets.RADAR_SANITY_WRITE_TOKEN }}
         run: pnpm bench store
+
+      - name: Fail on settle expectation mismatch
+        if: steps.settle.outcome == 'failure' && needs.build.outputs.backfill_sha == ''
+        run: |
+          echo "::error::settle expectation mismatch — see the 'Run settle benchmarks' step; the run was stored"
+          exit 1
 
       - uses: actions/upload-artifact@v7
         if: always()

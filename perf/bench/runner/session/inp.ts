@@ -5,6 +5,7 @@ import {type BenchScenario} from '../../scenarios/types'
 import {computeInp, INP_MIN_INTERACTIONS, type InpResult} from '../../stats/inp'
 import {createSessionContext} from '../browser'
 import {type RunningSide} from '../servers'
+import {SessionError} from './errors'
 import {
   DEFAULT_SESSION_CONFIG,
   drainEntries,
@@ -13,9 +14,9 @@ import {
   interactionMaxDurations,
   type ReadOnlyInterruptions,
   type SessionConfig,
-  SessionError,
   typeBurst,
 } from './interaction'
+import {awaitReadiness, gotoScenario} from './navigation'
 
 export interface InpSessionResult extends InpResult {
   /**
@@ -77,19 +78,11 @@ export async function runInpSession(options: {
 
   try {
     await page.addInitScript(instrumentation)
-    await page.goto(
-      `${running.studioUrl}/${scenario.workspace ?? scenario.name}/intent/edit/id=${encodeURIComponent(scenario.documentId)};type=${encodeURIComponent(scenario.documentType)}`,
-      {waitUntil: 'domcontentloaded', timeout: DEFAULT_SESSION_CONFIG.readinessTimeoutMs},
-    )
-    await page
-      .locator('[data-testid="form-view"]:not([data-read-only="true"])')
-      .waitFor({state: 'visible', timeout: DEFAULT_SESSION_CONFIG.readinessTimeoutMs})
-      .catch(() => {
-        throw new SessionError('readiness-timeout', 'form-view never became editable', [
-          ...session.consoleErrors,
-          ...session.pageErrors,
-        ])
-      })
+    await gotoScenario(page, running.studioUrl, scenario, DEFAULT_SESSION_CONFIG.readinessTimeoutMs)
+    await awaitReadiness(page, scenario, {
+      timeoutMs: DEFAULT_SESSION_CONFIG.readinessTimeoutMs,
+      diagnostics: () => [...session.consoleErrors, ...session.pageErrors],
+    })
 
     // Discard everything from boot — INP measures interactions, not load.
     await focusField(page, scenario.interactions[0], DEFAULT_SESSION_CONFIG.readinessTimeoutMs)

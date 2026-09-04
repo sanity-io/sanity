@@ -6,6 +6,8 @@ import {type AbScenarioResult} from '../runner/orchestrator'
 import {type InpSessionResult} from '../runner/session/inp'
 import {type InteractionSessionResult} from '../runner/session/interaction'
 import {type LoadCondition, type PageLoadSample} from '../runner/session/pageLoad'
+import {type SettleSessionResult} from '../runner/session/settle'
+import {type BenchScenario} from '../scenarios/types'
 import {type DiffInterval} from '../stats/bootstrap'
 import {type Verdict} from '../stats/gate'
 import {median, summarize} from '../stats/quantiles'
@@ -112,13 +114,16 @@ export function collectRunMetadata(options: {
       // dashboards group runs into per-branch lines and default to main — a run
       // filed under a tag name would sit outside the main series it belongs to.
       // The ref names how the run was dispatched; the branch names where the
-      // measured commit lives, which for a release is always main.
+      // measured commit lives, which for a release is always main — and for a
+      // backfill too: it replays a main-history commit, wherever the workflow
+      // carrying the harness was dispatched from (a branch dispatch of a
+      // backfill must not file main's history under that branch).
       //
       // GITHUB_HEAD_REF is empty (not unset) outside pull_request events, and
       // schedule runs are detached checkouts where rev-parse answers "HEAD" —
       // prefer GITHUB_REF_NAME there
       branch:
-        (triggerInfo.trigger === 'release' ? 'main' : '') ||
+        (triggerInfo.trigger === 'release' || triggerInfo.trigger === 'backfill' ? 'main' : '') ||
         process.env.GITHUB_HEAD_REF ||
         process.env.GITHUB_REF_NAME ||
         git(['rev-parse', '--abbrev-ref', 'HEAD']),
@@ -530,5 +535,103 @@ export function collectPageLoad(
     clsAttribution: [...byShiftSource.values()]
       .sort((a, b) => b.totalValue - a.totalValue)
       .slice(0, 5),
+  }
+}
+
+export function collectSettle(
+  scenario: BenchScenario,
+  sessions: SettleSessionResult[],
+): ScenarioReport {
+  const countMetric = (label: string, values: number[][]): MetricReport => ({
+    label,
+    unit: 'count',
+    presentAsEfps: false,
+    experiment: {sessions: values, summary: summarize(values.flat())},
+  })
+  const msMetric = (label: string, values: number[][]): MetricReport => ({
+    label,
+    unit: 'ms',
+    presentAsEfps: false,
+    experiment: {sessions: values, summary: summarize(values.flat())},
+  })
+
+  const settleTimes = sessions
+    .map((session) => session.settleTimeMs)
+    .filter((value): value is number => value !== null)
+    .map((value) => [value])
+
+  const metrics: MetricReport[] = [
+    // Run-level count (one pseudo-session), because the trend needs it: a
+    // median over per-session 0/1 values hides a single failing session
+    // (median of [0,1,1,1] is 1). This series is 0-flat when healthy, jumps
+    // on a regression, and charts as a constant N for red-by-design
+    // scenarios — their standing-evidence line.
+    countMetric('sessions not settled', [[sessions.filter((session) => !session.settled).length]]),
+    // Same shape for the primary signal's health: sessions where the React
+    // DevTools hook stub never attached (contract drift in react-dom). With
+    // the counter dark, commits read as zero and a green scenario looks
+    // healthier, not worse — this line is what says the detector went blind.
+    countMetric('sessions without commit counter', [
+      [sessions.filter((session) => !session.hookInstalled).length],
+    ]),
+    // 0/1 per session — the per-session record behind the count above.
+    countMetric(
+      'settled sessions',
+      sessions.map((session) => [session.settled ? 1 : 0]),
+    ),
+    countMetric(
+      'ready sessions',
+      sessions.map((session) => [session.ready ? 1 : 0]),
+    ),
+    ...(settleTimes.length > 0 ? [msMetric('time to settle', settleTimes)] : []),
+    countMetric(
+      'react commits after ready',
+      sessions.map((session) => [session.reactCommits]),
+    ),
+    msMetric(
+      'LoAF blocking after ready',
+      sessions.map((session) => [session.loafBlockingMs]),
+    ),
+    ...(() => {
+      const cpuSessions = sessions
+        .map((session) => session.cpuAfterReadyMs)
+        .filter((value): value is number => value !== null)
+        .map((value) => [value])
+      return cpuSessions.length > 0 ? [msMetric('cpu after ready', cpuSessions)] : []
+    })(),
+    // One row per instrumented component, `renders · <name>` — the
+    // per-component attribution the commit total can't give.
+    ...[...new Set(sessions.flatMap((session) => Object.keys(session.renderMarks)))]
+      .sort()
+      .map((name) =>
+        countMetric(
+          `renders · ${name}`,
+          sessions.map((session) => [session.renderMarks[name] ?? 0]),
+        ),
+      ),
+  ]
+
+  const byScript = new Map<string, {sourceUrl: string; functionName: string; totalMs: number}>()
+  for (const session of sessions) {
+    for (const entry of session.loafAttribution) {
+      const key = `${entry.sourceUrl}#${entry.functionName}`
+      const current = byScript.get(key)
+      if (current) current.totalMs += entry.totalMs
+      else byScript.set(key, {...entry})
+    }
+  }
+
+  return {
+    scenario: scenario.name,
+    sourceFile: scenario.sourceFile,
+    kind: 'pageload',
+    // Distinct from the plain pageLoad report so the two don't collide on the
+    // stored _key / shard-merge dedup (see ScenarioReport.mode)
+    mode: 'settle',
+    settleExpectation: {expectedToSettle: scenario.expectedToSettle ?? true},
+    metrics,
+    failures: [],
+    interruptions: {experiment: {count: 0, totalMs: 0}},
+    loafAttribution: [...byScript.values()].sort((a, b) => b.totalMs - a.totalMs).slice(0, 5),
   }
 }

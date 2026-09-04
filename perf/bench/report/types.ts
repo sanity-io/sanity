@@ -124,8 +124,17 @@ export interface ScenarioReport {
    * `pageload`) key-collide with the interaction/pageLoad reports and the
    * merge throws.
    */
-  mode?: 'interaction' | 'pageload' | 'soak' | 'inp'
+  mode?: 'interaction' | 'pageload' | 'soak' | 'inp' | 'settle'
   metrics: MetricReport[]
+  /**
+   * Settle mode only: the scenario's declared expectation. `expectedToSettle:
+   * false` marks a red-by-design scenario (a known, unfixed render-loop
+   * footgun) whose non-settling sessions are evidence, not failures. Reports
+   * warn on any expected-vs-observed mismatch — in either direction, so a
+   * scenario that starts settling after a hook hardening lands is flagged
+   * until the flag is flipped.
+   */
+  settleExpectation?: {expectedToSettle: boolean}
   /** Why A/B sampling stopped (absent in absolute mode). */
   stoppedBy?: 'converged' | 'budget' | 'max-sessions'
   /** Discarded-and-retried sessions — the flake telemetry. */
