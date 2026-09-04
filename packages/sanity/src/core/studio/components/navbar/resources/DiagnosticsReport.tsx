@@ -16,6 +16,7 @@ import {Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {type StudioDiagnostics} from '../../../diagnostics/gatherStudioDiagnostics'
+import {type StyleSheetDiagnostic} from '../../../diagnostics/getStylesDiagnostics'
 import {codeValue} from './DiagnosticsReport.css'
 import {RequestPerformanceReport} from './RequestPerformanceReport'
 
@@ -42,7 +43,7 @@ export function DiagnosticsReport({
   runAgainLabel = 'Run again',
 }: DiagnosticsReportProps) {
   const [useUtc, setUseUtc] = useState(true)
-  const {browser, network, schema, studio, user} = diagnostics
+  const {browser, network, schema, studio, styles, user} = diagnostics
 
   const roles = user.roles.map((role) => role.title || role.name).join(', ')
   const localStorageResult = browser.localStorage
@@ -112,6 +113,7 @@ export function DiagnosticsReport({
           <DetailRow label="React version" monospace value={studio.reactVersion} />
           <DetailRow label="Workspaces" value={studio.workspaceCount} />
           <DetailRow label="Unique targets" value={studio.uniqueTargetCount} />
+          <DetailRow label="Auto-updates" value={formatEnabled(studio.autoUpdates)} />
         </ReportSection>
 
         <ReportSection testId="diagnostics-workspace" title="Workspace">
@@ -150,6 +152,10 @@ export function DiagnosticsReport({
         </ReportSection>
 
         <NetworkReport diagnostics={diagnostics} useUtc={useUtc} />
+
+        {styles && styles.styledComponents.length > 0 ? (
+          <StyledComponentsReport sheets={styles.styledComponents} />
+        ) : null}
       </Grid>
 
       <Stack gap={3}>
@@ -246,17 +252,19 @@ function DetailRow({
   monospace,
   truncate,
   value,
+  wideLabel,
 }: {
-  label: string
+  label: ReactNode
   monospace?: boolean
   truncate?: boolean
   value?: ReactNode
+  wideLabel?: boolean
 }) {
   const displayValue = value === undefined || value === '' ? 'Unknown' : value
 
   return (
     <Flex alignItems="flex-start" gap={3} justifyContent="space-between">
-      <Box flex={1}>
+      <Box flex={wideLabel ? 3 : 1}>
         <Text muted size={1}>
           {label}
         </Text>
@@ -271,6 +279,51 @@ function DetailRow({
         </Text>
       </Box>
     </Flex>
+  )
+}
+
+// Every styled-components runtime on the page owns one `<style data-styled>` sheet, so a second
+// sheet means a plugin bundled or inlined its own copy instead of using the peer dependency.
+function StyledComponentsReport({sheets}: {sheets: StyleSheetDiagnostic[]}) {
+  const versions = Array.from(new Set(sheets.map((sheet) => sheet.version ?? 'unknown version')))
+  const ruleCount = sheets.reduce((sum, sheet) => sum + sheet.ruleCount, 0)
+  const multipleRuntimes = sheets.length > 1
+
+  return (
+    <ReportSection testId="diagnostics-styled-components" title="styled-components">
+      <DetailRow
+        label={versions.length > 1 ? 'Versions' : 'Version'}
+        monospace
+        value={versions.join(', ')}
+      />
+      <DetailRow
+        label={<span className={codeValue}>{'<style data-styled>'}</span>}
+        wideLabel
+        value={
+          multipleRuntimes ? (
+            <Flex alignItems="center" gap={2} justifyContent="flex-end">
+              {sheets.length}
+              <Badge fontSize={0} tone="caution">
+                Expected 1
+              </Badge>
+            </Flex>
+          ) : (
+            sheets.length
+          )
+        }
+      />
+      <DetailRow label="CSS rules inserted by JS" value={ruleCount.toLocaleString()} wideLabel />
+      {multipleRuntimes ? (
+        <Text data-testid="diagnostics-styled-components-sheets" muted size={1}>
+          {sheets
+            .map(
+              (sheet) =>
+                `${sheet.version ?? 'unknown version'}: ${sheet.ruleCount.toLocaleString()} rules`,
+            )
+            .join(' · ')}
+        </Text>
+      ) : null}
+    </ReportSection>
   )
 }
 
@@ -452,6 +505,10 @@ function formatDimensions(value?: {height: number; width: number}): string | und
 
 function formatBoolean(value: boolean | undefined): string | undefined {
   return value === undefined ? undefined : value ? 'Yes' : 'No'
+}
+
+function formatEnabled(value: boolean | undefined): string | undefined {
+  return value === undefined ? undefined : value ? 'Enabled' : 'Disabled'
 }
 
 function formatStorageResult(

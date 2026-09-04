@@ -28,7 +28,7 @@ export function parseStudioDiagnostics(input: string): StudioDiagnostics {
 function isStudioDiagnostics(value: unknown): value is StudioDiagnostics {
   if (!isRecord(value) || value.diagnosticVersion !== 1) return false
 
-  const {browser, network, schema, studio, user} = value
+  const {browser, network, schema, studio, styles, user} = value
   if (
     !isRecord(browser) ||
     !isRecord(network) ||
@@ -37,7 +37,8 @@ function isStudioDiagnostics(value: unknown): value is StudioDiagnostics {
     !isRecord(user) ||
     typeof value.durationMs !== 'number' ||
     typeof value.generatedAt !== 'string' ||
-    typeof value.startedAt !== 'string'
+    typeof value.startedAt !== 'string' ||
+    (styles !== undefined && !isStylesDiagnostics(styles))
   ) {
     return false
   }
@@ -59,6 +60,7 @@ function isStudioDiagnostics(value: unknown): value is StudioDiagnostics {
     typeof schema.documentTypes === 'number' &&
     typeof schema.objectTypes === 'number' &&
     typeof schema.primitiveTypes === 'number' &&
+    (studio.autoUpdates === undefined || typeof studio.autoUpdates === 'boolean') &&
     typeof studio.dataset === 'string' &&
     typeof studio.projectId === 'string' &&
     typeof studio.reactVersion === 'string' &&
@@ -143,6 +145,17 @@ function isBucketSummary(value: unknown): boolean {
     typeof value.maxMs === 'number' &&
     typeof value.medianMs === 'number' &&
     typeof value.p95Ms === 'number'
+  )
+}
+
+function isStylesDiagnostics(value: unknown): boolean {
+  if (!isRecord(value) || !Array.isArray(value.styledComponents)) return false
+
+  return value.styledComponents.every(
+    (node) =>
+      isRecord(node) &&
+      typeof node.ruleCount === 'number' &&
+      (node.version === undefined || typeof node.version === 'string'),
   )
 }
 
