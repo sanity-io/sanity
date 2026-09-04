@@ -37,4 +37,24 @@ describe('getStylesDiagnostics', () => {
 
     expect(getStylesDiagnostics().styledComponents[0]?.sizeBytes).toBe(28)
   })
+
+  it('measures CSSOM-injected rules when the style element markup is empty', () => {
+    const node = document.createElement('style')
+    node.dataset.styled = 'active'
+    document.head.appendChild(node)
+    styleNodes.push(node)
+    node.sheet?.insertRule('.a{color:red}', 0)
+    node.sheet?.insertRule('.b{color:blue}', 1)
+
+    expect(node.innerHTML).toBe('')
+    const cssText = Array.from(node.sheet?.cssRules ?? [], (rule) => rule.cssText).join('')
+    expect(cssText.length).toBeGreaterThan(0)
+    expect(getStylesDiagnostics().styledComponents).toEqual([
+      {
+        ruleCount: 2,
+        sizeBytes: new TextEncoder().encode(cssText).byteLength,
+        version: undefined,
+      },
+    ])
+  })
 })
