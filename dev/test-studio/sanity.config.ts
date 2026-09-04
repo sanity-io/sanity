@@ -47,6 +47,7 @@ import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
 import {wave} from './plugins/input/wave-plugin'
 import {languageFilter} from './plugins/language-filter/plugin'
 import {routerDebugTool} from './plugins/router-debug/plugin'
+import {styleOutline} from './plugins/style-outline/plugin'
 import {useArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
 import {createSchemaTypes} from './schema'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
@@ -262,6 +263,8 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       }),
       themerTool(),
       routerDebugTool(),
+      // Opt-in (Vercel test-studio). Must stay this exact member expression.
+      ...(process.env.SANITY_STUDIO_STYLE_OUTLINE === 'true' ? [styleOutline()] : []),
       formBuilderReproTool(),
       errorReportingTestPlugin(),
       media(),

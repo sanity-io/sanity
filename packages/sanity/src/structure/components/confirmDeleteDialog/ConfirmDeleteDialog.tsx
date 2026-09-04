@@ -1,8 +1,7 @@
-import {Flex} from '@sanity/ui'
 import {useCallback, useId, useMemo} from 'react'
 import {getPublishedId, LoadingBlock, useDocumentVersions, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {structureLocaleNamespace} from '../../i18n'
@@ -15,9 +14,9 @@ const DialogBody = styled(Box)`
 `
 
 const LoadingContainer = styled(Flex).attrs({
-  align: 'center',
-  direction: 'column',
-  justify: 'center',
+  alignItems: 'center',
+  flexDirection: 'column',
+  justifyContent: 'center',
 })`
   height: 110px;
 `

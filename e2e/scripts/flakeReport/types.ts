@@ -112,6 +112,8 @@ export interface AttemptCapture {
   errorText?: string
   fallback?: FallbackReport
   kind: 'studio' | 'fallback' | 'error' | 'none'
+  /** Text of the studio's request error dialog (rate limited / server error / network error) if it was showing. */
+  requestErrorText?: string
   status: string
 }
 
