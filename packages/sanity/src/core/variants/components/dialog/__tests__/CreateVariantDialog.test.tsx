@@ -90,7 +90,7 @@ describe('CreateVariantDialog', () => {
 
     expect(screen.getByRole('button', {name: 'Add condition'})).toBeDisabled()
 
-    await user.type(screen.getByRole('combobox', {name: 'Key'}), 'audience')
+    await user.type(await screen.findByRole('combobox', {name: 'Key'}), 'audience')
     expect(screen.getByRole('button', {name: 'Add condition'})).toBeDisabled()
 
     await user.type(screen.getByRole('combobox', {name: 'Value'}), 'loyal-customers')
