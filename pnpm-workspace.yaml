@@ -63,6 +63,12 @@ catalog:
 dedupePeers: true
 linkWorkspacePackages: deep
 
+# Experiment (do not merge): the `@sanity/ui@4` override below resolves via URL, and packages
+# such as @sanity/code-input depend on @sanity/ui transitively. Without this, pnpm refuses the
+# override in subdependencies (ERR_PNPM_EXOTIC_SUBDEP) and the tree would keep a second copy of
+# @sanity/ui from npm.
+blockExoticSubdeps: false
+
 minimumReleaseAge: 1440
 minimumReleaseAgeExcludePrune: true
 minimumReleaseAgeExclude:
@@ -152,6 +158,15 @@ minimumReleaseAgeExclude:
 
 overrides:
   vitest: 'catalog:'
+  # Experiment (do not merge): point @sanity/ui v4 at the pkg.pr.new preview build of
+  # sanity-io/ui#2828 (static styled-components rules moved to vanilla-extract) so the
+  # studio's visual regression suites run against it. Version-scoped to `@4` so the
+  # `ui5` catalog alias keeps resolving to the alpha.
+  '@sanity/ui@4': 'https://pkg.pr.new/@sanity/ui@2828'
+  # The preview tarball ships unresolved `catalog:` specifiers (see PR description), so pin
+  # them to the ranges `pnpm publish` would have written.
+  '@sanity/ui>react-is': '^19.2.8'
+  '@sanity/ui>react-refractor': '^4.0.0'
 
 preferWorkspacePackages: true
 
