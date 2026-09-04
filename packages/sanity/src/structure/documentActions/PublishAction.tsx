@@ -3,7 +3,7 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {isValidationErrorMarker} from '@sanity/types'
 import {Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type DocumentActionComponent,
   getPairTarget,
@@ -193,31 +193,29 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     }
   }, [isWaitingToPublish, telemetry, id, editState?.transactionSyncLock?.enabled])
 
+  const publishedImmediately = !draft?._createdAt
+  const previouslyPublished = Boolean(publishedInfo)
+  const shouldSetPublishScheduled =
+    isSyncing || isValidating || validationStatus.revision !== revision
+
+  // This value flips on every keystroke (`isSyncing`), so it lives in a ref to keep `handle`
+  // stable; the hook collection compares the action description by reference for functions.
+  const shouldSetPublishScheduledRef = useRef(shouldSetPublishScheduled)
+  useEffect(() => {
+    shouldSetPublishScheduledRef.current = shouldSetPublishScheduled
+  }, [shouldSetPublishScheduled])
+
   const handle = useCallback(() => {
     telemetry.log(DocumentPublished, {
-      publishedImmediately: !draft?._createdAt,
-      previouslyPublished: Boolean(publishedInfo),
+      publishedImmediately,
+      previouslyPublished,
     })
-    if (
-      syncState.isSyncing ||
-      validationStatus.isValidating ||
-      validationStatus.revision !== revision
-    ) {
+    if (shouldSetPublishScheduledRef.current) {
       setPublishScheduled(true)
     } else {
       doPublish()
     }
-  }, [
-    telemetry,
-    draft?._createdAt,
-    publishedInfo,
-    syncState.isSyncing,
-    validationStatus.isValidating,
-    validationStatus.revision,
-    revision,
-    doPublish,
-    setPublishScheduled,
-  ])
+  }, [publishedImmediately, previouslyPublished, telemetry, setPublishScheduled, doPublish])
 
   return useMemo(() => {
     if (isPublishedPerspective(selectedPerspective)) {

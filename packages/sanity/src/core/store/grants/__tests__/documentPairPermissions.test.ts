@@ -7,7 +7,7 @@ import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient
 import {createSchema} from '../../../schema/createSchema'
 import {snapshotPair} from '../../document/document-pair/snapshotPair'
 import {getDocumentPairPermissions} from '../documentPairPermissions'
-import {type GrantsStore} from '../types'
+import {type GrantsStore, type PermissionCheckResult} from '../types'
 
 vi.mock('../../document/document-pair/snapshotPair', () => ({snapshotPair: vi.fn()}))
 
@@ -188,5 +188,47 @@ describe('getDocumentPairPermissions (Pattern-B memoization)', () => {
     expect(grantsStore.checkDocumentPermission).toHaveBeenCalledTimes(3)
 
     subscriptions.forEach((subscription) => subscription.unsubscribe())
+  })
+
+  it('emits only when the granted flag or the reason changes', () => {
+    const {draft$, published$, version$} = createSnapshotPairMock()
+    const grantsStore = createGrantsStore()
+    const id = `book-${Math.random().toString(36).slice(2)}`
+
+    const results: PermissionCheckResult[] = []
+    const subscription = getDocumentPairPermissions({
+      client,
+      schema,
+      grantsStore,
+      id,
+      type: 'book',
+      permission: 'publish',
+    }).subscribe((result) => results.push(result))
+
+    const draftDoc: SanityDocument = {
+      _id: `drafts.${id}`,
+      _type: 'book',
+      _rev: 'r1',
+      _createdAt: '2024-01-01T00:00:00Z',
+      _updatedAt: '2024-01-01T00:00:00Z',
+    }
+    published$.next(null)
+    version$.next(null)
+    draft$.next(draftDoc)
+    draft$.next({...draftDoc, _rev: 'r2'})
+    draft$.next({...draftDoc, _rev: 'r3'})
+
+    expect(grantsStore.checkDocumentPermission).toHaveBeenCalledTimes(9)
+    expect(results).toEqual([{granted: true, reason: ''}])
+
+    vi.mocked(grantsStore.checkDocumentPermission).mockReturnValue(
+      of({granted: false, reason: 'no matching grants'}),
+    )
+    draft$.next({...draftDoc, _rev: 'r4'})
+
+    expect(results).toHaveLength(2)
+    expect(results[1].granted).toBe(false)
+
+    subscription.unsubscribe()
   })
 })

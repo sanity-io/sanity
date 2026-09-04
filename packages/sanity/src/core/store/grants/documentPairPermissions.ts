@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {type SanityDocument, type Schema, type SchemaType} from '@sanity/types'
 import {useMemo} from 'react'
 import {combineLatest, type Observable, of} from 'rxjs'
-import {map, shareReplay, switchMap} from 'rxjs/operators'
+import {distinctUntilChanged, map, shareReplay, switchMap} from 'rxjs/operators'
 
 import {useClient} from '../../hooks/useClient'
 import {useSchema} from '../../hooks/useSchema'
@@ -19,6 +19,10 @@ import {type GrantsStore, type PermissionCheckResult} from './types'
 
 function shareLatestWithRefCount<T>() {
   return shareReplay<T>({bufferSize: 1, refCount: true})
+}
+
+function isSamePermissionCheckResult(a: PermissionCheckResult, b: PermissionCheckResult) {
+  return a.granted === b.granted && a.reason === b.reason
 }
 
 function getSchemaType(schema: Schema, typeName: string): SchemaType {
@@ -279,7 +283,10 @@ function getDocumentPairPermissionsUncached({
 
 export const getDocumentPairPermissions = memoize(
   (options: DocumentPairPermissionsOptions): Observable<PermissionCheckResult> =>
-    getDocumentPairPermissionsUncached(options).pipe(shareLatestWithRefCount()),
+    getDocumentPairPermissionsUncached(options).pipe(
+      distinctUntilChanged(isSamePermissionCheckResult),
+      shareLatestWithRefCount(),
+    ),
   ({
     client,
     schema,
