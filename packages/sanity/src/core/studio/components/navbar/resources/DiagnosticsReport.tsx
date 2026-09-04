@@ -257,17 +257,20 @@ function DetailRow({
   monospace,
   truncate,
   value,
+  wideLabel,
 }: {
   label: ReactNode
   monospace?: boolean
   truncate?: boolean
   value?: ReactNode
+  /** Give the label most of the row; for long labels paired with short values */
+  wideLabel?: boolean
 }) {
   const displayValue = value === undefined || value === '' ? 'Unknown' : value
 
   return (
     <Flex alignItems="flex-start" gap={3} justifyContent="space-between">
-      <Box flex={1}>
+      <Box flex={wideLabel ? 3 : 1}>
         <Text muted size={1}>
           {label}
         </Text>
@@ -301,6 +304,7 @@ function StyledComponentsReport({sheets}: {sheets: StyleSheetDiagnostic[]}) {
       />
       <DetailRow
         label={<CodeValue>{'<style data-styled>'}</CodeValue>}
+        wideLabel
         value={
           multipleRuntimes ? (
             <Flex alignItems="center" gap={2} justifyContent="flex-end">
@@ -314,7 +318,7 @@ function StyledComponentsReport({sheets}: {sheets: StyleSheetDiagnostic[]}) {
           )
         }
       />
-      <DetailRow label="CSS rules inserted by JS" value={ruleCount.toLocaleString()} />
+      <DetailRow label="CSS rules inserted by JS" value={ruleCount.toLocaleString()} wideLabel />
       {multipleRuntimes ? (
         <Text data-testid="diagnostics-styled-components-sheets" muted size={1}>
           {sheets
