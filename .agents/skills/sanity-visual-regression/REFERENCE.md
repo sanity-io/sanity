@@ -26,12 +26,13 @@
 - **One Chromatic project per integration type** (Chromatic constraint): "sanity studio"
   (Storybook), "sanity studio playwright" (e2e archives) and "sanity studio vitest" (browser
   tests). The integrations never cross: the Storybook project only receives `storybook build`
-  output, Playwright archives are uploaded from `e2e.yml` with `chromatic --playwright`, Vitest
-  archives from `chromatic.yml` through `chromaui/action` with `vitest: true`. `dev/storybook`
+  output, Playwright archives are uploaded from `e2e.yml` through `chromaui/action` with
+  `playwright: true`, Vitest archives from `chromatic.yml` through the same action with
+  `vitest: true`. `dev/storybook`
   therefore has no `@chromatic-com/playwright` or `@chromatic-com/vitest` wiring and hosts no
   specs or browser tests — its `playwright` dependency is only the browser runner that
   `@storybook/addon-vitest` uses to render stories.
-- **Why both CI uploads go through `chromaui/action`:** the action forwards the `pull_request`
+- **Why all three CI uploads go through `chromaui/action`:** the action forwards the `pull_request`
   event (head sha, branch, repository) to Chromatic. Running the bare CLI from a `pull_request`
   checkout logged `Branch '<branch>' does not exist … Falling back to <sha> … Pull request status
 updates likely won't work properly`, and TurboSnap fell back to an unrelated baseline. The
@@ -183,8 +184,8 @@ chromium-only, so it is unaffected by any of this.
 - The e2e studio (`dev/studio-e2e-testing`) must set a workspace `icon`. The default
   letter-mark hashes `projectId` + `dataset` into a color, and e2e datasets change per PR.
 - Archives are written into the Playwright output dir during the run; the `e2e.yml` workflow
-  merges shard artifacts and uploads once with `chromatic --playwright` using
-  `CHROMATIC_PROJECT_TOKEN_E2E`.
+  merges shard artifacts and uploads once through `chromaui/action` (`playwright: true`,
+  `CHROMATIC_ARCHIVE_LOCATION` pointing at the merged copy) with `CHROMATIC_PROJECT_TOKEN_E2E`.
 
 ## Storybook + addon-vitest
 

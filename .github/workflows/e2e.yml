@@ -250,6 +250,10 @@ jobs:
         with:
           # Chromatic needs full git history to find baseline builds.
           fetch-depth: 0
+          # On pull_request events check out the PR branch itself rather than
+          # the ephemeral merge commit, so the commits Chromatic sees exist in
+          # the repository (see chromatic.yml). Empty on push events.
+          ref: ${{ github.event.pull_request.head.ref }}
 
       - uses: ./.github/actions/setup
 
@@ -260,14 +264,24 @@ jobs:
           merge-multiple: true
           path: chromatic-artifacts
 
+      # Uploaded through the official action, which forwards the pull_request
+      # event to Chromatic; the bare CLI logged "Branch '…' does not exist" and
+      # could not report PR status from a pull_request checkout. The action
+      # resolves @chromatic-com/playwright from workingDir to build the archive
+      # Storybook.
       - name: Upload archives to Chromatic
+        uses: chromaui/action@2a0b63f30233c48591844a46d451b9cf68128186 # v18.7.2
         env:
-          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN_E2E }}
           # Playwright's outputDir is e2e/results, and the test artifacts
           # preserve the results/ folder (which contains chromatic-archives/),
           # so point the Chromatic CLI at the merged copy.
           CHROMATIC_ARCHIVE_LOCATION: ${{ github.workspace }}/chromatic-artifacts/results
-        run: pnpm --filter e2e exec chromatic --playwright --exit-zero-on-changes --auto-accept-changes main
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN_E2E }}
+          workingDir: e2e
+          playwright: true
+          exitZeroOnChanges: true
+          autoAcceptChanges: main
 
   e2e-status:
     name: "E2E Status"

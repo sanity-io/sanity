@@ -33,7 +33,7 @@ pnpm chromatic           # publish + snapshot manually (needs CHROMATIC_PROJECT_
   Storybook harness owned by a `*.stories.tsx`. Stories only cover states no browser test
   renders.
 - **Playwright stays in `e2e/`.** The e2e suite has its own Chromatic project
-  (`e2e/studio-visual-test.ts`, uploaded from `e2e.yml` with `chromatic --playwright`). This
+  (`e2e/studio-visual-test.ts`, uploaded from `e2e.yml` through `chromaui/action`). This
   package's `playwright` dependency is only the browser runner `@storybook/addon-vitest` uses to
   render stories; it hosts no specs, fixtures, or `@chromatic-com/playwright` wiring.
 - **Authored migration sentinels:** component-local stories cover states the tests don't capture —
