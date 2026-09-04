@@ -118,8 +118,10 @@ export function buildDistAtCommit(sha: string, targetDist: string): void {
 
     // Borrow HEAD's installed harness dependencies instead of installing
     // them (see linkHarnessModules.ts): no resolution, no lockfile edits —
-    // the toolchain is the very bytes HEAD's CI vetted, and workspace deps
-    // are remapped so the harness builds the historical product
+    // the toolchain is the very bytes HEAD's CI vetted, workspace deps are
+    // remapped so the harness builds the historical product, and bundled
+    // studio plugins resolve against the worktree's own install so their
+    // `@sanity/*` imports reach the historical, built packages
     linkHarnessModules({repoRoot: REPO_ROOT, worktree})
 
     // The overlaid harness manifest intentionally disagrees with the
