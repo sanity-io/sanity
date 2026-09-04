@@ -107,7 +107,7 @@ job, but the job stays dormant until the project token exists. To activate:
 3. Done — the job self-activates on the next run. No code changes. Every browser test's end
    state becomes a snapshot; the first build is the full baseline.
 
-Stories that merely re-exported browser-test harnesses were removed once this landed; the
+Stories that merely re-exported browser-test harnesses were removed when the plugin went GA; the
 browser tests are the snapshot source for those states. See [REFERENCE.md](REFERENCE.md) for
 local capture runs, `takeSnapshot()`/`configure()` usage inside tests (only valid once the plugin
 is active — `takeSnapshot()` THROWS in normal runs, so never commit calls to it while the
