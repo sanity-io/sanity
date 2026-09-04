@@ -3,7 +3,7 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {isValidationErrorMarker} from '@sanity/types'
 import {Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useEffect, useInsertionEffect, useMemo, useRef, useState} from 'react'
 import {
   type DocumentActionComponent,
   getPairTarget,
@@ -194,9 +194,11 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   }, [isWaitingToPublish, telemetry, id, editState?.transactionSyncLock?.enabled])
 
   // The action description is deep-compared by the hook collection, so the handler must keep its
-  // identity while the sync and validation state it reads changes on every keystroke.
+  // identity while the sync and validation state it reads changes on every keystroke. The effect
+  // deliberately has no dependency list: it re-syncs the closure every render, like the
+  // use-effect-event ponyfill.
   const publishRef = useRef<() => void>(() => {})
-  useLayoutEffect(() => {
+  useInsertionEffect(() => {
     publishRef.current = () => {
       telemetry.log(DocumentPublished, {
         publishedImmediately: !draft?._createdAt,
