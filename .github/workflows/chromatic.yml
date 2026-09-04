@@ -167,12 +167,24 @@ jobs:
           SANITY_VITEST_BROWSER: chromium
         run: pnpm --filter sanity test:browser
 
+      # `--only-changed` (TurboSnap) below needs the preview-stats.json that the
+      # plugin writes when `turboSnap: true` is set in vitest.browser.config.mts.
+      # Without it the CLI fails the upload once TurboSnap is unlocked, and a
+      # sharded run that was not merged with `vitest run --merge-reports` would
+      # upload a build that traces nothing. Fail here, with the reason, instead.
+      - name: Check TurboSnap stats file
+        if: steps.token.outputs.has_token == 'true' && steps.changes.outputs.has_changes == 'true'
+        run: |
+          STATS_FILE=packages/sanity/.vitest/chromatic/preview-stats.json
+          if [ ! -f "$STATS_FILE" ]; then
+            echo "::error::$STATS_FILE not found. Keep chromaticPlugin({turboSnap: true}) in vitest.browser.config.mts; if the capture run is sharded, merge the shards with 'vitest run --merge-reports' before uploading."
+            ls -la packages/sanity/.vitest/chromatic || true
+            exit 1
+          fi
+
       - name: Upload archives to Chromatic
         if: steps.token.outputs.has_token == 'true' && steps.changes.outputs.has_changes == 'true'
         env:
           CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN_VITEST }}
-        # Same flag semantics as the storybook job above. `--only-changed`
-        # (TurboSnap) needs the preview-stats.json that the plugin writes when
-        # `turboSnap: true` is set in vitest.browser.config.mts; keep the two
-        # in sync, the CLI fails the upload if the stats file is missing.
+        # Same flag semantics as the storybook job above.
         run: pnpm --filter sanity exec chromatic --vitest --only-changed --exit-zero-on-changes --auto-accept-changes main
