@@ -5,7 +5,7 @@ import {
   type DeprecatedProperty,
   type FormNodeValidation,
 } from '@sanity/types'
-import {Badge, Flex, Stack, Text, type Theme} from '@sanity/ui'
+import {Badge, Stack, Text, type Theme} from '@sanity/ui'
 import {
   type FocusEvent,
   type HTMLProps,
@@ -17,7 +17,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {css, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
@@ -240,7 +240,7 @@ export function FormFieldSet(
             inputId={inputId}
             content={
               <Stack gap={3}>
-                <Flex align="center">
+                <Flex alignItems="center">
                   {title && (
                     <FormFieldSetLegend
                       collapsed={Boolean(collapsed)}

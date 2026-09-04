@@ -1,8 +1,8 @@
 import {type Asset} from '@sanity/types'
-import {Flex, Grid, Spinner, Text} from '@sanity/ui'
+import {Grid, Spinner, Text} from '@sanity/ui'
 import {type KeyboardEvent, type MouseEvent} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {AssetThumb} from './AssetThumb'
 
@@ -36,7 +36,7 @@ export function ImageListView(props: ImageListViewProps) {
         ))}
       </ThumbGrid>
       {isLoading && assets.length === 0 && (
-        <Flex justify="center">
+        <Flex justifyContent="center">
           <Spinner muted />
         </Flex>
       )}
