@@ -51,9 +51,6 @@ export function DiagnosticsReport({
   const {browser, network, schema, studio, styles, user} = diagnostics
 
   const roles = user.roles.map((role) => role.title || role.name).join(', ')
-  const styleNodes = styles?.styledComponents
-  const styleRuleCount = styleNodes?.reduce((sum, node) => sum + node.ruleCount, 0)
-  const styledComponentsVersions = styleNodes && formatStyleNodeVersions(styleNodes)
   const localStorageResult = browser.localStorage
     ? formatStorageResult(browser.localStorage)
     : undefined
@@ -119,22 +116,6 @@ export function DiagnosticsReport({
         <ReportSection testId="diagnostics-studio" title="Studio">
           <DetailRow label="Studio version" monospace value={studio.version} />
           <DetailRow label="React version" monospace value={studio.reactVersion} />
-          <DetailRow label="styled-components" monospace value={styledComponentsVersions} />
-          <DetailRow
-            label="Style nodes"
-            value={styleNodes ? formatStyleNodeCount(styleNodes.length) : undefined}
-          />
-          <DetailRow label="Style rules" value={styleRuleCount?.toLocaleString()} />
-          {styleNodes && styleNodes.length > 1 ? (
-            <Text data-testid="diagnostics-styled-components-nodes" muted size={1}>
-              {styleNodes
-                .map(
-                  (node) =>
-                    `${node.version ?? 'unknown version'}: ${node.ruleCount.toLocaleString()} rules`,
-                )
-                .join(' · ')}
-            </Text>
-          ) : null}
           <DetailRow label="Workspaces" value={studio.workspaceCount} />
           <DetailRow label="Unique targets" value={studio.uniqueTargetCount} />
           <DetailRow label="Auto-updates" value={formatEnabled(studio.autoUpdates)} />
@@ -176,6 +157,10 @@ export function DiagnosticsReport({
         </ReportSection>
 
         <NetworkReport diagnostics={diagnostics} useUtc={useUtc} />
+
+        {styles && styles.styledComponents.length > 0 ? (
+          <StyledComponentsReport sheets={styles.styledComponents} />
+        ) : null}
       </Grid>
 
       <Stack gap={3}>
@@ -273,7 +258,7 @@ function DetailRow({
   truncate,
   value,
 }: {
-  label: string
+  label: ReactNode
   monospace?: boolean
   truncate?: boolean
   value?: ReactNode
@@ -297,6 +282,50 @@ function DetailRow({
         </Text>
       </Box>
     </Flex>
+  )
+}
+
+// Every styled-components runtime on the page owns one `<style data-styled>` sheet, so a second
+// sheet means a plugin bundled or inlined its own copy instead of using the peer dependency.
+function StyledComponentsReport({sheets}: {sheets: StyleSheetDiagnostic[]}) {
+  const versions = Array.from(new Set(sheets.map((sheet) => sheet.version ?? 'unknown version')))
+  const ruleCount = sheets.reduce((sum, sheet) => sum + sheet.ruleCount, 0)
+  const multipleRuntimes = sheets.length > 1
+
+  return (
+    <ReportSection testId="diagnostics-styled-components" title="styled-components">
+      <DetailRow
+        label={versions.length > 1 ? 'Versions' : 'Version'}
+        monospace
+        value={versions.join(', ')}
+      />
+      <DetailRow
+        label={<CodeValue>{'<style data-styled>'}</CodeValue>}
+        value={
+          multipleRuntimes ? (
+            <Flex alignItems="center" gap={2} justifyContent="flex-end">
+              {sheets.length}
+              <Badge fontSize={0} tone="caution">
+                Expected 1
+              </Badge>
+            </Flex>
+          ) : (
+            sheets.length
+          )
+        }
+      />
+      <DetailRow label="CSS rules inserted by JS" value={ruleCount.toLocaleString()} />
+      {multipleRuntimes ? (
+        <Text data-testid="diagnostics-styled-components-sheets" muted size={1}>
+          {sheets
+            .map(
+              (sheet) =>
+                `${sheet.version ?? 'unknown version'}: ${sheet.ruleCount.toLocaleString()} rules`,
+            )
+            .join(' · ')}
+        </Text>
+      ) : null}
+    </ReportSection>
   )
 }
 
@@ -482,27 +511,6 @@ function formatBoolean(value: boolean | undefined): string | undefined {
 
 function formatEnabled(value: boolean | undefined): string | undefined {
   return value === undefined ? undefined : value ? 'Enabled' : 'Disabled'
-}
-
-function formatStyleNodeVersions(nodes: StyleSheetDiagnostic[]): string {
-  if (nodes.length === 0) return 'Not detected'
-  const versions = new Set(nodes.map((node) => node.version ?? 'unknown version'))
-  return Array.from(versions).join(', ')
-}
-
-// One sheet per styled-components runtime, so more than one means several runtimes are bundled.
-// Zero is fine: it is the normal state once the Studio no longer uses styled-components.
-function formatStyleNodeCount(count: number): ReactNode {
-  if (count <= 1) return count
-
-  return (
-    <Flex alignItems="center" gap={2} justifyContent="flex-end">
-      {count}
-      <Badge fontSize={0} tone="caution">
-        Expected 1
-      </Badge>
-    </Flex>
-  )
 }
 
 function formatStorageResult(

@@ -208,16 +208,22 @@ describe('DiagnosticsReport', () => {
     expect(studio.getByText('Unique targets')).toBeInTheDocument()
     expect(studio.getByText('2')).toBeInTheDocument()
     expect(studio.queryByText('test-project')).not.toBeInTheDocument()
-    expect(studio.getByText('styled-components')).toBeInTheDocument()
-    expect(studio.getByText('6.5.3')).toBeInTheDocument()
     expect(studio.getByText('Auto-updates')).toBeInTheDocument()
     expect(studio.getByText('Enabled')).toBeInTheDocument()
-    expect(studio.getByText('Style nodes')).toBeInTheDocument()
-    expect(studio.getByText('1')).toBeInTheDocument()
-    expect(studio.getByText('Style rules')).toBeInTheDocument()
-    expect(studio.getByText((1_234).toLocaleString())).toBeInTheDocument()
-    expect(studio.queryByText('Expected 1')).not.toBeInTheDocument()
-    expect(studio.queryByTestId('diagnostics-styled-components-nodes')).not.toBeInTheDocument()
+    expect(studio.queryByText('6.5.3')).not.toBeInTheDocument()
+
+    const styledComponents = within(screen.getByTestId('diagnostics-styled-components'))
+    expect(styledComponents.getByText('styled-components')).toBeInTheDocument()
+    expect(styledComponents.getByText('Version')).toBeInTheDocument()
+    expect(styledComponents.getByText('6.5.3')).toBeInTheDocument()
+    expect(styledComponents.getByText('<style data-styled>')).toBeInTheDocument()
+    expect(styledComponents.getByText('1')).toBeInTheDocument()
+    expect(styledComponents.getByText('CSS rules inserted by JS')).toBeInTheDocument()
+    expect(styledComponents.getByText((1_234).toLocaleString())).toBeInTheDocument()
+    expect(styledComponents.queryByText('Expected 1')).not.toBeInTheDocument()
+    expect(
+      styledComponents.queryByTestId('diagnostics-styled-components-sheets'),
+    ).not.toBeInTheDocument()
 
     const workspace = within(screen.getByTestId('diagnostics-workspace'))
     expect(workspace.getByText('Name')).toBeInTheDocument()
@@ -294,37 +300,32 @@ describe('DiagnosticsReport', () => {
       </ThemeProvider>,
     )
 
-    const studio = within(screen.getByTestId('diagnostics-studio'))
-    expect(studio.getByText('Expected 1')).toBeInTheDocument()
-    expect(studio.getByText((1_020).toLocaleString())).toBeInTheDocument()
-    expect(studio.getByTestId('diagnostics-styled-components-nodes')).toHaveTextContent(
+    const styledComponents = within(screen.getByTestId('diagnostics-styled-components'))
+    expect(styledComponents.getByText('Versions')).toBeInTheDocument()
+    expect(styledComponents.getByText('6.5.3, unknown version')).toBeInTheDocument()
+    expect(styledComponents.getByText('2')).toBeInTheDocument()
+    expect(styledComponents.getByText('Expected 1')).toBeInTheDocument()
+    expect(styledComponents.getByText((1_020).toLocaleString())).toBeInTheDocument()
+    expect(styledComponents.getByTestId('diagnostics-styled-components-sheets')).toHaveTextContent(
       '6.5.3: 900 rules · unknown version: 120 rules',
     )
-    expect(studio.getByText('Expected 1')).toBeInTheDocument()
-    expect(studio.getByText('6.5.3, unknown version')).toBeInTheDocument()
   })
 
-  it('treats a studio without styled-components as healthy', () => {
+  it('omits the styled-components card when no sheet is on the page', () => {
     render(
       <ThemeProvider theme={buildTheme()}>
         <DiagnosticsReport
-          diagnostics={{
-            ...diagnostics,
-            styles: {styledComponents: []},
-          }}
+          diagnostics={{...diagnostics, styles: {styledComponents: []}}}
           onRunAgain={vi.fn()}
         />
       </ThemeProvider>,
     )
 
-    const studio = within(screen.getByTestId('diagnostics-studio'))
-    expect(studio.getByText('Not detected')).toBeInTheDocument()
-    expect(studio.getAllByText('0')).toHaveLength(2)
-    expect(studio.queryByText('Expected 1')).not.toBeInTheDocument()
-    expect(studio.queryByTestId('diagnostics-styled-components-nodes')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('diagnostics-styled-components')).not.toBeInTheDocument()
+    expect(screen.queryByText('Expected 1')).not.toBeInTheDocument()
   })
 
-  it('shows unknown styles and flags for reports from older studios', () => {
+  it('omits the styled-components card and shows unknown flags for reports from older studios', () => {
     render(
       <ThemeProvider theme={buildTheme()}>
         <DiagnosticsReport
@@ -339,8 +340,8 @@ describe('DiagnosticsReport', () => {
     )
 
     const studio = within(screen.getByTestId('diagnostics-studio'))
-    expect(studio.getAllByText('Unknown')).toHaveLength(4)
-    expect(studio.queryByText('Expected 1')).not.toBeInTheDocument()
+    expect(studio.getByText('Unknown')).toBeInTheDocument()
+    expect(screen.queryByTestId('diagnostics-styled-components')).not.toBeInTheDocument()
   })
 
   it('hides connection setup timings when the browser reports zero', () => {
