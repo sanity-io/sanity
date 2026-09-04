@@ -153,6 +153,7 @@ const diagnostics: StudioDiagnostics = {
   startedAt: '2026-08-21T11:59:49.580Z',
   studio: {
     apiHost: 'https://test.api.sanity.io',
+    autoUpdates: true,
     basePath: '/',
     dataset: 'production',
     location: 'http://localhost:3333/structure',
@@ -164,6 +165,7 @@ const diagnostics: StudioDiagnostics = {
     workspaceName: 'default',
     workspaceTitle: 'Test workspace',
   },
+  styles: {styledComponents: [{ruleCount: 1_234, version: '6.5.3'}]},
   user: {
     id: 'user-id',
     provider: 'sanity',
@@ -206,6 +208,22 @@ describe('DiagnosticsReport', () => {
     expect(studio.getByText('Unique targets')).toBeInTheDocument()
     expect(studio.getByText('2')).toBeInTheDocument()
     expect(studio.queryByText('test-project')).not.toBeInTheDocument()
+    expect(studio.getByText('Auto-updates')).toBeInTheDocument()
+    expect(studio.getByText('Enabled')).toBeInTheDocument()
+    expect(studio.queryByText('6.5.3')).not.toBeInTheDocument()
+
+    const styledComponents = within(screen.getByTestId('diagnostics-styled-components'))
+    expect(styledComponents.getByText('styled-components')).toBeInTheDocument()
+    expect(styledComponents.getByText('Version')).toBeInTheDocument()
+    expect(styledComponents.getByText('6.5.3')).toBeInTheDocument()
+    expect(styledComponents.getByText('<style data-styled>')).toBeInTheDocument()
+    expect(styledComponents.getByText('1')).toBeInTheDocument()
+    expect(styledComponents.getByText('CSS rules inserted by JS')).toBeInTheDocument()
+    expect(styledComponents.getByText((1_234).toLocaleString())).toBeInTheDocument()
+    expect(styledComponents.queryByText('Expected 1')).not.toBeInTheDocument()
+    expect(
+      styledComponents.queryByTestId('diagnostics-styled-components-sheets'),
+    ).not.toBeInTheDocument()
 
     const workspace = within(screen.getByTestId('diagnostics-workspace'))
     expect(workspace.getByText('Name')).toBeInTheDocument()
@@ -267,6 +285,63 @@ describe('DiagnosticsReport', () => {
 
     await userInteraction.click(screen.getByRole('button', {name: 'Run again'}))
     expect(onRunAgain).toHaveBeenCalledOnce()
+  })
+
+  it('flags multiple styled-components runtimes and lists each style node', () => {
+    render(
+      <ThemeProvider theme={buildTheme()}>
+        <DiagnosticsReport
+          diagnostics={{
+            ...diagnostics,
+            styles: {styledComponents: [{ruleCount: 900, version: '6.5.3'}, {ruleCount: 120}]},
+          }}
+          onRunAgain={vi.fn()}
+        />
+      </ThemeProvider>,
+    )
+
+    const styledComponents = within(screen.getByTestId('diagnostics-styled-components'))
+    expect(styledComponents.getByText('Versions')).toBeInTheDocument()
+    expect(styledComponents.getByText('6.5.3, unknown version')).toBeInTheDocument()
+    expect(styledComponents.getByText('2')).toBeInTheDocument()
+    expect(styledComponents.getByText('Expected 1')).toBeInTheDocument()
+    expect(styledComponents.getByText((1_020).toLocaleString())).toBeInTheDocument()
+    expect(styledComponents.getByTestId('diagnostics-styled-components-sheets')).toHaveTextContent(
+      '6.5.3: 900 rules · unknown version: 120 rules',
+    )
+  })
+
+  it('omits the styled-components card when no sheet is on the page', () => {
+    render(
+      <ThemeProvider theme={buildTheme()}>
+        <DiagnosticsReport
+          diagnostics={{...diagnostics, styles: {styledComponents: []}}}
+          onRunAgain={vi.fn()}
+        />
+      </ThemeProvider>,
+    )
+
+    expect(screen.queryByTestId('diagnostics-styled-components')).not.toBeInTheDocument()
+    expect(screen.queryByText('Expected 1')).not.toBeInTheDocument()
+  })
+
+  it('omits the styled-components card and shows unknown flags for reports from older studios', () => {
+    render(
+      <ThemeProvider theme={buildTheme()}>
+        <DiagnosticsReport
+          diagnostics={{
+            ...diagnostics,
+            studio: {...diagnostics.studio, autoUpdates: undefined},
+            styles: undefined,
+          }}
+          onRunAgain={vi.fn()}
+        />
+      </ThemeProvider>,
+    )
+
+    const studio = within(screen.getByTestId('diagnostics-studio'))
+    expect(studio.getByText('Unknown')).toBeInTheDocument()
+    expect(screen.queryByTestId('diagnostics-styled-components')).not.toBeInTheDocument()
   })
 
   it('hides connection setup timings when the browser reports zero', () => {

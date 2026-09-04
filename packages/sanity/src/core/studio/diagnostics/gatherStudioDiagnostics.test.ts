@@ -121,12 +121,14 @@ describe('gatherStudioDiagnostics', () => {
     expect(diagnostics.startedAt).toBeTypeOf('string')
     expect(diagnostics.studio).toMatchObject({
       apiHost: 'https://api.sanity.test',
+      autoUpdates: false,
       dataset: 'production',
       projectId: 'project-id',
       uniqueTargetCount: 2,
       version: '4.0.0',
       workspaceCount: 2,
     })
+    expect(diagnostics.styles).toEqual({styledComponents: []})
     expect(diagnostics.schema).toEqual({documentTypes: 2, objectTypes: 3, primitiveTypes: 4})
     expect(diagnostics.user).toEqual({
       id: 'user-1',
@@ -287,6 +289,41 @@ describe('gatherStudioDiagnostics', () => {
       expect.objectContaining({path: '/ping', status: 'success'}),
       expect.objectContaining({path: '/geoip/country', status: 'success'}),
     ])
+  })
+
+  it('reports auto-updates when an import map provides the sanity package', async () => {
+    mocks.getApiNetworkDiagnostic.mockReturnValue(of(protocolDiagnostic))
+    const importMap = document.createElement('script')
+    importMap.type = 'importmap'
+    importMap.textContent = JSON.stringify({
+      imports: {sanity: 'https://sanity-cdn.com/v1/modules/sanity/default/%5E4.0.0/t1'},
+    })
+    document.head.appendChild(importMap)
+    const {client} = createClient()
+
+    try {
+      const diagnostics = await gatherStudioDiagnostics(createOptions(client))
+      expect(diagnostics.studio.autoUpdates).toBe(true)
+    } finally {
+      importMap.remove()
+    }
+  })
+
+  it('reports auto-updates as unknown when the import map cannot be parsed', async () => {
+    mocks.getApiNetworkDiagnostic.mockReturnValue(of(protocolDiagnostic))
+    const importMap = document.createElement('script')
+    importMap.type = 'importmap'
+    importMap.textContent = '{"imports": {'
+    document.head.appendChild(importMap)
+    const {client} = createClient()
+
+    try {
+      const diagnostics = await gatherStudioDiagnostics(createOptions(client))
+      expect(diagnostics.studio.autoUpdates).toBeUndefined()
+      expect(diagnostics.styles).toEqual({styledComponents: []})
+    } finally {
+      importMap.remove()
+    }
   })
 
   it('records a local storage failure without failing the report', async () => {
