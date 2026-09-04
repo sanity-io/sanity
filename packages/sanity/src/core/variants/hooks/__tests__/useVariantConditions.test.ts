@@ -3,12 +3,14 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {type VariantConditionsContext} from '../../../config/types'
-import {useVariantConditions} from '../useVariantConditions'
+import {useVariantConditionMismatches, useVariantConditions} from '../useVariantConditions'
 
 describe('useVariantConditions', () => {
   beforeEach(() => {
-    // Resolver failures are logged for studio developers; keep the test output quiet.
+    // Resolver failures and dropped invalid entries are logged for studio developers;
+    // keep the test output quiet.
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    vi.spyOn(console, 'warn').mockImplementation(() => undefined)
   })
 
   afterEach(() => {
@@ -218,5 +220,131 @@ describe('useVariantConditions', () => {
     })
 
     expect(conditions).toHaveBeenCalledTimes(1)
+  })
+
+  it('treats an empty static list as an error', async () => {
+    const wrapper = await createTestProvider({
+      config: {
+        beta: {
+          variants: {
+            enabled: true,
+            conditions: [],
+          },
+        },
+      },
+    })
+
+    const {result} = renderHook(() => useVariantConditions(), {wrapper})
+
+    expect(result.current).toMatchObject({
+      mode: 'mapped',
+      status: 'error',
+      error: expect.objectContaining({
+        message: 'Expected `beta.variants.conditions` to include at least one valid entry',
+      }),
+    })
+    expect(console.error).toHaveBeenCalledWith(
+      '[sanity] Failed to resolve `beta.variants.conditions`',
+      expect.objectContaining({
+        message: 'Expected `beta.variants.conditions` to include at least one valid entry',
+      }),
+    )
+  })
+
+  it('treats a static list of only invalid entries as an error', async () => {
+    const wrapper = await createTestProvider({
+      config: {
+        beta: {
+          variants: {
+            enabled: true,
+            conditions: [{name: '_system', values: ['ok']}],
+          },
+        },
+      },
+    })
+
+    const {result} = renderHook(() => useVariantConditions(), {wrapper})
+
+    expect(result.current).toMatchObject({
+      mode: 'mapped',
+      status: 'error',
+      error: expect.objectContaining({
+        message: 'Expected `beta.variants.conditions` to include at least one valid entry',
+      }),
+    })
+  })
+
+  it('treats an empty resolved list as an error that can be retried', async () => {
+    let empty = true
+    const conditions = async () => {
+      if (empty) {
+        return []
+      }
+
+      return [{name: 'locale', values: ['en-US']}]
+    }
+    const wrapper = await createTestProvider({
+      config: {
+        beta: {
+          variants: {
+            enabled: true,
+            conditions,
+          },
+        },
+      },
+    })
+
+    const {result} = renderHook(() => useVariantConditions(), {wrapper})
+
+    await waitFor(() => {
+      expect(result.current).toMatchObject({
+        mode: 'mapped',
+        status: 'error',
+        error: expect.objectContaining({
+          message: 'Expected `beta.variants.conditions` to include at least one valid entry',
+        }),
+      })
+    })
+
+    empty = false
+
+    await act(async () => {
+      if (result.current.mode === 'mapped' && result.current.status === 'error') {
+        result.current.retry()
+      }
+    })
+
+    await waitFor(() => {
+      expect(result.current).toEqual({
+        mode: 'mapped',
+        status: 'ready',
+        definitions: [
+          {
+            name: 'locale',
+            title: 'locale',
+            values: [{value: 'en-US', title: 'en-US'}],
+          },
+        ],
+      })
+    })
+  })
+
+  it('does not report mismatches while the configured list is empty', async () => {
+    const wrapper = await createTestProvider({
+      config: {
+        beta: {
+          variants: {
+            enabled: true,
+            conditions: [],
+          },
+        },
+      },
+    })
+
+    const {result} = renderHook(() => useVariantConditionMismatches({audience: 'loyal'}), {
+      wrapper,
+    })
+
+    expect(result.current).toEqual([])
   })
 })
