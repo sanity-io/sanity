@@ -128,8 +128,7 @@ describe('gatherStudioDiagnostics', () => {
       version: '4.0.0',
       workspaceCount: 2,
     })
-    expect(diagnostics.styles?.styledComponents.version).toBeTypeOf('string')
-    expect(diagnostics.styles?.styledComponents.styleNodes).toEqual([])
+    expect(diagnostics.styles).toEqual({styledComponents: []})
     expect(diagnostics.schema).toEqual({documentTypes: 2, objectTypes: 3, primitiveTypes: 4})
     expect(diagnostics.user).toEqual({
       id: 'user-1',

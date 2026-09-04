@@ -51,32 +51,24 @@ describe('parseStudioDiagnostics', () => {
     expect(parse(report)).toEqual(report)
   })
 
-  it('accepts reports carrying styles, auto-update and strict mode fields', () => {
+  it('accepts reports carrying styles and auto-update fields', () => {
     const extended: StudioDiagnostics = {
       ...report,
       studio: {...report.studio, autoUpdates: true},
-      styles: {
-        styledComponents: {
-          styleNodes: [{ruleCount: 1234, version: '6.5.3'}, {ruleCount: 12}],
-          version: '6.5.3',
-        },
-      },
+      styles: {styledComponents: [{ruleCount: 1234, version: '6.5.3'}, {ruleCount: 12}]},
     }
 
     expect(parse(extended)).toEqual(extended)
   })
 
-  it('accepts a styles section without a bundled styled-components version', () => {
-    const withoutRuntime: StudioDiagnostics = {
-      ...report,
-      styles: {styledComponents: {styleNodes: []}},
-    }
+  it('accepts a styles section without any styled-components sheets', () => {
+    const withoutRuntime: StudioDiagnostics = {...report, styles: {styledComponents: []}}
 
     expect(parse(withoutRuntime)).toEqual(withoutRuntime)
   })
 
   it('rejects a styles section with the wrong shape', () => {
-    expect(() => parse({...report, styles: {styledComponents: {version: 1}}})).toThrow(
+    expect(() => parse({...report, styles: {styledComponents: [{version: '6.5.3'}]}})).toThrow(
       'not a supported Studio diagnostics report',
     )
   })

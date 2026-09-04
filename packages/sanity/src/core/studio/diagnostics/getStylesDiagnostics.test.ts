@@ -1,4 +1,3 @@
-import {version as styledComponentsVersion} from 'styled-components'
 import {afterEach, describe, expect, it} from 'vitest'
 
 import {getStylesDiagnostics} from './getStylesDiagnostics'
@@ -19,17 +18,15 @@ afterEach(() => {
 })
 
 describe('getStylesDiagnostics', () => {
-  it('reports the bundled styled-components version and no nodes when none are injected', () => {
-    expect(getStylesDiagnostics()).toEqual({
-      styledComponents: {styleNodes: [], version: styledComponentsVersion},
-    })
+  it('reports no styled-components sheets when none are injected', () => {
+    expect(getStylesDiagnostics()).toEqual({styledComponents: []})
   })
 
-  it('reports rule counts and versions for each styled-components style node', () => {
+  it('reports rule counts and versions for each styled-components sheet', () => {
     appendStyledSheet('.a{color:red}.b{color:blue}', '6.5.3')
     appendStyledSheet('.c{color:green}')
 
-    expect(getStylesDiagnostics().styledComponents.styleNodes).toEqual([
+    expect(getStylesDiagnostics().styledComponents).toEqual([
       {ruleCount: 2, version: '6.5.3'},
       {ruleCount: 1, version: undefined},
     ])
@@ -45,8 +42,6 @@ describe('getStylesDiagnostics', () => {
       }),
     })
 
-    expect(getStylesDiagnostics().styledComponents.styleNodes).toEqual([
-      {ruleCount: 0, version: '6.5.3'},
-    ])
+    expect(getStylesDiagnostics().styledComponents).toEqual([{ruleCount: 0, version: '6.5.3'}])
   })
 })

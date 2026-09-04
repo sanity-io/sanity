@@ -17,6 +17,7 @@ import {Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {type StudioDiagnostics} from '../../../diagnostics/gatherStudioDiagnostics'
+import {type StyleSheetDiagnostic} from '../../../diagnostics/getStylesDiagnostics'
 import {RequestPerformanceReport} from './RequestPerformanceReport'
 
 type DiagnosticStatus = StudioDiagnostics['network']['protocol']['status']
@@ -50,8 +51,9 @@ export function DiagnosticsReport({
   const {browser, network, schema, studio, styles, user} = diagnostics
 
   const roles = user.roles.map((role) => role.title || role.name).join(', ')
-  const styleNodes = styles?.styledComponents.styleNodes
+  const styleNodes = styles?.styledComponents
   const styleRuleCount = styleNodes?.reduce((sum, node) => sum + node.ruleCount, 0)
+  const styledComponentsVersions = styleNodes && formatStyleNodeVersions(styleNodes)
   const localStorageResult = browser.localStorage
     ? formatStorageResult(browser.localStorage)
     : undefined
@@ -117,7 +119,7 @@ export function DiagnosticsReport({
         <ReportSection testId="diagnostics-studio" title="Studio">
           <DetailRow label="Studio version" monospace value={studio.version} />
           <DetailRow label="React version" monospace value={studio.reactVersion} />
-          <DetailRow label="styled-components" monospace value={styles?.styledComponents.version} />
+          <DetailRow label="styled-components" monospace value={styledComponentsVersions} />
           <DetailRow
             label="Style nodes"
             value={styleNodes ? formatStyleNodeCount(styleNodes.length) : undefined}
@@ -480,6 +482,12 @@ function formatBoolean(value: boolean | undefined): string | undefined {
 
 function formatEnabled(value: boolean | undefined): string | undefined {
   return value === undefined ? undefined : value ? 'Enabled' : 'Disabled'
+}
+
+function formatStyleNodeVersions(nodes: StyleSheetDiagnostic[]): string {
+  if (nodes.length === 0) return 'Not detected'
+  const versions = new Set(nodes.map((node) => node.version ?? 'unknown version'))
+  return Array.from(versions).join(', ')
 }
 
 // One sheet per styled-components runtime, so more than one means several runtimes are bundled.

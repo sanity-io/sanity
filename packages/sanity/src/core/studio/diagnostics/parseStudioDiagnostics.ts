@@ -149,16 +149,11 @@ function isBucketSummary(value: unknown): boolean {
 }
 
 function isStylesDiagnostics(value: unknown): boolean {
-  if (!isRecord(value) || !isRecord(value.styledComponents)) return false
+  if (!isRecord(value) || !Array.isArray(value.styledComponents)) return false
 
-  const {styleNodes, version} = value.styledComponents
-  return (
-    isOptional(version, isString) &&
-    Array.isArray(styleNodes) &&
-    styleNodes.every(
-      (node) =>
-        isRecord(node) && typeof node.ruleCount === 'number' && isOptional(node.version, isString),
-    )
+  return value.styledComponents.every(
+    (node) =>
+      isRecord(node) && typeof node.ruleCount === 'number' && isOptional(node.version, isString),
   )
 }
 

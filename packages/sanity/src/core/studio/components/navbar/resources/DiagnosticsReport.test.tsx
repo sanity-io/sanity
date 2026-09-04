@@ -165,12 +165,7 @@ const diagnostics: StudioDiagnostics = {
     workspaceName: 'default',
     workspaceTitle: 'Test workspace',
   },
-  styles: {
-    styledComponents: {
-      styleNodes: [{ruleCount: 1_234, version: '6.5.3'}],
-      version: '6.5.3',
-    },
-  },
+  styles: {styledComponents: [{ruleCount: 1_234, version: '6.5.3'}]},
   user: {
     id: 'user-id',
     provider: 'sanity',
@@ -292,12 +287,7 @@ describe('DiagnosticsReport', () => {
         <DiagnosticsReport
           diagnostics={{
             ...diagnostics,
-            styles: {
-              styledComponents: {
-                styleNodes: [{ruleCount: 900, version: '6.5.3'}, {ruleCount: 120}],
-                version: '6.5.3',
-              },
-            },
+            styles: {styledComponents: [{ruleCount: 900, version: '6.5.3'}, {ruleCount: 120}]},
           }}
           onRunAgain={vi.fn()}
         />
@@ -310,6 +300,8 @@ describe('DiagnosticsReport', () => {
     expect(studio.getByTestId('diagnostics-styled-components-nodes')).toHaveTextContent(
       '6.5.3: 900 rules · unknown version: 120 rules',
     )
+    expect(studio.getByText('Expected 1')).toBeInTheDocument()
+    expect(studio.getByText('6.5.3, unknown version')).toBeInTheDocument()
   })
 
   it('treats a studio without styled-components as healthy', () => {
@@ -318,7 +310,7 @@ describe('DiagnosticsReport', () => {
         <DiagnosticsReport
           diagnostics={{
             ...diagnostics,
-            styles: {styledComponents: {styleNodes: [], version: undefined}},
+            styles: {styledComponents: []},
           }}
           onRunAgain={vi.fn()}
         />
@@ -326,6 +318,7 @@ describe('DiagnosticsReport', () => {
     )
 
     const studio = within(screen.getByTestId('diagnostics-studio'))
+    expect(studio.getByText('Not detected')).toBeInTheDocument()
     expect(studio.getAllByText('0')).toHaveLength(2)
     expect(studio.queryByText('Expected 1')).not.toBeInTheDocument()
     expect(studio.queryByTestId('diagnostics-styled-components-nodes')).not.toBeInTheDocument()
