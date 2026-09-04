@@ -9,7 +9,6 @@ import {InvalidVideoWarningStory} from './InvalidVideoWarningStory'
 const meta = {
   title: 'Media Library/Invalid Video Warning',
   component: InvalidVideoWarningStory,
-  tags: ['!dev', '!autodocs', 'vrt-only'],
 } satisfies Meta<typeof InvalidVideoWarningStory>
 
 export default meta

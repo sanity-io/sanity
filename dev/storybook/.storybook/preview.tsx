@@ -14,8 +14,8 @@ import {type Decorator, type Preview} from '@storybook/react-vite'
 const studioTheme: RootTheme = buildTheme()
 
 /**
- * Provides the studio theme to every story. Stories that reuse the browser
- * test harnesses (`TestWrapper`) nest their own `ThemeProvider` with the same
+ * Provides the studio theme to every story. Harness stories that render inside
+ * the mock studio (`TestWrapper`) nest their own `ThemeProvider` with the same
  * theme, which is a supported no-op. The `Card` gives stories the same themed
  * canvas background the studio has (and respects the color scheme once dark
  * mode snapshots are enabled).

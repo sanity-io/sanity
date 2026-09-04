@@ -9,7 +9,6 @@ import {TimelineErrorStory} from './TimelineErrorStory'
 const meta = {
   title: 'Structure/Timeline Error',
   component: TimelineErrorStory,
-  tags: ['!dev', '!autodocs', 'vrt-only'],
 } satisfies Meta<typeof TimelineErrorStory>
 
 export default meta

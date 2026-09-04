@@ -1,10 +1,95 @@
+import {ColorWheelIcon} from '@sanity/icons/ColorWheel'
+import {defineArrayMember, defineField, defineType} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, server, userEvent} from 'vitest/browser'
 
+import {TestForm} from '../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../test/browser/testHelpers'
-import {AnnotationsStory} from './AnnotationsStory'
-import {MultipleAnnotationsStory} from './MultipleAnnotationsStory'
+import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
+
+const SCHEMA_TYPES = [
+  defineType({
+    type: 'document',
+    name: 'test',
+    title: 'Test',
+    fields: [
+      defineField({
+        type: 'array',
+        name: 'body',
+        of: [
+          defineArrayMember({
+            type: 'block',
+          }),
+        ],
+      }),
+    ],
+  }),
+]
+
+function AnnotationsHarness() {
+  return (
+    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+      <TestForm />
+    </TestWrapper>
+  )
+}
+
+const MULTIPLE_ANNOTATIONS_SCHEMA_TYPES = [
+  defineType({
+    type: 'document',
+    name: 'test',
+    title: 'Test',
+    fields: [
+      defineField({
+        type: 'array',
+        name: 'body',
+        of: [
+          defineArrayMember({
+            type: 'block',
+            marks: {
+              annotations: [
+                {
+                  type: 'object',
+                  name: 'link',
+                  title: 'Link',
+                  fields: [
+                    defineField({
+                      type: 'string',
+                      name: 'href',
+                      title: 'Link',
+                    }),
+                  ],
+                },
+                {
+                  type: 'object',
+                  name: 'highlight',
+                  title: 'Highlight',
+                  icon: ColorWheelIcon,
+                  fields: [
+                    defineField({
+                      type: 'string',
+                      name: 'color',
+                      title: 'Color',
+                    }),
+                  ],
+                },
+              ],
+            },
+          }),
+        ],
+      }),
+    ],
+  }),
+]
+
+function MultipleAnnotationsHarness() {
+  return (
+    <TestWrapper schemaTypes={MULTIPLE_ANNOTATIONS_SCHEMA_TYPES}>
+      <TestForm />
+    </TestWrapper>
+  )
+}
 
 describe('Portable Text Input', () => {
   describe('Annotations', () => {
@@ -15,7 +100,7 @@ describe('Portable Text Input', () => {
     // tests below skip for.
     it.skipIf(server.browser === 'firefox')('Create a new link with keyboard only', async () => {
       const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
-      void render(<AnnotationsStory />)
+      void render(<AnnotationsHarness />)
       const $pte = await getFocusedPortableTextEditor('field-body')
 
       await insertPortableText('Now we should insert a link.', $pte)
@@ -92,7 +177,7 @@ describe('Portable Text Input', () => {
       {timeout: 30_000},
       async () => {
         const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
-        void render(<AnnotationsStory />)
+        void render(<AnnotationsHarness />)
         const $pte = await getFocusedPortableTextEditor('field-body')
 
         await insertPortableText('Now we should insert a link.', $pte)
@@ -141,7 +226,7 @@ describe('Portable Text Input', () => {
       {timeout: 30_000},
       async () => {
         const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
-        void render(<AnnotationsStory />)
+        void render(<AnnotationsHarness />)
         const $pte = await getFocusedPortableTextEditor('field-body')
 
         await insertPortableText('Now we should insert a link.', $pte)
@@ -202,7 +287,7 @@ describe('Portable Text Input', () => {
 
     it('Can edit a root-level annotation in fullscreen', {timeout: 30_000}, async () => {
       const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
-      void render(<AnnotationsStory />)
+      void render(<AnnotationsHarness />)
       const $pte = await getFocusedPortableTextEditor('field-body')
 
       await insertPortableText('Fullscreen link', $pte)
@@ -226,7 +311,7 @@ describe('Portable Text Input', () => {
       'Shows combined popover with multiple annotations on same text',
       async () => {
         const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
-        void render(<MultipleAnnotationsStory />)
+        void render(<MultipleAnnotationsHarness />)
         const $pte = await getFocusedPortableTextEditor('field-body')
 
         await insertPortableText('Text with multiple annotations.', $pte)
