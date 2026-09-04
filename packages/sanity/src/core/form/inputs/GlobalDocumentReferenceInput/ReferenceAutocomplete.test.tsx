@@ -8,6 +8,9 @@
  *  - In portaled dialogs (e.g. the Media Library) where the reference element is not inside the
  *    inherited boundary element, we fall back to `document.documentElement` so the popover is
  *    positioned against the viewport (avoids `referenceHidden` / misalignment).
+ *  - Inside an edit dialog, prefer the captured outer boundary over the dialog scroll box so
+ *    results can overflow the dialog; fall back to the document root when that outer boundary
+ *    does not contain the input.
  *
  * `ReferenceInput/ReferenceAutocomplete` (same-dataset), GDR, and Cross-dataset
  * `CrossDatasetReferenceInput/ReferenceAutocomplete` share this Popover wiring. Same-dataset needs
@@ -17,6 +20,7 @@
 import {type Autocomplete, type AutocompleteProps} from '@sanity/ui/autocomplete'
 import {render, waitFor} from '@testing-library/react'
 import {type ReactNode, type Ref, useLayoutEffect, useRef, useState} from 'react'
+import {EditDialogOuterBoundaryContext} from 'sanity/_singletons'
 import {describe, expect, test, vi, beforeEach} from 'vitest'
 
 import {type PopoverProps as UIPopoverProps} from '../../../../ui-components/popover/Popover'
@@ -307,6 +311,85 @@ describe('ReferenceAutocomplete popover boundaries', () => {
       })
 
       expect(lastPopoverProps?.floatingBoundary).toBe(document.documentElement)
+      expect(lastPopoverProps?.referenceBoundary).toBe(document.documentElement)
+    })
+  })
+
+  describe('inside an edit dialog, prefers the captured outer boundary over the dialog scroll box', () => {
+    test('uses the outer boundary when it contains the reference', async () => {
+      const {boundary: innerBoundary, referenceElement} = setupContainedBoundary()
+      const outerBoundary = document.createElement('div')
+      outerBoundary.append(innerBoundary)
+      document.body.append(outerBoundary)
+      const editDialogOuterBoundary = {element: outerBoundary}
+
+      render(
+        <EditDialogOuterBoundaryContext.Provider value={editDialogOuterBoundary}>
+          <SameDatasetReferenceAutocomplete
+            path={[...sameDatasetFieldPath]}
+            loading={false}
+            options={[]}
+            onQueryChange={() => undefined}
+            referenceElement={referenceElement}
+            searchString=""
+            id="same-dataset-ref-ac-edit-dialog-outer"
+          />
+        </EditDialogOuterBoundaryContext.Provider>,
+      )
+
+      await waitFor(() => {
+        expect(lastPopoverProps?.floatingBoundary).toBe(outerBoundary)
+      })
+      expect(lastPopoverProps?.referenceBoundary).toBe(outerBoundary)
+    })
+
+    test('falls back to documentElement when the outer boundary does not contain the reference (portaled PTE popover)', async () => {
+      const {referenceElement} = setupContainedBoundary()
+      const outerBoundary = document.createElement('div')
+      document.body.append(outerBoundary)
+      const editDialogOuterBoundary = {element: outerBoundary}
+
+      render(
+        <EditDialogOuterBoundaryContext.Provider value={editDialogOuterBoundary}>
+          <SameDatasetReferenceAutocomplete
+            path={[...sameDatasetFieldPath]}
+            loading={false}
+            options={[]}
+            onQueryChange={() => undefined}
+            referenceElement={referenceElement}
+            searchString=""
+            id="same-dataset-ref-ac-edit-dialog-portaled"
+          />
+        </EditDialogOuterBoundaryContext.Provider>,
+      )
+
+      await waitFor(() => {
+        expect(lastPopoverProps?.floatingBoundary).toBe(document.documentElement)
+      })
+      expect(lastPopoverProps?.referenceBoundary).toBe(document.documentElement)
+    })
+
+    test('falls back to documentElement when the edit dialog captured no outer boundary', async () => {
+      const {referenceElement} = setupContainedBoundary()
+      const editDialogOuterBoundary = {element: null}
+
+      render(
+        <EditDialogOuterBoundaryContext.Provider value={editDialogOuterBoundary}>
+          <SameDatasetReferenceAutocomplete
+            path={[...sameDatasetFieldPath]}
+            loading={false}
+            options={[]}
+            onQueryChange={() => undefined}
+            referenceElement={referenceElement}
+            searchString=""
+            id="same-dataset-ref-ac-edit-dialog-no-outer"
+          />
+        </EditDialogOuterBoundaryContext.Provider>,
+      )
+
+      await waitFor(() => {
+        expect(lastPopoverProps?.floatingBoundary).toBe(document.documentElement)
+      })
       expect(lastPopoverProps?.referenceBoundary).toBe(document.documentElement)
     })
   })

@@ -1,21 +1,16 @@
 import {useBoundaryElement} from '@sanity/ui'
+import {useContext} from 'react'
+import {EditDialogOuterBoundaryContext} from 'sanity/_singletons'
 
 import {AUTOCOMPLETE_POPOVER_BOUNDARY} from '../inputs/referenceAutocompletePopoverBoundary'
 
 /**
- * Pick the right Floating UI boundary for a reference autocomplete popover.
+ * Floating UI boundary for a reference autocomplete popover.
  *
- * Document pane installs a `BoundaryElementProvider` on the scroll container. When the reference
- * input is rendered inside that subtree we want to reuse that boundary so the popover is
- * constrained by the scroll container (respects the sticky pane header, version chips /
- * document actions, and the bottom footer).
- *
- * Portaled dialogs (e.g. the Media Library, Create-new document) render outside the document
- * pane's scroll container, so the inherited context element no longer contains the reference
- * input. In that case fall back to {@link AUTOCOMPLETE_POPOVER_BOUNDARY} (the document root) so
- * the popover is anchored against the viewport.
- *
- * Shared by same-dataset, cross-dataset, and global-document reference autocompletes.
+ * Prefer the edit-dialog outer boundary when present so results can overflow the dialog's own
+ * scroll box. If that element does not contain the input (portaled dialogs), use the document
+ * root — using the pane would mark the reference `referenceHidden`. Otherwise reuse the nearest
+ * `BoundaryElementProvider` that contains the input.
  *
  * @internal
  */
@@ -23,9 +18,19 @@ export function useReferenceAutocompletePopoverBoundary(
   referenceElement: HTMLElement | null,
 ): HTMLElement | null {
   const {element: contextElement} = useBoundaryElement()
+  const editDialogOuterBoundary = useContext(EditDialogOuterBoundaryContext)
 
-  // Prefer the nearest `BoundaryElementProvider` element when it actually contains the reference
-  // element in the DOM (typically the document pane scroll container).
+  if (editDialogOuterBoundary) {
+    if (
+      editDialogOuterBoundary.element &&
+      referenceElement &&
+      editDialogOuterBoundary.element.contains(referenceElement)
+    ) {
+      return editDialogOuterBoundary.element
+    }
+    return AUTOCOMPLETE_POPOVER_BOUNDARY ?? null
+  }
+
   if (contextElement && referenceElement && contextElement.contains(referenceElement)) {
     return contextElement
   }
