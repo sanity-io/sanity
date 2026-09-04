@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.13.0](https://github.com/sanity-io/sanity/compare/v6.12.0...v6.13.0) (2026-09-04)
+
+### Features
+
+* **validation:** add capability-aware results ([#14306](https://github.com/sanity-io/sanity/issues/14306)) ([7de17c2](https://github.com/sanity-io/sanity/commit/7de17c29494b392553cae32fbf3e9fc010883695))
+
+### Performance Improvements
+
+* **core:** consolidate equality checks on dequal/lite and domain comparators ([#14501](https://github.com/sanity-io/sanity/issues/14501)) ([fccc674](https://github.com/sanity-io/sanity/commit/fccc67448c5f5777ecdeb2e7690ca4a8f85ca229))
 ## [6.12.0](https://github.com/sanity-io/sanity/compare/v6.11.0...v6.12.0) (2026-09-01)
 
 ### Features

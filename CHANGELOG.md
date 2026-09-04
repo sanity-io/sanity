@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.13.0](https://github.com/sanity-io/sanity/compare/v6.12.0...v6.13.0) (2026-09-04)
+
+### Features
+
+* **access-ui:** surface SAML enforcement before the request form ([#14357](https://github.com/sanity-io/sanity/issues/14357)) ([7d6d93b](https://github.com/sanity-io/sanity/commit/7d6d93b8e40194ec4a7cfc8d632342e85a119277))
+* **comments:** add opt-in comments API plugin ([#14451](https://github.com/sanity-io/sanity/issues/14451)) ([22811af](https://github.com/sanity-io/sanity/commit/22811af1895e64287d5021fa009377e7e6eb5d97))
+* **core:** report styled-components sheets and auto-updates in studio diagnostics ([#14562](https://github.com/sanity-io/sanity/issues/14562)) ([4d79e33](https://github.com/sanity-io/sanity/commit/4d79e33114b1a1d79564a7af2820a8a5391b82d8))
+* **storybook:** add visual coverage checker and skill ([#14538](https://github.com/sanity-io/sanity/issues/14538)) ([4286a96](https://github.com/sanity-io/sanity/commit/4286a96f4ee5a93048f1c71aeaf8c5d6d4bbde98))
+* **structure:** keep panes when creating from a nested pane ([#14580](https://github.com/sanity-io/sanity/issues/14580)) ([3f7137a](https://github.com/sanity-io/sanity/commit/3f7137a82581b9d666d720920eeeeb5b4e4b0e63))
+* **test-studio:** add style outline debug panel ([#14563](https://github.com/sanity-io/sanity/issues/14563)) ([926de3c](https://github.com/sanity-io/sanity/commit/926de3ce898f75a1014fcc62daf12a972d0730e1))
+* **test-studio:** split style migration metrics ([#14590](https://github.com/sanity-io/sanity/issues/14590)) ([068f07f](https://github.com/sanity-io/sanity/commit/068f07f3c3b6b56270f3a1d41b5e51d7422c703e))
+* **typegen:** register query result types on a global SanityQueries interface ([#14537](https://github.com/sanity-io/sanity/issues/14537)) ([b042601](https://github.com/sanity-io/sanity/commit/b04260176ee794c149ef9b4c4e75c369fa6e2404))
+* **validation:** add cancellation support ([#14307](https://github.com/sanity-io/sanity/issues/14307)) ([b528986](https://github.com/sanity-io/sanity/commit/b528986e6dbf91f8d3edb505428fc284ca3131eb))
+* **validation:** add capability-aware results ([#14306](https://github.com/sanity-io/sanity/issues/14306)) ([7de17c2](https://github.com/sanity-io/sanity/commit/7de17c29494b392553cae32fbf3e9fc010883695))
+
+### Bug Fixes
+
+* **core:** enforce uniqueness validation in variant definition dialogs ([#14515](https://github.com/sanity-io/sanity/issues/14515)) ([505dba7](https://github.com/sanity-io/sanity/commit/505dba7cc5b25a189a24dada87de33bbdd77404f))
+* **deps:** pin rolldown under vite to 1.2.5 so bundled dev mode loads again ([#14547](https://github.com/sanity-io/sanity/issues/14547)) ([2bb7574](https://github.com/sanity-io/sanity/commit/2bb757407784befe2e749853fe4050060d994f6e))
+* **deps:** replace `debug` with `obug` ([#14521](https://github.com/sanity-io/sanity/issues/14521)) ([9712c5f](https://github.com/sanity-io/sanity/commit/9712c5f0462b5ec9451886c76fe6000ee3cd136d))
+* **deps:** update dependency @sanity/client to ^8.5.0 ([#14541](https://github.com/sanity-io/sanity/issues/14541)) ([0df8eb0](https://github.com/sanity-io/sanity/commit/0df8eb0eb6951463777f83da95c8361a64268a18))
+* **deps:** update dev-non-major ([#14532](https://github.com/sanity-io/sanity/issues/14532)) ([88b9f1c](https://github.com/sanity-io/sanity/commit/88b9f1cde7ed9493c56a0b2a0db8786fa721feeb))
+* **deps:** update dev-non-major ([#14554](https://github.com/sanity-io/sanity/issues/14554)) ([5569634](https://github.com/sanity-io/sanity/commit/5569634c0a69569a59528c0c9a891041979abad1))
+* **deps:** update portabletext ([#14526](https://github.com/sanity-io/sanity/issues/14526)) ([8c00bc0](https://github.com/sanity-io/sanity/commit/8c00bc01279b56ff457457a18e13150fb779991f))
+* **deps:** update sanity-sdk to ^3.1.0 ([#14564](https://github.com/sanity-io/sanity/issues/14564)) ([0be9f4d](https://github.com/sanity-io/sanity/commit/0be9f4dd8c6d48c5ae4db2f94ee5926323867228))
+* **e2e:** capture the studio request error dialog on failed attempts ([#14558](https://github.com/sanity-io/sanity/issues/14558)) ([9c01a9d](https://github.com/sanity-io/sanity/commit/9c01a9dd4eef7212513c2faddb414dc9babf2268))
+* **e2e:** write flake report outputs relative to the invoking directory ([#14561](https://github.com/sanity-io/sanity/issues/14561)) ([e314e71](https://github.com/sanity-io/sanity/commit/e314e712c66058ba95f89e3d4f332fdfb3f84a89))
+* **storybook:** align storybook core to 10.6 with addon-vitest ([#14577](https://github.com/sanity-io/sanity/issues/14577)) ([1da9535](https://github.com/sanity-io/sanity/commit/1da9535c68747017d6e4166fac00e253d64cead0))
+
+### Performance Improvements
+
+* **core:** consolidate equality checks on dequal/lite and domain comparators ([#14501](https://github.com/sanity-io/sanity/issues/14501)) ([fccc674](https://github.com/sanity-io/sanity/commit/fccc67448c5f5777ecdeb2e7690ca4a8f85ca229))
+* **sanity:** fix idle and typing re-renders found via react devtools profiling ([#14495](https://github.com/sanity-io/sanity/issues/14495)) ([a0e2c6b](https://github.com/sanity-io/sanity/commit/a0e2c6b023cfe3ffe20f2feb5a373bd1a80d8aae))
 ## [6.12.0](https://github.com/sanity-io/sanity/compare/v6.11.0...v6.12.0) (2026-09-01)
 
 ### Features

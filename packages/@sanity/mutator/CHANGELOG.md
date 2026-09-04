@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.13.0](https://github.com/sanity-io/sanity/compare/v6.12.0...v6.13.0) (2026-09-04)
+
+### Bug Fixes
+
+* **deps:** replace `debug` with `obug` ([#14521](https://github.com/sanity-io/sanity/issues/14521)) ([9712c5f](https://github.com/sanity-io/sanity/commit/9712c5f0462b5ec9451886c76fe6000ee3cd136d))
+
+### Performance Improvements
+
+* **core:** consolidate equality checks on dequal/lite and domain comparators ([#14501](https://github.com/sanity-io/sanity/issues/14501)) ([fccc674](https://github.com/sanity-io/sanity/commit/fccc67448c5f5777ecdeb2e7690ca4a8f85ca229))
 ## [6.12.0](https://github.com/sanity-io/sanity/compare/v6.11.0...v6.12.0) (2026-09-01)
 
 ### Bug Fixes
