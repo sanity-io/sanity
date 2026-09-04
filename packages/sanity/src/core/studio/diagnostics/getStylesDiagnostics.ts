@@ -2,6 +2,8 @@
 export interface StyleSheetDiagnostic {
   /** `sheet.cssRules.length` of a `<style data-styled>` element; 0 when the sheet is unavailable */
   ruleCount: number
+  /** UTF-8 byte length of the generated CSS, as it would be in an external stylesheet */
+  sizeBytes?: number
   /** The element's `data-styled-version` attribute, the version of the runtime that owns it */
   version?: string
 }
@@ -16,6 +18,8 @@ export interface StylesDiagnostics {
   styledComponents: StyleSheetDiagnostic[]
 }
 
+const textEncoder = new TextEncoder()
+
 /** @internal */
 export function getStylesDiagnostics(): StylesDiagnostics {
   if (typeof document === 'undefined') return {styledComponents: []}
@@ -23,10 +27,30 @@ export function getStylesDiagnostics(): StylesDiagnostics {
   return {
     styledComponents: Array.from(
       document.querySelectorAll<HTMLStyleElement>('style[data-styled]'),
-      (node) => ({
-        ruleCount: node.sheet?.cssRules.length ?? 0,
-        version: node.dataset.styledVersion || undefined,
-      }),
+      (node) => {
+        const {css, ruleCount} = readStyleSheet(node)
+        return {
+          ruleCount,
+          sizeBytes: textEncoder.encode(css).byteLength,
+          version: node.dataset.styledVersion || undefined,
+        }
+      },
     ),
   }
+}
+
+function readStyleSheet(node: HTMLStyleElement): {css: string; ruleCount: number} {
+  try {
+    const rules = node.sheet?.cssRules
+    if (rules) {
+      return {
+        css: Array.from(rules, (rule) => rule.cssText).join(''),
+        ruleCount: rules.length,
+      }
+    }
+  } catch {
+    // Cross-origin or otherwise inaccessible CSSOM sheets throw on `cssRules`.
+  }
+
+  return {css: node.textContent ?? '', ruleCount: 0}
 }

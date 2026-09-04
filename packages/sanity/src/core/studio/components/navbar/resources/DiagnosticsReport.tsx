@@ -29,6 +29,8 @@ const DIAGNOSTIC_STATUS_LABELS: Record<DiagnosticStatus, string> = {
   unsupported: 'Unsupported',
 }
 
+const BYTE_UNITS = ['B', 'kB', 'MB', 'GB', 'TB', 'PB'] as const
+
 const CodeValue = styled.span`
   font-family: var(--card-code-family, monospace);
   overflow-wrap: anywhere;
@@ -292,6 +294,9 @@ function DetailRow({
 function StyledComponentsReport({sheets}: {sheets: StyleSheetDiagnostic[]}) {
   const versions = Array.from(new Set(sheets.map((sheet) => sheet.version ?? 'unknown version')))
   const ruleCount = sheets.reduce((sum, sheet) => sum + sheet.ruleCount, 0)
+  const sizeBytes = sheets.every((sheet) => sheet.sizeBytes !== undefined)
+    ? sheets.reduce((sum, sheet) => sum + (sheet.sizeBytes ?? 0), 0)
+    : undefined
   const multipleRuntimes = sheets.length > 1
 
   return (
@@ -318,12 +323,13 @@ function StyledComponentsReport({sheets}: {sheets: StyleSheetDiagnostic[]}) {
         }
       />
       <DetailRow label="CSS rules inserted by JS" value={ruleCount.toLocaleString()} wideLabel />
+      <DetailRow label="CSS size inserted by JS" value={formatByteSize(sizeBytes)} wideLabel />
       {multipleRuntimes ? (
         <Text data-testid="diagnostics-styled-components-sheets" muted size={1}>
           {sheets
             .map(
               (sheet) =>
-                `${sheet.version ?? 'unknown version'}: ${sheet.ruleCount.toLocaleString()} rules`,
+                `${sheet.version ?? 'unknown version'}: ${sheet.ruleCount.toLocaleString()} rules, ${formatByteSize(sheet.sizeBytes) ?? 'unknown size'}`,
             )
             .join(' · ')}
         </Text>
@@ -482,6 +488,18 @@ function formatHeaderTime(value: string, useUtc: boolean): string {
 
 function formatMilliseconds(value?: number): string | undefined {
   return formatOptional(value, (milliseconds) => `${Math.round(milliseconds).toLocaleString()} ms`)
+}
+
+function formatByteSize(value?: number): string | undefined {
+  if (value === undefined || !Number.isFinite(value) || value < 0) return undefined
+
+  const unitIndex = Math.min(
+    Math.max(0, Math.floor(Math.log(Math.max(value, 1)) / Math.log(1_000))),
+    BYTE_UNITS.length - 1,
+  )
+  const amount = value / 1_000 ** unitIndex
+
+  return `${amount.toLocaleString(undefined, {maximumFractionDigits: 2})} ${BYTE_UNITS[unitIndex]}`
 }
 
 function formatElapsedDuration(start: string, end: string): string | undefined {

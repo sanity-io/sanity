@@ -165,7 +165,7 @@ const diagnostics: StudioDiagnostics = {
     workspaceName: 'default',
     workspaceTitle: 'Test workspace',
   },
-  styles: {styledComponents: [{ruleCount: 1_234, version: '6.5.3'}]},
+  styles: {styledComponents: [{ruleCount: 1_234, sizeBytes: 12_345, version: '6.5.3'}]},
   user: {
     id: 'user-id',
     provider: 'sanity',
@@ -220,6 +220,8 @@ describe('DiagnosticsReport', () => {
     expect(styledComponents.getByText('1')).toBeInTheDocument()
     expect(styledComponents.getByText('CSS rules inserted by JS')).toBeInTheDocument()
     expect(styledComponents.getByText((1_234).toLocaleString())).toBeInTheDocument()
+    expect(styledComponents.getByText('CSS size inserted by JS')).toBeInTheDocument()
+    expect(styledComponents.getByText(formatExpectedByteSize(12_345))).toBeInTheDocument()
     expect(styledComponents.queryByText('Expected 1')).not.toBeInTheDocument()
     expect(
       styledComponents.queryByTestId('diagnostics-styled-components-sheets'),
@@ -293,7 +295,12 @@ describe('DiagnosticsReport', () => {
         <DiagnosticsReport
           diagnostics={{
             ...diagnostics,
-            styles: {styledComponents: [{ruleCount: 900, version: '6.5.3'}, {ruleCount: 120}]},
+            styles: {
+              styledComponents: [
+                {ruleCount: 900, sizeBytes: 12_000, version: '6.5.3'},
+                {ruleCount: 120, sizeBytes: 450},
+              ],
+            },
           }}
           onRunAgain={vi.fn()}
         />
@@ -306,9 +313,29 @@ describe('DiagnosticsReport', () => {
     expect(styledComponents.getByText('2')).toBeInTheDocument()
     expect(styledComponents.getByText('Expected 1')).toBeInTheDocument()
     expect(styledComponents.getByText((1_020).toLocaleString())).toBeInTheDocument()
+    expect(styledComponents.getByText(formatExpectedByteSize(12_450))).toBeInTheDocument()
     expect(styledComponents.getByTestId('diagnostics-styled-components-sheets')).toHaveTextContent(
-      '6.5.3: 900 rules · unknown version: 120 rules',
+      `6.5.3: 900 rules, ${formatExpectedByteSize(12_000)} · unknown version: 120 rules, ${formatExpectedByteSize(450)}`,
     )
+  })
+
+  it('omits invalid styled-components CSS sizes', () => {
+    render(
+      <ThemeProvider theme={buildTheme()}>
+        <DiagnosticsReport
+          diagnostics={{
+            ...diagnostics,
+            styles: {styledComponents: [{ruleCount: 12, sizeBytes: Number.NaN, version: '6.5.3'}]},
+          }}
+          onRunAgain={vi.fn()}
+        />
+      </ThemeProvider>,
+    )
+
+    const styledComponents = within(screen.getByTestId('diagnostics-styled-components'))
+    expect(styledComponents.getByText('CSS size inserted by JS')).toBeInTheDocument()
+    expect(styledComponents.getByText('Unknown')).toBeInTheDocument()
+    expect(styledComponents.queryByText('NaN undefined')).not.toBeInTheDocument()
   })
 
   it('omits the styled-components card when no sheet is on the page', () => {
@@ -422,4 +449,14 @@ function formatUtcTime(value: string): string {
     second: '2-digit',
     timeZone: 'UTC',
   })
+}
+
+function formatExpectedByteSize(value: number): string {
+  const units = ['B', 'kB', 'MB', 'GB', 'TB', 'PB'] as const
+  const unitIndex = Math.min(
+    Math.max(0, Math.floor(Math.log(Math.max(value, 1)) / Math.log(1_000))),
+    units.length - 1,
+  )
+  const amount = value / 1_000 ** unitIndex
+  return `${amount.toLocaleString(undefined, {maximumFractionDigits: 2})} ${units[unitIndex]}`
 }

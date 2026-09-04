@@ -55,7 +55,12 @@ describe('parseStudioDiagnostics', () => {
     const extended: StudioDiagnostics = {
       ...report,
       studio: {...report.studio, autoUpdates: true},
-      styles: {styledComponents: [{ruleCount: 1234, version: '6.5.3'}, {ruleCount: 12}]},
+      styles: {
+        styledComponents: [
+          {ruleCount: 1234, sizeBytes: 18_500, version: '6.5.3'},
+          {ruleCount: 12, sizeBytes: 240},
+        ],
+      },
     }
 
     expect(parse(extended)).toEqual(extended)
@@ -71,6 +76,15 @@ describe('parseStudioDiagnostics', () => {
     expect(() => parse({...report, styles: {styledComponents: [{version: '6.5.3'}]}})).toThrow(
       'not a supported Studio diagnostics report',
     )
+  })
+
+  it('rejects a non-numeric styled-components size', () => {
+    expect(() =>
+      parse({
+        ...report,
+        styles: {styledComponents: [{ruleCount: 1, sizeBytes: '100'}]},
+      }),
+    ).toThrow('not a supported Studio diagnostics report')
   })
 
   it('rejects a non-boolean auto-updates flag', () => {
