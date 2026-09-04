@@ -80,8 +80,17 @@ export type ProjectGrants = Record<
  * @hidden
  * @beta */
 export interface ProjectStore {
+  /**
+   * Issues a fresh request for the full project, including `members` and `features`.
+   */
   get: () => Observable<ProjectData>
   getDatasets: () => Observable<ProjectDatasetData[]>
+  /**
+   * The project as fetched once per studio session (and refreshed every five minutes), shared
+   * with `getOrganizationId` and `getOrganizationData`. Requested without `members` and
+   * `features`. Emits `null` if the request has failed and no earlier value is known.
+   */
+  getProject: () => Observable<ProjectData | null>
   getOrganizationData: () => Observable<ProjectOrganizationData | null>
   getOrganizationId: () => Observable<string | null>
   getGrants: () => Observable<ProjectGrants>
