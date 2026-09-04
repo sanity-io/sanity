@@ -9,11 +9,11 @@ Visual regression runs on [Chromatic](https://www.chromatic.com), wired via
 [.github/workflows/chromatic.yml](../../../.github/workflows/chromatic.yml). Three snapshot
 sources, one Chromatic project each:
 
-| Source                          | Chromatic project | Repo secret                         | Status                                             |
-| ------------------------------- | ----------------- | ----------------------------------- | -------------------------------------------------- |
-| `dev/storybook` stories         | `sanity`          | `CHROMATIC_PROJECT_TOKEN_STORYBOOK` | Active                                             |
-| Vitest browser tests (in place) | vitest project    | `CHROMATIC_PROJECT_TOKEN_VITEST`    | Wired; activates when the secret lands (see below) |
-| Playwright e2e `takeSnapshot()` | `sanity_e2e`      | `CHROMATIC_PROJECT_TOKEN_E2E`       | Active, curated opt-in                             |
+| Source                          | Chromatic project          | Repo secret                         | Status                 |
+| ------------------------------- | -------------------------- | ----------------------------------- | ---------------------- |
+| `dev/storybook` stories         | "sanity studio"            | `CHROMATIC_PROJECT_TOKEN_STORYBOOK` | Active                 |
+| Vitest browser tests (in place) | "sanity studio vitest"     | `CHROMATIC_PROJECT_TOKEN_VITEST`    | Active                 |
+| Playwright e2e `takeSnapshot()` | "sanity studio playwright" | `CHROMATIC_PROJECT_TOKEN_E2E`       | Active, curated opt-in |
 
 All checks are non-gating during burn-in (`exitZeroOnChanges`); merges to `main` auto-accept
 baselines. Review diffs on the Chromatic build linked from the PR check.
@@ -23,11 +23,11 @@ baselines. Review diffs on the Chromatic build linked from the PR check.
 Each source owns a disjoint set of states. Decide by how the state is reached, and never move a
 state between sources:
 
-| The state is…                                                                                         | It belongs in                                                                                                                  |
-| ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| Reachable from props/fixtures alone, or one `play` interaction (open a menu, hover a tooltip)         | A `*.stories.tsx` in the owning package (`dev/storybook` snapshots it)                                                         |
-| Reached by driving the UI: typing, drag, clipboard, focus tracking, viewport changes, server commands | A `*.browser.test.tsx` — its end state is the snapshot; `takeSnapshot()` for mid-test states once the Vitest project is active |
-| Full-studio chrome against a real deployment and dataset                                              | A Playwright spec using `e2e/studio-visual-test.ts` (`sanity_e2e` project), read-only states only                              |
+| The state is…                                                                                         | It belongs in                                                                                                   |
+| ----------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Reachable from props/fixtures alone, or one `play` interaction (open a menu, hover a tooltip)         | A `*.stories.tsx` in the owning package (`dev/storybook` snapshots it)                                          |
+| Reached by driving the UI: typing, drag, clipboard, focus tracking, viewport changes, server commands | A `*.browser.test.tsx` — its end state is the snapshot; `takeSnapshot()` for mid-test states (see below)        |
+| Full-studio chrome against a real deployment and dataset                                              | A Playwright spec using `e2e/studio-visual-test.ts` ("sanity studio playwright" project), read-only states only |
 
 Consequences:
 
@@ -117,24 +117,35 @@ tags and sets `parameters: {chromatic: {disableSnapshot: true}}`.
   1280×900 desktop mode in [preview.tsx](../../../dev/storybook/.storybook/preview.tsx) matches
   the vitest browser viewport).
 
-## Vitest integration activation runbook
+## Browser tests: automatic snapshots, opt-outs, targeted snapshots
 
 [Chromatic for Vitest Browser Mode](https://www.chromatic.com/blog/introducing-chromatic-for-vitest-browser-mode/)
-is generally available (`@chromatic-com/vitest` 1.x). The plugin is wired into
-`packages/sanity/vitest.browser.config.mts` and the `Chromatic / Vitest browser visual tests`
-job, but the job stays dormant until the project token exists. To activate:
+is generally available (`@chromatic-com/vitest` 1.x) and the "sanity studio vitest" project is
+live: the `Chromatic / Vitest browser visual tests` job re-runs the suite on chromium with
+`CHROMATIC=1` on every PR and pushes the archives. Every `*.browser.test.tsx` is in the visual
+suite without any code in the test, and the `MyComponent.browser.test.tsx` +
+`MyComponentStory.tsx` + `MyComponent.stories.tsx` triple that existed only to snapshot a browser
+test is gone (see "Which source owns a state").
 
-1. Create a Vitest-type project in Chromatic (project type "Vitest").
-2. Add its token as the `CHROMATIC_PROJECT_TOKEN_VITEST` repo secret.
-3. Done — the job self-activates on the next run. No code changes. Every browser test's end
-   state becomes a snapshot; the first build is the full baseline.
+- **Automatic snapshot at the end of every test.** Name it well: in Chromatic the snapshot is
+  `describe chain / it title / Snapshot #n` under the test file's path.
+- **Opt out with `configure({disableAutoSnapshot: true})`** from `@chromatic-com/vitest`. The
+  scope follows where it is called: at the top level of a test file it applies to every test in
+  the file; inside a `describe()` to that suite and its nested suites; inside a `test()` to that
+  test only. Use it for tests whose end state is not worth a snapshot (pure interaction checks,
+  cleanup-only states) — the snapshot budget is per test case.
+- **Targeted snapshots with `await takeSnapshot('state name')`** inside a `test()`, for states
+  the test moves through but does not end on (a menu open before the click that closes it, a
+  drag mid-way). Always `await` it; the plugin fails the test on un-awaited calls. Docs:
+  [targeted snapshots](https://www.chromatic.com/docs/vitest/targeted-snapshots/).
+- **Safe in every run.** The plugin is registered in `vitest.browser.config.mts` on every run, so
+  both helpers work in plain `pnpm --filter sanity test:browser` runs and in the functional
+  `browser-tests.yml` shards; they are no-ops on firefox and webkit. Only `CHROMATIC=1` turns on
+  capturing (automatic snapshots, TurboSnap stats, reporter output, Chromatic telemetry); a
+  normal run writes nothing except the archive of an explicit `takeSnapshot()` call, into the
+  gitignored `.vitest/chromatic`.
 
-Stories that merely re-exported browser-test harnesses were removed when the plugin went GA, and
-the shared `*Story.tsx` harnesses were folded back into their tests; the browser tests are the
-snapshot source for those states. See [REFERENCE.md](REFERENCE.md) for
-local capture runs, `takeSnapshot()`/`configure()` usage inside tests (only valid once the plugin
-is active — `takeSnapshot()` THROWS in normal runs, so never commit calls to it while the
-integration is dormant), and cost controls.
+See [REFERENCE.md](REFERENCE.md) for local capture runs, TurboSnap, sharding and cost controls.
 
 ## Playwright e2e snapshots
 

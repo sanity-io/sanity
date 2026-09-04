@@ -34,11 +34,15 @@ Node 22.18+ (`node scripts/visualCoverage.ts`).
 Chromatic snapshots stories, not components. A component is covered when a story renders it. The
 script models that as direct imports:
 
-| Evidence       | Files                                           | Chromatic project | Status in the report                                                        |
-| -------------- | ----------------------------------------------- | ----------------- | --------------------------------------------------------------------------- |
-| `story`        | `packages/**/src/**/*.stories.tsx`              | Storybook, active | `covered`                                                                   |
-| `browser-test` | `packages/**/src/**/*.browser.test.tsx`         | Vitest, wired     | `covered`, flagged "no Chromatic snapshot yet" until the Vitest token lands |
-| `pending`      | a `*.stories.tsx` added by an open PR (`--prs`) | none yet          | `pending`, claimed by that PR                                               |
+| Evidence       | Files                                           | Chromatic project      | Status in the report          |
+| -------------- | ----------------------------------------------- | ---------------------- | ----------------------------- |
+| `story`        | `packages/**/src/**/*.stories.tsx`              | "sanity studio"        | `covered`                     |
+| `browser-test` | `packages/**/src/**/*.browser.test.tsx`         | "sanity studio vitest" | `covered`                     |
+| `pending`      | a `*.stories.tsx` added by an open PR (`--prs`) | none yet               | `pending`, claimed by that PR |
+
+Both projects snapshot on every PR: a story is captured by the Storybook build, a browser test's
+end state by the `CHROMATIC=1` capture run (plus any `takeSnapshot()` it calls). The Playwright
+project ("sanity studio playwright") is curated opt-in and is not modelled as coverage.
 
 A file is covered when a story or browser test imports it directly, or imports a `*Story.tsx`
 harness that imports it. A `.css.ts` file inherits the coverage of the `.tsx` files that import

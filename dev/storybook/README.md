@@ -56,11 +56,13 @@ so stories render exactly like the studio and the browser tests.
 ## Chromatic
 
 The [Chromatic workflow](../../.github/workflows/chromatic.yml) publishes this Storybook to the
-`sanity` Chromatic project on every PR (secret: `CHROMATIC_PROJECT_TOKEN_STORYBOOK`), using
-TurboSnap so only stories affected by the change are snapshotted. The check is non-gating during
-burn-in (`exitZeroOnChanges`); merges to `main` auto-accept new baselines. The same workflow's
-`vitest-visual` job uploads the browser-test archives to a separate Vitest-type Chromatic project
-(secret: `CHROMATIC_PROJECT_TOKEN_VITEST`).
+"sanity studio" Chromatic project on every PR (secret: `CHROMATIC_PROJECT_TOKEN_STORYBOOK`),
+using TurboSnap so only stories affected by the change are snapshotted. The check is non-gating
+during burn-in (`exitZeroOnChanges`); merges to `main` auto-accept new baselines. The same
+workflow's `vitest-visual` job uploads the browser-test archives to the "sanity studio vitest"
+project (secret: `CHROMATIC_PROJECT_TOKEN_VITEST`), so this Storybook holds only stories written
+for people: browser tests are snapshotted in place and no longer appear here as tag-filtered
+stories.
 
 ## Vercel deployment
 

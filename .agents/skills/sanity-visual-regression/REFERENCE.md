@@ -23,14 +23,20 @@
   side-effect-imports both. Storybook must too — colocated sentinel stories import source files
   directly and never hit the `sanity` package entry, so they would otherwise snapshot without
   the ui5 reset and design tokens.
-- **One Chromatic project per integration type** (Chromatic constraint): `sanity` (Storybook),
-  `sanity_e2e` (Playwright), plus a Vitest-type project for the browser tests (created when
-  `CHROMATIC_PROJECT_TOKEN_VITEST` is added). The integrations never cross: the Storybook project
-  only receives `storybook build` output, Playwright archives are uploaded from `e2e.yml` with
-  `chromatic --playwright`, Vitest archives from `chromatic.yml` with `chromatic --vitest`.
-  `dev/storybook` therefore has no `@chromatic-com/playwright` or `@chromatic-com/vitest`
-  wiring and hosts no specs or browser tests — its `playwright` dependency is only the browser
-  runner that `@storybook/addon-vitest` uses to render stories.
+- **One Chromatic project per integration type** (Chromatic constraint): "sanity studio"
+  (Storybook), "sanity studio playwright" (e2e archives) and "sanity studio vitest" (browser
+  tests). The integrations never cross: the Storybook project only receives `storybook build`
+  output, Playwright archives are uploaded from `e2e.yml` with `chromatic --playwright`, Vitest
+  archives from `chromatic.yml` through `chromaui/action` with `vitest: true`. `dev/storybook`
+  therefore has no `@chromatic-com/playwright` or `@chromatic-com/vitest` wiring and hosts no
+  specs or browser tests — its `playwright` dependency is only the browser runner that
+  `@storybook/addon-vitest` uses to render stories.
+- **Why both CI uploads go through `chromaui/action`:** the action forwards the `pull_request`
+  event (head sha, branch, repository) to Chromatic. Running the bare CLI from a `pull_request`
+  checkout logged `Branch '<branch>' does not exist … Falling back to <sha> … Pull request status
+updates likely won't work properly`, and TurboSnap fell back to an unrelated baseline. The
+  checkouts also use `ref: ${{ github.event.pull_request.head.ref }}` so the workspace holds the
+  PR branch rather than GitHub's ephemeral merge commit, as Chromatic's TurboSnap guidance asks.
 
 ## Local Chromatic runs
 
@@ -38,7 +44,7 @@
 # Storybook: publish + snapshot from your machine (token from the Chromatic project's Manage page)
 CHROMATIC_PROJECT_TOKEN=<storybook-token> pnpm --filter sanity-storybook chromatic
 
-# Vitest capture (plugin gated behind CHROMATIC=1; chromium is auto-selected):
+# Vitest capture (capturing is gated behind CHROMATIC=1; chromium is auto-selected):
 CHROMATIC=1 pnpm --filter sanity test:browser
 # Archives land in packages/sanity/.vitest/chromatic (gitignored). Upload them:
 CHROMATIC_PROJECT_TOKEN=<vitest-token> pnpm --filter sanity exec chromatic --vitest
@@ -53,8 +59,17 @@ CI flag semantics (all three uploads): `--only-changed` (TurboSnap), `--exit-zer
 
 ## Vitest capture details
 
-- The plugin is registered in `packages/sanity/vitest.browser.config.mts` only when
-  `CHROMATIC=1`. Flag-off runs are byte-identical to a checkout without the integration.
+- The plugin is registered in `packages/sanity/vitest.browser.config.mts` on every run, so
+  `configure()` and `takeSnapshot()` from `@chromatic-com/vitest` are usable in any test file
+  (`takeSnapshot()` throws `TypeError` in a chromium test the plugin is not registered for;
+  both are no-ops on firefox/webkit). `CHROMATIC=1` switches the plugin from "helpers only" to
+  capturing: automatic end-of-test snapshots on, `turboSnap` stats on, reporter on, the
+  per-test fonts/network-idle wait on, telemetry on (off otherwise via
+  `CHROMATIC_DISABLE_TELEMETRY`). Measured on 25 files in chromium, the always-registered
+  plugin costs about a second over 63s. `@chromatic-com/vitest` is pre-bundled through
+  `deps.optimizer.client.include` so the first test file to import it cannot trigger a mid-run
+  re-optimization (which reloads the page and fails the file with "Vitest failed to find the
+  current suite").
 - Capture is chromium-only (plugin requirement; Chromatic re-renders archives in its own
   standardized cloud browser). The config throws if `SANITY_VITEST_BROWSER` is set to another
   browser while `CHROMATIC=1`.
@@ -62,13 +77,16 @@ CI flag semantics (all three uploads): `--only-changed` (TurboSnap), `--exit-zer
   component title is the test file path (`src/core/releases/tool/components/Table/__tests__/Table`)
   and the snapshot name is the `describe` / `it` chain plus `Snapshot #1`, so a test's title is
   its snapshot's name — keep `it(...)` titles descriptive.
-- Once the integration is active, inside browser tests you can use (from `@chromatic-com/vitest`):
-  - `configure({title, delay, disableAutoSnapshot, diffThreshold, ...})` — per test, suite, or
-    file scope. `title` fixes ambiguous build-table names.
+- Inside browser tests (from `@chromatic-com/vitest`):
+  - `configure({title, delay, disableAutoSnapshot, diffThreshold, ...})` — file scope when
+    called at the top level of the module, suite scope inside `describe()`, test scope inside
+    `test()`. `title` fixes ambiguous build-table names.
   - `await takeSnapshot('state name')` — targeted mid-test snapshots (e.g. menu open, mid-drag).
-  - ⚠️ Both require the plugin to be registered for the running project. `takeSnapshot()` throws
-    `TypeError` in a test that is not registered — do NOT add calls to shared test files until
-    the integration is active and CI always runs the capture job.
+    Un-awaited calls fail the test at the end (`PendingSnapshotsError`).
+  - Verified against 1.0: a file-level, suite-level and test-level `configure({disableAutoSnapshot:
+true})` each produced no archive for the tests they cover; a test with a `takeSnapshot('first
+state')` plus its end state produced two archives; the same file in a normal run produced only
+    the explicit one, and nothing on firefox.
 - Cost control: end-of-test snapshots ≈ number of test cases. Reduce with per-suite
   `configure({disableAutoSnapshot: true})` (opt-out) or flip the model to opt-in by disabling at
   the plugin level and re-enabling per file.
@@ -100,11 +118,11 @@ What to expect, measured on the full chromium capture (34 test files, 118 snapsh
   build. Over the 60 PRs merged before this was written, about a third touched nothing in the
   graph and the simulated mean was ~31 snapshots per build instead of 118.
 - Dependency bumps are traced through `pnpm-lock.yaml` to `node_modules/<pkg>` modules in the
-  stats (pnpm lockfiles are supported), so a bump of a rendering dependency re-runs its consumers
-  while a devDependency bump traces to nothing — unless the bump also touches
-  `packages/sanity/package.json` (see above). If that noise matters, `--untraced
-packages/sanity/package.json` is the documented escape hatch: dependency changes still arrive
-  via the lockfile route, only the version string edge is dropped. Not enabled yet.
+  stats (pnpm lockfiles are supported), and any bump that touches `packages/sanity/package.json`
+  additionally re-runs everything through the `src/core/version.ts` edge. That is deliberate:
+  do not add `--untraced` for `package.json` or the lockfile to trim it. A bump of a rendering
+  dependency such as `@sanity/ui` must re-snapshot every test and story, and relying on the
+  lockfile route alone to catch it is not a trade the team wants.
 - Chromatic bails to a full build when a changed file cannot be linked to specific tests (the
   Storybook job bails on `dev/storybook/.storybook/preview.tsx` edits the same way); read the
   "TurboSnap disabled due to file change" lines in the job log before assuming tracing is broken.

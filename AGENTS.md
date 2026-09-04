@@ -525,7 +525,7 @@ table decides where a new snapshot goes.
 pnpm dev:storybook                    # Storybook dev server at http://localhost:6006
 pnpm build:storybook                  # Static build via turbo (dev/storybook/storybook-static)
 pnpm --filter sanity-storybook test   # Run every story as a vitest browser-mode test
-CHROMATIC=1 pnpm --filter sanity test:browser   # Chromatic archive capture run (chromium only)
+CHROMATIC=1 pnpm --filter sanity test:browser   # Chromatic capture run: snapshots every browser test's end state (chromium only)
 pnpm visual-coverage --changed --prs  # Which changed UI files a story renders (PR comment runs the same)
 pnpm visual-coverage --uncovered      # Whole-tree coverage by area, plus the uncovered files
 ```
@@ -534,12 +534,18 @@ Before adding a story, run `pnpm visual-coverage` and follow the `sanity-visual-
 (`.agents/skills/sanity-visual-coverage/SKILL.md`): it tells covered from pending (claimed by an
 open PR) from uncovered, so coverage PRs do not duplicate the open `test(storybook)` stack.
 
-Repo secrets: `CHROMATIC_PROJECT_TOKEN_STORYBOOK` (active), `CHROMATIC_PROJECT_TOKEN_E2E`
-(active, used by e2e), `CHROMATIC_PROJECT_TOKEN_VITEST` (the `vitest-visual` CI job is dormant
-until this secret is added and self-activates the moment it exists — create a Vitest-type
-Chromatic project and paste its token). Checks are non-gating during burn-in. See the
-`sanity-visual-regression` skill (`.agents/skills/sanity-visual-regression/SKILL.md`) for how to
-add coverage, determinism rules, and the Vitest activation runbook.
+Chromatic projects and repo secrets: "sanity studio" (`CHROMATIC_PROJECT_TOKEN_STORYBOOK`, the
+Storybook), "sanity studio vitest" (`CHROMATIC_PROJECT_TOKEN_VITEST`, the browser tests) and
+"sanity studio playwright" (`CHROMATIC_PROJECT_TOKEN_E2E`, curated e2e snapshots); all three are
+active and uploaded from CI. Checks are non-gating during burn-in.
+
+Browser tests get an automatic snapshot at the end of every test. Opt out with
+`configure({disableAutoSnapshot: true})` from `@chromatic-com/vitest` — at the top of a file for
+the whole file, inside a `describe()` for that suite, inside a `test()` for that test — and add
+`await takeSnapshot('state')` inside a test for states it passes through but does not end on.
+Both work in every run (no-ops on firefox/webkit); only `CHROMATIC=1` runs capture and upload.
+See the `sanity-visual-regression` skill (`.agents/skills/sanity-visual-regression/SKILL.md`)
+for how to add coverage, which source owns a state, and determinism rules.
 
 ### E2E Tests (Playwright)
 
