@@ -7150,10 +7150,6 @@ packages:
     resolution: {integrity: sha512-iEkGiHbrxCnT/A30A6pH+vX4otP3lLp935Vwuv0/YrnETxrKCn6PnsZU+TfTm6ZEZ9kZGs8wKP5yBLmZw5S6OQ==}
     engines: {node: '>=20'}
 
-  '@sanity/client@8.4.0':
-    resolution: {integrity: sha512-rwMtDxH3x9dc8ZiCMRDLStZoCr6MSPrH2LH4NIxWTCZ9Vz5OSgg0RolZy+ccM8p4yzK5lgC9XMF8tF6zsje0gQ==}
-    engines: {node: '>=22.12.0'}
-
   '@sanity/client@8.5.0':
     resolution: {integrity: sha512-GpTdkeyMOqsuXCB74iCiGqOs7lHBELD7pgWCm+hJ0FrqXL+CIgR6ZvehPSn+O9/8964X9Nb7iFtjZpOYOydtMA==}
     engines: {node: '>=22.12.0'}
@@ -7484,10 +7480,6 @@ packages:
         optional: true
       svelte:
         optional: true
-
-  '@sanity/workbench-cli@2.4.0':
-    resolution: {integrity: sha512-rOwjzFMKbW4VM+XCVJV2fjDAW7UIuoMKzEsEF7wJRtBQzGwC/UGZIS2m9KPdREQDErvEmYZPXPpJ0WdCexFy4A==}
-    engines: {node: '>=22.12'}
 
   '@sanity/workbench-cli@2.4.1':
     resolution: {integrity: sha512-CMgo+gbJ+P8yx4EoPkIlkC0J5zvPDKKE9j6iMF4wIGlk6R7yjM/21PAUV5yyknk+/UnRwpoF/u0FHEphqyLGxQ==}
@@ -9514,22 +9506,6 @@ packages:
   chownr@3.0.0:
     resolution: {integrity: sha512-+IxzY9BZOQd/XuYPRmrvEVjF/nqj5kgT4kEq7VofrDoM1MxoRjEWkrCC3EtLi59TVawxTAn+orJwFQcrqEN1+g==}
     engines: {node: '>=18'}
-
-  chromatic@18.7.1:
-    resolution: {integrity: sha512-q1v08f0qrrBWqe0UGBaQhHaB/7NhaSPYTDDi574AdeecINa0sXbGpUyMXTja3RUDUSLGxo38/ZAD8ZxTGeePQQ==}
-    engines: {node: '>=22.0.0'}
-    hasBin: true
-    peerDependencies:
-      '@chromatic-com/cypress': ^0.*.* || ^1.0.0
-      '@chromatic-com/playwright': ^0.*.* || ^1.0.0
-      '@chromatic-com/vitest': ^0.*.* || ^1.0.0
-    peerDependenciesMeta:
-      '@chromatic-com/cypress':
-        optional: true
-      '@chromatic-com/playwright':
-        optional: true
-      '@chromatic-com/vitest':
-        optional: true
 
   chromatic@18.7.2:
     resolution: {integrity: sha512-e6YsVD1c97hF2Fz/IxmHiLSK6Di8PV6edc6lKql20Wp5ZUWxluBXC8ZHKgpqJMr6u3vhn708BqOEnZntOgiTOA==}
@@ -16538,7 +16514,7 @@ snapshots:
   '@chromatic-com/storybook@5.3.1(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.0)(storybook@10.6.0)':
     dependencies:
       '@neoconfetti/react': 1.0.0
-      chromatic: 18.7.1(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.0)
+      chromatic: 18.7.2(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.0)
       jsonfile: 6.2.1
       storybook: 10.6.0(@types/react@19.2.18)(prettier@3.9.6)(react@19.2.8)
       strip-ansi: 7.2.0
@@ -19574,7 +19550,7 @@ snapshots:
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/telemetry': 1.1.0(react@19.2.8)
       '@sanity/types': link:packages/@sanity/types
-      '@sanity/workbench-cli': 2.4.0(@noble/hashes@2.4.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.148.0)(tsx@4.23.13)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)
+      '@sanity/workbench-cli': 2.4.1(@noble/hashes@2.4.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.148.0)(tsx@4.23.13)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)
       '@vitejs/plugin-react': 6.1.1(@rolldown/plugin-babel@0.2.3)(oxc-transform-react@0.148.0)(vite@8.2.2)
       chokidar: 5.0.0
       cjs-module-lexer: 2.2.1
@@ -19623,7 +19599,7 @@ snapshots:
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/telemetry': 1.1.0(react@19.2.8)
       '@sanity/types': link:packages/@sanity/types
-      '@sanity/workbench-cli': 2.4.0(@noble/hashes@2.4.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.148.0)(tsx@4.23.13)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)
+      '@sanity/workbench-cli': 2.4.1(@noble/hashes@2.4.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.148.0)(tsx@4.23.13)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)
       '@vitejs/plugin-react': 6.1.1(@rolldown/plugin-babel@0.2.3)(oxc-transform-react@0.148.0)(vite@8.2.2)
       chokidar: 5.0.0
       cjs-module-lexer: 2.2.1
@@ -19848,15 +19824,6 @@ snapshots:
       get-it: 8.8.3
       nanoid: 3.3.18
       rxjs: 7.8.2
-
-  '@sanity/client@8.4.0(vitest@4.1.11)':
-    dependencies:
-      eventsource: 5.1.1
-      get-it: 9.5.2(vitest@4.1.11)
-      obug: 2.1.4
-      rxjs: 7.8.2
-    transitivePeerDependencies:
-      - vitest
 
   '@sanity/client@8.5.0(vitest@4.1.11)':
     dependencies:
@@ -20207,7 +20174,7 @@ snapshots:
 
   '@sanity/sdk-react@3.1.0(@types/react@19.2.18)(immer@11.1.18)(react-dom@19.2.8)(react@19.2.8)(use-sync-external-store@1.6.0)(vitest@4.1.11)':
     dependencies:
-      '@sanity/client': 8.4.0(vitest@4.1.11)
+      '@sanity/client': 8.5.0(vitest@4.1.11)
       '@sanity/message-protocol': 0.24.0
       '@sanity/sdk': 3.1.0(@types/react@19.2.18)(immer@11.1.18)(react@19.2.8)(use-sync-external-store@1.6.0)(vitest@4.1.11)(xstate@5.32.6)
       '@sanity/types': link:packages/@sanity/types
@@ -20228,7 +20195,7 @@ snapshots:
   '@sanity/sdk@3.1.0(@types/react@19.2.18)(immer@11.1.18)(react@19.2.8)(use-sync-external-store@1.6.0)(vitest@4.1.11)(xstate@5.32.6)':
     dependencies:
       '@sanity/bifur-client': 1.0.0
-      '@sanity/client': 8.4.0(vitest@4.1.11)
+      '@sanity/client': 8.5.0(vitest@4.1.11)
       '@sanity/comlink': 4.0.3
       '@sanity/diff-match-patch': 3.2.0
       '@sanity/diff-patch': 6.0.0
@@ -20432,42 +20399,6 @@ snapshots:
       '@sanity/client': 8.5.0(vitest@4.1.11)
     transitivePeerDependencies:
       - typescript
-
-  '@sanity/workbench-cli@2.4.0(@noble/hashes@2.4.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.148.0)(tsx@4.23.13)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)':
-    dependencies:
-      '@module-federation/runtime': 2.9.0
-      '@module-federation/vite': 1.21.0(typescript@7.0.2)(vite@8.2.2)
-      '@sanity/cli-core': 3.6.1(@noble/hashes@2.4.0)(@types/node@24.13.3)(esbuild@0.28.2)(oxc-transform-react@0.148.0)(tsx@4.23.13)(vitest@4.1.11)(yaml@2.9.0)
-      '@sanity/types': link:packages/@sanity/types
-      '@vitejs/plugin-react': 6.1.1(@rolldown/plugin-babel@0.2.3)(oxc-transform-react@0.148.0)(vite@8.2.2)
-      form-data: 4.0.6
-      rxjs: 7.8.2
-      tar: 7.5.22
-      vite: 8.2.2(@types/node@24.13.3)(@vitejs/devtools@0.6.3)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0)
-      zod: 4.5.4
-    transitivePeerDependencies:
-      - '@noble/hashes'
-      - '@rolldown/plugin-babel'
-      - '@types/node'
-      - '@vitejs/devtools'
-      - babel-plugin-react-compiler
-      - bufferutil
-      - canvas
-      - esbuild
-      - jiti
-      - less
-      - oxc-transform-react
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - terser
-      - tsx
-      - typescript
-      - utf-8-validate
-      - vitest
-      - vue-tsc
-      - yaml
 
   '@sanity/workbench-cli@2.4.1(@noble/hashes@2.4.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.148.0)(tsx@4.23.13)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)':
     dependencies:
@@ -22585,13 +22516,6 @@ snapshots:
   chownr@1.1.4: {}
 
   chownr@3.0.0: {}
-
-  chromatic@18.7.1(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.0):
-    dependencies:
-      semver: 7.8.5
-    optionalDependencies:
-      '@chromatic-com/playwright': 0.14.12(@playwright/test@1.62.1)(@testing-library/dom@10.4.1)(prettier@3.9.6)(react@19.2.8)
-      '@chromatic-com/vitest': 1.0.0(@testing-library/dom@10.4.1)(prettier@3.9.6)(react@19.2.8)(vitest@4.1.11)
 
   chromatic@18.7.2(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.0):
     dependencies:
@@ -27128,7 +27052,7 @@ snapshots:
     dependencies:
       '@hookform/resolvers': 4.1.3(react-hook-form@7.87.0)
       '@reduxjs/toolkit': 2.12.0(react-redux@9.3.0)(react@19.2.8)
-      '@sanity/client': 8.4.0(vitest@4.1.11)
+      '@sanity/client': 8.5.0(vitest@4.1.11)
       '@sanity/color': 3.0.8
       '@sanity/icons': 5.2.1(react@19.2.8)
       '@sanity/ui': 4.0.7(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
