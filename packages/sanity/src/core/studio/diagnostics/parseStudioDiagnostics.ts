@@ -155,6 +155,7 @@ function isStylesDiagnostics(value: unknown): boolean {
     (node) =>
       isRecord(node) &&
       typeof node.ruleCount === 'number' &&
+      (node.sizeBytes === undefined || typeof node.sizeBytes === 'number') &&
       (node.version === undefined || typeof node.version === 'string'),
   )
 }

@@ -165,7 +165,7 @@ const diagnostics: StudioDiagnostics = {
     workspaceName: 'default',
     workspaceTitle: 'Test workspace',
   },
-  styles: {styledComponents: [{ruleCount: 1_234, version: '6.5.3'}]},
+  styles: {styledComponents: [{ruleCount: 1_234, sizeBytes: 12_345, version: '6.5.3'}]},
   user: {
     id: 'user-id',
     provider: 'sanity',
@@ -220,6 +220,8 @@ describe('DiagnosticsReport', () => {
     expect(styledComponents.getByText('1')).toBeInTheDocument()
     expect(styledComponents.getByText('CSS rules inserted by JS')).toBeInTheDocument()
     expect(styledComponents.getByText((1_234).toLocaleString())).toBeInTheDocument()
+    expect(styledComponents.getByText('CSS size inserted by JS')).toBeInTheDocument()
+    expect(styledComponents.getByText('12.35 kB')).toBeInTheDocument()
     expect(styledComponents.queryByText('Expected 1')).not.toBeInTheDocument()
     expect(
       styledComponents.queryByTestId('diagnostics-styled-components-sheets'),
@@ -293,7 +295,12 @@ describe('DiagnosticsReport', () => {
         <DiagnosticsReport
           diagnostics={{
             ...diagnostics,
-            styles: {styledComponents: [{ruleCount: 900, version: '6.5.3'}, {ruleCount: 120}]},
+            styles: {
+              styledComponents: [
+                {ruleCount: 900, sizeBytes: 12_000, version: '6.5.3'},
+                {ruleCount: 120, sizeBytes: 450},
+              ],
+            },
           }}
           onRunAgain={vi.fn()}
         />
@@ -306,8 +313,9 @@ describe('DiagnosticsReport', () => {
     expect(styledComponents.getByText('2')).toBeInTheDocument()
     expect(styledComponents.getByText('Expected 1')).toBeInTheDocument()
     expect(styledComponents.getByText((1_020).toLocaleString())).toBeInTheDocument()
+    expect(styledComponents.getByText('12.45 kB')).toBeInTheDocument()
     expect(styledComponents.getByTestId('diagnostics-styled-components-sheets')).toHaveTextContent(
-      '6.5.3: 900 rules · unknown version: 120 rules',
+      '6.5.3: 900 rules, 12 kB · unknown version: 120 rules, 450 B',
     )
   })
 

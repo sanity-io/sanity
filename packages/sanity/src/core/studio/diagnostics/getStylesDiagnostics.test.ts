@@ -22,13 +22,19 @@ describe('getStylesDiagnostics', () => {
     expect(getStylesDiagnostics()).toEqual({styledComponents: []})
   })
 
-  it('reports rule counts and versions for each styled-components sheet', () => {
+  it('reports rule counts, UTF-8 sizes, and versions for each styled-components sheet', () => {
     appendStyledSheet('.a{color:red}.b{color:blue}', '6.5.3')
     appendStyledSheet('.c{color:green}')
 
     expect(getStylesDiagnostics().styledComponents).toEqual([
-      {ruleCount: 2, version: '6.5.3'},
-      {ruleCount: 1, version: undefined},
+      {ruleCount: 2, sizeBytes: 27, version: '6.5.3'},
+      {ruleCount: 1, sizeBytes: 15, version: undefined},
     ])
+  })
+
+  it('counts multibyte characters as they would be encoded in a CSS file', () => {
+    appendStyledSheet('.a::before{content:"é😀"}')
+
+    expect(getStylesDiagnostics().styledComponents[0]?.sizeBytes).toBe(28)
   })
 })
