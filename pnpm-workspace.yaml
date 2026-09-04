@@ -161,10 +161,14 @@ overrides:
   # studio's visual regression suites run against it. Version-scoped to `@4` so the
   # `ui5` catalog alias (@sanity/ui@5.0.0-alpha.8) keeps resolving to the alpha.
   '@sanity/ui@4': 'https://pkg.pr.new/@sanity/ui@2828'
-  # The preview tarball ships unresolved `catalog:` specifiers (see PR description), so pin
-  # them to the ranges `pnpm publish` would have written.
+  # Pnpm resolves dependencies before applying patches, so these are also needed even
+  # though the manifest patch below rewrites the same unpublished catalog specifiers.
   '@sanity/ui>react-is': '^19.2.8'
   '@sanity/ui>react-refractor': '^4.0.0'
+  # PR 2828 does not change these packages, and their preview tarballs have the same
+  # unpublished source exports as @sanity/ui. Use the equivalent released builds.
+  '@sanity/ui>@sanity/color': '^3.0.8'
+  '@sanity/ui>@sanity/icons': '^5.2.1'
   # vite 8.2.2 inlines a bundledDev runtime whose `registerModule(id, exportsHolder)` has no default,
   # while rolldown >= 1.2.6 emits `registerModule(id)` for export-less modules (rolldown#10772), so
   # `unstable_bundledDev` crashes with "Cannot read properties of undefined (reading 'exports')" on the
@@ -196,3 +200,6 @@ trustPolicyExclude:
   - undici@5.29.0
   - undici-types@6.21.0
   - vite@6.4.1
+
+patchedDependencies:
+  '@sanity/ui@4.0.7': patches/@sanity__ui@4.0.7.patch

@@ -1,0 +1,40 @@
+diff --git a/package.json b/package.json
+index 84089e44b209a62aa662ebbdacd00bad570bab50..b347417f5344dbcdbcd8524f990f49f2c97569a7 100644
+--- a/package.json
++++ b/package.json
+@@ -29,15 +29,15 @@
+   ],
+   "types": "./dist/index.d.ts",
+   "exports": {
+-    ".": "./src/exports/index.ts",
+-    "./autocomplete": "./src/exports/autocomplete.ts",
+-    "./breadcrumbs": "./src/exports/breadcrumbs.ts",
+-    "./code": "./src/exports/code.ts",
+-    "./menu": "./src/exports/menu.ts",
+-    "./popover": "./src/exports/popover.ts",
+-    "./theme": "./src/exports/theme.ts",
+-    "./toast": "./src/exports/toast.ts",
+-    "./tooltip": "./src/exports/tooltip.ts",
++    ".": "./dist/index.js",
++    "./autocomplete": "./dist/autocomplete.js",
++    "./breadcrumbs": "./dist/breadcrumbs.js",
++    "./code": "./dist/code.js",
++    "./menu": "./dist/menu.js",
++    "./popover": "./dist/popover.js",
++    "./theme": "./dist/theme.js",
++    "./toast": "./dist/toast.js",
++    "./tooltip": "./dist/tooltip.js",
+     "./styles.css": {
+       "types": "./dist/styles-css.d.ts",
+       "browser": "./dist/styles.css",
+@@ -84,8 +84,8 @@
+     "clsx": "^2.1.1",
+     "csstype": "^3.2.3",
+     "motion": "^13.1.1",
+-    "react-is": "catalog:",
+-    "react-refractor": "catalog:",
++    "react-is": "^19.2.8",
++    "react-refractor": "^4.0.0",
+     "use-effect-event": "^2.0.4"
+   },
+   "devDependencies": {
