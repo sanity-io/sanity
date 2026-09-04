@@ -48,7 +48,12 @@ export default defineConfig({
     // `compiler` runs React Compiler through `oxc-transform-react`, in the same native pass
     // as the TypeScript/JSX transform (no babel in the pipeline)
     viteReact({compiler: {target: '19'}}),
-    ...(chromaticEnabled ? [chromaticPlugin()] : []),
+    // `turboSnap` writes `preview-stats.json` (the Vite module graph per test
+    // file) next to the archives. The upload in chromatic.yml runs with
+    // `--only-changed`, which requires that file once Chromatic unlocks
+    // TurboSnap for the project — without it the CLI fails the upload rather
+    // than falling back to a full build.
+    ...(chromaticEnabled ? [chromaticPlugin({turboSnap: true})] : []),
   ],
   resolve: {
     conditions: ['monorepo', ...defaultClientConditions],

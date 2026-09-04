@@ -73,6 +73,42 @@ CI flag semantics (all three uploads): `--only-changed` (TurboSnap), `--exit-zer
   `configure({disableAutoSnapshot: true})` (opt-out) or flip the model to opt-in by disabling at
   the plugin level and re-enabling per file.
 
+### TurboSnap for the Vitest project
+
+TurboSnap needs two halves: `chromaticPlugin({turboSnap: true})` in
+`vitest.browser.config.mts`, which writes `.vitest/chromatic/preview-stats.json` (the Vite module
+graph per test file, ~2 MB, paths relative to `packages/sanity`), and `chromatic --vitest
+--only-changed` on upload. Keep them together: with `--only-changed` and no stats file the CLI
+(18.7) fails the upload with "TurboSnap requires a stats file" instead of falling back to a full
+build. The CLI defaults the base directory to the working directory, so running the upload from
+`packages/sanity` (as `chromatic.yml` does) resolves the stats paths without `--storybook-base-dir`.
+Chromatic only turns TurboSnap on after ten successful builds on the project; until then every
+build is full.
+
+What to expect, measured on the full chromium capture (34 test files, 118 snapshots):
+
+- Every test that mounts `TestWrapper` (26 of 32 snapshotting files) depends on the whole `sanity`
+  entry, so a change anywhere in `packages/sanity/src/core` — or to `packages/sanity/package.json`,
+  which `src/core/version.ts` imports — re-snapshots ~98 of 118. `vitest.browser.config.mts` and
+  `test/setup/browser.ts` are recorded as dependencies of every test file, so editing them is a
+  full run. The Storybook project has the same shape (a dependency bump re-snapshots ~70 of its
+  ~110 stories).
+- Leaf components with their own test are cheap: `Table.tsx` traces to 2 snapshots,
+  `CommentInput.tsx` to ~12.
+- Files outside the graph (`structure/`, `presentation/`, the other packages except the seven the
+  browser tests import, `e2e/`, `dev/`) trace to zero test files, so those PRs upload an empty
+  build. Over the 60 PRs merged before this was written, about a third touched nothing in the
+  graph and the simulated mean was ~31 snapshots per build instead of 118.
+- Dependency bumps are traced through `pnpm-lock.yaml` to `node_modules/<pkg>` modules in the
+  stats (pnpm lockfiles are supported), so a bump of a rendering dependency re-runs its consumers
+  while a devDependency bump traces to nothing — unless the bump also touches
+  `packages/sanity/package.json` (see above). If that noise matters, `--untraced
+packages/sanity/package.json` is the documented escape hatch: dependency changes still arrive
+  via the lockfile route, only the version string edge is dropped. Not enabled yet.
+- Chromatic bails to a full build when a changed file cannot be linked to specific tests (the
+  Storybook job bails on `dev/storybook/.storybook/preview.tsx` edits the same way); read the
+  "TurboSnap disabled due to file change" lines in the job log before assuming tracing is broken.
+
 ## Playwright e2e snapshots
 
 - Specs that take visual snapshots use `e2e/studio-visual-test.ts`, which composes the studio

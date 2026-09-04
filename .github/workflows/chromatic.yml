@@ -171,5 +171,8 @@ jobs:
         if: steps.token.outputs.has_token == 'true' && steps.changes.outputs.has_changes == 'true'
         env:
           CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN_VITEST }}
-        # Same flag semantics as the storybook job above.
+        # Same flag semantics as the storybook job above. `--only-changed`
+        # (TurboSnap) needs the preview-stats.json that the plugin writes when
+        # `turboSnap: true` is set in vitest.browser.config.mts; keep the two
+        # in sync, the CLI fails the upload if the stats file is missing.
         run: pnpm --filter sanity exec chromatic --vitest --only-changed --exit-zero-on-changes --auto-accept-changes main
