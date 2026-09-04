@@ -309,6 +309,23 @@ describe('gatherStudioDiagnostics', () => {
     }
   })
 
+  it('reports auto-updates as unknown when the import map cannot be parsed', async () => {
+    mocks.getApiNetworkDiagnostic.mockReturnValue(of(protocolDiagnostic))
+    const importMap = document.createElement('script')
+    importMap.type = 'importmap'
+    importMap.textContent = '{"imports": {'
+    document.head.appendChild(importMap)
+    const {client} = createClient()
+
+    try {
+      const diagnostics = await gatherStudioDiagnostics(createOptions(client))
+      expect(diagnostics.studio.autoUpdates).toBeUndefined()
+      expect(diagnostics.styles).toEqual({styledComponents: []})
+    } finally {
+      importMap.remove()
+    }
+  })
+
   it('records a local storage failure without failing the report', async () => {
     mocks.getApiNetworkDiagnostic.mockReturnValue(of(protocolDiagnostic))
     vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {

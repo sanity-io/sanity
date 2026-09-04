@@ -112,9 +112,8 @@ export interface StudioDiagnostics {
   studio: StudioDiagnosticsOptions['studio'] & {
     apiHost?: string
     /**
-     * Whether a `sanity` entry exists in an import map, the auto-updating studio signal. Always
-     * set by {@link gatherStudioDiagnostics}; optional only because reports from older studios
-     * lack it.
+     * Whether a `sanity` entry exists in an import map, the auto-updating studio signal.
+     * Undefined in reports from older studios and when the import map cannot be parsed.
      */
     autoUpdates?: boolean
     location?: string
@@ -216,7 +215,7 @@ async function runStudioDiagnostics({
     studio: {
       ...studio,
       apiHost: clientConfig.apiHost,
-      autoUpdates: hasSanityPackageInImportMap(),
+      autoUpdates: detectAutoUpdates(),
       location: typeof location === 'undefined' ? undefined : location.href,
     },
     styles: getStylesDiagnostics(),
@@ -225,6 +224,16 @@ async function runStudioDiagnostics({
       provider: user?.provider,
       roles: user?.roles.map(({name, title}) => ({name, title})) ?? [],
     },
+  }
+}
+
+// A malformed import map makes hasSanityPackageInImportMap throw on JSON.parse; the report is a
+// triage tool, so that reads as unknown rather than aborting the run.
+function detectAutoUpdates(): boolean | undefined {
+  try {
+    return hasSanityPackageInImportMap()
+  } catch {
+    return undefined
   }
 }
 
