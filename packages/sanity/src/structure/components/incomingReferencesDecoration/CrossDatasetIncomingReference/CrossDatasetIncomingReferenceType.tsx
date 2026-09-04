@@ -1,5 +1,5 @@
 import {type SchemaType} from '@sanity/types'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {Suspense, use, useCallback, useMemo} from 'react'
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
 import {
@@ -12,7 +12,7 @@ import {
   useSchema,
   useTranslation,
 } from 'sanity'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../i18n'
 import {INCOMING_REFERENCES_ITEM_HEIGHT, IncomingReferencesListContainer} from '../shared'
@@ -121,7 +121,7 @@ function CrossDatasetIncomingReferenceTypeList({
           </IncomingReferencesListContainer>
         ) : (
           <>
-            <Flex align="center" justify="center" padding={2}>
+            <Flex alignItems="center" justifyContent="center" padding={2}>
               <Text size={1} muted>
                 {t('incoming-references-input.no-items')}
               </Text>

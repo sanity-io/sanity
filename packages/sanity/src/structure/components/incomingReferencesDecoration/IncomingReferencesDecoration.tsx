@@ -1,6 +1,6 @@
-import {Flex, Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 import startCase from 'lodash-es/startCase.js'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {IncomingReferencesList} from './IncomingReferencesList'
 import {type IncomingReferencesOptions} from './types'
@@ -31,7 +31,7 @@ export function IncomingReferencesDecoration(
     <Stack gap={2}>
       <Box paddingY={2}>
         <Stack gap={3}>
-          <Flex align="center" paddingY={1}>
+          <Flex alignItems="center" paddingY={1}>
             <Text as="label" weight="medium" size={1}>
               {title || startCase(name)}
             </Text>
