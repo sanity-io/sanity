@@ -52,7 +52,10 @@ CI flag semantics (all three uploads): `--only-changed` (TurboSnap), `--exit-zer
 - Capture is chromium-only (plugin requirement; Chromatic re-renders archives in its own
   standardized cloud browser). The config throws if `SANITY_VITEST_BROWSER` is set to another
   browser while `CHROMATIC=1`.
-- Snapshot names follow the test hierarchy (`describe` > `it` titles), one archive per test case.
+- One archive per test case that ran (skipped tests capture nothing). In the Chromatic build the
+  component title is the test file path (`src/core/releases/tool/components/Table/__tests__/Table`)
+  and the snapshot name is the `describe` / `it` chain plus `Snapshot #1`, so a test's title is
+  its snapshot's name — keep `it(...)` titles descriptive.
 - Once the integration is active, inside browser tests you can use (from `@chromatic-com/vitest`):
   - `configure({title, delay, disableAutoSnapshot, diffThreshold, ...})` — per test, suite, or
     file scope. `title` fixes ambiguous build-table names.
