@@ -65,8 +65,9 @@ jobs:
       github.event_name == 'workflow_dispatch' ||
       github.event_name == 'schedule'
     runs-on: ubuntu-8core
-    # Headroom for the backfill path, which installs and builds a second
-    # worktree at the historical commit
+    # Headroom for the backfill path, which installs and builds the
+    # historical commit in a worktree, then installs a second, sparse
+    # worktree of HEAD's harness against the packed result
     timeout-minutes: 35
     permissions:
       contents: read
@@ -86,11 +87,12 @@ jobs:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
-          # Backfill and A/B builds add a worktree at a historical commit, which
-          # a depth-1 clone doesn't have. A release run also needs history: the
-          # validation step resolves the tag to check the measured commit is the
-          # tagged one, and tags are not fetched at depth 1. (All inputs are
-          # empty on non-dispatch events, so the cron stays shallow.)
+          # Backfill and A/B builds check out a historical commit into a
+          # worktree, which a depth-1 clone doesn't have. A release run also
+          # needs history: the validation step resolves the tag to check the
+          # measured commit is the tagged one, and tags are not fetched at
+          # depth 1. (All inputs are empty on non-dispatch events, so the cron
+          # stays shallow.)
           fetch-depth: ${{ (inputs.backfill_sha != '' || inputs.ab_to != '' || inputs.release_tag != '') && '0' || '1' }}
 
       - uses: ./.github/actions/detect-code-changes
@@ -181,7 +183,7 @@ jobs:
           fi
 
       # Backfill / A/B: build the experiment dist from the requested
-      # historical commit's packages (HEAD's harness overlaid) instead of
+      # historical commit's packages (with HEAD's harness) instead of
       # HEAD's — backfill repairs holes in the daily time series, ab_to is
       # the experiment side of an A/B dispatch. The downstream jobs run
       # unchanged and, for backfill, store the result under that sha
@@ -257,7 +259,7 @@ jobs:
           path: perf/bench/.reference/dist
           key: bench-reference-dist-v1-${{ steps.merge-base.outputs.sha }}-${{ hashFiles('perf/bench/**', '!perf/bench/dist/**', '!perf/bench/node_modules/**') }}
 
-      # Worktree/overlay/build/fallback logic lives in the CLI
+      # Checkout/pack/build/fallback logic lives in the CLI
       # (perf/bench/cli/commands/prepareReference.ts) - it writes the
       # merge_base and comparison outputs, and falls back to absolute mode
       # (comparison=skipped) when the merge-base predates perf/bench or the
