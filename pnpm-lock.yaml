@@ -765,8 +765,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       '@portabletext/plugin-character-pair-decorator':
-        specifier: ^9.0.6
-        version: 9.0.6(@portabletext/editor@8.1.2)(@types/react@19.2.18)(react@19.2.8)
+        specifier: ^9.0.7
+        version: 9.0.7(@portabletext/editor@8.1.2)(@types/react@19.2.18)(react@19.2.8)
       '@portabletext/react':
         specifier: ^8.0.1
         version: 8.0.1(react@19.2.8)
@@ -1878,14 +1878,14 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       '@portabletext/plugin-dnd':
-        specifier: ^2.0.7
-        version: 2.0.7(@portabletext/editor@8.1.2)(react@19.2.8)
+        specifier: ^2.0.8
+        version: 2.0.8(@portabletext/editor@8.1.2)(react@19.2.8)
       '@portabletext/plugin-list-index':
         specifier: ^2.0.6
         version: 2.0.6(@portabletext/editor@8.1.2)(react@19.2.8)
       '@portabletext/plugin-markdown-shortcuts':
-        specifier: ^9.0.6
-        version: 9.0.6(@portabletext/editor@8.1.2)(@types/react@19.2.18)(react@19.2.8)
+        specifier: ^9.0.7
+        version: 9.0.7(@portabletext/editor@8.1.2)(@types/react@19.2.18)(react@19.2.8)
       '@portabletext/plugin-one-line':
         specifier: ^8.0.6
         version: 8.0.6(@portabletext/editor@8.1.2)(react@19.2.8)
@@ -1896,8 +1896,8 @@ importers:
         specifier: ^2.0.6
         version: 2.0.6(@portabletext/editor@8.1.2)(react-dom@19.2.8)(react@19.2.8)
       '@portabletext/plugin-typography':
-        specifier: ^9.0.6
-        version: 9.0.6(@portabletext/editor@8.1.2)(@types/react@19.2.18)(react@19.2.8)
+        specifier: ^9.0.7
+        version: 9.0.7(@portabletext/editor@8.1.2)(@types/react@19.2.18)(react@19.2.8)
       '@portabletext/react':
         specifier: ^8.0.1
         version: 8.0.1(react@19.2.8)
@@ -6571,25 +6571,25 @@ packages:
     resolution: {integrity: sha512-3RbeVhdQRThYSMbP8v2jjVxAumB5I/tE8W6g8nMvW7epjWAkmRXQcSHr6MEQXWbSbLZJAAjBCKIkWzvlv2lLUw==}
     engines: {node: '>=22.12'}
 
-  '@portabletext/plugin-character-pair-decorator@9.0.6':
-    resolution: {integrity: sha512-gkfu+Q6q5N5G7SqpIu84ipEL8CdRSz/s2U/Rcr+KuLpPI/++YiZDAFg5cW3b5GHx5yW6vVQpJThay2Jf6mGCqQ==}
+  '@portabletext/plugin-character-pair-decorator@9.0.7':
+    resolution: {integrity: sha512-+3x7j8hd0gaCMA9ezzoGrwHqNqHbFIqyzLz1lA8HV3zTqUS0CACZ9PGbllFy5DKt7S5ipvLKjdG79+fit06+SQ==}
     engines: {node: '>=22.12'}
     peerDependencies:
       '@portabletext/editor': ^8.1.2
       react: ^19.2
 
-  '@portabletext/plugin-dnd@2.0.7':
-    resolution: {integrity: sha512-VCqj7ReRgWE+Vd4alxsQk4kmxXq50wIidbIAwFeubDI4pgnOtELhzfG7WpIycxqJm7lFOCT093z5+jt+VNEA/g==}
+  '@portabletext/plugin-dnd@2.0.8':
+    resolution: {integrity: sha512-la9m6oqOJI/0BMx0JCJzJtUHClr4RmJNEGobjcoyJQ+49bPUD7hLpMzlxpQbplkLgMrl0IYcL3IOEvvMrDPhEw==}
     engines: {node: '>=22.12'}
     peerDependencies:
       '@portabletext/editor': ^8.1.2
       react: ^19.2
 
-  '@portabletext/plugin-input-rule@7.0.6':
-    resolution: {integrity: sha512-jkftOZcWm4AYBJJsCKndl6G/i4qxJ7Py1E76YF5vlQDehyoP4Dl1ofv6WD6aCXwSIjqvSg25MJXGy7N/bof4dg==}
+  '@portabletext/plugin-input-rule@7.0.7':
+    resolution: {integrity: sha512-vqZjpPCG6m95LiNzQC3b0zo1I5XKrI8gE5KBMw9gZ+zgVG4nW8EsZYxL93t5hdxCeohuVGZQWkjcSIW3rc3qUQ==}
     engines: {node: '>=22.12'}
     peerDependencies:
-      '@portabletext/editor': ^8.0.2
+      '@portabletext/editor': ^8.1.2
       react: ^19.2
 
   '@portabletext/plugin-list-index@2.0.6':
@@ -6599,8 +6599,8 @@ packages:
       '@portabletext/editor': ^8.1.2
       react: ^19.2
 
-  '@portabletext/plugin-markdown-shortcuts@9.0.6':
-    resolution: {integrity: sha512-mN9iy5T5ByCNfUnQvgS84PTR03pJ8RtL9NP1H5fD1peJcjeFf+ttEPAYqqbkKl9vbi25ev5WHmHEg5AIstTFLw==}
+  '@portabletext/plugin-markdown-shortcuts@9.0.7':
+    resolution: {integrity: sha512-wy71v/of7/mslVxPYZ/R9aalySPyFjoog4nmnQSRwBQQhWD8XhHxrjXpmOAZLhihZIXDdARX1kcndsbvpjBwlQ==}
     engines: {node: '>=22.12'}
     peerDependencies:
       '@portabletext/editor': ^8.1.2
@@ -6628,11 +6628,11 @@ packages:
       react: ^19.2
       react-dom: ^19.2
 
-  '@portabletext/plugin-typography@9.0.6':
-    resolution: {integrity: sha512-nlYj6eoDA/82i9I3iaht9Pnr+cEmTo36yXsDI6iXg1wLrr+BA9FGKSv6JIXcHDeHCd1yUBswdXHjmconX8h94g==}
+  '@portabletext/plugin-typography@9.0.7':
+    resolution: {integrity: sha512-09aG5If7SCJhoJDaFtwKCa//kiladhAgR5SR18e0tL5usmDEMv8zR7+0OeZe7zYF7EIQSyvE+pbfrE4k7FOO8g==}
     engines: {node: '>=22.12'}
     peerDependencies:
-      '@portabletext/editor': ^8.0.2
+      '@portabletext/editor': ^8.1.2
       react: ^19.2
 
   '@portabletext/react@8.0.1':
@@ -19112,20 +19112,20 @@ snapshots:
     dependencies:
       '@sanity/diff-match-patch': 3.2.0
 
-  '@portabletext/plugin-character-pair-decorator@9.0.6(@portabletext/editor@8.1.2)(@types/react@19.2.18)(react@19.2.8)':
+  '@portabletext/plugin-character-pair-decorator@9.0.7(@portabletext/editor@8.1.2)(@types/react@19.2.18)(react@19.2.8)':
     dependencies:
       '@portabletext/editor': 8.1.2(@types/react@19.2.18)(react@19.2.8)(supports-color@8.1.1)
-      '@portabletext/plugin-input-rule': 7.0.6(@portabletext/editor@8.1.2)(@types/react@19.2.18)(react@19.2.8)
+      '@portabletext/plugin-input-rule': 7.0.7(@portabletext/editor@8.1.2)(@types/react@19.2.18)(react@19.2.8)
       react: 19.2.8
     transitivePeerDependencies:
       - '@types/react'
 
-  '@portabletext/plugin-dnd@2.0.7(@portabletext/editor@8.1.2)(react@19.2.8)':
+  '@portabletext/plugin-dnd@2.0.8(@portabletext/editor@8.1.2)(react@19.2.8)':
     dependencies:
       '@portabletext/editor': 8.1.2(@types/react@19.2.18)(react@19.2.8)(supports-color@8.1.1)
       react: 19.2.8
 
-  '@portabletext/plugin-input-rule@7.0.6(@portabletext/editor@8.1.2)(@types/react@19.2.18)(react@19.2.8)':
+  '@portabletext/plugin-input-rule@7.0.7(@portabletext/editor@8.1.2)(@types/react@19.2.18)(react@19.2.8)':
     dependencies:
       '@portabletext/editor': 8.1.2(@types/react@19.2.18)(react@19.2.8)(supports-color@8.1.1)
       '@xstate/react': 6.1.0(@types/react@19.2.18)(react@19.2.8)(xstate@5.32.6)
@@ -19139,11 +19139,11 @@ snapshots:
       '@portabletext/editor': 8.1.2(@types/react@19.2.18)(react@19.2.8)(supports-color@8.1.1)
       react: 19.2.8
 
-  '@portabletext/plugin-markdown-shortcuts@9.0.6(@portabletext/editor@8.1.2)(@types/react@19.2.18)(react@19.2.8)':
+  '@portabletext/plugin-markdown-shortcuts@9.0.7(@portabletext/editor@8.1.2)(@types/react@19.2.18)(react@19.2.8)':
     dependencies:
       '@portabletext/editor': 8.1.2(@types/react@19.2.18)(react@19.2.8)(supports-color@8.1.1)
-      '@portabletext/plugin-character-pair-decorator': 9.0.6(@portabletext/editor@8.1.2)(@types/react@19.2.18)(react@19.2.8)
-      '@portabletext/plugin-input-rule': 7.0.6(@portabletext/editor@8.1.2)(@types/react@19.2.18)(react@19.2.8)
+      '@portabletext/plugin-character-pair-decorator': 9.0.7(@portabletext/editor@8.1.2)(@types/react@19.2.18)(react@19.2.8)
+      '@portabletext/plugin-input-rule': 7.0.7(@portabletext/editor@8.1.2)(@types/react@19.2.18)(react@19.2.8)
       react: 19.2.8
     transitivePeerDependencies:
       - '@types/react'
@@ -19166,10 +19166,10 @@ snapshots:
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
 
-  '@portabletext/plugin-typography@9.0.6(@portabletext/editor@8.1.2)(@types/react@19.2.18)(react@19.2.8)':
+  '@portabletext/plugin-typography@9.0.7(@portabletext/editor@8.1.2)(@types/react@19.2.18)(react@19.2.8)':
     dependencies:
       '@portabletext/editor': 8.1.2(@types/react@19.2.18)(react@19.2.8)(supports-color@8.1.1)
-      '@portabletext/plugin-input-rule': 7.0.6(@portabletext/editor@8.1.2)(@types/react@19.2.18)(react@19.2.8)
+      '@portabletext/plugin-input-rule': 7.0.7(@portabletext/editor@8.1.2)(@types/react@19.2.18)(react@19.2.8)
       react: 19.2.8
     transitivePeerDependencies:
       - '@types/react'
