@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@sanity/client": "^8.4.0"
+    "@sanity/client": "^8.5.0"
   },
   "devDependencies": {
     "@sanity/blueprints": "^0.24.0",
