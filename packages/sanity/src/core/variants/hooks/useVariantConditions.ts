@@ -52,6 +52,30 @@ function toError(error: unknown): Error {
   return error instanceof Error ? error : new Error(String(error))
 }
 
+function emptyConditionsError(): Error {
+  return new Error('Expected `beta.variants.conditions` to include at least one valid entry')
+}
+
+function toReadyResult(value: unknown): Extract<UseVariantConditionsResult, {status: 'ready'}> {
+  const definitions = normalizeVariantConditions(value)
+
+  if (definitions.length === 0) {
+    throw emptyConditionsError()
+  }
+
+  return {mode: 'mapped', status: 'ready', definitions}
+}
+
+function toResolveError(
+  resolveError: unknown,
+  retry: () => void,
+): Extract<UseVariantConditionsResult, {status: 'error'}> {
+  const error = toError(resolveError)
+  console.error('[sanity] Failed to resolve `beta.variants.conditions`', error)
+
+  return {mode: 'mapped', status: 'error', error, retry}
+}
+
 function resolveConditions$(
   resolver: ConditionsResolver,
   context: VariantConditionsContext,
@@ -59,17 +83,8 @@ function resolveConditions$(
 ): Observable<UseVariantConditionsResult> {
   return defer(() => Promise.resolve(resolver(context))).pipe(
     timeout({first: RESOLVE_VARIANT_CONDITIONS_TIMEOUT_MS}),
-    map((value): UseVariantConditionsResult => ({
-      mode: 'mapped',
-      status: 'ready',
-      definitions: normalizeVariantConditions(value),
-    })),
-    catchError((resolveError: unknown) => {
-      const error = toError(resolveError)
-      console.error('[sanity] Failed to resolve `beta.variants.conditions`', error)
-
-      return of({mode: 'mapped', status: 'error', error, retry} as const)
-    }),
+    map(toReadyResult),
+    catchError((resolveError: unknown) => of(toResolveError(resolveError, retry))),
     startWith(LOADING_RESULT),
   )
 }
@@ -101,11 +116,11 @@ function getVariantConditions$(
   }
 
   if (Array.isArray(conditions)) {
-    return of({
-      mode: 'mapped',
-      status: 'ready',
-      definitions: normalizeVariantConditions(conditions),
-    })
+    try {
+      return of(toReadyResult(conditions))
+    } catch (error) {
+      return of(toResolveError(error, NOOP))
+    }
   }
 
   if (typeof conditions === 'function') {

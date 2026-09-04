@@ -84,4 +84,21 @@ describe('VariantsMenu', () => {
 
     expect(screen.queryByTestId('variant-condition-mismatch')).not.toBeInTheDocument()
   })
+
+  it('does not show a mismatch error when configured conditions resolve empty', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+
+    await renderMenu({
+      beta: {
+        variants: {
+          enabled: true,
+          conditions: [],
+        },
+      },
+    })
+
+    expect(screen.queryByTestId('variant-condition-mismatch')).not.toBeInTheDocument()
+
+    consoleError.mockRestore()
+  })
 })
