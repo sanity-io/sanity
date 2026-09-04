@@ -11,7 +11,6 @@ import {ReferenceChromeStory} from './ReferenceChromeStory'
 const meta = {
   title: 'Inputs/Reference Chrome',
   component: ReferenceChromeStory,
-  tags: ['!dev', '!autodocs', 'vrt-only'],
 } satisfies Meta<typeof ReferenceChromeStory>
 
 export default meta

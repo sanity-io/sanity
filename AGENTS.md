@@ -507,17 +507,25 @@ while closed (hidden with `display: none`). Consequences for tests:
 
 ### Visual Regression Tests (Chromatic + Storybook)
 
-Visual regression runs on Chromatic via `.github/workflows/chromatic.yml`. Stories are co-located
-with their source under `packages/**/src/**/__tests__`; most reuse vitest browser-mode test
-harnesses (`TestWrapper` + `*Story.tsx` components), alongside authored migration sentinels for
-`ui-components` and vanilla-extract-migrated components. `dev/storybook` contains the shared
-Storybook, Chromatic, and addon-vitest infrastructure.
+Visual regression runs on Chromatic via `.github/workflows/chromatic.yml` from two sources:
+Storybook stories, and the vitest browser-mode suite captured in place by `@chromatic-com/vitest`
+(every `*.browser.test.tsx` end state becomes a snapshot, no test changes). Stories are co-located
+with their source under `packages/**/src/**/__tests__` and cover states no browser test renders:
+authored migration sentinels for `ui-components` and vanilla-extract-migrated components, plus
+harness stories built on the same `TestWrapper` mock studio. Browser tests keep their harness
+component inline (`function FooHarness()` in the test file); every `*Story.tsx` is a Storybook
+harness owned by a `*.stories.tsx`. Do not extract a browser test's harness into a `*Story.tsx`
+to put a story on it — the browser test already is its snapshot. Playwright e2e snapshots are a
+third, separate Chromatic project wired in `e2e/studio-visual-test.ts`; nothing Playwright-related
+belongs under `dev/storybook`, which contains only the shared Storybook, Chromatic, and
+addon-vitest infrastructure. The `sanity-visual-regression` skill's "Which source owns a state"
+table decides where a new snapshot goes.
 
 ```bash
 pnpm dev:storybook                    # Storybook dev server at http://localhost:6006
 pnpm build:storybook                  # Static build via turbo (dev/storybook/storybook-static)
 pnpm --filter sanity-storybook test   # Run every story as a vitest browser-mode test
-CHROMATIC=1 pnpm --filter sanity test:browser   # Chromatic archive capture run (chromium only)
+CHROMATIC=1 pnpm --filter sanity test:browser   # Chromatic capture run: snapshots every browser test's end state (chromium only)
 pnpm visual-coverage --changed --prs  # Which changed UI files a story renders (PR comment runs the same)
 pnpm visual-coverage --uncovered      # Whole-tree coverage by area, plus the uncovered files
 ```
@@ -526,12 +534,18 @@ Before adding a story, run `pnpm visual-coverage` and follow the `sanity-visual-
 (`.agents/skills/sanity-visual-coverage/SKILL.md`): it tells covered from pending (claimed by an
 open PR) from uncovered, so coverage PRs do not duplicate the open `test(storybook)` stack.
 
-Repo secrets: `CHROMATIC_PROJECT_TOKEN_STORYBOOK` (active), `CHROMATIC_PROJECT_TOKEN_E2E`
-(active, used by e2e), `CHROMATIC_PROJECT_TOKEN_VITEST` (dormant until Chromatic's Vitest early
-access is enabled — the CI job self-activates when the secret is added). Checks are non-gating
-during burn-in. See the `sanity-visual-regression` skill
-(`.agents/skills/sanity-visual-regression/SKILL.md`) for how to add coverage, determinism rules,
-and the Vitest activation runbook.
+Chromatic projects and repo secrets: "sanity studio" (`CHROMATIC_PROJECT_TOKEN_STORYBOOK`, the
+Storybook), "sanity studio vitest" (`CHROMATIC_PROJECT_TOKEN_VITEST`, the browser tests) and
+"sanity studio playwright" (`CHROMATIC_PROJECT_TOKEN_E2E`, curated e2e snapshots); all three are
+active and uploaded from CI. Checks are non-gating during burn-in.
+
+Browser tests get an automatic snapshot at the end of every test. Opt out with
+`configure({disableAutoSnapshot: true})` from `@chromatic-com/vitest` — at the top of a file for
+the whole file, inside a `describe()` for that suite, inside a `test()` for that test — and add
+`await takeSnapshot('state')` inside a test for states it passes through but does not end on.
+Both work in every run (no-ops on firefox/webkit); only `CHROMATIC=1` runs capture and upload.
+See the `sanity-visual-regression` skill (`.agents/skills/sanity-visual-regression/SKILL.md`)
+for how to add coverage, which source owns a state, and determinism rules.
 
 ### E2E Tests (Playwright)
 
@@ -809,6 +823,7 @@ No Docker, databases, or other local services are required for unit tests, lint,
 - **Seeding test documents for the `/test` workspace via API.** In local dev (non-staging), the `/test` workspace talks to the production API host, so `STUDIO_AUTH_TOKEN` works as a Bearer token against `https://ppsg7ml5.api.sanity.io/v2024-01-01/data/mutate/test` (it returns 401 "Session not found" on `api.sanity.work`). Caveat when testing history/review-changes features: documents created by raw API mutations (e.g. `createOrReplace` of a published id) do not produce publish events, so the Review changes inspector shows "There are no changes" / "Same revision selected". Instead, create only the draft (`drafts.<id>`) via the API, click Publish in the studio UI to create a real publish event, then edit fields in the form to create draft changes.
 - **Seeding releases for the `/test` workspace via API.** Releases and document versions are created through the actions endpoint (`POST https://ppsg7ml5.api.sanity.io/v2025-02-19/data/actions/test` with `{"actions": [...]}`, same Bearer token). Useful action types: `sanity.action.release.create`, `sanity.action.document.version.create` (pass `publishedId` plus a `document` with `_id: versions.<releaseId>.<publishedId>`), `sanity.action.document.version.unpublish`, `sanity.action.document.version.discard`, `sanity.action.release.archive`, `sanity.action.release.delete`. Note that a version created by the unpublish action alone is an empty tombstone carrying only `_system.delete: true` — to get a version with content, create the version first and then unpublish it. `/test` is a shared dataset, so archive and delete any release you seed once you are done.
 - **Vitest browser mode (`*.browser.test.tsx`) needs a Playwright browser install first.** The VM has no browsers preinstalled: run `pnpm --filter sanity exec playwright install chromium`, then run a single file with `SANITY_VITEST_BROWSER=chromium pnpm --filter sanity exec vitest run -c vitest.browser.config.mts <path>`. Without `SANITY_VITEST_BROWSER` the config tries chromium, firefox, and webkit. No package build is required for these tests (they resolve monorepo sources).
+- **The Storybook addon-vitest suite (`pnpm --filter sanity-storybook test`) dies mid-run in the VM.** After roughly 45 story files the headless chromium page goes away and vitest reports `Browser connection was closed while running tests` as an unhandled error (reproducible on a clean `main`, so it is not your change). Run the suite in chunks of about 20 story files instead: `cd dev/storybook && pnpm exec vitest run <absolute paths...>`. Same Playwright chromium install as above; `pnpm --filter sanity-storybook exec storybook build` (about 20s, no package build needed) is the quick check that every remaining story still compiles into the index.
 - **Install agent skills with `pnpm dlx skills`, not `npx skills`.** This repo is pnpm-only, and the Cloud VM's `npx` wrapper often fails with `sh: 1: skills: not found`. Use the pnpm equivalent and skip prompts:
 
   ```bash

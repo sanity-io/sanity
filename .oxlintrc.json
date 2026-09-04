@@ -1283,14 +1283,9 @@
       }
     },
     {
-      // Browser-mode tests and their story/helper files render real Studio inputs and may import
-      // the public API and test-only deps freely
-      "files": [
-        "packages/sanity/**/*.browser.test.{ts,tsx}",
-        "packages/sanity/src/core/comments/components/pte/comment-input/__tests__/*Story.tsx",
-        "packages/sanity/src/core/form/inputs/arrays/__tests__/*Story.tsx",
-        "packages/sanity/src/core/form/inputs/PortableText/__tests__/**/*Story.tsx"
-      ],
+      // Browser-mode tests (harness components included) render real Studio inputs and may
+      // import the public API and test-only deps freely
+      "files": ["packages/sanity/**/*.browser.test.{ts,tsx}"],
       "rules": {
         "eslint/no-restricted-imports": "off"
       }

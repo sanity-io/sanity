@@ -9,7 +9,6 @@ import {CommentsListStatusStory} from './CommentsListStatusStory'
 const meta = {
   title: 'Comments (v2)/List Status',
   component: CommentsListStatusStory,
-  tags: ['!dev', '!autodocs', 'vrt-only'],
 } satisfies Meta<typeof CommentsListStatusStory>
 
 export default meta
