@@ -25,7 +25,7 @@ catalog:
   '@optique/core': ^1.1.1
   '@optique/run': ^1.1.1
   '@playwright/test': 1.62.1
-  '@sanity/client': ^8.4.0
+  '@sanity/client': ^8.5.0
   '@sanity/migrate': ^8.0.2
   '@sanity/telemetry': ^1.1.0
   '@sanity/tsdown-config': ^0.27.1
