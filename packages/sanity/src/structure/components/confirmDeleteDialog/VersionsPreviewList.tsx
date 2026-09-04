@@ -1,4 +1,4 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
@@ -18,6 +18,7 @@ import {
   useSchema,
   useTranslation,
 } from 'sanity'
+import {Flex} from 'ui5'
 
 import {ellipsisText} from './VersionsPreviewList.css'
 
@@ -94,7 +95,7 @@ const VersionItemPreview = ({
       status={
         <Card border radius="full">
           <Card radius={'full'} tone={tone} style={{backgroundColor: 'transparent'}}>
-            <Flex align="center" gap={2} paddingY={2} paddingRight={3} paddingLeft={2}>
+            <Flex alignItems="center" gap={2} paddingY={2} paddingRight={3} paddingLeft={2}>
               <Text size={1}>
                 <ReleaseAvatarIcon
                   release={documentVariant === 'version' && release ? release : documentVariant}

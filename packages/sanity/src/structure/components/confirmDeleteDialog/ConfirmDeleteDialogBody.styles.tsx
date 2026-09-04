@@ -1,10 +1,10 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
-import {Flex, Inline, rem, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {Inline, rem, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {clsx} from 'clsx'
 import {type ComponentProps} from 'react'
 import {useTranslation} from 'sanity'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {structureLocaleNamespace} from '../../i18n'

@@ -1,7 +1,6 @@
-import {Flex} from '@sanity/ui'
 import {useCallback, useId, useMemo} from 'react'
 import {getPublishedId, LoadingBlock, useDocumentVersions, useTranslation} from 'sanity'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {structureLocaleNamespace} from '../../i18n'
@@ -140,9 +139,9 @@ export function ConfirmDeleteDialog({
           />
         ) : (
           <Flex
-            align="center"
-            direction="column"
-            justify="center"
+            alignItems="center"
+            flexDirection="column"
+            justifyContent="center"
             className={loadingContainer}
             data-testid="loading-container"
           >

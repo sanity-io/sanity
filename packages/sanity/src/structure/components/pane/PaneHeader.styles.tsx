@@ -1,7 +1,8 @@
-import {Card, Flex, Layer, Text, TextSkeleton, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {Card, Layer, Text, TextSkeleton, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {clsx} from 'clsx'
 import {type ComponentProps} from 'react'
+import {Flex} from 'ui5'
 
 import {
   layout,

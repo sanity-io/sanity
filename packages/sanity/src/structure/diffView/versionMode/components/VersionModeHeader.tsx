@@ -8,7 +8,6 @@ import {
   // oxlint-disable-next-line no-restricted-imports -- the resolved menu button props are spread onto the `@sanity/ui` Button above
   type ButtonProps,
   type ButtonTone,
-  Flex,
   Stack,
   Text,
 } from '@sanity/ui'
@@ -44,7 +43,7 @@ import {
   useTranslation,
   useWorkspace,
 } from 'sanity'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {structureLocaleNamespace} from '../../../i18n'
@@ -133,7 +132,7 @@ export const VersionModeHeader: ComponentType<
             />
           ))}
       </div>
-      <Flex align="center" paddingX={3}>
+      <Flex alignItems="center" paddingX={3}>
         <Text size={1}>
           <TransferIcon />
         </Text>
@@ -345,7 +344,7 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
             </Text>
           )}
         </Stack>
-        <Flex flex="none">
+        <Flex flexBasis="auto" flexGrow={0} flexShrink={0}>
           {isReleaseScheduledOrScheduling(release) && (
             <Box padding={2}>
               <Text size={1}>

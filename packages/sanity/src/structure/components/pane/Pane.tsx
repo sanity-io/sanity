@@ -1,4 +1,4 @@
-import {BoundaryElementProvider, Card, type CardProps, Flex} from '@sanity/ui'
+import {BoundaryElementProvider, Card, type CardProps} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {clsx} from 'clsx'
 import {
@@ -14,6 +14,7 @@ import {
 } from 'react'
 import {IsLastPaneProvider, LegacyLayerProvider} from 'sanity'
 import {PaneContext} from 'sanity/_singletons'
+import {Flex} from 'ui5'
 
 import {PANE_COLLAPSED_WIDTH, PANE_DEBUG, PANE_DEFAULT_MIN_WIDTH} from './constants'
 import {root} from './Pane.css'
@@ -222,7 +223,7 @@ export function Pane(
 
               <BoundaryElementProvider element={rootElement}>
                 {!hidden && (
-                  <Flex direction="column" height="fill">
+                  <Flex flexDirection="column" height="100%">
                     {children}
                   </Flex>
                 )}
