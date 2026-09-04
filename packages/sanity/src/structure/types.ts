@@ -166,6 +166,33 @@ export interface StructureToolOptions {
    * The title that will be displayed for the tool. Defaults to Structure
    */
   title?: string
+  /**
+   * Keeps the navigation panes in place when a document is created from a pane
+   * that sits deeper than the intent matcher looks.
+   *
+   * The matcher only answers for the two outermost panes, and a
+   * `documentTypeList().child()` drops its intent handler entirely, so a
+   * "create" action offered by a deeper pane is handed to structure-wide intent
+   * resolution instead. Finding no match there, the studio replaces the whole
+   * pane path with a lone document editor, and the editor loses their place in
+   * the tree.
+   *
+   * With this enabled, a create action offered by one of the open panes opens
+   * the new document as that pane's child, the way opening an existing document
+   * from a list does: the navigation panes stay visible and collapse when there
+   * is not enough room.
+   *
+   * Only create actions offered by a pane that is currently open are affected,
+   * matched on the template and its parameters. Anything the structure search
+   * has to find is untouched and still jumps to the matching location: deep
+   * links, intents from other tools, and create actions for a type no open pane
+   * offers. Note that a pane offering the requested action counts even when the
+   * action was triggered elsewhere, so the navbar's "create new document" opens
+   * in an open list pane for that type rather than navigating to another one.
+   *
+   * @beta
+   */
+  keepPanesOnCreate?: boolean
 }
 
 /**
