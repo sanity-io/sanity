@@ -153,7 +153,11 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
         key={selectedGroup?.name}
       >
         {columns ? (
-          <AlignedBottomGrid gridTemplateColumns={columns} gap={4} marginTop={1}>
+          <AlignedBottomGrid
+            gridTemplateColumns={`repeat(${columns}, minmax(0, 1fr))`}
+            gap={4}
+            marginTop={1}
+          >
             {renderObjectMembers()}
           </AlignedBottomGrid>
         ) : (

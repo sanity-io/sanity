@@ -9,7 +9,6 @@ import {
   Button,
   Card,
   Flex,
-  Grid,
   Stack,
   Text,
 } from '@sanity/ui'
@@ -17,7 +16,7 @@ import {useToast} from '@sanity/ui/toast'
 import {type KeyboardEvent, type MouseEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
 import {css, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Grid, Box} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {getHumanFriendlyBytes} from '../../../../field/types/file/diff/helpers'
@@ -253,7 +252,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
     return (
       <Card paddingBottom={2} style={STYLES_ROW_CARD}>
         <Grid
-          gridTemplateColumns={4}
+          gridTemplateColumns="repeat(4, minmax(0, 1fr))"
           gap={1}
           style={{
             position: 'relative',
@@ -293,7 +292,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
         </Grid>
         {isOpen && (
           <>
-            <Grid marginTop={3} gridTemplateColumns={3} gap={1}>
+            <Grid marginTop={3} gridTemplateColumns="repeat(3, minmax(0, 1fr))" gap={1}>
               <Stack gap={2}>
                 <Text size={1} muted weight="medium">
                   {t('asset-source.file.asset-list.header.size')}
@@ -362,7 +361,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
       aria-selected="true"
     >
       <Grid
-        gridTemplateColumns={4}
+        gridTemplateColumns="repeat(4, minmax(0, 1fr))"
         gap={1}
         data-id={_id}
         paddingY={1}

@@ -17,7 +17,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {css, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, type GridProps} from 'ui5'
 
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
@@ -84,6 +84,13 @@ export interface FormFieldSetProps {
 
 function getChildren(children: ReactNode | (() => ReactNode)): ReactNode {
   return typeof children === 'function' ? children() : children
+}
+
+function getGridTemplateColumns(columns: number | number[]) {
+  if (Array.isArray(columns)) {
+    return columns.map((n) => `repeat(${n}, minmax(0, 1fr))`)
+  }
+  return `repeat(${columns}, minmax(0, 1fr))`
 }
 
 const Root = styled(Stack).attrs({forwardedAs: 'fieldset'})`
@@ -210,7 +217,15 @@ export function FormFieldSet(
       return null
     }
     return (
-      <ColumnarGrid gridTemplateColumns={columns} gapX={4} gapY={5}>
+      <ColumnarGrid
+        gridTemplateColumns={
+          columns
+            ? (getGridTemplateColumns(columns) as GridProps['gridTemplateColumns'])
+            : undefined
+        }
+        columnGap={4}
+        rowGap={5}
+      >
         {getChildren(children)}
       </ColumnarGrid>
     )

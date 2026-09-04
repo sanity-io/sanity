@@ -1,6 +1,6 @@
-import {Grid, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Grid, Box} from 'ui5'
 
 import {useTranslation} from '../../../../../../../../../../../i18n/hooks/useTranslation'
 import {CalendarDay} from './CalendarDay'
@@ -34,7 +34,7 @@ export function CalendarMonth({hidden, onSelect}: CalendarMonthProps) {
 
   return (
     <Box aria-hidden={hidden || false} data-ui="CalendarMonth">
-      <CustomGrid gapY={1}>
+      <CustomGrid rowGap={1}>
         {WEEK_DAY_NAME_KEYS[firstWeekDay].map((weekdayDay) => (
           <Box key={weekdayDay} paddingBottom={3} paddingTop={2}>
             <Text align="center" size={1} weight="medium">

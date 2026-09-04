@@ -4,7 +4,6 @@ import {
   type BadgeTone,
   Box,
   Card,
-  Grid,
   Heading,
   Stack,
   Switch,
@@ -13,7 +12,7 @@ import {
 } from '@sanity/ui'
 import {type ReactNode, useState} from 'react'
 import {styled} from 'styled-components'
-import {Flex} from 'ui5'
+import {Grid, Flex, type GapProps} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {type StudioDiagnostics} from '../../../diagnostics/gatherStudioDiagnostics'
@@ -111,7 +110,14 @@ export function DiagnosticsReport({
         </Flex>
       </Card>
 
-      <Grid gap={3} gridTemplateColumns={[1, 1, 2]}>
+      <Grid
+        gap={3}
+        gridTemplateColumns={[
+          'repeat(1, minmax(0, 1fr))',
+          'repeat(1, minmax(0, 1fr))',
+          'repeat(2, minmax(0, 1fr))',
+        ]}
+      >
         <ReportSection testId="diagnostics-studio" title="Studio">
           <DetailRow label="Studio version" monospace value={studio.version} />
           <DetailRow label="React version" monospace value={studio.reactVersion} />
@@ -172,7 +178,11 @@ export function DiagnosticsReport({
           <Grid
             data-testid="diagnostics-listen-connections"
             gap={3}
-            gridTemplateColumns={[1, 1, 2]}
+            gridTemplateColumns={[
+              'repeat(1, minmax(0, 1fr))',
+              'repeat(1, minmax(0, 1fr))',
+              'repeat(2, minmax(0, 1fr))',
+            ]}
           >
             <Card border data-testid="diagnostics-listen-connection" padding={4} radius={2}>
               <ListenReport result={network.listen.first} title="First connection" />
@@ -368,9 +378,12 @@ interface MetricProps {
   value?: string
 }
 
-function MetricGrid({gap = 4, metrics}: {gap?: number; metrics: MetricProps[]}) {
+function MetricGrid({gap = 4, metrics}: {gap?: GapProps['gap']; metrics: MetricProps[]}) {
   return (
-    <Grid gap={gap} gridTemplateColumns={[1, 3]}>
+    <Grid
+      gap={gap}
+      gridTemplateColumns={['repeat(1, minmax(0, 1fr))', 'repeat(3, minmax(0, 1fr))']}
+    >
       {metrics.map((metric, index) => (
         <Metric {...metric} align={['left', getMetricAlignment(index)]} key={metric.label} />
       ))}
