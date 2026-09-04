@@ -8,6 +8,7 @@ import groupBy from 'lodash-es/groupBy.js'
 
 import {compileSortExpression, type CompiledSortEntry} from '../common/compileSortExpression'
 import {deriveSearchWeightsFromType2024} from '../common/deriveSearchWeightsFromType2024'
+import {getExcludeAgentVersionsFilter} from '../common/excludeAgentVersionsFilter'
 import {prefixLast} from '../common/token'
 import {toOrderClause} from '../common/toOrderClause'
 import {
@@ -135,11 +136,13 @@ export function createSearchQuery(
   // Unscored has no `[_score > 0]` gate, so the reference match must live in the
   // filter for documents found only through a referenced leaf to surface.
   const unscoredMatch = hasReferenceIds ? `(${baseMatch} || references($__refIds))` : baseMatch
+  const excludeAgentVersions = getExcludeAgentVersionsFilter(perspective)
 
   const filters: string[] = [
     '_type in $__types',
     // If the search request doesn't use scoring, directly filter documents.
     isScored ? [] : unscoredMatch,
+    excludeAgentVersions ?? [],
     filter ? `(${filter})` : [],
     searchTerms.filter ? `(${searchTerms.filter})` : [],
     cursor ?? [],
