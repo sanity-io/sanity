@@ -138,7 +138,7 @@ When `beta.variants.conditions` is set (a static array or a function that may re
 
 - each row is two select-like `MenuButton`s (`ConditionMenuButton`): the key, then its value
 - menu rows follow the workspace switcher (`MenuItem` with icon, title, and description as subtitle); the current choice is checked
-- the trigger mirrors the picked row (icon, title, description) and keeps that two-line footprint in every state (the description line is blank when there is none); it only takes the selected look while its menu is open, so picking never shifts the form
+- the trigger stays one line in every state and only takes the selected look while its menu is open, so picking never shifts the form
 - the value dropdown is disabled until a key is chosen; switching keys resets the value
 - already-used keys are omitted from later rows
 - while the list loads, the rows render disabled with a spinner instead of a skeleton, so the ready state lands in place
