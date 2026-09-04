@@ -41,12 +41,12 @@ pnpm chromatic           # publish + snapshot manually (needs CHROMATIC_PROJECT_
   prioritized) and vanilla-extract-migrated components. Harness stories reuse the same
   `TestWrapper` + `TestForm` mock studio as the browser tests (deterministic, no network) through
   a story-only `*Story.tsx` harness.
-- **Curated sidebar via tags:** documented stories (default tags) are written to be read — they
-  form a living document of how the components are used. Pure regression fixtures carry
-  `tags: ['!dev', '!autodocs', 'vrt-only']`: hidden from the sidebar and docs, still present in
-  the story index, so Chromatic keeps snapshotting them and addon-vitest keeps rendering them.
-  See the [`sanity-visual-regression` skill](../../.agents/skills/sanity-visual-regression/SKILL.md)
-  for the full convention.
+- **Every story is browsable.** Stories are written to be read — they form a living document of
+  how the components are used — so nothing is hidden from the sidebar or docs with `tags`. The
+  `!dev` / `!autodocs` / `vrt-only` tags that used to hide the vitest-derived stories went away
+  with those stories. See the
+  [`sanity-visual-regression` skill](../../.agents/skills/sanity-visual-regression/SKILL.md) for
+  the full convention.
 
 The Vite config in [.storybook/main.ts](.storybook/main.ts) mirrors
 `packages/sanity/vitest.browser.config.mts`: the `monorepo` exports condition resolves workspace

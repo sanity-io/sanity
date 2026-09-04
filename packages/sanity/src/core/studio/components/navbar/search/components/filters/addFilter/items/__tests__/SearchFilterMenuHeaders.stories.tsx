@@ -24,7 +24,6 @@ const CRITICAL_HEADER: FilterMenuItemHeader = {
 const meta = {
   title: 'Studio/Search Filter Menu Headers',
   component: MenuItemHeader,
-  tags: ['!dev', '!autodocs', 'vrt-only'],
 } satisfies Meta<typeof MenuItemHeader>
 
 export default meta

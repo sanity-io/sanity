@@ -67,9 +67,9 @@ match", never "your component is rendered by a story".
 - "ui5 sentinel" and "box sentinel" are the same thing. A story added so the `@sanity/ui` to
   `ui5` Box/Flex/Card migration gets a snapshot before the swap lands. The harness renders the
   states most likely to drift (tones, spacing, truncation, empty states) with fixture copy only.
-  Naming follows the harness pattern above. `title` is `Area/Component`. Pure regression
-  fixtures carry `tags: ['!dev', '!autodocs', 'vrt-only']` so they stay out of the sidebar but in
-  the snapshot set. Read `FieldDiffChromeStory.tsx` and `FieldDiffChrome.stories.tsx` under
+  Naming follows the harness pattern above. `title` is `Area/Component`. Sentinels are ordinary
+  stories — browsable, with a JSDoc description saying what they pin down; there is no tag to
+  hide them. Read `FieldDiffChromeStory.tsx` and `FieldDiffChrome.stories.tsx` under
   `packages/sanity/src/core/field/diff/components/__tests__` as the reference pair.
 - A story covers exactly the components its harness imports. A `DocumentLayout` story also
   paints buttons and cards, but only the `Button` story is the sentinel for `Button`.

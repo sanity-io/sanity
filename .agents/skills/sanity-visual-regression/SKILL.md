@@ -88,23 +88,18 @@ Migration priority: card and tone-related components first (tones cascade throug
 box primitives later. Snapshot the _wrapper_ components in `packages/sanity/src/ui-components`
 and vanilla-extract-migrated components (change indicators, `DocumentLayout`) as sentinels.
 
-## Documented stories vs regression fixtures (tags)
+## Every story is browsable
 
-The Storybook is a living document of how reusable components look and behave, so the sidebar is
-curated: only stories written to be read by humans appear in it. Stories that exist purely as
-snapshot targets are tagged out of navigation but keep their test coverage:
+The Storybook is a living document of how reusable components look and behave, and every story
+in it is meant to be read: authored variant grids, component states and migration sentinels,
+each with a concise JSDoc description of what it shows and why. Do not use story `tags` to hide
+stories from the sidebar (`!dev`) or docs (`!autodocs`). That convention existed only for the
+stories that re-exported vitest browser tests, and those are gone — browser tests are snapshotted
+in place by the Vitest project. If a state is not worth a person looking at, it does not belong
+in Storybook; drive it in a browser test instead (see "Which source owns a state").
 
-- **Documented stories** (default tags): authored variant grids and component states with a
-  concise JSDoc description. Held to a docs-quality bar — someone browsing the deployed Storybook
-  should learn how the component is used.
-- **Regression fixtures** (`tags: ['!dev', '!autodocs', 'vrt-only']`): state dumps with no
-  explanatory value (a chrome grid, an error card matrix). `!dev` removes the story from the
-  sidebar and `!autodocs` from any future docs pages, but the story stays in the index —
-  Chromatic still snapshots it and addon-vitest still renders it (the `test` tag is kept). The
-  `vrt-only` custom tag makes them greppable and filterable.
-
-The inverse also exists: a story that should be browsable but never snapshotted keeps default
-tags and sets `parameters: {chromatic: {disableSnapshot: true}}`.
+A story that should be browsable but never snapshotted sets
+`parameters: {chromatic: {disableSnapshot: true}}`.
 
 ## Determinism rules for stories
 
