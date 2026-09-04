@@ -25,7 +25,12 @@
   the ui5 reset and design tokens.
 - **One Chromatic project per integration type** (Chromatic constraint): `sanity` (Storybook),
   `sanity_e2e` (Playwright), plus a Vitest-type project for the browser tests (created when
-  `CHROMATIC_PROJECT_TOKEN_VITEST` is added).
+  `CHROMATIC_PROJECT_TOKEN_VITEST` is added). The integrations never cross: the Storybook project
+  only receives `storybook build` output, Playwright archives are uploaded from `e2e.yml` with
+  `chromatic --playwright`, Vitest archives from `chromatic.yml` with `chromatic --vitest`.
+  `dev/storybook` therefore has no `@chromatic-com/playwright` or `@chromatic-com/vitest`
+  wiring and hosts no specs or browser tests — its `playwright` dependency is only the browser
+  runner that `@storybook/addon-vitest` uses to render stories.
 
 ## Local Chromatic runs
 
@@ -81,8 +86,8 @@ CI flag semantics (all three uploads): `--only-changed` (TurboSnap), `--exit-zer
   automatically at test end — snapshots happen only at explicit `takeChromaticSnapshot` calls.
 - Specs that edit documents hang under the fixture for the same CDP reason
   (`createDraftDocument`'s editable-form wait times out), so e2e snapshots are for **page chrome
-  and read-only states** — document form states are covered by the Storybook harness stories
-  instead.
+  and read-only states** — document form states are covered by the vitest browser tests (Vitest
+  project) and the authored stories instead.
 - Only snapshot deterministic states: chrome (navbar, panes) without live data, and never
   anything showing relative timestamps ("2 minutes ago"), presence from other CI runs, or
   dataset-dependent lists.

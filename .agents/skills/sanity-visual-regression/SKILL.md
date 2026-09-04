@@ -15,14 +15,34 @@ sources, one Chromatic project each:
 | Vitest browser tests (in place) | vitest project    | `CHROMATIC_PROJECT_TOKEN_VITEST`    | Wired; activates when the secret lands (see below) |
 | Playwright e2e `takeSnapshot()` | `sanity_e2e`      | `CHROMATIC_PROJECT_TOKEN_E2E`       | Active, curated opt-in                             |
 
-Each source owns a disjoint set of states. A `*.browser.test.tsx` is the snapshot source for
-everything it renders — the Vitest plugin archives every test's end state with no test code
-changes — so browser tests keep their harness component inline (`function FooHarness()` in the
-test file) and never get a Storybook story on top. Every `*Story.tsx` file is a Storybook
-harness imported by a `*.stories.tsx`. Stories cover the states no browser test renders.
-
 All checks are non-gating during burn-in (`exitZeroOnChanges`); merges to `main` auto-accept
 baselines. Review diffs on the Chromatic build linked from the PR check.
+
+## Which source owns a state
+
+Each source owns a disjoint set of states. Decide by how the state is reached, and never move a
+state between sources:
+
+| The state is…                                                                                         | It belongs in                                                                                                                  |
+| ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Reachable from props/fixtures alone, or one `play` interaction (open a menu, hover a tooltip)         | A `*.stories.tsx` in the owning package (`dev/storybook` snapshots it)                                                         |
+| Reached by driving the UI: typing, drag, clipboard, focus tracking, viewport changes, server commands | A `*.browser.test.tsx` — its end state is the snapshot; `takeSnapshot()` for mid-test states once the Vitest project is active |
+| Full-studio chrome against a real deployment and dataset                                              | A Playwright spec using `e2e/studio-visual-test.ts` (`sanity_e2e` project), read-only states only                              |
+
+Consequences:
+
+- A `*.browser.test.tsx` is the snapshot source for everything it renders — the Vitest plugin
+  archives every test's end state with no test code changes. Browser tests keep their harness
+  component inline (`function FooHarness()` in the test file) and never get a Storybook story on
+  top. Do not re-export a browser test as a story, and do not port a browser test into a story
+  with an elaborate `play` function.
+- Every `*Story.tsx` file is a Storybook harness imported by a `*.stories.tsx`. Stories cover the
+  states no browser test renders.
+- Playwright stays in `e2e/`. Do not put specs, `@chromatic-com/playwright`, or e2e fixtures under
+  `dev/storybook`, and do not turn an e2e spec into a story (or the reverse) to get a snapshot.
+  `dev/storybook`'s `playwright` dependency is only the browser runner for `@storybook/addon-vitest`.
+- Do not add a `Chromatic / …` job that uploads one source's output to another source's project;
+  Chromatic requires one project per integration type.
 
 ## Quick start: add visual coverage for a component
 
@@ -38,7 +58,8 @@ renders the component or an open PR is about to, so you only add what is missing
      [Button.stories.tsx](../../../packages/sanity/src/ui-components/button/__tests__/Button.stories.tsx).
      Put many variants in one story (a grid) to keep snapshot count low.
    - **Studio-context states** (form inputs, anything needing workspace/i18n/layers): wrap in the
-     browser-test harness `TestWrapper` (+ `TestForm` for form inputs) — see
+     shared mock-studio wrapper `TestWrapper` (+ `TestForm` for form inputs) from
+     `packages/sanity/test/browser` — the same wrapper the browser tests use — see
      [Dialog.stories.tsx](../../../packages/sanity/src/ui-components/dialog/__tests__/Dialog.stories.tsx)
      and
      [EditorChrome.stories.tsx](../../../packages/sanity/src/core/form/inputs/PortableText/__tests__/EditorChrome.stories.tsx).

@@ -16,6 +16,10 @@ permissions: {}
 #   secret is added — the moment it exists the job starts running, with no
 #   code changes needed.
 #
+# The third Chromatic project, `sanity_e2e` (Playwright archives), is uploaded
+# from e2e.yml. Chromatic allows one integration type per project, so the
+# three uploads never share a project or a job.
+#
 # Both jobs are non-gating during burn-in (`--exit-zero-on-changes`): visual
 # changes are reported on the Chromatic build for review but do not fail CI.
 # Merges to `main` auto-accept the new baselines.

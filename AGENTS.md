@@ -515,8 +515,11 @@ authored migration sentinels for `ui-components` and vanilla-extract-migrated co
 harness stories built on the same `TestWrapper` mock studio. Browser tests keep their harness
 component inline (`function FooHarness()` in the test file); every `*Story.tsx` is a Storybook
 harness owned by a `*.stories.tsx`. Do not extract a browser test's harness into a `*Story.tsx`
-to put a story on it — the browser test already is its snapshot. `dev/storybook` contains the
-shared Storybook, Chromatic, and addon-vitest infrastructure.
+to put a story on it — the browser test already is its snapshot. Playwright e2e snapshots are a
+third, separate Chromatic project wired in `e2e/studio-visual-test.ts`; nothing Playwright-related
+belongs under `dev/storybook`, which contains only the shared Storybook, Chromatic, and
+addon-vitest infrastructure. The `sanity-visual-regression` skill's "Which source owns a state"
+table decides where a new snapshot goes.
 
 ```bash
 pnpm dev:storybook                    # Storybook dev server at http://localhost:6006
