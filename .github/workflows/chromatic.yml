@@ -6,14 +6,15 @@ permissions: {}
 # Two jobs, one per Chromatic project:
 #
 # - `storybook`: builds the Storybook host in `dev/storybook` (stories are
-#   package-owned and co-located; most reuse vitest browser-mode harnesses)
+#   package-owned and co-located, covering states no browser test renders)
 #   and uploads it to the `sanity` Chromatic project for snapshotting.
 # - `vitest-visual`: re-runs the vitest browser-mode suite (chromium only)
 #   with the @chromatic-com/vitest plugin enabled, archiving each test's end
-#   state, and uploads the archives to the Chromatic Vitest project.
-#   @chromatic-com/vitest is in early access, so this job is DORMANT until the
-#   CHROMATIC_PROJECT_TOKEN_VITEST repository secret is added — the moment it
-#   exists the job starts running, with no code changes needed.
+#   state, and uploads the archives to the Chromatic Vitest project. Browser
+#   tests are not re-exported as stories; this job is their snapshot source.
+#   The job is DORMANT until the CHROMATIC_PROJECT_TOKEN_VITEST repository
+#   secret is added — the moment it exists the job starts running, with no
+#   code changes needed.
 #
 # Both jobs are non-gating during burn-in (`--exit-zero-on-changes`): visual
 # changes are reported on the Chromatic build for review but do not fail CI.
@@ -90,8 +91,8 @@ jobs:
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
       # Secrets cannot be read in job-level `if` expressions, so a guard step
-      # exports whether the (early access) Vitest project token exists. Every
-      # later step keys off this output; the job reports success while dormant.
+      # exports whether the Vitest project token exists. Every later step keys
+      # off this output; the job reports success while dormant.
       - name: Check for Chromatic Vitest project token
         id: token
         env:
@@ -101,7 +102,7 @@ jobs:
             echo "has_token=true" >> "$GITHUB_OUTPUT"
           else
             echo "has_token=false" >> "$GITHUB_OUTPUT"
-            echo "CHROMATIC_PROJECT_TOKEN_VITEST is not set — skipping (Chromatic for Vitest is in early access)."
+            echo "CHROMATIC_PROJECT_TOKEN_VITEST is not set — skipping. Create a Vitest-type Chromatic project and add its token as a repository secret to activate this job."
           fi
 
       - uses: actions/checkout@v7

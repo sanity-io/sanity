@@ -37,7 +37,7 @@ script models that as direct imports:
 | Evidence       | Files                                           | Chromatic project | Status in the report                                                        |
 | -------------- | ----------------------------------------------- | ----------------- | --------------------------------------------------------------------------- |
 | `story`        | `packages/**/src/**/*.stories.tsx`              | Storybook, active | `covered`                                                                   |
-| `browser-test` | `packages/**/src/**/*.browser.test.tsx`         | Vitest, dormant   | `covered`, flagged "no Chromatic snapshot yet" until the Vitest token lands |
+| `browser-test` | `packages/**/src/**/*.browser.test.tsx`         | Vitest, wired     | `covered`, flagged "no Chromatic snapshot yet" until the Vitest token lands |
 | `pending`      | a `*.stories.tsx` added by an open PR (`--prs`) | none yet          | `pending`, claimed by that PR                                               |
 
 A file is covered when a story or browser test imports it directly, or imports a `*Story.tsx`
@@ -54,9 +54,12 @@ match", never "your component is rendered by a story".
   its `__tests__` directory. Nothing lives under `dev/storybook/stories`.
 - Two story shapes. Plain variant grids for `packages/sanity/src/ui-components` wrappers
   (`Button.stories.tsx` imports `../Button`). Harness stories for anything that needs a
-  workspace, i18n, or layers. The harness is `<Name>Story.tsx`, wraps `TestWrapper`, and is shared
-  with the `<Name>.browser.test.tsx` when one exists. `<Name>.stories.tsx` is then a thin CSF file
-  whose `component` is the harness.
+  workspace, i18n, or layers. The harness is `<Name>Story.tsx`, wraps `TestWrapper`, and
+  `<Name>.stories.tsx` is a thin CSF file whose `component` is the harness.
+- A `<Name>Story.tsx` that a `<Name>.browser.test.tsx` imports is a test harness, not a story
+  target. The Vitest Chromatic integration snapshots the test's end state in place, so those
+  harnesses have no `*.stories.tsx` re-export — do not add one. Their coverage shows up as
+  `browser-test` evidence.
 - "ui5 sentinel" and "box sentinel" are the same thing. A story added so the `@sanity/ui` to
   `ui5` Box/Flex/Card migration gets a snapshot before the swap lands. The harness renders the
   states most likely to drift (tones, spacing, truncation, empty states) with fixture copy only.
@@ -73,7 +76,8 @@ Run `pnpm visual-coverage --changed --prs` on the branch, then per file:
 
 1. `covered`. Done. If the change adds a state the story does not render (a new tone, an empty
    state, a truncation case), extend the existing story or harness. Do not add a second story
-   for the same component.
+   for the same component. When the only evidence is a `browser-test`, the state is snapshotted
+   by the Vitest integration; extend that test or its harness rather than adding a story for it.
 2. `pending`. Do not add a story. The PR number is in the report. Review that PR, or comment on
    it if the variant you need is missing.
 3. `uncovered`, and the file paints something (layout, tone, spacing, text). Add coverage per

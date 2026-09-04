@@ -26,13 +26,16 @@ pnpm chromatic           # publish + snapshot manually (needs CHROMATIC_PROJECT_
   workspace package `src` trees; `dev/storybook` owns only the Storybook, Chromatic, and
   addon-vitest infrastructure. Keep a story in the same `__tests__` directory as the component or
   harness it covers and use package-local imports instead of reaching across workspace boundaries.
-- **Harness reuse:** thin CSF files sit beside the `*Story.tsx` harness components that the vitest
-  browser-mode tests already use (`TestWrapper` + `TestForm` with a mock client/workspace —
-  deterministic, no network). The harnesses stay shared: tests exercise interactions, Chromatic
-  snapshots the rendered states.
+- **Browser tests are not re-exported as stories.** The vitest browser-mode suite
+  (`*.browser.test.tsx`) is its own Chromatic snapshot source: `@chromatic-com/vitest` archives
+  every test's end state in place (see the `vitest-visual` job in the Chromatic workflow), so a
+  `*Story.tsx` harness that a browser test renders has no CSF file on top of it. Stories only
+  cover states no browser test renders.
 - **Authored migration sentinels:** component-local stories cover states the tests don't capture —
   `ui-components` wrapper variants (the `@sanity/ui` → `ui5` surface, with card/tone coverage
-  prioritized) and vanilla-extract-migrated components.
+  prioritized) and vanilla-extract-migrated components. Harness stories reuse the same
+  `TestWrapper` + `TestForm` mock studio as the browser tests (deterministic, no network) through
+  a story-only `*Story.tsx` harness.
 - **Curated sidebar via tags:** documented stories (default tags) are written to be read — they
   form a living document of how the components are used. Pure regression fixtures carry
   `tags: ['!dev', '!autodocs', 'vrt-only']`: hidden from the sidebar and docs, still present in
@@ -50,7 +53,9 @@ so stories render exactly like the studio and the browser tests.
 The [Chromatic workflow](../../.github/workflows/chromatic.yml) publishes this Storybook to the
 `sanity` Chromatic project on every PR (secret: `CHROMATIC_PROJECT_TOKEN_STORYBOOK`), using
 TurboSnap so only stories affected by the change are snapshotted. The check is non-gating during
-burn-in (`exitZeroOnChanges`); merges to `main` auto-accept new baselines.
+burn-in (`exitZeroOnChanges`); merges to `main` auto-accept new baselines. The same workflow's
+`vitest-visual` job uploads the browser-test archives to a separate Vitest-type Chromatic project
+(secret: `CHROMATIC_PROJECT_TOKEN_VITEST`).
 
 ## Vercel deployment
 

@@ -6,13 +6,14 @@
   test-harness, and test-only imports within the same workspace boundary. `dev/storybook` is only
   the shared host; its discovery globs target workspace package `src` roots without traversing
   dependency symlinks under nested `node_modules` directories.
-- **Why harness reuse instead of moving tests into Storybook:** the 25 `*.browser.test.tsx`
-  files use `vitest-browser-react`, custom server commands (`readFileAsBase64`), clipboard/PTE
-  helpers and mid-test `page.viewport()` mutations — none of which map onto Storybook `play()`
-  functions. They were also already migrated once (Playwright CT → vitest browser mode). So the
-  `*Story.tsx` harness components stay shared: tests drive interactions, Storybook/Chromatic
-  snapshot rendered states, and `@chromatic-com/vitest` (once active) snapshots test end states
-  in place with zero test changes.
+- **Why browser tests are snapshotted in place instead of moved into Storybook:** the
+  `*.browser.test.tsx` files use `vitest-browser-react`, custom server commands
+  (`readFileAsBase64`), clipboard/PTE helpers and mid-test `page.viewport()` mutations — none of
+  which map onto Storybook `play()` functions. They were also already migrated once (Playwright
+  CT → vitest browser mode). `@chromatic-com/vitest` snapshots each test's end state with zero
+  test changes, so a test's `*Story.tsx` harness is test-only: it does not get a CSF re-export
+  in Storybook (those existed while the Vitest integration was in early access and were removed
+  once it went GA). `*Story.tsx` files that no browser test imports are story-only harnesses.
 - **Why the storybook Vite config mirrors `vitest.browser.config.mts`:** the `monorepo` exports
   condition resolves `sanity` (and other workspace packages) to TypeScript source; the
   vanilla-extract plugin compiles `.css.ts`; the React Compiler babel preset matches what the
@@ -22,7 +23,8 @@
   directly and never hit the `sanity` package entry, so they would otherwise snapshot without
   the ui5 reset and design tokens.
 - **One Chromatic project per integration type** (Chromatic constraint): `sanity` (Storybook),
-  `sanity_e2e` (Playwright), plus a Vitest-type project once early access lands.
+  `sanity_e2e` (Playwright), plus a Vitest-type project for the browser tests (created when
+  `CHROMATIC_PROJECT_TOKEN_VITEST` is added).
 
 ## Local Chromatic runs
 
@@ -50,6 +52,7 @@ CI flag semantics (all three uploads): `--only-changed` (TurboSnap), `--exit-zer
 - Capture is chromium-only (plugin requirement; Chromatic re-renders archives in its own
   standardized cloud browser). The config throws if `SANITY_VITEST_BROWSER` is set to another
   browser while `CHROMATIC=1`.
+- Snapshot names follow the test hierarchy (`describe` > `it` titles), one archive per test case.
 - Once the integration is active, inside browser tests you can use (from `@chromatic-com/vitest`):
   - `configure({title, delay, disableAutoSnapshot, diffThreshold, ...})` — per test, suite, or
     file scope. `title` fixes ambiguous build-table names.

@@ -507,11 +507,14 @@ while closed (hidden with `display: none`). Consequences for tests:
 
 ### Visual Regression Tests (Chromatic + Storybook)
 
-Visual regression runs on Chromatic via `.github/workflows/chromatic.yml`. Stories are co-located
-with their source under `packages/**/src/**/__tests__`; most reuse vitest browser-mode test
-harnesses (`TestWrapper` + `*Story.tsx` components), alongside authored migration sentinels for
-`ui-components` and vanilla-extract-migrated components. `dev/storybook` contains the shared
-Storybook, Chromatic, and addon-vitest infrastructure.
+Visual regression runs on Chromatic via `.github/workflows/chromatic.yml` from two sources:
+Storybook stories, and the vitest browser-mode suite captured in place by `@chromatic-com/vitest`
+(every `*.browser.test.tsx` end state becomes a snapshot, no test changes). Stories are co-located
+with their source under `packages/**/src/**/__tests__` and cover states no browser test renders:
+authored migration sentinels for `ui-components` and vanilla-extract-migrated components, plus
+harness stories built on the same `TestWrapper` mock studio. Do not re-export a browser test's
+`*Story.tsx` harness as a story — the browser test already is its snapshot. `dev/storybook`
+contains the shared Storybook, Chromatic, and addon-vitest infrastructure.
 
 ```bash
 pnpm dev:storybook                    # Storybook dev server at http://localhost:6006
@@ -527,11 +530,11 @@ Before adding a story, run `pnpm visual-coverage` and follow the `sanity-visual-
 open PR) from uncovered, so coverage PRs do not duplicate the open `test(storybook)` stack.
 
 Repo secrets: `CHROMATIC_PROJECT_TOKEN_STORYBOOK` (active), `CHROMATIC_PROJECT_TOKEN_E2E`
-(active, used by e2e), `CHROMATIC_PROJECT_TOKEN_VITEST` (dormant until Chromatic's Vitest early
-access is enabled — the CI job self-activates when the secret is added). Checks are non-gating
-during burn-in. See the `sanity-visual-regression` skill
-(`.agents/skills/sanity-visual-regression/SKILL.md`) for how to add coverage, determinism rules,
-and the Vitest activation runbook.
+(active, used by e2e), `CHROMATIC_PROJECT_TOKEN_VITEST` (the `vitest-visual` CI job is dormant
+until this secret is added and self-activates the moment it exists — create a Vitest-type
+Chromatic project and paste its token). Checks are non-gating during burn-in. See the
+`sanity-visual-regression` skill (`.agents/skills/sanity-visual-regression/SKILL.md`) for how to
+add coverage, determinism rules, and the Vitest activation runbook.
 
 ### E2E Tests (Playwright)
 
