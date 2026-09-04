@@ -3,7 +3,7 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {isValidationErrorMarker} from '@sanity/types'
 import {Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {useCallback, useEffect, useInsertionEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type DocumentActionComponent,
   getPairTarget,
@@ -193,25 +193,29 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     }
   }, [isWaitingToPublish, telemetry, id, editState?.transactionSyncLock?.enabled])
 
-  // The action description is deep-compared by the hook collection, so the handler must keep its
-  // identity while the sync and validation state it reads changes on every keystroke. The effect
-  // deliberately has no dependency list: it re-syncs the closure every render, like the
-  // use-effect-event ponyfill.
-  const publishRef = useRef<() => void>(() => {})
-  useInsertionEffect(() => {
-    publishRef.current = () => {
-      telemetry.log(DocumentPublished, {
-        publishedImmediately: !draft?._createdAt,
-        previouslyPublished: Boolean(publishedInfo),
-      })
-      if (isSyncing || isValidating || validationStatus.revision !== revision) {
-        setPublishScheduled(true)
-      } else {
-        doPublish()
-      }
+  const publishedImmediately = !draft?._createdAt
+  const previouslyPublished = Boolean(publishedInfo)
+  const shouldSetPublishScheduled =
+    isSyncing || isValidating || validationStatus.revision !== revision
+
+  // This value flips on every keystroke (`isSyncing`), so it lives in a ref to keep `handle`
+  // stable; the hook collection compares the action description by reference for functions.
+  const shouldSetPublishScheduledRef = useRef(shouldSetPublishScheduled)
+  useEffect(() => {
+    shouldSetPublishScheduledRef.current = shouldSetPublishScheduled
+  }, [shouldSetPublishScheduled])
+
+  const handle = useCallback(() => {
+    telemetry.log(DocumentPublished, {
+      publishedImmediately,
+      previouslyPublished,
+    })
+    if (shouldSetPublishScheduledRef.current) {
+      setPublishScheduled(true)
+    } else {
+      doPublish()
     }
-  })
-  const handle = useCallback(() => publishRef.current(), [])
+  }, [publishedImmediately, previouslyPublished, telemetry, setPublishScheduled, doPublish])
 
   return useMemo(() => {
     if (isPublishedPerspective(selectedPerspective)) {
