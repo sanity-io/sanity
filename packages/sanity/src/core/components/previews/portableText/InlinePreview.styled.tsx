@@ -1,77 +1,55 @@
-import {rem, Text, type Theme} from '@sanity/ui'
-import {css, styled} from 'styled-components'
+import {rem, Text, type TextProps, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 
-export const RootSpan = styled.span`
-  display: inline-flex;
-  align-items: center;
-  vertical-align: top;
-  height: calc(1em - 1px);
-  max-width: 100%;
-`
+import {
+  mediaSpan,
+  mediaSpanRadiusVar,
+  rootSpan,
+  textSpan,
+  textSpanFontSizeVar,
+  textSpanFontWeightVar,
+  textSpanLineHeightVar,
+} from './InlinePreview.css'
 
-export const MediaSpan = styled.span`
-  position: relative;
-  display: inline-block;
-  width: calc(1em - 1px);
-  height: calc(1em - 1px);
-  min-width: calc(1em - 1px);
+export function RootSpan(props: ComponentProps<'span'>) {
+  const {className, ...rest} = props
+  return <span {...rest} className={clsx(rootSpan, className)} />
+}
 
-  & img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: ${({theme}) => rem(theme.sanity.radius[1]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-  }
+export function MediaSpan(props: ComponentProps<'span'>) {
+  const {className, style, ...rest} = props
+  const {radius} = useThemeV2()
 
-  & img + span {
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    box-shadow: inset 0 0 0 1px var(--card-fg-color);
-    opacity: 0.2;
-    border-radius: ${({theme}) => rem(theme.sanity.radius[1]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-  }
+  return (
+    <span
+      {...rest}
+      className={clsx(mediaSpan, className)}
+      style={{...assignInlineVars({[mediaSpanRadiusVar]: `${rem(radius[1])}`}), ...style}}
+    />
+  )
+}
 
-  & svg {
-    display: block;
-    font-size: calc(14 / 16 * 1em);
-    margin: 1px 0;
-
-    &[data-sanity-icon] {
-      font-size: calc(18 / 16 * 1em);
-      margin: calc(1px + (2 / 18 * -1em)) 0;
-    }
-  }
-`
-
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-export const TextSpan = styled(Text).attrs({forwardedAs: 'span'})(({theme}: {theme: Theme}) => {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const textFont = theme.sanity.fonts.text
+export function TextSpan(props: Omit<TextProps<'span'>, 'as'>) {
+  const {className, style, ...rest} = props
+  const {font} = useThemeV2()
+  const textFont = font.text
   const textSize = textFont.sizes[1]
 
-  return css`
-    font-size: calc(${textSize.fontSize} / 16 * 1em);
-    font-weight: ${textFont.weights.medium};
-    box-sizing: border-box;
-    display: inline-block;
-    vertical-align: top;
-    line-height: ${textSize.lineHeight / textSize.fontSize};
-    padding-left: 0.5em;
-    padding-right: calc(0.5em - 2px);
-    min-width: 0;
-
-    & > span {
-      display: block;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      overflow: clip;
-    }
-  `
-})
+  return (
+    <Text
+      {...rest}
+      as="span"
+      className={clsx(textSpan, className)}
+      style={{
+        ...assignInlineVars({
+          [textSpanFontSizeVar]: `${textSize.fontSize}`,
+          [textSpanFontWeightVar]: `${textFont.weights.medium}`,
+          [textSpanLineHeightVar]: `${textSize.lineHeight / textSize.fontSize}`,
+        }),
+        ...style,
+      }}
+    />
+  )
+}

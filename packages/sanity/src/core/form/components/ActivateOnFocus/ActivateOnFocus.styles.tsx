@@ -1,44 +1,30 @@
 import {Card, Flex} from '@sanity/ui'
-import {styled} from 'styled-components'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 
-export const OverlayContainer = styled.div`
-  position: relative;
-`
+import {
+  cardContainer,
+  contentContainer,
+  flexContainer,
+  overlayContainer,
+} from './ActivateOnFocus.css'
 
-export const ContentContainer = styled.div`
-  z-index: 13;
-  opacity: 0;
-  transition: opacity 300ms linear;
-`
+export function OverlayContainer(props: ComponentProps<'div'>) {
+  const {className, ...rest} = props
+  return <div {...rest} className={clsx(overlayContainer, className)} />
+}
 
-export const CardContainer = styled(Card)`
-  border: 1px solid var(--card-border-color);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 12;
-  transition: opacity 150ms ease-in-out;
-  opacity: 0;
-  box-sizing: border-box;
-`
+export function ContentContainer(props: ComponentProps<'div'>) {
+  const {className, ...rest} = props
+  return <div {...rest} className={clsx(contentContainer, className)} />
+}
 
-export const FlexContainer = styled(Flex)`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+export function CardContainer(props: ComponentProps<typeof Card>) {
+  const {className, ...rest} = props
+  return <Card {...rest} className={clsx(cardContainer, className)} />
+}
 
-  &:hover,
-  &:focus {
-    & ${CardContainer} {
-      opacity: 0.9;
-    }
-
-    & ${ContentContainer} {
-      opacity: 1;
-    }
-  }
-`
+export function FlexContainer(props: ComponentProps<typeof Flex>) {
+  const {className, ...rest} = props
+  return <Flex {...rest} className={clsx(flexContainer, className)} />
+}

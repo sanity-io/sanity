@@ -1,14 +1,25 @@
-import {getTheme_v2 as getThemeV2} from '@sanity/ui/theme'
-import {css, styled} from 'styled-components'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 
-export const Container = styled.div(({theme}) => {
-  const {container, space} = getThemeV2(theme)
+import {container, container0Var, space3Var} from './Container.css'
 
-  return css`
-    display: grid;
-    grid-template-rows: min-content 1fr min-content;
-    inline-size: min(calc(${container[0]}px * 1.5), calc(100vw - (${space[3]}px * 2)));
-    max-block-size: 75vh;
-    block-size: var(--intrinsic-block-size, auto);
-  `
-})
+export function Container(props: ComponentProps<'div'>) {
+  const {className, style, ...rest} = props
+  const {container: containerSizes, space} = useThemeV2()
+
+  return (
+    <div
+      {...rest}
+      className={clsx(container, className)}
+      style={{
+        ...assignInlineVars({
+          [container0Var]: `${containerSizes[0]}px`,
+          [space3Var]: `${space[3]}px`,
+        }),
+        ...style,
+      }}
+    />
+  )
+}

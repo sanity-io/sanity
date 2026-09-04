@@ -28,7 +28,6 @@ import {
   useWorkspace,
 } from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
-import {styled} from 'styled-components'
 import {useEffectEvent} from 'use-effect-event'
 
 import {DEFAULT_TOOL_NAME, EDIT_INTENT_MODE, NARROW_MEDIA_INDEX} from './constants'
@@ -48,6 +47,7 @@ import {PresentationNavigateProvider} from './PresentationNavigateProvider'
 import {usePresentationNavigator} from './PresentationNavigator'
 import {PresentationParamsProvider} from './PresentationParamsProvider'
 import {PresentationProvider} from './PresentationProvider'
+import {container} from './PresentationTool.css'
 import {Preview} from './preview/Preview'
 import {
   type FrameState,
@@ -77,10 +77,6 @@ const PostMessagePerspective = lazy(() => import('./PostMessagePerspective'))
 const PostMessagePreviewSnapshots = lazy(() => import('./editor/PostMessagePreviewSnapshots'))
 const PostMessageSchema = lazy(() => import('./overlays/schema/PostMessageSchema'))
 const PostMessageTelemetry = lazy(() => import('./PostMessageTelemetry'))
-
-const Container = styled(Flex)`
-  overflow-x: auto;
-`
 
 // Fall back to the preview if the navigator tab is selected but no longer enabled.
 function resolveActiveTab(
@@ -539,7 +535,12 @@ export default function PresentationTool(props: {
         <PresentationNavigateProvider navigate={navigate}>
           <PresentationParamsProvider params={params}>
             <SharedStateProvider comlink={visualEditingComlink}>
-              <Container data-testid="presentation-root" direction="column" height="fill">
+              <Flex
+                className={container}
+                data-testid="presentation-root"
+                direction="column"
+                height="fill"
+              >
                 {isNarrow && (
                   <PresentationNarrowTabBar
                     activeTab={resolvedTab}
@@ -614,7 +615,7 @@ export default function PresentationTool(props: {
                     />
                   </Panels>
                 </Flex>
-              </Container>
+              </Flex>
             </SharedStateProvider>
           </PresentationParamsProvider>
         </PresentationNavigateProvider>

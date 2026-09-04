@@ -2,10 +2,11 @@ import {ArrowRightIcon} from '@sanity/icons/ArrowRight'
 import {ComposeSparklesIcon} from '@sanity/icons/ComposeSparkles'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type SanityDocument} from '@sanity/types'
-import {type BadgeTone, Card, Stack, Text} from '@sanity/ui'
-import {getTheme_v2} from '@sanity/ui/theme'
+import {type BadgeTone, Card, Stack, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
 import {motion} from 'motion/react'
-import {css, styled} from 'styled-components'
+import {type ComponentProps} from 'react'
 import {Box, Flex} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -13,13 +14,24 @@ import {ReleaseAvatarIcon} from '../../../releases/components/ReleaseAvatar'
 import {getDocumentVariantType} from '../../../util/getDocumentVariantType'
 import {canvasLocaleNamespace} from '../../i18n'
 import {DocumentDiff} from './DocumentDiff/DocumentDiff'
+import {chipCard, chipFgColorVar} from './LinkToCanvasDiff.css'
 
-const ChipCard = styled(Card)<{tone: BadgeTone}>((props) => {
-  const {color} = getTheme_v2(props.theme)
-  return css`
-    --card-fg-color: ${color.button.ghost[props.tone].enabled.fg};
-  `
-})
+function ChipCard(props: ComponentProps<typeof Card> & {tone: BadgeTone}) {
+  const {className, style, tone, ...rest} = props
+  const {color} = useThemeV2()
+
+  return (
+    <Card
+      {...rest}
+      tone={tone}
+      className={clsx(chipCard, className)}
+      style={{
+        ...assignInlineVars({[chipFgColorVar]: color.button.ghost[tone].enabled.fg}),
+        ...style,
+      }}
+    />
+  )
+}
 
 const VersionChip = ({id, showSparkles}: {id: string; showSparkles?: boolean}) => {
   const documentVariantType = getDocumentVariantType(id)

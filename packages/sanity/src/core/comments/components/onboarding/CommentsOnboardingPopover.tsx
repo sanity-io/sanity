@@ -1,29 +1,10 @@
-import {keyframes, styled} from 'styled-components'
 import {Text, Box, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Popover, type PopoverProps} from '../../../../ui-components/popover/Popover'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {commentsLocaleNamespace} from '../../i18n'
-
-const Root = styled(Box)`
-  max-width: 280px;
-`
-
-const fadeInKeyFrame = keyframes`
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-`
-
-const StyledPopover = styled(Popover)`
-  opacity: 0;
-  // Fade in the popover after 500ms
-  animation: ${fadeInKeyFrame} 200ms 500ms forwards;
-`
+import {root, styledPopover} from './CommentsOnboardingPopover.css'
 
 interface CommentsOnboardingPopoverProps extends Omit<PopoverProps, 'content'> {
   //   ...
@@ -35,9 +16,10 @@ export function CommentsOnboardingPopover(props: CommentsOnboardingPopoverProps)
   const {t} = useTranslation(commentsLocaleNamespace)
 
   return (
-    <StyledPopover
+    <Popover
+      className={styledPopover}
       content={
-        <Root padding={4}>
+        <Box className={root} padding={4}>
           <VStack gap={3}>
             <Text weight="medium" size={1} as="div" trim={true}>
               {t('onboarding.header')}
@@ -51,7 +33,7 @@ export function CommentsOnboardingPopover(props: CommentsOnboardingPopoverProps)
               <Button text={t('onboarding.dismiss')} tone="primary" onClick={onDismiss} />
             </Flex>
           </VStack>
-        </Root>
+        </Box>
       }
       open
       portal

@@ -1,11 +1,18 @@
-import {getTheme_v2, rgba} from '@sanity/ui/theme'
-import {type ComponentType} from 'react'
-import {createGlobalStyle, css} from 'styled-components'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {rgba} from '@sanity/ui/theme'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {useInsertionEffect, useState} from 'react'
 
-import {useWorkspace} from './workspace'
-
-const SCROLLBAR_SIZE = 12 // px
-const SCROLLBAR_BORDER_SIZE = 4 // px
+import {
+  bgColorVar,
+  borderColorVar,
+  GLOBAL_STYLES_ATTRIBUTE,
+  mutedFgColorVar,
+  resizerImageVar,
+  selectionColorVar,
+  textFontFamilyVar,
+  textMediumWeightVar,
+} from './styles.css'
 
 // Construct a resize handle icon as a data URI, to be displayed in browsers that support the `::-webkit-resizer` selector.
 function buildResizeHandleDataUri(hexColor: string) {
@@ -14,73 +21,86 @@ function buildResizeHandleDataUri(hexColor: string) {
   return `url("data:image/svg+xml,${encodedSvg}")`
 }
 
-export const GlobalStyle: ComponentType = () => {
-  const {
-    advancedVersionControl: {enabled: advancedVersionControlEnabled},
-  } = useWorkspace()
+type Vars = Record<string, string>
 
-  return <GlobalStyleSheet $documentEditorGutterEnabled={advancedVersionControlEnabled} />
+const VAR_NAMES = Object.keys(
+  assignInlineVars({
+    [resizerImageVar]: '',
+    [borderColorVar]: '',
+    [mutedFgColorVar]: '',
+    [selectionColorVar]: '',
+    [bgColorVar]: '',
+    [textFontFamilyVar]: '',
+    [textMediumWeightVar]: '',
+  }),
+)
+
+/**
+ * Studios mounted in the same document share `<html>`. The most recently mounted instance's
+ * values win, like the last injected global stylesheet did, a theme change keeps an instance's
+ * position, and unmounting one instance hands the root back to the remaining ones instead of
+ * stripping their values. `Map` preserves insertion order on `set` for an existing key.
+ */
+const instances = new Map<symbol, Vars>()
+
+function applyLatest(html: HTMLElement) {
+  let latest: Vars | undefined
+  for (const vars of instances.values()) latest = vars
+  if (latest) {
+    html.setAttribute(GLOBAL_STYLES_ATTRIBUTE, '')
+    for (const [name, value] of Object.entries(latest)) html.style.setProperty(name, value)
+    return
+  }
+  html.removeAttribute(GLOBAL_STYLES_ATTRIBUTE)
+  for (const name of VAR_NAMES) html.style.removeProperty(name)
 }
 
-interface Props {
-  $documentEditorGutterEnabled: boolean
+function mountInstance(html: HTMLElement, id: symbol): () => void {
+  instances.set(id, {})
+  return () => {
+    instances.delete(id)
+    applyLatest(html)
+  }
 }
 
-const GlobalStyleSheet = createGlobalStyle<Props>(({theme, $documentEditorGutterEnabled}) => {
-  const {color, font} = getTheme_v2(theme)
+function updateInstance(html: HTMLElement, id: symbol, vars: Vars) {
+  if (!instances.has(id)) return
+  instances.set(id, vars)
+  applyLatest(html)
+}
 
-  return css`
-    ::-webkit-resizer {
-      background-image: ${buildResizeHandleDataUri(color.icon)};
-      background-repeat: no-repeat;
-      background-position: bottom right;
-    }
+/**
+ * Applies the studio's document-level styles (`styles.css.ts`) by marking `<html>` and feeding
+ * it the theme values those rules read through CSS variables.
+ */
+export function GlobalStyle(): null {
+  const [id] = useState(() => Symbol('GlobalStyle'))
+  const {color, font} = useThemeV2()
+  const iconColor = color.icon
+  const borderColor = color.border
+  const mutedFgColor = color.muted.fg
+  const focusRingColor = color.focusRing
+  const bgColor = color.bg
+  const fontFamily = font.text.family
+  const mediumWeight = font.text.weights.medium
 
-    ::-webkit-scrollbar {
-      width: ${SCROLLBAR_SIZE}px;
-      height: ${SCROLLBAR_SIZE}px;
-    }
+  useInsertionEffect(() => mountInstance(document.documentElement, id), [id])
 
-    ::-webkit-scrollbar-corner {
-      background-color: transparent;
-    }
+  useInsertionEffect(() => {
+    updateInstance(
+      document.documentElement,
+      id,
+      assignInlineVars({
+        [resizerImageVar]: buildResizeHandleDataUri(iconColor),
+        [borderColorVar]: borderColor,
+        [mutedFgColorVar]: mutedFgColor,
+        [selectionColorVar]: rgba(focusRingColor, 0.3),
+        [bgColorVar]: bgColor,
+        [textFontFamilyVar]: fontFamily,
+        [textMediumWeightVar]: String(mediumWeight),
+      }),
+    )
+  }, [id, iconColor, borderColor, mutedFgColor, focusRingColor, bgColor, fontFamily, mediumWeight])
 
-    ::-webkit-scrollbar-thumb {
-      background-clip: content-box;
-      background-color: var(--card-border-color, ${color.border});
-      border: ${SCROLLBAR_BORDER_SIZE}px solid transparent;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background-color: var(--card-muted-fg-color, ${color.muted.fg});
-    }
-
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    *::selection {
-      background-color: ${rgba(color.focusRing, 0.3)};
-    }
-
-    html {
-      background-color: ${color.bg};
-    }
-
-    body {
-      scrollbar-gutter: stable;
-    }
-
-    #sanity {
-      font-family: ${font.text.family};
-    }
-
-    b {
-      font-weight: ${font.text.weights.medium};
-    }
-
-    strong {
-      font-weight: ${font.text.weights.medium};
-    }
-  `
-})
+  return null
+}

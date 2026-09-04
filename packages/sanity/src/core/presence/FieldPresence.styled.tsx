@@ -1,17 +1,15 @@
-import {styled} from 'styled-components'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 import {Flex} from 'ui5'
 
-import {AVATAR_SIZE} from './constants'
+import {flexWrapper, innerBox} from './FieldPresence.styled.css'
 
-export const FlexWrapper = styled(Flex)`
-  & > div:first-child {
-    flex: 1;
-    min-width: 0;
-  }
-`
+export function FlexWrapper(props: ComponentProps<typeof Flex>) {
+  const {className, ...rest} = props
+  return <Flex {...rest} className={clsx(flexWrapper, className)} />
+}
 
-export const InnerBox = styled(Flex)`
-  height: ${AVATAR_SIZE}px;
-  min-width: 23px;
-  vertical-align: top;
-`
+export function InnerBox(props: ComponentProps<typeof Flex>) {
+  const {className, ...rest} = props
+  return <Flex {...rest} className={clsx(innerBox, className)} />
+}

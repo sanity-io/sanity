@@ -11,11 +11,11 @@ import {
   useState,
   type RefAttributes,
 } from 'react'
-import {css, styled} from 'styled-components'
 
 import {type MenuButtonProps} from '../../../ui-components/menuButton/MenuButton'
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {ContextMenuButton} from '../contextMenuButton/ContextMenuButton'
+import {optionObserveElement, outerFlex, rootFlex, rowFlex} from './CollapseMenu.css'
 import {CollapseMenuDivider} from './CollapseMenuDivider'
 import {CollapseOverflowMenu} from './CollapseOverflowMenu'
 import {ObserveElement} from './ObserveElement'
@@ -33,44 +33,6 @@ export interface CollapseMenuProps {
   }
   onMenuClose?: () => void
 }
-
-const FOCUS_RING_PADDING = 3
-
-const OPTION_STYLE = css`
-  list-style: none;
-  display: flex;
-  white-space: nowrap;
-
-  &[data-hidden='true'] {
-    opacity: 0;
-    visibility: hidden;
-  }
-`
-
-const OuterFlex = styled(Flex)`
-  padding: ${FOCUS_RING_PADDING}px;
-  margin: -${FOCUS_RING_PADDING}px;
-  box-sizing: border-box;
-`
-
-const RootFlex = styled(Flex)`
-  border-radius: inherit;
-  position: relative;
-`
-
-const RowFlex = styled(Flex)`
-  width: max-content;
-  &[data-hidden='true'] {
-    visibility: hidden;
-    position: relative;
-    margin-top: -1px;
-    height: 1px;
-  }
-`
-
-const OptionObserveElement = styled(ObserveElement)`
-  ${OPTION_STYLE}
-`
 
 function _isReactElement(node: unknown): node is React.JSX.Element {
   return Boolean(node)
@@ -274,17 +236,18 @@ export function AutoCollapseMenu(
   )
 
   return (
-    <OuterFlex
+    <Flex
       align="center"
       data-ui="CollapseMenu"
       overflow="hidden"
       sizing="border"
       ref={ref}
       {...rest}
+      className={outerFlex}
     >
-      <RootFlex direction="column" flex={1} justify="center" ref={setRootEl}>
+      <Flex className={rootFlex} direction="column" flex={1} justify="center" ref={setRootEl}>
         {/* The actual visible options */}
-        <RowFlex gap={gap}>
+        <Flex className={rowFlex} gap={gap}>
           {pendingIntersections.length === 0 &&
             visibleMenuOptions.map((optionElement, index) => {
               const {dividerBefore, tooltipText = '', tooltipProps = {}} = optionElement.props
@@ -306,7 +269,7 @@ export function AutoCollapseMenu(
                 </Fragment>
               )
             })}
-        </RowFlex>
+        </Flex>
         {/* Rendered hidden in order to calculate intersections for original (expanded) menu options */}
         <RenderHidden
           gap={gap}
@@ -321,7 +284,7 @@ export function AutoCollapseMenu(
           intersectionOptions={intersectionOptions}
           onIntersectionChange={handleCollapsedIntersection}
         />
-      </RootFlex>
+      </Flex>
 
       {/* Show the collapsed items that doesn't fit in a menu */}
       {overflowingCollapsedOptionElements.length > 0 && (
@@ -335,7 +298,7 @@ export function AutoCollapseMenu(
           />
         </Flex>
       )}
-    </OuterFlex>
+    </Flex>
   )
 }
 
@@ -347,14 +310,15 @@ const RenderHidden = memo(function RenderHidden(props: {
 }) {
   const {elements, gap, intersectionOptions, onIntersectionChange} = props
   return (
-    <RowFlex data-hidden aria-hidden="true" gap={gap} overflow="hidden">
+    <Flex className={rowFlex} data-hidden aria-hidden="true" gap={gap} overflow="hidden">
       {elements.map((element, index) => {
         const {dividerBefore} = element.props
         return (
           <Fragment key={element.key}>
             {dividerBefore && index !== 0 && <CollapseMenuDivider hidden />}
 
-            <OptionObserveElement
+            <ObserveElement
+              className={optionObserveElement}
               options={intersectionOptions}
               // Entries are delivered oldest first, so the last one is current
               onIntersectionChange={(e) => onIntersectionChange(e[e.length - 1], element)}
@@ -365,10 +329,10 @@ const RenderHidden = memo(function RenderHidden(props: {
                   'aria-hidden': true,
                 })}
               </Flex>
-            </OptionObserveElement>
+            </ObserveElement>
           </Fragment>
         )
       })}
-    </RowFlex>
+    </Flex>
   )
 })

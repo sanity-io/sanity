@@ -3,7 +3,6 @@ import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {Card, Container, Heading, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
-import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -12,41 +11,15 @@ import {useActiveWorkspace} from '../activeWorkspaceMatcher/useActiveWorkspace'
 import {Layout} from '../components/navbar/workspace/WorkspaceAuth/Layout'
 import {WorkspaceAuthCard} from '../components/navbar/workspace/WorkspaceAuth/WorkspaceAuthCard'
 import {type ConfigErrorClassification} from '../requestErrors/classify'
+import {centeredContainer, contentWrapper, helpLink, inlineCode} from './ConfigErrorScreen.css'
 import {useVisibleWorkspaces} from './useVisibleWorkspaces'
-
-const CenteredContainer = styled(Flex)`
-  min-height: 100vh;
-  box-sizing: border-box;
-`
-
-const ContentWrapper = styled(Box)`
-  width: 100%;
-  max-width: 520px;
-`
-
-const HelpLink = styled.a`
-  color: var(--card-link-fg-color);
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25em;
-
-  &:hover {
-    text-decoration: underline;
-  }
-`
 
 // Inline monospace for config-key names mentioned in prose (e.g.
 // `projectId`). A plain <code> flows inline with text, unlike @sanity/ui's
 // <Code>, which renders a block-level <pre> that breaks onto its own line.
-const InlineCode = styled.code`
-  font-family: var(--card-code-family, monospace);
-  font-size: 0.9em;
-  background: var(--card-code-bg-color);
-  color: var(--card-code-fg-color);
-  padding: 0.1em 0.35em;
-  border-radius: 3px;
-`
+function InlineCode(props: {children: React.ReactNode}) {
+  return <code className={inlineCode}>{props.children}</code>
+}
 
 /** @internal */
 export interface ConfigErrorScreenProps {
@@ -145,7 +118,7 @@ function WorkspaceChooserScreen(props: {
       data-error="Config error workspace chooser"
       height="fill"
     >
-      <CenteredContainer alignItems="center" justifyContent="center" padding={4}>
+      <Flex className={centeredContainer} alignItems="center" justifyContent="center" padding={4}>
         <Container width={1}>
           <Stack gap={2}>
             <Flex>
@@ -164,7 +137,7 @@ function WorkspaceChooserScreen(props: {
             </Layout>
           </Stack>
         </Container>
-      </CenteredContainer>
+      </Flex>
     </Card>
   )
 }
@@ -196,8 +169,8 @@ function ConfigErrorLayout(props: {
 }) {
   return (
     <Card data-testid="studio-error-screen" data-error={props.errorLabel} height="fill">
-      <CenteredContainer alignItems="center" justifyContent="center" padding={4}>
-        <ContentWrapper paddingBottom={5}>
+      <Flex className={centeredContainer} alignItems="center" justifyContent="center" padding={4}>
+        <Box className={contentWrapper} paddingBottom={5}>
           <Stack gap={4}>
             <ChooseAnotherWorkspaceButton
               onChooseAnotherWorkspace={props.onChooseAnotherWorkspace}
@@ -215,8 +188,8 @@ function ConfigErrorLayout(props: {
             <Flex paddingTop={2}>{props.action}</Flex>
             <DocsLink />
           </Stack>
-        </ContentWrapper>
-      </CenteredContainer>
+        </Box>
+      </Flex>
     </Card>
   )
 }
@@ -342,14 +315,15 @@ function DocsLink() {
   return (
     <Flex justifyContent="flex-end" paddingTop={2}>
       <Text size={1}>
-        <HelpLink
+        <a
+          className={helpLink}
           href="https://www.sanity.io/docs/configuration"
           rel="noopener noreferrer"
           style={{textDecoration: 'none'}}
           target="_blank"
         >
           Studio configuration docs &rarr;
-        </HelpLink>
+        </a>
       </Text>
     </Flex>
   )

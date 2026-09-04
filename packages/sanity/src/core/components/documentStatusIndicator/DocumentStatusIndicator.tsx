@@ -1,51 +1,18 @@
 import {Flex} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useMemo} from 'react'
-import {css, styled} from 'styled-components'
 
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
-import {RELEASE_TYPES_TONES} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {useWorkspace} from '../../studio/workspace'
+import {dot, dotZIndexVar} from './DocumentStatusIndicator.css'
 
 interface DocumentStatusProps {
   draft?: VersionInfoDocumentStub | undefined
   published?: VersionInfoDocumentStub | undefined
   versions?: Record<string, VersionInfoDocumentStub | undefined>
 }
-
-const Dot = styled.div<{$index: number}>((props) => {
-  const {$index} = props
-  const tone = {
-    asap: RELEASE_TYPES_TONES.asap.tone,
-    scheduled: RELEASE_TYPES_TONES.scheduled.tone,
-    undecided: RELEASE_TYPES_TONES.undecided.tone,
-  }
-
-  return css`
-    width: 5px;
-    height: 5px;
-    background-color: var(--card-icon-color);
-    border-radius: 999px;
-    box-shadow: 0 0 0 1px var(--card-bg-color);
-    z-index: ${$index};
-    &[data-status='published'] {
-      --card-icon-color: var(--card-badge-positive-dot-color);
-    }
-    &[data-status='draft'] {
-      --card-icon-color: var(--card-badge-caution-dot-color);
-    }
-    &[data-status='asap'] {
-      --card-icon-color: var(--card-badge-${tone.asap}-dot-color);
-    }
-    &[data-status='undecided'] {
-      --card-icon-color: var(--card-badge-${tone.undecided}-dot-color);
-    }
-    &[data-status='scheduled'] {
-      --card-icon-color: var(--card-badge-${tone.scheduled}-dot-color);
-    }
-  `
-})
 
 type Status = 'published' | 'draft' | 'asap' | 'scheduled' | 'undecided'
 
@@ -110,7 +77,12 @@ export function DocumentStatusIndicator({draft, published, versions}: DocumentSt
       {indicators
         .filter(({show}) => show)
         .map(({status}, index) => (
-          <Dot key={status} data-status={status} $index={index + 1} />
+          <div
+            key={status}
+            className={dot}
+            data-status={status}
+            style={assignInlineVars({[dotZIndexVar]: String(index + 1)})}
+          />
         ))}
     </Flex>
   )

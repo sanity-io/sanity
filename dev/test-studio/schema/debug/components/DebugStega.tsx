@@ -6,8 +6,9 @@ import {vercelStegaDecodeAll} from '@vercel/stega'
 import {useMemo} from 'react'
 import {type InputProps, isDocumentSchemaType} from 'sanity'
 import {useDocumentPane, usePaneRouter} from 'sanity/structure'
-import {styled} from 'styled-components'
 import {Box} from 'ui5'
+
+import {hoverCard} from './DebugStega.css'
 
 export function StegaDebugger(props: InputProps) {
   if (isDocumentSchemaType(props.schemaType)) {
@@ -26,20 +27,12 @@ export function StegaDebugger(props: InputProps) {
   )
 }
 
-const HoverCard = styled(Card)`
-  transition: opacity 100ms ease;
-  &:hover {
-    opacity: 0.1;
-  }
-  &:active {
-    pointer-events: none;
-  }
-`
 function DocumentDebugger() {
   const {focusPath} = useDocumentPane()
   // if (!focusPath || focusPath.length < 1) return null
   return (
-    <HoverCard
+    <Card
+      className={hoverCard}
       radius={2}
       shadow={2}
       padding={2}
@@ -59,7 +52,7 @@ function DocumentDebugger() {
           <Code size={0}>{studioPath.toString(focusPath) || 'undefined'}</Code>
         </Box>
       </Stack>
-    </HoverCard>
+    </Card>
   )
 }
 

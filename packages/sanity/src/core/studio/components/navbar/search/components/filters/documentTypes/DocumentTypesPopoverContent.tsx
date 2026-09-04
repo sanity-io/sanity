@@ -3,7 +3,6 @@ import {Stack, Text} from '@sanity/ui'
 import {MenuDivider} from '@sanity/ui/menu'
 import partition from 'lodash-es/partition.js'
 import {type ChangeEvent, useCallback, useMemo, useRef, useState} from 'react'
-import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../../../../ui-components/button/Button'
@@ -19,13 +18,8 @@ import {useSearchState} from '../../../contexts/search/useSearchState'
 import {type DocumentTypeMenuItem} from '../../../types'
 import {getSelectableOmnisearchTypes} from '../../../utils/selectors'
 import {FilterPopoverContentHeader} from '../common/FilterPopoverContentHeader'
+import {clearButtonBox} from './DocumentTypesPopoverContent.css'
 import {DocumentTypeFilterItem} from './items/DocumentTypeFilterItem'
-
-const ClearButtonBox = styled(Box)`
-  border-top: 1px solid
-    ${({theme}) => theme.sanity.color.base.border /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-  flex-shrink: 0;
-`
 
 const POPOVER_STYLES = {width: '250px'}
 
@@ -179,7 +173,7 @@ function ClearButton({onClick, selectedTypes}: {onClick: () => void; selectedTyp
   const {t} = useTranslation()
 
   return (
-    <ClearButtonBox padding={1}>
+    <Box className={clearButtonBox} padding={1}>
       <Stack>
         <Button
           aria-label={t('search.action.clear-type-filters-aria-label')}
@@ -191,7 +185,7 @@ function ClearButton({onClick, selectedTypes}: {onClick: () => void; selectedTyp
           tone="primary"
         />
       </Stack>
-    </ClearButtonBox>
+    </Box>
   )
 }
 

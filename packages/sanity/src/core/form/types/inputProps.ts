@@ -30,12 +30,12 @@ import {
 import {
   type ClipboardEventHandler,
   type ComponentType,
+  type CSSProperties,
   type FocusEvent as ReactFocusEvent,
   type FocusEventHandler,
   type FormEventHandler,
   type RefObject,
 } from 'react'
-import {type CSSProperties} from 'styled-components'
 
 import {type PatchEvent} from '../patch/PatchEvent'
 import {type FormPatch} from '../patch/types'

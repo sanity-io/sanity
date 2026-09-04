@@ -2,8 +2,9 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Card, Flex, Text} from '@sanity/ui'
 import {type ComponentProps, type ReactNode} from 'react'
-import {styled} from 'styled-components'
 import {Box} from 'ui5'
+
+import {suffixBox} from './Alert.css'
 
 interface AlertProps extends Omit<ComponentProps<typeof Card>, 'title'> {
   title: ReactNode
@@ -15,10 +16,6 @@ const STATUS_TONES = {
   warning: 'caution',
   error: 'critical',
 } as const
-
-const SuffixBox = styled(Box)`
-  border-top: 1px solid var(--card-border-color);
-`
 
 export function Alert(props: AlertProps) {
   const {children, status = 'warning', suffix, title, ...rest} = props
@@ -48,7 +45,7 @@ export function Alert(props: AlertProps) {
         </Box>
       </Flex>
 
-      {suffix && <SuffixBox>{suffix}</SuffixBox>}
+      {suffix && <Box className={suffixBox}>{suffix}</Box>}
     </Card>
   )
 }

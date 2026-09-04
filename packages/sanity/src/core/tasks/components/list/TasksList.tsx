@@ -2,12 +2,12 @@ import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {Stack, Text} from '@sanity/ui'
 import {MenuDivider} from '@sanity/ui/menu'
 import {Fragment, useMemo} from 'react'
-import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {TASK_STATUS} from '../../constants/TaskStatus'
 import {type TaskDocument, type TaskStatus} from '../../types'
 import {EmptyStatusListState, EmptyTasksListState} from './EmptyStates'
+import {detailsFlex, summaryBox} from './TasksList.css'
 import {TasksListItem} from './TasksListItem'
 
 const EMPTY_ARRAY: [] = []
@@ -16,22 +16,6 @@ const getLabelForStatus = (status: string) => {
   const statusConfig = TASK_STATUS.find((item) => item.value === status)
   return statusConfig?.title
 }
-
-const DetailsFlex = styled(Flex)`
-  [data-ui='summary-icon'] {
-    transition: transform 0.2s;
-    transform: rotate(-90deg);
-  }
-  &[open] [data-ui='summary-icon'] {
-    transform: rotate(0);
-  }
-  > summary::-webkit-details-marker {
-    display: none;
-  }
-`
-const SummaryBox = styled(Box)`
-  list-style: none;
-`
 
 interface TaskListProps {
   status: TaskStatus
@@ -43,8 +27,8 @@ function TaskList(props: TaskListProps) {
   const {status, tasks, onTaskSelect} = props
 
   return (
-    <DetailsFlex forwardedAs="details" flexDirection="column" open={status === 'open'}>
-      <SummaryBox forwardedAs="summary" paddingY={1}>
+    <Flex as="details" className={detailsFlex} flexDirection="column" open={status === 'open'}>
+      <Box as="summary" className={summaryBox} paddingY={1}>
         <Flex alignItems="center" gap={1} paddingY={1}>
           <Text size={1} weight="medium" muted>
             {getLabelForStatus(status)}
@@ -54,7 +38,7 @@ function TaskList(props: TaskListProps) {
             <ChevronDownIcon data-ui="summary-icon" />
           </Text>
         </Flex>
-      </SummaryBox>
+      </Box>
 
       <Stack gap={4} marginTop={3} paddingBottom={5}>
         {tasks?.length > 0 ? (
@@ -81,7 +65,7 @@ function TaskList(props: TaskListProps) {
           <EmptyStatusListState status={status} />
         )}
       </Stack>
-    </DetailsFlex>
+    </Flex>
   )
 }
 

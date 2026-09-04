@@ -6,10 +6,10 @@ import {
   useRef,
   type RefAttributes,
 } from 'react'
-import {createGlobalStyle, styled} from 'styled-components'
 import {Box} from 'ui5'
 
 import {useId} from '../useId'
+import {iframeElement, iframeOverlay} from './IFrame.css'
 
 interface IFrameProps {
   animate: VariantLabels
@@ -57,7 +57,8 @@ export function IFrame(props: IFrameProps & RefAttributes<HTMLIFrameElement>) {
 
   return (
     <>
-      <IFrameElement
+      <motion.iframe
+        className={iframeElement}
         style={{
           ...style,
           viewTransitionName,
@@ -69,37 +70,7 @@ export function IFrame(props: IFrameProps & RefAttributes<HTMLIFrameElement>) {
         src={src}
         variants={variants}
       />
-      {preventClick && <IFrameOverlay />}
-      <GlobalViewTransition />
+      {preventClick && <Box className={iframeOverlay} />}
     </>
   )
 }
-
-const IFrameElement = motion.create(styled.iframe`
-  box-shadow: 0 0 0 1px var(--card-border-color);
-  border: 0;
-  max-height: 100%;
-  width: 100%;
-  view-transition-class: presentation-tool-iframe;
-`)
-
-const IFrameOverlay = styled(Box)`
-  position: absolute;
-  inset: 0;
-  background: transparent;
-`
-
-const GlobalViewTransition = createGlobalStyle`
-html:active-view-transition-type(sanity-iframe-viewport) {
-  view-transition-name: none;
-  &::view-transition {
-    pointer-events: none;
-  }
-  /* &::view-transition-old(root) {
-    display: none;
-  }
-  &::view-transition-new(root) {
-    animation: none;
-  } */
-}
-`

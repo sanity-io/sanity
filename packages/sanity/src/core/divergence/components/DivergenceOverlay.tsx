@@ -1,9 +1,17 @@
 import {type Path} from '@sanity/types'
-import {type LayerContextValue, Card} from '@sanity/ui'
-import {getTheme_v2} from '@sanity/ui/theme'
-import {css, styled} from 'styled-components'
+import {type LayerContextValue, Card, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 
 import {pathToAnchorIdent} from '../../form/utils/pathToAnchorIdent'
+import {
+  anchorNameVar,
+  divergenceOverlay,
+  space3Var,
+  space5Var,
+  zIndexVar,
+} from './DivergenceOverlay.css'
 
 interface Props {
   $path: Path
@@ -13,20 +21,23 @@ interface Props {
 /**
  * @internal
  */
-export const DivergenceOverlay = styled(Card)<Props>(({$path, $layer, ...props}) => {
-  const theme = getTheme_v2(props.theme)
+export function DivergenceOverlay(props: ComponentProps<typeof Card> & Props) {
+  const {$layer, $path, className, style, ...rest} = props
+  const {space} = useThemeV2()
 
-  return css`
-    inline-size: 100%;
-    margin-block-start: ${theme.space[3]}px;
-
-    @supports (position-anchor: --anchor) {
-      position: fixed;
-      position-anchor: ${pathToAnchorIdent('input', $path)};
-      position-area: block-end span-all;
-      position-try-fallbacks: flip-block;
-      inline-size: calc(anchor-size(inline) + ${theme.space[5]}px);
-      z-index: ${$layer.zIndex};
-    }
-  `
-})
+  return (
+    <Card
+      {...rest}
+      className={clsx(divergenceOverlay, className)}
+      style={{
+        ...assignInlineVars({
+          [space3Var]: `${space[3]}px`,
+          [space5Var]: `${space[5]}px`,
+          [anchorNameVar]: pathToAnchorIdent('input', $path),
+          [zIndexVar]: `${$layer.zIndex}`,
+        }),
+        ...style,
+      }}
+    />
+  )
+}

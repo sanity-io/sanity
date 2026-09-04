@@ -1,8 +1,15 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
-import {getTheme_v2} from '@sanity/ui/theme'
+import {Card, Flex, Stack, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {Fragment, type ReactNode} from 'react'
-import {css, styled} from 'styled-components'
 import {Box} from 'ui5'
+
+import {
+  glyphCell,
+  propertiesCard,
+  propertiesCardMarginTopVar,
+  propertiesCardMaxWidthVar,
+  sectionGrid,
+} from './DetailPropertiesPanel.css'
 
 // At or above this many rows, a `multiColumn` section splits into two side-by-side columns so a
 // long list (e.g. six targeting conditions) reads as a compact block instead of a tall stack.
@@ -10,56 +17,9 @@ import {Box} from 'ui5'
 const MULTI_COLUMN_THRESHOLD = 5
 
 // The size of the detail-page title (bold, size 4) this panel sits beside. Used to drop the panel by
-// the title's top half-leading below.
+// the title's top half-leading (see `propertiesCard` in the .css.ts). Derived from theme font
+// metrics so it tracks the type scale.
 const TITLE_SIZE = 4
-
-// The panel sizes to its content (so a short two-row panel doesn't leave a wide empty gap) but never
-// grows past a sensible max, at which point long values truncate instead of stretching the pane.
-//
-// margin-top drops the panel by the title's top half-leading so its top border lines up with the
-// title's visible cap-height beside it (a text line-box is taller than its glyphs, so the title cap
-// sits a few px below its layout top). Compensating on the panel — moving it down — rather than
-// lifting the title up avoids clipping the title's caps under an overflow-hidden header. Derived from
-// theme font metrics so it tracks the type scale.
-const PropertiesCard = styled(Card)<{$maxWidth: number}>((props) => {
-  const {font} = getTheme_v2(props.theme)
-  const {fontSize, lineHeight} = font.text.sizes[TITLE_SIZE]
-  const titleTopLeading = Math.round((lineHeight - fontSize) / 2)
-  return css`
-    width: fit-content;
-    max-width: ${props.$maxWidth}px;
-    margin-top: ${titleTopLeading}px;
-  `
-})
-
-// One grid per section so every row shares column tracks and stays aligned:
-//  - glyph  (auto) — only present when the section has glyphs
-//  - label  (max-content) — sizes to the widest label, so labels never truncate and values start on
-//                           one clean left edge
-//  - value  (minmax(0, 1fr)) — takes the rest; min-width:0 lets a long value truncate in its column
-// grid-auto-rows keeps every row on an even minimum height, matching the old rhythm.
-const SectionGrid = styled.div<{$hasGlyphs: boolean}>`
-  display: grid;
-  align-items: center;
-  column-gap: 12px;
-  row-gap: 6px;
-  grid-auto-rows: minmax(25px, auto);
-  ${(props) =>
-    props.$hasGlyphs
-      ? css`
-          grid-template-columns: auto max-content minmax(0, 1fr);
-        `
-      : css`
-          grid-template-columns: max-content minmax(0, 1fr);
-        `}
-`
-
-const GlyphCell = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-`
 
 /**
  * A single row: an optional leading `icon` (a glyph accompanying the label), a `label`, and a
@@ -93,11 +53,11 @@ function PropertyRowsGrid({
   hasGlyphs: boolean
 }): React.JSX.Element {
   return (
-    <SectionGrid $hasGlyphs={hasGlyphs}>
+    <div className={hasGlyphs ? sectionGrid.withGlyphs : sectionGrid.withoutGlyphs}>
       {rows.map((row, rowIndex) => (
         // oxlint-disable-next-line no-array-index-key
         <Fragment key={rowIndex}>
-          {hasGlyphs && <GlyphCell>{row.icon}</GlyphCell>}
+          {hasGlyphs && <div className={glyphCell}>{row.icon}</div>}
           <Text muted size={1}>
             {row.label}
           </Text>
@@ -114,7 +74,7 @@ function PropertyRowsGrid({
           </Box>
         </Fragment>
       ))}
-    </SectionGrid>
+    </div>
   )
 }
 
@@ -135,15 +95,22 @@ export function DetailPropertiesPanel(props: {
   maxWidth?: number
 }): React.JSX.Element {
   const {sections, testId, maxWidth = 300} = props
+  const {font} = useThemeV2()
+  const {fontSize, lineHeight} = font.text.sizes[TITLE_SIZE]
+  const titleTopLeading = Math.round((lineHeight - fontSize) / 2)
 
   return (
-    <PropertiesCard
+    <Card
+      className={propertiesCard}
+      style={assignInlineVars({
+        [propertiesCardMaxWidthVar]: `${maxWidth}px`,
+        [propertiesCardMarginTopVar]: `${titleTopLeading}px`,
+      })}
       flex="none"
       border
       radius={3}
       padding={3}
       tone="transparent"
-      $maxWidth={maxWidth}
       data-testid={testId}
     >
       <Stack gap={4}>
@@ -179,6 +146,6 @@ export function DetailPropertiesPanel(props: {
           )
         })}
       </Stack>
-    </PropertiesCard>
+    </Card>
   )
 }

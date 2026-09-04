@@ -1,40 +1,13 @@
 import {ElementQuery} from '@sanity/ui'
-import {styled} from 'styled-components'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 
-const DateWithTooltipElementQuery: typeof ElementQuery = styled(ElementQuery)`
-  .date-small {
-    display: inline;
-  }
-  .date-medium {
-    display: none;
-  }
-  .date-large {
-    display: none;
-  }
+import {dateWithTooltipElementQuery} from './DateWithTooltipElementQuery.css'
 
-  &[data-eq-min~='1'] {
-    .date-small {
-      display: none;
-    }
-    .date-medium {
-      display: inline;
-    }
-    .date-large {
-      display: none;
-    }
-  }
+function DateWithTooltipElementQuery(props: ComponentProps<typeof ElementQuery>) {
+  const {className, ...rest} = props
 
-  &[data-eq-min~='2'] {
-    .date-small {
-      display: none;
-    }
-    .date-medium {
-      display: none;
-    }
-    .date-large {
-      display: inline;
-    }
-  }
-`
+  return <ElementQuery {...rest} className={clsx(dateWithTooltipElementQuery, className)} />
+}
 
 export default DateWithTooltipElementQuery
