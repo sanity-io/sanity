@@ -46,7 +46,7 @@ export const useUnpublishAction: DocumentActionComponent = ({
   // Unpublishable only when a published document exists in the current lane — the base published
   // document when no variant is selected, the variant-of-published sibling when one is.
   const siblings = getTargetSiblings(targetDocumentState)
-  const hasSiblings = siblings !== undefined
+  const hasSiblings = Boolean(siblings)
   const publishedExists = Boolean(siblings?.published)
   const {unpublish} = useDocumentOperation(id, type, getPairTarget(targetDocumentState))
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
