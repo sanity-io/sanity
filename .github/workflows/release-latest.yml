@@ -211,8 +211,8 @@ jobs:
     #
     # Deliberately no `backfill_sha`: that selects bench's historical replay
     # path, which rebuilds a commit in its own worktree from that commit's
-    # lockfile. It is for trees that no longer match the checkout, which is not
-    # the case here.
+    # lockfile and packs it for HEAD's harness. It is for trees that no longer
+    # match the checkout, which is not the case here.
     #
     # Non-blocking by construction: nothing depends on this job, so a failed
     # benchmark can never fail or delay a release.
