@@ -88,6 +88,13 @@ effect of merged work; secondary: leads scanning health weekly.
    host) and when comparing branches.
 2. **Run detail** (P2) — click-through from a dot: the PR-comment tables
    (absolute variant), soak slope chart, flake telemetry, run metadata.
+   Today's run popover already carries the investigation hand-offs: the
+   GitHub compare of the gap to the previous distinct commit, **Copy A/B vs
+   previous run** (the `gh workflow run bench.yml … ab_from/ab_to` command —
+   GitHub has no URL that prefills dispatch inputs, so it is a command to
+   paste) and **Copy investigation prompt** (the same command inside a
+   paste-ready brief for a coding agent, `investigationPrompt.ts`). The
+   Comparisons tool is where a dispatched comparison lands.
 3. **Drift feed** (P2) — computed client-side, flagging a metric when it
    clears the same `rel`/`absMs` thresholds the gate uses
    (perf/bench/stats/gate.ts — one source of truth for "what matters").
