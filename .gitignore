@@ -122,3 +122,7 @@ dev/test-studio/.react-compiler-bailout-report.json
 # absolute paths, so they must not be tracked. Only relevant for clones whose
 # core.hooksPath still points here from the pre-lefthook husky setup.
 .husky/
+
+# Local output of `pnpm e2e:flake-report`
+flake-report.md
+flake-report.json
