@@ -12,8 +12,9 @@ const ALL_BROWSERS = ['chromium', 'firefox', 'webkit'] as const
 // @chromatic-com/vitest plugin archives each test's end state while the suite
 // runs, for upload to Chromatic via `chromatic --vitest` (see
 // .github/workflows/chromatic.yml). This is the visual snapshot source for the
-// browser tests — their `*Story.tsx` harnesses are not re-exported as
-// Storybook stories. Normal runs (flag unset) are unaffected.
+// browser tests — their harness components live inside the test files and
+// are not re-exported as Storybook stories. Normal runs (flag unset) are
+// unaffected.
 // Chromatic re-renders archives in its own standardized cloud browser, so
 // capture runs are chromium-only — capturing from firefox/webkit would only
 // multiply identical archives.

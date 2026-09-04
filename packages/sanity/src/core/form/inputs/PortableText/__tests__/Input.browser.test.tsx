@@ -1,16 +1,71 @@
 import {type PortableTextEditor} from '@portabletext/editor'
-import {type EditorChange} from 'sanity'
+import {defineArrayMember, defineField, defineType} from '@sanity/types'
+import {useMemo} from 'react'
+import {type EditorChange, type InputProps, type PortableTextInputProps} from 'sanity'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
 
+import {TestForm} from '../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../test/browser/testHelpers'
-import {InputStory} from './InputStory'
+import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
+
+interface InputHarnessProps {
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  editorRef?: React.Ref<PortableTextEditor | null>
+  ptInputProps?: Partial<PortableTextInputProps>
+}
+
+function InputHarness(props: InputHarnessProps) {
+  const {editorRef, ptInputProps} = props
+
+  const schemaTypes = useMemo(
+    () => [
+      defineType({
+        type: 'document',
+        name: 'test',
+        title: 'Test',
+        fields: [
+          defineField({
+            type: 'array',
+            name: 'body',
+            of: [
+              defineArrayMember({
+                type: 'block',
+              }),
+            ],
+            components: {
+              input: (inputProps: InputProps) => {
+                const editorProps = {
+                  ...inputProps,
+                  ...ptInputProps,
+                  editorRef,
+                } as PortableTextInputProps
+                return (
+                  <div data-testid="pt-input-with-editor-ref">
+                    {inputProps.renderDefault(editorProps)}
+                  </div>
+                )
+              },
+            },
+          }),
+        ],
+      }),
+    ],
+    [ptInputProps, editorRef],
+  )
+
+  return (
+    <TestWrapper schemaTypes={schemaTypes}>
+      <TestForm />
+    </TestWrapper>
+  )
+}
 
 describe('Portable Text Input', () => {
   describe('Activation', () => {
     it('Show call to action on focus', async () => {
-      void render(<InputStory ptInputProps={{initialActive: false}} />)
+      void render(<InputHarness ptInputProps={{initialActive: false}} />)
       const $portableTextInput = page.getByTestId('field-body')
       const $activeOverlay = $portableTextInput.getByTestId('activate-overlay')
 
@@ -23,7 +78,7 @@ describe('Portable Text Input', () => {
     })
 
     it('Show call to action on hover', async () => {
-      void render(<InputStory ptInputProps={{initialActive: false}} />)
+      void render(<InputHarness ptInputProps={{initialActive: false}} />)
       const $portableTextInput = page.getByTestId('field-body')
       const $activeOverlay = $portableTextInput.getByTestId('activate-overlay')
 
@@ -33,7 +88,7 @@ describe('Portable Text Input', () => {
     })
 
     it("Immediately activate on mount when 'initialActive' is true", async () => {
-      void render(<InputStory ptInputProps={{initialActive: true}} />)
+      void render(<InputHarness ptInputProps={{initialActive: true}} />)
 
       const $portableTextInput = page.getByTestId('field-body')
       const $activeOverlay = $portableTextInput.getByTestId('activate-overlay')
@@ -41,7 +96,7 @@ describe('Portable Text Input', () => {
     })
 
     it("Immediately activate on mount when 'initialActive' is unset", async () => {
-      void render(<InputStory />)
+      void render(<InputHarness />)
 
       const $portableTextInput = page.getByTestId('field-body')
       const $activeOverlay = $portableTextInput.getByTestId('activate-overlay')
@@ -51,7 +106,7 @@ describe('Portable Text Input', () => {
 
   describe('Placeholder', () => {
     it('Displays placeholder text and removes it when typed into', async () => {
-      void render(<InputStory />)
+      void render(<InputHarness />)
       const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
       const $pte = await getFocusedPortableTextEditor('field-body')
       // Scope to the field rather than the textbox locator: the placeholder
@@ -74,7 +129,7 @@ describe('Portable Text Input', () => {
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       let editorIstance: PortableTextEditor | undefined
       void render(
-        <InputStory
+        <InputHarness
           editorRef={(editor) => {
             if (editor) {
               editorIstance = editor
@@ -93,7 +148,7 @@ describe('Portable Text Input', () => {
       const {getFocusedPortableTextEditor} = testHelpers()
       const changes: EditorChange[] = []
       const pushChange = (change: EditorChange) => changes.push(change)
-      void render(<InputStory ptInputProps={{onEditorChange: pushChange}} />)
+      void render(<InputHarness ptInputProps={{onEditorChange: pushChange}} />)
       await getFocusedPortableTextEditor('field-body')
       expect(changes.length).toBeGreaterThan(0)
     })
@@ -101,7 +156,7 @@ describe('Portable Text Input', () => {
 
   describe('Fullscreen', () => {
     it('Input is rendered as fullscreen', async () => {
-      void render(<InputStory ptInputProps={{initialFullscreen: true}} />)
+      void render(<InputHarness ptInputProps={{initialFullscreen: true}} />)
       // Assertion: data-fullscreen attribute must be correctly set. Use a
       // retrying locator + attribute matcher instead of an eager querySelector
       // (which returns null before the editor mounts and throws).

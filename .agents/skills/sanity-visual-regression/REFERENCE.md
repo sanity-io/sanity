@@ -11,9 +11,10 @@
   (`readFileAsBase64`), clipboard/PTE helpers and mid-test `page.viewport()` mutations — none of
   which map onto Storybook `play()` functions. They were also already migrated once (Playwright
   CT → vitest browser mode). `@chromatic-com/vitest` snapshots each test's end state with zero
-  test changes, so a test's `*Story.tsx` harness is test-only: it does not get a CSF re-export
-  in Storybook (those existed while the Vitest integration was in early access and were removed
-  once it went GA). `*Story.tsx` files that no browser test imports are story-only harnesses.
+  test changes, so each browser test defines its harness component inline (`FooHarness`) and
+  gets no CSF re-export in Storybook. While the Vitest integration was in early access the
+  harnesses lived in shared `*Story.tsx` files with thin stories on top; both were removed once
+  it went GA, so today every `*Story.tsx` is a Storybook harness owned by a `*.stories.tsx`.
 - **Why the storybook Vite config mirrors `vitest.browser.config.mts`:** the `monorepo` exports
   condition resolves `sanity` (and other workspace packages) to TypeScript source; the
   vanilla-extract plugin compiles `.css.ts`; the React Compiler babel preset matches what the

@@ -16,9 +16,10 @@ sources, one Chromatic project each:
 | Playwright e2e `takeSnapshot()` | `sanity_e2e`      | `CHROMATIC_PROJECT_TOKEN_E2E`       | Active, curated opt-in                             |
 
 Each source owns a disjoint set of states. A `*.browser.test.tsx` is the snapshot source for
-everything its `*Story.tsx` harness renders — the Vitest plugin archives every test's end state
-with no test code changes — so browser-test harnesses do not get a Storybook story on top.
-Stories cover the states no browser test renders.
+everything it renders — the Vitest plugin archives every test's end state with no test code
+changes — so browser tests keep their harness component inline (`function FooHarness()` in the
+test file) and never get a Storybook story on top. Every `*Story.tsx` file is a Storybook
+harness imported by a `*.stories.tsx`. Stories cover the states no browser test renders.
 
 All checks are non-gating during burn-in (`exitZeroOnChanges`); merges to `main` auto-accept
 baselines. Review diffs on the Chromatic build linked from the PR check.
@@ -44,10 +45,10 @@ renders the component or an open PR is about to, so you only add what is missing
      New coverage can use a colocated `*Story.tsx` when the grid needs `TestWrapper` inside the
      harness — see
      [ConfirmPopover.stories.tsx](../../../packages/sanity/src/ui-components/confirmPopover/__tests__/ConfirmPopover.stories.tsx).
-     Do **not** write a story whose `component` is a harness that a `*.browser.test.tsx` already
-     renders: that state is snapshotted by the Vitest integration, and the story would be a
+     Do **not** extract a browser test's inline harness into a `*Story.tsx` to reuse it from a
+     story: that state is snapshotted by the Vitest integration, and the story would be a
      duplicate snapshot of the same pixels. If the test's harness lacks a state you need, add it
-     to the test (or to a separate story-only harness), not as a CSF re-export.
+     to the test, or build a separate story-only harness.
 2. Overlays that only exist after interaction (tooltips, menus, submenu flyouts) get a `play`
    function using `storybook/test` (`userEvent` + `waitFor`/`expect(...).toBeVisible()`, querying
    `within(document.body)` for portaled content). Chromatic and addon-vitest both run `play`
@@ -107,8 +108,9 @@ job, but the job stays dormant until the project token exists. To activate:
 3. Done — the job self-activates on the next run. No code changes. Every browser test's end
    state becomes a snapshot; the first build is the full baseline.
 
-Stories that merely re-exported browser-test harnesses were removed when the plugin went GA; the
-browser tests are the snapshot source for those states. See [REFERENCE.md](REFERENCE.md) for
+Stories that merely re-exported browser-test harnesses were removed when the plugin went GA, and
+the shared `*Story.tsx` harnesses were folded back into their tests; the browser tests are the
+snapshot source for those states. See [REFERENCE.md](REFERENCE.md) for
 local capture runs, `takeSnapshot()`/`configure()` usage inside tests (only valid once the plugin
 is active — `takeSnapshot()` THROWS in normal runs, so never commit calls to it while the
 integration is dormant), and cost controls.

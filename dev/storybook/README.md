@@ -28,9 +28,10 @@ pnpm chromatic           # publish + snapshot manually (needs CHROMATIC_PROJECT_
   harness it covers and use package-local imports instead of reaching across workspace boundaries.
 - **Browser tests are not re-exported as stories.** The vitest browser-mode suite
   (`*.browser.test.tsx`) is its own Chromatic snapshot source: `@chromatic-com/vitest` archives
-  every test's end state in place (see the `vitest-visual` job in the Chromatic workflow), so a
-  `*Story.tsx` harness that a browser test renders has no CSF file on top of it. Stories only
-  cover states no browser test renders.
+  every test's end state in place (see the `vitest-visual` job in the Chromatic workflow). Each
+  browser test keeps its harness component inline, and every `*Story.tsx` in the repo is a
+  Storybook harness owned by a `*.stories.tsx`. Stories only cover states no browser test
+  renders.
 - **Authored migration sentinels:** component-local stories cover states the tests don't capture —
   `ui-components` wrapper variants (the `@sanity/ui` → `ui5` surface, with card/tone coverage
   prioritized) and vanilla-extract-migrated components. Harness stories reuse the same

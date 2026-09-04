@@ -512,9 +512,11 @@ Storybook stories, and the vitest browser-mode suite captured in place by `@chro
 (every `*.browser.test.tsx` end state becomes a snapshot, no test changes). Stories are co-located
 with their source under `packages/**/src/**/__tests__` and cover states no browser test renders:
 authored migration sentinels for `ui-components` and vanilla-extract-migrated components, plus
-harness stories built on the same `TestWrapper` mock studio. Do not re-export a browser test's
-`*Story.tsx` harness as a story — the browser test already is its snapshot. `dev/storybook`
-contains the shared Storybook, Chromatic, and addon-vitest infrastructure.
+harness stories built on the same `TestWrapper` mock studio. Browser tests keep their harness
+component inline (`function FooHarness()` in the test file); every `*Story.tsx` is a Storybook
+harness owned by a `*.stories.tsx`. Do not extract a browser test's harness into a `*Story.tsx`
+to put a story on it — the browser test already is its snapshot. `dev/storybook` contains the
+shared Storybook, Chromatic, and addon-vitest infrastructure.
 
 ```bash
 pnpm dev:storybook                    # Storybook dev server at http://localhost:6006

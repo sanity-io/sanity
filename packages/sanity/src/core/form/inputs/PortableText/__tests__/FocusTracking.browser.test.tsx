@@ -1,10 +1,175 @@
-import {type Path, type SanityDocument} from '@sanity/types'
+import {defineContainer} from '@portabletext/editor'
+import {NodePlugin} from '@portabletext/editor/plugins'
+import {
+  defineArrayMember,
+  defineField,
+  defineType,
+  type Path,
+  type SanityDocument,
+} from '@sanity/types'
+import {type PortableTextPluginsProps} from 'sanity'
 import {beforeEach, describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
 
+import {TestForm} from '../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../test/browser/testHelpers'
-import FocusTrackingStory from './FocusTrackingStory'
+import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
+
+const CONTAINER_NODES = [
+  defineContainer({
+    type: 'table',
+    arrayField: 'rows',
+    render: ({children, attributes}) => (
+      <table {...attributes}>
+        <tbody>{children}</tbody>
+      </table>
+    ),
+    of: [
+      defineContainer({
+        type: 'row',
+        arrayField: 'cells',
+        render: ({children, attributes}) => <tr {...attributes}>{children}</tr>,
+        of: [
+          defineContainer({
+            type: 'cell',
+            arrayField: 'content',
+            render: ({children, attributes}) => <td {...attributes}>{children}</td>,
+          }),
+        ],
+      }),
+    ],
+  }),
+]
+
+function ContainerPlugins(props: PortableTextPluginsProps) {
+  return (
+    <>
+      {props.renderDefault(props)}
+      <NodePlugin nodes={CONTAINER_NODES} />
+    </>
+  )
+}
+
+const SCHEMA_TYPES = [
+  defineType({
+    type: 'document',
+    name: 'test',
+    title: 'Test',
+    fields: [
+      defineField({
+        type: 'array',
+        name: 'body',
+        of: [
+          defineArrayMember({
+            type: 'block',
+            of: [
+              defineArrayMember({
+                type: 'object',
+                name: 'inlineObjectWithTextProperty',
+                fields: [
+                  defineField({
+                    type: 'string',
+                    name: 'text',
+                    components: {
+                      input: (inputProps) => (
+                        <div data-testid="inlineTextInputField">
+                          {inputProps.renderDefault(inputProps)}
+                        </div>
+                      ),
+                    },
+                  }),
+                ],
+              }),
+            ],
+          }),
+          defineArrayMember({
+            type: 'object',
+            name: 'testObjectBlock',
+            fields: [{type: 'string', name: 'text'}],
+            components: {
+              input: (inputProps) => (
+                <div data-testid="objectBlockInputField">
+                  {inputProps.renderDefault(inputProps)}
+                </div>
+              ),
+            },
+          }),
+          defineArrayMember({
+            type: 'object',
+            name: 'table',
+            fields: [
+              defineField({
+                type: 'array',
+                name: 'rows',
+                of: [
+                  defineArrayMember({
+                    type: 'object',
+                    name: 'row',
+                    fields: [
+                      defineField({
+                        type: 'array',
+                        name: 'cells',
+                        of: [
+                          defineArrayMember({
+                            type: 'object',
+                            name: 'cell',
+                            fields: [
+                              defineField({
+                                type: 'array',
+                                name: 'content',
+                                of: [
+                                  defineArrayMember({type: 'block'}),
+                                  defineArrayMember({
+                                    type: 'object',
+                                    name: 'cellObjectBlock',
+                                    fields: [{type: 'string', name: 'text'}],
+                                    components: {
+                                      input: (inputProps) => (
+                                        <div data-testid="cellObjectBlockInputField">
+                                          {inputProps.renderDefault(inputProps)}
+                                        </div>
+                                      ),
+                                    },
+                                  }),
+                                ],
+                              }),
+                            ],
+                          }),
+                        ],
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ],
+        components: {
+          portableText: {
+            plugins: ContainerPlugins,
+          },
+        },
+      }),
+    ],
+  }),
+]
+
+function FocusTrackingHarness({
+  focusPath,
+  onPathFocus,
+  document,
+}: {
+  focusPath?: Path
+  onPathFocus?: (path: Path) => void
+  document?: SanityDocument
+}) {
+  return (
+    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+      <TestForm document={document} focusPath={focusPath} onPathFocus={onPathFocus} />
+    </TestWrapper>
+  )
+}
 
 const document: SanityDocument = {
   _id: '123',
@@ -92,14 +257,14 @@ describe('Portable Text Input', () => {
     it(`for span .text`, async () => {
       const {waitForFocusedNodeText} = testHelpers()
       const {rerender} = await render(
-        <FocusTrackingStory
+        <FocusTrackingHarness
           document={document}
           focusPath={['body', {_key: 'c'}, 'children', {_key: 'd'}, 'text']}
         />,
       )
       await waitForFocusedNodeText('Bar')
       await rerender(
-        <FocusTrackingStory
+        <FocusTrackingHarness
           document={document}
           focusPath={['body', {_key: 'e'}, 'children', {_key: 'f'}, 'text']}
         />,
@@ -109,14 +274,14 @@ describe('Portable Text Input', () => {
     it(`for span child root`, async () => {
       const {waitForFocusedNodeText} = testHelpers()
       const {rerender} = await render(
-        <FocusTrackingStory
+        <FocusTrackingHarness
           document={document}
           focusPath={['body', {_key: 'c'}, 'children', {_key: 'd'}]}
         />,
       )
       await waitForFocusedNodeText('Bar')
       await rerender(
-        <FocusTrackingStory
+        <FocusTrackingHarness
           document={document}
           focusPath={['body', {_key: 'e'}, 'children', {_key: 'f'}]}
         />,
@@ -125,7 +290,7 @@ describe('Portable Text Input', () => {
     })
     it(`for inline objects with .text prop`, async () => {
       const {rerender} = await render(
-        <FocusTrackingStory
+        <FocusTrackingHarness
           document={document}
           focusPath={['body', {_key: 'g'}, 'children', {_key: 'i'}, 'text']}
         />,
@@ -144,7 +309,7 @@ describe('Portable Text Input', () => {
       await expect.element(inlineObjectTextInput).toHaveFocus()
 
       await rerender(
-        <FocusTrackingStory
+        <FocusTrackingHarness
           document={document}
           focusPath={['body', {_key: 'e'}, 'children', {_key: 'f'}]}
         />,
@@ -153,7 +318,7 @@ describe('Portable Text Input', () => {
     })
     it(`for object blocks with .text prop`, async () => {
       void render(
-        <FocusTrackingStory document={document} focusPath={['body', {_key: 'k'}, 'text']} />,
+        <FocusTrackingHarness document={document} focusPath={['body', {_key: 'k'}, 'text']} />,
       )
       await expect.element(page.getByTestId('nested-object-dialog')).toBeVisible()
 
@@ -171,14 +336,14 @@ describe('Portable Text Input', () => {
     })
     it(`for block paths`, async () => {
       const {rerender} = await render(
-        <FocusTrackingStory document={document} focusPath={['body', {_key: 'k'}]} />,
+        <FocusTrackingHarness document={document} focusPath={['body', {_key: 'k'}]} />,
       )
       const $portableTextInput = page.getByTestId('field-body')
       const $pteTextbox = $portableTextInput.getByRole('textbox')
       await expect.element($pteTextbox).not.toHaveFocus()
       const blockObjectInput = page.getByTestId('objectBlockInputField').getByRole('textbox')
       await expect.element(blockObjectInput).toBeVisible()
-      await rerender(<FocusTrackingStory document={document} focusPath={['body', {_key: 'g'}]} />)
+      await rerender(<FocusTrackingHarness document={document} focusPath={['body', {_key: 'g'}]} />)
 
       await expect.element($pteTextbox).toHaveFocus()
       // Focus moved away from the block object, so its input unmounts entirely.
@@ -187,7 +352,7 @@ describe('Portable Text Input', () => {
     it(`for span paths inside a container`, async () => {
       const {waitForFocusedNodeText} = testHelpers()
       const {rerender} = await render(
-        <FocusTrackingStory
+        <FocusTrackingHarness
           document={document}
           focusPath={[
             'body',
@@ -206,7 +371,7 @@ describe('Portable Text Input', () => {
       )
       await waitForFocusedNodeText('Nested Foo')
       await rerender(
-        <FocusTrackingStory
+        <FocusTrackingHarness
           document={document}
           focusPath={[
             'body',
@@ -227,7 +392,7 @@ describe('Portable Text Input', () => {
     })
     it(`for block paths inside a container`, async () => {
       const {rerender} = await render(
-        <FocusTrackingStory
+        <FocusTrackingHarness
           document={document}
           focusPath={[
             'body',
@@ -249,7 +414,7 @@ describe('Portable Text Input', () => {
         .getByRole('textbox')
       await expect.element(cellObjectBlockInput).toBeVisible()
       await rerender(
-        <FocusTrackingStory
+        <FocusTrackingHarness
           document={document}
           focusPath={[
             'body',
@@ -271,7 +436,7 @@ describe('Portable Text Input', () => {
     const paths: Path[] = []
     const pushPath = (path: Path) => paths.push(path)
     const {getFocusedPortableTextEditor} = testHelpers()
-    void render(<FocusTrackingStory document={document} onPathFocus={pushPath} />)
+    void render(<FocusTrackingHarness document={document} onPathFocus={pushPath} />)
     const $pte = await getFocusedPortableTextEditor('field-body')
     await expect.element($pte).toHaveFocus()
     // onPathFocus fires asynchronously after focus/click, so poll for the latest path.

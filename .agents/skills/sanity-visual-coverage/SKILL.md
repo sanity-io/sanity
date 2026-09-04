@@ -56,10 +56,10 @@ match", never "your component is rendered by a story".
   (`Button.stories.tsx` imports `../Button`). Harness stories for anything that needs a
   workspace, i18n, or layers. The harness is `<Name>Story.tsx`, wraps `TestWrapper`, and
   `<Name>.stories.tsx` is a thin CSF file whose `component` is the harness.
-- A `<Name>Story.tsx` that a `<Name>.browser.test.tsx` imports is a test harness, not a story
-  target. The Vitest Chromatic integration snapshots the test's end state in place, so those
-  harnesses have no `*.stories.tsx` re-export — do not add one. Their coverage shows up as
-  `browser-test` evidence.
+- Browser tests define their harness component inline (`function <Name>Harness()` inside the
+  `<Name>.browser.test.tsx`), so every `*Story.tsx` belongs to a story. The Vitest Chromatic
+  integration snapshots the test's end state in place; do not extract a test's harness into a
+  `*Story.tsx` to put a story on it. Their coverage shows up as `browser-test` evidence.
 - "ui5 sentinel" and "box sentinel" are the same thing. A story added so the `@sanity/ui` to
   `ui5` Box/Flex/Card migration gets a snapshot before the swap lands. The harness renders the
   states most likely to drift (tones, spacing, truncation, empty states) with fixture copy only.
