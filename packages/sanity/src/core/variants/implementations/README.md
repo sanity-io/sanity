@@ -31,7 +31,7 @@ beta: {
       {
         name: 'audience',
         title: 'Audience',
-        description: 'Who this content is for.',
+        description: 'The group of visitors this content targets.',
         values: [
           {value: 'loyal', title: 'Loyal customers'},
           {value: 'new', title: 'New visitors'},

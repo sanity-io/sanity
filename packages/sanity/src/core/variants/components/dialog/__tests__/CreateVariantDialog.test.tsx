@@ -499,7 +499,7 @@ const mappedConditions = [
   {
     name: 'audience',
     title: 'Audience',
-    description: 'Who this content is for.',
+    description: 'The group of visitors this content targets.',
     values: [
       {value: 'loyal', title: 'Loyal customers', description: 'Repeat purchasers and members.'},
       {value: 'new', title: 'New visitors'},
@@ -599,7 +599,7 @@ describe('CreateVariantDialog mapped conditions', () => {
     const keyMenu = getMenuFor(keyMenuButton)
     const audienceOption = within(keyMenu).getByTestId('variant-form-condition-key-option-audience')
     expect(audienceOption).toHaveTextContent('Audience')
-    expect(audienceOption).toHaveTextContent('Who this content is for.')
+    expect(audienceOption).toHaveTextContent('The group of visitors this content targets.')
     expect(
       within(keyMenu).getByTestId('variant-form-condition-key-option-locale'),
     ).toHaveTextContent('Locale')

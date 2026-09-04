@@ -11,7 +11,7 @@ const KEY_OPTIONS: ConditionMenuOption[] = [
   {
     value: 'audience',
     title: 'Audience',
-    description: 'Who this content is for.',
+    description: 'The group of visitors this content targets.',
     icon: UsersIcon,
   },
   {
