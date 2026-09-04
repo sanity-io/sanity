@@ -786,6 +786,7 @@ Key env vars used in development:
 - `SANITY_STUDIO_PROJECT_ID` - Project ID for dev studio
 - `SANITY_STUDIO_DATASET` - Dataset for dev studio
 - `SANITY_INTERNAL_ENV` - Internal environment flag
+- `SANITY_STUDIO_STYLE_OUTLINE` - When `true`, mounts the test-studio style outline debug panel (`dev/test-studio/plugins/style-outline`). Opt-in; set on the Vercel `test-studio` project only. The bundled source must read `process.env.SANITY_STUDIO_STYLE_OUTLINE` as that exact member expression so Sanity's env string replace can see it.
 - `ENABLE_BUNDLE_ANALYZER` - When `true`, the `sanity` package tsdown build emits `lib/analyze-data.md` (`pnpm analyze:sanity`)
 
 See `turbo.json` for full list of environment variables that affect builds.
