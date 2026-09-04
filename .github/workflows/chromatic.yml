@@ -1,36 +1,8 @@
 name: Chromatic
 permissions: {}
 
-# Visual regression testing with Chromatic (https://www.chromatic.com).
-#
-# Two jobs, one per Chromatic project:
-#
-# - `storybook`: builds the Storybook host in `dev/storybook` (stories are
-#   package-owned and co-located, covering states no browser test renders)
-#   and uploads it to the "sanity studio" Chromatic project for snapshotting.
-# - `vitest-visual`: re-runs the vitest browser-mode suite (chromium only)
-#   with CHROMATIC=1, so the @chromatic-com/vitest plugin archives each test's
-#   end state, and uploads the archives to the "sanity studio vitest" project.
-#   Browser tests are not re-exported as stories; this job is their snapshot
-#   source.
-#
-# The third Chromatic project, "sanity studio playwright" (e2e archives), is
-# uploaded from e2e.yml. Chromatic allows one integration type per project, so
-# the three uploads never share a project or a job.
-#
-# Both uploads go through the official chromaui/action, which forwards the
-# pull_request event (head sha, branch, repo) to Chromatic. Invoking the CLI
-# directly from a pull_request checkout made Chromatic log "Branch '…' does
-# not exist" and fall back to an unrelated baseline for TurboSnap.
-#
-# Both jobs are non-gating during burn-in (`--exit-zero-on-changes`): visual
-# changes are reported on the Chromatic build for review but do not fail CI.
-# Merges to `main` auto-accept the new baselines.
-
 on:
-  # Build on pushes branches that have a PR (including drafts)
   pull_request:
-  # Keep baselines up to date on the default branch
   push:
     branches: [main]
 
@@ -45,8 +17,6 @@ jobs:
     runs-on: ubuntu-8core
     permissions:
       contents: read
-    # Chromatic project tokens are repository secrets, which are unavailable
-    # on PRs from forks — skip instead of failing.
     if: github.event_name == 'push' || github.event.pull_request.head.repo.fork == false
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -57,11 +27,8 @@ jobs:
           # Chromatic needs full git history to find baseline builds and to
           # trace changed files for TurboSnap.
           fetch-depth: 0
-          # On pull_request events check out the PR branch itself rather than
-          # the ephemeral merge commit, so the commits Chromatic sees exist in
-          # the repository (TurboSnap baselines, PR status). Empty on push
-          # events, where actions/checkout falls back to the pushed ref.
-          # https://www.chromatic.com/docs/turbosnap/best-practices/
+          # The PR branch, not GitHub's merge commit, so Chromatic can find the
+          # commits it compares: https://www.chromatic.com/docs/turbosnap/best-practices/
           ref: ${{ github.event.pull_request.head.ref }}
 
       - uses: ./.github/actions/detect-code-changes
@@ -70,10 +37,6 @@ jobs:
       - uses: ./.github/actions/setup
         if: steps.changes.outputs.has_changes == 'true'
 
-      # Builds the workspace packages dev/storybook depends on. The Storybook
-      # itself is built by the Chromatic action below (not via turbo): TurboSnap
-      # needs the preview-stats.json that Chromatic's own build invocation
-      # generates, and a prebuilt storybookBuildDir has no stats to trace.
       - name: Build packages
         if: steps.changes.outputs.has_changes == 'true'
         run: pnpm build --output-logs=full --log-order=grouped
@@ -85,11 +48,8 @@ jobs:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN_STORYBOOK }}
           workingDir: dev/storybook
           buildScriptName: build
-          # TurboSnap: only snapshot stories whose dependency graph changed
           onlyChanged: true
-          # Non-gating during burn-in: report changes without failing the check
           exitZeroOnChanges: true
-          # Merges to main become the new baselines without manual review
           autoAcceptChanges: main
 
   vitest-visual:
@@ -108,7 +68,6 @@ jobs:
           # Chromatic needs full git history to find baseline builds and to
           # trace changed files for TurboSnap.
           fetch-depth: 0
-          # See the storybook job: check out the PR branch, not the merge commit.
           ref: ${{ github.event.pull_request.head.ref }}
 
       - uses: ./.github/actions/detect-code-changes
@@ -131,8 +90,6 @@ jobs:
         uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
-          # Same per-browser key as browser-tests.yml so the two workflows
-          # share the chromium cache.
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-chromium
 
       # System dependencies live outside ~/.cache/ms-playwright and are not
@@ -153,20 +110,10 @@ jobs:
         if: steps.changes.outputs.has_changes == 'true'
         env:
           NODE_OPTIONS: --max_old_space_size=8192
-          # Turns on capturing in packages/sanity/vitest.browser.config.mts:
-          # automatic end-of-test snapshots and the TurboSnap stats file.
-          # Chromatic re-renders archives in a standardized cloud browser, so
-          # capturing from chromium alone is sufficient (and required by the
-          # plugin).
           CHROMATIC: 1
           SANITY_VITEST_BROWSER: chromium
         run: pnpm --filter sanity test:browser
 
-      # `onlyChanged` (TurboSnap) below needs the preview-stats.json that the
-      # plugin writes when `turboSnap` is on in vitest.browser.config.mts.
-      # Without it the CLI fails the upload, and a sharded run that was not
-      # merged with `vitest run --merge-reports` would upload a build that
-      # traces nothing. Fail here, with the reason, instead.
       - name: Check TurboSnap stats file
         if: steps.changes.outputs.has_changes == 'true'
         run: |
@@ -177,10 +124,6 @@ jobs:
             exit 1
           fi
 
-      # The action resolves @chromatic-com/vitest from workingDir to build the
-      # archive Storybook, and reads the archives from
-      # packages/sanity/.vitest/chromatic. Same flag semantics as the storybook
-      # job above.
       - name: Upload archives to Chromatic
         if: steps.changes.outputs.has_changes == 'true'
         uses: chromaui/action@2a0b63f30233c48591844a46d451b9cf68128186 # v18.7.2

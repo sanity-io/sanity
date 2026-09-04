@@ -250,9 +250,8 @@ jobs:
         with:
           # Chromatic needs full git history to find baseline builds.
           fetch-depth: 0
-          # On pull_request events check out the PR branch itself rather than
-          # the ephemeral merge commit, so the commits Chromatic sees exist in
-          # the repository (see chromatic.yml). Empty on push events.
+          # The PR branch, not GitHub's merge commit, so Chromatic can find the
+          # commits it compares: https://www.chromatic.com/docs/turbosnap/best-practices/
           ref: ${{ github.event.pull_request.head.ref }}
 
       - uses: ./.github/actions/setup
@@ -264,11 +263,6 @@ jobs:
           merge-multiple: true
           path: chromatic-artifacts
 
-      # Uploaded through the official action, which forwards the pull_request
-      # event to Chromatic; the bare CLI logged "Branch '…' does not exist" and
-      # could not report PR status from a pull_request checkout. The action
-      # resolves @chromatic-com/playwright from workingDir to build the archive
-      # Storybook.
       - name: Upload archives to Chromatic
         uses: chromaui/action@2a0b63f30233c48591844a46d451b9cf68128186 # v18.7.2
         env:
