@@ -18,6 +18,8 @@ export interface StylesDiagnostics {
   styledComponents: StyleSheetDiagnostic[]
 }
 
+const textEncoder = new TextEncoder()
+
 /** @internal */
 export function getStylesDiagnostics(): StylesDiagnostics {
   if (typeof document === 'undefined') return {styledComponents: []}
@@ -35,7 +37,7 @@ export function getStylesDiagnostics(): StylesDiagnostics {
 }
 
 function getStyleSheetSizeBytes(node: HTMLStyleElement): number {
-  return new TextEncoder().encode(serializeStyleSheet(node.sheet) || node.innerHTML).byteLength
+  return textEncoder.encode(serializeStyleSheet(node.sheet) || node.textContent || '').byteLength
 }
 
 function serializeStyleSheet(sheet: CSSStyleSheet | null): string {

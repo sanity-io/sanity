@@ -319,6 +319,25 @@ describe('DiagnosticsReport', () => {
     )
   })
 
+  it('omits invalid styled-components CSS sizes', () => {
+    render(
+      <ThemeProvider theme={buildTheme()}>
+        <DiagnosticsReport
+          diagnostics={{
+            ...diagnostics,
+            styles: {styledComponents: [{ruleCount: 12, sizeBytes: Number.NaN, version: '6.5.3'}]},
+          }}
+          onRunAgain={vi.fn()}
+        />
+      </ThemeProvider>,
+    )
+
+    const styledComponents = within(screen.getByTestId('diagnostics-styled-components'))
+    expect(styledComponents.getByText('CSS size inserted by JS')).toBeInTheDocument()
+    expect(styledComponents.getByText('Unknown')).toBeInTheDocument()
+    expect(styledComponents.queryByText('NaN undefined')).not.toBeInTheDocument()
+  })
+
   it('omits the styled-components card when no sheet is on the page', () => {
     render(
       <ThemeProvider theme={buildTheme()}>

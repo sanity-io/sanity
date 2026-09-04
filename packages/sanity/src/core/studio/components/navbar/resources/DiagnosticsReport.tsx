@@ -491,10 +491,12 @@ function formatMilliseconds(value?: number): string | undefined {
 }
 
 function formatByteSize(value?: number): string | undefined {
-  if (value === undefined) return undefined
+  if (value === undefined || !Number.isFinite(value) || value < 0) return undefined
 
-  const unitIndex =
-    value === 0 ? 0 : Math.min(Math.floor(Math.log(value) / Math.log(1_000)), BYTE_UNITS.length - 1)
+  const unitIndex = Math.min(
+    Math.max(0, Math.floor(Math.log(Math.max(value, 1)) / Math.log(1_000))),
+    BYTE_UNITS.length - 1,
+  )
   const amount = value / 1_000 ** unitIndex
 
   return `${amount.toLocaleString(undefined, {maximumFractionDigits: 2})} ${BYTE_UNITS[unitIndex]}`
