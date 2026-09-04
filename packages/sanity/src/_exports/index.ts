@@ -941,6 +941,7 @@ export {
   type TargetDocumentState,
   useTargetDocumentState,
 } from '../core/hooks/useTargetDocumentState'
+export {type TargetScopeIdOptions, useTargetScopeId} from '../core/hooks/useTargetScopeId'
 export {useTemplates} from '../core/hooks/useTemplates'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {type TimeAgoOpts, useTimeAgo} from '../core/hooks/useTimeAgo'

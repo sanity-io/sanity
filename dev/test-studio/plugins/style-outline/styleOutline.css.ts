@@ -48,7 +48,7 @@ export const panel = style([
     margin: 0,
     borderRadius: 12,
     padding: '12px 14px',
-    minWidth: 260,
+    width: 320,
     color: '#ececf1',
   },
 ])
@@ -69,11 +69,32 @@ export const header = style({
   },
 })
 
+export const group = style({
+  padding: '4px 0',
+})
+
+export const groupHeading = style({
+  margin: 0,
+  padding: '2px 0 6px',
+  fontSize: 11,
+  fontWeight: 600,
+  lineHeight: 1.4,
+  letterSpacing: '0.04em',
+  textTransform: 'uppercase',
+  color: 'rgba(236, 236, 241, 0.55)',
+})
+
+export const sectionDivider = style({
+  height: 1,
+  margin: '7px 0',
+  background: 'rgba(255, 255, 255, 0.08)',
+})
+
 export const row = style({
   display: 'flex',
   alignItems: 'center',
   gap: 10,
-  padding: '6px 0',
+  minHeight: 26,
   cursor: 'pointer',
 })
 
@@ -92,6 +113,84 @@ export const rowCount = style({
   fontVariantNumeric: 'tabular-nums',
   fontSize: 12,
   color: 'rgba(236, 236, 241, 0.55)',
+})
+
+export const adoption = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: 14,
+})
+
+export const donut = style({
+  position: 'relative',
+  display: 'grid',
+  width: 64,
+  height: 64,
+  borderRadius: '50%',
+  flexShrink: 0,
+  placeItems: 'center',
+  selectors: {
+    '&::after': {
+      content: '',
+      position: 'absolute',
+      inset: 11,
+      borderRadius: '50%',
+      background: '#202024',
+    },
+  },
+})
+
+export const donutValue = style({
+  position: 'relative',
+  zIndex: 1,
+  fontSize: 13,
+  fontWeight: 650,
+  fontVariantNumeric: 'tabular-nums',
+})
+
+export const legend = style({
+  flex: 1,
+})
+
+export const escapeDetails = style({
+  display: 'flex',
+  alignItems: 'baseline',
+  justifyContent: 'space-between',
+  gap: 12,
+})
+
+export const escapeCount = style({
+  display: 'flex',
+  alignItems: 'baseline',
+  gap: 5,
+})
+
+export const escapeCountValue = style({
+  fontSize: 18,
+  fontWeight: 650,
+  fontVariantNumeric: 'tabular-nums',
+})
+
+export const metricLabel = style({
+  fontSize: 12,
+  color: 'rgba(236, 236, 241, 0.72)',
+})
+
+export const cssMeter = style({
+  height: 5,
+  marginTop: 8,
+  overflow: 'hidden',
+  borderRadius: 999,
+  background: 'rgba(255, 255, 255, 0.12)',
+})
+
+export const cssMeterFill = style({
+  display: 'block',
+  height: '100%',
+  minWidth: 1,
+  borderRadius: 'inherit',
+  background: '#ff4fa3',
+  transition: 'width 150ms ease-out',
 })
 
 export const checkbox = style({

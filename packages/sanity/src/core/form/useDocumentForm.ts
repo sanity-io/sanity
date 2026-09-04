@@ -33,20 +33,18 @@ import {useSchema} from '../hooks/useSchema'
 import {
   getCreatableVariantTarget,
   getPairTarget,
-  getTargetScopeId,
   getTargetSiblings,
   useTargetDocumentState,
 } from '../hooks/useTargetDocumentState'
+import {useTargetScopeId} from '../hooks/useTargetScopeId'
 import {useValidationStatus} from '../hooks/useValidationStatus'
 import {getSelectedPerspective} from '../perspective/getSelectedPerspective'
 import {type ReleaseId} from '../perspective/types'
 import {usePerspective} from '../perspective/usePerspective'
 import {useDocumentVersions} from '../releases/hooks/useDocumentVersions'
-import {useDocumentVersionTypeSortedList} from '../releases/hooks/useDocumentVersionTypeSortedList'
 import {useOnlyHasVersions} from '../releases/hooks/useOnlyHasVersions'
 import {isReleaseDocument} from '../releases/store/types'
 import {useActiveReleases} from '../releases/store/useActiveReleases'
-import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isGoingToUnpublish} from '../releases/util/isGoingToUnpublish'
 import {isPublishedPerspective, isReleaseScheduledOrScheduling} from '../releases/util/util'
 import {usePresenceStore} from '../store/datastores'
@@ -174,11 +172,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const schema = useSchema()
   const presenceStore = usePresenceStore()
   const {data: releases} = useActiveReleases()
-  const {
-    data: documentVersions,
-    versions: documentVersionStubs,
-    loading: documentVersionsLoading,
-  } = useDocumentVersions({
+  const {versions: documentVersionStubs, loading: documentVersionsLoading} = useDocumentVersions({
     documentId,
   })
   const {selectedVariantName, bundle} = usePerspective()
@@ -198,56 +192,9 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
   const telemetry = useTelemetry()
 
-  // if it only has versions then we need to make sure that whatever the first document that is allowed
-  // is a version document, but also that it has the right order
-  // this will make sure that then the right document appears and so does the right chip within the document header
-  const {sortedDocumentList} = useDocumentVersionTypeSortedList({documentId})
   const onlyHasVersions = useOnlyHasVersions({documentId})
-  const firstVersion =
-    sortedDocumentList.length > 0
-      ? documentVersions.find(
-          (id) =>
-            getVersionFromId(id) === getReleaseIdFromReleaseDocumentId(sortedDocumentList[0]._id),
-        )
-      : undefined
 
-  // The bundle segment for the pair checkout (`useEditState` & co.). Variant targets use the
-  // stub-resolved opaque scope id exclusively: a missing/unresolved variant target must never
-  // fall back to another document (ops stay guarded, the form stays read-only). Non-variant
-  // targets keep the deterministic release derivation with its fallbacks — a release version id
-  // is derivable, so new documents under a release must check out the version pair for typing to
-  // create the release version (not the base draft), and documents that only have versions must
-  // check out their first version to display it.
-  const targetScopeId = useMemo(() => {
-    if (selectedVariantName) {
-      // The scope of the resolved target document (release id for release targets, opaque scope hash
-      // for variant targets), threaded through the version-editing pipeline. Undefined while the
-      // target is resolving or when the base draft/published pair applies.
-      return getTargetScopeId(targetDocumentState)
-    }
-    if (isSystemBundle(selectedPerspectiveName)) {
-      return undefined
-    }
-    // if a document version exists with the selected release id, then it should use that
-    if (documentVersions.some((id) => getVersionFromId(id) === selectedPerspectiveName)) {
-      return selectedPerspectiveName
-    }
-
-    // check if the selected version is the only version, if it isn't and it doesn't exist in the release
-    // then it needs to use the documentVersions
-    if (selectedPerspectiveName && (!documentVersions.length || !onlyHasVersions)) {
-      return selectedPerspectiveName
-    }
-
-    return getVersionFromId(firstVersion ?? '')
-  }, [
-    selectedVariantName,
-    targetDocumentState,
-    documentVersions,
-    onlyHasVersions,
-    selectedPerspectiveName,
-    firstVersion,
-  ])
+  const targetScopeId = useTargetScopeId({documentId, selectedPerspectiveName})
 
   const editState = useEditState(documentId, documentType, 'default', targetScopeId)
 

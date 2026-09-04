@@ -14,7 +14,12 @@ interface Fingerprint extends Omit<StyleSystem, 'selector'> {
 // Ordered by precedence: a node belongs to the first fingerprint it matches, so a
 // `styled(ui5Box)` counts as ui5 and a `styled(ui4Card)` counts as ui4.
 const FINGERPRINTS: readonly Fingerprint[] = [
-  {id: 'ui5', label: 'ui5', color: '#22d3ee', match: '[class^="sui-"], [class*=" sui-"]'},
+  {
+    id: 'ui5',
+    label: '@sanity/ui v5',
+    color: '#22d3ee',
+    match: '[class^="sui-"], [class*=" sui-"]',
+  },
   {id: 'ui4', label: '@sanity/ui v4', color: '#f5a524', match: '[data-ui]'},
   {
     id: 'styled',
