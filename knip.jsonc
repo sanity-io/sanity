@@ -63,8 +63,9 @@
       "ignoreBinaries": ["tzutil"],
       "ignoreDependencies": [
         "@vitest/expect",
-        // CLI invoked as `pnpm --filter sanity exec chromatic --vitest` in
-        // .github/workflows/chromatic.yml, which knip can't trace
+        // CLI for local uploads (`pnpm --filter sanity exec chromatic --vitest`, see
+        // .agents/skills/sanity-visual-regression/REFERENCE.md); CI uploads through
+        // chromaui/action, which bundles its own copy. Neither use is traceable by knip.
         "chromatic",
       ],
     },

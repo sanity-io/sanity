@@ -7,18 +7,21 @@ permissions: {}
 #
 # - `storybook`: builds the Storybook host in `dev/storybook` (stories are
 #   package-owned and co-located, covering states no browser test renders)
-#   and uploads it to the `sanity` Chromatic project for snapshotting.
+#   and uploads it to the "sanity studio" Chromatic project for snapshotting.
 # - `vitest-visual`: re-runs the vitest browser-mode suite (chromium only)
-#   with the @chromatic-com/vitest plugin enabled, archiving each test's end
-#   state, and uploads the archives to the Chromatic Vitest project. Browser
-#   tests are not re-exported as stories; this job is their snapshot source.
-#   The job is DORMANT until the CHROMATIC_PROJECT_TOKEN_VITEST repository
-#   secret is added — the moment it exists the job starts running, with no
-#   code changes needed.
+#   with CHROMATIC=1, so the @chromatic-com/vitest plugin archives each test's
+#   end state, and uploads the archives to the "sanity studio vitest" project.
+#   Browser tests are not re-exported as stories; this job is their snapshot
+#   source.
 #
-# The third Chromatic project, `sanity_e2e` (Playwright archives), is uploaded
-# from e2e.yml. Chromatic allows one integration type per project, so the
-# three uploads never share a project or a job.
+# The third Chromatic project, "sanity studio playwright" (e2e archives), is
+# uploaded from e2e.yml. Chromatic allows one integration type per project, so
+# the three uploads never share a project or a job.
+#
+# Both uploads go through the official chromaui/action, which forwards the
+# pull_request event (head sha, branch, repo) to Chromatic. Invoking the CLI
+# directly from a pull_request checkout made Chromatic log "Branch '…' does
+# not exist" and fall back to an unrelated baseline for TurboSnap.
 #
 # Both jobs are non-gating during burn-in (`--exit-zero-on-changes`): visual
 # changes are reported on the Chromatic build for review but do not fail CI.
@@ -54,6 +57,12 @@ jobs:
           # Chromatic needs full git history to find baseline builds and to
           # trace changed files for TurboSnap.
           fetch-depth: 0
+          # On pull_request events check out the PR branch itself rather than
+          # the ephemeral merge commit, so the commits Chromatic sees exist in
+          # the repository (TurboSnap baselines, PR status). Empty on push
+          # events, where actions/checkout falls back to the pushed ref.
+          # https://www.chromatic.com/docs/turbosnap/best-practices/
+          ref: ${{ github.event.pull_request.head.ref }}
 
       - uses: ./.github/actions/detect-code-changes
         id: changes
@@ -94,37 +103,22 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
-      # Secrets cannot be read in job-level `if` expressions, so a guard step
-      # exports whether the Vitest project token exists. Every later step keys
-      # off this output; the job reports success while dormant.
-      - name: Check for Chromatic Vitest project token
-        id: token
-        env:
-          CHROMATIC_PROJECT_TOKEN_VITEST: ${{ secrets.CHROMATIC_PROJECT_TOKEN_VITEST }}
-        run: |
-          if [ -n "$CHROMATIC_PROJECT_TOKEN_VITEST" ]; then
-            echo "has_token=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "has_token=false" >> "$GITHUB_OUTPUT"
-            echo "CHROMATIC_PROJECT_TOKEN_VITEST is not set — skipping. Create a Vitest-type Chromatic project and add its token as a repository secret to activate this job."
-          fi
-
       - uses: actions/checkout@v7
-        if: steps.token.outputs.has_token == 'true'
         with:
           # Chromatic needs full git history to find baseline builds and to
           # trace changed files for TurboSnap.
           fetch-depth: 0
+          # See the storybook job: check out the PR branch, not the merge commit.
+          ref: ${{ github.event.pull_request.head.ref }}
 
       - uses: ./.github/actions/detect-code-changes
-        if: steps.token.outputs.has_token == 'true'
         id: changes
 
       - uses: ./.github/actions/setup
-        if: steps.token.outputs.has_token == 'true' && steps.changes.outputs.has_changes == 'true'
+        if: steps.changes.outputs.has_changes == 'true'
 
       - name: Store Playwright's Version
-        if: steps.token.outputs.has_token == 'true' && steps.changes.outputs.has_changes == 'true'
+        if: steps.changes.outputs.has_changes == 'true'
         id: playwright-version
         run: |
           PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
@@ -132,7 +126,7 @@ jobs:
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Cache Playwright Browsers for Playwright's Version
-        if: steps.token.outputs.has_token == 'true' && steps.changes.outputs.has_changes == 'true'
+        if: steps.changes.outputs.has_changes == 'true'
         id: cache-playwright-browsers
         uses: actions/cache@v6
         with:
@@ -144,47 +138,56 @@ jobs:
       # System dependencies live outside ~/.cache/ms-playwright and are not
       # restored by the cache, so always install them (see browser-tests.yml).
       - name: Install Playwright system dependencies
-        if: steps.token.outputs.has_token == 'true' && steps.changes.outputs.has_changes == 'true'
+        if: steps.changes.outputs.has_changes == 'true'
         run: pnpm exec playwright install-deps chromium
 
       - name: Install Playwright Browsers
-        if: steps.token.outputs.has_token == 'true' && steps.changes.outputs.has_changes == 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        if: steps.changes.outputs.has_changes == 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: pnpm exec playwright install chromium
 
       - name: Build packages
-        if: steps.token.outputs.has_token == 'true' && steps.changes.outputs.has_changes == 'true'
+        if: steps.changes.outputs.has_changes == 'true'
         run: pnpm build --output-logs=full --log-order=grouped
 
       - name: Run browser tests with Chromatic archiving
-        if: steps.token.outputs.has_token == 'true' && steps.changes.outputs.has_changes == 'true'
+        if: steps.changes.outputs.has_changes == 'true'
         env:
           NODE_OPTIONS: --max_old_space_size=8192
-          # Enables the @chromatic-com/vitest plugin in
-          # packages/sanity/vitest.browser.config.mts. Chromatic re-renders
-          # archives in a standardized cloud browser, so capturing from
-          # chromium alone is sufficient (and required by the plugin).
+          # Turns on capturing in packages/sanity/vitest.browser.config.mts:
+          # automatic end-of-test snapshots and the TurboSnap stats file.
+          # Chromatic re-renders archives in a standardized cloud browser, so
+          # capturing from chromium alone is sufficient (and required by the
+          # plugin).
           CHROMATIC: 1
           SANITY_VITEST_BROWSER: chromium
         run: pnpm --filter sanity test:browser
 
-      # `--only-changed` (TurboSnap) below needs the preview-stats.json that the
-      # plugin writes when `turboSnap: true` is set in vitest.browser.config.mts.
-      # Without it the CLI fails the upload once TurboSnap is unlocked, and a
-      # sharded run that was not merged with `vitest run --merge-reports` would
-      # upload a build that traces nothing. Fail here, with the reason, instead.
+      # `onlyChanged` (TurboSnap) below needs the preview-stats.json that the
+      # plugin writes when `turboSnap` is on in vitest.browser.config.mts.
+      # Without it the CLI fails the upload, and a sharded run that was not
+      # merged with `vitest run --merge-reports` would upload a build that
+      # traces nothing. Fail here, with the reason, instead.
       - name: Check TurboSnap stats file
-        if: steps.token.outputs.has_token == 'true' && steps.changes.outputs.has_changes == 'true'
+        if: steps.changes.outputs.has_changes == 'true'
         run: |
           STATS_FILE=packages/sanity/.vitest/chromatic/preview-stats.json
           if [ ! -f "$STATS_FILE" ]; then
-            echo "::error::$STATS_FILE not found. Keep chromaticPlugin({turboSnap: true}) in vitest.browser.config.mts; if the capture run is sharded, merge the shards with 'vitest run --merge-reports' before uploading."
+            echo "::error::$STATS_FILE not found. Keep turboSnap on in vitest.browser.config.mts; if the capture run is sharded, merge the shards with 'vitest run --merge-reports' before uploading."
             ls -la packages/sanity/.vitest/chromatic || true
             exit 1
           fi
 
+      # The action resolves @chromatic-com/vitest from workingDir to build the
+      # archive Storybook, and reads the archives from
+      # packages/sanity/.vitest/chromatic. Same flag semantics as the storybook
+      # job above.
       - name: Upload archives to Chromatic
-        if: steps.token.outputs.has_token == 'true' && steps.changes.outputs.has_changes == 'true'
-        env:
-          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN_VITEST }}
-        # Same flag semantics as the storybook job above.
-        run: pnpm --filter sanity exec chromatic --vitest --only-changed --exit-zero-on-changes --auto-accept-changes main
+        if: steps.changes.outputs.has_changes == 'true'
+        uses: chromaui/action@2a0b63f30233c48591844a46d451b9cf68128186 # v18.7.2
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN_VITEST }}
+          workingDir: packages/sanity
+          vitest: true
+          onlyChanged: true
+          exitZeroOnChanges: true
+          autoAcceptChanges: main
