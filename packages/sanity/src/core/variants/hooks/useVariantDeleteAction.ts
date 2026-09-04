@@ -50,14 +50,11 @@ export function useVariantDeleteAction(
   const [isDeleting, setIsDeleting] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
-  // `null` until the dry run has answered; the store shares one request across every menu.
-  const hasDeletePermission = useObservable(
-    useMemo(
-      () => defer(() => checkWithPermissionGuard(deleteVariant, variantId)),
-      [checkWithPermissionGuard, deleteVariant, variantId],
-    ),
-    null,
+  const hasDeletePermission$ = useMemo(
+    () => defer(() => checkWithPermissionGuard(deleteVariant, variantId)),
+    [checkWithPermissionGuard, deleteVariant, variantId],
   )
+  const hasDeletePermission = useObservable(hasDeletePermission$, null)
 
   const hasDocuments = typeof documentCount === 'number' && documentCount > 0
   const countUnknown = documentsLoading || documentCount === undefined || documentCount === null
@@ -116,14 +113,16 @@ export function useVariantDeleteAction(
     if (!canDelete) {
       return
     }
-
-    setIsDeleting(true)
-
-    try {
+    const runDelete = async () => {
+      setIsDeleting(true)
       await deleteVariant(variantId)
       setIsDeleting(false)
       setIsDeleteDialogOpen(false)
       onDeleted?.()
+    }
+
+    try {
+      await runDelete()
     } catch (error) {
       console.error(error)
       toast.push({
