@@ -1164,6 +1164,7 @@ export {
   useSingleDocRelease,
 } from '../core/singleDocRelease/context/SingleDocReleaseProvider'
 export {usePausedScheduledDraft} from '../core/singleDocRelease/hooks/usePausedScheduledDraft'
+export {usePauseToEditScheduledDraft} from '../core/singleDocRelease/hooks/usePauseToEditScheduledDraft'
 export {useScheduledDraftDocument} from '../core/singleDocRelease/hooks/useScheduledDraftDocument'
 export {useScheduledDraftsEnabled} from '../core/singleDocRelease/hooks/useScheduledDraftsEnabled'
 export {isAgentBundleName} from '../core/store/agent/createAgentBundlesStore'

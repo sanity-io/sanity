@@ -2,7 +2,7 @@ import {type DocumentActionComponent} from '../../../config/document/actions'
 import {type DocumentActionsContext} from '../../../config/types'
 import {
   DeleteScheduledDraftAction,
-  EditScheduledDraftAction,
+  PauseToEditScheduledDraftAction,
   PublishScheduledDraftAction,
 } from './ScheduledDraftDocumentActions'
 import {useSchedulePublishAction} from './SchedulePublishAction'
@@ -13,11 +13,11 @@ export default function resolveDocumentActions(
 ): DocumentActionComponent[] {
   if (context.versionType === 'scheduled-draft') {
     // For paused scheduled drafts: Schedule (primary), Publish Now, Delete Schedule
-    // For active scheduled drafts: Publish Now (primary), Edit Schedule, Delete Schedule
+    // For active scheduled drafts: Publish Now (primary), Pause to edit, Delete Schedule
     return [
       useSchedulePublishAction, // Shows only when paused
       PublishScheduledDraftAction, // Always shows
-      EditScheduledDraftAction, // Shows only when NOT paused
+      PauseToEditScheduledDraftAction, // Shows only when NOT paused
       DeleteScheduledDraftAction, // Always shows
     ]
   }

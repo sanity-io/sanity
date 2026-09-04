@@ -1691,6 +1691,7 @@ import type {
   useParseErrorForPath,
   useParseErrors,
   usePausedScheduledDraft,
+  usePauseToEditScheduledDraft,
   usePerspective,
   usePresenceStore,
   usePreviewCard,
@@ -6930,6 +6931,9 @@ describe('sanity', () => {
   })
   test('usePausedScheduledDraft', () => {
     expectTypeOf<typeof usePausedScheduledDraft>().toBeFunction()
+  })
+  test('usePauseToEditScheduledDraft', () => {
+    expectTypeOf<typeof usePauseToEditScheduledDraft>().toBeFunction()
   })
   test('usePerspective', () => {
     expectTypeOf<typeof usePerspective>().toBeFunction()

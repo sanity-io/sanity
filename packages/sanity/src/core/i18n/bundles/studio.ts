@@ -1574,6 +1574,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.new-release.limit-reached': 'This workspace is limited to {{count}} release',
   'release.action.new-release.limit-reached_other':
     'This workspace is limited to {{count}} releases',
+  /** Action message for pausing a scheduled draft so it can be edited */
+  'release.action.pause-to-edit': 'Pause to edit',
   /** Tooltip message for not having permissions for creating new releases */
   'release.action.permission.error': 'You do not have permission to perform this action',
   /** Action message for running a scheduled draft immediately */

@@ -2,13 +2,16 @@ import {LockIcon} from '@sanity/icons/Lock'
 import {Text} from '@sanity/ui'
 import {
   getReleaseTone,
+  isCardinalityOneRelease,
   LATEST,
   type ReleaseDocument,
   Translate,
   useFormatRelativeLocalePublishDate,
+  usePauseToEditScheduledDraft,
   useTranslation,
 } from 'sanity'
 
+import {useDocumentTitle} from '../../useDocumentTitle'
 import {Banner} from './Banner'
 
 export function ScheduledReleaseBanner({
@@ -20,11 +23,18 @@ export function ScheduledReleaseBanner({
 
   const {t: tCore} = useTranslation()
   const formatPublishDate = useFormatRelativeLocalePublishDate()
+  const {title} = useDocumentTitle()
+  const isCardinalityOne = isCardinalityOneRelease(currentRelease)
+  const {pauseToEdit, isPausing} = usePauseToEditScheduledDraft({
+    release: isCardinalityOne ? currentRelease : undefined,
+    documentTitle: title,
+  })
 
   return (
     <Banner
       tone={tone}
       icon={LockIcon}
+      data-testid="scheduled-release-banner"
       content={
         <Text size={1}>
           <Translate
@@ -35,6 +45,17 @@ export function ScheduledReleaseBanner({
             }}
           />
         </Text>
+      }
+      action={
+        isCardinalityOne
+          ? {
+              text: tCore('release.action.pause-to-edit'),
+              onClick: pauseToEdit,
+              disabled: isPausing,
+              mode: 'default',
+              tone: tone,
+            }
+          : undefined
       }
     />
   )
