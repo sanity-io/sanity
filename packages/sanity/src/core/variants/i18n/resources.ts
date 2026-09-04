@@ -178,11 +178,8 @@ const variantsLocaleStrings = {
     'When multiple variant definitions match with the same specificity, the one with the higher priority wins.',
   /** Validation message when priority is not a valid number. */
   'dialog.create.priority.invalid': 'Priority must be a number',
-  /** Title for the conditions section in the create variant dialog. */
-  'dialog.create.conditions.title': 'Conditions',
-  /** Description for the conditions section in the create variant dialog. */
-  'dialog.create.conditions.description':
-    'Add key/value pairs that define when this variant definition applies.',
+  /** Label for the conditions section in the create variant dialog. */
+  'dialog.create.conditions.title': 'Who is this content for:',
   /** Validation message when the conditions match an existing variant definition. */
   'dialog.create.conditions.duplicate':
     'A variant definition with the same conditions already exists: <VariantLink>{{title}}</VariantLink>',

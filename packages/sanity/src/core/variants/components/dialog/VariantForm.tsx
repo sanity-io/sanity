@@ -429,14 +429,9 @@ export function VariantForm(props: {
       </Stack>
 
       <Stack gap={3}>
-        <Stack gap={2}>
-          <Text size={1} weight="medium">
-            {t('dialog.create.conditions.title')}
-          </Text>
-          <Text muted size={1}>
-            {t('dialog.create.conditions.description')}
-          </Text>
-        </Stack>
+        <Text size={1} weight="medium">
+          {t('dialog.create.conditions.title')}
+        </Text>
 
         {conditionsConfig.mode === 'mapped' && conditionsConfig.status === 'error' ? (
           <Stack data-testid="variant-form-conditions-error" gap={3}>
