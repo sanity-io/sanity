@@ -24,14 +24,7 @@ export type UseVariantConditionsResult =
   | {mode: 'mapped'; status: 'error'; error: Error; retry: () => void}
   | {mode: 'mapped'; status: 'ready'; definitions: NormalizedVariantConditionMap[]}
 
-/**
- * How long a `beta.variants.conditions` resolver may take before the form reports an error.
- * A resolver whose request is parked (network/CORS) never settles; without this the form would
- * spin forever with no way to retry.
- *
- * @internal
- */
-export const RESOLVE_VARIANT_CONDITIONS_TIMEOUT_MS = 10_000
+const RESOLVE_VARIANT_CONDITIONS_TIMEOUT_MS = 30_000
 
 type ConditionsResolver = Exclude<VariantConditions, unknown[]>
 
