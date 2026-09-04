@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.13.0](https://github.com/sanity-io/sanity/compare/v6.12.0...v6.13.0) (2026-09-04)
+
+### Features
+
+* **access-ui:** surface SAML enforcement before the request form ([#14357](https://github.com/sanity-io/sanity/issues/14357)) ([7d6d93b](https://github.com/sanity-io/sanity/commit/7d6d93b8e40194ec4a7cfc8d632342e85a119277))
 ## [6.11.0](https://github.com/sanity-io/sanity/compare/v6.10.1...v6.11.0) (2026-08-25)
 
 ### Performance Improvements

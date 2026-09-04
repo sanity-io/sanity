@@ -1,6 +1,6 @@
 {
   "name": "@sanity/access-ui",
-  "version": "6.12.0",
+  "version": "6.13.0",
   "description": "Shared request-access screen and access-request logic for Sanity applications",
   "keywords": [
     "access",
