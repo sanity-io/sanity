@@ -80,7 +80,7 @@ function formatCount(count: number | undefined, total: number): string {
   return `${count.toLocaleString()} · ${Math.round((count / total) * 100)}%`
 }
 
-export function StyleOutlinePanel() {
+export default function StyleOutlinePanel() {
   const [state, setState] = useState(readStoredState)
   const [counts, setCounts] = useState<Counts | null>(null)
   const {open, active} = state
