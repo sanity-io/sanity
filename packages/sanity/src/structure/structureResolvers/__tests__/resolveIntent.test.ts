@@ -98,6 +98,35 @@ describe('resolveIntent', () => {
     expect(routerPanes).toEqual([[{id: 'settings', params: {}, payload: undefined}]])
   })
 
+  it('resolves registry-configured singletons surfaced via S.list().singletons()', async () => {
+    const source = await getMockSource({
+      config: {
+        schema: mockSchema,
+        document: {singletons: ['settings']},
+      },
+    })
+    // @ts-expect-error -- pre-existing, fix later
+    const S = createStructureBuilder({source})
+
+    const rootPaneNode = S.list()
+      .title('Content')
+      .items([S.documentTypeListItem('book').title('Books')])
+      .singletons(['settings']) as unknown as UnresolvedPaneNode
+
+    // A deep link / search result for the singleton document resolves to the
+    // structure pane produced by the singleton helpers, not the fallback
+    // editor.
+    const routerPanes = await resolveIntent({
+      intent: 'edit',
+      params: {id: 'settings', type: 'settings'},
+      payload: undefined,
+      rootPaneNode,
+      structureContext: null as any,
+    })
+
+    expect(routerPanes).toEqual([[{id: 'settings', params: {}, payload: undefined}]])
+  })
+
   it('resolves nested singletons', async () => {
     const source = await getMockSource({config: {schema: mockSchema}})
     // @ts-expect-error -- pre-existing, fix later

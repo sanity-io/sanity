@@ -65,6 +65,35 @@ export interface Template<Params = any, Value = any> {
 }
 
 /**
+ * A template as produced by configuration resolution, stored on `Source.templates`.
+ *
+ * Unlike {@link Template} — the authoring type developers use with the
+ * `schema.templates` configuration — a resolved template may carry a
+ * `singleton` tag. The tag is set by the Studio, never by developers, so it
+ * is deliberately absent from the authoring type.
+ *
+ * @hidden
+ * @beta
+ */
+export interface ResolvedTemplate<Params = any, Value = any> extends Template<Params, Value> {
+  /**
+   * The singleton definition id this template provides the initial value for.
+   *
+   * Set on the templates Studio generates for the `document.singletons`
+   * configuration. Templates carrying this property are never offered as
+   * "create new" options — the singleton document has a fixed id — and
+   * identify the singleton subset of templates for singleton-aware surfaces.
+   *
+   * At most one template may carry a given singleton definition id.
+   *
+   * Developers cannot set this property, but a `schema.templates` resolver
+   * that spreads a tagged template (`{...template, value}`) preserves it at
+   * runtime.
+   */
+  singleton?: string
+}
+
+/**
  * Parameter for a template. Closely resembles API used to define fields for object schema types.
  * See {@link TemplateFieldDefinition} and {@link TemplateArrayFieldDefinition}
  * @public

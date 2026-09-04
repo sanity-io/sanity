@@ -10,6 +10,7 @@ import {type ComponentType, type ElementType, type ErrorInfo, isValidElement} fr
 import {isValidElementType} from 'react-is'
 import {map, shareReplay} from 'rxjs/operators'
 
+import {isDev} from '../environment'
 import {
   createDatasetFileAssetSource,
   createDatasetImageAssetSource,
@@ -31,8 +32,14 @@ import {uploadSchema} from '../studio/manifest/uploadSchema'
 import {type RequestErrorChannel} from '../studio/requestErrors/types'
 import {validateWorkspaces} from '../studio/workspaces/validateWorkspaces'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
-import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates/types'
+import {
+  type InitialValueTemplateItem,
+  type ResolvedTemplate,
+  type Template,
+  type TemplateItem,
+} from '../templates/types'
 import {canonicalHash} from '../util/canonicalHash'
+import {getPublishedId, isPublishedId} from '../util/draftUtils'
 import {EMPTY_ARRAY} from '../util/empty'
 import {isNonNullable} from '../util/isNonNullable'
 import {
@@ -66,6 +73,7 @@ import {
   scheduledDraftsEnabledReducer,
   schemaTemplatesReducer,
   searchStrategyReducer,
+  singletonsReducer,
   toolsReducer,
   variantsEnabledReducer,
 } from './configPropertyReducers'
@@ -84,6 +92,7 @@ import {
   type MissingConfigFile,
   type PluginOptions,
   type PreparedConfig,
+  type SingletonDefinition,
   type SingleWorkspace,
   type Source,
   type SourceClientOptions,
@@ -551,6 +560,64 @@ function resolveSource({
   const defaultAssetSources = createDatasetAssetSources(config, client)
   const mediaLibraryAssetSources = createMediaLibraryAssetSources(config)
 
+  // Resolve and validate the singleton registry before templates, so later
+  // steps can rely on a known-valid set of singleton definitions. Validation
+  // errors accumulate on the shared `errors` array and surface together via
+  // the ConfigResolutionError thrown further down.
+  let singletons: SingletonDefinition[] = []
+  try {
+    singletons = resolveConfigProperty({
+      config,
+      context,
+      initialValue: [],
+      propertyName: 'document.singletons',
+      reducer: singletonsReducer,
+    })
+  } catch (e) {
+    errors.push(e)
+  }
+  validateSingletons(singletons, schema, errors)
+
+  const singletonSchemaTypeNames = new Set(singletons.map((singleton) => singleton.schemaType))
+  const singletonsByDocumentId = new Map(
+    singletons.map((singleton) => [singleton.documentId, singleton]),
+  )
+
+  /**
+   * Looks up the singleton definition id for a document. Singleton
+   * `documentId`s are unique, so the published id alone identifies the
+   * definition; the schema type is verified defensively so a misconfigured
+   * structure node cannot silently apply singleton behaviour to a document of
+   * the wrong type.
+   *
+   * Performing the lookup centrally means every surface that resolves
+   * document configuration receives `context.singleton`, regardless of how
+   * the document was opened (structure helpers, intents, deep links).
+   */
+  const getSingletonId = (
+    documentId: string | undefined,
+    schemaTypeName: string | undefined,
+  ): string | undefined => {
+    if (!documentId) {
+      return undefined
+    }
+    const definition = singletonsByDocumentId.get(getPublishedId(documentId))
+    if (!definition) {
+      return undefined
+    }
+    if (schemaTypeName && definition.schemaType !== schemaTypeName) {
+      if (isDev) {
+        console.warn(
+          `Document "${documentId}" matches the document id of singleton "${definition.id}", ` +
+            `but has schema type "${schemaTypeName}" where the singleton expects "${definition.schemaType}". ` +
+            `Singleton behaviour will not be applied.`,
+        )
+      }
+      return undefined
+    }
+    return definition.id
+  }
+
   let templates!: Source['templates']
   try {
     templates = resolveConfigProperty({
@@ -564,6 +631,10 @@ function resolveSource({
         .map((typeName) => schema.get(typeName))
         .filter(isNonNullable)
         .filter((schemaType) => schemaType.type?.name === 'document')
+        // Schema types claimed by a singleton definition don't get a plain
+        // per-type template; each singleton definition gets its own template
+        // (tagged with `singleton`) below.
+        .filter((schemaType) => !singletonSchemaTypeNames.has(schemaType.name))
         .map((schemaType) => {
           const template: Template = {
             id: schemaType.name,
@@ -574,7 +645,28 @@ function resolveSource({
           }
 
           return template
-        }),
+        })
+        .concat(
+          singletons
+            .map((definition): ResolvedTemplate | undefined => {
+              const schemaType = schema.get(definition.schemaType)
+              // Missing schema types were already reported by
+              // `validateSingletons`; skip quietly here.
+              if (!schemaType) {
+                return undefined
+              }
+              return {
+                id: definition.id,
+                schemaType: definition.schemaType,
+                title: definition.title || schemaType.title || schemaType.name,
+                icon: definition.icon || schemaType.icon,
+                value: definition.initialValue ??
+                  schemaType.initialValue ?? {_type: definition.schemaType},
+                singleton: definition.id,
+              }
+            })
+            .filter(isNonNullable),
+        ),
     })
     // TODO: validate templates
     // TODO: validate that each one has a unique template ID
@@ -585,6 +677,8 @@ function resolveSource({
       causes: [e],
     })
   }
+
+  validateSingletonTemplates(templates, singletons, errors)
 
   let tools!: Source['tools']
   try {
@@ -612,6 +706,14 @@ function resolveSource({
   const initialTemplatesResponses = templates
     // filter out the ones with parameters to fill
     .filter((template) => !template.parameters?.length)
+    // Templates tagged with a singleton definition id provide the singleton's
+    // initial value; the singleton document has a fixed id, so they are never
+    // offered as "create new" options. Only the new-document options are
+    // filtered — the tagged template stays in `source.templates`, so opening a
+    // singleton document that doesn't exist yet still resolves its initial
+    // value. Untagged templates always pass through: that's the escape hatch
+    // for schema types shared between singletons and ordinary documents.
+    .filter((template) => template.singleton === undefined)
     .map((template): TemplateItem => ({
       templateId: template.id,
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -758,18 +860,32 @@ function resolveSource({
       config,
     }),
     document: {
-      actions: (partialContext) =>
-        resolveConfigProperty({
+      actions: (partialContext) => {
+        const singleton = getSingletonId(partialContext.documentId, partialContext.schemaType)
+        const resolvedActions = resolveConfigProperty({
           config,
-          context: {...context, ...partialContext},
+          context: {...context, ...partialContext, singleton},
           initialValue: initialDocumentActions,
           propertyName: 'document.actions',
           reducer: documentActionsReducer,
-        }),
+        })
+
+        // Built-in singleton filter — applied after every user resolver so it
+        // cannot be bypassed by reintroducing the duplicate action via
+        // `document.actions`.
+        if (singleton) {
+          return resolvedActions.filter((action) => action.action !== 'duplicate')
+        }
+        return resolvedActions
+      },
       badges: (partialContext) =>
         resolveConfigProperty({
           config,
-          context: {...context, ...partialContext},
+          context: {
+            ...context,
+            ...partialContext,
+            singleton: getSingletonId(partialContext.documentId, partialContext.schemaType),
+          },
           initialValue: initialDocumentBadges,
           propertyName: 'document.badges',
           reducer: documentBadgesReducer,
@@ -786,7 +902,11 @@ function resolveSource({
       unstable_fieldActions: (partialContext) =>
         resolveConfigProperty({
           config,
-          context: {...context, ...partialContext},
+          context: {
+            ...context,
+            ...partialContext,
+            singleton: getSingletonId(partialContext.documentId, partialContext.documentType),
+          },
           initialValue: initialDocumentFieldActions,
           propertyName: 'document.unstable_fieldActions',
           reducer: documentFieldActionsReducer,
@@ -794,7 +914,11 @@ function resolveSource({
       inspectors: (partialContext) =>
         resolveConfigProperty({
           config,
-          context: {...context, ...partialContext},
+          context: {
+            ...context,
+            ...partialContext,
+            singleton: getSingletonId(partialContext.documentId, partialContext.documentType),
+          },
           initialValue: EMPTY_ARRAY,
           propertyName: 'document.inspectors',
           reducer: documentInspectorsReducer,
@@ -808,10 +932,15 @@ function resolveSource({
           asyncReducer: resolveProductionUrlReducer,
         }),
       resolveNewDocumentOptions,
+      singletons,
       unstable_languageFilter: (partialContext) =>
         resolveConfigProperty({
           config,
-          context: {...context, ...partialContext},
+          context: {
+            ...context,
+            ...partialContext,
+            singleton: getSingletonId(partialContext.documentId, partialContext.schemaType),
+          },
           initialValue: initialLanguageFilter,
           propertyName: 'document.unstable_languageFilter',
           reducer: documentLanguageFilterReducer,
@@ -821,7 +950,10 @@ function resolveSource({
       unstable_comments: {
         enabled: (partialContext) => {
           return documentCommentsEnabledReducer({
-            context: partialContext,
+            context: {
+              ...partialContext,
+              singleton: getSingletonId(partialContext.documentId, partialContext.documentType),
+            },
             config,
             initialValue: true,
           })
@@ -830,7 +962,10 @@ function resolveSource({
       comments: {
         enabled: (partialContext) => {
           return documentCommentsEnabledReducer({
-            context: partialContext,
+            context: {
+              ...partialContext,
+              singleton: getSingletonId(partialContext.documentId, partialContext.documentType),
+            },
             config,
             initialValue: true,
           })
@@ -839,7 +974,10 @@ function resolveSource({
       askToEdit: {
         enabled: (partialContext) => {
           return documentAskToEditEnabledReducer({
-            context: partialContext,
+            context: {
+              ...partialContext,
+              singleton: getSingletonId(partialContext.documentId, partialContext.documentType),
+            },
             config,
             initialValue: true,
           })
@@ -1027,4 +1165,155 @@ function joinBasePath(rootPath: string, basePath?: string) {
     .join('/')
 
   return `/${joined}`
+}
+
+// Sanity document ids are limited to this character set. Validated alongside
+// `isPublishedId` to reject `drafts.` and `versions.` prefixes.
+// TODO: extract to @sanity/util alongside other id helpers.
+const SINGLETON_DOCUMENT_ID_PATTERN = /^[a-zA-Z0-9._-]+$/
+
+/**
+ * Validates the resolved singleton definitions, pushing every problem onto the
+ * shared `errors` array so they surface together via `ConfigResolutionError`.
+ *
+ * Uniqueness violations are aggregated into a single error per rule (listing
+ * every offending value) so users can fix everything in one pass.
+ */
+function validateSingletons(
+  singletons: SingletonDefinition[],
+  schema: Schema,
+  errors: unknown[],
+): void {
+  const idCounts = new Map<string, number>()
+  const documentIdCounts = new Map<string, number>()
+
+  for (const singleton of singletons) {
+    const {id, documentId, schemaType} = singleton
+
+    if (typeof id !== 'string' || id.length === 0) {
+      errors.push(
+        new Error(
+          `Singleton definitions must have a non-empty string \`id\`, but found ${JSON.stringify(id)}.`,
+        ),
+      )
+    } else {
+      idCounts.set(id, (idCounts.get(id) ?? 0) + 1)
+    }
+
+    if (typeof documentId !== 'string' || documentId.length === 0) {
+      errors.push(
+        new Error(
+          `Singleton definition "${id}" must have a non-empty string \`documentId\`, but found ${JSON.stringify(documentId)}.`,
+        ),
+      )
+    } else if (!isPublishedId(documentId) || !SINGLETON_DOCUMENT_ID_PATTERN.test(documentId)) {
+      errors.push(
+        new Error(
+          `Singleton definition "${id}" has invalid \`documentId\` "${documentId}". ` +
+            `It must be a published document id (no "drafts." or "versions." prefix) using only [a-zA-Z0-9._-].`,
+        ),
+      )
+    } else {
+      documentIdCounts.set(documentId, (documentIdCounts.get(documentId) ?? 0) + 1)
+    }
+
+    const resolvedSchemaType = typeof schemaType === 'string' ? schema.get(schemaType) : undefined
+    if (!resolvedSchemaType) {
+      errors.push(
+        new Error(
+          `Singleton definition "${id}" references schema type "${schemaType}", which does not exist in the schema.`,
+        ),
+      )
+    } else if (resolvedSchemaType.type?.name !== 'document') {
+      errors.push(
+        new Error(
+          `Singleton definition "${id}" references schema type "${schemaType}", which is not a document type.`,
+        ),
+      )
+    }
+  }
+
+  const duplicateIds = [...idCounts]
+    .filter(([, count]) => count > 1)
+    .map(([duplicateId]) => duplicateId)
+  if (duplicateIds.length > 0) {
+    errors.push(
+      new Error(
+        `Duplicate singleton definition ids found: ${duplicateIds.join(', ')}. ` +
+          `Each singleton \`id\` must be unique.`,
+      ),
+    )
+  }
+
+  const duplicateDocumentIds = [...documentIdCounts]
+    .filter(([, count]) => count > 1)
+    .map(([duplicateDocumentId]) => duplicateDocumentId)
+  if (duplicateDocumentIds.length > 0) {
+    errors.push(
+      new Error(
+        `Multiple singleton definitions claim the same document id: ${duplicateDocumentIds.join(', ')}. ` +
+          `Each singleton \`documentId\` must be unique.`,
+      ),
+    )
+  }
+}
+
+/**
+ * Validates the relationship between resolved templates and singleton
+ * definitions, pushing every problem onto the shared `errors` array so they
+ * surface together via `ConfigResolutionError`:
+ *
+ * - An untagged template must not reuse a singleton definition id — the
+ *   generated singleton template claims that id.
+ * - At most one template may carry a given `singleton` tag, and the tag must
+ *   reference a registered singleton definition.
+ */
+function validateSingletonTemplates(
+  templates: ResolvedTemplate[],
+  singletons: SingletonDefinition[],
+  errors: unknown[],
+): void {
+  const definitionIds = new Set(singletons.map((definition) => definition.id))
+  const taggedTemplateCounts = new Map<string, number>()
+
+  for (const template of templates) {
+    if (template.singleton === undefined) {
+      if (definitionIds.has(template.id)) {
+        errors.push(
+          new Error(
+            `Template "${template.id}" reuses the id of singleton definition "${template.id}". ` +
+              `That id is claimed by the singleton's generated template; use a different template id.`,
+          ),
+        )
+      }
+      continue
+    }
+
+    if (!definitionIds.has(template.singleton)) {
+      errors.push(
+        new Error(
+          `Template "${template.id}" is tagged with singleton "${template.singleton}", ` +
+            `which is not registered in \`document.singletons\`.`,
+        ),
+      )
+      continue
+    }
+
+    taggedTemplateCounts.set(
+      template.singleton,
+      (taggedTemplateCounts.get(template.singleton) ?? 0) + 1,
+    )
+  }
+
+  const duplicateTags = [...taggedTemplateCounts]
+    .filter(([, count]) => count > 1)
+    .map(([duplicateTag]) => duplicateTag)
+  if (duplicateTags.length > 0) {
+    errors.push(
+      new Error(
+        `Multiple templates are tagged with the same singleton definition id: ${duplicateTags.join(', ')}. ` +
+          `At most one template may provide a singleton's initial value.`,
+      ),
+    )
+  }
 }

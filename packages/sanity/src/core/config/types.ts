@@ -2,6 +2,7 @@ import {type BifurClient} from '@sanity/bifur-client'
 import {type ClientConfig as SanityClientConfig, type SanityClient} from '@sanity/client'
 import {
   type AssetSource,
+  type BaseSchemaType,
   type CurrentUser,
   type ObjectSchemaType,
   type SanityDocumentLike,
@@ -25,7 +26,12 @@ import {type LocalePluginOptions, type LocaleSource} from '../i18n/types'
 import {type AuthStore} from '../store/authStore/types'
 import {type SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
 import {type SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
-import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates/types'
+import {
+  type InitialValueTemplateItem,
+  type ResolvedTemplate,
+  type Template,
+  type TemplateItem,
+} from '../templates/types'
 import {type StudioTheme} from '../theme'
 import {type AuthConfig} from './auth/types'
 import {type DocumentActionComponent} from './document/actions'
@@ -301,6 +307,94 @@ export type NewDocumentCreationContext =
   | {type: 'structure'; documentId?: undefined; schemaType: string}
 
 /**
+ * Defines a singleton: a document with a fixed id that is edited in place
+ * rather than listed, created, or duplicated.
+ *
+ * @remarks
+ * The optional `title`, `icon`, and `initialValue` properties are inherited
+ * from {@link BaseSchemaType}. `title` and `icon` are used as the default
+ * list item title and icon by the `S.listItem().singleton()` and
+ * `S.list().singletons()` Structure Tool functions; `initialValue` provides
+ * the value of the singleton's generated initial value template. Each falls
+ * back to the schema type's own metadata when omitted.
+ *
+ * @hidden
+ * @beta
+ */
+export interface SingletonDefinition extends Pick<
+  BaseSchemaType,
+  'title' | 'icon' | 'initialValue'
+> {
+  /**
+   * The singleton _definition_ id: the stable identity by which structure
+   * code references the singleton. When omitted at configuration time, it
+   * inherits the definition's `documentId`. Establishing a discrete id for
+   * the definition decouples the singleton's identity from its schema type
+   * and document id:
+   *
+   * - Multiple singletons can share a schema type if necessary.
+   * - Structure code (often shared across workspaces) can reference a
+   *   singleton by a value that stays constant while each workspace maps it
+   *   to a different document id (e.g. per-dataset or per-environment ids).
+   * - Developers can change `documentId` or `schemaType` over time while
+   *   preserving the semantic identity of the singleton.
+   *
+   * Must be unique across singleton definitions.
+   */
+  id: string
+
+  /**
+   * The singleton _document_ id.
+   *
+   * Must be unique across singleton definitions.
+   */
+  documentId: string
+
+  /**
+   * The name of the document schema type used by the singleton.
+   */
+  schemaType: string
+}
+
+/**
+ * A singleton definition as provided by the developer: a definition whose
+ * `id` is optional (it inherits the definition's `documentId`), or — when
+ * `id`, `documentId`, and `schemaType` are all identical — that value as a
+ * single string.
+ *
+ * @hidden
+ * @beta
+ */
+export type UnresolvedSingletonDefinition =
+  | (Omit<SingletonDefinition, 'id'> & {
+      /**
+       * The singleton definition id. Optional: inherits the definition's
+       * `documentId` when omitted. Set it explicitly to be verbose, to guard
+       * against future collisions, or to address a singleton universally when
+       * different workspaces or environments map it to different document
+       * ids.
+       */
+      id?: string
+    })
+  | string
+
+/**
+ * Function for composing singletons.
+ *
+ * This function receives resolved singleton definitions
+ * ({@link SingletonDefinition}) and may return unresolved definitions
+ * ({@link UnresolvedSingletonDefinition}); Studio resolves the returned
+ * definitions before the next resolver sees them.
+ *
+ * @hidden
+ * @beta
+ */
+export type SingletonsResolver = (
+  prev: SingletonDefinition[],
+  context: ConfigContext,
+) => UnresolvedSingletonDefinition[]
+
+/**
  * @hidden
  * @beta
  */
@@ -333,6 +427,21 @@ export interface DocumentPluginOptions {
    * @beta
    */
   newDocumentOptions?: NewDocumentOptionsResolver
+
+  /**
+   * The singleton configuration, surfaced at the `document.singletons`
+   * configuration path.
+   *
+   * If a singleton's `id`, `documentId`, and `schemaType` properties are
+   * identical, it can simply be provided as a single string. Studio will
+   * expand it to a full {@link SingletonDefinition} at runtime.
+   *
+   * Alternatively, a resolver function may be provided.
+   *
+   * @hidden
+   * @beta
+   */
+  singletons?: UnresolvedSingletonDefinition[] | SingletonsResolver
 
   /** @deprecated Use `comments` instead */
   unstable_comments?: {
@@ -383,6 +492,12 @@ export interface DocumentPluginOptions {
 export interface DocumentLanguageFilterContext extends ConfigContext {
   documentId?: string
   schemaType: string
+
+  /**
+   * The singleton definition id, if the document is configured as a singleton
+   * via `document.singletons`.
+   */
+  singleton?: string
 }
 
 /**
@@ -741,6 +856,15 @@ export interface DocumentActionsContext extends ConfigContext {
   releaseId: string | undefined
   /** the type of the currently active document. */
   versionType: DocumentActionsVersionType
+
+  /**
+   * The singleton definition id, if the document is configured as a singleton
+   * via `document.singletons`.
+   *
+   * The context already includes `documentId` and `schemaType` properties, so
+   * the full {@link SingletonDefinition} is not provided.
+   */
+  singleton?: string
 }
 
 /**
@@ -750,24 +874,48 @@ export interface DocumentActionsContext extends ConfigContext {
 export interface DocumentBadgesContext extends ConfigContext {
   documentId?: string
   schemaType: string
+
+  /**
+   * The singleton definition id, if the document is configured as a singleton
+   * via `document.singletons`.
+   */
+  singleton?: string
 }
 
 /** @hidden @beta */
 export interface DocumentInspectorContext extends ConfigContext {
   documentId?: string
   documentType: string
+
+  /**
+   * The singleton definition id, if the document is configured as a singleton
+   * via `document.singletons`.
+   */
+  singleton?: string
 }
 
 /** @hidden @beta */
 export interface DocumentCommentsEnabledContext {
   documentId?: string
   documentType: string
+
+  /**
+   * The singleton definition id, if the document is configured as a singleton
+   * via `document.singletons`.
+   */
+  singleton?: string
 }
 
 /** @hidden @beta */
 export interface DocumentAskToEditEnabledContext {
   documentId?: string
   documentType: string
+
+  /**
+   * The singleton definition id, if the document is configured as a singleton
+   * via `document.singletons`.
+   */
+  singleton?: string
 }
 
 /**
@@ -823,7 +971,7 @@ export interface Source {
   /** The schema of the source. */
   schema: Schema
   /** The templates of the source. */
-  templates: Template[]
+  templates: ResolvedTemplate[]
   /** The tools of the source. */
   tools: Tool[]
   /** The current user of the source. */
@@ -898,6 +1046,15 @@ export interface Source {
      * @beta
      */
     resolveNewDocumentOptions: (context: NewDocumentCreationContext) => InitialValueTemplateItem[]
+
+    /**
+     * The resolved singleton definitions, from the `document.singletons`
+     * configuration.
+     *
+     * @hidden
+     * @beta
+     */
+    singletons: SingletonDefinition[]
 
     /** @alpha */
     unstable_languageFilter: (

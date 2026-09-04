@@ -3,7 +3,7 @@ import {structureTool} from 'sanity/structure'
 
 export default defineConfig({
   name: 'default',
-  title: 'Blog',
+  title: 'Restaurant website',
   projectId: 'xxxxxxxx',
   dataset: 'production',
   plugins: [
@@ -11,39 +11,36 @@ export default defineConfig({
       structure: (S) =>
         S.list()
           .title('Content')
-          .items([
-            S.listItem().singleton('siteSettings'),
-            S.divider(),
-            // Registered singleton schema types are excluded from the default
-            // type list automatically — no manual filtering needed.
-            ...S.documentTypeListItems(),
-          ]),
+          .items([S.listItem().singleton('footer'), S.divider(), ...S.documentTypeListItems()]),
     }),
   ],
   document: {
     // The string shorthand expands to
-    // {id: 'siteSettings', documentId: 'siteSettings', schemaType: 'siteSettings'}.
-    // Registering the singleton also removes the "create new" option and the
-    // "duplicate" action for it automatically.
-    singletons: ['siteSettings'],
+    // {id: 'footer', documentId: 'footer', schemaType: 'footer'}.
+    singletons: ['footer'],
   },
   schema: {
     types: [
       defineType({
-        name: 'siteSettings',
-        title: 'Site settings',
+        name: 'footer',
+        title: 'Footer',
         type: 'document',
         fields: [
           defineField({
-            name: 'siteTitle',
-            title: 'Site title',
+            name: 'openingHours',
+            title: 'Opening hours',
             type: 'string',
+          }),
+          defineField({
+            name: 'address',
+            title: 'Address',
+            type: 'text',
           }),
         ],
       }),
       defineType({
-        name: 'post',
-        title: 'Post',
+        name: 'menu',
+        title: 'Menu',
         type: 'document',
         fields: [
           defineField({
@@ -54,13 +51,13 @@ export default defineConfig({
         ],
       }),
       defineType({
-        name: 'author',
-        title: 'Author',
+        name: 'event',
+        title: 'Event',
         type: 'document',
         fields: [
           defineField({
-            name: 'name',
-            title: 'Name',
+            name: 'title',
+            title: 'Title',
             type: 'string',
           }),
         ],

@@ -101,6 +101,7 @@ export {
   type List,
   ListBuilder,
   type ListInput,
+  type SingletonListBuilder,
 } from '../structure/structureBuilder/List'
 export {
   type ListItem,
