@@ -242,7 +242,7 @@
     "xstate": "^5.32.6"
   },
   "devDependencies": {
-    "@chromatic-com/vitest": "0.1.10",
+    "@chromatic-com/vitest": "^1.0.0",
     "@repo/package.bundle": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
