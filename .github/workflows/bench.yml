@@ -334,7 +334,7 @@ jobs:
       fail-fast: false
       matrix:
         # One shard per scenario: wall-clock = slowest single scenario
-        scenario: [singleString, arrayI18n, article, recipe, synthetic]
+        scenario: [singleString, firstEditPublished, arrayI18n, article, recipe, synthetic]
     steps:
       - uses: actions/checkout@v7
         with:
@@ -550,7 +550,7 @@ jobs:
           # instead of rendering a clean table with a scenario silently
           # missing. Keep in sync with the bench-interaction matrix and the
           # bench-pageload --scenario flags above.
-          BENCH_EXPECTED_INTERACTION_SCENARIOS: singleString,arrayI18n,article,recipe,synthetic
+          BENCH_EXPECTED_INTERACTION_SCENARIOS: singleString,firstEditPublished,arrayI18n,article,recipe,synthetic
           BENCH_EXPECTED_PAGELOAD_SCENARIOS: singleString,syntheticLarge
         run: pnpm bench report
 
