@@ -131,7 +131,7 @@ export const donut = style({
   placeItems: 'center',
   selectors: {
     '&::after': {
-      content: '',
+      content: '""',
       position: 'absolute',
       inset: 11,
       borderRadius: '50%',
