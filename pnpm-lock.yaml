@@ -958,8 +958,8 @@ importers:
         specifier: ^3.0.3
         version: 3.0.3
       chromatic:
-        specifier: ^18.7.1
-        version: 18.7.1(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@0.1.10)
+        specifier: ^18.7.2
+        version: 18.7.2(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@0.1.10)
       fflate:
         specifier: ^0.8.3
         version: 0.8.3
@@ -2254,8 +2254,8 @@ importers:
         specifier: ^9.0.20240710
         version: 9.0.20240710
       chromatic:
-        specifier: ^18.7.1
-        version: 18.7.1(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@0.1.10)
+        specifier: ^18.7.2
+        version: 18.7.2(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@0.1.10)
       jsdom:
         specifier: 'catalog:'
         version: 29.1.1(@noble/hashes@2.4.0)
