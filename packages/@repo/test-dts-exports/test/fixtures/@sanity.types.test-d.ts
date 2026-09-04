@@ -1421,7 +1421,6 @@ describe('@sanity/types', () => {
   })
   test('ValidationContext', () => {
     expectTypeOf<ValidationContext>().toBeObject()
-    expectTypeOf<ValidationContext['signal']>().toEqualTypeOf<AbortSignal | undefined>()
   })
   test('ValidationError', () => {
     expectTypeOf<ValidationError>().toBeObject()

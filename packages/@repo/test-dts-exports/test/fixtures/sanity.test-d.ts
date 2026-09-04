@@ -734,6 +734,7 @@ import type {
   getSelectedVariant,
   getTargetDocument,
   getTargetScopeId,
+  getTargetSiblings,
   getTemplatePermissions,
   getValueAtPath,
   getValueError,
@@ -1457,6 +1458,8 @@ import type {
   StudioComponents,
   StudioComponentsPluginOptions,
   StudioDiagnostics,
+  StudioDiagnosticsBridge,
+  StudioDiagnosticsBridgeApi,
   StudioErrorHandler,
   StudioFeedbackDialog,
   StudioFeedbackDialogProps,
@@ -1735,6 +1738,7 @@ import type {
   useSearchState,
   useSetPerspective,
   useSetVariant,
+  useShallowUnique,
   useSingleDocRelease,
   useSource,
   useStudioErrorHandler,
@@ -4044,6 +4048,9 @@ describe('sanity', () => {
   test('getTargetScopeId', () => {
     expectTypeOf<typeof getTargetScopeId>().toBeFunction()
   })
+  test('getTargetSiblings', () => {
+    expectTypeOf<typeof getTargetSiblings>().toBeFunction()
+  })
   test('getTemplatePermissions', () => {
     expectTypeOf<typeof getTemplatePermissions>().toBeFunction()
   })
@@ -6221,6 +6228,12 @@ describe('sanity', () => {
   test('StudioDiagnostics', () => {
     expectTypeOf<StudioDiagnostics>().toBeObject()
   })
+  test('StudioDiagnosticsBridge', () => {
+    expectTypeOf<typeof StudioDiagnosticsBridge>().toBeFunction()
+  })
+  test('StudioDiagnosticsBridgeApi', () => {
+    expectTypeOf<StudioDiagnosticsBridgeApi>().toBeObject()
+  })
   test('StudioErrorHandler', () => {
     expectTypeOf<StudioErrorHandler>().toBeObject()
   })
@@ -7058,6 +7071,9 @@ describe('sanity', () => {
   })
   test('useSetVariant', () => {
     expectTypeOf<typeof useSetVariant>().toBeFunction()
+  })
+  test('useShallowUnique', () => {
+    expectTypeOf<typeof useShallowUnique>().toBeFunction()
   })
   test('useSingleDocRelease', () => {
     expectTypeOf<typeof useSingleDocRelease>().toBeFunction()
