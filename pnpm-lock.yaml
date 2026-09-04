@@ -28,9 +28,6 @@ catalogs:
     '@sanity/tsdown-config':
       specifier: ^0.27.1
       version: 0.27.1
-    '@sanity/ui':
-      specifier: ^4.0.7
-      version: 4.0.7
     '@sanity/vanilla-extract-vite-plugin':
       specifier: ^0.2.17
       version: 0.2.17
@@ -109,7 +106,15 @@ catalogs:
 
 overrides:
   vitest: ^4.1.11
+  '@sanity/ui': https://pkg.pr.new/@sanity/ui@2828
+  '@sanity/ui>react-is': ^19.2.8
+  '@sanity/ui>react-refractor': ^4.0.0
+  '@sanity/ui>@sanity/color': ^3.0.8
+  '@sanity/ui>@sanity/icons': ^5.2.1
   vite>rolldown: 1.2.5
+
+patchedDependencies:
+  '@sanity/ui@4.0.7': e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a
 
 importers:
 
@@ -255,8 +260,8 @@ importers:
         specifier: ^5.2.1
         version: 5.2.1(react@19.2.8)
       '@sanity/ui':
-        specifier: 'catalog:'
-        version: 4.0.7(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+        specifier: https://pkg.pr.new/@sanity/ui@2828
+        version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       react:
         specifier: 'catalog:'
         version: 19.2.8
@@ -320,8 +325,8 @@ importers:
   dev/embedded-studio:
     dependencies:
       '@sanity/ui':
-        specifier: 'catalog:'
-        version: 4.0.7(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+        specifier: https://pkg.pr.new/@sanity/ui@2828
+        version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       react:
         specifier: 'catalog:'
         version: 19.2.8
@@ -403,8 +408,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/types
       '@sanity/ui':
-        specifier: 'catalog:'
-        version: 4.0.7(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+        specifier: https://pkg.pr.new/@sanity/ui@2828
+        version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@sanity/visual-editing':
         specifier: ^6.1.2
         version: 6.1.2(@sanity/client@8.5.0)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)(typescript@7.0.2)
@@ -458,8 +463,8 @@ importers:
         specifier: ^5.2.1
         version: 5.2.1(react@19.2.8)
       '@sanity/ui':
-        specifier: 'catalog:'
-        version: 4.0.7(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+        specifier: https://pkg.pr.new/@sanity/ui@2828
+        version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@visx/axis':
         specifier: ^4.0.0
         version: 4.0.0(@types/react@19.2.18)(react@19.2.8)
@@ -578,8 +583,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/types
       '@sanity/ui':
-        specifier: 'catalog:'
-        version: 4.0.7(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+        specifier: https://pkg.pr.new/@sanity/ui@2828
+        version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       react:
         specifier: 'catalog:'
         version: 19.2.8
@@ -645,8 +650,8 @@ importers:
   dev/studio-diagnostics-viewer:
     dependencies:
       '@sanity/ui':
-        specifier: 'catalog:'
-        version: 4.0.7(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+        specifier: https://pkg.pr.new/@sanity/ui@2828
+        version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       react:
         specifier: 'catalog:'
         version: 19.2.8
@@ -697,8 +702,8 @@ importers:
         specifier: ^5.2.1
         version: 5.2.1(react@19.2.8)
       '@sanity/ui':
-        specifier: 'catalog:'
-        version: 4.0.7(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+        specifier: https://pkg.pr.new/@sanity/ui@2828
+        version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@sanity/vision':
         specifier: workspace:*
         version: link:../../packages/@sanity/vision
@@ -816,8 +821,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/types
       '@sanity/ui':
-        specifier: 'catalog:'
-        version: 4.0.7(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+        specifier: https://pkg.pr.new/@sanity/ui@2828
+        version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@sanity/util':
         specifier: workspace:*
         version: link:../../packages/@sanity/util
@@ -1352,8 +1357,8 @@ importers:
         specifier: ^5.2.1
         version: 5.2.1(react@19.2.8)
       '@sanity/ui':
-        specifier: 'catalog:'
-        version: 4.0.7(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+        specifier: https://pkg.pr.new/@sanity/ui@2828
+        version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       ui5:
         specifier: 'catalog:'
         version: '@sanity/ui@5.0.0-alpha.8(react-dom@19.2.8)(react@19.2.8)'
@@ -1737,8 +1742,8 @@ importers:
         specifier: ^1.0.4
         version: 1.0.4
       '@sanity/ui':
-        specifier: 'catalog:'
-        version: 4.0.7(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+        specifier: https://pkg.pr.new/@sanity/ui@2828
+        version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@sanity/uuid':
         specifier: ^3.0.3
         version: 3.0.3
@@ -1998,8 +2003,8 @@ importers:
         specifier: workspace:*
         version: link:../@sanity/types
       '@sanity/ui':
-        specifier: 'catalog:'
-        version: 4.0.7(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+        specifier: https://pkg.pr.new/@sanity/ui@2828
+        version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@sanity/util':
         specifier: workspace:*
         version: link:../@sanity/util
@@ -7401,14 +7406,6 @@ packages:
     peerDependencies:
       '@types/react': ^19.2
 
-  '@sanity/ui@4.0.7':
-    resolution: {integrity: sha512-hdXAqZDlctHUKVH7UJmQpCgeHefVjDIa3b6QUkCiLxS+tPhlRvNjOJRB32HAftWNw7scS6aJhXlqJp2/KvH8SA==}
-    engines: {node: '>=22.12'}
-    peerDependencies:
-      react: ^19.2
-      react-dom: ^19.2
-      styled-components: ^6.1
-
   '@sanity/ui@5.0.0-alpha.8':
     resolution: {integrity: sha512-97d8U9/gXi7Y09NuOSYSmg7AZucxdLGY465F1c0iS4TlO5oN3qP7hzxYoxdRfYESCaY3I2nPIkFrGViLYKDfwQ==}
     engines: {node: '>=20.19 <22 || >=22.12'}
@@ -7416,6 +7413,15 @@ packages:
     peerDependencies:
       react: ^19.2
       react-dom: ^19.2
+
+  '@sanity/ui@https://pkg.pr.new/@sanity/ui@2828':
+    resolution: {integrity: sha512-H45q6Vkh6u5PcDv4vPezmsruEXsh7IafvPHnvTLjKVBjt4q0eWR+4BvXPpJktzjIcW5M5lHZ8e0UEoJFQ2EX6A==, tarball: https://pkg.pr.new/@sanity/ui@2828}
+    version: 4.0.7
+    engines: {node: '>=22.12'}
+    peerDependencies:
+      react: ^19.2
+      react-dom: ^19.2
+      styled-components: ^6.1
 
   '@sanity/uuid@3.0.3':
     resolution: {integrity: sha512-aJvKuFwzcZKRwuIjrRPfXfXKpSdnLF4CnedV5WcX1n5SzhufvRNHIot5lkx1+Y1DwiMVQOZ5gDSPJH+P6Ao70A==}
@@ -19534,7 +19540,7 @@ snapshots:
       '@sanity/color': 3.0.8
       '@sanity/icons': 5.2.1(react@19.2.8)
       '@sanity/mutator': link:packages/@sanity/mutator
-      '@sanity/ui': 4.0.7(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+      '@sanity/ui': https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       date-fns: 4.4.0
       lodash-es: 4.18.1
       react: 19.2.8
@@ -19883,7 +19889,7 @@ snapshots:
       '@lezer/highlight': 1.2.3
       '@sanity/icons': 5.2.1(react@19.2.8)
       '@sanity/lezer-groq': 1.0.4
-      '@sanity/ui': 4.0.7(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+      '@sanity/ui': https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@uiw/codemirror-themes': 4.25.11(@codemirror/language@6.12.4)(@codemirror/state@6.7.2)(@codemirror/view@6.43.10)
       '@uiw/react-codemirror': 4.25.11(@babel/runtime@7.29.7)(@codemirror/autocomplete@6.20.3)(@codemirror/language@6.12.4)(@codemirror/lint@6.9.7)(@codemirror/search@6.7.2)(@codemirror/state@6.7.2)(@codemirror/theme-one-dark@6.1.3)(@codemirror/view@6.43.10)(codemirror@6.0.2)(react-dom@19.2.8)(react@19.2.8)
       react: 19.2.8
@@ -19974,7 +19980,7 @@ snapshots:
     dependencies:
       '@sanity/icons': 5.2.1(react@19.2.8)
       '@sanity/mutator': link:packages/@sanity/mutator
-      '@sanity/ui': 4.0.7(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+      '@sanity/ui': https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@sanity/util': link:packages/@sanity/util
       '@sanity/uuid': 3.0.3
       react: 19.2.8
@@ -20014,7 +20020,7 @@ snapshots:
   '@sanity/google-maps-input@6.1.13(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)':
     dependencies:
       '@sanity/icons': 5.2.1(react@19.2.8)
-      '@sanity/ui': 4.0.7(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+      '@sanity/ui': https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@vis.gl/react-google-maps': 1.9.0(react-dom@19.2.8)(react@19.2.8)
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
@@ -20065,7 +20071,7 @@ snapshots:
   '@sanity/language-filter@5.0.18(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)':
     dependencies:
       '@sanity/icons': 5.2.1(react@19.2.8)
-      '@sanity/ui': 4.0.7(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+      '@sanity/ui': https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
       react-rx: 4.2.5(react@19.2.8)(rxjs@7.8.2)
@@ -20272,7 +20278,7 @@ snapshots:
     dependencies:
       '@sanity/color': 3.0.8
       '@sanity/icons': 5.2.1(react@19.2.8)
-      '@sanity/ui': 4.0.7(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+      '@sanity/ui': https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       react: 19.2.8
       react-compiler-runtime: 1.0.0(react@19.2.8)
       react-refractor: 4.0.0(react@19.2.8)
@@ -20313,20 +20319,6 @@ snapshots:
       '@sanity/media-library-types': 1.6.0
       '@types/react': 19.2.18
 
-  '@sanity/ui@4.0.7(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)':
-    dependencies:
-      '@floating-ui/react-dom': 2.1.9(react-dom@19.2.8)(react@19.2.8)
-      '@sanity/color': 3.0.8
-      '@sanity/icons': 5.2.1(react@19.2.8)
-      csstype: 3.2.3
-      motion: 13.1.1(react-dom@19.2.8)(react@19.2.8)
-      react: 19.2.8
-      react-dom: 19.2.8(react@19.2.8)
-      react-is: 19.2.8
-      react-refractor: 4.0.0(react@19.2.8)
-      styled-components: 6.5.3(react-dom@19.2.8)(react@19.2.8)
-      use-effect-event: 2.0.4(react@19.2.8)
-
   '@sanity/ui@5.0.0-alpha.8(react-dom@19.2.8)(react@19.2.8)':
     dependencies:
       '@sanity-labs/design-tokens': 0.0.2-alpha.4
@@ -20338,6 +20330,21 @@ snapshots:
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
       react-refractor: 4.0.0(react@19.2.8)
+
+  '@sanity/ui@https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)':
+    dependencies:
+      '@floating-ui/react-dom': 2.1.9(react-dom@19.2.8)(react@19.2.8)
+      '@sanity/color': 3.0.8
+      '@sanity/icons': 5.2.1(react@19.2.8)
+      clsx: 2.1.1
+      csstype: 3.2.3
+      motion: 13.1.1(react-dom@19.2.8)(react@19.2.8)
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+      react-is: 19.2.8
+      react-refractor: 4.0.0(react@19.2.8)
+      styled-components: 6.5.3(react-dom@19.2.8)(react@19.2.8)
+      use-effect-event: 2.0.4(react@19.2.8)
 
   '@sanity/uuid@3.0.3':
     dependencies:
@@ -20415,7 +20422,7 @@ snapshots:
       '@sanity/presentation-comlink': 2.2.3(@sanity/types@packages+@sanity+types)
       '@sanity/preview-url-secret': 4.1.5(@sanity/client@8.5.0)
       '@sanity/types': link:packages/@sanity/types
-      '@sanity/ui': 4.0.7(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+      '@sanity/ui': https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@sanity/visual-editing-csm': 3.0.18(@sanity/client@8.5.0)(@sanity/types@packages+@sanity+types)(typescript@7.0.2)
       '@sanity/visual-editing-types': 2.1.1(@sanity/client@8.5.0)(@sanity/types@packages+@sanity+types)
       '@vercel/stega': 1.1.0
@@ -27099,7 +27106,7 @@ snapshots:
   sanity-plugin-asset-source-unsplash@7.0.25(@types/react@19.2.18)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3):
     dependencies:
       '@sanity/icons': 5.2.1(react@19.2.8)
-      '@sanity/ui': 4.0.7(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+      '@sanity/ui': https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       lodash-es: 4.18.1
       react: 19.2.8
       react-photo-album: 3.6.1(@types/react@19.2.18)(react@19.2.8)
@@ -27113,7 +27120,7 @@ snapshots:
     dependencies:
       '@sanity/icons': 5.2.1(react@19.2.8)
       '@sanity/language-filter': 5.0.18(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)
-      '@sanity/ui': 4.0.7(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+      '@sanity/ui': https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@sanity/util': link:packages/@sanity/util
       lodash-es: 4.18.1
       react: 19.2.8
@@ -27131,7 +27138,7 @@ snapshots:
       '@sanity/client': 8.4.0(vitest@4.1.11)
       '@sanity/color': 3.0.8
       '@sanity/icons': 5.2.1(react@19.2.8)
-      '@sanity/ui': 4.0.7(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+      '@sanity/ui': https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@sanity/uuid': 3.0.3
       '@tanem/react-nprogress': 5.0.63(react-dom@19.2.8)(react@19.2.8)
       copy-to-clipboard: 3.3.3
@@ -27165,7 +27172,7 @@ snapshots:
       '@sanity/asset-utils': 2.3.0
       '@sanity/icons': 5.2.1(react@19.2.8)
       '@sanity/image-url': 2.1.1
-      '@sanity/ui': 4.0.7(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
+      '@sanity/ui': https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
       react-fast-compare: 3.2.2
