@@ -144,7 +144,7 @@ When `beta.variants.conditions` is set (a static array or a function that may re
 - while the list loads, the rows render disabled with a spinner instead of a skeleton, so the ready state lands in place
 - existing conditions that are not in the list stay visible in a critical tone, are marked as errors, and block save
 - a load failure shows an error and retry; the form does not fall back to free-text
-- an empty list, or a list where every entry is dropped as invalid, is treated as that same load failure — not as a picker with no options
+- an empty list, or a list where every entry is dropped as invalid, is treated as that same load failure, not as a picker with no options
 - overview rows, detail condition rows, and navbar menu items show the same mismatch error after the list is ready
 
 `useVariantConditions` reads the resolved config from the workspace. Invalid keys and values are dropped by `normalizeVariantConditions` so the picker never offers them.
