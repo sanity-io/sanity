@@ -1,10 +1,11 @@
 import {AddIcon} from '@sanity/icons/Add'
-import {Badge, Box, Button, Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, Box, Button, Card, Container, Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useClient, useCurrentUser, useDocumentStore} from 'sanity'
+import {Flex} from 'ui5'
 
 import {useUrlState} from '../trends/useUrlState'
 import {
@@ -138,7 +139,7 @@ export function BisectTool() {
     <Box padding={4} style={{overflowY: 'auto', height: '100%'}}>
       <Container width={2}>
         <Stack gap={4}>
-          <Flex align="center" gap={3}>
+          <Flex alignItems="center" gap={3}>
             <Box flex={1}>
               <Stack gap={3}>
                 <Text size={3} weight="semibold">
@@ -208,13 +209,13 @@ function SessionRow(props: {session: SessionSummary; onOpen: () => void}) {
 
   return (
     <Card as="button" padding={4} radius={3} border onClick={onOpen} style={{textAlign: 'left'}}>
-      <Flex align="center" gap={3} wrap="wrap">
+      <Flex alignItems="center" gap={3} flexWrap="wrap">
         <Box flex={1}>
           <Stack gap={2}>
             <Text size={1} weight="medium">
               {session.title ?? session._id}
             </Text>
-            <Flex align="center" gap={2}>
+            <Flex alignItems="center" gap={2}>
               {session.createdAt && <RelativeDate dateTime={session.createdAt} size={0} muted />}
               <Text size={0} muted>
                 · {session.createdBy}

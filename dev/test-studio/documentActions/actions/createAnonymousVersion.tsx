@@ -1,5 +1,5 @@
 import {AsteriskIcon} from '@sanity/icons/Asterisk'
-import {Button, Card, Dialog, TextInput, Stack, Text, Flex} from '@sanity/ui'
+import {Button, Card, Dialog, TextInput, Stack, Text} from '@sanity/ui'
 import {useState} from 'react'
 import {
   useClient,
@@ -10,6 +10,7 @@ import {
   useSetPerspective,
 } from 'sanity'
 import {useDocumentPane} from 'sanity/structure'
+import {Flex} from 'ui5'
 
 export const useCreateAnonymousVersion: DocumentActionComponent = (props) => {
   const [open, setOpen] = useState<boolean>(false)
@@ -88,7 +89,7 @@ export const useCreateAnonymousVersion: DocumentActionComponent = (props) => {
                     <Text size={0}>{error.message}</Text>
                   </Card>
                 )}
-                <Flex justify="flex-end" gap={2}>
+                <Flex justifyContent="flex-end" gap={2}>
                   <Button mode="bleed" onClick={toggleOpen} text="Close" />
                   <Button
                     mode="default"

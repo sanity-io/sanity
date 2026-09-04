@@ -1,21 +1,10 @@
 import {type ClientError, ServerError} from '@sanity/client'
-import {
-  Button,
-  Card,
-  Container,
-  Flex,
-  Heading,
-  Stack,
-  Tab,
-  TabList,
-  TabPanel,
-  Text,
-} from '@sanity/ui'
+import {Button, Card, Container, Heading, Stack, Tab, TabList, TabPanel, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {lazy, type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {CorsOriginErrorScreen, useClient, useProjectId, useStudioErrorHandler} from 'sanity'
 import {useRouter} from 'sanity/router'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {
   installCheckCorsFetchInterceptor,
@@ -256,7 +245,7 @@ function DemoRow({demo}: {demo: DemoEntry}) {
   return (
     <Card border padding={4} radius={2} tone="transparent">
       <Stack gap={3}>
-        <Flex align="center" gap={4} wrap="wrap">
+        <Flex alignItems="center" gap={4} flexWrap="wrap">
           <Box flexBasis="0%" flexGrow={1} style={{minWidth: 240}}>
             {demo.description ? (
               <Stack gap={3}>
@@ -629,9 +618,9 @@ function RequestErrorsDemo() {
   if (showCustomDomainPreview) {
     return (
       <Card height="fill" style={{position: 'fixed', inset: 0, zIndex: 1000}}>
-        <Flex direction="column" height="fill">
+        <Flex flexDirection="column" height="100%">
           <Card padding={3} shadow={1} tone="transparent">
-            <Flex align="center" justify="space-between" gap={3}>
+            <Flex alignItems="center" justifyContent="space-between" gap={3}>
               <Text size={1} weight="medium">
                 CORS preview · custom domain, unregistered Studio
               </Text>

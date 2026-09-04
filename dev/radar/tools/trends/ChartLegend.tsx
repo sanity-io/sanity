@@ -1,4 +1,5 @@
-import {Flex, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
+import {Flex} from 'ui5'
 
 import {CALIBRATION_EXPLAINER, formatValue, type TrendSeries, type TrendTag} from './data'
 import {baselineDetail, baselineLabel, type DriftResult} from './drift'
@@ -42,7 +43,7 @@ function LegendItem(props: {
   const {layer, layers, label, hint, swatch} = props
   const hidden = layer ? !layers.visible(layer) : false
   const content = (
-    <Flex gap={1} align="center">
+    <Flex gap={1} alignItems="center">
       <Swatch dimmed={hidden}>{swatch}</Swatch>
       <Text size={0} muted style={hidden ? {textDecoration: 'line-through'} : undefined}>
         {label}
@@ -105,7 +106,7 @@ export function ChartLegend(props: {
   const goodItem = series.goodThreshold !== undefined && (
     <Flex
       gap={1}
-      align="center"
+      alignItems="center"
       title="web.dev 'good' recommendation, measured on field data at the 75th percentile; the lab medians here are not directly comparable"
     >
       <Swatch>
@@ -159,9 +160,9 @@ export function ChartLegend(props: {
 
   if (comparing) {
     return (
-      <Flex gap={3} wrap="wrap" align="center">
+      <Flex gap={3} flexWrap="wrap" alignItems="center">
         {series.lines.map((line, index) => (
-          <Flex key={line.branch} gap={1} align="center">
+          <Flex key={line.branch} gap={1} alignItems="center">
             <Swatch>
               <line x1={0} y1={5} x2={16} y2={5} stroke={categoricalColor(index)} strokeWidth={2} />
             </Swatch>
@@ -189,7 +190,7 @@ export function ChartLegend(props: {
   const hasLine = line && line.points.length > 1
 
   return (
-    <Flex gap={3} wrap="wrap" align="center">
+    <Flex gap={3} flexWrap="wrap" alignItems="center">
       {hasLine && (
         <LegendItem
           layer="median"

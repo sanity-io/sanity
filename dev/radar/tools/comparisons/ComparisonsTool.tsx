@@ -1,12 +1,12 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Badge, type BadgeTone, Button, Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, type BadgeTone, Button, Card, Container, Stack, Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useDocumentStore} from 'sanity'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {formatValue} from '../trends/data'
 import {ciRunUrl, commitUrl} from '../trends/links'
@@ -130,7 +130,7 @@ function ComparisonCard(props: {run: ComparisonRun; expanded: boolean; onToggle:
   return (
     <Card padding={4} radius={3} border>
       <Stack gap={4}>
-        <Flex align="center" gap={3} wrap="wrap">
+        <Flex alignItems="center" gap={3} flexWrap="wrap">
           <Button
             mode="bleed"
             padding={2}
@@ -141,7 +141,7 @@ function ComparisonCard(props: {run: ComparisonRun; expanded: boolean; onToggle:
             onClick={onToggle}
           />
           <Box flexBasis="0%" flexGrow={1}>
-            <Flex align="center" gap={2} wrap="wrap">
+            <Flex alignItems="center" gap={2} flexWrap="wrap">
               <ShaLink sha={fromSha} />
               <Text size={1} muted>
                 →
@@ -217,7 +217,7 @@ function MetricRow(props: {metric: ComparisonMetric}) {
   const sign = (value: number) => `${value >= 0 ? '+' : ''}${formatValue(value, metric.unit)}`
 
   return (
-    <Flex align="center" gap={3} wrap="wrap">
+    <Flex alignItems="center" gap={3} flexWrap="wrap">
       <Box style={{width: 220}}>
         <Text size={1} textOverflow="ellipsis">
           {metric.label}

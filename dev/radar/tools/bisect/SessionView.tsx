@@ -1,11 +1,12 @@
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Badge, Box, Button, Card, Container, Dialog, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, Box, Button, Card, Container, Dialog, Stack, Text} from '@sanity/ui'
 import {type ToastContextValue, useToast} from '@sanity/ui/toast'
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {type SanityClient, useDocumentStore} from 'sanity'
+import {Flex} from 'ui5'
 
 import {commitUrl, compareUrl} from '../trends/links'
 import {
@@ -250,7 +251,7 @@ export function SessionView(props: {
     <Box padding={4} style={{overflowY: 'auto', height: '100%'}}>
       <Container width={2}>
         <Stack gap={4}>
-          <Flex align="center" gap={3}>
+          <Flex alignItems="center" gap={3}>
             <Button mode="bleed" icon={ArrowLeftIcon} text="Sessions" onClick={onBack} />
             <Box flex={1}>
               <Text size={2} weight="semibold">
@@ -318,7 +319,7 @@ export function SessionView(props: {
                   inconsistent session, so the resolution the copy asks for has
                   to be offered right here. Undo peels the newest mark; repeat
                   until the conflicting one is gone. */}
-              <Flex align="center" gap={3}>
+              <Flex alignItems="center" gap={3}>
                 <Box flex={1}>
                   <Text size={1}>
                     Conflicting marks: <code>{state.goodMarkSha.slice(0, 10)}</code> is marked good
@@ -379,7 +380,7 @@ export function SessionView(props: {
                 Delete “{session?.title ?? sessionId}”? The session, its marks log, and any verdict
                 (including a regression pinned on a release) are permanently removed.
               </Text>
-              <Flex gap={2} justify="flex-end">
+              <Flex gap={2} justifyContent="flex-end">
                 <Button mode="ghost" text="Cancel" onClick={() => setConfirmingDelete(false)} />
                 <Button
                   tone="critical"
@@ -404,7 +405,7 @@ function RangeStatus(props: {
   const {state, releasesOnly} = props
   return (
     <Stack gap={3}>
-      <Flex align="center" gap={2} wrap="wrap">
+      <Flex alignItems="center" gap={2} flexWrap="wrap">
         <Text size={1} muted>
           The bad commit is between
         </Text>

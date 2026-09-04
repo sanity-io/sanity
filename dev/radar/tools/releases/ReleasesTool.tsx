@@ -1,12 +1,13 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Badge, Box, Button, Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, Box, Button, Card, Container, Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useClient, useCurrentUser, useDocumentStore} from 'sanity'
 import {useIntentLink} from 'sanity/router'
+import {Flex} from 'ui5'
 
 import {
   BISECT_COMMITS_QUERY,
@@ -148,7 +149,7 @@ export function ReleasesTool() {
     <Box padding={4} style={{overflowY: 'auto', height: '100%'}}>
       <Container width={2}>
         <Stack gap={4}>
-          <Flex align="center" gap={3}>
+          <Flex alignItems="center" gap={3}>
             <Box flex={1}>
               <Stack gap={3}>
                 <Text size={3} weight="semibold">
@@ -226,7 +227,7 @@ function ReleaseRow(props: {
 
   return (
     <Card padding={3} radius={2} border>
-      <Flex align="center" gap={3} wrap="wrap">
+      <Flex alignItems="center" gap={3} flexWrap="wrap">
         <Box style={{width: 110, flexShrink: 0}}>
           <Text size={2} weight="medium">
             <a href={documentLink.href} onClick={documentLink.onClick}>

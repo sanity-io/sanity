@@ -1,8 +1,9 @@
 import {AddDocumentIcon} from '@sanity/icons/AddDocument'
-import {Button, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Button, Card, Stack, Text} from '@sanity/ui'
 import {useActiveWorkspace} from 'sanity'
 import {usePresentationNavigate, usePresentationParams} from 'sanity/presentation'
 import {useIntentLink} from 'sanity/router'
+import {Flex} from 'ui5'
 
 export function CustomNavigator(): React.JSX.Element {
   const navigate = usePresentationNavigate()
@@ -17,7 +18,13 @@ export function CustomNavigator(): React.JSX.Element {
 
   return (
     <Card flex={1} height="fill">
-      <Flex height="fill" direction="column" justify="space-between" flex={1}>
+      <Flex
+        height="100%"
+        flexDirection="column"
+        justifyContent="space-between"
+        flexBasis="0%"
+        flexGrow={1}
+      >
         <Stack padding={2} gap={1}>
           <Card
             as="button"

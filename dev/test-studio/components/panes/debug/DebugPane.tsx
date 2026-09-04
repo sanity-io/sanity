@@ -2,11 +2,11 @@ import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {ControlsIcon} from '@sanity/icons/Controls'
 import {LinkIcon} from '@sanity/icons/Link'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useMemo, useState, type ComponentType} from 'react'
 import {usePaneRouter, type UserComponent} from 'sanity/structure'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 function usePaneChildLinkComponent(props: {
   id: string

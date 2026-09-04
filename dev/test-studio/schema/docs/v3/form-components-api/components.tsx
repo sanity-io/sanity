@@ -1,5 +1,5 @@
 import {hues} from '@sanity/color'
-import {Button, Flex, Grid, Heading, Inline, Stack, Text} from '@sanity/ui'
+import {Button, Grid, Heading, Inline, Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {
   type ArrayInputFunctionsProps,
@@ -11,7 +11,7 @@ import {
   type ItemProps,
   type PreviewProps,
 } from 'sanity'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 const COMPONENT_COLORS = {
   input: hues.blue[400].hex,
@@ -32,7 +32,7 @@ export function FormInput(props: InputProps) {
           </Text>
         </Stack>
 
-        <Flex align="center" gap={4}>
+        <Flex alignItems="center" gap={4}>
           {Object.entries(COMPONENT_COLORS).map(([key, value]) => (
             <Inline key={key} gap={2}>
               <div style={{width: '1em', height: '1em', background: value, borderRadius: '50%'}} />
