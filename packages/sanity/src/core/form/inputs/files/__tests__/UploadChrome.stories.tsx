@@ -11,7 +11,6 @@ import {UploadChromeStory} from './UploadChromeStory'
 const meta = {
   title: 'Inputs/Upload Chrome',
   component: UploadChromeStory,
-  tags: ['!dev', '!autodocs', 'vrt-only'],
   // The image preview settles on its error overlay after the broken image src fails to decode.
   parameters: {chromatic: {delay: 300}},
 } satisfies Meta<typeof UploadChromeStory>

@@ -1,15 +1,96 @@
+import {defineArrayMember, defineField, defineType} from '@sanity/types'
+import {Text} from '@sanity/ui'
+import {type PreviewProps} from 'sanity'
+import {Box} from 'ui5'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
 
+import {TestForm} from '../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../test/browser/testHelpers'
-import {ObjectBlockStory} from './ObjectBlockStory'
+import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
+
+// This is to emulate preview updates to the object without the preview store
+function CustomObjectPreview(props: PreviewProps) {
+  return (
+    <Box padding={1}>
+      <Text>Custom preview block:</Text> {props.renderDefault({...props})}
+    </Box>
+  )
+}
+
+const SCHEMA_TYPES = [
+  defineType({
+    type: 'document',
+    name: 'test',
+    title: 'Test',
+    fields: [
+      defineField({
+        type: 'array',
+        name: 'body',
+        of: [
+          defineArrayMember({
+            type: 'block',
+            of: [
+              defineArrayMember({
+                type: 'object',
+                title: 'Inline Object',
+                components: {
+                  preview: CustomObjectPreview,
+                },
+                fields: [
+                  defineField({
+                    type: 'string',
+                    name: 'title',
+                    title: 'Title',
+                  }),
+                ],
+              }),
+            ],
+          }),
+          defineArrayMember({
+            name: 'object',
+            type: 'object',
+            title: 'Object',
+            fields: [{type: 'string', name: 'title', title: 'Title'}],
+            preview: {
+              select: {
+                title: 'title',
+              },
+            },
+            components: {
+              preview: CustomObjectPreview,
+            },
+          }),
+          defineArrayMember({
+            name: 'objectWithoutTitle',
+            type: 'object',
+            fields: [{type: 'string', name: 'title', title: 'Title'}],
+            preview: {
+              select: {
+                title: 'title',
+              },
+            },
+          }),
+        ],
+      }),
+    ],
+  }),
+]
+
+function ObjectBlockHarness() {
+  return (
+    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+      <TestForm />
+    </TestWrapper>
+  )
+}
 
 describe('Portable Text Input', () => {
   describe('Object blocks', () => {
     it('Clicking a block link in the menu create a new block element', async () => {
       const {getFocusedPortableTextInput} = testHelpers()
-      void render(<ObjectBlockStory />)
+      void render(<ObjectBlockHarness />)
 
       const $portableTextInput = await getFocusedPortableTextInput('field-body')
 
@@ -21,7 +102,7 @@ describe('Portable Text Input', () => {
 
     it('Custom block preview components renders correctly', async () => {
       const {getFocusedPortableTextEditor} = testHelpers()
-      void render(<ObjectBlockStory />)
+      void render(<ObjectBlockHarness />)
       const $pte = await getFocusedPortableTextEditor('field-body')
 
       await page.getByRole('button', {name: 'Insert Inline Object (inline)'}).first().click()
@@ -35,7 +116,7 @@ describe('Portable Text Input', () => {
 
     it('Inline object toolbars works as expected after opening and closing the edit dialog', async () => {
       const {getFocusedPortableTextEditor} = testHelpers()
-      void render(<ObjectBlockStory />)
+      void render(<ObjectBlockHarness />)
       const $pte = await getFocusedPortableTextEditor('field-body')
       await page.getByRole('button', {name: 'Insert Inline Object (inline)'}).first().click()
       const $locatorDialog = page.getByTestId('popover-edit-dialog')
@@ -51,7 +132,7 @@ describe('Portable Text Input', () => {
 
     it('Inline object works as expected when clicking the edit button', async () => {
       const {getFocusedPortableTextEditor} = testHelpers()
-      void render(<ObjectBlockStory />)
+      void render(<ObjectBlockHarness />)
       const $pte = await getFocusedPortableTextEditor('field-body')
       await page.getByRole('button', {name: 'Insert Inline Object (inline)'}).first().click()
       await userEvent.dblClick(page.getByText('Custom preview block: Click'))
@@ -60,7 +141,7 @@ describe('Portable Text Input', () => {
 
     it('Inline object toolbars works as expected when removing the object', async () => {
       const {getFocusedPortableTextEditor} = testHelpers()
-      void render(<ObjectBlockStory />)
+      void render(<ObjectBlockHarness />)
       const $pte = await getFocusedPortableTextEditor('field-body')
       await page.getByRole('button', {name: 'Insert Inline Object (inline)'}).first().click()
 
@@ -88,7 +169,7 @@ describe('Portable Text Input', () => {
 
     it('Double-clicking opens a block', async () => {
       const {getFocusedPortableTextEditor} = testHelpers()
-      void render(<ObjectBlockStory />)
+      void render(<ObjectBlockHarness />)
 
       const $pte = await getFocusedPortableTextEditor('field-body')
 
@@ -118,7 +199,7 @@ describe('Portable Text Input', () => {
     // Two dialog round-trips plus two menu round-trips regularly exceed 30s on Firefox in CI
     it('Blocks should be accessible via block context menu', {timeout: 60_000}, async () => {
       const {getFocusedPortableTextInput} = testHelpers()
-      void render(<ObjectBlockStory />)
+      void render(<ObjectBlockHarness />)
 
       const $portableTextField = await getFocusedPortableTextInput('field-body')
 
@@ -168,7 +249,7 @@ describe('Portable Text Input', () => {
 
     it('Handle focus correctly in block edit dialog', async () => {
       const {getFocusedPortableTextEditor} = testHelpers()
-      void render(<ObjectBlockStory />)
+      void render(<ObjectBlockHarness />)
 
       const $pte = await getFocusedPortableTextEditor('field-body')
 
@@ -199,7 +280,7 @@ describe('Portable Text Input', () => {
 
     it('Blocks that appear in the menu bar should always display a title', async () => {
       const {getFocusedPortableTextInput} = testHelpers()
-      void render(<ObjectBlockStory />)
+      void render(<ObjectBlockHarness />)
 
       const $portableTextInput = await getFocusedPortableTextInput('field-body')
       await expect

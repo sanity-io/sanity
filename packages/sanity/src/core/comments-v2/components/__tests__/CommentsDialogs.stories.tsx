@@ -10,7 +10,6 @@ import {CommentsDialogsStory} from './CommentsDialogsStory'
 const meta = {
   title: 'Comments (v2)/Dialogs',
   component: CommentsDialogsStory,
-  tags: ['!dev', '!autodocs', 'vrt-only'],
 } satisfies Meta<typeof CommentsDialogsStory>
 
 export default meta

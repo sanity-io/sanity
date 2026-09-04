@@ -1,11 +1,46 @@
-import {type SanityDocument} from '@sanity/client'
+import {defineArrayMember, defineField, defineType, type SanityDocument} from '@sanity/types'
 import {type FormNodePresence} from 'sanity'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
 
+import {TestForm} from '../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../test/browser/testHelpers'
-import {PresenceCursorsStory} from './PresenceCursorsStory'
+import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
+
+const schemaTypes = [
+  defineType({
+    type: 'document',
+    name: 'test',
+    title: 'Test',
+    fields: [
+      defineField({
+        type: 'array',
+        name: 'body',
+        of: [
+          defineArrayMember({
+            type: 'block',
+          }),
+        ],
+      }),
+    ],
+  }),
+]
+
+interface PresenceCursorsHarnessProps {
+  presence: FormNodePresence[]
+  document: SanityDocument
+}
+
+function PresenceCursorsHarness(props: PresenceCursorsHarnessProps) {
+  const {document, presence} = props
+
+  return (
+    <TestWrapper schemaTypes={schemaTypes}>
+      <TestForm document={document} presence={presence} />
+    </TestWrapper>
+  )
+}
 
 const TEXT = 'Hello, this is some text in the editor.'
 
@@ -74,7 +109,7 @@ describe('Portable Text Input', () => {
     it('should keep position when inserting text in the editor', async () => {
       const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
 
-      void render(<PresenceCursorsStory document={DOCUMENT} presence={PRESENCE} />)
+      void render(<PresenceCursorsHarness document={DOCUMENT} presence={PRESENCE} />)
 
       const editor$ = await getFocusedPortableTextEditor('field-body')
       const $cursorA = page.getByTestId('presence-cursor-User-A')

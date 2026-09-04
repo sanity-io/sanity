@@ -9,7 +9,6 @@ import {MentionsMenuStory} from './MentionsMenuStory'
 const meta = {
   title: 'Comments (v2)/Mentions Menu',
   component: MentionsMenuStory,
-  tags: ['!dev', '!autodocs', 'vrt-only'],
 } satisfies Meta<typeof MentionsMenuStory>
 
 export default meta
