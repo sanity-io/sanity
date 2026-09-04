@@ -129,9 +129,6 @@ catalogs:
     '@sanity/tsdown-config':
       specifier: ^0.28.0
       version: 0.28.0
-    '@sanity/ui':
-      specifier: ^4.2.1
-      version: 4.2.1
     '@sanity/vanilla-extract-vite-plugin':
       specifier: ^0.2.18
       version: 0.2.18
@@ -213,7 +210,7 @@ catalogs:
 
 overrides:
   vitest: ^4.1.11
-  '@sanity/ui@4': https://pkg.pr.new/@sanity/ui@2828
+  '@sanity/ui': https://pkg.pr.new/@sanity/ui@2828
   '@sanity/ui>react-is': ^19.2.8
   '@sanity/ui>react-refractor': ^4.0.0
   '@sanity/ui>@sanity/color': ^3.0.8
@@ -369,8 +366,8 @@ importers:
         specifier: ^5.2.2
         version: 5.2.2(react@19.3.0)
       '@sanity/ui':
-        specifier: 'catalog:'
-        version: 4.2.1(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
+        specifier: https://pkg.pr.new/@sanity/ui@2828
+        version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
       react:
         specifier: 'catalog:'
         version: 19.3.0
@@ -434,8 +431,8 @@ importers:
   dev/embedded-studio:
     dependencies:
       '@sanity/ui':
-        specifier: 'catalog:'
-        version: 4.2.1(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
+        specifier: https://pkg.pr.new/@sanity/ui@2828
+        version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
       react:
         specifier: 'catalog:'
         version: 19.3.0
@@ -520,8 +517,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/types
       '@sanity/ui':
-        specifier: 'catalog:'
-        version: 4.2.1(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
+        specifier: https://pkg.pr.new/@sanity/ui@2828
+        version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
       '@sanity/visual-editing':
         specifier: ^6.1.2
         version: 6.1.2(@sanity/client@8.6.1)(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)(typescript@7.0.2)(vitest@4.1.11)
@@ -575,8 +572,8 @@ importers:
         specifier: ^5.2.2
         version: 5.2.2(react@19.3.0)
       '@sanity/ui':
-        specifier: 'catalog:'
-        version: 4.2.1(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
+        specifier: https://pkg.pr.new/@sanity/ui@2828
+        version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
       '@visx/axis':
         specifier: ^4.0.0
         version: 4.0.0(@types/react@19.3.0)(react@19.3.0)
@@ -695,8 +692,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/types
       '@sanity/ui':
-        specifier: 'catalog:'
-        version: 4.2.1(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
+        specifier: https://pkg.pr.new/@sanity/ui@2828
+        version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
       react:
         specifier: 'catalog:'
         version: 19.3.0
@@ -762,8 +759,8 @@ importers:
   dev/studio-diagnostics-viewer:
     dependencies:
       '@sanity/ui':
-        specifier: 'catalog:'
-        version: 4.2.1(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
+        specifier: https://pkg.pr.new/@sanity/ui@2828
+        version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
       react:
         specifier: 'catalog:'
         version: 19.3.0
@@ -814,8 +811,8 @@ importers:
         specifier: ^5.2.2
         version: 5.2.2(react@19.3.0)
       '@sanity/ui':
-        specifier: 'catalog:'
-        version: 4.2.1(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
+        specifier: https://pkg.pr.new/@sanity/ui@2828
+        version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
       '@sanity/vision':
         specifier: workspace:*
         version: link:../../packages/@sanity/vision
@@ -933,8 +930,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/types
       '@sanity/ui':
-        specifier: 'catalog:'
-        version: 4.2.1(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
+        specifier: https://pkg.pr.new/@sanity/ui@2828
+        version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
       '@sanity/util':
         specifier: workspace:*
         version: link:../../packages/@sanity/util
@@ -1472,8 +1469,8 @@ importers:
         specifier: ^5.2.2
         version: 5.2.2(react@19.3.0)
       '@sanity/ui':
-        specifier: 'catalog:'
-        version: 4.2.1(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
+        specifier: https://pkg.pr.new/@sanity/ui@2828
+        version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
       ui5:
         specifier: 'catalog:'
         version: '@sanity/ui@5.0.0-alpha.10(react-dom@19.3.0)(react@19.3.0)'
@@ -1860,8 +1857,8 @@ importers:
         specifier: ^1.0.4
         version: 1.0.4
       '@sanity/ui':
-        specifier: 'catalog:'
-        version: 4.2.1(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
+        specifier: https://pkg.pr.new/@sanity/ui@2828
+        version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
       '@sanity/uuid':
         specifier: ^3.0.3
         version: 3.0.3
@@ -2121,8 +2118,8 @@ importers:
         specifier: workspace:*
         version: link:../@sanity/types
       '@sanity/ui':
-        specifier: 'catalog:'
-        version: 4.2.1(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
+        specifier: https://pkg.pr.new/@sanity/ui@2828
+        version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
       '@sanity/util':
         specifier: workspace:*
         version: link:../@sanity/util
@@ -7431,14 +7428,6 @@ packages:
     resolution: {integrity: sha512-UM8GfNgsrFaGt3TQzG5tKFyXvNMEQD+e8AJq44DiL7t/UYJaMScofCSWzFGg+4c7A3A2lhooC8zO9gJi8Vj7aw==}
     peerDependencies:
       '@types/react': ^19.2
-
-  '@sanity/ui@4.2.1':
-    resolution: {integrity: sha512-pBuSBo3k6ZSoVjmd8j5qs0bNC/K0LRQk8P5LfV1+EQHVcw3gCZjCXEBiVwqNdrRh2CP3AxWMUyDv16HcuunWyw==}
-    engines: {node: '>=22.12'}
-    peerDependencies:
-      react: ^19.2
-      react-dom: ^19.2
-      styled-components: ^6.1
 
   '@sanity/ui@5.0.0-alpha.10':
     resolution: {integrity: sha512-CSfdb+UXaZksNqSg2YwIDg+dEkhULn94CvnG63ClmEPnloidMJwxndmImm2ipeQ6uzQjei7XOj95XFxgGrA9iw==}
@@ -20299,22 +20288,6 @@ snapshots:
       '@sanity/client': 7.26.2
       '@sanity/media-library-types': 1.6.0
       '@types/react': 19.3.0
-
-  '@sanity/ui@4.2.1(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)':
-    dependencies:
-      '@floating-ui/react-dom': 2.1.9(react-dom@19.3.0)(react@19.3.0)
-      '@sanity/color': 3.0.8
-      '@sanity/icons': 5.2.2(react@19.3.0)
-      '@vanilla-extract/dynamic': 2.1.5
-      clsx: 2.1.1
-      csstype: 3.2.3
-      motion: 13.2.0(react-dom@19.3.0)(react@19.3.0)
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
-      react-is: 19.3.0
-      react-refractor: 4.0.0(react@19.3.0)
-      styled-components: 6.5.3(react-dom@19.3.0)(react@19.3.0)
-      use-effect-event: 2.0.4(react@19.3.0)
 
   '@sanity/ui@5.0.0-alpha.10(react-dom@19.3.0)(react@19.3.0)':
     dependencies:
