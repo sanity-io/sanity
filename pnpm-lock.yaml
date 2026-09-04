@@ -28,9 +28,6 @@ catalogs:
     '@sanity/tsdown-config':
       specifier: ^0.27.1
       version: 0.27.1
-    '@sanity/ui':
-      specifier: https://pkg.pr.new/@sanity/ui@2828
-      version: 4.0.7
     '@sanity/vanilla-extract-vite-plugin':
       specifier: ^0.2.17
       version: 0.2.17
@@ -109,7 +106,7 @@ catalogs:
 
 overrides:
   vitest: ^4.1.11
-  '@sanity/ui@4': https://pkg.pr.new/@sanity/ui@2828
+  '@sanity/ui': https://pkg.pr.new/@sanity/ui@2828
   '@sanity/ui>react-is': ^19.2.8
   '@sanity/ui>react-refractor': ^4.0.0
   '@sanity/ui>@sanity/color': ^3.0.8
@@ -263,7 +260,7 @@ importers:
         specifier: ^5.2.1
         version: 5.2.1(react@19.2.8)
       '@sanity/ui':
-        specifier: 'catalog:'
+        specifier: https://pkg.pr.new/@sanity/ui@2828
         version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       react:
         specifier: 'catalog:'
@@ -328,7 +325,7 @@ importers:
   dev/embedded-studio:
     dependencies:
       '@sanity/ui':
-        specifier: 'catalog:'
+        specifier: https://pkg.pr.new/@sanity/ui@2828
         version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       react:
         specifier: 'catalog:'
@@ -411,7 +408,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/types
       '@sanity/ui':
-        specifier: 'catalog:'
+        specifier: https://pkg.pr.new/@sanity/ui@2828
         version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@sanity/visual-editing':
         specifier: ^6.1.2
@@ -466,7 +463,7 @@ importers:
         specifier: ^5.2.1
         version: 5.2.1(react@19.2.8)
       '@sanity/ui':
-        specifier: 'catalog:'
+        specifier: https://pkg.pr.new/@sanity/ui@2828
         version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@visx/axis':
         specifier: ^4.0.0
@@ -586,7 +583,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/types
       '@sanity/ui':
-        specifier: 'catalog:'
+        specifier: https://pkg.pr.new/@sanity/ui@2828
         version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       react:
         specifier: 'catalog:'
@@ -653,7 +650,7 @@ importers:
   dev/studio-diagnostics-viewer:
     dependencies:
       '@sanity/ui':
-        specifier: 'catalog:'
+        specifier: https://pkg.pr.new/@sanity/ui@2828
         version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       react:
         specifier: 'catalog:'
@@ -705,7 +702,7 @@ importers:
         specifier: ^5.2.1
         version: 5.2.1(react@19.2.8)
       '@sanity/ui':
-        specifier: 'catalog:'
+        specifier: https://pkg.pr.new/@sanity/ui@2828
         version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@sanity/vision':
         specifier: workspace:*
@@ -824,7 +821,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/types
       '@sanity/ui':
-        specifier: 'catalog:'
+        specifier: https://pkg.pr.new/@sanity/ui@2828
         version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@sanity/util':
         specifier: workspace:*
@@ -1360,7 +1357,7 @@ importers:
         specifier: ^5.2.1
         version: 5.2.1(react@19.2.8)
       '@sanity/ui':
-        specifier: 'catalog:'
+        specifier: https://pkg.pr.new/@sanity/ui@2828
         version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       ui5:
         specifier: 'catalog:'
@@ -1745,7 +1742,7 @@ importers:
         specifier: ^1.0.4
         version: 1.0.4
       '@sanity/ui':
-        specifier: 'catalog:'
+        specifier: https://pkg.pr.new/@sanity/ui@2828
         version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@sanity/uuid':
         specifier: ^3.0.3
@@ -2006,7 +2003,7 @@ importers:
         specifier: workspace:*
         version: link:../@sanity/types
       '@sanity/ui':
-        specifier: 'catalog:'
+        specifier: https://pkg.pr.new/@sanity/ui@2828
         version: https://pkg.pr.new/@sanity/ui@2828(patch_hash=e979c9d33516e1e66a79c260a6d7cf2dbe79cd1fe41b5d3caf53a81af31db09a)(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       '@sanity/util':
         specifier: workspace:*

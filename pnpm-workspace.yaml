@@ -29,7 +29,7 @@ catalog:
   '@sanity/migrate': ^8.0.2
   '@sanity/telemetry': ^1.1.0
   '@sanity/tsdown-config': ^0.27.1
-  '@sanity/ui': 'https://pkg.pr.new/@sanity/ui@2828'
+  '@sanity/ui': ^4.0.7
   '@types/node': ^24.13.3
   '@types/react': ^19.2.18
   '@types/react-dom': ^19.2.4
@@ -160,7 +160,7 @@ overrides:
   # sanity-io/ui#2828 (static styled-components rules moved to vanilla-extract) so the
   # studio's visual regression suites run against it. Version-scoped to `@4` so the
   # `ui5` catalog alias (@sanity/ui@5.0.0-alpha.8) keeps resolving to the alpha.
-  '@sanity/ui@4': 'https://pkg.pr.new/@sanity/ui@2828'
+  '@sanity/ui': 'https://pkg.pr.new/@sanity/ui@2828'
   # Pnpm resolves dependencies before applying patches, so these are also needed even
   # though the manifest patch below rewrites the same unpublished catalog specifiers.
   '@sanity/ui>react-is': '^19.2.8'
