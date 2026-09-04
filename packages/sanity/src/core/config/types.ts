@@ -1399,9 +1399,19 @@ export interface BetaFeatures {
     /**
      * Optional list of known variant condition keys and values.
      * When set, the create/edit form shows a card picker instead of free-text fields.
+     * And validates the condition values against the known keys and values.
+     *
      * Accepts a static array or a function that may return a promise (for example to
-     * load conditions from a CDP). The function receives project id, dataset, and
-     * `getClient`, and is called when the form opens, not at studio boot.
+     * load conditions from a CDP). The function receives {@link VariantConditionsContext}
+     * and is called when the form opens, not at studio boot.
+     *
+     * @example
+     * ```ts
+     * conditions: async ({getClient}) => {
+     *    const client = getClient({apiVersion: '2024-01-01'})
+     *    return await client.fetch(CONDITIONS_QUERY)
+     * }
+     * ```
      */
     conditions?: VariantConditions
   }

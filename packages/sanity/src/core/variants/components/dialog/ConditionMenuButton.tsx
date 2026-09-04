@@ -12,7 +12,7 @@ import {Box, Flex} from 'ui5'
 
 import {MenuButton, type MenuButtonProps} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
-
+import {menuButton} from './ConditionMenuButton.css.ts'
 /**
  * One entry in a condition dropdown: a configured condition key, or one of its values.
  *
@@ -121,6 +121,7 @@ export function ConditionMenuButton(props: ConditionMenuButtonProps): React.JSX.
           padding={3}
           tone={invalid ? 'critical' : 'default'}
           width="fill"
+          className={menuButton}
         >
           <Flex alignItems="center" gap={3}>
             {SelectedIcon ? (

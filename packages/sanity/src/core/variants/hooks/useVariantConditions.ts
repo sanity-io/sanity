@@ -26,11 +26,6 @@ export type UseVariantConditionsResult =
   | {mode: 'mapped'; status: 'error'; error: Error; retry: () => void}
   | {mode: 'mapped'; status: 'ready'; definitions: NormalizedVariantConditionMap[]}
 
-const FREEFORM_RESULT: UseVariantConditionsResult = {mode: 'freeform'}
-const IDLE_SNAPSHOT: MappedConditionsSnapshot = {status: 'loading'}
-const INVALID_CONDITIONS_ERROR = new Error('Expected conditions to be an array or a function')
-const NO_MISMATCHES: ConditionMismatch[] = []
-
 /**
  * Resolves `beta.variants.conditions` when a variant surface needs the configured list.
  * Async resolvers share one in-flight request per workspace until `retry()`.
@@ -60,7 +55,7 @@ export function useVariantConditions(): UseVariantConditionsResult {
   )
   const getSnapshot = useCallback((): MappedConditionsSnapshot => {
     if (!resolver) {
-      return IDLE_SNAPSHOT
+      return {status: 'loading'}
     }
 
     return getVariantConditionsSnapshot(resolver, context)
@@ -75,7 +70,7 @@ export function useVariantConditions(): UseVariantConditionsResult {
   }, [context, resolver])
 
   if (typeof conditions === 'undefined') {
-    return FREEFORM_RESULT
+    return {mode: 'freeform'}
   }
 
   if (Array.isArray(conditions)) {
@@ -90,7 +85,7 @@ export function useVariantConditions(): UseVariantConditionsResult {
     return {
       mode: 'mapped',
       status: 'error',
-      error: INVALID_CONDITIONS_ERROR,
+      error: new Error('Expected conditions to be an array or a function'),
       retry,
     }
   }
@@ -119,9 +114,8 @@ export function useVariantConditionMismatches(
 
   return useMemo(() => {
     if (!conditions || config.mode !== 'mapped' || config.status !== 'ready') {
-      return NO_MISMATCHES
+      return []
     }
-
     return getVariantConditionMismatches(conditions, config.definitions)
   }, [conditions, config])
 }

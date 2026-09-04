@@ -6,9 +6,9 @@ import {Button} from '../../../../ui-components/button/Button'
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {variantsLocaleNamespace} from '../../i18n'
-import {getVariantConditionIcon} from '../../tool/detail/variantConditionIcons'
 import {type NormalizedVariantConditionMap} from '../../util/normalizeVariantConditions'
-import {ConditionMenuButton, type ConditionMenuOption} from './ConditionMenuButton'
+import {ConditionMenuButton} from './ConditionMenuButton'
+import {getConditionMappedRowOptions} from './getConditionMappedRowOptions'
 
 interface ConditionMappedRowProps {
   definitions: readonly NormalizedVariantConditionMap[]
@@ -39,39 +39,13 @@ export function ConditionMappedRow(props: ConditionMappedRowProps): React.JSX.El
     valueError,
   } = props
   const {t} = useTranslation(variantsLocaleNamespace)
-  const definition = definitions.find((item) => item.name === selectedKey)
-
-  // Keys picked on other rows are hidden here, so one definition cannot target the same key twice.
-  const keyOptions: ConditionMenuOption[] = definitions
-    .filter((item) => item.name === selectedKey || !usedKeys.has(item.name))
-    .map((item) => ({
-      value: item.name,
-      title: item.title,
-      description: item.description,
-      icon: getVariantConditionIcon(item.name),
-    }))
-  const valueOptions: ConditionMenuOption[] =
-    definition?.values.map((item) => ({
-      value: item.value,
-      title: item.title,
-      description: item.description,
-    })) ?? []
-
-  // A stored pair that is no longer configured still renders as-is (in a critical tone) so the
-  // editor can see what to retarget, rather than silently disappearing from the form.
-  const selectedKeyOption = selectedKey
-    ? (keyOptions.find((item) => item.value === selectedKey) ?? {
-        value: selectedKey,
-        title: selectedKey,
-        icon: getVariantConditionIcon(selectedKey),
-      })
-    : undefined
-  const selectedValueOption = selectedValue
-    ? (valueOptions.find((item) => item.value === selectedValue) ?? {
-        value: selectedValue,
-        title: selectedValue,
-      })
-    : undefined
+  const {definition, keyOptions, selectedKeyOption, selectedValueOption, valueOptions} =
+    getConditionMappedRowOptions({
+      definitions,
+      selectedKey,
+      selectedValue,
+      usedKeys,
+    })
 
   const mappedError = keyError || valueError
 

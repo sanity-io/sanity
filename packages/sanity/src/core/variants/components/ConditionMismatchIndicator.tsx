@@ -3,17 +3,16 @@ import {Text} from '@sanity/ui'
 
 import {ToneIcon} from '../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
-import {useTranslation, type UseTranslationResponse} from '../../i18n/hooks/useTranslation'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {type TFunction} from '../../i18n/types'
 import {variantsLocaleNamespace} from '../i18n'
 import {type ConditionMismatch} from '../util/getVariantConditionMismatches'
-
-type VariantsTranslate = UseTranslationResponse<'variants', undefined>['t']
 
 /**
  * @internal
  */
 export function getConditionMismatchMessage(
-  t: VariantsTranslate,
+  t: TFunction<'variants'>,
   mismatches: readonly ConditionMismatch[],
 ): string {
   if (mismatches.length !== 1) {
@@ -48,15 +47,7 @@ export function ConditionMismatchIndicator(props: {
   }
 
   return (
-    <Tooltip
-      content={
-        <Text muted size={1}>
-          {getConditionMismatchMessage(t, mismatches)}
-        </Text>
-      }
-      placement="top"
-      portal
-    >
+    <Tooltip content={getConditionMismatchMessage(t, mismatches)} placement="top" portal>
       <Text size={1} data-testid={testId}>
         <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
       </Text>
