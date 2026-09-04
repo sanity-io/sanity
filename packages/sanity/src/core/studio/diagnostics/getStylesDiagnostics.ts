@@ -27,20 +27,30 @@ export function getStylesDiagnostics(): StylesDiagnostics {
   return {
     styledComponents: Array.from(
       document.querySelectorAll<HTMLStyleElement>('style[data-styled]'),
-      (node) => ({
-        ruleCount: node.sheet?.cssRules.length ?? 0,
-        sizeBytes: getStyleSheetSizeBytes(node),
-        version: node.dataset.styledVersion || undefined,
-      }),
+      (node) => {
+        const {css, ruleCount} = readStyleSheet(node)
+        return {
+          ruleCount,
+          sizeBytes: textEncoder.encode(css).byteLength,
+          version: node.dataset.styledVersion || undefined,
+        }
+      },
     ),
   }
 }
 
-function getStyleSheetSizeBytes(node: HTMLStyleElement): number {
-  return textEncoder.encode(serializeStyleSheet(node.sheet) || node.textContent || '').byteLength
-}
+function readStyleSheet(node: HTMLStyleElement): {css: string; ruleCount: number} {
+  try {
+    const rules = node.sheet?.cssRules
+    if (rules) {
+      return {
+        css: Array.from(rules, (rule) => rule.cssText).join(''),
+        ruleCount: rules.length,
+      }
+    }
+  } catch {
+    // Cross-origin or otherwise inaccessible CSSOM sheets throw on `cssRules`.
+  }
 
-function serializeStyleSheet(sheet: CSSStyleSheet | null): string {
-  if (!sheet) return ''
-  return Array.from(sheet.cssRules, (rule) => rule.cssText).join('')
+  return {css: node.textContent ?? '', ruleCount: 0}
 }

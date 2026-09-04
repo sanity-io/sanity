@@ -221,7 +221,7 @@ describe('DiagnosticsReport', () => {
     expect(styledComponents.getByText('CSS rules inserted by JS')).toBeInTheDocument()
     expect(styledComponents.getByText((1_234).toLocaleString())).toBeInTheDocument()
     expect(styledComponents.getByText('CSS size inserted by JS')).toBeInTheDocument()
-    expect(styledComponents.getByText('12.35 kB')).toBeInTheDocument()
+    expect(styledComponents.getByText(formatExpectedByteSize(12_345))).toBeInTheDocument()
     expect(styledComponents.queryByText('Expected 1')).not.toBeInTheDocument()
     expect(
       styledComponents.queryByTestId('diagnostics-styled-components-sheets'),
@@ -313,9 +313,9 @@ describe('DiagnosticsReport', () => {
     expect(styledComponents.getByText('2')).toBeInTheDocument()
     expect(styledComponents.getByText('Expected 1')).toBeInTheDocument()
     expect(styledComponents.getByText((1_020).toLocaleString())).toBeInTheDocument()
-    expect(styledComponents.getByText('12.45 kB')).toBeInTheDocument()
+    expect(styledComponents.getByText(formatExpectedByteSize(12_450))).toBeInTheDocument()
     expect(styledComponents.getByTestId('diagnostics-styled-components-sheets')).toHaveTextContent(
-      '6.5.3: 900 rules, 12 kB · unknown version: 120 rules, 450 B',
+      `6.5.3: 900 rules, ${formatExpectedByteSize(12_000)} · unknown version: 120 rules, ${formatExpectedByteSize(450)}`,
     )
   })
 
@@ -449,4 +449,14 @@ function formatUtcTime(value: string): string {
     second: '2-digit',
     timeZone: 'UTC',
   })
+}
+
+function formatExpectedByteSize(value: number): string {
+  const units = ['B', 'kB', 'MB', 'GB', 'TB', 'PB'] as const
+  const unitIndex = Math.min(
+    Math.max(0, Math.floor(Math.log(Math.max(value, 1)) / Math.log(1_000))),
+    units.length - 1,
+  )
+  const amount = value / 1_000 ** unitIndex
+  return `${amount.toLocaleString(undefined, {maximumFractionDigits: 2})} ${units[unitIndex]}`
 }

@@ -61,4 +61,22 @@ describe('getStylesDiagnostics', () => {
     expect(sheet).toMatchObject({ruleCount: 2, version: '6.5.3'})
     expect(sheet?.sizeBytes).toBeGreaterThan(0)
   })
+
+  it('falls back to textContent when cssRules is inaccessible', () => {
+    const node = appendStyledSheet('.a{color:red}', '6.5.3')
+    Object.defineProperty(node, 'sheet', {
+      configurable: true,
+      get() {
+        return {
+          get cssRules(): CSSRuleList {
+            throw new DOMException('The operation is insecure.', 'SecurityError')
+          },
+        }
+      },
+    })
+
+    expect(getStylesDiagnostics().styledComponents).toEqual([
+      {ruleCount: 0, sizeBytes: 13, version: '6.5.3'},
+    ])
+  })
 })
