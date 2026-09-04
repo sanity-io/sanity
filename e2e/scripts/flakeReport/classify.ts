@@ -47,6 +47,23 @@ export function classifyAttempt(
   capture: AttemptCapture,
   thresholds: Thresholds = DEFAULT_THRESHOLDS,
 ): AttemptAnalysis {
+  const analysis = classifyCaptureBody(capture, thresholds)
+  if (!capture.requestErrorText) return analysis
+
+  // The studio's request error dialog only ever shows rate-limit, server, or network
+  // failures, and it blocks the whole UI; the request-timing history cannot see the
+  // `/users/me` 429s that raise it, so the dialog is the authoritative signal here.
+  return {
+    ...analysis,
+    evidence: [
+      `studio showed its request error dialog: "${capture.requestErrorText.slice(0, 120)}"`,
+      ...analysis.evidence,
+    ],
+    verdict: 'degraded',
+  }
+}
+
+function classifyCaptureBody(capture: AttemptCapture, thresholds: Thresholds): AttemptAnalysis {
   if (capture.kind === 'studio' && capture.diagnostics) {
     return {...capture, ...classifyStudioCapture(capture, thresholds)}
   }

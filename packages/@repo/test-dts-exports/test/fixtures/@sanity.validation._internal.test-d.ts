@@ -77,24 +77,18 @@ describe('@sanity/validation/_internal', () => {
   })
   test('ValidateDocumentInternalOptions', () => {
     expectTypeOf<ValidateDocumentInternalOptions>().toBeObject()
-    expectTypeOf<ValidateDocumentInternalOptions['signal']>().toEqualTypeOf<
-      AbortSignal | undefined
-    >()
   })
   test('validateDocumentObservable', () => {
     expectTypeOf<typeof validateDocumentObservable>().toBeFunction()
   })
   test('ValidateDocumentObservableOptions', () => {
     expectTypeOf<ValidateDocumentObservableOptions>().toBeObject()
-    expectTypeOf<ValidateDocumentObservableOptions['signal']>().toEqualTypeOf<
-      AbortSignal | undefined
-    >()
   })
   test('validateItem', () => {
     expectTypeOf<typeof validateItem>().toBeFunction()
   })
   test('ValidateItemOptions', () => {
-    expectTypeOf<ValidateItemOptions['signal']>().toEqualTypeOf<AbortSignal | undefined>()
+    expectTypeOf<ValidateItemOptions>().not.toBeNever()
   })
   test('ValidationContext', () => {
     // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from

@@ -281,7 +281,7 @@ When CI e2e fails, the hosted Playwright report also serves a machine-readable d
 
 #### Diagnosing e2e flake: failure diagnostics and the flake report
 
-Every failed or timed-out e2e test attempt attaches `studio-diagnostics.json` — the same JSON the Studio Diagnostics dialog's "Copy output" produces (API latency probes, listen tests, the `x-sanity-shard` id, and the request-timing history recorded while the test ran). It is captured by the `_failureDiagnostics` auto fixture in `e2e/studio-test.ts` through `window.__sanityStudioDiagnostics`, which the e2e studio installs via the `StudioDiagnosticsBridge` component (`dev/studio-e2e-testing/diagnosticsBridge.tsx`). When the studio shell never mounted, `studio-diagnostics-fallback.json` holds plain-fetch probes instead. Attachments show up per test in the Playwright HTML report and paste straight into `dev/studio-diagnostics-viewer`.
+Every failed or timed-out e2e test attempt attaches `studio-diagnostics.json` — the same JSON the Studio Diagnostics dialog's "Copy output" produces (API latency probes, listen tests, the `x-sanity-shard` id, and the request-timing history recorded while the test ran). It is captured by the `_failureDiagnostics` auto fixture in `e2e/studio-test.ts` through `window.__sanityStudioDiagnostics`, which the e2e studio installs via the `StudioDiagnosticsBridge` component (`dev/studio-e2e-testing/diagnosticsBridge.tsx`). When the studio shell never mounted, `studio-diagnostics-fallback.json` holds plain-fetch probes instead, and `studio-request-error.txt` records the studio's request error dialog ("Too many requests", server error, network error) when it is showing — the request history only covers `/data/*` traffic, so this is how a 429 on `/users/me` becomes visible. Attachments show up per test in the Playwright HTML report and paste straight into `dev/studio-diagnostics-viewer`.
 
 To turn those captures into numbers ("how many failed runs were platform-caused?"), run the flake report:
 
@@ -770,6 +770,7 @@ Key env vars used in development:
 - `SANITY_STUDIO_PROJECT_ID` - Project ID for dev studio
 - `SANITY_STUDIO_DATASET` - Dataset for dev studio
 - `SANITY_INTERNAL_ENV` - Internal environment flag
+- `SANITY_STUDIO_STYLE_OUTLINE` - When `true`, mounts the test-studio style outline debug panel (`dev/test-studio/plugins/style-outline`). Opt-in; set on the Vercel `test-studio` project only. The bundled source must read `process.env.SANITY_STUDIO_STYLE_OUTLINE` as that exact member expression so Sanity's env string replace can see it.
 - `ENABLE_BUNDLE_ANALYZER` - When `true`, the `sanity` package tsdown build emits `lib/analyze-data.md` (`pnpm analyze:sanity`)
 
 See `turbo.json` for full list of environment variables that affect builds.

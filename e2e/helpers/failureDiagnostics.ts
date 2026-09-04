@@ -48,9 +48,18 @@ interface FallbackReport {
   userAgent?: string
 }
 
-type PageCaptureResult =
+type PageCaptureResult = (
   | {kind: 'studio'; diagnostics: unknown}
   | {kind: 'fallback'; report: FallbackReport}
+) & {
+  /**
+   * Text of the studio's request error dialog (`RequestErrorDialog`: rate limited, server
+   * error, or network error) when it is showing. The request-timing history only covers
+   * `/data/*` traffic, so a 429 on `/users/me` that blocks the whole studio would otherwise
+   * leave the capture looking healthy.
+   */
+  requestErrorDialog?: string
+}
 
 /**
  * Runs inside the browser. Prefers the studio diagnostics bridge installed by the
@@ -70,6 +79,21 @@ async function captureInPage(args: PageCaptureArgs): Promise<PageCaptureResult> 
   const getBridge = () =>
     (window as Window & {__sanityStudioDiagnostics?: DiagnosticsBridge}).__sanityStudioDiagnostics
 
+  // `RequestErrorDialog` renders with this id; the header fallback covers a ui version
+  // that does not forward the id to the DOM.
+  function readRequestErrorDialog(): string | undefined {
+    const byId = document.getElementById('request-error-dialog')
+    const dialog =
+      byId ??
+      Array.from(document.querySelectorAll('[role="dialog"]')).find((element) =>
+        /Too many requests|Server error|Network error/.test(element.textContent ?? ''),
+      )
+    const text = (dialog instanceof HTMLElement ? dialog.innerText : dialog?.textContent)
+      ?.replace(/\s+/g, ' ')
+      .trim()
+    return text ? text.slice(0, 500) : undefined
+  }
+
   const waitStartedAt = Date.now()
   let bridge = getBridge()
   while (!bridge && Date.now() - waitStartedAt < bridgeWaitMs) {
@@ -77,10 +101,16 @@ async function captureInPage(args: PageCaptureArgs): Promise<PageCaptureResult> 
     bridge = getBridge()
   }
 
+  const requestErrorDialog = readRequestErrorDialog()
+
   let fallbackReason = `The studio diagnostics bridge did not appear within ${bridgeWaitMs}ms — the studio shell may not have mounted.`
   if (bridge) {
     try {
-      return {kind: 'studio', diagnostics: await bridge.gather({requestTimeout: requestTimeoutMs})}
+      return {
+        kind: 'studio',
+        diagnostics: await bridge.gather({requestTimeout: requestTimeoutMs}),
+        requestErrorDialog,
+      }
     } catch (error) {
       const detail = error instanceof Error ? `${error.name}: ${error.message}` : String(error)
       fallbackReason = `The studio diagnostics gatherer failed: ${detail}`
@@ -146,6 +176,7 @@ async function captureInPage(args: PageCaptureArgs): Promise<PageCaptureResult> 
       reason: fallbackReason,
       userAgent: navigator.userAgent,
     },
+    requestErrorDialog,
   }
 }
 
@@ -225,6 +256,12 @@ export async function captureStudioDiagnosticsOnFailure(
         await testInfo.attach('studio-diagnostics-fallback.json', {
           body: JSON.stringify(result.report, null, 2),
           contentType: 'application/json',
+        })
+      }
+      if (result.requestErrorDialog) {
+        await testInfo.attach('studio-request-error.txt', {
+          body: result.requestErrorDialog,
+          contentType: 'text/plain',
         })
       }
     } finally {

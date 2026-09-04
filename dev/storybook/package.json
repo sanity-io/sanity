@@ -25,8 +25,8 @@
   "devDependencies": {
     "@chromatic-com/storybook": "^5.3.1",
     "@sanity/vanilla-extract-vite-plugin": "catalog:",
-    "@storybook/addon-vitest": "^10.5.10",
-    "@storybook/react-vite": "^10.5.10",
+    "@storybook/addon-vitest": "^10.6.0",
+    "@storybook/react-vite": "^10.6.0",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
