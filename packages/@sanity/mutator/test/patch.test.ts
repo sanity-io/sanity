@@ -1,4 +1,3 @@
-import cloneDeep from 'lodash-es/cloneDeep.js'
 import {expect, test} from 'vitest'
 
 import {type Doc} from '../src/document/types'
@@ -35,7 +34,7 @@ examples.forEach((example) => {
     }
 
     const patcher = new Patcher(example.patch)
-    const pristine = cloneDeep(example.before)
+    const pristine = structuredClone(example.before)
     const patched = patcher.apply(example.before as Doc) as Record<string, unknown>
 
     // Don't care about ids in result
