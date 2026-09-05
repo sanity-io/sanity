@@ -1443,9 +1443,6 @@ importers:
       dequal:
         specifier: 'catalog:'
         version: 2.0.3
-      lodash-es:
-        specifier: ^4.18.1
-        version: 4.18.1
       obug:
         specifier: ^2.1.4
         version: 2.1.4
@@ -1459,9 +1456,6 @@ importers:
       '@repo/tsdown.config':
         specifier: workspace:*
         version: link:../../@repo/tsdown.config
-      '@types/lodash-es':
-        specifier: ^4.17.12
-        version: 4.17.12
       '@types/node':
         specifier: 'catalog:'
         version: 24.13.3
