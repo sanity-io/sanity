@@ -11,6 +11,7 @@ import words from 'lodash-es/words.js'
 
 import {compileSortExpression} from '../common/compileSortExpression'
 import {deriveSearchWeightsFromType} from '../common/deriveSearchWeightsFromType'
+import {getExcludeAgentVersionsFilter} from '../common/excludeAgentVersionsFilter'
 import {toOrderClause} from '../common/toOrderClause'
 import {
   ORDERINGS_PROJECTION_KEY,
@@ -138,6 +139,7 @@ export function createSearchQuery(
   const filters = [
     '_type in $__types',
     ...createConstraints(terms, specs),
+    getExcludeAgentVersionsFilter(perspective) ?? '',
     filter ? `(${filter})` : '',
     searchTerms.filter ? `(${searchTerms.filter})` : '',
   ].filter(Boolean)
