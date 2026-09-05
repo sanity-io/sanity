@@ -8,6 +8,7 @@ import {type ArrayOfPrimitivesInputProps} from '../../../types/inputProps'
 import {type PrimitiveItemProps} from '../../../types/itemProps'
 import {ErrorItem} from '../ArrayOfObjectsInput/List/ErrorItem'
 import {ArrayValidationProvider} from '../common/ArrayValidationContext'
+import {resolveGridTemplateColumns} from '../common/gridColumns'
 import {Item, List} from '../common/list'
 import {ArrayOfPrimitivesFunctions} from './ArrayOfPrimitivesFunctions'
 import {UploadTargetCard} from './arrayOfPrimitiveUploadTarget'
@@ -163,6 +164,7 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
 
     const isSortable = !readOnly && get(schemaType, 'options.sortable') !== false
     const isGrid = schemaType.options?.layout === 'grid'
+    const gridTemplateColumns = resolveGridTemplateColumns(schemaType.options?.columns)
 
     // Compute tone for array container based on validation errors
     const hasErrors = validation?.some((v) => v.level === 'error')
@@ -197,7 +199,7 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
                     items={membersWithSortIds.map((m) => m.id)}
                     sortable={isSortable}
                     gap={isGrid ? 3 : 1}
-                    gridTemplateColumns={isGrid ? [2, 3, 4] : 1}
+                    gridTemplateColumns={isGrid ? gridTemplateColumns : 1}
                     padding={isGrid ? 1 : undefined}
                     margin={isGrid ? 1 : undefined}
                   >

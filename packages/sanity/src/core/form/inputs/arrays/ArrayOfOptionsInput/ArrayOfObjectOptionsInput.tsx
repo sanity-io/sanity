@@ -8,6 +8,7 @@ import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {IncompatibleItemType} from '../../../members/array/IncompatibleItemType'
 import {set, unset} from '../../../patch/patch'
 import {type ArrayOfObjectsInputProps} from '../../../types/inputProps'
+import {DEFAULT_GRID_COLUMNS} from '../common/gridColumns'
 
 function isEqual(item: any, otherItem: any): boolean {
   if (item === otherItem) {
@@ -105,15 +106,13 @@ export function ArrayOfObjectOptionsInput(props: ArrayOfObjectsInputProps) {
   )
 
   const isGrid = schemaType.options?.layout === 'grid'
+  // A checkbox grid never needs more tracks than it has options, so an explicit
+  // `columns` narrows the grid but cannot stretch it past the option count.
+  const gridColumns = Math.min(options.length, schemaType.options?.columns ?? DEFAULT_GRID_COLUMNS)
 
   return (
     <ChangeIndicator path={path} isChanged={changed} hasFocus={false}>
-      <Grid
-        gap={2}
-        gridTemplateColumns={isGrid ? Math.min(options.length, 4) : 1}
-        tabIndex={0}
-        {...elementProps}
-      >
+      <Grid gap={2} gridTemplateColumns={isGrid ? gridColumns : 1} tabIndex={0} {...elementProps}>
         {options.map((option, index) => {
           const optionType = getMemberTypeOfItem(schemaType, option)
           const checked = inArray(value, option)

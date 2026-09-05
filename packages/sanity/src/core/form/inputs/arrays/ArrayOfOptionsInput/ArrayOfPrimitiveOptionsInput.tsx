@@ -9,6 +9,7 @@ import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {set, unset} from '../../../patch/patch'
 import {type ArrayOfPrimitivesInputProps} from '../../../types/inputProps'
 import {IncompatibleItemType} from '../ArrayOfObjectsInput/List/IncompatibleItemType'
+import {DEFAULT_GRID_COLUMNS} from '../common/gridColumns'
 
 function isPrimitiveOption(option: unknown): option is NormalizedPrimitiveOption {
   return Boolean(option && typeof option === 'object' && 'title' in option && 'value' in option)
@@ -75,14 +76,13 @@ export function ArrayOfPrimitiveOptionsInput(props: ArrayOfPrimitivesInputProps)
   }
 
   const isGrid = schemaType.options?.layout === 'grid'
+  // A checkbox grid never needs more tracks than it has options, so an explicit
+  // `columns` narrows the grid but cannot stretch it past the option count.
+  const gridColumns = Math.min(options.length, schemaType.options?.columns ?? DEFAULT_GRID_COLUMNS)
 
   return (
     <ChangeIndicator path={path} isChanged={changed} hasFocus={false}>
-      <Grid
-        gap={2}
-        gridTemplateColumns={isGrid ? Math.min(options.length, 4) : 1}
-        {...elementProps}
-      >
+      <Grid gap={2} gridTemplateColumns={isGrid ? gridColumns : 1} {...elementProps}>
         {options.map((option, index) => {
           const optionType = getMemberTypeOfItem(schemaType, option)
           const checked = value.includes(option.value)
