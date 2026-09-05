@@ -1,4 +1,4 @@
-import {type Path} from '@sanity/types'
+import {type Path, type PortableTextBlock} from '@sanity/types'
 import {Stack, Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {AnimatePresence, motion, type Variants} from 'motion/react'
@@ -6,20 +6,15 @@ import {useMemo, useState} from 'react'
 import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
+import {CommentDeleteDialog as CommentDeleteDialogV2} from '../../../comments-v2/components/CommentDeleteDialog'
+import {useComments as useCommentsV2} from '../../../comments-v2/hooks/useComments'
 import {CommentDeleteDialog} from '../../../comments/components/CommentDeleteDialog'
-import {type CommentInputProps} from '../../../comments/components/pte/comment-input/CommentInput'
 import {useComments} from '../../../comments/hooks/useComments'
-import {
-  type CommentBaseCreatePayload,
-  type CommentCreatePayload,
-  type CommentReactionOption,
-  type CommentThreadItem,
-  type CommentUpdatePayload,
-} from '../../../comments/types'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {set} from '../../../form/patch/patch'
 import {type PatchEvent} from '../../../form/patch/PatchEvent'
 import {type FormPatch} from '../../../form/patch/types'
+import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useCurrentUser} from '../../../store/user/hooks'
 import {useWorkspace} from '../../../studio/workspace'
@@ -37,6 +32,7 @@ import {TasksActivityCommentInput} from './TasksActivityCommentInput'
 import {TasksActivityCommentItem} from './TasksActivityCommentItem'
 import {TasksActivityCreatedAt} from './TasksActivityCreatedAt'
 import {TasksSubscribers} from './TasksSubscribers'
+import {type TaskCommentCreate, type TaskCommentNotification, type TaskCommentReply} from './types'
 
 const EMPTY_ARRAY: [] = []
 
@@ -54,10 +50,61 @@ interface TasksActivityLogProps {
   activityData: FieldChange[]
 }
 
+/**
+ * What the activity feed needs to know about a comment thread, so that it does
+ * not have to deal with the comment types of a specific comments
+ * implementation.
+ */
+interface TaskCommentThread {
+  createdAt: string
+  /**
+   * The id of the thread's first comment.
+   */
+  id: string
+  replyCount: number
+}
+
+function getNotificationValue(
+  message: PortableTextBlock[] | null,
+  commentId: string,
+  options: {
+    basePath: string
+    mentionOptions: UserListWithPermissionsHookValue
+    task: TaskDocument
+    workspaceName: string
+    workspaceTitle: string
+  },
+): TaskCommentNotification {
+  const {basePath, mentionOptions, task, workspaceName, workspaceTitle} = options
+  const studioUrl = new URL(`${window.location.origin}${basePath ? `${basePath}/` : ''}`)
+
+  studioUrl.searchParams.set(TASKS_SIDEBAR_SEARCH_PARAM, 'tasks')
+  studioUrl.searchParams.set(TASKS_SELECTED_TASK_SEARCH_PARAM, task?._id)
+  studioUrl.searchParams.set(TASKS_VIEW_MODE_SEARCH_PARAM, 'edit')
+  studioUrl.searchParams.set('commentId', commentId)
+
+  // Mentions are stored with the user id of the comments implementation in use,
+  // which is a global user id in some of them. Task subscribers are project
+  // user ids, so resolve the mentioned user back to that.
+  const mentionedUsers = getMentionedUsers(message).map((userId) => {
+    const mentionedUser = mentionOptions.data?.find((user) => user.id === userId)
+    return mentionedUser?.projectUserId ?? userId
+  })
+  const subscribers = Array.from(new Set([...(task.subscribers || []), ...mentionedUsers]))
+
+  return {
+    documentTitle: task.title || 'Sanity task',
+    url: studioUrl.toString(),
+    workspaceTitle,
+    workspaceName,
+    subscribers,
+  }
+}
+
 type Activity =
   | {
       _type: 'comment'
-      payload: CommentThreadItem
+      payload: TaskCommentThread
       timestamp: string
     }
   | {
@@ -66,43 +113,142 @@ type Activity =
       timestamp: string
     }
 
+/**
+ * The activity feed on a task: comments and field changes in one chronological
+ * list, with a comment editor at the bottom.
+ *
+ * Comments are read from and written to whichever comments implementation the
+ * task is using. Since each of those has its own provider and hook, that part
+ * happens here, and the feed below is given comment threads reduced to what it
+ * needs.
+ */
 export function TasksActivityLog(props: TasksActivityLogProps) {
-  const {value, onChange, path, activityData = []} = props
-  const currentUser = useCurrentUser()
+  const {beta} = useWorkspace()
 
-  const {title: workspaceTitle, basePath, name: workspaceName} = useWorkspace()
+  if (beta?.comments?.v2) {
+    return <TasksActivityLogV2 {...props} />
+  }
+
+  return <TasksActivityLogV1 {...props} />
+}
+
+/**
+ * Reads and writes comments via the v1 comments context.
+ */
+function TasksActivityLogV1(props: TasksActivityLogProps) {
   const {comments, mentionOptions, operation, getComment} = useComments()
+
+  const taskComments = useMemo(
+    () =>
+      comments.data.open.map((thread): TaskCommentThread => ({
+        createdAt: thread.parentComment._createdAt,
+        id: thread.parentComment._id,
+        replyCount: thread.replies.length,
+      })),
+    [comments.data.open],
+  )
+
+  return (
+    <TasksActivityLogFeed
+      {...props}
+      getComment={getComment}
+      loading={comments.loading}
+      mentionOptions={mentionOptions}
+      onCommentCreate={operation.create}
+      onCommentRemove={operation.remove}
+      taskComments={taskComments}
+    />
+  )
+}
+
+/**
+ * Reads and writes comments via the v2 comments context.
+ */
+function TasksActivityLogV2(props: TasksActivityLogProps) {
+  const {comments, mentionOptions, operation, getComment} = useCommentsV2()
+
+  const taskComments = useMemo(
+    () =>
+      comments.data.open.map((thread): TaskCommentThread => ({
+        createdAt: thread.parentComment._createdAt,
+        id: thread.parentComment._id,
+        replyCount: thread.replies.length,
+      })),
+    [comments.data.open],
+  )
+
+  return (
+    <TasksActivityLogFeed
+      {...props}
+      getComment={getComment}
+      loading={comments.loading}
+      mentionOptions={mentionOptions}
+      onCommentCreate={operation.create}
+      onCommentRemove={operation.remove}
+      taskComments={taskComments}
+    />
+  )
+}
+
+interface TasksActivityLogFeedProps extends TasksActivityLogProps {
+  /**
+   * Looks up a comment in the comments implementation the task is using.
+   * Used when retrying a failed create.
+   */
+  getComment: (id: string) => TaskCommentRetry | undefined
+  loading: boolean
+  mentionOptions: UserListWithPermissionsHookValue
+  onCommentCreate: (comment: TaskCommentCreate) => Promise<void>
+  onCommentRemove: (id: string) => Promise<void>
+  taskComments: TaskCommentThread[]
+}
+
+/**
+ * Fields retry needs from the comments store. Both implementations expose these.
+ */
+interface TaskCommentRetry {
+  _id: string
+  message: PortableTextBlock[] | null
+  parentCommentId?: string
+  threadId: string
+}
+
+/**
+ * Chronological feed of field changes and comments, plus the comments input.
+ */
+function TasksActivityLogFeed(props: TasksActivityLogFeedProps) {
+  const {
+    value,
+    onChange,
+    path,
+    activityData = [],
+    getComment,
+    loading,
+    mentionOptions,
+    onCommentCreate,
+    onCommentRemove,
+    taskComments,
+  } = props
+  const currentUser = useCurrentUser()
+  const {title: workspaceTitle, basePath, name: workspaceName, beta} = useWorkspace()
+
   const [commentToDeleteId, setCommentToDeleteId] = useState<string | null>(null)
   const [commentDeleteError, setCommentDeleteError] = useState<Error | null>(null)
   const [commentDeleteLoading, setCommentDeleteLoading] = useState(false)
 
-  const loading = comments.loading
-  const taskComments = comments.data.open
-  const handleGetNotificationValue = (message: CommentInputProps['value'], commentId: string) => {
-    const studioUrl = new URL(`${window.location.origin}${basePath ? `${basePath}/` : ''}`)
-
-    studioUrl.searchParams.set(TASKS_SIDEBAR_SEARCH_PARAM, 'tasks')
-    studioUrl.searchParams.set(TASKS_SELECTED_TASK_SEARCH_PARAM, value?._id)
-    studioUrl.searchParams.set(TASKS_VIEW_MODE_SEARCH_PARAM, 'edit')
-    studioUrl.searchParams.set('commentId', commentId)
-
-    const mentionedUsers = getMentionedUsers(message)
-    const subscribers = Array.from(new Set([...(value.subscribers || []), ...mentionedUsers]))
-
-    return {
-      documentTitle: value.title || 'Sanity task',
-      url: studioUrl.toString(),
-      workspaceTitle,
-      workspaceName,
-      subscribers,
-    }
-  }
-
-  const handleCommentCreate = async (message: CommentInputProps['value']) => {
+  const handleCommentCreate = async (message: PortableTextBlock[] | null) => {
     const commentId = uuid()
-    const notification = handleGetNotificationValue(message, commentId)
+    const notification = getNotificationValue(message, commentId, {
+      basePath,
+      mentionOptions,
+      task: value,
+      workspaceName,
+      workspaceTitle,
+    })
 
-    const nextComment: CommentCreatePayload = {
+    onChange(set(notification.subscribers, ['subscribers']))
+
+    await onCommentCreate({
       id: commentId,
       type: 'task',
       message,
@@ -113,28 +259,29 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
       context: {
         notification,
       },
-    }
-
-    onChange(set(notification.subscribers, ['subscribers']))
-
-    await operation.create(nextComment)
+    })
   }
 
-  const handleCommentReply = async (nextComment: CommentBaseCreatePayload) => {
+  const handleCommentReply = async (reply: TaskCommentReply) => {
     const commentId = uuid()
-
-    const notification = handleGetNotificationValue(nextComment.message, commentId)
+    const notification = getNotificationValue(reply.message, commentId, {
+      basePath,
+      mentionOptions,
+      task: value,
+      workspaceName,
+      workspaceTitle,
+    })
 
     onChange(set(notification.subscribers, ['subscribers']))
 
-    await operation.create({
+    await onCommentCreate({
       id: commentId,
       type: 'task',
-      message: nextComment.message,
-      parentCommentId: nextComment.parentCommentId,
+      message: reply.message,
+      parentCommentId: reply.parentCommentId,
       reactions: EMPTY_ARRAY,
       status: 'open',
-      threadId: nextComment.threadId,
+      threadId: reply.threadId,
       context: {
         notification,
       },
@@ -147,26 +294,28 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
     const comment = getComment(id)
     if (!comment) return
 
-    const notification = handleGetNotificationValue(comment.message, comment._id)
+    const notification = getNotificationValue(comment.message, comment._id, {
+      basePath,
+      mentionOptions,
+      task: value,
+      workspaceName,
+      workspaceTitle,
+    })
 
     onChange(set(notification.subscribers, ['subscribers']))
 
-    await operation.create({
-      type: 'task',
+    await onCommentCreate({
       id: comment._id,
+      type: 'task',
       message: comment.message,
       parentCommentId: comment.parentCommentId,
-      reactions: comment.reactions || EMPTY_ARRAY,
-      status: comment.status,
+      reactions: EMPTY_ARRAY,
+      status: 'open',
       threadId: comment.threadId,
       context: {
         notification,
       },
     })
-  }
-
-  const handleCommentReact = async (id: string, reaction: CommentReactionOption) => {
-    await operation.react(id, reaction)
   }
 
   const handleDeleteCommentStart = (id: string) => setCommentToDeleteId(id)
@@ -176,16 +325,12 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
     try {
       setCommentDeleteLoading(true)
       setCommentDeleteError(null)
-      await operation.remove(id)
+      await onCommentRemove(id)
       setCommentToDeleteId(null)
     } catch (err) {
       setCommentDeleteError(err)
     }
     setCommentDeleteLoading(false)
-  }
-
-  const handleCommentEdit = async (id: string, next: CommentUpdatePayload) => {
-    await operation.update(id, next)
   }
 
   const activity: Activity[] = useMemo(() => {
@@ -197,7 +342,7 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
     const commentsActivity: Activity[] = taskComments.map((comment) => ({
       _type: 'comment' as const,
       payload: comment,
-      timestamp: comment.parentComment._createdAt,
+      timestamp: comment.createdAt,
     }))
 
     return taskActivity
@@ -207,16 +352,19 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
   const {t} = useTranslation(tasksLocaleNamespace)
 
   const commentToDeleteIsParent = useMemo(() => {
-    const parent = taskComments.find((c) => c.parentComment?._id === commentToDeleteId)
-    const isParent = Boolean(parent && parent?.replies?.length > 0)
+    const parent = taskComments.find((c) => c.id === commentToDeleteId)
+    const isParent = Boolean(parent && parent.replyCount > 0)
 
     return isParent
   }, [commentToDeleteId, taskComments])
 
+  // Pick the delete dialog for the comments implementation the workspace is using.
+  const DeleteDialog = beta?.comments?.v2 ? CommentDeleteDialogV2 : CommentDeleteDialog
+
   return (
     <>
       {commentToDeleteId && (
-        <CommentDeleteDialog
+        <DeleteDialog
           commentId={commentToDeleteId}
           error={commentDeleteError}
           isParent={commentToDeleteIsParent}
@@ -267,16 +415,13 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
 
                     return (
                       <TasksActivityCommentItem
-                        key={item.payload.parentComment._id}
+                        key={item.payload.id}
+                        commentId={item.payload.id}
                         currentUser={currentUser}
                         mentionOptions={mentionOptions}
                         onCreateRetry={handleCommentCreateRetry}
                         onDelete={handleDeleteCommentStart}
-                        onEdit={handleCommentEdit}
-                        onReactionSelect={handleCommentReact}
                         onReply={handleCommentReply}
-                        parentComment={item.payload.parentComment}
-                        replies={item.payload.replies}
                       />
                     )
                   })}
