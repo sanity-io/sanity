@@ -379,6 +379,10 @@ export const structure: StructureResolver = (
                     .title('Developers')
                     .filter('_type == $type && role == $role')
                     .params({type: 'author', role: 'developer'})
+                    .filterOptions([
+                      {id: 'has-image', title: 'Has an image', filter: 'defined(image)'},
+                      {id: 'has-awards', title: 'Has awards', filter: 'count(awards) > 0'},
+                    ])
                     .initialValueTemplates(S.initialValueTemplateItem('author-developer')),
               }),
 

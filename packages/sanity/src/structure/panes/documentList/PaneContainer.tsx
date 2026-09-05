@@ -17,6 +17,7 @@ import {
 import {Pane} from '../../components/pane/Pane'
 import {_DEBUG} from '../../constants'
 import {structureLocaleNamespace} from '../../i18n'
+import {type DocumentListFilterOption} from '../../structureBuilder/DocumentList'
 import {assignId} from '../../structureResolvers/assignId'
 import {type PaneMenuItem} from '../../types'
 import {useStructureToolSetting} from '../../useStructureToolSetting'
@@ -36,6 +37,31 @@ import {type SortOrder, type StaticSortOrder} from './types'
  * Maps menu item IDs to their current state values.
  */
 type CustomMenuItemState = Record<string, unknown>
+
+const FILTER_MENU_ITEM_ID_PREFIX = 'document-list-filter-'
+const FILTER_MENU_ITEM_GROUP = 'filtering'
+
+/**
+ * @internal exported for testing
+ */
+export const getDocumentListFilterMenuItemId = (id: string): string =>
+  `${FILTER_MENU_ITEM_ID_PREFIX}${id}`
+
+/**
+ * @internal exported for testing
+ */
+export const createDocumentListFilterMenuItems = (
+  filterOptions: DocumentListFilterOption[],
+): PaneMenuItem[] =>
+  filterOptions.map((filterOption) => ({
+    action: 'setMenuItemState',
+    group: FILTER_MENU_ITEM_GROUP,
+    icon: filterOption.icon,
+    id: getDocumentListFilterMenuItemId(filterOption.id),
+    i18n: filterOption.i18n,
+    params: {value: true},
+    title: filterOption.title,
+  }))
 
 /**
  * Adds auto-generated IDs to menu items that don't have one.
@@ -185,7 +211,7 @@ export const PaneContainer = memo(function PaneContainer(
     options,
     suppressRestoreDefaultMenuItems,
   } = pane
-  const {defaultOrdering = EMPTY_ARRAY, filter} = options
+  const {defaultOrdering = EMPTY_ARRAY, filter, filterOptions = EMPTY_ARRAY} = options
   const params = useShallowUnique(options.params || EMPTY_RECORD)
   const sourceName = pane.source
   const typeName = useMemo(() => {
@@ -253,7 +279,42 @@ export const PaneContainer = memo(function PaneContainer(
 
   const [customMenuItemState, setCustomMenuItemState] = useState<CustomMenuItemState>({})
 
-  const menuItemsWithIds = useMemo(() => addIdsToMenuItems(menuItems), [menuItems])
+  const filterMenuItems = useMemo(
+    () => createDocumentListFilterMenuItems(filterOptions),
+    [filterOptions],
+  )
+  const menuItemsWithIds = useMemo(
+    () => addIdsToMenuItems([...(menuItems || EMPTY_ARRAY), ...filterMenuItems]),
+    [filterMenuItems, menuItems],
+  )
+  const menuItemGroupsWithFilter = useMemo(() => {
+    if (
+      filterOptions.length === 0 ||
+      menuItemGroups?.some((group) => group.id === FILTER_MENU_ITEM_GROUP)
+    ) {
+      return menuItemGroups
+    }
+
+    return [
+      {
+        id: FILTER_MENU_ITEM_GROUP,
+        title: 'Filter',
+        i18n: {
+          title: {key: 'menu-item-groups.filtering-group', ns: structureLocaleNamespace},
+        },
+      },
+      ...(menuItemGroups || EMPTY_ARRAY),
+    ]
+  }, [filterOptions.length, menuItemGroups])
+
+  const selectedFilterOptions = useMemo(
+    () =>
+      filterOptions.filter(
+        (filterOption) =>
+          customMenuItemState[getDocumentListFilterMenuItemId(filterOption.id)] === true,
+      ),
+    [customMenuItemState, filterOptions],
+  )
 
   const disabledSortReason = t('panes.document-list-pane.sort-order.disabled-reason')
 
@@ -323,7 +384,7 @@ export const PaneContainer = memo(function PaneContainer(
           customMenuItemState={customMenuItemState}
           index={index}
           initialValueTemplates={initialValueTemplates}
-          menuItemGroups={menuItemGroups}
+          menuItemGroups={menuItemGroupsWithFilter}
           menuItems={menuItemsWithRestoreDefaults}
           setLayout={setLayout}
           setSortOrder={handleSetSortOrder}
@@ -332,7 +393,12 @@ export const PaneContainer = memo(function PaneContainer(
           restoreDefaultSortOrder={handleRestoreDefaultSortOrder}
           title={title}
         />
-        <DocumentListPane {...props} sortOrder={validatedSortOrder} layout={layout} />
+        <DocumentListPane
+          {...props}
+          activeFilterOptions={selectedFilterOptions}
+          sortOrder={validatedSortOrder}
+          layout={layout}
+        />
       </Pane>
     </SourceProvider>
   )

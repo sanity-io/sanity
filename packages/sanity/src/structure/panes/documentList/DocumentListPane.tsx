@@ -22,6 +22,7 @@ import {Box} from 'ui5'
 
 import {usePane} from '../../components/pane/usePane'
 import {structureLocaleNamespace} from '../../i18n'
+import {type DocumentListFilterOption} from '../../structureBuilder/DocumentList'
 import {type BaseStructureToolPaneProps} from '../types'
 import {DEFAULT_ORDERING, EMPTY_RECORD, FULL_LIST_LIMIT} from './constants'
 import {DocumentListPaneContent} from './DocumentListPaneContent'
@@ -32,6 +33,7 @@ import {
   RELEVANCE_ORDERING_ID,
 } from './DocumentListPaneSearchOrdering'
 import {documentListSearchMachine} from './documentListSearchMachine'
+import {combineDocumentListFilters} from './filterOptions'
 import {applyOrderingFunctions, findStaticTypesInFilter} from './helpers'
 import {isOrderByIdsParam, reorderItemsByIdsParam} from './orderByIdsParam'
 import {type LoadingVariant, type SortOrder} from './types'
@@ -40,6 +42,7 @@ import {useDocumentList} from './useDocumentList'
  * @internal
  */
 export type DocumentListPaneProps = BaseStructureToolPaneProps<'documentList'> & {
+  activeFilterOptions?: DocumentListFilterOption[]
   sortOrder?: SortOrder
   layout?: GeneralPreviewLayoutKey
 }
@@ -86,13 +89,30 @@ const DelayedSubtleSpinnerIcon = styled(SpinnerIcon)`
  */
 
 export const DocumentListPane = memo(function DocumentListPane(props: DocumentListPaneProps) {
-  const {childItemId, isActive, pane, paneKey, sortOrder: sortOrderRaw, layout} = props
+  const {
+    activeFilterOptions = EMPTY_ARRAY,
+    childItemId,
+    isActive,
+    pane,
+    paneKey,
+    sortOrder: sortOrderRaw,
+    layout,
+  } = props
   const schema = useSchema()
   const releases = useActiveReleases()
   const {perspectiveStack, selectedVariantName} = usePerspective()
   const {displayOptions, options} = pane
-  const {apiVersion, filter} = options
-  const params = useShallowUnique(options.params || EMPTY_RECORD)
+  const {apiVersion, filter: baseFilter} = options
+  const baseParams = useShallowUnique(options.params || EMPTY_RECORD)
+  const {filter, params} = useMemo(
+    () =>
+      combineDocumentListFilters({
+        filter: baseFilter,
+        params: baseParams,
+        selectedFilters: activeFilterOptions,
+      }),
+    [activeFilterOptions, baseFilter, baseParams],
+  )
   const typeName = useMemo(() => {
     const staticTypes = findStaticTypesInFilter(filter, params)
     if (staticTypes?.length === 1) return staticTypes[0]
