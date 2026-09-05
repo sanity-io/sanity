@@ -106,6 +106,7 @@ export {
   type ListItem,
   ListItemBuilder,
   type ListItemChild,
+  type ListItemCount,
   type ListItemDisplayOptions,
   type ListItemInput,
   type ListItemSerializeOptions,

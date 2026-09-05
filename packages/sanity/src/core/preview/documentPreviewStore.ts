@@ -21,6 +21,7 @@ import {createPathObserver} from './createPathObserver'
 import {createPreviewObserver} from './createPreviewObserver'
 import {createObservePathsDocumentPair} from './documentPair'
 import {createDocumentIdSetObserver, type DocumentIdSetObserverState} from './liveDocumentIdSet'
+import {createObserveDocumentCount} from './observeDocumentCount'
 import {createObserveFields} from './observeFields'
 import {createObserveVersionDocumentIds} from './observeVersionDocumentIds'
 import {
@@ -146,6 +147,19 @@ export interface DocumentPreviewStore {
   unstable_observeVersionDocumentIds: (publishedId: string) => Observable<string[]>
 
   /**
+   * Observes the number of documents matching a groq filter under a given perspective.
+   *
+   * @hidden
+   * @beta
+   */
+  unstable_observeDocumentCount: (
+    filter: string,
+    params: QueryParams,
+    perspective: StackablePerspective[],
+    options?: {tag?: string},
+  ) => Observable<number>
+
+  /**
    * Observe a complete document with the given ID
    *
    * @hidden
@@ -240,6 +254,11 @@ export function createDocumentPreviewStore({
     invalidationChannel,
   })
 
+  const observeDocumentCount = createObserveDocumentCount({
+    client: versionedClient,
+    invalidationChannel,
+  })
+
   const observeForPreview = createPreviewObserver({observeDocumentTypeFromId, observePaths})
 
   const observeDocumentStackAvailability = createDocumentStackAvailabilityObserver(
@@ -265,6 +284,7 @@ export function createDocumentPreviewStore({
     observeDocumentSystemFromId,
     unstable_observeDocumentIdSet: observeDocumentIdSet,
     unstable_observeVersionDocumentIds: observeVersionDocumentIds,
+    unstable_observeDocumentCount: observeDocumentCount,
     unstable_observeDocument: observeDocument,
     unstable_observeDocuments: (ids: string[]) =>
       combineLatest(ids.map((id) => observeDocument(id))),
