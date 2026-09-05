@@ -6,6 +6,18 @@ import {defaultClientConditions, mergeConfig} from 'vite'
 const config: StorybookConfig = {
   stories: ['../../../packages/{sanity,groq,@repo/*,@sanity/*}/src/**/*.stories.@(ts|tsx)'],
   addons: ['@chromatic-com/storybook', '@storybook/addon-vitest'],
+  // Storybook composition: the upstream `@sanity/ui` stories show up as their
+  // own sidebar tree, so the design system the studio builds on is browsable
+  // from here. The manager fetches the remote `index.json` and renders its
+  // stories from the remote `iframe.html` at runtime — nothing is bundled, and
+  // Chromatic does not snapshot composed refs. "(upstream)" keeps the tree
+  // apart from the local `Sanity UI/` tone sentinels in `src/ui-components`.
+  refs: {
+    'sanity-ui': {
+      title: 'Sanity UI (upstream)',
+      url: 'https://sanity-ui-storybook.sanity.dev',
+    },
+  },
   framework: {
     name: '@storybook/react-vite',
     options: {},
