@@ -43,6 +43,7 @@ const createScheduledDraftMenuActions = () => ({
       'tone': 'default' as const,
       'onClick': vi.fn(),
       'disabled': false,
+      'tooltipProps': null,
       'data-testid': 'publish-now-menu-item',
     },
     editSchedule: {
@@ -51,6 +52,7 @@ const createScheduledDraftMenuActions = () => ({
       'tone': 'default' as const,
       'onClick': vi.fn(),
       'disabled': false,
+      'tooltipProps': null,
       'data-testid': 'edit-schedule-menu-item',
     },
     schedulePublish: {
@@ -59,6 +61,7 @@ const createScheduledDraftMenuActions = () => ({
       'tone': 'default' as const,
       'onClick': vi.fn(),
       'disabled': false,
+      'tooltipProps': null,
       'data-testid': 'schedule-publish-menu-item',
     },
     deleteSchedule: {
@@ -67,6 +70,7 @@ const createScheduledDraftMenuActions = () => ({
       'tone': 'critical' as const,
       'onClick': vi.fn(),
       'disabled': false,
+      'tooltipProps': null,
       'data-testid': 'delete-schedule-menu-item',
     },
   },
