@@ -5,14 +5,12 @@ import {PureComponent} from 'react'
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {ArrayOfPrimitivesItem} from '../../../members/array/items/ArrayOfPrimitivesItem'
 import {type ArrayOfPrimitivesInputProps} from '../../../types/inputProps'
-import {type PrimitiveItemProps} from '../../../types/itemProps'
 import {ErrorItem} from '../ArrayOfObjectsInput/List/ErrorItem'
 import {ArrayValidationProvider} from '../common/ArrayValidationContext'
 import {Item, List} from '../common/list'
 import {ArrayOfPrimitivesFunctions} from './ArrayOfPrimitivesFunctions'
 import {UploadTargetCard} from './arrayOfPrimitiveUploadTarget'
 import {getEmptyValue} from './getEmptyValue'
-import {ItemRow} from './ItemRow'
 import {NoItemsPlaceholder} from './NoItemsPlaceholder'
 import {type PrimitiveValue} from './types'
 import {nearestIndexOf} from './utils/nearestIndex'
@@ -140,18 +138,13 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
     }
   }
 
-  renderArrayItem = (props: Omit<PrimitiveItemProps, 'renderDefault'>) => {
-    const {schemaType} = this.props
-    const sortable = schemaType.options?.sortable !== false
-    return <ItemRow {...props} sortable={sortable} insertableTypes={schemaType.of} />
-  }
-
   render() {
     const {
       schemaType,
       members,
       readOnly,
       renderInput,
+      renderItem,
       onUpload,
       onItemRemove,
       resolveUploader,
@@ -217,7 +210,7 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
                             >
                               <ArrayOfPrimitivesItem
                                 member={member}
-                                renderItem={this.renderArrayItem}
+                                renderItem={renderItem}
                                 renderInput={renderInput}
                               />
                             </ChangeIndicator>
