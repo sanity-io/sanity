@@ -102,11 +102,6 @@ minimumReleaseAgeExclude:
   # in lockstep; @sanity/tsdown-config tracks its latest so builds pick up new bindings together
   - 'lightningcss'
   - 'lightningcss-*'
-  # Fresh motion patch pulled in by @sanity/ui@4.0.6; exclude so 13.1.1 can
-  # install before the 3-day age gate
-  - 'framer-motion@13.1.1'
-  - 'motion-dom@13.1.1'
-  - 'motion@13.1.1'
   # oxc-transform-react and its per-platform native bindings (@oxc-transform-react/binding-*)
   # release in lockstep with the oxc toolchain; @vitejs/plugin-react and
   # @sanity/cli/@sanity/tsdown-config pin fresh versions as peers for the React Compiler oxc transform
