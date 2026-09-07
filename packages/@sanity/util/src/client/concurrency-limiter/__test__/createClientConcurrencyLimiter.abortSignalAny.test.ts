@@ -14,7 +14,6 @@ function deferred() {
   return Object.assign(promise, {resolve})
 }
 
-/** Mock `client.fetch` that rejects with the abort reason of the signal it received. */
 function abortableFetch() {
   return vi.fn(
     (_query: string, _params: object, {signal}: {signal: AbortSignal}) =>
@@ -24,7 +23,6 @@ function abortableFetch() {
   )
 }
 
-/** Mock `client.observable.fetch` that errors with the abort reason of the signal it received. */
 function abortableObservableFetch() {
   return vi.fn(
     (_query: string, _params: object, {signal}: {signal: AbortSignal}) =>
@@ -38,11 +36,6 @@ function abortableObservableFetch() {
 
 const nativeAbortSignalAny = AbortSignal.any
 
-/**
- * The scenarios below cover both of the places where the limiter has to combine two signals:
- * a fetch signal with the limiter's default signal, and a fetch signal with the internal
- * "unsubscribed while queued" controller of an Observable fetch.
- */
 function describeSignalCombination() {
   it('aborts a fetch when the default signal aborts', async () => {
     const defaultController = new AbortController()
@@ -219,10 +212,7 @@ describe('createClientConcurrencyLimiter signal combination', () => {
 
   describe('without native AbortSignal.any (Safari 17.0 – 17.3)', () => {
     beforeEach(() => {
-      // Safari only gained `AbortSignal.any` in 17.4. Deleting the static reproduces the
-      // `TypeError: AbortSignal.any is not a function` those releases throw.
-      // @ts-expect-error -- simulating a runtime without the static
-      delete AbortSignal.any
+      Reflect.deleteProperty(AbortSignal, 'any')
       expect(AbortSignal.any).toBeUndefined()
     })
 
