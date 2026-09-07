@@ -6,8 +6,12 @@ import {style} from '@vanilla-extract/css'
  */
 export const oversizedButtonStyle = style({
   position: 'relative',
-  cursor: 'default',
   selectors: {
+    // Button sets `cursor` on its own class; the doubled class wins that tie by specificity
+    // the way the runtime-injected wrapper used to by insertion order.
+    '&&': {
+      cursor: 'default',
+    },
     '&::before': {
       content: '""',
       position: 'absolute',
