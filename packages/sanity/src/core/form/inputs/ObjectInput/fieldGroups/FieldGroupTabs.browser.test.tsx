@@ -32,7 +32,7 @@ describe('FieldGroupTabs', () => {
   })
 
   it('shows the select on small screens', async () => {
-    await page.viewport(400, 900)
+    await page.viewport(320, 900)
     await render(
       <TestWrapper schemaTypes={[]}>
         <FieldGroupTabs groups={groups} path={[]} shouldAutoFocus={false} />
