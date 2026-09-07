@@ -23,6 +23,11 @@ export const root = style({
   boxSizing: 'border-box',
   position: 'relative',
   selectors: {
+    // `&&:not([hidden])` (0,3,0) beats Card's own `&:not([hidden]) {display: block}` (0,2,0)
+    // so `as={Flex}` keeps the cell stacking as a column.
+    '&&:not([hidden])': {
+      display: 'flex',
+    },
     [`.${MOVING_ITEM_CLASS_NAME} &`]: {
       boxShadow: [
         '0 0 0 0',
