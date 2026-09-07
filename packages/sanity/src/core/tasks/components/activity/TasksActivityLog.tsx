@@ -85,10 +85,12 @@ function getNotificationValue(
 
   // Mentions are stored with the user id of the comments implementation in use,
   // which is a global user id in some of them. Task subscribers are project
-  // user ids, so resolve the mentioned user back to that.
-  const mentionedUsers = getMentionedUsers(message).map((userId) => {
+  // user ids, so resolve the mentioned user back to that. A mention that cannot
+  // be resolved is skipped rather than kept as-is: unsubscribing filters by
+  // project user id, so an id of any other shape can never be removed again.
+  const mentionedUsers = getMentionedUsers(message).flatMap((userId) => {
     const mentionedUser = mentionOptions.data?.find((user) => user.id === userId)
-    return mentionedUser?.projectUserId ?? userId
+    return mentionedUser ? [mentionedUser.projectUserId ?? mentionedUser.id] : []
   })
   const subscribers = Array.from(new Set([...(task.subscribers || []), ...mentionedUsers]))
 

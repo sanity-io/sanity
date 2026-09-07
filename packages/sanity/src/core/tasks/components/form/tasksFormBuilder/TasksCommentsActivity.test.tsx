@@ -6,7 +6,7 @@ import {type Mock, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {useWorkspace} from '../../../../studio/workspace'
 import {type TaskDocument} from '../../../types'
-import {TasksCommentsActivity} from './FormEdit'
+import {TasksCommentsActivity} from './TasksCommentsActivity'
 
 const theme = buildTheme()
 
