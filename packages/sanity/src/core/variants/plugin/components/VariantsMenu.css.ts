@@ -1,8 +1,13 @@
 import {globalStyle, style} from '@vanilla-extract/css'
 
 export const menu = style({
-  minWidth: '240px',
   maxWidth: '320px',
+  selectors: {
+    // `&&` beats Box's own `min-width: 0` (Menu renders a Box)
+    '&&': {
+      minWidth: '240px',
+    },
+  },
 })
 
 /** (0,2,0) outranks the inner Stack's own `gap` rule (0,1,0), as the original selector did. */
