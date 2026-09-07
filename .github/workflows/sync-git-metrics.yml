@@ -77,19 +77,6 @@ jobs:
 
       - uses: ./.github/actions/setup
 
-      # Migration to the current id scheme (dot-free, dash-case — see
-      # @repo/utils/radar-ids): moves any document still on a legacy
-      # camelCase / dotted id and repoints its commit references. Runs on every
-      # sync, BEFORE it, so the sync never writes a new-id commit next to a
-      # legacy copy of the same sha (type-wide queries would list it twice).
-      # Idempotent: once the dataset is clean this is five empty listings.
-      # Remove the step and dev/radar/scripts/migrateDocumentIds.ts once a run
-      # has reported zero legacy documents.
-      - name: Migrate legacy document ids
-        env:
-          RADAR_SANITY_WRITE_TOKEN: ${{ secrets.RADAR_SANITY_WRITE_TOKEN }}
-        run: pnpm --filter radar migrate-ids
-
       - name: Sync git history to metrics dataset
         env:
           RADAR_SANITY_WRITE_TOKEN: ${{ secrets.RADAR_SANITY_WRITE_TOKEN }}
