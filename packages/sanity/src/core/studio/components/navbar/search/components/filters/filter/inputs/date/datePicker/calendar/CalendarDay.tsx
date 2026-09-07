@@ -1,35 +1,16 @@
-import {Card, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
-import {assignInlineVars} from '@vanilla-extract/dynamic'
-import {clsx} from 'clsx'
+import {Card, Text} from '@sanity/ui'
 import {isAfter} from 'date-fns/isAfter'
 import {isBefore} from 'date-fns/isBefore'
 import {isSameDay} from 'date-fns/isSameDay'
 import {isSameMonth} from 'date-fns/isSameMonth'
-import {type ComponentProps, useCallback} from 'react'
+import {useCallback} from 'react'
 
-import {circle, circleStrokeVar, circleSvg, customCard} from './CalendarDay.css'
+import {circle, circleSvg, customCard} from './CalendarDay.css'
 import {useCalendar} from './contexts/useDatePicker'
 
 interface CalendarDayProps {
   date: Date
   onSelect: (date: Date) => void
-}
-
-/** Rendered inside the day's Card so the theme read follows the Card's tone. */
-function CircleSvg(props: ComponentProps<'svg'>) {
-  const {className, style, ...rest} = props
-  const {color} = useThemeV2()
-
-  return (
-    <svg
-      {...rest}
-      className={clsx(circleSvg, className)}
-      style={{
-        ...assignInlineVars({[circleStrokeVar]: color.selectable.default.enabled.border}),
-        ...style,
-      }}
-    />
-  )
 }
 
 export function CalendarDay({date, onSelect}: CalendarDayProps) {
@@ -78,7 +59,8 @@ export function CalendarDay({date, onSelect}: CalendarDayProps) {
       tone={isWithinRange ? 'primary' : 'default'}
     >
       {isToday && (
-        <CircleSvg
+        <svg
+          className={circleSvg}
           height="100%"
           preserveAspectRatio="xMidYMid meet"
           vectorEffect="non-scaling-stroke"
@@ -86,7 +68,7 @@ export function CalendarDay({date, onSelect}: CalendarDayProps) {
           width="100%"
         >
           <circle className={circle} cx="50" cy="50" r="40%" />
-        </CircleSvg>
+        </svg>
       )}
       <Text
         align="center"

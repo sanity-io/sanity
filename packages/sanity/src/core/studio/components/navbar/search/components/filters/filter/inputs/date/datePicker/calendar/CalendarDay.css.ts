@@ -1,6 +1,4 @@
-import {createVar, style} from '@vanilla-extract/css'
-
-export const circleStrokeVar = createVar()
+import {style} from '@vanilla-extract/css'
 
 export const circleSvg = style({
   bottom: 0,
@@ -11,7 +9,8 @@ export const circleSvg = style({
 })
 
 export const circle = style({
-  stroke: circleStrokeVar,
+  // Card publishes this on itself; inherit so the today ring follows tone (including primary).
+  stroke: 'var(--card-border-color)',
   strokeWidth: '3',
   fill: 'none',
 })

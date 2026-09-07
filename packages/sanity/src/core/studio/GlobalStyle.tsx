@@ -21,15 +21,19 @@ function buildResizeHandleDataUri(hexColor: string) {
   return `url("data:image/svg+xml,${encodedSvg}")`
 }
 
-// Several studios on one page share the document root; the attribute stays while any is mounted.
+// Several studios on one page share the document root; the attribute and theme vars stay while any is mounted.
 let mountedCount = 0
 
-function markDocument(html: HTMLElement): () => void {
+function applyDocumentStyles(html: HTMLElement, vars: Record<string, string>): () => void {
   mountedCount += 1
   html.setAttribute(GLOBAL_STYLES_ATTRIBUTE, '')
+  for (const [name, value] of Object.entries(vars)) html.style.setProperty(name, value)
   return () => {
     mountedCount -= 1
-    if (mountedCount === 0) html.removeAttribute(GLOBAL_STYLES_ATTRIBUTE)
+    if (mountedCount === 0) {
+      html.removeAttribute(GLOBAL_STYLES_ATTRIBUTE)
+      for (const name of Object.keys(vars)) html.style.removeProperty(name)
+    }
   }
 }
 
@@ -47,10 +51,7 @@ export function GlobalStyle(): null {
   const fontFamily = font.text.family
   const mediumWeight = font.text.weights.medium
 
-  useInsertionEffect(() => markDocument(document.documentElement), [])
-
   useInsertionEffect(() => {
-    const html = document.documentElement
     const vars = assignInlineVars({
       [resizerImageVar]: buildResizeHandleDataUri(iconColor),
       [borderColorVar]: borderColor,
@@ -60,10 +61,7 @@ export function GlobalStyle(): null {
       [textFontFamilyVar]: fontFamily,
       [textMediumWeightVar]: String(mediumWeight),
     })
-    for (const [name, value] of Object.entries(vars)) html.style.setProperty(name, value)
-    return () => {
-      for (const name of Object.keys(vars)) html.style.removeProperty(name)
-    }
+    return applyDocumentStyles(document.documentElement, vars)
   }, [iconColor, borderColor, mutedFgColor, focusRingColor, bgColor, fontFamily, mediumWeight])
 
   return null
