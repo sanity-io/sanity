@@ -265,13 +265,13 @@ export default function StyleOutlinePanel() {
                 <span className={escapeCountValue}>
                   {styledCount === undefined ? '—' : styledCount.toLocaleString()}
                 </span>
-                <span className={metricLabel}>component instances</span>
+                <span className={metricLabel}>components</span>
               </div>
               <div
                 className={rowCount}
                 title={`${metrics?.stylesheets.inaccessible ?? 0} unreadable stylesheets`}
               >
-                {formatPercentage(styledRulePercentage)} of readable CSS rules
+                {formatPercentage(styledRulePercentage)} of CSS rules
               </div>
             </div>
             <div
