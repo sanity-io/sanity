@@ -45,7 +45,12 @@ globalStyle(`${table} tr > *:last-child`, {
   textAlign: 'right',
 })
 
-// The ui5 Flex sets no `min-height` of its own, so a single class is enough.
 export const documentIdFlex = style({
-  minHeight: '33px',
+  selectors: {
+    // ui5's Flex sets `min-height: 0` on itself through its `.sui-min-height` utility class
+    // (0,1,0); a single-class `min-height` ties and can lose. Double the class.
+    '&&': {
+      minHeight: '33px',
+    },
+  },
 })
