@@ -8,6 +8,7 @@ import {
   type CommentInputProps as CommentInputPropsV2,
 } from '../../../comments-v2/components/pte/comment-input/CommentInput'
 import {hasCommentMessageValue as hasCommentMessageValueV2} from '../../../comments-v2/helpers'
+import {useComments as useCommentsV2} from '../../../comments-v2/hooks/useComments'
 import {
   CommentInput,
   type CommentInputHandle,
@@ -122,6 +123,7 @@ function TasksActivityCommentInputV1(props: TasksCommentActivityInputProps) {
 function TasksActivityCommentInputV2(props: TasksCommentActivityInputProps) {
   const {mentionOptions, currentUser, onSubmit} = props
   const {mode} = useTasksEnabled()
+  const {readOnly} = useCommentsV2()
   const [value, setValue] = useState<CommentInputPropsV2['value']>(null)
   const editorRef = useRef<CommentInputHandleV2>(null)
 
@@ -176,7 +178,7 @@ function TasksActivityCommentInputV2(props: TasksCommentActivityInputProps) {
       onDiscardCancel={handleDiscardCancel}
       onKeyDown={handleKeyDown}
       onSubmit={handleSubmit}
-      readOnly={mode === 'upsell'}
+      readOnly={readOnly || mode === 'upsell'}
       placeholder={
         mode === 'upsell' ? t('panel.comment.placeholder.upsell') : t('panel.comment.placeholder')
       }

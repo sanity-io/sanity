@@ -100,7 +100,7 @@ function TasksActivityCommentItemV1(props: TasksActivityCommentItemProps) {
 function TasksActivityCommentItemV2(props: TasksActivityCommentItemProps) {
   const {commentId, currentUser, mentionOptions, onCreateRetry, onDelete, onReply} = props
   const {mode} = useTasksEnabled()
-  const {comments, operation} = useCommentsV2()
+  const {comments, operation, readOnly} = useCommentsV2()
 
   const thread = comments.data.open.find((item) => item.parentComment._id === commentId)
 
@@ -122,6 +122,7 @@ function TasksActivityCommentItemV2(props: TasksActivityCommentItemProps) {
           onReactionSelect={operation.react}
           onReply={onReply}
           parentComment={thread.parentComment}
+          readOnly={readOnly}
           replies={thread.replies}
         />
       </CommentListItemRoot>
