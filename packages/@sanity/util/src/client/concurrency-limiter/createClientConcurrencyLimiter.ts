@@ -1,8 +1,8 @@
 import {type ObservableSanityClient, type SanityClient} from '@sanity/client'
-import {anySignal} from 'any-signal'
 import {defer, finalize, Observable, switchMap} from 'rxjs'
 
 import {ConcurrencyLimiter} from '../../concurrency-limiter'
+import {anySignal} from './anySignal'
 
 function acquireSlot(limiter: ConcurrencyLimiter, signal?: AbortSignal): Observable<() => void> {
   return new Observable((subscriber) => {

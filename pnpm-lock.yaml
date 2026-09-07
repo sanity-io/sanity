@@ -58,9 +58,6 @@ catalogs:
     '@vitest/browser-playwright':
       specifier: ^4.1.11
       version: 4.1.11
-    any-signal:
-      specifier: ^4.2.0
-      version: 4.2.0
     dequal:
       specifier: ^2.0.3
       version: 2.0.3
@@ -1605,9 +1602,6 @@ importers:
       '@sanity/types':
         specifier: workspace:*
         version: link:../types
-      any-signal:
-        specifier: 'catalog:'
-        version: 4.2.0
       date-fns:
         specifier: ^4.4.0
         version: 4.4.0
@@ -9109,10 +9103,6 @@ packages:
 
   any-promise@1.3.0:
     resolution: {integrity: sha512-7UvmKalWRt1wgjL1RrGxoSJW/0QZFIegpeGvZG9kjp8vrRu55XTHbwnqq2GpXm9uLbcuhxm3IqX9OB4MZR1b2A==}
-
-  any-signal@4.2.0:
-    resolution: {integrity: sha512-LndMvYuAPf4rC195lk7oSFuHOYFpOszIYrNYv0gHAvz+aEhE9qPZLhmrIz5pXP2BSsPOXvsuHDXEGaiQhIh9wA==}
-    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
 
   anymatch@3.1.3:
     resolution: {integrity: sha512-KMReFUr0B4t+D+OBkjR3KYqvocp2XaSzO55UcB6mgQMd3KbcE+mWTyvVV7D/zsdEbNnV6acZUutkiHQXvTr1Rw==}
@@ -22149,8 +22139,6 @@ snapshots:
   ansis@4.3.1: {}
 
   any-promise@1.3.0: {}
-
-  any-signal@4.2.0: {}
 
   anymatch@3.1.3:
     dependencies:

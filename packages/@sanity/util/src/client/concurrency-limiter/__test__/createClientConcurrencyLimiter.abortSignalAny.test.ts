@@ -32,7 +32,19 @@ function abortableObservableFetch() {
   )
 }
 
-const nativeAbortSignalAny = AbortSignal.any
+const nativeAnyDescriptor = Object.getOwnPropertyDescriptor(AbortSignal, 'any')
+
+function simulateSafari17() {
+  Object.defineProperty(AbortSignal, 'any', {value: undefined, configurable: true, writable: true})
+}
+
+function restoreNativeAny() {
+  if (nativeAnyDescriptor) {
+    Object.defineProperty(AbortSignal, 'any', nativeAnyDescriptor)
+  } else {
+    Reflect.deleteProperty(AbortSignal, 'any')
+  }
+}
 
 function describeSignalCombination() {
   it('aborts a fetch when the default signal aborts', async () => {
@@ -181,13 +193,11 @@ function describeSignalCombination() {
 }
 
 describe('createClientConcurrencyLimiter signal combination', () => {
-  afterEach(() => {
-    AbortSignal.any = nativeAbortSignalAny
-  })
+  afterEach(restoreNativeAny)
 
   describe('without native AbortSignal.any (Safari 17.0 – 17.3)', () => {
     beforeEach(() => {
-      Reflect.deleteProperty(AbortSignal, 'any')
+      simulateSafari17()
       expect(AbortSignal.any).toBeUndefined()
     })
 
@@ -201,17 +211,18 @@ describe('createClientConcurrencyLimiter signal combination', () => {
 
     describeSignalCombination()
 
-    it('does not depend on the native static even when it exists', async () => {
+    it('prefers the native static when it exists', async () => {
       const spy = vi.spyOn(AbortSignal, 'any')
       const defaultController = new AbortController()
+      const fetchController = new AbortController()
       const mockClient = {fetch: vi.fn(async () => 'result')} as unknown as SanityClient
       const client = createClientConcurrencyLimiter(1, defaultController.signal)(mockClient)
 
-      await expect(client.fetch('query', {}, {signal: new AbortController().signal})).resolves.toBe(
+      await expect(client.fetch('query', {}, {signal: fetchController.signal})).resolves.toBe(
         'result',
       )
 
-      expect(spy).not.toHaveBeenCalled()
+      expect(spy).toHaveBeenCalledWith([defaultController.signal, fetchController.signal])
     })
   })
 })
