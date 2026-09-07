@@ -12,6 +12,7 @@ import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {PackageIcon} from '@sanity/icons/Package'
+import {SyncIcon} from '@sanity/icons/Sync'
 import {
   Badge,
   Button,
@@ -33,7 +34,7 @@ import {
 import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
 import {Popover} from '@sanity/ui/popover'
 import {ParentSize} from '@visx/responsive'
-import {type ComponentType, useEffect, useMemo, useRef, useState} from 'react'
+import {type ComponentType, type ReactNode, useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useDocumentStore} from 'sanity'
@@ -46,6 +47,7 @@ import {
   buildSeries,
   CALIBRATION_EXPLAINER,
   latestSoakCharts,
+  settleViews,
   soakSlopeSeries,
   soakLatestValueSeries,
   calibrationSeries,
@@ -83,6 +85,7 @@ const GROUP_ICONS: Record<TrendGroup, ComponentType> = {
   load: ClockIcon,
   bundle: PackageIcon,
   soak: DropIcon,
+  settle: SyncIcon,
   environment: ControlsIcon,
 }
 
@@ -530,9 +533,25 @@ function SeriesCard(props: {
   )
 }
 
+/**
+ * Blank state for a tab whose group has no data in the selected range. Every
+ * group is always a tab (a fixed layout is learnable), so each needs one.
+ */
+function EmptyGroup(props: {children: ReactNode}) {
+  return (
+    <Card tone="transparent" border padding={4} radius={2}>
+      <Text size={1} muted>
+        {props.children}
+      </Text>
+    </Card>
+  )
+}
+
 /** The responsive chart grid used by every group and soak sub-view. */
 function ChartGrid(props: {
   series: TrendSeries[]
+  /** Rendered instead of the grid when there is nothing to plot. */
+  emptyMessage?: ReactNode
   driftBySeries?: Map<string, DriftResult>
   silencedBySeries?: Map<string, DriftResult>
   /** Baselines for the chart overlay, including sub-threshold ones. */
@@ -545,6 +564,9 @@ function ChartGrid(props: {
   tags?: TrendTag[]
   onExpand?: (seriesKey: string) => void
 }) {
+  if (props.series.length === 0 && props.emptyMessage !== undefined) {
+    return <EmptyGroup>{props.emptyMessage}</EmptyGroup>
+  }
   return (
     <Grid gridTemplateColumns={[1, 1, 2, 3]} gap={3}>
       {props.series.map((entry) => {
@@ -615,7 +637,14 @@ function SoakPanel(props: {
 
   const [view, setView] = useUrlState('soak', views[0]?.id ?? 'slope')
   const active = views.find((v) => v.id === view) ?? views[0]
-  if (!active) return null
+  if (!active) {
+    return (
+      <EmptyGroup>
+        No soak runs in this range. Soak mode runs once a day from main (the track-main benchmark);
+        try a longer range.
+      </EmptyGroup>
+    )
+  }
 
   return (
     <Stack gap={3}>
@@ -638,6 +667,96 @@ function SoakPanel(props: {
           </Text>
           <ChartGrid
             series={active.charts}
+            layers={props.layers}
+            tags={props.tags}
+            onExpand={props.onExpand}
+          />
+        </Stack>
+      </TabPanel>
+    </Stack>
+  )
+}
+
+/**
+ * The settle group behind sub-tabs, one per question (tripwire count, time to
+ * settle, activity after ready, component renders — see settleViews). Unlike
+ * soak, these are ordinary run-history series, so they keep the drift/ack
+ * plumbing the plain grid has. Renders a blank state instead of nothing when
+ * the range holds no settle runs, since the tab is always shown.
+ */
+function SettlePanel(props: {
+  series: TrendSeries[]
+  driftBySeries: Map<string, DriftResult>
+  silencedBySeries: Map<string, DriftResult>
+  baselineBySeries: Map<string, DriftResult>
+  drift: DriftState
+  focusedKey: string | null
+  onFocusMetric: (seriesKey: string) => void
+  layers: LayerState
+  tags: TrendTag[]
+  onExpand: (seriesKey: string) => void
+  /** Explicit `?settle=` sub-tab ('' = none) and the deep-linked `?chart=` key. */
+  view: string
+  onViewChange: (id: string) => void
+  chartKey: string
+  /** The focused chart lives in another sub-tab the user just left. */
+  onLeaveChart: () => void
+}) {
+  const views = useMemo(() => settleViews(props.series), [props.series])
+  // Same rule as the group tabs: an explicit sub-tab wins, else the sub-tab
+  // holding the deep-linked/focused chart (so a drift-feed jump or a shared
+  // ?chart= link lands on the grid that has it), else the first.
+  const active =
+    views.find((v) => v.id === props.view) ??
+    (props.chartKey
+      ? views.find((v) => v.series.some((entry) => entry.key === props.chartKey))
+      : undefined) ??
+    views[0]
+
+  if (!active) {
+    return (
+      <EmptyGroup>
+        No settle runs in this range. Settle mode runs once a day from main (the track-main
+        benchmark) against the customization build; locally,{' '}
+        <code>pnpm bench run --mode settle</code> prints the same numbers as terminal charts.
+      </EmptyGroup>
+    )
+  }
+
+  return (
+    <Stack gap={3}>
+      <TabList gap={1}>
+        {views.map((v) => (
+          <Tab
+            key={v.id}
+            id={`settle-tab-${v.id}`}
+            aria-controls={`settle-panel-${v.id}`}
+            label={v.label}
+            selected={v.id === active.id}
+            onClick={() => {
+              props.onViewChange(v.id)
+              // As with the group tabs: a focused chart in another sub-tab
+              // must not linger in the shareable URL once navigated away
+              if (props.chartKey && !v.series.some((entry) => entry.key === props.chartKey)) {
+                props.onLeaveChart()
+              }
+            }}
+          />
+        ))}
+      </TabList>
+      <TabPanel id={`settle-panel-${active.id}`} aria-labelledby={`settle-tab-${active.id}`}>
+        <Stack gap={3}>
+          <Text size={1} muted>
+            {active.hint}
+          </Text>
+          <ChartGrid
+            series={active.series}
+            driftBySeries={props.driftBySeries}
+            silencedBySeries={props.silencedBySeries}
+            baselineBySeries={props.baselineBySeries}
+            drift={props.drift}
+            focusedKey={props.focusedKey}
+            onFocusMetric={props.onFocusMetric}
             layers={props.layers}
             tags={props.tags}
             onExpand={props.onExpand}
@@ -817,20 +936,19 @@ export function TrendsTool() {
     () => [calibration, ...series.filter((entry) => entry.group === 'environment')],
     [calibration, series],
   )
-
-  // The metric groups that actually have data become tabs. Soak is a tab
-  // whenever any of its three views has data; environment whenever calibration
-  // has points.
-  const soakHasData = soakSlopes.length > 0 || soakEndValues.length > 0 || Boolean(latestSoak)
-  const tabs = useMemo(
-    () =>
-      TREND_GROUPS.filter((group) => {
-        if (group.id === 'soak') return soakHasData
-        if (group.id === 'environment') return calibration.lines.some((l) => l.points.length > 0)
-        return series.some((entry) => entry.group === group.id)
-      }),
-    [series, soakHasData, calibration],
+  // Calibration is built even from zero runs (an empty line per branch), so
+  // the environment tab's blank state keys off its points, not its presence.
+  const calibrationHasPoints = calibration.lines.some((line) => line.points.length > 0)
+  const vitalGroups = useMemo(
+    () => vitalSections(series.filter((entry) => entry.group === 'vitals')),
+    [series],
   )
+
+  // Every metric group is a tab, always: a fixed layout is learnable, and a
+  // group without data in the range renders a blank state saying so (see
+  // EmptyGroup) rather than quietly disappearing — a new mode stays
+  // discoverable before its first run lands.
+  const tabs = TREND_GROUPS
   // Includes calibration, which lives outside `series` — a deep link to it
   // must still resolve to the Calibration tab.
   const groupById = useMemo(() => {
@@ -868,6 +986,9 @@ export function TrendsTool() {
   // tab. Instead resolve the active tab reactively: an explicit ?tab= wins,
   // else a deep-linked chart's group, else the first tab.
   const [tabParam, setTabParam] = useUrlState('tab', '')
+  // The settle sub-tab follows the same rule ('' = derive from the chart);
+  // owned here so a focus jump can clear it alongside ?tab=.
+  const [settleViewParam, setSettleViewParam] = useUrlState('settle', '')
   const activeTab =
     tabs.find((tab) => tab.id === tabParam) ??
     (chartParam ? tabs.find((tab) => tab.id === groupById.get(chartParam)) : undefined) ??
@@ -893,6 +1014,7 @@ export function TrendsTool() {
     // the chart's group, and a single Back returns to the pre-jump state.
     setChartParam(seriesKey, 'push')
     setTabParam('', 'replace')
+    setSettleViewParam('', 'replace')
     setFocusedKey(seriesKey)
   }
   // Side-effects of a focus (DOM scroll + auto-clearing the ring) live in an
@@ -1140,14 +1262,35 @@ export function TrendsTool() {
                         tags={tags}
                         onExpand={expandMetric}
                       />
+                    ) : activeTab.id === 'settle' ? (
+                      <SettlePanel
+                        series={series.filter((entry) => entry.group === 'settle')}
+                        driftBySeries={driftBySeries}
+                        silencedBySeries={silencedBySeries}
+                        baselineBySeries={baselineBySeries}
+                        drift={drift}
+                        focusedKey={focusedKey}
+                        onFocusMetric={focusMetric}
+                        layers={layers}
+                        tags={tags}
+                        onExpand={expandMetric}
+                        view={settleViewParam}
+                        onViewChange={setSettleViewParam}
+                        chartKey={chartParam}
+                        onLeaveChart={() => setChartParam('')}
+                      />
                     ) : activeTab.id === 'vitals' ? (
-                      // One section per vital, so the overview reads by metric
-                      // ("how is LCP doing, everywhere?") — see vitalSections.
-                      // The extra top padding separates the first section
-                      // header from the tab description it would otherwise hug.
-                      <Stack gap={6} paddingTop={3}>
-                        {vitalSections(series.filter((entry) => entry.group === 'vitals')).map(
-                          (section) => (
+                      vitalGroups.length === 0 ? (
+                        <EmptyGroup>
+                          No Web Vitals data in this range — try a longer range.
+                        </EmptyGroup>
+                      ) : (
+                        // One section per vital, so the overview reads by metric
+                        // ("how is LCP doing, everywhere?") — see vitalSections.
+                        // The extra top padding separates the first section
+                        // header from the tab description it would otherwise hug.
+                        <Stack gap={6} paddingTop={3}>
+                          {vitalGroups.map((section) => (
                             <Stack key={section.vital} gap={4}>
                               <Flex align="baseline" gap={2}>
                                 <Text size={1} weight="semibold">
@@ -1172,17 +1315,20 @@ export function TrendsTool() {
                                 onExpand={expandMetric}
                               />
                             </Stack>
-                          ),
-                        )}
-                      </Stack>
+                          ))}
+                        </Stack>
+                      )
                     ) : (
                       <ChartGrid
                         layers={layers}
                         series={
                           activeTab.id === 'environment'
-                            ? environmentSeries
+                            ? calibrationHasPoints
+                              ? environmentSeries
+                              : []
                             : series.filter((entry) => entry.group === activeTab.id)
                         }
+                        emptyMessage={`No ${activeTab.title.toLowerCase()} data in this range — try a longer range.`}
                         driftBySeries={driftBySeries}
                         silencedBySeries={silencedBySeries}
                         baselineBySeries={baselineBySeries}

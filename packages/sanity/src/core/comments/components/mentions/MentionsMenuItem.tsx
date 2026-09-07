@@ -1,7 +1,7 @@
-import {Badge, Card, Text, TextSkeleton} from '@sanity/ui'
+import {Badge, Card, TextSkeleton} from '@sanity/ui'
 import {type CSSProperties, useCallback} from 'react'
 import {styled} from 'styled-components'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {type UserWithPermission} from '../../../hooks/useUserListWithPermissions'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -26,7 +26,7 @@ export function MentionsMenuItem(props: MentionsItemProps) {
   const avatar = <CommentsAvatar user={loadedUser} status={user.granted ? undefined : 'inactive'} />
 
   const text = loadedUser ? (
-    <Text size={1} textOverflow="ellipsis" title={loadedUser.displayName}>
+    <Text size={1} truncate={1} title={loadedUser.displayName} as="div" trim={true}>
       {loadedUser.displayName}
     </Text>
   ) : (

@@ -9,14 +9,40 @@ Visual regression runs on [Chromatic](https://www.chromatic.com), wired via
 [.github/workflows/chromatic.yml](../../../.github/workflows/chromatic.yml). Three snapshot
 sources, one Chromatic project each:
 
-| Source                          | Chromatic project | Repo secret                         | Status                                        |
-| ------------------------------- | ----------------- | ----------------------------------- | --------------------------------------------- |
-| `dev/storybook` stories         | `sanity`          | `CHROMATIC_PROJECT_TOKEN_STORYBOOK` | Active                                        |
-| Vitest browser tests (in place) | vitest project    | `CHROMATIC_PROJECT_TOKEN_VITEST`    | Dormant (early access) — see activation below |
-| Playwright e2e `takeSnapshot()` | `sanity_e2e`      | `CHROMATIC_PROJECT_TOKEN_E2E`       | Active, curated opt-in                        |
+| Source                          | Chromatic project          | Repo secret                         | Status                 |
+| ------------------------------- | -------------------------- | ----------------------------------- | ---------------------- |
+| `dev/storybook` stories         | "sanity studio"            | `CHROMATIC_PROJECT_TOKEN_STORYBOOK` | Active                 |
+| Vitest browser tests (in place) | "sanity studio vitest"     | `CHROMATIC_PROJECT_TOKEN_VITEST`    | Active                 |
+| Playwright e2e `takeSnapshot()` | "sanity studio playwright" | `CHROMATIC_PROJECT_TOKEN_E2E`       | Active, curated opt-in |
 
 All checks are non-gating during burn-in (`exitZeroOnChanges`); merges to `main` auto-accept
 baselines. Review diffs on the Chromatic build linked from the PR check.
+
+## Which source owns a state
+
+Each source owns a disjoint set of states. Decide by how the state is reached, and never move a
+state between sources:
+
+| The state is…                                                                                         | It belongs in                                                                                                   |
+| ----------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Reachable from props/fixtures alone, or one `play` interaction (open a menu, hover a tooltip)         | A `*.stories.tsx` in the owning package (`dev/storybook` snapshots it)                                          |
+| Reached by driving the UI: typing, drag, clipboard, focus tracking, viewport changes, server commands | A `*.browser.test.tsx` — its end state is the snapshot; `takeSnapshot()` for mid-test states (see below)        |
+| Full-studio chrome against a real deployment and dataset                                              | A Playwright spec using `e2e/studio-visual-test.ts` ("sanity studio playwright" project), read-only states only |
+
+Consequences:
+
+- A `*.browser.test.tsx` is the snapshot source for everything it renders — the Vitest plugin
+  archives every test's end state with no test code changes. Browser tests keep their harness
+  component inline (`function FooHarness()` in the test file) and never get a Storybook story on
+  top. Do not re-export a browser test as a story, and do not port a browser test into a story
+  with an elaborate `play` function.
+- Every `*Story.tsx` file is a Storybook harness imported by a `*.stories.tsx`. Stories cover the
+  states no browser test renders.
+- Playwright stays in `e2e/`. Do not put specs, `@chromatic-com/playwright`, or e2e fixtures under
+  `dev/storybook`, and do not turn an e2e spec into a story (or the reverse) to get a snapshot.
+  `dev/storybook`'s `playwright` dependency is only the browser runner for `@storybook/addon-vitest`.
+- Do not add a `Chromatic / …` job that uploads one source's output to another source's project;
+  Chromatic requires one project per integration type.
 
 ## Quick start: add visual coverage for a component
 
@@ -32,13 +58,18 @@ renders the component or an open PR is about to, so you only add what is missing
      [Button.stories.tsx](../../../packages/sanity/src/ui-components/button/__tests__/Button.stories.tsx).
      Put many variants in one story (a grid) to keep snapshot count low.
    - **Studio-context states** (form inputs, anything needing workspace/i18n/layers): wrap in the
-     browser-test harness `TestWrapper` (+ `TestForm` for form inputs) — see
+     shared mock-studio wrapper `TestWrapper` (+ `TestForm` for form inputs) from
+     `packages/sanity/test/browser` — the same wrapper the browser tests use — see
      [Dialog.stories.tsx](../../../packages/sanity/src/ui-components/dialog/__tests__/Dialog.stories.tsx)
-     and the Portable Text stories. If a vitest browser test already has a `*Story.tsx` harness,
-     put the story beside it and reuse it (never fork it): the harness stays shared between the
-     test and the story. New coverage can also use a colocated `*Story.tsx` when the grid needs
-     `TestWrapper` inside the harness — see
+     and
+     [EditorChrome.stories.tsx](../../../packages/sanity/src/core/form/inputs/PortableText/__tests__/EditorChrome.stories.tsx).
+     New coverage can use a colocated `*Story.tsx` when the grid needs `TestWrapper` inside the
+     harness — see
      [ConfirmPopover.stories.tsx](../../../packages/sanity/src/ui-components/confirmPopover/__tests__/ConfirmPopover.stories.tsx).
+     Do **not** extract a browser test's inline harness into a `*Story.tsx` to reuse it from a
+     story: that state is snapshotted by the Vitest integration, and the story would be a
+     duplicate snapshot of the same pixels. If the test's harness lacks a state you need, add it
+     to the test, or build a separate story-only harness.
 2. Overlays that only exist after interaction (tooltips, menus, submenu flyouts) get a `play`
    function using `storybook/test` (`userEvent` + `waitFor`/`expect(...).toBeVisible()`, querying
    `within(document.body)` for portaled content). Chromatic and addon-vitest both run `play`
@@ -57,23 +88,18 @@ Migration priority: card and tone-related components first (tones cascade throug
 box primitives later. Snapshot the _wrapper_ components in `packages/sanity/src/ui-components`
 and vanilla-extract-migrated components (change indicators, `DocumentLayout`) as sentinels.
 
-## Documented stories vs regression fixtures (tags)
+## Every story is browsable
 
-The Storybook is a living document of how reusable components look and behave, so the sidebar is
-curated: only stories written to be read by humans appear in it. Stories that exist purely as
-snapshot targets are tagged out of navigation but keep their test coverage:
+The Storybook is a living document of how reusable components look and behave, and every story
+in it is meant to be read: authored variant grids, component states and migration sentinels,
+each with a concise JSDoc description of what it shows and why. Do not use story `tags` to hide
+stories from the sidebar (`!dev`) or docs (`!autodocs`). That convention existed only for the
+stories that re-exported vitest browser tests, and those are gone — browser tests are snapshotted
+in place by the Vitest project. If a state is not worth a person looking at, it does not belong
+in Storybook; drive it in a browser test instead (see "Which source owns a state").
 
-- **Documented stories** (default tags): authored variant grids and component states with a
-  concise JSDoc description. Held to a docs-quality bar — someone browsing the deployed Storybook
-  should learn how the component is used.
-- **Regression fixtures** (`tags: ['!dev', '!autodocs', 'vrt-only']`): harness dumps that reuse a
-  `*Story.tsx` browser-test harness, or states with no explanatory value. `!dev` removes the
-  story from the sidebar and `!autodocs` from any future docs pages, but the story stays in the
-  index — Chromatic still snapshots it and addon-vitest still renders it (the `test` tag is kept).
-  The `vrt-only` custom tag makes them greppable and filterable.
-
-The inverse also exists: a story that should be browsable but never snapshotted keeps default
-tags and sets `parameters: {chromatic: {disableSnapshot: true}}`.
+A story that should be browsable but never snapshotted sets
+`parameters: {chromatic: {disableSnapshot: true}}`.
 
 ## Determinism rules for stories
 
@@ -86,21 +112,35 @@ tags and sets `parameters: {chromatic: {disableSnapshot: true}}`.
   1280×900 desktop mode in [preview.tsx](../../../dev/storybook/.storybook/preview.tsx) matches
   the vitest browser viewport).
 
-## Vitest integration activation runbook (when early access lands)
+## Browser tests: automatic snapshots, opt-outs, targeted snapshots
 
-`@chromatic-com/vitest` is pre-wired but dormant. To activate:
+[Chromatic for Vitest Browser Mode](https://www.chromatic.com/blog/introducing-chromatic-for-vitest-browser-mode/)
+is generally available (`@chromatic-com/vitest` 1.x) and the "sanity studio vitest" project is
+live: the `Chromatic / Vitest browser visual tests` job re-runs the suite on chromium with
+`CHROMATIC=1` on every PR and pushes the archives. Every `*.browser.test.tsx` is in the visual
+suite without any code in the test, and the `MyComponent.browser.test.tsx` +
+`MyComponentStory.tsx` + `MyComponent.stories.tsx` triple that existed only to snapshot a browser
+test is gone (see "Which source owns a state").
 
-1. Create the Vitest-type Chromatic project (requires Chromatic early access enablement).
-2. Add its token as the `CHROMATIC_PROJECT_TOKEN_VITEST` repo secret.
-3. Done — the `Chromatic / Vitest browser visual tests` job self-activates on the next run. No
-   code changes. Every browser test's end state becomes a snapshot; the first build is the full
-   baseline.
+- **Automatic snapshot at the end of every test.** Name it well: in Chromatic the snapshot is
+  `describe chain / it title / Snapshot #n` under the test file's path.
+- **Opt out with `configure({disableAutoSnapshot: true})`** from `@chromatic-com/vitest`. The
+  scope follows where it is called: at the top level of a test file it applies to every test in
+  the file; inside a `describe()` to that suite and its nested suites; inside a `test()` to that
+  test only. Use it for tests whose end state is not worth a snapshot (pure interaction checks,
+  cleanup-only states) — the snapshot budget is per test case.
+- **Targeted snapshots with `await takeSnapshot('state name')`** inside a `test()`, for states
+  the test moves through but does not end on (a menu open before the click that closes it, a
+  drag mid-way). Always `await` it; the plugin fails the test on un-awaited calls. Docs:
+  [targeted snapshots](https://www.chromatic.com/docs/vitest/targeted-snapshots/).
+- **Safe in every run.** The plugin is registered in `vitest.browser.config.mts` on every run, so
+  both helpers work in plain `pnpm --filter sanity test:browser` runs and in the functional
+  `browser-tests.yml` shards; they are no-ops on firefox and webkit. Only `CHROMATIC=1` turns on
+  capturing (automatic snapshots, TurboSnap stats, reporter output, Chromatic telemetry); a
+  normal run writes nothing except the archive of an explicit `takeSnapshot()` call, into the
+  gitignored `.vitest/chromatic`.
 
-Afterwards, consider slimming co-located harness-reuse stories that overlap with end-of-test
-snapshots (keep them if the browsable workbench view is worth the snapshot spend). See
-[REFERENCE.md](REFERENCE.md) for local capture runs, `takeSnapshot()`/`configure()` usage inside
-tests (only valid once the plugin is active — `takeSnapshot()` THROWS in normal runs, so never
-commit calls to it while the integration is dormant), and cost controls.
+See [REFERENCE.md](REFERENCE.md) for local capture runs, TurboSnap, sharding and cost controls.
 
 ## Playwright e2e snapshots
 

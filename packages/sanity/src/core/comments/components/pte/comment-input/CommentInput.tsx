@@ -10,7 +10,7 @@ import {getValue} from '@portabletext/editor/selectors'
 import {OneLinePlugin} from '@portabletext/plugin-one-line'
 import {sanitySchemaToPortableTextSchema} from '@portabletext/sanity-bridge'
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
-import {type AvatarSize, focusFirstDescendant, focusLastDescendant, Stack} from '@sanity/ui'
+import {type AvatarSize, focusFirstDescendant, focusLastDescendant} from '@sanity/ui'
 import {
   type FocusEvent,
   type FormEvent,
@@ -24,6 +24,7 @@ import {
   useState,
   type RefAttributes,
 } from 'react'
+import {VStack} from 'ui5'
 
 import {type UserListWithPermissionsHookValue} from '../../../../hooks/useUserListWithPermissions'
 import {NormalBlock} from '../blocks/NormalBlock'
@@ -258,7 +259,7 @@ export function CommentInput(props: CommentInputProps & RefAttributes<CommentInp
         <CommentInputDiscardDialog onClose={onDiscardCancel} onConfirm={handleDiscardConfirm} />
       )}
 
-      <Stack ref={editorContainerRef} data-testid="comment-input" onFocus={handleFocus}>
+      <VStack ref={editorContainerRef} data-testid="comment-input" onFocus={handleFocus}>
         <EditorProvider
           key={editorInstanceKey}
           initialConfig={{
@@ -283,7 +284,7 @@ export function CommentInput(props: CommentInputProps & RefAttributes<CommentInp
           >
             {focusLock && <div ref={preDivRef} tabIndex={0} />}
 
-            <Stack ref={innerRef}>
+            <VStack ref={innerRef}>
               <CommentInputInner
                 avatarSize={avatarSize}
                 currentUser={currentUser}
@@ -296,12 +297,12 @@ export function CommentInput(props: CommentInputProps & RefAttributes<CommentInp
                 renderBlock={renderBlock}
                 withAvatar={withAvatar}
               />
-            </Stack>
+            </VStack>
 
             {focusLock && <div ref={postDivRef} tabIndex={0} />}
           </CommentInputProvider>
         </EditorProvider>
-      </Stack>
+      </VStack>
     </>
   )
 }

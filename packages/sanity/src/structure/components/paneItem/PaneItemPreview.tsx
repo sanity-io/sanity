@@ -4,7 +4,6 @@ import {
   type SchemaType,
   type SortOrdering,
 } from '@sanity/types'
-import {Flex} from '@sanity/ui'
 import {type ComponentType, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
@@ -21,6 +20,7 @@ import {
   useDocumentVersions,
   usePerspective,
 } from 'sanity'
+import {Flex} from 'ui5'
 
 import {TooltipDelayGroupProvider} from '../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 
@@ -96,7 +96,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
 
   const status = isLoading ? null : (
     <TooltipDelayGroupProvider>
-      <Flex align="center" gap={3}>
+      <Flex alignItems="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
         <DocumentVersionsStatusIndicator documentVersions={versions} />
       </Flex>

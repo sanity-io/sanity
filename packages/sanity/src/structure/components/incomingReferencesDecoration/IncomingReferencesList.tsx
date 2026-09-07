@@ -1,5 +1,6 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {useTranslation} from 'sanity'
+import {Flex} from 'ui5'
 
 import {structureLocaleNamespace} from '../../i18n'
 import {useDocumentPane} from '../../panes/document/useDocumentPane'
@@ -22,7 +23,7 @@ export function IncomingReferencesList({
   if (!types || types?.length === 0) {
     return (
       <Card border radius={2} padding={3} tone="critical">
-        <Flex align="center" justify="center">
+        <Flex alignItems="center" justifyContent="center">
           <Text size={1} muted>
             {t('incoming-references-input.types-not-defined')}
           </Text>

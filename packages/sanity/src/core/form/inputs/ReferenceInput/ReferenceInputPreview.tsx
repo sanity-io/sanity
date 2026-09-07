@@ -2,7 +2,7 @@ import {LaunchIcon as OpenInNewTabIcon} from '@sanity/icons/Launch'
 import {SyncIcon as ReplaceIcon} from '@sanity/icons/Sync'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type Reference} from '@sanity/types'
-import {Card, type CardTone, Flex, Stack} from '@sanity/ui'
+import {Card, type CardTone, Stack} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {
   type ComponentProps,
@@ -15,7 +15,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {IntentLink} from 'sanity/router'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
@@ -225,7 +225,7 @@ export function ReferenceInputPreview(props: ReferenceInputProps & {children: Re
   return (
     <WithFocusRingCard border $radius={2} padding={1} tone={tone} ref={setCardRef} tabIndex={-1}>
       <Stack gap={1}>
-        <Flex gap={1} align="center" style={{lineHeight: 0}}>
+        <Flex gap={1} alignItems="center" style={{lineHeight: 0}}>
           <TooltipDelayGroupProvider>
             <ReferenceLinkCard
               __unstable_focusRing

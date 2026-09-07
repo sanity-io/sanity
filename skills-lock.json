@@ -42,6 +42,12 @@
       "sourceType": "git",
       "computedHash": "b05fe3315ddf338551a759618f7f682ab6baf33184f97bbd65ef31826b0eab5a"
     },
+    "react-devtools": {
+      "source": "callstackincubator/agent-react-devtools",
+      "sourceType": "github",
+      "skillPath": "packages/agent-react-devtools/skills/react-devtools/SKILL.md",
+      "computedHash": "f914845954227725e3a2e8504e10779e79c1adde046b43c9046bf49e7ef262d1"
+    },
     "rxjs-like-a-pro": {
       "source": "bjoerge/rxjs-skills",
       "sourceType": "github",

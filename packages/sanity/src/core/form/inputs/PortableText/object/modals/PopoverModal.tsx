@@ -1,15 +1,9 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {
-  BoundaryElementProvider,
-  Flex,
-  Text,
-  useClickOutsideEvent,
-  useGlobalKeyDown,
-} from '@sanity/ui'
+import {BoundaryElementProvider, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {type ComponentProps, type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import {type PortableTextEditorElement} from 'sanity/_singletons'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../../ui-components/button/Button'
 import {type PopoverProps} from '../../../../../../ui-components/popover/Popover'
@@ -141,9 +135,9 @@ function Content(props: PopoverEditDialogProps) {
       <EditDialogOuterBoundaryProvider>
         <BoundaryElementProvider element={boundaryElement}>
           <FocusLock autoFocus whiteList={handleFocusLockWhiteList}>
-            <Flex as={NoopContainer} ref={containerElement} direction="column" height="fill">
+            <Flex as={NoopContainer} ref={containerElement} flexDirection="column" height="100%">
               <ContentHeaderBox flexBasis="auto" flexGrow={0} flexShrink={0} padding={1}>
-                <Flex align="center">
+                <Flex alignItems="center">
                   <Box flexBasis="0%" flexGrow={1} padding={2}>
                     <Text weight="medium">{title}</Text>
                   </Box>

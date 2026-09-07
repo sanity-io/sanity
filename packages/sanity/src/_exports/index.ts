@@ -359,6 +359,10 @@ export {
   type SourceOptions,
   type TemplateResolver,
   type Tool,
+  type VariantConditionMap,
+  type VariantConditions,
+  type VariantConditionsContext,
+  type VariantConditionValue,
   type Workspace,
   type WorkspaceHiddenContext,
   type WorkspaceHiddenProperty,
@@ -941,6 +945,7 @@ export {
   type TargetDocumentState,
   useTargetDocumentState,
 } from '../core/hooks/useTargetDocumentState'
+export {type TargetScopeIdOptions, useTargetScopeId} from '../core/hooks/useTargetScopeId'
 export {useTemplates} from '../core/hooks/useTemplates'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {type TimeAgoOpts, useTimeAgo} from '../core/hooks/useTimeAgo'
@@ -1530,6 +1535,10 @@ export {
 } from '../core/studio/copyPaste/types'
 export {type StudioDiagnostics} from '../core/studio/diagnostics/gatherStudioDiagnostics'
 export {parseStudioDiagnostics} from '../core/studio/diagnostics/parseStudioDiagnostics'
+export {
+  StudioDiagnosticsBridge,
+  type StudioDiagnosticsBridgeApi,
+} from '../core/studio/diagnostics/StudioDiagnosticsBridge'
 export {StudioFeedbackProvider} from '../core/studio/feedback/StudioFeedbackProvider'
 export {
   generateStudioManifest,

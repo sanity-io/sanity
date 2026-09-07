@@ -1,6 +1,6 @@
-import {Text, TextSkeleton} from '@sanity/ui'
+import {TextSkeleton} from '@sanity/ui'
 import {css, styled} from 'styled-components'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useCurrentUser, useUser} from '../../../../store/user/hooks'
@@ -59,7 +59,9 @@ export function MentionInlineBlock(props: MentionInlineBlockProps) {
             <CommentsAvatar user={user} />
           </Flex>
 
-          <Text size={1}>{user.displayName}</Text>
+          <Text size={1} as="div" trim={true}>
+            {user.displayName}
+          </Text>
         </Flex>
       }
     >

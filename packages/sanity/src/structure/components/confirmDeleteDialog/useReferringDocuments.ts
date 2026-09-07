@@ -1,4 +1,5 @@
 import {type ClientError, type SanityClient} from '@sanity/client'
+import {dequal} from 'dequal/lite'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {combineLatest, concat, EMPTY, fromEvent, type Observable, of, timer} from 'rxjs'
@@ -156,6 +157,7 @@ export function fetchCrossDatasetReferences(
           }),
         )
     }),
+    distinctUntilChanged(dequal),
   )
 }
 

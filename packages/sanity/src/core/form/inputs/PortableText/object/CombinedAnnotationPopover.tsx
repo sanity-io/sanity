@@ -1,7 +1,7 @@
 import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {EditIcon} from '@sanity/icons/Edit'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Flex, Text, useBoundaryElement, useGlobalKeyDown, useTheme} from '@sanity/ui'
+import {Text, useBoundaryElement, useGlobalKeyDown, useTheme} from '@sanity/ui'
 import {
   type ReactNode,
   type RefObject,
@@ -11,7 +11,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Popover, type PopoverProps} from '../../../../../ui-components/popover/Popover'
@@ -186,7 +186,7 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
       content={
         <Box padding={1} data-testid="annotation-toolbar-popover">
           {annotations.map((annotation, index) => (
-            <Flex key={annotation.key} gap={1} align="center">
+            <Flex key={annotation.key} gap={1} alignItems="center">
               <Box padding={2} flexBasis="0%" flexGrow={1}>
                 <Text weight="medium" size={1}>
                   {annotation.title}

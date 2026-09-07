@@ -52,6 +52,14 @@
       "matchPackageNames": ["!@portabletext/*", "!@sanity/client", "!@sanity/ui"]
     },
     {
+      "description": "Upgrade @sanity/sdk and @sanity/sdk-react together across all workspaces and dependency types, bumping every manifest to keep a single version throughout the repository",
+      "matchPackageNames": ["@sanity/sdk", "@sanity/sdk-react"],
+      "dependencyDashboardApproval": false,
+      "schedule": ["every weekday"],
+      "groupName": "sanity-sdk",
+      "rangeStrategy": "bump"
+    },
+    {
       "matchDepTypes": ["dependencies"],
       "matchPackageNames": [
         "@portabletext/*",

@@ -62,7 +62,7 @@ export function ImagePreview(props: ComponentProps<typeof Card> & ImagePreviewPr
 function LoadingOverlay() {
   return (
     <Overlay padding={3} tone="transparent">
-      <FlexOverlay direction="column" align="center" justify="center">
+      <FlexOverlay flexDirection="column" alignItems="center" justifyContent="center">
         <LoadingBlock showText />
       </FlexOverlay>
     </Overlay>
@@ -74,7 +74,7 @@ function AccessWarningOverlay() {
 
   return (
     <Overlay padding={3} tone="critical" border>
-      <FlexOverlay direction="column" align="center" justify="center" gap={2}>
+      <FlexOverlay flexDirection="column" alignItems="center" justifyContent="center" gap={2}>
         <ErrorIconWrapper>
           <WarningOutlineIcon />
         </ErrorIconWrapper>

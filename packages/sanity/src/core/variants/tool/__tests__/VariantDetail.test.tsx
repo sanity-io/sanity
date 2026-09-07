@@ -3,6 +3,7 @@ import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {type SingleWorkspace} from '../../../config/types'
 import {variantAlphaAudience} from '../../__fixtures__/variants.fixture'
 import {variantsUsEnglishLocaleBundle} from '../../i18n'
 import {VARIANT_DOCUMENTS_PATH} from '../../store/constants'
@@ -122,8 +123,9 @@ describe('VariantDetail', () => {
     variantsMock.byId = new Map(variants.map((variant) => [variant._id, variant]))
   }
 
-  const renderDetail = async () => {
+  const renderDetail = async (config?: Partial<SingleWorkspace>) => {
     const wrapper = await createTestProvider({
+      config,
       resources: [variantsUsEnglishLocaleBundle],
     })
     const result = render(<VariantDetail />, {wrapper})
@@ -427,5 +429,58 @@ describe('VariantDetail', () => {
     await user.click(screen.getByRole('button', {name: 'All variant definitions'}))
 
     expect(mockNavigate).toHaveBeenCalledWith({})
+  })
+
+  it('shows a mismatch error on a condition that is not in the configured list', async () => {
+    routerState.variantId = getVariantId(variantAlphaAudience._id)
+    setVariants([variantAlphaAudience])
+
+    await renderDetail({
+      beta: {
+        variants: {
+          enabled: true,
+          conditions: [{name: 'locale', values: ['en-US']}],
+        },
+      },
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', {level: 1, name: 'Alpha audience'})).toBeInTheDocument()
+    })
+
+    expect(screen.getByTestId('variant-condition-mismatch')).toBeInTheDocument()
+  })
+
+  it('does not show a mismatch error in freeform mode', async () => {
+    routerState.variantId = getVariantId(variantAlphaAudience._id)
+    setVariants([variantAlphaAudience])
+
+    await renderDetail()
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', {level: 1, name: 'Alpha audience'})).toBeInTheDocument()
+    })
+
+    expect(screen.queryByTestId('variant-condition-mismatch')).not.toBeInTheDocument()
+  })
+
+  it('does not show a mismatch error while configured conditions are loading', async () => {
+    routerState.variantId = getVariantId(variantAlphaAudience._id)
+    setVariants([variantAlphaAudience])
+
+    await renderDetail({
+      beta: {
+        variants: {
+          enabled: true,
+          conditions: () => new Promise(() => undefined),
+        },
+      },
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', {level: 1, name: 'Alpha audience'})).toBeInTheDocument()
+    })
+
+    expect(screen.queryByTestId('variant-condition-mismatch')).not.toBeInTheDocument()
   })
 })
