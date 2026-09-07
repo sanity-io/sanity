@@ -3,7 +3,7 @@ import {type User} from '@sanity/types'
 import {type AvatarSize, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {clsx} from 'clsx'
-import {type ReactNode} from 'react'
+import {type ComponentProps} from 'react'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {AvatarSkeleton, UserAvatar} from '../../components/userAvatar/UserAvatar'
@@ -15,22 +15,31 @@ import {
   avatarSizeVar,
 } from './TasksUserAvatar.css'
 
-function AvatarRoot(props: {
-  size: AvatarSize
-  border?: boolean
-  removeBg?: boolean
-  children: ReactNode
-}) {
-  const {size, border, removeBg, children} = props
+function AvatarRoot(
+  props: {
+    size: AvatarSize
+    border?: boolean
+    removeBg?: boolean
+  } & ComponentProps<'div'>,
+) {
+  const {size, border, removeBg, className, style, ref, ...rest} = props
   const {avatar} = useThemeV2()
 
   return (
     <div
-      className={clsx(avatarRoot, border && avatarRootBorder, removeBg && avatarRootRemoveBg)}
-      style={assignInlineVars({[avatarSizeVar]: `${avatar.sizes[size]?.size}px`})}
-    >
-      {children}
-    </div>
+      {...rest}
+      className={clsx(
+        avatarRoot,
+        border && avatarRootBorder,
+        removeBg && avatarRootRemoveBg,
+        className,
+      )}
+      ref={ref}
+      style={{
+        ...assignInlineVars({[avatarSizeVar]: `${avatar.sizes[size]?.size}px`}),
+        ...style,
+      }}
+    />
   )
 }
 
