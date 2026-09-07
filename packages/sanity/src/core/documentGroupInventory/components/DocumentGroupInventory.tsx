@@ -28,7 +28,6 @@ import {Flex} from 'ui5'
 import {type ActorRefFromLogic, fromObservable, fromPromise} from 'xstate'
 
 import {Button} from '../../../ui-components/button/Button'
-import {restrictIdsToConfiguredAction} from '../../config/document/bulkDocumentActions'
 import {STUDIO_DSN} from '../../error/sentry/sentryErrorReporter'
 import {StudioFeedbackDialog} from '../../feedback/components/StudioFeedbackDialog'
 import {useFeedbackTelemetry} from '../../feedback/hooks/useFeedbackTelemetry'
@@ -55,6 +54,7 @@ import {getPublishedId, type SystemBundle} from '../../util/draftUtils'
 import {useVariantDocumentOperations} from '../../variants/hooks/useVariantDocumentOperations'
 import {CreateVariantIcon} from '../../variants/plugin/components/PersonalizationIcons'
 import {useVariantsStore} from '../../variants/store/useVariantsStore'
+import {createInventoryDeletionMachine} from '../machines/createInventoryDeletionMachine'
 import {deletionMachine, type ReferringDocuments} from '../machines/deletionMachine'
 import {documentGroupInventoryMachine} from '../machines/documentGroupInventoryMachine'
 import {selectionMachine, type Variant} from '../machines/selectionMachine'
@@ -221,42 +221,18 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
       // Read-only mode passes the machines unprovided: their actors are
       // unreachable, because the guards refuse every event that would invoke
       // them, so there is nothing for the caller to wire up.
-      deletionMachine: useMemo(
-        () =>
-          typeof referringDocuments$ === 'undefined'
-            ? deletionMachine
-            : deletionMachine.provide({
-                actors: {
-                  referringDocuments: fromObservable(() => referringDocuments$),
-                  // oxlint-disable-next-line react/refs -- invoked on confirm, not during render; the ref is the latest allowlist
-                  deleteVariants: fromPromise(({input, signal}) => {
-                    const ids = restrictIdsToConfiguredAction(
-                      input.ids,
-                      deletableAllowlistRef.current,
-                    )
-                    if (ids.length === 0) {
-                      return Promise.resolve({
-                        transactionId: '',
-                        documentIds: [],
-                        results: [],
-                      })
-                    }
+      deletionMachine: useMemo(() => {
+        if (typeof referringDocuments$ === 'undefined') {
+          return deletionMachine
+        }
 
-                    return ids
-                      .reduce(
-                        (pendingTransaction, id) => pendingTransaction.delete(id),
-                        client.transaction(),
-                      )
-                      .commit({
-                        tag: 'document.delete',
-                        skipCrossDatasetReferenceValidation: true,
-                        signal,
-                      })
-                  }),
-                },
-              }),
-        [referringDocuments$, client, deletableAllowlistRef],
-      ),
+        // oxlint-disable-next-line react/refs -- read on confirm, not during render; the ref is the latest allowlist
+        return createInventoryDeletionMachine({
+          client,
+          referringDocuments$,
+          getDeletableIds: () => deletableAllowlistRef.current,
+        })
+      }, [referringDocuments$, client, deletableAllowlistRef]),
       variantCreationMachine: useMemo(
         () =>
           readOnly
