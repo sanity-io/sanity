@@ -13,9 +13,6 @@ globalStyle('#sanity', {
  */
 export const GLOBAL_STYLES_ATTRIBUTE = 'data-sanity-global-styles'
 
-export const resizerImageVar = createVar()
-export const borderColorVar = createVar()
-export const mutedFgColorVar = createVar()
 export const selectionColorVar = createVar()
 export const bgColorVar = createVar()
 export const textFontFamilyVar = createVar()
@@ -30,8 +27,12 @@ const everyElement = (pseudo: string) => `${root}${pseudo}, ${root} *${pseudo}`
 const SCROLLBAR_SIZE = 12 // px
 const SCROLLBAR_BORDER_SIZE = 4 // px
 
+/**
+ * Thumb/resizer colors cannot live in these rules: `::-webkit-scrollbar-*` and
+ * `::-webkit-resizer` do not reliably see custom properties from the originating
+ * element or `html`. `GlobalStyle` injects the theme literals at runtime.
+ */
 globalStyle(everyElement('::-webkit-resizer'), {
-  backgroundImage: resizerImageVar,
   backgroundRepeat: 'no-repeat',
   backgroundPosition: 'bottom right',
 })
@@ -47,12 +48,7 @@ globalStyle(everyElement('::-webkit-scrollbar-corner'), {
 
 globalStyle(everyElement('::-webkit-scrollbar-thumb'), {
   backgroundClip: 'content-box',
-  backgroundColor: `var(--card-border-color, ${borderColorVar})`,
   border: `${SCROLLBAR_BORDER_SIZE}px solid transparent`,
-})
-
-globalStyle(everyElement('::-webkit-scrollbar-thumb:hover'), {
-  backgroundColor: `var(--card-muted-fg-color, ${mutedFgColorVar})`,
 })
 
 globalStyle(everyElement('::-webkit-scrollbar-track'), {
