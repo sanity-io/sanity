@@ -4,7 +4,7 @@ import {WithIntersection} from './WithIntersection'
 
 interface StyleProps {
   $debug: boolean
-  margins?: [number, number, number, number]
+  $margins?: [number, number, number, number]
 }
 
 export const RootWrapper = styled.div`
@@ -28,14 +28,14 @@ const RegionWrapper = css`
   position: absolute;
 `
 
-export const TopRegionWrapper = styled(WithIntersection)<StyleProps>(({$debug, margins}) => {
+export const TopRegionWrapper = styled(WithIntersection)<StyleProps>(({$debug, $margins}) => {
   return css`
     ${RegionWrapper}
 
     z-index: 100;
     position: sticky;
     height: 1px;
-    top: ${margins ? `${margins[0] - 1}px` : undefined};
+    top: ${$margins ? `${$margins[0] - 1}px` : undefined};
     background-color: ${$debug ? 'red' : 'none'};
   `
 })

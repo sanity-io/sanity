@@ -25,8 +25,8 @@ const HeaderButton = styled.button`
   outline: none;
 `
 
-const ToggleArrow = styled(ToggleArrowRightIcon)<{open: boolean}>`
-  transform: ${(props) => (props.open ? 'rotate(90deg)' : '')};
+const ToggleArrow = styled(ToggleArrowRightIcon)<{$open: boolean}>`
+  transform: ${(props) => (props.$open ? 'rotate(90deg)' : '')};
 `
 
 const Header = styled(Flex)`
@@ -61,7 +61,7 @@ export function Details(props: DetailsProps) {
           <Flex align="center">
             <IconBox data-open={open ? '' : undefined}>
               <Text size={1}>
-                <ToggleArrow open={open} />
+                <ToggleArrow $open={open} />
               </Text>
             </IconBox>
             {icon && <Box marginLeft={1}>{icon}</Box>}
