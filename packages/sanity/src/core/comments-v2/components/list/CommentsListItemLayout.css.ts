@@ -96,7 +96,8 @@ export const errorFlex = style({
 export const retryCardButton = style({
   selectors: {
     /* Add not on hover */
-    '&:not(:hover)': {
+    // `&&` beats Card's own `background-color: var(--card-bg-color)`
+    '&&:not(:hover)': {
       backgroundColor: 'transparent',
     },
   },
