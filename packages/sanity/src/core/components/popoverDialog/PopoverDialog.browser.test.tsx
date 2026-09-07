@@ -38,5 +38,10 @@ describe('PopoverDialog', () => {
 
     const wrapper = document.querySelector<HTMLElement>('[data-ui="Popover__wrapper"]')!
     expect(getComputedStyle(wrapper).position).toBe('relative')
+
+    const stickyLayer = document.querySelector<HTMLElement>(
+      '[data-testid="popover-dialog"] [data-ui="Layer"]',
+    )!
+    expect(getComputedStyle(stickyLayer).position).toBe('sticky')
   })
 })
