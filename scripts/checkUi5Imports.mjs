@@ -14,7 +14,7 @@ const IGNORED_DIRECTORIES = new Set([
 ])
 const SOURCE_EXTENSIONS = new Set(['.cjs', '.cts', '.js', '.jsx', '.mjs', '.mts', '.ts', '.tsx'])
 const UI5_IMPORT =
-  /(?:^\s*(?:import|export)\s+(?:[^'"\n]*?\s+from\s+)?|(?:import|require)\s*\(\s*)['"]ui5(?:\/[^'"]*)?['"]/gm
+  /(?:\bfrom\s*|\bimport\s*\(\s*|\brequire\s*\(\s*|^\s*import\s*)['"]ui5(?:\/[^'"]*)?['"]/gm
 
 const root = process.cwd()
 const violations = []
