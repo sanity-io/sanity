@@ -18,8 +18,7 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "sanity": "workspace:*",
-    "styled-components": "catalog:",
-    "ui5": "catalog:"
+    "styled-components": "catalog:"
   },
   "devDependencies": {
     "@sanity/vanilla-extract-vite-plugin": "catalog:",

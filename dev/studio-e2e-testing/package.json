@@ -26,8 +26,7 @@
     "sanity-plugin-internationalized-array": "^5.2.4",
     "sanity-plugin-media": "^6.1.8",
     "sanity-test-studio": "workspace:*",
-    "styled-components": "catalog:",
-    "ui5": "catalog:"
+    "styled-components": "catalog:"
   },
   "devDependencies": {
     "@types/react": "catalog:"
