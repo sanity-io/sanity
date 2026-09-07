@@ -17,10 +17,10 @@ const FINGERPRINTS: readonly Fingerprint[] = [
   {
     id: 'ui5',
     label: '@sanity/ui v5',
-    color: '#3ecf8e',
+    color: '#3fb950',
     match: '[class^="sui-"], [class*=" sui-"]',
   },
-  {id: 'ui4', label: '@sanity/ui v4', color: '#e5565b', match: '[data-ui]'},
+  {id: 'ui4', label: '@sanity/ui v4', color: '#e2604f', match: '[data-ui]'},
   {
     id: 'styled',
     label: 'styled-components',
