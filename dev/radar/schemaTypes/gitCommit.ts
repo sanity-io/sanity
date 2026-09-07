@@ -3,7 +3,7 @@ import {defineField, defineType} from 'sanity'
 
 /**
  * One commit on main, metadata only — written by scripts/syncGitHistory.ts
- * with deterministic id `gitCommit-<sha>`, covering v5.0.0 onward. The
+ * with deterministic id `git-commit-<sha>`, covering v5.0.0 onward. The
  * conventional-commit fields are best-effort parses of the subject, absent
  * where it doesn't conform. Joins are by value: `benchRun.git.sha` ↔ `sha`,
  * time axes on `committedAt`.
