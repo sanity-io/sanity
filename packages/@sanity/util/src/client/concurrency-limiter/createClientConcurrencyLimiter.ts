@@ -4,28 +4,25 @@ import {defer, finalize, Observable, switchMap} from 'rxjs'
 
 import {ConcurrencyLimiter} from '../../concurrency-limiter'
 
-const noop = () => {}
-
 function acquireSlot(limiter: ConcurrencyLimiter, signal?: AbortSignal): Observable<() => void> {
   return new Observable((subscriber) => {
     const subscriptionController = new AbortController()
-    const waitSignal = anySignal([signal, subscriptionController.signal])
+    const waitSignal = signal
+      ? anySignal([signal, subscriptionController.signal])
+      : subscriptionController.signal
 
-    void limiter
-      .ready(waitSignal)
-      .then(
-        () => {
-          if (subscriber.closed) {
-            limiter.release()
-            return
-          }
+    void limiter.ready(waitSignal).then(
+      () => {
+        if (subscriber.closed) {
+          limiter.release()
+          return
+        }
 
-          subscriber.next(limiter.release)
-          subscriber.complete()
-        },
-        (error) => subscriber.error(error),
-      )
-      .finally(() => waitSignal.clear())
+        subscriber.next(limiter.release)
+        subscriber.complete()
+      },
+      (error) => subscriber.error(error),
+    )
 
     return () => subscriptionController.abort()
   })
@@ -57,15 +54,10 @@ export function createClientConcurrencyLimiter(
 ): (input: SanityClient) => SanityClient {
   const limiter = new ConcurrencyLimiter(maxConcurrency)
 
-  function acquireSignal(signal?: AbortSignal): {
-    signal: AbortSignal | undefined
-    release: () => void
-  } {
-    if (!defaultSignal || !signal || defaultSignal === signal) {
-      return {signal: signal || defaultSignal, release: noop}
-    }
-    const combined = anySignal([defaultSignal, signal])
-    return {signal: combined, release: () => combined.clear()}
+  function resolveSignal(signal?: AbortSignal): AbortSignal | undefined {
+    if (!defaultSignal || defaultSignal === signal) return signal || defaultSignal
+    if (!signal) return defaultSignal
+    return anySignal([defaultSignal, signal])
   }
 
   function wrapClient(client: SanityClient): SanityClient {
@@ -74,9 +66,9 @@ export function createClientConcurrencyLimiter(
         switch (property) {
           case 'fetch': {
             return (...args: Parameters<SanityClient['fetch']>) => {
-              const {signal, release} = acquireSignal(args[2]?.signal)
+              const signal = resolveSignal(args[2]?.signal)
               if (signal !== args[2]?.signal) args[2] = {...args[2], signal}
-              return limiter.run(() => target.fetch(...args), signal).finally(release)
+              return limiter.run(() => target.fetch(...args), signal)
             }
           }
           case 'clone': {
@@ -117,15 +109,9 @@ export function createClientConcurrencyLimiter(
         switch (property) {
           case 'fetch': {
             return (...args: Parameters<ObservableSanityClient['fetch']>) => {
-              const fetchSignal = args[2]?.signal
-              return defer(() => {
-                const {signal, release} = acquireSignal(fetchSignal)
-                const fetchArgs: typeof args = [...args]
-                if (signal !== fetchSignal) fetchArgs[2] = {...fetchArgs[2], signal}
-                return runObservable(limiter, () => target.fetch(...fetchArgs), signal).pipe(
-                  finalize(release),
-                )
-              })
+              const signal = resolveSignal(args[2]?.signal)
+              if (signal !== args[2]?.signal) args[2] = {...args[2], signal}
+              return runObservable(limiter, () => target.fetch(...args), signal)
             }
           }
           case 'clone': {

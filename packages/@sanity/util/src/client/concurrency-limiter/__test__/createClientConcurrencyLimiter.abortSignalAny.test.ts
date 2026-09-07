@@ -1,5 +1,3 @@
-import {getEventListeners} from 'node:events'
-
 import {type SanityClient} from '@sanity/client'
 import {firstValueFrom, Observable} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
@@ -179,29 +177,6 @@ function describeSignalCombination() {
     defaultController.abort(reason)
 
     await expect(second).rejects.toBe(reason)
-    expect(getEventListeners(defaultController.signal, 'abort')).toHaveLength(0)
-  })
-
-  it('removes its listeners from the source signals once the fetch settles', async () => {
-    const defaultController = new AbortController()
-    const fetchController = new AbortController()
-    const mockClient = {
-      fetch: vi.fn(async () => 'promise result'),
-      observable: {
-        fetch: vi.fn(() => new Observable((subscriber) => subscriber.next('observable result'))),
-      },
-    } as unknown as SanityClient
-    const client = createClientConcurrencyLimiter(1, defaultController.signal)(mockClient)
-
-    await expect(client.fetch('promise', {}, {signal: fetchController.signal})).resolves.toBe(
-      'promise result',
-    )
-    await expect(
-      firstValueFrom(client.observable.fetch('observable', {}, {signal: fetchController.signal})),
-    ).resolves.toBe('observable result')
-
-    expect(getEventListeners(defaultController.signal, 'abort')).toHaveLength(0)
-    expect(getEventListeners(fetchController.signal, 'abort')).toHaveLength(0)
   })
 }
 
