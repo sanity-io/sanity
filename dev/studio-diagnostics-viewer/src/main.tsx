@@ -1,3 +1,4 @@
+import 'ui5/styles.css'
 import '@sanity/ui/styles.css'
 import './styles.css'
 

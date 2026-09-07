@@ -2,7 +2,10 @@ import {readdir, readFile} from 'node:fs/promises'
 import {extname, join, relative, sep} from 'node:path'
 import process from 'node:process'
 
-const ALLOWED_DIRECTORIES = new Set(['dev/test-studio', 'packages'])
+// `ui5` is the pinned npm alias for the @sanity/ui v5 prerelease. First-party
+// code may migrate to it, but examples are templates users copy into their own
+// projects, where the alias does not exist.
+const ALLOWED_DIRECTORIES = new Set(['dev', 'packages'])
 const IGNORED_DIRECTORIES = new Set([
   '.git',
   '.turbo',
@@ -60,7 +63,7 @@ await inspectDirectory(root)
 if (violations.length > 0) {
   console.error(
     [
-      'ui5 imports are only allowed in dev/test-studio and packages/**:',
+      `ui5 imports are only allowed in ${[...ALLOWED_DIRECTORIES].map((allowed) => `${allowed}/**`).join(' and ')}:`,
       ...violations
         .toSorted((left, right) => left.localeCompare(right))
         .map((violation) => `  ${violation}`),

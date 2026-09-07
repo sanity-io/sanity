@@ -15,7 +15,6 @@ import {PackageIcon} from '@sanity/icons/Package'
 import {SyncIcon} from '@sanity/icons/Sync'
 import {
   Badge,
-  Box,
   Button,
   Card,
   Container,
@@ -39,6 +38,7 @@ import {type ComponentType, type ReactNode, useEffect, useMemo, useRef, useState
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useDocumentStore} from 'sanity'
+import {Box} from 'ui5'
 
 import {idSlug} from './acks'
 import {ChartLegend} from './ChartLegend'
@@ -405,7 +405,10 @@ function SeriesCard(props: {
             percentage it contextualizes instead of floating top-right while
             the badge wraps under a long title. */}
         <Flex align="center" justify="space-between" gap={3}>
-          <Box style={{flexBasis: '0%', flexGrow: 1, minWidth: 0}}>
+          {/* flexBasis/flexGrow rather than `flex`: this is ui5's Box, which
+              (unlike @sanity/ui's) has no `flex` prop — same pair
+              RunDetailPopover's header uses. */}
+          <Box flexBasis="0%" flexGrow={1} style={{minWidth: 0}}>
             {/* In the dialog the title lives in the dialog header — repeating it
                 here would only push the plot down. Clicking the grid card's
                 title deep-links to that chart (shareable focus). */}

@@ -2,19 +2,11 @@ import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {CloseIcon} from '@sanity/icons/Close'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {RobotIcon} from '@sanity/icons/Robot'
-import {
-  Badge,
-  Box,
-  Button,
-  Flex,
-  Stack,
-  Text,
-  useClickOutsideEvent,
-  useGlobalKeyDown,
-} from '@sanity/ui'
+import {Badge, Button, Flex, Stack, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {Popover} from '@sanity/ui/popover'
 import {useEffect, useRef, useState} from 'react'
 import {useIntentLink} from 'sanity/router'
+import {Box} from 'ui5'
 
 import {
   CALIBRATION_EXPLAINER,
@@ -146,7 +138,7 @@ export function RunDetailPopover(props: {
           <Stack gap={4}>
             {/* Header: series title as a quiet eyebrow, close button aligned */}
             <Flex align="flex-start" gap={3}>
-              <Box paddingTop={1} style={{flexBasis: '0%', flexGrow: 1}}>
+              <Box flexBasis="0%" flexGrow={1} paddingTop={1}>
                 <Text size={1} weight="medium" muted textOverflow="ellipsis">
                   {series.title}
                 </Text>

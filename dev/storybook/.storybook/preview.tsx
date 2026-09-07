@@ -1,8 +1,9 @@
-// The libraries ship static styles as stylesheets consumers import themselves.
-// The ui5 import lives with the package that owns the migration while this host
-// keeps direct ui5 imports out of dev tooling.
-// oxlint-disable-next-line import/no-unassigned-import -- Storybook needs the package-owned ui5 global styles
-import '../../../packages/sanity/test/storybook/ui5Styles'
+// Both libraries ship static styles as stylesheets consumers import
+// themselves. Match the studio entry (`packages/sanity/src/_exports/index.ts`)
+// rather than relying on a story happening to import `sanity` (TestWrapper
+// does; authored ui-components / ui5 sentinels import source files directly
+// and would otherwise miss the ui5 reset and design tokens).
+import 'ui5/styles.css'
 import '@sanity/ui/styles.css'
 
 import {Card, LayerProvider, ThemeProvider} from '@sanity/ui'
