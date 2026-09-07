@@ -2363,7 +2363,7 @@ importers:
         version: link:../../packages/sanity
       sanity-plugin-internationalized-array:
         specifier: ^5.2.3
-        version: 5.2.3(@sanity/assist@6.1.21)(@sanity/language-filter@5.0.18)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)
+        version: 5.2.4(@sanity/assist@6.1.21)(@sanity/language-filter@5.0.18)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)
       styled-components:
         specifier: 'catalog:'
         version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
@@ -7158,10 +7158,6 @@ packages:
     resolution: {integrity: sha512-iEkGiHbrxCnT/A30A6pH+vX4otP3lLp935Vwuv0/YrnETxrKCn6PnsZU+TfTm6ZEZ9kZGs8wKP5yBLmZw5S6OQ==}
     engines: {node: '>=20'}
 
-  '@sanity/client@8.4.0':
-    resolution: {integrity: sha512-rwMtDxH3x9dc8ZiCMRDLStZoCr6MSPrH2LH4NIxWTCZ9Vz5OSgg0RolZy+ccM8p4yzK5lgC9XMF8tF6zsje0gQ==}
-    engines: {node: '>=22.12.0'}
-
   '@sanity/client@8.5.0':
     resolution: {integrity: sha512-GpTdkeyMOqsuXCB74iCiGqOs7lHBELD7pgWCm+hJ0FrqXL+CIgR6ZvehPSn+O9/8964X9Nb7iFtjZpOYOydtMA==}
     engines: {node: '>=22.12.0'}
@@ -7492,10 +7488,6 @@ packages:
         optional: true
       svelte:
         optional: true
-
-  '@sanity/workbench-cli@2.4.0':
-    resolution: {integrity: sha512-rOwjzFMKbW4VM+XCVJV2fjDAW7UIuoMKzEsEF7wJRtBQzGwC/UGZIS2m9KPdREQDErvEmYZPXPpJ0WdCexFy4A==}
-    engines: {node: '>=22.12'}
 
   '@sanity/workbench-cli@2.4.1':
     resolution: {integrity: sha512-CMgo+gbJ+P8yx4EoPkIlkC0J5zvPDKKE9j6iMF4wIGlk6R7yjM/21PAUV5yyknk+/UnRwpoF/u0FHEphqyLGxQ==}
@@ -9523,22 +9515,6 @@ packages:
     resolution: {integrity: sha512-+IxzY9BZOQd/XuYPRmrvEVjF/nqj5kgT4kEq7VofrDoM1MxoRjEWkrCC3EtLi59TVawxTAn+orJwFQcrqEN1+g==}
     engines: {node: '>=18'}
 
-  chromatic@18.7.1:
-    resolution: {integrity: sha512-q1v08f0qrrBWqe0UGBaQhHaB/7NhaSPYTDDi574AdeecINa0sXbGpUyMXTja3RUDUSLGxo38/ZAD8ZxTGeePQQ==}
-    engines: {node: '>=22.0.0'}
-    hasBin: true
-    peerDependencies:
-      '@chromatic-com/cypress': ^0.*.* || ^1.0.0
-      '@chromatic-com/playwright': ^0.*.* || ^1.0.0
-      '@chromatic-com/vitest': ^0.*.* || ^1.0.0
-    peerDependenciesMeta:
-      '@chromatic-com/cypress':
-        optional: true
-      '@chromatic-com/playwright':
-        optional: true
-      '@chromatic-com/vitest':
-        optional: true
-
   chromatic@18.7.2:
     resolution: {integrity: sha512-e6YsVD1c97hF2Fz/IxmHiLSK6Di8PV6edc6lKql20Wp5ZUWxluBXC8ZHKgpqJMr6u3vhn708BqOEnZntOgiTOA==}
     engines: {node: '>=22.0.0'}
@@ -10886,11 +10862,6 @@ packages:
 
   fs.realpath@1.0.0:
     resolution: {integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==}
-
-  fsevents@2.3.2:
-    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
-    engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
-    os: [darwin]
 
   fsevents@2.3.3:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
@@ -12885,11 +12856,6 @@ packages:
       playwright-core:
         optional: true
 
-  playwright@1.62.1:
-    resolution: {integrity: sha512-0M+L3LAD8/nm554LOla9Ayx0j0tmFZ0FBcoQ7F1VuVHpM/XpiC8RcDzBQB8W5+hA8L22THxELzeF+2WcUzvcLg==}
-    engines: {node: '>=20'}
-    hasBin: true
-
   playwright@1.63.0:
     resolution: {integrity: sha512-+7ziBLidS4NaNCdt57SUDT+wYmmd5fmiQejUic/kb+YsYSCPyOOE9sebzMjNmQrsnNpDJqd4WHvV/8lfKfUDUg==}
     engines: {node: '>=20'}
@@ -13573,19 +13539,6 @@ packages:
       react: ^19.2
       sanity: ^5 || ^6.0.0-0
       styled-components: ^6.1
-
-  sanity-plugin-internationalized-array@5.2.3:
-    resolution: {integrity: sha512-fHlz3qDUMbOfsR9Ef1oWCtoSit5ZlRn4EemN/rMvwEFMymvfpWtmYB7+YqfMvj7oJsdD1C5fNa2IT1oAheGe7Q==}
-    engines: {node: '>=20.19 <22 || >=22.12'}
-    peerDependencies:
-      '@sanity/assist': ^6.1.21
-      '@sanity/language-filter': ^5.0.18
-      react: ^19.2
-      react-dom: ^19.2
-      sanity: ^5 || ^6.0.0-0
-    peerDependenciesMeta:
-      '@sanity/assist':
-        optional: true
 
   sanity-plugin-internationalized-array@5.2.4:
     resolution: {integrity: sha512-gMQymttU6EnkPbOsLsPNhMsQxNU0zPLWgi7BRWNzHGft8bO4Htk+gp4hwU9xn6/Qd5/uk23ykCJ6tQ6RrNyqeg==}
@@ -16566,7 +16519,7 @@ snapshots:
   '@chromatic-com/storybook@5.3.1(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.0)(storybook@10.6.0)':
     dependencies:
       '@neoconfetti/react': 1.0.0
-      chromatic: 18.7.1(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.0)
+      chromatic: 18.7.2(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.0)
       jsonfile: 6.2.1
       storybook: 10.6.0(@types/react@19.2.18)(prettier@3.9.6)(react@19.2.8)
       strip-ansi: 7.2.0
@@ -19611,7 +19564,7 @@ snapshots:
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/telemetry': 1.1.0(react@19.2.8)
       '@sanity/types': link:packages/@sanity/types
-      '@sanity/workbench-cli': 2.4.0(@noble/hashes@2.4.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.148.0)(tsx@4.23.13)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)
+      '@sanity/workbench-cli': 2.4.1(@noble/hashes@2.4.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.148.0)(tsx@4.23.13)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)
       '@vitejs/plugin-react': 6.1.1(@rolldown/plugin-babel@0.2.3)(oxc-transform-react@0.148.0)(vite@8.2.2)
       chokidar: 5.0.0
       cjs-module-lexer: 2.2.1
@@ -19660,7 +19613,7 @@ snapshots:
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/telemetry': 1.1.0(react@19.2.8)
       '@sanity/types': link:packages/@sanity/types
-      '@sanity/workbench-cli': 2.4.0(@noble/hashes@2.4.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.148.0)(tsx@4.23.13)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)
+      '@sanity/workbench-cli': 2.4.1(@noble/hashes@2.4.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.148.0)(tsx@4.23.13)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)
       '@vitejs/plugin-react': 6.1.1(@rolldown/plugin-babel@0.2.3)(oxc-transform-react@0.148.0)(vite@8.2.2)
       chokidar: 5.0.0
       cjs-module-lexer: 2.2.1
@@ -19885,15 +19838,6 @@ snapshots:
       get-it: 8.8.3
       nanoid: 3.3.18
       rxjs: 7.8.2
-
-  '@sanity/client@8.4.0(vitest@4.1.11)':
-    dependencies:
-      eventsource: 5.1.1
-      get-it: 9.5.2(vitest@4.1.11)
-      obug: 2.1.4
-      rxjs: 7.8.2
-    transitivePeerDependencies:
-      - vitest
 
   '@sanity/client@8.5.0(vitest@4.1.11)':
     dependencies:
@@ -20244,7 +20188,7 @@ snapshots:
 
   '@sanity/sdk-react@3.1.0(@types/react@19.2.18)(immer@11.1.18)(react-dom@19.2.8)(react@19.2.8)(use-sync-external-store@1.6.0)(vitest@4.1.11)':
     dependencies:
-      '@sanity/client': 8.4.0(vitest@4.1.11)
+      '@sanity/client': 8.5.0(vitest@4.1.11)
       '@sanity/message-protocol': 0.24.0
       '@sanity/sdk': 3.1.0(@types/react@19.2.18)(immer@11.1.18)(react@19.2.8)(use-sync-external-store@1.6.0)(vitest@4.1.11)(xstate@5.32.6)
       '@sanity/types': link:packages/@sanity/types
@@ -20265,7 +20209,7 @@ snapshots:
   '@sanity/sdk@3.1.0(@types/react@19.2.18)(immer@11.1.18)(react@19.2.8)(use-sync-external-store@1.6.0)(vitest@4.1.11)(xstate@5.32.6)':
     dependencies:
       '@sanity/bifur-client': 1.0.0
-      '@sanity/client': 8.4.0(vitest@4.1.11)
+      '@sanity/client': 8.5.0(vitest@4.1.11)
       '@sanity/comlink': 4.0.3
       '@sanity/diff-match-patch': 3.2.0
       '@sanity/diff-patch': 6.0.0
@@ -20469,42 +20413,6 @@ snapshots:
       '@sanity/client': 8.5.0(vitest@4.1.11)
     transitivePeerDependencies:
       - typescript
-
-  '@sanity/workbench-cli@2.4.0(@noble/hashes@2.4.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.148.0)(tsx@4.23.13)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)':
-    dependencies:
-      '@module-federation/runtime': 2.9.0
-      '@module-federation/vite': 1.21.0(typescript@7.0.2)(vite@8.2.2)
-      '@sanity/cli-core': 3.6.1(@noble/hashes@2.4.0)(@types/node@24.13.3)(esbuild@0.28.2)(oxc-transform-react@0.148.0)(tsx@4.23.13)(vitest@4.1.11)(yaml@2.9.0)
-      '@sanity/types': link:packages/@sanity/types
-      '@vitejs/plugin-react': 6.1.1(@rolldown/plugin-babel@0.2.3)(oxc-transform-react@0.148.0)(vite@8.2.2)
-      form-data: 4.0.6
-      rxjs: 7.8.2
-      tar: 7.5.22
-      vite: 8.2.2(@types/node@24.13.3)(@vitejs/devtools@0.7.2)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0)
-      zod: 4.5.4
-    transitivePeerDependencies:
-      - '@noble/hashes'
-      - '@rolldown/plugin-babel'
-      - '@types/node'
-      - '@vitejs/devtools'
-      - babel-plugin-react-compiler
-      - bufferutil
-      - canvas
-      - esbuild
-      - jiti
-      - less
-      - oxc-transform-react
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - terser
-      - tsx
-      - typescript
-      - utf-8-validate
-      - vitest
-      - vue-tsc
-      - yaml
 
   '@sanity/workbench-cli@2.4.1(@noble/hashes@2.4.0)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.148.0)(tsx@4.23.13)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)':
     dependencies:
@@ -22618,13 +22526,6 @@ snapshots:
 
   chownr@3.0.0: {}
 
-  chromatic@18.7.1(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.0):
-    dependencies:
-      semver: 7.8.5
-    optionalDependencies:
-      '@chromatic-com/playwright': 0.14.12(@playwright/test@1.63.0)(@testing-library/dom@10.4.1)(prettier@3.9.6)(react@19.2.8)
-      '@chromatic-com/vitest': 1.0.0(@testing-library/dom@10.4.1)(prettier@3.9.6)(react@19.2.8)(vitest@4.1.11)
-
   chromatic@18.7.2(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.0):
     dependencies:
       semver: 7.8.5
@@ -23982,9 +23883,6 @@ snapshots:
       universalify: 2.0.1
 
   fs.realpath@1.0.0:
-    optional: true
-
-  fsevents@2.3.2:
     optional: true
 
   fsevents@2.3.3:
@@ -26153,21 +26051,14 @@ snapshots:
 
   playwright-core@1.63.0: {}
 
-  playwright-extra@4.3.6(playwright-core@1.63.0)(playwright@1.62.1)(supports-color@8.1.1):
+  playwright-extra@4.3.6(playwright-core@1.63.0)(playwright@1.63.0)(supports-color@8.1.1):
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
     optionalDependencies:
-      playwright: 1.62.1
+      playwright: 1.63.0
       playwright-core: 1.63.0
     transitivePeerDependencies:
       - supports-color
-    optional: true
-
-  playwright@1.62.1:
-    dependencies:
-      playwright-core: 1.62.1
-    optionalDependencies:
-      fsevents: 2.3.2
     optional: true
 
   playwright@1.63.0:
@@ -26372,8 +26263,8 @@ snapshots:
       natural: 8.1.1(@opentelemetry/api@1.9.1)(gcp-metadata@8.1.4)(socks@2.8.9)
       node-sql-parser: 5.4.0
       pdf-parse: 2.4.5
-      playwright: 1.62.1
-      playwright-extra: 4.3.6(playwright-core@1.63.0)(playwright@1.62.1)(supports-color@8.1.1)
+      playwright: 1.63.0
+      playwright-extra: 4.3.6(playwright-core@1.63.0)(playwright@1.63.0)(supports-color@8.1.1)
       puppeteer-extra-plugin-stealth: 2.11.2(playwright-extra@4.3.6)(supports-color@8.1.1)
       read-excel-file: 7.0.3
       sharp: 0.34.5
@@ -26538,7 +26429,7 @@ snapshots:
       puppeteer-extra-plugin: 3.2.3(playwright-extra@4.3.6)(supports-color@8.1.1)
       puppeteer-extra-plugin-user-preferences: 2.4.1(playwright-extra@4.3.6)(supports-color@8.1.1)
     optionalDependencies:
-      playwright-extra: 4.3.6(playwright-core@1.63.0)(playwright@1.62.1)(supports-color@8.1.1)
+      playwright-extra: 4.3.6(playwright-core@1.63.0)(playwright@1.63.0)(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
     optional: true
@@ -26550,7 +26441,7 @@ snapshots:
       puppeteer-extra-plugin: 3.2.3(playwright-extra@4.3.6)(supports-color@8.1.1)
       rimraf: 3.0.2
     optionalDependencies:
-      playwright-extra: 4.3.6(playwright-core@1.63.0)(playwright@1.62.1)(supports-color@8.1.1)
+      playwright-extra: 4.3.6(playwright-core@1.63.0)(playwright@1.63.0)(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
     optional: true
@@ -26562,7 +26453,7 @@ snapshots:
       puppeteer-extra-plugin: 3.2.3(playwright-extra@4.3.6)(supports-color@8.1.1)
       puppeteer-extra-plugin-user-data-dir: 2.4.1(playwright-extra@4.3.6)(supports-color@8.1.1)
     optionalDependencies:
-      playwright-extra: 4.3.6(playwright-core@1.63.0)(playwright@1.62.1)(supports-color@8.1.1)
+      playwright-extra: 4.3.6(playwright-core@1.63.0)(playwright@1.63.0)(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
     optional: true
@@ -26573,7 +26464,7 @@ snapshots:
       debug: 4.4.3(supports-color@8.1.1)
       merge-deep: 3.0.3
     optionalDependencies:
-      playwright-extra: 4.3.6(playwright-core@1.63.0)(playwright@1.62.1)(supports-color@8.1.1)
+      playwright-extra: 4.3.6(playwright-core@1.63.0)(playwright@1.63.0)(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
     optional: true
@@ -27149,21 +27040,6 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
       - react-dom
-
-  sanity-plugin-internationalized-array@5.2.3(@sanity/assist@6.1.21)(@sanity/language-filter@5.0.18)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3):
-    dependencies:
-      '@sanity/icons': 5.2.1(react@19.2.8)
-      '@sanity/language-filter': 5.0.18(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)
-      '@sanity/ui': 4.0.7(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
-      '@sanity/util': link:packages/@sanity/util
-      lodash-es: 4.18.1
-      react: 19.2.8
-      react-dom: 19.2.8(react@19.2.8)
-      sanity: link:packages/sanity
-    optionalDependencies:
-      '@sanity/assist': 6.1.21(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)(vitest@4.1.11)
-    transitivePeerDependencies:
-      - styled-components
 
   sanity-plugin-internationalized-array@5.2.4(@sanity/assist@6.1.21)(@sanity/language-filter@5.0.18)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3):
     dependencies:
