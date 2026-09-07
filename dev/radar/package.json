@@ -11,6 +11,7 @@
     "build": "sanity build",
     "clean": "rimraf .sanity dist",
     "dev": "sanity dev --port 3399",
+    "migrate-ids": "node --conditions=monorepo --import tsx scripts/migrateDocumentIds.ts",
     "start": "sanity preview --port 3399",
     "sync-git": "node --conditions=monorepo --import tsx scripts/syncGitHistory.ts"
   },

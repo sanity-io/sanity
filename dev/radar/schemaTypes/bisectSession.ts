@@ -12,7 +12,7 @@ import {defineField, defineType} from 'sanity'
  * only so the sessions list can show the verdict without loading the ~2k
  * commit documents. Undoing a mark clears it again.
  *
- * Id: `bisectSession-<uuid>` — sessions are user-created, not idempotent.
+ * Id: `bisect-session-<uuid>` — sessions are user-created, not idempotent.
  */
 export const bisectSession = defineType({
   name: 'bisectSession',

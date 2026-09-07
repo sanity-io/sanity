@@ -84,7 +84,10 @@ export function ComparisonsTool() {
             </Text>
             <Card padding={3} radius={2} tone="transparent" border>
               <Text size={1}>
-                <code>gh workflow run bench.yml -f ab_from=&lt;sha&gt; -f ab_to=&lt;sha&gt;</code>
+                <code>
+                  gh workflow run bench.yml -R sanity-io/sanity -f ab_from=&lt;sha&gt; -f
+                  ab_to=&lt;sha&gt;
+                </code>
               </Text>
             </Card>
             {/* A dispatched run takes ~30 minutes to land here; the runs list
