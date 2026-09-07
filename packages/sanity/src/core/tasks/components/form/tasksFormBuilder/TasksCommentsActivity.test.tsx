@@ -17,15 +17,17 @@ function renderWithTheme(ui: ReactNode) {
 let capturedCommentsProviderProps: Record<string, unknown> | undefined
 let capturedCommentsProviderV2Props: Record<string, unknown> | undefined
 
+type CapturedProviderProps = Record<string, unknown> & {children?: ReactNode}
+
 vi.mock('../../../../comments/context/comments/CommentsProvider', () => ({
-  CommentsProvider: (props: Record<string, unknown>) => {
+  CommentsProvider: (props: CapturedProviderProps) => {
     capturedCommentsProviderProps = props
     return <>{props.children}</>
   },
 }))
 
 vi.mock('../../../../comments-v2/context/comments/CommentsProvider', () => ({
-  CommentsProvider: (props: Record<string, unknown>) => {
+  CommentsProvider: (props: CapturedProviderProps) => {
     capturedCommentsProviderV2Props = props
     return <>{props.children}</>
   },
