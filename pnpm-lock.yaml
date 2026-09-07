@@ -14,8 +14,8 @@ catalogs:
       specifier: ^1.1.1
       version: 1.2.4
     '@playwright/test':
-      specifier: 1.62.1
-      version: 1.62.1
+      specifier: 1.63.0
+      version: 1.63.0
     '@sanity/client':
       specifier: ^8.5.0
       version: 8.5.0
@@ -68,8 +68,8 @@ catalogs:
       specifier: ^0.148.0
       version: 0.148.0
     playwright:
-      specifier: 1.62.1
-      version: 1.62.1
+      specifier: 1.63.0
+      version: 1.63.0
     react:
       specifier: ^19.2.8
       version: 19.2.8
@@ -183,7 +183,7 @@ importers:
         version: 0.0.87
       playwright:
         specifier: 'catalog:'
-        version: 1.62.1
+        version: 1.63.0
       sanity:
         specifier: workspace:*
         version: link:packages/sanity
@@ -303,7 +303,7 @@ importers:
     devDependencies:
       '@playwright/test':
         specifier: 'catalog:'
-        version: 1.62.1
+        version: 1.63.0
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.18
@@ -619,7 +619,7 @@ importers:
         version: 6.1.1(@rolldown/plugin-babel@0.2.3)(oxc-transform-react@0.148.0)(vite@8.2.2)
       '@vitest/browser-playwright':
         specifier: 'catalog:'
-        version: 5.0.0(playwright@1.62.1)(vite@8.2.2)(vitest@5.0.0)
+        version: 5.0.0(playwright@1.63.0)(vite@8.2.2)(vitest@5.0.0)
       chromatic:
         specifier: ^18.7.2
         version: 18.7.2(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.0)
@@ -628,7 +628,7 @@ importers:
         version: 0.148.0
       playwright:
         specifier: 'catalog:'
-        version: 1.62.1
+        version: 1.63.0
       rimraf:
         specifier: 'catalog:'
         version: 6.1.3
@@ -938,10 +938,10 @@ importers:
     devDependencies:
       '@chromatic-com/playwright':
         specifier: ^0.14.12
-        version: 0.14.12(@playwright/test@1.62.1)(@testing-library/dom@10.4.1)(prettier@3.9.6)(react@19.2.8)
+        version: 0.14.12(@playwright/test@1.63.0)(@testing-library/dom@10.4.1)(prettier@3.9.6)(react@19.2.8)
       '@playwright/test':
         specifier: 'catalog:'
-        version: 1.62.1
+        version: 1.63.0
       '@repo/test-config':
         specifier: workspace:*
         version: link:../packages/@repo/test-config
@@ -977,7 +977,7 @@ importers:
         version: link:../tsconfig
       '@sanity/ailf':
         specifier: ^7.36.0
-        version: 7.36.0(@aws-sdk/credential-provider-node@3.972.81)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.18)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.23.0)(playwright-core@1.62.1)(react-devtools-core@7.0.1)(socks@2.8.9)(supports-color@8.1.1)
+        version: 7.36.0(@aws-sdk/credential-provider-node@3.972.81)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.18)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.23.0)(playwright-core@1.63.0)(react-devtools-core@7.0.1)(socks@2.8.9)(supports-color@8.1.1)
       sanity:
         specifier: workspace:*
         version: link:../../sanity
@@ -2246,7 +2246,7 @@ importers:
         version: 6.1.1(@rolldown/plugin-babel@0.2.3)(oxc-transform-react@0.148.0)(vite@8.2.2)
       '@vitest/browser-playwright':
         specifier: 'catalog:'
-        version: 5.0.0(playwright@1.62.1)(vite@8.2.2)(vitest@5.0.0)
+        version: 5.0.0(playwright@1.63.0)(vite@8.2.2)(vitest@5.0.0)
       '@vitest/expect':
         specifier: ^5.0.0
         version: 5.0.0
@@ -2348,7 +2348,7 @@ importers:
         version: 3.0.8
       playwright:
         specifier: 'catalog:'
-        version: 1.62.1
+        version: 1.63.0
       react:
         specifier: 'catalog:'
         version: 19.2.8
@@ -2425,7 +2425,7 @@ importers:
     dependencies:
       '@playwright/test':
         specifier: 'catalog:'
-        version: 1.62.1
+        version: 1.63.0
       '@sanity/client':
         specifier: 'catalog:'
         version: 8.5.0(vitest@5.0.0)
@@ -6536,8 +6536,8 @@ packages:
     resolution: {integrity: sha512-DU/t4TSqHvAc+uFMt972forQYqBTh/ul7lZ8U81HYGyxnf6vSPPz9NzuE0OR3x/elqvvGm+n4gcny+QSKT+FDw==}
     engines: {node: '>=20'}
 
-  '@playwright/test@1.62.1':
-    resolution: {integrity: sha512-DTcUc8qii+cpHvtOwggMtBRMjKZHXYWdw8syRYu2vtzuq4Wxphqq4NfCs5Zt44L6mA8rfDfj+PHnxFc/FeK6mQ==}
+  '@playwright/test@1.63.0':
+    resolution: {integrity: sha512-oxMK4vllB9RK5NQ2l1pq1IfOf2AvnEuj/vYGDj0H2nMtmtZpKtCwt/l00GEO6xjGfpBNAvjovvYdCm50dRQkpQ==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -12887,6 +12887,11 @@ packages:
     engines: {node: '>=20'}
     hasBin: true
 
+  playwright-core@1.63.0:
+    resolution: {integrity: sha512-rYCsBF/M5HjUch52bbtVONEFjv6Xu8sm8h72dNlR5bzIE1fvC/bxgspzkjSfU+MweEMmPM8KJebG6nnyxo5mCg==}
+    engines: {node: '>=20'}
+    hasBin: true
+
   playwright-extra@4.3.6:
     resolution: {integrity: sha512-q2rVtcE8V8K3vPVF1zny4pvwZveHLH8KBuVU2MoE3Jw4OKVoBWsHI9CH9zPydovHHOCDxjGN2Vg+2m644q3ijA==}
     engines: {node: '>=12'}
@@ -12901,6 +12906,11 @@ packages:
 
   playwright@1.62.1:
     resolution: {integrity: sha512-0M+L3LAD8/nm554LOla9Ayx0j0tmFZ0FBcoQ7F1VuVHpM/XpiC8RcDzBQB8W5+hA8L22THxELzeF+2WcUzvcLg==}
+    engines: {node: '>=20'}
+    hasBin: true
+
+  playwright@1.63.0:
+    resolution: {integrity: sha512-+7ziBLidS4NaNCdt57SUDT+wYmmd5fmiQejUic/kb+YsYSCPyOOE9sebzMjNmQrsnNpDJqd4WHvV/8lfKfUDUg==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -16564,10 +16574,10 @@ snapshots:
       hashery: 1.5.1
       keyv: 5.6.0
 
-  '@chromatic-com/playwright@0.14.12(@playwright/test@1.62.1)(@testing-library/dom@10.4.1)(prettier@3.9.6)(react@19.2.8)':
+  '@chromatic-com/playwright@0.14.12(@playwright/test@1.63.0)(@testing-library/dom@10.4.1)(prettier@3.9.6)(react@19.2.8)':
     dependencies:
       '@chromaui/rrweb-snapshot': 2.0.0-alpha.19-noAbsolute
-      '@playwright/test': 1.62.1
+      '@playwright/test': 1.63.0
       storybook: 10.2.13(@testing-library/dom@10.4.1)(prettier@3.9.6)(react@19.2.8)
     transitivePeerDependencies:
       - '@testing-library/dom'
@@ -19103,9 +19113,9 @@ snapshots:
       playwright-core: 1.62.1
     optional: true
 
-  '@playwright/test@1.62.1':
+  '@playwright/test@1.63.0':
     dependencies:
-      playwright: 1.62.1
+      playwright: 1.63.0
 
   '@pnpm/config.env-replace@1.1.0': {}
 
@@ -19498,7 +19508,7 @@ snapshots:
     dependencies:
       '@oclif/core': 4.14.0
 
-  '@sanity/ailf@7.36.0(@aws-sdk/credential-provider-node@3.972.81)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.18)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.23.0)(playwright-core@1.62.1)(react-devtools-core@7.0.1)(socks@2.8.9)(supports-color@8.1.1)':
+  '@sanity/ailf@7.36.0(@aws-sdk/credential-provider-node@3.972.81)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.18)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.23.0)(playwright-core@1.63.0)(react-devtools-core@7.0.1)(socks@2.8.9)(supports-color@8.1.1)':
     dependencies:
       '@google-cloud/bigquery': 8.3.1(supports-color@8.1.1)
       '@google-cloud/storage': 7.22.0(supports-color@8.1.1)
@@ -19516,7 +19526,7 @@ snapshots:
       jiti: 2.7.0
       js-yaml: 4.3.2
       oxc-parser: 0.129.0
-      promptfoo: 0.120.27(@aws-sdk/credential-provider-node@3.972.81)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.18)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.23.0)(playwright-core@1.62.1)(react-devtools-core@7.0.1)(socks@2.8.9)(supports-color@8.1.1)
+      promptfoo: 0.120.27(@aws-sdk/credential-provider-node@3.972.81)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.18)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.23.0)(playwright-core@1.63.0)(react-devtools-core@7.0.1)(socks@2.8.9)(supports-color@8.1.1)
       zod: 4.5.4
     transitivePeerDependencies:
       - '@aws-sdk/client-rds-data'
@@ -20781,7 +20791,7 @@ snapshots:
       storybook: 10.6.0(@types/react@19.2.18)(prettier@3.9.6)(react@19.2.8)
     optionalDependencies:
       '@vitest/browser': 4.1.11(vite@8.2.2)(vitest@5.0.0)
-      '@vitest/browser-playwright': 5.0.0(playwright@1.62.1)(vite@8.2.2)(vitest@5.0.0)
+      '@vitest/browser-playwright': 5.0.0(playwright@1.63.0)(vite@8.2.2)(vitest@5.0.0)
       '@vitest/runner': 4.1.11
       vitest: 5.0.0(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/browser-playwright@5.0.0)(@vitest/coverage-v8@5.0.0)(@vitest/ui@5.0.0)(jsdom@29.1.1)(vite@8.2.2)
     transitivePeerDependencies:
@@ -21857,11 +21867,11 @@ snapshots:
       '@rolldown/plugin-babel': 0.2.3(@babel/core@7.29.7)(@babel/runtime@7.29.7)(rolldown@1.2.6)(vite@8.2.2)
       oxc-transform-react: 0.148.0
 
-  '@vitest/browser-playwright@5.0.0(playwright@1.62.1)(vite@8.2.2)(vitest@5.0.0)':
+  '@vitest/browser-playwright@5.0.0(playwright@1.63.0)(vite@8.2.2)(vitest@5.0.0)':
     dependencies:
       '@vitest/browser': 5.0.0(vite@8.2.2)(vitest@5.0.0)
       '@vitest/mocker': 5.0.0(vite@8.2.2)
-      playwright: 1.62.1
+      playwright: 1.63.0
       tinyrainbow: 3.1.1
       vitest: 5.0.0(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/browser-playwright@5.0.0)(@vitest/coverage-v8@5.0.0)(@vitest/ui@5.0.0)(jsdom@29.1.1)(vite@8.2.2)
     transitivePeerDependencies:
@@ -22687,14 +22697,14 @@ snapshots:
     dependencies:
       semver: 7.8.5
     optionalDependencies:
-      '@chromatic-com/playwright': 0.14.12(@playwright/test@1.62.1)(@testing-library/dom@10.4.1)(prettier@3.9.6)(react@19.2.8)
+      '@chromatic-com/playwright': 0.14.12(@playwright/test@1.63.0)(@testing-library/dom@10.4.1)(prettier@3.9.6)(react@19.2.8)
       '@chromatic-com/vitest': 1.0.0(@testing-library/dom@10.4.1)(prettier@3.9.6)(react@19.2.8)(vitest@5.0.0)
 
   chromatic@18.7.2(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.0):
     dependencies:
       semver: 7.8.5
     optionalDependencies:
-      '@chromatic-com/playwright': 0.14.12(@playwright/test@1.62.1)(@testing-library/dom@10.4.1)(prettier@3.9.6)(react@19.2.8)
+      '@chromatic-com/playwright': 0.14.12(@playwright/test@1.63.0)(@testing-library/dom@10.4.1)(prettier@3.9.6)(react@19.2.8)
       '@chromatic-com/vitest': 1.0.0(@testing-library/dom@10.4.1)(prettier@3.9.6)(react@19.2.8)(vitest@5.0.0)
 
   citty@0.2.2: {}
@@ -26195,14 +26205,17 @@ snapshots:
     transitivePeerDependencies:
       - react
 
-  playwright-core@1.62.1: {}
+  playwright-core@1.62.1:
+    optional: true
 
-  playwright-extra@4.3.6(playwright-core@1.62.1)(playwright@1.62.1)(supports-color@8.1.1):
+  playwright-core@1.63.0: {}
+
+  playwright-extra@4.3.6(playwright-core@1.63.0)(playwright@1.62.1)(supports-color@8.1.1):
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
     optionalDependencies:
       playwright: 1.62.1
-      playwright-core: 1.62.1
+      playwright-core: 1.63.0
     transitivePeerDependencies:
       - supports-color
     optional: true
@@ -26212,6 +26225,11 @@ snapshots:
       playwright-core: 1.62.1
     optionalDependencies:
       fsevents: 2.3.2
+    optional: true
+
+  playwright@1.63.0:
+    dependencies:
+      playwright-core: 1.63.0
 
   pluralize-esm@9.0.5: {}
 
@@ -26292,7 +26310,7 @@ snapshots:
 
   promisepipe@3.0.0: {}
 
-  promptfoo@0.120.27(@aws-sdk/credential-provider-node@3.972.81)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.18)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.23.0)(playwright-core@1.62.1)(react-devtools-core@7.0.1)(socks@2.8.9)(supports-color@8.1.1):
+  promptfoo@0.120.27(@aws-sdk/credential-provider-node@3.972.81)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.18)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.23.0)(playwright-core@1.63.0)(react-devtools-core@7.0.1)(socks@2.8.9)(supports-color@8.1.1):
     dependencies:
       '@anthropic-ai/sdk': 0.78.0(zod@4.5.4)
       '@apidevtools/json-schema-ref-parser': 15.5.2(@types/json-schema@7.0.15)
@@ -26412,7 +26430,7 @@ snapshots:
       node-sql-parser: 5.4.0
       pdf-parse: 2.4.5
       playwright: 1.62.1
-      playwright-extra: 4.3.6(playwright-core@1.62.1)(playwright@1.62.1)(supports-color@8.1.1)
+      playwright-extra: 4.3.6(playwright-core@1.63.0)(playwright@1.62.1)(supports-color@8.1.1)
       puppeteer-extra-plugin-stealth: 2.11.2(playwright-extra@4.3.6)(supports-color@8.1.1)
       read-excel-file: 7.0.3
       sharp: 0.34.5
@@ -26577,7 +26595,7 @@ snapshots:
       puppeteer-extra-plugin: 3.2.3(playwright-extra@4.3.6)(supports-color@8.1.1)
       puppeteer-extra-plugin-user-preferences: 2.4.1(playwright-extra@4.3.6)(supports-color@8.1.1)
     optionalDependencies:
-      playwright-extra: 4.3.6(playwright-core@1.62.1)(playwright@1.62.1)(supports-color@8.1.1)
+      playwright-extra: 4.3.6(playwright-core@1.63.0)(playwright@1.62.1)(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
     optional: true
@@ -26589,7 +26607,7 @@ snapshots:
       puppeteer-extra-plugin: 3.2.3(playwright-extra@4.3.6)(supports-color@8.1.1)
       rimraf: 3.0.2
     optionalDependencies:
-      playwright-extra: 4.3.6(playwright-core@1.62.1)(playwright@1.62.1)(supports-color@8.1.1)
+      playwright-extra: 4.3.6(playwright-core@1.63.0)(playwright@1.62.1)(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
     optional: true
@@ -26601,7 +26619,7 @@ snapshots:
       puppeteer-extra-plugin: 3.2.3(playwright-extra@4.3.6)(supports-color@8.1.1)
       puppeteer-extra-plugin-user-data-dir: 2.4.1(playwright-extra@4.3.6)(supports-color@8.1.1)
     optionalDependencies:
-      playwright-extra: 4.3.6(playwright-core@1.62.1)(playwright@1.62.1)(supports-color@8.1.1)
+      playwright-extra: 4.3.6(playwright-core@1.63.0)(playwright@1.62.1)(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
     optional: true
@@ -26612,7 +26630,7 @@ snapshots:
       debug: 4.4.3(supports-color@8.1.1)
       merge-deep: 3.0.3
     optionalDependencies:
-      playwright-extra: 4.3.6(playwright-core@1.62.1)(playwright@1.62.1)(supports-color@8.1.1)
+      playwright-extra: 4.3.6(playwright-core@1.63.0)(playwright@1.62.1)(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
     optional: true
@@ -28415,7 +28433,7 @@ snapshots:
     optionalDependencies:
       '@opentelemetry/api': 1.9.1
       '@types/node': 24.13.3
-      '@vitest/browser-playwright': 5.0.0(playwright@1.62.1)(vite@8.2.2)(vitest@5.0.0)
+      '@vitest/browser-playwright': 5.0.0(playwright@1.63.0)(vite@8.2.2)(vitest@5.0.0)
       '@vitest/coverage-v8': 5.0.0(@vitest/browser@5.0.0)(vitest@5.0.0)
       '@vitest/ui': 5.0.0(vitest@5.0.0)
       jsdom: 29.1.1(@noble/hashes@2.4.0)

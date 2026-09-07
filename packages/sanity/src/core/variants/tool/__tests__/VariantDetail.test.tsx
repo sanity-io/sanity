@@ -42,6 +42,10 @@ const variantOperationsMock = vi.hoisted(() => ({
   deleteVariant: vi.fn(),
 }))
 
+const variantPermissionsMock = vi.hoisted(() => ({
+  checkWithPermissionGuard: vi.fn(),
+}))
+
 const toastMock = vi.hoisted(() => ({
   push: vi.fn(),
 }))
@@ -73,6 +77,10 @@ vi.mock('../../store/useVariantOperations', () => ({
   useVariantOperations: vi.fn(() => variantOperationsMock),
 }))
 
+vi.mock('../../store/useVariantPermissions', () => ({
+  useVariantPermissions: vi.fn(() => variantPermissionsMock),
+}))
+
 vi.mock('../../hooks/useVariantDocuments', () => ({
   useVariantDocuments: vi.fn(() => ({
     loading: false,
@@ -98,6 +106,7 @@ describe('VariantDetail', () => {
     variantsMock.loading = false
     variantsMock.error = undefined
     routerState.variantId = undefined
+    variantPermissionsMock.checkWithPermissionGuard.mockResolvedValue(true)
     variantOperationsMock.updateVariant.mockImplementation(async (variant) => {
       const existingVariant = variantsMock.byId.get(variant._id)
 
@@ -369,6 +378,26 @@ describe('VariantDetail', () => {
       expect(variantOperationsMock.deleteVariant).toHaveBeenCalledWith(variantAlphaAudience._id)
       expect(mockNavigate).toHaveBeenCalledWith({})
     })
+  })
+
+  it('disables delete in the detail menu when the user lacks permission', async () => {
+    variantPermissionsMock.checkWithPermissionGuard.mockResolvedValue(false)
+    routerState.variantId = getVariantId(variantAlphaAudience._id)
+    setVariants([variantAlphaAudience])
+    const user = userEvent.setup()
+
+    await renderDetail()
+
+    await user.click(await screen.findByTestId('variant-detail-menu-button'))
+    const deleteItem = await screen.findByTestId('delete-variant-menu-item')
+
+    await waitFor(() => {
+      expect(deleteItem).toBeDisabled()
+    })
+    await user.click(deleteItem)
+
+    expect(screen.queryByTestId('confirm-button')).not.toBeInTheDocument()
+    expect(variantOperationsMock.deleteVariant).not.toHaveBeenCalled()
   })
 
   it('shows a toast and stays on the detail page when deletion fails', async () => {
