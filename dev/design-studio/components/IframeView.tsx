@@ -1,5 +1,12 @@
-import {iframe} from './IframeView.css'
+import {styled} from 'styled-components'
+
+const IFrame = styled.iframe`
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+`
 
 export function IFrameView() {
-  return <iframe className={iframe} src="https://www.sanity.io/" />
+  return <IFrame src="https://www.sanity.io/" />
 }
