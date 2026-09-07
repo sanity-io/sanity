@@ -172,11 +172,18 @@ export function sparseCheckoutPaths(
 
 /**
  * Build the bench studio from `sha`'s packages with HEAD's `perf/bench`
- * harness, and copy the built dist to `targetDist`. Throws on any failure;
- * callers decide whether that's a fallback (prepare-reference) or fatal
- * (prepare-backfill).
+ * harness, and copy the built dist to `targetDist`. With
+ * `customizationsDist`, the customization studio (studio-customizations/,
+ * what settle mode measures) is built from the same harness install — HEAD's
+ * workspaces over the historical `sanity` — and copied there too. Throws on
+ * any failure; callers decide whether that's a fallback (prepare-reference)
+ * or fatal (prepare-backfill).
  */
-export function buildDistAtCommit(sha: string, targetDist: string): void {
+export function buildDistAtCommit(
+  sha: string,
+  targetDist: string,
+  options: {customizationsDist?: string} = {},
+): void {
   // A unique temp dir, never a repo sibling or a nested dir: a fixed path
   // could collide with something the finally block then removes, and a
   // nested checkout would be picked up by test/build globs
@@ -189,16 +196,24 @@ export function buildDistAtCommit(sha: string, targetDist: string): void {
 
     const harness = path.join(harnessTree, path.relative(REPO_ROOT, BENCH_ROOT))
     step('pnpm', ['run', 'build'], harness)
+    copyBuiltDist(sha, path.join(harness, 'dist'), targetDist)
 
-    const builtDist = path.join(harness, 'dist')
-    if (!fs.existsSync(path.join(builtDist, 'index.html'))) {
-      throw new Error(
-        `build at ${sha.slice(0, 10)} produced no ${path.join(builtDist, 'index.html')}`,
-      )
+    if (options.customizationsDist) {
+      // Best effort: the customization workspaces are HEAD's components
+      // compiled against the historical sanity, and an API they use may not
+      // exist at that commit. That must not block repairing the pristine
+      // series — warn, leave the dist absent, and let the settle step skip.
+      try {
+        step('pnpm', ['run', 'build:customizations'], harness)
+        copyBuiltDist(sha, path.join(harness, 'dist-customizations'), options.customizationsDist)
+      } catch (error) {
+        const reason = (error instanceof Error ? error.message : String(error)).replace(/\s+/g, ' ')
+        fs.rmSync(options.customizationsDist, {recursive: true, force: true})
+        console.log(
+          `::warning::Customization studio did not build at ${sha.slice(0, 10)} - settle mode is skipped for this run (${reason})`,
+        )
+      }
     }
-    fs.rmSync(targetDist, {recursive: true, force: true})
-    fs.mkdirSync(path.dirname(targetDist), {recursive: true})
-    fs.cpSync(builtDist, targetDist, {recursive: true})
   } finally {
     // CI runners are ephemeral; locally, don't leave the trees behind
     if (!process.env.CI) {
@@ -208,6 +223,18 @@ export function buildDistAtCommit(sha: string, targetDist: string): void {
       fs.rmSync(stage, {recursive: true, force: true})
     }
   }
+}
+
+/** Replace `targetDist` with a built studio, refusing an empty or failed build. */
+function copyBuiltDist(sha: string, builtDist: string, targetDist: string): void {
+  if (!fs.existsSync(path.join(builtDist, 'index.html'))) {
+    throw new Error(
+      `build at ${sha.slice(0, 10)} produced no ${path.join(builtDist, 'index.html')}`,
+    )
+  }
+  fs.rmSync(targetDist, {recursive: true, force: true})
+  fs.mkdirSync(path.dirname(targetDist), {recursive: true})
+  fs.cpSync(builtDist, targetDist, {recursive: true})
 }
 
 /**

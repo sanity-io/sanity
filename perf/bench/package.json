@@ -8,6 +8,7 @@
   "type": "module",
   "scripts": {
     "build": "sanity build",
+    "build:customizations": "cd studio-customizations && sanity build ../dist-customizations && cd .. && node scripts/write-build-flags.mjs dist-customizations customizations",
     "build:reference-config": "SANITY_STUDIO_BENCH_API_HOST=https://localhost:4312 SANITY_STUDIO_BENCH_PROJECT_ID=benchref sanity build .reference/dist",
     "cli": "./cli/index.ts",
     "dev": "./cli/index.ts dev",

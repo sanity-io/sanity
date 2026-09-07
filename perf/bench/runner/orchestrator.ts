@@ -6,11 +6,11 @@ import {gate, INTERACTION_THRESHOLDS, shouldStop, type Verdict} from '../stats/g
 import {median} from '../stats/quantiles'
 import {type Rng} from '../stats/rng'
 import {type RunningSide} from './servers'
+import {SessionError} from './session/errors'
 import {
   type InteractionSessionResult,
   runInteractionSession,
   type SessionConfig,
-  SessionError,
 } from './session/interaction'
 
 export interface OrchestratorConfig {
