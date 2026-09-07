@@ -1,0 +1,252 @@
+import {getEventListeners} from 'node:events'
+
+import {type SanityClient} from '@sanity/client'
+import {firstValueFrom, Observable} from 'rxjs'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
+
+import {createClientConcurrencyLimiter} from '../createClientConcurrencyLimiter'
+
+const tick = () => new Promise((resolve) => setTimeout(resolve, 0))
+
+function deferred() {
+  let resolve!: () => void
+  const promise = new Promise<void>((thisResolve) => (resolve = thisResolve))
+  return Object.assign(promise, {resolve})
+}
+
+/** Mock `client.fetch` that rejects with the abort reason of the signal it received. */
+function abortableFetch() {
+  return vi.fn(
+    (_query: string, _params: object, {signal}: {signal: AbortSignal}) =>
+      new Promise((_resolve, reject) => {
+        signal.addEventListener('abort', () => reject(signal.reason), {once: true})
+      }),
+  )
+}
+
+/** Mock `client.observable.fetch` that errors with the abort reason of the signal it received. */
+function abortableObservableFetch() {
+  return vi.fn(
+    (_query: string, _params: object, {signal}: {signal: AbortSignal}) =>
+      new Observable((subscriber) => {
+        const onAbort = () => subscriber.error(signal.reason)
+        signal.addEventListener('abort', onAbort, {once: true})
+        return () => signal.removeEventListener('abort', onAbort)
+      }),
+  )
+}
+
+const nativeAbortSignalAny = AbortSignal.any
+
+/**
+ * The scenarios below cover both of the places where the limiter has to combine two signals:
+ * a fetch signal with the limiter's default signal, and a fetch signal with the internal
+ * "unsubscribed while queued" controller of an Observable fetch.
+ */
+function describeSignalCombination() {
+  it('aborts a fetch when the default signal aborts', async () => {
+    const defaultController = new AbortController()
+    const fetchController = new AbortController()
+    const reason = new Error('validation cancelled')
+    const mockClient = {fetch: abortableFetch()} as unknown as SanityClient
+    const client = createClientConcurrencyLimiter(1, defaultController.signal)(mockClient)
+
+    const result = client.fetch('query', {}, {signal: fetchController.signal})
+    await vi.waitFor(() => expect(mockClient.fetch).toHaveBeenCalledOnce())
+    defaultController.abort(reason)
+
+    await expect(result).rejects.toBe(reason)
+    expect(fetchController.signal.aborted).toBe(false)
+  })
+
+  it('aborts a fetch when the fetch signal aborts', async () => {
+    const defaultController = new AbortController()
+    const fetchController = new AbortController()
+    const reason = new Error('fetch cancelled')
+    const mockClient = {fetch: abortableFetch()} as unknown as SanityClient
+    const client = createClientConcurrencyLimiter(1, defaultController.signal)(mockClient)
+
+    const result = client.fetch('query', {}, {signal: fetchController.signal})
+    await vi.waitFor(() => expect(mockClient.fetch).toHaveBeenCalledOnce())
+    fetchController.abort(reason)
+
+    await expect(result).rejects.toBe(reason)
+    expect(defaultController.signal.aborted).toBe(false)
+  })
+
+  it('rejects a fetch immediately when the default signal is already aborted', async () => {
+    const defaultController = new AbortController()
+    const reason = new Error('already cancelled')
+    defaultController.abort(reason)
+    const mockClient = {fetch: vi.fn(async () => 'result')} as unknown as SanityClient
+    const client = createClientConcurrencyLimiter(1, defaultController.signal)(mockClient)
+
+    await expect(client.fetch('query', {}, {signal: new AbortController().signal})).rejects.toBe(
+      reason,
+    )
+    expect(mockClient.fetch).not.toHaveBeenCalled()
+  })
+
+  it('aborts an Observable fetch when the default signal aborts', async () => {
+    const defaultController = new AbortController()
+    const fetchController = new AbortController()
+    const reason = new Error('validation cancelled')
+    const mockClient = {
+      observable: {fetch: abortableObservableFetch()},
+    } as unknown as SanityClient
+    const client = createClientConcurrencyLimiter(1, defaultController.signal)(mockClient)
+
+    const result = firstValueFrom(
+      client.observable.fetch('query', {}, {signal: fetchController.signal}),
+    )
+    await vi.waitFor(() => expect(mockClient.observable.fetch).toHaveBeenCalledOnce())
+    defaultController.abort(reason)
+
+    await expect(result).rejects.toBe(reason)
+    expect(fetchController.signal.aborted).toBe(false)
+  })
+
+  it('drops a queued Observable fetch when its signal aborts', async () => {
+    const pending = deferred()
+    const fetchController = new AbortController()
+    const reason = new Error('queued fetch cancelled')
+    const fetch = vi
+      .fn()
+      .mockImplementationOnce(
+        () => new Observable<void>((subscriber) => void pending.then(() => subscriber.complete())),
+      )
+      .mockImplementationOnce(() => {
+        throw new Error('the aborted fetch must never start')
+      })
+    const client = createClientConcurrencyLimiter(1)({
+      observable: {fetch},
+    } as unknown as SanityClient)
+
+    const active = client.observable.fetch('active').subscribe()
+    const queued = firstValueFrom(
+      client.observable.fetch('queued', {}, {signal: fetchController.signal}),
+    )
+    await tick()
+    expect(fetch).toHaveBeenCalledOnce()
+
+    fetchController.abort(reason)
+    await expect(queued).rejects.toBe(reason)
+
+    pending.resolve()
+    await tick()
+    active.unsubscribe()
+    expect(fetch).toHaveBeenCalledOnce()
+  })
+
+  it('drops a queued Observable fetch when unsubscribed', async () => {
+    const pending = deferred()
+    const fetchController = new AbortController()
+    const fetch = vi
+      .fn()
+      .mockImplementationOnce(
+        () => new Observable<void>((subscriber) => void pending.then(() => subscriber.complete())),
+      )
+      .mockImplementationOnce(() => {
+        throw new Error('the unsubscribed fetch must never start')
+      })
+    const client = createClientConcurrencyLimiter(1)({
+      observable: {fetch},
+    } as unknown as SanityClient)
+
+    const active = client.observable.fetch('active').subscribe()
+    const queued = client.observable
+      .fetch('queued', {}, {signal: fetchController.signal})
+      .subscribe()
+    await tick()
+    queued.unsubscribe()
+
+    pending.resolve()
+    await tick()
+    active.unsubscribe()
+    expect(fetch).toHaveBeenCalledOnce()
+    expect(fetchController.signal.aborted).toBe(false)
+  })
+
+  it('combines the signals again when an Observable fetch is re-subscribed', async () => {
+    const defaultController = new AbortController()
+    const fetchController = new AbortController()
+    const reason = new Error('validation cancelled')
+    const mockClient = {
+      observable: {fetch: abortableObservableFetch()},
+    } as unknown as SanityClient
+    const client = createClientConcurrencyLimiter(1, defaultController.signal)(mockClient)
+    const fetch$ = client.observable.fetch('query', {}, {signal: fetchController.signal})
+
+    const first = fetch$.subscribe()
+    await vi.waitFor(() => expect(mockClient.observable.fetch).toHaveBeenCalledOnce())
+    first.unsubscribe()
+
+    const second = firstValueFrom(fetch$)
+    await vi.waitFor(() => expect(mockClient.observable.fetch).toHaveBeenCalledTimes(2))
+    defaultController.abort(reason)
+
+    await expect(second).rejects.toBe(reason)
+    expect(getEventListeners(defaultController.signal, 'abort')).toHaveLength(0)
+  })
+
+  it('removes its listeners from the source signals once the fetch settles', async () => {
+    const defaultController = new AbortController()
+    const fetchController = new AbortController()
+    const mockClient = {
+      fetch: vi.fn(async () => 'promise result'),
+      observable: {
+        fetch: vi.fn(() => new Observable((subscriber) => subscriber.next('observable result'))),
+      },
+    } as unknown as SanityClient
+    const client = createClientConcurrencyLimiter(1, defaultController.signal)(mockClient)
+
+    await expect(client.fetch('promise', {}, {signal: fetchController.signal})).resolves.toBe(
+      'promise result',
+    )
+    await expect(
+      firstValueFrom(client.observable.fetch('observable', {}, {signal: fetchController.signal})),
+    ).resolves.toBe('observable result')
+
+    expect(getEventListeners(defaultController.signal, 'abort')).toHaveLength(0)
+    expect(getEventListeners(fetchController.signal, 'abort')).toHaveLength(0)
+  })
+}
+
+describe('createClientConcurrencyLimiter signal combination', () => {
+  afterEach(() => {
+    AbortSignal.any = nativeAbortSignalAny
+  })
+
+  describe('without native AbortSignal.any (Safari 17.0 – 17.3)', () => {
+    beforeEach(() => {
+      // Safari only gained `AbortSignal.any` in 17.4. Deleting the static reproduces the
+      // `TypeError: AbortSignal.any is not a function` those releases throw.
+      // @ts-expect-error -- simulating a runtime without the static
+      delete AbortSignal.any
+      expect(AbortSignal.any).toBeUndefined()
+    })
+
+    describeSignalCombination()
+  })
+
+  describe('with native AbortSignal.any (Safari 17.4+ and other modern runtimes)', () => {
+    beforeEach(() => {
+      expect(typeof AbortSignal.any).toBe('function')
+    })
+
+    describeSignalCombination()
+
+    it('does not depend on the native static even when it exists', async () => {
+      const spy = vi.spyOn(AbortSignal, 'any')
+      const defaultController = new AbortController()
+      const mockClient = {fetch: vi.fn(async () => 'result')} as unknown as SanityClient
+      const client = createClientConcurrencyLimiter(1, defaultController.signal)(mockClient)
+
+      await expect(client.fetch('query', {}, {signal: new AbortController().signal})).resolves.toBe(
+        'result',
+      )
+
+      expect(spy).not.toHaveBeenCalled()
+    })
+  })
+})
