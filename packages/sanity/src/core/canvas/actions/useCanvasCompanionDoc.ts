@@ -21,7 +21,7 @@ export const useCanvasCompanionDoc = (documentId: string) => {
   // resets this state, so there's no cross-document tear. react-rx v5's
   // identity-coherent deferral additionally falls back to the live value if
   // the observable identity ever changes.
-  const companionDocs = useObservable(companionDocs$)
+  const companionDocs = useObservable(companionDocs$, undefined)
 
   const companionDoc = useMemo(
     () => companionDocs?.data.find((companion) => companion?.studioDocumentId === documentId),

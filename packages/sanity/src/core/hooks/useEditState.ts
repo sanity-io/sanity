@@ -51,5 +51,5 @@ export function useEditState(
    * We know that since the observable has a startWith operator, it will always emit a value
    * and that's why the non-null assertion is used here
    */
-  return useSyncObservable(observable)!
+  return useSyncObservable(observable, undefined)!
 }
