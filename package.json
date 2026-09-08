@@ -134,7 +134,7 @@
     "oxfmt": "^0.66.0",
     "oxlint": "^1.81.0",
     "oxlint-tsgolint": "^7.0.2001",
-    "pkg-pr-new": "^0.0.87",
+    "pkg-pr-new": "^0.0.88",
     "playwright": "catalog:",
     "sanity": "workspace:*",
     "tsx": "^4.23.13",
