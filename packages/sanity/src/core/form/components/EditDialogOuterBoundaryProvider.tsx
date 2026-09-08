@@ -18,9 +18,10 @@ export interface EditDialogOuterBoundaryContextValue {
  * shadows it with its own scroll container (`BoundaryElementProvider`). Render it *around* the
  * dialog's `BoundaryElementProvider`.
  *
- * Popovers that are allowed to overflow the dialog (currently only the array insert menu) use the
- * captured element — typically the document pane's scroll container — as their floating boundary,
- * so they can escape the dialog while still respecting the pane header and footer.
+ * Popovers that are allowed to overflow the dialog (the array insert menu, and reference
+ * autocomplete results) use the captured element — typically the document pane's scroll
+ * container — as their floating boundary, so they can escape the dialog while still respecting
+ * the pane header and footer.
  *
  * When edit dialogs are stacked, the value captured by the outermost dialog is inherited, so
  * popovers in nested dialogs are not constrained to the (hidden) parent dialog's content box.
