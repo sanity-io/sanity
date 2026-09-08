@@ -167,7 +167,7 @@ importers:
         specifier: ^2.1.12
         version: 2.1.12
       npm-run-all2:
-        specifier: ^9.0.2
+        specifier: ^9.0.3
         version: 9.0.3
       only-allow:
         specifier: ^1.2.2

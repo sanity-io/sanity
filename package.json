@@ -129,7 +129,7 @@
     "eslint-plugin-tsdoc": "^0.5.2",
     "knip": "^6.34.0",
     "lefthook": "^2.1.12",
-    "npm-run-all2": "^9.0.2",
+    "npm-run-all2": "^9.0.3",
     "only-allow": "^1.2.2",
     "oxfmt": "^0.66.0",
     "oxlint": "^1.81.0",
