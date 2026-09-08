@@ -25,6 +25,7 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
 import {useVariantConditions} from '../../hooks/useVariantConditions'
 import {type VariantsLocaleResourceKeys, variantsLocaleNamespace} from '../../i18n'
+import {VARIANTS_TOOL_NAME} from '../../plugin'
 import {useAllVariants} from '../../store/useAllVariants'
 import {getVariantId, getVariantTitle} from '../../tool/util'
 import {type EditableSystemVariant, type SystemVariant} from '../../types'
@@ -161,7 +162,13 @@ function getPortableTextDescriptionValue(description?: PortableTextBlock[]): str
 }
 
 function DuplicateVariantLink(props: {children?: ReactNode; variantId?: string}) {
-  return <StateLink state={{variantId: props.variantId}}>{props.children}</StateLink>
+  return (
+    <StateLink
+      state={{tool: VARIANTS_TOOL_NAME, [VARIANTS_TOOL_NAME]: {variantId: props.variantId}}}
+    >
+      {props.children}
+    </StateLink>
+  )
 }
 
 const DUPLICATE_MESSAGE_COMPONENTS = {VariantLink: DuplicateVariantLink}

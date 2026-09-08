@@ -31,20 +31,24 @@ vi.mock('@sanity/ui/toast', async (importOriginal) => ({
   useToast: vi.fn(() => toastMock),
 }))
 
-// The test router has no `variantId` route, so resolve duplicate-error links to plain anchors.
+// The test router has no real `variants` tool route registered, so resolve the tool-scoped
+// duplicate-error state to plain anchors instead of exercising real route resolution.
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),
   StateLink: function MockStateLink({
     ref,
     state,
     ...rest
-  }: {state?: {variantId?: string}} & HTMLProps<HTMLAnchorElement>) {
+  }: {
+    state?: {tool?: string; variants?: {variantId?: string}}
+  } & HTMLProps<HTMLAnchorElement>) {
+    const variantId = state?.tool === 'variants' ? state.variants?.variantId : undefined
     return (
       // oxlint-disable-next-line jsx_a11y/anchor-has-content
       <a
         {...rest}
         ref={ref as Ref<HTMLAnchorElement>}
-        href={state?.variantId ? `/variants/${state.variantId}` : '/variants'}
+        href={variantId ? `/variants/${variantId}` : '/variants'}
       />
     )
   },

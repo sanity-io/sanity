@@ -20,7 +20,10 @@ export const VARIANTS_NAME = 'sanity/variants'
 
 const VARIANTS_INTENT = 'variant'
 
-const VARIANTS_TOOL_NAME = 'variants'
+/**
+ * @internal
+ */
+export const VARIANTS_TOOL_NAME = 'variants'
 
 /**
  * @internal
