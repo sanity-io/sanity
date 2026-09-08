@@ -8,14 +8,14 @@ import {
   enablePreviewAccessSharing,
 } from '@sanity/preview-url-secret/toggle-preview-access-sharing'
 import {setSecretSearchParams} from '@sanity/preview-url-secret/without-secret-search-params'
-import {Card, Grid, Spinner, Stack, Switch, Text} from '@sanity/ui'
+import {Card, Spinner, Stack, Switch, Text} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
 import {AnimatePresence, motion} from 'motion/react'
 import {lazy, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {useClient, useCurrentUser, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Grid, Box} from 'ui5'
 
 import {Button} from '../../ui-components/button/Button'
 import {MenuButton} from '../../ui-components/menuButton/MenuButton'
@@ -213,10 +213,10 @@ export function SharePreviewMenu(props: SharePreviewMenuProps): React.JSX.Elemen
             <>
               <label style={{cursor: 'pointer'}}>
                 <Grid
-                  gridTemplateColumns={2}
-                  gridTemplateRows={2}
-                  gapX={3}
-                  gapY={1}
+                  gridTemplateColumns="repeat(2, minmax(0, 1fr))"
+                  gridTemplateRows="repeat(2, minmax(0, 1fr))"
+                  columnGap={3}
+                  rowGap={1}
                   style={{
                     justifyContent: 'center',
                     alignItems: 'center',
