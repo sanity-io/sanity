@@ -112,7 +112,7 @@
     "@sanity/client": "catalog:",
     "@sanity/types": "workspace:*",
     "date-fns": "^4.4.0",
-    "get-it": "https://pkg.pr.new/get-it@672",
+    "get-it": "catalog:",
     "rxjs": "^7.8.2"
   },
   "devDependencies": {

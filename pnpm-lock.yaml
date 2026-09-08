@@ -61,6 +61,9 @@ catalogs:
     dequal:
       specifier: ^2.0.3
       version: 2.0.3
+    get-it:
+      specifier: ^9.5.4
+      version: 9.5.4
     jsdom:
       specifier: ^29.1.1
       version: 29.1.1
@@ -1606,8 +1609,8 @@ importers:
         specifier: ^4.4.0
         version: 4.4.0
       get-it:
-        specifier: https://pkg.pr.new/get-it@672
-        version: https://pkg.pr.new/get-it@672(vitest@4.1.11)
+        specifier: 'catalog:'
+        version: 9.5.4(vitest@4.1.11)
       rxjs:
         specifier: ^7.8.2
         version: 7.8.2
@@ -10930,9 +10933,8 @@ packages:
       vitest:
         optional: true
 
-  get-it@https://pkg.pr.new/get-it@672:
-    resolution: {integrity: sha512-we4/m7Yqe2tkJA4762SWhcS/5Gf41eOqM2GljBlDAPoP7INrdyCpp8Voio4CccoDlHsCYkevNXxRY0ULoTKWQw==, tarball: https://pkg.pr.new/get-it@672}
-    version: 9.5.3
+  get-it@9.5.4:
+    resolution: {integrity: sha512-LXbU86HfKWzssHTTsQtUphDh5RB9ilOvncCPPDjaJTbli8zPIJBv4KA9EMB/Wv8GfPXy0dpulfRJzd76n7c3bg==}
     engines: {node: '>=22.12.0'}
     peerDependencies:
       vitest: ^4.1.11
@@ -23994,7 +23996,7 @@ snapshots:
     optionalDependencies:
       vitest: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(@vitest/browser-playwright@4.1.11)(@vitest/coverage-v8@4.1.11)(jsdom@29.1.1)(vite@8.2.2)
 
-  get-it@https://pkg.pr.new/get-it@672(vitest@4.1.11):
+  get-it@9.5.4(vitest@4.1.11):
     dependencies:
       undici: 7.29.0
     optionalDependencies:
