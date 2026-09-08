@@ -3,10 +3,15 @@ import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 
 import {useSchema} from '../../hooks/useSchema'
-import {getPreviewStateObservable} from '../../preview/utils/getPreviewStateObservable'
+import {
+  getPreviewStateObservable,
+  type PreviewState,
+} from '../../preview/utils/getPreviewStateObservable'
 import {useDocumentPreviewStore} from '../../store/datastores'
 import {useWorkspace} from '../../studio/workspace'
 import {type CommentContext} from '../types'
+
+const EMPTY_PREVIEW_STATE: PreviewState = {original: null, snapshot: null}
 
 interface NotificationTargetHookOptions {
   versionId: string
@@ -39,7 +44,7 @@ export function useNotificationTarget(
   const documentPreviewStore = useDocumentPreviewStore()
 
   const previewStateObservable = useMemo(() => {
-    if (!versionId || !schemaType) return of(null)
+    if (!versionId || !schemaType) return of(EMPTY_PREVIEW_STATE)
     const perspectiveStack = documentVersionId ? [documentVersionId, 'drafts'] : ['drafts']
     return getPreviewStateObservable(documentPreviewStore, schemaType, versionId, perspectiveStack)
   }, [versionId, documentPreviewStore, schemaType, documentVersionId])
@@ -47,9 +52,7 @@ export function useNotificationTarget(
   // email body, where a briefly stale title is harmless (it can go stale
   // after send anyway). react-rx v5's identity-coherent deferral still falls
   // back to the live value when the previewed document id changes.
-  const previewState = useObservable(previewStateObservable, undefined)
-
-  const {snapshot, original} = previewState || {}
+  const {snapshot, original} = useObservable(previewStateObservable, EMPTY_PREVIEW_STATE)
   const documentTitle = (snapshot?.title || original?.title || 'Sanity document') as string
 
   const handleGetNotificationValue = useCallback(
