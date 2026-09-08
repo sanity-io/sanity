@@ -29,7 +29,7 @@ export function useActiveReleases(): ReleasesState {
   // snapshot could tear the release identity (e.g. reference create-in-place
   // writing `_weak` or opening the wrong version). Executable proof:
   // perspective/__tests__/deferralSafety.test.tsx.
-  const state = useSyncObservable(state$)!
+  const state = useSyncObservable(state$, undefined)!
   const releasesAsArray = useMemo(
     () =>
       sortReleases(

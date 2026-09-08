@@ -53,7 +53,7 @@ function CacheWarmer() {
       ),
     [previewStore],
   )
-  useObservable(warm$)
+  useObservable(warm$, undefined)
   return null
 }
 

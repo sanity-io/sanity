@@ -38,7 +38,7 @@ export function useDocumentOperation(
    * document id/type they were created for, so a deferred (stale) API could
    * execute an action against the previously viewed document after navigation.
    */
-  const api = useSyncObservable(observable)!
+  const api = useSyncObservable(observable, undefined)!
 
   return useDocumentOperationWithComlinkHistory({
     api,

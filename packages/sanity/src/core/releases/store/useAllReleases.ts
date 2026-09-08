@@ -21,7 +21,7 @@ export function useAllReleases(): {
   // pair a stale release list with the current selection — or disagree with
   // the synchronous `useActiveReleases` read of the same store. Executable
   // proof: perspective/__tests__/deferralSafety.test.tsx.
-  const {releases, error, state} = useSyncObservable(state$)!
+  const {releases, error, state} = useSyncObservable(state$, undefined)!
 
   return useMemo(
     () => ({

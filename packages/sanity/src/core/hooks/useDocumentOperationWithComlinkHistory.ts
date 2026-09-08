@@ -41,7 +41,7 @@ export function useDocumentOperationWithComlinkHistory({
   // Kept synchronous: capabilities emit once at boot and gate whether
   // operations are decorated with comlink history capture; deferring only
   // delays the decoration.
-  const capabilities = useSyncObservable(renderingContextStore.capabilities)
+  const capabilities = useSyncObservable(renderingContextStore.capabilities, undefined)
 
   // Used to prevent redundant `edited` events being recorded.
   const [hasRecordedEdit, setHasRecordedEdit] = useState<boolean>(false)

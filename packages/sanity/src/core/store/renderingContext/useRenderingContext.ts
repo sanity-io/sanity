@@ -7,5 +7,5 @@ export function useRenderingContext() {
 
   // Kept synchronous: the rendering context emits once at boot; deferring
   // only delays consumers reacting to it.
-  return useSyncObservable(renderingContextStore.renderingContext)
+  return useSyncObservable(renderingContextStore.renderingContext, undefined)
 }

@@ -29,7 +29,7 @@ export function WorkspaceAuthCard({workspace, onSelect}: WorkspaceAuthCardProps)
       }),
     [workspace.apiHost, workspace.dataset, workspace.projectId],
   )
-  const probe = useObservable(probe$)
+  const probe = useObservable(probe$, undefined)
 
   const state: 'loading' | 'logged-in' | 'logged-out' | 'no-access' = !probe
     ? 'loading'
