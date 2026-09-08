@@ -41,7 +41,8 @@ describe('isUsingLegacyHttp', () => {
         responseStart: 0,
         secureConnectionStart: 0,
         serverTiming: [],
-        startTime: performance.now() + 1,
+        // Set when the observer fires so startTime is after detectApiNetwork's startedAt.
+        startTime: 0,
         transferSize: 0,
       }
 
@@ -54,7 +55,10 @@ describe('isUsingLegacyHttp', () => {
             this.callback = callback
           }
           observe() {
-            setTimeout(() => this.callback({getEntries: () => [mockEntry]}), 0)
+            setTimeout(() => {
+              mockEntry.startTime = performance.now()
+              this.callback({getEntries: () => [mockEntry]})
+            }, 0)
           }
           disconnect() {
             // noop
@@ -130,7 +134,7 @@ describe('isUsingLegacyHttp', () => {
         responseStart: 40,
         secureConnectionStart: 20,
         serverTiming: [],
-        startTime: performance.now() + 1,
+        startTime: 0,
         transferSize: 304,
       }
       const mockObserve = vi.fn()
@@ -147,6 +151,7 @@ describe('isUsingLegacyHttp', () => {
             mockObserve()
             // Emit the entry async so the fetch can resolve first
             setTimeout(() => {
+              mockEntry.startTime = performance.now()
               this.callback({getEntries: () => [mockEntry]})
             }, 0)
           }
@@ -210,7 +215,7 @@ describe('isUsingLegacyHttp', () => {
         responseStart: 0,
         secureConnectionStart: 0,
         serverTiming: [],
-        startTime: performance.now() + 1,
+        startTime: 0,
         transferSize: 0,
       }
 
@@ -223,7 +228,10 @@ describe('isUsingLegacyHttp', () => {
             this.callback = callback
           }
           observe() {
-            setTimeout(() => this.callback({getEntries: () => [mockEntry]}), 0)
+            setTimeout(() => {
+              mockEntry.startTime = performance.now()
+              this.callback({getEntries: () => [mockEntry]})
+            }, 0)
           }
           disconnect() {
             // noop
