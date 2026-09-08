@@ -10,6 +10,7 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {createHookFromObservableFactory} from '../../util/createHookFromObservableFactory'
 import {getDraftId, getPublishedId, getIdPair} from '../../util/draftUtils'
 import {type PartialExcept} from '../../util/PartialExcept'
+import {shallowEquals} from '../../util/shallowEquals'
 import {useGrantsStore} from '../datastores'
 import {snapshotPair} from '../document/document-pair/snapshotPair'
 import {type DocumentStoreExtraOptions} from '../document/getPairListener'
@@ -19,10 +20,6 @@ import {type GrantsStore, type PermissionCheckResult} from './types'
 
 function shareLatestWithRefCount<T>() {
   return shareReplay<T>({bufferSize: 1, refCount: true})
-}
-
-function isSamePermissionCheckResult(a: PermissionCheckResult, b: PermissionCheckResult) {
-  return a.granted === b.granted && a.reason === b.reason
 }
 
 function getSchemaType(schema: Schema, typeName: string): SchemaType {
@@ -284,7 +281,7 @@ function getDocumentPairPermissionsUncached({
 export const getDocumentPairPermissions = memoize(
   (options: DocumentPairPermissionsOptions): Observable<PermissionCheckResult> =>
     getDocumentPairPermissionsUncached(options).pipe(
-      distinctUntilChanged(isSamePermissionCheckResult),
+      distinctUntilChanged(shallowEquals),
       shareLatestWithRefCount(),
     ),
   ({
