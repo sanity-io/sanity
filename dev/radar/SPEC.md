@@ -96,11 +96,12 @@ effect of merged work; secondary: leads scanning health weekly.
    paste-ready brief for a coding agent, `investigationPrompt.ts`). The
    Comparisons tool is where a dispatched comparison lands.
 3. **Drift feed** (P2) — computed client-side, flagging a metric when it
-   clears the gate's floors (perf/bench/stats/gate.ts — one source of truth
-   for "what matters": the larger of 16ms and 5% of the baseline for ms
-   metrics, so a baseline of 0 is judged on the absolute floor alone and a
-   tripwire count going 0 → 4 flags) **and** moves by at least 2.5 standard
-   errors of its own run-to-run noise. A move from a zero baseline is shown
+   clears the floors (the larger of 16ms and 5% of the baseline for ms
+   metrics — the gate's interaction pair from perf/bench/stats/gate.ts, applied
+   to load metrics as well since drift cannot tell the two apart by unit and
+   the gate's looser pageload pair of 100ms/8% is a subset; at a baseline of 0
+   the absolute floor alone decides, so a tripwire count going 0 → 4 flags)
+   **and** moves by at least 2.5 standard errors of its own run-to-run noise. A move from a zero baseline is shown
    as its absolute size ("+4"), since a percentage of nothing has no meaning.
 
    One baseline: the median of the last 7 runs vs the median of the prior 21.
@@ -109,7 +110,7 @@ effect of merged work; secondary: leads scanning health weekly.
 
    The noise test is what makes the feed reviewable. Per-run noise on keystroke
    latency is 11–22% and on load metrics 5–20% (48 stored runs, Aug 2026), so
-   the gate's fixed 5% floor alone flagged 68% of all 7-vs-21 windows on the
+   the fixed 5% floor alone flagged 68% of all 7-vs-21 windows on the
    stored history — and a pure-noise simulation with the same spread flagged
    57%. The noise is estimated per series from the points being compared
    (robust MAD of consecutive differences and of the prior window's residuals,

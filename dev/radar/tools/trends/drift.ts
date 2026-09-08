@@ -5,9 +5,12 @@
  * before them (one point per commit — `buildSeries` merges re-runs). A move
  * counts when it passes all three of:
  *
- * 1. the gate's absolute floor for the unit (perf/bench/stats/gate.ts; 16ms
- *    for ms — two Event Timing quantisation steps);
- * 2. the gate's relative floor, 5% of the baseline; and
+ * 1. an absolute floor per unit — for ms the gate's interaction floor of 16ms
+ *    (perf/bench/stats/gate.ts; two Event Timing quantisation steps);
+ * 2. a relative floor of 5% of the baseline — the gate's interaction figure,
+ *    applied to every ms series (the gate's looser pageload pair, 100ms and
+ *    8%, is not used: drift cannot tell load from keystroke metrics by unit,
+ *    and a load metric that clears 8% clears 5%); and
  * 3. a noise test: at least NOISE_Z standard errors of the window comparison,
  *    with the noise estimated from the series itself (`noiseSigma`).
  *
@@ -27,7 +30,12 @@ interface DriftThreshold {
   relative: number
 }
 
-/** Mirrors the gate's floors by unit (INTERACTION_THRESHOLDS for ms). */
+/**
+ * Floors by unit. For ms this is the gate's INTERACTION_THRESHOLDS (16ms, 5%),
+ * applied to load metrics too — the gate's PAGELOAD_THRESHOLDS (100ms, 8%) are
+ * deliberately not mirrored, since drift cannot tell the two kinds apart by
+ * unit and the tighter pair is a superset. The other units are drift's own.
+ */
 function thresholdFor(unit: TrendUnit): DriftThreshold {
   // 16ms = two Event Timing quantisation steps (8ms granularity), the gate's
   // interaction floor. Load metrics are far above it, so one floor serves both.
