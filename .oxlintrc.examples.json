@@ -1,5 +1,9 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
+  // `examples/**` is in the root config's `ignorePatterns` because it is out of scope for type
+  // checking (SGH-461), and `options.typeCheck` cannot be scoped per override — so this restriction
+  // cannot live in `.oxlintrc.json`. `check:oxlint` runs this config over `examples` as a second
+  // pass. Only the import restriction is enabled; examples stay ungated for every other rule.
   "categories": {
     "correctness": "off"
   },

@@ -41,15 +41,15 @@ pnpm check:oxlint
 
 These checks run on every PR and **must pass**:
 
-| Check            | Command               | Notes                                                                                                                                                            |
-| ---------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Format**       | `pnpm check:format`   | Uses oxfmt. Fix with `pnpm chore:format:fix`                                                                                                                     |
-| **Oxlint**       | `pnpm check:oxlint`   | Rust linter with type-aware rules and TypeScript type checking via tsgolint (`options.typeCheck`). Fix with `pnpm chore:oxlint:fix`                              |
-| **Unit Tests**   | `pnpm test`           | Vitest, sharded in CI                                                                                                                                            |
-| **Export Tests** | `pnpm test:exports`   | Ensures ESM/CJS/DTS work                                                                                                                                         |
-| **Dep Check**    | `pnpm depcheck`       | Finds unused/missing deps                                                                                                                                        |
-| **Zizmor**       | `pnpm lint:workflows` | Audits `.github/workflows/` for security issues. Fails CI on high-severity findings. Local run needs [`zizmor`](https://docs.zizmor.sh/installation/) on `PATH`. |
-| **PR Title**     | Conventional commits  | e.g., `feat(scope): description`                                                                                                                                 |
+| Check            | Command               | Notes                                                                                                                                                                                                                    |
+| ---------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Format**       | `pnpm check:format`   | Uses oxfmt. Fix with `pnpm chore:format:fix`                                                                                                                                                                             |
+| **Oxlint**       | `pnpm check:oxlint`   | Rust linter with type-aware rules and TypeScript type checking via tsgolint (`options.typeCheck`). Runs `.oxlintrc.json` over the repo, then `.oxlintrc.examples.json` over `examples`. Fix with `pnpm chore:oxlint:fix` |
+| **Unit Tests**   | `pnpm test`           | Vitest, sharded in CI                                                                                                                                                                                                    |
+| **Export Tests** | `pnpm test:exports`   | Ensures ESM/CJS/DTS work                                                                                                                                                                                                 |
+| **Dep Check**    | `pnpm depcheck`       | Finds unused/missing deps                                                                                                                                                                                                |
+| **Zizmor**       | `pnpm lint:workflows` | Audits `.github/workflows/` for security issues. Fails CI on high-severity findings. Local run needs [`zizmor`](https://docs.zizmor.sh/installation/) on `PATH`.                                                         |
+| **PR Title**     | Conventional commits  | e.g., `feat(scope): description`                                                                                                                                                                                         |
 
 ### Before Committing
 
@@ -323,6 +323,8 @@ pnpm lint:fix          # Auto-fix issues (oxfmt + oxlint --fix)
 All packages use **ESM** (`"type": "module"`). TypeScript strict mode is enabled.
 
 Rules that the linter already enforces (restricted imports, type-aware rules, React Compiler rules, i18n rules, module boundaries) are not repeated in this guide — run `pnpm lint` and follow the reported messages, which explain the expected pattern.
+
+`examples/**` is in the root config's `ignorePatterns` (out of scope for type checking, SGH-461), so rules that must still reach example studios live in `.oxlintrc.examples.json`, which `check:oxlint` runs as a second pass. It cannot be an override in `.oxlintrc.json`: `options.typeCheck` is global and has no per-override form, so un-ignoring `examples` would flood the run with type errors. Keep that config scoped to restrictions that genuinely matter for code users copy into their own projects — examples are otherwise deliberately ungated.
 
 ### Do Not Weaken the Linter
 

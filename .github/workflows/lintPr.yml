@@ -21,8 +21,6 @@ jobs:
         run: pnpm check:oxlint
         env:
           NODE_OPTIONS: --max_old_space_size=8192
-      - name: Check ui5 import boundaries
-        run: pnpm check:ui5-imports
 
   knip:
     runs-on: ubuntu-latest
