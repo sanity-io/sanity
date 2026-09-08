@@ -6,7 +6,7 @@ import {flushMicrotasksThisIsACodeSmell} from '../../../../../../test/testUtils/
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {usePerspectiveMockReturn} from '../../../../perspective/__mocks__/usePerspective.mock'
 import {activeASAPRelease} from '../../../../releases/__fixtures__/release.fixture'
-import {variantAlphaAudience} from '../../../__fixtures__/variants.fixture'
+import {variantAlphaAudience, variantNorwegianMarket} from '../../../__fixtures__/variants.fixture'
 import {variantsUsEnglishLocaleBundle} from '../../../i18n'
 import {getVariantId} from '../../../tool/util'
 import {VariantsStudioNavbar} from '../VariantsStudioNavbar'
@@ -16,6 +16,12 @@ const mockNavigate = vi.fn()
 const routerMock = vi.hoisted(() => ({
   stickyParams: {} as Record<string, string | undefined>,
 }))
+
+const activeDocumentMock = vi.hoisted(() => ({
+  value: {activeDocument: undefined} as {activeDocument?: {documentId: string}},
+}))
+
+const documentVariantIdsMock = vi.hoisted(() => ({value: new Set<string>()}))
 
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),
@@ -37,8 +43,20 @@ vi.mock('../../../../perspective/navbar/GlobalPerspectiveMenu', () => ({
   GlobalPerspectiveMenu: () => <div data-testid="global-perspective-menu" />,
 }))
 
+// Renders `trigger` rather than swallowing it. The variant pill's rhombus lives IN the trigger, so
+// a stub that drops it hides exactly the thing these tests assert on.
 vi.mock('../VariantsMenu', () => ({
-  VariantsMenu: () => <div data-testid="variants-menu" />,
+  VariantsMenu: ({trigger}: {trigger?: React.ReactNode}) => (
+    <div data-testid="variants-menu">{trigger}</div>
+  ),
+}))
+
+vi.mock('../../../../perspective/activeDocument/usePerspectiveActiveDocument', () => ({
+  usePerspectiveActiveDocument: vi.fn(() => activeDocumentMock.value),
+}))
+
+vi.mock('../../../hooks/useDocumentVariantIds', () => ({
+  useDocumentVariantIds: vi.fn(() => documentVariantIdsMock.value),
 }))
 
 function getFilter(prefix: string) {
@@ -56,6 +74,8 @@ describe('VariantsStudioNavbar', () => {
     routerMock.stickyParams = {}
     usePerspectiveMockReturn.selectedPerspective = 'drafts'
     usePerspectiveMockReturn.selectedVariant = undefined
+    activeDocumentMock.value = {activeDocument: undefined}
+    documentVariantIdsMock.value = new Set<string>()
   })
 
   const renderNavbar = async () => {
@@ -138,6 +158,43 @@ describe('VariantsStudioNavbar', () => {
       stickyParams: {
         variant: null,
       },
+    })
+  })
+
+  describe("the variant pill's rhombus", () => {
+    const rhombus = () => {
+      const button = screen.getByTestId('variants-nav-menu-button')
+      const svg = button.querySelector('[data-sanity-icon]')
+      if (!svg) throw new Error('no icon rendered in the variant trigger')
+      return svg.getAttribute('data-sanity-icon')
+    }
+
+    it('outlines when no document is open', async () => {
+      await renderNavbar()
+      expect(rhombus()).toBe('rhombus-outlined')
+    })
+
+    it('fills on the default perspective when a document is open', async () => {
+      activeDocumentMock.value = {activeDocument: {documentId: 'book-1'}}
+      await renderNavbar()
+      // A document always exists outside every variant, so the default is presence, not absence.
+      expect(rhombus()).toBe('rhombus')
+    })
+
+    it('fills when the open document has a version in the selected variant', async () => {
+      activeDocumentMock.value = {activeDocument: {documentId: 'book-1'}}
+      usePerspectiveMockReturn.selectedVariant = variantAlphaAudience
+      documentVariantIdsMock.value = new Set([variantAlphaAudience._id])
+      await renderNavbar()
+      expect(rhombus()).toBe('rhombus')
+    })
+
+    it('outlines when the open document has no version in the selected variant', async () => {
+      activeDocumentMock.value = {activeDocument: {documentId: 'book-1'}}
+      usePerspectiveMockReturn.selectedVariant = variantAlphaAudience
+      documentVariantIdsMock.value = new Set([variantNorwegianMarket._id])
+      await renderNavbar()
+      expect(rhombus()).toBe('rhombus-outlined')
     })
   })
 })

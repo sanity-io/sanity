@@ -17,6 +17,13 @@ export const PUBLISHED = 'published' as const
 export const DEFAULT_RELEASE_TYPE = 'asap'
 
 /**
+ * The order release types are presented in, everywhere they are grouped.
+ *
+ * @internal
+ */
+export const ORDERED_RELEASE_TYPES: ReleaseType[] = ['asap', 'scheduled', 'undecided']
+
+/**
  * @internal
  */
 export const ARCHIVED_RELEASE_STATES = ['archived', 'published']
