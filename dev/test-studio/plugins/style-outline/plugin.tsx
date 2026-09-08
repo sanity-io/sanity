@@ -1,12 +1,15 @@
+import {lazy, Suspense} from 'react'
 import {definePlugin, type LayoutProps} from 'sanity'
 
-import {StyleOutlinePanel} from './StyleOutlinePanel'
+const StyleOutlinePanel = lazy(() => import('./StyleOutlinePanel'))
 
 function StyleOutlineLayout(props: LayoutProps) {
   return (
     <>
       {props.renderDefault(props)}
-      <StyleOutlinePanel />
+      <Suspense fallback={null}>
+        <StyleOutlinePanel />
+      </Suspense>
     </>
   )
 }

@@ -1,6 +1,6 @@
 {
   "name": "@sanity/validation",
-  "version": "6.12.0",
+  "version": "6.13.0",
   "description": "Document validation for Sanity schemas",
   "keywords": [
     "cms",

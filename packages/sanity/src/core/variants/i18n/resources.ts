@@ -36,6 +36,9 @@ const variantsLocaleStrings = {
     "This variant definition contains {{count}} documents in it, it can't be removed until the documents have been removed.",
   /** Error toast title when variant deletion fails. */
   'overview.action.delete-variant.error.title': 'Unable to delete variant definition',
+  /** Tooltip (and error toast description) when the user lacks permission to delete a variant. */
+  'overview.action.delete-variant.permission-error':
+    'You do not have permission to delete this variant definition',
   /** Link label for Variants overview documentation (empty state). */
   'overview.action.documentation': 'Documentation',
   /** Description for the Variants overview empty state. */

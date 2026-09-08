@@ -5,7 +5,8 @@ import process from 'node:process'
 import {afterEach, beforeEach, describe, expect, it} from 'vitest'
 
 import {type PageLoadSample} from '../../runner/session/pageLoad'
-import {collectPageLoad, collectRunMetadata} from '../collect'
+import {type SettleSessionResult} from '../../runner/session/settle'
+import {collectPageLoad, collectRunMetadata, collectSettle} from '../collect'
 
 const ENV_KEYS = [
   'GITHUB_SHA',
@@ -389,6 +390,79 @@ describe('collectPageLoad', () => {
     expect(report.clsAttribution).toEqual([
       {source: 'div.banner', totalValue: 0.02},
       {source: '[data-testid="pane-content"]', totalValue: 0.005 + 0.01},
+    ])
+  })
+})
+
+describe('collectSettle', () => {
+  const scenario = {
+    name: 'previewHeavy',
+    sourceFile: 'perf/bench/scenarios/customizations.ts',
+    documentType: 'previewHeavy',
+    documentId: 'doc',
+    fixture: () => [],
+    interactions: [],
+  }
+
+  function settleSession(overrides: Partial<SettleSessionResult> = {}): SettleSessionResult {
+    return {
+      ready: true,
+      settled: true,
+      settleTimeMs: 1200,
+      reactCommits: 12,
+      commitsPerSecond: 2.5,
+      hookInstalled: true,
+      loafCount: 1,
+      loafBlockingMs: 60,
+      cpuAfterReadyMs: 400,
+      peakCpuUtilization: 0.2,
+      renderMarks: {'previewHeavy.row': 24},
+      loafAttribution: [{sourceUrl: 'https://x/chunk.js', functionName: 'f', totalMs: 60}],
+      timeline: [],
+      ...overrides,
+    }
+  }
+
+  it('reports mode settle with the scenario expectation', () => {
+    const report = collectSettle(scenario, [settleSession()])
+    expect(report.mode).toBe('settle')
+    expect(report.kind).toBe('pageload')
+    expect(report.settleExpectation).toEqual({expectedToSettle: true})
+  })
+
+  it('carries expectedToSettle: false for red-by-design scenarios', () => {
+    const report = collectSettle({...scenario, expectedToSettle: false}, [
+      settleSession({settled: false, settleTimeMs: null}),
+    ])
+    expect(report.settleExpectation).toEqual({expectedToSettle: false})
+  })
+
+  it('emits settled/ready as 0-1 per session and per-component render rows', () => {
+    const report = collectSettle(scenario, [
+      settleSession(),
+      settleSession({settled: false, settleTimeMs: null, ready: false, hookInstalled: false}),
+    ])
+    const byLabel = new Map(report.metrics.map((metric) => [metric.label, metric]))
+    // Run-level count: a single pseudo-session, so the trend median IS the count
+    expect(byLabel.get('sessions not settled')?.experiment.sessions).toEqual([[1]])
+    // Same shape for the detector's own health: sessions whose commit counter never attached
+    expect(byLabel.get('sessions without commit counter')?.experiment.sessions).toEqual([[1]])
+    expect(byLabel.get('settled sessions')?.experiment.sessions).toEqual([[1], [0]])
+    expect(byLabel.get('ready sessions')?.experiment.sessions).toEqual([[1], [0]])
+    expect(byLabel.get('time to settle')?.experiment.sessions).toEqual([[1200]])
+    expect(byLabel.get('react commits after ready')?.experiment.sessions).toEqual([[12], [12]])
+    expect(byLabel.get('renders · previewHeavy.row')?.experiment.sessions).toEqual([[24], [24]])
+  })
+
+  it('omits time-to-settle when no session settled', () => {
+    const report = collectSettle(scenario, [settleSession({settled: false, settleTimeMs: null})])
+    expect(report.metrics.some((metric) => metric.label === 'time to settle')).toBe(false)
+  })
+
+  it('folds loaf attribution across sessions', () => {
+    const report = collectSettle(scenario, [settleSession(), settleSession()])
+    expect(report.loafAttribution).toEqual([
+      {sourceUrl: 'https://x/chunk.js', functionName: 'f', totalMs: 120},
     ])
   })
 })

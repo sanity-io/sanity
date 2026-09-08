@@ -10,7 +10,6 @@ import {EditorChromeStory} from './EditorChromeStory'
 const meta = {
   title: 'Portable Text/Editor Chrome',
   component: EditorChromeStory,
-  tags: ['!dev', '!autodocs', 'vrt-only'],
   // The collapsed toolbar depends on a ResizeObserver measurement after mount.
   parameters: {chromatic: {delay: 300}},
 } satisfies Meta<typeof EditorChromeStory>

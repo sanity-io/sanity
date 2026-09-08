@@ -263,7 +263,8 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       }),
       themerTool(),
       routerDebugTool(),
-      styleOutline(),
+      // Opt-in (Vercel test-studio). Must stay this exact member expression.
+      ...(process.env.SANITY_STUDIO_STYLE_OUTLINE === 'true' ? [styleOutline()] : []),
       formBuilderReproTool(),
       errorReportingTestPlugin(),
       media(),

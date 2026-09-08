@@ -718,6 +718,7 @@ exports[`exports snapshot 1`] = `
     "useStudioUrl": "function",
     "useSyncState": "function",
     "useTargetDocumentState": "function",
+    "useTargetScopeId": "function",
     "useTelemetryConsent": "function",
     "useTemplatePermissions": "function",
     "useTemplatePermissionsFromHookFactory": "function",

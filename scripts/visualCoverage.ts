@@ -312,9 +312,7 @@ function formatText(items: Coverage[], noun: string): string {
 
 function markdownEvidence(item: Coverage): string {
   const cells = item.coveredBy.map((e) =>
-    e.kind === 'story'
-      ? `\`${e.file}\``
-      : `\`${e.file}\` (browser test, no Chromatic snapshot yet)`,
+    e.kind === 'story' ? `\`${e.file}\`` : `\`${e.file}\` (browser test)`,
   )
   for (const e of item.pendingIn) cells.push(`#${e.pr} \`${e.file}\``)
   const shown = cells.slice(0, MARKDOWN_EVIDENCE_LIMIT)
@@ -330,8 +328,8 @@ function formatMarkdown(items: Coverage[], noun: string): string {
   const rows = items.map((item) => [`\`${item.file}\``, statusOf(item), markdownEvidence(item)])
   const table = renderTable(['File', 'Status', 'Evidence'], rows, 'markdown')
   const legend =
-    'covered: a committed `*.stories.tsx` (Chromatic snapshots it) or `*.browser.test.tsx` imports the file, directly or through its `*Story.tsx` harness. ' +
-    'pending: an open PR adds such a story; do not open a duplicate. uncovered: no story renders this file. ' +
+    'covered: a committed `*.stories.tsx` (snapshotted by the "sanity studio" Chromatic project) or `*.browser.test.tsx` (end state snapshotted by "sanity studio vitest") imports the file, directly or through its `*Story.tsx` harness. ' +
+    'pending: an open PR adds such a story; do not open a duplicate. uncovered: no story or browser test renders this file. ' +
     'How to add one: `.agents/skills/sanity-visual-coverage/SKILL.md`.'
   return [heading, '', summaryLine(items, noun), '', table, '', legend].join('\n')
 }

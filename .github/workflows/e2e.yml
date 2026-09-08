@@ -250,6 +250,9 @@ jobs:
         with:
           # Chromatic needs full git history to find baseline builds.
           fetch-depth: 0
+          # The PR branch, not GitHub's merge commit, so Chromatic can find the
+          # commits it compares: https://www.chromatic.com/docs/turbosnap/best-practices/
+          ref: ${{ github.event.pull_request.head.ref }}
 
       - uses: ./.github/actions/setup
 
@@ -261,13 +264,18 @@ jobs:
           path: chromatic-artifacts
 
       - name: Upload archives to Chromatic
+        uses: chromaui/action@2a0b63f30233c48591844a46d451b9cf68128186 # v18.7.2
         env:
-          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN_E2E }}
           # Playwright's outputDir is e2e/results, and the test artifacts
           # preserve the results/ folder (which contains chromatic-archives/),
           # so point the Chromatic CLI at the merged copy.
           CHROMATIC_ARCHIVE_LOCATION: ${{ github.workspace }}/chromatic-artifacts/results
-        run: pnpm --filter e2e exec chromatic --playwright --exit-zero-on-changes --auto-accept-changes main
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN_E2E }}
+          workingDir: e2e
+          playwright: true
+          exitZeroOnChanges: true
+          autoAcceptChanges: main
 
   e2e-status:
     name: "E2E Status"
