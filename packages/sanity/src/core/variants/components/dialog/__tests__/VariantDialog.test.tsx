@@ -63,6 +63,7 @@ describe('VariantDialog', () => {
         onCancel={onCancel}
         onSubmit={onSubmit}
         renderCancelButton={props?.renderCancelButton}
+        withinVariantsTool
       />,
       {wrapper},
     )
