@@ -743,24 +743,27 @@ function usePreserveIntrinsicBlockSize({
   const heightRef = useRef(0)
 
   useEffect(() => {
-    if (!element) {
+    if (!isActive || !element) {
       return undefined
     }
 
-    // `observe()` fires an initial callback, so restarting the observer when `isActive`
-    // flips lets the handler apply the transition itself.
+    const setHeight = (height: number) => {
+      heightRef.current = height
+      element.style.setProperty(INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY, `${height}px`)
+    }
+
     const resizeObserver = new ResizeObserver(([entry]) => {
-      if (!isActive) {
-        heightRef.current = entry.contentRect.height
-      } else if (heightRef.current) {
-        element.style.setProperty(INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY, `${heightRef.current}px`)
-      }
+      setHeight(entry.contentRect.height)
     })
+
+    if (heightRef.current) {
+      setHeight(heightRef.current)
+    }
     resizeObserver.observe(element)
 
     return () => {
-      resizeObserver.disconnect()
       element.style.removeProperty(INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY)
+      resizeObserver.disconnect()
     }
-  }, [element, isActive])
+  }, [isActive, element])
 }
