@@ -6,6 +6,7 @@ import {useActorRef, useSelector} from '@xstate/react'
 import {
   type ChangeEvent,
   type ComponentType,
+  useEffect,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -731,8 +732,6 @@ const INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY = '--intrinsic-block-size'
 /**
  * Preserve the intrinsic block size of an element by maintaining an `--intrinsic-block-size`
  * custom property. This custom property must be used by styles to control the element's size.
- * While inactive the element's natural height is tracked; while active it is pinned to the
- * last tracked height.
  */
 function usePreserveIntrinsicBlockSize({
   isActive,
@@ -741,23 +740,42 @@ function usePreserveIntrinsicBlockSize({
   isActive: boolean
   element: HTMLElement | null
 }): void {
-  const measuredHeight = useRef(0)
+  // `isActive` only decides what to do with a measurement; it must not set up
+  // or tear down the ResizeObserver, so the observer reads it through a ref.
+  const isActiveRef = useRef(isActive)
+  const heightRef = useRef(0)
 
   useLayoutEffect(() => {
-    if (!element) return undefined
+    isActiveRef.current = isActive
 
-    if (isActive) {
-      const height = measuredHeight.current
-      if (!height) return undefined
-      element.style.setProperty(INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY, `${height}px`)
-      return () => element.style.removeProperty(INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY)
+    if (!element || !heightRef.current) {
+      return undefined
     }
 
-    // Only observe while inactive: the pinned height is the last natural one.
-    const resizeObserver = new ResizeObserver(([entry]) => {
-      measuredHeight.current = entry.contentRect.height
-    })
-    resizeObserver.observe(element)
-    return () => resizeObserver.disconnect()
+    const cleanUp = () => {
+      element.style.removeProperty(INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY)
+    }
+
+    if (isActive) {
+      element.style.setProperty(INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY, `${heightRef.current}px`)
+      return cleanUp
+    }
+
+    cleanUp()
+    return undefined
   }, [element, isActive])
+
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver(([entry]) => {
+      if (!isActiveRef.current) {
+        heightRef.current = entry.contentRect.height
+      }
+    })
+
+    if (element) {
+      resizeObserver.observe(element)
+    }
+
+    return () => resizeObserver.disconnect()
+  }, [element])
 }
