@@ -1,0 +1,25 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "categories": {
+    "correctness": "off"
+  },
+  "rules": {
+    "eslint/no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "ui5",
+            "message": "The ui5 alias is only available to first-party monorepo code. Example studios must import from @sanity/ui."
+          }
+        ],
+        "patterns": [
+          {
+            "group": ["ui5/*"],
+            "message": "The ui5 alias is only available to first-party monorepo code. Example studios must import from @sanity/ui."
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -28,7 +28,7 @@
     "check:format": "oxfmt --check .",
     "check:oxlint": "oxlint --disable-nested-config --quiet",
     "check:test": "pnpm test -- --silent",
-    "check:ui5-imports": "node scripts/checkUi5Imports.mjs",
+    "check:ui5-imports": "oxlint --config .oxlintrc.examples.json examples",
     "chore:format:fix": "pnpm format",
     "chore:normalize-versions": "tsx scripts/normalizeDependencyVersions.ts",
     "chore:oxlint:fix": "oxlint --disable-nested-config --fix --quiet",
