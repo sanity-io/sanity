@@ -3,9 +3,9 @@ import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {CloseIcon} from '@sanity/icons/Close'
 import {FilterIcon} from '@sanity/icons/Filter'
 import {SearchIcon} from '@sanity/icons/Search'
-import {Card, Flex, Stack, Text, TextInput, useClickOutsideEvent} from '@sanity/ui'
+import {Card, Stack, Text, TextInput, useClickOutsideEvent} from '@sanity/ui'
 import {type ComponentType, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Popover} from '../../../../ui-components/popover/Popover'
@@ -129,7 +129,7 @@ function AddFilterMenu({
               })}
             </Stack>
           ) : (
-            <Flex align="center" height="fill" justify="center" padding={4}>
+            <Flex alignItems="center" height="100%" justifyContent="center" padding={4}>
               <Text align="center" muted size={1}>
                 {t('overview.filter.pick-dimension-hint')}
               </Text>
@@ -191,7 +191,7 @@ function FilterChip({
   const Icon = chip.icon
   const body = (
     <Card border padding={1} radius={2} style={{flex: 'none'}} tone="primary">
-      <Flex align="center" gap={2}>
+      <Flex alignItems="center" gap={2}>
         <Box paddingLeft={1}>
           <Text size={1}>
             <Icon />
@@ -259,7 +259,7 @@ function ActiveChips({
       ref={containerRef}
       style={{minWidth: 0, overflow: 'hidden', position: 'relative'}}
     >
-      <Flex align="center" gap={2} wrap="nowrap">
+      <Flex alignItems="center" gap={2} flexWrap="nowrap">
         {chips.map((chip) => (
           <FilterChip
             chip={chip}
@@ -281,7 +281,7 @@ function ActiveChips({
           top: 0,
           visibility: 'hidden',
         }}
-        wrap="nowrap"
+        flexWrap="nowrap"
       >
         {chips.map((chip) => (
           <FilterChip
@@ -345,7 +345,7 @@ export function VariantConditionFilters({
     // Fill the lane when there are chips (so Clear pins right and the chips zone can measure its
     // available width); shrink to content when there are none, so the empty bar stays compact.
     <Card border padding={1} radius={2} style={hasActive ? undefined : {display: 'inline-flex'}}>
-      <Flex align="center" gap={2} wrap="nowrap">
+      <Flex alignItems="center" gap={2} flexWrap="nowrap">
         <Box paddingX={1} style={{flex: 'none'}}>
           <Text muted size={1}>
             <FilterIcon />

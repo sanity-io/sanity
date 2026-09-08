@@ -1,5 +1,6 @@
-import {Checkbox, Flex, Spinner} from '@sanity/ui'
+import {Checkbox, Spinner} from '@sanity/ui'
 import {useCallback, useState} from 'react'
+import {Flex} from 'ui5'
 
 import {useTaskOperations} from '../../hooks/useTaskOperations'
 

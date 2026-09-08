@@ -1,5 +1,5 @@
 import {render} from '@testing-library/react'
-import {getTargetScopeId, usePerspective} from 'sanity'
+import {getTargetScopeId, usePerspective, useWorkspace} from 'sanity'
 import {type Mock, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
@@ -9,25 +9,47 @@ import {CommentsWrapper} from '../CommentsWrapper'
 const mockResolveIntentLink = vi.hoisted(() => vi.fn(() => '/mock-intent-link'))
 
 let capturedCommentsProviderProps: Record<string, unknown> | undefined
+let capturedCommentsProviderV2Props: Record<string, unknown> | undefined
 
-vi.mock('sanity', () => ({
-  COMMENTS_INSPECTOR_NAME: 'sanity/comments',
-  CommentsEnabledProvider: ({children}: {children: React.ReactNode}) => <>{children}</>,
-  CommentsProvider: (props: Record<string, unknown>) => {
-    capturedCommentsProviderProps = props
-    return <>{props.children}</>
-  },
-  getTargetScopeId: vi.fn(() => undefined),
-  useCommentsEnabled: vi.fn(() => ({enabled: true})),
-  usePerspective: vi.fn(() => ({
-    selectedPerspectiveName: undefined,
-    selectedReleaseId: undefined,
-    selectedVariantName: undefined,
-    selectedPerspective: 'drafts',
-    perspectiveStack: ['drafts'],
-    excludedPerspectives: [],
-  })),
-}))
+vi.mock('sanity', async () => {
+  // Use the real id helpers so the derived target reflects production behaviour.
+  const {
+    getDraftId: draftId,
+    getPublishedId: publishedId,
+    getVersionId: versionId,
+  } = await import('@sanity/client/csm')
+
+  return {
+    COMMENTS_INSPECTOR_NAME: 'sanity/comments',
+    CommentsEnabledProvider: ({children}: {children: React.ReactNode}) => <>{children}</>,
+    CommentsEnabledProviderV2: ({children}: {children: React.ReactNode}) => <>{children}</>,
+    CommentsProvider: (props: Record<string, unknown>) => {
+      capturedCommentsProviderProps = props
+      return <>{props.children}</>
+    },
+    CommentsProviderV2: (props: Record<string, unknown>) => {
+      capturedCommentsProviderV2Props = props
+      return <>{props.children}</>
+    },
+    getDraftId: draftId,
+    getPublishedId: publishedId,
+    getVersionId: versionId,
+    getTargetScopeId: vi.fn(() => undefined),
+    useCommentsEnabled: vi.fn(() => ({enabled: true})),
+    useCommentsEnabledV2: vi.fn(() => ({enabled: true})),
+    usePerspective: vi.fn(() => ({
+      selectedPerspectiveName: undefined,
+      selectedReleaseId: undefined,
+      selectedVariantName: undefined,
+      selectedPerspective: 'drafts',
+      perspectiveStack: ['drafts'],
+      excludedPerspectives: [],
+    })),
+    useWorkspace: vi.fn(() => ({
+      beta: {comments: {v2: false}},
+    })),
+  }
+})
 
 vi.mock('sanity/router', () => ({
   useRouter: vi.fn(() => ({
@@ -49,7 +71,14 @@ vi.mock('../../useDocumentPane', () => ({
     onPathOpen: vi.fn(),
     inspector: null,
     openInspector: vi.fn(),
-    targetDocumentState: {status: 'ready', scopeId: undefined},
+    targetDocumentState: {
+      status: 'ready',
+      scopeId: undefined,
+      targetDocument: undefined,
+      variant: undefined,
+      siblings: {published: undefined, draft: undefined, version: undefined},
+    },
+    value: {_id: 'doc-1'},
   })),
 }))
 
@@ -57,33 +86,56 @@ const mockUsePerspective = usePerspective as Mock
 const mockUsePaneRouter = usePaneRouter as Mock
 const mockUseDocumentPane = useDocumentPane as Mock
 const mockGetTargetScopeId = getTargetScopeId as Mock
+const mockUseWorkspace = useWorkspace as Mock
+
+function documentPane(overrides: Record<string, unknown> = {}) {
+  return {
+    connectionState: 'connected',
+    onPathOpen: vi.fn(),
+    inspector: null,
+    openInspector: vi.fn(),
+    targetDocumentState: {
+      status: 'ready',
+      scopeId: undefined,
+      targetDocument: undefined,
+      variant: undefined,
+      siblings: {published: undefined, draft: undefined, version: undefined},
+    },
+    value: {_id: 'doc-1'},
+    ...overrides,
+  }
+}
+
+function draftsPerspective(overrides: Record<string, unknown> = {}) {
+  return {
+    selectedPerspectiveName: undefined,
+    selectedReleaseId: undefined,
+    selectedVariantName: undefined,
+    selectedPerspective: 'drafts',
+    perspectiveStack: ['drafts'],
+    excludedPerspectives: [],
+    ...overrides,
+  }
+}
 
 describe('CommentsWrapper', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     capturedCommentsProviderProps = undefined
+    capturedCommentsProviderV2Props = undefined
 
-    mockUsePerspective.mockReturnValue({
-      selectedPerspectiveName: undefined,
-      selectedReleaseId: undefined,
-      selectedVariantName: undefined,
-      selectedPerspective: 'drafts',
-      perspectiveStack: ['drafts'],
-      excludedPerspectives: [],
+    mockUseWorkspace.mockReturnValue({
+      beta: {comments: {v2: false}},
     })
+
+    mockUsePerspective.mockReturnValue(draftsPerspective())
 
     mockUsePaneRouter.mockReturnValue({
       params: {},
       setParams: vi.fn(),
     })
 
-    mockUseDocumentPane.mockReturnValue({
-      connectionState: 'connected',
-      onPathOpen: vi.fn(),
-      inspector: null,
-      openInspector: vi.fn(),
-      targetDocumentState: {status: 'ready', scopeId: undefined},
-    })
+    mockUseDocumentPane.mockReturnValue(documentPane())
 
     mockGetTargetScopeId.mockReturnValue(undefined)
   })
@@ -291,16 +343,10 @@ describe('CommentsWrapper', () => {
         scopeId: 'varscope',
         targetDocument: undefined,
         variant: undefined,
-        publishedSibling: undefined,
+        siblings: {published: undefined, draft: undefined, version: undefined},
       }
 
-      mockUseDocumentPane.mockReturnValue({
-        connectionState: 'connected',
-        onPathOpen: vi.fn(),
-        inspector: null,
-        openInspector: vi.fn(),
-        targetDocumentState,
-      })
+      mockUseDocumentPane.mockReturnValue(documentPane({targetDocumentState}))
       mockGetTargetScopeId.mockReturnValue('varscope')
 
       render(
@@ -316,21 +362,16 @@ describe('CommentsWrapper', () => {
     it('passes undefined releaseId when the target document is still resolving', () => {
       const targetDocumentState = {status: 'resolving' as const}
 
-      mockUsePerspective.mockReturnValue({
-        selectedPerspectiveName: 'rSomeRelease',
-        selectedReleaseId: 'rSomeRelease',
-        selectedVariantName: 'alpha-audience',
-        selectedPerspective: 'rSomeRelease',
-        perspectiveStack: ['rSomeRelease', 'drafts'],
-        excludedPerspectives: [],
-      })
-      mockUseDocumentPane.mockReturnValue({
-        connectionState: 'connected',
-        onPathOpen: vi.fn(),
-        inspector: null,
-        openInspector: vi.fn(),
-        targetDocumentState,
-      })
+      mockUsePerspective.mockReturnValue(
+        draftsPerspective({
+          selectedPerspectiveName: 'rSomeRelease',
+          selectedReleaseId: 'rSomeRelease',
+          selectedVariantName: 'alpha-audience',
+          selectedPerspective: 'rSomeRelease',
+          perspectiveStack: ['rSomeRelease', 'drafts'],
+        }),
+      )
+      mockUseDocumentPane.mockReturnValue(documentPane({targetDocumentState}))
       mockGetTargetScopeId.mockReturnValue(undefined)
 
       render(
@@ -345,30 +386,25 @@ describe('CommentsWrapper', () => {
     })
 
     it('uses variant scopeId rather than the release id when a variant is selected', () => {
-      mockUsePerspective.mockReturnValue({
-        selectedPerspectiveName: 'rSomeRelease',
-        selectedReleaseId: 'rSomeRelease',
-        selectedVariantName: 'alpha-audience',
-        selectedPerspective: 'rSomeRelease',
-        perspectiveStack: ['rSomeRelease', 'drafts'],
-        excludedPerspectives: [],
-      })
+      mockUsePerspective.mockReturnValue(
+        draftsPerspective({
+          selectedPerspectiveName: 'rSomeRelease',
+          selectedReleaseId: 'rSomeRelease',
+          selectedVariantName: 'alpha-audience',
+          selectedPerspective: 'rSomeRelease',
+          perspectiveStack: ['rSomeRelease', 'drafts'],
+        }),
+      )
 
       const targetDocumentState = {
         status: 'ready' as const,
         scopeId: 'varscope',
         targetDocument: undefined,
         variant: {_id: 'system.variant.alpha-audience', name: 'alpha-audience'},
-        publishedSibling: undefined,
+        siblings: {published: undefined, draft: undefined, version: undefined},
       }
 
-      mockUseDocumentPane.mockReturnValue({
-        connectionState: 'connected',
-        onPathOpen: vi.fn(),
-        inspector: null,
-        openInspector: vi.fn(),
-        targetDocumentState,
-      })
+      mockUseDocumentPane.mockReturnValue(documentPane({targetDocumentState}))
       // Variant stubs carry an opaque scope hash, not the release id.
       mockGetTargetScopeId.mockReturnValue('varscope')
 
@@ -380,6 +416,143 @@ describe('CommentsWrapper', () => {
 
       expect(capturedCommentsProviderProps?.releaseId).toBe('varscope')
       expect(capturedCommentsProviderProps?.releaseId).not.toBe('rSomeRelease')
+    })
+  })
+
+  describe('beta.comments.v2', () => {
+    it('does not mount the v2 provider when the flag is off', () => {
+      render(
+        <CommentsWrapper documentId="doc-default" documentType="article">
+          <div>children</div>
+        </CommentsWrapper>,
+      )
+
+      expect(capturedCommentsProviderProps).toBeDefined()
+      expect(capturedCommentsProviderV2Props).toBeUndefined()
+      expect(capturedCommentsProviderProps).not.toHaveProperty('versionId')
+    })
+
+    it('mounts the v2 provider with versionId when the flag is on', () => {
+      mockUseWorkspace.mockReturnValue({
+        beta: {comments: {v2: true}},
+      })
+      mockUseDocumentPane.mockReturnValue(documentPane({value: {_id: 'drafts.doc-v2'}}))
+
+      render(
+        <CommentsWrapper documentId="doc-v2" documentType="article">
+          <div>children</div>
+        </CommentsWrapper>,
+      )
+
+      expect(capturedCommentsProviderProps).toBeUndefined()
+      expect(capturedCommentsProviderV2Props?.groupId).toBe('doc-v2')
+      expect(capturedCommentsProviderV2Props?.versionId).toBe('drafts.doc-v2')
+      expect(capturedCommentsProviderV2Props).not.toHaveProperty('documentId')
+      expect(capturedCommentsProviderV2Props).not.toHaveProperty('releaseId')
+    })
+  })
+
+  describe('versionId (v2)', () => {
+    beforeEach(() => {
+      mockUseWorkspace.mockReturnValue({beta: {comments: {v2: true}}})
+    })
+
+    function renderWrapper() {
+      render(
+        <CommentsWrapper documentId="doc-1" documentType="article">
+          <div>children</div>
+        </CommentsWrapper>,
+      )
+      return capturedCommentsProviderV2Props?.versionId
+    }
+
+    it('targets the draft in the drafts perspective before the draft exists', () => {
+      // The pane still reports the published id until the first edit creates the draft. Comments
+      // made now belong to the draft, so they keep their range as the draft is edited.
+      mockUseDocumentPane.mockReturnValue(documentPane({value: {_id: 'doc-1'}}))
+
+      expect(renderWrapper()).toBe('drafts.doc-1')
+    })
+
+    it('targets the draft in the drafts perspective once the draft exists', () => {
+      mockUseDocumentPane.mockReturnValue(documentPane({value: {_id: 'drafts.doc-1'}}))
+
+      expect(renderWrapper()).toBe('drafts.doc-1')
+    })
+
+    it('targets the published document in the published perspective', () => {
+      mockUsePerspective.mockReturnValue(
+        draftsPerspective({selectedPerspectiveName: 'published', selectedPerspective: 'published'}),
+      )
+      mockUseDocumentPane.mockReturnValue(documentPane({value: {_id: 'doc-1'}}))
+
+      expect(renderWrapper()).toBe('doc-1')
+    })
+
+    it('normalises a draft id to the published id in the published perspective', () => {
+      mockUsePerspective.mockReturnValue(
+        draftsPerspective({selectedPerspectiveName: 'published', selectedPerspective: 'published'}),
+      )
+      mockUseDocumentPane.mockReturnValue(documentPane({value: {_id: 'drafts.doc-1'}}))
+
+      expect(renderWrapper()).toBe('doc-1')
+    })
+
+    it('targets the release version id before the version document exists', () => {
+      // Same idea as drafts: `versions.<releaseId>.<id>` is deterministic, so comments made while
+      // still viewing the draft/published pair under a release perspective belong to that version.
+      mockUsePerspective.mockReturnValue(
+        draftsPerspective({
+          selectedPerspectiveName: 'rSomeRelease',
+          selectedReleaseId: 'rSomeRelease',
+          selectedPerspective: 'rSomeRelease',
+          perspectiveStack: ['rSomeRelease', 'drafts'],
+        }),
+      )
+      mockUseDocumentPane.mockReturnValue(documentPane({value: {_id: 'doc-1'}}))
+
+      expect(renderWrapper()).toBe('versions.rSomeRelease.doc-1')
+    })
+
+    it('targets the release version id once the version exists', () => {
+      mockUsePerspective.mockReturnValue(
+        draftsPerspective({
+          selectedPerspectiveName: 'rSomeRelease',
+          selectedReleaseId: 'rSomeRelease',
+          selectedPerspective: 'rSomeRelease',
+          perspectiveStack: ['rSomeRelease', 'drafts'],
+        }),
+      )
+      mockUseDocumentPane.mockReturnValue(
+        documentPane({value: {_id: 'versions.rSomeRelease.doc-1'}}),
+      )
+
+      expect(renderWrapper()).toBe('versions.rSomeRelease.doc-1')
+    })
+
+    it('uses the resolved document id for a variant, rather than deriving a draft', () => {
+      // Variant scopes are opaque and server-assigned; deriving `drafts.doc-1` here would file the
+      // comment against the base pair instead of the variant document on screen.
+      mockUsePerspective.mockReturnValue(draftsPerspective({selectedVariantName: 'alpha-audience'}))
+      mockUseDocumentPane.mockReturnValue(documentPane({value: {_id: 'versions.varscope.doc-1'}}))
+
+      expect(renderWrapper()).toBe('versions.varscope.doc-1')
+    })
+
+    it('prefers the variant document id over the release version id when both sticky params are set', () => {
+      mockUsePerspective.mockReturnValue(
+        draftsPerspective({
+          selectedPerspectiveName: 'rSomeRelease',
+          selectedReleaseId: 'rSomeRelease',
+          selectedVariantName: 'alpha-audience',
+          selectedPerspective: 'rSomeRelease',
+          perspectiveStack: ['rSomeRelease', 'drafts'],
+        }),
+      )
+      mockUseDocumentPane.mockReturnValue(documentPane({value: {_id: 'versions.varscope.doc-1'}}))
+
+      expect(renderWrapper()).toBe('versions.varscope.doc-1')
+      expect(renderWrapper()).not.toBe('versions.rSomeRelease.doc-1')
     })
   })
 })

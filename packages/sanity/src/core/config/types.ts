@@ -1239,6 +1239,7 @@ export type {AuthConfig} from './auth/types'
 
 /** @beta */
 export type DefaultPluginsWorkspaceOptions = {
+  comments: {v2: boolean}
   tasks: {enabled: boolean}
   scheduledDrafts: {enabled: boolean}
   variants: {enabled: boolean}
@@ -1287,6 +1288,47 @@ export interface MediaLibraryConfig {
     frontendHost?: string
   }
 }
+
+/**
+ * A selectable value for a known variant condition key.
+ *
+ * @internal
+ */
+export interface VariantConditionValue {
+  value: string
+  title?: string
+  description?: string
+}
+
+/**
+ * A known variant condition key and the values it may take.
+ *
+ * @internal
+ */
+export interface VariantConditionMap {
+  /** Persisted condition key. */
+  name: string
+  /** Picker heading; falls back to {@link VariantConditionMap.name}. */
+  title?: string
+  description?: string
+  values: string[] | VariantConditionValue[]
+}
+
+/**
+ * Context passed to a `beta.variants.conditions` resolver.
+ *
+ * @internal
+ */
+export type VariantConditionsContext = Pick<ConfigContext, 'projectId' | 'dataset' | 'getClient'>
+
+/**
+ * Static or resolved list of known variant conditions.
+ *
+ * @internal
+ */
+export type VariantConditions =
+  | VariantConditionMap[]
+  | ((context: VariantConditionsContext) => VariantConditionMap[] | Promise<VariantConditionMap[]>)
 
 /**
  * @internal
@@ -1354,6 +1396,32 @@ export interface BetaFeatures {
    */
   variants?: {
     enabled?: boolean
+    /**
+     * Optional list of known variant condition keys and values.
+     * When set, the create/edit form shows a card picker instead of free-text fields.
+     * And validates the condition values against the known keys and values.
+     *
+     * Accepts a static array or a function that may return a promise (for example to
+     * load conditions from a CDP). The function receives {@link VariantConditionsContext}
+     * and is called when the form opens, not at studio boot.
+     *
+     * @example
+     * ```ts
+     * conditions: async ({getClient}) => {
+     *    const client = getClient({apiVersion: '2024-01-01'})
+     *    return await client.fetch(CONDITIONS_QUERY)
+     * }
+     * ```
+     */
+    conditions?: VariantConditions
+  }
+  /**
+   * Config for the opt-in Comments API implementation.
+   *
+   * @internal
+   */
+  comments?: {
+    v2?: boolean
   }
   /**
    * Control whether the preview of the new document group inventory is

@@ -1,5 +1,5 @@
-import {Box} from '@sanity/ui'
 import {useTranslation} from 'sanity'
+import {Box} from 'ui5'
 
 import {visionLocaleNamespace} from '../i18n'
 import {ErrorCode} from './QueryErrorDialog.styled'

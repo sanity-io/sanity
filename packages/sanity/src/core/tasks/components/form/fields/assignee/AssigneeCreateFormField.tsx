@@ -1,7 +1,8 @@
-import {Badge, Card, Flex, Text, TextSkeleton} from '@sanity/ui'
+import {Badge, Card, Text, TextSkeleton} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {set} from '../../../../../form/patch/patch'
 import {type StringInputProps} from '../../../../../form/types/inputProps'
@@ -49,8 +50,8 @@ export function AssigneeCreateFormField(props: StringInputProps) {
       value={value}
       menuButton={
         <FocusableCard data-as="button" padding={1} radius={2} tabIndex={0}>
-          <Flex align="center" gap={3}>
-            <Flex align="center" gap={1} flex={1}>
+          <Flex alignItems="center" gap={3}>
+            <Flex alignItems="center" gap={1} flexBasis="0%" flexGrow={1}>
               <TasksUserAvatar user={mentionedUser} size={1} border={false} />
               <Text size={1} textOverflow="ellipsis" muted={!mentionedUser}>
                 {displayText}

@@ -1,9 +1,9 @@
 import {type EditorSelection, PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
 import {type ObjectSchemaType, type Path, type PortableTextTextBlock} from '@sanity/types'
-import {Flex, type ResponsivePaddingProps, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {isEqual} from '@sanity/util/paths'
 import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
-import {Box, type PaddingProps} from 'ui5'
+import {Flex, Box, type PaddingProps} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useHoveredChange} from '../../../../changeIndicators/useHoveredChange'
@@ -182,7 +182,7 @@ export function TextBlock(props: TextBlockProps) {
 
   const text = useMemo(() => {
     return (
-      <TextFlex align="flex-start" $level={value?.level}>
+      <TextFlex alignItems="flex-start" $level={value?.level}>
         {value.listItem && (
           <ListPrefixWrapper contentEditable={false}>
             <Text data-list-prefix="">
@@ -197,7 +197,7 @@ export function TextBlock(props: TextBlockProps) {
     )
   }, [value.listItem, value.level, children])
 
-  const innerPaddingProps: ResponsivePaddingProps = useMemo(() => {
+  const innerPaddingProps: PaddingProps = useMemo(() => {
     if (nested) {
       // A nested block sits inside a container that owns horizontal spacing
       // (e.g. a table cell's padding), so the root gutter is dropped.
@@ -335,7 +335,7 @@ export function TextBlock(props: TextBlockProps) {
     >
       <TextBlockWrapper data-testid="text-block__wrapper">
         <FormNodeDivergenceDetail path={path} readOnly={readOnly}>
-          <Flex flex={1} {...innerPaddingProps}>
+          <Flex flexBasis="0%" flexGrow={1} {...innerPaddingProps}>
             <Box flexBasis="0%" flexGrow={1} style={{anchorName: anchorIdent}}>
               <Tooltip
                 content={toolTipContent}

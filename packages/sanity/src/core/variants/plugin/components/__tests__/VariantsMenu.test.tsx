@@ -1,27 +1,34 @@
-import {render, screen} from '@testing-library/react'
+import {render, screen, waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {route, RouterProvider} from 'sanity/router'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {flushMicrotasksThisIsACodeSmell} from '../../../../../../test/testUtils/flushMicrotasks'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
-import {type Tool} from '../../../../config/types'
+import {type SingleWorkspace, type Tool} from '../../../../config/types'
 import {createRouter} from '../../../../studio/router/router'
 import {variantAlphaAudience, variantNorwegianMarket} from '../../../__fixtures__/variants.fixture'
 import {variantsUsEnglishLocaleBundle} from '../../../i18n'
+import {getVariantId} from '../../../tool/util'
+import {type SystemVariant} from '../../../types'
 import {VARIANTS_TOOL_NAME} from '../../index'
 import {VariantsMenu} from '../VariantsMenu'
 
+const variantsMock = vi.hoisted(() => ({
+  data: [] as SystemVariant[],
+  byId: new Map<string, SystemVariant>(),
+  loading: false,
+  error: undefined as Error | undefined,
+}))
+
+const setVariant = vi.fn()
+
 vi.mock('../../../store/useAllVariants', () => ({
-  useAllVariants: vi.fn(() => ({
-    data: [variantAlphaAudience, variantNorwegianMarket],
-    byId: new Map(),
-    loading: false,
-    error: undefined,
-  })),
+  useAllVariants: vi.fn(() => variantsMock),
 }))
 
 vi.mock('../../../../perspective/useSetVariant', () => ({
-  useSetVariant: vi.fn(() => vi.fn()),
+  useSetVariant: vi.fn(() => setVariant),
 }))
 
 // Only the tool's name matters for the link under test; its inner routing is
@@ -35,8 +42,8 @@ const variantsTool = {
 
 const studioRouter = createRouter({tools: [variantsTool]})
 
-async function renderMenu() {
-  const wrapper = await createTestProvider({resources: [variantsUsEnglishLocaleBundle]})
+async function renderMenu(config?: Partial<SingleWorkspace>) {
+  const wrapper = await createTestProvider({config, resources: [variantsUsEnglishLocaleBundle]})
   const view = render(
     <RouterProvider router={studioRouter} state={{}} onNavigate={vi.fn()}>
       <VariantsMenu trigger={<button type="button" data-testid="trigger" />} />
@@ -52,6 +59,11 @@ async function renderMenu() {
 describe('VariantsMenu', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    variantsMock.data = [variantAlphaAudience, variantNorwegianMarket]
+    variantsMock.byId = new Map([
+      [variantAlphaAudience._id, variantAlphaAudience],
+      [variantNorwegianMarket._id, variantNorwegianMarket],
+    ])
   })
 
   it('points "View variants" at the variants tool', async () => {
@@ -75,5 +87,59 @@ describe('VariantsMenu', () => {
     expect(href).not.toContain('/intent/')
     expect(href).not.toContain('//')
     expect(studioRouter.isNotFound(href!)).toBe(false)
+  })
+
+  describe('condition mismatch', () => {
+    beforeEach(() => {
+      variantsMock.data = [variantAlphaAudience]
+      variantsMock.byId = new Map([[variantAlphaAudience._id, variantAlphaAudience]])
+    })
+
+    it('shows a mismatch error when a stored condition is not in the configured list', async () => {
+      await renderMenu({
+        beta: {
+          variants: {
+            enabled: true,
+            conditions: [{name: 'locale', values: ['en-US']}],
+          },
+        },
+      })
+
+      await userEvent.setup().click(screen.getByTestId('trigger'))
+      await screen.findByTestId('variants-nav-menu')
+
+      expect(screen.getByTestId('variant-condition-mismatch')).toBeInTheDocument()
+    })
+
+    it('does not show a mismatch error in freeform mode', async () => {
+      await renderMenu()
+
+      await userEvent.setup().click(screen.getByTestId('trigger'))
+      await screen.findByTestId('variants-nav-menu')
+
+      expect(screen.queryByTestId('variant-condition-mismatch')).not.toBeInTheDocument()
+    })
+
+    it('does not show a mismatch error while configured conditions are loading', async () => {
+      await renderMenu({
+        beta: {
+          variants: {
+            enabled: true,
+            conditions: () => new Promise(() => undefined),
+          },
+        },
+      })
+
+      await userEvent.setup().click(screen.getByTestId('trigger'))
+      await screen.findByTestId('variants-nav-menu')
+
+      await waitFor(() => {
+        expect(
+          screen.getByTestId(`variant-${getVariantId(variantAlphaAudience._id)}`),
+        ).toBeInTheDocument()
+      })
+
+      expect(screen.queryByTestId('variant-condition-mismatch')).not.toBeInTheDocument()
+    })
   })
 })

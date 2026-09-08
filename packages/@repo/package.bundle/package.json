@@ -12,12 +12,11 @@
   "devDependencies": {
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "@rolldown/plugin-babel": "catalog:",
     "@sanity/vanilla-extract-vite-plugin": "catalog:",
     "@types/lodash-es": "^4.17.12",
     "@vitejs/plugin-react": "catalog:",
-    "babel-plugin-react-compiler": "catalog:",
     "lodash-es": "^4.18.1",
+    "oxc-transform-react": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
   }

@@ -1,7 +1,8 @@
 import {AddIcon} from '@sanity/icons/Add'
-import {Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Container, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -98,7 +99,13 @@ export function VariantsOverview(): React.JSX.Element {
   const tableEmptyState = useCallback(() => {
     if (error && !hasVariants) {
       return (
-        <Flex align="center" direction="column" gap={3} justify="center" padding={4}>
+        <Flex
+          alignItems="center"
+          flexDirection="column"
+          gap={3}
+          justifyContent="center"
+          padding={4}
+        >
           <Text muted size={1}>
             {t('overview.error')}
           </Text>
@@ -108,7 +115,13 @@ export function VariantsOverview(): React.JSX.Element {
 
     if (hasVariants && hasActiveConditionFilters && rows.length === 0) {
       return (
-        <Flex align="center" direction="column" gap={3} justify="center" padding={4}>
+        <Flex
+          alignItems="center"
+          flexDirection="column"
+          gap={3}
+          justifyContent="center"
+          padding={4}
+        >
           <Text data-testid="variants-filter-empty-state" muted size={1}>
             {t('overview.filter.no-matching-definitions')}
           </Text>
@@ -120,13 +133,13 @@ export function VariantsOverview(): React.JSX.Element {
   }, [createVariantButton, error, hasActiveConditionFilters, hasVariants, rows.length, t])
 
   return (
-    <Flex direction="column" flex={1} height="fill">
+    <Flex flexDirection="column" flexBasis="0%" flexGrow={1} height="100%">
       {/* Same container width as the releases document table (`container[3]`), so the page header
           aligns with the table's row content below. */}
       <Container flex="none" width={3}>
-        <Flex direction="column" paddingX={3}>
+        <Flex flexDirection="column" paddingX={3}>
           <Card flex="none" paddingBottom={4} paddingTop={5}>
-            <Flex align="flex-start" gap={4} justify="space-between">
+            <Flex alignItems="flex-start" gap={4} justifyContent="space-between">
               <Stack gap={2}>
                 <Text as="h1" size={4} weight="bold">
                   {t('overview.title')}

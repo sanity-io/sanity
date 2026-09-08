@@ -31,8 +31,8 @@ export function getBadgeSystemDocument(
     return state.targetDocument
   }
 
-  if (state.status === 'variant-missing' && state.publishedSibling) {
-    return state.publishedSibling
+  if (state.status === 'variant-missing' && state.siblings.published) {
+    return state.siblings.published
   }
 
   return displayed ?? undefined
@@ -96,7 +96,7 @@ export function isTargetBadgeMissing({
     case 'variant-definition-document-not-found':
       return true
     case 'variant-missing':
-      return !(isLiveEdit && Boolean(state.publishedSibling) && isSystemBundle(bundle))
+      return !(isLiveEdit && Boolean(state.siblings.published) && isSystemBundle(bundle))
     case 'ready':
       return !state.targetDocument && !state.variant && !isSystemBundle(bundle)
     default:

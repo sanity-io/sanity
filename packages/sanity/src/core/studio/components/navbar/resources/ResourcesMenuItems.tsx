@@ -2,10 +2,11 @@
 // The design of the Studio version menu item doesn't align with the limitations of the
 // 'ui-components/menuItem/MenuItem.tsx' since we want both a subtitle and a top right aligned version badge.
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Badge, Card, type CardTone, Flex, Text} from '@sanity/ui'
+import {Badge, Card, type CardTone, Text} from '@sanity/ui'
 import {MenuDivider, MenuItem as UIMenuItem} from '@sanity/ui/menu'
 import {Fragment, useCallback} from 'react'
 import {type SemVer} from 'semver'
+import {Flex} from 'ui5'
 
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
@@ -138,8 +139,8 @@ function StudioVersion({
 
   return (
     <UIMenuItem padding={2} onClick={action} data-testid={testId}>
-      <Flex align="flex-start">
-        <Flex direction="column" flex={1} gap={2} padding={1}>
+      <Flex alignItems="flex-start">
+        <Flex flexDirection="column" flexBasis="0%" flexGrow={1} gap={2} padding={1}>
           <Text size={1} weight="medium">
             {t('help-resources.studio')}
           </Text>

@@ -1,7 +1,6 @@
 import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {
   Badge,
-  Box,
   Button,
   Card,
   type CardTone,
@@ -13,6 +12,7 @@ import {
 import {Popover} from '@sanity/ui/popover'
 import {type ComponentProps, useCallback, useRef, useState} from 'react'
 import {Translate, useTranslation} from 'sanity'
+import {Box} from 'ui5'
 
 import {visionLocaleNamespace} from '../i18n'
 import {dot, perspectivePopoverContent, perspectivePopoverLink} from './PerspectivePopover.css'

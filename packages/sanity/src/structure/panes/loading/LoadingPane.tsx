@@ -1,10 +1,11 @@
-import {_raf2, type CardTone, Flex} from '@sanity/ui'
+import {_raf2, type CardTone} from '@sanity/ui'
 import {memo, useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {isObservable, type Observable, of} from 'rxjs'
 import {map} from 'rxjs/operators'
 import {Delay, LoadingBlock, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {Pane} from '../../components/pane/Pane'
 import {PaneContent} from '../../components/pane/PaneContent'
@@ -91,11 +92,11 @@ export const LoadingPane = memo((props: LoadingPaneProps) => {
 
   const content = (
     <Content
-      align="center"
+      alignItems="center"
       data-mounted={mounted ? '' : undefined}
-      direction="column"
-      height="fill"
-      justify="center"
+      flexDirection="column"
+      height="100%"
+      justifyContent="center"
       ref={setContentElement}
     >
       <LoadingBlock showText title={title || currentMessage} />
@@ -108,5 +109,3 @@ export const LoadingPane = memo((props: LoadingPaneProps) => {
     </Pane>
   )
 })
-
-LoadingPane.displayName = 'Memo(LoadingPane)'

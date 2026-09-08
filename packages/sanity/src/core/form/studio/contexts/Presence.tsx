@@ -11,7 +11,6 @@ export function PresenceProvider(props: {presence: FormNodePresence[]; children:
     <PresenceContext.Provider value={props.presence}>{props.children}</PresenceContext.Provider>
   )
 }
-PresenceProvider.displayName = 'PresenceProvider'
 
 export function useFormFieldPresence(): FormNodePresence[] {
   const ctx = useContext(PresenceContext)

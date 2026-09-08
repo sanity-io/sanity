@@ -3,12 +3,12 @@ import {LinkIcon} from '@sanity/icons/Link'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type PortableTextBlock} from '@sanity/types'
-import {Card, Flex, Stack} from '@sanity/ui'
+import {Card, Stack} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
@@ -133,7 +133,7 @@ function FormEditInner(props: ObjectInputProps) {
 
   return (
     <>
-      <Flex align="flex-start" gap={3}>
+      <Flex alignItems="flex-start" gap={3}>
         <Stack flex={1}>
           <Title
             onChange={handleChangeAndSubscribe}
@@ -149,9 +149,9 @@ function FormEditInner(props: ObjectInputProps) {
         <FirstRow
           paddingBottom={3}
           paddingTop={4}
-          align="flex-start"
-          justify="flex-start"
-          wrap="wrap"
+          alignItems="flex-start"
+          justifyContent="flex-start"
+          flexWrap="wrap"
         >
           <TooltipDelayGroupProvider>
             <StatusSelector

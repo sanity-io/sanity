@@ -6,11 +6,12 @@ import {
   type PortableTextChild,
   type PortableTextObject,
 } from '@sanity/types'
-import {Card, Flex, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Card, Text, useClickOutsideEvent} from '@sanity/ui'
 import {FOCUS_TERMINATOR, toString} from '@sanity/util/paths'
 import {type MouseEvent, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
 import {DiffContext, ReviewChangesContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {Popover} from '../../../../../../ui-components/popover/Popover'
 import {useChangeIndicatorsReportedValues} from '../../../../../changeIndicators/tracker'
@@ -164,7 +165,7 @@ function InlineObjectWithDiff({
           >
             <InlineBox>
               <Preview schemaType={schemaType} value={object} layout="inline" />
-              <Flex align="center" paddingX={1}>
+              <Flex alignItems="center" paddingX={1}>
                 <InlineText size={0}>
                   <ChevronDownIcon />
                 </InlineText>

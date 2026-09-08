@@ -1,7 +1,6 @@
 import {defineConfig} from '@repo/test-config/vitest'
-import babel from '@rolldown/plugin-babel'
 import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
-import viteReact, {reactCompilerPreset} from '@vitejs/plugin-react'
+import viteReact from '@vitejs/plugin-react'
 
 // The vanilla-extract plugin is still required in jsdom: `.css.ts` modules need its transform
 // for file scoping (they throw "Styles were unable to be assigned to a file" without it). Style
@@ -31,7 +30,8 @@ export default defineConfig({
   },
   plugins: [
     vanillaExtractPlugin(),
-    ...viteReact(),
-    babel({presets: [reactCompilerPreset({target: '19'})]}),
+    // `compiler` runs React Compiler through `oxc-transform-react`, in the same native pass
+    // as the TypeScript/JSX transform (no babel in the pipeline)
+    ...viteReact({compiler: {target: '19'}}),
   ],
 })

@@ -1,11 +1,11 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {LockIcon} from '@sanity/icons/Lock'
-import {Flex, Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 // oxlint-disable-next-line no-restricted-imports -- custom use for MenuItem not supported by ui-components
 import {MenuItem} from '@sanity/ui/menu'
 import {useCallback} from 'react'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {ToneIcon} from '../../../ui-components/toneIcon/ToneIcon'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
@@ -63,7 +63,7 @@ export function GlobalPerspectiveMenuItem(props: {
       data-testid={`release-${releaseId}`}
       {...props.menuItemProps?.({perspective: release})}
     >
-      <Flex align="flex-start" gap={1}>
+      <Flex alignItems="flex-start" gap={1}>
         <Box
           flexBasis="auto"
           flexGrow={0}
@@ -83,7 +83,7 @@ export function GlobalPerspectiveMenuItem(props: {
           gap={2}
           style={{maxWidth: '200px', minWidth: 0}}
         >
-          <Flex gap={3} align="center" style={{minWidth: 0}}>
+          <Flex gap={3} alignItems="center">
             {isReleaseDocument(release) ? (
               <ReleaseTitle
                 title={release.metadata.title}

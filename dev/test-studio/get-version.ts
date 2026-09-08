@@ -1,6 +1,8 @@
 #!/usr/bin/env tsx
 import {execSync} from 'node:child_process'
-import fs from 'node:fs'
+import {createRequire} from 'node:module'
+
+const requireFrom = createRequire(import.meta.url)
 
 function slugify(input: string): string {
   return input
@@ -19,14 +21,16 @@ function exec(cmd: string): string | undefined {
 }
 
 function getVersion({pr, branch}: {pr?: string; branch?: string}) {
-  const pkgJson = JSON.parse(fs.readFileSync('package.json', 'utf8'))
-  const version: string = pkgJson.version
+  // The studio reports the version of the `sanity` package it bundles. This app's own
+  // package.json is private, and the release bump deliberately skips private packages
+  // (see `selectPackagesToBump` in @repo/release-notes), so its version never moves.
+  const version: string = requireFrom('sanity/package.json').version
 
   const COMMIT_HASH = exec('git rev-parse --short HEAD')
 
   if (pr) {
     // e.g. 1.2.3-pr.123+abc1234
-    return `${version}-pr.${PR_ID}+${COMMIT_HASH}`
+    return `${version}-pr.${pr}+${COMMIT_HASH}`
   }
 
   if (branch) {

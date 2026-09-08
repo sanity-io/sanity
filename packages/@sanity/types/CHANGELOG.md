@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.12.0](https://github.com/sanity-io/sanity/compare/v6.11.0...v6.12.0) (2026-09-01)
+
+### Features
+
+* **validation:** add headless document validation package ([#14093](https://github.com/sanity-io/sanity/issues/14093)) ([51f4486](https://github.com/sanity-io/sanity/commit/51f448658213df354afb61746b459dc94f7c10b8))
+* **validation:** add stable codes to validation markers ([#14137](https://github.com/sanity-io/sanity/issues/14137)) ([e92ea70](https://github.com/sanity-io/sanity/commit/e92ea704d74e5013bfbe091edb85e3298b5330f6))
+## [6.11.0](https://github.com/sanity-io/sanity/compare/v6.10.1...v6.11.0) (2026-08-25)
+
+### Bug Fixes
+
+* **pkg:** add missing engines.node fields ([#14126](https://github.com/sanity-io/sanity/issues/14126)) ([7009966](https://github.com/sanity-io/sanity/commit/7009966be9aa012efbb1da24926bd4e102f275dc))
 ## [6.9.1](https://github.com/sanity-io/sanity/compare/v6.9.0...v6.9.1) (2026-08-06)
 
 ### Bug Fixes

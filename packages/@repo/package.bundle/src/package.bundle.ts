@@ -1,6 +1,5 @@
-import babel from '@rolldown/plugin-babel'
 import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
-import viteReact, {reactCompilerPreset} from '@vitejs/plugin-react'
+import viteReact from '@vitejs/plugin-react'
 import escapeRegExp from 'lodash-es/escapeRegExp.js'
 import {esmExternalRequirePlugin, type Plugin, type UserConfig} from 'vite'
 
@@ -26,8 +25,9 @@ export function createDefaultConfig({version}: DefaultConfigOptions): UserConfig
       'process.env': {},
     },
     plugins: [
-      viteReact(),
-      babel({presets: [reactCompilerPreset({target: '19'})]}),
+      // `compiler` runs React Compiler through `oxc-transform-react`, in the same native pass
+      // as the TypeScript/JSX transform (no babel in the pipeline)
+      viteReact({compiler: {target: '19'}}),
       vanillaExtractPlugin(),
       cleanupCssOutputPlugin(),
       esmExternalRequirePlugin({

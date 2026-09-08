@@ -4,8 +4,8 @@ import {type Diff, type ObjectDiff} from '@sanity/diff'
 
 import {type Annotation, type Chunk} from '../../../field/types'
 import {type RemoteSnapshotVersionEvent} from '../../document/document-pair/checkoutPair'
+import {getJsonStream} from '../../events/getJsonStream'
 import {Aligner} from './Aligner'
-import {getJsonStream} from './getJsonStream'
 import {Reconstruction} from './Reconstruction'
 import {type ParsedTimeRef, type Timeline} from './Timeline'
 

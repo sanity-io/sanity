@@ -1,5 +1,6 @@
-import {Flex, Stack, Switch, Text} from '@sanity/ui'
+import {Stack, Switch, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {useTranslation} from '../../../../../../../../../../i18n/hooks/useTranslation'
 
@@ -15,7 +16,7 @@ const TimeLabelText = styled(Text)`
 export function DateIncludeTimeFooter({onChange, value}: DateIncludeTimeFooterProps) {
   const {t} = useTranslation()
   return (
-    <Flex align="center" gap={2} justify="flex-end" marginTop={1}>
+    <Flex alignItems="center" gap={2} justifyContent="flex-end" marginTop={1}>
       <Stack>
         <TimeLabelText muted onClick={onChange} size={1} weight="medium">
           {t('calendar.action.include-time-label')}

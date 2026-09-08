@@ -1,10 +1,11 @@
 import {type ReleaseDocument} from '@sanity/client/stega'
 import ChevronLeftIcon from '@sanity/icons/ChevronLeft'
 // oxlint-disable-next-line no-restricted-imports -- `Button` requires fine-grained control
-import {Button, Flex, Label, Spinner, Stack, Text} from '@sanity/ui'
+import {Button, Label, Spinner, Stack, Text} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
 import {type ComponentType} from 'react'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 import {type ActorRefFromLogic} from 'xstate'
 
 import {Delay} from '../../../components/Delay'
@@ -86,7 +87,7 @@ export const SelectBundle: ComponentType<Props> = ({variantCreationRef, selectio
           }
         >
           <Text size={1} weight="medium">
-            <Flex gap={2} align="center">
+            <Flex gap={2} alignItems="center">
               <ChevronLeftIcon />
               <TruncatedText>{headerTitle}</TruncatedText>
             </Flex>

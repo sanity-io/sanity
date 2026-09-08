@@ -24,6 +24,7 @@
     {"name": "tsdoc", "specifier": "eslint-plugin-tsdoc"},
     {"name": "i18next", "specifier": "eslint-plugin-i18next"},
     {"name": "@sanity/i18n", "specifier": "@sanity/eslint-plugin-i18n"},
+    {"name": "@repo/i18n", "specifier": "@repo/oxlint-plugin-i18n"},
     {"name": "boundaries", "specifier": "eslint-plugin-boundaries"},
     {"name": "testing-library", "specifier": "eslint-plugin-testing-library"}
   ],
@@ -487,7 +488,8 @@
           }
         ],
         "@sanity/i18n/no-attribute-template-literals": "error",
-        "@sanity/i18n/no-i18next-import": "error"
+        "@sanity/i18n/no-i18next-import": "error",
+        "@repo/i18n/no-inline-translate-components": "error"
       }
     },
     {
@@ -1281,14 +1283,9 @@
       }
     },
     {
-      // Browser-mode tests and their story/helper files render real Studio inputs and may import
-      // the public API and test-only deps freely
-      "files": [
-        "packages/sanity/**/*.browser.test.{ts,tsx}",
-        "packages/sanity/src/core/comments/components/pte/comment-input/__tests__/*Story.tsx",
-        "packages/sanity/src/core/form/inputs/arrays/__tests__/*Story.tsx",
-        "packages/sanity/src/core/form/inputs/PortableText/__tests__/**/*Story.tsx"
-      ],
+      // Browser-mode tests (harness components included) render real Studio inputs and may
+      // import the public API and test-only deps freely
+      "files": ["packages/sanity/**/*.browser.test.{ts,tsx}"],
       "rules": {
         "eslint/no-restricted-imports": "off"
       }

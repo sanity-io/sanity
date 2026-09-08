@@ -53,10 +53,9 @@ const ReleaseCalendarFilterDayWithCardinality = (
 export const createReleaseCalendarFilterDay = (
   cardinalityView: CardinalityView,
 ): CalendarProps['renderCalendarDay'] => {
-  const ReleaseCalendarFilterDayComponent = (props: CalendarDayProps) => (
-    <ReleaseCalendarFilterDayWithCardinality {...props} cardinalityView={cardinalityView} />
-  )
-  ReleaseCalendarFilterDayComponent.displayName = 'ReleaseCalendarFilterDayComponent'
+  function ReleaseCalendarFilterDayComponent(props: CalendarDayProps) {
+    return <ReleaseCalendarFilterDayWithCardinality {...props} cardinalityView={cardinalityView} />
+  }
   return ReleaseCalendarFilterDayComponent
 }
 

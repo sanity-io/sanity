@@ -117,5 +117,3 @@ export const PaneHeader = memo(
     )
   },
 )
-
-PaneHeader.displayName = 'Memo(PaneHeader)'

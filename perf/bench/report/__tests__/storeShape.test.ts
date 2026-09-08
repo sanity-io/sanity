@@ -111,7 +111,7 @@ function assertKeyedArrayItems(value: unknown, path: string): void {
 }
 
 describe('toStorableRun', () => {
-  it('produces no directly nested arrays (matches the metrics-studio schema)', () => {
+  it('produces no directly nested arrays (matches the Studio Radar schema)', () => {
     assertNoNestedArrays(toStorableRun(RUN), 'run')
   })
 
@@ -144,5 +144,61 @@ describe('toStorableRun', () => {
     const before = JSON.parse(JSON.stringify(RUN))
     toStorableRun(RUN)
     expect(RUN).toEqual(before)
+  })
+
+  it('adds a weak gitCommit reference for a full sha', () => {
+    const sha = 'a'.repeat(40)
+    const stored = toStorableRun({...RUN, git: {...RUN.git, sha}})
+    expect(stored.git.commit).toEqual({
+      _type: 'reference',
+      _ref: `git-commit-${sha}`,
+      _weak: true,
+    })
+    expect(stored.git.sha).toBe(sha)
+  })
+
+  it('omits the commit reference when the sha is not a full sha', () => {
+    // RUN's sha is 16 chars; collect.ts also emits 'unknown' outside a repo
+    expect(toStorableRun(RUN).git).not.toHaveProperty('commit')
+    expect(toStorableRun({...RUN, git: {...RUN.git, sha: 'unknown'}}).git).not.toHaveProperty(
+      'commit',
+    )
+  })
+
+  it('keys a settle report distinctly from a pageload report of the same scenario', () => {
+    const settleScenario: BenchRunDocument['scenarios'][number] = {
+      scenario: 'singleString',
+      kind: 'pageload',
+      mode: 'settle',
+      settleExpectation: {expectedToSettle: true},
+      metrics: [
+        {
+          label: 'settled sessions',
+          unit: 'count',
+          presentAsEfps: false,
+          experiment: {
+            sessions: [[1], [1]],
+            summary: {n: 2, median: 1, p75: 1, p90: 1, p99: 1, min: 1, max: 1},
+          },
+        },
+      ],
+      failures: [],
+      interruptions: {experiment: {count: 0, totalMs: 0}},
+      loafAttribution: [],
+    }
+    const pageloadScenario: BenchRunDocument['scenarios'][number] = {
+      ...settleScenario,
+      mode: undefined,
+      settleExpectation: undefined,
+    }
+    const stored = toStorableRun({...RUN, scenarios: [settleScenario, pageloadScenario]})
+    expect(stored.scenarios.map((scenario) => scenario._key)).toEqual([
+      'settle-singleString',
+      'pageload-singleString',
+    ])
+    // The expectation object passes through untouched (no arrays inside).
+    expect(stored.scenarios[0].settleExpectation).toEqual({expectedToSettle: true})
+    assertNoNestedArrays(stored, 'run')
+    assertKeyedArrayItems(stored, 'run')
   })
 })

@@ -111,7 +111,7 @@ Covered behavior:
 
 ## Condition Autocomplete
 
-Condition key/value autocomplete is intentionally data-driven. We do not maintain a separate list of allowed keys or values.
+When `beta.variants.conditions` is **not** set, condition key/value autocomplete is data-driven. We do not maintain a separate list of allowed keys or values.
 
 `components/dialog/conditionSuggestions.ts` derives suggestions from existing variants:
 
@@ -131,6 +131,22 @@ Important behavior:
 - while the input is focused, the wrapper avoids forcing the current row value back into `Autocomplete.value`, because doing so closes the suggestion popover while typing
 
 The autocomplete is a consistency aid, not a schema constraint. Users can still introduce new condition patterns when needed.
+
+## Configured conditions picker
+
+When `beta.variants.conditions` is set (a static array or a function that may return a promise), the form switches to an exclusive dropdown picker. The function receives `projectId`, `dataset`, and `getClient`, and is resolved when a surface needs the list, not during studio boot.
+
+- each row is two select-like `MenuButton`s (`ConditionMenuButton`): the key, then its value
+- menu rows follow the workspace switcher (`MenuItem` with icon, title, and description as subtitle); the current choice is checked
+- the trigger stays one line in every state and only takes the selected look while its menu is open, so picking never shifts the form
+- the value dropdown is disabled until a key is chosen; switching keys resets the value
+- already-used keys are omitted from later rows
+- while the list loads, the rows render disabled with a spinner instead of a skeleton, so the ready state lands in place
+- existing conditions that are not in the list stay visible in a critical tone, are marked as errors, and block save
+- a load failure shows an error and retry; the form does not fall back to free-text
+- overview rows, detail condition rows, and navbar menu items show the same mismatch error after the list is ready
+
+`useVariantConditions` reads the resolved config from the workspace. Invalid keys and values are dropped by `normalizeVariantConditions` so the picker never offers them.
 
 ## Detail Page
 
@@ -173,7 +189,7 @@ Covered behavior:
 - detail-specific menu button
 - delete action navigates back to the overview after success
 
-The delete action currently does not confirm or check whether the variant has documents.
+Deleting a variant definition is validated server-side: `sanity.action.variant.definition.delete` fails while documents still reference the definition, and when the user lacks permission (see `ACTIONS.md`). In the Studio, both the overview row menu and the detail menu share `hooks/useVariantDeleteAction.ts`, which disables the delete action while the variant's document count is unknown or greater than zero, or while a dry run of the delete (`store/useVariantPermissions.ts`, mirroring the releases permission guard) reports missing permission, and asks for confirmation before deleting. If the server still refuses, the error toast reuses the same "contains documents" / "no permission" copy.
 
 ## Test Coverage
 
@@ -189,6 +205,7 @@ Covered areas include:
 - create/edit dialog validation and submit behavior
 - condition row validation and partial-edit regressions
 - condition suggestion helpers
+- conditions config reduction, normalization, mapped dropdown-picker form flow, and condition mismatch errors
 - detail page rendering, edit dialog, footer, and detail delete menu
 
 Focused command:
@@ -226,7 +243,5 @@ Local browser execution has previously hit `EMFILE: too many open files, watch` 
 ## Pending Work
 
 - Drop the local `SanityClientWithVariantsActions` typing wrapper once `@sanity/client` exports the variant definition action types.
-- Decide how document counts affect deleting variants.
-- Add a delete confirmation or disabled state once variants can have documents.
 - Expand the detail-specific actions menu independently from the overview row menu.
 - Reassess whether inline detail editing is needed after the dialog-based edit flow has been used.

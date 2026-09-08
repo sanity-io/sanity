@@ -481,6 +481,9 @@ export function ArrayOfObjectsField(props: {
       __unstable_computeDiff: member.field.__unstable_computeDiff,
       compareValue: member.field.compareValue,
       hasUpstreamVersion: member.field.hasUpstreamVersion,
+      changedFromBaseVariant: member.field.changedFromBaseVariant,
+      baseVariantValue: member.field.baseVariantValue,
+      hasBaseVariant: member.field.hasBaseVariant,
       id: member.field.id,
       onItemExpand: handleExpandItem,
       onItemCollapse: handleCollapseItem,
@@ -530,6 +533,9 @@ export function ArrayOfObjectsField(props: {
     member.field.validation,
     member.field.presence,
     member.field.hasUpstreamVersion,
+    member.field.changedFromBaseVariant,
+    member.field.baseVariantValue,
+    member.field.hasBaseVariant,
     member.field.displayInlineChanges,
     handleExpandItem,
     handleCollapseItem,
@@ -576,6 +582,7 @@ export function ArrayOfObjectsField(props: {
         collapsible={member.collapsible}
         collapsed={member.collapsed}
         changed={member.field.changed}
+        changedFromBaseVariant={member.field.changedFromBaseVariant}
         onCollapse={handleCollapse}
         onExpand={handleExpand}
         schemaType={member.field.schemaType}

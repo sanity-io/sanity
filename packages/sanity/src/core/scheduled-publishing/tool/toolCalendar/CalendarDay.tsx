@@ -1,9 +1,9 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {Badge, Card, type CardTone, Flex, Inline, Label, Stack, Text} from '@sanity/ui'
+import {Badge, Card, type CardTone, Inline, Label, Stack, Text} from '@sanity/ui'
 import {format} from 'date-fns/format'
 import {isWeekend} from 'date-fns/isWeekend'
 import {useCallback, useMemo} from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useTimeZone} from '../../../hooks/useTimeZone'
@@ -101,7 +101,7 @@ export function CalendarDay(props: CalendarDayProps) {
               right: 2,
             }}
           >
-            <Flex align="center" gap={1} justify="center">
+            <Flex alignItems="center" gap={1} justifyContent="center">
               {completed.length > 0 && <Pip selected={selected} />}
               {upcoming.length > 0 && <Pip selected={selected} />}
               {failed.length > 0 && <Pip mode="failed" selected={selected} />}
@@ -172,7 +172,7 @@ function TooltipContent(props: TooltipContentProps) {
                         </Box>
                         {/* HACK: Hide non unpublish schedules to maintain layout */}
                         <Flex
-                          align="center"
+                          alignItems="center"
                           style={{flexShrink: 0, opacity: schedule.action === 'unpublish' ? 1 : 0}}
                         >
                           <Badge

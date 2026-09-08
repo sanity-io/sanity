@@ -1,8 +1,8 @@
 import {ClockIcon} from '@sanity/icons/Clock'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Badge, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, Card, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
-import {Box} from 'ui5'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {isDev} from '../../environment'
@@ -166,9 +166,14 @@ function UnclaimedProjectNudgeInner({
       padding={3}
       borderBottom
     >
-      <Flex align="center" gap={3} justify="center" wrap="wrap">
-        <Flex align="center" gap={2}>
-          <Flex aria-hidden="true" align="center" justify="center" style={{lineHeight: 0}}>
+      <Flex alignItems="center" gap={3} justifyContent="center" flexWrap="wrap">
+        <Flex alignItems="center" gap={2}>
+          <Flex
+            aria-hidden="true"
+            alignItems="center"
+            justifyContent="center"
+            style={{lineHeight: 0}}
+          >
             <ClockIcon style={{display: 'block'}} />
           </Flex>
           <Text size={1} weight="medium">

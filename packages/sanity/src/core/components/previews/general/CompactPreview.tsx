@@ -1,5 +1,6 @@
-import {Box, Flex, rem, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {Flex, rem, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'

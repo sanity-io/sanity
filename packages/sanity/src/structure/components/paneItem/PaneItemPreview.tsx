@@ -4,24 +4,23 @@ import {
   type SchemaType,
   type SortOrdering,
 } from '@sanity/types'
-import {Flex} from '@sanity/ui'
 import {type ComponentType, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
   type DocumentPresence,
   DocumentPreviewPresence,
   type DocumentPreviewStore,
-  DocumentStatus,
+  DocumentVersionsStatus,
   DocumentVersionsStatusIndicator,
   type GeneralPreviewLayoutKey,
   getPreviewStateObservable,
   getPreviewValueWithFallback,
   getPublishedId,
   SanityDefaultPreview,
-  useDocumentVersionInfo,
   useDocumentVersions,
   usePerspective,
 } from 'sanity'
+import {Flex} from 'ui5'
 
 import {TooltipDelayGroupProvider} from '../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 
@@ -51,9 +50,8 @@ const INITIAL_PREVIEW_STATE = {
 export function PaneItemPreview(props: PaneItemPreviewProps) {
   const {icon, layout, presence, schemaType, sortOrder, value} = props
 
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const versionsInfo = useDocumentVersionInfo(value._id)
-  const {versions} = useDocumentVersions({documentId: getPublishedId(value._id)})
+  const publishedId = getPublishedId(value._id)
+  const {versions} = useDocumentVersions({documentId: publishedId})
 
   const {perspectiveStack, selectedVariantName} = usePerspective()
   const viewOptions = useMemo((): PrepareViewOptions | undefined => {
@@ -98,20 +96,14 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
 
   const status = isLoading ? null : (
     <TooltipDelayGroupProvider>
-      <Flex align="center" gap={3}>
+      <Flex alignItems="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
         <DocumentVersionsStatusIndicator documentVersions={versions} />
       </Flex>
     </TooltipDelayGroupProvider>
   )
 
-  const tooltip = (
-    <DocumentStatus
-      draft={versionsInfo.draft}
-      published={versionsInfo.published}
-      versions={versionsInfo.versions}
-    />
-  )
+  const tooltip = <DocumentVersionsStatus documentGroupId={publishedId} />
 
   return (
     <SanityDefaultPreview

@@ -1,7 +1,7 @@
-import {Card, Flex, Spinner, Stack, TextInput} from '@sanity/ui'
+import {Card, Spinner, Stack, TextInput} from '@sanity/ui'
 import {type ChangeEvent, type JSX, useCallback, useEffect, useMemo, useRef} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {CreateReleaseMenuItem} from '../../releases/components/CreateReleaseMenuItem'
@@ -104,7 +104,7 @@ export function ReleasesList({
 
   if (loading) {
     return (
-      <Flex padding={4} justify="center" data-testid="spinner">
+      <Flex padding={4} justifyContent="center" data-testid="spinner">
         <Spinner muted />
       </Flex>
     )

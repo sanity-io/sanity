@@ -1,10 +1,11 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {SyncIcon} from '@sanity/icons/Sync'
-import {Box, Card, Container, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Container, Heading, Stack, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useCallback} from 'react'
 import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../i18n'

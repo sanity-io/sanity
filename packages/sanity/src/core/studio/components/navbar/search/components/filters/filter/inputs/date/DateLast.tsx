@@ -1,6 +1,6 @@
-import {Flex, Select, TextInput} from '@sanity/ui'
+import {Select, TextInput} from '@sanity/ui'
 import {type ChangeEvent, useCallback, useRef, useState} from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {type StudioLocaleResourceKeys} from '../../../../../../../../../i18n/bundles/studio'
 import {useTranslation} from '../../../../../../../../../i18n/hooks/useTranslation'

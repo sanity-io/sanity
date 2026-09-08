@@ -1,10 +1,83 @@
-import {type SanityDocument} from '@sanity/types'
+import {
+  defineArrayMember,
+  defineField,
+  defineType,
+  type Path,
+  type SanityDocument,
+} from '@sanity/types'
 import {beforeEach, describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
 
+import {TestForm} from '../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../test/browser/testHelpers'
-import DragAndDropStory from './DragAndDropStory'
+import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
+
+const SCHEMA_TYPES = [
+  defineType({
+    type: 'document',
+    name: 'test',
+    title: 'Test',
+    fields: [
+      defineField({
+        type: 'array',
+        name: 'body',
+        of: [
+          defineArrayMember({
+            type: 'block',
+            of: [
+              defineArrayMember({
+                type: 'object',
+                name: 'inlineObjectWithTextProperty',
+                fields: [
+                  defineField({
+                    type: 'string',
+                    name: 'text',
+                    components: {
+                      input: (inputProps) => (
+                        <div data-testid="inlineTextInputField">
+                          {inputProps.renderDefault(inputProps)}
+                        </div>
+                      ),
+                    },
+                  }),
+                ],
+              }),
+            ],
+          }),
+          defineArrayMember({
+            type: 'object',
+            name: 'testObjectBlock',
+            fields: [{type: 'string', name: 'text'}],
+            components: {
+              input: (inputProps) => (
+                <div data-testid="objectBlockInputField">
+                  {inputProps.renderDefault(inputProps)}
+                </div>
+              ),
+            },
+          }),
+        ],
+      }),
+    ],
+  }),
+]
+
+function DragAndDropHarness({
+  focusPath,
+  onPathFocus,
+  document,
+}: {
+  focusPath?: Path
+  onPathFocus?: (path: Path) => void
+  document?: SanityDocument
+}) {
+  return (
+    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+      <TestForm document={document} focusPath={focusPath} onPathFocus={onPathFocus} />
+    </TestWrapper>
+  )
+}
 
 const document: SanityDocument = {
   _id: '123',
@@ -49,7 +122,7 @@ describe('Portable Text Input', () => {
       const {dragAndDrop, getFocusedPortableTextEditor} = testHelpers()
 
       void render(
-        <DragAndDropStory
+        <DragAndDropHarness
           document={document}
           focusPath={['body', {_key: 'c'}, 'children', {_key: 'd'}, 'text']}
         />,
@@ -58,7 +131,10 @@ describe('Portable Text Input', () => {
       await getFocusedPortableTextEditor('field-body')
 
       // Drag and drop the 'Hello world' block to the position of 'Baz'
-      await dragAndDrop('.pt-editable [draggable="true"]', '[data-pt-block="text"]:nth-child(3)')
+      await dragAndDrop(
+        '[data-pt-editor] [draggable="true"]',
+        '[data-pt-block="text"]:nth-child(3)',
+      )
 
       // NOTE: `document` is shadowed by the SanityDocument fixture above, so
       // reach for the DOM via `window.document`.
@@ -70,7 +146,7 @@ describe('Portable Text Input', () => {
       const {dragWithoutDrop, getFocusedPortableTextEditor} = testHelpers()
 
       void render(
-        <DragAndDropStory
+        <DragAndDropHarness
           document={document}
           focusPath={['body', {_key: 'c'}, 'children', {_key: 'd'}, 'text']}
         />,
@@ -80,7 +156,7 @@ describe('Portable Text Input', () => {
 
       // Drag and drop the 'Hello world' block to the position of 'Baz' without dropping it
       await dragWithoutDrop(
-        '.pt-editable [draggable="true"]',
+        '[data-pt-editor] [draggable="true"]',
         '[data-pt-block="text"]:nth-child(3)',
       )
 

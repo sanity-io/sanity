@@ -60,6 +60,10 @@ export interface BaseFieldProps {
   name: string
   index: number
   changed: boolean
+  /**
+   * Whether the field's value differs to the document's base variant.
+   */
+  changedFromBaseVariant: boolean
   children: ReactNode
   version?: string
   renderDefault: (props: FieldProps) => React.JSX.Element

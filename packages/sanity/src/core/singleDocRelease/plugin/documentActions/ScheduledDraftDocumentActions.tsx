@@ -99,11 +99,8 @@ export const EditScheduledDraftAction = createScheduledDraftAction(
  */
 export const DeleteScheduledDraftAction = createScheduledDraftAction('deleteSchedule')
 
-PublishScheduledDraftAction.displayName = 'PublishScheduledDraftAction'
 PublishScheduledDraftAction.action = 'publish'
 
-EditScheduledDraftAction.displayName = 'EditScheduledDraftAction'
 EditScheduledDraftAction.action = 'schedule'
 
-DeleteScheduledDraftAction.displayName = 'DeleteScheduledDraftAction'
 DeleteScheduledDraftAction.action = 'discardVersion'

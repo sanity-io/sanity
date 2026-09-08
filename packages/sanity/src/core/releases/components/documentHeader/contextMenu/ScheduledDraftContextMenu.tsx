@@ -27,6 +27,10 @@ interface ScheduledDraftContextMenuProps {
   scheduledDraftMenuActions: UseScheduledDraftMenuActionsReturn
   documentType: string
   release?: ReleaseDocument
+  /** Each gated on the matching `document.actions` id still being configured. */
+  showPublishNow: boolean
+  showEditSchedule: boolean
+  showDeleteSchedule: boolean
 }
 
 export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu(
@@ -44,6 +48,9 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
     scheduledDraftMenuActions,
     documentType,
     release,
+    showPublishNow,
+    showEditSchedule,
+    showDeleteSchedule,
   } = props
   const {t} = useTranslation()
   const hasCopyToDraftOption = useHasCopyToDraftOption(documentType, bundleId)
@@ -52,13 +59,16 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
   const copyToReleaseOptions = releases.filter((r) => !isReleaseScheduledOrScheduling(r))
   const isReleasesEnabled = !!useWorkspace().releases?.enabled
   const showCopyToReleaseMenuItem = isReleasesEnabled && copyToReleaseOptions.length > 0
+  const showCopySection = showCopyToReleaseMenuItem || hasCopyToDraftOption
+  const showEditScheduleItem = showEditSchedule && !isPausedCardinalityOneRelease(release)
+  const showCopyToDeleteDivider = showCopySection && showDeleteSchedule
 
   const {actions} = scheduledDraftMenuActions
 
   return (
     <Menu>
-      <MenuItem {...actions.publishNow} />
-      {!isPausedCardinalityOneRelease(release) && <MenuItem {...actions.editSchedule} />}
+      {showPublishNow && <MenuItem {...actions.publishNow} />}
+      {showEditScheduleItem && <MenuItem {...actions.editSchedule} />}
       <IntentLink
         intent={RELEASES_SCHEDULED_DRAFTS_INTENT}
         params={{view: 'drafts'}}
@@ -67,8 +77,8 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
       >
         <MenuItem icon={CalendarIcon} text={t('release.action.view-scheduled-drafts')} />
       </IntentLink>
-      <MenuDivider />
-      {(showCopyToReleaseMenuItem || hasCopyToDraftOption) && (
+      {(showCopySection || showDeleteSchedule) && <MenuDivider />}
+      {showCopySection && (
         <>
           <CopyToReleaseMenuGroup
             releases={copyToReleaseOptions}
@@ -82,10 +92,10 @@ export const ScheduledDraftContextMenu = memo(function ScheduledDraftContextMenu
             hasCreatePermission={hasCreatePermission}
             documentType={documentType}
           />
-          <MenuDivider />
+          {showCopyToDeleteDivider && <MenuDivider />}
         </>
       )}
-      <MenuItem {...actions.deleteSchedule} />
+      {showDeleteSchedule && <MenuItem {...actions.deleteSchedule} />}
     </Menu>
   )
 })

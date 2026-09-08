@@ -1,9 +1,10 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {Card, Flex, Text} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import debounce from 'lodash-es/debounce.js'
 import {type RefObject, useCallback, useMemo} from 'react'
 import {type TFunction, useTranslation} from 'sanity'
+import {Box} from 'ui5'
 
 import {paramsExtensions} from '../codemirror/extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'

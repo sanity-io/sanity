@@ -1,7 +1,7 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Container, Flex, Text} from '@sanity/ui'
+import {Card, Container, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {useScheduledPublishingEnabled} from '../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
@@ -39,7 +39,7 @@ export const Schedules = () => {
         <>
           {showWarning && (
             <Card margin={4} marginBottom={2} padding={3} tone="caution" radius={3} shadow={1}>
-              <Flex gap={3} align={'center'}>
+              <Flex gap={3} alignItems={'center'}>
                 <Text size={1}>
                   <WarningOutlineIcon />
                 </Text>

@@ -1,0 +1,6 @@
+{
+  "extends": "../tsconfig.dev",
+  "compilerOptions": {
+    "types": ["vite/client"]
+  }
+}

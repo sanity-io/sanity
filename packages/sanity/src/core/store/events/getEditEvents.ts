@@ -4,7 +4,6 @@ import {
   type TransactionLogEventWithEffects,
 } from '@sanity/types'
 
-import {getVersionFromId} from '../../util/draftUtils'
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {
   type EditDocumentVersionEvent,
@@ -13,6 +12,16 @@ import {
 } from './types'
 import {isWithinMergeWindow} from './utils'
 
+/**
+ * Classifies a mendoza effect pair by what it did to the document:
+ * - `'deleted'`: the apply patch deletes the document (`[0, null]`).
+ * - `'created'`: the revert patch deletes the document, i.e. applying it forward created it.
+ * - `'modified'`: an effect exists but neither creates nor deletes.
+ * - `'noop'`: no effect for this document in the transaction.
+ *
+ * Used to filter edit transactions (only `'modified'` become edit events) and to decide whether a
+ * remote mutation requires refetching the event list (created/deleted look like lifecycle events).
+ */
 export function getEffectState(
   effect?: MendozaEffectPair,
 ): 'noop' | 'deleted' | 'modified' | 'created' {
@@ -66,6 +75,26 @@ export function getEditEvents(
   documentId: string,
   liveEdit: boolean,
 ): (EditDocumentVersionEvent | UpdateLiveDocumentEvent)[]
+/**
+ * Builds synthetic edit events from translog transactions — the events API does not expose edits,
+ * so the studio derives them client-side (both for the initial fetch and for real-time remote
+ * mutations).
+ *
+ * Behavior:
+ * - Only transactions whose effect on `documentId` is `'modified'` are considered
+ *   (see {@link getEffectState}); creations and deletions are lifecycle events, not edits.
+ * - Transactions are sorted newest-first, then grouped: a transaction within the merge window
+ *   (5 min) of the *current group's newest* transaction is merged into that group; otherwise it
+ *   starts a new event. Note the window is anchored to the group head, not the previous
+ *   transaction, so a continuous editing session splits every 5 minutes.
+ * - `liveEdit: false` produces `editDocumentVersionEvent`s: merged transactions are appended to
+ *   `transactions` and distinct authors accumulate in `contributors`. The event id/revisionId is
+ *   the *newest* transaction id of the group.
+ * - `liveEdit: true` produces `updateLiveDocument` events — one per group. Known quirk: merged
+ *   (in-window) transactions are dropped entirely, including those by *other authors*, losing
+ *   their attribution (tracked as a known issue; contrast with `squashLiveEditEvents`, which only
+ *   squashes same-author events).
+ */
 export function getEditEvents(
   transactions: TransactionLogEventWithEffects[],
   documentId: string,
@@ -100,7 +129,6 @@ export function getEditEvents(
           timestamp: transaction.timestamp,
           author: transaction.author,
           contributors: [transaction.author],
-          releaseId: getVersionFromId(documentId),
           revisionId: transaction.id,
           transactions: [getEditTransaction(transaction)],
           documentVariantType: getDocumentVariantType(documentId),

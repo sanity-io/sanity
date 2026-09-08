@@ -1,8 +1,9 @@
 import {PlayIcon} from '@sanity/icons/Play'
 import {StopIcon} from '@sanity/icons/Stop'
-import {Box, Button, Card, Flex, Hotkeys, Text} from '@sanity/ui'
+import {Button, Card, Flex, Hotkeys, Text} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {useTranslation} from 'sanity'
+import {Box} from 'ui5'
 
 import {visionLocaleNamespace} from '../i18n'
 import {ControlsContainer} from './VisionGui.styled'
@@ -44,7 +45,7 @@ export function VisionGuiControls({
           portal
         >
           <Flex justify="space-evenly">
-            <Box flex={1}>
+            <Box flexBasis="0%" flexGrow={1}>
               <Tooltip
                 content={
                   <Card radius={4}>
@@ -65,7 +66,7 @@ export function VisionGuiControls({
                 />
               </Tooltip>
             </Box>
-            <Box flex={1} marginLeft={3}>
+            <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
               <Button
                 width="fill"
                 onClick={onListenExecution}

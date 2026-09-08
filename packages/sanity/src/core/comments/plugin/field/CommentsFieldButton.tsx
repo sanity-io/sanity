@@ -4,13 +4,11 @@ import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import {
   // oxlint-disable-next-line no-restricted-imports
   Button as SanityUIButton,
-  Flex,
-  Stack,
-  Text,
   useClickOutsideEvent,
 } from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
+import {Text, Flex, Icon} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Popover} from '../../../../ui-components/popover/Popover'
@@ -27,7 +25,7 @@ import {hasCommentMessageValue} from '../../helpers'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentMessage} from '../../types'
 
-const ContentStack = styled(Stack)`
+const ContentStack = styled(Flex)`
   width: 320px;
 `
 
@@ -143,7 +141,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
     )
 
     const content = (
-      <ContentStack padding={2} gap={4}>
+      <ContentStack padding={2} gap={4} flexDirection="column">
         <CommentInput
           currentUser={currentUser}
           focusLock
@@ -201,11 +199,11 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
         padding={2}
         gap={2}
       >
-        <Flex align="center" gap={2}>
-          <Text size={1}>
-            <CommentIcon />
+        <Flex alignItems="center" gap={2}>
+          <Icon muted size={1} icon={CommentIcon} style={{margin: '-0.375rem'}} />
+          <Text size={0} as="div" trim={true}>
+            {count > 9 ? '9+' : count}
           </Text>
-          <Text size={0}>{count > 9 ? '9+' : count}</Text>
         </Flex>
       </SanityUIButton>
     </Tooltip>

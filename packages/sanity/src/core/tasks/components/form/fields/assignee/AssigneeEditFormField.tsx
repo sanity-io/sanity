@@ -3,13 +3,12 @@ import {
   Badge,
   // oxlint-disable-next-line no-restricted-imports
   Button,
-  Flex,
   Text,
   TextSkeleton,
 } from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Tooltip} from '../../../../../../ui-components/tooltip/Tooltip'
 import {useFormValue} from '../../../../../form/contexts/FormValue'
@@ -74,8 +73,8 @@ export function AssigneeEditFormField(props: AssigneeEditFormFieldProps) {
                 : t('form.input.assignee.no-user-assigned.tooltip')
             }
           >
-            <Flex align="center" gap={3}>
-              <Flex align="center" gap={2} flex={1}>
+            <Flex alignItems="center" gap={3}>
+              <Flex alignItems="center" gap={2} flexBasis="0%" flexGrow={1}>
                 <TasksUserAvatar user={mentionedUser} size={0} />
                 <Box>
                   <Text size={1} textOverflow="ellipsis">

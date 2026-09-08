@@ -5,6 +5,7 @@ import {
   type DocumentActionModalDialogProps,
   getPairTarget,
   getTargetScopeId,
+  getTargetSiblings,
   InsufficientPermissionsMessage,
   useCurrentUser,
   useDocumentOperation,
@@ -42,11 +43,10 @@ export const useUnpublishAction: DocumentActionComponent = ({
   const isTargetReady = targetDocumentState.status === 'ready'
   const scopeId = getTargetScopeId(targetDocumentState)
   const isVariantTarget = isTargetReady && targetDocumentState.variant !== undefined
-  // A variant is unpublishable only when its variant-of-published sibling exists — the base
-  // `published` document says nothing about the variant's publish state.
-  const isVariantUnpublishable = isVariantTarget
-    ? targetDocumentState.publishedSibling !== undefined
-    : true
+  // Unpublishable only when a published document exists in the current lane — the base published
+  // document when no variant is selected, the variant-of-published sibling when one is.
+  const siblings = getTargetSiblings(targetDocumentState)
+  const publishedExists = Boolean(siblings?.published)
   const {unpublish} = useDocumentOperation(id, type, getPairTarget(targetDocumentState))
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
@@ -118,7 +118,7 @@ export const useUnpublishAction: DocumentActionComponent = ({
       }
     }
 
-    if (!isVariantUnpublishable) {
+    if (siblings && !publishedExists) {
       return {
         tone: 'critical',
         icon: UnpublishIcon,
@@ -143,7 +143,8 @@ export const useUnpublishAction: DocumentActionComponent = ({
     liveEditSchemaType,
     isPermissionsLoading,
     isTargetReady,
-    isVariantUnpublishable,
+    publishedExists,
+    siblings,
     permissions?.granted,
     unpublish.disabled,
     t,

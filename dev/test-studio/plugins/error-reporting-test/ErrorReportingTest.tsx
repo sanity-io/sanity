@@ -1,6 +1,5 @@
 import {type ClientError, ServerError} from '@sanity/client'
 import {
-  Box,
   Button,
   Card,
   Container,
@@ -16,6 +15,7 @@ import {Code} from '@sanity/ui/code'
 import {lazy, type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {CorsOriginErrorScreen, useClient, useProjectId, useStudioErrorHandler} from 'sanity'
 import {useRouter} from 'sanity/router'
+import {Box} from 'ui5'
 
 import {
   installCheckCorsFetchInterceptor,
@@ -257,7 +257,7 @@ function DemoRow({demo}: {demo: DemoEntry}) {
     <Card border padding={4} radius={2} tone="transparent">
       <Stack gap={3}>
         <Flex align="center" gap={4} wrap="wrap">
-          <Box flex={1} style={{minWidth: 240}}>
+          <Box flexBasis="0%" flexGrow={1} style={{minWidth: 240}}>
             {demo.description ? (
               <Stack gap={3}>
                 <Text size={1} weight="medium">
@@ -642,7 +642,7 @@ function RequestErrorsDemo() {
               />
             </Flex>
           </Card>
-          <Box flex={1} style={{overflow: 'auto'}}>
+          <Box flexBasis="0%" flexGrow={1} overflow="auto">
             <CorsOriginErrorScreen
               allowed={false}
               withCredentials={false}

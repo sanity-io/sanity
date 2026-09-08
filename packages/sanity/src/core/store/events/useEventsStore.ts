@@ -5,35 +5,40 @@ import {of} from 'rxjs'
 
 import {useClient} from '../../hooks/useClient'
 import {useSchema} from '../../hooks/useSchema'
-import {useReleasesStore} from '../../releases/store/useReleasesStore'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases/util/releasesClient'
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {createEventsStore} from './createEventsStore'
 import {getDocumentAtRevision as getDocumentAtRevisionFunction} from './getDocumentAtRevision'
 import {
-  type DocumentGroupEvent,
-  type EventsStore,
-  isCreateDocumentVersionEvent,
-  isDeleteDocumentGroupEvent,
-  isDeleteDocumentVersionEvent,
-  isEditDocumentVersionEvent,
-  isPublishDocumentVersionEvent,
-} from './types'
-
-export interface EventsObservableValue {
-  events: DocumentGroupEvent[]
-  nextCursor: string
-  loading: boolean
-  error: null | Error
-}
-const INITIAL_VALUE: EventsObservableValue = {
-  events: [],
-  nextCursor: '',
-  loading: true,
-  error: null,
-}
+  findRangeForRevision as findRangeForRevisionPure,
+  findRangeForSince as findRangeForSincePure,
+  getLastNonDeletedRevId,
+  resolveRevisionId,
+  resolveSinceId,
+} from './resolveRevisions'
+import {type EventsStore, INITIAL_EVENTS_VALUE} from './types'
 
 /**
+ * React entry point of the events store: creates a `createEventsStore` instance for the document
+ * (recreated when client/document/liveEdit change), subscribes the remote-transactions
+ * listener for the component lifetime, and resolves the `rev`/`since` selection against the
+ * loaded events.
+ *
+ * The resolution logic lives in `resolveRevisions.ts`:
+ * - `rev` → `revisionId` via {@link resolveRevisionId}, which receives `loadMoreEvents` as its
+ *   `onLoadMore` callback: unresolved `@release:` revs keep paginating until the release's
+ *   publish event is loaded — with no termination if it never appears (known issue).
+ * - `since` → `sinceId` via {@link resolveSinceId}, only meaningful with a revision to compare
+ *   against.
+ * - `findRangeForRevision(nextRev)` / `findRangeForSince(nextSince)` compute the `[since, rev]`
+ *   pair to write to the URL when the user picks a new revision/since in the timeline, clearing
+ *   whichever side would make the range inverted (since must be older than rev).
+ *
+ * Also exposes per-revision document fetching (`getDocumentAtRevision`, plus resolved `revision` /
+ * `sinceRevision` snapshots), `getChangesList` (diff between the resolved revisions),
+ * `expandEvent`, `loadMoreEvents` and `lastNonDeletedRevId` (newest event that isn't a delete —
+ * used to restore deleted documents).
+ *
  * @internal
  */
 export function useEventsStore({
@@ -42,13 +47,12 @@ export function useEventsStore({
   rev,
   since,
 }: {
-  documentId: string
+  documentId: string | undefined
   documentType: string
   rev?: string | '@lastEdited' | '@lastPublished'
   since?: string | '@lastPublished'
 }): EventsStore {
   const client = useClient(RELEASES_STUDIO_CLIENT_OPTIONS)
-  const {state$: releases$} = useReleasesStore()
 
   const schema = useSchema()
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
@@ -60,10 +64,9 @@ export function useEventsStore({
         client,
         documentId,
         documentType,
-        releases$,
         isLiveEdit,
       }),
-    [client, documentId, documentType, releases$, isLiveEdit],
+    [client, documentId, documentType, isLiveEdit],
   )
   // Deferred (per review): these events drive the review-changes list, which
   // users don't expect to update synchronously on every edit. `revisionId` /
@@ -74,7 +77,7 @@ export function useEventsStore({
   // diff was deferred incoherently while events stayed live.
   const {events, loading, error, nextCursor} = useObservable(
     eventsStore.eventsObservable$,
-    INITIAL_VALUE,
+    INITIAL_EVENTS_VALUE,
   )
 
   useEffect(() => {
@@ -85,45 +88,14 @@ export function useEventsStore({
     }
   }, [eventsStore])
 
-  const revisionId = useMemo(() => {
-    if (rev === '@lastPublished') {
-      const publishEvent = events.find(isPublishDocumentVersionEvent)
-      return publishEvent?.id || null
-    }
-    if (rev === '@lastEdited') {
-      const editEvent = events.find(isEditDocumentVersionEvent)
-      if (editEvent) return editEvent.revisionId
-    }
-    if (rev?.startsWith('@release:')) {
-      const releaseId = rev.split(':')[1]
-      const releaseEvent = events.find(
-        (event) => isPublishDocumentVersionEvent(event) && event.releaseId === releaseId,
-      )
-      if (releaseEvent) return releaseEvent.id
-      if (events.length > 0 && !loading) eventsStore.loadMoreEvents()
-    }
-
-    if (!rev) {
-      const [lastEvent] = events
-
-      // if the most recent event was a publish, or delete version, use that event as the revision
-      if (lastEvent) {
-        if (isPublishDocumentVersionEvent(lastEvent)) {
-          return lastEvent.id
-        }
-        if (isDeleteDocumentVersionEvent(lastEvent)) {
-          // the versionRevisionId returned by this event is incorrect, see #content-releases-actions-history channel.
-          // We need to use the last edit event we can find to grab the revision id.
-          return events.find(isEditDocumentVersionEvent)?.revisionId
-        }
-      }
-    }
-
-    return rev
-  }, [events, rev, eventsStore, loading])
+  const revisionId = useMemo(
+    () => resolveRevisionId({events, rev, loading, onLoadMore: eventsStore.loadMoreEvents}),
+    [events, rev, loading, eventsStore],
+  )
 
   const getDocumentAtRevision = useCallback(
     (revision: string) => {
+      if (!documentId) return of(null)
       return getDocumentAtRevisionFunction({
         client,
         documentId,
@@ -139,32 +111,10 @@ export function useEventsStore({
   )
   const revision = useSyncObservable(revision$, null)
 
-  const sinceId = useMemo(() => {
-    if (since && since !== '@lastPublished') return since
-    if (!events) return null
-
-    if (since === '@lastPublished' || !since) {
-      const revisionIndex = events.findIndex((e) => e.id === revisionId)
-      // Skip the revision event and find the next published event
-      const lastPublishedId = events
-        .slice(revisionIndex + 1)
-        .find(isPublishDocumentVersionEvent)?.id
-      if (lastPublishedId) return lastPublishedId
-
-      // If it doesn't have a published event used the creation event as the since.
-      const creationEvent = events.find(isCreateDocumentVersionEvent)
-      if (creationEvent) return creationEvent.id
-    }
-
-    // rev has not been selected, the is seeing the last version of the document, select the event that comes after
-    if (!revisionId) return events[1]?.id
-
-    // If the user has selected a revisionId, we should show here the id of the event that is the previous event to the rev selected.
-    const revisionEventIndex = events.findIndex((e) => e.id === revisionId)
-    if (revisionEventIndex === -1) return null
-
-    return events[revisionEventIndex + 1]?.id || null
-  }, [events, revisionId, since])
+  const sinceId = useMemo(
+    () => resolveSinceId({events, revisionId, since}),
+    [events, revisionId, since],
+  )
 
   const since$ = useMemo(
     () => (sinceId ? getDocumentAtRevision(sinceId) : of(null)),
@@ -178,62 +128,21 @@ export function useEventsStore({
 
   const sinceRevision = useSyncObservable(since$, null)
 
-  const documentVariantType = getDocumentVariantType(documentId)
+  const documentVariantType = documentId ? getDocumentVariantType(documentId) : undefined
   const findRangeForRevision = useCallback(
-    (nextRev: string): [string | null, string | null] => {
-      if (!events) return [null, null]
-      const revisionIndex = events.findIndex((event) => event.id === nextRev)
-      if (revisionIndex === 0) {
-        // If last event is publish and we are in a version, select that one as the nextRev
-        if (documentVariantType === 'version' && isPublishDocumentVersionEvent(events[0])) {
-          return [since || null, nextRev]
-        }
-        // When selecting the first element of the events (latest) the rev is removed.
-        return [since || null, null]
-      }
-
-      if (!since) {
-        // Get the current revision and check if it's older than the next revision, in that case, use that value as the since.
-        const currentRevisionIndex = events.findIndex((event) => event.id === revisionId)
-        if (
-          currentRevisionIndex === -1 ||
-          revisionIndex === -1 ||
-          revisionIndex > currentRevisionIndex
-        ) {
-          return [null, nextRev]
-        }
-        return [revisionId || null, nextRev]
-      }
-      const sinceIndex = events.findIndex((event) => event.id === since)
-
-      if (sinceIndex === -1 || revisionIndex === -1) return [null, nextRev]
-      if (sinceIndex < revisionIndex) return [null, nextRev]
-      if (sinceIndex === revisionIndex) return [null, nextRev]
-      return [since, nextRev]
-    },
+    (nextRev: string): [string | null, string | null] =>
+      findRangeForRevisionPure(nextRev, {events, since, revisionId, documentVariantType}),
     [events, since, documentVariantType, revisionId],
   )
 
   const findRangeForSince = useCallback(
-    (nextSince: string): [string | null, string | null] => {
-      if (!events) return [null, null]
-      if (!rev || !revisionId) return [nextSince, null]
-      const revisionIndex = events.findIndex((event) => event.id === revisionId)
-      const sinceIndex = events.findIndex((event) => event.id === nextSince)
-      if (sinceIndex === -1 || revisionIndex === -1) return [nextSince, null]
-      if (sinceIndex < revisionIndex) return [nextSince, null]
-      if (sinceIndex === revisionIndex) return [nextSince, null]
-      return [nextSince, revisionId]
-    },
+    (nextSince: string): [string | null, string | null] =>
+      findRangeForSincePure(nextSince, {events, rev, revisionId}),
     [events, rev, revisionId],
   )
 
-  const lastNonDeletedRevId = useMemo(
-    () =>
-      events.find((e) => !isDeleteDocumentGroupEvent(e) && !isDeleteDocumentVersionEvent(e))?.id ||
-      null,
-    [events],
-  )
+  const lastNonDeletedRevId = useMemo(() => getLastNonDeletedRevId(events), [events])
+
   return {
     events,
     nextCursor,

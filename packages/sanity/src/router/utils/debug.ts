@@ -1,3 +1,3 @@
-import Debug from 'debug'
+import {createDebug} from 'obug'
 
-export const debug = Debug('state-router')
+export const debug = createDebug('state-router')

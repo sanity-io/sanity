@@ -1,19 +1,25 @@
-import {Flex, LayerProvider, Stack, Text} from '@sanity/ui'
+import {LayerProvider, Stack, Text} from '@sanity/ui'
 import {memo, useCallback, useMemo, useState} from 'react'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   DocumentGroupInventory,
   DocumentGroupInventoryAction,
-  type DocumentGroupInventoryProps,
+  type DocumentGroupInventoryComponents,
+  getReleaseIdFromReleaseDocumentId,
   Hotkeys,
   isGoingToUnpublish,
   isSanityDefinedAction,
+  isVariantId,
+  readVersionType,
   useClient,
   useDocumentStore,
   usePausedScheduledDraft,
   usePerspective,
+  useSetVariant,
   useSource,
+  type VersionInfoDocumentStub,
 } from 'sanity'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -34,7 +40,7 @@ import {useDocumentPane} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'
 
-const documentGroupInventoryComponents: DocumentGroupInventoryProps['components'] = {
+const documentGroupInventoryComponents: DocumentGroupInventoryComponents = {
   DocTitle,
   ReferencePreviewLink,
   VersionsPreviewList,
@@ -77,6 +83,36 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
     [setIsDocumentGroupInventoryActive],
   )
 
+  const setVariant = useSetVariant()
+
+  // Picking a version in the inventory switches the pane to it.
+  const selectDocumentGroupVariant = useCallback(
+    (document: VersionInfoDocumentStub) => {
+      let bundle
+
+      switch (readVersionType(document)) {
+        case 'release':
+          bundle = getReleaseIdFromReleaseDocumentId(document._system.release?._ref ?? '')
+          break
+        case 'published':
+          bundle = 'published'
+          break
+        case 'draft':
+          bundle = 'drafts'
+          break
+        case 'agent':
+          bundle = document._system.bundleId
+      }
+
+      const variantId = isVariantId(document._system.variant?._ref)
+        ? document._system.variant._ref
+        : undefined
+
+      setVariant({variantId, perspective: bundle})
+    },
+    [setVariant],
+  )
+
   const {selectedReleaseId} = usePerspective()
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
@@ -88,7 +124,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
     if (!firstActionState || (!firstActionState.title && !firstActionState.shortcut)) return null
 
     return (
-      <Flex style={{maxWidth: 300}} align="center" gap={3}>
+      <Flex style={{maxWidth: 300}} alignItems="center" gap={3}>
         {firstActionState.title && <Text size={1}>{firstActionState.title}</Text>}
         {firstActionState.shortcut && (
           <Hotkeys
@@ -136,7 +172,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
       : displayed?._id
 
   return (
-    <Flex align="center" gap={3}>
+    <Flex alignItems="center" gap={3}>
       {__internal_tasks && __internal_tasks.footerAction}
       {hasDocumentGroupInventory && typeof targetDocumentId !== 'undefined' && (
         <DocumentGroupInventoryAction
@@ -146,6 +182,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
           setIsDocumentGroupInventoryActive={setIsDocumentGroupInventoryActive}
         >
           <DocumentGroupInventory
+            mode="manage"
             documentId={targetDocumentId}
             documentType={documentType}
             portalElementName={DOCUMENT_PANEL_PORTAL_ELEMENT}
@@ -153,6 +190,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
             referringDocuments$={referringDocuments$}
             requestClose={requestDocumentGroupInventoryClose}
             components={documentGroupInventoryComponents}
+            onSelect={selectDocumentGroupVariant}
           />
         </DocumentGroupInventoryAction>
       )}

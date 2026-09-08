@@ -1,5 +1,6 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
-import {Card, Flex, Inline, Stack, Text} from '@sanity/ui'
+import {Card, Inline, Stack, Text} from '@sanity/ui'
+import {Flex} from 'ui5'
 
 import {RELEASES_DOCS_URL} from '../../constants'
 
@@ -8,7 +9,7 @@ import {RELEASES_DOCS_URL} from '../../constants'
 const InfoCallout = () => {
   return (
     <Card overflow="hidden" padding={4} radius={2} shadow={1} tone="suggest">
-      <Flex align="center" gap={4}>
+      <Flex alignItems="center" gap={4}>
         <Text size={2}>
           <InfoOutlineIcon />
         </Text>

@@ -15,6 +15,10 @@ interface InsufficientPermissionBannerProps {
   requiredPermission: 'update' | 'create'
 }
 
+function Roles({roleList}: {children?: React.ReactNode; roleList?: React.ReactNode}) {
+  return roleList
+}
+
 export function InsufficientPermissionBanner({
   requiredPermission,
 }: InsufficientPermissionBannerProps) {
@@ -67,7 +71,8 @@ export function InsufficientPermissionBanner({
             <Translate
               t={t}
               i18nKey="banners.permission-check-banner.missing-permission"
-              components={{Roles: () => <>{roles}</>}}
+              components={{Roles}}
+              componentProps={{roleList: roles}}
               values={{count: roles.length, roles: roleTitles}}
               context={requiredPermission}
             />

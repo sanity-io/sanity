@@ -1,5 +1,5 @@
 import {type HotspotPreview, type Image, type ImageSchemaType} from '@sanity/types'
-import {Card, Flex, Grid, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Grid, Heading, Stack, Text} from '@sanity/ui'
 import {
   type ReactNode,
   useCallback,
@@ -10,7 +10,7 @@ import {
   useState,
 } from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
@@ -35,6 +35,18 @@ export interface ImageToolInputProps extends Omit<
   imageUrl: string
 }
 
+function ImageUrlDocumentationLink({children}: {children?: ReactNode}) {
+  return <a href="https://www.sanity.io/docs/image-urls#fm-048ba39d9e88">{children}</a>
+}
+
+function ImageUrlPackageDocumentationLink({children}: {children?: ReactNode}) {
+  return (
+    <a href="https://www.sanity.io/docs/image-urls#fm-048ba39d9e88">
+      <code>{children}</code>
+    </a>
+  )
+}
+
 const HOTSPOT_PATH = ['hotspot']
 
 const DEFAULT_PREVIEWS: HotspotPreview[] = [
@@ -55,7 +67,12 @@ const Placeholder = styled.div`
 
 function LoadStatus(props: {children: ReactNode}) {
   return (
-    <Flex align="center" justify="center" padding={4} style={{overflowWrap: 'break-word'}}>
+    <Flex
+      alignItems="center"
+      justifyContent="center"
+      padding={4}
+      style={{overflowWrap: 'break-word'}}
+    >
       {props.children}
     </Flex>
   )
@@ -155,18 +172,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
                   <Translate
                     t={t}
                     i18nKey="inputs.imagetool.vector-warning.developer-info"
-                    components={{
-                      ImageUrlDocumentationLink: ({children}) => (
-                        <a href="https://www.sanity.io/docs/image-urls#fm-048ba39d9e88">
-                          {children}
-                        </a>
-                      ),
-                      ImageUrlPackageDocumentationLink: ({children}) => (
-                        <a href="https://www.sanity.io/docs/image-urls#fm-048ba39d9e88">
-                          <code>{children}</code>
-                        </a>
-                      ),
-                    }}
+                    components={{ImageUrlDocumentationLink, ImageUrlPackageDocumentationLink}}
                   />
                 </Text>
               </Details>

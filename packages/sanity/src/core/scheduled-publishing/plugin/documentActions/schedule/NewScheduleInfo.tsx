@@ -1,4 +1,5 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
+import {Flex} from 'ui5'
 
 import {useValidationStatus} from '../../../../hooks/useValidationStatus'
 import {getDraftId, getPublishedId} from '../../../../util/draftUtils'
@@ -42,7 +43,7 @@ function ValidationWarning({id, type}: {id: string; type: string}) {
 
   return (
     <Card padding={2} radius={1} shadow={1} tone="critical">
-      <Flex gap={1} align="center">
+      <Flex gap={1} alignItems="center">
         <ValidationInfo
           markers={validationStatus.validation}
           type={schema}

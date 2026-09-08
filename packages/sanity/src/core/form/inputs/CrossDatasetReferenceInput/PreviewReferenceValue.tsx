@@ -8,6 +8,10 @@ import {type CrossDatasetReferenceInfo} from './types'
 import {type Loadable} from './useReferenceInfo'
 import {useProjectId} from './utils/useProjectId'
 
+function JsonValue({value}: {children?: React.ReactNode; value?: unknown}) {
+  return <pre>{JSON.stringify(value, null, 2)}</pre>
+}
+
 export function PreviewReferenceValue(props: {
   value: CrossDatasetReferenceValue
   showStudioUrlIcon?: boolean
@@ -40,7 +44,8 @@ export function PreviewReferenceValue(props: {
             t={t}
             i18nKey="inputs.reference.cross-dataset.invalid-type"
             values={{typeName: refTypeName || 'unknown'}}
-            components={{JsonValue: () => <pre>{JSON.stringify(value, null, 2)}</pre>}}
+            components={{JsonValue}}
+            componentProps={{value}}
           />
         </Text>
       </Stack>

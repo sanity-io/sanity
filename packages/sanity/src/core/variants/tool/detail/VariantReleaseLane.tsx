@@ -1,4 +1,5 @@
-import {Flex, TabList} from '@sanity/ui'
+import {TabList} from '@sanity/ui'
+import {Flex} from 'ui5'
 
 import {Tab} from '../../../../ui-components/tab/Tab'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -34,7 +35,7 @@ export function VariantReleaseLane({
   const {t: tCore} = useTranslation()
 
   return (
-    <Flex align="center" wrap="nowrap" data-testid="variant-release-lane">
+    <Flex alignItems="center" flexWrap="nowrap" data-testid="variant-release-lane">
       {/* No leading icon/label: the tabs (All, Published, Drafts, release names) are self-evidently
           bundle filters. A filter icon here read as a clickable control that wasn't one. */}
       <TabList gap={1}>

@@ -1,5 +1,5 @@
-import {Box, Flex} from '@sanity/ui'
 import {CrossDatasetReferencePreview, PreviewCard} from 'sanity'
+import {Flex, Box} from 'ui5'
 
 import {type CrossDatasetIncomingReference} from '../types'
 import {type CrossDatasetIncomingReferenceDocument} from './getCrossDatasetIncomingReferences'
@@ -13,8 +13,8 @@ export function CrossDatasetIncomingReferenceDocumentPreview({
 }) {
   const studioUrl = type?.studioUrl?.({id: document.id, type: document.type})
   return (
-    <Flex key={document.id} gap={1} align="center">
-      <Box flex={1}>
+    <Flex key={document.id} gap={1} alignItems="center">
+      <Box flexBasis="0%" flexGrow={1}>
         <PreviewCard
           data-as={studioUrl ? 'a' : 'div'}
           flex={1}

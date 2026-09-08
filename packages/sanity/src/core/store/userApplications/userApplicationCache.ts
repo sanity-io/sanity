@@ -1,9 +1,9 @@
 import {type SanityClient} from '@sanity/client'
-import debugit from 'debug'
+import {createDebug} from 'obug'
 
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 
-const debug = debugit('sanity:store')
+const debug = createDebug('sanity:store')
 
 /**
  * User application from the API

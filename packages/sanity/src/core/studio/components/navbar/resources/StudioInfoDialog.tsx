@@ -4,10 +4,11 @@ import {LaunchIcon} from '@sanity/icons/Launch'
 import {RefreshIcon} from '@sanity/icons/Refresh'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {SanityMonogram} from '@sanity/logos'
-import {Badge, Card, Flex, Grid, Inline, Spinner, Stack, Text} from '@sanity/ui'
+import {Badge, Card, Grid, Inline, Spinner, Stack, Text} from '@sanity/ui'
 import {useEffect, useId} from 'react'
 import semver, {type SemVer} from 'semver'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -122,7 +123,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
   const importMapWarning =
     importMapInfo?.valid && !importMapInfo.appId ? (
       <Card padding={4} tone="caution">
-        <Flex align="flex-start" gap={3}>
+        <Flex alignItems="flex-start" gap={3}>
           <TextWithTone tone="caution">
             <WarningOutlineIcon />
           </TextWithTone>
@@ -165,13 +166,13 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
       ) : null}
 
       <Stack gap={3} paddingY={3}>
-        <Flex align="center" justify="center" paddingY={4}>
+        <Flex alignItems="center" justifyContent="center" paddingY={4}>
           <MonogramContainer>
             <SanityMonogram height={75} width={75} />
           </MonogramContainer>
         </Flex>
         <Grid gridTemplateColumns={2} gap={2}>
-          <Flex justify="flex-end" align="center">
+          <Flex justifyContent="flex-end" alignItems="center">
             <Text as="h2" size={1} weight="semibold">
               Sanity Studio
             </Text>
@@ -195,7 +196,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
               </Card>
             }
           >
-            <Flex gap={2} align="center" paddingRight={2}>
+            <Flex gap={2} alignItems="center" paddingRight={2}>
               <TruncateBadge tone={versionBadgeTone}>
                 {currentVersion ? ensureVersionPrefix(currentVersion.version) : 'unknown'}
               </TruncateBadge>
@@ -215,14 +216,14 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
 
           {isAutoUpdating && newAutoUpdateVersionAvailable ? (
             <>
-              <Flex justify="flex-end" align="center">
+              <Flex justifyContent="flex-end" alignItems="center">
                 <Text size={1} weight="semibold">
                   {/* Note that this is not necessary a *higher* version than current, it's the new version made available for auto updates,
                    which in some cases could even be a downgrade compared to current */}
                   {t('about-dialog.version-info.new-version.text')}
                 </Text>
               </Flex>
-              <Flex justify="flex-start" align="center" gap={2}>
+              <Flex justifyContent="flex-start" alignItems="center" gap={2}>
                 <Badge tone="primary">
                   {autoUpdatingVersion && ensureVersionPrefix(autoUpdatingVersion?.version)}
                 </Badge>
@@ -247,12 +248,12 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
             </>
           ) : isUpToDate ? null : (
             <>
-              <Flex justify="flex-end" align="center">
+              <Flex justifyContent="flex-end" alignItems="center">
                 <Text size={1} weight="semibold">
                   {t('about-dialog.version-info.latest-version.header')}
                 </Text>
               </Flex>
-              <Flex justify="flex-start" align="center" gap={2}>
+              <Flex justifyContent="flex-start" alignItems="center" gap={2}>
                 <Badge tone="primary">
                   {latestTaggedVersion
                     ? ensureVersionPrefix(latestTaggedVersion.version)
@@ -282,7 +283,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
         <Stack gap={2} paddingY={3}>
           {isAutoUpdating ? (
             <Card tone="transparent" padding={2} radius={3} marginX={2}>
-              <Flex align="center" justify="space-evenly" gap={2}>
+              <Flex alignItems="center" justifyContent="space-evenly" gap={2}>
                 <Text size={1} muted>
                   {t('about-dialog.version-info.auto-updates.enabled')}
                 </Text>
@@ -301,7 +302,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
             // note: in dev we currently can't tell if auto updates is enabled or not,
             // so instead of showing misleading info, we just don't show anything
             <Card tone="transparent" padding={2} radius={3} marginX={2}>
-              <Flex align="center" justify="space-evenly" gap={2}>
+              <Flex alignItems="center" justifyContent="space-evenly" gap={2}>
                 <Text size={1} muted>
                   {t('about-dialog.version-info.auto-updates.disabled')}
                 </Text>

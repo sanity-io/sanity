@@ -1,5 +1,5 @@
 import {UserIcon} from '@sanity/icons/User'
-import {Badge, Container, Flex, Text, TextInput, VirtualList} from '@sanity/ui'
+import {Badge, Container, Text, TextInput, VirtualList} from '@sanity/ui'
 import {
   Menu,
   // oxlint-disable-next-line no-restricted-imports
@@ -8,7 +8,7 @@ import {
 import deburr from 'lodash-es/deburr.js'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {MenuButton} from '../../../../../../ui-components/menuButton/MenuButton'
 import {LoadingBlock} from '../../../../../components/loadingBlock/LoadingBlock'
@@ -30,8 +30,8 @@ function MentionUserMenuItem(props: {
   const handleSelect = useCallback(() => onSelect(user.id), [user, onSelect])
   return (
     <MenuItem onClick={handleSelect} padding={1} disabled={!user.granted} pressed={pressed}>
-      <Flex align="center" gap={3}>
-        <Flex align="center" gap={2} flex={1}>
+      <Flex alignItems="center" gap={3}>
+        <Flex alignItems="center" gap={2} flexBasis="0%" flexGrow={1}>
           <TasksUserAvatar user={user.id ? user : undefined} size={1} />
           <Text size={1} textOverflow="ellipsis" title={user.displayName}>
             {user.displayName}

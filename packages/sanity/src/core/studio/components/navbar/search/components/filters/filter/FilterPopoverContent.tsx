@@ -1,5 +1,5 @@
-import {Flex} from '@sanity/ui'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {DEBUG_MODE} from '../../../constants'
 import {type SearchFilter} from '../../../types'
@@ -21,7 +21,7 @@ const ContainerFlex = styled(Flex)`
 
 export function FilterPopoverContent({filter}: FilterPopoverContentProps) {
   return (
-    <ContainerFlex direction="column">
+    <ContainerFlex flexDirection="column">
       <FilterForm filter={filter} />
 
       {/* Debug panels */}

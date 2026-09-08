@@ -32,6 +32,11 @@ export interface NodeChronologyProps {
    * Whether the document has an upstream version.
    */
   hasUpstreamVersion: boolean
+
+  /**
+   * Whether the document has a base variant.
+   */
+  hasBaseVariant: boolean
 }
 
 /**
@@ -62,6 +67,16 @@ export interface NodeDiffProps<Annotation, Value = unknown> extends NodeChronolo
    * version.
    */
   compareValue?: Value
+  /**
+   * Whether the current value is different to the node's value in the document's base variant.
+   */
+  changedFromBaseVariant: boolean
+  /**
+   * The node's value in the document's base variant.
+   *
+   * You can use the `hasBaseVariant` prop to determine whether the document has a base variant.
+   */
+  baseVariantValue?: Value
 }
 
 /**

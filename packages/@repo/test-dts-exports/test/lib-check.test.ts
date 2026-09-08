@@ -83,6 +83,13 @@ const filteredErrors = errors.filter((d) => {
     return false
   }
 
+  // Temporary workaround for @sanity/cli-core declarations importing optional React compiler plugin
+  // peer types from "babel-plugin-react-compiler". This originates in node_modules and does not
+  // affect runtime behavior.
+  if (code === 2307 && file.fileName.includes('/node_modules/@sanity/cli-core/dist/cliConfig-')) {
+    return false
+  }
+
   return true
 })
 

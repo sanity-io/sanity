@@ -63,6 +63,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
           validation={props.validation}
           deprecated={props.schemaType.deprecated}
           path={path}
+          changedFromBaseVariant={props.changedFromBaseVariant}
         >
           {children}
         </FormField>

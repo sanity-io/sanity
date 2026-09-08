@@ -1,11 +1,11 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {DocumentIcon} from '@sanity/icons/Document'
-import {Card, Flex, LayerProvider, Stack, Text} from '@sanity/ui'
+import {Card, LayerProvider, Stack, Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useMemo, useState, type RefAttributes} from 'react'
 import {IntentLink} from 'sanity/router'
 import {css, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {FormFieldHeaderText} from '../../../../form/components/formField/FormFieldHeaderText'
@@ -123,7 +123,7 @@ function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
 
   return (
     <TargetRoot border radius={2} data-testid="task-target-field-preview">
-      <Flex gap={1} align={'center'} justify={'space-between'}>
+      <Flex gap={1} alignItems={'center'} justifyContent={'space-between'}>
         <Card as={CardLink} radius={2} data-as="button">
           <SearchResultItemPreview
             documentType={documentType}
@@ -228,7 +228,7 @@ export function TargetField(
                     onKeyDown={handleKeyDown}
                     tabIndex={0}
                   >
-                    <Flex gap={1} justify={'flex-start'} align={'center'}>
+                    <Flex gap={1} justifyContent={'flex-start'} alignItems={'center'}>
                       <Box paddingX={1}>
                         <Text size={1}>
                           <DocumentIcon />

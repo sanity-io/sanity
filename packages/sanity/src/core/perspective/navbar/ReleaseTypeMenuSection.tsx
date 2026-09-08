@@ -1,7 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Card, Flex, Label, Stack} from '@sanity/ui'
+import {Card, Label, Stack} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {stickyMenuHeadingStyle} from '../styles'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
@@ -49,7 +49,7 @@ export function ReleaseTypeMenuSection({
             </Box>
           </StickyHeading>
         )}
-        <Flex direction="column" gap={1}>
+        <Flex flexDirection="column" gap={1}>
           {releases.map((release) => (
             <GlobalPerspectiveMenuItem
               key={release._id}

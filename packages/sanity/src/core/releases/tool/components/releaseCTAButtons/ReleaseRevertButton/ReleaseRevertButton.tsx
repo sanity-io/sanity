@@ -1,11 +1,11 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {RestoreIcon} from '@sanity/icons/Restore'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, Checkbox, Flex, Text} from '@sanity/ui'
+import {Card, Checkbox, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {useRouter} from 'sanity/router'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {Button} from '../../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../../ui-components/dialog/Dialog'
@@ -31,6 +31,32 @@ interface ReleasePublishAllButtonProps {
 }
 
 type RevertReleaseStatus = 'idle' | 'confirm' | 'reverting'
+
+function RevertStageSuccessLink({
+  linkText,
+  onLinkClick,
+}: {
+  children?: React.ReactNode
+  linkText?: string
+  onLinkClick?: () => void
+}) {
+  return (
+    <Text
+      size={1}
+      weight="medium"
+      data-as="a"
+      onClick={onLinkClick}
+      style={{
+        cursor: 'pointer',
+        marginBottom: '0.5rem',
+        display: 'flex',
+      }}
+      data-testid="revert-stage-success-link"
+    >
+      {linkText}
+    </Text>
+  )
+}
 
 const ConfirmReleaseDialog = ({
   revertReleaseStatus,
@@ -96,23 +122,10 @@ const ConfirmReleaseDialog = ({
           title: (
             <Text muted size={1}>
               <Translate
-                components={{
-                  Link: () => (
-                    <Text
-                      size={1}
-                      weight="medium"
-                      data-as="a"
-                      onClick={navigateToRevertRelease(revertReleaseId)}
-                      style={{
-                        cursor: 'pointer',
-                        marginBottom: '0.5rem',
-                        display: 'flex',
-                      }}
-                      data-testid="revert-stage-success-link"
-                    >
-                      {t('toast.revert-stage.success-link')}
-                    </Text>
-                  ),
+                components={{Link: RevertStageSuccessLink}}
+                componentProps={{
+                  linkText: t('toast.revert-stage.success-link'),
+                  onLinkClick: navigateToRevertRelease(revertReleaseId),
                 }}
                 t={t}
                 i18nKey="toast.revert-stage.success"
@@ -209,7 +222,7 @@ const ConfirmReleaseDialog = ({
           />
         }
       </Text>
-      <Flex align="center" paddingTop={4}>
+      <Flex alignItems="center" paddingTop={4}>
         <Checkbox
           onChange={() => setStageNewRevertRelease((current) => !current)}
           id="immediate-revert-release"

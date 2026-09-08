@@ -1,3 +1,4 @@
+import {dequal} from 'dequal/lite'
 import {catchError, distinctUntilChanged, filter, map, type Observable, of, switchMap} from 'rxjs'
 import {mergeMapArray} from 'rxjs-mergemap-array'
 import {
@@ -78,10 +79,7 @@ export function getIncomingReferences({
       : of({filter: filterQueryRaw, filterParams: filterParamsRaw})
 
   return filterResolver.pipe(
-    distinctUntilChanged(
-      (a, b) =>
-        a.filter === b.filter && JSON.stringify(a.filterParams) === JSON.stringify(b.filterParams),
-    ),
+    distinctUntilChanged((a, b) => a.filter === b.filter && dequal(a.filterParams, b.filterParams)),
     switchMap(({filter: filterQuery, filterParams}) => {
       return documentPreviewStore
         .unstable_observeDocumentIdSet(

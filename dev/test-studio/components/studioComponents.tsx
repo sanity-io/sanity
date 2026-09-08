@@ -1,4 +1,4 @@
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {createContext, useContext} from 'react'
 import {
   definePlugin,
@@ -7,13 +7,14 @@ import {
   type NavbarProps,
   type ToolMenuProps,
 } from 'sanity'
+import {Box} from 'ui5'
 
 export const studioComponentsPlugin = definePlugin({
   name: 'studio-components-plugin',
   studio: {
     components: {
       layout: (props) => (
-        <Box height="fill" data-testid="test-layout-plugin">
+        <Box height="100%" data-testid="test-layout-plugin">
           {props.renderDefault(props)}
         </Box>
       ),
@@ -36,7 +37,7 @@ export function CustomLayout(props: LayoutProps) {
 
   return (
     <TitleContext.Provider value="Context value">
-      <Box height="fill" data-testid="test-layout-config">
+      <Box height="100%" data-testid="test-layout-config">
         {renderDefault(props)}
       </Box>
     </TitleContext.Provider>

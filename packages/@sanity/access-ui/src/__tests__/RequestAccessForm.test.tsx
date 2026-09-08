@@ -106,6 +106,92 @@ describe('RequestAccessForm', () => {
       'href',
       'https://idp.example.com/login',
     )
+    // A send did fail here, but the wall is the point, not the failure.
+    expect(screen.getByRole('heading', {name: 'Sign in with SSO required'})).toBeInTheDocument()
+  })
+
+  const SSO_LOGIN_URL = 'https://www.sanity.io/login/sso/acme?origin=https%3A%2F%2Fexample.test%2F'
+
+  const samlRequired = (redirectUrl?: string) => ({
+    status: () => Promise.resolve({state: 'saml-required', ...(redirectUrl && {redirectUrl})}),
+  })
+
+  it('offers no form at all when the server says the org enforces SSO', async () => {
+    const client = createClientStub(samlRequired(SSO_LOGIN_URL))
+    await renderForm({client})
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/requires signing in with SSO/)
+    // The org's own SSO login page, which auto-submits, so this is the only click.
+    expect(screen.getByRole('link', {name: 'Sign in with SSO'})).toHaveAttribute(
+      'href',
+      SSO_LOGIN_URL,
+    )
+    // The whole point of asking first: no note field, no futile submit.
+    expect(screen.queryByRole('form')).not.toBeInTheDocument()
+    expect(screen.queryByRole('textbox', {name: 'Message'})).not.toBeInTheDocument()
+  })
+
+  it('does not claim a send failed when SSO blocks the form on mount', async () => {
+    const client = createClientStub(samlRequired(SSO_LOGIN_URL))
+    await renderForm({client})
+
+    expect(
+      await screen.findByRole('heading', {name: 'Sign in with SSO required'}),
+    ).toBeInTheDocument()
+    expect(screen.queryByText('Access request couldn’t be sent')).not.toBeInTheDocument()
+  })
+
+  it('names the provider the user is actually signed in with', async () => {
+    const client = createClientStub(samlRequired())
+    await renderForm({client})
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/signed in with Google/)
+  })
+
+  it('omits the CTA when the API resolves no login URL', async () => {
+    const client = createClientStub(samlRequired())
+    await renderForm({client})
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument()
+    expect(screen.queryByRole('link', {name: 'Sign in with SSO'})).not.toBeInTheDocument()
+  })
+
+  it('shows SSO over a pending request, which an enforced org can never approve', async () => {
+    const client = createClientStub({
+      ...samlRequired(),
+      list: () => Promise.resolve([createAccessRequest()]),
+    })
+    await renderForm({client})
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/requires signing in with SSO/)
+    expect(screen.queryByText(/pending approval/)).not.toBeInTheDocument()
+  })
+
+  it('blocks rather than offering a form for an unavailable resource', async () => {
+    const client = createClientStub({
+      status: () => Promise.resolve({state: 'resource-not-available'}),
+    })
+    await renderForm({client})
+
+    // Not the submit-failure copy: nothing was submitted.
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'The resource currently being requested is no longer available.',
+    )
+    expect(screen.queryByRole('form')).not.toBeInTheDocument()
+  })
+
+  it('keeps the form when the server says eligible', async () => {
+    const client = createClientStub({status: () => Promise.resolve({state: 'eligible'})})
+    await renderForm({client})
+
+    expect(await screen.findByRole('form', {name: 'Request access'})).toBeInTheDocument()
+  })
+
+  it('keeps the form when the state fetch fails, leaving the submit gate as the backstop', async () => {
+    const client = createClientStub({status: () => Promise.reject(new Error('offline'))})
+    await renderForm({client})
+
+    expect(await screen.findByRole('form', {name: 'Request access'})).toBeInTheDocument()
   })
 
   it('renders the sent state and reports the submission after a successful submit', async () => {

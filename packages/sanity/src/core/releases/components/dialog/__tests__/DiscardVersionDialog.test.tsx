@@ -46,7 +46,7 @@ const READY_BASE_TARGET = {
   targetDocument: undefined,
   scopeId: undefined,
   variant: undefined,
-  publishedSibling: undefined,
+  siblings: {published: undefined, draft: undefined, version: undefined},
 } as const
 
 const config = defineConfig({
@@ -156,7 +156,7 @@ describe('DiscardVersionDialog operation target', () => {
       targetDocument: undefined,
       scopeId: 'someVariantScope',
       variant: {_id: 'variant-doc'},
-      publishedSibling: undefined,
+      siblings: {published: undefined, draft: undefined, version: undefined},
     } as unknown as ReturnType<typeof useTargetDocumentState>)
 
     await renderDialog({versionId: 'versions.rSummer.my-doc'})

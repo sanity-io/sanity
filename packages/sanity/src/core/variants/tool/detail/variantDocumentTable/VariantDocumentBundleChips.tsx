@@ -1,8 +1,8 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Badge, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {IntentLink} from 'sanity/router'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -120,9 +120,9 @@ export function VariantDocumentBundleChips({
   const overflow = chips.slice(MAX_VISIBLE_CHIPS)
 
   return (
-    <Flex align="center" gap={2} style={{minWidth: 0, overflow: 'hidden'}} wrap="nowrap">
+    <Flex alignItems="center" gap={2} style={{overflow: 'hidden'}} flexWrap="nowrap">
       {visible.map((chip) => (
-        <Box key={chip.key} style={{minWidth: 0, overflow: 'hidden'}}>
+        <Box key={chip.key} style={{overflow: 'hidden'}}>
           <VisibleChip chip={chip} label={getLabel(chip)} />
         </Box>
       ))}
@@ -135,7 +135,7 @@ export function VariantDocumentBundleChips({
               </Text>
               <Stack gap={2}>
                 {overflow.map((chip) => (
-                  <Flex align="center" gap={2} key={chip.key}>
+                  <Flex alignItems="center" gap={2} key={chip.key}>
                     <Text size={0}>
                       <ChipIcon chip={chip} />
                     </Text>

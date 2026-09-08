@@ -1,11 +1,12 @@
 /* oxlint-disable @sanity/i18n/no-attribute-template-literals */
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, Flex} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import startCase from 'lodash-es/startCase.js'
 import {lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {NavbarContext} from 'sanity/_singletons'
 import {RouteScope, useRouter, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
 import {isDefaultRouteTool} from '../config/isDefaultRouteTool'
@@ -184,7 +185,7 @@ export function StudioLayoutComponent() {
   }, [])
 
   return (
-    <Flex data-ui="ToolScreen" direction="column" height="fill" data-testid="studio-layout">
+    <Flex data-ui="ToolScreen" flexDirection="column" height="100%" data-testid="studio-layout">
       <NavbarContext.Provider value={navbarContextValue}>
         {/* oxlint-disable-next-line react/static-components -- Navbar comes from useNavbarComponent(), stable per workspace */}
         <Navbar />

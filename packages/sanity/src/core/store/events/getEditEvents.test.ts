@@ -1,6 +1,8 @@
 import {describe, expect, it} from 'vitest'
 
-import {getEditEvents} from './getEditEvents'
+import {DRAFT_ID, minutesAfterBase} from './__fixtures__/events.fixture'
+import {editTransaction} from './__fixtures__/transactions.fixture'
+import {getEditEvents, getEffectState} from './getEditEvents'
 import {type EditDocumentVersionEvent, type UpdateLiveDocumentEvent} from './types'
 
 describe('getEditEvents()', () => {
@@ -58,7 +60,6 @@ describe('getEditEvents()', () => {
       timestamp: '2024-11-19T08:27:33.251404Z',
       author: 'p8xDvUMxC',
       contributors: ['p8xDvUMxC'],
-      releaseId: 'rkaihDvC1',
       revisionId: 'edit-tx-2',
       documentVariantType: 'version',
       transactions: [
@@ -106,7 +107,6 @@ describe('getEditEvents()', () => {
         id: 'new-tx',
         author: 'p8xDvUMxC',
         contributors: ['p8xDvUMxC'],
-        releaseId: 'rkaihDvC1',
         revisionId: 'new-tx',
         documentVariantType: 'version',
         transactions: [
@@ -170,10 +170,10 @@ describe('getEditEvents()', () => {
       expect(events).toEqual([expectedEvent])
     })
 
-    it('fails soft for variant-scoped version ids (opaque scope hash as bundle segment)', () => {
+    it('does not populate releaseId for variant-scoped version ids', () => {
       // Variant document ids are `versions.<scopeId>.<groupId>` where the scope id is an opaque
-      // server-generated hash, not a release id. Attribution must not throw or misclassify —
-      // `releaseId` simply carries the hash (it will never match a real release downstream).
+      // server-generated hash, not a release id. Synthesized edits must not throw or treat the
+      // hash as a releaseId.
       const variantDocumentId = 'versions.a1b2c3d4e5f6.f8dece19-c458-4cff-bf76-732b00617183'
       const variantTx = {
         id: 'variant-edit-tx',
@@ -195,9 +195,9 @@ describe('getEditEvents()', () => {
       expect(events[0]).toMatchObject({
         type: 'editDocumentVersion',
         documentId: variantDocumentId,
-        releaseId: 'a1b2c3d4e5f6',
         documentVariantType: 'version',
       })
+      expect(events[0]).not.toHaveProperty('releaseId')
     })
   })
   describe('when the document is liveEdit', () => {
@@ -291,6 +291,64 @@ describe('getEditEvents()', () => {
         true,
       )
       expect(events).toEqual([expectedEvent])
+    })
+  })
+
+  describe('merge window characterization', () => {
+    it('anchors the window to the group head, not the previous transaction', () => {
+      // Three edits 4 minutes apart: each is within 5 minutes of the previous one, but the third
+      // is 8 minutes from the group head — so it starts a new event (known quirk: a continuous
+      // editing session splits every 5 minutes).
+      const transactions = [
+        editTransaction({id: 'tx-0', timestamp: minutesAfterBase(0)}),
+        editTransaction({id: 'tx-4', timestamp: minutesAfterBase(4)}),
+        editTransaction({id: 'tx-8', timestamp: minutesAfterBase(8)}),
+      ]
+
+      const events = getEditEvents(transactions, DRAFT_ID, false)
+      expect(events).toHaveLength(2)
+      expect(events[0].id).toBe('tx-8')
+      expect(
+        (events[0] as EditDocumentVersionEvent).transactions.map((tx) => tx.revisionId),
+      ).toEqual(['tx-8', 'tx-4'])
+      expect(events[1].id).toBe('tx-0')
+    })
+
+    it('accumulates distinct authors as contributors when merging', () => {
+      const transactions = [
+        editTransaction({id: 'tx-1', timestamp: minutesAfterBase(0), author: 'author-1'}),
+        editTransaction({id: 'tx-2', timestamp: minutesAfterBase(1), author: 'author-2'}),
+      ]
+
+      const [event] = getEditEvents(transactions, DRAFT_ID, false) as EditDocumentVersionEvent[]
+      expect(event.author).toBe('author-2')
+      expect(event.contributors).toEqual(['author-2', 'author-1'])
+      expect(event.transactions.map((tx) => tx.revisionId)).toEqual(['tx-2', 'tx-1'])
+    })
+
+    it('liveEdit drops merged in-window transactions entirely, including other authors', () => {
+      // Live edit checks for the events received from the events api, not the transactions.
+      const transactions = [
+        editTransaction({id: 'tx-1', timestamp: minutesAfterBase(0), author: 'author-1'}),
+        editTransaction({id: 'tx-2', timestamp: minutesAfterBase(1), author: 'author-2'}),
+      ]
+
+      const events = getEditEvents(transactions, DRAFT_ID, true)
+      // Only the newest transaction survives; author-1's edit leaves no trace.
+      expect(events).toEqual([
+        expect.objectContaining({type: 'updateLiveDocument', id: 'tx-2', author: 'author-2'}),
+      ])
+    })
+  })
+
+  describe('getEffectState()', () => {
+    it('classifies effects by their apply/revert delete patches', () => {
+      expect(getEffectState(undefined)).toBe('noop')
+      expect(getEffectState({apply: [0, null], revert: [11, 3]})).toBe('deleted')
+      expect(getEffectState({apply: [11, 3], revert: [0, null]})).toBe('created')
+      expect(getEffectState({apply: [11, 3], revert: [11, 4]})).toBe('modified')
+      // A transaction that both creates and deletes reports 'deleted' (apply wins).
+      expect(getEffectState({apply: [0, null], revert: [0, null]})).toBe('deleted')
     })
   })
 })

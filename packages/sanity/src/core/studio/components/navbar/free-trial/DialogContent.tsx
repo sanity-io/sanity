@@ -1,7 +1,7 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {Flex, Heading} from '@sanity/ui'
+import {Heading} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -112,7 +112,7 @@ export function DialogContent({
       {content.image && (
         <Image src={content.image.asset.url} alt={content.image.asset.altText ?? ''} />
       )}
-      <Flex padding={3} direction={'column'}>
+      <Flex padding={3} flexDirection={'column'}>
         <Box paddingX={2} marginTop={3}>
           <Heading size={2}>{content.headingText}</Heading>
         </Box>

@@ -1,5 +1,6 @@
-import {Box, Flex, rem, Stack, Text} from '@sanity/ui'
+import {Flex, rem, Stack, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {LinearProgress} from '../../progress/LinearProgress'
@@ -42,7 +43,7 @@ export function BlockPreview(props: Omit<PreviewProps<'block'>, 'renderDefault'>
       <HeaderFlex data-testid="block-preview__header">
         {media && <Media dimensions={mediaDimensions} layout="block" media={media as any} />}
 
-        <Box flex={1} paddingLeft={media ? 2 : 1}>
+        <Box flexBasis="0%" flexGrow={1} paddingLeft={media ? 2 : 1}>
           <Text size={1} textOverflow="ellipsis" weight="medium">
             {title ? renderPreviewNode(title, 'block') : 'Untitled'}
           </Text>

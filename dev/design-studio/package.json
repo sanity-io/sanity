@@ -41,6 +41,7 @@
   "devDependencies": {
     "@sanity/vanilla-extract-vite-plugin": "catalog:",
     "@types/react": "catalog:",
+    "oxc-transform-react": "catalog:",
     "rimraf": "catalog:"
   }
 }

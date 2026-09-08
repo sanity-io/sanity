@@ -7,9 +7,9 @@ import {PinIcon} from '@sanity/icons/Pin'
 import {PinFilledIcon} from '@sanity/icons/PinFilled'
 import {UserIcon} from '@sanity/icons/User'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Container, Flex, Skeleton, Stack, Text} from '@sanity/ui'
+import {Card, Container, Skeleton, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useRef, useState} from 'react'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
@@ -78,7 +78,7 @@ function ReleaseDashboardDetailsProduction({
   return (
     <Container width={3}>
       <Stack padding={3} paddingY={[3, 3, 4, 5]}>
-        <Flex gap={1} align="center">
+        <Flex gap={1} alignItems="center">
           {isReleaseOpen && (
             <Button
               icon={isSelected ? PinFilledIcon : PinIcon}
@@ -271,7 +271,7 @@ export function ReleaseDashboardDetails({
             on the right. Wraps to a single column on narrow widths (metadata stacks under the
             description). The pin control was removed (it's a global-perspective mode that belongs in
             the perspective bar, matching the Variants pin removal). */}
-        <Flex align="flex-start" gap={4} wrap="wrap">
+        <Flex alignItems="flex-start" gap={4} flexWrap="wrap">
           <Box flexBasis="0%" flexGrow={1} minWidth={RELEASE_IDENTITY_MIN_WIDTH}>
             <ReleaseDetailsEditor release={release} />
           </Box>

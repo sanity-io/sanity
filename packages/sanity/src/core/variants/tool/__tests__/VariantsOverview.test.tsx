@@ -5,6 +5,7 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {setupVirtualListEnv} from '../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {type SingleWorkspace} from '../../../config/types'
 import {variantAlphaAudience, variantNorwegianMarket} from '../../__fixtures__/variants.fixture'
 import {variantsUsEnglishLocaleBundle} from '../../i18n'
 import {type EditableSystemVariant, type SystemVariant} from '../../types'
@@ -28,6 +29,10 @@ const variantOperationsMock = vi.hoisted(() => ({
   createVariant: vi.fn(),
   updateVariant: vi.fn(),
   deleteVariant: vi.fn(),
+}))
+
+const variantPermissionsMock = vi.hoisted(() => ({
+  checkWithPermissionGuard: vi.fn(),
 }))
 
 const documentCountsMock = vi.hoisted(() => ({
@@ -79,6 +84,10 @@ vi.mock('../../store/useVariantOperations', () => ({
   useVariantOperations: vi.fn(() => variantOperationsMock),
 }))
 
+vi.mock('../../store/useVariantPermissions', () => ({
+  useVariantPermissions: vi.fn(() => variantPermissionsMock),
+}))
+
 vi.mock('../../hooks/useVariantsDocumentCounts', () => ({
   useVariantsDocumentCounts: vi.fn(() => ({
     data: documentCountsMock.data,
@@ -111,14 +120,16 @@ describe('VariantsOverview', () => {
       }),
     )
     variantOperationsMock.deleteVariant.mockResolvedValue(undefined)
+    variantPermissionsMock.checkWithPermissionGuard.mockResolvedValue(true)
   })
 
   afterEach(() => {
     vi.clearAllMocks()
   })
 
-  const renderOverview = async () => {
+  const renderOverview = async (config?: Partial<SingleWorkspace>) => {
     const wrapper = await createTestProvider({
+      config,
       resources: [variantsUsEnglishLocaleBundle],
     })
     const view = render(<VariantsOverview />, {wrapper})
@@ -383,6 +394,56 @@ describe('VariantsOverview', () => {
         variantId: getVariantId(createdVariant._id),
       })
     })
+  })
+
+  it('shows a mismatch error when a stored condition is not in the configured list', async () => {
+    setVariants([variantAlphaAudience])
+
+    await renderOverview({
+      beta: {
+        variants: {
+          enabled: true,
+          conditions: [{name: 'locale', values: ['en-US']}],
+        },
+      },
+    })
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+    })
+
+    expect(screen.getByTestId('variant-condition-mismatch')).toBeInTheDocument()
+  })
+
+  it('does not show a mismatch error in freeform mode', async () => {
+    setVariants([variantAlphaAudience])
+
+    await renderOverview()
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+    })
+
+    expect(screen.queryByTestId('variant-condition-mismatch')).not.toBeInTheDocument()
+  })
+
+  it('does not show a mismatch error while configured conditions are loading', async () => {
+    setVariants([variantAlphaAudience])
+
+    await renderOverview({
+      beta: {
+        variants: {
+          enabled: true,
+          conditions: () => new Promise(() => undefined),
+        },
+      },
+    })
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+    })
+
+    expect(screen.queryByTestId('variant-condition-mismatch')).not.toBeInTheDocument()
   })
 
   it('shows error copy in the table empty state when load fails with no data', async () => {

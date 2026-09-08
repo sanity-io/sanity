@@ -1,0 +1,12 @@
+{
+  "name": "@repo/oxlint-plugin-i18n",
+  "version": "6.9.2",
+  "private": true,
+  "description": "In-repo oxlint jsPlugin with i18n rules that complement @sanity/eslint-plugin-i18n",
+  "type": "module",
+  "main": "./src/index.mjs",
+  "exports": {
+    ".": "./src/index.mjs"
+  },
+  "scripts": {}
+}

@@ -8,7 +8,8 @@ export default defineCliConfig({
     projectId: process.env.SANITY_E2E_PROJECT_ID,
     dataset: process.env.SANITY_E2E_DATASET,
   },
-  reactCompiler: {target: '19'},
+  // React Compiler on `oxc-transform-react` (no babel), see dev/test-studio/sanity.cli.ts
+  reactCompiler: {transform: 'oxc', target: '19'},
   vite: {
     define: {
       'process.env.SANITY_E2E_PROJECT_ID': JSON.stringify(process.env.SANITY_E2E_PROJECT_ID),

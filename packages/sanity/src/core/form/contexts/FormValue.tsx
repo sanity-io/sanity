@@ -27,17 +27,22 @@ export function FormValueProvider(props: {
   return <FormValueContext.Provider value={value}>{props.children}</FormValueContext.Provider>
 }
 
+const ROOT_PATH: Path = []
+
 /**
- * React hook that returns the value of the field specified by a path.
+ * React hook that returns the value of the field specified by a path, or the whole
+ * document when called without one.
  * @public
  *
- * @param path - An array notation with segments that are either strings representing field names, index integers for arrays with simple values, or objects with a _key for arrays containing objects
+ * @param path - An array notation with segments that are either strings representing field names, index integers for arrays with simple values, or objects with a _key for arrays containing objects. Defaults to the document root.
  *
- * @returns The value of the field specified by the path
+ * @returns The value of the field specified by the path, or the whole document if no path is given
  *
  * @example Using the `useFormValue` hook
  * ```ts
  * function MyComponent() {
+ *    // get the whole document
+ *    const document = useFormValue()
  *    // get value of field 'name' in object 'author'
  *    const authorName = useFormValue(['author', 'name'])
  *    // get value of the second item in array 'tags' of type 'string'
@@ -49,7 +54,7 @@ export function FormValueProvider(props: {
  * ```
  */
 
-export function useFormValue(path: Path): unknown {
+export function useFormValue(path: Path = ROOT_PATH): unknown {
   const uniquePath = pathFor(path)
   const ctx = useContext(FormValueContext)
   if (!ctx) {

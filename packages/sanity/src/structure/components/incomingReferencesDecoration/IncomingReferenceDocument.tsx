@@ -1,4 +1,4 @@
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {motion, type Variants} from 'motion/react'
 import {useState} from 'react'
 import {
@@ -8,6 +8,7 @@ import {
   useSchema,
   useTranslation,
 } from 'sanity'
+import {Flex, Box} from 'ui5'
 
 import {structureLocaleNamespace} from '../../i18n'
 import {IncomingReferenceDocumentActions} from './IncomingReferenceDocumentActions'
@@ -58,10 +59,10 @@ export const IncomingReferenceDocument = (props: {
       initial="initial"
       animate={isExecutingAction ? 'actionInProgress' : 'animate'}
       gap={1}
-      align="center"
+      alignItems="center"
       variants={variants}
     >
-      <Box flex={1}>
+      <Box flexBasis="0%" flexGrow={1}>
         {/* In some cases when the document has been recently linked the value we get
           in the listener is not the latest, but a previous value with the document not yet linked, this handles that */}
         {referencePaths.length > 0 ? (

@@ -1,14 +1,18 @@
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Flex, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
 import {Box} from 'ui5'
 
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
+import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
 import {RhombusOutlinedIcon} from '../../../components/temporary-icons/RhombusOutlined'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {stickyMenuHeadingStyle} from '../../../perspective/styles'
+import {getConditionMismatchMessage} from '../../components/ConditionMismatchIndicator'
 import {useDocumentVariantIds} from '../../hooks/useDocumentVariantIds'
+import {useVariantConditionMismatches} from '../../hooks/useVariantConditions'
 import {variantsLocaleNamespace} from '../../i18n'
 import {getVariantId, getVariantTitle} from '../../tool/util'
 import {type SystemVariant} from '../../types'
@@ -52,6 +56,52 @@ interface VariantListProps {
   filled: boolean
 }
 
+function VariantMenuItem(props: {
+  isSelected: boolean
+  onSelect: (variant: SystemVariant) => void
+  variant: SystemVariant
+  icon: React.ComponentType
+}): React.JSX.Element {
+  const {isSelected, onSelect, variant, icon: Icon} = props
+  const {t} = useTranslation(variantsLocaleNamespace)
+  const mismatches = useVariantConditionMismatches(variant.conditions)
+  const mismatchMessage =
+    mismatches.length > 0 ? getConditionMismatchMessage(t, mismatches) : undefined
+
+  return (
+    <MenuItem
+      data-testid={`variant-${getVariantId(variant._id)}`}
+      icon={
+        <Text size={2} className={suggestIconColor}>
+          <Icon />
+        </Text>
+      }
+      iconRight={
+        mismatches.length > 0 ? (
+          <span data-testid="variant-condition-mismatch">
+            <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
+          </span>
+        ) : undefined
+      }
+      onClick={() => onSelect(variant)}
+      pressed={isSelected}
+      selected={isSelected}
+      text={getVariantTitle(variant)}
+      tooltipProps={
+        mismatchMessage
+          ? {
+              content: (
+                <Text muted size={1}>
+                  {mismatchMessage}
+                </Text>
+              ),
+            }
+          : undefined
+      }
+    />
+  )
+}
+
 function VariantList({
   variants,
   selectedVariantId,
@@ -62,25 +112,15 @@ function VariantList({
 
   return (
     <Box paddingX={2}>
-      {variants.map((variant) => {
-        const isSelected = selectedVariantId === variant._id
-
-        return (
-          <MenuItem
-            key={variant._id}
-            data-testid={`variant-${getVariantId(variant._id)}`}
-            icon={
-              <Text size={2} className={suggestIconColor}>
-                <Icon />
-              </Text>
-            }
-            onClick={() => onSelect(variant)}
-            pressed={isSelected}
-            selected={isSelected}
-            text={getVariantTitle(variant)}
-          />
-        )
-      })}
+      {variants.map((variant) => (
+        <VariantMenuItem
+          key={variant._id}
+          isSelected={selectedVariantId === variant._id}
+          onSelect={onSelect}
+          variant={variant}
+          icon={Icon}
+        />
+      ))}
     </Box>
   )
 }

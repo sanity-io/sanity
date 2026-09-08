@@ -1,4 +1,4 @@
-import {Flex, Text, usePortal} from '@sanity/ui'
+import {type BadgeTone, Text, usePortal} from '@sanity/ui'
 import {
   Menu,
   // oxlint-disable-next-line no-restricted-imports
@@ -7,6 +7,7 @@ import {
 import {useCallback} from 'react'
 import {
   ContextMenuButton,
+  getReleaseDocumentIdFromReleaseId,
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   getVersionFromId,
@@ -15,17 +16,23 @@ import {
   RELEASES_INTENT,
   ReleaseTitle,
   Translate,
+  useAllReleases,
   useSetPerspective,
   useTranslation,
   useWorkspace,
   VersionInlineBadge,
 } from 'sanity'
 import {IntentLink} from 'sanity/router'
+import {Flex} from 'ui5'
 
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {TIMELINE_MENU_PORTAL} from '../timelineMenu'
+
+function VersionBadge({children, tone}: {children?: React.ReactNode; tone?: BadgeTone}) {
+  return <VersionInlineBadge $tone={tone}>{children}</VersionInlineBadge>
+}
 
 export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}) {
   const {t} = useTranslation(structureLocaleNamespace)
@@ -62,25 +69,27 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
     }, 100)
   }, [setParams, params, event.versionRevisionId, setPerspective, isDraftModelEnabled])
 
-  const releaseTitle = event.release?.metadata?.title
+  // Resolve the release behind a release publish. When the release is missing from the store
+  // (e.g. it was deleted) a stub {_id} keeps the release indicated but disables the menu;
+  // draft publishes have no releaseId.
+  const {map: releasesMap} = useAllReleases()
+  const releaseDocumentId = event.releaseId
+    ? getReleaseDocumentIdFromReleaseId(event.releaseId)
+    : undefined
+  const release = releaseDocumentId
+    ? releasesMap.get(releaseDocumentId) || {_id: releaseDocumentId, metadata: undefined}
+    : undefined
+
+  const releaseTitle = release?.metadata?.title
   const releaseFallback = tCore('release.placeholder-untitled-release')
 
-  const VersionBadge = ({children}: {children: React.ReactNode}) => {
-    return (
-      <VersionInlineBadge
-        $tone={
-          event.release
-            ? isReleaseDocument(event.release)
-              ? getReleaseTone(event.release)
-              : 'default'
-            : undefined
-        }
-      >
-        {children}
-      </VersionInlineBadge>
-    )
-  }
-  const isMenuDisabled = event.release && !isReleaseDocument(event.release)
+  const releaseBadgeTone = release
+    ? isReleaseDocument(release)
+      ? getReleaseTone(release)
+      : 'default'
+    : undefined
+  const isMenuDisabled = release && !isReleaseDocument(release)
+
   return (
     <MenuButton
       id={`timeline-item-menu-button-${event.versionId}`}
@@ -90,8 +99,8 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
           tooltipProps={{
             content: isMenuDisabled
               ? t('timeline-item.not-found-release.tooltip', {
-                  releaseId: event.release?._id
-                    ? getReleaseIdFromReleaseDocumentId(event.release._id)
+                  releaseId: release?._id
+                    ? getReleaseIdFromReleaseDocumentId(release._id)
                     : undefined,
                 })
               : t('timeline-item.menu-button.tooltip'),
@@ -101,22 +110,21 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
       }
       menu={
         <Menu padding={1}>
-          {event.release ? (
+          {release ? (
             <>
               <IntentLink
                 intent={RELEASES_INTENT}
-                params={{id: getReleaseIdFromReleaseDocumentId(event.release._id)}}
+                params={{id: getReleaseIdFromReleaseDocumentId(release._id)}}
                 style={{textDecoration: 'none'}}
               >
                 <MenuItem padding={3}>
-                  <Flex align={'center'} justify="flex-start">
+                  <Flex alignItems={'center'} justifyContent="flex-start">
                     <Text size={1} style={{textDecoration: 'none'}}>
                       <ReleaseTitle title={releaseTitle} fallback={releaseFallback}>
                         {({displayTitle}) => (
                           <Translate
-                            components={{
-                              VersionBadge: ({children}) => <VersionBadge>{children}</VersionBadge>,
-                            }}
+                            components={{VersionBadge}}
+                            componentProps={{tone: releaseBadgeTone}}
                             i18nKey="events.open.release"
                             values={{
                               releaseTitle: displayTitle,
@@ -130,14 +138,13 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
                 </MenuItem>
               </IntentLink>
               <MenuItem onClick={handleOpenReleaseDocument}>
-                <Flex align={'center'} justify="flex-start">
+                <Flex alignItems={'center'} justifyContent="flex-start">
                   <Text size={1}>
                     <ReleaseTitle title={releaseTitle} fallback={releaseFallback}>
                       {({displayTitle}) => (
                         <Translate
-                          components={{
-                            VersionBadge: ({children}) => <VersionBadge>{children}</VersionBadge>,
-                          }}
+                          components={{VersionBadge}}
+                          componentProps={{tone: releaseBadgeTone}}
                           i18nKey="events.inspect.release"
                           values={{
                             releaseTitle: displayTitle,
@@ -152,14 +159,11 @@ export function PublishedEventMenu({event}: {event: PublishDocumentVersionEvent}
             </>
           ) : (
             <MenuItem onClick={handleOpenDraftDocument} disabled={!event.versionRevisionId}>
-              <Flex align={'center'}>
+              <Flex alignItems={'center'}>
                 <Text size={1}>
                   <Translate
-                    components={{
-                      VersionBadge: ({children}) => (
-                        <VersionInlineBadge $tone="caution">{children}</VersionInlineBadge>
-                      ),
-                    }}
+                    components={{VersionBadge}}
+                    componentProps={{tone: 'caution' as const}}
                     i18nKey="events.open.draft"
                     t={t}
                   />

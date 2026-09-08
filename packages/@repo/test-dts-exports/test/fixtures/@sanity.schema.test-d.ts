@@ -5,7 +5,9 @@
 import type {
   default as _default,
   DEFAULT_ANNOTATIONS,
+  DEFAULT_BLOCK_STYLES,
   DEFAULT_DECORATORS,
+  DEFAULT_LIST_TYPES,
   Rule,
   Schema,
   SchemaValidationResult,
@@ -19,8 +21,14 @@ describe('@sanity/schema', () => {
   test('DEFAULT_ANNOTATIONS', () => {
     expectTypeOf<typeof DEFAULT_ANNOTATIONS>().not.toBeNever()
   })
+  test('DEFAULT_BLOCK_STYLES', () => {
+    expectTypeOf<typeof DEFAULT_BLOCK_STYLES>().not.toBeNever()
+  })
   test('DEFAULT_DECORATORS', () => {
     expectTypeOf<typeof DEFAULT_DECORATORS>().not.toBeNever()
+  })
+  test('DEFAULT_LIST_TYPES', () => {
+    expectTypeOf<typeof DEFAULT_LIST_TYPES>().not.toBeNever()
   })
   test('Rule', () => {
     expectTypeOf<typeof Rule>().not.toBeNever()

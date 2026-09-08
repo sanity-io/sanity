@@ -1,9 +1,9 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {type PreviewValue} from '@sanity/types'
-import {Checkbox, Flex, Stack, Text} from '@sanity/ui'
+import {Checkbox, Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {type ChangeEvent, type ReactNode, useCallback, useMemo, useState} from 'react'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
@@ -245,7 +245,7 @@ function DeleteScheduledDraftDialogWithCopyToDraft({
             </Text>
           </Box>
           <Box paddingX={2}>
-            <Flex align="center" gap={3} as="label">
+            <Flex alignItems="center" gap={3} as="label">
               <Checkbox
                 checked={shouldCopyToDraft}
                 onChange={(event: ChangeEvent<HTMLInputElement>) =>

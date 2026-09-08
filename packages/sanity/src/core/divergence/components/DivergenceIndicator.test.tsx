@@ -52,7 +52,6 @@ test('does not forward the styling path to the DOM', async () => {
       <DivergenceIndicator
         divergence={divergence}
         divergenceNavigator={divergenceNavigator}
-        path={['title']}
         upstreamBundle="published"
       />
     </TestProvider>,

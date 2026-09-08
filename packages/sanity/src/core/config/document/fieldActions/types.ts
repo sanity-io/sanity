@@ -22,6 +22,11 @@ export interface DocumentFieldActionHook {
  * @hidden
  * @beta */
 export interface DocumentFieldActionProps {
+  /**
+   * The published id of the document being edited. Draft (`drafts.`) and release
+   * (`versions.<releaseId>.`) prefixes are stripped, so this does not identify the
+   * document revision currently shown in the editor.
+   */
   documentId: string
   documentType: string
   path: Path

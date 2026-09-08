@@ -1,7 +1,8 @@
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Card, type CardTone, Flex, Text} from '@sanity/ui'
+import {Card, type CardTone, Text} from '@sanity/ui'
 import {useEffect, useMemo, useState} from 'react'
+import {Flex} from 'ui5'
 
 import {ProgressIcon} from '../../../../ui-components/progressIcon/ProgressIcon'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'

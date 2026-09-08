@@ -2,7 +2,6 @@ import {MenuIcon} from '@sanity/icons/Menu'
 import {
   BoundaryElementProvider,
   Card,
-  Flex,
   Grid,
   Layer,
   LayerProvider,
@@ -13,7 +12,7 @@ import {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'rea
 import {NavbarContext} from 'sanity/_singletons'
 import {type RouterState, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
@@ -204,8 +203,8 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
           <NavGrid gap={1}>
             {/** Left flex */}
             <TooltipDelayGroupProvider>
-              <Flex align="center" gap={2} justify="flex-start">
-                <Flex align="center" gap={2}>
+              <Flex alignItems="center" gap={2} justifyContent="flex-start">
+                <Flex alignItems="center" gap={2}>
                   {/* Menu button */}
                   {!shouldRender.tools && (
                     <Button
@@ -236,7 +235,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
             </TooltipDelayGroupProvider>
 
             {/** Center flex */}
-            <Flex align="center" justify="center" style={CENTER_TOOLS_STYLE}>
+            <Flex alignItems="center" justifyContent="center" style={CENTER_TOOLS_STYLE}>
               {shouldRender.tools && (
                 // oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work
                 <ToolMenu
@@ -251,7 +250,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
 
             {/** Right flex */}
             <TooltipDelayGroupProvider>
-              <Flex align="center" gap={1} justify="flex-end">
+              <Flex alignItems="center" gap={1} justifyContent="flex-end">
                 {/* Search */}
                 <LayerProvider>
                   <SearchProvider fullscreen={shouldRender.searchFullscreen}>

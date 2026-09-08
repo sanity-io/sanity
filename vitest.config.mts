@@ -15,14 +15,6 @@ const workerExecArgv = ['--no-experimental-webstorage']
 export default defineConfig({
   test: {
     execArgv: workerExecArgv,
-    experimental: {
-      // Print the slowest imports after test runs, to keep the cost of heavy
-      // import graphs (e.g. barrel files) visible in CI and local runs.
-      importDurations: {
-        limit: 10,
-        print: true,
-      },
-    },
     forceRerunTriggers: [
       '**/package.json/**',
       '**/vitest.config.*/**',
@@ -51,12 +43,15 @@ export default defineConfig({
       // they must run on every PR, not only label-gated bench runs
       'perf/bench',
       // The dashboard's drift/ack math — pure modules, plain node environment
-      'dev/metrics-studio',
+      'dev/radar',
       'packages/@repo/debug-proxy',
       'packages/@repo/release-notes',
       'packages/@repo/bundle-manager',
       'packages/@repo/package.bundle',
       'packages/@repo/utils',
+      // Reporter and flake-report unit tests only (see e2e/vitest.config.mts);
+      // Playwright specs stay out.
+      'e2e',
     ],
     coverage: {
       provider: 'v8',

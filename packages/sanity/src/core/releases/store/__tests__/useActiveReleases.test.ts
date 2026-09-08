@@ -47,6 +47,7 @@ describe('useActiveReleases', () => {
     expect(result.current).toEqual({
       loading: true,
       data: [],
+      byId: new Map(),
       error: undefined,
       dispatch: mockDispatch,
     })
@@ -69,6 +70,7 @@ describe('useActiveReleases', () => {
       expect(result.current).toEqual({
         loading: false,
         data: [],
+        byId: new Map(),
         error: testError,
         dispatch: mockDispatch,
       })
@@ -93,6 +95,7 @@ describe('useActiveReleases', () => {
       expect(result.current).toEqual({
         loading: false,
         data: [activeASAPRelease],
+        byId: new Map([[activeASAPRelease._id, activeASAPRelease]]),
         error: undefined,
         dispatch: mockDispatch,
       })
@@ -117,6 +120,7 @@ describe('useActiveReleases', () => {
       expect(result.current).toEqual({
         loading: false,
         data: mockReleases,
+        byId: new Map(mockReleases.map((release) => [release._id, release])),
         error: undefined,
         dispatch: mockDispatch,
       })
@@ -130,6 +134,7 @@ describe('useActiveReleases', () => {
     expect(result.current).toEqual({
       loading: true,
       data: [],
+      byId: new Map(),
       error: undefined,
       dispatch: mockDispatch,
     })

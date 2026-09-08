@@ -43,6 +43,9 @@ const variantsLocaleStrings = {
     "This variant definition contains {{count}} documents in it, it can't be removed until the documents have been removed.",
   /** Error toast title when variant deletion fails. */
   'overview.action.delete-variant.error.title': 'Unable to delete variant definition',
+  /** Tooltip (and error toast description) when the user lacks permission to delete a variant. */
+  'overview.action.delete-variant.permission-error':
+    'You do not have permission to delete this variant definition',
   /** Link label for Variants overview documentation (empty state). */
   'overview.action.documentation': 'Documentation',
   /** Description for the Variants overview empty state. */
@@ -75,6 +78,15 @@ const variantsLocaleStrings = {
   'overview.table.documents': 'Documents',
   /** Fallback text when a variant has no conditions. */
   'overview.table.no-conditions': 'No conditions',
+  /** Tooltip when a stored condition key is not in the configured list. */
+  'conditions.mismatch.unknown-key':
+    'The condition "{{key}}" is not in the configured list. Edit the variant to fix it.',
+  /** Tooltip when a stored condition value is not in the configured list for that key. */
+  'conditions.mismatch.unknown-value':
+    'The value "{{value}}" is not valid for "{{key}}". Edit the variant to fix it.',
+  /** Tooltip when a variant has more than one condition that is not in the configured list. */
+  'conditions.mismatch.multiple':
+    'This variant uses conditions that are no longer configured. Edit the variant to fix it.',
   /** Title for the Variants overview. */
   'overview.title': 'Variant definitions',
   /** Primary action label on the Variant detail action rail. */
@@ -142,6 +154,18 @@ const variantsLocaleStrings = {
   /** Tooltip when add condition is disabled because the current row is incomplete. */
   'dialog.create.action.add-condition.disabled-hint':
     'Complete the current condition key and value before adding another.',
+  /** Tooltip when add condition is disabled because every mapped condition is already used. */
+  'dialog.create.action.add-condition.none-remaining': 'Every available condition is already used.',
+  /** Placeholder on the condition key dropdown before a configured key is picked. */
+  'dialog.create.conditions.choose-key': 'Choose a condition',
+  /** Placeholder on the condition value dropdown before a value is picked for the selected key. */
+  'dialog.create.conditions.choose-value': 'Choose a value',
+  /** Placeholder on the condition key dropdown while configured conditions are resolving. */
+  'dialog.create.conditions.loading': 'Loading conditions',
+  /** Error message when configured conditions fail to load. */
+  'dialog.create.conditions.error': 'Unable to load conditions',
+  /** Retry action when configured conditions fail to load. */
+  'dialog.create.conditions.retry': 'Retry',
   /** Remove condition action for the create variant dialog. */
   'dialog.create.remove-condition': 'Remove condition',
   /** Label for the variant title field in the create variant dialog. */
@@ -150,6 +174,9 @@ const variantsLocaleStrings = {
   'dialog.create.variant-title.placeholder': 'e.g. Loyal customers',
   /** Validation message when the variant title is missing. */
   'dialog.create.variant-title.required': 'Title is required',
+  /** Validation message when the variant title matches an existing variant definition. */
+  'dialog.create.variant-title.duplicate':
+    'A variant definition with this title already exists: <VariantLink>{{title}}</VariantLink>',
   /** Label for the description field in the create variant dialog. */
   'dialog.create.description.label': 'Description',
   /** Placeholder for the description field in the create variant dialog. */
@@ -161,11 +188,11 @@ const variantsLocaleStrings = {
     'When multiple variant definitions match with the same specificity, the one with the higher priority wins.',
   /** Validation message when priority is not a valid number. */
   'dialog.create.priority.invalid': 'Priority must be a number',
-  /** Title for the conditions section in the create variant dialog. */
-  'dialog.create.conditions.title': 'Conditions',
-  /** Description for the conditions section in the create variant dialog. */
-  'dialog.create.conditions.description':
-    'Add key/value pairs that define when this variant definition applies.',
+  /** Label for the conditions section in the create variant dialog. */
+  'dialog.create.conditions.title': 'Who is this content for:',
+  /** Validation message when the conditions match an existing variant definition. */
+  'dialog.create.conditions.duplicate':
+    'A variant definition with the same conditions already exists: <VariantLink>{{title}}</VariantLink>',
   /** Label for the condition key field in the create variant dialog. */
   'dialog.create.condition-key.label': 'Key',
   /** Validation message when a condition key is repeated. */

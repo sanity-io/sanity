@@ -72,5 +72,3 @@ export const MediaWrapper = styled.span<{
     }
   `
 })
-
-MediaWrapper.displayName = 'Styled(MediaWrapper)'

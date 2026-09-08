@@ -215,6 +215,9 @@ export const ObjectField = function ObjectField(props: {
       changed: member.field.changed,
       __unstable_computeDiff: member.field.__unstable_computeDiff,
       hasUpstreamVersion: member.field.hasUpstreamVersion,
+      changedFromBaseVariant: member.field.changedFromBaseVariant,
+      baseVariantValue: member.field.baseVariantValue,
+      hasBaseVariant: member.field.hasBaseVariant,
       id: member.field.id,
       onFieldGroupSelect: handleSelectFieldGroup,
       onFieldOpen: handleOpenField,
@@ -251,6 +254,9 @@ export const ObjectField = function ObjectField(props: {
     member.field.changed,
     member.field.__unstable_computeDiff,
     member.field.hasUpstreamVersion,
+    member.field.changedFromBaseVariant,
+    member.field.baseVariantValue,
+    member.field.hasBaseVariant,
     member.field.id,
     member.field.path,
     member.field.focusPath,
@@ -301,6 +307,7 @@ export const ObjectField = function ObjectField(props: {
         onExpand={handleExpand}
         open={member.open}
         changed={member.field.changed}
+        changedFromBaseVariant={member.field.changedFromBaseVariant}
         onOpen={handleOpen}
         onClose={handleClose}
         schemaType={member.field.schemaType}

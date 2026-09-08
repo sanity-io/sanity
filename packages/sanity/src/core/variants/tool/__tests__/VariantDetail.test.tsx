@@ -3,6 +3,7 @@ import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {type SingleWorkspace} from '../../../config/types'
 import {variantAlphaAudience} from '../../__fixtures__/variants.fixture'
 import {variantsUsEnglishLocaleBundle} from '../../i18n'
 import {VARIANT_DOCUMENTS_PATH} from '../../store/constants'
@@ -41,6 +42,10 @@ const variantOperationsMock = vi.hoisted(() => ({
   deleteVariant: vi.fn(),
 }))
 
+const variantPermissionsMock = vi.hoisted(() => ({
+  checkWithPermissionGuard: vi.fn(),
+}))
+
 const toastMock = vi.hoisted(() => ({
   push: vi.fn(),
 }))
@@ -72,6 +77,10 @@ vi.mock('../../store/useVariantOperations', () => ({
   useVariantOperations: vi.fn(() => variantOperationsMock),
 }))
 
+vi.mock('../../store/useVariantPermissions', () => ({
+  useVariantPermissions: vi.fn(() => variantPermissionsMock),
+}))
+
 vi.mock('../../hooks/useVariantDocuments', () => ({
   useVariantDocuments: vi.fn(() => ({
     loading: false,
@@ -97,6 +106,7 @@ describe('VariantDetail', () => {
     variantsMock.loading = false
     variantsMock.error = undefined
     routerState.variantId = undefined
+    variantPermissionsMock.checkWithPermissionGuard.mockResolvedValue(true)
     variantOperationsMock.updateVariant.mockImplementation(async (variant) => {
       const existingVariant = variantsMock.byId.get(variant._id)
 
@@ -122,8 +132,9 @@ describe('VariantDetail', () => {
     variantsMock.byId = new Map(variants.map((variant) => [variant._id, variant]))
   }
 
-  const renderDetail = async () => {
+  const renderDetail = async (config?: Partial<SingleWorkspace>) => {
     const wrapper = await createTestProvider({
+      config,
       resources: [variantsUsEnglishLocaleBundle],
     })
     const result = render(<VariantDetail />, {wrapper})
@@ -369,6 +380,26 @@ describe('VariantDetail', () => {
     })
   })
 
+  it('disables delete in the detail menu when the user lacks permission', async () => {
+    variantPermissionsMock.checkWithPermissionGuard.mockResolvedValue(false)
+    routerState.variantId = getVariantId(variantAlphaAudience._id)
+    setVariants([variantAlphaAudience])
+    const user = userEvent.setup()
+
+    await renderDetail()
+
+    await user.click(await screen.findByTestId('variant-detail-menu-button'))
+    const deleteItem = await screen.findByTestId('delete-variant-menu-item')
+
+    await waitFor(() => {
+      expect(deleteItem).toBeDisabled()
+    })
+    await user.click(deleteItem)
+
+    expect(screen.queryByTestId('confirm-button')).not.toBeInTheDocument()
+    expect(variantOperationsMock.deleteVariant).not.toHaveBeenCalled()
+  })
+
   it('shows a toast and stays on the detail page when deletion fails', async () => {
     const error = new Error('delete failed')
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined)
@@ -427,5 +458,58 @@ describe('VariantDetail', () => {
     await user.click(screen.getByRole('button', {name: 'All variant definitions'}))
 
     expect(mockNavigate).toHaveBeenCalledWith({})
+  })
+
+  it('shows a mismatch error on a condition that is not in the configured list', async () => {
+    routerState.variantId = getVariantId(variantAlphaAudience._id)
+    setVariants([variantAlphaAudience])
+
+    await renderDetail({
+      beta: {
+        variants: {
+          enabled: true,
+          conditions: [{name: 'locale', values: ['en-US']}],
+        },
+      },
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', {level: 1, name: 'Alpha audience'})).toBeInTheDocument()
+    })
+
+    expect(screen.getByTestId('variant-condition-mismatch')).toBeInTheDocument()
+  })
+
+  it('does not show a mismatch error in freeform mode', async () => {
+    routerState.variantId = getVariantId(variantAlphaAudience._id)
+    setVariants([variantAlphaAudience])
+
+    await renderDetail()
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', {level: 1, name: 'Alpha audience'})).toBeInTheDocument()
+    })
+
+    expect(screen.queryByTestId('variant-condition-mismatch')).not.toBeInTheDocument()
+  })
+
+  it('does not show a mismatch error while configured conditions are loading', async () => {
+    routerState.variantId = getVariantId(variantAlphaAudience._id)
+    setVariants([variantAlphaAudience])
+
+    await renderDetail({
+      beta: {
+        variants: {
+          enabled: true,
+          conditions: () => new Promise(() => undefined),
+        },
+      },
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', {level: 1, name: 'Alpha audience'})).toBeInTheDocument()
+    })
+
+    expect(screen.queryByTestId('variant-condition-mismatch')).not.toBeInTheDocument()
   })
 })

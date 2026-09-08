@@ -6,6 +6,8 @@ import {type AbScenarioResult} from '../runner/orchestrator'
 import {type InpSessionResult} from '../runner/session/inp'
 import {type InteractionSessionResult} from '../runner/session/interaction'
 import {type LoadCondition, type PageLoadSample} from '../runner/session/pageLoad'
+import {type SettleSessionResult} from '../runner/session/settle'
+import {type BenchScenario} from '../scenarios/types'
 import {type DiffInterval} from '../stats/bootstrap'
 import {type Verdict} from '../stats/gate'
 import {median, summarize} from '../stats/quantiles'
@@ -24,12 +26,59 @@ function git(args: string[]): string {
   }
 }
 
+const TRIGGERS = new Set(['cron', 'release', 'backfill', 'dispatch', 'pr'])
+
+/**
+ * Why this run happened, and (for release runs) which tag it measured.
+ *
+ * `BENCH_TRIGGER` is set by the workflow, but it is not trusted blindly: an
+ * unrecognized value falls back to inference rather than being stored, so a typo
+ * in a workflow edit cannot invent a trigger kind that consumers then filter on.
+ * Inference covers every path that does not set it — notably the daily schedule,
+ * which predates this field and must keep producing `cron`.
+ *
+ * `releaseTag` is only kept for `release` runs: a tag on a cron run would claim
+ * that run measured a release, which is exactly the false attribution this
+ * field exists to eliminate.
+ */
+function triggerFields(
+  prNumber: number,
+  mode: 'ab' | 'absolute',
+): {
+  trigger?: BenchRunDocument['trigger']
+  releaseTag?: string
+} {
+  const declared = process.env.BENCH_TRIGGER
+  const trigger: BenchRunDocument['trigger'] =
+    declared && TRIGGERS.has(declared)
+      ? (declared as BenchRunDocument['trigger'])
+      : !Number.isNaN(prNumber)
+        ? 'pr'
+        : process.env.GITHUB_EVENT_NAME === 'schedule'
+          ? 'cron'
+          : // A dispatch measuring a historical commit is a backfill — but only
+            // in absolute mode. An A/B dispatch also sets BENCH_GIT_SHA (to
+            // ab_to), and calling that a backfill would misdescribe it: it
+            // measures two commits against each other rather than repairing a
+            // hole in the series.
+            mode === 'absolute' && process.env.BENCH_GIT_SHA
+            ? 'backfill'
+            : 'dispatch'
+  const releaseTag = process.env.BENCH_RELEASE_TAG
+  return {
+    trigger,
+    ...(trigger === 'release' && releaseTag ? {releaseTag} : {}),
+  }
+}
+
 export function collectRunMetadata(options: {
   mode: 'ab' | 'absolute'
   calibrationMs: number
   cpuThrottleRate: number
   seed: number
   startedAt: string
+  /** Chromium version the sessions run in (`browser.version()`). */
+  browserVersion?: string
 }): Omit<BenchRunDocument, 'scenarios' | 'completedAt' | 'bundle'> {
   const prNumber = Number(
     (process.env.GITHUB_REF ?? '').match(/refs\/pull\/(\d+)\//)?.[1] ?? Number.NaN,
@@ -46,10 +95,13 @@ export function collectRunMetadata(options: {
   // repo, and a malformed workflow override must not poison the time axis
   // consumers sort and filter on
   const committedAt = Number.isNaN(Date.parse(committedAtRaw)) ? undefined : committedAtRaw
+  const triggerInfo = triggerFields(prNumber, options.mode)
+
   return {
     _type: 'benchRun',
     schemaVersion: 1,
     mode: options.mode,
+    ...triggerInfo,
     git: {
       // BENCH_GIT_SHA: the commit the measured dist was actually built from,
       // when that differs from the checkout — backfill runs build a
@@ -57,10 +109,21 @@ export function collectRunMetadata(options: {
       // cli/commands/prepareBackfill.ts) and must be stored under that
       // commit, not the workflow's HEAD
       sha: process.env.BENCH_GIT_SHA || process.env.GITHUB_SHA || git(['rev-parse', 'HEAD']),
+      // A release run is dispatched at its tag, so GITHUB_REF_NAME is the tag
+      // name ('v6.11.0'). The commit it measures is a main commit, and the
+      // dashboards group runs into per-branch lines and default to main — a run
+      // filed under a tag name would sit outside the main series it belongs to.
+      // The ref names how the run was dispatched; the branch names where the
+      // measured commit lives, which for a release is always main — and for a
+      // backfill too: it replays a main-history commit, wherever the workflow
+      // carrying the harness was dispatched from (a branch dispatch of a
+      // backfill must not file main's history under that branch).
+      //
       // GITHUB_HEAD_REF is empty (not unset) outside pull_request events, and
       // schedule runs are detached checkouts where rev-parse answers "HEAD" —
       // prefer GITHUB_REF_NAME there
       branch:
+        (triggerInfo.trigger === 'release' || triggerInfo.trigger === 'backfill' ? 'main' : '') ||
         process.env.GITHUB_HEAD_REF ||
         process.env.GITHUB_REF_NAME ||
         git(['rev-parse', '--abbrev-ref', 'HEAD']),
@@ -77,6 +140,17 @@ export function collectRunMetadata(options: {
       cpus: os.cpus().length,
       memGb: Math.round(os.totalmem() / 1024 ** 3),
       nodeVersion: process.version,
+      // The hardware discriminator: GitHub rotates CPU generations under the
+      // same vCPU shape, so cpus/memGb can't explain a host-speed step but
+      // the model string can. Empty on platforms where Node reports none.
+      ...(os.cpus()[0]?.model.trim() ? {cpuModel: os.cpus()[0].model.trim()} : {}),
+      // GitHub runner image identity — pins when the image (toolchain, libs)
+      // rolled, which tends to coincide with host-speed regime changes
+      ...(process.env.ImageOS ? {imageOs: process.env.ImageOS} : {}),
+      ...(process.env.ImageVersion ? {imageVersion: process.env.ImageVersion} : {}),
+      // The measuring instrument: a Playwright bump moves INP/vitals with no
+      // studio change, and this is what makes that visible after the fact
+      ...(options.browserVersion ? {browserVersion: options.browserVersion} : {}),
       ci: process.env.CI === 'true',
       ...(process.env.GITHUB_RUN_ID ? {runId: process.env.GITHUB_RUN_ID} : {}),
       ...(process.env.GITHUB_RUN_ATTEMPT
@@ -461,5 +535,103 @@ export function collectPageLoad(
     clsAttribution: [...byShiftSource.values()]
       .sort((a, b) => b.totalValue - a.totalValue)
       .slice(0, 5),
+  }
+}
+
+export function collectSettle(
+  scenario: BenchScenario,
+  sessions: SettleSessionResult[],
+): ScenarioReport {
+  const countMetric = (label: string, values: number[][]): MetricReport => ({
+    label,
+    unit: 'count',
+    presentAsEfps: false,
+    experiment: {sessions: values, summary: summarize(values.flat())},
+  })
+  const msMetric = (label: string, values: number[][]): MetricReport => ({
+    label,
+    unit: 'ms',
+    presentAsEfps: false,
+    experiment: {sessions: values, summary: summarize(values.flat())},
+  })
+
+  const settleTimes = sessions
+    .map((session) => session.settleTimeMs)
+    .filter((value): value is number => value !== null)
+    .map((value) => [value])
+
+  const metrics: MetricReport[] = [
+    // Run-level count (one pseudo-session), because the trend needs it: a
+    // median over per-session 0/1 values hides a single failing session
+    // (median of [0,1,1,1] is 1). This series is 0-flat when healthy, jumps
+    // on a regression, and charts as a constant N for red-by-design
+    // scenarios — their standing-evidence line.
+    countMetric('sessions not settled', [[sessions.filter((session) => !session.settled).length]]),
+    // Same shape for the primary signal's health: sessions where the React
+    // DevTools hook stub never attached (contract drift in react-dom). With
+    // the counter dark, commits read as zero and a green scenario looks
+    // healthier, not worse — this line is what says the detector went blind.
+    countMetric('sessions without commit counter', [
+      [sessions.filter((session) => !session.hookInstalled).length],
+    ]),
+    // 0/1 per session — the per-session record behind the count above.
+    countMetric(
+      'settled sessions',
+      sessions.map((session) => [session.settled ? 1 : 0]),
+    ),
+    countMetric(
+      'ready sessions',
+      sessions.map((session) => [session.ready ? 1 : 0]),
+    ),
+    ...(settleTimes.length > 0 ? [msMetric('time to settle', settleTimes)] : []),
+    countMetric(
+      'react commits after ready',
+      sessions.map((session) => [session.reactCommits]),
+    ),
+    msMetric(
+      'LoAF blocking after ready',
+      sessions.map((session) => [session.loafBlockingMs]),
+    ),
+    ...(() => {
+      const cpuSessions = sessions
+        .map((session) => session.cpuAfterReadyMs)
+        .filter((value): value is number => value !== null)
+        .map((value) => [value])
+      return cpuSessions.length > 0 ? [msMetric('cpu after ready', cpuSessions)] : []
+    })(),
+    // One row per instrumented component, `renders · <name>` — the
+    // per-component attribution the commit total can't give.
+    ...[...new Set(sessions.flatMap((session) => Object.keys(session.renderMarks)))]
+      .sort()
+      .map((name) =>
+        countMetric(
+          `renders · ${name}`,
+          sessions.map((session) => [session.renderMarks[name] ?? 0]),
+        ),
+      ),
+  ]
+
+  const byScript = new Map<string, {sourceUrl: string; functionName: string; totalMs: number}>()
+  for (const session of sessions) {
+    for (const entry of session.loafAttribution) {
+      const key = `${entry.sourceUrl}#${entry.functionName}`
+      const current = byScript.get(key)
+      if (current) current.totalMs += entry.totalMs
+      else byScript.set(key, {...entry})
+    }
+  }
+
+  return {
+    scenario: scenario.name,
+    sourceFile: scenario.sourceFile,
+    kind: 'pageload',
+    // Distinct from the plain pageLoad report so the two don't collide on the
+    // stored _key / shard-merge dedup (see ScenarioReport.mode)
+    mode: 'settle',
+    settleExpectation: {expectedToSettle: scenario.expectedToSettle ?? true},
+    metrics,
+    failures: [],
+    interruptions: {experiment: {count: 0, totalMs: 0}},
+    loafAttribution: [...byScript.values()].sort((a, b) => b.totalMs - a.totalMs).slice(0, 5),
   }
 }

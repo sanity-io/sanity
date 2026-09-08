@@ -1,5 +1,6 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
-import {Box, Flex, Text} from '@sanity/ui'
+import {Flex, Text} from '@sanity/ui'
+import {Box} from 'ui5'
 
 interface InfoBoxPreviewProps {
   value?: {_type: 'infobox'; body: unknown[]; title: string}
@@ -12,7 +13,7 @@ export function InfoBoxPreview(props: InfoBoxPreviewProps) {
   if (!body) {
     return (
       <Flex align="center" height="fill">
-        <Box flex={1} padding={3}>
+        <Box flexBasis="0%" flexGrow={1} padding={3}>
           <Text muted size={1} textOverflow="ellipsis">
             The info box content is empty 😿
           </Text>
@@ -28,7 +29,7 @@ export function InfoBoxPreview(props: InfoBoxPreviewProps) {
           <InfoOutlineIcon />
         </Text>
       </Box>
-      <Box flex={1} padding={3}>
+      <Box flexBasis="0%" flexGrow={1} padding={3}>
         <Text size={1} textOverflow="ellipsis" weight="semibold">
           {title || <>Untitled</>}
         </Text>

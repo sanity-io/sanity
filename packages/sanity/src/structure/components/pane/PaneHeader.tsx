@@ -1,6 +1,7 @@
-import {Box, Card, Flex, LayerProvider, useElementSize} from '@sanity/ui'
+import {Card, LayerProvider, useElementSize} from '@sanity/ui'
 import {type ReactNode, type RefAttributes, useCallback, useMemo} from 'react'
 import {LegacyLayerProvider} from 'sanity'
+import {Flex, Box} from 'ui5'
 
 import {Layout, Root, TitleCard, TitleText, TitleTextSkeleton} from './PaneHeader.styles'
 import {usePane} from './usePane'
@@ -73,15 +74,18 @@ export function PaneHeader(props: PaneHeaderProps & RefAttributes<HTMLDivElement
         <LegacyLayerProvider zOffset="paneHeader">
           <Card data-collapsed={collapsed ? '' : undefined} tone="inherit">
             <Layout
-              direction="column"
+              flexDirection="column"
               gap={3}
               onClick={handleLayoutClick}
               padding={3}
-              sizing="border"
               style={layoutStyle}
             >
-              <Flex align="flex-start" gap={3}>
-                {backButton && <Box flex="none">{backButton}</Box>}
+              <Flex alignItems="center" gap={3}>
+                {backButton && (
+                  <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
+                    {backButton}
+                  </Box>
+                )}
 
                 <TitleCard
                   __unstable_focusRing
@@ -97,7 +101,7 @@ export function PaneHeader(props: PaneHeaderProps & RefAttributes<HTMLDivElement
                     </Box>
                   )}
                   {!loading && (
-                    <Flex align="center" gap={1}>
+                    <Flex alignItems="center" gap={1}>
                       <TitleText size={1} textOverflow="ellipsis" weight="semibold">
                         {title}
                       </TitleText>
@@ -114,8 +118,8 @@ export function PaneHeader(props: PaneHeaderProps & RefAttributes<HTMLDivElement
               </Flex>
 
               {showTabsOrSubActions && (
-                <Flex align="center" hidden={collapsed} overflow="auto">
-                  <Box flex={1} marginRight={subActions ? 3 : 0}>
+                <Flex alignItems="center" hidden={collapsed} overflow="auto">
+                  <Box flexBasis="0%" flexGrow={1} marginRight={subActions ? 3 : 0}>
                     {tabs}
                   </Box>
 

@@ -14,13 +14,6 @@ export interface CrossDatasetReferenceInfo {
 }
 
 /** @internal */
-export interface SearchState {
-  hits: CrossDatasetSearchHit[]
-  searchString?: string
-  isLoading: boolean
-}
-
-/** @internal */
 type CrossDatasetSearchFunction = (query: string) => Observable<CrossDatasetSearchHit[]>
 
 /** @internal */

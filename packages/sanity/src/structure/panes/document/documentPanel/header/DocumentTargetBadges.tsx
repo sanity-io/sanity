@@ -1,4 +1,4 @@
-import {Card, Flex, Text, type BadgeTone} from '@sanity/ui'
+import {Card, Text, type BadgeTone} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {memo, type RefAttributes, type SVGProps} from 'react'
 import {
@@ -16,6 +16,7 @@ import {
   type TargetPerspective,
 } from 'sanity'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {isLiveEditEnabled} from '../../../../components/paneItem/helpers'
@@ -57,6 +58,9 @@ const TargetBadge = styled(Card)`
   display: inline-flex;
   align-items: center;
   flex: none;
+  /* Drawn as an inset shadow instead of the Card border prop so the 1px border
+     does not make the badge taller than the box-shadow-bordered VersionChip pills. */
+  box-shadow: inset 0 0 0 1px var(--card-border-color);
 `
 const BadgeContainer = styled(Flex)`
   user-select: none;
@@ -107,8 +111,10 @@ const PerspectiveBadgeLabel = memo(function PerspectiveBadgeLabel({
 
   if (isReleaseDocument(selectedPerspective)) {
     return (
-      <BadgeContainer gap={2} paddingY={1} paddingRight={2} align="center">
-        <ReleaseAvatarIcon release={selectedPerspective} />
+      <BadgeContainer gap={2} padding={2} alignItems="center">
+        <Text size={1}>
+          <ReleaseAvatarIcon release={selectedPerspective} />
+        </Text>
 
         <ReleaseTitle
           title={selectedPerspective.metadata?.title}
@@ -132,7 +138,7 @@ const PerspectiveBadgeLabel = memo(function PerspectiveBadgeLabel({
 const VariantBadgeLabel = memo(function VariantBadgeLabel({variant}: {variant: SystemVariant}) {
   return (
     <BadgeContainer padding={2}>
-      <Flex align="center" gap={2}>
+      <Flex alignItems="center" gap={2}>
         <Text size={0}>
           <RhombusIcon />
         </Text>
@@ -164,11 +170,17 @@ export const DocumentTargetBadges = memo(function DocumentTargetBadges() {
       content={t('document-target-badges.not-in-target.tooltip')}
       disabled={!isTargetMissing}
     >
-      <Flex align="center" flex="none" gap={2} paddingRight={1}>
+      <Flex
+        alignItems="center"
+        flexBasis="auto"
+        flexGrow={0}
+        flexShrink={0}
+        gap={2}
+        paddingRight={1}
+      >
         <BadgeMotionWrapper animate={{opacity: badgeOpacity}} transition={{duration: 0.2}}>
           <TargetBadge
             tone={getPerspectiveBadgeTone(badgePerspective)}
-            border
             radius={4}
             data-ui="DocumentTargetPerspectiveBadge"
           >
@@ -177,7 +189,7 @@ export const DocumentTargetBadges = memo(function DocumentTargetBadges() {
         </BadgeMotionWrapper>
         {selectedVariantBadge ? (
           <BadgeMotionWrapper animate={{opacity: badgeOpacity}} transition={{duration: 0.2}}>
-            <TargetBadge tone="suggest" border radius={4} data-ui="DocumentTargetVariantBadge">
+            <TargetBadge tone="suggest" radius={4} data-ui="DocumentTargetVariantBadge">
               <VariantBadgeLabel variant={selectedVariantBadge} />
             </TargetBadge>
           </BadgeMotionWrapper>

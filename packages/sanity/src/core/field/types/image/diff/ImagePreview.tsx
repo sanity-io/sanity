@@ -2,10 +2,10 @@ import {getImageDimensions, isDefaultCrop, isDefaultHotspot} from '@sanity/asset
 import {hues} from '@sanity/color'
 import {ImageIcon} from '@sanity/icons/Image'
 import {createImageUrlBuilder} from '@sanity/image-url'
-import {Card, Flex, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {type SyntheticEvent, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {useClient} from '../../../../hooks/useClient'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -28,7 +28,7 @@ export const NoImagePreview = () => {
   const {t} = useTranslation()
   return (
     <Card flex={1} tone="transparent" padding={4} radius={2} height="stretch">
-      <Flex align="center" justify="center" height="fill">
+      <Flex alignItems="center" justifyContent="center" height="100%">
         <Text size={1} muted>
           {t('changes.image.no-image-placeholder')}
         </Text>
@@ -126,11 +126,11 @@ export function ImagePreview(props: ImagePreviewProps): React.JSX.Element {
   const metaAction = action === 'changed' ? undefined : action
 
   return (
-    <Flex direction="column" height="fill" flex={1}>
+    <Flex flexDirection="column" height="100%" flexBasis="0%" flexGrow={1}>
       <Box flexBasis="0%" flexGrow={1} padding={2} paddingBottom={0}>
         <Flex
           as={ImageWrapper}
-          direction="column"
+          flexDirection="column"
           data-changed={is === 'from' && assetChanged ? '' : undefined}
           data-error={imageError ? '' : undefined}
         >

@@ -1,7 +1,7 @@
 import {ComposeIcon} from '@sanity/icons/Compose'
 import {DropIcon} from '@sanity/icons/Drop'
 import {ImageIcon} from '@sanity/icons/Image'
-import {Box, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {
   BlockEditor,
   defineArrayMember,
@@ -9,6 +9,7 @@ import {
   defineType,
   type PortableTextInputProps,
 } from 'sanity'
+import {Box} from 'ui5'
 
 function CustomEditor(props: PortableTextInputProps) {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR

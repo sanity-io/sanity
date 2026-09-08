@@ -1,9 +1,10 @@
 import {JsonInspector} from '@rexxars/react-json-inspector'
 import {type SanityDocument} from '@sanity/types'
-import {Card, Flex, TabList, TabPanel} from '@sanity/ui'
+import {Card, TabList, TabPanel} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useCallback} from 'react'
 import {Translate, useTranslation} from 'sanity'
+import {Flex} from 'ui5'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {Tab} from '../../../../ui-components/tab/Tab'
@@ -20,6 +21,15 @@ const JSON_INSPECTOR_SEARCH_OPTIONS = {debounceTime: 200}
 
 interface InspectDialogProps {
   value: Partial<SanityDocument> | null
+}
+
+function DocumentTitle({document}: {children?: React.ReactNode; document?: unknown}) {
+  if (!isDocumentLike(document)) return null
+  return (
+    <em>
+      <DocTitle document={document} />
+    </em>
+  )
 }
 
 export function InspectDialog(props: InspectDialogProps) {
@@ -51,20 +61,15 @@ export function InspectDialog(props: InspectDialogProps) {
 
   return (
     <Dialog
-      bodyHeight="fill"
+      bodyHeight="100%"
       id={`${dialogIdPrefix}dialog`}
       header={
         isDocumentLike(value) ? (
           <Translate
             t={t}
             i18nKey="document-inspector.dialog.title"
-            components={{
-              DocumentTitle: () => (
-                <em>
-                  <DocTitle document={value} />
-                </em>
-              ),
-            }}
+            components={{DocumentTitle}}
+            componentProps={{document: value}}
           />
         ) : (
           <em>{t('document-inspector.dialog.title-no-value')}</em>
@@ -75,7 +80,7 @@ export function InspectDialog(props: InspectDialogProps) {
       padding={false}
       width={2}
     >
-      <Flex direction="column" height="fill">
+      <Flex flexDirection="column" height="100%">
         <Card
           padding={3}
           paddingTop={0}

@@ -1,5 +1,5 @@
-import {Box} from '@sanity/ui'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 export const INCOMING_REFERENCES_ITEM_HEIGHT = 51
 const INCOMING_REFERENCES_MAX_VISIBLE_ITEMS = 10

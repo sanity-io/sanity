@@ -5,7 +5,6 @@ import {
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   isAgentBundleName,
-  getVersionInlineBadge,
   LATEST,
   ReleaseTitle,
   type SystemBundle,
@@ -14,6 +13,7 @@ import {
   useConditionalToast,
   useTranslation,
   useVersionOperations,
+  VersionInlineBadge,
 } from 'sanity'
 
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -25,6 +25,26 @@ const TOAST_DELAY = 1000
 type VersionCreateState = {
   status: 'creating' | 'created'
   lastUpdate: Date
+}
+
+function VersionBadge({
+  children,
+  currentRelease,
+  fallbackTitle,
+}: {
+  children?: React.ReactNode
+  currentRelease?: Exclude<TargetPerspective, SystemBundle>
+  fallbackTitle?: string
+}) {
+  const tone = getReleaseTone(currentRelease ?? LATEST)
+  if (typeof currentRelease === 'string' || !currentRelease) {
+    return <VersionInlineBadge $tone={tone}>{children}</VersionInlineBadge>
+  }
+  return (
+    <ReleaseTitle title={currentRelease.metadata?.title} fallback={fallbackTitle ?? ''}>
+      {() => <VersionInlineBadge $tone={tone}>{children}</VersionInlineBadge>}
+    </ReleaseTitle>
+  )
 }
 
 export function DocumentNotInReleaseBanner({
@@ -100,21 +120,10 @@ export function DocumentNotInReleaseBanner({
             values={{
               title: releaseTitle,
             }}
-            components={{
-              VersionBadge: ({children}) => {
-                const BadgeWithTone = getVersionInlineBadge(currentRelease)
-                if (isAnonymousBundle) {
-                  return <BadgeWithTone>{children}</BadgeWithTone>
-                }
-                return (
-                  <ReleaseTitle
-                    title={currentRelease.metadata?.title}
-                    fallback={tCore('release.placeholder-untitled-release')}
-                  >
-                    {() => <BadgeWithTone>{children}</BadgeWithTone>}
-                  </ReleaseTitle>
-                )
-              },
+            components={{VersionBadge}}
+            componentProps={{
+              currentRelease,
+              fallbackTitle: tCore('release.placeholder-untitled-release'),
             }}
           />
         </Text>

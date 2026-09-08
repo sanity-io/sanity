@@ -82,4 +82,3 @@ function ScrollContainerComponent<T extends ElementType = 'div'>(
  * @internal
  */
 export const ScrollContainer = memo(ScrollContainerComponent)
-ScrollContainer.displayName = 'Memo(ScrollContainer)'

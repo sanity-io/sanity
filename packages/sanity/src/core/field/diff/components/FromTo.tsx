@@ -1,5 +1,6 @@
-import {Flex, Grid, type GridProps, rem, useTheme} from '@sanity/ui'
+import {Grid, type GridProps, rem, useTheme} from '@sanity/ui'
 import {type HTMLProps, type ReactNode, useMemo, type RefAttributes} from 'react'
+import {Flex, type FlexProps} from 'ui5'
 
 import {FromToArrow} from './FromToArrow'
 
@@ -43,15 +44,15 @@ export function FromTo(props: FromToProps & RefAttributes<HTMLDivElement>) {
     <>
       {from && (
         <>
-          <Flex align={FLEX_ALIGN[align]} style={columnStyles}>
+          <Flex alignItems={FLEX_ALIGN[align]} style={columnStyles}>
             {from}
           </Flex>
-          <Flex align="center" justify="center" padding={2}>
+          <Flex alignItems="center" justifyContent="center" padding={2}>
             <FromToArrow />
           </Flex>
         </>
       )}
-      <Flex align={FLEX_ALIGN[align]} style={columnStyles}>
+      <Flex alignItems={FLEX_ALIGN[align]} style={columnStyles}>
         {to}
       </Flex>
     </>
@@ -59,7 +60,7 @@ export function FromTo(props: FromToProps & RefAttributes<HTMLDivElement>) {
 
   if (layout === 'inline') {
     return (
-      <Flex {...restProps} ref={ref} style={layoutStyles} data-from-to-layout>
+      <Flex {...(restProps as FlexProps)} ref={ref} style={layoutStyles} data-from-to-layout>
         {children}
       </Flex>
     )

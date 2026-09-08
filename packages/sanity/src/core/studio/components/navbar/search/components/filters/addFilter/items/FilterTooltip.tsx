@@ -1,6 +1,7 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import startCase from 'lodash-es/startCase.js'
 import uniq from 'lodash-es/uniq.js'
+import {Flex} from 'ui5'
 
 import {Tooltip} from '../../../../../../../../../ui-components/tooltip/Tooltip'
 import {TextWithTone} from '../../../../../../../../components/textWithTone/TextWithTone'
@@ -117,7 +118,7 @@ export function FilterTooltip({
             {/* Field document titles */}
             {!documentTypesNarrowed.length && fieldDefinitionDocumentTypeTitles.length > 0 && (
               <Stack gap={2}>
-                <Flex align="center" gap={1}>
+                <Flex alignItems="center" gap={1}>
                   <Text muted size={1} weight="medium">
                     {t('search.filter-field-tooltip-used-in-document-types')}
                   </Text>

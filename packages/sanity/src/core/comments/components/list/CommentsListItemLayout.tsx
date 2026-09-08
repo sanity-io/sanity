@@ -1,19 +1,11 @@
 import {hues} from '@sanity/color'
 import {type CurrentUser} from '@sanity/types'
-import {
-  type AvatarSize,
-  Card,
-  Flex,
-  Stack,
-  Text,
-  TextSkeleton,
-  useClickOutsideEvent,
-} from '@sanity/ui'
+import {type AvatarSize, Card, TextSkeleton, useClickOutsideEvent} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {css, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Text, Box, Flex, VStack} from 'ui5'
 
 import {useDidUpdate} from '../../../form/hooks/useDidUpdate'
 import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
@@ -43,6 +35,21 @@ import {CommentsListItemContextMenu} from './CommentsListItemContextMenu'
 import {CommentsListItemReferencedValue} from './CommentsListItemReferencedValue'
 
 const stopPropagation = (e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()
+
+function CommentIntentLink({
+  children,
+  intent,
+}: {
+  children?: React.ReactNode
+  intent?: CommentContext['intent']
+}) {
+  if (!intent) return null
+  return (
+    <IntentLink params={intent.params} intent={intent.name}>
+      {children}
+    </IntentLink>
+  )
+}
 
 const ContextMenuBox = styled(Box)``
 
@@ -81,7 +88,7 @@ const IntentText = styled(Text)(({theme}) => {
   `
 })
 
-const InnerStack = styled(Stack)`
+const InnerStack = styled(VStack)`
   transition: opacity 200ms ease;
 
   &[data-muted='true'] {
@@ -105,7 +112,7 @@ const RetryCardButton = styled(Card)`
   }
 `
 
-const RootStack = styled(Stack)(({theme}) => {
+const RootStack = styled(VStack)(({theme}) => {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {space} = theme.sanity
 
@@ -329,7 +336,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   useClickOutsideEvent(!hasChanges && cancelEdit, () => [rootElementRef.current])
 
   const name = user?.displayName ? (
-    <Text size={1} weight="medium" textOverflow="ellipsis" title={user.displayName}>
+    <Text size={1} weight="medium" truncate={1} title={user.displayName} as="div" trim={true}>
       {user.displayName}
     </Text>
   ) : (
@@ -345,31 +352,43 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
       gap={4}
     >
       <InnerStack gap={1} data-muted={displayError}>
-        <HeaderFlex align="center" gap={FLEX_GAP} flex={1} $size={avatarSize}>
+        <HeaderFlex
+          alignItems="center"
+          gap={FLEX_GAP}
+          flexBasis="0%"
+          flexGrow={1}
+          $size={avatarSize}
+        >
           {withAvatar && <CommentsAvatar user={user} size={avatarSize} />}
 
-          <Flex direction="column" gap={2} paddingY={intent ? 2 : 0}>
+          <Flex flexDirection="column" gap={2} paddingY={intent ? 2 : 0}>
             <Flex
-              align="center"
+              alignItems="center"
               paddingBottom={comment.context?.intent ? 0 : 1}
-              sizing="border"
-              flex={1}
+              flexBasis="0%"
+              flexGrow={1}
             >
-              <Flex align="flex-end" gap={2}>
+              <Flex alignItems="flex-end" gap={2}>
                 <Box flexBasis="0%" flexGrow={1}>
                   {name}
                 </Box>
 
                 {!displayError && (
-                  <Flex align="center" gap={1}>
-                    <TimeText muted size={0}>
+                  <Flex alignItems="center" gap={1}>
+                    <TimeText muted size={0} forwardedAs="div" trim={true}>
                       <time dateTime={createdDate.toISOString()} title={formattedCreatedAt}>
                         {createdTimeAgo}
                       </time>
                     </TimeText>
 
                     {formattedLastEditAt && editedDate && (
-                      <TimeText muted size={0} title={formattedLastEditAt}>
+                      <TimeText
+                        muted
+                        size={0}
+                        title={formattedLastEditAt}
+                        forwardedAs="div"
+                        trim={true}
+                      >
                         <time dateTime={editedDate.toISOString()} title={formattedLastEditAt}>
                           ({t('list-item.layout-edited')})
                         </time>
@@ -382,19 +401,13 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
             {intent && (
               <Box flexBasis="0%" flexGrow={1}>
-                <IntentText muted size={0} textOverflow="ellipsis">
+                <IntentText muted size={0} truncate={1} forwardedAs="div" trim={true}>
                   <Translate
                     t={t}
                     i18nKey="list-item.layout-context"
                     values={{title: intent.title, intent: 'edit'}}
-                    components={{
-                      IntentLink: ({children}) =>
-                        intent ? (
-                          <IntentLink params={intent.params} intent={intent.name}>
-                            {children}
-                          </IntentLink>
-                        ) : undefined,
-                    }}
+                    components={{IntentLink: CommentIntentLink}}
+                    componentProps={{intent}}
                   />
                 </IntentText>
               </Box>
@@ -434,10 +447,10 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
         )}
 
         {isEditing && (
-          <Flex align="flex-start" gap={2}>
+          <Flex alignItems="flex-start" gap={2}>
             {withAvatar && <SpacerAvatar $size={avatarSize} />}
 
-            <Stack flex={1}>
+            <Flex flexBasis="0%" flexGrow={1} flexDirection="column">
               <CommentInput
                 currentUser={currentUser}
                 focusOnMount
@@ -452,7 +465,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                 value={value}
                 withAvatar={false}
               />
-            </Stack>
+            </Flex>
           </Flex>
         )}
 
@@ -485,8 +498,8 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
         <ErrorFlex gap={FLEX_GAP} $size={avatarSize}>
           {withAvatar && <SpacerAvatar $size={avatarSize} />}
 
-          <Flex align="center" gap={1} flex={1}>
-            <Text muted size={1}>
+          <Flex alignItems="center" gap={1} flexBasis="0%" flexGrow={1}>
+            <Text muted size={1} as="div" trim={true}>
               {hasError && t('list-item.layout-failed-sent')}
               {isRetrying && t('list-item.layout-posting')}
             </Text>
@@ -501,7 +514,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                 radius={2}
                 tone="primary"
               >
-                <Text size={1} muted>
+                <Text size={1} muted as="div" trim={true}>
                   {t('list-item.layout-retry')}
                 </Text>
               </RetryCardButton>

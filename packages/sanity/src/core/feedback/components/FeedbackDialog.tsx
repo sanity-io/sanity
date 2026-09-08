@@ -1,7 +1,7 @@
 import {FaceHappyIcon} from '@sanity/icons/FaceHappy'
 import {FaceIndifferentIcon} from '@sanity/icons/FaceIndifferent'
 import {FaceSadIcon} from '@sanity/icons/FaceSad'
-import {Card, Flex, Stack, Switch, Text, TextArea} from '@sanity/ui'
+import {Card, Stack, Switch, Text, TextArea} from '@sanity/ui'
 import {
   type ChangeEvent,
   type ClipboardEvent,
@@ -11,6 +11,7 @@ import {
   useState,
 } from 'react'
 import {FeedbackContext} from 'sanity/_singletons'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {Dialog} from '../../../ui-components/dialog/Dialog'
@@ -277,7 +278,7 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
                   {t('feedback.consent.disclaimer')}
                 </Text>
               </Stack>
-              <Flex align="center" gap={2}>
+              <Flex alignItems="center" gap={2}>
                 <Switch
                   id={contactConsentId}
                   checked={contactConsent}
@@ -293,7 +294,7 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
       </Card>
 
       <Card padding={3} borderTop>
-        <Flex gap={2} justify="flex-end">
+        <Flex gap={2} justifyContent="flex-end">
           <Button mode="ghost" text={t('feedback.cancel')} onClick={handleDismiss} />
           <Button
             tone="primary"

@@ -2,7 +2,7 @@ import {type ReleaseDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons/Add'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
-import {type ButtonMode, Card, Flex, Inline, useMediaIndex} from '@sanity/ui'
+import {type ButtonMode, Card, Inline, useMediaIndex} from '@sanity/ui'
 import {isSameDay} from 'date-fns/isSameDay'
 import {AnimatePresence, motion} from 'motion/react'
 import {
@@ -15,7 +15,7 @@ import {
   useState,
 } from 'react'
 import {useRouter} from 'sanity/router'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -480,7 +480,7 @@ export function ReleasesOverview() {
 
   const renderCalendarFilter = useMemo(
     () => (
-      <Flex flex="none">
+      <Flex flexBasis="auto" flexGrow={0} flexShrink={0}>
         <Card borderRight flex="none" disabled>
           {calendarFilterContent}
         </Card>
@@ -538,13 +538,13 @@ export function ReleasesOverview() {
   }
 
   return (
-    <Flex direction="row" flex={1} style={{height: '100%'}}>
-      <Flex flex={1}>
+    <Flex flexDirection="row" flexBasis="0%" flexGrow={1} style={{height: '100%'}}>
+      <Flex flexBasis="0%" flexGrow={1}>
         {showCalendar && renderCalendarFilter}
 
-        <Flex direction="column" flex={1} style={{position: 'relative'}}>
+        <Flex flexDirection="column" flexBasis="0%" flexGrow={1} style={{position: 'relative'}}>
           <Card flex="none" padding={3}>
-            <Flex align="center" flex={1} gap={3} wrap="wrap">
+            <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={3} flexWrap="wrap">
               <Inline>
                 {!showCalendar && (
                   <CalendarPopover content={calendarFilterContent} asDialog={isNarrowViewport} />
@@ -560,7 +560,7 @@ export function ReleasesOverview() {
                 />
               </Inline>
 
-              <Flex flex={1} gap={1} style={narrowFilterStyle}>
+              <Flex flexBasis="0%" flexGrow={1} gap={1} style={narrowFilterStyle}>
                 {loadingOrHasReleases &&
                   (releaseFilterDate ? (
                     <DateFilterButton filterDate={releaseFilterDate} onClear={clearFilterDate} />
@@ -568,7 +568,13 @@ export function ReleasesOverview() {
                     currentArchivedPicker
                   ))}
               </Flex>
-              <Flex flex="none" gap={2} style={narrowTimezoneStyle}>
+              <Flex
+                flexBasis="auto"
+                flexGrow={0}
+                flexShrink={0}
+                gap={2}
+                style={narrowTimezoneStyle}
+              >
                 <Button
                   icon={EarthGlobeIcon}
                   mode="bleed"

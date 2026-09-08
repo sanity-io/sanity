@@ -14,13 +14,6 @@ export interface GlobalDocumentReferenceInfo {
 }
 
 /** @internal */
-export interface SearchState {
-  hits: SearchHit[]
-  searchString?: string
-  isLoading: boolean
-}
-
-/** @internal */
 type GlobalDocumentSearchFunction = (query: string) => Observable<SearchHit[]>
 
 /** @internal */

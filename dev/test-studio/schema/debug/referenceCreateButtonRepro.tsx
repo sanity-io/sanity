@@ -7,7 +7,7 @@
  * right next to it, inside the item). The empty item must not be removed, and
  * the create flow must open the new document pane.
  */
-import {Box, Button, Flex} from '@sanity/ui'
+import {Button, Flex} from '@sanity/ui'
 import {useCallback} from 'react'
 import {
   defineField,
@@ -20,6 +20,7 @@ import {
   setIfMissing,
 } from 'sanity'
 import {usePaneRouter} from 'sanity/structure'
+import {Box} from 'ui5'
 
 type CustomReferenceInputProps = ReferenceInputProps | ObjectItemProps
 
@@ -60,7 +61,7 @@ export function CustomReferenceInput(props: CustomReferenceInputProps) {
 
   return (
     <Flex gap={2} align="flex-end">
-      <Box flex={1}>
+      <Box flexBasis="0%" flexGrow={1}>
         {/* @ts-expect-error -- pre-existing, fix later */}
         {props.renderDefault(props)}
       </Box>

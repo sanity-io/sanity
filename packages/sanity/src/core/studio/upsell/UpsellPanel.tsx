@@ -1,23 +1,27 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {_responsive, Card, Flex, type FlexDirection} from '@sanity/ui'
+import {_responsive, Card} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box, type FlexParentProps} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {type UpsellData} from './types'
 import {UpsellDescriptionSerializer} from './upsellDescriptionSerializer/UpsellDescriptionSerializer'
 
 type Layout = 'vertical' | 'horizontal'
-const Image = styled.img<{$direction: FlexDirection[]}>((props) => {
+const Image = styled.img<{$direction: FlexParentProps['flexDirection']}>((props) => {
   const {media} = getTheme_v2(props.theme)
 
-  const responsiveStyles = _responsive(media, props.$direction, (val) => {
-    return {
-      width: val === 'row' ? '50%' : '100%',
-      height: val === 'row' ? 'auto' : '180px',
-    }
-  })
+  const responsiveStyles = _responsive(
+    media,
+    Array.isArray(props.$direction) ? props.$direction : [props.$direction],
+    (val) => {
+      return {
+        width: val === 'row' ? '50%' : '100%',
+        height: val === 'row' ? 'auto' : '180px',
+      }
+    },
+  )
 
   return css`
     object-fit: cover;
@@ -52,7 +56,7 @@ export function UpsellPanel(props: CommentsUpsellPanelProps) {
     border = true,
     align = 'flex-start',
   } = props
-  const direction: FlexDirection[] = [
+  const direction: FlexParentProps['flexDirection'] = [
     'column',
     'column',
     layout === 'horizontal' ? 'row' : 'column',
@@ -60,7 +64,7 @@ export function UpsellPanel(props: CommentsUpsellPanelProps) {
 
   return (
     <Card radius={3} overflow={'hidden'} border={border}>
-      <Flex direction={direction} gap={2}>
+      <Flex flexDirection={direction} gap={2}>
         {data.image && (
           <Image
             src={data.image.asset.url}
@@ -69,10 +73,10 @@ export function UpsellPanel(props: CommentsUpsellPanelProps) {
           />
         )}
         <DescriptionRoot paddingX={3} paddingY={layout === 'horizontal' ? HORIZONTAL_PADDING_Y : 3}>
-          <Flex gap={4} direction={'column'} align={align}>
+          <Flex gap={4} flexDirection={'column'} alignItems={align}>
             <UpsellDescriptionSerializer blocks={data.descriptionText} />
           </Flex>
-          <Flex gap={2} justify={align === 'center' ? 'center' : 'flex-end'} marginTop={5}>
+          <Flex gap={2} justifyContent={align === 'center' ? 'center' : 'flex-end'} marginTop={5}>
             {data.secondaryButton.text && (
               <Button
                 mode="bleed"

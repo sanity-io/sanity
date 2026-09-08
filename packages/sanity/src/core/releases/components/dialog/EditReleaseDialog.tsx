@@ -1,7 +1,8 @@
 import {type EditableReleaseDocument, type ReleaseDocument} from '@sanity/client'
-import {Card, Flex, Stack, Text, TextArea, TextInput} from '@sanity/ui'
+import {Card, Stack, Text, TextArea, TextInput} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {type ChangeEvent, useCallback, useId, useRef, useState} from 'react'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
@@ -57,11 +58,9 @@ export function EditReleaseDialog({
         status: 'error',
         title: t('release.toast.edit-release-error.title'),
       })
-      // oxlint-disable-next-line react/todo -- pre-existing violation, to be fixed in a follow-up
-    } finally {
-      isSavingRef.current = false
-      setIsSaving(false)
     }
+    isSavingRef.current = false
+    setIsSaving(false)
   }, [description, onClose, release, t, title, toast, updateRelease])
 
   // Ignore click-outside / Escape / close while a save is in flight: dismissing mid-mutation would
@@ -111,7 +110,7 @@ export function EditReleaseDialog({
             />
           </Stack>
         </Stack>
-        <Flex justify="flex-end" paddingTop={5}>
+        <Flex justifyContent="flex-end" paddingTop={5}>
           <Button
             data-testid="save-release-details-button"
             loading={isSaving}

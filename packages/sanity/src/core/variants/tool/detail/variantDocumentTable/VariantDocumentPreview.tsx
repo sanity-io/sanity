@@ -1,8 +1,8 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Card, Flex, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {useMemo, type RefAttributes} from 'react'
 import {IntentLink} from 'sanity/router'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {type PreviewLayoutKey} from '../../../../components/previews/types'
 import {DocumentPreviewPresence} from '../../../../presence/DocumentPreviewPresence'
@@ -151,7 +151,7 @@ export function VariantDocumentPreview({
   })
 
   return (
-    <Flex align="center" gap={2}>
+    <Flex alignItems="center" gap={2}>
       <PrimaryBundleIcon releasesById={releasesById} row={row} />
       <Card
         tone="inherit"

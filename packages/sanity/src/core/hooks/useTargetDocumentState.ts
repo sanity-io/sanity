@@ -5,10 +5,11 @@ import {usePerspective} from '../perspective/usePerspective'
 import {useDocumentVersions} from '../releases/hooks/useDocumentVersions'
 import {type VersionInfoDocumentStub} from '../releases/store/types'
 import {type DocumentPairTarget} from '../store/document/types'
-import {getVersionFromId} from '../util/draftUtils'
-import {getTargetDocument, getVariantPublishedSibling} from '../util/getTargetDocument'
+import {getVersionFromId, isSystemBundle} from '../util/draftUtils'
+import {getTargetDocument} from '../util/getTargetDocument'
 import {useAllVariants} from '../variants/store/useAllVariants'
 import {type SystemVariant} from '../variants/types'
+import {useSchema} from './useSchema'
 
 /**
  * The id and scope of a missing draft variant that can be created by typing: the id is known
@@ -25,6 +26,20 @@ export interface CreatableTargetDocument {
 }
 
 /**
+ * The published, draft, and release-scoped documents in the current lane (base pair when no
+ * variant is selected, variant siblings when one is). Each field is `undefined` when that
+ * document does not exist. Present on every resolved {@link TargetDocumentState}.
+ *
+ * @internal
+ * @beta
+ */
+export interface TargetDocumentSiblings {
+  published: VersionInfoDocumentStub | undefined
+  draft: VersionInfoDocumentStub | undefined
+  version: VersionInfoDocumentStub | undefined
+}
+
+/**
  * The resolution state of the document targeted by the selected perspective (bundle) and variant.
  *
  * The union is shaped by what consumers must do, not just by what was observed:
@@ -36,12 +51,14 @@ export interface CreatableTargetDocument {
  *   selected and no stub exists for the bundle, in which case base draft/published semantics
  *   legitimately apply. `scopeId` is the bundle segment to thread into version-aware hooks
  *   (release id for release stubs, opaque scope hash for variant stubs, `undefined` for the
- *   base pair).
+ *   base pair). `siblings` always lists the published, draft, and non system bundle scoped documents in
+ *   the current lane (base pair or variant), each `undefined` when that document does not exist.
  * - `variant-missing` — a variant is selected but the document has no variant-scoped version
- *   for the current bundle. When `creatableTarget` is set (drafts bundle, published variant
- *   advertising its draft sibling id), the document is editable: typing creates the draft
- *   variant at the advertised id, seeded from the published sibling. Otherwise consumers must
- *   treat the document as read-only and offer creation. Never fall back to the base pair.
+ *   for the current bundle. When `creatableTarget` is set (drafts bundle, non-live-edit,
+ *   published variant advertising its draft sibling id), the document is editable: typing
+ *   creates the draft variant at the advertised id, seeded from the published sibling.
+ *   Live-edit documents pinned to drafts never take this path: they resolve as the published
+ *   sibling (`ready`) instead of a creatable draft.
  * - `variant-definition-document-not-found` — the requested variant name matches no
  *   `system.variant` definition. An error state, never silently treated as "no variant".
  *
@@ -56,29 +73,18 @@ export type TargetDocumentState =
       scopeId: string | undefined
       /** The selected variant when the resolved target is a variant-scoped version. */
       variant: SystemVariant | undefined
-      /**
-       * The variant-of-published sibling stub (same `_system.variant`, no `_system.bundleId`).
-       * Only set for variant targets; `undefined` means the variant has never been published.
-       * Publish-state gating (already-published, unpublishable, discard copy) must read this
-       * instead of the base `published` document.
-       */
-      publishedSibling: VersionInfoDocumentStub | undefined
+      siblings: TargetDocumentSiblings
     }
   | {
       status: 'variant-missing'
       variant: SystemVariant
       bundle: PerspectiveBundle
-      /**
-       * The variant-of-published sibling, when the variant is missing in the current bundle but
-       * published. Lets consumers distinguish "never existed" from "exists published, not in
-       * this bundle".
-       */
-      publishedSibling: VersionInfoDocumentStub | undefined
+      siblings: TargetDocumentSiblings
       /**
        * Present when the missing variant document can be created by typing: the drafts-bundle
        * variant of a published variant whose `_system.draft` weak ref advertises the (stable,
        * server-generated) id the draft will occupy. The pair is checked out at this id with
-       * `allowCreate` declared to the store, and the display falls back to `publishedSibling`
+       * `allowCreate` declared to the store, and the display falls back to `siblings.published`
        * until the document exists.
        */
       creatableTarget?: CreatableTargetDocument
@@ -110,6 +116,32 @@ function getCreatableTarget(
     return undefined
   }
   return {id: draftId, scopeId}
+}
+
+function getDocumentSiblings(
+  versions: VersionInfoDocumentStub[],
+  variantId: string | undefined,
+  bundle: PerspectiveBundle,
+): TargetDocumentSiblings {
+  return {
+    published: getTargetDocument({
+      bundle: 'published',
+      variant: variantId,
+      documentVersions: versions,
+    }),
+    draft: getTargetDocument({
+      bundle: 'drafts',
+      variant: variantId,
+      documentVersions: versions,
+    }),
+    version: isSystemBundle(bundle)
+      ? undefined
+      : getTargetDocument({
+          bundle,
+          variant: variantId,
+          documentVersions: versions,
+        }),
+  }
 }
 
 /**
@@ -148,6 +180,20 @@ export function getCreatableVariantTarget(
   state: TargetDocumentState,
 ): CreatableTargetDocument | undefined {
   return state.status === 'variant-missing' ? state.creatableTarget : undefined
+}
+
+/**
+ * The published/draft/release siblings of a resolved target, or `undefined` while the target is
+ * still resolving or the selected variant definition was not found.
+ *
+ * @internal
+ * @beta
+ */
+export function getTargetSiblings(state: TargetDocumentState): TargetDocumentSiblings | undefined {
+  if (state.status === 'ready' || state.status === 'variant-missing') {
+    return state.siblings
+  }
+  return undefined
 }
 
 /**
@@ -206,9 +252,22 @@ export function getTargetDocumentState(options: {
   variantsLoading: boolean
   versions: VersionInfoDocumentStub[]
   versionsLoading: boolean
+  /**
+   * Derived by {@link useTargetDocumentState} from the schema. When set, a drafts-bundle
+   * lookup remaps to published: live-edit types have no drafts lane, so the
+   * variant-of-published is the edit target (never a type-to-create draft).
+   */
+  liveEdit?: boolean
 }): TargetDocumentState {
-  const {bundle, selectedVariant, selectedVariantName, variantsLoading, versions, versionsLoading} =
-    options
+  const {
+    bundle,
+    selectedVariant,
+    selectedVariantName,
+    variantsLoading,
+    versions,
+    versionsLoading,
+    liveEdit,
+  } = options
 
   if (!selectedVariantName) {
     if (versionsLoading) {
@@ -224,7 +283,7 @@ export function getTargetDocumentState(options: {
       targetDocument,
       scopeId: targetDocument?._system.scopeId ?? undefined,
       variant: undefined,
-      publishedSibling: undefined,
+      siblings: getDocumentSiblings(versions, undefined, bundle),
     }
   }
 
@@ -243,13 +302,15 @@ export function getTargetDocumentState(options: {
     return RESOLVING
   }
 
-  const targetDocument = getTargetDocument({
-    bundle,
-    variant: selectedVariant._id,
-    documentVersions: versions,
-  })
+  const siblings = getDocumentSiblings(versions, selectedVariant._id, bundle)
+  // Live-edit documents are edited in place on the published sibling. The studio is often
+  // pinned to drafts, but live-edit types have no drafts lane — looking that up would miss
+  // the published variant and offer a creatable draft (patches then create `bundleId: 'drafts'`).
+  const targetBundle =
+    liveEdit && bundle === 'drafts' && !siblings.draft?._id ? 'published' : bundle
 
-  const publishedSibling = getVariantPublishedSibling({
+  const targetDocument = getTargetDocument({
+    bundle: targetBundle,
     variant: selectedVariant._id,
     documentVersions: versions,
   })
@@ -259,8 +320,11 @@ export function getTargetDocumentState(options: {
       status: 'variant-missing',
       variant: selectedVariant,
       bundle,
-      publishedSibling,
-      creatableTarget: getCreatableTarget(bundle, publishedSibling),
+      siblings,
+      creatableTarget:
+        liveEdit && bundle === 'drafts'
+          ? undefined
+          : getCreatableTarget(bundle, siblings.published),
     }
   }
 
@@ -269,7 +333,7 @@ export function getTargetDocumentState(options: {
     targetDocument,
     scopeId: targetDocument._system.scopeId ?? undefined,
     variant: selectedVariant,
-    publishedSibling,
+    siblings,
   }
 }
 
@@ -284,6 +348,8 @@ export function getTargetDocumentState(options: {
  * (`ready` without a target document). Consumers must switch on `status` instead of treating
  * `undefined` as "no variant".
  *
+ * Live-edit is read from the schema via version stubs (`_type`)
+ *
  * @internal
  * @beta
  */
@@ -291,6 +357,11 @@ export function useTargetDocumentState(documentGroupId: string): TargetDocumentS
   const {versions, loading: versionsLoading} = useDocumentVersions({documentId: documentGroupId})
   const {bundle, selectedVariant, selectedVariantName} = usePerspective()
   const {loading: variantsLoading} = useAllVariants()
+  const schema = useSchema()
+  const liveEdit = useMemo(
+    () => versions.some((version) => schema.get(version._type)?.liveEdit === true),
+    [versions, schema],
+  )
 
   return useMemo(
     () =>
@@ -301,7 +372,16 @@ export function useTargetDocumentState(documentGroupId: string): TargetDocumentS
         variantsLoading,
         versions,
         versionsLoading,
+        liveEdit,
       }),
-    [bundle, selectedVariant, selectedVariantName, variantsLoading, versions, versionsLoading],
+    [
+      bundle,
+      selectedVariant,
+      selectedVariantName,
+      variantsLoading,
+      versions,
+      versionsLoading,
+      liveEdit,
+    ],
   )
 }

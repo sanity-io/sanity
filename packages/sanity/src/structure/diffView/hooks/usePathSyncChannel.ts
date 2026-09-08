@@ -1,6 +1,6 @@
 import {type Path} from '@sanity/types'
+import {isEqual} from '@sanity/util/paths'
 import {useCallback, useMemo} from 'react'
-import deepEquals from 'react-fast-compare'
 import {distinctUntilChanged, filter, map, type Observable} from 'rxjs'
 
 import {type PathSyncChannelProps, type PathSyncState} from '../types/pathSyncChannel'
@@ -24,9 +24,7 @@ export function usePathSyncChannel({syncChannel, id}: PathSyncChannelProps): {
   const path = useMemo(
     () =>
       syncChannel.pipe(
-        distinctUntilChanged<PathSyncState>((previous, next) =>
-          deepEquals(previous.path, next.path),
-        ),
+        distinctUntilChanged<PathSyncState>((previous, next) => isEqual(previous.path, next.path)),
         filter(({source}) => source !== id),
         map((state) => state.path),
       ),

@@ -1,7 +1,8 @@
-import {Box, Flex, rem, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {Flex, rem, Stack, Text, TextSkeleton} from '@sanity/ui'
 import {type ElementType, isValidElement, type ReactNode} from 'react'
 import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {Media, type MediaProps} from '../_common/Media'

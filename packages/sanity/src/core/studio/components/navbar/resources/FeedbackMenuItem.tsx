@@ -1,5 +1,4 @@
 import {FeedbackIcon} from '@sanity/icons/Feedback'
-import {MenuDivider} from '@sanity/ui/menu'
 
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -18,10 +17,5 @@ export function FeedbackMenuItem(props: FeedbackMenuItemProps) {
   const {onClick} = props
   const {t} = useTranslation(feedbackLocaleNamespace)
 
-  return (
-    <>
-      <MenuItem icon={FeedbackIcon} text={t('feedback.menu-item')} onClick={onClick} />
-      <MenuDivider />
-    </>
-  )
+  return <MenuItem icon={FeedbackIcon} text={t('feedback.menu-item')} onClick={onClick} />
 }

@@ -1,7 +1,8 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {LockIcon} from '@sanity/icons/Lock'
-import {Flex, Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 import {memo} from 'react'
+import {Flex} from 'ui5'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useFormatRelativeLocalePublishDate} from '../../../hooks/useFormatRelativeLocalePublishDate'
@@ -18,7 +19,7 @@ export const VersionContextMenuItem = memo(function VersionContextMenuItem(props
   const isScheduled = isReleaseScheduledOrScheduling(release)
 
   return (
-    <Flex gap={3} justify="center" align="center">
+    <Flex gap={3} justifyContent="center" alignItems="center">
       <ReleaseAvatar padding={2} release={release} />
       <Stack flex={1} gap={2}>
         <ReleaseTitle

@@ -1,7 +1,8 @@
 import {type Path} from '@sanity/types'
-import {AvatarStack, Flex} from '@sanity/ui'
+import {AvatarStack} from '@sanity/ui'
 import {AnimatePresence, motion} from 'motion/react'
 import {useCallback, useMemo} from 'react'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {set} from '../../../form/patch/patch'
@@ -41,7 +42,7 @@ export function TasksSubscribers(props: TasksSubscriberProps) {
   }, [value.subscribers, currentUserId, onChange, path])
 
   return (
-    <Flex gap={1} align="center">
+    <Flex gap={1} alignItems="center">
       <Button mode="bleed" text={buttonText} onClick={handleToggleSubscribe} />
       {value.subscribers && value.subscribers?.length > 0 && (
         <TasksSubscriberAvatars subscriberIds={value.subscribers} />

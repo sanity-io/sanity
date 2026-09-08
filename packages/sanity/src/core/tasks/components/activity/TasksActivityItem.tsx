@@ -1,6 +1,5 @@
-import {Flex} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Box, type Space} from 'ui5'
+import {Flex, Box, type Space} from 'ui5'
 
 import {TasksUserAvatar} from '../TasksUserAvatar'
 
@@ -22,7 +21,7 @@ export function ActivityItem({avatarPaddingTop = 1, userId, children}: ActivityI
       <Box marginRight={3} paddingTop={avatarPaddingTop}>
         <TasksUserAvatar user={{id: userId}} size={0} />
       </Box>
-      <ActivityChildrenRoot align="center" flex={1}>
+      <ActivityChildrenRoot alignItems="center" flexBasis="0%" flexGrow={1}>
         <ActivityItemChildrenContainer>{children}</ActivityItemChildrenContainer>
       </ActivityChildrenRoot>
     </Flex>

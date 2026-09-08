@@ -1,7 +1,8 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {Card, Flex, Stack, Text, type CardTone} from '@sanity/ui'
+import {Card, Stack, Text, type CardTone} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {type ReactNode} from 'react'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {RhombusIcon} from '../../../../components/temporary-icons/Rhombus'
@@ -85,7 +86,7 @@ export const Enabled: Story = {
     <Card padding={4}>
       <Stack gap={4}>
         {CASES.map(({tone, label, caption, icon}) => (
-          <Flex key={tone} align="center" gap={4}>
+          <Flex key={tone} alignItems="center" gap={4}>
             <PerspectiveFilter prefix="Version" tone={tone}>
               <TriggerButton text={label} icon={icon} />
             </PerspectiveFilter>
@@ -106,7 +107,7 @@ export const Selected: Story = {
     <Card padding={4}>
       <Stack gap={4}>
         {CASES.map(({tone, label, caption, icon}) => (
-          <Flex key={tone} align="center" gap={4}>
+          <Flex key={tone} alignItems="center" gap={4}>
             <PerspectiveFilter
               prefix="Version"
               tone={tone}
@@ -130,7 +131,7 @@ export const Disabled: Story = {
   args: {prefix: 'Variant', tone: 'default', children: null},
   render: () => (
     <Card padding={4}>
-      <Flex align="center" gap={4}>
+      <Flex alignItems="center" gap={4}>
         <PerspectiveFilter prefix="Variant" tone="default">
           {/* The variant pill's rhombus is already drawn at dot scale, so it has
               no `size="small"` counterpart. */}

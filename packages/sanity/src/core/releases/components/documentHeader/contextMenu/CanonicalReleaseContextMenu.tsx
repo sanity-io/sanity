@@ -29,7 +29,8 @@ interface CanonicalReleaseContextMenuProps {
   hasDiscardPermission: boolean
   isPublished: boolean
   /**
-   * Whether the UI permits discarding versions.
+   * Whether the UI permits discarding versions, which includes whether the
+   * discard action is still configured in `document.actions`.
    * Defaults to `true`.
    */
   isDiscardable?: boolean

@@ -1,9 +1,9 @@
 import {CalendarIcon} from '@sanity/icons/Calendar'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type ValidationMarker} from '@sanity/types'
-import {Badge, Card, Flex, Inline, Stack, Text} from '@sanity/ui'
+import {Badge, Card, Inline, Stack, Text} from '@sanity/ui'
 import {format} from 'date-fns/format'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {useScheduledPublishingEnabled} from '../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
 import {DATE_FORMAT} from '../../../studio/timezones/constants'
@@ -33,7 +33,7 @@ export function ScheduleBanner(props: Props) {
     <Box marginBottom={4}>
       {mode === 'upsell' && (
         <Card tone="caution" padding={3} radius={3} shadow={1} marginBottom={3}>
-          <Flex align="center" gap={3} padding={1}>
+          <Flex alignItems="center" gap={3} padding={1}>
             <Text muted size={1}>
               <WarningOutlineIcon />
             </Text>
@@ -51,7 +51,7 @@ export function ScheduleBanner(props: Props) {
         style={mode === 'upsell' ? {opacity: 0.7} : undefined}
       >
         <Stack gap={2}>
-          <Flex align="center" gap={3} marginBottom={1} padding={1}>
+          <Flex alignItems="center" gap={3} marginBottom={1} padding={1}>
             <Text muted size={1}>
               <CalendarIcon />
             </Text>

@@ -57,7 +57,7 @@ export const FieldPresenceInner = memo(function FieldPresenceInner({
     <FlexWrapper>
       <div />
 
-      <InnerBox direction="row-reverse">
+      <InnerBox flexDirection="row-reverse">
         {avatars.map(
           (av, i) =>
             av && (

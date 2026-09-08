@@ -1,10 +1,10 @@
 import {ArrowUpIcon} from '@sanity/icons/ArrowUp'
 import {SearchIcon} from '@sanity/icons/Search'
-import {Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
+import {Card, Stack, Text, TextInput} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type CSSProperties, useMemo} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {Button, type ButtonProps} from '../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -102,10 +102,7 @@ export const TableHeader = ({headers, searchDisabled}: TableHeaderProps) => {
       <Flex
         as="tr"
         style={{
-          paddingInline: `max(
-          calc((100% - var(--maxInlineSize)) / 2),
-          var(--paddingInline)
-        )`,
+          paddingInline: 'var(--tableInlinePadding)',
         }}
       >
         {headers.map(

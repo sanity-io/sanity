@@ -1,0 +1,33 @@
+{
+  "name": "studio-diagnostics-viewer",
+  "version": "6.11.0",
+  "private": true,
+  "description": "Standalone viewer for Sanity Studio diagnostics output",
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "clean": "rimraf dist",
+    "dev": "vite --port 3343",
+    "preview": "vite preview --port 3343",
+    "start": "pnpm preview"
+  },
+  "dependencies": {
+    "@sanity/ui": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "sanity": "workspace:*",
+    "styled-components": "catalog:",
+    "ui5": "catalog:"
+  },
+  "devDependencies": {
+    "@sanity/vanilla-extract-vite-plugin": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "oxc-transform-react": "catalog:",
+    "rimraf": "catalog:",
+    "vite": "catalog:"
+  }
+}
