@@ -161,14 +161,21 @@ function getPortableTextDescriptionValue(description?: PortableTextBlock[]): str
   return toPlainText(description)
 }
 
-function DuplicateVariantLink(props: {children?: ReactNode; variantId?: string}) {
-  return (
-    <StateLink
-      state={{tool: VARIANTS_TOOL_NAME, [VARIANTS_TOOL_NAME]: {variantId: props.variantId}}}
-    >
-      {props.children}
-    </StateLink>
-  )
+function DuplicateVariantLink(props: {
+  children?: ReactNode
+  variantId?: string
+  withinVariantsTool: boolean
+}) {
+  // The router state's own shape depends on where this link renders, and that can't be
+  // detected at runtime: inside the variants tool, `RouteScope` has already stripped the
+  // `tool` key out of the local state view, so a bare `{variantId}` is what resolves. Anywhere
+  // else (e.g. the perspective bar's "Add variant" menu) there is no such scope, and the link
+  // has to name the tool explicitly. Callers know which case they're in; this doesn't guess.
+  const state = props.withinVariantsTool
+    ? {variantId: props.variantId}
+    : {tool: VARIANTS_TOOL_NAME, [VARIANTS_TOOL_NAME]: {variantId: props.variantId}}
+
+  return <StateLink state={state}>{props.children}</StateLink>
 }
 
 const DUPLICATE_MESSAGE_COMPONENTS = {VariantLink: DuplicateVariantLink}
@@ -191,6 +198,13 @@ export function VariantForm(props: {
   onPriorityValidityChange: (invalid: boolean) => void
   showValidation?: boolean
   value: EditableSystemVariant
+  /**
+   * Whether this form is rendered inside the variants tool's own route scope (the overview or a
+   * variant's detail page) as opposed to elsewhere (e.g. the perspective bar's "Add variant"
+   * menu). Determines how the duplicate-variant link resolves its target — see
+   * `DuplicateVariantLink` above.
+   */
+  withinVariantsTool: boolean
 }) {
   const {
     duplicateConditionsOf,
@@ -200,6 +214,7 @@ export function VariantForm(props: {
     onPriorityValidityChange,
     showValidation = false,
     value,
+    withinVariantsTool,
   } = props
   const {t} = useTranslation(variantsLocaleNamespace)
   const {data: variants} = useAllVariants()
@@ -379,7 +394,10 @@ export function VariantForm(props: {
                 t={t}
                 i18nKey="dialog.create.variant-title.duplicate"
                 components={DUPLICATE_MESSAGE_COMPONENTS}
-                componentProps={{variantId: getVariantId(duplicateTitleVariant._id)}}
+                componentProps={{
+                  variantId: getVariantId(duplicateTitleVariant._id),
+                  withinVariantsTool,
+                }}
                 values={{title: getVariantTitle(duplicateTitleVariant)}}
               />
             ) : (
@@ -576,7 +594,10 @@ export function VariantForm(props: {
               t={t}
               i18nKey="dialog.create.conditions.duplicate"
               components={DUPLICATE_MESSAGE_COMPONENTS}
-              componentProps={{variantId: getVariantId(duplicateConditionsVariant._id)}}
+              componentProps={{
+                variantId: getVariantId(duplicateConditionsVariant._id),
+                withinVariantsTool,
+              }}
               values={{title: getVariantTitle(duplicateConditionsVariant)}}
             />
           </TextWithTone>

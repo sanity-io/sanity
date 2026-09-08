@@ -65,6 +65,7 @@ export function VariantMenuButton({
           onCancel={() => setIsEditDialogOpen(false)}
           onSubmit={() => setIsEditDialogOpen(false)}
           variant={variant}
+          withinVariantsTool
         />
       )}
       {isDeleteDialogOpen && (

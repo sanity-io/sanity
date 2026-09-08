@@ -31,24 +31,20 @@ vi.mock('@sanity/ui/toast', async (importOriginal) => ({
   useToast: vi.fn(() => toastMock),
 }))
 
-// The test router has no real `variants` tool route registered, so resolve the tool-scoped
-// duplicate-error state to plain anchors instead of exercising real route resolution.
+// The test router has no `variantId` route, so resolve duplicate-error links to plain anchors.
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),
   StateLink: function MockStateLink({
     ref,
     state,
     ...rest
-  }: {
-    state?: {tool?: string; variants?: {variantId?: string}}
-  } & HTMLProps<HTMLAnchorElement>) {
-    const variantId = state?.tool === 'variants' ? state.variants?.variantId : undefined
+  }: {state?: {variantId?: string}} & HTMLProps<HTMLAnchorElement>) {
     return (
       // oxlint-disable-next-line jsx_a11y/anchor-has-content
       <a
         {...rest}
         ref={ref as Ref<HTMLAnchorElement>}
-        href={variantId ? `/variants/${variantId}` : '/variants'}
+        href={state?.variantId ? `/variants/${state.variantId}` : '/variants'}
       />
     )
   },
@@ -79,9 +75,12 @@ describe('CreateVariantDialog', () => {
     const wrapper = await createTestProvider({
       resources: [variantsUsEnglishLocaleBundle],
     })
-    const result = render(<CreateVariantDialog onCancel={onCancel} onSubmit={onSubmit} />, {
-      wrapper,
-    })
+    const result = render(
+      <CreateVariantDialog onCancel={onCancel} onSubmit={onSubmit} withinVariantsTool />,
+      {
+        wrapper,
+      },
+    )
     await screen.findByRole('dialog', {name: 'Create variant definition'})
     return result
   }
@@ -561,9 +560,12 @@ describe('CreateVariantDialog mapped conditions', () => {
       },
       resources: [variantsUsEnglishLocaleBundle],
     })
-    const result = render(<CreateVariantDialog onCancel={onCancel} onSubmit={onSubmit} />, {
-      wrapper,
-    })
+    const result = render(
+      <CreateVariantDialog onCancel={onCancel} onSubmit={onSubmit} withinVariantsTool />,
+      {
+        wrapper,
+      },
+    )
     await screen.findByRole('dialog', {name: 'Create variant definition'})
     return result
   }

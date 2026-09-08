@@ -9,10 +9,12 @@ import {VariantDialog} from './VariantDialog'
 interface CreateVariantDialogProps {
   onCancel: () => void
   onSubmit: (createdVariantId: string) => void
+  /** See `VariantForm`'s prop of the same name. */
+  withinVariantsTool: boolean
 }
 
 export function CreateVariantDialog(props: CreateVariantDialogProps): React.JSX.Element {
-  const {onCancel, onSubmit} = props
+  const {onCancel, onSubmit, withinVariantsTool} = props
   const {t} = useTranslation(variantsLocaleNamespace)
   const {createVariant} = useVariantOperations()
   const initialValue = useMemo(() => getVariantDefaults(), [])
@@ -35,6 +37,7 @@ export function CreateVariantDialog(props: CreateVariantDialogProps): React.JSX.
       initialValue={initialValue}
       onCancel={onCancel}
       onSubmit={handleSubmit}
+      withinVariantsTool={withinVariantsTool}
     />
   )
 }
