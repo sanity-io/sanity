@@ -8,14 +8,9 @@ import {Box} from 'ui5'
 
 import {idSlug, SNOOZE_DAYS} from './acks'
 import {formatValue} from './data'
-import {baselineDetail, type DriftResult, noiseLabel} from './drift'
+import {baselineDetail, deltaLabel, type DriftResult, noiseLabel} from './drift'
 import {backlinksFor} from './links'
 import {type DriftState} from './useDriftState'
-
-function pct(fraction: number): string {
-  const sign = fraction > 0 ? '+' : ''
-  return `${sign}${(fraction * 100).toFixed(0)}%`
-}
 
 function DriftRow(props: {
   entry: DriftResult
@@ -40,7 +35,7 @@ function DriftRow(props: {
           ({entry.branch})
         </Text>
       )}
-      <Text size={1}>{pct(worst.deltaFraction)}</Text>
+      <Text size={1}>{deltaLabel(worst, entry.unit)}</Text>
       <Text size={0} muted>
         {formatValue(worst.baseline, entry.unit)} → {formatValue(worst.recent, entry.unit)}
         {' · '}

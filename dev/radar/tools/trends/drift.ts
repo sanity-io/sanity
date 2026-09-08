@@ -20,7 +20,7 @@
  * choices and the alternatives that were rejected are in SPEC.md, "Drift
  * feed" — this header only repeats the numbers the constants below depend on.
  */
-import {type TrendPoint, type TrendSeries, type TrendUnit} from './data'
+import {formatValue, type TrendPoint, type TrendSeries, type TrendUnit} from './data'
 
 interface DriftThreshold {
   absolute: number
@@ -119,6 +119,12 @@ export interface DriftBaseline {
   recent: number
   baseline: number
   delta: number
+  /**
+   * `delta` as a fraction of the baseline. ±Infinity when the baseline is 0
+   * and the series moved (a move from nothing has no finite relative size, and
+   * it should sort first, not last) — display through `deltaLabel`, which
+   * falls back to the absolute move in that case.
+   */
   deltaFraction: number
   direction: DriftDirection
   /**
@@ -157,6 +163,19 @@ export function baselineDetail(baseline: DriftBaseline): string {
 }
 
 /**
+ * The move for badges and feed rows: a signed percentage of the baseline, or
+ * the signed absolute move when the baseline was 0 and a percentage has no
+ * meaning ("+4" for a tripwire count that went 0 → 4).
+ */
+export function deltaLabel(baseline: DriftBaseline, unit: TrendUnit): string {
+  const sign = baseline.delta > 0 ? '+' : baseline.delta < 0 ? '−' : ''
+  if (!Number.isFinite(baseline.deltaFraction)) {
+    return `${sign}${formatValue(Math.abs(baseline.delta), unit)}`
+  }
+  return `${sign}${Math.abs(baseline.deltaFraction * 100).toFixed(0)}%`
+}
+
+/**
  * The move as a multiple of the series' own noise — the third test, stated so
  * a reader can see why a 6% move flagged on one chart and a 9% move did not on
  * another. "∞× noise" for a series that has never varied.
@@ -190,10 +209,15 @@ function classify(
   goal: TrendSeries['goal'],
 ): DriftDirection {
   const delta = recent - baseline
+  // The gate's rule (gate.ts): the minimum effect is the larger of the absolute
+  // floor and the relative floor of the baseline. Written that way rather than
+  // as two checks so a baseline of 0 is handled: a tripwire count ("sessions
+  // not settled") sitting at 0 has no relative scale, and a move to 4 must
+  // flag on the absolute floor alone — an earlier `baseline !== 0` guard made
+  // such series unflaggable.
+  const minimumEffect = Math.max(threshold.absolute, threshold.relative * Math.abs(baseline))
   const cleared =
-    Math.abs(delta) >= threshold.absolute &&
-    baseline !== 0 &&
-    Math.abs(delta) / Math.abs(baseline) >= threshold.relative &&
+    Math.abs(delta) >= minimumEffect &&
     // standardError is 0 for a series that never varies: any move that
     // cleared the floors is then real by definition
     Math.abs(delta) >= NOISE_Z * standardError
@@ -235,7 +259,8 @@ function computeBaseline(
     recent,
     baseline: prior,
     delta,
-    deltaFraction: prior === 0 ? 0 : delta / Math.abs(prior),
+    deltaFraction:
+      prior === 0 ? (delta === 0 ? 0 : Math.sign(delta) * Infinity) : delta / Math.abs(prior),
     direction,
     noiseSigma: sigma,
     standardError,

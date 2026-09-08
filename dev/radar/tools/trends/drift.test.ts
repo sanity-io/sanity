@@ -5,6 +5,7 @@ import {
   baselineDetail,
   baselineLabel,
   computeDrift,
+  deltaLabel,
   type DriftBaseline,
   type DriftResult,
   NOISE_Z,
@@ -325,7 +326,7 @@ function noisy(priorLevel: number, recentLevel: number, spread: number): number[
 // neutral on a series whose runs scatter ±100ms: the move is well inside what
 // that series does on its own. This is the difference between a review feed
 // and an alarm that is always on.
-test('a move inside the series own noise stays neutral', () => {
+test("a move inside the series' own noise stays neutral", () => {
   const quiet = computeDrift([series([...Array(21).fill(350), ...Array(7).fill(380)])])
   expect(quiet[0].direction).toBe('regression')
 
@@ -387,4 +388,44 @@ test('scatter confined to the recent window counts as noise', () => {
   const drift = computeDrift([series([...Array(21).fill(400), ...recent])])
   expect(drift[0].baseline.noiseSigma).toBeGreaterThan(100)
   expect(drift[0].direction).toBe('neutral')
+})
+
+// --- zero baselines --------------------------------------------------------------
+
+// A tripwire count that has always been 0 has no relative scale. The gate's
+// rule is max(absolute, relative × baseline), so at 0 the absolute floor alone
+// decides — an earlier `baseline !== 0` guard made such series unflaggable,
+// which is exactly wrong for "sessions not settled".
+test('a move away from a zero baseline flags on the absolute floor', () => {
+  const drift = computeDrift([series([...Array(21).fill(0), ...Array(7).fill(4)], {unit: 'count'})])
+  expect(drift[0].direction).toBe('regression')
+  expect(drift[0].baseline.deltaFraction).toBe(Infinity)
+  // No percentage of nothing — the label falls back to the absolute move
+  expect(deltaLabel(drift[0].baseline, 'count')).toBe('+4')
+  // ...and it outranks a finite regression in the feed
+  const finite = series([...Array(21).fill(320), ...Array(9).fill(400)], {key: 'finite'})
+  const [first] = computeDrift([
+    finite,
+    series([...Array(21).fill(0), ...Array(7).fill(4)], {unit: 'count', key: 'zero'}),
+  ])
+  expect(first.seriesKey).toBe('zero')
+})
+
+test('a zero baseline that stays at zero is neutral, not NaN', () => {
+  const drift = computeDrift([
+    series(
+      Array.from({length: 30}, () => 0),
+      {unit: 'count'},
+    ),
+  ])
+  expect(drift[0].direction).toBe('neutral')
+  expect(drift[0].baseline.deltaFraction).toBe(0)
+  expect(deltaLabel(drift[0].baseline, 'count')).toBe('0%')
+})
+
+test('deltaLabel shows a signed percentage for finite baselines', () => {
+  const up = computeDrift([series([...Array(21).fill(320), ...Array(9).fill(400)])])
+  expect(deltaLabel(up[0].baseline, 'ms')).toBe('+25%')
+  const down = computeDrift([series([...Array(21).fill(400), ...Array(9).fill(300)])])
+  expect(deltaLabel(down[0].baseline, 'ms')).toBe('−25%')
 })

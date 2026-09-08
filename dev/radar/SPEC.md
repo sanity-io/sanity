@@ -97,8 +97,11 @@ effect of merged work; secondary: leads scanning health weekly.
    Comparisons tool is where a dispatched comparison lands.
 3. **Drift feed** (P2) — computed client-side, flagging a metric when it
    clears the gate's floors (perf/bench/stats/gate.ts — one source of truth
-   for "what matters": 16ms and 5% for ms metrics) **and** moves by at least
-   2.5 standard errors of its own run-to-run noise.
+   for "what matters": the larger of 16ms and 5% of the baseline for ms
+   metrics, so a baseline of 0 is judged on the absolute floor alone and a
+   tripwire count going 0 → 4 flags) **and** moves by at least 2.5 standard
+   errors of its own run-to-run noise. A move from a zero baseline is shown
+   as its absolute size ("+4"), since a percentage of nothing has no meaning.
 
    One baseline: the median of the last 7 runs vs the median of the prior 21.
    Smoothing both sides is what makes it trustworthy — one noisy run barely
