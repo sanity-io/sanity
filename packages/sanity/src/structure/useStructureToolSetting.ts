@@ -24,11 +24,7 @@ export function useStructureToolSetting<ValueType>(
     )
   }, [defaultValue, keyValueStore, keyValueStoreKey])
 
-  // Keep the immediate store value for write-side equality checks so a stale
-  // deferred snapshot cannot skip (or redundantly issue) a setKey while the
-  // store has already moved on. The rendered value is deferred by react-rx v5
-  // (identity-coherent, and sharing the same store subscription as the sync
-  // read), so a storage key change never renders the previous key's value.
+  // Use the live value for write-side equality; rendering can remain deferred.
   const observedValue = useSyncObservable(value$, defaultValue) as ValueType
   const value = useObservable(value$, defaultValue) as ValueType
   const set = useCallback(
