@@ -55,6 +55,7 @@ export function VariantActionRail({
           onCancel={() => setEditDialogOpen(false)}
           onSubmit={() => setEditDialogOpen(false)}
           variant={variant}
+          withinVariantsTool
         />
       )}
     </>

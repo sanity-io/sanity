@@ -10,6 +10,8 @@ interface EditVariantDialogProps {
   onCancel: () => void
   onSubmit: () => void
   variant: SystemVariant
+  /** See `VariantForm`'s prop of the same name. */
+  withinVariantsTool: boolean
 }
 
 function toEditableVariant(variant: SystemVariant): EditableSystemVariant {
@@ -23,7 +25,7 @@ function toEditableVariant(variant: SystemVariant): EditableSystemVariant {
 }
 
 export function EditVariantDialog(props: EditVariantDialogProps): React.JSX.Element {
-  const {onCancel, onSubmit, variant: initialVariant} = props
+  const {onCancel, onSubmit, variant: initialVariant, withinVariantsTool} = props
   const {t} = useTranslation(variantsLocaleNamespace)
   const {updateVariant} = useVariantOperations()
   const initialValue = useMemo(() => toEditableVariant(initialVariant), [initialVariant])
@@ -47,6 +49,7 @@ export function EditVariantDialog(props: EditVariantDialogProps): React.JSX.Elem
       onCancel={onCancel}
       onSubmit={handleSubmit}
       renderCancelButton
+      withinVariantsTool={withinVariantsTool}
     />
   )
 }

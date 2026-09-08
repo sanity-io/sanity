@@ -75,9 +75,12 @@ describe('CreateVariantDialog', () => {
     const wrapper = await createTestProvider({
       resources: [variantsUsEnglishLocaleBundle],
     })
-    const result = render(<CreateVariantDialog onCancel={onCancel} onSubmit={onSubmit} />, {
-      wrapper,
-    })
+    const result = render(
+      <CreateVariantDialog onCancel={onCancel} onSubmit={onSubmit} withinVariantsTool />,
+      {
+        wrapper,
+      },
+    )
     await screen.findByRole('dialog', {name: 'Create variant definition'})
     return result
   }
@@ -557,9 +560,12 @@ describe('CreateVariantDialog mapped conditions', () => {
       },
       resources: [variantsUsEnglishLocaleBundle],
     })
-    const result = render(<CreateVariantDialog onCancel={onCancel} onSubmit={onSubmit} />, {
-      wrapper,
-    })
+    const result = render(
+      <CreateVariantDialog onCancel={onCancel} onSubmit={onSubmit} withinVariantsTool />,
+      {
+        wrapper,
+      },
+    )
     await screen.findByRole('dialog', {name: 'Create variant definition'})
     return result
   }

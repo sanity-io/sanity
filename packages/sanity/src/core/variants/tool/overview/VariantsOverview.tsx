@@ -197,6 +197,7 @@ export function VariantsOverview(): React.JSX.Element {
         <CreateVariantDialog
           onCancel={() => setIsCreateVariantDialogOpen(false)}
           onSubmit={handleOnCreateVariant}
+          withinVariantsTool
         />
       )}
     </Flex>

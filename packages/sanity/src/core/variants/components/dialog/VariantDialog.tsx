@@ -25,6 +25,8 @@ interface VariantDialogProps {
   onCancel: () => void
   onSubmit: (variant: EditableSystemVariant) => Promise<void>
   renderCancelButton?: boolean
+  /** See `VariantForm`'s prop of the same name. */
+  withinVariantsTool: boolean
 }
 
 export function VariantDialog(props: VariantDialogProps): React.JSX.Element {
@@ -38,6 +40,7 @@ export function VariantDialog(props: VariantDialogProps): React.JSX.Element {
     onCancel,
     onSubmit,
     renderCancelButton = false,
+    withinVariantsTool,
   } = props
   const toast = useToast()
   const {t} = useTranslation(variantsLocaleNamespace)
@@ -114,6 +117,7 @@ export function VariantDialog(props: VariantDialogProps): React.JSX.Element {
               onPriorityValidityChange={setPriorityInvalid}
               showValidation={showValidation}
               value={variant}
+              withinVariantsTool={withinVariantsTool}
             />
           </Box>
           <Flex gap={2} justifyContent="flex-end" paddingTop={5}>
