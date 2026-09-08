@@ -63,7 +63,7 @@ const createScheduledDraftAction = (
       disabled: actionProps.disabled || loading,
       icon: actionProps.icon,
       label: actionProps.text,
-      title: actionProps.text,
+      title: actionProps.tooltipProps?.content ?? actionProps.text,
       tone: actionProps.tone,
       dialog: dialogs
         ? {

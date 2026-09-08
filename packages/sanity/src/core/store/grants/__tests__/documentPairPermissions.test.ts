@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
-import {of, Subject} from 'rxjs'
+import {firstValueFrom, of, Subject} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
@@ -188,5 +188,24 @@ describe('getDocumentPairPermissions (Pattern-B memoization)', () => {
     expect(grantsStore.checkDocumentPermission).toHaveBeenCalledTimes(3)
 
     subscriptions.forEach((subscription) => subscription.unsubscribe())
+  })
+
+  it('denies without a document lookup when the type is a wildcard', async () => {
+    const grantsStore = createGrantsStore()
+    const id = `book-${Math.random().toString(36).slice(2)}`
+
+    const result = await firstValueFrom(
+      getDocumentPairPermissions({
+        client,
+        schema,
+        grantsStore,
+        id,
+        type: '*',
+        permission: 'publish',
+      }),
+    )
+
+    expect(result).toEqual({granted: false, reason: 'Type specified was `*`'})
+    expect(mockedSnapshotPair).not.toHaveBeenCalled()
   })
 })

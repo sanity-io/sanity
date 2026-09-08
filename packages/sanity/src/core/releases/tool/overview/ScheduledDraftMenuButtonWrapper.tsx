@@ -41,7 +41,7 @@ export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocu
   const {actions, dialogs, isPerformingOperation} = useScheduledDraftMenuActions({
     release,
     documentType: scheduledDraftDocument?._type,
-    documentId: scheduledDraftDocument?._id,
+    documentId: scheduledDraftDocument ? getPublishedId(scheduledDraftDocument._id) : undefined,
     disabled: !scheduledDraftDocument,
     onActionComplete: handleActionComplete,
   })
