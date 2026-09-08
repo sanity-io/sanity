@@ -740,42 +740,27 @@ function usePreserveIntrinsicBlockSize({
   isActive: boolean
   element: HTMLElement | null
 }): void {
-  // `isActive` only decides what to do with a measurement; it must not set up
-  // or tear down the ResizeObserver, so the observer reads it through a ref.
-  const isActiveRef = useRef(isActive)
   const heightRef = useRef(0)
 
-  useLayoutEffect(() => {
-    isActiveRef.current = isActive
-
-    if (!element || !heightRef.current) {
+  useEffect(() => {
+    if (!element) {
       return undefined
     }
 
-    const cleanUp = () => {
-      element.style.removeProperty(INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY)
-    }
-
-    if (isActive) {
-      element.style.setProperty(INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY, `${heightRef.current}px`)
-      return cleanUp
-    }
-
-    cleanUp()
-    return undefined
-  }, [element, isActive])
-
-  useEffect(() => {
+    // `observe()` fires an initial callback, so restarting the observer when `isActive`
+    // flips lets the handler apply the transition itself.
     const resizeObserver = new ResizeObserver(([entry]) => {
-      if (!isActiveRef.current) {
+      if (!isActive) {
         heightRef.current = entry.contentRect.height
+      } else if (heightRef.current) {
+        element.style.setProperty(INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY, `${heightRef.current}px`)
       }
     })
+    resizeObserver.observe(element)
 
-    if (element) {
-      resizeObserver.observe(element)
+    return () => {
+      resizeObserver.disconnect()
+      element.style.removeProperty(INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY)
     }
-
-    return () => resizeObserver.disconnect()
-  }, [element])
+  }, [element, isActive])
 }
