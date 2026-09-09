@@ -632,6 +632,39 @@ export default defineType({
       ],
     },
     {
+      name: 'gridArrayTwoColumns',
+      title: 'Image grid, columns: 2',
+      description: 'options: {layout: "grid", columns: 2} — narrower than the default of 4',
+      type: 'array',
+      options: {
+        layout: 'grid',
+        columns: 2,
+      },
+      of: [{type: 'image'}],
+    },
+    {
+      name: 'gridArraySixColumns',
+      title: 'Image grid, columns: 6',
+      description: 'options: {layout: "grid", columns: 6} — wider than the default of 4',
+      type: 'array',
+      options: {
+        layout: 'grid',
+        columns: 6,
+      },
+      of: [{type: 'image'}],
+    },
+    {
+      name: 'gridArrayOfStringsTwoColumns',
+      title: 'String grid, columns: 2',
+      description: 'Primitive array with options: {layout: "grid", columns: 2}',
+      type: 'array',
+      options: {
+        layout: 'grid',
+        columns: 2,
+      },
+      of: [{type: 'string'}],
+    },
+    {
       name: 'polymorphicGridArray',
       title: 'Polymorphic grid array',
       description: 'An array of multiple types. options: {layout: "grid"}',

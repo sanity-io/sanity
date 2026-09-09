@@ -7,6 +7,7 @@ import {type ArrayOfObjectsInputProps} from '../../../../types/inputProps'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types/itemProps'
 import {UploadTargetCard} from '../../../files/common/uploadTarget/UploadTargetCard'
 import {ArrayValidationProvider} from '../../common/ArrayValidationContext'
+import {resolveGridTemplateColumns} from '../../common/gridColumns'
 import {Item, List} from '../../common/list'
 import {ArrayOfObjectsFunctions} from '../ArrayOfObjectsFunctions'
 import {createProtoArrayValue} from '../createProtoArrayValue'
@@ -43,6 +44,7 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   const errorTone: CardTone | undefined = hasErrors ? 'critical' : undefined
 
   const sortable = schemaType.options?.sortable !== false
+  const gridTemplateColumns = resolveGridTemplateColumns(schemaType.options?.columns)
 
   const renderItem = useCallback((itemProps: Omit<ObjectItemProps, 'renderDefault'>) => {
     // todo: consider using a different item component for references
@@ -74,7 +76,7 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
             {members?.length > 0 && (
               <Card border radius={1} tone={errorTone}>
                 <List
-                  gridTemplateColumns={[2, 3, 4]}
+                  gridTemplateColumns={gridTemplateColumns}
                   gap={3}
                   padding={1}
                   margin={1}
