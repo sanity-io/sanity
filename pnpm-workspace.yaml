@@ -28,7 +28,7 @@ catalog:
   '@sanity/client': ^8.6.1
   '@sanity/migrate': ^8.0.2
   '@sanity/telemetry': ^1.1.0
-  '@sanity/tsdown-config': ^0.27.1
+  '@sanity/tsdown-config': ^0.28.0
   '@sanity/ui': ^4.2.0
   '@types/node': ^24.13.3
   '@types/react': ^19.2.18
@@ -54,7 +54,7 @@ catalog:
   # Exact version on purpose (like @sanity/workbench): bumps are explicit so published
   # packages ship the version we validated instead of whatever the alpha dist-tag points to
   ui5: npm:@sanity/ui@5.0.0-alpha.9
-  tsdown: ^0.22.14
+  tsdown: ^0.23.0
   typescript: ^7.0.2
   vite: ^8.2.2
   vitest: ^4.1.11
@@ -150,7 +150,7 @@ overrides:
   # while rolldown >= 1.2.6 emits `registerModule(id)` for export-less modules (rolldown#10772), so
   # `unstable_bundledDev` crashes with "Cannot read properties of undefined (reading 'exports')" on the
   # first lazy chunk containing one. Drop once the catalog vite ships a runtime that defaults the holder.
-  'vite>rolldown': '1.2.7'
+  'vite>rolldown': '1.2.8'
 
 preferWorkspacePackages: true
 
@@ -161,6 +161,8 @@ trustPolicyExclude:
   - '@octokit/plugin-paginate-rest@9.2.2'
   - '@reduxjs/toolkit@2.9.0 || 2.10.1 || 2.11.0'
   - '@sanity/cli'
+  # @sanity/cli 8.9.1 updates this official Sanity dependency to v7
+  - '@sanity/import@7.0.1'
   - '@sanity/mutate@0.11.0-canary.4'
   - '@sanity/sdk@3.0.0'
   - '@sanity/sdk-react@3.0.0'
