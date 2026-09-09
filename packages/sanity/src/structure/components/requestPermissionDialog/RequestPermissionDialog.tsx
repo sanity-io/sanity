@@ -14,6 +14,8 @@ import {AskToEditRequestSent} from './__telemetry__/RequestPermissionDialog.tele
 import {type AccessRequest} from './useRoleRequestsStatus'
 
 const MAX_NOTE_LENGTH = 150
+// Requested until the project's roles say an editor role exists.
+const ADMIN_ROLE = 'administrator' as const
 
 const DialogBody = styled(Box)`
   box-sizing: border-box;
@@ -61,7 +63,7 @@ export function RequestPermissionDialog({
   const [hasBeenDenied, setHasBeenDenied] = useState<boolean>(false)
 
   const requestedRole$: Observable<'administrator' | 'editor'> = useMemo(() => {
-    const adminRole = 'administrator' as const
+    const adminRole = ADMIN_ROLE
     if (!projectId || !client) return of(adminRole)
     return client.observable
       .request<(Role & {appliesToUsers?: boolean})[]>({url: `/projects/${projectId}/roles`})
@@ -80,7 +82,7 @@ export function RequestPermissionDialog({
   // Kept synchronous: `onSubmit` reads this value into the request body, so a
   // deferred snapshot could submit the stale startWith('administrator') role
   // after the observable has already resolved to 'editor'.
-  const requestedRole = useSyncObservable(requestedRole$, undefined)
+  const requestedRole = useSyncObservable(requestedRole$, ADMIN_ROLE)
 
   const onSubmit = () => {
     setIsSubmitting(true)
