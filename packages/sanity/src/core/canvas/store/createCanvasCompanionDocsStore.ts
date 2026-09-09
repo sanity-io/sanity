@@ -84,10 +84,20 @@ const getCompanionDocs = memoize(
       map((value) => ({error: null, data: value, loading: false})),
       catchError((error) => of({error, data: [], loading: false})),
       startWith(INITIAL_VALUE),
-      shareReplay(1),
+      // refCount so the listener tears down when the last subscriber leaves.
+      // Combined with the credential in the memo key below, a cross-tab
+      // re-login's stale-token entry stops listening once the form remounts
+      // onto the new client — a plain `shareReplay(1)` would keep the
+      // stale-token listener connected forever and it would 401.
+      shareReplay({bufferSize: 1, refCount: true}),
     )
   },
-  (publishedId, client) => `${publishedId}-${client.config().dataset}-${client.config().projectId}`,
+  // `token` is part of the key: this captures `client` and fetches/listens
+  // through it, so a cross-tab re-login (new token) gets a fresh entry rather
+  // than replaying the stale-token client. See the memoizeKeyGen comment for
+  // the full explanation.
+  (publishedId, client) =>
+    `${publishedId}-${client.config().dataset}-${client.config().projectId}-${client.config().token ?? ''}`,
 )
 
 /**

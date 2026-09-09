@@ -289,7 +289,11 @@ export const getDocumentPairPermissions = memoize(
     permission,
     userId,
   }: DocumentPairPermissionsOptions): string => {
-    const {dataset = '', projectId = ''} = client.config()
+    // `token` is part of the key: this captures `client` and issues grants
+    // requests through it, so a re-login must build a fresh entry instead of
+    // replaying the stale-token client, which would 401 (see the memoizeKeyGen
+    // comment).
+    const {dataset = '', projectId = '', token = ''} = client.config()
     // `liveEdit` is derived from the schema and branches the resulting permission
     // observable, so it must be part of the key: workspaces sharing a
     // project/dataset can define the same `type` with a different `liveEdit`.
@@ -299,6 +303,7 @@ export const getDocumentPairPermissions = memoize(
     // (getPublishedId(id), version). The raw `version` string is kept as-is;
     // never call getIdPair here (it throws on version 'drafts'|'published').
     return [
+      token,
       dataset,
       projectId,
       getPublishedId(id),

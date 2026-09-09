@@ -210,7 +210,11 @@ export const operationEvents = memoize(
   },
   (ctx) => {
     const config = ctx.client.config()
-    // we only want one of these per dataset+projectid
-    return `${config.dataset ?? ''}-${config.projectId ?? ''}`
+    // One per dataset+projectid, but ALSO per credential: this captures
+    // `ctx.client` and drives commits/mutations through it, so a cross-tab
+    // re-login (new token) must get a fresh entry rather than replaying the
+    // stale-token client. See the memoizeKeyGen comment for the full
+    // explanation.
+    return `${config.token ?? ''}-${config.dataset ?? ''}-${config.projectId ?? ''}`
   },
 )
