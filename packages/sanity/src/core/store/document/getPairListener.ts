@@ -19,6 +19,7 @@ import {
   type WelcomeEvent,
 } from './types'
 import {dedupeListenerEvents} from './utils/dedupeListenerEvents'
+import {reconnectOnRejectedConnection} from './utils/reconnectOnRejectedConnection'
 import {OutOfSyncError, sequentializeListenerEvents} from './utils/sequentializeListenerEvents'
 
 interface Snapshots {
@@ -155,6 +156,7 @@ export function getPairListener(
         },
       ) as Observable<WelcomeEvent | MutationEvent | ReconnectEvent | WelcomeBackEvent | ResetEvent>
     ).pipe(
+      reconnectOnRejectedConnection(),
       dedupeListenerEvents(),
       map((event): WelcomeEvent | MutationEvent | ReconnectEvent | WelcomeBackEvent | ResetEvent =>
         event.type === 'mutation'
