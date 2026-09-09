@@ -77,9 +77,6 @@ export async function createTestProvider({
   const router = route.create('/', [route.intents('/intent')])
 
   await i18next.init()
-  await i18next.loadNamespaces([
-    ...new Set(usEnglishLocale.bundles?.map((bundle) => bundle.namespace)),
-  ])
 
   const routerState = {}
   const activeWorkspace = {name: 'default'} as WorkspaceSummary
