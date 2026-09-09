@@ -1,5 +1,4 @@
-import {Skeleton} from '@sanity/ui'
-import {type ComponentType, Fragment, Suspense, useMemo} from 'react'
+import {type ComponentType, Fragment, useMemo} from 'react'
 
 import {useSource} from '../../studio/source'
 import {flattenConfig} from '../flattenConfig'
@@ -25,17 +24,13 @@ function _createMiddlewareComponent<T extends {}>(
       next = (props) => <Middleware {...props} renderDefault={renderDefault} />
     }
 
-    return (
-      <Suspense fallback={<Skeleton padding={3} radius={1} animated />}>
-        {next({
-          ...outerProps,
-          // NOTE: it's safe to pass the empty render function, since it'll be overwritten in the next step (above).
-          // NOTE: it's important that the default component does not use `renderDefault`, since it will
-          // get the `emptyRender` callback will be passed when the middleware stack is empty.
-          renderDefault: emptyRender,
-        })}
-      </Suspense>
-    )
+    return next({
+      ...outerProps,
+      // NOTE: it's safe to pass the empty render function, since it'll be overwritten in the next step (above).
+      // NOTE: it's important that the default component does not use `renderDefault`, since it will
+      // get the `emptyRender` callback will be passed when the middleware stack is empty.
+      renderDefault: emptyRender,
+    })
   }
   return MiddlewareComponent
 }
@@ -49,6 +44,11 @@ function _createMiddlewareComponent<T extends {}>(
  *   The `renderDefault` function is added to the props of the middleware components so that they can render the default
  *   component and continue the middleware chain.
  *
+ * The returned component has no Suspense boundary of its own. Middleware is often `lazy()`
+ * (core plugins register lazy field, input, layout and navbar components), so the site that
+ * renders the returned component must wrap it in `<Suspense>` with a fallback shaped like the
+ * component it stands in for.
+ *
  * @example
  * Example usage of:
  *
@@ -58,7 +58,11 @@ function _createMiddlewareComponent<T extends {}>(
  *   defaultComponent: StudioLayout,
  *  })
  *
- * return <StudioLayout />
+ * return (
+ *   <Suspense fallback={<LoadingBlock />}>
+ *     <StudioLayout />
+ *   </Suspense>
+ * )
  *```
  */
 export function useMiddlewareComponents<T extends {}>(props: {
