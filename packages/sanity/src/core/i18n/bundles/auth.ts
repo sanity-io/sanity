@@ -7,6 +7,9 @@ export const studioAuthLocaleStrings = defineLocalesResources('studio', {
   'login.logged-out.generic': 'Your session is no longer valid. Please sign in again.',
   'login.logged-out.session-expired': 'Your session expired. Please sign in again.',
   'login.logged-out.title': "You've been logged out",
+  'workspaces.action.add-workspace': 'Add workspace',
+  'workspaces.action.choose-another-workspace': 'Choose another workspace',
+  'workspaces.choose-your-workspace-label': 'Choose your workspace',
 })
 
 export const studioAuthLocaleResources: LocaleResourceBundle = {

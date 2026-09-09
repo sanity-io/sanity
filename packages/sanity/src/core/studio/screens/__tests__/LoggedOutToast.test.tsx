@@ -30,6 +30,22 @@ describe('LoggedOutToast', () => {
     expect(useConditionalToast).toHaveBeenCalledWith(expect.objectContaining({enabled: false}))
   })
 
+  test('translates logged-out copy without LocaleProvider', () => {
+    // AuthenticateScreen mounts this toast outside LocaleProvider — only the
+    // synchronous fallback locale is available.
+    render(
+      <LoggedOutReasonContext.Provider value="session-expired">
+        <LoggedOutToast />
+      </LoggedOutReasonContext.Provider>,
+    )
+    expect(useConditionalToast).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: "You've been logged out",
+        description: 'Your session expired. Please sign in again.',
+      }),
+    )
+  })
+
   test('enables a persistent, dismissable session-expired toast', async () => {
     await renderWithReason('session-expired')
     expect(useConditionalToast).toHaveBeenCalledWith(

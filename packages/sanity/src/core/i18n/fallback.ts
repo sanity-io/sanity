@@ -1,5 +1,5 @@
 /* oxlint-disable @sanity/i18n/no-i18next-import */
-import {createInstance, type Resource} from 'i18next'
+import {createInstance, type i18n, type Resource} from 'i18next'
 import memoize from 'lodash-es/memoize.js'
 
 import {isStaticResourceBundle} from './helpers'
@@ -24,42 +24,51 @@ const fallbackLocales: LocaleSource['locales'] = [defaultLocale]
  */
 export const getFallbackLocaleSource: () => LocaleSource = memoize(
   function getFallbackLocaleSource(): LocaleSource {
-    const i18n = getFallbackI18nInstance()
-    void i18n.init()
+    const i18nInstance = getFallbackI18nInstance()
     return {
       currentLocale: defaultLocale,
       locales: fallbackLocales,
-      loadNamespaces: i18n.loadNamespaces,
-      t: i18n.t,
+      loadNamespaces: i18nInstance.loadNamespaces,
+      t: i18nInstance.t,
     }
   },
 )
 
-function getFallbackI18nInstance() {
-  // Find all core locale resource bundles we can load synchronously
-  const staticResources: Resource = {[defaultLocale.id]: {}}
-  const staticBundles = usEnglishLocale.bundles?.filter(isStaticResourceBundle) || []
-  const namespaces = new Set<string>()
-  for (const bundle of staticBundles) {
-    staticResources[defaultLocale.id][bundle.namespace] = bundle.resources
-    namespaces.add(bundle.namespace)
-  }
+/**
+ * i18next instance backing {@link getFallbackLocaleSource}. Used by
+ * `useTranslation` when no `LocaleProvider` is mounted (login, config error).
+ *
+ * @internal
+ */
+export const getFallbackI18nInstance: () => i18n = memoize(
+  function getFallbackI18nInstance(): i18n {
+    // Find all core locale resource bundles we can load synchronously
+    const staticResources: Resource = {[defaultLocale.id]: {}}
+    const staticBundles = usEnglishLocale.bundles?.filter(isStaticResourceBundle) || []
+    const namespaces = new Set<string>()
+    for (const bundle of staticBundles) {
+      staticResources[defaultLocale.id][bundle.namespace] = bundle.resources
+      namespaces.add(bundle.namespace)
+    }
 
-  return createInstance({
-    ns: Array.from(namespaces),
-    defaultNS: studioLocaleNamespace,
-    initAsync: true,
-    partialBundledLanguages: true,
-    fallbackLng: defaultLocale.id,
-    lng: defaultLocale.id,
-    supportedLngs: [defaultLocale.id],
-    debug: false,
-    load: 'currentOnly',
-    resources: staticResources,
-    interpolation: {
-      // If we're in a browser, assume this is running inside of the studio, eg a React app,
-      // and that values returned will be escaped by the framework (eg React) automatically.
-      escapeValue: shouldEscape,
-    },
-  })
-}
+    const i18nInstance = createInstance({
+      ns: Array.from(namespaces),
+      defaultNS: studioLocaleNamespace,
+      initAsync: true,
+      partialBundledLanguages: true,
+      fallbackLng: defaultLocale.id,
+      lng: defaultLocale.id,
+      supportedLngs: [defaultLocale.id],
+      debug: false,
+      load: 'currentOnly',
+      resources: staticResources,
+      interpolation: {
+        // If we're in a browser, assume this is running inside of the studio, eg a React app,
+        // and that values returned will be escaped by the framework (eg React) automatically.
+        escapeValue: shouldEscape,
+      },
+    })
+    void i18nInstance.init()
+    return i18nInstance
+  },
+)

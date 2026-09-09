@@ -1,8 +1,11 @@
 /* oxlint-disable @sanity/i18n/no-i18next-import */
 import {type FlatNamespace, type KeyPrefix, type Namespace, type TFunction} from 'i18next'
+import {useContext} from 'react'
 import {type FallbackNs, useTranslation as useOriginalTranslation} from 'react-i18next'
+import {LocaleContext} from 'sanity/_singletons'
 
 import {maybeWrapT} from '../debug'
+import {getFallbackI18nInstance} from '../fallback'
 
 /**
  * Inlined from `react-i18next/helpers`, as our TSC doesn't support importing from it.
@@ -55,13 +58,19 @@ export function useTranslation<
   ns?: Ns,
   options?: UseTranslationOptions<KPrefix>,
 ): UseTranslationResponse<FallbackNs<Ns>, KPrefix> {
-  const {t} = useOriginalTranslation(
-    ns,
-    options
+  // Login and config-error screens render outside LocaleProvider. Pass the
+  // synchronous fallback instance so they get English copy instead of raw keys.
+  const localeContext = useContext(LocaleContext)
+  const fallbackI18n = localeContext ? undefined : getFallbackI18nInstance()
+
+  const {t} = useOriginalTranslation(ns, {
+    ...(options
       ? // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-        {keyPrefix: options.keyPrefix, lng: options.lng, ...translationOptionOverrides}
-      : translationOptionOverrides,
-  )
+        {keyPrefix: options.keyPrefix, lng: options.lng}
+      : undefined),
+    ...(fallbackI18n ? {i18n: fallbackI18n} : undefined),
+    ...translationOptionOverrides,
+  })
 
   return {t: maybeWrapT(t)}
 }
