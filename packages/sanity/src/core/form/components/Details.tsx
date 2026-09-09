@@ -26,7 +26,7 @@ const HeaderButton = styled.button`
 `
 
 const ToggleArrow = styled(ToggleArrowRightIcon)<{$open: boolean}>`
-  transform: ${(props) => (props.$open ? 'rotate(90deg)' : '')};
+  transform: ${(props) => (props.$open ? 'rotate(90deg)' : 'none')};
 `
 
 const Header = styled(Flex)`
