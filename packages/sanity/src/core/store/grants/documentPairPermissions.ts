@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {type SanityDocument, type Schema, type SchemaType} from '@sanity/types'
 import {useMemo} from 'react'
 import {combineLatest, type Observable, of} from 'rxjs'
-import {map, shareReplay, switchMap} from 'rxjs/operators'
+import {distinctUntilChanged, map, shareReplay, switchMap} from 'rxjs/operators'
 
 import {useClient} from '../../hooks/useClient'
 import {useSchema} from '../../hooks/useSchema'
@@ -10,6 +10,7 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {createHookFromObservableFactory} from '../../util/createHookFromObservableFactory'
 import {getDraftId, getPublishedId, getIdPair} from '../../util/draftUtils'
 import {type PartialExcept} from '../../util/PartialExcept'
+import {shallowEquals} from '../../util/shallowEquals'
 import {useGrantsStore} from '../datastores'
 import {snapshotPair} from '../document/document-pair/snapshotPair'
 import {type DocumentStoreExtraOptions} from '../document/getPairListener'
@@ -279,7 +280,10 @@ function getDocumentPairPermissionsUncached({
 
 export const getDocumentPairPermissions = memoize(
   (options: DocumentPairPermissionsOptions): Observable<PermissionCheckResult> =>
-    getDocumentPairPermissionsUncached(options).pipe(shareLatestWithRefCount()),
+    getDocumentPairPermissionsUncached(options).pipe(
+      distinctUntilChanged(shallowEquals),
+      shareLatestWithRefCount(),
+    ),
   ({
     client,
     schema,
