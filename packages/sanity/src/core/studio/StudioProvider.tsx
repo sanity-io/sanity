@@ -1,6 +1,6 @@
 import {DeferredTelemetryProvider} from '@sanity/telemetry/react'
 import {ToastProvider} from '@sanity/ui/toast'
-import {type ReactNode, useEffect, useMemo} from 'react'
+import {lazy, type ReactNode, Suspense, useEffect, useMemo} from 'react'
 
 import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
 import {errorReporter} from '../error/errorReporter'
@@ -31,10 +31,14 @@ import {StudioRootErrorHandler} from './StudioRootErrorHandler'
 import {StudioThemeProvider} from './StudioThemeProvider'
 import {StudioTelemetryProvider} from './telemetry/StudioTelemetryProvider'
 import {UnclaimedProjectProvider} from './unclaimedProject/UnclaimedProjectProvider'
-import {WorkspaceLoader} from './workspaceLoader/WorkspaceLoader'
 import {ConfigErrorGate} from './workspaces/ConfigErrorGate'
 import {VisibleWorkspacesProvider} from './workspaces/VisibleWorkspacesProvider'
 import {WorkspacesProvider} from './workspaces/WorkspacesProvider'
+
+const workspaceLoaderPromise = import('./workspaceLoader/WorkspaceLoader').then(
+  ({WorkspaceLoader}) => ({default: WorkspaceLoader}),
+)
+const WorkspaceLoader = lazy(() => workspaceLoaderPromise)
 
 /**
  * @hidden
@@ -75,31 +79,33 @@ export function StudioProvider({
       <UserApplicationCacheProvider>
         <LiveUserApplicationProvider>
           <LiveManifestRegisterProvider />
-          <WorkspaceLoader
-            LoadingComponent={LoadingBlock}
-            ConfigErrorsComponent={ConfigErrorsScreen}
-          >
-            <LocaleProvider>
-              <PackageVersionStatusProvider>
-                <ResourceCacheProvider>
-                  <StudioTelemetryProvider>
-                    <AppIdCacheProvider>
-                      <ComlinkRouteHandler />
-                      <StudioAnnouncementsProvider>
-                        <GlobalPerspectiveProvider>
-                          <DocumentLimitUpsellProvider>
-                            <AssetLimitUpsellProvider>
-                              <UnclaimedProjectProvider>{children}</UnclaimedProjectProvider>
-                            </AssetLimitUpsellProvider>
-                          </DocumentLimitUpsellProvider>
-                        </GlobalPerspectiveProvider>
-                      </StudioAnnouncementsProvider>
-                    </AppIdCacheProvider>
-                  </StudioTelemetryProvider>
-                </ResourceCacheProvider>
-              </PackageVersionStatusProvider>
-            </LocaleProvider>
-          </WorkspaceLoader>
+          <Suspense fallback={<LoadingBlock />}>
+            <WorkspaceLoader
+              LoadingComponent={LoadingBlock}
+              ConfigErrorsComponent={ConfigErrorsScreen}
+            >
+              <LocaleProvider>
+                <PackageVersionStatusProvider>
+                  <ResourceCacheProvider>
+                    <StudioTelemetryProvider>
+                      <AppIdCacheProvider>
+                        <ComlinkRouteHandler />
+                        <StudioAnnouncementsProvider>
+                          <GlobalPerspectiveProvider>
+                            <DocumentLimitUpsellProvider>
+                              <AssetLimitUpsellProvider>
+                                <UnclaimedProjectProvider>{children}</UnclaimedProjectProvider>
+                              </AssetLimitUpsellProvider>
+                            </DocumentLimitUpsellProvider>
+                          </GlobalPerspectiveProvider>
+                        </StudioAnnouncementsProvider>
+                      </AppIdCacheProvider>
+                    </StudioTelemetryProvider>
+                  </ResourceCacheProvider>
+                </PackageVersionStatusProvider>
+              </LocaleProvider>
+            </WorkspaceLoader>
+          </Suspense>
         </LiveUserApplicationProvider>
       </UserApplicationCacheProvider>
     ),
