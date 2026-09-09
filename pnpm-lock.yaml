@@ -202,8 +202,8 @@ catalogs:
       specifier: ^7.0.2
       version: 7.0.2
     ui5:
-      specifier: npm:@sanity/ui@5.0.0-alpha.8
-      version: 5.0.0-alpha.8
+      specifier: npm:@sanity/ui@5.0.0-alpha.9
+      version: 5.0.0-alpha.9
     vite:
       specifier: ^8.2.2
       version: 8.2.2
@@ -529,7 +529,7 @@ importers:
         version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.8(react-dom@19.2.8)(react@19.2.8)'
+        version: '@sanity/ui@5.0.0-alpha.9(react-dom@19.2.8)(react@19.2.8)'
     devDependencies:
       '@types/react':
         specifier: 'catalog:'
@@ -602,7 +602,7 @@ importers:
         version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.8(react-dom@19.2.8)(react@19.2.8)'
+        version: '@sanity/ui@5.0.0-alpha.9(react-dom@19.2.8)(react@19.2.8)'
       vite:
         specifier: 'catalog:'
         version: 8.2.2(@types/node@24.13.3)(@vitejs/devtools@0.7.2)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0)
@@ -698,7 +698,7 @@ importers:
         version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.8(react-dom@19.2.8)(react@19.2.8)'
+        version: '@sanity/ui@5.0.0-alpha.9(react-dom@19.2.8)(react@19.2.8)'
     devDependencies:
       '@chromatic-com/storybook':
         specifier: ^5.3.1
@@ -765,7 +765,7 @@ importers:
         version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.8(react-dom@19.2.8)(react@19.2.8)'
+        version: '@sanity/ui@5.0.0-alpha.9(react-dom@19.2.8)(react@19.2.8)'
     devDependencies:
       '@sanity/vanilla-extract-vite-plugin':
         specifier: 'catalog:'
@@ -832,7 +832,7 @@ importers:
         version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.8(react-dom@19.2.8)(react@19.2.8)'
+        version: '@sanity/ui@5.0.0-alpha.9(react-dom@19.2.8)(react@19.2.8)'
     devDependencies:
       '@types/react':
         specifier: 'catalog:'
@@ -842,7 +842,7 @@ importers:
     dependencies:
       '@sanity/code-input':
         specifier: ^7.3.8
-        version: 7.3.8(@babel/runtime@7.29.7)(@codemirror/theme-one-dark@6.1.3)(codemirror@6.0.2)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)
+        version: 7.3.8(@babel/runtime@7.29.7)(@codemirror/lint@6.9.7)(@codemirror/theme-one-dark@6.1.3)(codemirror@6.0.2)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)
       react:
         specifier: 'catalog:'
         version: 19.2.8
@@ -990,7 +990,7 @@ importers:
         version: 6.5.3(react-dom@19.2.8)(react@19.2.8)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.8(react-dom@19.2.8)(react@19.2.8)'
+        version: '@sanity/ui@5.0.0-alpha.9(react-dom@19.2.8)(react@19.2.8)'
     devDependencies:
       '@sanity/vanilla-extract-vite-plugin':
         specifier: 'catalog:'
@@ -1405,7 +1405,7 @@ importers:
         version: link:../tsconfig
       '@sanity/tsdown-config':
         specifier: 'catalog:'
-        version: 0.27.1(@babel/core@7.29.7)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(tsdown@0.22.14)(typescript@7.0.2)(vite@8.2.2)
+        version: 0.27.1(@babel/core@7.29.7)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(tsdown@0.22.14)(typescript@7.0.2)(vite@8.2.2)
       '@types/node':
         specifier: 'catalog:'
         version: 24.13.3
@@ -1460,7 +1460,7 @@ importers:
         version: 4.2.0(react-dom@19.2.8)(react@19.2.8)(styled-components@6.5.3)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.8(react-dom@19.2.8)(react@19.2.8)'
+        version: '@sanity/ui@5.0.0-alpha.9(react-dom@19.2.8)(react@19.2.8)'
     devDependencies:
       '@repo/test-config':
         specifier: workspace:*
@@ -1881,7 +1881,7 @@ importers:
         version: 7.8.2
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.8(react-dom@19.2.8)(react@19.2.8)'
+        version: '@sanity/ui@5.0.0-alpha.9(react-dom@19.2.8)(react@19.2.8)'
       use-effect-event:
         specifier: ^2.0.4
         version: 2.0.4(react@19.2.8)
@@ -2253,7 +2253,7 @@ importers:
         version: 2.5.1(react@19.2.8)
       ui5:
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.8(react-dom@19.2.8)(react@19.2.8)'
+        version: '@sanity/ui@5.0.0-alpha.9(react-dom@19.2.8)(react@19.2.8)'
       urlpattern-polyfill:
         specifier: 10.1.0
         version: 10.1.0
@@ -7523,8 +7523,8 @@ packages:
       react-dom: ^19.2
       styled-components: ^6.1
 
-  '@sanity/ui@5.0.0-alpha.8':
-    resolution: {integrity: sha512-97d8U9/gXi7Y09NuOSYSmg7AZucxdLGY465F1c0iS4TlO5oN3qP7hzxYoxdRfYESCaY3I2nPIkFrGViLYKDfwQ==}
+  '@sanity/ui@5.0.0-alpha.9':
+    resolution: {integrity: sha512-dwTWWwHvMEp7mVU6TtTgUCAEzZH84ok5e4pN81xSTfudUAE4x3Qf68yezbKX6FDtcaEgt6d7RS+n23QjyPdknw==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     hasBin: true
     peerDependencies:
@@ -19960,7 +19960,7 @@ snapshots:
     transitivePeerDependencies:
       - vitest
 
-  '@sanity/code-input@7.3.8(@babel/runtime@7.29.7)(@codemirror/theme-one-dark@6.1.3)(codemirror@6.0.2)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)':
+  '@sanity/code-input@7.3.8(@babel/runtime@7.29.7)(@codemirror/lint@6.9.7)(@codemirror/theme-one-dark@6.1.3)(codemirror@6.0.2)(react-dom@19.2.8)(react@19.2.8)(sanity@packages+sanity)(styled-components@6.5.3)':
     dependencies:
       '@codemirror/lang-html': 6.4.12
       '@codemirror/lang-java': 6.0.2
@@ -20376,12 +20376,12 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@sanity/tsdown-config@0.27.1(@babel/core@7.29.7)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(tsdown@0.22.14)(typescript@7.0.2)(vite@8.2.2)':
+  '@sanity/tsdown-config@0.27.1(@babel/core@7.29.7)(@rolldown/plugin-babel@0.2.3)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(tsdown@0.22.14)(typescript@7.0.2)(vite@8.2.2)':
     dependencies:
       '@microsoft/api-extractor': 7.59.0(@types/node@24.13.3)
       '@microsoft/tsdoc-config': 0.18.1
       '@sanity/browserslist-config': 1.0.5
-      '@sanity/vanilla-extract-tsdown-plugin': 0.3.6(rolldown@1.2.7)(tsdown@0.22.14)
+      '@sanity/vanilla-extract-tsdown-plugin': 0.3.6(babel-plugin-macros@3.1.0)(rolldown@1.2.7)(tsdown@0.22.14)
       '@typescript/typescript6': 6.0.2
       '@vitejs/plugin-react': 6.1.1(@rolldown/plugin-babel@0.2.3)(oxc-transform-react@0.148.0)(vite@8.2.2)
       browserslist: 4.28.8
@@ -20422,7 +20422,7 @@ snapshots:
       styled-components: 6.5.3(react-dom@19.2.8)(react@19.2.8)
       use-effect-event: 2.0.4(react@19.2.8)
 
-  '@sanity/ui@5.0.0-alpha.8(react-dom@19.2.8)(react@19.2.8)':
+  '@sanity/ui@5.0.0-alpha.9(react-dom@19.2.8)(react@19.2.8)':
     dependencies:
       '@sanity-labs/design-tokens': 0.0.2-alpha.4
       '@sanity/icons': 5.2.1(react@19.2.8)
@@ -20447,7 +20447,7 @@ snapshots:
     transitivePeerDependencies:
       - babel-plugin-macros
 
-  '@sanity/vanilla-extract-rolldown-plugin@0.4.6(rolldown@1.2.7)':
+  '@sanity/vanilla-extract-rolldown-plugin@0.4.6(babel-plugin-macros@3.1.0)(rolldown@1.2.7)':
     dependencies:
       '@sanity/vanilla-extract-integration': 0.1.18(babel-plugin-macros@3.1.0)
       lightningcss: 1.33.0
@@ -20456,9 +20456,9 @@ snapshots:
     transitivePeerDependencies:
       - babel-plugin-macros
 
-  '@sanity/vanilla-extract-tsdown-plugin@0.3.6(rolldown@1.2.7)(tsdown@0.22.14)':
+  '@sanity/vanilla-extract-tsdown-plugin@0.3.6(babel-plugin-macros@3.1.0)(rolldown@1.2.7)(tsdown@0.22.14)':
     dependencies:
-      '@sanity/vanilla-extract-rolldown-plugin': 0.4.6(rolldown@1.2.7)
+      '@sanity/vanilla-extract-rolldown-plugin': 0.4.6(babel-plugin-macros@3.1.0)(rolldown@1.2.7)
       tsdown: 0.22.14(@vitejs/devtools@0.7.2)(oxc-resolver@11.24.2)(publint@0.3.24)(tsx@4.23.13)(typescript@7.0.2)
     transitivePeerDependencies:
       - babel-plugin-macros
