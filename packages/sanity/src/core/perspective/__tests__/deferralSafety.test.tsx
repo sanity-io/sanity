@@ -8,11 +8,13 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {activeASAPRelease} from '../../releases/__fixtures__/release.fixture'
 import {sortReleases} from '../../releases/hooks/utils'
+import {INITIAL_RELEASES_STATE} from '../../releases/store/createReleaseStore'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {useAllReleases} from '../../releases/store/useAllReleases'
 import {useReleasesStore} from '../../releases/store/useReleasesStore'
 import {ARCHIVED_RELEASE_STATES} from '../../releases/util/const'
 import {variantAlphaAudience} from '../../variants/__fixtures__/variants.fixture'
+import {INITIAL_VARIANTS_STATE} from '../../variants/store/createVariantsStore'
 import {type VariantStoreState} from '../../variants/store/reducer'
 import {useVariantsStore} from '../../variants/store/useVariantsStore'
 import {getSelectedReleaseId} from '../getSelectedReleaseId'
@@ -104,7 +106,7 @@ function SyncVariantHarness() {
 function DeferredActiveReleasesCounterfactual() {
   const name = useSyncObservable(selectedReleaseName$, undefined)
   const {state$} = useReleasesStore()
-  const state = useObservable(state$, undefined)!
+  const state = useObservable(state$, INITIAL_RELEASES_STATE)
   const data = useMemo(
     () =>
       sortReleases(
@@ -121,7 +123,7 @@ function DeferredActiveReleasesCounterfactual() {
 function DeferredAllVariantsCounterfactual() {
   const name = useSyncObservable(selectedVariantName$, undefined)
   const {state$} = useVariantsStore()
-  const {variants} = useObservable(state$, undefined)!
+  const {variants} = useObservable(state$, INITIAL_VARIANTS_STATE)
   variantFrames.push({
     name,
     variantId: getSelectedVariant({selectedVariantName: name, variantsById: variants})?._id,
@@ -132,7 +134,7 @@ function DeferredAllVariantsCounterfactual() {
 function MixedSyncDeferredReleasesProbe() {
   const {data: active} = useActiveReleases()
   const {state$} = useReleasesStore()
-  const deferredState = useObservable(state$, undefined)!
+  const deferredState = useObservable(state$, INITIAL_RELEASES_STATE)
   const all = useMemo(
     () => sortReleases(Array.from(deferredState.releases.values())),
     [deferredState.releases],

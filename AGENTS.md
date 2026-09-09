@@ -344,8 +344,26 @@ Import `useEffectEvent` from `use-effect-event`, never from `react`. On React 19
 returns first-render values when the calling component is wrapped in `forwardRef` or `memo`
 ([facebook/react#34818](https://github.com/facebook/react/issues/34818), fixed in 19.3 canaries).
 `eslint/no-restricted-imports` in `.oxlintrc.json` enforces this. The bug reaches any dependency that
-wraps the native hook, so check the implementation before trusting one — `react-rx`'s
-`useObservableEvent` builds on the same `use-effect-event` ponyfill.
+wraps the native hook, so check the implementation before trusting one.
+
+### react-rx: stable observables, explicit initial values
+
+`react-rx` v7 never subscribes during render. `useObservable` / `useSyncObservable` render the
+`initialValue` (required — pass `undefined` explicitly when there is nothing better) until the
+subscription started on commit delivers a value, and a synchronous emission arrives one pass later.
+Two rules follow:
+
+- **The observable identity must be stable across renders**: build it with `useMemo`, keep it on a
+  store, or hoist it to module scope, and key memos on primitives (a path string, an id) rather than
+  on arrays or objects recreated every render. An observable rebuilt each render is torn down and
+  re-subscribed each commit; when it synchronously replays a value that differs from the
+  `initialValue`, React aborts with "Maximum update depth exceeded"
+  (`useDocumentValuesRenderLoop.repro.test.tsx` guards one such case).
+- **Never rely on a synchronous first emission.** `useSyncObservable(obs$, undefined)!` is a
+  first-render crash. Pass the value the observable emits first (`GUARDED`, a store's exported
+  `INITIAL_*_STATE`), or fall back per render with `??` when the initial value depends on the
+  observable's parameters (`useEditState`), since react-rx captures `initialValue` once per hook
+  instance.
 
 ### Translate: never define `components` inline
 
