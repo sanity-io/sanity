@@ -298,7 +298,7 @@
     "node": ">=22.12"
   },
   "inlinedDependencies": {
-    "@sanity/visual-editing-csm": "3.0.17",
+    "@sanity/visual-editing-csm": "3.0.18",
     "rxjs-etc": "10.6.2",
     "valibot": "1.4.2"
   }
