@@ -1080,8 +1080,8 @@ importers:
         specifier: workspace:*
         version: link:../tsconfig
       '@sanity/ailf':
-        specifier: ^7.36.0
-        version: 7.36.0(@aws-sdk/credential-provider-node@3.972.81)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.18)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.23.0)(playwright-core@1.63.0)(react-devtools-core@7.0.1)(socks@2.8.9)(supports-color@8.1.1)
+        specifier: ^7.37.0
+        version: 7.37.0(@aws-sdk/credential-provider-node@3.972.81)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.18)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.23.0)(playwright-core@1.63.0)(react-devtools-core@7.0.1)(socks@2.8.9)(supports-color@8.1.1)
       sanity:
         specifier: workspace:*
         version: link:../../sanity
@@ -7063,8 +7063,8 @@ packages:
     peerDependencies:
       '@oclif/core': ^4.0.0
 
-  '@sanity/ailf@7.36.0':
-    resolution: {integrity: sha512-OTQWf8rlvfPew0z7ByqdaDXIPTdn/fuyfBitAJAkeLWQnuzGz3NrJYvjR1jnSIn8PsbJLaYwP0nrDD2K8ATXYg==}
+  '@sanity/ailf@7.37.0':
+    resolution: {integrity: sha512-/Vx7yRNTuxtbI9kupZ8lLatcF2YHjw8zX1+HiwVnfjfOY+WwvsOS4tYecpykoP4lqAvMMtYiEZUDiNSiFJNyLA==}
     hasBin: true
 
   '@sanity/asset-utils@2.3.0':
@@ -19436,7 +19436,7 @@ snapshots:
     dependencies:
       '@oclif/core': 4.14.0
 
-  '@sanity/ailf@7.36.0(@aws-sdk/credential-provider-node@3.972.81)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.18)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.23.0)(playwright-core@1.63.0)(react-devtools-core@7.0.1)(socks@2.8.9)(supports-color@8.1.1)':
+  '@sanity/ailf@7.37.0(@aws-sdk/credential-provider-node@3.972.81)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.2.18)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.23.0)(playwright-core@1.63.0)(react-devtools-core@7.0.1)(socks@2.8.9)(supports-color@8.1.1)':
     dependencies:
       '@google-cloud/bigquery': 8.3.1(supports-color@8.1.1)
       '@google-cloud/storage': 7.22.0(supports-color@8.1.1)
