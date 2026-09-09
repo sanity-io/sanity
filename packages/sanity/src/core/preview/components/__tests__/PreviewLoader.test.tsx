@@ -1,8 +1,12 @@
 import {DocumentIcon} from '@sanity/icons/Document'
 import {type SchemaType} from '@sanity/types'
-import {render} from '@testing-library/react'
+import {ThemeProvider} from '@sanity/ui'
+import {buildTheme} from '@sanity/ui/theme'
+import {act, render, screen} from '@testing-library/react'
+import {type ComponentType, lazy} from 'react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {type PreviewProps} from '../../../components/previews/types'
 import {useValuePreview} from '../../useValuePreview'
 import {useVisibility} from '../../useVisibility'
 import {PreviewLoader} from '../PreviewLoader'
@@ -17,6 +21,8 @@ vi.mock('react-i18next', async (importOriginal) => ({
 vi.mock('../_extractUploadState', () => ({
   _extractUploadState: () => null,
 }))
+
+const theme = buildTheme()
 
 // Mock component that captures the media prop for testing
 let capturedMedia: unknown
@@ -232,6 +238,50 @@ describe('PreviewLoader', () => {
 
       // No preview config means no prepare function, so fallback to schema icon
       expect(capturedMedia).toBe(DocumentIcon)
+    })
+  })
+
+  describe('lazy preview component', () => {
+    it('shows the layout placeholder until the component loads', async () => {
+      type LoadedPreview = ComponentType<Omit<PreviewProps, 'renderDefault'>>
+      const schemaType = {name: 'testDoc', icon: DocumentIcon} as unknown as SchemaType
+      vi.mocked(useValuePreview).mockReturnValue({isLoading: false, value: {title: 'Test Title'}})
+
+      let resolveComponent!: (component: LoadedPreview) => void
+      const LazyPreview = lazy(
+        () =>
+          new Promise<{default: LoadedPreview}>((resolve) => {
+            resolveComponent = (component) => resolve({default: component})
+          }),
+      )
+
+      // oxlint-disable-next-line testing-library/no-unnecessary-act -- the lazy preview suspends during mount, and React only resumes work that suspended inside an awaited async `act`
+      await act(async () => {
+        render(
+          <ThemeProvider theme={theme}>
+            <PreviewLoader
+              component={LazyPreview}
+              schemaType={schemaType}
+              value={{_id: 'test', _type: 'testDoc'}}
+              skipVisibilityCheck
+            />
+          </ThemeProvider>,
+        )
+      })
+
+      expect(screen.getByTestId('default-preview__heading')).toBeInTheDocument()
+      expect(screen.queryByText('Test Title')).not.toBeInTheDocument()
+
+      await act(async () => {
+        resolveComponent((props) => (
+          <div data-testid="loaded-preview">
+            {typeof props.title === 'string' ? props.title : null}
+          </div>
+        ))
+      })
+
+      expect(screen.getByTestId('loaded-preview')).toHaveTextContent('Test Title')
+      expect(screen.queryByTestId('default-preview__heading')).not.toBeInTheDocument()
     })
   })
 })
