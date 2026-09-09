@@ -1600,7 +1600,7 @@ importers:
         specifier: 'catalog:'
         version: 2.0.3
       get-it:
-        specifier: ^9.5.2
+        specifier: ^9.5.4
         version: 9.5.4(vitest@4.1.11)
       groq-js:
         specifier: ^2.0.0
