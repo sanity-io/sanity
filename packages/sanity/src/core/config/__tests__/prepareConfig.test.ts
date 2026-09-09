@@ -193,6 +193,33 @@ describe('prepareConfig — workspace hidden property', () => {
   })
 })
 
+describe('prepareConfig — lazy schema resolution', () => {
+  it('compiles a workspace schema only on first access', () => {
+    const types = vi.fn(() => [])
+    const {workspaces} = prepareConfig(createWorkspace({schema: {types}}))
+
+    expect(types).not.toHaveBeenCalled()
+
+    const schema = workspaces[0].schema
+    expect(types).toHaveBeenCalledOnce()
+    expect(workspaces[0].schema).toBe(schema)
+    expect(types).toHaveBeenCalledOnce()
+  })
+
+  it('defers and memoizes schema compilation errors', () => {
+    const error = new Error('invalid schema')
+    const types = vi.fn(() => {
+      throw error
+    })
+    const {workspaces} = prepareConfig(createWorkspace({schema: {types}}))
+
+    expect(types).not.toHaveBeenCalled()
+    expect(() => workspaces[0].schema).toThrow('invalid schema')
+    expect(() => workspaces[0].schema).toThrow('invalid schema')
+    expect(types).toHaveBeenCalledOnce()
+  })
+})
+
 describe('prepareConfig — studio request handler', () => {
   it('passes the handler to a custom client factory', () => {
     const requestHandler: RequestHandler = (request, next) => next(request)

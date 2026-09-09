@@ -336,37 +336,7 @@ export function prepareConfig(
     })
 
     const resolvedSources = sources.map((source): InternalSource => {
-      const {projectId, dataset} = source
-
-      let schemaTypes
-      try {
-        schemaTypes = resolveSchemaTypes({
-          config: source,
-          context: {projectId, dataset},
-        })
-      } catch (e) {
-        throw new ConfigResolutionError({
-          name: source.name,
-          type: 'source',
-          causes: [e],
-        })
-      }
-
-      const schema = createSchema({
-        name: source.name,
-        types: schemaTypes,
-      })
-
-      const schemaValidationProblemGroups = schema._validation
-      const schemaErrors = schemaValidationProblemGroups?.filter((msg) =>
-        msg.problems.some(isError),
-      )
-
-      if (schemaValidationProblemGroups && schemaErrors?.length) {
-        // TODO: consider using the `ConfigResolutionError`
-        throw new SchemaError(schema)
-      }
-
+      const getSchema = createSchemaGetter(source)
       const auth = getAuthStore(source, {
         createStudioRequestHandler: options?.createStudioRequestHandler,
         requestErrorChannel: options?.requestErrorChannel,
@@ -379,7 +349,7 @@ export function prepareConfig(
             config: source,
             client,
             currentUser,
-            schema,
+            schema: getSchema(),
             authenticated,
             auth,
             i18n,
@@ -394,7 +364,9 @@ export function prepareConfig(
         dataset: source.dataset,
         title: source.title || startCase(source.name),
         auth,
-        schema,
+        get schema() {
+          return getSchema()
+        },
         i18n: i18n.source,
         source: source$,
       }
@@ -408,7 +380,9 @@ export function prepareConfig(
       basePath: joinBasePath(rootPath, rootSource.basePath),
       dataset: rootSource.dataset,
       apiHost: rootSource.apiHost,
-      schema: resolvedSources[0].schema,
+      get schema() {
+        return resolvedSources[0].schema
+      },
       i18n: resolvedSources[0].i18n,
       customIcon: !!rootSource.icon,
       icon: normalizeIcon(rootSource.icon, title, `${rootSource.projectId} ${rootSource.dataset}`),
@@ -430,6 +404,51 @@ export function prepareConfig(
   })
 
   return {type: 'prepared-config', workspaces}
+}
+
+type SchemaResult = {type: 'success'; schema: Schema} | {type: 'failure'; error: unknown}
+
+function createSchemaGetter(source: SourceOptions): () => Schema {
+  let result: SchemaResult | undefined
+
+  return function getSchema(): Schema {
+    if (result?.type === 'success') return result.schema
+    if (result?.type === 'failure') throw result.error
+
+    try {
+      const {projectId, dataset} = source
+      let schemaTypes
+      try {
+        schemaTypes = resolveSchemaTypes({
+          config: source,
+          context: {projectId, dataset},
+        })
+      } catch (error) {
+        throw new ConfigResolutionError({
+          name: source.name,
+          type: 'source',
+          causes: [error],
+        })
+      }
+
+      const schema = createSchema({
+        name: source.name,
+        types: schemaTypes,
+      })
+      const schemaErrors = schema._validation?.filter((message) => message.problems.some(isError))
+
+      if (schemaErrors?.length) {
+        // TODO: consider using the `ConfigResolutionError`
+        throw new SchemaError(schema)
+      }
+
+      result = {type: 'success', schema}
+      return schema
+    } catch (error) {
+      result = {type: 'failure', error}
+      throw error
+    }
+  }
 }
 
 function getAuthStore(
