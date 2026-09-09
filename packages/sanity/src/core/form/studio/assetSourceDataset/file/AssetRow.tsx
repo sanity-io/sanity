@@ -361,7 +361,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
       radius={0}
       overflow={'hidden'}
       $isSelected={isSelected}
-      aria-selected="true"
+      aria-selected={Boolean(isSelected)}
     >
       <Grid
         gridTemplateColumns={4}
