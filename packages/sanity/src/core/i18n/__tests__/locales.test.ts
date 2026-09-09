@@ -5,12 +5,12 @@ import {isStaticResourceBundle} from '../helpers'
 import {usEnglishLocale} from '../locales'
 
 describe('default locale resources', () => {
-  it('keeps only authentication copy in the synchronous fallback', () => {
+  it('keeps authentication and headless validation copy in the synchronous fallback', () => {
     const staticBundles = usEnglishLocale.bundles?.filter(isStaticResourceBundle)
+    const authBundle = staticBundles?.find((bundle) => bundle.namespace === 'studio')
 
-    expect(staticBundles).toHaveLength(1)
-    expect(staticBundles?.[0].namespace).toBe('studio')
-    expect(staticBundles?.[0].resources).toEqual({
+    expect(staticBundles).toHaveLength(2)
+    expect(authBundle?.resources).toEqual({
       'login.logged-out.generic': 'Your session is no longer valid. Please sign in again.',
       'login.logged-out.session-expired': 'Your session expired. Please sign in again.',
       'login.logged-out.title': "You've been logged out",
@@ -27,7 +27,9 @@ describe('default locale resources', () => {
   })
 
   it('loads the full Studio bundle asynchronously', async () => {
-    const fullStudioBundle = usEnglishLocale.bundles?.[1]
+    const fullStudioBundle = usEnglishLocale.bundles?.find(
+      (bundle) => bundle.namespace === 'studio' && !isStaticResourceBundle(bundle),
+    )
 
     expect(typeof fullStudioBundle?.resources).toBe('function')
     if (!fullStudioBundle || typeof fullStudioBundle.resources !== 'function') {

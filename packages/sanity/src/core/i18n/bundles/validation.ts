@@ -10,7 +10,7 @@ import {type LocaleResourceBundle} from '../types'
  * @hidden
  */
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-export const validationLocaleStrings = defineLocalesResources('validation', {
+const validationLocaleStrings = defineLocalesResources('validation', {
   /** Array must have exactly "$wantedLength" items, but has more/less */
   'array.exact-length': 'Must have exactly {{wantedLength}} items',
   /** Portable Text array must have exactly "$wantedLength" blocks, but has more/less */

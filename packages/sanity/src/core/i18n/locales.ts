@@ -1,23 +1,16 @@
 import {studioAuthLocaleResources} from './bundles/auth'
+import {validationLocaleResources} from './bundles/validation'
 import {defineLocale, defineLocaleResourceBundle} from './helpers'
 import {
   copyPasteLocalNamespace,
   feedbackLocaleNamespace,
   studioLocaleNamespace,
-  validationLocaleNamespace,
 } from './localeNamespaces'
 
 const studioDefaultLocaleResources = defineLocaleResourceBundle({
   locale: 'en-US',
   namespace: studioLocaleNamespace,
   resources: () => import('./bundles/studio').then(({studioLocaleStrings}) => studioLocaleStrings),
-})
-
-const validationLocaleResources = defineLocaleResourceBundle({
-  locale: 'en-US',
-  namespace: validationLocaleNamespace,
-  resources: () =>
-    import('./bundles/validation').then(({validationLocaleStrings}) => validationLocaleStrings),
 })
 
 const copyPasteLocaleResources = defineLocaleResourceBundle({
