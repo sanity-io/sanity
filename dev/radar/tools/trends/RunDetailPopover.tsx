@@ -1,5 +1,6 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {CloseIcon} from '@sanity/icons/Close'
+import {CopyIcon} from '@sanity/icons/Copy'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {RobotIcon} from '@sanity/icons/Robot'
 import {Badge, Button, Flex, Stack, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
@@ -18,9 +19,40 @@ import {
   type TrendTag,
 } from './data'
 import {buildInvestigationPrompt} from './investigationPrompt'
-import {backlinksFor, compareUrl, sourceFileUrl} from './links'
+import {abDispatchCommand, backlinksFor, compareUrl, sourceFileUrl} from './links'
 
 const FULL_SHA = /^[0-9a-f]{40}$/i
+
+type CopyState = 'idle' | 'copied' | 'failed'
+
+/**
+ * Clipboard write with feedback that lives on the button itself (label + icon
+ * flip) rather than a toast — the popover is small enough that the change is
+ * right under the cursor, and a failure is just as visible. Resets after 2s.
+ */
+function useCopyFeedback(): {state: CopyState; copy: (text: string) => void} {
+  const [state, setState] = useState<CopyState>('idle')
+  const resetTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
+  useEffect(() => () => clearTimeout(resetTimer.current), [])
+  const copy = (text: string) => {
+    const finish = (next: 'copied' | 'failed') => {
+      setState(next)
+      clearTimeout(resetTimer.current)
+      resetTimer.current = setTimeout(() => setState('idle'), 2000)
+    }
+    // navigator.clipboard is undefined outside secure contexts, where the
+    // call would throw synchronously instead of rejecting
+    try {
+      navigator.clipboard.writeText(text).then(
+        () => finish('copied'),
+        () => finish('failed'),
+      )
+    } catch {
+      finish('failed')
+    }
+  }
+  return {state, copy}
+}
 
 /**
  * Details for one run, shown in a popover anchored at the clicked point.
@@ -67,30 +99,19 @@ export function RunDetailPopover(props: {
     intent: 'edit',
     params: {id: point.runId, type: 'benchRun'},
   })
-  // Feedback for the copy-prompt button lives on the button itself (label +
-  // icon flip) rather than a toast — the popover is small enough that the
-  // change is right under the cursor, and a failure is just as visible.
-  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'failed'>('idle')
-  const copyResetTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
-  useEffect(() => () => clearTimeout(copyResetTimer.current), [])
-  const handleCopyPrompt = () => {
-    if (!previousPoint) return
-    const finish = (state: 'copied' | 'failed') => {
-      setCopyState(state)
-      clearTimeout(copyResetTimer.current)
-      copyResetTimer.current = setTimeout(() => setCopyState('idle'), 2000)
-    }
-    // navigator.clipboard is undefined outside secure contexts, where the
-    // call would throw synchronously instead of rejecting
-    try {
-      navigator.clipboard.writeText(buildInvestigationPrompt(series, point, previousPoint)).then(
-        () => finish('copied'),
-        () => finish('failed'),
-      )
-    } catch {
-      finish('failed')
-    }
-  }
+  // Two copy affordances share the previous point as `ab_from`: the bare
+  // dispatch command (for someone who already knows what they suspect) and
+  // the full investigation brief for a coding agent. Each keeps its own
+  // feedback state so copying one never relabels the other.
+  const abCopy = useCopyFeedback()
+  const promptCopy = useCopyFeedback()
+  // The bench workflow's ab_from/ab_to inputs require full shas, and GitHub
+  // has no URL that prefills a workflow_dispatch form — so the affordance is
+  // a copyable command, previous point as reference, this point as experiment
+  const abCommand =
+    previousPoint && FULL_SHA.test(previousPoint.sha) && FULL_SHA.test(point.sha)
+      ? abDispatchCommand(previousPoint.sha, point.sha)
+      : undefined
   const backlinks = backlinksFor(point)
   // The scenario source *as it ran for this commit* — pinning to the run's sha
   // (not main) shows exactly the definition that produced this point, since
@@ -372,23 +393,48 @@ export function RunDetailPopover(props: {
                   text="Compare with previous run"
                   aria-label="GitHub compare view of the commits between the previous run's commit and this one (opens in a new tab)"
                 />
+                {/* The bare dispatch command — previous point as reference,
+                    this point as experiment — for a human who knows what they
+                    suspect and just wants the run going. The command doubles
+                    as the tooltip so a denied clipboard is still recoverable. */}
+                {abCommand && (
+                  <Button
+                    mode="ghost"
+                    fontSize={1}
+                    icon={abCopy.state === 'copied' ? CheckmarkIcon : CopyIcon}
+                    tone={abCopy.state === 'copied' ? 'positive' : 'default'}
+                    text={
+                      abCopy.state === 'copied'
+                        ? 'Copied — paste in a terminal'
+                        : abCopy.state === 'failed'
+                          ? 'Copy failed — command in tooltip'
+                          : 'Copy A/B vs previous run'
+                    }
+                    title={abCommand}
+                    aria-label="Copy the gh command dispatching an A/B bench comparison of this commit against the previous run's commit"
+                    onClick={() => abCopy.copy(abCommand)}
+                  />
+                )}
                 {/* A paste-ready brief for a coding agent: the full signal
                     (metric, both commits, delta, backlinks) plus the A/B
                     dispatch / bisect recipe from perf/bench/README.md */}
                 <Button
                   mode="ghost"
                   fontSize={1}
-                  icon={copyState === 'copied' ? CheckmarkIcon : RobotIcon}
-                  tone={copyState === 'copied' ? 'positive' : 'default'}
+                  icon={promptCopy.state === 'copied' ? CheckmarkIcon : RobotIcon}
+                  tone={promptCopy.state === 'copied' ? 'positive' : 'default'}
                   text={
-                    copyState === 'copied'
+                    promptCopy.state === 'copied'
                       ? 'Copied'
-                      : copyState === 'failed'
+                      : promptCopy.state === 'failed'
                         ? 'Copy failed'
                         : 'Copy investigation prompt'
                   }
                   aria-label="Copy an investigation brief for a coding agent to the clipboard"
-                  onClick={handleCopyPrompt}
+                  onClick={() =>
+                    previousPoint &&
+                    promptCopy.copy(buildInvestigationPrompt(series, point, previousPoint))
+                  }
                 />
               </Stack>
             )}

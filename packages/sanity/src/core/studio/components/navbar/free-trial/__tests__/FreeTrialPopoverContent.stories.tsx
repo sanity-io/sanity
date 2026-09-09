@@ -56,7 +56,6 @@ const NOOP = () => undefined
 const meta = {
   title: 'Studio/Free Trial Popover',
   component: PopoverContent,
-  tags: ['!dev', '!autodocs', 'vrt-only'],
 } satisfies Meta<typeof PopoverContent>
 
 export default meta

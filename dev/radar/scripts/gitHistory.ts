@@ -8,6 +8,8 @@
  * throws rather than silently mis-attributing fields.
  */
 
+import {gitCommitId, gitTagId} from '@repo/utils/radar-ids'
+
 /** `git log --format=` value producing one \x1e-terminated record per commit. */
 export const COMMIT_LOG_FORMAT = '%H%x1f%an%x1f%ae%x1f%aI%x1f%cI%x1f%s%x1f%P%x1e'
 
@@ -182,15 +184,11 @@ export function parseTagRefs(raw: string): TagInfo[] {
     })
 }
 
-export function commitDocumentId(sha: string): string {
-  return `gitCommit-${sha}`
-}
-
 export function commitDocument(info: CommitInfo): GitCommitDocument {
   const {commitType, scope, breaking} = parseConventionalSubject(info.subject)
   const prNumber = parsePrNumber(info.subject)
   return {
-    _id: commitDocumentId(info.sha),
+    _id: gitCommitId(info.sha),
     _type: 'gitCommit',
     schemaVersion: 1,
     sha: info.sha,
@@ -209,14 +207,12 @@ export function commitDocument(info: CommitInfo): GitCommitDocument {
 
 export function tagDocument(info: TagInfo): GitTagDocument {
   return {
-    // Dots in ids make path segments (invisible to unauthenticated queries)
-    // — fine here, every reader authenticates
-    _id: `gitTag-${info.tag}`,
+    _id: gitTagId(info.tag),
     _type: 'gitTag',
     schemaVersion: 1,
     tag: info.tag,
     sha: info.sha,
-    commit: {_type: 'reference', _ref: commitDocumentId(info.sha), _weak: true},
+    commit: {_type: 'reference', _ref: gitCommitId(info.sha), _weak: true},
     taggedAt: info.taggedAt,
     major: info.major,
     minor: info.minor,

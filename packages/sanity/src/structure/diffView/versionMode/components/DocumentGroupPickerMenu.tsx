@@ -3,7 +3,6 @@ import {
   Badge,
   // oxlint-disable-next-line no-restricted-imports -- we need more control over how the `Button` component is rendered
   Button,
-  Flex,
   LayerProvider,
   useClickOutsideEvent,
 } from '@sanity/ui'
@@ -24,6 +23,7 @@ import {
   useTranslation,
   type VersionInfoDocumentStub,
 } from 'sanity'
+import {Flex} from 'ui5'
 
 import {Popover} from '../../../../ui-components/popover/Popover'
 import {structureLocaleNamespace} from '../../../i18n'

@@ -10,7 +10,6 @@ import {RequestErrorDialogStory} from './RequestErrorDialogStory'
 const meta = {
   title: 'Studio/Request Error Dialog',
   component: RequestErrorDialogStory,
-  tags: ['!dev', '!autodocs', 'vrt-only'],
 } satisfies Meta<typeof RequestErrorDialogStory>
 
 export default meta

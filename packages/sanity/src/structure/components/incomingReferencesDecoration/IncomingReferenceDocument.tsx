@@ -1,4 +1,4 @@
-import {Card, Flex, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {motion, type Variants} from 'motion/react'
 import {useState} from 'react'
 import {
@@ -8,7 +8,7 @@ import {
   useSchema,
   useTranslation,
 } from 'sanity'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {structureLocaleNamespace} from '../../i18n'
 import {IncomingReferenceDocumentActions} from './IncomingReferenceDocumentActions'
@@ -59,7 +59,7 @@ export const IncomingReferenceDocument = (props: {
       initial="initial"
       animate={isExecutingAction ? 'actionInProgress' : 'animate'}
       gap={1}
-      align="center"
+      alignItems="center"
       variants={variants}
     >
       <Box flexBasis="0%" flexGrow={1}>

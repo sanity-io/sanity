@@ -1,12 +1,95 @@
+import {defineArrayMember, defineField, defineType, type ReferenceValue} from '@sanity/types'
+import {useCallback} from 'react'
+import {Box, Flex} from 'ui5'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
 
+import {TestForm} from '../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../test/browser/testHelpers'
-import {
-  CREATED_SECTION_ID,
-  ReferenceItemCustomCreateButtonStory,
-} from './ReferenceItemCustomCreateButtonStory'
+import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
+import {Button} from '../../../../../ui-components/button/Button'
+import {set, setIfMissing} from '../../../patch/patch'
+import {type ObjectItem, type ObjectItemProps} from '../../../types/itemProps'
+
+const CREATED_SECTION_ID = 'deterministic-section-id'
+
+/**
+ * Mirrors a common studio customization: a custom item component for reference
+ * items in arrays which renders a "Create new" action (assigning a
+ * deterministic document ID) next to the default reference input.
+ */
+function CustomReferenceItem(props: ObjectItemProps<ReferenceValue & ObjectItem>) {
+  const {inputProps, schemaType, value} = props
+  const {onChange} = inputProps
+
+  const handleCreate = useCallback(() => {
+    onChange([
+      setIfMissing({}),
+      set(schemaType.name, ['_type']),
+      set(CREATED_SECTION_ID, ['_ref']),
+      set(true, ['_weak']),
+    ])
+  }, [onChange, schemaType.name])
+
+  return (
+    <Flex alignItems="center" data-testid="custom-reference-item" gap={3} paddingRight={3}>
+      <Box flexBasis="0%" flexGrow={1}>
+        {props.renderDefault(props)}
+      </Box>
+      {value?._ref ? null : (
+        <Button
+          data-testid="custom-create-new-button"
+          mode="ghost"
+          onClick={handleCreate}
+          text="Create new"
+        />
+      )}
+    </Flex>
+  )
+}
+
+const SCHEMA_TYPES = [
+  defineType({
+    type: 'document',
+    name: 'test',
+    title: 'Test',
+    fields: [
+      defineField({
+        type: 'string',
+        name: 'title',
+        title: 'Title',
+      }),
+      defineField({
+        type: 'array',
+        name: 'sections',
+        title: 'Sections',
+        of: [
+          defineArrayMember({
+            type: 'reference',
+            name: 'sectionRef',
+            to: [{type: 'sectionDoc'}],
+            components: {item: CustomReferenceItem},
+          }),
+        ],
+      }),
+    ],
+  }),
+  defineType({
+    type: 'document',
+    name: 'sectionDoc',
+    title: 'Section',
+    fields: [defineField({type: 'string', name: 'title', title: 'Title'})],
+  }),
+]
+
+function ReferenceItemCustomCreateButtonHarness() {
+  return (
+    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+      <TestForm />
+    </TestWrapper>
+  )
+}
 
 // Regression tests for custom "Create new" actions rendered by custom
 // item/input components next to the default reference input in arrays.
@@ -19,7 +102,7 @@ import {
 describe('reference array item with a custom create button', () => {
   it('clicking the custom create button completes the create flow instead of removing the item', async () => {
     const {waitForDocumentState} = testHelpers()
-    void render(<ReferenceItemCustomCreateButtonStory />)
+    void render(<ReferenceItemCustomCreateButtonHarness />)
 
     // Add an empty reference item to the array. Focus moves to its search input.
     await page.getByTestId('add-single-object-button').click()
@@ -35,7 +118,7 @@ describe('reference array item with a custom create button', () => {
 
   it('a mousedown on the custom item wrapper (just missing the button) keeps the item', async () => {
     const {waitForDocumentState} = testHelpers()
-    void render(<ReferenceItemCustomCreateButtonStory />)
+    void render(<ReferenceItemCustomCreateButtonHarness />)
 
     await page.getByTestId('add-single-object-button').click()
     await expect.element(page.getByTestId('custom-create-new-button')).toBeVisible()
@@ -58,7 +141,7 @@ describe('reference array item with a custom create button', () => {
 
   it('clicking outside the array item still clears the empty item', async () => {
     const {waitForDocumentState} = testHelpers()
-    void render(<ReferenceItemCustomCreateButtonStory />)
+    void render(<ReferenceItemCustomCreateButtonHarness />)
 
     await page.getByTestId('add-single-object-button').click()
     await expect.element(page.getByTestId('custom-create-new-button')).toBeVisible()

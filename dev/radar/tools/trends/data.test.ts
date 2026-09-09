@@ -6,10 +6,12 @@ import {
   soakLatestValueSeries,
   formatTick,
   formatValue,
+  settleViews,
   type TrendRun,
   type TrendSeries,
   vitalSections,
 } from './data'
+import {generateDebugRuns} from './debugData'
 
 const START = Date.UTC(2026, 0, 1)
 const DAY = 24 * 60 * 60 * 1000
@@ -536,4 +538,112 @@ test('the release tag survives a same-commit merge, whichever run sorts last', (
     expect(points, name).toHaveLength(1)
     expect(points[0].releaseTag, name).toBe('v6.10.1')
   }
+})
+
+/** A minimal absolute-mode run carrying one settle scenario. */
+function settleRun(options: {
+  id: string
+  sha: string
+  day: number
+  notSettled: number
+  expectedToSettle?: boolean
+}): TrendRun {
+  const {id, sha, day, notSettled, expectedToSettle = true} = options
+  const summary = (value: number) => ({summary: {median: value, p75: value, p90: value}})
+  return {
+    _id: id,
+    startedAt: new Date(START + day * DAY).toISOString(),
+    mode: 'absolute',
+    git: {sha, branch: 'main', committedAt: new Date(START + day * DAY).toISOString()},
+    runner: {calibrationMs: 8, runId: id, runAttempt: 1},
+    bundle: null,
+    scenarios: [
+      {
+        scenario: 'documentActions',
+        kind: 'pageload',
+        mode: 'settle',
+        settleExpectation: {expectedToSettle},
+        metrics: [
+          {label: 'sessions not settled', unit: 'count', experiment: summary(notSettled)},
+          {label: 'settled sessions', unit: 'count', experiment: summary(notSettled > 0 ? 0 : 1)},
+          {label: 'ready sessions', unit: 'count', experiment: summary(1)},
+          {label: 'react commits after ready', unit: 'count', experiment: summary(60_000)},
+        ],
+      },
+    ],
+  }
+}
+
+test('settle metrics chart under the settle group with mode-scoped keys', () => {
+  const series = buildSeries([settleRun({id: 'a', sha: 'sha-1', day: 0, notSettled: 4})])
+  const keys = series.map((entry) => entry.key)
+  expect(keys).toContain('settle:documentActions:sessions not settled')
+  expect(keys).toContain('settle:documentActions:react commits after ready')
+  for (const entry of series) {
+    expect(entry.group).toBe('settle')
+    expect(entry.goal).toBe('lower')
+  }
+})
+
+test('per-session settled/ready records stay out of the charts', () => {
+  const series = buildSeries([settleRun({id: 'a', sha: 'sha-1', day: 0, notSettled: 0})])
+  const keys = series.map((entry) => entry.key)
+  expect(keys.some((key) => key.includes('settled sessions'))).toBe(false)
+  expect(keys.some((key) => key.includes('ready sessions'))).toBe(false)
+})
+
+test('red-by-design settle scenarios carry the evidence note in their description', () => {
+  const series = buildSeries([
+    settleRun({id: 'a', sha: 'sha-1', day: 0, notSettled: 4, expectedToSettle: false}),
+  ])
+  const notSettled = series.find((entry) => entry.key.endsWith('sessions not settled'))
+  expect(notSettled?.description).toContain('RED BY DESIGN')
+  const green = buildSeries([settleRun({id: 'b', sha: 'sha-2', day: 0, notSettled: 0})])
+  const greenSeries = green.find((entry) => entry.key.endsWith('sessions not settled'))
+  expect(greenSeries?.description).not.toContain('RED BY DESIGN')
+})
+
+test('demo data exercises the settle group: controls, a red-by-design row and a re-regression', () => {
+  const settle = buildSeries(generateDebugRuns('demo')).filter((entry) => entry.group === 'settle')
+  expect(settle.length).toBeGreaterThan(0)
+  expect(settle.every((entry) => entry.key.startsWith('settle:'))).toBe(true)
+
+  const tripwire = (scenario: string) =>
+    settle.find((entry) => entry.key === `settle:${scenario}:sessions not settled`)
+  expect(tripwire('documentActions')?.description).toContain('RED BY DESIGN')
+  expect(tripwire('singleString')?.description).not.toContain('RED BY DESIGN')
+
+  // previewHeavy loops from day 75 on: the tripwire steps from 0 to 4 and
+  // 'time to settle' (settled sessions only) stops being reported.
+  const previewTripwire = tripwire('previewHeavy')
+  const values = previewTripwire?.lines.flatMap((line) => line.points.map((point) => point.value))
+  expect(values).toContain(0)
+  expect(values).toContain(4)
+  const previewSettleTime = settle.find(
+    (entry) => entry.key === 'settle:previewHeavy:time to settle',
+  )
+  expect(previewSettleTime?.lines.flatMap((line) => line.points).length).toBeLessThan(
+    previewTripwire?.lines.flatMap((line) => line.points).length ?? 0,
+  )
+})
+
+test('settle views split the group by question and drop empty views', () => {
+  const settle = buildSeries(generateDebugRuns('demo')).filter((entry) => entry.group === 'settle')
+  const views = settleViews(settle)
+  expect(views.map((view) => view.id)).toEqual(['tripwire', 'time', 'activity', 'renders'])
+
+  const labelsOf = (id: string) =>
+    new Set(views.find((view) => view.id === id)?.series.map((entry) => entry.key.split(':')[2]))
+  expect(labelsOf('tripwire')).toEqual(
+    new Set(['sessions not settled', 'sessions without commit counter']),
+  )
+  expect(labelsOf('time')).toEqual(new Set(['time to settle']))
+  expect(labelsOf('activity')).toEqual(
+    new Set(['react commits after ready', 'LoAF blocking after ready', 'cpu after ready']),
+  )
+  expect(labelsOf('renders')).toEqual(new Set(['renders · previewHeavy.preview']))
+
+  // Every settle series lands in exactly one view; none are lost
+  expect(views.flatMap((view) => view.series).length).toBe(settle.length)
+  expect(settleViews([])).toEqual([])
 })

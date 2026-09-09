@@ -1,12 +1,12 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, DialogProvider, Flex, Stack, Text, TextInput} from '@sanity/ui'
+import {Card, DialogProvider, Stack, Text, TextInput} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useId, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {catchError, map, type Observable, of, startWith} from 'rxjs'
 import {type Role, useClient, useProjectId, useTranslation, useZIndex} from 'sanity'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {structureLocaleNamespace} from '../../i18n'
@@ -20,9 +20,9 @@ const DialogBody = styled(Box)`
 `
 
 const LoadingContainer = styled(Flex).attrs({
-  align: 'center',
-  direction: 'column',
-  justify: 'center',
+  alignItems: 'center',
+  flexDirection: 'column',
+  justifyContent: 'center',
 })`
   height: 110px;
 `

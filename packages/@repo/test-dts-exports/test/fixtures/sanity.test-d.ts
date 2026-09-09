@@ -734,6 +734,7 @@ import type {
   getSelectedVariant,
   getTargetDocument,
   getTargetScopeId,
+  getTargetSiblings,
   getTemplatePermissions,
   getValueAtPath,
   getValueError,
@@ -1457,6 +1458,8 @@ import type {
   StudioComponents,
   StudioComponentsPluginOptions,
   StudioDiagnostics,
+  StudioDiagnosticsBridge,
+  StudioDiagnosticsBridgeApi,
   StudioErrorHandler,
   StudioFeedbackDialog,
   StudioFeedbackDialogProps,
@@ -1486,6 +1489,7 @@ import type {
   TagValue,
   TargetDocumentState,
   TargetPerspective,
+  TargetScopeIdOptions,
   TelephoneInput,
   TelephoneInputProps,
   Template,
@@ -1735,6 +1739,7 @@ import type {
   useSearchState,
   useSetPerspective,
   useSetVariant,
+  useShallowUnique,
   useSingleDocRelease,
   useSource,
   useStudioErrorHandler,
@@ -1742,6 +1747,7 @@ import type {
   useStudioUrl,
   useSyncState,
   useTargetDocumentState,
+  useTargetScopeId,
   useTelemetryConsent,
   useTemplatePermissions,
   useTemplatePermissionsFromHookFactory,
@@ -4044,6 +4050,9 @@ describe('sanity', () => {
   test('getTargetScopeId', () => {
     expectTypeOf<typeof getTargetScopeId>().toBeFunction()
   })
+  test('getTargetSiblings', () => {
+    expectTypeOf<typeof getTargetSiblings>().toBeFunction()
+  })
   test('getTemplatePermissions', () => {
     expectTypeOf<typeof getTemplatePermissions>().toBeFunction()
   })
@@ -6221,6 +6230,12 @@ describe('sanity', () => {
   test('StudioDiagnostics', () => {
     expectTypeOf<StudioDiagnostics>().toBeObject()
   })
+  test('StudioDiagnosticsBridge', () => {
+    expectTypeOf<typeof StudioDiagnosticsBridge>().toBeFunction()
+  })
+  test('StudioDiagnosticsBridgeApi', () => {
+    expectTypeOf<StudioDiagnosticsBridgeApi>().toBeObject()
+  })
   test('StudioErrorHandler', () => {
     expectTypeOf<StudioErrorHandler>().toBeObject()
   })
@@ -6307,6 +6322,9 @@ describe('sanity', () => {
   })
   test('TargetPerspective', () => {
     expectTypeOf<TargetPerspective>().not.toBeNever()
+  })
+  test('TargetScopeIdOptions', () => {
+    expectTypeOf<TargetScopeIdOptions>().toBeObject()
   })
   test('TelephoneInput', () => {
     expectTypeOf<typeof TelephoneInput>().toBeFunction()
@@ -7059,6 +7077,9 @@ describe('sanity', () => {
   test('useSetVariant', () => {
     expectTypeOf<typeof useSetVariant>().toBeFunction()
   })
+  test('useShallowUnique', () => {
+    expectTypeOf<typeof useShallowUnique>().toBeFunction()
+  })
   test('useSingleDocRelease', () => {
     expectTypeOf<typeof useSingleDocRelease>().toBeFunction()
   })
@@ -7079,6 +7100,9 @@ describe('sanity', () => {
   })
   test('useTargetDocumentState', () => {
     expectTypeOf<typeof useTargetDocumentState>().toBeFunction()
+  })
+  test('useTargetScopeId', () => {
+    expectTypeOf<typeof useTargetScopeId>().toBeFunction()
   })
   test('useTelemetryConsent', () => {
     expectTypeOf<typeof useTelemetryConsent>().toBeFunction()

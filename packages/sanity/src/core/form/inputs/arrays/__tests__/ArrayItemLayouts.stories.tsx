@@ -10,7 +10,6 @@ import {ArrayItemLayoutsStory} from './ArrayItemLayoutsStory'
 const meta = {
   title: 'Inputs/Array Item Layouts',
   component: ArrayItemLayoutsStory,
-  tags: ['!dev', '!autodocs', 'vrt-only'],
 } satisfies Meta<typeof ArrayItemLayoutsStory>
 
 export default meta

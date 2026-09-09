@@ -9,7 +9,6 @@ import {DetailLayoutStory} from './DetailLayoutStory'
 const meta = {
   title: 'Studio/Detail Layout',
   component: DetailLayoutStory,
-  tags: ['!dev', '!autodocs', 'vrt-only'],
 } satisfies Meta<typeof DetailLayoutStory>
 
 export default meta

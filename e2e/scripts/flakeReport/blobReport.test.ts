@@ -59,6 +59,11 @@ const jsonl = [
           contentType: 'application/json',
           name: 'studio-diagnostics-fallback.json',
         },
+        {
+          base64: Buffer.from('Too many requests').toString('base64'),
+          contentType: 'text/plain',
+          name: 'studio-request-error.txt',
+        },
       ],
       resultId: 'r2',
       testId: 't-restore',
@@ -91,6 +96,8 @@ describe('extractTestCaptures', () => {
     ])
     expect(restore.attempts[0].diagnostics).toMatchObject({network: {shard: 'gcp-eu'}})
     expect(restore.attempts[1].fallback).toMatchObject({fallbackVersion: 1})
+    expect(restore.attempts[1].requestErrorText).toBe('Too many requests')
+    expect(restore.attempts[0].requestErrorText).toBeUndefined()
   })
 
   it('drops tests that never failed for the compact diagnostics artifact', () => {
