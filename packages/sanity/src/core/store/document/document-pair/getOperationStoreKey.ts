@@ -1,5 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 
+import {createMemoKey} from '../utils/memoKey'
+
 export function getOperationStoreKey(client: SanityClient): string {
   const config = client.config()
   const {projectId, dataset, token} = config
@@ -16,5 +18,5 @@ export function getOperationStoreKey(client: SanityClient): string {
   // re-login runs a second pipeline; without the token here one emitted
   // operation would match both the fresh and the stale-token pipeline while
   // both are briefly subscribed and execute the mutation twice.
-  return `${projectId}-${dataset}-${token ?? ''}`
+  return createMemoKey([projectId, dataset, token])
 }

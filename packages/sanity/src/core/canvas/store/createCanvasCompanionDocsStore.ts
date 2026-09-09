@@ -14,6 +14,7 @@ import {mergeMapArray} from 'rxjs-mergemap-array'
 
 import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
 import {memoize} from '../../store/document/utils/createMemoizer'
+import {createMemoKey, getClientCredentialSegments} from '../../store/document/utils/memoKey'
 import {getPublishedId} from '../../util/draftUtils'
 import {type CompanionDoc} from '../types'
 
@@ -92,12 +93,10 @@ const getCompanionDocs = memoize(
       shareReplay({bufferSize: 1, refCount: true}),
     )
   },
-  // `token` is part of the key: this captures `client` and fetches/listens
-  // through it, so a cross-tab re-login (new token) gets a fresh entry rather
-  // than replaying the stale-token client. See the memoizeKeyGen comment for
-  // the full explanation.
-  (publishedId, client) =>
-    `${publishedId}-${client.config().dataset}-${client.config().projectId}-${client.config().token ?? ''}`,
+  // Keyed by the credential: this captures `client` and fetches/listens through
+  // it, so a cross-tab re-login (new token) gets a fresh entry rather than
+  // replaying the stale-token client. See getClientCredentialSegments.
+  (publishedId, client) => createMemoKey([publishedId, ...getClientCredentialSegments(client)]),
 )
 
 /**

@@ -14,19 +14,19 @@ import {
 } from 'rxjs'
 
 import {memoize} from '../document/utils/createMemoizer'
+import {createMemoKey, getClientCredentialSegments} from '../document/utils/memoKey'
 import {type ProjectData, type ProjectGrants, type ProjectStore} from './types'
 
 const REFETCH_INTERVAL = 5 * 60 * 1000 // 5 minutes
 
 // Memo key for the per-client request observables below. Must include the
-// token, not just project/dataset — these poll `/projects` on a captured
-// client, so a stale-token entry would keep 401ing after a re-login (see the
-// memoizeKeyGen comment). The old entry goes idle when its last
+// credential, not just project/dataset — these poll `/projects` on a captured
+// client, so a stale-token entry would keep 401ing after a re-login (see
+// getClientCredentialSegments). The old entry goes idle when its last
 // subscriber leaves, but the memoizer never evicts, so its key and token string
 // are retained for the life of the page. Token stays in-memory (never logged).
 function projectRequestKey(client: SanityClient): string {
-  const config = client.config()
-  return `${config.projectId}-${config.dataset}-${config.token ?? ''}`
+  return createMemoKey(getClientCredentialSegments(client))
 }
 
 /**
