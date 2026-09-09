@@ -2,11 +2,12 @@ import {lazy, Suspense} from 'react'
 
 import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
 
-const StudioLayoutComponentImpl = lazy(() =>
-  import('./StudioLayoutComponentImpl').then(({StudioLayoutComponent}) => ({
+const studioLayoutComponentPromise = import('./StudioLayoutComponentImpl').then(
+  ({StudioLayoutComponent}) => ({
     default: StudioLayoutComponent,
-  })),
+  }),
 )
+const StudioLayoutComponentImpl = lazy(() => studioLayoutComponentPromise)
 
 export function StudioLayoutComponent() {
   return (
