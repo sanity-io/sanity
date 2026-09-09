@@ -33,7 +33,7 @@
     "@optique/run": "catalog:",
     "@portabletext/toolkit": "^6.0.0",
     "@sanity/client": "catalog:",
-    "@sanity/id-utils": "^1.0.0",
+    "@sanity/id-utils": "^1.1.0",
     "@sanity/mutate": "^0.18.1",
     "@sanity/types": "workspace:*",
     "conventional-changelog": "^7.2.1",
