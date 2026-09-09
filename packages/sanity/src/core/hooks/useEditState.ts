@@ -51,13 +51,12 @@ export function useEditState(
     )
   }, [docTypeName, documentStore.pair, priority, publishedDocId, version])
 
-  // Rendered until the pipeline emits. Derived per render rather than passed as react-rx's
-  // `initialValue`, which is captured once per hook instance and would carry the previous
-  // document's id through an identity swap.
-  const initialState = useMemo(
-    () => getInitialEditState(schema, getIdPair(publishedDocId, {version}), docTypeName),
-    [docTypeName, publishedDocId, schema, version],
-  )
-
-  return useSyncObservable(observable, undefined) ?? initialState
+  const editState = useSyncObservable(observable, undefined)
+  return useMemo(() => {
+    if (editState) return editState
+    // Rendered until the pipeline emits. Derived per render rather than passed as react-rx's
+    // `initialValue`, which is captured once per hook instance and would carry the previous
+    // document's id through an identity swap.
+    return getInitialEditState(schema, getIdPair(publishedDocId, {version}), docTypeName)
+  }, [editState, docTypeName, publishedDocId, schema, version])
 }
