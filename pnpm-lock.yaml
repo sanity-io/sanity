@@ -1228,8 +1228,8 @@ importers:
         specifier: 'catalog:'
         version: 8.6.1(vitest@4.1.11)
       '@sanity/id-utils':
-        specifier: ^1.0.0
-        version: 1.0.0
+        specifier: ^1.1.0
+        version: 1.1.0
       '@sanity/mutate':
         specifier: ^0.18.1
         version: 0.18.1(xstate@5.32.6)
@@ -1747,8 +1747,8 @@ importers:
         specifier: 'catalog:'
         version: 8.6.1(vitest@4.1.11)
       '@sanity/id-utils':
-        specifier: ^1.0.0
-        version: 1.0.0
+        specifier: ^1.1.0
+        version: 1.1.0
       '@sanity/schema':
         specifier: workspace:*
         version: link:../schema
@@ -2060,8 +2060,8 @@ importers:
         specifier: ^5.2.1
         version: 5.2.1(react@19.2.8)
       '@sanity/id-utils':
-        specifier: ^1.0.0
-        version: 1.0.0
+        specifier: ^1.1.0
+        version: 1.1.0
       '@sanity/image-url':
         specifier: ^2.1.1
         version: 2.1.1
@@ -7268,6 +7268,10 @@ packages:
 
   '@sanity/id-utils@1.0.0':
     resolution: {integrity: sha512-2sb7tbdMDuUuVyocJPKG0gZBiOML/ovCe+mJiLrv1j69ODOfa2LfUjDVR+dRw/A/+XuxoJSSP8ebG7NiwTOgIA==}
+    engines: {node: '>=18'}
+
+  '@sanity/id-utils@1.1.0':
+    resolution: {integrity: sha512-A+DujVHCO3/+0DuzinmfCRQacIWVIherK0AHqFDoDOSgxx+Bur1kLhzX8fn7PdB2uZilxu2zWOr+UaGcj5zGbA==}
     engines: {node: '>=18'}
 
   '@sanity/image-url@2.1.1':
@@ -19738,7 +19742,7 @@ snapshots:
       '@sanity/descriptors': 1.3.0
       '@sanity/export': 6.2.1(supports-color@8.1.1)
       '@sanity/generate-help-url': 4.0.0
-      '@sanity/id-utils': 1.0.0
+      '@sanity/id-utils': 1.1.0
       '@sanity/import': 6.0.4(@sanity/client@8.6.1)(supports-color@8.1.1)
       '@sanity/migrate': 8.0.2(supports-color@8.1.1)(xstate@5.32.6)
       '@sanity/runtime-cli': 17.12.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.4.0)(@types/node@24.13.3)(esbuild@0.28.2)(oxc-transform-react@0.149.0)(rolldown@1.2.7)(tsx@4.23.13)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.0)
@@ -20011,6 +20015,11 @@ snapshots:
     dependencies:
       '@sanity/uuid': 3.0.3
       lodash: 4.18.1
+      ts-brand: 0.2.0
+
+  '@sanity/id-utils@1.1.0':
+    dependencies:
+      '@sanity/uuid': 3.0.3
       ts-brand: 0.2.0
 
   '@sanity/image-url@2.1.1':
@@ -20498,7 +20507,7 @@ snapshots:
   '@sanity/workflow-engine@0.31.0(@types/react@19.2.18)(supports-color@8.1.1)(typescript@7.0.2)':
     dependencies:
       '@sanity/groq-condition-describe': 0.4.1(supports-color@8.1.1)
-      '@sanity/id-utils': 1.0.0
+      '@sanity/id-utils': 1.1.0
       '@sanity/types': 5.31.2(@types/react@19.2.18)
       groq-js: 1.30.3(supports-color@8.1.1)
       valibot: 1.4.2(typescript@7.0.2)
