@@ -35,7 +35,7 @@ export const TopRegionWrapper = styled(WithIntersection)<StyleProps>(({$debug, $
     z-index: 100;
     position: sticky;
     height: 1px;
-    top: ${$margins ? `${$margins[0] - 1}px` : undefined};
+    top: ${$margins ? `${$margins[0] - 1}px` : 'auto'};
     background-color: ${$debug ? 'red' : 'transparent'};
   `
 })
