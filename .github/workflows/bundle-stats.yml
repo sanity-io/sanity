@@ -21,16 +21,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: ./.github/actions/detect-code-changes
-        id: changes
-
       - uses: ./.github/actions/setup
-        if: steps.changes.outputs.has_changes == 'true'
       # Held on v1: v2 bundles with Rolldown, which cannot bundle CSS and does not
       # externalize it, so every scenario that reaches `sanity/bundle.css` fails.
       # See the renovate.json rule that blocks v2 for the upgrade conditions.
       - uses: rexxars/bundle-stats@d3671d09a4973b4b2b09c4fe8b1c07c360683397 # v1
-        if: steps.changes.outputs.has_changes == 'true'
         with:
           packages: packages/sanity
           build-command: pnpm build
