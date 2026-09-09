@@ -9,7 +9,6 @@ import {DocumentInspectorHeaderStory} from './DocumentInspectorHeaderStory'
 const meta = {
   title: 'Structure/Document Inspector Header',
   component: DocumentInspectorHeaderStory,
-  tags: ['!dev', '!autodocs', 'vrt-only'],
 } satisfies Meta<typeof DocumentInspectorHeaderStory>
 
 export default meta

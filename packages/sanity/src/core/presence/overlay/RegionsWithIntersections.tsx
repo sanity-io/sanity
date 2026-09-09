@@ -165,7 +165,7 @@ export function RegionsWithIntersections(
         io={io}
         id="::top"
         onIntersection={onIntersection}
-        margins={margins}
+        $margins={margins}
       />
       <div>{children}</div>
       <OverlayWrapper ref={overlayRef}>

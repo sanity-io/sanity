@@ -1,9 +1,9 @@
 import {styled} from 'styled-components'
 import {Box} from 'ui5'
 
-export const RatioBox = styled(Box)<{ratio?: number}>`
+export const RatioBox = styled(Box)<{$ratio?: number}>`
   position: relative;
-  padding-bottom: calc(${({ratio = 3 / 2}) => 1 / ratio} * 100%);
+  padding-bottom: calc(${({$ratio = 3 / 2}) => 1 / $ratio} * 100%);
 
   & > div {
     position: absolute;

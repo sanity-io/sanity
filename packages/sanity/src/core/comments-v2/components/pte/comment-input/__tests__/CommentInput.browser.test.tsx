@@ -1,22 +1,93 @@
-import {type PortableTextBlock} from '@sanity/types'
+import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
+import noop from 'lodash-es/noop.js'
+import {useCallback, useState} from 'react'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
 
 import {testHelpers} from '../../../../../../../test/browser/testHelpers'
-import {CommentsInputStory} from './CommentInputStory'
+import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
+import {type UserListWithPermissionsHookValue} from '../../../../../hooks/useUserListWithPermissions'
+import {CommentInput} from '../CommentInput'
+
+const currentUser: CurrentUser = {
+  email: '',
+  id: '',
+  name: '',
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  role: '',
+  roles: [],
+  profileImage: '',
+  provider: '',
+}
+
+const SCHEMA_TYPES: [] = []
+
+const MENTION_DATA: UserListWithPermissionsHookValue = {
+  data: [
+    {
+      id: 'l33t',
+      displayName: 'Test Person',
+      email: 'test@test.com',
+      granted: true,
+    },
+  ],
+  loading: false,
+  error: null,
+}
+
+function CommentsInputHarness({
+  onDiscardCancel = noop,
+  onDiscardConfirm = noop,
+  onSubmit = noop,
+  value = null,
+}: {
+  onDiscardCancel?: () => void
+  onDiscardConfirm?: () => void
+  onSubmit?: (value: PortableTextBlock[]) => void
+  value?: PortableTextBlock[] | null
+}) {
+  const [valueState, setValueState] = useState<PortableTextBlock[] | null>(value)
+
+  const handleSubmit = useCallback(
+    (nextValue: PortableTextBlock[]) => {
+      // The Studio resets the `value` it passes to `CommentInput` after each
+      // submit; the harness does the same.
+      setValueState(null)
+      onSubmit(nextValue)
+    },
+    [onSubmit],
+  )
+
+  return (
+    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+      <CommentInput
+        focusOnMount
+        placeholder="Your comment..."
+        focusLock
+        currentUser={currentUser}
+        onChange={setValueState}
+        value={valueState}
+        mentionOptions={MENTION_DATA}
+        onDiscardConfirm={onDiscardConfirm}
+        onDiscardCancel={onDiscardCancel}
+        onSubmit={handleSubmit}
+      />
+    </TestWrapper>
+  )
+}
 
 describe('Comments', () => {
   describe('CommentInput', () => {
     it('Should render', async () => {
-      void render(<CommentsInputStory />)
+      void render(<CommentsInputHarness />)
       const $editable = page.getByTestId('comment-input-editable')
       await expect.element($editable).toBeVisible()
     })
 
     it('Should be able to type into', async () => {
       const {insertPortableText} = testHelpers()
-      void render(<CommentsInputStory />)
+      void render(<CommentsInputHarness />)
       const $editable = page.getByTestId('comment-input-editable')
       await expect.element($editable).toBeVisible()
       await insertPortableText('My first comment!', $editable)
@@ -24,7 +95,7 @@ describe('Comments', () => {
     })
 
     it('Should bring up mentions menu when typing @', async () => {
-      void render(<CommentsInputStory />)
+      void render(<CommentsInputHarness />)
       const $editable = page.getByTestId('comment-input-editable')
       await expect.element($editable).toBeVisible()
       await userEvent.keyboard('@')
@@ -36,7 +107,7 @@ describe('Comments', () => {
     })
 
     it('Should bring up mentions menu when pressing the @ button, whilst retaining focus on PTE', async () => {
-      void render(<CommentsInputStory />)
+      void render(<CommentsInputHarness />)
       const $editable = page.getByTestId('comment-input-editable')
       await expect.element($editable).toBeVisible()
       const $mentionButton = page.getByTestId('comment-input-mention-button')
@@ -51,7 +122,7 @@ describe('Comments', () => {
       let resolve!: () => void
       const submitted = Object.assign(new Promise<void>((r) => (resolve = r)), {resolve})
 
-      void render(<CommentsInputStory onSubmit={submitted.resolve} />)
+      void render(<CommentsInputHarness onSubmit={submitted.resolve} />)
       const $editable = page.getByTestId('comment-input-editable')
       await expect.element($editable).toBeVisible()
       await userEvent.keyboard('{Enter}')
@@ -65,7 +136,7 @@ describe('Comments', () => {
 
     it('Should keep typed text on both sides of a mention, and remove only the mention on backspace', async () => {
       const {insertPortableText} = testHelpers()
-      void render(<CommentsInputStory />)
+      void render(<CommentsInputHarness />)
       const $editable = page.getByTestId('comment-input-editable')
       await expect.element($editable).toBeVisible()
 
@@ -111,7 +182,7 @@ describe('Comments', () => {
       let resolve!: (value: PortableTextBlock[]) => void
       const submitted = new Promise<PortableTextBlock[]>((r) => (resolve = r))
 
-      void render(<CommentsInputStory onSubmit={resolve} />)
+      void render(<CommentsInputHarness onSubmit={resolve} />)
       const $editable = page.getByTestId('comment-input-editable')
       await expect.element($editable).toBeVisible()
       await insertPortableText('First comment', $editable)

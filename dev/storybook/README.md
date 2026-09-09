@@ -26,19 +26,27 @@ pnpm chromatic           # publish + snapshot manually (needs CHROMATIC_PROJECT_
   workspace package `src` trees; `dev/storybook` owns only the Storybook, Chromatic, and
   addon-vitest infrastructure. Keep a story in the same `__tests__` directory as the component or
   harness it covers and use package-local imports instead of reaching across workspace boundaries.
-- **Harness reuse:** thin CSF files sit beside the `*Story.tsx` harness components that the vitest
-  browser-mode tests already use (`TestWrapper` + `TestForm` with a mock client/workspace —
-  deterministic, no network). The harnesses stay shared: tests exercise interactions, Chromatic
-  snapshots the rendered states.
+- **Browser tests are not re-exported as stories.** The vitest browser-mode suite
+  (`*.browser.test.tsx`) is its own Chromatic snapshot source: `@chromatic-com/vitest` archives
+  every test's end state in place (see the `vitest-visual` job in the Chromatic workflow). Each
+  browser test keeps its harness component inline, and every `*Story.tsx` in the repo is a
+  Storybook harness owned by a `*.stories.tsx`. Stories only cover states no browser test
+  renders.
+- **Playwright stays in `e2e/`.** The e2e suite has its own Chromatic project
+  (`e2e/studio-visual-test.ts`, uploaded from `e2e.yml` through `chromaui/action`). This
+  package's `playwright` dependency is only the browser runner `@storybook/addon-vitest` uses to
+  render stories; it hosts no specs, fixtures, or `@chromatic-com/playwright` wiring.
 - **Authored migration sentinels:** component-local stories cover states the tests don't capture —
   `ui-components` wrapper variants (the `@sanity/ui` → `ui5` surface, with card/tone coverage
-  prioritized) and vanilla-extract-migrated components.
-- **Curated sidebar via tags:** documented stories (default tags) are written to be read — they
-  form a living document of how the components are used. Pure regression fixtures carry
-  `tags: ['!dev', '!autodocs', 'vrt-only']`: hidden from the sidebar and docs, still present in
-  the story index, so Chromatic keeps snapshotting them and addon-vitest keeps rendering them.
-  See the [`sanity-visual-regression` skill](../../.agents/skills/sanity-visual-regression/SKILL.md)
-  for the full convention.
+  prioritized) and vanilla-extract-migrated components. Harness stories reuse the same
+  `TestWrapper` + `TestForm` mock studio as the browser tests (deterministic, no network) through
+  a story-only `*Story.tsx` harness.
+- **Every story is browsable.** Stories are written to be read — they form a living document of
+  how the components are used — so nothing is hidden from the sidebar or docs with `tags`. The
+  `!dev` / `!autodocs` / `vrt-only` tags that used to hide the vitest-derived stories went away
+  with those stories. See the
+  [`sanity-visual-regression` skill](../../.agents/skills/sanity-visual-regression/SKILL.md) for
+  the full convention.
 
 The Vite config in [.storybook/main.ts](.storybook/main.ts) mirrors
 `packages/sanity/vitest.browser.config.mts`: the `monorepo` exports condition resolves workspace
@@ -48,9 +56,13 @@ so stories render exactly like the studio and the browser tests.
 ## Chromatic
 
 The [Chromatic workflow](../../.github/workflows/chromatic.yml) publishes this Storybook to the
-`sanity` Chromatic project on every PR (secret: `CHROMATIC_PROJECT_TOKEN_STORYBOOK`), using
-TurboSnap so only stories affected by the change are snapshotted. The check is non-gating during
-burn-in (`exitZeroOnChanges`); merges to `main` auto-accept new baselines.
+"sanity studio" Chromatic project on every PR (secret: `CHROMATIC_PROJECT_TOKEN_STORYBOOK`),
+using TurboSnap so only stories affected by the change are snapshotted. The check is non-gating
+during burn-in (`exitZeroOnChanges`); merges to `main` auto-accept new baselines. The same
+workflow's `vitest-visual` job uploads the browser-test archives to the "sanity studio vitest"
+project (secret: `CHROMATIC_PROJECT_TOKEN_VITEST`), so this Storybook holds only stories written
+for people: browser tests are snapshotted in place and no longer appear here as tag-filtered
+stories.
 
 ## Vercel deployment
 

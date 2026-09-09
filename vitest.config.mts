@@ -15,14 +15,6 @@ const workerExecArgv = ['--no-experimental-webstorage']
 export default defineConfig({
   test: {
     execArgv: workerExecArgv,
-    experimental: {
-      // Print the slowest imports after test runs, to keep the cost of heavy
-      // import graphs (e.g. barrel files) visible in CI and local runs.
-      importDurations: {
-        limit: 10,
-        print: true,
-      },
-    },
     forceRerunTriggers: [
       '**/package.json/**',
       '**/vitest.config.*/**',
@@ -57,7 +49,8 @@ export default defineConfig({
       'packages/@repo/bundle-manager',
       'packages/@repo/package.bundle',
       'packages/@repo/utils',
-      // Reporter unit tests only (`reporters/**/*.test.ts`); Playwright specs stay out.
+      // Reporter and flake-report unit tests only (see e2e/vitest.config.mts);
+      // Playwright specs stay out.
       'e2e',
     ],
     coverage: {

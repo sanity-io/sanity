@@ -1,4 +1,4 @@
-import {type SingleActionResult, type SanityClient} from '@sanity/client'
+import {type BaseActionOptions, type SingleActionResult, type SanityClient} from '@sanity/client'
 
 import {variantsApiClient} from '../../store/document/document-pair/utils/variantsApiClient'
 import {getVariantId} from '../tool/util'
@@ -7,7 +7,11 @@ import {type EditableSystemVariant} from '../types'
 export interface VariantOperationsStore {
   createVariant: (variant: EditableSystemVariant) => Promise<SingleActionResult>
   updateVariant: (variant: EditableSystemVariant) => Promise<SingleActionResult>
-  deleteVariant: (variantId: string) => Promise<SingleActionResult>
+  /**
+   * `opts` are forwarded to the action request, so the permissions store can `dryRun` the
+   * delete to find out whether the current user is allowed to perform it.
+   */
+  deleteVariant: (variantId: string, opts?: BaseActionOptions) => Promise<SingleActionResult>
 }
 
 /**
@@ -63,13 +67,13 @@ export function createVariantOperationsStore(options: {
     return await client.action(action, {tag: 'variants.edit'})
   }
 
-  const handleDeleteVariant = async (variantIdOrDocumentId: string) => {
+  const handleDeleteVariant = async (variantIdOrDocumentId: string, opts?: BaseActionOptions) => {
     const action = {
       actionType: 'sanity.action.variant.definition.delete' as const,
       variantId: getVariantId(variantIdOrDocumentId),
     }
 
-    return await client.action(action, {tag: 'variants.delete'})
+    return await client.action(action, {tag: 'variants.delete', ...opts})
   }
 
   return {

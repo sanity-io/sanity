@@ -9,7 +9,6 @@ import {CommentsInspectorHeaderStory} from './CommentsInspectorHeaderStory'
 const meta = {
   title: 'Comments (v2)/Inspector Header',
   component: CommentsInspectorHeaderStory,
-  tags: ['!dev', '!autodocs', 'vrt-only'],
 } satisfies Meta<typeof CommentsInspectorHeaderStory>
 
 export default meta

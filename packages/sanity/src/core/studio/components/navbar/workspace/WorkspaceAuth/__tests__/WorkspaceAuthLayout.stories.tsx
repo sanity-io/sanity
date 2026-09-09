@@ -39,7 +39,6 @@ const NODE_HEADER = (
 const meta = {
   title: 'Studio/Workspace Auth Layout',
   component: Layout,
-  tags: ['!dev', '!autodocs', 'vrt-only'],
 } satisfies Meta<typeof Layout>
 
 export default meta

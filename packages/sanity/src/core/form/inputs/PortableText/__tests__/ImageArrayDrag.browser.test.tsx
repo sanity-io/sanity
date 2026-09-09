@@ -1,9 +1,71 @@
-import {type SanityDocument} from '@sanity/types'
+import {
+  defineArrayMember,
+  defineField,
+  defineType,
+  type Path,
+  type SanityDocument,
+} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 import {page} from 'vitest/browser'
 
+import {TestForm} from '../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../test/browser/testHelpers'
-import ImageArrayDragStory from './ImageArrayDragStory'
+import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
+
+const SCHEMA_TYPES = [
+  defineType({
+    type: 'document',
+    name: 'test',
+    title: 'Test',
+    fields: [
+      defineField({
+        type: 'array',
+        name: 'body',
+        of: [
+          defineArrayMember({
+            type: 'block',
+          }),
+          defineArrayMember({
+            type: 'object',
+            name: 'imageSlideshow',
+            title: 'Image slideshow',
+            fields: [
+              defineField({
+                name: 'images',
+                type: 'array',
+                title: 'Images',
+                of: [
+                  defineArrayMember({
+                    type: 'image',
+                    options: {
+                      hotspot: true,
+                    },
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  }),
+]
+
+function ImageArrayDragHarness({
+  focusPath,
+  onPathFocus,
+  document,
+}: {
+  focusPath?: Path
+  onPathFocus?: (path: Path) => void
+  document?: SanityDocument
+}) {
+  return (
+    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+      <TestForm document={document} focusPath={focusPath} onPathFocus={onPathFocus} />
+    </TestWrapper>
+  )
+}
 
 const {render} = await import('vitest-browser-react')
 
@@ -27,7 +89,7 @@ describe('Portable Text Input - ImageArrayDrag', () => {
   it('Array Input of images dragging an image will not trigger range out of bounds (toast)', async () => {
     const {dragAndDrop, getFocusedPortableTextEditor} = testHelpers()
 
-    void render(<ImageArrayDragStory document={document} focusPath={['body']} />)
+    void render(<ImageArrayDragHarness document={document} focusPath={['body']} />)
 
     const $pte = await getFocusedPortableTextEditor('field-body')
 

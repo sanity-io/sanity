@@ -52,6 +52,14 @@
       "matchPackageNames": ["!@portabletext/*", "!@sanity/client", "!@sanity/ui"]
     },
     {
+      "description": "Upgrade @sanity/sdk and @sanity/sdk-react together across all workspaces and dependency types, bumping every manifest to keep a single version throughout the repository",
+      "matchPackageNames": ["@sanity/sdk", "@sanity/sdk-react"],
+      "dependencyDashboardApproval": false,
+      "schedule": ["every weekday"],
+      "groupName": "sanity-sdk",
+      "rangeStrategy": "bump"
+    },
+    {
       "matchDepTypes": ["dependencies"],
       "matchPackageNames": [
         "@portabletext/*",
@@ -145,6 +153,12 @@
         "packages/@repo/typedoc/package.json"
       ],
       "allowedVersions": "/^6\\./"
+    },
+    {
+      "description": "Hold rexxars/bundle-stats on v1: v2 measures with Rolldown, which removed CSS bundling and does not externalize CSS, so every sanity scenario fails on `sanity/bundle.css`. Digest and v1 updates still flow. Drop this rule once v2 externalizes CSS, and move the workflow inputs to a bundle-stats.config.ts at the same time",
+      "matchDepNames": ["rexxars/bundle-stats"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
     },
     {
       "description": "Always upgrade oxlint together",

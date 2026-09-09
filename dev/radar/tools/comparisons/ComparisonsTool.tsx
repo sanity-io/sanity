@@ -9,7 +9,7 @@ import {useDocumentStore} from 'sanity'
 import {Flex, Box} from 'ui5'
 
 import {formatValue} from '../trends/data'
-import {ciRunUrl, commitUrl} from '../trends/links'
+import {ciRunUrl, commitUrl, dispatchRunsUrl} from '../trends/links'
 import {
   type ComparisonMetric,
   type ComparisonRun,
@@ -84,9 +84,27 @@ export function ComparisonsTool() {
             </Text>
             <Card padding={3} radius={2} tone="transparent" border>
               <Text size={1}>
-                <code>gh workflow run bench.yml -f ab_from=&lt;sha&gt; -f ab_to=&lt;sha&gt;</code>
+                <code>
+                  gh workflow run bench.yml -R sanity-io/sanity -f ab_from=&lt;sha&gt; -f
+                  ab_to=&lt;sha&gt;
+                </code>
               </Text>
             </Card>
+            {/* A dispatched run takes ~30 minutes to land here; the runs list
+                is where to watch it in the meantime */}
+            <Flex>
+              <Button
+                as="a"
+                href={dispatchRunsUrl()}
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Dispatched bench runs on GitHub (opens in a new tab)"
+                mode="ghost"
+                fontSize={1}
+                icon={LaunchIcon}
+                text="Dispatched runs"
+              />
+            </Flex>
           </Stack>
 
           {live.error && (
