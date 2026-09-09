@@ -6,6 +6,7 @@ import {styled} from 'styled-components'
 
 import {EMPTY_ARRAY} from '../../../util/empty'
 import {FormRow} from '../../components/layout/FormRow'
+import {getGridTemplateColumns} from '../../components/layout/getGridTemplateColumns'
 import {ObjectInputMembers} from '../../members/object/ObjectInputMembers'
 import {useRenderMembers} from '../../members/object/useRenderMembers'
 import {type ObjectInputProps} from '../../types/inputProps'
@@ -154,7 +155,7 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
       >
         {columns ? (
           <AlignedBottomGrid
-            gridTemplateColumns={`repeat(${columns}, minmax(0, 1fr))`}
+            gridTemplateColumns={getGridTemplateColumns(columns)}
             gap={4}
             marginTop={1}
           >

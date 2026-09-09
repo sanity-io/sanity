@@ -17,7 +17,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {css, styled} from 'styled-components'
-import {Box, type GridProps} from 'ui5'
+import {Box} from 'ui5'
 
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
@@ -30,6 +30,7 @@ import {FormFieldGutter} from '../FormFieldGutter'
 import {FormNodeDivergenceCollectionIndicator} from '../FormNodeDivergenceCollectionIndicator'
 import {FormNodeDivergenceDetail} from '../FormNodeDivergenceDetail'
 import {FormRow} from '../layout/FormRow'
+import {getGridTemplateColumns} from '../layout/getGridTemplateColumns'
 import {FormFieldBaseHeader} from './FormFieldBaseHeader'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
@@ -84,13 +85,6 @@ export interface FormFieldSetProps {
 
 function getChildren(children: ReactNode | (() => ReactNode)): ReactNode {
   return typeof children === 'function' ? children() : children
-}
-
-function getGridTemplateColumns(columns: number | number[]) {
-  if (Array.isArray(columns)) {
-    return columns.map((n) => `repeat(${n}, minmax(0, 1fr))`)
-  }
-  return `repeat(${columns}, minmax(0, 1fr))`
 }
 
 const Root = styled(Stack).attrs({forwardedAs: 'fieldset'})`
@@ -218,11 +212,7 @@ export function FormFieldSet(
     }
     return (
       <ColumnarGrid
-        gridTemplateColumns={
-          columns
-            ? (getGridTemplateColumns(columns) as GridProps['gridTemplateColumns'])
-            : undefined
-        }
+        gridTemplateColumns={columns ? getGridTemplateColumns(columns) : undefined}
         columnGap={4}
         rowGap={5}
       >
