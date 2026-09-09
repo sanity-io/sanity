@@ -2,6 +2,7 @@ import {useMemo} from 'react'
 import {useSyncObservable} from 'react-rx'
 
 import {useDocumentStore} from '../store/datastores'
+import {GUARDED} from '../store/document/document-pair/operations/helpers'
 import {type OperationsAPI} from '../store/document/document-pair/operations/types'
 import {type DocumentPairTarget} from '../store/document/types'
 import {useDocumentOperationWithComlinkHistory} from './useDocumentOperationWithComlinkHistory'
@@ -30,15 +31,11 @@ export function useDocumentOperation(
     [docTypeName, documentStore.pair, publishedDocId, target],
   )
 
-  /**
-   * We know that since the observable has a startWith operator, it will always emit a value
-   * and that's why the non-null assertion is used here
-   *
-   * Kept synchronous: the operations are imperative emitters bound to the
-   * document id/type they were created for, so a deferred (stale) API could
-   * execute an action against the previously viewed document after navigation.
-   */
-  const api = useSyncObservable(observable, undefined)!
+  // Kept synchronous: the operations are imperative emitters bound to the
+  // document id/type they were created for, so a deferred (stale) API could
+  // execute an action against the previously viewed document after navigation.
+  // `GUARDED` is also what the pair emits first, so nothing can execute before it is ready.
+  const api = useSyncObservable(observable, GUARDED)
 
   return useDocumentOperationWithComlinkHistory({
     api,

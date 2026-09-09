@@ -27,6 +27,7 @@ const mockDocumentStore = {
 }
 
 vi.mock('../../store/datastores', () => ({useDocumentStore: () => mockDocumentStore}))
+vi.mock('../useSchema', () => ({useSchema: () => ({get: () => undefined})}))
 
 describe('useEditState', () => {
   beforeEach(() => {

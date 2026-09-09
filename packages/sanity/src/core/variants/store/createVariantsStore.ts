@@ -26,7 +26,11 @@ const QUERY_PROJECTION = `{
 
 const QUERY = `*[${QUERY_FILTER}] ${QUERY_PROJECTION} | ${QUERY_SORT_ORDER}`
 
-const INITIAL_STATE: VariantStoreState = {
+/**
+ * What `state$` emits first for a cold store; also the value the hooks render until it emits.
+ * @internal
+ */
+export const INITIAL_VARIANTS_STATE: VariantStoreState = {
   variants: new Map(),
   state: 'initialising' as const,
 }
@@ -95,8 +99,8 @@ export function createVariantsStore(context: {
   )
 
   const state$ = merge(listFetch$, dispatch$).pipe(
-    scan((state, action) => variantStoreReducer(state, action), INITIAL_STATE),
-    startWith(INITIAL_STATE),
+    scan((state, action) => variantStoreReducer(state, action), INITIAL_VARIANTS_STATE),
+    startWith(INITIAL_VARIANTS_STATE),
     shareReplay(1),
   )
 
