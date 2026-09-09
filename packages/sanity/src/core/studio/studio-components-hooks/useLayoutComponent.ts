@@ -1,12 +1,8 @@
-import {lazy, type ComponentType} from 'react'
+import {type ComponentType} from 'react'
 
 import {useMiddlewareComponents} from '../../config/components/useMiddlewareComponents'
+import {StudioLayoutComponent} from '../StudioLayoutComponent'
 import {pickLayoutComponent} from './picks'
-
-const studioLayoutComponentPromise = import('../StudioLayoutComponent').then(
-  ({StudioLayoutComponent}) => ({default: StudioLayoutComponent}),
-)
-const StudioLayoutComponent = lazy(() => studioLayoutComponentPromise)
 
 /**
  * @internal
