@@ -1,6 +1,6 @@
 {
   "name": "sanity-root",
-  "version": "6.13.0",
+  "version": "6.13.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -129,10 +129,10 @@
     "eslint-plugin-tsdoc": "^0.5.2",
     "knip": "^6.34.0",
     "lefthook": "^2.1.12",
-    "npm-run-all2": "^9.0.2",
+    "npm-run-all2": "^9.0.3",
     "only-allow": "^1.2.2",
-    "oxfmt": "^0.66.0",
-    "oxlint": "^1.81.0",
+    "oxfmt": "^0.67.0",
+    "oxlint": "^1.82.0",
     "oxlint-tsgolint": "^7.0.2001",
     "pkg-pr-new": "^0.0.87",
     "playwright": "catalog:",
@@ -144,6 +144,6 @@
     "vite": "catalog:",
     "vitest": "catalog:"
   },
-  "packageManager": "pnpm@11.25.0",
+  "packageManager": "pnpm@12.3.4",
   "//": "pnpm settings moved to pnpm-workspace.yaml"
 }

@@ -1,11 +1,12 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import groupBy from 'lodash-es/groupBy.js'
-import {defer, merge, type Observable, of, throwError} from 'rxjs'
+import {defer, EMPTY, merge, type Observable, of, throwError} from 'rxjs'
 import {catchError, concatMap, filter, map, mergeMap, scan, share} from 'rxjs/operators'
 
 import {shareReplayLatest} from '../../preview/utils/shareReplayLatest'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases/util/releasesClient'
+import {isConnectionSessionError} from '../../util/apiErrors'
 import {getVersionFromId} from '../../util/draftUtils'
 import {type StoreRequestErrorHandler} from '../requestErrorHandler'
 import {debug} from './debug'
@@ -271,6 +272,19 @@ export function getPairListener(
         // this will retry immediately
         return caught$
       }
+
+      // A listener 401 is a dead session (see isConnectionSessionError), so
+      // complete the stream rather than rethrow — an errored stream is rethrown
+      // by `useSyncObservable` during render and crashes the tool. Forced logout
+      // is not triggered here; it's owned by the request handler, which 401s on
+      // the ordinary HTTP requests a mounted pane also fires (users, grants, …).
+      // The pane keeps its last value (or stays loading if it never got a
+      // snapshot) until that logout lands.
+      if (isConnectionSessionError(err)) {
+        debug('Listener connection rejected (HTTP 401), terminating (invalid session)')
+        return EMPTY
+      }
+
       return throwError(() => err)
     }),
   )
