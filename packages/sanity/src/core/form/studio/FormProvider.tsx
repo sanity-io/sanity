@@ -1,10 +1,15 @@
 import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
-import {type ReactNode, useCallback} from 'react'
+import {type ReactNode, Suspense, useCallback} from 'react'
 
 import {type DocumentFieldAction} from '../../config/document/fieldActions/types'
 import {type FormNodePresence} from '../../presence/types'
 import {PreviewLoader} from '../../preview/components/PreviewLoader'
 import {useSource} from '../../studio/source'
+import {FormBlockSkeleton} from '../components/skeletons/FormBlockSkeleton'
+import {FormFieldSkeleton} from '../components/skeletons/FormFieldSkeleton'
+import {FormInlineSkeleton} from '../components/skeletons/FormInlineSkeleton'
+import {FormInputFallback} from '../components/skeletons/FormInputFallback'
+import {FormItemSkeleton} from '../components/skeletons/FormItemSkeleton'
 import {useAnnotationComponent} from '../form-components-hooks/useAnnotationComponent'
 import {useBlockComponent} from '../form-components-hooks/useBlockComponent'
 import {useFieldComponent} from '../form-components-hooks/useFieldComponent'
@@ -103,16 +108,26 @@ export function FormProvider(props: FormProviderProps) {
   const Annotation = useAnnotationComponent()
 
   const renderInput = useCallback(
-    (inputProps: Omit<InputProps, 'renderDefault'>) => <Input {...inputProps} />,
+    (inputProps: Omit<InputProps, 'renderDefault'>) => (
+      <Suspense fallback={<FormInputFallback inputProps={inputProps} />}>
+        <Input {...inputProps} />
+      </Suspense>
+    ),
     [Input],
   )
   const renderField = useCallback(
-    (fieldProps: Omit<FieldProps, 'renderDefault'>) => <Field {...fieldProps} />,
+    (fieldProps: Omit<FieldProps, 'renderDefault'>) => (
+      <Suspense fallback={<FormFieldSkeleton />}>
+        <Field {...fieldProps} />
+      </Suspense>
+    ),
     [Field],
   )
   const renderItem = useCallback(
     (itemProps: Omit<ItemProps, 'renderDefault'>) => (
-      <Item key={itemProps.inputId} {...itemProps} />
+      <Suspense key={itemProps.inputId} fallback={<FormItemSkeleton />}>
+        <Item {...itemProps} />
+      </Suspense>
     ),
     [Item],
   )
@@ -123,16 +138,26 @@ export function FormProvider(props: FormProviderProps) {
     [Preview],
   )
   const renderBlock = useCallback(
-    (blockProps: Omit<BlockProps, 'renderDefault'>) => <Block {...blockProps} />,
+    (blockProps: Omit<BlockProps, 'renderDefault'>) => (
+      <Suspense fallback={<FormBlockSkeleton value={blockProps.value} />}>
+        <Block {...blockProps} />
+      </Suspense>
+    ),
     [Block],
   )
   const renderInlineBlock = useCallback(
-    (blockProps: Omit<BlockProps, 'renderDefault'>) => <InlineBlock {...blockProps} />,
+    (blockProps: Omit<BlockProps, 'renderDefault'>) => (
+      <Suspense fallback={<FormInlineSkeleton />}>
+        <InlineBlock {...blockProps} />
+      </Suspense>
+    ),
     [InlineBlock],
   )
   const renderAnnotation = useCallback(
     (annotationProps: Omit<BlockAnnotationProps, 'renderDefault'>) => (
-      <Annotation {...annotationProps} />
+      <Suspense fallback={<FormInlineSkeleton />}>
+        <Annotation {...annotationProps} />
+      </Suspense>
     ),
     [Annotation],
   )

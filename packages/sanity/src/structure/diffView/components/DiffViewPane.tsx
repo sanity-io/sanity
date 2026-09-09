@@ -10,6 +10,7 @@ import noop from 'lodash-es/noop.js'
 import {
   type ComponentType,
   type CSSProperties,
+  Suspense,
   useCallback,
   useEffect,
   useMemo,
@@ -138,8 +139,10 @@ export function DiffViewPane({
                           Scope the perspective to the pane's own bundle, with no variant
                           selected. */}
                       <PerspectiveProvider selectedPerspectiveName={perspectiveName(documentId)}>
-                        {/* oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work */}
-                        <DocumentLayout documentId={documentId} documentType={documentType} />
+                        <Suspense fallback={<LoadingBlock showText />}>
+                          {/* oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work */}
+                          <DocumentLayout documentId={documentId} documentType={documentType} />
+                        </Suspense>
                       </PerspectiveProvider>
                     </Container>
                   </DialogProvider>

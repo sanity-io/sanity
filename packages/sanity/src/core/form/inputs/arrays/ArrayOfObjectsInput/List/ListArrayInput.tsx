@@ -1,10 +1,11 @@
 import {type DragStartEvent} from '@dnd-kit/core'
 import {isKeySegment} from '@sanity/types'
 import {Card, type CardTone, Stack, Text} from '@sanity/ui'
-import {useCallback, useMemo, useRef, useState} from 'react'
+import {Suspense, useCallback, useMemo, useRef, useState} from 'react'
 
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {shallowEquals} from '../../../../../util/shallowEquals'
+import {FormItemSkeleton} from '../../../../components/skeletons/FormItemSkeleton'
 import {useItemComponent} from '../../../../form-components-hooks/useItemComponent'
 import {type ArrayOfObjectsInputProps} from '../../../../types/inputProps'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types/itemProps'
@@ -47,7 +48,11 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   // props.renderItem accumulating callback wrapping through ancestor components.
   const ItemComponent = useItemComponent()
   const renderItem = useCallback(
-    (itemProps: Omit<ObjectItemProps, 'renderDefault'>) => <ItemComponent {...itemProps} />,
+    (itemProps: Omit<ObjectItemProps, 'renderDefault'>) => (
+      <Suspense fallback={<FormItemSkeleton />}>
+        <ItemComponent {...itemProps} />
+      </Suspense>
+    ),
     [ItemComponent],
   )
   const hasErrors = validation?.some((v) => v.level === 'error')
