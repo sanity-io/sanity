@@ -9,7 +9,7 @@ import {type LocaleResourceBundle} from '../types'
  * @hidden
  */
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-const copyPasteLocaleStrings = defineLocalesResources('copy-paste', {
+export const copyPasteLocaleStrings = defineLocalesResources('copy-paste', {
   /** Text on the field action button to copy a document */
   'copy-paste.field-action-copy-button.document.title': 'Copy document',
   /** Text on the field action button to copy a field */

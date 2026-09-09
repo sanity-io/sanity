@@ -1,6 +1,7 @@
 import {createClient, type RequestHandler} from '@sanity/client'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {type LocaleDefinition} from '../../i18n/types'
 import {getCollectedConfigWarnings} from '../configWarnings'
 import {prepareConfig} from '../prepareConfig'
 import {type WorkspaceOptions} from '../types'
@@ -217,6 +218,18 @@ describe('prepareConfig — lazy schema resolution', () => {
     expect(() => workspaces[0].schema).toThrow('invalid schema')
     expect(() => workspaces[0].schema).toThrow('invalid schema')
     expect(types).toHaveBeenCalledOnce()
+  })
+
+  it('initializes workspace i18n only on first access', () => {
+    const locales = vi.fn((previous: LocaleDefinition[]) => previous)
+    const {workspaces} = prepareConfig(createWorkspace({i18n: {locales}}))
+
+    expect(locales).not.toHaveBeenCalled()
+
+    const i18n = workspaces[0].i18n
+    expect(locales).toHaveBeenCalledOnce()
+    expect(workspaces[0].i18n).toBe(i18n)
+    expect(locales).toHaveBeenCalledOnce()
   })
 })
 

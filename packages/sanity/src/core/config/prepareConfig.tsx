@@ -342,7 +342,7 @@ export function prepareConfig(
         requestErrorChannel: options?.requestErrorChannel,
         requestFailureDiagnostics: options?.requestFailureDiagnostics,
       })
-      const i18n = prepareI18n(source)
+      const getI18n = createMemoizedGetter(() => prepareI18n(source))
       const source$ = auth.state.pipe(
         map(({client, authenticated, currentUser}) => {
           return resolveSource({
@@ -352,7 +352,7 @@ export function prepareConfig(
             schema: getSchema(),
             authenticated,
             auth,
-            i18n,
+            i18n: getI18n(),
           })
         }),
         shareReplay(1),
@@ -367,7 +367,9 @@ export function prepareConfig(
         get schema() {
           return getSchema()
         },
-        i18n: i18n.source,
+        get i18n() {
+          return getI18n().source
+        },
         source: source$,
       }
     })
@@ -383,7 +385,9 @@ export function prepareConfig(
       get schema() {
         return resolvedSources[0].schema
       },
-      i18n: resolvedSources[0].i18n,
+      get i18n() {
+        return resolvedSources[0].i18n
+      },
       customIcon: !!rootSource.icon,
       icon: normalizeIcon(rootSource.icon, title, `${rootSource.projectId} ${rootSource.dataset}`),
       name: rootSource.name || 'default',
@@ -406,44 +410,51 @@ export function prepareConfig(
   return {type: 'prepared-config', workspaces}
 }
 
-type SchemaResult = {type: 'success'; schema: Schema} | {type: 'failure'; error: unknown}
-
 function createSchemaGetter(source: SourceOptions): () => Schema {
-  let result: SchemaResult | undefined
+  return createMemoizedGetter(() => {
+    const {projectId, dataset} = source
+    let schemaTypes
+    try {
+      schemaTypes = resolveSchemaTypes({
+        config: source,
+        context: {projectId, dataset},
+      })
+    } catch (error) {
+      throw new ConfigResolutionError({
+        name: source.name,
+        type: 'source',
+        causes: [error],
+      })
+    }
 
-  return function getSchema(): Schema {
-    if (result?.type === 'success') return result.schema
+    const schema = createSchema({
+      name: source.name,
+      types: schemaTypes,
+    })
+    const schemaErrors = schema._validation?.filter((message) => message.problems.some(isError))
+
+    if (schemaErrors?.length) {
+      // TODO: consider using the `ConfigResolutionError`
+      throw new SchemaError(schema)
+    }
+
+    return schema
+  })
+}
+
+type MemoizedResult<T> = {type: 'success'; value: T} | {type: 'failure'; error: unknown}
+
+function createMemoizedGetter<T>(factory: () => T): () => T {
+  let result: MemoizedResult<T> | undefined
+
+  return function getMemoizedValue(): T {
+    if (result?.type === 'success') return result.value
     if (result?.type === 'failure') throw result.error
 
     try {
-      const {projectId, dataset} = source
-      let schemaTypes
-      try {
-        schemaTypes = resolveSchemaTypes({
-          config: source,
-          context: {projectId, dataset},
-        })
-      } catch (error) {
-        throw new ConfigResolutionError({
-          name: source.name,
-          type: 'source',
-          causes: [error],
-        })
-      }
-
-      const schema = createSchema({
-        name: source.name,
-        types: schemaTypes,
-      })
-      const schemaErrors = schema._validation?.filter((message) => message.problems.some(isError))
-
-      if (schemaErrors?.length) {
-        // TODO: consider using the `ConfigResolutionError`
-        throw new SchemaError(schema)
-      }
-
-      result = {type: 'success', schema}
-      return schema
+      const value = factory()
+      result = {type: 'success', value}
+      return value
     } catch (error) {
       result = {type: 'failure', error}
       throw error
