@@ -14,6 +14,9 @@ describe('default locale resources', () => {
       'login.logged-out.generic': 'Your session is no longer valid. Please sign in again.',
       'login.logged-out.session-expired': 'Your session expired. Please sign in again.',
       'login.logged-out.title': "You've been logged out",
+      'workspaces.action.add-workspace': 'Add workspace',
+      'workspaces.action.choose-another-workspace': 'Choose another workspace',
+      'workspaces.choose-your-workspace-label': 'Choose your workspace',
     })
   })
 
@@ -24,6 +27,7 @@ describe('default locale resources', () => {
     expect(fallback.t('login.logged-out.session-expired')).toBe(
       'Your session expired. Please sign in again.',
     )
+    expect(fallback.t('workspaces.choose-your-workspace-label')).toBe('Choose your workspace')
   })
 
   it('loads the full Studio bundle asynchronously', async () => {
@@ -37,6 +41,14 @@ describe('default locale resources', () => {
     }
 
     const resources = await fullStudioBundle.resources()
-    expect(resources).toHaveProperty('workspaces.title', 'Workspaces')
+    const fullResources = 'default' in resources ? resources.default : resources
+    const authBundle = usEnglishLocale.bundles?.find(
+      (bundle) => bundle.namespace === 'studio' && isStaticResourceBundle(bundle),
+    )
+
+    expect(fullResources).toHaveProperty('workspaces.title', 'Workspaces')
+    for (const [key, value] of Object.entries(authBundle?.resources ?? {})) {
+      expect(fullResources).toHaveProperty(key, value)
+    }
   })
 })

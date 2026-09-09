@@ -1,7 +1,9 @@
 import {createClient, type RequestHandler} from '@sanity/client'
+import {firstValueFrom} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type LocaleDefinition} from '../../i18n/types'
+import {createMockAuthStore} from '../../store/authStore/createMockAuthStore'
 import {getCollectedConfigWarnings} from '../configWarnings'
 import {prepareConfig} from '../prepareConfig'
 import {type WorkspaceOptions} from '../types'
@@ -217,6 +219,28 @@ describe('prepareConfig — lazy schema resolution', () => {
     expect(types).not.toHaveBeenCalled()
     expect(() => workspaces[0].schema).toThrow('invalid schema')
     expect(() => workspaces[0].schema).toThrow('invalid schema')
+    expect(types).toHaveBeenCalledOnce()
+  })
+
+  it('surfaces a deferred schema error when the authenticated source loads', async () => {
+    const types = vi.fn(() => {
+      throw new Error('invalid authenticated schema')
+    })
+    const client = createClient({
+      projectId: 'test',
+      dataset: 'test',
+      apiVersion: '2024-01-01',
+      useCdn: false,
+    })
+    const auth = createMockAuthStore({client, currentUser: null})
+    const {workspaces} = prepareConfig(createWorkspace({auth, schema: {types}}))
+
+    expect(types).not.toHaveBeenCalled()
+
+    // oxlint-disable-next-line no-deprecated -- source observable is the integration boundary under test
+    await expect(firstValueFrom(workspaces[0].__internal.sources[0].source)).rejects.toThrow(
+      'invalid authenticated schema',
+    )
     expect(types).toHaveBeenCalledOnce()
   })
 
