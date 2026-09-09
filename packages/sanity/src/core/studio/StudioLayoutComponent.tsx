@@ -13,6 +13,7 @@ import {isDefaultRouteTool} from '../config/isDefaultRouteTool'
 import {DocumentLimitsUpsellPanel} from '../limits/context/documents/DocumentLimitsUpsellPanel'
 import {isDocumentLimitError} from '../limits/context/documents/isDocumentLimitError'
 import {StudioReadyMeasured} from './__telemetry__/bootstrap.telemetry'
+import {NavbarSkeleton} from './components/navbar/NavbarSkeleton'
 import {useNetworkProtocolCheck} from './networkCheck/useNetworkProtocolCheck'
 import {NoToolsScreen} from './screens/NoToolsScreen'
 import {RedirectingScreen} from './screens/RedirectingScreen'
@@ -187,8 +188,10 @@ export function StudioLayoutComponent() {
   return (
     <Flex data-ui="ToolScreen" flexDirection="column" height="100%" data-testid="studio-layout">
       <NavbarContext.Provider value={navbarContextValue}>
-        {/* oxlint-disable-next-line react/static-components -- Navbar comes from useNavbarComponent(), stable per workspace */}
-        <Navbar />
+        <Suspense fallback={<NavbarSkeleton />}>
+          {/* oxlint-disable-next-line react/static-components -- Navbar comes from useNavbarComponent(), stable per workspace */}
+          <Navbar />
+        </Suspense>
       </NavbarContext.Provider>
       <UnclaimedProjectNudge />
       {isLegacyDeskRedirect && <RedirectingScreen />}

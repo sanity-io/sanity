@@ -1,7 +1,7 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {Card, Layer, Stack, Text} from '@sanity/ui'
 import {AnimatePresence, motion, type Transition, type Variants} from 'motion/react'
-import {type KeyboardEvent, memo, useCallback, useMemo} from 'react'
+import {type KeyboardEvent, memo, Suspense, useCallback, useMemo} from 'react'
 import TrapFocus from 'react-focus-lock'
 import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
@@ -208,14 +208,16 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
               >
                 {/* Tools */}
                 <Card flex="none" padding={2}>
-                  {/* oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work */}
-                  <ToolMenu
-                    activeToolName={activeToolName}
-                    closeSidebar={onClose}
-                    context="sidebar"
-                    isSidebarOpen={isOpen}
-                    tools={tools}
-                  />
+                  <Suspense fallback={null}>
+                    {/* oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work */}
+                    <ToolMenu
+                      activeToolName={activeToolName}
+                      closeSidebar={onClose}
+                      context="sidebar"
+                      isSidebarOpen={isOpen}
+                      tools={tools}
+                    />
+                  </Suspense>
                 </Card>
 
                 <Flex flexDirection="column">
