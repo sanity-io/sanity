@@ -63,7 +63,7 @@ import {
   vitalSections,
 } from './data'
 import {DEBUG_SOURCES, type DebugSource, generateDebugRuns, generateDebugTags} from './debugData'
-import {type DriftResult, worstBySeries} from './drift'
+import {deltaLabel, type DriftResult, worstBySeries} from './drift'
 import {DriftFeed} from './DriftFeed'
 import {type LayerState, useLayerState} from './layers'
 import {sourceFileUrl, webVitalDocUrl} from './links'
@@ -328,12 +328,10 @@ function chartDomId(seriesKey: string): string {
 }
 
 function driftBadge(entry: DriftResult): {tone: 'caution' | 'positive'; label: string} {
-  const worst = entry.baseline
-  const sign = worst.deltaFraction > 0 ? '+' : ''
   const arrow = entry.direction === 'regression' ? '↑' : '↓'
   return {
     tone: entry.direction === 'regression' ? 'caution' : 'positive',
-    label: `${arrow} ${sign}${(worst.deltaFraction * 100).toFixed(0)}%`,
+    label: `${arrow} ${deltaLabel(entry.baseline, entry.unit)}`,
   }
 }
 

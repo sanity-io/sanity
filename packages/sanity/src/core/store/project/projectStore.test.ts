@@ -80,6 +80,50 @@ describe('createProjectStore getOrganizationId', () => {
     subscription.unsubscribe()
   })
 
+  it('shares one request between getProjectName and getOrganizationId', async () => {
+    const project = {...createMockProjectData('org-shared'), displayName: 'Shared project'}
+    const client = createMockClient({
+      projectId: 'shared-request-project',
+      requestImplementation: () => of(project),
+    })
+
+    const store = createProjectStore({client})
+
+    const names: Array<string | null> = []
+    const organizationIds: Array<string | null> = []
+    const subscription = store.getProjectName().subscribe((value) => names.push(value))
+    subscription.add(store.getOrganizationId().subscribe((value) => organizationIds.push(value)))
+
+    await vi.advanceTimersByTimeAsync(0)
+    expect(names).toEqual(['Shared project'])
+    expect(organizationIds).toEqual(['org-shared'])
+    expect(client.observable.request).toHaveBeenCalledTimes(1)
+
+    let replayed: string | null | undefined
+    subscription.add(store.getProjectName().subscribe((value) => (replayed = value)))
+    expect(replayed).toBe('Shared project')
+    expect(client.observable.request).toHaveBeenCalledTimes(1)
+
+    subscription.unsubscribe()
+  })
+
+  it('emits null from getProjectName when the request fails', async () => {
+    const client = createMockClient({
+      projectId: 'failing-name-project',
+      requestImplementation: () => throwError(() => new Error('persistent failure')),
+    })
+
+    const store = createProjectStore({client})
+
+    const names: Array<string | null> = []
+    const subscription = store.getProjectName().subscribe((value) => names.push(value))
+
+    await vi.advanceTimersByTimeAsync(0)
+    expect(names).toEqual([null])
+
+    subscription.unsubscribe()
+  })
+
   it('emits null only when no organization id has ever been resolved', async () => {
     const client = createMockClient({
       projectId: 'always-failing-project',

@@ -246,6 +246,8 @@ pnpm bench dev                                     # mock + `sanity dev` for int
 
 See `perf/bench/README.md` for A/B comparisons, scenarios, and CI details. (The legacy `dev/efps` suite has been decommissioned; perf/bench replaces it.)
 
+Three skills cover this area: `sanity-bench` (`.agents/skills/sanity-bench/SKILL.md`, running and dispatching the suite, the `trigger:perf-bench` label, dispatch inputs), `sanity-radar` (`.agents/skills/sanity-radar/SKILL.md`, the Studio Radar dashboard in `dev/radar` and how to query its dataset) and `sanity-radar-investigate` (`.agents/skills/sanity-radar-investigate/SKILL.md`, the regression-hunting procedure from a drift flag or investigation prompt to a confirmed culprit).
+
 ### E2E Tests (Token Required)
 
 E2E tests require authentication tokens. Add these to `.env.local` in the repo root:
@@ -444,6 +446,30 @@ Two traps when unit testing a component or hook that suspends on a promise with 
   React throws `Update hook called on initial render` as a recoverable error — which vitest can
   catch as an unhandled error and fail the run. Once a load has started, keep calling `use()` on
   the same cached promise on every render instead of re-checking the environment.
+- **`use()` inside a hidden `<Activity>` tree can trip React's "A component suspended inside an
+  `act` scope, but the `act` call was not awaited" warning even when the thenable is already
+  fulfilled.** A sync `act` (what `render` uses) stops flushing as soon as a yielded render has
+  called `use()` with any thenable (`didUsePromise`), and a closed popover's pre-render yields
+  once its tree is big enough. Nothing actually suspended; mount with
+  `await act(async () => { render(...) })` (see `WorkspaceMenuButton.test.tsx`).
+
+#### react-rx: `useObservablePromise` and `use()` live in different components
+
+react-rx v7 ([react-rx#515](https://github.com/sanity-io/react-rx/pull/515)) never subscribes
+during a mounting render, and a hidden `<Activity>` tree never subscribes at all until it is
+revealed. Two consequences for Suspense code:
+
+- Never `use()` the promise returned by `useObservablePromise` in the same component. The
+  component suspends before the commit that would start the fetch and deadlocks (verified against
+  the v7 build). Call the hook in a parent and pass the promise to a child that reads it under a
+  `<Suspense>` boundary.
+- For content inside a closed popover or any other hidden `<Activity>` tree, call the hook in a
+  visible ancestor and pass the promise down, as `WorkspaceMenuButton` does for `ManageMenu`.
+  The fetch then starts when the ancestor commits, and the data is settled before the reveal.
+
+`useObservable` and `useSyncObservable` require an `initialValue` in v7 and render it on the first
+pass regardless of synchronous emissions, so do not rely on a replayed value winning the first
+paint through them; that is what `useObservablePromise` plus `use()` is for.
 
 #### Custom matchers shipped in node_modules (e.g. `get-it/vitest`)
 
@@ -840,6 +866,7 @@ No Docker, databases, or other local services are required for unit tests, lint,
 - **Snapshot lockfile drift can fail `pnpm check:oxlint` in untouched files.** The VM image may have `node_modules` resolved to newer in-range versions than the committed `pnpm-lock.yaml` (e.g. `@sanity/client` 8.4.0 vs the locked 8.3.0), and `pnpm install` — even with `--frozen-lockfile` — keeps rewriting the lockfile to match instead of downgrading. Type errors in files you never touched (e.g. `@sanity/vision`'s `useDatasets.test.ts` missing a `description` field) are this drift, not your change: revert the churn with `git checkout -- pnpm-lock.yaml`, never commit it, and rely on CI (which installs from the committed lockfile) for the authoritative type check of those files.
 - **Do not run oxlint type checking (`pnpm check:oxlint`) while the dev studio is running.** Both are memory-hungry and running them concurrently has exhausted the VM's memory and frozen it for hours (unkillable thrashing). Stop `sanity dev` first (Ctrl-C in its tmux session), run the checks, then restart the studio.
 - **`sanity dev` in bundledDev mode (`unstable_bundledDev: true`, on by default in `dev/test-studio`, `dev/design-studio`, `dev/radar`, `dev/auth-test-studio`) grows by roughly 300 MB of RSS per distinct lazy chunk (`/@vite/lazy?id=...`) it compiles, on top of a ~2 GB baseline.** Page reloads, fresh client ids and re-requests of an already compiled chunk cost nothing, but a studio session that touches every plugin's lazy entry points can push the server past 10 GB (13.6 GB observed on vite 8.2.2, freezing the 16 GB VM). Classic mode sits at ~1 GB for the same actions. When you need a long-running studio or plan to exercise many tools, either flip `unstable_bundledDev` off locally or run the server with a PID watchdog (`while sleep 5; do r=$(ps -o rss= -p $PID) || break; [ "${r:-0}" -gt 5000000 ] && kill $PID; done`) and restart it when it trips. This is upstream vite/rolldown behavior, not something the studio config can tune.
+- **`sanity dev` can keep serving a stale revision after two edits of the same file land within a second or two** (observed in bundledDev mode when a script rewrote `useProject.ts` twice in quick succession: the terminal logged one `hmr update` and then served the first revision, and `touch` did not trigger another). Before measuring anything in the browser after scripted or rapid edits, check the `sanity dev` terminal for an `hmr update` line matching your last edit, and restart the server if it is missing.
 - **Simulating Presentation preview failure states.** The `/test` workspace's presentation tool allows any localhost origin (`allowOrigins: ['https://*.sanity.dev', 'http://localhost:*']`), so failure UIs can be triggered deterministically by pointing the preview at a throwaway local server via the `?preview=` search param, e.g. `http://localhost:3333/test/presentation?preview=http%3A%2F%2Flocalhost%3A3398%2F`. A plain HTML page that never runs `@sanity/visual-editing` exercises the overlays connection timeout path (loading overlay → "connecting" status card after 5s → caution card with "Continue anyway" after 3s more); a server that accepts connections but never responds (`createServer(() => {})`) keeps the iframe `load` event from firing and exercises the 15s load timeout → error card → "Retry" path. Note the demo screen recordings are time-compressed, so verify real timings from the `sanity dev` terminal log — the studio pipes browser `console.error` output there with timestamps.
 - **Verifying a production studio build (`sanity build`) must happen on an allow-listed origin.** `sanity build` for `dev/test-studio` bundles the _built_ `sanity` package (run `pnpm build` first — only `sanity dev` resolves monorepo sources via the `monorepo` export condition). Serve `dev/test-studio/dist` statically on **port 3333** (e.g. `python3 -m http.server 3333`, after stopping the dev server): project `ppsg7ml5` only allow-lists `http://localhost:3333`, so from any other port API requests fail CORS and the bifur `/socket/` WebSocket is rejected during its handshake (close code 1006 + retry loop). The static server has no SPA fallback, so load `http://localhost:3333/#token=…` (root path) and let the client-side router redirect, rather than deep-linking to a workspace path.
 

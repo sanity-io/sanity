@@ -1,6 +1,6 @@
 {
   "name": "sanity",
-  "version": "6.12.0",
+  "version": "6.13.0",
   "description": "Sanity is a real-time content infrastructure with a scalable, hosted backend featuring a Graph Oriented Query Language (GROQ), asset pipelines and fast edge caches",
   "keywords": [
     "cms",
@@ -188,7 +188,7 @@
     "@sanity/validation": "workspace:*",
     "@sanity/workbench": "0.1.0-alpha.45",
     "@sentry/react": "^10.73.0",
-    "@tanstack/react-virtual": "^3.14.10",
+    "@tanstack/react-virtual": "^3.14.11",
     "@vanilla-extract/dynamic": "catalog:",
     "@xstate/react": "^6.1.0",
     "clsx": "^2.1.1",
@@ -242,7 +242,7 @@
     "xstate": "^5.32.6"
   },
   "devDependencies": {
-    "@chromatic-com/vitest": "^1.0.0",
+    "@chromatic-com/vitest": "^1.0.1",
     "@repo/package.bundle": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
