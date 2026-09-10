@@ -1021,13 +1021,13 @@ importers:
         version: 0.7.3(cac@7.0.0)(crossws@0.4.12)(srvx@0.12.7)(vite@8.2.2)
       agent-react-devtools:
         specifier: ^0.4.0
-        version: 0.4.0(react-devtools-core@7.0.1)(supports-color@8.1.1)(vite@8.2.2)
+        version: 0.4.0(react-devtools-core@8.0.0)(supports-color@8.1.1)(vite@8.2.2)
       oxc-transform-react:
         specifier: 'catalog:'
         version: 0.149.0
       react-devtools-core:
-        specifier: ^7.0.1
-        version: 7.0.1
+        specifier: ^8.0.0
+        version: 8.0.0
       rimraf:
         specifier: 'catalog:'
         version: 6.1.3
@@ -13073,6 +13073,9 @@ packages:
   react-devtools-core@7.0.1:
     resolution: {integrity: sha512-C3yNvRHaizlpiASzy7b9vbnBGLrhvdhl1CbdU6EnZgxPNbai60szdLtl+VL76UNOt5bOoVTOz5rNWZxgGt+Gsw==}
 
+  react-devtools-core@8.0.0:
+    resolution: {integrity: sha512-DGXJX+sCn2zC3ZalHoJhmZJsvP4QTpERlmCQAOgExc4Vp74ywB9ZnO8992cKw5ZcOS5u8GtpchTUPbjTiu5zaw==}
+
   react-docgen-typescript@2.4.0:
     resolution: {integrity: sha512-ZtAp5XTO5HRzQctjPU0ybY0RRCQO19X/8fxn3w7y2VVTUbGHDKULPTL4ky3vB05euSgG5NpALhEhDPvQ56wvXg==}
     peerDependencies:
@@ -22014,13 +22017,13 @@ snapshots:
 
   agent-base@7.1.4: {}
 
-  agent-react-devtools@0.4.0(react-devtools-core@7.0.1)(supports-color@8.1.1)(vite@8.2.2):
+  agent-react-devtools@0.4.0(react-devtools-core@8.0.0)(supports-color@8.1.1)(vite@8.2.2):
     dependencies:
       '@modelcontextprotocol/sdk': 1.30.0(supports-color@8.1.1)(zod@3.25.76)
       ws: 8.21.3
       zod: 3.25.76
     optionalDependencies:
-      react-devtools-core: 7.0.1
+      react-devtools-core: 8.0.0
       vite: 8.2.2(@types/node@24.13.3)(@vitejs/devtools@0.7.3)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0)
     transitivePeerDependencies:
       - '@cfworker/json-schema'
@@ -26523,6 +26526,15 @@ snapshots:
       react: 19.2.8
 
   react-devtools-core@7.0.1:
+    dependencies:
+      shell-quote: 1.10.0
+      ws: 7.5.13
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+    optional: true
+
+  react-devtools-core@8.0.0:
     dependencies:
       shell-quote: 1.10.0
       ws: 7.5.13
