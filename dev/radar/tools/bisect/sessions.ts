@@ -1,3 +1,4 @@
+import {bisectSessionId} from '@repo/utils/radar-ids'
 import {type Patch} from '@sanity/client'
 import {type SanityClient} from 'sanity'
 
@@ -28,7 +29,7 @@ function endpointLabel(endpoint: {sha: string; label?: string}): string {
 
 export async function createSession(client: SanityClient, input: NewSessionInput): Promise<string> {
   const created = await client.create({
-    _id: `bisectSession-${crypto.randomUUID()}`,
+    _id: bisectSessionId(crypto.randomUUID()),
     _type: 'bisectSession',
     title: `${endpointLabel(input.good)} → ${endpointLabel(input.bad)}`,
     good: input.good,
@@ -66,7 +67,7 @@ export async function reportRegression(
   input: ManualRegressionInput,
 ): Promise<string> {
   const created = await client.create({
-    _id: `bisectSession-${crypto.randomUUID()}`,
+    _id: bisectSessionId(crypto.randomUUID()),
     _type: 'bisectSession',
     title: `${endpointLabel(input.good)} → ${endpointLabel(input.bad)}`,
     good: input.good,

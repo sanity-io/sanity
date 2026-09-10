@@ -7,13 +7,14 @@ import {ratioBox, ratioBoxChildInsetVar, ratioBoxPaddingBottomVar} from './Ratio
 
 type RatioBoxProps = BoxProps &
   Omit<ComponentPropsWithRef<'div'>, keyof BoxProps> & {
+    $ratio?: number
     ratio?: number
   }
 
 const DEFAULT_RATIO = 3 / 2
 
 export function RatioBox(props: RatioBoxProps) {
-  const {ratio = DEFAULT_RATIO, className, style, ...rest} = props
+  const {$ratio, ratio = $ratio ?? DEFAULT_RATIO, className, style, ...rest} = props
   const {padding = 0} = rest
   // The child inset mirrors the (numeric) `padding` prop as pixels, like the styled template did
   const childInset = typeof padding === 'number' ? `${padding}px` : undefined

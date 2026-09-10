@@ -151,7 +151,7 @@ describe('toStorableRun', () => {
     const stored = toStorableRun({...RUN, git: {...RUN.git, sha}})
     expect(stored.git.commit).toEqual({
       _type: 'reference',
-      _ref: `gitCommit-${sha}`,
+      _ref: `git-commit-${sha}`,
       _weak: true,
     })
     expect(stored.git.sha).toBe(sha)

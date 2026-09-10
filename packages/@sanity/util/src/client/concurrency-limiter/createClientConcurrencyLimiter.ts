@@ -1,4 +1,5 @@
 import {type ObservableSanityClient, type SanityClient} from '@sanity/client'
+import {anySignal} from 'get-it/any-signal'
 import {defer, finalize, Observable, switchMap} from 'rxjs'
 
 import {ConcurrencyLimiter} from '../../concurrency-limiter'
@@ -7,7 +8,7 @@ function acquireSlot(limiter: ConcurrencyLimiter, signal?: AbortSignal): Observa
   return new Observable((subscriber) => {
     const subscriptionController = new AbortController()
     const waitSignal = signal
-      ? AbortSignal.any([signal, subscriptionController.signal])
+      ? anySignal([signal, subscriptionController.signal])
       : subscriptionController.signal
 
     void limiter.ready(waitSignal).then(
@@ -56,7 +57,7 @@ export function createClientConcurrencyLimiter(
   function resolveSignal(signal?: AbortSignal): AbortSignal | undefined {
     if (!defaultSignal || defaultSignal === signal) return signal || defaultSignal
     if (!signal) return defaultSignal
-    return AbortSignal.any([defaultSignal, signal])
+    return anySignal([defaultSignal, signal])
   }
 
   function wrapClient(client: SanityClient): SanityClient {
