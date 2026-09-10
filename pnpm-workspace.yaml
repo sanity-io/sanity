@@ -150,7 +150,6 @@ minimumReleaseAgeExclude:
 
 overrides:
   '@sanity/ui>react-is': '19.3.0'
-  vitest: 'catalog:'
 
 preferWorkspacePackages: true
 
