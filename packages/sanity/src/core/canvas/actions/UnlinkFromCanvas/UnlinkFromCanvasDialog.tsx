@@ -1,8 +1,8 @@
 import {type SanityDocument} from '@sanity/client'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {AnimatePresence, motion} from 'motion/react'
 import {useId} from 'react'
-import {Box} from 'ui5'
+import {VStack, Box} from 'ui5'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {useSchema} from '../../../hooks/useSchema'
@@ -62,8 +62,8 @@ export const UnlinkFromCanvasDialog = ({
         },
       }}
     >
-      <Stack gap={3}>
-        <Stack gap={3}>
+      <VStack gap={3}>
+        <VStack gap={3}>
           <Box paddingBottom={2}>
             <Text size={1} muted>
               <Translate
@@ -78,7 +78,7 @@ export const UnlinkFromCanvasDialog = ({
               {t('dialog.unlink-from-canvas.description')}
             </Text>
           </Box>
-        </Stack>
+        </VStack>
         <AnimatePresence>
           {status === 'error' && (
             <motion.div
@@ -94,7 +94,7 @@ export const UnlinkFromCanvasDialog = ({
             </motion.div>
           )}
         </AnimatePresence>
-      </Stack>
+      </VStack>
     </Dialog>
   )
 }

@@ -1,5 +1,6 @@
 import {type SanityDocument} from '@sanity/types'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
+import {VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {LinkToCanvasDiff} from '../LinkToCanvasDiff'
@@ -22,12 +23,12 @@ export function LinkToCanvasDiffStory() {
   return (
     <TestWrapper schemaTypes={[]}>
       <Card padding={4} style={{maxWidth: 480}}>
-        <Stack gap={2}>
+        <VStack gap={2}>
           <Text muted size={1} weight="medium">
             draft to published chips
           </Text>
           <LinkToCanvasDiff originalDocument={DRAFT} mappedDocument={undefined} />
-        </Stack>
+        </VStack>
       </Card>
     </TestWrapper>
   )
