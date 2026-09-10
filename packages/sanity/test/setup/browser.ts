@@ -79,9 +79,9 @@ if (typeof document !== 'undefined') {
     }
     /* Enabled send uses tone=primary; :hover fills it solid between captures
        even after pointer park. Keep the idle primary surface. */
-    [data-testid='comment-input-send-button']:hover {
-      background-color: var(--card-badge-primary-bg) !important;
-      color: var(--card-badge-primary-fg) !important;
+    [data-testid='comment-input-send-button']:not(:disabled):hover {
+      background-color: var(--card-badge-primary-bg-color) !important;
+      color: var(--card-badge-primary-fg-color) !important;
     }
   `
   document.documentElement.appendChild(style)
