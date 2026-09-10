@@ -149,7 +149,14 @@ minimumReleaseAgeExclude:
   - '@oxc-project/types@0.147.0'
 
 overrides:
-  '@sanity/ui>react-is': '19.3.0'
+  vitest: 'catalog:'
+  # Storybook 10.6 only supports Vitest 4; keep its project and peer set on one version.
+  '@storybook/addon-vitest@10.6.0>vitest': '4.1.11'
+  '@vitest/browser-playwright@4.1.11>vitest': '4.1.11'
+  '@vitest/browser@4.1.11>vitest': '4.1.11'
+  '@vitest/coverage-v8@4.1.11>vitest': '4.1.11'
+  '@vitest/ui@4.1.11>vitest': '4.1.11'
+  'sanity-storybook>vitest': '4.1.11'
 
 preferWorkspacePackages: true
 
