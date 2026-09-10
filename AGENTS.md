@@ -143,6 +143,11 @@ pnpm test -- --project=sanity
 
 **Important:** Do NOT use `pnpm test -- path/to/file.test.ts` for running a single file — it runs all tests across all projects. Use `pnpm vitest run --project=<project> <path>` instead.
 
+The headless validation package is registered as `@sanity/validation`: run its full suite with
+`pnpm vitest run --project=@sanity/validation`. When testing inherited validation, cover Studio's
+compilation path too: call `inferFromSchema` on the built-in schema before compiling custom types,
+then call it on the compiled custom schema. Studio inherits already-normalized built-in rules.
+
 Components that need auth context use `createMockAuthStore` in tests, so no real authentication is needed. This is the recommended way to verify most code changes.
 
 ### Running the Dev Studio (Auth Required)
@@ -230,6 +235,10 @@ pnpm analyze:sanity
 ```
 
 The report is written to `packages/sanity/lib/analyze-data.md` (gitignored with `lib/`). The flag is opt-in because analysis adds work to the package build; it is declared in `packages/sanity/turbo.json` so turbo-cached builds are invalidated when it changes. Wiring is `@sanity/tsdown-config`'s `bundleAnalyzer` option (`true` selects markdown).
+
+### Auto-updating studio CSS (Lightning CSS `light-dark()`)
+
+The CDN / auto-update bundle Vite config lives in `@repo/package.bundle` (`createDefaultConfig`). Vite 8 minifies that CSS with Lightning CSS against `baseline-widely-available` (Chrome 111 / Safari 16.4), which down-transpiles `light-dark()` into `--lightningcss-light` / `--lightningcss-dark` toggled only by `prefers-color-scheme`. That breaks Studio theme colors when OS appearance ≠ Studio theme (ui5 sets `color-scheme` independently). The shared config excludes `Features.LightDark` so the function is left native — same workaround as Tailwind; see [lightningcss#873](https://github.com/parcel-bundler/lightningcss/issues/873). Do not re-enable that polyfill. The `sanity build` / `sanity preview` Vite config lives in `sanity-io/cli`, not this repo.
 
 ### Studio performance benchmarks (perf/bench — No Auth Required)
 
@@ -880,7 +889,7 @@ No Docker, databases, or other local services are required for unit tests, lint,
 - **Node version:** the VM runs Node 22.x, which satisfies the repo engine range (`>=22.12`). A couple of internal tooling packages print a harmless `Unsupported engine` warning wanting Node `>=22.18`; it does not affect testing or running the studio. However, **`pnpm build` requires Node >= 22.18**: the packages build with `tsdown`, which loads its `tsdown.config.ts` through Node's native TypeScript support and fails on older Node 22.x (e.g. the VM default `v22.14.0`) with `Failed to import module "unrun"`. A new enough runtime is available via nvm: `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH"`.
 - **`pnpm build` can fail in the VM with `unable to spawn child process: Exec format error (os error 8)`.** Turbo itself starts (it prints its version and the task graph) but cannot spawn the per-package build, so every task fails within milliseconds. Reproducible on a clean `main` and independent of the Node version, so it is an environment artifact, not your change. Build through pnpm instead — `-r run` executes in topological order, same as turbo: `pnpm -r --filter="./packages/*" --filter="./packages/@sanity/*" run build`.
 - **`pnpm build` may dirty `packages/sanity/package.json`.** tsdown auto-generates the `inlinedDependencies` field on every build, and in this VM the computed set can differ from what is committed (e.g. `@sanity/sdk` and `zustand` get dropped) even on a clean checkout of `main`. That churn is an environment artifact, not part of your change — revert it with `git checkout -- packages/sanity/package.json` (re-applying any edits of your own) instead of committing it.
-- **Timezone-sensitive snapshots in `@sanity/validation`.** `test/dates.test.ts` snapshots render datetimes in `America/Los_Angeles`, and the VM defaults to UTC, so those 4 snapshot tests fail locally with times shifted by the `America/Los_Angeles` offset on any branch. Run with `TZ=America/Los_Angeles pnpm test` or treat the failures as environment artifacts, like the lockfile drift below.
+- **Timezone-sensitive snapshots in `@sanity/validation`.** `test/dates.test.ts` snapshots render datetimes in `America/Los_Angeles`. The package Vitest config sets that timezone for its workers, including when run through the root suite.
 - **`isUsingLegacyHttp.test.ts` fails in the VM on any branch.** The "reuses one legacy protocol probe across callers and subscriptions" case resolves `[undefined, undefined, undefined]` instead of `[false, false, false]`. It reproduces on a clean detached `main` with main's own lockfile, and the `Unit tests` job is green on the same commit in CI, so treat it as an environment artifact like the timezone snapshots above rather than a regression in your change.
 - **`pnpm lint:workflows` needs zizmor installed first.** It is not in the image and is not an npm package: `pip3 install --user zizmor`, then run it with `PATH="$HOME/.local/bin:$PATH"`. Baseline before blaming your change — a clean `main` currently reports 11 high-severity findings with zizmor 1.30.1 (CI pins an older version), so compare finding counts with and without your change rather than requiring zero.
 - **`pnpm depcheck` fails on a clean checkout of `main` in the VM** (knip reports the root `lefthook` devDependency as unused, plus a `knip.jsonc` config hint). Baseline before blaming your change: `git stash push -u && pnpm depcheck; git stash pop`.

@@ -1,5 +1,5 @@
 import {type HotspotPreview, type Image, type ImageSchemaType} from '@sanity/types'
-import {Card, Grid, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Heading, Stack, Text} from '@sanity/ui'
 import {
   type ReactNode,
   useCallback,
@@ -10,7 +10,7 @@ import {
   useState,
 } from 'react'
 import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Grid, Flex, Box} from 'ui5'
 
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
@@ -228,7 +228,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
 
         {hotspotPreviews.length > 0 ? (
           <Box marginTop={2}>
-            <Grid gridTemplateColumns={4} gap={1}>
+            <Grid gridTemplateColumns="repeat(4, minmax(0, 1fr))" gap={1}>
               {hotspotPreviews.map(({title, aspectRatio}) => (
                 <Box key={title} marginTop={2}>
                   <Heading as="h4" size={0}>
