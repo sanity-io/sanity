@@ -236,6 +236,10 @@ pnpm analyze:sanity
 
 The report is written to `packages/sanity/lib/analyze-data.md` (gitignored with `lib/`). The flag is opt-in because analysis adds work to the package build; it is declared in `packages/sanity/turbo.json` so turbo-cached builds are invalidated when it changes. Wiring is `@sanity/tsdown-config`'s `bundleAnalyzer` option (`true` selects markdown).
 
+### Auto-updating studio CSS (Lightning CSS `light-dark()`)
+
+The CDN / auto-update bundle Vite config lives in `@repo/package.bundle` (`createDefaultConfig`). Vite 8 minifies that CSS with Lightning CSS against `baseline-widely-available` (Chrome 111 / Safari 16.4), which down-transpiles `light-dark()` into `--lightningcss-light` / `--lightningcss-dark` toggled only by `prefers-color-scheme`. That breaks Studio theme colors when OS appearance ≠ Studio theme (ui5 sets `color-scheme` independently). The shared config excludes `Features.LightDark` so the function is left native — same workaround as Tailwind; see [lightningcss#873](https://github.com/parcel-bundler/lightningcss/issues/873). Do not re-enable that polyfill. The `sanity build` / `sanity preview` Vite config lives in `sanity-io/cli`, not this repo.
+
 ### Studio performance benchmarks (perf/bench — No Auth Required)
 
 The `perf/bench` suite benchmarks a built studio against a **local mock** of the Sanity API — fully hermetic, no tokens, no network:
