@@ -61,6 +61,12 @@ if (typeof document !== 'undefined') {
       pointer-events: auto !important;
       width: max-content !important;
     }
+    /* Block / table object menus render an ellipsis that toggles with hover
+       between identical-code Chromatic captures. Keep them fully opaque. */
+    [data-testid='block-preview'] button,
+    [data-testid='pte-block-object'] button {
+      opacity: 1 !important;
+    }
     /* CommentInput applies :hover after :focus-within, so a leftover pointer
        on the card swaps the focus ring for the hover border between captures.
        Do not require [data-focused] — React focus state can lag :focus-within

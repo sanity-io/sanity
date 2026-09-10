@@ -515,6 +515,41 @@ export function testHelpers() {
           .toBe(true)
       }
 
+      // CollapseMenu measures toolbar width asynchronously; button set /
+      // x-offsets must stop moving or identical-code captures disagree on
+      // overflow "..." vs inline Strong/Italic/etc.
+      const toolbarSig = () =>
+        Array.from(
+          window.document.querySelectorAll<HTMLElement>('[data-testid="pt-editor__toolbar-card"]'),
+        )
+          .filter((el) => el.checkVisibility())
+          .map((toolbar) =>
+            Array.from(toolbar.querySelectorAll('button'))
+              .filter((btn) => btn instanceof HTMLElement && btn.checkVisibility())
+              .map((btn) => {
+                const label =
+                  btn.getAttribute('aria-label')?.trim() || btn.textContent?.trim() || ''
+                return `${label}@${Math.round(btn.getBoundingClientRect().x)}`
+              })
+              .join(','),
+          )
+          .join('||')
+      if (toolbarSig()) {
+        let previous = ''
+        let stable = 0
+        await expect
+          .poll(() => {
+            const next = toolbarSig()
+            if (next && next === previous) stable += 1
+            else {
+              previous = next
+              stable = 0
+            }
+            return stable >= 3
+          })
+          .toBe(true)
+      }
+
       // Snap after geometry has settled so the archive cannot land on a
       // half-pixel Floating UI translate that differs across identical runs.
       snapFloatingUiToIntegerPixels()

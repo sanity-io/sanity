@@ -154,12 +154,18 @@ describe('Portable Text Input', () => {
 
   describe('onEditorChange', () => {
     it('Supports own handler of editor changes through props', async () => {
-      const {getFocusedPortableTextEditor} = testHelpers()
+      const {getFocusedPortableTextEditor, settleChromaticEndState} = testHelpers()
       const changes: EditorChange[] = []
       const pushChange = (change: EditorChange) => changes.push(change)
       void render(<InputHarness ptInputProps={{onEditorChange: pushChange}} />)
       await getFocusedPortableTextEditor('field-body')
       expect(changes.length).toBeGreaterThan(0)
+      // Empty caret reports "Normal"; CollapseMenu must finish measuring so
+      // Strong/Italic are inline rather than overflow "..." before Chromatic.
+      await settleChromaticEndState({
+        styleSelectText: /^Normal$/,
+        styleSelectRoot: '[data-testid="field-body"]',
+      })
     })
   })
 

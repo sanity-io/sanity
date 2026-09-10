@@ -7,7 +7,10 @@ import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
 
 import {TestForm} from '../../../../../../test/browser/TestForm'
-import {testHelpers} from '../../../../../../test/browser/testHelpers'
+import {
+  snapFloatingUiToIntegerPixels,
+  testHelpers,
+} from '../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 
 interface ToolbarHarnessProps {
@@ -426,6 +429,45 @@ describe('Portable Text Input', () => {
           )
           .toBe(true)
 
+        // Do not park the pointer — body mouseover can dismiss the open menu.
+        // Settle menu geometry, then re-assert visibility right before archive:
+        // without this, identical-code captures raced open vs closed.
+        const {settleChromaticEndState} = testHelpers()
+        await settleChromaticEndState({parkPointer: false})
+        const menuBox = () => {
+          const items = Array.from(
+            window.document.querySelectorAll<HTMLElement>('[role="menuitem"]'),
+          ).filter((el) => el.checkVisibility())
+          if (!items.length) return ''
+          const r = items[0]!.parentElement?.getBoundingClientRect()
+          if (!r) return ''
+          return `${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)},${Math.round(r.height)},${items.length}`
+        }
+        await expect.poll(menuBox).not.toBe('')
+        let previous = ''
+        let stable = 0
+        await expect
+          .poll(() => {
+            const next = menuBox()
+            if (next && next === previous) stable += 1
+            else {
+              previous = next
+              stable = 0
+            }
+            return stable >= 3
+          })
+          .toBe(true)
+        snapFloatingUiToIntegerPixels()
+        await expect
+          .poll(() =>
+            Array.from(window.document.querySelectorAll('[role="menuitem"]')).some(
+              (el) =>
+                el instanceof HTMLElement &&
+                el.checkVisibility() &&
+                el.textContent?.trim() === 'Normal',
+            ),
+          )
+          .toBe(true)
         await takeSnapshot('nested-style-menu-open')
       })
     })

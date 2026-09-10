@@ -177,7 +177,7 @@ const document: SanityDocument = {
 
 describe('Portable Text Input - range decorations at depth', () => {
   it('decorates ranges at the root and inside table cells alike', async () => {
-    const {getFocusedPortableTextEditor} = testHelpers()
+    const {getFocusedPortableTextEditor, settleChromaticEndState} = testHelpers()
 
     void render(<TableRangeDecorationDepthHarness document={document} />)
 
@@ -189,6 +189,13 @@ describe('Portable Text Input - range decorations at depth', () => {
       {text: 'decorated', insideTable: false},
       {text: 'decorated', insideTable: true},
     ])
+    // Park the pointer and wait for toolbar / block-object chrome to settle —
+    // the table/block ellipsis was appearing on only one of two identical-code
+    // Chromatic captures.
+    await settleChromaticEndState({
+      styleSelectText: /^Normal$/,
+      styleSelectRoot: '[data-testid="field-body"]',
+    })
   })
 })
 
