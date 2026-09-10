@@ -77,6 +77,12 @@ if (typeof document !== 'undefined') {
       --input-box-shadow: inset 0 0 0 1px var(--card-focus-ring-color) !important;
       box-shadow: inset 0 0 0 1px var(--card-focus-ring-color) !important;
     }
+    /* Enabled send uses tone=primary; :hover fills it solid between captures
+       even after pointer park. Keep the idle primary surface. */
+    [data-testid='comment-input-send-button']:hover {
+      background-color: var(--card-badge-primary-bg) !important;
+      color: var(--card-badge-primary-fg) !important;
+    }
   `
   document.documentElement.appendChild(style)
 }

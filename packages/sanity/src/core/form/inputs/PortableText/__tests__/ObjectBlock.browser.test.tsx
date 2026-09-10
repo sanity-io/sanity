@@ -123,8 +123,12 @@ describe('Portable Text Input', () => {
 
       // Assertion: Text in custom preview component should show
       await expect.element(page.getByText('Custom preview block:')).toBeVisible()
-      // Last click sits on Insert Object; Chromatic delay otherwise archives
-      // its tooltip on some identical-code captures.
+      // Insert opens the edit dialog and an inline-object toolbar; Close /
+      // toolbar hover then races the archive. Close first, then park.
+      const $editDialog = page.getByTestId('popover-edit-dialog')
+      await expect.element($editDialog).toBeVisible()
+      await page.getByTestId('close-popover-edit-dialog-button').click()
+      await expect.element($editDialog).not.toBeInTheDocument()
       await settleChromaticEndState()
     })
 

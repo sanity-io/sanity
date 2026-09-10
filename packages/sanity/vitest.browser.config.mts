@@ -76,9 +76,10 @@ export default defineConfig({
             // line of text wraps; viewport crops keep the frame fixed at
             // 1280×900 (see `browser.viewport`) and include portaled overlays.
             cropToViewport: true,
-            // Extra settle time for PTE toolbar CollapseMenu / font metrics after
-            // interactions; 500ms still left style-select subpixel flakes.
-            delay: 1000,
+            // Do not add a post-test delay: 1000ms was long enough for hover
+            // tooltips, primary-button fills, and Floating UI to drift after
+            // settleChromaticEndState. Layout waits belong in that helper.
+            delay: 0,
             pauseAnimationAtEnd: true,
             prefersReducedMotion: 'reduce',
           }

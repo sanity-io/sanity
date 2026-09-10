@@ -113,6 +113,12 @@ describe('Comments', () => {
       await userEvent.keyboard('@')
       const $mentionsMenu = page.getByTestId('comments-mentions-menu')
       await expect.element($mentionsMenu).toBeVisible()
+      await expect
+        .poll(() => {
+          const el = window.document.querySelector('[data-testid="comments-mentions-menu"]')
+          return el instanceof HTMLElement ? Math.round(el.getBoundingClientRect().height) : 0
+        })
+        .toBeGreaterThan(0)
       // Mentions close on click-outside; a real pointer park dismisses the menu.
       await settleChromaticEndState({parkPointer: false})
       await expect.element($mentionsMenu).toBeVisible()
