@@ -582,6 +582,12 @@ Both work in every run (no-ops on firefox/webkit); only `CHROMATIC=1` runs captu
 See the `sanity-visual-regression` skill (`.agents/skills/sanity-visual-regression/SKILL.md`)
 for how to add coverage, which source owns a state, and determinism rules.
 
+Keep `test.sequence.hooks: 'list'` in `packages/sanity/vitest.browser.config.mts`. Vitest defaults
+hooks to `parallel`, which lets Chromatic's automatic snapshot race
+`packages/sanity/test/setup/browser.ts` cleanup and produces partially unmounted, blank, or
+duplicate captures. The Chromatic plugin prepends its setup file for `list` ordering, so the
+snapshot finishes before React cleanup starts.
+
 ### E2E Tests (Playwright)
 
 ```bash
