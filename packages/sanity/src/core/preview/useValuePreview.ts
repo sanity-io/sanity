@@ -4,10 +4,11 @@ import {
   type SchemaType,
   type SortOrdering,
 } from '@sanity/types'
-import {useMemo} from 'react'
+import {dequal} from 'dequal'
+import {useEffect, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
-import {type Observable, of} from 'rxjs'
-import {catchError, map} from 'rxjs/operators'
+import {BehaviorSubject, type Observable, of} from 'rxjs'
+import {catchError, distinctUntilChanged, map, switchMap} from 'rxjs/operators'
 
 import {type PerspectiveStack} from '../perspective/types'
 import {usePerspective} from '../perspective/usePerspective'
@@ -38,6 +39,17 @@ const IDLE_STATE: State = {
     description: undefined,
   },
 }
+
+function isSameError(a: Error | undefined, b: Error | undefined): boolean {
+  return a === b || (!!a && !!b && a.name === b.name && a.message === b.message)
+}
+
+// Prepared previews are small, so comparing them is cheap. Editing a field the preview does not
+// select, or passing an equal value object built during render, then leaves the rendered state
+// alone instead of re-rendering every preview consumer (or, for the latter, looping).
+function isSameState(a: State, b: State): boolean {
+  return a.isLoading === b.isLoading && isSameError(a.error, b.error) && dequal(a.value, b.value)
+}
 /**
  * @internal
  */
@@ -66,57 +78,70 @@ export function useValuePreview(props: {
   } = props || {}
   const {observeForPreview} = useDocumentPreviewStore()
   const {perspectiveStack, selectedVariantName} = usePerspective()
-  const observable = useMemo<Observable<State>>(() => {
-    // this will render previews as "loaded" (i.e. not in loading state) – typically with "Untitled" text
-    if (!enabled || !previewValue || !schemaType) return of(IDLE_STATE)
 
-    const goingToUnpublish = isGoingToUnpublish(previewValue as SanityDocument)
+  // The value is a new object on every edit. It enters the pipeline through a subject so the
+  // observable identity — and with it the subscription and the field observers it holds — survives
+  // keystrokes; a new identity per value would resubscribe and refetch every reference it follows.
+  const [value$] = useState(() => new BehaviorSubject<unknown>(previewValue))
+  useEffect(() => {
+    value$.next(previewValue)
+  }, [previewValue, value$])
 
-    const updatedStack = goingToUnpublish ? [] : (chosenPerspectiveStack ?? perspectiveStack)
-    // A document slated for unpublishing is previewed as its published version, which is outside
-    // of any variant. Otherwise the variant follows the perspective: only inherited from the
-    // context when the perspective is too.
-    const updatedVariant = goingToUnpublish
-      ? undefined
-      : (chosenVariant ?? (chosenPerspectiveStack ? undefined : selectedVariantName))
-    const updatedDocId = goingToUnpublish
-      ? getPublishedId((previewValue as SanityDocument)._id)
-      : (previewValue as SanityDocument)._id
+  const observable = useMemo<Observable<State>>(
+    () =>
+      value$.pipe(
+        distinctUntilChanged(),
+        switchMap((value) => {
+          // this will render previews as "loaded" (i.e. not in loading state) – typically with "Untitled" text
+          if (!enabled || !value || !schemaType) return of(IDLE_STATE)
 
-    // allow for previewing the published document when a version is slated for unpublishing
-    // but if it's not for unpublishing, then we want to preview the content as was before
-    const restPreviewValue = goingToUnpublish
-      ? {}
-      : {
-          ...(previewValue as Previewable),
-        }
+          const goingToUnpublish = isGoingToUnpublish(value as SanityDocument)
 
-    return observeForPreview(
-      {
-        _id: updatedDocId,
-        ...restPreviewValue,
-      },
+          const updatedStack = goingToUnpublish ? [] : (chosenPerspectiveStack ?? perspectiveStack)
+          // A document slated for unpublishing is previewed as its published version, which is
+          // outside of any variant. Otherwise the variant follows the perspective: only inherited
+          // from the context when the perspective is too.
+          const updatedVariant = goingToUnpublish
+            ? undefined
+            : (chosenVariant ?? (chosenPerspectiveStack ? undefined : selectedVariantName))
+          const updatedDocId = goingToUnpublish
+            ? getPublishedId((value as SanityDocument)._id)
+            : (value as SanityDocument)._id
+
+          // allow for previewing the published document when a version is slated for unpublishing
+          // but if it's not for unpublishing, then we want to preview the content as was before
+          const restPreviewValue = goingToUnpublish ? {} : {...(value as Previewable)}
+
+          return observeForPreview(
+            {
+              _id: updatedDocId,
+              ...restPreviewValue,
+            },
+            schemaType,
+            {
+              perspective: updatedStack,
+              variant: updatedVariant,
+              viewOptions: {ordering: ordering},
+            },
+          ).pipe(
+            map((event) => ({isLoading: false, value: event.snapshot || undefined})),
+            catchError((error) => of({isLoading: false, error})),
+          )
+        }),
+        distinctUntilChanged(isSameState),
+      ),
+    [
+      value$,
+      enabled,
       schemaType,
-      {
-        perspective: updatedStack,
-        variant: updatedVariant,
-        viewOptions: {ordering: ordering},
-      },
-    ).pipe(
-      map((event) => ({isLoading: false, value: event.snapshot || undefined})),
-      catchError((error) => of({isLoading: false, error})),
-    )
-  }, [
-    enabled,
-    previewValue,
-    schemaType,
-    chosenPerspectiveStack,
-    perspectiveStack,
-    chosenVariant,
-    selectedVariantName,
-    observeForPreview,
-    ordering,
-  ])
+      chosenPerspectiveStack,
+      perspectiveStack,
+      chosenVariant,
+      selectedVariantName,
+      observeForPreview,
+      ordering,
+    ],
+  )
 
   // Do not defer: search/reference UIs assert on preview titles synchronously after selection.
   return useSyncObservable(observable, INITIAL_STATE)
