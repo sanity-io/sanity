@@ -1457,8 +1457,8 @@ importers:
         specifier: 'catalog:'
         version: 8.6.1(vitest@4.1.11)
       '@sanity/icons':
-        specifier: ^5.2.1
-        version: 5.2.1(react@19.3.0)
+        specifier: ^5.2.2
+        version: 5.2.2(react@19.3.0)
       '@sanity/ui':
         specifier: 'catalog:'
         version: 4.2.0(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
@@ -1632,8 +1632,8 @@ importers:
         specifier: workspace:*
         version: link:../../@repo/tsdown.config
       '@sanity/icons':
-        specifier: ^5.2.1
-        version: 5.2.1(react@19.3.0)
+        specifier: ^5.2.2
+        version: 5.2.2(react@19.3.0)
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12
@@ -1842,8 +1842,8 @@ importers:
         specifier: ^3.0.8
         version: 3.0.8
       '@sanity/icons':
-        specifier: ^5.2.1
-        version: 5.2.1(react@19.3.0)
+        specifier: ^5.2.2
+        version: 5.2.2(react@19.3.0)
       '@sanity/lezer-groq':
         specifier: ^1.0.4
         version: 1.0.4
@@ -2061,8 +2061,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0
       '@sanity/icons':
-        specifier: ^5.2.1
-        version: 5.2.1(react@19.3.0)
+        specifier: ^5.2.2
+        version: 5.2.2(react@19.3.0)
       '@sanity/id-utils':
         specifier: ^1.1.0
         version: 1.1.0
@@ -7266,6 +7266,12 @@ packages:
 
   '@sanity/icons@5.2.1':
     resolution: {integrity: sha512-P5gY1HRungh4RgCcypdIpu/SKoTwRBTttpbHntZjdW1MO3MK6xEOs+pbAzSARyhh22OcN9PkBBEYk2FL34BvfQ==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+    peerDependencies:
+      react: ^18 || ^19
+
+  '@sanity/icons@5.2.2':
+    resolution: {integrity: sha512-v+5dMjYJ6pC4x8IS/4O/GvQBet5GqsXsqJxBiiS6WHZt21EgntpW+q5hxU3dO4q/njiyR8O1JsdLAs3NranoXA==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       react: ^18 || ^19
@@ -19936,6 +19942,10 @@ snapshots:
       - supports-color
 
   '@sanity/icons@5.2.1(react@19.3.0)':
+    dependencies:
+      react: 19.3.0
+
+  '@sanity/icons@5.2.2(react@19.3.0)':
     dependencies:
       react: 19.3.0
 
