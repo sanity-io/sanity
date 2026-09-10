@@ -1,7 +1,7 @@
 import {BinaryDocumentIcon} from '@sanity/icons/BinaryDocument'
 import {UploadIcon} from '@sanity/icons/Upload'
-import {Card, Stack, Text} from '@sanity/ui'
-import {Flex} from 'ui5'
+import {Card, Text} from '@sanity/ui'
+import {VStack, Flex} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {FileInputButton} from '../../form/inputs/files/common/FileInputButton/FileInputButton'
@@ -55,7 +55,7 @@ export function ImageAttachment(props: ImageAttachmentProps) {
 
   if (imageFile) {
     return (
-      <Stack gap={3}>
+      <VStack gap={3}>
         <Text size={1} weight="medium">
           {t('feedback.attachment.label')}
         </Text>
@@ -72,12 +72,12 @@ export function ImageAttachment(props: ImageAttachmentProps) {
             />
           </Flex>
         </Card>
-      </Stack>
+      </VStack>
     )
   }
 
   return (
-    <Stack gap={3}>
+    <VStack gap={3}>
       <Text size={1} weight="medium">
         {t('feedback.attachment.label')}
       </Text>
@@ -112,6 +112,6 @@ export function ImageAttachment(props: ImageAttachmentProps) {
           {error}
         </Text>
       )}
-    </Stack>
+    </VStack>
   )
 }
