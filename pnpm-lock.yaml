@@ -212,6 +212,7 @@ catalogs:
       version: 2.3.0
 
 overrides:
+  '@sanity/ui>react-is': 19.3.0
   vitest: ^4.1.11
 
 importers:
