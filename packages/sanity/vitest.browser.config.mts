@@ -81,6 +81,13 @@ export default defineConfig({
   test: {
     name: 'sanity-browser',
     include: ['./src/**/*.browser.test.{ts,tsx}'],
+    // Chromatic and the React test setup both register `afterEach` hooks:
+    // Chromatic captures the automatic snapshot, then the test setup unmounts
+    // the rendered tree. Vitest defaults hooks to `parallel`, which lets those
+    // operations race and produces partially unmounted or blank snapshots.
+    // `list` makes the Chromatic setup file run first, so capture completes
+    // before cleanup starts.
+    sequence: {hooks: 'list'},
     // Browser tests are slower and flakier than jsdom tests, especially on
     // WebKit/Firefox in CI where all three browsers share one runner. Give
     // them generous timeouts and retry once (the old Playwright CT setup used
