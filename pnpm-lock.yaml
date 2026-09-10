@@ -1235,8 +1235,8 @@ importers:
         specifier: ^1.1.0
         version: 1.1.0
       '@sanity/mutate':
-        specifier: ^0.18.1
-        version: 0.18.1(xstate@5.32.6)
+        specifier: ^0.18.2
+        version: 0.18.2(vitest@4.1.11)(xstate@5.32.6)
       '@sanity/types':
         specifier: workspace:*
         version: link:../../@sanity/types
@@ -2082,8 +2082,8 @@ importers:
         specifier: 'catalog:'
         version: 8.0.2(supports-color@8.1.1)(xstate@5.32.6)
       '@sanity/mutate':
-        specifier: ^0.18.1
-        version: 0.18.1(xstate@5.32.6)
+        specifier: ^0.18.2
+        version: 0.18.2(vitest@4.1.11)(xstate@5.32.6)
       '@sanity/mutator':
         specifier: workspace:*
         version: link:../@sanity/mutator
@@ -7318,6 +7318,14 @@ packages:
 
   '@sanity/mutate@0.18.1':
     resolution: {integrity: sha512-28iICKl33s9yr8XtgpoCHOb+l5kKVbd6CpFYi4Vx0fHNZcFiKDGdY+RzZrC34GWqb6M16wkxwtHSVbEmXbfTpw==}
+    peerDependencies:
+      xstate: ^5.19.0
+    peerDependenciesMeta:
+      xstate:
+        optional: true
+
+  '@sanity/mutate@0.18.2':
+    resolution: {integrity: sha512-1z199kB46I1F+3z7Z0bwKepUf81BAZ766jhpozVfC8nHaN/ceqQby7lh95KbrwqnlpxbIRu7dWpzXMBdTvm1xA==}
     peerDependencies:
       xstate: ^5.19.0
     peerDependenciesMeta:
@@ -20013,6 +20021,22 @@ snapshots:
       rxjs: 7.8.2
     optionalDependencies:
       xstate: 5.32.6
+
+  '@sanity/mutate@0.18.2(vitest@4.1.11)(xstate@5.32.6)':
+    dependencies:
+      '@isaacs/ttlcache': 2.1.5
+      '@sanity/client': 8.6.1(vitest@4.1.11)
+      '@sanity/diff-match-patch': 3.2.0
+      '@sanity/uuid': 3.0.3
+      hotscript: 1.0.13
+      lodash: 4.18.1
+      mendoza: 3.0.8
+      nanoid: 5.1.16
+      rxjs: 7.8.2
+    optionalDependencies:
+      xstate: 5.32.6
+    transitivePeerDependencies:
+      - vitest
 
   '@sanity/presentation-comlink@2.2.3(@sanity/types@packages+@sanity+types)':
     dependencies:

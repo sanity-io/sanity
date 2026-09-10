@@ -173,7 +173,7 @@
     "@sanity/media-library-types": "^1.6.0",
     "@sanity/message-protocol": "^0.24.0",
     "@sanity/migrate": "catalog:",
-    "@sanity/mutate": "^0.18.1",
+    "@sanity/mutate": "^0.18.2",
     "@sanity/mutator": "workspace:*",
     "@sanity/presentation-comlink": "^2.2.3",
     "@sanity/preview-url-secret": "^4.1.5",
