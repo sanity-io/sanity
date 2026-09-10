@@ -7,7 +7,7 @@ import {
 } from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
-import {page, server} from 'vitest/browser'
+import {page, server, userEvent} from 'vitest/browser'
 
 import {TestForm} from '../../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../../test/browser/testHelpers'
@@ -174,6 +174,28 @@ describe.skipIf(server.browser === 'webkit')('Portable Text Input', () => {
       const snapshotLength = NORMALIZED_INPUT_SNAPSHOT.length
 
       expect(documentState?.bodyNormalized?.length || 0).toEqual(snapshotLength)
+
+      // Paste can leave the caret on a style-less span so the style select
+      // flickers between "Normal" and "No style"; click into the field and wait
+      // for a stable label before Chromatic archives.
+      await userEvent.click($pte)
+      await expect
+        .poll(() => {
+          const select = window.document.querySelector(
+            '[data-testid="field-bodyNormalized"] [data-testid="block-style-select"]',
+          )
+          return select?.textContent?.trim() ?? ''
+        })
+        .toMatch(/^(Normal|No style)$/)
+      const styleSig = () => {
+        const select = window.document.querySelector(
+          '[data-testid="field-bodyNormalized"] [data-testid="block-style-select"]',
+        )
+        if (!(select instanceof HTMLElement)) return ''
+        return `${select.textContent?.trim()}@${Math.round(select.getBoundingClientRect().x)}`
+      }
+      const settled = styleSig()
+      await expect.poll(styleSig).toBe(settled)
     })
   })
 

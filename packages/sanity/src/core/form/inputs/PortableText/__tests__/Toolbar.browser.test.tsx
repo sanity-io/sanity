@@ -242,8 +242,17 @@ describe('Portable Text Input', () => {
           await expect.element($actionMenuAutoCollapseMenu).toBeVisible()
           await expect.element($insertMenuAutoCollapseMenu).toBeVisible()
 
-          // Non-root CollapseMenu still measures after viewport shrink; wait for
-          // button positions to stop moving before Chromatic archives.
+          // Non-root CollapseMenu still measures after viewport shrink — wait
+          // until an Object insert control is painted and button positions stop
+          // moving (mid-measure archives flip between truncated "..." and "Obj").
+          await expect
+            .poll(() => {
+              const toolbar = $portableTextInput
+                .element()
+                .querySelector('[data-testid="pt-editor__toolbar-card"]')
+              return toolbar?.textContent ?? ''
+            })
+            .toMatch(/Obj|Object/)
           const toolbarSignature = () => {
             const toolbar = $portableTextInput
               .element()
@@ -256,9 +265,20 @@ describe('Portable Text Input', () => {
               )
               .join('|')
           }
-          await expect.poll(toolbarSignature).not.toBe('')
-          const settled = toolbarSignature()
-          await expect.poll(toolbarSignature).toBe(settled)
+          await expect.poll(toolbarSignature).toMatch(/object-insert-menu-button/)
+          let previous = ''
+          let stable = 0
+          await expect
+            .poll(() => {
+              const next = toolbarSignature()
+              if (next && next === previous) stable += 1
+              else {
+                previous = next
+                stable = 0
+              }
+              return stable >= 3
+            })
+            .toBe(true)
         })
       })
     })

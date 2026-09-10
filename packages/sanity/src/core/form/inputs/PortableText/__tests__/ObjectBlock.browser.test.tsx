@@ -143,21 +143,43 @@ describe('Portable Text Input', () => {
     })
 
     it('Inline object works as expected when clicking the edit button', async () => {
-      // Dialog open/closed races the auto snapshot; capture while open.
+      // Dialog open/closed races the auto snapshot; capture while the edit
+      // dialog is open and the floating inline toolbar is not.
       configure({disableAutoSnapshot: true})
       const {getFocusedPortableTextEditor} = testHelpers()
       void render(<ObjectBlockHarness />)
       const $pte = await getFocusedPortableTextEditor('field-body')
       await page.getByRole('button', {name: 'Insert Inline Object (inline)'}).first().click()
-      await userEvent.dblClick(page.getByText('Custom preview block: Click'))
+      await expect.element(page.getByTestId('popover-edit-dialog')).toBeVisible()
+      await page.getByTestId('close-popover-edit-dialog-button').click()
+      await expect.element(page.getByTestId('popover-edit-dialog')).not.toBeInTheDocument()
+
+      await page.getByText('Custom preview block:').click()
+      await expect.element(page.getByTestId('inline-object-toolbar-popover')).toBeVisible()
+      await page.getByTestId('edit-inline-object-button').click()
+
       const $dialog = page.getByTestId('popover-edit-dialog')
       await expect.element($dialog).toBeVisible()
+      await expect
+        .poll(() => {
+          const toolbar = window.document.querySelector(
+            '[data-testid="inline-object-toolbar-popover"]',
+          )
+          return !toolbar || !(toolbar instanceof HTMLElement) || !toolbar.checkVisibility()
+        })
+        .toBe(true)
       await expect
         .poll(() => {
           const el = window.document.querySelector('[data-testid="popover-edit-dialog"]')
           return el instanceof HTMLElement ? el.getBoundingClientRect().height : 0
         })
         .toBeGreaterThan(0)
+      const dialogX = () => {
+        const el = window.document.querySelector('[data-testid="popover-edit-dialog"]')
+        return el instanceof HTMLElement ? Math.round(el.getBoundingClientRect().x) : -1
+      }
+      const settledX = dialogX()
+      await expect.poll(dialogX).toBe(settledX)
       await takeSnapshot('inline-edit-dialog-open')
     })
 

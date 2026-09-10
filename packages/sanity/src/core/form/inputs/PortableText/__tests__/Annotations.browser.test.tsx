@@ -286,6 +286,21 @@ describe('Portable Text Input', () => {
 
         // Assertion: The URL input should be focused
         await expect.element($linkInputReopened).toHaveFocus()
+        // Clear any leftover PTE text selection so the annotated "link" span
+        // does not archive with a selection highlight on some runs only.
+        window.getSelection()?.removeAllRanges()
+        await expect
+          .poll(() => {
+            const el = window.document.querySelector('[data-testid="popover-edit-dialog"]')
+            return el instanceof HTMLElement ? Math.round(el.getBoundingClientRect().x) : -1
+          })
+          .toBeGreaterThanOrEqual(0)
+        const dialogX = () => {
+          const el = window.document.querySelector('[data-testid="popover-edit-dialog"]')
+          return el instanceof HTMLElement ? Math.round(el.getBoundingClientRect().x) : -1
+        }
+        const settledX = dialogX()
+        await expect.poll(dialogX).toBe(settledX)
         await takeSnapshot('edit-link-open')
       },
     )
@@ -438,6 +453,15 @@ describe('Portable Text Input', () => {
         await expect.element($toolbarPopover).toBeVisible()
         await expect.element(page.getByTestId('edit-annotation-button')).toBeVisible()
         await expect.element(page.getByTestId('edit-annotation-button-1')).toBeVisible()
+        // Hover tooltips are hidden via browser setup CSS; still wait for the
+        // floating toolbar's x position to stop drifting before snapshotting.
+        const toolbarX = () => {
+          const el = window.document.querySelector('[data-testid="annotation-toolbar-popover"]')
+          return el instanceof HTMLElement ? Math.round(el.getBoundingClientRect().x) : -1
+        }
+        await expect.poll(toolbarX).toBeGreaterThanOrEqual(0)
+        const settledX = toolbarX()
+        await expect.poll(toolbarX).toBe(settledX)
         await takeSnapshot('combined-toolbar-open')
       },
     )
