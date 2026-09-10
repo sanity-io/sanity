@@ -289,6 +289,14 @@ describe('Portable Text Input', () => {
         // Clear any leftover PTE text selection so the annotated "link" span
         // does not archive with a selection highlight on some runs only.
         window.getSelection()?.removeAllRanges()
+        window.document.body.dispatchEvent(new MouseEvent('mouseover', {bubbles: true}))
+        await expect
+          .poll(() =>
+            Array.from(window.document.querySelectorAll('[data-ui="Tooltip"]')).every(
+              (el) => !(el instanceof HTMLElement) || !el.checkVisibility(),
+            ),
+          )
+          .toBe(true)
         await expect
           .poll(() => {
             const el = window.document.querySelector('[data-testid="popover-edit-dialog"]')
@@ -453,8 +461,16 @@ describe('Portable Text Input', () => {
         await expect.element($toolbarPopover).toBeVisible()
         await expect.element(page.getByTestId('edit-annotation-button')).toBeVisible()
         await expect.element(page.getByTestId('edit-annotation-button-1')).toBeVisible()
-        // Hover tooltips are hidden via browser setup CSS; still wait for the
-        // floating toolbar's x position to stop drifting before snapshotting.
+        // Clear accidental toolbar hover tooltips (e.g. "Underline") before snapshot —
+        // pointer position is not stable across Chromatic archive runs.
+        window.document.body.dispatchEvent(new MouseEvent('mouseover', {bubbles: true}))
+        await expect
+          .poll(() =>
+            Array.from(window.document.querySelectorAll('[data-ui="Tooltip"]')).every(
+              (el) => !(el instanceof HTMLElement) || !el.checkVisibility(),
+            ),
+          )
+          .toBe(true)
         const toolbarX = () => {
           const el = window.document.querySelector('[data-testid="annotation-toolbar-popover"]')
           return el instanceof HTMLElement ? Math.round(el.getBoundingClientRect().x) : -1

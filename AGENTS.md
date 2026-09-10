@@ -589,9 +589,10 @@ duplicate captures. The Chromatic plugin prepends its setup file for `list` orde
 snapshot finishes before React cleanup starts. Capture runs also set `retry: 0` (a retried test
 archives twice and Chromatic publishes `Snapshot #1 (2)`), `cropToViewport`,
 `pauseAnimationAtEnd`, a `delay` of 1000ms for fonts/CollapseMenu settle, and the browser setup
-forces transparent carets, grayscale font-smoothing, and hidden hover tooltips so portal menus,
-blinking carets, subpixel toolbar text, and pointer-dependent Tooltip chrome do not show up as
-false diffs. Tests that leave a menu open on purpose should assert a
+forces transparent carets plus grayscale font-smoothing so portal menus, blinking carets, and
+subpixel toolbar text do not show up as false diffs. Do not globally `display:none` hover
+tooltips — tests like PreviewTooltip assert on them; park the pointer / wait out open tooltips
+in the flaky test instead. Tests that leave a menu open on purpose should assert a
 _visible_ overlay (closed `@sanity/ui` menus stay mounted) and prefer `takeSnapshot()` when the
 automatic afterEach capture can race menu dismiss. Interaction-only tests whose end
 state is a loading or error flash should `configure({disableAutoSnapshot: true})`. Do not set

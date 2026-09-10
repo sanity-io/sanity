@@ -26,11 +26,10 @@ afterEach(async () => {
 // Chromatic archives `:focus` and the OS caret. Hide the caret so blink/phase
 // cannot show up as a pixel diff; focus rings stay visible. Also force
 // grayscale font smoothing — subpixel AA is a common source of 1px toolbar
-// text diffs between identical-code captures. Hide hover tooltips — pointer
-// position is not deterministic across Chromatic archive runs, so a toolbar
-// Tooltip ("Underline") appearing on one capture but not the next is noise.
-// Applied in every browser run (this file has no Node `process`) so Chromatic
-// and local chromium stay aligned.
+// text diffs between identical-code captures. Applied in every browser run
+// (this file has no Node `process`) so Chromatic and local chromium stay aligned.
+// Do NOT hide `[data-ui="Tooltip"]` globally — PreviewTooltip and similar tests
+// assert on visible tooltips; park the pointer in flaky tests instead.
 if (typeof document !== 'undefined') {
   const style = document.createElement('style')
   style.dataset.chromaticDeterminism = ''
@@ -39,10 +38,6 @@ if (typeof document !== 'undefined') {
     html {
       -webkit-font-smoothing: antialiased !important;
       -moz-osx-font-smoothing: grayscale !important;
-    }
-    [data-ui="Tooltip"],
-    [role="tooltip"] {
-      display: none !important;
     }
   `
   document.documentElement.appendChild(style)
