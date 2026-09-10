@@ -251,6 +251,7 @@ describe.skipIf(server.browser === 'webkit')('Portable Text Input', () => {
         getFocusedPortableTextEditor,
         dropFileOverPortableTextEditor,
         hoverFileOverPortableTextEditor,
+        settleChromaticEndState,
       } = testHelpers()
 
       void render(<CopyPasteHarness document={document} />)
@@ -272,14 +273,13 @@ describe.skipIf(server.browser === 'webkit')('Portable Text Input', () => {
       const $preview = $pte.getByTestId('block-preview')
       await expect.element($preview).toBeVisible()
       await expect.poll(() => $preview.element().getBoundingClientRect().height).toBeGreaterThan(0)
-      const styleSig = () => {
-        const select = window.document.querySelector('[data-testid="block-style-select"]')
-        if (!(select instanceof HTMLElement)) return ''
-        return `${select.textContent}@${Math.round(select.getBoundingClientRect().x)}`
-      }
-      await expect.poll(styleSig).toBeTruthy()
-      const settled = styleSig()
-      await expect.poll(styleSig).toBe(settled)
+      // Focus the image block so the style select consistently shows "No style"
+      // (object blocks have no style) instead of flickering with "Normal".
+      await userEvent.click($preview)
+      await settleChromaticEndState({
+        styleSelectText: /^No style$/,
+        styleSelectRoot: '[data-testid="field-body"]',
+      })
     })
 
     it(`Display error message on drag over if file is not accepted`, async () => {

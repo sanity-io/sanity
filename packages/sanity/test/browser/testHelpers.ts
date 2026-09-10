@@ -384,38 +384,41 @@ export function testHelpers() {
         )
         .toBe(0)
 
-      if (options?.styleSelectText) {
-        const root = options.styleSelectRoot
-        await expect
-          .poll(() => {
-            const select = root
-              ? window.document.querySelector(`${root} [data-testid="block-style-select"]`)
-              : window.document.querySelector('[data-testid="block-style-select"]')
-            return select?.textContent?.trim() ?? ''
-          })
-          .toMatch(options.styleSelectText)
-      }
-
-      const styleSig = () => {
+      // Style-select label (Normal ↔ No style) must stay on the expected text
+      // for the whole stability window — matching once then stabilizing on a
+      // flipped label was a pairwise Chromatic false diff.
+      const styleSelectEl = () => {
         const root = options?.styleSelectRoot
         const select = root
           ? window.document.querySelector(`${root} [data-testid="block-style-select"]`)
           : window.document.querySelector('[data-testid="block-style-select"]')
-        if (!(select instanceof HTMLElement)) return ''
+        return select instanceof HTMLElement ? select : null
+      }
+      const styleSig = () => {
+        const select = styleSelectEl()
+        if (!select) return ''
         return `${select.textContent?.trim()}@${Math.round(select.getBoundingClientRect().x)}`
       }
-      if (styleSig()) {
+      if (options?.styleSelectText || styleSig()) {
+        const required = options?.styleSelectText
         let previous = ''
         let stable = 0
         await expect
           .poll(() => {
+            const select = styleSelectEl()
+            const text = select?.textContent?.trim() ?? ''
+            if (required && !required.test(text)) {
+              previous = ''
+              stable = 0
+              return false
+            }
             const next = styleSig()
             if (next && next === previous) stable += 1
             else {
               previous = next
               stable = 0
             }
-            return stable >= 2
+            return stable >= 3
           })
           .toBe(true)
       }
