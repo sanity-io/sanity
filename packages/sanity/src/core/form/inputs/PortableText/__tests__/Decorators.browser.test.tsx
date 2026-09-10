@@ -175,7 +175,7 @@ describe('Portable Text Input', () => {
       })
 
       it('Should display custom decorator button and icon', async () => {
-        const {getFocusedPortableTextInput} = testHelpers()
+        const {getFocusedPortableTextInput, settleChromaticEndState} = testHelpers()
         void render(<DecoratorsHarness />)
         const $portableTextInput = await getFocusedPortableTextInput('field-customDecorator')
         // Assertion: Button for highlight should exist
@@ -186,6 +186,12 @@ describe('Portable Text Input', () => {
           $highlightButton.element().querySelector(`svg[data-sanity-icon='bulb-outline']`)!,
         )
         await expect.element($icon).toBeVisible()
+        // Empty focused PTE can briefly report "No style" before the block style
+        // resolves to Normal — wait so Chromatic does not archive either label.
+        await settleChromaticEndState({
+          styleSelectText: /^Normal$/,
+          styleSelectRoot: '[data-testid="field-customDecorator"]',
+        })
       })
     })
 
@@ -229,6 +235,7 @@ describe('Portable Text Input', () => {
         getFocusedPortableTextInput,
         getFocusedPortableTextEditor,
         insertPortableText,
+        settleChromaticEndState,
       } = testHelpers()
       void render(<DecoratorsHarness />)
       const $portableTextInput = await getFocusedPortableTextInput('field-customDecorator')
@@ -243,6 +250,11 @@ describe('Portable Text Input', () => {
       )
       await expect.element($customComponent).toBeVisible()
       await expect.element($customComponent).toHaveTextContent('spoiler text')
+      // Spoiler stays selected on the caret; clear hover so Chromatic does not
+      // archive a mid-hover pill around the selected toolbar button.
+      await settleChromaticEndState({
+        styleSelectRoot: '[data-testid="field-customDecorator"]',
+      })
     })
   })
 })

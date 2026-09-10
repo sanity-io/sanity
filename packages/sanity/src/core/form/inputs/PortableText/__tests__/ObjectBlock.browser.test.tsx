@@ -117,7 +117,7 @@ describe('Portable Text Input', () => {
     })
 
     it('Inline object toolbars works as expected after opening and closing the edit dialog', async () => {
-      const {getFocusedPortableTextEditor} = testHelpers()
+      const {getFocusedPortableTextEditor, settleChromaticEndState} = testHelpers()
       void render(<ObjectBlockHarness />)
       const $pte = await getFocusedPortableTextEditor('field-body')
       await page.getByRole('button', {name: 'Insert Inline Object (inline)'}).first().click()
@@ -140,6 +140,7 @@ describe('Portable Text Input', () => {
           return el instanceof HTMLElement ? el.getBoundingClientRect().height : 0
         })
         .toBeGreaterThan(0)
+      await settleChromaticEndState()
     })
 
     it('Inline object works as expected when clicking the edit button', async () => {
@@ -184,7 +185,7 @@ describe('Portable Text Input', () => {
     })
 
     it('Inline object toolbars works as expected when removing the object', async () => {
-      const {getFocusedPortableTextEditor} = testHelpers()
+      const {getFocusedPortableTextEditor, settleChromaticEndState} = testHelpers()
       void render(<ObjectBlockHarness />)
       const $pte = await getFocusedPortableTextEditor('field-body')
       await page.getByRole('button', {name: 'Insert Inline Object (inline)'}).first().click()
@@ -209,6 +210,12 @@ describe('Portable Text Input', () => {
         .element(page.getByTestId('inline-object-toolbar-popover'))
         .not.toBeInTheDocument()
       await expect.element($pte).toHaveFocus()
+      // After remove, annotation buttons can still be mid-opacity from the click;
+      // park the pointer and wait for the style select to settle on Normal.
+      await settleChromaticEndState({
+        styleSelectText: /^Normal$/,
+        styleSelectRoot: '[data-testid="field-body"]',
+      })
     })
 
     it('Double-clicking opens a block', async () => {
@@ -323,7 +330,7 @@ describe('Portable Text Input', () => {
     })
 
     it('Blocks that appear in the menu bar should always display a title', async () => {
-      const {getFocusedPortableTextInput} = testHelpers()
+      const {getFocusedPortableTextInput, settleChromaticEndState} = testHelpers()
       void render(<ObjectBlockHarness />)
 
       const $portableTextInput = await getFocusedPortableTextInput('field-body')
@@ -355,6 +362,11 @@ describe('Portable Text Input', () => {
       }
       const first = signature()
       await expect.poll(signature).toBe(first)
+      // Clear hover on the Object insert button (pill background was a pairwise flake).
+      await settleChromaticEndState({
+        styleSelectText: /^Normal$/,
+        styleSelectRoot: '[data-testid="field-body"]',
+      })
     })
   })
 })

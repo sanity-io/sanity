@@ -351,5 +351,97 @@ export function testHelpers() {
         `Timeout waiting for selection offsets: focus=${offsets.focus}, anchor=${offsets.anchor}`,
       )
     },
+
+    /**
+     * Park the pointer and wait for Chromatic-sensitive chrome to stop moving.
+     * Call at the end of a browser test (or just before `takeSnapshot`) so the
+     * auto-archive does not catch toolbar hover pills, style-select label
+     * flicker (Normal vs No style), or floating PTE toolbars mid-layout.
+     */
+    settleChromaticEndState: async (options?: {
+      styleSelectText?: RegExp
+      styleSelectRoot?: string
+    }) => {
+      if (typeof document.fonts?.ready !== 'undefined') {
+        await document.fonts.ready
+      }
+
+      // Clear :hover on toolbar buttons / field headers (pointer may still sit
+      // on the last clicked control after userEvent.click).
+      window.document.body.dispatchEvent(new MouseEvent('mouseover', {bubbles: true}))
+
+      await expect
+        .poll(
+          () =>
+            Array.from(window.document.querySelectorAll('[data-ui="Tooltip"]')).filter(
+              (el) => el instanceof HTMLElement && el.checkVisibility(),
+            ).length,
+        )
+        .toBe(0)
+
+      if (options?.styleSelectText) {
+        const root = options.styleSelectRoot
+        await expect
+          .poll(() => {
+            const select = root
+              ? window.document.querySelector(`${root} [data-testid="block-style-select"]`)
+              : window.document.querySelector('[data-testid="block-style-select"]')
+            return select?.textContent?.trim() ?? ''
+          })
+          .toMatch(options.styleSelectText)
+      }
+
+      const styleSig = () => {
+        const root = options?.styleSelectRoot
+        const select = root
+          ? window.document.querySelector(`${root} [data-testid="block-style-select"]`)
+          : window.document.querySelector('[data-testid="block-style-select"]')
+        if (!(select instanceof HTMLElement)) return ''
+        return `${select.textContent?.trim()}@${Math.round(select.getBoundingClientRect().x)}`
+      }
+      if (styleSig()) {
+        let previous = ''
+        let stable = 0
+        await expect
+          .poll(() => {
+            const next = styleSig()
+            if (next && next === previous) stable += 1
+            else {
+              previous = next
+              stable = 0
+            }
+            return stable >= 2
+          })
+          .toBe(true)
+      }
+
+      const floatingSig = () =>
+        Array.from(
+          window.document.querySelectorAll<HTMLElement>(
+            '[data-testid="inline-object-toolbar-popover"], [data-testid="annotation-toolbar-popover"]',
+          ),
+        )
+          .filter((el) => el.checkVisibility())
+          .map((el) => {
+            const r = el.getBoundingClientRect()
+            return `${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)}`
+          })
+          .join('|')
+      if (floatingSig()) {
+        let previous = ''
+        let stable = 0
+        await expect
+          .poll(() => {
+            const next = floatingSig()
+            if (next && next === previous) stable += 1
+            else {
+              previous = next
+              stable = 0
+            }
+            return stable >= 2
+          })
+          .toBe(true)
+      }
+    },
   }
 }

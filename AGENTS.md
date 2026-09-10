@@ -589,14 +589,18 @@ duplicate captures. The Chromatic plugin prepends its setup file for `list` orde
 snapshot finishes before React cleanup starts. Capture runs also set `retry: 0` (a retried test
 archives twice and Chromatic publishes `Snapshot #1 (2)`), `cropToViewport`,
 `pauseAnimationAtEnd`, a `delay` of 1000ms for fonts/CollapseMenu settle, and the browser setup
-forces transparent carets plus grayscale font-smoothing so portal menus, blinking carets, and
-subpixel toolbar text do not show up as false diffs. Do not globally `display:none` hover
-tooltips — tests like PreviewTooltip assert on them; park the pointer / wait out open tooltips
-in the flaky test instead. Tests that leave a menu open on purpose should assert a
-_visible_ overlay (closed `@sanity/ui` menus stay mounted) and prefer `takeSnapshot()` when the
-automatic afterEach capture can race menu dismiss. Interaction-only tests whose end
-state is a loading or error flash should `configure({disableAutoSnapshot: true})`. Do not set
-`localStorage.debug` in browser tests — debug overlay noise shows up in Chromatic archives.
+forces transparent carets, grayscale font-smoothing, zero-duration transitions/animations, and
+always-opaque field-actions chrome so portal menus, blinking carets, subpixel toolbar text,
+field-title "..." fades, and button hover pills do not show up as false diffs. Do not globally
+`display:none` hover tooltips — tests like PreviewTooltip assert on them; park the pointer /
+wait out open tooltips in the flaky test instead (see `settleChromaticEndState` in
+`packages/sanity/test/browser/testHelpers.ts`). Tests that leave a menu open on purpose should
+assert a _visible_ overlay (closed `@sanity/ui` menus stay mounted) and prefer `takeSnapshot()`
+when the automatic afterEach capture can race menu dismiss. Force the PTE style select to a
+specific label (`Normal` vs `No style`) before archive when focus can land on a text block or
+an object block. Interaction-only tests whose end state is a loading or error flash should
+`configure({disableAutoSnapshot: true})`. Do not set `localStorage.debug` in browser tests —
+debug overlay noise shows up in Chromatic archives.
 
 ### E2E Tests (Playwright)
 

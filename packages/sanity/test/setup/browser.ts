@@ -30,14 +30,36 @@ afterEach(async () => {
 // (this file has no Node `process`) so Chromatic and local chromium stay aligned.
 // Do NOT hide `[data-ui="Tooltip"]` globally — PreviewTooltip and similar tests
 // assert on visible tooltips; park the pointer in flaky tests instead.
+//
+// Field-actions opacity (FormFieldBaseHeader) and button hover transitions are
+// a recurring source of identical-code Chromatic pairwise diffs: the floating
+// "..." next to the field title and toolbar button pills land mid-fade. Kill
+// transitions and keep field-actions flex fully opaque so end-of-test archives
+// do not depend on hover/focus timing. Tests that open the menu still click
+// `[data-testid="field-actions-trigger"]` normally.
 if (typeof document !== 'undefined') {
   const style = document.createElement('style')
   style.dataset.chromaticDeterminism = ''
   style.textContent = `
     [contenteditable], input, textarea { caret-color: transparent !important; }
-    html {
+    html, body, button, input, textarea, [contenteditable] {
       -webkit-font-smoothing: antialiased !important;
       -moz-osx-font-smoothing: grayscale !important;
+    }
+    *, *::before, *::after {
+      transition-duration: 0s !important;
+      transition-delay: 0s !important;
+      animation-duration: 0s !important;
+      animation-delay: 0s !important;
+    }
+    [data-actions-visible] {
+      opacity: 1 !important;
+      pointer-events: auto !important;
+    }
+    [data-actions-visible] [data-ui='FieldActionsFlex'] {
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      width: max-content !important;
     }
   `
   document.documentElement.appendChild(style)

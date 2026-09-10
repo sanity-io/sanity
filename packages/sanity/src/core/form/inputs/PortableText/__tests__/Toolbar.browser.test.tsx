@@ -177,7 +177,7 @@ describe('Portable Text Input', () => {
     describe('Collapsible toolbar', () => {
       describe('Root <FormBuilder>', () => {
         it('Toolbar should collapse when element width is less than 400px', async () => {
-          const {getFocusedPortableTextInput} = testHelpers()
+          const {getFocusedPortableTextInput, settleChromaticEndState} = testHelpers()
           void render(<ToolbarHarness id="root" />)
           const $portableTextInput = await getFocusedPortableTextInput('field-body')
 
@@ -221,11 +221,14 @@ describe('Portable Text Input', () => {
           }
           const settled = toolbarSignature()
           await expect.poll(toolbarSignature).toBe(settled)
+          await settleChromaticEndState({
+            styleSelectRoot: '[data-testid="field-body"]',
+          })
         })
       })
       describe('Non-root <FormBuilder>', () => {
         it('Toolbar should not collapse when element width is less than 400px', async () => {
-          const {getFocusedPortableTextInput} = testHelpers()
+          const {getFocusedPortableTextInput, settleChromaticEndState} = testHelpers()
           void render(<ToolbarHarness id="inspector-panel" />)
           const $portableTextInput = await getFocusedPortableTextInput('field-body')
 
@@ -279,6 +282,9 @@ describe('Portable Text Input', () => {
               return stable >= 3
             })
             .toBe(true)
+          await settleChromaticEndState({
+            styleSelectRoot: '[data-testid="field-body"]',
+          })
         })
       })
     })

@@ -1,3 +1,4 @@
+import {configure, takeSnapshot} from '@chromatic-com/vitest'
 import {defineArrayMember, defineField, defineType, type SanityDocument} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
@@ -58,7 +59,9 @@ describe('Portable Text Input', () => {
   describe('Styles', () => {
     describe('Toolbar', () => {
       it('Should display all default styles in style selector when clicked', async () => {
-        const {getFocusedPortableTextInput} = testHelpers()
+        // Menu open/closed races the auto snapshot; capture while open.
+        configure({disableAutoSnapshot: true})
+        const {getFocusedPortableTextInput, settleChromaticEndState} = testHelpers()
         void render(<StylesHarness />)
         const $portableTextInput = await getFocusedPortableTextInput('field-defaultStyles')
         const $styleSelectButton = $portableTextInput.getByTestId('block-style-select')
@@ -71,6 +74,8 @@ describe('Portable Text Input', () => {
           // by visible text within the open menu (mirrors `.filter({hasText})`).
           await expect.element($menu.getByText(styleName, {exact: true})).toBeVisible()
         }
+        await settleChromaticEndState()
+        await takeSnapshot('default-styles-menu-open')
       })
 
       it('Should not display block style button when no block styles are present', async () => {

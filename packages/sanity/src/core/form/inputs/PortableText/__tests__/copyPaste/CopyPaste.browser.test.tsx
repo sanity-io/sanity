@@ -157,8 +157,12 @@ describe.skipIf(server.browser === 'webkit')('Portable Text Input', () => {
     })
 
     it(`Normalized whitespace`, async () => {
-      const {getFocusedPortableTextEditor, insertPortableTextCopyPaste, waitForDocumentState} =
-        testHelpers()
+      const {
+        getFocusedPortableTextEditor,
+        insertPortableTextCopyPaste,
+        waitForDocumentState,
+        settleChromaticEndState,
+      } = testHelpers()
 
       void render(<CopyPasteHarness document={document} />)
 
@@ -177,25 +181,12 @@ describe.skipIf(server.browser === 'webkit')('Portable Text Input', () => {
 
       // Paste can leave the caret on a style-less span so the style select
       // flickers between "Normal" and "No style"; click into the field and wait
-      // for a stable label before Chromatic archives.
+      // for Normal specifically before Chromatic archives.
       await userEvent.click($pte)
-      await expect
-        .poll(() => {
-          const select = window.document.querySelector(
-            '[data-testid="field-bodyNormalized"] [data-testid="block-style-select"]',
-          )
-          return select?.textContent?.trim() ?? ''
-        })
-        .toMatch(/^(Normal|No style)$/)
-      const styleSig = () => {
-        const select = window.document.querySelector(
-          '[data-testid="field-bodyNormalized"] [data-testid="block-style-select"]',
-        )
-        if (!(select instanceof HTMLElement)) return ''
-        return `${select.textContent?.trim()}@${Math.round(select.getBoundingClientRect().x)}`
-      }
-      const settled = styleSig()
-      await expect.poll(styleSig).toBe(settled)
+      await settleChromaticEndState({
+        styleSelectText: /^Normal$/,
+        styleSelectRoot: '[data-testid="field-bodyNormalized"]',
+      })
     })
   })
 
@@ -230,7 +221,11 @@ describe.skipIf(server.browser === 'webkit')('Portable Text Input', () => {
     // Pasting a file via synthetic ClipboardEvent doesn't work in Firefox
     // (matches the original Playwright `test.skip(browserName === 'firefox')`).
     it.skipIf(server.browser === 'firefox')(`Added pasted image as a block`, async () => {
-      const {getFocusedPortableTextEditor, pasteFileOverPortableTextEditor} = testHelpers()
+      const {
+        getFocusedPortableTextEditor,
+        pasteFileOverPortableTextEditor,
+        settleChromaticEndState,
+      } = testHelpers()
 
       void render(<CopyPasteHarness document={document} />)
 
@@ -242,16 +237,13 @@ describe.skipIf(server.browser === 'webkit')('Portable Text Input', () => {
       const $preview = $pte.getByTestId('block-preview')
       await expect.element($preview).toBeVisible()
       await expect.poll(() => $preview.element().getBoundingClientRect().height).toBeGreaterThan(0)
-      // Style-select label subpixel position was flipping between paste/drop
-      // captures; wait until the select text and x offset stop moving.
-      const styleSig = () => {
-        const select = window.document.querySelector('[data-testid="block-style-select"]')
-        if (!(select instanceof HTMLElement)) return ''
-        return `${select.textContent}@${Math.round(select.getBoundingClientRect().x)}`
-      }
-      await expect.poll(styleSig).toBeTruthy()
-      const settled = styleSig()
-      await expect.poll(styleSig).toBe(settled)
+      // Focus the image block so the style select consistently shows "No style"
+      // (object blocks have no style) instead of flickering with "Normal".
+      await userEvent.click($preview)
+      await settleChromaticEndState({
+        styleSelectText: /^No style$/,
+        styleSelectRoot: '[data-testid="field-body"]',
+      })
     })
 
     it(`Added dropped image as a block`, async () => {
