@@ -31,6 +31,12 @@ function createSchema(
       {name: 'customSlug', type: 'slug', options: {isUnique}},
       {name: 'nestedSlug', type: 'customSlug'},
       {
+        name: 'customObject',
+        type: 'object',
+        options: {isUnique},
+        fields: [{name: 'current', type: 'string'}],
+      },
+      {
         name: 'article',
         type: 'document',
         fields: [
@@ -53,6 +59,24 @@ function createClient(unique: boolean) {
 }
 
 describe.each(['headless', 'studio'] as const)('%s slug uniqueness', (mode) => {
+  it.each([true, false])(
+    'does not run slug uniqueness on an ordinary object with customValidation=%s',
+    async (customValidation) => {
+      const isUnique = vi.fn(async () => false)
+      const {client, fetch} = createClient(false)
+      const result = await validateDocument({
+        client,
+        customValidation,
+        document: {...document, slug: {_type: 'customObject', current: 'hello'}},
+        schema: createSchema(mode, 'customObject', isUnique),
+      })
+
+      expect(result).toEqual({status: 'passed', markers: []})
+      expect(isUnique).not.toHaveBeenCalled()
+      expect(fetch).not.toHaveBeenCalled()
+    },
+  )
+
   it.each(['slug', 'customSlug', 'nestedSlug'])(
     'uses the custom callback on %s instead of the default query',
     async (type) => {
