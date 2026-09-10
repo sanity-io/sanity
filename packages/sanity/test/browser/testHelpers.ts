@@ -9,37 +9,75 @@ const DEFAULT_TYPE_DELAY = 20
  * but drifts across Chromatic captures of identical code, shifting whole
  * dialogs by 1px and producing large false visual diffs.
  */
+const FLOATING_UI_SNAP_SELECTOR = [
+  '[data-testid="popover-edit-dialog"]',
+  '[data-testid="annotation-toolbar-popover"]',
+  '[data-testid="inline-object-toolbar-popover"]',
+  '[data-testid="comments-mentions-menu"]',
+  '[data-ui="Popover"]',
+  '[role="menu"]',
+  '[role="listbox"]',
+].join(', ')
+
+function roundPx(value: string): string {
+  return value.replace(/(-?\d+\.?\d*)px/g, (token) => `${Math.round(Number.parseFloat(token))}px`)
+}
+
+function snapFloatingUiNode(node: HTMLElement): void {
+  const {transform, top, left, translate} = node.style
+  if (transform && transform !== 'none') {
+    const rounded = roundPx(transform)
+    if (rounded !== transform) node.style.transform = rounded
+  }
+  if (translate) {
+    const rounded = roundPx(translate)
+    if (rounded !== translate) node.style.translate = rounded
+  }
+  if (top) {
+    const rounded = `${Math.round(Number.parseFloat(top))}px`
+    if (rounded !== top) node.style.top = rounded
+  }
+  if (left) {
+    const rounded = `${Math.round(Number.parseFloat(left))}px`
+    if (rounded !== left) node.style.left = rounded
+  }
+}
+
 export function snapFloatingUiToIntegerPixels(): void {
-  const anchors = window.document.querySelectorAll<HTMLElement>(
-    [
-      '[data-testid="popover-edit-dialog"]',
-      '[data-testid="annotation-toolbar-popover"]',
-      '[data-testid="inline-object-toolbar-popover"]',
-      '[role="menu"]',
-      '[role="listbox"]',
-    ].join(', '),
-  )
+  const anchors = window.document.querySelectorAll<HTMLElement>(FLOATING_UI_SNAP_SELECTOR)
   const snapped = new Set<HTMLElement>()
   for (const anchor of anchors) {
     if (!anchor.checkVisibility()) continue
     let node: HTMLElement | null = anchor
-    for (let depth = 0; depth < 8 && node; depth++, node = node.parentElement) {
+    for (let depth = 0; depth < 12 && node; depth++, node = node.parentElement) {
       if (snapped.has(node)) break
-      const {transform, top, left} = node.style
+      const {transform, top, left, translate} = node.style
       const hasTransform = Boolean(transform) && transform !== 'none'
-      const hasOffset = Boolean(top) || Boolean(left)
+      const hasOffset = Boolean(top) || Boolean(left) || Boolean(translate)
       if (!hasTransform && !hasOffset) continue
       snapped.add(node)
-      if (hasTransform) {
-        const rounded = transform.replace(/(-?\d+\.?\d*)px/g, (value) => {
-          return `${Math.round(Number.parseFloat(value))}px`
-        })
-        if (rounded !== transform) node.style.transform = rounded
-      }
-      if (top) node.style.top = `${Math.round(Number.parseFloat(top))}px`
-      if (left) node.style.left = `${Math.round(Number.parseFloat(left))}px`
+      snapFloatingUiNode(node)
       break
     }
+  }
+  // Chromatic's `delay` can let Floating UI rewrite a half-pixel translate
+  // after this function returns. Re-round on style mutations until unmount.
+  if (!window.document.documentElement.hasAttribute('data-chromatic-float-lock')) {
+    window.document.documentElement.setAttribute('data-chromatic-float-lock', '')
+    const observer = new MutationObserver(() => {
+      observer.disconnect()
+      snapFloatingUiToIntegerPixels()
+      observer.observe(window.document.body, {
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['style'],
+      })
+    })
+    observer.observe(window.document.body, {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['style'],
+    })
   }
 }
 
@@ -401,8 +439,10 @@ export function testHelpers() {
     settleChromaticEndState: async (options?: {
       styleSelectText?: RegExp
       styleSelectRoot?: string
-      /** Clear :hover via body mouseover. Disable when an open dialog/menu
-       * dismisses on outside pointer events (default true). */
+      /** Move the real pointer onto an inset park target (force hover) so
+       * CSS :hover tooltips cannot open during Chromatic's delay. Disable
+       * when an open dialog/menu dismisses on outside pointer events
+       * (default true). */
       parkPointer?: boolean
     }) => {
       if (typeof document.fonts?.ready !== 'undefined') {

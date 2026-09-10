@@ -112,7 +112,7 @@ describe('Portable Text Input', () => {
     })
 
     it('Custom block preview components renders correctly', async () => {
-      const {getFocusedPortableTextEditor} = testHelpers()
+      const {getFocusedPortableTextEditor, settleChromaticEndState} = testHelpers()
       void render(<ObjectBlockHarness />)
       const $pte = await getFocusedPortableTextEditor('field-body')
 
@@ -123,6 +123,9 @@ describe('Portable Text Input', () => {
 
       // Assertion: Text in custom preview component should show
       await expect.element(page.getByText('Custom preview block:')).toBeVisible()
+      // Last click sits on Insert Object; Chromatic delay otherwise archives
+      // its tooltip on some identical-code captures.
+      await settleChromaticEndState()
     })
 
     it('Inline object toolbars works as expected after opening and closing the edit dialog', async () => {

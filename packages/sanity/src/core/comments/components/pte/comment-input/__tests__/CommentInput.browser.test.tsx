@@ -113,9 +113,9 @@ describe('Comments', () => {
       await userEvent.keyboard('@')
       const $mentionsMenu = page.getByTestId('comments-mentions-menu')
       await expect.element($mentionsMenu).toBeVisible()
-      // Mentions close on click-outside, not mouseover — park the pointer so the
-      // input card border stays on the focus ring while the menu is open.
-      await settleChromaticEndState()
+      // Mentions close on click-outside; a real pointer park dismisses the menu.
+      await settleChromaticEndState({parkPointer: false})
+      await expect.element($mentionsMenu).toBeVisible()
       await takeSnapshot('mentions-menu-open')
       await userEvent.keyboard('{Enter}')
       await expect.element($mentionsMenu).not.toBeInTheDocument()
@@ -141,7 +141,9 @@ describe('Comments', () => {
           return el instanceof HTMLElement ? Math.round(el.getBoundingClientRect().height) : 0
         })
         .toBeGreaterThan(0)
-      await settleChromaticEndState()
+      // Real pointer park dismisses the mentions popover (click-outside).
+      await settleChromaticEndState({parkPointer: false})
+      await expect.element($mentionsMenu).toBeVisible()
       await takeSnapshot('mentions-menu-via-button')
     })
 
