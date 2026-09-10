@@ -23,6 +23,7 @@ export const FormFieldGutter: ComponentType<FormFieldGutterProps> = ({
   changedFromBaseVariant,
 }) => (
   <div
+    data-testid="form-field-gutter"
     className={`${formFieldAnchor} ${formFieldGutter}`}
     style={assignInlineVars({[formFieldAnchorPath]: pathToAnchorIdent('input', path)})}
   >
