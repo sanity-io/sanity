@@ -1,8 +1,8 @@
 import {type Asset} from '@sanity/types'
-import {Grid, Spinner, Text} from '@sanity/ui'
+import {Spinner, Text} from '@sanity/ui'
 import {type KeyboardEvent, type MouseEvent} from 'react'
 import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Flex, Grid, Box} from 'ui5'
 
 import {AssetThumb} from './AssetThumb'
 

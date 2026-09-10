@@ -13,7 +13,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@sanity/icons": "^5.2.1",
+    "@sanity/icons": "^5.2.2",
     "@sanity/types": "workspace:*",
     "@sanity/ui": "catalog:",
     "react": "catalog:",

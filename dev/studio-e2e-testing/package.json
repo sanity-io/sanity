@@ -16,7 +16,7 @@
   "dependencies": {
     "@repo/utils": "workspace:*",
     "@sanity/google-maps-input": "^6.1.13",
-    "@sanity/icons": "^5.2.1",
+    "@sanity/icons": "^5.2.2",
     "@sanity/ui": "catalog:",
     "@sanity/vision": "workspace:*",
     "oxc-transform-react": "catalog:",

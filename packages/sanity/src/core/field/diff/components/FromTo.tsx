@@ -1,6 +1,6 @@
-import {Grid, type GridProps, rem, useTheme} from '@sanity/ui'
+import {rem, useTheme} from '@sanity/ui'
 import {type HTMLProps, type ReactNode, useMemo, type RefAttributes} from 'react'
-import {Flex, type FlexProps} from 'ui5'
+import {Grid, type GridProps, Flex, type FlexProps} from 'ui5'
 
 import {FromToArrow} from './FromToArrow'
 

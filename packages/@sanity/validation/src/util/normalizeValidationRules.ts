@@ -9,12 +9,7 @@ import {dequal as isEqual} from 'dequal/lite'
 
 import {markInternalValidator} from '../internalValidators'
 import {Rule as RuleClass} from '../Rule'
-import {
-  customSlugUniquenessValidator,
-  defaultSlugUniquenessValidator,
-  hasCustomSlugUniqueness,
-  slugStructureValidator,
-} from '../validators/slugValidator'
+import {slugStructureValidator, slugUniquenessValidator} from '../validators/slugValidator'
 
 const ruleConstraintTypes: {[P in Lowercase<RuleTypeConstraint>]: true} = {
   array: true,
@@ -68,13 +63,9 @@ function baseRuleReducer(inputRule: Rule, type: SchemaType) {
   if (type.name === 'date') return baseRule.type('Date')
   if (type.name === 'url') return baseRule.uri()
   if (type.name === 'slug') {
-    const uniquenessValidator = hasCustomSlugUniqueness(type.options)
-      ? customSlugUniquenessValidator
-      : markInternalValidator(defaultSlugUniquenessValidator)
-
     return baseRule
       .custom(markInternalValidator(slugStructureValidator), {bypassConcurrencyLimit: true})
-      .custom(uniquenessValidator, {bypassConcurrencyLimit: true})
+      .custom(markInternalValidator(slugUniquenessValidator), {bypassConcurrencyLimit: true})
   }
   if (type.name === 'reference') return baseRule.reference()
   if (type.name === 'email') return baseRule.email()
