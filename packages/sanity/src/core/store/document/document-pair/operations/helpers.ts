@@ -60,6 +60,17 @@ export const TARGET_NOT_FOUND_OPERATIONS: OperationsAPI = {
   duplicate: createTargetNotFoundOperation('duplicate'),
   restore: createTargetNotFoundOperation('restore'),
 }
+const OPERATION_NAMES = Object.keys(GUARDED) as (keyof OperationsAPI)[]
+
+/**
+ * `execute` only emits the operation name with the id pair, type name and store key the api
+ * was created for; the arguments are read from the live `operationArgs` stream at execution
+ * time. `disabled` is therefore the only field a consumer can observe changing.
+ */
+export function hasSameDisabledState(a: OperationsAPI, b: OperationsAPI): boolean {
+  return OPERATION_NAMES.every((name) => a[name].disabled === b[name].disabled)
+}
+
 const createEmitter =
   (operationName: keyof OperationsAPI, idPair: IdPair, typeName: string, storeKey: string) =>
   (...executeArgs: any[]) =>

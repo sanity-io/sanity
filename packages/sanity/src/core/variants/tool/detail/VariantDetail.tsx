@@ -16,8 +16,6 @@ import {
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {RelativeTime} from '../../../components/RelativeTime'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {ConditionMismatchIndicator} from '../../components/ConditionMismatchIndicator'
-import {useVariantConditionMismatches} from '../../hooks/useVariantConditions'
 import {useVariantDocuments} from '../../hooks/useVariantDocuments'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
@@ -41,7 +39,6 @@ export function VariantDetail() {
   const {byId, loading} = useAllVariants()
 
   const variant = variantId ? byId.get(variantId) : undefined
-  const conditionMismatches = useVariantConditionMismatches(variant?.conditions ?? {})
   const {
     loading: documentsLoading,
     results: variantDocuments,
@@ -77,7 +74,6 @@ export function VariantDetail() {
             // Each targeting dimension gets a recognizable glyph (audience → people, location →
             // pin, …) so a multi-dimension definition reads at a glance.
             const DimensionIcon = getVariantConditionIcon(key)
-            const mismatch = conditionMismatches.find((item) => item.key === key)
             return {
               icon: (
                 <Text muted size={1}>
@@ -85,14 +81,7 @@ export function VariantDetail() {
                 </Text>
               ),
               label: key,
-              value: mismatch ? (
-                <Flex alignItems="center" gap={2}>
-                  <Text size={1}>{value}</Text>
-                  <ConditionMismatchIndicator mismatches={[mismatch]} />
-                </Flex>
-              ) : (
-                value
-              ),
+              value,
             }
           })
         : [
@@ -117,7 +106,7 @@ export function VariantDetail() {
         rows: conditionRows,
       },
     ]
-  }, [conditionMismatches, t, variant])
+  }, [t, variant])
 
   const documentSections = useMemo<DetailPropertiesSection[]>(() => {
     // While documents are still streaming in, show a skeleton rather than "0" — a literal 0

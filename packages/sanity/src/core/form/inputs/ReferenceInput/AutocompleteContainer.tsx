@@ -1,5 +1,6 @@
-import {Grid, useElementSize} from '@sanity/ui'
+import {useElementSize} from '@sanity/ui'
 import {type ReactNode, type Ref, useCallback, useState} from 'react'
+import {Grid} from 'ui5'
 
 import {root} from './AutocompleteContainer.css'
 

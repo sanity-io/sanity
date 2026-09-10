@@ -35,7 +35,6 @@ import {
   type PluginOptions,
   type ResolveProductionUrlContext,
   type Tool,
-  type VariantConditions,
 } from './types'
 
 export const initialDocumentBadges: DocumentBadgeComponent[] = []
@@ -496,42 +495,6 @@ export const variantsEnabledReducer = (opts: {
   }, initialValue)
 
   return result
-}
-
-function isVariantConditions(value: unknown): value is VariantConditions {
-  return Array.isArray(value) || typeof value === 'function'
-}
-
-export const variantsConditionsReducer = (opts: {
-  config: PluginOptions
-  initialValue: VariantConditions | undefined
-}): VariantConditions | undefined => {
-  const {config, initialValue} = opts
-  const flattenedConfig = flattenConfig(config, [])
-
-  return flattenedConfig.reduce<VariantConditions | undefined>((acc, {config: innerConfig}) => {
-    const variants: unknown = innerConfig.beta?.variants
-
-    if (typeof variants === 'undefined') return acc
-    if (!isRecord(variants)) {
-      throw new Error(
-        `Expected \`beta.variants\` to be an object, but received ${getPrintableType(variants)}`,
-      )
-    }
-
-    const conditions = variants.conditions
-
-    if (typeof conditions === 'undefined') return acc
-    if (isVariantConditions(conditions)) {
-      return conditions
-    }
-
-    throw new Error(
-      `Expected \`beta.variants.conditions\` to be an array or a function, but received ${getPrintableType(
-        conditions,
-      )}`,
-    )
-  }, initialValue)
 }
 
 export const commentsV2EnabledReducer = (opts: {

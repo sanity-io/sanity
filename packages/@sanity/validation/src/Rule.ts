@@ -23,6 +23,7 @@ import {dateValidators} from './validators/dateValidator'
 import {genericValidators} from './validators/genericValidator'
 import {numberValidators} from './validators/numberValidator'
 import {objectValidators} from './validators/objectValidator'
+import {hasCustomSlugUniqueness, slugUniquenessValidator} from './validators/slugValidator'
 import {stringValidators} from './validators/stringValidator'
 
 const typeValidators = {
@@ -132,7 +133,15 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
         }
 
         if (curr.flag === 'custom' || curr.flag === 'media') {
-          if (!isInternalValidator(specConstraint) && !customValidation) {
+          // Slug rules can be inherited from a compiled base type, so classify the
+          // callback using the actual field's options at validation time.
+          const usesCustomSlugUniqueness =
+            specConstraint === slugUniquenessValidator &&
+            hasCustomSlugUniqueness(context.type?.options)
+          if (
+            (!isInternalValidator(specConstraint) || usesCustomSlugUniqueness) &&
+            !customValidation
+          ) {
             markIncomplete?.()
             return []
           }
