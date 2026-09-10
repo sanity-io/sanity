@@ -1,7 +1,10 @@
 import {type SanityClient} from '@sanity/client'
-import {type TransactionLogEventWithEffects} from '@sanity/types'
+import {
+  type TransactionLogEventWithEffects,
+  type TransactionLogEventWithMutations,
+} from '@sanity/types'
 import {renderHook, waitFor} from '@testing-library/react'
-import {of} from 'rxjs'
+import {of, throwError} from 'rxjs'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {useClient} from '../../../../../../hooks/useClient'
@@ -233,6 +236,54 @@ describe('useDocumentRevertStates', () => {
     expect(mockGetTransactionsLogs).toHaveBeenCalledWith(mockClient, ['doc1', 'doc2'], {
       toTransaction: 'rev1',
       reverse: true,
+    })
+  })
+  it('looks up a document missing from the bulk translog response instead of marking it for deletion', async () => {
+    // The bulk request is capped (default limit 50) and the window is shared across every
+    // document in the release, so doc2's pre-release transaction can fall outside it even though
+    // doc2 has history. It must be resolved individually, not turned into an unpublish action.
+    mockGetTransactionsLogs.mockImplementation((_client, documentIds) =>
+      Promise.resolve(
+        (Array.isArray(documentIds)
+          ? [{id: 'trans0_doc1', documentIDs: ['doc1'], timestamp: new Date().toISOString()}]
+          : [
+              {id: 'trans0_doc2', documentIDs: ['doc2'], timestamp: new Date().toISOString()},
+            ]) as unknown as (TransactionLogEventWithEffects & TransactionLogEventWithMutations)[],
+      ),
+    )
+
+    const {result} = renderHook(() => useDocumentRevertStates(mockDocuments))
+
+    await waitFor(async () => {
+      const resolvedResult = await result.current()
+      expect(resolvedResult).toEqual([
+        {_id: 'doc1', _rev: 'observable-rev-1', title: 'Reverted Document 1'},
+        {_id: 'doc2', _rev: 'observable-rev-2', title: 'Reverted Document 2'},
+      ])
+    })
+
+    expect(mockGetTransactionsLogs).toHaveBeenCalledWith(
+      mockClient,
+      'doc2',
+      expect.objectContaining({toTransaction: 'rev1', reverse: true}),
+    )
+  })
+
+  it('does not silently drop a document whose revision fetch fails', async () => {
+    mockClient.observable.request.mockImplementation(({url}) => {
+      if (url!.includes('doc2')) return throwError(() => new Error('Failed to fetch'))
+      return of({
+        documents: [{_id: 'doc1', _rev: 'observable-rev-1', title: 'Reverted Document 1'}],
+      })
+    })
+
+    const {result} = renderHook(() => useDocumentRevertStates(mockDocuments))
+
+    await waitFor(async () => {
+      const resolvedResult = await result.current()
+      // The revert must account for every document in the release: a document whose previous
+      // revision could not be fetched may not be left out of the revert release unnoticed.
+      expect(resolvedResult).toHaveLength(2)
     })
   })
 })
