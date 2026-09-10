@@ -1,4 +1,3 @@
-import {configure, takeSnapshot} from '@chromatic-com/vitest'
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import noop from 'lodash-es/noop.js'
 import {useCallback, useState} from 'react'
@@ -105,7 +104,8 @@ describe('Comments', () => {
     it('Should bring up mentions menu when typing @', async () => {
       // Selecting a mention leaves an animated loading skeleton; snapshot the
       // open mentions menu instead so Chromatic does not archive mid-skeleton.
-      configure({disableAutoSnapshot: true})
+      // Prefer auto end-state over takeSnapshot: DOM archives of this portal
+      // dropped the menu and only kept a flaky focus ring.
       const {settleChromaticEndState} = testHelpers()
       void render(<CommentsInputHarness />)
       const $editable = page.getByTestId('comment-input-editable')
@@ -119,18 +119,14 @@ describe('Comments', () => {
           return el instanceof HTMLElement ? Math.round(el.getBoundingClientRect().height) : 0
         })
         .toBeGreaterThan(0)
-      // Mentions close on click-outside; a real pointer park dismisses the menu.
+      // Mentions close on click-outside; do not park the real pointer.
       await settleChromaticEndState({parkPointer: false})
       await expect.element($mentionsMenu).toBeVisible()
-      // Do not type after takeSnapshot: Chromatic archives asynchronously and
-      // Enter would close the menu before the capture (open vs closed / focus
-      // ring pairwise flakes).
-      await takeSnapshot('mentions-menu-open')
+      await expect.element($editable).toHaveFocus()
     })
 
     it('Should bring up mentions menu when pressing the @ button, whilst retaining focus on PTE', async () => {
-      // Mentions menu open/closed races the auto snapshot (same as typing @).
-      configure({disableAutoSnapshot: true})
+      // Keep the menu open for the auto end-state archive (same portal as typing @).
       const {settleChromaticEndState} = testHelpers()
       void render(<CommentsInputHarness />)
       const $editable = page.getByTestId('comment-input-editable')
@@ -147,10 +143,9 @@ describe('Comments', () => {
           return el instanceof HTMLElement ? Math.round(el.getBoundingClientRect().height) : 0
         })
         .toBeGreaterThan(0)
-      // Real pointer park dismisses the mentions popover (click-outside).
       await settleChromaticEndState({parkPointer: false})
       await expect.element($mentionsMenu).toBeVisible()
-      await takeSnapshot('mentions-menu-via-button')
+      await expect.element($editable).toHaveFocus()
     })
 
     it('Should be able to submit', async () => {
@@ -211,6 +206,10 @@ describe('Comments', () => {
         .element(page.getByTestId('comment-mentions-loading-skeleton'))
         .not.toBeInTheDocument()
       await expect.element($editable).toHaveTextContent(/^before$/)
+      // Park pointer so the @ button tooltip / send hover cannot open during
+      // Chromatic's end-state archive.
+      const {settleChromaticEndState} = testHelpers()
+      await settleChromaticEndState()
     })
 
     it('Should start the next comment empty after submitting the previous one', async () => {

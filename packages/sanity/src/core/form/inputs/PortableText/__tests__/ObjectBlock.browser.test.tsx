@@ -232,11 +232,18 @@ describe('Portable Text Input', () => {
         styleSelectText: /^Normal$/,
         styleSelectRoot: '[data-testid="field-body"]',
       })
-      // Park hover can drop :focus on the editor; Chromatic then archives a
-      // grey vs blue field ring. Blur so both captures match.
+      // Park hover can leave :focus-within on the field (blue ring). Blur
+      // everything and wait until the field is not focus-within so identical
+      // captures agree on the grey ring.
+      const field = window.document.querySelector('[data-testid="field-body"]')
       if (window.document.activeElement instanceof HTMLElement) {
         window.document.activeElement.blur()
       }
+      window.document.body.tabIndex = -1
+      window.document.body.focus()
+      await expect
+        .poll(() => !(field instanceof HTMLElement && field.matches(':focus-within')))
+        .toBe(true)
     })
 
     it('Double-clicking opens a block', async () => {
