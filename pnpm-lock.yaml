@@ -360,7 +360,7 @@ importers:
   dev/design-studio:
     dependencies:
       '@sanity/icons':
-        specifier: ^5.2.1
+        specifier: ^5.2.2
         version: 5.2.2(react@19.3.0)
       '@sanity/ui':
         specifier: 'catalog:'
@@ -563,7 +563,7 @@ importers:
         specifier: 'catalog:'
         version: 8.6.1(vitest@4.1.11)
       '@sanity/icons':
-        specifier: ^5.2.1
+        specifier: ^5.2.2
         version: 5.2.2(react@19.3.0)
       '@sanity/ui':
         specifier: 'catalog:'
@@ -680,7 +680,7 @@ importers:
   dev/storybook:
     dependencies:
       '@sanity/icons':
-        specifier: ^5.2.1
+        specifier: ^5.2.2
         version: 5.2.2(react@19.3.0)
       '@sanity/types':
         specifier: workspace:*
@@ -802,7 +802,7 @@ importers:
         specifier: ^6.1.13
         version: 6.1.13(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
       '@sanity/icons':
-        specifier: ^5.2.1
+        specifier: ^5.2.2
         version: 5.2.2(react@19.3.0)
       '@sanity/ui':
         specifier: 'catalog:'
@@ -900,7 +900,7 @@ importers:
         specifier: ^6.1.13
         version: 6.1.13(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
       '@sanity/icons':
-        specifier: ^5.2.1
+        specifier: ^5.2.2
         version: 5.2.2(react@19.3.0)
       '@sanity/image-url':
         specifier: ^2.1.1
@@ -918,8 +918,8 @@ importers:
         specifier: ^2.2.2
         version: 2.2.2(@sanity/types@packages+@sanity+types)(react@19.3.0)(typescript@7.0.2)
       '@sanity/themer':
-        specifier: ^0.3.12
-        version: 0.3.12(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
+        specifier: ^0.3.13
+        version: 0.3.13(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
       '@sanity/types':
         specifier: workspace:*
         version: link:../../packages/@sanity/types
@@ -7379,8 +7379,8 @@ packages:
     engines: {node: '>=18.0.0'}
     hasBin: true
 
-  '@sanity/themer@0.3.12':
-    resolution: {integrity: sha512-i8qb+pYHXcNIxDVRWG7O89DY19q90nWavFGdnOhTjla7v7x5Z2HkB7j22AfNXro5dPZEJBb8O6Qrt7yNbewx8g==}
+  '@sanity/themer@0.3.13':
+    resolution: {integrity: sha512-xixJmsENsPB6JRCh7FON+yXXG+aPI75vz+Rc9ErfZ2c95QtUMFXyMssww4xY5iWC5X+FbuMO0NXqO35hzb+mgA==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       react: ^18 || ^19
@@ -20216,7 +20216,7 @@ snapshots:
     dependencies:
       yaml: 2.9.0
 
-  '@sanity/themer@0.3.12(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)':
+  '@sanity/themer@0.3.13(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)':
     dependencies:
       '@sanity/color': 3.0.8
       '@sanity/icons': 5.2.2(react@19.3.0)
