@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "@sanity/client": "catalog:",
-    "@sanity/icons": "^5.2.1",
+    "@sanity/icons": "^5.2.2",
     "@sanity/ui": "catalog:",
     "ui5": "catalog:"
   },

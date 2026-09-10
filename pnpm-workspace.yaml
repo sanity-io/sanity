@@ -29,7 +29,7 @@ catalog:
   '@sanity/migrate': ^8.0.2
   '@sanity/telemetry': ^1.1.0
   '@sanity/tsdown-config': ^0.28.0
-  '@sanity/ui': ^4.2.0
+  '@sanity/ui': ^4.2.1
   '@types/node': ^24.13.3
   '@types/react': ^19.3.0
   '@types/react-dom': ^19.3.0
@@ -53,7 +53,7 @@ catalog:
   styled-components: ^6.5.3
   # Exact version on purpose (like @sanity/workbench): bumps are explicit so published
   # packages ship the version we validated instead of whatever the alpha dist-tag points to
-  ui5: npm:@sanity/ui@5.0.0-alpha.9
+  ui5: npm:@sanity/ui@5.0.0-alpha.10
   tsdown: ^0.23.0
   typescript: ^7.0.2
   vite: ^8.3.0
@@ -136,6 +136,8 @@ minimumReleaseAgeExclude:
   - 'tsdown'
   # Fresh patch; exclude so 2.0.4 can install before the age gate
   - 'use-effect-event@2.0.4'
+  # Fresh minor; exclude so 1.7.0 can install before the age gate
+  - 'use-sync-external-store@1.7.0'
   # verkit is part of the tsdown toolchain (tsdown dependency since 0.22.12)
   - 'verkit'
   - 'vitest'
