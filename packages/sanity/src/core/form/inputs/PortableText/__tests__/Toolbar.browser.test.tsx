@@ -1,3 +1,4 @@
+import {configure, takeSnapshot} from '@chromatic-com/vitest'
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
 import {useMemo} from 'react'
 import {type InputProps, type PortableTextInputProps} from 'sanity'
@@ -200,6 +201,12 @@ describe('Portable Text Input', () => {
           // Assertion: all auto collapsing menu buttons should be hidden/removed
           await expect.element($actionMenuAutoCollapseMenu).not.toBeInTheDocument()
           await expect.element($insertMenuAutoCollapseMenu).not.toBeInTheDocument()
+
+          // Let CollapseMenu finish measuring after the viewport change so
+          // Chromatic does not archive a mid-reflow toolbar width.
+          await expect
+            .poll(() => $portableTextInput.element().getBoundingClientRect().width)
+            .toBeLessThan(400)
         })
       })
       describe('Non-root <FormBuilder>', () => {
@@ -283,6 +290,9 @@ describe('Portable Text Input', () => {
       // (firefox), so any runner slowdown pushed it over the limit. Give it
       // explicit headroom instead.
       it('on a full screen multi nested PTE', {timeout: 90_000}, async () => {
+        // Capture while the nested style menu is open — the automatic afterEach
+        // snapshot sometimes archives after the menu has already closed.
+        configure({disableAutoSnapshot: true})
         const {getFocusedPortableTextInput} = testHelpers()
         void render(<ToolbarHarness />)
         const $portableTextInput = await getFocusedPortableTextInput('field-body')
@@ -351,6 +361,8 @@ describe('Portable Text Input', () => {
             ),
           )
           .toBe(true)
+
+        await takeSnapshot('nested-style-menu-open')
       })
     })
   })

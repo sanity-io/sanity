@@ -1,3 +1,4 @@
+import {configure, takeSnapshot} from '@chromatic-com/vitest'
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import noop from 'lodash-es/noop.js'
 import {useCallback, useState} from 'react'
@@ -93,15 +94,20 @@ describe('Comments', () => {
       await expect.element($editable).toBeVisible()
       await insertPortableText('My first comment!', $editable)
       await expect.element($editable).toHaveTextContent('My first comment!')
+      await expect.element($editable).toHaveFocus()
     })
 
     it('Should bring up mentions menu when typing @', async () => {
+      // Selecting a mention leaves an animated loading skeleton; snapshot the
+      // open mentions menu instead so Chromatic does not archive mid-skeleton.
+      configure({disableAutoSnapshot: true})
       void render(<CommentsInputHarness />)
       const $editable = page.getByTestId('comment-input-editable')
       await expect.element($editable).toBeVisible()
       await userEvent.keyboard('@')
       const $mentionsMenu = page.getByTestId('comments-mentions-menu')
       await expect.element($mentionsMenu).toBeVisible()
+      await takeSnapshot('mentions-menu-open')
       await userEvent.keyboard('{Enter}')
       await expect.element($mentionsMenu).not.toBeInTheDocument()
       await expect.element(page.getByTestId('comment-mentions-loading-skeleton')).toBeVisible()

@@ -221,7 +221,9 @@ describe.skipIf(server.browser === 'webkit')('Portable Text Input', () => {
 
       await pasteFileOverPortableTextEditor(fileData, $pte)
       await page.getByTestId('upload-destination-sanity-default').click()
-      await expect.element($pte.getByTestId('block-preview')).toBeVisible()
+      const $preview = $pte.getByTestId('block-preview')
+      await expect.element($preview).toBeVisible()
+      await expect.poll(() => $preview.element().getBoundingClientRect().height).toBeGreaterThan(0)
     })
 
     it(`Added dropped image as a block`, async () => {
@@ -247,7 +249,9 @@ describe.skipIf(server.browser === 'webkit')('Portable Text Input', () => {
 
       await page.getByTestId('upload-destination-sanity-default').click()
 
-      await expect.element($pte.getByTestId('block-preview')).toBeVisible()
+      const $preview = $pte.getByTestId('block-preview')
+      await expect.element($preview).toBeVisible()
+      await expect.poll(() => $preview.element().getBoundingClientRect().height).toBeGreaterThan(0)
     })
 
     it(`Display error message on drag over if file is not accepted`, async () => {
