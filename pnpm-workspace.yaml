@@ -147,6 +147,9 @@ minimumReleaseAgeExclude:
   - '@oxc-project/types@0.147.0'
 
 overrides:
+  '@types/react': '19.3.0'
+  '@types/react-dom': '19.3.0'
+  react-is: '19.3.0'
   vitest: 'catalog:'
   # vite 8.2.2 inlines a bundledDev runtime whose `registerModule(id, exportsHolder)` has no default,
   # while rolldown >= 1.2.6 emits `registerModule(id)` for export-less modules (rolldown#10772), so
