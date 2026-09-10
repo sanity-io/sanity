@@ -138,6 +138,12 @@ catalogs:
     '@types/node':
       specifier: ^24.13.3
       version: 24.13.3
+    '@types/react':
+      specifier: ^19.3.0
+      version: 19.3.0
+    '@types/react-dom':
+      specifier: ^19.3.0
+      version: 19.3.0
     '@types/react-is':
       specifier: ^19.3.0
       version: 19.3.0
@@ -174,6 +180,9 @@ catalogs:
     react-dom:
       specifier: ^19.3.0
       version: 19.3.0
+    react-is:
+      specifier: ^19.3.0
+      version: 19.3.0
     react-rx:
       specifier: ^6.0.1
       version: 6.0.1
@@ -203,9 +212,10 @@ catalogs:
       version: 2.3.0
 
 overrides:
-  '@types/react': 19.3.0
-  '@types/react-dom': 19.3.0
-  react-is: 19.3.0
+  '@sanity/ui>react-is': 19.3.0
+  '@testing-library/react>@types/react-dom': 19.3.0
+  react-error-boundary>@types/react: 19.3.0
+  zustand>@types/react: 19.3.0
   vitest: ^4.1.11
   vite>rolldown: 1.2.8
 
@@ -375,7 +385,7 @@ importers:
         specifier: 'catalog:'
         version: 0.2.18(babel-plugin-macros@3.1.0)(vite@8.2.2)
       '@types/react':
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       oxc-transform-react:
         specifier: 'catalog:'
@@ -403,10 +413,10 @@ importers:
         specifier: 'catalog:'
         version: 1.63.0
       '@types/react':
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       '@types/react-dom':
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0(@types/react@19.3.0)
       '@vitejs/plugin-react':
         specifier: 'catalog:'
@@ -434,10 +444,10 @@ importers:
         version: 6.5.3(react-dom@19.3.0)(react@19.3.0)
     devDependencies:
       '@types/react':
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       '@types/react-dom':
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0(@types/react@19.3.0)
       '@vitejs/plugin-react':
         specifier: 'catalog:'
@@ -526,10 +536,10 @@ importers:
         version: '@sanity/ui@5.0.0-alpha.9(react-dom@19.3.0)(react@19.3.0)'
     devDependencies:
       '@types/react':
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       '@types/react-dom':
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0(@types/react@19.3.0)
       '@vitejs/plugin-react':
         specifier: 'catalog:'
@@ -608,7 +618,7 @@ importers:
         specifier: 'catalog:'
         version: 0.2.18(babel-plugin-macros@3.1.0)(vite@8.2.2)
       '@types/react':
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       rimraf:
         specifier: 'catalog:'
@@ -707,10 +717,10 @@ importers:
         specifier: ^10.6.0
         version: 10.6.0(@types/react-dom@19.3.0)(@types/react@19.3.0)(react-dom@19.3.0)(react@19.3.0)(storybook@10.6.0)(supports-color@8.1.1)(typescript@7.0.2)(vite@8.2.2)
       '@types/react':
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       '@types/react-dom':
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0(@types/react@19.3.0)
       '@vitejs/plugin-react':
         specifier: 'catalog:'
@@ -765,10 +775,10 @@ importers:
         specifier: 'catalog:'
         version: 0.2.18(babel-plugin-macros@3.1.0)(vite@8.2.2)
       '@types/react':
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       '@types/react-dom':
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0(@types/react@19.3.0)
       '@vitejs/plugin-react':
         specifier: 'catalog:'
@@ -829,7 +839,7 @@ importers:
         version: '@sanity/ui@5.0.0-alpha.9(react-dom@19.3.0)(react@19.3.0)'
     devDependencies:
       '@types/react':
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
 
   dev/test-create-integration-studio:
@@ -993,10 +1003,10 @@ importers:
         specifier: ^4.17.12
         version: 4.17.12
       '@types/react':
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       '@types/react-dom':
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0(@types/react@19.3.0)
       '@vanilla-extract/css':
         specifier: 'catalog:'
@@ -1075,7 +1085,7 @@ importers:
         version: link:../tsconfig
       '@sanity/ailf':
         specifier: ^7.37.0
-        version: 7.37.0(@aws-sdk/credential-provider-node@3.972.81)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.23.0)(playwright-core@1.63.0)(react-devtools-core@7.0.1)(socks@2.8.9)(supports-color@8.1.1)
+        version: 7.37.0(@aws-sdk/credential-provider-node@3.972.81)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.3.0)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.23.0)(playwright-core@1.63.0)(react-devtools-core@7.0.1)(socks@2.8.9)(supports-color@8.1.1)
       sanity:
         specifier: workspace:*
         version: link:../../sanity
@@ -1475,7 +1485,7 @@ importers:
         specifier: ^14.6.7
         version: 14.6.7(@testing-library/dom@10.4.1)
       '@types/react':
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       '@vitejs/plugin-react':
         specifier: 'catalog:'
@@ -1631,7 +1641,7 @@ importers:
         specifier: ^1.13.0
         version: 1.13.0
       '@types/react':
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       tsdown:
         specifier: 'catalog:'
@@ -1665,7 +1675,7 @@ importers:
         specifier: workspace:*
         version: link:../../@repo/tsdown.config
       '@types/react':
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       '@vitejs/plugin-react':
         specifier: 'catalog:'
@@ -1778,7 +1788,7 @@ importers:
         specifier: ^4.17.12
         version: 4.17.12
       '@types/react':
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       tsdown:
         specifier: 'catalog:'
@@ -1902,7 +1912,7 @@ importers:
         specifier: ^4.17.12
         version: 4.17.12
       '@types/react':
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       '@vanilla-extract/css':
         specifier: 'catalog:'
@@ -2210,7 +2220,7 @@ importers:
         specifier: ^17.0.13
         version: 17.0.13(i18next@26.4.1)(react-dom@19.3.0)(react@19.3.0)(typescript@7.0.2)
       react-is:
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       react-refractor:
         specifier: ^4.0.0
@@ -2319,10 +2329,10 @@ importers:
         specifier: ^3.4.3
         version: 3.4.3
       '@types/react':
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       '@types/react-dom':
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0(@types/react@19.3.0)
       '@types/react-is':
         specifier: 'catalog:'
@@ -2485,7 +2495,7 @@ importers:
         specifier: 'catalog:'
         version: 24.13.3
       '@types/react':
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       vite:
         specifier: 'catalog:'
@@ -2516,7 +2526,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@repo/tsconfig
       '@types/react':
-        specifier: 19.3.0
+        specifier: 'catalog:'
         version: 19.3.0
       rimraf:
         specifier: 'catalog:'
@@ -5174,7 +5184,7 @@ packages:
   '@mux/mux-player-react@3.13.2':
     resolution: {integrity: sha512-yjAmiqVPYTKi88LAuHxSwKiYrZUDy1ofUYjrDP91mvPfz8BfTvUanzpyE8+a6pRIZFp55rmiAnWyjWKuqSGASw==}
     peerDependencies:
-      '@types/react': 19.3.0
+      '@types/react': ^17.0.0 || ^17.0.0-0 || ^18 || ^18.0.0-0 || ^19 || ^19.0.0-0
       '@types/react-dom': '*'
       react: ^17.0.2 || ^17.0.0-0 || ^18 || ^18.0.0-0 || ^19 || ^19.0.0-0
       react-dom: ^17.0.2 || ^17.0.2-0 || ^18 || ^18.0.0-0 || ^19 || ^19.0.0-0
@@ -7408,7 +7418,7 @@ packages:
   '@sanity/types@5.31.2':
     resolution: {integrity: sha512-UM8GfNgsrFaGt3TQzG5tKFyXvNMEQD+e8AJq44DiL7t/UYJaMScofCSWzFGg+4c7A3A2lhooC8zO9gJi8Vj7aw==}
     peerDependencies:
-      '@types/react': 19.3.0
+      '@types/react': ^19.2
 
   '@sanity/ui@4.2.0':
     resolution: {integrity: sha512-O8orW8pfSgs+phecd+9xr8Ptr/1fWEdx37kZ+X8l/XJ4cguDKJhhMtVzE/+OSWrStVDTT/eXAZWjRWEVC41KFg==}
@@ -7680,8 +7690,8 @@ packages:
   '@storybook/react-dom-shim@10.6.0':
     resolution: {integrity: sha512-ZE0l4xL6d00rKFeJhRDuh0t3r+/2ffhx47lIyaSWrTD5kuM3nDjKDxCIWwX4E3gLV+oNX8E1prXRMuEWJUJwJg==}
     peerDependencies:
-      '@types/react': 19.3.0
-      '@types/react-dom': 19.3.0
+      '@types/react': ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      '@types/react-dom': ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       storybook: ^10.6.0
@@ -7706,8 +7716,8 @@ packages:
   '@storybook/react@10.6.0':
     resolution: {integrity: sha512-0xfYYPRHcr5ta1hmXJCSezH4JGuUHJ+xVF9f1j+Y/MWEMOQE4wnaKWKsk/HLrDjZkT5hKfvmogt9b0yduP6zEQ==}
     peerDependencies:
-      '@types/react': 19.3.0
-      '@types/react-dom': 19.3.0
+      '@types/react': ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      '@types/react-dom': ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       storybook: ^10.6.0
@@ -7858,7 +7868,7 @@ packages:
     engines: {node: '>=18'}
     peerDependencies:
       '@testing-library/dom': ^10.0.0
-      '@types/react': 19.3.0
+      '@types/react': ^18.0.0 || ^19.0.0
       '@types/react-dom': 19.3.0
       react: ^18.0.0 || ^19.0.0
       react-dom: ^18.0.0 || ^19.0.0
@@ -8087,7 +8097,7 @@ packages:
   '@types/react-dom@19.3.0':
     resolution: {integrity: sha512-ZI7bU42mZXXKHn/qNLEw2IrbiINU7X5+vfgdixBHkCNpYWXjKgfQ/P+uyGb5CjOLB9UcnTeg3rylQtV2hym44Q==}
     peerDependencies:
-      '@types/react': 19.3.0
+      '@types/react': ^19.3.0
 
   '@types/react-is@19.3.0':
     resolution: {integrity: sha512-pnL9JaaCgCeERlAwWLHBbv/sQV9jRFnp5ex7docWJ4/zA2UDwY2BrTSjEshBWJ81wyl37w9BSz22NW6i0qJhwA==}
@@ -8095,7 +8105,7 @@ packages:
   '@types/react-transition-group@4.4.12':
     resolution: {integrity: sha512-8TV6R3h2j7a91c+1DXdJi3Syo69zzIZbz7Lg5tORM5LEJG7X/E6a1V3drRyBRZq7/utz7A+c4OgYLiLcYGHG6w==}
     peerDependencies:
-      '@types/react': 19.3.0
+      '@types/react': '*'
 
   '@types/react@19.3.0':
     resolution: {integrity: sha512-N0rFCuH9YoxG9/m61l9MfpJKfmLOVU0em7ipIz6TRgSSkvReLB9vL85GB+yr8Bs5leqpvg96JSwF4ZS1s4viQg==}
@@ -8566,7 +8576,7 @@ packages:
   '@visx/axis@4.0.0':
     resolution: {integrity: sha512-cSPNO9Aic2UX49AmIeJJ9TQrrAkvUHpHOGqimUAXhbg07VI3HoHDKcXZdrjvQz+g0LhubrUkjj8Gwju2WZ3dtg==}
     peerDependencies:
-      '@types/react': 19.3.0
+      '@types/react': ^18.0.0 || ^19.0.0
       react: ^18.0.0 || ^19.0.0
     peerDependenciesMeta:
       '@types/react':
@@ -8578,7 +8588,7 @@ packages:
   '@visx/group@4.0.0':
     resolution: {integrity: sha512-HGAq8BCqn5x0t94CJOLJeKtWss9LFpF3HY69HbuO1PlR+B9c4aVT9xbjfudmU8wGQZLT6JNt+PJvxbO2aJ+1aA==}
     peerDependencies:
-      '@types/react': 19.3.0
+      '@types/react': ^18.0.0 || ^19.0.0
       react: ^18.0.0 || ^19.0.0
     peerDependenciesMeta:
       '@types/react':
@@ -8590,7 +8600,7 @@ packages:
   '@visx/responsive@4.0.0':
     resolution: {integrity: sha512-MGPK8AeiBIhzz34o9TNJIyUDQIdWEj5mt+U/Je4qVRRXpXSMhor1IE7v71czAS5b90OrFxC9L3w27AV+szG25w==}
     peerDependencies:
-      '@types/react': 19.3.0
+      '@types/react': ^18.0.0 || ^19.0.0
       react: ^18.0.0 || ^19.0.0
     peerDependenciesMeta:
       '@types/react':
@@ -8602,7 +8612,7 @@ packages:
   '@visx/shape@4.0.0':
     resolution: {integrity: sha512-X0FP3OFjQhc5/6Vj2aY7cK2JwKYI0H0hQM7cdNRWy/ZMMlrh5KpEdqx0HVo0KoTeTlkUvO+kydMLnAuuCRFIFw==}
     peerDependencies:
-      '@types/react': 19.3.0
+      '@types/react': ^18.0.0 || ^19.0.0
       react: ^18.0.0 || ^19.0.0
     peerDependenciesMeta:
       '@types/react':
@@ -8611,7 +8621,7 @@ packages:
   '@visx/text@4.0.0':
     resolution: {integrity: sha512-39f2goSaKy5Mqn89lRDGSJ1IMr49wplkbIFHsFI8cPnAPbguiJxYZ+ulizd7Vcsq2z/hytuGv3Lmk165zUiUYQ==}
     peerDependencies:
-      '@types/react': 19.3.0
+      '@types/react': ^18.0.0 || ^19.0.0
       react: ^18.0.0 || ^19.0.0
     peerDependenciesMeta:
       '@types/react':
@@ -11219,7 +11229,7 @@ packages:
     resolution: {integrity: sha512-sbl1RdLOgkO9isK42WCZlJCFN9hb++sX9dsklOvfd1YQ3bQ2AiFu12Q6tFlr0HvEUvzraJntQCCpfEoUe9DSzA==}
     engines: {node: '>=20'}
     peerDependencies:
-      '@types/react': 19.3.0
+      '@types/react': '>=19.0.0'
       react: '>=19.0.0'
       react-devtools-core: '>=6.1.2'
     peerDependenciesMeta:
@@ -13113,7 +13123,7 @@ packages:
   react-focus-lock@2.13.7:
     resolution: {integrity: sha512-20lpZHEQrXPb+pp1tzd4ULL6DyO5D2KnR0G69tTDdydrmNhU7pdFmbQUYVyHUgp+xN29IuFR0PVuhOmvaZL9Og==}
     peerDependencies:
-      '@types/react': 19.3.0
+      '@types/react': '*'
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
     peerDependenciesMeta:
       '@types/react':
@@ -13146,6 +13156,12 @@ packages:
     peerDependencies:
       react: '*'
 
+  react-is@16.13.1:
+    resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
+
+  react-is@17.0.2:
+    resolution: {integrity: sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==}
+
   react-is@19.3.0:
     resolution: {integrity: sha512-UpMYezM4v5/18F28aC66AEsjXIgE02kyEMH6yLdgLXu/UTfa1Ntwck/nNLrbqJsEXW7gPb0coNO9FQse9WTovA==}
 
@@ -13153,7 +13169,7 @@ packages:
     resolution: {integrity: sha512-m4pTIpgEpdAJgRnf3DfISHfIHMjJkouWJdKUyGy9UaFBBePv1kolqKTzAmZrfQcoZBVfT/g9vvcc39o1RfwZgA==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@types/react': 19.3.0
+      '@types/react': ^18 || ^19
       react: ^18 || ^19
     peerDependenciesMeta:
       '@types/react':
@@ -13168,7 +13184,7 @@ packages:
   react-redux@9.3.0:
     resolution: {integrity: sha512-KQopgqFo/p/fgmAs5qz6p5RWaNAzq40WAu7fJIXnQpYxFPbJYtsJPWvGeF2rOBaY/kEuV77AVsX8TsQzKm+A/g==}
     peerDependencies:
-      '@types/react': 19.3.0
+      '@types/react': ^18.2.25 || ^19
       react: ^18.0 || ^19
       redux: ^5.0.0
     peerDependenciesMeta:
@@ -13816,7 +13832,7 @@ packages:
     resolution: {integrity: sha512-H48X6AURAFTpfN2zEux6vNesee5Oq8Gxj1IanYmblPZ218sfKSeyyerF1NC7GD7BrruoC8L4/cU0zII4y+d6zw==}
     hasBin: true
     peerDependencies:
-      '@types/react': 19.3.0
+      '@types/react': ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       prettier: ^2 || ^3
       vite-plus: ^0.1.15 || ^0.2.0
     peerDependenciesMeta:
@@ -14386,7 +14402,7 @@ packages:
     resolution: {integrity: sha512-jQL3lRnocaFtu3V00JToYz/4QkNWswxijDaCVNZRiRTO3HQDLsdu1ZtmIUvV4yPp+rvWm5j0y0TG/S61cuijTg==}
     engines: {node: '>=10'}
     peerDependencies:
-      '@types/react': 19.3.0
+      '@types/react': '*'
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
     peerDependenciesMeta:
       '@types/react':
@@ -14420,7 +14436,7 @@ packages:
     resolution: {integrity: sha512-Fedw0aZvkhynoPYlA5WXrMCAMm+nSWdZt6lzJQ7Ok8S6Q+VsHmHpRWndVRJ8Be0ZbkfPc5LRYH+5XrzXcEeLRQ==}
     engines: {node: '>=10'}
     peerDependencies:
-      '@types/react': 19.3.0
+      '@types/react': '*'
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
     peerDependenciesMeta:
       '@types/react':
@@ -14598,8 +14614,8 @@ packages:
   vitest-browser-react@2.3.0:
     resolution: {integrity: sha512-S5vdGHHA93j2Z6dbmIJI1wtxT3AXPTRlmC1Meo+ekG011yNnEutMAnHrwyj8qFlGhgBYA8ENGK6+o1Q+vnFz6A==}
     peerDependencies:
-      '@types/react': 19.3.0
-      '@types/react-dom': 19.3.0
+      '@types/react': ^18.0.0 || ^19.0.0
+      '@types/react-dom': ^18.0.0 || ^19.0.0
       react: ^18.0.0 || ^19.0.0
       react-dom: ^18.0.0 || ^19.0.0
       vitest: ^4.1.11
@@ -19338,7 +19354,7 @@ snapshots:
     dependencies:
       '@oclif/core': 4.14.0
 
-  '@sanity/ailf@7.37.0(@aws-sdk/credential-provider-node@3.972.81)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.23.0)(playwright-core@1.63.0)(react-devtools-core@7.0.1)(socks@2.8.9)(supports-color@8.1.1)':
+  '@sanity/ailf@7.37.0(@aws-sdk/credential-provider-node@3.972.81)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.3.0)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.23.0)(playwright-core@1.63.0)(react-devtools-core@7.0.1)(socks@2.8.9)(supports-color@8.1.1)':
     dependencies:
       '@google-cloud/bigquery': 8.3.1(supports-color@8.1.1)
       '@google-cloud/storage': 7.22.0(supports-color@8.1.1)
@@ -19356,7 +19372,7 @@ snapshots:
       jiti: 2.7.0
       js-yaml: 4.3.2
       oxc-parser: 0.129.0
-      promptfoo: 0.120.27(@aws-sdk/credential-provider-node@3.972.81)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.23.0)(playwright-core@1.63.0)(react-devtools-core@7.0.1)(socks@2.8.9)(supports-color@8.1.1)
+      promptfoo: 0.120.27(@aws-sdk/credential-provider-node@3.972.81)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.3.0)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.23.0)(playwright-core@1.63.0)(react-devtools-core@7.0.1)(socks@2.8.9)(supports-color@8.1.1)
       zod: 4.5.4
     transitivePeerDependencies:
       - '@aws-sdk/client-rds-data'
@@ -24222,7 +24238,7 @@ snapshots:
 
   hoist-non-react-statics@3.3.2:
     dependencies:
-      react-is: 19.3.0
+      react-is: 16.13.1
 
   hono@4.13.5: {}
 
@@ -24379,7 +24395,7 @@ snapshots:
 
   ini@5.0.0: {}
 
-  ink@6.8.0(react-devtools-core@7.0.1)(react@19.3.0):
+  ink@6.8.0(@types/react@19.3.0)(react-devtools-core@7.0.1)(react@19.3.0):
     dependencies:
       '@alcalzone/ansi-tokenize': 0.2.5
       ansi-escapes: 7.3.0
@@ -24408,6 +24424,7 @@ snapshots:
       ws: 8.21.3
       yoga-layout: 3.2.1
     optionalDependencies:
+      '@types/react': 19.3.0
       react-devtools-core: 7.0.1
     transitivePeerDependencies:
       - bufferutil
@@ -26124,7 +26141,7 @@ snapshots:
     dependencies:
       ansi-regex: 5.0.1
       ansi-styles: 5.2.0
-      react-is: 19.3.0
+      react-is: 17.0.2
 
   pretty-ms@9.3.1:
     dependencies:
@@ -26138,7 +26155,7 @@ snapshots:
 
   promisepipe@3.0.0: {}
 
-  promptfoo@0.120.27(@aws-sdk/credential-provider-node@3.972.81)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.23.0)(playwright-core@1.63.0)(react-devtools-core@7.0.1)(socks@2.8.9)(supports-color@8.1.1):
+  promptfoo@0.120.27(@aws-sdk/credential-provider-node@3.972.81)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.3)(@types/react@19.3.0)(babel-plugin-macros@3.1.0)(debug@4.3.4)(pg@8.23.0)(playwright-core@1.63.0)(react-devtools-core@7.0.1)(socks@2.8.9)(supports-color@8.1.1):
     dependencies:
       '@anthropic-ai/sdk': 0.78.0(zod@4.5.4)
       '@apidevtools/json-schema-ref-parser': 15.5.2(@types/json-schema@7.0.15)
@@ -26190,7 +26207,7 @@ snapshots:
       gcp-metadata: 8.1.4(supports-color@8.1.1)
       glob: 13.0.6
       http-z: 8.1.1
-      ink: 6.8.0(react-devtools-core@7.0.1)(react@19.3.0)
+      ink: 6.8.0(@types/react@19.3.0)(react-devtools-core@7.0.1)(react@19.3.0)
       istextorbinary: 9.5.0
       jks-js: 1.1.7
       js-rouge: 3.2.1
@@ -26323,7 +26340,7 @@ snapshots:
     dependencies:
       loose-envify: 1.4.0
       object-assign: 4.1.1
-      react-is: 19.3.0
+      react-is: 16.13.1
 
   property-information@7.2.0: {}
 
@@ -26607,6 +26624,10 @@ snapshots:
   react-icons@5.7.0(react@19.3.0):
     dependencies:
       react: 19.3.0
+
+  react-is@16.13.1: {}
+
+  react-is@17.0.2: {}
 
   react-is@19.3.0: {}
 
