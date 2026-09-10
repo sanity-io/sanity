@@ -65,7 +65,8 @@ jobs:
       - name: Install minimum supported React
         if: matrix.react == 'minimum'
         run: |
-          export REACT_VERSION=$(pnpm --silent --filter sanity exec node -e "const {minVersion} = require('semver'); process.stdout.write(minVersion(require('./package.json').peerDependencies.react).version)")
+          REACT_VERSION=$(pnpm --silent --filter sanity exec node -e "const {minVersion} = require('semver'); process.stdout.write(minVersion(require('./package.json').peerDependencies.react).version)")
+          export REACT_VERSION
           node --input-type=module <<'EOF'
           import {readFile, writeFile} from 'node:fs/promises'
 
