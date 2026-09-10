@@ -9,7 +9,6 @@ import {
   Button,
   Card,
   Flex,
-  Grid,
   Stack,
   Text,
 } from '@sanity/ui'
@@ -17,7 +16,7 @@ import {useToast} from '@sanity/ui/toast'
 import {type KeyboardEvent, type MouseEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
 import {css, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Grid, Box} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {getHumanFriendlyBytes} from '../../../../field/types/file/diff/helpers'
@@ -49,16 +48,20 @@ const CardIconWrapper = styled.span`
 // These are here because using vanilla UI components caused a type issue inside of styled-components
 const CustomFlex = styled(Flex)``
 
-const CustomCard = styled(Card)<RowProps>`
+interface SelectableStyleProps {
+  $isSelected?: boolean
+}
+
+const CustomCard = styled(Card)<SelectableStyleProps>`
   ${(props) =>
-    props.isSelected &&
+    props.$isSelected &&
     css`
       --card-muted-fg-color: var(--card-bg-color);
       --card-fg-color: var(--card-bg-color);
     `}
 `
 
-const RowButton = styled(Button)<RowProps>`
+const RowButton = styled(Button)<SelectableStyleProps>`
   box-shadow: none;
   min-width: 0;
   cursor: pointer;
@@ -82,7 +85,7 @@ const RowButton = styled(Button)<RowProps>`
   }
 
   ${(props) =>
-    props.isSelected &&
+    props.$isSelected &&
     css`
       --card-muted-fg-color: var(--card-bg-color);
       --card-fg-color: var(--card-bg-color);
@@ -102,7 +105,7 @@ const RowButton = styled(Button)<RowProps>`
     `}
 
   ${(props) =>
-    !props.isSelected &&
+    !props.$isSelected &&
     css`
       &:hover:before {
         background-color: var(--card-bg-color);
@@ -253,7 +256,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
     return (
       <Card paddingBottom={2} style={STYLES_ROW_CARD}>
         <Grid
-          gridTemplateColumns={4}
+          gridTemplateColumns="repeat(4, minmax(0, 1fr))"
           gap={1}
           style={{
             position: 'relative',
@@ -262,7 +265,6 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
           }}
         >
           <RowButton
-            asset={asset}
             mode="bleed"
             padding={0}
             data-id={_id}
@@ -293,7 +295,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
         </Grid>
         {isOpen && (
           <>
-            <Grid marginTop={3} gridTemplateColumns={3} gap={1}>
+            <Grid marginTop={3} gridTemplateColumns="repeat(3, minmax(0, 1fr))" gap={1}>
               <Stack gap={2}>
                 <Text size={1} muted weight="medium">
                   {t('asset-source.file.asset-list.header.size')}
@@ -353,16 +355,15 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
 
   return (
     <CustomCard
-      asset={asset}
       paddingBottom={1}
       style={STYLES_ROW_CARD}
       radius={0}
       overflow={'hidden'}
-      isSelected={isSelected}
-      aria-selected="true"
+      $isSelected={isSelected}
+      aria-selected={Boolean(isSelected)}
     >
       <Grid
-        gridTemplateColumns={4}
+        gridTemplateColumns="repeat(4, minmax(0, 1fr))"
         gap={1}
         data-id={_id}
         paddingY={1}
@@ -373,7 +374,6 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
         }}
       >
         <RowButton
-          asset={asset}
           mode="bleed"
           data-id={_id}
           onClick={onClick}
@@ -382,7 +382,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
           title={t('asset-source.file.asset-list.item.select-file-tooltip', {
             filename: originalFilename,
           })}
-          isSelected={isSelected}
+          $isSelected={isSelected}
           radius={2}
         >
           <CustomFlex

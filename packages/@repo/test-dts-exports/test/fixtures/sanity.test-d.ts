@@ -1489,6 +1489,7 @@ import type {
   TagValue,
   TargetDocumentState,
   TargetPerspective,
+  TargetScopeIdOptions,
   TelephoneInput,
   TelephoneInputProps,
   Template,
@@ -1746,6 +1747,7 @@ import type {
   useStudioUrl,
   useSyncState,
   useTargetDocumentState,
+  useTargetScopeId,
   useTelemetryConsent,
   useTemplatePermissions,
   useTemplatePermissionsFromHookFactory,
@@ -6321,6 +6323,9 @@ describe('sanity', () => {
   test('TargetPerspective', () => {
     expectTypeOf<TargetPerspective>().not.toBeNever()
   })
+  test('TargetScopeIdOptions', () => {
+    expectTypeOf<TargetScopeIdOptions>().toBeObject()
+  })
   test('TelephoneInput', () => {
     expectTypeOf<typeof TelephoneInput>().toBeFunction()
   })
@@ -7095,6 +7100,9 @@ describe('sanity', () => {
   })
   test('useTargetDocumentState', () => {
     expectTypeOf<typeof useTargetDocumentState>().toBeFunction()
+  })
+  test('useTargetScopeId', () => {
+    expectTypeOf<typeof useTargetScopeId>().toBeFunction()
   })
   test('useTelemetryConsent', () => {
     expectTypeOf<typeof useTelemetryConsent>().toBeFunction()

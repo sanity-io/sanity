@@ -19,7 +19,6 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import {CSS} from '@dnd-kit/utilities'
-import {Grid} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {
   type ComponentProps,
@@ -31,7 +30,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {ArrayItemRootElementContext, SortableItemIdContext} from 'sanity/_singletons'
-import {Box, type BoxProps} from 'ui5'
+import {Grid, Box, type BoxProps} from 'ui5'
 
 import {restrictToParentElementWithMargins} from './dndkit-modifier/restrictToParentElementWithMargins'
 import {listItemMoving, MOVING_ITEM_CLASS_NAME} from './list.css'
