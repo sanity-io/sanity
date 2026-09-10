@@ -129,7 +129,16 @@ describe('Portable Text Input', () => {
 
       await page.getByText('Custom preview block:').click()
       // Assertion: the annotation toolbar popover should be visible
-      await expect.element(page.getByTestId('inline-object-toolbar-popover')).toBeVisible()
+      const $toolbar = page.getByTestId('inline-object-toolbar-popover')
+      await expect.element($toolbar).toBeVisible()
+      // Wait for the portaled toolbar to finish layout so Chromatic does not
+      // archive a zero-height / mid-animation popover.
+      await expect
+        .poll(() => {
+          const el = document.querySelector('[data-testid="inline-object-toolbar-popover"]')
+          return el instanceof HTMLElement ? el.getBoundingClientRect().height : 0
+        })
+        .toBeGreaterThan(0)
     })
 
     it('Inline object works as expected when clicking the edit button', async () => {

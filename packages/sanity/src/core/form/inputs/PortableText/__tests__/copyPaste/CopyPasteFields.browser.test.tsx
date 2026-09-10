@@ -171,13 +171,9 @@ describe('Copy and pasting fields', () => {
         .getByTestId('field-actions-menu-objectWithColumns')
         .getByTestId('field-actions-trigger')
 
-      await $fieldActions.element().focus()
-      await expect.element($fieldActions).toHaveFocus()
-      await userEvent.keyboard('{Enter}')
-
+      await userEvent.click($fieldActions)
       await expect.element(page.getByRole('menuitem', {name: 'Copy field'})).toBeVisible()
-      await page.getByRole('menuitem', {name: 'Copy field'}).element().focus()
-      await userEvent.keyboard('{Enter}')
+      await userEvent.click(page.getByRole('menuitem', {name: 'Copy field'}))
 
       // Clear string1 so we can verify paste restores it
       await userEvent.fill(
@@ -189,23 +185,22 @@ describe('Copy and pasting fields', () => {
         .getByTestId('field-actions-menu-objectWithColumns')
         .getByTestId('field-actions-trigger')
 
-      await $fieldActions.element().focus()
-
       await expect.element($fieldActions).toBeVisible()
-
-      await userEvent.keyboard('{Enter}')
+      await userEvent.click($fieldActions)
 
       await expect.element(page.getByRole('menuitem', {name: 'Paste field'})).toBeVisible()
-      await page.getByRole('menuitem', {name: 'Paste field'}).element().focus()
-      await userEvent.keyboard('{Enter}')
+      await userEvent.click(page.getByRole('menuitem', {name: 'Paste field'}))
 
       // Assertion: the copied value was pasted back. (The studio no longer shows
       // success toasts for copy/paste — see #8612 — so assert on the field value.)
-      await expect
-        .element(page.getByTestId('field-objectWithColumns.string1').getByRole('textbox'))
-        .toHaveValue('A string to copy')
+      const $string1 = page.getByTestId('field-objectWithColumns.string1').getByRole('textbox')
+      await expect.element($string1).toHaveValue('A string to copy')
 
-      await userEvent.keyboard('{Escape}')
+      // Settle the Chromatic end state: focus a stable field so the actions
+      // menu is not left open mid-animation, and re-assert the pasted value.
+      await userEvent.click($string1)
+      await expect.element($string1).toHaveValue('A string to copy')
+      await expect.element($string1).toHaveFocus()
     })
 
     // TODO: native Ctrl+C/Ctrl+V is handled by the browser and bypasses
@@ -273,31 +268,29 @@ describe('Copy and pasting fields', () => {
       const fieldActionsId = 'field-actions-menu-title'
       const fieldActionsTriggerId = 'field-actions-trigger'
 
-      await page.getByTestId(fieldActionsId).getByTestId(fieldActionsTriggerId).element().focus()
-      await userEvent.keyboard('{Enter}')
+      const $titleActions = page.getByTestId(fieldActionsId).getByTestId(fieldActionsTriggerId)
+      await userEvent.click($titleActions)
 
       await expect.element(page.getByRole('menuitem', {name: 'Copy field'})).toBeVisible()
-      await page.getByRole('menuitem', {name: 'Copy field'}).element().focus()
-      await userEvent.keyboard('{Enter}')
+      await userEvent.click(page.getByRole('menuitem', {name: 'Copy field'}))
 
       await userEvent.fill(page.getByTestId('field-title').getByRole('textbox').element(), '')
 
-      // Trigger the field actions menu
-      await page.getByTestId(fieldActionsId).getByTestId(fieldActionsTriggerId).element().focus()
-      await userEvent.keyboard('{Enter}')
+      await userEvent.click($titleActions)
 
-      // Click on the "Paste field" option in the menu
       await expect.element(page.getByRole('menuitem', {name: 'Paste field'})).toBeVisible()
-      await page.getByRole('menuitem', {name: 'Paste field'}).element().focus()
-      await userEvent.keyboard('{Enter}')
+      await userEvent.click(page.getByRole('menuitem', {name: 'Paste field'}))
 
       // Verify that the field content is updated with the pasted value. (No
       // success toast any more — see #8612 — so assert on the field value.)
-      await expect
-        .element(page.getByTestId('field-title').getByRole('textbox'))
-        .toHaveValue('A string to copy')
+      const $title = page.getByTestId('field-title').getByRole('textbox')
+      await expect.element($title).toHaveValue('A string to copy')
 
-      await userEvent.keyboard('{Escape}')
+      // Settle the Chromatic end state: focus a stable field so the actions
+      // menu is not left open mid-animation, and re-assert the pasted value.
+      await userEvent.click($title)
+      await expect.element($title).toHaveValue('A string to copy')
+      await expect.element($title).toHaveFocus()
     })
   })
 

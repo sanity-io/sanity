@@ -101,9 +101,11 @@ export default defineConfig({
     // Browser tests are slower and flakier than jsdom tests, especially on
     // WebKit/Firefox in CI where all three browsers share one runner. Give
     // them generous timeouts and retry once (the old Playwright CT setup used
-    // `retries: 1`).
+    // `retries: 1`). Chromatic capture runs must not retry: a failed attempt
+    // still runs the plugin's `afterEach` archive, and the retry archives again
+    // as `Snapshot #1 (2)` (seen as an ADDED story on Vitest Chromatic builds).
     testTimeout: 30_000,
-    retry: 1,
+    retry: chromaticEnabled ? 0 : 1,
     // Element matchers (`expect.element(...).toBeVisible()`, `expect.poll`)
     // retry until this timeout; the default (~1s) is too tight for a loaded
     // CI runner running three browsers at once.

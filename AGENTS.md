@@ -586,7 +586,8 @@ Keep `test.sequence.hooks: 'list'` in `packages/sanity/vitest.browser.config.mts
 hooks to `parallel`, which lets Chromatic's automatic snapshot race
 `packages/sanity/test/setup/browser.ts` cleanup and produces partially unmounted, blank, or
 duplicate captures. The Chromatic plugin prepends its setup file for `list` ordering, so the
-snapshot finishes before React cleanup starts. Capture runs also set `cropToViewport`,
+snapshot finishes before React cleanup starts. Capture runs also set `retry: 0` (a retried test
+archives twice and Chromatic publishes `Snapshot #1 (2)`), `cropToViewport`,
 `pauseAnimationAtEnd`, a short `delay`, and transparent carets so portal menus and blinking
 carets do not show up as false diffs. Tests that leave a menu open on purpose should assert a
 _visible_ overlay (closed `@sanity/ui` menus stay mounted). Interaction-only tests whose end

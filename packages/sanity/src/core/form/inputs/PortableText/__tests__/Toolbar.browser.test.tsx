@@ -312,26 +312,32 @@ describe('Portable Text Input', () => {
         await $overlay.element().focus()
         await $overlay.click()
 
-        // click the block
-        const toolbarCards = document.querySelectorAll('[data-testid="pt-editor__toolbar-card"]')
-        expect(toolbarCards.length).toBeGreaterThanOrEqual(2)
+        // Nested editor must be present before we expand / open its style menu.
+        // Soft `if (length >= 2)` skips used to let this test "pass" on the root
+        // editor alone and archive an empty fullscreen Body for Chromatic.
+        await expect
+          .poll(() => document.querySelectorAll('[data-testid="pt-editor__toolbar-card"]').length)
+          .toBeGreaterThanOrEqual(2)
 
-        // click the nested PTE expand
+        await expect
+          .poll(() => document.querySelectorAll('[aria-label="Expand editor"]').length)
+          .toBeGreaterThanOrEqual(2)
         const expandButtons = document.querySelectorAll('[aria-label="Expand editor"]')
-        if (expandButtons.length >= 2) {
-          await userEvent.click(expandButtons[1] as HTMLElement)
-        }
+        await userEvent.click(expandButtons[1] as HTMLElement)
 
-        // click the block style select
+        await expect
+          .poll(() => document.querySelectorAll('[data-testid="block-style-select"]').length)
+          .toBeGreaterThanOrEqual(2)
         const blockStyleSelects = document.querySelectorAll('[data-testid="block-style-select"]')
-        if (blockStyleSelects.length >= 2) {
-          await userEvent.click(blockStyleSelects[1] as HTMLElement)
-        }
+        await userEvent.click(blockStyleSelects[1] as HTMLElement)
 
-        // Assertion: block style dropdown should be visible. Closed
+        // Assertion: nested block style dropdown should be visible. Closed
         // `@sanity/ui` menus stay mounted (`display: none`), so a raw
         // querySelector is not enough for a deterministic Chromatic end state.
         await expect.element(page.getByRole('menuitem', {name: 'Normal'})).toBeVisible()
+        await expect
+          .poll(() => document.querySelectorAll('[data-testid="block-style-select"]').length)
+          .toBeGreaterThanOrEqual(2)
       })
     })
   })
