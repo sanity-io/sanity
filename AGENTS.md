@@ -369,10 +369,10 @@ Two rules follow:
   `initialValue`, React aborts with "Maximum update depth exceeded"
   (`useDocumentValuesRenderLoop.repro.test.tsx` guards one such case).
 - **Never rely on a synchronous first emission.** `useSyncObservable(obs$, undefined)!` is a
-  first-render crash. Pass the value the observable emits first (`GUARDED`, a store's exported
-  `INITIAL_*_STATE`), or fall back per render with `??` when the initial value depends on the
-  observable's parameters (`useEditState`), since react-rx captures `initialValue` once per hook
-  instance.
+  first-render crash. Pass the value the observable emits first (`GUARDED`, the releases store's
+  exported `INITIAL_RELEASES_STATE`, `useVariantsStore().initialState`), or derive it per render
+  when it depends on the observable's parameters (`useEditState`), since react-rx captures
+  `initialValue` once per hook instance.
 
 ### Translate: never define `components` inline
 
