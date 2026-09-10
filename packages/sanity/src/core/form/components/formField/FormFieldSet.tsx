@@ -30,6 +30,7 @@ import {FormFieldGutter} from '../FormFieldGutter'
 import {FormNodeDivergenceCollectionIndicator} from '../FormNodeDivergenceCollectionIndicator'
 import {FormNodeDivergenceDetail} from '../FormNodeDivergenceDetail'
 import {FormRow} from '../layout/FormRow'
+import {getGridTemplateColumns} from '../layout/getGridTemplateColumns'
 import {FormFieldBaseHeader} from './FormFieldBaseHeader'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
@@ -210,7 +211,11 @@ export function FormFieldSet(
       return null
     }
     return (
-      <ColumnarGrid gridTemplateColumns={columns} gapX={4} gapY={5}>
+      <ColumnarGrid
+        gridTemplateColumns={columns ? getGridTemplateColumns(columns) : undefined}
+        columnGap={4}
+        rowGap={5}
+      >
         {getChildren(children)}
       </ColumnarGrid>
     )
