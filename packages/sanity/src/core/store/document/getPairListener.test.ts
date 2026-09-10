@@ -1,5 +1,5 @@
-import {type SanityClient} from '@sanity/client'
-import {from, lastValueFrom, of, Subject, throwError} from 'rxjs'
+import {ConnectionFailedError, type SanityClient} from '@sanity/client'
+import {defer, from, lastValueFrom, type Observable, of, Subject, throwError} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {type StoreRequestErrorHandler} from '../requestErrorHandler'
@@ -406,6 +406,74 @@ describe('getPairListener', () => {
       // welcomeback means resume succeeded — no snapshot fetch needed
       expect(getDocuments.mock.calls.length).toBe(fetchCountAfterWelcome)
 
+      sub.unsubscribe()
+    })
+  })
+
+  describe('listener connection failures', () => {
+    // A listener connection the client gives up on errors the stream with a
+    // `ConnectionFailedError` carrying the HTTP status.
+    function rejectedConnection(status: number) {
+      return throwError(() => new ConnectionFailedError('EventSource connection failed', {status}))
+    }
+
+    function createFailingClient(connectImpl: () => Observable<unknown>) {
+      const connect = vi.fn(connectImpl)
+      const mockClient = {
+        observable: {
+          listen: vi.fn(() => defer(connect)),
+          getDocuments: vi.fn(() => of([publishedDoc, draftDoc])),
+        },
+        withConfig: vi.fn(function (this: unknown) {
+          return this
+        }),
+      } as unknown as SanityClient
+      return {client: mockClient, connect}
+    }
+
+    test('a 401 completes the stream — no error rethrow, no retry', async () => {
+      const {client: mockClient, connect} = createFailingClient(() => rejectedConnection(401))
+
+      const errors: unknown[] = []
+      let completed = false
+      const sub = getPairListener(mockClient, idPair).subscribe({
+        error: (e) => errors.push(e),
+        complete: () => {
+          completed = true
+        },
+      })
+      await nextTick()
+
+      // The listen endpoint only 401s on an invalid/expired session, so the
+      // connection is terminal: the stream completes (not errors — an errored
+      // stream would be rethrown by `useSyncObservable` and crash the tool)
+      // and is not retried. Recovery is driven by the studio's request handler
+      // on ordinary requests, not by this stream.
+      expect(errors).toEqual([])
+      expect(completed).toBe(true)
+      expect(connect).toHaveBeenCalledTimes(1)
+
+      sub.unsubscribe()
+    })
+
+    test('other listener errors still propagate', async () => {
+      const error = new Error('channel error')
+      const {client: mockClient} = createFailingClient(() => throwError(() => error))
+      const errors: unknown[] = []
+      const sub = getPairListener(mockClient, idPair).subscribe({error: (e) => errors.push(e)})
+      await nextTick()
+      // Non-session errors are not swallowed and still surface to the caller.
+      expect(errors).toEqual([error])
+      sub.unsubscribe()
+    })
+
+    test('a non-401 rejected connection also propagates (listen only 401s in practice)', async () => {
+      const {client: mockClient} = createFailingClient(() => rejectedConnection(500))
+      const errors: unknown[] = []
+      const sub = getPairListener(mockClient, idPair).subscribe({error: (e) => errors.push(e)})
+      await nextTick()
+      expect(errors).toHaveLength(1)
+      expect(errors[0]).toBeInstanceOf(ConnectionFailedError)
       sub.unsubscribe()
     })
   })

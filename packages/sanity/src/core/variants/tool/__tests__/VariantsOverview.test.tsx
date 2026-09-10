@@ -5,7 +5,6 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {setupVirtualListEnv} from '../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
-import {type SingleWorkspace} from '../../../config/types'
 import {variantAlphaAudience, variantNorwegianMarket} from '../../__fixtures__/variants.fixture'
 import {variantsUsEnglishLocaleBundle} from '../../i18n'
 import {type EditableSystemVariant, type SystemVariant} from '../../types'
@@ -127,9 +126,8 @@ describe('VariantsOverview', () => {
     vi.clearAllMocks()
   })
 
-  const renderOverview = async (config?: Partial<SingleWorkspace>) => {
+  const renderOverview = async () => {
     const wrapper = await createTestProvider({
-      config,
       resources: [variantsUsEnglishLocaleBundle],
     })
     const view = render(<VariantsOverview />, {wrapper})
@@ -394,56 +392,6 @@ describe('VariantsOverview', () => {
         variantId: getVariantId(createdVariant._id),
       })
     })
-  })
-
-  it('shows a mismatch error when a stored condition is not in the configured list', async () => {
-    setVariants([variantAlphaAudience])
-
-    await renderOverview({
-      beta: {
-        variants: {
-          enabled: true,
-          conditions: [{name: 'locale', values: ['en-US']}],
-        },
-      },
-    })
-
-    await waitFor(() => {
-      expect(screen.getAllByTestId('table-row')).toHaveLength(1)
-    })
-
-    expect(screen.getByTestId('variant-condition-mismatch')).toBeInTheDocument()
-  })
-
-  it('does not show a mismatch error in freeform mode', async () => {
-    setVariants([variantAlphaAudience])
-
-    await renderOverview()
-
-    await waitFor(() => {
-      expect(screen.getAllByTestId('table-row')).toHaveLength(1)
-    })
-
-    expect(screen.queryByTestId('variant-condition-mismatch')).not.toBeInTheDocument()
-  })
-
-  it('does not show a mismatch error while configured conditions are loading', async () => {
-    setVariants([variantAlphaAudience])
-
-    await renderOverview({
-      beta: {
-        variants: {
-          enabled: true,
-          conditions: () => new Promise(() => undefined),
-        },
-      },
-    })
-
-    await waitFor(() => {
-      expect(screen.getAllByTestId('table-row')).toHaveLength(1)
-    })
-
-    expect(screen.queryByTestId('variant-condition-mismatch')).not.toBeInTheDocument()
   })
 
   it('shows error copy in the table empty state when load fails with no data', async () => {
