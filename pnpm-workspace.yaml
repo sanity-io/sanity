@@ -38,7 +38,7 @@ catalog:
   '@vanilla-extract/css': ^1.21.2
   '@vanilla-extract/dynamic': ^2.1.5
   '@vitejs/plugin-react': ^6.1.1
-  '@vitest/browser-playwright': ^4.1.11
+  '@vitest/browser-playwright': ^5.0.0
   dequal: ^2.0.3
   get-it: ^9.5.4
   jsdom: ^29.1.1
@@ -56,8 +56,8 @@ catalog:
   ui5: npm:@sanity/ui@5.0.0-alpha.10
   tsdown: ^0.23.0
   typescript: ^7.0.2
-  vite: ^8.2.2
-  vitest: ^4.1.11
+  vite: ^8.3.0
+  vitest: ^5.0.0
   vitest-browser-react: ^2.3.0
 
 dedupePeers: true
@@ -151,11 +151,6 @@ minimumReleaseAgeExclude:
 overrides:
   '@sanity/ui>react-is': '19.3.0'
   vitest: 'catalog:'
-  # vite 8.2.2 inlines a bundledDev runtime whose `registerModule(id, exportsHolder)` has no default,
-  # while rolldown >= 1.2.6 emits `registerModule(id)` for export-less modules (rolldown#10772), so
-  # `unstable_bundledDev` crashes with "Cannot read properties of undefined (reading 'exports')" on the
-  # first lazy chunk containing one. Drop once the catalog vite ships a runtime that defaults the holder.
-  'vite>rolldown': '1.2.8'
 
 preferWorkspacePackages: true
 
