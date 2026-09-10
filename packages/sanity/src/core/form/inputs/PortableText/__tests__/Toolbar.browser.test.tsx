@@ -161,7 +161,7 @@ describe('Portable Text Input', () => {
         await expect
           .poll(() =>
             Array.from(
-              document.querySelectorAll<HTMLElement>(
+              window.document.querySelectorAll<HTMLElement>(
                 '[data-ui="MenuButton__popover"] [data-ui="Menu"]',
               ),
             )
@@ -316,28 +316,41 @@ describe('Portable Text Input', () => {
         // Soft `if (length >= 2)` skips used to let this test "pass" on the root
         // editor alone and archive an empty fullscreen Body for Chromatic.
         await expect
-          .poll(() => document.querySelectorAll('[data-testid="pt-editor__toolbar-card"]').length)
+          .poll(
+            () =>
+              window.document.querySelectorAll('[data-testid="pt-editor__toolbar-card"]').length,
+          )
           .toBeGreaterThanOrEqual(2)
 
         await expect
-          .poll(() => document.querySelectorAll('[aria-label="Expand editor"]').length)
+          .poll(() => window.document.querySelectorAll('[aria-label="Expand editor"]').length)
           .toBeGreaterThanOrEqual(2)
-        const expandButtons = document.querySelectorAll('[aria-label="Expand editor"]')
+        const expandButtons = window.document.querySelectorAll('[aria-label="Expand editor"]')
         await userEvent.click(expandButtons[1] as HTMLElement)
 
         await expect
-          .poll(() => document.querySelectorAll('[data-testid="block-style-select"]').length)
+          .poll(() => window.document.querySelectorAll('[data-testid="block-style-select"]').length)
           .toBeGreaterThanOrEqual(2)
-        const blockStyleSelects = document.querySelectorAll('[data-testid="block-style-select"]')
-        await userEvent.click(blockStyleSelects[1] as HTMLElement)
+        const blockStyleSelects = window.document.querySelectorAll(
+          '[data-testid="block-style-select"]',
+        )
+        // Prefer the last style select — nested fullscreen editors append after the root.
+        const nestedStyleSelect = blockStyleSelects[blockStyleSelects.length - 1] as HTMLElement
+        await userEvent.click(nestedStyleSelect)
 
-        // Assertion: nested block style dropdown should be visible. Closed
+        // Assertion: nested block style dropdown should be visibly open. Closed
         // `@sanity/ui` menus stay mounted (`display: none`), so a raw
-        // querySelector is not enough for a deterministic Chromatic end state.
-        await expect.element(page.getByRole('menuitem', {name: 'Normal'})).toBeVisible()
+        // querySelector / role match on a hidden item is not enough for Chromatic.
         await expect
-          .poll(() => document.querySelectorAll('[data-testid="block-style-select"]').length)
-          .toBeGreaterThanOrEqual(2)
+          .poll(() =>
+            Array.from(window.document.querySelectorAll('[role="menuitem"]')).some(
+              (el) =>
+                el instanceof HTMLElement &&
+                el.checkVisibility() &&
+                el.textContent?.trim() === 'Normal',
+            ),
+          )
+          .toBe(true)
       })
     })
   })

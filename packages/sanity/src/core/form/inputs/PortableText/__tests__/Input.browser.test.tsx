@@ -120,6 +120,10 @@ describe('Portable Text Input', () => {
       await insertPortableText('Hello there', $pte)
       // Assertion: placeholder was removed
       await expect.element($placeholder).not.toBeInTheDocument()
+      await expect.element($pte).toHaveTextContent('Hello there')
+      // Blur so Chromatic does not archive an intermittent focus ring alone.
+      await userEvent.keyboard('{Escape}')
+      await expect.element($pte).toHaveTextContent('Hello there')
     })
   })
 

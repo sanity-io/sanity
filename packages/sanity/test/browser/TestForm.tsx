@@ -94,8 +94,9 @@ export function TestForm(props: TestFormProps) {
     documentFromProps || {
       _id: documentId,
       _type: documentType,
-      _createdAt: new Date().toISOString(),
-      _updatedAt: new Date().toISOString(),
+      // Fixed timestamps keep Chromatic archive DOM deterministic across runs.
+      _createdAt: '2024-01-01T00:00:00.000Z',
+      _updatedAt: '2024-01-01T00:00:00.000Z',
       _rev: '123',
     },
   )

@@ -125,8 +125,10 @@ export type UpdateFn = () => {focusPath: Path; document: SanityDocument}
 const document: SanityDocument = {
   _id: '123',
   _type: 'test',
-  _createdAt: new Date().toISOString(),
-  _updatedAt: new Date().toISOString(),
+  // Fixed timestamps — module-load `new Date()` is a nondeterministic input if
+  // anything in the tree ever surfaces them (and keeps archive DOM stable).
+  _createdAt: '2024-01-01T00:00:00.000Z',
+  _updatedAt: '2024-01-01T00:00:00.000Z',
   _rev: '123',
   arrayOfPrimitives: ['One', 'Two', true],
   arrayOfMultipleTypes: [
@@ -196,11 +198,24 @@ describe('Copy and pasting fields', () => {
       const $string1 = page.getByTestId('field-objectWithColumns.string1').getByRole('textbox')
       await expect.element($string1).toHaveValue('A string to copy')
 
-      // Settle the Chromatic end state: focus a stable field so the actions
-      // menu is not left open mid-animation, and re-assert the pasted value.
+      // Settle the Chromatic end state: dismiss any leftover field-actions menu
+      // (clicking the textbox alone does not always close it), then focus the
+      // pasted field so the snapshot is not mid-animation.
+      await userEvent.keyboard('{Escape}')
       await userEvent.click($string1)
       await expect.element($string1).toHaveValue('A string to copy')
       await expect.element($string1).toHaveFocus()
+      await expect
+        .poll(
+          () =>
+            Array.from(window.document.querySelectorAll('[role="menuitem"]')).filter(
+              (el) =>
+                el instanceof HTMLElement &&
+                el.checkVisibility() &&
+                /Copy field|Paste field/.test(el.textContent || ''),
+            ).length,
+        )
+        .toBe(0)
     })
 
     // TODO: native Ctrl+C/Ctrl+V is handled by the browser and bypasses
@@ -286,11 +301,24 @@ describe('Copy and pasting fields', () => {
       const $title = page.getByTestId('field-title').getByRole('textbox')
       await expect.element($title).toHaveValue('A string to copy')
 
-      // Settle the Chromatic end state: focus a stable field so the actions
-      // menu is not left open mid-animation, and re-assert the pasted value.
+      // Settle the Chromatic end state: dismiss any leftover field-actions menu
+      // (clicking the textbox alone does not always close it), then focus the
+      // pasted field so the snapshot is not mid-animation.
+      await userEvent.keyboard('{Escape}')
       await userEvent.click($title)
       await expect.element($title).toHaveValue('A string to copy')
       await expect.element($title).toHaveFocus()
+      await expect
+        .poll(
+          () =>
+            Array.from(window.document.querySelectorAll('[role="menuitem"]')).filter(
+              (el) =>
+                el instanceof HTMLElement &&
+                el.checkVisibility() &&
+                /Copy field|Paste field/.test(el.textContent || ''),
+            ).length,
+        )
+        .toBe(0)
     })
   })
 

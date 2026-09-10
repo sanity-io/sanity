@@ -5,9 +5,9 @@ import {
   type Path,
   type SanityDocument,
 } from '@sanity/types'
-import {beforeEach, describe, expect, it} from 'vitest'
+import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
-import {page} from 'vitest/browser'
+import {page, userEvent} from 'vitest/browser'
 
 import {TestForm} from '../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../test/browser/testHelpers'
@@ -82,8 +82,8 @@ function DragAndDropHarness({
 const document: SanityDocument = {
   _id: '123',
   _type: 'test',
-  _createdAt: new Date().toISOString(),
-  _updatedAt: new Date().toISOString(),
+  _createdAt: '2024-01-01T00:00:00.000Z',
+  _updatedAt: '2024-01-01T00:00:00.000Z',
   _rev: '123',
   body: [
     {
@@ -113,10 +113,6 @@ const document: SanityDocument = {
 }
 
 describe('Portable Text Input', () => {
-  beforeEach(() => {
-    window.localStorage.debug = 'sanity-pte:*'
-  })
-
   describe('Should be able to drag and drop blocks', () => {
     it(`drag and drop blocks`, async () => {
       const {dragAndDrop, getFocusedPortableTextEditor} = testHelpers()
@@ -140,6 +136,11 @@ describe('Portable Text Input', () => {
       // reach for the DOM via `window.document`.
       const fourthBlock = window.document.querySelector('[data-pt-block]:nth-child(4)')
       expect(fourthBlock?.textContent).toContain('Baz')
+
+      // Settle selection: the dropped object can keep an intermittent selection
+      // ring; click a text block so Chromatic always archives the same focus.
+      await userEvent.click(page.getByText('Baz', {exact: true}))
+      await expect.element(page.getByText('Hello world')).toBeVisible()
     })
 
     it(`drag and drop blocks without warning overlay`, async () => {

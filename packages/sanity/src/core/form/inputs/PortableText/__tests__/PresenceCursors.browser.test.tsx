@@ -47,8 +47,8 @@ const TEXT = 'Hello, this is some text in the editor.'
 const DOCUMENT: SanityDocument = {
   _id: '123',
   _type: 'test',
-  _createdAt: new Date().toISOString(),
-  _updatedAt: new Date().toISOString(),
+  _createdAt: '2024-01-01T00:00:00.000Z',
+  _updatedAt: '2024-01-01T00:00:00.000Z',
   _rev: '123',
   body: [
     {
@@ -66,7 +66,7 @@ const offset2 = TEXT.indexOf('some text')
 const PRESENCE: FormNodePresence[] = [
   {
     path: ['body', 'text'],
-    lastActiveAt: new Date().toISOString(),
+    lastActiveAt: '2024-01-01T00:00:00.000Z',
     sessionId: 'session-A',
     selection: {
       anchor: {offset: offset1, path: [{_key: 'a'}, 'children', {_key: 'a1'}]},
@@ -80,7 +80,7 @@ const PRESENCE: FormNodePresence[] = [
   },
   {
     path: ['body', 'text'],
-    lastActiveAt: new Date().toISOString(),
+    lastActiveAt: '2024-01-01T00:00:00.000Z',
     sessionId: 'session-B',
     selection: {
       anchor: {offset: offset2, path: [{_key: 'a'}, 'children', {_key: 'a1'}]},
@@ -133,6 +133,11 @@ describe('Portable Text Input', () => {
       const siblingContentB = getSiblingTextContent()
       expect(siblingContentB.cursorA).toBe('this is ')
       expect(siblingContentB.cursorB).toBe('some text in the editor.')
+
+      // Re-assert presence markers for a settled Chromatic end state.
+      await expect.element($cursorA).toBeVisible()
+      await expect.element($cursorB).toBeVisible()
+      await expect.element(editor$).toHaveTextContent(`INSERTED TEXT. ${TEXT}`)
     })
 
     it.skip('should keep position when deleting text in the editor', async () => {
