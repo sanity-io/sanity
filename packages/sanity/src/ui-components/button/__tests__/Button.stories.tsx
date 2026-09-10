@@ -1,7 +1,8 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {PublishIcon} from '@sanity/icons/Publish'
-import {type ButtonTone, Flex, Grid, Stack, Text} from '@sanity/ui'
+import {type ButtonTone, Flex, Stack, Text} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
+import {Grid} from 'ui5'
 
 import {Button} from '../Button'
 
@@ -42,7 +43,11 @@ export const AllVariants: Story = {
           <Text muted size={1} weight="medium">
             mode="{mode}"
           </Text>
-          <Grid gap={2} gridTemplateColumns={TONES.length} style={{justifyItems: 'start'}}>
+          <Grid
+            gap={2}
+            gridTemplateColumns={`repeat(${TONES.length}, minmax(0, 1fr))`}
+            style={{justifyItems: 'start'}}
+          >
             {TONES.map((tone) => (
               <Button key={tone} mode={mode} tone={tone} text={tone} />
             ))}

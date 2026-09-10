@@ -4,11 +4,11 @@ import {LaunchIcon} from '@sanity/icons/Launch'
 import {RefreshIcon} from '@sanity/icons/Refresh'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {SanityMonogram} from '@sanity/logos'
-import {Badge, Card, Grid, Inline, Spinner, Stack, Text} from '@sanity/ui'
+import {Badge, Card, Inline, Spinner, Stack, Text} from '@sanity/ui'
 import {useEffect, useId} from 'react'
 import semver, {type SemVer} from 'semver'
 import {styled} from 'styled-components'
-import {Flex} from 'ui5'
+import {Grid, Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -171,7 +171,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
             <SanityMonogram height={75} width={75} />
           </MonogramContainer>
         </Flex>
-        <Grid gridTemplateColumns={2} gap={2}>
+        <Grid gridTemplateColumns="repeat(2, minmax(0, 1fr))" gap={2}>
           <Flex justifyContent="flex-end" alignItems="center">
             <Text as="h2" size={1} weight="semibold">
               Sanity Studio

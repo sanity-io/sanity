@@ -3,13 +3,13 @@ import {SearchIcon} from '@sanity/icons/Search'
 import {ThLargeIcon} from '@sanity/icons/ThLarge'
 import {UlistIcon} from '@sanity/icons/Ulist'
 import {type InsertMenuOptions, type SchemaType} from '@sanity/types'
-import {Button, Flex, Grid, Stack, Tab, TabList, Text, TextInput} from '@sanity/ui'
+import {Button, Flex, Stack, Tab, TabList, Text, TextInput} from '@sanity/ui'
 import {Menu, MenuItem, type MenuItemProps} from '@sanity/ui/menu'
 import {Tooltip} from '@sanity/ui/tooltip'
 import startCase from 'lodash-es/startCase.js'
 import {useReducer, useState, type ChangeEvent, type CSSProperties} from 'react'
 import {isValidElementType} from 'react-is'
-import {Box} from 'ui5'
+import {Grid, Box} from 'ui5'
 
 import {getSchemaTypeIcon} from './getSchemaTypeIcon'
 
@@ -165,7 +165,7 @@ export function InsertMenu(props: InsertMenuProps): React.JSX.Element {
               </Text>
             </Box>
           ) : !selectedView ? null : selectedView.name === 'grid' ? (
-            <Grid autoRows="auto" flex={1} gap={1} style={gridStyle}>
+            <Grid gridAutoRows="auto" flexBasis="0%" flexGrow={1} gap={1} style={gridStyle}>
               {filteredSchemaTypes.map((schemaType) => (
                 <GridMenuItem
                   key={schemaType.name}
