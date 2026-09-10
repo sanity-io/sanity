@@ -90,7 +90,7 @@ function ObjectBlockHarness() {
 describe('Portable Text Input', () => {
   describe('Object blocks', () => {
     it('Clicking a block link in the menu create a new block element', async () => {
-      const {getFocusedPortableTextInput} = testHelpers()
+      const {getFocusedPortableTextInput, settleChromaticEndState} = testHelpers()
       void render(<ObjectBlockHarness />)
 
       const $portableTextInput = await getFocusedPortableTextInput('field-body')
@@ -100,6 +100,13 @@ describe('Portable Text Input', () => {
       // Assertion: Object preview should be visible
       await expect.element($portableTextInput.getByTestId('pte-block-object')).toBeVisible()
       await expect.element(page.getByRole('button', {name: 'Insert Object (block)'})).toBeVisible()
+      // Insert leaves the object selected (No style) or focus can bounce back to
+      // an empty text block (Normal) — force the object-selected end state.
+      await userEvent.click($portableTextInput.getByTestId('pte-block-object'))
+      await settleChromaticEndState({
+        styleSelectText: /^No style$/,
+        styleSelectRoot: '[data-testid="field-body"]',
+      })
     })
 
     it('Custom block preview components renders correctly', async () => {
@@ -249,7 +256,7 @@ describe('Portable Text Input', () => {
 
     // Two dialog round-trips plus two menu round-trips regularly exceed 30s on Firefox in CI
     it('Blocks should be accessible via block context menu', {timeout: 60_000}, async () => {
-      const {getFocusedPortableTextInput} = testHelpers()
+      const {getFocusedPortableTextInput, settleChromaticEndState} = testHelpers()
       void render(<ObjectBlockHarness />)
 
       const $portableTextField = await getFocusedPortableTextInput('field-body')
@@ -296,6 +303,12 @@ describe('Portable Text Input', () => {
 
       // Assertion: Block should now be deleted
       await expect.element(page.getByTestId('pte-block-object')).not.toBeInTheDocument()
+      // Empty PTE after remove: force Normal so Chromatic does not archive No style.
+      await userEvent.click($portableTextField.getByRole('textbox'))
+      await settleChromaticEndState({
+        styleSelectText: /^Normal$/,
+        styleSelectRoot: '[data-testid="field-body"]',
+      })
     })
 
     it('Handle focus correctly in block edit dialog', async () => {

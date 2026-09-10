@@ -321,7 +321,7 @@ describe('Portable Text Input', () => {
         // `@sanity/ui` menus stay mounted (`display: none`), so a raw
         // querySelector is not enough for a deterministic Chromatic end state.
         await expect.element(page.getByRole('menuitem', {name: 'Normal'})).toBeVisible()
-        await settleChromaticEndState()
+        await settleChromaticEndState({parkPointer: false})
         await takeSnapshot('simple-style-menu-open')
       })
 
@@ -346,7 +346,7 @@ describe('Portable Text Input', () => {
         // `@sanity/ui` menus stay mounted (`display: none`), so a raw
         // querySelector is not enough for a deterministic Chromatic end state.
         await expect.element(page.getByRole('menuitem', {name: 'Normal'})).toBeVisible()
-        await settleChromaticEndState()
+        await settleChromaticEndState({parkPointer: false})
         await takeSnapshot('fullscreen-style-menu-open')
       })
 

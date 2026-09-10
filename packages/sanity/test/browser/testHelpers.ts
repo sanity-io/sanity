@@ -361,6 +361,9 @@ export function testHelpers() {
     settleChromaticEndState: async (options?: {
       styleSelectText?: RegExp
       styleSelectRoot?: string
+      /** Clear :hover via body mouseover. Disable when an open dialog/menu
+       * dismisses on outside pointer events (default true). */
+      parkPointer?: boolean
     }) => {
       if (typeof document.fonts?.ready !== 'undefined') {
         await document.fonts.ready
@@ -368,7 +371,9 @@ export function testHelpers() {
 
       // Clear :hover on toolbar buttons / field headers (pointer may still sit
       // on the last clicked control after userEvent.click).
-      window.document.body.dispatchEvent(new MouseEvent('mouseover', {bubbles: true}))
+      if (options?.parkPointer !== false) {
+        window.document.body.dispatchEvent(new MouseEvent('mouseover', {bubbles: true}))
+      }
 
       await expect
         .poll(

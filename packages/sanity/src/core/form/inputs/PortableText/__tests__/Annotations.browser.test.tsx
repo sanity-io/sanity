@@ -288,8 +288,10 @@ describe('Portable Text Input', () => {
         await expect.element($linkInputReopened).toHaveFocus()
         // Clear any leftover PTE text selection so the annotated "link" span
         // does not archive with a selection highlight on some runs only.
+        // Do NOT mouseover/click document.body here — that can dismiss the
+        // edit dialog (click-outside) and Chromatic then archives the closed
+        // state (seen as open vs closed pairwise flakes).
         window.getSelection()?.removeAllRanges()
-        window.document.body.dispatchEvent(new MouseEvent('mouseover', {bubbles: true}))
         await expect
           .poll(() =>
             Array.from(window.document.querySelectorAll('[data-ui="Tooltip"]')).every(
@@ -297,18 +299,28 @@ describe('Portable Text Input', () => {
             ),
           )
           .toBe(true)
+        const dialogBox = () => {
+          const el = window.document.querySelector('[data-testid="popover-edit-dialog"]')
+          if (!(el instanceof HTMLElement) || !el.checkVisibility()) return ''
+          const r = el.getBoundingClientRect()
+          return `${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)},${Math.round(r.height)}`
+        }
+        await expect.poll(dialogBox).not.toBe('')
+        let previous = ''
+        let stable = 0
         await expect
           .poll(() => {
-            const el = window.document.querySelector('[data-testid="popover-edit-dialog"]')
-            return el instanceof HTMLElement ? Math.round(el.getBoundingClientRect().x) : -1
+            const next = dialogBox()
+            if (next && next === previous) stable += 1
+            else {
+              previous = next
+              stable = 0
+            }
+            return stable >= 3
           })
-          .toBeGreaterThanOrEqual(0)
-        const dialogX = () => {
-          const el = window.document.querySelector('[data-testid="popover-edit-dialog"]')
-          return el instanceof HTMLElement ? Math.round(el.getBoundingClientRect().x) : -1
-        }
-        const settledX = dialogX()
-        await expect.poll(dialogX).toBe(settledX)
+          .toBe(true)
+        await expect.element(page.getByTestId('popover-edit-dialog')).toBeVisible()
+        await expect.element($linkInputReopened).toHaveFocus()
         await takeSnapshot('edit-link-open')
       },
     )

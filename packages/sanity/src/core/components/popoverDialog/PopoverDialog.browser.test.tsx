@@ -40,5 +40,24 @@ describe('PopoverDialog', () => {
     expect(wrapper).not.toBeNull()
     await expect.poll(() => wrapper.getBoundingClientRect().height).toBeGreaterThan(0)
     expect(getComputedStyle(wrapper).position).toBe('relative')
+    // Content-box capture height was flipping by 2px between identical-code
+    // builds; wait until the wrapper box stops moving.
+    const boxSig = () => {
+      const r = wrapper.getBoundingClientRect()
+      return `${Math.round(r.width)}x${Math.round(r.height)}@${Math.round(r.x)},${Math.round(r.y)}`
+    }
+    let previous = ''
+    let stable = 0
+    await expect
+      .poll(() => {
+        const next = boxSig()
+        if (next && next === previous) stable += 1
+        else {
+          previous = next
+          stable = 0
+        }
+        return stable >= 3
+      })
+      .toBe(true)
   })
 })

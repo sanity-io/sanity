@@ -1,3 +1,4 @@
+import {configure, takeSnapshot} from '@chromatic-com/vitest'
 import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
@@ -56,6 +57,9 @@ describe('CollapseTabList', () => {
   })
 
   it('moves children that do not fit into the overflow menu', async () => {
+    // Menu open/closed and overflow-button x offset raced the auto snapshot
+    // (2px capture-height pairwise flakes). Snapshot while the menu is open.
+    configure({disableAutoSnapshot: true})
     await render(
       <TestList width={NARROW}>{makeTabs(['Alpha', 'Beta', 'Gamma', 'Delta'])}</TestList>,
     )
@@ -65,6 +69,31 @@ describe('CollapseTabList', () => {
 
     await overflowMenuButton.click()
     await expect.element(page.getByRole('menuitem', {name: 'Delta'})).toBeVisible()
+    const layoutSig = () => {
+      const list = window.document.querySelector('[data-testid="collapse-tab-list"]')
+      const menu = Array.from(window.document.querySelectorAll<HTMLElement>('[role="menu"]')).find(
+        (el) => el.checkVisibility(),
+      )
+      if (!(list instanceof HTMLElement) || !menu) return ''
+      const lr = list.getBoundingClientRect()
+      const mr = menu.getBoundingClientRect()
+      return `${Math.round(lr.width)}:${Math.round(mr.x)},${Math.round(mr.y)},${Math.round(mr.height)}`
+    }
+    await expect.poll(layoutSig).not.toBe('')
+    let previous = ''
+    let stable = 0
+    await expect
+      .poll(() => {
+        const next = layoutSig()
+        if (next && next === previous) stable += 1
+        else {
+          previous = next
+          stable = 0
+        }
+        return stable >= 3
+      })
+      .toBe(true)
+    await takeSnapshot('overflow-menu-open')
   })
 
   it('removes the overflow button when the container grows enough to fit all children', async () => {
