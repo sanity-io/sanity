@@ -100,12 +100,14 @@ describe('Portable Text Input', () => {
       // Assertion: Object preview should be visible
       await expect.element($portableTextInput.getByTestId('pte-block-object')).toBeVisible()
       await expect.element(page.getByRole('button', {name: 'Insert Object (block)'})).toBeVisible()
-      // Insert leaves the object selected (No style) or focus can bounce back to
-      // an empty text block (Normal) — force the object-selected end state.
-      await userEvent.click($portableTextInput.getByTestId('pte-block-object'))
+      // Insert opens the edit dialog with the object focused. Style select can
+      // briefly show Normal before settling on No style — wait for No style
+      // without clicking through the dialog (pointer events are intercepted).
+      await expect.element(page.getByTestId('nested-object-dialog')).toBeVisible()
       await settleChromaticEndState({
         styleSelectText: /^No style$/,
         styleSelectRoot: '[data-testid="field-body"]',
+        parkPointer: false,
       })
     })
 
