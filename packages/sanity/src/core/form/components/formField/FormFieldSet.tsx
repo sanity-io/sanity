@@ -261,7 +261,7 @@ export function FormFieldSet(
                       </Badge>
                     </Box>
                   )}
-                  {isArraySchemaType(schemaType) && (
+                  {isArraySchemaType(schemaType) && Array.isArray(path) && (
                     <Box marginLeft={2}>
                       <FormNodeDivergenceCollectionIndicator path={path} />
                     </Box>

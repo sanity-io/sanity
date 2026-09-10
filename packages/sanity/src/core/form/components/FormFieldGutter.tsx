@@ -21,13 +21,25 @@ export type FormFieldGutterProps = Pick<BaseFieldProps, 'path' | 'changedFromBas
 export const FormFieldGutter: ComponentType<FormFieldGutterProps> = ({
   path,
   changedFromBaseVariant,
-}) => (
-  <div
-    data-testid="form-field-gutter"
-    className={`${formFieldAnchor} ${formFieldGutter}`}
-    style={assignInlineVars({[formFieldAnchorPath]: pathToAnchorIdent('input', path)})}
-  >
-    <FormDivergenceIndicator path={path} />
-    <FormBaseVariantDiffIndicator changedFromBaseVariant={changedFromBaseVariant} />
-  </div>
-)
+}) => {
+  // `FormField` and `FormFieldSet` are exported from `sanity`, and `path` only became a required
+  // prop in v5.17. Custom inputs written before that still render them without one, so the gutter
+  // must tolerate a missing path instead of letting `pathToAnchorIdent` throw and take down the
+  // whole form. Without a path there is nothing to anchor to and no divergence to look up.
+  const hasPath = Array.isArray(path)
+
+  return (
+    <div
+      data-testid="form-field-gutter"
+      className={hasPath ? `${formFieldAnchor} ${formFieldGutter}` : formFieldGutter}
+      style={
+        hasPath
+          ? assignInlineVars({[formFieldAnchorPath]: pathToAnchorIdent('input', path)})
+          : undefined
+      }
+    >
+      {hasPath && <FormDivergenceIndicator path={path} />}
+      <FormBaseVariantDiffIndicator changedFromBaseVariant={changedFromBaseVariant} />
+    </div>
+  )
+}
