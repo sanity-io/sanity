@@ -118,6 +118,8 @@ minimumReleaseAgeExclude:
   - 'react-i18next@17.0.13'
   - 'react-is'
   - 'react-rx'
+  # Fresh patch; exclude so 0.28.0 can install before the age gate
+  - 'scheduler@0.28.0'
   - 'i18next@26.4.1'
   # tsdown and its rolldown/rolldown-plugin-dts/yuku toolchain release frequently and in
   # lockstep, so new releases are often younger than minimumReleaseAge
