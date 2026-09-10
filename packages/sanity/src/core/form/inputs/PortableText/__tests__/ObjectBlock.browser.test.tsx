@@ -100,6 +100,13 @@ describe('Portable Text Input', () => {
       // Assertion: Object preview should be visible
       await expect.element($portableTextInput.getByTestId('pte-block-object')).toBeVisible()
       await expect.element(page.getByRole('button', {name: 'Insert Object (block)'})).toBeVisible()
+
+      // Insert opens the object edit dialog; close it before selecting the
+      // block so the click is not intercepted by the modal overlay.
+      await expect.element(page.getByTestId('nested-object-dialog')).toBeVisible()
+      await page.getByTestId('nested-object-dialog').getByRole('button', {name: 'Close'}).click()
+      await expect.element(page.getByTestId('nested-object-dialog')).not.toBeInTheDocument()
+
       // Insert leaves the object selected (No style) or focus can bounce back to
       // an empty text block (Normal) — force the object-selected end state.
       await userEvent.click($portableTextInput.getByTestId('pte-block-object'))
