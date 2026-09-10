@@ -74,7 +74,11 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
             {members?.length > 0 && (
               <Card border radius={1} tone={errorTone}>
                 <List
-                  gridTemplateColumns={[2, 3, 4]}
+                  gridTemplateColumns={[
+                    'repeat(2, minmax(0, 1fr))',
+                    'repeat(3, minmax(0, 1fr))',
+                    'repeat(4, minmax(0, 1fr))',
+                  ]}
                   gap={3}
                   padding={1}
                   margin={1}

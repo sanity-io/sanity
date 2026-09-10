@@ -1,7 +1,7 @@
-import {Card, Grid, Label} from '@sanity/ui'
+import {Card, Label} from '@sanity/ui'
 import {isSameDay} from 'date-fns/isSameDay'
 import {isSameMonth} from 'date-fns/isSameMonth'
-import {Box} from 'ui5'
+import {Grid, Box} from 'ui5'
 
 import {type TimeZoneScope, useTimeZone} from '../../../../hooks/useTimeZone'
 import {useCurrentLocale} from '../../../../i18n/hooks/useLocale'
