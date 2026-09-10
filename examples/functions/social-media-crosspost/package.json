@@ -5,7 +5,7 @@
   "dependencies": {
     "@humanwhocodes/crosspost": "^1.0.4",
     "@sanity/client": "^8.6.1",
-    "@sanity/functions": "^1.7.1",
+    "@sanity/functions": "^1.7.2",
     "@sanity/image-url": "^2.1.1"
   },
   "blueprintResourceItem": {
