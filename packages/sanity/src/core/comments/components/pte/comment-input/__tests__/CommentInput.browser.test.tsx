@@ -81,32 +81,41 @@ function CommentsInputHarness({
 describe('Comments', () => {
   describe('CommentInput', () => {
     it('Should render', async () => {
+      const {settleChromaticEndState} = testHelpers()
       void render(<CommentsInputHarness />)
       const $editable = page.getByTestId('comment-input-editable')
       await expect.element($editable).toBeVisible()
       await expect.element($editable).toHaveFocus()
+      // Clear :hover on the input card so the focus ring is not swapped for the
+      // hover border (CommentInput CSS applies :hover after :focus-within).
+      await settleChromaticEndState()
     })
 
     it('Should be able to type into', async () => {
-      const {insertPortableText} = testHelpers()
+      const {insertPortableText, settleChromaticEndState} = testHelpers()
       void render(<CommentsInputHarness />)
       const $editable = page.getByTestId('comment-input-editable')
       await expect.element($editable).toBeVisible()
       await insertPortableText('My first comment!', $editable)
       await expect.element($editable).toHaveTextContent('My first comment!')
       await expect.element($editable).toHaveFocus()
+      await settleChromaticEndState()
     })
 
     it('Should bring up mentions menu when typing @', async () => {
       // Selecting a mention leaves an animated loading skeleton; snapshot the
       // open mentions menu instead so Chromatic does not archive mid-skeleton.
       configure({disableAutoSnapshot: true})
+      const {settleChromaticEndState} = testHelpers()
       void render(<CommentsInputHarness />)
       const $editable = page.getByTestId('comment-input-editable')
       await expect.element($editable).toBeVisible()
       await userEvent.keyboard('@')
       const $mentionsMenu = page.getByTestId('comments-mentions-menu')
       await expect.element($mentionsMenu).toBeVisible()
+      // Mentions close on click-outside, not mouseover — park the pointer so the
+      // input card border stays on the focus ring while the menu is open.
+      await settleChromaticEndState()
       await takeSnapshot('mentions-menu-open')
       await userEvent.keyboard('{Enter}')
       await expect.element($mentionsMenu).not.toBeInTheDocument()
@@ -116,6 +125,7 @@ describe('Comments', () => {
     it('Should bring up mentions menu when pressing the @ button, whilst retaining focus on PTE', async () => {
       // Mentions menu open/closed races the auto snapshot (same as typing @).
       configure({disableAutoSnapshot: true})
+      const {settleChromaticEndState} = testHelpers()
       void render(<CommentsInputHarness />)
       const $editable = page.getByTestId('comment-input-editable')
       await expect.element($editable).toBeVisible()
@@ -131,6 +141,7 @@ describe('Comments', () => {
           return el instanceof HTMLElement ? Math.round(el.getBoundingClientRect().height) : 0
         })
         .toBeGreaterThan(0)
+      await settleChromaticEndState()
       await takeSnapshot('mentions-menu-via-button')
     })
 

@@ -326,6 +326,9 @@ describe('Portable Text Input', () => {
     )
 
     it('Can edit a root-level annotation in fullscreen', {timeout: 30_000}, async () => {
+      // Auto end-state can archive after the edit dialog has already closed
+      // (fullscreen + dialog open vs fullscreen alone). Snapshot while open.
+      configure({disableAutoSnapshot: true})
       const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
       void render(<AnnotationsHarness />)
       const $pte = await getFocusedPortableTextEditor('field-body')
@@ -343,6 +346,38 @@ describe('Portable Text Input', () => {
       await expect.element($linkInput).toBeVisible()
       await $linkInput.element().focus()
       await expect.element($linkInput).toHaveFocus()
+      // Do not park the pointer — body mouseover can dismiss the edit dialog.
+      window.getSelection()?.removeAllRanges()
+      await expect
+        .poll(() =>
+          Array.from(window.document.querySelectorAll('[data-ui="Tooltip"]')).every(
+            (el) => !(el instanceof HTMLElement) || !el.checkVisibility(),
+          ),
+        )
+        .toBe(true)
+      const dialogBox = () => {
+        const el = window.document.querySelector('[data-testid="popover-edit-dialog"]')
+        if (!(el instanceof HTMLElement) || !el.checkVisibility()) return ''
+        const r = el.getBoundingClientRect()
+        return `${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)},${Math.round(r.height)}`
+      }
+      await expect.poll(dialogBox).not.toBe('')
+      let previous = ''
+      let stable = 0
+      await expect
+        .poll(() => {
+          const next = dialogBox()
+          if (next && next === previous) stable += 1
+          else {
+            previous = next
+            stable = 0
+          }
+          return stable >= 3
+        })
+        .toBe(true)
+      await expect.element(page.getByTestId('popover-edit-dialog')).toBeVisible()
+      await expect.element($linkInput).toHaveFocus()
+      await takeSnapshot('fullscreen-edit-link-open')
     })
 
     // Firefox has timing issues with PTE selection events (matches the original

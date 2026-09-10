@@ -61,6 +61,12 @@ if (typeof document !== 'undefined') {
       pointer-events: auto !important;
       width: max-content !important;
     }
+    /* CommentInput applies :hover after :focus-within, so a leftover pointer
+       on the card swaps the focus ring for the hover border between captures.
+       Keep the focused shadow stable regardless of :hover. */
+    #comment-input-root[data-focused='true']:focus-within {
+      --input-box-shadow: inset 0 0 0 1px var(--card-focus-ring-color) !important;
+    }
   `
   document.documentElement.appendChild(style)
 }
