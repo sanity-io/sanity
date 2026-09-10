@@ -201,6 +201,7 @@ describe('Portable Text Input', () => {
         getFocusedPortableTextInput,
         getFocusedPortableTextEditor,
         insertPortableText,
+        settleChromaticEndState,
       } = testHelpers()
       void render(<DecoratorsHarness />)
       const $portableTextInput = await getFocusedPortableTextInput('field-customDecorator')
@@ -227,6 +228,10 @@ describe('Portable Text Input', () => {
       )
       await expect.element($defaultMarkup).toBeVisible()
       await expect.element($defaultMarkup).toHaveTextContent('highlighted text')
+      // Selected Highlight toolbar pill background was a pairwise AA/hover flake.
+      await settleChromaticEndState({
+        styleSelectRoot: '[data-testid="field-customDecorator"]',
+      })
     })
 
     it('Renders a custom decorator component that renders only its children', async () => {

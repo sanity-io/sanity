@@ -114,14 +114,24 @@ describe('Comments', () => {
     })
 
     it('Should bring up mentions menu when pressing the @ button, whilst retaining focus on PTE', async () => {
+      // Mentions menu open/closed races the auto snapshot (same as typing @).
+      configure({disableAutoSnapshot: true})
       void render(<CommentsInputHarness />)
       const $editable = page.getByTestId('comment-input-editable')
       await expect.element($editable).toBeVisible()
       const $mentionButton = page.getByTestId('comment-input-mention-button')
       await expect.element($mentionButton).toBeVisible()
       await userEvent.click($mentionButton)
-      await expect.element(page.getByTestId('comments-mentions-menu')).toBeVisible()
+      const $mentionsMenu = page.getByTestId('comments-mentions-menu')
+      await expect.element($mentionsMenu).toBeVisible()
       await expect.element($editable).toHaveFocus()
+      await expect
+        .poll(() => {
+          const el = window.document.querySelector('[data-testid="comments-mentions-menu"]')
+          return el instanceof HTMLElement ? Math.round(el.getBoundingClientRect().height) : 0
+        })
+        .toBeGreaterThan(0)
+      await takeSnapshot('mentions-menu-via-button')
     })
 
     it('Should be able to submit', async () => {

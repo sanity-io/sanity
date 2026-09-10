@@ -304,7 +304,8 @@ describe('Portable Text Input', () => {
     // TODO - needs rewrite to avoid flakiness
     describe('Opening block style', () => {
       it('on a simple editor', async () => {
-        const {getFocusedPortableTextInput} = testHelpers()
+        configure({disableAutoSnapshot: true})
+        const {getFocusedPortableTextInput, settleChromaticEndState} = testHelpers()
         void render(<ToolbarHarness />)
         const $portableTextInput = await getFocusedPortableTextInput('field-body')
 
@@ -320,10 +321,13 @@ describe('Portable Text Input', () => {
         // `@sanity/ui` menus stay mounted (`display: none`), so a raw
         // querySelector is not enough for a deterministic Chromatic end state.
         await expect.element(page.getByRole('menuitem', {name: 'Normal'})).toBeVisible()
+        await settleChromaticEndState()
+        await takeSnapshot('simple-style-menu-open')
       })
 
       it('on a full screen simple editor', async () => {
-        const {getFocusedPortableTextInput} = testHelpers()
+        configure({disableAutoSnapshot: true})
+        const {getFocusedPortableTextInput, settleChromaticEndState} = testHelpers()
         void render(<ToolbarHarness />)
         const $portableTextInput = await getFocusedPortableTextInput('field-body')
 
@@ -342,6 +346,8 @@ describe('Portable Text Input', () => {
         // `@sanity/ui` menus stay mounted (`display: none`), so a raw
         // querySelector is not enough for a deterministic Chromatic end state.
         await expect.element(page.getByRole('menuitem', {name: 'Normal'})).toBeVisible()
+        await settleChromaticEndState()
+        await takeSnapshot('fullscreen-style-menu-open')
       })
 
       // Takes ~25s against the default 30s timeout on a healthy CI runner

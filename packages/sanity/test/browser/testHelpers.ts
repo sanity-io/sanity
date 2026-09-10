@@ -442,6 +442,30 @@ export function testHelpers() {
           })
           .toBe(true)
       }
+
+      const menuSig = () =>
+        Array.from(window.document.querySelectorAll<HTMLElement>('[role="menu"]'))
+          .filter((el) => el.checkVisibility())
+          .map((el) => {
+            const r = el.getBoundingClientRect()
+            return `${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)},${Math.round(r.height)}`
+          })
+          .join('|')
+      if (menuSig()) {
+        let previous = ''
+        let stable = 0
+        await expect
+          .poll(() => {
+            const next = menuSig()
+            if (next && next === previous) stable += 1
+            else {
+              previous = next
+              stable = 0
+            }
+            return stable >= 3
+          })
+          .toBe(true)
+      }
     },
   }
 }

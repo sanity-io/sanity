@@ -107,7 +107,8 @@ function getSiblingTextContent() {
 describe('Portable Text Input', () => {
   describe('Presence Cursors', () => {
     it('should keep position when inserting text in the editor', async () => {
-      const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
+      const {getFocusedPortableTextEditor, insertPortableText, settleChromaticEndState} =
+        testHelpers()
 
       void render(<PresenceCursorsHarness document={DOCUMENT} presence={PRESENCE} />)
 
@@ -147,8 +148,26 @@ describe('Portable Text Input', () => {
         return `${Math.round(a.getBoundingClientRect().left)}:${Math.round(b.getBoundingClientRect().left)}`
       }
       await expect.poll(presenceSig).toMatch(/^\d+:\d+$/)
-      const settled = presenceSig()
-      await expect.poll(presenceSig).toBe(settled)
+      let previous = ''
+      let stable = 0
+      await expect
+        .poll(() => {
+          const next = presenceSig()
+          if (next && next === previous) stable += 1
+          else {
+            previous = next
+            stable = 0
+          }
+          return stable >= 3
+        })
+        .toBe(true)
+      // Toolbar enablement/style-select muted vs dark text flipped between
+      // identical-code captures when focus/selection briefly unsettled.
+      await userEvent.click(editor$)
+      await settleChromaticEndState({
+        styleSelectText: /^Normal$/,
+        styleSelectRoot: '[data-testid="field-body"]',
+      })
     })
 
     it.skip('should keep position when deleting text in the editor', async () => {
