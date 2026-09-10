@@ -1,6 +1,6 @@
 {
   "name": "@sanity/util",
-  "version": "6.12.0",
+  "version": "6.13.1",
   "description": "Utilities shared across projects of Sanity",
   "keywords": [
     "cms",
@@ -112,6 +112,7 @@
     "@sanity/client": "catalog:",
     "@sanity/types": "workspace:*",
     "date-fns": "^4.4.0",
+    "get-it": "catalog:",
     "rxjs": "^7.8.2"
   },
   "devDependencies": {

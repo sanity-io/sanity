@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type Schema} from '@sanity/types'
 import {concat, EMPTY, merge, type Observable, of} from 'rxjs'
-import {map, mergeMap, shareReplay} from 'rxjs/operators'
+import {distinctUntilChanged, map, mergeMap, shareReplay} from 'rxjs/operators'
 
 import {type HistoryStore} from '../../history/createHistoryStore'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
@@ -10,7 +10,7 @@ import {memoize} from '../utils/createMemoizer'
 import {memoizeKeyGen} from './memoizeKeyGen'
 import {operationArgs} from './operationArgs'
 import {operationEvents} from './operationEvents'
-import {createOperationsAPI, GUARDED} from './operations/helpers'
+import {createOperationsAPI, GUARDED, hasSameDisabledState} from './operations/helpers'
 import {type OperationsAPI} from './operations/types'
 
 export const editOperations = memoize(
@@ -31,7 +31,10 @@ export const editOperations = memoize(
     const operationEvents$ = operationEvents(ctx)
 
     const operationArgs$ = operationArgs(ctx, idPair, typeName)
-    const operations$ = operationArgs$.pipe(map((args) => createOperationsAPI({...args, target})))
+    const operations$ = operationArgs$.pipe(
+      map((args) => createOperationsAPI({...args, target})),
+      distinctUntilChanged(hasSameDisabledState),
+    )
 
     // To makes sure we connect the stream that actually performs the operations
     return concat(

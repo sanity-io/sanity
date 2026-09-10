@@ -13,7 +13,7 @@ import {
   type TrendSeries,
   type TrendUnit,
 } from './data'
-import {ciRunUrl, commitUrl, compareUrl, prUrl, sourceFileUrl} from './links'
+import {abDispatchCommand, ciRunUrl, commitUrl, compareUrl, prUrl, sourceFileUrl} from './links'
 
 /** Signed delta. The slope units already carry their sign in formatValue. */
 function formatDelta(delta: number, unit: TrendUnit): string {
@@ -91,7 +91,7 @@ export function buildInvestigationPrompt(
     `1. Read the compare range and shortlist commits that could plausibly move this metric (studio runtime code, dependency bumps, build config, or the bench harness/scenario itself).`,
     `2. Confirm with an A/B dispatch — the same harness CI uses, with bootstrap-gated verdicts:
 
-   gh workflow run bench.yml -f ab_from=${previousPoint.sha} -f ab_to=${point.sha}
+   ${abDispatchCommand(previousPoint.sha, point.sha)}
 
    The verdict table lands on that workflow run's summary page, and the comparison is stored as a mode:"ab" benchRun document (Comparisons tool in Studio Radar).`,
     `3. If the range is long, bisect it with further A/B dispatches (log2(N) runs find the culprit commit).`,

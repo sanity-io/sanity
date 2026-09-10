@@ -1,9 +1,9 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Grid, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {Fragment, useCallback, useEffect, useMemo, useRef} from 'react'
 import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Grid, Flex, Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {Dialog} from '../../../ui-components/dialog/Dialog'

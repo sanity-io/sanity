@@ -1,8 +1,27 @@
-import {type HttpError, isHttpError} from '@sanity/client'
+import {type ConnectionFailedError, type HttpError, isHttpError} from '@sanity/client'
 
 /** @internal */
 export function isUnauthorizedError(err: unknown): err is HttpError {
   return isHttpError(err) && err.statusCode === 401
+}
+
+/**
+ * Whether `err` is a listener/live-events connection the client rejected with a
+ * 401. Unlike a data request, the `listen` endpoint never answers 403: access
+ * is applied by filtering events, so a rejected connection can only be an
+ * invalid or expired session. The rejection is a `ConnectionFailedError`
+ * carrying only `status` (no response body, so no `errorCode`), matched by name
+ * to survive duplicate `@sanity/client` copies.
+ *
+ * @internal
+ */
+export function isConnectionSessionError(err: unknown): err is ConnectionFailedError {
+  return (
+    err instanceof Error &&
+    err.name === 'ConnectionFailedError' &&
+    'status' in err &&
+    err.status === 401
+  )
 }
 
 /**
