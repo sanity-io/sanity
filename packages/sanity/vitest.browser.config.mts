@@ -96,6 +96,9 @@ export default defineConfig({
       provider: playwright(),
       headless: true,
       commands: {readFileAsBase64},
+      // Vitest 5 defaults text locators to exact match; keep substring matching
+      // so existing getByText/getByRole({name}) calls continue to work.
+      locators: {exact: false},
       // Desktop viewport so the Portable Text toolbar renders all buttons
       // instead of collapsing them into an overflow menu (matches the old
       // Playwright "Desktop" device presets).

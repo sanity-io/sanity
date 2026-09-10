@@ -26,7 +26,9 @@ export default defineConfig({
     expect: {poll: {timeout: 10_000}},
     browser: {
       enabled: true,
-      provider: playwright(),
+      // Storybook stays on Vitest 4 until @storybook/addon-vitest supports 5.
+      // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- The root typecheck resolves Vitest 5 provider types, which are incompatible with this isolated Vitest 4 project.
+      provider: playwright() as never,
       headless: true,
       viewport: {width: 1280, height: 900},
       instances: [{browser: 'chromium'}],

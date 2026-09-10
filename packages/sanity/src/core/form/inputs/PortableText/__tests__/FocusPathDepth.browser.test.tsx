@@ -166,7 +166,7 @@ describe('Portable Text Input - focus path span suffix at depth', () => {
     void render(<FocusPathDepthHarness document={document} onPathFocus={pushPath} />)
 
     const $pte = await getFocusedPortableTextEditor('field-body')
-    await expect.element($pte).toHaveTextContent('cell span')
+    await expect.element($pte).toMatchTextContent('cell span')
     const lastPath = () => paths.slice(-1)[0]
 
     const rootNode = [...$pte.element().querySelectorAll('*')].find(
