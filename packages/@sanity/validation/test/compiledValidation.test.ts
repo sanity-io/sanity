@@ -22,6 +22,118 @@ function createSchema(types: SchemaTypeDefinition[], compiled: boolean) {
 }
 
 describe.each([false, true])('validation with compiled schema=%s', (compiled) => {
+  it.each(['date', 'datetime'])('keeps %s validation through multiple aliases', async (type) => {
+    const schema = createSchema(
+      [
+        {name: 'eventDate', type},
+        {name: 'nestedDate', type: 'eventDate'},
+        {name: 'article', type: 'document', fields: [{name: 'date', type: 'nestedDate'}]},
+      ],
+      compiled,
+    )
+    const invalid = await validateDocument({schema, document: {...document, date: 'not a date'}})
+    expect(invalid.markers).toEqual([
+      expect.objectContaining({code: validationMarkerCodes.dateInvalidFormat}),
+    ])
+    await expect(
+      validateDocument({schema, document: {...document, date: '2027-01-01'}}),
+    ).resolves.toMatchObject({status: 'passed', markers: []})
+  })
+
+  it('preserves URL scheme overrides across inherited validation arrays', async () => {
+    const schema = createSchema(
+      [
+        {
+          name: 'contactUrl',
+          type: 'url',
+          validation: (rule: Rule) => [rule.uri({scheme: ['mailto']}), rule.required()],
+        },
+        {name: 'article', type: 'document', fields: [{name: 'contact', type: 'contactUrl'}]},
+      ],
+      compiled,
+    )
+    await expect(
+      validateDocument({schema, document: {...document, contact: 'mailto:test@example.com'}}),
+    ).resolves.toMatchObject({status: 'passed', markers: []})
+    const invalid = await validateDocument({
+      schema,
+      document: {...document, contact: 'https://example.com'},
+    })
+    expect(invalid.status).toBe('failed')
+  })
+
+  it('keeps inherited weak references', async () => {
+    const schema = createSchema(
+      [
+        {name: 'articleReference', type: 'reference', to: [{type: 'article'}], weak: true},
+        {
+          name: 'article',
+          type: 'document',
+          fields: [{name: 'related', type: 'articleReference'}],
+        },
+      ],
+      compiled,
+    )
+    const getDocumentExists = vi.fn(async () => false)
+    await expect(
+      validateDocument({
+        schema,
+        getDocumentExists,
+        document: {...document, related: {_type: 'reference', _ref: 'missing'}},
+      }),
+    ).resolves.toMatchObject({status: 'passed', markers: []})
+    expect(getDocumentExists).not.toHaveBeenCalled()
+  })
+
+  it.each(['image', 'file'])('keeps inherited %s asset requirements', async (type) => {
+    const schema = createSchema(
+      [
+        {name: 'media', type, validation: (rule: Rule) => rule.assetRequired()},
+        {name: 'article', type: 'document', fields: [{name: 'media', type: 'media'}]},
+      ],
+      compiled,
+    )
+    const result = await validateDocument({
+      schema,
+      document: {...document, media: {_type: 'media'}},
+    })
+    expect(result.markers).toEqual([
+      expect.objectContaining({
+        code: validationMarkerCodes.assetRequired,
+        details: {assetType: type},
+      }),
+    ])
+  })
+
+  it('uses the date field’s formatting options for inherited bounds', async () => {
+    const schema = createSchema(
+      [
+        {
+          name: 'eventDate',
+          type: 'date',
+          options: {dateFormat: 'YYYY-MM-DD'},
+          validation: (rule: Rule) => rule.min('2026-12-31'),
+        },
+        {
+          name: 'article',
+          type: 'document',
+          fields: [{name: 'date', type: 'eventDate', options: {dateFormat: 'DD/MM/YYYY'}}],
+        },
+      ],
+      compiled,
+    )
+    const result = await validateDocument({schema, document: {...document, date: '2026-01-01'}})
+    expect(result.markers).toEqual([
+      expect.objectContaining({
+        code: validationMarkerCodes.dateMinimum,
+        message: expect.stringContaining('31/12/2026'),
+      }),
+    ])
+    await expect(
+      validateDocument({schema, document: {...document, date: '2027-01-01'}}),
+    ).resolves.toMatchObject({status: 'passed', markers: []})
+  })
+
   it('passes child context to Rule.fields builders', async () => {
     const contexts: Array<ValidationContext | undefined> = []
     const schema = createSchema(

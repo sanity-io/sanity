@@ -11,6 +11,9 @@ import {dequal as isEqual} from 'dequal/lite'
 import {markInternalValidator} from '../internalValidators'
 import {Rule as RuleClass} from '../Rule'
 import {slugStructureValidator, slugUniquenessValidator} from '../validators/slugValidator'
+import {getTypeChain} from './getTypeChain'
+
+export {getTypeChain} from './getTypeChain'
 
 const ruleConstraintTypes: {[P in Lowercase<RuleTypeConstraint>]: true} = {
   array: true,
@@ -39,26 +42,7 @@ export function compileValidationRules(type: SchemaType): Rule[] {
   return rules
 }
 
-export function getTypeChain(
-  type: SchemaType | undefined,
-  visited: Set<SchemaType> = new Set(),
-): SchemaType[] {
-  if (!type) return []
-  if (visited.has(type)) return []
-
-  visited.add(type)
-
-  const next = type.type ? getTypeChain(type.type, visited) : []
-  return [...next, type]
-}
-
-function baseRuleReducer(inputRule: Rule, type: SchemaType) {
-  let baseRule = inputRule
-
-  if (isRuleConstraint(type.jsonType)) {
-    baseRule = baseRule.type(type.jsonType)
-  }
-
+function baseRuleReducer(baseRule: Rule, type: SchemaType) {
   if (type.name === 'datetime') return baseRule.type('Date')
   if (type.name === 'date') return baseRule.type('Date')
   if (type.name === 'url') return baseRule.uri()
@@ -151,6 +135,7 @@ export function normalizeValidationRules(
     return omitLeakedDefaultUri(rules, typeDef)
   }
 
+  const initialRule = new RuleClass(typeDef)
   let baseRule =
     // using an object + Object.values to de-dupe the type chain by type name
     Object.values(
@@ -158,7 +143,10 @@ export function normalizeValidationRules(
         acc[type.name] = type
         return acc
       }, {}),
-    ).reduce(baseRuleReducer, new RuleClass(typeDef))
+    ).reduce(
+      baseRuleReducer,
+      isRuleConstraint(typeDef.jsonType) ? initialRule.type(typeDef.jsonType) : initialRule,
+    )
 
   const options = typeDef.options
   const list =
