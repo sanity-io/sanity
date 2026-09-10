@@ -107,7 +107,8 @@ describe('Portable Text Input', () => {
   describe('Placeholder', () => {
     it('Displays placeholder text and removes it when typed into', async () => {
       void render(<InputHarness />)
-      const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
+      const {getFocusedPortableTextEditor, insertPortableText, settleChromaticEndState} =
+        testHelpers()
       const $pte = await getFocusedPortableTextEditor('field-body')
       // Scope to the field rather than the textbox locator: the placeholder
       // lives inside the contenteditable, where the role-based locator doesn't
@@ -121,9 +122,13 @@ describe('Portable Text Input', () => {
       // Assertion: placeholder was removed
       await expect.element($placeholder).not.toBeInTheDocument()
       await expect.element($pte).toHaveTextContent('Hello there')
-      // Blur so Chromatic does not archive an intermittent focus ring alone.
-      await userEvent.keyboard('{Escape}')
-      await expect.element($pte).toHaveTextContent('Hello there')
+      // Keep focus and force Normal — blurring flipped Normal ↔ No style between
+      // identical-code Chromatic captures (focus-ring avoidance is handled by
+      // settle parking the pointer instead).
+      await settleChromaticEndState({
+        styleSelectText: /^Normal$/,
+        styleSelectRoot: '[data-testid="field-body"]',
+      })
     })
   })
 

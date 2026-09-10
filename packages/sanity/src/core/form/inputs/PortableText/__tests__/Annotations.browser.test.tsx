@@ -177,6 +177,9 @@ describe('Portable Text Input', () => {
       'Does not flash the annotation toolbar popover or show it while the edit popover is opening',
       {timeout: 30_000},
       async () => {
+        // Auto end-state raced PTE focus-ring on vs off while the edit dialog
+        // stayed open; snapshot the focused dialog explicitly.
+        configure({disableAutoSnapshot: true})
         const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
         void render(<AnnotationsHarness />)
         const $pte = await getFocusedPortableTextEditor('field-body')
@@ -219,6 +222,42 @@ describe('Portable Text Input', () => {
 
         // Assertion: the toolbar popover never appeared while the edit popover was opening
         expect(toolbarPopoverAppeared).toBe(false)
+
+        const $linkInput = page.getByTestId('popover-edit-dialog').getByLabelText('Link')
+        await $linkInput.element().focus()
+        await expect.element($linkInput).toHaveFocus()
+        // Do not park the pointer — body mouseover can dismiss the edit dialog.
+        window.getSelection()?.removeAllRanges()
+        await expect
+          .poll(() =>
+            Array.from(window.document.querySelectorAll('[data-ui="Tooltip"]')).every(
+              (el) => !(el instanceof HTMLElement) || !el.checkVisibility(),
+            ),
+          )
+          .toBe(true)
+        const dialogBox = () => {
+          const el = window.document.querySelector('[data-testid="popover-edit-dialog"]')
+          if (!(el instanceof HTMLElement) || !el.checkVisibility()) return ''
+          const r = el.getBoundingClientRect()
+          return `${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)},${Math.round(r.height)}`
+        }
+        await expect.poll(dialogBox).not.toBe('')
+        let previous = ''
+        let stable = 0
+        await expect
+          .poll(() => {
+            const next = dialogBox()
+            if (next && next === previous) stable += 1
+            else {
+              previous = next
+              stable = 0
+            }
+            return stable >= 3
+          })
+          .toBe(true)
+        await expect.element(page.getByTestId('popover-edit-dialog')).toBeVisible()
+        await expect.element($linkInput).toHaveFocus()
+        await takeSnapshot('no-toolbar-flash-edit-dialog-open')
       },
     )
 
