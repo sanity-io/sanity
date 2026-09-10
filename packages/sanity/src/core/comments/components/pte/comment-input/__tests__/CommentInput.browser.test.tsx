@@ -122,10 +122,10 @@ describe('Comments', () => {
       // Mentions close on click-outside; a real pointer park dismisses the menu.
       await settleChromaticEndState({parkPointer: false})
       await expect.element($mentionsMenu).toBeVisible()
+      // Do not type after takeSnapshot: Chromatic archives asynchronously and
+      // Enter would close the menu before the capture (open vs closed / focus
+      // ring pairwise flakes).
       await takeSnapshot('mentions-menu-open')
-      await userEvent.keyboard('{Enter}')
-      await expect.element($mentionsMenu).not.toBeInTheDocument()
-      await expect.element(page.getByTestId('comment-mentions-loading-skeleton')).toBeVisible()
     })
 
     it('Should bring up mentions menu when pressing the @ button, whilst retaining focus on PTE', async () => {

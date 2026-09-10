@@ -232,6 +232,11 @@ describe('Portable Text Input', () => {
         styleSelectText: /^Normal$/,
         styleSelectRoot: '[data-testid="field-body"]',
       })
+      // Park hover can drop :focus on the editor; Chromatic then archives a
+      // grey vs blue field ring. Blur so both captures match.
+      if (window.document.activeElement instanceof HTMLElement) {
+        window.document.activeElement.blur()
+      }
     })
 
     it('Double-clicking opens a block', async () => {
