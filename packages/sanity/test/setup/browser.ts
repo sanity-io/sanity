@@ -24,8 +24,10 @@ afterEach(async () => {
 })
 
 // Chromatic archives `:focus` and the OS caret. Hide the caret so blink/phase
-// cannot show up as a pixel diff; focus rings stay visible.
-if (typeof document !== 'undefined' && Boolean(process.env.CHROMATIC)) {
+// cannot show up as a pixel diff; focus rings stay visible. Applied in every
+// browser run (this file has no Node `process`) so Chromatic and local
+// chromium stay aligned.
+if (typeof document !== 'undefined') {
   const style = document.createElement('style')
   style.dataset.chromaticCaret = ''
   style.textContent = '[contenteditable], input, textarea { caret-color: transparent !important; }'
