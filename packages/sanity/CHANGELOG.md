@@ -2,6 +2,49 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.13.1](https://github.com/sanity-io/sanity/compare/v6.13.0...v6.13.1) (2026-09-09)
+
+### Bug Fixes
+
+* **core:** make styled-component style props transient so they do not leak to the dom ([#14639](https://github.com/sanity-io/sanity/issues/14639)) ([1c51ca5](https://github.com/sanity-io/sanity/commit/1c51ca54a2e17f3d10d7079a7e51718ce6e973e4))
+* **core:** render the workspace menu project name without a layout shift ([#14560](https://github.com/sanity-io/sanity/issues/14560)) ([b992c0b](https://github.com/sanity-io/sanity/commit/b992c0bbefcc451ddfac13c1ea1b4f5d49a957c6))
+* **core:** terminate document listener on 401 ([#14680](https://github.com/sanity-io/sanity/issues/14680)) ([59c29f7](https://github.com/sanity-io/sanity/commit/59c29f772942ef8f86950fef4df029d4a0fed421))
+* **deps:** update dependency @sanity/cli to ^8.9.1 ([#14675](https://github.com/sanity-io/sanity/issues/14675)) ([5d97879](https://github.com/sanity-io/sanity/commit/5d978795d9b30b301a2473700674d2fb63b19585))
+* **deps:** update dependency motion to ^13.2.0 ([#14610](https://github.com/sanity-io/sanity/issues/14610)) ([bae59a7](https://github.com/sanity-io/sanity/commit/bae59a7dcc9c7a371c0104427f5cd598575119cb))
+* **deps:** update portabletext ([#14674](https://github.com/sanity-io/sanity/issues/14674)) ([289f65f](https://github.com/sanity-io/sanity/commit/289f65f047639c03dacf76b38c481bc831f35521))
+* key client-capturing memo caches by credential ([#14672](https://github.com/sanity-io/sanity/issues/14672)) ([02ff775](https://github.com/sanity-io/sanity/commit/02ff775da152689025ac351a3d18b034ff90e419))
+
+### Performance Improvements
+
+* **structure:** stop document action re-render fan-out on every keystroke ([#14559](https://github.com/sanity-io/sanity/issues/14559)) ([c0b4699](https://github.com/sanity-io/sanity/commit/c0b4699d09965d415e1d9f007a81e4723bebd24d))
+## [6.13.0](https://github.com/sanity-io/sanity/compare/v6.12.0...v6.13.0) (2026-09-08)
+
+### Features
+
+* **comments:** add opt-in comments API plugin ([#14451](https://github.com/sanity-io/sanity/issues/14451)) ([22811af](https://github.com/sanity-io/sanity/commit/22811af1895e64287d5021fa009377e7e6eb5d97))
+* **core:** report styled-components sheets and auto-updates in studio diagnostics ([#14562](https://github.com/sanity-io/sanity/issues/14562)) ([4d79e33](https://github.com/sanity-io/sanity/commit/4d79e33114b1a1d79564a7af2820a8a5391b82d8))
+* **diagnostics:** report styled components css size ([#14591](https://github.com/sanity-io/sanity/issues/14591)) ([9eaa196](https://github.com/sanity-io/sanity/commit/9eaa196d462313d93d7292378bfeca7af2ae1daf))
+* **structure:** keep panes when creating from a nested pane ([#14580](https://github.com/sanity-io/sanity/issues/14580)) ([3f7137a](https://github.com/sanity-io/sanity/commit/3f7137a82581b9d666d720920eeeeb5b4e4b0e63))
+* **typegen:** register query result types on a global SanityQueries interface ([#14537](https://github.com/sanity-io/sanity/issues/14537)) ([b042601](https://github.com/sanity-io/sanity/commit/b04260176ee794c149ef9b4c4e75c369fa6e2404))
+* **validation:** add cancellation support ([#14307](https://github.com/sanity-io/sanity/issues/14307)) ([b528986](https://github.com/sanity-io/sanity/commit/b528986e6dbf91f8d3edb505428fc284ca3131eb))
+* **variants:** gate definition delete on permission and explain server refusals ([#14528](https://github.com/sanity-io/sanity/issues/14528)) ([5aa89fa](https://github.com/sanity-io/sanity/commit/5aa89faac97d481ce320ef49129b198c37fe24ff))
+
+### Bug Fixes
+
+* **core:** enforce uniqueness validation in variant definition dialogs ([#14515](https://github.com/sanity-io/sanity/issues/14515)) ([505dba7](https://github.com/sanity-io/sanity/commit/505dba7cc5b25a189a24dada87de33bbdd77404f))
+* **core:** keep draft chip avatar orange when no draft exists ([#14598](https://github.com/sanity-io/sanity/issues/14598)) ([c337ea3](https://github.com/sanity-io/sanity/commit/c337ea3badafdaa06fe9ed51cd5f4371490b1c7d))
+* **deps:** replace `debug` with `obug` ([#14521](https://github.com/sanity-io/sanity/issues/14521)) ([9712c5f](https://github.com/sanity-io/sanity/commit/9712c5f0462b5ec9451886c76fe6000ee3cd136d))
+* **deps:** update portabletext ([#14526](https://github.com/sanity-io/sanity/issues/14526)) ([8c00bc0](https://github.com/sanity-io/sanity/commit/8c00bc01279b56ff457457a18e13150fb779991f))
+* **deps:** update portabletext ([#14573](https://github.com/sanity-io/sanity/issues/14573)) ([6830b9d](https://github.com/sanity-io/sanity/commit/6830b9d05f36e208140bfbdfc649c36157cade25))
+* **deps:** update sanity-sdk to ^3.1.0 ([#14564](https://github.com/sanity-io/sanity/issues/14564)) ([0be9f4d](https://github.com/sanity-io/sanity/commit/0be9f4dd8c6d48c5ae4db2f94ee5926323867228))
+* **form:** constrain pte annotation reference picker width and results height ([#14362](https://github.com/sanity-io/sanity/issues/14362)) ([9f65aa6](https://github.com/sanity-io/sanity/commit/9f65aa6bddae163638a36830cca337c7aaa74cc6))
+* **sanity:** false-positive appearance of `ReferenceChangedBanner` ([cf59363](https://github.com/sanity-io/sanity/commit/cf5936336185436888d7418e684075f39db8ea6f))
+* **storybook:** align storybook core to 10.6 with addon-vitest ([#14577](https://github.com/sanity-io/sanity/issues/14577)) ([1da9535](https://github.com/sanity-io/sanity/commit/1da9535c68747017d6e4166fac00e253d64cead0))
+
+### Performance Improvements
+
+* **core:** consolidate equality checks on dequal/lite and domain comparators ([#14501](https://github.com/sanity-io/sanity/issues/14501)) ([fccc674](https://github.com/sanity-io/sanity/commit/fccc67448c5f5777ecdeb2e7690ca4a8f85ca229))
+* **sanity:** fix idle and typing re-renders found via react devtools profiling ([#14495](https://github.com/sanity-io/sanity/issues/14495)) ([a0e2c6b](https://github.com/sanity-io/sanity/commit/a0e2c6b023cfe3ffe20f2feb5a373bd1a80d8aae))
 ## [6.12.0](https://github.com/sanity-io/sanity/compare/v6.11.0...v6.12.0) (2026-09-01)
 
 ### Features

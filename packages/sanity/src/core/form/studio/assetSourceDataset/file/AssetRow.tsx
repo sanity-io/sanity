@@ -49,16 +49,20 @@ const CardIconWrapper = styled.span`
 // These are here because using vanilla UI components caused a type issue inside of styled-components
 const CustomFlex = styled(Flex)``
 
-const CustomCard = styled(Card)<RowProps>`
+interface SelectableStyleProps {
+  $isSelected?: boolean
+}
+
+const CustomCard = styled(Card)<SelectableStyleProps>`
   ${(props) =>
-    props.isSelected &&
+    props.$isSelected &&
     css`
       --card-muted-fg-color: var(--card-bg-color);
       --card-fg-color: var(--card-bg-color);
     `}
 `
 
-const RowButton = styled(Button)<RowProps>`
+const RowButton = styled(Button)<SelectableStyleProps>`
   box-shadow: none;
   min-width: 0;
   cursor: pointer;
@@ -82,7 +86,7 @@ const RowButton = styled(Button)<RowProps>`
   }
 
   ${(props) =>
-    props.isSelected &&
+    props.$isSelected &&
     css`
       --card-muted-fg-color: var(--card-bg-color);
       --card-fg-color: var(--card-bg-color);
@@ -102,7 +106,7 @@ const RowButton = styled(Button)<RowProps>`
     `}
 
   ${(props) =>
-    !props.isSelected &&
+    !props.$isSelected &&
     css`
       &:hover:before {
         background-color: var(--card-bg-color);
@@ -262,7 +266,6 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
           }}
         >
           <RowButton
-            asset={asset}
             mode="bleed"
             padding={0}
             data-id={_id}
@@ -353,13 +356,12 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
 
   return (
     <CustomCard
-      asset={asset}
       paddingBottom={1}
       style={STYLES_ROW_CARD}
       radius={0}
       overflow={'hidden'}
-      isSelected={isSelected}
-      aria-selected="true"
+      $isSelected={isSelected}
+      aria-selected={Boolean(isSelected)}
     >
       <Grid
         gridTemplateColumns={4}
@@ -373,7 +375,6 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
         }}
       >
         <RowButton
-          asset={asset}
           mode="bleed"
           data-id={_id}
           onClick={onClick}
@@ -382,7 +383,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
           title={t('asset-source.file.asset-list.item.select-file-tooltip', {
             filename: originalFilename,
           })}
-          isSelected={isSelected}
+          $isSelected={isSelected}
           radius={2}
         >
           <CustomFlex

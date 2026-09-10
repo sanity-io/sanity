@@ -195,7 +195,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
             hasFocus={focusPath[0] === 'hotspot'}
             isChanged={changed}
           >
-            <RatioBox ratio={3 / 2}>
+            <RatioBox $ratio={3 / 2}>
               {(isImageLoading || imageLoadError) && (
                 <LoadStatus>
                   {imageLoadError ? (
@@ -235,7 +235,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
                     {title}
                   </Heading>
                   <Box marginTop={2}>
-                    <RatioBox ratio={aspectRatio}>
+                    <RatioBox $ratio={aspectRatio}>
                       <Card __unstable_checkered border>
                         {!isImageLoading && image ? (
                           <HotspotImage

@@ -2,6 +2,9 @@ import {globalStyle, style} from '@vanilla-extract/css'
 
 import {STYLE_OUTLINE_ATTRIBUTE, STYLE_SYSTEMS} from './styleSystems'
 
+// Overlapping nodes (eg a `styled(ui5Box)`) match several systems at once, and styled-components
+// must win so the debt stays visible. Its exclusion `:not()` gives it the higher specificity today;
+// keep it last in STYLE_SYSTEMS so it still wins on order should that exclusion ever go away.
 for (const {id, color, selector} of STYLE_SYSTEMS) {
   globalStyle(`html[${STYLE_OUTLINE_ATTRIBUTE}~="${id}"] ${selector}`, {
     outline: `1px solid ${color} !important`,

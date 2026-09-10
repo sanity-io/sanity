@@ -12,6 +12,7 @@ import {useReleasesToolAvailable} from '../../../schedules/hooks/useReleasesTool
 import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
 import {isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
 import {useVersionContextMenu} from '../../hooks/useVersionContextMenu'
+import {LATEST} from '../../util/const'
 import {Chip} from '../Chip'
 import {ReleaseAvatarIcon} from '../ReleaseAvatar'
 import {VersionContextMenuDialogs} from './contextMenu/VersionContextMenuDialogs'
@@ -123,6 +124,9 @@ export const VersionChip = memo(function VersionChip(props: {
   const contextMenuHandler = disabled || !releasesToolAvailable ? undefined : handleContextMenu
 
   const isPaused = isPausedCardinalityOneRelease(release)
+  // Draft chips may act on the published document when no draft exists (so "add
+  // to a release" copies what's on screen). The avatar still represents drafts.
+  const avatarRelease = bundleId === 'draft' ? LATEST : sourceReleasePerspective
 
   const rightIcon = useMemo(() => {
     if (isLinked) return <ComposeSparklesIcon />
@@ -145,7 +149,7 @@ export const VersionChip = memo(function VersionChip(props: {
             selected={selected}
             tone={tone}
             onContextMenu={contextMenuHandler}
-            icon={<ReleaseAvatarIcon release={sourceReleasePerspective} />}
+            icon={<ReleaseAvatarIcon release={avatarRelease} />}
             iconRight={rightIcon}
             text={text}
           />
