@@ -30,15 +30,13 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
-    "@vitest/browser-playwright": "^4.1.11",
-    "@vitest/coverage-v8": "^4.1.11",
-    "@vitest/ui": "^4.1.11",
+    "@vitest/browser-playwright": "catalog:",
     "chromatic": "^18.7.2",
     "oxc-transform-react": "catalog:",
     "playwright": "catalog:",
     "rimraf": "catalog:",
     "storybook": "catalog:",
     "vite": "catalog:",
-    "vitest": "^4.1.11"
+    "vitest": "catalog:"
   }
 }

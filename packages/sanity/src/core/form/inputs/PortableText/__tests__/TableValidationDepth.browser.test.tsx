@@ -145,7 +145,7 @@ describe('Portable Text Input - validation markers at depth', () => {
     void render(<TableValidationDepthHarness document={document} />)
 
     const $pte = await getFocusedPortableTextEditor('field-body')
-    await expect.element($pte).toMatchTextContent('bad cell text')
+    await expect.element($pte).toHaveTextContent('bad cell text')
 
     // Validation runs async in the harness; poll until the root control
     // shows its marker, then compare all four blocks in one snapshot.

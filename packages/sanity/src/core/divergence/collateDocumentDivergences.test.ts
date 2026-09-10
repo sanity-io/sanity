@@ -7,11 +7,6 @@ import {
   peekCollatedDocumentDivergences,
 } from './collateDocumentDivergences'
 
-// Production debounce is 1s; Vitest 5's expect.poll default timeout is also 1s and
-// fails hard when the deadline elapses (unlike Vitest 4). Give the poll room past
-// debounce + computation so the first attempt does not flake into retries.
-const READY_POLL_TIMEOUT_MS = 2_500
-
 describe('collateDocumentDivergences', () => {
   it('collates document divergences when context is written', async () => {
     const upstreamAtFork: SanityDocument = {
@@ -55,7 +50,7 @@ describe('collateDocumentDivergences', () => {
       subjectHead,
     })
 
-    await expect.poll(() => emissions.at(-1)?.state, {timeout: READY_POLL_TIMEOUT_MS}).toBe('ready')
+    await expect.poll(() => emissions.at(-1)?.state).toBe('ready')
 
     expect(emissions.at(0)?.state).toBe('pending')
     expect(emissions.at(-1)?.state).toBe('ready')
@@ -110,7 +105,7 @@ describe('peekCollatedDocumentDivergences', () => {
       subjectHead,
     })
 
-    await expect.poll(() => emissions.at(-1)?.state, {timeout: READY_POLL_TIMEOUT_MS}).toBe('ready')
+    await expect.poll(() => emissions.at(-1)?.state).toBe('ready')
 
     expect(emissions.at(0)?.state).toBe('pending')
     expect(emissions.at(-1)?.state).toBe('ready')

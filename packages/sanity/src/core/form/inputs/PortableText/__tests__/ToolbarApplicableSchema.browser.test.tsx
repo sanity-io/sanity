@@ -145,7 +145,7 @@ describe('Portable Text Input - toolbar reflects the positional schema', () => {
     void render(<ToolbarApplicableSchemaHarness document={document} />)
 
     const $pte = await getFocusedPortableTextEditor('field-body')
-    await expect.element($pte).toMatchTextContent('cell text')
+    await expect.element($pte).toHaveTextContent('cell text')
 
     const clickText = async (text: string) => {
       const node = [...$pte.element().querySelectorAll('*')].find(

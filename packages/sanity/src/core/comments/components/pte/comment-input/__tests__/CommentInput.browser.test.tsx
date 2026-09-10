@@ -148,7 +148,7 @@ describe('Comments', () => {
       await expect.element(page.getByTestId('comment-mentions-loading-skeleton')).toBeVisible()
 
       await userEvent.keyboard('foo')
-      await expect.element($editable).toHaveTextContent('before foo')
+      await expect.element($editable).toHaveTextContent(/^before foo$/)
 
       // The mention registration must render its `children`: they carry the
       // editor's caret spacer, without which the caret cannot land on the
@@ -174,7 +174,7 @@ describe('Comments', () => {
       await expect
         .element(page.getByTestId('comment-mentions-loading-skeleton'))
         .not.toBeInTheDocument()
-      await expect.element($editable).toHaveTextContent('before')
+      await expect.element($editable).toHaveTextContent(/^before$/)
     })
 
     it('Should start the next comment empty after submitting the previous one', async () => {
@@ -193,10 +193,10 @@ describe('Comments', () => {
       await userEvent.keyboard('{Enter}')
       expect(textOf(await submitted)).toBe('First comment typed')
 
-      await expect.element($editable).not.toMatchTextContent('First comment')
+      await expect.element($editable).not.toHaveTextContent('First comment')
 
       await insertPortableText('Second comment', $editable)
-      await expect.element($editable).toHaveTextContent('Second comment')
+      await expect.element($editable).toHaveTextContent(/^Second comment$/)
     })
   })
 })

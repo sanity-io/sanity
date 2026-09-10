@@ -38,7 +38,7 @@ catalog:
   '@vanilla-extract/css': ^1.21.2
   '@vanilla-extract/dynamic': ^2.1.5
   '@vitejs/plugin-react': ^6.1.1
-  '@vitest/browser-playwright': ^5.0.0
+  '@vitest/browser-playwright': ^4.1.11
   dequal: ^2.0.3
   get-it: ^9.5.4
   jsdom: ^29.1.1
@@ -57,7 +57,7 @@ catalog:
   tsdown: ^0.23.0
   typescript: ^7.0.2
   vite: ^8.3.0
-  vitest: ^5.0.0
+  vitest: ^4.1.11
   vitest-browser-react: ^2.3.0
 
 dedupePeers: true
@@ -149,14 +149,8 @@ minimumReleaseAgeExclude:
   - '@oxc-project/types@0.147.0'
 
 overrides:
+  '@sanity/ui>react-is': '19.3.0'
   vitest: 'catalog:'
-  # Storybook 10.6 only supports Vitest 4; keep its project and peer set on one version.
-  '@storybook/addon-vitest@10.6.0>vitest': '4.1.11'
-  '@vitest/browser-playwright@4.1.11>vitest': '4.1.11'
-  '@vitest/browser@4.1.11>vitest': '4.1.11'
-  '@vitest/coverage-v8@4.1.11>vitest': '4.1.11'
-  '@vitest/ui@4.1.11>vitest': '4.1.11'
-  'sanity-storybook>vitest': '4.1.11'
 
 preferWorkspacePackages: true
 

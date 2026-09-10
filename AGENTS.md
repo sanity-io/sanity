@@ -486,18 +486,6 @@ TypeScript 6 applies the augmentation in both cases. Workaround: put the side-ef
 a vitest setup file (registered via `test.setupFiles`) instead of the test file that uses the
 matchers — see `packages/@sanity/schema/test/setup.ts` and its `vitest.config.mts`.
 
-#### Vitest 5 browser matcher compatibility
-
-Vitest 5 makes browser text locators exact by default and changes `toHaveTextContent` to strict
-equality. The `sanity` browser project keeps Vitest 4's substring locator behavior through
-`browser.locators.exact: false`; pass `{exact: true}` at call sites that require uniqueness.
-Use `toHaveTextContent` for exact text and `toMatchTextContent` for substring or regular-expression
-matching.
-
-Storybook 10.6's Vitest addon only supports Vitest 4. Keep `dev/storybook`'s Vitest packages on a
-consistent 4.1.x set until the addon supports Vitest 5; the rest of the monorepo uses the catalog
-Vitest version.
-
 #### Vanilla-extract in jsdom tests
 
 The `sanity` and `@sanity/vision` jsdom suites import

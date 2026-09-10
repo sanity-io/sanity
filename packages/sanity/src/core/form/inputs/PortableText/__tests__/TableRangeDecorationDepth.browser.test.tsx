@@ -182,7 +182,7 @@ describe('Portable Text Input - range decorations at depth', () => {
     void render(<TableRangeDecorationDepthHarness document={document} />)
 
     const $pte = await getFocusedPortableTextEditor('field-body')
-    await expect.element($pte).toMatchTextContent('cell decorated here')
+    await expect.element($pte).toHaveTextContent('cell decorated here')
 
     await expect.poll(() => decorations().length).toBe(2)
     expect(decorations()).toEqual([
