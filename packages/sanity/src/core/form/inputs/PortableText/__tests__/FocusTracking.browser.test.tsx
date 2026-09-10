@@ -8,7 +8,7 @@ import {
   type SanityDocument,
 } from '@sanity/types'
 import {type PortableTextPluginsProps} from 'sanity'
-import {beforeEach, describe, expect, it} from 'vitest'
+import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
 
@@ -250,9 +250,6 @@ const document: SanityDocument = {
 }
 
 describe('Portable Text Input', () => {
-  beforeEach(() => {
-    window.localStorage.debug = 'sanity-pte:*'
-  })
   describe('Should track focusPath', () => {
     it(`for span .text`, async () => {
       const {waitForFocusedNodeText} = testHelpers()
@@ -448,5 +445,16 @@ describe('Portable Text Input', () => {
     const $blockObject = page.getByTestId('pte-block-object').first()
     await $blockObject.click()
     await expect.poll(lastPath).toEqual(['body', {_key: 'k'}])
+    // Inline toolbar can linger via Activity; wait until only the block is selected
+    // so Chromatic does not archive a floating inline popover mid-close.
+    await expect
+      .poll(() => {
+        const popover = window.document.querySelector<HTMLElement>(
+          '[data-testid="inline-object-toolbar-popover"]',
+        )
+        return !popover || !popover.checkVisibility()
+      })
+      .toBe(true)
+    await expect.element($blockObject).toBeVisible()
   })
 })

@@ -5,7 +5,7 @@ import {
   type Path,
   type SanityDocument,
 } from '@sanity/types'
-import {beforeEach, describe, expect, it} from 'vitest'
+import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, server} from 'vitest/browser'
 
@@ -131,10 +131,6 @@ const document: SanityDocument = {
 // honoured by Chromium; WebKit ignores it, so these paste tests can't run there
 // (matches the original Playwright `test.skip(browserName === 'webkit')`).
 describe.skipIf(server.browser === 'webkit')('Portable Text Input', () => {
-  beforeEach(() => {
-    window.localStorage.debug = 'sanity-pte:*'
-  })
-
   describe('Should be able to paste from Google Docs and get correct formatting', () => {
     it(`Removed whitespace`, async () => {
       const {getFocusedPortableTextEditor, insertPortableTextCopyPaste, waitForDocumentState} =
@@ -224,6 +220,16 @@ describe.skipIf(server.browser === 'webkit')('Portable Text Input', () => {
       const $preview = $pte.getByTestId('block-preview')
       await expect.element($preview).toBeVisible()
       await expect.poll(() => $preview.element().getBoundingClientRect().height).toBeGreaterThan(0)
+      // Style-select label subpixel position was flipping between paste/drop
+      // captures; wait until the select text and x offset stop moving.
+      const styleSig = () => {
+        const select = window.document.querySelector('[data-testid="block-style-select"]')
+        if (!(select instanceof HTMLElement)) return ''
+        return `${select.textContent}@${Math.round(select.getBoundingClientRect().x)}`
+      }
+      await expect.poll(styleSig).toBeTruthy()
+      const settled = styleSig()
+      await expect.poll(styleSig).toBe(settled)
     })
 
     it(`Added dropped image as a block`, async () => {
@@ -252,6 +258,14 @@ describe.skipIf(server.browser === 'webkit')('Portable Text Input', () => {
       const $preview = $pte.getByTestId('block-preview')
       await expect.element($preview).toBeVisible()
       await expect.poll(() => $preview.element().getBoundingClientRect().height).toBeGreaterThan(0)
+      const styleSig = () => {
+        const select = window.document.querySelector('[data-testid="block-style-select"]')
+        if (!(select instanceof HTMLElement)) return ''
+        return `${select.textContent}@${Math.round(select.getBoundingClientRect().x)}`
+      }
+      await expect.poll(styleSig).toBeTruthy()
+      const settled = styleSig()
+      await expect.poll(styleSig).toBe(settled)
     })
 
     it(`Display error message on drag over if file is not accepted`, async () => {

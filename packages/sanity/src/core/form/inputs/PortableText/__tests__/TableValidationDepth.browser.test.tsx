@@ -6,6 +6,7 @@ import {
   type SanityDocument,
 } from '@sanity/types'
 import {describe, expect, it} from 'vitest'
+import {page, userEvent} from 'vitest/browser'
 
 import {TestForm} from '../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../test/browser/testHelpers'
@@ -156,6 +157,13 @@ describe('Portable Text Input - validation markers at depth', () => {
       'bad cell text': true,
       'clean cell text': false,
     })
+
+    // Focus can land on the table (column insert chrome / style select flicker).
+    // Click a clean text block so Chromatic always archives the same selection.
+    await userEvent.click(page.getByText('clean root text', {exact: true}))
+    await expect
+      .poll(() => window.document.querySelector('[data-testid="block-style-select"]')?.textContent)
+      .toMatch(/Normal/)
   })
 })
 

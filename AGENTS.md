@@ -588,11 +588,13 @@ hooks to `parallel`, which lets Chromatic's automatic snapshot race
 duplicate captures. The Chromatic plugin prepends its setup file for `list` ordering, so the
 snapshot finishes before React cleanup starts. Capture runs also set `retry: 0` (a retried test
 archives twice and Chromatic publishes `Snapshot #1 (2)`), `cropToViewport`,
-`pauseAnimationAtEnd`, a short `delay` (500ms for fonts), and transparent carets so portal menus and blinking
-carets do not show up as false diffs. Tests that leave a menu open on purpose should assert a
+`pauseAnimationAtEnd`, a `delay` of 1000ms for fonts/CollapseMenu settle, and the browser setup
+forces transparent carets plus grayscale font-smoothing so portal menus, blinking carets, and
+subpixel toolbar text do not show up as false diffs. Tests that leave a menu open on purpose should assert a
 _visible_ overlay (closed `@sanity/ui` menus stay mounted) and prefer `takeSnapshot()` when the
 automatic afterEach capture can race menu dismiss. Interaction-only tests whose end
-state is a loading or error flash should `configure({disableAutoSnapshot: true})`.
+state is a loading or error flash should `configure({disableAutoSnapshot: true})`. Do not set
+`localStorage.debug` in browser tests — debug overlay noise shows up in Chromatic archives.
 
 ### E2E Tests (Playwright)
 

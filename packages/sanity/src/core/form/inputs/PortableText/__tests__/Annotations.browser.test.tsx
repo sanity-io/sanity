@@ -1,3 +1,4 @@
+import {configure, takeSnapshot} from '@chromatic-com/vitest'
 import {ColorWheelIcon} from '@sanity/icons/ColorWheel'
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
@@ -225,6 +226,9 @@ describe('Portable Text Input', () => {
       'Can create, and then open the existing annotation again for editing',
       {timeout: 30_000},
       async () => {
+        // Auto end-state sometimes archives after the edit dialog has already
+        // closed; snapshot while it is open and focused instead.
+        configure({disableAutoSnapshot: true})
         const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
         void render(<AnnotationsHarness />)
         const $pte = await getFocusedPortableTextEditor('field-body')
@@ -282,6 +286,7 @@ describe('Portable Text Input', () => {
 
         // Assertion: The URL input should be focused
         await expect.element($linkInputReopened).toHaveFocus()
+        await takeSnapshot('edit-link-open')
       },
     )
 
@@ -310,6 +315,9 @@ describe('Portable Text Input', () => {
     it.skipIf(server.browser === 'firefox')(
       'Shows combined popover with multiple annotations on same text',
       async () => {
+        // Snapshot the combined toolbar explicitly — auto capture can race the
+        // floating popover position / open state after the last Escape.
+        configure({disableAutoSnapshot: true})
         const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
         void render(<MultipleAnnotationsHarness />)
         const $pte = await getFocusedPortableTextEditor('field-body')
@@ -428,6 +436,9 @@ describe('Portable Text Input', () => {
         await userEvent.keyboard('{Escape}')
         await expect.element($pte).toHaveFocus()
         await expect.element($toolbarPopover).toBeVisible()
+        await expect.element(page.getByTestId('edit-annotation-button')).toBeVisible()
+        await expect.element(page.getByTestId('edit-annotation-button-1')).toBeVisible()
+        await takeSnapshot('combined-toolbar-open')
       },
     )
   })

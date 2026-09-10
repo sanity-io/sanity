@@ -141,6 +141,18 @@ describe('Portable Text Input', () => {
       // ring; click a text block so Chromatic always archives the same focus.
       await userEvent.click(page.getByText('Baz', {exact: true}))
       await expect.element(page.getByText('Hello world')).toBeVisible()
+      await expect
+        .poll(
+          () => window.document.querySelector('[data-testid="block-style-select"]')?.textContent,
+        )
+        .toMatch(/Normal/)
+      const styleSig = () => {
+        const select = window.document.querySelector('[data-testid="block-style-select"]')
+        if (!(select instanceof HTMLElement)) return ''
+        return `${select.textContent}@${Math.round(select.getBoundingClientRect().x)}`
+      }
+      const settled = styleSig()
+      await expect.poll(styleSig).toBe(settled)
     })
 
     it(`drag and drop blocks without warning overlay`, async () => {

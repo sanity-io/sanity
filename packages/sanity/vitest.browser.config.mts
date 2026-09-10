@@ -76,7 +76,9 @@ export default defineConfig({
             // line of text wraps; viewport crops keep the frame fixed at
             // 1280×900 (see `browser.viewport`) and include portaled overlays.
             cropToViewport: true,
-            delay: 500,
+            // Extra settle time for PTE toolbar CollapseMenu / font metrics after
+            // interactions; 500ms still left style-select subpixel flakes.
+            delay: 1000,
             pauseAnimationAtEnd: true,
             prefersReducedMotion: 'reduce',
           }

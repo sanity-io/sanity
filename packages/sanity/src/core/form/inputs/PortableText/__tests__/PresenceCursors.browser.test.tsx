@@ -138,6 +138,17 @@ describe('Portable Text Input', () => {
       await expect.element($cursorA).toBeVisible()
       await expect.element($cursorB).toBeVisible()
       await expect.element(editor$).toHaveTextContent(`INSERTED TEXT. ${TEXT}`)
+      // Presence pin geometry can shift by a sub-pixel while the caret settles;
+      // wait until both markers report a stable left offset.
+      const presenceSig = () => {
+        const a = window.document.querySelector('[data-testid="presence-cursor-User-A"]')
+        const b = window.document.querySelector('[data-testid="presence-cursor-User-B"]')
+        if (!(a instanceof HTMLElement) || !(b instanceof HTMLElement)) return ''
+        return `${Math.round(a.getBoundingClientRect().left)}:${Math.round(b.getBoundingClientRect().left)}`
+      }
+      await expect.poll(presenceSig).toMatch(/^\d+:\d+$/)
+      const settled = presenceSig()
+      await expect.poll(presenceSig).toBe(settled)
     })
 
     it.skip('should keep position when deleting text in the editor', async () => {

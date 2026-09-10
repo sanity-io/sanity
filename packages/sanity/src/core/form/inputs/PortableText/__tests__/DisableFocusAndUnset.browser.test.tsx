@@ -6,7 +6,7 @@ import {
   type SanityDocument,
 } from '@sanity/types'
 import {unset} from 'sanity'
-import {beforeEach, describe, expect, it} from 'vitest'
+import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
 
@@ -137,9 +137,6 @@ const document: SanityDocument = {
 }
 
 describe('Portable Text Input', () => {
-  beforeEach(() => {
-    window.localStorage.debug = 'sanity-pte:*'
-  })
   describe('onPathFocus', () => {
     it(`should not allow setting focus on the input itself`, async () => {
       void render(

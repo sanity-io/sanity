@@ -1,3 +1,4 @@
+import {configure, takeSnapshot} from '@chromatic-com/vitest'
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
 import {Text} from '@sanity/ui'
 import {type PreviewProps} from 'sanity'
@@ -142,12 +143,22 @@ describe('Portable Text Input', () => {
     })
 
     it('Inline object works as expected when clicking the edit button', async () => {
+      // Dialog open/closed races the auto snapshot; capture while open.
+      configure({disableAutoSnapshot: true})
       const {getFocusedPortableTextEditor} = testHelpers()
       void render(<ObjectBlockHarness />)
       const $pte = await getFocusedPortableTextEditor('field-body')
       await page.getByRole('button', {name: 'Insert Inline Object (inline)'}).first().click()
       await userEvent.dblClick(page.getByText('Custom preview block: Click'))
-      await expect.element(page.getByTestId('popover-edit-dialog')).toBeVisible()
+      const $dialog = page.getByTestId('popover-edit-dialog')
+      await expect.element($dialog).toBeVisible()
+      await expect
+        .poll(() => {
+          const el = window.document.querySelector('[data-testid="popover-edit-dialog"]')
+          return el instanceof HTMLElement ? el.getBoundingClientRect().height : 0
+        })
+        .toBeGreaterThan(0)
+      await takeSnapshot('inline-edit-dialog-open')
     })
 
     it('Inline object toolbars works as expected when removing the object', async () => {
@@ -297,6 +308,31 @@ describe('Portable Text Input', () => {
       await expect
         .element(page.getByRole('button', {name: 'Insert Object Without Title (block)'}))
         .toBeVisible()
+      // Wait for CollapseMenu button positions to settle — style-select / insert
+      // button x offsets were a recurring Chromatic pairwise flake.
+      await expect
+        .poll(() => {
+          const toolbar = $portableTextInput
+            .element()
+            .querySelector('[data-testid="pt-editor__toolbar-card"]')
+          if (!toolbar) return ''
+          return Array.from(toolbar.querySelectorAll('button'))
+            .map((b) => `${b.textContent?.trim()}@${Math.round(b.getBoundingClientRect().x)}`)
+            .join('|')
+        })
+        .toMatch(/Object Without Title/)
+      // Second poll with the same signature confirms layout stopped moving.
+      const signature = () => {
+        const toolbar = $portableTextInput
+          .element()
+          .querySelector('[data-testid="pt-editor__toolbar-card"]')
+        if (!toolbar) return ''
+        return Array.from(toolbar.querySelectorAll('button'))
+          .map((b) => `${b.textContent?.trim()}@${Math.round(b.getBoundingClientRect().x)}`)
+          .join('|')
+      }
+      const first = signature()
+      await expect.poll(signature).toBe(first)
     })
   })
 })

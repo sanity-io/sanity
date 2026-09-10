@@ -207,6 +207,20 @@ describe('Portable Text Input', () => {
           await expect
             .poll(() => $portableTextInput.element().getBoundingClientRect().width)
             .toBeLessThan(400)
+          const toolbarSignature = () => {
+            const toolbar = $portableTextInput
+              .element()
+              .querySelector('[data-testid="pt-editor__toolbar-card"]')
+            if (!toolbar) return ''
+            return Array.from(toolbar.querySelectorAll('button'))
+              .map(
+                (b) =>
+                  `${b.getAttribute('data-testid') ?? b.textContent?.trim()}@${Math.round(b.getBoundingClientRect().width)}`,
+              )
+              .join('|')
+          }
+          const settled = toolbarSignature()
+          await expect.poll(toolbarSignature).toBe(settled)
         })
       })
       describe('Non-root <FormBuilder>', () => {
@@ -227,6 +241,24 @@ describe('Portable Text Input', () => {
           // Assertion: all auto collapsing menu buttons should be visible
           await expect.element($actionMenuAutoCollapseMenu).toBeVisible()
           await expect.element($insertMenuAutoCollapseMenu).toBeVisible()
+
+          // Non-root CollapseMenu still measures after viewport shrink; wait for
+          // button positions to stop moving before Chromatic archives.
+          const toolbarSignature = () => {
+            const toolbar = $portableTextInput
+              .element()
+              .querySelector('[data-testid="pt-editor__toolbar-card"]')
+            if (!toolbar) return ''
+            return Array.from(toolbar.querySelectorAll('button'))
+              .map(
+                (b) =>
+                  `${b.getAttribute('data-testid') ?? b.textContent?.trim()}@${Math.round(b.getBoundingClientRect().x)}`,
+              )
+              .join('|')
+          }
+          await expect.poll(toolbarSignature).not.toBe('')
+          const settled = toolbarSignature()
+          await expect.poll(toolbarSignature).toBe(settled)
         })
       })
     })
