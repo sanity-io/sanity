@@ -6,7 +6,10 @@ import {render} from 'vitest-browser-react'
 import {page, server, userEvent} from 'vitest/browser'
 
 import {TestForm} from '../../../../../../test/browser/TestForm'
-import {testHelpers} from '../../../../../../test/browser/testHelpers'
+import {
+  snapFloatingUiToIntegerPixels,
+  testHelpers,
+} from '../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 
 const SCHEMA_TYPES = [
@@ -257,6 +260,21 @@ describe('Portable Text Input', () => {
           .toBe(true)
         await expect.element(page.getByTestId('popover-edit-dialog')).toBeVisible()
         await expect.element($linkInput).toHaveFocus()
+        snapFloatingUiToIntegerPixels()
+        // Re-check after snapping so we do not archive mid-layout from the style write.
+        previous = ''
+        stable = 0
+        await expect
+          .poll(() => {
+            const next = dialogBox()
+            if (next && next === previous) stable += 1
+            else {
+              previous = next
+              stable = 0
+            }
+            return stable >= 2
+          })
+          .toBe(true)
         await takeSnapshot('no-toolbar-flash-edit-dialog-open')
       },
     )
@@ -360,6 +378,21 @@ describe('Portable Text Input', () => {
           .toBe(true)
         await expect.element(page.getByTestId('popover-edit-dialog')).toBeVisible()
         await expect.element($linkInputReopened).toHaveFocus()
+        snapFloatingUiToIntegerPixels()
+        // Re-check after snapping so we do not archive mid-layout from the style write.
+        previous = ''
+        stable = 0
+        await expect
+          .poll(() => {
+            const next = dialogBox()
+            if (next && next === previous) stable += 1
+            else {
+              previous = next
+              stable = 0
+            }
+            return stable >= 2
+          })
+          .toBe(true)
         await takeSnapshot('edit-link-open')
       },
     )
@@ -416,6 +449,21 @@ describe('Portable Text Input', () => {
         .toBe(true)
       await expect.element(page.getByTestId('popover-edit-dialog')).toBeVisible()
       await expect.element($linkInput).toHaveFocus()
+      snapFloatingUiToIntegerPixels()
+      // Re-check after snapping so we do not archive mid-layout from the style write.
+      previous = ''
+      stable = 0
+      await expect
+        .poll(() => {
+          const next = dialogBox()
+          if (next && next === previous) stable += 1
+          else {
+            previous = next
+            stable = 0
+          }
+          return stable >= 2
+        })
+        .toBe(true)
       await takeSnapshot('fullscreen-edit-link-open')
     })
 

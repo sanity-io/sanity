@@ -3,6 +3,46 @@ import {page, server, userEvent} from 'vitest/browser'
 
 const DEFAULT_TYPE_DELAY = 20
 
+/**
+ * Round Floating UI / Popper inline `transform` / `top` / `left` to whole CSS
+ * pixels. Subpixel placement (e.g. 120.5 vs 121) is stable within a single run
+ * but drifts across Chromatic captures of identical code, shifting whole
+ * dialogs by 1px and producing large false visual diffs.
+ */
+export function snapFloatingUiToIntegerPixels(): void {
+  const anchors = window.document.querySelectorAll<HTMLElement>(
+    [
+      '[data-testid="popover-edit-dialog"]',
+      '[data-testid="annotation-toolbar-popover"]',
+      '[data-testid="inline-object-toolbar-popover"]',
+      '[role="menu"]',
+      '[role="listbox"]',
+    ].join(', '),
+  )
+  const snapped = new Set<HTMLElement>()
+  for (const anchor of anchors) {
+    if (!anchor.checkVisibility()) continue
+    let node: HTMLElement | null = anchor
+    for (let depth = 0; depth < 8 && node; depth++, node = node.parentElement) {
+      if (snapped.has(node)) break
+      const {transform, top, left} = node.style
+      const hasTransform = Boolean(transform) && transform !== 'none'
+      const hasOffset = Boolean(top) || Boolean(left)
+      if (!hasTransform && !hasOffset) continue
+      snapped.add(node)
+      if (hasTransform) {
+        const rounded = transform.replace(/(-?\d+\.?\d*)px/g, (value) => {
+          return `${Math.round(Number.parseFloat(value))}px`
+        })
+        if (rounded !== transform) node.style.transform = rounded
+      }
+      if (top) node.style.top = `${Math.round(Number.parseFloat(top))}px`
+      if (left) node.style.left = `${Math.round(Number.parseFloat(left))}px`
+      break
+    }
+  }
+}
+
 /** Poll `document.querySelector` until the element appears, then return it. */
 async function waitForElement(selector: string): Promise<Element> {
   let el: Element | null = null
@@ -474,6 +514,10 @@ export function testHelpers() {
           })
           .toBe(true)
       }
+
+      // Snap after geometry has settled so the archive cannot land on a
+      // half-pixel Floating UI translate that differs across identical runs.
+      snapFloatingUiToIntegerPixels()
     },
   }
 }

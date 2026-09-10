@@ -133,8 +133,12 @@ const document: SanityDocument = {
 describe.skipIf(server.browser === 'webkit')('Portable Text Input', () => {
   describe('Should be able to paste from Google Docs and get correct formatting', () => {
     it(`Removed whitespace`, async () => {
-      const {getFocusedPortableTextEditor, insertPortableTextCopyPaste, waitForDocumentState} =
-        testHelpers()
+      const {
+        getFocusedPortableTextEditor,
+        insertPortableTextCopyPaste,
+        waitForDocumentState,
+        settleChromaticEndState,
+      } = testHelpers()
 
       void render(<CopyPasteHarness document={document} />)
 
@@ -154,6 +158,15 @@ describe.skipIf(server.browser === 'webkit')('Portable Text Input', () => {
       // We therefore compare the length of the body to the snapshot length here instead.
       // This will make sure we don't have extra whitespace blocks
       expect(documentState?.body?.length || 0).toEqual(snapshotLength)
+
+      // Paste can leave the caret on a style-less span so the style select
+      // flickers between "Normal" and "No style"; click into the field and wait
+      // for Normal specifically before Chromatic archives.
+      await userEvent.click($pte)
+      await settleChromaticEndState({
+        styleSelectText: /^Normal$/,
+        styleSelectRoot: '[data-testid="field-body"]',
+      })
     })
 
     it(`Normalized whitespace`, async () => {

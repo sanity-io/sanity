@@ -63,9 +63,13 @@ if (typeof document !== 'undefined') {
     }
     /* CommentInput applies :hover after :focus-within, so a leftover pointer
        on the card swaps the focus ring for the hover border between captures.
-       Keep the focused shadow stable regardless of :hover. */
-    #comment-input-root[data-focused='true']:focus-within {
+       Do not require [data-focused] — React focus state can lag :focus-within
+       and leave the hover border winning. Force both the CSS variable and the
+       computed box-shadow so styled-components hover cannot override. */
+    #comment-input-root:focus-within,
+    #comment-input-root:focus-within:hover {
       --input-box-shadow: inset 0 0 0 1px var(--card-focus-ring-color) !important;
+      box-shadow: inset 0 0 0 1px var(--card-focus-ring-color) !important;
     }
   `
   document.documentElement.appendChild(style)
