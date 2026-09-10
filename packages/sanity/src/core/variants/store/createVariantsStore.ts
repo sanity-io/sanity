@@ -26,17 +26,17 @@ const QUERY_PROJECTION = `{
 
 const QUERY = `*[${QUERY_FILTER}] ${QUERY_PROJECTION} | ${QUERY_SORT_ORDER}`
 
-/**
- * What `state$` emits first for a cold store; also the value the hooks render until it emits.
- * @internal
- */
-export const INITIAL_VARIANTS_STATE: VariantStoreState = {
+const INITIAL_STATE: VariantStoreState = {
   variants: new Map(),
   state: 'initialising' as const,
 }
 
 export interface VariantStore {
   state$: Observable<VariantStoreState>
+  /**
+   * What `state$` emits first; hooks render it until the subscription started on commit emits.
+   */
+  initialState: VariantStoreState
   dispatch: Dispatch<VariantStoreAction>
 }
 
@@ -62,6 +62,7 @@ export function createVariantsStore(context: {
 
     return {
       state$: of(disabledState),
+      initialState: disabledState,
       dispatch: () => {
         // noop
       },
@@ -99,13 +100,14 @@ export function createVariantsStore(context: {
   )
 
   const state$ = merge(listFetch$, dispatch$).pipe(
-    scan((state, action) => variantStoreReducer(state, action), INITIAL_VARIANTS_STATE),
-    startWith(INITIAL_VARIANTS_STATE),
+    scan((state, action) => variantStoreReducer(state, action), INITIAL_STATE),
+    startWith(INITIAL_STATE),
     shareReplay(1),
   )
 
   return {
     state$,
+    initialState: INITIAL_STATE,
     dispatch,
   }
 }

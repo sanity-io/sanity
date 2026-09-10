@@ -14,7 +14,6 @@ import {useAllReleases} from '../../releases/store/useAllReleases'
 import {useReleasesStore} from '../../releases/store/useReleasesStore'
 import {ARCHIVED_RELEASE_STATES} from '../../releases/util/const'
 import {variantAlphaAudience} from '../../variants/__fixtures__/variants.fixture'
-import {INITIAL_VARIANTS_STATE} from '../../variants/store/createVariantsStore'
 import {type VariantStoreState} from '../../variants/store/reducer'
 import {useVariantsStore} from '../../variants/store/useVariantsStore'
 import {getSelectedReleaseId} from '../getSelectedReleaseId'
@@ -38,10 +37,11 @@ const releasesState$ = new BehaviorSubject<MockReleasesState>({
   releases: new Map(),
   state: 'initialising',
 })
-const variantsState$ = new BehaviorSubject<VariantStoreState>({
+const INITIAL_VARIANTS_STATE: VariantStoreState = {
   variants: new Map(),
   state: 'initialising',
-})
+}
+const variantsState$ = new BehaviorSubject<VariantStoreState>(INITIAL_VARIANTS_STATE)
 
 const selectedReleaseName$ = new BehaviorSubject<ReleaseId | undefined>(undefined)
 const selectedVariantName$ = new BehaviorSubject<string | undefined>(undefined)
@@ -50,7 +50,11 @@ vi.mock('../../releases/store/useReleasesStore', () => ({
   useReleasesStore: () => ({state$: releasesState$, dispatch: vi.fn()}),
 }))
 vi.mock('../../variants/store/useVariantsStore', () => ({
-  useVariantsStore: () => ({state$: variantsState$, dispatch: vi.fn()}),
+  useVariantsStore: () => ({
+    state$: variantsState$,
+    initialState: INITIAL_VARIANTS_STATE,
+    dispatch: vi.fn(),
+  }),
 }))
 
 const RELEASE_NAME = 'rASAP' as ReleaseId
@@ -122,8 +126,8 @@ function DeferredActiveReleasesCounterfactual() {
 
 function DeferredAllVariantsCounterfactual() {
   const name = useSyncObservable(selectedVariantName$, undefined)
-  const {state$} = useVariantsStore()
-  const {variants} = useObservable(state$, INITIAL_VARIANTS_STATE)
+  const {state$, initialState} = useVariantsStore()
+  const {variants} = useObservable(state$, initialState)
   variantFrames.push({
     name,
     variantId: getSelectedVariant({selectedVariantName: name, variantsById: variants})?._id,
