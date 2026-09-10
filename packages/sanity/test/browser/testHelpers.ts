@@ -410,9 +410,23 @@ export function testHelpers() {
       }
 
       // Clear :hover on toolbar buttons / field headers (pointer may still sit
-      // on the last clicked control after userEvent.click).
+      // on the last clicked control after userEvent.click). Synthetic
+      // `mouseover` does NOT clear CSS :hover, so Chromatic's 1s delay can
+      // still open a tooltip (e.g. "Insert Table") between settle and archive.
+      // Hover an inset park target to move the real pointer off chrome.
+      // Playwright treats a 1×1 at (0,0) as outside the viewport (tests run in
+      // an iframe), so use a small inset target and force the hover.
       if (options?.parkPointer !== false) {
-        window.document.body.dispatchEvent(new MouseEvent('mouseover', {bubbles: true}))
+        const park = window.document.createElement('div')
+        park.setAttribute('data-testid', 'chromatic-pointer-park')
+        park.style.cssText =
+          'position:fixed;left:8px;top:8px;width:4px;height:4px;opacity:0.01;z-index:2147483647'
+        window.document.body.appendChild(park)
+        try {
+          await userEvent.hover(park, {force: true})
+        } finally {
+          park.remove()
+        }
       }
 
       await expect

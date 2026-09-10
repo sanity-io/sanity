@@ -134,7 +134,7 @@ describe('Portable Text Input', () => {
 
   describe('Editor Ref', () => {
     it('Editor can be controlled from outside the Input using the editorRef prop', async () => {
-      const {getFocusedPortableTextEditor} = testHelpers()
+      const {getFocusedPortableTextEditor, settleChromaticEndState} = testHelpers()
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       let editorIstance: PortableTextEditor | undefined
       void render(
@@ -149,6 +149,12 @@ describe('Portable Text Input', () => {
       await getFocusedPortableTextEditor('field-body')
       // If the ref has .schemaTypes.block, it means the editorRef was set correctly
       expect(editorIstance?.schemaTypes.block).toBeDefined()
+      // Same empty-editor CollapseMenu race as onEditorChange: wait for Normal
+      // + inline Strong/Italic before Chromatic archives.
+      await settleChromaticEndState({
+        styleSelectText: /^Normal$/,
+        styleSelectRoot: '[data-testid="field-body"]',
+      })
     })
   })
 

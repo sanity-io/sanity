@@ -1,3 +1,4 @@
+import {configure, takeSnapshot} from '@chromatic-com/vitest'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {Button as UIButton} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
@@ -87,11 +88,36 @@ describe('perspective bar filter pill as a menu trigger', () => {
   })
 
   it('opens the menu from the labelled pill trigger and keeps it open', async () => {
+    // Auto end-state raced the open menu vs a dismissed one across identical
+    // Chromatic captures; archive while the menu is visibly open.
+    configure({disableAutoSnapshot: true})
     void render(<Fixture />)
 
     await page.getByTestId('pill-trigger').click()
 
     await expect.element(page.getByTestId('pill-menu-content')).toBeVisible()
+    const menuBox = () => {
+      const el = window.document.querySelector('[data-testid="pill-menu-content"]')
+      if (!(el instanceof HTMLElement) || !el.checkVisibility()) return ''
+      const r = el.getBoundingClientRect()
+      return `${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)},${Math.round(r.height)}`
+    }
+    await expect.poll(menuBox).not.toBe('')
+    let previous = ''
+    let stable = 0
+    await expect
+      .poll(() => {
+        const next = menuBox()
+        if (next && next === previous) stable += 1
+        else {
+          previous = next
+          stable = 0
+        }
+        return stable >= 3
+      })
+      .toBe(true)
+    await expect.element(page.getByTestId('pill-menu-content')).toBeVisible()
+    await takeSnapshot('pill-menu-open')
   })
 
   it('still opens when the pill also renders a remove segment', async () => {
