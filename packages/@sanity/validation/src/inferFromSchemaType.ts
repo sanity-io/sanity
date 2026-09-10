@@ -1,6 +1,6 @@
 import {type Schema, type SchemaType, type SchemaValidationValue} from '@sanity/types'
 
-import {normalizeValidationRules} from './util/normalizeValidationRules'
+import {compileValidationRules} from './util/normalizeValidationRules'
 
 // NOTE: this overload is for TS API compatibility with a previous implementation
 export function inferFromSchemaType(
@@ -28,7 +28,7 @@ function traverse(typeDef: SchemaType, visited: Set<SchemaType>) {
   // Only normalize validation at schema-compile time when it doesn't rely on runtime context.
   // Context-aware validation functions must be evaluated during validation, where context exists.
   if (!usesValidationContext) {
-    typeDef.validation = normalizeValidationRules(typeDef)
+    typeDef.validation = compileValidationRules(typeDef)
   }
 
   if ('fields' in typeDef) {

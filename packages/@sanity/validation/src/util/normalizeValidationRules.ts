@@ -3,6 +3,7 @@ import {
   type RuleSpec,
   type RuleTypeConstraint,
   type SchemaType,
+  type SchemaValidationValue,
   type ValidationContext,
 } from '@sanity/types'
 import {dequal as isEqual} from 'dequal/lite'
@@ -23,6 +24,21 @@ const ruleConstraintTypes: {[P in Lowercase<RuleTypeConstraint>]: true} = {
 const isRuleConstraint = (typeString: string): typeString is Lowercase<RuleTypeConstraint> =>
   typeString in ruleConstraintTypes
 
+const compiledValidations = new WeakMap<
+  object,
+  {type: SchemaType; definition: SchemaValidationValue | undefined; rules: Rule[]}
+>()
+
+export function compileValidationRules(type: SchemaType): Rule[] {
+  const inherited = Array.isArray(type.validation)
+    ? compiledValidations.get(type.validation)
+    : undefined
+  const definition = inherited ? inherited.definition : type.validation
+  const rules = normalizeValidationRules(type)
+  compiledValidations.set(rules, {type, definition, rules})
+  return rules
+}
+
 export function getTypeChain(
   type: SchemaType | undefined,
   visited: Set<SchemaType> = new Set(),
@@ -41,22 +57,6 @@ function baseRuleReducer(inputRule: Rule, type: SchemaType) {
 
   if (isRuleConstraint(type.jsonType)) {
     baseRule = baseRule.type(type.jsonType)
-  }
-
-  const typeOptionsList =
-    // if type.options is truthy
-    type?.options &&
-    // and type.options is an object (non-null from the previous)
-    typeof type.options === 'object' &&
-    // and if `list` is in options
-    'list' in type.options &&
-    // then finally access the list
-    type.options.list
-
-  if (Array.isArray(typeOptionsList)) {
-    baseRule = baseRule.valid(
-      typeOptionsList.map((option) => extractValueFromListOption(option, type)),
-    )
   }
 
   if (type.name === 'datetime') return baseRule.type('Date')
@@ -126,6 +126,16 @@ export function normalizeValidationRules(
     return []
   }
 
+  const compiled = Array.isArray(typeDef.validation)
+    ? compiledValidations.get(typeDef.validation)
+    : undefined
+  if (compiled) {
+    if (compiled.type === typeDef) return compiled.rules
+    // Derived fields inherit compiled rules, but their options can differ. Rebuild
+    // from the authored definition instead of reusing the ancestor's constraints.
+    return normalizeValidationRules({...typeDef, validation: compiled.definition}, context)
+  }
+
   const validation = typeDef.validation
 
   if (Array.isArray(validation)) {
@@ -141,7 +151,7 @@ export function normalizeValidationRules(
     return omitLeakedDefaultUri(rules, typeDef)
   }
 
-  const baseRule =
+  let baseRule =
     // using an object + Object.values to de-dupe the type chain by type name
     Object.values(
       getTypeChain(typeDef).reduce<Record<string, SchemaType>>((acc, type) => {
@@ -149,6 +159,13 @@ export function normalizeValidationRules(
         return acc
       }, {}),
     ).reduce(baseRuleReducer, new RuleClass(typeDef))
+
+  const options = typeDef.options
+  const list =
+    options && typeof options === 'object' && 'list' in options ? options.list : undefined
+  if (Array.isArray(list)) {
+    baseRule = baseRule.valid(list.map((option) => extractValueFromListOption(option, typeDef)))
+  }
 
   if (validation && typeof validation === 'object') {
     return [validation]
