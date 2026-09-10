@@ -289,7 +289,9 @@ describe('Portable Text Input', () => {
         // Clear any leftover PTE text selection so the annotated "link" span
         // does not archive with a selection highlight on some runs only.
         window.getSelection()?.removeAllRanges()
-        window.document.body.dispatchEvent(new MouseEvent('mouseover', {bubbles: true}))
+        // Park the pointer on the editor so leftover toolbar hover tooltips
+        // (e.g. "Underline") close before Chromatic archives.
+        await userEvent.hover($pte)
         await expect
           .poll(() =>
             Array.from(window.document.querySelectorAll('[data-ui="Tooltip"]')).every(
@@ -461,9 +463,9 @@ describe('Portable Text Input', () => {
         await expect.element($toolbarPopover).toBeVisible()
         await expect.element(page.getByTestId('edit-annotation-button')).toBeVisible()
         await expect.element(page.getByTestId('edit-annotation-button-1')).toBeVisible()
-        // Clear accidental toolbar hover tooltips (e.g. "Underline") before snapshot —
-        // pointer position is not stable across Chromatic archive runs.
-        window.document.body.dispatchEvent(new MouseEvent('mouseover', {bubbles: true}))
+        // Park the pointer on the editor so leftover toolbar hover tooltips
+        // (e.g. "Underline") close before Chromatic archives.
+        await userEvent.hover($pte)
         await expect
           .poll(() =>
             Array.from(window.document.querySelectorAll('[data-ui="Tooltip"]')).every(

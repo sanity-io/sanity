@@ -176,9 +176,9 @@ describe.skipIf(server.browser === 'webkit')('Portable Text Input', () => {
       expect(documentState?.bodyNormalized?.length || 0).toEqual(snapshotLength)
 
       // Paste can leave the caret on a style-less span so the style select
-      // flickers between "Normal" and "No style"; click into the field and wait
-      // for a stable label before Chromatic archives.
-      await userEvent.click($pte)
+      // flickers between "Normal" and "No style"; click a known Normal block
+      // so Chromatic always archives that label.
+      await userEvent.click(page.getByText('Lorem:', {exact: true}))
       await expect
         .poll(() => {
           const select = window.document.querySelector(
@@ -186,7 +186,7 @@ describe.skipIf(server.browser === 'webkit')('Portable Text Input', () => {
           )
           return select?.textContent?.trim() ?? ''
         })
-        .toMatch(/^(Normal|No style)$/)
+        .toMatch(/Normal/)
       const styleSig = () => {
         const select = window.document.querySelector(
           '[data-testid="field-bodyNormalized"] [data-testid="block-style-select"]',
