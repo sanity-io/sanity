@@ -136,6 +136,8 @@ minimumReleaseAgeExclude:
   - 'tsdown'
   # Fresh patch; exclude so 2.0.4 can install before the age gate
   - 'use-effect-event@2.0.4'
+  # Fresh minor; exclude so 1.7.0 can install before the age gate
+  - 'use-sync-external-store@1.7.0'
   # verkit is part of the tsdown toolchain (tsdown dependency since 0.22.12)
   - 'verkit'
   - 'vitest'
