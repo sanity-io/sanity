@@ -366,9 +366,20 @@ export function testHelpers() {
         await document.fonts.ready
       }
 
-      // Clear :hover on toolbar buttons / field headers (pointer may still sit
-      // on the last clicked control after userEvent.click).
-      window.document.body.dispatchEvent(new MouseEvent('mouseover', {bubbles: true}))
+      // CSS :hover and Floating UI follow the real Playwright pointer, not a
+      // bubbling MouseEvent on body. After userEvent.click the pointer is still
+      // on that control; park it on an inert target so hover pills and delayed
+      // tooltips do not stay visible (and so the tooltip poll can succeed).
+      let park = window.document.getElementById('chromatic-pointer-park')
+      if (!park) {
+        park = window.document.createElement('div')
+        park.id = 'chromatic-pointer-park'
+        park.setAttribute('aria-hidden', 'true')
+        park.style.cssText =
+          'position:fixed;right:0;bottom:0;width:1px;height:1px;opacity:0;z-index:2147483647'
+        window.document.body.appendChild(park)
+      }
+      await userEvent.hover(park)
 
       await expect
         .poll(
