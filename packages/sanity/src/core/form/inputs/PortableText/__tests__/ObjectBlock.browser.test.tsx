@@ -123,9 +123,9 @@ describe('Portable Text Input', () => {
 
       // Assertion: Text in custom preview component should show
       await expect.element(page.getByText('Custom preview block:')).toBeVisible()
-      // Last click sits on Insert Object; Chromatic delay otherwise archives
-      // its tooltip on some identical-code captures.
-      await settleChromaticEndState()
+      // Insert leaves popover-edit-dialog open; a real pointer park is
+      // treated as click-outside and can dismiss it mid-settle.
+      await settleChromaticEndState({parkPointer: false})
     })
 
     it('Inline object toolbars works as expected after opening and closing the edit dialog', async () => {
