@@ -251,9 +251,10 @@ describe('Portable Text Input', () => {
         // click the block style select
         await page.getByTestId('block-style-select').click()
 
-        // Assertion: block style dropdown should be visible
-        const menuPopover = document.querySelector('[data-ui="MenuButton__popover"]')
-        expect(menuPopover).not.toBeNull()
+        // Assertion: block style dropdown should be visible. Closed
+        // `@sanity/ui` menus stay mounted (`display: none`), so a raw
+        // querySelector is not enough for a deterministic Chromatic end state.
+        await expect.element(page.getByRole('menuitem', {name: 'Normal'})).toBeVisible()
       })
 
       it('on a full screen simple editor', async () => {
@@ -272,9 +273,10 @@ describe('Portable Text Input', () => {
         // click the block style select
         await page.getByTestId('block-style-select').click()
 
-        // Assertion: block style dropdown should be visible
-        const menuPopover = document.querySelector('[data-ui="MenuButton__popover"]')
-        expect(menuPopover).not.toBeNull()
+        // Assertion: block style dropdown should be visible. Closed
+        // `@sanity/ui` menus stay mounted (`display: none`), so a raw
+        // querySelector is not enough for a deterministic Chromatic end state.
+        await expect.element(page.getByRole('menuitem', {name: 'Normal'})).toBeVisible()
       })
 
       // Takes ~25s against the default 30s timeout on a healthy CI runner
@@ -326,9 +328,10 @@ describe('Portable Text Input', () => {
           await userEvent.click(blockStyleSelects[1] as HTMLElement)
         }
 
-        // Assertion: block style dropdown should be visible
-        const menuPopover = document.querySelector('[data-ui="MenuButton__popover"]')
-        expect(menuPopover).not.toBeNull()
+        // Assertion: block style dropdown should be visible. Closed
+        // `@sanity/ui` menus stay mounted (`display: none`), so a raw
+        // querySelector is not enough for a deterministic Chromatic end state.
+        await expect.element(page.getByRole('menuitem', {name: 'Normal'})).toBeVisible()
       })
     })
   })

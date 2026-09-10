@@ -70,7 +70,17 @@ export default defineConfig({
       turboSnap: chromaticEnabled,
       // Outside capture runs, skip the per-test wait for fonts and network idle
       // that only matters for archiving resources.
-      ...(chromaticEnabled ? {} : {resourceArchiveTimeout: 0}),
+      ...(chromaticEnabled
+        ? {
+            // Content-box crops change height when a portal menu opens or a
+            // line of text wraps; viewport crops keep the frame fixed at
+            // 1280×900 (see `browser.viewport`) and include portaled overlays.
+            cropToViewport: true,
+            delay: 200,
+            pauseAnimationAtEnd: true,
+            prefersReducedMotion: 'reduce',
+          }
+        : {resourceArchiveTimeout: 0}),
       reporter: chromaticEnabled,
     }),
   ],

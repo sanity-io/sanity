@@ -19,9 +19,18 @@ const DEFAULT_VIEWPORT = {width: 1280, height: 900}
 // getByTestId('field-body') resolve ambiguously (or to a stale tree) in
 // later tests within the same file.
 afterEach(async () => {
-  void cleanup()
+  await cleanup()
   await page.viewport(DEFAULT_VIEWPORT.width, DEFAULT_VIEWPORT.height)
 })
+
+// Chromatic archives `:focus` and the OS caret. Hide the caret so blink/phase
+// cannot show up as a pixel diff; focus rings stay visible.
+if (typeof document !== 'undefined' && Boolean(process.env.CHROMATIC)) {
+  const style = document.createElement('style')
+  style.dataset.chromaticCaret = ''
+  style.textContent = '[contenteditable], input, textarea { caret-color: transparent !important; }'
+  document.documentElement.appendChild(style)
+}
 
 // Suppress noisy warnings in test output
 const warn = console.warn

@@ -98,6 +98,7 @@ describe('Portable Text Input', () => {
 
       // Assertion: Object preview should be visible
       await expect.element($portableTextInput.getByTestId('pte-block-object')).toBeVisible()
+      await expect.element(page.getByRole('button', {name: 'Insert Object (block)'})).toBeVisible()
     })
 
     it('Custom block preview components renders correctly', async () => {
@@ -122,8 +123,9 @@ describe('Portable Text Input', () => {
       const $locatorDialog = page.getByTestId('popover-edit-dialog')
       // Assertion: Object edit dialog should be visible
       await expect.element($locatorDialog).toBeVisible()
-      const closeButton = document.querySelector('[data-sanity-icon="close"]') as HTMLElement
-      if (closeButton) await userEvent.click(closeButton)
+      await expect.element(page.getByTestId('close-popover-edit-dialog-button')).toBeVisible()
+      await page.getByTestId('close-popover-edit-dialog-button').click()
+      await expect.element(page.getByTestId('popover-edit-dialog')).not.toBeInTheDocument()
 
       await page.getByText('Custom preview block:').click()
       // Assertion: the annotation toolbar popover should be visible

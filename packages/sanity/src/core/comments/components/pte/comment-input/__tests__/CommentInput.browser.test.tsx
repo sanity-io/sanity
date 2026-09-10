@@ -83,6 +83,7 @@ describe('Comments', () => {
       void render(<CommentsInputHarness />)
       const $editable = page.getByTestId('comment-input-editable')
       await expect.element($editable).toBeVisible()
+      await expect.element($editable).toHaveFocus()
     })
 
     it('Should be able to type into', async () => {

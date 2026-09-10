@@ -37,6 +37,8 @@ describe('PopoverDialog', () => {
     await expect.element(page.getByTestId('popover-dialog')).toBeVisible()
 
     const wrapper = document.querySelector<HTMLElement>('[data-ui="Popover__wrapper"]')!
+    expect(wrapper).not.toBeNull()
+    await expect.poll(() => wrapper.getBoundingClientRect().height).toBeGreaterThan(0)
     expect(getComputedStyle(wrapper).position).toBe('relative')
   })
 })

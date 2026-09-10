@@ -204,6 +204,9 @@ describe('Copy and pasting fields', () => {
       await expect
         .element(page.getByTestId('field-objectWithColumns.string1').getByRole('textbox'))
         .toHaveValue('A string to copy')
+
+      await userEvent.keyboard('{Escape}')
+      await expect.element(page.getByRole('menuitem', {name: 'Paste field'})).not.toBeVisible()
     })
 
     // TODO: native Ctrl+C/Ctrl+V is handled by the browser and bypasses
@@ -294,6 +297,9 @@ describe('Copy and pasting fields', () => {
       await expect
         .element(page.getByTestId('field-title').getByRole('textbox'))
         .toHaveValue('A string to copy')
+
+      await userEvent.keyboard('{Escape}')
+      await expect.element(page.getByRole('menuitem', {name: 'Paste field'})).not.toBeVisible()
     })
   })
 

@@ -1,3 +1,4 @@
+import {configure} from '@chromatic-com/vitest'
 import {defineArrayMember, defineField, defineType, type ReferenceValue} from '@sanity/types'
 import {useCallback} from 'react'
 import {Box, Flex} from 'ui5'
@@ -100,6 +101,10 @@ function ReferenceItemCustomCreateButtonHarness() {
 // and must not count as "outside": clearing on mousedown unmounts the custom
 // UI before its click handlers run, breaking custom create flows.
 describe('reference array item with a custom create button', () => {
+  // Interaction tests: the created `_ref` has no preview document in the mock
+  // client, so the end state races "Unable to load reference metadata".
+  configure({disableAutoSnapshot: true})
+
   it('clicking the custom create button completes the create flow instead of removing the item', async () => {
     const {waitForDocumentState} = testHelpers()
     void render(<ReferenceItemCustomCreateButtonHarness />)
