@@ -232,9 +232,11 @@ describe('Portable Text Input', () => {
         styleSelectText: /^Normal$/,
         styleSelectRoot: '[data-testid="field-body"]',
       })
-      // Park hover can leave :focus-within on the field (blue ring). Blur
-      // everything and wait until the field is not focus-within so identical
-      // captures agree on the grey ring.
+      // Park hover can leave focus on the field (blue ring). Blur and wait
+      // until React drops `data-focused` (`focused || hasFocusWithin`).
+      // `:focus-within` clears on DOM blur before that render, so waiting
+      // only for it can archive grey vs blue (and toolbar enablement can
+      // still flip).
       const field = window.document.querySelector('[data-testid="field-body"]')
       if (window.document.activeElement instanceof HTMLElement) {
         window.document.activeElement.blur()
@@ -242,7 +244,11 @@ describe('Portable Text Input', () => {
       window.document.body.tabIndex = -1
       window.document.body.focus()
       await expect
-        .poll(() => !(field instanceof HTMLElement && field.matches(':focus-within')))
+        .poll(() => {
+          if (!(field instanceof HTMLElement)) return true
+          if (field.matches(':focus-within')) return false
+          return !field.querySelector('[data-focused]')
+        })
         .toBe(true)
     })
 
