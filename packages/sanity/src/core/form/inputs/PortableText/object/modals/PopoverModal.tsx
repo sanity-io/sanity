@@ -42,7 +42,7 @@ const NoopContainer = ({children, ...props}: ComponentProps<'div'>) => (
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
 export function PopoverEditDialog(props: PopoverEditDialogProps): ReactNode {
-  const {floatingBoundary, referenceBoundary, referenceElement, width = 2} = props
+  const {floatingBoundary, referenceBoundary, referenceElement, width = 1} = props
   return (
     <RootPopover
       content={<Content {...props} />}

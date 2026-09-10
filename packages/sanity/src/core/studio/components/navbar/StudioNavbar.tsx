@@ -2,7 +2,6 @@ import {MenuIcon} from '@sanity/icons/Menu'
 import {
   BoundaryElementProvider,
   Card,
-  Grid,
   Layer,
   LayerProvider,
   PortalProvider,
@@ -11,7 +10,7 @@ import {
 import {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
 import {NavbarContext} from 'sanity/_singletons'
 import {type RouterState, useRouterState} from 'sanity/router'
-import {Flex, Box} from 'ui5'
+import {Grid, Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'

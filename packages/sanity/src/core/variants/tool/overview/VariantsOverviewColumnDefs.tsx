@@ -6,8 +6,6 @@ import {Flex, Box} from 'ui5'
 import {useTranslation, type UseTranslationResponse} from '../../../i18n/hooks/useTranslation'
 import {Headers} from '../../../releases/tool/components/Table/TableHeader'
 import {type Column, type VisibleColumn} from '../../../releases/tool/components/Table/types'
-import {ConditionMismatchIndicator} from '../../components/ConditionMismatchIndicator'
-import {useVariantConditionMismatches} from '../../hooks/useVariantConditions'
 import {variantsLocaleNamespace} from '../../i18n'
 import {type SystemVariant} from '../../types'
 import {getVariantId, getVariantConditionsText, getVariantTitle} from '../util'
@@ -46,7 +44,6 @@ const VariantDocumentsCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, d
 
 const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum: variant}) => {
   const {t} = useTranslation(variantsLocaleNamespace)
-  const mismatches = useVariantConditionMismatches(variant.conditions ?? {})
 
   const encodedVariantId = getVariantId(variant._id)
 
@@ -95,9 +92,6 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
             </Stack>
           </Flex>
         </Card>
-        <Box paddingTop={2}>
-          <ConditionMismatchIndicator mismatches={mismatches} />
-        </Box>
       </Flex>
     </Box>
   )

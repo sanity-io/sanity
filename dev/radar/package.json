@@ -17,7 +17,7 @@
   "dependencies": {
     "@repo/utils": "workspace:*",
     "@sanity/client": "catalog:",
-    "@sanity/icons": "^5.2.1",
+    "@sanity/icons": "^5.2.2",
     "@sanity/ui": "catalog:",
     "@visx/axis": "^4.0.0",
     "@visx/group": "^4.0.0",
