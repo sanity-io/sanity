@@ -22,6 +22,52 @@ function createSchema(types: SchemaTypeDefinition[], compiled: boolean) {
 }
 
 describe.each([false, true])('validation with compiled schema=%s', (compiled) => {
+  it('passes child context to Rule.fields builders', async () => {
+    const contexts: Array<ValidationContext | undefined> = []
+    const schema = createSchema(
+      [
+        {
+          name: 'article',
+          type: 'document',
+          fields: [
+            {name: 'requireValue', type: 'boolean'},
+            {
+              name: 'details',
+              type: 'object',
+              fields: [{name: 'title', type: 'string', hidden: true}],
+              validation: (rule: Rule) =>
+                rule.fields({
+                  title: (fieldRule, context) => {
+                    contexts.push(context)
+                    return context?.document?.requireValue
+                      ? fieldRule.required()
+                      : fieldRule.optional()
+                  },
+                }),
+            },
+          ],
+        },
+      ],
+      compiled,
+    )
+    const result = await validateDocument({
+      schema,
+      document: {...document, requireValue: true, details: {}},
+    })
+    expect(
+      result.markers.filter((marker) => marker.code === validationMarkerCodes.valueRequired),
+    ).toEqual([expect.objectContaining({path: ['details', 'title']})])
+    expect(contexts).toEqual([
+      expect.objectContaining({
+        document: expect.objectContaining({requireValue: true}),
+        parent: {},
+        path: ['details', 'title'],
+        hidden: true,
+        type: expect.objectContaining({name: 'string'}),
+      }),
+    ])
+  })
+
   it.each([
     [
       'default context',
