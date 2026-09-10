@@ -8,7 +8,12 @@ export const listWrapperMaxHeightVar = createVar()
 
 export const listWrapper = style({
   maxHeight: listWrapperMaxHeightVar,
-  minWidth: '244px',
+  selectors: {
+    // Flex (via Box) sets `min-width` on itself
+    '&&': {
+      minWidth: '244px',
+    },
+  },
 })
 
 export const root = style({

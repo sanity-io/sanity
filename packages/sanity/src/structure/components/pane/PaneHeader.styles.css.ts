@@ -66,8 +66,13 @@ globalStyle(`${titleCard} [data-ui='Text']`, {
 })
 
 export const titleTextSkeleton = style({
-  width: '66%',
-  maxWidth: '175px',
+  selectors: {
+    // `&&`: TextSkeleton is self-styled; `width` is among its own declarations.
+    '&&': {
+      width: '66%',
+      maxWidth: '175px',
+    },
+  },
 })
 
 export const titleText = style({
