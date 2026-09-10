@@ -1,6 +1,6 @@
 import {Schema} from '@sanity/schema'
 import {builtinTypes} from '@sanity/schema/_internal'
-import {type Rule, type SchemaTypeDefinition} from '@sanity/types'
+import {type Rule, type SchemaTypeDefinition, type ValidationContext} from '@sanity/types'
 import {describe, expect, it, vi} from 'vitest'
 
 import {validateDocument, validationMarkerCodes} from '../src'
@@ -22,6 +22,59 @@ function createSchema(types: SchemaTypeDefinition[], compiled: boolean) {
 }
 
 describe.each([false, true])('validation with compiled schema=%s', (compiled) => {
+  it.each([
+    [
+      'default context',
+      (rule: Rule, context: Partial<ValidationContext> = {}) =>
+        context.document?.requireValue ? rule.required() : rule.optional(),
+    ],
+    [
+      'default destructured context',
+      (rule: Rule, {document: currentDocument}: Partial<ValidationContext> = {}) =>
+        currentDocument?.requireValue ? rule.required() : rule.optional(),
+    ],
+    [
+      'rest parameters',
+      (...[rule, context]: [Rule, ValidationContext?]) =>
+        context?.document?.requireValue ? rule.required() : rule.optional(),
+    ],
+    [
+      'bound function',
+      function (this: {enabled: boolean}, rule: Rule, context: Partial<ValidationContext> = {}) {
+        return this.enabled && context.document?.requireValue ? rule.required() : rule.optional()
+      }.bind({enabled: true}),
+    ],
+    [
+      'wrapped function',
+      vi.fn((rule: Rule, context: Partial<ValidationContext> = {}) =>
+        context.document?.requireValue ? rule.required() : rule.optional(),
+      ),
+    ],
+  ])('evaluates %s using the current document', async (_name, validation) => {
+    const schema = createSchema(
+      [
+        {name: 'title', type: 'string', validation},
+        {
+          name: 'article',
+          type: 'document',
+          fields: [
+            {name: 'requireValue', type: 'boolean'},
+            {name: 'title', type: 'title'},
+          ],
+        },
+      ],
+      compiled,
+    )
+    for (const requireValue of [false, true, false]) {
+      // Run sequentially to exercise changing context against the same compiled schema.
+      // oxlint-disable-next-line no-await-in-loop -- each validation checks the next document state
+      const result = await validateDocument({schema, document: {...document, requireValue}})
+      expect(
+        result.markers.filter((marker) => marker.code === validationMarkerCodes.valueRequired),
+      ).toHaveLength(requireValue ? 1 : 0)
+    }
+  })
+
   it.each(['string', 'color', 'nestedColor'])(
     'uses the field list on %s without requiring an explicit validation function',
     async (type) => {
@@ -140,14 +193,19 @@ describe.each([false, true])('validation with compiled schema=%s', (compiled) =>
 })
 
 it('reuses compiled static rules for the same field across repeated inference and validation', async () => {
-  const validation = vi.fn((rule: Rule) => rule.min(3))
+  const onCompile = vi.fn()
+  const validation = (rule: Rule) => {
+    onCompile()
+    return rule.min(3)
+  }
   const schema = createSchema(
     [{name: 'article', type: 'document', fields: [{name: 'name', type: 'string', validation}]}],
     true,
   )
-  const callsAfterCompilation = validation.mock.calls.length
+  const callsAfterCompilation = onCompile.mock.calls.length
+  expect(callsAfterCompilation).toBeGreaterThan(0)
   inferFromSchema(schema)
   await validateDocument({schema, document: {...document, name: 'abc'}})
   await validateDocument({schema, document: {...document, name: 'def'}})
-  expect(validation).toHaveBeenCalledTimes(callsAfterCompilation)
+  expect(onCompile).toHaveBeenCalledTimes(callsAfterCompilation)
 })
