@@ -93,7 +93,7 @@ export type UnitFormatter = (value: number, unit: FormattableMeasurementUnit) =>
  *
  * @param options - Optional options for the unit formatter
  * @returns Formatter function
- * @public
+ * @internal
  */
 export function useUnitFormatter(options: UseUnitFormatterOptions = {}): UnitFormatter {
   const currentLocale = useCurrentLocale().id

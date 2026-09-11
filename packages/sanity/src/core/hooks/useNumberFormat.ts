@@ -14,7 +14,7 @@ export type UseNumberFormatOptions = Intl.NumberFormatOptions
  *
  * @param options - Optional options for the number formatter
  * @returns Instance of `Intl.NumberFormat`
- * @public
+ * @internal
  */
 export function useNumberFormat(options: UseNumberFormatOptions = {}): Intl.NumberFormat {
   const currentLocale = useCurrentLocale().id

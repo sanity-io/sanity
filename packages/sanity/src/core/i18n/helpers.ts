@@ -68,8 +68,7 @@ export function defineLocalesResources<R extends Record<string, string>>(
  *
  * @param resources - The resources to remove undefined values from
  * @returns The resources without any undefined values
- * @public
- * @hidden
+ * @internal
  */
 export function removeUndefinedLocaleResources<T extends {[key: string]: string | undefined}>(
   resources: T,

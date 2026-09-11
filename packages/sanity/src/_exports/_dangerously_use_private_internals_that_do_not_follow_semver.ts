@@ -156,6 +156,7 @@ export {SchemaError} from '../core/config/SchemaError'
 export {type CookielessCompatibleLoginMethod} from '../core/config/auth/types'
 export {useMiddlewareComponents} from '../core/config/components/useMiddlewareComponents'
 export {createDefaultIcon} from '../core/config/createDefaultIcon'
+export {isSanityDefinedAction} from '../core/config/document/actions'
 export {initialDocumentFieldActions} from '../core/config/document/fieldActions'
 export {documentFieldActionsReducer} from '../core/config/document/fieldActions/reducer'
 export {getDocumentVersionType} from '../core/config/document/useConfiguredDocumentActionIds'
@@ -466,6 +467,8 @@ export {
   type ConnectionState,
   useConnectionState,
 } from '../core/hooks/useConnectionState'
+export {useDateTimeFormat} from '../core/hooks/useDateTimeFormat'
+export {useDialogStack} from '../core/hooks/useDialogStack'
 export {type DocumentIdStack, useDocumentIdStack} from '../core/hooks/useDocumentIdStack'
 export {useDocumentOperationEvent} from '../core/hooks/useDocumentOperationEvent'
 export {
@@ -481,7 +484,9 @@ export {
   useGlobalCopyPasteElementHandler,
 } from '../core/hooks/useGlobalCopyPasteElementHandler'
 export {useManageFavorite, type UseManageFavoriteProps} from '../core/hooks/useManageFavorite'
+export {useNumberFormat} from '../core/hooks/useNumberFormat'
 export {useReconnectingToast} from '../core/hooks/useReconnectingToast'
+export {useReferringDocuments} from '../core/hooks/useReferringDocuments'
 export {type RelativeTimeOptions} from '../core/hooks/useRelativeTime'
 export {useReviewChanges} from '../core/hooks/useReviewChanges'
 export {useStudioUrl} from '../core/hooks/useStudioUrl'
@@ -497,13 +502,15 @@ export {
 } from '../core/hooks/useTargetDocumentState'
 export {type TargetScopeIdOptions, useTargetScopeId} from '../core/hooks/useTargetScopeId'
 export {type TimeAgoOpts} from '../core/hooks/useTimeAgo'
+export {useUnitFormatter} from '../core/hooks/useUnitFormatter'
+export {useUserListWithPermissions} from '../core/hooks/useUserListWithPermissions'
 export {useVersionRelease} from '../core/hooks/useVersionRelease'
 export {LocaleProvider, LocaleProviderBase} from '../core/i18n/components/LocaleProvider'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-export {defineLocalesResources} from '../core/i18n/helpers'
+export {defineLocalesResources, removeUndefinedLocaleResources} from '../core/i18n/helpers'
 export {useGetI18nText} from '../core/i18n/hooks/useGetI18nText'
 export {type I18nNode, useI18nText} from '../core/i18n/hooks/useI18nText'
-export {useLocale} from '../core/i18n/hooks/useLocale'
+export {useCurrentLocale, useLocale} from '../core/i18n/hooks/useLocale'
 export {defaultLocale, usEnglishLocale} from '../core/i18n/locales'
 export {useDocumentLimitsUpsellContext} from '../core/limits/context/documents/DocumentLimitUpsellProvider'
 export {isDocumentLimitError} from '../core/limits/context/documents/isDocumentLimitError'
@@ -674,8 +681,11 @@ export {
 export {
   useComlinkStore,
   useConnectionStatusStore,
+  useGrantsStore,
   useHistoryStore,
   useKeyValueStore,
+  usePresenceStore,
+  useProjectStore,
   useRenderingContextStore,
 } from '../core/store/datastores'
 export {
@@ -751,6 +761,7 @@ export {useEventsStore} from '../core/store/events/useEventsStore'
 export {
   type DocumentPairPermissionsOptions,
   type DocumentPermission,
+  getDocumentPairPermissions,
   useDocumentPairPermissionsFromHookFactory,
 } from '../core/store/grants/documentPairPermissions'
 export {
@@ -995,6 +1006,7 @@ export {
   type CollatedHit,
   createDraftFrom,
   createPublishedFrom,
+  documentIdEquals,
   getIdPair,
   idMatchesPerspective,
   isDraft,
@@ -1002,11 +1014,13 @@ export {
   isSystemBundleName,
   newDraftFrom,
   removeDupes,
+  systemBundles,
 } from '../core/util/draftUtils'
 export {EMPTY_ARRAY, EMPTY_OBJECT} from '../core/util/empty'
 export {formatRelativeLocale} from '../core/util/formatRelativeLocale'
 export {getDocumentVariantType} from '../core/util/getDocumentVariantType'
 export {getErrorMessage} from '../core/util/getErrorMessage'
+export {getReferencePaths} from '../core/util/getReferencePaths'
 export {getTargetDocument, getVariantPublishedSibling} from '../core/util/getTargetDocument'
 export {globalScope} from '../core/util/globalScope'
 export {isArray} from '../core/util/isArray'

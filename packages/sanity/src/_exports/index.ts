@@ -91,7 +91,6 @@ export {
   type DocumentActionProps,
   type DuplicateActionProps,
   type DuplicateDocumentActionComponent,
-  isSanityDefinedAction,
   type SanityDefinedAction,
 } from '../core/config/document/actions'
 export {
@@ -411,8 +410,7 @@ export {fromMutationPatches} from '../core/form/utils/mutationPatch'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {useClient} from '../core/hooks/useClient'
 export {useDataset} from '../core/hooks/useDataset'
-export {useDateTimeFormat, type UseDateTimeFormatOptions} from '../core/hooks/useDateTimeFormat'
-export {useDialogStack} from '../core/hooks/useDialogStack'
+export {type UseDateTimeFormatOptions} from '../core/hooks/useDateTimeFormat'
 export {useDocumentOperation} from '../core/hooks/useDocumentOperation'
 export {useEditState} from '../core/hooks/useEditState'
 export {
@@ -421,9 +419,9 @@ export {
   type UseFormattedDurationOptions,
 } from '../core/hooks/useFormattedDuration'
 export {useListFormat, type UseListFormatOptions} from '../core/hooks/useListFormat'
-export {useNumberFormat, type UseNumberFormatOptions} from '../core/hooks/useNumberFormat'
+export {type UseNumberFormatOptions} from '../core/hooks/useNumberFormat'
 export {useProjectId} from '../core/hooks/useProjectId'
-export {type DocumentField, useReferringDocuments} from '../core/hooks/useReferringDocuments'
+export {type DocumentField} from '../core/hooks/useReferringDocuments'
 export {useRelativeTime} from '../core/hooks/useRelativeTime'
 export {useSchema} from '../core/hooks/useSchema'
 export {useSyncState} from '../core/hooks/useSyncState'
@@ -434,25 +432,18 @@ export {useTools} from '../core/hooks/useTools'
 export {
   type FormattableMeasurementUnit,
   type UnitFormatter,
-  useUnitFormatter,
   type UseUnitFormatterOptions,
 } from '../core/hooks/useUnitFormatter'
 export {
   type UserListWithPermissionsHookValue,
   type UserListWithPermissionsOptions,
   type UserWithPermission,
-  useUserListWithPermissions,
 } from '../core/hooks/useUserListWithPermissions'
 export {useValidationStatus} from '../core/hooks/useValidationStatus'
 export {useWorkspaceSchemaId} from '../core/hooks/useWorkspaceSchemaId'
 export {type StudioLocaleResourceKeys} from '../core/i18n/bundles/studio'
 export {type ValidationLocaleResourceKeys} from '../core/i18n/bundles/validation'
-export {
-  defineLocale,
-  defineLocaleResourceBundle,
-  removeUndefinedLocaleResources,
-} from '../core/i18n/helpers'
-export {useCurrentLocale} from '../core/i18n/hooks/useLocale'
+export {defineLocale, defineLocaleResourceBundle} from '../core/i18n/helpers'
 export {
   useTranslation,
   type UseTranslationOptions,
@@ -526,14 +517,7 @@ export {
   type AuthStore,
   type LoginComponentProps,
 } from '../core/store/authStore/types'
-export {
-  useDocumentPreviewStore,
-  useDocumentStore,
-  useGrantsStore,
-  usePresenceStore,
-  useProjectStore,
-  useUserStore,
-} from '../core/store/datastores'
+export {useDocumentPreviewStore, useDocumentStore, useUserStore} from '../core/store/datastores'
 export {type BufferedDocumentEvent} from '../core/store/document/buffered-doc/createBufferedDocument'
 export {
   type CommittedEvent,
@@ -585,10 +569,7 @@ export {
   type UnscheduleDocumentVersionEvent,
   type UpdateLiveDocumentEvent,
 } from '../core/store/events/types'
-export {
-  getDocumentPairPermissions,
-  useDocumentPairPermissions,
-} from '../core/store/grants/documentPairPermissions'
+export {useDocumentPairPermissions} from '../core/store/grants/documentPairPermissions'
 export {
   type DocumentValuePermission,
   type GrantsStore,
@@ -688,7 +669,6 @@ export {useUserColorManager} from '../core/user-color/hooks'
 export {createHookFromObservableFactory} from '../core/util/createHookFromObservableFactory'
 export {
   collate,
-  documentIdEquals,
   type DraftId,
   DRAFTS_FOLDER,
   getDraftId,
@@ -700,11 +680,9 @@ export {
   isVersionId,
   type PublishedId,
   type SystemBundle,
-  systemBundles,
   VERSION_FOLDER,
 } from '../core/util/draftUtils'
 export {type DocumentVariantType} from '../core/util/getDocumentVariantType'
-export {getReferencePaths} from '../core/util/getReferencePaths'
 export {isRecord} from '../core/util/isRecord'
 export {truncateString} from '../core/util/unicodeString'
 export {userHasRole} from '../core/util/userHasRole'

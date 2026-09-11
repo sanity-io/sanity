@@ -3,7 +3,6 @@ import {memo, useCallback, useMemo, useState} from 'react'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   getReleaseIdFromReleaseDocumentId,
-  isSanityDefinedAction,
   useClient,
   useDocumentStore,
   usePerspective,
@@ -11,6 +10,7 @@ import {
 import {Flex} from 'ui5'
 
 import {Hotkeys} from '../../../../core/components/Hotkeys'
+import {isSanityDefinedAction} from '../../../../core/config/document/actions'
 import {DocumentGroupInventory} from '../../../../core/documentGroupInventory/components/DocumentGroupInventory'
 import {DocumentGroupInventoryAction} from '../../../../core/documentGroupInventory/components/DocumentGroupInventoryAction'
 import {type DocumentGroupInventoryComponents} from '../../../../core/documentGroupInventory/types'

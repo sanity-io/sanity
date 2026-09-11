@@ -14,7 +14,7 @@ export type UseDateTimeFormatOptions = Omit<Intl.DateTimeFormatOptions, 'fractio
  *
  * @param options - Optional options for the date/time formatter
  * @returns Instance of `Intl.DateTimeFormat`
- * @public
+ * @internal
  */
 export function useDateTimeFormat(options: UseDateTimeFormatOptions = {}): Intl.DateTimeFormat {
   const currentLocale = useCurrentLocale().id
