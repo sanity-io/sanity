@@ -44,13 +44,15 @@ import {createPresenceStore, type PresenceStore} from './presence/presence-store
 import {createProjectStore} from './project/projectStore'
 import {type ProjectStore} from './project/types'
 import {createRenderingContextStore} from './renderingContext/createRenderingContextStore'
-import {type RenderingContextStore} from './renderingContext/types'
+import {type CapabilityRecord, type RenderingContextStore} from './renderingContext/types'
 import {useResourceCache} from './ResourceCacheProvider'
 import {createUserStore, type UserStore} from './user/userStore'
 
 /**
  * Latencies below this value will not be logged
  */
+const EMPTY_CAPABILITIES: CapabilityRecord = {}
+
 const IGNORE_LATENCY_BELOW_MS = 1000
 
 /** Minimum time between slow commit toast notifications */
@@ -449,8 +451,13 @@ export function useComlinkStore(): ComlinkStore {
   // Kept synchronous: `createComlinkStore` starts the comlink node when
   // `capabilities.comlink` flips true, so a deferred snapshot would delay
   // comlink initialization. Capabilities emit once at boot; there is nothing
-  // to gain from deferring them.
-  const capabilities = useSyncObservable(renderingContext.capabilities, {})
+  // to gain from deferring them. The store has already resolved them, so the
+  // comlink store is created for the actual capabilities right away instead
+  // of once for `{}` and again after the first emission.
+  const capabilities = useSyncObservable(
+    renderingContext.capabilities,
+    () => renderingContext.getCapabilities() ?? EMPTY_CAPABILITIES,
+  )
 
   return useMemo(() => {
     const comlinkStore =

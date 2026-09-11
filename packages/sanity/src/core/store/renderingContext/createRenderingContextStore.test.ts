@@ -34,4 +34,13 @@ describe('capabilities', () => {
     const {capabilities} = createRenderingContextStore()
     expect(await firstValueFrom(capabilities)).toEqual({})
   })
+
+  it('resolves the capabilities synchronously when the store is created', () => {
+    expect(createRenderingContextStore().getCapabilities()).toEqual({})
+    expect(createRenderingContextStore(CORE_UI_SEARCH).getCapabilities()).toEqual({
+      globalUserMenu: true,
+      globalWorkspaceControl: true,
+      comlink: true,
+    })
+  })
 })

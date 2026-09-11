@@ -58,6 +58,11 @@ export type RenderingContextStore = {
    * context is unresolved, which the store's own synchronous pipeline never is.
    */
   getRenderingContext: () => StudioRenderingContext | undefined
+  /**
+   * The capabilities of that rendering context — the value `capabilities` replays — for reading
+   * during render, on the same terms as `getRenderingContext`.
+   */
+  getCapabilities: () => CapabilityRecord | undefined
 }
 
 /**
