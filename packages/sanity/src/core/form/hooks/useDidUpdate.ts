@@ -14,8 +14,7 @@ import {shallowEquals} from '../../util/shallowEquals'
  * })
  * ```
  *
- * @beta
- * @hidden
+ * @internal
  */
 export function useDidUpdate<T>(
   /** The value you want to respond to changes in. */
@@ -24,6 +23,7 @@ export function useDidUpdate<T>(
   didUpdate: (previous: T | undefined, current: T) => void,
   compare?: (previous: T | undefined, current: T) => boolean,
 ): void
+/** @internal */
 export function useDidUpdate<T>(
   current: T,
   didUpdate: (previous: T | undefined, current: T | undefined) => void,

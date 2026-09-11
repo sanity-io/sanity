@@ -14,7 +14,7 @@ export type ValidateDocumentOptions = ValidateDocumentWorkspaceOptions
 /**
  * Validates a document against the schema in the given workspace.
  *
- * @beta
+ * @internal
  */
 export function validateDocument(options: ValidateDocumentOptions) {
   // oxlint-disable-next-line typescript/no-deprecated -- wraps the compatibility API without deprecating the stable Studio export

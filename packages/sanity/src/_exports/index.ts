@@ -244,7 +244,6 @@ export {FormInput} from '../core/form/components/FormInput'
 export {useFormValue} from '../core/form/contexts/FormValue'
 export {useGetFormValue} from '../core/form/contexts/GetFormValue'
 export {type FormBuilderContextValue} from '../core/form/FormBuilderContext'
-export {useDidUpdate} from '../core/form/hooks/useDidUpdate'
 export {ArrayOfObjectsFunctions} from '../core/form/inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsFunctions'
 export {VirtualizerScrollInstanceProvider} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 export {type DateInputProps} from '../core/form/inputs/DateInputs/DateInput'
@@ -336,13 +335,9 @@ export {
   type StringFormNode,
 } from '../core/form/store/types/nodes'
 export {type StateTree} from '../core/form/store/types/state'
-export {
-  createSanityMediaLibraryFileSource,
-  createSanityMediaLibraryImageSource,
-} from '../core/form/studio/assetSourceMediaLibrary/createAssetSource'
 export {FormCallbacksProvider, useFormCallbacks} from '../core/form/studio/contexts/FormCallbacks'
 export {FormBuilder, type FormBuilderProps} from '../core/form/studio/FormBuilder'
-export {FormProvider, type FormProviderProps} from '../core/form/studio/FormProvider'
+export {type FormProviderProps} from '../core/form/studio/FormProvider'
 export {type StudioCrossDatasetReferenceInputProps as CrossDatasetReferenceInputProps} from '../core/form/studio/inputs/crossDatasetReference/StudioCrossDatasetReferenceInput'
 export {type StudioReferenceInputProps as ReferenceInputProps} from '../core/form/studio/inputs/reference/StudioReferenceInput'
 export {type FileInputProps} from '../core/form/studio/inputs/StudioFileInput'
@@ -372,13 +367,8 @@ export {
   type RenderCustomMarkers,
 } from '../core/form/types/_transitional'
 export {
-  isArrayOfBlocksInputProps,
   isArrayOfObjectsInputProps,
-  isArrayOfPrimitivesInputProps,
-  isBooleanInputProps,
-  isNumberInputProps,
   isObjectInputProps,
-  isObjectItemProps,
   isStringInputProps,
 } from '../core/form/types/asserters'
 export {
@@ -445,9 +435,7 @@ export {
   type RenderPreviewCallback,
   type RenderPreviewCallbackProps,
 } from '../core/form/types/renderCallback'
-export {useFormBuilder} from '../core/form/useFormBuilder'
 export {fromMutationPatches} from '../core/form/utils/mutationPatch'
-export {TransformPatches} from '../core/form/utils/TransformPatches'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {useClient} from '../core/hooks/useClient'
 export {useDataset} from '../core/hooks/useDataset'
@@ -788,7 +776,7 @@ export {
   readVersionType,
   type VersionType,
 } from '../core/util/versionsUtils'
-export {type ValidateDocumentOptions, validateDocument} from '../core/validation'
+export {type ValidateDocumentOptions} from '../core/validation'
 export {type SystemVariant} from '../core/variants/types'
 export {SANITY_VERSION} from '../core/version'
 export {

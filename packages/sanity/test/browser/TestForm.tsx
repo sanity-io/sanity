@@ -17,11 +17,11 @@ import {
   type StateTree,
   useCopyPaste,
   useWorkspace,
-  validateDocument,
   VirtualizerScrollInstanceProvider,
   type Workspace,
 } from 'sanity'
 import {
+  validateDocument,
   EMPTY_ARRAY,
   getExpandOperations,
   ScrollContainer,

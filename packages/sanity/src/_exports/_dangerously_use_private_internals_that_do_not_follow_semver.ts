@@ -328,6 +328,7 @@ export {
 } from '../core/form/field/actions/FieldActionsResolver'
 export {useFieldActions} from '../core/form/field/actions/useFieldActions'
 export {useHoveredField} from '../core/form/field/useHoveredField'
+export {useDidUpdate} from '../core/form/hooks/useDidUpdate'
 export {BooleanInput} from '../core/form/inputs/BooleanInput'
 export {CrossDatasetReferencePreview} from '../core/form/inputs/CrossDatasetReferenceInput/CrossDatasetReferencePreview'
 export {DateInput} from '../core/form/inputs/DateInputs/DateInput'
@@ -395,6 +396,11 @@ export {
   type SetActiveGroupOperation,
 } from '../core/form/store/utils/getExpandOperations'
 export {mergeParseErrors, type ParseError} from '../core/form/store/utils/mergeParseErrors'
+export {FormProvider} from '../core/form/studio/FormProvider'
+export {
+  createSanityMediaLibraryFileSource,
+  createSanityMediaLibraryImageSource,
+} from '../core/form/studio/assetSourceMediaLibrary/createAssetSource'
 export {type FormCallbacksValue} from '../core/form/studio/contexts/FormCallbacks'
 export {
   ParseErrorsProvider,
@@ -427,9 +433,18 @@ export {StudioReferenceInput as ReferenceInput} from '../core/form/studio/inputs
 export {useEnhancedObjectDialog} from '../core/form/studio/tree-editing/context/enabled/useEnhancedObjectDialog'
 export {type UploaderDef} from '../core/form/studio/uploads/types'
 export {type FormBuilderFilterFieldFn} from '../core/form/types/_transitional'
+export {
+  isArrayOfBlocksInputProps,
+  isArrayOfPrimitivesInputProps,
+  isBooleanInputProps,
+  isNumberInputProps,
+  isObjectItemProps,
+} from '../core/form/types/asserters'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {type FieldCommentsProps, type PrimitiveFieldProps} from '../core/form/types/fieldProps'
 export {useDocumentForm} from '../core/form/useDocumentForm'
+export {useFormBuilder} from '../core/form/useFormBuilder'
+export {TransformPatches} from '../core/form/utils/TransformPatches'
 export {type MutationPatch, toMutationPatches} from '../core/form/utils/mutationPatch'
 export {decodePath, encodePath} from '../core/form/utils/path'
 export {useConditionalToast} from '../core/hooks/useConditionalToast'
@@ -972,6 +987,7 @@ export {useShallowUnique} from '../core/util/useShallowUnique'
 export {useThrottledCallback} from '../core/util/useThrottledCallback'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {useUnique} from '../core/util/useUnique'
+export {validateDocument} from '../core/validation'
 export {isDocumentInSelectedVariant} from '../core/variants/documents/isDocumentInSelectedVariant'
 export {useCreatableVariantInitialValue} from '../core/variants/hooks/useCreatableVariantInitialValue'
 export {useVariantDocumentOperations} from '../core/variants/hooks/useVariantDocumentOperations'

@@ -4,9 +4,11 @@ import {
   type FieldSetMember,
   type ObjectInputProps,
   type ObjectMember,
-  useFormBuilder,
 } from 'sanity'
-import {ObjectInput} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {
+  useFormBuilder,
+  ObjectInput,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {_isPathCollapsed} from './_helpers'
 import {type LanguageFilterPluginOptions} from './types'
