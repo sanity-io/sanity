@@ -1,9 +1,9 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, Stack, Text} from '@sanity/ui'
-import {getTheme_v2} from '@sanity/ui/theme'
-import {useEffect} from 'react'
-import {css, keyframes, styled} from 'styled-components'
+import {Card, Stack, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
+import {type ComponentProps, useEffect} from 'react'
 import {Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -11,70 +11,33 @@ import {Popover} from '../../../ui-components/popover/Popover'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {SANITY_VERSION} from '../../version'
 import {ProductAnnouncementCardSeen} from './__telemetry__/studioAnnouncements.telemetry'
+import {
+  buttonRoot,
+  cardHoverBgVar,
+  cardNormalBgVar,
+  closeButtonHoverBorderVar,
+  root,
+} from './StudioAnnouncementsCard.css'
 
-const keyframe = keyframes`
-  0% {
-    background-position: 100%;
-  }
-  100% {
-    background-position: -100%;
-  }
-`
+function Root(props: ComponentProps<'div'>) {
+  const {className, style, ...rest} = props
+  const {color} = useThemeV2()
 
-const Root = styled.div((props) => {
-  const theme = getTheme_v2(props.theme)
-  const cardHoverBg = theme.color.selectable.default.hovered.bg
-  const cardNormalBg = theme.color.selectable.default.enabled.bg
-
-  return css`
-    position: relative;
-    cursor: pointer;
-    // hide the close button
-    #close-floating-button {
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-
-    &:hover {
-      > [data-ui='whats-new-card'] {
-        --card-bg-color: ${cardHoverBg};
-        box-shadow: inset 0 0 2px 1px var(--card-skeleton-color-to);
-        background-image: linear-gradient(
-          to right,
-          var(--card-bg-color),
-          var(--card-bg-color),
-          ${cardNormalBg},
-          var(--card-bg-color),
-          var(--card-bg-color),
-          var(--card-bg-color)
-        );
-        background-position: 100%;
-        background-size: 200% 100%;
-        background-attachment: fixed;
-        animation-name: ${keyframe};
-        animation-timing-function: ease-in;
-        animation-iteration-count: infinite;
-        animation-duration: 2000ms;
-      }
-      #close-floating-button {
-        opacity: 1;
-        background: transparent;
-
-        &:hover {
-          transition: all 0.2s;
-          box-shadow: 0 0 0 1px ${theme.color.selectable.default.hovered.border};
-        }
-      }
-    }
-  `
-})
-
-const ButtonRoot = styled.div`
-  z-index: 1;
-  position: absolute;
-  top: 2px;
-  right: 6px;
-`
+  return (
+    <div
+      {...rest}
+      className={clsx(root, className)}
+      style={{
+        ...assignInlineVars({
+          [cardHoverBgVar]: color.selectable.default.hovered.bg,
+          [cardNormalBgVar]: color.selectable.default.enabled.bg,
+          [closeButtonHoverBorderVar]: color.selectable.default.hovered.border,
+        }),
+        ...style,
+      }}
+    />
+  )
+}
 
 interface StudioAnnouncementCardProps {
   title: string
@@ -147,7 +110,7 @@ export function StudioAnnouncementsCard({
               </Text>
             </Stack>
           </Card>
-          <ButtonRoot>
+          <div className={buttonRoot}>
             <Button
               id="close-floating-button"
               mode="bleed"
@@ -159,7 +122,7 @@ export function StudioAnnouncementsCard({
                 content: t('announcement.floating-button.dismiss'),
               }}
             />
-          </ButtonRoot>
+          </div>
         </Root>
       }
     />
