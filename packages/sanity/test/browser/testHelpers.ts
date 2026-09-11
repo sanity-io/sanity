@@ -22,8 +22,13 @@ const PTE_SELECTION_THROTTLE_MS = 100
 /** Timer and render slack on top of the throttle before trusting the sync. */
 const PTE_SELECTION_SYNC_MARGIN_MS = 50
 
-/** Visible with `visibility` taken into account (`checkVisibility()` alone ignores it). */
-const isShown = (el: Element): el is HTMLElement =>
+/**
+ * Visible with `visibility` taken into account (`checkVisibility()` alone
+ * ignores it). Use it to sample toolbar buttons: `CollapseMenu` keeps
+ * `visibility: hidden` measurement clones of every button, with the same test
+ * ids and labels, in the DOM.
+ */
+export const isShown = (el: Element): el is HTMLElement =>
   el instanceof HTMLElement && el.checkVisibility({visibilityProperty: true})
 
 const visibleTooltips = (): HTMLElement[] =>

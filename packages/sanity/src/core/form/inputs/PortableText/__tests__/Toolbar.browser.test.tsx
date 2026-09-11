@@ -7,7 +7,7 @@ import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
 
 import {TestForm} from '../../../../../../test/browser/TestForm'
-import {expectStable, testHelpers} from '../../../../../../test/browser/testHelpers'
+import {expectStable, isShown, testHelpers} from '../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 
 interface ToolbarHarnessProps {
@@ -210,12 +210,16 @@ describe('Portable Text Input', () => {
           await expect
             .poll(() => $portableTextInput.element().getBoundingClientRect().width)
             .toBeLessThan(400)
+          // Painted buttons only: CollapseMenu's `visibility: hidden`
+          // measurement clones carry the same test ids and would otherwise
+          // read as a laid-out toolbar.
           const toolbarSignature = () => {
             const toolbar = $portableTextInput
               .element()
               .querySelector('[data-testid="pt-editor__toolbar-card"]')
             if (!toolbar) return ''
             return Array.from(toolbar.querySelectorAll('button'))
+              .filter(isShown)
               .map(
                 (b) =>
                   `${b.getAttribute('data-testid') ?? b.textContent?.trim()}@${Math.round(b.getBoundingClientRect().width)}`,
@@ -251,31 +255,32 @@ describe('Portable Text Input', () => {
           await expect.element($actionMenuAutoCollapseMenu).toBeVisible()
           await expect.element($insertMenuAutoCollapseMenu).toBeVisible()
 
-          // Non-root CollapseMenu still measures after viewport shrink — wait
-          // until an Object insert control is painted and button positions stop
-          // moving (mid-measure archives flip between truncated "..." and "Obj").
-          await expect
-            .poll(() => {
-              const toolbar = $portableTextInput
-                .element()
-                .querySelector('[data-testid="pt-editor__toolbar-card"]')
-              return toolbar?.textContent ?? ''
-            })
-            .toMatch(/Obj|Object/)
+          // The non-root CollapseMenus re-measure after the viewport shrink;
+          // until they do, the painted row is still the wide layout with every
+          // insert button expanded. The 350px end state is both groups
+          // collapsed behind their "..." buttons, so wait for that row and for
+          // its button positions to stop moving. Sample painted buttons only:
+          // the menus' `visibility: hidden` measurement clones carry the same
+          // test ids and labels and would match before (or without) any
+          // visible collapse.
           const toolbarSignature = () => {
             const toolbar = $portableTextInput
               .element()
               .querySelector('[data-testid="pt-editor__toolbar-card"]')
             if (!toolbar) return ''
             return Array.from(toolbar.querySelectorAll('button'))
+              .filter(isShown)
               .map(
                 (b) =>
-                  `${b.getAttribute('data-testid') ?? b.textContent?.trim()}@${Math.round(b.getBoundingClientRect().x)}`,
+                  `|${b.getAttribute('data-testid') ?? b.textContent?.trim()}@${Math.round(b.getBoundingClientRect().x)}`,
               )
-              .join('|')
+              .join('')
           }
-          await expect.poll(toolbarSignature).toMatch(/object-insert-menu-button/)
-          expect(await expectStable(toolbarSignature)).toMatch(/object-insert-menu-button/)
+          const collapsedRow = /\|action-menu-button@\d+.*\|insert-menu-button@\d+/
+          await expect.poll(toolbarSignature).toMatch(collapsedRow)
+          const stableRow = await expectStable(toolbarSignature)
+          expect(stableRow).toMatch(collapsedRow)
+          expect(stableRow).not.toMatch(/\|\w+-insert-menu-button@/)
           // Same as the root case: focus never left the empty editor, so the
           // archived label must be Normal.
           await settleChromaticEndState({
