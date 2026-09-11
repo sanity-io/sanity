@@ -28,7 +28,19 @@ function isList(collection: Collection): collection is List {
   return collection.type === 'list'
 }
 
-function getDocumentTypes({schema}: StructureContext): string[] {
+function getDocumentTypes({schema, document}: StructureContext): string[] {
+  // Schema types used by at least one singleton definition are excluded from
+  // default document lists. Developers surface singletons explicitly via
+  // `S.document().singleton()`, `S.listItem().singleton()`, or
+  // `S.list().singletons()`.
+  //
+  // `S.documentTypeList(typeName)`, which is never filtered, can be used to
+  // create document list showing singleton and non-singleton documents that
+  // share a schema type.
+  const singletonSchemaTypeNames = new Set(
+    document.singletons.map((singleton) => singleton.schemaType),
+  )
+
   return schema
     .getTypeNames()
     .filter((n) => {
@@ -36,6 +48,7 @@ function getDocumentTypes({schema}: StructureContext): string[] {
       return schemaType && isDocumentType(schemaType)
     })
     .filter((n) => !isBundledDocType(n))
+    .filter((n) => !singletonSchemaTypeNames.has(n))
 }
 
 export function getDocumentTypeListItems(context: StructureContext): ListItemBuilder[] {

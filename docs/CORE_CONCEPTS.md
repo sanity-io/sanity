@@ -132,6 +132,64 @@ Documents with `liveEdit: true` in their schema skip the draft stage—edits are
 
 **Source**: `packages/@sanity/types/src/documents/types.ts`, `packages/sanity/src/core/util/draftUtils.ts`
 
+### Singletons
+
+Documents with a fixed id that are edited in place rather than listed, created, or duplicated (e.g. site settings). Registered via the `document.singletons` configuration:
+
+```typescript
+import {defineConfig, defineSingleton} from 'sanity'
+
+export default defineConfig({
+  // ...
+  document: {
+    singletons: [
+      // String shorthand: id === documentId === schemaType.
+      'siteSettings',
+      // Definition object. Multiple singletons may share a schema type, each
+      // with its own display metadata and initial value. `id` is optional —
+      // it inherits `documentId` when omitted.
+      defineSingleton({
+        documentId: 'springCampaign',
+        schemaType: 'campaign',
+        title: 'Spring campaign',
+        initialValue: {season: 'spring'},
+      }),
+    ],
+  },
+})
+```
+
+A singleton definition binds a **definition id** to a document id and schema type. The definition id is optional, inheriting `documentId` when omitted — set it explicitly to be verbose, to guard against future collisions, or to address a singleton universally when different workspaces or environments map it to different document ids. The discrete definition id decouples the singleton's identity from both: multiple singletons can share a schema type, structure code shared across workspaces can reference a stable id while each workspace maps it to a different document id, and `documentId`/`schemaType` can change over time without changing the singleton's identity. Optional `title`, `icon`, and `initialValue` properties (inherited from `BaseSchemaType`) override the schema type's own metadata for this singleton.
+
+When a singleton is registered, Studio automatically:
+
+- Generates a dedicated initial value template per singleton (tagged with the definition id via `ResolvedTemplate.singleton` — a resolver-produced type; the authoring `Template` type deliberately omits the tag, so developers never set it directly, value from `definition.initialValue ?? schemaType.initialValue`) instead of the plain per-type template, and removes tagged templates from "create new" UI (the global create menu, structure panes, reference inputs). The tagged template stays in `source.templates`, so opening the singleton before it exists still applies its initial value. Untagged templates — including any the developer defines via `schema.templates`, under any id — are never filtered: that's the escape hatch for schema types shared between singletons and ordinary documents. Spreading the singleton's template (matched by its id, which equals the definition id) in a `schema.templates` resolver customises the singleton's initial value while staying filtered, since the spread preserves the tag at runtime.
+- Injects `context.singleton` (the definition id) into document-scoped configuration contexts (`document.actions`, `badges`, `inspectors`, field actions, comments, ask-to-edit), looked up by published document id—so it applies however the document was opened.
+- Filters the `duplicate` document action, after all user resolvers (cannot be reintroduced). Delete, unpublish, and discard remain available: deleting a singleton is a legitimate "reset" (the structure still points at the fixed id; editing recreates it). Hide them in userland via `document.actions` + `context.singleton` if desired.
+- Hides the schema type from the implicit default content list. Explicit usage always wins: `S.documentTypeList(typeName)` is never filtered, and a document type list over a shared schema type intentionally includes the singleton documents.
+
+Surface a singleton in Structure Tool with one of the helpers (all keyed by definition id):
+
+```typescript
+// As a list item with a child document pane:
+S.listItem().singleton('siteSettings')
+
+// As a list of singletons (returns a builder without `.items()` — call
+// `.items()` first, or use `S.listItem().singleton()` inside `.items()`):
+S.list().id('singletons').title('Singletons').singletons(['siteSettings', 'springCampaign'])
+
+// Inside a custom list item:
+S.listItem().title('Settings').id('settings').child(S.document().singleton('siteSettings'))
+```
+
+Validation rules enforced at config-resolution time (violations raise `ConfigResolutionError`, aggregated so every problem surfaces at once):
+
+- `id` must be a non-empty string, unique across definitions (an explicit id colliding with another definition's inherited one counts).
+- `documentId` must be a non-empty published id (no `drafts.` / `versions.` prefix, only `[a-zA-Z0-9._-]`), unique across definitions.
+- `schemaType` must name an existing document type. It does **not** need to be unique.
+
+**Source**: `packages/sanity/src/core/config/types.ts`, `packages/sanity/src/core/config/prepareConfig.tsx`, `packages/sanity/src/structure/structureBuilder/`
+
 ---
 
 ## Schema
