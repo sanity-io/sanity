@@ -651,18 +651,11 @@ export {
 export {useCurrentUser} from '../core/store/user/hooks'
 export {type UserStore} from '../core/store/user/userStore'
 export {useActiveWorkspace} from '../core/studio/activeWorkspaceMatcher/useActiveWorkspace'
-export {AddonDatasetProvider} from '../core/studio/addonDataset/AddonDatasetProvider'
 export {type AddonDatasetContextValue} from '../core/studio/addonDataset/types'
-export {useAddonDataset} from '../core/studio/addonDataset/useAddonDataset'
-export {useColorSchemeSetValue, useColorSchemeValue} from '../core/studio/colorScheme'
-export {
-  defineSearchFilter,
-  defineSearchFilterOperators,
-  type SearchFilterDefinition,
-} from '../core/studio/components/navbar/search/definitions/filters'
+export {useColorSchemeValue} from '../core/studio/colorScheme'
+export {type SearchFilterDefinition} from '../core/studio/components/navbar/search/definitions/filters'
 export {type SearchOperatorType} from '../core/studio/components/navbar/search/definitions/operators/defaultOperators'
 export {
-  defineSearchOperator,
   type I18nSearchOperatorDescriptionKey,
   type I18nSearchOperatorNameKey,
   type OperatorButtonValueComponentProps,
@@ -676,11 +669,7 @@ export {
   type ValuelessSearchOperatorBuilder,
   type ValuelessSearchOperatorParams,
 } from '../core/studio/components/navbar/search/definitions/operators/operatorTypes'
-export {StudioLogo} from '../core/studio/components/navbar/StudioLogo'
-export {StudioNavbar} from '../core/studio/components/navbar/StudioNavbar'
-export {StudioToolMenu} from '../core/studio/components/navbar/tools/StudioToolMenu'
 export {ToolLink, type ToolLinkProps} from '../core/studio/components/navbar/tools/ToolLink'
-export {CopyPasteProvider, useCopyPaste} from '../core/studio/copyPaste/CopyPasteProvider'
 export {
   type BaseOptions,
   type CopyOptions,

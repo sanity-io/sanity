@@ -4,8 +4,7 @@ import {Box} from 'ui5'
 import {type LogoProps} from '../../../config/studio/types'
 
 /**
- * @hidden
- * @beta */
+ * @internal */
 export function StudioLogo(props: LogoProps) {
   const {title} = props
 

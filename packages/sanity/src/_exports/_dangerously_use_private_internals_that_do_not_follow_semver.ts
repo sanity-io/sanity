@@ -793,6 +793,8 @@ export {
   type MatchWorkspaceOptions,
   type MatchWorkspaceResult,
 } from '../core/studio/activeWorkspaceMatcher/matchWorkspace'
+export {AddonDatasetProvider} from '../core/studio/addonDataset/AddonDatasetProvider'
+export {useAddonDataset} from '../core/studio/addonDataset/useAddonDataset'
 export {
   ColorSchemeCustomProvider,
   ColorSchemeLocalStorageProvider,
@@ -802,7 +804,10 @@ export {
   useColorScheme,
   useColorSchemeInternalValue,
   useColorSchemeOptions,
+  useColorSchemeSetValue,
 } from '../core/studio/colorScheme'
+export {StudioLogo} from '../core/studio/components/navbar/StudioLogo'
+export {StudioNavbar} from '../core/studio/components/navbar/StudioNavbar'
 export {
   DiagnosticsReport,
   type DiagnosticsReportProps,
@@ -819,11 +824,18 @@ export {SearchResultItemPreview} from '../core/studio/components/navbar/search/c
 export {type SearchContextValue} from '../core/studio/components/navbar/search/contexts/search/SearchContext'
 export {SearchProvider} from '../core/studio/components/navbar/search/contexts/search/SearchProvider'
 export {useSearchState} from '../core/studio/components/navbar/search/contexts/search/useSearchState'
+export {
+  defineSearchFilter,
+  defineSearchFilterOperators,
+} from '../core/studio/components/navbar/search/definitions/filters'
 export {operatorDefinitions} from '../core/studio/components/navbar/search/definitions/operators/defaultOperators'
+export {defineSearchOperator} from '../core/studio/components/navbar/search/definitions/operators/operatorTypes'
 export {
   type PartialIndexSettings,
   useSearchMaxFieldDepth,
 } from '../core/studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
+export {StudioToolMenu} from '../core/studio/components/navbar/tools/StudioToolMenu'
+export {CopyPasteProvider, useCopyPaste} from '../core/studio/copyPaste/CopyPasteProvider'
 export {
   StudioDiagnosticsBridge,
   type StudioDiagnosticsBridgeApi,

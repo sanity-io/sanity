@@ -2,7 +2,7 @@ import {type Path} from '@sanity/types'
 import {Stack, Text} from '@sanity/ui'
 import {fromString as pathFromString} from '@sanity/util/paths'
 import {memo, useMemo} from 'react'
-import {CopyPasteProvider, getPublishedId, Translate, usePerspective, useTranslation} from 'sanity'
+import {getPublishedId, Translate, usePerspective, useTranslation} from 'sanity'
 
 import {ReferenceInputOptionsProvider} from '../../../core/form/studio/contexts/ReferenceInputOptions'
 import {
@@ -11,6 +11,7 @@ import {
 } from '../../../core/hooks/useTargetDocumentState'
 import {useDocumentType} from '../../../core/store/document/hooks/useDocumentType'
 import {useTemplatePermissions} from '../../../core/store/grants/templatePermissions'
+import {CopyPasteProvider} from '../../../core/studio/copyPaste/CopyPasteProvider'
 import {SourceProvider, useSource} from '../../../core/studio/source'
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {DiffViewDocumentLayout} from '../../diffView/plugin/DiffViewDocumentLayout'

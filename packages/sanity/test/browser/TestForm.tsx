@@ -15,12 +15,12 @@ import {
   type FormNodePresence,
   type PatchEvent,
   type StateTree,
-  useCopyPaste,
   useWorkspace,
   VirtualizerScrollInstanceProvider,
   type Workspace,
 } from 'sanity'
 import {
+  useCopyPaste,
   validateDocument,
   EMPTY_ARRAY,
   getExpandOperations,

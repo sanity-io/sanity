@@ -134,7 +134,7 @@ export function ColorSchemeCustomProvider({
   )
 }
 
-/** @alpha */
+/** @internal */
 export function useColorSchemeSetValue():
   | false
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
