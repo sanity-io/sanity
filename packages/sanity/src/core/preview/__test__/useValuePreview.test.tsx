@@ -1,5 +1,6 @@
 import {type SchemaType} from '@sanity/types'
 import {act, render} from '@testing-library/react'
+import {StrictMode} from 'react'
 import {Observable, Subject} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -390,6 +391,50 @@ describe('useValuePreview', () => {
     expect(frames.at(-1)).toEqual(IDLE_FRAME)
     await flush()
     expect(subscriptions).toEqual({active: 0, total: 1})
+  })
+
+  it('previews the current value when re-enabled, not the one it was disabled with', () => {
+    const frames: Frame[] = []
+    const {rerender} = render(
+      <Harness schemaType={bookType} value={{_id: 'a', title: 'one'}} frames={frames} />,
+    )
+    rerender(
+      <Harness
+        schemaType={bookType}
+        value={{_id: 'a', title: 'two'}}
+        enabled={false}
+        frames={frames}
+      />,
+    )
+    expect(frames.at(-1)).toEqual(IDLE_FRAME)
+    const settled = frames.length
+
+    rerender(<Harness schemaType={bookType} value={{_id: 'a', title: 'three'}} frames={frames} />)
+
+    expect(frames.at(-1)).toEqual({isLoading: false, title: 'three', error: undefined})
+    expect(frames.slice(settled).map((frame) => frame.title)).not.toContain('two')
+  })
+
+  it('behaves the same under StrictMode', async () => {
+    const frames: Frame[] = []
+    const {rerender} = render(
+      <StrictMode>
+        <Harness schemaType={bookType} value={{_id: 'a', title: 'one'}} frames={frames} />
+      </StrictMode>,
+    )
+    expect(frames.at(-1)).toEqual({isLoading: false, title: 'one', error: undefined})
+    const settled = frames.length
+
+    rerender(
+      <StrictMode>
+        <Harness schemaType={bookType} value={{_id: 'a', title: 'two'}} frames={frames} />
+      </StrictMode>,
+    )
+
+    expect(frames.at(-1)).toEqual({isLoading: false, title: 'two', error: undefined})
+    expect(frames.slice(settled).filter((frame) => frame.isLoading)).toEqual([])
+    await flush()
+    expect(subscriptions).toEqual({active: 1, total: 2})
   })
 
   it('surfaces a preview error', () => {

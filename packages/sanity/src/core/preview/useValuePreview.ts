@@ -126,25 +126,31 @@ function createPreviewObservable(
 
 /**
  * A subject holding the latest inputs. It is replaced together with the observable that reads it,
- * whenever the schema type or the previewed document changes, and seeded with the current render's
- * inputs so the new observable never previews the previous document. Every other change is pushed
- * into the existing subject after commit.
+ * whenever `enabled`, the schema type or the previewed document changes, and seeded with the current
+ * render's inputs so the new observable never previews the inputs of an earlier render. Every other
+ * change is pushed into the existing subject after commit.
  */
 function useInputsSubject(
+  enabled: boolean,
   schemaType: SchemaType | undefined,
   inputs: PreviewInputs,
 ): BehaviorSubject<PreviewInputs> {
   const documentId = getPreviewDocumentId(inputs.value)
   const [current, setCurrent] = useState(() => ({
+    enabled,
     schemaType,
     documentId,
     inputs$: new BehaviorSubject(inputs),
   }))
 
   let {inputs$} = current
-  if (current.schemaType !== schemaType || current.documentId !== documentId) {
+  if (
+    current.enabled !== enabled ||
+    current.schemaType !== schemaType ||
+    current.documentId !== documentId
+  ) {
     inputs$ = new BehaviorSubject(inputs)
-    setCurrent({schemaType, documentId, inputs$})
+    setCurrent({enabled, schemaType, documentId, inputs$})
   }
 
   useEffect(() => {
@@ -194,7 +200,7 @@ export function useValuePreview(props: {
     }),
     [value, chosenPerspectiveStack, perspectiveStack, chosenVariant, selectedVariantName, ordering],
   )
-  const inputs$ = useInputsSubject(schemaType, inputs)
+  const inputs$ = useInputsSubject(enabled, schemaType, inputs)
 
   // Only `enabled`, the schema type and the previewed document change the observable's identity,
   // which is what restarts the subscription and renders the loading state. Everything else
