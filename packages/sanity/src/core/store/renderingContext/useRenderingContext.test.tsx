@@ -1,12 +1,9 @@
 import {render} from '@testing-library/react'
-import {of, shareReplay} from 'rxjs'
 import {beforeEach, expect, it, vi} from 'vitest'
 
 import {useRenderingContextStore} from '../datastores'
-import {coreUiRenderingContext} from './coreUiRenderingContext'
-import {defaultRenderingContext} from './defaultRenderingContext'
-import {listCapabilities} from './listCapabilities'
-import {type RenderingContextStore, type StudioRenderingContext} from './types'
+import {createRenderingContextStore} from './createRenderingContextStore'
+import {type StudioRenderingContext} from './types'
 import {useRenderingContext} from './useRenderingContext'
 
 vi.mock('../datastores')
@@ -14,16 +11,6 @@ vi.mock('../datastores')
 const CORE_UI_SEARCH = `?_context=${encodeURIComponent(
   JSON.stringify({mode: 'core-ui', env: 'test'}),
 )}`
-
-// The same pipeline as `createRenderingContextStore`, for a given URL query string
-function createStore(urlSearch: string): RenderingContextStore {
-  const renderingContext = of(undefined).pipe(
-    coreUiRenderingContext(urlSearch),
-    defaultRenderingContext(),
-    shareReplay(1),
-  )
-  return {renderingContext, capabilities: renderingContext.pipe(listCapabilities(), shareReplay(1))}
-}
 
 function Consumer({frames}: {frames: (StudioRenderingContext | undefined)[]}) {
   frames.push(useRenderingContext())
@@ -35,7 +22,7 @@ beforeEach(() => {
 })
 
 it('resolves the core ui rendering context in the render that mounts the consumer', () => {
-  vi.mocked(useRenderingContextStore).mockReturnValue(createStore(CORE_UI_SEARCH))
+  vi.mocked(useRenderingContextStore).mockReturnValue(createRenderingContextStore(CORE_UI_SEARCH))
   const frames: (StudioRenderingContext | undefined)[] = []
 
   render(<Consumer frames={frames} />)
@@ -46,7 +33,7 @@ it('resolves the core ui rendering context in the render that mounts the consume
 })
 
 it('resolves the default rendering context in the render that mounts the consumer', () => {
-  vi.mocked(useRenderingContextStore).mockReturnValue(createStore(''))
+  vi.mocked(useRenderingContextStore).mockReturnValue(createRenderingContextStore(''))
   const frames: (StudioRenderingContext | undefined)[] = []
 
   render(<Consumer frames={frames} />)

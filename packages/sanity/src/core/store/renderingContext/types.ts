@@ -52,6 +52,12 @@ export type CapabilityRecord = Partial<Record<Capability, boolean>>
 export type RenderingContextStore = {
   renderingContext: Observable<StudioRenderingContext>
   capabilities: Observable<CapabilityRecord>
+  /**
+   * The rendering context the store resolved when it was created — the value `renderingContext`
+   * replays — for reading during render, where nothing may subscribe. `undefined` only while the
+   * context is unresolved, which the store's own synchronous pipeline never is.
+   */
+  getRenderingContext: () => StudioRenderingContext | undefined
 }
 
 /**
