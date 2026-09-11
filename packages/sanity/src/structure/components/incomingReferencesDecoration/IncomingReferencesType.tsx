@@ -5,22 +5,22 @@ import {useToast} from '@sanity/ui/toast'
 import {Suspense, use, useCallback, useEffect, useMemo, useState} from 'react'
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
 import {
-  CommandList,
-  type CommandListRenderItemCallback,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   getDraftId,
   getPublishedId,
   isPublishedId,
-  LoadingBlock,
   SanityDefaultPreview,
   useClient,
   useDocumentPreviewStore,
   useSchema,
-  useSource,
   useTranslation,
 } from 'sanity'
 import {Flex, Box} from 'ui5'
 
+import {CommandList} from '../../../core/components/commandList/CommandList'
+import {type CommandListRenderItemCallback} from '../../../core/components/commandList/types'
+import {LoadingBlock} from '../../../core/components/loadingBlock/LoadingBlock'
+import {useSource} from '../../../core/studio/source'
 import {Button} from '../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../i18n'
 import {useDocumentPane} from '../../panes/document/useDocumentPane'

@@ -7,19 +7,20 @@ import {
   getPreviewValueWithFallback,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
-  getReleaseTone,
   getVersionFromId,
   ReleaseAvatarIcon,
-  ReleaseTitle,
   SanityDefaultPreview,
   type SchemaType,
-  useActiveReleases,
   useDocumentPreviewStore,
   useSchema,
   useTranslation,
 } from 'sanity'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'
+
+import {ReleaseTitle} from '../../../core/releases/components/ReleaseTitle'
+import {useActiveReleases} from '../../../core/releases/store/useActiveReleases'
+import {getReleaseTone} from '../../../core/releases/util/getReleaseTone'
 
 const EllipsisText = styled(Text)`
   /* text-overflow: ellipsis;

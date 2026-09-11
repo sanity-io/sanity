@@ -19,19 +19,15 @@ import {
 } from '@sanity/presentation-comlink'
 import {dequal as isEqual} from 'dequal/lite'
 import {memo, startTransition, useDeferredValue, useEffect, useMemo, useState} from 'react'
+import {type SanityClient, type SanityDocument, useClient, useDataset, useProjectId} from 'sanity'
+import {useEffectEvent} from 'use-effect-event'
+
 import {
   isReleasePerspective,
   RELEASES_STUDIO_CLIENT_OPTIONS,
-  type SanityClient,
-  type SanityDocument,
-  useClient,
-  useDataset,
-  useProjectId,
-  VARIANTS_STUDIO_CLIENT_OPTIONS,
-} from 'sanity'
-import {useEffectEvent} from 'use-effect-event'
-
+} from '../../core/releases/util/releasesClient'
 import {variantsApiClient} from '../../core/store/document/document-pair/utils/variantsApiClient'
+import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../../core/variants/store/constants'
 import {API_VERSION, MIN_LOADER_QUERY_LISTEN_HEARTBEAT_INTERVAL} from '../constants'
 import {type LoaderConnection, type PresentationPerspective} from '../types'
 import {type DocumentOnPage} from '../useDocumentsOnPage'

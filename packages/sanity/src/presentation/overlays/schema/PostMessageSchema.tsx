@@ -1,15 +1,13 @@
 import {type ClientPerspective} from '@sanity/client'
 import {type ResolvedSchemaTypeMap, type UnresolvedPath} from '@sanity/presentation-comlink'
 import {memo, useEffect} from 'react'
+import {getPublishedId, useClient, useWorkspace} from 'sanity'
+
 import {
-  getPublishedId,
   isReleasePerspective,
   RELEASES_STUDIO_CLIENT_OPTIONS,
-  useClient,
-  useWorkspace,
-  VARIANTS_STUDIO_CLIENT_OPTIONS,
-} from 'sanity'
-
+} from '../../../core/releases/util/releasesClient'
+import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../../../core/variants/store/constants'
 import {API_VERSION} from '../../constants'
 import {type VisualEditingConnection} from '../../types'
 import {extractSchema} from './extract'

@@ -1,9 +1,11 @@
 import {renderHook, waitFor} from '@testing-library/react'
-import {defineConfig, prepareForPreview, type SanityClient, useValuePreview} from 'sanity'
+import {defineConfig, type SanityClient} from 'sanity'
 import {beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {useValuePreview} from '../../../../core/preview/useValuePreview'
+import {prepareForPreview} from '../../../../core/preview/utils/prepareForPreview'
 import {structureUsEnglishLocaleBundle} from '../../../i18n'
 import {type DocumentPaneContextValue} from '../DocumentPaneContext'
 import {useDocumentPane} from '../useDocumentPane'
@@ -33,11 +35,17 @@ vi.mock('sanity', async (importOriginal) => {
   const {usePerspectiveMockReturn} = await import('../../../__mocks__/usePerspective.mock')
   return {
     ...original,
-    useValuePreview: vi.fn(),
-    prepareForPreview: vi.fn(),
     usePerspective: vi.fn(() => usePerspectiveMockReturn),
   }
 })
+vi.mock('../../../../core/preview/useValuePreview', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useValuePreview: vi.fn(),
+}))
+vi.mock('../../../../core/preview/utils/prepareForPreview', async (importOriginal) => ({
+  ...(await importOriginal()),
+  prepareForPreview: vi.fn(),
+}))
 
 const mockUseDocumentPane = useDocumentPane as MockedFunction<typeof useDocumentPane>
 const mockUseValuePreview = useValuePreview as MockedFunction<typeof useValuePreview>

@@ -1,4 +1,4 @@
-import {defineLocalesResources} from 'sanity'
+import {defineLocalesResources} from '../../core/i18n/helpers'
 
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export default defineLocalesResources('presentation', {

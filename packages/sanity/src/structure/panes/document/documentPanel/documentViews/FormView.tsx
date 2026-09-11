@@ -3,18 +3,13 @@ import {type FormEvent, useCallback, useEffect, useMemo, useState, type RefAttri
 import {tap} from 'rxjs/operators'
 import {
   createPatchChannel,
-  Delay,
   type DocumentMutationEvent,
   type DocumentRebaseEvent,
   FormBuilder,
-  FormContainer,
   type FormDocumentValue,
-  FormRow,
   fromMutationPatches,
-  getTargetScopeId,
   type PatchMsg,
   PresenceOverlay,
-  useConditionalToast,
   useDocumentPresence,
   useDocumentStore,
   usePerspective,
@@ -23,6 +18,11 @@ import {
 import {Flex, Box} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
+import {Delay} from '../../../../../core/components/Delay'
+import {FormContainer} from '../../../../../core/form/components/layout/FormContainer'
+import {FormRow} from '../../../../../core/form/components/layout/FormRow'
+import {useConditionalToast} from '../../../../../core/hooks/useConditionalToast'
+import {getTargetScopeId} from '../../../../../core/hooks/useTargetDocumentState'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentTitle} from '../../useDocumentTitle'

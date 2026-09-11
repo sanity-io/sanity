@@ -1,5 +1,4 @@
-import {type OperationsAPI} from 'sanity'
-
+import {type OperationsAPI} from '../../core/store/document/document-pair/operations/types'
 import {type StructureLocaleResourceKeys} from '../i18n'
 
 /** @internal */

@@ -1,15 +1,22 @@
 import {type SanityClient} from '@sanity/client'
 import {type Schema} from '@sanity/types'
 import {firstValueFrom, of} from 'rxjs'
-import {createSearch, type SearchSort} from 'sanity'
 import {describe, expect, it, vi} from 'vitest'
 
+import {type SearchSort} from '../../../../core/search/common/types'
+import {createSearch} from '../../../../core/search/search'
 import {listenSearchQuery, resolveSearchOrdering} from '../listenSearchQuery'
 
-vi.mock('sanity', async (importOriginal) => ({
+vi.mock('../../../../core/search/common/compileFieldPath', async (importOriginal) => ({
   ...(await importOriginal()),
   compileFieldPath: vi.fn(),
+}))
+vi.mock('../../../../core/search/search', async (importOriginal) => ({
+  ...(await importOriginal()),
   createSearch: vi.fn(() => vi.fn(() => of({hits: []}))),
+}))
+vi.mock('../../../../core/search/common/getSearchableTypes', async (importOriginal) => ({
+  ...(await importOriginal()),
   getSearchableTypes: vi.fn(() => [{name: 'author'}]),
 }))
 

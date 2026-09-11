@@ -4,18 +4,18 @@ import {Suspense, use, useCallback, useMemo} from 'react'
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
 import {map} from 'rxjs'
 import {
-  CommandList,
-  type CommandListRenderItemCallback,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
-  LoadingBlock,
   useClient,
   useDocumentPreviewStore,
   useSchema,
-  useSource,
   useTranslation,
 } from 'sanity'
 import {Flex, Box} from 'ui5'
 
+import {CommandList} from '../../../../../core/components/commandList/CommandList'
+import {type CommandListRenderItemCallback} from '../../../../../core/components/commandList/types'
+import {LoadingBlock} from '../../../../../core/components/loadingBlock/LoadingBlock'
+import {useSource} from '../../../../../core/studio/source'
 import {CrossDatasetIncomingReferenceDocumentPreview} from '../../../../components/incomingReferencesDecoration/CrossDatasetIncomingReference/CrossDatasetIncomingReferenceDocumentPreview'
 import {
   type CrossDatasetIncomingReferenceDocument,

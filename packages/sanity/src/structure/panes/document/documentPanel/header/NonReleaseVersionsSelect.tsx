@@ -3,17 +3,13 @@ import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronUpIcon} from '@sanity/icons/ChevronUp'
 import {Container, useClickOutsideEvent} from '@sanity/ui'
 import {useMemo, useRef, useState} from 'react'
-import {
-  type VersionInfoDocumentStub,
-  Chip,
-  getPublishedId,
-  getVersionFromId,
-  type AgentVersionDisplay,
-  useTranslation,
-  VersionChip,
-} from 'sanity'
+import {getPublishedId, getVersionFromId, useTranslation} from 'sanity'
 import {Flex} from 'ui5'
 
+import {Chip} from '../../../../../core/releases/components/Chip'
+import {VersionChip} from '../../../../../core/releases/components/documentHeader/VersionChip'
+import {type VersionInfoDocumentStub} from '../../../../../core/releases/store/types'
+import {type AgentVersionDisplay} from '../../../../../core/store/agent/useAgentVersionDisplay'
 import {Popover} from '../../../../../ui-components/popover/Popover'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 

@@ -2,15 +2,13 @@ import {Card, Flex, Label, Stack} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {type ErrorInfo, useCallback, useEffect, useMemo, useState} from 'react'
 import {getPublishedId, useTranslation} from 'sanity'
-import {
-  DocumentListPane as StructureDocumentListPane,
-  ORDER_BY_IDS_PARAM_FIELD,
-  PaneLayout,
-  type PaneNode,
-  StructureToolProvider,
-} from 'sanity/structure'
+import {PaneLayout} from 'sanity/structure'
 import {styled} from 'styled-components'
 
+import {ORDER_BY_IDS_PARAM_FIELD} from '../../structure/panes/documentList/orderByIdsParam'
+import {PaneContainer as StructureDocumentListPane} from '../../structure/panes/documentList/PaneContainer'
+import {StructureToolProvider} from '../../structure/StructureToolProvider'
+import {type PaneNode} from '../../structure/types'
 import {ErrorBoundary} from '../../ui-components/errorBoundary/ErrorBoundary'
 import {ErrorCard} from '../components/ErrorCard'
 import {presentationLocaleNamespace} from '../i18n'

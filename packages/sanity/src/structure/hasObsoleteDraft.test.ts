@@ -1,6 +1,7 @@
-import {type TargetDocumentState, type VersionInfoDocumentStub} from 'sanity'
 import {expect, it} from 'vitest'
 
+import {type TargetDocumentState} from '../core/hooks/useTargetDocumentState'
+import {type VersionInfoDocumentStub} from '../core/releases/store/types'
 import {type Context, hasObsoleteDraft} from './hasObsoleteDraft'
 
 const workspaceWithDraftModelActive: Context['workspace'] = {

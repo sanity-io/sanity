@@ -40,8 +40,6 @@ vi.mock('../DocumentListPane', async () => {
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
-  useSearchState: vi.fn(),
-  useActiveReleases: vi.fn(() => ({})),
   usePerspective: vi.fn((): PerspectiveContextValue => ({
     perspectiveStack: ['drafts'],
     excludedPerspectives: [],
@@ -52,6 +50,17 @@ vi.mock('sanity', async (importOriginal) => ({
     selectedVariant: undefined,
     bundle: 'drafts',
   })),
+}))
+vi.mock(
+  '../../../../core/studio/components/navbar/search/contexts/search/useSearchState',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    useSearchState: vi.fn(),
+  }),
+)
+vi.mock('../../../../core/releases/store/useActiveReleases', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useActiveReleases: vi.fn(() => ({})),
 }))
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),

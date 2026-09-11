@@ -1,17 +1,13 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
 import {Stack, Text} from '@sanity/ui'
-import {
-  getReleaseTone,
-  isGoingToUnpublish,
-  isReleaseDocument,
-  ReleaseTitle,
-  Translate,
-  usePerspective,
-  useTranslation,
-  VersionInlineBadge,
-} from 'sanity'
+import {Translate, usePerspective, useTranslation} from 'sanity'
 
+import {ReleaseTitle} from '../../../../../core/releases/components/ReleaseTitle'
+import {VersionInlineBadge} from '../../../../../core/releases/components/VersionInlineBadge'
+import {isReleaseDocument} from '../../../../../core/releases/store/types'
+import {getReleaseTone} from '../../../../../core/releases/util/getReleaseTone'
+import {isGoingToUnpublish} from '../../../../../core/releases/util/isGoingToUnpublish'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'

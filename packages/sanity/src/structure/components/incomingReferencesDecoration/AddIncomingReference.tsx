@@ -5,25 +5,25 @@ import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo} from 'react'
 import {map, type Observable} from 'rxjs'
 import {
-  createSearch,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   getPublishedId,
   isDraftId,
   isPublishedId,
   isVersionId,
-  ReferenceAutocomplete,
   type SanityClient,
   type SchemaType,
   type SearchStrategy,
   useClient,
   useDocumentPreviewStore,
   useSchema,
-  useSearchMachine,
-  useSource,
   useTranslation,
 } from 'sanity'
 import {Grid, Box} from 'ui5'
 
+import {ReferenceAutocomplete} from '../../../core/form/inputs/ReferenceInput/ReferenceAutocomplete'
+import {createSearch} from '../../../core/search/search'
+import {useSearchMachine} from '../../../core/search/useSearchMachine'
+import {useSource} from '../../../core/studio/source'
 import {structureLocaleNamespace} from '../../i18n'
 import {CreateNewIncomingReference} from './CreateNewIncomingReference'
 import {LinkToExistingPreview} from './LinkToExistingPreview'

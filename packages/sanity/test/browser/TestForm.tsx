@@ -10,24 +10,26 @@ import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   createPatchChannel,
   type DocumentFieldAction,
-  EMPTY_ARRAY,
   FormBuilder,
   type FormBuilderProps,
   type FormNodePresence,
-  getExpandOperations,
   type PatchEvent,
-  ScrollContainer,
-  setAtPath,
   type StateTree,
   useCopyPaste,
-  useFormState,
-  useGlobalCopyPasteElementHandler,
-  useSource,
   useWorkspace,
   validateDocument,
   VirtualizerScrollInstanceProvider,
   type Workspace,
 } from 'sanity'
+import {
+  EMPTY_ARRAY,
+  getExpandOperations,
+  ScrollContainer,
+  setAtPath,
+  useFormState,
+  useGlobalCopyPasteElementHandler,
+  useSource,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {css, styled} from 'styled-components'
 import {Box} from 'ui5'
 

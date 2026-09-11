@@ -1,13 +1,11 @@
 import {useCallback, useLayoutEffect, useRef} from 'react'
 import {
-  COMMENTS_INSPECTOR_NAME,
   CommentsEnabledProvider,
   CommentsEnabledProviderV2,
   CommentsProvider,
   CommentsProviderV2,
   getDraftId,
   getPublishedId,
-  getTargetScopeId,
   getVersionId,
   useCommentsEnabled,
   useCommentsEnabledV2,
@@ -16,6 +14,8 @@ import {
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 
+import {COMMENTS_INSPECTOR_NAME} from '../../../../core/comments/constants'
+import {getTargetScopeId} from '../../../../core/hooks/useTargetDocumentState'
 import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
 import {useDocumentPane} from '../useDocumentPane'
 

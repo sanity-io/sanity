@@ -6,7 +6,8 @@ import {
 
 /**
  * Options for generating a studio manifest.
- * @internal
+ * @hidden
+ * @public
  */
 export interface GenerateStudioManifestOptions<W extends ManifestWorkspaceInput> {
   /** The workspaces to include in the manifest */
@@ -51,7 +52,8 @@ async function generateWorkspaceManifest<W extends ManifestWorkspaceInput>(
 /**
  * Generates a StudioManifest from workspaces.
  * This is a shared utility used by both CLI deployment and live manifest registration.
- * @internal
+ * @hidden
+ * @public
  */
 export async function generateStudioManifest<W extends ManifestWorkspaceInput>(
   options: GenerateStudioManifestOptions<W>,

@@ -15,7 +15,7 @@ const rePropName =
   /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g
 const reKeySegment = /_key\s*==\s*['"](.*)['"]/
 
-/** @internal */
+/** @public */
 export function pathToString(path: Path): string {
   if (!Array.isArray(path)) {
     throw new Error('Path is not an array')
@@ -81,7 +81,7 @@ export function findIndex(array: unknown[], segment: PathSegment): number {
     : array.findIndex((item) => isKeyedObject(item) && item._key === segment._key)
 }
 
-/** @internal */
+/** @public */
 export function stringToPath(path: string): Path {
   const segments = path.match(rePropName)
   if (!segments) {
@@ -129,7 +129,7 @@ export function normalizeIndexTupleSegment(segment: string): IndexTuple {
   return [from, to]
 }
 
-/** @internal */
+/** @public */
 export function pathsAreEqual(pathA: Path, pathB: Path): boolean {
   if (pathA.length !== pathB.length) {
     return false

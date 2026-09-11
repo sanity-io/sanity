@@ -4,16 +4,16 @@ import {type MouseEvent, useCallback, useMemo} from 'react'
 import {
   AvatarSkeleton,
   type ChunkType,
-  type RelativeTimeOptions,
   useDateTimeFormat,
   UserAvatar,
   useRelativeTime,
   useTranslation,
-  useUser,
 } from 'sanity'
 import {css, styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
+import {type RelativeTimeOptions} from '../../../../core/hooks/useRelativeTime'
+import {useUser} from '../../../../core/store/user/hooks'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {getTimelineEventIconComponent} from './helpers'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'

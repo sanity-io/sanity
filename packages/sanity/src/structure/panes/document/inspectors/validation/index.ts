@@ -7,14 +7,14 @@ import {
   type DocumentInspectorMenuItem,
   type DocumentInspectorUseMenuItemProps,
   type FormNodeValidation,
-  isGoingToUnpublish,
   isValidationError,
   isValidationWarning,
-  mergeParseErrors,
-  useParseErrors,
   useTranslation,
 } from 'sanity'
 
+import {mergeParseErrors} from '../../../../../core/form/store/utils/mergeParseErrors'
+import {useParseErrors} from '../../../../../core/form/studio/contexts/ParseErrors'
+import {isGoingToUnpublish} from '../../../../../core/releases/util/isGoingToUnpublish'
 import {VALIDATION_INSPECTOR_NAME} from '../../constants'
 import {useDocumentPane} from '../../useDocumentPane'
 import {ValidationInspector} from './ValidationInspector'

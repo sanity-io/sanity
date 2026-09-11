@@ -20,9 +20,21 @@ vi.mock('sanity', async (importOriginal) => ({
       Manage versions
     </button>
   ),
-  DocumentGroupInventory: () => null,
-  usePausedScheduledDraft: vi.fn(() => ({isPaused: false, currentRelease: undefined})),
 }))
+vi.mock(
+  '../../../../core/documentGroupInventory/components/DocumentGroupInventory',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    DocumentGroupInventory: () => null,
+  }),
+)
+vi.mock(
+  '../../../../core/singleDocRelease/hooks/usePausedScheduledDraft',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    usePausedScheduledDraft: vi.fn(() => ({isPaused: false, currentRelease: undefined})),
+  }),
+)
 
 vi.mock('../useDocumentPane', () => ({
   useDocumentPane: vi.fn(),

@@ -20,7 +20,6 @@ import {
   useState,
 } from 'react'
 import {
-  type FIXME,
   type GeneralPreviewLayoutKey,
   getPublishedId,
   PreviewCard,
@@ -32,6 +31,7 @@ import {
 } from 'sanity'
 import {Box} from 'ui5'
 
+import {type FIXME} from '../../../core/FIXME'
 import {MissingSchemaType} from '../MissingSchemaType'
 import {usePaneRouter} from '../paneRouter/usePaneRouter'
 import {PaneItemPreview} from './PaneItemPreview'

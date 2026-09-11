@@ -3,7 +3,6 @@ import {renderHook, waitFor} from '@testing-library/react'
 import deepCompare from 'react-fast-compare'
 import {
   type DocumentActionProps,
-  type TargetDocumentState,
   useDocumentOperation,
   useDocumentPairPermissions,
   usePerspective,
@@ -11,6 +10,7 @@ import {
 import {beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
+import {type TargetDocumentState} from '../../../core/hooks/useTargetDocumentState'
 import {perspectiveContextValueMock} from '../../__mocks__/usePerspective.mock'
 import {structureUsEnglishLocaleBundle} from '../../i18n'
 import {useDocumentPane} from '../../panes/document/useDocumentPane'

@@ -1,6 +1,7 @@
-import {type ReferenceInputOptions} from 'sanity'
 import {useIntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
+
+import {type ReferenceInputOptions} from '../../../core/form/studio/contexts/ReferenceInputOptions'
 
 const Link = styled.a`
   flex: 1;

@@ -17,14 +17,20 @@ vi.mock('sanity', () => ({
   usePerspective: sanityMocks.usePerspective,
   useTranslation: () => ({t: (key: string) => key}),
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
-  defineLocalesResources: (_namespace: string, resources: unknown) => resources,
-  getVariantTitle: (variant: {metadata?: {title?: string}; _id: string}) => {
-    const title = variant.metadata?.title
-    return typeof title === 'string' && title.trim()
-      ? title
-      : variant._id.replace(/^_\.variants\./, '')
-  },
 }))
+vi.mock(
+  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    defineLocalesResources: (_namespace: string, resources: unknown) => resources,
+    getVariantTitle: (variant: {metadata?: {title?: string}; _id: string}) => {
+      const title = variant.metadata?.title
+      return typeof title === 'string' && title.trim()
+        ? title
+        : variant._id.replace(/^_\.variants\./, '')
+    },
+  }),
+)
 
 vi.stubGlobal(
   'matchMedia',

@@ -1,7 +1,8 @@
 import {type ReactNode, useContext, useMemo, type RefAttributes} from 'react'
-import {useUnique} from 'sanity'
 import {PaneRouterContext} from 'sanity/_singletons'
 import {StateLink} from 'sanity/router'
+
+import {useUnique} from '../../../core/util/useUnique'
 
 interface ParameterizedLinkProps {
   params?: Record<string, string>

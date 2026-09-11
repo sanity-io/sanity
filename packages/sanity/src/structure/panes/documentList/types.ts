@@ -1,5 +1,6 @@
 import {type SanityDocumentLike} from '@sanity/types'
-import {type SearchSort} from 'sanity'
+
+import {type SearchSort} from '../../../core/search/common/types'
 
 export interface DocumentListPaneItem extends SanityDocumentLike {
   hasPublished: boolean

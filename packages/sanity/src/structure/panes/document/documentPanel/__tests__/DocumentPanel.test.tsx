@@ -71,12 +71,21 @@ vi.mock('../../documentInspector/DocumentInspectorPanel', () => ({
   DocumentInspectorPanel: () => <aside data-ui="DocumentInspectorPanel">Inspector</aside>,
 }))
 
-vi.mock('sanity', async (importOriginal) => ({
+vi.mock('../../../../../core/releases/store/useArchivedReleases', async (importOriginal) => ({
   ...(await importOriginal()),
   useArchivedReleases: vi.fn(() => ({data: []})),
-  useFilteredReleases: vi.fn(() => ({currentReleases: [], notCurrentReleases: []})),
-  usePausedScheduledDraft: vi.fn(() => ({isPaused: false})),
 }))
+vi.mock('../../../../../core/hooks/useFilteredReleases', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useFilteredReleases: vi.fn(() => ({currentReleases: [], notCurrentReleases: []})),
+}))
+vi.mock(
+  '../../../../../core/singleDocRelease/hooks/usePausedScheduledDraft',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    usePausedScheduledDraft: vi.fn(() => ({isPaused: false})),
+  }),
+)
 
 const mockUseDocumentPane = vi.mocked(useDocumentPane)
 const mockUseStructureTool = vi.mocked(useStructureTool)

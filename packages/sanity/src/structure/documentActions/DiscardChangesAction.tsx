@@ -2,9 +2,6 @@ import {ResetIcon} from '@sanity/icons/Reset'
 import {useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
-  getPairTarget,
-  getTargetScopeId,
-  getTargetSiblings,
   InsufficientPermissionsMessage,
   isPublishedId,
   useCurrentUser,
@@ -13,6 +10,11 @@ import {
   useTranslation,
 } from 'sanity'
 
+import {
+  getPairTarget,
+  getTargetScopeId,
+  getTargetSiblings,
+} from '../../core/hooks/useTargetDocumentState'
 import {ConfirmDiscardDialog} from '../components/confirmDiscardDialog/ConfirmDiscardDialog'
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'

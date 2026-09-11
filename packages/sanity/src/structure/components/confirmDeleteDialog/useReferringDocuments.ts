@@ -12,7 +12,6 @@ import {
   switchMap,
 } from 'rxjs/operators'
 import {
-  type AvailabilityResponse,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   type DocumentStore,
   getDraftId,
@@ -20,6 +19,8 @@ import {
   useClient,
   useDocumentStore,
 } from 'sanity'
+
+import {type AvailabilityResponse} from '../../../core/preview/types'
 
 // this is used in place of `instanceof` so the matching can be more robust and
 // won't have any issues with dual packages etc

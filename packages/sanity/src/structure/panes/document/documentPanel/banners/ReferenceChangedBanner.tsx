@@ -11,14 +11,14 @@ import {distinctUntilChanged, map} from 'rxjs/operators'
 import {
   type EditStateFor,
   getPublishedId,
-  isGoingToUnpublish,
-  isPublishedPerspective,
   useDocumentStore,
   usePerspective,
-  useTargetScopeId,
   useTranslation,
 } from 'sanity'
 
+import {useTargetScopeId} from '../../../../../core/hooks/useTargetScopeId'
+import {isGoingToUnpublish} from '../../../../../core/releases/util/isGoingToUnpublish'
+import {isPublishedPerspective} from '../../../../../core/releases/util/util'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useResolvedPanesList} from '../../../../structureResolvers/useResolvedPanesList'
