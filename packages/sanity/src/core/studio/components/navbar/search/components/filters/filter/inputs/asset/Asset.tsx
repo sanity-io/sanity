@@ -7,7 +7,6 @@ import {Portal, Stack} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import get from 'lodash-es/get.js'
 import {useCallback, useEffect, useId, useMemo, useState} from 'react'
-import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../../../../../../ui-components/button/Button'
@@ -22,6 +21,7 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../../../../../studioCl
 import {useSource} from '../../../../../../../../source'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {type OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
+import {containerBox} from './Asset.css'
 import {AssetSourceError} from './AssetSourceError'
 import {AssetPreview} from './preview/AssetPreview'
 
@@ -31,10 +31,6 @@ const ASSET_TYPE: Record<AssetType, string> = {
   file: 'sanity.fileAsset',
   image: 'sanity.imageAsset',
 }
-
-const ContainerBox = styled(Box)`
-  width: min(calc(100vw - 40px), 320px);
-`
 
 export function SearchFilterAssetInput(type?: AssetType) {
   return function FieldInputAssetWithType({
@@ -120,7 +116,7 @@ export function SearchFilterAssetInput(type?: AssetType) {
     const accept = get(type, 'options.accept', type === 'image' ? 'image/*' : '')
 
     return (
-      <ContainerBox>
+      <Box className={containerBox}>
         <Stack gap={3}>
           {/* Asset source component */}
           {selectedAssetSource && AssetSourceComponent && (
@@ -204,7 +200,7 @@ export function SearchFilterAssetInput(type?: AssetType) {
             )}
           </Flex>
         </Stack>
-      </ContainerBox>
+      </Box>
     )
   }
 }
