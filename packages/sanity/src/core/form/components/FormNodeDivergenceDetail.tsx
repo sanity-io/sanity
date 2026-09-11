@@ -33,7 +33,10 @@ export const FormNodeDivergenceDetail: ComponentType<
 
   const divergenceNavigator = useDocumentDivergences()
 
-  if (!divergenceNavigator.enabled) {
+  // Public `FormField`/`FormFieldSet` consumers written before `path` became a required prop can
+  // still render without one. There is no divergence to select for a missing path, so render the
+  // children as-is rather than letting `selectDivergence` throw on it.
+  if (!divergenceNavigator.enabled || !Array.isArray(props.path)) {
     return props.children
   }
 
