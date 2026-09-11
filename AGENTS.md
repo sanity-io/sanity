@@ -202,6 +202,8 @@ How it works:
 
 The test studio can register with a local [agent-react-devtools](https://github.com/callstackincubator/agent-react-devtools) daemon, which exposes the React component tree and render profiling over a CLI — made for AI agents to inspect props/state/hooks and hunt unnecessary re-renders. The `react-devtools` skill (`.agents/skills/react-devtools/SKILL.md`) documents the CLI; read it before profiling.
 
+For `useObservable`, `useSyncObservable` and `useObservablePromise` call sites whose observable identity churns, the `react-rx-hook-audit` skill (`.agents/skills/react-rx-hook-audit/SKILL.md`) covers finding them, counting renders and subscriptions at runtime, and the `useValuePreview` refactor and test pattern.
+
 ```bash
 # 1. Start the daemon (port 8097)
 pnpm --filter sanity-test-studio exec agent-react-devtools start
