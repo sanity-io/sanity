@@ -20,7 +20,6 @@ import {
   Container,
   Dialog,
   Flex,
-  Grid,
   PortalProvider,
   Select,
   Spinner,
@@ -38,7 +37,7 @@ import {type ComponentType, type ReactNode, useEffect, useMemo, useRef, useState
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useDocumentStore} from 'sanity'
-import {Box} from 'ui5'
+import {Box, Grid} from 'ui5'
 
 import {idSlug} from './acks'
 import {ChartLegend} from './ChartLegend'
@@ -566,7 +565,15 @@ function ChartGrid(props: {
     return <EmptyGroup>{props.emptyMessage}</EmptyGroup>
   }
   return (
-    <Grid gridTemplateColumns={[1, 1, 2, 3]} gap={3}>
+    <Grid
+      gridTemplateColumns={[
+        'repeat(1, minmax(0, 1fr))',
+        'repeat(1, minmax(0, 1fr))',
+        'repeat(2, minmax(0, 1fr))',
+        'repeat(3, minmax(0, 1fr))',
+      ]}
+      gap={3}
+    >
       {props.series.map((entry) => {
         const entryDrift = props.driftBySeries?.get(entry.key)
         const entrySilenced = props.silencedBySeries?.get(entry.key)
