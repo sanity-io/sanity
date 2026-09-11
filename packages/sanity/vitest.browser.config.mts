@@ -120,11 +120,12 @@ export default defineConfig({
       enabled: true,
       // Emulate `prefers-reduced-motion: reduce` in the test browser, matching
       // the `prefersReducedMotion: 'reduce'` Chromatic renders archives with.
-      // The `@sanity/ui` v5 stylesheet (`ui5/styles.css`, loaded by the
-      // `sanity` entry point every harness imports) collapses transitions and
-      // animations to 0.01ms under that media query, so the DOM a test asserts
-      // on (and the archive Chromatic re-renders) is never caught mid-fade —
-      // without overriding any component CSS from the test setup.
+      // The `@sanity/ui` v5 stylesheet (`ui5/styles.css`, loaded for every
+      // test file by `test/setup/browser.ts`, as the `sanity` entry point does)
+      // collapses transitions and animations to 0.01ms under that media query,
+      // so the DOM a test asserts on (and the archive Chromatic re-renders) is
+      // never caught mid-fade — without overriding any component CSS from the
+      // test setup.
       provider: playwright({contextOptions: {reducedMotion: 'reduce'}}),
       headless: true,
       commands: {readFileAsBase64},
