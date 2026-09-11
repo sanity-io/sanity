@@ -77,6 +77,11 @@ const FLOATING_UI_SNAP_SELECTOR = [
   '[role="listbox"]',
 ].join(', ')
 
+/**
+ * Round every `<number>px` token in a CSS value; percentages, `auto` and
+ * other units are left untouched so the snap never changes what a value
+ * means, only its sub-pixel part.
+ */
 function roundPx(value: string): string {
   return value.replace(/(-?\d+\.?\d*)px/g, (token) => `${Math.round(Number.parseFloat(token))}px`)
 }
@@ -92,11 +97,11 @@ function snapFloatingUiNode(node: HTMLElement): void {
     if (rounded !== translate) node.style.translate = rounded
   }
   if (top) {
-    const rounded = `${Math.round(Number.parseFloat(top))}px`
+    const rounded = roundPx(top)
     if (rounded !== top) node.style.top = rounded
   }
   if (left) {
-    const rounded = `${Math.round(Number.parseFloat(left))}px`
+    const rounded = roundPx(left)
     if (rounded !== left) node.style.left = rounded
   }
 }
