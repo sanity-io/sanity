@@ -1,7 +1,13 @@
 import {defineType} from '@sanity/types'
+import {lazy} from 'react'
 
-import {StudioVideoInput} from '../VideoInput/StudioVideoInput'
 import {VideoField} from '../VideoInput/VideoField'
+
+// The plugin module is bundled into every studio whether or not `mediaLibrary.enabled` is set,
+// so the video input (player, upload handling) loads when a video field first renders instead.
+const StudioVideoInput = lazy(() =>
+  import('../VideoInput/StudioVideoInput').then((module) => ({default: module.StudioVideoInput})),
+)
 
 export const video = defineType({
   name: 'sanity.video',

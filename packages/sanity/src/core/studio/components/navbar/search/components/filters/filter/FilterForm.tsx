@@ -1,11 +1,12 @@
 import {TrashIcon} from '@sanity/icons/Trash'
 import {Card, Stack, Text} from '@sanity/ui'
-import {type ErrorInfo, useCallback, useState} from 'react'
+import {type ErrorInfo, Suspense, useCallback, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../../../../ui-components/button/Button'
 import {ErrorBoundary} from '../../../../../../../../ui-components/errorBoundary/ErrorBoundary'
+import {LoadingBlock} from '../../../../../../../components/loadingBlock/LoadingBlock'
 import {supportsTouch} from '../../../../../../../util/supportsTouch'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getFilterDefinition} from '../../../definitions/filters'
@@ -73,13 +74,16 @@ export function FilterForm({filter}: FilterFormProps) {
           {/* Value */}
           {Component && (
             <Card borderTop padding={3}>
-              <Component
-                // re-render on new operators
-                key={filter.operatorType}
-                fieldDefinition={fieldDefinition}
-                onChange={handleValueChange}
-                value={filter.value}
-              />
+              {/* Operator input components are code-split (see definitions/operators/lazyInputComponents) */}
+              <Suspense fallback={<LoadingBlock />}>
+                <Component
+                  // re-render on new operators
+                  key={filter.operatorType}
+                  fieldDefinition={fieldDefinition}
+                  onChange={handleValueChange}
+                  value={filter.value}
+                />
+              </Suspense>
             </Card>
           )}
 
