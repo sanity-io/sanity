@@ -84,12 +84,12 @@ const createScheduledDraftAction = (
 export const PublishScheduledDraftAction = createScheduledDraftAction('publishNow')
 
 /**
- * Document action for editing schedule of a scheduled draft
+ * Document action for pausing a scheduled draft so it can be edited.
  * Only visible when the draft is NOT paused
  * @internal
  */
-export const EditScheduledDraftAction = createScheduledDraftAction(
-  'editSchedule',
+export const PauseToEditScheduledDraftAction = createScheduledDraftAction(
+  'pauseToEdit',
   (release) => !isPausedCardinalityOneRelease(release), // Hide when paused
 )
 
@@ -101,6 +101,6 @@ export const DeleteScheduledDraftAction = createScheduledDraftAction('deleteSche
 
 PublishScheduledDraftAction.action = 'publish'
 
-EditScheduledDraftAction.action = 'schedule'
+PauseToEditScheduledDraftAction.action = 'schedule'
 
 DeleteScheduledDraftAction.action = 'discardVersion'
