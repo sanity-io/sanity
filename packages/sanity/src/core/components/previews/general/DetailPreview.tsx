@@ -1,5 +1,5 @@
-import {Flex, Stack, Text} from '@sanity/ui'
-import {Box} from 'ui5'
+import {Stack, Text} from '@sanity/ui'
+import {Flex, Box} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -59,10 +59,15 @@ export function DetailPreview(props: DetailPreviewProps) {
         paddingRight={2}
         paddingY={2}
       >
-        <Flex align="center" flex={1} gap={3}>
+        <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={3}>
           {media && <MediaSkeleton data-testid="detail-preview__media" />}
 
-          <Flex align="center" data-testid="detail-preview__header" flex={1}>
+          <Flex
+            alignItems="center"
+            data-testid="detail-preview__header"
+            flexBasis="0%"
+            flexGrow={1}
+          >
             <Stack flex={1} gap={2}>
               <TitleSkeleton />
               <SubtitleSkeleton />
@@ -87,10 +92,10 @@ export function DetailPreview(props: DetailPreviewProps) {
       paddingRight={2}
       paddingY={2}
     >
-      <Flex align="center" flex={1} gap={3}>
+      <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={3}>
         {media && <Media dimensions={mediaDimensions} layout="detail" media={media as any} />}
 
-        <Flex align="center" data-testid="detail-preview__header" flex={1}>
+        <Flex alignItems="center" data-testid="detail-preview__header" flexBasis="0%" flexGrow={1}>
           <Stack flex={1} gap={2}>
             <Text textOverflow="ellipsis" size={1} style={{color: 'inherit'}} weight="medium">
               {title && renderPreviewNode(title, 'detail')}

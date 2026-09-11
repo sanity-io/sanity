@@ -1,6 +1,6 @@
-import {Flex, rem, Stack, Text} from '@sanity/ui'
+import {rem, Stack, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {LinearProgress} from '../../progress/LinearProgress'
@@ -16,7 +16,7 @@ const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
   dpr: getDevicePixelRatio(),
 }
 
-const HeaderFlex = styled(Flex).attrs({align: 'center'})`
+const HeaderFlex = styled(Flex).attrs({alignItems: 'center'})`
   min-height: ${rem(PREVIEW_SIZES.block.media.height)};
 `
 

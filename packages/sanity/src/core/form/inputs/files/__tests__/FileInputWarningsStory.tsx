@@ -1,5 +1,6 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
+import {Flex} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {AccessPolicyBadge} from '../common/AccessPolicyBadge'
@@ -43,7 +44,7 @@ export function FileInputWarningsStory() {
             <Text muted size={1} weight="medium">
               access policy (FileActionsMenu row)
             </Text>
-            <Flex justify="center" gap={2}>
+            <Flex justifyContent="center" gap={2}>
               <AccessPolicyBadge />
             </Flex>
           </Stack>

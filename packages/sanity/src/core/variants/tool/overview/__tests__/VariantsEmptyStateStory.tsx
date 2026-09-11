@@ -1,4 +1,5 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
+import {Flex} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {Button} from '../../../../../ui-components/button/Button'
@@ -22,7 +23,7 @@ export function VariantsEmptyStateStory() {
             <Text muted size={1} weight="medium">
               docs link only
             </Text>
-            <Flex justify="center">
+            <Flex justifyContent="center">
               <VariantsEmptyState />
             </Flex>
           </Stack>
@@ -30,7 +31,7 @@ export function VariantsEmptyStateStory() {
             <Text muted size={1} weight="medium">
               with create action
             </Text>
-            <Flex justify="center">
+            <Flex justifyContent="center">
               <VariantsEmptyState createVariantButton={<Button text="Create variant" />} />
             </Flex>
           </Stack>

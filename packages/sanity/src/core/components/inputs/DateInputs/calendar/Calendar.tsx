@@ -2,7 +2,7 @@ import {TZDate} from '@date-fns/tz'
 import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
-import {Flex, Select, Text} from '@sanity/ui'
+import {Select, Text} from '@sanity/ui'
 import {format} from '@sanity/util/legacyDateFormat'
 import {addDays} from 'date-fns/addDays'
 import {addMonths} from 'date-fns/addMonths'
@@ -25,7 +25,7 @@ import {
   useState,
   type RefAttributes,
 } from 'react'
-import {Grid, Box, type PaddingProps} from 'ui5'
+import {Flex, Grid, Box, type PaddingProps} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
@@ -271,7 +271,7 @@ export function Calendar(props: CalendarProps & RefAttributes<HTMLDivElement>) {
     if (monthPickerVariant === 'carousel') {
       return (
         <Flex
-          align="center"
+          alignItems="center"
           paddingLeft={4}
           style={{
             borderBottom: '1px solid var(--card-border-color)',
@@ -280,8 +280,8 @@ export function Calendar(props: CalendarProps & RefAttributes<HTMLDivElement>) {
             top: 0,
           }}
         >
-          <Flex align="center" flex={1} justify="space-between">
-            <Flex align="center" flex={1}>
+          <Flex alignItems="center" flexBasis="0%" flexGrow={1} justifyContent="space-between">
+            <Flex alignItems="center" flexBasis="0%" flexGrow={1}>
               <Text weight="medium" size={1}>
                 {labels.monthNames[(focusedDate || new Date())?.getMonth()]}{' '}
                 {(focusedDate || new Date())?.getFullYear()}
@@ -393,11 +393,11 @@ export function Calendar(props: CalendarProps & RefAttributes<HTMLDivElement>) {
       </Box>
 
       <Box padding={2} style={{borderTop: '1px solid var(--card-border-color)'}}>
-        <Flex align="center" justify="space-between">
+        <Flex alignItems="center" justifyContent="space-between">
           {/* Select time */}
           {selectTime && (
             <>
-              <Flex align="center">
+              <Flex alignItems="center">
                 <TimeInput
                   aria-label={labels.selectTime}
                   value={timeValue}
@@ -426,7 +426,12 @@ export function Calendar(props: CalendarProps & RefAttributes<HTMLDivElement>) {
               )}
 
               {features.timePresets && (
-                <Flex direction="row" justify="center" align="center" style={{marginTop: 5}}>
+                <Flex
+                  flexDirection="row"
+                  justifyContent="center"
+                  alignItems="center"
+                  style={{marginTop: 5}}
+                >
                   {DEFAULT_TIME_PRESETS.map(([hours, minutes]) => {
                     const text = formatTime(hours, minutes)
                     return (
@@ -476,7 +481,7 @@ function CalendarMonthSelect(props: {
   const {onChange, value, monthNames} = props
 
   return (
-    <Flex flex={1} gap={1}>
+    <Flex flexBasis="0%" flexGrow={1} gap={1}>
       <Box flexBasis="0%" flexGrow={1}>
         <Select fontSize={1} radius={2} value={value} onChange={onChange} padding={2}>
           {monthNames.map((monthName, i) => (
