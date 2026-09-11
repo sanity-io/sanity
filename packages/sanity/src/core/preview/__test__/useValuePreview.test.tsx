@@ -1,4 +1,4 @@
-import {type SchemaType} from '@sanity/types'
+import {type SchemaType, type SortOrdering} from '@sanity/types'
 import {act, render} from '@testing-library/react'
 import {Observable, Subject} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
@@ -144,6 +144,69 @@ describe('useValuePreview', () => {
       second.next({snapshot: {title: 'two'}})
     })
     expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'two'})
+  })
+
+  it('resets to loading in the render that changes the schema type, until the new preview arrives', () => {
+    const asArticle = new Subject<{snapshot: {title: string}}>()
+    const articleType = {name: 'article', jsonType: 'object', preview: {}} as unknown as SchemaType
+    observeForPreview.mockImplementation((value: {title: string}, type: SchemaType) =>
+      type === articleType
+        ? asArticle
+        : new Observable((subscriber) => {
+            subscriber.next({snapshot: {title: value.title}})
+          }),
+    )
+    const frames: Frame[] = []
+    const value = {_id: 'a', title: 'one'}
+    const {rerender} = render(<Harness value={value} frames={frames} />)
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
+    const settled = frames.length
+
+    // the same document prepared through another schema type is another preview: the previous
+    // one must not linger, not even in the render that first receives the new type
+    rerender(<Harness value={value} schemaType={articleType} frames={frames} />)
+    expect(frames.slice(settled).map((frame) => frame.title)).not.toContain('one')
+    expect(frames.at(-1)).toEqual({isLoading: true, title: undefined, error: undefined})
+
+    act(() => {
+      asArticle.next({snapshot: {title: 'one, as an article'}})
+    })
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one, as an article'})
+  })
+
+  it('resets to loading in the render that changes the ordering, until the new preview arrives', () => {
+    const byDate: SortOrdering = {
+      name: 'byDate',
+      title: 'By date',
+      by: [{field: 'date', direction: 'asc'}],
+    }
+    const orderedByDate = new Subject<{snapshot: {title: string}}>()
+    observeForPreview.mockImplementation(
+      (
+        value: {title: string},
+        _type: unknown,
+        options: {viewOptions: {ordering?: SortOrdering}},
+      ) =>
+        options.viewOptions.ordering === byDate
+          ? orderedByDate
+          : new Observable((subscriber) => {
+              subscriber.next({snapshot: {title: value.title}})
+            }),
+    )
+    const frames: Frame[] = []
+    const value = {_id: 'a', title: 'one'}
+    const {rerender} = render(<Harness value={value} frames={frames} />)
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
+    const settled = frames.length
+
+    rerender(<Harness value={value} ordering={byDate} frames={frames} />)
+    expect(frames.slice(settled).map((frame) => frame.title)).not.toContain('one')
+    expect(frames.at(-1)).toEqual({isLoading: true, title: undefined, error: undefined})
+
+    act(() => {
+      orderedByDate.next({snapshot: {title: 'one · 2026'}})
+    })
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one · 2026'})
   })
 
   it('keeps the preview when a draft or version of the same document is materialized', () => {
