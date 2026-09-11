@@ -113,6 +113,9 @@ export {
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {WithReferringDocuments} from '../core/components/WithReferringDocuments'
 export {type AuthConfig, type AuthProvider, type LoginMethod} from '../core/config/auth/types'
+export {createDefaultIcon} from '../core/config/createDefaultIcon'
+export {resolveConfig} from '../core/config/resolveConfig'
+export {SchemaError} from '../core/config/SchemaError'
 // oxlint-disable-next-line no-deprecated -- preserved for backwards compatibility
 export {createConfig, defineConfig} from '../core/config/defineConfig'
 // oxlint-disable-next-line no-deprecated -- preserved for backwards compatibility
@@ -768,7 +771,16 @@ export {
   type PasteOptions,
   type SanityClipboardItem,
 } from '../core/studio/copyPaste/types'
-export {type StudioManifest} from '../core/studio/manifest/types'
+export {
+  generateStudioManifest,
+  type GenerateStudioManifestOptions,
+} from '../core/studio/manifest/generateStudioManifest'
+export {
+  type ManifestWorkspaceInput,
+  type StudioManifest,
+  type StudioWorkspaceManifest,
+} from '../core/studio/manifest/types'
+export {uploadSchema} from '../core/studio/manifest/uploadSchema'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {renderStudio} from '../core/studio/renderStudio'
 export {isTimeoutError} from '../core/studio/requestErrors/classify'
