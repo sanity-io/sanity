@@ -1,11 +1,12 @@
 import {Card, useGlobalKeyDown, useLayer} from '@sanity/ui'
+import {clsx} from 'clsx'
 import {isHotkey} from 'is-hotkey-esm'
-import {type ReactNode, useCallback, useEffect, useState} from 'react'
+import {type ComponentProps, type ReactNode, useCallback, useEffect, useState} from 'react'
 import FocusLock from 'react-focus-lock'
-import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
 import {POPOVER_INPUT_PADDING, POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants'
+import {hiddenOverlay} from './FilterPopoverWrapper.css'
 
 interface FilterPopoverWrapperProps {
   anchorElement?: HTMLElement | null
@@ -17,15 +18,10 @@ const isEscape = isHotkey('escape')
 
 const MAX_HEIGHT = 500 // px
 
-const HiddenOverlay = styled.div`
-  background: transparent;
-  height: 100%;
-  left: 0;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: -1;
-`
+function HiddenOverlay(props: ComponentProps<'div'>) {
+  const {className, ...rest} = props
+  return <div {...rest} className={clsx(hiddenOverlay, className)} />
+}
 
 export function FilterPopoverWrapper({
   anchorElement,
