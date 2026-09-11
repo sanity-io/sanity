@@ -137,9 +137,12 @@ describe('useValuePreview', () => {
     const frames: Frame[] = []
     const {rerender} = render(<Harness value={{_id: 'a', title: 'one'}} frames={frames} />)
     expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
+    const settled = frames.length
 
-    // the new document's preview is still pending: the previous title must not linger
+    // the new document's preview is still pending: the previous title must not linger, not even
+    // in the render that first receives the new value (before any effect has run)
     rerender(<Harness value={{_id: 'b', title: 'two'}} frames={frames} />)
+    expect(frames.slice(settled).map((frame) => frame.title)).not.toContain('one')
     expect(frames.at(-1)).toEqual({isLoading: true, title: undefined, error: undefined})
 
     act(() => {
@@ -174,9 +177,11 @@ describe('useValuePreview', () => {
     const version = {_id: 'versions.r1.a', title: 'in release'}
     const {rerender} = render(<Harness value={version} frames={frames} />)
     expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'in release'})
+    const settled = frames.length
 
     // the same version, now marked for unpublishing: it previews the published document instead
     rerender(<Harness value={{...version, _system: {delete: true}}} frames={frames} />)
+    expect(frames.slice(settled).map((frame) => frame.title)).not.toContain('in release')
     expect(frames.at(-1)).toEqual({isLoading: true, title: undefined, error: undefined})
     expect(observeForPreview).toHaveBeenLastCalledWith(
       {_id: 'a'},
@@ -268,6 +273,30 @@ describe('useValuePreview', () => {
       />,
     )
     expect(frames.length).toBe(before + 3)
+  })
+
+  it('compares element media by identity without walking it', () => {
+    // A self-referencing prop would overflow a deep compare that walked into the element
+    const cyclic: Record<string, unknown> = {}
+    cyclic.self = cyclic
+    const makeMedia = () => <span data-owner={cyclic} />
+    observeForPreview.mockImplementation(
+      (value: {title: string; version: number}) =>
+        new Observable((subscriber) => {
+          subscriber.next({snapshot: {title: value.title, media: makeMedia()}})
+        }),
+    )
+    const frames: Frame[] = []
+    const {rerender} = render(
+      <Harness value={{_id: 'a', title: 'one', version: 1}} frames={frames} />,
+    )
+    const before = frames.length
+
+    // a new element instance is new media, so the consumer re-renders (rerender + store update)
+    rerender(<Harness value={{_id: 'a', title: 'one', version: 2}} frames={frames} />)
+
+    expect(frames.length).toBe(before + 2)
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
   })
 
   it('surfaces a preview error once, even when the value is rebuilt on every render', () => {
