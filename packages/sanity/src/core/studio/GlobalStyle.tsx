@@ -65,6 +65,8 @@ const GlobalStyleSheet = createGlobalStyle<Props>(({theme, $documentEditorGutter
 
     html {
       background-color: ${color.bg};
+      /* ui5 light-dark() follows this, not ThemeProvider context — see documentColorScheme.ts */
+      color-scheme: ${color._dark ? 'dark' : 'light'};
     }
 
     body {

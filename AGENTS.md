@@ -240,6 +240,11 @@ The report is written to `packages/sanity/lib/analyze-data.md` (gitignored with 
 
 The CDN / auto-update bundle Vite config lives in `@repo/package.bundle` (`createDefaultConfig`). Vite 8 minifies that CSS with Lightning CSS against `baseline-widely-available` (Chrome 111 / Safari 16.4), which down-transpiles `light-dark()` into `--lightningcss-light` / `--lightningcss-dark` toggled only by `prefers-color-scheme`. That breaks Studio theme colors when OS appearance ≠ Studio theme (ui5 sets `color-scheme` independently). The shared config excludes `Features.LightDark` so the function is left native — same workaround as Tailwind; see [lightningcss#873](https://github.com/parcel-bundler/lightningcss/issues/873). Do not re-enable that polyfill. The `sanity build` / `sanity preview` Vite config lives in `sanity-io/cli`, not this repo.
 
+Two bugs can look identical (poor-contrast comments / ui5 colors when OS scheme ≠ Studio scheme):
+
+- **Path A (production minify):** Lightning CSS rewrote `light-dark()`. Fixed by the exclude above and the same flag in `@sanity/cli-build` `getViteConfig`. If deployed CSS still contains `--lightningcss-light`, the CLI that built it is older than 8.10.0.
+- **Path B (dev / embeds, native `light-dark()` intact):** ui5 declares `:root { color-scheme: light dark }` and tokens like `--foreground-high: light-dark(...)`. `@sanity/ui` v4 `ThemeProvider` is React context only — it does not set document `color-scheme`. Dashboard / some hosted shells set it on `<html>`; `sanity dev`, Next.js `next-sanity` embeds, and `StudioProvider` without `unstable_globalStyles` do not. Studio writes `document.documentElement.style.colorScheme` from the resolved Appearance scheme (`documentColorScheme.ts`). Do not treat a local-only repro as an incomplete Path A fix.
+
 ### Studio performance benchmarks (perf/bench — No Auth Required)
 
 The `perf/bench` suite benchmarks a built studio against a **local mock** of the Sanity API — fully hermetic, no tokens, no network:
