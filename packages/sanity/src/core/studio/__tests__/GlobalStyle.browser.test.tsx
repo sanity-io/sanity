@@ -5,14 +5,17 @@ import 'ui5/styles.css'
 import {configure} from '@chromatic-com/vitest'
 import {ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
-import {ColorSchemeValueContext} from 'sanity/_singletons'
+import {ActiveWorkspaceMatcherContext, ColorSchemeValueContext} from 'sanity/_singletons'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 
 import {type Workspace} from '../../config/types'
+import {buildLegacyTheme} from '../../theme/_legacy/theme'
 import {type StudioColorScheme} from '../../theme/types'
+import {type ActiveWorkspaceMatcherContextValue} from '../activeWorkspaceMatcher/ActiveWorkspaceMatcherContext'
 import {ColorSchemeProvider} from '../colorScheme'
 import {GlobalStyle} from '../GlobalStyle'
+import {StudioThemeProvider} from '../StudioThemeProvider'
 import {WorkspaceProvider} from '../workspace'
 
 // `GlobalStyle` reads one workspace flag; nothing else of the workspace takes part here
@@ -107,6 +110,36 @@ describe('GlobalStyle', () => {
     await expect.poll(documentColorScheme).toBe('light dark')
     const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches
     expect(probeColor()).toBe(prefersDark ? DARK : LIGHT)
+  })
+
+  it('follows a legacy theme, which forces the scheme regardless of the appearance', async () => {
+    // `buildLegacyTheme` derives `__dark` from the component colours, and `StudioThemeProvider`
+    // then forces that scheme onto everything below it — `GlobalStyle` included, in the studio
+    // oxlint-disable-next-line no-deprecated -- the deprecated legacy theme path is what this covers
+    const darkLegacyTheme = buildLegacyTheme({
+      '--component-bg': '#101112',
+      '--component-text-color': '#ffffff',
+    })
+    expect(darkLegacyTheme.__dark).toBe(true)
+    const activeWorkspace = {
+      activeWorkspace: {theme: darkLegacyTheme},
+    } as unknown as ActiveWorkspaceMatcherContextValue
+
+    await render(
+      <WorkspaceProvider workspace={workspace}>
+        <ColorSchemeProvider scheme="light">
+          <ActiveWorkspaceMatcherContext.Provider value={activeWorkspace}>
+            <StudioThemeProvider>
+              <GlobalStyle />
+              <span data-testid="probe" style={{color: `light-dark(${LIGHT}, ${DARK})`}} />
+            </StudioThemeProvider>
+          </ActiveWorkspaceMatcherContext.Provider>
+        </ColorSchemeProvider>
+      </WorkspaceProvider>,
+    )
+
+    await expect.poll(documentColorScheme).toBe('dark')
+    expect(probeColor()).toBe(DARK)
   })
 
   it('follows the appearance as it changes', async () => {
