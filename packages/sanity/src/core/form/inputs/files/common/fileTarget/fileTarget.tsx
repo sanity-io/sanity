@@ -11,6 +11,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import {useEffectEvent} from 'use-effect-event'
 
 import {extractDroppedFiles, extractPastedFiles, isPortableTextItem} from './utils/extractFiles'
 import {imageUrlToBlob} from './utils/imageUrlToBlob'
@@ -284,6 +285,41 @@ export function fileTarget<ComponentProps>(
       },
       [onFilesOut],
     )
+
+    const clearHover = useEffectEvent(() => {
+      if (enteredElements.current.length === 0) {
+        return false
+      }
+      enteredElements.current = []
+      onFilesOut?.()
+      return true
+    })
+
+    useEffect(() => {
+      if (disabled) {
+        return undefined
+      }
+
+      const onDragEnd = () => {
+        clearHover()
+      }
+
+      const onKeyDown = (event: globalThis.KeyboardEvent) => {
+        if (event.key !== 'Escape') {
+          return
+        }
+        if (clearHover()) {
+          event.stopPropagation()
+        }
+      }
+
+      window.addEventListener('dragend', onDragEnd)
+      window.addEventListener('keydown', onKeyDown, true)
+      return () => {
+        window.removeEventListener('dragend', onDragEnd)
+        window.removeEventListener('keydown', onKeyDown, true)
+      }
+    }, [disabled])
 
     const prevShowPasteInput = useRef(false)
     useEffect(() => {
