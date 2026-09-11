@@ -116,7 +116,6 @@ import type {
   CreateAuthStoreOptions,
   createBufferedDocument,
   createConnectionStatusStore,
-  createDefaultIcon,
   createDocumentPreviewStore,
   createDocumentStore,
   createDraftFrom,
@@ -299,8 +298,6 @@ import type {
   FromToArrowDirection,
   FromToIndex,
   FromToProps,
-  generateStudioManifest,
-  GenerateStudioManifestOptions,
   getAnnotationAtPath,
   getAnnotationColor,
   getApiErrorCode,
@@ -430,7 +427,6 @@ import type {
   LocaleProvider,
   LocaleProviderBase,
   Location,
-  ManifestWorkspaceInput,
   MatchError,
   MatchOk,
   MatchResult,
@@ -542,7 +538,6 @@ import type {
   Resizable,
   RESOLVE_INITIAL_VALUE_TIMEOUT_MS,
   resolveConditionalProperty,
-  resolveConfig,
   resolveDiffComponent,
   resolveInitialObjectValue,
   resolveInitialValue,
@@ -558,7 +553,6 @@ import type {
   SANITY_PATCH_TYPE,
   SanityDefaultPreviewProps,
   SchedulesContext,
-  SchemaError,
   ScrollContainer,
   ScrollContainerProps,
   ScrollContextValue,
@@ -623,7 +617,6 @@ import type {
   StudioFeedbackDialogProps,
   StudioFeedbackProvider,
   StudioLayoutComponent,
-  StudioWorkspaceManifest,
   supportsTouch,
   SyncState,
   TargetDocumentState,
@@ -650,7 +643,6 @@ import type {
   unstable_useValuePreview,
   UpdateReadOnlyPlugin,
   UploaderDef,
-  uploadSchema,
   UpsellDescriptionSerializer,
   UpsellDialogDismissed,
   UpsellDialogLearnMoreCtaClicked,
@@ -1151,9 +1143,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('createConnectionStatusStore', () => {
     expectTypeOf<typeof createConnectionStatusStore>().toBeFunction()
-  })
-  test('createDefaultIcon', () => {
-    expectTypeOf<typeof createDefaultIcon>().toBeFunction()
   })
   test('createDocumentPreviewStore', () => {
     expectTypeOf<typeof createDocumentPreviewStore>().toBeFunction()
@@ -1701,12 +1690,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('FromToProps', () => {
     expectTypeOf<FromToProps>().not.toBeNever()
   })
-  test('generateStudioManifest', () => {
-    expectTypeOf<typeof generateStudioManifest>().toBeFunction()
-  })
-  test('GenerateStudioManifestOptions', () => {
-    expectTypeOf<GenerateStudioManifestOptions<any>>().toBeObject()
-  })
   test('getAnnotationAtPath', () => {
     expectTypeOf<typeof getAnnotationAtPath>().toBeFunction()
   })
@@ -2094,9 +2077,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('Location', () => {
     expectTypeOf<Location>().toBeObject()
   })
-  test('ManifestWorkspaceInput', () => {
-    expectTypeOf<ManifestWorkspaceInput>().not.toBeNever()
-  })
   test('MatchError', () => {
     expectTypeOf<MatchError>().toBeObject()
   })
@@ -2430,9 +2410,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('resolveConditionalProperty', () => {
     expectTypeOf<typeof resolveConditionalProperty>().toBeFunction()
   })
-  test('resolveConfig', () => {
-    expectTypeOf<typeof resolveConfig>().toBeFunction()
-  })
   test('resolveDiffComponent', () => {
     expectTypeOf<typeof resolveDiffComponent>().toBeFunction()
   })
@@ -2477,9 +2454,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('SchedulesContext', () => {
     expectTypeOf<typeof SchedulesContext>().not.toBeNever()
-  })
-  test('SchemaError', () => {
-    expectTypeOf<SchemaError>().not.toBeNever()
   })
   test('ScrollContainer', () => {
     expectTypeOf<typeof ScrollContainer>().not.toBeNever()
@@ -2673,9 +2647,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('StudioLayoutComponent', () => {
     expectTypeOf<typeof StudioLayoutComponent>().toBeFunction()
   })
-  test('StudioWorkspaceManifest', () => {
-    expectTypeOf<StudioWorkspaceManifest>().toBeObject()
-  })
   test('supportsTouch', () => {
     expectTypeOf<typeof supportsTouch>().not.toBeNever()
   })
@@ -2753,9 +2724,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('UploaderDef', () => {
     expectTypeOf<UploaderDef>().not.toBeNever()
-  })
-  test('uploadSchema', () => {
-    expectTypeOf<typeof uploadSchema>().toBeFunction()
   })
   test('UpsellDescriptionSerializer', () => {
     expectTypeOf<typeof UpsellDescriptionSerializer>().toBeFunction()
