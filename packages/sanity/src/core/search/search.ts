@@ -8,6 +8,7 @@ import {
   type SearchStrategyFactory,
   type WeightedSearchResults,
 } from './common/types'
+import {EXCLUDE_AGENT_VERSIONS_FILTER} from './constants'
 import {createGroq2024Search} from './groq2024'
 import {createWeightedSearch} from './weighted'
 
@@ -36,5 +37,24 @@ export const createSearch: SearchStrategyFactory<WeightedSearchResults | Groq202
       : undefined,
   )
 
-  return factory(searchableTypes, versionedClient(client, apiVersion), options)
+  const search = factory(searchableTypes, versionedClient(client, apiVersion), options)
+
+  return (searchTerms, searchOptions) => {
+    const {perspective, filter} = {...options, ...searchOptions}
+
+    // The `raw` perspective returns every version of every document, including Content Agent
+    // versions. Those are only readable by their author, so for everyone else they surface as
+    // duplicate search hits that open an empty document. No studio search should show them, so
+    // they are excluded here — the one place every search strategy and caller passes through.
+    if (perspective !== 'raw') {
+      return search(searchTerms, searchOptions)
+    }
+
+    return search(searchTerms, {
+      ...searchOptions,
+      filter: filter
+        ? `(${filter}) && ${EXCLUDE_AGENT_VERSIONS_FILTER}`
+        : EXCLUDE_AGENT_VERSIONS_FILTER,
+    })
+  }
 }
