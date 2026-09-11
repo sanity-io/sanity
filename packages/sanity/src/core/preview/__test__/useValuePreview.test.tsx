@@ -1,8 +1,9 @@
 import {type SchemaType} from '@sanity/types'
-import {render} from '@testing-library/react'
-import {Observable} from 'rxjs'
+import {act, render} from '@testing-library/react'
+import {Observable, Subject} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {type PerspectiveStack} from '../../perspective/types'
 import {useValuePreview} from '../useValuePreview'
 
 const observeForPreview = vi.fn()
@@ -25,8 +26,16 @@ interface Frame {
   error?: Error
 }
 
-function Harness({value, frames}: {value: unknown; frames: Frame[]}) {
-  const state = useValuePreview({schemaType, value})
+function Harness({
+  value,
+  frames,
+  perspectiveStack,
+}: {
+  value: unknown
+  frames: Frame[]
+  perspectiveStack?: PerspectiveStack
+}) {
+  const state = useValuePreview({schemaType, value, perspectiveStack})
   frames.push({isLoading: state.isLoading, title: state.value?.title, error: state.error})
   return null
 }
@@ -84,6 +93,70 @@ describe('useValuePreview', () => {
     // the edit is previewed, but the equal result does not cause a store-driven render
     expect(observeForPreview).toHaveBeenCalledTimes(2)
     expect(frames.length).toBe(before + 1)
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
+  })
+
+  it('ignores the timestamps every local mutation bumps when comparing previews', () => {
+    observeForPreview.mockImplementation(
+      (value: {title: string; _updatedAt: string}) =>
+        new Observable((subscriber) => {
+          subscriber.next({
+            snapshot: {title: value.title, _updatedAt: value._updatedAt, _createdAt: '2026-01-01'},
+          })
+        }),
+    )
+    const frames: Frame[] = []
+    const {rerender} = render(
+      <Harness
+        value={{_id: 'a', title: 'one', _updatedAt: '2026-09-11T10:00:00Z'}}
+        frames={frames}
+      />,
+    )
+    const before = frames.length
+
+    rerender(
+      <Harness
+        value={{_id: 'a', title: 'one', _updatedAt: '2026-09-11T10:00:01Z'}}
+        frames={frames}
+      />,
+    )
+
+    expect(frames.length).toBe(before + 1)
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
+  })
+
+  it('resets to loading when the value previews a different document', () => {
+    const second = new Subject<{snapshot: {title: string}}>()
+    observeForPreview.mockImplementation((value: {_id: string; title: string}) =>
+      value._id === 'b'
+        ? second
+        : new Observable((subscriber) => {
+            subscriber.next({snapshot: {title: value.title}})
+          }),
+    )
+    const frames: Frame[] = []
+    const {rerender} = render(<Harness value={{_id: 'a', title: 'one'}} frames={frames} />)
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
+
+    // the new document's preview is still pending: the previous title must not linger
+    rerender(<Harness value={{_id: 'b', title: 'two'}} frames={frames} />)
+    expect(frames.at(-1)).toEqual({isLoading: true, title: undefined, error: undefined})
+
+    act(() => {
+      second.next({snapshot: {title: 'two'}})
+    })
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'two'})
+  })
+
+  it('keeps one observable when the perspective stack is rebuilt every render', () => {
+    const frames: Frame[] = []
+    const value = {_id: 'a', title: 'one'}
+    const {rerender} = render(<Harness value={value} frames={frames} perspectiveStack={[]} />)
+    rerender(<Harness value={value} frames={frames} perspectiveStack={[]} />)
+    rerender(<Harness value={value} frames={frames} perspectiveStack={[]} />)
+
+    expect(observeForPreview).toHaveBeenCalledTimes(1)
+    expect(subscriptions.total).toBe(1)
     expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
   })
 
