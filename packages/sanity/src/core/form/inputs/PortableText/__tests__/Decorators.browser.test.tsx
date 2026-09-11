@@ -127,6 +127,7 @@ describe('Portable Text Input', () => {
         getFocusedPortableTextEditor,
         getFocusedPortableTextInput,
         insertPortableText,
+        settleChromaticEndState,
         toggleHotkey,
       } = testHelpers()
       void render(<DecoratorsHarness fields={['defaultDecorators']} />)
@@ -160,6 +161,12 @@ describe('Portable Text Input', () => {
           await expect.element($decoratedText).toHaveTextContent(`${decorator.name} text 123`)
         }
       }
+      // The last keystrokes leave a validation run in flight; wait for it (and
+      // the Normal style label) so the archive is not taken mid re-render.
+      await settleChromaticEndState({
+        styleSelectText: /^Normal$/,
+        styleSelectRoot: '[data-testid="field-defaultDecorators"]',
+      })
     })
 
     describe('Toolbar buttons', () => {
