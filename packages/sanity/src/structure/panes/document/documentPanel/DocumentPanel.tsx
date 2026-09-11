@@ -242,6 +242,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       return <ArchivedReleaseDocumentBanner releaseId={archivedReleaseId} />
     }
 
+    const deletedDocumentBanners = activeView.type === 'form' ? <DeletedDocumentBanners /> : null
+
     const isScheduledRelease =
       isReleaseDocument(selectedPerspective) && isReleaseScheduledOrScheduling(selectedPerspective)
 
@@ -264,13 +266,16 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       })
     ) {
       return (
-        !isSelectedPerspectiveWriteable.result && (
-          <ChooseNewDocumentDestinationBanner
-            schemaType={schemaType}
-            selectedPerspective={selectedPerspective}
-            reason={isSelectedPerspectiveWriteable.reason}
-          />
-        )
+        <>
+          {!isSelectedPerspectiveWriteable.result && (
+            <ChooseNewDocumentDestinationBanner
+              schemaType={schemaType}
+              selectedPerspective={selectedPerspective}
+              reason={isSelectedPerspectiveWriteable.reason}
+            />
+          )}
+          {deletedDocumentBanners}
+        </>
       )
     }
 
@@ -379,7 +384,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
         <ReferenceChangedBanner />
         <DeprecatedDocumentTypeBanner />
         <CanvasLinkedBanner />
-        <DeletedDocumentBanners />
+        {deletedDocumentBanners}
         <UnpublishedDocumentBanner />
         <OpenReleaseToEditBanner
           documentId={displayed?._id ?? documentId}
