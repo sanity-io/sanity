@@ -5,6 +5,7 @@ import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
 
+import {testHelpers} from '../../../../test/browser/testHelpers'
 import {PopoverDialog} from './PopoverDialog'
 
 const theme = buildTheme()
@@ -33,6 +34,7 @@ function Harness() {
 
 describe('PopoverDialog', () => {
   it('positions the popover wrapper so change connectors subtract its scrollTop', async () => {
+    const {settleChromaticEndState} = testHelpers()
     await render(<Harness />)
     await expect.element(page.getByTestId('popover-dialog')).toBeVisible()
 
@@ -59,5 +61,14 @@ describe('PopoverDialog', () => {
         return stable >= 3
       })
       .toBe(true)
+
+    // The dialog's `TrapFocus autoFocus` never moves focus in this harness:
+    // react-focus-lock only activates when the current `activeElement` passes
+    // the `whiteList`, and without a `PortalProvider` that is `<body>` checked
+    // against the default `<div data-portal>`, so the Close button and its
+    // focus tooltip stay closed. Pin that end state rather than rely on it —
+    // the helper fails if any tooltip shows within the tooltip open delay.
+    await settleChromaticEndState()
+    expect(document.activeElement).toBe(document.body)
   })
 })
