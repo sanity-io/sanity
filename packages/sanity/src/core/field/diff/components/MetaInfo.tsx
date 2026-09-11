@@ -1,7 +1,9 @@
 import {Stack, Text} from '@sanity/ui'
-import {type ComponentType, type ReactNode} from 'react'
-import {styled} from 'styled-components'
+import {clsx} from 'clsx'
+import {type ComponentProps, type ComponentType, type ReactNode} from 'react'
 import {Box, Flex} from 'ui5'
+
+import {metaText} from './MetaInfo.css'
 
 /** @internal */
 export interface MetaInfoProps {
@@ -12,9 +14,11 @@ export interface MetaInfoProps {
   markRemoved?: boolean
 }
 
-const MetaText = styled(Text)`
-  color: inherit;
-`
+function MetaText(props: ComponentProps<typeof Text>) {
+  const {className, ...rest} = props
+
+  return <Text {...rest} className={clsx(metaText, className)} />
+}
 
 /** @internal */
 export function MetaInfo(props: MetaInfoProps) {
@@ -24,19 +28,14 @@ export function MetaInfo(props: MetaInfoProps) {
     <Flex padding={2} alignItems="center">
       {Icon && (
         <Box padding={2}>
-          <MetaText size={4} forwardedAs={markRemoved ? 'del' : 'div'}>
+          <MetaText size={4} as={markRemoved ? 'del' : 'div'}>
             <Icon />
           </MetaText>
         </Box>
       )}
 
       <Stack gap={2} paddingLeft={2}>
-        <MetaText
-          size={1}
-          weight="medium"
-          forwardedAs={markRemoved ? 'del' : 'h3'}
-          textOverflow="ellipsis"
-        >
+        <MetaText size={1} weight="medium" as={markRemoved ? 'del' : 'h3'} textOverflow="ellipsis">
           {title}
         </MetaText>
 
