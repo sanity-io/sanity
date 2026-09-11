@@ -11,7 +11,8 @@ export const customTextInputBox = style({
  */
 export const transparentInputBackground = style({})
 
-globalStyle(`${transparentInputBackground} input + span`, {
+// TextInput's Presentation span sets background-color on itself; the doubled class outranks it
+globalStyle(`${transparentInputBackground}${transparentInputBackground} input + span`, {
   background: 'transparent',
 })
 
