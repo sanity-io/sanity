@@ -5,17 +5,7 @@ import '../core/form/types/definitionExtensions'
 
 export {useCanvasCompanionDoc} from '../core/canvas/actions/useCanvasCompanionDoc'
 export {ChangeIndicator} from '../core/changeIndicators/ChangeIndicator'
-export {CommentDeleteDialog} from '../core/comments/components/CommentDeleteDialog'
-export {CommentsList} from '../core/comments/components/list/CommentsList'
-export {CommentsAuthoringPathProvider} from '../core/comments/context/authoring-path/CommentsAuthoringPathProvider'
-export {CommentsProvider} from '../core/comments/context/comments/CommentsProvider'
-export {CommentsEnabledProvider} from '../core/comments/context/enabled/CommentsEnabledProvider'
-export {
-  CommentsIntentProvider,
-  type CommentsIntentProviderProps,
-} from '../core/comments/context/intent/CommentsIntentProvider'
-export {useComments} from '../core/comments/hooks/useComments'
-export {useCommentsEnabled} from '../core/comments/hooks/useCommentsEnabled'
+export {type CommentsIntentProviderProps} from '../core/comments/context/intent/CommentsIntentProvider'
 export {
   type CommentBaseCreatePayload,
   type CommentContext,
@@ -43,9 +33,6 @@ export {
   type CommentUpdatePayload,
   type Loadable,
 } from '../core/comments/types'
-export {CommentsProvider as CommentsProviderV2} from '../core/comments-v2/context/comments/CommentsProvider'
-export {CommentsEnabledProvider as CommentsEnabledProviderV2} from '../core/comments-v2/context/enabled/CommentsEnabledProvider'
-export {useCommentsEnabled as useCommentsEnabledV2} from '../core/comments-v2/hooks/useCommentsEnabled'
 // oxlint-disable-next-line no-deprecated -- preserved for backwards compatibility
 export {DocumentStatus} from '../core/components/documentStatus/DocumentStatus'
 // oxlint-disable-next-line no-deprecated -- preserved for backwards compatibility

@@ -35,7 +35,9 @@ export {
   type TrackedArea,
   type TrackedChange,
 } from '../core/changeIndicators/types'
+export {CommentDeleteDialog} from '../core/comments/components/CommentDeleteDialog'
 export {CommentDisabledIcon} from '../core/comments/components/icons/CommentDisabledIcon'
+export {CommentsList} from '../core/comments/components/list/CommentsList'
 export {CommentInlineHighlightSpan} from '../core/comments/components/pte/CommentInlineHighlightSpan'
 export {
   CommentInput,
@@ -43,14 +45,23 @@ export {
   type CommentInputProps,
 } from '../core/comments/components/pte/comment-input/CommentInput'
 export {COMMENTS_INSPECTOR_NAME} from '../core/comments/constants'
+export {CommentsAuthoringPathProvider} from '../core/comments/context/authoring-path/CommentsAuthoringPathProvider'
+export {CommentsProvider} from '../core/comments/context/comments/CommentsProvider'
+export {CommentsEnabledProvider} from '../core/comments/context/enabled/CommentsEnabledProvider'
+export {CommentsIntentProvider} from '../core/comments/context/intent/CommentsIntentProvider'
 export {CommentsSelectedPathProvider} from '../core/comments/context/selected-path/CommentsSelectedPathProvider'
 export {type CommentsSelectedPath} from '../core/comments/context/selected-path/types'
 export {hasCommentMessageValue, isTextSelectionComment} from '../core/comments/helpers'
+export {useComments} from '../core/comments/hooks/useComments'
+export {useCommentsEnabled} from '../core/comments/hooks/useCommentsEnabled'
 export {useCommentsSelectedPath} from '../core/comments/hooks/useCommentsSelectedPath'
 export {useCommentsTelemetry} from '../core/comments/hooks/useCommentsTelemetry'
 export {buildCommentRangeDecorations} from '../core/comments/utils/inline-comments/buildCommentRangeDecorations'
 export {buildRangeDecorationSelectionsFromComments} from '../core/comments/utils/inline-comments/buildRangeDecorationSelectionsFromComments'
 export {buildTextSelectionFromFragment} from '../core/comments/utils/inline-comments/buildTextSelectionFromFragment'
+export {CommentsProvider as CommentsProviderV2} from '../core/comments-v2/context/comments/CommentsProvider'
+export {CommentsEnabledProvider as CommentsEnabledProviderV2} from '../core/comments-v2/context/enabled/CommentsEnabledProvider'
+export {useCommentsEnabled as useCommentsEnabledV2} from '../core/comments-v2/hooks/useCommentsEnabled'
 export {BetaBadge, type BetaBadgeProps} from '../core/components/BetaBadge'
 export {CapabilityGate} from '../core/components/CapabilityGate'
 export {Delay} from '../core/components/Delay'
