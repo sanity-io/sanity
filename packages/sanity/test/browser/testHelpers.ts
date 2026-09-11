@@ -12,6 +12,16 @@ const DEFAULT_TYPE_DELAY = 20
  */
 const TOOLTIP_FREE_WINDOW_MS = TOOLTIP_DELAY_PROPS.open + 100
 
+/**
+ * `@portabletext/editor` picks the DOM selection up through a leading+trailing
+ * throttle of this many milliseconds (`onDOMSelectionChange`), so its internal
+ * selection can trail the caret by one keystroke for up to this long.
+ */
+const PTE_SELECTION_THROTTLE_MS = 100
+
+/** Timer and render slack on top of the throttle before trusting the sync. */
+const PTE_SELECTION_SYNC_MARGIN_MS = 50
+
 /** Visible with `visibility` taken into account (`checkVisibility()` alone ignores it). */
 const isShown = (el: Element): el is HTMLElement =>
   el instanceof HTMLElement && el.checkVisibility({visibilityProperty: true})
@@ -538,6 +548,78 @@ export function testHelpers() {
       }
 
       throw new Error(`Timeout waiting for focused node text: "${text}"`)
+    },
+
+    /**
+     * Wait until the Portable Text Editor has taken over the current DOM
+     * selection, which must read as `text` (`''` for a collapsed caret).
+     *
+     * The editor syncs `selectionchange` into its own state through a
+     * leading+trailing throttle (`PTE_SELECTION_THROTTLE_MS`), so a toolbar
+     * action fired straight after Shift+Arrow ×4 or a double-click can run
+     * against the selection *before* the last keystroke: the link then covers
+     * "ink" instead of "link" (a different reference for the edit popover, so
+     * a different archive), or `addAnnotation` sees a collapsed selection and
+     * opens no edit dialog at all. The re-render that follows a sync also runs
+     * the editor's `validateSelection`, which writes the editor's selection
+     * back into the DOM when the two differ — so a keystroke that lands inside
+     * the throttle window of the previous one is silently undone. Any other
+     * render that touches the editable does the same: `TestForm` validates
+     * the document on every change, gated on `requestIdleCallback`, so the
+     * result for a URL typed into an annotation dialog lands during a later
+     * idle moment and can re-render the annotation span, which in Firefox
+     * also fires a `selectionchange` that re-arms the throttle. (`TestForm`
+     * aborts superseded runs, so this is at most one late render rather than
+     * one per keystroke.)
+     *
+     * Call this between making a selection and acting on it, and between
+     * consecutive selection-moving keystrokes whose outcome the test relies
+     * on. It resolves once the DOM selection is the expected text and neither
+     * a `selectionchange` nor a DOM mutation inside the editable has happened
+     * for longer than the throttle window, which is when the trailing sync
+     * has run and no re-render is about to undo it.
+     */
+    waitForPortableTextSelection: async (text: string) => {
+      // Events before this call are not observed, so the call time stands in
+      // for them: the trailing sync of an earlier event runs no later than
+      // one throttle window after it, which is no later than one after now.
+      let lastActivityAt = performance.now()
+      const touch = () => {
+        lastActivityAt = performance.now()
+      }
+      window.document.addEventListener('selectionchange', touch)
+      const anchor = window.getSelection()?.anchorNode
+      const editable =
+        (anchor instanceof Element ? anchor : anchor?.parentElement)?.closest('[data-pt-editor]') ??
+        window.document.activeElement?.closest('[data-pt-editor]') ??
+        null
+      const observer = new MutationObserver(touch)
+      if (editable) {
+        observer.observe(editable, {
+          attributes: true,
+          characterData: true,
+          childList: true,
+          subtree: true,
+        })
+      }
+      try {
+        await expect
+          .poll(
+            () => {
+              const current = window.getSelection()?.toString() ?? ''
+              if (current !== text) return `DOM selection is ${JSON.stringify(current)}`
+              const quietFor = performance.now() - lastActivityAt
+              return quietFor > PTE_SELECTION_THROTTLE_MS + PTE_SELECTION_SYNC_MARGIN_MS
+                ? 'synced'
+                : `quiet for ${Math.round(quietFor)}ms`
+            },
+            {interval: 25},
+          )
+          .toBe('synced')
+      } finally {
+        observer.disconnect()
+        window.document.removeEventListener('selectionchange', touch)
+      }
     },
 
     /**
