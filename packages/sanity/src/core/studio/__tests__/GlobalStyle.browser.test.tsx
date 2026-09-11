@@ -2,6 +2,7 @@
 // loads it, so load it here too.
 import 'ui5/styles.css'
 
+import {configure} from '@chromatic-com/vitest'
 import {ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {ColorSchemeValueContext} from 'sanity/_singletons'
@@ -57,6 +58,10 @@ function injectedRootRules() {
 }
 
 describe('GlobalStyle', () => {
+  // Nothing visible is rendered here — every assertion is on computed styles — so a Chromatic
+  // snapshot of each end state would be a blank frame.
+  configure({disableAutoSnapshot: true})
+
   it('starts from the ui5 reset, which lets the OS decide', () => {
     expect(documentColorScheme()).toBe('light dark')
   })
