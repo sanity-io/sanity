@@ -1,8 +1,9 @@
-import {isReferenceSchemaType, type SchemaType} from '@sanity/types'
+import {isPrimitiveSchemaType, isReferenceSchemaType, type SchemaType} from '@sanity/types'
 import {type ComponentType} from 'react'
 
 import {type FIXME} from '../../../FIXME'
 import {PreviewItem} from '../../inputs/arrays/ArrayOfObjectsInput/List/PreviewItem'
+import {ItemRow} from '../../inputs/arrays/ArrayOfPrimitivesInput/ItemRow'
 import {ReferenceItem} from '../../inputs/ReferenceInput/ReferenceItem'
 import {type ItemProps} from '../../types/itemProps'
 
@@ -13,6 +14,10 @@ export function defaultResolveItemComponent(
 
   if (isReferenceSchemaType(schemaType)) {
     return ReferenceItem as FIXME
+  }
+
+  if (isPrimitiveSchemaType(schemaType)) {
+    return ItemRow as FIXME
   }
 
   return PreviewItem as FIXME
