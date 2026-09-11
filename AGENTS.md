@@ -360,11 +360,16 @@ fails when a public entry's built `.d.ts` exports an `@internal` declaration.
 Rules that follow from this:
 
 - A new `@internal` export goes into the dangerous internals barrel, never into `index.ts`,
-  `structure.ts`, `router.ts` or `presentation.ts`. If code outside `src/core` needs it
-  (`src/structure`, `src/presentation`, `src/desk`, `@sanity/vision`, the dev studios), import it
-  from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`; `src/core` keeps
-  using relative imports (the boundaries rules forbid core from importing the entry, which would
-  pull the whole barrel into `lib/index.js`).
+  `structure.ts`, `router.ts` or `presentation.ts`. Consumers outside `packages/sanity`
+  (`@sanity/vision`, the dev studios, plugins) import it from
+  `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Inside the package,
+  `src/core` and `src/structure` import internals relatively; the boundaries rules forbid both
+  from importing the entry. Core importing it would pull the whole barrel into `lib/index.js`;
+  structure importing it is a cycle, because the barrel re-exports structure modules
+  (`DocumentPane`, `Pane`, `StructureToolProvider`, …), which in vitest also makes
+  `vi.mock('sanity/_dangerously…', importOriginal)` invisible to the component under test.
+  Structure tests mock the source module they need (`vi.mock('../../core/hooks/useX', …)`), like
+  core tests do. `src/presentation` is not re-exported by the barrel and may import the entry.
 - A symbol carries exactly one release tag. `@internal` plus `@beta`/`@public` on the same
   declaration is a bug, not a way to say "beta but hidden" — use `@hidden` with `@beta` for that.
 - Tagging something `@public`/`@beta` moves it onto a public entry; tagging it `@internal` moves
