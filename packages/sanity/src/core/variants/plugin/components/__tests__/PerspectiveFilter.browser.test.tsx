@@ -80,11 +80,13 @@ function Fixture({withRemove}: {withRemove?: boolean}) {
 }
 
 // One complete rectangle per sample, rounded, so `expectStable` compares the
-// whole menu position at once rather than one edge at a time.
+// whole menu position at once rather than one edge at a time. A hidden or
+// not-yet-laid-out (zero-size) menu reads as `null`, never as a rectangle.
 const pillMenuBox = () => {
   const el = window.document.querySelector('[data-testid="pill-menu-content"]')
-  if (!(el instanceof HTMLElement) || !el.checkVisibility()) return null
+  if (!(el instanceof HTMLElement) || !el.checkVisibility({visibilityProperty: true})) return null
   const r = el.getBoundingClientRect()
+  if (r.width === 0 || r.height === 0) return null
   return `${Math.round(r.left)},${Math.round(r.top)},${Math.round(r.right)},${Math.round(r.bottom)}`
 }
 
@@ -149,9 +151,10 @@ describe('perspective bar filter pill as a menu trigger', () => {
     // one complete rectangle to hold still, then check the anchoring on that
     // single sample. Below the trigger, and overlapping it horizontally: a menu
     // that has drifted to the other edge of the viewport is the reported symptom.
-    // (A fresh Symbol per hidden sample can never match, so a menu that closes
-    // times out here instead of passing on a stale rectangle.)
-    const stableBox = await expectStable(() => pillMenuBox() ?? Symbol('hidden'))
+    // (A fresh Symbol per hidden or zero-size sample can never match, so a menu
+    // that closes, or has not laid out yet, times out here instead of passing
+    // on a stale or empty rectangle.)
+    const stableBox = await expectStable(() => pillMenuBox() ?? Symbol('hidden or unlaid-out'))
     if (typeof stableBox !== 'string') throw new Error('pill menu is not visible')
     const menuRect = parseBox(stableBox)
     expect(menuRect.top).toBeGreaterThanOrEqual(triggerRect.top)
