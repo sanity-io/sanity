@@ -11,6 +11,7 @@ import words from 'lodash-es/words.js'
 
 import {compileSortExpression} from '../common/compileSortExpression'
 import {deriveSearchWeightsFromType} from '../common/deriveSearchWeightsFromType'
+import {getExcludeAgentVersionsFilter} from '../common/excludeAgentVersionsFilter'
 import {toOrderClause} from '../common/toOrderClause'
 import {
   ORDERINGS_PROJECTION_KEY,
@@ -133,11 +134,13 @@ export function createSearchQuery(
 
   // Extract search terms from string query, factoring in phrases wrapped in quotes
   const terms = extractTermsFromQuery(searchTerms.query)
+  const excludeAgentVersions = getExcludeAgentVersionsFilter(perspective)
 
   // Construct search filters used in this GROQ query
   const filters = [
     '_type in $__types',
     ...createConstraints(terms, specs),
+    excludeAgentVersions ?? '',
     filter ? `(${filter})` : '',
     searchTerms.filter ? `(${searchTerms.filter})` : '',
   ].filter(Boolean)
