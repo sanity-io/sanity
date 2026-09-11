@@ -1,10 +1,15 @@
 import {defineEvent} from '@sanity/telemetry'
 
+import {type BaseOptions} from '../types'
+
+/**
+ * The context the action was triggered from. Emitted verbatim, so the camelCase
+ * spelling is fixed by both the public options type and the existing time series.
+ */
+export type CopyPasteContext = BaseOptions['context']['source']
+
 interface FieldCopiedInfo {
-  /**
-   * The context the action was triggered from
-   */
-  context: 'fieldAction' | 'documentFieldAction' | 'keyboardShortcut' | 'arrayItem' | 'unknown'
+  context: CopyPasteContext
   /**
    * The schema type(s) that was copied
    */
@@ -12,10 +17,7 @@ interface FieldCopiedInfo {
 }
 
 interface FieldPastedInfo {
-  /**
-   * The context the action was triggered from
-   */
-  context: 'fieldAction' | 'documentFieldAction' | 'keyboardShortcut' | 'arrayItem' | 'unknown'
+  context: CopyPasteContext
   /**
    * The schema(s) type that was copied
    */

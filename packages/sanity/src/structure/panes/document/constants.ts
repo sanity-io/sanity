@@ -20,3 +20,12 @@ export const INCOMING_REFERENCES_INSPECTOR_NAME = 'sanity/structure/incoming-ref
 
 // timeline
 export const TIMELINE_LIST_WRAPPER_ID = 'timeline-list-wrapper'
+
+// history / review changes inspector tabs
+const CHANGES_INSPECTOR_TABS = ['history', 'review'] as const
+
+export type ChangesInspectorTab = (typeof CHANGES_INSPECTOR_TABS)[number]
+
+export function resolveChangesInspectorTab(tab: string | undefined): ChangesInspectorTab {
+  return CHANGES_INSPECTOR_TABS.find((candidate) => candidate === tab) ?? CHANGES_INSPECTOR_TABS[0]
+}

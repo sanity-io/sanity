@@ -1,3 +1,4 @@
+import {useTelemetry} from '@sanity/telemetry/react'
 import {type ObjectSchemaType, type Path} from '@sanity/types'
 import {Stack} from '@sanity/ui'
 import {Fragment, type HTMLAttributes, startTransition, useCallback, useMemo, useState} from 'react'
@@ -12,6 +13,7 @@ import {
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useDocumentPairPermissions} from '../../../store/grants/documentPairPermissions'
 import {type FieldChangeNode} from '../../types'
+import {DocumentChangesReverted} from '../__telemetry__/diff.telemetry'
 import {undoChange} from '../changes/undoChange'
 import {useDocumentChange} from '../hooks/useDocumentChange'
 import {ChangeBreadcrumb} from './ChangeBreadcrumb'
@@ -90,6 +92,7 @@ export function FieldChange(
     startTransition(() => _setButtonElement(element))
   }
   const {t} = useTranslation()
+  const telemetry = useTelemetry()
 
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id: documentId,
@@ -99,9 +102,10 @@ export function FieldChange(
   })
 
   const handleRevertChanges = useCallback(() => {
+    telemetry.log(DocumentChangesReverted, {scope: 'field', changeCount: 1})
     undoChange(change, rootDiff, ops)
     setConfirmRevertOpen(false)
-  }, [change, rootDiff, ops])
+  }, [change, rootDiff, ops, telemetry])
 
   const handleRevertChangesConfirm = useCallback(() => {
     setConfirmRevertOpen(true)

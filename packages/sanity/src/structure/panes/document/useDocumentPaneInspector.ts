@@ -4,7 +4,13 @@ import {type DocumentInspector, useSource} from 'sanity'
 import {type PaneRouterContextValue} from '../../components/paneRouter/types'
 import {type PaneMenuItem} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
-import {HISTORY_INSPECTOR_NAME, INSPECT_ACTION_PREFIX} from './constants'
+import {type DocumentHistoryOpenPath} from './__telemetry__/documentPanes.telemetry'
+import {
+  HISTORY_INSPECTOR_NAME,
+  INSPECT_ACTION_PREFIX,
+  resolveChangesInspectorTab,
+} from './constants'
+import {useDocumentHistoryTelemetry} from './useDocumentHistoryTelemetry'
 
 export function useDocumentPaneInspector({
   documentId,
@@ -48,6 +54,9 @@ export function useDocumentPaneInspector({
   )
 
   const changesOpen = currentInspector?.name === HISTORY_INSPECTOR_NAME
+  const activeTab = resolveChangesInspectorTab(params.changesInspectorTab)
+
+  const {recordOpenIntent, recordOpenTab} = useDocumentHistoryTelemetry({changesOpen, activeTab})
 
   const closeInspector = useCallback(
     (closeInspectorName?: string) => {
@@ -115,9 +124,19 @@ export function useDocumentPaneInspector({
       setInspectorName(nextInspector.name)
       inspectParamRef.current = nextInspector.name
 
-      setParams({...result.params, ...paneParams, inspect: nextInspector.name})
+      const nextParams: Record<string, string | undefined> = {
+        ...result.params,
+        ...paneParams,
+        inspect: nextInspector.name,
+      }
+
+      if (nextInspector.name === HISTORY_INSPECTOR_NAME) {
+        recordOpenTab(resolveChangesInspectorTab(nextParams.changesInspectorTab))
+      }
+
+      setParams(nextParams)
     },
-    [currentInspector, inspectors, params, setParams],
+    [currentInspector, inspectors, params, recordOpenTab, setParams],
   )
   const handleHistoryClose = useCallback(() => {
     if (historyInspector) {
@@ -125,15 +144,19 @@ export function useDocumentPaneInspector({
     }
   }, [closeInspector, historyInspector])
 
-  const handleHistoryOpen = useCallback(() => {
-    if (!features.reviewChanges) {
-      return
-    }
+  const handleHistoryOpen = useCallback(
+    (openPath: DocumentHistoryOpenPath) => {
+      if (!features.reviewChanges) {
+        return
+      }
 
-    if (historyInspector) {
-      openInspector(historyInspector.name, {changesInspectorTab: 'review'})
-    }
-  }, [features.reviewChanges, openInspector, historyInspector])
+      if (historyInspector) {
+        recordOpenIntent(openPath)
+        openInspector(historyInspector.name, {changesInspectorTab: 'review'})
+      }
+    },
+    [features.reviewChanges, openInspector, historyInspector, recordOpenIntent],
+  )
 
   const inspectOpen = params.inspect === 'on'
 
@@ -168,13 +191,23 @@ export function useDocumentPaneInspector({
         if (nextInspector.name === inspectorName) {
           closeInspector(nextInspector.name)
         } else {
+          if (nextInspector.name === HISTORY_INSPECTOR_NAME) {
+            recordOpenIntent('pane_menu')
+          }
           openInspector(nextInspector.name)
         }
         return true
       }
       return false
     },
-    [closeInspector, inspectorName, inspectors, openInspector, toggleLegacyInspect],
+    [
+      closeInspector,
+      inspectorName,
+      inspectors,
+      openInspector,
+      recordOpenIntent,
+      toggleLegacyInspect,
+    ],
   )
 
   return {
