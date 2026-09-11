@@ -103,7 +103,7 @@ function PropertyRowsGrid({
           </Text>
           {/* Pure-text value on one left edge; a long value truncates (title tooltip shows the full
               text) rather than wrapping and breaking the single-line grid. */}
-          <Box style={{minWidth: 0}}>
+          <Box>
             {typeof row.value === 'string' ? (
               <Text size={1} textOverflow="ellipsis" title={row.value}>
                 {row.value}
