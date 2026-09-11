@@ -4,6 +4,7 @@ import {act, renderHook} from '@testing-library/react'
 import {afterEach, beforeEach, describe, expect, it, type MockedFunction, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {useSchema} from '../../../../../hooks/useSchema'
 import {type SearchTerms} from '../../../../../search/common/types'
 import {filterDefinitions} from '../definitions/defaultFilters'
 import {createFieldDefinitions} from '../definitions/fields'
@@ -65,7 +66,9 @@ const constructRecentSearchesStore = async () => {
 
   return renderHook(
     () => {
-      return useRecentSearchesStore()
+      const store = useRecentSearchesStore()
+      const schema = useSchema()
+      return {...store, schema}
     },
     {wrapper: TestWrapper},
   )
@@ -278,7 +281,9 @@ describe('search-store', () => {
       const recentTerms = result.current.getRecentSearches()
 
       expect(recentTerms.length).toEqual(1)
-      expect(recentTerms[0]).toMatchObject(searchTerms)
+      expect(recentTerms[0]).toMatchObject({query: searchTerms.query})
+      expect(recentTerms[0]?.types).toHaveLength(1)
+      expect(recentTerms[0]?.types[0]).toBe(result.current.schema.get('article'))
     })
 
     it('should remove duplicate terms', async () => {
