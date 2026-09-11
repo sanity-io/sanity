@@ -66,16 +66,17 @@ export function FilterForm({filter}: FilterFormProps) {
     return <FilterError padding={4} />
   }
 
-  // Flex order is reversed to ensure form inputs are focusable first
+  // Flex order is reversed to ensure form inputs are focusable first.
+  // Suspense wraps FocusLock so autofocus runs only after the lazy value input is in the DOM.
   return (
     <ErrorBoundary onCatch={handleCatchError}>
-      <FocusLock autoFocus={!supportsTouch} returnFocus>
-        <Flex flexDirection="column-reverse">
-          {/* Value */}
-          {Component && (
-            <Card borderTop padding={3}>
-              {/* Operator input components are code-split (see definitions/operators/lazyInputComponents) */}
-              <Suspense fallback={<LoadingBlock />}>
+      <Suspense fallback={<LoadingBlock />}>
+        <FocusLock autoFocus={!supportsTouch} returnFocus>
+          <Flex flexDirection="column-reverse">
+            {/* Value */}
+            {Component && (
+              <Card borderTop padding={3}>
+                {/* Operator input components are code-split (see definitions/operators/lazyInputComponents) */}
                 <Component
                   // re-render on new operators
                   key={filter.operatorType}
@@ -83,40 +84,40 @@ export function FilterForm({filter}: FilterFormProps) {
                   onChange={handleValueChange}
                   value={filter.value}
                 />
-              </Suspense>
-            </Card>
-          )}
+              </Card>
+            )}
 
-          {/* Title, description and operator */}
-          <Card padding={3}>
-            <Stack gap={3}>
-              <Flex alignItems="flex-start" gap={3} justifyContent="space-between">
-                <Box paddingLeft={1} paddingRight={2} paddingY={1}>
-                  <FilterDetails filter={filter} />
-                </Box>
+            {/* Title, description and operator */}
+            <Card padding={3}>
+              <Stack gap={3}>
+                <Flex alignItems="flex-start" gap={3} justifyContent="space-between">
+                  <Box paddingLeft={1} paddingRight={2} paddingY={1}>
+                    <FilterDetails filter={filter} />
+                  </Box>
 
-                {fullscreen && (
-                  <Button
-                    icon={TrashIcon}
-                    mode="bleed"
-                    onClick={handleClose}
-                    tone="critical"
-                    tooltipProps={{content: 'Remove filter'}}
-                  />
+                  {fullscreen && (
+                    <Button
+                      icon={TrashIcon}
+                      mode="bleed"
+                      onClick={handleClose}
+                      tone="critical"
+                      tooltipProps={{content: 'Remove filter'}}
+                    />
+                  )}
+                </Flex>
+                {filterDefinition?.description && (
+                  <Card border padding={3} radius={2} tone="transparent">
+                    <Text muted size={1}>
+                      {filterDefinition.description}
+                    </Text>
+                  </Card>
                 )}
-              </Flex>
-              {filterDefinition?.description && (
-                <Card border padding={3} radius={2} tone="transparent">
-                  <Text muted size={1}>
-                    {filterDefinition.description}
-                  </Text>
-                </Card>
-              )}
-              <OperatorsMenuButton filter={filter} operator={operator} />
-            </Stack>
-          </Card>
-        </Flex>
-      </FocusLock>
+                <OperatorsMenuButton filter={filter} operator={operator} />
+              </Stack>
+            </Card>
+          </Flex>
+        </FocusLock>
+      </Suspense>
     </ErrorBoundary>
   )
 }
