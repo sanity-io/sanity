@@ -1,8 +1,9 @@
-import {Badge, Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, Box, Card, Stack, Text} from '@sanity/ui'
 import {startTransition, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {combineLatest} from 'rxjs'
 import {useDocumentPreviewStore, useDocumentValues} from 'sanity'
+import {Flex} from 'ui5'
 
 /**
  * Reproduces a customer-reported stall: document panes that never finish
@@ -94,7 +95,7 @@ function RateBadge({running}: {running: boolean}) {
     return () => clearInterval(interval)
   }, [running])
   return (
-    <Flex gap={2} align="center">
+    <Flex gap={2} alignItems="center">
       <Badge tone={rate > 50 ? 'critical' : 'positive'}>{rate} renders/s</Badge>
       <Text size={0} muted>
         {total} total
@@ -180,7 +181,7 @@ export function RenderLoopRepro() {
           </Stack>
         </Card>
         <DocumentOpenSimulation />
-        <Flex align="center" justify="space-between">
+        <Flex alignItems="center" justifyContent="space-between">
           <Text size={1} weight="medium">
             {loopRunning ? 'Preview rows (looping)' : 'Preview rows removed — loop over'}
           </Text>

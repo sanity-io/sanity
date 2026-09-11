@@ -19,7 +19,6 @@ import {
   Card,
   Container,
   Dialog,
-  Flex,
   PortalProvider,
   Select,
   Spinner,
@@ -37,7 +36,7 @@ import {type ComponentType, type ReactNode, useEffect, useMemo, useRef, useState
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useDocumentStore} from 'sanity'
-import {Box, Grid} from 'ui5'
+import {Box, Flex, Grid} from 'ui5'
 
 import {idSlug} from './acks'
 import {ChartLegend} from './ChartLegend'
@@ -161,7 +160,7 @@ function InfoButton(props: {
                     rel="noreferrer"
                     aria-label="Learn about this metric on web.dev (opens in a new tab)"
                   >
-                    <Flex align="center" gap={1}>
+                    <Flex alignItems="center" gap={1}>
                       <LaunchIcon />
                       <Text size={1}>About this metric (web.dev)</Text>
                     </Flex>
@@ -175,7 +174,7 @@ function InfoButton(props: {
                     rel="noreferrer"
                     aria-label="View scenario source (opens in a new tab)"
                   >
-                    <Flex align="center" gap={1}>
+                    <Flex alignItems="center" gap={1}>
                       <LaunchIcon />
                       <Text size={1}>View scenario source</Text>
                     </Flex>
@@ -401,7 +400,7 @@ function SeriesCard(props: {
             badge with the latest value — the number sits next to the
             percentage it contextualizes instead of floating top-right while
             the badge wraps under a long title. */}
-        <Flex align="center" justify="space-between" gap={3}>
+        <Flex alignItems="center" justifyContent="space-between" gap={3}>
           {/* flexBasis/flexGrow rather than `flex`: this is ui5's Box, which
               (unlike @sanity/ui's) has no `flex` prop — same pair
               RunDetailPopover's header uses. */}
@@ -435,7 +434,7 @@ function SeriesCard(props: {
               </Text>
             )}
           </Box>
-          <Flex align="center" gap={2} style={{flexShrink: 0}}>
+          <Flex alignItems="center" gap={2} flexShrink={0}>
             {(drift || silenced) && (onAck || onUnack) && (
               <AckMenu
                 seriesKey={(drift ?? silenced)!.seriesKey}
@@ -485,7 +484,7 @@ function SeriesCard(props: {
         {(badge || silenced || latest) && (
           // Value first, badge after — "64ms ↓ -22%" reads as a statement
           // qualified by its move, where badge-first read as two stats
-          <Flex align="center" gap={2} style={{flexWrap: 'wrap'}}>
+          <Flex alignItems="center" gap={2} flexWrap="wrap">
             {latest && (
               <Text
                 size={1}
@@ -1108,8 +1107,8 @@ export function TrendsTool() {
       <Card ref={setPortalElement} height="fill" overflow="auto">
         <Container width={3} padding={4}>
           <Stack gap={4}>
-            <Flex align="flex-start" justify="space-between" gap={3}>
-              <Flex align="center" gap={2}>
+            <Flex alignItems="flex-start" justifyContent="space-between" gap={3}>
+              <Flex alignItems="center" gap={2}>
                 <Text size={2} weight="semibold">
                   Studio performance trends
                 </Text>
@@ -1124,7 +1123,7 @@ export function TrendsTool() {
                   onClick={() => setShowHelp((v) => !v)}
                 />
               </Flex>
-              <Flex align="center" gap={2} style={{flexShrink: 0}}>
+              <Flex alignItems="center" gap={2} flexShrink={0}>
                 {/* Data source is a debug affordance: always available in dev,
                     but in prod it only appears once a demo is active (via the
                     ?source= param) so it's a quiet way back to live, not chrome
@@ -1194,7 +1193,7 @@ export function TrendsTool() {
               </Card>
             )}
             {loading && (
-              <Flex align="center" justify="center" padding={6}>
+              <Flex alignItems="center" justifyContent="center" padding={6}>
                 <Spinner muted />
               </Flex>
             )}
@@ -1226,7 +1225,7 @@ export function TrendsTool() {
                         aria-controls={`group-panel-${tab.id}`}
                         icon={GROUP_ICONS[tab.id]}
                         label={
-                          <Flex align="center" gap={2}>
+                          <Flex alignItems="center" gap={2}>
                             <span>{tab.title}</span>
                             {count > 0 && (
                               <Badge
@@ -1297,7 +1296,7 @@ export function TrendsTool() {
                         <Stack gap={6} paddingTop={3}>
                           {vitalGroups.map((section) => (
                             <Stack key={section.vital} gap={4}>
-                              <Flex align="baseline" gap={2}>
+                              <Flex alignItems="baseline" gap={2}>
                                 <Text size={1} weight="semibold">
                                   {section.vital}
                                 </Text>

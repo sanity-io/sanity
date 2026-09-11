@@ -1,5 +1,5 @@
-import {Card, Flex, Heading, Stack, Text} from '@sanity/ui'
-import {Box} from 'ui5'
+import {Card, Heading, Stack, Text} from '@sanity/ui'
+import {Flex, Box} from 'ui5'
 
 import {useQuery} from './loader'
 
@@ -41,7 +41,7 @@ export function InitialValues(): React.JSX.Element {
       </Box>
       {data.map((item, i) => (
         <Card key={item._id} padding={4} shadow={2} radius={2}>
-          <Flex align="flex-start" justify="space-between" gap={3}>
+          <Flex alignItems="flex-start" justifyContent="space-between" gap={3}>
             <Stack gap={2}>
               <Heading as="h1" size={1}>
                 {item.title}

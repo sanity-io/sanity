@@ -440,6 +440,9 @@ importers:
       styled-components:
         specifier: 'catalog:'
         version: 6.5.3(react-dom@19.3.0)(react@19.3.0)
+      ui5:
+        specifier: 'catalog:'
+        version: '@sanity/ui@5.0.0-alpha.10(react-dom@19.3.0)(react@19.3.0)'
     devDependencies:
       '@types/react':
         specifier: 'catalog:'

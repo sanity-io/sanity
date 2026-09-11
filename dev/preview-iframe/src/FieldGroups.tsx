@@ -1,5 +1,5 @@
-import {Card, Flex, Spinner, Stack, Text} from '@sanity/ui'
-import {Box} from 'ui5'
+import {Card, Spinner, Stack, Text} from '@sanity/ui'
+import {Flex, Box} from 'ui5'
 
 import {useQuery} from './loader'
 
@@ -40,10 +40,10 @@ export function FieldGroups(): React.JSX.Element {
   if (loading) {
     return (
       <Flex
-        align="center"
-        direction="column"
-        height="fill"
-        justify="center"
+        alignItems="center"
+        flexDirection="column"
+        height="100%"
+        justifyContent="center"
         style={{width: '100%'}}
       >
         <Spinner />
