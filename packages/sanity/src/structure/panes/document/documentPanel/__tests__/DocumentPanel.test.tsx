@@ -1,8 +1,10 @@
 import {render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import {PerspectiveContext} from 'sanity/_singletons'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {perspectiveContextValueMock} from '../../../../__mocks__/usePerspective.mock'
 import {structureUsEnglishLocaleBundle} from '../../../../i18n'
 import {useStructureTool} from '../../../../useStructureTool'
 import {useDocumentPane} from '../../useDocumentPane'
@@ -30,10 +32,6 @@ vi.mock('../../useDocumentPane', () => ({
 
 vi.mock('../../../../hasObsoleteDraft', () => ({
   hasObsoleteDraft: vi.fn(() => ({result: false})),
-}))
-
-vi.mock('../../../../mustChooseNewDocumentDestination', () => ({
-  mustChooseNewDocumentDestination: vi.fn(() => false),
 }))
 
 vi.mock('../header/DocumentPanelSubHeader', () => ({
@@ -80,6 +78,11 @@ vi.mock('sanity', async (importOriginal) => ({
 
 const mockUseDocumentPane = vi.mocked(useDocumentPane)
 const mockUseStructureTool = vi.mocked(useStructureTool)
+
+const publishedPerspectiveContextValue = {
+  ...perspectiveContextValueMock,
+  selectedPerspective: 'published' as const,
+}
 
 const splitPanesFeatures = {resizablePanes: true, splitPanes: true}
 const collapsedLayoutFeatures = {resizablePanes: false, splitPanes: false}
@@ -158,5 +161,51 @@ describe('DocumentPanel form persistence', () => {
     expect(screen.getByTestId('document-panel-form-view')).toBeVisible()
     expect(screen.getByTestId('form-state')).toHaveTextContent('1')
     expect(screen.getByTestId('fullscreen-pte')).toBeVisible()
+  })
+})
+
+describe('DocumentPanel banners', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockUseStructureTool.mockReturnValue({
+      features: splitPanesFeatures,
+    } as ReturnType<typeof useStructureTool>)
+  })
+
+  function deletedDocumentPaneValue({isDeleted}: {isDeleted: boolean}) {
+    return {
+      ...documentPaneValue(),
+      editState: {ready: true, draft: null, published: null, version: null},
+      isDeleted,
+      isDeleting: false,
+    } as unknown as ReturnType<typeof useDocumentPane>
+  }
+
+  async function renderBanners() {
+    const wrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
+    return render(
+      <PerspectiveContext.Provider value={publishedPerspectiveContextValue}>
+        {renderDocumentPanel()}
+      </PerspectiveContext.Provider>,
+      {wrapper},
+    )
+  }
+
+  it('shows the deleted document banner alongside the choose destination banner', async () => {
+    mockUseDocumentPane.mockReturnValue(deletedDocumentPaneValue({isDeleted: true}))
+
+    await renderBanners()
+
+    expect(screen.getByTestId('choose-new-document-destination-banner')).toBeInTheDocument()
+    expect(screen.getByTestId('deleted-document-banner')).toBeInTheDocument()
+  })
+
+  it('shows only the choose destination banner when the document was never created', async () => {
+    mockUseDocumentPane.mockReturnValue(deletedDocumentPaneValue({isDeleted: false}))
+
+    await renderBanners()
+
+    expect(screen.getByTestId('choose-new-document-destination-banner')).toBeInTheDocument()
+    expect(screen.queryByTestId('deleted-document-banner')).toBeNull()
   })
 })

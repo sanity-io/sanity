@@ -86,6 +86,7 @@ export const ChooseNewDocumentDestinationBanner: ComponentType<Props> = ({
     <Banner
       tone="caution"
       icon={WarningOutlineIcon}
+      data-testid="choose-new-document-destination-banner"
       content={
         <Flex alignItems="center" gap={2}>
           <Text size={1}>
