@@ -1,128 +1,53 @@
-import {css, styled} from 'styled-components'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 import {Box} from 'ui5'
 
-const INDICATOR_LEFT_OFFSET = 20
-const INDICATOR_WIDTH = 1
-const INDICATOR_COLOR_VAR_NAME = '--card-border-color'
-const INDICATOR_BOTTOM_OFFSET = 4
+import {
+  menuItemIndicator,
+  menuItemIndicatorFirst,
+  menuItemIndicatorInRange,
+  menuItemIndicatorInRangeTail,
+  menuItemIndicatorLast,
+  menuLabelIndicator,
+  menuLabelIndicatorWithinRange,
+} from './PerspectiveLayerIndicator.css'
 
-export const GlobalPerspectiveMenuItemIndicator = styled.div<{
-  $inRange: boolean
-  $last: boolean
-  $first: boolean
-  $isDefaultPerspective: boolean
-}>(
-  ({$inRange, $last, $first, $isDefaultPerspective}) => css`
-    position: relative;
+export function GlobalPerspectiveMenuItemIndicator(
+  props: ComponentProps<'div'> & {
+    $inRange: boolean
+    $last: boolean
+    $first: boolean
+    $isDefaultPerspective: boolean
+  },
+) {
+  const {$inRange, $last, $first, $isDefaultPerspective, className, ...rest} = props
 
-    --indicator-left: ${INDICATOR_LEFT_OFFSET}px;
-    --indicator-width: ${INDICATOR_WIDTH}px;
-    --indicator-color: var(${INDICATOR_COLOR_VAR_NAME});
-    --indicator-bottom: ${INDICATOR_BOTTOM_OFFSET}px;
+  return (
+    <div
+      {...rest}
+      className={clsx(
+        menuItemIndicator,
+        $inRange &&
+          !$last &&
+          menuItemIndicatorInRangeTail[$isDefaultPerspective ? 'default' : 'other'],
+        $inRange && menuItemIndicatorInRange,
+        $first && menuItemIndicatorFirst,
+        $last && menuItemIndicatorLast,
+        className,
+      )}
+    />
+  )
+}
 
-    --indicator-in-range-height: 16.5px;
+export function GlobalPerspectiveMenuLabelIndicator(
+  props: ComponentProps<typeof Box> & {$withinRange: boolean},
+) {
+  const {$withinRange, className, ...rest} = props
 
-    ${
-      $inRange &&
-      !$last &&
-      css`
-        &:after {
-          content: '';
-          display: block;
-          position: absolute;
-          left: var(--indicator-left);
-          bottom: -var(--indicator-bottom);
-          width: var(--indicator-width);
-          height: ${
-            $isDefaultPerspective
-              ? 'calc(var(--indicator-bottom) + 12px)'
-              : 'var(--indicator-bottom)'
-          };
-          background-color: var(--card-border-color);
-        }
-      `
-    }
-
-    ${
-      $inRange &&
-      css`
-        > [data-ui='MenuItem'] {
-          position: relative;
-
-          &:before,
-          &:after {
-            content: '';
-            display: block;
-            position: absolute;
-            left: var(--indicator-left);
-            width: var(--indicator-width);
-            background-color: var(--card-border-color);
-          }
-
-          &:before {
-            top: 0;
-            height: var(--indicator-in-range-height);
-          }
-
-          &:after {
-            top: var(--indicator-in-range-height);
-            bottom: 0;
-          }
-        }
-      `
-    }
-
-    ${
-      $first &&
-      css`
-        > [data-ui='MenuItem']:after {
-          margin-top: -3px;
-          border-top-left-radius: ${INDICATOR_WIDTH}px;
-          border-top-right-radius: ${INDICATOR_WIDTH}px;
-        }
-        > [data-ui='MenuItem']:before {
-          display: none;
-        }
-      `
-    }
-
-    ${
-      $last &&
-      css`
-        > [data-ui='MenuItem']:before {
-          // dot diameter (5px) - 1.6px stroke divided by 2
-          padding-bottom: 1.7px;
-          border-bottom-left-radius: ${INDICATOR_WIDTH}px;
-          border-bottom-right-radius: ${INDICATOR_WIDTH}px;
-        }
-        > [data-ui='MenuItem']:after {
-          display: none;
-        }
-      `
-    }
-  `,
-)
-
-export const GlobalPerspectiveMenuLabelIndicator = styled(Box)<{$withinRange: boolean}>(
-  ({$withinRange}) => css`
-    position: relative;
-    // 4px padding + 33px release indicator width + 4px gap
-    padding-left: 41px;
-
-    ${
-      $withinRange &&
-      css`
-        &:before {
-          content: '';
-          display: block;
-          position: absolute;
-          left: ${INDICATOR_LEFT_OFFSET}px;
-          top: -8px;
-          bottom: -${INDICATOR_BOTTOM_OFFSET}px;
-          width: ${INDICATOR_WIDTH}px;
-          background-color: var(${INDICATOR_COLOR_VAR_NAME});
-        }
-      `
-    }
-  `,
-)
+  return (
+    <Box
+      {...rest}
+      className={clsx(menuLabelIndicator, $withinRange && menuLabelIndicatorWithinRange, className)}
+    />
+  )
+}

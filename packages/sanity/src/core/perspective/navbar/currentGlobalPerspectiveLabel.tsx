@@ -1,9 +1,9 @@
 import {type ReleaseDocument} from '@sanity/client'
 // oxlint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
 import {Button, Text} from '@sanity/ui'
+import {clsx} from 'clsx'
 import {useMemo, type RefAttributes} from 'react'
 import {IntentLink} from 'sanity/router'
-import {styled} from 'styled-components'
 import {Box} from 'ui5'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
@@ -14,13 +14,9 @@ import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseI
 import {isDraftPerspective, isPublishedPerspective} from '../../releases/util/util'
 import {isAgentBundleName} from '../../store/agent/createAgentBundlesStore'
 import {useAgentBundles} from '../../store/agent/useAgentBundles'
-import {oversizedButtonStyle} from '../styles'
+import {oversizedButtonStyle} from '../styles.css'
 import {type TargetPerspective} from '../types'
 import {AnimatedTextWidth} from './AnimatedTextWidth'
-
-const OversizedButton = styled(IntentLink)`
-  ${oversizedButtonStyle}
-`
 
 const ReleasesLink = ({selectedPerspective}: {selectedPerspective: ReleaseDocument}) => {
   const {t} = useTranslation()
@@ -30,17 +26,19 @@ const ReleasesLink = ({selectedPerspective}: {selectedPerspective: ReleaseDocume
       function ReleasesIntentLink({
         ref,
         children,
+        className,
         ...intentProps
       }: React.ComponentPropsWithoutRef<'a'> & RefAttributes<HTMLAnchorElement>) {
         return (
-          <OversizedButton
+          <IntentLink
             {...intentProps}
+            className={clsx(oversizedButtonStyle, className)}
             ref={ref}
             intent={RELEASES_INTENT}
             params={{id: getReleaseIdFromReleaseDocumentId(selectedPerspective._id)}}
           >
             {children}
-          </OversizedButton>
+          </IntentLink>
         )
       },
     [selectedPerspective],
