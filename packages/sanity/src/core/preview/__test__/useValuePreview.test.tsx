@@ -91,7 +91,7 @@ describe('useValuePreview', () => {
     expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
   })
 
-  it('ignores the timestamps every local mutation bumps when comparing previews', () => {
+  it('re-emits when only the preserved timestamps change, since consumers may render them', () => {
     observeForPreview.mockImplementation(
       (value: {title: string; _updatedAt: string}) =>
         new Observable((subscriber) => {
@@ -116,7 +116,8 @@ describe('useValuePreview', () => {
       />,
     )
 
-    expect(frames.length).toBe(before + 1)
+    // `PreviewValue` carries `_updatedAt`: the rerender plus the store-driven render for the new stamp
+    expect(frames.length).toBe(before + 2)
     expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
   })
 
@@ -320,6 +321,31 @@ describe('useValuePreview', () => {
     // the very object, so nothing downstream can mistake it for a document
     expect(observeForPreview.mock.lastCall?.[0]).toBe(item)
     expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'In place'})
+  })
+
+  it('feeds a pipeline rebuilt in the same render as a value change the new value only', async () => {
+    const byDate: SortOrdering = {
+      name: 'byDate',
+      title: 'By date',
+      by: [{field: 'date', direction: 'asc'}],
+    }
+    const frames: Frame[] = []
+    const {rerender} = render(<Harness value={{_id: 'a', title: 'one'}} frames={frames} />)
+    expect(observeForPreview).toHaveBeenCalledTimes(1)
+
+    // a recycled list row: another document and a new ordering arrive in one render
+    rerender(<Harness value={{_id: 'b', title: 'two'}} ordering={byDate} frames={frames} />)
+
+    // the rebuilt pipeline never previews the previous document under the new ordering
+    expect(observeForPreview).toHaveBeenCalledTimes(2)
+    expect(observeForPreview).toHaveBeenLastCalledWith(
+      {_id: 'b', title: 'two'},
+      schemaType,
+      expect.objectContaining({viewOptions: {ordering: byDate}}),
+    )
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'two'})
+    // the replaced pipeline is released a tick later (react-rx's teardown grace)
+    await vi.waitFor(() => expect(subscriptions.active).toBe(1))
   })
 
   it('keeps the preview when a draft or version of the same document is materialized', () => {

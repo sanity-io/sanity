@@ -6,9 +6,9 @@ import {
 } from '@sanity/types'
 import {dequal} from 'dequal'
 import isPlainObject from 'lodash-es/isPlainObject.js'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo} from 'react'
 import {useSyncObservable} from 'react-rx'
-import {BehaviorSubject, concat, type Observable, of} from 'rxjs'
+import {concat, type Observable, of, Subject} from 'rxjs'
 import {catchError, distinctUntilChanged, map, scan, switchMap} from 'rxjs/operators'
 
 import {type PerspectiveStack} from '../perspective/types'
@@ -47,9 +47,6 @@ function isSameError(a: Error | undefined, b: Error | undefined): boolean {
   return a === b || (!!a && !!b && a.name === b.name && a.message === b.message)
 }
 
-// Every local mutation bumps the timestamps `prepareForPreview` preserves, and nothing renders them.
-const IGNORED_PREVIEW_KEYS = new Set(['_createdAt', '_updatedAt'])
-
 // React elements and portals are plain objects too, recognisable by `$$typeof`.
 function isReactNodeObject(value: unknown): boolean {
   return typeof value === 'object' && value !== null && '$$typeof' in value
@@ -66,13 +63,15 @@ function isSameMedia(a: unknown, b: unknown): boolean {
   return dequal(a, b)
 }
 
+// Every field takes part, the `_createdAt` / `_updatedAt` that `prepareForPreview` preserves
+// included: `PreviewValue` is public and `PreviewLoader` forwards the whole value, so a custom
+// preview component may well render them.
 function isSamePreview(a: PreviewValue | undefined, b: PreviewValue | undefined): boolean {
   if (a === b) return true
   if (!a || !b) return false
   const recordA = a as Record<string, unknown>
   const recordB = b as Record<string, unknown>
   for (const key of new Set([...Object.keys(recordA), ...Object.keys(recordB)])) {
-    if (IGNORED_PREVIEW_KEYS.has(key)) continue
     const same =
       key === 'media' ? isSameMedia(recordA[key], recordB[key]) : dequal(recordA[key], recordB[key])
     if (!same) return false
@@ -80,8 +79,8 @@ function isSamePreview(a: PreviewValue | undefined, b: PreviewValue | undefined)
   return true
 }
 
-// Prepared previews are small, so comparing them is cheap: editing a field the preview does not
-// select leaves the rendered state alone instead of re-rendering every preview consumer.
+// Prepared previews are small, so comparing them is cheap: an emission that prepares to the same
+// preview as the last one leaves the rendered state alone instead of re-rendering every consumer.
 function isSameState(a: State, b: State): boolean {
   return (
     a.isLoading === b.isLoading && isSameError(a.error, b.error) && isSamePreview(a.value, b.value)
@@ -184,14 +183,6 @@ export function useValuePreview(props: {
   const perspective = useShallowUnique(chosenPerspectiveStackProp ?? perspectiveStack)
   const variant = chosenVariant ?? (chosenPerspectiveStackProp ? undefined : selectedVariantName)
 
-  // The value is a new object on every edit. It enters the pipeline through a subject so the
-  // observable identity — and with it the subscription and the field observers it holds — survives
-  // keystrokes; a new identity per value would resubscribe and refetch every reference it follows.
-  const [value$] = useState(() => new BehaviorSubject<unknown>(previewValue))
-  useEffect(() => {
-    value$.next(previewValue)
-  }, [previewValue, value$])
-
   const resolveTarget = useCallback(
     (value: unknown): PreviewTarget | undefined => {
       if (!enabled || !value || !schemaType) return undefined
@@ -217,44 +208,57 @@ export function useValuePreview(props: {
     [enabled, schemaType, perspective, variant],
   )
 
-  const observable = useMemo<Observable<Emission>>(
-    () =>
-      value$.pipe(
-        // An edit replaces the changed field on the document, so a shallow compare catches every
-        // real change while an equal object built during render (`{_id}` in a dialog) is not
-        // previewed again — which would loop whenever `prepare()` returns a fresh media component.
-        distinctUntilChanged(shallowEquals),
-        scan<unknown, {target: PreviewTarget | undefined; targetChanged: boolean}>(
-          (previous, value) => {
-            const target = resolveTarget(value)
-            return {target, targetChanged: target?.key !== previous.target?.key}
-          },
-          {target: undefined, targetChanged: false},
-        ),
-        switchMap(({target, targetChanged}): Observable<Emission> => {
-          // this will render previews as "loaded" (i.e. not in loading state) – typically with "Untitled" text
-          if (!target || !schemaType) return of({key: null, state: IDLE_STATE})
-
-          const {key} = target
-          const preview$ = observeForPreview(target.previewable, schemaType, {
-            perspective: target.perspective,
-            variant: target.variant,
-            viewOptions: {ordering: ordering},
-          }).pipe(
-            map((event) => ({key, state: {isLoading: false, value: event.snapshot || undefined}})),
-            catchError((error) => of({key, state: {isLoading: false, error}})),
-          )
-
-          // A different target must not keep showing the previous one's preview while it loads.
-          return targetChanged ? concat(of({key, state: INITIAL_STATE}), preview$) : preview$
-        }),
-        distinctUntilChanged((a, b) => a.key === b.key && isSameState(a.state, b.state)),
+  // The value is a new object on every edit. It enters the pipeline through a subject so the
+  // observable identity — and with it the subscription and the field observers it holds — survives
+  // keystrokes; a new identity per value would resubscribe and refetch every reference it follows.
+  // Each pipeline has its own subject, fed from the effect below `useSyncObservable`: react-rx
+  // keeps a replaced pipeline subscribed for a tick after its successor took over, and a shared
+  // subject would feed the new value to both.
+  const [observable, feed] = useMemo((): [Observable<Emission>, (value: unknown) => void] => {
+    const value$ = new Subject<unknown>()
+    const emissions$ = value$.pipe(
+      // An edit replaces the changed field on the document, so a shallow compare catches every
+      // real change while an equal object built during render (`{_id}` in a dialog) is not
+      // previewed again — which would loop whenever `prepare()` returns a fresh media component.
+      distinctUntilChanged(shallowEquals),
+      scan<unknown, {target: PreviewTarget | undefined; targetChanged: boolean}>(
+        (previous, value) => {
+          const target = resolveTarget(value)
+          return {target, targetChanged: target?.key !== previous.target?.key}
+        },
+        {target: undefined, targetChanged: false},
       ),
-    [value$, resolveTarget, schemaType, observeForPreview, ordering],
-  )
+      switchMap(({target, targetChanged}): Observable<Emission> => {
+        // this will render previews as "loaded" (i.e. not in loading state) – typically with "Untitled" text
+        if (!target || !schemaType) return of({key: null, state: IDLE_STATE})
+
+        const {key} = target
+        const preview$ = observeForPreview(target.previewable, schemaType, {
+          perspective: target.perspective,
+          variant: target.variant,
+          viewOptions: {ordering: ordering},
+        }).pipe(
+          map((event) => ({key, state: {isLoading: false, value: event.snapshot || undefined}})),
+          catchError((error) => of({key, state: {isLoading: false, error}})),
+        )
+
+        // A different target must not keep showing the previous one's preview while it loads.
+        return targetChanged ? concat(of({key, state: INITIAL_STATE}), preview$) : preview$
+      }),
+      distinctUntilChanged((a, b) => a.key === b.key && isSameState(a.state, b.state)),
+    )
+    return [emissions$, (value) => value$.next(value)]
+  }, [resolveTarget, schemaType, observeForPreview, ordering])
 
   // Do not defer: search/reference UIs assert on preview titles synchronously after selection.
   const emission = useSyncObservable(observable, INITIAL_EMISSION)
+
+  // Declared after `useSyncObservable` on purpose: effects run in order, so a pipeline (re)built in
+  // this commit is subscribed by the time it is fed. Nothing is replayed, so a pipeline rebuilt
+  // together with a new value sees only the new value, and exactly once.
+  useEffect(() => {
+    feed(previewValue)
+  }, [feed, previewValue])
 
   // The subject is fed after commit, so the render that first receives a new value still holds
   // the previous target's emission. Nothing to preview needs no emission at all; otherwise compare
