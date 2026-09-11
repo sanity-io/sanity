@@ -5,7 +5,6 @@ import {type SchemaType, type UploadState} from '@sanity/types'
 import {Card, type CardTone} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
-import {styled} from 'styled-components'
 import {Box} from 'ui5'
 
 import {MenuButton} from '../../../../../../ui-components/menuButton/MenuButton'
@@ -33,25 +32,9 @@ import {useArrayValidation} from '../../common/ArrayValidationContext'
 import {CellLayout} from '../../layouts/CellLayout'
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {useInsertMenuMenuItems} from '../InsertMenuMenuItems'
+import {previewCard} from './GridItem.css'
 
 type GridItemProps<Item extends ObjectItem> = Omit<ObjectItemProps<Item>, 'renderDefault'>
-
-const PreviewCard = styled(Card)`
-  border-top-right-radius: inherit;
-  border-top-left-radius: inherit;
-  height: 100%;
-  position: relative;
-
-  @media (hover: hover) {
-    &:hover {
-      filter: brightness(95%);
-    }
-  }
-
-  &:focus:focus-visible {
-    box-shadow: 0 0 0 2px var(--card-focus-ring-color);
-  }
-`
 
 function getTone({
   readOnly,
@@ -283,10 +266,11 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
       selected={openPortal}
       readOnly={readOnly}
     >
-      <PreviewCard
+      <Card
+        className={previewCard}
         tone="inherit"
         overflow="auto"
-        forwardedAs="button"
+        as="button"
         data-ui="PreviewCard"
         data-as="button"
         type="button"
@@ -314,7 +298,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
         })}
 
         {resolvingInitialValue && <LoadingBlock fill />}
-      </PreviewCard>
+      </Card>
     </CellLayout>
   )
 
