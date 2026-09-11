@@ -21,11 +21,18 @@ export const bgColorVar = createVar()
 export const textFontFamilyVar = createVar()
 export const textMediumWeightVar = createVar()
 
-/** `:where()` keeps the specificity of every rule equal to its unscoped original. */
+/** Targets `<html>`; `:where()` keeps this equal to the unscoped `html` original. */
 const root = `html:where([${GLOBAL_STYLES_ATTRIBUTE}])`
 
+/**
+ * Scope for rules that did not select `<html>`. Wrapping the whole compound in `:where()` adds no
+ * specificity at all, so each rule stays equal to its unscoped original — prefixing with `html`
+ * outside `:where()` would add a type selector and let these win over rules that used to tie.
+ */
+const scope = `:where(html[${GLOBAL_STYLES_ATTRIBUTE}])`
+
 /** The bare `::pseudo` selectors matched `<html>` too (the viewport scrollbar), so list it explicitly. */
-const everyElement = (pseudo: string) => `${root}${pseudo}, ${root} *${pseudo}`
+const everyElement = (pseudo: string) => `${scope}${pseudo}, ${scope} *${pseudo}`
 
 const SCROLLBAR_SIZE = 12 // px
 const SCROLLBAR_BORDER_SIZE = 4 // px
@@ -67,14 +74,14 @@ globalStyle(root, {
   backgroundColor: bgColorVar,
 })
 
-globalStyle(`${root} body`, {
+globalStyle(`${scope} body`, {
   scrollbarGutter: 'stable',
 })
 
-globalStyle(`${root} #sanity`, {
+globalStyle(`${scope} #sanity`, {
   fontFamily: textFontFamilyVar,
 })
 
-globalStyle(`${root} b, ${root} strong`, {
+globalStyle(`${scope} b, ${scope} strong`, {
   fontWeight: textMediumWeightVar,
 })
