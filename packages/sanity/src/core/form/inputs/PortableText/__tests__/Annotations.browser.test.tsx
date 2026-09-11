@@ -91,6 +91,19 @@ function MultipleAnnotationsHarness() {
   )
 }
 
+// vitest-browser's `.not.toBeVisible()` throws on a missing element, so this
+// treats the popover being unmounted the same as it being hidden.
+async function expectPopoverAbsentOrHidden() {
+  await expect
+    .poll(() => {
+      const popover = document.querySelector<HTMLElement>(
+        '[data-testid="annotation-toolbar-popover"]',
+      )
+      return !popover || !popover.checkVisibility()
+    })
+    .toBe(true)
+}
+
 describe('Portable Text Input', () => {
   describe('Annotations', () => {
     // Firefox's tab order from the PTE does not reach the annotation toolbar
@@ -144,8 +157,21 @@ describe('Portable Text Input', () => {
 
       const $toolbarPopover = page.getByTestId('annotation-toolbar-popover')
 
+      // Collapse the selection to a caret inside the annotation.
+      await userEvent.keyboard('{ArrowLeft}')
+      await userEvent.keyboard('{ArrowRight}')
+
       // Assertion: the annotation toolbar popover should be visible
-      await expect.element(page.getByTestId('annotation-toolbar-popover')).toBeVisible()
+      await expect.element($toolbarPopover).toBeVisible()
+
+      // Expand the selection by one character while staying inside the annotation.
+      await userEvent.keyboard('{Shift>}{ArrowRight}{/Shift}')
+
+      // Assertion: an expanded selection inside the annotation hides the popover.
+      await expectPopoverAbsentOrHidden()
+
+      // Collapse again so the popover is visible for tabbing into its buttons.
+      await userEvent.keyboard('{ArrowLeft}')
       await expect.element($toolbarPopover).toBeVisible()
 
       // Wait for the popover's focusable buttons to be mounted before tabbing.
@@ -266,8 +292,24 @@ describe('Portable Text Input', () => {
         // Expect the editor to have focus after closing the popover
         await expect.element($pte).toHaveFocus()
 
+        const $toolbarPopover = page.getByTestId('annotation-toolbar-popover')
+
+        // Collapse the selection to a caret inside the annotation.
+        await userEvent.keyboard('{ArrowLeft}')
+        await userEvent.keyboard('{ArrowRight}')
+
         // Assertion: the annotation toolbar popover should be visible
-        await expect.element(page.getByTestId('annotation-toolbar-popover')).toBeVisible()
+        await expect.element($toolbarPopover).toBeVisible()
+
+        // Expand the selection by one character while staying inside the annotation.
+        await userEvent.keyboard('{Shift>}{ArrowRight}{/Shift}')
+
+        // Assertion: an expanded selection inside the annotation hides the popover.
+        await expectPopoverAbsentOrHidden()
+
+        // Collapse again so the popover is visible for clicking the edit button.
+        await userEvent.keyboard('{ArrowLeft}')
+        await expect.element($toolbarPopover).toBeVisible()
 
         // Open up the editing interface again
         await page.getByTestId('edit-annotation-button').click()
@@ -304,6 +346,54 @@ describe('Portable Text Input', () => {
       await $linkInput.element().focus()
       await expect.element($linkInput).toHaveFocus()
     })
+
+    it(
+      'Shows the annotation popover for a collapsed caret but not an expanded selection inside the annotation',
+      {timeout: 30_000},
+      async () => {
+        const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
+        void render(<AnnotationsHarness />)
+        const $pte = await getFocusedPortableTextEditor('field-body')
+
+        await insertPortableText('Now we should insert a link.', $pte)
+
+        // Backtrack and select the word "link"
+        await userEvent.keyboard('{ArrowLeft}')
+        await userEvent.keyboard('{Shift>}{ArrowLeft}{ArrowLeft}{ArrowLeft}{ArrowLeft}{/Shift}')
+        await page.getByRole('button', {name: 'Link'}).click()
+
+        const $link = page.elementLocator($pte.element().querySelector('span[data-link]')!)
+        await expect.element($link).toBeVisible()
+
+        const $linkInput = page.getByTestId('popover-edit-dialog').getByLabelText('Link')
+        await expect.element($linkInput).toBeInTheDocument()
+        await $linkInput.element().focus()
+        await userEvent.keyboard('https://www.sanity.io')
+        await userEvent.keyboard('{Escape}')
+
+        // Expect the editor to have focus after closing the popover
+        await expect.element($pte).toHaveFocus()
+
+        const $toolbarPopover = page.getByTestId('annotation-toolbar-popover')
+
+        // Collapse the selection to a caret inside the annotation (between
+        // the first and second letter of "link").
+        await userEvent.keyboard('{ArrowLeft}')
+        await userEvent.keyboard('{ArrowRight}')
+
+        // Assertion (positive control): a collapsed caret inside the
+        // annotation shows the popover.
+        await expect.element($toolbarPopover).toBeVisible()
+
+        // Expand the selection by one character while staying inside the
+        // annotation.
+        await userEvent.keyboard('{Shift>}{ArrowRight}{/Shift}')
+
+        // Assertion: an expanded selection inside the annotation must hide
+        // the popover.
+        await expectPopoverAbsentOrHidden()
+      },
+    )
 
     // Firefox has timing issues with PTE selection events (matches the original
     // Playwright `test.skip(browserName === 'firefox')`).
@@ -357,11 +447,13 @@ describe('Portable Text Input', () => {
         // Expect the editor to have focus after closing the popover
         await expect.element($pte).toHaveFocus()
 
-        // Double-click again to select the annotated text and trigger the popover
+        // Click inside the doubly-annotated text and collapse the selection
+        // to a caret to trigger the popover.
         const $linkedTextAgain = page.elementLocator(
           $pte.element().querySelector('span[data-link]')!,
         )
-        await userEvent.dblClick($linkedTextAgain)
+        await $linkedTextAgain.click()
+        await userEvent.keyboard('{ArrowRight}')
 
         // Assertion: the combined annotation toolbar popover should be visible
         const $toolbarPopover = page.getByTestId('annotation-toolbar-popover')
@@ -385,16 +477,8 @@ describe('Portable Text Input', () => {
         // stays registered while the modal is open (SAPP-2645).
         await page.getByTestId('edit-annotation-button').click()
         // The popover either closes (kept mounted while other annotations are
-        // registered) or unmounts entirely (no annotations registered), so
-        // assert on "absent or hidden" rather than visibility alone.
-        await expect
-          .poll(() => {
-            const popover = document.querySelector<HTMLElement>(
-              '[data-testid="annotation-toolbar-popover"]',
-            )
-            return !popover || !popover.checkVisibility()
-          })
-          .toBe(true)
+        // registered) or unmounts entirely (no annotations registered).
+        await expectPopoverAbsentOrHidden()
 
         let toolbarPopoverReappeared = false
         const observer = new MutationObserver(() => {
