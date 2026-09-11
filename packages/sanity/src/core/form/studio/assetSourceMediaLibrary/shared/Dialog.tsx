@@ -1,10 +1,11 @@
 // oxlint-disable-next-line no-restricted-imports -- This has some special implementation needed from @sanity/ui
 import {Dialog} from '@sanity/ui'
-import {styled} from 'styled-components'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 
-export const AppDialog = styled(Dialog)`
-  padding: 1.5rem;
-  [data-ui='Card']:first-child {
-    flex: 1;
-  }
-`
+import {appDialog} from './Dialog.css'
+
+export function AppDialog(props: ComponentProps<typeof Dialog>) {
+  const {className, ...rest} = props
+  return <Dialog {...rest} className={clsx(appDialog, className)} />
+}
