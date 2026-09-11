@@ -107,8 +107,11 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   // and `buildCommentsQuery` would treat that as the shared draft+published set —
   // briefly showing those comments on a version view. Wait until we have a
   // version id before listening/fetching.
+  //
+  // Task documents are not perspective-scoped; skip the gate so a selected
+  // release/variant on the content document cannot block task activity.
   const isVersionPerspective = Boolean(selectedReleaseId || selectedVariantName)
-  const commentsReady = !isVersionPerspective || isVersionId(versionId)
+  const commentsReady = type === 'task' || !isVersionPerspective || isVersionId(versionId)
 
   const editState = useEditState(publishedId, documentType, 'low', scopeId)
   const schemaType = useSchema().get(documentType)
