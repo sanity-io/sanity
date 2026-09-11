@@ -593,8 +593,9 @@ archive rather than before it. Capture runs also set `retry: 0` (a retried test
 archives twice and Chromatic publishes `Snapshot #1 (2)`), `cropToViewport`, `delay: 0`,
 `pauseAnimationAtEnd` and `prefersReducedMotion: 'reduce'`; the Playwright provider emulates the
 same `prefers-reduced-motion: reduce` locally (the `@sanity/ui` v5 stylesheet, `ui5/styles.css`,
-collapses transitions and animations under it), so the DOM a test asserts on is the DOM Chromatic
-renders.
+collapses transitions and animations under it; `test/setup/browser.ts` loads it together with
+`@sanity/ui/styles.css` for every test file, as the studio entry point does), so the DOM a test
+asserts on is the DOM Chromatic renders.
 
 Chromatic archives the DOM plus the elements matching `:hover` / `:focus` / `:active` at capture
 time and re-applies those states in its renderer, so the real pointer position and React
@@ -622,9 +623,14 @@ mask real regressions):
   `toHaveFocus()`) is unchanged. Guard them with `server.browser === 'firefox'`; Chromatic archives
   on chromium only, so nothing is lost.
 - Tests that leave a menu open on purpose must assert a _visible_ overlay (closed `@sanity/ui`
-  menus stay mounted). Use `configure({disableAutoSnapshot: true})` plus `takeSnapshot()` at the
-  asserted state when the automatic afterEach capture could race a dismiss, and do not mutate the
-  UI after `takeSnapshot` in that test.
+  menus stay mounted). The automatic afterEach capture archives whatever the DOM looks like after
+  the test's last statement, so when that end state could race a dismiss, use
+  `configure({disableAutoSnapshot: true})` and `takeSnapshot('state')` at the asserted state
+  instead. `takeSnapshot()` serializes the DOM and its `:hover`/`:focus` ids synchronously when
+  called (only the upload is awaited), so the test may keep exercising behavior afterwards — e.g.
+  the `CommentInput` browser tests snapshot `mentions-menu-open`, then press Enter and assert the
+  mention was accepted. Settle (`settleChromaticEndState()`) and assert the state _before_ the
+  `takeSnapshot()` call; interactions after it never reach that archive.
 - Interaction-only tests whose end state is a loading or error flash should
   `configure({disableAutoSnapshot: true})`. Do not set `localStorage.debug` in browser tests —
   debug overlay noise shows up in Chromatic archives.

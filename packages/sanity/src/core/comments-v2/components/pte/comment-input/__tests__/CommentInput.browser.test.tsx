@@ -160,6 +160,8 @@ describe('Comments', () => {
 
       // Enter accepts the highlighted mention: the menu closes and the mention
       // renders (its user lookup shows the loading skeleton in this harness).
+      // `takeSnapshot` serialized the DOM synchronously above, so nothing from
+      // here on reaches that archive.
       await userEvent.keyboard('{Enter}')
       await expect.element($mentionsMenu).not.toBeInTheDocument()
       await expect.element(page.getByTestId('comment-mentions-loading-skeleton')).toBeVisible()
