@@ -96,16 +96,22 @@ interface PreviewTarget {
    * What the preview shows, independent of the input's shape. A change resets the preview to
    * loading; edits to the same target keep the current preview until the next one arrives.
    */
-  key: string | undefined
+  key: string
 }
 
-/** A state together with the key of the target it was computed for. */
+/**
+ * A state together with the key of the target it was computed for; `null` when there was nothing
+ * to preview (disabled, no value, no schema type), which never matches a target.
+ */
 interface Emission {
-  key: string | undefined
+  key: string | null
   state: State
 }
 
-const INITIAL_EMISSION: Emission = {key: undefined, state: INITIAL_STATE}
+const INITIAL_EMISSION: Emission = {key: null, state: INITIAL_STATE}
+
+// Plain objects previewed in place carry no identifier; they all share this key.
+const INLINE_TARGET_KEY = 'inline'
 
 /**
  * Keys a target by the document it previews and the perspective it is seen through: a document
@@ -119,7 +125,7 @@ function getPreviewTargetKey(
   previewable: Previewable,
   perspective: PerspectiveStack,
   variant: string | undefined,
-): string | undefined {
+): string {
   const {_id, _ref, _key, _projectId, _dataset} = previewable as {
     _id?: string
     _ref?: string
@@ -128,7 +134,7 @@ function getPreviewTargetKey(
     _dataset?: string
   }
   const id = _id ?? _ref ?? _key
-  if (id === undefined) return undefined
+  if (id === undefined) return INLINE_TARGET_KEY
   const document = _dataset ? `${_projectId}/${_dataset}/${id}` : getPublishedId(id)
   return `${document}|${perspective.join(',')}|${variant ?? ''}`
 }
@@ -229,7 +235,7 @@ export function useValuePreview(props: {
         ),
         switchMap(({target, targetChanged}): Observable<Emission> => {
           // this will render previews as "loaded" (i.e. not in loading state) – typically with "Untitled" text
-          if (!target || !schemaType) return of({key: undefined, state: IDLE_STATE})
+          if (!target || !schemaType) return of({key: null, state: IDLE_STATE})
 
           const {key} = target
           const preview$ = observeForPreview(target.previewable, schemaType, {
@@ -252,8 +258,11 @@ export function useValuePreview(props: {
   // Do not defer: search/reference UIs assert on preview titles synchronously after selection.
   const emission = useSyncObservable(observable, INITIAL_EMISSION)
 
-  // The subject is fed after commit, so the render that first receives a new target still holds
-  // the previous target's emission. Compare against the target this render previews and show
-  // loading until the emission catches up, so nothing stale is ever painted.
-  return emission.key === resolveTarget(previewValue)?.key ? emission.state : INITIAL_STATE
+  // The subject is fed after commit, so the render that first receives a new value still holds
+  // the previous target's emission. Nothing to preview needs no emission at all; otherwise compare
+  // against the target this render previews and show loading until the emission catches up, so
+  // nothing stale is ever painted.
+  const target = resolveTarget(previewValue)
+  if (!target) return IDLE_STATE
+  return emission.key === target.key ? emission.state : INITIAL_STATE
 }

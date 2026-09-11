@@ -3,7 +3,6 @@ import {act, render} from '@testing-library/react'
 import {Observable, Subject} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {type PerspectiveStack} from '../../perspective/types'
 import {useValuePreview} from '../useValuePreview'
 
 const observeForPreview = vi.fn()
@@ -26,16 +25,9 @@ interface Frame {
   error?: Error
 }
 
-function Harness({
-  value,
-  frames,
-  perspectiveStack,
-}: {
-  value: unknown
-  frames: Frame[]
-  perspectiveStack?: PerspectiveStack
-}) {
-  const state = useValuePreview({schemaType, value, perspectiveStack})
+function Harness({frames, ...props}: Parameters<typeof useValuePreview>[0] & {frames: Frame[]}) {
+  // an explicit `schemaType={undefined}` overrides the default
+  const state = useValuePreview({schemaType, ...props})
   frames.push({isLoading: state.isLoading, title: state.value?.title, error: state.error})
   return null
 }
@@ -324,5 +316,43 @@ describe('useValuePreview', () => {
 
     expect(frames.at(-1)).toMatchObject({isLoading: false, title: undefined})
     expect(observeForPreview).not.toHaveBeenCalled()
+  })
+
+  it('drops an inline preview in the render that loses the value, not after an effect', () => {
+    const frames: Frame[] = []
+    // a plain object previewed in place has no id
+    const {rerender} = render(<Harness value={{title: 'one'}} frames={frames} />)
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
+    const settled = frames.length
+
+    rerender(<Harness value={undefined} frames={frames} />)
+    expect(frames.length).toBeGreaterThan(settled)
+    for (const frame of frames.slice(settled)) {
+      expect(frame).toEqual({isLoading: false, title: undefined, error: undefined})
+    }
+
+    // nor is the next inline value mistaken for the previous one
+    rerender(<Harness value={{title: 'two'}} frames={frames} />)
+    expect(frames.slice(settled).map((frame) => frame.title)).not.toContain('one')
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'two'})
+  })
+
+  it.each([
+    ['the value is removed', {value: undefined}],
+    ['the preview is disabled', {enabled: false}],
+    ['the schema type is removed', {schemaType: undefined}],
+  ])('renders the idle state, not loading, in the render where %s', async (_, props) => {
+    const frames: Frame[] = []
+    const {rerender} = render(<Harness value={{_id: 'a', title: 'one'}} frames={frames} />)
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
+    const settled = frames.length
+
+    rerender(<Harness value={{_id: 'a', title: 'one'}} {...props} frames={frames} />)
+    expect(frames.length).toBeGreaterThan(settled)
+    for (const frame of frames.slice(settled)) {
+      expect(frame).toEqual({isLoading: false, title: undefined, error: undefined})
+    }
+    // and the document is no longer observed (react-rx releases a swapped-out source a tick later)
+    await vi.waitFor(() => expect(subscriptions.active).toBe(0))
   })
 })
