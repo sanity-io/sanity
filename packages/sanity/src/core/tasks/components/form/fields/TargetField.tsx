@@ -1,10 +1,10 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {DocumentIcon} from '@sanity/icons/Document'
-import {Card, LayerProvider, Stack, Text} from '@sanity/ui'
-import {getTheme_v2} from '@sanity/ui/theme'
+import {Card, LayerProvider, Stack, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
 import {useCallback, useMemo, useState, type RefAttributes} from 'react'
 import {IntentLink} from 'sanity/router'
-import {css, styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
@@ -24,70 +24,15 @@ import {type FormMode, type TaskTarget} from '../../../types'
 import {CurrentWorkspaceProvider} from '../CurrentWorkspaceProvider'
 import {getTargetValue} from '../utils'
 import {FieldWrapperRoot} from './FieldWrapper'
-
-const EmptyReferenceRoot = styled(Card)((props) => {
-  const theme = getTheme_v2(props.theme)
-
-  return css`
-    &:focus {
-      border: 1px solid var(--card-focus-ring-color);
-    }
-    &:focus-visible {
-      outline: none;
-      border: 1px solid var(--card-focus-ring-color);
-    }
-    &:hover {
-      border-color: ${theme.color.input.default.hovered.border};
-    }
-  `
-})
-
-const Placeholder = styled(Text)((props) => {
-  const theme = getTheme_v2(props.theme)
-  return `
-      color: ${theme.color.input.default.enabled.placeholder};
-      margin-left: 3px;
-  `
-})
-
-// This allows to hide and show the remove button on hover or focus.
-const TargetRoot = styled(Card)`
-  position: relative;
-  [data-ui='show-on-hover'] {
-    opacity: 0;
-    position: absolute;
-    right: 6px;
-    top: 4px;
-    display: flex;
-  }
-  &:focus-within,
-  &:hover {
-    padding-right: 36px;
-    /* Hides the preview status dot, the button will take it's position. */
-    [data-testid='compact-preview__status'] {
-      opacity: 0;
-    }
-    [data-ui='show-on-hover'] {
-      transition: opacity 200ms;
-      opacity: 1;
-    }
-  }
-`
-const StyledIntentLink = styled(IntentLink)(() => {
-  return css`
-    text-decoration: none;
-    width: 100%;
-    overflow: hidden;
-    cursor: pointer;
-    &:focus {
-      box-shadow: 0 0 0 1px var(--card-focus-ring-color);
-    }
-    &:focus-visible {
-      outline: none;
-      box-shadow: 0 0 0 1px var(--card-focus-ring-color);
-    }
-  `
-})
+import {
+  emptyReferenceRoot,
+  inputHoveredBorderColorVar,
+  inputPlaceholderColorVar,
+  placeholder,
+  showOnHover,
+  styledIntentLink,
+  targetRoot,
+} from './TargetField.css'
 
 function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
   const {value, handleRemove} = props
@@ -102,12 +47,13 @@ function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
       function LinkComponent(
         linkProps: React.ComponentPropsWithoutRef<'a'> & RefAttributes<HTMLAnchorElement>,
       ) {
-        const {ref, ...rest} = linkProps
+        const {className, ref, ...rest} = linkProps
         const versionId = getVersionFromId(documentId)
 
         return (
-          <StyledIntentLink
+          <IntentLink
             {...rest}
+            className={clsx(styledIntentLink, className)}
             intent="edit"
             params={{id: getPublishedId(documentId), type: documentType}}
             ref={ref}
@@ -122,7 +68,7 @@ function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
   }
 
   return (
-    <TargetRoot border radius={2} data-testid="task-target-field-preview">
+    <Card border className={targetRoot} radius={2} data-testid="task-target-field-preview">
       <Flex gap={1} alignItems={'center'} justifyContent={'space-between'}>
         <Card as={CardLink} radius={2} data-as="button">
           <SearchResultItemPreview
@@ -135,7 +81,7 @@ function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
           />
         </Card>
 
-        <div data-ui="show-on-hover">
+        <div className={showOnHover} data-ui="show-on-hover">
           <Button
             icon={CloseIcon}
             mode="bleed"
@@ -144,7 +90,7 @@ function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
           />
         </div>
       </Flex>
-    </TargetRoot>
+    </Card>
   )
 }
 
@@ -155,6 +101,7 @@ export function TargetField(
 ) {
   const [open, setOpen] = useState(false)
   const {dataset, projectId} = useWorkspace()
+  const {color} = useThemeV2()
   const {
     mode,
     inputProps: {onChange},
@@ -219,13 +166,17 @@ export function TargetField(
                 {value ? (
                   <Preview value={value} handleRemove={handleRemove} />
                 ) : (
-                  <EmptyReferenceRoot
+                  <Card
                     border
+                    className={emptyReferenceRoot}
                     radius={2}
                     paddingX={2}
                     paddingY={3}
                     onClick={handleOpenSearch}
                     onKeyDown={handleKeyDown}
+                    style={assignInlineVars({
+                      [inputHoveredBorderColorVar]: color.input.default.hovered.border,
+                    })}
                     tabIndex={0}
                   >
                     <Flex gap={1} justifyContent={'flex-start'} alignItems={'center'}>
@@ -234,11 +185,17 @@ export function TargetField(
                           <DocumentIcon />
                         </Text>
                       </Box>
-                      <Placeholder size={1}>
+                      <Text
+                        className={placeholder}
+                        size={1}
+                        style={assignInlineVars({
+                          [inputPlaceholderColorVar]: color.input.default.enabled.placeholder,
+                        })}
+                      >
                         {t('form.input.target.search.placeholder')}
-                      </Placeholder>
+                      </Text>
                     </Flex>
-                  </EmptyReferenceRoot>
+                  </Card>
                 )}
               </Stack>
               <SearchPopover
