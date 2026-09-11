@@ -39,7 +39,13 @@ const ReferenceChangedBannerComponent: ComponentType = () => {
   const {params, groupIndex, routerPanesState, replaceCurrent, BackLink} = usePaneRouter()
   const {paneDataItems} = useResolvedPanesList()
   const routerReferenceId = routerPanesState.at(groupIndex)?.at(0)?.id
-  const parentPath = params?.parentRefPath ? pathFromString(params.parentRefPath) : null
+  const parentRefPath = params?.parentRefPath
+  // Keyed on the string: a fresh path array per render would rebuild (and resubscribe) the
+  // observable below on every render.
+  const parentPath = useMemo(
+    () => (parentRefPath ? pathFromString(parentRefPath) : null),
+    [parentRefPath],
+  )
   const {t} = useTranslation(structureLocaleNamespace)
 
   const parentPaneData = paneDataItems.find(

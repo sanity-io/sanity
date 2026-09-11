@@ -1,5 +1,5 @@
-import {Flex} from '@sanity/ui'
 import {type DocumentLayoutProps} from 'sanity'
+import {Flex} from 'ui5'
 
 export function DocumentLayout(props: DocumentLayoutProps & {testId: string}) {
   const {testId} = props
@@ -9,7 +9,14 @@ export function DocumentLayout(props: DocumentLayoutProps & {testId: string}) {
   }
 
   return (
-    <Flex data-testid={testId} direction="column" flex={1} height="fill" overflow="hidden">
+    <Flex
+      data-testid={testId}
+      flexDirection="column"
+      flexBasis="0%"
+      flexGrow={1}
+      height="100%"
+      overflow="hidden"
+    >
       {props.renderDefault(props)}
     </Flex>
   )

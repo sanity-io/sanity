@@ -1,13 +1,13 @@
-import {Card, Flex, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {type DocumentInspectorProps} from 'sanity'
 import {DocumentInspectorHeader} from 'sanity/structure'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 export function CustomInspector(props: DocumentInspectorProps) {
   const {onClose} = props
 
   return (
-    <Flex direction="column" height="fill" overflow="hidden">
+    <Flex flexDirection="column" height="100%" overflow="hidden">
       <DocumentInspectorHeader
         closeButtonLabel="Close custom inspector"
         flex="none"

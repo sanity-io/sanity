@@ -1,5 +1,6 @@
-import {Box, Button, Card, Dialog, Flex, Select, Stack, Text, TextArea, TextInput} from '@sanity/ui'
+import {Box, Button, Card, Dialog, Select, Stack, Text, TextArea, TextInput} from '@sanity/ui'
 import {useMemo, useState} from 'react'
+import {Flex} from 'ui5'
 
 import {type BisectCommit, buildChain} from '../bisect/bisect'
 import {type TagSlice} from '../bisect/data'
@@ -124,7 +125,7 @@ export function AddRegressionDialog(props: {
             />
           </Stack>
 
-          <Flex gap={2} justify="flex-end">
+          <Flex gap={2} justifyContent="flex-end">
             <Button mode="ghost" text="Cancel" onClick={onClose} />
             <Button
               tone="critical"

@@ -21,12 +21,16 @@ import {type CompanionDoc} from '../types'
 export interface CanvasCompanionDocsStore {
   getCompanionDocs: (documentId: string) => Observable<CompanionDocs>
 }
-interface CompanionDocs {
+export interface CompanionDocs {
   data: CompanionDoc[]
   error: null | string
   loading: boolean
 }
-const INITIAL_VALUE: CompanionDocs = {
+/**
+ * What `getCompanionDocs` emits first, while the companion docs are being looked up.
+ * @internal
+ */
+export const INITIAL_COMPANION_DOCS: CompanionDocs = {
   data: [],
   error: null,
   loading: true,
@@ -84,7 +88,7 @@ const getCompanionDocs = memoize(
       mergeMapArray(getCompanionDoc$),
       map((value) => ({error: null, data: value, loading: false})),
       catchError((error) => of({error, data: [], loading: false})),
-      startWith(INITIAL_VALUE),
+      startWith(INITIAL_COMPANION_DOCS),
       // refCount so the listener tears down when the last subscriber leaves.
       // Combined with the credential in the memo key below, a cross-tab
       // re-login's stale-token entry stops listening once the form remounts

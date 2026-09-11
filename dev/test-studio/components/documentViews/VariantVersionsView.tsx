@@ -1,5 +1,5 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Button, Card, Dialog, Grid, Inline, Stack, Text} from '@sanity/ui'
+import {Button, Card, Dialog, Inline, Stack, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
@@ -17,7 +17,7 @@ import {
   useDocumentVersions,
   usePerspective,
 } from 'sanity'
-import {Box} from 'ui5'
+import {Box, Grid} from 'ui5'
 
 const DOCUMENT_QUERY = '*[_id == $id][0]'
 const RAW_PERSPECTIVE_CLIENT_OPTIONS = {apiVersion: 'X' as const}
@@ -462,7 +462,14 @@ export function VariantVersionsView(props: {documentId: string}) {
               </Text>
             )}
           </Stack>
-          <Grid gridTemplateColumns={[1, 1, 2]} gap={4}>
+          <Grid
+            gridTemplateColumns={[
+              'repeat(1, minmax(0, 1fr))',
+              'repeat(1, minmax(0, 1fr))',
+              'repeat(2, minmax(0, 1fr))',
+            ]}
+            gap={4}
+          >
             {slots.map((slot) => (
               <VersionSlotCard key={slot.label} {...slot} />
             ))}
