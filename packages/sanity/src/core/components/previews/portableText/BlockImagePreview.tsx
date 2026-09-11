@@ -30,8 +30,7 @@ const getRatio = (dimensions: PreviewMediaDimensions) => {
 }
 
 /**
- * @hidden
- * @beta */
+ * @internal */
 export function BlockImagePreview(props: BlockImagePreviewProps) {
   const {
     actions,

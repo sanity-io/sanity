@@ -7,18 +7,13 @@ import {
   useClickOutsideEvent,
 } from '@sanity/ui'
 import {type ComponentType, type RefAttributes, useMemo, useRef, useState} from 'react'
-import {
-  getPublishedId,
-  getVersionFromId,
-  type ReleaseDocument,
-  useDocumentVersions,
-  useDocumentVersionTitle,
-  useTranslation,
-} from 'sanity'
+import {getPublishedId, getVersionFromId, type ReleaseDocument, useTranslation} from 'sanity'
 import {Flex} from 'ui5'
 
 import {DocumentVersionIcons} from '../../../../core/components/documentStatus/DocumentVersionIcons'
 import {DocumentGroupInventory} from '../../../../core/documentGroupInventory/components/DocumentGroupInventory'
+import {useDocumentVersionTitle} from '../../../../core/hooks/useDocumentVersionTitle'
+import {useDocumentVersions} from '../../../../core/releases/hooks/useDocumentVersions'
 import {type VersionInfoDocumentStub} from '../../../../core/releases/store/types'
 import {useActiveReleases} from '../../../../core/releases/store/useActiveReleases'
 import {getReleaseTone} from '../../../../core/releases/util/getReleaseTone'

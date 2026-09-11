@@ -9,12 +9,12 @@ import {
   getReleaseIdFromReleaseDocumentId,
   isRecord,
   useClient,
-  useDateTimeFormat,
   useDocumentPreviewStore,
-  useDocumentVersions,
   usePerspective,
 } from 'sanity'
 import {
+  useDateTimeFormat,
+  useDocumentVersions,
   getTargetDocument,
   getVariantTitle,
   useActiveReleases,

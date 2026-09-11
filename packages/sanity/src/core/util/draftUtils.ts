@@ -38,7 +38,7 @@ const DRAFTS_PREFIX = `${DRAFTS_FOLDER}${PATH_SEPARATOR}`
  * Checks if the document ID `documentId` has the same ID as `equalsDocumentId`,
  * ignoring the draft prefix.
  *
- * @public
+ * @internal
  *
  * @param documentId - The document ID to check
  * @param equalsDocumentId - The document ID to check against
@@ -103,7 +103,7 @@ export function getIdPair(
  * These differ to user bundles, which are created when a user establishes a custom set of documents
  * (e.g. by creating a release).
  *
- * @public
+ * @internal
  */
 export const systemBundles = ['drafts', 'published'] as const
 

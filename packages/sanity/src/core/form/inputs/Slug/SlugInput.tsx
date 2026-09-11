@@ -51,8 +51,7 @@ async function getNewFromSource(
 
 /**
  *
- * @hidden
- * @beta
+ * @internal
  */
 export function SlugInput(props: SlugInputProps) {
   const getFormValue = useGetFormValue()

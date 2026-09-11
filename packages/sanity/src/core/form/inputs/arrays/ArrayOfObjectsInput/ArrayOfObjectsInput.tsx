@@ -4,8 +4,7 @@ import {ListArrayInput} from './List/ListArrayInput'
 
 /**
  *
- * @hidden
- * @beta
+ * @internal
  */
 export function ArrayOfObjectsInput(props: ArrayOfObjectsInputProps) {
   const isGrid = props.schemaType.options?.layout === 'grid'

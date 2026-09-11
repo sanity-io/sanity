@@ -24,7 +24,6 @@ import {
   isVersionId,
   type PartialContext,
   pathToString,
-  useCopyPaste,
   usePerspective,
   useSchema,
   useWorkspace,
@@ -49,6 +48,7 @@ import {isPerspectiveWriteable} from '../../../core/perspective/isPerspectiveWri
 import {useActiveReleases} from '../../../core/releases/store/useActiveReleases'
 import {isGoingToUnpublish} from '../../../core/releases/util/isGoingToUnpublish'
 import {selectUpstreamVersion} from '../../../core/store/document/selectUpstreamVersion'
+import {useCopyPaste} from '../../../core/studio/copyPaste/CopyPasteProvider'
 import {useSource} from '../../../core/studio/source'
 import {EMPTY_ARRAY} from '../../../core/util/empty'
 import {

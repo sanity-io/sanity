@@ -2,24 +2,24 @@ import {LayerProvider, Stack, Text} from '@sanity/ui'
 import {memo, useCallback, useMemo, useState} from 'react'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
-  DocumentGroupInventoryAction,
   getReleaseIdFromReleaseDocumentId,
-  Hotkeys,
-  isSanityDefinedAction,
-  readVersionType,
   useClient,
   useDocumentStore,
   usePerspective,
 } from 'sanity'
 import {Flex} from 'ui5'
 
+import {Hotkeys} from '../../../../core/components/Hotkeys'
+import {isSanityDefinedAction} from '../../../../core/config/document/actions'
 import {DocumentGroupInventory} from '../../../../core/documentGroupInventory/components/DocumentGroupInventory'
+import {DocumentGroupInventoryAction} from '../../../../core/documentGroupInventory/components/DocumentGroupInventoryAction'
 import {type DocumentGroupInventoryComponents} from '../../../../core/documentGroupInventory/types'
 import {useSetVariant} from '../../../../core/perspective/useSetVariant'
 import {type VersionInfoDocumentStub} from '../../../../core/releases/store/types'
 import {isGoingToUnpublish} from '../../../../core/releases/util/isGoingToUnpublish'
 import {usePausedScheduledDraft} from '../../../../core/singleDocRelease/hooks/usePausedScheduledDraft'
 import {useSource} from '../../../../core/studio/source'
+import {readVersionType} from '../../../../core/util/versionsUtils'
 import {isVariantId} from '../../../../core/variants/types'
 import {Button} from '../../../../ui-components/button/Button'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'

@@ -1,10 +1,7 @@
 import {useCallback, useMemo} from 'react'
-import {
-  getReleaseIdFromReleaseDocumentId,
-  type TargetPerspective,
-  useGetDefaultPerspective,
-} from 'sanity'
+import {getReleaseIdFromReleaseDocumentId, type TargetPerspective} from 'sanity'
 
+import {useGetDefaultPerspective} from '../../core/perspective/useGetDefaultPerspective'
 import {useSetPerspective} from '../../core/perspective/useSetPerspective'
 import {isReleaseDocument} from '../../core/releases/store/types'
 import {useSingleDocRelease} from '../../core/singleDocRelease/context/SingleDocReleaseProvider'

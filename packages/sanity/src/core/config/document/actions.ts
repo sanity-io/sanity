@@ -78,7 +78,7 @@ export interface DocumentActionKeys extends Record<SanityDefinedAction, never> {
  * @param action - The action to check.
  * @returns `true` if the action identifier is Sanity-defined.
  *
- * @public
+ * @internal
  */
 export const isSanityDefinedAction = (
   action: DocumentActionDescription & {action?: keyof DocumentActionKeys},

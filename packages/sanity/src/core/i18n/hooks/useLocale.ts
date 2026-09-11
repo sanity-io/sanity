@@ -6,7 +6,7 @@ import {type Locale} from '../types'
 /**
  * Returns the currently active locale
  *
- * @public
+ * @internal
  */
 export function useCurrentLocale(): Locale {
   return useLocale().currentLocale

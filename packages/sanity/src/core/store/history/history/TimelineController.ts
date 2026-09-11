@@ -35,8 +35,7 @@ export type SelectionState = 'inactive' | 'rev' | 'range' | 'loading' | 'invalid
  *
  *
  * @deprecated Use the events API instead. The legacy document timeline will be removed in the next major version.
- * @hidden
- * @beta
+ * @internal
  */
 export class TimelineController {
   timeline: Timeline

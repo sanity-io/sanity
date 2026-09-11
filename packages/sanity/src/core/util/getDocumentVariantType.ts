@@ -14,7 +14,7 @@ export type DocumentVariantType = 'draft' | 'version' | 'published'
  * If it's a document that starts with `version.` it's a `version` document.
  * If it's a document that starts with `drafts.` it's a `draft` document.
  * Otherwise, it's a `published` document.
- * @public
+ * @internal
  * */
 export function getDocumentVariantType(documentId: string): DocumentVariantType {
   if (isDraftId(documentId)) return 'draft'

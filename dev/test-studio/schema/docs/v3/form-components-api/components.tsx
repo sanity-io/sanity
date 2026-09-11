@@ -3,7 +3,6 @@ import {Button, Heading, Inline, Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {
   type ArrayInputFunctionsProps,
-  ArrayOfPrimitivesFunctions,
   type ArrayOfPrimitivesInputProps,
   type ArraySchemaType,
   type FieldProps,
@@ -11,6 +10,7 @@ import {
   type ItemProps,
   type PreviewProps,
 } from 'sanity'
+import {ArrayOfPrimitivesFunctions} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Box, Flex, Grid} from 'ui5'
 
 const COMPONENT_COLORS = {

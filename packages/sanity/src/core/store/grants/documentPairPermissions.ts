@@ -279,6 +279,7 @@ function getDocumentPairPermissionsUncached({
   )
 }
 
+/** @internal */
 export const getDocumentPairPermissions = memoize(
   (options: DocumentPairPermissionsOptions): Observable<PermissionCheckResult> =>
     getDocumentPairPermissionsUncached(options).pipe(
