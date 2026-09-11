@@ -193,9 +193,12 @@ describe('Portable Text Input', () => {
       // The edit button the pointer was on is gone, so whatever the dialog
       // renders under that point would be `:hover`ed in the archive. Park the
       // pointer and let the settle helper wait for the dialog's box (it fails
-      // if the hover onto the park closed the dialog).
-      await settleChromaticEndState()
+      // if the hover onto the park closed the dialog). The dialog autofocuses
+      // its Close button, whose tooltip opens on focus after the tooltip delay
+      // and stays until blur — that tooltip is part of this end state.
+      await settleChromaticEndState({expectTooltip: /^Close$/})
       await expect.element($dialog).toBeVisible()
+      await expect.element(page.getByTestId('close-popover-edit-dialog-button')).toHaveFocus()
       await takeSnapshot('inline-edit-dialog-open')
     })
 

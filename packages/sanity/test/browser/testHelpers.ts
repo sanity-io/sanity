@@ -1,7 +1,47 @@
 import {expect, vi} from 'vitest'
 import {page, server, userEvent} from 'vitest/browser'
 
+import {TOOLTIP_DELAY_PROPS} from '../../src/ui-components/tooltip/constants'
+
 const DEFAULT_TYPE_DELAY = 20
+
+/**
+ * How long `settleChromaticEndState` must observe no visible tooltip before
+ * it trusts that none is about to open: the ui-components tooltip open delay
+ * plus a margin for the timer and render.
+ */
+const TOOLTIP_FREE_WINDOW_MS = TOOLTIP_DELAY_PROPS.open + 100
+
+/** Visible with `visibility` taken into account (`checkVisibility()` alone ignores it). */
+const isShown = (el: Element): el is HTMLElement =>
+  el instanceof HTMLElement && el.checkVisibility({visibilityProperty: true})
+
+const visibleTooltips = (): HTMLElement[] =>
+  Array.from(window.document.querySelectorAll<HTMLElement>('[data-ui="Tooltip"]')).filter((el) =>
+    el.checkVisibility(),
+  )
+
+/** React hover state of field headers: `data-actions-visible` flips after the pointer leaves. */
+const fieldActionsSig = (): string =>
+  Array.from(window.document.querySelectorAll('[data-actions-visible]'))
+    .map((el) => el.getAttribute('data-actions-visible'))
+    .join(',')
+
+/** Geometry signature of every visible match: `x,y,w,h` per element, `''` when none is visible. */
+const boxSig = (selector: string) => (): string =>
+  Array.from(window.document.querySelectorAll<HTMLElement>(selector))
+    .filter((el) => el.checkVisibility())
+    .map((el) => {
+      const r = el.getBoundingClientRect()
+      return `${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)},${Math.round(r.height)}`
+    })
+    .join('|')
+
+/**
+ * Wrap a signature so an empty value (hidden or unmounted) reads as a fresh
+ * symbol: `expectStable` then never accepts a closed overlay as stable.
+ */
+const present = (sig: () => string | symbol) => (): string | symbol => sig() || Symbol('absent')
 
 /**
  * Round Floating UI / Popper inline `transform` / `top` / `left` to whole CSS
@@ -15,6 +55,7 @@ const FLOATING_UI_SNAP_SELECTOR = [
   '[data-testid="inline-object-toolbar-popover"]',
   '[data-testid="comments-mentions-menu"]',
   '[data-ui="Popover"]',
+  '[data-ui="Tooltip"]',
   '[role="menu"]',
   '[role="listbox"]',
 ].join(', ')
@@ -511,19 +552,19 @@ export function testHelpers() {
     settleChromaticEndState: async (options?: {
       styleSelectText?: RegExp
       styleSelectRoot?: string
+      /**
+       * Text of the single tooltip the end state is expected to show. A
+       * focused icon button (e.g. the autofocused Close button of the popover
+       * edit dialog) opens its tooltip after the ui-components open delay and
+       * keeps it open until blur, so that tooltip is part of the archived
+       * state. By default no tooltip may be visible.
+       */
+      expectTooltip?: RegExp
     }) => {
+      const settleStart = performance.now()
       if (typeof document.fonts?.ready !== 'undefined') {
         await document.fonts.ready
       }
-
-      const boxSig = (selector: string) => () =>
-        Array.from(window.document.querySelectorAll<HTMLElement>(selector))
-          .filter((el) => el.checkVisibility())
-          .map((el) => {
-            const r = el.getBoundingClientRect()
-            return `${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)},${Math.round(r.height)}`
-          })
-          .join('|')
 
       // Floating PTE chrome: inline-object / annotation toolbars and the
       // popover edit dialog (all positioned by Floating UI).
@@ -551,8 +592,6 @@ export function testHelpers() {
       // `visibilityProperty` counts the `visibility: hidden` measurement rows,
       // so only truly visible buttons go into the signature and a measuring
       // menu yields a fresh symbol that can never read as stable.
-      const isShown = (el: Element): el is HTMLElement =>
-        el instanceof HTMLElement && el.checkVisibility({visibilityProperty: true})
       const toolbarSig = (): string | symbol => {
         const toolbars = Array.from(
           window.document.querySelectorAll<HTMLElement>('[data-testid="pt-editor__toolbar-card"]'),
@@ -607,22 +646,41 @@ export function testHelpers() {
           .map((el) => `${el.tagName.toLowerCase()}${el.id ? `#${el.id}` : ''}`)
       await expect.poll(hovered).toEqual([])
 
-      const fieldActionsSig = () =>
-        Array.from(window.document.querySelectorAll('[data-actions-visible]'))
-          .map((el) => el.getAttribute('data-actions-visible'))
-          .join(',')
       await expectStable(fieldActionsSig, 2)
 
-      // A tooltip opens on a timer, so one zero reading is not proof that none
-      // is about to appear: the visible count must stay at zero for consecutive
-      // samples. A visible tooltip yields a fresh symbol that never reads stable.
-      const visibleTooltipCount = () =>
-        Array.from(window.document.querySelectorAll('[data-ui="Tooltip"]')).filter(
-          (el) => el instanceof HTMLElement && el.checkVisibility(),
-        ).length
-      await expectStable(() =>
-        visibleTooltipCount() === 0 ? 'no tooltip' : Symbol('tooltip visible'),
-      )
+      // `@sanity/ui` tooltips open on hover *or focus* of their trigger, after
+      // the ui-components open delay, and close on mouseleave / blur. Parking
+      // cancels hover timers, but a trigger focused before this call still
+      // opens its tooltip up to `TOOLTIP_DELAY_PROPS.open` later, so a single
+      // zero reading proves nothing: the count must hold at zero for longer
+      // than that delay, measured from the start of settling (no trigger event
+      // can happen after the park). A test whose end state legitimately shows
+      // a focus tooltip declares it with `expectTooltip`, and that one tooltip
+      // must then be the only one and stop moving like the other floating
+      // chrome.
+      const tooltipSig = boxSig('[data-ui="Tooltip"]')
+      const expectedTooltip = options?.expectTooltip
+      // Firefox headless shares one window focus across the pages parallel
+      // test files run in, so a focus-driven tooltip is not deterministic
+      // there; Chromatic archives on chromium only.
+      const verifyExpectedTooltip = expectedTooltip && server.browser !== 'firefox'
+      if (verifyExpectedTooltip) {
+        await expect
+          .poll(() => visibleTooltips().map((el) => el.textContent?.trim() ?? ''))
+          .toEqual([expect.stringMatching(expectedTooltip)])
+        await expectStable(present(tooltipSig))
+      } else if (!expectedTooltip) {
+        let tooltipFreeSince = settleStart
+        await expect
+          .poll(() => {
+            if (visibleTooltips().length > 0) {
+              tooltipFreeSince = performance.now()
+              return false
+            }
+            return performance.now() - tooltipFreeSince >= TOOLTIP_FREE_WINDOW_MS
+          })
+          .toBe(true)
+      }
 
       // Style-select label (Normal ↔ No style) must stay on the expected text
       // for the whole stability window — matching once then stabilizing on a
@@ -663,12 +721,11 @@ export function testHelpers() {
           .toBe(true)
       }
 
-      // Floating chrome, menus and the PTE toolbar must stop moving — and, if
-      // they were open before parking, must still be open. An empty signature
-      // (hidden or unmounted) never counts as stable, so a popover that closes
-      // under the parked pointer times out here instead of being archived
-      // silently.
-      const present = (sig: () => string | symbol) => () => sig() || Symbol('absent')
+      // Floating chrome, menus, dialogs and the PTE toolbar must stop moving —
+      // and, if they were open before parking, must still be open. An empty
+      // signature (hidden or unmounted) never counts as stable, so a popover
+      // that closes under the parked pointer times out here instead of being
+      // archived silently.
       const settleFloating = hadFloating || Boolean(floatingSig())
       const settleMenu = hadMenu || Boolean(menuSig())
       const settleDialog = hadDialog || Boolean(dialogSig())
@@ -684,6 +741,7 @@ export function testHelpers() {
       snapFloatingUiToIntegerPixels()
       if (settleFloating) await expectStable(present(floatingSig), 2)
       if (settleMenu) await expectStable(present(menuSig))
+      if (verifyExpectedTooltip) await expectStable(present(tooltipSig))
     },
   }
 }
