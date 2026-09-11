@@ -516,6 +516,51 @@ export function testHelpers() {
         await document.fonts.ready
       }
 
+      const boxSig = (selector: string) => () =>
+        Array.from(window.document.querySelectorAll<HTMLElement>(selector))
+          .filter((el) => el.checkVisibility())
+          .map((el) => {
+            const r = el.getBoundingClientRect()
+            return `${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)},${Math.round(r.height)}`
+          })
+          .join('|')
+
+      // Floating PTE chrome: inline-object / annotation toolbars and the
+      // popover edit dialog (all positioned by Floating UI).
+      const floatingSig = boxSig(
+        '[data-testid="inline-object-toolbar-popover"], [data-testid="annotation-toolbar-popover"], [data-testid="popover-edit-dialog"]',
+      )
+      // Menus and listboxes (e.g. the comment mentions popover) are positioned
+      // by Floating UI after they open.
+      const menuSig = boxSig('[role="menu"], [role="listbox"]')
+      // CollapseMenu measures toolbar width asynchronously; button set /
+      // x-offsets must stop moving or identical-code captures disagree on
+      // overflow "..." vs inline Strong/Italic/etc.
+      const toolbarSig = () =>
+        Array.from(
+          window.document.querySelectorAll<HTMLElement>('[data-testid="pt-editor__toolbar-card"]'),
+        )
+          .filter((el) => el.checkVisibility())
+          .map((toolbar) =>
+            Array.from(toolbar.querySelectorAll('button'))
+              .filter((btn) => btn instanceof HTMLElement && btn.checkVisibility())
+              .map((btn) => {
+                const label =
+                  btn.getAttribute('aria-label')?.trim() || btn.textContent?.trim() || ''
+                return `${label}@${Math.round(btn.getBoundingClientRect().x)}`
+              })
+              .join(','),
+          )
+          .join('||')
+
+      // Overlays that are open when settling starts must still be open after
+      // the pointer has moved: record them before parking so a popover that
+      // closes under the park is a timeout below, not a silently archived
+      // closed state.
+      const hadFloating = Boolean(floatingSig())
+      const hadMenu = Boolean(menuSig())
+      const hadToolbar = Boolean(toolbarSig())
+
       // After `userEvent.click` the real pointer still sits on the clicked
       // control, so it (and its field header) stay `:hover`ed and tooltips
       // can open. Synthetic `mouseover` does not clear CSS `:hover`; only a
@@ -587,62 +632,25 @@ export function testHelpers() {
           .toBe(true)
       }
 
-      // Floating chrome that was open when settling started must still be open
-      // and must stop moving. An empty signature (hidden or unmounted) never
-      // counts as stable, so a popover that closes under the parked pointer
-      // times out here instead of being archived silently.
+      // Floating chrome, menus and the PTE toolbar must stop moving — and, if
+      // they were open before parking, must still be open. An empty signature
+      // (hidden or unmounted) never counts as stable, so a popover that closes
+      // under the parked pointer times out here instead of being archived
+      // silently.
       const present = (sig: () => string) => () => sig() || Symbol('absent')
-
-      const floatingSig = () =>
-        Array.from(
-          window.document.querySelectorAll<HTMLElement>(
-            '[data-testid="inline-object-toolbar-popover"], [data-testid="annotation-toolbar-popover"]',
-          ),
-        )
-          .filter((el) => el.checkVisibility())
-          .map((el) => {
-            const r = el.getBoundingClientRect()
-            return `${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)}`
-          })
-          .join('|')
-      if (floatingSig()) await expectStable(present(floatingSig), 2)
-
-      // Menus and listboxes (e.g. the comment mentions popover) are positioned
-      // by Floating UI after they open; wait for their box to stop changing.
-      const menuSig = () =>
-        Array.from(window.document.querySelectorAll<HTMLElement>('[role="menu"], [role="listbox"]'))
-          .filter((el) => el.checkVisibility())
-          .map((el) => {
-            const r = el.getBoundingClientRect()
-            return `${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)},${Math.round(r.height)}`
-          })
-          .join('|')
-      if (menuSig()) await expectStable(present(menuSig))
-
-      // CollapseMenu measures toolbar width asynchronously; button set /
-      // x-offsets must stop moving or identical-code captures disagree on
-      // overflow "..." vs inline Strong/Italic/etc.
-      const toolbarSig = () =>
-        Array.from(
-          window.document.querySelectorAll<HTMLElement>('[data-testid="pt-editor__toolbar-card"]'),
-        )
-          .filter((el) => el.checkVisibility())
-          .map((toolbar) =>
-            Array.from(toolbar.querySelectorAll('button'))
-              .filter((btn) => btn instanceof HTMLElement && btn.checkVisibility())
-              .map((btn) => {
-                const label =
-                  btn.getAttribute('aria-label')?.trim() || btn.textContent?.trim() || ''
-                return `${label}@${Math.round(btn.getBoundingClientRect().x)}`
-              })
-              .join(','),
-          )
-          .join('||')
-      if (toolbarSig()) await expectStable(present(toolbarSig))
+      const settleFloating = hadFloating || Boolean(floatingSig())
+      const settleMenu = hadMenu || Boolean(menuSig())
+      if (settleFloating) await expectStable(present(floatingSig), 2)
+      if (settleMenu) await expectStable(present(menuSig))
+      if (hadToolbar || toolbarSig()) await expectStable(present(toolbarSig))
 
       // Snap after geometry has settled so the archive cannot land on a
       // half-pixel Floating UI translate that differs across identical runs.
+      // The snap writes inline styles, which can cost one more layout pass, so
+      // the snapped chrome must be re-read as stable before returning.
       snapFloatingUiToIntegerPixels()
+      if (settleFloating) await expectStable(present(floatingSig), 2)
+      if (settleMenu) await expectStable(present(menuSig))
     },
   }
 }
