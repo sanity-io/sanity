@@ -347,6 +347,39 @@ File-wide `/* oxlint-disable <rule> */` is reserved for files that are an except
 
 `options.reportUnusedDisableDirectives` is `error`, so a suppression that stops being necessary fails CI — drop suppressions when the code underneath them changes.
 
+### Public `sanity` entries never export `@internal` symbols
+
+Everything a studio or plugin can reach through `sanity`, `sanity/structure`, `sanity/router` and
+`sanity/presentation` is public API. Symbols tagged `@internal` are exported from
+`sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead
+(`packages/sanity/src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver.ts`),
+an entry whose name spells out its contract: anything on it can change or disappear in any
+release. `packages/@repo/test-dts-exports/test/internal-exports.test.ts` (part of `pnpm test:exports`)
+fails when a public entry's built `.d.ts` exports an `@internal` declaration.
+
+Rules that follow from this:
+
+- A new `@internal` export goes into the dangerous internals barrel, never into `index.ts`,
+  `structure.ts`, `router.ts` or `presentation.ts`. If code outside `src/core` needs it
+  (`src/structure`, `src/presentation`, `src/desk`, `@sanity/vision`, the dev studios), import it
+  from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`; `src/core` keeps
+  using relative imports (the boundaries rules forbid core from importing the entry, which would
+  pull the whole barrel into `lib/index.js`).
+- A symbol carries exactly one release tag. `@internal` plus `@beta`/`@public` on the same
+  declaration is a bug, not a way to say "beta but hidden" — use `@hidden` with `@beta` for that.
+- Tagging something `@public`/`@beta` moves it onto a public entry; tagging it `@internal` moves
+  it off. Both are API changes: removing a named ESM export breaks consumers at module
+  evaluation time, and auto-updating studios pick minors up without a rebuild, so check
+  sanity.io/docs and the published first-party plugins (`@sanity/assist`,
+  `@sanity/document-internationalization`, `sanity-plugin-media`, `@sanity/code-input`, …)
+  before demoting a symbol.
+- Two router leaf modules (`src/router/stickyParams.ts`, `src/router/utils/jsonParamsEncoding.ts`)
+  are the `sanity/router__shared` file category in `.oxlintrc.json`, so `src/core` can import
+  them relatively without them being exported from the public `sanity/router` entry.
+- The CDN auto-update bundle (`packages/sanity/package.bundle.ts`) lists every entry explicitly;
+  a new entry must be added there too, otherwise the `sanity/` import-map prefix resolves it to a
+  404 on the module host.
+
 ### Effect events: use `use-effect-event`, not React's native hook
 
 Import `useEffectEvent` from `use-effect-event`, never from `react`. On React 19.2 the native hook
