@@ -12,9 +12,11 @@ vi.mock('../../store/datastores', () => ({
   useDocumentPreviewStore: () => ({observeForPreview}),
 }))
 // Stable like the real context value: a fresh array per render would rebuild the observable.
-const perspective = {perspectiveStack: ['drafts'], selectedVariantName: undefined}
+const DEFAULT_PERSPECTIVE = {perspectiveStack: ['drafts'], selectedVariantName: undefined}
+let currentPerspective: {perspectiveStack: string[]; selectedVariantName: string | undefined} =
+  DEFAULT_PERSPECTIVE
 vi.mock('../../perspective/usePerspective', () => ({
-  usePerspective: () => perspective,
+  usePerspective: () => currentPerspective,
 }))
 
 const schemaType = {name: 'book', jsonType: 'object', preview: {}} as unknown as SchemaType
@@ -36,6 +38,7 @@ describe('useValuePreview', () => {
   beforeEach(() => {
     subscriptions.active = 0
     subscriptions.total = 0
+    currentPerspective = DEFAULT_PERSPECTIVE
     observeForPreview.mockReset()
     observeForPreview.mockImplementation(
       (value: {title: string}) =>
@@ -153,6 +156,76 @@ describe('useValuePreview', () => {
 
     expect(frames.slice(settled).some((frame) => frame.isLoading)).toBe(false)
     expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one in release'})
+  })
+
+  it('keeps the preview when a draft of a cross-dataset document is materialized', () => {
+    const frames: Frame[] = []
+    const reference = {_projectId: 'p1', _dataset: 'd1'}
+    const {rerender} = render(
+      <Harness value={{...reference, _ref: 'x', title: 'one'}} frames={frames} />,
+    )
+    const settled = frames.length
+
+    rerender(
+      <Harness value={{...reference, _ref: 'drafts.x', title: 'one edited'}} frames={frames} />,
+    )
+    rerender(
+      <Harness
+        value={{...reference, _ref: 'versions.r1.x', title: 'in release'}}
+        frames={frames}
+      />,
+    )
+
+    expect(frames.slice(settled).some((frame) => frame.isLoading)).toBe(false)
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'in release'})
+
+    // the same document in another dataset is a different target
+    rerender(
+      <Harness
+        value={{...reference, _dataset: 'd2', _ref: 'x', title: 'elsewhere'}}
+        frames={frames}
+      />,
+    )
+    expect(frames.slice(settled).some((frame) => frame.isLoading)).toBe(true)
+  })
+
+  it('does not resubscribe a version preview when the global perspective or variant changes', () => {
+    const frames: Frame[] = []
+    const value = {_id: 'a', title: 'one'}
+    const {rerender} = render(
+      <Harness value={value} frames={frames} perspectiveStack={['r1', 'drafts']} />,
+    )
+    const settled = frames.length
+
+    // the caller previews a specific version, so the global selection does not take part
+    currentPerspective = {perspectiveStack: ['r2', 'drafts'], selectedVariantName: 'variant'}
+    rerender(<Harness value={value} frames={frames} perspectiveStack={['r1', 'drafts']} />)
+
+    expect(observeForPreview).toHaveBeenCalledTimes(1)
+    expect(subscriptions.total).toBe(1)
+    expect(frames.slice(settled).some((frame) => frame.isLoading)).toBe(false)
+  })
+
+  it('follows the global perspective when the caller does not choose one', () => {
+    const frames: Frame[] = []
+    const value = {_id: 'a', title: 'one'}
+    const {rerender} = render(<Harness value={value} frames={frames} />)
+    expect(observeForPreview).toHaveBeenLastCalledWith(
+      value,
+      schemaType,
+      expect.objectContaining({perspective: ['drafts']}),
+    )
+
+    currentPerspective = {perspectiveStack: ['r2', 'drafts'], selectedVariantName: undefined}
+    rerender(<Harness value={value} frames={frames} />)
+
+    expect(observeForPreview).toHaveBeenCalledTimes(2)
+    expect(observeForPreview).toHaveBeenLastCalledWith(
+      value,
+      schemaType,
+      expect.objectContaining({perspective: ['r2', 'drafts']}),
+    )
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
   })
 
   it('resets to loading when a version slated for unpublishing switches to the published preview', () => {

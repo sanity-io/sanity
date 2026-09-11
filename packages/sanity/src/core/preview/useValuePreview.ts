@@ -135,7 +135,8 @@ function getPreviewTargetKey(
   }
   const id = _id ?? _ref ?? _key
   if (id === undefined) return INLINE_TARGET_KEY
-  const document = _dataset ? `${_projectId}/${_dataset}/${id}` : getPublishedId(id)
+  const publishedId = getPublishedId(id)
+  const document = _dataset ? `${_projectId}/${_dataset}/${publishedId}` : publishedId
   return `${document}|${perspective.join(',')}|${variant ?? ''}`
 }
 /**
@@ -169,6 +170,11 @@ export function useValuePreview(props: {
   // Callers build this inline (`useDocumentTitle` passes `[]`); keyed by contents so a fresh array
   // per render does not rebuild the observable.
   const chosenPerspectiveStack = useShallowUnique(chosenPerspectiveStackProp)
+  // A caller previewing a specific version is not affected by the global selection, so resolve
+  // which perspective and variant apply up front: only those take part in the pipeline's identity,
+  // and a global perspective or variant change does not resubscribe such a preview.
+  const perspective = chosenPerspectiveStack ?? perspectiveStack
+  const variant = chosenVariant ?? (chosenPerspectiveStack ? undefined : selectedVariantName)
 
   // The value is a new object on every edit. It enters the pipeline through a subject so the
   // observable identity — and with it the subscription and the field observers it holds — survives
@@ -184,13 +190,10 @@ export function useValuePreview(props: {
 
       const goingToUnpublish = isGoingToUnpublish(value as SanityDocument)
 
-      const perspective = goingToUnpublish ? [] : (chosenPerspectiveStack ?? perspectiveStack)
       // A document slated for unpublishing is previewed as its published version, which is
-      // outside of any variant. Otherwise the variant follows the perspective: only inherited
-      // from the context when the perspective is too.
-      const variant = goingToUnpublish
-        ? undefined
-        : (chosenVariant ?? (chosenPerspectiveStack ? undefined : selectedVariantName))
+      // outside of any perspective or variant.
+      const targetPerspective = goingToUnpublish ? [] : perspective
+      const targetVariant = goingToUnpublish ? undefined : variant
       const id = goingToUnpublish
         ? getPublishedId((value as SanityDocument)._id)
         : (value as SanityDocument)._id
@@ -204,19 +207,12 @@ export function useValuePreview(props: {
 
       return {
         previewable,
-        perspective,
-        variant,
-        key: getPreviewTargetKey(previewable, perspective, variant),
+        perspective: targetPerspective,
+        variant: targetVariant,
+        key: getPreviewTargetKey(previewable, targetPerspective, targetVariant),
       }
     },
-    [
-      enabled,
-      schemaType,
-      chosenPerspectiveStack,
-      perspectiveStack,
-      chosenVariant,
-      selectedVariantName,
-    ],
+    [enabled, schemaType, perspective, variant],
   )
 
   const observable = useMemo<Observable<Emission>>(
