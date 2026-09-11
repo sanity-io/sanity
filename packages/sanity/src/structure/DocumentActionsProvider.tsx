@@ -4,11 +4,11 @@ import {
   type DocumentActionDescription,
   type DocumentActionProps,
   getReleaseIdFromReleaseDocumentId,
-  useCanvasCompanionDoc,
   useTranslation,
 } from 'sanity'
 import {DocumentActionsStateContext} from 'sanity/_singletons'
 
+import {useCanvasCompanionDoc} from '../core/canvas/actions/useCanvasCompanionDoc'
 import {getDocumentIdForCanvasLink} from '../core/canvas/utils/getDocumentIdForCanvasLink'
 import {GetHookCollectionState} from '../core/components/hookCollection/GetHookCollectionState'
 import {useActiveReleases} from '../core/releases/store/useActiveReleases'

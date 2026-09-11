@@ -11,10 +11,10 @@ import {
   useClient,
   useDateTimeFormat,
   useDocumentPreviewStore,
-  useDocumentVersions,
   usePerspective,
 } from 'sanity'
 import {
+  useDocumentVersions,
   getTargetDocument,
   getVariantTitle,
   useActiveReleases,

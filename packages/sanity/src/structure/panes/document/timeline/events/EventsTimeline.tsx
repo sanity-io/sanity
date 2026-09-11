@@ -3,7 +3,6 @@ import {motion, type Variants} from 'motion/react'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   type DocumentGroupEvent,
-  getDocumentVariantType,
   isCreateDocumentVersionEvent,
   isDeleteDocumentVersionEvent,
   isEditDocumentVersionEvent,
@@ -15,6 +14,7 @@ import {Flex, Box} from 'ui5'
 import {CommandList} from '../../../../../core/components/commandList/CommandList'
 import {type CommandListRenderItemCallback} from '../../../../../core/components/commandList/types'
 import {LoadingBlock} from '../../../../../core/components/loadingBlock/LoadingBlock'
+import {getDocumentVariantType} from '../../../../../core/util/getDocumentVariantType'
 import {ExpandableTimelineItemButton} from '../expandableTimelineItemButton'
 import {ListWrapper, Root} from '../timeline.styled'
 import {EventTimelineItem} from './EventTimelineItem'

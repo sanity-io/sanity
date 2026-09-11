@@ -16,6 +16,7 @@
  */
 
 export {type FIXME} from '../core/FIXME'
+export {useCanvasCompanionDoc} from '../core/canvas/actions/useCanvasCompanionDoc'
 export {useNavigateToCanvasDoc} from '../core/canvas/useNavigateToCanvasDoc'
 export {getDocumentIdForCanvasLink} from '../core/canvas/utils/getDocumentIdForCanvasLink'
 export {ChangeFieldWrapper} from '../core/changeIndicators/ChangeFieldWrapper'
@@ -186,6 +187,7 @@ export {
   DocumentGroupInventory,
   type DocumentGroupInventoryProps,
 } from '../core/documentGroupInventory/components/DocumentGroupInventory'
+export {DocumentGroupInventoryAction} from '../core/documentGroupInventory/components/DocumentGroupInventoryAction'
 export {
   type DocumentGroupInventoryComponents,
   type DocumentGroupInventoryPerspectiveList,
@@ -471,6 +473,7 @@ export {
   type DocumentSyncState,
   useDocumentSyncState,
 } from '../core/hooks/useDocumentSyncState'
+export {useDocumentVersionTitle} from '../core/hooks/useDocumentVersionTitle'
 export {useFeatureEnabled} from '../core/hooks/useFeatureEnabled'
 export {useFilteredReleases} from '../core/hooks/useFilteredReleases'
 export {
@@ -512,6 +515,7 @@ export {
 export {ReleasesNav} from '../core/perspective/navbar/ReleasesNav'
 export {type ReleasesNavMenuItemPropsGetter} from '../core/perspective/types'
 export {useExcludedPerspective} from '../core/perspective/useExcludedPerspective'
+export {useGetDefaultPerspective} from '../core/perspective/useGetDefaultPerspective'
 export {useSetPerspective} from '../core/perspective/useSetPerspective'
 export {useSetVariant} from '../core/perspective/useSetVariant'
 export {type DocumentPreviewPresenceProps} from '../core/presence/DocumentPreviewPresence'
@@ -558,14 +562,18 @@ export {unstable_useValuePreview, useValuePreview} from '../core/preview/useValu
 export {getPreviewPaths} from '../core/preview/utils/getPreviewPaths'
 export {prepareForPreview} from '../core/preview/utils/prepareForPreview'
 export {Chip} from '../core/releases/components/Chip'
+export {ReleaseAvatar, ReleaseAvatarIcon} from '../core/releases/components/ReleaseAvatar'
 export {ReleaseTitle} from '../core/releases/components/ReleaseTitle'
 export {
   getVersionInlineBadge,
   VersionInlineBadge,
 } from '../core/releases/components/VersionInlineBadge'
 export {VersionChip} from '../core/releases/components/documentHeader/VersionChip'
+export {useDocumentVersionTypeSortedList} from '../core/releases/hooks/useDocumentVersionTypeSortedList'
+export {useDocumentVersions} from '../core/releases/hooks/useDocumentVersions'
 export {useFormatRelativeLocalePublishDate} from '../core/releases/hooks/useFormatRelativeLocalePublishDate'
 export {useIsReleaseActive} from '../core/releases/hooks/useIsReleaseActive'
+export {useOnlyHasVersions} from '../core/releases/hooks/useOnlyHasVersions'
 export {useVersionOperations} from '../core/releases/hooks/useVersionOperations'
 export {sortReleases} from '../core/releases/hooks/utils'
 export {RELEASES_INTENT} from '../core/releases/plugin'
@@ -584,6 +592,7 @@ export {
 } from '../core/releases/util/releasesClient'
 export {
   formatRelativeLocalePublishDate,
+  getDocumentIsInPerspective,
   isDraftPerspective,
   isPublishedPerspective,
   isReleaseScheduledOrScheduling,
@@ -974,6 +983,7 @@ export {
 } from '../core/util/draftUtils'
 export {EMPTY_ARRAY, EMPTY_OBJECT} from '../core/util/empty'
 export {formatRelativeLocale} from '../core/util/formatRelativeLocale'
+export {getDocumentVariantType} from '../core/util/getDocumentVariantType'
 export {getErrorMessage} from '../core/util/getErrorMessage'
 export {getTargetDocument, getVariantPublishedSibling} from '../core/util/getTargetDocument'
 export {globalScope} from '../core/util/globalScope'
@@ -1010,6 +1020,13 @@ export {useShallowUnique} from '../core/util/useShallowUnique'
 export {useThrottledCallback} from '../core/util/useThrottledCallback'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {useUnique} from '../core/util/useUnique'
+export {
+  isDraftVersion,
+  isPublishedVersion,
+  isReleaseVersion,
+  isVariantVersion,
+  readVersionType,
+} from '../core/util/versionsUtils'
 export {validateDocument} from '../core/validation'
 export {isDocumentInSelectedVariant} from '../core/variants/documents/isDocumentInSelectedVariant'
 export {useCreatableVariantInitialValue} from '../core/variants/hooks/useCreatableVariantInitialValue'

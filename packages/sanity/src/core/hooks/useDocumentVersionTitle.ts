@@ -107,6 +107,7 @@ function buildVersionTitleResult({
  * - Draft variant: "Variant name · Draft"
  * - Release default: "All users (Default) · Release name"
  * - Release variant: "Variant name · Release name"
+ * @internal
  */
 export function useDocumentVersionTitle({version}: {version: VersionInfoDocumentStub}) {
   const {byId: variantsById, loading: variantsLoading, error: variantsError} = useAllVariants()

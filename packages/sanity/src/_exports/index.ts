@@ -3,7 +3,6 @@ import '@sanity/ui/styles.css'
 // oxlint-disable-next-line import/no-unassigned-import -- side effect: keeps the module augmentations declared by this module on the public type surface
 import '../core/form/types/definitionExtensions'
 
-export {useCanvasCompanionDoc} from '../core/canvas/actions/useCanvasCompanionDoc'
 export {ChangeIndicator} from '../core/changeIndicators/ChangeIndicator'
 export {type CommentsIntentProviderProps} from '../core/comments/context/intent/CommentsIntentProvider'
 export {
@@ -186,8 +185,6 @@ export {
   type WorkspaceHiddenProperty,
   type WorkspaceOptions,
 } from '../core/config/types'
-export {DocumentGroupInventoryAction} from '../core/documentGroupInventory/components/DocumentGroupInventoryAction'
-export {useDocumentVersionTitle} from '../core/hooks/useDocumentVersionTitle'
 export {isDev} from '../core/environment'
 export {type SendFeedbackOptions} from '../core/feedback/hooks/useInStudioFeedback'
 export {
@@ -487,7 +484,6 @@ export {
   type SelectedPerspective,
   type TargetPerspective,
 } from '../core/perspective/types'
-export {useGetDefaultPerspective} from '../core/perspective/useGetDefaultPerspective'
 export {usePerspective} from '../core/perspective/usePerspective'
 export {DocumentPreviewPresence} from '../core/presence/DocumentPreviewPresence'
 export {PresenceOverlay} from '../core/presence/overlay/PresenceOverlay'
@@ -515,14 +511,9 @@ export {
 } from '../core/preview/types'
 export {getPreviewStateObservable} from '../core/preview/utils/getPreviewStateObservable'
 export {getPreviewValueWithFallback} from '../core/preview/utils/getPreviewValueWithFallback'
-export {ReleaseAvatar, ReleaseAvatarIcon} from '../core/releases/components/ReleaseAvatar'
-export {useDocumentVersions} from '../core/releases/hooks/useDocumentVersions'
-export {useDocumentVersionTypeSortedList} from '../core/releases/hooks/useDocumentVersionTypeSortedList'
-export {useOnlyHasVersions} from '../core/releases/hooks/useOnlyHasVersions'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {useDocumentVersionInfo} from '../core/releases/store/useDocumentVersionInfo'
 export {getReleaseIdFromReleaseDocumentId} from '../core/releases/util/getReleaseIdFromReleaseDocumentId'
-export {getDocumentIsInPerspective} from '../core/releases/util/util'
 // oxlint-disable-next-line eslint/no-restricted-imports, no-deprecated -- deprecated scheduled-publishing API stays public until it is removed
 export {useScheduleAction as ScheduleAction} from '../core/scheduled-publishing/plugin/documentActions/schedule/ScheduleAction'
 // oxlint-disable-next-line eslint/no-restricted-imports, no-deprecated -- deprecated scheduled-publishing API stays public until it is removed
@@ -727,19 +718,12 @@ export {
   systemBundles,
   VERSION_FOLDER,
 } from '../core/util/draftUtils'
-export {type DocumentVariantType, getDocumentVariantType} from '../core/util/getDocumentVariantType'
+export {type DocumentVariantType} from '../core/util/getDocumentVariantType'
 export {getReferencePaths} from '../core/util/getReferencePaths'
 export {isRecord} from '../core/util/isRecord'
 export {truncateString} from '../core/util/unicodeString'
 export {userHasRole} from '../core/util/userHasRole'
-export {
-  isDraftVersion,
-  isPublishedVersion,
-  isReleaseVersion,
-  isVariantVersion,
-  readVersionType,
-  type VersionType,
-} from '../core/util/versionsUtils'
+export {type VersionType} from '../core/util/versionsUtils'
 export {type ValidateDocumentOptions} from '../core/validation'
 export {type SystemVariant} from '../core/variants/types'
 export {SANITY_VERSION} from '../core/version'
