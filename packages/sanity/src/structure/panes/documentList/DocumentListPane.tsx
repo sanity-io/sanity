@@ -11,17 +11,15 @@ import {
   useSchema,
   useTranslation,
 } from 'sanity'
-import {
-  EMPTY_ARRAY,
-  useActiveReleases,
-  useI18nText,
-  useReconnectingToast,
-  useShallowUnique,
-  useUnique,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {keyframes, styled} from 'styled-components'
 import {Box} from 'ui5'
 
+import {useReconnectingToast} from '../../../core/hooks/useReconnectingToast'
+import {useI18nText} from '../../../core/i18n/hooks/useI18nText'
+import {useActiveReleases} from '../../../core/releases/store/useActiveReleases'
+import {EMPTY_ARRAY} from '../../../core/util/empty'
+import {useShallowUnique} from '../../../core/util/useShallowUnique'
+import {useUnique} from '../../../core/util/useUnique'
 import {usePane} from '../../components/pane/usePane'
 import {structureLocaleNamespace} from '../../i18n'
 import {type BaseStructureToolPaneProps} from '../types'

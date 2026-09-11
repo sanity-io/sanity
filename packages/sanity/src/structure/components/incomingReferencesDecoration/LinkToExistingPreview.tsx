@@ -15,12 +15,11 @@ import {
   SanityDefaultPreview,
   useTranslation,
 } from 'sanity'
-import {
-  getReleaseTone,
-  ReleaseTitle,
-  useActiveReleases,
-  VersionInlineBadge,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+
+import {ReleaseTitle} from '../../../core/releases/components/ReleaseTitle'
+import {VersionInlineBadge} from '../../../core/releases/components/VersionInlineBadge'
+import {useActiveReleases} from '../../../core/releases/store/useActiveReleases'
+import {getReleaseTone} from '../../../core/releases/util/getReleaseTone'
 
 export interface LinkToExistingPreviewProps {
   documentPreviewStore: DocumentPreviewStore

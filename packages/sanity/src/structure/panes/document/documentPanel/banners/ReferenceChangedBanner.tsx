@@ -15,12 +15,10 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
-import {
-  isGoingToUnpublish,
-  isPublishedPerspective,
-  useTargetScopeId,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
+import {useTargetScopeId} from '../../../../../core/hooks/useTargetScopeId'
+import {isGoingToUnpublish} from '../../../../../core/releases/util/isGoingToUnpublish'
+import {isPublishedPerspective} from '../../../../../core/releases/util/util'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useResolvedPanesList} from '../../../../structureResolvers/useResolvedPanesList'

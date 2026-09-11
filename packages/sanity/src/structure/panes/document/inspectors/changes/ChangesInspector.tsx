@@ -3,18 +3,16 @@ import {type ObjectDiff} from '@sanity/diff'
 import {BoundaryElementProvider, Card, Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {ChangeList, type ObjectSchemaType, usePerspective, useTranslation} from 'sanity'
-import {
-  ChangeFieldWrapper,
-  type DocumentChangeContextInstance,
-  LoadingBlock,
-  NoChanges,
-  ScrollContainer,
-  useTimelineSelector,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {DocumentChangeContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 import {Flex, Box, Grid} from 'ui5'
 
+import {ChangeFieldWrapper} from '../../../../../core/changeIndicators/ChangeFieldWrapper'
+import {LoadingBlock} from '../../../../../core/components/loadingBlock/LoadingBlock'
+import {ScrollContainer} from '../../../../../core/components/scroll/scrollContainer'
+import {NoChanges} from '../../../../../core/field/diff/components/NoChanges'
+import {type DocumentChangeContextInstance} from '../../../../../core/field/diff/contexts/DocumentChangeContext'
+import {useTimelineSelector} from '../../../../../core/store/history/useTimelineSelector'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {TimelineError} from '../../timeline/TimelineError'
 import {TimelineMenu} from '../../timeline/timelineMenu'

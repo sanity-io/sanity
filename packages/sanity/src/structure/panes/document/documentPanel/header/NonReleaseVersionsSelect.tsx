@@ -4,14 +4,12 @@ import {ChevronUpIcon} from '@sanity/icons/ChevronUp'
 import {Container, useClickOutsideEvent} from '@sanity/ui'
 import {useMemo, useRef, useState} from 'react'
 import {getPublishedId, getVersionFromId, useTranslation} from 'sanity'
-import {
-  type VersionInfoDocumentStub,
-  Chip,
-  type AgentVersionDisplay,
-  VersionChip,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex} from 'ui5'
 
+import {Chip} from '../../../../../core/releases/components/Chip'
+import {VersionChip} from '../../../../../core/releases/components/documentHeader/VersionChip'
+import {type VersionInfoDocumentStub} from '../../../../../core/releases/store/types'
+import {type AgentVersionDisplay} from '../../../../../core/store/agent/useAgentVersionDisplay'
 import {Popover} from '../../../../../ui-components/popover/Popover'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 

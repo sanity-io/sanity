@@ -1,10 +1,8 @@
 import {type SystemVariant, type TargetPerspective} from 'sanity'
-import {
-  type TargetDocumentState,
-  type VersionInfoDocumentStub,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {describe, expect, it} from 'vitest'
 
+import {type TargetDocumentState} from '../../../../../core/hooks/useTargetDocumentState'
+import {type VersionInfoDocumentStub} from '../../../../../core/releases/store/types'
 import {
   getBadgeSystemDocument,
   getTargetBadgePerspective,

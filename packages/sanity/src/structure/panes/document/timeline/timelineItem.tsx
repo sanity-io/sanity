@@ -9,13 +9,11 @@ import {
   useRelativeTime,
   useTranslation,
 } from 'sanity'
-import {
-  type RelativeTimeOptions,
-  useUser,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {css, styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
+import {type RelativeTimeOptions} from '../../../../core/hooks/useRelativeTime'
+import {useUser} from '../../../../core/store/user/hooks'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {getTimelineEventIconComponent} from './helpers'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'

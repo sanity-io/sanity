@@ -10,13 +10,11 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
-import {
-  isReleaseDocument,
-  useSource,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
+import {isReleaseDocument} from '../../../../../core/releases/store/types'
+import {useSource} from '../../../../../core/studio/source'
 import {Button} from '../../../../../ui-components/button/Button'
 import {Tab} from '../../../../../ui-components/tab/Tab'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'

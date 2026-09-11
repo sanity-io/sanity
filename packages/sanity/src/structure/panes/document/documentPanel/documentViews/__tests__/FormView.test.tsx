@@ -28,13 +28,10 @@ vi.mock('sanity', async (importOriginal) => {
     useDocumentPresence: vi.fn(() => []),
   }
 })
-vi.mock(
-  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
-  async (importOriginal) => ({
-    ...(await importOriginal()),
-    useConditionalToast: vi.fn(),
-  }),
-)
+vi.mock('../../../../../../core/hooks/useConditionalToast', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useConditionalToast: vi.fn(),
+}))
 
 vi.mock('../../../useDocumentPane', () => ({
   useDocumentPane: vi.fn(),

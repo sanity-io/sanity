@@ -11,13 +11,11 @@ import {
   isUnscheduleDocumentVersionEvent,
   useTranslation,
 } from 'sanity'
-import {
-  TIMELINE_ITEM_I18N_KEY_MAPPING,
-  useEvents,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
+import {TIMELINE_ITEM_I18N_KEY_MAPPING} from '../../../../../core/field/diff/components/constants'
+import {useEvents} from '../../../../../core/store/events/EventsProvider'
 import {Button} from '../../../../../ui-components/button/Button'
 import {Popover} from '../../../../../ui-components/popover/Popover'
 import {useDocumentPane} from '../../useDocumentPane'

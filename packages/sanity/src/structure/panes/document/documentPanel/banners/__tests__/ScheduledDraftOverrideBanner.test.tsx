@@ -7,7 +7,7 @@ import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
 import {ScheduledDraftOverrideBanner} from '../ScheduledDraftOverrideBanner'
 
 vi.mock(
-  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
+  '../../../../../../core/singleDocRelease/hooks/useScheduledDraftDocument',
   async (importOriginal) => ({
     ...(await importOriginal()),
     useScheduledDraftDocument: vi.fn(),
@@ -15,7 +15,7 @@ vi.mock(
 )
 
 const {useScheduledDraftDocument: mockUseScheduledDraftDocument} = vi.mocked(
-  await import('sanity/_dangerously_use_private_internals_that_do_not_follow_semver'),
+  await import('../../../../../../core/singleDocRelease/hooks/useScheduledDraftDocument'),
 )
 
 describe('ScheduledDraftOverrideBanner', () => {

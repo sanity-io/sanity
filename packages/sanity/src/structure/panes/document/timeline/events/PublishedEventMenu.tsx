@@ -13,20 +13,18 @@ import {
   useTranslation,
   useWorkspace,
 } from 'sanity'
-import {
-  ContextMenuButton,
-  getReleaseDocumentIdFromReleaseId,
-  getReleaseTone,
-  isReleaseDocument,
-  RELEASES_INTENT,
-  ReleaseTitle,
-  useAllReleases,
-  useSetPerspective,
-  VersionInlineBadge,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {IntentLink} from 'sanity/router'
 import {Flex} from 'ui5'
 
+import {ContextMenuButton} from '../../../../../core/components/contextMenuButton/ContextMenuButton'
+import {useSetPerspective} from '../../../../../core/perspective/useSetPerspective'
+import {ReleaseTitle} from '../../../../../core/releases/components/ReleaseTitle'
+import {VersionInlineBadge} from '../../../../../core/releases/components/VersionInlineBadge'
+import {RELEASES_INTENT} from '../../../../../core/releases/plugin'
+import {isReleaseDocument} from '../../../../../core/releases/store/types'
+import {useAllReleases} from '../../../../../core/releases/store/useAllReleases'
+import {getReleaseDocumentIdFromReleaseId} from '../../../../../core/releases/util/getReleaseDocumentIdFromReleaseId'
+import {getReleaseTone} from '../../../../../core/releases/util/getReleaseTone'
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'

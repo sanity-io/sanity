@@ -8,18 +8,15 @@ import {
   type SystemVariant,
   type TargetPerspective,
 } from 'sanity'
-import {
-  ReleaseTitle,
-  getReleaseTone,
-  getVariantTitle,
-  isDraftPerspective,
-  isPublishedPerspective,
-  isReleaseDocument,
-  type TargetDocumentState,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
+import {type TargetDocumentState} from '../../../../../core/hooks/useTargetDocumentState'
+import {ReleaseTitle} from '../../../../../core/releases/components/ReleaseTitle'
+import {isReleaseDocument} from '../../../../../core/releases/store/types'
+import {getReleaseTone} from '../../../../../core/releases/util/getReleaseTone'
+import {isDraftPerspective, isPublishedPerspective} from '../../../../../core/releases/util/util'
+import {getVariantTitle} from '../../../../../core/variants/tool/util'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {isLiveEditEnabled} from '../../../../components/paneItem/helpers'
 import {structureLocaleNamespace} from '../../../../i18n'

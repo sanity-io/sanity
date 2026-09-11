@@ -33,21 +33,18 @@ import {
   useTranslation,
   useWorkspace,
 } from 'sanity'
-import {
-  type DocumentLayoutProps,
-  getReleaseTone,
-  isReleaseDocument,
-  isReleaseScheduledOrScheduling,
-  isSystemBundleName,
-  LATEST,
-  PUBLISHED,
-  ReleaseTitle,
-  useActiveReleases,
-  useFormatRelativeLocalePublishDate,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
+import {type DocumentLayoutProps} from '../../../../core/config/types'
+import {ReleaseTitle} from '../../../../core/releases/components/ReleaseTitle'
+import {useFormatRelativeLocalePublishDate} from '../../../../core/releases/hooks/useFormatRelativeLocalePublishDate'
+import {isReleaseDocument} from '../../../../core/releases/store/types'
+import {useActiveReleases} from '../../../../core/releases/store/useActiveReleases'
+import {LATEST, PUBLISHED} from '../../../../core/releases/util/const'
+import {getReleaseTone} from '../../../../core/releases/util/getReleaseTone'
+import {isReleaseScheduledOrScheduling} from '../../../../core/releases/util/util'
+import {isSystemBundleName} from '../../../../core/util/draftUtils'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useDiffViewRouter} from '../../hooks/useDiffViewRouter'

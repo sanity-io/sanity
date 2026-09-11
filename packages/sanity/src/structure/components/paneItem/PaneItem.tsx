@@ -29,9 +29,9 @@ import {
   useEditState,
   useSchema,
 } from 'sanity'
-import {type FIXME} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Box} from 'ui5'
 
+import {type FIXME} from '../../../core/FIXME'
 import {MissingSchemaType} from '../MissingSchemaType'
 import {usePaneRouter} from '../paneRouter/usePaneRouter'
 import {PaneItemPreview} from './PaneItemPreview'

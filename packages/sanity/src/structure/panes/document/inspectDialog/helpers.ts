@@ -1,7 +1,8 @@
 import {type SanityDocumentLike} from '@sanity/types'
 import LRU from 'quick-lru'
 import {isRecord} from 'sanity'
-import {isString} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+
+import {isString} from '../../../../core/util/isString'
 
 const lru = new LRU({maxSize: 1000})
 

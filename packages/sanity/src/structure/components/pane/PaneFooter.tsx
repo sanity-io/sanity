@@ -1,7 +1,7 @@
 import {type ReactNode, type RefAttributes} from 'react'
-import {LegacyLayerProvider} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Box, type PaddingProps} from 'ui5'
 
+import {LegacyLayerProvider} from '../../../core/components/transitional/LegacyLayerProvider'
 import {Root, RootCard} from './PaneFooter.styles'
 import {usePane} from './usePane'
 

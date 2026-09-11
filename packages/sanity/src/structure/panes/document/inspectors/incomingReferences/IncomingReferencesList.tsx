@@ -10,14 +10,12 @@ import {
   useSchema,
   useTranslation,
 } from 'sanity'
-import {
-  CommandList,
-  type CommandListRenderItemCallback,
-  LoadingBlock,
-  useSource,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex, Box} from 'ui5'
 
+import {CommandList} from '../../../../../core/components/commandList/CommandList'
+import {type CommandListRenderItemCallback} from '../../../../../core/components/commandList/types'
+import {LoadingBlock} from '../../../../../core/components/loadingBlock/LoadingBlock'
+import {useSource} from '../../../../../core/studio/source'
 import {CrossDatasetIncomingReferenceDocumentPreview} from '../../../../components/incomingReferencesDecoration/CrossDatasetIncomingReference/CrossDatasetIncomingReferenceDocumentPreview'
 import {
   type CrossDatasetIncomingReferenceDocument,

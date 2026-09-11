@@ -9,13 +9,11 @@ import {
   useSchema,
   useTranslation,
 } from 'sanity'
-import {
-  CommandList,
-  type CommandListRenderItemCallback,
-  LoadingBlock,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex, Box} from 'ui5'
 
+import {CommandList} from '../../../../core/components/commandList/CommandList'
+import {type CommandListRenderItemCallback} from '../../../../core/components/commandList/types'
+import {LoadingBlock} from '../../../../core/components/loadingBlock/LoadingBlock'
 import {structureLocaleNamespace} from '../../../i18n'
 import {INCOMING_REFERENCES_ITEM_HEIGHT, IncomingReferencesListContainer} from '../shared'
 import {type CrossDatasetIncomingReference} from '../types'

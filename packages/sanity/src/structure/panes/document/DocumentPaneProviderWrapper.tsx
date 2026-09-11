@@ -1,9 +1,7 @@
 import {memo, useCallback} from 'react'
-import {
-  SingleDocReleaseProvider,
-  useSource,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
+import {SingleDocReleaseProvider} from '../../../core/singleDocRelease/context/SingleDocReleaseProvider'
+import {useSource} from '../../../core/studio/source'
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {DocumentEventsPane} from './DocumentEventsPane'
 import {DocumentPaneWithLegacyTimelineStore} from './DocumentPaneLegacyTimeline'

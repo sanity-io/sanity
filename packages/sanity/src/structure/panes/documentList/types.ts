@@ -1,5 +1,6 @@
 import {type SanityDocumentLike} from '@sanity/types'
-import {type SearchSort} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+
+import {type SearchSort} from '../../../core/search/common/types'
 
 export interface DocumentListPaneItem extends SanityDocumentLike {
   hasPublished: boolean

@@ -12,13 +12,11 @@ import {
 import {Card, type CardTone, Stack, Text} from '@sanity/ui'
 import {type ErrorInfo, Fragment, type MouseEvent, useCallback, useMemo, useState} from 'react'
 import {type DocumentInspectorProps, useTranslation} from 'sanity'
-import {
-  isGoingToUnpublish,
-  mergeParseErrors,
-  useParseErrors,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex, Box} from 'ui5'
 
+import {mergeParseErrors} from '../../../../../core/form/store/utils/mergeParseErrors'
+import {useParseErrors} from '../../../../../core/form/studio/contexts/ParseErrors'
+import {isGoingToUnpublish} from '../../../../../core/releases/util/isGoingToUnpublish'
 import {ErrorBoundary} from '../../../../../ui-components/errorBoundary/ErrorBoundary'
 import {DocumentInspectorHeader} from '../../documentInspector/DocumentInspectorHeader'
 import {useDocumentPane} from '../../useDocumentPane'

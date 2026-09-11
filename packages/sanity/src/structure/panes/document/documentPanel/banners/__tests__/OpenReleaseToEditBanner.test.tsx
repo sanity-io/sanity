@@ -1,9 +1,9 @@
 import {render, screen} from '@testing-library/react'
 import {getReleaseIdFromReleaseDocumentId, type ReleaseDocument, useOnlyHasVersions} from 'sanity'
-import {useActiveReleases} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {useActiveReleases} from '../../../../../../core/releases/store/useActiveReleases'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
 import {OpenReleaseToEditBanner} from '../OpenReleaseToEditBanner'
 
@@ -18,15 +18,18 @@ vi.mock('sanity', async () => {
     useOnlyHasVersions: vi.fn(),
   }
 })
-vi.mock(
-  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
-  async (importOriginal) => ({
-    ...(await importOriginal()),
-    useReleasesIds: vi.fn(),
-    useActiveReleases: vi.fn(),
-    useArchivedReleases: vi.fn(),
-  }),
-)
+vi.mock('../../../../../../core/releases/store/useReleasesIds', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useReleasesIds: vi.fn(),
+}))
+vi.mock('../../../../../../core/releases/store/useActiveReleases', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useActiveReleases: vi.fn(),
+}))
+vi.mock('../../../../../../core/releases/store/useArchivedReleases', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useArchivedReleases: vi.fn(),
+}))
 
 const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
 const mockuseUseOnlyHasVersions = useOnlyHasVersions as Mock<typeof useOnlyHasVersions>

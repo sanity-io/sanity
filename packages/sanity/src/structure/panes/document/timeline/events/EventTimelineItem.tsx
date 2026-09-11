@@ -9,9 +9,9 @@ import {
   isUnscheduleDocumentVersionEvent,
   useTranslation,
 } from 'sanity'
-import {Event} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex} from 'ui5'
 
+import {Event} from '../../../../../core/field/diff/components/Event'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 
 export interface TimelineItemProps {

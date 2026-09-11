@@ -11,18 +11,16 @@ import {
   useDocumentStore,
   usePerspective,
 } from 'sanity'
-import {
-  DocumentGroupInventory,
-  type DocumentGroupInventoryComponents,
-  isGoingToUnpublish,
-  isVariantId,
-  usePausedScheduledDraft,
-  useSetVariant,
-  useSource,
-  type VersionInfoDocumentStub,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex} from 'ui5'
 
+import {DocumentGroupInventory} from '../../../../core/documentGroupInventory/components/DocumentGroupInventory'
+import {type DocumentGroupInventoryComponents} from '../../../../core/documentGroupInventory/types'
+import {useSetVariant} from '../../../../core/perspective/useSetVariant'
+import {type VersionInfoDocumentStub} from '../../../../core/releases/store/types'
+import {isGoingToUnpublish} from '../../../../core/releases/util/isGoingToUnpublish'
+import {usePausedScheduledDraft} from '../../../../core/singleDocRelease/hooks/usePausedScheduledDraft'
+import {useSource} from '../../../../core/studio/source'
+import {isVariantId} from '../../../../core/variants/types'
 import {Button} from '../../../../ui-components/button/Button'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {ReferencePreviewLink} from '../../../components/confirmDeleteDialog/ReferencePreviewLink'

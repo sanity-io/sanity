@@ -10,15 +10,13 @@ import {
   useSchema,
   useDocumentVersions,
 } from 'sanity'
-import {
-  EMPTY_ARRAY,
-  EventsProvider,
-  useArchivedReleases,
-  getTargetDocument,
-  useEventsStore,
-  useTargetDocumentState,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
+import {useTargetDocumentState} from '../../../core/hooks/useTargetDocumentState'
+import {useArchivedReleases} from '../../../core/releases/store/useArchivedReleases'
+import {EventsProvider} from '../../../core/store/events/EventsProvider'
+import {useEventsStore} from '../../../core/store/events/useEventsStore'
+import {EMPTY_ARRAY} from '../../../core/util/empty'
+import {getTargetDocument} from '../../../core/util/getTargetDocument'
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {EMPTY_PARAMS} from './constants'
 import {DocumentPaneProvider} from './DocumentPaneProvider'

@@ -1,7 +1,7 @@
 import {Suspense, useCallback} from 'react'
-import {Resizable} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Box} from 'ui5'
 
+import {Resizable} from '../../../../core/components/resizer/Resizable'
 import {usePane} from '../../../components/pane/usePane'
 import {useStructureTool} from '../../../useStructureTool'
 import {DOCUMENT_INSPECTOR_MAX_WIDTH, DOCUMENT_INSPECTOR_MIN_WIDTH} from '../constants'

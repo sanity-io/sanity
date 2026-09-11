@@ -1,12 +1,10 @@
 import {useToast} from '@sanity/ui/toast'
 import {memo, useEffect, useMemo, useRef} from 'react'
 import {Translate, usePerspective, useTranslation} from 'sanity'
-import {
-  isDocumentLimitError,
-  useDocumentLimitsUpsellContext,
-  useDocumentOperationEvent,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
+import {useDocumentOperationEvent} from '../../../core/hooks/useDocumentOperationEvent'
+import {useDocumentLimitsUpsellContext} from '../../../core/limits/context/documents/DocumentLimitUpsellProvider'
+import {isDocumentLimitError} from '../../../core/limits/context/documents/isDocumentLimitError'
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../i18n'
 import {useDocumentPane} from './useDocumentPane'

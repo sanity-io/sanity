@@ -1,5 +1,4 @@
-import {type OperationsAPI} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
-
+import {type OperationsAPI} from '../../core/store/document/document-pair/operations/types'
 import {type StructureLocaleResourceKeys} from '../i18n'
 
 /** @internal */

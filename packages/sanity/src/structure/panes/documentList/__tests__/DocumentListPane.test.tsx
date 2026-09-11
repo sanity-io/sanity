@@ -34,14 +34,14 @@ vi.mock('sanity', async (importOriginal) => ({
     bundle: 'drafts',
   })),
 }))
-vi.mock(
-  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
-  async (importOriginal) => ({
-    ...(await importOriginal()),
-    useActiveReleases: vi.fn(() => ({loading: false, data: []})),
-    useReconnectingToast: vi.fn(),
-  }),
-)
+vi.mock('../../../../core/releases/store/useActiveReleases', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useActiveReleases: vi.fn(() => ({loading: false, data: []})),
+}))
+vi.mock('../../../../core/hooks/useReconnectingToast', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useReconnectingToast: vi.fn(),
+}))
 
 const mockUseDocumentList = vi.mocked(useDocumentList)
 const mockUsePerspective = vi.mocked(usePerspective)

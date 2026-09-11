@@ -3,16 +3,15 @@ import {Stack, Text} from '@sanity/ui'
 import {fromString as pathFromString} from '@sanity/util/paths'
 import {memo, useMemo} from 'react'
 import {CopyPasteProvider, getPublishedId, Translate, usePerspective, useTranslation} from 'sanity'
+
+import {ReferenceInputOptionsProvider} from '../../../core/form/studio/contexts/ReferenceInputOptions'
 import {
   getCreatableVariantTarget,
-  ReferenceInputOptionsProvider,
-  SourceProvider,
-  useDocumentType,
-  useSource,
   useTargetDocumentState,
-  useTemplatePermissions,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
-
+} from '../../../core/hooks/useTargetDocumentState'
+import {useDocumentType} from '../../../core/store/document/hooks/useDocumentType'
+import {useTemplatePermissions} from '../../../core/store/grants/templatePermissions'
+import {SourceProvider, useSource} from '../../../core/studio/source'
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {DiffViewDocumentLayout} from '../../diffView/plugin/DiffViewDocumentLayout'
 import {structureLocaleNamespace} from '../../i18n'

@@ -10,13 +10,13 @@ import {
   useTranslation,
   IntentButton,
 } from 'sanity'
-import {
-  type TemplatePermissionsResult,
-  useGetI18nText,
-  useTemplatePermissions,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {IntentLink, type IntentLinkProps} from 'sanity/router'
 
+import {useGetI18nText} from '../../../core/i18n/hooks/useGetI18nText'
+import {
+  type TemplatePermissionsResult,
+  useTemplatePermissions,
+} from '../../../core/store/grants/templatePermissions'
 import {Button} from '../../../ui-components/button/Button'
 import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'

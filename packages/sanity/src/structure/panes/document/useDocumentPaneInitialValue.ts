@@ -1,10 +1,8 @@
 import {useMemo} from 'react'
 import {useTemplates} from 'sanity'
-import {
-  useInitialValue,
-  useUnique,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
+import {useInitialValue} from '../../../core/store/document/useInitialValue'
+import {useUnique} from '../../../core/util/useUnique'
 import {type PaneRouterContextValue} from '../../components/paneRouter/types'
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {type DocumentPaneNode} from '../../types'

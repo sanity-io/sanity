@@ -7,14 +7,12 @@ import {
   useCanvasCompanionDoc,
   useTranslation,
 } from 'sanity'
-import {
-  EMPTY_ARRAY,
-  getDocumentIdForCanvasLink,
-  GetHookCollectionState,
-  useActiveReleases,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {DocumentActionsStateContext} from 'sanity/_singletons'
 
+import {getDocumentIdForCanvasLink} from '../core/canvas/utils/getDocumentIdForCanvasLink'
+import {GetHookCollectionState} from '../core/components/hookCollection/GetHookCollectionState'
+import {useActiveReleases} from '../core/releases/store/useActiveReleases'
+import {EMPTY_ARRAY} from '../core/util/empty'
 import {structureLocaleNamespace} from './i18n'
 import {useDocumentPane} from './panes/document/useDocumentPane'
 

@@ -1,8 +1,8 @@
 import {render} from '@testing-library/react'
 import {usePerspective, useWorkspace} from 'sanity'
-import {getTargetScopeId} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {type Mock, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {getTargetScopeId} from '../../../../../core/hooks/useTargetDocumentState'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {useDocumentPane} from '../../useDocumentPane'
 import {CommentsWrapper} from '../CommentsWrapper'
@@ -49,14 +49,14 @@ vi.mock('sanity', async () => {
     })),
   }
 })
-vi.mock(
-  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
-  async (importOriginal) => ({
-    ...(await importOriginal()),
-    COMMENTS_INSPECTOR_NAME: 'sanity/comments',
-    getTargetScopeId: vi.fn(() => undefined),
-  }),
-)
+vi.mock('../../../../../core/comments/constants', async (importOriginal) => ({
+  ...(await importOriginal()),
+  COMMENTS_INSPECTOR_NAME: 'sanity/comments',
+}))
+vi.mock('../../../../../core/hooks/useTargetDocumentState', async (importOriginal) => ({
+  ...(await importOriginal()),
+  getTargetScopeId: vi.fn(() => undefined),
+}))
 
 vi.mock('sanity/router', () => ({
   useRouter: vi.fn(() => ({

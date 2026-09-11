@@ -3,9 +3,9 @@ import {
 } from '@sanity/ui'
 import {useId} from 'react'
 import {type DocumentActionModalDialogProps} from 'sanity'
-import {LegacyLayerProvider} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Box} from 'ui5'
 
+import {LegacyLayerProvider} from '../../../../../core/components/transitional/LegacyLayerProvider'
 import {DIALOG_WIDTH_TO_UI_WIDTH} from './constants'
 
 /**

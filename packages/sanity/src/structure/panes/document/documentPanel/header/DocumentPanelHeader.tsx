@@ -21,14 +21,12 @@ import {
   useTranslation,
   useWorkspace,
 } from 'sanity'
-import {
-  FieldPresenceInner,
-  useFieldActions,
-  useZIndex,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {css, styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
+import {useZIndex} from '../../../../../core/components/zOffsets/useZIndex'
+import {useFieldActions} from '../../../../../core/form/field/actions/useFieldActions'
+import {FieldPresenceInner} from '../../../../../core/presence/FieldPresence'
 import {Button} from '../../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {PaneContextMenuButton} from '../../../../components/pane/PaneContextMenuButton'

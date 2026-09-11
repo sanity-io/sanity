@@ -22,10 +22,16 @@ vi.mock('sanity', async (importOriginal) => ({
   ),
 }))
 vi.mock(
-  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
+  '../../../../core/documentGroupInventory/components/DocumentGroupInventory',
   async (importOriginal) => ({
     ...(await importOriginal()),
     DocumentGroupInventory: () => null,
+  }),
+)
+vi.mock(
+  '../../../../core/singleDocRelease/hooks/usePausedScheduledDraft',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
     usePausedScheduledDraft: vi.fn(() => ({isPaused: false, currentRelease: undefined})),
   }),
 )

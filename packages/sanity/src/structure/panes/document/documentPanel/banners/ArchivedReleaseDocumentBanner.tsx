@@ -6,15 +6,13 @@ import {
   Translate,
   useTranslation,
 } from 'sanity'
-import {
-  getReleaseTone,
-  isCardinalityOneRelease,
-  LATEST,
-  ReleaseTitle,
-  useArchivedReleases,
-  VersionInlineBadge,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
+import {ReleaseTitle} from '../../../../../core/releases/components/ReleaseTitle'
+import {VersionInlineBadge} from '../../../../../core/releases/components/VersionInlineBadge'
+import {useArchivedReleases} from '../../../../../core/releases/store/useArchivedReleases'
+import {LATEST} from '../../../../../core/releases/util/const'
+import {getReleaseTone} from '../../../../../core/releases/util/getReleaseTone'
+import {isCardinalityOneRelease} from '../../../../../core/util/releaseUtils'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'

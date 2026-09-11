@@ -2,13 +2,11 @@ import {Card} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type Ref, useCallback, useMemo, useState} from 'react'
 import {usePerspective} from 'sanity'
-import {
-  getCreatableVariantTarget,
-  isPublishedPerspective,
-  isReleaseDocument,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex} from 'ui5'
 
+import {getCreatableVariantTarget} from '../../../../core/hooks/useTargetDocumentState'
+import {isReleaseDocument} from '../../../../core/releases/store/types'
+import {isPublishedPerspective} from '../../../../core/releases/util/util'
 import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
 import {SpacerButton} from '../../../components/spacerButton/SpacerButton'
 import {EMPTY_PARAMS} from '../constants'

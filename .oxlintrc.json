@@ -701,7 +701,6 @@
                       "file": {
                         "categories": [
                           "sanity",
-                          "sanity/_dangerously_use_private_internals_that_do_not_follow_semver",
                           "sanity/router",
                           "sanity/_internal",
                           "sanity/structure",
@@ -730,16 +729,19 @@
                 "allow": {"to": {"element": {"type": "sanity/structure__contents"}}}
               },
               {
+                // Structure imports public API through the `sanity` entry and internals
+                // relatively from src/core. It must not import the internals entry: that entry
+                // re-exports structure modules, so the import would be a cycle.
                 "from": {"element": {"type": "sanity/structure__contents"}},
                 "allow": {
                   "to": [
-                    {"element": {"type": "sanity/structure__contents"}},
+                    {"element": {"type": ["sanity/structure__contents", "sanity__contents"]}},
                     {
                       "file": {
                         "categories": [
                           "sanity",
-                          "sanity/_dangerously_use_private_internals_that_do_not_follow_semver",
                           "sanity/router",
+                          "sanity/router__shared",
                           "sanity/_singletons"
                         ]
                       }

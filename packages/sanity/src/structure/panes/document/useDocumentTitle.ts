@@ -1,11 +1,9 @@
 import {useMemo} from 'react'
 import {useTranslation} from 'sanity'
-import {
-  prepareForPreview,
-  useValuePreview,
-  isGoingToUnpublish,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
+import {useValuePreview} from '../../../core/preview/useValuePreview'
+import {prepareForPreview} from '../../../core/preview/utils/prepareForPreview'
+import {isGoingToUnpublish} from '../../../core/releases/util/isGoingToUnpublish'
 import {structureLocaleNamespace} from '../../i18n'
 import {useDocumentPane} from './useDocumentPane'
 

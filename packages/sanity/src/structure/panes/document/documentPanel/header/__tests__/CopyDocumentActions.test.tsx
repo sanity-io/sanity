@@ -1,10 +1,10 @@
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {usePerspective} from 'sanity'
-import {useTargetDocumentState} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {type Mock, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {useTargetDocumentState} from '../../../../../../core/hooks/useTargetDocumentState'
 import {usePaneRouter} from '../../../../../components/paneRouter/usePaneRouter'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
 import {useDocumentPaneInfo} from '../../../useDocumentPaneInfo'
@@ -58,17 +58,17 @@ vi.mock('sanity', async (importOriginal) => ({
     t: (key: string) => key,
   })),
 }))
-vi.mock(
-  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
-  async (importOriginal) => ({
-    ...(await importOriginal()),
-    useTargetDocumentState: vi.fn(() => readyTarget({draft: DRAFT_SIBLING})),
-    useStudioUrl: vi.fn(() => ({
-      studioUrl: 'http://localhost:3333',
-      buildIntentUrl: mockBuildIntentUrl,
-    })),
-  }),
-)
+vi.mock('../../../../../../core/hooks/useTargetDocumentState', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useTargetDocumentState: vi.fn(() => readyTarget({draft: DRAFT_SIBLING})),
+}))
+vi.mock('../../../../../../core/hooks/useStudioUrl', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useStudioUrl: vi.fn(() => ({
+    studioUrl: 'http://localhost:3333',
+    buildIntentUrl: mockBuildIntentUrl,
+  })),
+}))
 
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),

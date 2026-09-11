@@ -18,14 +18,12 @@ import {
   useSchema,
   useTranslation,
 } from 'sanity'
-import {
-  createSearch,
-  ReferenceAutocomplete,
-  useSearchMachine,
-  useSource,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Grid, Box} from 'ui5'
 
+import {ReferenceAutocomplete} from '../../../core/form/inputs/ReferenceInput/ReferenceAutocomplete'
+import {createSearch} from '../../../core/search/search'
+import {useSearchMachine} from '../../../core/search/useSearchMachine'
+import {useSource} from '../../../core/studio/source'
 import {structureLocaleNamespace} from '../../i18n'
 import {CreateNewIncomingReference} from './CreateNewIncomingReference'
 import {LinkToExistingPreview} from './LinkToExistingPreview'

@@ -1,14 +1,12 @@
 import {LockIcon} from '@sanity/icons/Lock'
 import {Text} from '@sanity/ui'
 import {type ReleaseDocument, Translate, useTranslation} from 'sanity'
-import {
-  getReleaseTone,
-  isCardinalityOneRelease,
-  LATEST,
-  useFormatRelativeLocalePublishDate,
-  usePauseToEditScheduledDraft,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
+import {useFormatRelativeLocalePublishDate} from '../../../../../core/releases/hooks/useFormatRelativeLocalePublishDate'
+import {LATEST} from '../../../../../core/releases/util/const'
+import {getReleaseTone} from '../../../../../core/releases/util/getReleaseTone'
+import {usePauseToEditScheduledDraft} from '../../../../../core/singleDocRelease/hooks/usePauseToEditScheduledDraft'
+import {isCardinalityOneRelease} from '../../../../../core/util/releaseUtils'
 import {useDocumentTitle} from '../../useDocumentTitle'
 import {Banner} from './Banner'
 

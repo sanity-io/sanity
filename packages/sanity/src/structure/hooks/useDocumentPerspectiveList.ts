@@ -11,18 +11,16 @@ import {
   useSchema,
   useWorkspace,
 } from 'sanity'
-import {
-  getVariantTitle,
-  isGoingToUnpublish,
-  isPublishedPerspective,
-  useAgentVersionDisplay,
-  useFilteredReleases,
-  useSingleDocRelease,
-  useAllVariants,
-  type VersionInfoDocumentStub,
-  useSetVariant,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
+import {useFilteredReleases} from '../../core/hooks/useFilteredReleases'
+import {useSetVariant} from '../../core/perspective/useSetVariant'
+import {type VersionInfoDocumentStub} from '../../core/releases/store/types'
+import {isGoingToUnpublish} from '../../core/releases/util/isGoingToUnpublish'
+import {isPublishedPerspective} from '../../core/releases/util/util'
+import {useSingleDocRelease} from '../../core/singleDocRelease/context/SingleDocReleaseProvider'
+import {useAgentVersionDisplay} from '../../core/store/agent/useAgentVersionDisplay'
+import {useAllVariants} from '../../core/variants/store/useAllVariants'
+import {getVariantTitle} from '../../core/variants/tool/util'
 import {isLiveEditEnabled} from '../components/paneItem/helpers'
 import {usePaneRouter} from '../components/paneRouter/usePaneRouter'
 import {useDocumentPane} from '../panes/document/useDocumentPane'

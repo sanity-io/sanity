@@ -15,16 +15,14 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
-import {
-  Delay,
-  FormContainer,
-  FormRow,
-  getTargetScopeId,
-  useConditionalToast,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex, Box} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
+import {Delay} from '../../../../../core/components/Delay'
+import {FormContainer} from '../../../../../core/form/components/layout/FormContainer'
+import {FormRow} from '../../../../../core/form/components/layout/FormRow'
+import {useConditionalToast} from '../../../../../core/hooks/useConditionalToast'
+import {getTargetScopeId} from '../../../../../core/hooks/useTargetDocumentState'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentTitle} from '../../useDocumentTitle'
