@@ -12,6 +12,7 @@ import {
   merge,
   type Observable,
   of,
+  ReplaySubject,
   retry,
   timer,
 } from 'rxjs'
@@ -22,7 +23,6 @@ import {
   mergeMap,
   reduce,
   share,
-  shareReplay,
   startWith,
   switchMap,
   tap,
@@ -111,6 +111,12 @@ type CachedFieldObserver = {
   fields: FieldName[]
   changes$: Observable<any>
 }
+
+// How long a field observer stays connected after its last subscriber leaves. Consumers swap
+// subscriptions all the time — a preview pipeline is rebuilt for a new value, a component
+// re-subscribes on commit — and every reconnect replays the listener's `connected` event, which
+// costs a fetch. Bridging the gap keeps those swaps from turning into a query per edit.
+const TEARDOWN_GRACE_PERIOD = 1_000
 
 type Cache = {
   [id: string]: CachedFieldObserver[]
@@ -332,7 +338,10 @@ export function createObserveFields(options: {
         : currentDatasetListenFields(id, fields, perspective, variant)) as Observable<T>,
     ).pipe(
       tap((v: T | null) => (latest = v)),
-      shareReplay({refCount: true, bufferSize: 1}),
+      share({
+        connector: () => new ReplaySubject(1),
+        resetOnRefCountZero: () => timer(TEARDOWN_GRACE_PERIOD),
+      }),
     )
 
     return {id, fields, changes$}
