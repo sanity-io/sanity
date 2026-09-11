@@ -27,9 +27,7 @@ const isShown = (el: Element): el is HTMLElement =>
   el instanceof HTMLElement && el.checkVisibility({visibilityProperty: true})
 
 const visibleTooltips = (): HTMLElement[] =>
-  Array.from(window.document.querySelectorAll<HTMLElement>('[data-ui="Tooltip"]')).filter((el) =>
-    el.checkVisibility(),
-  )
+  Array.from(window.document.querySelectorAll('[data-ui="Tooltip"]')).filter(isShown)
 
 /** React hover state of field headers: `data-actions-visible` flips after the pointer leaves. */
 const fieldActionsSig = (): string =>
@@ -45,8 +43,8 @@ const fieldActionsSig = (): string =>
  * can never accept that mid-layout state.
  */
 const boxSig = (selector: string) => (): string | symbol => {
-  const rects = Array.from(window.document.querySelectorAll<HTMLElement>(selector))
-    .filter((el) => el.checkVisibility())
+  const rects = Array.from(window.document.querySelectorAll(selector))
+    .filter(isShown)
     .map((el) => el.getBoundingClientRect())
   if (rects.some((r) => r.width === 0 || r.height === 0)) return Symbol('zero-size overlay')
   return rects
@@ -107,7 +105,7 @@ function snapVisibleFloatingUi(): void {
   const anchors = window.document.querySelectorAll<HTMLElement>(FLOATING_UI_SNAP_SELECTOR)
   const snapped = new Set<HTMLElement>()
   for (const anchor of anchors) {
-    if (!anchor.checkVisibility()) continue
+    if (!isShown(anchor)) continue
     let node: HTMLElement | null = anchor
     for (let depth = 0; depth < 12 && node; depth++, node = node.parentElement) {
       if (snapped.has(node)) break
