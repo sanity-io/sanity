@@ -135,7 +135,11 @@ export default defineConfig({
       viewport: {width: 1280, height: 900},
       instances: browsers.map((browser) => ({browser})),
     },
-    setupFiles: ['./test/setup/browser.ts'],
+    // `idleCallback.ts` routes `requestIdleCallback` through a timer (headless
+    // Chromium fires it only after a frame, so idle-gated validation can stall
+    // on a page that paints nothing); it is its own entry, ahead of the rest,
+    // so that it runs before any module binds the native function.
+    setupFiles: ['./test/setup/idleCallback.ts', './test/setup/browser.ts'],
     deps: {
       optimizer: {
         client: {
