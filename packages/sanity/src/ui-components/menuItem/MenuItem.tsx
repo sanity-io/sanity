@@ -3,19 +3,14 @@ import {Badge, Flex, Stack, Text} from '@sanity/ui'
 import {MenuItem as UIMenuItem, type MenuItemProps as UIMenuItemProps} from '@sanity/ui/menu'
 import {type ElementType, isValidElement, type ReactNode, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
-import {styled} from 'styled-components'
 import {Box} from 'ui5'
 
 import {Hotkeys} from '../../core/components/Hotkeys'
 import {Tooltip, type TooltipProps} from '../tooltip/Tooltip'
+import {previewWrapper, subtitleText} from './MenuItem.css'
 
 const FONT_SIZE = 1
 const SUBTITLE_FONT_SIZE = 0
-
-/* Using px value here to make title/subtitles align with icon */
-const SubtitleText = styled(Text)`
-  margin-top: 2px;
-`
 
 /** @internal */
 export type MenuItemProps<E extends ElementType = 'button'> = Omit<
@@ -52,12 +47,6 @@ export type MenuItemProps<E extends ElementType = 'button'> = Omit<
   __unstable_space?: number
 }
 
-const PreviewWrapper = styled(Box)`
-  height: 25px;
-  width: 25px;
-  overflow: hidden;
-`
-
 /**
  * Customized Sanity UI <MenuItem> that restricts usage of `children` to encourage simple,
  * single line menu items.
@@ -89,14 +78,15 @@ export function MenuItem<E extends ElementType = 'button'>({
     return (
       <Flex align="center" gap={2}>
         {preview && (
-          <PreviewWrapper
+          <Box
+            className={previewWrapper}
             style={{opacity: disabled ? 0.25 : undefined}}
             paddingRight={__unstable_space ? 1 : 0}
           >
             <Flex align="center" height="fill" justify="center">
               {preview}
             </Flex>
-          </PreviewWrapper>
+          </Box>
         )}
         {Icon && (
           <Box paddingRight={1}>
@@ -112,9 +102,15 @@ export function MenuItem<E extends ElementType = 'button'>({
               {text}
             </Text>
             {__unstable_subtitle && (
-              <SubtitleText size={SUBTITLE_FONT_SIZE} textOverflow="ellipsis" weight="medium" muted>
+              <Text
+                className={subtitleText}
+                size={SUBTITLE_FONT_SIZE}
+                textOverflow="ellipsis"
+                weight="medium"
+                muted
+              >
                 {__unstable_subtitle}
-              </SubtitleText>
+              </Text>
             )}
           </Stack>
         )}

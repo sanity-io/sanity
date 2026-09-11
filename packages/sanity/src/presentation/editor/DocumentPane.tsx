@@ -9,7 +9,6 @@ import {
   type DocumentPaneNode,
   PaneLayout,
 } from 'sanity/structure'
-import {styled} from 'styled-components'
 
 import {ErrorBoundary} from '../../ui-components/errorBoundary/ErrorBoundary'
 import {ErrorCard} from '../components/ErrorCard'
@@ -23,10 +22,7 @@ import {
   type StructureDocumentPaneParams,
 } from '../types'
 import {usePresentationTool} from '../usePresentationTool'
-
-const WrappedCode = styled(Code)`
-  white-space: pre-wrap;
-`
+import {wrappedCode} from './DocumentPane.css'
 
 export function DocumentPane(props: {
   documentId: string
@@ -101,7 +97,9 @@ export function DocumentPane(props: {
               <Label muted size={0}>
                 {t('presentation-error.label')}
               </Label>
-              <WrappedCode size={1}>{errorParams.error.message}</WrappedCode>
+              <Code className={wrappedCode} size={1}>
+                {errorParams.error.message}
+              </Code>
             </Stack>
           </Card>
         )}
