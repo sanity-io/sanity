@@ -674,6 +674,7 @@ export {
 export {
   useComlinkStore,
   useConnectionStatusStore,
+  useHistoryStore,
   useKeyValueStore,
   useRenderingContextStore,
 } from '../core/store/datastores'
@@ -732,7 +733,20 @@ export {
   useInitialValueResolverContext,
 } from '../core/store/document/useInitialValue'
 export {EventsProvider, useEvents} from '../core/store/events/EventsProvider'
-export {type DocumentVersionEventType, type EventsStore} from '../core/store/events/types'
+export {
+  type DocumentVersionEventType,
+  type EventsStore,
+  isCreateDocumentVersionEvent,
+  isCreateLiveDocumentEvent,
+  isDeleteDocumentGroupEvent,
+  isDeleteDocumentVersionEvent,
+  isEditDocumentVersionEvent,
+  isPublishDocumentVersionEvent,
+  isScheduleDocumentVersionEvent,
+  isUnpublishDocumentEvent,
+  isUnscheduleDocumentVersionEvent,
+  isUpdateLiveDocumentEvent,
+} from '../core/store/events/types'
 export {useEventsStore} from '../core/store/events/useEventsStore'
 export {
   type DocumentPairPermissionsOptions,
@@ -762,6 +776,14 @@ export {
   type HistoryStoreOptions,
   removeMissingReferences,
 } from '../core/store/history/createHistoryStore'
+export {
+  // oxlint-disable-next-line no-deprecated -- the legacy document timeline stays exported while deprecated; removing it is a breaking change deferred to the next major
+  Timeline,
+} from '../core/store/history/history/Timeline'
+export {
+  // oxlint-disable-next-line no-deprecated -- the legacy document timeline stays exported while deprecated; removing it is a breaking change deferred to the next major
+  TimelineController,
+} from '../core/store/history/history/TimelineController'
 // oxlint-disable-next-line no-deprecated -- the legacy document timeline stays exported while deprecated; removing it is a breaking change deferred to the next major
 export {useTimelineSelector} from '../core/store/history/useTimelineSelector'
 export {

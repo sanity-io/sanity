@@ -40,8 +40,7 @@ export interface TimelineOptions {
  *
  *
  * @deprecated Use the events API instead. The legacy document timeline will be removed in the next major version.
- * @hidden
- * @beta
+ * @internal
  */
 export class Timeline {
   reachedEarliestEntry = false

@@ -1,21 +1,20 @@
 import {BoundaryElementProvider, Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useState} from 'react'
-import {
-  type DocumentGroupEvent,
-  isDeleteDocumentGroupEvent,
-  isDeleteDocumentVersionEvent,
-  isScheduleDocumentVersionEvent,
-  isUnpublishDocumentEvent,
-  isUnscheduleDocumentVersionEvent,
-  useTranslation,
-} from 'sanity'
+import {type DocumentGroupEvent, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
 import {LoadingBlock} from '../../../../../core/components/loadingBlock/LoadingBlock'
 import {ScrollContainer} from '../../../../../core/components/scroll/scrollContainer'
 import {useEvents} from '../../../../../core/store/events/EventsProvider'
+import {
+  isDeleteDocumentGroupEvent,
+  isDeleteDocumentVersionEvent,
+  isScheduleDocumentVersionEvent,
+  isUnpublishDocumentEvent,
+  isUnscheduleDocumentVersionEvent,
+} from '../../../../../core/store/events/types'
 import {EventsTimeline} from '../../timeline/events/EventsTimeline'
 import {TimelineError} from '../../timeline/TimelineError'
 import {useDocumentPane} from '../../useDocumentPane'

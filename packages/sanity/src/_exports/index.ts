@@ -530,7 +530,6 @@ export {
   useDocumentPreviewStore,
   useDocumentStore,
   useGrantsStore,
-  useHistoryStore,
   usePresenceStore,
   useProjectStore,
   useUserStore,
@@ -580,16 +579,6 @@ export {
   type EditDocumentVersionEvent,
   type EventsStoreRevision,
   type HistoryClearedEvent,
-  isCreateDocumentVersionEvent,
-  isCreateLiveDocumentEvent,
-  isDeleteDocumentGroupEvent,
-  isDeleteDocumentVersionEvent,
-  isEditDocumentVersionEvent,
-  isPublishDocumentVersionEvent,
-  isScheduleDocumentVersionEvent,
-  isUnpublishDocumentEvent,
-  isUnscheduleDocumentVersionEvent,
-  isUpdateLiveDocumentEvent,
   type PublishDocumentVersionEvent,
   type ScheduleDocumentVersionEvent,
   type UnpublishDocumentEvent,
@@ -610,15 +599,11 @@ export {
   // oxlint-disable-next-line no-deprecated -- the legacy document timeline stays exported while deprecated; removing it is a breaking change deferred to the next major
   type ParsedTimeRef,
   // oxlint-disable-next-line no-deprecated -- the legacy document timeline stays exported while deprecated; removing it is a breaking change deferred to the next major
-  Timeline,
-  // oxlint-disable-next-line no-deprecated -- the legacy document timeline stays exported while deprecated; removing it is a breaking change deferred to the next major
   type TimelineOptions,
 } from '../core/store/history/history/Timeline'
 export {
   // oxlint-disable-next-line no-deprecated -- the legacy document timeline stays exported while deprecated; removing it is a breaking change deferred to the next major
   type SelectionState,
-  // oxlint-disable-next-line no-deprecated -- the legacy document timeline stays exported while deprecated; removing it is a breaking change deferred to the next major
-  TimelineController,
   // oxlint-disable-next-line no-deprecated -- the legacy document timeline stays exported while deprecated; removing it is a breaking change deferred to the next major
   type TimelineControllerOptions,
 } from '../core/store/history/history/TimelineController'

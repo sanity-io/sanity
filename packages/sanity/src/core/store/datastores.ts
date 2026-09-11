@@ -113,8 +113,7 @@ export function useGrantsStore(): GrantsStore {
 }
 
 /**
- * @hidden
- * @beta */
+ * @internal */
 export function useHistoryStore(): HistoryStore {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const resourceCache = useResourceCache()
