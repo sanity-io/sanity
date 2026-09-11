@@ -394,6 +394,33 @@ extract` and `sanity documents validate` break at runtime (not at build time) if
   a new entry must be added there too, otherwise the `sanity/` import-map prefix resolves it to a
   404 on the module host.
 
+### The `sanity` entry's static import graph is the login page
+
+With `autoUpdates: true` the studio's import map points `sanity` and `sanity/*` at the module
+host, so the browser downloads `index.mjs` plus every chunk it statically imports before the
+login screen renders, and nothing in that graph is tree-shaken. Only dynamic `import()` keeps
+code off that path. Measure it on the CDN build, not on `sanity build` output:
+`pnpm --filter sanity build:bundle`, then compute the transitive static import closure of
+`packages/sanity/dist/index.mjs` (follow relative specifiers and `sanity/<x>` → `<x>.mjs`; the
+`.map` files attribute chunk bytes back to source modules). Rules that keep the graph small:
+
+- UI that only renders after a click or after login (dialogs, menu contents, the default layout
+  and navbar, filter inputs referenced from search operator definitions) is a `lazy()` component
+  with a `Suspense` at its render site. `prepareConfig` runs before login and statically reaches
+  every default plugin module, so a plugin's document actions, asset sources and schema
+  `components` must reference lazy components for anything heavier than the hook itself.
+- A heavy component that stays exported from `sanity` is exported as a facade from
+  `createLazyComponent` (`packages/sanity/src/core/components/lazy/createLazyComponent.tsx`): the
+  same name and props, a `Suspense` of its own, and the implementation loaded on first render.
+  `src/core/form/lazy.tsx` and `src/core/comments/lazy.tsx` are the existing groups. Internal
+  code keeps importing the implementation directly. A facade group only pays off when every
+  export reaching the same modules is covered; check with the closure, not with a single export.
+- Code that must be fetched right after login (layout, navbar) is preloaded from
+  `PreloadStudioShell`, mounted inside `AuthBoundary`, so the fetch overlaps with workspace loading.
+- Exporting a `memo()`-wrapped component through a facade changes `typeof` from `object` to
+  `function` in `test/__snapshots__/exports.test.ts.snap`, and the generated d.ts fixtures in
+  `@repo/test-dts-exports` switch from function to const declarations; regenerate both.
+
 ### Effect events: use `use-effect-event`, not React's native hook
 
 Import `useEffectEvent` from `use-effect-event`, never from `react`. On React 19.2 the native hook
