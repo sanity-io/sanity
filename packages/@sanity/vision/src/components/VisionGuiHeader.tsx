@@ -1,5 +1,5 @@
 import {CopyIcon} from '@sanity/icons/Copy'
-import {Button, Card, Flex, Grid, Inline, Select, Stack, Text, TextInput} from '@sanity/ui'
+import {Button, Card, Flex, Inline, Select, Stack, Text, TextInput} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {
   type ChangeEvent,
@@ -17,7 +17,7 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
-import {Box} from 'ui5'
+import {Box, Grid} from 'ui5'
 
 import {API_VERSIONS} from '../apiVersions'
 import {visionLocaleNamespace} from '../i18n'
@@ -114,7 +114,14 @@ export function VisionGuiHeader({
 
   return (
     <Header paddingX={3} paddingY={2}>
-      <Grid gridTemplateColumns={[1, 4, 8, 12]}>
+      <Grid
+        gridTemplateColumns={[
+          'repeat(1, minmax(0, 1fr))',
+          'repeat(4, minmax(0, 1fr))',
+          'repeat(8, minmax(0, 1fr))',
+          'repeat(12, minmax(0, 1fr))',
+        ]}
+      >
         {/* Dataset selector */}
         <Box padding={1} gridColumn={['span 1 / span 1', 'span 2 / span 2']}>
           <Stack>
