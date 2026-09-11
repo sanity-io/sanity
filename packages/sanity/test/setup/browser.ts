@@ -20,18 +20,19 @@ import {parkPointer, releaseFloatingUiSnapLock, removePointerPark} from '../brow
 // collapse tests) mutate it for the whole iframe, so reset between tests.
 const DEFAULT_VIEWPORT = {width: 1280, height: 900}
 
-// Park the real pointer in the bottom-right corner of the (default) viewport
-// right before each test renders anything. Chromium dispatches `mouseover` to
-// content that appears under a stationary pointer, so a control rendered under
-// it would start out `:hover`ed and could open its tooltip mid-test. Without
-// the park the pointer would sit at Chromium's default top-left position in a
-// fresh page (over the harness's first control), wherever the previous test's
-// last click left it, or at that test's reduced-viewport park (the 350×500
-// toolbar tests) once the viewport is restored. The park element itself is
-// removed again so it is not part of the test's DOM.
+// Park the real pointer on the transparent park element in the bottom-right
+// corner of the (default) viewport right before each test renders anything,
+// and leave the park mounted (topmost, 4×4) until `afterEach`. Chromium
+// dispatches `mouseover` to content that appears under a stationary pointer,
+// so with the pointer over bare `body` a control rendered at that coordinate
+// would start out `:hover`ed and could open its tooltip mid-test; with the
+// park in place the hit test at that coordinate keeps resolving to the park.
+// Without the park the pointer would sit at Chromium's default top-left
+// position in a fresh page (over the harness's first control), wherever the
+// previous test's last click left it, or at that test's reduced-viewport park
+// (the 350×500 toolbar tests) once the viewport is restored.
 beforeEach(async () => {
   await parkPointer()
-  removePointerPark()
 })
 
 // Unmount any rendered component trees between tests. Without this, each
@@ -40,11 +41,12 @@ beforeEach(async () => {
 // later tests within the same file.
 //
 // With `sequence.hooks: 'list'` this runs after the Chromatic plugin's
-// afterEach has archived the end state, so the pointer park element that
-// `settleChromaticEndState` leaves under the real pointer is still present in
-// the archive (it is transparent) and only removed here. The Floating UI
-// snap observer is released here for the same reason: it must keep rounding
-// offsets until the archive is taken, and must not outlive the test.
+// afterEach has archived the end state, so the pointer park element mounted
+// by `beforeEach` (and hovered again by `settleChromaticEndState`) is still
+// present in the archive (it is transparent) and only removed here. The
+// Floating UI snap observer is released here for the same reason: it must
+// keep rounding offsets until the archive is taken, and must not outlive the
+// test.
 afterEach(async () => {
   await cleanup()
   removePointerPark()

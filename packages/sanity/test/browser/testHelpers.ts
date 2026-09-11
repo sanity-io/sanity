@@ -185,10 +185,13 @@ export async function expectStable<T>(sample: () => T, repeats = 3): Promise<T> 
 const POINTER_PARK_TESTID = 'chromatic-pointer-park'
 
 /**
- * Transparent, fixed 4×4 element in the bottom-right corner of the viewport
- * that `settleChromaticEndState` moves the real pointer onto. It stays in the
- * DOM until the setup file's `afterEach` so the pointer keeps hovering it
- * (and nothing else) while Chromatic archives the end state.
+ * Transparent, topmost, fixed 4×4 element in the bottom-right corner of the
+ * viewport that the real pointer is moved onto. The setup file's `beforeEach`
+ * mounts it and `settleChromaticEndState` hovers it again at the end of a
+ * test; it stays in the DOM until the setup file's `afterEach`, so the
+ * stationary pointer keeps hitting the park (and nothing rendered later under
+ * that coordinate) throughout the test and while Chromatic archives the end
+ * state.
  */
 function getPointerPark(): HTMLElement {
   const existing = window.document.querySelector<HTMLElement>(
@@ -204,11 +207,12 @@ function getPointerPark(): HTMLElement {
 }
 
 /**
- * Move the real pointer onto the park element and return it. Used at the end
- * of a test by `settleChromaticEndState`, and by the setup file's `beforeEach`
- * so every test starts with the pointer in the bottom-right corner of the
- * default viewport rather than at a fresh page's top-left corner or wherever
- * the previous test's last click (or its park at a reduced viewport) left it.
+ * Move the real pointer onto the park element (mounting it if needed) and
+ * return it. Used at the end of a test by `settleChromaticEndState`, and by
+ * the setup file's `beforeEach` so every test starts with the pointer on the
+ * park in the bottom-right corner of the default viewport rather than at a
+ * fresh page's top-left corner or wherever the previous test's last click (or
+ * its park at a reduced viewport) left it.
  */
 export async function parkPointer(): Promise<HTMLElement> {
   const park = getPointerPark()
