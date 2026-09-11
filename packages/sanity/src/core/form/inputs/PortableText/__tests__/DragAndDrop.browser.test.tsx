@@ -149,7 +149,7 @@ describe('Portable Text Input', () => {
     })
 
     it(`drag and drop blocks without warning overlay`, async () => {
-      const {dragWithoutDrop, getFocusedPortableTextEditor} = testHelpers()
+      const {dragWithoutDrop, getFocusedPortableTextEditor, settleChromaticEndState} = testHelpers()
 
       void render(
         <DragAndDropHarness
@@ -169,6 +169,19 @@ describe('Portable Text Input', () => {
       // The "can't upload" warning is only shown for external file drags, never
       // for an internal block move. It never renders, so assert absence.
       await expect.element(page.getByText(`Can't upload this file here`)).not.toBeInTheDocument()
+
+      // The editor tracks drags through native dragstart/dragover/drop, which
+      // the synthetic pointer sequence above does not raise, so there is no
+      // in-progress drag to archive: no drop indicator, editor still focused.
+      // Settle the idle editor like the completed-drop case so the archive is
+      // the same explicit end state (pointer parked, style select holding the
+      // label of the untouched, style-less focused block).
+      expect(window.document.querySelector('.pt-drop-indicator')).toBeNull()
+      await settleChromaticEndState({
+        styleSelectText: /^No style$/,
+        styleSelectRoot: '[data-testid="field-body"]',
+      })
+      await expect.element(page.getByTestId('field-body').getByRole('textbox')).toHaveFocus()
     })
   })
 })
