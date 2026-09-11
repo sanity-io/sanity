@@ -334,11 +334,6 @@ export interface DocumentPluginOptions {
    */
   newDocumentOptions?: NewDocumentOptionsResolver
 
-  /** @deprecated Use `comments` instead */
-  unstable_comments?: {
-    enabled: boolean | ((context: DocumentCommentsEnabledContext) => boolean)
-  }
-
   /** @internal */
   comments?: {
     enabled: boolean | ((context: DocumentCommentsEnabledContext) => boolean)
@@ -909,11 +904,6 @@ export interface Source {
      * @beta
      */
     inspectors: (props: PartialContext<DocumentInspectorContext>) => DocumentInspector[]
-
-    /** @deprecated  Use `comments` instead */
-    unstable_comments: {
-      enabled: (props: DocumentCommentsEnabledContext) => boolean
-    }
 
     /** @internal */
     comments: {

@@ -21,7 +21,7 @@ export default defineConfig({
   dataset: 'test',
 
   document: {
-    unstable_comments: {
+    comments: {
       enabled: true,
     },
   },
