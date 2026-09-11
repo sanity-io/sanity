@@ -101,11 +101,10 @@ function ReferenceItemCustomCreateButtonHarness() {
 // and must not count as "outside": clearing on mousedown unmounts the custom
 // UI before its click handlers run, breaking custom create flows.
 describe('reference array item with a custom create button', () => {
-  // Interaction tests: the created `_ref` has no preview document in the mock
-  // client, so the end state races "Unable to load reference metadata".
-  configure({disableAutoSnapshot: true})
-
   it('clicking the custom create button completes the create flow instead of removing the item', async () => {
+    // The created `_ref` has no preview document in the mock client, so the
+    // end state races "Unable to load reference metadata".
+    configure({disableAutoSnapshot: true})
     const {waitForDocumentState} = testHelpers()
     void render(<ReferenceItemCustomCreateButtonHarness />)
 
@@ -122,6 +121,8 @@ describe('reference array item with a custom create button', () => {
   })
 
   it('a mousedown on the custom item wrapper (just missing the button) keeps the item', async () => {
+    // Same metadata race as above once the create flow has run.
+    configure({disableAutoSnapshot: true})
     const {waitForDocumentState} = testHelpers()
     void render(<ReferenceItemCustomCreateButtonHarness />)
 
@@ -145,7 +146,7 @@ describe('reference array item with a custom create button', () => {
   })
 
   it('clicking outside the array item still clears the empty item', async () => {
-    const {waitForDocumentState} = testHelpers()
+    const {settleChromaticEndState, waitForDocumentState} = testHelpers()
     void render(<ReferenceItemCustomCreateButtonHarness />)
 
     await page.getByTestId('add-single-object-button').click()
@@ -156,5 +157,10 @@ describe('reference array item with a custom create button', () => {
 
     // The empty item is removed.
     await waitForDocumentState((state) => (state?.sections ?? []).length === 0)
+    // No reference is left to load metadata for, so this end state (empty
+    // array, title field focused) is archived: assert the item is gone from
+    // the DOM as well, then park the pointer away from the title field.
+    await expect.element(page.getByTestId('custom-create-new-button')).not.toBeInTheDocument()
+    await settleChromaticEndState()
   })
 })
