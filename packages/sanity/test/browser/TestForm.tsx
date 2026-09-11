@@ -165,7 +165,12 @@ export function TestForm(props: TestFormProps) {
   )
 
   useEffect(() => {
-    void validateStaticDocument(document, workspace, (result) => setValidation(result))
+    // Validation is gated on `requestIdleCallback`, so a run for a superseded
+    // document would otherwise land whenever the browser next idles and
+    // re-render the form with stale markers. Abort it instead.
+    const controller = new AbortController()
+    void validateStaticDocument(document, workspace, setValidation, controller.signal)
+    return () => controller.abort()
   }, [document, workspace])
 
   const formState = useFormState({
@@ -351,15 +356,23 @@ async function validateStaticDocument(
   document: SanityDocument,
   workspace: Workspace,
   setCallback: (result: ValidationMarker[]) => void,
+  signal: AbortSignal,
 ) {
-  const result = await validateDocument({
-    document,
-    workspace,
-    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-    getClient,
-    getDocumentExists: () => Promise.resolve(true),
-  })
-  setCallback(result)
+  let result: ValidationMarker[]
+  try {
+    result = await validateDocument({
+      document,
+      workspace,
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+      getClient,
+      getDocumentExists: () => Promise.resolve(true),
+      signal,
+    })
+  } catch (err) {
+    if (signal.aborted) return
+    throw err
+  }
+  if (!signal.aborted) setCallback(result)
 }
 
 const client = createMockSanityClient() as any as ReturnType<ValidationContext['getClient']>
