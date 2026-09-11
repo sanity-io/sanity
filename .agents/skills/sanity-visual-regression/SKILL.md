@@ -133,6 +133,16 @@ test is gone (see "Which source owns a state").
   the test moves through but does not end on (a menu open before the click that closes it, a
   drag mid-way). Always `await` it; the plugin fails the test on un-awaited calls. Docs:
   [targeted snapshots](https://www.chromatic.com/docs/vitest/targeted-snapshots/).
+- **Make the archived state explicit.** Chromatic records which elements match `:hover` /
+  `:focus` / `:active` at capture and re-applies them, so the real pointer position and React
+  hover/focus state are part of the snapshot. End interactive tests with
+  `settleChromaticEndState()` (`packages/sanity/test/browser/testHelpers.ts`: parks the pointer,
+  asserts a hover-free tree and no open tooltip, waits for toolbar/popover geometry) and assert
+  the exact state you want captured (`toBeEnabled()`, `data-focused="true"`, a visible menu)
+  right before the test ends or before `takeSnapshot()`. Never fix a flaky snapshot with global
+  CSS from the test setup (zeroed transitions, hidden carets, forced opacity); reduced motion
+  comes from the Playwright `reducedMotion: 'reduce'` context option, which the `@sanity/ui` v5
+  stylesheet (`ui5/styles.css`) honors.
 - **Safe in every run.** The plugin is registered in `vitest.browser.config.mts` on every run, so
   both helpers work in plain `pnpm --filter sanity test:browser` runs and in the functional
   `browser-tests.yml` shards; they are no-ops on firefox and webkit. Only `CHROMATIC=1` turns on

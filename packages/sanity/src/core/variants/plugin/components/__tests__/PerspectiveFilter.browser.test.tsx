@@ -78,6 +78,8 @@ function Fixture({withRemove}: {withRemove?: boolean}) {
   )
 }
 
+const pillMenuRect = () => page.getByTestId('pill-menu-content').element().getBoundingClientRect()
+
 describe('perspective bar filter pill as a menu trigger', () => {
   it('opens the menu from the chevron-only trigger (control)', async () => {
     void render(<Fixture />)
@@ -136,12 +138,12 @@ describe('perspective bar filter pill as a menu trigger', () => {
     await expect.element(page.getByTestId('pill-menu-content')).toBeVisible()
 
     const triggerRect = trigger.element().getBoundingClientRect()
-    const menuRect = page.getByTestId('pill-menu-content').element().getBoundingClientRect()
 
     // Below the trigger, and overlapping it horizontally: a menu that has
-    // drifted to the other edge of the viewport is the reported symptom.
-    expect(menuRect.top).toBeGreaterThanOrEqual(triggerRect.top)
-    expect(menuRect.right).toBeGreaterThan(triggerRect.left)
-    expect(menuRect.left).toBeLessThan(triggerRect.right + 320)
+    // drifted to the other edge of the viewport is the reported symptom. The
+    // popover is visible before Floating UI has positioned it, so poll.
+    await expect.poll(() => pillMenuRect().top).toBeGreaterThanOrEqual(triggerRect.top)
+    await expect.poll(() => pillMenuRect().right).toBeGreaterThan(triggerRect.left)
+    await expect.poll(() => pillMenuRect().left).toBeLessThan(triggerRect.right + 320)
   })
 })

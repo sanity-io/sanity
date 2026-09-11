@@ -74,7 +74,8 @@ describe('Portable Text Input', () => {
           // by visible text within the open menu (mirrors `.filter({hasText})`).
           await expect.element($menu.getByText(styleName, {exact: true})).toBeVisible()
         }
-        await settleChromaticEndState({parkPointer: false})
+        await settleChromaticEndState()
+        await expect.element($menu.getByText('Normal', {exact: true})).toBeVisible()
         await takeSnapshot('default-styles-menu-open')
       })
 

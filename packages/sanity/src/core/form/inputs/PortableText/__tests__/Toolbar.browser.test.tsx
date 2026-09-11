@@ -324,7 +324,8 @@ describe('Portable Text Input', () => {
         // `@sanity/ui` menus stay mounted (`display: none`), so a raw
         // querySelector is not enough for a deterministic Chromatic end state.
         await expect.element(page.getByRole('menuitem', {name: 'Normal'})).toBeVisible()
-        await settleChromaticEndState({parkPointer: false})
+        await settleChromaticEndState()
+        await expect.element(page.getByRole('menuitem', {name: 'Normal'})).toBeVisible()
         await takeSnapshot('simple-style-menu-open')
       })
 
@@ -349,7 +350,8 @@ describe('Portable Text Input', () => {
         // `@sanity/ui` menus stay mounted (`display: none`), so a raw
         // querySelector is not enough for a deterministic Chromatic end state.
         await expect.element(page.getByRole('menuitem', {name: 'Normal'})).toBeVisible()
-        await settleChromaticEndState({parkPointer: false})
+        await settleChromaticEndState()
+        await expect.element(page.getByRole('menuitem', {name: 'Normal'})).toBeVisible()
         await takeSnapshot('fullscreen-style-menu-open')
       })
 
@@ -429,11 +431,10 @@ describe('Portable Text Input', () => {
           )
           .toBe(true)
 
-        // Do not park the pointer — body mouseover can dismiss the open menu.
         // Settle menu geometry, then re-assert visibility right before archive:
         // without this, identical-code captures raced open vs closed.
         const {settleChromaticEndState} = testHelpers()
-        await settleChromaticEndState({parkPointer: false})
+        await settleChromaticEndState()
         const menuBox = () => {
           const items = Array.from(
             window.document.querySelectorAll<HTMLElement>('[role="menuitem"]'),

@@ -77,6 +77,33 @@ function CommentsInputHarness({
   )
 }
 
+/**
+ * The input card paints its focus ring from React's `focused` state
+ * (`data-focused`) combined with `:focus-within`, and lets `:hover` override
+ * it with the hover border. Chromatic re-applies the recorded `:hover` /
+ * `:focus` states when it renders the archive, so assert the ring's inputs
+ * explicitly (after `settleChromaticEndState` has parked the pointer) instead
+ * of relying on the editable's `toHaveFocus()` alone.
+ */
+const commentInputRoot = () => window.document.getElementById('comment-input-root')
+
+async function expectFocusRingSettled() {
+  await expect.poll(() => commentInputRoot()?.getAttribute('data-focused')).toBe('true')
+  await expect.poll(() => commentInputRoot()?.matches(':focus-within')).toBe(true)
+  await expect.poll(() => commentInputRoot()?.matches(':hover')).toBe(false)
+}
+
+/** The mentions popover is positioned by Floating UI after it opens; wait for
+ * it to be laid out at a stable size before archiving it. */
+async function expectMentionsMenuLaidOut() {
+  await expect
+    .poll(() => {
+      const el = window.document.querySelector('[data-testid="comments-mentions-menu"]')
+      return el instanceof HTMLElement ? Math.round(el.getBoundingClientRect().height) : 0
+    })
+    .toBeGreaterThan(0)
+}
+
 describe('Comments', () => {
   describe('CommentInput', () => {
     it('Should render', async () => {
@@ -85,9 +112,8 @@ describe('Comments', () => {
       const $editable = page.getByTestId('comment-input-editable')
       await expect.element($editable).toBeVisible()
       await expect.element($editable).toHaveFocus()
-      // Clear :hover on the input card so the focus ring is not swapped for the
-      // hover border (CommentInput CSS applies :hover after :focus-within).
       await settleChromaticEndState()
+      await expectFocusRingSettled()
     })
 
     it('Should be able to type into', async () => {
@@ -98,14 +124,16 @@ describe('Comments', () => {
       await insertPortableText('My first comment!', $editable)
       await expect.element($editable).toHaveTextContent('My first comment!')
       await expect.element($editable).toHaveFocus()
+      // Typing enables the primary-tone send button; wait for that state
+      // before archiving so the snapshot does not race the debounced change.
+      await expect.element(page.getByTestId('comment-input-send-button')).toBeEnabled()
       await settleChromaticEndState()
+      await expectFocusRingSettled()
     })
 
     it('Should bring up mentions menu when typing @', async () => {
-      // Selecting a mention leaves an animated loading skeleton; snapshot the
-      // open mentions menu instead so Chromatic does not archive mid-skeleton.
-      // Prefer auto end-state over takeSnapshot: DOM archives of this portal
-      // dropped the menu and only kept a flaky focus ring.
+      // Selecting a mention leaves an animated loading skeleton; archive the
+      // open mentions menu (the test's end state) instead.
       const {settleChromaticEndState} = testHelpers()
       void render(<CommentsInputHarness />)
       const $editable = page.getByTestId('comment-input-editable')
@@ -113,20 +141,14 @@ describe('Comments', () => {
       await userEvent.keyboard('@')
       const $mentionsMenu = page.getByTestId('comments-mentions-menu')
       await expect.element($mentionsMenu).toBeVisible()
-      await expect
-        .poll(() => {
-          const el = window.document.querySelector('[data-testid="comments-mentions-menu"]')
-          return el instanceof HTMLElement ? Math.round(el.getBoundingClientRect().height) : 0
-        })
-        .toBeGreaterThan(0)
-      // Mentions close on click-outside; do not park the real pointer.
-      await settleChromaticEndState({parkPointer: false})
+      await expectMentionsMenuLaidOut()
+      await settleChromaticEndState()
       await expect.element($mentionsMenu).toBeVisible()
       await expect.element($editable).toHaveFocus()
+      await expectFocusRingSettled()
     })
 
     it('Should bring up mentions menu when pressing the @ button, whilst retaining focus on PTE', async () => {
-      // Keep the menu open for the auto end-state archive (same portal as typing @).
       const {settleChromaticEndState} = testHelpers()
       void render(<CommentsInputHarness />)
       const $editable = page.getByTestId('comment-input-editable')
@@ -137,15 +159,11 @@ describe('Comments', () => {
       const $mentionsMenu = page.getByTestId('comments-mentions-menu')
       await expect.element($mentionsMenu).toBeVisible()
       await expect.element($editable).toHaveFocus()
-      await expect
-        .poll(() => {
-          const el = window.document.querySelector('[data-testid="comments-mentions-menu"]')
-          return el instanceof HTMLElement ? Math.round(el.getBoundingClientRect().height) : 0
-        })
-        .toBeGreaterThan(0)
-      await settleChromaticEndState({parkPointer: false})
+      await expectMentionsMenuLaidOut()
+      await settleChromaticEndState()
       await expect.element($mentionsMenu).toBeVisible()
       await expect.element($editable).toHaveFocus()
+      await expectFocusRingSettled()
     })
 
     it('Should be able to submit', async () => {
@@ -206,10 +224,10 @@ describe('Comments', () => {
         .element(page.getByTestId('comment-mentions-loading-skeleton'))
         .not.toBeInTheDocument()
       await expect.element($editable).toHaveTextContent(/^before$/)
-      // Park pointer so the @ button tooltip / send hover cannot open during
-      // Chromatic's end-state archive.
+      await expect.element(page.getByTestId('comment-input-send-button')).toBeEnabled()
       const {settleChromaticEndState} = testHelpers()
       await settleChromaticEndState()
+      await expectFocusRingSettled()
     })
 
     it('Should start the next comment empty after submitting the previous one', async () => {

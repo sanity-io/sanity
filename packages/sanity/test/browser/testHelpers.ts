@@ -60,8 +60,8 @@ export function snapFloatingUiToIntegerPixels(): void {
       break
     }
   }
-  // Chromatic's `delay` can let Floating UI rewrite a half-pixel translate
-  // after this function returns. Re-round on style mutations until unmount.
+  // Floating UI can rewrite a half-pixel translate between this call and the
+  // archive. Re-round on style mutations until unmount.
   if (!window.document.documentElement.hasAttribute('data-chromatic-float-lock')) {
     window.document.documentElement.setAttribute('data-chromatic-float-lock', '')
     const observer = new MutationObserver(() => {
@@ -79,6 +79,31 @@ export function snapFloatingUiToIntegerPixels(): void {
       attributeFilter: ['style'],
     })
   }
+}
+
+const POINTER_PARK_TESTID = 'chromatic-pointer-park'
+
+/**
+ * Transparent, fixed 4×4 element in the bottom-right corner of the viewport
+ * that `settleChromaticEndState` moves the real pointer onto. It stays in the
+ * DOM until the setup file's `afterEach` so the pointer keeps hovering it
+ * (and nothing else) while Chromatic archives the end state.
+ */
+function getPointerPark(): HTMLElement {
+  const existing = window.document.querySelector<HTMLElement>(
+    `[data-testid="${POINTER_PARK_TESTID}"]`,
+  )
+  if (existing) return existing
+  const park = window.document.createElement('div')
+  park.setAttribute('data-testid', POINTER_PARK_TESTID)
+  park.setAttribute('aria-hidden', 'true')
+  park.style.cssText = 'position:fixed;right:8px;bottom:8px;width:4px;height:4px;z-index:2147483647'
+  window.document.body.appendChild(park)
+  return park
+}
+
+export function removePointerPark(): void {
+  window.document.querySelector(`[data-testid="${POINTER_PARK_TESTID}"]`)?.remove()
 }
 
 /** Poll `document.querySelector` until the element appears, then return it. */
@@ -433,41 +458,55 @@ export function testHelpers() {
     /**
      * Park the pointer and wait for Chromatic-sensitive chrome to stop moving.
      * Call at the end of a browser test (or just before `takeSnapshot`) so the
-     * auto-archive does not catch toolbar hover pills, style-select label
+     * archive does not catch hovered controls, tooltips, style-select label
      * flicker (Normal vs No style), or floating PTE toolbars mid-layout.
+     *
+     * Chromatic records which elements match `:hover` / `:focus` at archive
+     * time and re-applies those states when it renders the DOM, so the pointer
+     * position at the end of a test is part of the snapshot.
      */
     settleChromaticEndState: async (options?: {
       styleSelectText?: RegExp
       styleSelectRoot?: string
-      /** Move the real pointer onto an inset park target (force hover) so
-       * CSS :hover tooltips cannot open during Chromatic's delay. Disable
-       * when an open dialog/menu dismisses on outside pointer events
-       * (default true). */
-      parkPointer?: boolean
     }) => {
       if (typeof document.fonts?.ready !== 'undefined') {
         await document.fonts.ready
       }
 
-      // Clear :hover on toolbar buttons / field headers (pointer may still sit
-      // on the last clicked control after userEvent.click). Synthetic
-      // `mouseover` does NOT clear CSS :hover, so Chromatic's 1s delay can
-      // still open a tooltip (e.g. "Insert Table") between settle and archive.
-      // Hover an inset park target to move the real pointer off chrome.
-      // Playwright treats a 1×1 at (0,0) as outside the viewport (tests run in
-      // an iframe), so use a small inset target and force the hover.
-      if (options?.parkPointer !== false) {
-        const park = window.document.createElement('div')
-        park.setAttribute('data-testid', 'chromatic-pointer-park')
-        park.style.cssText =
-          'position:fixed;left:8px;top:8px;width:4px;height:4px;opacity:0.01;z-index:2147483647'
-        window.document.body.appendChild(park)
-        try {
-          await userEvent.hover(park, {force: true})
-        } finally {
-          park.remove()
-        }
-      }
+      // After `userEvent.click` the real pointer still sits on the clicked
+      // control, so it (and its field header) stay `:hover`ed and tooltips
+      // can open. Synthetic `mouseover` does not clear CSS `:hover`; only a
+      // real pointer move does. Park it on a transparent element in the
+      // bottom-right corner, then assert the rendered tree is hover-free and
+      // that React hover state (field actions) has flushed.
+      const park = getPointerPark()
+      await userEvent.hover(park)
+      const hovered = () =>
+        Array.from(window.document.querySelectorAll(':hover'))
+          .filter(
+            (el) =>
+              el !== window.document.documentElement && el !== window.document.body && el !== park,
+          )
+          .map((el) => `${el.tagName.toLowerCase()}${el.id ? `#${el.id}` : ''}`)
+      await expect.poll(hovered).toEqual([])
+
+      const fieldActionsSig = () =>
+        Array.from(window.document.querySelectorAll('[data-actions-visible]'))
+          .map((el) => el.getAttribute('data-actions-visible'))
+          .join(',')
+      let previousFieldActions = fieldActionsSig()
+      let fieldActionsStable = 0
+      await expect
+        .poll(() => {
+          const next = fieldActionsSig()
+          if (next === previousFieldActions) fieldActionsStable += 1
+          else {
+            previousFieldActions = next
+            fieldActionsStable = 0
+          }
+          return fieldActionsStable >= 2
+        })
+        .toBe(true)
 
       await expect
         .poll(

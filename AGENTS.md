@@ -587,20 +587,35 @@ hooks to `parallel`, which lets Chromatic's automatic snapshot race
 `packages/sanity/test/setup/browser.ts` cleanup and produces partially unmounted, blank, or
 duplicate captures. The Chromatic plugin prepends its setup file for `list` ordering, so the
 snapshot finishes before React cleanup starts. Capture runs also set `retry: 0` (a retried test
-archives twice and Chromatic publishes `Snapshot #1 (2)`), `cropToViewport`,
-`pauseAnimationAtEnd`, a `delay` of 1000ms for fonts/CollapseMenu settle, and the browser setup
-forces transparent carets, grayscale font-smoothing, zero-duration transitions/animations, and
-always-opaque field-actions chrome so portal menus, blinking carets, subpixel toolbar text,
-field-title "..." fades, and button hover pills do not show up as false diffs. Do not globally
-`display:none` hover tooltips — tests like PreviewTooltip assert on them; park the pointer /
-wait out open tooltips in the flaky test instead (see `settleChromaticEndState` in
-`packages/sanity/test/browser/testHelpers.ts`). Tests that leave a menu open on purpose should
-assert a _visible_ overlay (closed `@sanity/ui` menus stay mounted) and prefer `takeSnapshot()`
-when the automatic afterEach capture can race menu dismiss. Force the PTE style select to a
-specific label (`Normal` vs `No style`) before archive when focus can land on a text block or
-an object block. Interaction-only tests whose end state is a loading or error flash should
-`configure({disableAutoSnapshot: true})`. Do not set `localStorage.debug` in browser tests —
-debug overlay noise shows up in Chromatic archives.
+archives twice and Chromatic publishes `Snapshot #1 (2)`), `cropToViewport`, `delay: 0`,
+`pauseAnimationAtEnd` and `prefersReducedMotion: 'reduce'`; the Playwright provider emulates the
+same `prefers-reduced-motion: reduce` locally (the `@sanity/ui` v5 stylesheet, `ui5/styles.css`,
+collapses transitions and animations under it), so the DOM a test asserts on is the DOM Chromatic
+renders.
+
+Chromatic archives the DOM plus the elements matching `:hover` / `:focus` / `:active` at capture
+time and re-applies those states in its renderer, so the real pointer position and React
+hover/focus state are part of every snapshot. Make them deterministic in the test, never with
+global CSS overrides from the browser setup (no `transition: 0s`, hidden carets, forced
+opacity, or `!important` focus rings — they hide the state the snapshot is meant to show and
+mask real regressions):
+
+- End interactive tests with `settleChromaticEndState()` from
+  `packages/sanity/test/browser/testHelpers.ts`. It moves the real pointer onto a transparent park
+  element, asserts nothing in the rendered tree is `:hover`ed and no tooltip is open, waits for
+  field-actions / PTE toolbar / floating popover geometry to stop changing, and rounds Floating UI
+  offsets. Do not globally `display:none` tooltips — PreviewTooltip and similar tests assert on them.
+- Assert the state you want archived right before the end of the test (or before
+  `takeSnapshot`): e.g. `toBeEnabled()` on a button whose tone changes with pending input,
+  `data-focused="true"` plus `:focus-within` on a card whose focus ring comes from React state,
+  or `styleSelectText: /^No style$/` when PTE focus can land on a text block or an object block.
+- Tests that leave a menu open on purpose must assert a _visible_ overlay (closed `@sanity/ui`
+  menus stay mounted). Use `configure({disableAutoSnapshot: true})` plus `takeSnapshot()` at the
+  asserted state when the automatic afterEach capture could race a dismiss, and do not mutate the
+  UI after `takeSnapshot` in that test.
+- Interaction-only tests whose end state is a loading or error flash should
+  `configure({disableAutoSnapshot: true})`. Do not set `localStorage.debug` in browser tests —
+  debug overlay noise shows up in Chromatic archives.
 
 ### E2E Tests (Playwright)
 
