@@ -167,7 +167,7 @@ export const CommentReactionsBar = memo(function CommentReactionsBar(
                   tone={hasReacted ? 'primary' : 'default'}
                 >
                   <Flex alignItems="center" gap={1}>
-                    <EmojiText size={1} forwardedAs="div" trim={true}>
+                    <EmojiText size={1} as="div" trim={true}>
                       {emoji}
                     </EmojiText>
 
