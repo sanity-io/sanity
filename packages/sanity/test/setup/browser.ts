@@ -4,6 +4,7 @@
 // @sanity/ui ships its static styles as a stylesheet consumers import themselves, so load it here
 // the same way the studio entry point does.
 import '@sanity/ui/styles.css'
+import 'ui5/styles.css'
 
 import {afterEach} from 'vitest'
 import {cleanup} from 'vitest-browser-react'
