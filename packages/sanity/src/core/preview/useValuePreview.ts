@@ -66,12 +66,14 @@ interface PreviewTarget {
 /**
  * Identifies the document `observeForPreview` will observe for a value. A change means a different
  * document is being previewed, which restarts the preview so the previous document's preview is
- * never shown for the new one. A cross-dataset reference is identified by its dataset as well.
+ * never shown for the new one. A cross-dataset reference is identified by its dataset as well, and
+ * a version slated for unpublishing by its own key, so it never continues the published document's
+ * subscription.
  */
 function getPreviewDocumentKey(value: unknown): string | undefined {
   if (!value || typeof value !== 'object') return undefined
   const document = value as SanityDocument & {_ref?: string; _dataset?: string; _projectId?: string}
-  if (isGoingToUnpublish(document)) return getPublishedId(document._id)
+  if (isGoingToUnpublish(document)) return `unpublish:${getPublishedId(document._id)}`
   const id = document._id ?? document._ref
   return document._dataset ? `${document._projectId}/${document._dataset}/${id}` : id
 }

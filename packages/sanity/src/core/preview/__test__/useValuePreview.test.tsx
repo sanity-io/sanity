@@ -332,6 +332,29 @@ describe('useValuePreview', () => {
     expect(frames.at(-1)).toEqual({isLoading: false, title: 'from b', error: undefined})
   })
 
+  it('shows the loading state when a document turns into a version slated for unpublishing', () => {
+    const {observe, snapshots$} = previewLater()
+    observeForPreview.mockImplementation(observe)
+    const frames: Frame[] = []
+    const {rerender} = render(
+      <Harness schemaType={bookType} value={{_id: 'a', title: 'draft'}} frames={frames} />,
+    )
+    act(() => snapshots$.next({snapshot: {title: 'draft'}}))
+    const settled = frames.length
+
+    rerender(
+      <Harness
+        schemaType={bookType}
+        value={{_id: 'versions.rRelease.a', _system: {delete: true}}}
+        frames={frames}
+      />,
+    )
+    expectOnlyLoadingFrames(frames.slice(settled))
+
+    act(() => snapshots$.next({snapshot: {title: 'published'}}))
+    expect(frames.at(-1)).toEqual({isLoading: false, title: 'published', error: undefined})
+  })
+
   it('previews a version slated for unpublishing as its published document', () => {
     observeForPreview.mockImplementation(previewRequest())
     currentPerspective = {perspectiveStack: ['rRelease', 'drafts'], selectedVariantName: 'nb'}
