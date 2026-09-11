@@ -9,7 +9,7 @@
 import 'ui5/styles.css'
 import '@sanity/ui/styles.css'
 
-import {afterEach} from 'vitest'
+import {afterEach, beforeEach} from 'vitest'
 import {cleanup} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
 
@@ -19,6 +19,20 @@ import {parkPointer, releaseFloatingUiSnapLock, removePointerPark} from '../brow
 // vitest.browser.config.mts. Tests that call `page.viewport(...)` (e.g. toolbar
 // collapse tests) mutate it for the whole iframe, so reset between tests.
 const DEFAULT_VIEWPORT = {width: 1280, height: 900}
+
+// Park the real pointer in the bottom-right corner of the (default) viewport
+// right before each test renders anything. Chromium dispatches `mouseover` to
+// content that appears under a stationary pointer, so a control rendered under
+// it would start out `:hover`ed and could open its tooltip mid-test. That is
+// where the pointer sits in a fresh page (Chromium's default position is the
+// top-left corner, over the harness's first control), after a test that ended
+// on a click, and after one that parked at a reduced viewport (the 350×500
+// toolbar tests) once the viewport is restored. The park element itself is
+// removed again so it is not part of the test's DOM.
+beforeEach(async () => {
+  await parkPointer()
+  removePointerPark()
+})
 
 // Unmount any rendered component trees between tests. Without this, each
 // test's render() stacks another tree in the DOM, so locators like
@@ -31,20 +45,10 @@ const DEFAULT_VIEWPORT = {width: 1280, height: 900}
 // the archive (it is transparent) and only removed here. The Floating UI
 // snap observer is released here for the same reason: it must keep rounding
 // offsets until the archive is taken, and must not outlive the test.
-//
-// The real pointer is then parked again *after* the viewport is restored: a
-// test that parked at a reduced viewport (the 350×500 toolbar tests) or ended
-// on a click leaves the pointer over what becomes the next test's content in
-// the default viewport, where a control rendered under it would start out
-// `:hover`ed and could open its tooltip mid-test. Every test therefore starts
-// with the pointer in the bottom-right corner of the 1280×900 viewport; the
-// park element itself is removed so it is not part of the next test's DOM.
 afterEach(async () => {
   await cleanup()
   releaseFloatingUiSnapLock()
   await page.viewport(DEFAULT_VIEWPORT.width, DEFAULT_VIEWPORT.height)
-  await parkPointer()
-  removePointerPark()
 })
 
 // Suppress noisy warnings in test output
