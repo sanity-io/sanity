@@ -6,7 +6,7 @@ import {
 } from '@sanity/types'
 import {dequal} from 'dequal'
 import isPlainObject from 'lodash-es/isPlainObject.js'
-import {useEffect, useMemo, useState} from 'react'
+import {isValidElement, useEffect, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {BehaviorSubject, concat, type Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, map, scan, switchMap} from 'rxjs/operators'
@@ -56,6 +56,8 @@ const IGNORED_PREVIEW_KEYS = new Set(['_createdAt', '_updatedAt'])
 // re-renders as it did before.
 function isSameMedia(a: unknown, b: unknown): boolean {
   if (a === b) return true
+  // Elements are plain objects, but walking `props` / `_owner` reaches fibers.
+  if (isValidElement(a) || isValidElement(b)) return false
   return isPlainObject(a) && isPlainObject(b) && dequal(a, b)
 }
 

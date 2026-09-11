@@ -270,6 +270,28 @@ describe('useValuePreview', () => {
     expect(frames.length).toBe(before + 3)
   })
 
+  it('compares element media by identity instead of walking the element', () => {
+    const media = <span />
+    const sameShape = <span />
+    observeForPreview.mockImplementation(
+      (value: {title: string; media: unknown}) =>
+        new Observable((subscriber) => {
+          subscriber.next({snapshot: {title: value.title, media: value.media}})
+        }),
+    )
+    const frames: Frame[] = []
+    const {rerender} = render(<Harness value={{_id: 'a', title: 'one', media}} frames={frames} />)
+    const before = frames.length
+
+    // the same element instance is the same media
+    rerender(<Harness value={{_id: 'a', title: 'one', media}} frames={frames} />)
+    expect(frames.length).toBe(before + 1)
+
+    // a different instance is not, even when it has the same type and props
+    rerender(<Harness value={{_id: 'a', title: 'one', media: sameShape}} frames={frames} />)
+    expect(frames.length).toBe(before + 3)
+  })
+
   it('surfaces a preview error once, even when the value is rebuilt on every render', () => {
     observeForPreview.mockImplementation(
       () =>
