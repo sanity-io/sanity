@@ -15,13 +15,13 @@ import {
   type TargetDocumentState,
   type TargetPerspective,
 } from 'sanity'
-import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {isLiveEditEnabled} from '../../../../components/paneItem/helpers'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
+import {badgeContainer, badgeMotionWrapper, targetBadge} from './DocumentTargetBadges.css'
 import {
   getBadgeSystemDocument,
   getTargetBadgePerspective,
@@ -54,23 +54,6 @@ function RhombusIcon(props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElemen
   )
 }
 
-const TargetBadge = styled(Card)`
-  display: inline-flex;
-  align-items: center;
-  flex: none;
-  /* Drawn as an inset shadow instead of the Card border prop so the 1px border
-     does not make the badge taller than the box-shadow-bordered VersionChip pills. */
-  box-shadow: inset 0 0 0 1px var(--card-border-color);
-`
-const BadgeContainer = styled(Flex)`
-  user-select: none;
-  flex: none;
-`
-
-const BadgeMotionWrapper = styled(motion.div)`
-  flex: none;
-`
-
 function getSelectedVariantFromState(
   state: TargetDocumentState,
   selectedVariant: SystemVariant | undefined,
@@ -99,19 +82,19 @@ const PerspectiveBadgeLabel = memo(function PerspectiveBadgeLabel({
 
   if (isPublishedPerspective(selectedPerspective) || isDraftPerspective(selectedPerspective)) {
     return (
-      <BadgeContainer padding={2}>
+      <Flex className={badgeContainer} padding={2}>
         <Text size={1} weight="medium">
           {isPublishedPerspective(selectedPerspective)
             ? t('release.chip.published')
             : t('release.chip.global.drafts')}
         </Text>
-      </BadgeContainer>
+      </Flex>
     )
   }
 
   if (isReleaseDocument(selectedPerspective)) {
     return (
-      <BadgeContainer gap={2} padding={2} alignItems="center">
+      <Flex className={badgeContainer} gap={2} padding={2} alignItems="center">
         <Text size={1}>
           <ReleaseAvatarIcon release={selectedPerspective} />
         </Text>
@@ -122,22 +105,22 @@ const PerspectiveBadgeLabel = memo(function PerspectiveBadgeLabel({
           enableTooltip={false}
           textProps={{size: 1, weight: 'medium'}}
         />
-      </BadgeContainer>
+      </Flex>
     )
   }
 
   return (
-    <BadgeContainer padding={2}>
+    <Flex className={badgeContainer} padding={2}>
       <Text size={1} textOverflow="ellipsis" weight="medium">
         {t('version.agent-bundle.proposed-changes')}
       </Text>
-    </BadgeContainer>
+    </Flex>
   )
 })
 
 const VariantBadgeLabel = memo(function VariantBadgeLabel({variant}: {variant: SystemVariant}) {
   return (
-    <BadgeContainer padding={2}>
+    <Flex className={badgeContainer} padding={2}>
       <Flex alignItems="center" gap={2}>
         <Text size={0}>
           <RhombusIcon />
@@ -146,7 +129,7 @@ const VariantBadgeLabel = memo(function VariantBadgeLabel({variant}: {variant: S
           {getVariantTitle(variant)}
         </Text>
       </Flex>
-    </BadgeContainer>
+    </Flex>
   )
 })
 
@@ -178,21 +161,35 @@ export const DocumentTargetBadges = memo(function DocumentTargetBadges() {
         gap={2}
         paddingRight={1}
       >
-        <BadgeMotionWrapper animate={{opacity: badgeOpacity}} transition={{duration: 0.2}}>
-          <TargetBadge
+        <motion.div
+          className={badgeMotionWrapper}
+          animate={{opacity: badgeOpacity}}
+          transition={{duration: 0.2}}
+        >
+          <Card
+            className={targetBadge}
             tone={getPerspectiveBadgeTone(badgePerspective)}
             radius={4}
             data-ui="DocumentTargetPerspectiveBadge"
           >
             <PerspectiveBadgeLabel selectedPerspective={badgePerspective} />
-          </TargetBadge>
-        </BadgeMotionWrapper>
+          </Card>
+        </motion.div>
         {selectedVariantBadge ? (
-          <BadgeMotionWrapper animate={{opacity: badgeOpacity}} transition={{duration: 0.2}}>
-            <TargetBadge tone="suggest" radius={4} data-ui="DocumentTargetVariantBadge">
+          <motion.div
+            className={badgeMotionWrapper}
+            animate={{opacity: badgeOpacity}}
+            transition={{duration: 0.2}}
+          >
+            <Card
+              className={targetBadge}
+              tone="suggest"
+              radius={4}
+              data-ui="DocumentTargetVariantBadge"
+            >
               <VariantBadgeLabel variant={selectedVariantBadge} />
-            </TargetBadge>
-          </BadgeMotionWrapper>
+            </Card>
+          </motion.div>
         ) : null}
       </Flex>
     </Tooltip>

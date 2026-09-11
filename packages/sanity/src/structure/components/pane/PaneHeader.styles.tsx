@@ -1,61 +1,55 @@
-import {Card, Layer, Text, TextSkeleton, type Theme} from '@sanity/ui'
-import {css, styled} from 'styled-components'
+import {Card, Layer, Text, TextSkeleton, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 import {Flex} from 'ui5'
+
+import {
+  layout,
+  root,
+  rootBorder,
+  rootNoBorder,
+  titleCard,
+  titleCardBgVar,
+  titleCardFgVar,
+  titleText,
+  titleTextSkeleton,
+} from './PaneHeader.styles.css'
 
 interface RootProps {
   $border?: boolean
 }
 
-export const Root = styled(Layer)<RootProps>(({$border}) => {
-  return css`
-    line-height: 0;
-    position: sticky;
-    top: 0;
+export function Root(props: ComponentProps<typeof Layer> & RootProps) {
+  const {$border, className, ...rest} = props
+  return <Layer {...rest} className={clsx(root, $border ? rootBorder : rootNoBorder, className)} />
+}
 
-    &:not([data-collapsed]):after {
-      content: '';
-      display: block;
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: -1px;
-      border-bottom: 1px solid ${$border ? 'var(--card-border-color)' : 'transparent'};
-      opacity: 1;
-    }
-  `
-})
+export function Layout(props: ComponentProps<typeof Flex>) {
+  const {className, ...rest} = props
+  return <Flex {...rest} className={clsx(layout, className)} />
+}
 
-export const Layout = styled(Flex)`
-  transform-origin: calc(51px / 2);
+export function TitleCard(props: ComponentProps<typeof Card>) {
+  const {className, style, ...rest} = props
+  const {color} = useThemeV2()
+  const {bg, fg} = color.selectable.default.enabled
 
-  [data-collapsed] > div > & {
-    transform: rotate(90deg);
-  }
-`
+  return (
+    <Card
+      {...rest}
+      className={clsx(titleCard, className)}
+      style={{...assignInlineVars({[titleCardBgVar]: bg, [titleCardFgVar]: fg}), ...style}}
+    />
+  )
+}
 
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-export const TitleCard = styled(Card)(({theme}: {theme: Theme}) => {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {fg, bg} = theme.sanity.color.card.enabled
+export function TitleTextSkeleton(props: ComponentProps<typeof TextSkeleton>) {
+  const {className, ...rest} = props
+  return <TextSkeleton {...rest} className={clsx(titleTextSkeleton, className)} />
+}
 
-  // Disable color updates on hover
-  return css`
-    background-color: ${bg};
-    min-width: 0;
-
-    [data-ui='Text'] {
-      color: ${fg};
-    }
-  `
-})
-
-export const TitleTextSkeleton = styled(TextSkeleton)`
-  width: 66%;
-  max-width: 175px;
-`
-
-export const TitleText = styled(Text)`
-  cursor: default;
-  outline: none;
-  min-width: 0;
-`
+export function TitleText(props: ComponentProps<typeof Text>) {
+  const {className, ...rest} = props
+  return <Text {...rest} className={clsx(titleText, className)} />
+}
