@@ -222,6 +222,52 @@ export function removePointerPark(): void {
   window.document.querySelector(`[data-testid="${POINTER_PARK_TESTID}"]`)?.remove()
 }
 
+/** Elements matching `:hover` other than the root, body and the pointer park. */
+function hoveredOutside(park: HTMLElement): Element[] {
+  return Array.from(window.document.querySelectorAll(':hover')).filter(
+    (el) => el !== window.document.documentElement && el !== window.document.body && el !== park,
+  )
+}
+
+function describeElement(el: Element): string {
+  const name = el.getAttribute('data-testid') ?? el.getAttribute('data-ui')
+  return `${el.tagName.toLowerCase()}${el.id ? `#${el.id}` : ''}${name ? `[${name}]` : ''}`
+}
+
+const isRendered = (el: Element): el is HTMLElement => {
+  if (!isShown(el)) return false
+  const rect = el.getBoundingClientRect()
+  return rect.width > 0 && rect.height > 0
+}
+
+/** `root` itself if it is shown with a box, else its first such descendant. */
+function firstRendered(root: Element): HTMLElement | undefined {
+  if (isRendered(root)) return root
+  return Array.from(root.querySelectorAll('*')).find(isRendered)
+}
+
+/**
+ * WebKit does not re-diff its `:hover` chain when the element under the
+ * pointer leaves the DOM (a popover unmounting under the button that was just
+ * clicked, a block moved by a drop), so `:hover` stays set on what that chain
+ * left behind — the `@sanity/ui` portal container above an unmounted popover,
+ * the moved block itself after a drop — wherever the pointer goes next, and
+ * parking alone cannot clear it. Entering such an element (or a rendered
+ * descendant) for real puts it back into the tracked chain, and the next move
+ * away clears it; parking after that leaves the tree hover-free.
+ */
+async function reenterStaleWebkitHover(park: HTMLElement): Promise<void> {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const stale = hoveredOutside(park)
+    if (stale.length === 0) return
+    const target = stale.map(firstRendered).find((el) => el !== undefined)
+    if (!target) return
+    // `force` skips actionability waits: only the pointer position matters.
+    await userEvent.hover(target, {force: true})
+    await userEvent.hover(park)
+  }
+}
+
 /** Poll `document.querySelector` until the element appears, then return it. */
 async function waitForElement(selector: string): Promise<Element> {
   let el: Element | null = null
@@ -739,14 +785,9 @@ export function testHelpers() {
       // bottom-right corner, then assert the rendered tree is hover-free and
       // that React hover state (field actions) has flushed.
       const park = await parkPointer()
+      if (server.browser === 'webkit') await reenterStaleWebkitHover(park)
       const parkedAt = performance.now()
-      const hovered = () =>
-        Array.from(window.document.querySelectorAll(':hover'))
-          .filter(
-            (el) =>
-              el !== window.document.documentElement && el !== window.document.body && el !== park,
-          )
-          .map((el) => `${el.tagName.toLowerCase()}${el.id ? `#${el.id}` : ''}`)
+      const hovered = () => hoveredOutside(park).map(describeElement)
       await expect.poll(hovered).toEqual([])
 
       await expectStable(fieldActionsSig, 2)
