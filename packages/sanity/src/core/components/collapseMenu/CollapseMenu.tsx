@@ -1,4 +1,3 @@
-import {Flex} from '@sanity/ui'
 import difference from 'lodash-es/difference.js'
 import {
   Children,
@@ -12,6 +11,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {css, styled} from 'styled-components'
+import {Flex, type MarginProps, type GapProps} from 'ui5'
 
 import {type MenuButtonProps} from '../../../ui-components/menuButton/MenuButton'
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
@@ -26,7 +26,7 @@ export interface CollapseMenuProps {
   collapsed?: boolean
   collapseText?: boolean
   disableRestoreFocusOnClose?: boolean
-  gap?: number | number[]
+  gap?: GapProps['gap']
   menuButtonProps?: Omit<MenuButtonProps, 'id' | 'menu' | 'button'> & {
     id?: string
     button?: React.JSX.Element
@@ -274,15 +274,14 @@ export function AutoCollapseMenu(
   )
 
   return (
-    <OuterFlex
-      align="center"
-      data-ui="CollapseMenu"
-      overflow="hidden"
-      sizing="border"
-      ref={ref}
-      {...rest}
-    >
-      <RootFlex direction="column" flex={1} justify="center" ref={setRootEl}>
+    <OuterFlex alignItems="center" data-ui="CollapseMenu" overflow="hidden" ref={ref} {...rest}>
+      <RootFlex
+        flexDirection="column"
+        flexBasis="0%"
+        flexGrow={1}
+        justifyContent="center"
+        ref={setRootEl}
+      >
         {/* The actual visible options */}
         <RowFlex gap={gap}>
           {pendingIntersections.length === 0 &&
@@ -325,7 +324,7 @@ export function AutoCollapseMenu(
 
       {/* Show the collapsed items that doesn't fit in a menu */}
       {overflowingCollapsedOptionElements.length > 0 && (
-        <Flex marginLeft={gap}>
+        <Flex marginLeft={gap as MarginProps['marginLeft']}>
           <CollapseOverflowMenu
             disableRestoreFocusOnClose={disableRestoreFocusOnClose}
             menuButton={menuButton}
@@ -341,7 +340,7 @@ export function AutoCollapseMenu(
 
 const RenderHidden = memo(function RenderHidden(props: {
   elements: React.JSX.Element[]
-  gap?: number | number[]
+  gap?: GapProps['gap']
   intersectionOptions: IntersectionObserverInit
   onIntersectionChange: (e: IntersectionObserverEntry, element: React.JSX.Element) => void
 }) {

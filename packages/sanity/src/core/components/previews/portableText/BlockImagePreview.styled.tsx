@@ -1,10 +1,10 @@
-import {Card, Flex, rem} from '@sanity/ui'
+import {Card, rem} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {PREVIEW_SIZES} from '../constants'
 
-export const HeaderFlex = styled(Flex).attrs({align: 'center'})`
+export const HeaderFlex = styled(Flex).attrs({alignItems: 'center'})`
   height: ${rem(PREVIEW_SIZES.block.media.height)};
   white-space: nowrap;
   position: relative;

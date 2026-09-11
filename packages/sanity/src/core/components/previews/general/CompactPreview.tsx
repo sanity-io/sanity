@@ -1,6 +1,6 @@
-import {Flex, rem, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {rem, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -48,13 +48,13 @@ export function CompactPreview(props: CompactPreviewProps) {
   if (isPlaceholder) {
     return (
       <Root
-        align="center"
+        alignItems="center"
         data-testid="default-preview"
         paddingLeft={media ? 1 : 2}
         paddingRight={2}
         paddingY={1}
       >
-        <Flex align="center" flex={1} gap={2}>
+        <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2}>
           {media && <Skeleton animated radius={2} style={PREVIEW_SIZES.compact.media} />}
 
           <Stack data-testid="compact-preview__heading" flex={1} gap={2}>
@@ -69,13 +69,13 @@ export function CompactPreview(props: CompactPreviewProps) {
 
   return (
     <Root
-      align="center"
+      alignItems="center"
       data-testid="compact-preview"
       paddingLeft={media ? 1 : 2}
       paddingRight={2}
       paddingY={1}
     >
-      <Flex align="center" flex={1} gap={2}>
+      <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2}>
         {media && (
           <Media
             border={false}

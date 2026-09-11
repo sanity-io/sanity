@@ -1,5 +1,6 @@
-import {Flex, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {useDocumentLastEditedBy} from '../../store/translog/useDocumentLastEditedBy'
 import {useUser} from '../../store/user/hooks'
@@ -49,7 +50,7 @@ export function EditedByAvatar({
   }
 
   return (
-    <CellRoot align="center" gap={2}>
+    <CellRoot alignItems="center" gap={2}>
       <UserAvatar size={0} user={userId} withTooltip />
       {user?.displayName && (
         <NameText muted size={1} textOverflow="ellipsis">

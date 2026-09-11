@@ -1,4 +1,3 @@
-import {Flex} from '@sanity/ui'
 import {
   Children,
   cloneElement,
@@ -10,6 +9,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {styled} from 'styled-components'
+import {Flex, type GapProps} from 'ui5'
 
 import {type MenuButtonProps} from '../../../ui-components/menuButton/MenuButton'
 import {CollapseOverflowMenu} from '../collapseMenu/CollapseOverflowMenu'
@@ -41,7 +41,7 @@ const MenuButtonPlaceholder = styled.div`
 
 interface CollapseTabListProps {
   children: ReactNode
-  gap?: number | number[]
+  gap?: GapProps['gap']
   menuButtonProps?: Omit<MenuButtonProps, 'id' | 'menu' | 'button'> & {
     id?: string
     button?: React.JSX.Element
@@ -120,13 +120,15 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
 
   return (
     <Flex
-      direction="column"
+      flexDirection="column"
       ref={ref}
-      sizing="border"
       {...rest}
-      style={{position: 'relative', minWidth: 0, ...style}}
+      style={{
+        position: 'relative',
+        ...style,
+      }}
     >
-      <Flex justify="center" gap={gap} flex={1}>
+      <Flex justifyContent="center" gap={gap} flexBasis="0%" flexGrow={1}>
         {hasMeasured ? displayChildren : null}
         {hiddenChildren.length > 0 ? (
           <CollapseOverflowMenu
@@ -152,7 +154,13 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
       </Flex>
 
       {/* Element that always render all the children to keep track of their position and if the available space to render them */}
-      <HiddenRow justify="flex-start" gap={gap} ref={setRootEl} data-hidden aria-hidden="true">
+      <HiddenRow
+        justifyContent="flex-start"
+        gap={gap}
+        ref={setRootEl}
+        data-hidden
+        aria-hidden="true"
+      >
         {cloneElement(menuButton, {
           'disabled': true,
           'aria-hidden': true,
