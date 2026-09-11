@@ -1,7 +1,8 @@
 import {type ObjectSchemaType} from '@sanity/types'
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {type TargetDocumentState, useDocumentOperation} from 'sanity'
+import {useDocumentOperation} from 'sanity'
+import {type TargetDocumentState} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'

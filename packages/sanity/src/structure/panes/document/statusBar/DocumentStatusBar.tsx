@@ -1,12 +1,12 @@
 import {Card} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type Ref, useCallback, useMemo, useState} from 'react'
+import {usePerspective} from 'sanity'
 import {
   getCreatableVariantTarget,
   isPublishedPerspective,
   isReleaseDocument,
-  usePerspective,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex} from 'ui5'
 
 import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'

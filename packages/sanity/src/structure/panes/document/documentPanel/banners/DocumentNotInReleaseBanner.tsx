@@ -3,18 +3,20 @@ import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
+  type SystemBundle,
+  type TargetPerspective,
+  Translate,
+  useTranslation,
+} from 'sanity'
+import {
   getReleaseTone,
   isAgentBundleName,
   LATEST,
   ReleaseTitle,
-  type SystemBundle,
-  type TargetPerspective,
-  Translate,
   useConditionalToast,
-  useTranslation,
   useVersionOperations,
   VersionInlineBadge,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'

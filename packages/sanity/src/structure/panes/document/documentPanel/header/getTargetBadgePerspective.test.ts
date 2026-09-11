@@ -1,9 +1,8 @@
+import {type SystemVariant, type TargetPerspective} from 'sanity'
 import {
-  type SystemVariant,
   type TargetDocumentState,
-  type TargetPerspective,
   type VersionInfoDocumentStub,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {describe, expect, it} from 'vitest'
 
 import {

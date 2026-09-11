@@ -5,11 +5,13 @@ import {
   getVersionId,
   type ReleaseDocument,
   type ReleaseId,
-  useActiveReleases,
   useDocumentVersions,
-  useFilteredReleases,
   usePerspective,
 } from 'sanity'
+import {
+  useActiveReleases,
+  useFilteredReleases,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {SingleDocReleaseContext} from 'sanity/_singletons'
 import {type IntentLinkProps} from 'sanity/router'
 import {
@@ -34,7 +36,6 @@ import {DocumentPerspectiveList} from '../DocumentPerspectiveList'
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
-  useFilteredReleases: vi.fn(),
   useOnlyHasVersions: vi.fn().mockReturnValue(false),
   usePerspective: vi.fn(),
   useDocumentVersions: vi.fn().mockReturnValue({
@@ -43,16 +44,23 @@ vi.mock('sanity', async (importOriginal) => ({
     loading: true,
     versions: [],
   }),
-  useActiveReleases: vi.fn().mockReturnValue({data: [], byId: new Map(), loading: false}),
-  useAllVariants: vi.fn().mockReturnValue({
-    data: [],
-    byId: new Map(),
-    loading: false,
-  }),
-  useSetVariant: vi.fn().mockReturnValue(vi.fn()),
-  useArchivedReleases: vi.fn().mockReturnValue({data: [], loading: false}),
   SANITY_VERSION: '0.0.0',
 }))
+vi.mock(
+  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    useFilteredReleases: vi.fn(),
+    useActiveReleases: vi.fn().mockReturnValue({data: [], byId: new Map(), loading: false}),
+    useAllVariants: vi.fn().mockReturnValue({
+      data: [],
+      byId: new Map(),
+      loading: false,
+    }),
+    useSetVariant: vi.fn().mockReturnValue(vi.fn()),
+    useArchivedReleases: vi.fn().mockReturnValue({data: [], loading: false}),
+  }),
+)
 
 vi.mock('sanity/router', () => {
   return {

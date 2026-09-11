@@ -1,16 +1,14 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
 import {Stack, Text} from '@sanity/ui'
+import {Translate, usePerspective, useTranslation} from 'sanity'
 import {
   getReleaseTone,
   isGoingToUnpublish,
   isReleaseDocument,
   ReleaseTitle,
-  Translate,
-  usePerspective,
-  useTranslation,
   VersionInlineBadge,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'

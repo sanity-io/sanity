@@ -1,21 +1,23 @@
 import {type ObjectSchemaType} from '@sanity/types'
 import {useMemo} from 'react'
 import {
-  EMPTY_ARRAY,
-  EventsProvider,
   getDraftId,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
   getVersionId,
   PerspectiveProvider,
+  usePerspective,
+  useSchema,
+  useDocumentVersions,
+} from 'sanity'
+import {
+  EMPTY_ARRAY,
+  EventsProvider,
   useArchivedReleases,
   getTargetDocument,
   useEventsStore,
-  usePerspective,
-  useSchema,
   useTargetDocumentState,
-  useDocumentVersions,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {EMPTY_PARAMS} from './constants'

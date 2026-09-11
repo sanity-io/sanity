@@ -3,12 +3,8 @@ import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {Card, Container, Heading, Text, useClickOutsideEvent} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
-import {
-  getDocumentVariantType,
-  useCanvasCompanionDoc,
-  useNavigateToCanvasDoc,
-  useTranslation,
-} from 'sanity'
+import {getDocumentVariantType, useCanvasCompanionDoc, useTranslation} from 'sanity'
+import {useNavigateToCanvasDoc} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 

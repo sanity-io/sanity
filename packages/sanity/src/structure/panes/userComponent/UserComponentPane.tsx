@@ -1,6 +1,6 @@
 import {isValidElement, useState} from 'react'
 import {isValidElementType} from 'react-is'
-import {useI18nText} from 'sanity'
+import {useI18nText} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {Pane} from '../../components/pane/Pane'
 import {type StructureToolPaneActionHandler} from '../../types'

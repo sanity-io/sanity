@@ -2,19 +2,21 @@ import {type SanityDocument} from '@sanity/types'
 import {Container, Heading, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
-  CommandList,
-  type CommandListRenderItemCallback,
-  Delay,
-  ErrorActions,
   type GeneralPreviewLayoutKey,
   getPublishedId,
   isDev,
-  LoadingBlock,
   SanityDefaultPreview,
   Translate,
   useSchema,
   useTranslation,
 } from 'sanity'
+import {
+  CommandList,
+  type CommandListRenderItemCallback,
+  Delay,
+  ErrorActions,
+  LoadingBlock,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 

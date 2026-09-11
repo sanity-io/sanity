@@ -4,13 +4,15 @@ import {type MouseEvent, useCallback, useMemo} from 'react'
 import {
   AvatarSkeleton,
   type ChunkType,
-  type RelativeTimeOptions,
   useDateTimeFormat,
   UserAvatar,
   useRelativeTime,
   useTranslation,
-  useUser,
 } from 'sanity'
+import {
+  type RelativeTimeOptions,
+  useUser,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {css, styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 

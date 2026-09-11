@@ -13,7 +13,8 @@ import {
 } from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {lazy, type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {CorsOriginErrorScreen, useClient, useProjectId, useStudioErrorHandler} from 'sanity'
+import {useClient, useProjectId, useStudioErrorHandler} from 'sanity'
+import {CorsOriginErrorScreen} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useRouter} from 'sanity/router'
 import {Box} from 'ui5'
 

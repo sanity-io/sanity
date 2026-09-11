@@ -1,12 +1,12 @@
 import {uuid} from '@sanity/uuid'
 import {useCallback, useMemo} from 'react'
+import {getPublishedId} from 'sanity'
 import {
   CreateReferenceButton,
   type CreateReferenceOption,
-  getPublishedId,
   isNonNullable,
   useReferenceInputOptions,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useRouter} from 'sanity/router'
 
 import {usePaneRouter} from '../paneRouter/usePaneRouter'

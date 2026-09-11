@@ -5,10 +5,10 @@ import {getPublishedId, useTranslation} from 'sanity'
 import {
   DocumentListPane as StructureDocumentListPane,
   ORDER_BY_IDS_PARAM_FIELD,
-  PaneLayout,
   type PaneNode,
   StructureToolProvider,
-} from 'sanity/structure'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {PaneLayout} from 'sanity/structure'
 import {styled} from 'styled-components'
 
 import {ErrorBoundary} from '../../ui-components/errorBoundary/ErrorBoundary'

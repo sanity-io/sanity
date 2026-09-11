@@ -3,11 +3,11 @@ import {renderHook, waitFor} from '@testing-library/react'
 import deepCompare from 'react-fast-compare'
 import {
   type DocumentActionProps,
-  type TargetDocumentState,
   useDocumentOperation,
   useDocumentPairPermissions,
   usePerspective,
 } from 'sanity'
+import {type TargetDocumentState} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'

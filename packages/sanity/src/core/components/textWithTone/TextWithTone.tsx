@@ -33,7 +33,7 @@ const TextWithToneStyle = styled(Text)`
   }
 `
 
-/** @internal */
+/** @public */
 export function TextWithTone(props: TextWithToneProps & RefAttributes<HTMLDivElement>) {
   const {ref, tone, dimmed, muted, ...rest} = props
 

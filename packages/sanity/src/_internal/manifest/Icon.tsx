@@ -2,7 +2,7 @@ import {ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {type ComponentType, isValidElement, type ReactNode} from 'react'
 import {isValidElementType} from 'react-is'
-import {createDefaultIcon} from 'sanity'
+import {createDefaultIcon} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 const theme = buildTheme()
 

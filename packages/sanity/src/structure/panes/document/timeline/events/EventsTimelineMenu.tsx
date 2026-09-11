@@ -9,10 +9,12 @@ import {
   isScheduleDocumentVersionEvent,
   isUnpublishDocumentEvent,
   isUnscheduleDocumentVersionEvent,
-  TIMELINE_ITEM_I18N_KEY_MAPPING,
-  useEvents,
   useTranslation,
 } from 'sanity'
+import {
+  TIMELINE_ITEM_I18N_KEY_MAPPING,
+  useEvents,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 

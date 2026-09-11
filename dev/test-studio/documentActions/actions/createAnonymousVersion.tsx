@@ -7,8 +7,8 @@ import {
   type DocumentActionDescription,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   getPublishedId,
-  useSetPerspective,
 } from 'sanity'
+import {useSetPerspective} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useDocumentPane} from 'sanity/structure'
 
 export const useCreateAnonymousVersion: DocumentActionComponent = (props) => {

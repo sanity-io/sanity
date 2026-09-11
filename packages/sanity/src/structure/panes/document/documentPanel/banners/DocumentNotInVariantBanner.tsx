@@ -2,18 +2,20 @@ import {Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo, useState} from 'react'
 import {
-  getVariantTitle,
-  isDraftPerspective,
-  isPublishedPerspective,
-  isReleaseDocument,
   Translate,
-  useConditionalToast,
   useDocumentVersions,
   useGetDefaultPerspective,
   usePerspective,
   useTranslation,
-  useVariantDocumentOperations,
 } from 'sanity'
+import {
+  getVariantTitle,
+  isDraftPerspective,
+  isPublishedPerspective,
+  isReleaseDocument,
+  useConditionalToast,
+  useVariantDocumentOperations,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'

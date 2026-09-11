@@ -8,21 +8,23 @@ import {
 } from '@sanity/ui'
 import {type ComponentType, type RefAttributes, useMemo, useRef, useState} from 'react'
 import {
-  DocumentGroupInventory,
-  DocumentVersionIcons,
   getPublishedId,
-  getReleaseTone,
   getVersionFromId,
-  isAgentBundleName,
-  isReleaseScheduledOrScheduling,
   type ReleaseDocument,
-  useActiveReleases,
-  useAllVariants,
   useDocumentVersions,
   useDocumentVersionTitle,
   useTranslation,
-  type VersionInfoDocumentStub,
 } from 'sanity'
+import {
+  DocumentGroupInventory,
+  DocumentVersionIcons,
+  getReleaseTone,
+  isAgentBundleName,
+  isReleaseScheduledOrScheduling,
+  useActiveReleases,
+  useAllVariants,
+  type VersionInfoDocumentStub,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex} from 'ui5'
 
 import {Popover} from '../../../../ui-components/popover/Popover'

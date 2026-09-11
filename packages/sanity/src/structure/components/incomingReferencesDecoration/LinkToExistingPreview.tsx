@@ -7,18 +7,20 @@ import {
   getPreviewStateObservable,
   getPreviewValueWithFallback,
   getReleaseIdFromReleaseDocumentId,
-  getReleaseTone,
   getVersionFromId,
   isDraftId,
   isPublishedId,
   isVersionId,
   PreviewCard,
-  ReleaseTitle,
   SanityDefaultPreview,
-  useActiveReleases,
   useTranslation,
-  VersionInlineBadge,
 } from 'sanity'
+import {
+  getReleaseTone,
+  ReleaseTitle,
+  useActiveReleases,
+  VersionInlineBadge,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 export interface LinkToExistingPreviewProps {
   documentPreviewStore: DocumentPreviewStore

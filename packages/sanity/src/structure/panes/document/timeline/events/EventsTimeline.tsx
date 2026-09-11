@@ -2,17 +2,19 @@ import {Spinner, Stack, Text} from '@sanity/ui'
 import {motion, type Variants} from 'motion/react'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
-  CommandList,
-  type CommandListRenderItemCallback,
   type DocumentGroupEvent,
   getDocumentVariantType,
   isCreateDocumentVersionEvent,
   isDeleteDocumentVersionEvent,
   isEditDocumentVersionEvent,
   isPublishDocumentVersionEvent,
-  LoadingBlock,
   useTranslation,
 } from 'sanity'
+import {
+  CommandList,
+  type CommandListRenderItemCallback,
+  LoadingBlock,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex, Box} from 'ui5'
 
 import {ExpandableTimelineItemButton} from '../expandableTimelineItemButton'

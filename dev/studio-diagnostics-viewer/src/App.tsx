@@ -1,11 +1,12 @@
 import {Box, Button, Card, Flex, Heading, Stack, Text, TextArea} from '@sanity/ui'
 import {lazy, Suspense, type SyntheticEvent, useCallback, useId, useRef, useState} from 'react'
-import {type StudioDiagnostics} from 'sanity'
+import {type StudioDiagnostics} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 // Loaded on demand so the initial paste screen doesn't carry the sanity
 // package; the report and the parser share the same lazy chunk. Module-scope
 // because React Compiler cannot lower import() inside a component body.
-const loadSanityModule = () => import('sanity')
+const loadSanityModule = () =>
+  import('sanity/_dangerously_use_private_internals_that_do_not_follow_semver')
 
 const DiagnosticsReport = lazy(() =>
   loadSanityModule().then((module) => ({default: module.DiagnosticsReport})),

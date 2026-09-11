@@ -6,11 +6,7 @@ import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type DocumentActionComponent,
-  getPairTarget,
-  getTargetScopeId,
-  getTargetSiblings,
   InsufficientPermissionsMessage,
-  isPublishedPerspective,
   type TFunction,
   useCurrentUser,
   useDocumentOperation,
@@ -22,6 +18,12 @@ import {
   useTranslation,
   useValidationStatus,
 } from 'sanity'
+import {
+  getPairTarget,
+  getTargetScopeId,
+  getTargetSiblings,
+  isPublishedPerspective,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'

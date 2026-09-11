@@ -1,5 +1,8 @@
 import {memo, useCallback} from 'react'
-import {SingleDocReleaseProvider, useSource} from 'sanity'
+import {
+  SingleDocReleaseProvider,
+  useSource,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {DocumentEventsPane} from './DocumentEventsPane'
@@ -8,7 +11,8 @@ import {DocumentPerspectiveProvider} from './DocumentPerspectiveProvider'
 import {type DocumentPaneProviderProps} from './types'
 
 /**
- * @internal
+ * @hidden
+ * @beta
  */
 export const DocumentPaneProviderWrapper = memo((props: DocumentPaneProviderProps) => {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR

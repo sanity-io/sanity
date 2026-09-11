@@ -8,11 +8,13 @@ import {
   isScheduleDocumentVersionEvent,
   isUnpublishDocumentEvent,
   isUnscheduleDocumentVersionEvent,
+  useTranslation,
+} from 'sanity'
+import {
   LoadingBlock,
   ScrollContainer,
   useEvents,
-  useTranslation,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 

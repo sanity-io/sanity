@@ -1,12 +1,10 @@
 import {render, screen, waitFor} from '@testing-library/react'
+import {defineConfig, type SanityClient, useDocumentVersions} from 'sanity'
 import {
-  defineConfig,
-  type SanityClient,
   useActiveReleases,
   useArchivedReleases,
-  useDocumentVersions,
   useValuePreview,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useRouter} from 'sanity/router'
 import {beforeEach, describe, expect, it, type Mock, type MockedFunction, vi} from 'vitest'
 
@@ -56,13 +54,20 @@ vi.mock('../../../../useDocumentTitle', () => ({
 vi.mock('sanity', async (importOriginal) => {
   return {
     ...(await importOriginal()),
-    useValuePreview: vi.fn(),
     useDocumentVersions: vi.fn(),
     usePerspective: vi.fn(() => usePerspectiveMockReturn),
   }
 })
+vi.mock(
+  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    useValuePreview: vi.fn(),
+  }),
+)
 
 vi.mock('sanity/router')
+vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver')
 
 const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
 const mockUseArchivedReleases = useArchivedReleases as Mock<typeof useArchivedReleases>

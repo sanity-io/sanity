@@ -2,23 +2,25 @@ import {LayerProvider, Stack, Text} from '@sanity/ui'
 import {memo, useCallback, useMemo, useState} from 'react'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
-  DocumentGroupInventory,
   DocumentGroupInventoryAction,
-  type DocumentGroupInventoryComponents,
   getReleaseIdFromReleaseDocumentId,
   Hotkeys,
-  isGoingToUnpublish,
   isSanityDefinedAction,
-  isVariantId,
   readVersionType,
   useClient,
   useDocumentStore,
-  usePausedScheduledDraft,
   usePerspective,
+} from 'sanity'
+import {
+  DocumentGroupInventory,
+  type DocumentGroupInventoryComponents,
+  isGoingToUnpublish,
+  isVariantId,
+  usePausedScheduledDraft,
   useSetVariant,
   useSource,
   type VersionInfoDocumentStub,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'

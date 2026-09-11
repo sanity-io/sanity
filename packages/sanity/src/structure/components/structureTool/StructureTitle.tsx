@@ -1,6 +1,7 @@
 import {type SanityDocument, type ObjectSchemaType} from '@sanity/types'
 import {useEffect} from 'react'
-import {useTranslation, useValuePreview} from 'sanity'
+import {useTranslation} from 'sanity'
+import {useValuePreview} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {LOADING_PANE} from '../../constants'
 import {structureLocaleNamespace} from '../../i18n'

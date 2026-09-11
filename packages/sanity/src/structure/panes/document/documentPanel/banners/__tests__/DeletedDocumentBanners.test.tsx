@@ -1,11 +1,10 @@
 import {render, screen, waitFor} from '@testing-library/react'
+import {type ReleaseDocument, usePerspective} from 'sanity'
 import {
   LATEST,
-  type ReleaseDocument,
   useActiveReleases,
-  usePerspective,
   useReleasesIds,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
@@ -21,12 +20,18 @@ vi.mock('sanity', async () => {
   const sanity = await vi.importActual('sanity')
   return {
     ...sanity,
-    useReleasesIds: vi.fn(),
-    useActiveReleases: vi.fn(),
     usePerspective: vi.fn(),
-    useArchivedReleases: vi.fn(),
   }
 })
+vi.mock(
+  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    useReleasesIds: vi.fn(),
+    useActiveReleases: vi.fn(),
+    useArchivedReleases: vi.fn(),
+  }),
+)
 
 const mockUseDocumentPane = useDocumentPane as Mock<typeof useDocumentPane>
 const mockUseReleasesIds = useReleasesIds as Mock<typeof useReleasesIds>

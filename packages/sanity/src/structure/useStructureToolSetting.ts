@@ -1,7 +1,10 @@
 import {useCallback, useMemo} from 'react'
 import {useObservable, useSyncObservable} from 'react-rx'
 import {map} from 'rxjs/operators'
-import {type KeyValueStoreValue, useKeyValueStore} from 'sanity'
+import {
+  type KeyValueStoreValue,
+  useKeyValueStore,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 const STRUCTURE_TOOL_NAMESPACE = 'studio.structure-tool'
 

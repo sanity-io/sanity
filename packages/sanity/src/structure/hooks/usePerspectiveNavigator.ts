@@ -1,13 +1,15 @@
 import {useCallback, useMemo} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
-  isCardinalityOneRelease,
-  isReleaseDocument,
   type TargetPerspective,
   useGetDefaultPerspective,
+} from 'sanity'
+import {
+  isCardinalityOneRelease,
+  isReleaseDocument,
   useSetPerspective,
   useSingleDocRelease,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {usePaneRouter} from '../components/paneRouter/usePaneRouter'
 

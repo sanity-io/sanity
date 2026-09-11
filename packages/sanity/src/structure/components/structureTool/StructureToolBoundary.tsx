@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react'
-import {SourceProvider, type Tool, useWorkspace} from 'sanity'
+import {type Tool, useWorkspace} from 'sanity'
+import {SourceProvider} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {ErrorBoundary} from '../../../ui-components/errorBoundary/ErrorBoundary'
 import {setActivePanes} from '../../getIntentState'

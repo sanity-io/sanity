@@ -1,11 +1,11 @@
 import {type DocumentSystem} from '@sanity/types'
+import {type TargetPerspective} from 'sanity'
 import {
   isDraftPerspective,
   isPublishedPerspective,
   isSystemBundle,
   type TargetDocumentState,
-  type TargetPerspective,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 /**
  * A document (or version stub) that may carry `_system` metadata used to

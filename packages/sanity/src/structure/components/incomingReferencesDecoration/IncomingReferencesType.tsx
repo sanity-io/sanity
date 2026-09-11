@@ -5,20 +5,22 @@ import {useToast} from '@sanity/ui/toast'
 import {Suspense, use, useCallback, useEffect, useMemo, useState} from 'react'
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
 import {
-  CommandList,
-  type CommandListRenderItemCallback,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   getDraftId,
   getPublishedId,
   isPublishedId,
-  LoadingBlock,
   SanityDefaultPreview,
   useClient,
   useDocumentPreviewStore,
   useSchema,
-  useSource,
   useTranslation,
 } from 'sanity'
+import {
+  CommandList,
+  type CommandListRenderItemCallback,
+  LoadingBlock,
+  useSource,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'

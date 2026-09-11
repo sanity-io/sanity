@@ -3,15 +3,17 @@ import {Card, Stack, Text} from '@sanity/ui'
 import {Suspense, use, useCallback, useMemo} from 'react'
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
 import {
-  CommandList,
-  type CommandListRenderItemCallback,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
-  LoadingBlock,
   useClient,
   useDocumentPreviewStore,
   useSchema,
   useTranslation,
 } from 'sanity'
+import {
+  CommandList,
+  type CommandListRenderItemCallback,
+  LoadingBlock,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex, Box} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../i18n'

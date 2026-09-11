@@ -22,7 +22,9 @@ const Root = styled(Card)({
   lineHeight: '0',
 })
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export function DocumentInspectorHeader(
   props: DocumentInspectorHeaderProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
 ) {

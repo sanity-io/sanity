@@ -2,8 +2,11 @@ import {type SanityClient} from '@sanity/client'
 import {render} from '@testing-library/react'
 import noop from 'lodash-es/noop.js'
 import {type ReactNode, useRef} from 'react'
+import {
+  decodeJsonParams,
+  encodeJsonParams,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {MediaLibraryIdsContext} from 'sanity/_singletons'
-import {decodeJsonParams, encodeJsonParams} from 'sanity/router'
 import {describe, expect, test, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'

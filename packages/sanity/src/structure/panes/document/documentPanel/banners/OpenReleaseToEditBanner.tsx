@@ -2,19 +2,21 @@ import {Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
-  getReleaseTone,
   getVersionFromId,
-  isCardinalityOneRelease,
   isVersionId,
-  ReleaseTitle,
   Translate,
-  useActiveReleases,
   useDocumentVersions,
   useOnlyHasVersions,
-  useSetPerspective,
   useTranslation,
-  VersionInlineBadge,
 } from 'sanity'
+import {
+  getReleaseTone,
+  isCardinalityOneRelease,
+  ReleaseTitle,
+  useActiveReleases,
+  useSetPerspective,
+  VersionInlineBadge,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'

@@ -3,8 +3,14 @@ import {useEffect, useMemo, useRef, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   getVersionFromId,
-  isCardinalityOneRelease,
   isDraftId,
+  type ReleaseDocument,
+  usePerspective,
+  useWorkspace,
+  VirtualizerScrollInstanceProvider,
+} from 'sanity'
+import {
+  isCardinalityOneRelease,
   isGoingToUnpublish,
   isNewDocument,
   isPausedCardinalityOneRelease,
@@ -13,15 +19,11 @@ import {
   isReleaseScheduledOrScheduling,
   isSystemBundle,
   LegacyLayerProvider,
-  type ReleaseDocument,
   ScrollContainer,
   useArchivedReleases,
   useFilteredReleases,
   usePausedScheduledDraft,
-  usePerspective,
-  useWorkspace,
-  VirtualizerScrollInstanceProvider,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {css, styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 

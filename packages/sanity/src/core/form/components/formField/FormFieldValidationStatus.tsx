@@ -38,7 +38,9 @@ const StyledStack = styled(Stack)`
   max-width: 200px;
 `
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export function FormFieldValidationStatus(props: FormFieldValidationStatusProps) {
   const {validation = EMPTY_ARRAY, __unstable_showSummary: showSummary, fontSize, placement} = props
 

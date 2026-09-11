@@ -1,6 +1,10 @@
 import {Box, Button, Card, Container, Flex, Heading, Stack, Text, TextArea} from '@sanity/ui'
 import {type SyntheticEvent, useCallback, useId, useRef, useState} from 'react'
-import {DiagnosticsReport, parseStudioDiagnostics, type StudioDiagnostics} from 'sanity'
+import {
+  DiagnosticsReport,
+  parseStudioDiagnostics,
+  type StudioDiagnostics,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 /**
  * The in-studio twin of dev/studio-diagnostics-viewer: paste the JSON copied

@@ -3,16 +3,18 @@ import {Code} from '@sanity/ui/code'
 import {dequal as isEqual} from 'dequal/lite'
 import {memo, useCallback, useMemo, useState} from 'react'
 import {
-  EMPTY_ARRAY,
   type GeneralDocumentListLayoutKey,
   type ObjectSchemaType,
-  SourceProvider,
-  useI18nText,
   useSchema,
-  useShallowUnique,
-  useSource,
   useTranslation,
 } from 'sanity'
+import {
+  EMPTY_ARRAY,
+  SourceProvider,
+  useI18nText,
+  useShallowUnique,
+  useSource,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {Pane} from '../../components/pane/Pane'
 import {_DEBUG} from '../../constants'

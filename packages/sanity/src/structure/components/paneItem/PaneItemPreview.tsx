@@ -7,11 +7,8 @@ import {
 import {type ComponentType, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
-  type DocumentPresence,
   DocumentPreviewPresence,
   type DocumentPreviewStore,
-  DocumentVersionsStatus,
-  DocumentVersionsStatusIndicator,
   type GeneralPreviewLayoutKey,
   getPreviewStateObservable,
   getPreviewValueWithFallback,
@@ -20,6 +17,11 @@ import {
   useDocumentVersions,
   usePerspective,
 } from 'sanity'
+import {
+  type DocumentPresence,
+  DocumentVersionsStatus,
+  DocumentVersionsStatusIndicator,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex} from 'ui5'
 
 import {TooltipDelayGroupProvider} from '../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'

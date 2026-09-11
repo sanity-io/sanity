@@ -2,20 +2,16 @@ import {type Path} from '@sanity/types'
 import {Stack, Text} from '@sanity/ui'
 import {fromString as pathFromString} from '@sanity/util/paths'
 import {memo, useMemo} from 'react'
+import {CopyPasteProvider, getPublishedId, Translate, usePerspective, useTranslation} from 'sanity'
 import {
-  CopyPasteProvider,
   getCreatableVariantTarget,
-  getPublishedId,
   ReferenceInputOptionsProvider,
   SourceProvider,
-  Translate,
   useDocumentType,
-  usePerspective,
   useSource,
   useTargetDocumentState,
   useTemplatePermissions,
-  useTranslation,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {DiffViewDocumentLayout} from '../../diffView/plugin/DiffViewDocumentLayout'

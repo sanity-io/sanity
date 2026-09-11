@@ -11,13 +11,12 @@ import {
 } from '@sanity/types'
 import {Card, type CardTone, Stack, Text} from '@sanity/ui'
 import {type ErrorInfo, Fragment, type MouseEvent, useCallback, useMemo, useState} from 'react'
+import {type DocumentInspectorProps, useTranslation} from 'sanity'
 import {
-  type DocumentInspectorProps,
   isGoingToUnpublish,
   mergeParseErrors,
   useParseErrors,
-  useTranslation,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex, Box} from 'ui5'
 
 import {ErrorBoundary} from '../../../../../ui-components/errorBoundary/ErrorBoundary'

@@ -3,15 +3,13 @@ import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronUpIcon} from '@sanity/icons/ChevronUp'
 import {Container, useClickOutsideEvent} from '@sanity/ui'
 import {useMemo, useRef, useState} from 'react'
+import {getPublishedId, getVersionFromId, useTranslation} from 'sanity'
 import {
   type VersionInfoDocumentStub,
   Chip,
-  getPublishedId,
-  getVersionFromId,
   type AgentVersionDisplay,
-  useTranslation,
   VersionChip,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex} from 'ui5'
 
 import {Popover} from '../../../../../ui-components/popover/Popover'

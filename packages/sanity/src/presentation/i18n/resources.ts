@@ -1,4 +1,4 @@
-import {defineLocalesResources} from 'sanity'
+import {defineLocalesResources} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export default defineLocalesResources('presentation', {

@@ -3,12 +3,12 @@ import {Card, Label, Stack} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {type ErrorInfo, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {type Path, useTranslation} from 'sanity'
-import {decodeJsonParams} from 'sanity/router'
 import {
+  decodeJsonParams,
   DocumentPane as StructureDocumentPane,
   type DocumentPaneNode,
-  PaneLayout,
-} from 'sanity/structure'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {PaneLayout} from 'sanity/structure'
 import {styled} from 'styled-components'
 
 import {ErrorBoundary} from '../../ui-components/errorBoundary/ErrorBoundary'

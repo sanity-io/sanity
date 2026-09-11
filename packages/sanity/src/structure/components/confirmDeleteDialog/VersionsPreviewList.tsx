@@ -7,17 +7,19 @@ import {
   getPreviewValueWithFallback,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
-  getReleaseTone,
   getVersionFromId,
   ReleaseAvatarIcon,
-  ReleaseTitle,
   SanityDefaultPreview,
   type SchemaType,
-  useActiveReleases,
   useDocumentPreviewStore,
   useSchema,
   useTranslation,
 } from 'sanity'
+import {
+  getReleaseTone,
+  ReleaseTitle,
+  useActiveReleases,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 

@@ -1,13 +1,11 @@
 import {LockIcon} from '@sanity/icons/Lock'
 import {Text} from '@sanity/ui'
+import {type ReleaseDocument, Translate, useTranslation} from 'sanity'
 import {
   getReleaseTone,
   LATEST,
-  type ReleaseDocument,
-  Translate,
   useFormatRelativeLocalePublishDate,
-  useTranslation,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {Banner} from './Banner'
 

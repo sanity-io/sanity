@@ -1,7 +1,8 @@
 import {rem} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ReactNode, useContext} from 'react'
-import {FormRow, type ObjectSchemaType, type PublishedId} from 'sanity'
+import {type ObjectSchemaType, type PublishedId} from 'sanity'
+import {FormRow} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {PresentationDocumentContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
 

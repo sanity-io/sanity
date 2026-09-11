@@ -71,12 +71,15 @@ vi.mock('../../documentInspector/DocumentInspectorPanel', () => ({
   DocumentInspectorPanel: () => <aside data-ui="DocumentInspectorPanel">Inspector</aside>,
 }))
 
-vi.mock('sanity', async (importOriginal) => ({
-  ...(await importOriginal()),
-  useArchivedReleases: vi.fn(() => ({data: []})),
-  useFilteredReleases: vi.fn(() => ({currentReleases: [], notCurrentReleases: []})),
-  usePausedScheduledDraft: vi.fn(() => ({isPaused: false})),
-}))
+vi.mock(
+  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    useArchivedReleases: vi.fn(() => ({data: []})),
+    useFilteredReleases: vi.fn(() => ({currentReleases: [], notCurrentReleases: []})),
+    usePausedScheduledDraft: vi.fn(() => ({isPaused: false})),
+  }),
+)
 
 const mockUseDocumentPane = vi.mocked(useDocumentPane)
 const mockUseStructureTool = vi.mocked(useStructureTool)

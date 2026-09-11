@@ -2,18 +2,15 @@
 import {type ObjectDiff} from '@sanity/diff'
 import {BoundaryElementProvider, Card, Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
+import {ChangeList, type ObjectSchemaType, usePerspective, useTranslation} from 'sanity'
 import {
   ChangeFieldWrapper,
-  ChangeList,
   type DocumentChangeContextInstance,
   LoadingBlock,
   NoChanges,
-  type ObjectSchemaType,
   ScrollContainer,
-  usePerspective,
   useTimelineSelector,
-  useTranslation,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {DocumentChangeContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 import {Flex, Box, Grid} from 'ui5'

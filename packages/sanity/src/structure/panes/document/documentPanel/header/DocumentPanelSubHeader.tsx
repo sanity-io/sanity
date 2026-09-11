@@ -1,6 +1,7 @@
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {memo, useMemo} from 'react'
-import {CapabilityGate, useActiveWorkspace, useTranslation} from 'sanity'
+import {useActiveWorkspace, useTranslation} from 'sanity'
+import {CapabilityGate} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {PaneHeader} from '../../../../components/pane/PaneHeader'

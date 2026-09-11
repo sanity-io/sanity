@@ -1,5 +1,5 @@
 import {Flex} from '@sanity/ui'
-import {type DocumentLayoutProps} from 'sanity'
+import {type DocumentLayoutProps} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 export function DocumentLayout(props: DocumentLayoutProps & {testId: string}) {
   const {testId} = props

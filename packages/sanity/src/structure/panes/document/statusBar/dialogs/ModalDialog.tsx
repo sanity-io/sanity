@@ -2,7 +2,8 @@ import {
   Dialog, // oxlint-disable-line no-restricted-imports
 } from '@sanity/ui'
 import {useId} from 'react'
-import {type DocumentActionModalDialogProps, LegacyLayerProvider} from 'sanity'
+import {type DocumentActionModalDialogProps} from 'sanity'
+import {LegacyLayerProvider} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Box} from 'ui5'
 
 import {DIALOG_WIDTH_TO_UI_WIDTH} from './constants'

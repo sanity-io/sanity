@@ -1,5 +1,5 @@
 import {Suspense, useCallback} from 'react'
-import {Resizable} from 'sanity'
+import {Resizable} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Box} from 'ui5'
 
 import {usePane} from '../../../components/pane/usePane'

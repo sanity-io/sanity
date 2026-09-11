@@ -1,5 +1,6 @@
 import {render} from '@testing-library/react'
-import {getTargetScopeId, usePerspective, useWorkspace} from 'sanity'
+import {usePerspective, useWorkspace} from 'sanity'
+import {getTargetScopeId} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {type Mock, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
@@ -20,7 +21,6 @@ vi.mock('sanity', async () => {
   } = await import('@sanity/client/csm')
 
   return {
-    COMMENTS_INSPECTOR_NAME: 'sanity/comments',
     CommentsEnabledProvider: ({children}: {children: React.ReactNode}) => <>{children}</>,
     CommentsEnabledProviderV2: ({children}: {children: React.ReactNode}) => <>{children}</>,
     CommentsProvider: (props: Record<string, unknown>) => {
@@ -34,7 +34,6 @@ vi.mock('sanity', async () => {
     getDraftId: draftId,
     getPublishedId: publishedId,
     getVersionId: versionId,
-    getTargetScopeId: vi.fn(() => undefined),
     useCommentsEnabled: vi.fn(() => ({enabled: true})),
     useCommentsEnabledV2: vi.fn(() => ({enabled: true})),
     usePerspective: vi.fn(() => ({
@@ -50,6 +49,14 @@ vi.mock('sanity', async () => {
     })),
   }
 })
+vi.mock(
+  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    COMMENTS_INSPECTOR_NAME: 'sanity/comments',
+    getTargetScopeId: vi.fn(() => undefined),
+  }),
+)
 
 vi.mock('sanity/router', () => ({
   useRouter: vi.fn(() => ({

@@ -3,6 +3,7 @@ import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type ObjectSchemaType} from '@sanity/types'
 import {Text} from '@sanity/ui'
 import {type ComponentType, type ReactNode, useCallback} from 'react'
+import {type TargetPerspective, Translate, useTranslation, useWorkspace} from 'sanity'
 import {
   getReleaseTone,
   isPerspectiveWriteable,
@@ -11,12 +12,8 @@ import {
   ReleasesNav,
   type ReleasesNavMenuItemPropsGetter,
   ReleaseTitle,
-  type TargetPerspective,
-  Translate,
-  useTranslation,
-  useWorkspace,
   VersionInlineBadge,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'

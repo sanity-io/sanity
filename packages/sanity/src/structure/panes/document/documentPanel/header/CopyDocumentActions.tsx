@@ -5,14 +5,12 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {Menu} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo} from 'react'
+import {getDraftId, usePerspective, useTranslation} from 'sanity'
 import {
-  getDraftId,
   getTargetSiblings,
-  usePerspective,
   useStudioUrl,
   useTargetDocumentState,
-  useTranslation,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useRouter} from 'sanity/router'
 
 import {Button} from '../../../../../ui-components/button/Button'

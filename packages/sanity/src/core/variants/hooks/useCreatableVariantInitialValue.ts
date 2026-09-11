@@ -58,7 +58,6 @@ export function buildCreatableVariantInitialValue(options: {
  * again.
  *
  * @internal
- * @beta
  */
 export function useCreatableVariantInitialValue(
   targetDocumentState: TargetDocumentState,

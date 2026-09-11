@@ -1,5 +1,5 @@
 import {type ComponentType, useContext, useMemo, useState} from 'react'
-import {type DocumentLayoutProps} from 'sanity'
+import {type DocumentLayoutProps} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {ReferenceInputOptionsContext} from 'sanity/_singletons'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'

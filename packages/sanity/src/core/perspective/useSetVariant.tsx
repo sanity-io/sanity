@@ -29,7 +29,6 @@ export type SetVariant = (
  * are updated atomically (a single history entry, no intermediate render).
  * Do not use in production, this can change in any release.
  * @internal
- * @beta
  */
 export function useSetVariant(): SetVariant {
   const router = useRouter()

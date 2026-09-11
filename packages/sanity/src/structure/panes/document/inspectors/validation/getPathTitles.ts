@@ -1,5 +1,6 @@
 import {type Path, type SanityDocument, type SchemaType} from '@sanity/types'
-import {isArray, isRecord} from 'sanity'
+import {isRecord} from 'sanity'
+import {isArray} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 export function getPathTitles(options: {
   path: Path

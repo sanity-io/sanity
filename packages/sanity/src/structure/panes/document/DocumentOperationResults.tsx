@@ -1,13 +1,11 @@
 import {useToast} from '@sanity/ui/toast'
 import {memo, useEffect, useMemo, useRef} from 'react'
+import {Translate, usePerspective, useTranslation} from 'sanity'
 import {
   isDocumentLimitError,
-  Translate,
   useDocumentLimitsUpsellContext,
   useDocumentOperationEvent,
-  usePerspective,
-  useTranslation,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../i18n'

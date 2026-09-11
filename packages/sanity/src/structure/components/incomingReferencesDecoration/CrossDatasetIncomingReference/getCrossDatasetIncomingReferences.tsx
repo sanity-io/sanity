@@ -5,12 +5,14 @@ import {mergeMapArray} from 'rxjs-mergemap-array'
 import {
   type DocumentAvailability,
   type DocumentPreviewStore,
-  getPreviewPaths,
   getPublishedId,
-  isNonNullable,
-  prepareForPreview,
   type SanityClient,
 } from 'sanity'
+import {
+  getPreviewPaths,
+  isNonNullable,
+  prepareForPreview,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {fetchCrossDatasetReferences} from '../../confirmDeleteDialog/useReferringDocuments'
 import {type CrossDatasetIncomingReference} from '../types'

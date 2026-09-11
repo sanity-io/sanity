@@ -5,14 +5,16 @@ import {
   type InitialValueTemplateItem,
   type ReleaseId,
   type Template,
-  type TemplatePermissionsResult,
-  useGetI18nText,
   usePerspective,
-  useTemplatePermissions,
   useTemplates,
   useTranslation,
   IntentButton,
 } from 'sanity'
+import {
+  type TemplatePermissionsResult,
+  useGetI18nText,
+  useTemplatePermissions,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {IntentLink, type IntentLinkProps} from 'sanity/router'
 
 import {Button} from '../../../ui-components/button/Button'

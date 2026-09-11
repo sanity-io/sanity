@@ -6,22 +6,24 @@ import {
 } from '@sanity/ui/menu'
 import {useCallback} from 'react'
 import {
-  ContextMenuButton,
-  getReleaseDocumentIdFromReleaseId,
   getReleaseIdFromReleaseDocumentId,
-  getReleaseTone,
   getVersionFromId,
-  isReleaseDocument,
   type PublishDocumentVersionEvent,
-  RELEASES_INTENT,
-  ReleaseTitle,
   Translate,
-  useAllReleases,
-  useSetPerspective,
   useTranslation,
   useWorkspace,
-  VersionInlineBadge,
 } from 'sanity'
+import {
+  ContextMenuButton,
+  getReleaseDocumentIdFromReleaseId,
+  getReleaseTone,
+  isReleaseDocument,
+  RELEASES_INTENT,
+  ReleaseTitle,
+  useAllReleases,
+  useSetPerspective,
+  VersionInlineBadge,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {IntentLink} from 'sanity/router'
 import {Flex} from 'ui5'
 

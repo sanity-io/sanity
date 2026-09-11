@@ -3,23 +3,25 @@ import {type FormEvent, useCallback, useEffect, useMemo, useState, type RefAttri
 import {tap} from 'rxjs/operators'
 import {
   createPatchChannel,
-  Delay,
   type DocumentMutationEvent,
   type DocumentRebaseEvent,
   FormBuilder,
-  FormContainer,
   type FormDocumentValue,
-  FormRow,
   fromMutationPatches,
-  getTargetScopeId,
   type PatchMsg,
   PresenceOverlay,
-  useConditionalToast,
   useDocumentPresence,
   useDocumentStore,
   usePerspective,
   useTranslation,
 } from 'sanity'
+import {
+  Delay,
+  FormContainer,
+  FormRow,
+  getTargetScopeId,
+  useConditionalToast,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex, Box} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 

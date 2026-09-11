@@ -22,13 +22,12 @@ import {
   takeUntil,
   withLatestFrom,
 } from 'rxjs/operators'
+import {useSchema, useWorkspace} from 'sanity'
 import {
   catchWithCount,
   measureFirstMatch,
-  useSchema,
   useSearchMaxFieldDepth,
-  useWorkspace,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {DocumentListLoadTimeMeasured} from './__telemetry__/documentListSearch.telemetry'
 import {DEFAULT_ORDERING, FULL_LIST_LIMIT, PARTIAL_PAGE_LIMIT} from './constants'

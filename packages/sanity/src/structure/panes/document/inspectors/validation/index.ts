@@ -7,13 +7,15 @@ import {
   type DocumentInspectorMenuItem,
   type DocumentInspectorUseMenuItemProps,
   type FormNodeValidation,
-  isGoingToUnpublish,
   isValidationError,
   isValidationWarning,
-  mergeParseErrors,
-  useParseErrors,
   useTranslation,
 } from 'sanity'
+import {
+  isGoingToUnpublish,
+  mergeParseErrors,
+  useParseErrors,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {VALIDATION_INSPECTOR_NAME} from '../../constants'
 import {useDocumentPane} from '../../useDocumentPane'

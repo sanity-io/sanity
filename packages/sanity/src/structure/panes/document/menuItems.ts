@@ -2,12 +2,8 @@ import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {EarthAmericasIcon} from '@sanity/icons/EarthAmericas'
 import {JsonIcon} from '@sanity/icons/Json'
 import {TransferIcon} from '@sanity/icons/Transfer'
-import {
-  type DocumentIdStack,
-  type DocumentInspector,
-  type DocumentInspectorMenuItem,
-  type TFunction,
-} from 'sanity'
+import {type DocumentInspector, type DocumentInspectorMenuItem, type TFunction} from 'sanity'
+import {type DocumentIdStack} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {type PaneMenuItem, type StructureToolFeatures} from '../../types'
 import {HiddenCheckmarkIcon} from './components/HiddenCheckmarkIcon'

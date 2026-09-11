@@ -1,4 +1,7 @@
-import {type TargetDocumentState, type VersionInfoDocumentStub} from 'sanity'
+import {
+  type TargetDocumentState,
+  type VersionInfoDocumentStub,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {expect, it} from 'vitest'
 
 import {type Context, hasObsoleteDraft} from './hasObsoleteDraft'
