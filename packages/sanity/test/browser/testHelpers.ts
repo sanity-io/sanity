@@ -533,17 +533,44 @@ export function testHelpers() {
       // Menus and listboxes (e.g. the comment mentions popover) are positioned
       // by Floating UI after they open.
       const menuSig = boxSig('[role="menu"], [role="listbox"]')
+      // Modal `@sanity/ui` dialog cards (`nested-object-dialog`,
+      // `default-edit-object-dialog`, …). Centered by CSS rather than
+      // Floating UI, but their height follows the lazily rendered form inside,
+      // and tests settle with them open, so they must stay open and stop
+      // resizing before the archive.
+      const dialogSig = boxSig('[data-ui="DialogCard"]')
       // CollapseMenu measures toolbar width asynchronously; button set /
       // x-offsets must stop moving or identical-code captures disagree on
       // overflow "..." vs inline Strong/Italic/etc.
-      const toolbarSig = () =>
-        Array.from(
+      //
+      // CollapseMenu renders its visible row only once every hidden
+      // measurement row has reported an intersection, so a menu whose hidden
+      // rows hold buttons while nothing is visible (and no overflow button has
+      // appeared) is still measuring. Chromatic archived one such empty
+      // toolbar on an identical-code run. `checkVisibility()` without
+      // `visibilityProperty` counts the `visibility: hidden` measurement rows,
+      // so only truly visible buttons go into the signature and a measuring
+      // menu yields a fresh symbol that can never read as stable.
+      const isShown = (el: Element): el is HTMLElement =>
+        el instanceof HTMLElement && el.checkVisibility({visibilityProperty: true})
+      const toolbarSig = (): string | symbol => {
+        const toolbars = Array.from(
           window.document.querySelectorAll<HTMLElement>('[data-testid="pt-editor__toolbar-card"]'),
+        ).filter(isShown)
+        const measuring = toolbars.some((toolbar) =>
+          Array.from(toolbar.querySelectorAll<HTMLElement>('[data-ui="CollapseMenu"]'))
+            .filter(isShown)
+            .some(
+              (menu) =>
+                menu.querySelectorAll('[data-hidden] button').length > 0 &&
+                !Array.from(menu.querySelectorAll('button')).some(isShown),
+            ),
         )
-          .filter((el) => el.checkVisibility())
+        if (measuring) return Symbol('collapse menu measuring')
+        return toolbars
           .map((toolbar) =>
             Array.from(toolbar.querySelectorAll('button'))
-              .filter((btn) => btn instanceof HTMLElement && btn.checkVisibility())
+              .filter(isShown)
               .map((btn) => {
                 const label =
                   btn.getAttribute('aria-label')?.trim() || btn.textContent?.trim() || ''
@@ -552,6 +579,7 @@ export function testHelpers() {
               .join(','),
           )
           .join('||')
+      }
 
       // Overlays that are open when settling starts must still be open after
       // the pointer has moved: record them before parking so a popover that
@@ -559,6 +587,7 @@ export function testHelpers() {
       // closed state.
       const hadFloating = Boolean(floatingSig())
       const hadMenu = Boolean(menuSig())
+      const hadDialog = Boolean(dialogSig())
       const hadToolbar = Boolean(toolbarSig())
 
       // After `userEvent.click` the real pointer still sits on the clicked
@@ -584,14 +613,16 @@ export function testHelpers() {
           .join(',')
       await expectStable(fieldActionsSig, 2)
 
-      await expect
-        .poll(
-          () =>
-            Array.from(window.document.querySelectorAll('[data-ui="Tooltip"]')).filter(
-              (el) => el instanceof HTMLElement && el.checkVisibility(),
-            ).length,
-        )
-        .toBe(0)
+      // A tooltip opens on a timer, so one zero reading is not proof that none
+      // is about to appear: the visible count must stay at zero for consecutive
+      // samples. A visible tooltip yields a fresh symbol that never reads stable.
+      const visibleTooltipCount = () =>
+        Array.from(window.document.querySelectorAll('[data-ui="Tooltip"]')).filter(
+          (el) => el instanceof HTMLElement && el.checkVisibility(),
+        ).length
+      await expectStable(() =>
+        visibleTooltipCount() === 0 ? 'no tooltip' : Symbol('tooltip visible'),
+      )
 
       // Style-select label (Normal ↔ No style) must stay on the expected text
       // for the whole stability window — matching once then stabilizing on a
@@ -637,11 +668,13 @@ export function testHelpers() {
       // (hidden or unmounted) never counts as stable, so a popover that closes
       // under the parked pointer times out here instead of being archived
       // silently.
-      const present = (sig: () => string) => () => sig() || Symbol('absent')
+      const present = (sig: () => string | symbol) => () => sig() || Symbol('absent')
       const settleFloating = hadFloating || Boolean(floatingSig())
       const settleMenu = hadMenu || Boolean(menuSig())
+      const settleDialog = hadDialog || Boolean(dialogSig())
       if (settleFloating) await expectStable(present(floatingSig), 2)
       if (settleMenu) await expectStable(present(menuSig))
+      if (settleDialog) await expectStable(present(dialogSig), 2)
       if (hadToolbar || toolbarSig()) await expectStable(present(toolbarSig))
 
       // Snap after geometry has settled so the archive cannot land on a

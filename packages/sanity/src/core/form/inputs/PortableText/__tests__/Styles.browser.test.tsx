@@ -80,13 +80,22 @@ describe('Portable Text Input', () => {
       })
 
       it('Should not display block style button when no block styles are present', async () => {
-        const {getFocusedPortableTextInput} = testHelpers()
+        const {getFocusedPortableTextInput, settleChromaticEndState} = testHelpers()
         void render(<StylesHarness />)
         const $portableTextInput = await getFocusedPortableTextInput('field-oneStyle')
         const styleSelectButton = $portableTextInput
           .element()
           .querySelector('button#block-style-select')
         expect(styleSelectButton).toBeNull()
+        // The toolbar's action buttons render only once the editor selection
+        // has landed (asynchronously after focus) and CollapseMenu has
+        // measured them; an identical-code Chromatic pair archived this toolbar
+        // once with and once without its buttons. Assert the archived state
+        // (by role: CollapseMenu's aria-hidden measurement rows repeat the
+        // button, so a test-id query is ambiguous).
+        await expect.element($portableTextInput.getByRole('button', {name: 'Strong'})).toBeVisible()
+        await settleChromaticEndState()
+        expect($portableTextInput.element().querySelector('button#block-style-select')).toBeNull()
       })
 
       it('Applies the chosen style to every block in the selection, not just the focus block', async () => {
