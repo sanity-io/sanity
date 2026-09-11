@@ -2,7 +2,6 @@ import {Text, TextInput} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useMemo, useState, type JSX} from 'react'
 import {useRouter} from 'sanity/router'
-import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
@@ -20,21 +19,8 @@ import {
   getVariantTitle,
 } from '../../tool/util'
 import {type SystemVariant} from '../../types'
+import {menu, sectionHeader} from './VariantsMenu.css'
 import {menuIconSpacer, suggestIconColor} from './VariantsNav.css'
-
-const StyledMenu = styled(Menu)`
-  min-width: 240px;
-  max-width: 320px;
-
-  > [data-ui='Stack'] {
-    gap: 0;
-  }
-`
-
-const SectionHeader = styled(Text)`
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-`
 
 /**
  * @internal
@@ -91,7 +77,7 @@ export function VariantsMenu({trigger}: {trigger: JSX.Element}): React.JSX.Eleme
       id="variants-nav-menu"
       onClose={handleMenuClose}
       menu={
-        <StyledMenu data-testid="variants-nav-menu" padding={0}>
+        <Menu className={menu} data-testid="variants-nav-menu" padding={0}>
           <Box padding={2}>
             <TextInput
               fontSize={1}
@@ -125,9 +111,9 @@ export function VariantsMenu({trigger}: {trigger: JSX.Element}): React.JSX.Eleme
                   {/* Spacer for icon alignment */}
                   <Box className={menuIconSpacer} />
                   <Box>
-                    <SectionHeader muted size={0} weight="medium">
+                    <Text className={sectionHeader} muted size={0} weight="medium">
                       {t('navbar.variant.other')}
-                    </SectionHeader>
+                    </Text>
                   </Box>
                 </Flex>
               </Box>
@@ -154,7 +140,7 @@ export function VariantsMenu({trigger}: {trigger: JSX.Element}): React.JSX.Eleme
               </Box>
             </>
           )}
-        </StyledMenu>
+        </Menu>
       }
       popover={{
         __unstable_margins: [0, 0, 32, 0],

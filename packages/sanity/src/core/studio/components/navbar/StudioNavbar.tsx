@@ -10,7 +10,6 @@ import {
 import {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
 import {NavbarContext} from 'sanity/_singletons'
 import {type RouterState, useRouterState} from 'sanity/router'
-import {styled} from 'styled-components'
 import {Grid, Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
@@ -37,34 +36,13 @@ import {SearchPopover} from './search/components/SearchPopover'
 import {SearchProvider} from './search/contexts/search/SearchProvider'
 import {SearchButton} from './search/SearchButton'
 import {SearchDialog} from './search/SearchDialog'
+import {navGrid, rootCard, rootLayer} from './StudioNavbar.css'
 import {UserMenu} from './userMenu/UserMenu'
 import {WorkspaceMenuButton} from './workspace/WorkspaceMenuButton'
 
 const EMPTY_ARRAY: [] = []
 
 const CENTER_TOOLS_STYLE = {minWidth: 0, overflow: 'hidden'} as const
-
-const RootLayer = styled(Layer)`
-  min-height: auto;
-  position: relative;
-
-  &[data-search-open='true'] {
-    top: 0;
-    position: sticky;
-  }
-`
-
-const RootCard = styled(Card)`
-  line-height: 0;
-`
-
-const NavGrid = styled(Grid)`
-  /* Allow the tools column to shrink below its content so CollapseTabList can collapse into the overflow menu. */
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  @media screen and (min-width: ${({theme}) => `${theme.sanity.media[4] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px`}) {
-    grid-template-columns: 1fr auto 1fr;
-  }
-`
 
 /**
  * @hidden
@@ -190,8 +168,9 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
 
   return (
     <FreeTrialProvider>
-      <RootLayer zOffset={100} data-search-open={searchFullscreenOpen}>
-        <RootCard
+      <Layer className={rootLayer} zOffset={100} data-search-open={searchFullscreenOpen}>
+        <Card
+          className={rootCard}
           tone={getReleaseTone(selectedPerspective)}
           borderBottom
           data-testid="studio-navbar"
@@ -199,7 +178,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
           padding={3}
           sizing="border"
         >
-          <NavGrid gap={1}>
+          <Grid className={navGrid} gap={1}>
             {/** Left flex */}
             <TooltipDelayGroupProvider>
               <Flex alignItems="center" gap={2} justifyContent="flex-start">
@@ -298,8 +277,8 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                 )}
               </Flex>
             </TooltipDelayGroupProvider>
-          </NavGrid>
-        </RootCard>
+          </Grid>
+        </Card>
 
         {!shouldRender.tools && (
           <NavDrawer
@@ -310,7 +289,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
             tools={tools}
           />
         )}
-      </RootLayer>
+      </Layer>
     </FreeTrialProvider>
   )
 }

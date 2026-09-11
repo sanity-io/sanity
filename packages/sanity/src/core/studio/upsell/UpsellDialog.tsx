@@ -1,9 +1,7 @@
-import {white} from '@sanity/color'
 import {CloseIcon} from '@sanity/icons/Close'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Stack} from '@sanity/ui'
-import {getTheme_v2} from '@sanity/ui/theme'
-import {styled} from 'styled-components'
+import {Stack, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -13,34 +11,7 @@ import {
   type InterpolationProp,
   UpsellDescriptionSerializer,
 } from './upsellDescriptionSerializer/UpsellDescriptionSerializer'
-
-/**
- * Absolute positioned button to close the dialog.
- */
-const StyledButton = styled(Button)(({theme}) => {
-  const {space} = getTheme_v2(theme)
-  return `
-      position: absolute;
-      top: ${space[3]}px;
-      right: ${space[3]}px;
-      z-index: 20;
-      background: transparent;
-      border-radius: 9999px;
-      box-shadow: none;
-      color: ${white.hex};
-      --card-fg-color: ${white.hex};
-      :hover {
-        --card-fg-color: ${white.hex};
-      }
-    `
-})
-
-const Image = styled.img`
-  object-fit: cover;
-  width: 100%;
-  height: 100%;
-  height: 200px;
-`
+import {closeButton, image, space3Var} from './UpsellDialog.css'
 
 interface UpsellDialogProps {
   data?: UpsellData | null
@@ -53,6 +24,7 @@ interface UpsellDialogProps {
 
 export function UpsellDialog(props: UpsellDialogProps) {
   const {data, open = true, onClose, onPrimaryClick, onSecondaryClick, interpolation} = props
+  const {space} = useThemeV2()
 
   if (!data || !open) {
     return null
@@ -97,7 +69,9 @@ export function UpsellDialog(props: UpsellDialogProps) {
         },
       }}
     >
-      <StyledButton
+      <Button
+        className={closeButton}
+        style={assignInlineVars({[space3Var]: `${space[3]}px`})}
         icon={CloseIcon}
         mode="bleed"
         tone="default"
@@ -105,7 +79,9 @@ export function UpsellDialog(props: UpsellDialogProps) {
         tabIndex={-1}
         tooltipProps={null}
       />
-      {data.image && <Image src={data.image.asset.url} alt={data.image.asset.altText ?? ''} />}
+      {data.image && (
+        <img className={image} src={data.image.asset.url} alt={data.image.asset.altText ?? ''} />
+      )}
       <Box padding={3} marginTop={2}>
         <Stack gap={4} paddingBottom={2}>
           <UpsellDescriptionSerializer
