@@ -148,6 +148,48 @@ describe('useValuePreview', () => {
     expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'two'})
   })
 
+  it('keeps the preview when a draft or version of the same document is materialized', () => {
+    const frames: Frame[] = []
+    const {rerender} = render(<Harness value={{_id: 'a', title: 'one'}} frames={frames} />)
+    const settled = frames.length
+
+    rerender(<Harness value={{_id: 'drafts.a', title: 'one edited'}} frames={frames} />)
+    rerender(<Harness value={{_id: 'versions.r1.a', title: 'one in release'}} frames={frames} />)
+
+    expect(frames.slice(settled).some((frame) => frame.isLoading)).toBe(false)
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one in release'})
+  })
+
+  it('resets to loading when a version slated for unpublishing switches to the published preview', () => {
+    const published = new Subject<{snapshot: {title: string}}>()
+    observeForPreview.mockImplementation(
+      (value: {_id: string; title?: string}, _type: unknown, options: {perspective: unknown[]}) =>
+        value._id === 'a' && options.perspective.length === 0
+          ? published
+          : new Observable((subscriber) => {
+              subscriber.next({snapshot: {title: value.title}})
+            }),
+    )
+    const frames: Frame[] = []
+    const version = {_id: 'versions.r1.a', title: 'in release'}
+    const {rerender} = render(<Harness value={version} frames={frames} />)
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'in release'})
+
+    // the same version, now marked for unpublishing: it previews the published document instead
+    rerender(<Harness value={{...version, _system: {delete: true}}} frames={frames} />)
+    expect(frames.at(-1)).toEqual({isLoading: true, title: undefined, error: undefined})
+    expect(observeForPreview).toHaveBeenLastCalledWith(
+      {_id: 'a'},
+      schemaType,
+      expect.objectContaining({perspective: [], variant: undefined}),
+    )
+
+    act(() => {
+      published.next({snapshot: {title: 'published'}})
+    })
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'published'})
+  })
+
   it('keeps one observable when the perspective stack is rebuilt every render', () => {
     const frames: Frame[] = []
     const value = {_id: 'a', title: 'one'}
@@ -171,6 +213,61 @@ describe('useValuePreview', () => {
     render(<InlineValue />)
 
     expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
+  })
+
+  it('converges when the value is rebuilt on every render and prepare() returns fresh media', () => {
+    observeForPreview.mockImplementation(
+      (value: {title: string}) =>
+        new Observable((subscriber) => {
+          subscriber.next({
+            // a new component and a new element on every emission, like `media: () => ...` does
+            snapshot: {
+              title: value.title,
+              media: () => <span />,
+              icon: <i />,
+            },
+          })
+        }),
+    )
+    const frames: Frame[] = []
+    function InlineValue() {
+      if (frames.length > 10) throw new Error(`render loop after ${frames.length} renders`)
+      const state = useValuePreview({schemaType, value: {_id: 'a', title: 'one'}})
+      frames.push({isLoading: state.isLoading, title: state.value?.title})
+      return null
+    }
+    render(<InlineValue />)
+
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
+    expect(observeForPreview).toHaveBeenCalledTimes(1)
+  })
+
+  it('re-renders when media changes but not when only its identity does', () => {
+    const asset = {_type: 'image', asset: {_ref: 'image-1'}}
+    observeForPreview.mockImplementation(
+      (value: {title: string; media: unknown}) =>
+        new Observable((subscriber) => {
+          subscriber.next({snapshot: {title: value.title, media: value.media}})
+        }),
+    )
+    const frames: Frame[] = []
+    const {rerender} = render(
+      <Harness value={{_id: 'a', title: 'one', media: {...asset}}} frames={frames} />,
+    )
+    const before = frames.length
+
+    // an equal asset object is the same media
+    rerender(<Harness value={{_id: 'a', title: 'one', media: {...asset}}} frames={frames} />)
+    expect(frames.length).toBe(before + 1)
+
+    // a different asset is not
+    rerender(
+      <Harness
+        value={{_id: 'a', title: 'one', media: {_type: 'image', asset: {_ref: 'image-2'}}}}
+        frames={frames}
+      />,
+    )
+    expect(frames.length).toBe(before + 3)
   })
 
   it('surfaces a preview error once, even when the value is rebuilt on every render', () => {
