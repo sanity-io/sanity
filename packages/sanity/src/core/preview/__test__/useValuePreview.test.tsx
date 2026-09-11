@@ -209,6 +209,16 @@ describe('useValuePreview', () => {
     expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one · 2026'})
   })
 
+  it('previews an array item as it is, without synthesizing a document id', () => {
+    const item = {_key: 'item-1', _type: 'item', title: 'In place'}
+    const frames: Frame[] = []
+    render(<Harness value={item} frames={frames} />)
+
+    // the very object, so nothing downstream can mistake it for a document
+    expect(observeForPreview.mock.lastCall?.[0]).toBe(item)
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'In place'})
+  })
+
   it('keeps the preview when a draft or version of the same document is materialized', () => {
     const frames: Frame[] = []
     const {rerender} = render(<Harness value={{_id: 'a', title: 'one'}} frames={frames} />)

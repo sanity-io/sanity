@@ -190,20 +190,14 @@ export function useValuePreview(props: {
 
       const goingToUnpublish = isGoingToUnpublish(value as SanityDocument)
 
-      // A document slated for unpublishing is previewed as its published version, which is
-      // outside of any perspective or variant.
+      // A document slated for unpublishing is previewed as its published version — outside of any
+      // perspective or variant — and none of its own content. Anything else is previewed as it is:
+      // a document or reference by its id, an array item (`_key` only) or a plain object in place.
+      const previewable: Previewable = goingToUnpublish
+        ? {_id: getPublishedId((value as SanityDocument)._id)}
+        : (value as Previewable)
       const targetPerspective = goingToUnpublish ? [] : perspective
       const targetVariant = goingToUnpublish ? undefined : variant
-      const id = goingToUnpublish
-        ? getPublishedId((value as SanityDocument)._id)
-        : (value as SanityDocument)._id
-
-      // allow for previewing the published document when a version is slated for unpublishing
-      // but if it's not for unpublishing, then we want to preview the content as was before
-      const previewable: Previewable = {
-        _id: id,
-        ...(goingToUnpublish ? {} : (value as Previewable)),
-      }
 
       return {
         previewable,
