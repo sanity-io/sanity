@@ -23,10 +23,10 @@ const DEFAULT_VIEWPORT = {width: 1280, height: 900}
 // Park the real pointer in the bottom-right corner of the (default) viewport
 // right before each test renders anything. Chromium dispatches `mouseover` to
 // content that appears under a stationary pointer, so a control rendered under
-// it would start out `:hover`ed and could open its tooltip mid-test. That is
-// where the pointer sits in a fresh page (Chromium's default position is the
-// top-left corner, over the harness's first control), after a test that ended
-// on a click, and after one that parked at a reduced viewport (the 350×500
+// it would start out `:hover`ed and could open its tooltip mid-test. Without
+// the park the pointer would sit at Chromium's default top-left position in a
+// fresh page (over the harness's first control), wherever the previous test's
+// last click left it, or at that test's reduced-viewport park (the 350×500
 // toolbar tests) once the viewport is restored. The park element itself is
 // removed again so it is not part of the test's DOM.
 beforeEach(async () => {
@@ -47,6 +47,7 @@ beforeEach(async () => {
 // offsets until the archive is taken, and must not outlive the test.
 afterEach(async () => {
   await cleanup()
+  removePointerPark()
   releaseFloatingUiSnapLock()
   await page.viewport(DEFAULT_VIEWPORT.width, DEFAULT_VIEWPORT.height)
 })
