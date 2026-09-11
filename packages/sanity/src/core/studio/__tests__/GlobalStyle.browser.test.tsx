@@ -2,6 +2,9 @@
 // loads it, so load it here too.
 import 'ui5/styles.css'
 
+import {ThemeProvider} from '@sanity/ui'
+import {buildTheme} from '@sanity/ui/theme'
+import {ColorSchemeValueContext} from 'sanity/_singletons'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 
@@ -38,8 +41,44 @@ function probeColor() {
   return getComputedStyle(document.querySelector('[data-testid="probe"]')!).color
 }
 
+// The `html:root { color-scheme }` rules as injected (styled-components appends text in
+// development and inserts rules through the CSSOM in production, so read both)
+function injectedRootRules() {
+  return Array.from(document.querySelectorAll('style'))
+    .map(
+      (style) =>
+        style.textContent +
+        Array.from(style.sheet?.cssRules ?? [])
+          .map((rule) => rule.cssText)
+          .join(''),
+    )
+    .join('\n')
+    .match(/html:root\s*\{[^}]*\}/g)
+}
+
 describe('GlobalStyle', () => {
   it('starts from the ui5 reset, which lets the OS decide', () => {
+    expect(documentColorScheme()).toBe('light dark')
+  })
+
+  it('leaves both schemes allowed until the persisted scheme is known', async () => {
+    // What `ColorSchemeLocalStorageProvider` hands out in the render before its store has
+    // initialized: nothing, despite the type
+    await render(
+      <WorkspaceProvider workspace={workspace}>
+        <ThemeProvider theme={buildTheme()}>
+          <ColorSchemeValueContext.Provider value={undefined as never}>
+            <GlobalStyle />
+          </ColorSchemeValueContext.Provider>
+        </ThemeProvider>
+      </WorkspaceProvider>,
+    )
+
+    // an explicit rule — an unknown value must not silently drop the declaration or emit an
+    // invalid one
+    await expect
+      .poll(() => injectedRootRules()?.join('\n'))
+      .toMatch(/^html:root\s*\{\s*color-scheme:\s*light dark;?\s*\}$/)
     expect(documentColorScheme()).toBe('light dark')
   })
 

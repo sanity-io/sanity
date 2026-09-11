@@ -24,7 +24,10 @@ export const GlobalStyle: ComponentType = () => {
   return (
     <GlobalStyleSheet
       $documentEditorGutterEnabled={advancedVersionControlEnabled}
-      $colorScheme={scheme === 'system' ? 'light dark' : scheme}
+      // Only a chosen appearance pins the document. `system` leaves both allowed, and so does the
+      // render before the persisted-scheme store has initialized, where the value is not set yet
+      // despite its type: an unknown value must not become an invalid declaration.
+      $colorScheme={scheme === 'light' || scheme === 'dark' ? scheme : 'light dark'}
     />
   )
 }
