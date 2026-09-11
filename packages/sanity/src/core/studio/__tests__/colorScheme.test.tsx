@@ -1,10 +1,11 @@
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {ColorSchemeSetValueContext, ColorSchemeValueContext} from 'sanity/_singletons'
-import {beforeEach, describe, expect, test, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {Button} from '../../../ui-components/button/Button'
 import {ColorSchemeLocalStorageProvider, ColorSchemeProvider} from '../colorScheme'
+import {setSnapshot} from '../colorSchemeStore'
 
 describe('ColorScheme', () => {
   const mockLocalStorage = {
@@ -20,6 +21,12 @@ describe('ColorScheme', () => {
     })
     // Clear all mocks before each test
     vi.clearAllMocks()
+    setSnapshot('system')
+    document.documentElement.style.colorScheme = ''
+  })
+
+  afterEach(() => {
+    document.documentElement.style.colorScheme = ''
   })
 
   describe('ColorSchemeProvider - smoke tests', () => {
@@ -74,6 +81,52 @@ describe('ColorScheme', () => {
       expect(screen.getByTestId('scheme')).toHaveTextContent('dark')
       expect(onSchemeChange).toHaveBeenCalledWith('dark')
       expect(mockLocalStorage.setItem).toHaveBeenCalledWith('sanityStudio:ui:colorScheme', 'dark')
+      expect(document.documentElement.style.colorScheme).toBe('dark')
+    })
+  })
+
+  describe('document color-scheme sync', () => {
+    test('writes the resolved scheme onto documentElement for ui5 light-dark()', () => {
+      render(
+        <ColorSchemeProvider scheme="dark">
+          <div data-testid="child">Test</div>
+        </ColorSchemeProvider>,
+      )
+      expect(document.documentElement.style.colorScheme).toBe('dark')
+    })
+
+    test('updates documentElement when the scheme changes', async () => {
+      render(
+        <ColorSchemeLocalStorageProvider>
+          <ColorSchemeSetValueContext.Consumer>
+            {(setValue) => (
+              <Button
+                data-testid="to-dark"
+                onClick={() => setValue && setValue('dark')}
+                text="Dark"
+              />
+            )}
+          </ColorSchemeSetValueContext.Consumer>
+        </ColorSchemeLocalStorageProvider>,
+      )
+
+      // matchMedia mock reports light (matches: false for prefers-color-scheme: dark)
+      expect(document.documentElement.style.colorScheme).toBe('light')
+
+      await userEvent.click(screen.getByTestId('to-dark'))
+      expect(document.documentElement.style.colorScheme).toBe('dark')
+    })
+
+    test('restores the previous document color-scheme on unmount', () => {
+      document.documentElement.style.colorScheme = 'light'
+      const {unmount} = render(
+        <ColorSchemeProvider scheme="dark">
+          <div>Test</div>
+        </ColorSchemeProvider>,
+      )
+      expect(document.documentElement.style.colorScheme).toBe('dark')
+      unmount()
+      expect(document.documentElement.style.colorScheme).toBe('light')
     })
   })
 })
