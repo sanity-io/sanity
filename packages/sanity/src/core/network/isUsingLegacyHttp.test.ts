@@ -41,10 +41,12 @@ describe('isUsingLegacyHttp', () => {
         responseStart: 0,
         secureConnectionStart: 0,
         serverTiming: [],
-        // Set when the observer fires so startTime is after detectApiNetwork's startedAt.
-        startTime: 0,
         transferSize: 0,
       }
+
+      // oxlint-disable-next-line typescript/no-extraneous-class
+      const FakePerformanceResourceTiming = class FakePerformanceResourceTiming {}
+      vi.stubGlobal('PerformanceResourceTiming', FakePerformanceResourceTiming)
 
       vi.mocked(fetch).mockResolvedValue(new Response('pong'))
       vi.stubGlobal(
@@ -56,8 +58,12 @@ describe('isUsingLegacyHttp', () => {
           }
           observe() {
             setTimeout(() => {
-              mockEntry.startTime = performance.now()
-              this.callback({getEntries: () => [mockEntry]})
+              // A fresh entry per delivery, timed after detectApiNetwork's startedAt.
+              const entry = Object.setPrototypeOf(
+                {...mockEntry, startTime: performance.now()},
+                FakePerformanceResourceTiming.prototype,
+              )
+              this.callback({getEntries: () => [entry]})
             }, 0)
           }
           disconnect() {
@@ -65,10 +71,6 @@ describe('isUsingLegacyHttp', () => {
           }
         },
       )
-      // oxlint-disable-next-line typescript/no-extraneous-class
-      const FakePerformanceResourceTiming = class FakePerformanceResourceTiming {}
-      vi.stubGlobal('PerformanceResourceTiming', FakePerformanceResourceTiming)
-      Object.setPrototypeOf(mockEntry, FakePerformanceResourceTiming.prototype)
 
       const client = {
         getUrl: (path: string) => `https://test.api.sanity.io/v2025-02-19${path}`,
