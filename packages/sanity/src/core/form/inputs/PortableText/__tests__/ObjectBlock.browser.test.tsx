@@ -165,7 +165,7 @@ describe('Portable Text Input', () => {
       // Dialog open/closed races the auto snapshot; capture while the edit
       // dialog is open and the floating inline toolbar is not.
       configure({disableAutoSnapshot: true})
-      const {getFocusedPortableTextEditor} = testHelpers()
+      const {getFocusedPortableTextEditor, settleChromaticEndState} = testHelpers()
       void render(<ObjectBlockHarness />)
       const $pte = await getFocusedPortableTextEditor('field-body')
       await page.getByRole('button', {name: 'Insert Inline Object (inline)'}).first().click()
@@ -187,17 +187,12 @@ describe('Portable Text Input', () => {
           return !toolbar || !(toolbar instanceof HTMLElement) || !toolbar.checkVisibility()
         })
         .toBe(true)
-      await expect
-        .poll(() => {
-          const el = window.document.querySelector('[data-testid="popover-edit-dialog"]')
-          return el instanceof HTMLElement ? el.getBoundingClientRect().height : 0
-        })
-        .toBeGreaterThan(0)
-      const dialogX = () => {
-        const el = window.document.querySelector('[data-testid="popover-edit-dialog"]')
-        return el instanceof HTMLElement ? Math.round(el.getBoundingClientRect().x) : -1
-      }
-      expect(await expectStable(dialogX)).toBeGreaterThanOrEqual(0)
+      // The edit button the pointer was on is gone, so whatever the dialog
+      // renders under that point would be `:hover`ed in the archive. Park the
+      // pointer and let the settle helper wait for the dialog's box (it fails
+      // if the hover onto the park closed the dialog).
+      await settleChromaticEndState()
+      await expect.element($dialog).toBeVisible()
       await takeSnapshot('inline-edit-dialog-open')
     })
 
@@ -227,18 +222,11 @@ describe('Portable Text Input', () => {
         .element(page.getByTestId('inline-object-toolbar-popover'))
         .not.toBeInTheDocument()
       await expect.element($pte).toHaveFocus()
-      // After remove, annotation buttons can still be mid-opacity from the click;
-      // park the pointer and wait for the style select to settle on Normal.
-      await settleChromaticEndState({
-        styleSelectText: /^Normal$/,
-        styleSelectRoot: '[data-testid="field-body"]',
-      })
-      // Park hover can leave :focus-within on the field (blue ring). Blur
-      // everything and wait until the field is neither focus-within nor
-      // flagged focused by the editor's React state (`data-focused` drives
-      // the ring), so identical captures agree on the grey ring. Body only
-      // needs a tabindex while it takes focus; put it back afterwards so the
-      // attribute does not leak into the next test in this file.
+      // Archive the grey (unfocused) ring: blur everything and wait until the
+      // field is neither focus-within nor flagged focused by the editor's
+      // React state (`data-focused` drives the ring), so identical captures
+      // agree. Body only needs a tabindex while it takes focus; put it back
+      // afterwards so the attribute does not leak into the next test.
       const field = window.document.querySelector('[data-testid="field-body"]')
       const body = window.document.body
       const bodyTabIndex = body.getAttribute('tabindex')
@@ -256,10 +244,18 @@ describe('Portable Text Input', () => {
         if (bodyTabIndex === null) body.removeAttribute('tabindex')
         else body.setAttribute('tabindex', bodyTabIndex)
       }
+      // Settle after the focus change so the archived state — pointer parked,
+      // remove-click opacity flushed, toolbar and style select (Normal) still
+      // — is the one that was stabilized.
+      await settleChromaticEndState({
+        styleSelectText: /^Normal$/,
+        styleSelectRoot: '[data-testid="field-body"]',
+      })
+      await expect.poll(() => field?.querySelector('[data-focused]') ?? null).toBeNull()
     })
 
     it('Double-clicking opens a block', async () => {
-      const {getFocusedPortableTextEditor} = testHelpers()
+      const {getFocusedPortableTextEditor, settleChromaticEndState} = testHelpers()
       void render(<ObjectBlockHarness />)
 
       const $pte = await getFocusedPortableTextEditor('field-body')
@@ -284,6 +280,11 @@ describe('Portable Text Input', () => {
       await userEvent.dblClick(page.getByTestId('pte-block-object'))
 
       // Assertion: Object edit dialog should be visible
+      await expect.element(page.getByTestId('nested-object-dialog')).toBeVisible()
+
+      // End state for the archive: the pointer parked (not on the double-clicked
+      // block) and the dialog still open afterwards.
+      await settleChromaticEndState()
       await expect.element(page.getByTestId('nested-object-dialog')).toBeVisible()
     })
 
@@ -345,7 +346,7 @@ describe('Portable Text Input', () => {
     })
 
     it('Handle focus correctly in block edit dialog', async () => {
-      const {getFocusedPortableTextEditor} = testHelpers()
+      const {getFocusedPortableTextEditor, settleChromaticEndState} = testHelpers()
       void render(<ObjectBlockHarness />)
 
       const $pte = await getFocusedPortableTextEditor('field-body')
@@ -372,6 +373,12 @@ describe('Portable Text Input', () => {
       await expect.element(page.getByTestId('nested-object-dialog')).toBeVisible()
 
       // Check that we have focus on the input
+      expect(document.activeElement).toBe($inputEl)
+
+      // End state for the archive: pointer parked (not on the toolbar insert
+      // button), dialog still open and the input still focused.
+      await settleChromaticEndState()
+      await expect.element(page.getByTestId('nested-object-dialog')).toBeVisible()
       expect(document.activeElement).toBe($inputEl)
     })
 

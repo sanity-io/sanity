@@ -141,7 +141,7 @@ const document: SanityDocument = {
 
 describe('Portable Text Input - validation markers at depth', () => {
   it('renders the error marker on failing blocks at root and inside table cells alike', async () => {
-    const {getFocusedPortableTextEditor} = testHelpers()
+    const {getFocusedPortableTextEditor, settleChromaticEndState} = testHelpers()
 
     void render(<TableValidationDepthHarness document={document} />)
 
@@ -159,11 +159,14 @@ describe('Portable Text Input - validation markers at depth', () => {
     })
 
     // Focus can land on the table (column insert chrome / style select flicker).
-    // Click a clean text block so Chromatic always archives the same selection.
+    // Click a clean text block so Chromatic always archives the same selection,
+    // then park the pointer (still over that text) and wait for the toolbar
+    // and style select to hold on Normal.
     await userEvent.click(page.getByText('clean root text', {exact: true}))
-    await expect
-      .poll(() => window.document.querySelector('[data-testid="block-style-select"]')?.textContent)
-      .toMatch(/Normal/)
+    await settleChromaticEndState({
+      styleSelectText: /^Normal$/,
+      styleSelectRoot: '[data-testid="field-body"]',
+    })
   })
 })
 

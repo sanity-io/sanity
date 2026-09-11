@@ -7,11 +7,7 @@ import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
 
 import {TestForm} from '../../../../../../test/browser/TestForm'
-import {
-  expectStable,
-  snapFloatingUiToIntegerPixels,
-  testHelpers,
-} from '../../../../../../test/browser/testHelpers'
+import {expectStable, testHelpers} from '../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 
 interface ToolbarHarnessProps {
@@ -141,7 +137,7 @@ describe('Portable Text Input', () => {
   describe('Toolbar', () => {
     describe('Adaptive size', () => {
       it('Overflow links should appear in the "Add" context menu', async () => {
-        const {getFocusedPortableTextInput} = testHelpers()
+        const {getFocusedPortableTextInput, settleChromaticEndState} = testHelpers()
         void render(<ToolbarHarness />)
         const $portableTextInput = await getFocusedPortableTextInput('field-body')
 
@@ -163,18 +159,21 @@ describe('Portable Text Input', () => {
 
         // Assertion: Overflowing block link should appear in the "Add" menu button.
         // Menus keep their items mounted while closed, so read the one that is open.
-        await expect
-          .poll(() =>
-            Array.from(
-              window.document.querySelectorAll<HTMLElement>(
-                '[data-ui="MenuButton__popover"] [data-ui="Menu"]',
-              ),
-            )
-              .filter((menu) => menu.checkVisibility())
-              .map((menu) => menu.textContent)
-              .join(''),
+        const openMenuText = () =>
+          Array.from(
+            window.document.querySelectorAll<HTMLElement>(
+              '[data-ui="MenuButton__popover"] [data-ui="Menu"]',
+            ),
           )
-          .toContain('Inline Object')
+            .filter((menu) => menu.checkVisibility())
+            .map((menu) => menu.textContent)
+            .join('')
+        await expect.poll(openMenuText).toContain('Inline Object')
+
+        // End state for the archive: pointer parked (not on the "Add" trigger)
+        // and the menu still open with the overflowed item afterwards.
+        await settleChromaticEndState()
+        expect(openMenuText()).toContain('Inline Object')
       })
     })
 
@@ -419,34 +418,23 @@ describe('Portable Text Input', () => {
           )
           .toBe(true)
 
-        // Settle menu geometry, then re-assert visibility right before archive:
-        // without this, identical-code captures raced open vs closed.
+        // Park the pointer, require the open menu to stay open and stop moving,
+        // and snap its Floating UI transform (the helper re-checks stability
+        // after the snap). Without this, identical-code captures raced open vs
+        // closed.
         const {settleChromaticEndState} = testHelpers()
         await settleChromaticEndState()
+        // Item count and the menu rectangle must agree on consecutive reads; a
+        // closed menu is a fresh Symbol each sample so it can never stabilize.
         const menuBox = () => {
           const items = Array.from(
             window.document.querySelectorAll<HTMLElement>('[role="menuitem"]'),
           ).filter((el) => el.checkVisibility())
-          if (!items.length) return ''
-          const r = items[0]!.parentElement?.getBoundingClientRect()
-          if (!r) return ''
+          const r = items[0]?.parentElement?.getBoundingClientRect()
+          if (!r) return Symbol('menu closed')
           return `${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)},${Math.round(r.height)},${items.length}`
         }
-        await expect.poll(menuBox).not.toBe('')
-        let previous = ''
-        let stable = 0
-        await expect
-          .poll(() => {
-            const next = menuBox()
-            if (next && next === previous) stable += 1
-            else {
-              previous = next
-              stable = 0
-            }
-            return stable >= 3
-          })
-          .toBe(true)
-        snapFloatingUiToIntegerPixels()
+        await expectStable(menuBox)
         await expect
           .poll(() =>
             Array.from(window.document.querySelectorAll('[role="menuitem"]')).some(

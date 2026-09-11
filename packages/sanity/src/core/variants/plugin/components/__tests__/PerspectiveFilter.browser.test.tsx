@@ -6,6 +6,7 @@ import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
 
+import {expectStable, testHelpers} from '../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {Button} from '../../../../../ui-components/button/Button'
 import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
@@ -78,14 +79,33 @@ function Fixture({withRemove}: {withRemove?: boolean}) {
   )
 }
 
-const pillMenuRect = () => page.getByTestId('pill-menu-content').element().getBoundingClientRect()
+// One complete rectangle per sample, rounded, so `expectStable` compares the
+// whole menu position at once rather than one edge at a time.
+const pillMenuBox = () => {
+  const el = window.document.querySelector('[data-testid="pill-menu-content"]')
+  if (!(el instanceof HTMLElement) || !el.checkVisibility()) return null
+  const r = el.getBoundingClientRect()
+  return `${Math.round(r.left)},${Math.round(r.top)},${Math.round(r.right)},${Math.round(r.bottom)}`
+}
+
+const parseBox = (box: string) => {
+  const [left, top, right, bottom] = box.split(',').map(Number)
+  return {left, top, right, bottom}
+}
 
 describe('perspective bar filter pill as a menu trigger', () => {
+  const {settleChromaticEndState} = testHelpers()
+
   it('opens the menu from the chevron-only trigger (control)', async () => {
     void render(<Fixture />)
 
     await page.getByTestId('control-trigger').click()
 
+    await expect.element(page.getByTestId('control-menu-content')).toBeVisible()
+
+    // Park the pointer (it is still on the trigger) and require the menu to
+    // stay open and stop moving before the auto snapshot.
+    await settleChromaticEndState()
     await expect.element(page.getByTestId('control-menu-content')).toBeVisible()
   })
 
@@ -98,26 +118,10 @@ describe('perspective bar filter pill as a menu trigger', () => {
     await page.getByTestId('pill-trigger').click()
 
     await expect.element(page.getByTestId('pill-menu-content')).toBeVisible()
-    const menuBox = () => {
-      const el = window.document.querySelector('[data-testid="pill-menu-content"]')
-      if (!(el instanceof HTMLElement) || !el.checkVisibility()) return ''
-      const r = el.getBoundingClientRect()
-      return `${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)},${Math.round(r.height)}`
-    }
-    await expect.poll(menuBox).not.toBe('')
-    let previous = ''
-    let stable = 0
-    await expect
-      .poll(() => {
-        const next = menuBox()
-        if (next && next === previous) stable += 1
-        else {
-          previous = next
-          stable = 0
-        }
-        return stable >= 3
-      })
-      .toBe(true)
+    // Parks the real pointer (so `pill-trigger` is not archived `:hover`ed),
+    // requires the open menu to stay open with a stable rectangle, and snaps
+    // its Floating UI transform to whole pixels.
+    await settleChromaticEndState()
     await expect.element(page.getByTestId('pill-menu-content')).toBeVisible()
     await takeSnapshot('pill-menu-open')
   })
@@ -127,6 +131,8 @@ describe('perspective bar filter pill as a menu trigger', () => {
 
     await page.getByTestId('pill-trigger').click()
 
+    await expect.element(page.getByTestId('pill-menu-content')).toBeVisible()
+    await settleChromaticEndState()
     await expect.element(page.getByTestId('pill-menu-content')).toBeVisible()
   })
 
@@ -139,11 +145,20 @@ describe('perspective bar filter pill as a menu trigger', () => {
 
     const triggerRect = trigger.element().getBoundingClientRect()
 
-    // Below the trigger, and overlapping it horizontally: a menu that has
-    // drifted to the other edge of the viewport is the reported symptom. The
-    // popover is visible before Floating UI has positioned it, so poll.
-    await expect.poll(() => pillMenuRect().top).toBeGreaterThanOrEqual(triggerRect.top)
-    await expect.poll(() => pillMenuRect().right).toBeGreaterThan(triggerRect.left)
-    await expect.poll(() => pillMenuRect().left).toBeLessThan(triggerRect.right + 320)
+    // The popover is visible before Floating UI has positioned it, so wait for
+    // one complete rectangle to hold still, then check the anchoring on that
+    // single sample. Below the trigger, and overlapping it horizontally: a menu
+    // that has drifted to the other edge of the viewport is the reported symptom.
+    // (A fresh Symbol per hidden sample can never match, so a menu that closes
+    // times out here instead of passing on a stale rectangle.)
+    const stableBox = await expectStable(() => pillMenuBox() ?? Symbol('hidden'))
+    if (typeof stableBox !== 'string') throw new Error('pill menu is not visible')
+    const menuRect = parseBox(stableBox)
+    expect(menuRect.top).toBeGreaterThanOrEqual(triggerRect.top)
+    expect(menuRect.right).toBeGreaterThan(triggerRect.left)
+    expect(menuRect.left).toBeLessThan(triggerRect.right + 320)
+
+    await settleChromaticEndState()
+    await expect.element(page.getByTestId('pill-menu-content')).toBeVisible()
   })
 })

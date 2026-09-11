@@ -6,10 +6,7 @@ import {render} from 'vitest-browser-react'
 import {page, server, userEvent} from 'vitest/browser'
 
 import {TestForm} from '../../../../../../test/browser/TestForm'
-import {
-  snapFloatingUiToIntegerPixels,
-  testHelpers,
-} from '../../../../../../test/browser/testHelpers'
+import {testHelpers} from '../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 
 const SCHEMA_TYPES = [
@@ -103,7 +100,8 @@ describe('Portable Text Input', () => {
     // assertions hang. Same class of Firefox PTE keyboard quirk the sibling
     // tests below skip for.
     it.skipIf(server.browser === 'firefox')('Create a new link with keyboard only', async () => {
-      const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
+      const {getFocusedPortableTextEditor, insertPortableText, settleChromaticEndState} =
+        testHelpers()
       void render(<AnnotationsHarness />)
       const $pte = await getFocusedPortableTextEditor('field-body')
 
@@ -174,6 +172,12 @@ describe('Portable Text Input', () => {
       // Assertion: escape closes the toolbar popover. Popovers keep their content mounted while
       // closed, so this asserts on visibility rather than on the element being removed.
       await expect.element($toolbarPopover).not.toBeVisible()
+
+      // End state for the archive: pointer parked (not on the toolbar Link
+      // button clicked earlier), editor still focused, popover still closed.
+      await settleChromaticEndState()
+      await expect.element($pte).toHaveFocus()
+      await expect.element($toolbarPopover).not.toBeVisible()
     })
 
     it(
@@ -183,7 +187,8 @@ describe('Portable Text Input', () => {
         // Auto end-state raced PTE focus-ring on vs off while the edit dialog
         // stayed open; snapshot the focused dialog explicitly.
         configure({disableAutoSnapshot: true})
-        const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
+        const {getFocusedPortableTextEditor, insertPortableText, settleChromaticEndState} =
+          testHelpers()
         void render(<AnnotationsHarness />)
         const $pte = await getFocusedPortableTextEditor('field-body')
 
@@ -229,52 +234,15 @@ describe('Portable Text Input', () => {
         const $linkInput = page.getByTestId('popover-edit-dialog').getByLabelText('Link')
         await $linkInput.element().focus()
         await expect.element($linkInput).toHaveFocus()
-        // Do not park the pointer — body mouseover can dismiss the edit dialog.
+        // Clear the PTE text selection so the annotated span never archives
+        // with a selection highlight, then park the real pointer (it is still
+        // on the Link toolbar button). The dialog only closes on mousedown
+        // outside, so a hover onto the park does not dismiss it — and the
+        // settle helper fails if it did.
         window.getSelection()?.removeAllRanges()
-        await expect
-          .poll(() =>
-            Array.from(window.document.querySelectorAll('[data-ui="Tooltip"]')).every(
-              (el) => !(el instanceof HTMLElement) || !el.checkVisibility(),
-            ),
-          )
-          .toBe(true)
-        const dialogBox = () => {
-          const el = window.document.querySelector('[data-testid="popover-edit-dialog"]')
-          if (!(el instanceof HTMLElement) || !el.checkVisibility()) return ''
-          const r = el.getBoundingClientRect()
-          return `${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)},${Math.round(r.height)}`
-        }
-        await expect.poll(dialogBox).not.toBe('')
-        let previous = ''
-        let stable = 0
-        await expect
-          .poll(() => {
-            const next = dialogBox()
-            if (next && next === previous) stable += 1
-            else {
-              previous = next
-              stable = 0
-            }
-            return stable >= 3
-          })
-          .toBe(true)
+        await settleChromaticEndState()
         await expect.element(page.getByTestId('popover-edit-dialog')).toBeVisible()
         await expect.element($linkInput).toHaveFocus()
-        snapFloatingUiToIntegerPixels()
-        // Re-check after snapping so we do not archive mid-layout from the style write.
-        previous = ''
-        stable = 0
-        await expect
-          .poll(() => {
-            const next = dialogBox()
-            if (next && next === previous) stable += 1
-            else {
-              previous = next
-              stable = 0
-            }
-            return stable >= 2
-          })
-          .toBe(true)
         await takeSnapshot('no-toolbar-flash-edit-dialog-open')
       },
     )
@@ -286,7 +254,8 @@ describe('Portable Text Input', () => {
         // Auto end-state sometimes archives after the edit dialog has already
         // closed; snapshot while it is open and focused instead.
         configure({disableAutoSnapshot: true})
-        const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
+        const {getFocusedPortableTextEditor, insertPortableText, settleChromaticEndState} =
+          testHelpers()
         void render(<AnnotationsHarness />)
         const $pte = await getFocusedPortableTextEditor('field-body')
 
@@ -344,55 +313,14 @@ describe('Portable Text Input', () => {
         // Assertion: The URL input should be focused
         await expect.element($linkInputReopened).toHaveFocus()
         // Clear any leftover PTE text selection so the annotated "link" span
-        // does not archive with a selection highlight on some runs only.
-        // Do NOT mouseover/click document.body here — that can dismiss the
-        // edit dialog (click-outside) and Chromatic then archives the closed
-        // state (seen as open vs closed pairwise flakes).
+        // does not archive with a selection highlight on some runs only, then
+        // park the pointer that is still on the edit-annotation button. The
+        // dialog closes on mousedown outside only; the settle helper fails if
+        // the hover onto the park dismissed it.
         window.getSelection()?.removeAllRanges()
-        await expect
-          .poll(() =>
-            Array.from(window.document.querySelectorAll('[data-ui="Tooltip"]')).every(
-              (el) => !(el instanceof HTMLElement) || !el.checkVisibility(),
-            ),
-          )
-          .toBe(true)
-        const dialogBox = () => {
-          const el = window.document.querySelector('[data-testid="popover-edit-dialog"]')
-          if (!(el instanceof HTMLElement) || !el.checkVisibility()) return ''
-          const r = el.getBoundingClientRect()
-          return `${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)},${Math.round(r.height)}`
-        }
-        await expect.poll(dialogBox).not.toBe('')
-        let previous = ''
-        let stable = 0
-        await expect
-          .poll(() => {
-            const next = dialogBox()
-            if (next && next === previous) stable += 1
-            else {
-              previous = next
-              stable = 0
-            }
-            return stable >= 3
-          })
-          .toBe(true)
+        await settleChromaticEndState()
         await expect.element(page.getByTestId('popover-edit-dialog')).toBeVisible()
         await expect.element($linkInputReopened).toHaveFocus()
-        snapFloatingUiToIntegerPixels()
-        // Re-check after snapping so we do not archive mid-layout from the style write.
-        previous = ''
-        stable = 0
-        await expect
-          .poll(() => {
-            const next = dialogBox()
-            if (next && next === previous) stable += 1
-            else {
-              previous = next
-              stable = 0
-            }
-            return stable >= 2
-          })
-          .toBe(true)
         await takeSnapshot('edit-link-open')
       },
     )
@@ -401,7 +329,8 @@ describe('Portable Text Input', () => {
       // Auto end-state can archive after the edit dialog has already closed
       // (fullscreen + dialog open vs fullscreen alone). Snapshot while open.
       configure({disableAutoSnapshot: true})
-      const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
+      const {getFocusedPortableTextEditor, insertPortableText, settleChromaticEndState} =
+        testHelpers()
       void render(<AnnotationsHarness />)
       const $pte = await getFocusedPortableTextEditor('field-body')
 
@@ -418,52 +347,13 @@ describe('Portable Text Input', () => {
       await expect.element($linkInput).toBeVisible()
       await $linkInput.element().focus()
       await expect.element($linkInput).toHaveFocus()
-      // Do not park the pointer — body mouseover can dismiss the edit dialog.
+      // Clear the PTE selection, then park the pointer that is still on the
+      // Expand editor button. The dialog closes on mousedown outside only; the
+      // settle helper fails if the hover onto the park dismissed it.
       window.getSelection()?.removeAllRanges()
-      await expect
-        .poll(() =>
-          Array.from(window.document.querySelectorAll('[data-ui="Tooltip"]')).every(
-            (el) => !(el instanceof HTMLElement) || !el.checkVisibility(),
-          ),
-        )
-        .toBe(true)
-      const dialogBox = () => {
-        const el = window.document.querySelector('[data-testid="popover-edit-dialog"]')
-        if (!(el instanceof HTMLElement) || !el.checkVisibility()) return ''
-        const r = el.getBoundingClientRect()
-        return `${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)},${Math.round(r.height)}`
-      }
-      await expect.poll(dialogBox).not.toBe('')
-      let previous = ''
-      let stable = 0
-      await expect
-        .poll(() => {
-          const next = dialogBox()
-          if (next && next === previous) stable += 1
-          else {
-            previous = next
-            stable = 0
-          }
-          return stable >= 3
-        })
-        .toBe(true)
+      await settleChromaticEndState()
       await expect.element(page.getByTestId('popover-edit-dialog')).toBeVisible()
       await expect.element($linkInput).toHaveFocus()
-      snapFloatingUiToIntegerPixels()
-      // Re-check after snapping so we do not archive mid-layout from the style write.
-      previous = ''
-      stable = 0
-      await expect
-        .poll(() => {
-          const next = dialogBox()
-          if (next && next === previous) stable += 1
-          else {
-            previous = next
-            stable = 0
-          }
-          return stable >= 2
-        })
-        .toBe(true)
       await takeSnapshot('fullscreen-edit-link-open')
     })
 

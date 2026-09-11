@@ -7,10 +7,12 @@ import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
 
+import {expectStable, testHelpers} from '../../../../../test/browser/testHelpers'
 import {Button} from '../../../../ui-components/button/Button'
 import {CollapseTabList} from '../CollapseTabList'
 
 const theme = buildTheme()
+const {settleChromaticEndState} = testHelpers()
 
 const overflowButton = (
   <Button aria-label="More tools" icon={EllipsisHorizontalIcon} mode="bleed" tooltipProps={null} />
@@ -69,30 +71,26 @@ describe('CollapseTabList', () => {
 
     await overflowMenuButton.click()
     await expect.element(page.getByRole('menuitem', {name: 'Delta'})).toBeVisible()
+
+    // Park the real pointer (it is still on the "..." button, which Chromatic
+    // would archive as `:hover`), require the open menu to stay open with a
+    // stable rectangle, and snap its Floating UI transform to whole pixels.
+    await settleChromaticEndState()
+
+    // The list width and the full menu rectangle (x, y, width, height) must
+    // then hold still together; a width-only relayout would otherwise pass.
     const layoutSig = () => {
       const list = window.document.querySelector('[data-testid="collapse-tab-list"]')
       const menu = Array.from(window.document.querySelectorAll<HTMLElement>('[role="menu"]')).find(
         (el) => el.checkVisibility(),
       )
-      if (!(list instanceof HTMLElement) || !menu) return ''
+      if (!(list instanceof HTMLElement) || !menu) return Symbol('menu closed')
       const lr = list.getBoundingClientRect()
       const mr = menu.getBoundingClientRect()
-      return `${Math.round(lr.width)}:${Math.round(mr.x)},${Math.round(mr.y)},${Math.round(mr.height)}`
+      return `${Math.round(lr.width)}:${Math.round(mr.x)},${Math.round(mr.y)},${Math.round(mr.width)},${Math.round(mr.height)}`
     }
-    await expect.poll(layoutSig).not.toBe('')
-    let previous = ''
-    let stable = 0
-    await expect
-      .poll(() => {
-        const next = layoutSig()
-        if (next && next === previous) stable += 1
-        else {
-          previous = next
-          stable = 0
-        }
-        return stable >= 3
-      })
-      .toBe(true)
+    await expectStable(layoutSig)
+    await expect.element(page.getByRole('menuitem', {name: 'Delta'})).toBeVisible()
     await takeSnapshot('overflow-menu-open')
   })
 
