@@ -11,6 +11,8 @@ const rotate = keyframes({
 
 export const animatedSpinnerIcon = style({
   animation: `${rotate} 500ms linear infinite`,
+  height: 'round(1em, 2px)',
+  width: 'round(1em, 2px)',
 })
 
 export const filterDiv = style({
