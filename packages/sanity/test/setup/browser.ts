@@ -13,7 +13,7 @@ import {afterEach} from 'vitest'
 import {cleanup} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
 
-import {releaseFloatingUiSnapLock, removePointerPark} from '../browser/testHelpers'
+import {parkPointer, releaseFloatingUiSnapLock, removePointerPark} from '../browser/testHelpers'
 
 // Keep this in sync with the `browser.viewport` default in
 // vitest.browser.config.mts. Tests that call `page.viewport(...)` (e.g. toolbar
@@ -31,11 +31,20 @@ const DEFAULT_VIEWPORT = {width: 1280, height: 900}
 // the archive (it is transparent) and only removed here. The Floating UI
 // snap observer is released here for the same reason: it must keep rounding
 // offsets until the archive is taken, and must not outlive the test.
+//
+// The real pointer is then parked again *after* the viewport is restored: a
+// test that parked at a reduced viewport (the 350×500 toolbar tests) or ended
+// on a click leaves the pointer over what becomes the next test's content in
+// the default viewport, where a control rendered under it would start out
+// `:hover`ed and could open its tooltip mid-test. Every test therefore starts
+// with the pointer in the bottom-right corner of the 1280×900 viewport; the
+// park element itself is removed so it is not part of the next test's DOM.
 afterEach(async () => {
   await cleanup()
-  removePointerPark()
   releaseFloatingUiSnapLock()
   await page.viewport(DEFAULT_VIEWPORT.width, DEFAULT_VIEWPORT.height)
+  await parkPointer()
+  removePointerPark()
 })
 
 // Suppress noisy warnings in test output

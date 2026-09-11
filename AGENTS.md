@@ -608,7 +608,10 @@ mask real regressions):
   `packages/sanity/test/browser/testHelpers.ts`. It moves the real pointer onto a transparent park
   element, asserts nothing in the rendered tree is `:hover`ed and no tooltip is open, waits for
   field-actions / PTE toolbar / floating popover geometry to stop changing, and rounds Floating UI
-  offsets. Do not globally `display:none` tooltips — PreviewTooltip and similar tests assert on them.
+  offsets. The shared `afterEach` in `test/setup/browser.ts` parks the pointer again after restoring
+  the viewport, so every test starts with it in the bottom-right corner rather than over the previous
+  test's last click. Do not globally `display:none` tooltips — PreviewTooltip and similar tests
+  assert on them.
 - Assert the state you want archived right before the end of the test (or before
   `takeSnapshot`): e.g. `toBeEnabled()` on a button whose tone changes with pending input,
   `data-focused="true"` plus `:focus-within` on a card whose focus ring comes from React state,
