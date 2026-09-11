@@ -1,10 +1,10 @@
 import {type ResponseQueryOptions} from '@sanity/client'
 import {use, useEffect, useRef, useState} from 'react'
 import {useClient} from 'sanity'
-import {VARIANTS_STUDIO_CLIENT_OPTIONS} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {type RouterState, useRouter} from 'sanity/router'
 import {useEffectEvent} from 'use-effect-event'
 
+import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../core/variants/store/constants'
 import {API_VERSION} from './constants'
 import {
   type DocumentResolver,

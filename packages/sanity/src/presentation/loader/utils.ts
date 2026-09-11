@@ -2,7 +2,8 @@ import {toPlainText} from '@portabletext/react'
 import {isPortableTextBlock} from '@portabletext/toolkit'
 import {type ClientPerspective, type QueryParams} from '@sanity/client'
 import {type ApplySourceDocumentsUpdateFunction} from '@sanity/client/csm'
-import {type FIXME} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+
+import {type FIXME} from '../../core/FIXME'
 
 /**
  * Used by `applySourceDocuments`

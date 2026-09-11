@@ -369,7 +369,9 @@ Rules that follow from this:
   (`DocumentPane`, `Pane`, `StructureToolProvider`, …), which in vitest also makes
   `vi.mock('sanity/_dangerously…', importOriginal)` invisible to the component under test.
   Structure tests mock the source module they need (`vi.mock('../../core/hooks/useX', …)`), like
-  core tests do. `src/presentation` is not re-exported by the barrel and may import the entry.
+  core tests do. `src/presentation` imports internals relatively for the same reasons, and
+  because a lazily loaded module (an i18n `resources` chunk, a `lazy()` component) that imports
+  the entry drags the whole barrel in with it.
 - A symbol carries exactly one release tag. `@internal` plus `@beta`/`@public` on the same
   declaration is a bug, not a way to say "beta but hidden" — use `@hidden` with `@beta` for that.
 - Tagging something `@public`/`@beta` moves it onto a public entry; tagging it `@internal` moves
