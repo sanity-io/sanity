@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.13.3](https://github.com/sanity-io/sanity/compare/v6.13.2...v6.13.3) (2026-09-11)
+
+### Bug Fixes
+
+* **deps:** update dev-non-major ([#14706](https://github.com/sanity-io/sanity/issues/14706)) ([f0f5e66](https://github.com/sanity-io/sanity/commit/f0f5e660e1dd05e02c1c0725df16e6e08ce0b0f2))
+* **examples:** stop importing ui5 in ecommerce studio ([#14681](https://github.com/sanity-io/sanity/issues/14681)) ([dee6ac7](https://github.com/sanity-io/sanity/commit/dee6ac749cd780e567184092498c50dd6c64c1c1))
+* **portable-text:** only show the annotation toolbar popover for collapsed selections ([#14713](https://github.com/sanity-io/sanity/issues/14713)) ([b670874](https://github.com/sanity-io/sanity/commit/b6708748ebba921e33651f2bf8dfe9b145cf7de3))
 ## [6.13.2](https://github.com/sanity-io/sanity/compare/v6.13.1...v6.13.2) (2026-09-11)
 
 ### Bug Fixes

@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.13.3](https://github.com/sanity-io/sanity/compare/v6.13.2...v6.13.3) (2026-09-11)
+
+### Bug Fixes
+
+* **portable-text:** only show the annotation toolbar popover for collapsed selections ([#14713](https://github.com/sanity-io/sanity/issues/14713)) ([b670874](https://github.com/sanity-io/sanity/commit/b6708748ebba921e33651f2bf8dfe9b145cf7de3))
 ## [6.13.2](https://github.com/sanity-io/sanity/compare/v6.13.1...v6.13.2) (2026-09-11)
 
 ### Bug Fixes
