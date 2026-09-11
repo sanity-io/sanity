@@ -16,6 +16,18 @@ test.describe('Auth smoke test', () => {
     await expect(page.locator('[data-testid="studio-navbar"]')).toBeVisible()
   })
 
+  test('cold logged-out load renders the translated login shell', async ({context}) => {
+    const page = await context.newPage()
+    const mock = await setupMockAuth(page, {catchAll: true})
+    mock.logOut()
+
+    await page.goto(`${BASE_URL}/cookie`)
+
+    await expect(
+      page.locator('[data-ui="Heading"]:has-text("Choose login provider")'),
+    ).toBeVisible()
+  })
+
   test('single tab logout shows login screen', async ({context}) => {
     const page = await context.newPage()
     const mock = await setupMockAuth(page, {catchAll: true})

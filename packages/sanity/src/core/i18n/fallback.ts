@@ -1,5 +1,5 @@
 /* oxlint-disable @sanity/i18n/no-i18next-import */
-import {createInstance, type Resource} from 'i18next'
+import {createInstance, type i18n, type Resource} from 'i18next'
 import memoize from 'lodash-es/memoize.js'
 
 import {isStaticResourceBundle} from './helpers'
@@ -25,7 +25,6 @@ const fallbackLocales: LocaleSource['locales'] = [defaultLocale]
 export const getFallbackLocaleSource: () => LocaleSource = memoize(
   function getFallbackLocaleSource(): LocaleSource {
     const i18n = getFallbackI18nInstance()
-    void i18n.init()
     return {
       currentLocale: defaultLocale,
       locales: fallbackLocales,
@@ -35,7 +34,7 @@ export const getFallbackLocaleSource: () => LocaleSource = memoize(
   },
 )
 
-function getFallbackI18nInstance() {
+export const getFallbackI18nInstance: () => i18n = memoize(function getFallbackI18nInstance() {
   // Find all core locale resource bundles we can load synchronously
   const staticResources: Resource = {[defaultLocale.id]: {}}
   const staticBundles = usEnglishLocale.bundles?.filter(isStaticResourceBundle) || []
@@ -45,10 +44,10 @@ function getFallbackI18nInstance() {
     namespaces.add(bundle.namespace)
   }
 
-  return createInstance({
+  const instance = createInstance({
     ns: Array.from(namespaces),
     defaultNS: studioLocaleNamespace,
-    initAsync: true,
+    initAsync: false,
     partialBundledLanguages: true,
     fallbackLng: defaultLocale.id,
     lng: defaultLocale.id,
@@ -62,4 +61,6 @@ function getFallbackI18nInstance() {
       escapeValue: shouldEscape,
     },
   })
-}
+  void instance.init()
+  return instance
+})

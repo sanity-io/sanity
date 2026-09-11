@@ -1,7 +1,7 @@
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {useMemo} from 'react'
+import {lazy, useMemo} from 'react'
 import {
   type DocumentInspector,
   type DocumentInspectorMenuItem,
@@ -17,7 +17,10 @@ import {
 
 import {VALIDATION_INSPECTOR_NAME} from '../../constants'
 import {useDocumentPane} from '../../useDocumentPane'
-import {ValidationInspector} from './ValidationInspector'
+
+const ValidationInspector = lazy(() =>
+  import('./ValidationInspector').then(({ValidationInspector}) => ({default: ValidationInspector})),
+)
 
 function useMenuItem(_props: DocumentInspectorUseMenuItemProps): DocumentInspectorMenuItem {
   const {t} = useTranslation('validation')
