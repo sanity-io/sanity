@@ -22,7 +22,7 @@ export const textFontFamilyVar = createVar()
 export const textMediumWeightVar = createVar()
 
 /** `:where()` keeps the specificity of every rule equal to its unscoped original. */
-const root = `html:where([${GLOBAL_STYLES_ATTRIBUTE}])`
+const root = `:where(html[${GLOBAL_STYLES_ATTRIBUTE}])`
 
 /** The bare `::pseudo` selectors matched `<html>` too (the viewport scrollbar), so list it explicitly. */
 const everyElement = (pseudo: string) => `${root}${pseudo}, ${root} *${pseudo}`
