@@ -24,9 +24,13 @@ export function useStructureToolSetting<ValueType>(
     )
   }, [defaultValue, keyValueStore, keyValueStoreKey])
 
+  // react-rx captures an initial value once per hook instance, but this instance outlives its key
+  // (`PaneContainer` is reused across panes) and `defaultValue` differs per key. Until the
+  // subscription for the current `value$` emits, fall back per render to the current default, so a
+  // key change never renders the previous key's default — nor its value — for a commit.
   // Use the live value for write-side equality; rendering can remain deferred.
-  const observedValue = useSyncObservable(value$, defaultValue) as ValueType
-  const value = useObservable(value$, defaultValue) as ValueType
+  const observedValue = (useSyncObservable(value$, undefined) ?? defaultValue) as ValueType
+  const value = (useObservable(value$, undefined) ?? defaultValue) as ValueType
   const set = useCallback(
     async (newValue: ValueType | null) => {
       if (newValue !== observedValue) {
