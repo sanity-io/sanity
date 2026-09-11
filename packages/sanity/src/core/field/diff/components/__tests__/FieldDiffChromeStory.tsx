@@ -1,5 +1,6 @@
 import {DocumentIcon} from '@sanity/icons/Document'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
+import {VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {MissingSinceDocumentError} from '../../../../store/events/getDocumentChanges'
@@ -24,26 +25,26 @@ export function FieldDiffChromeStory() {
   return (
     <TestWrapper schemaTypes={[]}>
       <Card padding={4} style={{maxWidth: 480}}>
-        <Stack gap={5}>
-          <Stack gap={2}>
+        <VStack gap={5}>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               value error
             </Text>
             <ValueError error={TYPE_ERROR} />
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               changes error
             </Text>
             <ChangesError />
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               missing revision
             </Text>
             <ChangesError error={new MissingSinceDocumentError('revAbc123')} />
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               meta info
             </Text>
@@ -53,8 +54,8 @@ export function FieldDiffChromeStory() {
             <MetaInfo icon={DocumentIcon} markRemoved title="old-report.pdf">
               12 kB
             </MetaInfo>
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               change breadcrumb
             </Text>
@@ -62,8 +63,8 @@ export function FieldDiffChromeStory() {
             <ChangeBreadcrumb
               titlePath={['Article', 'Body', 'Content', 'Block', 'Image', 'Alt text']}
             />
-          </Stack>
-        </Stack>
+          </VStack>
+        </VStack>
       </Card>
     </TestWrapper>
   )

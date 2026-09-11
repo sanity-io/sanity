@@ -1,5 +1,6 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {type ReactNode} from 'react'
+import {VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {commentsUsEnglishLocaleBundle} from '../../../i18n'
@@ -22,8 +23,8 @@ export function CommentsListStatusStory() {
   return (
     <TestWrapper i18nBundles={[commentsUsEnglishLocaleBundle]} schemaTypes={[]}>
       <Card padding={4} style={{maxWidth: 360}}>
-        <Stack gap={5}>
-          <Stack gap={2}>
+        <VStack gap={5}>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               error
             </Text>
@@ -35,24 +36,24 @@ export function CommentsListStatusStory() {
                 status="open"
               />
             </StatusFrame>
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               empty open
             </Text>
             <StatusFrame>
               <CommentsListStatus error={null} hasNoComments loading={false} status="open" />
             </StatusFrame>
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               empty resolved
             </Text>
             <StatusFrame>
               <CommentsListStatus error={null} hasNoComments loading={false} status="resolved" />
             </StatusFrame>
-          </Stack>
-        </Stack>
+          </VStack>
+        </VStack>
       </Card>
     </TestWrapper>
   )

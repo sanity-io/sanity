@@ -1,9 +1,9 @@
 import ChevronLeftIcon from '@sanity/icons/ChevronLeft'
 // oxlint-disable-next-line no-restricted-imports -- `Button` requires fine-grained control.
-import {Button, Stack, Text} from '@sanity/ui'
+import {Button, Text} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
 import {type ComponentType} from 'react'
-import {Flex} from 'ui5'
+import {VStack, Flex} from 'ui5'
 import {type ActorRefFromLogic} from 'xstate'
 
 import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
@@ -44,7 +44,7 @@ export const SelectVariantDefinition: ComponentType<Props> = ({variantCreationRe
         </TextButton>
       </Header>
       <Body>
-        <Stack gap={1}>
+        <VStack gap={1}>
           {[...variantDefinitions.entries()].map(([id, variantDefinition]) => (
             <Button
               key={id}
@@ -62,7 +62,7 @@ export const SelectVariantDefinition: ComponentType<Props> = ({variantCreationRe
               }
             />
           ))}
-        </Stack>
+        </VStack>
       </Body>
     </>
   )

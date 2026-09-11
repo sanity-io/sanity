@@ -1,7 +1,7 @@
 import {type ObjectSchemaType, type Path} from '@sanity/types'
-import {Stack} from '@sanity/ui'
 import {Fragment, type HTMLAttributes, startTransition, useCallback, useMemo, useState} from 'react'
 import {DiffContext} from 'sanity/_singletons'
+import {VStack} from 'ui5'
 
 import {useDocumentOperation} from '../../../hooks/useDocumentOperation'
 import {
@@ -139,7 +139,7 @@ export function FieldChange(
 
   return (
     <>
-      <Stack gap={1} as={FieldChangeContainer} {...restProps}>
+      <VStack gap={1} as={FieldChangeContainer} {...restProps}>
         {change.showHeader && <ChangeBreadcrumb change={change} titlePath={change.titlePath} />}
         <ParentWrapper
           path={fieldPath}
@@ -183,7 +183,7 @@ export function FieldChange(
             </DiffInspectWrapper>
           </FieldWrapper>
         </ParentWrapper>
-      </Stack>
+      </VStack>
 
       <RevertChangesConfirmDialog
         open={confirmRevertOpen}
