@@ -379,7 +379,14 @@ Rules that follow from this:
   evaluation time, and auto-updating studios pick minors up without a rebuild, so check
   sanity.io/docs and the published first-party plugins (`@sanity/assist`,
   `@sanity/document-internationalization`, `sanity-plugin-media`, `@sanity/code-input`, …)
-  before demoting a symbol.
+  before demoting a symbol. The CLI is a consumer too, and an invisible one: `@sanity/cli`,
+  `@sanity/cli-core` and `@sanity/cli-build` load the studio's local `sanity` package at runtime
+  (`resolveLocalPackage('sanity')`) and destructure `renderStudio`, `resolveConfig`,
+  `createSchema`, `SchemaError`, `createDefaultIcon`, `generateStudioManifest`, `uploadSchema`
+  and `validateDocument` from the root, so `sanity schema extract/deploy`, `sanity manifest
+extract` and `sanity documents validate` break at runtime (not at build time) if one of them
+  leaves the root. They are tagged `@hidden @public`; grep the CLI packages in `node_modules`
+  for `resolveLocalPackage('sanity'` before touching them.
 - Two router leaf modules (`src/router/stickyParams.ts`, `src/router/utils/jsonParamsEncoding.ts`)
   are the `sanity/router__shared` file category in `.oxlintrc.json`, so `src/core` can import
   them relatively without them being exported from the public `sanity/router` entry.
