@@ -759,7 +759,7 @@ export {
   type ValuelessSearchOperatorParams,
 } from '../core/studio/components/navbar/search/definitions/operators/operatorTypes'
 export {StudioLogo} from '../core/studio/components/navbar/StudioLogo'
-export {StudioNavbar} from '../core/studio/components/navbar/StudioNavbar'
+export {LazyStudioNavbar as StudioNavbar} from '../core/studio/components/navbar/LazyStudioNavbar'
 export {StudioToolMenu} from '../core/studio/components/navbar/tools/StudioToolMenu'
 export {ToolLink, type ToolLinkProps} from '../core/studio/components/navbar/tools/ToolLink'
 export {CopyPasteProvider, useCopyPaste} from '../core/studio/copyPaste/CopyPasteProvider'
