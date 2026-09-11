@@ -1,7 +1,8 @@
 import {DocumentIcon} from '@sanity/icons/Document'
-import {Card, Text} from '@sanity/ui'
-import {useMemo} from 'react'
-import {styled} from 'styled-components'
+import {Card, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
+import {type ComponentProps, useMemo} from 'react'
 import {Box, Flex} from 'ui5'
 
 import {useUnitFormatter} from '../../../../hooks/useUnitFormatter'
@@ -13,26 +14,30 @@ import {FromTo} from '../../../diff/components/FromTo'
 import {MetaInfo} from '../../../diff/components/MetaInfo'
 import {useRefValue} from '../../../diff/hooks/useRefValue'
 import {type DiffComponent, type ObjectDiff} from '../../../types'
+import {sizeDiff, sizeDiffNegativeVar, sizeDiffPositiveVar} from './FileFieldDiff.css'
 import {getHumanFriendlyBytes, getSizeDiff} from './helpers'
 import {type File, type FileAsset} from './types'
 
-const SizeDiff = styled.div`
-  ${({theme}) => `
-    --size-diff-positive: ${theme.sanity.color.solid.positive.enabled.bg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-    --size-diff-negative: ${theme.sanity.color.solid.critical.enabled.bg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-  `}
-  &:not([hidden]) {
-    display: inline-block;
-  }
+// Stays the `as` target of the Card below (rather than a `className`) so the theme is read inside
+// the Card's own `ThemeColorProvider`, exactly where the previous styled.div resolved its colors.
+function SizeDiff(props: ComponentProps<'div'>) {
+  const {className, style, ...rest} = props
+  const {color} = useThemeV2()
 
-  [data-number='positive'] {
-    color: var(--size-diff-positive);
-  }
-
-  [data-number='negative'] {
-    color: var(--size-diff-negative);
-  }
-`
+  return (
+    <div
+      {...rest}
+      className={clsx(sizeDiff, className)}
+      style={{
+        ...assignInlineVars({
+          [sizeDiffPositiveVar]: color.button.default.positive.enabled.bg,
+          [sizeDiffNegativeVar]: color.button.default.critical.enabled.bg,
+        }),
+        ...style,
+      }}
+    />
+  )
+}
 
 export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType}) => {
   const {fromValue, toValue, fields} = diff

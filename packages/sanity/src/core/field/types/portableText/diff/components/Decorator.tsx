@@ -1,30 +1,29 @@
-import {styled} from 'styled-components'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
 
-const DecoratorWrapper = styled.span<{decoration: string}>`
-  display: inline;
-  ${({theme, decoration}) => {
-    switch (decoration) {
-      case 'strong':
-        return 'font-weight: bold;'
-      case 'em':
-        return 'font-style: italic;'
-      case 'underline':
-        return 'text-decoration: underline;'
-      case 'overline':
-        return 'text-decoration: overline;'
-      case 'strike-through':
-        return 'text-decoration: line-through;'
-      case 'code':
-        return `
-          font-family: ${theme.sanity.fonts.code.family /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-          background: ${theme.sanity.color.muted.default.enabled.bg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-        `
-      default:
-        return ''
-    }
-  }}
-`
+import {codeBackgroundVar, codeFontFamilyVar, decoration, decoratorWrapper} from './Decorator.css'
+
+function isKnownDecoration(mark: string): mark is keyof typeof decoration {
+  return Object.hasOwn(decoration, mark)
+}
 
 export function Decorator({mark, children}: {mark: string; children: React.JSX.Element}) {
-  return <DecoratorWrapper decoration={mark}>{children}</DecoratorWrapper>
+  const {color, font} = useThemeV2()
+
+  return (
+    <span
+      className={clsx(decoratorWrapper, isKnownDecoration(mark) && decoration[mark])}
+      style={
+        mark === 'code'
+          ? assignInlineVars({
+              [codeFontFamilyVar]: font.code.family,
+              [codeBackgroundVar]: color.button.ghost.default.enabled.bg,
+            })
+          : undefined
+      }
+    >
+      {children}
+    </span>
+  )
 }
