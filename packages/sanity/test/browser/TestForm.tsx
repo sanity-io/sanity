@@ -37,6 +37,7 @@ import {type FormDocumentValue} from '../../src/core/form/types/formDocumentValu
 import {createMockSanityClient} from './createMockSanityClient'
 
 const NOOP = () => null
+const NO_MARKERS: ValidationMarker[] = []
 
 // Tests read the current document value off `window.documentState` (see the
 // `waitForDocumentState` helper). Use a narrow cast rather than augmenting the
@@ -81,7 +82,10 @@ export function TestForm(props: TestFormProps) {
 
   const {setDocumentMeta} = useCopyPaste()
   const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(null)
-  const [validation, setValidation] = useState<ValidationMarker[]>([])
+  const [validationState, setValidationState] = useState<{
+    document: SanityDocument
+    markers: ValidationMarker[]
+  } | null>(null)
   const [openPath, onSetOpenPath] = useState<Path>(openPathFromProps)
   const [fieldGroupState, onSetFieldGroupState] = useState<StateTree<string>>()
   const [collapsedPaths, onSetCollapsedPath] = useState<StateTree<boolean>>()
@@ -164,12 +168,25 @@ export function TestForm(props: TestFormProps) {
     [documentId, documentType, fieldActionsResolver, schemaType],
   )
 
+  const validation = validationState?.markers ?? NO_MARKERS
+  // Every document change starts a validation run that ends in a re-render
+  // with the resulting markers. Tests wait on `[data-validation-pending]` (see
+  // `waitForPortableTextSelection` and `settleChromaticEndState` in
+  // `testHelpers`) so that re-render cannot land in the middle of a keystroke
+  // sequence or after the Chromatic capture.
+  const validationPending = validationState?.document !== document
+
   useEffect(() => {
     // Validation is gated on `requestIdleCallback`, so a run for a superseded
     // document would otherwise land whenever the browser next idles and
     // re-render the form with stale markers. Abort it instead.
     const controller = new AbortController()
-    void validateStaticDocument(document, workspace, setValidation, controller.signal)
+    void validateStaticDocument(
+      document,
+      workspace,
+      (markers) => setValidationState({document, markers}),
+      controller.signal,
+    )
     return () => controller.abort()
   }, [document, workspace])
 
@@ -341,7 +358,10 @@ export function TestForm(props: TestFormProps) {
               data-testid="document-panel-scroller"
               ref={setDocumentScrollElement}
             >
-              <Box ref={formContainerElement}>
+              <Box
+                ref={formContainerElement}
+                data-validation-pending={validationPending ? '' : undefined}
+              >
                 <FormBuilder {...formBuilderProps} />
               </Box>
             </Scroller>

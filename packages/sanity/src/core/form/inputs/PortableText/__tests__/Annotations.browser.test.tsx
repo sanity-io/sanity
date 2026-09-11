@@ -140,6 +140,7 @@ describe('Portable Text Input', () => {
         getFocusedPortableTextEditor,
         insertPortableText,
         settleChromaticEndState,
+        extendPortableTextSelection,
         waitForPortableTextSelection,
       } = testHelpers()
       void render(<AnnotationsHarness />)
@@ -149,8 +150,7 @@ describe('Portable Text Input', () => {
 
       // Backtrack and click link icon in menu bar
       await userEvent.keyboard('{ArrowLeft}')
-      await userEvent.keyboard('{Shift>}{ArrowLeft}{ArrowLeft}{ArrowLeft}{ArrowLeft}{/Shift}')
-      await waitForPortableTextSelection('link')
+      await extendPortableTextSelection('link', {reverse: true})
       await page.getByRole('button', {name: 'Link'}).click()
       // Assertion: Wait for link to be re-rendered / PTE internal state to be done
       const $link = page.elementLocator($pte.element().querySelector('span[data-link]')!)
@@ -250,7 +250,7 @@ describe('Portable Text Input', () => {
           getFocusedPortableTextEditor,
           insertPortableText,
           settleChromaticEndState,
-          waitForPortableTextSelection,
+          extendPortableTextSelection,
         } = testHelpers()
         void render(<AnnotationsHarness />)
         const $pte = await getFocusedPortableTextEditor('field-body')
@@ -259,8 +259,7 @@ describe('Portable Text Input', () => {
 
         // Backtrack and select the word "link"
         await userEvent.keyboard('{ArrowLeft}')
-        await userEvent.keyboard('{Shift>}{ArrowLeft}{ArrowLeft}{ArrowLeft}{ArrowLeft}{/Shift}')
-        await waitForPortableTextSelection('link')
+        await extendPortableTextSelection('link', {reverse: true})
 
         // Watch the DOM continuously between clicking the toolbar button and
         // the edit popover opening: the annotation toolbar popover must never
@@ -323,6 +322,7 @@ describe('Portable Text Input', () => {
           getFocusedPortableTextEditor,
           insertPortableText,
           settleChromaticEndState,
+          extendPortableTextSelection,
           waitForPortableTextSelection,
         } = testHelpers()
         void render(<AnnotationsHarness />)
@@ -332,8 +332,7 @@ describe('Portable Text Input', () => {
 
         // Backtrack and click link icon in menu bar
         await userEvent.keyboard('{ArrowLeft}')
-        await userEvent.keyboard('{Shift>}{ArrowLeft}{ArrowLeft}{ArrowLeft}{ArrowLeft}{/Shift}')
-        await waitForPortableTextSelection('link')
+        await extendPortableTextSelection('link', {reverse: true})
         await page.getByRole('button', {name: 'Link'}).click()
         // Assertion: Wait for link to be re-rendered / PTE internal state to be done.
         // The annotation must cover exactly "link": it is the reference the
@@ -426,14 +425,13 @@ describe('Portable Text Input', () => {
         getFocusedPortableTextEditor,
         insertPortableText,
         settleChromaticEndState,
-        waitForPortableTextSelection,
+        extendPortableTextSelection,
       } = testHelpers()
       void render(<AnnotationsHarness />)
       const $pte = await getFocusedPortableTextEditor('field-body')
 
       await insertPortableText('Fullscreen link', $pte)
-      await userEvent.keyboard('{Shift>}{ArrowLeft}{ArrowLeft}{ArrowLeft}{ArrowLeft}{/Shift}')
-      await waitForPortableTextSelection('link')
+      await extendPortableTextSelection('link', {reverse: true})
       await page.getByRole('button', {name: 'Link'}).click()
 
       const $linkInput = page.getByTestId('popover-edit-dialog').getByLabelText('Link')
@@ -465,6 +463,7 @@ describe('Portable Text Input', () => {
           getFocusedPortableTextEditor,
           insertPortableText,
           settleChromaticEndState,
+          extendPortableTextSelection,
           waitForPortableTextSelection,
         } = testHelpers()
         void render(<AnnotationsHarness />)
@@ -474,8 +473,7 @@ describe('Portable Text Input', () => {
 
         // Backtrack and select the word "link"
         await userEvent.keyboard('{ArrowLeft}')
-        await userEvent.keyboard('{Shift>}{ArrowLeft}{ArrowLeft}{ArrowLeft}{ArrowLeft}{/Shift}')
-        await waitForPortableTextSelection('link')
+        await extendPortableTextSelection('link', {reverse: true})
         await page.getByRole('button', {name: 'Link'}).click()
 
         const $link = page.elementLocator($pte.element().querySelector('span[data-link]')!)

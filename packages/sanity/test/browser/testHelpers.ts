@@ -268,6 +268,91 @@ async function reenterStaleWebkitHover(park: HTMLElement): Promise<void> {
   }
 }
 
+/**
+ * `TestForm` marks its form container while a document validation run is in
+ * flight; the run ends in a form re-render with the resulting markers.
+ */
+const validationPending = (): boolean =>
+  window.document.querySelector('[data-validation-pending]') !== null
+
+/**
+ * Wait until the Portable Text Editor has taken over the current DOM
+ * selection, which must read as `text` (`''` for a collapsed caret).
+ *
+ * The editor syncs `selectionchange` into its own state through a
+ * leading+trailing throttle (`PTE_SELECTION_THROTTLE_MS`), so a toolbar
+ * action fired straight after Shift+Arrow ×4 or a double-click can run
+ * against the selection *before* the last keystroke: the link then covers
+ * "ink" instead of "link" (a different reference for the edit popover, so
+ * a different archive), or `addAnnotation` sees a collapsed selection and
+ * opens no edit dialog at all. The re-render that follows a sync also runs
+ * the editable's layout effect, which writes the editor's selection back
+ * into the DOM when the two differ — so a keystroke that lands inside the
+ * throttle window of the previous one is silently undone. Any other
+ * render that touches the editable does the same: `TestForm` validates
+ * the document on every change, gated on `requestIdleCallback`, so the
+ * result for a URL typed into an annotation dialog lands during a later
+ * idle moment and can re-render the annotation span, which in Firefox
+ * also fires a `selectionchange` that re-arms the throttle. (`TestForm`
+ * aborts superseded runs, so this is at most one late render rather than
+ * one per keystroke.)
+ *
+ * Call this between making a selection and acting on it, and between
+ * consecutive selection-moving keystrokes whose outcome the test relies
+ * on. It resolves once the DOM selection is the expected text, no
+ * validation run is pending, and neither a `selectionchange` nor a DOM
+ * mutation inside the editable has happened for longer than the throttle
+ * window, which is when the trailing sync has run and no re-render is
+ * about to undo it.
+ */
+async function waitForPortableTextSelection(text: string): Promise<void> {
+  // Events before this call are not observed, so the call time stands in
+  // for them: the trailing sync of an earlier event runs no later than
+  // one throttle window after it, which is no later than one after now.
+  let lastActivityAt = performance.now()
+  const touch = () => {
+    lastActivityAt = performance.now()
+  }
+  window.document.addEventListener('selectionchange', touch)
+  const anchor = window.getSelection()?.anchorNode
+  const editable =
+    (anchor instanceof Element ? anchor : anchor?.parentElement)?.closest('[data-pt-editor]') ??
+    window.document.activeElement?.closest('[data-pt-editor]') ??
+    null
+  const observer = new MutationObserver(touch)
+  if (editable) {
+    observer.observe(editable, {
+      attributes: true,
+      characterData: true,
+      childList: true,
+      subtree: true,
+    })
+  }
+  try {
+    await expect
+      .poll(
+        () => {
+          const current = window.getSelection()?.toString() ?? ''
+          if (current !== text) return `DOM selection is ${JSON.stringify(current)}`
+          // The render that ends the run comes first, its layout effects
+          // (where the editable rewrites the DOM selection) included, and only
+          // then is the marker removed: once it is gone, any effect on the
+          // selection has already shown up above or in `lastActivityAt`.
+          if (validationPending()) return 'validation pending'
+          const quietFor = performance.now() - lastActivityAt
+          return quietFor > PTE_SELECTION_THROTTLE_MS + PTE_SELECTION_SYNC_MARGIN_MS
+            ? 'synced'
+            : `quiet for ${Math.round(quietFor)}ms`
+        },
+        {interval: 25},
+      )
+      .toBe('synced')
+  } finally {
+    observer.disconnect()
+    window.document.removeEventListener('selectionchange', touch)
+  }
+}
+
 /** Poll `document.querySelector` until the element appears, then return it. */
 async function waitForElement(selector: string): Promise<Element> {
   let el: Element | null = null
@@ -596,75 +681,34 @@ export function testHelpers() {
       throw new Error(`Timeout waiting for focused node text: "${text}"`)
     },
 
+    waitForPortableTextSelection,
+
     /**
-     * Wait until the Portable Text Editor has taken over the current DOM
-     * selection, which must read as `text` (`''` for a collapsed caret).
+     * Extend a collapsed selection over `text` with Shift+ArrowRight (or
+     * Shift+ArrowLeft with `reverse`, when the caret sits after `text`),
+     * one press at a time, waiting for the editor to take each press over.
      *
-     * The editor syncs `selectionchange` into its own state through a
-     * leading+trailing throttle (`PTE_SELECTION_THROTTLE_MS`), so a toolbar
-     * action fired straight after Shift+Arrow ×4 or a double-click can run
-     * against the selection *before* the last keystroke: the link then covers
-     * "ink" instead of "link" (a different reference for the edit popover, so
-     * a different archive), or `addAnnotation` sees a collapsed selection and
-     * opens no edit dialog at all. The re-render that follows a sync also runs
-     * the editor's `validateSelection`, which writes the editor's selection
-     * back into the DOM when the two differ — so a keystroke that lands inside
-     * the throttle window of the previous one is silently undone. Any other
-     * render that touches the editable does the same: `TestForm` validates
-     * the document on every change, gated on `requestIdleCallback`, so the
-     * result for a URL typed into an annotation dialog lands during a later
-     * idle moment and can re-render the annotation span, which in Firefox
-     * also fires a `selectionchange` that re-arms the throttle. (`TestForm`
-     * aborts superseded runs, so this is at most one late render rather than
-     * one per keystroke.)
-     *
-     * Call this between making a selection and acting on it, and between
-     * consecutive selection-moving keystrokes whose outcome the test relies
-     * on. It resolves once the DOM selection is the expected text and neither
-     * a `selectionchange` nor a DOM mutation inside the editable has happened
-     * for longer than the throttle window, which is when the trailing sync
-     * has run and no re-render is about to undo it.
+     * Shift+Arrow is native selection extension; the editor only learns of it
+     * through the throttled sync described on `waitForPortableTextSelection`,
+     * and each sync re-renders the editable, whose layout effect writes the
+     * editor's selection back into the DOM when the two differ. A press that
+     * lands between a trailing sync and its render is therefore undone: with
+     * four presses in one `userEvent.keyboard` call on a loaded runner, the
+     * sync for "ink" renders after the fourth press has extended the DOM to
+     * "link", puts "ink" back, and both settle on "ink". Pressing once per
+     * sync window removes the race without changing what the test exercises.
      */
-    waitForPortableTextSelection: async (text: string) => {
-      // Events before this call are not observed, so the call time stands in
-      // for them: the trailing sync of an earlier event runs no later than
-      // one throttle window after it, which is no later than one after now.
-      let lastActivityAt = performance.now()
-      const touch = () => {
-        lastActivityAt = performance.now()
-      }
-      window.document.addEventListener('selectionchange', touch)
-      const anchor = window.getSelection()?.anchorNode
-      const editable =
-        (anchor instanceof Element ? anchor : anchor?.parentElement)?.closest('[data-pt-editor]') ??
-        window.document.activeElement?.closest('[data-pt-editor]') ??
-        null
-      const observer = new MutationObserver(touch)
-      if (editable) {
-        observer.observe(editable, {
-          attributes: true,
-          characterData: true,
-          childList: true,
-          subtree: true,
-        })
-      }
-      try {
-        await expect
-          .poll(
-            () => {
-              const current = window.getSelection()?.toString() ?? ''
-              if (current !== text) return `DOM selection is ${JSON.stringify(current)}`
-              const quietFor = performance.now() - lastActivityAt
-              return quietFor > PTE_SELECTION_THROTTLE_MS + PTE_SELECTION_SYNC_MARGIN_MS
-                ? 'synced'
-                : `quiet for ${Math.round(quietFor)}ms`
-            },
-            {interval: 25},
-          )
-          .toBe('synced')
-      } finally {
-        observer.disconnect()
-        window.document.removeEventListener('selectionchange', touch)
+    extendPortableTextSelection: async (text: string, options: {reverse?: boolean} = {}) => {
+      const {reverse = false} = options
+      // The caret may still be inside the sync window of the keystroke that
+      // placed it, and `TestForm` may be about to re-render with validation
+      // markers for the text just typed; the first press must not race either.
+      await waitForPortableTextSelection(window.getSelection()?.toString() ?? '')
+      for (let count = 1; count <= text.length; count++) {
+        await userEvent.keyboard(
+          reverse ? '{Shift>}{ArrowLeft}{/Shift}' : '{Shift>}{ArrowRight}{/Shift}',
+        )
+        await waitForPortableTextSelection(reverse ? text.slice(-count) : text.slice(0, count))
       }
     },
 
@@ -714,6 +758,9 @@ export function testHelpers() {
       if (typeof document.fonts?.ready !== 'undefined') {
         await document.fonts.ready
       }
+      // The markers `TestForm` renders once its validation run finishes are
+      // part of the end state.
+      await expect.poll(validationPending).toBe(false)
 
       // Floating PTE chrome: inline-object / annotation toolbars and the
       // popover edit dialog (all positioned by Floating UI).
