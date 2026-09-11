@@ -4,7 +4,6 @@ import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   DocumentGroupInventoryAction,
   getReleaseIdFromReleaseDocumentId,
-  Hotkeys,
   isSanityDefinedAction,
   readVersionType,
   useClient,
@@ -13,6 +12,7 @@ import {
 } from 'sanity'
 import {Flex} from 'ui5'
 
+import {Hotkeys} from '../../../../core/components/Hotkeys'
 import {DocumentGroupInventory} from '../../../../core/documentGroupInventory/components/DocumentGroupInventory'
 import {type DocumentGroupInventoryComponents} from '../../../../core/documentGroupInventory/types'
 import {useSetVariant} from '../../../../core/perspective/useSetVariant'

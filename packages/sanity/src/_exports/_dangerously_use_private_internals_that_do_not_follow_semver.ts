@@ -65,6 +65,7 @@ export {useCommentsEnabled as useCommentsEnabledV2} from '../core/comments-v2/ho
 export {BetaBadge, type BetaBadgeProps} from '../core/components/BetaBadge'
 export {CapabilityGate} from '../core/components/CapabilityGate'
 export {Delay} from '../core/components/Delay'
+export {Hotkeys} from '../core/components/Hotkeys'
 export {type InsufficientPermissionsMessageProps} from '../core/components/InsufficientPermissionsMessage'
 export {RelativeTime, type RelativeTimeProps} from '../core/components/RelativeTime'
 export {TooltipOfDisabled} from '../core/components/TooltipOfDisabled'
@@ -107,6 +108,14 @@ export {
   ReferenceInputPreviewCard,
   usePreviewCard,
 } from '../core/components/previewCard/PreviewCard'
+export {CompactPreview} from '../core/components/previews/general/CompactPreview'
+export {DetailPreview} from '../core/components/previews/general/DetailPreview'
+export {MediaPreview} from '../core/components/previews/general/MediaPreview'
+export {BlockImagePreview} from '../core/components/previews/portableText/BlockImagePreview'
+export {BlockPreview} from '../core/components/previews/portableText/BlockPreview'
+export {InlinePreview} from '../core/components/previews/portableText/InlinePreview'
+export {TemplatePreview} from '../core/components/previews/template/TemplatePreview'
+export {CircularProgress} from '../core/components/progress/CircularProgress'
 export {
   type TrackerContextGetSnapshot,
   type TrackerContextStore,
@@ -119,6 +128,7 @@ export {
   type ReporterHook,
 } from '../core/components/react-track-elements/types'
 export {Resizable} from '../core/components/resizer/Resizable'
+export {useRovingFocus} from '../core/components/rovingFocus/useRovingFocus'
 export {useOnScroll} from '../core/components/scroll/hooks'
 export {ScrollContainer, type ScrollContainerProps} from '../core/components/scroll/scrollContainer'
 export {type ScrollContextValue, type ScrollEventHandler} from '../core/components/scroll/types'
@@ -129,6 +139,7 @@ export {
   LegacyLayerProvider,
   type ZIndexContextValueKey,
 } from '../core/components/transitional/LegacyLayerProvider'
+export {AvatarSkeleton} from '../core/components/userAvatar/UserAvatar'
 export {ZIndexProvider} from '../core/components/zOffsets/ZIndexProvider'
 export {type ZIndexContextValue} from '../core/components/zOffsets/types'
 export {useZIndex} from '../core/components/zOffsets/useZIndex'

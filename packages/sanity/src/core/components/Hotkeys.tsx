@@ -24,7 +24,7 @@ export type HotkeysProps = UIHotkeysProps & {
  *
  * @param props - Properties to render with
  * @returns React element
- * @public
+ * @internal
  */
 export function Hotkeys({makePlatformAware = true, keys: hotKeys = [], ...props}: HotkeysProps) {
   const keys = makePlatformAware ? hotKeys.map(platformifyKey) : hotKeys
