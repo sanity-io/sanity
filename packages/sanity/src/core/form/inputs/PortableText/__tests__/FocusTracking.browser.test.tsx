@@ -432,7 +432,7 @@ describe('Portable Text Input', () => {
   it(`reports focus on spans with with .text prop, and everything else without`, async () => {
     const paths: Path[] = []
     const pushPath = (path: Path) => paths.push(path)
-    const {getFocusedPortableTextEditor} = testHelpers()
+    const {getFocusedPortableTextEditor, settleChromaticEndState} = testHelpers()
     void render(<FocusTrackingHarness document={document} onPathFocus={pushPath} />)
     const $pte = await getFocusedPortableTextEditor('field-body')
     await expect.element($pte).toHaveFocus()
@@ -455,6 +455,13 @@ describe('Portable Text Input', () => {
         return !popover || !popover.checkVisibility()
       })
       .toBe(true)
+    await expect.element($blockObject).toBeVisible()
+    // The real pointer still sits on the clicked block object; park it so the
+    // archive does not carry its hover state or a lingering tooltip.
+    await settleChromaticEndState({
+      styleSelectText: /^No style$/,
+      styleSelectRoot: '[data-testid="field-body"]',
+    })
     await expect.element($blockObject).toBeVisible()
   })
 })

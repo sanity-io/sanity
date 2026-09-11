@@ -8,6 +8,7 @@ import {page, userEvent} from 'vitest/browser'
 
 import {TestForm} from '../../../../../../test/browser/TestForm'
 import {
+  expectStable,
   snapFloatingUiToIntegerPixels,
   testHelpers,
 } from '../../../../../../test/browser/testHelpers'
@@ -222,8 +223,7 @@ describe('Portable Text Input', () => {
               )
               .join('|')
           }
-          const settled = toolbarSignature()
-          await expect.poll(toolbarSignature).toBe(settled)
+          expect(await expectStable(toolbarSignature)).not.toBe('')
           await settleChromaticEndState({
             styleSelectRoot: '[data-testid="field-body"]',
           })
@@ -272,19 +272,7 @@ describe('Portable Text Input', () => {
               .join('|')
           }
           await expect.poll(toolbarSignature).toMatch(/object-insert-menu-button/)
-          let previous = ''
-          let stable = 0
-          await expect
-            .poll(() => {
-              const next = toolbarSignature()
-              if (next && next === previous) stable += 1
-              else {
-                previous = next
-                stable = 0
-              }
-              return stable >= 3
-            })
-            .toBe(true)
+          expect(await expectStable(toolbarSignature)).toMatch(/object-insert-menu-button/)
           await settleChromaticEndState({
             styleSelectRoot: '[data-testid="field-body"]',
           })

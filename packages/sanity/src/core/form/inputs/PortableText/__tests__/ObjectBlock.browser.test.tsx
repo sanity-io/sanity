@@ -8,7 +8,7 @@ import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
 
 import {TestForm} from '../../../../../../test/browser/TestForm'
-import {testHelpers} from '../../../../../../test/browser/testHelpers'
+import {expectStable, testHelpers} from '../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 
 // This is to emulate preview updates to the object without the preview store
@@ -99,7 +99,9 @@ describe('Portable Text Input', () => {
 
       // Assertion: Object preview should be visible
       await expect.element($portableTextInput.getByTestId('pte-block-object')).toBeVisible()
-      await expect.element(page.getByRole('button', {name: 'Insert Object (block)'})).toBeVisible()
+      await expect
+        .element(page.getByRole('button', {name: 'Insert Object (block)'}).first())
+        .toBeVisible()
       // Insert opens the edit dialog with the object focused. Style select can
       // briefly show Normal before settling on No style — wait for No style.
       const $dialog = page.getByTestId('nested-object-dialog')
@@ -195,8 +197,7 @@ describe('Portable Text Input', () => {
         const el = window.document.querySelector('[data-testid="popover-edit-dialog"]')
         return el instanceof HTMLElement ? Math.round(el.getBoundingClientRect().x) : -1
       }
-      const settledX = dialogX()
-      await expect.poll(dialogX).toBe(settledX)
+      expect(await expectStable(dialogX)).toBeGreaterThanOrEqual(0)
       await takeSnapshot('inline-edit-dialog-open')
     })
 
@@ -233,17 +234,28 @@ describe('Portable Text Input', () => {
         styleSelectRoot: '[data-testid="field-body"]',
       })
       // Park hover can leave :focus-within on the field (blue ring). Blur
-      // everything and wait until the field is not focus-within so identical
-      // captures agree on the grey ring.
+      // everything and wait until the field is neither focus-within nor
+      // flagged focused by the editor's React state (`data-focused` drives
+      // the ring), so identical captures agree on the grey ring. Body only
+      // needs a tabindex while it takes focus; put it back afterwards so the
+      // attribute does not leak into the next test in this file.
       const field = window.document.querySelector('[data-testid="field-body"]')
-      if (window.document.activeElement instanceof HTMLElement) {
-        window.document.activeElement.blur()
+      const body = window.document.body
+      const bodyTabIndex = body.getAttribute('tabindex')
+      try {
+        if (window.document.activeElement instanceof HTMLElement) {
+          window.document.activeElement.blur()
+        }
+        body.tabIndex = -1
+        body.focus()
+        await expect
+          .poll(() => !(field instanceof HTMLElement && field.matches(':focus-within')))
+          .toBe(true)
+        await expect.poll(() => field?.querySelector('[data-focused]') ?? null).toBeNull()
+      } finally {
+        if (bodyTabIndex === null) body.removeAttribute('tabindex')
+        else body.setAttribute('tabindex', bodyTabIndex)
       }
-      window.document.body.tabIndex = -1
-      window.document.body.focus()
-      await expect
-        .poll(() => !(field instanceof HTMLElement && field.matches(':focus-within')))
-        .toBe(true)
     })
 
     it('Double-clicking opens a block', async () => {
@@ -373,18 +385,6 @@ describe('Portable Text Input', () => {
         .toBeVisible()
       // Wait for CollapseMenu button positions to settle — style-select / insert
       // button x offsets were a recurring Chromatic pairwise flake.
-      await expect
-        .poll(() => {
-          const toolbar = $portableTextInput
-            .element()
-            .querySelector('[data-testid="pt-editor__toolbar-card"]')
-          if (!toolbar) return ''
-          return Array.from(toolbar.querySelectorAll('button'))
-            .map((b) => `${b.textContent?.trim()}@${Math.round(b.getBoundingClientRect().x)}`)
-            .join('|')
-        })
-        .toMatch(/Object Without Title/)
-      // Second poll with the same signature confirms layout stopped moving.
       const signature = () => {
         const toolbar = $portableTextInput
           .element()
@@ -394,8 +394,8 @@ describe('Portable Text Input', () => {
           .map((b) => `${b.textContent?.trim()}@${Math.round(b.getBoundingClientRect().x)}`)
           .join('|')
       }
-      const first = signature()
-      await expect.poll(signature).toBe(first)
+      await expect.poll(signature).toMatch(/Object Without Title/)
+      expect(await expectStable(signature)).toMatch(/Object Without Title/)
       // Clear hover on the Object insert button (pill background was a pairwise flake).
       await settleChromaticEndState({
         styleSelectText: /^Normal$/,

@@ -5,7 +5,7 @@ import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, server, userEvent} from 'vitest/browser'
 
-import {testHelpers} from '../../../../../../../test/browser/testHelpers'
+import {expectStable, testHelpers} from '../../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
 import {type UserListWithPermissionsHookValue} from '../../../../../hooks/useUserListWithPermissions'
 import {CommentInput} from '../CommentInput'
@@ -101,14 +101,14 @@ async function expectFocusRingSettled() {
 }
 
 /** The mentions popover is positioned by Floating UI after it opens; wait for
- * it to be laid out at a stable size before archiving it. */
+ * it to be laid out at a size that stops changing before archiving it. */
 async function expectMentionsMenuLaidOut() {
-  await expect
-    .poll(() => {
-      const el = window.document.querySelector('[data-testid="comments-mentions-menu"]')
-      return el instanceof HTMLElement ? Math.round(el.getBoundingClientRect().height) : 0
-    })
-    .toBeGreaterThan(0)
+  const menuHeight = () => {
+    const el = window.document.querySelector('[data-testid="comments-mentions-menu"]')
+    return el instanceof HTMLElement ? Math.round(el.getBoundingClientRect().height) : 0
+  }
+  await expect.poll(menuHeight).toBeGreaterThan(0)
+  expect(await expectStable(menuHeight)).toBeGreaterThan(0)
 }
 
 describe('Comments', () => {

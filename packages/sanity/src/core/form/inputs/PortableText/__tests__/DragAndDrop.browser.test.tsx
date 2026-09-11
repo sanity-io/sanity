@@ -115,7 +115,7 @@ const document: SanityDocument = {
 describe('Portable Text Input', () => {
   describe('Should be able to drag and drop blocks', () => {
     it(`drag and drop blocks`, async () => {
-      const {dragAndDrop, getFocusedPortableTextEditor} = testHelpers()
+      const {dragAndDrop, getFocusedPortableTextEditor, settleChromaticEndState} = testHelpers()
 
       void render(
         <DragAndDropHarness
@@ -138,21 +138,14 @@ describe('Portable Text Input', () => {
       expect(fourthBlock?.textContent).toContain('Baz')
 
       // Settle selection: the dropped object can keep an intermittent selection
-      // ring; click a text block so Chromatic always archives the same focus.
+      // ring; click a text block so Chromatic always archives the same focus,
+      // then park the pointer and wait for the style select to hold "Normal".
       await userEvent.click(page.getByText('Baz', {exact: true}))
       await expect.element(page.getByText('Hello world')).toBeVisible()
-      await expect
-        .poll(
-          () => window.document.querySelector('[data-testid="block-style-select"]')?.textContent,
-        )
-        .toMatch(/Normal/)
-      const styleSig = () => {
-        const select = window.document.querySelector('[data-testid="block-style-select"]')
-        if (!(select instanceof HTMLElement)) return ''
-        return `${select.textContent}@${Math.round(select.getBoundingClientRect().x)}`
-      }
-      const settled = styleSig()
-      await expect.poll(styleSig).toBe(settled)
+      await settleChromaticEndState({
+        styleSelectText: /^Normal$/,
+        styleSelectRoot: '[data-testid="field-body"]',
+      })
     })
 
     it(`drag and drop blocks without warning overlay`, async () => {

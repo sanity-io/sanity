@@ -475,7 +475,8 @@ describe('Portable Text Input', () => {
         // Snapshot the combined toolbar explicitly — auto capture can race the
         // floating popover position / open state after the last Escape.
         configure({disableAutoSnapshot: true})
-        const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
+        const {getFocusedPortableTextEditor, insertPortableText, settleChromaticEndState} =
+          testHelpers()
         void render(<MultipleAnnotationsHarness />)
         const $pte = await getFocusedPortableTextEditor('field-body')
 
@@ -595,23 +596,12 @@ describe('Portable Text Input', () => {
         await expect.element($toolbarPopover).toBeVisible()
         await expect.element(page.getByTestId('edit-annotation-button')).toBeVisible()
         await expect.element(page.getByTestId('edit-annotation-button-1')).toBeVisible()
-        // Clear accidental toolbar hover tooltips (e.g. "Underline") before snapshot —
-        // pointer position is not stable across Chromatic archive runs.
-        window.document.body.dispatchEvent(new MouseEvent('mouseover', {bubbles: true}))
-        await expect
-          .poll(() =>
-            Array.from(window.document.querySelectorAll('[data-ui="Tooltip"]')).every(
-              (el) => !(el instanceof HTMLElement) || !el.checkVisibility(),
-            ),
-          )
-          .toBe(true)
-        const toolbarX = () => {
-          const el = window.document.querySelector('[data-testid="annotation-toolbar-popover"]')
-          return el instanceof HTMLElement ? Math.round(el.getBoundingClientRect().x) : -1
-        }
-        await expect.poll(toolbarX).toBeGreaterThanOrEqual(0)
-        const settledX = toolbarX()
-        await expect.poll(toolbarX).toBe(settledX)
+        // The real pointer still sits on the edit button, so a toolbar tooltip
+        // (e.g. "Underline") can be open; a synthetic `mouseover` on body does
+        // not clear CSS `:hover`. Park the pointer, wait for tooltips to close
+        // and for the toolbar popover to stop moving, then archive it open.
+        await settleChromaticEndState()
+        await expect.element($toolbarPopover).toBeVisible()
         await takeSnapshot('combined-toolbar-open')
       },
     )
