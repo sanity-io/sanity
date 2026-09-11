@@ -1,5 +1,6 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {type ReactNode} from 'react'
+import {Flex} from 'ui5'
 
 import {commitUrl, prUrl} from '../trends/links'
 import {AuthorAvatar} from './AuthorAvatar'
@@ -23,7 +24,7 @@ export function CommitCard(props: {
             {commit.subject}
           </a>
         </Text>
-        <Flex align="center" gap={3} wrap="wrap">
+        <Flex alignItems="center" gap={3} flexWrap="wrap">
           <Text size={1}>
             <a href={commitUrl(commit.sha)} target="_blank" rel="noreferrer">
               <code>{commit.sha.slice(0, 10)}</code>

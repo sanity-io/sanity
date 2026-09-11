@@ -31,7 +31,7 @@
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "@vitest/browser-playwright": "catalog:",
-    "chromatic": "^18.7.2",
+    "chromatic": "^18.7.4",
     "oxc-transform-react": "catalog:",
     "playwright": "catalog:",
     "rimraf": "catalog:",

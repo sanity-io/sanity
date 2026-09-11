@@ -14,11 +14,6 @@ export function useDocumentValues<T = Record<string, unknown>>(
 ): LoadableState<T | undefined> {
   const documentPreviewStore = useDocumentPreviewStore()
 
-  // Consumers routinely pass `paths` as an inline literal. Keying the memo on
-  // the array reference would rebuild the observable on every render, which
-  // react-rx v5 turns into a self-sustaining render loop (each new identity's
-  // deferred pass re-renders, minting another identity — see
-  // __tests__/useDocumentValuesRenderLoop.repro.test.tsx). Key on contents.
   const stablePaths = useShallowUnique(paths)
 
   const documentValues$ = useMemo(

@@ -1,10 +1,11 @@
-import {Box, Button, Card, Container, Flex, Heading, Stack, Text, TextArea} from '@sanity/ui'
+import {Box, Button, Card, Container, Heading, Stack, Text, TextArea} from '@sanity/ui'
 import {type SyntheticEvent, useCallback, useId, useRef, useState} from 'react'
 import {
   DiagnosticsReport,
   parseStudioDiagnostics,
   type StudioDiagnostics,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {Flex} from 'ui5'
 
 /**
  * The in-studio twin of dev/studio-diagnostics-viewer: paste the JSON copied
@@ -82,7 +83,7 @@ export function DiagnosticsTool() {
                     </Card>
                   ) : null}
 
-                  <Flex justify="flex-end">
+                  <Flex justifyContent="flex-end">
                     <Button mode="default" text="View diagnostics" tone="primary" type="submit" />
                   </Flex>
                 </Stack>

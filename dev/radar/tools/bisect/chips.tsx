@@ -1,9 +1,10 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {CopyIcon} from '@sanity/icons/Copy'
-import {Button, Card, Flex, Text} from '@sanity/ui'
+import {Button, Card, Text} from '@sanity/ui'
 import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
 import {useId, useState} from 'react'
+import {Flex} from 'ui5'
 
 function useCopyToClipboard() {
   const toast = useToast()
@@ -34,7 +35,7 @@ export function CommandChip(props: {command: string}) {
   const copy = useCopyToClipboard()
   return (
     <Card padding={1} paddingLeft={2} radius={2} tone="transparent" border>
-      <Flex align="center" gap={1}>
+      <Flex alignItems="center" gap={1}>
         <Text size={1} muted>
           <code>{command}</code>
         </Text>
@@ -94,7 +95,7 @@ export function InstallChip(props: {version: string}) {
   }
   return (
     <Card padding={1} radius={2} tone="transparent" border>
-      <Flex align="center" gap={1}>
+      <Flex alignItems="center" gap={1}>
         <MenuButton
           id={menuId}
           button={

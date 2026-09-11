@@ -393,8 +393,26 @@ Import `useEffectEvent` from `use-effect-event`, never from `react`. On React 19
 returns first-render values when the calling component is wrapped in `forwardRef` or `memo`
 ([facebook/react#34818](https://github.com/facebook/react/issues/34818), fixed in 19.3 canaries).
 `eslint/no-restricted-imports` in `.oxlintrc.json` enforces this. The bug reaches any dependency that
-wraps the native hook, so check the implementation before trusting one — `react-rx` is safe on both
-v4 and v5 because `useObservableEvent` builds on the same `use-effect-event` ponyfill.
+wraps the native hook, so check the implementation before trusting one.
+
+### react-rx: stable observables, explicit initial values
+
+`react-rx` v7 never subscribes during render. `useObservable` / `useSyncObservable` render the
+`initialValue` (required — pass `undefined` explicitly when there is nothing better) until the
+subscription started on commit delivers a value, and a synchronous emission arrives one pass later.
+Two rules follow:
+
+- **The observable identity must be stable across renders**: build it with `useMemo`, keep it on a
+  store, or hoist it to module scope, and key memos on primitives (a path string, an id) rather than
+  on arrays or objects recreated every render. An observable rebuilt each render is torn down and
+  re-subscribed each commit; when it synchronously replays a value that differs from the
+  `initialValue`, React aborts with "Maximum update depth exceeded"
+  (`useDocumentValuesRenderLoop.repro.test.tsx` guards one such case).
+- **Never rely on a synchronous first emission.** `useSyncObservable(obs$, undefined)!` is a
+  first-render crash. Pass the value the observable emits first (`GUARDED`, the releases store's
+  exported `INITIAL_RELEASES_STATE`, `useVariantsStore().initialState`), or derive it per render
+  when it depends on the observable's parameters (`useEditState`), since react-rx captures
+  `initialValue` once per hook instance.
 
 ### Translate: never define `components` inline
 
@@ -918,7 +936,6 @@ No Docker, databases, or other local services are required for unit tests, lint,
 - **Snapshot lockfile drift can fail `pnpm check:oxlint` in untouched files.** The VM image may have `node_modules` resolved to newer in-range versions than the committed `pnpm-lock.yaml` (e.g. `@sanity/client` 8.4.0 vs the locked 8.3.0), and `pnpm install` — even with `--frozen-lockfile` — keeps rewriting the lockfile to match instead of downgrading. Type errors in files you never touched (e.g. `@sanity/vision`'s `useDatasets.test.ts` missing a `description` field) are this drift, not your change: revert the churn with `git checkout -- pnpm-lock.yaml`, never commit it, and rely on CI (which installs from the committed lockfile) for the authoritative type check of those files.
 - **Do not run oxlint type checking (`pnpm check:oxlint`) while the dev studio is running.** Both are memory-hungry and running them concurrently has exhausted the VM's memory and frozen it for hours (unkillable thrashing). Stop `sanity dev` first (Ctrl-C in its tmux session), run the checks, then restart the studio.
 - **`sanity dev` in bundledDev mode (`unstable_bundledDev: true`, on by default in `dev/test-studio`, `dev/design-studio`, `dev/radar`, `dev/auth-test-studio`) grows by roughly 300 MB of RSS per distinct lazy chunk (`/@vite/lazy?id=...`) it compiles, on top of a ~2 GB baseline.** Page reloads, fresh client ids and re-requests of an already compiled chunk cost nothing, but a studio session that touches every plugin's lazy entry points can push the server past 10 GB (13.6 GB observed on vite 8.2.2, freezing the 16 GB VM). Classic mode sits at ~1 GB for the same actions. When you need a long-running studio or plan to exercise many tools, either flip `unstable_bundledDev` off locally or run the server with a PID watchdog (`while sleep 5; do r=$(ps -o rss= -p $PID) || break; [ "${r:-0}" -gt 5000000 ] && kill $PID; done`) and restart it when it trips. This is upstream vite/rolldown behavior, not something the studio config can tune.
-- **`sanity dev` can keep serving a stale revision after two edits of the same file land within a second or two** (observed in bundledDev mode when a script rewrote `useProject.ts` twice in quick succession: the terminal logged one `hmr update` and then served the first revision, and `touch` did not trigger another). Before measuring anything in the browser after scripted or rapid edits, check the `sanity dev` terminal for an `hmr update` line matching your last edit, and restart the server if it is missing.
 - **Simulating Presentation preview failure states.** The `/test` workspace's presentation tool allows any localhost origin (`allowOrigins: ['https://*.sanity.dev', 'http://localhost:*']`), so failure UIs can be triggered deterministically by pointing the preview at a throwaway local server via the `?preview=` search param, e.g. `http://localhost:3333/test/presentation?preview=http%3A%2F%2Flocalhost%3A3398%2F`. A plain HTML page that never runs `@sanity/visual-editing` exercises the overlays connection timeout path (loading overlay → "connecting" status card after 5s → caution card with "Continue anyway" after 3s more); a server that accepts connections but never responds (`createServer(() => {})`) keeps the iframe `load` event from firing and exercises the 15s load timeout → error card → "Retry" path. Note the demo screen recordings are time-compressed, so verify real timings from the `sanity dev` terminal log — the studio pipes browser `console.error` output there with timestamps.
 - **Verifying a production studio build (`sanity build`) must happen on an allow-listed origin.** `sanity build` for `dev/test-studio` bundles the _built_ `sanity` package (run `pnpm build` first — only `sanity dev` resolves monorepo sources via the `monorepo` export condition). Serve `dev/test-studio/dist` statically on **port 3333** (e.g. `python3 -m http.server 3333`, after stopping the dev server): project `ppsg7ml5` only allow-lists `http://localhost:3333`, so from any other port API requests fail CORS and the bifur `/socket/` WebSocket is rejected during its handshake (close code 1006 + retry loop). The static server has no SPA fallback, so load `http://localhost:3333/#token=…` (root path) and let the client-side router redirect, rather than deep-linking to a workspace path.
 
