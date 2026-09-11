@@ -23,8 +23,7 @@ const RootStack = styled(Stack)`
 `
 
 /**
- * @hidden
- * @beta */
+ * @internal */
 export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
   const {
     groups,

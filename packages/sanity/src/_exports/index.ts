@@ -237,8 +237,6 @@ export {
   type DiffProps,
   type ObjectDiff,
 } from '../core/field/types'
-export {EditPortal} from '../core/form/components/EditPortal'
-export {EnhancedObjectDialog} from '../core/form/components/EnhancedObjectDialog'
 export {FormField} from '../core/form/components/formField/FormField'
 export {FormFieldHeaderText} from '../core/form/components/formField/FormFieldHeaderText'
 export {FormFieldValidationStatus} from '../core/form/components/formField/FormFieldValidationStatus'
@@ -248,40 +246,25 @@ export {useGetFormValue} from '../core/form/contexts/GetFormValue'
 export {type FormBuilderContextValue} from '../core/form/FormBuilderContext'
 export {useDidUpdate} from '../core/form/hooks/useDidUpdate'
 export {ArrayOfObjectsFunctions} from '../core/form/inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsFunctions'
-export {ArrayOfObjectsInput} from '../core/form/inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsInput'
 export {VirtualizerScrollInstanceProvider} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
-export {ArrayOfObjectOptionsInput} from '../core/form/inputs/arrays/ArrayOfOptionsInput/ArrayOfObjectOptionsInput'
-export {ArrayOfOptionsInput} from '../core/form/inputs/arrays/ArrayOfOptionsInput/ArrayOfOptionsInput'
-export {ArrayOfPrimitiveOptionsInput} from '../core/form/inputs/arrays/ArrayOfOptionsInput/ArrayOfPrimitiveOptionsInput'
-export {ArrayOfPrimitivesFunctions} from '../core/form/inputs/arrays/ArrayOfPrimitivesInput/ArrayOfPrimitivesFunctions'
-export {ArrayOfPrimitivesInput} from '../core/form/inputs/arrays/ArrayOfPrimitivesInput/ArrayOfPrimitivesInput'
-export {UniversalArrayInput} from '../core/form/inputs/arrays/UniversalArrayInput'
-export {BooleanInput} from '../core/form/inputs/BooleanInput'
-export {DateInput, type DateInputProps} from '../core/form/inputs/DateInputs/DateInput'
-export {DateTimeInput, type DateTimeInputProps} from '../core/form/inputs/DateInputs/DateTimeInput'
-export {EmailInput, type EmailInputProps} from '../core/form/inputs/EmailInput'
+export {type DateInputProps} from '../core/form/inputs/DateInputs/DateInput'
+export {type DateTimeInputProps} from '../core/form/inputs/DateInputs/DateTimeInput'
+export {type EmailInputProps} from '../core/form/inputs/EmailInput'
 export {type AssetAccessPolicy} from '../core/form/inputs/files/types'
-export {NumberInput} from '../core/form/inputs/NumberInput/NumberInput'
-export {ObjectInput} from '../core/form/inputs/ObjectInput/ObjectInput'
 export {
   PortableTextInput as BlockEditor,
   PortableTextInput,
 } from '../core/form/inputs/PortableText/PortableTextInput'
-export {SelectInput} from '../core/form/inputs/SelectInput'
-export {SlugInput, type SlugInputProps} from '../core/form/inputs/Slug/SlugInput'
-export {StringInput} from '../core/form/inputs/StringInput/StringInput'
-export {TagsArrayInput, type TagsArrayInputProps} from '../core/form/inputs/TagsArrayInput'
-export {TelephoneInput, type TelephoneInputProps} from '../core/form/inputs/TelephoneInput'
+export {type SlugInputProps} from '../core/form/inputs/Slug/SlugInput'
+export {type TagsArrayInputProps} from '../core/form/inputs/TagsArrayInput'
+export {type TelephoneInputProps} from '../core/form/inputs/TelephoneInput'
 export {TextInput, type TextInputProps} from '../core/form/inputs/TextInput'
-export {UrlInput, type UrlInputProps} from '../core/form/inputs/UrlInput'
+export {type UrlInputProps} from '../core/form/inputs/UrlInput'
 export {
   ArrayOfObjectsItem,
   type MemberItemProps,
 } from '../core/form/members/array/items/ArrayOfObjectsItem'
-export {
-  ArrayOfPrimitivesItem,
-  type PrimitiveMemberItemProps,
-} from '../core/form/members/array/items/ArrayOfPrimitivesItem'
+export {type PrimitiveMemberItemProps} from '../core/form/members/array/items/ArrayOfPrimitivesItem'
 export {MemberItemError} from '../core/form/members/array/MemberItemError'
 export {MemberField} from '../core/form/members/object/MemberField'
 export {MemberFieldError} from '../core/form/members/object/MemberFieldError'
@@ -360,22 +343,10 @@ export {
 export {FormCallbacksProvider, useFormCallbacks} from '../core/form/studio/contexts/FormCallbacks'
 export {FormBuilder, type FormBuilderProps} from '../core/form/studio/FormBuilder'
 export {FormProvider, type FormProviderProps} from '../core/form/studio/FormProvider'
-export {
-  StudioCrossDatasetReferenceInput as CrossDatasetReferenceInput,
-  type StudioCrossDatasetReferenceInputProps as CrossDatasetReferenceInputProps,
-} from '../core/form/studio/inputs/crossDatasetReference/StudioCrossDatasetReferenceInput'
-export {
-  StudioReferenceInput as ReferenceInput,
-  type StudioReferenceInputProps as ReferenceInputProps,
-} from '../core/form/studio/inputs/reference/StudioReferenceInput'
-export {
-  StudioFileInput as FileInput,
-  type FileInputProps,
-} from '../core/form/studio/inputs/StudioFileInput'
-export {
-  StudioImageInput as ImageInput,
-  type ImageInputProps,
-} from '../core/form/studio/inputs/StudioImageInput'
+export {type StudioCrossDatasetReferenceInputProps as CrossDatasetReferenceInputProps} from '../core/form/studio/inputs/crossDatasetReference/StudioCrossDatasetReferenceInput'
+export {type StudioReferenceInputProps as ReferenceInputProps} from '../core/form/studio/inputs/reference/StudioReferenceInput'
+export {type FileInputProps} from '../core/form/studio/inputs/StudioFileInput'
+export {type ImageInputProps} from '../core/form/studio/inputs/StudioImageInput'
 export {
   type AssetSourcesResolver,
   type FileLike,

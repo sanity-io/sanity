@@ -25,8 +25,7 @@ export type ImageInputProps = Omit<
 >
 
 /**
- * @hidden
- * @beta */
+ * @internal */
 export function StudioImageInput(props: ImageInputProps) {
   const sourcesFromSchema = props.schemaType.options?.sources
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR

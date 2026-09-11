@@ -287,6 +287,8 @@ export {
   type TypeChangeDiff,
 } from '../core/field/types'
 export {type FieldValueError, getValueError} from '../core/field/validation'
+export {EditPortal} from '../core/form/components/EditPortal'
+export {EnhancedObjectDialog} from '../core/form/components/EnhancedObjectDialog'
 export {
   type FormInputAbsolutePathArg,
   type FormInputRelativePathArg,
@@ -326,8 +328,14 @@ export {
 } from '../core/form/field/actions/FieldActionsResolver'
 export {useFieldActions} from '../core/form/field/actions/useFieldActions'
 export {useHoveredField} from '../core/form/field/useHoveredField'
+export {BooleanInput} from '../core/form/inputs/BooleanInput'
 export {CrossDatasetReferencePreview} from '../core/form/inputs/CrossDatasetReferenceInput/CrossDatasetReferencePreview'
+export {DateInput} from '../core/form/inputs/DateInputs/DateInput'
+export {DateTimeInput} from '../core/form/inputs/DateInputs/DateTimeInput'
 export {getCalendarLabels} from '../core/form/inputs/DateInputs/utils'
+export {EmailInput} from '../core/form/inputs/EmailInput'
+export {NumberInput} from '../core/form/inputs/NumberInput/NumberInput'
+export {ObjectInput} from '../core/form/inputs/ObjectInput/ObjectInput'
 export {
   type PortableTextMemberItem,
   UpdateReadOnlyPlugin,
@@ -335,10 +343,23 @@ export {
 export {CreateButton as CreateReferenceButton} from '../core/form/inputs/ReferenceInput/CreateButton'
 export {ReferenceAutocomplete} from '../core/form/inputs/ReferenceInput/ReferenceAutocomplete'
 export {type CreateReferenceOption} from '../core/form/inputs/ReferenceInput/types'
+export {SelectInput} from '../core/form/inputs/SelectInput'
+export {SlugInput} from '../core/form/inputs/Slug/SlugInput'
+export {StringInput} from '../core/form/inputs/StringInput/StringInput'
+export {TagsArrayInput} from '../core/form/inputs/TagsArrayInput'
+export {TelephoneInput} from '../core/form/inputs/TelephoneInput'
+export {UrlInput} from '../core/form/inputs/UrlInput'
+export {ArrayOfObjectsInput} from '../core/form/inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsInput'
 export {
   useVirtualizerScrollInstance,
   type VirtualizerScrollInstance,
 } from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/useVirtualizerScrollInstance'
+export {ArrayOfObjectOptionsInput} from '../core/form/inputs/arrays/ArrayOfOptionsInput/ArrayOfObjectOptionsInput'
+export {ArrayOfOptionsInput} from '../core/form/inputs/arrays/ArrayOfOptionsInput/ArrayOfOptionsInput'
+export {ArrayOfPrimitiveOptionsInput} from '../core/form/inputs/arrays/ArrayOfOptionsInput/ArrayOfPrimitiveOptionsInput'
+export {ArrayOfPrimitivesFunctions} from '../core/form/inputs/arrays/ArrayOfPrimitivesInput/ArrayOfPrimitivesFunctions'
+export {ArrayOfPrimitivesInput} from '../core/form/inputs/arrays/ArrayOfPrimitivesInput/ArrayOfPrimitivesInput'
+export {UniversalArrayInput} from '../core/form/inputs/arrays/UniversalArrayInput'
 export {
   ArrayOfObjectsInputMember,
   type ArrayOfObjectsMemberProps,
@@ -347,6 +368,7 @@ export {
   ArrayOfObjectsInputMembers,
   type ArrayOfObjectsInputMembersProps,
 } from '../core/form/members/array/ArrayOfObjectsInputMembers'
+export {ArrayOfPrimitivesItem} from '../core/form/members/array/items/ArrayOfPrimitivesItem'
 export {type MemberFieldProps} from '../core/form/members/object/MemberField'
 export {MemberFieldSet} from '../core/form/members/object/MemberFieldset'
 export {type ObjectInputMemberProps} from '../core/form/members/object/ObjectInputMember'
@@ -397,6 +419,10 @@ export {
   defaultRenderItem,
   defaultRenderPreview,
 } from '../core/form/studio/defaults'
+export {StudioFileInput as FileInput} from '../core/form/studio/inputs/StudioFileInput'
+export {StudioImageInput as ImageInput} from '../core/form/studio/inputs/StudioImageInput'
+export {StudioCrossDatasetReferenceInput as CrossDatasetReferenceInput} from '../core/form/studio/inputs/crossDatasetReference/StudioCrossDatasetReferenceInput'
+export {StudioReferenceInput as ReferenceInput} from '../core/form/studio/inputs/reference/StudioReferenceInput'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {useEnhancedObjectDialog} from '../core/form/studio/tree-editing/context/enabled/useEnhancedObjectDialog'
 export {type UploaderDef} from '../core/form/studio/uploads/types'
