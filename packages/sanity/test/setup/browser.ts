@@ -9,7 +9,7 @@ import {afterEach} from 'vitest'
 import {cleanup} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
 
-import {removePointerPark} from '../browser/testHelpers'
+import {releaseFloatingUiSnapLock, removePointerPark} from '../browser/testHelpers'
 
 // Keep this in sync with the `browser.viewport` default in
 // vitest.browser.config.mts. Tests that call `page.viewport(...)` (e.g. toolbar
@@ -24,10 +24,13 @@ const DEFAULT_VIEWPORT = {width: 1280, height: 900}
 // With `sequence.hooks: 'list'` this runs after the Chromatic plugin's
 // afterEach has archived the end state, so the pointer park element that
 // `settleChromaticEndState` leaves under the real pointer is still present in
-// the archive (it is transparent) and only removed here.
+// the archive (it is transparent) and only removed here. The Floating UI
+// snap observer is released here for the same reason: it must keep rounding
+// offsets until the archive is taken, and must not outlive the test.
 afterEach(async () => {
   await cleanup()
   removePointerPark()
+  releaseFloatingUiSnapLock()
   await page.viewport(DEFAULT_VIEWPORT.width, DEFAULT_VIEWPORT.height)
 })
 

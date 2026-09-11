@@ -43,7 +43,7 @@ function snapFloatingUiNode(node: HTMLElement): void {
   }
 }
 
-export function snapFloatingUiToIntegerPixels(): void {
+function snapVisibleFloatingUi(): void {
   const anchors = window.document.querySelectorAll<HTMLElement>(FLOATING_UI_SNAP_SELECTOR)
   const snapped = new Set<HTMLElement>()
   for (const anchor of anchors) {
@@ -60,25 +60,68 @@ export function snapFloatingUiToIntegerPixels(): void {
       break
     }
   }
+}
+
+const FLOATING_UI_SNAP_OBSERVER_OPTIONS: MutationObserverInit = {
+  subtree: true,
+  attributes: true,
+  attributeFilter: ['style'],
+}
+
+/**
+ * The observer that keeps re-rounding Floating UI offsets after
+ * `snapFloatingUiToIntegerPixels`. One per test: the setup file's `afterEach`
+ * releases it so a lock left by one test never keeps rewriting styles in the
+ * next one.
+ */
+let floatingUiSnapObserver: MutationObserver | null = null
+
+export function snapFloatingUiToIntegerPixels(): void {
+  snapVisibleFloatingUi()
   // Floating UI can rewrite a half-pixel translate between this call and the
-  // archive. Re-round on style mutations until unmount.
-  if (!window.document.documentElement.hasAttribute('data-chromatic-float-lock')) {
-    window.document.documentElement.setAttribute('data-chromatic-float-lock', '')
-    const observer = new MutationObserver(() => {
-      observer.disconnect()
-      snapFloatingUiToIntegerPixels()
-      observer.observe(window.document.body, {
-        subtree: true,
-        attributes: true,
-        attributeFilter: ['style'],
-      })
+  // archive. Re-round on style mutations until `releaseFloatingUiSnapLock`.
+  if (floatingUiSnapObserver) return
+  const observer = new MutationObserver(() => {
+    if (floatingUiSnapObserver !== observer) return
+    // Pause while re-rounding so our own style writes do not re-trigger it.
+    observer.disconnect()
+    snapVisibleFloatingUi()
+    observer.observe(window.document.body, FLOATING_UI_SNAP_OBSERVER_OPTIONS)
+  })
+  observer.observe(window.document.body, FLOATING_UI_SNAP_OBSERVER_OPTIONS)
+  floatingUiSnapObserver = observer
+}
+
+/** Stop re-rounding Floating UI offsets. Called from the setup file's `afterEach`. */
+export function releaseFloatingUiSnapLock(): void {
+  floatingUiSnapObserver?.disconnect()
+  floatingUiSnapObserver = null
+}
+
+/**
+ * Poll `sample` until it returns the same value on `repeats` consecutive
+ * re-reads, then return that value. A single matching re-read is not enough
+ * for layout driven by ResizeObserver / Floating UI: it can agree once and
+ * move again on the next frame, which is exactly what produced pairwise
+ * Chromatic diffs of identical code.
+ */
+export async function expectStable<T>(sample: () => T, repeats = 3): Promise<T> {
+  let previous!: T
+  let hasPrevious = false
+  let stable = 0
+  await expect
+    .poll(() => {
+      const next = sample()
+      if (hasPrevious && Object.is(next, previous)) stable += 1
+      else {
+        previous = next
+        hasPrevious = true
+        stable = 0
+      }
+      return stable >= repeats
     })
-    observer.observe(window.document.body, {
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['style'],
-    })
-  }
+    .toBe(true)
+  return previous
 }
 
 const POINTER_PARK_TESTID = 'chromatic-pointer-park'
@@ -494,19 +537,7 @@ export function testHelpers() {
         Array.from(window.document.querySelectorAll('[data-actions-visible]'))
           .map((el) => el.getAttribute('data-actions-visible'))
           .join(',')
-      let previousFieldActions = fieldActionsSig()
-      let fieldActionsStable = 0
-      await expect
-        .poll(() => {
-          const next = fieldActionsSig()
-          if (next === previousFieldActions) fieldActionsStable += 1
-          else {
-            previousFieldActions = next
-            fieldActionsStable = 0
-          }
-          return fieldActionsStable >= 2
-        })
-        .toBe(true)
+      await expectStable(fieldActionsSig, 2)
 
       await expect
         .poll(
@@ -556,6 +587,12 @@ export function testHelpers() {
           .toBe(true)
       }
 
+      // Floating chrome that was open when settling started must still be open
+      // and must stop moving. An empty signature (hidden or unmounted) never
+      // counts as stable, so a popover that closes under the parked pointer
+      // times out here instead of being archived silently.
+      const present = (sig: () => string) => () => sig() || Symbol('absent')
+
       const floatingSig = () =>
         Array.from(
           window.document.querySelectorAll<HTMLElement>(
@@ -568,45 +605,19 @@ export function testHelpers() {
             return `${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)}`
           })
           .join('|')
-      if (floatingSig()) {
-        let previous = ''
-        let stable = 0
-        await expect
-          .poll(() => {
-            const next = floatingSig()
-            if (next && next === previous) stable += 1
-            else {
-              previous = next
-              stable = 0
-            }
-            return stable >= 2
-          })
-          .toBe(true)
-      }
+      if (floatingSig()) await expectStable(present(floatingSig), 2)
 
+      // Menus and listboxes (e.g. the comment mentions popover) are positioned
+      // by Floating UI after they open; wait for their box to stop changing.
       const menuSig = () =>
-        Array.from(window.document.querySelectorAll<HTMLElement>('[role="menu"]'))
+        Array.from(window.document.querySelectorAll<HTMLElement>('[role="menu"], [role="listbox"]'))
           .filter((el) => el.checkVisibility())
           .map((el) => {
             const r = el.getBoundingClientRect()
             return `${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)},${Math.round(r.height)}`
           })
           .join('|')
-      if (menuSig()) {
-        let previous = ''
-        let stable = 0
-        await expect
-          .poll(() => {
-            const next = menuSig()
-            if (next && next === previous) stable += 1
-            else {
-              previous = next
-              stable = 0
-            }
-            return stable >= 3
-          })
-          .toBe(true)
-      }
+      if (menuSig()) await expectStable(present(menuSig))
 
       // CollapseMenu measures toolbar width asynchronously; button set /
       // x-offsets must stop moving or identical-code captures disagree on
@@ -627,21 +638,7 @@ export function testHelpers() {
               .join(','),
           )
           .join('||')
-      if (toolbarSig()) {
-        let previous = ''
-        let stable = 0
-        await expect
-          .poll(() => {
-            const next = toolbarSig()
-            if (next && next === previous) stable += 1
-            else {
-              previous = next
-              stable = 0
-            }
-            return stable >= 3
-          })
-          .toBe(true)
-      }
+      if (toolbarSig()) await expectStable(present(toolbarSig))
 
       // Snap after geometry has settled so the archive cannot land on a
       // half-pixel Floating UI translate that differs across identical runs.
