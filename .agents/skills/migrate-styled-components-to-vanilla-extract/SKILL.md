@@ -21,9 +21,13 @@ the `sanity-io/plugins` skill of the same name for this repo's setup.
   specificity outcome must be preserved. Copy CSS values verbatim; do not "improve" them.
 - **Small PRs.** Migrate one component (or one tightly-coupled cluster) per PR, conventional-commit
   titled, e.g. `refactor(structure): migrate Scroller to vanilla-extract`.
-- **Reference implementations:** `packages/@sanity/vision` (fully migrated, styled-components
-  banned there by lint), `packages/sanity/src/core/changeIndicators/ElementWithChangeBar.*`, and
-  `packages/sanity/src/structure/panes/document/document-layout/DocumentLayout.*`.
+- **Reference implementations:** `packages/@sanity/vision`,
+  `packages/sanity/src/core/changeIndicators/ElementWithChangeBar.*`,
+  `packages/sanity/src/structure/panes/document/document-layout/DocumentLayout.*`, and for the
+  dynamic shapes `packages/sanity/src/core/components/popoverDialog/PopoverContainer.*`
+  (responsive widths through per-breakpoint variables) and
+  `packages/sanity/src/core/form/inputs/PortableText/text/TextBlock.styles.*` (per-level
+  `styleVariants`, private custom properties, theme-driven colors).
 
 ## Step 1: Inventory
 
@@ -254,12 +258,14 @@ or computed styles (runtime styles are disabled there — see AGENTS.md); assert
 For high-traffic components, add a Chromatic story per the `sanity-visual-regression` skill so the
 migration is sentinel-protected.
 
-## End state per package
+## End state
 
-Once a package is fully migrated, a `no-restricted-imports` ban keeps styled-components from
-creeping back — see the `packages/@sanity/vision/**` override in `.oxlintrc.json`. Per AGENTS.md,
-`.oxlintrc.json` changes require an explicit maintainer request; propose the ban in the final
-migration PR rather than adding it unprompted.
+The monorepo's own code no longer imports `styled-components`; `eslint/no-restricted-imports` in
+`.oxlintrc.json` bans the module everywhere (the global rule and every override that repeats it).
+The dependency itself stays declared because `@sanity/ui@4` requires it as a peer and still
+injects its own styles at runtime — which is exactly why the cascade rules above still matter for
+every new `.css.ts`. Use this skill for new components and for plugin or example code that still
+carries styled-components.
 
 ## Checklist
 
