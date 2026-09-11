@@ -1,6 +1,6 @@
 ---
 name: react-rx-hook-audit
-description: Find react-rx hook call sites (useObservable, useSyncObservable, useObservablePromise) whose observable identity churns or that re-render more than needed, verify the suspicion at runtime, and refactor them to the useValuePreview pattern. Use when reviewing or writing a component or hook that calls these hooks, when a re-render or resubscribe storm is suspected, or when preparing the react-rx 7 upgrade.
+description: Find react-rx hook call sites (useObservable, useSyncObservable, useObservablePromise) whose observable identity churns or that re-render more than needed, verify the suspicion at runtime, and refactor them to the useValuePreview pattern. Use when reviewing or writing a component or hook that calls these hooks, or when a re-render, loading flash or resubscribe storm is suspected.
 ---
 
 # react-rx hook audit
@@ -8,7 +8,7 @@ description: Find react-rx hook call sites (useObservable, useSyncObservable, us
 ## Start here
 
 Use when a component or hook calls `useObservable`, `useSyncObservable` or `useObservablePromise`,
-when you suspect a re-render or resubscribe storm, or before the react-rx 7 upgrade.
+or when you suspect a re-render, loading flash or resubscribe storm.
 
 Read the reference refactor `packages/sanity/src/core/preview/useValuePreview.ts` and its test
 `packages/sanity/src/core/preview/__test__/useValuePreview.test.tsx` before you change a hook.
@@ -16,13 +16,13 @@ Read the reference refactor `packages/sanity/src/core/preview/useValuePreview.ts
 react-rx keeps one shared store per observable identity. A new identity is a new store and a new
 subscription of the source on commit, even when the pipeline is the same.
 
-- react-rx 6 (installed) subscribes a replacement observable once during render, so a synchronous
-  emission shows in that render. Read the comments on `needsWarmUp` and `warmUp` in
-  `packages/sanity/node_modules/react-rx/dist/index.js`. The resubscribe still happens, and an
-  asynchronous source still shows `initialValue` first.
-- react-rx 7 has no warm-up. Every identity change renders `initialValue` once and resubscribes on
-  commit. `initialValue` is required and omitting it throws during render. `useObservableSubject`
-  replaces `useObservableEvent`. Get the dist with `npm pack react-rx@7`.
+- react-rx 7 (installed since #14643) has no warm-up. Every identity change renders `initialValue`
+  once and resubscribes on commit, so identity churn shows up as loading flashes. `initialValue` is
+  required and omitting it throws during render. `useObservableSubject` replaces
+  `useObservableEvent`.
+- react-rx 6 subscribed a replacement observable once during render (`needsWarmUp` and `warmUp` in
+  its `dist/index.js`, `npm pack react-rx@6.0.1` to read them), so a synchronous emission showed in
+  that render and the churn cost only the resubscribe. Code that looked fine on 6 flashes on 7.
 
 ## Find candidates
 
@@ -132,9 +132,9 @@ Reproduce the `useValuePreview` shape:
    together, so `switchMap` never subscribes an intermediate source.
 3. Hold the record in a `BehaviorSubject` fed from a `useEffect`. Replace the subject whenever any
    identity input changes, `enabled` included, seeded with the current render's inputs, with the
-   "adjust state during render" pattern. react-rx 6 warms up the replacement observable during
-   render, so an old subject would make it preview the inputs of an earlier render. This is
-   `useInputsSubject` in `useValuePreview.ts`:
+   "adjust state during render" pattern. A replacement observable must never read the inputs of an
+   earlier render, and react-rx 6 subscribed it during render. This is `useInputsSubject` in
+   `useValuePreview.ts`:
 
    ```ts
    function useInputsSubject(
@@ -204,16 +204,18 @@ Write these three tests. They catch the regressions the refactor guards against:
 3. Identity change (another document or schema type): every frame since the switch is the loading
    frame, the previous target's title never renders, then the new title renders.
 
-Run the file against the react-rx 7 dist to see which failures are v7-only. The installed dist
-files are hard links into the pnpm store, so never write into them in place; unlink first:
+At this commit `useValuePreview.test.tsx` (23 tests) passes on the installed react-rx 7.0.0, and
+`main`'s previous hook fails 7 of them there: loading frames on same-document edits and perspective
+changes, a second render for an edit that leaves the preview unchanged, three previews for equal
+inline inputs, a resubscribe on an overridden context change, and StrictMode. To see which of those
+the react-rx 6 warm-up masked, run the file against the 6.0.1 dist. The installed dist files are hard
+links into the pnpm store, so never write into them in place; unlink first:
 
 ```bash
 RX=packages/sanity/node_modules/react-rx/dist
-cp -a $RX /tmp/react-rx6-dist
-rm $RX/index.js $RX/index.d.ts && cp /tmp/react-rx7/package/dist/index.js /tmp/react-rx7/package/dist/index.d.ts $RX/
+cp -a $RX /tmp/react-rx7-dist
+(cd /tmp && npm pack react-rx@6.0.1 --silent && tar xzf react-rx-6.0.1.tgz)
+rm $RX/index.js $RX/index.d.ts && cp /tmp/package/dist/index.js /tmp/package/dist/index.d.ts $RX/
 pnpm vitest run --project=sanity <the test file>
-rm $RX/index.js $RX/index.d.ts && cp /tmp/react-rx6-dist/index.js /tmp/react-rx6-dist/index.d.ts $RX/
+rm $RX/index.js $RX/index.d.ts && cp /tmp/react-rx7-dist/index.js /tmp/react-rx7-dist/index.d.ts $RX/
 ```
-
-At this commit `useValuePreview.test.tsx` passes under both dists; on `main`'s hook it fails 2 tests
-under v6 and 6 under v7.
