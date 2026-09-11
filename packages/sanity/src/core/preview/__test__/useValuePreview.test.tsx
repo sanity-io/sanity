@@ -125,6 +125,57 @@ describe('useValuePreview', () => {
     expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
   })
 
+  it('does not reset to loading when a published document becomes a draft or version', () => {
+    const pending = new Subject<{snapshot: {title: string}}>()
+    observeForPreview.mockImplementation((value: {_id: string; title: string}) =>
+      value._id === 'a'
+        ? new Observable((subscriber) => {
+            subscriber.next({snapshot: {title: value.title}})
+          })
+        : pending,
+    )
+    const frames: Frame[] = []
+    const {rerender} = render(<Harness value={{_id: 'a', title: 'one'}} frames={frames} />)
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
+
+    // first edit materializes a draft of the same document; keep the current title
+    rerender(<Harness value={{_id: 'drafts.a', title: 'one'}} frames={frames} />)
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
+
+    rerender(<Harness value={{_id: 'versions.release.a', title: 'one'}} frames={frames} />)
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
+  })
+
+  it('resets to loading when a version is slated for unpublish', () => {
+    const published = new Subject<{snapshot: {title: string}}>()
+    observeForPreview.mockImplementation((value: {_id: string; title?: string}) =>
+      value._id === 'a'
+        ? published
+        : new Observable((subscriber) => {
+            subscriber.next({snapshot: {title: value.title}})
+          }),
+    )
+    const frames: Frame[] = []
+    const {rerender} = render(
+      <Harness value={{_id: 'versions.release.a', title: 'version'}} frames={frames} />,
+    )
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'version'})
+
+    // the pipeline now observes the published document; the version title must not linger
+    rerender(
+      <Harness
+        value={{_id: 'versions.release.a', title: 'version', _system: {delete: true}}}
+        frames={frames}
+      />,
+    )
+    expect(frames.at(-1)).toEqual({isLoading: true, title: undefined, error: undefined})
+
+    act(() => {
+      published.next({snapshot: {title: 'published'}})
+    })
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'published'})
+  })
+
   it('resets to loading when the value previews a different document', () => {
     const second = new Subject<{snapshot: {title: string}}>()
     observeForPreview.mockImplementation((value: {_id: string; title: string}) =>

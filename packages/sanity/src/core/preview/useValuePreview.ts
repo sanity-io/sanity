@@ -82,9 +82,11 @@ function isSameState(a: State, b: State): boolean {
 
 /**
  * Identifies what a value previews: a document or reference by id (per dataset for cross-dataset
- * references), an array item by key. A change of target resets the preview to loading; edits to
- * the same target keep the current preview until the next one arrives. Values without any of
- * these identifiers (plain objects previewed in place) all count as one target.
+ * references), an array item by key. Draft, version, and published ids of the same document are
+ * one target. A version slated for unpublish is observed as the published document, so it is a
+ * different target. A change of target resets the preview to loading; edits to the same target
+ * keep the current preview until the next one arrives. Values without any of these identifiers
+ * (plain objects previewed in place) all count as one target.
  */
 function getPreviewTargetKey(value: unknown): string | undefined {
   if (!value || typeof value !== 'object') return undefined
@@ -95,9 +97,13 @@ function getPreviewTargetKey(value: unknown): string | undefined {
     _projectId?: string
     _dataset?: string
   }
-  const id = _id ?? _ref ?? _key
-  if (id === undefined) return undefined
-  return _dataset ? `${_projectId}/${_dataset}/${id}` : id
+  const rawId = _id ?? _ref ?? _key
+  if (rawId === undefined) return undefined
+  // Document ids: drafts.X, versions.*.X, and X are the same document. Array item keys are not.
+  const id = _id !== undefined || _ref !== undefined ? getPublishedId(rawId) : rawId
+  // Unpublish rewrites the observed document to the published id and drops the rest of the value.
+  const target = isGoingToUnpublish(value as SanityDocument) ? `${id}:unpublish` : id
+  return _dataset ? `${_projectId}/${_dataset}/${target}` : target
 }
 /**
  * @internal
