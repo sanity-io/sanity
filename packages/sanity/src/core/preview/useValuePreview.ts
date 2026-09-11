@@ -5,7 +5,8 @@ import {
   type SortOrdering,
 } from '@sanity/types'
 import {dequal} from 'dequal'
-import {isValidElement, useEffect, useMemo, useState} from 'react'
+import isPlainObject from 'lodash-es/isPlainObject.js'
+import {useEffect, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {BehaviorSubject, concat, type Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, map, scan, switchMap} from 'rxjs/operators'
@@ -15,6 +16,7 @@ import {usePerspective} from '../perspective/usePerspective'
 import {isGoingToUnpublish} from '../releases/util/isGoingToUnpublish'
 import {useDocumentPreviewStore} from '../store/datastores'
 import {getPublishedId} from '../util/draftUtils'
+import {shallowEquals} from '../util/shallowEquals'
 import {useShallowUnique} from '../util/useShallowUnique'
 import {type Previewable} from './types'
 
@@ -48,13 +50,13 @@ function isSameError(a: Error | undefined, b: Error | undefined): boolean {
 // Every local mutation bumps the timestamps `prepareForPreview` preserves, and nothing renders them.
 const IGNORED_PREVIEW_KEYS = new Set(['_createdAt', '_updatedAt'])
 
-// Components and elements compare by identity (walking an element's props could reach fibers);
-// plain media values such as image assets compare by content.
+// Plain media values such as image assets compare by content. Anything else — components,
+// elements, arrays of elements, portals — compares by identity: walking React internals is not
+// safe, and `prepare()` may build a fresh one per emission, in which case the preview simply
+// re-renders as it did before.
 function isSameMedia(a: unknown, b: unknown): boolean {
   if (a === b) return true
-  if (typeof a === 'function' || typeof b === 'function') return false
-  if (isValidElement(a) || isValidElement(b)) return false
-  return dequal(a, b)
+  return isPlainObject(a) && isPlainObject(b) && dequal(a, b)
 }
 
 function isSamePreview(a: PreviewValue | undefined, b: PreviewValue | undefined): boolean {
@@ -71,24 +73,39 @@ function isSamePreview(a: PreviewValue | undefined, b: PreviewValue | undefined)
   return true
 }
 
-// Prepared previews are small, so comparing them is cheap. Editing a field the preview does not
-// select, or passing an equal value object built during render, then leaves the rendered state
-// alone instead of re-rendering every preview consumer (or, for the latter, looping).
+// Prepared previews are small, so comparing them is cheap: editing a field the preview does not
+// select leaves the rendered state alone instead of re-rendering every preview consumer.
 function isSameState(a: State, b: State): boolean {
   return (
     a.isLoading === b.isLoading && isSameError(a.error, b.error) && isSamePreview(a.value, b.value)
   )
 }
 
+interface PreviewTarget {
+  previewable: Previewable
+  perspective: PerspectiveStack
+  variant: string | undefined
+  /**
+   * What the preview shows, independent of the input's shape. A change resets the preview to
+   * loading; edits to the same target keep the current preview until the next one arrives.
+   */
+  key: string | undefined
+}
+
 /**
- * Identifies what a value previews: a document or reference by id (per dataset for cross-dataset
- * references), an array item by key. A change of target resets the preview to loading; edits to
- * the same target keep the current preview until the next one arrives. Values without any of
- * these identifiers (plain objects previewed in place) all count as one target.
+ * Keys a target by the document it previews and the perspective it is seen through: a document
+ * or reference by its published id — so `drafts.x`, `versions.*.x` and `x` are one document and
+ * materializing a draft does not reset the preview — per project and dataset for cross-dataset
+ * references, an array item by key. Values without any identifier (plain objects previewed in
+ * place) all count as one target. The perspective is part of the key because a version slated
+ * for unpublishing switches to previewing the published document.
  */
-function getPreviewTargetKey(value: unknown): string | undefined {
-  if (!value || typeof value !== 'object') return undefined
-  const {_id, _ref, _key, _projectId, _dataset} = value as {
+function getPreviewTargetKey(
+  previewable: Previewable,
+  perspective: PerspectiveStack,
+  variant: string | undefined,
+): string | undefined {
+  const {_id, _ref, _key, _projectId, _dataset} = previewable as {
     _id?: string
     _ref?: string
     _key?: string
@@ -97,7 +114,8 @@ function getPreviewTargetKey(value: unknown): string | undefined {
   }
   const id = _id ?? _ref ?? _key
   if (id === undefined) return undefined
-  return _dataset ? `${_projectId}/${_dataset}/${id}` : id
+  const document = _dataset ? `${_projectId}/${_dataset}/${id}` : getPublishedId(id)
+  return `${document}|${perspective.join(',')}|${variant ?? ''}`
 }
 /**
  * @internal
@@ -139,71 +157,79 @@ export function useValuePreview(props: {
     value$.next(previewValue)
   }, [previewValue, value$])
 
-  const observable = useMemo<Observable<State>>(
-    () =>
-      value$.pipe(
-        distinctUntilChanged(),
-        scan<unknown, {value: unknown; key: string | undefined; targetChanged: boolean}>(
-          (previous, value) => {
-            const key = getPreviewTargetKey(value)
-            return {value, key, targetChanged: key !== previous.key}
-          },
-          {value: undefined, key: undefined, targetChanged: false},
-        ),
-        switchMap(({value, targetChanged}) => {
-          // this will render previews as "loaded" (i.e. not in loading state) – typically with "Untitled" text
-          if (!enabled || !value || !schemaType) return of(IDLE_STATE)
+  const observable = useMemo<Observable<State>>(() => {
+    const resolveTarget = (value: unknown): PreviewTarget | undefined => {
+      if (!enabled || !value || !schemaType) return undefined
 
-          const goingToUnpublish = isGoingToUnpublish(value as SanityDocument)
+      const goingToUnpublish = isGoingToUnpublish(value as SanityDocument)
 
-          const updatedStack = goingToUnpublish ? [] : (chosenPerspectiveStack ?? perspectiveStack)
-          // A document slated for unpublishing is previewed as its published version, which is
-          // outside of any variant. Otherwise the variant follows the perspective: only inherited
-          // from the context when the perspective is too.
-          const updatedVariant = goingToUnpublish
-            ? undefined
-            : (chosenVariant ?? (chosenPerspectiveStack ? undefined : selectedVariantName))
-          const updatedDocId = goingToUnpublish
-            ? getPublishedId((value as SanityDocument)._id)
-            : (value as SanityDocument)._id
+      const perspective = goingToUnpublish ? [] : (chosenPerspectiveStack ?? perspectiveStack)
+      // A document slated for unpublishing is previewed as its published version, which is
+      // outside of any variant. Otherwise the variant follows the perspective: only inherited
+      // from the context when the perspective is too.
+      const variant = goingToUnpublish
+        ? undefined
+        : (chosenVariant ?? (chosenPerspectiveStack ? undefined : selectedVariantName))
+      const id = goingToUnpublish
+        ? getPublishedId((value as SanityDocument)._id)
+        : (value as SanityDocument)._id
 
-          // allow for previewing the published document when a version is slated for unpublishing
-          // but if it's not for unpublishing, then we want to preview the content as was before
-          const restPreviewValue = goingToUnpublish ? {} : {...(value as Previewable)}
+      // allow for previewing the published document when a version is slated for unpublishing
+      // but if it's not for unpublishing, then we want to preview the content as was before
+      const previewable: Previewable = {
+        _id: id,
+        ...(goingToUnpublish ? {} : (value as Previewable)),
+      }
 
-          const preview$ = observeForPreview(
-            {
-              _id: updatedDocId,
-              ...restPreviewValue,
-            },
-            schemaType,
-            {
-              perspective: updatedStack,
-              variant: updatedVariant,
-              viewOptions: {ordering: ordering},
-            },
-          ).pipe(
-            map((event) => ({isLoading: false, value: event.snapshot || undefined})),
-            catchError((error) => of({isLoading: false, error})),
-          )
+      return {
+        previewable,
+        perspective,
+        variant,
+        key: getPreviewTargetKey(previewable, perspective, variant),
+      }
+    }
 
-          // A different document must not keep showing the previous one's preview while it loads.
-          return targetChanged ? concat(of(INITIAL_STATE), preview$) : preview$
-        }),
-        distinctUntilChanged(isSameState),
+    return value$.pipe(
+      // An edit replaces the changed field on the document, so a shallow compare catches every real
+      // change while an equal object built during render (`{_id}` in a dialog) is not previewed
+      // again — which would loop whenever `prepare()` returns a fresh media component.
+      distinctUntilChanged(shallowEquals),
+      scan<unknown, {target: PreviewTarget | undefined; targetChanged: boolean}>(
+        (previous, value) => {
+          const target = resolveTarget(value)
+          return {target, targetChanged: target?.key !== previous.target?.key}
+        },
+        {target: undefined, targetChanged: false},
       ),
-    [
-      value$,
-      enabled,
-      schemaType,
-      chosenPerspectiveStack,
-      perspectiveStack,
-      chosenVariant,
-      selectedVariantName,
-      observeForPreview,
-      ordering,
-    ],
-  )
+      switchMap(({target, targetChanged}) => {
+        // this will render previews as "loaded" (i.e. not in loading state) – typically with "Untitled" text
+        if (!target || !schemaType) return of(IDLE_STATE)
+
+        const preview$ = observeForPreview(target.previewable, schemaType, {
+          perspective: target.perspective,
+          variant: target.variant,
+          viewOptions: {ordering: ordering},
+        }).pipe(
+          map((event) => ({isLoading: false, value: event.snapshot || undefined})),
+          catchError((error) => of({isLoading: false, error})),
+        )
+
+        // A different target must not keep showing the previous one's preview while it loads.
+        return targetChanged ? concat(of(INITIAL_STATE), preview$) : preview$
+      }),
+      distinctUntilChanged(isSameState),
+    )
+  }, [
+    value$,
+    enabled,
+    schemaType,
+    chosenPerspectiveStack,
+    perspectiveStack,
+    chosenVariant,
+    selectedVariantName,
+    observeForPreview,
+    ordering,
+  ])
 
   // Do not defer: search/reference UIs assert on preview titles synchronously after selection.
   return useSyncObservable(observable, INITIAL_STATE)
