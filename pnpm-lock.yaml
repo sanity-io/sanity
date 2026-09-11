@@ -729,8 +729,8 @@ importers:
         specifier: 'catalog:'
         version: 4.1.11(playwright@1.63.0)(vite@8.2.2)(vitest@4.1.11)
       chromatic:
-        specifier: ^18.7.2
-        version: 18.7.2(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.1)
+        specifier: ^18.7.4
+        version: 18.7.4(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.1)
       oxc-transform-react:
         specifier: 'catalog:'
         version: 0.149.0
@@ -9507,6 +9507,22 @@ packages:
       '@chromatic-com/vitest':
         optional: true
 
+  chromatic@18.7.4:
+    resolution: {integrity: sha512-2PP+l1wY6VsOm8eFAc1Pl3mwQoqmuRdY6JjXGcym6fC7RNR/XHoWbStRTqCHB8CkTCqIZtWW3UfCRLtilDhKxQ==}
+    engines: {node: '>=22.0.0'}
+    hasBin: true
+    peerDependencies:
+      '@chromatic-com/cypress': ^0.*.* || ^1.0.0
+      '@chromatic-com/playwright': ^0.*.* || ^1.0.0
+      '@chromatic-com/vitest': ^0.*.* || ^1.0.0
+    peerDependenciesMeta:
+      '@chromatic-com/cypress':
+        optional: true
+      '@chromatic-com/playwright':
+        optional: true
+      '@chromatic-com/vitest':
+        optional: true
+
   citty@0.2.2:
     resolution: {integrity: sha512-+6vJA3L98yv+IdfKGZHBNiGW5KHn22e/JwID0Strsz8h4S/csAu/OuICwxrg44k5MRiZHWIo8XXuJgQTriRP4w==}
 
@@ -16492,7 +16508,7 @@ snapshots:
   '@chromatic-com/storybook@5.3.1(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.1)(storybook@10.6.0)':
     dependencies:
       '@neoconfetti/react': 1.0.0
-      chromatic: 18.7.2(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.1)
+      chromatic: 18.7.4(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.1)
       jsonfile: 6.2.1
       storybook: 10.6.0(@types/react@19.3.0)(prettier@3.9.6)(react@19.3.0)
       strip-ansi: 7.2.0
@@ -22600,6 +22616,13 @@ snapshots:
   chownr@3.0.0: {}
 
   chromatic@18.7.2(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.1):
+    dependencies:
+      semver: 7.8.5
+    optionalDependencies:
+      '@chromatic-com/playwright': 0.14.12(@playwright/test@1.63.0)(@testing-library/dom@10.4.1)(prettier@3.9.6)(react@19.3.0)
+      '@chromatic-com/vitest': 1.0.1(@testing-library/dom@10.4.1)(prettier@3.9.6)(react@19.3.0)(vitest@4.1.11)
+
+  chromatic@18.7.4(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.1):
     dependencies:
       semver: 7.8.5
     optionalDependencies:
