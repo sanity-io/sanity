@@ -1,38 +1,14 @@
-import {Badge, Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, Box, Card, Stack, Text} from '@sanity/ui'
 import {startTransition, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {combineLatest} from 'rxjs'
 import {useDocumentPreviewStore, useDocumentValues} from 'sanity'
+import {Flex} from 'ui5'
 
 /**
- * Reproduces a customer-reported stall: document panes that never finish
- * opening while list previews are on screen.
- *
- * The preview rows below call `useDocumentValues(id, ['title'])` with an
- * inline paths array — the natural call shape. The hook memoizes its
- * observable on the array REFERENCE, so every render builds a new observable;
- * react-rx v5 treats each one as a brand-new store whose warm-up replays the
- * cached value synchronously, and the fresh snapshot forces another render —
- * a self-sustaining loop.
- *
- * The pane simulates opening a document at the same time: a heavy subtree
- * mounts in a transition the moment the pane opens. Every loop iteration is
- * an urgent update that restarts the in-flight mount, so the status line
- * stays stuck at "mounting…" for as long as the loop runs. After 15 seconds
- * the loop rows remove themselves — and the mount lands immediately. That is
- * the customer's timeline: the stall lasts exactly as long as the pressure.
- *
- * Once useDocumentValues keys its memo on path CONTENTS instead of the array
- * reference, the rows settle after a couple of renders and the mount
- * completes right away.
- *
- * The cache warmer keeps a stable subscription to the same documents so the
- * preview store replays synchronously on every resubscribe — without it the
- * loop ticks at refetch cadence instead of render speed and looks harmless
- * (in real studios the actual document list plays this role).
- *
- * Unit-level twin:
- * packages/sanity/src/core/store/document/hooks/__tests__/useDocumentValuesRenderLoop.repro.test.tsx
+ * Reproduces a document-pane stall caused by list previews creating a new
+ * observable identity on every render. The cache warmer keeps the preview
+ * values replayable so the loop runs at render speed.
  */
 
 const DOC_IDS = ['render-loop-1', 'render-loop-2', 'render-loop-3', 'render-loop-4']
@@ -52,14 +28,14 @@ function CacheWarmer() {
       ),
     [previewStore],
   )
-  useObservable(warm$)
+  useObservable(warm$, undefined)
   return null
 }
 
 function PreviewRow({id}: {id: string}) {
   // oxlint-disable-next-line react/immutability -- deliberate render counter: this repro exists to make the loop measurable
   renderCounts.rows++
-  // The footgun: a fresh array literal on every render
+  // Deliberately inline: stabilizing this array disables the repro.
   const {value, isLoading} = useDocumentValues<{title?: string}>(id, ['title'])
   return (
     <Card border padding={3} radius={2}>
@@ -94,7 +70,7 @@ function RateBadge({running}: {running: boolean}) {
     return () => clearInterval(interval)
   }, [running])
   return (
-    <Flex gap={2} align="center">
+    <Flex gap={2} alignItems="center">
       <Badge tone={rate > 50 ? 'critical' : 'positive'}>{rate} renders/s</Badge>
       <Text size={0} muted>
         {total} total
@@ -180,7 +156,7 @@ export function RenderLoopRepro() {
           </Stack>
         </Card>
         <DocumentOpenSimulation />
-        <Flex align="center" justify="space-between">
+        <Flex alignItems="center" justifyContent="space-between">
           <Text size={1} weight="medium">
             {loopRunning ? 'Preview rows (looping)' : 'Preview rows removed — loop over'}
           </Text>

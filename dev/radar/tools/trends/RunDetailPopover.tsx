@@ -3,11 +3,11 @@ import {CloseIcon} from '@sanity/icons/Close'
 import {CopyIcon} from '@sanity/icons/Copy'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {RobotIcon} from '@sanity/icons/Robot'
-import {Badge, Button, Flex, Stack, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
+import {Badge, Button, Stack, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {Popover} from '@sanity/ui/popover'
 import {useEffect, useRef, useState} from 'react'
 import {useIntentLink} from 'sanity/router'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {
   CALIBRATION_EXPLAINER,
@@ -158,7 +158,7 @@ export function RunDetailPopover(props: {
         <Box ref={setContentEl} padding={4} style={{width: 320, maxWidth: '92vw'}}>
           <Stack gap={4}>
             {/* Header: series title as a quiet eyebrow, close button aligned */}
-            <Flex align="flex-start" gap={3}>
+            <Flex alignItems="flex-start" gap={3}>
               <Box flexBasis="0%" flexGrow={1} paddingTop={1}>
                 <Text size={1} weight="medium" muted textOverflow="ellipsis">
                   {series.title}
@@ -237,7 +237,7 @@ export function RunDetailPopover(props: {
                 <Text size={0} muted weight="medium">
                   Release
                 </Text>
-                <Flex align="center" gap={2}>
+                <Flex alignItems="center" gap={2}>
                   <Text size={1} muted>
                     released as
                   </Text>
@@ -258,7 +258,7 @@ export function RunDetailPopover(props: {
                 </Text>
                 <Stack gap={2}>
                   {releaseContext.previous && (
-                    <Flex align="center" gap={2}>
+                    <Flex alignItems="center" gap={2}>
                       <Text size={1} muted>
                         after
                       </Text>
@@ -271,7 +271,7 @@ export function RunDetailPopover(props: {
                     </Flex>
                   )}
                   {releaseContext.next ? (
-                    <Flex align="center" gap={2}>
+                    <Flex alignItems="center" gap={2}>
                       <Text size={1} muted>
                         before
                       </Text>
@@ -329,7 +329,7 @@ export function RunDetailPopover(props: {
                     </Text>
                   )}
                   {point.calibrationMs !== undefined && (
-                    <Flex align="center" gap={2} title={CALIBRATION_EXPLAINER}>
+                    <Flex alignItems="center" gap={2} title={CALIBRATION_EXPLAINER}>
                       <Text size={1} muted>
                         calibration
                       </Text>
@@ -345,7 +345,7 @@ export function RunDetailPopover(props: {
                 <Text size={0} muted weight="medium">
                   Links
                 </Text>
-                <Flex gap={2} wrap="wrap">
+                <Flex gap={2} flexWrap="wrap">
                   {backlinks.map((link) => (
                     <Button
                       key={link.href}
@@ -441,7 +441,7 @@ export function RunDetailPopover(props: {
 
             {/* Divider before the footer action so it reads as a distinct row */}
             <Box style={{borderTop: '1px solid var(--card-border-color)'}} paddingTop={3}>
-              <Flex align="center" justify="space-between" gap={2}>
+              <Flex alignItems="center" justifyContent="space-between" gap={2}>
                 <Badge tone="default" fontSize={0}>
                   benchRun
                 </Badge>

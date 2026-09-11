@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui/toast'
-import {useCallback, useMemo} from 'react'
+import {useCallback, useEffect, useMemo} from 'react'
 import {useSyncObservable} from 'react-rx'
 
 import {useClient} from '../hooks/useClient'
@@ -44,13 +44,15 @@ import {createPresenceStore, type PresenceStore} from './presence/presence-store
 import {createProjectStore} from './project/projectStore'
 import {type ProjectStore} from './project/types'
 import {createRenderingContextStore} from './renderingContext/createRenderingContextStore'
-import {type RenderingContextStore} from './renderingContext/types'
+import {type CapabilityRecord, type RenderingContextStore} from './renderingContext/types'
 import {useResourceCache} from './ResourceCacheProvider'
 import {createUserStore, type UserStore} from './user/userStore'
 
 /**
  * Latencies below this value will not be logged
  */
+const EMPTY_CAPABILITIES: CapabilityRecord = {}
+
 const IGNORE_LATENCY_BELOW_MS = 1000
 
 /** Minimum time between slow commit toast notifications */
@@ -442,14 +444,19 @@ export function useRenderingContextStore(): RenderingContextStore {
 export function useComlinkStore(): ComlinkStore {
   const resourceCache = useResourceCache()
   const renderingContext = useRenderingContextStore()
-  // Kept synchronous: `createComlinkStore` starts the comlink node when
-  // `capabilities.comlink` flips true, so a deferred snapshot would delay
-  // comlink initialization. Capabilities emit once at boot; there is nothing
-  // to gain from deferring them.
-  const capabilities = useSyncObservable(renderingContext.capabilities, {})
+  // Kept synchronous: the comlink node is created when `capabilities.comlink`
+  // is true, so a deferred snapshot would delay comlink initialization.
+  // Capabilities emit once at boot; there is nothing to gain from deferring
+  // them. The store has already resolved them, so the comlink store is created
+  // for the actual capabilities right away instead of once for `{}` and again
+  // after the first emission.
+  const capabilities = useSyncObservable(
+    renderingContext.capabilities,
+    () => renderingContext.getCapabilities() ?? EMPTY_CAPABILITIES,
+  )
 
-  return useMemo(() => {
-    const comlinkStore =
+  const comlinkStore = useMemo(() => {
+    const store =
       resourceCache.get<ComlinkStore>({
         dependencies: [capabilities],
         namespace: 'ComlinkStore',
@@ -458,9 +465,18 @@ export function useComlinkStore(): ComlinkStore {
     resourceCache.set({
       dependencies: [capabilities],
       namespace: 'ComlinkStore',
-      value: comlinkStore,
+      value: store,
     })
 
-    return comlinkStore
+    return store
   }, [capabilities, resourceCache])
+
+  // The store is created during render, which React may abandon; the node is
+  // only started once a consumer commits. Starting is idempotent, so every
+  // consumer may ask for it.
+  useEffect(() => {
+    comlinkStore.start()
+  }, [comlinkStore])
+
+  return comlinkStore
 }

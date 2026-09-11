@@ -152,10 +152,8 @@ export {
   ConfigResolutionError,
   type ConfigResolutionErrorOptions,
 } from '../core/config/ConfigResolutionError'
-export {SchemaError} from '../core/config/SchemaError'
 export {type CookielessCompatibleLoginMethod} from '../core/config/auth/types'
 export {useMiddlewareComponents} from '../core/config/components/useMiddlewareComponents'
-export {createDefaultIcon} from '../core/config/createDefaultIcon'
 export {isSanityDefinedAction} from '../core/config/document/actions'
 export {initialDocumentFieldActions} from '../core/config/document/fieldActions'
 export {documentFieldActionsReducer} from '../core/config/document/fieldActions/reducer'
@@ -166,7 +164,6 @@ export {
   createSourceFromConfig,
   createWorkspaceFromConfig,
   type CreateWorkspaceFromConfigOptions,
-  resolveConfig,
 } from '../core/config/resolveConfig'
 export {resolveSchemaTypes} from '../core/config/resolveSchemaTypes'
 export {type NavbarAction} from '../core/config/studio/types'
@@ -886,15 +883,6 @@ export {type StudioDiagnostics} from '../core/studio/diagnostics/gatherStudioDia
 export {parseStudioDiagnostics} from '../core/studio/diagnostics/parseStudioDiagnostics'
 export {StudioFeedbackProvider} from '../core/studio/feedback/StudioFeedbackProvider'
 export {LiveManifestRegisterProvider} from '../core/studio/manifest/LiveManifestRegisterProvider'
-export {
-  generateStudioManifest,
-  type GenerateStudioManifestOptions,
-} from '../core/studio/manifest/generateStudioManifest'
-export {
-  type ManifestWorkspaceInput,
-  type StudioWorkspaceManifest,
-} from '../core/studio/manifest/types'
-export {uploadSchema} from '../core/studio/manifest/uploadSchema'
 export {
   RequestErrorDialog,
   useRetryCountdown,

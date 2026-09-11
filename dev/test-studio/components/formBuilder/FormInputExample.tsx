@@ -1,6 +1,6 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
-import {Button, Card, Checkbox, Flex, Inline, Stack, Text} from '@sanity/ui'
+import {Button, Card, Checkbox, Inline, Stack, Text} from '@sanity/ui'
 import {useState} from 'react'
 import {
   FormInput,
@@ -9,7 +9,7 @@ import {
   pathToString,
   type RenderInputCallback,
 } from 'sanity'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 export function FormInputExample(props: ObjectInputProps) {
   const [path, setPath] = useState<Path>([])

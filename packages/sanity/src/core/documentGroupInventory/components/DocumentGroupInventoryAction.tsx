@@ -36,6 +36,7 @@ export const DocumentGroupInventoryAction: ComponentType<
       () => versionState.pipe(map(({loading, versions}) => !loading && versions.length !== 0)),
       [versionState],
     ),
+    false,
   )
 
   useClickOutsideEvent(

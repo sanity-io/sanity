@@ -80,9 +80,6 @@ export function SearchResultItemPreview({
     [documentId, documentType],
   )
 
-  // Deferred: react-rx v5's deferral is identity-coherent, so on a document
-  // id change the live snapshot wins and the previous document's title/media
-  // never renders next to the new document's version badges.
   const {isLoading, snapshot, original} = useObservable(observable, INITIAL_PREVIEW_STATE)
 
   const {versions} = useDocumentVersions({documentId})

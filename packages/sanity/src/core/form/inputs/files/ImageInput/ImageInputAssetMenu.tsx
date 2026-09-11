@@ -193,7 +193,7 @@ function ImageInputAssetMenuWithReferenceAssetComponent(
   // Kept synchronous: a deferred snapshot could pair the previous asset with a
   // newly selected reference, pointing menu actions (e.g. open in source) at
   // the wrong asset.
-  const asset = useSyncObservable(observable)
+  const asset = useSyncObservable(observable, undefined)
   const assetSourcesWithUpload = getAssetSourcesWithUpload(assetSources)
 
   // Find the first asset source that can handle opening this asset in source

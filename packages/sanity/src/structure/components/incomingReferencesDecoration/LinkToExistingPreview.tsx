@@ -55,10 +55,6 @@ export function LinkToExistingPreview(props: LinkToExistingPreviewProps) {
     )
   }, [props.documentPreviewStore, schemaType, value._id])
 
-  // Deferred: react-rx v5's deferral is identity-coherent, so when this
-  // component is reused for a new document id the live snapshot wins and the
-  // previous document's title/media never renders beside the new document's
-  // version badge.
   const {snapshot, original, isLoading} = useObservable(
     previewStateObservable,
     INITIAL_PREVIEW_STATE,
