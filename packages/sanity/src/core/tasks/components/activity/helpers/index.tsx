@@ -4,8 +4,9 @@ import {EditIcon} from '@sanity/icons/Edit'
 import {LinkIcon} from '@sanity/icons/Link'
 import {UserIcon} from '@sanity/icons/User'
 import {TextSkeleton} from '@sanity/ui'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 import {IntentLink} from 'sanity/router'
-import {styled} from 'styled-components'
 
 import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../../../../hooks/useDateTimeFormat'
 import {type RelativeTimeOptions, useRelativeTime} from '../../../../hooks/useRelativeTime'
@@ -15,6 +16,7 @@ import {useUser} from '../../../../store/user/hooks'
 import {TASK_STATUS} from '../../../constants/TaskStatus'
 import {useDocumentPreviewValues} from '../../../hooks/useDocumentPreviewValues'
 import {type TaskTarget} from '../../../types'
+import {linkWrapper, noWrap, strong} from './index.css'
 import {type FieldChange} from './parseTransactions'
 
 const DATE_FORMAT_OPTIONS: UseDateTimeFormatOptions = {
@@ -30,12 +32,10 @@ const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {
   useTemporalPhrase: true,
 }
 
-const Strong = styled.strong`
-  font-weight: 600;
-`
-export const NoWrap = styled.span`
-  white-space: nowrap;
-`
+export function NoWrap(props: ComponentProps<'span'>) {
+  const {className, ...rest} = props
+  return <span {...rest} className={clsx(noWrap, className)} />
+}
 
 export function useUpdatedTimeAgo(timestamp: string) {
   const date = new Date(timestamp)
@@ -49,7 +49,11 @@ export function useUpdatedTimeAgo(timestamp: string) {
 
 export function UserName({userId}: {userId: string}) {
   const [user, isLoading] = useUser(userId)
-  return isLoading ? <TextSkeleton style={{width: '15ch'}} /> : <Strong>{user?.displayName}</Strong>
+  return isLoading ? (
+    <TextSkeleton style={{width: '15ch'}} />
+  ) : (
+    <strong className={strong}>{user?.displayName}</strong>
+  )
 }
 
 const DUE_BY_DATE_OPTIONS: UseDateTimeFormatOptions = {
@@ -64,20 +68,11 @@ function DueByChange({date}: {date: string}) {
   const formattedDate = dateFormatter.format(dueBy)
 
   return (
-    <Strong>
+    <strong className={strong}>
       <NoWrap>{formattedDate}</NoWrap>
-    </Strong>
+    </strong>
   )
 }
-
-const LinkWrapper = styled.span`
-  > a {
-    color: var(--card-fg-muted-color);
-    text-decoration: underline;
-    text-underline-offset: 1px;
-    font-weight: 600;
-  }
-`
 
 function TargetContentChange({target}: {target: TaskTarget}) {
   const schema = useSchema()
@@ -100,11 +95,11 @@ function TargetContentChange({target}: {target: TaskTarget}) {
   }
 
   return (
-    <LinkWrapper>
+    <span className={linkWrapper}>
       <IntentLink intent="edit" params={{id: documentId, type: documentType}}>
         {value?.title}
       </IntentLink>
-    </LinkWrapper>
+    </span>
   )
 }
 
@@ -119,7 +114,7 @@ export function getChangeDetails(activity: FieldChange): {
       return {
         text: 'changed status to',
         icon: TASK_STATUS.find((s) => s.value === activity.to)?.icon || <CircleIcon />,
-        changeTo: <Strong>{statusTitle}</Strong>,
+        changeTo: <strong className={strong}>{statusTitle}</strong>,
       }
     }
     case 'target':
