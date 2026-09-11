@@ -5,9 +5,10 @@ import {
   Card,
   rem,
   useClickOutsideEvent,
+  useTheme_v2 as useThemeV2,
 } from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type KeyboardEvent, useCallback, useRef, useState} from 'react'
-import {styled} from 'styled-components'
 
 import {Popover} from '../../../../../../../../ui-components/popover/Popover'
 import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
@@ -17,6 +18,7 @@ import {type SearchFilter} from '../../../types'
 import {getFilterKey, validateFilter} from '../../../utils/filterUtils'
 import {FilterLabel} from '../../common/FilterLabel'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
+import {closeButton, closeCard, containerDiv, labelButton, radius2Var} from './FilterButton.css'
 import {FilterPopoverContent} from './FilterPopoverContent'
 
 interface FilterButtonProps {
@@ -24,33 +26,11 @@ interface FilterButtonProps {
   initialOpen?: boolean
 }
 
-const CloseButton = styled(Button)`
-  border-radius: ${({theme}) =>
-    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-    `0 ${rem(theme.sanity.radius[2])} ${rem(theme.sanity.radius[2])} 0`};
-`
-
-const CloseCard = styled(Card)`
-  position: absolute;
-  right: 0;
-`
-
-const ContainerDiv = styled.div`
-  align-items: center;
-  display: inline-flex;
-  max-width: 100%;
-  position: relative;
-`
-
-const LabelButton = styled(Button)`
-  border: none;
-  width: 100%;
-`
-
 export function FilterButton({filter, initialOpen}: FilterButtonProps) {
   const [open, setOpen] = useState(initialOpen)
   const [buttonElement, setButtonElement] = useState<HTMLElement | null>(null)
   const popoverRef = useRef<HTMLDivElement | null>(null)
+  const {radius} = useThemeV2()
 
   const {
     dispatch,
@@ -103,14 +83,15 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
       radius={POPOVER_RADIUS}
       ref={popoverRef}
     >
-      <ContainerDiv>
+      <div className={containerDiv}>
         <Card
           __unstable_focusRing
           display="flex"
           radius={2}
           tone={isValid ? 'primary' : 'transparent'}
         >
-          <LabelButton
+          <Button
+            className={labelButton}
             mode="bleed"
             onClick={handleOpen}
             onKeyDown={handleKeyDown}
@@ -120,18 +101,20 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
             ref={setButtonElement}
           >
             <FilterLabel filter={filter} showContent={isValid} />
-          </LabelButton>
+          </Button>
         </Card>
 
         {!fullscreen && (
-          <CloseCard
+          <Card
             __unstable_focusRing
+            className={closeCard}
             display="flex"
             radius={2}
             tone={isValid ? 'primary' : 'transparent'}
           >
-            <CloseButton
+            <Button
               aria-label={t('search.action.remove-filter-aria-label')}
+              className={closeButton}
               fontSize={1}
               icon={CloseIcon}
               mode="bleed"
@@ -139,10 +122,11 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
               onKeyDown={handleKeyDown}
               padding={2}
               radius={2}
+              style={assignInlineVars({[radius2Var]: `${rem(radius[2])}`})}
             />
-          </CloseCard>
+          </Card>
         )}
-      </ContainerDiv>
+      </div>
     </Popover>
   )
 }

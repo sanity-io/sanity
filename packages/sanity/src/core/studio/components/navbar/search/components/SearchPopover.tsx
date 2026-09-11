@@ -1,9 +1,9 @@
 import {type StackablePerspective} from '@sanity/client'
 import {Card, Portal, useClickOutsideEvent, useLayer} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {AnimatePresence, motion, type Transition, type Variants} from 'motion/react'
 import {useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
-import {styled} from 'styled-components'
 
 import {supportsTouch} from '../../../../../util/supportsTouch'
 import {
@@ -18,6 +18,13 @@ import {SearchWrapper} from './common/SearchWrapper'
 import {Filters} from './filters/Filters'
 import {RecentSearches} from './recentSearches/RecentSearches'
 import {SearchHeader} from './SearchHeader'
+import {
+  motionOverlay,
+  popoverInputPaddingVar,
+  popoverMaxHeightVar,
+  popoverMaxWidthVar,
+  searchMotionCard,
+} from './SearchPopover.css'
 import {type ItemSelectHandler} from './searchResults/item/SearchResultItem'
 import {SearchResults} from './searchResults/SearchResults'
 
@@ -56,29 +63,13 @@ const OVERLAY_VARIANTS: Variants = {
   closed: {opacity: 0},
 }
 
-const Y_POSITION = 12 // vh
+const MotionCard = motion.create(Card)
 
-const MotionOverlay = styled(motion.create(Card))`
-  background-color: var(--card-backdrop-color);
-  bottom: 0;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-`
-
-const SearchMotionCard = styled(motion.create(Card))`
-  display: flex !important;
-  flex-direction: column;
-  left: 50%;
-  max-height: min(
-    calc(100vh - ${Y_POSITION}vh - ${POPOVER_INPUT_PADDING}px),
-    ${POPOVER_MAX_HEIGHT}px
-  );
-  position: absolute;
-  top: ${Y_POSITION}vh;
-  width: min(calc(100vw - ${POPOVER_INPUT_PADDING * 2}px), ${POPOVER_MAX_WIDTH}px);
-`
+const SEARCH_MOTION_CARD_VARS = assignInlineVars({
+  [popoverInputPaddingVar]: `${POPOVER_INPUT_PADDING}px`,
+  [popoverMaxHeightVar]: `${POPOVER_MAX_HEIGHT}px`,
+  [popoverMaxWidthVar]: `${POPOVER_MAX_WIDTH}px`,
+})
 
 /**
  * @internal
@@ -119,8 +110,9 @@ export function SearchPopover({
         {open && (
           <Portal>
             <FocusLock autoFocus={!supportsTouch} disabled={disableFocusLock} returnFocus>
-              <MotionOverlay
+              <MotionCard
                 animate="open"
+                className={motionOverlay}
                 exit="closed"
                 initial="closed"
                 style={{zIndex}}
@@ -128,15 +120,16 @@ export function SearchPopover({
                 variants={OVERLAY_VARIANTS}
               />
 
-              <SearchMotionCard
+              <MotionCard
                 animate="open"
+                className={searchMotionCard}
                 exit="closed"
                 initial="closed"
                 overflow="hidden"
                 radius={POPOVER_RADIUS}
                 ref={popoverElement}
                 shadow={2}
-                style={{zIndex}}
+                style={{...SEARCH_MOTION_CARD_VARS, zIndex}}
                 transition={ANIMATION_TRANSITION}
                 variants={CARD_VARIANTS}
               >
@@ -157,7 +150,7 @@ export function SearchPopover({
                 ) : (
                   <RecentSearches inputElement={inputElement} />
                 )}
-              </SearchMotionCard>
+              </MotionCard>
             </FocusLock>
           </Portal>
         )}

@@ -1,6 +1,5 @@
 import {Card, Text, useMediaIndex} from '@sanity/ui'
 import {useCallback, useMemo, useRef} from 'react'
-import {styled} from 'styled-components'
 import {Box} from 'ui5'
 
 import {Button} from '../../../../../../../ui-components/button/Button'
@@ -14,18 +13,13 @@ import {useSearchState} from '../../contexts/search/useSearchState'
 import {type RecentSearch, useRecentSearchesStore} from '../../datastores/recentSearches'
 import {Instructions} from '../Instructions'
 import {RecentSearchItem} from './item/RecentSearchItem'
+import {recentSearchesBox} from './RecentSearches.css'
 
 const VIRTUAL_LIST_RECENT_SEARCH_ITEM_HEIGHT = 36 // px
 
 // Max character count of selected document types (combined) by breakpoint
 const MAX_COMBINED_TYPE_COUNT_SMALL = 20
 const MAX_COMBINED_TYPE_COUNT_LARGE = 40
-
-const RecentSearchesBox = styled(Card)`
-  overflow-x: hidden;
-  overflow-y: auto;
-  position: relative;
-`
 
 interface RecentSearchesProps {
   inputElement?: HTMLInputElement | null
@@ -80,8 +74,9 @@ export function RecentSearches({inputElement}: RecentSearchesProps) {
   const hasRecentSearches = !!recentSearches.length
 
   return (
-    <RecentSearchesBox
+    <Card
       borderTop={hasRecentSearches || (!hasRecentSearches && !filtersVisible && fullscreen)}
+      className={recentSearchesBox}
       flex={1}
     >
       {recentSearches.length > 0 ? (
@@ -117,6 +112,6 @@ export function RecentSearches({inputElement}: RecentSearchesProps) {
       ) : (
         !filtersVisible && fullscreen && <Instructions />
       )}
-    </RecentSearchesBox>
+    </Card>
   )
 }

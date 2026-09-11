@@ -1,27 +1,30 @@
-import {css, styled} from 'styled-components'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 import {Box} from 'ui5'
 
-export const CustomTextInputBox = styled(Box)<{
+import {
+  customTextInputBox,
+  smallClearButton,
+  transparentInputBackground,
+} from './CustomTextInputBox.css'
+
+interface CustomTextInputBoxProps extends ComponentProps<typeof Box> {
   $background?: boolean
   $smallClearButton?: boolean
-}>(({$background, $smallClearButton}) => {
-  return css`
-    width: 100%;
+}
 
-    input + span {
-      background: ${({theme}) =>
-        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-        $background ? theme.sanity.color.card.disabled.bg2 : 'transparent'};
-    }
+export function CustomTextInputBox(props: CustomTextInputBoxProps) {
+  const {$background, $smallClearButton, className, ...rest} = props
 
-    [data-qa='clear-button'] {
-      background: none;
-      box-shadow: none;
-      display: flex; /* TODO: hack, currently used to vertically center <TextInput>'s clearButton */
-      transform: ${$smallClearButton ? 'scale(0.8)' : 'scale(1)'};
-      &:hover {
-        opacity: 0.5;
-      }
-    }
-  `
-})
+  return (
+    <Box
+      {...rest}
+      className={clsx(
+        customTextInputBox,
+        !$background && transparentInputBackground,
+        $smallClearButton && smallClearButton,
+        className,
+      )}
+    />
+  )
+}
