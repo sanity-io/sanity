@@ -126,7 +126,9 @@ Reproduce the `useValuePreview` shape:
    `useValuePreview` these are `enabled`, `schemaType` and the previewed document id. Everything
    else is a streamed input.
 2. Put the streamed inputs in one typed record (`PreviewInputs`) and `useMemo` it on its fields.
-   One record, not one subject per input: two fields that change in the same render arrive
+   Resolve overrides first, so the record carries the effective perspective and variant rather than
+   both the caller's and the context's; a context change the caller overrides then never reaches the
+   stream. One record, not one subject per input: two fields that change in the same render arrive
    together, so `switchMap` never subscribes an intermediate source.
 3. Hold the record in a `BehaviorSubject` fed from a `useEffect`. Replace the subject whenever any
    identity input changes, `enabled` included, seeded with the current render's inputs, with the
@@ -140,11 +142,11 @@ Reproduce the `useValuePreview` shape:
      schemaType: SchemaType | undefined,
      inputs: PreviewInputs,
    ): BehaviorSubject<PreviewInputs> {
-     const documentId = getPreviewDocumentId(inputs.value)
+     const documentKey = getPreviewDocumentKey(inputs.value)
      const [current, setCurrent] = useState(() => ({
        enabled,
        schemaType,
-       documentId,
+       documentKey,
        inputs$: new BehaviorSubject(inputs),
      }))
 
@@ -152,10 +154,10 @@ Reproduce the `useValuePreview` shape:
      if (
        current.enabled !== enabled ||
        current.schemaType !== schemaType ||
-       current.documentId !== documentId
+       current.documentKey !== documentKey
      ) {
        inputs$ = new BehaviorSubject(inputs)
-       setCurrent({enabled, schemaType, documentId, inputs$})
+       setCurrent({enabled, schemaType, documentKey, inputs$})
      }
 
      useEffect(() => {
