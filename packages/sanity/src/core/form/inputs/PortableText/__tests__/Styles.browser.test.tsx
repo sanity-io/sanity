@@ -123,8 +123,12 @@ describe('Portable Text Input', () => {
           ],
         }
 
-        const {getFocusedPortableTextInput, waitForFocusedNodeText, waitForDocumentState} =
-          testHelpers()
+        const {
+          getFocusedPortableTextInput,
+          waitForFocusedNodeText,
+          waitForDocumentState,
+          waitForPortableTextSelection,
+        } = testHelpers()
         void render(<StylesHarness document={documentValue} />)
         const $portableTextInput = await getFocusedPortableTextInput('field-defaultStyles')
 
@@ -132,10 +136,15 @@ describe('Portable Text Input', () => {
           (node) => node.childElementCount === 0 && node.textContent === 'Heading text',
         )
         await userEvent.click($headingText as HTMLElement)
+        await waitForPortableTextSelection('')
         // Place the selection anchor at the end of the `h2` block, then extend
         // the focus down into the `normal` block below it, so the selection
-        // spans both blocks with its focus outside the `h2` block.
+        // spans both blocks with its focus outside the `h2` block. Let the
+        // editor pick up the caret before extending it: a Shift+ArrowDown
+        // inside the sync window of the `End` keystroke is written back over
+        // by the editor's `validateSelection` and the focus never leaves the `h2`.
         await userEvent.keyboard('{End}')
+        await waitForPortableTextSelection('')
         await userEvent.keyboard('{Shift>}{ArrowDown}{/Shift}')
         await waitForFocusedNodeText('Normal text')
 
@@ -189,15 +198,23 @@ describe('Portable Text Input', () => {
           ],
         }
 
-        const {getFocusedPortableTextInput, waitForFocusedNodeText, waitForDocumentState} =
-          testHelpers()
+        const {
+          getFocusedPortableTextInput,
+          waitForFocusedNodeText,
+          waitForDocumentState,
+          waitForPortableTextSelection,
+        } = testHelpers()
         void render(<StylesHarness document={documentValue} />)
         const $portableTextInput = await getFocusedPortableTextInput('field-defaultStyles')
         const $firstText = [...$portableTextInput.element().querySelectorAll('*')].find(
           (node) => node.childElementCount === 0 && node.textContent === 'Explicit normal text',
         )
         await userEvent.click($firstText as HTMLElement)
+        await waitForPortableTextSelection('')
+        // Same as above: let the editor pick up each caret move before the
+        // next keystroke.
         await userEvent.keyboard('{End}')
+        await waitForPortableTextSelection('')
         await userEvent.keyboard('{Shift>}{ArrowDown}{/Shift}')
         await waitForFocusedNodeText('Unstyled text')
 
