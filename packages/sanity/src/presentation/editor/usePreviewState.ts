@@ -36,8 +36,5 @@ export default function usePreviewState(documentId: string, schemaType?: SchemaT
     [documentPreviewStore, schemaType, documentId, perspectiveStack, selectedVariantName],
   )
 
-  // Deferred: react-rx v5's deferral is identity-coherent, so on a document
-  // id change the live snapshot wins and the previous document's preview
-  // never renders under the new identity.
   return useObservable(preview$, EMPTY_STATE)
 }

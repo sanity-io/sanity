@@ -46,7 +46,7 @@ runner (tsx CLI, runs from HEAD)
 
 ### Settle mode (render-loop detector)
 
-`--mode settle` targets the render-loop bug class (per-render observable identity churn — react-rx v5 turned it into self-sustaining loops, e.g. `useDocumentValues` with an inline `paths` array, fixed in #14241): open the scenario, wait for readiness, then measure **time to quiescence** — and whether the page ever gets there. No typing. Activity signals, all on the page clock:
+`--mode settle` targets the render-loop bug class (per-render observable identity churn, e.g. `useDocumentValues` with an inline `paths` array, fixed in #14241): open the scenario, wait for readiness, then measure **time to quiescence** — and whether the page ever gets there. No typing. Activity signals, all on the page clock:
 
 - **React commits** (primary): a settle-only init script (`instrumentation/settle.ts`) installs a minimal React DevTools hook stub before React loads; production react-dom reports every commit to it, so a loop is visible even when each frame is cheap. This script is injected by settle sessions ONLY — `instrumentation/index.ts` stays byte-identical for every other mode, by design.
 - **Long Animation Frames** with script attribution (expensive loops name their culprit).
