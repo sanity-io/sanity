@@ -8,8 +8,6 @@ import {
   // oxlint-disable-next-line no-restricted-imports
   Button,
   Card,
-  Flex,
-  Grid,
   Stack,
   Text,
 } from '@sanity/ui'
@@ -17,7 +15,7 @@ import {useToast} from '@sanity/ui/toast'
 import {type KeyboardEvent, type MouseEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
 import {css, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Grid, Box} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {getHumanFriendlyBytes} from '../../../../field/types/file/diff/helpers'
@@ -257,7 +255,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
     return (
       <Card paddingBottom={2} style={STYLES_ROW_CARD}>
         <Grid
-          gridTemplateColumns={4}
+          gridTemplateColumns="repeat(4, minmax(0, 1fr))"
           gap={1}
           style={{
             position: 'relative',
@@ -273,7 +271,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
             paddingY={1}
             radius={2}
           >
-            <Flex gap={2} flex={2} align="center">
+            <Flex gap={2} flexBasis="0%" flexGrow={2} alignItems="center">
               <Card as={CardIconWrapper} padding={2} tone="transparent" radius={2}>
                 <Text muted size={2} style={STYLES_ICON_CARD}>
                   <DocumentIcon />
@@ -284,7 +282,12 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
               </Text>
             </Flex>
           </RowButton>
-          <Flex justify="flex-end" align="center" paddingRight={1} style={STYLES_ASSETMENU_WRAPPER}>
+          <Flex
+            justifyContent="flex-end"
+            alignItems="center"
+            paddingRight={1}
+            style={STYLES_ASSETMENU_WRAPPER}
+          >
             <Button
               mode="bleed"
               fontSize={1}
@@ -296,7 +299,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
         </Grid>
         {isOpen && (
           <>
-            <Grid marginTop={3} gridTemplateColumns={3} gap={1}>
+            <Grid marginTop={3} gridTemplateColumns="repeat(3, minmax(0, 1fr))" gap={1}>
               <Stack gap={2}>
                 <Text size={1} muted weight="medium">
                   {t('asset-source.file.asset-list.header.size')}
@@ -364,7 +367,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
       aria-selected={Boolean(isSelected)}
     >
       <Grid
-        gridTemplateColumns={4}
+        gridTemplateColumns="repeat(4, minmax(0, 1fr))"
         gap={1}
         data-id={_id}
         paddingY={1}
@@ -388,9 +391,10 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
         >
           <CustomFlex
             gap={2}
-            flex={2}
+            flexBasis="0%"
+            flexGrow={2}
             paddingRight={1}
-            align="center"
+            alignItems="center"
             onClick={onClick}
             onKeyPress={onKeyPress}
             data-id={_id}
@@ -421,26 +425,26 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
             )}
           </CustomFlex>
         </RowButton>
-        <CustomFlex align="center">
+        <CustomFlex alignItems="center">
           <Text size={1} muted>
             {formattedSize}
           </Text>
         </CustomFlex>
-        <CustomFlex align="center">
+        <CustomFlex alignItems="center">
           <Box>
             <TypeText size={1} muted textOverflow="ellipsis">
               {formattedMimeType}
             </TypeText>
           </Box>
         </CustomFlex>
-        <CustomFlex align="center">
+        <CustomFlex alignItems="center">
           <Text as="time" size={1} muted dateTime={_createdAt}>
             {formattedTime}
           </Text>
         </CustomFlex>
         <CustomFlex
-          justify="flex-end"
-          align="center"
+          justifyContent="flex-end"
+          alignItems="center"
           paddingX={1}
           paddingY={1}
           style={STYLES_ASSETMENU_WRAPPER}

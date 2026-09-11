@@ -19,7 +19,6 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import {CSS} from '@dnd-kit/utilities'
-import {Grid} from '@sanity/ui'
 import {
   type ComponentProps,
   memo,
@@ -31,7 +30,7 @@ import {
 } from 'react'
 import {ArrayItemRootElementContext, SortableItemIdContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
-import {Box, type BoxProps} from 'ui5'
+import {Grid, Box, type BoxProps} from 'ui5'
 
 import {restrictToParentElementWithMargins} from './dndkit-modifier/restrictToParentElementWithMargins'
 

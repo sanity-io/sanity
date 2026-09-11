@@ -3,7 +3,9 @@ import {useSyncObservable} from 'react-rx'
 import {debounce, distinctUntilChanged, merge, share, shareReplay, skip, take, timer} from 'rxjs'
 
 import {useDocumentStore} from '../store/datastores'
-import {type EditStateFor} from '../store/document/document-pair/editState'
+import {type EditStateFor, getInitialEditState} from '../store/document/document-pair/editState'
+import {getIdPair} from '../util/draftUtils'
+import {useSchema} from './useSchema'
 
 // Snapshot refs (draft/published/version) are preserved upstream when content
 // hasn't changed, so ref equality on those + ready + transactionSyncLock catches
@@ -26,6 +28,7 @@ export function useEditState(
     throw new Error('Version cannot be published or draft')
   }
   const documentStore = useDocumentStore()
+  const schema = useSchema()
 
   const observable = useMemo(() => {
     const source = documentStore.pair.editState(publishedDocId, docTypeName, version)
@@ -47,9 +50,13 @@ export function useEditState(
       shareReplay({bufferSize: 1, refCount: true}),
     )
   }, [docTypeName, documentStore.pair, priority, publishedDocId, version])
-  /**
-   * We know that since the observable has a startWith operator, it will always emit a value
-   * and that's why the non-null assertion is used here
-   */
-  return useSyncObservable(observable)!
+
+  const editState = useSyncObservable(observable, undefined)
+  return useMemo(() => {
+    if (editState) return editState
+    // Rendered until the pipeline emits. Derived per render rather than passed as react-rx's
+    // `initialValue`, which is captured once per hook instance and would carry the previous
+    // document's id through an identity swap.
+    return getInitialEditState(schema, getIdPair(publishedDocId, {version}), docTypeName)
+  }, [editState, docTypeName, publishedDocId, schema, version])
 }

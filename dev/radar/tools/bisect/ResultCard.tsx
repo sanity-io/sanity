@@ -1,6 +1,7 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {UndoIcon} from '@sanity/icons/Undo'
-import {Badge, Box, Button, Card, Flex, Stack, Text, TextArea} from '@sanity/ui'
+import {Badge, Box, Button, Card, Stack, Text, TextArea} from '@sanity/ui'
+import {Flex} from 'ui5'
 
 import {commitUrl, compareUrl} from '../trends/links'
 import {type deriveBisectState} from './bisect'
@@ -37,7 +38,7 @@ export function ResultCard(props: {
       commit={state.firstBad}
       tone="critical"
       heading={
-        <Flex align="center" gap={2}>
+        <Flex alignItems="center" gap={2}>
           <Badge tone="critical" fontSize={0}>
             first bad commit
           </Badge>
@@ -55,7 +56,7 @@ export function ResultCard(props: {
       }
     >
       <IncludedIn releases={releases} />
-      <Flex align="center" gap={3} wrap="wrap">
+      <Flex alignItems="center" gap={3} flexWrap="wrap">
         {state.firstBad.testStudioUrl && (
           <Button
             as="a"
@@ -85,7 +86,7 @@ export function ResultCard(props: {
         {version && <InstallChip version={version} />}
       </Flex>
       {/* stretch: the toggle matches the textarea's height */}
-      <Flex gap={2} align="stretch" wrap="wrap">
+      <Flex gap={2} alignItems="stretch" flexWrap="wrap">
         <Box flex={1} style={{minWidth: 220}}>
           <TextArea
             rows={2}

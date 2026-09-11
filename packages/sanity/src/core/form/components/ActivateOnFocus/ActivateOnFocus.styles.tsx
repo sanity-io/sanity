@@ -1,5 +1,6 @@
-import {Card, Flex} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 export const OverlayContainer = styled.div`
   position: relative;

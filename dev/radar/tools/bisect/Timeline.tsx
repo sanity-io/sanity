@@ -3,7 +3,8 @@ import {CloseIcon} from '@sanity/icons/Close'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {StackCompactIcon} from '@sanity/icons/StackCompact'
 import {UndoIcon} from '@sanity/icons/Undo'
-import {Badge, type BadgeTone, Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, type BadgeTone, Box, Button, Card, Stack, Text} from '@sanity/ui'
+import {Flex} from 'ui5'
 
 import {commitUrl, compareUrl} from '../trends/links'
 import {AuthorAvatar} from './AuthorAvatar'
@@ -99,7 +100,7 @@ function GapRow(props: {entry: Extract<TimelineEntry, {kind: 'gap'}>}) {
   const {entry} = props
   return (
     <Card padding={2} radius={2} tone="neutral">
-      <Flex align="center" gap={2}>
+      <Flex alignItems="center" gap={2}>
         <Box style={{width: 96, flexShrink: 0}}>
           <Badge tone={GAP_ZONE[entry.zone].tone} fontSize={0}>
             {GAP_ZONE[entry.zone].label}
@@ -134,7 +135,7 @@ function CurrentStepCard(props: {
       commit={entry.commit}
       tone="primary"
       heading={
-        <Flex align="center" gap={2}>
+        <Flex alignItems="center" gap={2}>
           <Text size={1} weight="semibold">
             Next commit to test
             {stepsLeft === undefined ? '' : ` (${pluralize(stepsLeft, 'commit')} left)`}
@@ -153,7 +154,7 @@ function CurrentStepCard(props: {
       }
     >
       <IncludedIn releases={releases} />
-      <Flex align="center" gap={3} wrap="wrap">
+      <Flex alignItems="center" gap={3} flexWrap="wrap">
         <Button
           as="a"
           href={entry.commit.testStudioUrl}
@@ -167,7 +168,7 @@ function CurrentStepCard(props: {
         <CommandChip command={`git checkout ${entry.commit.sha.slice(0, 10)}`} />
         {version && <InstallChip version={version} />}
         <Box flex={1} />
-        <Flex align="center" gap={2}>
+        <Flex alignItems="center" gap={2}>
           <Text size={1} muted>
             Mark as
           </Text>
@@ -203,7 +204,7 @@ function CommitRow(props: {entry: Extract<TimelineEntry, {kind: 'commit'}>}) {
   const {entry} = props
   return (
     <Card padding={2} radius={2}>
-      <Flex align="center" gap={2}>
+      <Flex alignItems="center" gap={2}>
         <Box style={{width: 96, flexShrink: 0}}>
           <Badge tone={TIMELINE_ROLE[entry.role].tone} fontSize={0}>
             {TIMELINE_ROLE[entry.role].label}
