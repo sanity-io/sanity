@@ -10,6 +10,8 @@ export const LIGHTNINGCSS_LIGHT_VARIABLE = '--lightningcss-light'
 /** @internal */
 export const LIGHTNINGCSS_DARK_VARIABLE = '--lightningcss-dark'
 
+const COLOR_SCHEME_STORAGE_KEY = 'sanityStudio:ui:colorScheme'
+
 /**
  * Pins the document to the resolved Studio appearance. Returns a disposer that undoes this call.
  *
@@ -39,5 +41,27 @@ export function setDocumentColorScheme(scheme: 'light' | 'dark'): () => void {
       rootStyle.removeProperty(LIGHTNINGCSS_LIGHT_VARIABLE)
       rootStyle.removeProperty(LIGHTNINGCSS_DARK_VARIABLE)
     }
+  }
+}
+
+/**
+ * Apply a stored explicit Studio scheme before React mounts so the first paint
+ * of ui5 `light-dark()` tokens matches Appearance. `"system"` is left unset so
+ * `:root { color-scheme: light dark }` keeps following the OS.
+ *
+ * @internal
+ */
+export function applyStoredDocumentColorScheme(): void {
+  if (typeof document === 'undefined') {
+    return
+  }
+
+  try {
+    const stored = localStorage.getItem(COLOR_SCHEME_STORAGE_KEY)
+    if (stored === 'light' || stored === 'dark') {
+      setDocumentColorScheme(stored)
+    }
+  } catch {
+    // localStorage can throw in private browsing / disabled storage
   }
 }
