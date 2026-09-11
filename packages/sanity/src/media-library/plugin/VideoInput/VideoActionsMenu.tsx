@@ -8,9 +8,7 @@ import {RatioBox} from './styles'
 import {type VideoPlaybackTokens} from './types'
 import {VideoSkeleton} from './VideoSkeleton'
 
-const VideoPlayer = lazy(() =>
-  import('./VideoPlayer').then((module) => ({default: module.VideoPlayer})),
-)
+const VideoPlayer = lazy(() => import('./VideoPlayer.lazy'))
 
 type Props = {
   customDomain: string

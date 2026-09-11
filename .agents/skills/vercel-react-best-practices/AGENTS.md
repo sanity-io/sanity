@@ -434,6 +434,11 @@ Load large data or modules only when a feature is activated.
 
 **Example: lazy-load animation frames**
 
+```js
+// animation-frames.lazy.js
+export {frames as default} from './animation-frames.js'
+```
+
 ```tsx
 function AnimationPlayer({
   enabled,
@@ -445,11 +450,18 @@ function AnimationPlayer({
   const [frames, setFrames] = useState<Frame[] | null>(null)
 
   useEffect(() => {
-    if (enabled && !frames && typeof window !== 'undefined') {
-      import('./animation-frames.js')
-        .then((mod) => setFrames(mod.frames))
-        .catch(() => setEnabled(false))
+    if (!enabled || frames || typeof window === 'undefined') return
+
+    async function loadFrames() {
+      try {
+        const {default: animationFrames} = await import('./animation-frames.lazy.js')
+        setFrames(animationFrames)
+      } catch {
+        setEnabled(false)
+      }
     }
+
+    void loadFrames()
   }, [enabled, frames, setEnabled])
 
   if (!frames) return <Skeleton />
@@ -484,10 +496,15 @@ export default function RootLayout({children}) {
 
 **Correct: loads after hydration**
 
+```ts
+// Analytics.lazy.ts
+export {Analytics as default} from '@vercel/analytics/react'
+```
+
 ```tsx
 import dynamic from 'next/dynamic'
 
-const Analytics = dynamic(() => import('@vercel/analytics/react').then((m) => m.Analytics), {
+const Analytics = dynamic(() => import('./Analytics.lazy'), {
   ssr: false,
 })
 
@@ -521,10 +538,15 @@ function CodePanel({code}: {code: string}) {
 
 **Correct: Monaco loads on demand**
 
+```ts
+// monaco-editor.lazy.ts
+export {MonacoEditor as default} from './monaco-editor'
+```
+
 ```tsx
 import dynamic from 'next/dynamic'
 
-const MonacoEditor = dynamic(() => import('./monaco-editor').then((m) => m.MonacoEditor), {
+const MonacoEditor = dynamic(() => import('./monaco-editor.lazy'), {
   ssr: false,
 })
 
@@ -559,11 +581,21 @@ function EditorButton({onClick}: {onClick: () => void}) {
 
 **Example: preload when feature flag is enabled**
 
+```ts
+// monaco-editor-init.lazy.ts
+export {init as default} from './monaco-editor'
+```
+
 ```tsx
+async function initializeEditor() {
+  const {default: init} = await import('./monaco-editor-init.lazy')
+  init()
+}
+
 function FlagsProvider({children, flags}: Props) {
   useEffect(() => {
     if (flags.editorEnabled && typeof window !== 'undefined') {
-      void import('./monaco-editor').then((mod) => mod.init())
+      void initializeEditor()
     }
   }, [flags.editorEnabled])
 

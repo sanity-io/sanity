@@ -36,11 +36,16 @@ function isWorkbenchEnvironment(): boolean {
 export function observeWorkbenchToken(): Observable<string | null> | undefined {
   if (!isWorkbenchEnvironment()) return undefined
 
-  return from(import('@sanity/workbench')).pipe(
-    switchMap(({os}) => os.subscribe('auth.token')),
+  return from(import('./workbenchOs.lazy')).pipe(
+    switchMap(({default: os}) => os.subscribe('auth.token')),
     // Any failure (importing the host bundle, or the subscription) means "no OS token".
     catchError(() => of(null)),
   )
+}
+
+async function requestWorkbenchTokenRefresh(): Promise<void> {
+  const {default: os} = await import('./workbenchOs.lazy')
+  os.emit('auth.token.refresh', undefined)
 }
 
 /**
@@ -54,8 +59,5 @@ export function observeWorkbenchToken(): Observable<string | null> | undefined {
 export function refreshWorkbenchToken(): void {
   if (!isWorkbenchEnvironment()) return
 
-  void import('@sanity/workbench').then(
-    ({os}) => os.emit('auth.token.refresh', undefined),
-    () => {},
-  )
+  void requestWorkbenchTokenRefresh().catch(() => {})
 }

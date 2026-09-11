@@ -7,14 +7,8 @@ import {releasesUsEnglishLocaleBundle} from '../../releases/i18n'
 import {RELEASES_INTENT} from '../../releases/plugin'
 import {RELEASES_SCHEDULED_DRAFTS_INTENT} from '../../singleDocRelease/plugin'
 
-const ReleasesStudioLayout = lazy(() =>
-  import('../../releases/plugin/ReleasesStudioLayout').then((module) => ({
-    default: module.ReleasesStudioLayout,
-  })),
-)
-const ReleasesTool = lazy(() =>
-  import('../../releases/tool/ReleasesTool').then((module) => ({default: module.ReleasesTool})),
-)
+const ReleasesStudioLayout = lazy(() => import('../../releases/plugin/ReleasesStudioLayout.lazy'))
+const ReleasesTool = lazy(() => import('../../releases/tool/ReleasesTool.lazy'))
 
 /**
  * @internal
