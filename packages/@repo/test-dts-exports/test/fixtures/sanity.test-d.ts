@@ -179,6 +179,7 @@ import type {
   CopyPasteContextType,
   CopyPasteProvider,
   createConfig,
+  createDefaultIcon,
   CreateDocumentVersionEvent,
   createHookFromObservableFactory,
   CreateIfNotExistsMutation,
@@ -412,6 +413,8 @@ import type {
   fromMutationPatches,
   GeneralDocumentListLayoutKey,
   GeneralPreviewLayoutKey,
+  generateStudioManifest,
+  GenerateStudioManifestOptions,
   GeopointComponents,
   GeopointDefinition,
   GeopointOptions,
@@ -610,6 +613,7 @@ import type {
   LoginComponentProps,
   LoginMethod,
   LogoProps,
+  ManifestWorkspaceInput,
   MapDocument,
   MarkdownConfig,
   MaybeAllowUnknownProps,
@@ -805,6 +809,7 @@ import type {
   renderStudio,
   RequestErrorReportOptions,
   ResetEvent,
+  resolveConfig,
   ResolvedUploader,
   ResolveProductionUrlContext,
   Role,
@@ -831,6 +836,7 @@ import type {
   ScheduleDocumentVersionEvent,
   ScheduledPublishingPluginOptions,
   Schema,
+  SchemaError,
   SchemaPluginOptions,
   SchemaType,
   SchemaTypeDefinition,
@@ -918,6 +924,7 @@ import type {
   StudioTheme,
   StudioThemeColorSchemeKey,
   StudioToolMenu,
+  StudioWorkspaceManifest,
   SwatchName,
   SystemBundle,
   systemBundles,
@@ -983,6 +990,7 @@ import type {
   UploadEvent,
   UploadOptions,
   UploadProgressEvent,
+  uploadSchema,
   UploadState,
   UriValidationOptions,
   UrlComponents,
@@ -1638,6 +1646,9 @@ describe('sanity', () => {
   })
   test('createConfig', () => {
     expectTypeOf<typeof createConfig>().toBeFunction()
+  })
+  test('createDefaultIcon', () => {
+    expectTypeOf<typeof createDefaultIcon>().toBeFunction()
   })
   test('CreateDocumentVersionEvent', () => {
     expectTypeOf<CreateDocumentVersionEvent>().toBeObject()
@@ -2346,6 +2357,12 @@ describe('sanity', () => {
   test('GeneralPreviewLayoutKey', () => {
     expectTypeOf<GeneralPreviewLayoutKey>().not.toBeNever()
   })
+  test('generateStudioManifest', () => {
+    expectTypeOf<typeof generateStudioManifest>().toBeFunction()
+  })
+  test('GenerateStudioManifestOptions', () => {
+    expectTypeOf<GenerateStudioManifestOptions<any>>().toBeObject()
+  })
   test('GeopointComponents', () => {
     expectTypeOf<GeopointComponents>().toBeObject()
   })
@@ -2942,6 +2959,9 @@ describe('sanity', () => {
   test('LogoProps', () => {
     expectTypeOf<LogoProps>().toBeObject()
   })
+  test('ManifestWorkspaceInput', () => {
+    expectTypeOf<ManifestWorkspaceInput>().not.toBeNever()
+  })
   test('MapDocument', () => {
     expectTypeOf<MapDocument>().not.toBeNever()
   })
@@ -3532,6 +3552,9 @@ describe('sanity', () => {
   test('ResetEvent', () => {
     expectTypeOf<ResetEvent>().not.toBeNever()
   })
+  test('resolveConfig', () => {
+    expectTypeOf<typeof resolveConfig>().toBeFunction()
+  })
   test('ResolvedUploader', () => {
     expectTypeOf<ResolvedUploader>().not.toBeNever()
   })
@@ -3609,6 +3632,9 @@ describe('sanity', () => {
   })
   test('Schema', () => {
     expectTypeOf<Schema>().toBeObject()
+  })
+  test('SchemaError', () => {
+    expectTypeOf<SchemaError>().not.toBeNever()
   })
   test('SchemaPluginOptions', () => {
     expectTypeOf<SchemaPluginOptions>().toBeObject()
@@ -3873,6 +3899,9 @@ describe('sanity', () => {
   test('StudioToolMenu', () => {
     expectTypeOf<typeof StudioToolMenu>().toBeFunction()
   })
+  test('StudioWorkspaceManifest', () => {
+    expectTypeOf<StudioWorkspaceManifest>().toBeObject()
+  })
   test('SwatchName', () => {
     expectTypeOf<SwatchName>().not.toBeNever()
   })
@@ -4068,6 +4097,9 @@ describe('sanity', () => {
   })
   test('UploadProgressEvent', () => {
     expectTypeOf<UploadProgressEvent>().not.toBeNever()
+  })
+  test('uploadSchema', () => {
+    expectTypeOf<typeof uploadSchema>().toBeFunction()
   })
   test('UploadState', () => {
     expectTypeOf<UploadState>().toBeObject()
