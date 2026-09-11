@@ -583,10 +583,13 @@ See the `sanity-visual-regression` skill (`.agents/skills/sanity-visual-regressi
 for how to add coverage, which source owns a state, and determinism rules.
 
 Keep `test.sequence.hooks: 'list'` in `packages/sanity/vitest.browser.config.mts`. Vitest defaults
-hooks to `parallel`, which lets Chromatic's automatic snapshot race
-`packages/sanity/test/setup/browser.ts` cleanup and produces partially unmounted, blank, or
-duplicate captures. The Chromatic plugin prepends its setup file for `list` ordering, so the
-snapshot finishes before React cleanup starts. Capture runs also set `retry: 0` (a retried test
+hooks to `stack` (after-hooks run in reverse registration order) and the Chromatic plugin adapts to
+either ordering: it appends its setup file under `stack` and prepends it under `list`, so the
+automatic snapshot runs before `packages/sanity/test/setup/browser.ts` unmounts the tree in both
+cases; only `parallel` lets them race (partially unmounted, blank, or duplicate captures) and the
+plugin warns about it. `list` is set explicitly so the order is stated in the config, and so that
+`afterEach` hooks registered inside a test file (clipboard restores, spies) also run after the
+archive rather than before it. Capture runs also set `retry: 0` (a retried test
 archives twice and Chromatic publishes `Snapshot #1 (2)`), `cropToViewport`, `delay: 0`,
 `pauseAnimationAtEnd` and `prefersReducedMotion: 'reduce'`; the Playwright provider emulates the
 same `prefers-reduced-motion: reduce` locally (the `@sanity/ui` v5 stylesheet, `ui5/styles.css`,
@@ -609,6 +612,15 @@ mask real regressions):
   `takeSnapshot`): e.g. `toBeEnabled()` on a button whose tone changes with pending input,
   `data-focused="true"` plus `:focus-within` on a card whose focus ring comes from React state,
   or `styleSelectText: /^No style$/` when PTE focus can land on a text block or an object block.
+- Wait for layout with `expectStable(sample)` (same helpers file): it polls until the sampled
+  geometry / signature is unchanged on several consecutive re-reads. A single re-read that happens
+  to match (`const x = f(); await expect.poll(f).toBe(x)`) is not a stability check — Floating UI
+  and CollapseMenu can agree once and move on the next frame.
+- Assertions on React focus state (`data-focused`, editor `focused`/`blurred` events) are
+  chromium-only in practice: Firefox headless shares one window focus across the pages Vitest runs
+  test files in, so input in another file blurs the editor while `document.activeElement` (and
+  `toHaveFocus()`) is unchanged. Guard them with `server.browser === 'firefox'`; Chromatic archives
+  on chromium only, so nothing is lost.
 - Tests that leave a menu open on purpose must assert a _visible_ overlay (closed `@sanity/ui`
   menus stay mounted). Use `configure({disableAutoSnapshot: true})` plus `takeSnapshot()` at the
   asserted state when the automatic afterEach capture could race a dismiss, and do not mutate the

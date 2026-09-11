@@ -96,10 +96,13 @@ export default defineConfig({
     include: ['./src/**/*.browser.test.{ts,tsx}'],
     // Chromatic and the React test setup both register `afterEach` hooks:
     // Chromatic captures the automatic snapshot, then the test setup unmounts
-    // the rendered tree. Vitest defaults hooks to `parallel`, which lets those
-    // operations race and produces partially unmounted or blank snapshots.
-    // `list` makes the Chromatic setup file run first, so capture completes
-    // before cleanup starts.
+    // the rendered tree. Vitest's default is `stack` (after-hooks run in
+    // reverse registration order); the Chromatic plugin adapts to either by
+    // appending its setup file under `stack` and prepending it under `list`,
+    // and only warns under `parallel`. `list` is set explicitly so the order
+    // is stated here rather than inferred, and so that `afterEach` hooks
+    // registered inside a test file (clipboard restores, spies) also run after
+    // the archive instead of before it.
     sequence: {hooks: 'list'},
     // Browser tests are slower and flakier than jsdom tests, especially on
     // WebKit/Firefox in CI where all three browsers share one runner. Give
