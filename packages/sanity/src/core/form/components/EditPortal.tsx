@@ -38,10 +38,16 @@ function onDrop(event: DragEvent<HTMLDivElement>) {
 
 /**
  * @beta
+ * Props for {@link EditPortal}: either a dialog or a popover variant.
+ */
+export type EditPortalProps = PopoverProps | DialogProps
+
+/**
+ * @beta
  * Creates a dialog or a popover for editing content.
  * Handles presence and virtual scrolling.
  */
-export function EditPortal(props: PopoverProps | DialogProps): React.JSX.Element {
+export function EditPortal(props: EditPortalProps): React.JSX.Element {
   const {children, header, onClose, type, width} = props
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const containerElement = useRef<HTMLDivElement | null>(null)

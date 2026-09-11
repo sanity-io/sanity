@@ -72,13 +72,19 @@ function onDrop(event: DragEvent<HTMLDivElement>) {
 
 /**
  * @beta
+ * Props for {@link EnhancedObjectDialog}: either a dialog or a popover variant.
+ */
+export type EnhancedObjectDialogProps = PopoverProps | DialogProps
+
+/**
+ * @beta
  * Creates a dialog or a popover for editing content.
  * Handles presence and virtual scrolling.
  *
  * When multiple dialogs are open, only the top-most dialog is visible.
  * Non-top dialogs are hidden via CSS while preserving their state.
  */
-export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.JSX.Element {
+export function EnhancedObjectDialog(props: EnhancedObjectDialogProps): React.JSX.Element {
   const {children, header, type, width} = props
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const containerElement = useRef<HTMLDivElement | null>(null)
