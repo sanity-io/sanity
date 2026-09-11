@@ -727,8 +727,8 @@ importers:
         specifier: 'catalog:'
         version: 4.1.11(playwright@1.63.0)(vite@8.3.0)(vitest@4.1.11)
       chromatic:
-        specifier: ^18.7.2
-        version: 18.7.2(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.1)
+        specifier: ^18.7.4
+        version: 18.7.4(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.1)
       oxc-transform-react:
         specifier: 'catalog:'
         version: 0.149.0
@@ -1065,7 +1065,7 @@ importers:
         version: 3.0.3
       chromatic:
         specifier: ^18.7.2
-        version: 18.7.2(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.1)
+        version: 18.7.4(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.1)
       fflate:
         specifier: ^0.8.3
         version: 0.8.3
@@ -2367,7 +2367,7 @@ importers:
         version: 9.0.20240710
       chromatic:
         specifier: ^18.7.2
-        version: 18.7.2(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.1)
+        version: 18.7.4(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.1)
       jsdom:
         specifier: 'catalog:'
         version: 29.1.1(@noble/hashes@2.4.0)
@@ -9489,8 +9489,8 @@ packages:
     resolution: {integrity: sha512-+IxzY9BZOQd/XuYPRmrvEVjF/nqj5kgT4kEq7VofrDoM1MxoRjEWkrCC3EtLi59TVawxTAn+orJwFQcrqEN1+g==}
     engines: {node: '>=18'}
 
-  chromatic@18.7.2:
-    resolution: {integrity: sha512-e6YsVD1c97hF2Fz/IxmHiLSK6Di8PV6edc6lKql20Wp5ZUWxluBXC8ZHKgpqJMr6u3vhn708BqOEnZntOgiTOA==}
+  chromatic@18.7.4:
+    resolution: {integrity: sha512-2PP+l1wY6VsOm8eFAc1Pl3mwQoqmuRdY6JjXGcym6fC7RNR/XHoWbStRTqCHB8CkTCqIZtWW3UfCRLtilDhKxQ==}
     engines: {node: '>=22.0.0'}
     hasBin: true
     peerDependencies:
@@ -16490,7 +16490,7 @@ snapshots:
   '@chromatic-com/storybook@5.3.1(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.1)(storybook@10.6.0)':
     dependencies:
       '@neoconfetti/react': 1.0.0
-      chromatic: 18.7.2(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.1)
+      chromatic: 18.7.4(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.1)
       jsonfile: 6.2.1
       storybook: 10.6.0(@types/react@19.3.0)(prettier@3.9.6)(react@19.3.0)
       strip-ansi: 7.2.0
@@ -22657,7 +22657,7 @@ snapshots:
 
   chownr@3.0.0: {}
 
-  chromatic@18.7.2(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.1):
+  chromatic@18.7.4(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.1):
     dependencies:
       semver: 7.8.5
     optionalDependencies:
