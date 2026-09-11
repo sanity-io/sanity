@@ -16,9 +16,14 @@ export const DocumentGroupInventoryHint: ComponentType = () => {
   const {t} = useTranslation(structureLocaleNamespace)
   const {setIsDocumentGroupInventoryActive} = useDocumentPane()
   const telemetry = useTelemetry()
-  const status = useObservable(useMemo(() => hintStatus(browserStorageAdapter), []))
+  const status = useObservable(
+    useMemo(() => hintStatus(browserStorageAdapter), []),
+    undefined,
+  )
 
-  if (status === 'inactive') {
+  // The status is read from storage asynchronously; a hint the user has already dismissed must
+  // not flash while it is unresolved.
+  if (status !== 'active') {
     return null
   }
 

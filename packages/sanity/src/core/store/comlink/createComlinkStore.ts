@@ -15,14 +15,18 @@ interface Options {
 const SDK_CHANNEL_NAME = 'dashboard/channels/sdk'
 const SDK_NODE_NAME = 'dashboard/nodes/sdk'
 
+function noop() {}
+
 /**
- * Create a Comlink node if Comlink is provided by the Studio rendering context.
+ * Create a Comlink node if Comlink is provided by the Studio rendering context. The node is not
+ * started here — the store is created during render — but by the first `start()` call, which
+ * `useComlinkStore` makes once the consumer has committed.
  *
  * @internal
  */
 export function createComlinkStore({capabilities}: Options): ComlinkStore {
   if (!capabilities.comlink) {
-    return {}
+    return {start: noop}
   }
 
   const node = createNode<FrameMessages, WindowMessages>({
@@ -30,9 +34,14 @@ export function createComlinkStore({capabilities}: Options): ComlinkStore {
     connectTo: SDK_CHANNEL_NAME,
   })
 
-  node.start()
+  let started = false
 
   return {
     node,
+    start: () => {
+      if (started) return
+      started = true
+      node.start()
+    },
   }
 }

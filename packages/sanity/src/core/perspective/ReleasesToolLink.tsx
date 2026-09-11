@@ -32,7 +32,7 @@ const OversizedButton = styled(ToolLink)`
 export function ReleasesToolLink(): React.JSX.Element {
   const {t} = useTranslation()
   const {errorCount$} = useReleasesStore()
-  const errorCount = useObservable(errorCount$)
+  const errorCount = useObservable(errorCount$, 0)
   const hasError = errorCount !== 0
   const {selectedPerspective} = usePerspective()
   const activeToolName = useRouterState(
