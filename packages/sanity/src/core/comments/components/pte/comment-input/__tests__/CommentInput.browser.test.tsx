@@ -1,3 +1,4 @@
+import {configure, takeSnapshot} from '@chromatic-com/vitest'
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import noop from 'lodash-es/noop.js'
 import {useCallback, useState} from 'react'
@@ -139,8 +140,10 @@ describe('Comments', () => {
     })
 
     it('Should bring up mentions menu when typing @', async () => {
-      // Selecting a mention leaves an animated loading skeleton; archive the
-      // open mentions menu (the test's end state) instead.
+      // Accepting the mention leaves an animated loading skeleton that cannot
+      // be archived deterministically, so snapshot the open mentions menu
+      // explicitly and keep the Enter-to-accept behaviour as a plain assertion.
+      configure({disableAutoSnapshot: true})
       const {settleChromaticEndState} = testHelpers()
       void render(<CommentsInputHarness />)
       const $editable = page.getByTestId('comment-input-editable')
@@ -153,6 +156,14 @@ describe('Comments', () => {
       await expect.element($mentionsMenu).toBeVisible()
       await expect.element($editable).toHaveFocus()
       await expectFocusRingSettled()
+      await takeSnapshot('mentions-menu-open')
+
+      // Enter accepts the highlighted mention: the menu closes and the mention
+      // renders (its user lookup shows the loading skeleton in this harness).
+      await userEvent.keyboard('{Enter}')
+      await expect.element($mentionsMenu).not.toBeInTheDocument()
+      await expect.element(page.getByTestId('comment-mentions-loading-skeleton')).toBeVisible()
+      await expect.element($editable).toHaveFocus()
     })
 
     it('Should bring up mentions menu when pressing the @ button, whilst retaining focus on PTE', async () => {
