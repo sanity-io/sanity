@@ -1,133 +1,48 @@
-import {rem, type Theme} from '@sanity/ui'
-import {css, styled} from 'styled-components'
+import {rem, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-export const JSONInspectorWrapper = styled.div(({theme}: {theme: Theme}) => {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {color, fonts, space} = theme.sanity
+import {
+  codeFamilyVar,
+  codeFontSizeVar,
+  codeLineHeightVar,
+  jsonInspectorWrapper,
+  space3Var,
+  space4HalfVar,
+  space4Var,
+  syntaxBooleanVar,
+  syntaxConstantVar,
+  syntaxNumberVar,
+  syntaxPropertyVar,
+  syntaxStringVar,
+} from './InspectDialog.css'
 
-  return css`
-    & .json-inspector,
-    & .json-inspector .json-inspector__selection {
-      font-family: ${fonts.code.family};
-      font-size: ${fonts.code.sizes[1].fontSize}px;
-      line-height: ${fonts.code.sizes[1].lineHeight}px;
-      color: var(--card-code-fg-color);
-    }
+export function JSONInspectorWrapper(props: ComponentProps<'div'>) {
+  const {className, style, ...rest} = props
+  const {color, font, space} = useThemeV2()
+  const codeSize = font.code.sizes[1]
 
-    & .json-inspector .json-inspector__leaf {
-      padding-left: ${rem(space[4])};
-    }
-
-    & .json-inspector .json-inspector__leaf.json-inspector__leaf_root {
-      padding-top: ${rem(space[3])};
-      padding-left: 0;
-    }
-
-    & .json-inspector > .json-inspector__leaf_root > .json-inspector__line > .json-inspector__key {
-      display: none;
-    }
-
-    & .json-inspector .json-inspector__line {
-      display: block;
-      position: relative;
-      cursor: default;
-    }
-
-    & .json-inspector .json-inspector__line::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -200px;
-      right: -50px;
-      bottom: 0;
-      z-index: -1;
-      pointer-events: none;
-    }
-
-    & .json-inspector .json-inspector__line:hover::after {
-      background: var(--card-code-bg-color);
-    }
-
-    & .json-inspector .json-inspector__leaf_composite > .json-inspector__line {
-      cursor: pointer;
-    }
-
-    & .json-inspector .json-inspector__leaf_composite > .json-inspector__line::before {
-      content: '▸ ';
-      margin-left: calc(0 - ${rem(space[4])} + 3px);
-      font-size: ${fonts.code.sizes[1].fontSize}px;
-      line-height: ${fonts.code.sizes[1].lineHeight}px;
-    }
-
-    &
-      .json-inspector
-      .json-inspector__leaf_expanded.json-inspector__leaf_composite
-      > .json-inspector__line::before {
-      content: '▾ ';
-      font-size: ${fonts.code.sizes[1].fontSize}px;
-      line-height: ${fonts.code.sizes[1].lineHeight}px;
-    }
-
-    & .json-inspector .json-inspector__radio,
-    & .json-inspector .json-inspector__flatpath {
-      display: none;
-    }
-
-    & .json-inspector .json-inspector__value {
-      margin-left: ${rem(space[4] / 2)};
-    }
-
-    &
-      .json-inspector
-      > .json-inspector__leaf_root
-      > .json-inspector__line
-      > .json-inspector__key
-      + .json-inspector__value {
-      margin: 0;
-    }
-
-    & .json-inspector .json-inspector__key {
-      color: ${color.syntax.property};
-    }
-
-    & .json-inspector .json-inspector__value_helper,
-    & .json-inspector .json-inspector__value_null {
-      color: ${color.syntax.constant};
-    }
-
-    & .json-inspector .json-inspector__not-found {
-      padding-top: ${rem(space[3])};
-    }
-
-    & .json-inspector .json-inspector__value_string {
-      color: ${color.syntax.string};
-    }
-
-    & .json-inspector .json-inspector__value_boolean {
-      color: ${color.syntax.boolean};
-    }
-
-    & .json-inspector .json-inspector__value_number {
-      color: ${color.syntax.number};
-    }
-
-    & .json-inspector .json-inspector__show-original {
-      display: inline-block;
-      padding: 0 6px;
-      cursor: pointer;
-    }
-
-    & .json-inspector .json-inspector__show-original:hover {
-      color: inherit;
-    }
-
-    & .json-inspector .json-inspector__show-original::before {
-      content: '↔';
-    }
-
-    & .json-inspector .json-inspector__show-original:hover::after {
-      content: ' expand';
-    }
-  `
-})
+  return (
+    <div
+      {...rest}
+      className={clsx(jsonInspectorWrapper, className)}
+      style={{
+        ...assignInlineVars({
+          [codeFamilyVar]: font.code.family,
+          [codeFontSizeVar]: `${codeSize.fontSize}px`,
+          [codeLineHeightVar]: `${codeSize.lineHeight}px`,
+          [space3Var]: `${rem(space[3])}`,
+          [space4Var]: `${rem(space[4])}`,
+          [space4HalfVar]: `${rem(space[4] / 2)}`,
+          [syntaxPropertyVar]: color.syntax.property,
+          [syntaxConstantVar]: color.syntax.constant,
+          [syntaxStringVar]: color.syntax.string,
+          [syntaxBooleanVar]: color.syntax.boolean,
+          [syntaxNumberVar]: color.syntax.number,
+        }),
+        ...style,
+      }}
+    />
+  )
+}
