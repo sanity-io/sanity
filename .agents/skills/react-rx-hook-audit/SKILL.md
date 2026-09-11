@@ -128,27 +128,34 @@ Reproduce the `useValuePreview` shape:
 2. Put the streamed inputs in one typed record (`PreviewInputs`) and `useMemo` it on its fields.
    One record, not one subject per input: two fields that change in the same render arrive
    together, so `switchMap` never subscribes an intermediate source.
-3. Hold the record in a `BehaviorSubject` fed from a `useEffect`. Replace the subject when an
-   identity input changes, seeded with the current render's inputs, with the "adjust state during
-   render" pattern. react-rx 6 warms up the replacement observable during render, so an old subject
-   would make it preview stale inputs. This is `useInputsSubject` in `useValuePreview.ts`:
+3. Hold the record in a `BehaviorSubject` fed from a `useEffect`. Replace the subject whenever any
+   identity input changes, `enabled` included, seeded with the current render's inputs, with the
+   "adjust state during render" pattern. react-rx 6 warms up the replacement observable during
+   render, so an old subject would make it preview the inputs of an earlier render. This is
+   `useInputsSubject` in `useValuePreview.ts`:
 
    ```ts
    function useInputsSubject(
+     enabled: boolean,
      schemaType: SchemaType | undefined,
      inputs: PreviewInputs,
    ): BehaviorSubject<PreviewInputs> {
      const documentId = getPreviewDocumentId(inputs.value)
      const [current, setCurrent] = useState(() => ({
+       enabled,
        schemaType,
        documentId,
        inputs$: new BehaviorSubject(inputs),
      }))
 
      let {inputs$} = current
-     if (current.schemaType !== schemaType || current.documentId !== documentId) {
+     if (
+       current.enabled !== enabled ||
+       current.schemaType !== schemaType ||
+       current.documentId !== documentId
+     ) {
        inputs$ = new BehaviorSubject(inputs)
-       setCurrent({schemaType, documentId, inputs$})
+       setCurrent({enabled, schemaType, documentId, inputs$})
      }
 
      useEffect(() => {
@@ -207,4 +214,4 @@ rm $RX/index.js $RX/index.d.ts && cp /tmp/react-rx6-dist/index.js /tmp/react-rx6
 ```
 
 At this commit `useValuePreview.test.tsx` passes under both dists; on `main`'s hook it fails 2 tests
-under v6 and 5 under v7.
+under v6 and 6 under v7.
