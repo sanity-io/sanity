@@ -1,4 +1,5 @@
-import {type VersionInfoDocumentStub, type SystemVariant} from 'sanity'
+import {type SystemVariant} from 'sanity'
+import {type VersionInfoDocumentStub} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {describe, expect, it} from 'vitest'
 
 import {findVariantCreateBaseDocument} from '../findVariantCreateBaseDocument'

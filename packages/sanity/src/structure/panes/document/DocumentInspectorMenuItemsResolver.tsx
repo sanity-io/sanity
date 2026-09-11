@@ -1,5 +1,6 @@
 import {memo, useCallback, useEffect, useMemo, useState} from 'react'
-import {type DocumentInspector, type DocumentInspectorMenuItem, useUnique} from 'sanity'
+import {type DocumentInspector, type DocumentInspectorMenuItem} from 'sanity'
+import {useUnique} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 interface DocumentInspectorMenuItemsResolverProps {
   documentId: string

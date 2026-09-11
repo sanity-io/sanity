@@ -10,7 +10,6 @@ const INITIAL_STATE = {loading: true, document: null}
 
 /**
  * @internal
- * @beta
  *
  * Observes a document by its ID and returns the document and loading state
  * it will listen to the document changes.
@@ -39,7 +38,6 @@ export function useUnstableObserveDocument<T extends SanityDocument>(
 /**
  * @deprecated Use `useUnstableObserveDocument` instead
  * @internal
- * @beta
  */
 export const unstable_useObserveDocument = function useObserveDocument(
   args: Parameters<typeof useUnstableObserveDocument>,

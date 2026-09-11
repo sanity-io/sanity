@@ -8,18 +8,20 @@ import {AnimatePresence, motion} from 'motion/react'
 import {useEffect, useLayoutEffect, useState} from 'react'
 import {
   AvatarSkeleton,
+  usePerspective,
+  UserAvatar,
+  useRelativeTime,
+  useSyncState,
+  useTranslation,
+} from 'sanity'
+import {
   getTargetScopeId,
   isPublishedPerspective,
   TIMELINE_ITEM_I18N_KEY_MAPPING,
   useEvents,
-  usePerspective,
-  UserAvatar,
-  useRelativeTime,
   useSource,
-  useSyncState,
   useTimelineSelector,
-  useTranslation,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex, Box} from 'ui5'
 
 import {HISTORY_INSPECTOR_NAME} from '../constants'

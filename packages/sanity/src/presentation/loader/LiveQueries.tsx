@@ -19,16 +19,12 @@ import {
 } from '@sanity/presentation-comlink'
 import {dequal as isEqual} from 'dequal/lite'
 import {memo, startTransition, useDeferredValue, useEffect, useMemo, useState} from 'react'
+import {type SanityClient, type SanityDocument, useClient, useDataset, useProjectId} from 'sanity'
 import {
   isReleasePerspective,
   RELEASES_STUDIO_CLIENT_OPTIONS,
-  type SanityClient,
-  type SanityDocument,
-  useClient,
-  useDataset,
-  useProjectId,
   VARIANTS_STUDIO_CLIENT_OPTIONS,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useEffectEvent} from 'use-effect-event'
 
 import {variantsApiClient} from '../../core/store/document/document-pair/utils/variantsApiClient'

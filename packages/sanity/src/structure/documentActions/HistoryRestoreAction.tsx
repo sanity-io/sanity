@@ -3,11 +3,13 @@ import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type DocumentActionComponent,
   type DocumentActionDialogProps,
-  getPairTarget,
   useDocumentOperation,
-  useDocumentOperationEvent,
   useTranslation,
 } from 'sanity'
+import {
+  getPairTarget,
+  useDocumentOperationEvent,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useRouter} from 'sanity/router'
 
 import {structureLocaleNamespace} from '../i18n'

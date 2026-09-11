@@ -3,15 +3,17 @@ import {ReadOnlyIcon} from '@sanity/icons/ReadOnly'
 import {Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {
-  isDraftPerspective,
-  isPublishedPerspective,
-  isReleaseDocument,
   type ReleaseDocument,
   Translate,
   useDocumentOperation,
   usePerspective,
   useTranslation,
 } from 'sanity'
+import {
+  isDraftPerspective,
+  isPublishedPerspective,
+  isReleaseDocument,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useRouter} from 'sanity/router'
 
 import {structureLocaleNamespace} from '../../../../i18n'

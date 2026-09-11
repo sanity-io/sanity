@@ -1,17 +1,23 @@
 import {type SanityClient} from '@sanity/client'
 import {type Schema} from '@sanity/types'
 import {firstValueFrom, of} from 'rxjs'
-import {createSearch, type SearchSort} from 'sanity'
+import {
+  createSearch,
+  type SearchSort,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {describe, expect, it, vi} from 'vitest'
 
 import {listenSearchQuery, resolveSearchOrdering} from '../listenSearchQuery'
 
-vi.mock('sanity', async (importOriginal) => ({
-  ...(await importOriginal()),
-  compileFieldPath: vi.fn(),
-  createSearch: vi.fn(() => vi.fn(() => of({hits: []}))),
-  getSearchableTypes: vi.fn(() => [{name: 'author'}]),
-}))
+vi.mock(
+  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    compileFieldPath: vi.fn(),
+    createSearch: vi.fn(() => vi.fn(() => of({hits: []}))),
+    getSearchableTypes: vi.fn(() => [{name: 'author'}]),
+  }),
+)
 
 const mockCreateSearch = vi.mocked(createSearch)
 

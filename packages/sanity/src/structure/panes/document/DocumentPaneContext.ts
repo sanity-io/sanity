@@ -9,19 +9,21 @@ import {
   type DocumentActionComponent,
   type DocumentBadgeComponent,
   type DocumentFieldAction,
-  type DocumentFormNode,
   type DocumentInspector,
   type DocumentLanguageFilterComponent,
-  type DocumentSyncState,
   type EditStateFor,
   type NodeChronologyProps,
   type PatchEvent,
   type PermissionCheckResult,
   type ReleaseId,
   type StateTree,
+} from 'sanity'
+import {
+  type DocumentFormNode,
+  type DocumentSyncState,
   type TargetDocumentState,
   type TimelineStore,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {type View} from '../../structureBuilder/types'
 import {type PaneMenuItem, type PaneMenuItemGroup} from '../../types'

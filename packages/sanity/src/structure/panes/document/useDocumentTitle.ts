@@ -1,5 +1,10 @@
 import {useMemo} from 'react'
-import {prepareForPreview, useTranslation, useValuePreview, isGoingToUnpublish} from 'sanity'
+import {useTranslation} from 'sanity'
+import {
+  prepareForPreview,
+  useValuePreview,
+  isGoingToUnpublish,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {structureLocaleNamespace} from '../../i18n'
 import {useDocumentPane} from './useDocumentPane'

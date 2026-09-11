@@ -1,6 +1,6 @@
 import {Card} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
-import {useI18nText} from 'sanity'
+import {useI18nText} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {Pane} from '../../components/pane/Pane'
 import {_DEBUG} from '../../constants'

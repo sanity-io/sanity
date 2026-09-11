@@ -1,12 +1,11 @@
 import {Text} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
+import {type Chunk, useTranslation} from 'sanity'
 import {
-  type Chunk,
   CommandList,
   type CommandListRenderItemCallback,
   LoadingBlock,
-  useTranslation,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Box} from 'ui5'
 
 import {TIMELINE_LIST_WRAPPER_ID} from '../constants'

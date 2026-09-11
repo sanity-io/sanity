@@ -5,18 +5,20 @@ import {useActorRef, useSelector} from '@xstate/react'
 import {Activity, memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
-  EMPTY_ARRAY,
   type GeneralPreviewLayoutKey,
-  useActiveReleases,
   useClient,
-  useI18nText,
   usePerspective,
-  useReconnectingToast,
   useSchema,
-  useShallowUnique,
   useTranslation,
-  useUnique,
 } from 'sanity'
+import {
+  EMPTY_ARRAY,
+  useActiveReleases,
+  useI18nText,
+  useReconnectingToast,
+  useShallowUnique,
+  useUnique,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {keyframes, styled} from 'styled-components'
 import {Box} from 'ui5'
 

@@ -3,14 +3,16 @@ import {
   type DocumentActionComponent,
   type DocumentActionDescription,
   type DocumentActionProps,
-  EMPTY_ARRAY,
-  getDocumentIdForCanvasLink,
-  GetHookCollectionState,
   getReleaseIdFromReleaseDocumentId,
-  useActiveReleases,
   useCanvasCompanionDoc,
   useTranslation,
 } from 'sanity'
+import {
+  EMPTY_ARRAY,
+  getDocumentIdForCanvasLink,
+  GetHookCollectionState,
+  useActiveReleases,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {DocumentActionsStateContext} from 'sanity/_singletons'
 
 import {structureLocaleNamespace} from './i18n'

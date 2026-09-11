@@ -4,24 +4,26 @@ import {motion} from 'motion/react'
 import {type ReactElement, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {
-  ChangeFieldWrapper,
   ChangeList,
+  type DocumentGroupEvent,
+  type ObjectDiff,
+  type ObjectSchemaType,
+  Translate,
+  useEditState,
+  usePerspective,
+  useTranslation,
+} from 'sanity'
+import {
+  ChangeFieldWrapper,
   ChangesError,
   type DocumentChangeContextInstance,
-  type DocumentGroupEvent,
   getTargetSiblings,
   isReleaseDocument,
   LoadingBlock,
   NoChanges,
-  type ObjectDiff,
-  type ObjectSchemaType,
   ScrollContainer,
-  Translate,
-  useEditState,
   useEvents,
-  usePerspective,
-  useTranslation,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {DocumentChangeContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 import {Flex, Box, Grid} from 'ui5'

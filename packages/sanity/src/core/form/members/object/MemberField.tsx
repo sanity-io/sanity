@@ -33,7 +33,9 @@ export interface MemberFieldProps {
   renderPreview: RenderPreviewCallback
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export const MemberField = memo(function MemberField(props: MemberFieldProps) {
   const {
     member,

@@ -1,25 +1,27 @@
 import {type BadgeTone} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {
-  getVariantTitle,
   getVersionFromId,
   isDraftId,
-  isGoingToUnpublish,
   isPublishedId,
-  isPublishedPerspective,
   isVersionId,
   type TargetPerspective,
-  useAgentVersionDisplay,
   useDocumentVersions,
-  useFilteredReleases,
   usePerspective,
   useSchema,
-  useSingleDocRelease,
   useWorkspace,
+} from 'sanity'
+import {
+  getVariantTitle,
+  isGoingToUnpublish,
+  isPublishedPerspective,
+  useAgentVersionDisplay,
+  useFilteredReleases,
+  useSingleDocRelease,
   useAllVariants,
   type VersionInfoDocumentStub,
   useSetVariant,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {isLiveEditEnabled} from '../components/paneItem/helpers'
 import {usePaneRouter} from '../components/paneRouter/usePaneRouter'

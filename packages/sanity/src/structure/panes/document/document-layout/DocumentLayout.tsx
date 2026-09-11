@@ -3,18 +3,20 @@ import {clsx} from 'clsx'
 import {isHotkey} from 'is-hotkey-esm'
 import {type ComponentProps, useCallback, useMemo, useState} from 'react'
 import {
-  ChangeConnectorRoot,
   type DocumentFieldActionNode,
   type DocumentInspectorMenuItem,
+  type Path,
+  useTranslation,
+} from 'sanity'
+import {
+  ChangeConnectorRoot,
   FieldActionsProvider,
   FieldActionsResolver,
   GetFormValueProvider,
-  type Path,
   useDocumentIdStack,
   useGlobalCopyPasteElementHandler,
-  useTranslation,
   useZIndex,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useRouter} from 'sanity/router'
 import {Flex} from 'ui5'
 

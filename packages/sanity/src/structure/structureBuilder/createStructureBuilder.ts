@@ -1,11 +1,7 @@
 import {type SchemaType} from '@sanity/types'
 import {isValidElementType} from 'react-is'
-import {
-  getConfigContextFromSource,
-  getPublishedId,
-  type PerspectiveStack,
-  type Source,
-} from 'sanity'
+import {getPublishedId, type PerspectiveStack, type Source} from 'sanity'
+import {getConfigContextFromSource} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {structureLocaleNamespace} from '../i18n'
 import {ComponentBuilder, type ComponentInput} from './Component'

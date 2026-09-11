@@ -23,7 +23,6 @@ vi.mock('../DocumentListPaneContent', () => ({
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
-  useActiveReleases: vi.fn(() => ({loading: false, data: []})),
   usePerspective: vi.fn((): PerspectiveContextValue => ({
     perspectiveStack: ['drafts'],
     excludedPerspectives: [],
@@ -34,8 +33,15 @@ vi.mock('sanity', async (importOriginal) => ({
     selectedVariant: undefined,
     bundle: 'drafts',
   })),
-  useReconnectingToast: vi.fn(),
 }))
+vi.mock(
+  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    useActiveReleases: vi.fn(() => ({loading: false, data: []})),
+    useReconnectingToast: vi.fn(),
+  }),
+)
 
 const mockUseDocumentList = vi.mocked(useDocumentList)
 const mockUsePerspective = vi.mocked(usePerspective)

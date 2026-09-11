@@ -1,19 +1,19 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {render, screen, waitFor} from '@testing-library/react'
-import {useArchivedReleases} from 'sanity'
+import {useArchivedReleases} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
 import {ArchivedReleaseDocumentBanner} from '../ArchivedReleaseDocumentBanner'
 
-vi.mock('sanity', async () => {
-  const sanity = await vi.importActual('sanity')
-  return {
-    ...sanity,
+vi.mock(
+  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
     useArchivedReleases: vi.fn(),
-  }
-})
+  }),
+)
 
 // NOTE: the banner imports `usePaneRouter` directly from
 // `../../../../components/paneRouter/usePaneRouter`, so the mock must target that

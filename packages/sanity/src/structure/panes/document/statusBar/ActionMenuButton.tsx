@@ -1,11 +1,10 @@
 import {Menu} from '@sanity/ui/menu'
 import {memo, type ReactNode, useCallback, useEffect, useId, useMemo, useRef, useState} from 'react'
+import {type DocumentActionDescription, useTranslation} from 'sanity'
 import {
   ContextMenuButton,
-  type DocumentActionDescription,
   LegacyLayerProvider,
-  useTranslation,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'

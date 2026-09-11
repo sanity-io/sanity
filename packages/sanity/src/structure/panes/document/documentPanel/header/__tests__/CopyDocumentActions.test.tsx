@@ -1,6 +1,7 @@
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {usePerspective, useTargetDocumentState} from 'sanity'
+import {usePerspective} from 'sanity'
+import {useTargetDocumentState} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {type Mock, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
@@ -53,15 +54,21 @@ function readyTarget(
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
   usePerspective: vi.fn(() => DEFAULT_PERSPECTIVE),
-  useTargetDocumentState: vi.fn(() => readyTarget({draft: DRAFT_SIBLING})),
-  useStudioUrl: vi.fn(() => ({
-    studioUrl: 'http://localhost:3333',
-    buildIntentUrl: mockBuildIntentUrl,
-  })),
   useTranslation: vi.fn(() => ({
     t: (key: string) => key,
   })),
 }))
+vi.mock(
+  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    useTargetDocumentState: vi.fn(() => readyTarget({draft: DRAFT_SIBLING})),
+    useStudioUrl: vi.fn(() => ({
+      studioUrl: 'http://localhost:3333',
+      buildIntentUrl: mockBuildIntentUrl,
+    })),
+  }),
+)
 
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),

@@ -346,7 +346,9 @@ export const useDocumentPairPermissionsFromHookFactory = createHookFromObservabl
   getDocumentPairPermissions,
 )
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export function useDocumentPairPermissions({
   id,
   type,

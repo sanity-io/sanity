@@ -4,13 +4,13 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {Text} from '@sanity/ui'
 import {type ComponentType, useCallback, useState} from 'react'
 import {
-  getTargetSiblings,
   type ObjectSchemaType,
   Translate,
   useDocumentOperation,
   usePerspective,
   useTranslation,
 } from 'sanity'
+import {getTargetSiblings} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'

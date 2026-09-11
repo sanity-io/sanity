@@ -1,7 +1,8 @@
 import {type SanityDocument} from '@sanity/client'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Text} from '@sanity/ui'
-import {getPublishedId, Translate, useScheduledDraftDocument, useTranslation} from 'sanity'
+import {getPublishedId, Translate, useTranslation} from 'sanity'
+import {useScheduledDraftDocument} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'

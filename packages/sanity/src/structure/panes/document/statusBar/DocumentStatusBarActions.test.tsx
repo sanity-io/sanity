@@ -20,9 +20,15 @@ vi.mock('sanity', async (importOriginal) => ({
       Manage versions
     </button>
   ),
-  DocumentGroupInventory: () => null,
-  usePausedScheduledDraft: vi.fn(() => ({isPaused: false, currentRelease: undefined})),
 }))
+vi.mock(
+  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    DocumentGroupInventory: () => null,
+    usePausedScheduledDraft: vi.fn(() => ({isPaused: false, currentRelease: undefined})),
+  }),
+)
 
 vi.mock('../useDocumentPane', () => ({
   useDocumentPane: vi.fn(),

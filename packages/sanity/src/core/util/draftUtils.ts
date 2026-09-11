@@ -210,7 +210,9 @@ export interface CollatedHit<T extends {_id: string} = {_id: string}> {
   versions: T[]
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export function collate<T extends {_id: string; _type: string}>(documents: T[]): CollatedHit<T>[] {
   const byId = documents.reduce((res, doc) => {
     const publishedId = getPublishedId(doc._id)

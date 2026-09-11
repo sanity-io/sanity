@@ -16,37 +16,39 @@ import {
   useState,
 } from 'react'
 import {
-  DivergencesProvider,
   type DocumentActionsContext,
   type DocumentFieldAction,
   type EditStateFor,
+  getPublishedId,
+  getReleaseIdFromReleaseDocumentId,
+  isVersionId,
+  type PartialContext,
+  pathToString,
+  useCopyPaste,
+  usePerspective,
+  useSchema,
+  useWorkspace,
+} from 'sanity'
+import {
+  DivergencesProvider,
   EMPTY_ARRAY,
   getCreatableVariantTarget,
   getDocumentVersionType,
-  getPublishedId,
-  getReleaseIdFromReleaseDocumentId,
   isCardinalityOneRelease,
   isGoingToUnpublish,
   isPausedCardinalityOneRelease,
   isPerspectiveWriteable,
-  isVersionId,
   ParseErrorsProvider,
-  type PartialContext,
-  pathToString,
   selectUpstreamVersion,
   useActiveReleases,
-  useCopyPaste,
   useCreatableVariantInitialValue,
   useDocumentDivergences,
   useDocumentForm,
   useDocumentIdStack,
-  usePerspective,
-  useSchema,
   useSource,
   useTargetDocumentState,
   useUnique,
-  useWorkspace,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {DocumentPaneContext, DocumentPaneInfoContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 import {useEffectEvent} from 'use-effect-event'

@@ -6,9 +6,11 @@ import {
   useDocumentVersions,
   useGetDefaultPerspective,
   usePerspective,
+} from 'sanity'
+import {
   useVariantDocumentOperations,
   type VersionInfoDocumentStub,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
@@ -26,10 +28,16 @@ vi.mock('sanity', async () => {
     ...sanity,
     usePerspective: vi.fn(),
     useDocumentVersions: vi.fn(),
-    useVariantDocumentOperations: vi.fn(),
     useGetDefaultPerspective: vi.fn(),
   }
 })
+vi.mock(
+  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    useVariantDocumentOperations: vi.fn(),
+  }),
+)
 
 const mockUseDocumentPane = useDocumentPane as Mock<typeof useDocumentPane>
 const mockUsePerspective = usePerspective as Mock<typeof usePerspective>

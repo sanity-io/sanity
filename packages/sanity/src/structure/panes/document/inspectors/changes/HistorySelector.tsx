@@ -2,13 +2,11 @@
 import {BoundaryElementProvider, Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useState} from 'react'
+import {type Chunk, usePerspective, useTranslation} from 'sanity'
 import {
-  type Chunk,
   ScrollContainer,
-  usePerspective,
   useTimelineSelector,
-  useTranslation,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 

@@ -20,7 +20,6 @@ import {
   useState,
 } from 'react'
 import {
-  type FIXME,
   type GeneralPreviewLayoutKey,
   getPublishedId,
   PreviewCard,
@@ -30,6 +29,7 @@ import {
   useEditState,
   useSchema,
 } from 'sanity'
+import {type FIXME} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Box} from 'ui5'
 
 import {MissingSchemaType} from '../MissingSchemaType'

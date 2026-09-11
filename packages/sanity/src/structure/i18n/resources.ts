@@ -1,5 +1,5 @@
 /* eslint sort-keys: "error" */
-import {defineLocalesResources} from 'sanity'
+import {defineLocalesResources} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 /**
  * Defined locale strings for the structure tool, in US English.

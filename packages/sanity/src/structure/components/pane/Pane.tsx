@@ -11,7 +11,10 @@ import {
   useState,
   type RefAttributes,
 } from 'react'
-import {IsLastPaneProvider, LegacyLayerProvider} from 'sanity'
+import {
+  IsLastPaneProvider,
+  LegacyLayerProvider,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {PaneContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'

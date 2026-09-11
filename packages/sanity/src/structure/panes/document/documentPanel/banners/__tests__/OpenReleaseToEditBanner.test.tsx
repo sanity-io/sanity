@@ -1,10 +1,6 @@
 import {render, screen} from '@testing-library/react'
-import {
-  getReleaseIdFromReleaseDocumentId,
-  type ReleaseDocument,
-  useActiveReleases,
-  useOnlyHasVersions,
-} from 'sanity'
+import {getReleaseIdFromReleaseDocumentId, type ReleaseDocument, useOnlyHasVersions} from 'sanity'
+import {useActiveReleases} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
@@ -19,12 +15,18 @@ vi.mock('sanity', async () => {
   const sanity = await vi.importActual('sanity')
   return {
     ...sanity,
-    useReleasesIds: vi.fn(),
-    useActiveReleases: vi.fn(),
-    useArchivedReleases: vi.fn(),
     useOnlyHasVersions: vi.fn(),
   }
 })
+vi.mock(
+  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    useReleasesIds: vi.fn(),
+    useActiveReleases: vi.fn(),
+    useArchivedReleases: vi.fn(),
+  }),
+)
 
 const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
 const mockuseUseOnlyHasVersions = useOnlyHasVersions as Mock<typeof useOnlyHasVersions>

@@ -1,4 +1,8 @@
-import {type EditStateFor, isNewDocument, type isPerspectiveWriteable} from 'sanity'
+import {type EditStateFor} from 'sanity'
+import {
+  isNewDocument,
+  type isPerspectiveWriteable,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 /**
  * Determine whether the user must choose a new perspective in order to create a document.

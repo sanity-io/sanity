@@ -1,5 +1,8 @@
 import {type ComponentType} from 'react'
-import {type DocumentLayoutProps, useMiddlewareComponents} from 'sanity'
+import {
+  type DocumentLayoutProps,
+  useMiddlewareComponents,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {DocumentLayout} from './DocumentLayout'
 import {pickDocumentLayoutComponent} from './pickDocumentLayoutComponent'

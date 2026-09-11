@@ -1,4 +1,5 @@
-import {CrossDatasetReferencePreview, PreviewCard} from 'sanity'
+import {PreviewCard} from 'sanity'
+import {CrossDatasetReferencePreview} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex, Box} from 'ui5'
 
 import {type CrossDatasetIncomingReference} from '../types'

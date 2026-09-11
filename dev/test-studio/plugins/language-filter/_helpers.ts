@@ -1,4 +1,5 @@
-import {isArray, type Path, type StateTree} from 'sanity'
+import {type Path, type StateTree} from 'sanity'
+import {isArray} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 export function _isPathCollapsed(
   path: Path,

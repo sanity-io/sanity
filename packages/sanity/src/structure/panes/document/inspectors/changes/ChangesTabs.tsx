@@ -4,14 +4,16 @@ import {Card, TabList, TabPanel, Text} from '@sanity/ui'
 import {useState} from 'react'
 import {
   type DocumentInspectorProps,
-  isReleaseDocument,
   type TargetPerspective,
   type TFunction,
   Translate,
   usePerspective,
-  useSource,
   useTranslation,
 } from 'sanity'
+import {
+  isReleaseDocument,
+  useSource,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 

@@ -9,7 +9,8 @@ import {
   useRef,
   useState,
 } from 'react'
-import {type DocumentActionDescription, LegacyLayerProvider} from 'sanity'
+import {type DocumentActionDescription} from 'sanity'
+import {LegacyLayerProvider} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {RenderActionCollectionState} from '../../../components/RenderActionCollectionState'
 import {ActionStateDialog} from '../statusBar/ActionStateDialog'

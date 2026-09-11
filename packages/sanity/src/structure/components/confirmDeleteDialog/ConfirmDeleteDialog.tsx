@@ -1,5 +1,6 @@
 import {useCallback, useId, useMemo} from 'react'
-import {getPublishedId, LoadingBlock, useDocumentVersions, useTranslation} from 'sanity'
+import {getPublishedId, useDocumentVersions, useTranslation} from 'sanity'
+import {LoadingBlock} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 

@@ -1,12 +1,12 @@
 import {Text} from '@sanity/ui'
 import {useCallback} from 'react'
+import {type GeneralPreviewLayoutKey} from 'sanity'
 import {
   CommandList,
   type CommandListItemContext,
-  type GeneralPreviewLayoutKey,
   useGetI18nText,
   useI18nText,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {styled} from 'styled-components'
 import {Box} from 'ui5'
 

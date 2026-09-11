@@ -1,5 +1,5 @@
 import {type ReactNode, useContext, useMemo, type RefAttributes} from 'react'
-import {useUnique} from 'sanity'
+import {useUnique} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {PaneRouterContext} from 'sanity/_singletons'
 import {StateLink} from 'sanity/router'
 

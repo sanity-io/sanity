@@ -1,7 +1,7 @@
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import noop from 'lodash-es/noop.js'
 import {useCallback, useState} from 'react'
-import {CommentInput} from 'sanity'
+import {CommentInput} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'

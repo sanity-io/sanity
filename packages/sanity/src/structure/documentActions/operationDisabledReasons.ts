@@ -1,4 +1,4 @@
-import {type OperationsAPI} from 'sanity'
+import {type OperationsAPI} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {type StructureLocaleResourceKeys} from '../i18n'
 

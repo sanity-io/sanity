@@ -1,6 +1,7 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useMemo} from 'react'
-import {useDocumentPreviewValues, usePerspective, useTranslation} from 'sanity'
+import {usePerspective, useTranslation} from 'sanity'
+import {useDocumentPreviewValues} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useRouter, useRouterState} from 'sanity/router'
 
 import {Button} from '../../../../../ui-components/button/Button'

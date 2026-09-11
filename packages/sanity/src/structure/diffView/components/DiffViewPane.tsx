@@ -18,7 +18,6 @@ import {
   type RefAttributes,
 } from 'react'
 import {
-  ChangeIndicatorsTracker,
   createPatchChannel,
   FormBuilder,
   getPublishedId,
@@ -26,16 +25,19 @@ import {
   isDraftId,
   isPublishedId,
   isVersionId,
-  LoadingBlock,
   PerspectiveProvider,
   PortalBoundaryProvider,
   type TargetPerspective,
-  useActiveReleases,
-  useDocumentForm,
   useEditState,
-  useMiddlewareComponents,
   VirtualizerScrollInstanceProvider,
 } from 'sanity'
+import {
+  ChangeIndicatorsTracker,
+  LoadingBlock,
+  useActiveReleases,
+  useDocumentForm,
+  useMiddlewareComponents,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {CommentsEnabledContext, ReviewChangesContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 

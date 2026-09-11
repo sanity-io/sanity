@@ -40,8 +40,6 @@ vi.mock('../DocumentListPane', async () => {
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
-  useSearchState: vi.fn(),
-  useActiveReleases: vi.fn(() => ({})),
   usePerspective: vi.fn((): PerspectiveContextValue => ({
     perspectiveStack: ['drafts'],
     excludedPerspectives: [],
@@ -53,6 +51,14 @@ vi.mock('sanity', async (importOriginal) => ({
     bundle: 'drafts',
   })),
 }))
+vi.mock(
+  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    useSearchState: vi.fn(),
+    useActiveReleases: vi.fn(() => ({})),
+  }),
+)
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),
   useRouter: vi.fn().mockReturnValue({

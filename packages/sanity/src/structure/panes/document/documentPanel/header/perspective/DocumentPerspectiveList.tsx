@@ -4,22 +4,24 @@ import {
   getDraftId,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
-  getReleaseTone,
   getVersionId,
-  isGoingToUnpublish,
-  isReleaseScheduledOrScheduling,
   type ReleaseDocument,
-  ReleaseTitle,
   type SanityDocumentLike,
   Translate,
-  useActiveReleases,
   useDateTimeFormat,
   type UseDateTimeFormatOptions,
-  useFormatRelativeLocalePublishDate,
   usePerspective,
   useTranslation,
-  VersionChip,
 } from 'sanity'
+import {
+  getReleaseTone,
+  isGoingToUnpublish,
+  isReleaseScheduledOrScheduling,
+  ReleaseTitle,
+  useActiveReleases,
+  useFormatRelativeLocalePublishDate,
+  VersionChip,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {useDocumentPerspectiveList} from '../../../../../hooks/useDocumentPerspectiveList'
 import {useDocumentPane} from '../../../useDocumentPane'

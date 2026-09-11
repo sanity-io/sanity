@@ -3,18 +3,20 @@ import {motion} from 'motion/react'
 import {memo, type RefAttributes, type SVGProps} from 'react'
 import {
   ReleaseAvatarIcon,
+  usePerspective,
+  useTranslation,
+  type SystemVariant,
+  type TargetPerspective,
+} from 'sanity'
+import {
   ReleaseTitle,
   getReleaseTone,
   getVariantTitle,
   isDraftPerspective,
   isPublishedPerspective,
   isReleaseDocument,
-  usePerspective,
-  useTranslation,
-  type SystemVariant,
   type TargetDocumentState,
-  type TargetPerspective,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 

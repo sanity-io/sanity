@@ -1,5 +1,6 @@
 import {type ComponentType} from 'react'
-import {type DocumentLayoutProps, type PluginOptions} from 'sanity'
+import {type PluginOptions} from 'sanity'
+import {type DocumentLayoutProps} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 /**
  * Pick the document layout component when composing the component middleware chain.

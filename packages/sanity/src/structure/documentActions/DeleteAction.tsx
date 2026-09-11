@@ -4,11 +4,7 @@ import {useCallback, useMemo, useState} from 'react'
 import {catchError, filter, firstValueFrom, map, of, timeout} from 'rxjs'
 import {
   type DocumentActionComponent,
-  getPairTarget,
-  getTargetScopeId,
   InsufficientPermissionsMessage,
-  isAgentBundleName,
-  isReleaseScheduledOrScheduling,
   useCurrentUser,
   useDocumentOperation,
   useDocumentPairPermissions,
@@ -16,6 +12,12 @@ import {
   useDocumentVersionTypeSortedList,
   useTranslation,
 } from 'sanity'
+import {
+  getPairTarget,
+  getTargetScopeId,
+  isAgentBundleName,
+  isReleaseScheduledOrScheduling,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {ConfirmDeleteDialog} from '../components/confirmDeleteDialog'
 import {type DeleteReferenceCounts} from '../components/confirmDeleteDialog/ConfirmDeleteDialog'

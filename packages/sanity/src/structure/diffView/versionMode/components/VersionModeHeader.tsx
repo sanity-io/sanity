@@ -20,29 +20,31 @@ import {
 import {type TFunction} from 'i18next'
 import {type ComponentType, useMemo} from 'react'
 import {
-  type DocumentLayoutProps,
   getDraftId,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
-  getReleaseTone,
   getVersionFromId,
   getVersionId,
+  ReleaseAvatar,
+  type ReleaseDocument,
+  type TargetPerspective,
+  useDocumentVersions,
+  useEditState,
+  useTranslation,
+  useWorkspace,
+} from 'sanity'
+import {
+  type DocumentLayoutProps,
+  getReleaseTone,
   isReleaseDocument,
   isReleaseScheduledOrScheduling,
   isSystemBundleName,
   LATEST,
   PUBLISHED,
-  ReleaseAvatar,
-  type ReleaseDocument,
   ReleaseTitle,
-  type TargetPerspective,
   useActiveReleases,
-  useDocumentVersions,
-  useEditState,
   useFormatRelativeLocalePublishDate,
-  useTranslation,
-  useWorkspace,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 

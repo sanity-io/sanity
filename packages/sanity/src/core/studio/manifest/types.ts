@@ -30,7 +30,8 @@ export interface StudioWorkspaceManifest {
 
 /**
  * Studio configuration manifest that gets registered with the Content Operating System.
- * @internal
+ * @hidden
+ * @beta
  */
 export interface StudioManifest {
   version?: string

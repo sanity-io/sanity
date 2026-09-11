@@ -10,6 +10,8 @@ export default defineConfig(() => {
         entry: {
           '_singletons': './src/_exports/_singletons.ts',
           '_createContext': './src/_exports/_createContext.ts',
+          '_dangerously_use_private_internals_that_do_not_follow_semver':
+            './src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver.ts',
           // 'sanity' module
           'index': './src/_exports/index.ts',
           'desk': './src/_exports/desk.ts',

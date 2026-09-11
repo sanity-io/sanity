@@ -19,14 +19,16 @@ import {useActorRef, useSelector} from '@xstate/react'
 import {lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type CommentIntentGetter,
-  COMMENTS_INSPECTOR_NAME,
   type SanityDocument,
   type Tool,
   useDataset,
   useProjectId,
-  useUnique,
   useWorkspace,
 } from 'sanity'
+import {
+  COMMENTS_INSPECTOR_NAME,
+  useUnique,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 import {useEffectEvent} from 'use-effect-event'

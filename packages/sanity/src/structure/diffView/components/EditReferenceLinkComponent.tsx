@@ -1,4 +1,4 @@
-import {type ReferenceInputOptions} from 'sanity'
+import {type ReferenceInputOptions} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useIntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 

@@ -2,16 +2,18 @@ import {Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
+  type TargetPerspective,
+  Translate,
+  useTranslation,
+} from 'sanity'
+import {
   getReleaseTone,
   isCardinalityOneRelease,
   LATEST,
   ReleaseTitle,
-  type TargetPerspective,
-  Translate,
   useArchivedReleases,
-  useTranslation,
   VersionInlineBadge,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'

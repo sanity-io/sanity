@@ -16,14 +16,16 @@ import {
   type RefAttributes,
 } from 'react'
 import {
-  FieldPresenceInner,
   type DocumentActionDescription,
   useDocumentPresence,
-  useFieldActions,
   useTranslation,
-  useZIndex,
   useWorkspace,
 } from 'sanity'
+import {
+  FieldPresenceInner,
+  useFieldActions,
+  useZIndex,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {css, styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 

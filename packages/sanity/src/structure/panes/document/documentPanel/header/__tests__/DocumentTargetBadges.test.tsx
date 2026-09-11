@@ -1,12 +1,10 @@
 import {type ObjectSchemaType} from '@sanity/types'
 import {render, screen} from '@testing-library/react'
+import {type SystemVariant, type TargetPerspective, usePerspective} from 'sanity'
 import {
-  type SystemVariant,
   type TargetDocumentState,
-  type TargetPerspective,
   type VersionInfoDocumentStub,
-  usePerspective,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
