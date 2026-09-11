@@ -188,10 +188,11 @@ describe('Portable Text Input', () => {
 
       const $toolbarPopover = page.getByTestId('annotation-toolbar-popover')
 
-      // Collapse the selection to a caret inside the annotation, and let the
-      // editor pick it up before the next keystroke (its `validateSelection`
-      // otherwise writes the stale caret back over the Shift+Arrow below).
+      // Collapse the selection to a caret inside the annotation, letting the
+      // editor pick up each caret move before the next keystroke (its
+      // `validateSelection` otherwise writes the stale caret back over it).
       await userEvent.keyboard('{ArrowLeft}')
+      await waitForPortableTextSelection('')
       await userEvent.keyboard('{ArrowRight}')
 
       // Assertion: the annotation toolbar popover should be visible
@@ -370,10 +371,11 @@ describe('Portable Text Input', () => {
 
         const $toolbarPopover = page.getByTestId('annotation-toolbar-popover')
 
-        // Collapse the selection to a caret inside the annotation, and let the
-        // editor pick it up before the next keystroke (its `validateSelection`
-        // otherwise writes the stale caret back over the Shift+Arrow below).
+        // Collapse the selection to a caret inside the annotation, letting the
+        // editor pick up each caret move before the next keystroke (its
+        // `validateSelection` otherwise writes the stale caret back over it).
         await userEvent.keyboard('{ArrowLeft}')
+        await waitForPortableTextSelection('')
         await userEvent.keyboard('{ArrowRight}')
 
         // Assertion: the annotation toolbar popover should be visible
@@ -492,12 +494,14 @@ describe('Portable Text Input', () => {
         const $toolbarPopover = page.getByTestId('annotation-toolbar-popover')
 
         // Collapse the selection to a caret inside the annotation (between
-        // the first and second letter of "link"). Let the editor pick the
-        // caret up before the next keystroke: the re-render from that sync
-        // runs `validateSelection`, which writes the editor's selection back
-        // into the DOM when the two differ, so a Shift+Arrow landing inside
-        // the throttle window gets undone and the popover reopens.
+        // the first and second letter of "link"). Let the editor pick each
+        // caret move up before the next keystroke: the re-render from that
+        // sync runs `validateSelection`, which writes the editor's selection
+        // back into the DOM when the two differ, so an arrow key landing
+        // inside the throttle window gets undone (and a Shift+Arrow reopens
+        // the popover).
         await userEvent.keyboard('{ArrowLeft}')
+        await waitForPortableTextSelection('')
         await userEvent.keyboard('{ArrowRight}')
 
         // Assertion (positive control): a collapsed caret inside the
