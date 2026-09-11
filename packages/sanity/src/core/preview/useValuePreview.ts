@@ -136,15 +136,15 @@ function getPreviewTargetKey(
     _projectId?: string
     _dataset?: string
   }
+  // Each kind of identity has its own prefix: `inline` is a valid document id, and only prefixes
+  // keep a document, an array item and an id-less object from ever sharing a segment.
   const documentId = _id ?? _ref
   const document =
     documentId === undefined
       ? _key === undefined
         ? INLINE_TARGET_KEY
         : `key:${_key}`
-      : _dataset
-        ? `${_projectId}/${_dataset}/${getPublishedId(documentId)}`
-        : getPublishedId(documentId)
+      : `doc:${_dataset ? `${_projectId}/${_dataset}/` : ''}${getPublishedId(documentId)}`
   return `${document}|${perspective.join(',')}|${variant ?? ''}|${publishedOnly ? 'published' : ''}`
 }
 /**

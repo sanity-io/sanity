@@ -284,6 +284,34 @@ describe('useValuePreview', () => {
     expect(frames.slice(settled).some((frame) => frame.isLoading)).toBe(false)
   })
 
+  it('does not mistake an id-less object for a document whose id spells its own key', () => {
+    const inline = new Subject<{snapshot: {title: string}}>()
+    observeForPreview.mockImplementation((value: {_id?: string; title: string}) =>
+      value._id === undefined
+        ? inline
+        : new Observable((subscriber) => {
+            subscriber.next({snapshot: {title: value.title}})
+          }),
+    )
+    const frames: Frame[] = []
+    const {rerender} = render(
+      <Harness value={{_id: 'inline', title: 'a document named inline'}} frames={frames} />,
+    )
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'a document named inline'})
+    const settled = frames.length
+
+    rerender(<Harness value={{title: 'plain object'}} frames={frames} />)
+    expect(frames.slice(settled).map((frame) => frame.title)).not.toContain(
+      'a document named inline',
+    )
+    expect(frames.at(-1)).toEqual({isLoading: true, title: undefined, error: undefined})
+
+    act(() => {
+      inline.next({snapshot: {title: 'plain object'}})
+    })
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'plain object'})
+  })
+
   it('previews an array item as it is, without synthesizing a document id', () => {
     const item = {_key: 'item-1', _type: 'item', title: 'In place'}
     const frames: Frame[] = []
