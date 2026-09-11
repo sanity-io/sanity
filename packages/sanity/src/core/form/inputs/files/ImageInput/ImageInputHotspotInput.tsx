@@ -1,12 +1,19 @@
 import {Stack} from '@sanity/ui'
+import {lazy, Suspense} from 'react'
 
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
+import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
 import {type FIXME} from '../../../../FIXME'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {PresenceOverlay} from '../../../../presence/overlay/PresenceOverlay'
 import {type InputProps} from '../../../types/inputProps'
-import {ImageToolInput} from '../ImageToolInput'
 import {type BaseImageInputProps} from './types'
+
+// The hotspot/crop editor only renders inside this dialog, so its chunk is fetched on open
+// rather than with every image input.
+const ImageToolInput = lazy(() =>
+  import('../ImageToolInput').then((module) => ({default: module.ImageToolInput})),
+)
 
 export function ImageInputHotspotInput(props: {
   handleCloseDialog: () => void
@@ -33,13 +40,15 @@ export function ImageInputHotspotInput(props: {
       <PresenceOverlay>
         <Stack gap={5}>
           {withImageTool && value?.asset && (
-            <ImageToolInput
-              {...imageInputProps}
-              imageUrl={imageUrl}
-              value={value as FIXME}
-              presence={inputProps.presence}
-              changed={changed}
-            />
+            <Suspense fallback={<LoadingBlock />}>
+              <ImageToolInput
+                {...imageInputProps}
+                imageUrl={imageUrl}
+                value={value as FIXME}
+                presence={inputProps.presence}
+                changed={changed}
+              />
+            </Suspense>
           )}
         </Stack>
       </PresenceOverlay>
