@@ -5,7 +5,7 @@ import {
   type DeprecatedProperty,
   type FormNodeValidation,
 } from '@sanity/types'
-import {Badge, Flex, Stack, Text, type Theme} from '@sanity/ui'
+import {Badge, Stack, Text, type Theme} from '@sanity/ui'
 import {
   type FocusEvent,
   type HTMLProps,
@@ -17,7 +17,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {css, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
@@ -30,6 +30,7 @@ import {FormFieldGutter} from '../FormFieldGutter'
 import {FormNodeDivergenceCollectionIndicator} from '../FormNodeDivergenceCollectionIndicator'
 import {FormNodeDivergenceDetail} from '../FormNodeDivergenceDetail'
 import {FormRow} from '../layout/FormRow'
+import {getGridTemplateColumns} from '../layout/getGridTemplateColumns'
 import {FormFieldBaseHeader} from './FormFieldBaseHeader'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
@@ -210,7 +211,11 @@ export function FormFieldSet(
       return null
     }
     return (
-      <ColumnarGrid gridTemplateColumns={columns} gapX={4} gapY={5}>
+      <ColumnarGrid
+        gridTemplateColumns={columns ? getGridTemplateColumns(columns) : undefined}
+        columnGap={4}
+        rowGap={5}
+      >
         {getChildren(children)}
       </ColumnarGrid>
     )
@@ -240,7 +245,7 @@ export function FormFieldSet(
             inputId={inputId}
             content={
               <Stack gap={3}>
-                <Flex align="center">
+                <Flex alignItems="center">
                   {title && (
                     <FormFieldSetLegend
                       collapsed={Boolean(collapsed)}
@@ -256,7 +261,7 @@ export function FormFieldSet(
                       </Badge>
                     </Box>
                   )}
-                  {isArraySchemaType(schemaType) && (
+                  {isArraySchemaType(schemaType) && Array.isArray(path) && (
                     <Box marginLeft={2}>
                       <FormNodeDivergenceCollectionIndicator path={path} />
                     </Box>

@@ -692,25 +692,21 @@ function validateItemObservable({
         .flatMap((fieldResults) => Object.entries(fieldResults))
         .flatMap(([name, validation]) => {
           const fieldType = fieldTypes[name]
-          return normalizeValidationRules({...fieldType, validation})
+          const nestedValue = isRecord(value) ? value[name] : undefined
+          const fieldContext = {
+            ...restOfContext,
+            parent: value,
+            path: path.concat(name),
+            type: fieldType,
+            environment,
+            hidden: resolveHiddenForType(fieldType, nestedValue, value, path.concat(name), hidden),
+          }
+          return normalizeValidationRules({...fieldType, validation}, fieldContext)
             .map(addUnknownFieldsValidator)
             .map((subRule) => {
-              const nestedValue = isRecord(value) ? value[name] : undefined
-              const nestedHidden = resolveHiddenForType(
-                fieldType,
-                nestedValue,
-                value,
-                path.concat(name),
-                hidden,
-              )
               return defer(() =>
                 validateRule(subRule, nestedValue, {
-                  ...restOfContext,
-                  parent: value,
-                  path: path.concat(name),
-                  type: fieldType,
-                  environment,
-                  hidden: nestedHidden,
+                  ...fieldContext,
                   __internal: {
                     ...__internal,
                     customValidation,

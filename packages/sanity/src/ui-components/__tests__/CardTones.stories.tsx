@@ -1,5 +1,6 @@
-import {Badge, Card, type CardTone, Grid, Stack, Text} from '@sanity/ui'
+import {Badge, Card, type CardTone, Stack, Text} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
+import {Grid} from 'ui5'
 
 const TONES: CardTone[] = [
   'default',
@@ -28,7 +29,7 @@ type Story = StoryObj<typeof meta>
 
 export const AllTones: Story = {
   render: () => (
-    <Grid gap={3} gridTemplateColumns={2} padding={4}>
+    <Grid gap={3} gridTemplateColumns="repeat(2, minmax(0, 1fr))" padding={4}>
       {TONES.map((tone) => (
         <Card key={tone} border padding={4} radius={2} tone={tone}>
           <Stack gap={3}>
