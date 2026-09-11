@@ -17,12 +17,6 @@ export const INTERSECTION_THRESHOLDS = [0, 0.25, 0.75, 1]
 // The elements that reports intersection changes are padded top+bottom in order to detect when entering leaving
 export const INTERSECTION_ELEMENT_PADDING = 23
 
-// Make the avatars snap to the top dock when they are closer than this from the top
-export const SNAP_TO_DOCK_DISTANCE_TOP = 8
-
-// Make the avatars snap to the bottom dock when they are closer than this from the bottom
-export const SNAP_TO_DOCK_DISTANCE_BOTTOM = 8
-
 // The avatar will move to the right when this close (in pixels) to the top
 export const SLIDE_RIGHT_THRESHOLD_TOP = 20
 

@@ -159,7 +159,7 @@ export function StickyOverlay(props: Props) {
   )
 
   const renderCallback = useCallback(
-    (regionsWithIntersectionDetails: RegionWithIntersectionDetails[], containerWidth: any) => {
+    (regionsWithIntersectionDetails: RegionWithIntersectionDetails[], _containerWidth: number) => {
       const grouped = group(
         regionsWithIntersectionDetails.filter((item) => item.region.presence.length > 0),
       )
@@ -193,10 +193,7 @@ export function StickyOverlay(props: Props) {
             regionsWithIntersectionDetails={grouped.top}
           />
           <Spacer height={topSpacing} />
-          <PresenceInside
-            containerWidth={containerWidth}
-            regionsWithIntersectionDetails={grouped.inside}
-          />
+          <PresenceInside regionsWithIntersectionDetails={grouped.inside} />
           <Spacer height={bottomSpacing} />
           <PresenceDock
             closeCount={counts.nearBottom}
@@ -277,11 +274,18 @@ const PresenceDock = memo(function PresenceDock(props: {
   )
 })
 
-function PresenceInside(props: {
-  containerWidth: number
-  regionsWithIntersectionDetails: RegionWithSpacerHeight[]
-}) {
-  const {regionsWithIntersectionDetails, containerWidth} = props
+export function getInsidePresenceTranslateX(_options: {
+  nearTop: boolean
+  nearBottom: boolean
+  containerWidth?: number
+  originalLeft?: number
+  regionWidth?: number
+}): number {
+  return 0
+}
+
+function PresenceInside(props: {regionsWithIntersectionDetails: RegionWithSpacerHeight[]}) {
+  const {regionsWithIntersectionDetails} = props
 
   return (
     <>
@@ -292,7 +296,7 @@ function PresenceInside(props: {
         const nearTop = distanceTop <= SLIDE_RIGHT_THRESHOLD_TOP
         const nearBottom = distanceBottom <= SLIDE_RIGHT_THRESHOLD_BOTTOM
 
-        const diffRight = containerWidth - originalLeft - withIntersection.region.rect.width
+        const translateX = getInsidePresenceTranslateX({nearTop, nearBottom})
 
         const {presence, maxAvatars} = withIntersection.region
         return (
@@ -303,7 +307,7 @@ function PresenceInside(props: {
                 position: 'absolute',
                 ...ITEM_TRANSITION,
                 left: originalLeft,
-                transform: `translate3d(${nearTop || nearBottom ? diffRight : 0}px, 0px, 0px)`,
+                transform: `translate3d(${translateX}px, 0px, 0px)`,
                 height: withIntersection.region.rect.height,
                 top: withIntersection.region.rect.top,
               }}
