@@ -97,7 +97,8 @@ page.on('console', (message) => {
   if (tag.startsWith('[rx:')) counts[tag] = (counts[tag] ?? 0) + 1
 })
 const token = encodeURIComponent(process.env.STUDIO_AUTH_TOKEN) // never log it
-await page.goto(`http://localhost:3333/test/intent/create/type=author/#token=${token}`)
+// an existing document in the /test workspace, for example one you created through the mutate API
+await page.goto(`http://localhost:3333/test/structure/author;${process.env.DOC_ID}#token=${token}`)
 const input = page.getByTestId('field-name').getByTestId('string-input')
 await input.waitFor()
 const before = {...counts}
@@ -194,7 +195,16 @@ Write these three tests. They catch the regressions the refactor guards against:
 3. Identity change (another document or schema type): every frame since the switch is the loading
    frame, the previous target's title never renders, then the new title renders.
 
-Run the file against the react-rx 7 dist to see which failures are v7-only: back the installed
-`dist` up with `cp -a`, copy the v7 `dist/*` over it, run the file, then copy the backup files back
-over the same paths. Do not delete the directory in between. The dist files are hard links into the
-pnpm store, so writing in place restores the store too. At this commit the file passes under both.
+Run the file against the react-rx 7 dist to see which failures are v7-only. The installed dist
+files are hard links into the pnpm store, so never write into them in place; unlink first:
+
+```bash
+RX=packages/sanity/node_modules/react-rx/dist
+cp -a $RX /tmp/react-rx6-dist
+rm $RX/index.js $RX/index.d.ts && cp /tmp/react-rx7/package/dist/index.js /tmp/react-rx7/package/dist/index.d.ts $RX/
+pnpm vitest run --project=sanity <the test file>
+rm $RX/index.js $RX/index.d.ts && cp /tmp/react-rx6-dist/index.js /tmp/react-rx6-dist/index.d.ts $RX/
+```
+
+At this commit `useValuePreview.test.tsx` passes under both dists; on `main`'s hook it fails 2 tests
+under v6 and 5 under v7.
