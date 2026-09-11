@@ -3,7 +3,7 @@ import noop from 'lodash-es/noop.js'
 import {useCallback, useState} from 'react'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
-import {page, userEvent} from 'vitest/browser'
+import {page, server, userEvent} from 'vitest/browser'
 
 import {testHelpers} from '../../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
@@ -84,10 +84,17 @@ function CommentsInputHarness({
  * `:focus` states when it renders the archive, so assert the ring's inputs
  * explicitly (after `settleChromaticEndState` has parked the pointer) instead
  * of relying on the editable's `toHaveFocus()` alone.
+ *
+ * Chromatic archives on chromium only. Firefox headless shares one window
+ * focus across the pages Vitest runs test files in, so input in another
+ * file's page blurs this editor (the editor emits `blurred` and `data-focused`
+ * flips to `false`) while `document.activeElement` is unchanged; `toHaveFocus()`
+ * still holds there, but the ring inputs cannot be asserted reliably.
  */
 const commentInputRoot = () => window.document.getElementById('comment-input-root')
 
 async function expectFocusRingSettled() {
+  if (server.browser === 'firefox') return
   await expect.poll(() => commentInputRoot()?.getAttribute('data-focused')).toBe('true')
   await expect.poll(() => commentInputRoot()?.matches(':focus-within')).toBe(true)
   await expect.poll(() => commentInputRoot()?.matches(':hover')).toBe(false)
