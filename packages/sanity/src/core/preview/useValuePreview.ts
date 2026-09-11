@@ -254,6 +254,10 @@ export function useValuePreview(props: {
 
   // The subject is fed after commit, so the render that first receives a new target still holds
   // the previous target's emission. Compare against the target this render previews and show
-  // loading until the emission catches up, so nothing stale is ever painted.
-  return emission.key === resolveTarget(previewValue)?.key ? emission.state : INITIAL_STATE
+  // loading until the emission catches up, so nothing stale is ever painted. `undefined` is not a
+  // real key — idle (no value, disabled, or no schema) and in-place objects both use it — so a
+  // missing target must not reuse that emission or fall through to loading.
+  const target = resolveTarget(previewValue)
+  if (!target) return IDLE_STATE
+  return emission.key === target.key ? emission.state : INITIAL_STATE
 }

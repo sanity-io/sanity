@@ -30,12 +30,14 @@ function Harness({
   value,
   frames,
   perspectiveStack,
+  enabled,
 }: {
   value: unknown
   frames: Frame[]
   perspectiveStack?: PerspectiveStack
+  enabled?: boolean
 }) {
-  const state = useValuePreview({schemaType, value, perspectiveStack})
+  const state = useValuePreview({schemaType, value, perspectiveStack, enabled})
   frames.push({isLoading: state.isLoading, title: state.value?.title, error: state.error})
   return null
 }
@@ -324,5 +326,40 @@ describe('useValuePreview', () => {
 
     expect(frames.at(-1)).toMatchObject({isLoading: false, title: undefined})
     expect(observeForPreview).not.toHaveBeenCalled()
+  })
+
+  it('resets to idle, not loading, when a document value is cleared', () => {
+    const frames: Frame[] = []
+    const {rerender} = render(<Harness value={{_id: 'a', title: 'one'}} frames={frames} />)
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
+    const settled = frames.length
+
+    rerender(<Harness value={undefined} frames={frames} />)
+    expect(frames.slice(settled).map((frame) => frame.title)).not.toContain('one')
+    expect(frames.at(-1)).toEqual({isLoading: false, title: undefined, error: undefined})
+  })
+
+  it('resets to idle when an in-place object with no identifier is cleared', () => {
+    const frames: Frame[] = []
+    const {rerender} = render(<Harness value={{_type: 'object', title: 'one'}} frames={frames} />)
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
+    const settled = frames.length
+
+    // the previous preview also has key `undefined`; that must not keep its title for a frame
+    rerender(<Harness value={undefined} frames={frames} />)
+    expect(frames.slice(settled).map((frame) => frame.title)).not.toContain('one')
+    expect(frames.at(-1)).toEqual({isLoading: false, title: undefined, error: undefined})
+  })
+
+  it('resets to idle when preview is disabled after an in-place object', () => {
+    const frames: Frame[] = []
+    const value = {_type: 'object', title: 'one'}
+    const {rerender} = render(<Harness value={value} frames={frames} />)
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
+    const settled = frames.length
+
+    rerender(<Harness value={value} frames={frames} enabled={false} />)
+    expect(frames.slice(settled).map((frame) => frame.title)).not.toContain('one')
+    expect(frames.at(-1)).toEqual({isLoading: false, title: undefined, error: undefined})
   })
 })
