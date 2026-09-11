@@ -6,7 +6,7 @@ import {
 } from '@sanity/types'
 import {dequal} from 'dequal'
 import isPlainObject from 'lodash-es/isPlainObject.js'
-import {useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {BehaviorSubject, concat, type Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, map, scan, switchMap} from 'rxjs/operators'
@@ -50,13 +50,20 @@ function isSameError(a: Error | undefined, b: Error | undefined): boolean {
 // Every local mutation bumps the timestamps `prepareForPreview` preserves, and nothing renders them.
 const IGNORED_PREVIEW_KEYS = new Set(['_createdAt', '_updatedAt'])
 
+// React elements and portals are plain objects too, recognisable by `$$typeof`.
+function isReactNodeObject(value: unknown): boolean {
+  return typeof value === 'object' && value !== null && '$$typeof' in value
+}
+
 // Plain media values such as image assets compare by content. Anything else — components,
-// elements, arrays of elements, portals — compares by identity: walking React internals is not
-// safe, and `prepare()` may build a fresh one per emission, in which case the preview simply
-// re-renders as it did before.
+// elements, arrays of elements, portals — compares by identity: walking React internals (an
+// element's props or `_owner`) is not safe, and `prepare()` may build a fresh one per emission,
+// in which case the preview simply re-renders as it did before.
 function isSameMedia(a: unknown, b: unknown): boolean {
   if (a === b) return true
-  return isPlainObject(a) && isPlainObject(b) && dequal(a, b)
+  if (!isPlainObject(a) || !isPlainObject(b)) return false
+  if (isReactNodeObject(a) || isReactNodeObject(b)) return false
+  return dequal(a, b)
 }
 
 function isSamePreview(a: PreviewValue | undefined, b: PreviewValue | undefined): boolean {
@@ -91,6 +98,14 @@ interface PreviewTarget {
    */
   key: string | undefined
 }
+
+/** A state together with the key of the target it was computed for. */
+interface Emission {
+  key: string | undefined
+  state: State
+}
+
+const INITIAL_EMISSION: Emission = {key: undefined, state: INITIAL_STATE}
 
 /**
  * Keys a target by the document it previews and the perspective it is seen through: a document
@@ -157,8 +172,8 @@ export function useValuePreview(props: {
     value$.next(previewValue)
   }, [previewValue, value$])
 
-  const observable = useMemo<Observable<State>>(() => {
-    const resolveTarget = (value: unknown): PreviewTarget | undefined => {
+  const resolveTarget = useCallback(
+    (value: unknown): PreviewTarget | undefined => {
       if (!enabled || !value || !schemaType) return undefined
 
       const goingToUnpublish = isGoingToUnpublish(value as SanityDocument)
@@ -187,50 +202,58 @@ export function useValuePreview(props: {
         variant,
         key: getPreviewTargetKey(previewable, perspective, variant),
       }
-    }
+    },
+    [
+      enabled,
+      schemaType,
+      chosenPerspectiveStack,
+      perspectiveStack,
+      chosenVariant,
+      selectedVariantName,
+    ],
+  )
 
-    return value$.pipe(
-      // An edit replaces the changed field on the document, so a shallow compare catches every real
-      // change while an equal object built during render (`{_id}` in a dialog) is not previewed
-      // again — which would loop whenever `prepare()` returns a fresh media component.
-      distinctUntilChanged(shallowEquals),
-      scan<unknown, {target: PreviewTarget | undefined; targetChanged: boolean}>(
-        (previous, value) => {
-          const target = resolveTarget(value)
-          return {target, targetChanged: target?.key !== previous.target?.key}
-        },
-        {target: undefined, targetChanged: false},
+  const observable = useMemo<Observable<Emission>>(
+    () =>
+      value$.pipe(
+        // An edit replaces the changed field on the document, so a shallow compare catches every
+        // real change while an equal object built during render (`{_id}` in a dialog) is not
+        // previewed again — which would loop whenever `prepare()` returns a fresh media component.
+        distinctUntilChanged(shallowEquals),
+        scan<unknown, {target: PreviewTarget | undefined; targetChanged: boolean}>(
+          (previous, value) => {
+            const target = resolveTarget(value)
+            return {target, targetChanged: target?.key !== previous.target?.key}
+          },
+          {target: undefined, targetChanged: false},
+        ),
+        switchMap(({target, targetChanged}): Observable<Emission> => {
+          // this will render previews as "loaded" (i.e. not in loading state) – typically with "Untitled" text
+          if (!target || !schemaType) return of({key: undefined, state: IDLE_STATE})
+
+          const {key} = target
+          const preview$ = observeForPreview(target.previewable, schemaType, {
+            perspective: target.perspective,
+            variant: target.variant,
+            viewOptions: {ordering: ordering},
+          }).pipe(
+            map((event) => ({key, state: {isLoading: false, value: event.snapshot || undefined}})),
+            catchError((error) => of({key, state: {isLoading: false, error}})),
+          )
+
+          // A different target must not keep showing the previous one's preview while it loads.
+          return targetChanged ? concat(of({key, state: INITIAL_STATE}), preview$) : preview$
+        }),
+        distinctUntilChanged((a, b) => a.key === b.key && isSameState(a.state, b.state)),
       ),
-      switchMap(({target, targetChanged}) => {
-        // this will render previews as "loaded" (i.e. not in loading state) – typically with "Untitled" text
-        if (!target || !schemaType) return of(IDLE_STATE)
-
-        const preview$ = observeForPreview(target.previewable, schemaType, {
-          perspective: target.perspective,
-          variant: target.variant,
-          viewOptions: {ordering: ordering},
-        }).pipe(
-          map((event) => ({isLoading: false, value: event.snapshot || undefined})),
-          catchError((error) => of({isLoading: false, error})),
-        )
-
-        // A different target must not keep showing the previous one's preview while it loads.
-        return targetChanged ? concat(of(INITIAL_STATE), preview$) : preview$
-      }),
-      distinctUntilChanged(isSameState),
-    )
-  }, [
-    value$,
-    enabled,
-    schemaType,
-    chosenPerspectiveStack,
-    perspectiveStack,
-    chosenVariant,
-    selectedVariantName,
-    observeForPreview,
-    ordering,
-  ])
+    [value$, resolveTarget, schemaType, observeForPreview, ordering],
+  )
 
   // Do not defer: search/reference UIs assert on preview titles synchronously after selection.
-  return useSyncObservable(observable, INITIAL_STATE)
+  const emission = useSyncObservable(observable, INITIAL_EMISSION)
+
+  // The subject is fed after commit, so the render that first receives a new target still holds
+  // the previous target's emission. Compare against the target this render previews and show
+  // loading until the emission catches up, so nothing stale is ever painted.
+  return emission.key === resolveTarget(previewValue)?.key ? emission.state : INITIAL_STATE
 }
