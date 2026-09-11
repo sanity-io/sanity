@@ -2,6 +2,7 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 
 import {getPublishedId} from '../../util/draftUtils'
+import {INITIAL_COMPANION_DOCS} from '../store/createCanvasCompanionDocsStore'
 import {useCanvasCompanionDocsStore} from '../store/useCanvasCompanionDocsStore'
 
 /**
@@ -16,16 +17,18 @@ export const useCanvasCompanionDoc = (documentId: string) => {
     () => companionDocsStore.getCompanionDocs(publishedId),
     [publishedId, companionDocsStore],
   )
-  const companionDocs = useObservable(companionDocs$, undefined)
+  // The lookup starts out loading, and the actions that depend on the link state stay hidden while
+  // it is — rendering anything else before the subscription emits would enable them for a moment.
+  const companionDocs = useObservable(companionDocs$, INITIAL_COMPANION_DOCS)
 
   const companionDoc = useMemo(
-    () => companionDocs?.data.find((companion) => companion?.studioDocumentId === documentId),
+    () => companionDocs.data.find((companion) => companion?.studioDocumentId === documentId),
     [companionDocs, documentId],
   )
   return {
     isLinked: Boolean(companionDoc),
     isLockedByCanvas: companionDoc ? !companionDoc.isStudioDocumentEditable : false,
     companionDoc,
-    loading: companionDocs?.loading,
+    loading: companionDocs.loading,
   }
 }
