@@ -197,6 +197,14 @@ function createWorkspaces(env: {projectId: string; dataset: string; apiHost?: st
 export default defineConfig([
   ...envs.flatMap(createWorkspaces),
   {
+    ...production.ppsg7ml5,
+    name: `noTools`,
+    title: `No tools`,
+    basePath: `/ppsg7ml5/noTools`,
+    tools: [],
+    schema: {types: []},
+  } satisfies WorkspaceOptions,
+  {
     ...shared,
     ...production.ppsg7ml5,
     name: `noProviders`,
