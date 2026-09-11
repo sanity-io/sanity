@@ -16,6 +16,14 @@ describe('documentColorScheme', () => {
     expect(document.documentElement.style.colorScheme).toBe('light')
   })
 
+  test('applyDocumentColorScheme leaves system unset so the OS can win', () => {
+    document.documentElement.style.colorScheme = 'dark'
+    const restore = applyDocumentColorScheme('system')
+    expect(document.documentElement.style.colorScheme).toBe('')
+    restore()
+    expect(document.documentElement.style.colorScheme).toBe('dark')
+  })
+
   test('applyStoredDocumentColorScheme applies a stored light or dark scheme', () => {
     localStorage.setItem('sanityStudio:ui:colorScheme', 'dark')
     applyStoredDocumentColorScheme()

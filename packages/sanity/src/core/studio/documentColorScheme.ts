@@ -1,4 +1,4 @@
-import {type ThemeColorSchemeKey} from '@sanity/ui/theme'
+import {type StudioColorScheme} from '../theme/types'
 
 /**
  * ui5 tokens use `light-dark()` and declare `:root { color-scheme: light dark }`.
@@ -7,12 +7,17 @@ import {type ThemeColorSchemeKey} from '@sanity/ui/theme'
  * does not write that property, so comments and other ui5 surfaces pick OS
  * colors when Studio appearance ≠ `prefers-color-scheme`.
  *
+ * `"system"` is left unset so `:root { color-scheme: light dark }` keeps
+ * following the OS. Pinning a resolved light/dark here would override that
+ * (and flash the wrong ui5 tokens during SSR/hydration, when `usePrefersDark`
+ * defaults to light).
+ *
  * @internal
  */
-export function applyDocumentColorScheme(scheme: ThemeColorSchemeKey): () => void {
+export function applyDocumentColorScheme(scheme: StudioColorScheme): () => void {
   const root = document.documentElement
   const previous = root.style.colorScheme
-  root.style.colorScheme = scheme
+  root.style.colorScheme = scheme === 'system' ? '' : scheme
   return () => {
     root.style.colorScheme = previous
   }

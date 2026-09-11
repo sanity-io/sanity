@@ -37,7 +37,8 @@ function ColorThemeProvider({
   const scheme = _scheme === 'system' ? systemScheme : _scheme
 
   // ui5 `light-dark()` follows this document property, not ThemeProvider context.
-  useLayoutEffect(() => applyDocumentColorScheme(scheme), [scheme])
+  // Pass the stored preference so `system` stays unset (see applyDocumentColorScheme).
+  useLayoutEffect(() => applyDocumentColorScheme(_scheme), [_scheme])
 
   return (
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR

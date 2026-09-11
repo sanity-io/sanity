@@ -95,6 +95,15 @@ describe('ColorScheme', () => {
       expect(document.documentElement.style.colorScheme).toBe('dark')
     })
 
+    test('leaves system unset so the OS can win', () => {
+      render(
+        <ColorSchemeProvider scheme="system">
+          <div data-testid="child">Test</div>
+        </ColorSchemeProvider>,
+      )
+      expect(document.documentElement.style.colorScheme).toBe('')
+    })
+
     test('updates documentElement when the scheme changes', async () => {
       render(
         <ColorSchemeLocalStorageProvider>
@@ -110,8 +119,8 @@ describe('ColorScheme', () => {
         </ColorSchemeLocalStorageProvider>,
       )
 
-      // matchMedia mock reports light (matches: false for prefers-color-scheme: dark)
-      expect(document.documentElement.style.colorScheme).toBe('light')
+      // `system` stays unset so `:root { color-scheme: light dark }` follows the OS
+      expect(document.documentElement.style.colorScheme).toBe('')
 
       await userEvent.click(screen.getByTestId('to-dark'))
       expect(document.documentElement.style.colorScheme).toBe('dark')
