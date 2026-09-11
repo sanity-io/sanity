@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.13.2](https://github.com/sanity-io/sanity/compare/v6.13.1...v6.13.2) (2026-09-11)
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/cli to ^8.10.0 ([#14707](https://github.com/sanity-io/sanity/issues/14707)) ([b23924d](https://github.com/sanity-io/sanity/commit/b23924d66c894c46e53f5a8cf5a564ffd529ed8c))
+* **deps:** update dependency @sanity/icons to ^5.2.2 ([#14697](https://github.com/sanity-io/sanity/issues/14697)) ([77313bb](https://github.com/sanity-io/sanity/commit/77313bba37b99b05f1d353fffc4e998866542f5a))
+* **deps:** update dependency @sanity/mutate to ^0.18.2 ([#14692](https://github.com/sanity-io/sanity/issues/14692)) ([8e1279f](https://github.com/sanity-io/sanity/commit/8e1279f28c1338c5cfd8aafc0929cbcdd51f4315))
+* **deps:** update dev-non-major ([#14698](https://github.com/sanity-io/sanity/issues/14698)) ([9222afc](https://github.com/sanity-io/sanity/commit/9222afc79c3b09992671fa0a91383598f6647119))
+* **deps:** update react monorepo to ^19.3.0 ([#14600](https://github.com/sanity-io/sanity/issues/14600)) ([5f48931](https://github.com/sanity-io/sanity/commit/5f489317e52aca24ac81ff9574de47e5a22c5120))
+* **deps:** update typescript-tooling and vite>rolldown to v1.2.8 ([#14678](https://github.com/sanity-io/sanity/issues/14678)) ([ecc4fea](https://github.com/sanity-io/sanity/commit/ecc4fea492276b0ac9da557c25480a86f75b43c5))
+* **form:** tolerate a missing path in the form field gutter ([#14714](https://github.com/sanity-io/sanity/issues/14714)) ([5951f9b](https://github.com/sanity-io/sanity/commit/5951f9bad9852f5777943ad0ca60cfa2d5531f82))
+* **releases:** resolve every document's revert target before reverting a release ([#14715](https://github.com/sanity-io/sanity/issues/14715)) ([7ca649b](https://github.com/sanity-io/sanity/commit/7ca649b302f310d269fa58138edebf7999bb3705))
+* **studio:** preserve light-dark in auto-update bundle css ([#14704](https://github.com/sanity-io/sanity/issues/14704)) ([299acbf](https://github.com/sanity-io/sanity/commit/299acbf9683e287f6c546eaebfde434bd64fc4eb))
+* **studio:** stabilize custom spinners in safari ([#14702](https://github.com/sanity-io/sanity/issues/14702)) ([172b1a8](https://github.com/sanity-io/sanity/commit/172b1a809cfc670099fab42aea572f86cb1f6fef))
+* **validation:** honor custom slug uniqueness on type aliases ([#14701](https://github.com/sanity-io/sanity/issues/14701)) ([97bae2a](https://github.com/sanity-io/sanity/commit/97bae2ac9754abd8c0a2aa7f1dc93630635949cd))
+* **validation:** keep inherited rules and runtime context consistent ([#14703](https://github.com/sanity-io/sanity/issues/14703)) ([2cf1d4e](https://github.com/sanity-io/sanity/commit/2cf1d4ee2167b54095d9e25b690282af81e90cb3))
 ## [6.13.1](https://github.com/sanity-io/sanity/compare/v6.13.0...v6.13.1) (2026-09-09)
 
 ### Bug Fixes
