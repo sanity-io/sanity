@@ -1,5 +1,5 @@
 import {hues} from '@sanity/color'
-import {Button, Grid, Heading, Inline, Stack, Text} from '@sanity/ui'
+import {Button, Heading, Inline, Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {
   type ArrayInputFunctionsProps,
@@ -11,7 +11,7 @@ import {
   type ItemProps,
   type PreviewProps,
 } from 'sanity'
-import {Flex, Box} from 'ui5'
+import {Box, Flex, Grid} from 'ui5'
 
 const COMPONENT_COLORS = {
   input: hues.blue[400].hex,
@@ -104,7 +104,7 @@ function ArrayActions(props: ArrayInputFunctionsProps<string | number | boolean,
 
   return (
     <Grid
-      gridTemplateColumns={1}
+      gridTemplateColumns="repeat(1, minmax(0, 1fr))"
       gap={2}
       data-testid="input-schema-array-primitives-custom-functions"
     >
