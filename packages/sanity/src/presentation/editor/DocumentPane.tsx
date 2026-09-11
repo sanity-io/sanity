@@ -3,14 +3,12 @@ import {Card, Label, Stack} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {type ErrorInfo, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {type Path, useTranslation} from 'sanity'
-import {
-  decodeJsonParams,
-  DocumentPane as StructureDocumentPane,
-  type DocumentPaneNode,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {PaneLayout} from 'sanity/structure'
 import {styled} from 'styled-components'
 
+import {decodeJsonParams} from '../../router/utils/jsonParamsEncoding'
+import {DocumentPane as StructureDocumentPane} from '../../structure/panes/document/DocumentPane'
+import {type DocumentPaneNode} from '../../structure/types'
 import {ErrorBoundary} from '../../ui-components/errorBoundary/ErrorBoundary'
 import {ErrorCard} from '../components/ErrorCard'
 import {presentationLocaleNamespace} from '../i18n'

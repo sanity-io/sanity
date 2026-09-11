@@ -7,12 +7,12 @@ import {
 import {type FunctionComponent, memo, useEffect} from 'react'
 import {filter, first, merge, shareReplay} from 'rxjs'
 import {useClient} from 'sanity'
+
 import {
   isReleasePerspective,
   RELEASES_STUDIO_CLIENT_OPTIONS,
-  VARIANTS_STUDIO_CLIENT_OPTIONS,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
-
+} from '../../core/releases/util/releasesClient'
+import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../../core/variants/store/constants'
 import {API_VERSION} from '../constants'
 import {type VisualEditingConnection} from '../types'
 
