@@ -3,13 +3,11 @@ import {BoundaryElementProvider, Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useState} from 'react'
 import {type Chunk, usePerspective, useTranslation} from 'sanity'
-import {
-  ScrollContainer,
-  useTimelineSelector,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
+import {ScrollContainer} from '../../../../../core/components/scroll/scrollContainer'
+import {useTimelineSelector} from '../../../../../core/store/history/useTimelineSelector'
 import {Timeline} from '../../timeline/timeline'
 import {TimelineError} from '../../timeline/TimelineError'
 import {useDocumentPane} from '../../useDocumentPane'

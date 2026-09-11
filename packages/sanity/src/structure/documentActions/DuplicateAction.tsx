@@ -11,12 +11,9 @@ import {
   useDocumentStore,
   useTranslation,
 } from 'sanity'
-import {
-  getPairTarget,
-  getTargetScopeId,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useRouter} from 'sanity/router'
 
+import {getPairTarget, getTargetScopeId} from '../../core/hooks/useTargetDocumentState'
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 

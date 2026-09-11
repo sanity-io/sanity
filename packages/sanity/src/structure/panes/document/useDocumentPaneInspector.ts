@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type DocumentInspector} from 'sanity'
-import {useSource} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
+import {useSource} from '../../../core/studio/source'
 import {type PaneRouterContextValue} from '../../components/paneRouter/types'
 import {type PaneMenuItem} from '../../types'
 import {useStructureTool} from '../../useStructureTool'

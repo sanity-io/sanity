@@ -30,16 +30,14 @@ import {
   useEditState,
   VirtualizerScrollInstanceProvider,
 } from 'sanity'
-import {
-  ChangeIndicatorsTracker,
-  LoadingBlock,
-  useActiveReleases,
-  useDocumentForm,
-  useMiddlewareComponents,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {CommentsEnabledContext, ReviewChangesContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
+import {ChangeIndicatorsTracker} from '../../../core/changeIndicators/tracker'
+import {LoadingBlock} from '../../../core/components/loadingBlock/LoadingBlock'
+import {useMiddlewareComponents} from '../../../core/config/components/useMiddlewareComponents'
+import {useDocumentForm} from '../../../core/form/useDocumentForm'
+import {useActiveReleases} from '../../../core/releases/store/useActiveReleases'
 import {pickDocumentLayoutComponent} from '../../panes/document/document-layout/pickDocumentLayoutComponent'
 import {usePathSyncChannel} from '../hooks/usePathSyncChannel'
 import {type PathSyncChannel} from '../types/pathSyncChannel'

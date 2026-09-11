@@ -13,21 +13,19 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
-import {
-  ChangeFieldWrapper,
-  ChangesError,
-  type DocumentChangeContextInstance,
-  getTargetSiblings,
-  isReleaseDocument,
-  LoadingBlock,
-  NoChanges,
-  ScrollContainer,
-  useEvents,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {DocumentChangeContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 import {Flex, Box, Grid} from 'ui5'
 
+import {ChangeFieldWrapper} from '../../../../../core/changeIndicators/ChangeFieldWrapper'
+import {LoadingBlock} from '../../../../../core/components/loadingBlock/LoadingBlock'
+import {ScrollContainer} from '../../../../../core/components/scroll/scrollContainer'
+import {ChangesError} from '../../../../../core/field/diff/components/ChangesError'
+import {NoChanges} from '../../../../../core/field/diff/components/NoChanges'
+import {type DocumentChangeContextInstance} from '../../../../../core/field/diff/contexts/DocumentChangeContext'
+import {getTargetSiblings} from '../../../../../core/hooks/useTargetDocumentState'
+import {isReleaseDocument} from '../../../../../core/releases/store/types'
+import {useEvents} from '../../../../../core/store/events/EventsProvider'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {EventsTimelineMenu} from '../../timeline/events/EventsTimelineMenu'
 import {useDocumentPane} from '../../useDocumentPane'

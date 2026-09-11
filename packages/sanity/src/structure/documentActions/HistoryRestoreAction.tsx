@@ -6,12 +6,10 @@ import {
   useDocumentOperation,
   useTranslation,
 } from 'sanity'
-import {
-  getPairTarget,
-  useDocumentOperationEvent,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useRouter} from 'sanity/router'
 
+import {useDocumentOperationEvent} from '../../core/hooks/useDocumentOperationEvent'
+import {getPairTarget} from '../../core/hooks/useTargetDocumentState'
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 

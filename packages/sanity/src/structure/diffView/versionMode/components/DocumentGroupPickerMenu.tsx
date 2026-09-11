@@ -15,18 +15,16 @@ import {
   useDocumentVersionTitle,
   useTranslation,
 } from 'sanity'
-import {
-  DocumentGroupInventory,
-  DocumentVersionIcons,
-  getReleaseTone,
-  isAgentBundleName,
-  isReleaseScheduledOrScheduling,
-  useActiveReleases,
-  useAllVariants,
-  type VersionInfoDocumentStub,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex} from 'ui5'
 
+import {DocumentVersionIcons} from '../../../../core/components/documentStatus/DocumentVersionIcons'
+import {DocumentGroupInventory} from '../../../../core/documentGroupInventory/components/DocumentGroupInventory'
+import {type VersionInfoDocumentStub} from '../../../../core/releases/store/types'
+import {useActiveReleases} from '../../../../core/releases/store/useActiveReleases'
+import {getReleaseTone} from '../../../../core/releases/util/getReleaseTone'
+import {isReleaseScheduledOrScheduling} from '../../../../core/releases/util/util'
+import {isAgentBundleName} from '../../../../core/store/agent/createAgentBundlesStore'
+import {useAllVariants} from '../../../../core/variants/store/useAllVariants'
 import {Popover} from '../../../../ui-components/popover/Popover'
 import {structureLocaleNamespace} from '../../../i18n'
 

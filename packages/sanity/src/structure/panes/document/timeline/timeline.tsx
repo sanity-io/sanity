@@ -1,13 +1,11 @@
 import {Text} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {type Chunk, useTranslation} from 'sanity'
-import {
-  CommandList,
-  type CommandListRenderItemCallback,
-  LoadingBlock,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Box} from 'ui5'
 
+import {CommandList} from '../../../../core/components/commandList/CommandList'
+import {type CommandListRenderItemCallback} from '../../../../core/components/commandList/types'
+import {LoadingBlock} from '../../../../core/components/loadingBlock/LoadingBlock'
 import {TIMELINE_LIST_WRAPPER_ID} from '../constants'
 import {ExpandableTimelineItemButton} from './expandableTimelineItemButton'
 import {ListWrapper, Root, StackWrapper} from './timeline.styled'

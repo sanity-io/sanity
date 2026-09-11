@@ -3,11 +3,11 @@ import {StarFilledIcon} from '@sanity/icons/StarFilled'
 import {Text} from '@sanity/ui'
 import {type ComponentType} from 'react'
 import {useTranslation} from 'sanity'
+
 import {
   useManageFavorite,
   type UseManageFavoriteProps,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
-
+} from '../../../../../core/hooks/useManageFavorite'
 import {Button} from '../../../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../../../i18n'
 

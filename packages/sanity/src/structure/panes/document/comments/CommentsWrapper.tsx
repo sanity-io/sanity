@@ -12,12 +12,10 @@ import {
   usePerspective,
   useWorkspace,
 } from 'sanity'
-import {
-  COMMENTS_INSPECTOR_NAME,
-  getTargetScopeId,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useRouter} from 'sanity/router'
 
+import {COMMENTS_INSPECTOR_NAME} from '../../../../core/comments/constants'
+import {getTargetScopeId} from '../../../../core/hooks/useTargetDocumentState'
 import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
 import {useDocumentPane} from '../useDocumentPane'
 

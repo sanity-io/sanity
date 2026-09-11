@@ -11,14 +11,12 @@ import {
   useState,
   type RefAttributes,
 } from 'react'
-import {
-  IsLastPaneProvider,
-  LegacyLayerProvider,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {PaneContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
+import {LegacyLayerProvider} from '../../../core/components/transitional/LegacyLayerProvider'
+import {IsLastPaneProvider} from '../../../core/tasks/context/isLastPane/IsLastPaneProvider'
 import {PANE_COLLAPSED_WIDTH, PANE_DEBUG, PANE_DEFAULT_MIN_WIDTH} from './constants'
 import {PaneDivider} from './PaneDivider'
 import {usePaneLayout} from './usePaneLayout'

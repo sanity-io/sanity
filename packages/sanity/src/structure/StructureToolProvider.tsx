@@ -1,11 +1,9 @@
 import {type ReactNode, useMemo, useState} from 'react'
 import {useDocumentStore, usePerspective} from 'sanity'
-import {
-  useConfigContextFromSource,
-  useSource,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {StructureToolContext} from 'sanity/_singletons'
 
+import {useConfigContextFromSource} from '../core/config/useConfigContextFromSource'
+import {useSource} from '../core/studio/source'
 import {createStructureBuilder} from './structureBuilder/createStructureBuilder'
 import {type DefaultDocumentNodeResolver} from './structureBuilder/types'
 import {

@@ -4,18 +4,18 @@ import {type ObjectSchemaType} from '@sanity/types'
 import {Text} from '@sanity/ui'
 import {type ComponentType, type ReactNode, useCallback} from 'react'
 import {type TargetPerspective, Translate, useTranslation, useWorkspace} from 'sanity'
-import {
-  getReleaseTone,
-  isPerspectiveWriteable,
-  isReleaseDocument,
-  type PerspectiveNotWriteableReason,
-  ReleasesNav,
-  type ReleasesNavMenuItemPropsGetter,
-  ReleaseTitle,
-  VersionInlineBadge,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex} from 'ui5'
 
+import {
+  isPerspectiveWriteable,
+  type PerspectiveNotWriteableReason,
+} from '../../../../../core/perspective/isPerspectiveWriteable'
+import {ReleasesNav} from '../../../../../core/perspective/navbar/ReleasesNav'
+import {type ReleasesNavMenuItemPropsGetter} from '../../../../../core/perspective/types'
+import {ReleaseTitle} from '../../../../../core/releases/components/ReleaseTitle'
+import {VersionInlineBadge} from '../../../../../core/releases/components/VersionInlineBadge'
+import {isReleaseDocument} from '../../../../../core/releases/store/types'
+import {getReleaseTone} from '../../../../../core/releases/util/getReleaseTone'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
 

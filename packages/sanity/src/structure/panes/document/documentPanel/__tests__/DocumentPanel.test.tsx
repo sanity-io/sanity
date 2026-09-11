@@ -71,12 +71,18 @@ vi.mock('../../documentInspector/DocumentInspectorPanel', () => ({
   DocumentInspectorPanel: () => <aside data-ui="DocumentInspectorPanel">Inspector</aside>,
 }))
 
+vi.mock('../../../../../core/releases/store/useArchivedReleases', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useArchivedReleases: vi.fn(() => ({data: []})),
+}))
+vi.mock('../../../../../core/hooks/useFilteredReleases', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useFilteredReleases: vi.fn(() => ({currentReleases: [], notCurrentReleases: []})),
+}))
 vi.mock(
-  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
+  '../../../../../core/singleDocRelease/hooks/usePausedScheduledDraft',
   async (importOriginal) => ({
     ...(await importOriginal()),
-    useArchivedReleases: vi.fn(() => ({data: []})),
-    useFilteredReleases: vi.fn(() => ({currentReleases: [], notCurrentReleases: []})),
     usePausedScheduledDraft: vi.fn(() => ({isPaused: false})),
   }),
 )

@@ -10,9 +10,9 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
-import {getTargetSiblings} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex} from 'ui5'
 
+import {getTargetSiblings} from '../../../../../core/hooks/useTargetDocumentState'
 import {Button} from '../../../../../ui-components/button/Button'
 import {useDiffViewRouter} from '../../../../diffView/hooks/useDiffViewRouter'
 import {

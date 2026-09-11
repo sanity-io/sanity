@@ -26,7 +26,6 @@ vi.mock('../../workspace')
 vi.mock('../../workspaces/useWorkspaces')
 vi.mock('../../../store/project/useProjectOrganizationId')
 vi.mock('sanity/router')
-vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver')
 vi.mock('../../../environment', () => ({
   isProd: false,
   isDev: true,

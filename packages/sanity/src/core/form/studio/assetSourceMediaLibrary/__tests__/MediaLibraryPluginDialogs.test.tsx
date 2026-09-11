@@ -2,15 +2,12 @@ import {type SanityClient} from '@sanity/client'
 import {render} from '@testing-library/react'
 import noop from 'lodash-es/noop.js'
 import {type ReactNode, useRef} from 'react'
-import {
-  decodeJsonParams,
-  encodeJsonParams,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {MediaLibraryIdsContext} from 'sanity/_singletons'
 import {describe, expect, test, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {decodeJsonParams, encodeJsonParams} from '../../../../../router/utils/jsonParamsEncoding'
 import type * as FormValueMod from '../../../contexts/FormValue'
 
 // SelectAssetsDialog calls useFormValue for validation; stub so we need not wrap FormValueProvider

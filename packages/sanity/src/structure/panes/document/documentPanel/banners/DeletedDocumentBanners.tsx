@@ -9,13 +9,10 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
-import {
-  isDraftPerspective,
-  isPublishedPerspective,
-  isReleaseDocument,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useRouter} from 'sanity/router'
 
+import {isReleaseDocument} from '../../../../../core/releases/store/types'
+import {isDraftPerspective, isPublishedPerspective} from '../../../../../core/releases/util/util'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'

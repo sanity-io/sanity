@@ -9,16 +9,14 @@ import {
   useOnlyHasVersions,
   useTranslation,
 } from 'sanity'
-import {
-  getReleaseTone,
-  isCardinalityOneRelease,
-  ReleaseTitle,
-  useActiveReleases,
-  useSetPerspective,
-  VersionInlineBadge,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex} from 'ui5'
 
+import {useSetPerspective} from '../../../../../core/perspective/useSetPerspective'
+import {ReleaseTitle} from '../../../../../core/releases/components/ReleaseTitle'
+import {VersionInlineBadge} from '../../../../../core/releases/components/VersionInlineBadge'
+import {useActiveReleases} from '../../../../../core/releases/store/useActiveReleases'
+import {getReleaseTone} from '../../../../../core/releases/util/getReleaseTone'
+import {isCardinalityOneRelease} from '../../../../../core/util/releaseUtils'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
 

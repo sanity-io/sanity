@@ -9,12 +9,12 @@ import {
   useDocumentPairPermissions,
   useTranslation,
 } from 'sanity'
+
 import {
   getPairTarget,
   getTargetScopeId,
   getTargetSiblings,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
-
+} from '../../core/hooks/useTargetDocumentState'
 import {ConfirmDiscardDialog} from '../components/confirmDiscardDialog/ConfirmDiscardDialog'
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'

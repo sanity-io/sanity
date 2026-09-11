@@ -52,13 +52,16 @@ vi.mock('sanity', async (importOriginal) => ({
   })),
 }))
 vi.mock(
-  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
+  '../../../../core/studio/components/navbar/search/contexts/search/useSearchState',
   async (importOriginal) => ({
     ...(await importOriginal()),
     useSearchState: vi.fn(),
-    useActiveReleases: vi.fn(() => ({})),
   }),
 )
+vi.mock('../../../../core/releases/store/useActiveReleases', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useActiveReleases: vi.fn(() => ({})),
+}))
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),
   useRouter: vi.fn().mockReturnValue({

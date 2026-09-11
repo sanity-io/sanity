@@ -13,16 +13,14 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
-import {
-  getReleaseTone,
-  isGoingToUnpublish,
-  isReleaseScheduledOrScheduling,
-  ReleaseTitle,
-  useActiveReleases,
-  useFormatRelativeLocalePublishDate,
-  VersionChip,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
+import {VersionChip} from '../../../../../../core/releases/components/documentHeader/VersionChip'
+import {ReleaseTitle} from '../../../../../../core/releases/components/ReleaseTitle'
+import {useFormatRelativeLocalePublishDate} from '../../../../../../core/releases/hooks/useFormatRelativeLocalePublishDate'
+import {useActiveReleases} from '../../../../../../core/releases/store/useActiveReleases'
+import {getReleaseTone} from '../../../../../../core/releases/util/getReleaseTone'
+import {isGoingToUnpublish} from '../../../../../../core/releases/util/isGoingToUnpublish'
+import {isReleaseScheduledOrScheduling} from '../../../../../../core/releases/util/util'
 import {useDocumentPerspectiveList} from '../../../../../hooks/useDocumentPerspectiveList'
 import {useDocumentPane} from '../../../useDocumentPane'
 import {useDocumentPaneInfo} from '../../../useDocumentPaneInfo'

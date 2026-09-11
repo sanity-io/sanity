@@ -18,13 +18,13 @@ import {
   useTranslation,
   useValidationStatus,
 } from 'sanity'
+
 import {
   getPairTarget,
   getTargetScopeId,
   getTargetSiblings,
-  isPublishedPerspective,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
-
+} from '../../core/hooks/useTargetDocumentState'
+import {isPublishedPerspective} from '../../core/releases/util/util'
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 import {

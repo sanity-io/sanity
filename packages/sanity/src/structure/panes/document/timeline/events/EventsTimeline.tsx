@@ -10,13 +10,11 @@ import {
   isPublishDocumentVersionEvent,
   useTranslation,
 } from 'sanity'
-import {
-  CommandList,
-  type CommandListRenderItemCallback,
-  LoadingBlock,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex, Box} from 'ui5'
 
+import {CommandList} from '../../../../../core/components/commandList/CommandList'
+import {type CommandListRenderItemCallback} from '../../../../../core/components/commandList/types'
+import {LoadingBlock} from '../../../../../core/components/loadingBlock/LoadingBlock'
 import {ExpandableTimelineItemButton} from '../expandableTimelineItemButton'
 import {ListWrapper, Root} from '../timeline.styled'
 import {EventTimelineItem} from './EventTimelineItem'

@@ -7,13 +7,11 @@ import {
   useGetDefaultPerspective,
   usePerspective,
 } from 'sanity'
-import {
-  useVariantDocumentOperations,
-  type VersionInfoDocumentStub,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {type VersionInfoDocumentStub} from '../../../../../../core/releases/store/types'
+import {useVariantDocumentOperations} from '../../../../../../core/variants/hooks/useVariantDocumentOperations'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
 import {useDocumentPane} from '../../../useDocumentPane'
 import {DocumentNotInVariantBanner} from '../DocumentNotInVariantBanner'
@@ -32,7 +30,7 @@ vi.mock('sanity', async () => {
   }
 })
 vi.mock(
-  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
+  '../../../../../../core/variants/hooks/useVariantDocumentOperations',
   async (importOriginal) => ({
     ...(await importOriginal()),
     useVariantDocumentOperations: vi.fn(),

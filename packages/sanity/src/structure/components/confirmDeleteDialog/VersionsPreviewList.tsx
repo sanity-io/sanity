@@ -15,13 +15,12 @@ import {
   useSchema,
   useTranslation,
 } from 'sanity'
-import {
-  getReleaseTone,
-  ReleaseTitle,
-  useActiveReleases,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'
+
+import {ReleaseTitle} from '../../../core/releases/components/ReleaseTitle'
+import {useActiveReleases} from '../../../core/releases/store/useActiveReleases'
+import {getReleaseTone} from '../../../core/releases/util/getReleaseTone'
 
 const EllipsisText = styled(Text)`
   /* text-overflow: ellipsis;

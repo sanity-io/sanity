@@ -1,15 +1,13 @@
 import {Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {type GeneralPreviewLayoutKey} from 'sanity'
-import {
-  CommandList,
-  type CommandListItemContext,
-  useGetI18nText,
-  useI18nText,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {styled} from 'styled-components'
 import {Box} from 'ui5'
 
+import {CommandList} from '../../../core/components/commandList/CommandList'
+import {type CommandListItemContext} from '../../../core/components/commandList/types'
+import {useGetI18nText} from '../../../core/i18n/hooks/useGetI18nText'
+import {useI18nText} from '../../../core/i18n/hooks/useI18nText'
 import {PaneContent} from '../../components/pane/PaneContent'
 import {usePaneLayout} from '../../components/pane/usePaneLayout'
 import {PaneItem} from '../../components/paneItem/PaneItem'

@@ -8,12 +8,10 @@ import {
   getPublishedId,
   type SanityClient,
 } from 'sanity'
-import {
-  getPreviewPaths,
-  isNonNullable,
-  prepareForPreview,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
+import {getPreviewPaths} from '../../../../core/preview/utils/getPreviewPaths'
+import {prepareForPreview} from '../../../../core/preview/utils/prepareForPreview'
+import {isNonNullable} from '../../../../core/util/isNonNullable'
 import {fetchCrossDatasetReferences} from '../../confirmDeleteDialog/useReferringDocuments'
 import {type CrossDatasetIncomingReference} from '../types'
 

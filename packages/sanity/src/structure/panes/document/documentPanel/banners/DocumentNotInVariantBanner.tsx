@@ -8,15 +8,12 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
-import {
-  getVariantTitle,
-  isDraftPerspective,
-  isPublishedPerspective,
-  isReleaseDocument,
-  useConditionalToast,
-  useVariantDocumentOperations,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
+import {useConditionalToast} from '../../../../../core/hooks/useConditionalToast'
+import {isReleaseDocument} from '../../../../../core/releases/store/types'
+import {isDraftPerspective, isPublishedPerspective} from '../../../../../core/releases/util/util'
+import {useVariantDocumentOperations} from '../../../../../core/variants/hooks/useVariantDocumentOperations'
+import {getVariantTitle} from '../../../../../core/variants/tool/util'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'

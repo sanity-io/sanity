@@ -4,7 +4,8 @@ import {useObservable} from 'react-rx'
 import {BehaviorSubject, from, of} from 'rxjs'
 import {catchError, debounceTime, distinctUntilChanged, switchMap} from 'rxjs/operators'
 import {isRecord} from 'sanity'
-import {useSource} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+
+import {useSource} from '../../../core/studio/source'
 
 const isSanityDocument = (value: unknown): value is SanityDocument =>
   isRecord(value) && typeof value._id === 'string' && typeof value._type === 'string'

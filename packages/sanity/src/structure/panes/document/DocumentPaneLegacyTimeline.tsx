@@ -2,11 +2,9 @@
 import {type SanityDocument} from '@sanity/types'
 import {useMemo, useState} from 'react'
 import {getPublishedId} from 'sanity'
-import {
-  useTimelineSelector,
-  useTimelineStore,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
+import {useTimelineSelector} from '../../../core/store/history/useTimelineSelector'
+import {useTimelineStore} from '../../../core/store/history/useTimelineStore'
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {EMPTY_PARAMS} from './constants'
 import {DocumentPaneProvider} from './DocumentPaneProvider'

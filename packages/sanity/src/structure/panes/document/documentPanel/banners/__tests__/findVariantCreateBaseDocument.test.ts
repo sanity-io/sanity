@@ -1,7 +1,7 @@
 import {type SystemVariant} from 'sanity'
-import {type VersionInfoDocumentStub} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {describe, expect, it} from 'vitest'
 
+import {type VersionInfoDocumentStub} from '../../../../../../core/releases/store/types'
 import {findVariantCreateBaseDocument} from '../findVariantCreateBaseDocument'
 
 const PUBLISHED_ID = 'article-1'

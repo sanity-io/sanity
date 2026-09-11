@@ -10,16 +10,14 @@ import {
   useSchema,
   useTranslation,
 } from 'sanity'
-import {
-  CommandList,
-  type CommandListRenderItemCallback,
-  Delay,
-  ErrorActions,
-  LoadingBlock,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
+import {CommandList} from '../../../core/components/commandList/CommandList'
+import {type CommandListRenderItemCallback} from '../../../core/components/commandList/types'
+import {Delay} from '../../../core/components/Delay'
+import {ErrorActions} from '../../../core/components/errorActions/ErrorActions'
+import {LoadingBlock} from '../../../core/components/loadingBlock/LoadingBlock'
 import {PaneContent} from '../../components/pane/PaneContent'
 import {usePane} from '../../components/pane/usePane'
 import {usePaneLayout} from '../../components/pane/usePaneLayout'

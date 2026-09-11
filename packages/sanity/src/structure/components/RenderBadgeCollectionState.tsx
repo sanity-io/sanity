@@ -1,6 +1,7 @@
 import {memo, type ReactNode} from 'react'
 import {type DocumentBadgeDescription, type DocumentBadgeProps, type EditStateFor} from 'sanity'
-import {GetHookCollectionState} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+
+import {GetHookCollectionState} from '../../core/components/hookCollection/GetHookCollectionState'
 
 /** @internal */
 export interface Badge<Args, Description> {

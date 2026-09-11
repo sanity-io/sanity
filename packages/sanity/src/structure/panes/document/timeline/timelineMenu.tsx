@@ -4,10 +4,10 @@ import {type Placement, PortalProvider, useClickOutsideEvent, useGlobalKeyDown} 
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo, useState} from 'react'
 import {type Chunk, useTranslation} from 'sanity'
-import {useTimelineSelector} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
+import {useTimelineSelector} from '../../../../core/store/history/useTimelineSelector'
 import {Button} from '../../../../ui-components/button/Button'
 import {Popover} from '../../../../ui-components/popover/Popover'
 import {useDocumentPane} from '../useDocumentPane'

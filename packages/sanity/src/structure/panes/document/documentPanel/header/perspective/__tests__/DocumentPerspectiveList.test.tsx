@@ -8,10 +8,6 @@ import {
   useDocumentVersions,
   usePerspective,
 } from 'sanity'
-import {
-  useActiveReleases,
-  useFilteredReleases,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {SingleDocReleaseContext} from 'sanity/_singletons'
 import {type IntentLinkProps} from 'sanity/router'
 import {
@@ -26,6 +22,8 @@ import {
 } from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
+import {useFilteredReleases} from '../../../../../../../core/hooks/useFilteredReleases'
+import {useActiveReleases} from '../../../../../../../core/releases/store/useActiveReleases'
 import {
   type DocumentPaneContextValue,
   type DocumentPaneInfoContextValue,
@@ -46,21 +44,30 @@ vi.mock('sanity', async (importOriginal) => ({
   }),
   SANITY_VERSION: '0.0.0',
 }))
-vi.mock(
-  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
-  async (importOriginal) => ({
-    ...(await importOriginal()),
-    useFilteredReleases: vi.fn(),
-    useActiveReleases: vi.fn().mockReturnValue({data: [], byId: new Map(), loading: false}),
-    useAllVariants: vi.fn().mockReturnValue({
-      data: [],
-      byId: new Map(),
-      loading: false,
-    }),
-    useSetVariant: vi.fn().mockReturnValue(vi.fn()),
-    useArchivedReleases: vi.fn().mockReturnValue({data: [], loading: false}),
+vi.mock('../../../../../../../core/hooks/useFilteredReleases', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useFilteredReleases: vi.fn(),
+}))
+vi.mock('../../../../../../../core/releases/store/useActiveReleases', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useActiveReleases: vi.fn().mockReturnValue({data: [], byId: new Map(), loading: false}),
+}))
+vi.mock('../../../../../../../core/variants/store/useAllVariants', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useAllVariants: vi.fn().mockReturnValue({
+    data: [],
+    byId: new Map(),
+    loading: false,
   }),
-)
+}))
+vi.mock('../../../../../../../core/perspective/useSetVariant', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useSetVariant: vi.fn().mockReturnValue(vi.fn()),
+}))
+vi.mock('../../../../../../../core/releases/store/useArchivedReleases', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useArchivedReleases: vi.fn().mockReturnValue({data: [], loading: false}),
+}))
 
 vi.mock('sanity/router', () => {
   return {

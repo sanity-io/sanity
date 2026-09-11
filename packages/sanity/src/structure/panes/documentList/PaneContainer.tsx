@@ -8,14 +8,11 @@ import {
   useSchema,
   useTranslation,
 } from 'sanity'
-import {
-  EMPTY_ARRAY,
-  SourceProvider,
-  useI18nText,
-  useShallowUnique,
-  useSource,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
+import {useI18nText} from '../../../core/i18n/hooks/useI18nText'
+import {SourceProvider, useSource} from '../../../core/studio/source'
+import {EMPTY_ARRAY} from '../../../core/util/empty'
+import {useShallowUnique} from '../../../core/util/useShallowUnique'
 import {Pane} from '../../components/pane/Pane'
 import {_DEBUG} from '../../constants'
 import {structureLocaleNamespace} from '../../i18n'

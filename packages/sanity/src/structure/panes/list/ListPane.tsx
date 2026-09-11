@@ -1,7 +1,7 @@
 import {Card} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
-import {useI18nText} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
+import {useI18nText} from '../../../core/i18n/hooks/useI18nText'
 import {Pane} from '../../components/pane/Pane'
 import {_DEBUG} from '../../constants'
 import {type BaseStructureToolPaneProps} from '../types'

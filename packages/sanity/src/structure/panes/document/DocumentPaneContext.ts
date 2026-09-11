@@ -18,13 +18,11 @@ import {
   type ReleaseId,
   type StateTree,
 } from 'sanity'
-import {
-  type DocumentFormNode,
-  type DocumentSyncState,
-  type TargetDocumentState,
-  type TimelineStore,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
+import {type DocumentFormNode} from '../../../core/form/store/types/nodes'
+import {type DocumentSyncState} from '../../../core/hooks/useDocumentSyncState'
+import {type TargetDocumentState} from '../../../core/hooks/useTargetDocumentState'
+import {type TimelineStore} from '../../../core/store/history/useTimelineStore'
 import {type View} from '../../structureBuilder/types'
 import {type PaneMenuItem, type PaneMenuItemGroup} from '../../types'
 

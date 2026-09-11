@@ -1,7 +1,7 @@
 import {type SchemaType} from '@sanity/types'
 import {type Workspace} from 'sanity'
-import {type TargetDocumentState} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
+import {type TargetDocumentState} from '../core/hooks/useTargetDocumentState'
 import {isLiveEditEnabled} from './components/paneItem/helpers'
 
 export interface Context {

@@ -4,13 +4,11 @@ import {
   type TargetPerspective,
   useGetDefaultPerspective,
 } from 'sanity'
-import {
-  isCardinalityOneRelease,
-  isReleaseDocument,
-  useSetPerspective,
-  useSingleDocRelease,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
+import {useSetPerspective} from '../../core/perspective/useSetPerspective'
+import {isReleaseDocument} from '../../core/releases/store/types'
+import {useSingleDocRelease} from '../../core/singleDocRelease/context/SingleDocReleaseProvider'
+import {isCardinalityOneRelease} from '../../core/util/releaseUtils'
 import {usePaneRouter} from '../components/paneRouter/usePaneRouter'
 
 interface PerspectiveNavigator {

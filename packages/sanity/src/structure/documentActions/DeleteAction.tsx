@@ -12,13 +12,10 @@ import {
   useDocumentVersionTypeSortedList,
   useTranslation,
 } from 'sanity'
-import {
-  getPairTarget,
-  getTargetScopeId,
-  isAgentBundleName,
-  isReleaseScheduledOrScheduling,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
+import {getPairTarget, getTargetScopeId} from '../../core/hooks/useTargetDocumentState'
+import {isReleaseScheduledOrScheduling} from '../../core/releases/util/util'
+import {isAgentBundleName} from '../../core/store/agent/createAgentBundlesStore'
 import {ConfirmDeleteDialog} from '../components/confirmDeleteDialog'
 import {type DeleteReferenceCounts} from '../components/confirmDeleteDialog/ConfirmDeleteDialog'
 import {structureLocaleNamespace} from '../i18n'

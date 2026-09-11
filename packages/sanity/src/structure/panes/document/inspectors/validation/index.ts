@@ -11,12 +11,10 @@ import {
   isValidationWarning,
   useTranslation,
 } from 'sanity'
-import {
-  isGoingToUnpublish,
-  mergeParseErrors,
-  useParseErrors,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
+import {mergeParseErrors} from '../../../../../core/form/store/utils/mergeParseErrors'
+import {useParseErrors} from '../../../../../core/form/studio/contexts/ParseErrors'
+import {isGoingToUnpublish} from '../../../../../core/releases/util/isGoingToUnpublish'
 import {VALIDATION_INSPECTOR_NAME} from '../../constants'
 import {useDocumentPane} from '../../useDocumentPane'
 import {ValidationInspector} from './ValidationInspector'

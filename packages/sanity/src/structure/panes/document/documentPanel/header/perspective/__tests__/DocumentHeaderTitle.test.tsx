@@ -1,15 +1,13 @@
 import {render, screen, waitFor} from '@testing-library/react'
 import {defineConfig, type SanityClient, useDocumentVersions} from 'sanity'
-import {
-  useActiveReleases,
-  useArchivedReleases,
-  useValuePreview,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useRouter} from 'sanity/router'
 import {beforeEach, describe, expect, it, type Mock, type MockedFunction, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
+import {useValuePreview} from '../../../../../../../core/preview/useValuePreview'
+import {useActiveReleases} from '../../../../../../../core/releases/store/useActiveReleases'
+import {useArchivedReleases} from '../../../../../../../core/releases/store/useArchivedReleases'
 import {usePerspectiveMockReturn} from '../../../../../../__mocks__/usePerspective.mock'
 import {structureUsEnglishLocaleBundle} from '../../../../../../i18n'
 import {
@@ -58,16 +56,12 @@ vi.mock('sanity', async (importOriginal) => {
     usePerspective: vi.fn(() => usePerspectiveMockReturn),
   }
 })
-vi.mock(
-  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
-  async (importOriginal) => ({
-    ...(await importOriginal()),
-    useValuePreview: vi.fn(),
-  }),
-)
+vi.mock('../../../../../../../core/preview/useValuePreview', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useValuePreview: vi.fn(),
+}))
 
 vi.mock('sanity/router')
-vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver')
 
 const mockUseActiveReleases = useActiveReleases as Mock<typeof useActiveReleases>
 const mockUseArchivedReleases = useArchivedReleases as Mock<typeof useArchivedReleases>

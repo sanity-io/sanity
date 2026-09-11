@@ -8,18 +8,16 @@ import {
   type Path,
   useTranslation,
 } from 'sanity'
-import {
-  ChangeConnectorRoot,
-  FieldActionsProvider,
-  FieldActionsResolver,
-  GetFormValueProvider,
-  useDocumentIdStack,
-  useGlobalCopyPasteElementHandler,
-  useZIndex,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useRouter} from 'sanity/router'
 import {Flex} from 'ui5'
 
+import {ChangeConnectorRoot} from '../../../../core/changeIndicators/overlay/ChangeConnectorRoot'
+import {useZIndex} from '../../../../core/components/zOffsets/useZIndex'
+import {GetFormValueProvider} from '../../../../core/form/contexts/GetFormValue'
+import {FieldActionsProvider} from '../../../../core/form/field/actions/FieldActionsProvider'
+import {FieldActionsResolver} from '../../../../core/form/field/actions/FieldActionsResolver'
+import {useDocumentIdStack} from '../../../../core/hooks/useDocumentIdStack'
+import {useGlobalCopyPasteElementHandler} from '../../../../core/hooks/useGlobalCopyPasteElementHandler'
 import {Pane} from '../../../components/pane/Pane'
 import {usePaneLayout} from '../../../components/pane/usePaneLayout'
 import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'

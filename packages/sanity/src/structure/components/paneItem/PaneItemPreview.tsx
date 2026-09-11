@@ -17,13 +17,11 @@ import {
   useDocumentVersions,
   usePerspective,
 } from 'sanity'
-import {
-  type DocumentPresence,
-  DocumentVersionsStatus,
-  DocumentVersionsStatusIndicator,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex} from 'ui5'
 
+import {DocumentVersionsStatus} from '../../../core/components/documentStatus/DocumentVersionsStatus'
+import {DocumentVersionsStatusIndicator} from '../../../core/components/documentStatusIndicator/DocumentVersionsStatusIndicator'
+import {type DocumentPresence} from '../../../core/store/presence/types'
 import {TooltipDelayGroupProvider} from '../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 
 export interface PaneItemPreviewProps {
