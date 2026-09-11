@@ -815,6 +815,7 @@ exports[`exports snapshot 1`] = `
     "FullscreenPTEContext": "object",
     "GetFormValueContext": "object",
     "HoveredFieldContext": "object",
+    "InlineObjectEditModalContext": "object",
     "IsLastPaneContext": "object",
     "LiveUserApplicationContext": "object",
     "LocaleContext": "object",
