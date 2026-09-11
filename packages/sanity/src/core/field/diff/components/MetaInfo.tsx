@@ -30,7 +30,7 @@ export function MetaInfo(props: MetaInfoProps) {
         </Box>
       )}
 
-      <Flex gap={2} paddingLeft={2} flexDirection="column" flexShrink={0}>
+      <Flex gap={2} paddingLeft={2} flexDirection="column">
         <MetaText
           size={1}
           weight="medium"
