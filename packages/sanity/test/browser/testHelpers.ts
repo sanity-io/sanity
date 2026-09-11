@@ -27,15 +27,24 @@ const fieldActionsSig = (): string =>
     .map((el) => el.getAttribute('data-actions-visible'))
     .join(',')
 
-/** Geometry signature of every visible match: `x,y,w,h` per element, `''` when none is visible. */
-const boxSig = (selector: string) => (): string =>
-  Array.from(window.document.querySelectorAll<HTMLElement>(selector))
+/**
+ * Geometry signature of every visible match: `x,y,w,h` per element, `''` when
+ * none is visible. A match that is mounted but has no size yet (a portal whose
+ * lazy content has not laid out) reads as a fresh symbol: it counts as open for
+ * the callers that record which overlays must stay open, but `expectStable`
+ * can never accept that mid-layout state.
+ */
+const boxSig = (selector: string) => (): string | symbol => {
+  const rects = Array.from(window.document.querySelectorAll<HTMLElement>(selector))
     .filter((el) => el.checkVisibility())
-    .map((el) => {
-      const r = el.getBoundingClientRect()
-      return `${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)},${Math.round(r.height)}`
-    })
+    .map((el) => el.getBoundingClientRect())
+  if (rects.some((r) => r.width === 0 || r.height === 0)) return Symbol('zero-size overlay')
+  return rects
+    .map(
+      (r) => `${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)},${Math.round(r.height)}`,
+    )
     .join('|')
+}
 
 /**
  * Wrap a signature so an empty value (hidden or unmounted) reads as a fresh
@@ -183,6 +192,19 @@ function getPointerPark(): HTMLElement {
   park.setAttribute('aria-hidden', 'true')
   park.style.cssText = 'position:fixed;right:8px;bottom:8px;width:4px;height:4px;z-index:2147483647'
   window.document.body.appendChild(park)
+  return park
+}
+
+/**
+ * Move the real pointer onto the park element and return it. Used at the end
+ * of a test by `settleChromaticEndState`, and by the setup file's `afterEach`
+ * after the viewport has been restored, so every test starts with the pointer
+ * in the bottom-right corner of the default viewport rather than wherever the
+ * previous test's last click (or its park at a reduced viewport) left it.
+ */
+export async function parkPointer(): Promise<HTMLElement> {
+  const park = getPointerPark()
+  await userEvent.hover(park)
   return park
 }
 
@@ -561,7 +583,6 @@ export function testHelpers() {
        */
       expectTooltip?: RegExp
     }) => {
-      const settleStart = performance.now()
       if (typeof document.fonts?.ready !== 'undefined') {
         await document.fonts.ready
       }
@@ -635,8 +656,8 @@ export function testHelpers() {
       // real pointer move does. Park it on a transparent element in the
       // bottom-right corner, then assert the rendered tree is hover-free and
       // that React hover state (field actions) has flushed.
-      const park = getPointerPark()
-      await userEvent.hover(park)
+      const park = await parkPointer()
+      const parkedAt = performance.now()
       const hovered = () =>
         Array.from(window.document.querySelectorAll(':hover'))
           .filter(
@@ -650,14 +671,16 @@ export function testHelpers() {
 
       // `@sanity/ui` tooltips open on hover *or focus* of their trigger, after
       // the ui-components open delay, and close on mouseleave / blur. Parking
-      // cancels hover timers, but a trigger focused before this call still
-      // opens its tooltip up to `TOOLTIP_DELAY_PROPS.open` later, so a single
-      // zero reading proves nothing: the count must hold at zero for longer
-      // than that delay, measured from the start of settling (no trigger event
-      // can happen after the park). A test whose end state legitimately shows
-      // a focus tooltip declares it with `expectTooltip`, and that one tooltip
-      // must then be the only one and stop moving like the other floating
-      // chrome.
+      // cancels hover timers, but a trigger focused before the park — by the
+      // test, or by React between the start of settling and the park (a
+      // dialog autofocusing its Close button, focus restored on close) —
+      // still opens its tooltip up to `TOOLTIP_DELAY_PROPS.open` later, so a
+      // single zero reading proves nothing: the count must hold at zero for
+      // longer than that delay, measured from the park, the last trigger event
+      // this helper controls (the font wait above must not eat into it). A
+      // test whose end state legitimately shows a focus tooltip declares it
+      // with `expectTooltip`, and that one tooltip must then be the only one
+      // and stop moving like the other floating chrome.
       const tooltipSig = boxSig('[data-ui="Tooltip"]')
       const expectedTooltip = options?.expectTooltip
       // Firefox headless shares one window focus across the pages parallel
@@ -670,7 +693,7 @@ export function testHelpers() {
           .toEqual([expect.stringMatching(expectedTooltip)])
         await expectStable(present(tooltipSig))
       } else if (!expectedTooltip) {
-        let tooltipFreeSince = settleStart
+        let tooltipFreeSince = parkedAt
         await expect
           .poll(() => {
             if (visibleTooltips().length > 0) {
