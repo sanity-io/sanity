@@ -47,14 +47,13 @@ const IDLE_STATE_OBSERVABLE = of(IDLE_STATE)
 /**
  * Everything the preview is derived from apart from the schema type and the identity of the
  * previewed document. These stream into the live preview observable, so a change updates the
- * preview in place instead of restarting the subscription.
+ * preview in place instead of restarting the subscription. The perspective and variant are the
+ * effective ones, so a context change a caller's own selection overrides never reaches the stream.
  */
 interface PreviewInputs {
   value: unknown
-  chosenPerspectiveStack: PerspectiveStack | undefined
-  perspectiveStack: PerspectiveStack
-  chosenVariant: string | undefined
-  selectedVariantName: string | undefined
+  perspective: PerspectiveStack
+  variant: string | undefined
   ordering: SortOrdering | undefined
 }
 
@@ -65,34 +64,29 @@ interface PreviewTarget {
 }
 
 /**
- * The id `observeForPreview` will observe for a value. A change means a different document is
- * being previewed, which restarts the preview so the previous document's preview is never shown
- * for the new one.
+ * Identifies the document `observeForPreview` will observe for a value. A change means a different
+ * document is being previewed, which restarts the preview so the previous document's preview is
+ * never shown for the new one. A cross-dataset reference is identified by its dataset as well.
  */
-function getPreviewDocumentId(value: unknown): string | undefined {
+function getPreviewDocumentKey(value: unknown): string | undefined {
   if (!value || typeof value !== 'object') return undefined
-  const document = value as SanityDocument & {_ref?: string}
+  const document = value as SanityDocument & {_ref?: string; _dataset?: string; _projectId?: string}
   if (isGoingToUnpublish(document)) return getPublishedId(document._id)
-  return document._id ?? document._ref
+  const id = document._id ?? document._ref
+  return document._dataset ? `${document._projectId}/${document._dataset}/${id}` : id
 }
 
 function resolvePreviewTarget(inputs: PreviewInputs): PreviewTarget | undefined {
-  const {value, chosenPerspectiveStack, perspectiveStack, chosenVariant, selectedVariantName} =
-    inputs
+  const {value, perspective, variant} = inputs
   if (!value) return undefined
 
   const document = value as SanityDocument
   // A document slated for unpublishing is previewed as its published version, which is outside
-  // of any variant. Otherwise the variant follows the perspective: only inherited from the
-  // context when the perspective is too.
+  // of any variant.
   if (isGoingToUnpublish(document)) {
     return {previewable: {_id: getPublishedId(document._id)}, perspective: [], variant: undefined}
   }
-  return {
-    previewable: {_id: document._id, ...(value as Previewable)},
-    perspective: chosenPerspectiveStack ?? perspectiveStack,
-    variant: chosenVariant ?? (chosenPerspectiveStack ? undefined : selectedVariantName),
-  }
+  return {previewable: {_id: document._id, ...(value as Previewable)}, perspective, variant}
 }
 
 function isSameState(a: State, b: State): boolean {
@@ -135,11 +129,11 @@ function useInputsSubject(
   schemaType: SchemaType | undefined,
   inputs: PreviewInputs,
 ): BehaviorSubject<PreviewInputs> {
-  const documentId = getPreviewDocumentId(inputs.value)
+  const documentKey = getPreviewDocumentKey(inputs.value)
   const [current, setCurrent] = useState(() => ({
     enabled,
     schemaType,
-    documentId,
+    documentKey,
     inputs$: new BehaviorSubject(inputs),
   }))
 
@@ -147,10 +141,10 @@ function useInputsSubject(
   if (
     current.enabled !== enabled ||
     current.schemaType !== schemaType ||
-    current.documentId !== documentId
+    current.documentKey !== documentKey
   ) {
     inputs$ = new BehaviorSubject(inputs)
-    setCurrent({enabled, schemaType, documentId, inputs$})
+    setCurrent({enabled, schemaType, documentKey, inputs$})
   }
 
   useEffect(() => {
@@ -189,16 +183,12 @@ export function useValuePreview(props: {
   const {observeForPreview} = useDocumentPreviewStore()
   const {perspectiveStack, selectedVariantName} = usePerspective()
 
+  const perspective = chosenPerspectiveStack ?? perspectiveStack
+  // The variant follows the perspective: only inherited from the context when the perspective is too.
+  const variant = chosenVariant ?? (chosenPerspectiveStack ? undefined : selectedVariantName)
   const inputs = useMemo<PreviewInputs>(
-    () => ({
-      value,
-      chosenPerspectiveStack,
-      perspectiveStack,
-      chosenVariant,
-      selectedVariantName,
-      ordering,
-    }),
-    [value, chosenPerspectiveStack, perspectiveStack, chosenVariant, selectedVariantName, ordering],
+    () => ({value, perspective, variant, ordering}),
+    [value, perspective, variant, ordering],
   )
   const inputs$ = useInputsSubject(enabled, schemaType, inputs)
 

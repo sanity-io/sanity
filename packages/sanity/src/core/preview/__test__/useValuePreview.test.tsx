@@ -286,6 +286,52 @@ describe('useValuePreview', () => {
     })
   })
 
+  it('ignores a context perspective change when the caller selects the perspective', async () => {
+    observeForPreview.mockImplementation(previewRequest())
+    const frames: Frame[] = []
+    const {rerender} = render(
+      <Harness
+        schemaType={bookType}
+        value={{_id: 'a'}}
+        perspectiveStack={['rRelease', 'drafts']}
+        frames={frames}
+      />,
+    )
+    const settled = frames.length
+
+    currentPerspective = {perspectiveStack: ['rOther', 'drafts'], selectedVariantName: 'nb'}
+    rerender(
+      <Harness
+        schemaType={bookType}
+        value={{_id: 'a'}}
+        perspectiveStack={['rRelease', 'drafts']}
+        frames={frames}
+      />,
+    )
+
+    expect(frames.slice(settled)).toEqual([frames[settled - 1]])
+    await flush()
+    expect(subscriptions).toEqual({active: 1, total: 1})
+  })
+
+  it('shows the loading state when a cross-dataset reference moves to another dataset', () => {
+    const {observe, snapshots$} = previewLater()
+    observeForPreview.mockImplementation(observe)
+    const frames: Frame[] = []
+    const reference = {_type: 'crossDatasetReference', _ref: 'x', _projectId: 'p', _dataset: 'a'}
+    const {rerender} = render(<Harness schemaType={bookType} value={reference} frames={frames} />)
+    act(() => snapshots$.next({snapshot: {title: 'from a'}}))
+    const settled = frames.length
+
+    rerender(
+      <Harness schemaType={bookType} value={{...reference, _dataset: 'b'}} frames={frames} />,
+    )
+    expectOnlyLoadingFrames(frames.slice(settled))
+
+    act(() => snapshots$.next({snapshot: {title: 'from b'}}))
+    expect(frames.at(-1)).toEqual({isLoading: false, title: 'from b', error: undefined})
+  })
+
   it('previews a version slated for unpublishing as its published document', () => {
     observeForPreview.mockImplementation(previewRequest())
     currentPerspective = {perspectiveStack: ['rRelease', 'drafts'], selectedVariantName: 'nb'}
