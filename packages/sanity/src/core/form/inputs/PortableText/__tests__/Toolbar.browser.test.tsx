@@ -223,7 +223,11 @@ describe('Portable Text Input', () => {
               .join('|')
           }
           expect(await expectStable(toolbarSignature)).not.toBe('')
+          // The editor was focused at the start and nothing since has moved
+          // focus, so the empty block's style resolves to Normal; pin it so a
+          // No style label (lost selection) times out instead of archiving.
           await settleChromaticEndState({
+            styleSelectText: /^Normal$/,
             styleSelectRoot: '[data-testid="field-body"]',
           })
         })
@@ -272,7 +276,10 @@ describe('Portable Text Input', () => {
           }
           await expect.poll(toolbarSignature).toMatch(/object-insert-menu-button/)
           expect(await expectStable(toolbarSignature)).toMatch(/object-insert-menu-button/)
+          // Same as the root case: focus never left the empty editor, so the
+          // archived label must be Normal.
           await settleChromaticEndState({
+            styleSelectText: /^Normal$/,
             styleSelectRoot: '[data-testid="field-body"]',
           })
         })
