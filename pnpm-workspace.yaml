@@ -151,7 +151,6 @@ minimumReleaseAgeExclude:
   - '@oxc-project/types@0.147.0'
 
 overrides:
-  '@sanity/ui>react-is': '19.3.0'
   vitest: 'catalog:'
 
 preferWorkspacePackages: true

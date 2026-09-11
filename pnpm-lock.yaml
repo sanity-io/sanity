@@ -212,7 +212,6 @@ catalogs:
       version: 2.3.0
 
 overrides:
-  '@sanity/ui>react-is': 19.3.0
   vitest: ^4.1.11
 
 importers:
@@ -12851,10 +12850,6 @@ packages:
     resolution: {integrity: sha512-OBatVyC/N7SCW/FaDHrSd+vn0o5cS855TOmYi4OkdWUMSJCET/xip//ch8xGUvtr3i44X9LVyWwQlRMTN3pwSA==}
     engines: {node: '>=10'}
 
-  postcss@8.5.26:
-    resolution: {integrity: sha512-u82N74LFzG8ca+dD8puPnplTXoGH4fTPpVGuIbt36G3qvNlkvfD0lEAZSxaly3KX8TS/L1A1gsCEmvKmBcVbkQ==}
-    engines: {node: ^10 || ^12 || >=14}
-
   postcss@8.5.28:
     resolution: {integrity: sha512-RRuzqDtt5Y9h3quz5hWhK+TPnsmVs6WwSU6LkJMeY4HstUEDuYTG8UJSdawMRzmzAtV+KEoG8N3Qg2qLy5vM/A==}
     engines: {node: ^10 || ^12 || >=14}
@@ -16521,7 +16516,7 @@ snapshots:
 
   '@chromaui/rrweb-snapshot@2.0.0-alpha.19-noAbsolute':
     dependencies:
-      postcss: 8.5.26
+      postcss: 8.5.28
 
   '@codemirror/autocomplete@6.20.3':
     dependencies:
@@ -26240,12 +26235,6 @@ snapshots:
   polished@4.3.1:
     dependencies:
       '@babel/runtime': 7.29.7
-
-  postcss@8.5.26:
-    dependencies:
-      nanoid: 3.3.18
-      picocolors: 1.1.1
-      source-map-js: 1.2.1
 
   postcss@8.5.28:
     dependencies:
