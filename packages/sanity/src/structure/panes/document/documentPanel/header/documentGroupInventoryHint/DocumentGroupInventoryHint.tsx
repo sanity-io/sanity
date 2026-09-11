@@ -1,15 +1,16 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Text} from '@sanity/ui'
-import {type ComponentType, useMemo} from 'react'
+import {clsx} from 'clsx'
+import {type ComponentProps, type ComponentType, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {useTranslation} from 'sanity'
-import {styled, css} from 'styled-components'
 import {Flex} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../../i18n'
 import {useDocumentPane} from '../../../useDocumentPane'
 import {DocumentGroupInventoryHintPressed} from '../__telemetry__/documentGroupInventoryHint.telemetry'
+import {textButton} from './DocumentGroupInventoryHint.css'
 import {browserStorageAdapter, hintStatus, suppressHint} from './hintStatus'
 
 export const DocumentGroupInventoryHint: ComponentType = () => {
@@ -46,27 +47,8 @@ export const DocumentGroupInventoryHint: ComponentType = () => {
   )
 }
 
-const TextButton = styled.button(({theme}) => {
-  return css`
-    display: inline-block;
-    vertical-align: middle;
-    appearance: none;
-    border: 0;
-    margin: 0;
-    padding: 0;
-    outline: none;
-    all: unset;
-    flex: none;
-    white-space: nowrap;
-    color: var(--card-badge-suggest-fg-color);
-    cursor: pointer;
+function TextButton(props: ComponentProps<'button'>) {
+  const {className, ...rest} = props
 
-    * {
-      color: inherit;
-    }
-
-    svg[data-sanity-icon] {
-      color: currentColor;
-    }
-  `
-})
+  return <button {...rest} className={clsx(textButton, className)} />
+}

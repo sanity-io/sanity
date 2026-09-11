@@ -7,13 +7,13 @@ import {
   useGetI18nText,
   useI18nText,
 } from 'sanity'
-import {styled} from 'styled-components'
 import {Box} from 'ui5'
 
 import {PaneContent} from '../../components/pane/PaneContent'
 import {usePaneLayout} from '../../components/pane/usePaneLayout'
 import {PaneItem} from '../../components/paneItem/PaneItem'
 import {type PaneListItem, type PaneListItemDivider} from '../../types'
+import {divider, dividerContainer, dividerTitle} from './ListPaneContent.css'
 
 interface ListPaneContentProps {
   childItemId?: string
@@ -24,41 +24,20 @@ interface ListPaneContentProps {
   title: string
 }
 
-const DividerContainer = styled(Box)`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin: 0.75rem 0 0.25rem 0;
-`
-
-const Divider = styled.hr`
-  flex: 1;
-  background-color: var(--card-border-color);
-  height: 1px;
-  margin: 0;
-  border: none;
-`
-
-const DividerTitle = styled(Text)`
-  padding-bottom: 0.75rem;
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-`
-
 interface DividerItemProps {
   item: PaneListItemDivider
 }
 
 function DividerItem({item}: DividerItemProps) {
-  const {title: dividerTitle} = useI18nText(item)
+  const {title} = useI18nText(item)
   return (
-    <DividerContainer>
-      <DividerTitle weight="semibold" muted size={1}>
-        {dividerTitle}
-      </DividerTitle>
+    <Box className={dividerContainer}>
+      <Text className={dividerTitle} weight="semibold" muted size={1}>
+        {title}
+      </Text>
 
-      <Divider />
-    </DividerContainer>
+      <hr className={divider} />
+    </Box>
   )
 }
 
@@ -97,7 +76,7 @@ export function ListPaneContent(props: ListPaneContentProps) {
       if (item.type === 'divider') {
         return (
           <Box key={`divider-${itemIndex}`} marginBottom={1}>
-            {item.title ? <DividerItem item={item} /> : <Divider />}
+            {item.title ? <DividerItem item={item} /> : <hr className={divider} />}
           </Box>
         )
       }
