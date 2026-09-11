@@ -1,5 +1,6 @@
 import {type SchemaType, type SortOrdering} from '@sanity/types'
 import {act, render} from '@testing-library/react'
+import {useEffect, useLayoutEffect} from 'react'
 import {Observable, Subject} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -67,6 +68,42 @@ describe('useValuePreview', () => {
     // each value is previewed once, and only the latest preview stays subscribed
     expect(observeForPreview).toHaveBeenCalledTimes(3)
     expect(subscriptions.active).toBe(1)
+  })
+
+  it('paints a synchronous preview before the feed effect, not the loading fallback', () => {
+    const beforeEffect: Frame[] = []
+    let effectRan = false
+    function Probe() {
+      const state = useValuePreview({schemaType, value: {_id: 'a', title: 'one'}})
+      useLayoutEffect(() => {
+        if (!effectRan) {
+          beforeEffect.push({isLoading: state.isLoading, title: state.value?.title})
+        }
+      })
+      useEffect(() => {
+        effectRan = true
+      })
+      return null
+    }
+    render(<Probe />)
+
+    // `useDocumentTitle` maps a missing value to "New {type}"; the first paint must already
+    // have the snapshot when `observeForPreview` emits synchronously.
+    expect(beforeEffect.at(-1)).toMatchObject({isLoading: false, title: 'one'})
+  })
+
+  it('does not drop to loading when a pipeline rebuild still has a synchronous preview', () => {
+    const frames: Frame[] = []
+    const value = {_id: 'a', title: 'one'}
+    const {rerender} = render(<Harness value={value} frames={frames} />)
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
+    const settled = frames.length
+
+    currentPerspective = {perspectiveStack: ['r2', 'drafts'], selectedVariantName: undefined}
+    rerender(<Harness value={value} frames={frames} />)
+
+    expect(frames.slice(settled).some((frame) => frame.isLoading)).toBe(false)
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
   })
 
   it('previews an unchanged value only once', () => {
