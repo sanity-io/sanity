@@ -31,6 +31,8 @@ export function MemberFieldError(props: {member: FieldError}) {
         onChange={handleChange}
         actualType={member.error.resolvedValueType}
         validTypes={[member.error.expectedSchemaType.name]}
+        fieldName={member.fieldName}
+        fieldTitle={member.error.expectedSchemaType.title}
       />
     )
   }
