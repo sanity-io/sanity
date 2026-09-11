@@ -16,12 +16,12 @@ import {
   type PatchEvent,
   type StateTree,
   useWorkspace,
+  validateDocument,
   VirtualizerScrollInstanceProvider,
   type Workspace,
 } from 'sanity'
 import {
   useCopyPaste,
-  validateDocument,
   EMPTY_ARRAY,
   getExpandOperations,
   ScrollContainer,

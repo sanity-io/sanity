@@ -896,7 +896,6 @@ import type {
   useWorkspaces,
   useZIndex,
   validateBasePaths,
-  validateDocument,
   validateNames,
   ValidateWorkspaceOptions,
   validateWorkspaces,
@@ -3608,9 +3607,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('validateBasePaths', () => {
     expectTypeOf<typeof validateBasePaths>().toBeFunction()
-  })
-  test('validateDocument', () => {
-    expectTypeOf<typeof validateDocument>().toBeFunction()
   })
   test('validateNames', () => {
     expectTypeOf<typeof validateNames>().toBeFunction()

@@ -1063,7 +1063,6 @@ export {
   isVariantVersion,
   readVersionType,
 } from '../core/util/versionsUtils'
-export {validateDocument} from '../core/validation'
 export {isDocumentInSelectedVariant} from '../core/variants/documents/isDocumentInSelectedVariant'
 export {useCreatableVariantInitialValue} from '../core/variants/hooks/useCreatableVariantInitialValue'
 export {useVariantDocumentOperations} from '../core/variants/hooks/useVariantDocumentOperations'

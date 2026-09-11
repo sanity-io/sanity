@@ -197,6 +197,7 @@ exports[`exports snapshot 1`] = `
     "useWorkspace": "function",
     "useWorkspaceSchemaId": "function",
     "userHasRole": "function",
+    "validateDocument": "function",
   },
   "./_createContext": {
     "createContext": "function",
@@ -792,7 +793,6 @@ exports[`exports snapshot 1`] = `
     "useWorkspaces": "function",
     "useZIndex": "function",
     "validateBasePaths": "function",
-    "validateDocument": "function",
     "validateNames": "function",
     "validateWorkspaces": "function",
     "validation": "function",

@@ -687,7 +687,7 @@ export {isRecord} from '../core/util/isRecord'
 export {truncateString} from '../core/util/unicodeString'
 export {userHasRole} from '../core/util/userHasRole'
 export {type VersionType} from '../core/util/versionsUtils'
-export {type ValidateDocumentOptions} from '../core/validation'
+export {type ValidateDocumentOptions, validateDocument} from '../core/validation'
 export {type SystemVariant} from '../core/variants/types'
 export {SANITY_VERSION} from '../core/version'
 export {

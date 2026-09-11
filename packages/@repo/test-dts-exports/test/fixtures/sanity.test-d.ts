@@ -954,6 +954,7 @@ import type {
   useValidationStatus,
   useWorkspace,
   useWorkspaceSchemaId,
+  validateDocument,
   ValidateDocumentOptions,
   ValidationBuilder,
   ValidationContext,
@@ -3865,6 +3866,9 @@ describe('sanity', () => {
   })
   test('useWorkspaceSchemaId', () => {
     expectTypeOf<typeof useWorkspaceSchemaId>().not.toBeNever()
+  })
+  test('validateDocument', () => {
+    expectTypeOf<typeof validateDocument>().toBeFunction()
   })
   test('ValidateDocumentOptions', () => {
     expectTypeOf<ValidateDocumentOptions>().not.toBeNever()
