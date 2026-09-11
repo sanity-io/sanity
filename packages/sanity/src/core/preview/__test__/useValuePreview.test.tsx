@@ -209,6 +209,81 @@ describe('useValuePreview', () => {
     expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one · 2026'})
   })
 
+  it('keys array items by their _key as it is, not as a document id', () => {
+    const second = new Subject<{snapshot: {title: string}}>()
+    observeForPreview.mockImplementation((value: {_key: string; title: string}) =>
+      value._key === 'foo'
+        ? second
+        : new Observable((subscriber) => {
+            subscriber.next({snapshot: {title: value.title}})
+          }),
+    )
+    const frames: Frame[] = []
+    const {rerender} = render(
+      <Harness value={{_key: 'drafts.foo', title: 'one'}} frames={frames} />,
+    )
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
+    const settled = frames.length
+
+    // `drafts.foo` and `foo` are two items, not a draft and its published document
+    rerender(<Harness value={{_key: 'foo', title: 'two'}} frames={frames} />)
+    expect(frames.slice(settled).map((frame) => frame.title)).not.toContain('one')
+    expect(frames.at(-1)).toEqual({isLoading: true, title: undefined, error: undefined})
+
+    act(() => {
+      second.next({snapshot: {title: 'two'}})
+    })
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'two'})
+  })
+
+  it('resets to loading when a version switches to the published preview under an empty perspective stack', () => {
+    const published = new Subject<{snapshot: {title: string}}>()
+    observeForPreview.mockImplementation((value: {_id: string; title?: string}) =>
+      value._id === 'a'
+        ? published
+        : new Observable((subscriber) => {
+            subscriber.next({snapshot: {title: value.title}})
+          }),
+    )
+    const frames: Frame[] = []
+    const version = {_id: 'versions.r1.a', title: 'in release'}
+    const {rerender} = render(<Harness value={version} perspectiveStack={[]} frames={frames} />)
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'in release'})
+    const settled = frames.length
+
+    // the caller's stack is already empty, so only the switch to the published document itself
+    // distinguishes the new target from the version
+    rerender(
+      <Harness
+        value={{...version, _system: {delete: true}}}
+        perspectiveStack={[]}
+        frames={frames}
+      />,
+    )
+    expect(frames.slice(settled).map((frame) => frame.title)).not.toContain('in release')
+    expect(frames.at(-1)).toEqual({isLoading: true, title: undefined, error: undefined})
+
+    act(() => {
+      published.next({snapshot: {title: 'published'}})
+    })
+    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'published'})
+  })
+
+  it('does not resubscribe when the inherited perspective stack is rebuilt with the same contents', () => {
+    const frames: Frame[] = []
+    const value = {_id: 'a', title: 'one'}
+    const {rerender} = render(<Harness value={value} frames={frames} />)
+    const settled = frames.length
+
+    // the perspective context rebuilds its stack whenever the releases change
+    currentPerspective = {perspectiveStack: ['drafts'], selectedVariantName: undefined}
+    rerender(<Harness value={value} frames={frames} />)
+
+    expect(observeForPreview).toHaveBeenCalledTimes(1)
+    expect(subscriptions.total).toBe(1)
+    expect(frames.slice(settled).some((frame) => frame.isLoading)).toBe(false)
+  })
+
   it('previews an array item as it is, without synthesizing a document id', () => {
     const item = {_key: 'item-1', _type: 'item', title: 'In place'}
     const frames: Frame[] = []

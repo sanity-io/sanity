@@ -110,21 +110,24 @@ interface Emission {
 
 const INITIAL_EMISSION: Emission = {key: null, state: INITIAL_STATE}
 
-// Plain objects previewed in place carry no identifier; they all share this key.
+// Plain objects previewed in place carry no identifier; they all share this document segment.
 const INLINE_TARGET_KEY = 'inline'
 
 /**
  * Keys a target by the document it previews and the perspective it is seen through: a document
  * or reference by its published id — so `drafts.x`, `versions.*.x` and `x` are one document and
  * materializing a draft does not reset the preview — per project and dataset for cross-dataset
- * references, an array item by key. Values without any identifier (plain objects previewed in
- * place) all count as one target. The perspective is part of the key because a version slated
- * for unpublishing switches to previewing the published document.
+ * references, an array item by its `_key` as it is (an item key is not a document id). Values
+ * without any identifier (plain objects previewed in place) all count as one target. The
+ * perspective is part of the key, and so is previewing the published document in place of a
+ * version slated for unpublishing: that switch must reset even when the perspective stack is
+ * already empty.
  */
 function getPreviewTargetKey(
   previewable: Previewable,
   perspective: PerspectiveStack,
   variant: string | undefined,
+  publishedOnly: boolean,
 ): string {
   const {_id, _ref, _key, _projectId, _dataset} = previewable as {
     _id?: string
@@ -133,11 +136,16 @@ function getPreviewTargetKey(
     _projectId?: string
     _dataset?: string
   }
-  const id = _id ?? _ref ?? _key
-  if (id === undefined) return INLINE_TARGET_KEY
-  const publishedId = getPublishedId(id)
-  const document = _dataset ? `${_projectId}/${_dataset}/${publishedId}` : publishedId
-  return `${document}|${perspective.join(',')}|${variant ?? ''}`
+  const documentId = _id ?? _ref
+  const document =
+    documentId === undefined
+      ? _key === undefined
+        ? INLINE_TARGET_KEY
+        : `key:${_key}`
+      : _dataset
+        ? `${_projectId}/${_dataset}/${getPublishedId(documentId)}`
+        : getPublishedId(documentId)
+  return `${document}|${perspective.join(',')}|${variant ?? ''}|${publishedOnly ? 'published' : ''}`
 }
 /**
  * @internal
@@ -167,14 +175,14 @@ export function useValuePreview(props: {
   } = props || {}
   const {observeForPreview} = useDocumentPreviewStore()
   const {perspectiveStack, selectedVariantName} = usePerspective()
-  // Callers build this inline (`useDocumentTitle` passes `[]`); keyed by contents so a fresh array
-  // per render does not rebuild the observable.
-  const chosenPerspectiveStack = useShallowUnique(chosenPerspectiveStackProp)
   // A caller previewing a specific version is not affected by the global selection, so resolve
   // which perspective and variant apply up front: only those take part in the pipeline's identity,
-  // and a global perspective or variant change does not resubscribe such a preview.
-  const perspective = chosenPerspectiveStack ?? perspectiveStack
-  const variant = chosenVariant ?? (chosenPerspectiveStack ? undefined : selectedVariantName)
+  // and a global perspective or variant change does not resubscribe such a preview. The stack is
+  // keyed by contents — callers build theirs inline (`useDocumentTitle` passes `[]`) and the
+  // perspective context rebuilds its own whenever the releases change — so a fresh array with the
+  // same entries does not rebuild the observable and resubscribe every preview.
+  const perspective = useShallowUnique(chosenPerspectiveStackProp ?? perspectiveStack)
+  const variant = chosenVariant ?? (chosenPerspectiveStackProp ? undefined : selectedVariantName)
 
   // The value is a new object on every edit. It enters the pipeline through a subject so the
   // observable identity — and with it the subscription and the field observers it holds — survives
@@ -203,7 +211,7 @@ export function useValuePreview(props: {
         previewable,
         perspective: targetPerspective,
         variant: targetVariant,
-        key: getPreviewTargetKey(previewable, targetPerspective, targetVariant),
+        key: getPreviewTargetKey(previewable, targetPerspective, targetVariant, goingToUnpublish),
       }
     },
     [enabled, schemaType, perspective, variant],
