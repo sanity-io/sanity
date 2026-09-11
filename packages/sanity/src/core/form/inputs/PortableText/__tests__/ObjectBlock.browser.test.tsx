@@ -158,7 +158,10 @@ describe('Portable Text Input', () => {
           return el instanceof HTMLElement ? el.getBoundingClientRect().height : 0
         })
         .toBeGreaterThan(0)
+      // The helper records the open toolbar before parking and fails if the
+      // hover onto the park closed it; re-assert explicitly all the same.
       await settleChromaticEndState()
+      await expect.element($toolbar).toBeVisible()
     })
 
     it('Inline object works as expected when clicking the edit button', async () => {
