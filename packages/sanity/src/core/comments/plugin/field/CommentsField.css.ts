@@ -47,7 +47,8 @@ export const fieldStack = style({
     // Hide when the field component renders nothing (e.g. a custom
     // field component that returns null) to avoid an empty wrapper
     // taking up space in the form.
-    '&:empty:not([hidden])': {
+    // `&&` beats VStack/Flex's `&&:not([hidden]) {display: flex}` (0,3,0)
+    '&&:empty:not([hidden])': {
       display: 'none',
     },
   },
