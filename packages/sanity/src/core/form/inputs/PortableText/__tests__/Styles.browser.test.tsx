@@ -123,12 +123,8 @@ describe('Portable Text Input', () => {
           ],
         }
 
-        const {
-          getFocusedPortableTextInput,
-          waitForFocusedNodeText,
-          waitForDocumentState,
-          waitForPortableTextSelection,
-        } = testHelpers()
+        const {getFocusedPortableTextInput, waitForDocumentState, waitForPortableTextSelection} =
+          testHelpers()
         void render(<StylesHarness document={documentValue} />)
         const $portableTextInput = await getFocusedPortableTextInput('field-defaultStyles')
 
@@ -146,7 +142,12 @@ describe('Portable Text Input', () => {
         await userEvent.keyboard('{End}')
         await waitForPortableTextSelection('')
         await userEvent.keyboard('{Shift>}{ArrowDown}{/Shift}')
-        await waitForFocusedNodeText('Normal text')
+        // Then let the editor take the extended selection over before the
+        // toolbar acts on it; where the focus lands in the next block depends
+        // on layout, so match the focus node rather than the selected text.
+        await waitForPortableTextSelection(
+          (selection) => selection.focusNode?.textContent === 'Normal text',
+        )
 
         const $styleSelectButton = $portableTextInput.getByTestId('block-style-select')
         await $styleSelectButton.click()
@@ -198,12 +199,8 @@ describe('Portable Text Input', () => {
           ],
         }
 
-        const {
-          getFocusedPortableTextInput,
-          waitForFocusedNodeText,
-          waitForDocumentState,
-          waitForPortableTextSelection,
-        } = testHelpers()
+        const {getFocusedPortableTextInput, waitForDocumentState, waitForPortableTextSelection} =
+          testHelpers()
         void render(<StylesHarness document={documentValue} />)
         const $portableTextInput = await getFocusedPortableTextInput('field-defaultStyles')
         const $firstText = [...$portableTextInput.element().querySelectorAll('*')].find(
@@ -212,11 +209,13 @@ describe('Portable Text Input', () => {
         await userEvent.click($firstText as HTMLElement)
         await waitForPortableTextSelection('')
         // Same as above: let the editor pick up each caret move before the
-        // next keystroke.
+        // next keystroke, and the extended selection before the toolbar acts.
         await userEvent.keyboard('{End}')
         await waitForPortableTextSelection('')
         await userEvent.keyboard('{Shift>}{ArrowDown}{/Shift}')
-        await waitForFocusedNodeText('Unstyled text')
+        await waitForPortableTextSelection(
+          (selection) => selection.focusNode?.textContent === 'Unstyled text',
+        )
 
         const $styleSelectButton = $portableTextInput.getByTestId('block-style-select')
         await $styleSelectButton.click()

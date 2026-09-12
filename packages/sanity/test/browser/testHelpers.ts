@@ -318,8 +318,19 @@ const validationPending = (): boolean =>
  * mutation inside the editable has happened for longer than the throttle
  * window, which is when the trailing sync has run and no re-render is
  * about to undo it.
+ *
+ * Pass a predicate instead of the text when the selection's string form
+ * depends on layout — a Shift+ArrowDown from the end of one block lands
+ * wherever the next block's text sits under that x position — and match
+ * on `focusNode` / `anchorNode` instead. The throttle is leading and
+ * trailing, and the previous trailing sync may have run up to one window
+ * after the keystroke that caused it, so the sync for the next keystroke
+ * can itself be a trailing one: a DOM focus node that already moved says
+ * nothing about whether the editor has taken the selection over yet.
  */
-async function waitForPortableTextSelection(text: string): Promise<void> {
+async function waitForPortableTextSelection(
+  expected: string | ((selection: Selection) => boolean),
+): Promise<void> {
   // Events before this call are not observed, so the call time stands in
   // for them: the trailing sync of an earlier event runs no later than
   // one throttle window after it, which is no later than one after now.
@@ -346,8 +357,13 @@ async function waitForPortableTextSelection(text: string): Promise<void> {
     await expect
       .poll(
         () => {
-          const current = window.getSelection()?.toString() ?? ''
-          if (current !== text) return `DOM selection is ${JSON.stringify(current)}`
+          const selection = window.getSelection()
+          const current = selection?.toString() ?? ''
+          const matches =
+            typeof expected === 'string'
+              ? current === expected
+              : selection !== null && expected(selection)
+          if (!matches) return `DOM selection is ${JSON.stringify(current)}`
           // The render that ends the run comes first, its layout effects
           // (where the editable rewrites the DOM selection) included, and only
           // then is the marker removed: once it is gone, any effect on the
