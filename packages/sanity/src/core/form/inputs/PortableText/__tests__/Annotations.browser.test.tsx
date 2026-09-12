@@ -207,7 +207,12 @@ describe('Portable Text Input', () => {
       await expectPopoverAbsentOrHidden()
 
       // Collapse again so the popover is visible for tabbing into its buttons.
+      // The popover reappears on the DOM `selectionchange`, before the editor's
+      // throttled sync has picked the collapse up; wait for that sync so the
+      // editor's `validateSelection` cannot write the expanded selection back
+      // (hiding the popover again) between here and the Tab.
       await userEvent.keyboard('{ArrowLeft}')
+      await waitForPortableTextSelection('')
       await expect.element($toolbarPopover).toBeVisible()
 
       // Wait for the popover's focusable buttons to be mounted before tabbing.
@@ -390,7 +395,12 @@ describe('Portable Text Input', () => {
         await expectPopoverAbsentOrHidden()
 
         // Collapse again so the popover is visible for clicking the edit button.
+        // The popover reappears on the DOM `selectionchange`, before the editor's
+        // throttled sync has picked the collapse up; wait for that sync so the
+        // editor's `validateSelection` cannot write the expanded selection back
+        // (hiding the popover again) between here and the click.
         await userEvent.keyboard('{ArrowLeft}')
+        await waitForPortableTextSelection('')
         await expect.element($toolbarPopover).toBeVisible()
 
         // Open up the editing interface again
