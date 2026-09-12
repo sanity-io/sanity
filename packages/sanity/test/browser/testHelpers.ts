@@ -218,11 +218,13 @@ function getPointerPark(): HTMLElement {
 
 /**
  * Move the real pointer onto the park element (mounting it if needed) and
- * return it. Used at the end of a test by `settleChromaticEndState`, and by
- * the setup file's `beforeEach` so every test starts with the pointer on the
- * park in the bottom-right corner of the default viewport rather than at a
- * fresh page's top-left corner or wherever the previous test's last click (or
- * its park at a reduced viewport) left it.
+ * return it. Used at the end of a test by `settleChromaticEndState`, by the
+ * setup file's `beforeEach` so every test starts with the pointer on the park
+ * in the bottom-right corner of the default viewport rather than at a fresh
+ * page's top-left corner, and by its `afterEach` (after the viewport is
+ * restored, before the park is removed) so the pointer rests in that corner
+ * between tests rather than wherever the previous test's last click or its
+ * reduced-viewport park left it.
  */
 export async function parkPointer(): Promise<HTMLElement> {
   const park = getPointerPark()

@@ -628,9 +628,11 @@ mask real regressions):
   field-actions / PTE toolbar / floating popover geometry to stop changing, and rounds Floating UI
   offsets. The shared `beforeEach` in `test/setup/browser.ts` mounts that topmost 4×4 park in the
   bottom-right corner and parks the pointer on it before the test renders anything, and leaves it
-  mounted until the shared `afterEach` removes it and restores the viewport — so every test starts
-  with the pointer on the park rather than over the previous test's last click or the harness's
-  first control, and content rendered under that coordinate later never starts out `:hover`ed. Do
+  mounted until the shared `afterEach`, which restores the viewport, parks the pointer on it once
+  more (now back in the default viewport's corner) and then removes it — so every test starts
+  with the pointer on the park rather than over the previous test's last click, its
+  reduced-viewport corner or the harness's first control, and content rendered under that
+  coordinate later never starts out `:hover`ed. Do
   not globally `display:none` tooltips — PreviewTooltip and similar tests assert on them.
 - Assert the state you want archived right before the end of the test (or before
   `takeSnapshot`): e.g. `toBeEnabled()` on a button whose tone changes with pending input,

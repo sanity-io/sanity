@@ -27,10 +27,10 @@ const DEFAULT_VIEWPORT = {width: 1280, height: 900}
 // so with the pointer over bare `body` a control rendered at that coordinate
 // would start out `:hover`ed and could open its tooltip mid-test; with the
 // park in place the hit test at that coordinate keeps resolving to the park.
-// Without the park the pointer would sit at Chromium's default top-left
-// position in a fresh page (over the harness's first control), wherever the
-// previous test's last click left it, or at that test's reduced-viewport park
-// (the 350×500 toolbar tests) once the viewport is restored.
+// In a fresh page the pointer sits at Chromium's default top-left position
+// (over the harness's first control) until this moves it; after a previous
+// test `afterEach` has already left it in this corner, but over bare `body`,
+// so the park has to be mounted again before the test renders.
 beforeEach(async () => {
   await parkPointer()
 })
@@ -47,11 +47,21 @@ beforeEach(async () => {
 // Floating UI snap observer is released here for the same reason: it must
 // keep rounding offsets until the archive is taken, and must not outlive the
 // test.
+//
+// Order matters for the pointer: restore the viewport first, then park the
+// pointer once more on the (still mounted) park, now back in the default
+// viewport's corner, and only then remove the park. A test that reduced the
+// viewport (the 350×500 toolbar tests) otherwise leaves the real pointer at
+// its reduced-viewport corner, and a test that ended on a click leaves it
+// there — so where the pointer rests between tests would depend on the
+// previous test. Nothing is mounted at this point (`cleanup()` ran), so the
+// move can only hit `body` and the park.
 afterEach(async () => {
   await cleanup()
-  removePointerPark()
   releaseFloatingUiSnapLock()
   await page.viewport(DEFAULT_VIEWPORT.width, DEFAULT_VIEWPORT.height)
+  await parkPointer()
+  removePointerPark()
 })
 
 // Suppress noisy warnings in test output
