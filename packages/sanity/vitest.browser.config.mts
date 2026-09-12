@@ -73,8 +73,11 @@ export default defineConfig({
       ...(chromaticEnabled
         ? {
             // Content-box crops change height when a portal menu opens or a
-            // line of text wraps; viewport crops keep the frame fixed at
-            // 1280×900 (see `browser.viewport`) and include portaled overlays.
+            // line of text wraps; viewport crops keep the frame at the test's
+            // viewport and include portaled overlays. That is 1280×900 (see
+            // `browser.viewport`) unless the test set its own — the toolbar
+            // collapse tests archive at 350×500 / 800×1000 on purpose; the
+            // setup's `afterEach` restores the default only after the archive.
             cropToViewport: true,
             // Do not add a post-test delay: 1000ms was long enough for hover
             // tooltips, primary-button fills, and Floating UI to drift after
