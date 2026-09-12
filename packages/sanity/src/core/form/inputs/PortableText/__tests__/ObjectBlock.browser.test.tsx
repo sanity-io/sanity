@@ -8,7 +8,7 @@ import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
 
 import {TestForm} from '../../../../../../test/browser/TestForm'
-import {expectStable, testHelpers} from '../../../../../../test/browser/testHelpers'
+import {expectStable, isShown, testHelpers} from '../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 
 // This is to emulate preview updates to the object without the preview store
@@ -397,13 +397,17 @@ describe('Portable Text Input', () => {
         .element(page.getByRole('button', {name: 'Insert Object Without Title (block)'}))
         .toBeVisible()
       // Wait for CollapseMenu button positions to settle — style-select / insert
-      // button x offsets were a recurring Chromatic pairwise flake.
+      // button x offsets were a recurring Chromatic pairwise flake. Painted
+      // buttons only: CollapseMenu's `visibility: hidden` measurement clones
+      // carry the same labels and would match whether or not the painted row
+      // shows the button.
       const signature = () => {
         const toolbar = $portableTextInput
           .element()
           .querySelector('[data-testid="pt-editor__toolbar-card"]')
         if (!toolbar) return ''
         return Array.from(toolbar.querySelectorAll('button'))
+          .filter(isShown)
           .map((b) => `${b.textContent?.trim()}@${Math.round(b.getBoundingClientRect().x)}`)
           .join('|')
       }
