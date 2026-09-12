@@ -144,11 +144,14 @@ test is gone (see "Which source owns a state").
   comes from the Playwright `reducedMotion: 'reduce'` context option, which the `@sanity/ui` v5
   stylesheet (`ui5/styles.css`) honors.
 - **Safe in every run.** The plugin is registered in `vitest.browser.config.mts` on every run, so
-  both helpers work in plain `pnpm --filter sanity test:browser` runs and in the functional
-  `browser-tests.yml` shards; they are no-ops on firefox and webkit. Only `CHROMATIC=1` turns on
-  capturing (automatic snapshots, TurboSnap stats, reporter output, Chromatic telemetry); a
-  normal run writes nothing except the archive of an explicit `takeSnapshot()` call, into the
-  gitignored `.vitest/chromatic`.
+  both `@chromatic-com/vitest` helpers (`configure`, `takeSnapshot`) work in plain
+  `pnpm --filter sanity test:browser` runs and in the functional `browser-tests.yml` shards; those
+  two are no-ops on firefox and webkit. `settleChromaticEndState()` is not part of the plugin and
+  is not a no-op anywhere: it parks the pointer and runs its stability waits on every browser, so
+  a test's end state is asserted in the functional shards too — do not skip it on firefox or
+  webkit. Only `CHROMATIC=1` turns on capturing (automatic snapshots, TurboSnap stats, reporter
+  output, Chromatic telemetry); a normal run writes nothing except the archive of an explicit
+  `takeSnapshot()` call, into the gitignored `.vitest/chromatic`.
 
 See [REFERENCE.md](REFERENCE.md) for local capture runs, TurboSnap, sharding and cost controls.
 
