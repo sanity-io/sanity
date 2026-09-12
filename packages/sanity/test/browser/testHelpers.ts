@@ -2,6 +2,7 @@ import {expect, vi} from 'vitest'
 import {page, server, userEvent} from 'vitest/browser'
 
 import {TOOLTIP_DELAY_PROPS} from '../../src/ui-components/tooltip/constants'
+import {isValidationPending} from './validationPending'
 
 const DEFAULT_TYPE_DELAY = 20
 
@@ -283,11 +284,12 @@ async function reenterStaleWebkitHover(park: HTMLElement): Promise<void> {
 }
 
 /**
- * `TestForm` marks its form container while a document validation run is in
- * flight; the run ends in a form re-render with the resulting markers.
+ * True while a mounted `TestForm` has a document validation run in flight;
+ * the run ends in a form re-render with the resulting markers. Module state
+ * published by `TestForm` (see `validationPending.ts`), kept out of the DOM
+ * so it cannot reach the Chromatic archive.
  */
-const validationPending = (): boolean =>
-  window.document.querySelector('[data-validation-pending]') !== null
+const validationPending = (): boolean => isValidationPending()
 
 /**
  * Wait until the Portable Text Editor has taken over the current DOM

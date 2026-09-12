@@ -6,7 +6,7 @@ import {
   type ValidationMarker,
 } from '@sanity/types'
 import {BoundaryElementProvider} from '@sanity/ui'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState} from 'react'
 import {
   createPatchChannel,
   type DocumentFieldAction,
@@ -35,6 +35,7 @@ import {applyAll} from '../../src/core/form/patch/applyPatch'
 import {PresenceProvider} from '../../src/core/form/studio/contexts/Presence'
 import {type FormDocumentValue} from '../../src/core/form/types/formDocumentValue'
 import {createMockSanityClient} from './createMockSanityClient'
+import {setValidationPending} from './validationPending'
 
 const NOOP = () => null
 const NO_MARKERS: ValidationMarker[] = []
@@ -170,11 +171,20 @@ export function TestForm(props: TestFormProps) {
 
   const validation = validationState?.markers ?? NO_MARKERS
   // Every document change starts a validation run that ends in a re-render
-  // with the resulting markers. Tests wait on `[data-validation-pending]` (see
-  // `waitForPortableTextSelection` and `settleChromaticEndState` in
-  // `testHelpers`) so that re-render cannot land in the middle of a keystroke
-  // sequence or after the Chromatic capture.
+  // with the resulting markers. Tests wait on `validationPending()` in
+  // `testHelpers` (see `waitForPortableTextSelection` and
+  // `settleChromaticEndState`) so that re-render cannot land in the middle of
+  // a keystroke sequence or after the Chromatic capture. Published as module
+  // state, not a DOM attribute: the archive is the serialized DOM, and a test
+  // that ends without settling would otherwise archive the marker or not
+  // depending on whether the run had finished. A layout effect so the value
+  // changes in the same commit as `document`, before any poll can read it.
   const validationPending = validationState?.document !== document
+  const formId = useId()
+  useLayoutEffect(() => {
+    setValidationPending(formId, validationPending)
+    return () => setValidationPending(formId, false)
+  }, [formId, validationPending])
 
   useEffect(() => {
     // Validation is gated on `requestIdleCallback`, so a run for a superseded
@@ -358,10 +368,7 @@ export function TestForm(props: TestFormProps) {
               data-testid="document-panel-scroller"
               ref={setDocumentScrollElement}
             >
-              <Box
-                ref={formContainerElement}
-                data-validation-pending={validationPending ? '' : undefined}
-              >
+              <Box ref={formContainerElement}>
                 <FormBuilder {...formBuilderProps} />
               </Box>
             </Scroller>
