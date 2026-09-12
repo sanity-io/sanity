@@ -20,6 +20,16 @@ import {parkPointer, releaseFloatingUiSnapLock, removePointerPark} from '../brow
 // collapse tests) mutate it for the whole iframe, so reset between tests.
 const DEFAULT_VIEWPORT = {width: 1280, height: 900}
 
+// Pointer park lifecycle (the whole of it; `settleChromaticEndState` reuses
+// the same element and `testHelpers.ts` documents the element itself):
+//
+//   beforeEach  mount the park, move the real pointer onto it
+//   test        park stays mounted; a settle step hovers it again at the end
+//   archive     Chromatic's afterEach captures with the park in the DOM
+//   afterEach   cleanup() → release snap observer → restore the viewport →
+//               parkPointer() (pointer back in the default corner) →
+//               removePointerPark()
+//
 // Park the real pointer on the transparent park element in the bottom-right
 // corner of the (default) viewport right before each test renders anything,
 // and leave the park mounted (topmost, 4×4) until `afterEach`. Chromium
