@@ -907,45 +907,6 @@ export function testHelpers() {
           .toBe(true)
       }
 
-      // Style-select label (Normal ↔ No style) must stay on the expected text
-      // for the whole stability window — matching once then stabilizing on a
-      // flipped label was a pairwise Chromatic false diff.
-      const styleSelectEl = () => {
-        const root = options?.styleSelectRoot
-        const select = root
-          ? window.document.querySelector(`${root} [data-testid="block-style-select"]`)
-          : window.document.querySelector('[data-testid="block-style-select"]')
-        return select instanceof HTMLElement ? select : null
-      }
-      const styleSig = () => {
-        const select = styleSelectEl()
-        if (!select) return ''
-        return `${select.textContent?.trim()}@${Math.round(select.getBoundingClientRect().x)}`
-      }
-      if (options?.styleSelectText || styleSig()) {
-        const required = options?.styleSelectText
-        let previous = ''
-        let stable = 0
-        await expect
-          .poll(() => {
-            const select = styleSelectEl()
-            const text = select?.textContent?.trim() ?? ''
-            if (required && !required.test(text)) {
-              previous = ''
-              stable = 0
-              return false
-            }
-            const next = styleSig()
-            if (next && next === previous) stable += 1
-            else {
-              previous = next
-              stable = 0
-            }
-            return stable >= 3
-          })
-          .toBe(true)
-      }
-
       // Floating chrome, menus, dialogs and the PTE toolbar must stop moving —
       // and, if they were open before parking, must still be open. An empty
       // signature (hidden or unmounted) never counts as stable, so a popover
@@ -967,6 +928,49 @@ export function testHelpers() {
       if (settleFloating) await expectStable(present(floatingSig), 2)
       if (settleMenu) await expectStable(present(menuSig))
       if (verifyExpectedTooltip) await expectStable(present(tooltipSig))
+
+      // Style-select label (Normal ↔ No style), last: it must read as the
+      // required text for the whole final stability window, with the toolbar
+      // it sits in unchanged on the same samples — matching once then
+      // stabilizing on a flipped label was a pairwise Chromatic false diff,
+      // and a label that flipped during the waits above would otherwise leave
+      // the toolbar settled on the wrong one.
+      const styleSelectEl = () => {
+        const root = options?.styleSelectRoot
+        const select = root
+          ? window.document.querySelector(`${root} [data-testid="block-style-select"]`)
+          : window.document.querySelector('[data-testid="block-style-select"]')
+        return select instanceof HTMLElement ? select : null
+      }
+      const styleSig = () => {
+        const select = styleSelectEl()
+        if (!select) return ''
+        return `${select.textContent?.trim()}@${Math.round(select.getBoundingClientRect().x)}`
+      }
+      if (options?.styleSelectText || styleSig()) {
+        const required = options?.styleSelectText
+        let previous = ''
+        let stable = 0
+        await expect
+          .poll(() => {
+            const text = styleSelectEl()?.textContent?.trim() ?? ''
+            const toolbar = toolbarSig()
+            if ((required && !required.test(text)) || typeof toolbar === 'symbol') {
+              previous = ''
+              stable = 0
+              return false
+            }
+            const style = styleSig()
+            const next = style ? `${style}|${toolbar}` : ''
+            if (next && next === previous) stable += 1
+            else {
+              previous = next
+              stable = 0
+            }
+            return stable >= 3
+          })
+          .toBe(true)
+      }
     },
   }
 }
