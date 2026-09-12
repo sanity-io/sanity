@@ -5,7 +5,7 @@ import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
 
 import {TestForm} from '../../../../../../test/browser/TestForm'
-import {testHelpers} from '../../../../../../test/browser/testHelpers'
+import {expectStable, testHelpers} from '../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 
 const schemaTypes = [
@@ -147,20 +147,7 @@ describe('Portable Text Input', () => {
         if (!(a instanceof HTMLElement) || !(b instanceof HTMLElement)) return ''
         return `${Math.round(a.getBoundingClientRect().left)}:${Math.round(b.getBoundingClientRect().left)}`
       }
-      await expect.poll(presenceSig).toMatch(/^\d+:\d+$/)
-      let previous = ''
-      let stable = 0
-      await expect
-        .poll(() => {
-          const next = presenceSig()
-          if (next && next === previous) stable += 1
-          else {
-            previous = next
-            stable = 0
-          }
-          return stable >= 3
-        })
-        .toBe(true)
+      expect(await expectStable(presenceSig)).toMatch(/^\d+:\d+$/)
       // Toolbar enablement/style-select muted vs dark text flipped between
       // identical-code captures when focus/selection briefly unsettled.
       await userEvent.click(editor$)
