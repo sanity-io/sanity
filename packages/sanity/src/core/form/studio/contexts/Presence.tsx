@@ -1,10 +1,10 @@
 import {type Path} from '@sanity/types'
 import {isEqual, startsWith} from '@sanity/util/paths'
-import {type ReactNode, useContext, useRef} from 'react'
+import {type ReactNode, useContext} from 'react'
 import {PresenceContext} from 'sanity/_singletons'
 
 import {type FormNodePresence} from '../../../presence/types'
-import {immutableReconcile} from '../../store/utils/immutableReconcile'
+import {useImmutableReconcile} from '../../store/utils/useImmutableReconcile'
 
 export function PresenceProvider(props: {presence: FormNodePresence[]; children: ReactNode}) {
   return (
@@ -27,15 +27,10 @@ export function useFormFieldPresence(): FormNodePresence[] {
  */
 export function useChildPresence(path: Path, inclusive?: boolean): FormNodePresence[] {
   const presence = useFormFieldPresence()
-  const prev = useRef(presence)
-  const next = immutableReconcile(
-    // oxlint-disable-next-line react/refs -- @todo fix later, requires research to avoid perf degradation, for now "this is fine"
-    prev.current,
+  const reconcile = useImmutableReconcile<FormNodePresence[]>()
+  return reconcile(
     presence.filter(
       (item) => startsWith(path, item.path) && (inclusive || !isEqual(path, item.path)),
     ),
   )
-  // oxlint-disable-next-line react/refs -- see above
-  prev.current = next
-  return next
 }
