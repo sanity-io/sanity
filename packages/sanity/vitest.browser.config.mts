@@ -70,7 +70,23 @@ export default defineConfig({
       turboSnap: chromaticEnabled,
       // Outside capture runs, skip the per-test wait for fonts and network idle
       // that only matters for archiving resources.
-      ...(chromaticEnabled ? {} : {resourceArchiveTimeout: 0}),
+      ...(chromaticEnabled
+        ? {
+            // Content-box crops change height when a portal menu opens or a
+            // line of text wraps; viewport crops keep the frame at the test's
+            // viewport and include portaled overlays. That is 1280×900 (see
+            // `browser.viewport`) unless the test set its own — the toolbar
+            // collapse tests archive at 350×500 / 800×1000 on purpose; the
+            // setup's `afterEach` restores the default only after the archive.
+            cropToViewport: true,
+            // Do not add a post-test delay: 1000ms was long enough for hover
+            // tooltips, primary-button fills, and Floating UI to drift after
+            // settleChromaticEndState. Layout waits belong in that helper.
+            delay: 0,
+            pauseAnimationAtEnd: true,
+            prefersReducedMotion: 'reduce',
+          }
+        : {resourceArchiveTimeout: 0}),
       reporter: chromaticEnabled,
     }),
   ],
@@ -81,19 +97,39 @@ export default defineConfig({
   test: {
     name: 'sanity-browser',
     include: ['./src/**/*.browser.test.{ts,tsx}'],
+    // Chromatic and the React test setup both register `afterEach` hooks:
+    // Chromatic captures the automatic snapshot, then the test setup unmounts
+    // the rendered tree. Vitest's default is `stack` (after-hooks run in
+    // reverse registration order); the Chromatic plugin adapts to either by
+    // appending its setup file under `stack` and prepending it under `list`,
+    // and only warns under `parallel`. `list` is set explicitly so the order
+    // is stated here rather than inferred, and so that `afterEach` hooks
+    // registered inside a test file (clipboard restores, spies) also run after
+    // the archive instead of before it.
+    sequence: {hooks: 'list'},
     // Browser tests are slower and flakier than jsdom tests, especially on
     // WebKit/Firefox in CI where all three browsers share one runner. Give
     // them generous timeouts and retry once (the old Playwright CT setup used
-    // `retries: 1`).
+    // `retries: 1`). Chromatic capture runs must not retry: a failed attempt
+    // still runs the plugin's `afterEach` archive, and the retry archives again
+    // as `Snapshot #1 (2)` (seen as an ADDED story on Vitest Chromatic builds).
     testTimeout: 30_000,
-    retry: 1,
+    retry: chromaticEnabled ? 0 : 1,
     // Element matchers (`expect.element(...).toBeVisible()`, `expect.poll`)
     // retry until this timeout; the default (~1s) is too tight for a loaded
     // CI runner running three browsers at once.
     expect: {poll: {timeout: 10_000}},
     browser: {
       enabled: true,
-      provider: playwright(),
+      // Emulate `prefers-reduced-motion: reduce` in the test browser, matching
+      // the `prefersReducedMotion: 'reduce'` Chromatic renders archives with.
+      // The `@sanity/ui` v5 stylesheet (`ui5/styles.css`, loaded for every
+      // test file by `test/setup/browser.ts`, as the `sanity` entry point does)
+      // collapses transitions and animations to 0.01ms under that media query,
+      // so the DOM a test asserts on (and the archive Chromatic re-renders) is
+      // never caught mid-fade — without overriding any component CSS from the
+      // test setup.
+      provider: playwright({contextOptions: {reducedMotion: 'reduce'}}),
       headless: true,
       commands: {readFileAsBase64},
       // Desktop viewport so the Portable Text toolbar renders all buttons
@@ -102,7 +138,11 @@ export default defineConfig({
       viewport: {width: 1280, height: 900},
       instances: browsers.map((browser) => ({browser})),
     },
-    setupFiles: ['./test/setup/browser.ts'],
+    // `idleCallback.ts` routes `requestIdleCallback` through a timer (headless
+    // Chromium fires it only after a frame, so idle-gated validation can stall
+    // on a page that paints nothing); it is its own entry, ahead of the rest,
+    // so that it runs before any module binds the native function.
+    setupFiles: ['./test/setup/idleCallback.ts', './test/setup/browser.ts'],
     deps: {
       optimizer: {
         client: {

@@ -5,7 +5,7 @@ import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
 
 import {TestForm} from '../../../../../../test/browser/TestForm'
-import {testHelpers} from '../../../../../../test/browser/testHelpers'
+import {expectStable, testHelpers} from '../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 
 const schemaTypes = [
@@ -47,8 +47,8 @@ const TEXT = 'Hello, this is some text in the editor.'
 const DOCUMENT: SanityDocument = {
   _id: '123',
   _type: 'test',
-  _createdAt: new Date().toISOString(),
-  _updatedAt: new Date().toISOString(),
+  _createdAt: '2024-01-01T00:00:00.000Z',
+  _updatedAt: '2024-01-01T00:00:00.000Z',
   _rev: '123',
   body: [
     {
@@ -66,7 +66,7 @@ const offset2 = TEXT.indexOf('some text')
 const PRESENCE: FormNodePresence[] = [
   {
     path: ['body', 'text'],
-    lastActiveAt: new Date().toISOString(),
+    lastActiveAt: '2024-01-01T00:00:00.000Z',
     sessionId: 'session-A',
     selection: {
       anchor: {offset: offset1, path: [{_key: 'a'}, 'children', {_key: 'a1'}]},
@@ -80,7 +80,7 @@ const PRESENCE: FormNodePresence[] = [
   },
   {
     path: ['body', 'text'],
-    lastActiveAt: new Date().toISOString(),
+    lastActiveAt: '2024-01-01T00:00:00.000Z',
     sessionId: 'session-B',
     selection: {
       anchor: {offset: offset2, path: [{_key: 'a'}, 'children', {_key: 'a1'}]},
@@ -107,7 +107,8 @@ function getSiblingTextContent() {
 describe('Portable Text Input', () => {
   describe('Presence Cursors', () => {
     it('should keep position when inserting text in the editor', async () => {
-      const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
+      const {getFocusedPortableTextEditor, insertPortableText, settleChromaticEndState} =
+        testHelpers()
 
       void render(<PresenceCursorsHarness document={DOCUMENT} presence={PRESENCE} />)
 
@@ -133,6 +134,27 @@ describe('Portable Text Input', () => {
       const siblingContentB = getSiblingTextContent()
       expect(siblingContentB.cursorA).toBe('this is ')
       expect(siblingContentB.cursorB).toBe('some text in the editor.')
+
+      // Re-assert presence markers for a settled Chromatic end state.
+      await expect.element($cursorA).toBeVisible()
+      await expect.element($cursorB).toBeVisible()
+      await expect.element(editor$).toHaveTextContent(`INSERTED TEXT. ${TEXT}`)
+      // Presence pin geometry can shift by a sub-pixel while the caret settles;
+      // wait until both markers report a stable left offset.
+      const presenceSig = () => {
+        const a = window.document.querySelector('[data-testid="presence-cursor-User-A"]')
+        const b = window.document.querySelector('[data-testid="presence-cursor-User-B"]')
+        if (!(a instanceof HTMLElement) || !(b instanceof HTMLElement)) return ''
+        return `${Math.round(a.getBoundingClientRect().left)}:${Math.round(b.getBoundingClientRect().left)}`
+      }
+      expect(await expectStable(presenceSig)).toMatch(/^\d+:\d+$/)
+      // Toolbar enablement/style-select muted vs dark text flipped between
+      // identical-code captures when focus/selection briefly unsettled.
+      await userEvent.click(editor$)
+      await settleChromaticEndState({
+        styleSelectText: /^Normal$/,
+        styleSelectRoot: '[data-testid="field-body"]',
+      })
     })
 
     it.skip('should keep position when deleting text in the editor', async () => {
