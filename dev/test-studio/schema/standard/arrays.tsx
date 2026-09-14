@@ -766,12 +766,7 @@ export default defineType({
       firstItem: 'arrayOfStrings.0',
       length: 'arrayOfStrings.length',
     },
-    prepare({title, strings, firstItem, length}) {
-      console.log('arraysTest preview.prepare', {
-        strings,
-        firstItem,
-        length,
-      })
+    prepare({title}) {
       return {title}
     },
   },
