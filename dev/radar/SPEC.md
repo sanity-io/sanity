@@ -310,9 +310,16 @@ effect of merged work; secondary: leads scanning health weekly.
    next, halving the range per good/bad verdict until the first bad commit is
    named. The chain is the exact first-parent walk (`gitCommit.parentSha`),
    not a date sort. Each run is a `bisectSession` document (studio-written,
-   liveEdit, like `driftAck`): endpoints, an append-only marks log (last mark
-   per sha wins; undo removes the tail), and — denormalized at convergence
-   only, for the session list — the result. Commits without a testable build
+   liveEdit, like `driftAck`): endpoints, an optional repro path, an
+   append-only marks log (last mark per sha wins; undo removes the tail), and
+   — denormalized at convergence only, for the session list — the result. The
+   repro path (`reproPath`, e.g. `/test/structure/author;abc?x=1`) is where in
+   the test studio the issue shows; it is entered at session start (a bare
+   path, or a full test-studio URL reduced to its path) and appended to every
+   preview build the tool opens, so no step needs manual navigation. It is
+   normalized to a single-slash same-origin path so it can never redirect the
+   preview to another origin or scheme, and a releases-only drill-down
+   inherits it. Commits without a testable build
    (skipped builds, one-sync URL lag) are never proposed and end up as
    explicit "suspects" in the verdict rather than silently blamed.
    Conflicting marks (a good newer than a bad) surface as an error state that
@@ -324,7 +331,9 @@ effect of merged work; secondary: leads scanning health weekly.
    view (hard delete behind a confirm — they're the only user-owned documents
    here).
 
-8. **Studio releases** — every synced release tag, newest first: current
+8. **Studio releases** — every synced release tag in semver order (newest
+   version first, prereleases below their release — a version list, not a
+   timeline, so a maintenance patch sits with its minor): current
    dist-tags, weekly downloads, publish time, links out (GitHub release,
    sanity.io changelog, npmx.dev), and the version linking to the gitTag
    document in the structure tool. The changelog link is derived from the
@@ -336,7 +345,11 @@ effect of merged work; secondary: leads scanning health weekly.
    a bisect (user reports) are added by hand via "Add regression", stored as
    a born-converged releases-only bisectSession (base release → blamed
    release, the commits between as suspects) so attribution and the bisect
-   drill-down work unchanged.
+   drill-down work unchanged. A path field under the header holds a
+   test-studio path (same normalization as the bisect repro path, `?path=`
+   in the URL so it is reload-safe and shareable) that every release's
+   Test Studio link opens at — checking one repro across releases is a click per
+   row.
 
 ## Architecture
 
