@@ -13,6 +13,7 @@ import {CommandChip, InstallChip} from './chips'
 import {CommitCard} from './CommitCard'
 import {type TagSlice} from './data'
 import {IncludedIn} from './IncludedIn'
+import {withReproPath} from './reproPath'
 import {ResultCard} from './ResultCard'
 import {type ResultAnnotations} from './sessions'
 import {pluralize} from './text'
@@ -45,6 +46,8 @@ export function Timeline(props: {
   stepsLeft?: number
   currentReleases?: TagSlice[]
   versionBySha?: Map<string, string>
+  /** Session's repro path — every "Open test studio" link opens the preview build there. */
+  reproPath?: string
   converged?: {
     state: Extract<ReturnType<typeof deriveBisectState>, {kind: 'converged'}>
     releases: TagSlice[]
@@ -55,7 +58,8 @@ export function Timeline(props: {
     onContinue?: () => void
   }
 }) {
-  const {entries, onMark, onUndo, stepsLeft, currentReleases, versionBySha, converged} = props
+  const {entries, onMark, onUndo, stepsLeft, currentReleases, versionBySha, reproPath, converged} =
+    props
   return (
     <Stack gap={2}>
       <Text size={1} weight="semibold">
@@ -72,6 +76,7 @@ export function Timeline(props: {
               releases={converged.releases}
               releasesOnly={converged.releasesOnly}
               version={versionBySha?.get(entry.commit.sha)}
+              reproPath={reproPath}
               annotations={converged.annotations}
               onAnnotate={converged.onAnnotate}
               onContinue={converged.onContinue}
@@ -84,6 +89,7 @@ export function Timeline(props: {
               stepsLeft={stepsLeft}
               releases={currentReleases ?? []}
               version={versionBySha?.get(entry.commit.sha)}
+              reproPath={reproPath}
               onMark={onMark}
               onUndo={onUndo}
             />
@@ -126,10 +132,11 @@ function CurrentStepCard(props: {
   stepsLeft?: number
   releases: TagSlice[]
   version?: string
+  reproPath?: string
   onMark: (sha: string, verdict: Verdict) => void
   onUndo?: () => void
 }) {
-  const {entry, stepsLeft, releases, version, onMark, onUndo} = props
+  const {entry, stepsLeft, releases, version, reproPath, onMark, onUndo} = props
   return (
     <CommitCard
       commit={entry.commit}
@@ -157,7 +164,7 @@ function CurrentStepCard(props: {
       <Flex alignItems="center" gap={3} flexWrap="wrap">
         <Button
           as="a"
-          href={entry.commit.testStudioUrl}
+          href={entry.commit.testStudioUrl && withReproPath(entry.commit.testStudioUrl, reproPath)}
           target="_blank"
           rel="noreferrer"
           aria-label="Open test studio (opens in a new tab)"
