@@ -18,6 +18,9 @@ const VariantsStudioNavbar = lazy(() =>
  */
 export const VARIANTS_NAME = 'sanity/variants'
 
+/**
+ * @internal
+ */
 export const VARIANTS_INTENT = 'variant'
 
 const VARIANTS_TOOL_NAME = 'variants'
