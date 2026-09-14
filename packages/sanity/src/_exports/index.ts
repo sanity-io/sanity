@@ -194,6 +194,8 @@ export {
   type RovingFocusNavigationType,
   type RovingFocusProps,
 } from '../core/components/rovingFocus/types'
+export {PortalBoundaryProvider} from '../core/components/portalBoundary/PortalBoundaryProvider'
+export {usePortalBoundary} from '../core/components/portalBoundary/usePortalBoundary'
 export {useRovingFocus} from '../core/components/rovingFocus/useRovingFocus'
 export {useOnScroll} from '../core/components/scroll/hooks'
 export {ScrollContainer, type ScrollContainerProps} from '../core/components/scroll/scrollContainer'

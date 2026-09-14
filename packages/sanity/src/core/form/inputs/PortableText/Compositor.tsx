@@ -34,6 +34,8 @@ import {type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
 import {Box} from 'ui5'
 
 import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
+import {PortalBoundaryProvider} from '../../../components/portalBoundary/PortalBoundaryProvider'
+import {usePortalBoundary} from '../../../components/portalBoundary/usePortalBoundary'
 import {EMPTY_ARRAY} from '../../../util/empty'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {type RenderCustomMarkers, type RenderBlockActionsCallback} from '../../types/_transitional'
@@ -162,6 +164,11 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(null)
   const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
   const floatingBoundary = isFullscreen ? scrollElement : boundaryElement
+  // In fullscreen the editor covers the pane's content area and its own scroll element is the
+  // region popovers that escape object modals must respect (below the fullscreen toolbar),
+  // so it replaces the pane's declared portal boundary while expanded.
+  const inheritedPortalBoundary = usePortalBoundary()
+  const portalBoundary = isFullscreen ? scrollElement : inheritedPortalBoundary
 
   const handleToggleFullscreen = useCallback(() => {
     onToggleFullscreen()
@@ -621,38 +628,40 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         <ListIndexProvider>
           <NodePlugin nodes={catchAllNodes} />
           <PortalProvider __unstable_elements={portalElements} element={portal.element}>
-            <BoundaryElementProvider element={floatingBoundary}>
-              <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
-                <ChangeIndicator
-                  disabled={isFullscreen}
-                  hasFocus={Boolean(focused)}
-                  isChanged={changed}
-                  path={path}
-                >
-                  <Root
-                    data-focused={editorFocused ? '' : undefined}
-                    data-read-only={readOnly ? '' : undefined}
+            <PortalBoundaryProvider element={portalBoundary} portalElement={portal.element}>
+              <BoundaryElementProvider element={floatingBoundary}>
+                <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
+                  <ChangeIndicator
+                    disabled={isFullscreen}
+                    hasFocus={Boolean(focused)}
+                    isChanged={changed}
+                    path={path}
                   >
-                    <Box data-wrapper="" ref={setWrapperElement}>
-                      <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
-                        {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
-                        <AnnotationObjectEditModal
-                          annotationOpeningRef={annotationOpeningRef}
-                          focused={focused}
-                          onItemClose={handleItemClose}
-                          referenceBoundary={scrollElement}
-                        />
-                        <CombinedAnnotationPopover
-                          annotationOpeningRef={annotationOpeningRef}
-                          referenceBoundary={scrollElement}
-                        />
-                      </Portal>
-                    </Box>
-                    <div data-border="" />
-                  </Root>
-                </ChangeIndicator>
-              </ActivateOnFocus>
-            </BoundaryElementProvider>
+                    <Root
+                      data-focused={editorFocused ? '' : undefined}
+                      data-read-only={readOnly ? '' : undefined}
+                    >
+                      <Box data-wrapper="" ref={setWrapperElement}>
+                        <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
+                          {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
+                          <AnnotationObjectEditModal
+                            annotationOpeningRef={annotationOpeningRef}
+                            focused={focused}
+                            onItemClose={handleItemClose}
+                            referenceBoundary={scrollElement}
+                          />
+                          <CombinedAnnotationPopover
+                            annotationOpeningRef={annotationOpeningRef}
+                            referenceBoundary={scrollElement}
+                          />
+                        </Portal>
+                      </Box>
+                      <div data-border="" />
+                    </Root>
+                  </ChangeIndicator>
+                </ActivateOnFocus>
+              </BoundaryElementProvider>
+            </PortalBoundaryProvider>
           </PortalProvider>
         </ListIndexProvider>
       </DndProvider>
