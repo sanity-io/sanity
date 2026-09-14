@@ -6,6 +6,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {variantAlphaAudience, variantNorwegianMarket} from '../../../__fixtures__/variants.fixture'
 import {variantsUsEnglishLocaleBundle} from '../../../i18n'
+import {VARIANTS_INTENT} from '../../../plugin'
 import {type SystemVariant} from '../../../types'
 import {CreateVariantDialog} from '../CreateVariantDialog'
 
@@ -31,20 +32,26 @@ vi.mock('@sanity/ui/toast', async (importOriginal) => ({
   useToast: vi.fn(() => toastMock),
 }))
 
-// The test router has no `variantId` route, so resolve duplicate-error links to plain anchors.
+// The test router has no variants tool, so resolve duplicate-error IntentLinks to plain anchors.
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),
-  StateLink: function MockStateLink({
+  IntentLink: function MockIntentLink({
     ref,
-    state,
+    intent,
+    params,
     ...rest
-  }: {state?: {variantId?: string}} & HTMLProps<HTMLAnchorElement>) {
+  }: {
+    intent?: string
+    params?: {id?: string}
+  } & HTMLProps<HTMLAnchorElement>) {
+    const variantId = params?.id
+
     return (
       // oxlint-disable-next-line jsx_a11y/anchor-has-content
       <a
         {...rest}
         ref={ref as Ref<HTMLAnchorElement>}
-        href={state?.variantId ? `/variants/${state.variantId}` : '/variants'}
+        href={variantId ? `/intent/${intent}/id=${variantId}` : `/intent/${intent}`}
       />
     )
   },
@@ -396,7 +403,7 @@ describe('CreateVariantDialog', () => {
     )
     expect(within(titleError).getByRole('link', {name: 'Alpha audience'})).toHaveAttribute(
       'href',
-      '/variants/alpha-audience',
+      `/intent/${VARIANTS_INTENT}/id=alpha-audience`,
     )
 
     await user.type(screen.getByTestId('variant-form-title'), ' expanded')
@@ -443,7 +450,7 @@ describe('CreateVariantDialog', () => {
     )
     expect(within(conditionsError).getByRole('link', {name: 'Alpha audience'})).toHaveAttribute(
       'href',
-      '/variants/alpha-audience',
+      `/intent/${VARIANTS_INTENT}/id=alpha-audience`,
     )
   })
 
