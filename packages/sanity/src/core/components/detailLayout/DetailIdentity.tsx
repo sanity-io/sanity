@@ -1,10 +1,16 @@
-import {Flex, Stack, Text} from '@sanity/ui'
-import {getTheme_v2} from '@sanity/ui/theme'
-import {type ElementType} from 'react'
-import {css, styled} from 'styled-components'
+import {Flex, Stack, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
+import {type ComponentProps, type ElementType} from 'react'
 import {Box} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
+import {
+  clampedDescription,
+  descriptionFontFamilyVar,
+  descriptionFontSizeVar,
+  descriptionLineHeightVar,
+} from './DetailIdentity.css'
 
 const DESCRIPTION_TOOLTIP_MAX_WIDTH = 360
 
@@ -13,24 +19,28 @@ const DESCRIPTION_TOOLTIP_MAX_WIDTH = 360
 // Full text lives in the hover tooltip; maxWidth keeps the line length fixed rather than stretching
 // across the whole pane.
 //
-// This is a plain styled.div rather than @sanity/ui <Text> on purpose: <Text> forces its own
+// This is a plain div rather than @sanity/ui <Text> on purpose: <Text> forces its own
 // `display` (flow-root), which defeats `-webkit-line-clamp` (that needs display:-webkit-box) and
 // collapses the box, clipping the first line. Owning the element lets the clamp work correctly.
-const ClampedDescription = styled.div((props) => {
-  const {font} = getTheme_v2(props.theme)
-  return css`
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 4;
-    overflow: hidden;
-    max-width: 560px;
-    margin: 0;
-    font-family: ${font.text.family};
-    font-size: ${font.text.sizes[2].fontSize}px;
-    line-height: ${font.text.sizes[2].lineHeight}px;
-    color: var(--card-muted-fg-color);
-  `
-})
+function ClampedDescription(props: ComponentProps<'div'>) {
+  const {className, style, ...rest} = props
+  const {font} = useThemeV2()
+
+  return (
+    <div
+      {...rest}
+      className={clsx(clampedDescription, className)}
+      style={{
+        ...assignInlineVars({
+          [descriptionFontFamilyVar]: font.text.family,
+          [descriptionFontSizeVar]: `${font.text.sizes[2].fontSize}px`,
+          [descriptionLineHeightVar]: `${font.text.sizes[2].lineHeight}px`,
+        }),
+        ...style,
+      }}
+    />
+  )
+}
 
 /**
  * The identity block (title + description) of an entity detail page, as a read-only **display**
