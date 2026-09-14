@@ -10,13 +10,8 @@ import {
   useMemo,
   useRef,
 } from 'react'
-import {
-  getVariantTitle,
-  type PerspectiveContextValue,
-  type TFunction,
-  usePerspective,
-  useTranslation,
-} from 'sanity'
+import {type PerspectiveContextValue, type TFunction, usePerspective, useTranslation} from 'sanity'
+import {getVariantTitle} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Box} from 'ui5'
 
 import {API_VERSIONS} from '../apiVersions'

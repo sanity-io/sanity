@@ -1,14 +1,10 @@
 import {LockIcon} from '@sanity/icons/Lock'
 import {Text} from '@sanity/ui'
-import {
-  getReleaseTone,
-  LATEST,
-  type ReleaseDocument,
-  Translate,
-  useFormatRelativeLocalePublishDate,
-  useTranslation,
-} from 'sanity'
+import {type ReleaseDocument, Translate, useTranslation} from 'sanity'
 
+import {useFormatRelativeLocalePublishDate} from '../../../../../core/releases/hooks/useFormatRelativeLocalePublishDate'
+import {LATEST} from '../../../../../core/releases/util/const'
+import {getReleaseTone} from '../../../../../core/releases/util/getReleaseTone'
 import {Banner} from './Banner'
 
 export function ScheduledReleaseBanner({

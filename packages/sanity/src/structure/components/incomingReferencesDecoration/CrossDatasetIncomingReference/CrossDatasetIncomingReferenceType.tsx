@@ -3,10 +3,7 @@ import {Card, Stack, Text} from '@sanity/ui'
 import {Suspense, use, useCallback, useMemo} from 'react'
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
 import {
-  CommandList,
-  type CommandListRenderItemCallback,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
-  LoadingBlock,
   useClient,
   useDocumentPreviewStore,
   useSchema,
@@ -14,6 +11,9 @@ import {
 } from 'sanity'
 import {Flex, Box} from 'ui5'
 
+import {CommandList} from '../../../../core/components/commandList/CommandList'
+import {type CommandListRenderItemCallback} from '../../../../core/components/commandList/types'
+import {LoadingBlock} from '../../../../core/components/loadingBlock/LoadingBlock'
 import {structureLocaleNamespace} from '../../../i18n'
 import {INCOMING_REFERENCES_ITEM_HEIGHT, IncomingReferencesListContainer} from '../shared'
 import {type CrossDatasetIncomingReference} from '../types'

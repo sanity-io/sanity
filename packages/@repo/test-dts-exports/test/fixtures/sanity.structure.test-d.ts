@@ -6,12 +6,10 @@ import type {
   BackLinkProps,
   BaseGenericList,
   BaseIntentParams,
-  BaseResolvedPaneNode,
   BaseView,
   BuildableComponent,
   BuildableGenericList,
   BuildableList,
-  Builder,
   Child,
   ChildLinkProps,
   ChildObservable,
@@ -19,27 +17,17 @@ import type {
   ChildResolverOptions,
   Collection,
   CollectionBuilder,
-  component,
   Component,
   ComponentBuilder,
   ComponentInput,
   ComponentView,
   ComponentViewBuilder,
-  ConfirmDeleteDialog,
-  ConfirmDeleteDialogProps,
-  createStructureBuilder,
-  CustomComponentPaneNode,
-  DEFAULT_INTENT_HANDLER,
   DefaultDocumentNodeContext,
   DefaultDocumentNodeResolver,
-  defaultInitialValueTemplateItems,
-  defaultIntentChecker,
   defineIncomingReferenceDecoration,
   Divider,
   DocumentBuilder,
   DocumentFieldMenuActionNode,
-  documentFromEditor,
-  documentFromEditorWithInitialValue,
   DocumentInspectorHeader,
   DocumentList,
   DocumentListBuilder,
@@ -48,30 +36,19 @@ import type {
   DocumentListItemBuilder,
   DocumentListItemInput,
   DocumentListOptions,
-  DocumentListPane,
-  DocumentListPaneNode,
-  DocumentListPaneProps,
   DocumentNode,
   DocumentOptions,
-  DocumentPane,
-  DocumentPaneNode,
   DocumentPaneProvider,
-  DocumentPaneProviderProps,
   DocumentTypeListBuilder,
   DocumentTypeListInput,
   EditorNode,
   EditReferenceOptions,
-  form,
   FormView,
   FormViewBuilder,
   GenericList,
   GenericListBuilder,
   GenericListInput,
   GenericViewBuilder,
-  getOrderingMenuItem,
-  getOrderingMenuItemsForSchemaType,
-  getTypeNamesFromFilter,
-  HELP_URL,
   IncomingReferenceAction,
   IncomingReferencesOptions,
   InitialValueTemplateItemBuilder,
@@ -79,7 +56,6 @@ import type {
   IntentChecker,
   IntentJsonParams,
   IntentParams,
-  isDocumentListItem,
   isIncomingReferenceCreation,
   ItemChild,
   KnownMenuItemParams,
@@ -93,28 +69,13 @@ import type {
   ListItemDisplayOptions,
   ListItemInput,
   ListItemSerializeOptions,
-  ListPaneNode,
-  maybeSerializeInitialValueTemplateItem,
-  maybeSerializeMenuItem,
-  maybeSerializeMenuItemGroup,
-  maybeSerializeView,
   MenuItem,
   MenuItemActionType,
   MenuItemBuilder,
   MenuItemGroup,
   MenuItemGroupBuilder,
   MenuItemParamsType,
-  menuItemsFromInitialValueTemplateItems,
-  ORDER_BY_IDS_PARAM_FIELD,
-  Pane,
-  PaneContent,
   PaneLayout,
-  PaneListItem,
-  PaneListItemDivider,
-  PaneMenuItem,
-  PaneMenuItemGroup,
-  PaneNode,
-  PaneNodeResolver,
   PaneRouterContext,
   PaneRouterContextValue,
   ParameterizedLinkProps,
@@ -127,17 +88,10 @@ import type {
   RouterPaneGroup,
   RouterPanes,
   RouterPaneSibling,
-  RouterPaneSiblingContext,
   Serializable,
-  SerializablePaneNode,
-  SerializeError,
   SerializeOptions,
   SerializePath,
-  shallowIntentChecker,
-  SortMenuItem,
-  StrictVersionLayeringOptions,
   StructureBuilder,
-  StructureBuilderOptions,
   StructureContext,
   structureLocaleNamespace,
   StructureLocaleResourceKeys,
@@ -145,24 +99,16 @@ import type {
   StructureResolver,
   StructureResolverContext,
   structureTool,
-  StructureToolContextValue,
-  StructureToolFeatures,
   StructureToolMenuItem,
   StructureToolOptions,
-  StructureToolPaneActionHandler,
-  StructureToolProvider,
-  StructureToolProviderProps,
-  UnresolvedPaneNode,
   UnserializedListItem,
   UnserializedListItemChild,
   useDocumentPane,
   useDocumentTitle,
   UseDocumentTitle,
-  usePaneOptions,
   usePaneRouter,
   UserComponent,
   UserViewComponent,
-  useStructureTool,
   View,
   ViewBuilder,
 } from 'sanity/structure'
@@ -178,9 +124,6 @@ describe('sanity/structure', () => {
   test('BaseIntentParams', () => {
     expectTypeOf<BaseIntentParams>().toBeObject()
   })
-  test('BaseResolvedPaneNode', () => {
-    expectTypeOf<BaseResolvedPaneNode<any>>().toBeObject()
-  })
   test('BaseView', () => {
     expectTypeOf<BaseView>().toBeObject()
   })
@@ -192,9 +135,6 @@ describe('sanity/structure', () => {
   })
   test('BuildableList', () => {
     expectTypeOf<BuildableList>().toBeObject()
-  })
-  test('Builder', () => {
-    expectTypeOf<Builder>().not.toBeNever()
   })
   test('Child', () => {
     expectTypeOf<Child>().not.toBeNever()
@@ -217,9 +157,6 @@ describe('sanity/structure', () => {
   test('CollectionBuilder', () => {
     expectTypeOf<CollectionBuilder>().not.toBeNever()
   })
-  test('component', () => {
-    expectTypeOf<typeof component>().not.toBeNever()
-  })
   test('Component', () => {
     expectTypeOf<Component>().toBeObject()
   })
@@ -235,32 +172,11 @@ describe('sanity/structure', () => {
   test('ComponentViewBuilder', () => {
     expectTypeOf<ComponentViewBuilder>().not.toBeNever()
   })
-  test('ConfirmDeleteDialog', () => {
-    expectTypeOf<typeof ConfirmDeleteDialog>().toBeFunction()
-  })
-  test('ConfirmDeleteDialogProps', () => {
-    expectTypeOf<ConfirmDeleteDialogProps>().toBeObject()
-  })
-  test('createStructureBuilder', () => {
-    expectTypeOf<typeof createStructureBuilder>().toBeFunction()
-  })
-  test('CustomComponentPaneNode', () => {
-    expectTypeOf<CustomComponentPaneNode>().toBeObject()
-  })
-  test('DEFAULT_INTENT_HANDLER', () => {
-    expectTypeOf<typeof DEFAULT_INTENT_HANDLER>().not.toBeNever()
-  })
   test('DefaultDocumentNodeContext', () => {
     expectTypeOf<DefaultDocumentNodeContext>().toBeObject()
   })
   test('DefaultDocumentNodeResolver', () => {
     expectTypeOf<DefaultDocumentNodeResolver>().not.toBeNever()
-  })
-  test('defaultInitialValueTemplateItems', () => {
-    expectTypeOf<typeof defaultInitialValueTemplateItems>().toBeFunction()
-  })
-  test('defaultIntentChecker', () => {
-    expectTypeOf<typeof defaultIntentChecker>().not.toBeNever()
   })
   test('defineIncomingReferenceDecoration', () => {
     expectTypeOf<typeof defineIncomingReferenceDecoration>().toBeFunction()
@@ -273,12 +189,6 @@ describe('sanity/structure', () => {
   })
   test('DocumentFieldMenuActionNode', () => {
     expectTypeOf<DocumentFieldMenuActionNode>().not.toBeNever()
-  })
-  test('documentFromEditor', () => {
-    expectTypeOf<typeof documentFromEditor>().toBeFunction()
-  })
-  test('documentFromEditorWithInitialValue', () => {
-    expectTypeOf<typeof documentFromEditorWithInitialValue>().toBeFunction()
   })
   test('DocumentInspectorHeader', () => {
     expectTypeOf<typeof DocumentInspectorHeader>().toBeFunction()
@@ -304,32 +214,14 @@ describe('sanity/structure', () => {
   test('DocumentListOptions', () => {
     expectTypeOf<DocumentListOptions>().toBeObject()
   })
-  test('DocumentListPane', () => {
-    expectTypeOf<typeof DocumentListPane>().not.toBeNever()
-  })
-  test('DocumentListPaneNode', () => {
-    expectTypeOf<DocumentListPaneNode>().toBeObject()
-  })
-  test('DocumentListPaneProps', () => {
-    expectTypeOf<DocumentListPaneProps>().not.toBeNever()
-  })
   test('DocumentNode', () => {
     expectTypeOf<DocumentNode>().toBeObject()
   })
   test('DocumentOptions', () => {
     expectTypeOf<DocumentOptions>().toBeObject()
   })
-  test('DocumentPane', () => {
-    expectTypeOf<typeof DocumentPane>().not.toBeNever()
-  })
-  test('DocumentPaneNode', () => {
-    expectTypeOf<DocumentPaneNode>().toBeObject()
-  })
   test('DocumentPaneProvider', () => {
     expectTypeOf<typeof DocumentPaneProvider>().not.toBeNever()
-  })
-  test('DocumentPaneProviderProps', () => {
-    expectTypeOf<DocumentPaneProviderProps>().not.toBeNever()
   })
   test('DocumentTypeListBuilder', () => {
     expectTypeOf<DocumentTypeListBuilder>().not.toBeNever()
@@ -342,9 +234,6 @@ describe('sanity/structure', () => {
   })
   test('EditReferenceOptions', () => {
     expectTypeOf<EditReferenceOptions>().toBeObject()
-  })
-  test('form', () => {
-    expectTypeOf<typeof form>().not.toBeNever()
   })
   test('FormView', () => {
     expectTypeOf<FormView>().toBeObject()
@@ -363,18 +252,6 @@ describe('sanity/structure', () => {
   })
   test('GenericViewBuilder', () => {
     expectTypeOf<GenericViewBuilder<any, any>>().not.toBeNever()
-  })
-  test('getOrderingMenuItem', () => {
-    expectTypeOf<typeof getOrderingMenuItem>().toBeFunction()
-  })
-  test('getOrderingMenuItemsForSchemaType', () => {
-    expectTypeOf<typeof getOrderingMenuItemsForSchemaType>().toBeFunction()
-  })
-  test('getTypeNamesFromFilter', () => {
-    expectTypeOf<typeof getTypeNamesFromFilter>().toBeFunction()
-  })
-  test('HELP_URL', () => {
-    expectTypeOf<typeof HELP_URL>().not.toBeNever()
   })
   test('IncomingReferenceAction', () => {
     expectTypeOf<IncomingReferenceAction>().not.toBeNever()
@@ -396,9 +273,6 @@ describe('sanity/structure', () => {
   })
   test('IntentParams', () => {
     expectTypeOf<IntentParams>().not.toBeNever()
-  })
-  test('isDocumentListItem', () => {
-    expectTypeOf<typeof isDocumentListItem>().toBeFunction()
   })
   test('isIncomingReferenceCreation', () => {
     expectTypeOf<typeof isIncomingReferenceCreation>().toBeFunction()
@@ -439,21 +313,6 @@ describe('sanity/structure', () => {
   test('ListItemSerializeOptions', () => {
     expectTypeOf<ListItemSerializeOptions>().toBeObject()
   })
-  test('ListPaneNode', () => {
-    expectTypeOf<ListPaneNode>().toBeObject()
-  })
-  test('maybeSerializeInitialValueTemplateItem', () => {
-    expectTypeOf<typeof maybeSerializeInitialValueTemplateItem>().toBeFunction()
-  })
-  test('maybeSerializeMenuItem', () => {
-    expectTypeOf<typeof maybeSerializeMenuItem>().toBeFunction()
-  })
-  test('maybeSerializeMenuItemGroup', () => {
-    expectTypeOf<typeof maybeSerializeMenuItemGroup>().toBeFunction()
-  })
-  test('maybeSerializeView', () => {
-    expectTypeOf<typeof maybeSerializeView>().toBeFunction()
-  })
   test('MenuItem', () => {
     expectTypeOf<MenuItem>().toBeObject()
   })
@@ -472,38 +331,8 @@ describe('sanity/structure', () => {
   test('MenuItemParamsType', () => {
     expectTypeOf<MenuItemParamsType>().not.toBeNever()
   })
-  test('menuItemsFromInitialValueTemplateItems', () => {
-    expectTypeOf<typeof menuItemsFromInitialValueTemplateItems>().toBeFunction()
-  })
-  test('ORDER_BY_IDS_PARAM_FIELD', () => {
-    expectTypeOf<typeof ORDER_BY_IDS_PARAM_FIELD>().not.toBeNever()
-  })
-  test('Pane', () => {
-    expectTypeOf<typeof Pane>().toBeFunction()
-  })
-  test('PaneContent', () => {
-    expectTypeOf<typeof PaneContent>().toBeFunction()
-  })
   test('PaneLayout', () => {
     expectTypeOf<typeof PaneLayout>().toBeFunction()
-  })
-  test('PaneListItem', () => {
-    expectTypeOf<PaneListItem<any>>().toBeObject()
-  })
-  test('PaneListItemDivider', () => {
-    expectTypeOf<PaneListItemDivider>().toBeObject()
-  })
-  test('PaneMenuItem', () => {
-    expectTypeOf<PaneMenuItem>().toBeObject()
-  })
-  test('PaneMenuItemGroup', () => {
-    expectTypeOf<PaneMenuItemGroup>().toBeObject()
-  })
-  test('PaneNode', () => {
-    expectTypeOf<PaneNode>().not.toBeNever()
-  })
-  test('PaneNodeResolver', () => {
-    expectTypeOf<PaneNodeResolver>().not.toBeNever()
   })
   test('PaneRouterContext', () => {
     expectTypeOf<typeof PaneRouterContext>().not.toBeNever()
@@ -541,17 +370,8 @@ describe('sanity/structure', () => {
   test('RouterPaneSibling', () => {
     expectTypeOf<RouterPaneSibling>().toBeObject()
   })
-  test('RouterPaneSiblingContext', () => {
-    expectTypeOf<RouterPaneSiblingContext>().toBeObject()
-  })
   test('Serializable', () => {
     expectTypeOf<Serializable<any>>().toBeObject()
-  })
-  test('SerializablePaneNode', () => {
-    expectTypeOf<SerializablePaneNode>().not.toBeNever()
-  })
-  test('SerializeError', () => {
-    expectTypeOf<SerializeError>().not.toBeNever()
   })
   test('SerializeOptions', () => {
     expectTypeOf<SerializeOptions>().toBeObject()
@@ -559,20 +379,8 @@ describe('sanity/structure', () => {
   test('SerializePath', () => {
     expectTypeOf<SerializePath>().not.toBeNever()
   })
-  test('shallowIntentChecker', () => {
-    expectTypeOf<typeof shallowIntentChecker>().not.toBeNever()
-  })
-  test('SortMenuItem', () => {
-    expectTypeOf<SortMenuItem>().toBeObject()
-  })
-  test('StrictVersionLayeringOptions', () => {
-    expectTypeOf<StrictVersionLayeringOptions>().toBeObject()
-  })
   test('StructureBuilder', () => {
     expectTypeOf<StructureBuilder>().toBeObject()
-  })
-  test('StructureBuilderOptions', () => {
-    expectTypeOf<StructureBuilderOptions>().toBeObject()
   })
   test('StructureContext', () => {
     expectTypeOf<StructureContext>().toBeObject()
@@ -595,29 +403,11 @@ describe('sanity/structure', () => {
   test('structureTool', () => {
     expectTypeOf<typeof structureTool>().not.toBeNever()
   })
-  test('StructureToolContextValue', () => {
-    expectTypeOf<StructureToolContextValue>().toBeObject()
-  })
-  test('StructureToolFeatures', () => {
-    expectTypeOf<StructureToolFeatures>().toBeObject()
-  })
   test('StructureToolMenuItem', () => {
     expectTypeOf<StructureToolMenuItem>().toBeObject()
   })
   test('StructureToolOptions', () => {
     expectTypeOf<StructureToolOptions>().toBeObject()
-  })
-  test('StructureToolPaneActionHandler', () => {
-    expectTypeOf<StructureToolPaneActionHandler>().not.toBeNever()
-  })
-  test('StructureToolProvider', () => {
-    expectTypeOf<typeof StructureToolProvider>().toBeFunction()
-  })
-  test('StructureToolProviderProps', () => {
-    expectTypeOf<StructureToolProviderProps>().toBeObject()
-  })
-  test('UnresolvedPaneNode', () => {
-    expectTypeOf<UnresolvedPaneNode>().not.toBeNever()
   })
   test('UnserializedListItem', () => {
     expectTypeOf<UnserializedListItem>().toBeObject()
@@ -634,9 +424,6 @@ describe('sanity/structure', () => {
   test('UseDocumentTitle', () => {
     expectTypeOf<UseDocumentTitle>().toBeObject()
   })
-  test('usePaneOptions', () => {
-    expectTypeOf<typeof usePaneOptions>().toBeFunction()
-  })
   test('usePaneRouter', () => {
     expectTypeOf<typeof usePaneRouter>().toBeFunction()
   })
@@ -645,9 +432,6 @@ describe('sanity/structure', () => {
   })
   test('UserViewComponent', () => {
     expectTypeOf<UserViewComponent<any>>().not.toBeNever()
-  })
-  test('useStructureTool', () => {
-    expectTypeOf<typeof useStructureTool>().toBeFunction()
   })
   test('View', () => {
     expectTypeOf<View>().not.toBeNever()

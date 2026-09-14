@@ -7,7 +7,9 @@ import {versionedClient} from '../../studioClient'
 import {variantApiVersion} from '../../variants/util/variantApiVersion'
 import {type MutationEvent, type ReconnectEvent, type WelcomeEvent} from './types'
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export type ListenQueryParams = Record<string, string | number | boolean | string[]>
 
 /**

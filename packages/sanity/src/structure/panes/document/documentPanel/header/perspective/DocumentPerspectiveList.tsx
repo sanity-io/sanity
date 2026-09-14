@@ -4,23 +4,23 @@ import {
   getDraftId,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
-  getReleaseTone,
   getVersionId,
-  isGoingToUnpublish,
-  isReleaseScheduledOrScheduling,
   type ReleaseDocument,
-  ReleaseTitle,
   type SanityDocumentLike,
   Translate,
-  useActiveReleases,
   useDateTimeFormat,
   type UseDateTimeFormatOptions,
-  useFormatRelativeLocalePublishDate,
   usePerspective,
   useTranslation,
-  VersionChip,
 } from 'sanity'
 
+import {VersionChip} from '../../../../../../core/releases/components/documentHeader/VersionChip'
+import {ReleaseTitle} from '../../../../../../core/releases/components/ReleaseTitle'
+import {useFormatRelativeLocalePublishDate} from '../../../../../../core/releases/hooks/useFormatRelativeLocalePublishDate'
+import {useActiveReleases} from '../../../../../../core/releases/store/useActiveReleases'
+import {getReleaseTone} from '../../../../../../core/releases/util/getReleaseTone'
+import {isGoingToUnpublish} from '../../../../../../core/releases/util/isGoingToUnpublish'
+import {isReleaseScheduledOrScheduling} from '../../../../../../core/releases/util/util'
 import {useDocumentPerspectiveList} from '../../../../../hooks/useDocumentPerspectiveList'
 import {useDocumentPane} from '../../../useDocumentPane'
 import {useDocumentPaneInfo} from '../../../useDocumentPaneInfo'

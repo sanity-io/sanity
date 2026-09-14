@@ -11,7 +11,7 @@ const sanityMocks = vi.hoisted(() => ({
   variantsApiVersion: 'X',
 }))
 
-vi.mock('sanity', () => ({
+vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => ({
   RELEASES_STUDIO_CLIENT_OPTIONS: {apiVersion: sanityMocks.releasesApiVersion},
   VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: sanityMocks.variantsApiVersion},
 }))

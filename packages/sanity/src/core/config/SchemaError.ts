@@ -1,6 +1,9 @@
 import {type Schema} from '@sanity/types'
 
-/** @internal */
+/**
+ * @hidden
+ * @public
+ */
 // TODO: consider removing this error in favor of the `ConfigResolutionError`
 export class SchemaError extends Error {
   public schema: Schema

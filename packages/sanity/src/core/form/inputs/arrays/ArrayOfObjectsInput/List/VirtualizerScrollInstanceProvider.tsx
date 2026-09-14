@@ -12,7 +12,8 @@ interface VirtualizerScrollInstanceProviderProps extends VirtualizerScrollInstan
 
 /**
  *
- * @internal
+ * @hidden
+ * @beta
  */
 export function VirtualizerScrollInstanceProvider(props: VirtualizerScrollInstanceProviderProps) {
   const {scrollElement, containerElement} = props

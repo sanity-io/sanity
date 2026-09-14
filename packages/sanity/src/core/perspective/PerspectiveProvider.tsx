@@ -13,7 +13,8 @@ import {getSelectedVariant} from './getSelectedVariant'
 import {type PerspectiveContextValue, type ReleaseId} from './types'
 
 /**
- * @internal
+ * @hidden
+ * @beta
  */
 export function PerspectiveProvider({
   children,

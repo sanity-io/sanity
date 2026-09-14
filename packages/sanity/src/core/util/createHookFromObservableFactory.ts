@@ -9,13 +9,17 @@ export type LoadingTuple<T> = [T, boolean]
 /** @internal */
 export type ReactHook<TArgs, TResult> = (args: TArgs) => TResult
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 // overloads to handle types where an initial value is passed
 export function createHookFromObservableFactory<T, TArg = void>(
   observableFactory: (arg: TArg) => Observable<T>,
   initialValue: T,
 ): ReactHook<TArg, LoadingTuple<T>>
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export function createHookFromObservableFactory<T, TArg = void>(
   observableFactory: (arg: TArg) => Observable<T>,
   initialValue?: T,
@@ -32,7 +36,8 @@ export function createHookFromObservableFactory<T, TArg = void>(
  * will flip to false when the observable from the function emits the next
  * value.
  *
- * @internal
+ * @hidden
+ * @beta
  */
 export function createHookFromObservableFactory<T, TArg = void>(
   observableFactory: (arg: TArg) => Observable<T>,

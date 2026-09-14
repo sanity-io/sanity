@@ -3,21 +3,8 @@ import {useEffect, useMemo, useRef, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   getVersionFromId,
-  isCardinalityOneRelease,
   isDraftId,
-  isGoingToUnpublish,
-  isNewDocument,
-  isPausedCardinalityOneRelease,
-  isPerspectiveWriteable,
-  isReleaseDocument,
-  isReleaseScheduledOrScheduling,
-  isSystemBundle,
-  LegacyLayerProvider,
   type ReleaseDocument,
-  ScrollContainer,
-  useArchivedReleases,
-  useFilteredReleases,
-  usePausedScheduledDraft,
   usePerspective,
   useWorkspace,
   VirtualizerScrollInstanceProvider,
@@ -25,6 +12,21 @@ import {
 import {css, styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
+import {ScrollContainer} from '../../../../core/components/scroll/scrollContainer'
+import {LegacyLayerProvider} from '../../../../core/components/transitional/LegacyLayerProvider'
+import {useFilteredReleases} from '../../../../core/hooks/useFilteredReleases'
+import {isPerspectiveWriteable} from '../../../../core/perspective/isPerspectiveWriteable'
+import {isReleaseDocument} from '../../../../core/releases/store/types'
+import {useArchivedReleases} from '../../../../core/releases/store/useArchivedReleases'
+import {isGoingToUnpublish} from '../../../../core/releases/util/isGoingToUnpublish'
+import {isReleaseScheduledOrScheduling} from '../../../../core/releases/util/util'
+import {usePausedScheduledDraft} from '../../../../core/singleDocRelease/hooks/usePausedScheduledDraft'
+import {isNewDocument} from '../../../../core/store/document/isNewDocument'
+import {isSystemBundle} from '../../../../core/util/draftUtils'
+import {
+  isCardinalityOneRelease,
+  isPausedCardinalityOneRelease,
+} from '../../../../core/util/releaseUtils'
 import {PaneContent} from '../../../components/pane/PaneContent'
 import {usePane} from '../../../components/pane/usePane'
 import {usePaneLayout} from '../../../components/pane/usePaneLayout'

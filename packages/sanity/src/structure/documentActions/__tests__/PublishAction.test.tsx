@@ -4,7 +4,6 @@ import deepCompare from 'react-fast-compare'
 import {
   type DocumentActionProps,
   type EditStateFor,
-  type TargetDocumentState,
   useDocumentOperation,
   useDocumentPairPermissions,
   useEditState,
@@ -14,6 +13,7 @@ import {
 import {beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
+import {type TargetDocumentState} from '../../../core/hooks/useTargetDocumentState'
 import {structureUsEnglishLocaleBundle} from '../../i18n'
 import {useDocumentPane} from '../../panes/document/useDocumentPane'
 import {usePublishAction} from '../PublishAction'
