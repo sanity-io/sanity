@@ -1,45 +1,35 @@
 import {type DecoratorRenderProps} from '@portabletext/editor'
-import {type Theme} from '@sanity/ui'
-import {useCallback, useMemo} from 'react'
-import {css, styled} from 'styled-components'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {type ElementType, useCallback, useMemo} from 'react'
 
 import {type BlockDecoratorProps} from '../../../types/blockProps'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {TEXT_DECORATOR_TAGS} from './constants'
-
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-const Root = styled.span(({theme}: {theme: Theme}) => {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const isDark = theme.sanity.color.dark
-
-  return css`
-    /* Make sure the annotation styling is visible */
-    &[data-mark='code'] {
-      color: inherit;
-      mix-blend-mode: ${isDark ? 'screen' : 'multiply'};
-    }
-  `
-})
+import {root} from './Decorator.css'
 
 export function Decorator(props: DecoratorRenderProps) {
   const {decorator, focused, selected, children} = props
   const schemaTypes = usePortableTextMemberSchemaTypes()
+  const {color} = useThemeV2()
   const sanitySchemaType = schemaTypes.decorators.find((type) => type.value === decorator)
   if (!sanitySchemaType) {
     // This should never happen
     throw new Error(`Could not find Sanity schema type for decorator: ${decorator}`)
   }
-  const tag = TEXT_DECORATOR_TAGS[decorator]
+  // Custom decorators have no tag in the map and render as a `span`
+  const Tag: ElementType = TEXT_DECORATOR_TAGS[decorator] ?? 'span'
+  // Make sure the annotation styling is visible
+  const rootClassName = root[color._dark ? 'dark' : 'light']
   const CustomComponent = sanitySchemaType.component
   const DefaultComponent = useCallback(
     (defaultComponentProps: BlockDecoratorProps) => {
       return (
-        <Root as={tag} data-mark={decorator}>
+        <Tag className={rootClassName} data-mark={decorator}>
           {defaultComponentProps.children}
-        </Root>
+        </Tag>
       )
     },
-    [tag, decorator],
+    [Tag, decorator, rootClassName],
   )
   return useMemo(() => {
     const componentProps = {
