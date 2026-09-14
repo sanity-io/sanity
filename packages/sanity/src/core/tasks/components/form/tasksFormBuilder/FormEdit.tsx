@@ -3,11 +3,10 @@ import {LinkIcon} from '@sanity/icons/Link'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type PortableTextBlock} from '@sanity/types'
-import {Card, Stack} from '@sanity/ui'
+import {Card, Stack, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
-import {getTheme_v2} from '@sanity/ui/theme'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useCallback, useMemo} from 'react'
-import {css, styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
@@ -38,14 +37,7 @@ import {StatusSelector} from '../fields/StatusSelector'
 import {Title} from '../fields/TitleField'
 import {RemoveTaskDialog} from '../RemoveTaskDialog'
 import {getMentionedUsers} from '../utils'
-
-const FirstRow = styled(Flex)((props) => {
-  const theme = getTheme_v2(props.theme)
-  return css`
-    column-gap: ${theme.space[2]}px;
-    row-gap: ${theme.space[3]}px;
-  `
-})
+import {firstRow, space2Var, space3Var} from './FormEdit.css'
 
 function FormActionsMenu({id, value}: {id: string; value: TaskDocument}) {
   const {setViewMode, handleCopyLinkToTask} = useTasksNavigation()
@@ -112,6 +104,7 @@ function FormEditInner(props: ObjectInputProps) {
   const value = props.value as TaskDocument
   const currentUser = useCurrentUser()
   const {t} = useTranslation(tasksLocaleNamespace)
+  const {space} = useThemeV2()
   const activityData = useActivityLog(value).changes
   const handleChangeAndSubscribe = useCallback(
     (patch: FormPatch | PatchEvent | FormPatch[]) => {
@@ -146,12 +139,17 @@ function FormEditInner(props: ObjectInputProps) {
       </Flex>
 
       <Card borderTop marginTop={3}>
-        <FirstRow
+        <Flex
+          className={firstRow}
           paddingBottom={3}
           paddingTop={4}
           alignItems="flex-start"
           justifyContent="flex-start"
           flexWrap="wrap"
+          style={assignInlineVars({
+            [space2Var]: `${space[2]}px`,
+            [space3Var]: `${space[3]}px`,
+          })}
         >
           <TooltipDelayGroupProvider>
             <StatusSelector
@@ -171,7 +169,7 @@ function FormEditInner(props: ObjectInputProps) {
               path={['dueBy']}
             />
           </TooltipDelayGroupProvider>
-        </FirstRow>
+        </Flex>
       </Card>
 
       {props.renderDefault(props)}
