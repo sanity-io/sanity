@@ -1,9 +1,9 @@
 import {Card, Container, Text, useTheme} from '@sanity/ui'
+import {clsx} from 'clsx'
 import {parse} from 'date-fns/parse'
-import {useEffect, useMemo, useRef} from 'react'
+import {type ComponentPropsWithRef, useEffect, useMemo, useRef} from 'react'
 import {Link, type RouterContextValue, useRouter} from 'sanity/router'
-import {styled} from 'styled-components'
-import {Box, Flex} from 'ui5'
+import {Box, Flex, type FlexProps} from 'ui5'
 
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
 import {TimeZoneButton} from '../../components/timeZone/timeZoneButton/TimeZoneButton'
@@ -27,13 +27,17 @@ import {SchedulesProvider} from './contexts/schedules'
 import {ScheduleFilters} from './scheduleFilters'
 import {Schedules} from './schedules'
 import SchedulesContextMenu from './schedulesContextMenu/SchedulesContextMenu'
+import {column} from './Tool.css'
 import {ToolCalendar} from './toolCalendar'
 
-const Column = styled(Flex).attrs({flexDirection: 'column'})`
-  &:not(:last-child) {
-    border-right: 1px solid var(--card-border-color);
-  }
-`
+type ColumnProps = FlexProps & Omit<ComponentPropsWithRef<'div'>, keyof FlexProps>
+
+// `flexDirection` comes after the spread so it wins over a caller's value, as `.attrs` did.
+function Column(props: ColumnProps) {
+  const {className, ...rest} = props
+
+  return <Flex {...rest} className={clsx(column, className)} flexDirection="column" />
+}
 
 const NO_SCHEDULE: Schedule[] = []
 const DATE_SLUG_FORMAT = 'yyyy-MM-dd' // date-fns format

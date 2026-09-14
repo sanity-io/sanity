@@ -6,12 +6,9 @@ import {type ButtonTone, Stack, Text} from '@sanity/ui'
 // oxlint-disable-next-line no-restricted-imports
 import {MenuItem} from '@sanity/ui/menu'
 import {useCallback} from 'react'
-import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
-const StyledText = styled(Text)`
-  white-space: initial;
-`
+import {wrappingText} from './ValidationListItem.css'
 
 const MENU_ITEM_TONES: Record<'error' | 'warning' | 'info', ButtonTone> = {
   error: 'critical',
@@ -56,14 +53,19 @@ export function ValidationListItem(props: ValidationListItemProps) {
 
       <Stack gap={2} flex={1} paddingLeft={3}>
         {path && (
-          <StyledText size={1} weight="semibold">
+          <Text className={wrappingText} size={1} weight="semibold">
             {path}
-          </StyledText>
+          </Text>
         )}
         {message && (
-          <StyledText muted size={1} textOverflow={truncate ? 'ellipsis' : undefined}>
+          <Text
+            className={wrappingText}
+            muted
+            size={1}
+            textOverflow={truncate ? 'ellipsis' : undefined}
+          >
             {message}
-          </StyledText>
+          </Text>
         )}
       </Stack>
     </Flex>

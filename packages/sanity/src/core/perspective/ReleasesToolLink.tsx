@@ -1,9 +1,9 @@
 // oxlint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
 import {Button} from '@sanity/ui'
-import {useCallback} from 'react'
+import {clsx} from 'clsx'
+import {type ComponentProps, useCallback} from 'react'
 import {useObservable} from 'react-rx'
 import {useRouterState} from 'sanity/router'
-import {styled} from 'styled-components'
 
 import {Tooltip} from '../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../i18n/hooks/useTranslation'
@@ -11,19 +11,14 @@ import {ReleaseAvatarIcon} from '../releases/components/ReleaseAvatar'
 import {useReleasesStore} from '../releases/store/useReleasesStore'
 import {SCHEDULES_TOOL_NAME} from '../schedules/plugin'
 import {ToolLink} from '../studio/components/navbar/tools/ToolLink'
-import {oversizedButtonStyle} from './styles'
+import {dot} from './ReleasesToolLink.css'
+import {oversizedButtonStyle} from './styles.css'
 import {usePerspective} from './usePerspective'
 
-const Dot = styled.div({
-  width: 4,
-  height: 4,
-  borderRadius: 3,
-  boxShadow: '0 0 0 1px var(--card-bg-color)',
-})
-
-const OversizedButton = styled(ToolLink)`
-  ${oversizedButtonStyle}
-`
+function OversizedButton(props: ComponentProps<typeof ToolLink>) {
+  const {className, ...rest} = props
+  return <ToolLink {...rest} className={clsx(oversizedButtonStyle, className)} />
+}
 
 /**
  * represents the calendar icon for the releases tool.
@@ -57,7 +52,8 @@ export function ReleasesToolLink(): React.JSX.Element {
         selected={activeToolName === SCHEDULES_TOOL_NAME}
       >
         {hasError && (
-          <Dot
+          <div
+            className={dot}
             data-ui="error-status-icon"
             style={{
               backgroundColor: `var(--card-badge-critical-dot-color)`,

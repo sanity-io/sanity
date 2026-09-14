@@ -8,7 +8,6 @@ import {toString as pathToString} from '@sanity/util/paths'
 import {type TFunction} from 'i18next'
 import {type CSSProperties, memo, useCallback, useEffect, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
-import {styled} from 'styled-components'
 import {Box, Flex} from 'ui5'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
@@ -34,6 +33,7 @@ import {type Column, type InjectedTableProps} from '../../components/Table/types
 import {getDocumentActionType, getReleaseDocumentActionConfig} from '../releaseDocumentActions'
 import {type BundleDocumentRow} from '../ReleaseSummary'
 import {type DocumentInRelease} from '../types'
+import {truncatedSpan} from './DocumentTableColumnDefs.css'
 import {useReleaseHistory} from './useReleaseHistory'
 
 const MemoReleaseDocumentPreview = memo(
@@ -71,14 +71,6 @@ const MemoReleaseDocumentPreview = memo(
     prev.releaseId === next.releaseId &&
     prev.releaseState === next.releaseState,
 )
-
-// Carries its own overflow CSS because @sanity/ui's `textOverflow` prop is inert here.
-const TruncatedSpan = styled.span`
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`
 
 /** @internal - exported for unit testing only */
 export function DocumentType({type}: {type: string}) {
@@ -129,7 +121,9 @@ export function DocumentType({type}: {type: string}) {
 
   const textElement = (
     <Text size={1}>
-      <TruncatedSpan ref={measureRef}>{title}</TruncatedSpan>
+      <span className={truncatedSpan} ref={measureRef}>
+        {title}
+      </span>
     </Text>
   )
 

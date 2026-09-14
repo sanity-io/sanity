@@ -1,7 +1,6 @@
 import {type SchemaType} from '@sanity/types'
 import {Badge, Card, Stack, Text} from '@sanity/ui'
 import {type ComponentPropsWithoutRef, type ElementType, type ReactNode, useState} from 'react'
-import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -22,12 +21,10 @@ import {EMPTY_VALIDATION_STATUS, useValidationState} from '../../utils/validatio
 import {ValidateScheduleDoc} from '../validation/SchedulesValidation'
 import {ValidationInfo} from '../validation/ValidationInfo'
 import DateWithTooltip from './dateWithTooltip/DateWithTooltip'
+import {statusDotPlaceholder} from './PreviewWrapper.css'
 import StateReasonFailedInfo from './StateReasonFailedInfo'
 import User from './User'
 
-const StatusDotPlaceholder = styled(Box)`
-  width: 9px;
-`
 interface Props<TLink extends ElementType | undefined = undefined> {
   children?: ReactNode
   contextMenu?: ReactNode
@@ -157,7 +154,7 @@ function PreviewWrapper<TLink extends ElementType | undefined = undefined>(props
                   {publishedDocumentId ? (
                     <ScheduleItemStatusIndicator publishedDocumentId={publishedDocumentId} />
                   ) : (
-                    <StatusDotPlaceholder />
+                    <Box className={statusDotPlaceholder} />
                   )}
                 </Box>
               </Flex>

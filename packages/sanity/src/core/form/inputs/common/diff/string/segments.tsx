@@ -19,7 +19,7 @@ type SegmentElementProps =
   | ({as: 'del'} & ComponentProps<'del'>)
   | ({as: 'ins'} & ComponentProps<'ins'>)
 
-export function Segment(props: StyledSegmentProps & SegmentElementProps) {
+function Segment(props: StyledSegmentProps & SegmentElementProps) {
   const {$tone, className, style, ...rest} = props
   const {color} = useThemeV2()
   const toneColor = typeof $tone === 'undefined' ? undefined : color.button.bleed[$tone]?.pressed

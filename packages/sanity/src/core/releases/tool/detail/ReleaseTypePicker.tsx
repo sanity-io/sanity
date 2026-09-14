@@ -6,7 +6,6 @@ import {isBefore} from 'date-fns/isBefore'
 import {startOfMinute} from 'date-fns/startOfMinute'
 import {dequal as isEqual} from 'dequal/lite'
 import {useCallback, useMemo, useRef, useState} from 'react'
-import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
@@ -33,27 +32,7 @@ import {
 } from '../../util/util'
 import {ReleaseTime} from '../components/ReleaseTime'
 import {ReleaseDateInput} from './ReleaseDateInput'
-
-// The Schedule value reads as plain text (matching the other property values), but stays clickable
-// to open the picker: a flush, chrome-free button that only underlines on hover — no pill, and its
-// text sits on the same left edge as every other value.
-const ScheduleTrigger = styled.button`
-  appearance: none;
-  background: none;
-  border: 0;
-  margin: 0;
-  padding: 0;
-  display: block;
-  width: 100%;
-  min-width: 0;
-  text-align: left;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-  &:hover {
-    text-decoration: underline;
-  }
-`
+import {scheduleTrigger} from './ReleaseTypePicker.css'
 
 export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.JSX.Element {
   const {release} = props
@@ -351,13 +330,14 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
         </Tooltip>
       ) : (
         <Card tone={tone} padding={0} style={{background: 'transparent'}}>
-          <ScheduleTrigger
+          <button
+            className={scheduleTrigger}
             ref={buttonRef}
             onClick={handleOnPickerClick}
             data-testid="release-type-picker"
           >
             {valueText}
-          </ScheduleTrigger>
+          </button>
         </Card>
       )}
     </Popover>
