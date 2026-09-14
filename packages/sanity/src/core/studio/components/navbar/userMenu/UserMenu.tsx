@@ -6,10 +6,11 @@ import {
   Card,
   Stack,
   Text,
+  useTheme_v2 as useThemeV2,
 } from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useMemo} from 'react'
-import {styled} from 'styled-components'
 import {Box, Flex} from 'ui5'
 
 import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
@@ -21,23 +22,14 @@ import {useWorkspace} from '../../../workspace'
 import {AppearanceMenu} from './ApperanceMenu'
 import {LocaleMenu} from './LocaleMenu'
 import {LoginProviderLogo} from './LoginProviderLogo'
+import {avatarBox, avatarSize2Var, menu} from './UserMenu.css'
 import {UserMenuAuthAction} from './UserMenuAuthAction'
-
-const StyledMenu = styled(Menu)`
-  min-width: 200px;
-  max-width: 300px;
-`
-
-const AvatarBox = styled(Box)`
-  position: relative;
-  min-width: ${({theme}) => theme.sanity.avatar.sizes[2].size /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
-  min-height: ${({theme}) => theme.sanity.avatar.sizes[2].size /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
-`
 
 export function UserMenu() {
   const {currentUser} = useWorkspace()
   const scheme = useColorSchemeValue()
   const setScheme = useColorSchemeSetValue()
+  const {avatar} = useThemeV2()
 
   const providerTitle = getProviderTitle(currentUser?.provider)
 
@@ -64,7 +56,7 @@ export function UserMenu() {
       }
       id="user-menu"
       menu={
-        <StyledMenu data-testid="user-menu">
+        <Menu className={menu} data-testid="user-menu">
           <Card padding={2}>
             <Flex alignItems="center">
               <Tooltip
@@ -72,10 +64,14 @@ export function UserMenu() {
                 portal
                 content={t('user-menu.login-provider', {providerTitle})}
               >
-                <AvatarBox marginRight={3}>
+                <Box
+                  className={avatarBox}
+                  marginRight={3}
+                  style={assignInlineVars({[avatarSize2Var]: `${avatar.sizes[2].size}px`})}
+                >
                   <UserAvatar size={2} user="me" />
                   {currentUser?.provider && <LoginProviderLogo provider={currentUser.provider} />}
-                </AvatarBox>
+                </Box>
               </Tooltip>
 
               <Stack gap={2} flex={1}>
@@ -94,7 +90,7 @@ export function UserMenu() {
           <LocaleMenu />
 
           <UserMenuAuthAction layout="menu" />
-        </StyledMenu>
+        </Menu>
       }
       popover={popoverProps}
     />
