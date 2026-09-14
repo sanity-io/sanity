@@ -1,9 +1,9 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {CopyIcon} from '@sanity/icons/Copy'
-import {Stack} from '@sanity/ui'
 import {MenuDivider} from '@sanity/ui/menu'
 import {memo} from 'react'
 import {styled} from 'styled-components'
+import {VStack} from 'ui5'
 
 import {MenuGroup} from '../../../../../ui-components/menuGroup/MenuGroup'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
@@ -13,7 +13,7 @@ import {CreateReleaseMenuItem} from '../../CreateReleaseMenuItem'
 import {CopyToDraftsMenuItem} from './CopyToDraftsMenuItem'
 import {VersionContextMenuItem} from './VersionContextMenuItem'
 
-const ReleasesList = styled(Stack)`
+const ReleasesList = styled(VStack)`
   max-width: 300px;
   max-height: 200px;
   overflow-y: auto;
