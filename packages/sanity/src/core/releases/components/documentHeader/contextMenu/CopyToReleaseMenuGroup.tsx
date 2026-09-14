@@ -3,7 +3,7 @@ import {CopyIcon} from '@sanity/icons/Copy'
 import {MenuDivider} from '@sanity/ui/menu'
 import {memo} from 'react'
 import {styled} from 'styled-components'
-import {Flex} from 'ui5'
+import {VStack} from 'ui5'
 
 import {MenuGroup} from '../../../../../ui-components/menuGroup/MenuGroup'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
@@ -13,9 +13,14 @@ import {CreateReleaseMenuItem} from '../../CreateReleaseMenuItem'
 import {CopyToDraftsMenuItem} from './CopyToDraftsMenuItem'
 import {VersionContextMenuItem} from './VersionContextMenuItem'
 
-const ReleasesList = styled(Flex)`
+const ReleasesList = styled(VStack)`
   max-width: 300px;
   max-height: 200px;
+  overflow-y: auto;
+
+  > * {
+    flex-shrink: 0;
+  }
 `
 
 interface CopyToReleaseMenuGroupProps {
@@ -61,7 +66,7 @@ export const CopyToReleaseMenuGroup = memo(function CopyToReleaseMenuGroup(
       data-testid="copy-version-to-release-button-group"
     >
       {(hasCopyToDraftOption || releases.length > 0) && (
-        <ReleasesList key={bundleId} gap={1} overflowY="auto" flexDirection="column" flexShrink={0}>
+        <ReleasesList key={bundleId} gap={1}>
           {hasCopyToDraftOption && (
             <CopyToDraftsMenuItem
               documentType={documentType}
