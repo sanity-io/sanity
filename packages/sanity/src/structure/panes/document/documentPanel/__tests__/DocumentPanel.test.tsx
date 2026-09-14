@@ -38,15 +38,19 @@ vi.mock('../header/DocumentPanelSubHeader', () => ({
   DocumentPanelSubHeader: () => null,
 }))
 
+const portalBoundaryCapture = vi.hoisted(() => ({current: null as HTMLElement | null}))
+
 vi.mock('../documentViews/FormView', async () => {
   const {useState} = await import('react')
   const {createPortal} = await import('react-dom')
   const {usePortal} = await import('@sanity/ui')
+  const {usePortalBoundary} = await import('sanity')
 
   return {
     FormView: function MockFormView() {
       const [count, setCount] = useState(0)
       const portal = usePortal()
+      portalBoundaryCapture.current = usePortalBoundary()
       return (
         <div data-testid="document-panel-scroller">
           <button
@@ -161,6 +165,24 @@ describe('DocumentPanel form persistence', () => {
     expect(screen.getByTestId('document-panel-form-view')).toBeVisible()
     expect(screen.getByTestId('form-state')).toHaveTextContent('1')
     expect(screen.getByTestId('fullscreen-pte')).toBeVisible()
+  })
+})
+
+describe('DocumentPanel portal boundary', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    portalBoundaryCapture.current = null
+    mockUseStructureTool.mockReturnValue({
+      features: splitPanesFeatures,
+    } as ReturnType<typeof useStructureTool>)
+  })
+
+  it('declares the document scroll container as the boundary for portaled popovers', async () => {
+    await renderPanel()
+
+    // The real scroller wraps the (mocked) form view's stand-in, so it is the first match.
+    const [scroller] = screen.getAllByTestId('document-panel-scroller')
+    expect(portalBoundaryCapture.current).toBe(scroller)
   })
 })
 
