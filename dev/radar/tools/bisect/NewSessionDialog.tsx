@@ -18,6 +18,8 @@ import {AuthorAvatar} from './AuthorAvatar'
 import {type BisectCommit, buildChain, chainErrorCopy} from './bisect'
 import {filterCommits, type GitCommitSlice, type TagSlice} from './data'
 import {RelativeDate} from './RelativeDate'
+import {normalizeReproPath} from './reproPath'
+import {ReproPathField} from './ReproPathField'
 import {type NewSessionInput} from './sessions'
 import {pluralize} from './text'
 
@@ -49,7 +51,9 @@ export function NewSessionDialog(props: {
   const [good, setGood] = useState<Endpoint | null>(null)
   const [bad, setBad] = useState<Endpoint | null>(null)
   const [releasesOnly, setReleasesOnly] = useState(false)
+  const [reproPathInput, setReproPathInput] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const reproPath = normalizeReproPath(reproPathInput)
 
   const chainCheck = useMemo(() => {
     if (!good || !bad) return null
@@ -127,6 +131,12 @@ export function NewSessionDialog(props: {
             </Text>
           )}
 
+          <ReproPathField
+            value={reproPathInput}
+            onChange={setReproPathInput}
+            appliesTo="every preview build the bisect proposes"
+          />
+
           <Flex alignItems="center" gap={2} as="label">
             <Checkbox
               checked={releasesOnly}
@@ -146,7 +156,7 @@ export function NewSessionDialog(props: {
                 setSubmitting(true)
                 // On success the tool unmounts this dialog; on failure the
                 // button re-arms next to the error toast
-                void onCreate({good, bad, releasesOnly, createdBy}).finally(() =>
+                void onCreate({good, bad, releasesOnly, reproPath, createdBy}).finally(() =>
                   setSubmitting(false),
                 )
               }}
