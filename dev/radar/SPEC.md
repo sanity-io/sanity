@@ -331,7 +331,9 @@ effect of merged work; secondary: leads scanning health weekly.
    view (hard delete behind a confirm — they're the only user-owned documents
    here).
 
-8. **Studio releases** — every synced release tag, newest first: current
+8. **Studio releases** — every synced release tag in semver order (newest
+   version first, prereleases below their release — a version list, not a
+   timeline, so a maintenance patch sits with its minor): current
    dist-tags, weekly downloads, publish time, links out (GitHub release,
    sanity.io changelog, npmx.dev), and the version linking to the gitTag
    document in the structure tool. The changelog link is derived from the

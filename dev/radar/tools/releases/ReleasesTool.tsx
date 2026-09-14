@@ -1,6 +1,5 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {DocumentTextIcon} from '@sanity/icons/DocumentText'
-import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {PackageIcon} from '@sanity/icons/Package'
 import {Badge, Box, Button, Card, Container, Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
@@ -35,7 +34,13 @@ import {pluralize} from '../bisect/text'
 import {releaseUrl} from '../trends/links'
 import {useUrlState} from '../trends/useUrlState'
 import {AddRegressionDialog} from './AddRegressionDialog'
-import {baseVersionOf, changelogUrl, npmxUrl, regressionCountByTag} from './releaseInfo'
+import {
+  baseVersionOf,
+  changelogUrl,
+  compareTagsSemverDesc,
+  npmxUrl,
+  regressionCountByTag,
+} from './releaseInfo'
 
 interface LiveState<T> {
   data: T | null
@@ -148,6 +153,15 @@ export function ReleasesTool() {
     [commitsLive.data],
   )
   const tags = useMemo(() => tagsLive.data ?? [], [tagsLive.data])
+  // Display order only. The query orders by tag date and the list reads as a
+  // version list (a maintenance patch cut last week belongs with its minor,
+  // not on top) — but the lookups below keep the date order: `tagBySha` is
+  // last-wins over tags sharing a commit, and sorting its source would flip
+  // which tag names a release's base
+  const sortedTags = useMemo(
+    () => tags.toSorted((a, b) => compareTagsSemverDesc(a.tag, b.tag)),
+    [tags],
+  )
   const tagBySha = useMemo(() => new Map(tags.map((tag) => [tag.sha, tag.tag])), [tags])
 
   // Per-release base version (an O(chain) ancestry walk) — precomputed once
@@ -211,7 +225,7 @@ export function ReleasesTool() {
               <Flex alignItems="center" gap={3}>
                 <Box style={{flexShrink: 0}}>
                   <Flex as={Text} size={1} weight="medium" alignItems="center" gap={2}>
-                    <EyeOpenIcon style={ICON_IN_FLEX} />
+                    <SanityMonogram style={ICON_IN_FLEX} />
                     <span>Test Studio Path</span>
                   </Flex>
                 </Box>
@@ -256,7 +270,7 @@ export function ReleasesTool() {
             </Card>
           )}
 
-          {tags.map((tag) => (
+          {sortedTags.map((tag) => (
             <ReleaseRow
               key={tag._id}
               tag={tag}
@@ -300,6 +314,23 @@ function IconLink(props: {
         <span>{children}</span>
       </Flex>
     </Text>
+  )
+}
+
+/**
+ * The Sanity monogram in currentColor (the mark from @sanity/logos without
+ * its background tile — that package is not a dependency here). The glyph
+ * spans 24…164 of a 192 box; the viewBox pads it to the same ~18% inset as
+ * the @sanity/icons glyphs so it sits level with its neighbours.
+ */
+function SanityMonogram(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="-12 -12 216 216" width="1em" height="1em" aria-hidden="true" {...props}>
+      <path
+        fill="currentColor"
+        d="M160.077 112.697L154.865 103.629L129.659 118.981L157.655 83.3368L161.888 80.8533L160.841 79.2802L162.764 76.8232L153.929 69.4699L149.886 74.6225L68.2657 122.375L98.4429 86.0855L154.651 55.2759L149.311 44.953L118.696 61.7277L133.771 43.6096L125.134 36L91.2055 76.7966L57.5083 95.2771L83.307 61.1709L99.4731 52.757L94.3391 42.3192L47.2403 66.8361L60.0839 49.8405L51.1123 42.6551L24 78.5378L24.4207 78.8736L29.486 89.1877L59.543 73.5354L32.1474 109.745L36.6375 113.342L39.3075 118.504L70.9528 101.154L36.1052 143.065L44.742 150.674L46.4762 148.588L130.543 99.2454L102.632 134.792L103.088 135.172L103.045 135.199L108.831 145.265L145.954 122.649L131.659 145.716L141.24 152L164 115.278L160.077 112.697Z"
+      />
+    </svg>
   )
 }
 
@@ -363,7 +394,7 @@ function ReleaseRow(props: {
         {/* One icon per destination so a row scans without reading the labels */}
         <Flex gap={3} flexWrap="wrap">
           {previewUrl && (
-            <IconLink href={withReproPath(previewUrl, previewPath)} icon={EyeOpenIcon}>
+            <IconLink href={withReproPath(previewUrl, previewPath)} icon={SanityMonogram}>
               Test Studio
             </IconLink>
           )}
