@@ -9,25 +9,23 @@ interface ObserveElementProps {
 
 export function ObserveElement(props: ObserveElementProps) {
   const {onIntersectionChange, children, options, ...rest} = props
-  const [el, setEl] = useState<HTMLSpanElement | null>(null)
+  const [el, setEl] = useState<HTMLDivElement | null>(null)
 
   useEffect(() => {
-    const target = el?.closest('[data-ui="Flex"]')
-    if (!target) return undefined
+    if (!el) return undefined
 
     const io = new IntersectionObserver(onIntersectionChange, options)
-    io.observe(target)
+    io.observe(el)
 
     return () => {
-      io.unobserve(target)
+      io.unobserve(el)
       io.disconnect()
     }
   }, [el, onIntersectionChange, options])
 
   return (
-    <Flex {...rest}>
+    <Flex {...rest} ref={setEl}>
       {children}
-      <span hidden ref={setEl} />
     </Flex>
   )
 }
