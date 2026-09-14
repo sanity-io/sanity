@@ -1,9 +1,8 @@
 import {type CurrentUser} from '@sanity/types'
-import {type AvatarSize, Card} from '@sanity/ui'
+import {type AvatarSize, Card, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {MenuDivider} from '@sanity/ui/menu'
-import {getTheme_v2} from '@sanity/ui/theme'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useCallback} from 'react'
-import {css, styled} from 'styled-components'
 import {Box, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
@@ -15,93 +14,20 @@ import {CommentsAvatar} from '../../avatars/CommentsAvatar'
 import {MentionIcon} from '../../icons/MentionIcon'
 import {SendIcon} from '../../icons/SendIcon'
 import {type CommentInputRenderBlock} from './CommentInput'
+import {
+  actionsFlex,
+  avatarContainer,
+  avatarSize1Var,
+  buttonDivider,
+  editableWrap,
+  inputBorderWidthVar,
+  inputEnabledBorderColorVar,
+  inputHoveredBorderColorVar,
+  radius2Var,
+  rootCard,
+} from './CommentInputInner.css'
 import {Editable} from './Editable'
 import {useCommentInput} from './useCommentInput'
-
-const EditableWrap = styled(Box)`
-  max-height: 20vh;
-  overflow-y: auto;
-`
-
-const ButtonDivider = styled(MenuDivider)({
-  height: 20,
-  width: 1,
-})
-
-function focusRingBorderStyle(border: {color: string; width: number}): string {
-  return `inset 0 0 0 ${border.width}px ${border.color}`
-}
-
-const RootCard = styled(Card)(({theme}) => {
-  const {color, input, radius} = getTheme_v2(theme)
-  const radii = radius[2]
-
-  return css`
-    border-radius: ${radii}px;
-    box-shadow: var(--input-box-shadow);
-
-    --input-box-shadow: ${focusRingBorderStyle({
-      color: color.input.default.enabled.border,
-      width: input.border.width,
-    })};
-
-    &:not([data-expand-on-focus='false'], :focus-within) {
-      background: transparent;
-      box-shadow: unset;
-    }
-
-    &[data-focused='true']:focus-within {
-      ${EditableWrap} {
-        min-height: 1em;
-      }
-
-      /* box-shadow: inset 0 0 0 1px var(--card-focus-ring-color); */
-      --input-box-shadow: ${focusRingBorderStyle({
-        color: 'var(--card-focus-ring-color)',
-        width: input.border.width,
-      })};
-    }
-
-    &:focus-within {
-      ${EditableWrap} {
-        min-height: 1em;
-      }
-    }
-
-    &[data-expand-on-focus='false'] {
-      ${EditableWrap} {
-        min-height: 1em;
-      }
-    }
-
-    &[data-expand-on-focus='true'] {
-      [data-ui='CommentInputActions']:not([hidden]) {
-        display: none;
-      }
-
-      &:focus-within {
-        [data-ui='CommentInputActions'] {
-          display: flex;
-        }
-      }
-    }
-    &:hover {
-      --input-box-shadow: ${focusRingBorderStyle({
-        color: color.input.default.hovered.border,
-        width: input.border.width,
-      })};
-    }
-  `
-})
-
-const AvatarContainer = styled.div((props) => {
-  const theme = getTheme_v2(props.theme)
-  return `
-    min-height: ${theme.avatar.sizes[1]?.size}px;
-    display: flex;
-    align-items: center;
-  `
-})
 
 interface CommentInputInnerProps {
   avatarSize?: AvatarSize
@@ -143,12 +69,19 @@ export function CommentInputInner(props: CommentInputInnerProps) {
     readOnly,
     mentionOptions,
   } = useCommentInput()
+  const {avatar: avatarTheme, color, input, radius} = useThemeV2()
 
   const {t} = useTranslation(commentsLocaleNamespace)
+  const avatarPxSize = avatarTheme.sizes[1]?.size
   const avatar = withAvatar ? (
-    <AvatarContainer>
+    <div
+      className={avatarContainer}
+      style={assignInlineVars({
+        [avatarSize1Var]: avatarPxSize === undefined ? undefined : `${avatarPxSize}px`,
+      })}
+    >
       <CommentsAvatar user={user} size={avatarSize} />
-    </AvatarContainer>
+    </div>
   ) : null
 
   const handleMentionButtonClicked = useCallback(
@@ -164,7 +97,14 @@ export function CommentInputInner(props: CommentInputInnerProps) {
     <Flex alignItems="flex-start" gap={2}>
       {avatar}
 
-      <RootCard
+      <Card
+        className={rootCard}
+        style={assignInlineVars({
+          [radius2Var]: `${radius[2]}px`,
+          [inputBorderWidthVar]: `${input.border.width}px`,
+          [inputEnabledBorderColorVar]: color.input.default.enabled.border,
+          [inputHoveredBorderColorVar]: color.input.default.hovered.border,
+        })}
         id="comment-input-root"
         data-expand-on-focus={expandOnFocus && !canSubmit ? 'true' : 'false'}
         data-focused={focused ? 'true' : 'false'}
@@ -173,7 +113,12 @@ export function CommentInputInner(props: CommentInputInnerProps) {
         tone={readOnly ? 'transparent' : 'default'}
       >
         <VStack>
-          <EditableWrap data-ui="CommentInputEditableWrap" paddingX={1} paddingY={2}>
+          <Box
+            className={editableWrap}
+            data-ui="CommentInputEditableWrap"
+            paddingX={1}
+            paddingY={2}
+          >
             <Editable
               focusLock={focusLock}
               onBlur={onBlur}
@@ -183,10 +128,11 @@ export function CommentInputInner(props: CommentInputInnerProps) {
               placeholder={placeholder}
               renderBlock={renderBlock}
             />
-          </EditableWrap>
+          </Box>
 
           <Flex
             alignItems="center"
+            className={actionsFlex}
             data-ui="CommentInputActions"
             gap={1}
             justifyContent="flex-end"
@@ -207,7 +153,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
               )}
               {onSubmit && (
                 <>
-                  {!mentionOptions.disabled && <ButtonDivider />}
+                  {!mentionOptions.disabled && <MenuDivider className={buttonDivider} />}
 
                   <Button
                     aria-label={t('compose.send-comment-aria-label')}
@@ -224,7 +170,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
             </TooltipDelayGroupProvider>
           </Flex>
         </VStack>
-      </RootCard>
+      </Card>
     </Flex>
   )
 }
