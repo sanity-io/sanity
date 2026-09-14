@@ -1,6 +1,6 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
-import {Card, Inline, Text} from '@sanity/ui'
-import {Flex} from 'ui5'
+import {Card, Text} from '@sanity/ui'
+import {Flex, VStack} from 'ui5'
 
 import {RELEASES_DOCS_URL} from '../../constants'
 
@@ -13,11 +13,11 @@ const InfoCallout = () => {
         <Text size={2}>
           <InfoOutlineIcon />
         </Text>
-        <Inline gap={3}>
+        <VStack gap={4}>
           <Text size={1} weight="semibold">
             Schedule Publishing is not enabled
           </Text>
-          <Flex gap={3} marginTop={2} flexDirection="column">
+          <VStack gap={3}>
             <Text size={1}>
               We recommend using{' '}
               <a target="_blank" href={RELEASES_DOCS_URL} rel="noreferrer">
@@ -39,8 +39,8 @@ const InfoCallout = () => {
                 Read the docs
               </a>
             </Text>
-          </Flex>
-        </Inline>
+          </VStack>
+        </VStack>
       </Flex>
     </Card>
   )
