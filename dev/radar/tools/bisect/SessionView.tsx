@@ -114,6 +114,7 @@ export function SessionView(props: {
     [tags],
   )
   const releasesOnly = Boolean(session?.releasesOnly)
+  const reproPath = session?.reproPath ?? undefined
   // `null` = can't derive yet: a releases-only session must wait for the tags
   // to load. An empty candidate set is NOT "unrestricted" to the engine — it
   // is "nothing testable", which would derive a spurious `converged` and the
@@ -238,6 +239,7 @@ export function SessionView(props: {
     createSession(client, {
       good: label(state.lastGood.sha),
       bad: label(state.firstBad.sha),
+      reproPath,
       createdBy: userName,
     })
       .then(onOpenSession)
@@ -253,10 +255,17 @@ export function SessionView(props: {
         <Stack gap={4}>
           <Flex alignItems="center" gap={3}>
             <Button mode="bleed" icon={ArrowLeftIcon} text="Sessions" onClick={onBack} />
-            <Box flex={1}>
-              <Text size={2} weight="semibold">
-                {session?.title ?? 'Bisect session'}
-              </Text>
+            <Box flex={1} style={{minWidth: 0}}>
+              <Stack gap={2}>
+                <Text size={2} weight="semibold">
+                  {session?.title ?? 'Bisect session'}
+                </Text>
+                {reproPath && (
+                  <Text size={0} muted textOverflow="ellipsis">
+                    Preview builds open at <code>{reproPath}</code>
+                  </Text>
+                )}
+              </Stack>
             </Box>
             {session && (
               <Button
@@ -343,6 +352,7 @@ export function SessionView(props: {
               stepsLeft={state?.kind === 'active' ? state.stepsLeft : undefined}
               currentReleases={state?.kind === 'active' ? releases : []}
               versionBySha={versionBySha}
+              reproPath={reproPath}
               converged={
                 state?.kind === 'converged'
                   ? {

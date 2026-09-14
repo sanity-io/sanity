@@ -14,6 +14,8 @@ export interface NewSessionInput {
   good: {sha: string; label?: string}
   bad: {sha: string; label?: string}
   releasesOnly?: boolean
+  /** Already normalized (tools/bisect/reproPath.ts) — stored as-is. */
+  reproPath?: string
   createdBy: string
 }
 
@@ -35,6 +37,7 @@ export async function createSession(client: SanityClient, input: NewSessionInput
     good: input.good,
     bad: input.bad,
     ...(input.releasesOnly ? {releasesOnly: true} : {}),
+    ...(input.reproPath ? {reproPath: input.reproPath} : {}),
     marks: [],
     createdAt: new Date().toISOString(),
     createdBy: input.createdBy,
