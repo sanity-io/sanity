@@ -1,6 +1,5 @@
 import {render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {type HTMLProps, type Ref} from 'react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -30,31 +29,6 @@ const variantsMock = vi.hoisted(() => ({
 vi.mock('@sanity/ui/toast', async (importOriginal) => ({
   ...(await importOriginal()),
   useToast: vi.fn(() => toastMock),
-}))
-
-// The test router has no variants tool, so resolve duplicate-error IntentLinks to plain anchors.
-vi.mock('sanity/router', async (importOriginal) => ({
-  ...(await importOriginal()),
-  IntentLink: function MockIntentLink({
-    ref,
-    intent,
-    params,
-    ...rest
-  }: {
-    intent?: string
-    params?: {id?: string}
-  } & HTMLProps<HTMLAnchorElement>) {
-    const variantId = params?.id
-
-    return (
-      // oxlint-disable-next-line jsx_a11y/anchor-has-content
-      <a
-        {...rest}
-        ref={ref as Ref<HTMLAnchorElement>}
-        href={variantId ? `/intent/${intent}/id=${variantId}` : `/intent/${intent}`}
-      />
-    )
-  },
 }))
 
 vi.mock('../../../store/useVariantOperations', () => ({
@@ -384,6 +358,7 @@ describe('CreateVariantDialog', () => {
     expect(onSubmit).toHaveBeenCalledWith(createdVariant._id)
   })
 
+  // Real IntentLink: TestProvider only has /intent routes, not a variants tool — the crash path this change fixes.
   it('blocks submit and links to the duplicate when the title matches an existing variant', async () => {
     const user = userEvent.setup()
 
@@ -403,7 +378,7 @@ describe('CreateVariantDialog', () => {
     )
     expect(within(titleError).getByRole('link', {name: 'Alpha audience'})).toHaveAttribute(
       'href',
-      `/intent/${VARIANTS_INTENT}/id=alpha-audience`,
+      `/intent/${VARIANTS_INTENT}/id=alpha-audience/`,
     )
 
     await user.type(screen.getByTestId('variant-form-title'), ' expanded')
@@ -450,7 +425,7 @@ describe('CreateVariantDialog', () => {
     )
     expect(within(conditionsError).getByRole('link', {name: 'Alpha audience'})).toHaveAttribute(
       'href',
-      `/intent/${VARIANTS_INTENT}/id=alpha-audience`,
+      `/intent/${VARIANTS_INTENT}/id=alpha-audience/`,
     )
   })
 
