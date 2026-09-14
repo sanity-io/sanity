@@ -9,6 +9,7 @@ import {CommandChip, InstallChip} from './chips'
 import {CommitCard} from './CommitCard'
 import {type TagSlice} from './data'
 import {IncludedIn} from './IncludedIn'
+import {withReproPath} from './reproPath'
 import {type ResultAnnotations} from './sessions'
 import {pluralize} from './text'
 
@@ -25,14 +26,25 @@ export function ResultCard(props: {
   releasesOnly?: boolean
   /** npm version if the first bad commit is itself a release */
   version?: string
+  /** Session's repro path — the test studio link opens the preview build there */
+  reproPath?: string
   annotations: ResultAnnotations
   onAnnotate: (patch: ResultAnnotations) => void
   /** Start a commit-granular session over the suspect range (releases-only drill-down) */
   onContinue?: () => void
   onUndo?: () => void
 }) {
-  const {state, releases, releasesOnly, version, annotations, onAnnotate, onContinue, onUndo} =
-    props
+  const {
+    state,
+    releases,
+    releasesOnly,
+    version,
+    reproPath,
+    annotations,
+    onAnnotate,
+    onContinue,
+    onUndo,
+  } = props
   return (
     <CommitCard
       commit={state.firstBad}
@@ -60,7 +72,7 @@ export function ResultCard(props: {
         {state.firstBad.testStudioUrl && (
           <Button
             as="a"
-            href={state.firstBad.testStudioUrl}
+            href={withReproPath(state.firstBad.testStudioUrl, reproPath)}
             target="_blank"
             rel="noreferrer"
             aria-label="Open test studio (opens in a new tab)"

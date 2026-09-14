@@ -63,6 +63,7 @@ export interface SessionDocument {
   good: SessionEndpoint | null
   bad: SessionEndpoint | null
   releasesOnly: boolean | null
+  reproPath: string | null
   marks: {_key: string; sha: string; verdict: string}[] | null
   result: {
     firstBadSha: string
@@ -75,7 +76,7 @@ export interface SessionDocument {
 }
 
 export const BISECT_SESSION_QUERY = `*[_id == $id][0] {
-  _id, title, good{sha, label}, bad{sha, label}, releasesOnly,
+  _id, title, good{sha, label}, bad{sha, label}, releasesOnly, reproPath,
   marks[]{_key, sha, verdict},
   result{firstBadSha, regression, description, linearIssue},
   createdAt, createdBy
