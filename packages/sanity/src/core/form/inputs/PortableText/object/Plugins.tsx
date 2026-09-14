@@ -6,7 +6,7 @@ import {OneLinePlugin} from '@portabletext/plugin-one-line'
 import {PasteLinkPlugin} from '@portabletext/plugin-paste-link'
 import {createDecoratorGuard, TypographyPlugin} from '@portabletext/plugin-typography'
 import {type ArraySchemaType, type PortableTextBlock} from '@sanity/types'
-import {type ComponentType, useMemo} from 'react'
+import {type ComponentType, Suspense, useMemo} from 'react'
 
 import {useMiddlewareComponents} from '../../../../config/components/useMiddlewareComponents'
 import {pickPortableTextEditorPluginsComponent} from '../../../form-components-hooks/picks'
@@ -212,6 +212,11 @@ const RenderDefault = (props: Omit<PortableTextPluginsProps, 'renderDefault'>) =
     defaultComponent: DefaultPortableTextEditorPlugins,
     pick: pickPortableTextEditorPluginsComponent,
   })
-  // oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work
-  return <RenderPlugins {...props} />
+  // Editor plugins render behaviors, not visible UI, so nothing stands in while a lazy one loads.
+  return (
+    <Suspense fallback={null}>
+      {/* oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work */}
+      <RenderPlugins {...props} />
+    </Suspense>
+  )
 }
