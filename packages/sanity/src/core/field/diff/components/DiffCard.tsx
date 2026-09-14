@@ -1,11 +1,13 @@
 import {type Path} from '@sanity/types'
-import {Card, rem} from '@sanity/ui'
+import {rem, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
 import {type ElementType, type HTMLProps, type ReactNode, useMemo} from 'react'
-import {styled} from 'styled-components'
 
 import {type Annotation, type Diff} from '../../types'
 import {getAnnotationAtPath} from '../annotations/helpers'
 import {useAnnotationColor} from '../annotations/hooks'
+import {diffCard, diffCardBgColorVar, diffCardFgColorVar, diffCardRadiusVar} from './DiffCard.css'
 import {DiffTooltip} from './DiffTooltip'
 
 /** @internal */
@@ -18,63 +20,6 @@ export interface DiffCardProps {
   tooltip?: {description?: ReactNode} | boolean
 }
 
-interface StyledCardProps {
-  $annotationColor: {backgroundColor: string; color: string}
-}
-
-const StyledCard = styled(Card)<StyledCardProps>`
-  --diff-card-radius: ${({theme}) => rem(theme.sanity.radius[2]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-  --diff-card-bg-color: ${({theme}) => theme.sanity.color.card.enabled.bg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-
-  max-width: 100%;
-  position: relative;
-  border-radius: var(--diff-card-radius);
-  background-color: ${({$annotationColor}) => $annotationColor.backgroundColor};
-  color: ${({$annotationColor}) => $annotationColor.color};
-  z-index: 1;
-
-  &:not(del) {
-    text-decoration: none;
-  }
-
-  &[data-hover] {
-    &::after {
-      content: '';
-      display: block;
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-    }
-
-    &:hover {
-      border-bottom-left-radius: 0;
-      border-bottom-right-radius: 0;
-
-      &::after {
-        bottom: -3px;
-        border-top: 1px solid var(---diff-card-bg-color);
-        border-bottom: 2px solid currentColor;
-        border-bottom-left-radius: var(--diff-card-radius);
-        border-bottom-right-radius: var(--diff-card-radius);
-      }
-    }
-
-    [data-from-to-layout]:hover & {
-      border-bottom-left-radius: 0;
-      border-bottom-right-radius: 0;
-
-      &::after {
-        bottom: -3px;
-        border-top: 1px solid var(---diff-card-bg-color);
-        border-bottom: 2px solid currentColor;
-        border-bottom-left-radius: var(--diff-card-radius);
-        border-bottom-right-radius: var(--diff-card-radius);
-      }
-    }
-  }
-`
-
 const EMPTY_PATH: Path = []
 
 /** @internal */
@@ -82,7 +27,7 @@ export function DiffCard(props: DiffCardProps & Omit<HTMLProps<HTMLElement>, 'as
   const {
     ref,
     annotation: annotationProp,
-    as = 'div',
+    as: Component = 'div',
     children,
     className,
     diff,
@@ -92,6 +37,7 @@ export function DiffCard(props: DiffCardProps & Omit<HTMLProps<HTMLElement>, 'as
     tooltip,
     ...restProps
   } = props
+  const {radius} = useThemeV2()
 
   const annotation = useMemo(
     () => annotationProp || getAnnotationAtPath(diff!, path),
@@ -101,20 +47,24 @@ export function DiffCard(props: DiffCardProps & Omit<HTMLProps<HTMLElement>, 'as
   const color = useAnnotationColor(annotation)
 
   const element = (
-    <StyledCard
+    <Component
       {...restProps}
-      as={as}
-      className={className}
+      className={clsx(diffCard, className)}
       data-hover={disableHoverEffect || !annotation ? undefined : ''}
       data-ui="diff-card"
       ref={ref}
-      radius={1}
       // Added annotation color to the card using css to make it possible to override by the ReleaseReview
-      $annotationColor={{backgroundColor: color.background, color: color.text}}
-      style={style}
+      style={{
+        ...assignInlineVars({
+          [diffCardRadiusVar]: `${rem(radius[2])}`,
+          [diffCardBgColorVar]: color.background,
+          [diffCardFgColorVar]: color.text,
+        }),
+        ...style,
+      }}
     >
       {children}
-    </StyledCard>
+    </Component>
   )
 
   if (tooltip && annotation) {

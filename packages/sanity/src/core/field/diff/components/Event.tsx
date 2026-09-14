@@ -1,7 +1,15 @@
-import {type AvatarSize, AvatarStack, Skeleton, Stack, Text} from '@sanity/ui'
-import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
-import {useMemo} from 'react'
-import {css, styled} from 'styled-components'
+import {
+  type AvatarSize,
+  AvatarStack,
+  Skeleton,
+  Stack,
+  Text,
+  useTheme_v2 as useThemeV2,
+} from '@sanity/ui'
+import {type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
+import {type ComponentProps, useMemo} from 'react'
 import {Box, Flex} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -26,6 +34,15 @@ import {
   TIMELINE_ITEM_EVENT_TONE,
   TIMELINE_ITEM_I18N_KEY_MAPPING,
 } from './constants'
+import {
+  avatarSize0Var,
+  avatarSize1Var,
+  avatarSkeleton,
+  iconBox,
+  iconBoxColor,
+  nameSkeleton,
+  textLineHeight0Var,
+} from './Event.css'
 
 interface UserAvatarStackProps {
   maxLength?: number
@@ -44,45 +61,52 @@ function UserAvatarStack({maxLength, userIds, size, withTooltip = true}: UserAva
   )
 }
 
-const IconBox = styled(Flex)<{$color: ThemeColorAvatarColorKey}>((props) => {
-  const theme = getTheme_v2(props.theme)
-  const color = props.$color
+function IconBox(props: ComponentProps<typeof Flex> & {$color: ThemeColorAvatarColorKey}) {
+  const {$color, className, style, ...rest} = props
+  const {avatar} = useThemeV2()
 
-  return css`
-    --card-icon-color: ${theme.color.avatar[color].fg};
-    background-color: ${theme.color.avatar[color].bg};
-    box-shadow: 0 0 0 1px var(--card-bg-color);
-
-    position: absolute;
-    width: ${theme.avatar.sizes[0].size}px;
-    height: ${theme.avatar.sizes[0].size}px;
-    right: -3px;
-    bottom: -3px;
-    border-radius: 50%;
-  `
-})
+  return (
+    <Flex
+      {...rest}
+      className={clsx(iconBox, iconBoxColor[$color], className)}
+      style={{...assignInlineVars({[avatarSize0Var]: `${avatar.sizes[0].size}px`}), ...style}}
+    />
+  )
+}
 
 const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {
   minimal: true,
   useTemporalPhrase: true,
 }
 
-const AvatarSkeleton = styled(Skeleton)((props) => {
-  const theme = getTheme_v2(props.theme)
-  return css`
-    border-radius: 50%;
-    width: ${theme.avatar.sizes[1].size}px;
-    height: ${theme.avatar.sizes[1].size}px;
-  `
-})
+function AvatarSkeleton(props: ComponentProps<typeof Skeleton>) {
+  const {className, style, ...rest} = props
+  const {avatar} = useThemeV2()
 
-const NameSkeleton = styled(Skeleton)((props) => {
-  const theme = getTheme_v2(props.theme)
-  return css`
-    width: 6ch;
-    height: ${theme.font.text.sizes[0].lineHeight}px;
-  `
-})
+  return (
+    <Skeleton
+      {...rest}
+      className={clsx(avatarSkeleton, className)}
+      style={{...assignInlineVars({[avatarSize1Var]: `${avatar.sizes[1].size}px`}), ...style}}
+    />
+  )
+}
+
+function NameSkeleton(props: ComponentProps<typeof Skeleton>) {
+  const {className, style, ...rest} = props
+  const {font} = useThemeV2()
+
+  return (
+    <Skeleton
+      {...rest}
+      className={clsx(nameSkeleton, className)}
+      style={{
+        ...assignInlineVars({[textLineHeight0Var]: `${font.text.sizes[0].lineHeight}px`}),
+        ...style,
+      }}
+    />
+  )
+}
 
 const UserLine = ({userId}: {userId: string}) => {
   const [user, loading] = useUser(userId)

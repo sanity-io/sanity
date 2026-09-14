@@ -1,7 +1,6 @@
 import {Card, Stack, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {type CSSProperties} from 'react'
-import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type DiffComponent} from '../../types'
@@ -9,17 +8,7 @@ import {useChangeVerb} from '../hooks/useChangeVerb'
 import {DiffCard} from './DiffCard'
 import {DiffTooltip} from './DiffTooltip'
 import {FromToArrow} from './FromToArrow'
-
-/**
- * Horizontal scroll only. Avoid `overflow-x: auto` on `pre`: CSS pairs it with
- * `overflow-y: auto`, which spuriously shows a vertical scrollbar in flex layouts.
- */
-const CodeWrapper = styled.div`
-  max-width: 100%;
-  min-width: 0;
-  overflow-x: auto;
-  overflow-y: hidden;
-`
+import {codeWrapper} from './JsonFieldDiff.css'
 
 const cardStyles: CSSProperties = {
   flex: 1,
@@ -42,21 +31,21 @@ export const JsonFieldDiff: DiffComponent = ({diff}) => {
 
   const from = diff.fromValue !== undefined && diff.fromValue !== null && (
     <DiffCard as="del" diff={diff} style={cardStyles}>
-      <CodeWrapper>
+      <div className={codeWrapper}>
         <Code language="json" size={1}>
           {jsonify(diff.fromValue)}
         </Code>
-      </CodeWrapper>
+      </div>
     </DiffCard>
   )
 
   const to = diff.toValue !== undefined && diff.toValue !== null && (
     <DiffCard as="ins" diff={diff} style={cardStyles}>
-      <CodeWrapper>
+      <div className={codeWrapper}>
         <Code language="json" size={1}>
           {jsonify(diff.toValue)}
         </Code>
-      </CodeWrapper>
+      </div>
     </DiffCard>
   )
 
