@@ -1,4 +1,5 @@
 import {AddIcon} from '@sanity/icons/Add'
+import {BugIcon} from '@sanity/icons/Bug'
 import {DocumentTextIcon} from '@sanity/icons/DocumentText'
 import {PackageIcon} from '@sanity/icons/Package'
 import {Badge, Box, Button, Card, Container, Stack, Text} from '@sanity/ui'
@@ -76,7 +77,9 @@ export function ReleasesTool() {
   const client = useClient({apiVersion: '2025-02-19'})
   const currentUser = useCurrentUser()
   const toast = useToast()
-  const [addingRegression, setAddingRegression] = useState(false)
+  // `null` = closed; a tag name = opened from that release's row (preselected);
+  // '' = opened from the header with nothing picked yet
+  const [addingRegression, setAddingRegression] = useState<string | null>(null)
   const [previewPath, setPreviewPath] = useUrlState('path', '')
   // Raw text while typing; the URL only ever gets the normalized path. The
   // draft is shown only while it still normalizes to the URL's value —
@@ -185,7 +188,7 @@ export function ReleasesTool() {
   const handleAddRegression = async (input: ManualRegressionInput) => {
     try {
       await reportRegression(client, input)
-      setAddingRegression(false)
+      setAddingRegression(null)
     } catch (err) {
       toast.push({
         status: 'error',
@@ -216,7 +219,7 @@ export function ReleasesTool() {
               text="Add regression"
               mode="ghost"
               disabled={!tagsLive.data || !commitsLive.data}
-              onClick={() => setAddingRegression(true)}
+              onClick={() => setAddingRegression('')}
             />
           </Flex>
 
@@ -278,17 +281,21 @@ export function ReleasesTool() {
               regressions={regressionCounts.get(tag.tag) ?? 0}
               previewUrl={commitsBySha.get(tag.sha)?.testStudioUrl}
               previewPath={previewPath || undefined}
+              onAddRegression={
+                tagsLive.data && commitsLive.data ? () => setAddingRegression(tag.tag) : undefined
+              }
             />
           ))}
         </Stack>
       </Container>
 
-      {addingRegression && (
+      {addingRegression !== null && (
         <AddRegressionDialog
           tags={tags}
           commitsBySha={commitsBySha}
           createdBy={userName}
-          onClose={() => setAddingRegression(false)}
+          initialTag={addingRegression || undefined}
+          onClose={() => setAddingRegression(null)}
           onCreate={handleAddRegression}
         />
       )}
@@ -357,8 +364,10 @@ function ReleaseRow(props: {
   regressions: number
   previewUrl: string | undefined
   previewPath: string | undefined
+  /** Absent while the data the dialog needs is still loading. */
+  onAddRegression: (() => void) | undefined
 }) {
-  const {tag, baseVersion, regressions, previewUrl, previewPath} = props
+  const {tag, baseVersion, regressions, previewUrl, previewPath, onAddRegression} = props
   const version = tag.tag.replace(/^v/, '')
   // The version opens the gitTag document in the structure tool — the raw
   // synced record behind the row
@@ -410,6 +419,18 @@ function ReleaseRow(props: {
             npmx
           </IconLink>
         </Flex>
+        {/* Pin a regression on this release without picking it in the dialog */}
+        <Button
+          mode="bleed"
+          tone="critical"
+          fontSize={1}
+          padding={2}
+          icon={BugIcon}
+          aria-label={`Report a regression introduced in ${tag.tag}`}
+          title={`Report a regression introduced in ${tag.tag}`}
+          disabled={!onAddRegression}
+          onClick={onAddRegression}
+        />
       </Flex>
     </Card>
   )

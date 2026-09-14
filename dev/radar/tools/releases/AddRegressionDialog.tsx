@@ -22,12 +22,14 @@ export function AddRegressionDialog(props: {
   tags: TagSlice[]
   commitsBySha: Map<string, BisectCommit>
   createdBy: string
+  /** Opened from a release row — that release starts selected (still changeable). */
+  initialTag?: string
   onClose: () => void
   /** Must settle (the tool toasts failures) — the submit stays disabled until it does. */
   onCreate: (input: ManualRegressionInput) => Promise<unknown>
 }) {
-  const {tags, commitsBySha, createdBy, onClose, onCreate} = props
-  const [selectedTagName, setSelectedTagName] = useState('')
+  const {tags, commitsBySha, createdBy, initialTag, onClose, onCreate} = props
+  const [selectedTagName, setSelectedTagName] = useState(initialTag ?? '')
   const [description, setDescription] = useState('')
   const [linearIssue, setLinearIssue] = useState('')
   const [submitting, setSubmitting] = useState(false)

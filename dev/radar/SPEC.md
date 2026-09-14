@@ -342,10 +342,11 @@ effect of merged work; secondary: leads scanning health weekly.
    (maintenance lines) may lack it. Each release also shows the count of
    confirmed regressions bisect sessions have attributed to it, blamed on the
    release that FIRST shipped the offending commit. Regressions found outside
-   a bisect (user reports) are added by hand via "Add regression", stored as
-   a born-converged releases-only bisectSession (base release → blamed
-   release, the commits between as suspects) so attribution and the bisect
-   drill-down work unchanged. A path field under the header holds a
+   a bisect (user reports) are added by hand via "Add regression" — from the
+   header with a release picker, or from a release's own row with that
+   release preselected — stored as a born-converged releases-only
+   bisectSession (base release → blamed release, the commits between as
+   suspects) so attribution and the bisect drill-down work unchanged. A path field under the header holds a
    test-studio path (same normalization as the bisect repro path, `?path=`
    in the URL so it is reload-safe and shareable) that every release's
    Test Studio link opens at — checking one repro across releases is a click per
