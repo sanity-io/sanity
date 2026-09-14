@@ -1,5 +1,7 @@
-import {styled} from 'styled-components'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 
+import {formCell} from './FormCell.css'
 import {type FormArea} from './FormRow'
 
 interface Props {
@@ -9,6 +11,8 @@ interface Props {
 /**
  * @internal
  */
-export const FormCell = styled.div<Props>`
-  grid-area: ${({$area}) => $area};
-`
+export function FormCell(props: Props & ComponentProps<'div'>) {
+  const {$area, className, ...rest} = props
+
+  return <div {...rest} className={clsx(formCell[$area], className)} />
+}
