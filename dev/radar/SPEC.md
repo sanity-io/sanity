@@ -346,7 +346,11 @@ effect of merged work; secondary: leads scanning health weekly.
    header with a release picker, or from a release's own row with that
    release preselected — stored as a born-converged releases-only
    bisectSession (base release → blamed release, the commits between as
-   suspects) so attribution and the bisect drill-down work unchanged. A path field under the header holds a
+   suspects) so attribution and the bisect drill-down work unchanged. The
+   regression count on a row opens the list behind it — what broke, who
+   recorded it, a link into the Bisect tool — and removes an entry, which
+   deletes its session (the session is the regression; there is no separate
+   record to unpin). A path field under the header holds a
    test-studio path (same normalization as the bisect repro path, `?path=`
    in the URL so it is reload-safe and shareable) that every release's
    Test Studio link opens at — checking one repro across releases is a click per
