@@ -1,3 +1,4 @@
+import {clsx} from 'clsx'
 import {
   type FunctionComponent,
   type MouseEvent as ReactMouseEvent,
@@ -8,59 +9,17 @@ import {
   useRef,
 } from 'react'
 import {PresentationPanelsContext} from 'sanity/_singletons'
-import {styled} from 'styled-components'
 
+import {
+  resizer,
+  resizerBorder,
+  resizerHidden,
+  resizerHoverEffect,
+  resizerInner,
+  resizerInnerDisabled,
+  resizerInnerEnabled,
+} from './PanelResizer.css'
 import {usePanelId} from './usePanelId'
-
-const Resizer = styled.div<{$hidden: boolean}>`
-  position: relative;
-  ${({$hidden}) => $hidden && `display: none;`}
-`
-const ResizerInner = styled.div<{
-  $disabled: boolean
-}>`
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: -5px;
-  width: 9px;
-  z-index: 10;
-  cursor: ${({$disabled}) => ($disabled ? 'auto' : 'ew-resize')};
-
-  /* Border */
-  & > span:nth-child(1) {
-    display: block;
-    border-left: 1px solid var(--card-border-color);
-    position: absolute;
-    top: 0;
-    left: 4px;
-    bottom: 0;
-    transition: opacity 200ms;
-  }
-
-  ${({$disabled}) =>
-    !$disabled &&
-    `
-    /* Hover effect */
-    & > span:nth-child(2) {
-      display: block;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 9px;
-      bottom: 0;
-      background-color: var(--card-border-color);
-      opacity: 0;
-      transition: opacity 150ms;
-    }
-
-    @media (hover: hover) {
-      &:hover > span:nth-child(2) {
-        opacity: 0.2;
-      }
-    }
-  `}
-`
 
 export const PanelResizer: FunctionComponent<{
   id?: string
@@ -156,11 +115,11 @@ export const PanelResizer: FunctionComponent<{
   }, [id, order, registerElement, unregisterElement])
 
   return (
-    <Resizer $hidden={hidden} onMouseDown={onMouseDown} ref={el}>
-      <ResizerInner $disabled={disabled}>
-        <span />
-        <span />
-      </ResizerInner>
-    </Resizer>
+    <div className={clsx(resizer, hidden && resizerHidden)} onMouseDown={onMouseDown} ref={el}>
+      <div className={clsx(resizerInner, disabled ? resizerInnerDisabled : resizerInnerEnabled)}>
+        <span className={resizerBorder} />
+        <span className={disabled ? undefined : resizerHoverEffect} />
+      </div>
+    </div>
   )
 }

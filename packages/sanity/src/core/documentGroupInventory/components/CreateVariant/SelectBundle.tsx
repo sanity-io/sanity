@@ -4,7 +4,6 @@ import ChevronLeftIcon from '@sanity/icons/ChevronLeft'
 import {Button, Label, Spinner, Stack, Text} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
 import {type ComponentType} from 'react'
-import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 import {type ActorRefFromLogic} from 'xstate'
 
@@ -22,6 +21,7 @@ import {type variantCreationMachine} from '../../machines/variantCreationMachine
 import {Body} from '../Body'
 import {Header} from '../Header'
 import {TextButton} from '../TextButton'
+import {truncatedText} from './SelectBundle.css'
 
 interface Props {
   variantCreationRef: ActorRefFromLogic<typeof variantCreationMachine>
@@ -89,7 +89,7 @@ export const SelectBundle: ComponentType<Props> = ({variantCreationRef, selectio
           <Text size={1} weight="medium">
             <Flex gap={2} alignItems="center">
               <ChevronLeftIcon />
-              <TruncatedText>{headerTitle}</TruncatedText>
+              <span className={truncatedText}>{headerTitle}</span>
             </Flex>
           </Text>
         </TextButton>
@@ -216,10 +216,3 @@ export const SelectBundle: ComponentType<Props> = ({variantCreationRef, selectio
     </>
   )
 }
-
-const TruncatedText = styled.span`
-  overflow: hidden;
-  min-inline-size: 0;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`
