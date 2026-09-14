@@ -25,6 +25,7 @@ use `sanity-bench`.
 
 Trends URL state, all shareable: `?range=30|90|all`, `?branches=main,<branch>`,
 `?layers=-band,-calibration` (hide layers), `?tab=<metric group>`, `?max=<series key>` (one chart maximized).
+Releases: `?path=<test-studio path>` (the path field under the header) opens every release's Test Studio link at that path.
 Clicking a point opens the run popover: value, percentiles, host, release context, links, and
 under "Suspect a regression?" the GitHub compare of the gap, **Copy A/B vs previous run** (the
 `gh workflow run bench.yml … ab_from/ab_to` command) and **Copy investigation prompt** (a

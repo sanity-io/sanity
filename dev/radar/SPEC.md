@@ -343,7 +343,11 @@ effect of merged work; secondary: leads scanning health weekly.
    a bisect (user reports) are added by hand via "Add regression", stored as
    a born-converged releases-only bisectSession (base release → blamed
    release, the commits between as suspects) so attribution and the bisect
-   drill-down work unchanged.
+   drill-down work unchanged. A path field under the header holds a
+   test-studio path (same normalization as the bisect repro path, `?path=`
+   in the URL so it is reload-safe and shareable) that every release's
+   Test Studio link opens at — checking one repro across releases is a click per
+   row.
 
 ## Architecture
 

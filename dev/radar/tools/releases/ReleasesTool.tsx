@@ -1,8 +1,17 @@
 import {AddIcon} from '@sanity/icons/Add'
-import {LaunchIcon} from '@sanity/icons/Launch'
+import {DocumentTextIcon} from '@sanity/icons/DocumentText'
+import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
+import {PackageIcon} from '@sanity/icons/Package'
 import {Badge, Box, Button, Card, Container, Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {useMemo, useState} from 'react'
+import {
+  type ComponentType,
+  type CSSProperties,
+  type ReactNode,
+  type SVGProps,
+  useMemo,
+  useState,
+} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useClient, useCurrentUser, useDocumentStore} from 'sanity'
@@ -19,9 +28,12 @@ import {
   toBisectCommit,
 } from '../bisect/data'
 import {RelativeDate} from '../bisect/RelativeDate'
+import {normalizeReproPath, withReproPath} from '../bisect/reproPath'
+import {ReproPathInput} from '../bisect/ReproPathField'
 import {type ManualRegressionInput, reportRegression} from '../bisect/sessions'
 import {pluralize} from '../bisect/text'
 import {releaseUrl} from '../trends/links'
+import {useUrlState} from '../trends/useUrlState'
 import {AddRegressionDialog} from './AddRegressionDialog'
 import {baseVersionOf, changelogUrl, npmxUrl, regressionCountByTag} from './releaseInfo'
 
@@ -29,6 +41,13 @@ interface LiveState<T> {
   data: T | null
   error: string | null
 }
+
+/**
+ * @sanity/ui's Text pulls icons in with a negative margin on every side so
+ * they fit the cap height inline. In a flex row that eats the gap between
+ * icon and label; keep the vertical part, drop the horizontal.
+ */
+const ICON_IN_FLEX: CSSProperties = {marginLeft: 0, marginRight: 0}
 
 /**
  * Every release, newest first: when it shipped (npm publish time when known),
@@ -40,6 +59,12 @@ interface LiveState<T> {
  * the first-parent chain — so off-mainline releases (maintenance lines) may
  * lack it. Regressions found outside a bisect are added by hand via
  * AddRegressionDialog, stored as born-converged bisect sessions.
+ *
+ * The path field under the header holds a test-studio path — where the
+ * issue under investigation reproduces — that every release's Test Studio link
+ * opens at, so checking a repro across releases is one click per release. It
+ * lives in the URL (`?path=`) like the other tool state: reload-safe and
+ * shareable.
  */
 export function ReleasesTool() {
   const documentStore = useDocumentStore()
@@ -47,6 +72,17 @@ export function ReleasesTool() {
   const currentUser = useCurrentUser()
   const toast = useToast()
   const [addingRegression, setAddingRegression] = useState(false)
+  const [previewPath, setPreviewPath] = useUrlState('path', '')
+  // Raw text while typing; the URL only ever gets the normalized path. The
+  // draft is shown only while it still normalizes to the URL's value —
+  // Back/Forward swaps the URL underneath it, and the field must follow
+  const [previewPathDraft, setPreviewPathDraft] = useState(previewPath)
+  const previewPathInput =
+    (normalizeReproPath(previewPathDraft) ?? '') === previewPath ? previewPathDraft : previewPath
+  const changePreviewPath = (next: string) => {
+    setPreviewPathDraft(next)
+    setPreviewPath(normalizeReproPath(next) ?? '')
+  }
 
   const tagsLive = useObservable(
     useMemo(
@@ -170,6 +206,38 @@ export function ReleasesTool() {
             />
           </Flex>
 
+          <Card padding={3} radius={2} tone="transparent" border>
+            <Stack gap={3}>
+              <Flex alignItems="center" gap={3}>
+                <Box style={{flexShrink: 0}}>
+                  <Flex as={Text} size={1} weight="medium" alignItems="center" gap={2}>
+                    <EyeOpenIcon style={ICON_IN_FLEX} />
+                    <span>Test Studio Path</span>
+                  </Flex>
+                </Box>
+                <Box flex={1}>
+                  <ReproPathInput
+                    value={previewPathInput}
+                    onChange={changePreviewPath}
+                    placeholder="/test/structure/author;abc — or paste a test-studio URL"
+                  />
+                </Box>
+                {previewPathInput && (
+                  <Button
+                    mode="ghost"
+                    fontSize={1}
+                    text="Clear"
+                    onClick={() => changePreviewPath('')}
+                  />
+                )}
+              </Flex>
+              <Text size={0} muted>
+                Every release's Test Studio link opens its preview build at this path — paste a
+                test-studio URL and only its path is kept.
+              </Text>
+            </Stack>
+          </Card>
+
           {error && (
             <Card padding={4} radius={3} tone="critical">
               <Text size={1}>Failed to load: {error}</Text>
@@ -195,6 +263,7 @@ export function ReleasesTool() {
               baseVersion={baseVersions.get(tag.tag)}
               regressions={regressionCounts.get(tag.tag) ?? 0}
               previewUrl={commitsBySha.get(tag.sha)?.testStudioUrl}
+              previewPath={previewPath || undefined}
             />
           ))}
         </Stack>
@@ -213,13 +282,52 @@ export function ReleasesTool() {
   )
 }
 
+/**
+ * External link with a leading icon. Flex rather than inline SVG-in-text:
+ * the @sanity/icons glyphs and the brand logos have different boxes, so
+ * baseline alignment leaves them jittering against the label.
+ */
+function IconLink(props: {
+  href: string
+  icon: ComponentType<SVGProps<SVGSVGElement>>
+  children: ReactNode
+}) {
+  const {href, icon: Icon, children} = props
+  return (
+    <Text size={1}>
+      <Flex as="a" href={href} target="_blank" rel="noreferrer" alignItems="center" gap={1}>
+        <Icon style={ICON_IN_FLEX} />
+        <span>{children}</span>
+      </Flex>
+    </Text>
+  )
+}
+
+/**
+ * GitHub mark in currentColor. @sanity/icons glyphs sit inset inside a
+ * 25-unit box (about 4 units of air on each side); the viewBox here pads
+ * the 24-unit mark the same way so it renders at the same visual size and
+ * distance from its label as its neighbours.
+ */
+function GitHubLogo(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="-5 -5 34 34" width="1em" height="1em" aria-hidden="true" {...props}>
+      <path
+        fill="currentColor"
+        d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"
+      />
+    </svg>
+  )
+}
+
 function ReleaseRow(props: {
   tag: TagSlice
   baseVersion: string | undefined
   regressions: number
   previewUrl: string | undefined
+  previewPath: string | undefined
 }) {
-  const {tag, baseVersion, regressions, previewUrl} = props
+  const {tag, baseVersion, regressions, previewUrl, previewPath} = props
   const version = tag.tag.replace(/^v/, '')
   // The version opens the gitTag document in the structure tool — the raw
   // synced record behind the row
@@ -252,31 +360,24 @@ function ReleaseRow(props: {
           </Text>
         )}
         <RelativeDate dateTime={tag.npm?.publishedAt ?? tag.taggedAt} size={0} muted />
-        <Flex gap={3}>
+        {/* One icon per destination so a row scans without reading the labels */}
+        <Flex gap={3} flexWrap="wrap">
           {previewUrl && (
-            <Text size={1}>
-              <a href={previewUrl} target="_blank" rel="noreferrer">
-                Preview
-              </a>
-            </Text>
+            <IconLink href={withReproPath(previewUrl, previewPath)} icon={EyeOpenIcon}>
+              Test Studio
+            </IconLink>
           )}
-          <Text size={1}>
-            <a href={releaseUrl(tag.tag)} target="_blank" rel="noreferrer">
-              GitHub
-            </a>
-          </Text>
+          <IconLink href={releaseUrl(tag.tag)} icon={GitHubLogo}>
+            GitHub
+          </IconLink>
           {baseVersion && (
-            <Text size={1}>
-              <a href={changelogUrl(baseVersion)} target="_blank" rel="noreferrer">
-                Changelog
-              </a>
-            </Text>
+            <IconLink href={changelogUrl(baseVersion)} icon={DocumentTextIcon}>
+              Changelog
+            </IconLink>
           )}
-          <Text size={1}>
-            <a href={npmxUrl(version)} target="_blank" rel="noreferrer">
-              npmx <LaunchIcon />
-            </a>
-          </Text>
+          <IconLink href={npmxUrl(version)} icon={PackageIcon}>
+            npmx
+          </IconLink>
         </Flex>
       </Flex>
     </Card>
