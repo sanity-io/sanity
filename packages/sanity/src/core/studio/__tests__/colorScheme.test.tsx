@@ -164,5 +164,21 @@ describe('ColorScheme', () => {
       await userEvent.click(screen.getByTestId('to-system'))
       expect(document.documentElement.style.colorScheme).toBe('dark')
     })
+
+    test('a cold mount without a resolved store snapshot writes nothing', async () => {
+      mockLocalStorage.getItem.mockReturnValue(null)
+      // a fresh module pair reproduces the first-ever render, where the store snapshot is
+      // undefined until the subscribe effect initialises it
+      vi.resetModules()
+      const {ColorSchemeLocalStorageProvider: FreshProvider} = await import('../colorScheme')
+
+      render(
+        <FreshProvider>
+          <div data-testid="child">Test</div>
+        </FreshProvider>,
+      )
+
+      expect(document.documentElement.style.colorScheme).toBe('')
+    })
   })
 })

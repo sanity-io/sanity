@@ -1,4 +1,4 @@
-import {afterEach, beforeEach, describe, expect, test} from 'vitest'
+import {afterEach, describe, expect, test} from 'vitest'
 
 import {
   LIGHTNINGCSS_DARK_VARIABLE,
@@ -15,10 +15,7 @@ function osPrefersDark(): boolean {
   return window.matchMedia('(prefers-color-scheme: dark)').matches
 }
 
-// Mirrors the blocks Lightning CSS emits alongside down-leveled `light-dark()`. Injected in
-// beforeEach so the module's down-level detection, which caches its first probe for the life
-// of the page, always sees the declarations; the no-declaration case lives in
-// documentColorSchemeUndetected.browser.test.ts, which runs in its own page.
+// Mirrors the blocks Lightning CSS emits alongside down-leveled `light-dark()`
 function injectDownleveledStylesheet(): void {
   const style = document.createElement('style')
   style.dataset.downlevel = 'true'
@@ -39,11 +36,9 @@ function renderDownleveledProbe(): HTMLElement {
   return probe
 }
 
-describe('setDocumentColorScheme (real CSSOM, down-leveled output present)', () => {
-  beforeEach(() => {
-    injectDownleveledStylesheet()
-  })
-
+// The module caches a positive detection for the life of the page (negatives re-probe), so the
+// no-declaration test must run before any test that injects the down-leveled stylesheet.
+describe('setDocumentColorScheme (real CSSOM)', () => {
   afterEach(() => {
     document.documentElement.removeAttribute('style')
     document.body.replaceChildren()
@@ -52,7 +47,20 @@ describe('setDocumentColorScheme (real CSSOM, down-leveled output present)', () 
     }
   })
 
+  test('skips the toggles when nothing declares them', () => {
+    const probe = renderDownleveledProbe()
+    const mismatchScheme = osPrefersDark() ? 'light' : 'dark'
+    const mismatchColor = osPrefersDark() ? LIGHT_COLOR : DARK_COLOR
+
+    setDocumentColorScheme(mismatchScheme)
+
+    expect(document.documentElement.style.colorScheme).toBe(mismatchScheme)
+    expect(document.documentElement.getAttribute('style') ?? '').not.toContain('lightningcss')
+    expect(getComputedStyle(probe).color).not.toBe(mismatchColor)
+  })
+
   test('a scheme mismatching the OS writes the toggles and flips down-leveled light-dark()', () => {
+    injectDownleveledStylesheet()
     const probe = renderDownleveledProbe()
     const osColor = osPrefersDark() ? DARK_COLOR : LIGHT_COLOR
     const mismatchScheme = osPrefersDark() ? 'light' : 'dark'
@@ -67,6 +75,7 @@ describe('setDocumentColorScheme (real CSSOM, down-leveled output present)', () 
   })
 
   test('a scheme matching the OS writes only color-scheme', () => {
+    injectDownleveledStylesheet()
     const probe = renderDownleveledProbe()
     const osScheme = osPrefersDark() ? 'dark' : 'light'
     const osColor = osPrefersDark() ? DARK_COLOR : LIGHT_COLOR
@@ -79,6 +88,7 @@ describe('setDocumentColorScheme (real CSSOM, down-leveled output present)', () 
   })
 
   test('the disposer restores a host-set color-scheme and removes the toggles', () => {
+    injectDownleveledStylesheet()
     const probe = renderDownleveledProbe()
     const osColor = osPrefersDark() ? DARK_COLOR : LIGHT_COLOR
     const mismatchScheme = osPrefersDark() ? 'light' : 'dark'
@@ -93,11 +103,24 @@ describe('setDocumentColorScheme (real CSSOM, down-leveled output present)', () 
     expect(getComputedStyle(probe).color).toBe(osColor)
   })
 
+  test('the disposer restores a host-set inline toggle', () => {
+    injectDownleveledStylesheet()
+    const mismatchScheme = osPrefersDark() ? 'light' : 'dark'
+    const hostEnabledToggle = osPrefersDark()
+      ? LIGHTNINGCSS_DARK_VARIABLE
+      : LIGHTNINGCSS_LIGHT_VARIABLE
+    const rootStyle = document.documentElement.style
+
+    // a host pinning its own page to the OS scheme via an inline toggle
+    rootStyle.setProperty(hostEnabledToggle, 'initial')
+
+    const dispose = setDocumentColorScheme(mismatchScheme)
+    dispose()
+
+    expect(rootStyle.getPropertyValue(hostEnabledToggle)).toBe('initial')
+  })
+
   test('a space-valued custom property survives where an empty string would not', () => {
-    // inline-only scenario: the stylesheet would keep the removed variable declared at :root
-    for (const style of Array.from(document.head.querySelectorAll('style[data-downlevel]'))) {
-      style.remove()
-    }
     const probe = renderDownleveledProbe()
     const rootStyle = document.documentElement.style
 

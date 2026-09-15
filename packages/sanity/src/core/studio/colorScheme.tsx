@@ -37,17 +37,18 @@ function ColorThemeProvider({
   const scheme = _scheme === 'system' ? systemScheme : _scheme
 
   useLayoutEffect(() => {
-    // In system mode the browser's own `prefers-color-scheme` resolution is already correct
-    // for both native and down-leveled `light-dark()`, so leave the document untouched; the
-    // previous effect's disposer has already restored what was there before.
-    if (_scheme === 'system') {
-      return undefined
+    // Act only on an explicitly pinned scheme. In system mode the browser's own
+    // `prefers-color-scheme` resolution is already correct for both native and down-leveled
+    // `light-dark()`, and on a cold mount the store snapshot is undefined until the subscribe
+    // effect initialises it - writing then would pin a scheme nobody chose.
+    if (_scheme === 'light' || _scheme === 'dark') {
+      return setDocumentColorScheme(_scheme)
     }
-    return setDocumentColorScheme(scheme)
+    return undefined
     // systemScheme is deliberate: the helper's mismatch check reads matchMedia, so an OS flip
     // while the appearance is pinned must re-run the write
     // oxlint-disable-next-line react/exhaustive-effect-dependencies -- see above
-  }, [_scheme, scheme, systemScheme])
+  }, [_scheme, systemScheme])
 
   return (
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
