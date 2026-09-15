@@ -767,6 +767,12 @@ Do **not** apply `trigger:*` labels unless the prompter or a maintainer asks —
 
 ### Crediting Original Authors (Ported / Cherry-picked Work)
 
+When rebasing an existing PR, use a separate worktree if the current checkout contains unrelated
+work. Preserve newer implementations on the base branch when resolving conflicts, and update all
+consumers if a shared helper's return type has changed. Push with an explicit lease on the original
+PR head (`git push --force-with-lease=refs/heads/<branch>:<original-sha> origin HEAD:<branch>`) so
+concurrent changes to the PR cannot be overwritten.
+
 When porting or rebasing someone else's PR (community contribution, backport, etc.), credit the **original author**, not only the agent or whoever opens the port PR:
 
 1. Prefer commits authored as the original contributor when history allows:
@@ -818,6 +824,11 @@ pnpm clean && pnpm install && pnpm build
 1. Ensure you've built: `pnpm build`
 2. Check if snapshots need updating: `pnpm test -- -u`
 3. Run specific test for better output: `pnpm test -- <test-name>`
+
+On macOS, `e2e/reporters/summary.test.ts` can fail its relative-path assertion because
+`process.cwd()` resolves `/var` to `/private/var`, while `os.tmpdir()` keeps the symlink path.
+Run that suite with a canonical temporary directory:
+`TMPDIR=/private/tmp pnpm vitest run --project=e2e e2e/reporters/summary.test.ts`.
 
 ### Lint Failures
 
