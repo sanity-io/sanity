@@ -8,9 +8,10 @@ import {
   type ObjectSchemaType,
   type PortableTextBlock,
 } from '@sanity/types'
-import {Card, PortalProvider, Stack, Text, TextInput, usePortal} from '@sanity/ui'
+import {Card, PortalProvider, Text, TextInput, usePortal} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
 import {useMemo, useState} from 'react'
+import {VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {useSchema} from '../../../../hooks/useSchema'
@@ -59,8 +60,8 @@ function Toolbars({schemaType}: {schemaType: ArraySchemaType<PortableTextBlock>}
   return (
     <PortableTextMemberSchemaTypesProvider schemaType={schemaType}>
       <EditorProvider initialConfig={initialConfig}>
-        <Stack gap={5}>
-          <Stack gap={2}>
+        <VStack gap={5}>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               toolbar (wide)
             </Text>
@@ -75,8 +76,8 @@ function Toolbars({schemaType}: {schemaType: ArraySchemaType<PortableTextBlock>}
                 />
               </ToolbarCard>
             </Card>
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               toolbar collapsed below 400px
             </Text>
@@ -93,8 +94,8 @@ function Toolbars({schemaType}: {schemaType: ArraySchemaType<PortableTextBlock>}
                 </ToolbarCard>
               </Card>
             </div>
-          </Stack>
-        </Stack>
+          </VStack>
+        </VStack>
       </EditorProvider>
     </PortableTextMemberSchemaTypesProvider>
   )
@@ -121,20 +122,20 @@ function PopoverModal() {
             referenceElement={referenceElement}
             title="Edit Image"
           >
-            <Stack gap={4}>
-              <Stack gap={2}>
+            <VStack gap={4}>
+              <VStack gap={2}>
                 <Text size={1} weight="medium">
                   Alternative text
                 </Text>
                 <TextInput defaultValue="A mountain lake at dawn" />
-              </Stack>
-              <Stack gap={2}>
+              </VStack>
+              <VStack gap={2}>
                 <Text size={1} weight="medium">
                   Caption
                 </Text>
                 <TextInput defaultValue="" />
-              </Stack>
-            </Stack>
+              </VStack>
+            </VStack>
           </PopoverEditDialog>
         )}
       </div>
@@ -149,15 +150,15 @@ function EditorChrome() {
 
   return (
     <Card padding={4} style={{maxWidth: 640}}>
-      <Stack gap={5}>
+      <VStack gap={5}>
         <Toolbars schemaType={schemaType} />
-        <Stack gap={2}>
+        <VStack gap={2}>
           <Text muted size={1} weight="medium">
             popover edit dialog
           </Text>
           <PopoverModal />
-        </Stack>
-      </Stack>
+        </VStack>
+      </VStack>
     </Card>
   )
 }
