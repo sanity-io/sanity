@@ -7,6 +7,7 @@ import {
   type ReactNode,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useSyncExternalStore,
 } from 'react'
@@ -15,6 +16,7 @@ import {ColorSchemeSetValueContext, ColorSchemeValueContext} from 'sanity/_singl
 import {type TFunction} from '../i18n/types'
 import {type StudioThemeColorSchemeKey} from '../theme/types'
 import {getSnapshot, setSnapshot, subscribe} from './colorSchemeStore'
+import {applyDocumentColorScheme} from './documentColorScheme'
 
 /** @internal */
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -33,6 +35,9 @@ function ColorThemeProvider({
 }) {
   const systemScheme = useSystemScheme()
   const scheme = _scheme === 'system' ? systemScheme : _scheme
+
+  // ui5 `light-dark()` follows this document property, not ThemeProvider context.
+  useLayoutEffect(() => applyDocumentColorScheme(scheme), [scheme])
 
   return (
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
