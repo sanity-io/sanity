@@ -47,6 +47,7 @@ const SEARCH_HITS: ReferenceSearchHit[] = [
 const SEARCH_WITH_HITS = () => of(SEARCH_HITS)
 
 const POPULATED_VALUE: Reference = {_type: 'reference', _ref: 'actor-1'}
+const POPULATED_ARRAY_ITEM_VALUE: Reference = {...POPULATED_VALUE, _key: 'item-0'}
 
 const schema = Schema.compile({
   name: 'default',
@@ -371,11 +372,8 @@ describe('ReferenceInput blur handling', () => {
 })
 
 describe('ReferenceInput autocomplete clear', () => {
-  it('unsets only _ref and leaves edit mode, keeping the array item in place', async () => {
-    const {onChange, onPathFocus} = await renderReferenceInput({
-      onSearch: SEARCH_WITH_HITS,
-      value: POPULATED_VALUE,
-    })
+  async function clickClearButton(value: Reference) {
+    const {onChange, onPathFocus} = await renderReferenceInput({onSearch: SEARCH_WITH_HITS, value})
     const user = userEvent.setup()
     const input = await getEditableCombobox()
 
@@ -385,15 +383,26 @@ describe('ReferenceInput autocomplete clear', () => {
       expect(input).toHaveValue('act')
     })
 
-    const clearButton = screen.getByRole('button', {name: /clear/i})
     onPathFocus.mockClear()
-    await user.click(clearButton)
+    await user.click(screen.getByRole('button', {name: /clear/i}))
 
-    // Unsetting the whole object would remove the item from an array of
-    // references; only the `_ref` path is unset.
+    return {onChange, onPathFocus}
+  }
+
+  it('unsets only _ref for an array item so the item itself is kept', async () => {
+    const {onChange, onPathFocus} = await clickClearButton(POPULATED_ARRAY_ITEM_VALUE)
+
+    // Unsetting the whole object would remove the item from the array.
     expect(onChange).toHaveBeenCalledTimes(1)
     expect(onChange).toHaveBeenCalledWith(expect.objectContaining({type: 'unset', path: ['_ref']}))
-    expect(onChange).not.toHaveBeenCalledWith(expect.objectContaining({type: 'unset', path: []}))
+    expect(onPathFocus).toHaveBeenCalledWith([])
+  })
+
+  it('unsets the whole reference when it is not an array item', async () => {
+    const {onChange, onPathFocus} = await clickClearButton(POPULATED_VALUE)
+
+    expect(onChange).toHaveBeenCalledTimes(1)
+    expect(onChange).toHaveBeenCalledWith(expect.objectContaining({type: 'unset', path: []}))
     expect(onPathFocus).toHaveBeenCalledWith([])
   })
 })
