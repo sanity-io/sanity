@@ -6,9 +6,9 @@ import {
   setDocumentColorScheme,
 } from '../documentColorScheme'
 
-// jsdom cannot resolve the computed style the down-level detection probe reads, so the
-// Lightning CSS toggle behaviour is covered by documentColorScheme.browser.test.ts; these
-// tests cover what jsdom can observe: the color-scheme write and its snapshot/restore.
+// The Lightning CSS toggle behaviour needs real CSSOM and matchMedia and is covered by
+// documentColorScheme.browser.test.ts; these tests cover the color-scheme write and its
+// snapshot/restore.
 describe('setDocumentColorScheme', () => {
   afterEach(() => {
     document.documentElement.removeAttribute('style')

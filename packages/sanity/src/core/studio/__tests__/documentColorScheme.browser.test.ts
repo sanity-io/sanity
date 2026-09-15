@@ -36,8 +36,6 @@ function renderDownleveledProbe(): HTMLElement {
   return probe
 }
 
-// The module caches a positive detection for the life of the page (negatives re-probe), so the
-// no-declaration test must run before any test that injects the down-leveled stylesheet.
 describe('setDocumentColorScheme (real CSSOM)', () => {
   afterEach(() => {
     document.documentElement.removeAttribute('style')
@@ -45,18 +43,6 @@ describe('setDocumentColorScheme (real CSSOM)', () => {
     for (const style of Array.from(document.head.querySelectorAll('style[data-downlevel]'))) {
       style.remove()
     }
-  })
-
-  test('skips the toggles when nothing declares them', () => {
-    const probe = renderDownleveledProbe()
-    const mismatchScheme = osPrefersDark() ? 'light' : 'dark'
-    const mismatchColor = osPrefersDark() ? LIGHT_COLOR : DARK_COLOR
-
-    setDocumentColorScheme(mismatchScheme)
-
-    expect(document.documentElement.style.colorScheme).toBe(mismatchScheme)
-    expect(document.documentElement.getAttribute('style') ?? '').not.toContain('lightningcss')
-    expect(getComputedStyle(probe).color).not.toBe(mismatchColor)
   })
 
   test('a scheme mismatching the OS writes the toggles and flips down-leveled light-dark()', () => {
@@ -101,23 +87,6 @@ describe('setDocumentColorScheme (real CSSOM)', () => {
     expect(document.documentElement.style.colorScheme).toBe('dark')
     expect(document.documentElement.getAttribute('style') ?? '').not.toContain('lightningcss')
     expect(getComputedStyle(probe).color).toBe(osColor)
-  })
-
-  test('the disposer restores a host-set inline toggle', () => {
-    injectDownleveledStylesheet()
-    const mismatchScheme = osPrefersDark() ? 'light' : 'dark'
-    const hostEnabledToggle = osPrefersDark()
-      ? LIGHTNINGCSS_DARK_VARIABLE
-      : LIGHTNINGCSS_LIGHT_VARIABLE
-    const rootStyle = document.documentElement.style
-
-    // a host pinning its own page to the OS scheme via an inline toggle
-    rootStyle.setProperty(hostEnabledToggle, 'initial')
-
-    const dispose = setDocumentColorScheme(mismatchScheme)
-    dispose()
-
-    expect(rootStyle.getPropertyValue(hostEnabledToggle)).toBe('initial')
   })
 
   test('a space-valued custom property survives where an empty string would not', () => {

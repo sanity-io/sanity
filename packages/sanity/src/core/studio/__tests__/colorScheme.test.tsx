@@ -78,9 +78,8 @@ describe('ColorScheme', () => {
     })
   })
 
-  // jsdom cannot resolve the down-level detection probe, so the Lightning CSS toggle behaviour
-  // is covered by documentColorScheme.browser.test.ts; these tests cover the color-scheme write
-  // and restore through the providers.
+  // The Lightning CSS toggle behaviour is covered by documentColorScheme.browser.test.ts; these
+  // tests cover the color-scheme write and restore through the providers.
   describe('document color scheme sync', () => {
     afterEach(() => {
       document.documentElement.removeAttribute('style')
