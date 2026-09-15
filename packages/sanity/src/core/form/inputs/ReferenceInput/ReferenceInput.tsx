@@ -1,7 +1,15 @@
 import {Stack, Text, useClickOutsideEvent} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {uuid} from '@sanity/uuid'
-import {type FocusEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
+import {
+  type FocusEvent,
+  type KeyboardEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {ReferenceInputPreviewCard} from '../../../components/previewCard/PreviewCard'
@@ -248,20 +256,61 @@ export function ReferenceInput(props: ReferenceInputProps) {
   const createButtonMenuPortalRef = useRef<HTMLDivElement>(null)
 
   const handleFocus = useCallback(() => onPathFocus(['_ref']), [onPathFocus])
+
+  // Everything that counts as "inside" the reference input for focus purposes.
+  // Mirrors the boundaries passed to useClickOutsideEvent below.
+  const getChromeElements = useCallback(
+    () => [
+      autocompletePopoverReferenceElement,
+      containerRef.current,
+      menuButtonRef.current,
+      menuRef.current,
+      autoCompletePortalRef.current,
+      createButtonMenuPortalRef.current,
+      clickOutsideBoundaryRef.current,
+      arrayItemRootElementRef?.current,
+    ],
+    [
+      arrayItemRootElementRef,
+      autocompletePopoverReferenceElement,
+      containerRef,
+      menuButtonRef,
+      menuRef,
+    ],
+  )
+
+  // Safari blurs the input on mousedown of a portaled option without moving
+  // focus (relatedTarget is null, activeElement is body). Remember whether
+  // that pointerdown was still inside the reference chrome so the deferred
+  // Autocomplete onBlur does not tear down the picker.
+  const pointerDownInsideChromeRef = useRef(false)
+  useEffect(() => {
+    const onPointerDown = (event: PointerEvent) => {
+      pointerDownInsideChromeRef.current = isNodeInside(event.target, getChromeElements())
+    }
+    // Reset on cancel too: a press that ends off-window or turns into a scroll
+    // never delivers pointerup, and a stuck flag would swallow the next real blur.
+    const onPointerEnd = () => {
+      pointerDownInsideChromeRef.current = false
+    }
+    document.addEventListener('pointerdown', onPointerDown, true)
+    document.addEventListener('pointerup', onPointerEnd, true)
+    document.addEventListener('pointercancel', onPointerEnd, true)
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown, true)
+      document.removeEventListener('pointerup', onPointerEnd, true)
+      document.removeEventListener('pointercancel', onPointerEnd, true)
+    }
+  }, [getChromeElements])
+
   const handleBlur = useCallback(
     (event: FocusEvent) => {
+      if (pointerDownInsideChromeRef.current) {
+        return
+      }
       // Autocomplete calls onBlur after a timeout and checks document.activeElement,
       // so relatedTarget can be stale or null by the time we run.
-      const chrome = [
-        autocompletePopoverReferenceElement,
-        containerRef.current,
-        menuButtonRef.current,
-        menuRef.current,
-        autoCompletePortalRef.current,
-        createButtonMenuPortalRef.current,
-        clickOutsideBoundaryRef.current,
-        arrayItemRootElementRef?.current,
-      ]
+      const chrome = getChromeElements()
       if (
         !isNodeInside(event.relatedTarget, chrome) &&
         !isNodeInside(document.activeElement, chrome)
@@ -269,17 +318,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
         props.elementProps.onBlur(event)
       }
     },
-    [
-      arrayItemRootElementRef,
-      autocompletePopoverReferenceElement,
-      autoCompletePortalRef,
-      clickOutsideBoundaryRef,
-      containerRef,
-      createButtonMenuPortalRef,
-      menuButtonRef,
-      menuRef,
-      props.elementProps,
-    ],
+    [getChromeElements, props.elementProps],
   )
 
   const isWeakRefToNonexistent =

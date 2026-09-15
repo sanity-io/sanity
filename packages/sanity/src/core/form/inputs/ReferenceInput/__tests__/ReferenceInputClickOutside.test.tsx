@@ -332,6 +332,25 @@ describe('ReferenceInput blur handling', () => {
     expect(onBlur).not.toHaveBeenCalled()
   })
 
+  it('does not call onBlur when the input blurs after a pointerdown on the autocomplete portal', async () => {
+    const {onBlur} = await renderReferenceInput({
+      onSearch: SEARCH_WITH_HITS,
+      value: POPULATED_VALUE,
+    })
+    const input = await getEditableCombobox()
+    const popover = await screen.findByTestId('autocomplete-popover')
+
+    input.focus()
+    // oxlint-disable-next-line testing-library/prefer-user-event -- Safari closes on pointerdown+blur, before click
+    fireEvent.pointerDown(popover)
+    fireEvent.focusOut(input, {relatedTarget: null})
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
+
+    expect(onBlur).not.toHaveBeenCalled()
+  })
+
   it('does not call onBlur when focus moves to custom UI within the same array item', async () => {
     const {onBlur} = await renderReferenceInput()
     const input = await getEditableCombobox()
