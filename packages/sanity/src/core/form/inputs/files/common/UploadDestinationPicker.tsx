@@ -1,8 +1,8 @@
 import {type AssetSource} from '@sanity/types'
-import {Stack, Text, useGlobalKeyDown} from '@sanity/ui'
+import {Text, useGlobalKeyDown} from '@sanity/ui'
 import {useCallback} from 'react'
 import {isValidElementType} from 'react-is'
-import {Flex, Box} from 'ui5'
+import {Box, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -60,7 +60,7 @@ export function UploadDestinationPicker(props: UploadDestinationPickerProps) {
       bodyHeight="stretch"
     >
       <Box padding={2}>
-        <Stack gap={2}>
+        <VStack gap={2}>
           {assetSourcesWithUpload.map((assetSource) => {
             const Icon = assetSource.icon
             return (
@@ -83,7 +83,7 @@ export function UploadDestinationPicker(props: UploadDestinationPickerProps) {
               </Button>
             )
           })}
-        </Stack>
+        </VStack>
       </Box>
     </Dialog>
   )

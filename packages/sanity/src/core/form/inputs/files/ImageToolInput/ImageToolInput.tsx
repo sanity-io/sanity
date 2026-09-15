@@ -1,5 +1,5 @@
 import {type HotspotPreview, type Image, type ImageSchemaType} from '@sanity/types'
-import {Card, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Heading, Text} from '@sanity/ui'
 import {
   type ReactNode,
   useCallback,
@@ -10,7 +10,7 @@ import {
   useState,
 } from 'react'
 import {styled} from 'styled-components'
-import {Grid, Flex, Box} from 'ui5'
+import {Box, Flex, Grid, VStack} from 'ui5'
 
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
@@ -165,7 +165,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
       {isSvg ? (
         <>
           <Card padding={3} marginY={3} tone="caution" radius={2}>
-            <Stack gap={4}>
+            <VStack gap={4}>
               <Text size={1}>{t('inputs.imagetool.vector-warning.title')}</Text>
               <Details title={t('inputs.imagetool.vector-warning.expand-developer-info')}>
                 <Text size={1}>
@@ -176,7 +176,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
                   />
                 </Text>
               </Details>
-            </Stack>
+            </VStack>
           </Card>
         </>
       ) : null}
