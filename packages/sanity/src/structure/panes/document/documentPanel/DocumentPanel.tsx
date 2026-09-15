@@ -51,6 +51,7 @@ import {ReferenceChangedBanner} from './banners/ReferenceChangedBanner'
 import {RevisionNotFoundBanner} from './banners/RevisionNotFoundBanner'
 import {ScheduledDraftOverrideBanner} from './banners/ScheduledDraftOverrideBanner'
 import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
+import {SeeDraftBanner} from './banners/SeeDraftBanner'
 import {UnpublishedDocumentBanner} from './banners/UnpublishedDocumentBanner'
 import {VariantDefinitionNotFoundBanner} from './banners/VariantDefinitionNotFoundBanner'
 import {FormView} from './documentViews/FormView'
@@ -387,6 +388,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
         <CanvasLinkedBanner />
         {deletedDocumentBanners}
         <UnpublishedDocumentBanner />
+        <SeeDraftBanner />
         <OpenReleaseToEditBanner
           documentId={displayed?._id ?? documentId}
           isPinnedDraftOrPublished={isPinnedDraftOrPublish}
