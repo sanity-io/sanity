@@ -1,8 +1,7 @@
 /**
- * Custom properties Lightning CSS emits when a consumer's bundler down-levels `light-dark()`
- * (Next.js with Turbopack, or Vite on older targets). The down-leveled output is gated on a
- * `prefers-color-scheme` media query, which the runtime `color-scheme` property does not feed
- * into, so a pinned Studio appearance has to be written to these too.
+ * Custom properties Lightning CSS emits when a consumer's bundler down-levels `light-dark()`.
+ * The down-leveled output is gated on a `prefers-color-scheme` media query, which the runtime
+ * `color-scheme` property does not feed into, so a pinned Studio appearance is written here too.
  *
  * @internal
  */
@@ -11,7 +10,11 @@ export const LIGHTNINGCSS_LIGHT_VARIABLE = '--lightningcss-light'
 /** @internal */
 export const LIGHTNINGCSS_DARK_VARIABLE = '--lightningcss-dark'
 
-/** @internal */
+/**
+ * Pins the document to the resolved Studio appearance. Returns a disposer that undoes this call.
+ *
+ * @internal
+ */
 export function setDocumentColorScheme(scheme: 'light' | 'dark'): () => void {
   const rootStyle = document.documentElement.style
   const previousColorScheme = rootStyle.getPropertyValue('color-scheme')
