@@ -2,7 +2,7 @@ import {TZDate} from '@date-fns/tz'
 import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
-import {Flex, Grid, Select, Text} from '@sanity/ui'
+import {Flex, Select, Text} from '@sanity/ui'
 import {format} from '@sanity/util/legacyDateFormat'
 import {addDays} from 'date-fns/addDays'
 import {addMonths} from 'date-fns/addMonths'
@@ -25,7 +25,7 @@ import {
   useState,
   type RefAttributes,
 } from 'react'
-import {Box, type PaddingProps} from 'ui5'
+import {Grid, Box, type PaddingProps} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
@@ -358,7 +358,11 @@ export function Calendar(props: CalendarProps & RefAttributes<HTMLDivElement>) {
       <Box padding={padding}>
         {/* Day presets */}
         {features.dayPresets && (
-          <Grid gridTemplateColumns={3} data-ui="CalendaryDayPresets" gap={1}>
+          <Grid
+            gridTemplateColumns="repeat(3, minmax(0, 1fr))"
+            data-ui="CalendaryDayPresets"
+            gap={1}
+          >
             <Button text={labels.goToYesterday} mode="bleed" onClick={handleYesterdayClick} />
             <Button text={labels.goToToday} mode="bleed" onClick={handleTodayClick} />
             <Button text={labels.goToTomorrow} mode="bleed" onClick={handleTomorrowClick} />

@@ -65,16 +65,21 @@ const fadeIn = keyframes`
   }
 `
 
-const AnimatedSpinnerIcon = styled(SpinnerIcon)`
+const SizedSpinnerIcon = styled(SpinnerIcon)`
+  height: round(1em, 2px);
+  width: round(1em, 2px);
+`
+
+const AnimatedSpinnerIcon = styled(SizedSpinnerIcon)`
   animation: ${rotate} 500ms linear infinite;
 `
 
-const SubtleSpinnerIcon = styled(SpinnerIcon)`
+const SubtleSpinnerIcon = styled(SizedSpinnerIcon)`
   animation: ${rotate} 1500ms linear infinite;
   opacity: 0.4;
 `
 
-const DelayedSubtleSpinnerIcon = styled(SpinnerIcon)`
+const DelayedSubtleSpinnerIcon = styled(SizedSpinnerIcon)`
   animation:
     ${rotate} 1500ms linear infinite,
     ${fadeIn} 1000ms linear;

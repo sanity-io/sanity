@@ -1,9 +1,9 @@
 import {type ArraySchemaType} from '@sanity/types'
-import {Checkbox, Grid, Text} from '@sanity/ui'
+import {Checkbox, Text} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
 import startCase from 'lodash-es/startCase.js'
 import {useMemo} from 'react'
-import {Flex, Box} from 'ui5'
+import {Grid, Flex, Box} from 'ui5'
 
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {set, unset} from '../../../patch/patch'
@@ -80,7 +80,7 @@ export function ArrayOfPrimitiveOptionsInput(props: ArrayOfPrimitivesInputProps)
     <ChangeIndicator path={path} isChanged={changed} hasFocus={false}>
       <Grid
         gap={2}
-        gridTemplateColumns={isGrid ? Math.min(options.length, 4) : 1}
+        gridTemplateColumns={`repeat(${isGrid ? Math.min(options.length, 4) : 1}, minmax(0, 1fr))`}
         {...elementProps}
       >
         {options.map((option, index) => {

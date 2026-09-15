@@ -99,7 +99,7 @@ export function ArrayItemLayoutsStory() {
             <Card border padding={1} radius={1}>
               <List
                 gap={3}
-                gridTemplateColumns={3}
+                gridTemplateColumns="repeat(3, minmax(0, 1fr))"
                 items={GRID_ITEMS}
                 margin={1}
                 padding={1}

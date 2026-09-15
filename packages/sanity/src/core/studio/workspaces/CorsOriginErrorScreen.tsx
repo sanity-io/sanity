@@ -1,9 +1,9 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Card, Grid, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Heading, Stack, Text} from '@sanity/ui'
 import {type ReactNode, useMemo} from 'react'
 import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Grid, Flex, Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {isProd} from '../../environment'
@@ -197,13 +197,23 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
             <Heading as="h1" size={2}>
               Connect this Studio to your project
             </Heading>
-
             <Text size={2} muted>
               This Studio isn&apos;t connected to your project yet. Pick an option below to connect
               it.
             </Text>
-
-            <Grid gridTemplateColumns={showRegisterOption ? [1, 1, 2] : 1} gapX={4} gapY={3}>
+            <Grid
+              gridTemplateColumns={
+                showRegisterOption
+                  ? [
+                      'repeat(1, minmax(0, 1fr))',
+                      'repeat(1, minmax(0, 1fr))',
+                      'repeat(2, minmax(0, 1fr))',
+                    ]
+                  : 'repeat(1, minmax(0, 1fr))'
+              }
+              columnGap={4}
+              rowGap={3}
+            >
               {/* Register Studio Option */}
               {showRegisterOption && (
                 <Card border padding={4} radius={4}>
@@ -264,7 +274,6 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
                 </Flex>
               </Card>
             </Grid>
-
             <Flex gap={4} justifyContent="flex-end" flexWrap="wrap">
               <DocsHelpLink
                 href={STUDIO_REGISTRATION_DOCS_URL}

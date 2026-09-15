@@ -1,7 +1,14 @@
 import {expect, test} from 'vitest'
 
 import {type BisectCommit} from '../bisect/bisect'
-import {baseTagOf, baseVersionOf, changelogUrl, npmxUrl, regressionCountByTag} from './releaseInfo'
+import {
+  baseTagOf,
+  baseVersionOf,
+  changelogUrl,
+  compareTagsSemverDesc,
+  npmxUrl,
+  regressionCountByTag,
+} from './releaseInfo'
 
 function sha(index: number): string {
   return index.toString(16).repeat(40).slice(0, 40)
@@ -54,4 +61,48 @@ test('regressionCountByTag blames the introducing release', () => {
   expect(counts.get('v2.1.0')).toBe(2)
   expect(counts.get('v2.0.0')).toBe(1)
   expect(counts.size).toBe(2)
+})
+
+test('compareTagsSemverDesc orders newest version first, prereleases below their release', () => {
+  const tags = [
+    'v6.10.1',
+    'v7.0.0-rc.1',
+    'v7.0.0',
+    'v6.9.12',
+    'v7.0.0-rc.10',
+    'v7.0.0-rc.2',
+    'v6.10.0',
+    'v7.1.0',
+    'v7.0.0-beta.1',
+  ]
+  expect([...tags].sort(compareTagsSemverDesc)).toEqual([
+    'v7.1.0',
+    'v7.0.0',
+    'v7.0.0-rc.10',
+    'v7.0.0-rc.2',
+    'v7.0.0-rc.1',
+    'v7.0.0-beta.1',
+    'v6.10.1',
+    'v6.10.0',
+    'v6.9.12',
+  ])
+})
+
+test('compareTagsSemverDesc is stable for equal tags and pushes junk to the end', () => {
+  expect(compareTagsSemverDesc('v6.10.1', '6.10.1')).toBe(0)
+  expect(['junk', 'v6.10.1', 'other'].sort(compareTagsSemverDesc)).toEqual([
+    'v6.10.1',
+    'other',
+    'junk',
+  ])
+})
+
+test('compareTagsSemverDesc compares prerelease identifiers in code-point order, not locale order', () => {
+  // SemVer: non-numeric identifiers sort lexically in ASCII order, so
+  // "RC" < "alpha" and alpha has the higher precedence — a locale-aware
+  // compare would put alpha below RC
+  expect(['v7.0.0-RC', 'v7.0.0-alpha'].sort(compareTagsSemverDesc)).toEqual([
+    'v7.0.0-alpha',
+    'v7.0.0-RC',
+  ])
 })

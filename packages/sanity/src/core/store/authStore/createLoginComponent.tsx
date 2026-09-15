@@ -123,11 +123,7 @@ export function createLoginComponent({
     const [error, setError] = useState<unknown>(null)
     if (error) throw error
 
-    // Deferred (per review): the only way to change workspace mid-login is a
-    // URL change, which triggers a full reload — so `client$` doesn't swap
-    // under a mounted login screen. react-rx v5's identity-coherent deferral
-    // also falls back to the live value if the client ever does change.
-    const client = useObservable(client$)
+    const client = useObservable(client$, undefined)
 
     const getProviderData = useCallback(async () => {
       let providers = [] as AuthProvider[]

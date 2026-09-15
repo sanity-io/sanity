@@ -9,9 +9,9 @@ import {
   useEffect,
   useLayoutEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
-import {useSyncObservable} from 'react-rx'
 import {
   combineLatest,
   debounceTime,
@@ -727,6 +727,8 @@ const ManagedVariantRow: ComponentType<{
   )
 }
 
+const INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY = '--intrinsic-block-size'
+
 /**
  * Preserve the intrinsic block size of an element by maintaining an `--intrinsic-block-size`
  * custom property. This custom property must be used by styles to control the element's size.
@@ -738,41 +740,30 @@ function usePreserveIntrinsicBlockSize({
   isActive: boolean
   element: HTMLElement | null
 }): void {
-  const size = useMemo(() => new Subject<DOMRect | undefined>(), [])
-  // Kept synchronous: this drives an imperative style write
-  // (`--intrinsic-block-size`) that preserves layout during activation, so a
-  // deferred snapshot lagging the latest ResizeObserver measurement could
-  // cause visible layout jumps.
-  const currentSize = useSyncObservable(size)
+  const heightRef = useRef(0)
 
   useEffect(() => {
+    if (!isActive || !element) {
+      return undefined
+    }
+
+    const setHeight = (height: number) => {
+      heightRef.current = height
+      element.style.setProperty(INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY, `${height}px`)
+    }
+
     const resizeObserver = new ResizeObserver(([entry]) => {
-      if (!isActive) {
-        size.next(entry.contentRect)
-      }
+      setHeight(entry.contentRect.height)
     })
 
-    if (element) {
-      resizeObserver.observe(element)
+    if (heightRef.current) {
+      setHeight(heightRef.current)
     }
+    resizeObserver.observe(element)
 
-    return () => resizeObserver.disconnect()
-  }, [isActive, element, size])
-
-  useEffect(() => {
-    if (!element || !currentSize) {
-      return () => {}
+    return () => {
+      element.style.removeProperty(INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY)
+      resizeObserver.disconnect()
     }
-
-    const INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY = '--intrinsic-block-size'
-    const cleanUp = () => element.style.removeProperty(INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY)
-
-    if (isActive) {
-      element?.style.setProperty(INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY, `${currentSize.height}px`)
-      return cleanUp
-    }
-
-    cleanUp()
-    return () => {}
-  }, [element, currentSize, isActive])
+  }, [isActive, element])
 }

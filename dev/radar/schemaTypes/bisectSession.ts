@@ -60,6 +60,12 @@ export const bisectSession = defineType({
       type: 'boolean',
     }),
     defineField({
+      name: 'reproPath',
+      description:
+        'Where in the test studio the issue reproduces, e.g. “/test/structure/author;abc” — appended to every preview build the tool proposes',
+      type: 'string',
+    }),
+    defineField({
       name: 'marks',
       description: 'Append-only verdict log — the last mark per sha wins; undo removes the tail',
       type: 'array',

@@ -27,7 +27,10 @@ const VariantsDocumentInputLayout = lazy(() =>
  */
 export const VARIANTS_NAME = 'sanity/variants'
 
-const VARIANTS_INTENT = 'variant'
+/**
+ * @internal
+ */
+export const VARIANTS_INTENT = 'variant'
 
 // Exported for the variant menu's "View variants" item, which links to the tool.
 export const VARIANTS_TOOL_NAME = 'variants'
