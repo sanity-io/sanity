@@ -1,24 +1,4 @@
-import {styled} from 'styled-components'
-
-const CustomBox = styled.div`
-  animation: 3s linear 0s infinite normal none spin;
-  background: white;
-  border: 1px solid black;
-  cursor: pointer;
-  height: 40px;
-  width: 40px;
-  &:hover {
-    background: red;
-  }
-  @keyframes spin {
-    from {
-      transform: rotate(0);
-    }
-    to {
-      transform: rotate(180deg);
-    }
-  }
-`
+import {customBox} from './fieldComponentsTest.css'
 
 export default {
   name: 'fieldComponentsTest',
@@ -52,7 +32,7 @@ export default {
           <div>Image description 📷</div>
           <div style={{display: 'inline-block', padding: '2em'}}>
             <a href="https://www.sanity.io" rel="noopener noreferrer" target="_blank">
-              <CustomBox />
+              <div className={customBox} />
             </a>
           </div>
         </div>
