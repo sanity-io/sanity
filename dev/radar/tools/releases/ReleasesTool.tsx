@@ -308,6 +308,7 @@ export function ReleasesTool() {
         <RegressionsDialog
           tag={viewingRegressions}
           regressions={regressions.get(viewingRegressions) ?? []}
+          tags={tags}
           client={client}
           onClose={() => setViewingRegressions(null)}
         />

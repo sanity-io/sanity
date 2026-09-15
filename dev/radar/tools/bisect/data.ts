@@ -46,6 +46,7 @@ export interface SessionSummary {
     regression: boolean | null
     description: string | null
     linearIssue: string | null
+    fixedIn: string | null
   } | null
   resultSubject: string | null
 }
@@ -54,7 +55,7 @@ export interface SessionSummary {
 export const BISECT_SESSIONS_QUERY = `*[_type == "bisectSession"] | order(createdAt desc) {
   _id, title, good{sha, label}, bad{sha, label}, createdAt, createdBy,
   "markCount": count(marks),
-  result{firstBadSha, regression, description, linearIssue},
+  result{firstBadSha, regression, description, linearIssue, fixedIn},
   "resultSubject": *[_type == "gitCommit" && sha == ^.result.firstBadSha][0].subject
 }`
 

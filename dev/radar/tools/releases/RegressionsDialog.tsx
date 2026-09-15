@@ -1,17 +1,17 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Box, Button, Card, Dialog, Stack, Text} from '@sanity/ui'
+import {Badge, Box, Button, Card, Dialog, Select, Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {useState} from 'react'
+import {useMemo, useState} from 'react'
 import {type SanityClient} from 'sanity'
 import {useRouter} from 'sanity/router'
 import {Flex} from 'ui5'
 
-import {type SessionSummary} from '../bisect/data'
+import {type SessionSummary, type TagSlice} from '../bisect/data'
 import {RelativeDate} from '../bisect/RelativeDate'
-import {deleteSession} from '../bisect/sessions'
+import {deleteSession, updateResult} from '../bisect/sessions'
 import {pluralize} from '../bisect/text'
-import {bisectSessionPath} from './releaseInfo'
+import {bisectSessionPath, compareTagsSemverDesc} from './releaseInfo'
 
 /**
  * The regressions pinned on one release — each is a bisectSession (a real
@@ -24,10 +24,20 @@ import {bisectSessionPath} from './releaseInfo'
 export function RegressionsDialog(props: {
   tag: string
   regressions: SessionSummary[]
+  /** Every synced release — the "fixed in" candidates are the ones newer than `tag`. */
+  tags: TagSlice[]
   client: SanityClient
   onClose: () => void
 }) {
-  const {tag, regressions, client, onClose} = props
+  const {tag, regressions, tags, client, onClose} = props
+  // A fix can only ship after the release that introduced the regression
+  const fixCandidates = useMemo(
+    () =>
+      tags
+        .filter((candidate) => compareTagsSemverDesc(candidate.tag, tag) < 0)
+        .toSorted((a, b) => compareTagsSemverDesc(a.tag, b.tag)),
+    [tags, tag],
+  )
   return (
     <Dialog
       id="releases-regressions"
@@ -43,7 +53,12 @@ export function RegressionsDialog(props: {
             </Text>
           )}
           {regressions.map((session) => (
-            <RegressionRow key={session._id} session={session} client={client} />
+            <RegressionRow
+              key={session._id}
+              session={session}
+              fixCandidates={fixCandidates}
+              client={client}
+            />
           ))}
         </Stack>
       </Box>
@@ -51,8 +66,12 @@ export function RegressionsDialog(props: {
   )
 }
 
-function RegressionRow(props: {session: SessionSummary; client: SanityClient}) {
-  const {session, client} = props
+function RegressionRow(props: {
+  session: SessionSummary
+  fixCandidates: TagSlice[]
+  client: SanityClient
+}) {
+  const {session, fixCandidates, client} = props
   const toast = useToast()
   const router = useRouter()
   const [confirming, setConfirming] = useState(false)
@@ -61,6 +80,21 @@ function RegressionRow(props: {session: SessionSummary; client: SanityClient}) {
   // See bisectSessionPath: the tool router is scoped, so the sibling tool's
   // URL comes from the current location instead
   const sessionHref = bisectSessionPath(window.location.pathname, session._id)
+
+  const fixedIn = session.result?.fixedIn ?? ''
+  // A stored value that isn't (or is no longer) a synced newer release still
+  // has to be selectable, or the select would silently show "Not fixed yet"
+  const fixedInIsKnown = fixCandidates.some((candidate) => candidate.tag === fixedIn)
+  const setFixedIn = (next: string) => {
+    if (next === fixedIn) return
+    updateResult(client, session._id, {fixedIn: next}).catch((err: unknown) =>
+      toast.push({
+        status: 'error',
+        title: 'Could not save where it was fixed',
+        description: err instanceof Error ? err.message : String(err),
+      }),
+    )
+  }
 
   const remove = () => {
     setRemoving(true)
@@ -81,9 +115,16 @@ function RegressionRow(props: {session: SessionSummary; client: SanityClient}) {
       <Flex alignItems="flex-start" gap={3}>
         <Box flex={1} style={{minWidth: 0}}>
           <Stack gap={2}>
-            <Text size={1} weight="medium">
-              {session.result?.description || session.title || session._id}
-            </Text>
+            <Flex alignItems="center" gap={2} flexWrap="wrap">
+              <Text size={1} weight="medium">
+                {session.result?.description || session.title || session._id}
+              </Text>
+              {fixedIn && (
+                <Badge tone="positive" fontSize={0}>
+                  fixed in {fixedIn}
+                </Badge>
+              )}
+            </Flex>
             {session.resultSubject && (
               <Text size={1} muted textOverflow="ellipsis">
                 {session.result?.firstBadSha?.slice(0, 7)} {session.resultSubject}
@@ -118,6 +159,23 @@ function RegressionRow(props: {session: SessionSummary; client: SanityClient}) {
               </Text>
             </Flex>
           </Stack>
+        </Box>
+        <Box style={{flexShrink: 0}}>
+          <Select
+            fontSize={1}
+            padding={2}
+            value={fixedIn}
+            aria-label="Fixed in release"
+            onChange={(event) => setFixedIn(event.currentTarget.value)}
+          >
+            <option value="">Not fixed yet</option>
+            {fixedIn && !fixedInIsKnown && <option value={fixedIn}>Fixed in {fixedIn}</option>}
+            {fixCandidates.map((candidate) => (
+              <option key={candidate._id} value={candidate.tag}>
+                Fixed in {candidate.tag}
+              </option>
+            ))}
+          </Select>
         </Box>
         {confirming ? (
           <Flex gap={2} style={{flexShrink: 0}}>
