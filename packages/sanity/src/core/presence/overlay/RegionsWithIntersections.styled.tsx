@@ -7,8 +7,16 @@ interface StyleProps {
   $margins?: [number, number, number, number]
 }
 
+/**
+ * The in-flow children are the top sentinel, the content wrapper and the bottom sentinel. Laying
+ * them out as grid rows lets the content row fill the root when the root is given a definite
+ * height (e.g. inside the fullscreen Portable Text editor), so `height: 100%` chains through it.
+ * With an auto height root this is equivalent to normal block flow.
+ */
 export const RootWrapper = styled.div`
   position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
 `
 
 export const OverlayWrapper = styled.div`
