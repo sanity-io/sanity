@@ -167,7 +167,13 @@ export interface StructureBuilder {
    * @returns an array of initial value template item builders. See {@link ListItemBuilder}
    */
   defaultInitialValueTemplateItems: () => InitialValueTemplateItemBuilder[]
-  /** Get the default List builder
+  /**
+   * Get the default List builder.
+   *
+   * The default structure contains a document type list for each document type,
+   * followed by a single list item for each registered singleton (in
+   * registration order).
+   *
    * @returns a List builder. See {@link ListBuilder}
    */
   defaults: () => ListBuilder
