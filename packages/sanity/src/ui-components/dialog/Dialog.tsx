@@ -70,7 +70,7 @@ export function Dialog({
   zOffset,
   ...props
 }: DialogProps &
-  Pick<HTMLProps<HTMLDivElement>, 'onDragEnter' | 'onDrop'> &
+  Pick<HTMLProps<HTMLDivElement>, 'className' | 'onDragEnter' | 'onDrop'> &
   RefAttributes<HTMLDivElement>) {
   const {t} = useTranslation()
 
