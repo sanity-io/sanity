@@ -164,6 +164,9 @@ export function Annotation(props: AnnotationProps): React.JSX.Element {
       __unstable_referenceBoundary: referenceBoundary,
       __unstable_referenceElement: referenceElement,
       __unstable_textElementFocus: editorNodeFocused, // Is there focus on the related text element for this object?
+      // Leave undefined (not false) when there's no member item, so "unknown" stays
+      // distinguishable from "no changes" for the optional `changed` prop.
+      changed: memberItem?.member.item.changed,
       children: input,
       focused,
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -199,6 +202,7 @@ export function Annotation(props: AnnotationProps): React.JSX.Element {
       input,
       isOpen,
       markers,
+      memberItem?.member.item.changed,
       markersToolTip,
       nodePath,
       onClose,
