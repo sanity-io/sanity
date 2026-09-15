@@ -86,6 +86,7 @@ export function AddRegressionDialog(props: {
             </Text>
             <Select
               fontSize={1}
+              aria-label="Introduced in release"
               value={selectedTagName}
               onChange={(event) => setSelectedTagName(event.currentTarget.value)}
             >
@@ -147,6 +148,7 @@ export function AddRegressionDialog(props: {
             </Text>
             <Select
               fontSize={1}
+              aria-label="Fixed in release"
               value={fixedInValid ? fixedIn : ''}
               disabled={!selected}
               onChange={(event) => setFixedIn(event.currentTarget.value)}

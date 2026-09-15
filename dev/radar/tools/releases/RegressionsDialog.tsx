@@ -4,7 +4,7 @@ import {Badge, Box, Button, Card, Dialog, Select, Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useMemo, useState} from 'react'
 import {type SanityClient} from 'sanity'
-import {useRouter} from 'sanity/router'
+import {useLink} from 'sanity/router'
 import {Flex} from 'ui5'
 
 import {type SessionSummary, type TagSlice} from '../bisect/data'
@@ -73,20 +73,23 @@ function RegressionRow(props: {
 }) {
   const {session, fixCandidates, client} = props
   const toast = useToast()
-  const router = useRouter()
   const [confirming, setConfirming] = useState(false)
   const [removing, setRemoving] = useState(false)
 
   // See bisectSessionPath: the tool router is scoped, so the sibling tool's
   // URL comes from the current location instead
   const sessionHref = bisectSessionPath(window.location.pathname, session._id)
+  // Same modifier/middle-click handling as every other studio link
+  const sessionLink = useLink({href: sessionHref})
 
   const fixedIn = session.result?.fixedIn ?? ''
   // A stored value that isn't (or is no longer) a synced newer release still
   // has to be selectable, or the select would silently show "Not fixed yet"
   const fixedInIsKnown = fixCandidates.some((candidate) => candidate.tag === fixedIn)
+  // No "unchanged" short-circuit: it would compare against the last echoed
+  // value, so a quick A → B → A would skip the write back to A. The change
+  // event only fires for real changes, and a redundant set/unset is harmless
   const setFixedIn = (next: string) => {
-    if (next === fixedIn) return
     updateResult(client, session._id, {fixedIn: next}).catch((err: unknown) =>
       toast.push({
         status: 'error',
@@ -146,14 +149,7 @@ function RegressionRow(props: {
                 ·
               </Text>
               <Text size={0}>
-                <a
-                  href={sessionHref}
-                  onClick={(event) => {
-                    if (event.metaKey || event.ctrlKey || event.button !== 0) return
-                    event.preventDefault()
-                    router.navigateUrl({path: sessionHref})
-                  }}
-                >
+                <a href={sessionHref} onClick={sessionLink.onClick}>
                   Open in Bisect <LaunchIcon />
                 </a>
               </Text>
