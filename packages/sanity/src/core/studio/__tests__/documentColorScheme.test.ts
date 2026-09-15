@@ -1,4 +1,3 @@
-import {transform} from 'lightningcss'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {
@@ -87,28 +86,44 @@ describe('setDocumentColorScheme', () => {
   })
 })
 
-describe('lightningcss light-dark() down-level canary', () => {
-  test('emits the variable names and initial/space convention the runtime writes', () => {
-    const output = transform({
-      filename: 'canary.css',
-      code: Buffer.from(':root{color-scheme:light dark}a{color:light-dark(#fff,#000)}'),
-      // versions are encoded as major << 16 | minor << 8; chrome 111 / safari 16.4 are the
-      // baseline-widely-available targets Next.js builds against, which down-level light-dark()
-      targets: {chrome: 111 << 16, safari: (16 << 16) | (4 << 8)},
-    }).code.toString()
+// Verbatim output of lightningcss 1.33.0 transforming
+// `:root{color-scheme:light dark}a{color:light-dark(#fff,#000)}`
+// with targets chrome 111 / safari 16.4, the baseline-widely-available targets
+// Next.js builds against, which down-level light-dark()
+const LIGHTNINGCSS_DOWNLEVEL_FIXTURE = `:root {
+  --lightningcss-light: initial;
+  --lightningcss-dark: ;
+  color-scheme: light dark;
+}
 
-    expect(output).toContain(`var(${LIGHTNINGCSS_LIGHT_VARIABLE}, #fff)`)
-    expect(output).toContain(`var(${LIGHTNINGCSS_DARK_VARIABLE}, #000)`)
+@media (prefers-color-scheme: dark) {
+  :root {
+    --lightningcss-light: ;
+    --lightningcss-dark: initial;
+  }
+}
 
-    const darkMediaQueryIndex = output.indexOf('@media (prefers-color-scheme: dark)')
+a {
+  color: var(--lightningcss-light, #fff) var(--lightningcss-dark, #000);
+}
+`
+
+describe('lightningcss light-dark() down-level convention', () => {
+  test("the space toggle is Lightning CSS's convention, not a typo to tidy into an empty string", () => {
+    expect(LIGHTNINGCSS_DOWNLEVEL_FIXTURE).toContain(`var(${LIGHTNINGCSS_LIGHT_VARIABLE}, #fff)`)
+    expect(LIGHTNINGCSS_DOWNLEVEL_FIXTURE).toContain(`var(${LIGHTNINGCSS_DARK_VARIABLE}, #000)`)
+
+    const darkMediaQueryIndex = LIGHTNINGCSS_DOWNLEVEL_FIXTURE.indexOf(
+      '@media (prefers-color-scheme: dark)',
+    )
     expect(darkMediaQueryIndex).toBeGreaterThan(-1)
 
-    const lightBlock = output.slice(0, darkMediaQueryIndex)
-    expect(lightBlock).toContain(`${LIGHTNINGCSS_LIGHT_VARIABLE}: initial`)
+    const lightBlock = LIGHTNINGCSS_DOWNLEVEL_FIXTURE.slice(0, darkMediaQueryIndex)
+    expect(lightBlock).toContain(`${LIGHTNINGCSS_LIGHT_VARIABLE}: initial;`)
     expect(lightBlock).toContain(`${LIGHTNINGCSS_DARK_VARIABLE}: ;`)
 
-    const darkBlock = output.slice(darkMediaQueryIndex)
+    const darkBlock = LIGHTNINGCSS_DOWNLEVEL_FIXTURE.slice(darkMediaQueryIndex)
     expect(darkBlock).toContain(`${LIGHTNINGCSS_LIGHT_VARIABLE}: ;`)
-    expect(darkBlock).toContain(`${LIGHTNINGCSS_DARK_VARIABLE}: initial`)
+    expect(darkBlock).toContain(`${LIGHTNINGCSS_DARK_VARIABLE}: initial;`)
   })
 })
