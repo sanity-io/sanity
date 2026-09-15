@@ -2374,6 +2374,9 @@ importers:
       jsdom:
         specifier: 'catalog:'
         version: 29.1.1(@noble/hashes@2.4.0)
+      lightningcss:
+        specifier: ^1.33.0
+        version: 1.33.0
       oxc-transform-react:
         specifier: 'catalog:'
         version: 0.149.0

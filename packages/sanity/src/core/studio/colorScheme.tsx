@@ -7,6 +7,7 @@ import {
   type ReactNode,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useSyncExternalStore,
 } from 'react'
@@ -14,7 +15,8 @@ import {ColorSchemeSetValueContext, ColorSchemeValueContext} from 'sanity/_singl
 
 import {type TFunction} from '../i18n/types'
 import {type StudioThemeColorSchemeKey} from '../theme/types'
-import {getSnapshot, setSnapshot, subscribe} from './colorSchemeStore'
+import {getSnapshot, LOCAL_STORAGE_KEY, setSnapshot, subscribe} from './colorSchemeStore'
+import {clearDocumentColorScheme, setDocumentColorScheme} from './documentColorScheme'
 
 /** @internal */
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -34,6 +36,16 @@ function ColorThemeProvider({
   const systemScheme = useSystemScheme()
   const scheme = _scheme === 'system' ? systemScheme : _scheme
 
+  useLayoutEffect(() => {
+    // In system mode the browser's own `prefers-color-scheme` resolution is already correct
+    // for both native and down-leveled `light-dark()`, so leave the document untouched.
+    if (_scheme === 'system') {
+      clearDocumentColorScheme()
+      return undefined
+    }
+    return setDocumentColorScheme(scheme)
+  }, [_scheme, scheme])
+
   return (
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     <ThemeProvider scheme={scheme} theme={studioTheme}>
@@ -45,8 +57,6 @@ function ColorThemeProvider({
     </ThemeProvider>
   )
 }
-
-const LOCAL_STORAGE_KEY = 'sanityStudio:ui:colorScheme'
 
 /** @internal */
 export interface ColorSchemeProviderProps {

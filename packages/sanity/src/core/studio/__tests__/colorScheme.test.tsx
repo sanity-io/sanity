@@ -1,10 +1,12 @@
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {ColorSchemeSetValueContext, ColorSchemeValueContext} from 'sanity/_singletons'
-import {beforeEach, describe, expect, test, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {Button} from '../../../ui-components/button/Button'
 import {ColorSchemeLocalStorageProvider, ColorSchemeProvider} from '../colorScheme'
+import {setSnapshot} from '../colorSchemeStore'
+import {LIGHTNINGCSS_DARK_VARIABLE, LIGHTNINGCSS_LIGHT_VARIABLE} from '../documentColorScheme'
 
 describe('ColorScheme', () => {
   const mockLocalStorage = {
@@ -74,6 +76,79 @@ describe('ColorScheme', () => {
       expect(screen.getByTestId('scheme')).toHaveTextContent('dark')
       expect(onSchemeChange).toHaveBeenCalledWith('dark')
       expect(mockLocalStorage.setItem).toHaveBeenCalledWith('sanityStudio:ui:colorScheme', 'dark')
+    })
+  })
+
+  describe('document color scheme sync', () => {
+    afterEach(() => {
+      document.documentElement.removeAttribute('style')
+    })
+
+    test('a fixed scheme is written to the document element', () => {
+      const setProperty = vi.spyOn(document.documentElement.style, 'setProperty')
+
+      render(
+        <ColorSchemeProvider scheme="dark">
+          <div data-testid="child">Test</div>
+        </ColorSchemeProvider>,
+      )
+
+      expect(document.documentElement.style.colorScheme).toBe('dark')
+      expect(setProperty).toHaveBeenCalledWith(LIGHTNINGCSS_DARK_VARIABLE, 'initial')
+      expect(setProperty).toHaveBeenCalledWith(LIGHTNINGCSS_LIGHT_VARIABLE, ' ')
+    })
+
+    test('runtime scheme changes follow, and system leaves the document unset', async () => {
+      mockLocalStorage.getItem.mockReturnValue(null)
+      setSnapshot('system')
+      const setProperty = vi.spyOn(document.documentElement.style, 'setProperty')
+
+      render(
+        <ColorSchemeLocalStorageProvider>
+          <ColorSchemeSetValueContext.Consumer>
+            {(setValue) => (
+              <>
+                <Button
+                  data-testid="to-light"
+                  onClick={() => setValue && setValue('light')}
+                  text="Light"
+                />
+                <Button
+                  data-testid="to-system"
+                  onClick={() => setValue && setValue('system')}
+                  text="System"
+                />
+              </>
+            )}
+          </ColorSchemeSetValueContext.Consumer>
+        </ColorSchemeLocalStorageProvider>,
+      )
+
+      expect(document.documentElement.style.colorScheme).toBe('')
+      expect(setProperty).not.toHaveBeenCalled()
+
+      await userEvent.click(screen.getByTestId('to-light'))
+      expect(document.documentElement.style.colorScheme).toBe('light')
+      expect(setProperty).toHaveBeenCalledWith(LIGHTNINGCSS_LIGHT_VARIABLE, 'initial')
+      expect(setProperty).toHaveBeenCalledWith(LIGHTNINGCSS_DARK_VARIABLE, ' ')
+
+      await userEvent.click(screen.getByTestId('to-system'))
+      expect(document.documentElement.style.colorScheme).toBe('')
+      expect(document.documentElement.getAttribute('style') ?? '').not.toContain('lightningcss')
+    })
+
+    test('system mode leaves a host-set color-scheme in place', () => {
+      mockLocalStorage.getItem.mockReturnValue(null)
+      setSnapshot('system')
+      document.documentElement.style.colorScheme = 'dark'
+
+      render(
+        <ColorSchemeLocalStorageProvider>
+          <div data-testid="child">Test</div>
+        </ColorSchemeLocalStorageProvider>,
+      )
+
+      expect(document.documentElement.style.colorScheme).toBe('dark')
     })
   })
 })
