@@ -1,5 +1,6 @@
-import {type BadgeTone, Card, Flex, Stack, Text} from '@sanity/ui'
+import {type BadgeTone, Card, Flex, Text} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
+import {VStack} from 'ui5'
 
 import {
   activeASAPRelease,
@@ -28,8 +29,8 @@ export const AllVariants: Story = {
   args: {releaseType: 'asap'},
   render: () => (
     <Card padding={4}>
-      <Stack gap={5}>
-        <Stack gap={2}>
+      <VStack gap={5}>
+        <VStack gap={2}>
           <Text muted size={1} weight="medium">
             by releaseType
           </Text>
@@ -38,8 +39,8 @@ export const AllVariants: Story = {
             <ReleaseAvatar releaseType="scheduled" />
             <ReleaseAvatar releaseType="undecided" />
           </Flex>
-        </Stack>
-        <Stack gap={2}>
+        </VStack>
+        <VStack gap={2}>
           <Text muted size={1} weight="medium">
             by release document
           </Text>
@@ -50,8 +51,8 @@ export const AllVariants: Story = {
             <ReleaseAvatar release={activeCardinalityOneRelease} />
             <ReleaseAvatar release="drafts" />
           </Flex>
-        </Stack>
-        <Stack gap={2}>
+        </VStack>
+        <VStack gap={2}>
           <Text muted size={1} weight="medium">
             by tone
           </Text>
@@ -61,17 +62,17 @@ export const AllVariants: Story = {
               <ReleaseAvatar key={tone} tone={tone} />
             ))}
           </Flex>
-        </Stack>
-        <Stack gap={2}>
+        </VStack>
+        <VStack gap={2}>
           <Text muted size={1} weight="medium">
             StatusItem
           </Text>
-          <Stack gap={2} style={{maxWidth: 280}}>
+          <VStack gap={2} style={{maxWidth: 280}}>
             <StatusItem avatar={<ReleaseAvatar padding={2} releaseType="asap" />} text="ASAP" />
             <StatusItem text="No avatar" />
-          </Stack>
-        </Stack>
-      </Stack>
+          </VStack>
+        </VStack>
+      </VStack>
     </Card>
   ),
 }
