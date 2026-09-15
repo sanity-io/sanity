@@ -88,6 +88,7 @@
     "lint:fix": "pnpm chore:format:fix && pnpm chore:oxlint:fix",
     "lint:workflows": "if command -v zizmor >/dev/null 2>&1; then zizmor .github --min-severity high; else echo 'zizmor not found. Install it: https://docs.zizmor.sh/installation/'; exit 1; fi",
     "list:deps-updates": "npm-check-updates --workspaces --root -m",
+    "measure:sanity-startup": "tsx scripts/measureSanityStartup.ts",
     "normalize-pkgfields": "tsx scripts/normalizePackageFields.ts",
     "normalize:versions": "tsx scripts/normalizeDependencyVersions.ts",
     "perf:codegen": "cd perf/tests && pnpm perf:codegen",
