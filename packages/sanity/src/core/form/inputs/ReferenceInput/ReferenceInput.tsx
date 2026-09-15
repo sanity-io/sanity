@@ -31,6 +31,13 @@ import {useReferenceItemRef} from './useReferenceItemRef'
 
 const NO_FILTER = () => true
 
+function isNodeInside(
+  node: EventTarget | Node | null,
+  containers: Array<Node | null | undefined>,
+): boolean {
+  return Boolean(node instanceof Node && containers.some((container) => container?.contains(node)))
+}
+
 interface AutocompleteOption {
   hit: ReferenceSearchHit
   value: string
@@ -139,9 +146,9 @@ export function ReferenceInput(props: ReferenceInputProps) {
   const handleChange = useCallback(
     (nextId: string) => {
       if (!nextId) {
-        // Clicking the X icon in the autocomplete should not clear the value.
-        // Return early to prevent that.
-        // Users can use it to type a new value and search for the reference.
+        // Autocomplete X clears the search query so the user can type again.
+        // It must not unset the stored reference or leave edit mode.
+        handleQueryChange('')
         return
       }
 
@@ -166,7 +173,15 @@ export function ReferenceInput(props: ReferenceInputProps) {
       // Move focus away from _ref and one level up
       onPathFocus(path)
     },
-    [onChange, onPathFocus, schemaType.name, schemaType.weak, searchState.hits, path],
+    [
+      handleQueryChange,
+      onChange,
+      onPathFocus,
+      schemaType.name,
+      schemaType.weak,
+      searchState.hits,
+      path,
+    ],
   )
 
   const handleClear = useCallback(() => {
@@ -225,22 +240,46 @@ export function ReferenceInput(props: ReferenceInputProps) {
     loadableReferenceInfo.result?.preview?.snapshot?.title,
   ])
 
-  // --- click outside handling
+  // --- click outside / blur handling
   const {menuRef, menuButtonRef, containerRef} = useReferenceItemRef()
+  const arrayItemRootElementRef = useArrayItemRootElementRef()
+  const clickOutsideBoundaryRef = useRef<HTMLDivElement>(null)
+  const autoCompletePortalRef = useRef<HTMLDivElement>(null)
+  const createButtonMenuPortalRef = useRef<HTMLDivElement>(null)
 
   const handleFocus = useCallback(() => onPathFocus(['_ref']), [onPathFocus])
   const handleBlur = useCallback(
     (event: FocusEvent) => {
+      // Autocomplete calls onBlur after a timeout and checks document.activeElement,
+      // so relatedTarget can be stale or null by the time we run.
+      const chrome = [
+        autocompletePopoverReferenceElement,
+        containerRef.current,
+        menuButtonRef.current,
+        menuRef.current,
+        autoCompletePortalRef.current,
+        createButtonMenuPortalRef.current,
+        clickOutsideBoundaryRef.current,
+        arrayItemRootElementRef?.current,
+      ]
       if (
-        !autocompletePopoverReferenceElement?.contains(event.relatedTarget) &&
-        !containerRef.current?.contains(event.relatedTarget) &&
-        !menuButtonRef.current?.contains(event.relatedTarget) &&
-        !menuRef.current?.contains(event.relatedTarget)
+        !isNodeInside(event.relatedTarget, chrome) &&
+        !isNodeInside(document.activeElement, chrome)
       ) {
         props.elementProps.onBlur(event)
       }
     },
-    [autocompletePopoverReferenceElement, props.elementProps, containerRef, menuButtonRef, menuRef],
+    [
+      arrayItemRootElementRef,
+      autocompletePopoverReferenceElement,
+      autoCompletePortalRef,
+      clickOutsideBoundaryRef,
+      containerRef,
+      createButtonMenuPortalRef,
+      menuButtonRef,
+      menuRef,
+      props.elementProps,
+    ],
   )
 
   const isWeakRefToNonexistent =
@@ -264,28 +303,29 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
   const isEditing = focusPath.length === 1 && focusPath[0] === '_ref'
 
-  const arrayItemRootElementRef = useArrayItemRootElementRef()
-  const clickOutsideBoundaryRef = useRef<HTMLDivElement>(null)
-  const autoCompletePortalRef = useRef<HTMLDivElement>(null)
-  const createButtonMenuPortalRef = useRef<HTMLDivElement>(null)
-
   useClickOutsideEvent(
-    // We only clear on clicks outside if the ref does not have a value yet
-    !value?._ref &&
+    // Empty references still clear on outside click. Valued references only
+    // exit replace mode while editing — a populated preview must not steal
+    // focus from another field.
+    (!value?._ref || isEditing) &&
       (() => {
-        // Handle clicks outside while the input is focused
-        if (isEditing) {
-          handleClear()
-        }
-        // And handle ReferenceItem clicks outside after clicking the context menu:
-        // 1. Click "+ Add item".
-        // 2. The empty reference has focus.
-        // 3. Click on the "••• Show more" button.
-        // 4. Focus leaves the empty reference autocomplete and moves to the menu.
-        // 5. Clicking outside of the menu should be handled as if `isEditing` were `true`
-        else if (document.activeElement === menuButtonRef.current) {
-          // If the menu button has focus when this event fires then it means the user clicked outside the menu and we should close
-          handleClear()
+        if (!value?._ref) {
+          // Handle clicks outside while the input is focused
+          if (isEditing) {
+            handleClear()
+          }
+          // And handle ReferenceItem clicks outside after clicking the context menu:
+          // 1. Click "+ Add item".
+          // 2. The empty reference has focus.
+          // 3. Click on the "••• Show more" button.
+          // 4. Focus leaves the empty reference autocomplete and moves to the menu.
+          // 5. Clicking outside of the menu should be handled as if `isEditing` were `true`
+          else if (document.activeElement === menuButtonRef.current) {
+            // If the menu button has focus when this event fires then it means the user clicked outside the menu and we should close
+            handleClear()
+          }
+        } else {
+          onPathFocus([])
         }
       }),
     () => [

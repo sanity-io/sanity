@@ -762,9 +762,6 @@ export default defineType({
   preview: {
     select: {
       title: 'title',
-      strings: 'arrayOfStrings',
-      firstItem: 'arrayOfStrings.0',
-      length: 'arrayOfStrings.length',
     },
     prepare({title}) {
       return {title}
