@@ -1,43 +1,53 @@
 import {SearchIcon} from '@sanity/icons/Search'
-import {Card, Flex, Inline, Stack, Text, type Theme} from '@sanity/ui'
+import {Card, Flex, Inline, Stack, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {Autocomplete} from '@sanity/ui/autocomplete'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useCallback, useMemo, useState} from 'react'
-import {css, styled} from 'styled-components'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {type TimeZoneScope, type TimeZoneScopeType, useTimeZone} from '../../hooks/useTimeZone'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {type NormalizedTimeZone} from '../../studio/timezones/types'
+import {
+  alternativeNameColorVar,
+  cityColorVar,
+  offsetColorVar,
+  timeZoneAlternativeNameSpan,
+  timeZoneCitySpan,
+  timeZoneOffsetSpan,
+} from './DialogTimeZone.css'
 
 export interface DialogTimeZoneProps {
   onClose?: () => void
   timeZoneScope: TimeZoneScope
 }
 
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-const TimeZoneCitySpan = styled.span(({theme}: {theme: Theme}) => {
-  return css`
-    color: ${theme.sanity.color.base.fg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-    font-weight: 500;
-    margin-left: 1em;
-  `
-})
+// Rendered inside the option `Card` so the theme is read from the same scope the spans live in
+function TimeZoneOptionText({option}: {option: NormalizedTimeZone}) {
+  const {color} = useThemeV2()
+  const style = useMemo(
+    () =>
+      assignInlineVars({
+        [cityColorVar]: color.fg,
+        [offsetColorVar]: color.button.ghost.default.enabled.fg,
+        [alternativeNameColorVar]: color.input.default.readOnly.fg,
+      }),
+    [color],
+  )
 
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-const TimeZoneOffsetSpan = styled.span(({theme}: {theme: Theme}) => {
-  return css`
-    color: ${theme.sanity.color.muted.default.enabled.fg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-    font-weight: 500;
-  `
-})
+  return (
+    <Text size={1} textOverflow="ellipsis" style={style}>
+      <span className={timeZoneCitySpan}>{option.city}</span>
+      <span className={timeZoneOffsetSpan}>
+        {' '}
+        ({'GMT'}
+        {option.offset})
+      </span>
 
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-const TimeZoneAlternativeNameSpan = styled.span(({theme}: {theme: Theme}) => {
-  return css`
-    color: ${theme.sanity.color.input.default.readOnly.fg /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-    float: right;
-  `
-})
+      <span className={timeZoneAlternativeNameSpan}>{option.alternativeName}</span>
+    </Text>
+  )
+}
 
 const DialogTimeZone = (props: DialogTimeZoneProps) => {
   const {onClose, timeZoneScope} = props
@@ -98,16 +108,7 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
   const renderOption = useCallback((option: NormalizedTimeZone) => {
     return (
       <Card as="button" padding={3}>
-        <Text size={1} textOverflow="ellipsis">
-          <TimeZoneCitySpan>{option.city}</TimeZoneCitySpan>
-          <TimeZoneOffsetSpan>
-            {' '}
-            ({'GMT'}
-            {option.offset})
-          </TimeZoneOffsetSpan>
-
-          <TimeZoneAlternativeNameSpan>{option.alternativeName}</TimeZoneAlternativeNameSpan>
-        </Text>
+        <TimeZoneOptionText option={option} />
       </Card>
     )
   }, [])
