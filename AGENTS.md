@@ -600,6 +600,66 @@ Both work in every run (no-ops on firefox/webkit); only `CHROMATIC=1` runs captu
 See the `sanity-visual-regression` skill (`.agents/skills/sanity-visual-regression/SKILL.md`)
 for how to add coverage, which source owns a state, and determinism rules.
 
+Keep `test.sequence.hooks: 'list'` in `packages/sanity/vitest.browser.config.mts`. Vitest defaults
+hooks to `stack` (after-hooks run in reverse registration order) and the Chromatic plugin adapts to
+either ordering: it appends its setup file under `stack` and prepends it under `list`, so the
+automatic snapshot runs before `packages/sanity/test/setup/browser.ts` unmounts the tree in both
+cases; only `parallel` lets them race (partially unmounted, blank, or duplicate captures) and the
+plugin warns about it. `list` is set explicitly so the order is stated in the config, and so that
+`afterEach` hooks registered inside a test file (clipboard restores, spies) also run after the
+archive rather than before it. Capture runs also set `retry: 0` (a retried test
+archives twice and Chromatic publishes `Snapshot #1 (2)`), `cropToViewport`, `delay: 0`,
+`pauseAnimationAtEnd` and `prefersReducedMotion: 'reduce'`; the Playwright provider emulates the
+same `prefers-reduced-motion: reduce` locally (the `@sanity/ui` v5 stylesheet, `ui5/styles.css`,
+collapses transitions and animations under it; `test/setup/browser.ts` loads it together with
+`@sanity/ui/styles.css` for every test file, as the studio entry point does), so the DOM a test
+asserts on is the DOM Chromatic renders.
+
+Chromatic archives the DOM plus the elements matching `:hover` / `:focus` / `:active` at capture
+time and re-applies those states in its renderer, so the real pointer position and React
+hover/focus state are part of every snapshot. Make them deterministic in the test, never with
+global CSS overrides from the browser setup (no `transition: 0s`, hidden carets, forced
+opacity, or `!important` focus rings — they hide the state the snapshot is meant to show and
+mask real regressions):
+
+- End interactive tests with `settleChromaticEndState()` from
+  `packages/sanity/test/browser/testHelpers.ts`. It moves the real pointer onto a transparent park
+  element, asserts nothing in the rendered tree is `:hover`ed and no tooltip is open, waits for
+  field-actions / PTE toolbar / floating popover geometry to stop changing, and rounds Floating UI
+  offsets. The shared `beforeEach` in `test/setup/browser.ts` mounts that topmost 4×4 park in the
+  bottom-right corner and parks the pointer on it before the test renders anything, and leaves it
+  mounted until the shared `afterEach`, which restores the viewport, parks the pointer on it once
+  more (now back in the default viewport's corner) and then removes it — so every test starts
+  with the pointer on the park rather than over the previous test's last click, its
+  reduced-viewport corner or the harness's first control, and content rendered under that
+  coordinate later never starts out `:hover`ed. Do
+  not globally `display:none` tooltips — PreviewTooltip and similar tests assert on them.
+- Assert the state you want archived right before the end of the test (or before
+  `takeSnapshot`): e.g. `toBeEnabled()` on a button whose tone changes with pending input,
+  `data-focused="true"` plus `:focus-within` on a card whose focus ring comes from React state,
+  or `styleSelectText: /^No style$/` when PTE focus can land on a text block or an object block.
+- Wait for layout with `expectStable(sample)` (same helpers file): it polls until the sampled
+  geometry / signature is unchanged on several consecutive re-reads. A single re-read that happens
+  to match (`const x = f(); await expect.poll(f).toBe(x)`) is not a stability check — Floating UI
+  and CollapseMenu can agree once and move on the next frame.
+- Assertions on React focus state (`data-focused`, editor `focused`/`blurred` events) are
+  chromium-only in practice: Firefox headless shares one window focus across the pages Vitest runs
+  test files in, so input in another file blurs the editor while `document.activeElement` (and
+  `toHaveFocus()`) is unchanged. Guard them with `server.browser === 'firefox'`; Chromatic archives
+  on chromium only, so nothing is lost.
+- Tests that leave a menu open on purpose must assert a _visible_ overlay (closed `@sanity/ui`
+  menus stay mounted). The automatic afterEach capture archives whatever the DOM looks like after
+  the test's last statement, so when that end state could race a dismiss, use
+  `configure({disableAutoSnapshot: true})` and `takeSnapshot('state')` at the asserted state
+  instead. `takeSnapshot()` serializes the DOM and its `:hover`/`:focus` ids synchronously when
+  called (only the upload is awaited), so the test may keep exercising behavior afterwards — e.g.
+  the `CommentInput` browser tests snapshot `mentions-menu-open`, then press Enter and assert the
+  mention was accepted. Settle (`settleChromaticEndState()`) and assert the state _before_ the
+  `takeSnapshot()` call; interactions after it never reach that archive.
+- Interaction-only tests whose end state is a loading or error flash should
+  `configure({disableAutoSnapshot: true})`. Do not set `localStorage.debug` in browser tests —
+  debug overlay noise shows up in Chromatic archives.
+
 ### E2E Tests (Playwright)
 
 ```bash
