@@ -1,67 +1,32 @@
-import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
+import {afterEach, describe, expect, test} from 'vitest'
 
 import {
   LIGHTNINGCSS_DARK_VARIABLE,
   LIGHTNINGCSS_LIGHT_VARIABLE,
-  overrideLightDarkDownlevelForTests,
   setDocumentColorScheme,
 } from '../documentColorScheme'
 
+// jsdom cannot resolve the computed style the down-level detection probe reads, so the
+// Lightning CSS toggle behaviour is covered by documentColorScheme.browser.test.ts; these
+// tests cover what jsdom can observe: the color-scheme write and its snapshot/restore.
 describe('setDocumentColorScheme', () => {
-  beforeEach(() => {
-    overrideLightDarkDownlevelForTests(true)
-  })
-
   afterEach(() => {
-    overrideLightDarkDownlevelForTests(null)
     document.documentElement.removeAttribute('style')
-    vi.restoreAllMocks()
   })
 
-  test('light writes color-scheme and enables the light branch', () => {
-    const setProperty = vi.spyOn(document.documentElement.style, 'setProperty')
-
+  test('writes the resolved scheme to color-scheme', () => {
     setDocumentColorScheme('light')
-
     expect(document.documentElement.style.colorScheme).toBe('light')
-    expect(document.documentElement.getAttribute('style')).toContain(
-      `${LIGHTNINGCSS_LIGHT_VARIABLE}: initial`,
-    )
-    // jsdom does not store whitespace-only custom properties, so the disabled branch is
-    // pinned via the call; the real CSSOM behaviour is covered by the browser test
-    expect(setProperty).toHaveBeenCalledWith(LIGHTNINGCSS_DARK_VARIABLE, ' ')
-  })
-
-  test('dark writes color-scheme and enables the dark branch', () => {
-    const setProperty = vi.spyOn(document.documentElement.style, 'setProperty')
 
     setDocumentColorScheme('dark')
-
     expect(document.documentElement.style.colorScheme).toBe('dark')
-    expect(document.documentElement.getAttribute('style')).toContain(
-      `${LIGHTNINGCSS_DARK_VARIABLE}: initial`,
-    )
-    expect(setProperty).toHaveBeenCalledWith(LIGHTNINGCSS_LIGHT_VARIABLE, ' ')
   })
 
-  test('skips the custom properties when no down-leveled output is detected', () => {
-    overrideLightDarkDownlevelForTests(false)
-    const setProperty = vi.spyOn(document.documentElement.style, 'setProperty')
-
-    setDocumentColorScheme('light')
-
-    expect(document.documentElement.style.colorScheme).toBe('light')
-    expect(document.documentElement.getAttribute('style') ?? '').not.toContain('lightningcss')
-    expect(setProperty).not.toHaveBeenCalledWith(LIGHTNINGCSS_LIGHT_VARIABLE, expect.anything())
-    expect(setProperty).not.toHaveBeenCalledWith(LIGHTNINGCSS_DARK_VARIABLE, expect.anything())
-  })
-
-  test('the disposer removes everything the call wrote', () => {
+  test('the disposer removes a color-scheme written over an empty one', () => {
     const dispose = setDocumentColorScheme('dark')
     dispose()
 
     expect(document.documentElement.style.colorScheme).toBe('')
-    expect(document.documentElement.getAttribute('style') ?? '').not.toContain('lightningcss')
   })
 
   test('the disposer restores a host-set color-scheme', () => {

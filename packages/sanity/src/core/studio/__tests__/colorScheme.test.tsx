@@ -6,11 +6,6 @@ import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 import {Button} from '../../../ui-components/button/Button'
 import {ColorSchemeLocalStorageProvider, ColorSchemeProvider} from '../colorScheme'
 import {setSnapshot} from '../colorSchemeStore'
-import {
-  LIGHTNINGCSS_DARK_VARIABLE,
-  LIGHTNINGCSS_LIGHT_VARIABLE,
-  overrideLightDarkDownlevelForTests,
-} from '../documentColorScheme'
 
 describe('ColorScheme', () => {
   const mockLocalStorage = {
@@ -83,19 +78,15 @@ describe('ColorScheme', () => {
     })
   })
 
+  // jsdom cannot resolve the down-level detection probe, so the Lightning CSS toggle behaviour
+  // is covered by documentColorScheme.browser.test.ts; these tests cover the color-scheme write
+  // and restore through the providers.
   describe('document color scheme sync', () => {
-    beforeEach(() => {
-      overrideLightDarkDownlevelForTests(true)
-    })
-
     afterEach(() => {
-      overrideLightDarkDownlevelForTests(null)
       document.documentElement.removeAttribute('style')
     })
 
     test('a fixed scheme is written to the document element', () => {
-      const setProperty = vi.spyOn(document.documentElement.style, 'setProperty')
-
       render(
         <ColorSchemeProvider scheme="dark">
           <div data-testid="child">Test</div>
@@ -103,14 +94,11 @@ describe('ColorScheme', () => {
       )
 
       expect(document.documentElement.style.colorScheme).toBe('dark')
-      expect(setProperty).toHaveBeenCalledWith(LIGHTNINGCSS_DARK_VARIABLE, 'initial')
-      expect(setProperty).toHaveBeenCalledWith(LIGHTNINGCSS_LIGHT_VARIABLE, ' ')
     })
 
     test('runtime scheme changes follow, and system leaves the document unset', async () => {
       mockLocalStorage.getItem.mockReturnValue(null)
       setSnapshot('system')
-      const setProperty = vi.spyOn(document.documentElement.style, 'setProperty')
 
       render(
         <ColorSchemeLocalStorageProvider>
@@ -134,16 +122,12 @@ describe('ColorScheme', () => {
       )
 
       expect(document.documentElement.style.colorScheme).toBe('')
-      expect(setProperty).not.toHaveBeenCalled()
 
       await userEvent.click(screen.getByTestId('to-light'))
       expect(document.documentElement.style.colorScheme).toBe('light')
-      expect(setProperty).toHaveBeenCalledWith(LIGHTNINGCSS_LIGHT_VARIABLE, 'initial')
-      expect(setProperty).toHaveBeenCalledWith(LIGHTNINGCSS_DARK_VARIABLE, ' ')
 
       await userEvent.click(screen.getByTestId('to-system'))
       expect(document.documentElement.style.colorScheme).toBe('')
-      expect(document.documentElement.getAttribute('style') ?? '').not.toContain('lightningcss')
     })
 
     test('a host-set color-scheme survives system mode and returns after a pinned scheme', async () => {
@@ -179,7 +163,6 @@ describe('ColorScheme', () => {
 
       await userEvent.click(screen.getByTestId('to-system'))
       expect(document.documentElement.style.colorScheme).toBe('dark')
-      expect(document.documentElement.getAttribute('style') ?? '').not.toContain('lightningcss')
     })
   })
 })

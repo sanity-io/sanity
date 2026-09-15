@@ -1,20 +1,33 @@
-import {afterEach, describe, expect, test} from 'vitest'
+import {afterEach, beforeEach, describe, expect, test} from 'vitest'
 
 import {
   LIGHTNINGCSS_DARK_VARIABLE,
   LIGHTNINGCSS_LIGHT_VARIABLE,
-  overrideLightDarkDownlevelForTests,
   setDocumentColorScheme,
 } from '../documentColorScheme'
 
 const LIGHT_COLOR = 'rgb(10, 20, 30)'
 const DARK_COLOR = 'rgb(200, 210, 220)'
 
-// Mirrors the `:root` block Lightning CSS emits alongside down-leveled `light-dark()`
+// The toggles are only written when the appearance disagrees with the OS, so each test derives
+// the mismatching scheme from the browser's own preference instead of assuming light
+function osPrefersDark(): boolean {
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
+}
+
+// Mirrors the blocks Lightning CSS emits alongside down-leveled `light-dark()`. Injected in
+// beforeEach so the module's down-level detection, which caches its first probe for the life
+// of the page, always sees the declarations; the no-declaration case lives in
+// documentColorSchemeUndetected.browser.test.ts, which runs in its own page.
 function injectDownleveledStylesheet(): void {
   const style = document.createElement('style')
   style.dataset.downlevel = 'true'
-  style.textContent = `:root { ${LIGHTNINGCSS_LIGHT_VARIABLE}: initial; ${LIGHTNINGCSS_DARK_VARIABLE}: ; }`
+  style.textContent = `
+    :root { ${LIGHTNINGCSS_LIGHT_VARIABLE}: initial; ${LIGHTNINGCSS_DARK_VARIABLE}: ; }
+    @media (prefers-color-scheme: dark) {
+      :root { ${LIGHTNINGCSS_LIGHT_VARIABLE}: ; ${LIGHTNINGCSS_DARK_VARIABLE}: initial; }
+    }
+  `
   document.head.appendChild(style)
 }
 
@@ -26,9 +39,12 @@ function renderDownleveledProbe(): HTMLElement {
   return probe
 }
 
-describe('setDocumentColorScheme (real CSSOM)', () => {
+describe('setDocumentColorScheme (real CSSOM, down-leveled output present)', () => {
+  beforeEach(() => {
+    injectDownleveledStylesheet()
+  })
+
   afterEach(() => {
-    overrideLightDarkDownlevelForTests(null)
     document.documentElement.removeAttribute('style')
     document.body.replaceChildren()
     for (const style of Array.from(document.head.querySelectorAll('style[data-downlevel]'))) {
@@ -36,27 +52,52 @@ describe('setDocumentColorScheme (real CSSOM)', () => {
     }
   })
 
-  test('light resolves down-leveled light-dark() to the light value', () => {
-    injectDownleveledStylesheet()
+  test('a scheme mismatching the OS writes the toggles and flips down-leveled light-dark()', () => {
     const probe = renderDownleveledProbe()
+    const osColor = osPrefersDark() ? DARK_COLOR : LIGHT_COLOR
+    const mismatchScheme = osPrefersDark() ? 'light' : 'dark'
+    const mismatchColor = osPrefersDark() ? LIGHT_COLOR : DARK_COLOR
 
-    setDocumentColorScheme('light')
+    expect(getComputedStyle(probe).color).toBe(osColor)
 
-    expect(document.documentElement.style.colorScheme).toBe('light')
-    expect(getComputedStyle(probe).color).toBe(LIGHT_COLOR)
+    setDocumentColorScheme(mismatchScheme)
+
+    expect(document.documentElement.style.colorScheme).toBe(mismatchScheme)
+    expect(getComputedStyle(probe).color).toBe(mismatchColor)
   })
 
-  test('dark resolves down-leveled light-dark() to the dark value', () => {
-    injectDownleveledStylesheet()
+  test('a scheme matching the OS writes only color-scheme', () => {
     const probe = renderDownleveledProbe()
+    const osScheme = osPrefersDark() ? 'dark' : 'light'
+    const osColor = osPrefersDark() ? DARK_COLOR : LIGHT_COLOR
 
-    setDocumentColorScheme('dark')
+    setDocumentColorScheme(osScheme)
 
+    expect(document.documentElement.style.colorScheme).toBe(osScheme)
+    expect(document.documentElement.getAttribute('style') ?? '').not.toContain('lightningcss')
+    expect(getComputedStyle(probe).color).toBe(osColor)
+  })
+
+  test('the disposer restores a host-set color-scheme and removes the toggles', () => {
+    const probe = renderDownleveledProbe()
+    const osColor = osPrefersDark() ? DARK_COLOR : LIGHT_COLOR
+    const mismatchScheme = osPrefersDark() ? 'light' : 'dark'
+    document.documentElement.style.colorScheme = 'dark'
+
+    const dispose = setDocumentColorScheme(mismatchScheme)
+    expect(document.documentElement.style.colorScheme).toBe(mismatchScheme)
+
+    dispose()
     expect(document.documentElement.style.colorScheme).toBe('dark')
-    expect(getComputedStyle(probe).color).toBe(DARK_COLOR)
+    expect(document.documentElement.getAttribute('style') ?? '').not.toContain('lightningcss')
+    expect(getComputedStyle(probe).color).toBe(osColor)
   })
 
   test('a space-valued custom property survives where an empty string would not', () => {
+    // inline-only scenario: the stylesheet would keep the removed variable declared at :root
+    for (const style of Array.from(document.head.querySelectorAll('style[data-downlevel]'))) {
+      style.remove()
+    }
     const probe = renderDownleveledProbe()
     const rootStyle = document.documentElement.style
 
@@ -67,28 +108,6 @@ describe('setDocumentColorScheme (real CSSOM)', () => {
     // an empty string removes the property, so both var() fallbacks apply and the
     // composite value becomes invalid at computed-value time
     rootStyle.setProperty(LIGHTNINGCSS_DARK_VARIABLE, '')
-    expect(getComputedStyle(probe).color).not.toBe(LIGHT_COLOR)
-  })
-
-  test('the disposer restores a host-set color-scheme and removes the toggles', () => {
-    injectDownleveledStylesheet()
-    document.documentElement.style.colorScheme = 'dark'
-
-    const dispose = setDocumentColorScheme('light')
-    expect(document.documentElement.style.colorScheme).toBe('light')
-
-    dispose()
-    expect(document.documentElement.style.colorScheme).toBe('dark')
-    expect(document.documentElement.getAttribute('style') ?? '').not.toContain('lightningcss')
-  })
-
-  test('skips the custom properties when nothing declares the toggles', () => {
-    const probe = renderDownleveledProbe()
-
-    setDocumentColorScheme('light')
-
-    expect(document.documentElement.style.colorScheme).toBe('light')
-    expect(document.documentElement.getAttribute('style') ?? '').not.toContain('lightningcss')
     expect(getComputedStyle(probe).color).not.toBe(LIGHT_COLOR)
   })
 })

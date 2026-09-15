@@ -44,7 +44,10 @@ function ColorThemeProvider({
       return undefined
     }
     return setDocumentColorScheme(scheme)
-  }, [_scheme, scheme])
+    // systemScheme is deliberate: the helper's mismatch check reads matchMedia, so an OS flip
+    // while the appearance is pinned must re-run the write
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- see above
+  }, [_scheme, scheme, systemScheme])
 
   return (
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
