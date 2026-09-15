@@ -10,9 +10,7 @@ import {COMMENTS_INSPECTOR_NAME} from '../../constants'
 import {useCommentsEnabled} from '../../hooks/useCommentsEnabled'
 import {commentsLocaleNamespace} from '../../i18n'
 
-const CommentsInspector = lazy(() =>
-  import('./CommentsInspector').then((module) => ({default: module.CommentsInspector})),
-)
+const CommentsInspector = lazy(() => import('./CommentsInspector.lazy'))
 
 function useMenuItem(): DocumentInspectorMenuItem {
   const {t} = useTranslation(commentsLocaleNamespace)

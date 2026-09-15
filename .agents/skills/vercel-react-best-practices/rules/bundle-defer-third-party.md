@@ -28,10 +28,15 @@ export default function RootLayout({children}) {
 
 **Correct (loads after hydration):**
 
+```ts
+// Analytics.lazy.ts
+export {Analytics as default} from '@vercel/analytics/react'
+```
+
 ```tsx
 import dynamic from 'next/dynamic'
 
-const Analytics = dynamic(() => import('@vercel/analytics/react').then((m) => m.Analytics), {
+const Analytics = dynamic(() => import('./Analytics.lazy'), {
   ssr: false,
 })
 
