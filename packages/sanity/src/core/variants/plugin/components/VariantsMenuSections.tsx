@@ -1,18 +1,14 @@
-import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Flex, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
 import {Box} from 'ui5'
 
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
-import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
 import {RhombusOutlinedIcon} from '../../../components/temporary-icons/RhombusOutlined'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {stickyMenuHeadingStyle} from '../../../perspective/styles'
-import {getConditionMismatchMessage} from '../../components/ConditionMismatchIndicator'
 import {useDocumentVariantIds} from '../../hooks/useDocumentVariantIds'
-import {useVariantConditionMismatches} from '../../hooks/useVariantConditions'
 import {variantsLocaleNamespace} from '../../i18n'
 import {getVariantId, getVariantTitle} from '../../tool/util'
 import {type SystemVariant} from '../../types'
@@ -63,11 +59,6 @@ function VariantMenuItem(props: {
   icon: React.ComponentType
 }): React.JSX.Element {
   const {isSelected, onSelect, variant, icon: Icon} = props
-  const {t} = useTranslation(variantsLocaleNamespace)
-  const mismatches = useVariantConditionMismatches(variant.conditions)
-  const mismatchMessage =
-    mismatches.length > 0 ? getConditionMismatchMessage(t, mismatches) : undefined
-
   return (
     <MenuItem
       data-testid={`variant-${getVariantId(variant._id)}`}
@@ -76,28 +67,10 @@ function VariantMenuItem(props: {
           <Icon />
         </Text>
       }
-      iconRight={
-        mismatches.length > 0 ? (
-          <span data-testid="variant-condition-mismatch">
-            <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
-          </span>
-        ) : undefined
-      }
       onClick={() => onSelect(variant)}
       pressed={isSelected}
       selected={isSelected}
       text={getVariantTitle(variant)}
-      tooltipProps={
-        mismatchMessage
-          ? {
-              content: (
-                <Text muted size={1}>
-                  {mismatchMessage}
-                </Text>
-              ),
-            }
-          : undefined
-      }
     />
   )
 }
