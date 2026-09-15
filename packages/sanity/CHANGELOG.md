@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.14.0](https://github.com/sanity-io/sanity/compare/v6.13.2...v6.14.0) (2026-09-15)
+
+### Features
+
+* **tasks:** opt task comments into the Comments API ([#14519](https://github.com/sanity-io/sanity/issues/14519)) ([86855b9](https://github.com/sanity-io/sanity/commit/86855b9eadd86ac2a79ec54a94e68659cb8238b4))
+
+### Bug Fixes
+
+* **core:** reference input autocomplete unexpected blink ([#14740](https://github.com/sanity-io/sanity/issues/14740)) ([a8a4e33](https://github.com/sanity-io/sanity/commit/a8a4e33640f120c25c3cd62527c6e898b35b2f44))
+* **core:** use intent link for variants duplicate message ([#14735](https://github.com/sanity-io/sanity/issues/14735)) ([0b7173e](https://github.com/sanity-io/sanity/commit/0b7173ed6ab5cb40da81c48bf0bc0e8e63624d3f))
+* **form:** keep popovers inside pane when opened from dialogs ([#14734](https://github.com/sanity-io/sanity/issues/14734)) ([2c23972](https://github.com/sanity-io/sanity/commit/2c23972215226882f96d4da38771d38c921a8bdc))
+* **portable-text:** only show the annotation toolbar popover for collapsed selections ([#14713](https://github.com/sanity-io/sanity/issues/14713)) ([b670874](https://github.com/sanity-io/sanity/commit/b6708748ebba921e33651f2bf8dfe9b145cf7de3))
+* **sanity:** choose-document-destination banner incorrectly superseded deleted-document banners ([a7fcc7c](https://github.com/sanity-io/sanity/commit/a7fcc7cf6eb83174112d0b807015729efc1f872c))
 ## [6.13.2](https://github.com/sanity-io/sanity/compare/v6.13.1...v6.13.2) (2026-09-11)
 
 ### Bug Fixes
