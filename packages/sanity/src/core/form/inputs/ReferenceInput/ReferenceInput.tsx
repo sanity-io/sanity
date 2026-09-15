@@ -271,24 +271,23 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
   useClickOutsideEvent(
     // We only clear on clicks outside if the ref does not have a value yet
-    !value?._ref
-      ? () => {
-          // Handle clicks outside while the input is focused
-          if (isEditing) {
-            handleClear()
-          }
-          // And handle ReferenceItem clicks outside after clicking the context menu:
-          // 1. Click "+ Add item".
-          // 2. The empty reference has focus.
-          // 3. Click on the "••• Show more" button.
-          // 4. Focus leaves the empty reference autocomplete and moves to the menu.
-          // 5. Clicking outside of the menu should be handled as if `isEditing` were `true`
-          else if (document.activeElement === menuButtonRef.current) {
-            // If the menu button has focus when this event fires then it means the user clicked outside the menu and we should close
-            handleClear()
-          }
+    !value?._ref &&
+      (() => {
+        // Handle clicks outside while the input is focused
+        if (isEditing) {
+          handleClear()
         }
-      : () => onPathFocus([]),
+        // And handle ReferenceItem clicks outside after clicking the context menu:
+        // 1. Click "+ Add item".
+        // 2. The empty reference has focus.
+        // 3. Click on the "••• Show more" button.
+        // 4. Focus leaves the empty reference autocomplete and moves to the menu.
+        // 5. Clicking outside of the menu should be handled as if `isEditing` were `true`
+        else if (document.activeElement === menuButtonRef.current) {
+          // If the menu button has focus when this event fires then it means the user clicked outside the menu and we should close
+          handleClear()
+        }
+      }),
     () => [
       menuRef.current,
       menuButtonRef.current,
