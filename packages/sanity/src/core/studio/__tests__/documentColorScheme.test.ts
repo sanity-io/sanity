@@ -1,16 +1,20 @@
 import {transform} from 'lightningcss'
-import {afterEach, describe, expect, test, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {
-  clearDocumentColorScheme,
   LIGHTNINGCSS_DARK_VARIABLE,
   LIGHTNINGCSS_LIGHT_VARIABLE,
+  overrideLightDarkDownlevelForTests,
   setDocumentColorScheme,
 } from '../documentColorScheme'
 
 describe('setDocumentColorScheme', () => {
+  beforeEach(() => {
+    overrideLightDarkDownlevelForTests(true)
+  })
+
   afterEach(() => {
-    clearDocumentColorScheme()
+    overrideLightDarkDownlevelForTests(null)
     document.documentElement.removeAttribute('style')
     vi.restoreAllMocks()
   })
@@ -41,32 +45,45 @@ describe('setDocumentColorScheme', () => {
     expect(setProperty).toHaveBeenCalledWith(LIGHTNINGCSS_LIGHT_VARIABLE, ' ')
   })
 
-  test('the disposer removes all three properties', () => {
-    const removeProperty = vi.spyOn(document.documentElement.style, 'removeProperty')
+  test('skips the custom properties when no down-leveled output is detected', () => {
+    overrideLightDarkDownlevelForTests(false)
+    const setProperty = vi.spyOn(document.documentElement.style, 'setProperty')
 
+    setDocumentColorScheme('light')
+
+    expect(document.documentElement.style.colorScheme).toBe('light')
+    expect(document.documentElement.getAttribute('style') ?? '').not.toContain('lightningcss')
+    expect(setProperty).not.toHaveBeenCalledWith(LIGHTNINGCSS_LIGHT_VARIABLE, expect.anything())
+    expect(setProperty).not.toHaveBeenCalledWith(LIGHTNINGCSS_DARK_VARIABLE, expect.anything())
+  })
+
+  test('the disposer removes everything the call wrote', () => {
     const dispose = setDocumentColorScheme('dark')
     dispose()
 
     expect(document.documentElement.style.colorScheme).toBe('')
     expect(document.documentElement.getAttribute('style') ?? '').not.toContain('lightningcss')
-    expect(removeProperty).toHaveBeenCalledWith('color-scheme')
-    expect(removeProperty).toHaveBeenCalledWith(LIGHTNINGCSS_LIGHT_VARIABLE)
-    expect(removeProperty).toHaveBeenCalledWith(LIGHTNINGCSS_DARK_VARIABLE)
   })
 
-  test('clearDocumentColorScheme removes all three properties', () => {
-    setDocumentColorScheme('light')
-    clearDocumentColorScheme()
-
-    expect(document.documentElement.style.colorScheme).toBe('')
-    expect(document.documentElement.getAttribute('style') ?? '').not.toContain('lightningcss')
-  })
-
-  test('clearDocumentColorScheme leaves a host-set color-scheme in place', () => {
+  test('the disposer restores a host-set color-scheme', () => {
     document.documentElement.style.colorScheme = 'dark'
-    clearDocumentColorScheme()
 
+    const dispose = setDocumentColorScheme('light')
+    expect(document.documentElement.style.colorScheme).toBe('light')
+
+    dispose()
     expect(document.documentElement.style.colorScheme).toBe('dark')
+  })
+
+  test('each disposer restores its own snapshot', () => {
+    const disposeFirst = setDocumentColorScheme('light')
+    const disposeSecond = setDocumentColorScheme('dark')
+
+    disposeSecond()
+    expect(document.documentElement.style.colorScheme).toBe('light')
+
+    disposeFirst()
+    expect(document.documentElement.style.colorScheme).toBe('')
   })
 })
 
@@ -75,8 +92,9 @@ describe('lightningcss light-dark() down-level canary', () => {
     const output = transform({
       filename: 'canary.css',
       code: Buffer.from(':root{color-scheme:light dark}a{color:light-dark(#fff,#000)}'),
-      // versions are encoded as major << 16; chrome 110 predates light-dark() support
-      targets: {chrome: 110 << 16},
+      // versions are encoded as major << 16 | minor << 8; chrome 111 / safari 16.4 are the
+      // baseline-widely-available targets Next.js builds against, which down-level light-dark()
+      targets: {chrome: 111 << 16, safari: (16 << 16) | (4 << 8)},
     }).code.toString()
 
     expect(output).toContain(`var(${LIGHTNINGCSS_LIGHT_VARIABLE}, #fff)`)

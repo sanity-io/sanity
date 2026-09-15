@@ -2375,7 +2375,7 @@ importers:
         specifier: 'catalog:'
         version: 29.1.1(@noble/hashes@2.4.0)
       lightningcss:
-        specifier: ^1.33.0
+        specifier: 1.33.0
         version: 1.33.0
       oxc-transform-react:
         specifier: 'catalog:'

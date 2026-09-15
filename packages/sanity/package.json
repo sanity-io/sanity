@@ -271,7 +271,7 @@
     "blob-polyfill": "^9.0.20240710",
     "chromatic": "^18.7.2",
     "jsdom": "catalog:",
-    "lightningcss": "^1.33.0",
+    "lightningcss": "1.33.0",
     "oxc-transform-react": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",

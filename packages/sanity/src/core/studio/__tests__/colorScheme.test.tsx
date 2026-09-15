@@ -6,7 +6,11 @@ import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 import {Button} from '../../../ui-components/button/Button'
 import {ColorSchemeLocalStorageProvider, ColorSchemeProvider} from '../colorScheme'
 import {setSnapshot} from '../colorSchemeStore'
-import {LIGHTNINGCSS_DARK_VARIABLE, LIGHTNINGCSS_LIGHT_VARIABLE} from '../documentColorScheme'
+import {
+  LIGHTNINGCSS_DARK_VARIABLE,
+  LIGHTNINGCSS_LIGHT_VARIABLE,
+  overrideLightDarkDownlevelForTests,
+} from '../documentColorScheme'
 
 describe('ColorScheme', () => {
   const mockLocalStorage = {
@@ -80,7 +84,12 @@ describe('ColorScheme', () => {
   })
 
   describe('document color scheme sync', () => {
+    beforeEach(() => {
+      overrideLightDarkDownlevelForTests(true)
+    })
+
     afterEach(() => {
+      overrideLightDarkDownlevelForTests(null)
       document.documentElement.removeAttribute('style')
     })
 
@@ -137,18 +146,40 @@ describe('ColorScheme', () => {
       expect(document.documentElement.getAttribute('style') ?? '').not.toContain('lightningcss')
     })
 
-    test('system mode leaves a host-set color-scheme in place', () => {
+    test('a host-set color-scheme survives system mode and returns after a pinned scheme', async () => {
       mockLocalStorage.getItem.mockReturnValue(null)
       setSnapshot('system')
       document.documentElement.style.colorScheme = 'dark'
 
       render(
         <ColorSchemeLocalStorageProvider>
-          <div data-testid="child">Test</div>
+          <ColorSchemeSetValueContext.Consumer>
+            {(setValue) => (
+              <>
+                <Button
+                  data-testid="to-light"
+                  onClick={() => setValue && setValue('light')}
+                  text="Light"
+                />
+                <Button
+                  data-testid="to-system"
+                  onClick={() => setValue && setValue('system')}
+                  text="System"
+                />
+              </>
+            )}
+          </ColorSchemeSetValueContext.Consumer>
         </ColorSchemeLocalStorageProvider>,
       )
 
       expect(document.documentElement.style.colorScheme).toBe('dark')
+
+      await userEvent.click(screen.getByTestId('to-light'))
+      expect(document.documentElement.style.colorScheme).toBe('light')
+
+      await userEvent.click(screen.getByTestId('to-system'))
+      expect(document.documentElement.style.colorScheme).toBe('dark')
+      expect(document.documentElement.getAttribute('style') ?? '').not.toContain('lightningcss')
     })
   })
 })

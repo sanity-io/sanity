@@ -1,14 +1,22 @@
 import {afterEach, describe, expect, test} from 'vitest'
 
 import {
-  clearDocumentColorScheme,
   LIGHTNINGCSS_DARK_VARIABLE,
   LIGHTNINGCSS_LIGHT_VARIABLE,
+  overrideLightDarkDownlevelForTests,
   setDocumentColorScheme,
 } from '../documentColorScheme'
 
-const LIGHT_COLOR = 'rgb(1, 2, 3)'
-const DARK_COLOR = 'rgb(201, 202, 203)'
+const LIGHT_COLOR = 'rgb(10, 20, 30)'
+const DARK_COLOR = 'rgb(200, 210, 220)'
+
+// Mirrors the `:root` block Lightning CSS emits alongside down-leveled `light-dark()`
+function injectDownleveledStylesheet(): void {
+  const style = document.createElement('style')
+  style.dataset.downlevel = 'true'
+  style.textContent = `:root { ${LIGHTNINGCSS_LIGHT_VARIABLE}: initial; ${LIGHTNINGCSS_DARK_VARIABLE}: ; }`
+  document.head.appendChild(style)
+}
 
 // Mirrors the output Lightning CSS emits when down-leveling `color: light-dark(A, B)`
 function renderDownleveledProbe(): HTMLElement {
@@ -20,11 +28,16 @@ function renderDownleveledProbe(): HTMLElement {
 
 describe('setDocumentColorScheme (real CSSOM)', () => {
   afterEach(() => {
-    clearDocumentColorScheme()
+    overrideLightDarkDownlevelForTests(null)
+    document.documentElement.removeAttribute('style')
     document.body.replaceChildren()
+    for (const style of Array.from(document.head.querySelectorAll('style[data-downlevel]'))) {
+      style.remove()
+    }
   })
 
   test('light resolves down-leveled light-dark() to the light value', () => {
+    injectDownleveledStylesheet()
     const probe = renderDownleveledProbe()
 
     setDocumentColorScheme('light')
@@ -34,6 +47,7 @@ describe('setDocumentColorScheme (real CSSOM)', () => {
   })
 
   test('dark resolves down-leveled light-dark() to the dark value', () => {
+    injectDownleveledStylesheet()
     const probe = renderDownleveledProbe()
 
     setDocumentColorScheme('dark')
@@ -56,11 +70,25 @@ describe('setDocumentColorScheme (real CSSOM)', () => {
     expect(getComputedStyle(probe).color).not.toBe(LIGHT_COLOR)
   })
 
-  test('the disposer removes everything it wrote', () => {
-    const dispose = setDocumentColorScheme('dark')
-    dispose()
+  test('the disposer restores a host-set color-scheme and removes the toggles', () => {
+    injectDownleveledStylesheet()
+    document.documentElement.style.colorScheme = 'dark'
 
-    expect(document.documentElement.style.colorScheme).toBe('')
+    const dispose = setDocumentColorScheme('light')
+    expect(document.documentElement.style.colorScheme).toBe('light')
+
+    dispose()
+    expect(document.documentElement.style.colorScheme).toBe('dark')
     expect(document.documentElement.getAttribute('style') ?? '').not.toContain('lightningcss')
+  })
+
+  test('skips the custom properties when nothing declares the toggles', () => {
+    const probe = renderDownleveledProbe()
+
+    setDocumentColorScheme('light')
+
+    expect(document.documentElement.style.colorScheme).toBe('light')
+    expect(document.documentElement.getAttribute('style') ?? '').not.toContain('lightningcss')
+    expect(getComputedStyle(probe).color).not.toBe(LIGHT_COLOR)
   })
 })
