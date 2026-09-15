@@ -1,6 +1,6 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {useDocumentVersionTitle} from '../../hooks/useDocumentVersionTitle'
 import {useRelativeTime} from '../../hooks/useRelativeTime'
@@ -85,7 +85,7 @@ function VersionStatus({version}: DocumentVersionStatusItem) {
 
   return (
     <Box className={versionStatusItem}>
-      <Flex gap={2} justify="space-between" paddingY={2}>
+      <Flex gap={2} justifyContent="space-between" paddingY={2}>
         <Stack className={titleStack} gap={2}>
           <Text size={1} title={isTruncated ? fullTitle : undefined} weight="medium">
             {title}
