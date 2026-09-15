@@ -163,7 +163,13 @@ function RadioSelect(
         gap={3}
         justifyContent="space-between"
       >
-        <Flex gap={3} role="group" paddingY={1} flexDirection={isHorizontal ? 'row' : 'column'}>
+        <Flex
+          gap={3}
+          role="group"
+          paddingY={1}
+          flexDirection={isHorizontal ? 'row' : 'column'}
+          flexWrap={isHorizontal ? 'wrap' : undefined}
+        >
           {items.map((item, index) => (
             <RadioSelectItem
               // oxlint-disable-next-line no-array-index-key
