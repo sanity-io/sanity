@@ -147,7 +147,7 @@ export class InitialValueTemplateItemBuilder implements Serializable<InitialValu
 
     return {
       id: this.spec.id,
-      templateId: this.spec.id,
+      templateId: this.spec.templateId,
       schemaType: template.schemaType,
       type: 'initialValueTemplateItem',
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
