@@ -98,6 +98,7 @@ export function getDocumentTypeList(
     .title(spec.title || title)
     .filter('_type == $type')
     .params({type: typeName})
+    .filterOptions(spec.filterOptions || [])
     .schemaType(type)
     .defaultOrdering(DEFAULT_SELECTED_ORDERING_OPTION.by)
     .menuItemGroups(
@@ -105,7 +106,7 @@ export function getDocumentTypeList(
         {
           id: 'sorting',
           title: 'Sort',
-          i18n: {title: {key: 'menu-item-groups.actions-group', ns: structureLocaleNamespace}},
+          i18n: {title: {key: 'menu-item-groups.sorting-group', ns: structureLocaleNamespace}},
         },
         {
           id: 'layout',
@@ -115,7 +116,7 @@ export function getDocumentTypeList(
         {
           id: 'actions',
           title: 'Actions',
-          i18n: {title: {key: 'menu-item-groups.sorting-group', ns: structureLocaleNamespace}},
+          i18n: {title: {key: 'menu-item-groups.actions-group', ns: structureLocaleNamespace}},
         },
       ],
     )

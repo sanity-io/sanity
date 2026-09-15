@@ -1,7 +1,11 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {AddIcon} from '@sanity/icons/Add'
 import {type SchemaType, type SortOrderingItem} from '@sanity/types'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS, type InitialValueTemplateItem} from 'sanity'
+import {
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
+  type I18nTextRecord,
+  type InitialValueTemplateItem,
+} from 'sanity'
 
 import {type ChildResolver, type ChildResolverOptions, type ItemChild} from './ChildResolver'
 import {DocumentBuilder} from './Document'
@@ -21,8 +25,12 @@ import {resolveTypeForDocument} from './util/resolveTypeForDocument'
 // creating a circular import (this module extends `GenericListBuilder`, which imports `Intent`).
 export {getTypeNamesFromFilter} from './util/getTypeNamesFromFilter'
 
-const validateFilter = (spec: PartialDocumentList, options: SerializeOptions) => {
-  const filter = spec.options?.filter.trim() || ''
+const validateFilter = (
+  filterValue: string | undefined,
+  spec: PartialDocumentList,
+  options: SerializeOptions,
+) => {
+  const filter = filterValue?.trim() || ''
 
   if (['*', '{'].includes(filter[0])) {
     throw new SerializeError(
@@ -34,6 +42,58 @@ const validateFilter = (spec: PartialDocumentList, options: SerializeOptions) =>
   }
 
   return filter
+}
+
+const validateFilterOptions = (
+  spec: PartialDocumentList,
+  options: SerializeOptions,
+): DocumentListFilterOption[] | undefined => {
+  const filterOptions = spec.options?.filterOptions
+  if (!filterOptions?.length) return undefined
+
+  const ids = new Set<string>()
+
+  return filterOptions.map((filterOption, index) => {
+    if (!filterOption.id) {
+      throw new SerializeError(
+        `\`filterOptions[${index}].id\` is required`,
+        options.path,
+        spec.id,
+        spec.title,
+      )
+    }
+    if (ids.has(filterOption.id)) {
+      throw new SerializeError(
+        `Filter option IDs must be unique, but "${filterOption.id}" is duplicated`,
+        options.path,
+        spec.id,
+        spec.title,
+      )
+    }
+    ids.add(filterOption.id)
+
+    if (!filterOption.title) {
+      throw new SerializeError(
+        `\`filterOptions[${index}].title\` is required`,
+        options.path,
+        spec.id,
+        spec.title,
+      )
+    }
+    if (!filterOption.filter) {
+      throw new SerializeError(
+        `\`filterOptions[${index}].filter\` is required`,
+        options.path,
+        spec.id,
+        spec.title,
+      )
+    }
+
+    return {
+      ...filterOption,
+      filter: validateFilter(filterOption.filter, spec, options),
+    }
+  })
 }
 
 const createDocumentChildResolverForItem =
@@ -99,12 +159,34 @@ export interface DocumentList extends GenericList {
 export interface DocumentListOptions {
   /** Document list filter */
   filter: string
+  /** Filter options shown in the document list menu */
+  filterOptions?: DocumentListFilterOption[]
   /** Document list parameters */
   params?: Record<string, unknown>
   /** Document list API version */
   apiVersion?: string
   /** Document list API default ordering array. */
   defaultOrdering?: SortOrderingItem[]
+}
+
+/**
+ * A selectable filter option for a document list.
+ *
+ * @public
+ */
+export interface DocumentListFilterOption {
+  /** Unique identifier for the filter option */
+  id: string
+  /** Human-readable title */
+  title: string
+  /** GROQ filter fragment combined with the document list's base filter */
+  filter: string
+  /** Parameters used by the GROQ filter fragment */
+  params?: Record<string, unknown>
+  /** Optional icon shown in the menu */
+  icon?: React.ComponentType | React.ReactNode
+  /** Optional localized title */
+  i18n?: I18nTextRecord<'title'>
 }
 
 /**
@@ -162,6 +244,33 @@ export class DocumentListBuilder extends GenericListBuilder<
    */
   getFilter(): string | undefined {
     return this.spec.options?.filter
+  }
+
+  /**
+   * Set the filter options shown in the document list menu.
+   *
+   * Selected options are combined with the list's base filter using `&&`.
+   *
+   * @param filterOptions - Filter options available to editors
+   * @returns document list builder based on the provided filter options
+   */
+  filterOptions(filterOptions: DocumentListFilterOption[]): DocumentListBuilder {
+    if (!Array.isArray(filterOptions)) {
+      throw new Error('`filterOptions` must be an array')
+    }
+
+    return this.clone({
+      options: {...(this.spec.options || {filter: ''}), filterOptions},
+    })
+  }
+
+  /**
+   * Get the document list filter options.
+   *
+   * @returns configured filter options
+   */
+  getFilterOptions(): DocumentListFilterOption[] | undefined {
+    return this.spec.options?.filterOptions
   }
 
   /** Set Document list schema type name
@@ -248,6 +357,8 @@ export class DocumentListBuilder extends GenericListBuilder<
         generateHelpUrl(HELP_URL.API_VERSION_REQUIRED_FOR_CUSTOM_FILTER),
       )
     }
+    const filterOptions = validateFilterOptions(this.spec, options)
+
     return {
       ...super.serialize(options),
       type: 'documentList',
@@ -257,7 +368,8 @@ export class DocumentListBuilder extends GenericListBuilder<
         ...this.spec.options,
         // @todo: make specifying .apiVersion required when using custom (non-simple) filters in v4
         apiVersion: this.spec.options.apiVersion || DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion,
-        filter: validateFilter(this.spec, options),
+        filter: validateFilter(this.spec.options.filter, this.spec, options),
+        ...(filterOptions ? {filterOptions} : {}),
       },
     }
   }

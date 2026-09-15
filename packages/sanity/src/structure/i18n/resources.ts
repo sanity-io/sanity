@@ -585,6 +585,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** --- Menu items --- */
   /** The menu item group title to use for the Action menu items */
   'menu-item-groups.actions-group': 'Actions',
+  /** The menu item group title to use for document list filter menu items */
+  'menu-item-groups.filtering-group': 'Filter',
   /** The menu item group title to use for the Layout menu items */
   'menu-item-groups.layout-group': 'Layout',
   /** The menu item group title to use for the Sort menu items */
