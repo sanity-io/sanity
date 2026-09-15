@@ -155,8 +155,9 @@ export function ReferenceInput(props: ReferenceInputProps) {
     (nextId: string) => {
       if (!nextId) {
         // Autocomplete X clears the search query so the user can type again.
-        // It must not unset the stored reference or leave edit mode.
-        handleQueryChange('')
+        // It must not unset the whole object, just the `_ref` so the ref used in an array is not removed.
+        onChange(unset(['_ref']))
+        onPathFocus([])
         return
       }
 
@@ -181,15 +182,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
       // Move focus away from _ref and one level up
       onPathFocus(path)
     },
-    [
-      handleQueryChange,
-      onChange,
-      onPathFocus,
-      schemaType.name,
-      schemaType.weak,
-      searchState.hits,
-      path,
-    ],
+    [onChange, onPathFocus, schemaType.name, schemaType.weak, searchState.hits, path],
   )
 
   const handleClear = useCallback(() => {

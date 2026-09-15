@@ -371,7 +371,7 @@ describe('ReferenceInput blur handling', () => {
 })
 
 describe('ReferenceInput autocomplete clear', () => {
-  it('clears the search query without unsetting the stored reference or leaving edit mode', async () => {
+  it('unsets only _ref and leaves edit mode, keeping the array item in place', async () => {
     const {onChange, onPathFocus} = await renderReferenceInput({
       onSearch: SEARCH_WITH_HITS,
       value: POPULATED_VALUE,
@@ -389,10 +389,11 @@ describe('ReferenceInput autocomplete clear', () => {
     onPathFocus.mockClear()
     await user.click(clearButton)
 
-    expect(onChange).not.toHaveBeenCalled()
-    expect(onPathFocus).not.toHaveBeenCalledWith([])
-    await waitFor(() => {
-      expect(input).not.toHaveValue('act')
-    })
+    // Unsetting the whole object would remove the item from an array of
+    // references; only the `_ref` path is unset.
+    expect(onChange).toHaveBeenCalledTimes(1)
+    expect(onChange).toHaveBeenCalledWith(expect.objectContaining({type: 'unset', path: ['_ref']}))
+    expect(onChange).not.toHaveBeenCalledWith(expect.objectContaining({type: 'unset', path: []}))
+    expect(onPathFocus).toHaveBeenCalledWith([])
   })
 })
