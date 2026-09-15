@@ -31,6 +31,7 @@ import {
   PublishButtonDisabledStart,
   PublishButtonClicked,
 } from './__telemetry__/documentActions.telemetry'
+import {getPublishActionLabel} from './getPublishActionLabel'
 import {PUBLISH_DISABLED_REASON} from './operationDisabledReasons'
 
 const PUBLISHED_STATE = {status: 'published'} as const
@@ -243,11 +244,18 @@ export const usePublishAction: DocumentActionComponent = (props) => {
      * Skipped when a variant is selected: the base published document says nothing about the
      * variant's publish state (the store-level disabled reasons and target guards apply instead).
      */
+    // `selectedVariantName` is the sticky param — available before the target document loads.
+    const label = getPublishActionLabel(t, {
+      isVariant: Boolean(selectedVariantName),
+      publishScheduled,
+      publishState,
+    })
+
     if (published && !draft && !version && !selectedVariantName) {
       return {
         tone: 'default',
         icon: PublishIcon,
-        label: t('action.publish.label'),
+        label,
         title: getDisabledReason('ALREADY_PUBLISHED', published?._updatedAt, t),
         disabled: true,
       }
@@ -257,7 +265,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       return {
         tone: 'default',
         icon: PublishIcon,
-        label: t('action.publish.label'),
+        label,
         title: (
           <InsufficientPermissionsMessage context="publish-document" currentUser={currentUser} />
         ),
@@ -278,14 +286,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     return {
       disabled: disabled || isPermissionsLoading,
       tone: 'default',
-      label:
-        publishState?.status === 'published'
-          ? t('action.publish.published.label')
-          : publishScheduled
-            ? t('action.publish.validation-in-progress.label')
-            : publishState?.status === 'publishing'
-              ? t('action.publish.running.label')
-              : t('action.publish.draft.label'),
+      label,
       // @todo: Implement loading state, to show a `<Button loading />` state
       // loading: publishScheduled || publishState === 'publishing',
       icon: PublishIcon,
