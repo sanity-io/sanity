@@ -11,6 +11,7 @@ import {
   type SerializeOptions,
 } from './StructureNodes'
 import {type StructureContext} from './types'
+import {isDefaultDocumentTypeChild} from './util/defaultDocumentTypeChild'
 import {getStructureNodeId} from './util/getStructureNodeId'
 import {isSerializable, serializableMarker} from './util/isSerializable'
 import {validateId} from './util/validateId'
@@ -51,6 +52,8 @@ export interface ListItemSerializeOptions extends SerializeOptions {
 export interface ListItemDisplayOptions {
   /** Check if list item display should show icon */
   showIcon?: boolean
+  /** Check if list item display should show a live document count */
+  showCount?: boolean
 }
 
 /**
@@ -70,6 +73,16 @@ export interface ListItemInput {
   displayOptions?: ListItemDisplayOptions
   /** List item schema type. See {@link SchemaType} */
   schemaType?: SchemaType | string
+}
+
+/**
+ * Names the document schema type a live count covers. The count query itself is authored by the
+ * Studio, so an item can only ever ask for the number of documents of one schema type.
+ *
+ * @public */
+export interface ListItemCount {
+  /** Name of the document schema type to count */
+  type: string
 }
 
 /**
@@ -96,6 +109,8 @@ export interface ListItem {
   displayOptions?: ListItemDisplayOptions
   /** List item schema type. See {@link SchemaType} */
   schemaType?: SchemaType
+  /** Document schema type to show a live count for. See {@link ListItemCount} */
+  count?: ListItemCount
 }
 
 /**
@@ -226,6 +241,30 @@ export class ListItemBuilder implements Serializable<ListItem> {
   }
 
   /**
+   * Set if list item should show a live document count.
+   *
+   * The badge counts every document of the item's schema type. It is withheld, with a development
+   * warning, unless the item resolves a document schema type and its child is proven to list every
+   * document of that type: no child, the built-in document type child, or a document list carrying
+   * the default whole-type query.
+   *
+   * @returns list item builder based on showCount provided. See {@link ListItemBuilder}
+   */
+  showCount(enabled = true): ListItemBuilder {
+    return this.clone({
+      displayOptions: {...this.spec.displayOptions, showCount: enabled},
+    })
+  }
+
+  /**
+   * Check if list item should show a live document count
+   * @returns true if it should show the count, false if not, undefined if not set
+   */
+  getShowCount(): boolean | undefined {
+    return this.spec.displayOptions ? this.spec.displayOptions.showCount : undefined
+  }
+
+  /**
    *Get list item icon
    * @returns list item icon. See {@link PartialListItem}
    */
@@ -319,6 +358,10 @@ export class ListItemBuilder implements Serializable<ListItem> {
       }
     }
 
+    const count = this.spec.displayOptions?.showCount
+      ? resolveListItemCount(child, schemaType, id)
+      : undefined
+
     return {
       ...this.spec,
       id: validateId(id, options.path, options.index),
@@ -326,6 +369,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
       child: listChild,
       title,
       type: 'listItem',
+      count,
     }
   }
 
@@ -338,4 +382,74 @@ export class ListItemBuilder implements Serializable<ListItem> {
     builder.spec = {...this.spec, ...withSpec}
     return builder
   }
+}
+
+const DEFAULT_DOCUMENT_TYPE_FILTER = '_type == $type'
+const COUNT_COVERS_WHOLE_TYPE = 'a count only ever covers a whole document type'
+
+function warnCountWithheld(id: string, reason: string): void {
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn(`[structure] showCount() ignored for list item "${id}": ${reason}`)
+  }
+}
+
+interface DocumentListShapedChild {
+  getFilter(): string | undefined
+  getParams(): Record<string, unknown> | undefined
+}
+
+function isDocumentListShapedChild(child: unknown): child is DocumentListShapedChild {
+  if (isSerializable(child)) {
+    const candidate = child as Partial<DocumentListShapedChild>
+    return typeof candidate.getFilter === 'function' && typeof candidate.getParams === 'function'
+  }
+
+  return false
+}
+
+function hasDefaultDocumentTypeQuery(child: DocumentListShapedChild, typeName: string): boolean {
+  const params = child.getParams() ?? {}
+
+  return (
+    child.getFilter() === DEFAULT_DOCUMENT_TYPE_FILTER &&
+    Object.keys(params).length === 1 &&
+    params.type === typeName
+  )
+}
+
+/**
+ * Emits a count descriptor only for a child proven to list every document of the item's schema type:
+ * no child, the built-in document type child, or a document list carrying the default whole-type
+ * query. Any other child withholds the count, so a badge never contradicts the list it sits on.
+ */
+function resolveListItemCount(
+  child: PartialListItem['child'],
+  schemaType: SchemaType | undefined,
+  id: string,
+): ListItemCount | undefined {
+  if (schemaType === undefined) {
+    warnCountWithheld(id, 'it resolves no document type to count')
+    return undefined
+  }
+
+  const count: ListItemCount = {type: schemaType.name}
+
+  if (child === undefined || isDefaultDocumentTypeChild(child)) {
+    return count
+  }
+
+  if (isDocumentListShapedChild(child)) {
+    if (hasDefaultDocumentTypeQuery(child, schemaType.name)) {
+      return count
+    }
+
+    warnCountWithheld(id, `its child document list is filtered, and ${COUNT_COVERS_WHOLE_TYPE}`)
+    return undefined
+  }
+
+  warnCountWithheld(
+    id,
+    `its child cannot be inspected at serialize time, and ${COUNT_COVERS_WHOLE_TYPE}`,
+  )
+  return undefined
 }
