@@ -300,11 +300,11 @@ export function fileTarget<ComponentProps>(
         return undefined
       }
 
-      const onDragEnd = () => {
+      const handleWindowDragEnd = () => {
         clearHover()
       }
 
-      const onKeyDown = (event: globalThis.KeyboardEvent) => {
+      const handleWindowKeyDown = (event: globalThis.KeyboardEvent) => {
         if (event.key !== 'Escape') {
           return
         }
@@ -313,11 +313,12 @@ export function fileTarget<ComponentProps>(
         }
       }
 
-      window.addEventListener('dragend', onDragEnd)
-      window.addEventListener('keydown', onKeyDown, true)
+      window.addEventListener('dragend', handleWindowDragEnd)
+      // Capture phase so this wins over useGlobalKeyDown, which listens on window while bubbling
+      window.addEventListener('keydown', handleWindowKeyDown, true)
       return () => {
-        window.removeEventListener('dragend', onDragEnd)
-        window.removeEventListener('keydown', onKeyDown, true)
+        window.removeEventListener('dragend', handleWindowDragEnd)
+        window.removeEventListener('keydown', handleWindowKeyDown, true)
       }
     }, [disabled])
 
