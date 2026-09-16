@@ -184,6 +184,8 @@ function computeRegion(
     ...region,
     id,
     clampedTo,
+    // The spot at the edge behaves like a dock: several clamped regions get merged into it
+    maxAvatars: MAX_AVATARS_DOCK,
     rect: {
       top:
         clampedTo === 'top'
