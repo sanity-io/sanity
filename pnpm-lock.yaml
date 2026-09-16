@@ -2103,6 +2103,9 @@ importers:
       '@sanity/schema':
         specifier: workspace:*
         version: link:../@sanity/schema
+      '@sanity/sdk':
+        specifier: ^3.2.0
+        version: 3.2.0(@types/react@19.3.0)(immer@11.1.18)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@4.1.11)(xstate@5.32.6)
       '@sanity/sdk-react':
         specifier: ^3.2.0
         version: 3.2.0(@types/react@19.3.0)(immer@11.1.18)(react-dom@19.3.0)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@4.1.11)(xstate@5.32.6)
@@ -2124,9 +2127,6 @@ importers:
       '@sanity/validation':
         specifier: workspace:*
         version: link:../@sanity/validation
-      '@sanity/workbench':
-        specifier: 0.1.0-alpha.48
-        version: 0.1.0-alpha.48(@sanity/sdk@3.2.0)(react@19.3.0)(vitest@4.1.11)(xstate@5.32.6)
       '@sentry/react':
         specifier: ^10.73.0
         version: 10.73.0(react@19.3.0)
@@ -2302,9 +2302,6 @@ importers:
       '@repo/tsdown.config':
         specifier: workspace:*
         version: link:../@repo/tsdown.config
-      '@sanity/sdk':
-        specifier: ^3.2.0
-        version: 3.2.0(@types/react@19.3.0)(immer@11.1.18)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@4.1.11)(xstate@5.32.6)
       '@sanity/vanilla-extract-vite-plugin':
         specifier: 'catalog:'
         version: 0.2.18(babel-plugin-macros@3.1.0)(vite@8.3.0)
@@ -7511,13 +7508,6 @@ packages:
   '@sanity/workbench-cli@2.4.3':
     resolution: {integrity: sha512-64K/4ZkRF5iQDuIjNsoXkGXXZcisjt1gFeNiQTCiIDQWqO+aw3l991hJm1qyzye3/EiupOxsSNm5tHoD5Ijetw==}
     engines: {node: '>=22.12'}
-
-  '@sanity/workbench@0.1.0-alpha.48':
-    resolution: {integrity: sha512-fE7rEvt4Hi5kAfM/h6BpmGcMudU1bDBFSitUtxQo4MhV62lZ4Dxbr4ClK8HCltuMxEhNr8DaQJcHE9Pajvlrfw==}
-    engines: {node: '>=20.19.1 <22 || >=22.12'}
-    peerDependencies:
-      '@sanity/sdk': ^3.0.0
-      xstate: ^5.31.0
 
   '@sanity/worker-channels@2.0.0':
     resolution: {integrity: sha512-mC+8yPQuw2rHXdHigFPU9thNa6vTaPmh7jFR6RvloE8s+6dmnk9bHdPXRbrrUqafxzK3L9aH2E170ubXyxcAIA==}
@@ -20428,22 +20418,6 @@ snapshots:
       - vitest
       - vue-tsc
       - yaml
-
-  '@sanity/workbench@0.1.0-alpha.48(@sanity/sdk@3.2.0)(react@19.3.0)(vitest@4.1.11)(xstate@5.32.6)':
-    dependencies:
-      '@module-federation/runtime': 2.9.0
-      '@sanity/client': 8.6.1(vitest@4.1.11)
-      '@sanity/color': 3.0.8
-      '@sanity/sdk': 3.2.0(@types/react@19.3.0)(immer@11.1.18)(react@19.3.0)(use-sync-external-store@1.7.0)(vitest@4.1.11)(xstate@5.32.6)
-      '@sanity/telemetry': 1.1.0(react@19.3.0)
-      es-toolkit: 1.52.0
-      rxjs: 7.8.2
-      verkit: 0.4.0
-      xstate: 5.32.6
-      zod: 4.5.4
-    transitivePeerDependencies:
-      - react
-      - vitest
 
   '@sanity/worker-channels@2.0.0': {}
 
