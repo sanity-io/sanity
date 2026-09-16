@@ -106,6 +106,19 @@ describe('ReleasesList', () => {
       expect(screen.getByTestId('release-drafts')).toBeInTheDocument()
     })
 
+    it('renders the action card, which carries the divider above the actions', async () => {
+      const wrapper = await createTestProvider()
+      render(
+        <Menu>
+          <TestReleasesList handleOpenBundleDialog={handleOpenBundleDialog} areReleasesEnabled />
+        </Menu>,
+        {wrapper},
+      )
+      await flushMicrotasksThisIsACodeSmell()
+
+      expect(screen.getByTestId('release-menu-actions')).toBeInTheDocument()
+    })
+
     it('calls handleOpenBundleDialog when create new release button is clicked', async () => {
       const wrapper = await createTestProvider()
       render(
@@ -196,6 +209,24 @@ describe('ReleasesList', () => {
         expect(screen.queryByTestId('release-rActive')).not.toBeInTheDocument()
       })
       expect(screen.getByTestId('release-drafts')).toBeInTheDocument()
+    })
+
+    it('should not render the action card at all, so its border is not left behind', async () => {
+      const wrapper = await createTestProvider()
+      render(
+        <Menu>
+          <TestReleasesList
+            handleOpenBundleDialog={handleOpenBundleDialog}
+            areReleasesEnabled={false}
+          />
+        </Menu>,
+        {wrapper},
+      )
+      await flushMicrotasksThisIsACodeSmell()
+
+      // The card carries `borderTop`, so hiding every item inside it is not enough: an empty card
+      // still draws a divider with nothing under it.
+      expect(screen.queryByTestId('release-menu-actions')).not.toBeInTheDocument()
     })
 
     it('should hide the create new release', async () => {

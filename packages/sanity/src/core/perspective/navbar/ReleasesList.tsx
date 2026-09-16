@@ -18,6 +18,7 @@ import {AgentBundleMenuItem} from './AgentBundleMenuItem'
 import {GlobalPerspectiveMenuItem} from './GlobalPerspectiveMenuItem'
 import {DocumentReleaseSections, ReleaseTypeSections} from './ReleaseMenuSections'
 import {ScheduledDraftsMenuItem} from './ScheduledDraftsMenuItem'
+import {useScheduledDraftsAvailable} from './useScheduledDraftsAvailable'
 import {ViewContentReleasesMenuItem} from './ViewContentReleasesMenuItem'
 
 const StickyCard = styled(Card)`
@@ -53,6 +54,7 @@ export function ReleasesList({
   const {loading, data: allReleases} = useActiveReleases()
   const {bundles: agentBundles} = useAgentBundles()
   const {activeDocument} = usePerspectiveActiveDocument()
+  const isScheduledDraftsAvailable = useScheduledDraftsAvailable()
 
   const releases = useMemo(
     () => allReleases.filter((release) => !isCardinalityOneRelease(release)),
@@ -152,17 +154,21 @@ export function ReleasesList({
           )}
         </Stack>
       )}
-      <StickyBottomCard borderTop paddingY={1} paddingX={2}>
-        <Stack gap={1}>
-          <ScheduledDraftsMenuItem />
-          {areReleasesEnabled && (
-            <>
-              <ViewContentReleasesMenuItem />
-              <CreateReleaseMenuItem onCreateRelease={handleOpenBundleDialog} />
-            </>
-          )}
-        </Stack>
-      </StickyBottomCard>
+      {/* The card carries the border, so it must not render when every item inside it is hidden:
+          releases off and scheduled drafts unavailable leaves a divider with nothing under it. */}
+      {(areReleasesEnabled || isScheduledDraftsAvailable) && (
+        <StickyBottomCard borderTop paddingY={1} paddingX={2} data-testid="release-menu-actions">
+          <Stack gap={1}>
+            <ScheduledDraftsMenuItem />
+            {areReleasesEnabled && (
+              <>
+                <ViewContentReleasesMenuItem />
+                <CreateReleaseMenuItem onCreateRelease={handleOpenBundleDialog} />
+              </>
+            )}
+          </Stack>
+        </StickyBottomCard>
+      )}
     </Card>
   )
 }
