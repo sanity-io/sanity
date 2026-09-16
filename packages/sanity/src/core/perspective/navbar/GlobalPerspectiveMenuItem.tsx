@@ -22,6 +22,28 @@ import {isDraftPerspective, isReleaseScheduledOrScheduling} from '../../releases
 import {useWorkspace} from '../../studio/workspace'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
 
+/**
+ * A label with the occurrences of the filter term marked.
+ *
+ * Shared by both branches below so published and drafts mark the same way a release title does —
+ * they are filtered on their labels, so a row that survived the filter should show why.
+ */
+function MarkedLabel({label, searchTerm}: {label: string; searchTerm: string | undefined}) {
+  return (
+    <>
+      {splitOnSearchTerm(label, searchTerm ?? '').map((segment, index) =>
+        segment.isMatch ? (
+          // oxlint-disable-next-line react/no-array-index-key -- segments are derived from the label
+          <strong key={index}>{segment.text}</strong>
+        ) : (
+          // oxlint-disable-next-line react/no-array-index-key -- segments are derived from the label
+          <span key={index}>{segment.text}</span>
+        ),
+      )}
+    </>
+  )
+}
+
 export function GlobalPerspectiveMenuItem(props: {
   release: ReleaseDocument | 'published' | typeof LATEST
   menuItemProps?: ReleasesNavMenuItemPropsGetter
@@ -96,27 +118,23 @@ export function GlobalPerspectiveMenuItem(props: {
                 {({displayTitle}) => (
                   <Text size={1} weight="medium" style={{minWidth: 0}}>
                     {/*
-                      Marking the matched run shows why the row is in the results, which a ranked
-                      list otherwise leaves the reader to infer. `displayTitle` is already truncated
-                      to 50 characters, so a match past that point is not shown here — the tooltip
-                      still carries the full title.
+                      `displayTitle` is already truncated to 50 characters, so a match past that
+                      point is not marked here — the tooltip still carries the full title.
                     */}
-                    {splitOnSearchTerm(displayTitle, searchTerm ?? '').map((segment, index) =>
-                      segment.isMatch ? (
-                        // eslint-disable-next-line react/no-array-index-key -- segments are derived
-                        <strong key={index}>{segment.text}</strong>
-                      ) : (
-                        <span key={index}>{segment.text}</span>
-                      ),
-                    )}
+                    <MarkedLabel label={displayTitle} searchTerm={searchTerm} />
                   </Text>
                 )}
               </ReleaseTitle>
             ) : (
               <Text size={1} weight="medium" style={{minWidth: 0}}>
-                {isDraftPerspective(release)
-                  ? t('release.navbar.drafts')
-                  : t('release.navbar.published')}
+                <MarkedLabel
+                  label={
+                    isDraftPerspective(release)
+                      ? t('release.navbar.drafts')
+                      : t('release.navbar.published')
+                  }
+                  searchTerm={searchTerm}
+                />
               </Text>
             )}
             {isReleaseDocument(release) &&

@@ -7,6 +7,20 @@ import {
 import {getPublishDateFromRelease} from './util'
 
 /**
+ * Release count at which the menu offers a filter at all.
+ *
+ * Below it the whole list is on screen and a filter is a control with nothing to do, taking the
+ * top of the panel to say so. Set lower than the count at which scrolling begins, because that
+ * count depends on window height and the navbar leaves less room than it looks like: a filter that
+ * appears slightly early costs a row of chrome, one that appears late costs the ability to find
+ * anything. The bands start being labelled much later, at
+ * `RELEASE_TIME_BUCKET_HEADING_THRESHOLD`.
+ *
+ * @internal
+ */
+export const RELEASE_FILTER_THRESHOLD = 7
+
+/**
  * Narrows a release list by a free-text term, matching the title and the release
  * id. Mirrors `filterVariantsForSearch` so the two perspective dropdowns filter
  * the same way.

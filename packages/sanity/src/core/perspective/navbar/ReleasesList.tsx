@@ -10,6 +10,7 @@ import {LATEST} from '../../releases/util/const'
 import {
   filterReleasesForSearch,
   matchesSearchTerm,
+  RELEASE_FILTER_THRESHOLD,
 } from '../../releases/util/filterReleasesForSearch'
 import {useAgentBundles} from '../../store/agent/useAgentBundles'
 import {useWorkspace} from '../../studio/workspace'
@@ -81,9 +82,16 @@ export function ReleasesList({
   // actions are all things you navigate with, and none of them answers what you typed. Published
   // and Drafts are matched on their own labels rather than left in place — typing "pub" should not
   // leave Published sitting above a "no results" message.
+  // Counted before the search, never after: narrowing the list past the threshold would otherwise
+  // pull the input out from under the person typing, and take their term with it.
+  const showFilter = releases.length >= RELEASE_FILTER_THRESHOLD
   const isFiltering = filterQuery.trim().length > 0
-  const showPublished = matchesSearchTerm(t('release.chip.published'), filterQuery)
-  const showDrafts = isDraftModelEnabled && matchesSearchTerm(t('release.chip.draft'), filterQuery)
+  // Matched against the strings the rows render, not the chip strings: `release.chip.draft` is
+  // "Draft" while the row says "Drafts", so matching the chip meant typing the visible word never
+  // found it.
+  const showPublished = matchesSearchTerm(t('release.navbar.published'), filterQuery)
+  const showDrafts =
+    isDraftModelEnabled && matchesSearchTerm(t('release.navbar.drafts'), filterQuery)
 
   const filteredReleases = useMemo(
     () => filterReleasesForSearch(releases, filterQuery),
@@ -134,18 +142,20 @@ export function ReleasesList({
           panel a fixed top, a scrolling middle and a fixed bottom — and hid the fact that these two
           are the first entries in the same time order as the releases below: published is live now,
           drafts is the indefinite next, then asap, then dated, then undecided. */}
-      <StickyTopCard borderBottom ref={pinnedRef}>
-        <Card padding={2}>
-          <TextInput
-            data-testid="release-menu-filter"
-            fontSize={1}
-            onChange={handleFilterChange}
-            placeholder={t('release.menu.filter-placeholder')}
-            radius={2}
-            value={filterQuery}
-          />
-        </Card>
-      </StickyTopCard>
+      {showFilter && (
+        <StickyTopCard borderBottom ref={pinnedRef}>
+          <Card padding={2}>
+            <TextInput
+              data-testid="release-menu-filter"
+              fontSize={1}
+              onChange={handleFilterChange}
+              placeholder={t('release.menu.filter-placeholder')}
+              radius={2}
+              value={filterQuery}
+            />
+          </Card>
+        </StickyTopCard>
+      )}
       {(showPublished || showDrafts) && (
         <Card borderBottom padding={1}>
           <Stack gap={1}>

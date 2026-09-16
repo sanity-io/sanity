@@ -1,6 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {Menu} from '@sanity/ui/menu'
-import {render, screen, waitFor} from '@testing-library/react'
+import {render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {type ComponentProps, useState} from 'react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
@@ -68,6 +68,23 @@ vi.mock('../ScheduledDraftsMenuItem', () => ({
 
 const handleOpenBundleDialog = vi.fn()
 
+/**
+ * Enough releases to clear `RELEASE_FILTER_THRESHOLD`, since the menu offers no filter below it.
+ * The three fixtures are cloned with distinct ids and titles so filter assertions stay meaningful.
+ */
+function enoughReleasesToFilter(): ReleaseDocument[] {
+  const base = [activeASAPRelease, activeScheduledRelease, activeUndecidedRelease]
+
+  return Array.from({length: 9}, (_unused, index) => {
+    const template = base[index % base.length]
+    return {
+      ...template,
+      _id: `${template._id}-bulk${index}`,
+      metadata: {...template.metadata, title: `${template.metadata.title} ${index}`},
+    }
+  })
+}
+
 describe('ReleasesList', () => {
   describe('when releases are enabled', () => {
     beforeEach(async () => {
@@ -94,6 +111,15 @@ describe('ReleasesList', () => {
     })
 
     it('narrows the list by the filter query, published and drafts included', async () => {
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
+        data: [
+          activeASAPRelease,
+          activeScheduledRelease,
+          activeUndecidedRelease,
+          ...enoughReleasesToFilter(),
+        ],
+      })
       const wrapper = await createTestProvider()
       render(
         <Menu>
@@ -120,6 +146,12 @@ describe('ReleasesList', () => {
     })
 
     it('marks where the term appears inside a matching title', async () => {
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
+        // The original fixture keeps its own id so the row can be addressed; the clones are only
+        // there to clear the filter threshold.
+        data: [activeUndecidedRelease, ...enoughReleasesToFilter()],
+      })
       const wrapper = await createTestProvider()
       render(
         <Menu>
@@ -135,12 +167,17 @@ describe('ReleasesList', () => {
 
       const row = screen.getByTestId('release-rUndecided')
 
-      // The marked run is the part typed, not the whole title, and the row still reads as named.
-      expect(row.querySelector('strong')).toHaveTextContent('undecid')
+      // The marked run is its own element containing exactly what was typed, so it is addressable
+      // by that text; the row as a whole still reads as the release was named.
+      expect(within(row).getByText('undecid').tagName).toBe('STRONG')
       expect(row).toHaveTextContent('undecided Release')
     })
 
     it('keeps published when the term matches its label', async () => {
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
+        data: enoughReleasesToFilter(),
+      })
       const wrapper = await createTestProvider()
       render(
         <Menu>
@@ -159,6 +196,10 @@ describe('ReleasesList', () => {
     })
 
     it('hides the actions while filtering, and shows a message when nothing matches', async () => {
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
+        data: enoughReleasesToFilter(),
+      })
       const wrapper = await createTestProvider()
       render(
         <Menu>
@@ -175,6 +216,37 @@ describe('ReleasesList', () => {
       expect(screen.getByTestId('release-menu-no-results')).toBeInTheDocument()
       // The actions are navigation, not results, so they step aside for the duration of the filter.
       expect(screen.queryByTestId('release-menu-actions')).not.toBeInTheDocument()
+    })
+
+    it('offers no filter while the whole list is on screen', async () => {
+      const wrapper = await createTestProvider()
+      render(
+        <Menu>
+          <TestReleasesList handleOpenBundleDialog={handleOpenBundleDialog} areReleasesEnabled />
+        </Menu>,
+        {wrapper},
+      )
+      await flushMicrotasksThisIsACodeSmell()
+
+      // Three releases, all visible. A filter here is a control with nothing to do.
+      expect(screen.queryByTestId('release-menu-filter')).not.toBeInTheDocument()
+    })
+
+    it('offers a filter once the list is long enough to need one', async () => {
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
+        data: enoughReleasesToFilter(),
+      })
+      const wrapper = await createTestProvider()
+      render(
+        <Menu>
+          <TestReleasesList handleOpenBundleDialog={handleOpenBundleDialog} areReleasesEnabled />
+        </Menu>,
+        {wrapper},
+      )
+      await flushMicrotasksThisIsACodeSmell()
+
+      expect(screen.getByTestId('release-menu-filter')).toBeInTheDocument()
     })
 
     it('renders the action card, which carries the divider above the actions', async () => {
