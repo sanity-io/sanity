@@ -1,7 +1,7 @@
 import {Card, Spinner, Stack, TextInput} from '@sanity/ui'
 import {type ChangeEvent, type JSX, useCallback, useEffect, useMemo, useRef} from 'react'
 import {styled} from 'styled-components'
-import {Box, Flex} from 'ui5'
+import {Flex} from 'ui5'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {CreateReleaseMenuItem} from '../../releases/components/CreateReleaseMenuItem'
@@ -114,8 +114,12 @@ export function ReleasesList({
 
   return (
     <Card radius={3} ref={rootRef}>
+      {/* Only the filter is pinned. Published and drafts used to be pinned with it, which made the
+          panel a fixed top, a scrolling middle and a fixed bottom — and hid the fact that these two
+          are the first entries in the same time order as the releases below: published is live now,
+          drafts is the indefinite next, then asap, then dated, then undecided. */}
       <StickyTopCard borderBottom ref={pinnedRef}>
-        <Card padding={2} borderBottom>
+        <Card padding={2}>
           <TextInput
             data-testid="release-menu-filter"
             fontSize={1}
@@ -125,15 +129,15 @@ export function ReleasesList({
             value={filterQuery}
           />
         </Card>
-        <Box padding={1}>
-          <Stack gap={1}>
-            <GlobalPerspectiveMenuItem release={'published'} menuItemProps={menuItemProps} />
-            {isDraftModelEnabled && (
-              <GlobalPerspectiveMenuItem release={LATEST} menuItemProps={menuItemProps} />
-            )}
-          </Stack>
-        </Box>
       </StickyTopCard>
+      <Card borderBottom padding={1}>
+        <Stack gap={1}>
+          <GlobalPerspectiveMenuItem release={'published'} menuItemProps={menuItemProps} />
+          {isDraftModelEnabled && (
+            <GlobalPerspectiveMenuItem release={LATEST} menuItemProps={menuItemProps} />
+          )}
+        </Stack>
+      </Card>
       {agentBundles[0] && (
         <Card borderBottom padding={1}>
           <Stack gap={1}>
