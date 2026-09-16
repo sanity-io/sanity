@@ -1,5 +1,5 @@
 import {act, render, renderHook} from '@testing-library/react'
-import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
+import {afterAll, afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {
   type TrackerContextGetSnapshot,
@@ -12,6 +12,13 @@ type Value = {label: string}
 
 // The store publishes its snapshot with a trailing 10 ms debounce
 const PUBLISH_DELAY = 10
+
+// React runs unmount cleanups parent-first, so a reporter unmounting after its tracker re-arms
+// that debounce against the already unmounted reducer: a harmless no-op in the browser.
+// Testing-library's automatic cleanup does exactly that after the last `afterEach`, with real
+// timers, so let the timer fire while the DOM environment still exists rather than racing its
+// teardown (`window is not defined` from inside react-dom).
+afterAll(() => new Promise((resolve) => setTimeout(resolve, 2 * PUBLISH_DELAY)))
 
 /**
  * Mounts a tracker store and exposes the store, the latest published snapshot and how many
