@@ -1,7 +1,7 @@
 import {render, waitFor} from '@testing-library/react'
 import {type ComponentType, type PropsWithChildren, type ReactNode, useEffect} from 'react'
 import {FormFieldPresenceContext} from 'sanity/_singletons'
-import {beforeAll, describe, expect, it, vi} from 'vitest'
+import {afterAll, beforeAll, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {DEFAULT_MAX_AVATARS_FIELDS} from '../constants'
@@ -44,6 +44,12 @@ let TestProvider: ComponentType<PropsWithChildren>
 beforeAll(async () => {
   TestProvider = await createTestProvider()
 })
+
+// The tracker publishes through a trailing 10 ms debounce that a reporter unmounting after the
+// tracker (React unmounts parent-first) re-arms against the unmounted reducer, a no-op in the
+// browser. Testing-library's automatic cleanup does that after the last test; let the timer fire
+// while the DOM environment still exists rather than racing its teardown.
+afterAll(() => new Promise((resolve) => setTimeout(resolve, 20)))
 
 function Harness({
   children,

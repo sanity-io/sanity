@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {defineField, defineType, type Path} from '@sanity/types'
 import {render, screen, waitFor} from '@testing-library/react'
 import {type ComponentType, type PropsWithChildren, useEffect, useMemo, useState} from 'react'
-import {beforeAll, describe, expect, it, vi} from 'vitest'
+import {afterAll, beforeAll, describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
@@ -19,7 +19,6 @@ import {createPatchChannel} from '../../patch/PatchChannel'
 import {useFormState} from '../../store/useFormState'
 import {type FormDocumentValue} from '../../types/formDocumentValue'
 import {FormBuilder, type FormBuilderProps} from '../FormBuilder'
-import {useEnhancedObjectDialog} from '../tree-editing/context/enabled/useEnhancedObjectDialog'
 
 /**
  * Integration of the form with the presence tracker: the form state routes presence to the exact
@@ -155,6 +154,12 @@ beforeAll(async () => {
     config: {name: 'default', projectId: 'test', dataset: 'test', schema: {types: schemaTypes}},
   })
 })
+
+// The tracker publishes through a trailing 10 ms debounce that a reporter unmounting after the
+// tracker (React unmounts parent-first) re-arms against the unmounted reducer, a no-op in the
+// browser. Testing-library's automatic cleanup does that after the last test; let the timer fire
+// while the DOM environment still exists rather than racing its teardown.
+afterAll(() => new Promise((resolve) => setTimeout(resolve, 20)))
 
 function Harness({
   presence: presenceProp,
