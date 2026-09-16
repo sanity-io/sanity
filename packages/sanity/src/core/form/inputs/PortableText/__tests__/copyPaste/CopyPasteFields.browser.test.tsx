@@ -1,10 +1,124 @@
-import {type Path, type SanityDocument} from '@sanity/types'
+import {defineField, defineType, type Path, type SanityDocument} from '@sanity/types'
 import {afterEach, describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
 
+import {TestForm} from '../../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../../test/browser/testHelpers'
-import CopyPasteFieldsStory from './CopyPasteFieldsStory'
+import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
+
+const SCHEMA_TYPES = [
+  defineType({
+    type: 'document',
+    name: 'test',
+    title: 'Test',
+    fields: [
+      defineField({
+        type: 'string',
+        name: 'title',
+        title: 'Title',
+      }),
+      defineField({
+        type: 'object',
+        name: 'objectWithColumns',
+        title: 'Object with columns',
+        options: {
+          columns: 4,
+        },
+        fields: [
+          {
+            type: 'string',
+            title: 'String 1',
+            description: 'this is a king kong description',
+            name: 'string1',
+          },
+          {
+            type: 'string',
+            title: 'String 2',
+            name: 'string2',
+          },
+          {
+            type: 'number',
+            title: 'Number 1',
+            name: 'number1',
+          },
+          {
+            type: 'number',
+            title: 'Number 2',
+            name: 'number2',
+          },
+          {
+            type: 'image',
+            title: 'Image 1',
+            name: 'image1',
+          },
+          {
+            name: 'file',
+            type: 'file',
+            title: 'File',
+          },
+        ],
+      }),
+      defineField({
+        name: 'arrayOfPrimitives',
+        type: 'array',
+        of: [
+          {
+            type: 'string',
+            title: 'A string',
+          },
+          {
+            type: 'number',
+            title: 'A number',
+          },
+          {
+            type: 'boolean',
+            title: 'A boolean',
+          },
+        ],
+      }),
+      defineField({
+        name: 'arrayOfMultipleTypes',
+        title: 'Array of multiple types',
+        type: 'array',
+        of: [
+          {
+            type: 'image',
+          },
+          {
+            type: 'object',
+            name: 'color',
+            title: 'Color with a long title',
+            fields: [
+              {
+                name: 'title',
+                type: 'string',
+              },
+              {
+                name: 'name',
+                type: 'string',
+              },
+            ],
+          },
+        ],
+      }),
+    ],
+  }),
+]
+
+function CopyPasteFieldsHarness({
+  focusPath,
+  document,
+}: {
+  focusPath?: Path
+  document?: SanityDocument
+}) {
+  return (
+    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+      <TestForm document={document} focusPath={focusPath} />
+    </TestWrapper>
+  )
+}
 
 export type UpdateFn = () => {focusPath: Path; document: SanityDocument}
 
@@ -32,7 +146,7 @@ describe('Copy and pasting fields', () => {
   describe('Object input', () => {
     it(`Copy and paste via field actions`, async () => {
       clipboard = mockClipboard()
-      void render(<CopyPasteFieldsStory document={document} />)
+      void render(<CopyPasteFieldsHarness document={document} />)
 
       await expect.element(page.getByTestId(`field-objectWithColumns`)).toBeVisible()
 
@@ -98,7 +212,7 @@ describe('Copy and pasting fields', () => {
     it.skip(`Copy via keyboard shortcut`, async () => {
       const {findBySelector} = testHelpers()
       clipboard = mockClipboard()
-      void render(<CopyPasteFieldsStory document={document} />)
+      void render(<CopyPasteFieldsHarness document={document} />)
 
       await expect.element(page.getByTestId(`field-objectWithColumns`)).toBeVisible()
 
@@ -142,7 +256,7 @@ describe('Copy and pasting fields', () => {
   describe('String input', () => {
     it(`Copy and pasting via field actions`, async () => {
       clipboard = mockClipboard()
-      void render(<CopyPasteFieldsStory document={document} />)
+      void render(<CopyPasteFieldsHarness document={document} />)
 
       await expect.element(page.getByTestId(`field-title`)).toBeVisible()
 
@@ -189,7 +303,7 @@ describe('Copy and pasting fields', () => {
     it.skip(`Copy and pasting via field actions`, async () => {
       const {findBySelector} = testHelpers()
       clipboard = mockClipboard()
-      void render(<CopyPasteFieldsStory document={document} />)
+      void render(<CopyPasteFieldsHarness document={document} />)
 
       await expect.element(page.getByTestId(`field-arrayOfPrimitives`)).toBeVisible()
 

@@ -1,6 +1,7 @@
-import {Card, Flex, rem} from '@sanity/ui'
+import {Card, rem} from '@sanity/ui'
 import {useStateLink} from 'sanity/router'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {focusRingStyle} from '../../../../form/components/withFocusRing/helpers'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher/useActiveWorkspace'
@@ -44,9 +45,9 @@ export function HomeButton() {
 
   return (
     <StyledCard as="a" href={rootHref} onClick={handleRootClick}>
-      <Flex align="center">
+      <Flex alignItems="center">
         <LogoMarkContainer>
-          <Flex align="center" height="fill" justify="center">
+          <Flex alignItems="center" height="100%" justifyContent="center">
             <WorkspacePreviewIcon icon={activeWorkspace.icon} size="small" />
           </Flex>
         </LogoMarkContainer>

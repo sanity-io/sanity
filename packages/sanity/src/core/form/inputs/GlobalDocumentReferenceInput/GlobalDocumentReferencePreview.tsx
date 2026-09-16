@@ -4,9 +4,9 @@ import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {createImageUrlBuilder} from '@sanity/image-url'
 import {type GlobalDocumentReferenceType, type PreviewValue} from '@sanity/types'
-import {Badge, Flex, Inline, Text} from '@sanity/ui'
+import {Badge, Inline, Text} from '@sanity/ui'
 import {isValidElement as reactIsValidElement, useMemo} from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {DefaultPreview} from '../../../components/previews/general/DefaultPreview'
@@ -86,7 +86,13 @@ export function GlobalDocumentReferencePreview(props: {
   }, [previewMedia, resourceType, resourceId, refType?.icon, t])
 
   return (
-    <StyledPreviewFlex align="center" justify="center" flex={1} data-testid="preview">
+    <StyledPreviewFlex
+      alignItems="center"
+      justifyContent="center"
+      flexBasis="0%"
+      flexGrow={1}
+      data-testid="preview"
+    >
       {availability?.available ? (
         <Box flexBasis="0%" flexGrow={1}>
           <DefaultPreview
@@ -97,7 +103,7 @@ export function GlobalDocumentReferencePreview(props: {
         </Box>
       ) : (
         <Box flexBasis="0%" flexGrow={1}>
-          <Flex align="center">
+          <Flex alignItems="center">
             <Box flexBasis="0%" flexGrow={1} paddingY={2}>
               <Text muted>{t('inputs.reference.error.document-unavailable-title')}</Text>
             </Box>

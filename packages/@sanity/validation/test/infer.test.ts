@@ -6,11 +6,12 @@ import {type ObjectSchemaType, type Rule, type SanityDocument} from '@sanity/typ
 import has from 'lodash-es/has.js'
 import {afterEach, describe, expect, test, vi} from 'vitest'
 
-import {type ValidateDocumentOptions} from '../src'
+import {validationMarkerCodes} from '../src'
 import {
   getFallbackLocaleSource,
   hasValidationContext,
   inferFromSchema,
+  type ValidateDocumentInternalOptions,
   validateDocumentInternal,
 } from '../src/_internal'
 import {createMockSanityClient} from './mocks/mockSanityClient'
@@ -24,7 +25,12 @@ function createSchema(schemaDef: {name: string; types: any[]}) {
   return inferFromSchema(SchemaBuilder.compile({...schemaDef, parent: builtinSchema}))
 }
 
-function validateDocument({client: documentClient, ...options}: ValidateDocumentOptions) {
+function validateDocument({
+  client: documentClient,
+  ...options
+}: Omit<ValidateDocumentInternalOptions, 'environment' | 'getClient' | 'i18n'> & {
+  client: SanityClient
+}) {
   return validateDocumentInternal({
     ...options,
     environment: 'studio',
@@ -181,6 +187,9 @@ describe('schema validation inference', () => {
         }),
       ).resolves.toEqual([
         {
+          __internal_metadata: undefined,
+          code: validationMarkerCodes.mediaNotFound,
+          details: {referenceId: 'media-library:abc:def'},
           item: {
             message: 'The asset could not be found in the Media Library',
           },
@@ -215,6 +224,7 @@ describe('schema validation inference', () => {
           __internal_metadata: {
             name: 'media',
           },
+          code: validationMarkerCodes.mediaCustom,
           item: {
             message: 'Image must be a summer image',
           },
@@ -223,6 +233,29 @@ describe('schema validation inference', () => {
           path: ['imageField'],
         },
       ])
+    })
+
+    test('passes cancellation to media asset fetches', async () => {
+      const controller = new AbortController()
+      client.fetch.mockResolvedValue({
+        _id: 'image-12345-67890-png',
+        assetType: 'sanity.imageAsset',
+        aspects: {season: 'summer'},
+      })
+
+      await validateDocument({
+        client: sanityClient,
+        document: mockDocument,
+        getDocumentExists: () => Promise.resolve(true),
+        schema,
+        signal: controller.signal,
+      })
+
+      expect(client.fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        {id: 'def'},
+        {signal: controller.signal},
+      )
     })
   })
 
@@ -255,6 +288,26 @@ describe('schema validation inference', () => {
 
     afterEach(() => {
       client.fetch.mockReset()
+    })
+
+    test('reports the actual type for an invalid slug value', async () => {
+      await expect(
+        validateDocument({
+          client: sanityClient,
+          document: {...mockDocument, slugField: []},
+          getDocumentExists: () => Promise.resolve(true),
+          schema,
+        }),
+      ).resolves.toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            code: validationMarkerCodes.slugInvalidType,
+            details: {actualType: 'Array'},
+            path: ['slugField'],
+          }),
+        ]),
+      )
+      expect(client.fetch).not.toHaveBeenCalled()
     })
 
     test('slug is valid if uniqueness queries returns true', async () => {
@@ -306,6 +359,8 @@ describe('schema validation inference', () => {
         }),
       ).resolves.toMatchObject([
         {
+          code: validationMarkerCodes.slugNotUnique,
+          details: {slug: 'example-value'},
           path: ['slugField'],
           level: 'error',
           message: 'Slug is already in use',
@@ -378,6 +433,8 @@ describe('schema validation inference', () => {
         }),
       ).resolves.toMatchObject([
         {
+          code: validationMarkerCodes.referenceInvalid,
+          details: {actualType: 'Object'},
           message: 'Must be a reference to a document',
           level: 'error',
           path: ['referenceField'],
@@ -401,6 +458,8 @@ describe('schema validation inference', () => {
         }),
       ).resolves.toMatchObject([
         {
+          code: validationMarkerCodes.referenceNotPublished,
+          details: {referenceId: 'example-id'},
           message: /.+/,
           level: 'error',
           path: ['referenceField'],

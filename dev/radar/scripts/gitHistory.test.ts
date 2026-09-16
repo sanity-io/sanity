@@ -1,9 +1,9 @@
+import {gitCommitId} from '@repo/utils/radar-ids'
 import {describe, expect, it} from 'vitest'
 
 import {
   assembleSyncDocuments,
   commitDocument,
-  commitDocumentId,
   parseCommitRecords,
   parseConventionalSubject,
   parsePrNumber,
@@ -162,7 +162,7 @@ describe('commitDocument', () => {
       subject: 'feat(form)!: add thing (#123)',
     })
     expect(doc).toEqual({
-      _id: `gitCommit-${SHA_A}`,
+      _id: `git-commit-${SHA_A}`,
       _type: 'gitCommit',
       schemaVersion: 1,
       sha: SHA_A,
@@ -206,8 +206,9 @@ describe('tagDocument', () => {
       minor: 10,
       patch: 1,
     })
-    expect(doc._id).toBe('gitTag-v6.10.1')
-    expect(doc.commit).toEqual({_type: 'reference', _ref: commitDocumentId(SHA_A), _weak: true})
+    // No dots: a dotted id is a path the API hides from anonymous reads
+    expect(doc._id).toBe('git-tag-v6-10-1')
+    expect(doc.commit).toEqual({_type: 'reference', _ref: gitCommitId(SHA_A), _weak: true})
     expect(doc).toMatchObject({tag: 'v6.10.1', sha: SHA_A, major: 6, minor: 10, patch: 1})
     expect(doc).not.toHaveProperty('prerelease')
   })

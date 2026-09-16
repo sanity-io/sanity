@@ -36,6 +36,9 @@ const variantsLocaleStrings = {
     "This variant definition contains {{count}} documents in it, it can't be removed until the documents have been removed.",
   /** Error toast title when variant deletion fails. */
   'overview.action.delete-variant.error.title': 'Unable to delete variant definition',
+  /** Tooltip (and error toast description) when the user lacks permission to delete a variant. */
+  'overview.action.delete-variant.permission-error':
+    'You do not have permission to delete this variant definition',
   /** Link label for Variants overview documentation (empty state). */
   'overview.action.documentation': 'Documentation',
   /** Description for the Variants overview empty state. */
@@ -143,6 +146,9 @@ const variantsLocaleStrings = {
   'dialog.create.variant-title.placeholder': 'e.g. Loyal customers',
   /** Validation message when the variant title is missing. */
   'dialog.create.variant-title.required': 'Title is required',
+  /** Validation message when the variant title matches an existing variant definition. */
+  'dialog.create.variant-title.duplicate':
+    'A variant definition with this title already exists: <VariantLink>{{title}}</VariantLink>',
   /** Label for the description field in the create variant dialog. */
   'dialog.create.description.label': 'Description',
   /** Placeholder for the description field in the create variant dialog. */
@@ -159,6 +165,9 @@ const variantsLocaleStrings = {
   /** Description for the conditions section in the create variant dialog. */
   'dialog.create.conditions.description':
     'Add key/value pairs that define when this variant definition applies.',
+  /** Validation message when the conditions match an existing variant definition. */
+  'dialog.create.conditions.duplicate':
+    'A variant definition with the same conditions already exists: <VariantLink>{{title}}</VariantLink>',
   /** Label for the condition key field in the create variant dialog. */
   'dialog.create.condition-key.label': 'Key',
   /** Validation message when a condition key is repeated. */

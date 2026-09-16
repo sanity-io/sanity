@@ -1,7 +1,7 @@
-import {Card, Flex, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {getReferencePaths, type SanityDocument, useSchema, useTranslation} from 'sanity'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {IncomingReferencePreview} from '../../../../components/incomingReferencesDecoration/IncomingReferencePreview'
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -31,7 +31,7 @@ export const IncomingReferenceDocument = (props: {
 
   return (
     <Card radius={2} tone="default">
-      <FadeInFlex initial={{opacity: 0}} animate={{opacity: 1}} gap={1} align="center">
+      <FadeInFlex initial={{opacity: 0}} animate={{opacity: 1}} gap={1} alignItems="center">
         <Box flexBasis="0%" flexGrow={1}>
           <IncomingReferencePreview type={schemaType} value={document} path={referencePaths[0]} />
         </Box>

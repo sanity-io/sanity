@@ -1,6 +1,6 @@
 import {ResetIcon} from '@sanity/icons/Reset'
 import {isTitledListValue, type TitledListValue} from '@sanity/types'
-import {Card, type CardTone, Flex, Inline, Radio, Select, Stack, Text} from '@sanity/ui'
+import {Card, type CardTone, Inline, Radio, Select, Stack, Text} from '@sanity/ui'
 import capitalize from 'lodash-es/capitalize.js'
 import {
   type ChangeEvent,
@@ -10,7 +10,7 @@ import {
   useMemo,
   type RefAttributes,
 } from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {ChangeIndicator} from '../../changeIndicators/ChangeIndicator'
@@ -159,7 +159,11 @@ function RadioSelect(
 
   return (
     <Card border paddingY={2} paddingX={3} radius={2} tone={tone}>
-      <Flex align={isHorizontal ? 'center' : 'flex-end'} gap={3} justify="space-between">
+      <Flex
+        alignItems={isHorizontal ? 'center' : 'flex-end'}
+        gap={3}
+        justifyContent="space-between"
+      >
         <Layout gap={3} role="group" paddingY={1}>
           {items.map((item, index) => (
             <RadioSelectItem
@@ -207,7 +211,7 @@ function RadioSelectItem(
   }, [item, onChange])
   const checked = value === item
   return (
-    <Flex as="label" align="center">
+    <Flex as="label" alignItems="center">
       <Radio
         ref={ref}
         checked={checked}

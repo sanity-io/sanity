@@ -1,27 +1,32 @@
 import {type SanityClient} from '@sanity/client'
-import {
-  type SanityDocument,
-  type TransactionLogEventWithEffects,
-  type TransactionLogEventWithMutations,
-} from '@sanity/types'
+import {type SanityDocument} from '@sanity/types'
 import {BehaviorSubject, filter, firstValueFrom, of} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {collectEmissions} from './__fixtures__/collect.fixture'
-import {createDocumentVersionEvent, DRAFT_ID, minutesAfterBase} from './__fixtures__/events.fixture'
+import {
+  createDocumentVersionEvent,
+  deleteDocumentGroupEvent,
+  deleteDocumentVersionEvent,
+  DOCUMENT_ID,
+  DRAFT_ID,
+  editDocumentVersionEvent,
+  minutesAfterBase,
+  publishDocumentVersionEvent,
+} from './__fixtures__/events.fixture'
 import {createMockClient} from './__fixtures__/mockClient'
 import {createTransaction, editTransaction} from './__fixtures__/transactions.fixture'
-import {getDocumentChanges, MissingSinceDocumentError} from './getDocumentChanges'
+import {
+  buildDocumentForDiffInput,
+  createTransactionsCache,
+  getDocumentChanges,
+  MissingSinceDocumentError,
+  removeDuplicatedTransactions,
+  resolveSinceDocument,
+} from './getDocumentChanges'
 import {getDocumentTransactions} from './getDocumentTransactions'
 import {HISTORY_CLEARED_EVENT_ID} from './getInitialFetchEvents'
-import {
-  type DeleteDocumentGroupEvent,
-  type DeleteDocumentVersionEvent,
-  type EditDocumentVersionEvent,
-  type EventsStoreRevision,
-  type PublishDocumentVersionEvent,
-} from './types'
-import {type EventsObservableValue} from './useEventsStore'
+import {type EventsObservableValue, type EventsStoreRevision} from './types'
 
 vi.mock('./getDocumentTransactions', () => ({
   getDocumentTransactions: vi.fn(),
@@ -50,72 +55,28 @@ const revision = (revisionId: string, document: SanityDocument | null): EventsSt
   document,
 })
 
-const publishedDoc = {
-  _createdAt: '2025-12-04T15:21:51Z',
-  _id: 'doc-1',
+const publishedDoc: SanityDocument = {
+  ...sinceDoc,
+  _id: DOCUMENT_ID,
   _rev: 'publish-revision-id',
-  _type: 'author',
-  _updatedAt: '2025-12-04T15:21:51Z',
-  name: 'foo',
-} satisfies SanityDocument
-
-const staleDraftTx: TransactionLogEventWithEffects & TransactionLogEventWithMutations = {
-  id: '81c6d51a-e35c-4dd9-b6ee-9a096df5896b',
-  timestamp: '2025-12-04T15:22:07.930920Z',
-  author: 'p8xDvUMxC',
-  documentIDs: ['drafts.doc-1'],
-  mutations: [],
-  effects: {
-    'drafts.doc-1': {
-      apply: [11, 3, 23, 0, 15, 22, '2:07', 23, 19, 20, 15, 17, 'foo bar', 'name'],
-      revert: [10, 0, 14, '_updatedAt', 17, 'foo', 'name'],
-    },
-  },
 }
 
-const publishEvent: PublishDocumentVersionEvent = {
-  type: 'publishDocumentVersion',
+const staleDraftTx = editTransaction({before: {name: 'foo'}, after: {name: 'foo bar'}})
+
+const publishEvent = publishDocumentVersionEvent({
   id: 'publish-event-id',
-  timestamp: '2026-01-01T00:00:00.000Z',
-  author: 'author-1',
-  documentVariantType: 'draft',
-  documentId: 'doc-1',
   revisionId: 'publish-revision-id',
-  versionId: 'drafts.doc-1',
-  publishCause: 'document.publish',
-}
-
-const editEvent: EditDocumentVersionEvent = {
-  type: 'editDocumentVersion',
-  id: 'edit-event-id',
-  timestamp: '2026-01-02T00:00:00.000Z',
-  author: 'author-1',
-  documentVariantType: 'draft',
-  documentId: 'drafts.doc-1',
-  contributors: ['author-1'],
+  timestamp: minutesAfterBase(10),
+})
+const editEvent = editDocumentVersionEvent({
   revisionId: 'edit-revision-id',
-  transactions: [],
-}
-
-const discardVersionEvent: DeleteDocumentVersionEvent = {
-  type: 'deleteDocumentVersion',
+  timestamp: minutesAfterBase(20),
+})
+const discardVersionEvent = deleteDocumentVersionEvent({
   id: 'discard-event-id',
-  timestamp: '2026-01-03T00:00:00.000Z',
-  author: 'author-1',
-  documentVariantType: 'draft',
-  documentId: 'doc-1',
-  versionId: 'drafts.doc-1',
-  versionRevisionId: 'discard-version-revision-id',
-}
-
-const discardGroupEvent: DeleteDocumentGroupEvent = {
-  type: 'deleteDocumentGroup',
-  id: 'deleted-2026-01-03T00:00:00.000Z',
-  timestamp: '2026-01-03T00:00:00.000Z',
-  author: 'author-1',
-  documentVariantType: 'draft',
-  documentId: 'doc-1',
-}
+  timestamp: minutesAfterBase(30),
+})
+const discardGroupEvent = deleteDocumentGroupEvent({timestamp: minutesAfterBase(30)})
 
 async function collectDiff(events: EventsObservableValue['events']) {
   return firstValueFrom(
@@ -128,11 +89,117 @@ async function collectDiff(events: EventsObservableValue['events']) {
         revisionId: publishedDoc._rev,
       }),
       remoteTransactions$: of([staleDraftTx]),
-      documentId: 'drafts.doc-1',
+      documentId: DRAFT_ID,
       client: {} as SanityClient,
     }).pipe(filter((value) => !value.loading)),
   )
 }
+
+describe('buildDocumentForDiffInput', () => {
+  it('strips internal fields and undefined values', () => {
+    expect(buildDocumentForDiffInput({...sinceDoc, extra: undefined})).toEqual({name: 'foo'})
+  })
+
+  it('returns an empty object for missing documents', () => {
+    expect(buildDocumentForDiffInput(null)).toEqual({})
+    expect(buildDocumentForDiffInput(undefined)).toEqual({})
+  })
+})
+
+describe('removeDuplicatedTransactions', () => {
+  it('removes transactions with duplicate ids, keeping the first occurrence', () => {
+    const first = editTransaction({id: 'tx-1', author: 'author-1'})
+    const duplicate = editTransaction({id: 'tx-1', author: 'author-2'})
+    const other = editTransaction({id: 'tx-2', author: 'author-1'})
+
+    expect(removeDuplicatedTransactions([first, duplicate, other])).toEqual([first, other])
+  })
+})
+
+describe('resolveSinceDocument', () => {
+  it("uses the since revision's document when present", () => {
+    expect(
+      resolveSinceDocument({since: revision('rev-since', sinceDoc), to: toDoc, events: []}),
+    ).toEqual({sinceDoc, error: null})
+  })
+
+  it('synthesizes an empty since document when "to" points at a creation event', () => {
+    const result = resolveSinceDocument({
+      since: null,
+      to: toDoc,
+      events: [createDocumentVersionEvent({id: 'rev-to'})],
+    })
+    expect(result.error).toBeNull()
+    expect(result.sinceDoc).toEqual({_type: toDoc._type, _id: toDoc._id, _rev: toDoc._rev})
+  })
+
+  it('does not synthesize a document for non-creation events', () => {
+    const result = resolveSinceDocument({
+      since: null,
+      to: toDoc,
+      events: [publishDocumentVersionEvent({id: 'rev-to'})],
+    })
+    expect(result.sinceDoc).toBeUndefined()
+    expect(result.error).toBeNull()
+  })
+
+  it('returns MissingSinceDocumentError when a requested since document could not be fetched', () => {
+    const result = resolveSinceDocument({since: revision('rev-gone', null), to: toDoc, events: []})
+    expect(result.sinceDoc).toBeUndefined()
+    expect(result.error).toBeInstanceOf(MissingSinceDocumentError)
+    expect(result.error?.revisionId).toBe('rev-gone')
+  })
+
+  it('returns no error while the since revision is still loading', () => {
+    const result = resolveSinceDocument({
+      since: {revisionId: 'rev-since', loading: true, document: null},
+      to: toDoc,
+      events: [],
+    })
+    expect(result).toEqual({sinceDoc: undefined, error: null})
+  })
+})
+
+describe('createTransactionsCache', () => {
+  const tx1 = editTransaction({id: 'tx-1', author: 'author-1'})
+  const tx2 = editTransaction({id: 'tx-2', author: 'author-1'})
+
+  it('returns null before anything is cached', () => {
+    const cache = createTransactionsCache()
+    expect(
+      cache.get({sinceRev: 'rev-a', toRev: 'rev-b', viewingLatest: false, remoteTransactions: []}),
+    ).toBeNull()
+  })
+
+  it('viewing latest: concatenates cached and remote transactions, deduped by id', () => {
+    const cache = createTransactionsCache()
+    cache.set({sinceRev: 'rev-a', toRev: undefined, transactions: [tx1]})
+
+    expect(
+      cache.get({
+        sinceRev: 'rev-a',
+        toRev: undefined,
+        viewingLatest: true,
+        remoteTransactions: [tx1, tx2],
+      }),
+    ).toEqual([tx1, tx2])
+  })
+
+  it('reuses transactions when neither since nor to changed', () => {
+    const cache = createTransactionsCache()
+    cache.set({sinceRev: 'rev-a', toRev: 'rev-b', transactions: [tx1]})
+
+    expect(
+      cache.get({sinceRev: 'rev-a', toRev: 'rev-b', viewingLatest: false, remoteTransactions: []}),
+    ).toEqual([tx1])
+    expect(
+      cache.get({sinceRev: 'rev-a', toRev: 'rev-c', viewingLatest: false, remoteTransactions: []}),
+    ).toBeNull()
+    expect(
+      cache.get({sinceRev: 'rev-z', toRev: 'rev-b', viewingLatest: false, remoteTransactions: []}),
+    ).toBeNull()
+  })
+})
 
 describe('getDocumentChanges', () => {
   beforeEach(() => {

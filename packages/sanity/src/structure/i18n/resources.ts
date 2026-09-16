@@ -164,6 +164,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'The type <strong>{{schemaType}}</strong> has <code>liveEdit</code> enabled, but a draft version of this document exists. Publish or discard the draft in order to continue live editing it.',
   /** The label for the "compare draft" action */
   'banners.obsolete-draft.actions.compare-draft.text': 'Compare draft',
+  /** Tooltip when compare draft is disabled because the published document does not exist */
+  'banners.obsolete-draft.actions.compare-draft.tooltip':
+    "The published document doesn't exist, so this draft can't be compared.",
   /** The label for the "discard draft" action */
   'banners.obsolete-draft.actions.discard-draft.text': 'Discard draft',
   /** The label for the "publish draft" action */

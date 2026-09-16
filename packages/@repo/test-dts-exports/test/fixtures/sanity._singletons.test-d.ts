@@ -17,13 +17,20 @@ import type {
   ColorSchemeSetValueContext,
   ColorSchemeValueContext,
   CommentInputContext,
+  CommentInputContextV2,
   CommentsAuthoringPathContext,
+  CommentsAuthoringPathContextV2,
   CommentsContext,
+  CommentsContextV2,
   CommentsEnabledContext,
+  CommentsEnabledContextV2,
   CommentsIntentContext,
   CommentsOnboardingContext,
+  CommentsOnboardingContextV2,
   CommentsSelectedPathContext,
+  CommentsSelectedPathContextV2,
   CommentsUpsellContext,
+  CommentsUpsellContextV2,
   ConfigErrorContext,
   ConfigErrorValue,
   CopyPasteContext,
@@ -83,6 +90,8 @@ import type {
   PortableTextMemberItemElementRefsContext,
   PortableTextMemberItemsContext,
   PortableTextMemberSchemaTypesContext,
+  PortalBoundaryContext,
+  PortalBoundaryContextValue,
   PresenceContext,
   PresenceTrackerContextGetSnapshot,
   PresenceTrackerContextStore,
@@ -188,14 +197,26 @@ describe('sanity/_singletons', () => {
   test('CommentInputContext', () => {
     expectTypeOf<typeof CommentInputContext>().not.toBeNever()
   })
+  test('CommentInputContextV2', () => {
+    expectTypeOf<typeof CommentInputContextV2>().not.toBeNever()
+  })
   test('CommentsAuthoringPathContext', () => {
     expectTypeOf<typeof CommentsAuthoringPathContext>().not.toBeNever()
+  })
+  test('CommentsAuthoringPathContextV2', () => {
+    expectTypeOf<typeof CommentsAuthoringPathContextV2>().not.toBeNever()
   })
   test('CommentsContext', () => {
     expectTypeOf<typeof CommentsContext>().not.toBeNever()
   })
+  test('CommentsContextV2', () => {
+    expectTypeOf<typeof CommentsContextV2>().not.toBeNever()
+  })
   test('CommentsEnabledContext', () => {
     expectTypeOf<typeof CommentsEnabledContext>().not.toBeNever()
+  })
+  test('CommentsEnabledContextV2', () => {
+    expectTypeOf<typeof CommentsEnabledContextV2>().not.toBeNever()
   })
   test('CommentsIntentContext', () => {
     expectTypeOf<typeof CommentsIntentContext>().not.toBeNever()
@@ -203,11 +224,20 @@ describe('sanity/_singletons', () => {
   test('CommentsOnboardingContext', () => {
     expectTypeOf<typeof CommentsOnboardingContext>().not.toBeNever()
   })
+  test('CommentsOnboardingContextV2', () => {
+    expectTypeOf<typeof CommentsOnboardingContextV2>().not.toBeNever()
+  })
   test('CommentsSelectedPathContext', () => {
     expectTypeOf<typeof CommentsSelectedPathContext>().not.toBeNever()
   })
+  test('CommentsSelectedPathContextV2', () => {
+    expectTypeOf<typeof CommentsSelectedPathContextV2>().not.toBeNever()
+  })
   test('CommentsUpsellContext', () => {
     expectTypeOf<typeof CommentsUpsellContext>().not.toBeNever()
+  })
+  test('CommentsUpsellContextV2', () => {
+    expectTypeOf<typeof CommentsUpsellContextV2>().not.toBeNever()
   })
   test('ConfigErrorContext', () => {
     expectTypeOf<typeof ConfigErrorContext>().not.toBeNever()
@@ -385,6 +415,12 @@ describe('sanity/_singletons', () => {
   })
   test('PortableTextMemberSchemaTypesContext', () => {
     expectTypeOf<typeof PortableTextMemberSchemaTypesContext>().not.toBeNever()
+  })
+  test('PortalBoundaryContext', () => {
+    expectTypeOf<typeof PortalBoundaryContext>().not.toBeNever()
+  })
+  test('PortalBoundaryContextValue', () => {
+    expectTypeOf<PortalBoundaryContextValue>().toBeObject()
   })
   test('PresenceContext', () => {
     expectTypeOf<typeof PresenceContext>().not.toBeNever()

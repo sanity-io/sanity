@@ -4,8 +4,6 @@ import {
   type BadgeTone,
   Box,
   Card,
-  Flex,
-  Grid,
   Heading,
   Stack,
   Switch,
@@ -14,9 +12,11 @@ import {
 } from '@sanity/ui'
 import {type ReactNode, useState} from 'react'
 import {styled} from 'styled-components'
+import {Grid, Flex, type GapProps} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {type StudioDiagnostics} from '../../../diagnostics/gatherStudioDiagnostics'
+import {type StyleSheetDiagnostic} from '../../../diagnostics/getStylesDiagnostics'
 import {RequestPerformanceReport} from './RequestPerformanceReport'
 
 type DiagnosticStatus = StudioDiagnostics['network']['protocol']['status']
@@ -28,12 +28,15 @@ const DIAGNOSTIC_STATUS_LABELS: Record<DiagnosticStatus, string> = {
   unsupported: 'Unsupported',
 }
 
+const BYTE_UNITS = ['B', 'kB', 'MB', 'GB', 'TB', 'PB'] as const
+
 const CodeValue = styled.span`
   font-family: var(--card-code-family, monospace);
   overflow-wrap: anywhere;
 `
 
-interface DiagnosticsReportProps {
+/** @internal */
+export interface DiagnosticsReportProps {
   diagnostics: StudioDiagnostics
   onRunAgain: () => void
   runAgainLabel?: string
@@ -46,7 +49,7 @@ export function DiagnosticsReport({
   runAgainLabel = 'Run again',
 }: DiagnosticsReportProps) {
   const [useUtc, setUseUtc] = useState(true)
-  const {browser, network, schema, studio, user} = diagnostics
+  const {browser, network, schema, studio, styles, user} = diagnostics
 
   const roles = user.roles.map((role) => role.title || role.name).join(', ')
   const localStorageResult = browser.localStorage
@@ -70,7 +73,7 @@ export function DiagnosticsReport({
   return (
     <Stack gap={5}>
       <Card padding={3} radius={2} tone="transparent">
-        <Flex align="stretch" direction={['column', 'row']} gap={5}>
+        <Flex alignItems="stretch" flexDirection={['column', 'row']} gap={5}>
           <Box flex={1}>
             <MetricGrid
               metrics={[
@@ -89,7 +92,7 @@ export function DiagnosticsReport({
               ]}
             />
           </Box>
-          <Flex align="stretch" direction={['column', 'row']} gap={4}>
+          <Flex alignItems="stretch" flexDirection={['column', 'row']} gap={4}>
             <Stack gap={2}>
               <Text muted size={1}>
                 UTC time
@@ -110,12 +113,20 @@ export function DiagnosticsReport({
         </Flex>
       </Card>
 
-      <Grid gap={3} gridTemplateColumns={[1, 1, 2]}>
+      <Grid
+        gap={3}
+        gridTemplateColumns={[
+          'repeat(1, minmax(0, 1fr))',
+          'repeat(1, minmax(0, 1fr))',
+          'repeat(2, minmax(0, 1fr))',
+        ]}
+      >
         <ReportSection testId="diagnostics-studio" title="Studio">
           <DetailRow label="Studio version" monospace value={studio.version} />
           <DetailRow label="React version" monospace value={studio.reactVersion} />
           <DetailRow label="Workspaces" value={studio.workspaceCount} />
           <DetailRow label="Unique targets" value={studio.uniqueTargetCount} />
+          <DetailRow label="Auto-updates" value={formatEnabled(studio.autoUpdates)} />
         </ReportSection>
 
         <ReportSection testId="diagnostics-workspace" title="Workspace">
@@ -154,6 +165,10 @@ export function DiagnosticsReport({
         </ReportSection>
 
         <NetworkReport diagnostics={diagnostics} useUtc={useUtc} />
+
+        {styles && styles.styledComponents.length > 0 ? (
+          <StyledComponentsReport sheets={styles.styledComponents} />
+        ) : null}
       </Grid>
 
       <Stack gap={3}>
@@ -171,7 +186,11 @@ export function DiagnosticsReport({
           <Grid
             data-testid="diagnostics-listen-connections"
             gap={3}
-            gridTemplateColumns={[1, 1, 2]}
+            gridTemplateColumns={[
+              'repeat(1, minmax(0, 1fr))',
+              'repeat(1, minmax(0, 1fr))',
+              'repeat(2, minmax(0, 1fr))',
+            ]}
           >
             <Card border data-testid="diagnostics-listen-connection" padding={4} radius={2}>
               <ListenReport result={network.listen.first} title="First connection" />
@@ -193,10 +212,10 @@ export function DiagnosticsReport({
             {network.requests.map((request) => (
               <Card border key={request.path} padding={3} radius={2}>
                 <Flex
-                  align={['flex-start', 'center']}
-                  direction={['column', 'row']}
+                  alignItems={['flex-start', 'center']}
+                  flexDirection={['column', 'row']}
                   gap={3}
-                  justify="space-between"
+                  justifyContent="space-between"
                 >
                   <Stack flex={1} gap={2}>
                     <Text size={1} weight="semibold">
@@ -208,7 +227,7 @@ export function DiagnosticsReport({
                       </Text>
                     ) : null}
                   </Stack>
-                  <Flex align="center" gap={3}>
+                  <Flex alignItems="center" gap={3}>
                     <Text muted size={1}>
                       {formatMilliseconds(request.durationMs)}
                     </Text>
@@ -250,17 +269,19 @@ function DetailRow({
   monospace,
   truncate,
   value,
+  wideLabel,
 }: {
-  label: string
+  label: ReactNode
   monospace?: boolean
   truncate?: boolean
   value?: ReactNode
+  wideLabel?: boolean
 }) {
   const displayValue = value === undefined || value === '' ? 'Unknown' : value
 
   return (
-    <Flex align="flex-start" gap={3} justify="space-between">
-      <Box flex={1}>
+    <Flex alignItems="flex-start" gap={3} justifyContent="space-between">
+      <Box flex={wideLabel ? 3 : 1}>
         <Text muted size={1}>
           {label}
         </Text>
@@ -275,6 +296,55 @@ function DetailRow({
         </Text>
       </Box>
     </Flex>
+  )
+}
+
+// Every styled-components runtime on the page owns one `<style data-styled>` sheet, so a second
+// sheet means a plugin bundled or inlined its own copy instead of using the peer dependency.
+function StyledComponentsReport({sheets}: {sheets: StyleSheetDiagnostic[]}) {
+  const versions = Array.from(new Set(sheets.map((sheet) => sheet.version ?? 'unknown version')))
+  const ruleCount = sheets.reduce((sum, sheet) => sum + sheet.ruleCount, 0)
+  const sizeBytes = sheets.every((sheet) => sheet.sizeBytes !== undefined)
+    ? sheets.reduce((sum, sheet) => sum + (sheet.sizeBytes ?? 0), 0)
+    : undefined
+  const multipleRuntimes = sheets.length > 1
+
+  return (
+    <ReportSection testId="diagnostics-styled-components" title="styled-components">
+      <DetailRow
+        label={versions.length > 1 ? 'Versions' : 'Version'}
+        monospace
+        value={versions.join(', ')}
+      />
+      <DetailRow
+        label={<CodeValue>{'<style data-styled>'}</CodeValue>}
+        wideLabel
+        value={
+          multipleRuntimes ? (
+            <Flex alignItems="center" gap={2} justifyContent="flex-end">
+              {sheets.length}
+              <Badge fontSize={0} tone="caution">
+                Expected 1
+              </Badge>
+            </Flex>
+          ) : (
+            sheets.length
+          )
+        }
+      />
+      <DetailRow label="CSS rules inserted by JS" value={ruleCount.toLocaleString()} wideLabel />
+      <DetailRow label="CSS size inserted by JS" value={formatByteSize(sizeBytes)} wideLabel />
+      {multipleRuntimes ? (
+        <Text data-testid="diagnostics-styled-components-sheets" muted size={1}>
+          {sheets
+            .map(
+              (sheet) =>
+                `${sheet.version ?? 'unknown version'}: ${sheet.ruleCount.toLocaleString()} rules, ${formatByteSize(sheet.sizeBytes) ?? 'unknown size'}`,
+            )
+            .join(' · ')}
+        </Text>
+      ) : null}
+    </ReportSection>
   )
 }
 
@@ -330,7 +400,7 @@ function ListenReport({
 }) {
   return (
     <Stack gap={4}>
-      <Flex align="center" gap={2} wrap="wrap">
+      <Flex alignItems="center" gap={2} flexWrap="wrap">
         <Text size={1} weight="semibold">
           {title}
         </Text>
@@ -367,9 +437,12 @@ interface MetricProps {
   value?: string
 }
 
-function MetricGrid({gap = 4, metrics}: {gap?: number; metrics: MetricProps[]}) {
+function MetricGrid({gap = 4, metrics}: {gap?: GapProps['gap']; metrics: MetricProps[]}) {
   return (
-    <Grid gap={gap} gridTemplateColumns={[1, 3]}>
+    <Grid
+      gap={gap}
+      gridTemplateColumns={['repeat(1, minmax(0, 1fr))', 'repeat(3, minmax(0, 1fr))']}
+    >
       {metrics.map((metric, index) => (
         <Metric {...metric} align={['left', getMetricAlignment(index)]} key={metric.label} />
       ))}
@@ -430,6 +503,18 @@ function formatMilliseconds(value?: number): string | undefined {
   return formatOptional(value, (milliseconds) => `${Math.round(milliseconds).toLocaleString()} ms`)
 }
 
+function formatByteSize(value?: number): string | undefined {
+  if (value === undefined || !Number.isFinite(value) || value < 0) return undefined
+
+  const unitIndex = Math.min(
+    Math.max(0, Math.floor(Math.log(Math.max(value, 1)) / Math.log(1_000))),
+    BYTE_UNITS.length - 1,
+  )
+  const amount = value / 1_000 ** unitIndex
+
+  return `${amount.toLocaleString(undefined, {maximumFractionDigits: 2})} ${BYTE_UNITS[unitIndex]}`
+}
+
 function formatElapsedDuration(start: string, end: string): string | undefined {
   const durationMs = new Date(end).getTime() - new Date(start).getTime()
   if (!Number.isFinite(durationMs) || durationMs < 0) return undefined
@@ -456,6 +541,10 @@ function formatDimensions(value?: {height: number; width: number}): string | und
 
 function formatBoolean(value: boolean | undefined): string | undefined {
   return value === undefined ? undefined : value ? 'Yes' : 'No'
+}
+
+function formatEnabled(value: boolean | undefined): string | undefined {
+  return value === undefined ? undefined : value ? 'Enabled' : 'Disabled'
 }
 
 function formatStorageResult(

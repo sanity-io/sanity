@@ -13,8 +13,10 @@ import {
   timeout,
 } from 'rxjs'
 
+import {hasSanityPackageInImportMap} from '../../environment/importMap'
 import {type ApiNetworkDiagnostic, getApiNetworkDiagnostic} from '../../network/isUsingLegacyHttp'
 import {type SchemaDiagnostics} from './getStudioConfigurationDiagnostics'
+import {getStylesDiagnostics, type StylesDiagnostics} from './getStylesDiagnostics'
 import {
   DEFAULT_REQUEST_PERFORMANCE_CAPACITY,
   type RequestPerformanceSnapshot,
@@ -109,8 +111,18 @@ export interface StudioDiagnostics {
   startedAt: string
   studio: StudioDiagnosticsOptions['studio'] & {
     apiHost?: string
+    /**
+     * Whether a `sanity` entry exists in an import map, the auto-updating studio signal.
+     * Undefined in reports from older studios and when the import map cannot be parsed.
+     */
+    autoUpdates?: boolean
     location?: string
   }
+  /**
+   * Always set by {@link gatherStudioDiagnostics}; optional only because reports from older
+   * studios lack it.
+   */
+  styles?: StylesDiagnostics
   user: {
     id?: string
     provider?: string
@@ -203,13 +215,25 @@ async function runStudioDiagnostics({
     studio: {
       ...studio,
       apiHost: clientConfig.apiHost,
+      autoUpdates: detectAutoUpdates(),
       location: typeof location === 'undefined' ? undefined : location.href,
     },
+    styles: getStylesDiagnostics(),
     user: {
       id: user?.id,
       provider: user?.provider,
       roles: user?.roles.map(({name, title}) => ({name, title})) ?? [],
     },
+  }
+}
+
+// hasSanityPackageInImportMap JSON.parses the page's import maps; a malformed one must not abort
+// the report.
+function detectAutoUpdates(): boolean | undefined {
+  try {
+    return hasSanityPackageInImportMap()
+  } catch {
+    return undefined
   }
 }
 

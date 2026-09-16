@@ -1,5 +1,5 @@
 /* oxlint-disable no-deprecated -- this module implements the deprecated legacy document timeline */
-import {BoundaryElementProvider, Card, Flex} from '@sanity/ui'
+import {BoundaryElementProvider, Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useState} from 'react'
 import {
@@ -10,6 +10,7 @@ import {
   useTranslation,
 } from 'sanity'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {Timeline} from '../../timeline/timeline'
 import {TimelineError} from '../../timeline/TimelineError'
@@ -75,7 +76,7 @@ export function HistorySelector({showList}: {showList: boolean}) {
   }, [loading, timelineStore])
 
   return (
-    <Flex data-testid="review-changes-pane" direction="column" height="fill">
+    <Flex data-testid="review-changes-pane" flexDirection="column" height="100%">
       <Card flex={1} padding={2} paddingTop={0}>
         {timelineError || selectedReleaseId ? (
           <TimelineError versionError={Boolean(selectedReleaseId)} />

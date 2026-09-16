@@ -1,9 +1,9 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
-import {Flex, Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 import {type ComponentType, isValidElement, type ReactNode, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 export const STATE_TITLES = {
   'loading': 'Checking…',
@@ -63,7 +63,7 @@ export function WorkspacePreview(props: WorkspacePreviewProps) {
   const iconRightComponent = useMemo(() => createIcon(iconRight), [iconRight])
 
   return (
-    <Flex align="center" flex="none" gap={3}>
+    <Flex alignItems="center" flexBasis="auto" flexGrow={0} flexShrink={0} gap={3}>
       <WorkspacePreviewIcon icon={icon} size="small" />
 
       <Stack flex={1} gap={2}>
@@ -87,7 +87,7 @@ export function WorkspacePreview(props: WorkspacePreviewProps) {
       )}
 
       {(selected || iconRightComponent) && (
-        <Flex align="center" gap={4} paddingLeft={3} paddingRight={2}>
+        <Flex alignItems="center" gap={4} paddingLeft={3} paddingRight={2}>
           {selected && (
             <Text>
               <CheckmarkIcon />

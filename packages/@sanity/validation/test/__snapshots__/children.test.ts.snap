@@ -6,6 +6,30 @@ exports[`child rules > all() rules - multiple failures > all() rules - multiple 
 [
   {
     "__internal_metadata": undefined,
+    "code": "rule.all-failed",
+    "details": {
+      "causes": [
+        {
+          "code": "string.regex-mismatch",
+          "details": {
+            "invert": false,
+            "name": "/^[A-Z]/",
+            "pattern": "^[A-Z]",
+          },
+          "message": "Must start with an uppercase character",
+          "path": [],
+        },
+        {
+          "code": "string.minimum-length",
+          "details": {
+            "actualLength": 4,
+            "minimumLength": 5,
+          },
+          "message": "5 chars or more",
+          "path": [],
+        },
+      ],
+    },
     "item": {
       "message": "Must start with an uppercase character and 5 chars or more",
     },
@@ -22,6 +46,21 @@ exports[`child rules > all() rules - single failure > all() rules - single failu
 [
   {
     "__internal_metadata": undefined,
+    "code": "rule.all-failed",
+    "details": {
+      "causes": [
+        {
+          "code": "string.regex-mismatch",
+          "details": {
+            "invert": false,
+            "name": "/^[A-Z]/",
+            "pattern": "^[A-Z]",
+          },
+          "message": "Must start with an uppercase character",
+          "path": [],
+        },
+      ],
+    },
     "item": {
       "message": "Must start with an uppercase character",
     },
@@ -36,6 +75,30 @@ exports[`child rules > all() rules - single failure, custom, common error > all(
 [
   {
     "__internal_metadata": undefined,
+    "code": "rule.all-failed",
+    "details": {
+      "causes": [
+        {
+          "code": "string.regex-mismatch",
+          "details": {
+            "invert": false,
+            "name": "/^[A-Z]/",
+            "pattern": "^[A-Z]",
+          },
+          "message": "Does not match "/^[A-Z]/"-pattern",
+          "path": [],
+        },
+        {
+          "code": "string.minimum-length",
+          "details": {
+            "actualLength": 4,
+            "minimumLength": 5,
+          },
+          "message": "Must be at least 5 characters long",
+          "path": [],
+        },
+      ],
+    },
     "item": {
       "message": "Needs to be a capital letter followed by at least 4 lowercase characters",
     },
@@ -50,6 +113,21 @@ exports[`child rules > all() rules - single failure, custom, common error > all(
 [
   {
     "__internal_metadata": undefined,
+    "code": "rule.all-failed",
+    "details": {
+      "causes": [
+        {
+          "code": "string.regex-mismatch",
+          "details": {
+            "invert": false,
+            "name": "/^[A-Z]/",
+            "pattern": "^[A-Z]",
+          },
+          "message": "Does not match "/^[A-Z]/"-pattern",
+          "path": [],
+        },
+      ],
+    },
     "item": {
       "message": "Needs to start with a capital letter and then follow with lowercase characters",
     },
@@ -64,6 +142,31 @@ exports[`child rules > either() rules - all fail, custom, common error > either(
 [
   {
     "__internal_metadata": undefined,
+    "code": "rule.either-failed",
+    "details": {
+      "causes": [
+        {
+          "code": "string.regex-mismatch",
+          "details": {
+            "invert": false,
+            "name": "/^[A-Z]/",
+            "pattern": "^[A-Z]",
+          },
+          "message": "Does not match "/^[A-Z]/"-pattern",
+          "path": [],
+        },
+        {
+          "code": "string.regex-mismatch",
+          "details": {
+            "invert": false,
+            "name": "/^i[A-Z]/",
+            "pattern": "^i[A-Z]",
+          },
+          "message": "Does not match "/^i[A-Z]/"-pattern",
+          "path": [],
+        },
+      ],
+    },
     "item": {
       "message": "Needs to start with a capital letter, unless it's an iProduct",
     },
@@ -80,6 +183,31 @@ exports[`child rules > either() rules - all matches > either() rules - no matche
 [
   {
     "__internal_metadata": undefined,
+    "code": "rule.either-failed",
+    "details": {
+      "causes": [
+        {
+          "code": "string.regex-mismatch",
+          "details": {
+            "invert": false,
+            "name": "/^R/",
+            "pattern": "^R",
+          },
+          "message": "Must start with a capital R",
+          "path": [],
+        },
+        {
+          "code": "string.regex-mismatch",
+          "details": {
+            "invert": false,
+            "name": "/ed$/",
+            "pattern": "ed$",
+          },
+          "message": "Must end with "ed"",
+          "path": [],
+        },
+      ],
+    },
     "item": {
       "message": "Must start with a capital R or Must end with "ed"",
     },
@@ -94,6 +222,31 @@ exports[`child rules > either() rules - single failure > either() rules - match 
 [
   {
     "__internal_metadata": undefined,
+    "code": "rule.either-failed",
+    "details": {
+      "causes": [
+        {
+          "code": "string.regex-mismatch",
+          "details": {
+            "invert": false,
+            "name": "/^rgb(\\d+,\\s*\\d+,\\s*\\d+)$/",
+            "pattern": "^rgb(\\d+,\\s*\\d+,\\s*\\d+)$",
+          },
+          "message": "Must be rgb(num, num, num) format",
+          "path": [],
+        },
+        {
+          "code": "string.regex-mismatch",
+          "details": {
+            "invert": false,
+            "name": "/^#([a-f0-9]{3}|[a-f0-9]{6})$/",
+            "pattern": "^#([a-f0-9]{3}|[a-f0-9]{6})$",
+          },
+          "message": "Must be hex color with #-prefix",
+          "path": [],
+        },
+      ],
+    },
     "item": {
       "message": "Must be rgb(num, num, num) format or Must be hex color with #-prefix",
     },
@@ -108,6 +261,31 @@ exports[`child rules > either() rules - single failure > either() rules - single
 [
   {
     "__internal_metadata": undefined,
+    "code": "rule.either-failed",
+    "details": {
+      "causes": [
+        {
+          "code": "string.regex-mismatch",
+          "details": {
+            "invert": false,
+            "name": "/^rgb(\\d+,\\s*\\d+,\\s*\\d+)$/",
+            "pattern": "^rgb(\\d+,\\s*\\d+,\\s*\\d+)$",
+          },
+          "message": "Must be rgb(num, num, num) format",
+          "path": [],
+        },
+        {
+          "code": "string.regex-mismatch",
+          "details": {
+            "invert": false,
+            "name": "/^#([a-f0-9]{3}|[a-f0-9]{6})$/",
+            "pattern": "^#([a-f0-9]{3}|[a-f0-9]{6})$",
+          },
+          "message": "Must be hex color with #-prefix",
+          "path": [],
+        },
+      ],
+    },
     "item": {
       "message": "Must be rgb(num, num, num) format or Must be hex color with #-prefix",
     },

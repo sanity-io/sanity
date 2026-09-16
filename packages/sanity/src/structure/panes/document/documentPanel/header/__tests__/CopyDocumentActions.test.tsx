@@ -1,12 +1,11 @@
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {useDocumentVersions, usePerspective, useTargetDocumentState} from 'sanity'
+import {usePerspective, useTargetDocumentState} from 'sanity'
 import {type Mock, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {usePaneRouter} from '../../../../../components/paneRouter/usePaneRouter'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
-import {useDocumentPane} from '../../../useDocumentPane'
 import {useDocumentPaneInfo} from '../../../useDocumentPaneInfo'
 import {CopyDocumentActions} from '../CopyDocumentActions'
 
@@ -25,25 +24,36 @@ const DEFAULT_PERSPECTIVE = {
   excludedPerspectives: [],
 }
 
-const READY_TARGET_STATE = {
-  status: 'ready' as const,
-  targetDocument: undefined,
-  scopeId: undefined,
-  variant: undefined,
-}
+const DRAFT_SIBLING = {_id: 'drafts.doc-123'}
+const PUBLISHED_SIBLING = {_id: 'doc-123'}
+const RELEASE_SIBLING = {_id: 'versions.rMyRelease.doc-123'}
+const SCHEDULED_SIBLING = {_id: 'versions.rScheduled.doc-123'}
 
-const EXISTING_DOCUMENT_VERSIONS = {
-  data: ['drafts.doc-123', 'doc-123', 'versions.rMyRelease.doc-123', 'versions.rScheduled.doc-123'],
-  versions: [],
-  loading: false,
-  error: null,
+function readyTarget(
+  siblings: {
+    published?: {_id: string; _system?: {draft?: {_ref: string}; variant?: {_ref: string}}}
+    draft?: {_id: string}
+    version?: {_id: string}
+  } = {},
+) {
+  return {
+    status: 'ready' as const,
+    targetDocument: siblings.draft ?? siblings.published ?? siblings.version,
+    scopeId: undefined,
+    variant: undefined,
+    siblings: {
+      published: undefined,
+      draft: undefined,
+      version: undefined,
+      ...siblings,
+    },
+  }
 }
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
   usePerspective: vi.fn(() => DEFAULT_PERSPECTIVE),
-  useTargetDocumentState: vi.fn(() => READY_TARGET_STATE),
-  useDocumentVersions: vi.fn(() => EXISTING_DOCUMENT_VERSIONS),
+  useTargetDocumentState: vi.fn(() => readyTarget({draft: DRAFT_SIBLING})),
   useStudioUrl: vi.fn(() => ({
     studioUrl: 'http://localhost:3333',
     buildIntentUrl: mockBuildIntentUrl,
@@ -68,8 +78,6 @@ vi.mock('../../../../../components/paneRouter/usePaneRouter', () => ({
   })),
 }))
 
-vi.mock('../../../useDocumentPane')
-
 vi.mock('../../../useDocumentPaneInfo')
 
 vi.mock('@sanity/telemetry/react', () => ({
@@ -79,18 +87,14 @@ vi.mock('@sanity/telemetry/react', () => ({
 const mockUsePerspective = usePerspective as Mock
 const mockUsePaneRouter = usePaneRouter as Mock
 const mockUseDocumentPaneInfo = useDocumentPaneInfo as Mock
-const mockUseDocumentPane = useDocumentPane as Mock
 const mockUseTargetDocumentState = useTargetDocumentState as Mock
-const mockUseDocumentVersions = useDocumentVersions as Mock
-
-const EXISTING_EDIT_STATE = {
-  ready: true,
-  draft: {_id: 'drafts.doc-123'},
-  published: {_id: 'doc-123'},
-  version: null,
-}
 
 let wrapper: React.ComponentType<{children: React.ReactNode}>
+
+async function clickMenuItem(testId: string) {
+  await userEvent.click(screen.getByTestId('copy-document-actions-button'))
+  await userEvent.click(await screen.findByTestId(testId))
+}
 
 beforeAll(async () => {
   wrapper = await createTestProvider({
@@ -112,19 +116,10 @@ describe('CopyDocumentActions', () => {
       documentId: 'doc-123',
       schemaType: {liveEdit: false},
     })
-    mockUseDocumentPane.mockReturnValue({
-      documentId: 'doc-123',
-      documentType: 'article',
-      editState: EXISTING_EDIT_STATE,
-    })
-    mockUseTargetDocumentState.mockReturnValue(READY_TARGET_STATE)
-    mockUseDocumentVersions.mockReturnValue(EXISTING_DOCUMENT_VERSIONS)
+    mockUseTargetDocumentState.mockReturnValue(
+      readyTarget({draft: DRAFT_SIBLING, published: PUBLISHED_SIBLING}),
+    )
   })
-
-  async function clickMenuItem(testId: string) {
-    await userEvent.click(screen.getByTestId('copy-document-actions-button'))
-    await userEvent.click(await screen.findByTestId(testId))
-  }
 
   describe('Copy link to document', () => {
     it('copies URL with no perspective param for drafts', async () => {
@@ -146,12 +141,47 @@ describe('CopyDocumentActions', () => {
         selectedPerspective: 'rMyRelease',
         perspectiveStack: ['rMyRelease', 'drafts'],
       })
+      mockUseTargetDocumentState.mockReturnValue(readyTarget({version: RELEASE_SIBLING}))
 
       render(<CopyDocumentActions />, {wrapper})
       await clickMenuItem('copy-link-to-document')
 
       expect(mockResolveIntentLink).toHaveBeenCalledWith('edit', {id: 'doc-123', type: 'article'}, [
         ['perspective', 'rMyRelease'],
+      ])
+    })
+
+    it('copies URL with variant search param when a variant is selected', async () => {
+      mockUsePerspective.mockReturnValue({
+        ...DEFAULT_PERSPECTIVE,
+        selectedVariantName: 'alpha-audience',
+      })
+
+      render(<CopyDocumentActions />, {wrapper})
+      await clickMenuItem('copy-link-to-document')
+
+      expect(mockResolveIntentLink).toHaveBeenCalledWith('edit', {id: 'doc-123', type: 'article'}, [
+        ['variant', 'alpha-audience'],
+      ])
+    })
+
+    it('copies URL with perspective and variant params for a release with a variant', async () => {
+      mockUsePerspective.mockReturnValue({
+        ...DEFAULT_PERSPECTIVE,
+        selectedPerspectiveName: 'rMyRelease',
+        selectedReleaseId: 'rMyRelease',
+        selectedVariantName: 'alpha-audience',
+        selectedPerspective: 'rMyRelease',
+        perspectiveStack: ['rMyRelease', 'drafts'],
+      })
+      mockUseTargetDocumentState.mockReturnValue(readyTarget({version: RELEASE_SIBLING}))
+
+      render(<CopyDocumentActions />, {wrapper})
+      await clickMenuItem('copy-link-to-document')
+
+      expect(mockResolveIntentLink).toHaveBeenCalledWith('edit', {id: 'doc-123', type: 'article'}, [
+        ['perspective', 'rMyRelease'],
+        ['variant', 'alpha-audience'],
       ])
     })
 
@@ -163,11 +193,11 @@ describe('CopyDocumentActions', () => {
         selectedPerspective: 'rScheduled',
         perspectiveStack: ['rScheduled', 'drafts'],
       })
-
       mockUsePaneRouter.mockReturnValue({
         params: {scheduledDraft: 'rScheduled'},
         setParams: vi.fn(),
       })
+      mockUseTargetDocumentState.mockReturnValue(readyTarget({version: SCHEDULED_SIBLING}))
 
       render(<CopyDocumentActions />, {wrapper})
       await clickMenuItem('copy-link-to-document')
@@ -176,6 +206,31 @@ describe('CopyDocumentActions', () => {
         'edit',
         {id: 'doc-123', type: 'article', scheduledDraft: 'rScheduled'},
         [],
+      )
+    })
+
+    it('copies URL with variant search param and scheduledDraft intent param', async () => {
+      mockUsePerspective.mockReturnValue({
+        ...DEFAULT_PERSPECTIVE,
+        selectedPerspectiveName: 'rScheduled',
+        selectedReleaseId: 'rScheduled',
+        selectedVariantName: 'alpha-audience',
+        selectedPerspective: 'rScheduled',
+        perspectiveStack: ['rScheduled', 'drafts'],
+      })
+      mockUsePaneRouter.mockReturnValue({
+        params: {scheduledDraft: 'rScheduled'},
+        setParams: vi.fn(),
+      })
+      mockUseTargetDocumentState.mockReturnValue(readyTarget({version: SCHEDULED_SIBLING}))
+
+      render(<CopyDocumentActions />, {wrapper})
+      await clickMenuItem('copy-link-to-document')
+
+      expect(mockResolveIntentLink).toHaveBeenCalledWith(
+        'edit',
+        {id: 'doc-123', type: 'article', scheduledDraft: 'rScheduled'},
+        [['variant', 'alpha-audience']],
       )
     })
 
@@ -211,14 +266,14 @@ describe('CopyDocumentActions', () => {
   })
 
   describe('Copy document ID', () => {
-    it('copies drafts.{docId} for drafts perspective', async () => {
+    it('copies the draft sibling id on the drafts perspective', async () => {
       render(<CopyDocumentActions />, {wrapper})
       await clickMenuItem('copy-document-id')
 
       expect(mockClipboardWriteText).toHaveBeenCalledWith('drafts.doc-123')
     })
 
-    it('copies {docId} for live edit document types', async () => {
+    it('copies the published sibling id for live edit document types', async () => {
       mockUseDocumentPaneInfo.mockReturnValue({
         documentType: 'settings',
         documentId: 'doc-123',
@@ -231,7 +286,7 @@ describe('CopyDocumentActions', () => {
       expect(mockClipboardWriteText).toHaveBeenCalledWith('doc-123')
     })
 
-    it('copies {docId} for published perspective', async () => {
+    it('copies the published sibling id on the published perspective', async () => {
       mockUsePerspective.mockReturnValue({
         ...DEFAULT_PERSPECTIVE,
         selectedPerspectiveName: 'published',
@@ -245,7 +300,7 @@ describe('CopyDocumentActions', () => {
       expect(mockClipboardWriteText).toHaveBeenCalledWith('doc-123')
     })
 
-    it('copies versions.{releaseId}.{docId} for release perspective', async () => {
+    it('copies the version sibling id on a release perspective', async () => {
       mockUsePerspective.mockReturnValue({
         ...DEFAULT_PERSPECTIVE,
         selectedPerspectiveName: 'rMyRelease',
@@ -253,6 +308,7 @@ describe('CopyDocumentActions', () => {
         selectedPerspective: 'rMyRelease',
         perspectiveStack: ['rMyRelease', 'drafts'],
       })
+      mockUseTargetDocumentState.mockReturnValue(readyTarget({version: RELEASE_SIBLING}))
 
       render(<CopyDocumentActions />, {wrapper})
       await clickMenuItem('copy-document-id')
@@ -260,7 +316,7 @@ describe('CopyDocumentActions', () => {
       expect(mockClipboardWriteText).toHaveBeenCalledWith('versions.rMyRelease.doc-123')
     })
 
-    it('copies versions.{releaseId}.{docId} for scheduled draft', async () => {
+    it('copies the version sibling id for a scheduled draft', async () => {
       mockUsePerspective.mockReturnValue({
         ...DEFAULT_PERSPECTIVE,
         selectedPerspectiveName: 'rScheduled',
@@ -268,16 +324,90 @@ describe('CopyDocumentActions', () => {
         selectedPerspective: 'rScheduled',
         perspectiveStack: ['rScheduled', 'drafts'],
       })
-
       mockUsePaneRouter.mockReturnValue({
         params: {scheduledDraft: 'rScheduled'},
         setParams: vi.fn(),
       })
+      mockUseTargetDocumentState.mockReturnValue(readyTarget({version: SCHEDULED_SIBLING}))
 
       render(<CopyDocumentActions />, {wrapper})
       await clickMenuItem('copy-document-id')
 
       expect(mockClipboardWriteText).toHaveBeenCalledWith('versions.rScheduled.doc-123')
+    })
+
+    it('copies the constructed drafts id when published is shown on the draft perspective', async () => {
+      mockUseTargetDocumentState.mockReturnValue(readyTarget({published: PUBLISHED_SIBLING}))
+
+      render(<CopyDocumentActions />, {wrapper})
+      await clickMenuItem('copy-document-id')
+
+      expect(mockClipboardWriteText).toHaveBeenCalledWith('drafts.doc-123')
+    })
+
+    it('copies the advertised draft id when a published variant is shown on the draft perspective', async () => {
+      const advertisedDraftId = 'versions.varscope.doc-123'
+      mockUseTargetDocumentState.mockReturnValue(
+        readyTarget({
+          published: {
+            _id: 'versions.varscopePub.doc-123',
+            _system: {
+              variant: {_ref: 'variant-1'},
+              draft: {_ref: advertisedDraftId},
+            },
+          },
+        }),
+      )
+
+      render(<CopyDocumentActions />, {wrapper})
+      await clickMenuItem('copy-document-id')
+
+      expect(mockClipboardWriteText).toHaveBeenCalledWith(advertisedDraftId)
+    })
+
+    it('copies the lane draft sibling id when a variant draft exists', async () => {
+      const variantDraftId = 'versions.varscope.doc-123'
+      mockUseTargetDocumentState.mockReturnValue(readyTarget({draft: {_id: variantDraftId}}))
+
+      render(<CopyDocumentActions />, {wrapper})
+      await clickMenuItem('copy-document-id')
+
+      expect(mockClipboardWriteText).toHaveBeenCalledWith(variantDraftId)
+    })
+
+    it('copies the lane published sibling id when a variant is published', async () => {
+      const variantPublishedId = 'versions.varscopePub.doc-123'
+      mockUsePerspective.mockReturnValue({
+        ...DEFAULT_PERSPECTIVE,
+        selectedPerspectiveName: 'published',
+        selectedPerspective: 'published',
+        perspectiveStack: ['published'],
+      })
+      mockUseTargetDocumentState.mockReturnValue(
+        readyTarget({published: {_id: variantPublishedId}}),
+      )
+
+      render(<CopyDocumentActions />, {wrapper})
+      await clickMenuItem('copy-document-id')
+
+      expect(mockClipboardWriteText).toHaveBeenCalledWith(variantPublishedId)
+    })
+
+    it('copies the lane version sibling id when a variant exists in a release', async () => {
+      const variantVersionId = 'versions.varscopeRel.doc-123'
+      mockUsePerspective.mockReturnValue({
+        ...DEFAULT_PERSPECTIVE,
+        selectedPerspectiveName: 'rMyRelease',
+        selectedReleaseId: 'rMyRelease',
+        selectedPerspective: 'rMyRelease',
+        perspectiveStack: ['rMyRelease', 'drafts'],
+      })
+      mockUseTargetDocumentState.mockReturnValue(readyTarget({version: {_id: variantVersionId}}))
+
+      render(<CopyDocumentActions />, {wrapper})
+      await clickMenuItem('copy-document-id')
+
+      expect(mockClipboardWriteText).toHaveBeenCalledWith(variantVersionId)
     })
 
     it('shows a toast after copying the ID', async () => {
@@ -309,83 +439,32 @@ describe('CopyDocumentActions', () => {
         perspectiveStack: [releaseId, 'drafts'],
       })
 
-    it('hides the button when a release is pinned but the version does not exist', () => {
+    it('hides the button when the current lane sibling does not exist', () => {
       pinRelease('rMyRelease')
-      mockUseDocumentPane.mockReturnValue({
-        documentId: 'doc-123',
-        documentType: 'article',
-        editState: {ready: true, draft: null, published: {_id: 'doc-123'}, version: null},
-      })
-      mockUseDocumentVersions.mockReturnValue({...EXISTING_DOCUMENT_VERSIONS, data: ['doc-123']})
+      mockUseTargetDocumentState.mockReturnValue(
+        readyTarget({published: PUBLISHED_SIBLING, draft: DRAFT_SIBLING}),
+      )
 
       render(<CopyDocumentActions />, {wrapper})
 
       expect(screen.queryByTestId('copy-document-actions-button')).not.toBeInTheDocument()
     })
 
-    it('hides the button when the pinned release differs from the only existing version', () => {
+    it('shows the button when the current lane sibling exists', () => {
       pinRelease('rMyRelease')
-      mockUseDocumentPane.mockReturnValue({
-        documentId: 'doc-123',
-        documentType: 'article',
-        editState: {
-          ready: true,
-          draft: null,
-          published: null,
-          version: {_id: 'versions.rOther.doc-123'},
-        },
-      })
-      mockUseDocumentVersions.mockReturnValue({
-        ...EXISTING_DOCUMENT_VERSIONS,
-        data: ['versions.rOther.doc-123'],
-      })
-
-      render(<CopyDocumentActions />, {wrapper})
-
-      expect(screen.queryByTestId('copy-document-actions-button')).not.toBeInTheDocument()
-    })
-
-    it('stays visible when creating a new document inside a release', () => {
-      pinRelease('rMyRelease')
-      mockUseDocumentPane.mockReturnValue({
-        documentId: 'doc-123',
-        documentType: 'article',
-        editState: {ready: true, draft: null, published: null, version: null},
-      })
-      mockUseDocumentVersions.mockReturnValue({...EXISTING_DOCUMENT_VERSIONS, data: []})
+      mockUseTargetDocumentState.mockReturnValue(readyTarget({version: RELEASE_SIBLING}))
 
       render(<CopyDocumentActions />, {wrapper})
 
       expect(screen.getByTestId('copy-document-actions-button')).toBeInTheDocument()
     })
 
-    it('shows the button when the pinned release contains the version', () => {
-      pinRelease('rMyRelease')
-      mockUseDocumentPane.mockReturnValue({
-        documentId: 'doc-123',
-        documentType: 'article',
-        editState: {
-          ready: true,
-          draft: null,
-          published: null,
-          version: {_id: 'versions.rMyRelease.doc-123'},
-        },
-      })
-      mockUseDocumentVersions.mockReturnValue({
-        ...EXISTING_DOCUMENT_VERSIONS,
-        data: ['versions.rMyRelease.doc-123'],
-      })
-
-      render(<CopyDocumentActions />, {wrapper})
-
-      expect(screen.getByTestId('copy-document-actions-button')).toBeInTheDocument()
-    })
-
-    it('hides the button when the selected variant does not exist', () => {
+    it('hides the button when the selected variant has no siblings', () => {
       mockUseTargetDocumentState.mockReturnValue({
         status: 'variant-missing',
         variant: {_id: 'variant-1'},
         bundle: 'published',
+        siblings: {published: undefined, draft: undefined, version: undefined},
       })
 
       render(<CopyDocumentActions />, {wrapper})
@@ -404,70 +483,43 @@ describe('CopyDocumentActions', () => {
       expect(screen.queryByTestId('copy-document-actions-button')).not.toBeInTheDocument()
     })
 
-    it('shows the button when the selected variant exists', () => {
-      mockUseTargetDocumentState.mockReturnValue({
-        status: 'ready',
-        targetDocument: {_id: 'versions.v1a2b3c4.doc-123'},
-        scopeId: 'v1a2b3c4',
-        variant: {_id: 'variant-1'},
-      })
-
-      render(<CopyDocumentActions />, {wrapper})
-
-      expect(screen.getByTestId('copy-document-actions-button')).toBeInTheDocument()
-    })
-
-    it('stays visible on the drafts perspective when no draft exists (pseudo-draft)', () => {
-      mockUseDocumentPane.mockReturnValue({
-        documentId: 'doc-123',
-        documentType: 'article',
-        editState: {ready: true, draft: null, published: {_id: 'doc-123'}, version: null},
-      })
-      mockUseDocumentVersions.mockReturnValue({...EXISTING_DOCUMENT_VERSIONS, data: ['doc-123']})
-
-      render(<CopyDocumentActions />, {wrapper})
-
-      expect(screen.getByTestId('copy-document-actions-button')).toBeInTheDocument()
-    })
-
-    it('stays visible while the document versions are still loading', () => {
-      pinRelease('rMyRelease')
-      mockUseDocumentPane.mockReturnValue({
-        documentId: 'doc-123',
-        documentType: 'article',
-        editState: {ready: true, draft: null, published: {_id: 'doc-123'}, version: null},
-      })
-      mockUseDocumentVersions.mockReturnValue({
-        data: [],
-        versions: [],
-        loading: true,
-        error: null,
-      })
-
-      render(<CopyDocumentActions />, {wrapper})
-
-      expect(screen.getByTestId('copy-document-actions-button')).toBeInTheDocument()
-    })
-
-    it('stays visible while the target document state is still resolving', () => {
+    it('hides the button while the target is still resolving', () => {
       mockUseTargetDocumentState.mockReturnValue({status: 'resolving'})
 
       render(<CopyDocumentActions />, {wrapper})
 
-      expect(screen.getByTestId('copy-document-actions-button')).toBeInTheDocument()
+      expect(screen.queryByTestId('copy-document-actions-button')).not.toBeInTheDocument()
     })
 
-    it('stays visible while the edit state is not yet ready', () => {
-      pinRelease('rMyRelease')
-      mockUseDocumentPane.mockReturnValue({
-        documentId: 'doc-123',
-        documentType: 'article',
-        editState: {ready: false, draft: null, published: null, version: null},
-      })
+    it('hides the button for a new unpublished document with no siblings', () => {
+      mockUseTargetDocumentState.mockReturnValue(readyTarget())
+
+      render(<CopyDocumentActions />, {wrapper})
+
+      expect(screen.queryByTestId('copy-document-actions-button')).not.toBeInTheDocument()
+    })
+
+    it('shows the button when published is shown on the draft perspective', () => {
+      mockUseTargetDocumentState.mockReturnValue(readyTarget({published: PUBLISHED_SIBLING}))
 
       render(<CopyDocumentActions />, {wrapper})
 
       expect(screen.getByTestId('copy-document-actions-button')).toBeInTheDocument()
+    })
+
+    it('hides the button when a published variant has no advertised draft id', () => {
+      mockUseTargetDocumentState.mockReturnValue(
+        readyTarget({
+          published: {
+            _id: 'versions.varscopePub.doc-123',
+            _system: {variant: {_ref: 'variant-1'}},
+          },
+        }),
+      )
+
+      render(<CopyDocumentActions />, {wrapper})
+
+      expect(screen.queryByTestId('copy-document-actions-button')).not.toBeInTheDocument()
     })
   })
 })

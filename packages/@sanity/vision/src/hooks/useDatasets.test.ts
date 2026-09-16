@@ -18,6 +18,7 @@ const MOCK_DATASETS: DatasetsResponse = [
   {
     name: 'production',
     aclMode: 'public',
+    description: '',
     createdAt: '2017-11-02T14:45:09.221Z',
     createdByUserId: '123',
     addonFor: null,
@@ -28,6 +29,7 @@ const MOCK_DATASETS: DatasetsResponse = [
   {
     name: 'staging',
     aclMode: 'public',
+    description: '',
     createdAt: '2017-11-02T14:45:09.221Z',
     createdByUserId: '456',
     addonFor: null,
@@ -38,6 +40,7 @@ const MOCK_DATASETS: DatasetsResponse = [
   {
     name: 'development',
     aclMode: 'public',
+    description: '',
     createdAt: '2017-11-02T14:45:09.221Z',
     createdByUserId: '789',
     addonFor: null,

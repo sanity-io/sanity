@@ -4,7 +4,6 @@ import {
   type SchemaType,
   type SortOrdering,
 } from '@sanity/types'
-import {Flex} from '@sanity/ui'
 import {type ComponentType, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
@@ -21,6 +20,7 @@ import {
   useDocumentVersions,
   usePerspective,
 } from 'sanity'
+import {Flex} from 'ui5'
 
 import {TooltipDelayGroupProvider} from '../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 
@@ -82,10 +82,6 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
     selectedVariantName,
   ])
 
-  // Deferred: react-rx v5's deferral is identity-coherent, so when a
-  // (recycled) list item switches to a new document id the live snapshot for
-  // the new id wins and the previous document's title/media never renders
-  // next to the new document's version badges.
   const {
     snapshot,
     original,
@@ -96,7 +92,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
 
   const status = isLoading ? null : (
     <TooltipDelayGroupProvider>
-      <Flex align="center" gap={3}>
+      <Flex alignItems="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
         <DocumentVersionsStatusIndicator documentVersions={versions} />
       </Flex>

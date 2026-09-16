@@ -57,6 +57,7 @@ export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocu
       : null,
   )
   const showPublishNow = configuredActionIds.has('publish')
+  // EditScheduledDraftAction and useSchedulePublishAction both claim `schedule`, so removing one leaves this gate open.
   const showSchedule = configuredActionIds.has('schedule')
   const showDeleteSchedule = configuredActionIds.has('discardVersion')
 
@@ -82,7 +83,7 @@ export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocu
     }
 
     const editSchedule = showSchedule
-      ? [<MenuItem key={'edit-schedule'} {...actions.editSchedule} />]
+      ? [<MenuItem key={'pause-to-edit'} {...actions.pauseToEdit} />]
       : []
 
     return [...publishNow, ...editSchedule, ...deleteSchedule]

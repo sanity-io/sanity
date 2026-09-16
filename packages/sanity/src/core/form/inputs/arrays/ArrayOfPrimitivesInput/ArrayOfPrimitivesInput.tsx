@@ -197,7 +197,15 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
                     items={membersWithSortIds.map((m) => m.id)}
                     sortable={isSortable}
                     gap={isGrid ? 3 : 1}
-                    gridTemplateColumns={isGrid ? [2, 3, 4] : 1}
+                    gridTemplateColumns={
+                      isGrid
+                        ? [
+                            'repeat(2, minmax(0, 1fr))',
+                            'repeat(3, minmax(0, 1fr))',
+                            'repeat(4, minmax(0, 1fr))',
+                          ]
+                        : ['repeat(1, minmax(0, 1fr))']
+                    }
                     padding={isGrid ? 1 : undefined}
                     margin={isGrid ? 1 : undefined}
                   >

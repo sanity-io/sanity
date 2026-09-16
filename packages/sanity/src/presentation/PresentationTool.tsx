@@ -61,6 +61,7 @@ import {
 import {useAllowPatterns} from './useAllowPatterns'
 import {useDocumentsOnPage} from './useDocumentsOnPage'
 import {useMainDocument} from './useMainDocument'
+import {useNavigatePreviewFrame} from './useNavigatePreviewFrame'
 import {useParams} from './useParams'
 import {usePopups} from './usePopups'
 import {usePresentationPerspective} from './usePresentationPerspective'
@@ -416,43 +417,13 @@ export default function PresentationTool(props: {
   }, [params.id, params.path, visualEditingComlink])
 
   // Dispatch a navigation message when the preview param changes
-  useEffect(() => {
-    if (
-      frameStateRef.current.url &&
-      params.preview &&
-      frameStateRef.current.url !== params.preview
-    ) {
-      try {
-        const frameOrigin = new URL(frameStateRef.current.url, targetOrigin).origin
-        const previewOrigin = new URL(params.preview, targetOrigin).origin
-        if (frameOrigin !== previewOrigin) {
-          return
-        }
-      } catch {
-        // ignore
-      }
-
-      frameStateRef.current.url = params.preview
-      if (overlaysConnection === 'connected') {
-        /**
-         * Translate the possibly absolute params url back to a relative URL
-         */
-        let url = params.preview
-        if (url.startsWith('http')) {
-          try {
-            const newUrl = new URL(params.preview, targetOrigin)
-            url = newUrl.pathname + newUrl.search + newUrl.hash
-          } catch {
-            // ignore
-          }
-        }
-        visualEditingComlink?.post('presentation/navigate', {
-          url,
-          type: 'replace',
-        })
-      }
-    }
-  }, [overlaysConnection, targetOrigin, params.preview, visualEditingComlink])
+  useNavigatePreviewFrame({
+    frameStateRef,
+    overlaysConnection,
+    preview: params.preview,
+    targetOrigin,
+    visualEditingComlink,
+  })
 
   const toggleOverlay = useCallback(
     () => visualEditingComlink?.post('presentation/toggle-overlay'),

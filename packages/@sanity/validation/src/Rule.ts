@@ -10,6 +10,10 @@ import {
 } from '@sanity/types'
 import get from 'lodash-es/get.js'
 
+import {ClientUnavailableError} from './clientUnavailable'
+import {validationMarkerCodes} from './codes'
+import {isInternalValidator} from './internalValidators'
+import {type InternalValidationContext} from './types'
 import {convertToValidationMarker} from './util/convertToValidationMarker'
 import {isLocalizedMessages, localizeMessage} from './util/localizeMessage'
 import {pathToString} from './util/pathToString'
@@ -19,6 +23,7 @@ import {dateValidators} from './validators/dateValidator'
 import {genericValidators} from './validators/genericValidator'
 import {numberValidators} from './validators/numberValidator'
 import {objectValidators} from './validators/objectValidator'
+import {hasCustomSlugUniqueness, slugUniquenessValidator} from './validators/slugValidator'
 import {stringValidators} from './validators/stringValidator'
 
 const typeValidators = {
@@ -36,6 +41,14 @@ const isFieldRef = (constraint: unknown): constraint is {type: symbol; path: str
 }
 
 const EMPTY_ARRAY: unknown[] = []
+
+const fallbackCodeForRule = (flag: string) => {
+  if (flag === 'custom') return validationMarkerCodes.custom
+  if (flag === 'media') return validationMarkerCodes.mediaCustom
+  if (flag === 'all') return validationMarkerCodes.ruleAllFailed
+  if (flag === 'either') return validationMarkerCodes.ruleEitherFailed
+  return validationMarkerCodes.validationFailed
+}
 
 /**
  * Concrete Rule implementation with validation logic.
@@ -82,9 +95,10 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
 
   async validate(
     value: unknown,
-    {__internal = {}, ...context}: Parameters<IRule['validate']>[1],
+    options: Parameters<IRule['validate']>[1],
   ): Promise<ValidationMarker[]> {
-    const {customValidationConcurrencyLimiter} = __internal
+    const {__internal = {}, ...context} = options as InternalValidationContext
+    const {customValidation = true, customValidationConcurrencyLimiter, markIncomplete} = __internal
 
     const valueIsEmpty = value === null || value === undefined
 
@@ -118,20 +132,29 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
           specConstraint = get(context.parent, specConstraint.path)
         }
 
+        if (curr.flag === 'custom' || curr.flag === 'media') {
+          // Slug rules can be inherited from a compiled base type, so classify the
+          // callback using the actual field's options at validation time.
+          const usesCustomSlugUniqueness =
+            specConstraint === slugUniquenessValidator &&
+            hasCustomSlugUniqueness(context.type?.options)
+          if (
+            (!isInternalValidator(specConstraint) || usesCustomSlugUniqueness) &&
+            !customValidation
+          ) {
+            markIncomplete?.()
+            return []
+          }
+        }
+
         if (
           curr.flag === 'custom' &&
           customValidationConcurrencyLimiter &&
           !(specConstraint as CustomValidator)?.bypassConcurrencyLimit
         ) {
           const customValidator = specConstraint as CustomValidator
-          specConstraint = async (...args: Parameters<CustomValidator>) => {
-            await customValidationConcurrencyLimiter.ready()
-            try {
-              return await customValidator(...args)
-            } finally {
-              customValidationConcurrencyLimiter.release()
-            }
-          }
+          specConstraint = (...args: Parameters<CustomValidator>) =>
+            customValidationConcurrencyLimiter.run(() => customValidator(...args), context.signal)
         }
 
         const message = isLocalizedMessages(this._message)
@@ -140,13 +163,25 @@ export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
 
         try {
           const result = await validator(specConstraint, value, message, context)
-          return convertToValidationMarker(result, this._level, context)
+          return convertToValidationMarker(result, this._level, context, {
+            code: fallbackCodeForRule(curr.flag),
+          })
         } catch (err) {
+          context.signal?.throwIfAborted()
+          if (err instanceof ClientUnavailableError) {
+            markIncomplete?.()
+            return []
+          }
+
           const errorMessage = `${pathToString(
             context.path,
           )}: Exception occurred while validating value: ${err.message}`
 
-          return convertToValidationMarker({message: errorMessage}, 'error', context)
+          return convertToValidationMarker(
+            {code: validationMarkerCodes.validationException, message: errorMessage},
+            'error',
+            context,
+          )
         }
       }),
     )

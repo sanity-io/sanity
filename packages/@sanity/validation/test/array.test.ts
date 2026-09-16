@@ -38,6 +38,15 @@ describe('array', () => {
     await expect(rule.validate(['a', 'b'], context)).resolves.toMatchSnapshot('exact length: valid')
   })
 
+  test('reports the allowed value count without retaining all values', async () => {
+    await expect(Rule.array().valid(['one', 'two']).validate(['three'], context)).resolves.toEqual([
+      expect.objectContaining({
+        code: 'value.not-allowed',
+        details: {allowedValuesCount: 2},
+      }),
+    ])
+  })
+
   test('unique constraint (default, simple values)', async () => {
     const rule = Rule.array().unique()
     await expect(rule.validate(['a', 'b', 'c', 'd'], context)).resolves.toMatchSnapshot(

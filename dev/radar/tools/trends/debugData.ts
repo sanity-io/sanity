@@ -5,7 +5,8 @@
  * host-speed-correlated noise (why the calibration strip exists), an auth
  * round-trip drop, and sparse/single/empty datasets. It mirrors every shape CI
  * actually stores: both load conditions (boot-cold + open-doc-warm),
- * main-thread blocking, INP, soak, and the PR/CI backlink fields.
+ * main-thread blocking, INP, soak, settle (green controls, a red-by-design
+ * scenario, a re-regressed loop), and the PR/CI backlink fields.
  */
 import {type TrendRun, type TrendTag} from './data'
 
@@ -84,6 +85,67 @@ function metric(
       summary: unit === 'ms' ? summary(rng, median) : {median, p75: median, p90: median},
     },
   }
+}
+
+type DemoScenario = NonNullable<TrendRun['scenarios']>[number]
+
+function settleScenarios(rng: () => number, day: number): DemoScenario[] {
+  const settle = (
+    scenario: string,
+    options: {
+      notSettled: number
+      settleMs?: number
+      commits: number
+      loafMs: number
+      cpuMs: number
+      renders?: [component: string, count: number]
+      redByDesign?: boolean
+    },
+  ): DemoScenario => ({
+    scenario,
+    sourceFile: `perf/bench/scenarios/${scenario === 'singleString' ? 'singleString' : 'customizations'}.ts`,
+    kind: 'pageload',
+    mode: 'settle',
+    ...(options.redByDesign ? {settleExpectation: {expectedToSettle: false}} : {}),
+    metrics: [
+      metric(rng, 'sessions not settled', options.notSettled, 'count'),
+      // The detector's own health line: flat zero unless the hook stub fails
+      metric(rng, 'sessions without commit counter', 0, 'count'),
+      metric(rng, 'settled sessions', options.notSettled === 4 ? 0 : 1, 'count'),
+      metric(rng, 'ready sessions', 1, 'count'),
+      ...(options.settleMs === undefined ? [] : [metric(rng, 'time to settle', options.settleMs)]),
+      metric(rng, 'react commits after ready', options.commits, 'count'),
+      metric(rng, 'LoAF blocking after ready', options.loafMs),
+      metric(rng, 'cpu after ready', options.cpuMs),
+      ...(options.renders
+        ? [metric(rng, `renders · ${options.renders[0]}`, options.renders[1], 'count')]
+        : []),
+    ],
+  })
+  const previewLoops = day >= 75
+  return [
+    // Vanilla control: settles in ~4s, a few dozen commits
+    settle('singleString', {notSettled: 0, settleMs: 3900, commits: 30, loafMs: 150, cpuMs: 700}),
+    // Guards the #14241 fix; re-regresses at day 75 (inline paths array)
+    settle('previewHeavy', {
+      notSettled: previewLoops ? 4 : 0,
+      settleMs: previewLoops ? undefined : 4100,
+      commits: previewLoops ? 61_000 : 70,
+      loafMs: previewLoops ? 40 : 190,
+      cpuMs: previewLoops ? 29_500 : 1400,
+      renders: ['previewHeavy.preview', previewLoops ? 30_000 : 48],
+    }),
+    // Red by design: useTemplatePermissions inline templateItems, ~2200 c/s
+    settle('documentActions', {
+      notSettled: 4,
+      commits: 66_000,
+      loafMs: 34,
+      cpuMs: 30_000,
+      redByDesign: true,
+    }),
+    // Custom S.component pane: nearly nothing to settle
+    settle('structurePane', {notSettled: 0, settleMs: 520, commits: 1, loafMs: 130, cpuMs: 320}),
+  ]
 }
 
 function generateDemo(branch = 'main', shift = 0): TrendRun[] {
@@ -208,6 +270,12 @@ function generateDemo(branch = 'main', shift = 0): TrendRun[] {
             }),
           },
         },
+        // Settle mode (render-loop detector), 4 sessions per scenario. The
+        // 'sessions not settled' count is the tripwire series: flat zero on
+        // healthy scenarios, a constant 4 on red-by-design ones. previewHeavy
+        // re-regresses at day 75 — every session loops, so 'time to settle'
+        // (settled sessions only) drops out and the commit count explodes.
+        ...settleScenarios(rng, day),
       ],
     })
   }

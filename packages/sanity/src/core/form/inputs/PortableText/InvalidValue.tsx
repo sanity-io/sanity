@@ -4,13 +4,12 @@ import {
   // oxlint-disable-next-line no-restricted-imports
   Button,
   Card,
-  Grid,
   Stack,
   Text,
 } from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useCallback} from 'react'
-import {Box} from 'ui5'
+import {Grid, Box} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
@@ -56,7 +55,10 @@ export function InvalidValue(props: InvalidValueProps) {
       suffix={
         <Stack padding={2}>
           {resolution.action && (
-            <Grid gridTemplateColumns={[1, 2]} gap={1}>
+            <Grid
+              gridTemplateColumns={['repeat(1, minmax(0, 1fr))', 'repeat(2, minmax(0, 1fr))']}
+              gap={1}
+            >
               <Button
                 mode="ghost"
                 onClick={handleOnIgnore}

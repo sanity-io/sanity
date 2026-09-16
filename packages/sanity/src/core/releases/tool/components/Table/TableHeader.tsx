@@ -102,10 +102,7 @@ export const TableHeader = ({headers, searchDisabled}: TableHeaderProps) => {
       <Flex
         as="tr"
         style={{
-          paddingInline: `max(
-          calc((100% - var(--maxInlineSize)) / 2),
-          var(--paddingInline)
-        )`,
+          paddingInline: 'var(--tableInlinePadding)',
         }}
       >
         {headers.map(

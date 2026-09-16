@@ -17,9 +17,10 @@ import {test as studioTest} from './studio-test'
  * ⚠️ Known limitation: specs that edit documents (`createDraftDocument` waits
  * for the form to become editable) hang under this fixture for the same
  * reason — stick to page chrome and read-only states. Document form states
- * are already visually covered by the Storybook harness stories
- * (dev/storybook), so e2e snapshots should focus on what Storybook can't
- * render: full-studio page chrome against a real deployment.
+ * are already visually covered by the vitest browser tests (snapshotted in
+ * place by @chromatic-com/vitest) and the Storybook stories, so e2e snapshots
+ * should focus on what neither can render: full-studio page chrome against a
+ * real deployment.
  *
  * Automatic end-of-test snapshots are disabled globally (`disableAutoSnapshot`
  * in playwright.config.ts): the e2e suite runs against per-PR staging datasets

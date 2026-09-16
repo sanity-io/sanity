@@ -4,6 +4,7 @@
  * branch and tied to the value at ack time, with a half-life so it can't hide
  * a metric forever.
  */
+import {driftAckId} from '@repo/utils/radar-ids'
 import {type SanityClient} from 'sanity'
 
 export type AckState = 'silenced' | 'snoozed' | 'fixed'
@@ -32,11 +33,6 @@ export const SNOOZE_DAYS = 7
 /** Collapse to an id-safe slug (document ids, DOM ids — keys contain `·`/spaces). */
 export function idSlug(value: string): string {
   return value.replace(/[^a-zA-Z0-9]+/g, '-')
-}
-
-/** Deterministic id so acking a metric/branch updates in place (idempotent). */
-export function ackId(metricKey: string, branch: string): string {
-  return `driftAck-${idSlug(`${metricKey}:${branch}`)}`
 }
 
 /**
@@ -72,7 +68,7 @@ export async function writeAck(
   },
 ): Promise<void> {
   await client.createOrReplace({
-    _id: ackId(input.metricKey, input.branch),
+    _id: driftAckId(input.metricKey, input.branch),
     _type: 'driftAck',
     metricKey: input.metricKey,
     branch: input.branch,
@@ -89,5 +85,5 @@ export async function clearAck(
   metricKey: string,
   branch: string,
 ): Promise<void> {
-  await client.delete(ackId(metricKey, branch))
+  await client.delete(driftAckId(metricKey, branch))
 }

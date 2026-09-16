@@ -10,21 +10,7 @@ import {
   getSearchOrderingId,
   RELEVANCE_ORDERING_ID,
 } from '../DocumentListPaneSearchOrdering'
-
-const ORDERINGS: PaneMenuItem[] = [
-  {
-    id: 'updated-desc',
-    title: 'Last edited',
-    action: 'setSortOrder',
-    params: {by: [{field: '_updatedAt', direction: 'desc'}]},
-  },
-  {
-    id: 'title-asc',
-    title: 'Title',
-    action: 'setSortOrder',
-    params: {by: [{field: 'title', direction: 'asc'}]},
-  },
-]
+import {ORDERINGS} from './DocumentListPaneSearchOrdering.fixture'
 
 async function renderControl(props: {
   value?: string
