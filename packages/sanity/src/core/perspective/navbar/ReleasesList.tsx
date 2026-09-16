@@ -33,6 +33,13 @@ const StickyTopCard = styled(StickyCard)`
 
 const StickyBottomCard = styled(StickyCard)`
   bottom: 0;
+  /* Every element that can precede this card draws its own bottom border - a release section, the
+     published/drafts card, the agent bundle card, or the filter block - so this card's top border
+     landed against one and the pair read as a single 2px rule. Pulling up by exactly one border
+     width overlaps them, and this card's opaque background hides the one underneath. The top
+     border has to stay: while the list scrolls, rows pass beneath this card and that border is
+     the only thing separating them. */
+  margin-top: -1px;
 `
 
 export function ReleasesList({
