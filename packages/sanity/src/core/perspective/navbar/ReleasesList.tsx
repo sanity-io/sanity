@@ -159,11 +159,22 @@ export function ReleasesList({
       {(showPublished || showDrafts) && (
         <Card borderBottom padding={1}>
           <Stack gap={1}>
+            {/* These two are rendered here rather than through `ReleaseTypeMenuSection`, so they
+                need the term passed explicitly — without it they were filtered on their labels but
+                never marked, which read as the marking being broken for them. */}
             {showPublished && (
-              <GlobalPerspectiveMenuItem release={'published'} menuItemProps={menuItemProps} />
+              <GlobalPerspectiveMenuItem
+                release={'published'}
+                menuItemProps={menuItemProps}
+                searchTerm={filterQuery}
+              />
             )}
             {showDrafts && (
-              <GlobalPerspectiveMenuItem release={LATEST} menuItemProps={menuItemProps} />
+              <GlobalPerspectiveMenuItem
+                release={LATEST}
+                menuItemProps={menuItemProps}
+                searchTerm={filterQuery}
+              />
             )}
           </Stack>
         </Card>

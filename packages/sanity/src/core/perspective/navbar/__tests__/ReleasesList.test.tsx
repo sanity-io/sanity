@@ -75,7 +75,7 @@ const handleOpenBundleDialog = vi.fn()
 function enoughReleasesToFilter(): ReleaseDocument[] {
   const base = [activeASAPRelease, activeScheduledRelease, activeUndecidedRelease]
 
-  return Array.from({length: 9}, (_unused, index) => {
+  return Array.from({length: 12}, (_unused, index) => {
     const template = base[index % base.length]
     return {
       ...template,
@@ -171,6 +171,31 @@ describe('ReleasesList', () => {
       // by that text; the row as a whole still reads as the release was named.
       expect(within(row).getByText('undecid').tagName).toBe('STRONG')
       expect(row).toHaveTextContent('undecided Release')
+    })
+
+    it('marks the term inside the published label, not only inside release titles', async () => {
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
+        data: enoughReleasesToFilter(),
+      })
+      const wrapper = await createTestProvider()
+      render(
+        <Menu>
+          <TestReleasesList
+            handleOpenBundleDialog={handleOpenBundleDialog}
+            areReleasesEnabled
+            initialFilterQuery="pub"
+          />
+        </Menu>,
+        {wrapper},
+      )
+      await flushMicrotasksThisIsACodeSmell()
+
+      // Published and drafts render outside `ReleaseTypeMenuSection`, so they take the term by a
+      // different route and need their own coverage.
+      const published = screen.getByTestId('release-published')
+      expect(within(published).getByText('Pub').tagName).toBe('STRONG')
+      expect(published).toHaveTextContent('Published')
     })
 
     it('keeps published when the term matches its label', async () => {
