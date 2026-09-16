@@ -109,12 +109,35 @@ describe('ReleasesList', () => {
         expect(screen.queryByText('active asap Release')).not.toBeInTheDocument()
       })
       expect(screen.queryByText('active Release')).not.toBeInTheDocument()
-      expect(screen.getByText('undecided Release')).toBeInTheDocument()
+      // The matched run is wrapped so it can be marked, which splits the title across elements —
+      // `getByText` with the whole title no longer matches. Read the row's text instead.
+      expect(screen.getByTestId('release-rUndecided')).toHaveTextContent('undecided Release')
 
       // Published and Drafts are matched on their own labels. Leaving them in place would put two
       // entries above a result list that neither of them belongs to.
       expect(screen.queryByTestId('release-published')).not.toBeInTheDocument()
       expect(screen.queryByTestId('release-drafts')).not.toBeInTheDocument()
+    })
+
+    it('marks where the term appears inside a matching title', async () => {
+      const wrapper = await createTestProvider()
+      render(
+        <Menu>
+          <TestReleasesList
+            handleOpenBundleDialog={handleOpenBundleDialog}
+            areReleasesEnabled
+            initialFilterQuery="undecid"
+          />
+        </Menu>,
+        {wrapper},
+      )
+      await flushMicrotasksThisIsACodeSmell()
+
+      const row = screen.getByTestId('release-rUndecided')
+
+      // The marked run is the part typed, not the whole title, and the row still reads as named.
+      expect(row.querySelector('strong')).toHaveTextContent('undecid')
+      expect(row).toHaveTextContent('undecided Release')
     })
 
     it('keeps published when the term matches its label', async () => {

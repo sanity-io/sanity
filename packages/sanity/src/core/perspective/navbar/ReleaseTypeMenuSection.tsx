@@ -23,11 +23,14 @@ export function ReleaseTypeMenuSection({
   releases,
   heading,
   menuItemProps,
+  searchTerm,
   'data-testid': dataTestId,
 }: {
   'releases': ReleaseDocument[]
   'heading'?: string
   'menuItemProps'?: ReleasesNavMenuItemPropsGetter
+  /** Passed through so each row can mark where the term appears in its title. */
+  'searchTerm'?: string
   'data-testid'?: string
 }): React.JSX.Element | null {
   if (releases.length === 0) return null
@@ -55,6 +58,7 @@ export function ReleaseTypeMenuSection({
               key={release._id}
               release={release}
               menuItemProps={menuItemProps}
+              searchTerm={searchTerm}
             />
           ))}
         </Flex>

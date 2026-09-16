@@ -17,6 +17,7 @@ import {useFormatRelativeLocalePublishDate} from '../../releases/hooks/useFormat
 import {isReleaseDocument} from '../../releases/store/types'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {splitOnSearchTerm} from '../../releases/util/splitOnSearchTerm'
 import {isDraftPerspective, isReleaseScheduledOrScheduling} from '../../releases/util/util'
 import {useWorkspace} from '../../studio/workspace'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
@@ -24,8 +25,10 @@ import {type ReleasesNavMenuItemPropsGetter} from '../types'
 export function GlobalPerspectiveMenuItem(props: {
   release: ReleaseDocument | 'published' | typeof LATEST
   menuItemProps?: ReleasesNavMenuItemPropsGetter
+  /** The active filter term. Its occurrences are marked inside the release title. */
+  searchTerm?: string
 }) {
-  const {release} = props
+  const {release, searchTerm} = props
 
   const {
     document: {
@@ -89,7 +92,26 @@ export function GlobalPerspectiveMenuItem(props: {
                 title={release.metadata.title}
                 fallback={t('release.placeholder-untitled-release')}
                 textProps={{size: 1, weight: 'medium', style: {minWidth: 0}}}
-              />
+              >
+                {({displayTitle}) => (
+                  <Text size={1} weight="medium" style={{minWidth: 0}}>
+                    {/*
+                      Marking the matched run shows why the row is in the results, which a ranked
+                      list otherwise leaves the reader to infer. `displayTitle` is already truncated
+                      to 50 characters, so a match past that point is not shown here — the tooltip
+                      still carries the full title.
+                    */}
+                    {splitOnSearchTerm(displayTitle, searchTerm ?? '').map((segment, index) =>
+                      segment.isMatch ? (
+                        // eslint-disable-next-line react/no-array-index-key -- segments are derived
+                        <strong key={index}>{segment.text}</strong>
+                      ) : (
+                        <span key={index}>{segment.text}</span>
+                      ),
+                    )}
+                  </Text>
+                )}
+              </ReleaseTitle>
             ) : (
               <Text size={1} weight="medium" style={{minWidth: 0}}>
                 {isDraftPerspective(release)

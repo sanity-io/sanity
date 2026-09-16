@@ -52,6 +52,7 @@ export function ReleaseTypeSections({
         data-testid="release-menu-section-results"
         releases={ranked}
         menuItemProps={menuItemProps}
+        searchTerm={searchTerm}
       />
     )
   }
@@ -80,16 +81,19 @@ export function ReleaseTypeSections({
           data-testid="release-menu-section-sequence-asap"
           releases={grouped.asap}
           menuItemProps={menuItemProps}
+          searchTerm={searchTerm}
         />
         <ReleaseTypeMenuSection
           data-testid="release-menu-section-sequence-dated"
           releases={dated}
           menuItemProps={menuItemProps}
+          searchTerm={searchTerm}
         />
         <ReleaseTypeMenuSection
           data-testid="release-menu-section-sequence-undecided"
           releases={grouped.undecided}
           menuItemProps={menuItemProps}
+          searchTerm={searchTerm}
         />
       </>
     )
@@ -104,6 +108,7 @@ export function ReleaseTypeSections({
           heading={showHeadings ? t(RELEASE_TIME_BUCKET_LABELS[bucket]) : undefined}
           releases={grouped[bucket]}
           menuItemProps={menuItemProps}
+          searchTerm={searchTerm}
         />
       ))}
     </>
@@ -135,6 +140,7 @@ function OtherReleaseSections({
         heading={t('release.menu.other-releases')}
         releases={ranked}
         menuItemProps={menuItemProps}
+        searchTerm={searchTerm}
       />
     )
   }
@@ -148,6 +154,7 @@ function OtherReleaseSections({
           heading={bucket === firstNonEmpty ? t('release.menu.other-releases') : undefined}
           releases={grouped[bucket]}
           menuItemProps={menuItemProps}
+          searchTerm={searchTerm}
         />
       ))}
     </>
@@ -202,6 +209,7 @@ export function DocumentReleaseSections({
         heading={t('release.menu.part-of-releases', {count: partOf.length})}
         releases={rankReleasesForSearch(partOf, searchTerm)}
         menuItemProps={menuItemProps}
+        searchTerm={searchTerm}
       />
       <OtherReleaseSections
         releases={others}
