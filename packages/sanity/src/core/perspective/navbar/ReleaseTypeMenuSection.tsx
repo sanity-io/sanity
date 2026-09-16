@@ -24,6 +24,7 @@ export function ReleaseTypeMenuSection({
   heading,
   menuItemProps,
   searchTerm,
+  renderWhenEmpty,
   'data-testid': dataTestId,
 }: {
   'releases': ReleaseDocument[]
@@ -31,9 +32,17 @@ export function ReleaseTypeMenuSection({
   'menuItemProps'?: ReleasesNavMenuItemPropsGetter
   /** Passed through so each row can mark where the term appears in its title. */
   'searchTerm'?: string
+  /**
+   * Render the heading even with no releases under it.
+   *
+   * The `Releases` label names what the list is, so it has to survive the workspace having no
+   * releases yet — that is the state where a reader most needs telling. Every other section drops
+   * out when empty, which is what keeps unused time bands from drawing rules.
+   */
+  'renderWhenEmpty'?: boolean
   'data-testid'?: string
 }): React.JSX.Element | null {
-  if (releases.length === 0) return null
+  if (releases.length === 0 && !(renderWhenEmpty && heading)) return null
 
   return (
     <Card padding={1} borderBottom data-testid={dataTestId}>

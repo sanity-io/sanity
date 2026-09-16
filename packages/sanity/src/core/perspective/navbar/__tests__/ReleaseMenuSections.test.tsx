@@ -48,11 +48,12 @@ async function renderSections(node: React.JSX.Element) {
 }
 
 describe('ReleaseTypeSections', () => {
-  it('leaves a short list unlabelled, and still lists every release', async () => {
+  it('labels a short list "Releases" rather than by band, and lists every release', async () => {
     await renderSections(<ReleaseTypeSections releases={allReleases} />)
 
-    // A heading over one or two rows interrupts more than it explains, so below the threshold the
-    // list is one unlabelled sequence.
+    // One label naming what the list is. A band heading over one or two rows interrupts more than
+    // it explains, so below the threshold no band is named.
+    expect(screen.getByText('Releases')).toBeInTheDocument()
     expect(screen.queryByText('As soon as possible')).not.toBeInTheDocument()
     expect(screen.queryByText('Overdue')).not.toBeInTheDocument()
     expect(screen.queryByText('Undecided')).not.toBeInTheDocument()
@@ -60,6 +61,39 @@ describe('ReleaseTypeSections', () => {
     expect(screen.getByText('active asap Release')).toBeInTheDocument()
     expect(screen.getByText('active Release')).toBeInTheDocument()
     expect(screen.getByText('undecided Release')).toBeInTheDocument()
+  })
+
+  it('labels the list exactly once, on the first type that holds a release', async () => {
+    await renderSections(<ReleaseTypeSections releases={allReleases} />)
+
+    // The label belongs to the list, not to each type — three fixtures of three types must not
+    // produce three copies of it.
+    expect(screen.getAllByText('Releases')).toHaveLength(1)
+    expect(
+      within(screen.getByTestId('release-menu-section-sequence-asap')).getByText('Releases'),
+    ).toBeInTheDocument()
+  })
+
+  it('keeps the label with no releases at all, so the menu still says what the list is', async () => {
+    await renderSections(<ReleaseTypeSections releases={[]} />)
+
+    // Every other section drops out when empty. This one must not: a workspace with no releases
+    // yet is where a reader most needs telling what the list would hold.
+    expect(screen.getByText('Releases')).toBeInTheDocument()
+  })
+
+  it('hands the labelling over to the bands once they are shown', async () => {
+    await renderSections(<ReleaseTypeSections releases={manyScheduledReleases(20)} />)
+
+    // The bands are the more specific label, so stacking "Releases" above them adds a level for
+    // nothing.
+    expect(screen.queryByText('Releases')).not.toBeInTheDocument()
+  })
+
+  it('drops the label while filtering, where the list is a set of results', async () => {
+    await renderSections(<ReleaseTypeSections releases={allReleases} searchTerm="active" />)
+
+    expect(screen.queryByText('Releases')).not.toBeInTheDocument()
   })
 
   it('divides a short list by release type, so a rule falls where the icon changes', async () => {
@@ -103,6 +137,9 @@ describe('DocumentReleaseSections', () => {
     expect(screen.getByText('active asap Release')).toBeInTheDocument()
     expect(screen.queryByText(/Part of/)).not.toBeInTheDocument()
     expect(screen.queryByText('Other releases')).not.toBeInTheDocument()
+    // The label is what keeps this from reading as the menu declining to answer: the document is
+    // in no release, and the list says what it is instead of saying nothing.
+    expect(screen.getByText('Releases')).toBeInTheDocument()
   })
 
   it('lists the releases holding a version under a counted heading', async () => {

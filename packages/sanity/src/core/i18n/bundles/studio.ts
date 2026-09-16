@@ -1704,6 +1704,11 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.menu.filter-placeholder': 'Filter releases…',
   /** Label for the release menu */
   'release.menu.label': 'Release menu',
+  /**
+   * Names the release list in the perspective menu. Shown at every scope, including a workspace
+   * with no releases yet, so the menu says what the list is rather than only what is in it.
+   */
+  'release.menu.releases': 'Releases',
   /** Section heading for releases the selected document has no version in */
   'release.menu.other-releases': 'Other releases',
   /** Section heading listing the releases the selected document has a version in */

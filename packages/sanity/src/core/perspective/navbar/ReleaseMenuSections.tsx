@@ -74,27 +74,32 @@ export function ReleaseTypeSections({
       ...grouped.thisQuarter,
       ...grouped.later,
     ]
+    const groups = [
+      {type: 'asap', releases: grouped.asap},
+      {type: 'dated', releases: dated},
+      {type: 'undecided', releases: grouped.undecided},
+    ]
+    // The label belongs to the list as a whole, so it goes on the first group that has rows —
+    // repeating it over each type would read as three different things.
+    const labelled = groups.findIndex(({releases: group}) => group.length > 0)
 
     return (
       <>
-        <ReleaseTypeMenuSection
-          data-testid="release-menu-section-sequence-asap"
-          releases={grouped.asap}
-          menuItemProps={menuItemProps}
-          searchTerm={searchTerm}
-        />
-        <ReleaseTypeMenuSection
-          data-testid="release-menu-section-sequence-dated"
-          releases={dated}
-          menuItemProps={menuItemProps}
-          searchTerm={searchTerm}
-        />
-        <ReleaseTypeMenuSection
-          data-testid="release-menu-section-sequence-undecided"
-          releases={grouped.undecided}
-          menuItemProps={menuItemProps}
-          searchTerm={searchTerm}
-        />
+        {groups.map(({type, releases: group}, index) => (
+          <ReleaseTypeMenuSection
+            key={type}
+            data-testid={`release-menu-section-sequence-${type}`}
+            // With no releases at all, nothing is non-empty and the label still has to appear, so
+            // the first group carries it and renders as a heading on its own.
+            heading={
+              index === (labelled === -1 ? 0 : labelled) ? t('release.menu.releases') : undefined
+            }
+            renderWhenEmpty={labelled === -1}
+            releases={group}
+            menuItemProps={menuItemProps}
+            searchTerm={searchTerm}
+          />
+        ))}
       </>
     )
   }
