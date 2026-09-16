@@ -219,6 +219,46 @@ describe('uploadTarget - drag and drop', () => {
     }
   })
 
+  it('still tracks a later drag after Escape cancelled the previous one', async () => {
+    const assetSource = createMockAssetSourceWithMediaLibraryUploader()
+
+    await renderFileInput({
+      assetSources: [assetSource],
+      configOverrides: {mediaLibrary: {enabled: false}},
+      fieldDefinition: {name: 'someFile', title: 'A file', type: 'file'},
+      observeAsset: observeFileAssetStub,
+      render: (inputProps) => <BaseFileInput {...inputProps} />,
+    })
+
+    const fileTarget = document.querySelector('[data-test-id="file-target"]')
+    expect(fileTarget).toBeInTheDocument()
+
+    const dataTransfer = {
+      items: [{kind: 'file' as const, type: 'application/pdf'}],
+      files: [] as File[],
+    }
+
+    fireEvent.dragEnter(fileTarget!, {dataTransfer})
+    await waitFor(() => {
+      expect(screen.getByTestId('upload-target-drop-message')).toBeInTheDocument()
+    })
+
+    await userEvent.keyboard('{Escape}')
+    await waitFor(() => {
+      expect(screen.queryByTestId('upload-target-drop-message')).not.toBeInTheDocument()
+    })
+
+    fireEvent.dragEnter(fileTarget!, {dataTransfer})
+    await waitFor(() => {
+      expect(screen.getByTestId('upload-target-drop-message')).toBeInTheDocument()
+    })
+
+    fireEvent.dragLeave(fileTarget!, {dataTransfer})
+    await waitFor(() => {
+      expect(screen.queryByTestId('upload-target-drop-message')).not.toBeInTheDocument()
+    })
+  })
+
   it('hides drop overlay when the window dragend event fires', async () => {
     const assetSource = createMockAssetSourceWithMediaLibraryUploader()
 
