@@ -30,10 +30,20 @@ import {ReleasesList} from '../ReleasesList'
  * it so it can be cleared when the popover closes. This stands in for that.
  */
 function TestReleasesList(
-  props: Omit<ComponentProps<typeof ReleasesList>, 'filterQuery' | 'onFilterQueryChange'>,
+  props: Omit<ComponentProps<typeof ReleasesList>, 'filterQuery' | 'onFilterQueryChange'> & {
+    /**
+     * Seeds the query instead of typing it. `userEvent.type` enters one character at a time, so an
+     * assertion can land mid-word and see the list filtered by a prefix — which made the
+     * label-match and empty-state cases fail intermittently under a full-suite run.
+     */
+    initialFilterQuery?: string
+  },
 ) {
-  const [filterQuery, setFilterQuery] = useState('')
-  return <ReleasesList {...props} filterQuery={filterQuery} onFilterQueryChange={setFilterQuery} />
+  const {initialFilterQuery = '', ...listProps} = props
+  const [filterQuery, setFilterQuery] = useState(initialFilterQuery)
+  return (
+    <ReleasesList {...listProps} filterQuery={filterQuery} onFilterQueryChange={setFilterQuery} />
+  )
 }
 
 vi.mock('../../../releases/contexts/upsell/useReleasesUpsell', () => ({
@@ -111,17 +121,17 @@ describe('ReleasesList', () => {
       const wrapper = await createTestProvider()
       render(
         <Menu>
-          <TestReleasesList handleOpenBundleDialog={handleOpenBundleDialog} areReleasesEnabled />
+          <TestReleasesList
+            handleOpenBundleDialog={handleOpenBundleDialog}
+            areReleasesEnabled
+            initialFilterQuery="publi"
+          />
         </Menu>,
         {wrapper},
       )
       await flushMicrotasksThisIsACodeSmell()
 
-      await userEvent.type(screen.getByTestId('release-menu-filter'), 'publi')
-
-      await waitFor(() => {
-        expect(screen.getByTestId('release-published')).toBeInTheDocument()
-      })
+      expect(screen.getByTestId('release-published')).toBeInTheDocument()
       expect(screen.queryByTestId('release-drafts')).not.toBeInTheDocument()
     })
 
@@ -129,17 +139,17 @@ describe('ReleasesList', () => {
       const wrapper = await createTestProvider()
       render(
         <Menu>
-          <TestReleasesList handleOpenBundleDialog={handleOpenBundleDialog} areReleasesEnabled />
+          <TestReleasesList
+            handleOpenBundleDialog={handleOpenBundleDialog}
+            areReleasesEnabled
+            initialFilterQuery="zzzznothing"
+          />
         </Menu>,
         {wrapper},
       )
       await flushMicrotasksThisIsACodeSmell()
 
-      await userEvent.type(screen.getByTestId('release-menu-filter'), 'zzzznothing')
-
-      await waitFor(() => {
-        expect(screen.getByTestId('release-menu-no-results')).toBeInTheDocument()
-      })
+      expect(screen.getByTestId('release-menu-no-results')).toBeInTheDocument()
       // The actions are navigation, not results, so they step aside for the duration of the filter.
       expect(screen.queryByTestId('release-menu-actions')).not.toBeInTheDocument()
     })

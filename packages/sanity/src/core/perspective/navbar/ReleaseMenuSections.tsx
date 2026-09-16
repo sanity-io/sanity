@@ -56,17 +56,42 @@ export function ReleaseTypeSections({
     )
   }
 
-  // Unlabelled means one section, not several with their labels removed. Each section is a card
-  // with a bottom border, so keeping the bands while hiding their headings drew a divider between
-  // every band — and a band often holds a single release, which made the short list read as a
-  // stack of one-row groups divided for no stated reason.
+  // Unlabelled, the list is divided by release type and nothing else. Each section is a card with
+  // a bottom border, so one section per band drew a rule between single-release bands that named
+  // neither side; one section for everything lost the only distinction a reader can actually see,
+  // which is the icon. A section per type puts a rule exactly where the icon changes.
+  //
+  // Type order matches the icons a person meets top to bottom: asap, then dated, then undecided.
+  // Ordering strictly by band instead would place an overdue release — which is dated, and so
+  // carries the clock — above the asap ones, alternating the icon and adding a third rule. Band
+  // order still decides the sequence inside the dated run, so overdue stays at its top.
   if (!showHeadings) {
+    const dated = [
+      ...grouped.overdue,
+      ...grouped.thisWeek,
+      ...grouped.thisMonth,
+      ...grouped.thisQuarter,
+      ...grouped.later,
+    ]
+
     return (
-      <ReleaseTypeMenuSection
-        data-testid="release-menu-section-sequence"
-        releases={ORDERED_RELEASE_TIME_BUCKETS.flatMap((bucket) => grouped[bucket])}
-        menuItemProps={menuItemProps}
-      />
+      <>
+        <ReleaseTypeMenuSection
+          data-testid="release-menu-section-sequence-asap"
+          releases={grouped.asap}
+          menuItemProps={menuItemProps}
+        />
+        <ReleaseTypeMenuSection
+          data-testid="release-menu-section-sequence-dated"
+          releases={dated}
+          menuItemProps={menuItemProps}
+        />
+        <ReleaseTypeMenuSection
+          data-testid="release-menu-section-sequence-undecided"
+          releases={grouped.undecided}
+          menuItemProps={menuItemProps}
+        />
+      </>
     )
   }
 

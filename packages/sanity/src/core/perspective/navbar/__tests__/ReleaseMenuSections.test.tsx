@@ -62,13 +62,18 @@ describe('ReleaseTypeSections', () => {
     expect(screen.getByText('undecided Release')).toBeInTheDocument()
   })
 
-  it('renders a short list as one section, not one per band with the labels removed', async () => {
+  it('divides a short list by release type, so a rule falls where the icon changes', async () => {
     const {container} = await renderSections(<ReleaseTypeSections releases={allReleases} />)
 
-    // Each section is a bordered card, so a band per release would divide the list for no stated
-    // reason. The three fixtures span asap, dated and undecided and must still share one section.
-    expect(container.querySelectorAll('[data-testid^="release-menu-section-"]')).toHaveLength(1)
-    expect(screen.getByTestId('release-menu-section-sequence')).toBeInTheDocument()
+    // Each section is a bordered card. One per band ruled between single-release bands that named
+    // neither side; one for everything lost the only distinction visible on the row, the icon. The
+    // three fixtures are one of each type, so each gets a section and there are exactly two rules.
+    expect(
+      container.querySelectorAll('[data-testid^="release-menu-section-sequence"]'),
+    ).toHaveLength(3)
+    expect(screen.getByTestId('release-menu-section-sequence-asap')).toBeInTheDocument()
+    expect(screen.getByTestId('release-menu-section-sequence-dated')).toBeInTheDocument()
+    expect(screen.getByTestId('release-menu-section-sequence-undecided')).toBeInTheDocument()
   })
 
   it('labels the time bands once the list is long enough to need them', async () => {
