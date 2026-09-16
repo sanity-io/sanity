@@ -3,6 +3,7 @@ import {useMemo} from 'react'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useDocumentVersionTypeSortedList} from '../../releases/hooks/useDocumentVersionTypeSortedList'
+import {rankReleasesForSearch} from '../../releases/util/filterReleasesForSearch'
 import {
   groupReleasesByTimeBucket,
   ORDERED_RELEASE_TIME_BUCKETS,
@@ -15,6 +16,12 @@ import {ReleaseTypeMenuSection} from './ReleaseTypeMenuSection'
 interface SectionsProps {
   releases: ReleaseDocument[]
   menuItemProps?: ReleasesNavMenuItemPropsGetter
+  /**
+   * The active filter term, or an empty string. While filtering, the time bands are replaced by a
+   * single list ordered by how well each release matches: a filtered list is a set of results, and
+   * banding them by date buries the best match among dates nobody asked about.
+   */
+  searchTerm?: string
 }
 
 /**
@@ -26,12 +33,28 @@ interface SectionsProps {
  * cannot be read at a glance, which is the job a heading does. The order is the same either way, so
  * crossing the threshold adds labels rather than moving anything.
  */
-export function ReleaseTypeSections({releases, menuItemProps}: SectionsProps): React.JSX.Element {
+export function ReleaseTypeSections({
+  releases,
+  menuItemProps,
+  searchTerm = '',
+}: SectionsProps): React.JSX.Element {
   const {t} = useTranslation()
   // Recomputed per render rather than memoised on a clock: the bands shift as time passes, and a
   // menu that is open across a boundary should not keep asserting the old one.
   const grouped = useMemo(() => groupReleasesByTimeBucket(releases, new Date()), [releases])
-  const showHeadings = releases.length >= RELEASE_TIME_BUCKET_HEADING_THRESHOLD
+  const ranked = useMemo(() => rankReleasesForSearch(releases, searchTerm), [releases, searchTerm])
+  const isFiltering = searchTerm.trim().length > 0
+  const showHeadings = !isFiltering && releases.length >= RELEASE_TIME_BUCKET_HEADING_THRESHOLD
+
+  if (isFiltering) {
+    return (
+      <ReleaseTypeMenuSection
+        data-testid="release-menu-section-results"
+        releases={ranked}
+        menuItemProps={menuItemProps}
+      />
+    )
+  }
 
   return (
     <>
@@ -54,10 +77,28 @@ export function ReleaseTypeSections({releases, menuItemProps}: SectionsProps): R
  * carries a heading — the rest are separated by their card border alone, which is
  * what the design asks for.
  */
-function OtherReleaseSections({releases, menuItemProps}: SectionsProps): React.JSX.Element {
+function OtherReleaseSections({
+  releases,
+  menuItemProps,
+  searchTerm = '',
+}: SectionsProps): React.JSX.Element {
   const {t} = useTranslation()
   const grouped = useMemo(() => groupReleasesByTimeBucket(releases, new Date()), [releases])
+  const ranked = useMemo(() => rankReleasesForSearch(releases, searchTerm), [releases, searchTerm])
   const firstNonEmpty = ORDERED_RELEASE_TIME_BUCKETS.find((bucket) => grouped[bucket].length > 0)
+
+  // The part-of / other split survives filtering — it answers a different question from the bands,
+  // and which releases hold a version of the open document stays worth knowing while searching.
+  if (searchTerm.trim().length > 0) {
+    return (
+      <ReleaseTypeMenuSection
+        data-testid="release-menu-section-other-results"
+        heading={t('release.menu.other-releases')}
+        releases={ranked}
+        menuItemProps={menuItemProps}
+      />
+    )
+  }
 
   return (
     <>
@@ -86,6 +127,7 @@ export function DocumentReleaseSections({
   documentId,
   releases,
   menuItemProps,
+  searchTerm = '',
 }: SectionsProps & {documentId: string}): React.JSX.Element {
   const {t} = useTranslation()
   const {sortedDocumentList} = useDocumentVersionTypeSortedList({documentId})
@@ -105,7 +147,13 @@ export function DocumentReleaseSections({
 
   // A document with no versions reads exactly like no document at all.
   if (partOf.length === 0) {
-    return <ReleaseTypeSections releases={releases} menuItemProps={menuItemProps} />
+    return (
+      <ReleaseTypeSections
+        releases={releases}
+        menuItemProps={menuItemProps}
+        searchTerm={searchTerm}
+      />
+    )
   }
 
   return (
@@ -113,10 +161,14 @@ export function DocumentReleaseSections({
       <ReleaseTypeMenuSection
         data-testid="release-menu-section-part-of"
         heading={t('release.menu.part-of-releases', {count: partOf.length})}
-        releases={partOf}
+        releases={rankReleasesForSearch(partOf, searchTerm)}
         menuItemProps={menuItemProps}
       />
-      <OtherReleaseSections releases={others} menuItemProps={menuItemProps} />
+      <OtherReleaseSections
+        releases={others}
+        menuItemProps={menuItemProps}
+        searchTerm={searchTerm}
+      />
     </>
   )
 }

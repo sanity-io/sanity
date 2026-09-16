@@ -1716,6 +1716,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Menu item label for viewing content releases */
   /** Label for the create-release item in the perspective menu's action block. */
   'release.menu.create-release': 'Create new release',
+  /** Shown in place of the list when a filter term matches nothing in the release menu. */
+  'release.menu.no-results': 'No results for “{{searchTerm}}”',
   'release.menu.view-releases': 'View content releases',
   /** Label for draft perspective in navbar */
   'release.navbar.drafts': 'Drafts',

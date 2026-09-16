@@ -1,4 +1,4 @@
-import {Card, Spinner, Stack, TextInput} from '@sanity/ui'
+import {Card, Spinner, Stack, Text, TextInput} from '@sanity/ui'
 import {type ChangeEvent, type JSX, useCallback, useEffect, useMemo, useRef} from 'react'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'
@@ -7,7 +7,10 @@ import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {CreateReleaseMenuItem} from '../../releases/components/CreateReleaseMenuItem'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {LATEST} from '../../releases/util/const'
-import {filterReleasesForSearch} from '../../releases/util/filterReleasesForSearch'
+import {
+  filterReleasesForSearch,
+  matchesSearchTerm,
+} from '../../releases/util/filterReleasesForSearch'
 import {useAgentBundles} from '../../store/agent/useAgentBundles'
 import {useWorkspace} from '../../studio/workspace'
 import {isCardinalityOneRelease} from '../../util/releaseUtils'
@@ -74,8 +77,14 @@ export function ReleasesList({
     },
   } = useWorkspace()
 
-  // Published and Drafts stay put while filtering, matching how the variant menu
-  // treats its own default entry.
+  // Filtering turns the panel into a result list: the time bands, the published/drafts pair and the
+  // actions are all things you navigate with, and none of them answers what you typed. Published
+  // and Drafts are matched on their own labels rather than left in place — typing "pub" should not
+  // leave Published sitting above a "no results" message.
+  const isFiltering = filterQuery.trim().length > 0
+  const showPublished = matchesSearchTerm(t('release.chip.published'), filterQuery)
+  const showDrafts = isDraftModelEnabled && matchesSearchTerm(t('release.chip.draft'), filterQuery)
+
   const filteredReleases = useMemo(
     () => filterReleasesForSearch(releases, filterQuery),
     [filterQuery, releases],
@@ -137,14 +146,18 @@ export function ReleasesList({
           />
         </Card>
       </StickyTopCard>
-      <Card borderBottom padding={1}>
-        <Stack gap={1}>
-          <GlobalPerspectiveMenuItem release={'published'} menuItemProps={menuItemProps} />
-          {isDraftModelEnabled && (
-            <GlobalPerspectiveMenuItem release={LATEST} menuItemProps={menuItemProps} />
-          )}
-        </Stack>
-      </Card>
+      {(showPublished || showDrafts) && (
+        <Card borderBottom padding={1}>
+          <Stack gap={1}>
+            {showPublished && (
+              <GlobalPerspectiveMenuItem release={'published'} menuItemProps={menuItemProps} />
+            )}
+            {showDrafts && (
+              <GlobalPerspectiveMenuItem release={LATEST} menuItemProps={menuItemProps} />
+            )}
+          </Stack>
+        </Card>
+      )}
       {agentBundles[0] && (
         <Card borderBottom padding={1}>
           <Stack gap={1}>
@@ -159,15 +172,27 @@ export function ReleasesList({
               documentId={activeDocument.documentId}
               releases={filteredReleases}
               menuItemProps={menuItemProps}
+              searchTerm={filterQuery}
             />
           ) : (
-            <ReleaseTypeSections releases={filteredReleases} menuItemProps={menuItemProps} />
+            <ReleaseTypeSections
+              releases={filteredReleases}
+              menuItemProps={menuItemProps}
+              searchTerm={filterQuery}
+            />
           )}
         </Stack>
       )}
       {/* The card carries the border, so it must not render when every item inside it is hidden:
           releases off and scheduled drafts unavailable leaves a divider with nothing under it. */}
-      {(areReleasesEnabled || isScheduledDraftsAvailable) && (
+      {isFiltering && !showPublished && !showDrafts && filteredReleases.length === 0 && (
+        <Card padding={4} data-testid="release-menu-no-results">
+          <Text align="center" muted size={1}>
+            {t('release.menu.no-results', {searchTerm: filterQuery.trim()})}
+          </Text>
+        </Card>
+      )}
+      {!isFiltering && (areReleasesEnabled || isScheduledDraftsAvailable) && (
         <StickyBottomCard borderTop paddingY={1} paddingX={2} data-testid="release-menu-actions">
           <Stack gap={1}>
             <ScheduledDraftsMenuItem />

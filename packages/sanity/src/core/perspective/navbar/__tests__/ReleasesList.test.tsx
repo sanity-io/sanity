@@ -83,7 +83,7 @@ describe('ReleasesList', () => {
       expect(screen.getByText('undecided Release')).toBeInTheDocument()
     })
 
-    it('narrows the release list by the filter query, leaving the system stack alone', async () => {
+    it('narrows the list by the filter query, published and drafts included', async () => {
       const wrapper = await createTestProvider()
       render(
         <Menu>
@@ -101,9 +101,47 @@ describe('ReleasesList', () => {
       expect(screen.queryByText('active Release')).not.toBeInTheDocument()
       expect(screen.getByText('undecided Release')).toBeInTheDocument()
 
-      // Published and Drafts are not releases and are never filtered out.
-      expect(screen.getByTestId('release-published')).toBeInTheDocument()
-      expect(screen.getByTestId('release-drafts')).toBeInTheDocument()
+      // Published and Drafts are matched on their own labels. Leaving them in place would put two
+      // entries above a result list that neither of them belongs to.
+      expect(screen.queryByTestId('release-published')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('release-drafts')).not.toBeInTheDocument()
+    })
+
+    it('keeps published when the term matches its label', async () => {
+      const wrapper = await createTestProvider()
+      render(
+        <Menu>
+          <TestReleasesList handleOpenBundleDialog={handleOpenBundleDialog} areReleasesEnabled />
+        </Menu>,
+        {wrapper},
+      )
+      await flushMicrotasksThisIsACodeSmell()
+
+      await userEvent.type(screen.getByTestId('release-menu-filter'), 'publi')
+
+      await waitFor(() => {
+        expect(screen.getByTestId('release-published')).toBeInTheDocument()
+      })
+      expect(screen.queryByTestId('release-drafts')).not.toBeInTheDocument()
+    })
+
+    it('hides the actions while filtering, and shows a message when nothing matches', async () => {
+      const wrapper = await createTestProvider()
+      render(
+        <Menu>
+          <TestReleasesList handleOpenBundleDialog={handleOpenBundleDialog} areReleasesEnabled />
+        </Menu>,
+        {wrapper},
+      )
+      await flushMicrotasksThisIsACodeSmell()
+
+      await userEvent.type(screen.getByTestId('release-menu-filter'), 'zzzznothing')
+
+      await waitFor(() => {
+        expect(screen.getByTestId('release-menu-no-results')).toBeInTheDocument()
+      })
+      // The actions are navigation, not results, so they step aside for the duration of the filter.
+      expect(screen.queryByTestId('release-menu-actions')).not.toBeInTheDocument()
     })
 
     it('renders the action card, which carries the divider above the actions', async () => {
