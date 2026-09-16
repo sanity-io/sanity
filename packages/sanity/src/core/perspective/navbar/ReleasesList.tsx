@@ -163,7 +163,10 @@ export function ReleasesList({
             {areReleasesEnabled && (
               <>
                 <ViewContentReleasesMenuItem />
-                <CreateReleaseMenuItem onCreateRelease={handleOpenBundleDialog} />
+                <CreateReleaseMenuItem
+                  onCreateRelease={handleOpenBundleDialog}
+                  text={t('release.menu.create-release')}
+                />
               </>
             )}
           </Stack>

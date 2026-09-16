@@ -1710,11 +1710,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.menu.part-of-releases_one': 'Part of {{count}} release',
   'release.menu.part-of-releases_other': 'Part of {{count}} releases',
   /** Menu item label for scheduled drafts */
-  'release.menu.scheduled-drafts': 'View Scheduled Drafts',
+  'release.menu.scheduled-drafts': 'View scheduled drafts',
   /** Tooltip for the release menu */
   'release.menu.tooltip': 'Actions',
   /** Menu item label for viewing content releases */
-  'release.menu.view-releases': 'View Content Releases',
+  /** Label for the create-release item in the perspective menu's action block. */
+  'release.menu.create-release': 'Create new release',
+  'release.menu.view-releases': 'View content releases',
   /** Label for draft perspective in navbar */
   'release.navbar.drafts': 'Drafts',
   /** Label for published releases in navbar */

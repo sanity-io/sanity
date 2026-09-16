@@ -192,7 +192,9 @@ describe('ReleasesNav', () => {
       })
 
       it('allows for new release to be created', async () => {
-        await userEvent.click(screen.getByText('New release'))
+        // The perspective menu labels this 'Create new release'; the releases overview's own
+        // primary button keeps 'New release'.
+        await userEvent.click(screen.getByText('Create new release'))
 
         expect(screen.getByRole('dialog')).toHaveAttribute('id', 'create-release-dialog')
       })
