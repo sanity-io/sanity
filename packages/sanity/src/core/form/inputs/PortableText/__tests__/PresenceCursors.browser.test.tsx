@@ -303,6 +303,22 @@ describe('Portable Text Input', () => {
       expect(getVisibleAvatars('User A')).toHaveLength(1)
     })
 
+    it('should show every user whose cursor is hidden at the same editor edge', async () => {
+      // Two users with their cursors in the last block, both scrolled out of the editor's view
+      const presence: FormNodePresence[] = [
+        LAST_BLOCK_PRESENCE[0],
+        {...LAST_BLOCK_PRESENCE[0], ...PRESENCE[1], selection: LAST_BLOCK_PRESENCE[0].selection},
+      ]
+      void render(<DockedPresenceCursorsHarness document={LONG_DOCUMENT} presence={presence} />)
+
+      // Both avatars share the spot at the editor's bottom edge, stacked like in a dock
+      await expect.poll(() => getAvatarAtEditorEdge('bottom', 'User A')).toBeDefined()
+      await expect.poll(() => getAvatarAtEditorEdge('bottom', 'User B')).toBeDefined()
+      expect(getVisibleAvatars('User A')).toHaveLength(1)
+      expect(getVisibleAvatars('User B')).toHaveLength(1)
+      expect(document.querySelector('[data-ui="AvatarCounter"]')).toBeNull()
+    })
+
     it('should hand over between the editor and the pane docks without duplicates', async () => {
       void render(
         <DockedPresenceCursorsHarness
