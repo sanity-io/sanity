@@ -56,6 +56,20 @@ export function ReleaseTypeSections({
     )
   }
 
+  // Unlabelled means one section, not several with their labels removed. Each section is a card
+  // with a bottom border, so keeping the bands while hiding their headings drew a divider between
+  // every band — and a band often holds a single release, which made the short list read as a
+  // stack of one-row groups divided for no stated reason.
+  if (!showHeadings) {
+    return (
+      <ReleaseTypeMenuSection
+        data-testid="release-menu-section-sequence"
+        releases={ORDERED_RELEASE_TIME_BUCKETS.flatMap((bucket) => grouped[bucket])}
+        menuItemProps={menuItemProps}
+      />
+    )
+  }
+
   return (
     <>
       {ORDERED_RELEASE_TIME_BUCKETS.map((bucket) => (
