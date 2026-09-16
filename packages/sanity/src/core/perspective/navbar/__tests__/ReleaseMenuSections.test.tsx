@@ -80,6 +80,25 @@ describe('ReleaseTypeSections', () => {
     // Every other section drops out when empty. This one must not: a workspace with no releases
     // yet is where a reader most needs telling what the list would hold.
     expect(screen.getByText('Releases')).toBeInTheDocument()
+    // The heading alone reads as unfinished with nothing under it, so the empty state spells out
+    // that there is genuinely nothing there yet.
+    expect(screen.getByTestId('release-menu-no-releases')).toHaveTextContent(
+      'No releases created yet',
+    )
+  })
+
+  it('does not show the no-releases message once releases exist', async () => {
+    await renderSections(<ReleaseTypeSections releases={allReleases} />)
+
+    expect(screen.queryByTestId('release-menu-no-releases')).not.toBeInTheDocument()
+  })
+
+  it('does not show the no-releases message on the filtering path, which has its own message', async () => {
+    // A filter matching nothing is a different state from the workspace having no releases at
+    // all — that one is answered by `release-menu-no-results` in `ReleasesList`, not this message.
+    await renderSections(<ReleaseTypeSections releases={[]} searchTerm="nothing matches" />)
+
+    expect(screen.queryByTestId('release-menu-no-releases')).not.toBeInTheDocument()
   })
 
   it('hands the labelling over to the bands once they are shown', async () => {

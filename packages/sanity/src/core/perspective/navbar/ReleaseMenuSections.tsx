@@ -95,6 +95,11 @@ export function ReleaseTypeSections({
               index === (labelled === -1 ? 0 : labelled) ? t('release.menu.releases') : undefined
             }
             renderWhenEmpty={labelled === -1}
+            // Only the group carrying the heading can show this — the others return null before
+            // ever reaching a render, since they have no heading to keep them up.
+            emptyMessage={
+              labelled === -1 && index === 0 ? t('release.menu.no-releases-yet') : undefined
+            }
             releases={group}
             menuItemProps={menuItemProps}
             searchTerm={searchTerm}

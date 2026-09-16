@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Card, Label, Stack} from '@sanity/ui'
+import {Card, Label, Stack, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
 import {Box, Flex} from 'ui5'
 
@@ -25,6 +25,7 @@ export function ReleaseTypeMenuSection({
   menuItemProps,
   searchTerm,
   renderWhenEmpty,
+  emptyMessage,
   'data-testid': dataTestId,
 }: {
   'releases': ReleaseDocument[]
@@ -40,6 +41,12 @@ export function ReleaseTypeMenuSection({
    * out when empty, which is what keeps unused time bands from drawing rules.
    */
   'renderWhenEmpty'?: boolean
+  /**
+   * Statement shown in place of the (empty) list, only while `renderWhenEmpty` is keeping the
+   * heading up with no releases underneath it. A no-releases-at-all state is not the same as a
+   * filter matching nothing, so this is unrelated to `release-menu-no-results`.
+   */
+  'emptyMessage'?: string
   'data-testid'?: string
 }): React.JSX.Element | null {
   if (releases.length === 0 && !(renderWhenEmpty && heading)) return null
@@ -61,16 +68,24 @@ export function ReleaseTypeMenuSection({
             </Box>
           </StickyHeading>
         )}
-        <Flex flexDirection="column" gap={1}>
-          {releases.map((release) => (
-            <GlobalPerspectiveMenuItem
-              key={release._id}
-              release={release}
-              menuItemProps={menuItemProps}
-              searchTerm={searchTerm}
-            />
-          ))}
-        </Flex>
+        {releases.length === 0 && emptyMessage ? (
+          <Box paddingLeft={2} paddingBottom={2}>
+            <Text data-testid="release-menu-no-releases" muted size={1}>
+              {emptyMessage}
+            </Text>
+          </Box>
+        ) : (
+          <Flex flexDirection="column" gap={1}>
+            {releases.map((release) => (
+              <GlobalPerspectiveMenuItem
+                key={release._id}
+                release={release}
+                menuItemProps={menuItemProps}
+                searchTerm={searchTerm}
+              />
+            ))}
+          </Flex>
+        )}
       </Stack>
     </Card>
   )

@@ -1709,6 +1709,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
    * with no releases yet, so the menu says what the list is rather than only what is in it.
    */
   'release.menu.releases': 'Releases',
+  /**
+   * Shown directly beneath the `Releases` heading when the workspace has no releases at all.
+   * Distinct from `release.menu.no-results`: that one answers a filter that matched nothing, this
+   * one that there is nothing to filter yet.
+   */
+  'release.menu.no-releases-yet': 'No releases created yet',
   /** Section heading for releases the selected document has no version in */
   'release.menu.other-releases': 'Other releases',
   /** Section heading listing the releases the selected document has a version in */
