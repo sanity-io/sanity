@@ -198,6 +198,12 @@ How it works:
 - The flag is declared in `dev/test-studio/turbo.json` so turbo-cached builds are invalidated when it changes
 - Enabling devtools makes `sanity build` noticeably slower; that's why it's opt-in via the env flag
 
+### Debugging presence with fake users
+
+**Field action (test studio).** Open a `Presence debug` document (`presenceDebug`, under Debug in the structure). Every field has a `Presence` button in its header with **Fake presence here**: pick a user in the dialog and they show up as present at that field. Inside a Portable Text field the user is placed at your last cursor position in that editor, so different users can be put at different spots. **Remove all fake presence** clears them. The plugin lives in `dev/test-studio/plugins/presence-debug` and uses the presence store's `@internal` `debug` API (`fakePresence`, `removeFakePresence`, `ownLocation$`), so the fake sessions go through the real presence code path (user lookup, form routing, overlay docking).
+
+**URL hash flags.** The presence store also reads two older debug flags from the URL hash (`packages/sanity/src/core/store/presence/presence-store.ts`), comma separated after `#_debug_presence=`: `fake_others` (random mock users at fixed paths in a document with `_id: "presence-debug"`) and `show_own` (also show your own session).
+
 ### Profiling studio re-renders with React DevTools (agent-react-devtools)
 
 The test studio can register with a local [agent-react-devtools](https://github.com/callstackincubator/agent-react-devtools) daemon, which exposes the React component tree and render profiling over a CLI — made for AI agents to inspect props/state/hooks and hunt unnecessary re-renders. The `react-devtools` skill (`.agents/skills/react-devtools/SKILL.md`) documents the CLI; read it before profiling.
