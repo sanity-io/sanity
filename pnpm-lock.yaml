@@ -1559,8 +1559,8 @@ importers:
         specifier: ^4.18.1
         version: 4.18.1
       obug:
-        specifier: ^2.1.4
-        version: 2.1.4
+        specifier: ^3.0.0
+        version: 3.0.0
     devDependencies:
       '@repo/test-config':
         specifier: workspace:*
@@ -2200,8 +2200,8 @@ importers:
         specifier: ^1.0.3
         version: 1.0.3(rxjs@7.8.2)
       obug:
-        specifier: ^2.1.4
-        version: 2.1.4
+        specifier: ^3.0.0
+        version: 3.0.0
       player.style:
         specifier: ^0.3.4
         version: 0.3.4(react@19.3.0)
@@ -12383,6 +12383,10 @@ packages:
 
   obug@2.1.4:
     resolution: {integrity: sha512-4a+OsYv9UktOJKE+l1A4OufDgdRF9PifWj+tJnHURo/P+WOxpG4GzUFL9qCalmWauao6ogiG+QvnCovwPoyAWA==}
+    engines: {node: '>=12.20.0'}
+
+  obug@3.0.0:
+    resolution: {integrity: sha512-5vvB5+W7ePv+p3uqxi+RcW1XAzLW0/hxt3/4X4Lc4qHudzOhmBiBwOY6DRob4WnanAEGvNcLjF+KNOufrUoEQw==}
     engines: {node: '>=12.20.0'}
 
   on-finished@2.4.1:
@@ -25625,6 +25629,8 @@ snapshots:
       rxjs: 7.8.2
 
   obug@2.1.4: {}
+
+  obug@3.0.0: {}
 
   on-finished@2.4.1:
     dependencies:
