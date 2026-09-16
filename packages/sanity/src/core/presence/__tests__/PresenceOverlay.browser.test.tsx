@@ -158,7 +158,12 @@ function fieldCounter(name: string) {
   )
 }
 
+/**
+ * The arrow of an avatar. `@sanity/ui`'s Avatar starts out with `animateArrowFrom` and moves to
+ * its real position one animation frame after mounting, so assertions on arrows must poll.
+ */
 const arrowOf = (avatar: Element) => avatar.getAttribute('data-arrow-position')
+const arrowsOf = (avatars: Element[]) => avatars.map(arrowOf)
 
 /** Scrolls the pane so the field sits at the given place of the viewport */
 function scrollFieldTo(name: string, block: 'start' | 'center' | 'end') {
@@ -205,7 +210,7 @@ describe('PresenceOverlay', () => {
 
     await expect.poll(() => dockAvatars('bottom')).toHaveLength(2)
     expect(dockCounter('bottom')).toHaveTextContent('8')
-    expect(dockAvatars('bottom').map(arrowOf)).toEqual(['bottom', 'bottom'])
+    await expect.poll(() => arrowsOf(dockAvatars('bottom'))).toEqual(['bottom', 'bottom'])
     expect(dockAvatars('top')).toHaveLength(0)
     expect(visibleAvatars()).toHaveLength(2)
 
@@ -229,8 +234,8 @@ describe('PresenceOverlay', () => {
     }
     // A field within SLIDE_RIGHT_THRESHOLD_TOP of the pane edge already points its arrow towards
     // the edge while still drawn at the field; the others point nowhere in particular.
-    expect(fieldAvatars('field0').map(arrowOf)).toEqual(['top'])
-    expect(fieldAvatars('field5').map(arrowOf)).toEqual(['inside'])
+    await expect.poll(() => arrowsOf(fieldAvatars('field0'))).toEqual(['top'])
+    await expect.poll(() => arrowsOf(fieldAvatars('field5'))).toEqual(['inside'])
     expect(dockAvatars('top')).toHaveLength(0)
     expect(dockAvatars('bottom')).toHaveLength(0)
 
@@ -238,7 +243,7 @@ describe('PresenceOverlay', () => {
     pane().scrollTop = pane().scrollHeight
     await expect.poll(() => dockAvatars('top')).toHaveLength(2)
     expect(dockCounter('top')).toHaveTextContent('8')
-    expect(dockAvatars('top').map(arrowOf)).toEqual(['top', 'top'])
+    await expect.poll(() => arrowsOf(dockAvatars('top'))).toEqual(['top', 'top'])
     expect(dockAvatars('bottom')).toHaveLength(0)
     expect(visibleAvatars()).toHaveLength(2)
   })
@@ -258,13 +263,13 @@ describe('PresenceOverlay', () => {
     scrollFieldTo('field14', 'center')
 
     await expect.poll(() => titles(dockAvatars('top'))).toEqual(['User above'])
-    expect(arrowOf(dockAvatars('top')[0])).toBe('top')
+    await expect.poll(() => arrowsOf(dockAvatars('top'))).toEqual(['top'])
 
     await expect.poll(() => titles(dockAvatars('bottom'))).toEqual(['User below'])
-    expect(arrowOf(dockAvatars('bottom')[0])).toBe('bottom')
+    await expect.poll(() => arrowsOf(dockAvatars('bottom'))).toEqual(['bottom'])
 
     expect(titles(fieldAvatars('field14'))).toEqual(['User inside'])
-    expect(arrowOf(fieldAvatars('field14')[0])).toBe('inside')
+    await expect.poll(() => arrowsOf(fieldAvatars('field14'))).toEqual(['inside'])
 
     // Every user is visible exactly once
     expect(titles(visibleAvatars())).toEqual(['User above', 'User below', 'User inside'])
@@ -304,7 +309,7 @@ describe('PresenceOverlay', () => {
     }
     await expect.poll(() => fieldAvatars('field15')).toHaveLength(1)
     expect(dockAvatars('top')).toHaveLength(0)
-    expect(arrowOf(fieldAvatars('field15')[0])).toBe('inside')
+    await expect.poll(() => arrowsOf(fieldAvatars('field15'))).toEqual(['inside'])
   })
 
   it('shows a user with several sessions once, in the field and in the dock', async () => {
