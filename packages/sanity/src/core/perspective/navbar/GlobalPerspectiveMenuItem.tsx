@@ -1,6 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {LockIcon} from '@sanity/icons/Lock'
 import {Stack, Text} from '@sanity/ui'
 // oxlint-disable-next-line no-restricted-imports -- custom use for MenuItem not supported by ui-components
 import {MenuItem} from '@sanity/ui/menu'
@@ -18,7 +17,7 @@ import {isReleaseDocument} from '../../releases/store/types'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {splitOnSearchTerm} from '../../releases/util/splitOnSearchTerm'
-import {isDraftPerspective, isReleaseScheduledOrScheduling} from '../../releases/util/util'
+import {isDraftPerspective} from '../../releases/util/util'
 import {useWorkspace} from '../../studio/workspace'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
 
@@ -153,15 +152,6 @@ export function GlobalPerspectiveMenuItem(props: {
               </Text>
             )}
         </Stack>
-        <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
-          {isReleaseDocument(release) && isReleaseScheduledOrScheduling(release) && (
-            <Box padding={2}>
-              <Text size={1} data-testid="release-lock-icon">
-                <LockIcon />
-              </Text>
-            </Box>
-          )}
-        </Box>
       </Flex>
     </MenuItem>
   )

@@ -179,7 +179,6 @@ describe('ReleasesNav', () => {
           .closest('button')!
 
         within(scheduledMenuItem).getByText(/\b\d{1,2}\/\d{1,2}\/\d{4}\b/)
-        within(scheduledMenuItem).getByTestId('release-lock-icon')
         within(scheduledMenuItem).getByTestId('release-avatar-suggest')
       })
 
@@ -239,7 +238,7 @@ describe('ReleasesNav', () => {
           expect(mockedSetPerspective).toHaveBeenCalledWith('rScheduled2')
         })
 
-        it('should show a lock icon on scheduled releases', async () => {
+        it('should not show a lock icon on scheduled releases', async () => {
           await prerenderTest()
 
           const scheduledReleaseMenuItem = within(screen.getByTestId('release-menu'))
@@ -247,8 +246,8 @@ describe('ReleasesNav', () => {
             .closest('button')!
 
           expect(
-            within(scheduledReleaseMenuItem).getByTestId('release-lock-icon'),
-          ).toBeInTheDocument()
+            within(scheduledReleaseMenuItem).queryByTestId('release-lock-icon'),
+          ).not.toBeInTheDocument()
         })
       })
 
