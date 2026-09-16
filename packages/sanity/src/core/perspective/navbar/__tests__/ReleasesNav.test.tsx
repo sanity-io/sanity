@@ -148,12 +148,13 @@ describe('ReleasesNav', () => {
         expect(mockedSetPerspective).toHaveBeenCalledWith('published')
       })
 
-      it('should list all the releases', async () => {
+      it('should list all the releases, unlabelled at this length', async () => {
         const releaseMenu = within(screen.getByTestId('release-menu'))
 
-        // section titles
-        releaseMenu.getByText('As soon as possible')
-        releaseMenu.getByText('At time')
+        // Four releases is well under the threshold at which the menu labels its time bands, so
+        // the list reads as one sequence with no headings.
+        expect(releaseMenu.queryByText('As soon as possible')).toBeNull()
+        expect(releaseMenu.queryByText('This week')).toBeNull()
         expect(releaseMenu.queryByText('Undecided')).toBeNull()
 
         // releases

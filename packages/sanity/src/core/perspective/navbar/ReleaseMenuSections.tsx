@@ -1,27 +1,16 @@
-import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
+import {type ReleaseDocument} from '@sanity/client'
 import {useMemo} from 'react'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useDocumentVersionTypeSortedList} from '../../releases/hooks/useDocumentVersionTypeSortedList'
-import {ORDERED_RELEASE_TYPES} from '../../releases/util/const'
+import {
+  groupReleasesByTimeBucket,
+  ORDERED_RELEASE_TIME_BUCKETS,
+  RELEASE_TIME_BUCKET_HEADING_THRESHOLD,
+  RELEASE_TIME_BUCKET_LABELS,
+} from '../../releases/util/getReleaseTimeBuckets'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {ReleaseTypeMenuSection} from './ReleaseTypeMenuSection'
-
-const RELEASE_TYPE_LABELS: Record<ReleaseType, string> = {
-  asap: 'release.type.asap',
-  scheduled: 'release.type.scheduled',
-  undecided: 'release.type.undecided',
-}
-
-function groupByReleaseType(releases: ReleaseDocument[]): Record<ReleaseType, ReleaseDocument[]> {
-  return ORDERED_RELEASE_TYPES.reduce<Record<ReleaseType, ReleaseDocument[]>>(
-    (grouped, releaseType) => ({
-      ...grouped,
-      [releaseType]: releases.filter(({metadata}) => metadata.releaseType === releaseType),
-    }),
-    {} as Record<ReleaseType, ReleaseDocument[]>,
-  )
-}
 
 interface SectionsProps {
   releases: ReleaseDocument[]
@@ -29,21 +18,29 @@ interface SectionsProps {
 }
 
 /**
- * The list as it reads with no document selected: one labelled group per release
- * type.
+ * The list as it reads with no document selected: one sequence in time, banded by when each release
+ * is due.
+ *
+ * The bands are labelled only past {@link RELEASE_TIME_BUCKET_HEADING_THRESHOLD}. A short list is
+ * already scannable, and a heading over two rows explains less than it interrupts; a long one
+ * cannot be read at a glance, which is the job a heading does. The order is the same either way, so
+ * crossing the threshold adds labels rather than moving anything.
  */
 export function ReleaseTypeSections({releases, menuItemProps}: SectionsProps): React.JSX.Element {
   const {t} = useTranslation()
-  const grouped = useMemo(() => groupByReleaseType(releases), [releases])
+  // Recomputed per render rather than memoised on a clock: the bands shift as time passes, and a
+  // menu that is open across a boundary should not keep asserting the old one.
+  const grouped = useMemo(() => groupReleasesByTimeBucket(releases, new Date()), [releases])
+  const showHeadings = releases.length >= RELEASE_TIME_BUCKET_HEADING_THRESHOLD
 
   return (
     <>
-      {ORDERED_RELEASE_TYPES.map((releaseType) => (
+      {ORDERED_RELEASE_TIME_BUCKETS.map((bucket) => (
         <ReleaseTypeMenuSection
-          key={releaseType}
-          data-testid={`release-menu-section-${releaseType}`}
-          heading={t(RELEASE_TYPE_LABELS[releaseType])}
-          releases={grouped[releaseType]}
+          key={bucket}
+          data-testid={`release-menu-section-${bucket}`}
+          heading={showHeadings ? t(RELEASE_TIME_BUCKET_LABELS[bucket]) : undefined}
+          releases={grouped[bucket]}
           menuItemProps={menuItemProps}
         />
       ))}
@@ -59,17 +56,17 @@ export function ReleaseTypeSections({releases, menuItemProps}: SectionsProps): R
  */
 function OtherReleaseSections({releases, menuItemProps}: SectionsProps): React.JSX.Element {
   const {t} = useTranslation()
-  const grouped = useMemo(() => groupByReleaseType(releases), [releases])
-  const firstNonEmptyType = ORDERED_RELEASE_TYPES.find((type) => grouped[type].length > 0)
+  const grouped = useMemo(() => groupReleasesByTimeBucket(releases, new Date()), [releases])
+  const firstNonEmpty = ORDERED_RELEASE_TIME_BUCKETS.find((bucket) => grouped[bucket].length > 0)
 
   return (
     <>
-      {ORDERED_RELEASE_TYPES.map((releaseType) => (
+      {ORDERED_RELEASE_TIME_BUCKETS.map((bucket) => (
         <ReleaseTypeMenuSection
-          key={releaseType}
-          data-testid={`release-menu-section-other-${releaseType}`}
-          heading={releaseType === firstNonEmptyType ? t('release.menu.other-releases') : undefined}
-          releases={grouped[releaseType]}
+          key={bucket}
+          data-testid={`release-menu-section-other-${bucket}`}
+          heading={bucket === firstNonEmpty ? t('release.menu.other-releases') : undefined}
+          releases={grouped[bucket]}
           menuItemProps={menuItemProps}
         />
       ))}

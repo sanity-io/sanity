@@ -1,3 +1,4 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {Menu} from '@sanity/ui/menu'
 import {render, screen, within} from '@testing-library/react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
@@ -20,6 +21,23 @@ const mockUseDocumentVersionTypeSortedList = vi.mocked(useDocumentVersionTypeSor
 
 const allReleases = [activeASAPRelease, activeScheduledRelease, activeUndecidedRelease]
 
+/**
+ * Enough scheduled releases to cross `RELEASE_TIME_BUCKET_HEADING_THRESHOLD`, dated so that more
+ * than one band is populated — a single band would label itself and prove nothing.
+ */
+function manyScheduledReleases(count: number): ReleaseDocument[] {
+  return Array.from({length: count}, (_unused, index) => ({
+    ...activeScheduledRelease,
+    _id: `_.releases.bulk${index}`,
+    metadata: {
+      ...activeScheduledRelease.metadata,
+      releaseType: 'scheduled' as const,
+      // Two days apart, so the first few land in `thisWeek` and the rest spread beyond it.
+      intendedPublishAt: new Date(Date.now() + (index + 1) * 2 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+  }))
+}
+
 async function renderSections(node: React.JSX.Element) {
   const wrapper = await createTestProvider()
   const view = render(<Menu>{node}</Menu>, {wrapper})
@@ -30,19 +48,32 @@ async function renderSections(node: React.JSX.Element) {
 }
 
 describe('ReleaseTypeSections', () => {
-  it('labels every non-empty release type', async () => {
+  it('leaves a short list unlabelled, and still lists every release', async () => {
     await renderSections(<ReleaseTypeSections releases={allReleases} />)
 
-    expect(screen.getByText('As soon as possible')).toBeInTheDocument()
-    expect(screen.getByText('At time')).toBeInTheDocument()
-    expect(screen.getByText('Undecided')).toBeInTheDocument()
+    // A heading over one or two rows interrupts more than it explains, so below the threshold the
+    // list is one unlabelled sequence.
+    expect(screen.queryByText('As soon as possible')).not.toBeInTheDocument()
+    expect(screen.queryByText('Overdue')).not.toBeInTheDocument()
+    expect(screen.queryByText('Undecided')).not.toBeInTheDocument()
+
+    expect(screen.getByText('active asap Release')).toBeInTheDocument()
+    expect(screen.getByText('active Release')).toBeInTheDocument()
+    expect(screen.getByText('undecided Release')).toBeInTheDocument()
   })
 
-  it('omits a section entirely when its type has no releases', async () => {
-    await renderSections(<ReleaseTypeSections releases={[activeASAPRelease]} />)
+  it('labels the time bands once the list is long enough to need them', async () => {
+    await renderSections(<ReleaseTypeSections releases={manyScheduledReleases(20)} />)
 
-    expect(screen.getByText('As soon as possible')).toBeInTheDocument()
-    expect(screen.queryByText('At time')).not.toBeInTheDocument()
+    expect(screen.getByText('This week')).toBeInTheDocument()
+    expect(screen.getByText('This month')).toBeInTheDocument()
+  })
+
+  it('labels only the bands that hold something', async () => {
+    await renderSections(<ReleaseTypeSections releases={manyScheduledReleases(20)} />)
+
+    // Every band is rendered, but an empty one draws nothing — so no heading appears over a gap.
+    expect(screen.queryByText('Overdue')).not.toBeInTheDocument()
     expect(screen.queryByText('Undecided')).not.toBeInTheDocument()
   })
 })
@@ -52,10 +83,10 @@ describe('DocumentReleaseSections', () => {
     mockUseDocumentVersionTypeSortedList.mockReturnValue({sortedDocumentList: []})
   })
 
-  it('falls back to the type sections when the document has no versions', async () => {
+  it('falls back to the plain time sequence when the document has no versions', async () => {
     await renderSections(<DocumentReleaseSections documentId="book-1" releases={allReleases} />)
 
-    expect(screen.getByText('As soon as possible')).toBeInTheDocument()
+    expect(screen.getByText('active asap Release')).toBeInTheDocument()
     expect(screen.queryByText(/Part of/)).not.toBeInTheDocument()
     expect(screen.queryByText('Other releases')).not.toBeInTheDocument()
   })
