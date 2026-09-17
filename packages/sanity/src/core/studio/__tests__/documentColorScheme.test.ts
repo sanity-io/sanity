@@ -54,7 +54,9 @@ describe('setDocumentColorScheme', () => {
 
 describe('applyStoredDocumentColorScheme', () => {
   afterEach(() => {
-    document.documentElement.style.colorScheme = ''
+    // Claim any stashed host snapshot so it cannot leak into later tests.
+    setDocumentColorScheme('light')()
+    document.documentElement.removeAttribute('style')
     localStorage.removeItem('sanityStudio:ui:colorScheme')
   })
 
@@ -69,6 +71,26 @@ describe('applyStoredDocumentColorScheme', () => {
     localStorage.setItem('sanityStudio:ui:colorScheme', 'system')
     applyStoredDocumentColorScheme()
     expect(document.documentElement.style.colorScheme).toBe('')
+  })
+
+  test('the next setDocumentColorScheme restores the host original, not the stored write', () => {
+    localStorage.setItem('sanityStudio:ui:colorScheme', 'dark')
+    applyStoredDocumentColorScheme()
+    expect(document.documentElement.style.colorScheme).toBe('dark')
+
+    const dispose = setDocumentColorScheme('dark')
+    dispose()
+    expect(document.documentElement.style.colorScheme).toBe('')
+  })
+
+  test('the next setDocumentColorScheme restores a host-set color-scheme captured before the stored write', () => {
+    document.documentElement.style.colorScheme = 'light'
+    localStorage.setItem('sanityStudio:ui:colorScheme', 'dark')
+    applyStoredDocumentColorScheme()
+
+    const dispose = setDocumentColorScheme('dark')
+    dispose()
+    expect(document.documentElement.style.colorScheme).toBe('light')
   })
 })
 

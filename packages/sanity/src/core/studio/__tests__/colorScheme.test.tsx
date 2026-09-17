@@ -6,6 +6,7 @@ import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 import {Button} from '../../../ui-components/button/Button'
 import {ColorSchemeLocalStorageProvider, ColorSchemeProvider} from '../colorScheme'
 import {setSnapshot} from '../colorSchemeStore'
+import {applyStoredDocumentColorScheme} from '../documentColorScheme'
 
 describe('ColorScheme', () => {
   const mockLocalStorage = {
@@ -131,6 +132,31 @@ describe('ColorScheme', () => {
 
       await userEvent.click(screen.getByTestId('to-light'))
       expect(document.documentElement.style.colorScheme).toBe('light')
+
+      await userEvent.click(screen.getByTestId('to-system'))
+      expect(document.documentElement.style.colorScheme).toBe('')
+    })
+
+    test('switching to system after a pre-mount stored write leaves the document unset', async () => {
+      mockLocalStorage.getItem.mockReturnValue('dark')
+      setSnapshot('dark')
+      applyStoredDocumentColorScheme()
+
+      render(
+        <ColorSchemeLocalStorageProvider>
+          <ColorSchemeSetValueContext.Consumer>
+            {(setValue) => (
+              <Button
+                data-testid="to-system"
+                onClick={() => setValue && setValue('system')}
+                text="System"
+              />
+            )}
+          </ColorSchemeSetValueContext.Consumer>
+        </ColorSchemeLocalStorageProvider>,
+      )
+
+      expect(document.documentElement.style.colorScheme).toBe('dark')
 
       await userEvent.click(screen.getByTestId('to-system'))
       expect(document.documentElement.style.colorScheme).toBe('')
