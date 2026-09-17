@@ -3,7 +3,6 @@ import {UsersIcon} from '@sanity/icons/Users'
 import {Stack, Text} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useMemo, useState} from 'react'
-import {styled} from 'styled-components'
 import {Box} from 'ui5'
 
 import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
@@ -15,17 +14,8 @@ import {useColorSchemeValue} from '../../../colorScheme'
 import {useEnvAwareSanityWebsiteUrl} from '../../../hooks/useEnvAwareSanityWebsiteUrl'
 import {useWorkspace} from '../../../workspace'
 import {useCanInviteProjectMembers} from '../useCanInviteMembers'
+import {footerStack, menu} from './PresenceMenu.css'
 import {PresenceMenuItem} from './PresenceMenuItem'
-
-const StyledMenu = styled(Menu)`
-  max-width: 260px;
-`
-
-const FooterStack = styled(Stack)`
-  position: sticky;
-  bottom: 0;
-  background-color: var(--card-bg-color);
-`
 
 export function PresenceMenu() {
   const presence = useGlobalPresence()
@@ -94,7 +84,7 @@ export function PresenceMenu() {
       id="global-presence-menu"
       onOpen={() => setOpen(true)}
       menu={
-        <StyledMenu>
+        <Menu className={menu}>
           {hasPresence &&
             presence.map((item) => (
               <PresenceMenuItem
@@ -121,7 +111,7 @@ export function PresenceMenu() {
           )}
 
           {canInviteMembers && (
-            <FooterStack gap={1}>
+            <Stack className={footerStack} gap={1}>
               <MenuDivider />
 
               <MenuItem
@@ -133,9 +123,9 @@ export function PresenceMenu() {
                 target="_blank"
                 text={t('presence.action.manage-members')}
               />
-            </FooterStack>
+            </Stack>
           )}
-        </StyledMenu>
+        </Menu>
       }
       onClose={handleClose}
       popover={popoverProps}
