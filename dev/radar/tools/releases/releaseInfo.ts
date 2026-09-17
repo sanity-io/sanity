@@ -84,3 +84,63 @@ export function regressionCountByTag<T extends ReleaseTag>(
   }
   return counts
 }
+
+/**
+ * Semver order for `vMAJOR.MINOR.PATCH[-prerelease]` tags, newest first —
+ * the releases list is a version list, not a timeline, and tag dates put a
+ * maintenance patch cut last week above the minor it backports from.
+ * A prerelease sorts below its release (`v7.0.0-rc.1` < `v7.0.0`);
+ * prerelease identifiers compare numerically when both are numbers, else as
+ * strings. Anything that doesn't parse sorts last, by tag name.
+ */
+export function compareTagsSemverDesc(a: string, b: string): number {
+  const pa = parseSemverTag(a)
+  const pb = parseSemverTag(b)
+  if (!pa && !pb) return compareCodePointsDesc(a, b)
+  if (!pa) return 1
+  if (!pb) return -1
+  for (const key of ['major', 'minor', 'patch'] as const) {
+    if (pa[key] !== pb[key]) return pb[key] - pa[key]
+  }
+  if (!pa.prerelease && !pb.prerelease) return 0
+  if (!pa.prerelease) return -1
+  if (!pb.prerelease) return 1
+  return comparePrereleaseDesc(pa.prerelease, pb.prerelease)
+}
+
+function parseSemverTag(
+  tag: string,
+): {major: number; minor: number; patch: number; prerelease?: string} | undefined {
+  const match = /^v?(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z.-]+))?$/.exec(tag)
+  if (!match) return undefined
+  const [, major, minor, patch, prerelease] = match
+  return {major: Number(major), minor: Number(minor), patch: Number(patch), prerelease}
+}
+
+function comparePrereleaseDesc(a: string, b: string): number {
+  const as = a.split('.')
+  const bs = b.split('.')
+  for (let i = 0; i < Math.max(as.length, bs.length); i++) {
+    // A shorter identifier list is the lower precedence (rc < rc.1)
+    if (as[i] === undefined) return 1
+    if (bs[i] === undefined) return -1
+    const an = /^\d+$/.test(as[i]) ? Number(as[i]) : undefined
+    const bn = /^\d+$/.test(bs[i]) ? Number(bs[i]) : undefined
+    if (an !== undefined && bn !== undefined) {
+      if (an !== bn) return bn - an
+    } else if (an !== undefined) {
+      return 1 // numeric identifiers rank below alphanumeric ones
+    } else if (bn !== undefined) {
+      return -1
+    } else if (as[i] !== bs[i]) {
+      return compareCodePointsDesc(as[i], bs[i])
+    }
+  }
+  return 0
+}
+
+/** SemVer wants ASCII order for non-numeric identifiers; `localeCompare` is locale- and case-folding-dependent. */
+function compareCodePointsDesc(a: string, b: string): number {
+  if (a === b) return 0
+  return a < b ? 1 : -1
+}

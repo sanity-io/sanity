@@ -1,10 +1,47 @@
-import {type SanityDocument} from '@sanity/types'
+import {defineArrayMember, defineField, defineType, type SanityDocument} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
 
+import {TestForm} from '../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../test/browser/testHelpers'
-import {StylesStory} from './StylesStory'
+import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
+
+const SCHEMA_TYPES = [
+  defineType({
+    type: 'document',
+    name: 'test',
+    title: 'Test',
+    fields: [
+      defineField({
+        type: 'array',
+        name: 'defaultStyles',
+        of: [
+          defineArrayMember({
+            type: 'block',
+          }),
+        ],
+      }),
+      defineField({
+        type: 'array',
+        name: 'oneStyle',
+        of: [
+          defineArrayMember({
+            type: 'block',
+            styles: [{title: 'Normal', value: 'normal'}],
+          }),
+        ],
+      }),
+    ],
+  }),
+]
+function StylesHarness(props: {document?: SanityDocument}) {
+  return (
+    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+      <TestForm document={props.document} />
+    </TestWrapper>
+  )
+}
 
 const DEFAULT_STYLE_NAMES = [
   'Normal',
@@ -22,7 +59,7 @@ describe('Portable Text Input', () => {
     describe('Toolbar', () => {
       it('Should display all default styles in style selector when clicked', async () => {
         const {getFocusedPortableTextInput} = testHelpers()
-        void render(<StylesStory />)
+        void render(<StylesHarness />)
         const $portableTextInput = await getFocusedPortableTextInput('field-defaultStyles')
         const $styleSelectButton = $portableTextInput.getByTestId('block-style-select')
         await $styleSelectButton.click()
@@ -38,7 +75,7 @@ describe('Portable Text Input', () => {
 
       it('Should not display block style button when no block styles are present', async () => {
         const {getFocusedPortableTextInput} = testHelpers()
-        void render(<StylesStory />)
+        void render(<StylesHarness />)
         const $portableTextInput = await getFocusedPortableTextInput('field-oneStyle')
         const styleSelectButton = $portableTextInput
           .element()
@@ -73,7 +110,7 @@ describe('Portable Text Input', () => {
 
         const {getFocusedPortableTextInput, waitForFocusedNodeText, waitForDocumentState} =
           testHelpers()
-        void render(<StylesStory document={documentValue} />)
+        void render(<StylesHarness document={documentValue} />)
         const $portableTextInput = await getFocusedPortableTextInput('field-defaultStyles')
 
         const $headingText = [...$portableTextInput.element().querySelectorAll('*')].find(
@@ -139,7 +176,7 @@ describe('Portable Text Input', () => {
 
         const {getFocusedPortableTextInput, waitForFocusedNodeText, waitForDocumentState} =
           testHelpers()
-        void render(<StylesStory document={documentValue} />)
+        void render(<StylesHarness document={documentValue} />)
         const $portableTextInput = await getFocusedPortableTextInput('field-defaultStyles')
         const $firstText = [...$portableTextInput.element().querySelectorAll('*')].find(
           (node) => node.childElementCount === 0 && node.textContent === 'Explicit normal text',

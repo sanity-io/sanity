@@ -62,7 +62,9 @@ describe('buildInvestigationPrompt', () => {
 
   test('assembles the A/B dispatch command with both full shas', () => {
     const prompt = buildInvestigationPrompt(makeSeries(), makePoint(), previous)
-    expect(prompt).toContain(`gh workflow run bench.yml -f ab_from=${FROM_SHA} -f ab_to=${TO_SHA}`)
+    expect(prompt).toContain(
+      `gh workflow run bench.yml -R sanity-io/sanity -f ab_from=${FROM_SHA} -f ab_to=${TO_SHA}`,
+    )
   })
 
   test('derives the local repro command from the series key', () => {

@@ -14,19 +14,20 @@ import {
   collectInp,
   collectPageLoad,
   collectRunMetadata,
+  collectSettle,
 } from '../../report/collect'
 import {type BenchRunDocument, type ScenarioReport} from '../../report/types'
 import {calibrateHost, launchBrowser} from '../../runner/browser'
 import {measureBundleSize} from '../../runner/bundleSize'
-import {bundleInstrumentation} from '../../runner/inject'
+import {bundleInstrumentation, bundleSettleInstrumentation} from '../../runner/inject'
 import {runAbScenario} from '../../runner/orchestrator'
 import {startSide} from '../../runner/servers'
+import {SessionError} from '../../runner/session/errors'
 import {type InpSessionResult, runInpSession} from '../../runner/session/inp'
 import {
   type InteractionSessionResult,
   runInteractionSession,
   runSoakSession,
-  SessionError,
 } from '../../runner/session/interaction'
 import {
   type LoadCondition,
@@ -34,11 +35,14 @@ import {
   type PageLoadSample,
   runPageLoadSample,
 } from '../../runner/session/pageLoad'
+import {runSettleSession, type SettleSessionResult} from '../../runner/session/settle'
 import {getScenario, SCENARIOS} from '../../scenarios'
 import {bootstrapDiffOfMedians} from '../../stats/bootstrap'
 import {gate, isDecidedVerdict, PAGELOAD_THRESHOLDS} from '../../stats/gate'
 import {summarize} from '../../stats/quantiles'
 import {mulberry32} from '../../stats/rng'
+import {settleMismatch} from '../../stats/settle'
+import {sparkline} from '../../stats/sparkline'
 import {resolveFromInvocation} from '../benchRoot'
 import {type RunArgs} from './run'
 
@@ -92,6 +96,15 @@ async function withSessionRetries<T>(label: string, run: () => Promise<T>): Prom
   }
 }
 
+/** Flags stamped into a dist by its build script (absent = pristine build). */
+function readBuildFlags(dist: string): {customizations?: boolean} {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(dist, 'bench-build-flags.json'), 'utf8'))
+  } catch {
+    return {}
+  }
+}
+
 export async function runBench(argv: RunArgs): Promise<void> {
   const dist = resolveFromInvocation(argv.dist)
   if (!fs.existsSync(path.join(dist, 'index.html'))) {
@@ -101,9 +114,32 @@ export async function runBench(argv: RunArgs): Promise<void> {
     process.exit(1)
   }
 
-  const scenarios = argv.scenario.length
+  const requested = argv.scenario.length
     ? argv.scenario.map((name) => getScenario(name))
     : SCENARIOS
+
+  const buildFlags = readBuildFlags(dist)
+  const scenarios = requested.filter((scenario) => {
+    if (scenario.requiresCustomizations && !buildFlags.customizations) {
+      // The workspace does not exist in a pristine dist — a session against
+      // it fails confusingly, so skip with the fix instead.
+      console.log(
+        chalk.yellow(
+          `skipping ${scenario.name}: its workspace only exists in the customization build — ` +
+            `run \`pnpm --filter bench build:customizations\` and pass --dist perf/bench/dist-customizations`,
+        ),
+      )
+      return false
+    }
+    if (argv.mode !== 'settle' && scenario.interactions.length === 0) {
+      // Every mode except settle types into interactions[0].
+      console.log(
+        chalk.yellow(`skipping ${scenario.name}: no interaction targets (settle-only scenario)`),
+      )
+      return false
+    }
+    return true
+  })
 
   const referenceDist = argv.referenceDist ? resolveFromInvocation(argv.referenceDist) : undefined
   if (referenceDist && !fs.existsSync(path.join(referenceDist, 'index.html'))) {
@@ -171,6 +207,107 @@ export async function runBench(argv: RunArgs): Promise<void> {
           loafAttribution: [],
           soak: {minutes: soak.minutes, samples: soak.samples},
         })
+      }
+    } else if (argv.mode === 'settle') {
+      // Absolute-only in v1 (track-main cron); A/B promotion is a follow-up.
+      // Non-settlement and never-ready are RESULTS from the session, so
+      // withSessionRetries only sees broken-scenario tripwires (console
+      // errors, hermeticity, unexpected endpoints) — a genuine render loop
+      // is never retried as a flake.
+      const settleInstrumentation = await bundleSettleInstrumentation()
+      const expectationMismatches: string[] = []
+      const staleRedFlags: string[] = []
+      for (const scenario of scenarios) {
+        const expected = scenario.expectedToSettle ?? true
+        console.log(
+          `\n${chalk.cyan(scenario.name)} — settle, ${argv.sessions} session(s)` +
+            (expected ? '' : chalk.yellow(' (expected NOT to settle — red by design)')),
+        )
+        const results: SettleSessionResult[] = []
+        for (let i = 0; i < argv.sessions; i++) {
+          const result = await withSessionRetries(scenario.name, () =>
+            runSettleSession({
+              browser,
+              running,
+              scenario,
+              instrumentation,
+              settleInstrumentation,
+              config: {cpuThrottleRate: argv.throttle},
+            }),
+          )
+          results.push(result)
+          const status = !result.ready
+            ? chalk.red('never became ready')
+            : result.settled
+              ? `settled after ${result.settleTimeMs?.toFixed(0)}ms`
+              : chalk.red('did not settle')
+          console.log(
+            `  session ${i + 1}/${argv.sessions}: ${status} — ` +
+              `${result.reactCommits} commits (${result.commitsPerSecond.toFixed(1)}/s), ` +
+              `${result.loafCount} LoAF (${result.loafBlockingMs.toFixed(0)}ms blocking)` +
+              `${result.cpuAfterReadyMs === null ? '' : `, cpu ${result.cpuAfterReadyMs.toFixed(0)}ms`}` +
+              `${result.hookInstalled ? '' : chalk.yellow(' [commit hook not installed]')}`,
+          )
+          // Per-poll activity charts: the session's shape over time. A loop
+          // reads as a sustained plateau; a healthy open as a short burst
+          // followed by flatline.
+          if (result.timeline.length > 0) {
+            const commitRates = result.timeline.map((sample) => sample.commitsPerSecond)
+            const cpuRates = result.timeline.map((sample) => sample.cpuUtilization ?? 0)
+            const seconds = ((result.timeline.at(-1)?.atMs ?? 0) / 1000).toFixed(1)
+            console.log(
+              `    commits/s ${chalk.cyan(sparkline(commitRates))} peak ${Math.round(Math.max(...commitRates))}/s over ${seconds}s`,
+            )
+            if (result.timeline.some((sample) => sample.cpuUtilization !== null)) {
+              console.log(
+                `    cpu       ${chalk.magenta(sparkline(cpuRates, Math.max(1, ...cpuRates)))} peak ${Math.round(Math.max(...cpuRates) * 100)}%`,
+              )
+            }
+          }
+        }
+        const settledCount = results.filter((result) => result.settled).length
+        const settleTimes = results
+          .map((result) => result.settleTimeMs)
+          .filter((value): value is number => value !== null)
+        console.log(
+          `  ${chalk.bold('settle')}: ${settledCount}/${results.length} settled` +
+            (settleTimes.length > 0
+              ? `, time-to-settle p50 ${summarize(settleTimes).median.toFixed(0)}ms`
+              : ''),
+        )
+        if (
+          settleMismatch({
+            expectedToSettle: expected,
+            settledCount,
+            sessionCount: results.length,
+          })
+        ) {
+          if (expected) {
+            expectationMismatches.push(
+              `${scenario.name}: expected to settle, ${results.length - settledCount}/${results.length} session(s) did not`,
+            )
+          } else {
+            staleRedFlags.push(
+              `${scenario.name}: expected NOT to settle but every session settled — the footgun ` +
+                `appears fixed; flip expectedToSettle in ${scenario.sourceFile}`,
+            )
+          }
+        }
+        scenarioReports.push(collectSettle(scenario, results))
+      }
+      // A red-by-design scenario that settles is good news with a chore
+      // attached (flip the flag) — loud, but not an alarm: a backfill of a
+      // commit that never had the hazard must still store its numbers.
+      if (staleRedFlags.length > 0) {
+        console.error(chalk.yellow(`\nsettle expectation stale:\n  ${staleRedFlags.join('\n  ')}`))
+      }
+      if (expectationMismatches.length > 0) {
+        // Fail AFTER the report/JSON is assembled and written below — the
+        // numbers are the evidence; the exit code is just the alarm.
+        console.error(
+          chalk.red(`\nsettle expectation mismatch:\n  ${expectationMismatches.join('\n  ')}`),
+        )
+        process.exitCode = 1
       }
     } else if (argv.mode === 'inp') {
       for (const scenario of scenarios) {

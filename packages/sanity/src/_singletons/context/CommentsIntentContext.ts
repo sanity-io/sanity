@@ -1,6 +1,12 @@
 import {createContext} from 'sanity/_createContext'
 
-import type {CommentsIntentContextValue} from '../../core/comments/context/intent/types'
+import type {IntentParameters} from '../../router/types'
+
+type CommentsIntentContextValue = (comment: {
+  id: string
+  type: string
+  path: string
+}) => {title: string; name: string; params: IntentParameters} | undefined
 
 /**
  * @internal

@@ -46,6 +46,10 @@ export interface TrendRun {
         /** Per-scenario shard runner calibration (multi-shard CI runs only). */
         runner?: {calibrationMs: number | null; cpuModel?: string | null} | null
         kind: 'interaction' | 'pageload'
+        /** Measurement mode discriminator (soak/inp/settle reuse the kinds). */
+        mode?: string | null
+        /** Settle mode only: `false` marks a red-by-design scenario. */
+        settleExpectation?: {expectedToSettle?: boolean | null} | null
         metrics:
           | {
               label: string
@@ -89,6 +93,8 @@ export const TREND_QUERY = `*[_type == "benchRun" && mode == "absolute"] | order
     sourceFile,
     runner{calibrationMs, cpuModel},
     kind,
+    mode,
+    settleExpectation{expectedToSettle},
     metrics[]{label, unit, experiment{summary{median, p75, p90}}},
     soak{minutes, samples[]{minute, heapMb, domNodes, listeners, latencyP50Ms, cpuTaskMs, connections, requests}}
   }
@@ -229,7 +235,14 @@ export function availableBranches(runs: TrendRun[]): string[] {
   })
 }
 
-export type TrendGroup = 'vitals' | 'responsiveness' | 'load' | 'bundle' | 'soak' | 'environment'
+export type TrendGroup =
+  | 'vitals'
+  | 'responsiveness'
+  | 'load'
+  | 'bundle'
+  | 'soak'
+  | 'settle'
+  | 'environment'
 
 /**
  * The soak sample fields we chart, with display metadata. A constant,
@@ -346,6 +359,17 @@ export const TREND_GROUPS: {id: TrendGroup; title: string; description: string}[
       'One long session typing continuously into a self-erasing document. Every line should stay flat. An upward slope is a leak or degradation over time.',
   },
   {
+    id: 'settle',
+    title: 'Settle',
+    description:
+      'How long after opening a scenario until the studio goes quiet — no React commits, long ' +
+      'animation frames, or instrumented render marks for a full quiet window. Catches render ' +
+      'loops and other runaway work: "sessions not settled" should stay flat at zero, except ' +
+      'red-by-design scenarios exercising a known unfixed footgun, which chart a constant ' +
+      'non-zero line until the fix lands (and warn when it does). Measured against the ' +
+      'customization build (perf/bench/studio-customizations). Lower is better on every series.',
+  },
+  {
     id: 'environment',
     title: 'Calibration',
     description: `${CALIBRATION_EXPLAINER} Every number in the other tabs depends on how fast the host was, so check here before trusting a spike.`,
@@ -360,7 +384,69 @@ export const TREND_GROUPS: {id: TrendGroup; title: string; description: string}[
 function describeSeries(
   kind: 'interaction' | 'pageload',
   label: string,
+  mode?: string | null,
 ): Pick<TrendSeries, 'description' | 'goal' | 'group' | 'goodThreshold'> {
+  if (mode === 'settle') {
+    if (label === 'sessions not settled') {
+      return {
+        group: 'settle',
+        description:
+          'Sessions that never reached a full quiet window (or never became ready) — the ' +
+          'render-loop tripwire. Zero when healthy; a constant line on red-by-design scenarios.',
+        goal: 'lower',
+      }
+    }
+    if (label === 'sessions without commit counter') {
+      return {
+        group: 'settle',
+        description:
+          'Sessions where the React commit counter (a DevTools-hook stub) failed to attach — ' +
+          'the primary signal went dark, so commit counts read as zero. Must stay at zero; ' +
+          'anything else means react-dom changed the hook contract, not that the studio got quieter.',
+        goal: 'lower',
+      }
+    }
+    if (label === 'time to settle') {
+      return {
+        group: 'settle',
+        description:
+          'From the scenario becoming ready until its last activity before a full quiet window. ' +
+          'Settled sessions only.',
+        goal: 'lower',
+      }
+    }
+    if (label === 'react commits after ready') {
+      return {
+        group: 'settle',
+        description:
+          'React render cycles committed after readiness (counted via the DevTools hook) — the ' +
+          'loop magnitude, visible even when each frame is too cheap for a long animation frame.',
+        goal: 'lower',
+      }
+    }
+    if (label === 'LoAF blocking after ready') {
+      return {
+        group: 'settle',
+        description: 'Long-animation-frame blocking time after readiness.',
+        goal: 'lower',
+      }
+    }
+    if (label === 'cpu after ready') {
+      return {
+        group: 'settle',
+        description: 'Main-thread task time between readiness and the settle verdict (CDP).',
+        goal: 'lower',
+      }
+    }
+    if (label.startsWith('renders · ')) {
+      return {
+        group: 'settle',
+        description: `Render count of the instrumented ${label.slice('renders · '.length)} component after readiness (bench:render mark).`,
+        goal: 'lower',
+      }
+    }
+    return {group: 'settle', description: label, goal: 'lower'}
+  }
   if (label.includes('time to editable')) {
     return {
       group: 'load',
@@ -1055,19 +1141,40 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
         (metric) => metric.label === 'INP interactions',
       )?.experiment?.summary?.median
       const scenarioMeta = shardMeta(run, scenario.runner)
+      const redByDesign = scenario.settleExpectation?.expectedToSettle === false
       for (const metric of scenario.metrics ?? []) {
         if (metric.label === 'INP interactions') continue
         // Older documents carry a TTFB metric; skip it. Against the local
         // mock it is a 2–10ms constant of the bench setup, not a studio
         // signal, and the bench does not store it anymore.
         if (metric.label.endsWith('TTFB')) continue
+        // Per-session 0/1 records behind the 'sessions not settled' count —
+        // a median over them hides a single failing session, so the count
+        // series carries the signal and these stay out of the charts.
+        if (
+          scenario.mode === 'settle' &&
+          (metric.label === 'settled sessions' || metric.label === 'ready sessions')
+        ) {
+          continue
+        }
         const summary = metric.experiment?.summary
         if (!summary) continue
+        const meta = describeSeries(scenario.kind, metric.label, scenario.mode)
         push(
-          `${scenario.kind}:${scenario.scenario}:${metric.label}`,
+          // Settle reuses kind 'pageload'; the mode keeps its keys from ever
+          // colliding with a real pageload metric of the same scenario.
+          `${scenario.mode === 'settle' ? 'settle' : scenario.kind}:${scenario.scenario}:${metric.label}`,
           `${scenario.scenario} · ${metric.label}`,
           metric.unit,
-          {...describeSeries(scenario.kind, metric.label), sourceFile: scenario.sourceFile},
+          {
+            ...meta,
+            ...(scenario.mode === 'settle' && redByDesign
+              ? {
+                  description: `${meta.description} RED BY DESIGN: this scenario exercises a known unfixed render-loop footgun (expectedToSettle: false) — its non-zero line is the standing evidence, and the bench warns when a fix lands.`,
+                }
+              : {}),
+            sourceFile: scenario.sourceFile,
+          },
           run,
           {
             value: summary.median,
@@ -1167,6 +1274,81 @@ export function vitalSections(list: TrendSeries[]): VitalSection[] {
   const leftover = list.filter((entry) => !matched.has(entry)).sort(byTitle)
   if (leftover.length > 0) sections.push({vital: 'Other', series: leftover})
   return sections.filter((section) => section.series.length > 0)
+}
+
+export interface SettleView {
+  id: 'tripwire' | 'time' | 'activity' | 'renders' | 'other'
+  label: string
+  /** One-line reading guide shown above the view's charts. */
+  hint: string
+  series: TrendSeries[]
+}
+
+/** The metric label behind a settle series key (`settle:<scenario>:<label>`). */
+function settleLabel(entry: TrendSeries): string {
+  return entry.key.split(':').slice(2).join(':')
+}
+
+/**
+ * The settle group's sub-tabs, one per question: is anything looping (the
+ * per-scenario tripwire count), how long does settling take, how much work
+ * happens after readiness, and which instrumented components rendered.
+ * Like the soak views, empty ones are dropped; unknown labels land in
+ * "Other" so a new bench metric never silently vanishes.
+ */
+export function settleViews(list: TrendSeries[]): SettleView[] {
+  // Declaration order is tab order
+  const views: Record<SettleView['id'], SettleView> = {
+    tripwire: {
+      id: 'tripwire',
+      label: 'Sessions not settled',
+      hint: 'Sessions per run that never went quiet, and sessions whose commit counter never attached. Flat zero is healthy; red-by-design scenarios sit at a constant non-zero line.',
+      series: [],
+    },
+    time: {
+      id: 'time',
+      label: 'Time to settle',
+      hint: 'From ready until the last activity before a full quiet window — settled sessions only.',
+      series: [],
+    },
+    activity: {
+      id: 'activity',
+      label: 'Activity after ready',
+      hint: 'Work done after readiness: React commits, long-animation-frame blocking and main-thread CPU.',
+      series: [],
+    },
+    renders: {
+      id: 'renders',
+      label: 'Component renders',
+      hint: 'Render counts of the instrumented workspace components after readiness (bench:render marks).',
+      series: [],
+    },
+    other: {
+      id: 'other',
+      label: 'Other',
+      hint: 'Settle metrics without a dedicated view.',
+      series: [],
+    },
+  }
+  for (const entry of list) {
+    const label = settleLabel(entry)
+    const id: SettleView['id'] =
+      label === 'sessions not settled' || label === 'sessions without commit counter'
+        ? 'tripwire'
+        : label === 'time to settle'
+          ? 'time'
+          : label === 'react commits after ready' ||
+              label === 'LoAF blocking after ready' ||
+              label === 'cpu after ready'
+            ? 'activity'
+            : label.startsWith('renders · ')
+              ? 'renders'
+              : 'other'
+    views[id].series.push(entry)
+  }
+  return Object.values(views)
+    .filter((view) => view.series.length > 0)
+    .map((view) => ({...view, series: [...view.series].sort(byTitle)}))
 }
 
 /** The honesty overlay: host-speed score per run (higher = slower host). */

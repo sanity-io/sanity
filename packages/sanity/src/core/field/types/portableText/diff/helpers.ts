@@ -18,8 +18,8 @@ import {
   type SchemaType,
   type SpanSchemaType,
 } from '@sanity/types'
+import {dequal as isEqual} from 'dequal/lite'
 import flatten from 'lodash-es/flatten.js'
-import isEqual from 'lodash-es/isEqual.js'
 import orderBy from 'lodash-es/orderBy.js'
 
 import {

@@ -218,6 +218,20 @@ jobs:
             e2e/results
           retention-days: 30
 
+      # The studio diagnostics captured on failed attempts, without the videos and
+      # traces, so `pnpm e2e:flake-report` can aggregate weeks of runs cheaply.
+      - name: Extract failure diagnostics
+        if: always()
+        run: pnpm --filter e2e extract-diagnostics
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: e2e-diagnostics-${{ matrix.project }}-${{ matrix.shardIndex }}
+          path: e2e/diagnostics
+          if-no-files-found: ignore
+          retention-days: 90
+
   chromatic-e2e:
     name: Chromatic E2E visual tests
     timeout-minutes: 15
@@ -236,6 +250,9 @@ jobs:
         with:
           # Chromatic needs full git history to find baseline builds.
           fetch-depth: 0
+          # The PR branch, not GitHub's merge commit, so Chromatic can find the
+          # commits it compares: https://www.chromatic.com/docs/turbosnap/best-practices/
+          ref: ${{ github.event.pull_request.head.ref }}
 
       - uses: ./.github/actions/setup
 
@@ -247,13 +264,18 @@ jobs:
           path: chromatic-artifacts
 
       - name: Upload archives to Chromatic
+        uses: chromaui/action@2a0b63f30233c48591844a46d451b9cf68128186 # v18.7.2
         env:
-          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN_E2E }}
           # Playwright's outputDir is e2e/results, and the test artifacts
           # preserve the results/ folder (which contains chromatic-archives/),
           # so point the Chromatic CLI at the merged copy.
           CHROMATIC_ARCHIVE_LOCATION: ${{ github.workspace }}/chromatic-artifacts/results
-        run: pnpm --filter e2e exec chromatic --playwright --exit-zero-on-changes --auto-accept-changes main
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN_E2E }}
+          workingDir: e2e
+          playwright: true
+          exitZeroOnChanges: true
+          autoAcceptChanges: main
 
   e2e-status:
     name: "E2E Status"
@@ -278,7 +300,7 @@ jobs:
           fi
 
   merge-reports:
-    needs: [playwright-test]
+    needs: [playwright-test, deploy-preview]
     if: "!cancelled() && needs.playwright-test.result != 'skipped'"
     runs-on: ubuntu-latest
     outputs:
@@ -301,6 +323,14 @@ jobs:
           path: all-blob-reports
 
       - name: Merge into HTML Report
+        env:
+          # Used by e2e/reporters/summary.ts to embed the exact local repro command
+          # in the agent-friendly failure report (agent-report.md).
+          SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}
+          SANITY_E2E_BASE_URL: ${{ needs.deploy-preview.outputs.preview_url }}
+          SANITY_E2E_DATASET: ${{ env.CHROMIUM_DATASET }}
+          SANITY_E2E_DATASET_CHROMIUM: ${{ env.CHROMIUM_DATASET }}
+          SANITY_E2E_DATASET_FIREFOX: ${{ env.FIREFOX_DATASET }}
         run: pnpm exec playwright merge-reports --reporter html,./e2e/reporters/summary.ts all-blob-reports/blob-report
 
       - name: Extract test summary
@@ -326,6 +356,14 @@ jobs:
               process.stdout.write('ENDOFFILES\n');
             }
           " >> $GITHUB_OUTPUT
+
+      - name: Append failure digest to job summary
+        if: ${{ !cancelled() && steps.summary.outputs.failed != '0' && steps.summary.outputs.failed != '' }}
+        run: |
+          if [ -f playwright-report/agent-report.md ]; then
+            # GITHUB_STEP_SUMMARY is limited to 1MB; keep a safety margin.
+            head -c 900000 playwright-report/agent-report.md >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Upload HTML report
         id: upload-playwright-report
@@ -394,6 +432,21 @@ jobs:
             if (s.flaky) parts.push('[🟡 ' + s.flaky + ' flaky](' + u + '#?q=s%3Aflaky)');
             if (s.skipped) parts.push('([⚪ ' + s.skipped + ' skipped](' + u + '#?q=s%3Askipped))');
             console.log('text=' + parts.join(' • ') + ' • [view full report](' + u + ')');
+            if (u && s.failed) {
+              // Fenced so GitHub shows a one-click copy button for the whole prompt.
+              // String.fromCharCode avoids bash interpreting backticks in this double-quoted node -e.
+              const fence = String.fromCharCode(96).repeat(3);
+              const block = [
+                '🤖 **Share with an AI agent:**',
+                '',
+                fence,
+                'Fix the failing e2e tests. The failure report with error messages and page snapshots is at ' + u + '/agent-report.md',
+                fence,
+              ].join('\n');
+              process.stdout.write('agent_block<<ENDOFAGENTBLOCK\n' + block + '\nENDOFAGENTBLOCK\n');
+            } else {
+              console.log('agent_block=');
+            }
           " >> $GITHUB_OUTPUT
 
       - name: Update PR Comment (tests passed)
@@ -417,6 +470,8 @@ jobs:
             ### ❌ E2E Tests
 
             ${{ steps.linked-summary.outputs.text }} • [view run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+            ${{ steps.linked-summary.outputs.agent_block }}
 
             <details>
             <summary>Debug failing tests locally</summary>

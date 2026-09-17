@@ -17,6 +17,16 @@ const documentTransactionsCache: Record<
 // Transactions are in an order, so if we have [rev4, rev3, rev2] and we already got [rev4, rev3] we can just get the diff between rev3 and rev2 and increment it.
 
 /**
+ * Clears the module-level transactions cache. Exposed for tests.
+ * @internal
+ */
+export function clearDocumentTransactionsCache(): void {
+  for (const key of Object.keys(documentTransactionsCache)) {
+    delete documentTransactionsCache[key]
+  }
+}
+
+/**
  * Fetches the translog transactions for `documentId` between two revisions, transparently
  * paginating past the 50-entries-per-request API limit.
  *
@@ -27,9 +37,9 @@ const documentTransactionsCache: Record<
  *   fetched recursively starting from the last received id — unless `toTransaction` was already
  *   reached. With no `toTransaction`, pagination continues to the present (an empty
  *   `fromTransaction` therefore walks the entire translog — tracked as a known issue).
- * - Results are cached module-level per `documentId-toTransaction-fromTransaction`; the cache is
- *   only *read* for closed ranges (`toTransaction` defined — those are immutable), but writes
- *   happen for open ranges too.
+ * - Results are cached module-level per `projectId:dataset:documentId-toTransaction-fromTransaction`;
+ *   the cache is only *read* for closed ranges (`toTransaction` defined — those are immutable),
+ *   but writes happen for open ranges too.
  *
  * Known quirk: the cache never evicts (tracked as known issues).
  */
@@ -44,7 +54,8 @@ export async function getDocumentTransactions({
   toTransaction?: string
   fromTransaction: string
 }): Promise<(TransactionLogEventWithEffects & TransactionLogEventWithMutations)[]> {
-  const cacheKey = `${documentId}-${toTransaction}-${fromTransaction}`
+  const {projectId, dataset} = client.config()
+  const cacheKey = `${projectId}:${dataset}:${documentId}-${toTransaction}-${fromTransaction}`
   if (documentTransactionsCache[cacheKey] && typeof toTransaction !== 'undefined') {
     return documentTransactionsCache[cacheKey]
   }

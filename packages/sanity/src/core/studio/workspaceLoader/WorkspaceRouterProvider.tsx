@@ -1,5 +1,5 @@
+import {dequal as isEqual} from 'dequal/lite'
 import escapeRegExp from 'lodash-es/escapeRegExp.js'
-import isEqual from 'lodash-es/isEqual.js'
 import {
   type ComponentType,
   type ReactNode,

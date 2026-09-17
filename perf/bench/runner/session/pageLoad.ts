@@ -1,9 +1,11 @@
-import {type Browser, type Page} from 'playwright'
+import {type Browser} from 'playwright'
 
 import {type BenchScenario} from '../../scenarios/types'
 import {type AttachedPage, attachPage, createSessionContext} from '../browser'
 import {type RunningSide} from '../servers'
-import {HERMETICITY_HINT, SessionError} from './interaction'
+import {SessionError} from './errors'
+import {HERMETICITY_HINT} from './interaction'
+import {awaitReadiness, scenarioUrl} from './navigation'
 
 export type LoadCondition = 'boot-cold' | 'open-doc-warm'
 
@@ -198,15 +200,11 @@ async function measureLoad(options: {
   await page.addInitScript(instrumentation)
   await page.goto(url, {waitUntil: 'domcontentloaded', timeout: config.readinessTimeoutMs})
 
-  await page
-    .locator('[data-testid="form-view"]:not([data-read-only="true"])')
-    .waitFor({state: 'visible', timeout: config.readinessTimeoutMs})
-    .catch(() => {
-      throw new SessionError('readiness-timeout', `form never became editable (${condition})`, [
-        ...attached.consoleErrors,
-        ...attached.httpErrors,
-      ])
-    })
+  await awaitReadiness(page, scenario, {
+    timeoutMs: config.readinessTimeoutMs,
+    context: condition,
+    diagnostics: () => [...attached.consoleErrors, ...attached.httpErrors],
+  })
 
   const firstField = scenario.interactions[0]
   const input = page
@@ -302,7 +300,7 @@ export async function runPageLoadSample(options: {
   })
   const {context} = session
 
-  const url = `${running.studioUrl}/${scenario.workspace ?? scenario.name}/intent/edit/id=${encodeURIComponent(scenario.documentId)};type=${encodeURIComponent(scenario.documentType)}`
+  const url = scenarioUrl(running.studioUrl, scenario)
 
   try {
     await applyNetworkEmulation(session, config.network)

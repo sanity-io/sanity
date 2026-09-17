@@ -1,7 +1,7 @@
 import {BinaryDocumentIcon} from '@sanity/icons/BinaryDocument'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {type ReactNode, type RefObject} from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {formatBytes} from '../../common/helper'
 import {AccessPolicyBadge} from '../common/AccessPolicyBadge'
@@ -36,7 +36,7 @@ export function FileActionsMenu(props: Props) {
   } = props
 
   return (
-    <Flex wrap="nowrap" justify="space-between" align="center">
+    <Flex flexWrap="nowrap" justifyContent="space-between" alignItems="center">
       <Card
         as={muted || disabled ? undefined : 'button'}
         radius={2}
@@ -46,7 +46,7 @@ export function FileActionsMenu(props: Props) {
         flex={1}
       >
         {/* todo: consider replacing with <SanityDefaultPreview> */}
-        <Flex wrap="nowrap" align="center">
+        <Flex flexWrap="nowrap" alignItems="center">
           <Card padding={3} tone="transparent" shadow={1} radius={1}>
             <Text muted={muted}>
               <BinaryDocumentIcon />
@@ -70,7 +70,7 @@ export function FileActionsMenu(props: Props) {
       </Card>
 
       <Box padding={2}>
-        <Flex justify="center" gap={2}>
+        <Flex justifyContent="center" gap={2}>
           {accessPolicy === 'private' && <AccessPolicyBadge />}
           <OptionsMenuPopover
             // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals -- it's a translation key, not an attribute string literal

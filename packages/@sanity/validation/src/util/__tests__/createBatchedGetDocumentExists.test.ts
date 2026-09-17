@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {from, map, of} from 'rxjs'
+import {from, map, Observable, of, Subject} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 
 import {
@@ -90,5 +90,109 @@ describe('createBatchedGetDocumentExists', () => {
     const results = await resultsPromise
     expect(results.every((result) => result === true))
     expect(mockClient.observable.request).toHaveBeenCalledTimes(MAX_REQUEST_CONCURRENCY + 1)
+  })
+
+  it('does not request an already-aborted check', async () => {
+    const reason = new Error('cancelled')
+    const mockClient = {
+      getDataUrl: (operation: string, path?: string) => `https://example.com/${operation}/${path}`,
+      observable: {
+        request: vi.fn(() => of({omitted: []})),
+      },
+    }
+    const getDocumentExists = createBatchedGetDocumentExists(mockClient as unknown as SanityClient)
+
+    await expect(
+      getDocumentExists({id: 'cancelled', signal: AbortSignal.abort(reason)}),
+    ).rejects.toBe(reason)
+    await timeout(300)
+
+    expect(mockClient.observable.request).not.toHaveBeenCalled()
+  })
+
+  it('does not abort unrelated checks before their requests start', async () => {
+    const controller = new AbortController()
+    const reason = new Error('cancelled')
+    const mockClient = {
+      getDataUrl: (operation: string, path?: string) => `https://example.com/${operation}/${path}`,
+      observable: {
+        request: vi.fn(() => of({omitted: []})),
+      },
+    }
+    const getDocumentExists = createBatchedGetDocumentExists(mockClient as unknown as SanityClient)
+
+    const cancelled = getDocumentExists({id: 'cancelled', signal: controller.signal})
+    const active = getDocumentExists({id: 'active'})
+    controller.abort(reason)
+
+    await expect(cancelled).rejects.toBe(reason)
+    await expect(active).resolves.toBe(true)
+    expect(mockClient.observable.request).toHaveBeenCalledOnce()
+    expect(mockClient.observable.request).toHaveBeenCalledWith(
+      expect.objectContaining({signal: undefined}),
+    )
+  })
+
+  it('cancels one caller without aborting a shared request', async () => {
+    const controller = new AbortController()
+    const reason = new Error('cancelled')
+    const response$ = new Subject<{
+      omitted: {id: string; reason: 'existence' | 'permission'}[]
+    }>()
+    const mockClient = {
+      getDataUrl: (operation: string, path?: string) => `https://example.com/${operation}/${path}`,
+      observable: {
+        request: vi.fn(() => response$),
+      },
+    }
+    const getDocumentExists = createBatchedGetDocumentExists(mockClient as unknown as SanityClient)
+
+    const cancelled = getDocumentExists({id: 'cancelled', signal: controller.signal})
+    const active = getDocumentExists({id: 'active'})
+    await vi.waitFor(() => expect(mockClient.observable.request).toHaveBeenCalledOnce())
+    controller.abort(reason)
+
+    await expect(cancelled).rejects.toBe(reason)
+    response$.next({omitted: []})
+    response$.complete()
+    await expect(active).resolves.toBe(true)
+    expect(mockClient.observable.request).toHaveBeenCalledOnce()
+    expect(mockClient.observable.request).toHaveBeenCalledWith(
+      expect.objectContaining({signal: undefined}),
+    )
+  })
+
+  it('cancels active and queued batches with the default signal', async () => {
+    const controller = new AbortController()
+    const reason = new Error('validation cancelled')
+    const unsubscribe = vi.fn()
+    const mockClient = {
+      getDataUrl: (operation: string, path?: string) => `https://example.com/${operation}/${path}`,
+      observable: {
+        request: vi.fn(
+          () =>
+            new Observable(() => {
+              return unsubscribe
+            }),
+        ),
+      },
+    }
+    const getDocumentExists = createBatchedGetDocumentExists(
+      mockClient as unknown as SanityClient,
+      controller.signal,
+    )
+    const checks = Promise.all(
+      Array.from({length: MAX_BUFFER_SIZE + 1}, (_, index) =>
+        getDocumentExists({id: index.toString()}),
+      ),
+    )
+    await vi.waitFor(() => expect(mockClient.observable.request).toHaveBeenCalledOnce())
+
+    controller.abort(reason)
+
+    await expect(checks).rejects.toBe(reason)
+    expect(unsubscribe).toHaveBeenCalledOnce()
+    await timeout(300)
+    expect(mockClient.observable.request).toHaveBeenCalledOnce()
   })
 })

@@ -82,6 +82,7 @@ export type ProjectGrants = Record<
 export interface ProjectStore {
   get: () => Observable<ProjectData>
   getDatasets: () => Observable<ProjectDatasetData[]>
+  getProjectName: () => Observable<string | null>
   getOrganizationData: () => Observable<ProjectOrganizationData | null>
   getOrganizationId: () => Observable<string | null>
   getGrants: () => Observable<ProjectGrants>

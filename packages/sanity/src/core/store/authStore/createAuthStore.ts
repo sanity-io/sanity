@@ -5,7 +5,7 @@ import {
   type SanityClient,
 } from '@sanity/client'
 import {type CurrentUser} from '@sanity/types'
-import isEqual from 'lodash-es/isEqual.js'
+import {dequal as isEqual} from 'dequal/lite'
 import memoize from 'lodash-es/memoize.js'
 import {
   concat,

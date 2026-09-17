@@ -1,4 +1,5 @@
 export {
+  fetchAccessRequestStatus,
   listMyAccessRequests,
   MAX_ACCESS_REQUEST_NOTE_LENGTH,
   submitAccessRequest,
@@ -14,6 +15,7 @@ export {
 export {
   type AccessRequest,
   type AccessRequestState,
+  type AccessRequestEligibilityState,
   type AccessResourceType,
   type AccessUser,
   type SubmitAccessRequestResult,

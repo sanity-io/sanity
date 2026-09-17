@@ -1,3 +1,4 @@
+import {bisectSessionId} from '@repo/utils/radar-ids'
 import {type Patch} from '@sanity/client'
 import {type SanityClient} from 'sanity'
 
@@ -13,6 +14,8 @@ export interface NewSessionInput {
   good: {sha: string; label?: string}
   bad: {sha: string; label?: string}
   releasesOnly?: boolean
+  /** Already normalized (tools/bisect/reproPath.ts) — stored as-is. */
+  reproPath?: string
   createdBy: string
 }
 
@@ -28,12 +31,13 @@ function endpointLabel(endpoint: {sha: string; label?: string}): string {
 
 export async function createSession(client: SanityClient, input: NewSessionInput): Promise<string> {
   const created = await client.create({
-    _id: `bisectSession-${crypto.randomUUID()}`,
+    _id: bisectSessionId(crypto.randomUUID()),
     _type: 'bisectSession',
     title: `${endpointLabel(input.good)} → ${endpointLabel(input.bad)}`,
     good: input.good,
     bad: input.bad,
     ...(input.releasesOnly ? {releasesOnly: true} : {}),
+    ...(input.reproPath ? {reproPath: input.reproPath} : {}),
     marks: [],
     createdAt: new Date().toISOString(),
     createdBy: input.createdBy,
@@ -54,7 +58,7 @@ export interface ManualRegressionInput {
 }
 
 /**
- * A regression reported by hand from the Studio Releases tool — no bisect was
+ * A regression reported by hand from the Studio releases tool — no bisect was
  * run, only the introducing release is known. Stored as a bisectSession that
  * is converged from birth: releases-only endpoints at the blamed release and
  * its base, no marks, and the verdict written at creation. That keeps one
@@ -66,7 +70,7 @@ export async function reportRegression(
   input: ManualRegressionInput,
 ): Promise<string> {
   const created = await client.create({
-    _id: `bisectSession-${crypto.randomUUID()}`,
+    _id: bisectSessionId(crypto.randomUUID()),
     _type: 'bisectSession',
     title: `${endpointLabel(input.good)} → ${endpointLabel(input.bad)}`,
     good: input.good,

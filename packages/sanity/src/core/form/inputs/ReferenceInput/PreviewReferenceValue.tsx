@@ -1,9 +1,9 @@
 import {AccessDeniedIcon} from '@sanity/icons/AccessDenied'
 import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {type Reference, type ReferenceSchemaType} from '@sanity/types'
-import {Badge, Flex, Inline, Stack, Text} from '@sanity/ui'
+import {Badge, Inline, Stack, Text} from '@sanity/ui'
 import {type ComponentType, Fragment, type ReactNode} from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {type PreviewLayoutKey} from '../../../components/previews/types'
@@ -60,7 +60,7 @@ export function PreviewReferenceValue(props: {
       : value
 
     return (
-      <Flex align="center">
+      <Flex alignItems="center">
         <Box flexBasis="0%" flexGrow={1}>
           {renderPreview({
             layout,
@@ -84,7 +84,7 @@ export function PreviewReferenceValue(props: {
     return (
       <Inline gap={2}>
         <Box padding={1}>
-          <Flex align="center">
+          <Flex alignItems="center">
             <Box flexBasis="0%" flexGrow={1} paddingY={2}>
               <Text muted>{t('inputs.reference.error.document-unavailable-title')}</Text>
             </Box>
@@ -187,9 +187,9 @@ function InvalidType({
   const {t} = useTranslation()
 
   return (
-    <Flex align="center" justify="flex-start">
+    <Flex alignItems="center" justifyContent="flex-start">
       <Box padding={1}>
-        <Flex align="center">
+        <Flex alignItems="center">
           <Box flexBasis="0%" flexGrow={1} paddingY={2}>
             <Text muted>{t('inputs.reference.error.invalid-type-title')}</Text>
           </Box>

@@ -184,7 +184,7 @@ describe('documentIdForRun', () => {
   // doc per run so the time series accumulates
 
   it('gives a PR run a per-PR id (latest push overwrites)', () => {
-    expect(documentIdForRun(AB_RUN)).toBe('benchRun-pr-777')
+    expect(documentIdForRun(AB_RUN)).toBe('bench-run-pr-777')
   })
 
   it('gives a main run a per-run id (sha + CI run id) so the series accumulates', () => {
@@ -192,7 +192,7 @@ describe('documentIdForRun', () => {
       ...AB_RUN,
       git: {sha: 'abcdef1234567890', branch: 'main'},
     }
-    expect(documentIdForRun(mainRun)).toBe('benchRun-abcdef1234567890-424242')
+    expect(documentIdForRun(mainRun)).toBe('bench-run-abcdef1234567890-424242')
   })
 
   it('falls back to a local suffix without a CI run id', () => {
@@ -201,6 +201,6 @@ describe('documentIdForRun', () => {
       git: {sha: 'abcdef1234567890', branch: 'main'},
       runner: {...AB_RUN.runner, runId: undefined},
     }
-    expect(documentIdForRun(localRun)).toBe('benchRun-abcdef1234567890-local')
+    expect(documentIdForRun(localRun)).toBe('bench-run-abcdef1234567890-local')
   })
 })

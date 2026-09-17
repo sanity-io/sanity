@@ -4,7 +4,8 @@ import {
   type PropsWithChildren,
   type SetStateAction,
 } from 'react'
-import {type CommentIntentGetter, CommentsIntentProvider, type SanityDocument} from 'sanity'
+import {type CommentIntentGetter, type SanityDocument} from 'sanity'
+import {CommentsIntentContext} from 'sanity/_singletons'
 
 import {ContentEditor} from './editor/ContentEditor'
 import {DisplayedDocumentBroadcasterProvider} from './loader/DisplayedDocumentBroadcaster'
@@ -63,9 +64,9 @@ const PresentationContentWrapper: FunctionComponent<
           documentId={documentId}
           setDisplayedDocument={setDisplayedDocument}
         >
-          <CommentsIntentProvider getIntent={getCommentIntent}>
+          <CommentsIntentContext.Provider value={getCommentIntent}>
             {props.children}
-          </CommentsIntentProvider>
+          </CommentsIntentContext.Provider>
         </DisplayedDocumentBroadcasterProvider>
       </Panel>
     </>

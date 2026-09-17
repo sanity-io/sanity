@@ -242,6 +242,84 @@ describe('renderMarkdownReport', () => {
     expect(renderMarkdownReport(RUN)).not.toContain('Missing results')
   })
 
+  it('renders no settle section for runs without settle reports', () => {
+    // Load-bearing: settle rendering must be strictly conditional so existing
+    // reports (and this file's snapshot) stay byte-identical.
+    expect(renderMarkdownReport(RUN)).not.toContain('Settle')
+  })
+
+  it('renders settle scenarios with their expectation, warning on mismatches both ways', () => {
+    const settledSessions = (values: number[]): MetricReport => ({
+      label: 'settled sessions',
+      unit: 'count',
+      presentAsEfps: false,
+      experiment: {
+        sessions: values.map((value) => [value]),
+        summary: {n: values.length, median: 1, p75: 1, p90: 1, p99: 1, min: 0, max: 1},
+      },
+    })
+    const settleRun: BenchRunDocument = {
+      ...RUN,
+      mode: 'absolute',
+      scenarios: [
+        {
+          scenario: 'previewHeavy',
+          kind: 'pageload',
+          mode: 'settle',
+          settleExpectation: {expectedToSettle: true},
+          metrics: [settledSessions([1, 1])],
+          failures: [],
+          interruptions: {experiment: {count: 0, totalMs: 0}},
+          loafAttribution: [],
+        },
+        {
+          scenario: 'customInputs',
+          kind: 'pageload',
+          mode: 'settle',
+          settleExpectation: {expectedToSettle: true},
+          metrics: [settledSessions([1, 0])],
+          failures: [],
+          interruptions: {experiment: {count: 0, totalMs: 0}},
+          loafAttribution: [],
+        },
+        {
+          scenario: 'documentActions',
+          kind: 'pageload',
+          mode: 'settle',
+          settleExpectation: {expectedToSettle: false},
+          metrics: [settledSessions([0, 0])],
+          failures: [],
+          interruptions: {experiment: {count: 0, totalMs: 0}},
+          loafAttribution: [],
+        },
+        {
+          scenario: 'listenQueryPane',
+          kind: 'pageload',
+          mode: 'settle',
+          settleExpectation: {expectedToSettle: false},
+          metrics: [settledSessions([1, 1])],
+          failures: [],
+          interruptions: {experiment: {count: 0, totalMs: 0}},
+          loafAttribution: [],
+        },
+      ],
+    }
+    const report = renderMarkdownReport(settleRun)
+    expect(report).toContain('**Settle** (post-open quiescence):')
+    // Green scenario meeting its expectation: no warning
+    expect(report).toContain('`previewHeavy` settled 2/2 session(s) — expected: settles')
+    expect(report).not.toMatch(/`previewHeavy`.*mismatch/)
+    // Green scenario with a non-settling session: regression warning
+    expect(report).toMatch(/`customInputs` settled 1\/2.*expectation mismatch/)
+    // Red-by-design scenario staying red: no warning
+    expect(report).toContain(
+      '`documentActions` settled 0/2 session(s) — expected: does not settle (known bug)',
+    )
+    expect(report).not.toMatch(/`documentActions`.*mismatch/)
+    // Red-by-design scenario that now settles: flag is stale — warn
+    expect(report).toMatch(/`listenQueryPane` settled 2\/2.*expectation mismatch/)
+  })
+
   it('renders absolute mode without comparison columns', () => {
     const absolute: BenchRunDocument = {
       ...RUN,
@@ -310,6 +388,23 @@ describe('mergeShards', () => {
       calibrationMs: 19,
       cpuModel: 'Intel Xeon 8370C',
     })
+  })
+
+  it('does not treat a settle report as a duplicate of a pageload report', () => {
+    // Both reports describe singleString with kind 'pageload'; the settle
+    // mode discriminator is what keeps their merge keys distinct.
+    const settleShard: BenchRunDocument = {
+      ...shardTwo,
+      scenarios: [
+        {
+          ...RUN.scenarios[2],
+          mode: 'settle',
+          settleExpectation: {expectedToSettle: true},
+        },
+      ],
+    }
+    const merged = mergeShards([RUN, settleShard])
+    expect(merged.scenarios).toHaveLength(RUN.scenarios.length + 1)
   })
 
   it('fails loudly on duplicate scenario reports (they would collide as stored _keys)', () => {

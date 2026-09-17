@@ -1,8 +1,8 @@
 import {ToggleArrowRightIcon} from '@sanity/icons/ToggleArrowRight'
-import {Flex, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
 import {styled} from 'styled-components'
-import {Box, type MarginProps} from 'ui5'
+import {Flex, Box, type MarginProps} from 'ui5'
 
 interface DetailsProps extends MarginProps {
   children?: ReactNode
@@ -25,8 +25,8 @@ const HeaderButton = styled.button`
   outline: none;
 `
 
-const ToggleArrow = styled(ToggleArrowRightIcon)<{open: boolean}>`
-  transform: ${(props) => (props.open ? 'rotate(90deg)' : '')};
+const ToggleArrow = styled(ToggleArrowRightIcon)<{$open: boolean}>`
+  transform: ${(props) => (props.$open ? 'rotate(90deg)' : 'none')};
 `
 
 const Header = styled(Flex)`
@@ -58,10 +58,10 @@ export function Details(props: DetailsProps) {
     <Box {...restProps}>
       <HeaderButton type="button" onClick={handleToggle}>
         <Header>
-          <Flex align="center">
+          <Flex alignItems="center">
             <IconBox data-open={open ? '' : undefined}>
               <Text size={1}>
-                <ToggleArrow open={open} />
+                <ToggleArrow $open={open} />
               </Text>
             </IconBox>
             {icon && <Box marginLeft={1}>{icon}</Box>}

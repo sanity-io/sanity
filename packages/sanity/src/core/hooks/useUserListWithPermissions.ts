@@ -46,6 +46,7 @@ export type UserListWithPermissionsHookValue = Loadable<UserWithPermission[]> & 
  */
 export interface UserWithPermission extends User {
   granted: boolean
+  projectUserId?: string
 }
 
 const INITIAL_STATE: UserListWithPermissionsHookValue = {
@@ -120,6 +121,7 @@ export function useUserListWithPermissions(
         res.map((user) => ({
           displayName: user.displayName,
           id: user.id,
+          sanityUserId: user.sanityUserId,
           granted: false,
         })),
       ),

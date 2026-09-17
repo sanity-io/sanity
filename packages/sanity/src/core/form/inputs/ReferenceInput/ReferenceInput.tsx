@@ -1,16 +1,22 @@
 import {Stack, Text, useClickOutsideEvent} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {uuid} from '@sanity/uuid'
-import {type FocusEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
-import {useObservableEvent} from 'react-rx'
-import {concat, type Observable, of} from 'rxjs'
-import {catchError, filter, map, scan, switchMap, tap} from 'rxjs/operators'
+import {
+  type FocusEvent,
+  type KeyboardEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {ReferenceInputPreviewCard} from '../../../components/previewCard/PreviewCard'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
 import {usePerspective} from '../../../perspective/usePerspective'
+import {useSearchMachine} from '../../../search/useSearchMachine'
 import {getPublishedId} from '../../../util/draftUtils'
 import {isNonNullable} from '../../../util/isNonNullable'
 import {Alert} from '../../components/Alert'
@@ -26,21 +32,18 @@ import {
   type CreateReferenceOption,
   type ReferenceInputProps,
   type ReferenceSearchHit,
-  type ReferenceSearchState,
 } from './types'
 import {useReferenceInfo} from './useReferenceInfo'
 import {useReferenceInput} from './useReferenceInput'
 import {useReferenceItemRef} from './useReferenceItemRef'
 
-const INITIAL_SEARCH_STATE: ReferenceSearchState = {
-  hits: [],
-  isLoading: false,
-}
-
 const NO_FILTER = () => true
 
-function nonNullable<T>(v: T): v is NonNullable<T> {
-  return v !== null
+function isNodeInside(
+  node: EventTarget | Node | null,
+  containers: Array<Node | null | undefined>,
+): boolean {
+  return Boolean(node instanceof Node && containers.some((container) => container?.contains(node)))
 }
 
 interface AutocompleteOption {
@@ -74,7 +77,22 @@ export function ReferenceInput(props: ReferenceInputProps) {
     value,
   })
 
-  const [searchState, setSearchState] = useState<ReferenceSearchState>(INITIAL_SEARCH_STATE)
+  const {push} = useToast()
+  const {t} = useTranslation()
+
+  const {searchState, handleQueryChange} = useSearchMachine<ReferenceSearchHit>({
+    search: onSearch,
+    onSearchFailed: (error) => {
+      push({
+        title: t('inputs.reference.error.search-failed-title'),
+        description: error.message,
+        status: 'error',
+        id: `reference-search-fail-${id}`,
+      })
+
+      console.error(error)
+    },
+  })
 
   const handleCreateNew = useCallback(
     (option: CreateReferenceOption) => {
@@ -136,7 +154,14 @@ export function ReferenceInput(props: ReferenceInputProps) {
   const handleChange = useCallback(
     (nextId: string) => {
       if (!nextId) {
-        onChange(unset())
+        // Autocomplete X clears the search query so the user can type again.
+        if (value?._key) {
+          // It must not unset the whole object, just the `_ref` so the ref used in an array is not removed.
+          onChange(unset(['_ref']))
+        } else {
+          // If the reference is not used in an array, unset the whole object.
+          onChange(unset())
+        }
         onPathFocus([])
         return
       }
@@ -162,7 +187,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
       // Move focus away from _ref and one level up
       onPathFocus(path)
     },
-    [onChange, onPathFocus, schemaType.name, schemaType.weak, searchState.hits, path],
+    [onChange, onPathFocus, schemaType.name, schemaType.weak, searchState.hits, path, value?._key],
   )
 
   const handleClear = useCallback(() => {
@@ -182,41 +207,6 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
   const [autocompletePopoverReferenceElement, setAutocompletePopoverReferenceElement] =
     useState<HTMLDivElement | null>(null)
-
-  const {push} = useToast()
-  const {t} = useTranslation()
-
-  const handleQueryChange = useObservableEvent((inputValue$: Observable<string | null>) => {
-    return inputValue$.pipe(
-      filter(nonNullable),
-      switchMap((searchString) =>
-        concat(
-          of({isLoading: true}),
-          onSearch(searchString).pipe(
-            map((hits) => ({hits, searchString, isLoading: false})),
-            catchError((error) => {
-              push({
-                title: t('inputs.reference.error.search-failed-title'),
-                description: error.message,
-                status: 'error',
-                id: `reference-search-fail-${id}`,
-              })
-
-              console.error(error)
-              return of({hits: [], searchString, isLoading: false})
-            }),
-          ),
-        ),
-      ),
-
-      scan(
-        (prevState, nextState): ReferenceSearchState => ({...prevState, ...nextState}),
-        INITIAL_SEARCH_STATE,
-      ),
-
-      tap(setSearchState),
-    )
-  })
 
   const handleAutocompleteOpenButtonClick = useCallback(() => {
     handleQueryChange('')
@@ -256,14 +246,77 @@ export function ReferenceInput(props: ReferenceInputProps) {
     loadableReferenceInfo.result?.preview?.snapshot?.title,
   ])
 
+  // --- click outside / blur handling
+  const {menuRef, menuButtonRef, containerRef} = useReferenceItemRef()
+  const arrayItemRootElementRef = useArrayItemRootElementRef()
+  const clickOutsideBoundaryRef = useRef<HTMLDivElement>(null)
+  const autoCompletePortalRef = useRef<HTMLDivElement>(null)
+  const createButtonMenuPortalRef = useRef<HTMLDivElement>(null)
+
   const handleFocus = useCallback(() => onPathFocus(['_ref']), [onPathFocus])
+
+  // Everything that counts as "inside" the reference input for focus purposes.
+  // Mirrors the boundaries passed to useClickOutsideEvent below.
+  const getChromeElements = useCallback(
+    () => [
+      autocompletePopoverReferenceElement,
+      containerRef.current,
+      menuButtonRef.current,
+      menuRef.current,
+      autoCompletePortalRef.current,
+      createButtonMenuPortalRef.current,
+      clickOutsideBoundaryRef.current,
+      arrayItemRootElementRef?.current,
+    ],
+    [
+      arrayItemRootElementRef,
+      autocompletePopoverReferenceElement,
+      containerRef,
+      menuButtonRef,
+      menuRef,
+    ],
+  )
+
+  // Safari blurs the input on mousedown of a portaled option without moving
+  // focus (relatedTarget is null, activeElement is body). Remember whether
+  // that pointerdown was still inside the reference chrome so the deferred
+  // Autocomplete onBlur does not tear down the picker.
+  const pointerDownInsideChromeRef = useRef(false)
+  useEffect(() => {
+    const onPointerDown = (event: PointerEvent) => {
+      pointerDownInsideChromeRef.current = isNodeInside(event.target, getChromeElements())
+    }
+    // Reset on cancel too: a press that ends off-window or turns into a scroll
+    // never delivers pointerup, and a stuck flag would swallow the next real blur.
+    const onPointerEnd = () => {
+      pointerDownInsideChromeRef.current = false
+    }
+    document.addEventListener('pointerdown', onPointerDown, true)
+    document.addEventListener('pointerup', onPointerEnd, true)
+    document.addEventListener('pointercancel', onPointerEnd, true)
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown, true)
+      document.removeEventListener('pointerup', onPointerEnd, true)
+      document.removeEventListener('pointercancel', onPointerEnd, true)
+    }
+  }, [getChromeElements])
+
   const handleBlur = useCallback(
     (event: FocusEvent) => {
-      if (!autocompletePopoverReferenceElement?.contains(event.relatedTarget)) {
+      if (pointerDownInsideChromeRef.current) {
+        return
+      }
+      // Autocomplete calls onBlur after a timeout and checks document.activeElement,
+      // so relatedTarget can be stale or null by the time we run.
+      const chrome = getChromeElements()
+      if (
+        !isNodeInside(event.relatedTarget, chrome) &&
+        !isNodeInside(document.activeElement, chrome)
+      ) {
         props.elementProps.onBlur(event)
       }
     },
-    [autocompletePopoverReferenceElement, props.elementProps],
+    [getChromeElements, props.elementProps],
   )
 
   const isWeakRefToNonexistent =
@@ -287,29 +340,19 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
   const isEditing = focusPath.length === 1 && focusPath[0] === '_ref'
 
-  // --- click outside handling
-  const {menuRef, menuButtonRef, containerRef} = useReferenceItemRef()
-  const arrayItemRootElementRef = useArrayItemRootElementRef()
-  const clickOutsideBoundaryRef = useRef<HTMLDivElement>(null)
-  const autoCompletePortalRef = useRef<HTMLDivElement>(null)
-  const createButtonMenuPortalRef = useRef<HTMLDivElement>(null)
   useClickOutsideEvent(
-    // We only clear on clicks outside if the ref does not have a value yet
-    !value?._ref &&
+    // Empty references still clear on outside click. Valued references only
+    // exit replace mode while editing — a populated preview must not steal
+    // focus from another field.
+    (!value?._ref || isEditing) &&
       (() => {
-        // Handle clicks outside while the input is focused
-        if (isEditing) {
-          handleClear()
-        }
-        // And handle ReferenceItem clicks outside after clicking the context menu:
-        // 1. Click "+ Add item".
-        // 2. The empty reference has focus.
-        // 3. Click on the "••• Show more" button.
-        // 4. Focus leaves the empty reference autocomplete and moves to the menu.
-        // 5. Clicking outside of the menu should be handled as if `isEditing` were `true`
-        else if (document.activeElement === menuButtonRef.current) {
-          // If the menu button has focus when this event fires then it means the user clicked outside the menu and we should close
-          handleClear()
+        if (!value?._ref) {
+          // Handle clicks outside while the input is focused
+          if (isEditing || document.activeElement === menuButtonRef.current) {
+            handleClear()
+          }
+        } else {
+          onPathFocus([])
         }
       }),
     () => [

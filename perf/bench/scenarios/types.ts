@@ -31,6 +31,36 @@ export interface BenchScenario {
    * when several scenarios share one workspace (e.g. syntheticLarge).
    */
   workspace?: string
+  /**
+   * Workspace-relative route to open instead of the edit intent for the
+   * document under test — e.g. a custom structure pane (`structure/<itemId>`).
+   * The document fixture is still seeded; `documentId`/`documentType` keep
+   * identifying it.
+   */
+  path?: string
+  /**
+   * Readiness selector to wait for after navigation. Defaults to the editable
+   * document form (`DEFAULT_READY_SELECTOR` in runner/session/navigation.ts);
+   * set it for routes that don't render a document form, e.g. custom panes.
+   */
+  readySelector?: string
+  /**
+   * Settle-mode expectation (default true). `false` marks a scenario that is
+   * red BY DESIGN — it exercises a known, unfixed render-loop footgun, and
+   * its `settled: false` sessions are evidence, not failures: they don't
+   * exit non-zero and don't page the cron alert. The report warns on any
+   * expectation mismatch in either direction, so when the hook hardening
+   * lands the same PR must flip this flag.
+   */
+  expectedToSettle?: boolean
+  /**
+   * The scenario's workspace only exists in the customization build
+   * (`pnpm --filter bench build:customizations` → dist-customizations, which
+   * writes `bench-build-flags.json`). The runner skips the scenario with a
+   * pointer to that command when the target dist lacks the flag — the
+   * pristine dist every other mode measures never includes these workspaces.
+   */
+  requiresCustomizations?: boolean
   documentType: string
   /** Published id of the document under test (draft is `drafts.<id>`). */
   documentId: string

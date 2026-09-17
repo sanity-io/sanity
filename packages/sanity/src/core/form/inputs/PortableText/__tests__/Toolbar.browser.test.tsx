@@ -1,16 +1,143 @@
+import {defineArrayMember, defineField, defineType} from '@sanity/types'
+import {useMemo} from 'react'
+import {type InputProps, type PortableTextInputProps} from 'sanity'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
 
+import {TestForm} from '../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../test/browser/testHelpers'
-import {ToolbarStory} from './ToolbarStory'
+import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
+
+interface ToolbarHarnessProps {
+  id?: string
+  ptInputProps?: Partial<PortableTextInputProps>
+}
+
+function ToolbarHarness(props: ToolbarHarnessProps) {
+  const {id = 'root', ptInputProps} = props
+
+  const schemaTypes = useMemo(
+    () => [
+      defineType({
+        type: 'document',
+        name: 'test',
+        title: 'Test',
+        fields: [
+          defineField({
+            type: 'array',
+            name: 'body',
+            of: [
+              defineArrayMember({
+                type: 'block',
+                of: [
+                  defineArrayMember({
+                    type: 'object',
+                    title: 'Inline Object',
+                    fields: [
+                      defineField({
+                        type: 'string',
+                        name: 'title',
+                        title: 'Title',
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+              defineArrayMember({
+                name: 'object',
+                type: 'object',
+                title: 'Object',
+                fields: [{type: 'string', name: 'title', title: 'Title'}],
+                preview: {
+                  select: {
+                    title: 'title',
+                  },
+                },
+              }),
+              defineArrayMember({
+                name: 'objectWithoutTitle',
+                type: 'object',
+                fields: [{type: 'string', name: 'title', title: 'Title'}],
+                preview: {
+                  select: {
+                    title: 'title',
+                  },
+                },
+              }),
+              defineArrayMember({
+                name: 'nested',
+                type: 'object',
+                fields: [
+                  defineField({
+                    name: 'items',
+                    type: 'array',
+                    of: [
+                      defineArrayMember({
+                        name: 'item',
+                        type: 'object',
+                        fields: [
+                          defineField({
+                            name: 'deep',
+                            type: 'array',
+                            of: [
+                              defineArrayMember({
+                                type: 'block',
+                                styles: [
+                                  {title: 'Normal', value: 'normal'},
+                                  {title: 'H2', value: 'h2'},
+                                  {title: 'H3', value: 'h3'},
+                                  {title: 'H4', value: 'h4'},
+                                ],
+                              }),
+                            ],
+                            components: {
+                              input: (inputProps: InputProps) => {
+                                const editorProps = {
+                                  ...inputProps,
+                                  initialActive: false,
+                                } as PortableTextInputProps
+                                return inputProps.renderDefault(editorProps)
+                              },
+                            },
+                          }),
+                        ],
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+            ],
+
+            components: {
+              input: (inputProps: InputProps) => {
+                const editorProps = {
+                  ...inputProps,
+                  ...ptInputProps,
+                } as PortableTextInputProps
+                return inputProps.renderDefault(editorProps)
+              },
+            },
+          }),
+        ],
+      }),
+    ],
+    [ptInputProps],
+  )
+
+  return (
+    <TestWrapper schemaTypes={schemaTypes}>
+      <TestForm id={id} />
+    </TestWrapper>
+  )
+}
 
 describe('Portable Text Input', () => {
   describe('Toolbar', () => {
     describe('Adaptive size', () => {
       it('Overflow links should appear in the "Add" context menu', async () => {
         const {getFocusedPortableTextInput} = testHelpers()
-        void render(<ToolbarStory />)
+        void render(<ToolbarHarness />)
         const $portableTextInput = await getFocusedPortableTextInput('field-body')
 
         // Adjust the viewport size to make the Inline Object button hidden
@@ -50,7 +177,7 @@ describe('Portable Text Input', () => {
       describe('Root <FormBuilder>', () => {
         it('Toolbar should collapse when element width is less than 400px', async () => {
           const {getFocusedPortableTextInput} = testHelpers()
-          void render(<ToolbarStory id="root" />)
+          void render(<ToolbarHarness id="root" />)
           const $portableTextInput = await getFocusedPortableTextInput('field-body')
 
           // Adjust viewport size to enable auto collapsing toolbar menus
@@ -78,7 +205,7 @@ describe('Portable Text Input', () => {
       describe('Non-root <FormBuilder>', () => {
         it('Toolbar should not collapse when element width is less than 400px', async () => {
           const {getFocusedPortableTextInput} = testHelpers()
-          void render(<ToolbarStory id="inspector-panel" />)
+          void render(<ToolbarHarness id="inspector-panel" />)
           const $portableTextInput = await getFocusedPortableTextInput('field-body')
 
           await page.viewport(350, 500)
@@ -100,7 +227,7 @@ describe('Portable Text Input', () => {
     describe('Hidden toolbar', () => {
       it('Toolbar should be hidden after activation', async () => {
         const {getFocusedPortableTextInput} = testHelpers()
-        void render(<ToolbarStory ptInputProps={{hideToolbar: true}} />)
+        void render(<ToolbarHarness ptInputProps={{hideToolbar: true}} />)
         const $portableTextInput = await getFocusedPortableTextInput('field-body')
 
         const $toolbarCard = $portableTextInput.getByTestId('pt-editor__toolbar-card')
@@ -113,7 +240,7 @@ describe('Portable Text Input', () => {
     describe('Opening block style', () => {
       it('on a simple editor', async () => {
         const {getFocusedPortableTextInput} = testHelpers()
-        void render(<ToolbarStory />)
+        void render(<ToolbarHarness />)
         const $portableTextInput = await getFocusedPortableTextInput('field-body')
 
         const $toolbarCard = $portableTextInput.getByTestId('pt-editor__toolbar-card')
@@ -131,7 +258,7 @@ describe('Portable Text Input', () => {
 
       it('on a full screen simple editor', async () => {
         const {getFocusedPortableTextInput} = testHelpers()
-        void render(<ToolbarStory />)
+        void render(<ToolbarHarness />)
         const $portableTextInput = await getFocusedPortableTextInput('field-body')
 
         const $toolbarCard = $portableTextInput.getByTestId('pt-editor__toolbar-card')
@@ -155,7 +282,7 @@ describe('Portable Text Input', () => {
       // explicit headroom instead.
       it('on a full screen multi nested PTE', {timeout: 90_000}, async () => {
         const {getFocusedPortableTextInput} = testHelpers()
-        void render(<ToolbarStory />)
+        void render(<ToolbarHarness />)
         const $portableTextInput = await getFocusedPortableTextInput('field-body')
 
         const $toolbarCard = $portableTextInput.getByTestId('pt-editor__toolbar-card')

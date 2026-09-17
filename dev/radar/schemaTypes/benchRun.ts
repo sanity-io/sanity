@@ -160,7 +160,15 @@ const benchScenario = defineType({
     defineField({
       name: 'mode',
       type: 'string',
-      options: {list: ['interaction', 'pageload', 'soak', 'inp']},
+      options: {list: ['interaction', 'pageload', 'soak', 'inp', 'settle']},
+    }),
+    defineField({
+      name: 'settleExpectation',
+      description:
+        'Settle mode only: expectedToSettle=false marks a red-by-design scenario (a known ' +
+        'unfixed render-loop footgun) whose non-settling sessions are standing evidence',
+      type: 'object',
+      fields: [defineField({name: 'expectedToSettle', type: 'boolean'})],
     }),
     defineField({name: 'metrics', type: 'array', of: [defineArrayMember({type: 'benchMetric'})]}),
     defineField({

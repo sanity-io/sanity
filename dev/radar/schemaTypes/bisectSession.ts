@@ -12,7 +12,7 @@ import {defineField, defineType} from 'sanity'
  * only so the sessions list can show the verdict without loading the ~2k
  * commit documents. Undoing a mark clears it again.
  *
- * Id: `bisectSession-<uuid>` — sessions are user-created, not idempotent.
+ * Id: `bisect-session-<uuid>` — sessions are user-created, not idempotent.
  */
 export const bisectSession = defineType({
   name: 'bisectSession',
@@ -58,6 +58,12 @@ export const bisectSession = defineType({
       name: 'releasesOnly',
       description: 'Only propose commits that are release tags — bisecting versions, not commits',
       type: 'boolean',
+    }),
+    defineField({
+      name: 'reproPath',
+      description:
+        'Where in the test studio the issue reproduces, e.g. “/test/structure/author;abc” — appended to every preview build the tool proposes',
+      type: 'string',
     }),
     defineField({
       name: 'marks',

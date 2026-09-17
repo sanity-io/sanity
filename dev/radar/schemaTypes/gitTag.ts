@@ -3,7 +3,8 @@ import {defineField, defineType} from 'sanity'
 
 /**
  * One `v*` release tag (major >= 5) — written by scripts/syncGitHistory.ts
- * with deterministic id `gitTag-<tagName>`.
+ * with deterministic id `git-tag-<tag, dots as dashes>` (`git-tag-v6-10-1`; a dotted id
+ * would be a path segment like `drafts.x`, which the API scopes differently).
  *
  * `commit` is a weak reference: ingestion order isn't guaranteed, and tags
  * cut from release branches point at commits that never get a gitCommit

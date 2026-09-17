@@ -15,7 +15,7 @@ import {
   type Schema,
   type SchemaType,
 } from '@sanity/types'
-import isEqual from 'lodash-es/isEqual.js'
+import {dequal as isEqual} from 'dequal/lite'
 import isObject from 'lodash-es/isObject.js'
 
 import {Rule} from '../legacy/Rule'

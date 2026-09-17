@@ -1,9 +1,10 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Flex, Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {useClient} from '../../hooks/useClient'
@@ -46,7 +47,7 @@ export function useNetworkProtocolCheck(): undefined {
     () => (isWarningSnoozed ? of(undefined) : isUsingLegacyHttp(client)),
     [client, isWarningSnoozed],
   )
-  const isOnLegacyHttp = useObservable(isOnLegacyHttp$)
+  const isOnLegacyHttp = useObservable(isOnLegacyHttp$, undefined)
 
   const handleSnooze = useCallback(
     () => setWarningSnoozedAt(new Date().toISOString()),

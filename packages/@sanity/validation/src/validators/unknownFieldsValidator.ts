@@ -1,5 +1,7 @@
 import {type CustomValidator, type ObjectSchemaType} from '@sanity/types'
 
+import {validationMarkerCodes} from '../codes'
+
 /**
  * Given a schema type, returns a custom validator used to warn users of unknown
  * fields found in an object.
@@ -17,6 +19,8 @@ export const unknownFieldsValidator =
       .filter((key) => !fieldNames.has(key))
 
     return unknownFields.map((unknownField) => ({
+      code: validationMarkerCodes.objectUnknownField,
+      details: {fieldName: unknownField, typeName: type.name},
       message: `Field '${unknownField}' does not exist on type '${type.name}'`,
       path: [unknownField],
     }))

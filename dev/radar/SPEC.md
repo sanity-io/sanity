@@ -4,7 +4,7 @@ One place to answer repo-health questions without opening CI logs: **is
 studio performance drifting on main?** (Trends), **what did a specific run
 look like?** (run detail), **did anything change that needs a human?**
 (drift feed), **which commit broke it?** (Bisect), **what shipped when, and
-what regressed?** (Studio Releases). Primary users: studio engineers checking the
+what regressed?** (Studio releases). Primary users: studio engineers checking the
 effect of merged work; secondary: leads scanning health weekly.
 
 ## Data reality
@@ -88,13 +88,66 @@ effect of merged work; secondary: leads scanning health weekly.
    host) and when comparing branches.
 2. **Run detail** (P2) — click-through from a dot: the PR-comment tables
    (absolute variant), soak slope chart, flake telemetry, run metadata.
+   Today's run popover already carries the investigation hand-offs: the
+   GitHub compare of the gap to the previous distinct commit, **Copy A/B vs
+   previous run** (the `gh workflow run bench.yml … ab_from/ab_to` command —
+   GitHub has no URL that prefills dispatch inputs, so it is a command to
+   paste) and **Copy investigation prompt** (the same command inside a
+   paste-ready brief for a coding agent, `investigationPrompt.ts`). The
+   Comparisons tool is where a dispatched comparison lands.
 3. **Drift feed** (P2) — computed client-side, flagging a metric when it
-   clears the same `rel`/`absMs` thresholds the gate uses
-   (perf/bench/stats/gate.ts — one source of truth for "what matters").
+   clears the floors (the larger of 16ms and 5% of the baseline for ms
+   metrics — the gate's interaction pair from perf/bench/stats/gate.ts, applied
+   to load metrics as well since drift cannot tell the two apart by unit and
+   the gate's looser pageload pair of 100ms/8% is a subset; at a baseline of 0
+   the absolute floor alone decides, so a tripwire count going 0 → 4 flags)
+   **and** moves by at least 2.5 standard errors of its own run-to-run noise. A move from a zero baseline is shown
+   as its absolute size ("+4"), since a percentage of nothing has no meaning.
 
    One baseline: the median of the last 7 runs vs the median of the prior 21.
    Smoothing both sides is what makes it trustworthy — one noisy run barely
    moves a median of 7, so a flag means a sustained shift.
+
+   The noise test is what makes the feed reviewable. Per-run noise on keystroke
+   latency is 11–22% and on load metrics 5–20% (48 stored runs, Aug 2026), so
+   the fixed 5% floor alone flagged 68% of all 7-vs-21 windows on the
+   stored history — and a pure-noise simulation with the same spread flagged
+   57%. The noise is estimated per series from the points being compared
+   (robust MAD of consecutive differences and of the prior window's residuals,
+   whichever is larger, so both scatter and slow wander count). With it, the
+   same history flags 6% of keystroke windows (simulated pure noise: 1%), and
+   the load metrics that still flag are real sustained level shifts. What the
+   noise estimate sees: run-to-run scatter (consecutive differences, across
+   both windows and across the recent window alone) and slow wander inside
+   the prior window (residuals around its median). What it deliberately does
+   not treat as noise: a ramp inside the recent window, which is a level
+   change in progress.
+
+   Stated plainly, the feed catches **sustained level shifts, not steady
+   slopes**. A regression that creeps in a few percent per run is absorbed as
+   wander: +14% spread evenly over 21 runs comes out neutral (z ≈ 2.5 against
+   a 2.5 threshold). Catching slopes needs a trend test, which is a different
+   detector with its own false-alarm budget — not on the board today.
+
+   The summary numbers above are the whole record; the replay scripts that
+   produced them are not checked in (they ran against the bench dataset while
+   it was still publicly readable, with a Python model of the rule that the
+   shipped TypeScript was then checked against on the live history).
+
+   Drift stays on **measured values** — no host-speed correction. Keystroke
+   latency does track runner calibration (log-log slope 1.08, R² 0.35 on the
+   stored history; INP 0.90; load metrics only 0.28), and dividing it out
+   would take the keystroke false-alarm rate at z = 2.5 from 6% to 2%. It was
+   still left out, on the same grounds as the earlier host-normalization work
+   (`metrics-host-normalization-reference`: a controlled CPU-throttle sweep
+   fitting a sensitivity exponent per metric, kept strictly to a labelled
+   display lens): a correction is a model estimate with error bars, and the
+   review feed, badges and acks must not flag or unflag on a model. Calibration
+   is drawn as context so a reader can see when the host moved with the metric.
+   An implemented variant (a `scalesWithHost` series flag, adjustment applied
+   inside the window comparison, "host-adjusted" labels) exists as an unmerged
+   local branch and is not part of this repository's history; the decision
+   above is what to revisit first if it ever comes back.
 
    Windows are counted in **runs, not days**, and the UI says so ("vs prior 21
    runs"): the cron aims for one run a day, but the history has gaps and
@@ -112,6 +165,14 @@ effect of merged work; secondary: leads scanning health weekly.
    throttled or failed re-run can't drag the point. The merged point keeps a real
    run's identity so click-through opens an actual document.
 
+   Median for the window statistic too — measured, not assumed. Keystroke noise
+   is Gaussian (sd/MAD ratio 0.8–1.25, excess kurtosis ≈ 0), where a mean would
+   be ~20% more efficient; but the load metrics are heavy-tailed (auth-in-flight
+   kurtosis 12; syntheticLarge LCP bimodal between ~6s and ~25s), and there the
+   median fires on real shifts while the mean fires on the tail. Under the
+   noise-aware rule the median fires no more often than the mean anywhere, and it
+   is the statistic the plotted point, the badge and the PR gate already use.
+
    Honesty cost, stated plainly: re-runs of one commit often land on hosts of
    different speed (sha `7147d045`'s two runs differ by 21% of calibration), so a
    merged point averages across hosts. The **calibration strip is deliberately
@@ -123,7 +184,9 @@ effect of merged work; secondary: leads scanning health weekly.
    size, because run-to-run noise (~12% median) is well over the 5% threshold.
    Two baselines would also be impossible to tell apart in the UI while one of
    them fired constantly. Catching a single-run jump needs a more precise
-   measurement (more sessions per run), not different arithmetic.
+   measurement (more sessions per run), not different arithmetic — the noise
+   test above makes the 7-vs-21 comparison honest about its noise, it does not
+   make a single run less noisy.
 
    A weekday-matched variant (compare against the last 4 runs on the _same
    weekday_, to control for day-of-week CI runner load) was rejected too: the
@@ -247,9 +310,16 @@ effect of merged work; secondary: leads scanning health weekly.
    next, halving the range per good/bad verdict until the first bad commit is
    named. The chain is the exact first-parent walk (`gitCommit.parentSha`),
    not a date sort. Each run is a `bisectSession` document (studio-written,
-   liveEdit, like `driftAck`): endpoints, an append-only marks log (last mark
-   per sha wins; undo removes the tail), and — denormalized at convergence
-   only, for the session list — the result. Commits without a testable build
+   liveEdit, like `driftAck`): endpoints, an optional repro path, an
+   append-only marks log (last mark per sha wins; undo removes the tail), and
+   — denormalized at convergence only, for the session list — the result. The
+   repro path (`reproPath`, e.g. `/test/structure/author;abc?x=1`) is where in
+   the test studio the issue shows; it is entered at session start (a bare
+   path, or a full test-studio URL reduced to its path) and appended to every
+   preview build the tool opens, so no step needs manual navigation. It is
+   normalized to a single-slash same-origin path so it can never redirect the
+   preview to another origin or scheme, and a releases-only drill-down
+   inherits it. Commits without a testable build
    (skipped builds, one-sync URL lag) are never proposed and end up as
    explicit "suspects" in the verdict rather than silently blamed.
    Conflicting marks (a good newer than a bad) surface as an error state that
@@ -261,7 +331,9 @@ effect of merged work; secondary: leads scanning health weekly.
    view (hard delete behind a confirm — they're the only user-owned documents
    here).
 
-8. **Studio Releases** — every synced release tag, newest first: current
+8. **Studio releases** — every synced release tag in semver order (newest
+   version first, prereleases below their release — a version list, not a
+   timeline, so a maintenance patch sits with its minor): current
    dist-tags, weekly downloads, publish time, links out (GitHub release,
    sanity.io changelog, npmx.dev), and the version linking to the gitTag
    document in the structure tool. The changelog link is derived from the
@@ -273,7 +345,11 @@ effect of merged work; secondary: leads scanning health weekly.
    a bisect (user reports) are added by hand via "Add regression", stored as
    a born-converged releases-only bisectSession (base release → blamed
    release, the commits between as suspects) so attribution and the bisect
-   drill-down work unchanged.
+   drill-down work unchanged. A path field under the header holds a
+   test-studio path (same normalization as the bisect repro path, `?path=`
+   in the URL so it is reload-safe and shareable) that every release's
+   Test Studio link opens at — checking one repro across releases is a click per
+   row.
 
 ## Architecture
 

@@ -1,7 +1,7 @@
 import {DownloadIcon} from '@sanity/icons/Download'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {type Asset, type AssetFromSource, type AssetSourceComponentProps} from '@sanity/types'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import uniqueId from 'lodash-es/uniqueId.js'
 import {
@@ -16,6 +16,7 @@ import {
 } from 'react'
 import {type Subscription} from 'rxjs'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -260,7 +261,7 @@ function SelectAssetsComponent(props: AssetSourceComponentProps & RefAttributes<
       <Stack gap={5}>
         {!isImageOnlyWildCard && !isLoading && accept?.length > 0 && (
           <Card tone="primary" padding={3} border radius={2}>
-            <Flex gap={3} align="center">
+            <Flex gap={3} alignItems="center">
               <Text size={1}>
                 <InfoOutlineIcon />
               </Text>
@@ -298,7 +299,7 @@ function SelectAssetsComponent(props: AssetSourceComponentProps & RefAttributes<
         )}
         {assets.length > 0 && !isLastPage && (
           <CardLoadMore tone="default" padding={4}>
-            <Flex direction="column">
+            <Flex flexDirection="column">
               <Button
                 type="button"
                 icon={DownloadIcon}

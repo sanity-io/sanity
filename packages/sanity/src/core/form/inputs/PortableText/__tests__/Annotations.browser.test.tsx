@@ -1,10 +1,108 @@
+import {ColorWheelIcon} from '@sanity/icons/ColorWheel'
+import {defineArrayMember, defineField, defineType} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, server, userEvent} from 'vitest/browser'
 
+import {TestForm} from '../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../test/browser/testHelpers'
-import {AnnotationsStory} from './AnnotationsStory'
-import {MultipleAnnotationsStory} from './MultipleAnnotationsStory'
+import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
+
+const SCHEMA_TYPES = [
+  defineType({
+    type: 'document',
+    name: 'test',
+    title: 'Test',
+    fields: [
+      defineField({
+        type: 'array',
+        name: 'body',
+        of: [
+          defineArrayMember({
+            type: 'block',
+          }),
+        ],
+      }),
+    ],
+  }),
+]
+
+function AnnotationsHarness() {
+  return (
+    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+      <TestForm />
+    </TestWrapper>
+  )
+}
+
+const MULTIPLE_ANNOTATIONS_SCHEMA_TYPES = [
+  defineType({
+    type: 'document',
+    name: 'test',
+    title: 'Test',
+    fields: [
+      defineField({
+        type: 'array',
+        name: 'body',
+        of: [
+          defineArrayMember({
+            type: 'block',
+            marks: {
+              annotations: [
+                {
+                  type: 'object',
+                  name: 'link',
+                  title: 'Link',
+                  fields: [
+                    defineField({
+                      type: 'string',
+                      name: 'href',
+                      title: 'Link',
+                    }),
+                  ],
+                },
+                {
+                  type: 'object',
+                  name: 'highlight',
+                  title: 'Highlight',
+                  icon: ColorWheelIcon,
+                  fields: [
+                    defineField({
+                      type: 'string',
+                      name: 'color',
+                      title: 'Color',
+                    }),
+                  ],
+                },
+              ],
+            },
+          }),
+        ],
+      }),
+    ],
+  }),
+]
+
+function MultipleAnnotationsHarness() {
+  return (
+    <TestWrapper schemaTypes={MULTIPLE_ANNOTATIONS_SCHEMA_TYPES}>
+      <TestForm />
+    </TestWrapper>
+  )
+}
+
+// vitest-browser's `.not.toBeVisible()` throws on a missing element, so this
+// treats the popover being unmounted the same as it being hidden.
+async function expectPopoverAbsentOrHidden() {
+  await expect
+    .poll(() => {
+      const popover = document.querySelector<HTMLElement>(
+        '[data-testid="annotation-toolbar-popover"]',
+      )
+      return !popover || !popover.checkVisibility()
+    })
+    .toBe(true)
+}
 
 describe('Portable Text Input', () => {
   describe('Annotations', () => {
@@ -15,7 +113,7 @@ describe('Portable Text Input', () => {
     // tests below skip for.
     it.skipIf(server.browser === 'firefox')('Create a new link with keyboard only', async () => {
       const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
-      void render(<AnnotationsStory />)
+      void render(<AnnotationsHarness />)
       const $pte = await getFocusedPortableTextEditor('field-body')
 
       await insertPortableText('Now we should insert a link.', $pte)
@@ -59,8 +157,21 @@ describe('Portable Text Input', () => {
 
       const $toolbarPopover = page.getByTestId('annotation-toolbar-popover')
 
+      // Collapse the selection to a caret inside the annotation.
+      await userEvent.keyboard('{ArrowLeft}')
+      await userEvent.keyboard('{ArrowRight}')
+
       // Assertion: the annotation toolbar popover should be visible
-      await expect.element(page.getByTestId('annotation-toolbar-popover')).toBeVisible()
+      await expect.element($toolbarPopover).toBeVisible()
+
+      // Expand the selection by one character while staying inside the annotation.
+      await userEvent.keyboard('{Shift>}{ArrowRight}{/Shift}')
+
+      // Assertion: an expanded selection inside the annotation hides the popover.
+      await expectPopoverAbsentOrHidden()
+
+      // Collapse again so the popover is visible for tabbing into its buttons.
+      await userEvent.keyboard('{ArrowLeft}')
       await expect.element($toolbarPopover).toBeVisible()
 
       // Wait for the popover's focusable buttons to be mounted before tabbing.
@@ -92,7 +203,7 @@ describe('Portable Text Input', () => {
       {timeout: 30_000},
       async () => {
         const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
-        void render(<AnnotationsStory />)
+        void render(<AnnotationsHarness />)
         const $pte = await getFocusedPortableTextEditor('field-body')
 
         await insertPortableText('Now we should insert a link.', $pte)
@@ -141,7 +252,7 @@ describe('Portable Text Input', () => {
       {timeout: 30_000},
       async () => {
         const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
-        void render(<AnnotationsStory />)
+        void render(<AnnotationsHarness />)
         const $pte = await getFocusedPortableTextEditor('field-body')
 
         await insertPortableText('Now we should insert a link.', $pte)
@@ -181,8 +292,24 @@ describe('Portable Text Input', () => {
         // Expect the editor to have focus after closing the popover
         await expect.element($pte).toHaveFocus()
 
+        const $toolbarPopover = page.getByTestId('annotation-toolbar-popover')
+
+        // Collapse the selection to a caret inside the annotation.
+        await userEvent.keyboard('{ArrowLeft}')
+        await userEvent.keyboard('{ArrowRight}')
+
         // Assertion: the annotation toolbar popover should be visible
-        await expect.element(page.getByTestId('annotation-toolbar-popover')).toBeVisible()
+        await expect.element($toolbarPopover).toBeVisible()
+
+        // Expand the selection by one character while staying inside the annotation.
+        await userEvent.keyboard('{Shift>}{ArrowRight}{/Shift}')
+
+        // Assertion: an expanded selection inside the annotation hides the popover.
+        await expectPopoverAbsentOrHidden()
+
+        // Collapse again so the popover is visible for clicking the edit button.
+        await userEvent.keyboard('{ArrowLeft}')
+        await expect.element($toolbarPopover).toBeVisible()
 
         // Open up the editing interface again
         await page.getByTestId('edit-annotation-button').click()
@@ -202,7 +329,7 @@ describe('Portable Text Input', () => {
 
     it('Can edit a root-level annotation in fullscreen', {timeout: 30_000}, async () => {
       const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
-      void render(<AnnotationsStory />)
+      void render(<AnnotationsHarness />)
       const $pte = await getFocusedPortableTextEditor('field-body')
 
       await insertPortableText('Fullscreen link', $pte)
@@ -220,13 +347,61 @@ describe('Portable Text Input', () => {
       await expect.element($linkInput).toHaveFocus()
     })
 
+    it(
+      'Shows the annotation popover for a collapsed caret but not an expanded selection inside the annotation',
+      {timeout: 30_000},
+      async () => {
+        const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
+        void render(<AnnotationsHarness />)
+        const $pte = await getFocusedPortableTextEditor('field-body')
+
+        await insertPortableText('Now we should insert a link.', $pte)
+
+        // Backtrack and select the word "link"
+        await userEvent.keyboard('{ArrowLeft}')
+        await userEvent.keyboard('{Shift>}{ArrowLeft}{ArrowLeft}{ArrowLeft}{ArrowLeft}{/Shift}')
+        await page.getByRole('button', {name: 'Link'}).click()
+
+        const $link = page.elementLocator($pte.element().querySelector('span[data-link]')!)
+        await expect.element($link).toBeVisible()
+
+        const $linkInput = page.getByTestId('popover-edit-dialog').getByLabelText('Link')
+        await expect.element($linkInput).toBeInTheDocument()
+        await $linkInput.element().focus()
+        await userEvent.keyboard('https://www.sanity.io')
+        await userEvent.keyboard('{Escape}')
+
+        // Expect the editor to have focus after closing the popover
+        await expect.element($pte).toHaveFocus()
+
+        const $toolbarPopover = page.getByTestId('annotation-toolbar-popover')
+
+        // Collapse the selection to a caret inside the annotation (between
+        // the first and second letter of "link").
+        await userEvent.keyboard('{ArrowLeft}')
+        await userEvent.keyboard('{ArrowRight}')
+
+        // Assertion (positive control): a collapsed caret inside the
+        // annotation shows the popover.
+        await expect.element($toolbarPopover).toBeVisible()
+
+        // Expand the selection by one character while staying inside the
+        // annotation.
+        await userEvent.keyboard('{Shift>}{ArrowRight}{/Shift}')
+
+        // Assertion: an expanded selection inside the annotation must hide
+        // the popover.
+        await expectPopoverAbsentOrHidden()
+      },
+    )
+
     // Firefox has timing issues with PTE selection events (matches the original
     // Playwright `test.skip(browserName === 'firefox')`).
     it.skipIf(server.browser === 'firefox')(
       'Shows combined popover with multiple annotations on same text',
       async () => {
         const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
-        void render(<MultipleAnnotationsStory />)
+        void render(<MultipleAnnotationsHarness />)
         const $pte = await getFocusedPortableTextEditor('field-body')
 
         await insertPortableText('Text with multiple annotations.', $pte)
@@ -272,11 +447,13 @@ describe('Portable Text Input', () => {
         // Expect the editor to have focus after closing the popover
         await expect.element($pte).toHaveFocus()
 
-        // Double-click again to select the annotated text and trigger the popover
+        // Click inside the doubly-annotated text and collapse the selection
+        // to a caret to trigger the popover.
         const $linkedTextAgain = page.elementLocator(
           $pte.element().querySelector('span[data-link]')!,
         )
-        await userEvent.dblClick($linkedTextAgain)
+        await $linkedTextAgain.click()
+        await userEvent.keyboard('{ArrowRight}')
 
         // Assertion: the combined annotation toolbar popover should be visible
         const $toolbarPopover = page.getByTestId('annotation-toolbar-popover')
@@ -300,16 +477,8 @@ describe('Portable Text Input', () => {
         // stays registered while the modal is open (SAPP-2645).
         await page.getByTestId('edit-annotation-button').click()
         // The popover either closes (kept mounted while other annotations are
-        // registered) or unmounts entirely (no annotations registered), so
-        // assert on "absent or hidden" rather than visibility alone.
-        await expect
-          .poll(() => {
-            const popover = document.querySelector<HTMLElement>(
-              '[data-testid="annotation-toolbar-popover"]',
-            )
-            return !popover || !popover.checkVisibility()
-          })
-          .toBe(true)
+        // registered) or unmounts entirely (no annotations registered).
+        await expectPopoverAbsentOrHidden()
 
         let toolbarPopoverReappeared = false
         const observer = new MutationObserver(() => {

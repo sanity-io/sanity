@@ -1,5 +1,6 @@
-import {Card, Flex, Layer, Text, TextSkeleton, type Theme} from '@sanity/ui'
+import {Card, Layer, Text, TextSkeleton, type Theme} from '@sanity/ui'
 import {css, styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 interface RootProps {
   $border?: boolean

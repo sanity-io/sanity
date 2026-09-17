@@ -2,14 +2,57 @@
 // If deleting the exports, for example, then please use this command to regenerate the tests
 // If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports`
 
-import type {ValidationContext} from '@sanity/types'
-import type {ValidateDocumentOptions, validateDocument} from '@sanity/validation'
+import type {
+  BuiltInValidationMarkerCode,
+  DocumentValidationMarker,
+  DocumentValidationResult,
+  validateDocument,
+  ValidateDocumentOptions,
+  validateDocumentWithWorkspace,
+  ValidateDocumentWorkspaceOptions,
+  ValidationClient,
+  ValidationMarkerCode,
+  validationMarkerCodes,
+  ValidationSchema,
+  ValidationSource,
+} from '@sanity/validation'
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('@sanity/validation', () => {
+  test('BuiltInValidationMarkerCode', () => {
+    expectTypeOf<BuiltInValidationMarkerCode>().not.toBeNever()
+  })
+  test('DocumentValidationMarker', () => {
+    expectTypeOf<DocumentValidationMarker>().not.toBeNever()
+  })
+  test('DocumentValidationResult', () => {
+    expectTypeOf<DocumentValidationResult>().toBeObject()
+  })
   test('validateDocument', () => {
     expectTypeOf<typeof validateDocument>().toBeFunction()
-    expectTypeOf<Parameters<typeof validateDocument>[0]>().toEqualTypeOf<ValidateDocumentOptions>()
-    expectTypeOf<ValidationContext['i18n']>().toBeObject()
+  })
+  test('ValidateDocumentOptions', () => {
+    expectTypeOf<ValidateDocumentOptions>().not.toBeNever()
+  })
+  test('validateDocumentWithWorkspace', () => {
+    expectTypeOf<typeof validateDocumentWithWorkspace>().toBeFunction()
+  })
+  test('ValidateDocumentWorkspaceOptions', () => {
+    expectTypeOf<ValidateDocumentWorkspaceOptions>().toBeObject()
+  })
+  test('ValidationClient', () => {
+    expectTypeOf<ValidationClient>().toBeObject()
+  })
+  test('ValidationMarkerCode', () => {
+    expectTypeOf<ValidationMarkerCode>().not.toBeNever()
+  })
+  test('validationMarkerCodes', () => {
+    expectTypeOf<typeof validationMarkerCodes>().not.toBeNever()
+  })
+  test('ValidationSchema', () => {
+    expectTypeOf<ValidationSchema>().toBeObject()
+  })
+  test('ValidationSource', () => {
+    expectTypeOf<ValidationSource>().toBeObject()
   })
 })

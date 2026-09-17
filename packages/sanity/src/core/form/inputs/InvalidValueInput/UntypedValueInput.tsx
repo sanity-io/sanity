@@ -1,6 +1,7 @@
-import {Card, Grid, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useCallback, useMemo} from 'react'
+import {Grid} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {isDev} from '../../../environment'
@@ -132,7 +133,14 @@ export function UntypedValueInput({validTypes, value, onChange}: UntypedValueInp
             </Card>
           </Stack>
 
-          <Grid gridTemplateColumns={[1, 2, 2]} gap={1}>
+          <Grid
+            gridTemplateColumns={[
+              'repeat(1, minmax(0, 1fr))',
+              'repeat(2, minmax(0, 1fr))',
+              'repeat(2, minmax(0, 1fr))',
+            ]}
+            gap={1}
+          >
             {isSingleValidType && (
               <SetMissingTypeButton onChange={onChange} targetType={validTypes[0]} value={value} />
             )}

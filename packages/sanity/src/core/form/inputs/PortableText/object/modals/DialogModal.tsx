@@ -4,7 +4,6 @@ import {Box} from 'ui5'
 
 import {Dialog} from '../../../../../../ui-components/dialog/Dialog'
 import {PresenceOverlay} from '../../../../../presence/overlay/PresenceOverlay'
-import {EditDialogOuterBoundaryProvider} from '../../../../components/EditDialogOuterBoundaryProvider'
 import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {type ModalWidth} from './types'
 
@@ -40,11 +39,9 @@ export function DefaultEditDialog(props: DefaultEditDialogProps) {
           scrollElement={contentElement}
           containerElement={containerElement}
         >
-          <EditDialogOuterBoundaryProvider>
-            <BoundaryElementProvider element={contentElement}>
-              <Box ref={containerElement}>{children}</Box>
-            </BoundaryElementProvider>
-          </EditDialogOuterBoundaryProvider>
+          <BoundaryElementProvider element={contentElement}>
+            <Box ref={containerElement}>{children}</Box>
+          </BoundaryElementProvider>
         </VirtualizerScrollInstanceProvider>
       </PresenceOverlay>
     </Dialog>
