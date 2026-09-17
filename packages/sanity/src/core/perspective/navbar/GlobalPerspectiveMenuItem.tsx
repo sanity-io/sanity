@@ -16,32 +16,10 @@ import {useFormatRelativeLocalePublishDate} from '../../releases/hooks/useFormat
 import {isReleaseDocument} from '../../releases/store/types'
 import {LATEST, PUBLISHED} from '../../releases/util/const'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
-import {splitOnSearchTerm} from '../../releases/util/splitOnSearchTerm'
 import {isDraftPerspective} from '../../releases/util/util'
 import {useWorkspace} from '../../studio/workspace'
+import {MarkedLabel} from '../MarkedLabel'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
-
-/**
- * A label with the occurrences of the filter term marked.
- *
- * Shared by both branches below so published and drafts mark the same way a release title does —
- * they are filtered on their labels, so a row that survived the filter should show why.
- */
-function MarkedLabel({label, searchTerm}: {label: string; searchTerm: string | undefined}) {
-  return (
-    <>
-      {splitOnSearchTerm(label, searchTerm ?? '').map((segment, index) =>
-        segment.isMatch ? (
-          // oxlint-disable-next-line react/no-array-index-key -- segments are derived from the label
-          <strong key={index}>{segment.text}</strong>
-        ) : (
-          // oxlint-disable-next-line react/no-array-index-key -- segments are derived from the label
-          <span key={index}>{segment.text}</span>
-        ),
-      )}
-    </>
-  )
-}
 
 export function GlobalPerspectiveMenuItem(props: {
   release: ReleaseDocument | 'published' | typeof LATEST
