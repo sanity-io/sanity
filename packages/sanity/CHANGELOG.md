@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.14.1](https://github.com/sanity-io/sanity/compare/v6.14.0...v6.14.1) (2026-09-16)
+
+### Bug Fixes
+
+* **core:** pin document color-scheme to the resolved studio appearance ([#14745](https://github.com/sanity-io/sanity/issues/14745)) ([c2b3fc2](https://github.com/sanity-io/sanity/commit/c2b3fc2d793108018ea6c458905cbaae846de4e1))
+* **deps:** update portabletext ([#14667](https://github.com/sanity-io/sanity/issues/14667)) ([663d296](https://github.com/sanity-io/sanity/commit/663d296f6917d6e26fc2343a3395c27767fb9760))
+* **form:** never rewrite a Portable Text block removal to a whole-field unset ([8118ccc](https://github.com/sanity-io/sanity/commit/8118cccf12f5bdba8cfbc1ca16cb698a6c7aa575))
 ## [6.14.0](https://github.com/sanity-io/sanity/compare/v6.13.2...v6.14.0) (2026-09-15)
 
 ### Features
