@@ -1,5 +1,5 @@
 import {Card, Spinner, Stack, Text, TextInput} from '@sanity/ui'
-import {type ChangeEvent, type JSX, useCallback, useEffect, useMemo, useRef} from 'react'
+import {type ChangeEvent, type JSX, useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
@@ -16,7 +16,6 @@ import {useAgentBundles} from '../../store/agent/useAgentBundles'
 import {useWorkspace} from '../../studio/workspace'
 import {isCardinalityOneRelease} from '../../util/releaseUtils'
 import {usePerspectiveActiveDocument} from '../activeDocument/usePerspectiveActiveDocument'
-import {MENU_PINNED_BLOCK_HEIGHT_VAR} from '../styles'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {AgentBundleMenuItem} from './AgentBundleMenuItem'
 import {GlobalPerspectiveMenuItem} from './GlobalPerspectiveMenuItem'
@@ -29,10 +28,6 @@ const StickyCard = styled(Card)`
   position: sticky;
   z-index: 2;
   background: var(--card-bg-color);
-`
-
-const StickyTopCard = styled(StickyCard)`
-  top: 0;
 `
 
 const StickyBottomCard = styled(StickyCard)`
@@ -60,8 +55,6 @@ export function ReleasesList({
   onFilterQueryChange: (query: string) => void
 }): JSX.Element {
   const {t} = useTranslation()
-  const rootRef = useRef<HTMLDivElement | null>(null)
-  const pinnedRef = useRef<HTMLDivElement | null>(null)
   const {loading, data: allReleases} = useActiveReleases()
   const {bundles: agentBundles} = useAgentBundles()
   const {activeDocument} = usePerspectiveActiveDocument()
@@ -103,31 +96,6 @@ export function ReleasesList({
     [onFilterQueryChange],
   )
 
-  // Publish the pinned block's height so the section headings can pin directly
-  // below it — `MENU_PINNED_BLOCK_HEIGHT_VAR` explains why an offset is needed at
-  // all. Re-runs on `loading` because neither node exists while the spinner is up.
-  useEffect(() => {
-    // Nothing is rendered but the spinner while loading, so there is no block to
-    // measure yet. Checked directly rather than leaning on the refs being null,
-    // which reads as an unused dependency.
-    if (loading) return undefined
-
-    const root = rootRef.current
-    const pinned = pinnedRef.current
-    if (!root || !pinned) return undefined
-
-    const publish = () =>
-      root.style.setProperty(MENU_PINNED_BLOCK_HEIGHT_VAR, `${pinned.offsetHeight}px`)
-
-    publish()
-
-    // The block changes height in use: the Drafts row is conditional on the
-    // workspace, and the filter input can wrap.
-    const observer = new ResizeObserver(publish)
-    observer.observe(pinned)
-    return () => observer.disconnect()
-  }, [loading])
-
   if (loading) {
     return (
       <Flex padding={4} justifyContent="center" data-testid="spinner">
@@ -137,13 +105,14 @@ export function ReleasesList({
   }
 
   return (
-    <Card radius={3} ref={rootRef}>
-      {/* Only the filter is pinned. Published and drafts used to be pinned with it, which made the
-          panel a fixed top, a scrolling middle and a fixed bottom — and hid the fact that these two
-          are the first entries in the same time order as the releases below: published is live now,
-          drafts is the indefinite next, then asap, then dated, then undecided. */}
+    <Card radius={3}>
+      {/* The filter scrolls with the list rather than holding the top edge. It sits at the head of
+          the list, so scrolling away from the top carries it out of view and returning brings it
+          back — the same relationship published and drafts have with the releases under them.
+          Nothing above the list is pinned now, which is why the section headings pin at the top
+          edge itself rather than against a measured offset. */}
       {showFilter && (
-        <StickyTopCard borderBottom ref={pinnedRef}>
+        <Card borderBottom>
           <Card padding={2}>
             <TextInput
               data-testid="release-menu-filter"
@@ -154,7 +123,7 @@ export function ReleasesList({
               value={filterQuery}
             />
           </Card>
-        </StickyTopCard>
+        </Card>
       )}
       {(showPublished || showDrafts) && (
         <Card borderBottom padding={1}>
