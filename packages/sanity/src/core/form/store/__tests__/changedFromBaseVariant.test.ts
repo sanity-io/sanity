@@ -148,7 +148,7 @@ describe('changedFromBaseVariant', () => {
       ...baseDocument,
       _id: 'versions.opaquescope.article',
       _rev: 'variant-rev',
-      _system: {variant: {_ref: 'system.variant.nynorsk', _weak: true}},
+      _system: {variants: [{_ref: 'system.variant.nynorsk', _weak: true}]},
     })
 
     expect(state.changedFromBaseVariant).toBe(false)

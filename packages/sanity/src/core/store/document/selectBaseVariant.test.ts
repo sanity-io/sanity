@@ -87,6 +87,14 @@ describe('selectBaseVariant', () => {
 
     it('returns null when the document with the base variant id has a variant reference', () => {
       const variant = createDocument(baseVariantId, {
+        variants: [{_ref: 'system.variant.nynorsk', _weak: true}],
+      })
+
+      expect(selectBaseVariant(createEditState({version: variant}), baseVariantId)).toBeNull()
+    })
+
+    it('returns null when the document carries the legacy `_system.variant` reference', () => {
+      const variant = createDocument(baseVariantId, {
         variant: {_ref: 'system.variant.nynorsk', _weak: true},
       })
 

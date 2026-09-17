@@ -21,6 +21,14 @@ describe('getVariantVersionInfo', () => {
   it('derives variantId and drafts bundle for a variant-over-drafts document', () => {
     expect(
       getVariantVersionInfo(
+        doc({bundleId: 'drafts', variants: [variantRef], group: groupRef, scopeId: 'varscope'}),
+      ),
+    ).toEqual({variantId: 'french', bundleId: 'drafts'})
+  })
+
+  it('falls back to the legacy `_system.variant` reference on unmigrated documents', () => {
+    expect(
+      getVariantVersionInfo(
         doc({bundleId: 'drafts', variant: variantRef, group: groupRef, scopeId: 'varscope'}),
       ),
     ).toEqual({variantId: 'french', bundleId: 'drafts'})
@@ -28,7 +36,7 @@ describe('getVariantVersionInfo', () => {
 
   it('reports the published bundle for a variant-of-published document (no bundleId)', () => {
     expect(
-      getVariantVersionInfo(doc({variant: variantRef, group: groupRef, scopeId: 'varscope'})),
+      getVariantVersionInfo(doc({variants: [variantRef], group: groupRef, scopeId: 'varscope'})),
     ).toEqual({variantId: 'french', bundleId: 'published'})
   })
 
@@ -37,7 +45,7 @@ describe('getVariantVersionInfo', () => {
       getVariantVersionInfo(
         doc({
           bundleId: 'rSummer',
-          variant: variantRef,
+          variants: [variantRef],
           release: {_ref: '_.releases.rSummer', _weak: true},
           group: groupRef,
           scopeId: 'varscope',

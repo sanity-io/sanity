@@ -35,7 +35,7 @@ const siblingStub: VersionInfoDocumentStub = {
   _type: 'article',
   _system: {
     group: {_ref: PUBLISHED_ID, _weak: true},
-    variant: {_ref: variantAlphaAudience._id, _weak: true},
+    variants: [{_ref: variantAlphaAudience._id, _weak: true}],
     scopeId: 'varscopePub',
     draft: {_ref: DRAFT_TARGET.id, _weak: true},
   },
@@ -49,7 +49,7 @@ const siblingDocument = {
   _updatedAt: '2026-01-02T00:00:00Z',
   _system: {
     group: {_ref: PUBLISHED_ID, _weak: true as const},
-    variant: {_ref: variantAlphaAudience._id, _weak: true as const},
+    variants: [{_ref: variantAlphaAudience._id, _weak: true as const}],
     scopeId: 'varscopePub',
     draft: {_ref: DRAFT_TARGET.id, _weak: true as const},
   },
@@ -84,7 +84,7 @@ describe('buildCreatableVariantInitialValue', () => {
       _updatedAt: '2026-01-02T00:00:00Z',
       _system: {
         group: {_ref: PUBLISHED_ID, _weak: true},
-        variant: {_ref: variantAlphaAudience._id, _weak: true},
+        variants: [{_ref: variantAlphaAudience._id, _weak: true}],
         bundleId: 'drafts',
         scopeId: DRAFT_TARGET.scopeId,
       },
@@ -103,7 +103,7 @@ describe('buildCreatableVariantInitialValue', () => {
 
     expect(seed._system).toEqual({
       group: {_ref: PUBLISHED_ID, _weak: true},
-      variant: {_ref: variantAlphaAudience._id, _weak: true},
+      variants: [{_ref: variantAlphaAudience._id, _weak: true}],
       bundleId: 'drafts',
       scopeId: DRAFT_TARGET.scopeId,
     })
