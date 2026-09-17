@@ -70,6 +70,9 @@ export function buildCommentBreadcrumbs(
   props: BuildCommentBreadcrumbsProps,
 ): CommentListBreadcrumbs {
   const {currentUser, schemaType, fieldPath, documentValue} = props
+  // Document-level comments are not anchored to a field, so there is no trail to build.
+  if (!fieldPath) return []
+
   const paths = PathUtils.fromString(fieldPath)
   const fieldPaths: CommentListBreadcrumbs = []
 

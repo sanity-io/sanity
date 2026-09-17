@@ -168,6 +168,17 @@ const schema = Schema.compile({
 })
 
 describe('comments: buildCommentBreadcrumbs', () => {
+  test('returns no breadcrumbs for a document-level comment', () => {
+    const crumbs = buildCommentBreadcrumbs({
+      currentUser: CURRENT_USER,
+      documentValue: {},
+      fieldPath: '',
+      schemaType: schema.get('testDocument'),
+    })
+
+    expect(crumbs).toEqual([])
+  })
+
   test('should use the title in the schema field if it exists', () => {
     const crumbs = buildCommentBreadcrumbs({
       currentUser: CURRENT_USER,
