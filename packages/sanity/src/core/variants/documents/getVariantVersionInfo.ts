@@ -1,5 +1,6 @@
 import {type SanityDocument} from '@sanity/types'
 
+import {getSystemVariantId} from '../../util/getSystemVariantRef'
 import {getVariantId} from '../tool/util'
 
 /**
@@ -7,7 +8,7 @@ import {getVariantId} from '../tool/util'
  *
  */
 export interface VariantVersionInfo {
-  /** The short variant name (the `_.variants.` prefix stripped from `_system.variant._ref`). */
+  /** The short variant name (the `_.variants.` prefix stripped from `_system.variants[0]._ref`). */
   variantId: string
   /**
    * The bundle the variant document belongs to: `'drafts'`, a release id, or `'published'` for
@@ -29,8 +30,8 @@ export interface VariantVersionInfo {
 export function getVariantVersionInfo(
   version: SanityDocument | null | undefined,
 ): VariantVersionInfo | undefined {
-  const variantRef = version?._system?.variant?._ref
-  if (!variantRef) {
+  const variantRef = getSystemVariantId(version?._system)
+  if (!version || !variantRef) {
     return undefined
   }
 

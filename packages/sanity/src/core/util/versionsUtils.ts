@@ -2,6 +2,7 @@ import {type VersionInfoDocumentStub} from '../releases/store/types'
 import {isAgentBundleName} from '../store/agent/createAgentBundlesStore'
 import {getVariantId} from '../variants/tool/util'
 import {getDraftId, getVersionFromId} from './draftUtils'
+import {getSystemVariantId, getSystemVariantRef} from './getSystemVariantRef'
 
 type VariantConstraint =
   | {
@@ -56,7 +57,7 @@ export function isPublishedVersion(
   if ('variant' in constraint) {
     return (
       isVariantVersion(version) &&
-      getVariantId(version._system.variant?._ref ?? '') === constraint.variant
+      getVariantId(getSystemVariantId(version._system) ?? '') === constraint.variant
     )
   }
 
@@ -93,7 +94,7 @@ export function isDraftVersion(
   if ('variant' in constraint) {
     return (
       isVariantVersion(version) &&
-      getVariantId(version._system.variant?._ref ?? '') === constraint.variant
+      getVariantId(getSystemVariantId(version._system) ?? '') === constraint.variant
     )
   }
 
@@ -113,7 +114,7 @@ export function isDraftVersion(
  * @beta
  */
 export function isVariantVersion(version: VersionInfoDocumentStub): boolean {
-  return Boolean(version._system?.variant)
+  return Boolean(getSystemVariantRef(version._system))
 }
 
 /**

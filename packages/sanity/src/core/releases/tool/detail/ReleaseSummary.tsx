@@ -77,7 +77,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   // production Releases until the flag is on.
   const {beta} = useWorkspace()
   const variantsEnabled = Boolean(beta?.variants?.enabled)
-  // Resolves each document's variant (via `_system.variant._ref`) to its definition for the
+  // Resolves each document's variant (via `_system.variants[0]._ref`) to its definition for the
   // "Variant" column. Provider-free + cached; returns empty when variants are disabled.
   const {byId: variantsById, loading: variantsLoading} = useAllVariants()
 
