@@ -8,7 +8,6 @@ packages:
   - packages/@sanity/*
   - packages/groq
   - packages/sanity
-  - packages/sanity/fixtures/examples/*
 
 allowBuilds:
   '@playwright/browser-chromium': false
