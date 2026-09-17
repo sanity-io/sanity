@@ -31,6 +31,14 @@ function makeValue(text: string) {
   ]
 }
 
+function makeBlock(key: string, text: string) {
+  return {
+    _type: 'block',
+    _key: key,
+    children: [{_type: 'span', _key: `span-${key}`, text}],
+  }
+}
+
 describe('updateCommentRange', () => {
   test('keeps the comment on the same text after typing before it', () => {
     // Comment created on "World" in "Hello World" (offsets 6-11).
@@ -92,6 +100,41 @@ describe('updateCommentRange', () => {
     expect(update).toEqual({
       range: null,
       selection: {type: 'text', value: []},
+    })
+  })
+
+  test('drops a selection item whose block was deleted', () => {
+    const comment = {
+      _id: 'comment-1',
+      target: {
+        path: {
+          field: 'body',
+          selection: {
+            type: 'text',
+            value: [
+              {_key: 'block-1', text: `Hello ${MARKER_START}World${MARKER_END}`},
+              {_key: 'block-2', text: `${MARKER_START}Second${MARKER_END} block`},
+            ],
+          },
+        },
+      },
+    } as unknown as CommentDocument
+
+    // The second block is removed from the editor entirely.
+    const editorValue = [makeBlock('block-1', 'Hello World')]
+
+    const update = buildCommentRangeUpdate({
+      comment,
+      value: editorValue,
+      documentValue: {body: editorValue},
+      basePath: ['body'],
+    })
+
+    // Keeping `block-2` here would re-send a selection the API cannot resolve.
+    expect(update.selection.value.map((item) => item._key)).toEqual(['block-1'])
+    expect(update.range).toEqual({
+      start: {_key: 'block-1', offset: 6},
+      end: {_key: 'block-1', offset: 11},
     })
   })
 })

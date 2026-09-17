@@ -399,6 +399,13 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
     const commentIdsToUpdate = Array.from(dirtyCommentIdsRef.current)
     if (commentIdsToUpdate.length === 0) return
 
+    // Offsets must be computed against the editor's live value, which is also
+    // what is sent as `fieldValue`. Without an editor there is nothing to
+    // rematch against, so leave the comments dirty for the next edit.
+    if (!editorRef.current) return
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+    const editorValue = PortableTextEditor.getValue(editorRef.current) || EMPTY_ARRAY
+
     commentIdsToUpdate.forEach((commentId) => {
       const comment = getComment(commentId)
 
@@ -420,11 +427,6 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
       const commentFieldPath = parseCommentFieldPath(comment.target.path?.field)
       if (!commentFieldPath || !PathUtils.isEqual(commentFieldPath, props.path)) return
 
-      // The below code will update the comment object to reflect the new selection
-      if (!editorRef.current) return
-      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-      const editorValue = PortableTextEditor.getValue(editorRef.current) || EMPTY_ARRAY
-
       const {range, selection} = buildCommentRangeUpdate({
         comment,
         value: editorValue,
@@ -438,7 +440,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
           path: {
             ...comment.target?.path,
             field: comment.target.path?.field || '',
-            selection: range ? selection : undefined,
+            selection,
           },
         },
       }
@@ -716,13 +718,14 @@ function useDebounceSelectionChange(
 }
 
 // Stable debounce for persisting ranges. The update is passed in so the timer
-// is not recreated when `updateCommentRange` changes. Flushed on unmount so a
-// pending persist is not dropped when leaving the field.
-// 500ms is long enough to ride out typing pauses; blur also flushes.
+// is not recreated when `updateCommentRange` changes. 500ms is long enough to
+// ride out typing pauses; blur flushes. Cancelled rather than flushed on
+// unmount, since the editor is gone by then and there is nothing to rematch
+// against. The comments stay dirty and are persisted on the next edit.
 function useDebounceCommentRangeUpdate() {
   const debounced = useMemo(() => debounce((update: () => void) => update(), 500), [])
 
-  useEffect(() => () => debounced.flush(), [debounced])
+  useEffect(() => () => debounced.cancel(), [debounced])
 
   return debounced
 }

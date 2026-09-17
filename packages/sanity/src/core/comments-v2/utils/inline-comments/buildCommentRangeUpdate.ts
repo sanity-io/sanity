@@ -23,9 +23,10 @@ interface CommentRangeUpdate {
 /**
  * Rematches an inline comment against the current editor value.
  *
- * Decorations with an empty range text represent selections that no longer
- * reference any content. Exclude them from both the persisted range and the
- * optimistic selection so a fully unanchored comment clears its API range.
+ * Only blocks the rematch still anchors to are kept. A selection item whose
+ * block was deleted, or whose markers no longer resolve, produces no decoration
+ * and is dropped, so the optimistic selection mirrors the range the API stores.
+ * A comment left with no anchored block clears its API range.
  */
 export function buildCommentRangeUpdate(props: BuildCommentRangeUpdateProps): CommentRangeUpdate {
   const {comment, value, documentValue, basePath} = props
@@ -38,10 +39,6 @@ export function buildCommentRangeUpdate(props: BuildCommentRangeUpdateProps): Co
   })
 
   const anchoredDecorations = updatedDecorations.filter((decoration) => decoration.range.text)
-  const updatedKeys = new Set(updatedDecorations.map((decoration) => decoration.range._key))
-  const unchangedRanges =
-    comment.target.path?.selection?.value.filter((range) => !updatedKeys.has(range._key)) || []
-  const nextRanges = anchoredDecorations.map((decoration) => decoration.range)
 
   return {
     range: selectionsToRange(
@@ -50,7 +47,9 @@ export function buildCommentRangeUpdate(props: BuildCommentRangeUpdateProps): Co
     ),
     selection: {
       type: 'text',
-      value: [...unchangedRanges, ...nextRanges].sort((a, b) => a._key.localeCompare(b._key)),
+      value: anchoredDecorations
+        .map((decoration) => decoration.range)
+        .sort((a, b) => a._key.localeCompare(b._key)),
     },
   }
 }
