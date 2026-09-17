@@ -1013,12 +1013,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.invalid-value.convert-button.text': 'Convert to {{targetType}}',
   /** The current value (<code>`{{actualType}}`</code>) */
   'inputs.invalid-value.current-type': 'The current value (<code>{{actualType}}</code>)',
-  /** The property value is stored as a value type that does not match the expected type. */
+  /** This field has content in a data type that is different from this field's configuration in the Studio schema. */
   'inputs.invalid-value.description':
-    'The property value is stored as a value type that does not match the expected type.',
+    "This field has content in a data type that is different from this field's configuration in the Studio schema.",
   /** The value of this property must be of type <code>`{{validType}}`</code> according to the schema. */
   'inputs.invalid-value.details.description':
     'The value of this property must be of type <code>{{validType}}</code> according to the schema.',
+  /** Field name: <code>`{{fieldName}}`</code> */
+  'inputs.invalid-value.details.field-name': 'Field name: <code>{{fieldName}}</code>',
   /** Only the following types are valid here according to schema: */
   'inputs.invalid-value.details.multi-type-description':
     'Only the following types are valid here according to schema:',
@@ -1028,10 +1030,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Developer info */
   'inputs.invalid-value.details.title': 'Developer info',
   /** -- Invalid Value Input -- */
-  /** Reset value */
-  'inputs.invalid-value.reset-button.text': 'Reset value',
+  /** Unset value */
+  'inputs.invalid-value.reset-button.text': 'Unset value',
   /** Invalid property value */
   'inputs.invalid-value.title': 'Invalid property value',
+  /** Invalid data for `{{fieldTitle}}` */
+  'inputs.invalid-value.title-with-field': 'Invalid data for {{fieldTitle}}',
   /** Title for the "All fields" field group */
   'inputs.object.field-group-tabs.all-fields-title': 'All fields',
   /** Aria label for the "Field groups" select control on smaller screens */
