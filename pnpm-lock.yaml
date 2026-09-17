@@ -1276,8 +1276,8 @@ importers:
         version: 7.2.4
     devDependencies:
       '@portabletext/markdown':
-        specifier: ^2.2.0
-        version: 2.2.0
+        specifier: ^2.2.1
+        version: 2.2.1
       '@repo/test-config':
         specifier: workspace:*
         version: link:../test-config
@@ -5094,11 +5094,29 @@ packages:
   '@marijn/find-cluster-break@1.0.4':
     resolution: {integrity: sha512-Wy0V7+SGUjnF9/TkiM1hKVDPj7jKXduPNboMVtHTA8dySMURWqfg/JZ9E2Sq8JgSJmkl7k7Qe9FLeMSrSraWmQ==}
 
+  '@mdit/helper@1.1.1':
+    resolution: {integrity: sha512-Rrl14ZjFerzfAqCt0zxAWbPgRpsumgm9iBLrCVE05WS8dM6v/LnF1ppPFVnRz1F7fAaxn0kTFOlYwzcY+kRsHQ==}
+    engines: {node: '>=22'}
+    peerDependencies:
+      markdown-it: ^15.0.1
+    peerDependenciesMeta:
+      markdown-it:
+        optional: true
+
   '@mdit/plugin-alert@0.23.2':
     resolution: {integrity: sha512-pXIil0FLy9ilhvT6d324A4X+mt5i/zG8ml0VIpZwiUYh2k1Wi6VnZhFHfsnONTRu6dPL2EwQBIhQgQ+269f7LA==}
     engines: {node: '>= 20'}
     peerDependencies:
       markdown-it: ^14.1.0
+    peerDependenciesMeta:
+      markdown-it:
+        optional: true
+
+  '@mdit/plugin-alert@2.0.1':
+    resolution: {integrity: sha512-aWAjNZWQlXfCYUmTJvE+uWV0XZSz7SFcrI8N9Iq78XDZ3E/lEZo2apf9V5Nlbtc8cbda16fM9kx11GYwZlCSzw==}
+    engines: {node: '>=22'}
+    peerDependencies:
+      markdown-it: ^15.0.1
     peerDependenciesMeta:
       markdown-it:
         optional: true
@@ -6683,8 +6701,8 @@ packages:
     resolution: {integrity: sha512-TLlWrsLT6kXUeE4Fn6KWW+NMOBB/epT5qZiD92+15cJje6R7xmmQ/orCwViSicCiQ77t1/zwguilCUzdNB4XDA==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
-  '@portabletext/markdown@2.2.0':
-    resolution: {integrity: sha512-rvmbm/pPhu3vekjuo9p9F8UlplQGRQ2zWMCljEKvFe/FtLtkhG/qEOKeD1tQH3nbFpP4tSGeE13TxAfTq9qzEA==}
+  '@portabletext/markdown@2.2.1':
+    resolution: {integrity: sha512-KHl4MP5w2JemxuzHZtLkiSSTbhw7kVi6NZ/2sfV61IGfjnlkJYWrkURzxRmvNcwO+vHBwYYtUm0paQkDymxScg==}
     engines: {node: '>=22.12'}
 
   '@portabletext/patches@3.0.0':
@@ -9075,6 +9093,9 @@ packages:
 
   argparse@2.0.1:
     resolution: {integrity: sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==}
+
+  argparse@3.0.2:
+    resolution: {integrity: sha512-mFdDM6WqWKraGLsVb+C9CahPnzTXOefAOLq3jYcca2YZ8bEWpr++Tzj+zSaKW9+X9L5uSxcm1AZ3Y6aZJ09OhQ==}
 
   aria-query@5.3.0:
     resolution: {integrity: sha512-b0P0sZPKtyu8HkeRAfCq0IfURZK+SuwMjY1UXGBU27wpAiTwQAIlq56IbIO+ytk/JjS1fMR14ee5WBBfKi5J6A==}
@@ -11809,6 +11830,9 @@ packages:
   linkify-it@5.0.2:
     resolution: {integrity: sha512-ONTm2jCMAVZjgQa/Fy1kScXsuOoF5NPTsoFBdE1KVIZ2vAh/r9+Bqo+0jINCBYnavTPQZz38QzFTme79ENoN3Q==}
 
+  linkify-it@6.1.0:
+    resolution: {integrity: sha512-wJ/TwpSDTLepCrQoYWYIExIKg5Zchex2Nn5yk2mFnB+6PtdkHtyLx742md9csRjjOnGkKIS/RrbY7l8D6gT9Vw==}
+
   load-esm@1.0.3:
     resolution: {integrity: sha512-v5xlu8eHD1+6r8EHTg6hfmO97LN8ugKtiXcy5e6oN72iD2r6u0RPfLl6fxM+7Wnh2ZRq15o0russMst44WauPA==}
     engines: {node: '>=13.2.0'}
@@ -11921,6 +11945,10 @@ packages:
 
   markdown-it@14.3.1:
     resolution: {integrity: sha512-4Ej49aYTDFIQ+uBkfX8GBvJGccoARxxPep+7aWTs55ozbjQJpW9M26Fe53vnGgvLeVzva/amzjQQaQu9w0vMhA==}
+    hasBin: true
+
+  markdown-it@15.0.2:
+    resolution: {integrity: sha512-q4IGxMv56jCqT4OCRCADBoDP3LO4MhmTXjFbphHPXs4g3j9Xg5RDnxqN8IF/3vIWEU+VCnUq+7JUg/cfy2E6Qw==}
     hasBin: true
 
   matcher@3.0.0:
@@ -14274,6 +14302,9 @@ packages:
 
   uc.micro@2.1.0:
     resolution: {integrity: sha512-ARDJmphmdvUk6Glw7y9DQ2bFkKBHwQHLi2lsaH6PPmz/Ka9sFOBsBluozhDltWmnv9u/cF6Rt87znRTPV+yp/A==}
+
+  uc.micro@3.0.0:
+    resolution: {integrity: sha512-U3PppEkleoTnIfi8BozMx3yju3qc/L6SwqWo2Sw+54PX+PX0q9I+r1Um5HCmqD7n9VDX5/v3vQH/AjA6deDdtw==}
 
   ufo@1.6.4:
     resolution: {integrity: sha512-JFNbkD1Svwe0KvGi8GOeLcP4kAWQ609twvCdcHxq1oSL8svv39ZuSvajcD8B+5D0eL4+s1Is2D/O6KN3qcTeRA==}
@@ -17823,11 +17854,21 @@ snapshots:
 
   '@marijn/find-cluster-break@1.0.4': {}
 
+  '@mdit/helper@1.1.1(markdown-it@15.0.2)':
+    optionalDependencies:
+      markdown-it: 15.0.2
+
   '@mdit/plugin-alert@0.23.2(markdown-it@14.3.1)':
     dependencies:
       '@types/markdown-it': 14.2.0
     optionalDependencies:
       markdown-it: 14.3.1
+
+  '@mdit/plugin-alert@2.0.1(markdown-it@15.0.2)':
+    dependencies:
+      '@mdit/helper': 1.1.1(markdown-it@15.0.2)
+    optionalDependencies:
+      markdown-it: 15.0.2
 
   '@microsoft/api-extractor-model@7.33.11(@types/node@24.13.3)':
     dependencies:
@@ -19057,14 +19098,14 @@ snapshots:
       '@portabletext/toolkit': 5.0.2
       markdown-it: 14.3.1
 
-  '@portabletext/markdown@2.2.0':
+  '@portabletext/markdown@2.2.1':
     dependencies:
-      '@mdit/plugin-alert': 0.23.2(markdown-it@14.3.1)
+      '@mdit/plugin-alert': 2.0.1(markdown-it@15.0.2)
       '@portabletext/schema': 3.0.0
       '@portabletext/toolkit': 6.0.0
       '@sanity/diff-match-patch': 3.2.0
-      linkify-it: 5.0.2
-      markdown-it: 14.3.1
+      linkify-it: 6.1.0
+      markdown-it: 15.0.2
 
   '@portabletext/patches@3.0.0':
     dependencies:
@@ -22221,6 +22262,8 @@ snapshots:
 
   argparse@2.0.1: {}
 
+  argparse@3.0.2: {}
+
   aria-query@5.3.0:
     dependencies:
       dequal: 2.0.3
@@ -25057,6 +25100,10 @@ snapshots:
     dependencies:
       uc.micro: 2.1.0
 
+  linkify-it@6.1.0:
+    dependencies:
+      uc.micro: 3.0.0
+
   load-esm@1.0.3:
     optional: true
 
@@ -25174,6 +25221,15 @@ snapshots:
       mdurl: 2.1.0
       punycode.js: 2.3.1
       uc.micro: 2.1.0
+
+  markdown-it@15.0.2:
+    dependencies:
+      argparse: 3.0.2
+      entities: 8.0.0
+      linkify-it: 6.1.0
+      mdurl: 2.1.0
+      punycode.js: 2.3.1
+      uc.micro: 3.0.0
 
   matcher@3.0.0:
     dependencies:
@@ -28086,6 +28142,8 @@ snapshots:
       '@typescript/typescript-win32-x64': 7.0.2
 
   uc.micro@2.1.0: {}
+
+  uc.micro@3.0.0: {}
 
   ufo@1.6.4: {}
 
