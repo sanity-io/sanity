@@ -439,6 +439,10 @@ Tests require a build first because some tests use compiled output:
 pnpm build && pnpm test
 ```
 
+On macOS, use `TMPDIR=/private/tmp pnpm test` if the E2E summary reporter test fails with a
+`/var` versus `/private/var` path mismatch. The test changes its working directory, which resolves
+the symlink; using a canonical temporary path keeps its expected and actual paths consistent.
+
 #### Test Timeouts
 
 When a test needs a custom timeout, use the Vitest options object as the second argument (not the deprecated third-argument form). Prefer numeric separators for readability:
