@@ -203,10 +203,14 @@ describe('presence-store', () => {
       const {store, incoming$} = createHarness()
       const {latest, subscription} = collect<DocumentPresence[]>(store.documentPresence('doc-1'))
 
+      // Alone, the own session yields no presence at all
       incoming$.next(stateEvent('me', SESSION_ID, [location('doc-1')]))
+      await settle()
+      expect(latest()).toEqual([])
+
+      // ...and it stays hidden next to other sessions
       incoming$.next(stateEvent('alice', 'session-alice', [location('doc-1')]))
       await settle()
-
       expect(latest().map((p) => p.sessionId)).toEqual(['session-alice'])
       subscription.unsubscribe()
     })
@@ -215,10 +219,14 @@ describe('presence-store', () => {
       const {store, incoming$} = createHarness()
       const {latest, subscription} = collect<DocumentPresence[]>(store.documentPresence('doc-1'))
 
+      // Alone, a session without a resolvable profile yields no presence at all
       incoming$.next(stateEvent('unknown', 'session-unknown', [location('doc-1')]))
+      await settle()
+      expect(latest()).toEqual([])
+
+      // ...and it stays dropped next to sessions that do resolve
       incoming$.next(stateEvent('alice', 'session-alice', [location('doc-1')]))
       await settle()
-
       expect(latest().map((p) => p.user.id)).toEqual(['alice'])
       subscription.unsubscribe()
     })
@@ -293,9 +301,11 @@ describe('presence-store', () => {
       const {latest, subscription} = collect<GlobalPresence[]>(store.globalPresence$)
 
       incoming$.next(stateEvent('me', SESSION_ID, [location('doc-1')]))
+      await settle()
+      expect(latest()).toEqual([])
+
       incoming$.next(stateEvent('alice', 'session-alice', [location('doc-1')]))
       await settle()
-
       expect(latest().map((p) => p.user.id)).toEqual(['alice'])
       subscription.unsubscribe()
     })
