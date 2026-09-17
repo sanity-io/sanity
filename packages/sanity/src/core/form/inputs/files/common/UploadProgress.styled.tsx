@@ -1,35 +1,28 @@
 import {Stack} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
-import {styled} from 'styled-components'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 import {Flex} from 'ui5'
 
 import {RatioBox} from '../ImageInput/ImagePreview.styled'
+import {cardWrapper, codeWrapper, flexWrapper, leftSection} from './UploadProgress.css'
 
-export const CardWrapper = styled(RatioBox)`
-  box-sizing: border-box;
-`
+export function CardWrapper(props: ComponentProps<typeof RatioBox>) {
+  const {className, ...rest} = props
+  return <RatioBox {...rest} className={clsx(cardWrapper, className)} />
+}
 
-export const FlexWrapper = styled(Flex)`
-  box-sizing: border-box;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  overflow: clip;
-`
+export function FlexWrapper(props: ComponentProps<typeof Flex>) {
+  const {className, ...rest} = props
+  return <Flex {...rest} className={clsx(flexWrapper, className)} />
+}
 
-export const LeftSection = styled(Stack)`
-  position: relative;
-  width: 60%;
-`
+export function LeftSection(props: ComponentProps<typeof Stack>) {
+  const {className, ...rest} = props
+  return <Stack {...rest} className={clsx(leftSection, className)} />
+}
 
-export const CodeWrapper = styled(Code)`
-  position: relative;
-  width: 100%;
-
-  code {
-    overflow: hidden;
-    overflow: clip;
-    text-overflow: ellipsis;
-    position: relative;
-    max-width: 200px;
-  }
-`
+export function CodeWrapper(props: ComponentProps<typeof Code>) {
+  const {className, ...rest} = props
+  return <Code {...rest} className={clsx(codeWrapper, className)} />
+}
