@@ -176,6 +176,41 @@ describe('VariantsMenuSections', () => {
     expect(norwegian.querySelector('[data-sanity-icon="rhombus"]')).toBeNull()
   })
 
+  it('shows a no-results message when the term matches nothing', async () => {
+    await renderSections(
+      <VariantsMenuSections
+        documentId={undefined}
+        variants={[]}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
+        searchTerm="zzz"
+      />,
+    )
+
+    expect(screen.getByTestId('variant-menu-no-results')).toBeInTheDocument()
+  })
+
+  it('does not show a no-results message while the default row still matches', async () => {
+    await renderSections(
+      <VariantsMenuSections
+        documentId={undefined}
+        variants={[]}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
+        searchTerm="users"
+      />,
+    )
+
+    // "All users (Default)" survives the term, so the menu is not empty and saying otherwise
+    // would contradict the row sitting right there.
+    expect(screen.queryByTestId('variant-menu-no-results')).not.toBeInTheDocument()
+    expect(screen.getByTestId('variant-default')).toBeInTheDocument()
+  })
+
   it('labels the list "Variants" with no document selected', async () => {
     await renderSections(
       <VariantsMenuSections

@@ -124,6 +124,7 @@ export function VariantsMenu({
   // document always exists outside any variant, so the default entry fills as
   // soon as there is one.
   const hasSelectedDocument = Boolean(activeDocument)
+  const isFiltering = filterQuery.trim().length > 0
 
   return (
     <>
@@ -158,23 +159,30 @@ export function VariantsMenu({
               onSelectDefault={handleSelectDefault}
             />
 
-            <MenuDivider />
-            <Box paddingX={2} paddingY={1}>
-              <MenuItem
-                as="a"
-                data-testid="view-variants-menu-item"
-                href={viewVariantsLink.href}
-                icon={RhombusOutlinedIcon}
-                onClick={viewVariantsLink.onClick}
-                text={t('navbar.variant.view-all')}
-              />
-              <MenuItem
-                data-testid="add-variant-menu-item"
-                icon={AddIcon}
-                onClick={handleOpenCreateVariantDialog}
-                text={t('navbar.variant.add')}
-              />
-            </Box>
+            {/* Dropped while filtering. A filtered menu is a set of results, and the divider plus
+                two navigational rows under it are chrome that competes with them. The release menu
+                withholds its action block on the same terms. */}
+            {!isFiltering && (
+              <>
+                <MenuDivider />
+                <Box paddingX={2} paddingY={1}>
+                  <MenuItem
+                    as="a"
+                    data-testid="view-variants-menu-item"
+                    href={viewVariantsLink.href}
+                    icon={RhombusOutlinedIcon}
+                    onClick={viewVariantsLink.onClick}
+                    text={t('navbar.variant.view-all')}
+                  />
+                  <MenuItem
+                    data-testid="add-variant-menu-item"
+                    icon={AddIcon}
+                    onClick={handleOpenCreateVariantDialog}
+                    text={t('navbar.variant.add')}
+                  />
+                </Box>
+              </>
+            )}
           </StyledMenu>
         }
         popover={{

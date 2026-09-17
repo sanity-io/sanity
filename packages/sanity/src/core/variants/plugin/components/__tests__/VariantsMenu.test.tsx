@@ -1,4 +1,5 @@
 import {render, screen} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {route, RouterProvider} from 'sanity/router'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -95,6 +96,31 @@ describe('VariantsMenu', () => {
     await renderMenu()
 
     expect(screen.getByTestId('variant-menu-filter')).toBeInTheDocument()
+  })
+
+  it('drops the action block while filtering', async () => {
+    variantsMock.data = manyVariants(VARIANT_FILTER_THRESHOLD)
+
+    await renderMenu()
+
+    // Asserted after the whole term lands, never mid-word: a per-keystroke assertion races the
+    // re-render and reads as flaky.
+    await userEvent.type(screen.getByTestId('variant-menu-filter'), 'Bulk variant 1')
+
+    expect(screen.queryByTestId('view-variants-menu-item')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('add-variant-menu-item')).not.toBeInTheDocument()
+  })
+
+  it('restores the action block when the filter is cleared', async () => {
+    variantsMock.data = manyVariants(VARIANT_FILTER_THRESHOLD)
+
+    await renderMenu()
+
+    const filter = screen.getByTestId('variant-menu-filter')
+    await userEvent.type(filter, 'Bulk')
+    await userEvent.clear(filter)
+
+    expect(screen.getByTestId('view-variants-menu-item')).toBeInTheDocument()
   })
 
   it('points "View variants" at the variants tool', async () => {

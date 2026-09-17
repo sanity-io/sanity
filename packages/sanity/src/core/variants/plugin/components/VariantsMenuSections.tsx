@@ -314,6 +314,18 @@ export function VariantsMenuSections({
     </Box>
   ) : null
 
+  // Filtered to nothing, with the default row excluded too, so there is no row left to show.
+  // Distinct from having no definitions at all, handled below: this state is about the term.
+  if (isFiltering && rest.variants.length === 0 && !defaultRow) {
+    return (
+      <Box padding={4}>
+        <Text align="center" muted size={1} data-testid="variant-menu-no-results">
+          {t('navbar.variant.no-results', {searchTerm: (rest.searchTerm ?? '').trim()})}
+        </Text>
+      </Box>
+    )
+  }
+
   // No definitions at all. The label still appears, because a workspace with none is where a
   // reader most needs telling what the list would hold; the message says why it is empty. Not
   // shown while filtering - a filter matching nothing is a different state, and saying "none

@@ -19,6 +19,8 @@ const variantsLocaleStrings = {
   /** Section header for non-default variants in the dropdown. */
   /** Names the variant list in the perspective menu. Shown at every count, including none. */
   'navbar.variant.list': 'Variants',
+  /** Shown in place of the list when a filter term matches nothing in the variant menu. */
+  'navbar.variant.no-results': 'No results for “{{searchTerm}}”',
   /** Shown under the list label when the workspace has no variant definitions yet. */
   'navbar.variant.none-yet': 'No variants created yet',
   'navbar.variant.other': 'Other variants',
