@@ -113,4 +113,42 @@ describe('createHookFromObservableFactory render stability', () => {
     expect(observableFactory.mock.calls.length).toBeGreaterThan(callsAfterMount)
     expect(observableFactory).toHaveBeenLastCalledWith({id: 'b'})
   })
+
+  it('rebuilds when a nested class-instance arg identity changes', async () => {
+    // Mirrors useDocumentPairPermissions / useUser: the factory arg is a
+    // freshly built options object that *contains* a client/store. dequal/lite
+    // would treat two TokenClients as equal (private fields are invisible) and
+    // keep the previous observable keyed on the stale client.
+    class TokenClient {
+      #token: string
+      constructor(token: string) {
+        this.#token = token
+      }
+      get token() {
+        return this.#token
+      }
+    }
+
+    const factory = vi.fn((arg: {client: TokenClient}) =>
+      cachedValue$.pipe(map((value) => `${value}:${arg.client.constructor.name}`)),
+    )
+    const useClientHook = createHookFromObservableFactory(factory)
+    function ClientProbe(props: {client: TokenClient}) {
+      useClientHook({client: props.client})
+      return null
+    }
+
+    const first = new TokenClient('old-token')
+    root.render(<ClientProbe client={first} />)
+    await sleep(100)
+    const callsAfterMount = factory.mock.calls.length
+    expect(callsAfterMount).toBeGreaterThan(0)
+    expect(factory).toHaveBeenLastCalledWith({client: first})
+
+    const second = new TokenClient('new-token')
+    root.render(<ClientProbe client={second} />)
+    await sleep(100)
+    expect(factory.mock.calls.length).toBeGreaterThan(callsAfterMount)
+    expect(factory).toHaveBeenLastCalledWith({client: second})
+  })
 })

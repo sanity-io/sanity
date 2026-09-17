@@ -53,6 +53,53 @@ describe('useShallowUnique', () => {
     expect(result.current).toBe(second)
   })
 
+  it('compares class instances by identity, including when nested', () => {
+    // dequal/lite walks class instances by enumerable own keys and ignores
+    // private fields, so two distinct clients with the same public shape
+    // would otherwise pin the first instance forever.
+    class TokenClient {
+      #token: string
+      constructor(token: string) {
+        this.#token = token
+      }
+      get token() {
+        return this.#token
+      }
+    }
+
+    const first = new TokenClient('a')
+    const {result, rerender} = renderHook(({value}) => useShallowUnique(value), {
+      initialProps: {value: {client: first, id: 'doc'}},
+    })
+    expect(result.current.client).toBe(first)
+
+    const secondWrapped = {client: new TokenClient('b'), id: 'doc'}
+    rerender({value: secondWrapped})
+    expect(result.current).toBe(secondWrapped)
+
+    rerender({value: {client: secondWrapped.client, id: 'doc'}})
+    expect(result.current).toBe(secondWrapped)
+  })
+
+  it('does not recurse into cyclic class instances', () => {
+    class CyclicClient {
+      observable: {parent: CyclicClient}
+      constructor() {
+        this.observable = {parent: this}
+      }
+    }
+
+    const first = new CyclicClient()
+    const {result, rerender} = renderHook(({value}) => useShallowUnique(value), {
+      initialProps: {value: {client: first}},
+    })
+    expect(result.current.client).toBe(first)
+
+    const second = new CyclicClient()
+    rerender({value: {client: second}})
+    expect(result.current.client).toBe(second)
+  })
+
   it('passes primitives through', () => {
     const {result, rerender} = renderHook(
       ({value}) => useShallowUnique<string | undefined>(value),

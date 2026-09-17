@@ -49,7 +49,8 @@ export function createHookFromObservableFactory<T, TArg = void>(
     // build inline every render, and react-rx keys its store on observable
     // identity — a fresh identity per render becomes a self-sustaining render
     // loop under `useObservable`'s deferred pass (see the useDocumentValues
-    // regression, e089afde26).
+    // regression, e089afde26). Nested class instances (SanityClient, Schema,
+    // stores) compare by identity so a token/workspace change rebuilds.
     const arg = useShallowUnique(unstableArg)
     const observable = useMemo(
       () =>
