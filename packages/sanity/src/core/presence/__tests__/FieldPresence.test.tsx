@@ -113,7 +113,7 @@ describe('FieldPresence', () => {
     expect(reported.current[0][1].maxAvatars).toBe(DEFAULT_MAX_AVATARS_FIELDS)
   })
 
-  it('reports updated presence without re-registering', async () => {
+  it('reports updated presence under the same region id', async () => {
     const first = [presence('u1')]
     const {reported, rerenderWithTracker} = renderWithTracker(
       <FieldPresence presence={first} maxAvatars={3} />,
@@ -140,7 +140,7 @@ describe('FieldPresence', () => {
     await waitFor(() => expect(reported.current).toHaveLength(0))
   })
 
-  it('registers one region per field so several fields can be tracked at once', async () => {
+  it('registers a separate region for every instance', async () => {
     const {reported} = renderWithTracker(
       <>
         <FieldPresence presence={[presence('u1', ['title'])]} maxAvatars={3} />

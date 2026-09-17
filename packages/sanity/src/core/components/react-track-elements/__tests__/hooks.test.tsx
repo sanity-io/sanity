@@ -13,19 +13,28 @@ type Value = {label: string}
 // The store publishes its snapshot with a trailing 10 ms debounce
 const PUBLISH_DELAY = 10
 
-/** Mounts a tracker store and exposes both the store and the latest published snapshot */
+/**
+ * Mounts a tracker store and exposes the store, the latest published snapshot and how many
+ * snapshots have been published (every publish yields a new snapshot array)
+ */
 function renderStore() {
   const latest: {
     store: TrackerContextStore<Value> | null
     snapshot: TrackerContextGetSnapshot<Value>
-  } = {store: null, snapshot: []}
+    publishes: number
+  } = {store: null, snapshot: [], publishes: 0}
 
   const {rerender} = renderHook(() => {
     const result = useTrackerStore<Value>()
     latest.store = result.store
-    latest.snapshot = result.snapshot
+    if (result.snapshot !== latest.snapshot) {
+      latest.snapshot = result.snapshot
+      latest.publishes += 1
+    }
     return result
   })
+  // The initial snapshot is not a publish
+  latest.publishes = 0
 
   return {latest, rerender}
 }
@@ -76,9 +85,8 @@ describe('useTrackerStore', () => {
     ])
   })
 
-  it('coalesces a burst of changes into one snapshot', () => {
+  it('coalesces a burst of changes into a single publish', () => {
     const {latest} = renderStore()
-    const snapshots: TrackerContextGetSnapshot<Value>[] = []
 
     act(() => {
       latest.store!.add('a', {label: 'A'})
@@ -87,9 +95,9 @@ describe('useTrackerStore', () => {
       latest.store!.remove('b')
     })
     flushPublish()
-    snapshots.push(latest.snapshot)
 
-    expect(snapshots).toEqual([[['a', {label: 'A2'}]]])
+    expect(latest.publishes).toBe(1)
+    expect(latest.snapshot).toEqual([['a', {label: 'A2'}]])
   })
 
   it('removes entries', () => {
@@ -154,7 +162,7 @@ describe('useTrackerStoreReporter', () => {
     expect(latest.snapshot).toEqual([['a', {label: 'A'}]])
   })
 
-  it('does nothing without a store', () => {
+  it('does not even read the value without a store', () => {
     const value = vi.fn(() => ({label: 'A'}))
 
     render(<Reporter store={null} id="a" value={value} />)
@@ -214,7 +222,7 @@ describe('useTrackerStoreReporter', () => {
     expect(latest.snapshot).toEqual([['b', {label: 'A'}]])
   })
 
-  it('tracks several reporters independently', () => {
+  it('tracks several reporters and removes only the one that unmounts', () => {
     const {latest} = renderStore()
 
     const {rerender} = render(

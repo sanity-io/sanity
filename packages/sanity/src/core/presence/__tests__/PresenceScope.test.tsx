@@ -51,7 +51,7 @@ describe('PresenceScope', () => {
     ])
   })
 
-  it('handles keyed array item paths', () => {
+  it('trims keyed array item paths the same way', () => {
     expect(scoped(['items', {_key: 'a'}])).toEqual([
       {...presence('item-title', ['items', {_key: 'a'}, 'title']), path: ['title']},
     ])
