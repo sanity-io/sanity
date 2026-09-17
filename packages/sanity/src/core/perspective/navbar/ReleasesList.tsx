@@ -1,5 +1,5 @@
 import {Card, Spinner, Stack, Text, TextInput} from '@sanity/ui'
-import {type ChangeEvent, type JSX, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {type ChangeEvent, type JSX, useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
@@ -30,11 +30,6 @@ const StickyCard = styled(Card)`
   background: var(--card-bg-color);
 `
 
-/** TEMPORARY, EXPERIMENT ONLY - the pinned alternatives. The shipped filter is not sticky. */
-const StickyFilterCard = styled(StickyCard)`
-  top: 0;
-`
-
 const StickyBottomCard = styled(StickyCard)`
   bottom: 0;
   /* Every element that can precede this card draws its own bottom border - a release section, the
@@ -52,25 +47,14 @@ export function ReleasesList({
   menuItemProps,
   filterQuery,
   onFilterQueryChange,
-  experimentalFilterScroll = 'position',
 }: {
   areReleasesEnabled: boolean
   handleOpenBundleDialog: () => void
   menuItemProps?: ReleasesNavMenuItemPropsGetter
   filterQuery: string
   onFilterQueryChange: (query: string) => void
-  /**
-   * TEMPORARY, EXPERIMENT ONLY - which filter-scroll treatment to render.
-   *
-   * Defaults to `position`, which is the shipped behaviour: the filter is an ordinary block at the
-   * head of the list, so scrolling away from the top carries it out of view and returning brings
-   * it back. Only the catalog's comparison story passes anything else, so nothing in Studio
-   * changes.
-   */
-  experimentalFilterScroll?: 'position' | 'pinned' | 'direction'
 }): JSX.Element {
   const {t} = useTranslation()
-  // TEMPORARY, EXPERIMENT ONLY - `position` is the shipped, unpinned card.
   const {loading, data: allReleases} = useActiveReleases()
   const {bundles: agentBundles} = useAgentBundles()
   const {activeDocument} = usePerspectiveActiveDocument()
@@ -112,70 +96,6 @@ export function ReleasesList({
     [onFilterQueryChange],
   )
 
-  // TEMPORARY, EXPERIMENT ONLY - drives the `direction` alternative. Declared above the loading
-  // early return: hooks after it run on the loaded render only, which throws "Rendered more hooks
-  // than during the previous render".
-  const filterRef = useRef<HTMLDivElement | null>(null)
-  const [filterOffset, setFilterOffset] = useState(0)
-
-  useEffect(() => {
-    if (loading || experimentalFilterScroll !== 'direction') return undefined
-
-    let previousTop: number | null = null
-    let offset = 0
-    let frame = 0
-
-    // Captured from `window` rather than bound to the scroller directly. The scrolling ancestor is
-    // the popover, which has no scrollable extent while the menu is closed - and this effect runs
-    // at mount, when it is. Resolving the scroller from the event means open state does not matter.
-    // Scroll events do not bubble, but they do capture.
-    const handleScroll = (event: Event) => {
-      const scroller = event.target
-      const filter = filterRef.current
-      if (!(scroller instanceof HTMLElement) || !filter || !scroller.contains(filter)) return
-
-      // Chrome's scroll anchoring adjusts scrollTop to keep content stable when layout above the
-      // viewport changes. This handler changes layout in response to scroll, so anchoring
-      // compensates, and the compensation arrives as another scroll event carrying a non-zero
-      // delta, which moves the offset again. That loop locks the renderer.
-      scroller.style.overflowAnchor = 'none'
-
-      // One update per frame, and only when the value moves. State written per scroll event is
-      // the other half of what locked it.
-      if (frame) return
-      frame = requestAnimationFrame(() => {
-        frame = 0
-        const height = filter.offsetHeight
-        const top = scroller.scrollTop
-        if (previousTop === null) previousTop = top
-        const next = Math.min(Math.max(offset + (top - previousTop), 0), height)
-        previousTop = top
-        if (next === offset) return
-        offset = next
-        setFilterOffset(next)
-      })
-    }
-
-    window.addEventListener('scroll', handleScroll, {capture: true, passive: true})
-    return () => {
-      if (frame) cancelAnimationFrame(frame)
-      window.removeEventListener('scroll', handleScroll, {capture: true})
-    }
-  }, [experimentalFilterScroll, loading])
-
-  const filterInput = (
-    <Card padding={2}>
-      <TextInput
-        data-testid="release-menu-filter"
-        fontSize={1}
-        onChange={handleFilterChange}
-        placeholder={t('release.menu.filter-placeholder')}
-        radius={2}
-        value={filterQuery}
-      />
-    </Card>
-  )
-
   if (loading) {
     return (
       <Flex padding={4} justifyContent="center" data-testid="spinner">
@@ -191,24 +111,20 @@ export function ReleasesList({
           back — the same relationship published and drafts have with the releases under them.
           Nothing above the list is pinned now, which is why the section headings pin at the top
           edge itself rather than against a measured offset. */}
-      {showFilter &&
-        // TEMPORARY, EXPERIMENT ONLY - the `position` branch is the shipped render, untouched. The
-        // alternatives are a separate branch so nothing about today's path changes.
-        (experimentalFilterScroll === 'position' ? (
-          <Card borderBottom>{filterInput}</Card>
-        ) : (
-          <StickyFilterCard
-            borderBottom
-            ref={filterRef}
-            style={
-              experimentalFilterScroll === 'direction' && filterOffset
-                ? {transform: `translateY(-${filterOffset}px)`}
-                : undefined
-            }
-          >
-            {filterInput}
-          </StickyFilterCard>
-        ))}
+      {showFilter && (
+        <Card borderBottom>
+          <Card padding={2}>
+            <TextInput
+              data-testid="release-menu-filter"
+              fontSize={1}
+              onChange={handleFilterChange}
+              placeholder={t('release.menu.filter-placeholder')}
+              radius={2}
+              value={filterQuery}
+            />
+          </Card>
+        </Card>
+      )}
       {(showPublished || showDrafts) && (
         <Card borderBottom padding={1}>
           <Stack gap={1}>
