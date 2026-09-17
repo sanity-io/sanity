@@ -18,7 +18,7 @@ import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
 import {decodeVariantIdFromRoute} from '../../tool/util'
 import {isVariantId, type SystemVariant} from '../../types'
-import {rankVariantsForSearch} from '../../util/rankVariantsForSearch'
+import {rankVariantsForSearch, VARIANT_FILTER_THRESHOLD} from '../../util/rankVariantsForSearch'
 import {VARIANTS_TOOL_NAME} from '../index'
 import {VariantsMenuSections} from './VariantsMenuSections'
 import {suggestIconColor} from './VariantsNav.css'
@@ -133,16 +133,20 @@ export function VariantsMenu({
         onClose={handleMenuClose}
         menu={
           <StyledMenu data-testid="variants-nav-menu" padding={0}>
-            <Box padding={2}>
-              <TextInput
-                data-testid="variant-menu-filter"
-                fontSize={1}
-                onChange={handleFilterChange}
-                placeholder={t('navbar.variant.filter-placeholder')}
-                radius={2}
-                value={filterQuery}
-              />
-            </Box>
+            {/* Gated on the unfiltered count, not the filtered one: keyed off the results, the
+                input would disappear underneath whoever was typing into it. */}
+            {variants.length >= VARIANT_FILTER_THRESHOLD && (
+              <Box padding={2}>
+                <TextInput
+                  data-testid="variant-menu-filter"
+                  fontSize={1}
+                  onChange={handleFilterChange}
+                  placeholder={t('navbar.variant.filter-placeholder')}
+                  radius={2}
+                  value={filterQuery}
+                />
+              </Box>
+            )}
 
             <VariantsMenuSections
               documentId={activeDocument?.documentId}

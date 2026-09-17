@@ -295,29 +295,55 @@ export function VariantsMenuSections({
 }): React.JSX.Element | null {
   const {t} = useTranslation(variantsLocaleNamespace)
   const defaultLabel = t('navbar.variant.default')
+  const isFiltering = (rest.searchTerm ?? '').trim().length > 0
+
+  // The default row sits inside the list rather than above it, so the filter reaches it and its
+  // term is marked - the same treatment published and drafts have in the release menu. Rendered
+  // here rather than in `VariantsMenu` for exactly that reason: a row rendered outside the
+  // sections is a row the filter cannot see.
+  const defaultRow = matchesSearchTerm(defaultLabel, rest.searchTerm) ? (
+    <Box paddingX={2}>
+      <DefaultVariantMenuItem
+        // Filled once a document is selected: the default is the first version it ever had.
+        icon={documentId ? RhombusIcon : RhombusOutlinedIcon}
+        isSelected={isDefaultSelected}
+        label={defaultLabel}
+        onSelect={onSelectDefault}
+        searchTerm={rest.searchTerm}
+      />
+    </Box>
+  ) : null
+
+  // No definitions at all. The label still appears, because a workspace with none is where a
+  // reader most needs telling what the list would hold; the message says why it is empty. Not
+  // shown while filtering - a filter matching nothing is a different state, and saying "none
+  // created yet" there would be false.
+  if (rest.variants.length === 0 && !isFiltering) {
+    return (
+      <>
+        {defaultRow}
+        <VariantSectionHeader>{t('navbar.variant.list')}</VariantSectionHeader>
+        <Box paddingX={2} paddingBottom={2}>
+          <Text muted size={1} data-testid="variant-menu-none-yet">
+            {t('navbar.variant.none-yet')}
+          </Text>
+        </Box>
+      </>
+    )
+  }
 
   return (
     <>
-      {/* The default row sits inside the list rather than above it, so the filter reaches it and
-          its term is marked - the same treatment published and drafts have in the release menu.
-          Rendered here rather than in `VariantsMenu` for exactly that reason: a row rendered
-          outside the sections is a row the filter cannot see. */}
-      {matchesSearchTerm(defaultLabel, rest.searchTerm) && (
-        <Box paddingX={2}>
-          <DefaultVariantMenuItem
-            // Filled once a document is selected: the default is the first version it ever had.
-            icon={documentId ? RhombusIcon : RhombusOutlinedIcon}
-            isSelected={isDefaultSelected}
-            label={defaultLabel}
-            onSelect={onSelectDefault}
-            searchTerm={rest.searchTerm}
-          />
-        </Box>
-      )}
+      {defaultRow}
       {documentId ? (
         <DocumentVariantSections documentId={documentId} {...rest} />
       ) : (
-        <OtherVariantsSection {...rest} />
+        // Labelled `Variants` unless a filter is active, where the list is a set of results and a
+        // heading over them explains nothing. The document-selected path labels itself.
+        <OtherVariantsSection
+          heading={isFiltering ? undefined : t('navbar.variant.list')}
+          {...rest}
+        />
       )}
     </>
   )

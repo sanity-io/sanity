@@ -2,6 +2,16 @@ import {getVariantTitle} from '../tool/util'
 import {type SystemVariant} from '../types'
 
 /**
+ * Variant count at which the menu starts offering a filter.
+ *
+ * Matches the release menu's own threshold. Below it the whole list is readable at a glance and an
+ * input costs a row for nothing; above it, finding one definition by eye stops being practical.
+ *
+ * @internal
+ */
+export const VARIANT_FILTER_THRESHOLD = 10
+
+/**
  * How well a term matches a variant's title, lower being better. `Infinity` means no match.
  *
  * Unlike `filterVariantsForSearch`, only the title is considered: the id and condition values

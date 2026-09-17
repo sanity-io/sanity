@@ -176,6 +176,70 @@ describe('VariantsMenuSections', () => {
     expect(norwegian.querySelector('[data-sanity-icon="rhombus"]')).toBeNull()
   })
 
+  it('labels the list "Variants" with no document selected', async () => {
+    await renderSections(
+      <VariantsMenuSections
+        documentId={undefined}
+        variants={variants}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
+      />,
+    )
+
+    expect(screen.getByText('Variants')).toBeInTheDocument()
+  })
+
+  it('drops the label while filtering, where the list is a set of results', async () => {
+    await renderSections(
+      <VariantsMenuSections
+        documentId={undefined}
+        variants={variants}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
+        searchTerm="alpha"
+      />,
+    )
+
+    expect(screen.queryByText('Variants')).not.toBeInTheDocument()
+  })
+
+  it('says when the workspace has no variants yet', async () => {
+    await renderSections(
+      <VariantsMenuSections
+        documentId={undefined}
+        variants={[]}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
+      />,
+    )
+
+    // The label survives an empty list; the message says why it is empty.
+    expect(screen.getByText('Variants')).toBeInTheDocument()
+    expect(screen.getByTestId('variant-menu-none-yet')).toBeInTheDocument()
+  })
+
+  it('does not claim "none yet" when a filter merely matches nothing', async () => {
+    await renderSections(
+      <VariantsMenuSections
+        documentId={undefined}
+        variants={variants}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
+        searchTerm="zzz"
+      />,
+    )
+
+    expect(screen.queryByTestId('variant-menu-none-yet')).not.toBeInTheDocument()
+  })
+
   it('renders the default row inside the list, above the variants', async () => {
     await renderSections(
       <VariantsMenuSections

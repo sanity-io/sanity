@@ -9,6 +9,7 @@ import {createRouter} from '../../../../studio/router/router'
 import {variantAlphaAudience, variantNorwegianMarket} from '../../../__fixtures__/variants.fixture'
 import {variantsUsEnglishLocaleBundle} from '../../../i18n'
 import {type SystemVariant} from '../../../types'
+import {VARIANT_FILTER_THRESHOLD} from '../../../util/rankVariantsForSearch'
 import {VARIANTS_TOOL_NAME} from '../../index'
 import {VariantsMenu} from '../VariantsMenu'
 
@@ -54,6 +55,21 @@ async function renderMenu(config?: Partial<SingleWorkspace>) {
   return view
 }
 
+/** `count` distinct variants, cloned from the two fixtures so each carries a real shape. */
+function manyVariants(count: number): SystemVariant[] {
+  const templates = [variantAlphaAudience, variantNorwegianMarket]
+
+  return Array.from({length: count}, (_unused, index) => {
+    const template = templates[index % templates.length]
+
+    return {
+      ...template,
+      _id: `_.variants.bulk${index}`,
+      metadata: {...template.metadata, title: `Bulk variant ${index}`},
+    }
+  })
+}
+
 describe('VariantsMenu', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -62,6 +78,23 @@ describe('VariantsMenu', () => {
       [variantAlphaAudience._id, variantAlphaAudience],
       [variantNorwegianMarket._id, variantNorwegianMarket],
     ])
+  })
+
+  it('withholds the filter below the threshold', async () => {
+    variantsMock.data = manyVariants(VARIANT_FILTER_THRESHOLD - 1)
+
+    await renderMenu()
+
+    // A short list is readable at a glance, and the input would cost a row for nothing.
+    expect(screen.queryByTestId('variant-menu-filter')).not.toBeInTheDocument()
+  })
+
+  it('offers the filter at the threshold', async () => {
+    variantsMock.data = manyVariants(VARIANT_FILTER_THRESHOLD)
+
+    await renderMenu()
+
+    expect(screen.getByTestId('variant-menu-filter')).toBeInTheDocument()
   })
 
   it('points "View variants" at the variants tool', async () => {
