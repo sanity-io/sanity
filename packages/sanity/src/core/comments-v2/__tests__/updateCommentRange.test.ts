@@ -1,8 +1,7 @@
 import {describe, expect, test} from 'vitest'
 
 import {type CommentDocument} from '../types'
-import {buildRangeDecorationSelectionsFromComments} from '../utils/inline-comments/buildRangeDecorationSelectionsFromComments'
-import {selectionsToRange} from '../utils/inline-comments/selectionToRange'
+import {buildCommentRangeUpdate} from '../utils/inline-comments/buildCommentRangeUpdate'
 
 const MARKER_START = '\uF000'
 const MARKER_END = '\uF001'
@@ -41,17 +40,12 @@ describe('updateCommentRange', () => {
     // User then types "XXX " at the very start of the block.
     const editorValue = makeValue('XXX Hello World')
 
-    const decorations = buildRangeDecorationSelectionsFromComments({
-      comments: [comment],
+    const {range} = buildCommentRangeUpdate({
+      comment,
       value: editorValue,
+      documentValue: {body: editorValue},
+      basePath: ['body'],
     })
-
-    expect(decorations).toHaveLength(1)
-
-    const range = selectionsToRange(
-      decorations.map((d) => d.selection),
-      editorValue,
-    )
 
     // "World" now sits at offsets 10-15. If this yields 6-11 the client is
     // persisting the creation-time offsets against the new fieldValue.
@@ -71,21 +65,33 @@ describe('updateCommentRange', () => {
     const editorValue = makeValue('XXX Hello World')
     const staleDocumentValue = {_id: 'doc-1', _type: 'article', body: makeValue('Hello World')}
 
-    const decorations = buildRangeDecorationSelectionsFromComments({
-      comments: [comment],
+    const {range} = buildCommentRangeUpdate({
+      comment,
       value: editorValue,
       documentValue: staleDocumentValue,
       basePath: ['body'],
     })
 
-    const range = selectionsToRange(
-      decorations.map((d) => d.selection),
-      editorValue,
-    )
-
     expect(range).toEqual({
       start: {_key: 'block-1', offset: 10},
       end: {_key: 'block-1', offset: 15},
+    })
+  })
+
+  test('clears the range when the selected text is deleted', () => {
+    const comment = makeComment(`Hello ${MARKER_START}World${MARKER_END}`)
+    const editorValue = makeValue('Hello ')
+
+    const update = buildCommentRangeUpdate({
+      comment,
+      value: editorValue,
+      documentValue: {body: editorValue},
+      basePath: ['body'],
+    })
+
+    expect(update).toEqual({
+      range: null,
+      selection: {type: 'text', value: []},
     })
   })
 })
