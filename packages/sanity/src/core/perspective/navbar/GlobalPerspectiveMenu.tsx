@@ -28,9 +28,12 @@ export function GlobalPerspectiveMenu({
   areReleasesEnabled = true,
   menuItemProps,
   trigger,
+  experimentalFilterScroll,
 }: {
   areReleasesEnabled: boolean
   menuItemProps?: ReleasesNavMenuItemPropsGetter
+  /** TEMPORARY, EXPERIMENT ONLY - forwarded to `ReleasesList`. */
+  experimentalFilterScroll?: 'position' | 'pinned' | 'direction'
   /**
    * Overrides the chevron-only trigger. The perspective bar passes a full
    * labelled button so the whole pill is one touch target.
@@ -82,6 +85,7 @@ export function GlobalPerspectiveMenu({
               menuItemProps={menuItemProps}
               filterQuery={filterQuery}
               onFilterQueryChange={setFilterQuery}
+              experimentalFilterScroll={experimentalFilterScroll}
             />
           </StyledMenu>
         }
