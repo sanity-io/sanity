@@ -205,7 +205,7 @@ describe('PresenceOverlay', () => {
     expect(titles(fieldAvatars('field2'))).toEqual(['User u7', 'User u8', 'User u9'])
   })
 
-  it('docks 10 users in one field below the fold as 2 avatars and a counter of 8', async () => {
+  it('docks 10 users in a field below the fold as 2 avatars and a counter of 8, and hands them back to the field header when it scrolls into view', async () => {
     void render(<Harness presence={tenUsersIn(['field25'])} />)
 
     await expect.poll(() => dockAvatars('bottom')).toHaveLength(2)
@@ -248,7 +248,7 @@ describe('PresenceOverlay', () => {
     expect(visibleAvatars()).toHaveLength(2)
   })
 
-  it('docks users above the view at the top and users below the view at the bottom', async () => {
+  it('docks users above the view at the top, users below it at the bottom, and keeps the one in view at its field', async () => {
     void render(
       <Harness
         presence={[
@@ -334,7 +334,7 @@ describe('PresenceOverlay', () => {
     expect(visibleAvatars('User twice')).toHaveLength(1)
   })
 
-  it('shows presence in nested fields on the nested header and inside array items on the item', async () => {
+  it('shows nested field presence on the nested header, array item presence on the item preview, and document-level presence nowhere', async () => {
     void render(
       <Harness
         presence={[

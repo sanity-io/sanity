@@ -82,7 +82,7 @@ describe('FieldPresenceInner', () => {
     expect(avatarUserIds()).toEqual(expect.arrayContaining(['u1', 'u2']))
   })
 
-  it('puts the most recently active user first', () => {
+  it('renders the most recently active user first and on top of the stack', () => {
     renderInner(
       <FieldPresenceInner
         presence={[
@@ -94,6 +94,10 @@ describe('FieldPresenceInner', () => {
     )
 
     expect(avatarUserIds()).toEqual(['newest', 'middle', 'older'])
+    // Each avatar sits in a positioned wrapper; the first one is stacked on top of the others
+    const zIndexes = avatars().map((avatar) => Number(avatar.parentElement?.style.zIndex))
+    expect(zIndexes[0]).toBeGreaterThan(zIndexes[1])
+    expect(zIndexes[1]).toBeGreaterThan(zIndexes[2])
   })
 
   it('stacks 10 users into 2 avatars and a counter of 8 at the dock maximum', () => {
@@ -103,7 +107,7 @@ describe('FieldPresenceInner', () => {
     expect(counter()).toHaveTextContent('8')
   })
 
-  it('stacks 10 users into 2 avatars and a counter of 8 at the default field maximum', () => {
+  it('defaults the maximum to 3, stacking 10 users into 2 avatars and a counter of 8', () => {
     renderInner(<FieldPresenceInner presence={users(10)} />)
 
     expect(DEFAULT_MAX_AVATARS_FIELDS).toBe(3)
@@ -140,7 +144,7 @@ describe('FieldPresenceInner', () => {
     expect(counter()).toHaveTextContent('2')
   })
 
-  it('passes the arrow position on to the avatars', () => {
+  it('passes the arrow position and the online status on to the avatars', () => {
     renderInner(<FieldPresenceInner presence={users(1)} position="top" animateArrowFrom="bottom" />)
 
     const [avatar] = avatars()

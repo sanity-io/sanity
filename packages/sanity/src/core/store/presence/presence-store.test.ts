@@ -128,7 +128,7 @@ describe('presence-store', () => {
       subscription.unsubscribe()
     })
 
-    it('emits nothing while no one else is in the document', async () => {
+    it('emits an empty list while no one else is in the document', async () => {
       const {store, incoming$} = createHarness()
       const {latest, subscription} = collect<DocumentPresence[]>(store.documentPresence('doc-1'))
 
@@ -139,7 +139,7 @@ describe('presence-store', () => {
       subscription.unsubscribe()
     })
 
-    it('keeps one entry per location, so 10 users in the same field are 10 entries', async () => {
+    it('lists 10 users in the same field as 10 separate entries', async () => {
       const {store, incoming$} = createHarness()
       const {latest, subscription} = collect<DocumentPresence[]>(store.documentPresence('doc-1'))
 
@@ -223,7 +223,7 @@ describe('presence-store', () => {
       subscription.unsubscribe()
     })
 
-    it('includes drafts and versions of the document, unless versions are excluded', async () => {
+    it('matches drafts and versions of the document too, or only the exact id with excludeVersions', async () => {
       const {store, incoming$} = createHarness()
       const all = collect<DocumentPresence[]>(store.documentPresence('doc-1'))
       const excludingVersions = collect<DocumentPresence[]>(

@@ -32,12 +32,19 @@ describe('splitRight', () => {
 })
 
 describe('calcAvatarStackWidth', () => {
-  it('is the negated overlap for an empty stack', () => {
-    expect(calcAvatarStackWidth(0)).toBe(-AVATAR_DISTANCE)
+  // 25px avatars overlapping by 4px
+  it('is one avatar wide for a single avatar', () => {
+    expect(AVATAR_SIZE).toBe(25)
+    expect(AVATAR_DISTANCE).toBe(-4)
+    expect(calcAvatarStackWidth(1)).toBe(25)
   })
 
-  it('grows by one avatar minus the overlap per item', () => {
-    expect(calcAvatarStackWidth(1)).toBe(AVATAR_SIZE)
-    expect(calcAvatarStackWidth(4)).toBe(-AVATAR_DISTANCE + (AVATAR_SIZE + AVATAR_DISTANCE) * 4)
+  it('grows by an avatar minus the overlap for every further avatar', () => {
+    expect(calcAvatarStackWidth(2)).toBe(46)
+    expect(calcAvatarStackWidth(4)).toBe(88)
+  })
+
+  it('leaves the overlap as the width of an empty stack', () => {
+    expect(calcAvatarStackWidth(0)).toBe(4)
   })
 })

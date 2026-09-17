@@ -286,8 +286,7 @@ describe('FormBuilder presence', () => {
     await waitFor(() => expect(reported.current).toEqual([]))
   })
 
-  it('uses the default maximum of avatars nowhere in the field headers', async () => {
-    // Field headers stack up to 4 avatars, which differs from the overlay default of 3
+  it('lets field headers stack up to 4 avatars, more than the presence default of 3', async () => {
     const {reported} = await renderForm([presence('alice', ['field0'])])
 
     await waitFor(() => expect(reported.current).toHaveLength(1))
