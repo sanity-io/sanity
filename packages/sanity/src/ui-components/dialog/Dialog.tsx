@@ -112,7 +112,7 @@ export function Dialog({
       <Box
         height={bodyHeight}
         //  oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
-        minHeight={bodyHeight ? undefined : 'min-content'}
+        minHeight={bodyHeight === undefined ? 'min-content' : undefined}
         padding={padding ? 4 : 0}
       >
         {children}
