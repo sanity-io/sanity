@@ -1,12 +1,16 @@
-import {Flex, Text} from '@sanity/ui'
+import {Flex, Stack, Text} from '@sanity/ui'
+// A marked title is a node, and the ui-components wrapper takes `text` as a string only. Same
+// reason, and the same raw import, as `GlobalPerspectiveMenuItem` on the release side.
+// oxlint-disable-next-line no-restricted-imports -- custom use for MenuItem not supported by ui-components
+import {MenuItem as UIMenuItem} from '@sanity/ui/menu'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
 import {Box} from 'ui5'
 
-import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
 import {RhombusOutlinedIcon} from '../../../components/temporary-icons/RhombusOutlined'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {MarkedLabel} from '../../../perspective/MarkedLabel'
 import {stickyMenuHeadingStyle} from '../../../perspective/styles'
 import {useDocumentVariantIds} from '../../hooks/useDocumentVariantIds'
 import {variantsLocaleNamespace} from '../../i18n'
@@ -50,6 +54,7 @@ interface VariantListProps {
   onSelect: (variant: SystemVariant) => void
   /** Filled rhombus means the selected document already has this variant. */
   filled: boolean
+  searchTerm?: string
 }
 
 function VariantMenuItem(props: {
@@ -57,21 +62,42 @@ function VariantMenuItem(props: {
   onSelect: (variant: SystemVariant) => void
   variant: SystemVariant
   icon: React.ComponentType
+  /** The active filter term. Its occurrences are marked inside the variant title. */
+  searchTerm?: string
 }): React.JSX.Element {
-  const {isSelected, onSelect, variant, icon: Icon} = props
+  const {isSelected, onSelect, variant, icon: Icon, searchTerm} = props
+
   return (
-    <MenuItem
+    <UIMenuItem
       data-testid={`variant-${getVariantId(variant._id)}`}
-      icon={
-        <Text size={2} className={suggestIconColor}>
-          <Icon />
-        </Text>
-      }
       onClick={() => onSelect(variant)}
+      paddingLeft={3}
+      paddingRight={3}
+      paddingY={3}
       pressed={isSelected}
       selected={isSelected}
-      text={getVariantTitle(variant)}
-    />
+    >
+      {/* The layout mirrors `ui-components/MenuItem` exactly - the same Flex, gap, paddings and
+          text size - so the row is unchanged to look at. Only the title differs, and it has to,
+          because a marked title is a node and that wrapper's `text` takes a string. */}
+      <Flex align="center" gap={2}>
+        <Box paddingRight={1}>
+          {/* Two nested Texts, as the wrapper has them: it renders the caller's icon element
+              inside its own `size={1}` Text, and that outer size is what sets the row's line
+              height. Collapsing them into one made the row 2px taller. */}
+          <Text size={1}>
+            <Text size={2} className={suggestIconColor}>
+              <Icon />
+            </Text>
+          </Text>
+        </Box>
+        <Stack flex={1} gap={2}>
+          <Text size={1} textOverflow="ellipsis" weight="medium">
+            <MarkedLabel label={getVariantTitle(variant)} searchTerm={searchTerm} />
+          </Text>
+        </Stack>
+      </Flex>
+    </UIMenuItem>
   )
 }
 
@@ -80,6 +106,7 @@ function VariantList({
   selectedVariantId,
   onSelect,
   filled,
+  searchTerm,
 }: VariantListProps): React.JSX.Element {
   const Icon = filled ? RhombusIcon : RhombusOutlinedIcon
 
@@ -92,6 +119,7 @@ function VariantList({
           onSelect={onSelect}
           variant={variant}
           icon={Icon}
+          searchTerm={searchTerm}
         />
       ))}
     </Box>
@@ -102,6 +130,8 @@ interface SectionsProps {
   variants: SystemVariant[]
   selectedVariantId: string | undefined
   onSelect: (variant: SystemVariant) => void
+  /** The active filter term, or undefined. Marked inside each variant title. */
+  searchTerm?: string
 }
 
 /**
@@ -118,6 +148,7 @@ function OtherVariantsSection({
   selectedVariantId,
   onSelect,
   heading,
+  searchTerm,
 }: SectionsProps & {heading?: string}): React.JSX.Element | null {
   if (variants.length === 0) return null
 
@@ -129,6 +160,7 @@ function OtherVariantsSection({
         selectedVariantId={selectedVariantId}
         onSelect={onSelect}
         filled={false}
+        searchTerm={searchTerm}
       />
     </>
   )
@@ -139,6 +171,7 @@ function DocumentVariantSections({
   variants,
   selectedVariantId,
   onSelect,
+  searchTerm,
 }: SectionsProps & {documentId: string}): React.JSX.Element | null {
   const {t} = useTranslation(variantsLocaleNamespace)
   const documentVariantIds = useDocumentVariantIds(documentId)
@@ -157,6 +190,7 @@ function DocumentVariantSections({
         variants={others}
         selectedVariantId={selectedVariantId}
         onSelect={onSelect}
+        searchTerm={searchTerm}
       />
     )
   }
@@ -169,12 +203,14 @@ function DocumentVariantSections({
         selectedVariantId={selectedVariantId}
         onSelect={onSelect}
         filled
+        searchTerm={searchTerm}
       />
       <OtherVariantsSection
         heading={t('navbar.variant.other')}
         variants={others}
         selectedVariantId={selectedVariantId}
         onSelect={onSelect}
+        searchTerm={searchTerm}
       />
     </>
   )

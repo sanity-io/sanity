@@ -16,8 +16,9 @@ import {useSetVariant} from '../../../perspective/useSetVariant'
 import {CreateVariantDialog} from '../../components/dialog/CreateVariantDialog'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
-import {decodeVariantIdFromRoute, filterVariantsForSearch} from '../../tool/util'
+import {decodeVariantIdFromRoute} from '../../tool/util'
 import {isVariantId, type SystemVariant} from '../../types'
+import {rankVariantsForSearch} from '../../util/rankVariantsForSearch'
 import {VARIANTS_TOOL_NAME} from '../index'
 import {VariantsMenuSections} from './VariantsMenuSections'
 import {suggestIconColor} from './VariantsNav.css'
@@ -62,8 +63,11 @@ export function VariantsMenu({
     [selectedVariantDocumentId, variants],
   )
 
+  // Ranked, not merely filtered, and on the title alone: `filterVariantsForSearch` also matches
+  // ids and condition values, which is right for the variants overview's own search but surfaces
+  // rows in this menu whose visible title gives no clue why they appeared.
   const filteredVariants = useMemo(
-    () => filterVariantsForSearch(variants, filterQuery),
+    () => rankVariantsForSearch(variants, filterQuery),
     [filterQuery, variants],
   )
 
@@ -162,6 +166,7 @@ export function VariantsMenu({
               variants={filteredVariants}
               selectedVariantId={selectedVariant?._id}
               onSelect={handleSelectVariant}
+              searchTerm={filterQuery}
             />
 
             <MenuDivider />

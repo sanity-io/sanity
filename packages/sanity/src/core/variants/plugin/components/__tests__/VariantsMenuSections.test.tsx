@@ -164,6 +164,36 @@ describe('VariantsMenuSections', () => {
     expect(norwegian.querySelector('[data-sanity-icon="rhombus"]')).toBeNull()
   })
 
+  it('marks the filter term inside a variant title', async () => {
+    const {container} = await renderSections(
+      <VariantsMenuSections
+        documentId={undefined}
+        variants={variants}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        searchTerm="wegian"
+      />,
+    )
+
+    // The row survived the filter on its title, so the row shows why.
+    const marks = [...container.querySelectorAll('strong')].map((node) => node.textContent)
+    expect(marks).toContain('wegian')
+  })
+
+  it('leaves titles unmarked when no term is active', async () => {
+    const {container} = await renderSections(
+      <VariantsMenuSections
+        documentId={undefined}
+        variants={variants}
+        selectedVariantId={undefined}
+        onSelect={noop}
+      />,
+    )
+
+    expect(container.querySelectorAll('strong')).toHaveLength(0)
+    expect(screen.getByText('Norwegian market')).toBeInTheDocument()
+  })
+
   it('ignores versions that belong to no variant', async () => {
     setVersions([
       {
