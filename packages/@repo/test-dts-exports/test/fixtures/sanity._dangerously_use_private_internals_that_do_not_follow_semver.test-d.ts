@@ -715,6 +715,7 @@ import type {
   useParseErrorForPath,
   useParseErrors,
   usePausedScheduledDraft,
+  usePauseToEditScheduledDraft,
   usePreviewCard,
   useProject,
   useProjectDatasets,
@@ -2941,6 +2942,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('usePausedScheduledDraft', () => {
     expectTypeOf<typeof usePausedScheduledDraft>().toBeFunction()
+  })
+  test('usePauseToEditScheduledDraft', () => {
+    expectTypeOf<typeof usePauseToEditScheduledDraft>().toBeFunction()
   })
   test('usePreviewCard', () => {
     expectTypeOf<typeof usePreviewCard>().toBeFunction()
