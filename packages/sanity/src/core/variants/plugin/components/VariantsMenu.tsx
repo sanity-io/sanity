@@ -124,7 +124,6 @@ export function VariantsMenu({
   // document always exists outside any variant, so the default entry fills as
   // soon as there is one.
   const hasSelectedDocument = Boolean(activeDocument)
-  const DefaultIcon = hasSelectedDocument ? RhombusIcon : RhombusOutlinedIcon
 
   return (
     <>
@@ -145,28 +144,14 @@ export function VariantsMenu({
               />
             </Box>
 
-            <Box paddingX={2} paddingY={1}>
-              <MenuItem
-                data-testid="variant-default"
-                icon={
-                  <Text size={2} className={suggestIconColor}>
-                    <DefaultIcon />
-                  </Text>
-                }
-                onClick={handleSelectDefault}
-                pressed={isDefaultSelected}
-                selected={isDefaultSelected}
-                text={t('navbar.variant.default')}
-              />
-            </Box>
-            <MenuDivider />
-
             <VariantsMenuSections
               documentId={activeDocument?.documentId}
               variants={filteredVariants}
               selectedVariantId={selectedVariant?._id}
               onSelect={handleSelectVariant}
               searchTerm={filterQuery}
+              isDefaultSelected={isDefaultSelected}
+              onSelectDefault={handleSelectDefault}
             />
 
             <MenuDivider />

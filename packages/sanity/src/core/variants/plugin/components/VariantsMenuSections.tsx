@@ -101,6 +101,51 @@ function VariantMenuItem(props: {
   )
 }
 
+/**
+ * The default row. Structurally `VariantMenuItem`, but carrying a translated label instead of a
+ * variant, and no variant to select - so it takes the label and the handler directly.
+ */
+function DefaultVariantMenuItem({
+  icon: Icon,
+  isSelected,
+  label,
+  onSelect,
+  searchTerm,
+}: {
+  icon: React.ComponentType
+  isSelected: boolean
+  label: string
+  onSelect: () => void
+  searchTerm?: string
+}): React.JSX.Element {
+  return (
+    <UIMenuItem
+      data-testid="variant-default"
+      onClick={onSelect}
+      paddingLeft={3}
+      paddingRight={3}
+      paddingY={3}
+      pressed={isSelected}
+      selected={isSelected}
+    >
+      <Flex align="center" gap={2}>
+        <Box paddingRight={1}>
+          <Text size={1}>
+            <Text size={2} className={suggestIconColor}>
+              <Icon />
+            </Text>
+          </Text>
+        </Box>
+        <Stack flex={1} gap={2}>
+          <Text size={1} textOverflow="ellipsis" weight="medium">
+            <MarkedLabel label={label} searchTerm={searchTerm} />
+          </Text>
+        </Stack>
+      </Flex>
+    </UIMenuItem>
+  )
+}
+
 function VariantList({
   variants,
   selectedVariantId,
@@ -132,6 +177,18 @@ interface SectionsProps {
   onSelect: (variant: SystemVariant) => void
   /** The active filter term, or undefined. Marked inside each variant title. */
   searchTerm?: string
+}
+
+/**
+ * Whether a label survives the filter.
+ *
+ * Must agree with {@link rankVariantsForSearch}'s notion of a match: every tier it ranks - exact,
+ * prefix and substring - is a substring match, so this is the same test without the ordering.
+ */
+function matchesSearchTerm(label: string, searchTerm: string | undefined): boolean {
+  const normalized = searchTerm?.trim().toLowerCase()
+
+  return !normalized || label.toLowerCase().includes(normalized)
 }
 
 /**
@@ -228,11 +285,40 @@ function DocumentVariantSections({
  */
 export function VariantsMenuSections({
   documentId,
+  isDefaultSelected,
+  onSelectDefault,
   ...rest
-}: SectionsProps & {documentId: string | undefined}): React.JSX.Element | null {
-  if (documentId) {
-    return <DocumentVariantSections documentId={documentId} {...rest} />
-  }
+}: SectionsProps & {
+  documentId: string | undefined
+  isDefaultSelected: boolean
+  onSelectDefault: () => void
+}): React.JSX.Element | null {
+  const {t} = useTranslation(variantsLocaleNamespace)
+  const defaultLabel = t('navbar.variant.default')
 
-  return <OtherVariantsSection {...rest} />
+  return (
+    <>
+      {/* The default row sits inside the list rather than above it, so the filter reaches it and
+          its term is marked - the same treatment published and drafts have in the release menu.
+          Rendered here rather than in `VariantsMenu` for exactly that reason: a row rendered
+          outside the sections is a row the filter cannot see. */}
+      {matchesSearchTerm(defaultLabel, rest.searchTerm) && (
+        <Box paddingX={2}>
+          <DefaultVariantMenuItem
+            // Filled once a document is selected: the default is the first version it ever had.
+            icon={documentId ? RhombusIcon : RhombusOutlinedIcon}
+            isSelected={isDefaultSelected}
+            label={defaultLabel}
+            onSelect={onSelectDefault}
+            searchTerm={rest.searchTerm}
+          />
+        </Box>
+      )}
+      {documentId ? (
+        <DocumentVariantSections documentId={documentId} {...rest} />
+      ) : (
+        <OtherVariantsSection {...rest} />
+      )}
+    </>
+  )
 }

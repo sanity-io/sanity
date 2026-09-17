@@ -64,6 +64,8 @@ describe('VariantsMenuSections', () => {
         variants={variants}
         selectedVariantId={undefined}
         onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
       />,
     )
 
@@ -82,6 +84,8 @@ describe('VariantsMenuSections', () => {
         variants={variants}
         selectedVariantId={undefined}
         onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
       />,
     )
 
@@ -96,6 +100,8 @@ describe('VariantsMenuSections', () => {
         variants={variants}
         selectedVariantId={undefined}
         onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
       />,
     )
 
@@ -113,6 +119,8 @@ describe('VariantsMenuSections', () => {
         variants={variants}
         selectedVariantId={undefined}
         onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
       />,
     )
 
@@ -134,6 +142,8 @@ describe('VariantsMenuSections', () => {
         variants={variants}
         selectedVariantId={undefined}
         onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
       />,
     )
 
@@ -150,6 +160,8 @@ describe('VariantsMenuSections', () => {
         variants={variants}
         selectedVariantId={undefined}
         onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
       />,
     )
 
@@ -164,6 +176,57 @@ describe('VariantsMenuSections', () => {
     expect(norwegian.querySelector('[data-sanity-icon="rhombus"]')).toBeNull()
   })
 
+  it('renders the default row inside the list, above the variants', async () => {
+    await renderSections(
+      <VariantsMenuSections
+        documentId={undefined}
+        variants={variants}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
+      />,
+    )
+
+    expect(screen.getByTestId('variant-default')).toBeInTheDocument()
+  })
+
+  it('hides the default row when the filter excludes it', async () => {
+    await renderSections(
+      <VariantsMenuSections
+        documentId={undefined}
+        variants={variants}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
+        searchTerm="wegian"
+      />,
+    )
+
+    // Rendered outside the sections it was unreachable by the filter, which is the defect this
+    // row's move fixes: a row that survives a filter it was never tested against reads as a bug.
+    expect(screen.queryByTestId('variant-default')).not.toBeInTheDocument()
+    expect(screen.getByText(/wegian/)).toBeInTheDocument()
+  })
+
+  it('marks the filter term inside the default row', async () => {
+    const {container} = await renderSections(
+      <VariantsMenuSections
+        documentId={undefined}
+        variants={variants}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
+        searchTerm="users"
+      />,
+    )
+
+    const marks = [...container.querySelectorAll('strong')].map((node) => node.textContent)
+    expect(marks).toContain('users')
+  })
+
   it('marks the filter term inside a variant title', async () => {
     const {container} = await renderSections(
       <VariantsMenuSections
@@ -171,6 +234,8 @@ describe('VariantsMenuSections', () => {
         variants={variants}
         selectedVariantId={undefined}
         onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
         searchTerm="wegian"
       />,
     )
@@ -187,6 +252,8 @@ describe('VariantsMenuSections', () => {
         variants={variants}
         selectedVariantId={undefined}
         onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
       />,
     )
 
@@ -208,6 +275,8 @@ describe('VariantsMenuSections', () => {
         variants={variants}
         selectedVariantId={undefined}
         onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
       />,
     )
 
