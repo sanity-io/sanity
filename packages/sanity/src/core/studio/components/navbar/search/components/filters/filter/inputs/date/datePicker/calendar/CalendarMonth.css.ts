@@ -1,0 +1,5 @@
+import {style} from '@vanilla-extract/css'
+
+export const customGrid = style({
+  gridTemplateColumns: 'repeat(7, minmax(44px, auto))',
+})
