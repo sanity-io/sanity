@@ -49,7 +49,7 @@ const draftDocument = versionStub({
 const publishedVariant = versionStub({
   _id: 'versions.varscope.doc-1',
   _system: {
-    variant: variantRef,
+    variants: [variantRef],
     group: groupRef,
     scopeId: 'varscope',
   },

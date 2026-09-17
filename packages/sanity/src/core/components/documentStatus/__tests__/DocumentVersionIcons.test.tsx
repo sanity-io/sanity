@@ -53,7 +53,7 @@ function createVersion({
     _system: {
       bundleId,
       group: {_ref: GROUP_ID, _weak: true},
-      variant: variantRef ? {_ref: variantRef, _weak: true} : undefined,
+      variants: variantRef ? [{_ref: variantRef, _weak: true}] : undefined,
       release: releaseRef ? {_ref: releaseRef, _weak: true} : undefined,
     },
   }

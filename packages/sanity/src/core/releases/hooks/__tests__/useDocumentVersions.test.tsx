@@ -43,6 +43,7 @@ async function setupMocks({
   versionIds,
   observeSystem = true,
   pendingIdSet = false,
+  system,
 }: {
   releases: ReleaseDocument[]
   versionIds: string[]
@@ -53,6 +54,8 @@ async function setupMocks({
   observeSystem?: boolean
   /** When `true`, the version document ids observable never emits (initial loading state). */
   pendingIdSet?: boolean
+  /** Extra `_system` attributes to return for every observed version. */
+  system?: Partial<DocumentSystem>
 }) {
   const mockDocumentPreviewStore = useDocumentPreviewStore as Mock<typeof useDocumentPreviewStore>
 
@@ -77,6 +80,7 @@ async function setupMocks({
                   bundleId: 'drafts',
                   group: {_ref: getPublishedId(id), _weak: true},
                   scopeId: getPublishedId(id),
+                  ...system,
                 } satisfies DocumentSystem,
               }
             : {
@@ -170,7 +174,6 @@ describe('useDocumentVersions', () => {
         _system: {
           bundleId: 'rASAP',
           release: {_ref: '_.releases.rASAP', _weak: true},
-          variant: undefined,
           group: {_ref: 'document-1', _weak: true},
           scopeId: 'rASAP',
         },
@@ -198,12 +201,81 @@ describe('useDocumentVersions', () => {
         _system: {
           bundleId: 'drafts',
           release: undefined,
-          variant: undefined,
           group: {_ref: 'document-1', _weak: true},
           scopeId: undefined,
         },
       },
     ])
+  })
+
+  describe('variant reference normalization', () => {
+    const variantRef = {_ref: '_.variants.alpha', _weak: true as const}
+
+    it('passes `_system.variants` through untouched', async () => {
+      await setupMocks({
+        releases: [],
+        versionIds: ['versions.varscope.document-1'],
+        system: {variants: [variantRef]},
+      })
+      const {result} = renderHook(() => useDocumentVersions({documentId: 'document-1'}))
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false)
+      })
+      expect(result.current.versions[0]._system).toEqual({
+        bundleId: 'drafts',
+        group: {_ref: 'document-1', _weak: true},
+        scopeId: 'document-1',
+        variants: [variantRef],
+      })
+    })
+
+    it('folds the legacy `_system.variant` of unmigrated documents into `variants`', async () => {
+      await setupMocks({
+        releases: [],
+        versionIds: ['versions.varscope.document-1'],
+        system: {variant: variantRef},
+      })
+      const {result} = renderHook(() => useDocumentVersions({documentId: 'document-1'}))
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false)
+      })
+      expect(result.current.versions[0]._system).toEqual({
+        bundleId: 'drafts',
+        group: {_ref: 'document-1', _weak: true},
+        scopeId: 'document-1',
+        variants: [variantRef],
+      })
+      expect(result.current.versions[0]._system).not.toHaveProperty('variant')
+    })
+
+    it('prefers `variants` when an unmigrated document carries both fields', async () => {
+      const legacyRef = {_ref: '_.variants.legacy', _weak: true as const}
+      await setupMocks({
+        releases: [],
+        versionIds: ['versions.varscope.document-1'],
+        system: {variants: [variantRef], variant: legacyRef},
+      })
+      const {result} = renderHook(() => useDocumentVersions({documentId: 'document-1'}))
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false)
+      })
+      expect(result.current.versions[0]._system.variants).toEqual([variantRef])
+      expect(result.current.versions[0]._system).not.toHaveProperty('variant')
+    })
+
+    it('leaves base documents without a variant reference', async () => {
+      await setupMocks({
+        releases: [],
+        versionIds: ['drafts.document-1'],
+        system: {variants: []},
+      })
+      const {result} = renderHook(() => useDocumentVersions({documentId: 'document-1'}))
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false)
+      })
+      expect(result.current.versions[0]._system.variants).toEqual([])
+      expect(result.current.versions[0]._system).not.toHaveProperty('variant')
+    })
   })
 })
 

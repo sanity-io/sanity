@@ -39,7 +39,7 @@ const createDocumentInVariant = ({
       bundleId: bundleId ?? null,
       // @ts-expect-error -- pre-existing, fix later
       release: releaseRef ? {_ref: releaseRef, _weak: true} : null,
-      variant: {_ref: variantAlphaAudience._id, _weak: true},
+      variants: [{_ref: variantAlphaAudience._id, _weak: true}],
       group: {_ref: GROUP_ID, _weak: true},
       // @ts-expect-error -- pre-existing, fix later
       scopeId: null,
