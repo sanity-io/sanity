@@ -1,186 +1,68 @@
-import {Card, rem} from '@sanity/ui'
-import {getTheme_v2} from '@sanity/ui/theme'
-import {css, styled} from 'styled-components'
+import {Card, rem, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 
 import {ScrollContainer} from '../../../components/scroll/scrollContainer'
-import {TEXT_LEVELS} from './text/constants'
-import {createListName} from './text/helpers'
+import {
+  container1Var,
+  editableCard,
+  editableWrapper,
+  editorPaddingBottomVar,
+  gutterRemVar,
+  gutterVar,
+  radius2Var,
+  root,
+  rootOneLine,
+  scroller,
+  space2Var,
+  space3Var,
+  toolbarCard,
+} from './Editor.styles.css'
 
-export const Root = styled(Card)<{$isOneLine: boolean}>`
-  &[data-fullscreen='true'] {
-    height: 100%;
-  }
+export function Root(props: ComponentProps<typeof Card> & {$isOneLine: boolean}) {
+  const {$isOneLine, className, ...rest} = props
+  return <Card {...rest} className={clsx(root, $isOneLine && rootOneLine, className)} />
+}
 
-  &[data-fullscreen='false'] {
-    min-height: 5em;
-    resize: ${({$isOneLine}) => ($isOneLine ? 'none' : 'vertical')};
-    overflow: auto;
-    height: ${({$isOneLine}) => ($isOneLine ? 'auto' : '19em')};
-  }
+export function ToolbarCard(props: ComponentProps<typeof Card>) {
+  const {className, ...rest} = props
+  return <Card {...rest} className={clsx(toolbarCard, className)} />
+}
 
-  &:not([hidden]) {
-    display: flex;
-  }
+export function EditableCard(props: ComponentProps<typeof Card>) {
+  const {className, ...rest} = props
+  return <Card {...rest} className={clsx(editableCard, className)} />
+}
 
-  flex-direction: column;
-`
+export function Scroller(props: ComponentProps<typeof ScrollContainer>) {
+  const {className, ...rest} = props
+  return <ScrollContainer {...rest} className={clsx(scroller, className)} />
+}
 
-export const ToolbarCard = styled(Card)`
-  z-index: 10;
-  line-height: 0;
-`
+export function EditableWrapper(
+  props: ComponentProps<typeof Card> & {$isFullscreen: boolean; $isOneLine: boolean},
+) {
+  const {$isFullscreen, $isOneLine, className, style, ...rest} = props
+  const {container, radius, space} = useThemeV2()
+  const gutter = space[$isFullscreen ? 5 : 3]
 
-export const EditableCard = styled(Card)`
-  position: relative;
-  overflow: hidden;
-  overflow: clip;
-
-  & > [data-portal] {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    pointer-events: none;
-
-    & > * {
-      pointer-events: initial;
-    }
-  }
-
-  &::selection,
-  *::selection {
-    background-color: transparent;
-  }
-`
-
-export const Scroller = styled(ScrollContainer)`
-  position: relative;
-  overflow: auto;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-
-  & > * {
-    flex: 1;
-    min-height: auto;
-  }
-`
-
-export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $isOneLine: boolean}>`
-  height: 100%;
-  width: 100%;
-  counter-reset: ${TEXT_LEVELS.map((l) => createListName(l)).join(' ')};
-  overflow: hidden;
-  overflow: clip;
-
-  & > div {
-    height: 100%;
-  }
-
-  & [data-pt-editor] {
-    display: block;
-    width: 100%;
-    height: 100%;
-
-    ${TEXT_LEVELS.map((l) => {
-      return css`
-        /* Reset the list count each time a list index of 1 is encountered
-         * for the current level.
-         */
-        & [data-level='${l}'][data-list-index='1'] {
-          counter-set: ${createListName(l)} 1;
-        }
-        /* Otherwise, increment the list count for the current level. */
-        & [data-level='${l}']:not([data-list-index='1']) {
-          counter-increment: ${createListName(l)};
-        }
-      `
-    })}
-
-    & > .pt-list-item-bullet + .pt-list-item-number,
-    & > .pt-list-item-number + .pt-list-item-bullet {
-      margin-top: ${({theme}) => theme.sanity.space[3] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
-    }
-
-    & > :not(.pt-list-item) + .pt-list-item {
-      margin-top: ${({theme}) => theme.sanity.space[2] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
-    }
-
-    & > .pt-list-item + :not(.pt-list-item) {
-      margin-top: ${({theme}) => theme.sanity.space[3] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
-    }
-
-    & > :first-child {
-      padding-top: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 5 : 3] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
-    }
-
-    padding-bottom: ${({$isFullscreen, $isOneLine, theme}) =>
-      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-      $isOneLine ? '0' : theme.sanity.space[$isFullscreen ? 9 : 5]}px;
-
-    & > [data-pt-block] {
-      /* Positioning context for the absolutely-positioned drop indicator so it
-         sizes to the block (the centred text column) instead of the full-width
-         [data-pt-editor], which overshoots the block in fullscreen. */
-      position: relative;
-      margin: 0 auto;
-      max-width: ${(props) => getTheme_v2(props.theme).container[1]}px;
-    }
-
-    /* Container nodes are consumer-rendered and miss the inner-padding gutter
-     * the text-block/object components apply. Padding a container is unreliable
-     * (a table ignores it for cell layout), so narrow the box via max-width
-     * minus the gutter on both sides instead, centred by the margin auto above. */
-    & > [data-pt-block='container'] {
-      width: calc(
-        100% -
-          ${({$isFullscreen, theme}) => 2 * theme.sanity.space[$isFullscreen ? 5 : 3] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px
-      );
-      max-width: calc(
-        ${(props) => getTheme_v2(props.theme).container[1]}px -
-          ${({$isFullscreen, theme}) => 2 * theme.sanity.space[$isFullscreen ? 5 : 3] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px
-      );
-    }
-
-    & .pt-drop-indicator {
-      pointer-events: none;
-      border: 1px solid var(--card-focus-ring-color) !important;
-      height: 0px !important;
-      border-radius: ${(props) => getTheme_v2(props.theme).radius[2]}px;
-      margin-top: -3px;
-      left: calc(
-        ${({$isFullscreen, theme}) =>
-            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-            $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} -
-          1px
-      );
-      right: calc(
-        ${({$isFullscreen, theme}) =>
-            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-            $isFullscreen ? rem(theme.sanity.space[5]) : rem(theme.sanity.space[3])} -
-          1px
-      );
-      width: calc(
-        100% -
-          ${({$isFullscreen, theme}) =>
-            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-            $isFullscreen ? rem(theme.sanity.space[5] * 2) : rem(theme.sanity.space[3] * 2)} +
-          2px
-      ) !important;
-    }
-
-    /* A block nested in a container is its own positioning context, so its drop
-       indicator sizes to the block (the cell) instead of escaping to the
-       container, and spans the full width: the container owns the gutter. */
-    & [data-pt-block] [data-pt-block] {
-      position: relative;
-    }
-
-    & [data-pt-block] [data-pt-block] .pt-drop-indicator {
-      left: 0;
-      right: 0;
-      width: 100% !important;
-    }
-  }
-`
+  return (
+    <Card
+      {...rest}
+      className={clsx(editableWrapper, className)}
+      style={{
+        ...assignInlineVars({
+          [space2Var]: `${space[2]}px`,
+          [space3Var]: `${space[3]}px`,
+          [radius2Var]: `${radius[2]}px`,
+          [container1Var]: `${container[1]}px`,
+          [gutterVar]: `${gutter}px`,
+          [gutterRemVar]: String(rem(gutter)),
+          [editorPaddingBottomVar]: $isOneLine ? '0px' : `${space[$isFullscreen ? 9 : 5]}px`,
+        }),
+        ...style,
+      }}
+    />
+  )
+}
