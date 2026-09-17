@@ -19,6 +19,7 @@ import {RhombusIcon} from '../../../../components/temporary-icons/Rhombus'
 import {AvatarSkeleton, UserAvatar} from '../../../../components/userAvatar/UserAvatar'
 import {useSchema} from '../../../../hooks/useSchema'
 import {SanityDefaultPreview} from '../../../../preview/components/SanityDefaultPreview'
+import {getSystemVariantId} from '../../../../util/getSystemVariantRef'
 import {
   getVariantConditionsText,
   getVariantIdFromDocument,
@@ -202,12 +203,12 @@ const documentActionColumn: (
 const VARIANT_ICON_CARD_STYLE: CSSProperties = {backgroundColor: 'transparent'}
 const VARIANT_ICON_STYLE: CSSProperties = {color: 'var(--card-icon-color)'}
 
-/** Resolves a document's variant definition from its `_system.variant._ref` (full variant id). */
+/** Resolves a document's variant definition from its `_system.variants[0]._ref` (full variant id). */
 function resolveDocumentVariant(
   document: BundleDocumentRow['document'],
   variantsById: Map<string, SystemVariant>,
 ): SystemVariant | undefined {
-  const variantRef = (document as {_system?: {variant?: {_ref?: string}}})._system?.variant?._ref
+  const variantRef = getSystemVariantId(document._system)
   return variantRef ? variantsById.get(variantRef) : undefined
 }
 

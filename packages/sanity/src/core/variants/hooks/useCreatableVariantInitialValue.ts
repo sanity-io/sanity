@@ -11,7 +11,7 @@ import {getPublishedId, getVersionFromId} from '../../util/draftUtils'
 /**
  * Builds the initial value for a creatable missing draft variant from its published sibling: the
  * sibling's content re-identified as the draft target, with `_system` rewritten for the draft
- * (`{variant, bundleId: 'drafts', scopeId, group}`) and the sibling's `_rev` dropped (the
+ * (`{variants, bundleId: 'drafts', scopeId, group}`) and the sibling's `_rev` dropped (the
  * draft-to-be has no revision).
  *
  * The value serves double duty through the form's `initialValue`: it is displayed until the
@@ -39,7 +39,7 @@ export function buildCreatableVariantInitialValue(options: {
         _ref: getPublishedId(target.id),
         _weak: true as const,
       },
-      variant: {_ref: variantId, _weak: true as const},
+      variants: [{_ref: variantId, _weak: true as const}],
       bundleId: 'drafts',
       scopeId: getVersionFromId(target.id),
     },

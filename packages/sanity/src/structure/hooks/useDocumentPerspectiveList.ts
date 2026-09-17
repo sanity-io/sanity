@@ -1,6 +1,7 @@
 import {type BadgeTone} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {
+  getSystemVariantId,
   getVariantTitle,
   getVersionFromId,
   isDraftId,
@@ -217,13 +218,12 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
   )
   const getVersionDisplay = useCallback(
     (version: VersionInfoDocumentStub) => {
-      const isVariantVersion = Boolean(version._system.variant)
-      if (!isVariantVersion) {
+      const variantId = getSystemVariantId(version._system)
+      if (!variantId) {
         return getAgentVersionDisplay(version._id)
       }
-      const variantId = version._system.variant?._ref
-      const variant = variantId ? variants.get(variantId) : undefined
-      const variantTitle = variant ? getVariantTitle(variant) : (variantId ?? '')
+      const variant = variants.get(variantId)
+      const variantTitle = variant ? getVariantTitle(variant) : variantId
       return {
         displayName: `${variantTitle} [${version._system.bundleId || 'published'}]`,
         tone: version._system.bundleId ? ('caution' as const) : ('positive' as const),
@@ -239,20 +239,20 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
           return false
         }
         const hasRelease = Boolean(version._system.release)
-        const hasVariant = Boolean(version._system.variant)
+        const hasVariant = Boolean(getSystemVariantId(version._system))
         return !hasRelease && !hasVariant
       }),
     [filteredVersions],
   )
 
   const variantVersions = useMemo(
-    () => filteredVersions.filter((version) => Boolean(version._system.variant)),
+    () => filteredVersions.filter((version) => Boolean(getSystemVariantId(version._system))),
     [filteredVersions],
   )
   const setVariant = useSetVariant()
   const handleVariantSelectionChange = useCallback(
     (version: VersionInfoDocumentStub) => {
-      const variantId = version._system.variant?._ref
+      const variantId = getSystemVariantId(version._system)
       const variant = variantId ? variants.get(variantId) : undefined
       // Published version documents omit `bundleId`, so treat a missing bundle as published.
       // Passing the perspective alongside the variant updates both sticky params atomically.

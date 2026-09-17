@@ -1,5 +1,6 @@
 import {type SanityDocument} from '@sanity/types'
 
+import {getSystemVariantRef} from '../../util/getSystemVariantRef'
 import {type EditStateFor} from './document-pair/editState'
 
 /**
@@ -22,7 +23,7 @@ export function selectBaseVariant(
     baseVariantEditState.published,
   ].find((document) => document?._id === baseVariantId)
 
-  if (!baseVariant || baseVariant._system?.variant) {
+  if (!baseVariant || getSystemVariantRef(baseVariant._system)) {
     return null
   }
 
