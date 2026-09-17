@@ -53,7 +53,6 @@ export interface DocumentRevertStates {
   unresolvedDocumentIds: string[]
 }
 
-<<<<<<< HEAD
 /**
  * Upper bound per bulk translog request. The window is shared across the documents in the request,
  * so any document whose newest pre-release transaction falls outside it is resolved individually
