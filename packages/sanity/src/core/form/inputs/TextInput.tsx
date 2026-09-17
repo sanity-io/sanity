@@ -1,8 +1,8 @@
 import {type TextSchemaType} from '@sanity/types'
 import {TextArea} from '@sanity/ui'
-import {styled} from 'styled-components'
 
 import {type StringInputProps} from '../types/inputProps'
+import {textArea} from './TextInput.css'
 
 /**
  *
@@ -10,12 +10,6 @@ import {type StringInputProps} from '../types/inputProps'
  * @beta
  */
 export type TextInputProps = StringInputProps<TextSchemaType>
-
-const StyledTextArea = styled(TextArea)`
-  &[data-as='textarea'] {
-    resize: vertical;
-  }
-`
 
 /**
  *
@@ -26,7 +20,8 @@ export function TextInput(props: TextInputProps) {
   const {schemaType, validationError, value, elementProps} = props
 
   return (
-    <StyledTextArea
+    <TextArea
+      className={textArea}
       customValidity={validationError}
       value={value || ''}
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR

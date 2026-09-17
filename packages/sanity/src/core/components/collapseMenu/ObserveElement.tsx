@@ -3,6 +3,7 @@ import {useEffect, useState} from 'react'
 
 interface ObserveElementProps {
   children: React.JSX.Element
+  className?: string
   options?: IntersectionObserverInit
   onIntersectionChange: IntersectionObserverCallback
 }
