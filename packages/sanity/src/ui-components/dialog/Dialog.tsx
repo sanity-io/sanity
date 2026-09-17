@@ -6,13 +6,7 @@ import {
   Flex,
   Text,
 } from '@sanity/ui'
-import {
-  type ComponentProps,
-  type HTMLProps,
-  type ReactNode,
-  type Ref,
-  type RefAttributes,
-} from 'react'
+import {type ComponentProps, type HTMLProps, type ReactNode, type RefAttributes} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Box, type BoxProps} from 'ui5'
 
@@ -115,7 +109,12 @@ export function Dialog({
         )
       }
     >
-      <Box height={bodyHeight} padding={padding ? 4 : 0}>
+      <Box
+        height={bodyHeight}
+        //  oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
+        minHeight={bodyHeight ? undefined : 'min-content'}
+        padding={padding ? 4 : 0}
+      >
         {children}
       </Box>
     </UIDialog>
