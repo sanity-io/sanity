@@ -51,6 +51,9 @@
     "dev/auth-test-studio": {
       "ignoreDependencies": ["oxc-transform-react"],
     },
+    "dev/design-studio": {
+      "ignoreDependencies": ["oxc-transform-react"],
+    },
     // Same situation as the e2e workspace: the playwright plugin is disabled because
     // playwright.config.ts throws on missing SANITY_E2E_* env vars at load time (when CI
     // is set). Treat every file as an entry so dependency usage is still traced.
@@ -68,6 +71,9 @@
       "project": ["**/*.{ts,tsx}"],
     },
     "dev/page-building-studio": {
+      "ignoreDependencies": ["oxc-transform-react"],
+    },
+    "dev/radar": {
       "ignoreDependencies": ["oxc-transform-react"],
     },
     "dev/sdk-app": {
