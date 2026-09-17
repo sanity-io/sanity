@@ -226,6 +226,23 @@ describe('VariantsMenuSections', () => {
     expect(screen.getByText('Variants')).toBeInTheDocument()
   })
 
+  it('keeps the label when a document has no variants', async () => {
+    await renderSections(
+      <VariantsMenuSections
+        documentId="book-1"
+        variants={variants}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
+      />,
+    )
+
+    // This state has to read identically to having no document open. Without the label, selecting
+    // a document silently drops it and the list looks like a different component.
+    expect(screen.getByText('Variants')).toBeInTheDocument()
+  })
+
   it('drops the label while filtering, where the list is a set of results', async () => {
     await renderSections(
       <VariantsMenuSections

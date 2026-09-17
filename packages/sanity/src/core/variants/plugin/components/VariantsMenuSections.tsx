@@ -229,7 +229,16 @@ function DocumentVariantSections({
   selectedVariantId,
   onSelect,
   searchTerm,
-}: SectionsProps & {documentId: string}): React.JSX.Element | null {
+  unsplitHeading,
+}: SectionsProps & {
+  documentId: string
+  /**
+   * The heading for the case where the document has no variants and there is nothing to split.
+   * That state has to read identically to having no document open, label included - without it,
+   * selecting a document silently drops the label and the list looks like a different component.
+   */
+  unsplitHeading?: string
+}): React.JSX.Element | null {
   const {t} = useTranslation(variantsLocaleNamespace)
   const documentVariantIds = useDocumentVariantIds(documentId)
 
@@ -244,6 +253,7 @@ function DocumentVariantSections({
   if (has.length === 0) {
     return (
       <OtherVariantsSection
+        heading={unsplitHeading}
         variants={others}
         selectedVariantId={selectedVariantId}
         onSelect={onSelect}
@@ -348,7 +358,11 @@ export function VariantsMenuSections({
     <>
       {defaultRow}
       {documentId ? (
-        <DocumentVariantSections documentId={documentId} {...rest} />
+        <DocumentVariantSections
+          documentId={documentId}
+          unsplitHeading={isFiltering ? undefined : t('navbar.variant.list')}
+          {...rest}
+        />
       ) : (
         // Labelled `Variants` unless a filter is active, where the list is a set of results and a
         // heading over them explains nothing. The document-selected path labels itself.
