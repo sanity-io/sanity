@@ -400,5 +400,32 @@ describe('getDocumentChanges', () => {
       expect(result.error).toBeNull()
       expect(result.diff?.isChanged).toBe(false)
     })
+
+    it('stops replaying already-fetched draft transactions when a discard arrives while viewing latest', async () => {
+      const events$ = new BehaviorSubject(eventsValue([editEvent, publishEvent]))
+      const changes$ = getDocumentChanges({
+        eventsObservable$: events$,
+        to$: of(null),
+        since$: of({
+          document: publishedDoc,
+          loading: false,
+          revisionId: publishedDoc._rev,
+        }),
+        remoteTransactions$: of([staleDraftTx]),
+        documentId: DRAFT_ID,
+        client: {} as SanityClient,
+      })
+      const {values, subscription} = collectEmissions(changes$)
+
+      await vi.waitFor(() => expect(values.at(-1)?.loading).toBe(false))
+      expect(mockGetDocumentTransactions).toHaveBeenCalledTimes(1)
+      expect(values.at(-1)?.diff?.isChanged).toBe(true)
+
+      events$.next(eventsValue([discardVersionEvent, editEvent, publishEvent]))
+
+      await vi.waitFor(() => expect(values.at(-1)?.diff?.isChanged).toBe(false))
+      expect(mockGetDocumentTransactions).toHaveBeenCalledTimes(1)
+      subscription.unsubscribe()
+    })
   })
 })

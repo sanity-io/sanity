@@ -10,8 +10,7 @@ import {
   type DocumentChangeContextInstance,
   type DocumentGroupEvent,
   getTargetSiblings,
-  isDeleteDocumentGroupEvent,
-  isDeleteDocumentVersionEvent,
+  isNonSelectableTerminalEvent,
   isReleaseDocument,
   LoadingBlock,
   NoChanges,
@@ -170,10 +169,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
     // Discard is not selectable. Do not use it as the live to-event when the
     // current revision did not resolve (e.g. an unpublished draft was discarded).
     const fallbackToEvent =
-      lastEvent &&
-      (isDeleteDocumentVersionEvent(lastEvent) || isDeleteDocumentGroupEvent(lastEvent))
-        ? null
-        : lastEvent || null
+      lastEvent && isNonSelectableTerminalEvent(lastEvent) ? null : lastEvent || null
     return [
       events.find((e) => e.id === sinceRevision?.revisionId) || null,
       revisionEvent || fallbackToEvent,
@@ -262,7 +258,9 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
                   error={timelineError || diffError}
                   loading={revision?.loading || sinceRevision?.loading || false}
                   schemaType={schemaType}
-                  sameRevisionSelected={sinceEvent?.id === toEvent?.id}
+                  sameRevisionSelected={Boolean(
+                    sinceEvent && toEvent && sinceEvent.id === toEvent.id,
+                  )}
                   sinceEvent={sinceEvent}
                 />
               )}
