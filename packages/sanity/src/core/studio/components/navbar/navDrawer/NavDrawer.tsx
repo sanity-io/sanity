@@ -1,5 +1,5 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {Card, Layer, Stack, Text} from '@sanity/ui'
+import {Card, Layer, Stack, Text, TextSkeleton} from '@sanity/ui'
 import {AnimatePresence, motion, type Transition, type Variants} from 'motion/react'
 import {type KeyboardEvent, memo, Suspense, useCallback, useMemo} from 'react'
 import TrapFocus from 'react-focus-lock'
@@ -82,6 +82,27 @@ interface NavDrawerProps {
   isOpen: boolean
   onClose: () => void
   tools: Tool[]
+}
+
+/**
+ * Placeholder for the sidebar tool menu while a lazy `toolMenu` middleware loads. Mirrors
+ * `ToolVerticalMenu`: a stacked list of large bleed-button rows (`padding={3}` around size 1 text).
+ * `StudioToolMenu` renders nothing for a single tool, so this does too.
+ */
+function ToolMenuSkeleton({tools}: {tools: Tool[]}) {
+  if (tools.length <= 1) {
+    return null
+  }
+
+  return (
+    <Stack as="ul" gap={1}>
+      {tools.map((tool) => (
+        <Stack key={tool.name} as="li" padding={3}>
+          <TextSkeleton animated radius={1} size={1} style={{width: 120}} />
+        </Stack>
+      ))}
+    </Stack>
+  )
 }
 
 export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
@@ -208,7 +229,8 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
               >
                 {/* Tools */}
                 <Card flex="none" padding={2}>
-                  <Suspense fallback={null}>
+                  {/* Unlike the topbar, this card has no sibling that holds its height. */}
+                  <Suspense fallback={<ToolMenuSkeleton tools={tools} />}>
                     {/* oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work */}
                     <ToolMenu
                       activeToolName={activeToolName}
