@@ -3,11 +3,13 @@ import {expect, test} from 'vitest'
 import {type BisectCommit} from '../bisect/bisect'
 import {
   baseTagOf,
+  bisectSessionPath,
   baseVersionOf,
   changelogUrl,
   compareTagsSemverDesc,
   npmxUrl,
   regressionCountByTag,
+  regressionsByTag,
 } from './releaseInfo'
 
 function sha(index: number): string {
@@ -63,6 +65,24 @@ test('regressionCountByTag blames the introducing release', () => {
   expect(counts.size).toBe(2)
 })
 
+test('regressionsByTag keeps the items, grouped under the introducing release', () => {
+  const commits = chainOf(10)
+  const tags = [
+    {tag: 'v2.1.0', sha: sha(1), taggedAt: '2026-08-19T00:00:00Z'},
+    {tag: 'v2.0.0', sha: sha(5), taggedAt: '2026-08-15T00:00:00Z'},
+  ]
+  const items = [
+    {id: 'a', firstBadSha: sha(3)},
+    {id: 'b', firstBadSha: sha(7)},
+    {id: 'c', firstBadSha: sha(3)},
+    {id: 'unreleased', firstBadSha: sha(0)},
+  ]
+  const grouped = regressionsByTag(bySha(commits), tags, items)
+  expect(grouped.get('v2.1.0')?.map((item) => item.id)).toEqual(['a', 'c'])
+  expect(grouped.get('v2.0.0')?.map((item) => item.id)).toEqual(['b'])
+  expect(grouped.size).toBe(2)
+})
+
 test('compareTagsSemverDesc orders newest version first, prereleases below their release', () => {
   const tags = [
     'v6.10.1',
@@ -105,4 +125,14 @@ test('compareTagsSemverDesc compares prerelease identifiers in code-point order,
     'v7.0.0-alpha',
     'v7.0.0-RC',
   ])
+})
+
+test('bisectSessionPath swaps the tool segment and keeps the workspace base path', () => {
+  expect(bisectSessionPath('/releases', 'bisect-session-1')).toBe(
+    '/bisect?session=bisect-session-1',
+  )
+  expect(bisectSessionPath('/studio/releases', 'bisect-session-1')).toBe(
+    '/studio/bisect?session=bisect-session-1',
+  )
+  expect(bisectSessionPath('/releases/', 'a b')).toBe('/bisect?session=a%20b')
 })

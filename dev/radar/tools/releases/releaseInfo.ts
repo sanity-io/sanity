@@ -66,23 +66,39 @@ export function baseVersionOf(
 }
 
 /**
- * Count confirmed regressions per INTRODUCING release: for each first-bad
- * sha from a regression-flagged bisect session, the oldest release whose
- * ancestry contains it gets the blame. Shas no release contains (unreleased
- * regressions) are not counted here.
+ * Group confirmed regressions by INTRODUCING release: for each item's
+ * first-bad sha, the oldest release whose ancestry contains it gets the
+ * blame. Items no release contains (unreleased regressions) are dropped.
+ * Order within a release follows the input.
  */
+export function regressionsByTag<T extends ReleaseTag, R extends {firstBadSha: string}>(
+  commitsBySha: Map<string, BisectCommit>,
+  tags: T[],
+  regressions: R[],
+): Map<string, R[]> {
+  const byTag = new Map<string, R[]>()
+  for (const regression of regressions) {
+    const introducing = releasesContaining(commitsBySha, tags, regression.firstBadSha)[0]
+    if (!introducing) continue
+    const list = byTag.get(introducing.tag) ?? []
+    list.push(regression)
+    byTag.set(introducing.tag, list)
+  }
+  return byTag
+}
+
+/** `regressionsByTag` reduced to counts, for the badge. */
 export function regressionCountByTag<T extends ReleaseTag>(
   commitsBySha: Map<string, BisectCommit>,
   tags: T[],
   firstBadShas: string[],
 ): Map<string, number> {
-  const counts = new Map<string, number>()
-  for (const sha of firstBadShas) {
-    const introducing = releasesContaining(commitsBySha, tags, sha)[0]
-    if (!introducing) continue
-    counts.set(introducing.tag, (counts.get(introducing.tag) ?? 0) + 1)
-  }
-  return counts
+  const grouped = regressionsByTag(
+    commitsBySha,
+    tags,
+    firstBadShas.map((firstBadSha) => ({firstBadSha})),
+  )
+  return new Map([...grouped].map(([tag, list]) => [tag, list.length]))
 }
 
 /**
@@ -143,4 +159,18 @@ function comparePrereleaseDesc(a: string, b: string): number {
 function compareCodePointsDesc(a: string, b: string): number {
   if (a === b) return 0
   return a < b ? 1 : -1
+}
+
+/**
+ * The Bisect tool URL for a session, from the Releases tool's own location.
+ * Tools are top-level studio routes (`<basePath>/<tool name>`), and the
+ * Bisect tool reads `?session=` from the location rather than router state,
+ * so this is plain path surgery on the current pathname: swap the trailing
+ * `releases` segment for `bisect` and append the query. Router-based
+ * resolution is not an option here — `useRouter()` inside a tool is scoped
+ * to that tool, so a `{tool: 'bisect'}` state can't be encoded from it.
+ */
+export function bisectSessionPath(pathname: string, sessionId: string): string {
+  const base = pathname.replace(/\/releases(?:\/.*)?$/, '')
+  return `${base}/bisect?session=${encodeURIComponent(sessionId)}`
 }

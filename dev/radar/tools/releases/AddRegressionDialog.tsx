@@ -6,7 +6,7 @@ import {type BisectCommit, buildChain} from '../bisect/bisect'
 import {type TagSlice} from '../bisect/data'
 import {type ManualRegressionInput} from '../bisect/sessions'
 import {pluralize} from '../bisect/text'
-import {baseTagOf} from './releaseInfo'
+import {baseTagOf, compareTagsSemverDesc} from './releaseInfo'
 
 /**
  * Report a regression by hand when the introducing release is already known
@@ -22,14 +22,17 @@ export function AddRegressionDialog(props: {
   tags: TagSlice[]
   commitsBySha: Map<string, BisectCommit>
   createdBy: string
+  /** Opened from a release row — that release starts selected (still changeable). */
+  initialTag?: string
   onClose: () => void
   /** Must settle (the tool toasts failures) — the submit stays disabled until it does. */
   onCreate: (input: ManualRegressionInput) => Promise<unknown>
 }) {
-  const {tags, commitsBySha, createdBy, onClose, onCreate} = props
-  const [selectedTagName, setSelectedTagName] = useState('')
+  const {tags, commitsBySha, createdBy, initialTag, onClose, onCreate} = props
+  const [selectedTagName, setSelectedTagName] = useState(initialTag ?? '')
   const [description, setDescription] = useState('')
   const [linearIssue, setLinearIssue] = useState('')
+  const [fixedIn, setFixedIn] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
   const tagBySha = useMemo(() => new Map(tags.map((tag) => [tag.sha, tag.tag])), [tags])
@@ -52,6 +55,19 @@ export function AddRegressionDialog(props: {
     }
   }, [selected, commitsBySha, tagBySha, tags])
 
+  // A fix can only ship after the release that introduced the regression
+  const fixCandidates = useMemo(
+    () =>
+      selected
+        ? tags
+            .filter((candidate) => compareTagsSemverDesc(candidate.tag, selected.tag) < 0)
+            .toSorted((a, b) => compareTagsSemverDesc(a.tag, b.tag))
+        : [],
+    [tags, selected],
+  )
+  // Changing the introducing release can make the chosen fix older than it
+  const fixedInValid = fixCandidates.some((candidate) => candidate.tag === fixedIn)
+
   const blocked = !selected || !encoded?.ok || description.trim() === ''
 
   return (
@@ -70,6 +86,7 @@ export function AddRegressionDialog(props: {
             </Text>
             <Select
               fontSize={1}
+              aria-label="Introduced in release"
               value={selectedTagName}
               onChange={(event) => setSelectedTagName(event.currentTarget.value)}
             >
@@ -125,6 +142,26 @@ export function AddRegressionDialog(props: {
             />
           </Stack>
 
+          <Stack gap={2}>
+            <Text size={1} weight="medium">
+              Fixed in (optional)
+            </Text>
+            <Select
+              fontSize={1}
+              aria-label="Fixed in release"
+              value={fixedInValid ? fixedIn : ''}
+              disabled={!selected}
+              onChange={(event) => setFixedIn(event.currentTarget.value)}
+            >
+              <option value="">Not fixed yet</option>
+              {fixCandidates.map((candidate) => (
+                <option key={candidate._id} value={candidate.tag}>
+                  {candidate.tag}
+                </option>
+              ))}
+            </Select>
+          </Stack>
+
           <Flex gap={2} justifyContent="flex-end">
             <Button mode="ghost" text="Cancel" onClick={onClose} />
             <Button
@@ -142,6 +179,7 @@ export function AddRegressionDialog(props: {
                   suspectShas: encoded.suspectShas,
                   description: description.trim(),
                   linearIssue: linearIssue.trim() || undefined,
+                  fixedIn: fixedInValid ? fixedIn : undefined,
                   createdBy,
                 }).finally(() => setSubmitting(false))
               }}
