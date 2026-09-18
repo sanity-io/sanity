@@ -107,6 +107,7 @@ export {
   type PortalBoundaryContextValue,
 } from '../_singletons/context/PortalBoundaryContext'
 export {ParseErrorsContext, type SetParseError} from '../_singletons/context/ParseErrorsContext'
+export {PerspectiveActiveDocumentContext} from '../_singletons/context/PerspectiveActiveDocumentContext'
 export {PerspectiveContext} from '../_singletons/context/PerspectiveContext'
 export {PortableTextMarkersContext} from '../_singletons/context/PortableTextMarkersContext'
 export {
