@@ -71,7 +71,10 @@ export function GlobalPerspectiveMenuItem(props: {
           flexGrow={0}
           flexShrink={0}
           data-testid="release-indicator-icon"
-          paddingX={3}
+          paddingLeft={3}
+          // 4px here plus the parent Flex's own `gap={1}` is the 8px the design puts between the
+          // icon and the title. `paddingX={3}` made it 16px, which read as a loose row.
+          paddingRight={1}
           paddingY={2}
         >
           <Text size={2}>

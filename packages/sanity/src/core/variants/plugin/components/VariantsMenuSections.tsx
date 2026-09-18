@@ -81,7 +81,9 @@ function VariantMenuItem(props: {
           text size - so the row is unchanged to look at. Only the title differs, and it has to,
           because a marked title is a node and that wrapper's `text` takes a string. */}
       <Flex align="center" gap={2}>
-        <Box paddingRight={1}>
+        {/* No padding here: the parent Flex's `gap={2}` is already the 8px the design puts between
+            the icon and the title, and the wrapper's extra 4px made the row read as loose. */}
+        <Box>
           {/* Two nested Texts, as the wrapper has them: it renders the caller's icon element
               inside its own `size={1}` Text, and that outer size is what sets the row's line
               height. Collapsing them into one made the row 2px taller. */}
@@ -129,7 +131,7 @@ function DefaultVariantMenuItem({
       selected={isSelected}
     >
       <Flex align="center" gap={2}>
-        <Box paddingRight={1}>
+        <Box>
           <Text size={1}>
             <Text size={2} className={suggestIconColor}>
               <Icon />
