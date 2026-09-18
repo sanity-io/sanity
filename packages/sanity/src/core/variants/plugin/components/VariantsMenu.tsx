@@ -17,6 +17,7 @@ import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {RhombusOutlinedIcon} from '../../../components/temporary-icons/RhombusOutlined'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {usePerspectiveActiveDocument} from '../../../perspective/activeDocument/usePerspectiveActiveDocument'
+import {MENU_PINNED_BLOCK_HEIGHT_VAR} from '../../../perspective/styles'
 import {useSetVariant} from '../../../perspective/useSetVariant'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
@@ -89,6 +90,8 @@ export function VariantsMenu({
   trigger: JSX.Element
 }): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
+  const rootRef = useRef<HTMLDivElement | null>(null)
+  const pinnedRef = useRef<HTMLDivElement | null>(null)
   const router = useRouter()
   const setVariant = useSetVariant()
   const {data: variants} = useAllVariants()
@@ -146,11 +149,32 @@ export function VariantsMenu({
   })
 
   const isDefaultSelected = !selectedVariant
-  // Filled means "the selected document exists in this variant". A selected
-  // document always exists outside any variant, so the default entry fills as
-  // soon as there is one.
-  const hasSelectedDocument = Boolean(activeDocument)
   const isFiltering = filterQuery.trim().length > 0
+  // Counted before the search, as the release menu counts its own: narrowing past the threshold
+  // would pull the input out from under whoever is typing, and take their term with it.
+  const showFilter = variants.length >= VARIANT_FILTER_THRESHOLD
+
+  // Publish the filter block's height so the section headings pin directly below it rather than
+  // at the panel's own edge. Without this they resolve `MENU_PINNED_BLOCK_HEIGHT_VAR` to its 0px
+  // fallback and pin *underneath* the filter, which sits at the same offset with a higher stacking
+  // order and an opaque background - so a heading scrolling up simply disappears. Measured rather
+  // than declared for the same reason the release menu measures its own: the input can wrap.
+  useEffect(() => {
+    if (!showFilter) return undefined
+
+    const root = rootRef.current
+    const pinned = pinnedRef.current
+    if (!root || !pinned) return undefined
+
+    const publish = () =>
+      root.style.setProperty(MENU_PINNED_BLOCK_HEIGHT_VAR, `${pinned.offsetHeight}px`)
+
+    publish()
+
+    const observer = new ResizeObserver(publish)
+    observer.observe(pinned)
+    return () => observer.disconnect()
+  }, [showFilter])
 
   return (
     <>
@@ -159,13 +183,10 @@ export function VariantsMenu({
         id="variants-nav-menu"
         onClose={handleMenuClose}
         menu={
-          <StyledMenu data-testid="variants-nav-menu" padding={0}>
-            {/* Gated on the unfiltered count, not the filtered one: keyed off the results, the
-                input would disappear underneath whoever was typing into it.
-
-                4px and borderless, matching the release menu and the design's own filter block. */}
-            {variants.length >= VARIANT_FILTER_THRESHOLD && (
-              <StickyFilterCard borderBottom padding={1}>
+          <StyledMenu data-testid="variants-nav-menu" padding={0} ref={rootRef}>
+            {/* 4px and borderless, matching the release menu and the design's own filter block. */}
+            {showFilter && (
+              <StickyFilterCard borderBottom padding={1} ref={pinnedRef}>
                 <TextInput
                   border={false}
                   data-testid="variant-menu-filter"
