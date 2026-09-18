@@ -30,6 +30,7 @@ export const oversizedButtonStyle = css`
  * different height in different workspaces. A menu that pins nothing above its
  * headings never sets it, and the `0px` fallback is then already correct.
  */
+export const MENU_PINNED_BLOCK_HEIGHT_VAR = '--sanity-perspective-menu-pinned-height'
 
 /**
  * Pins a menu section heading below the menu's pinned top block.
@@ -40,7 +41,7 @@ export const oversizedButtonStyle = css`
  */
 export const stickyMenuHeadingStyle = css`
   position: sticky;
-  top: 0;
+  top: var(${MENU_PINNED_BLOCK_HEIGHT_VAR}, 0px);
   z-index: 1;
   background: var(--card-bg-color);
 `
