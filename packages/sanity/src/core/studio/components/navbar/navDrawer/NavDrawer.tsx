@@ -3,7 +3,6 @@ import {Card, Layer, Stack, Text} from '@sanity/ui'
 import {AnimatePresence, motion, type Transition, type Variants} from 'motion/react'
 import {type KeyboardEvent, memo, useCallback, useMemo} from 'react'
 import TrapFocus from 'react-focus-lock'
-import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
@@ -22,6 +21,7 @@ import {WorkspaceMenuButton} from '../workspace/WorkspaceMenuButton'
 import {AppearanceMenu} from './ApperanceMenu'
 import {LocaleMenu} from './LocaleMenu'
 import {ManageMenu} from './ManageMenu'
+import {backdrop, innerCard, root} from './NavDrawer.css'
 
 const ANIMATION_TRANSITION: Transition = {
   bounce: 0,
@@ -49,32 +49,7 @@ const INNER_CARD_VARIANTS: Variants = {
   },
 }
 
-const Root = styled(Layer)`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-`
-
-const BackdropMotion = styled(motion.create(Card))`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--card-shadow-penumbra-color);
-`
-
-const InnerCardMotion = styled(motion.create(Card))`
-  position: relative;
-  pointer-events: all;
-  flex-direction: column;
-  height: 100%;
-  min-width: 200px;
-  max-width: 280px;
-  overflow: auto;
-`
+const MotionCard = motion.create(Card)
 
 interface NavDrawerProps {
   __internal_actions?: NavbarAction[]
@@ -139,9 +114,10 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
     <AnimatePresence>
       {isOpen && (
         <TrapFocus returnFocus>
-          <Root onKeyDown={handleKeyDown}>
-            <BackdropMotion
+          <Layer className={root} onKeyDown={handleKeyDown}>
+            <MotionCard
               animate="open"
+              className={backdrop}
               data-open={isOpen}
               exit="closed"
               initial="closed"
@@ -149,8 +125,9 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
               transition={ANIMATION_TRANSITION}
               variants={BACKDROP_VARIANTS}
             />
-            <InnerCardMotion
+            <MotionCard
               animate="open"
+              className={innerCard}
               data-open={isOpen}
               display="flex"
               exit="closed"
@@ -236,8 +213,8 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
               <CapabilityGate capability="globalUserMenu">
                 <UserMenuAuthAction layout="drawer" />
               </CapabilityGate>
-            </InnerCardMotion>
-          </Root>
+            </MotionCard>
+          </Layer>
         </TrapFocus>
       )}
     </AnimatePresence>
