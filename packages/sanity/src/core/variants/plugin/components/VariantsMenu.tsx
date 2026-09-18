@@ -1,12 +1,19 @@
-import {Card, Text, TextInput} from '@sanity/ui'
+import {Card, TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
-import {type JSX, useCallback, useMemo, useState} from 'react'
+import {
+  type CSSProperties,
+  type JSX,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {useRouter, useStateLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
-import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
 import {RhombusOutlinedIcon} from '../../../components/temporary-icons/RhombusOutlined'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {usePerspectiveActiveDocument} from '../../../perspective/activeDocument/usePerspectiveActiveDocument'
@@ -18,7 +25,6 @@ import {type SystemVariant} from '../../types'
 import {rankVariantsForSearch, VARIANT_FILTER_THRESHOLD} from '../../util/rankVariantsForSearch'
 import {VARIANTS_TOOL_NAME} from '../index'
 import {VariantsMenuSections} from './VariantsMenuSections'
-import {suggestIconColor} from './VariantsNav.css'
 
 // Pinned, as the release menu's filter block is: the input is how you navigate a long list, and a
 // filter that scrolls away takes the term with it.
@@ -39,18 +45,26 @@ const ActionCard = styled(Card)`
 `
 
 /**
- * The rhombus at the rows' own size.
+ * The rhombus at the list rows' own size.
  *
- * The shared MenuItem renders the icon it is given inside a `size={1}` Text, which put the same
- * glyph one step smaller here than in the list directly above it. The wrapper accepts an element,
- * so the size travels with the icon rather than needing a change to the wrapper.
+ * Sanity UI sizes icons from a `.<text-class> [data-sanity-icon]` rule emitted by every Text, and
+ * the shared MenuItem wraps whatever icon it is given in its own `size={1}` Text - 21px where the
+ * rows' `size={2}` Text gives 25px. Wrapping the icon in a second, `size={2}` Text is not enough:
+ * both selectors are one class plus one attribute, so equal specificity, and the winner is decided
+ * by the order styled-components injected the two rules rather than by the nesting. It happened to
+ * resolve to 25px in Storybook and cannot be relied on anywhere else.
+ *
+ * So the two declarations that rule carries for text size 2 are pinned inline instead, where no
+ * stylesheet can outrank them: `font.text.sizes[2]` has `iconSize: 25`, and its icon offset -
+ * `(lineHeight - ascenderHeight - descenderHeight - iconSize) / 2` - is -7px.
  */
+const viewVariantsIconStyle: CSSProperties = {
+  fontSize: 'calc(25 / 16 * 1rem)',
+  margin: 'calc(-7 / 16 * 1rem)',
+}
+
 function ViewVariantsIcon(): React.JSX.Element {
-  return (
-    <Text size={2}>
-      <RhombusOutlinedIcon />
-    </Text>
-  )
+  return <RhombusOutlinedIcon style={viewVariantsIconStyle} />
 }
 
 const StyledMenu = styled(Menu)`
