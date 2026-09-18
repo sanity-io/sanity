@@ -1,12 +1,21 @@
 import {DiamondIcon} from '@sanity/icons/Diamond'
 import {Card, TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
-import {type JSX, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {
+  type CSSProperties,
+  type JSX,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {useRouter, useStateLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
+import {RhombusOutlinedIcon} from '../../../components/temporary-icons/RhombusOutlined'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {usePerspectiveActiveDocument} from '../../../perspective/activeDocument/usePerspectiveActiveDocument'
 import {MenuActionsCard} from '../../../perspective/MenuActionsCard'
@@ -27,6 +36,45 @@ const StickyFilterCard = styled(Card)`
   top: 0;
   z-index: 2;
   background: var(--card-bg-color);
+`
+
+/**
+ * The rhombus at the size an action row's icon renders at.
+ *
+ * `@sanity/icons` has no plain rhombus - its only diamond is a faceted gem, which is the wrong
+ * shape for this (the design draws a plain outline: PopoverMenu node 7736:40245). So the temporary
+ * glyph is the right one, and it needs sizing: it is drawn at 0.37 of its viewBox where icon-set
+ * glyphs sit at 0.56-0.68, so at the standard 21px box it renders 7.8px of ink - as small as a
+ * status icon, against the 11.8px a calendar carries in the same row of the release menu.
+ *
+ * A 33px box brings it to 12.2px, in line with those. The declarations are inline because Sanity UI
+ * sizes icons through a `.<text-class> [data-sanity-icon]` rule per `Text`, so a nested `Text` gives
+ * two rules of equal specificity and styled-components' injection order picks the winner.
+ *
+ * Delete all of this the day `@sanity/icons` ships a plain rhombus drawn at the set's own optical
+ * size: the row then needs nothing but `icon={RhombusOutlinedIcon}`.
+ */
+const viewVariantsIconStyle: CSSProperties = {
+  fontSize: 'calc(33 / 16 * 1rem)',
+  margin: 'calc(-11 / 16 * 1rem)',
+}
+
+function ViewVariantsIcon(): React.JSX.Element {
+  return <RhombusOutlinedIcon style={viewVariantsIconStyle} />
+}
+
+/**
+ * The shared action block, with one number overridden.
+ *
+ * `MenuActionsCard` insets its icons 11px, which is correct for every icon-set glyph. This one sits
+ * in a 33px box rather than a 21px box, so the same inset would put its ink 2px right of the rows:
+ * 9px lands it at 12.4px, in the column the rows establish. The override is here rather than in the
+ * shared card because the cause is this glyph, not this menu.
+ */
+const VariantActionsCard = styled(MenuActionsCard)`
+  [data-ui='MenuItem'] > [data-ui='Box'] {
+    padding-left: 9px;
+  }
 `
 
 const StyledMenu = styled(Menu)`
@@ -188,7 +236,7 @@ export function VariantsMenu({
                 {/* The release menu's own action block: a bordered 4px card rather than a
                     divider plus a padded box. It is not sticky here - this menu's actions scroll
                     with the list. */}
-                <MenuActionsCard borderTop padding={1} data-testid="variant-menu-actions">
+                <VariantActionsCard borderTop padding={1} data-testid="variant-menu-actions">
                   {/* The icon goes in plain, at the shared MenuItem's own size. An earlier pass
                       scaled it to a 33px box to match the list rows' diamonds; that moved the ink
                       out of column in one direction and the text in the other. Built like the
@@ -197,11 +245,11 @@ export function VariantsMenu({
                     as="a"
                     data-testid="view-variants-menu-item"
                     href={viewVariantsLink.href}
-                    icon={DiamondIcon}
+                    icon={<ViewVariantsIcon />}
                     onClick={viewVariantsLink.onClick}
                     text={t('navbar.variant.view-all')}
                   />
-                </MenuActionsCard>
+                </VariantActionsCard>
               </>
             )}
           </StyledMenu>
