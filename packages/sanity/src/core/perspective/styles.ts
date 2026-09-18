@@ -45,35 +45,3 @@ export const stickyMenuHeadingStyle = css`
   z-index: 1;
   background: var(--card-bg-color);
 `
-
-/**
- * Insets a perspective menu's action row so its icon's ink lands in the column the rows above it
- * establish.
- *
- * Both menus need this and neither can use the other's number, so what is shared is the mechanism
- * and the reasoning rather than the value.
- *
- * **Why an override at all.** The shared `ui-components/MenuItem` hardcodes its left inset to a
- * scale step and applies it to an inner `Box`, so a `style` on the item stacks with it instead of
- * replacing it. This selector reaches the box that actually carries the padding.
- *
- * **Why the value is off the 4px scale.** Icons align on ink, not on boxes. `@sanity/icons` glyphs
- * fill 0.56-0.60 of their box; a small release avatar's dot fills 0.28 and the temporary rhombi
- * 0.32-0.37. Equal boxes therefore read as a ragged column, and the correction is whatever puts the
- * ink in line - which lands between scale steps.
- *
- * **The two values, so a change to one is visibly a change to only one:**
- *
- * | Menu | Action icons | Inset | Resulting ink | Aligned against |
- * | --- | --- | --- | --- | --- |
- * | Release | calendar, add (21px box, 11.8-12.6px ink) | 11px | 13.2-13.6px | dots 14.0-14.6px, release icons 12.6px |
- * | Variant | outlined rhombus (33px box, 12.2px ink) | 7.5px | 10.9px | set by eye on review, 2px left of the rows |
- *
- * Re-measure both rows of that table when either changes - see the sibling-surfaces rule. A value
- * tuned against one fixture in one menu has repeatedly turned out to be wrong in the other.
- */
-export const menuActionIconInsetStyle = (inset: string) => css`
-  [data-ui='MenuItem'] > [data-ui='Box'] {
-    padding-left: ${inset};
-  }
-`

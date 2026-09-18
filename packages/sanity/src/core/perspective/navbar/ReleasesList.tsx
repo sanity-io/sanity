@@ -15,7 +15,8 @@ import {useAgentBundles} from '../../store/agent/useAgentBundles'
 import {useWorkspace} from '../../studio/workspace'
 import {isCardinalityOneRelease} from '../../util/releaseUtils'
 import {usePerspectiveActiveDocument} from '../activeDocument/usePerspectiveActiveDocument'
-import {MENU_PINNED_BLOCK_HEIGHT_VAR, menuActionIconInsetStyle} from '../styles'
+import {MenuActionsCard} from '../MenuActionsCard'
+import {MENU_PINNED_BLOCK_HEIGHT_VAR} from '../styles'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {AgentBundleMenuItem} from './AgentBundleMenuItem'
 import {GlobalPerspectiveMenuItem} from './GlobalPerspectiveMenuItem'
@@ -32,21 +33,6 @@ const StickyCard = styled(Card)`
 
 const StickyTopCard = styled(StickyCard)`
   top: 0;
-`
-
-const StickyBottomCard = styled(StickyCard)`
-  bottom: 0;
-  /* Every element that can precede this card draws its own bottom border - a release section, the
-     published/drafts card, the agent bundle card, or the filter block - so this card's top border
-     landed against one and the pair read as a single 2px rule. Pulling up by exactly one border
-     width overlaps them, and this card's opaque background hides the one underneath. The top
-     border has to stay: while the list scrolls, rows pass beneath this card and that border is
-     the only thing separating them. */
-  margin-top: -1px;
-
-  /* 11px of inset, and the shared helper carries why - both menus need this and the two values
-     live side by side in its doc comment. */
-  ${menuActionIconInsetStyle('11px')}
 `
 
 export function ReleasesList({
@@ -224,12 +210,12 @@ export function ReleasesList({
         </Card>
       )}
       {!isFiltering && (areReleasesEnabled || isScheduledDraftsAvailable) && (
-        <StickyBottomCard borderTop padding={1} data-testid="release-menu-actions">
+        <MenuActionsCard borderTop padding={1} data-testid="release-menu-actions">
           <Stack gap={1}>
             <ScheduledDraftsMenuItem />
             {areReleasesEnabled && <ViewContentReleasesMenuItem />}
           </Stack>
-        </StickyBottomCard>
+        </MenuActionsCard>
       )}
     </Card>
   )
