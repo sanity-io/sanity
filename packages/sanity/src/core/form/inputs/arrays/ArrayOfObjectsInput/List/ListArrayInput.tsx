@@ -1,7 +1,8 @@
 import {type DragStartEvent} from '@dnd-kit/core'
 import {isKeySegment} from '@sanity/types'
-import {Card, type CardTone, Stack, Text} from '@sanity/ui'
+import {Card, type CardTone, Text} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
+import {VStack} from 'ui5'
 
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {shallowEquals} from '../../../../../util/shallowEquals'
@@ -93,7 +94,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
 
   return (
     <ArrayValidationProvider schemaType={schemaType} itemCount={members.length}>
-      <Stack gap={2} ref={parentRef}>
+      <VStack gap={2} ref={parentRef}>
         <UploadTargetCard
           {...elementProps}
           $radius={radius}
@@ -103,7 +104,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
           tabIndex={0}
           types={schemaType.of}
         >
-          <Stack data-ui="ArrayInput__content" gap={2}>
+          <VStack data-ui="ArrayInput__content" gap={2}>
             {members.length === 0 ? (
               <Card padding={3} border radius={2} tone={errorTone}>
                 <Text align="center" muted size={1}>
@@ -137,7 +138,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                 radius={radius}
               />
             ) : null}
-          </Stack>
+          </VStack>
         </UploadTargetCard>
         <ArrayFunctions
           onChange={onChange}
@@ -149,7 +150,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
           schemaType={schemaType}
           value={value}
         />
-      </Stack>
+      </VStack>
     </ArrayValidationProvider>
   )
 }
