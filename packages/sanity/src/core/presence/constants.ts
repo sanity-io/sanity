@@ -23,10 +23,10 @@ export const SNAP_TO_DOCK_DISTANCE_TOP = 8
 // Make the avatars snap to the bottom dock when they are closer than this from the bottom
 export const SNAP_TO_DOCK_DISTANCE_BOTTOM = 8
 
-// The avatar will move to the right when this close (in pixels) to the top
+// An in-flow avatar this close (in pixels) to the top unstacks and points its arrow up
 export const SLIDE_RIGHT_THRESHOLD_TOP = 20
 
-// The avatar will move to the right when this close (in pixels) to the bottom
+// An in-flow avatar this close (in pixels) to the bottom unstacks and points its arrow down
 export const SLIDE_RIGHT_THRESHOLD_BOTTOM = 20
 
 // Switch on debug mode (will display regions)
