@@ -327,7 +327,13 @@ effect of merged work; secondary: leads scanning health weekly.
    endpoints, current bounds, every visited commit and the one under test,
    with the runs in between collapsed into gap rows labelled by what the
    bisect has already deduced (broken / untested / working), each linking to
-   the GitHub compare of the span. Sessions can be deleted from the session
+   the GitHub compare of the span. A gap row expands in place to list its
+   commits, and every listed or visited commit (bar the endpoints and a
+   concluded verdict) has a Test action that opens the same card as the
+   proposed step — preview build at the repro path, checkout/install chips,
+   good/bad/skip — so a suspicious commit can be checked out of turn. Such a mark joins the same log (last
+   mark per sha wins); one that contradicts the bounds surfaces as the usual
+   conflict that undo resolves. Sessions can be deleted from the session
    view (hard delete behind a confirm — they're the only user-owned documents
    here).
 
