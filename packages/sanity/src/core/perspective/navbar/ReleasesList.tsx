@@ -170,7 +170,7 @@ export function ReleasesList({
         </StickyTopCard>
       )}
       {(showPublished || showDrafts) && (
-        <Card borderBottom padding={1}>
+        <Card borderBottom paddingX={1} paddingTop={1} paddingBottom={2}>
           <Stack gap={1}>
             {/* These two are rendered here rather than through `ReleaseTypeMenuSection`, so they
                 need the term passed explicitly — without it they were filtered on their labels but
@@ -193,7 +193,7 @@ export function ReleasesList({
         </Card>
       )}
       {agentBundles[0] && (
-        <Card borderBottom padding={1}>
+        <Card borderBottom paddingX={1} paddingTop={1} paddingBottom={2}>
           <Stack gap={1}>
             <AgentBundleMenuItem bundle={agentBundles[0]} />
           </Stack>
@@ -227,7 +227,13 @@ export function ReleasesList({
         </Card>
       )}
       {!isFiltering && (areReleasesEnabled || isScheduledDraftsAvailable) && (
-        <StickyBottomCard borderTop padding={1} data-testid="release-menu-actions">
+        <StickyBottomCard
+          borderTop
+          paddingX={1}
+          paddingTop={1}
+          paddingBottom={2}
+          data-testid="release-menu-actions"
+        >
           <Stack gap={1}>
             <ScheduledDraftsMenuItem />
             {areReleasesEnabled && (

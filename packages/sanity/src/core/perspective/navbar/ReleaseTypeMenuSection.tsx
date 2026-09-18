@@ -51,8 +51,13 @@ export function ReleaseTypeMenuSection({
 }): React.JSX.Element | null {
   if (releases.length === 0 && !(renderWhenEmpty && heading)) return null
 
+  // 8px below the last row, not the 4px a uniform `padding={1}` gives. The design nests the rows
+  // 4px inside a `SectionContent` slot that is itself inset 4px from the section, so the space
+  // below the last row is twice the space at the sides (PopoverMenu node 6998:20254: the section at
+  // y=135 is 184 tall around 176 of content, whose last row ends 4px short of its own bottom).
+  // Against a two-line row the missing 4px read as the divider crowding the subtitle.
   return (
-    <Card padding={1} borderBottom data-testid={dataTestId}>
+    <Card paddingX={1} paddingTop={1} paddingBottom={2} borderBottom data-testid={dataTestId}>
       {/*
         The stack sets no gap and the heading carries the whole space below it as
         padding instead. A gap would leave a transparent strip that rows flicker
