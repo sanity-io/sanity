@@ -27,7 +27,7 @@ jobs:
 
   test:
     timeout-minutes: 60
-    name: Test (node ${{ matrix.node }}) - ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+    name: Test (node ${{ matrix.node }}, React ${{ matrix.react }}) - ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
     runs-on: ubuntu-8core
     needs: [check]
     if: needs.check.outputs.has_code_changes == 'true'
@@ -41,9 +41,15 @@ jobs:
       fail-fast: false
       matrix:
         node: [22, 24, 26]
+        react: [latest, minimum]
         experimental: [false]
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
+        exclude:
+          - node: 22
+            react: minimum
+          - node: 26
+            react: minimum
         # include:
         #   - os: windows-latest
         #     node: 16
@@ -56,6 +62,29 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
+      - name: Install minimum supported React
+        if: matrix.react == 'minimum'
+        run: |
+          REACT_VERSION=$(pnpm --silent --filter sanity exec node -e "const {minVersion} = require('semver'); process.stdout.write(minVersion(require('./package.json').peerDependencies.react).version)")
+          export REACT_VERSION
+          node --input-type=module <<'EOF'
+          import {readFile, writeFile} from 'node:fs/promises'
+
+          const path = 'pnpm-workspace.yaml'
+          const workspace = await readFile(path, 'utf8')
+          const marker = 'overrides:\n'
+          if (!workspace.includes(marker)) throw new Error(`Missing ${marker.trim()} section`)
+          await writeFile(
+            path,
+            workspace.replace(
+              marker,
+              `${marker}  react: '${process.env.REACT_VERSION}'\n  react-dom: '${process.env.REACT_VERSION}'\n`,
+            ),
+          )
+          EOF
+          pnpm install --no-frozen-lockfile
+          pnpm --filter sanity exec node -e "for (const dependency of ['react', 'react-dom']) { const actual = require(dependency + '/package.json').version; console.log(dependency + '@' + actual); if (actual !== process.env.REACT_VERSION) throw new Error('Expected ' + dependency + '@' + process.env.REACT_VERSION + ', got ' + actual) }"
+
       - name: Build packages
         run: pnpm build --output-logs=full --log-order=grouped
 
@@ -64,7 +93,7 @@ jobs:
         run: |
           # Base arguments for all test runs
           ARGS="--test-timeout=60000 --retry 4 --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }} --passWithNoTests"
-          if [ "${{ matrix.node }}" == "24" ]; then
+          if [ "${{ matrix.node }}" == "24" ] && [ "${{ matrix.react }}" == "latest" ]; then
             # We only gather coverage from a single Node version.
             # We pass in `--reporter=blob` so that we can combine the results from all shards.
             ARGS="$ARGS --coverage --reporter=default --reporter=blob"
@@ -74,7 +103,7 @@ jobs:
           GITHUB_SHARD_IDENTIFIER: ${{ matrix.shardIndex }}-${{ matrix.shardTotal }}
 
       - name: Upload blob report to GitHub Actions Artifacts
-        if: ${{ !cancelled() && matrix.node == '24' }}
+        if: ${{ !cancelled() && matrix.node == '24' && matrix.react == 'latest' }}
         uses: actions/upload-artifact@v7
         with:
           name: blob-report-${{ github.run_id }}-${{ matrix.shardIndex }}
