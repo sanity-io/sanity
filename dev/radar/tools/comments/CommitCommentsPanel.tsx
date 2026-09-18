@@ -223,12 +223,13 @@ function NewThreadComposer(props: {
           setValue(EMPTY_MESSAGE)
         }}
         onKeyDown={(event) => {
-          if (event.isDefaultPrevented() || event.key !== 'Escape') return
-          // Keep Escape from also closing the run dialog; with a draft, ask
-          // before throwing it away
+          if (event.isDefaultPrevented() || event.key !== 'Escape' || !hasValue) return
+          // With a draft, Escape asks before throwing it away — and must not
+          // also close the run dialog around it. An empty box lets Escape
+          // through, so the dialog closes as it would from anywhere else.
           event.preventDefault()
           event.stopPropagation()
-          if (hasValue) handle.current?.discardDialogController.open()
+          handle.current?.discardDialogController.open()
         }}
         onDiscardCancel={() => handle.current?.discardDialogController.close()}
         onDiscardConfirm={() => {

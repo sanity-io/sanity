@@ -75,9 +75,14 @@ const TAG_LABEL_MARGIN_TOP = 112
  * earlier distinct commit (first point, soak minutes, local runs).
  */
 function previousPointFor(lines: TrendLine[], selected: TrendPoint): TrendPoint | undefined {
-  const line = lines.find((candidate) => candidate.points.includes(selected))
+  // By run id, not object identity: the lines are rebuilt on every realtime
+  // emit while the selected point is held across them
+  const line = lines.find((candidate) =>
+    candidate.points.some((point) => point.runId === selected.runId),
+  )
   if (!line) return undefined
-  for (let i = line.points.indexOf(selected) - 1; i >= 0; i--) {
+  const index = line.points.findIndex((point) => point.runId === selected.runId)
+  for (let i = index - 1; i >= 0; i--) {
     const candidate = line.points[i]
     if (candidate.sha !== selected.sha && candidate.sha !== 'unknown') return candidate
   }

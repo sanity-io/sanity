@@ -83,8 +83,12 @@ export function RunDetailDialog(props: {
   const {series, point, previousPoint, tags = [], onClose} = props
   const {host} = point
   // The branch this run measured — only main commits have a gitCommit
-  // document for comments to hang on
-  const branch = series.lines.find((line) => line.points.includes(point))?.branch ?? 'unknown'
+  // document for comments to hang on. Matched by run id, not object identity:
+  // the series are rebuilt on every realtime emit, so the point this dialog
+  // holds stops being the object in `series.lines` while the dialog is open
+  const branch =
+    series.lines.find((line) => line.points.some((candidate) => candidate.runId === point.runId))
+      ?.branch ?? 'unknown'
   // Which releases this run sits between. Always stated when known, unlike the
   // hover tooltip's proximity-based row: "which release is this run's code in?"
   // is a question every run has an answer to. Meaningless on soak minute charts,
