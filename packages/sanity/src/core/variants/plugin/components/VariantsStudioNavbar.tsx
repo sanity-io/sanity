@@ -26,6 +26,7 @@ import {getVariantTitle} from '../../tool/util'
 import {getVersionFilterLabel} from './getVersionFilterLabel'
 import {PerspectiveFilter} from './PerspectiveFilter'
 import {VariantsMenu} from './VariantsMenu'
+import {suggestIconColor} from './VariantsNav.css'
 
 /**
  * The variant pill's rhombus, filled or outlined.
@@ -51,7 +52,11 @@ function DocumentVariantRhombus({
   // variant - so the default reads as filled rather than as an absence.
   const filled = !selectedVariantId || documentVariantIds.has(selectedVariantId)
 
-  return filled ? <RhombusIcon /> : <RhombusOutlinedIcon />
+  return filled ? (
+    <RhombusIcon className={suggestIconColor} />
+  ) : (
+    <RhombusOutlinedIcon className={suggestIconColor} />
+  )
 }
 
 export function VariantsStudioNavbar(props: NavbarProps) {
@@ -131,6 +136,10 @@ export function VariantsStudioNavbar(props: NavbarProps) {
               trigger={
                 <Button
                   data-testid="variants-nav-menu-button"
+                  // Suggest-toned in both branches, as the design has it and as every row in
+                  // the menu below already is. It rides on the icon rather than on the pill's
+                  // `tone`, which with no variant selected is `default` and would take the label
+                  // and the prefix with it.
                   icon={
                     activeDocument ? (
                       <DocumentVariantRhombus
@@ -140,7 +149,7 @@ export function VariantsStudioNavbar(props: NavbarProps) {
                     ) : (
                       // Nothing open, so there is no document to have or lack this variant.
                       // Matches the menu, whose default entry outlines with no active document.
-                      RhombusOutlinedIcon
+                      <RhombusOutlinedIcon className={suggestIconColor} />
                     )
                   }
                   iconRight={ChevronDownIcon}
