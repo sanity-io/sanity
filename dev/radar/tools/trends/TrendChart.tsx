@@ -14,6 +14,7 @@ import {
 } from '../comments/comments'
 import {CommentExcerpt} from '../comments/CommitComments'
 import {useCommitComments} from '../comments/CommitCommentsContext'
+import {CommitCommentsDialog} from '../comments/CommitCommentsDialog'
 import {
   CALIBRATION_EXPLAINER,
   formatTick,
@@ -610,8 +611,18 @@ const COMMENT_GLYPH = {left: 5.5, top: 6.5, width: 14, height: 14}
  * at (`x` horizontally centred, `y`). Shared by the chart marker and the legend
  * swatch so the two always agree on the shape.
  */
-export function CommentGlyph(props: {x: number; y: number; height: number}) {
-  const {x, y, height} = props
+export function CommentGlyph(props: {
+  x: number
+  y: number
+  height: number
+  /**
+   * The commit was not measured by any run in the chart — the bubble sits at
+   * the commit's own date. Drawn dashed and lighter, so it reads as "a comment
+   * exists near here" rather than "this run has a comment".
+   */
+  unmeasured?: boolean
+}) {
+  const {x, y, height, unmeasured = false} = props
   const scale = height / COMMENT_GLYPH.height
   const left = x - (COMMENT_GLYPH.left + COMMENT_GLYPH.width / 2) * scale
   const top = y - (COMMENT_GLYPH.top + COMMENT_GLYPH.height) * scale
@@ -629,6 +640,8 @@ export function CommentGlyph(props: {x: number; y: number; height: number}) {
       stroke={COLOR.comment}
       strokeWidth={1.5}
       strokeLinejoin="round"
+      strokeDasharray={unmeasured ? '2 1.5' : undefined}
+      opacity={unmeasured ? 0.6 : 1}
       vectorEffect="non-scaling-stroke"
     />
   )
@@ -655,9 +668,10 @@ export function CommentGlyph(props: {x: number; y: number; height: number}) {
  *
  * Unlike the other annotation layers, the bubble is a control: hovering it
  * puts the crosshair on its run (so the tooltip reads the threads), and
- * clicking or pressing Enter opens that run's dialog where the threads live.
- * Only a bubble anchored to a measured run opens anything — a commit no run
- * measured has no dialog to open — and the cursor says so.
+ * clicking or pressing Enter opens the threads — in that run's dialog when a
+ * run measured the commit, or on their own when none did (a merge commented
+ * from the Bisect stepper). The unmeasured bubble is drawn dashed and lighter
+ * so the two cases tell apart before the click.
  */
 function CommentMarkers(props: {
   comments: ResolvedCommitComments[]
@@ -672,22 +686,22 @@ function CommentMarkers(props: {
       {comments.map((entry) => {
         const count = entry.threads.length
         const label = `${count} comment ${count === 1 ? 'thread' : 'threads'} on commit ${entry.sha.slice(0, 7)}${
-          entry.measured ? '. Open the run' : ' (no run measured it)'
+          entry.measured ? '. Open the run' : '. No run measured this commit — open the comments'
         }`
         return (
           <g
             key={entry.sha}
-            role={entry.measured ? 'button' : undefined}
+            role="button"
             aria-label={label}
-            tabIndex={entry.measured ? 0 : undefined}
-            style={{cursor: entry.measured ? 'pointer' : 'default'}}
+            tabIndex={0}
+            style={{cursor: 'pointer'}}
             onPointerEnter={() => onHover(entry.atMs)}
             onPointerLeave={() => onHover(null)}
             onFocus={() => onHover(entry.atMs)}
             onBlur={() => onHover(null)}
-            onClick={() => entry.measured && onOpen(entry)}
+            onClick={() => onOpen(entry)}
             onKeyDown={(event) => {
-              if (entry.measured && (event.key === 'Enter' || event.key === ' ')) {
+              if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault()
                 onOpen(entry)
               }
@@ -698,6 +712,7 @@ function CommentMarkers(props: {
               x={xScale(entry.atMs)}
               y={COMMENT_BUBBLE_BOTTOM}
               height={COMMENT_BUBBLE_HEIGHT}
+              unmeasured={!entry.measured}
             />
           </g>
         )
@@ -752,6 +767,8 @@ export function TrendChart(props: {
   const [hoverMs, setHoverMs] = useState<number | null>(null)
   // The run whose detail dialog is open
   const [selected, setSelected] = useState<TrendPoint | null>(null)
+  // A commented commit no run measured, whose threads open on their own
+  const [commentsSha, setCommentsSha] = useState<string | null>(null)
   const captureRef = useRef<SVGRectElement>(null)
   // Comments come through context, not props — see CommentsContext for why
   const comments = useCommitComments()
@@ -1025,6 +1042,10 @@ export function TrendChart(props: {
             // The run that measured the commented commit — the bubble is
             // anchored on it, so the nearest point at that time is that run
             onOpen={(entry) => {
+              if (!entry.measured) {
+                setCommentsSha(entry.sha)
+                return
+              }
               const best = nearestPointAcrossLines(lines, entry.atMs)
               if (best) setSelected(best)
             }}
@@ -1402,7 +1423,14 @@ export function TrendChart(props: {
                   ))}
                   {hoveredThreads.length > 2 && (
                     <Text size={0} muted>
-                      +{hoveredThreads.length - 2} more — click the run to read them
+                      +{hoveredThreads.length - 2} more — click the bubble to read them
+                    </Text>
+                  )}
+                  {/* Why the bubble is dashed: the comment is on a commit
+                      between runs, so it opens on its own, not with a run */}
+                  {hoveredComments.some((entry) => !entry.measured) && (
+                    <Text size={0} muted>
+                      no run measured this commit — click the bubble to read the comments
                     </Text>
                   )}
                 </Stack>
@@ -1413,6 +1441,16 @@ export function TrendChart(props: {
             </Stack>
           </Card>
         </div>
+      )}
+      {commentsSha && (
+        <CommitCommentsDialog
+          sha={commentsSha}
+          scope={{seriesKey: series.key}}
+          onClose={() => {
+            setCommentsSha(null)
+            captureRef.current?.focus()
+          }}
+        />
       )}
       {selected && (
         <RunDetailDialog

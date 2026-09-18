@@ -409,6 +409,8 @@ effect of merged work; secondary: leads scanning health weekly.
    (`resolveCommentPositions`, the same resolution the release markers use)
    and falls back to the commit's date for commits no run measured — a merge
    commented from a bisect still lands in the right place on the trend.
+   A commit no run measured gets a dashed, lighter bubble, and clicking it
+   opens the threads on their own since there is no run dialog to open.
    Hovering the run names the threads (author and an excerpt each); the
    dialog has them in full. A `comments` legend entry toggles the layer
    grid-wide like the others. The investigation prompt includes the threads

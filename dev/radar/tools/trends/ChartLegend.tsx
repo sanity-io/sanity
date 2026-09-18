@@ -169,7 +169,7 @@ export function ChartLegend(props: {
       layer="comments"
       layers={layers}
       label="comments"
-      hint="Comment threads left on a commit — on the run that measured it, or at the commit's date. Hover a run to read them, click it to join in"
+      hint="Comment threads left on a commit — on the run that measured it, or (dashed) at the commit's date when no run did. Hover a run to read them, click the bubble to join in"
       swatch={
         // The bubble alone, filling the swatch. At 7px over a baseline the tail
         // merged with the line and the whole read as a blob on legs; the tick's
