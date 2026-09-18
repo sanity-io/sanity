@@ -22,14 +22,8 @@ export const ViewContentReleasesMenuItem: ComponentType = () => {
     onClick: logNavigationTelemetry,
   })
 
-  // 12px, aligning ink rather than boxes — same value and reason as `ScheduledDraftsMenuItem`,
-  // which carries the measurements: a small release avatar's dot sits ~9px inside its 25px svg
-  // while these @sanity/icons glyphs nearly fill theirs, so equal boxes left the action ink 3.4px
-  // left of the dots'. The design aligns the action icons with the rest of the column (PopoverMenu
-  // node 7576:27957).
   return (
     <MenuItem
-      style={{paddingLeft: '11px'}}
       as="a"
       href={href}
       onClick={onClick}
