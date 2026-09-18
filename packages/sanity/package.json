@@ -150,7 +150,7 @@
     "@portabletext/plugin-table": "^2.0.9",
     "@portabletext/plugin-typography": "^9.0.10",
     "@portabletext/react": "^8.0.1",
-    "@portabletext/sanity-bridge": "^4.1.0",
+    "@portabletext/sanity-bridge": "^4.1.1",
     "@portabletext/to-html": "^6.0.0",
     "@portabletext/toolkit": "^6.0.0",
     "@rexxars/react-json-inspector": "^9.0.1",
