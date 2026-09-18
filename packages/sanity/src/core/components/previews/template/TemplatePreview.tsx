@@ -1,8 +1,8 @@
-import {Flex, rem, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {rem, Stack, Text, TextSkeleton} from '@sanity/ui'
 import {type ElementType, isValidElement, type ReactNode} from 'react'
 import {isValidElementType} from 'react-is'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {Media, type MediaProps} from '../_common/Media'
@@ -41,7 +41,7 @@ const Root = styled(Box)`
   }
 `
 
-const HeaderFlex = styled(Flex).attrs({align: 'center'})`
+const HeaderFlex = styled(Flex).attrs({alignItems: 'center'})`
   height: ${rem(PREVIEW_SIZES.default.media.height)};
 `
 
@@ -105,7 +105,7 @@ export function TemplatePreview(props: TemplatePreviewProps) {
         </Stack>
 
         {media && (
-          <Flex align="flex-start" paddingLeft={2}>
+          <Flex alignItems="flex-start" paddingLeft={2}>
             <Media dimensions={mediaDimensions} layout="default" media={media} />
           </Flex>
         )}

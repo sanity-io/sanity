@@ -6,6 +6,7 @@ import {
   buildTimeline,
   deriveBisectState,
   type Mark,
+  pickableShas,
   releasesContaining,
 } from './bisect'
 
@@ -268,4 +269,39 @@ test('gap compare spans use the commit past the gap as base', () => {
   // three-dot compare excludes the base, so the base must be OUTSIDE the
   // gap (c5) for all four gap commits (c1..c4) to appear in the diff
   expect(gap).toMatchObject({kind: 'gap', count: 4, newestSha: sha(1), baseSha: sha(5)})
+})
+
+test('a gap carries its collapsed commits, newest first', () => {
+  const chain = chainOf(11)
+  const [, gap] = buildTimeline(chain, [])
+  expect(gap.kind === 'gap' && gap.commits.map((commit) => commit.sha)).toEqual([
+    sha(1),
+    sha(2),
+    sha(3),
+    sha(4),
+  ])
+})
+
+// -- pickableShas -------------------------------------------------------------
+
+test('visited commits are pickable; endpoints and the proposed step are not', () => {
+  const chain = chainOf(11)
+  // c0 bad … c10 good; good at c5 makes c2 the proposed step
+  const entries = buildTimeline(chain, marks([5, 'good']))
+  expect([...pickableShas(entries, new Set())]).toEqual([sha(5)])
+})
+
+test('a gap contributes its commits only while expanded', () => {
+  const chain = chainOf(11)
+  const entries = buildTimeline(chain, [])
+  const [, gap] = entries
+  expect(pickableShas(entries, new Set()).size).toBe(0)
+  const expanded = pickableShas(entries, new Set([gap.kind === 'gap' ? gap.newestSha : '']))
+  expect([...expanded]).toEqual([sha(1), sha(2), sha(3), sha(4)])
+})
+
+test('the verdict commit is not pickable once converged', () => {
+  const chain = chainOf(6)
+  const entries = buildTimeline(chain, marks([2, 'bad'], [3, 'good']))
+  expect([...pickableShas(entries, new Set(), {verdictSha: sha(2)})]).toEqual([sha(3)])
 })

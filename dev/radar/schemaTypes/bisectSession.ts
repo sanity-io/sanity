@@ -118,6 +118,12 @@ export const bisectSession = defineType({
           description: 'Linear ticket id, e.g. SAPP-1234',
           type: 'string',
         }),
+        defineField({
+          name: 'fixedIn',
+          description:
+            'Release tag the regression was fixed in, e.g. v6.10.3 — set from the releases tool',
+          type: 'string',
+        }),
         defineField({name: 'concludedAt', type: 'datetime'}),
       ],
     }),

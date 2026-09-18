@@ -35,6 +35,9 @@
         "preview",
         // `pnpm dist-tag` invocations in tag-latest.yml / tag-stable.yml
         "dist-tag",
+        // `pnpm deprecate` / `pnpm undeprecate` invocations in deprecate-version.yml
+        "deprecate",
+        "undeprecate",
         // Installed system-wide via brew/uv/pipx, not npm
         "zizmor",
       ],
