@@ -36,6 +36,21 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'about-dialog.version-info.copy-to-clipboard-button.text': 'Copy to Clipboard',
   /** "Current version" header in version info dialog  */
   'about-dialog.version-info.current-version.header': 'Current version',
+  /** Deprecation warning in About-dialog: the running (or pinned) version is deprecated */
+  'about-dialog.version-info.deprecated.current':
+    'v{{version}} has been deprecated and should no longer be used.',
+  /** Deprecation warning in About-dialog: header */
+  'about-dialog.version-info.deprecated.header': 'Deprecated version',
+  /** Deprecation warning in About-dialog: what to do when the studio is auto-updating but pinned to the deprecated version */
+  'about-dialog.version-info.deprecated.next-step.pinned':
+    'This Studio is pinned to a deprecated version. Choose a different version in Manage.',
+  /** Deprecation warning in About-dialog: what to do when the studio is not auto-updating */
+  'about-dialog.version-info.deprecated.next-step.upgrade':
+    'Update the sanity package to a newer version and redeploy the Studio.',
+  /** Deprecation warning in About-dialog: link to the upgrade guide for studios that are not auto-updating */
+  'about-dialog.version-info.deprecated.next-step.upgrade.learn-how': 'Learn how to update',
+  /** Deprecation warning in About-dialog: the reason given when the version was deprecated */
+  'about-dialog.version-info.deprecated.reason': 'Reason: {{reason}}',
   /** @deprecated "How to upgrade" link text */
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'about-dialog.version-info.how-to-upgrade': 'Update now',
@@ -50,6 +65,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'about-dialog.version-info.reload': 'Reload',
   /** "Reload to update"-tooltip when auto updates is enabled and a new version is available */
   'about-dialog.version-info.reload-to-update': 'Reload Studio to update',
+  /** "Deprecated" tooltip in About-dialog */
+  'about-dialog.version-info.tooltip.deprecated': 'Deprecated',
   /** "Development" tooltip in About-dialog */
   'about-dialog.version-info.tooltip.development': 'Development',
   /** "New version available" tooltip in About-dialog */
@@ -788,6 +805,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** Information for what studio version the current studio is running */
   'help-resources.studio-version': 'Sanity Studio v{{studioVersion}}',
+  /** Subtitle for the studio version menu item when the running or pinned version is deprecated */
+  'help-resources.studio-version-deprecated': 'v{{version}} is deprecated',
 
   /** Title for help and resources menus */
   'help-resources.title': 'Help and resources',
