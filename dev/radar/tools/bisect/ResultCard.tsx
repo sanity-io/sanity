@@ -3,6 +3,7 @@ import {UndoIcon} from '@sanity/icons/Undo'
 import {Badge, Box, Button, Card, Stack, Text, TextArea} from '@sanity/ui'
 import {Flex} from 'ui5'
 
+import {CommitCommentsPanel} from '../comments/CommitCommentsPanel'
 import {commitUrl, compareUrl} from '../trends/links'
 import {type deriveBisectState} from './bisect'
 import {CommandChip, InstallChip} from './chips'
@@ -119,6 +120,10 @@ export function ResultCard(props: {
           onClick={() => onAnnotate({regression: !annotations.regression})}
         />
       </Flex>
+      {/* Findings on the culprit itself, pinned to the commit so they show on
+          the trend charts too — the description above stays the session's
+          one-line verdict, this is the longer record */}
+      <CommitCommentsPanel sha={state.firstBad.sha} title={state.firstBad.subject} />
       {state.suspects.length > 0 && (
         <Card padding={3} radius={2} tone="caution">
           <Stack gap={3}>

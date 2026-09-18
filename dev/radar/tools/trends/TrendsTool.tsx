@@ -38,6 +38,8 @@ import {catchError, map, of} from 'rxjs'
 import {useDocumentStore} from 'sanity'
 import {Box, Flex, Grid} from 'ui5'
 
+import {type CommitComment} from '../comments/comments'
+import {CommitCommentsProvider, useLiveCommitComments} from '../comments/CommitCommentsContext'
 import {idSlug} from './acks'
 import {ChartLegend} from './ChartLegend'
 import {
@@ -88,6 +90,8 @@ const GROUP_ICONS: Record<TrendGroup, ComponentType> = {
 }
 
 type DataSource = 'live' | DebugSource
+
+const EMPTY_COMMENTS: CommitComment[] = []
 
 /**
  * Focus-pulse for a jumped-to / deep-linked chart: the ring fades in, holds,
@@ -879,6 +883,11 @@ export function TrendsTool() {
   // collision) is testable offline like every other layer — see SPEC
   const debugTags = useMemo(() => (source === 'live' ? [] : generateDebugTags(source)), [source])
   const tags = source === 'live' ? liveTags : debugTags
+  // Comments: the studio's own comment threads on gitCommit documents, drawn
+  // as markers and listed in the run dialog. None for the debug sources —
+  // their shas have no gitCommit document to comment on.
+  const liveComments = useLiveCommitComments()
+  const comments = source === 'live' ? liveComments : EMPTY_COMMENTS
   const error = source === 'live' ? live.error : null
   const loading = source === 'live' && live.runs === null && live.error === null
 
@@ -1101,7 +1110,7 @@ export function TrendsTool() {
     return map
   }, [drift.silenced, driftBySeries])
 
-  return (
+  const content = (
     <PortalProvider element={portalElement}>
       <style dangerouslySetInnerHTML={{__html: FOCUS_PULSE_CSS}} />
       <Card ref={setPortalElement} height="fill" overflow="auto">
@@ -1375,4 +1384,7 @@ export function TrendsTool() {
       )}
     </PortalProvider>
   )
+  // Comments reach the charts, the run dialog and the legend through context
+  // (see CommitCommentsContext)
+  return <CommitCommentsProvider comments={comments}>{content}</CommitCommentsProvider>
 }
