@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.15.0](https://github.com/sanity-io/sanity/compare/v6.14.1...v6.15.0) (2026-09-17)
+
+### Bug Fixes
+
+* **validation:** accept allowed object array selections ([#14765](https://github.com/sanity-io/sanity/issues/14765)) ([e570612](https://github.com/sanity-io/sanity/commit/e57061275a63d223fb0c687f08a253afb5b3d276))
 ## [6.13.2](https://github.com/sanity-io/sanity/compare/v6.13.1...v6.13.2) (2026-09-11)
 
 ### Bug Fixes

@@ -2,7 +2,7 @@ import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {Badge, Box, Button, Card, Container, Dialog, Stack, Text} from '@sanity/ui'
 import {type ToastContextValue, useToast} from '@sanity/ui/toast'
-import {useEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {type SanityClient, useDocumentStore} from 'sanity'
@@ -140,17 +140,17 @@ export function SessionView(props: {
     [chainResult, marks, bisectOptions],
   )
 
-  // Releases containing the commit in focus — the one under test while
-  // active, the culprit once converged
-  const focusSha =
-    state?.kind === 'converged'
-      ? state.firstBad.sha
-      : state?.kind === 'active'
-        ? state.next.sha
-        : undefined
+  // Releases containing a commit: the timeline asks for whichever commit it
+  // puts a test card on (the proposed step, or one picked out of turn), and
+  // the culprit's list is memoized here for the verdict card
+  const releasesFor = useCallback(
+    (sha: string) => releasesContaining(commitsBySha, tags ?? [], sha),
+    [commitsBySha, tags],
+  )
+  const firstBadSha = state?.kind === 'converged' ? state.firstBad.sha : undefined
   const releases = useMemo(
-    () => (focusSha ? releasesContaining(commitsBySha, tags ?? [], focusSha) : []),
-    [focusSha, commitsBySha, tags],
+    () => (firstBadSha ? releasesFor(firstBadSha) : []),
+    [firstBadSha, releasesFor],
   )
 
   const onError = (title: string) => toastError(toast, title)
@@ -350,7 +350,7 @@ export function SessionView(props: {
               onMark={mark}
               onUndo={marks.length > 0 ? undo : undefined}
               stepsLeft={state?.kind === 'active' ? state.stepsLeft : undefined}
-              currentReleases={state?.kind === 'active' ? releases : []}
+              releasesFor={releasesFor}
               versionBySha={versionBySha}
               reproPath={reproPath}
               converged={

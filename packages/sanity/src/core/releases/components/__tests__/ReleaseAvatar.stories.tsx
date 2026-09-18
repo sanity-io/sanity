@@ -1,6 +1,6 @@
-import {type BadgeTone, Card, Flex, Text} from '@sanity/ui'
+import {type BadgeTone, Card, Text} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
-import {VStack} from 'ui5'
+import {VStack, Flex} from 'ui5'
 
 import {
   activeASAPRelease,
@@ -34,7 +34,7 @@ export const AllVariants: Story = {
           <Text muted size={1} weight="medium">
             by releaseType
           </Text>
-          <Flex align="center" gap={3}>
+          <Flex alignItems="center" gap={3}>
             <ReleaseAvatar releaseType="asap" />
             <ReleaseAvatar releaseType="scheduled" />
             <ReleaseAvatar releaseType="undecided" />
@@ -44,7 +44,7 @@ export const AllVariants: Story = {
           <Text muted size={1} weight="medium">
             by release document
           </Text>
-          <Flex align="center" gap={3}>
+          <Flex alignItems="center" gap={3}>
             <ReleaseAvatar release={activeASAPRelease} />
             <ReleaseAvatar release={activeScheduledRelease} />
             <ReleaseAvatar release={activeUndecidedRelease} />
@@ -56,7 +56,7 @@ export const AllVariants: Story = {
           <Text muted size={1} weight="medium">
             by tone
           </Text>
-          <Flex align="center" gap={3}>
+          <Flex alignItems="center" gap={3}>
             {TONES.map((tone) => (
               // oxlint-disable-next-line no-deprecated -- deprecated tone path is still rendered in production
               <ReleaseAvatar key={tone} tone={tone} />

@@ -1,11 +1,11 @@
 import {type ReleaseDocument} from '@sanity/client/stega'
 import ChevronLeftIcon from '@sanity/icons/ChevronLeft'
 // oxlint-disable-next-line no-restricted-imports -- `Button` requires fine-grained control
-import {Button, Label, Spinner, Stack, Text} from '@sanity/ui'
+import {Button, Label, Spinner, Text} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
 import {type ComponentType} from 'react'
 import {styled} from 'styled-components'
-import {Flex} from 'ui5'
+import {VStack, Flex} from 'ui5'
 import {type ActorRefFromLogic} from 'xstate'
 
 import {Delay} from '../../../components/Delay'
@@ -95,11 +95,11 @@ export const SelectBundle: ComponentType<Props> = ({variantCreationRef, selectio
         </TextButton>
       </Header>
       <Body>
-        <Stack gap={4}>
+        <VStack gap={4}>
           {!existingBundles.has('drafts') && (
-            <Stack gap={3}>
+            <VStack gap={3}>
               <Label as="h3">{t('document-group.create-variant.target-drafts')}</Label>
-              <Stack gap={1}>
+              <VStack gap={1}>
                 <Button
                   mode="bleed"
                   justify="flex-start"
@@ -128,12 +128,12 @@ export const SelectBundle: ComponentType<Props> = ({variantCreationRef, selectio
                     })
                   }}
                 />
-              </Stack>
-            </Stack>
+              </VStack>
+            </VStack>
           )}
-          <Stack gap={3}>
+          <VStack gap={3}>
             <Label as="h3">{t('document-group.create-variant.target-releases')}</Label>
-            <Stack gap={1}>
+            <VStack gap={1}>
               {[...bundles.entries()]
                 .filter(
                   ([, bundle]) =>
@@ -173,12 +173,12 @@ export const SelectBundle: ComponentType<Props> = ({variantCreationRef, selectio
                     }}
                   />
                 ))}
-            </Stack>
-          </Stack>
+            </VStack>
+          </VStack>
           {existingBundles.size !== 0 && (
-            <Stack gap={3}>
+            <VStack gap={3}>
               <Label as="h3">{t('document-group.create-variant.view-existing-variants')}</Label>
-              <Stack gap={1}>
+              <VStack gap={1}>
                 {[...existingBundles.values()].map((bundleKey) => {
                   const bundle = bundles.get(getReleaseDocumentIdFromReleaseId(bundleKey))
 
@@ -208,10 +208,10 @@ export const SelectBundle: ComponentType<Props> = ({variantCreationRef, selectio
                     />
                   )
                 })}
-              </Stack>
-            </Stack>
+              </VStack>
+            </VStack>
           )}
-        </Stack>
+        </VStack>
       </Body>
     </>
   )

@@ -54,6 +54,8 @@ export interface ManualRegressionInput {
   suspectShas: string[]
   description: string
   linearIssue?: string
+  /** Release tag it was already fixed in, when known at report time. */
+  fixedIn?: string
   createdBy: string
 }
 
@@ -84,6 +86,7 @@ export async function reportRegression(
       regression: true,
       description: input.description,
       ...(input.linearIssue ? {linearIssue: input.linearIssue} : {}),
+      ...(input.fixedIn ? {fixedIn: input.fixedIn} : {}),
       concludedAt: new Date().toISOString(),
     },
     createdAt: new Date().toISOString(),
@@ -152,6 +155,8 @@ export interface ResultAnnotations {
   regression?: boolean
   description?: string
   linearIssue?: string
+  /** Release tag the regression was fixed in (releases tool). */
+  fixedIn?: string
 }
 
 /** Human annotations on a concluded run — cleared string fields are unset, not stored empty. */
