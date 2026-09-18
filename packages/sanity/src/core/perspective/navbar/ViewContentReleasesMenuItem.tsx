@@ -22,13 +22,14 @@ export const ViewContentReleasesMenuItem: ComponentType = () => {
     onClick: logNavigationTelemetry,
   })
 
-  // 8px against the wrapper's hardcoded 12px: this puts the icon 12px from the panel edge (4px
-  // from the action card, 8px from here), where every release row's icon and every section heading
-  // already sits. The design aligns the action icons with the rest of the column (PopoverMenu node
-  // 7576:27957).
+  // 12px, aligning ink rather than boxes — same value and reason as `ScheduledDraftsMenuItem`,
+  // which carries the measurements: a small release avatar's dot sits ~9px inside its 25px svg
+  // while these @sanity/icons glyphs nearly fill theirs, so equal boxes left the action ink 3.4px
+  // left of the dots'. The design aligns the action icons with the rest of the column (PopoverMenu
+  // node 7576:27957).
   return (
     <MenuItem
-      paddingLeft={2}
+      paddingLeft={3}
       as="a"
       href={href}
       onClick={onClick}

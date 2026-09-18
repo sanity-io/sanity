@@ -21,9 +21,10 @@ interface Props {
    */
   text?: string
   /**
-   * Overrides the wrapper's own left inset. The perspective menu's action block aligns its icons
-   * with the release rows above them, which sit 12px from the panel edge; the context menu leaves
-   * this alone and keeps the wrapper's default.
+   * Overrides the wrapper's own left inset. The perspective menu's action block aligns this
+   * icon's *ink* with the status dots of the release rows above it — the dots sit inset within
+   * their svg box, so equal boxes do not read as an aligned column. The context menu leaves this
+   * alone and keeps the wrapper's default.
    */
   paddingLeft?: ComponentProps<typeof MenuItem>['paddingLeft']
 }

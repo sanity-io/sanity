@@ -225,9 +225,11 @@ export function ReleasesList({
             {areReleasesEnabled && (
               <>
                 <ViewContentReleasesMenuItem />
+                {/* 12px for the same ink-alignment reason as the two rows above; see
+                    `ScheduledDraftsMenuItem` for the measurements. */}
                 <CreateReleaseMenuItem
                   onCreateRelease={handleOpenBundleDialog}
-                  paddingLeft={2}
+                  paddingLeft={3}
                   text={t('release.menu.create-release')}
                 />
               </>
