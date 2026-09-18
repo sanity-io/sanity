@@ -3,12 +3,23 @@ import {CloseIcon} from '@sanity/icons/Close'
 import {CopyIcon} from '@sanity/icons/Copy'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {RobotIcon} from '@sanity/icons/Robot'
-import {Badge, Button, Stack, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
+import {
+  Badge,
+  Button,
+  Stack,
+  Text,
+  useClickOutsideEvent,
+  useGlobalKeyDown,
+  useLayer,
+} from '@sanity/ui'
 import {Popover} from '@sanity/ui/popover'
 import {useEffect, useRef, useState} from 'react'
 import {useIntentLink} from 'sanity/router'
-import {Flex, Box} from 'ui5'
+import {Box, Flex, Grid} from 'ui5'
 
+import {messageToPlainText, threadsForSha} from '../comments/comments'
+import {useCommitComments} from '../comments/CommitCommentsContext'
+import {CommitCommentsPanel} from '../comments/CommitCommentsPanel'
 import {
   CALIBRATION_EXPLAINER,
   formatValue,
@@ -52,6 +63,36 @@ function useCopyFeedback(): {state: CopyState; copy: (text: string) => void} {
     }
   }
   return {state, copy}
+}
+
+/**
+ * The popover's three ways out — Escape, a click outside, and the close button
+ * (wired in the header) — guarded by the layer stack: the comments panel opens
+ * its own popovers and dialogs (the @mention picker, reactions, the delete
+ * confirm, the context menu), which portal outside this popover's element, so
+ * an unguarded click-outside would close the run behind them. `useLayer` reads
+ * the Layer that Popover wraps its content in, which is why this lives inside
+ * the content rather than in the parent. useClickOutsideEvent already ignores
+ * the click that opened the popover, and treats the reference (the clicked
+ * dot's anchor) as "inside" so re-clicking a dot doesn't fight the dismissal.
+ */
+function Dismissal(props: {
+  onClose: () => void
+  contentEl: HTMLElement | null
+  referenceElement: HTMLElement | null
+}) {
+  const {onClose, contentEl, referenceElement} = props
+  const {isTopLayer} = useLayer()
+  useGlobalKeyDown((event) => {
+    if (event.key === 'Escape' && isTopLayer) onClose()
+  })
+  useClickOutsideEvent(
+    () => {
+      if (isTopLayer) onClose()
+    },
+    () => [contentEl, referenceElement],
+  )
+  return null
 }
 
 /**
@@ -125,22 +166,21 @@ export function RunDetailPopover(props: {
       ? `minute ${Math.round(point.date.getTime() / 60_000)} of the run`
       : point.date.toISOString().slice(0, 10)
 
-  // Popover has no built-in dismissal, so wire up the three affordances a user
-  // expects: Escape, the close button (below), and a click outside. The @sanity/ui
-  // hooks are the idiomatic path — useClickOutsideEvent already ignores the click
-  // that opened the popover, and treats the reference (the clicked dot's anchor)
-  // as "inside" so re-clicking a dot doesn't fight the dismissal.
-  useGlobalKeyDown((event) => {
-    if (event.key === 'Escape') onClose()
-  })
-  useClickOutsideEvent(onClose, () => [contentEl, referenceElement])
-
   // Move focus into the popover once it mounts so keyboard users land inside
   // it (not stranded on the chart behind it); focus is restored to the chart
   // by the caller on close. Waits for the content element so the button exists.
   useEffect(() => {
     if (contentEl) closeButtonRef.current?.focus()
   }, [contentEl])
+
+  // The comment threads on this commit, as plain text for the investigation
+  // prompt — an agent should build on what people already found
+  const promptComments = threadsForSha(useCommitComments(), point.sha, series.key).map(
+    (thread) => ({
+      createdAt: thread.createdAt,
+      text: messageToPlainText(thread.message),
+    }),
+  )
 
   return (
     <Popover
@@ -155,7 +195,8 @@ export function RunDetailPopover(props: {
       // information; the flag belongs to the card, not to this panel.
       tone="default"
       content={
-        <Box ref={setContentEl} padding={4} style={{width: 320, maxWidth: '92vw'}}>
+        <Box ref={setContentEl} padding={4} style={{width: 480, maxWidth: '92vw'}}>
+          <Dismissal onClose={onClose} contentEl={contentEl} referenceElement={referenceElement} />
           <Stack gap={4}>
             {/* Header: series title as a quiet eyebrow, close button aligned */}
             <Flex alignItems="flex-start" gap={3}>
@@ -175,41 +216,46 @@ export function RunDetailPopover(props: {
               />
             </Flex>
 
-            {/* The value is the headline; the when-line sits beneath it, and
-                the percentiles read as a labelled stat row rather than a run-on */}
+            {/* The headline: the value and its date on the left, the
+                percentiles as a labelled stat row on the right — one line of
+                "what was measured", read left to right from the number to its
+                spread. Below it, the links that identify the run (commit, PR,
+                CI run, scenario source): chips, no eyebrow — each names itself. */}
             <Stack gap={3}>
-              <Stack gap={2}>
-                <Text size={4} weight="semibold">
-                  {formatValue(point.value, series.unit)}
-                </Text>
-                <Text size={1} muted>
-                  {when}
-                </Text>
-              </Stack>
-              {(point.p75 !== undefined || point.p90 !== undefined) && (
-                <Flex gap={4}>
-                  <Stack gap={2}>
-                    <Text size={0} muted>
-                      p75
-                    </Text>
-                    <Text size={1}>{formatValue(point.p75 ?? point.value, series.unit)}</Text>
-                  </Stack>
-                  <Stack gap={2}>
-                    <Text size={0} muted>
-                      p90
-                    </Text>
-                    <Text size={1}>{formatValue(point.p90 ?? point.value, series.unit)}</Text>
-                  </Stack>
-                  {point.interactions !== undefined && (
+              <Flex alignItems="flex-end" justifyContent="space-between" gap={4} flexWrap="wrap">
+                <Stack gap={2}>
+                  <Text size={4} weight="semibold">
+                    {formatValue(point.value, series.unit)}
+                  </Text>
+                  <Text size={1} muted>
+                    {when}
+                  </Text>
+                </Stack>
+                {(point.p75 !== undefined || point.p90 !== undefined) && (
+                  <Flex gap={4}>
                     <Stack gap={2}>
                       <Text size={0} muted>
-                        interactions
+                        p75
                       </Text>
-                      <Text size={1}>{point.interactions}</Text>
+                      <Text size={1}>{formatValue(point.p75 ?? point.value, series.unit)}</Text>
                     </Stack>
-                  )}
-                </Flex>
-              )}
+                    <Stack gap={2}>
+                      <Text size={0} muted>
+                        p90
+                      </Text>
+                      <Text size={1}>{formatValue(point.p90 ?? point.value, series.unit)}</Text>
+                    </Stack>
+                    {point.interactions !== undefined && (
+                      <Stack gap={2}>
+                        <Text size={0} muted>
+                          interactions
+                        </Text>
+                        <Text size={1}>{point.interactions}</Text>
+                      </Stack>
+                    )}
+                  </Flex>
+                )}
+              </Flex>
               {/* An INP from too few interactions is a weak estimate — say so
                   where the number is read, not in a separate chart */}
               {point.interactions !== undefined && point.interactions < INP_MIN_INTERACTIONS && (
@@ -218,133 +264,7 @@ export function RunDetailPopover(props: {
                   {INP_MIN_INTERACTIONS})
                 </Badge>
               )}
-            </Stack>
-
-            {/* Where this run sits in the release timeline. Stated for every
-                run (not only ones next to a marker), because "is this before or
-                after the release I care about?" is the question the markers
-                raise and the popover is where it gets answered.
-
-                Wording is careful: "released in" would claim commit containment,
-                which a by-date bound does not establish — so it says "after" /
-                "before", which is exactly what the dates support. */}
-            {/* This run built and measured the release commit — the one case
-                where a performance number attributes to a shipped version
-                rather than to "main around then". Stated plainly, and
-                deliberately distinct from the after/before bracket below. */}
-            {measuredTag && (
-              <Stack gap={2}>
-                <Text size={0} muted weight="medium">
-                  Release
-                </Text>
-                <Flex alignItems="center" gap={2}>
-                  <Text size={1} muted>
-                    released as
-                  </Text>
-                  <Text size={1} weight="semibold">
-                    {measuredTag}
-                  </Text>
-                </Flex>
-                <Text size={0} muted>
-                  This run measured the release commit.
-                </Text>
-              </Stack>
-            )}
-
-            {(releaseContext.previous || releaseContext.next) && (
-              <Stack gap={2}>
-                <Text size={0} muted weight="medium">
-                  Release
-                </Text>
-                <Stack gap={2}>
-                  {releaseContext.previous && (
-                    <Flex alignItems="center" gap={2}>
-                      <Text size={1} muted>
-                        after
-                      </Text>
-                      <Text size={1}>{releaseContext.previous.tag}</Text>
-                      {releaseContext.previous.distTags?.includes('latest') && (
-                        <Badge tone="primary" fontSize={0}>
-                          latest
-                        </Badge>
-                      )}
-                    </Flex>
-                  )}
-                  {releaseContext.next ? (
-                    <Flex alignItems="center" gap={2}>
-                      <Text size={1} muted>
-                        before
-                      </Text>
-                      <Text size={1}>{releaseContext.next.tag}</Text>
-                    </Flex>
-                  ) : (
-                    // The common case for recent runs, and worth saying out
-                    // loud: silence here would read as missing data
-                    <Text size={1} muted>
-                      not yet released
-                    </Text>
-                  )}
-                </Stack>
-              </Stack>
-            )}
-
-            {/* The machine that produced this run — the context every absolute
-                number depends on. cpuModel/image/browser exist on documents
-                from Aug 2026 on; older runs show what they recorded. */}
-            {(host || point.calibrationMs !== undefined) && (
-              <Stack gap={2}>
-                <Text size={0} muted weight="medium">
-                  Host
-                </Text>
-                <Stack gap={2}>
-                  {host?.cpuModel && (
-                    <Text size={1} muted>
-                      {host.cpuModel}
-                    </Text>
-                  )}
-                  {host && (host.os || host.cpus !== undefined || host.memGb !== undefined) && (
-                    <Text size={1} muted>
-                      {[
-                        host.os && (host.arch ? `${host.os}/${host.arch}` : host.os),
-                        host.cpus !== undefined ? `${host.cpus} cores` : undefined,
-                        host.memGb !== undefined ? `${host.memGb} GB RAM` : undefined,
-                      ]
-                        .filter(Boolean)
-                        .join(' · ')}
-                    </Text>
-                  )}
-                  {(host?.browserVersion || host?.nodeVersion) && (
-                    <Text size={1} muted>
-                      {[
-                        host.browserVersion ? `Chromium ${host.browserVersion}` : undefined,
-                        host.nodeVersion ? `Node ${host.nodeVersion}` : undefined,
-                      ]
-                        .filter(Boolean)
-                        .join(' · ')}
-                    </Text>
-                  )}
-                  {(host?.imageOs || host?.imageVersion) && (
-                    <Text size={1} muted>
-                      image {[host.imageOs, host.imageVersion].filter(Boolean).join(' ')}
-                    </Text>
-                  )}
-                  {point.calibrationMs !== undefined && (
-                    <Flex alignItems="center" gap={2} title={CALIBRATION_EXPLAINER}>
-                      <Text size={1} muted>
-                        calibration
-                      </Text>
-                      <Text size={1}>{formatValue(point.calibrationMs, 'ms')}</Text>
-                    </Flex>
-                  )}
-                </Stack>
-              </Stack>
-            )}
-
-            {(backlinks.length > 0 || scenarioHref) && (
-              <Stack gap={2}>
-                <Text size={0} muted weight="medium">
-                  Links
-                </Text>
+              {(backlinks.length > 0 || scenarioHref) && (
                 <Flex gap={2} flexWrap="wrap">
                   {backlinks.map((link) => (
                     <Button
@@ -356,6 +276,7 @@ export function RunDetailPopover(props: {
                       aria-label={`${link.label} (opens in a new tab)`}
                       mode="ghost"
                       fontSize={1}
+                      padding={2}
                       icon={LaunchIcon}
                       text={link.label}
                     />
@@ -369,12 +290,148 @@ export function RunDetailPopover(props: {
                       aria-label={`Scenario source at this commit (opens in a new tab)`}
                       mode="ghost"
                       fontSize={1}
+                      padding={2}
                       icon={LaunchIcon}
                       text="Scenario"
                     />
                   )}
                 </Flex>
-              </Stack>
+              )}
+            </Stack>
+
+            {/* Context, side by side: where the run sits among releases, and
+                the machine that measured it. Two short label/value lists that
+                are read together ("is this a real step, or a slower host after
+                a release?"), so they share a row rather than stacking. */}
+            {(measuredTag ||
+              releaseContext.previous ||
+              releaseContext.next ||
+              host ||
+              point.calibrationMs !== undefined) && (
+              <Grid gridTemplateColumns="repeat(2, minmax(0, 1fr))" gap={4}>
+                {/* Where this run sits in the release timeline. Stated for
+                    every run (not only ones next to a marker), because "is this
+                    before or after the release I care about?" is the question
+                    the markers raise and the popover is where it gets answered.
+
+                    Wording is careful: "released in" would claim commit
+                    containment, which a by-date bound does not establish — so
+                    it says "after" / "before", which is exactly what the dates
+                    support. A release run measured the tagged commit itself —
+                    the one case where a number attributes to a shipped version
+                    — and says "released as" instead of bracketing. */}
+                <Stack gap={2}>
+                  <Text size={0} muted weight="medium">
+                    Release
+                  </Text>
+                  {measuredTag ? (
+                    <Stack gap={2}>
+                      <Flex alignItems="center" gap={2}>
+                        <Text size={1} muted>
+                          released as
+                        </Text>
+                        <Text size={1} weight="semibold">
+                          {measuredTag}
+                        </Text>
+                      </Flex>
+                      <Text size={0} muted>
+                        This run measured the release commit.
+                      </Text>
+                    </Stack>
+                  ) : (
+                    <Stack gap={2}>
+                      {releaseContext.previous && (
+                        <Flex alignItems="center" gap={2}>
+                          <Text size={1} muted>
+                            after
+                          </Text>
+                          <Text size={1}>{releaseContext.previous.tag}</Text>
+                          {releaseContext.previous.distTags?.includes('latest') && (
+                            <Badge tone="primary" fontSize={0}>
+                              latest
+                            </Badge>
+                          )}
+                        </Flex>
+                      )}
+                      {releaseContext.next ? (
+                        <Flex alignItems="center" gap={2}>
+                          <Text size={1} muted>
+                            before
+                          </Text>
+                          <Text size={1}>{releaseContext.next.tag}</Text>
+                        </Flex>
+                      ) : (
+                        // The common case for recent runs, and worth saying out
+                        // loud: silence here would read as missing data
+                        <Text size={1} muted>
+                          not yet released
+                        </Text>
+                      )}
+                      {!releaseContext.previous && !releaseContext.next && (
+                        <Text size={1} muted>
+                          no release context
+                        </Text>
+                      )}
+                    </Stack>
+                  )}
+                </Stack>
+
+                {/* The machine that produced this run — the context every
+                    absolute number depends on. cpuModel/image/browser exist on
+                    documents from Aug 2026 on; older runs show what they
+                    recorded. */}
+                <Stack gap={2}>
+                  <Text size={0} muted weight="medium">
+                    Host
+                  </Text>
+                  <Stack gap={2}>
+                    {point.calibrationMs !== undefined && (
+                      <Flex alignItems="center" gap={2} title={CALIBRATION_EXPLAINER}>
+                        <Text size={1} muted>
+                          calibration
+                        </Text>
+                        <Text size={1}>{formatValue(point.calibrationMs, 'ms')}</Text>
+                      </Flex>
+                    )}
+                    {host?.cpuModel && (
+                      <Text size={1} muted>
+                        {host.cpuModel}
+                      </Text>
+                    )}
+                    {host && (host.os || host.cpus !== undefined || host.memGb !== undefined) && (
+                      <Text size={1} muted>
+                        {[
+                          host.os && (host.arch ? `${host.os}/${host.arch}` : host.os),
+                          host.cpus !== undefined ? `${host.cpus} cores` : undefined,
+                          host.memGb !== undefined ? `${host.memGb} GB RAM` : undefined,
+                        ]
+                          .filter(Boolean)
+                          .join(' · ')}
+                      </Text>
+                    )}
+                    {(host?.browserVersion || host?.nodeVersion) && (
+                      <Text size={1} muted>
+                        {[
+                          host.browserVersion ? `Chromium ${host.browserVersion}` : undefined,
+                          host.nodeVersion ? `Node ${host.nodeVersion}` : undefined,
+                        ]
+                          .filter(Boolean)
+                          .join(' · ')}
+                      </Text>
+                    )}
+                    {(host?.imageOs || host?.imageVersion) && (
+                      <Text size={1} muted>
+                        image {[host.imageOs, host.imageVersion].filter(Boolean).join(' ')}
+                      </Text>
+                    )}
+                    {!host && point.calibrationMs === undefined && (
+                      <Text size={1} muted>
+                        not recorded
+                      </Text>
+                    )}
+                  </Stack>
+                </Stack>
+              </Grid>
             )}
 
             {compareHref && (
@@ -382,61 +439,85 @@ export function RunDetailPopover(props: {
                 <Text size={0} muted weight="medium">
                   Suspect a regression?
                 </Text>
-                <Button
-                  as="a"
-                  href={compareHref}
-                  target="_blank"
-                  rel="noreferrer"
-                  mode="ghost"
-                  fontSize={1}
-                  icon={LaunchIcon}
-                  text="Compare with previous run"
-                  aria-label="GitHub compare view of the commits between the previous run's commit and this one (opens in a new tab)"
-                />
-                {/* The bare dispatch command — previous point as reference,
-                    this point as experiment — for a human who knows what they
-                    suspect and just wants the run going. The command doubles
-                    as the tooltip so a denied clipboard is still recoverable. */}
-                {abCommand && (
+                {/* Three hand-offs on one row (wrapping when a copy label
+                    lengthens): the compare view, the bare A/B dispatch, and
+                    the full brief. Stacked full-width they read as a menu. */}
+                <Flex gap={2} flexWrap="wrap">
+                  <Button
+                    as="a"
+                    href={compareHref}
+                    target="_blank"
+                    rel="noreferrer"
+                    mode="ghost"
+                    fontSize={1}
+                    padding={2}
+                    icon={LaunchIcon}
+                    text="Compare with previous run"
+                    aria-label="GitHub compare view of the commits between the previous run's commit and this one (opens in a new tab)"
+                  />
+                  {/* The bare dispatch command — previous point as reference,
+                      this point as experiment — for a human who knows what they
+                      suspect and just wants the run going. The command doubles
+                      as the tooltip so a denied clipboard is still recoverable. */}
+                  {abCommand && (
+                    <Button
+                      mode="ghost"
+                      fontSize={1}
+                      padding={2}
+                      icon={abCopy.state === 'copied' ? CheckmarkIcon : CopyIcon}
+                      tone={abCopy.state === 'copied' ? 'positive' : 'default'}
+                      text={
+                        abCopy.state === 'copied'
+                          ? 'Copied — paste in a terminal'
+                          : abCopy.state === 'failed'
+                            ? 'Copy failed — command in tooltip'
+                            : 'Copy A/B vs previous run'
+                      }
+                      title={abCommand}
+                      aria-label="Copy the gh command dispatching an A/B bench comparison of this commit against the previous run's commit"
+                      onClick={() => abCopy.copy(abCommand)}
+                    />
+                  )}
+                  {/* A paste-ready brief for a coding agent: the full signal
+                      (metric, both commits, delta, backlinks, existing comments)
+                      plus the A/B dispatch / bisect recipe from perf/bench/README.md */}
                   <Button
                     mode="ghost"
                     fontSize={1}
-                    icon={abCopy.state === 'copied' ? CheckmarkIcon : CopyIcon}
-                    tone={abCopy.state === 'copied' ? 'positive' : 'default'}
+                    padding={2}
+                    icon={promptCopy.state === 'copied' ? CheckmarkIcon : RobotIcon}
+                    tone={promptCopy.state === 'copied' ? 'positive' : 'default'}
                     text={
-                      abCopy.state === 'copied'
-                        ? 'Copied — paste in a terminal'
-                        : abCopy.state === 'failed'
-                          ? 'Copy failed — command in tooltip'
-                          : 'Copy A/B vs previous run'
+                      promptCopy.state === 'copied'
+                        ? 'Copied'
+                        : promptCopy.state === 'failed'
+                          ? 'Copy failed'
+                          : 'Copy investigation prompt'
                     }
-                    title={abCommand}
-                    aria-label="Copy the gh command dispatching an A/B bench comparison of this commit against the previous run's commit"
-                    onClick={() => abCopy.copy(abCommand)}
+                    aria-label="Copy an investigation brief for a coding agent to the clipboard"
+                    onClick={() =>
+                      previousPoint &&
+                      promptCopy.copy(
+                        buildInvestigationPrompt(series, point, previousPoint, promptComments),
+                      )
+                    }
                   />
-                )}
-                {/* A paste-ready brief for a coding agent: the full signal
-                    (metric, both commits, delta, backlinks) plus the A/B
-                    dispatch / bisect recipe from perf/bench/README.md */}
-                <Button
-                  mode="ghost"
-                  fontSize={1}
-                  icon={promptCopy.state === 'copied' ? CheckmarkIcon : RobotIcon}
-                  tone={promptCopy.state === 'copied' ? 'positive' : 'default'}
-                  text={
-                    promptCopy.state === 'copied'
-                      ? 'Copied'
-                      : promptCopy.state === 'failed'
-                        ? 'Copy failed'
-                        : 'Copy investigation prompt'
-                  }
-                  aria-label="Copy an investigation brief for a coding agent to the clipboard"
-                  onClick={() =>
-                    previousPoint &&
-                    promptCopy.copy(buildInvestigationPrompt(series, point, previousPoint))
-                  }
-                />
+                </Flex>
               </Stack>
+            )}
+
+            {/* The studio's comment threads on this commit — what people already
+                found out, and where a finding gets recorded, with @mentions
+                to pull a colleague in. Comments hang on the commit's gitCommit
+                document, so only commits on main (which have one) qualify:
+                soak minute charts have no commit, local runs have no sha, and
+                PR-branch runs are not synced. */}
+            {series.xKind !== 'minute' && FULL_SHA.test(point.sha) && (
+              <CommitCommentsPanel
+                sha={point.sha}
+                title={`Commit ${point.sha.slice(0, 7)}`}
+                scope={{seriesKey: series.key, label: series.title}}
+              />
             )}
 
             {/* Divider before the footer action so it reads as a distinct row */}

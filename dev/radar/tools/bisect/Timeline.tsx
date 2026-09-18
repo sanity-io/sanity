@@ -6,6 +6,8 @@ import {UndoIcon} from '@sanity/icons/Undo'
 import {Badge, type BadgeTone, Box, Button, Card, Stack, Text} from '@sanity/ui'
 import {Flex} from 'ui5'
 
+import {CommitCommentCount} from '../comments/CommitComments'
+import {CommitCommentsPanel} from '../comments/CommitCommentsPanel'
 import {commitUrl, compareUrl} from '../trends/links'
 import {AuthorAvatar} from './AuthorAvatar'
 import {type deriveBisectState, type TimelineEntry, type TimelineRole, type Verdict} from './bisect'
@@ -203,6 +205,10 @@ function CurrentStepCard(props: {
           />
         </Flex>
       </Flex>
+      {/* What this step showed, in words — "bad, but only on the second
+          load", "skipped: build 404s" — a comment thread on the commit, so it
+          is there for whoever looks at this commit next, here or on a chart */}
+      <CommitCommentsPanel sha={entry.commit.sha} title={entry.commit.subject} />
     </CommitCard>
   )
 }
@@ -235,6 +241,8 @@ function CommitRow(props: {entry: Extract<TimelineEntry, {kind: 'commit'}>}) {
             </a>
           </Text>
         </Box>
+        {/* A visited commit with comments says so; the excerpts are its tooltip */}
+        <CommitCommentCount sha={entry.commit.sha} />
       </Flex>
     </Card>
   )

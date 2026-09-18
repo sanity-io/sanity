@@ -44,6 +44,8 @@ export function buildInvestigationPrompt(
   series: TrendSeries,
   point: TrendPoint,
   previousPoint: TrendPoint,
+  /** Comment threads already left on the suspicious commit, as plain text. */
+  comments: {createdAt: string; text: string}[] = [],
 ): string {
   const when =
     series.xKind === 'minute'
@@ -100,13 +102,23 @@ export function buildInvestigationPrompt(
       : `4. See perf/bench/README.md for running the suite locally. Absolute numbers are host-relative; trust the A/B verdicts over point-to-point deltas.`,
   ]
 
+  // What people already found out — an agent should build on it, not redo it.
+  const recorded =
+    comments.length === 0
+      ? ''
+      : `## Comments already left on this commit
+
+${comments.map((comment) => `- ${comment.createdAt.slice(0, 10)}: ${comment.text}`).join('\n')}
+
+`
+
   return `Investigate a suspected performance regression in the sanity-io/sanity monorepo.
 
 ## Signal
 
 ${signal.join('\n')}
 
-## How to investigate
+${recorded}## How to investigate
 
 ${steps.join('\n')}
 

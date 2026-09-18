@@ -66,6 +66,14 @@ export const gitCommit = defineType({
       type: 'number',
     }),
     defineField({
+      name: 'findings',
+      title: 'Findings',
+      description:
+        'What people found out about this commit — the comment threads Studio Radar attaches to a commit hang on this field (the studio has no document-level comments). It holds no value of its own.',
+      type: 'string',
+      readOnly: true,
+    }),
+    defineField({
       name: 'testStudioUrl',
       description:
         'Immutable Vercel deploy of dev/test-studio built at this commit. Absent when the build was skipped or had not finished when last synced.',
