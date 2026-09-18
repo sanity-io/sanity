@@ -68,8 +68,11 @@ export function ReleaseTypeMenuSection({
             </Box>
           </StickyHeading>
         )}
+        {/* The empty message carries 4px on top of the heading's own 8px: the label and the
+            message read as one block otherwise, when the message answers the label rather than
+            continuing it. */}
         {releases.length === 0 && emptyMessage ? (
-          <Box paddingLeft={2} paddingBottom={2}>
+          <Box paddingLeft={2} paddingTop={1} paddingBottom={2}>
             <Text data-testid="release-menu-no-releases" muted size={1}>
               {emptyMessage}
             </Text>

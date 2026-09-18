@@ -71,7 +71,11 @@ export function GlobalPerspectiveMenuItem(props: {
           flexGrow={0}
           flexShrink={0}
           data-testid="release-indicator-icon"
-          paddingLeft={3}
+          // 4px, so the icon's left edge lands where a section heading's text does: the section
+          // card contributes 4px and the row another 4px, and the heading's own inset is 8px from
+          // the card. The design aligns the two (PopoverMenu node 6998:20254); 12px here put the
+          // icons visibly right of every heading above them.
+          paddingLeft={1}
           // 4px here plus the parent Flex's own `gap={1}` is the 8px the design puts between the
           // icon and the title. `paddingX={3}` made it 16px, which read as a loose row.
           paddingRight={1}

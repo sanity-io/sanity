@@ -144,8 +144,13 @@ export function ReleasesList({
           drafts is the indefinite next, then asap, then dated, then undecided. */}
       {showFilter && (
         <StickyTopCard borderBottom ref={pinnedRef}>
-          <Card padding={2}>
+          {/* 4px around a 33px input is the design's 41px block (PopoverMenu node 6998:20254:
+              Filter frame 247x41, TextInput inset at 4,4). Borderless with it: the design reads the
+              filter as placeholder text on the panel, with this card's own hairline beneath, rather
+              than as a field boxed inside the menu. */}
+          <Card padding={1}>
             <TextInput
+              border={false}
               data-testid="release-menu-filter"
               fontSize={1}
               onChange={handleFilterChange}

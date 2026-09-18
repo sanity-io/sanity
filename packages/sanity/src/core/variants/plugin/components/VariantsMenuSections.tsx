@@ -16,7 +16,7 @@ import {useDocumentVariantIds} from '../../hooks/useDocumentVariantIds'
 import {variantsLocaleNamespace} from '../../i18n'
 import {getVariantId, getVariantTitle} from '../../tool/util'
 import {type SystemVariant} from '../../types'
-import {menuIconSpacer, suggestIconColor} from './VariantsNav.css'
+import {suggestIconColor} from './VariantsNav.css'
 
 const SectionHeader = styled(Text)`
   text-transform: uppercase;
@@ -33,16 +33,16 @@ const StickyHeading = styled.div`
 function VariantSectionHeader({children}: {children: string}): React.JSX.Element {
   return (
     <StickyHeading>
+      {/* The heading's text lines up with the rows' icons, not with their titles. It used to be
+          indented past an icon-width spacer to meet the titles, which left it 30px right of every
+          icon beneath it. The design aligns the two (PopoverMenu node 7737:50936), and the release
+          menu's own headings already did. */}
       <Box paddingX={2}>
-        <Flex paddingTop={3} paddingBottom={2} gap={2} paddingLeft={3}>
-          {/* Spacer for icon alignment */}
-          <Box className={menuIconSpacer} />
-          <Box>
-            <SectionHeader muted size={0} weight="medium">
-              {children}
-            </SectionHeader>
-          </Box>
-        </Flex>
+        <Box paddingLeft={1} paddingTop={3} paddingBottom={2}>
+          <SectionHeader muted size={0} weight="medium">
+            {children}
+          </SectionHeader>
+        </Box>
       </Box>
     </StickyHeading>
   )
@@ -347,7 +347,8 @@ export function VariantsMenuSections({
       <>
         {defaultRow}
         <VariantSectionHeader>{t('navbar.variant.list')}</VariantSectionHeader>
-        <Box paddingX={2} paddingBottom={2}>
+        {/* 4px on top of the heading's own spacing, matching the release menu's empty state. */}
+        <Box paddingX={2} paddingTop={1} paddingBottom={2}>
           <Text muted size={1} data-testid="variant-menu-none-yet">
             {t('navbar.variant.none-yet')}
           </Text>

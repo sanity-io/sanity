@@ -115,10 +115,13 @@ export function VariantsMenu({
         menu={
           <StyledMenu data-testid="variants-nav-menu" padding={0}>
             {/* Gated on the unfiltered count, not the filtered one: keyed off the results, the
-                input would disappear underneath whoever was typing into it. */}
+                input would disappear underneath whoever was typing into it.
+
+                4px and borderless, matching the release menu and the design's own filter block. */}
             {variants.length >= VARIANT_FILTER_THRESHOLD && (
-              <Box padding={2}>
+              <Box padding={1}>
                 <TextInput
+                  border={false}
                   data-testid="variant-menu-filter"
                   fontSize={1}
                   onChange={handleFilterChange}
