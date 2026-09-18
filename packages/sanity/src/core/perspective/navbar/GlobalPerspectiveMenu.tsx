@@ -13,8 +13,12 @@ import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {ReleasesList} from './ReleasesList'
 
 const StyledMenu = styled(Menu)`
-  min-width: 200px;
-  max-width: 320px;
+  /* Fixed, not a min/max range. The width followed the widest row, so it moved between states: a
+     narrower panel at two releases than at twenty-five, and a panel that shrank mid-filter as the
+     long titles dropped out of the results. 247px is what the design gives both perspective
+     popovers (PopoverMenu nodes 6998:20254 and 7737:50936). Long titles already truncate, so
+     nothing needs the panel to grow for them. */
+  width: 247px;
   /* Remove the default menu gap*/
   > [data-ui='Stack'] {
     gap: 0;
