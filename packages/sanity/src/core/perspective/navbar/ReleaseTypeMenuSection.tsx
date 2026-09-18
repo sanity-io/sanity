@@ -1,79 +1,98 @@
-import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
-import {Card, Label, Stack} from '@sanity/ui'
-import {useCallback} from 'react'
-import {Flex} from 'ui5'
+import {type ReleaseDocument} from '@sanity/client'
+import {Card, Label, Stack, Text} from '@sanity/ui'
+import {styled} from 'styled-components'
+import {Box, Flex} from 'ui5'
 
-import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {usePerspective} from '../../perspective/usePerspective'
-import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
-import {type ReleaseId, type ReleasesNavMenuItemPropsGetter} from '../types'
-import {
-  getRangePosition,
-  GlobalPerspectiveMenuItem,
-  type LayerRange,
-} from './GlobalPerspectiveMenuItem'
-import {GlobalPerspectiveMenuLabelIndicator} from './PerspectiveLayerIndicator'
-import {type ScrollElement} from './useScrollIndicatorVisibility'
+import {stickyMenuHeadingStyle} from '../styles'
+import {type ReleasesNavMenuItemPropsGetter} from '../types'
+import {GlobalPerspectiveMenuItem} from './GlobalPerspectiveMenuItem'
 
-const RELEASE_TYPE_LABELS: Record<ReleaseType, string> = {
-  asap: 'release.type.asap',
-  scheduled: 'release.type.scheduled',
-  undecided: 'release.type.undecided',
-}
+const StickyHeading = styled.div`
+  ${stickyMenuHeadingStyle}
+`
 
+/**
+ * One divider-separated group of releases in the perspective menu, with an
+ * optional heading.
+ *
+ * The heading is supplied rather than derived from the release type because the
+ * document-selected layout groups by type but labels only the first group — see
+ * `ReleaseMenuSections`.
+ */
 export function ReleaseTypeMenuSection({
-  releaseType,
   releases,
-  range,
-  currentGlobalBundleMenuItemRef,
+  heading,
   menuItemProps,
+  searchTerm,
+  renderWhenEmpty,
+  emptyMessage,
+  'data-testid': dataTestId,
 }: {
-  releaseType: ReleaseType
-  releases: ReleaseDocument[]
-  range: LayerRange
-  currentGlobalBundleMenuItemRef: React.RefObject<ScrollElement>
-  menuItemProps?: ReleasesNavMenuItemPropsGetter
+  'releases': ReleaseDocument[]
+  'heading'?: string
+  'menuItemProps'?: ReleasesNavMenuItemPropsGetter
+  /** Passed through so each row can mark where the term appears in its title. */
+  'searchTerm'?: string
+  /**
+   * Render the heading even with no releases under it.
+   *
+   * The `Releases` label names what the list is, so it has to survive the workspace having no
+   * releases yet — that is the state where a reader most needs telling. Every other section drops
+   * out when empty, which is what keeps unused time bands from drawing rules.
+   */
+  'renderWhenEmpty'?: boolean
+  /**
+   * Statement shown in place of the (empty) list, only while `renderWhenEmpty` is keeping the
+   * heading up with no releases underneath it. A no-releases-at-all state is not the same as a
+   * filter matching nothing, so this is unrelated to `release-menu-no-results`.
+   */
+  'emptyMessage'?: string
+  'data-testid'?: string
 }): React.JSX.Element | null {
-  const {t} = useTranslation()
-  const {selectedReleaseId} = usePerspective()
+  if (releases.length === 0 && !(renderWhenEmpty && heading)) return null
 
-  const getMenuItemRef = useCallback(
-    (releaseId: ReleaseId) =>
-      selectedReleaseId === releaseId
-        ? (currentGlobalBundleMenuItemRef as React.RefObject<HTMLDivElement>)
-        : undefined,
-    [currentGlobalBundleMenuItemRef, selectedReleaseId],
-  )
-
-  if (releases.length === 0) return null
-
-  const {lastIndex, offsets} = range
-  const releaseTypeOffset = offsets[releaseType]
-
+  // 4px all round. The design nests a section's rows 4px inside a SectionContent slot that is
+  // itself 4px inside the section, which reads as 8px below the last row (PopoverMenu node
+  // 6998:20254: the section at y=135 is 184 tall around 176 of content). That was built and
+  // rejected on review as too broad against a two-line row, whose own 8px of internal padding
+  // already sits above the divider. 4px is the reviewed value; the design's own figure is 8px.
   return (
-    <Card padding={1} borderBottom>
-      <Stack gap={1}>
-        <GlobalPerspectiveMenuLabelIndicator
-          $withinRange={releaseTypeOffset > 0 && lastIndex >= releaseTypeOffset}
-          paddingLeft={2}
-          paddingTop={3}
-          paddingBottom={1}
-        >
-          <Label muted style={{textTransform: 'uppercase'}} size={1}>
-            {t(RELEASE_TYPE_LABELS[releaseType])}
-          </Label>
-        </GlobalPerspectiveMenuLabelIndicator>
-        <Flex flexDirection="column" gap={1}>
-          {releases.map((release, index) => (
-            <GlobalPerspectiveMenuItem
-              key={release._id}
-              release={release}
-              ref={getMenuItemRef(getReleaseIdFromReleaseDocumentId(release._id))}
-              rangePosition={getRangePosition(range, releaseTypeOffset + index)}
-              menuItemProps={menuItemProps}
-            />
-          ))}
-        </Flex>
+    <Card padding={1} borderBottom data-testid={dataTestId}>
+      {/*
+        The stack sets no gap and the heading carries the whole space below it as
+        padding instead. A gap would leave a transparent strip that rows flicker
+        through as they scroll under the pinned heading.
+      */}
+      <Stack gap={0}>
+        {heading && (
+          <StickyHeading>
+            <Box paddingLeft={2} paddingTop={3} paddingBottom={2}>
+              <Label muted style={{textTransform: 'uppercase'}} size={1}>
+                {heading}
+              </Label>
+            </Box>
+          </StickyHeading>
+        )}
+        {/* 8px above the message and 8px below it: the label sits closer to the message than to
+            anything else, but an asymmetric block reads as a mistake rather than as grouping. */}
+        {releases.length === 0 && emptyMessage ? (
+          <Box paddingLeft={2} paddingTop={2} paddingBottom={2}>
+            <Text data-testid="release-menu-no-releases" muted size={1}>
+              {emptyMessage}
+            </Text>
+          </Box>
+        ) : (
+          <Flex flexDirection="column" gap={1}>
+            {releases.map((release) => (
+              <GlobalPerspectiveMenuItem
+                key={release._id}
+                release={release}
+                menuItemProps={menuItemProps}
+                searchTerm={searchTerm}
+              />
+            ))}
+          </Flex>
+        )}
       </Stack>
     </Card>
   )
