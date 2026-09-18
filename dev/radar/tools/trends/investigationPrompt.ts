@@ -1,10 +1,10 @@
 /**
  * Assembles a self-contained investigation brief for a suspicious trend point,
  * meant to be pasted into a coding agent (Claude Code, Cursor, …) as a prompt.
- * Everything the popover knows — the metric, both commits, the delta, every
+ * Everything the run dialog knows — the metric, both commits, the delta, every
  * backlink — plus the investigation recipe from perf/bench/README.md, so the
  * agent starts with the full signal instead of re-deriving it from the chart.
- * Pure string building: kept out of the popover so it can be unit tested.
+ * Pure string building: kept out of the dialog so it can be unit tested.
  */
 import {
   formatValue,

@@ -12,7 +12,7 @@ import {COMMIT_COMMENTS_QUERY, type CommitComment, shaFromCommitDocumentId} from
  * is what the panels mount to read and write them); this is the read-only
  * aggregate next to it.
  *
- * Context rather than props: the chart, the legend, the popover and the bisect
+ * Context rather than props: the chart, the legend, the run dialog and the bisect
  * timeline all read it, and threading one array through five layers for a
  * value that never varies within a tool was the wrong trade. The default is
  * "no comments", so a chart rendered outside a provider (a story, a debug data

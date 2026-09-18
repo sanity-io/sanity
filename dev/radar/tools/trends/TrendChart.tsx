@@ -34,7 +34,7 @@ import {
 import {baselineDetail, type DriftBaseline, type DriftResult} from './drift'
 import {ALL_LAYERS_VISIBLE, type LayerState} from './layers'
 import {categoricalColor} from './palette'
-import {RunDetailPopover} from './RunDetailPopover'
+import {RunDetailDialog} from './RunDetailDialog'
 
 // Left gutter is computed per chart from its tick labels — see marginLeft
 // top: 20 — two rows of annotation above the plot: the release markers' 6px
@@ -650,14 +650,14 @@ export function CommentGlyph(props: {x: number; y: number; height: number}) {
  * instead (see ReleaseMarkers).
  *
  * One bubble per position, however many threads it holds: the tooltip lists
- * them, and the popover has them in full. No resting text at any size — a
+ * them, and the run dialog has them in full. No resting text at any size — a
  * comment is a sentence, and the marker's job is only to say "there is one here".
  *
  * Unlike the other annotation layers, the bubble is a control: hovering it
  * puts the crosshair on its run (so the tooltip reads the threads), and
- * clicking or pressing Enter opens that run's popover where the threads live.
+ * clicking or pressing Enter opens that run's dialog where the threads live.
  * Only a bubble anchored to a measured run opens anything — a commit no run
- * measured has no popover to open — and the cursor says so.
+ * measured has no dialog to open — and the cursor says so.
  */
 function CommentMarkers(props: {
   comments: ResolvedCommitComments[]
@@ -750,11 +750,8 @@ export function TrendChart(props: {
   } = props
   const {lines, unit} = series
   const [hoverMs, setHoverMs] = useState<number | null>(null)
-  // The selected point only — its anchor coords are derived from the current
-  // scales on every render, so an open popover follows the dot across a resize
-  // or a domain change instead of pointing at a stale pixel position
+  // The run whose detail dialog is open
   const [selected, setSelected] = useState<TrendPoint | null>(null)
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const captureRef = useRef<SVGRectElement>(null)
   // Comments come through context, not props — see CommentsContext for why
   const comments = useCommitComments()
@@ -904,8 +901,8 @@ export function TrendChart(props: {
   // layer's y-value — a dot on the median is anchored to nothing once the median
   // layer is toggled off.
   const snappedIndex = hoverMs === null ? -1 : nearestTimeIndex(stepTimes, hoverMs)
-  // While a run's popover is open the marker stays on that run: reaching the
-  // popover means moving the pointer out of the plot, which clears `hoverMs`, and
+  // While a run's dialog is open the marker stays on that run: reaching the
+  // dialog means moving the pointer out of the plot, which clears `hoverMs`, and
   // the line vanishing is exactly when you most need to see which run you opened.
   const snappedMs =
     snappedIndex === -1 ? (selected?.date.getTime() ?? null) : stepTimes[snappedIndex]
@@ -1220,8 +1217,8 @@ export function TrendChart(props: {
         </Group>
       </svg>
       {/* Tied to actual hovering, not to the marker: the marker also stands on
-          the selected run while its popover is open, and a hover tooltip on top
-          of that popover would report the same run twice. */}
+          the selected run while its dialog is open, and a hover tooltip on top
+          of that dialog would report the same run twice. */}
       {hoverMs !== null && anchor !== null && hovered.length > 0 && (
         <div
           style={{
@@ -1278,7 +1275,7 @@ export function TrendChart(props: {
                         ? `minute ${Math.round(entry.point.date.getTime() / 60_000)}`
                         : entry.point.date.toISOString().slice(0, 10)}
                     {/* Provenance as text — PR number only; a truncated sha is
-                        noise at hover speed, and the run popover (click) has
+                        noise at hover speed, and the run dialog (click) has
                         the full commit link */}
                     {series.xKind !== 'minute' && entry.point.prNumber
                       ? ` · PR #${entry.point.prNumber}`
@@ -1326,7 +1323,7 @@ export function TrendChart(props: {
                       in on documents that predate it), and the versions line
                       names the toolchain and the measuring instrument — a
                       Chromium bump moves vitals with no studio change. The
-                      full detail (image version) stays in the run popover. */}
+                      full detail (image version) stays in the run dialog. */}
                   {hovered
                     .filter((entry) => hostSummary(entry.point.host))
                     .map((entry) => (
@@ -1397,7 +1394,7 @@ export function TrendChart(props: {
               )}
               {/* Comments left on the commit under the crosshair — an excerpt
                   each, the first two, so a finding is readable at hover speed
-                  and the popover (click) has the full text and the composer. */}
+                  and the dialog (click) has the full text and the composer. */}
               {hoveredThreads.length > 0 && (
                 <Stack gap={1}>
                   {hoveredThreads.slice(0, 2).map((thread) => (
@@ -1418,41 +1415,24 @@ export function TrendChart(props: {
         </div>
       )}
       {selected && (
-        <>
-          {/* Invisible anchor at the selected dot — coords derived from the
-              current scales (MARGIN offsets the Group), so it tracks the dot
-              through resizes and domain changes. The popover positions against it. */}
-          <div
-            ref={setAnchorEl}
-            style={{
-              position: 'absolute',
-              left: marginLeft + x(selected),
-              top: marginTop + yScale(selected.value),
-              width: 1,
-              height: 1,
-              pointerEvents: 'none',
-            }}
-          />
-          <RunDetailPopover
-            key={selected.runId}
-            series={series}
-            point={selected}
-            previousPoint={previousPointFor(lines, selected)}
-            // The *full* tag list, not `visibleTags`: the release a run comes
-            // after is often older than the plotted window (a 30-day view of a
-            // month with no release), and the popover states release context
-            // unconditionally. Independent of the `releases` layer toggle too —
-            // that hides marks on the plot, it doesn't make the fact untrue.
-            tags={tags}
-            referenceElement={anchorEl}
-            onClose={() => {
-              setSelected(null)
-              // Restore focus to the chart so keyboard users continue where
-              // they were, rather than being dropped at the top of the page
-              captureRef.current?.focus()
-            }}
-          />
-        </>
+        <RunDetailDialog
+          key={selected.runId}
+          series={series}
+          point={selected}
+          previousPoint={previousPointFor(lines, selected)}
+          // The *full* tag list, not `visibleTags`: the release a run comes
+          // after is often older than the plotted window (a 30-day view of a
+          // month with no release), and the dialog states release context
+          // unconditionally. Independent of the `releases` layer toggle too —
+          // that hides marks on the plot, it doesn't make the fact untrue.
+          tags={tags}
+          onClose={() => {
+            setSelected(null)
+            // Restore focus to the chart so keyboard users continue where
+            // they were, rather than being dropped at the top of the page
+            captureRef.current?.focus()
+          }}
+        />
       )}
     </div>
   )
