@@ -38,7 +38,7 @@ const draftDocument = versionStub({
 const publishedVariant = versionStub({
   _id: 'versions.varscope.doc-1',
   _system: {
-    variant: variantRef,
+    variants: [variantRef],
     group: groupRef,
     scopeId: 'varscope',
   },
@@ -48,7 +48,7 @@ const draftVariant = versionStub({
   _id: 'versions.varscopeDraft.doc-1',
   _system: {
     bundleId: 'drafts',
-    variant: variantRef,
+    variants: [variantRef],
     group: groupRef,
     scopeId: 'varscopeDraft',
   },

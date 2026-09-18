@@ -28,15 +28,15 @@ function versionStub(
 
 const publishedDefault = versionStub(PUBLISHED_ID, {})
 const draftDefault = versionStub('drafts.article-1', {bundleId: 'drafts'})
-const publishedVariant = versionStub('published.alpha.article-1', {variant: variantRef})
+const publishedVariant = versionStub('published.alpha.article-1', {variants: [variantRef]})
 const draftVariant = versionStub('drafts.alpha.article-1', {
   bundleId: 'drafts',
-  variant: variantRef,
+  variants: [variantRef],
 })
 const releaseDefault = versionStub('versions.rASAP.article-1', {bundleId: RELEASE_BUNDLE_ID})
 const releaseVariant = versionStub('versions.alpha.article-1', {
   bundleId: RELEASE_BUNDLE_ID,
-  variant: variantRef,
+  variants: [variantRef],
 })
 const agentDefault = versionStub('versions.agent-abc123.article-1', {bundleId: AGENT_BUNDLE_ID})
 

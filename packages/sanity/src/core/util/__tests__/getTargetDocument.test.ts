@@ -2,12 +2,13 @@ import {type DocumentSystem} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
+import {getSystemVariantId} from '../getSystemVariantRef'
 import {getTargetDocument} from '../getTargetDocument'
 
 const PUBLISHED_ID = 'article-1'
 const groupRef = {_type: 'reference', _ref: PUBLISHED_ID, _weak: true} as const
 
-// The backend stores the full variant document id in `_system.variant._ref`.
+// The backend stores the full variant document id in `_system.variants[0]._ref`.
 const VARIANT_ALPHA_ID = '_.variants.alpha'
 const VARIANT_NORWEGIAN_ID = '_.variants.norwegian'
 
@@ -29,7 +30,7 @@ const publishedDefault = versionStub({
   _id: PUBLISHED_ID,
   _system: {
     release: null,
-    variant: null,
+    variants: null,
     group: groupRef,
     scopeId: null,
   } as unknown as DocumentSystem,
@@ -38,7 +39,7 @@ const publishedAlpha = versionStub({
   _id: 'published.bar.article-1',
   _system: {
     release: null,
-    variant: variantRef(VARIANT_ALPHA_ID),
+    variants: [variantRef(VARIANT_ALPHA_ID)],
     group: groupRef,
     scopeId: 'bar',
   } as unknown as DocumentSystem,
@@ -52,7 +53,7 @@ const draftDefault = versionStub({
     // @ts-expect-error -- pre-existing, fix later
     release: null,
     // @ts-expect-error -- pre-existing, fix later
-    variant: null,
+    variants: null,
     group: groupRef,
     // @ts-expect-error -- pre-existing, fix later
     scopeId: null,
@@ -64,7 +65,7 @@ const draftAlpha = versionStub({
     bundleId: 'drafts',
     // @ts-expect-error -- pre-existing, fix later
     release: null,
-    variant: variantRef(VARIANT_ALPHA_ID),
+    variants: [variantRef(VARIANT_ALPHA_ID)],
     group: groupRef,
     scopeId: 'baz',
   },
@@ -75,7 +76,7 @@ const draftNorwegian = versionStub({
     bundleId: 'drafts',
     // @ts-expect-error -- pre-existing, fix later
     release: null,
-    variant: variantRef(VARIANT_NORWEGIAN_ID),
+    variants: [variantRef(VARIANT_NORWEGIAN_ID)],
     group: groupRef,
     scopeId: 'qux',
   },
@@ -89,7 +90,7 @@ const releaseDefault = versionStub({
     bundleId: 'rASAP',
     release: releaseRef,
     // @ts-expect-error -- pre-existing, fix later
-    variant: null,
+    variants: null,
     group: groupRef,
     scopeId: 'rASAP',
   },
@@ -99,7 +100,7 @@ const releaseAlpha = versionStub({
   _system: {
     bundleId: 'rASAP',
     release: releaseRef,
-    variant: variantRef(VARIANT_ALPHA_ID),
+    variants: [variantRef(VARIANT_ALPHA_ID)],
     group: groupRef,
     scopeId: 'buz',
   },
@@ -127,7 +128,7 @@ describe('getTargetDocument', () => {
         bundle: 'published',
         variant: undefined,
         documentVersions: documentVersions.filter(
-          (version) => version._system.bundleId || version._system.variant !== null,
+          (version) => version._system.bundleId || getSystemVariantId(version._system),
         ),
       })
       expect(result).toBeUndefined()
@@ -144,7 +145,8 @@ describe('getTargetDocument', () => {
         variant: undefined,
         documentVersions: documentVersions.filter(
           // Filter out the default draft.
-          (version) => version._system.bundleId !== 'drafts' && version._system.variant === null,
+          (version) =>
+            version._system.bundleId !== 'drafts' && !getSystemVariantId(version._system),
         ),
       })
       expect(result).toBeUndefined()
@@ -160,7 +162,7 @@ describe('getTargetDocument', () => {
         bundle: 'rASAP',
         variant: undefined,
         documentVersions: documentVersions.filter(
-          (version) => version._system.bundleId !== 'rASAP' && version._system.variant === null,
+          (version) => version._system.bundleId !== 'rASAP' && !getSystemVariantId(version._system),
         ),
       })
       expect(result).toBeUndefined()
@@ -183,7 +185,7 @@ describe('getTargetDocument', () => {
         variant: VARIANT_ALPHA_ID,
         documentVersions: documentVersions.filter(
           (version) =>
-            version._system.bundleId || version._system.variant?._ref !== VARIANT_ALPHA_ID,
+            version._system.bundleId || getSystemVariantId(version._system) !== VARIANT_ALPHA_ID,
         ),
       })
       expect(result).toBeUndefined()
@@ -205,7 +207,7 @@ describe('getTargetDocument', () => {
         documentVersions: documentVersions.filter(
           (version) =>
             version._system.bundleId !== 'drafts' &&
-            version._system.variant?._ref !== VARIANT_ALPHA_ID,
+            getSystemVariantId(version._system) !== VARIANT_ALPHA_ID,
         ),
       })
       expect(result).toBeUndefined()
@@ -227,7 +229,7 @@ describe('getTargetDocument', () => {
         documentVersions: documentVersions.filter(
           (version) =>
             version._system.bundleId !== 'rASAP' &&
-            version._system.variant?._ref !== VARIANT_ALPHA_ID,
+            getSystemVariantId(version._system) !== VARIANT_ALPHA_ID,
         ),
       })
       expect(result).toBeUndefined()
@@ -241,6 +243,39 @@ describe('getTargetDocument', () => {
           documentVersions,
         }),
       ).toEqual(draftNorwegian)
+    })
+  })
+
+  describe('with unmigrated documents (legacy `_system.variant`)', () => {
+    const legacyDraftAlpha = versionStub({
+      _id: 'drafts.baz.article-1',
+      _system: {
+        bundleId: 'drafts',
+        variant: variantRef(VARIANT_ALPHA_ID),
+        group: groupRef,
+        scopeId: 'baz',
+      },
+    })
+    const legacyVersions = [publishedDefault, draftDefault, legacyDraftAlpha]
+
+    it('matches the variant through the legacy single reference', () => {
+      expect(
+        getTargetDocument({
+          bundle: 'drafts',
+          variant: VARIANT_ALPHA_ID,
+          documentVersions: legacyVersions,
+        }),
+      ).toEqual(legacyDraftAlpha)
+    })
+
+    it('does not treat a legacy variant document as the base document', () => {
+      expect(
+        getTargetDocument({
+          bundle: 'drafts',
+          variant: undefined,
+          documentVersions: legacyVersions,
+        }),
+      ).toEqual(draftDefault)
     })
   })
 

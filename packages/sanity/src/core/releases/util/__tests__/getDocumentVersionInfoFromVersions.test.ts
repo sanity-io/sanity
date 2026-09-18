@@ -50,7 +50,7 @@ const variantVersion: VersionInfoDocumentStub = {
   _type: 'article',
   _system: {
     bundleId: 'drafts',
-    variant: {_ref: '_.variants.test', _weak: true},
+    variants: [{_ref: '_.variants.test', _weak: true}],
     group: {_ref: publishedId, _weak: true},
     scopeId: 'scope1',
   },
@@ -104,7 +104,7 @@ describe('getDocumentVersionInfoFromVersions', () => {
         // @ts-expect-error -- pre-existing, fix later
         release: null,
         // @ts-expect-error -- pre-existing, fix later
-        variant: null,
+        variants: null,
         group: {_ref: 'other-article', _weak: true},
         // @ts-expect-error -- pre-existing, fix later
         scopeId: null,

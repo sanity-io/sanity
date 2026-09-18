@@ -386,6 +386,8 @@ exports[`exports snapshot 1`] = `
     "getSchemaTypeTitle": "function",
     "getSearchableTypes": "function",
     "getSelectedVariant": "function",
+    "getSystemVariantId": "function",
+    "getSystemVariantRef": "function",
     "getTargetDocument": "function",
     "getTargetScopeId": "function",
     "getTargetSiblings": "function",

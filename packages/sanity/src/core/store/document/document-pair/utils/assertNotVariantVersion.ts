@@ -1,5 +1,7 @@
 import {type SanityDocument} from '@sanity/types'
 
+import {getSystemVariantId} from '../../../../util/getSystemVariantRef'
+
 /** @internal */
 export const VARIANT_VERSION_DISABLED = 'VARIANT_VERSION' as const
 
@@ -15,7 +17,7 @@ export type VariantVersionDisabledReason = typeof VARIANT_VERSION_DISABLED
 export function disabledForVariantVersion(
   version: SanityDocument | null | undefined,
 ): VariantVersionDisabledReason | false {
-  if (version?._system?.variant?._ref) {
+  if (getSystemVariantId(version?._system)) {
     return VARIANT_VERSION_DISABLED
   }
   return false
@@ -35,7 +37,7 @@ export function assertNotVariantVersion(
   version: SanityDocument | null | undefined,
   operationName: string,
 ): void {
-  if (version?._system?.variant?._ref) {
+  if (version && getSystemVariantId(version._system)) {
     throw new Error(
       `Cannot execute the base "${operationName}" operation against the variant-scoped version "${version._id}": this would write variant content into the base document. This is a bug in the operation routing — please report it.`,
     )

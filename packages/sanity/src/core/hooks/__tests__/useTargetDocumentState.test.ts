@@ -71,7 +71,7 @@ const draftAlphaVariant = versionStub({
   _id: `versions.varscope.${PUBLISHED_ID}`,
   _system: {
     bundleId: 'drafts',
-    variant: variantRef(variantAlphaAudience._id),
+    variants: [variantRef(variantAlphaAudience._id)],
     group: groupRef,
     scopeId: 'varscope',
   },
@@ -80,7 +80,7 @@ const draftAlphaVariant = versionStub({
 const publishedAlphaVariant = versionStub({
   _id: `versions.varscopePub.${PUBLISHED_ID}`,
   _system: {
-    variant: variantRef(variantAlphaAudience._id),
+    variants: [variantRef(variantAlphaAudience._id)],
     group: groupRef,
     scopeId: 'varscopePub',
   },
@@ -88,7 +88,7 @@ const publishedAlphaVariant = versionStub({
 const publishedBetaVariant = versionStub({
   _id: `versions.varscopeBetaPub.${PUBLISHED_ID}`,
   _system: {
-    variant: variantRef(variantNorwegianMarket._id),
+    variants: [variantRef(variantNorwegianMarket._id)],
     group: groupRef,
     scopeId: 'varscopeBetaPub',
   },
@@ -99,7 +99,7 @@ const DRAFT_SIBLING_ID = `versions.varscopeDraft.${PUBLISHED_ID}`
 const publishedAlphaVariantAdvertisingDraft = versionStub({
   _id: `versions.varscopePub.${PUBLISHED_ID}`,
   _system: {
-    variant: variantRef(variantAlphaAudience._id),
+    variants: [variantRef(variantAlphaAudience._id)],
     group: groupRef,
     scopeId: 'varscopePub',
     draft: {_ref: DRAFT_SIBLING_ID, _weak: true},
@@ -246,7 +246,7 @@ describe('getTargetDocumentState', () => {
         _id: `versions.varscopeRel.${PUBLISHED_ID}`,
         _system: {
           bundleId: RELEASE_ID,
-          variant: variantRef(variantAlphaAudience._id),
+          variants: [variantRef(variantAlphaAudience._id)],
           group: groupRef,
           scopeId: 'varscopeRel',
         },
@@ -407,7 +407,7 @@ describe('getTargetDocumentState', () => {
           _id: `versions.varscopeRel.${PUBLISHED_ID}`,
           _system: {
             bundleId: RELEASE_ID,
-            variant: variantRef(variantAlphaAudience._id),
+            variants: [variantRef(variantAlphaAudience._id)],
             group: groupRef,
             scopeId: 'varscopeRel',
           },

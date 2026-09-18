@@ -82,7 +82,7 @@ describe('useVariantDocuments', () => {
       _system: {
         bundleId: 'drafts',
         release: null,
-        variant: {_ref: variantAlphaAudience._id, _weak: true},
+        variants: [{_ref: variantAlphaAudience._id, _weak: true}],
         group: {_ref: 'article-1', _weak: true},
         scopeId: null,
       },

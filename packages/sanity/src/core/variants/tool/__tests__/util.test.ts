@@ -27,6 +27,13 @@ describe('variants tool utilities', () => {
     expect(
       getVariantIdFromDocument({
         _system: {
+          variants: [{_ref: `${VARIANT_DOCUMENTS_PATH}.alpha-audience`, _weak: true}],
+        },
+      }),
+    ).toBe('alpha-audience')
+    expect(
+      getVariantIdFromDocument({
+        _system: {
           variant: {_ref: `${VARIANT_DOCUMENTS_PATH}.alpha-audience`, _weak: true},
         },
       }),

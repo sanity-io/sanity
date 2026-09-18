@@ -6,6 +6,7 @@ import {useClient} from '../../hooks/useClient'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getDraftId} from '../../util/draftUtils'
+import {getSystemVariantId} from '../../util/getSystemVariantRef'
 import {getTargetDocument} from '../../util/getTargetDocument'
 import {getVariantId} from '../../variants/tool/util'
 import {type VersionInfoDocumentStub} from '../store/types'
@@ -33,7 +34,7 @@ export function useCopyToDrafts(options: UseCopyToDraftsOptions): UseCopyToDraft
   const {t} = useTranslation()
 
   const {versions} = useDocumentVersions({documentId: documentGroupId})
-  const variantRef = documentVersionInfoStub?._system.variant?._ref
+  const variantRef = getSystemVariantId(documentVersionInfoStub?._system)
   const hasDraftVersion = useMemo(
     () =>
       Boolean(
@@ -65,7 +66,7 @@ export function useCopyToDrafts(options: UseCopyToDraftsOptions): UseCopyToDraft
         }
         const actions: Action[] = []
 
-        const variantRef = documentVersionInfoStub._system.variant?._ref
+        const variantRef = getSystemVariantId(documentVersionInfoStub._system)
         if (variantRef) {
           const variantId = getVariantId(variantRef)
 

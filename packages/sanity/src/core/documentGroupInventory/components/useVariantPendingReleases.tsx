@@ -1,5 +1,6 @@
 import {useDocumentVersions} from '../../releases/hooks/useDocumentVersions'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
+import {getSystemVariantId} from '../../util/getSystemVariantRef'
 
 interface Options {
   documentId: string
@@ -11,9 +12,10 @@ interface Options {
 export function useVariantPendingReleases({documentId, variantRef}: Options) {
   const {versions} = useDocumentVersions({documentId})
   const {data: releases} = useActiveReleases()
-  const versionsOfThisVariant = versions.filter((version) =>
-    variantRef ? version._system.variant?._ref === variantRef : !version._system.variant?._ref,
-  )
+  const versionsOfThisVariant = versions.filter((version) => {
+    const versionVariantRef = getSystemVariantId(version._system)
+    return variantRef ? versionVariantRef === variantRef : !versionVariantRef
+  })
   const releasesOfThisVariant = versionsOfThisVariant.map(
     (version) => version._system.release?._ref,
   )

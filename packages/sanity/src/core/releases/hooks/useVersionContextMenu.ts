@@ -13,6 +13,7 @@ import {
   type UseScheduledDraftMenuActionsReturn,
 } from '../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {isDocumentGroupId} from '../../util/draftUtils'
+import {getSystemVariantId} from '../../util/getSystemVariantRef'
 import {isCardinalityOneRelease} from '../../util/releaseUtils'
 import {useVariantDocumentOperations} from '../../variants/hooks/useVariantDocumentOperations'
 import {isVariantId} from '../../variants/types'
@@ -163,7 +164,7 @@ export function useVersionContextMenu(
 
   const {createVariantDocument} = useVariantDocumentOperations()
 
-  const stubVariantRef = documentVersionInfoStub?._system.variant?._ref
+  const stubVariantRef = getSystemVariantId(documentVersionInfoStub?._system)
   const variantRef = isVariantId(stubVariantRef) ? stubVariantRef : undefined
 
   const [contextMenu, setContextMenu] = useState<VersionContextMenuState>({open: false})

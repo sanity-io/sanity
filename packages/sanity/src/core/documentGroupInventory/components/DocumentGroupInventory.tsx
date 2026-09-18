@@ -49,6 +49,7 @@ import {useDocumentStore} from '../../store/datastores'
 import {useWorkspace} from '../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getPublishedId, type SystemBundle} from '../../util/draftUtils'
+import {getSystemVariantId} from '../../util/getSystemVariantRef'
 import {useVariantDocumentOperations} from '../../variants/hooks/useVariantDocumentOperations'
 import {CreateVariantIcon} from '../../variants/plugin/components/PersonalizationIcons'
 import {useVariantsStore} from '../../variants/store/useVariantsStore'
@@ -639,7 +640,7 @@ const ManagedVariantRow: ComponentType<{
 
   const pendingReleases = useVariantPendingReleases({
     documentId: documentGroupId,
-    variantRef: document._system.variant?._ref,
+    variantRef: getSystemVariantId(document._system),
   })
 
   const {
