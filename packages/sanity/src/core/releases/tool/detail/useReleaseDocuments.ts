@@ -8,6 +8,7 @@ import {type LocaleSource} from '../../../i18n/types'
 import {type DocumentPreviewStore} from '../../../preview/documentPreviewStore'
 import {useDocumentPreviewStore} from '../../../store/datastores'
 import {useSource} from '../../../studio/source'
+import {useShallowUnique} from '../../../util/useShallowUnique'
 import {useReleasesStore} from '../../store/useReleasesStore'
 import {getReleaseDocumentIdFromReleaseId} from '../../util/getReleaseDocumentIdFromReleaseId'
 import {isGoingToUnpublish} from '../../util/isGoingToUnpublish'
@@ -96,9 +97,13 @@ export function useReleaseDocuments(releaseId: string): {
 } {
   const documentPreviewStore = useDocumentPreviewStore()
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {getClient, i18n, currentUser} = useSource()
+  const {getClient, i18n, currentUser: unstableCurrentUser} = useSource()
   const schema = useSchema()
   const {state$: releasesState$} = useReleasesStore()
+  // Keyed on contents: a rebuilt observable refetches and revalidates every
+  // document in the release, so don't let a fresh-but-equal user reference
+  // trigger that.
+  const currentUser = useShallowUnique(unstableCurrentUser)
 
   const releaseDocumentsObservable = useMemo(
     () =>

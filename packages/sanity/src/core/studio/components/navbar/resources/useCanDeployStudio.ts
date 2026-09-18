@@ -5,8 +5,6 @@ import {map, of} from 'rxjs'
 import {useProjectStore} from '../../../../store/datastores'
 import {hasDeployStudioGrant} from '../../../manifest/canDeployStudio'
 
-const DISABLED$ = of(false)
-
 /**
  * A hook that returns whether the current user can deploy the studio.
  *
@@ -15,11 +13,20 @@ const DISABLED$ = of(false)
 export function useCanDeployStudio(enabled: boolean = true): boolean {
   const projectStore = useProjectStore()
 
-  // If the hook is disabled, don't subscribe to the observable
-  const canDeploy$ = useMemo(
-    () => (enabled ? projectStore.getGrants().pipe(map(hasDeployStudioGrant)) : DISABLED$),
-    [enabled, projectStore],
-  )
+  // Keep the observable identity stable across renders (mirrors
+  // useCanInviteProjectMembers).
+  //
+  // Why it matters: once this hook has received an emission, react-rx
+  // re-subscribes *replacement* observables during render (that is what
+  // lets rebuild-every-render consumers converge instead of looping).
+  // Stable identity = exactly one subscription for the hook's lifetime.
+  //
+  // The React Compiler usually memoizes this expression already. The
+  // explicit `useMemo` keeps the guarantee even where the compiler bails.
+  const canDeploy$ = useMemo(() => {
+    if (!enabled) return of(false)
+    return projectStore.getGrants().pipe(map(hasDeployStudioGrant))
+  }, [enabled, projectStore])
 
   return useObservable(canDeploy$, false)
 }

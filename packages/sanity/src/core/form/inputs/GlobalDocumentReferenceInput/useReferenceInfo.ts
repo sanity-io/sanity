@@ -3,6 +3,7 @@ import {useSyncObservable} from 'react-rx'
 import {type Observable, of} from 'rxjs'
 import {catchError, map, startWith} from 'rxjs/operators'
 
+import {useShallowUnique} from '../../../util/useShallowUnique'
 import {type GlobalDocumentReferenceInfo} from './types'
 
 const noop = () => {}
@@ -36,9 +37,13 @@ export type GetReferenceInfoFn = (doc: {
 // `packages/sanity/src/core/form/inputs/ReferenceInput/useReferenceInfo.ts` which are similar but have some differences
 
 export function useReferenceInfo(
-  doc: {_id: string; _type?: string} | null,
+  unstableDoc: {_id: string; _type?: string} | null,
   getReferenceInfo: GetReferenceInfoFn,
 ): Loadable<GlobalDocumentReferenceInfo> {
+  // Keyed on contents: callers pass small `{_id, _type}` stubs that are easy
+  // to rebuild inline, and the reference feeds the observable identity below —
+  // a fresh identity per render is loop-capable under react-rx v5.
+  const doc = useShallowUnique(unstableDoc)
   const [retryAttempt, setRetryAttempt] = useState<number>(0)
 
   const retry = useCallback(() => {

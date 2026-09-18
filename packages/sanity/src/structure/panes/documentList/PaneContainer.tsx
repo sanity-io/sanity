@@ -9,13 +9,13 @@ import {
   SourceProvider,
   useI18nText,
   useSchema,
-  useShallowUnique,
   useSource,
   useTranslation,
 } from 'sanity'
 
 import {Pane} from '../../components/pane/Pane'
 import {_DEBUG} from '../../constants'
+import {useShallowUnique} from '../../hooks/useShallowUnique'
 import {structureLocaleNamespace} from '../../i18n'
 import {assignId} from '../../structureResolvers/assignId'
 import {type PaneMenuItem} from '../../types'
@@ -31,6 +31,7 @@ import {
 } from './helpers'
 import {PaneHeader} from './PaneHeader'
 import {type SortOrder, type StaticSortOrder} from './types'
+
 /**
  * Type for custom menu item state storage.
  * Maps menu item IDs to their current state values.

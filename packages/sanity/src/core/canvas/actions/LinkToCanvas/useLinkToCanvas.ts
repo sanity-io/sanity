@@ -10,6 +10,7 @@ import {useComlinkStore, useProjectStore} from '../../../store/datastores'
 import {useRenderingContext} from '../../../store/renderingContext/useRenderingContext'
 import {useStudioAppIdStore} from '../../../store/studio-app/useStudioAppIdStore'
 import {useWorkspace} from '../../../studio/workspace'
+import {useShallowUnique} from '../../../util/useShallowUnique'
 import {type CanvasDiff} from '../../types'
 import {useCanvasTelemetry} from '../../useCanvasTelemetry'
 
@@ -80,7 +81,15 @@ const canvasPreflight = ({
   })
 }
 
-export function useLinkToCanvas({document}: {document: SanityDocument | undefined}) {
+export function useLinkToCanvas({
+  document: unstableDocument,
+}: {
+  document: SanityDocument | undefined
+}) {
+  // Keyed on contents: a rebuilt-but-equal document object would otherwise
+  // mint a new observable identity below and re-run the canvas preflight
+  // request (loop-capable under react-rx v5 if the caller rebuilds per render).
+  const document = useShallowUnique(unstableDocument)
   const workspace = useWorkspace()
   const projectStore = useProjectStore()
   const renderContext = useRenderingContext()
