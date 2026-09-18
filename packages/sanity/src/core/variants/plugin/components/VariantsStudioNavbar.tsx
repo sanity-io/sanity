@@ -73,7 +73,6 @@ export function VariantsStudioNavbar(props: NavbarProps) {
             label={versionTitle.displayTitle}
           >
             <GlobalPerspectiveMenu
-              selectedPerspectiveName={selectedPerspectiveName}
               areReleasesEnabled={releasesToolAvailable && isReleasesEnabled}
               trigger={
                 <Button
