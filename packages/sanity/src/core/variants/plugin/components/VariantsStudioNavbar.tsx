@@ -6,8 +6,10 @@ import {Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
+import {RhombusOutlinedIcon} from '../../../components/temporary-icons/RhombusOutlined'
 import {type NavbarProps} from '../../../config/studio/types'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {usePerspectiveActiveDocument} from '../../../perspective/activeDocument/usePerspectiveActiveDocument'
 import {GlobalPerspectiveMenu} from '../../../perspective/navbar/GlobalPerspectiveMenu'
 import {useGetDefaultPerspective} from '../../../perspective/useGetDefaultPerspective'
 import {usePerspective} from '../../../perspective/usePerspective'
@@ -18,16 +20,50 @@ import {getReleaseTone} from '../../../releases/util/getReleaseTone'
 import {useReleasesToolAvailable} from '../../../schedules/hooks/useReleasesToolAvailable'
 import {useAgentBundles} from '../../../store/agent/useAgentBundles'
 import {useWorkspace} from '../../../studio/workspace'
+import {useDocumentVariantIds} from '../../hooks/useDocumentVariantIds'
 import {variantsLocaleNamespace} from '../../i18n'
 import {getVariantTitle} from '../../tool/util'
 import {getVersionFilterLabel} from './getVersionFilterLabel'
 import {PerspectiveFilter} from './PerspectiveFilter'
 import {VariantsMenu} from './VariantsMenu'
+import {suggestIconColor} from './VariantsNav.css'
+
+/**
+ * The variant pill's rhombus, filled or outlined.
+ *
+ * Filled means "the document you are looking at exists in this variant". Outlined means it does
+ * not, so the perspective is selected but the document has no content written against it and the
+ * form below is showing the fallback. The variant menu already draws this distinction per entry;
+ * without it here the bar asserts the document has variant content when it has none.
+ *
+ * Split into its own component because `useDocumentVariantIds` needs a document id, and there is
+ * nothing to ask about when no document is open.
+ */
+function DocumentVariantRhombus({
+  documentId,
+  selectedVariantId,
+}: {
+  documentId: string
+  selectedVariantId: string | undefined
+}): React.JSX.Element {
+  const documentVariantIds = useDocumentVariantIds(documentId)
+
+  // No variant selected is the default perspective, and a document always exists outside every
+  // variant - so the default reads as filled rather than as an absence.
+  const filled = !selectedVariantId || documentVariantIds.has(selectedVariantId)
+
+  return filled ? (
+    <RhombusIcon className={suggestIconColor} />
+  ) : (
+    <RhombusOutlinedIcon className={suggestIconColor} />
+  )
+}
 
 export function VariantsStudioNavbar(props: NavbarProps) {
   const {t} = useTranslation(variantsLocaleNamespace)
   const {t: coreT} = useTranslation()
-  const {selectedPerspective, selectedPerspectiveName, selectedVariant} = usePerspective()
+  const {selectedPerspective, selectedVariant} = usePerspective()
+  const {activeDocument} = usePerspectiveActiveDocument()
   const router = useRouter()
   const releasesToolAvailable = useReleasesToolAvailable()
   const isReleasesEnabled = !!useWorkspace().releases?.enabled
@@ -77,7 +113,7 @@ export function VariantsStudioNavbar(props: NavbarProps) {
               trigger={
                 <Button
                   data-testid="global-perspective-menu-button"
-                  icon={<ReleaseAvatarIcon release={selectedPerspective} />}
+                  icon={<ReleaseAvatarIcon size="small" release={selectedPerspective} />}
                   iconRight={ChevronDownIcon}
                   mode="bleed"
                   text={versionTitle.displayTitle}
@@ -100,7 +136,23 @@ export function VariantsStudioNavbar(props: NavbarProps) {
               trigger={
                 <Button
                   data-testid="variants-nav-menu-button"
-                  icon={RhombusIcon}
+                  // Suggest-toned in both branches, as the design has it and as every row in
+                  // the menu below already is. It rides on the icon rather than on the pill's
+                  // `tone`, which with no variant selected is `default` and would take the label
+                  // and the prefix with it.
+                  icon={
+                    activeDocument ? (
+                      <DocumentVariantRhombus
+                        documentId={activeDocument.documentId}
+                        selectedVariantId={selectedVariant?._id}
+                      />
+                    ) : (
+                      // Filled, and suggest-toned, in every state - `PerspectiveFilter.Variant`
+                      // (node 7393:12127) draws it that way whether a document is open or not.
+                      // Outlining it here made the pill disagree with the menu's own default row.
+                      <RhombusIcon className={suggestIconColor} />
+                    )
+                  }
                   iconRight={ChevronDownIcon}
                   mode="bleed"
                   text={variantLabel}

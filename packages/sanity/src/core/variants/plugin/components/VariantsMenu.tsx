@@ -1,49 +1,112 @@
-import {Text, TextInput} from '@sanity/ui'
-import {Menu, MenuDivider} from '@sanity/ui/menu'
-import {useCallback, useMemo, useState, type JSX} from 'react'
-import {useRouter} from 'sanity/router'
+import {DiamondIcon} from '@sanity/icons/Diamond'
+import {Card, TextInput} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
+import {
+  type CSSProperties,
+  type JSX,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import {useRouter, useStateLink} from 'sanity/router'
 import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
-import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
 import {RhombusOutlinedIcon} from '../../../components/temporary-icons/RhombusOutlined'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {usePerspectiveActiveDocument} from '../../../perspective/activeDocument/usePerspectiveActiveDocument'
+import {MenuActionsCard} from '../../../perspective/MenuActionsCard'
+import {MENU_PINNED_BLOCK_HEIGHT_VAR} from '../../../perspective/styles'
 import {useSetVariant} from '../../../perspective/useSetVariant'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
-import {
-  decodeVariantIdFromRoute,
-  filterVariantsForSearch,
-  getVariantId,
-  getVariantTitle,
-} from '../../tool/util'
+import {decodeVariantIdFromRoute} from '../../tool/util'
 import {type SystemVariant} from '../../types'
-import {menuIconSpacer, suggestIconColor} from './VariantsNav.css'
+import {rankVariantsForSearch, VARIANT_FILTER_THRESHOLD} from '../../util/rankVariantsForSearch'
+import {VARIANTS_TOOL_NAME} from '../index'
+import {VariantsMenuSections} from './VariantsMenuSections'
+
+// Pinned, as the release menu's filter block is: the input is how you navigate a long list, and a
+// filter that scrolls away takes the term with it.
+const StickyFilterCard = styled(Card)`
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--card-bg-color);
+`
+
+/**
+ * The rhombus at the size an action row's icon renders at.
+ *
+ * `@sanity/icons` has no plain rhombus - its only diamond is a faceted gem, which is the wrong
+ * shape for this (the design draws a plain outline: PopoverMenu node 7736:40245). So the temporary
+ * glyph is the right one, and it needs sizing: it is drawn at 0.37 of its viewBox where icon-set
+ * glyphs sit at 0.56-0.68, so at the standard 21px box it renders 7.8px of ink - as small as a
+ * status icon, against the 11.8px a calendar carries in the same row of the release menu.
+ *
+ * A 33px box brings it to 12.2px, in line with those. The declarations are inline because Sanity UI
+ * sizes icons through a `.<text-class> [data-sanity-icon]` rule per `Text`, so a nested `Text` gives
+ * two rules of equal specificity and styled-components' injection order picks the winner.
+ *
+ * Delete all of this the day `@sanity/icons` ships a plain rhombus drawn at the set's own optical
+ * size: the row then needs nothing but `icon={RhombusOutlinedIcon}`.
+ */
+const viewVariantsIconStyle: CSSProperties = {
+  fontSize: 'calc(33 / 16 * 1rem)',
+  margin: 'calc(-11 / 16 * 1rem)',
+}
+
+function ViewVariantsIcon(): React.JSX.Element {
+  return <RhombusOutlinedIcon style={viewVariantsIconStyle} />
+}
+
+/**
+ * The shared action block, with one number overridden.
+ *
+ * `MenuActionsCard` insets its icons 11px, which is correct for every icon-set glyph. This one sits
+ * in a 33px box rather than a 21px box, so the same inset would put its ink 2px right of the rows:
+ * 9px lands it at 12.4px, in the column the rows establish. The override is here rather than in the
+ * shared card because the cause is this glyph, not this menu.
+ */
+const VariantActionsCard = styled(MenuActionsCard)`
+  [data-ui='MenuItem'] > [data-ui='Box'] {
+    padding-left: 9px;
+  }
+`
 
 const StyledMenu = styled(Menu)`
-  min-width: 240px;
-  max-width: 320px;
+  /* Fixed, not a min/max range. The width followed the widest row, so it moved between states: a
+     narrower panel at two releases than at twenty-five, and a panel that shrank mid-filter as the
+     long titles dropped out of the results. 247px is what the design gives both perspective
+     popovers (PopoverMenu nodes 6998:20254 and 7737:50936). Long titles already truncate, so
+     nothing needs the panel to grow for them. */
+  width: 247px;
 
   > [data-ui='Stack'] {
     gap: 0;
   }
 `
 
-const SectionHeader = styled(Text)`
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-`
-
 /**
  * @internal
  */
-export function VariantsMenu({trigger}: {trigger: JSX.Element}): React.JSX.Element {
+export function VariantsMenu({
+  trigger,
+}: {
+  /**
+   * The button that opens the menu. The perspective bar owns it so the whole
+   * labelled pill is one touch target, rather than only a chevron.
+   */
+  trigger: JSX.Element
+}): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
   const router = useRouter()
   const setVariant = useSetVariant()
   const {data: variants} = useAllVariants()
+  const {activeDocument} = usePerspectiveActiveDocument()
   const [filterQuery, setFilterQuery] = useState('')
 
   const selectedVariantDocumentId = decodeVariantIdFromRoute(
@@ -57,8 +120,11 @@ export function VariantsMenu({trigger}: {trigger: JSX.Element}): React.JSX.Eleme
     [selectedVariantDocumentId, variants],
   )
 
+  // Ranked, not merely filtered, and on the title alone: `filterVariantsForSearch` also matches
+  // ids and condition values, which is right for the variants overview's own search but surfaces
+  // rows in this menu whose visible title gives no clue why they appeared.
   const filteredVariants = useMemo(
-    () => filterVariantsForSearch(variants, filterQuery),
+    () => rankVariantsForSearch(variants, filterQuery),
     [filterQuery, variants],
   )
 
@@ -83,90 +149,127 @@ export function VariantsMenu({trigger}: {trigger: JSX.Element}): React.JSX.Eleme
     setFilterQuery('')
   }, [])
 
+  // Links straight at the tool rather than through the `variant` intent. That
+  // intent exists to open one specific variant, so with no id there is nothing for
+  // the params segment — `useIntentLink` then builds `/intent/variant//`, which
+  // decodes without a `params` key and makes `resolveIntentState` throw
+  // "intent params must be a string". Mirrors what `ToolLink` does internally,
+  // including clearing the tool's own state on the way in.
+  const viewVariantsLink = useStateLink({
+    state: {tool: VARIANTS_TOOL_NAME, [VARIANTS_TOOL_NAME]: undefined},
+  })
+
   const isDefaultSelected = !selectedVariant
+  const isFiltering = filterQuery.trim().length > 0
+  // Counted before the search, as the release menu counts its own: narrowing past the threshold
+  // would pull the input out from under whoever is typing, and take their term with it.
+  const showFilter = variants.length >= VARIANT_FILTER_THRESHOLD
+
+  // Publish the filter block's height so the section headings pin directly below it rather than
+  // at the panel's own edge. Without this they resolve `MENU_PINNED_BLOCK_HEIGHT_VAR` to its 0px
+  // fallback and pin *underneath* the filter, which sits at the same offset with a higher stacking
+  // order and an opaque background - so a heading scrolling up simply disappears. Measured rather
+  // than declared for the same reason the release menu measures its own: the input can wrap.
+  //
+  // A callback ref rather than an effect over `useRef`: the effect would have to name a dependency
+  // that changes when the node appears, and nothing here does - the filter's own condition is true
+  // from the first render, so the effect ran once against a ref that had not attached yet and was
+  // never invited back. This fires when the node attaches, and its cleanup runs when it detaches.
+  const observePinnedBlock = useCallback((pinned: HTMLDivElement | null) => {
+    if (!pinned) return undefined
+
+    // Walked up from the pinned card rather than taken from a ref on the menu: `Menu` does not
+    // forward one to its DOM node. The release menu's root is a `Card`, which does, so it needs
+    // no walk.
+    const root = pinned.closest<HTMLElement>('[data-ui="Menu"]')
+    if (!root) return undefined
+
+    const publish = () =>
+      root.style.setProperty(MENU_PINNED_BLOCK_HEIGHT_VAR, `${pinned.offsetHeight}px`)
+
+    publish()
+
+    // The block changes height in use: the input can wrap.
+    if (typeof ResizeObserver === 'undefined') return undefined
+    const observer = new ResizeObserver(publish)
+    observer.observe(pinned)
+    return () => observer.disconnect()
+  }, [])
 
   return (
-    <MenuButton
-      button={trigger}
-      id="variants-nav-menu"
-      onClose={handleMenuClose}
-      menu={
-        <StyledMenu data-testid="variants-nav-menu" padding={0}>
-          <Box padding={2}>
-            <TextInput
-              fontSize={1}
-              onChange={handleFilterChange}
-              placeholder={t('navbar.variant.filter-placeholder')}
-              radius={2}
-              value={filterQuery}
+    <>
+      <MenuButton
+        button={trigger}
+        id="variants-nav-menu"
+        onClose={handleMenuClose}
+        menu={
+          <StyledMenu data-testid="variants-nav-menu" padding={0}>
+            {/* 4px and borderless, matching the release menu and the design's own filter block. */}
+            {showFilter && (
+              <StickyFilterCard borderBottom padding={1} ref={observePinnedBlock}>
+                <TextInput
+                  border={false}
+                  data-testid="variant-menu-filter"
+                  fontSize={1}
+                  onChange={handleFilterChange}
+                  placeholder={t('navbar.variant.filter-placeholder')}
+                  radius={2}
+                  value={filterQuery}
+                />
+              </StickyFilterCard>
+            )}
+
+            <VariantsMenuSections
+              documentId={activeDocument?.documentId}
+              variants={filteredVariants}
+              selectedVariantId={selectedVariant?._id}
+              onSelect={handleSelectVariant}
+              searchTerm={filterQuery}
+              isDefaultSelected={isDefaultSelected}
+              onSelectDefault={handleSelectDefault}
             />
-          </Box>
 
-          <Box paddingX={2} paddingY={1}>
-            <MenuItem
-              data-testid="variant-default"
-              icon={
-                <Text size={2} className={suggestIconColor}>
-                  <RhombusOutlinedIcon />
-                </Text>
-              }
-              onClick={handleSelectDefault}
-              pressed={isDefaultSelected}
-              selected={isDefaultSelected}
-              text={t('navbar.variant.default')}
-            />
-          </Box>
-          <MenuDivider />
-
-          {filteredVariants.length > 0 && (
-            <>
-              <Box paddingX={2}>
-                <Flex paddingTop={3} paddingBottom={2} gap={2} paddingLeft={3}>
-                  {/* Spacer for icon alignment */}
-                  <Box className={menuIconSpacer} />
-                  <Box>
-                    <SectionHeader muted size={0} weight="medium">
-                      {t('navbar.variant.other')}
-                    </SectionHeader>
-                  </Box>
-                </Flex>
-              </Box>
-              <Box paddingX={2}>
-                {filteredVariants.map((variant) => {
-                  const isSelected = selectedVariant?._id === variant._id
-
-                  return (
-                    <MenuItem
-                      key={variant._id}
-                      data-testid={`variant-${getVariantId(variant._id)}`}
-                      icon={
-                        <Text size={2} className={suggestIconColor}>
-                          <RhombusIcon />
-                        </Text>
-                      }
-                      onClick={() => handleSelectVariant(variant)}
-                      pressed={isSelected}
-                      selected={isSelected}
-                      text={getVariantTitle(variant)}
-                    />
-                  )
-                })}
-              </Box>
-            </>
-          )}
-        </StyledMenu>
-      }
-      popover={{
-        __unstable_margins: [0, 0, 32, 0],
-        constrainSize: true,
-        fallbackPlacements: ['bottom-end'],
-        placement: 'bottom-end',
-        portal: true,
-        // @ts-expect-error PopoverProps doesn't include `style`, but the Popover implementation accepts it via React.HTMLProps<HTMLDivElement>
-        style: {overflow: 'hidden'} as React.CSSProperties,
-        tone: 'default',
-        zOffset: 3000,
-      }}
-    />
+            {/* Dropped while filtering, as the release menu's is: a filtered menu is a set of
+                results, and a navigational row under them is chrome that competes. */}
+            {!isFiltering && (
+              <>
+                {/* The release menu's own action block: a bordered 4px card rather than a
+                    divider plus a padded box. It is not sticky here - this menu's actions scroll
+                    with the list. */}
+                <VariantActionsCard borderTop padding={1} data-testid="variant-menu-actions">
+                  {/* The icon goes in plain, at the shared MenuItem's own size. An earlier pass
+                      scaled it to a 33px box to match the list rows' diamonds; that moved the ink
+                      out of column in one direction and the text in the other. Built like the
+                      release menu's rows, the box lands where theirs does. */}
+                  <MenuItem
+                    as="a"
+                    data-testid="view-variants-menu-item"
+                    href={viewVariantsLink.href}
+                    icon={<ViewVariantsIcon />}
+                    onClick={viewVariantsLink.onClick}
+                    text={t('navbar.variant.view-all')}
+                  />
+                </VariantActionsCard>
+              </>
+            )}
+          </StyledMenu>
+        }
+        popover={{
+          __unstable_margins: [0, 0, 32, 0],
+          constrainSize: true,
+          // Left-aligned with the trigger: the panel's left edge meets the
+          // button's, so the menu items line up under the button's own icon.
+          // `bottom-end` stays as the fallback so a panel that would overflow the
+          // viewport flips horizontally rather than vertically.
+          fallbackPlacements: ['bottom-end'],
+          placement: 'bottom-start',
+          portal: true,
+          // @ts-expect-error PopoverProps doesn't include `style`, but the Popover implementation accepts it via React.HTMLProps<HTMLDivElement>
+          style: {overflow: 'hidden'} as React.CSSProperties,
+          tone: 'default',
+          zOffset: 3000,
+        }}
+      />
+    </>
   )
 }
