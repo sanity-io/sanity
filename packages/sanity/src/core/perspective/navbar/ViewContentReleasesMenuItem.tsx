@@ -29,7 +29,7 @@ export const ViewContentReleasesMenuItem: ComponentType = () => {
   // node 7576:27957).
   return (
     <MenuItem
-      paddingLeft={3}
+      style={{paddingLeft: '11px'}}
       as="a"
       href={href}
       onClick={onClick}

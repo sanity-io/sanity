@@ -21,19 +21,15 @@ interface Props {
    */
   text?: string
   /**
-   * Overrides the wrapper's own left inset. The perspective menu's action block aligns this
-   * icon's *ink* with the status dots of the release rows above it — the dots sit inset within
-   * their svg box, so equal boxes do not read as an aligned column. The context menu leaves this
-   * alone and keeps the wrapper's default.
+   * Overrides the wrapper's own left inset, which it hardcodes to a scale step. The perspective
+   * menu's action block aligns this icon's *ink* with the release rows above it, and the value
+   * that does so is not on the 4px scale — see `ScheduledDraftsMenuItem`. The context menu leaves
+   * this alone and keeps the wrapper's default.
    */
-  paddingLeft?: ComponentProps<typeof MenuItem>['paddingLeft']
+  style?: ComponentProps<typeof MenuItem>['style']
 }
 
-export const CreateReleaseMenuItem: ComponentType<Props> = ({
-  onCreateRelease,
-  paddingLeft,
-  text,
-}) => {
+export const CreateReleaseMenuItem: ComponentType<Props> = ({onCreateRelease, style, text}) => {
   const {t} = useTranslation()
   const {createRelease} = useReleaseOperations()
   const {checkWithPermissionGuard} = useReleasePermissions()
@@ -57,14 +53,14 @@ export const CreateReleaseMenuItem: ComponentType<Props> = ({
 
   const menuItemProps: Pick<
     ComponentProps<typeof MenuItem>,
-    'icon' | 'onClick' | 'paddingLeft' | 'text'
+    'icon' | 'onClick' | 'style' | 'text'
   > & {
     'data-testid': string
   } = {
     'icon': AddIcon,
     'onClick': onCreateRelease,
     'data-testid': 'create-new-release-button',
-    paddingLeft,
+    style,
     'text': text ?? t('release.action.create-new'),
   }
 

@@ -26,16 +26,19 @@ export const ScheduledDraftsMenuItem: ComponentType = () => {
 
   if (!isAvailable) return null
 
-  // 12px, aligning ink rather than boxes. `ReleaseAvatarIcon size="small"` draws a 7px dot centred
-  // in a 25px svg, so the row icons' ink starts ~9px inside their box; the @sanity/icons glyphs
-  // here nearly fill theirs. Matching the boxes (both at 12px from the panel edge) therefore left
-  // the action ink 3.4px short of the dots'. Measured in the release-menu story: with this value
-  // the calendar ink lands at 14.6px from the panel edge against the Published dot's 14.0px and
-  // the Drafts ring's 14.6px. The design aligns the action icons with the rest of the column
-  // (PopoverMenu node 7576:27957).
+  // 11px, aligning ink rather than boxes, and off the 4px scale deliberately.
+  //
+  // `ReleaseAvatarIcon size="small"` draws a 7px dot centred in a 25px svg, so the status dots' ink
+  // starts ~9px inside their box, while the @sanity/icons glyphs here nearly fill theirs. Matching
+  // the boxes left the action ink 3.4px short of the dots'. Matching the dots exactly (a 12px
+  // inset) then put it 2px right of the bolt and clock row icons, whose wider glyphs sit at 12.6px.
+  // No scale step lands between the two, so this is an explicit value: 11px puts the action ink at
+  // 13.6px, between the dots' 14.0-14.6px and the release icons' 12.6px, which is where the design
+  // review settled it. The design aligns the action icons with the rest of the column (PopoverMenu
+  // node 7576:27957).
   return (
     <MenuItem
-      paddingLeft={3}
+      style={{paddingLeft: '11px'}}
       as="a"
       href={href}
       onClick={onClick}

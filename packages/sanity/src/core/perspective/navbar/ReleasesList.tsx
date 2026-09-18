@@ -225,11 +225,11 @@ export function ReleasesList({
             {areReleasesEnabled && (
               <>
                 <ViewContentReleasesMenuItem />
-                {/* 12px for the same ink-alignment reason as the two rows above; see
-                    `ScheduledDraftsMenuItem` for the measurements. */}
+                {/* Same 11px ink alignment as the two rows above; see `ScheduledDraftsMenuItem`
+                    for the measurements and why the value is off the scale. */}
                 <CreateReleaseMenuItem
                   onCreateRelease={handleOpenBundleDialog}
-                  paddingLeft={3}
+                  style={{paddingLeft: '11px'}}
                   text={t('release.menu.create-release')}
                 />
               </>
