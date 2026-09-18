@@ -16,7 +16,7 @@ import {useAgentBundles} from '../../store/agent/useAgentBundles'
 import {useWorkspace} from '../../studio/workspace'
 import {isCardinalityOneRelease} from '../../util/releaseUtils'
 import {usePerspectiveActiveDocument} from '../activeDocument/usePerspectiveActiveDocument'
-import {MENU_PINNED_BLOCK_HEIGHT_VAR} from '../styles'
+import {MENU_PINNED_BLOCK_HEIGHT_VAR, menuActionIconInsetStyle} from '../styles'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {AgentBundleMenuItem} from './AgentBundleMenuItem'
 import {GlobalPerspectiveMenuItem} from './GlobalPerspectiveMenuItem'
@@ -45,23 +45,9 @@ const StickyBottomCard = styled(StickyCard)`
      the only thing separating them. */
   margin-top: -1px;
 
-  /* The action rows' icons have to line up with the column of status dots and release icons above
-     them, and the shared MenuItem hardcodes its left inset to a 12px scale step - on its inner
-     Box, so a \`style\` on the item itself stacks with it rather than replacing it. Overriding
-     that box is the only way to reach the value, and it belongs here, once, rather than as a
-     layout prop threaded through three item components (one of which the document context menu
-     also renders).
-
-     Why 11px and not a scale step: ink, not boxes. \`ReleaseAvatarIcon size="small"\` draws a 7px
-     dot centred in a 25px svg, so the status dots' ink starts ~9px inside their box while these
-     @sanity/icons glyphs nearly fill theirs. Equal boxes (12px) left the action ink 3.4px short of
-     the dots'; matching the dots exactly put it 2px right of the bolt and clock row icons, whose
-     wider glyphs sit at 12.6px. Nothing on the 4px scale lands between, and 11px puts the action
-     ink at 13.6px - between the dots' 14.0-14.6px and the release icons' 12.6px, which is where
-     design review settled it (PopoverMenu node 7576:27957). */
-  [data-ui='MenuItem'] > [data-ui='Box'] {
-    padding-left: 11px;
-  }
+  /* 11px of inset, and the shared helper carries why - both menus need this and the two values
+     live side by side in its doc comment. */
+  ${menuActionIconInsetStyle('11px')}
 `
 
 export function ReleasesList({
