@@ -50,6 +50,16 @@ export const structure: StructureResolver = (
   return S.list()
     .title(t('testStudio:structure.root.title' as const) || 'Content')
     .items([
+      S.listItem().singleton('singletonSettings'),
+      S.listItem()
+        .id('campaigns')
+        .title('Campaigns (singletons)')
+        .child(
+          S.list()
+            .id('campaigns')
+            .title('Campaigns')
+            .singletons(['springCampaign', 'summerCampaign']),
+        ),
       S.documentListItem().id('validation').schemaType('allTypes'),
       S.listItem()
         .title('Sections by perspective')
