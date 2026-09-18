@@ -4,7 +4,6 @@ import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {CreateReleaseMenuItem} from '../../releases/components/CreateReleaseMenuItem'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {LATEST} from '../../releases/util/const'
 import {
@@ -52,13 +51,11 @@ const StickyBottomCard = styled(StickyCard)`
 
 export function ReleasesList({
   areReleasesEnabled,
-  handleOpenBundleDialog,
   menuItemProps,
   filterQuery,
   onFilterQueryChange,
 }: {
   areReleasesEnabled: boolean
-  handleOpenBundleDialog: () => void
   menuItemProps?: ReleasesNavMenuItemPropsGetter
   filterQuery: string
   onFilterQueryChange: (query: string) => void
@@ -230,15 +227,7 @@ export function ReleasesList({
         <StickyBottomCard borderTop padding={1} data-testid="release-menu-actions">
           <Stack gap={1}>
             <ScheduledDraftsMenuItem />
-            {areReleasesEnabled && (
-              <>
-                <ViewContentReleasesMenuItem />
-                <CreateReleaseMenuItem
-                  onCreateRelease={handleOpenBundleDialog}
-                  text={t('release.menu.create-release')}
-                />
-              </>
-            )}
+            {areReleasesEnabled && <ViewContentReleasesMenuItem />}
           </Stack>
         </StickyBottomCard>
       )}

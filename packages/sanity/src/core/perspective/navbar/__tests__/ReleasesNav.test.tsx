@@ -10,22 +10,8 @@ import {
   activeScheduledRelease,
   scheduledRelease,
 } from '../../../releases/__fixtures__/release.fixture'
-import {useReleasesUpsellMockReturn} from '../../../releases/contexts/upsell/__mocks__/useReleasesUpsell.mock'
 import {useActiveReleasesMockReturn} from '../../../releases/store/__tests__/__mocks/useActiveReleases.mock'
-import {
-  mockUseReleasePermissions,
-  useReleasePermissionsMockReturn,
-  useReleasesPermissionsMockReturnTrue,
-} from '../../../releases/store/__tests__/__mocks/useReleasePermissions.mock'
 import {ReleasesNav} from '../ReleasesNav'
-
-vi.mock('../../../releases/store/useReleasePermissions', () => ({
-  useReleasePermissions: vi.fn(() => useReleasePermissionsMockReturn),
-}))
-
-vi.mock('../../../releases/contexts/upsell/useReleasesUpsell', () => ({
-  useReleasesUpsell: vi.fn(() => useReleasesUpsellMockReturn),
-}))
 
 vi.mock('../../../perspective/usePerspective', () => ({
   usePerspective: vi.fn(() => usePerspectiveMockReturn),
@@ -78,8 +64,6 @@ const renderTest = async () => {
 describe('ReleasesNav', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-
-    mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
   })
   it('should have link to releases tool', async () => {
     await renderTest()
@@ -189,18 +173,6 @@ describe('ReleasesNav', () => {
 
         expect(releaseButton).toBeTruthy()
         within(releaseButton!).getByTestId('release-error-icon')
-      })
-
-      it('allows for new release to be created', async () => {
-        // The perspective menu labels this 'Create new release'; the releases overview's own
-        // primary button keeps 'New release'.
-        await userEvent.click(screen.getByText('Create new release'))
-
-        expect(screen.getByRole('dialog')).toHaveAttribute('id', 'create-release-dialog')
-      })
-
-      it('disables button when no permissions are met', async () => {
-        mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
       })
     })
 

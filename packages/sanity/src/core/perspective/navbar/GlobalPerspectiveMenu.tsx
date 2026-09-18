@@ -6,8 +6,6 @@ import {useCallback, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
-import {CreateReleaseDialog} from '../../releases/components/dialog/CreateReleaseDialog'
-import {useReleasesUpsell} from '../../releases/contexts/upsell/useReleasesUpsell'
 import {oversizedButtonStyle} from '../styles'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {ReleasesList} from './ReleasesList'
@@ -41,21 +39,7 @@ export function GlobalPerspectiveMenu({
    */
   trigger?: React.ReactElement
 }): React.JSX.Element {
-  const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
   const [filterQuery, setFilterQuery] = useState('')
-  const {handleOpenDialog: handleOpenReleasesUpsellDialog, mode: releasesUpsellMode} =
-    useReleasesUpsell()
-  const handleOpenBundleDialog = useCallback(() => {
-    if (releasesUpsellMode === 'upsell') {
-      handleOpenReleasesUpsellDialog()
-      return
-    }
-    setCreateBundleDialogOpen(true)
-  }, [releasesUpsellMode, handleOpenReleasesUpsellDialog])
-
-  const handleClose = useCallback(() => {
-    setCreateBundleDialogOpen(false)
-  }, [])
 
   // The popover's content is kept mounted while closed (Sanity UI wraps it in
   // React's state-preserving `Activity`), so the query has to be cleared by hand
@@ -63,51 +47,45 @@ export function GlobalPerspectiveMenu({
   const handleMenuClose = useCallback(() => setFilterQuery(''), [])
 
   return (
-    <>
-      <MenuButton
-        button={
-          trigger ?? (
-            <OversizedButton
-              data-testid="global-perspective-menu-button"
-              iconRight={ChevronDownIcon}
-              mode="bleed"
-              padding={2}
-              radius="full"
-            />
-          )
-        }
-        id="releases-menu"
-        onClose={handleMenuClose}
-        menu={
-          <StyledMenu data-testid="release-menu" padding={0}>
-            <ReleasesList
-              areReleasesEnabled={areReleasesEnabled}
-              handleOpenBundleDialog={handleOpenBundleDialog}
-              menuItemProps={menuItemProps}
-              filterQuery={filterQuery}
-              onFilterQueryChange={setFilterQuery}
-            />
-          </StyledMenu>
-        }
-        popover={{
-          __unstable_margins: [0, 0, 32, 0],
-          constrainSize: true,
-          // Left-aligned with the trigger: the panel's left edge meets the
-          // button's, so the menu items line up under the button's own icon.
-          // `bottom-end` stays as the fallback so a panel that would overflow the
-          // viewport flips horizontally rather than vertically.
-          fallbackPlacements: ['bottom-end'],
-          placement: 'bottom-start',
-          portal: true,
-          // @ts-expect-error PopoverProps doesn't include `style`, but the Popover implementation accepts it via React.HTMLProps<HTMLDivElement>
-          style: {overflow: 'hidden'} as React.CSSProperties,
-          tone: 'default',
-          zOffset: 3000,
-        }}
-      />
-      {createBundleDialogOpen && (
-        <CreateReleaseDialog onCancel={handleClose} onSubmit={handleClose} origin="structure" />
-      )}
-    </>
+    <MenuButton
+      button={
+        trigger ?? (
+          <OversizedButton
+            data-testid="global-perspective-menu-button"
+            iconRight={ChevronDownIcon}
+            mode="bleed"
+            padding={2}
+            radius="full"
+          />
+        )
+      }
+      id="releases-menu"
+      onClose={handleMenuClose}
+      menu={
+        <StyledMenu data-testid="release-menu" padding={0}>
+          <ReleasesList
+            areReleasesEnabled={areReleasesEnabled}
+            menuItemProps={menuItemProps}
+            filterQuery={filterQuery}
+            onFilterQueryChange={setFilterQuery}
+          />
+        </StyledMenu>
+      }
+      popover={{
+        __unstable_margins: [0, 0, 32, 0],
+        constrainSize: true,
+        // Left-aligned with the trigger: the panel's left edge meets the
+        // button's, so the menu items line up under the button's own icon.
+        // `bottom-end` stays as the fallback so a panel that would overflow the
+        // viewport flips horizontally rather than vertically.
+        fallbackPlacements: ['bottom-end'],
+        placement: 'bottom-start',
+        portal: true,
+        // @ts-expect-error PopoverProps doesn't include `style`, but the Popover implementation accepts it via React.HTMLProps<HTMLDivElement>
+        style: {overflow: 'hidden'} as React.CSSProperties,
+        tone: 'default',
+        zOffset: 3000,
+      }}
+    />
   )
 }
