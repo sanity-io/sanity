@@ -1,5 +1,5 @@
-import {Flex, Stack, Text} from '@sanity/ui'
-import {Box} from 'ui5'
+import {Stack, Text} from '@sanity/ui'
+import {Flex, Box} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {Media} from '../_common/Media'

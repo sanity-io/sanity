@@ -1,8 +1,8 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {Fragment, type ReactNode} from 'react'
 import {css, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 // At or above this many rows, a `multiColumn` section splits into two side-by-side columns so a
 // long list (e.g. six targeting conditions) reads as a compact block instead of a tall stack.
@@ -103,7 +103,7 @@ function PropertyRowsGrid({
           </Text>
           {/* Pure-text value on one left edge; a long value truncates (title tooltip shows the full
               text) rather than wrapping and breaking the single-line grid. */}
-          <Box style={{minWidth: 0}}>
+          <Box>
             {typeof row.value === 'string' ? (
               <Text size={1} textOverflow="ellipsis" title={row.value}>
                 {row.value}
@@ -168,7 +168,7 @@ export function DetailPropertiesPanel(props: {
                 </Text>
               )}
               {splitIntoColumns ? (
-                <Flex gap={4} wrap="wrap">
+                <Flex gap={4} flexWrap="wrap">
                   <PropertyRowsGrid hasGlyphs={hasGlyphs} rows={rows.slice(0, leftCount)} />
                   <PropertyRowsGrid hasGlyphs={hasGlyphs} rows={rows.slice(leftCount)} />
                 </Flex>
