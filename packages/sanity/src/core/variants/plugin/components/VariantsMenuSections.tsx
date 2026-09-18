@@ -368,10 +368,9 @@ export function VariantsMenuSections({
       <>
         {defaultRow}
         <VariantSectionCard heading={t('navbar.variant.list')}>
-          {/* 4px on top of the heading's own 8px, and the same 8px inset the heading has, so the
-              label and the message under it read as one block - the release menu's empty state
-              element for element. */}
-          <Box paddingLeft={2} paddingTop={1} paddingBottom={2}>
+          {/* 8px above and below the message, and the same 8px inset the heading has - the
+              release menu's empty state element for element. */}
+          <Box paddingLeft={2} paddingTop={2} paddingBottom={2}>
             <Text muted size={1} data-testid="variant-menu-none-yet">
               {t('navbar.variant.none-yet')}
             </Text>
