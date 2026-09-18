@@ -7,6 +7,7 @@ import {
   type PartialContext,
 } from '../types'
 import {type DocumentActionKeys} from './actions'
+import {resolveDocumentActionIds} from './bulkDocumentActions'
 
 const NO_ACTION_IDS: ReadonlySet<keyof DocumentActionKeys> = new Set()
 
@@ -34,13 +35,14 @@ export function useConfiguredDocumentActionIds(
     // Resolving without an identity would hand a `ctx.schemaType` predicate an undefined value.
     if (schemaType === undefined || versionType === undefined) return NO_ACTION_IDS
 
-    const configured = resolveDocumentActions({
-      schemaType,
-      documentId,
-      versionType,
-      releaseId,
-    })
-    return new Set(configured.flatMap(({action}) => (action ? [action] : [])))
+    return resolveDocumentActionIds(
+      resolveDocumentActions({
+        schemaType,
+        documentId,
+        versionType,
+        releaseId,
+      }),
+    )
   }, [schemaType, documentId, versionType, releaseId, resolveDocumentActions])
 }
 
