@@ -17,7 +17,18 @@ const variantsLocaleStrings = {
   /** Placeholder for the variant filter input in the dropdown. */
   'navbar.variant.filter-placeholder': 'Filter variants…',
   /** Section header for non-default variants in the dropdown. */
+  /** Names the variant list in the perspective menu. Shown at every count, including none. */
+  'navbar.variant.list': 'Variants',
+  /** Shown in place of the list when a filter term matches nothing in the variant menu. */
+  'navbar.variant.no-results': 'No results for “{{searchTerm}}”',
+  /** Shown under the list label when the workspace has no variant definitions yet. */
+  'navbar.variant.none-yet': 'No variants created yet',
   'navbar.variant.other': 'Other variants',
+  /** Section header listing the variants the selected document already has. */
+  'navbar.variant.has_one': 'Has {{count}} variant',
+  'navbar.variant.has_other': 'Has {{count}} variants',
+  /** Menu item that opens the variants overview. */
+  'navbar.variant.view-all': 'View variant definitions',
   /** Tooltip for clearing the selected variant. */
   'navbar.variant.clear': 'Clear variant selection',
   /** Tooltip for the button that clears the selected version */

@@ -1,0 +1,403 @@
+import {Menu} from '@sanity/ui/menu'
+import {render, screen} from '@testing-library/react'
+import {beforeEach, describe, expect, it, vi} from 'vitest'
+
+import {flushMicrotasksThisIsACodeSmell} from '../../../../../../test/testUtils/flushMicrotasks'
+import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {useDocumentVersions} from '../../../../releases/hooks/useDocumentVersions'
+import {variantAlphaAudience, variantNorwegianMarket} from '../../../__fixtures__/variants.fixture'
+import {variantsUsEnglishLocaleBundle} from '../../../i18n'
+import {VariantsMenuSections} from '../VariantsMenuSections'
+
+vi.mock('../../../../releases/hooks/useDocumentVersions', () => ({
+  useDocumentVersions: vi.fn(() => ({data: [], versions: [], loading: false})),
+}))
+
+const mockUseDocumentVersions = vi.mocked(useDocumentVersions)
+
+const variants = [variantAlphaAudience, variantNorwegianMarket]
+
+/** A version stub carrying just the field that identifies its variant. */
+function versionInVariant(variantId: string) {
+  return {
+    _id: `versions.scope.book-1`,
+    _rev: 'rev',
+    _createdAt: '2025-01-01T00:00:00Z',
+    _updatedAt: '2025-01-01T00:00:00Z',
+    _system: {
+      group: {_ref: 'book-1', _weak: true as const},
+      variant: {_ref: variantId, _weak: true as const},
+    },
+  }
+}
+
+function setVersions(versions: ReturnType<typeof versionInVariant>[]) {
+  mockUseDocumentVersions.mockReturnValue({
+    data: versions.map(({_id}) => _id),
+    // The hook's real return carries the full document stub; the sections only
+    // read `_system.variant`.
+    versions: versions as never,
+    loading: false,
+  })
+}
+
+async function renderSections(node: React.JSX.Element) {
+  const wrapper = await createTestProvider({resources: [variantsUsEnglishLocaleBundle]})
+  const view = render(<Menu>{node}</Menu>, {wrapper})
+  // The locale bundle resolves asynchronously; without this the first test in
+  // the file asserts against raw i18n keys.
+  await flushMicrotasksThisIsACodeSmell()
+  return view
+}
+
+const noop = () => undefined
+
+describe('VariantsMenuSections', () => {
+  beforeEach(() => {
+    setVersions([])
+  })
+
+  it('shows an unheaded flat list when no document is selected', async () => {
+    await renderSections(
+      <VariantsMenuSections
+        documentId={undefined}
+        variants={variants}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
+      />,
+    )
+
+    // "Other" only means something next to a "has" section, so neither heading
+    // appears — just the list.
+    expect(screen.queryByText('Other variants')).not.toBeInTheDocument()
+    expect(screen.queryByText(/^Has /)).not.toBeInTheDocument()
+    expect(screen.getByText('Alpha audience')).toBeInTheDocument()
+    expect(screen.getByText('Norwegian market')).toBeInTheDocument()
+  })
+
+  it('does not query versions when no document is selected', async () => {
+    await renderSections(
+      <VariantsMenuSections
+        documentId={undefined}
+        variants={variants}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
+      />,
+    )
+
+    // An empty document id would open a version subscription for ''.
+    expect(mockUseDocumentVersions).not.toHaveBeenCalled()
+  })
+
+  it('stays unheaded for a selected document with no variants', async () => {
+    await renderSections(
+      <VariantsMenuSections
+        documentId="book-1"
+        variants={variants}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
+      />,
+    )
+
+    expect(screen.queryByText('Other variants')).not.toBeInTheDocument()
+    expect(screen.queryByText(/^Has /)).not.toBeInTheDocument()
+    expect(screen.getByText('Alpha audience')).toBeInTheDocument()
+  })
+
+  it('splits into "Has N variants" and "Other variants"', async () => {
+    setVersions([versionInVariant(variantAlphaAudience._id)])
+
+    await renderSections(
+      <VariantsMenuSections
+        documentId="book-1"
+        variants={variants}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
+      />,
+    )
+
+    expect(screen.getByText('Has 1 variant')).toBeInTheDocument()
+    expect(screen.getByText('Other variants')).toBeInTheDocument()
+    expect(screen.getByText('Alpha audience')).toBeInTheDocument()
+    expect(screen.getByText('Norwegian market')).toBeInTheDocument()
+  })
+
+  it('pluralises the heading and drops the other section when it is empty', async () => {
+    setVersions([
+      versionInVariant(variantAlphaAudience._id),
+      versionInVariant(variantNorwegianMarket._id),
+    ])
+
+    await renderSections(
+      <VariantsMenuSections
+        documentId="book-1"
+        variants={variants}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
+      />,
+    )
+
+    expect(screen.getByText('Has 2 variants')).toBeInTheDocument()
+    expect(screen.queryByText('Other variants')).not.toBeInTheDocument()
+  })
+
+  it('marks the document’s variants with the filled rhombus and the rest hollow', async () => {
+    setVersions([versionInVariant(variantAlphaAudience._id)])
+
+    await renderSections(
+      <VariantsMenuSections
+        documentId="book-1"
+        variants={variants}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
+      />,
+    )
+
+    const alpha = screen.getByTestId('variant-alpha-audience')
+    const norwegian = screen.getByTestId('variant-norwegian-market')
+
+    // The two rhombuses are distinguished by `data-sanity-icon`, which is what
+    // the icon components set.
+    expect(alpha.querySelector('[data-sanity-icon="rhombus"]')).not.toBeNull()
+    expect(alpha.querySelector('[data-sanity-icon="rhombus-outlined"]')).toBeNull()
+    expect(norwegian.querySelector('[data-sanity-icon="rhombus-outlined"]')).not.toBeNull()
+    expect(norwegian.querySelector('[data-sanity-icon="rhombus"]')).toBeNull()
+  })
+
+  it('shows a no-results message when the term matches nothing', async () => {
+    await renderSections(
+      <VariantsMenuSections
+        documentId={undefined}
+        variants={[]}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
+        searchTerm="zzz"
+      />,
+    )
+
+    expect(screen.getByTestId('variant-menu-no-results')).toBeInTheDocument()
+  })
+
+  it('does not show a no-results message while the default row still matches', async () => {
+    await renderSections(
+      <VariantsMenuSections
+        documentId={undefined}
+        variants={[]}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
+        searchTerm="users"
+      />,
+    )
+
+    // "All users (Default)" survives the term, so the menu is not empty and saying otherwise
+    // would contradict the row sitting right there.
+    expect(screen.queryByTestId('variant-menu-no-results')).not.toBeInTheDocument()
+    expect(screen.getByTestId('variant-default')).toBeInTheDocument()
+  })
+
+  it('labels the list "Variants" with no document selected', async () => {
+    await renderSections(
+      <VariantsMenuSections
+        documentId={undefined}
+        variants={variants}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
+      />,
+    )
+
+    expect(screen.getByText('Variants')).toBeInTheDocument()
+  })
+
+  it('keeps the label when a document has no variants', async () => {
+    await renderSections(
+      <VariantsMenuSections
+        documentId="book-1"
+        variants={variants}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
+      />,
+    )
+
+    // This state has to read identically to having no document open. Without the label, selecting
+    // a document silently drops it and the list looks like a different component.
+    expect(screen.getByText('Variants')).toBeInTheDocument()
+  })
+
+  it('drops the label while filtering, where the list is a set of results', async () => {
+    await renderSections(
+      <VariantsMenuSections
+        documentId={undefined}
+        variants={variants}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
+        searchTerm="alpha"
+      />,
+    )
+
+    expect(screen.queryByText('Variants')).not.toBeInTheDocument()
+  })
+
+  it('says when the workspace has no variants yet', async () => {
+    await renderSections(
+      <VariantsMenuSections
+        documentId={undefined}
+        variants={[]}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
+      />,
+    )
+
+    // The label survives an empty list; the message says why it is empty.
+    expect(screen.getByText('Variants')).toBeInTheDocument()
+    expect(screen.getByTestId('variant-menu-none-yet')).toBeInTheDocument()
+  })
+
+  it('does not claim "none yet" when a filter merely matches nothing', async () => {
+    await renderSections(
+      <VariantsMenuSections
+        documentId={undefined}
+        variants={variants}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
+        searchTerm="zzz"
+      />,
+    )
+
+    expect(screen.queryByTestId('variant-menu-none-yet')).not.toBeInTheDocument()
+  })
+
+  it('renders the default row inside the list, above the variants', async () => {
+    await renderSections(
+      <VariantsMenuSections
+        documentId={undefined}
+        variants={variants}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
+      />,
+    )
+
+    expect(screen.getByTestId('variant-default')).toBeInTheDocument()
+  })
+
+  it('hides the default row when the filter excludes it', async () => {
+    await renderSections(
+      <VariantsMenuSections
+        documentId={undefined}
+        variants={variants}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
+        searchTerm="wegian"
+      />,
+    )
+
+    // Rendered outside the sections it was unreachable by the filter, which is the defect this
+    // row's move fixes: a row that survives a filter it was never tested against reads as a bug.
+    expect(screen.queryByTestId('variant-default')).not.toBeInTheDocument()
+    expect(screen.getByText(/wegian/)).toBeInTheDocument()
+  })
+
+  it('marks the filter term inside the default row', async () => {
+    const {container} = await renderSections(
+      <VariantsMenuSections
+        documentId={undefined}
+        variants={variants}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
+        searchTerm="users"
+      />,
+    )
+
+    const marks = [...container.querySelectorAll('strong')].map((node) => node.textContent)
+    expect(marks).toContain('users')
+  })
+
+  it('marks the filter term inside a variant title', async () => {
+    const {container} = await renderSections(
+      <VariantsMenuSections
+        documentId={undefined}
+        variants={variants}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
+        searchTerm="wegian"
+      />,
+    )
+
+    // The row survived the filter on its title, so the row shows why.
+    const marks = [...container.querySelectorAll('strong')].map((node) => node.textContent)
+    expect(marks).toContain('wegian')
+  })
+
+  it('leaves titles unmarked when no term is active', async () => {
+    const {container} = await renderSections(
+      <VariantsMenuSections
+        documentId={undefined}
+        variants={variants}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
+      />,
+    )
+
+    expect(container.querySelectorAll('strong')).toHaveLength(0)
+    expect(screen.getByText('Norwegian market')).toBeInTheDocument()
+  })
+
+  it('ignores versions that belong to no variant', async () => {
+    setVersions([
+      {
+        ...versionInVariant(variantAlphaAudience._id),
+        _system: {group: {_ref: 'book-1', _weak: true as const}},
+      } as ReturnType<typeof versionInVariant>,
+    ])
+
+    await renderSections(
+      <VariantsMenuSections
+        documentId="book-1"
+        variants={variants}
+        selectedVariantId={undefined}
+        onSelect={noop}
+        isDefaultSelected={false}
+        onSelectDefault={noop}
+      />,
+    )
+
+    expect(screen.queryByText(/^Has /)).not.toBeInTheDocument()
+    expect(screen.queryByText('Other variants')).not.toBeInTheDocument()
+    expect(screen.getByText('Alpha audience')).toBeInTheDocument()
+  })
+})

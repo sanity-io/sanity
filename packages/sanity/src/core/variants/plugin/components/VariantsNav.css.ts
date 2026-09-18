@@ -6,8 +6,3 @@ export const suggestIconColor = style({
     '--card-icon-color': 'var(--card-badge-suggest-icon-color)',
   },
 })
-
-/** Spacer to align section headers with menu item icons. */
-export const menuIconSpacer = style({
-  width: 15,
-})
