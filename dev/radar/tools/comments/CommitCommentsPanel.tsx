@@ -210,7 +210,7 @@ function NewThreadComposer(props: {
   return (
     // Framed like the list's own thread cards. Always expanded (no
     // `expandOnFocus`): the input growing on focus moved everything under it
-    // and made the popover, anchored to the dot, jump to a new position.
+    // and made the panel jump while it was being read.
     <Card border radius={3} padding={3}>
       <CommentInput
         ref={handle}
@@ -224,7 +224,7 @@ function NewThreadComposer(props: {
         }}
         onKeyDown={(event) => {
           if (event.isDefaultPrevented() || event.key !== 'Escape') return
-          // Keep Escape from also closing the run popover; with a draft, ask
+          // Keep Escape from also closing the run dialog; with a draft, ask
           // before throwing it away
           event.preventDefault()
           event.stopPropagation()
@@ -516,7 +516,7 @@ function CommitCommentsList(props: {scope?: ChartScope}) {
         )}
       {/* CommentsList fills its parent and scrolls inside it, so it needs a
           bounded flex column to live in; the cap keeps a long thread from
-          pushing the popover off screen. Not rendered while empty: its blank
+          pushing the dialog off screen. Not rendered while empty: its blank
           state ("no open comments") would sit under the composer saying the
           obvious — and the inline flex display would beat a `hidden` attribute */}
       {(comments.loading || comments.error || current.length > 0) && (
