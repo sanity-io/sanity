@@ -1,9 +1,8 @@
-import {Text, TextInput} from '@sanity/ui'
-import {Menu, MenuDivider} from '@sanity/ui/menu'
+import {Card, Text, TextInput} from '@sanity/ui'
+import {Menu} from '@sanity/ui/menu'
 import {type JSX, useCallback, useMemo, useState} from 'react'
 import {useRouter, useStateLink} from 'sanity/router'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
@@ -20,6 +19,15 @@ import {rankVariantsForSearch, VARIANT_FILTER_THRESHOLD} from '../../util/rankVa
 import {VARIANTS_TOOL_NAME} from '../index'
 import {VariantsMenuSections} from './VariantsMenuSections'
 import {suggestIconColor} from './VariantsNav.css'
+
+// Pinned, as the release menu's filter block is: the input is how you navigate a long list, and a
+// filter that scrolls away takes the term with it.
+const StickyFilterCard = styled(Card)`
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--card-bg-color);
+`
 
 const StyledMenu = styled(Menu)`
   min-width: 240px;
@@ -119,7 +127,7 @@ export function VariantsMenu({
 
                 4px and borderless, matching the release menu and the design's own filter block. */}
             {variants.length >= VARIANT_FILTER_THRESHOLD && (
-              <Box padding={1}>
+              <StickyFilterCard borderBottom padding={1}>
                 <TextInput
                   border={false}
                   data-testid="variant-menu-filter"
@@ -129,7 +137,7 @@ export function VariantsMenu({
                   radius={2}
                   value={filterQuery}
                 />
-              </Box>
+              </StickyFilterCard>
             )}
 
             <VariantsMenuSections
@@ -147,17 +155,24 @@ export function VariantsMenu({
                 withholds its action block on the same terms. */}
             {!isFiltering && (
               <>
-                <MenuDivider />
-                <Box paddingX={2} paddingY={1}>
+                {/* The release menu's own action block: a bordered 4px card rather than a
+                    divider plus a padded box. It is not sticky here - this menu's actions scroll
+                    with the list. */}
+                <Card borderTop padding={1}>
+                  {/* 8px, against the wrapper's hardcoded 12px: this puts the icon 12px from the
+                      panel edge, where every row's icon and every section heading already sits.
+                      The design aligns the action icons with the rest of the column (PopoverMenu
+                      node 7576:27957). */}
                   <MenuItem
                     as="a"
                     data-testid="view-variants-menu-item"
                     href={viewVariantsLink.href}
                     icon={RhombusOutlinedIcon}
                     onClick={viewVariantsLink.onClick}
+                    paddingLeft={2}
                     text={t('navbar.variant.view-all')}
                   />
-                </Box>
+                </Card>
               </>
             )}
           </StyledMenu>

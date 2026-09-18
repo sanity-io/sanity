@@ -1,11 +1,11 @@
-import {Flex, Stack, Text} from '@sanity/ui'
+import {Card, Label, Stack, Text} from '@sanity/ui'
 // A marked title is a node, and the ui-components wrapper takes `text` as a string only. Same
 // reason, and the same raw import, as `GlobalPerspectiveMenuItem` on the release side.
 // oxlint-disable-next-line no-restricted-imports -- custom use for MenuItem not supported by ui-components
 import {MenuItem as UIMenuItem} from '@sanity/ui/menu'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
 import {RhombusOutlinedIcon} from '../../../components/temporary-icons/RhombusOutlined'
@@ -18,14 +18,11 @@ import {getVariantId, getVariantTitle} from '../../tool/util'
 import {type SystemVariant} from '../../types'
 import {suggestIconColor} from './VariantsNav.css'
 
-const SectionHeader = styled(Text)`
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-`
-
-// This menu pins nothing above its headings, so the shared offset resolves to its
-// `0px` fallback. Sharing the helper with the release menu keeps the two in step
-// if a pinned filter is ever added here.
+/**
+ * Rebuilt on the release menu's own structure, so the two read as one component family: the same
+ * sticky heading, the same 4px section card, the same row internals. Divergent spacing here was
+ * not a set of independent gaps but one structural difference repeated in every row.
+ */
 const StickyHeading = styled.div`
   ${stickyMenuHeadingStyle}
 `
@@ -33,18 +30,38 @@ const StickyHeading = styled.div`
 function VariantSectionHeader({children}: {children: string}): React.JSX.Element {
   return (
     <StickyHeading>
-      {/* The heading's text lines up with the rows' icons, not with their titles. It used to be
-          indented past an icon-width spacer to meet the titles, which left it 30px right of every
-          icon beneath it. The design aligns the two (PopoverMenu node 7737:50936), and the release
-          menu's own headings already did. */}
-      <Box paddingX={2}>
-        <Box paddingLeft={1} paddingTop={3} paddingBottom={2}>
-          <SectionHeader muted size={0} weight="medium">
-            {children}
-          </SectionHeader>
-        </Box>
+      <Box paddingLeft={2} paddingTop={3} paddingBottom={2}>
+        <Label muted style={{textTransform: 'uppercase'}} size={1}>
+          {children}
+        </Label>
       </Box>
     </StickyHeading>
+  )
+}
+
+/**
+ * A section: one card, one hairline, an optional heading and the rows under it.
+ *
+ * The stack sets no gap and the heading carries the space below it as padding instead, as on the
+ * release side - a gap leaves a transparent strip that rows flicker through while scrolling under
+ * the pinned heading.
+ */
+function VariantSectionCard({
+  children,
+  heading,
+  'data-testid': dataTestId,
+}: {
+  'children': React.ReactNode
+  'heading'?: string
+  'data-testid'?: string
+}): React.JSX.Element {
+  return (
+    <Card padding={1} borderBottom data-testid={dataTestId}>
+      <Stack gap={0}>
+        {heading && <VariantSectionHeader>{heading}</VariantSectionHeader>}
+        {children}
+      </Stack>
+    </Card>
   )
 }
 
@@ -71,29 +88,29 @@ function VariantMenuItem(props: {
     <UIMenuItem
       data-testid={`variant-${getVariantId(variant._id)}`}
       onClick={() => onSelect(variant)}
-      paddingLeft={3}
-      paddingRight={3}
-      paddingY={3}
+      padding={1}
       pressed={isSelected}
       selected={isSelected}
     >
-      {/* The layout mirrors `ui-components/MenuItem` exactly - the same Flex, gap, paddings and
-          text size - so the row is unchanged to look at. Only the title differs, and it has to,
-          because a marked title is a node and that wrapper's `text` takes a string. */}
-      <Flex align="center" gap={2}>
-        {/* No padding here: the parent Flex's `gap={2}` is already the 8px the design puts between
-            the icon and the title, and the wrapper's extra 4px made the row read as loose. */}
-        <Box>
-          {/* Two nested Texts, as the wrapper has them: it renders the caller's icon element
-              inside its own `size={1}` Text, and that outer size is what sets the row's line
-              height. Collapsing them into one made the row 2px taller. */}
-          <Text size={1}>
-            <Text size={2} className={suggestIconColor}>
-              <Icon />
-            </Text>
+      {/* The row's internals are `GlobalPerspectiveMenuItem`'s, element for element: `padding={1}`
+          on the item, `gap={1}` on the flex, and the icon's own 4px on each side. That is what puts
+          the icon 12px from the panel edge - 4px from the section card, 4px from the row, 4px here -
+          and 8px from the title. This menu had `paddingX={3}` on the row inside a `paddingX={2}`
+          box, which is 20px, and the difference was visible with the two menus side by side. */}
+      <Flex alignItems="flex-start" gap={1}>
+        <Box
+          flexBasis="auto"
+          flexGrow={0}
+          flexShrink={0}
+          paddingLeft={1}
+          paddingRight={1}
+          paddingY={2}
+        >
+          <Text className={suggestIconColor} size={2}>
+            <Icon />
           </Text>
         </Box>
-        <Stack flex={1} gap={2}>
+        <Stack flex={1} paddingY={2} paddingRight={2} gap={2} style={{minWidth: 0}}>
           <Text size={1} textOverflow="ellipsis" weight="medium">
             <MarkedLabel label={getVariantTitle(variant)} searchTerm={searchTerm} />
           </Text>
@@ -124,21 +141,25 @@ function DefaultVariantMenuItem({
     <UIMenuItem
       data-testid="variant-default"
       onClick={onSelect}
-      paddingLeft={3}
-      paddingRight={3}
-      paddingY={3}
+      padding={1}
       pressed={isSelected}
       selected={isSelected}
     >
-      <Flex align="center" gap={2}>
-        <Box>
-          <Text size={1}>
-            <Text size={2} className={suggestIconColor}>
-              <Icon />
-            </Text>
+      {/* `VariantMenuItem`'s internals, for the reasons given there. */}
+      <Flex alignItems="flex-start" gap={1}>
+        <Box
+          flexBasis="auto"
+          flexGrow={0}
+          flexShrink={0}
+          paddingLeft={1}
+          paddingRight={1}
+          paddingY={2}
+        >
+          <Text className={suggestIconColor} size={2}>
+            <Icon />
           </Text>
         </Box>
-        <Stack flex={1} gap={2}>
+        <Stack flex={1} paddingY={2} paddingRight={2} gap={2} style={{minWidth: 0}}>
           <Text size={1} textOverflow="ellipsis" weight="medium">
             <MarkedLabel label={label} searchTerm={searchTerm} />
           </Text>
@@ -158,7 +179,7 @@ function VariantList({
   const Icon = filled ? RhombusIcon : RhombusOutlinedIcon
 
   return (
-    <Box paddingX={2}>
+    <Flex flexDirection="column" gap={1}>
       {variants.map((variant) => (
         <VariantMenuItem
           key={variant._id}
@@ -169,7 +190,7 @@ function VariantList({
           searchTerm={searchTerm}
         />
       ))}
-    </Box>
+    </Flex>
   )
 }
 
@@ -212,8 +233,7 @@ function OtherVariantsSection({
   if (variants.length === 0) return null
 
   return (
-    <>
-      {heading && <VariantSectionHeader>{heading}</VariantSectionHeader>}
+    <VariantSectionCard heading={heading}>
       <VariantList
         variants={variants}
         selectedVariantId={selectedVariantId}
@@ -221,7 +241,7 @@ function OtherVariantsSection({
         filled={false}
         searchTerm={searchTerm}
       />
-    </>
+    </VariantSectionCard>
   )
 }
 
@@ -266,14 +286,15 @@ function DocumentVariantSections({
 
   return (
     <>
-      <VariantSectionHeader>{t('navbar.variant.has', {count: has.length})}</VariantSectionHeader>
-      <VariantList
-        variants={has}
-        selectedVariantId={selectedVariantId}
-        onSelect={onSelect}
-        filled
-        searchTerm={searchTerm}
-      />
+      <VariantSectionCard heading={t('navbar.variant.has', {count: has.length})}>
+        <VariantList
+          variants={has}
+          selectedVariantId={selectedVariantId}
+          onSelect={onSelect}
+          filled
+          searchTerm={searchTerm}
+        />
+      </VariantSectionCard>
       <OtherVariantsSection
         heading={t('navbar.variant.other')}
         variants={others}
@@ -314,7 +335,7 @@ export function VariantsMenuSections({
   // here rather than in `VariantsMenu` for exactly that reason: a row rendered outside the
   // sections is a row the filter cannot see.
   const defaultRow = matchesSearchTerm(defaultLabel, rest.searchTerm) ? (
-    <Box paddingX={2}>
+    <VariantSectionCard>
       <DefaultVariantMenuItem
         // Filled once a document is selected: the default is the first version it ever had.
         icon={documentId ? RhombusIcon : RhombusOutlinedIcon}
@@ -323,18 +344,18 @@ export function VariantsMenuSections({
         onSelect={onSelectDefault}
         searchTerm={rest.searchTerm}
       />
-    </Box>
+    </VariantSectionCard>
   ) : null
 
   // Filtered to nothing, with the default row excluded too, so there is no row left to show.
   // Distinct from having no definitions at all, handled below: this state is about the term.
   if (isFiltering && rest.variants.length === 0 && !defaultRow) {
     return (
-      <Box padding={4}>
+      <Card padding={4}>
         <Text align="center" muted size={1} data-testid="variant-menu-no-results">
           {t('navbar.variant.no-results', {searchTerm: (rest.searchTerm ?? '').trim()})}
         </Text>
-      </Box>
+      </Card>
     )
   }
 
@@ -346,13 +367,16 @@ export function VariantsMenuSections({
     return (
       <>
         {defaultRow}
-        <VariantSectionHeader>{t('navbar.variant.list')}</VariantSectionHeader>
-        {/* 4px on top of the heading's own spacing, matching the release menu's empty state. */}
-        <Box paddingX={2} paddingTop={1} paddingBottom={2}>
-          <Text muted size={1} data-testid="variant-menu-none-yet">
-            {t('navbar.variant.none-yet')}
-          </Text>
-        </Box>
+        <VariantSectionCard heading={t('navbar.variant.list')}>
+          {/* 4px on top of the heading's own 8px, and the same 8px inset the heading has, so the
+              label and the message under it read as one block - the release menu's empty state
+              element for element. */}
+          <Box paddingLeft={2} paddingTop={1} paddingBottom={2}>
+            <Text muted size={1} data-testid="variant-menu-none-yet">
+              {t('navbar.variant.none-yet')}
+            </Text>
+          </Box>
+        </VariantSectionCard>
       </>
     )
   }
