@@ -1702,16 +1702,36 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.dialog.tooltip.title': 'Approximate time of release',
   /** The placeholder text when the release doesn't have a description */
   'release.form.placeholder-describe-release': 'Describe the release…',
-  /** Tooltip for button to hide release visibility */
-  'release.layer.hide': 'Hide release',
+  /** Placeholder for the release filter input in the perspective menu */
+  'release.menu.filter-placeholder': 'Filter releases…',
   /** Label for the release menu */
   'release.menu.label': 'Release menu',
+  /**
+   * Names the release list in the perspective menu. Shown at every scope, including a workspace
+   * with no releases yet, so the menu says what the list is rather than only what is in it.
+   */
+  'release.menu.releases': 'Releases',
+  /**
+   * Shown directly beneath the `Releases` heading when the workspace has no releases at all.
+   * Distinct from `release.menu.no-results`: that one answers a filter that matched nothing, this
+   * one that there is nothing to filter yet.
+   */
+  'release.menu.no-releases-yet': 'No releases created yet',
+  /** Section heading for releases the selected document has no version in */
+  'release.menu.other-releases': 'Other releases',
+  /** Section heading listing the releases the selected document has a version in */
+  'release.menu.part-of-releases_one': 'Part of {{count}} release',
+  'release.menu.part-of-releases_other': 'Part of {{count}} releases',
   /** Menu item label for scheduled drafts */
-  'release.menu.scheduled-drafts': 'View Scheduled Drafts',
+  'release.menu.scheduled-drafts': 'View scheduled drafts',
   /** Tooltip for the release menu */
   'release.menu.tooltip': 'Actions',
   /** Menu item label for viewing content releases */
-  'release.menu.view-releases': 'View Content Releases',
+  /** Label for the create-release item in the perspective menu's action block. */
+  'release.menu.create-release': 'Create new release',
+  /** Shown in place of the list when a filter term matches nothing in the release menu. */
+  'release.menu.no-results': 'No results for “{{searchTerm}}”',
+  'release.menu.view-releases': 'View content releases',
   /** Label for draft perspective in navbar */
   'release.navbar.drafts': 'Drafts',
   /** Label for published releases in navbar */
@@ -1788,6 +1808,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Label for when a release is scheduled / scheduling and a user can't add a document version to it */
   'release.tooltip.locked': 'This release has been scheduled. Unschedule it to add more documents.',
   /** Label for the release type 'as soon as possible' */
+  /** Time bands the release menu groups by once the list is long enough to label. */
+  'release.time-bucket.overdue': 'Overdue',
+  'release.time-bucket.this-week': 'This week',
+  'release.time-bucket.this-month': 'This month',
+  'release.time-bucket.this-quarter': 'This quarter',
+  'release.time-bucket.later': 'Later',
   'release.type.asap': 'As soon as possible',
   /** Label for the release type 'at time', meaning it's a release with a scheduled date */
   'release.type.scheduled': 'At time',
