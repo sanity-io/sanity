@@ -219,7 +219,7 @@ export function ReleasesList({
         </Card>
       )}
       {!isFiltering && (areReleasesEnabled || isScheduledDraftsAvailable) && (
-        <StickyBottomCard borderTop paddingY={1} paddingX={2} data-testid="release-menu-actions">
+        <StickyBottomCard borderTop padding={1} data-testid="release-menu-actions">
           <Stack gap={1}>
             <ScheduledDraftsMenuItem />
             {areReleasesEnabled && (
@@ -227,6 +227,7 @@ export function ReleasesList({
                 <ViewContentReleasesMenuItem />
                 <CreateReleaseMenuItem
                   onCreateRelease={handleOpenBundleDialog}
+                  paddingLeft={2}
                   text={t('release.menu.create-release')}
                 />
               </>

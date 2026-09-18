@@ -22,8 +22,13 @@ export const ViewContentReleasesMenuItem: ComponentType = () => {
     onClick: logNavigationTelemetry,
   })
 
+  // 8px against the wrapper's hardcoded 12px: this puts the icon 12px from the panel edge (4px
+  // from the action card, 8px from here), where every release row's icon and every section heading
+  // already sits. The design aligns the action icons with the rest of the column (PopoverMenu node
+  // 7576:27957).
   return (
     <MenuItem
+      paddingLeft={2}
       as="a"
       href={href}
       onClick={onClick}

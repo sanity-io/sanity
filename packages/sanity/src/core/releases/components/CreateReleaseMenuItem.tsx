@@ -20,9 +20,19 @@ interface Props {
    * releases overview's own primary button does not need.
    */
   text?: string
+  /**
+   * Overrides the wrapper's own left inset. The perspective menu's action block aligns its icons
+   * with the release rows above them, which sit 12px from the panel edge; the context menu leaves
+   * this alone and keeps the wrapper's default.
+   */
+  paddingLeft?: ComponentProps<typeof MenuItem>['paddingLeft']
 }
 
-export const CreateReleaseMenuItem: ComponentType<Props> = ({onCreateRelease, text}) => {
+export const CreateReleaseMenuItem: ComponentType<Props> = ({
+  onCreateRelease,
+  paddingLeft,
+  text,
+}) => {
   const {t} = useTranslation()
   const {createRelease} = useReleaseOperations()
   const {checkWithPermissionGuard} = useReleasePermissions()
@@ -44,12 +54,16 @@ export const CreateReleaseMenuItem: ComponentType<Props> = ({onCreateRelease, te
   const workspaceReleaseLimit = releases?.limit ?? Infinity
   const isWorkspaceReleaseLimitReached = activeReleaseCount >= workspaceReleaseLimit
 
-  const menuItemProps: Pick<ComponentProps<typeof MenuItem>, 'icon' | 'onClick' | 'text'> & {
+  const menuItemProps: Pick<
+    ComponentProps<typeof MenuItem>,
+    'icon' | 'onClick' | 'paddingLeft' | 'text'
+  > & {
     'data-testid': string
   } = {
     'icon': AddIcon,
     'onClick': onCreateRelease,
     'data-testid': 'create-new-release-button',
+    paddingLeft,
     'text': text ?? t('release.action.create-new'),
   }
 
