@@ -1,5 +1,5 @@
 import {Card, Spinner, Stack, Text, TextInput} from '@sanity/ui'
-import {type ChangeEvent, type JSX, useCallback, useEffect, useMemo, useRef} from 'react'
+import {type ChangeEvent, type JSX, useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
@@ -78,8 +78,6 @@ export function ReleasesList({
   onFilterQueryChange: (query: string) => void
 }): JSX.Element {
   const {t} = useTranslation()
-  const rootRef = useRef<HTMLDivElement | null>(null)
-  const pinnedRef = useRef<HTMLDivElement | null>(null)
   const {loading, data: allReleases} = useActiveReleases()
   const {bundles: agentBundles} = useAgentBundles()
   const {activeDocument} = usePerspectiveActiveDocument()
@@ -121,30 +119,36 @@ export function ReleasesList({
     [onFilterQueryChange],
   )
 
-  // Publish the pinned block's height so the section headings can pin directly
-  // below it — `MENU_PINNED_BLOCK_HEIGHT_VAR` explains why an offset is needed at
-  // all. Re-runs on `loading` because neither node exists while the spinner is up.
-  useEffect(() => {
-    // Nothing is rendered but the spinner while loading, so there is no block to
-    // measure yet. Checked directly rather than leaning on the refs being null,
-    // which reads as an unused dependency.
-    if (loading) return undefined
+  // Publish the pinned block's height so the section headings can pin directly below it —
+  // `MENU_PINNED_BLOCK_HEIGHT_VAR` explains why an offset is needed at all.
+  //
+  // A callback ref rather than an effect over `useRef`, because an effect has to name a dependency
+  // that changes when the node appears and there is not always one: this ran on `loading`, which
+  // only happens to flip after the data arrives. Where it does not — cached releases, so `loading`
+  // is false from the first render — the effect fires once against a ref that has not attached and
+  // is never invited back, and every heading then pins at the 0px fallback, underneath the filter
+  // block itself. The variant menu hit exactly that. This fires when the node attaches instead.
+  const observePinnedBlock = useCallback((pinned: HTMLDivElement | null) => {
+    if (!pinned) return undefined
 
-    const root = rootRef.current
-    const pinned = pinnedRef.current
-    if (!root || !pinned) return undefined
+    // The menu, not the nearest card: this block is itself a `Card`, so a card lookup finds the
+    // block and publishes the height onto the very element the headings need to clear. Custom
+    // properties inherit, so the menu is as good an owner and is one both menus can name.
+    const root = pinned.closest<HTMLElement>('[data-ui="Menu"]')
+    if (!root) return undefined
 
     const publish = () =>
       root.style.setProperty(MENU_PINNED_BLOCK_HEIGHT_VAR, `${pinned.offsetHeight}px`)
 
     publish()
 
-    // The block changes height in use: the Drafts row is conditional on the
-    // workspace, and the filter input can wrap.
+    // The block changes height in use: the Drafts row is conditional on the workspace, and the
+    // filter input can wrap.
+    if (typeof ResizeObserver === 'undefined') return undefined
     const observer = new ResizeObserver(publish)
     observer.observe(pinned)
     return () => observer.disconnect()
-  }, [loading])
+  }, [])
 
   if (loading) {
     return (
@@ -155,13 +159,13 @@ export function ReleasesList({
   }
 
   return (
-    <Card radius={3} ref={rootRef}>
+    <Card radius={3}>
       {/* Only the filter is pinned. Published and drafts used to be pinned with it, which made the
           panel a fixed top, a scrolling middle and a fixed bottom — and hid the fact that these two
           are the first entries in the same time order as the releases below: published is live now,
           drafts is the indefinite next, then asap, then dated, then undecided. */}
       {showFilter && (
-        <StickyTopCard borderBottom ref={pinnedRef}>
+        <StickyTopCard borderBottom ref={observePinnedBlock}>
           {/* 4px around a 33px input is the design's 41px block (PopoverMenu node 6998:20254:
               Filter frame 247x41, TextInput inset at 4,4). Borderless with it: the design reads the
               filter as placeholder text on the panel, with this card's own hairline beneath, rather

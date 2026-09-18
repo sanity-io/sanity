@@ -23,6 +23,7 @@ import {
   useReleasesPermissionsMockReturnFalse,
   useReleasesPermissionsMockReturnTrue,
 } from '../../../releases/store/__tests__/__mocks/useReleasePermissions.mock'
+import {MENU_PINNED_BLOCK_HEIGHT_VAR} from '../../styles'
 import {ReleasesList} from '../ReleasesList'
 
 /**
@@ -272,6 +273,28 @@ describe('ReleasesList', () => {
       await flushMicrotasksThisIsACodeSmell()
 
       expect(screen.getByTestId('release-menu-filter')).toBeInTheDocument()
+    })
+
+    it('publishes the pinned filter block height for the section headings to pin below', async () => {
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
+        data: enoughReleasesToFilter(),
+      })
+      const wrapper = await createTestProvider()
+      render(
+        <Menu>
+          <TestReleasesList handleOpenBundleDialog={handleOpenBundleDialog} areReleasesEnabled />
+        </Menu>,
+        {wrapper},
+      )
+      await flushMicrotasksThisIsACodeSmell()
+
+      // The headings resolve their sticky offset from this property. jsdom has no layout, so the
+      // value is 0px; what is under test is that it is published at all - unset means the effect
+      // bailed, and the headings then pin at 0px, underneath the filter block itself.
+      const root = screen.getByTestId('release-menu-filter').closest('[data-ui="Menu"]')
+
+      expect(root?.getAttribute('style')).toContain(`${MENU_PINNED_BLOCK_HEIGHT_VAR}: 0px`)
     })
 
     it('renders the action card, which carries the divider above the actions', async () => {

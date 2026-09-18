@@ -90,7 +90,6 @@ export function VariantsMenu({
   trigger: JSX.Element
 }): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
-  const pinnedRef = useRef<HTMLDivElement | null>(null)
   const router = useRouter()
   const setVariant = useSetVariant()
   const {data: variants} = useAllVariants()
@@ -158,25 +157,31 @@ export function VariantsMenu({
   // fallback and pin *underneath* the filter, which sits at the same offset with a higher stacking
   // order and an opaque background - so a heading scrolling up simply disappears. Measured rather
   // than declared for the same reason the release menu measures its own: the input can wrap.
-  useEffect(() => {
-    if (!showFilter) return undefined
+  //
+  // A callback ref rather than an effect over `useRef`: the effect would have to name a dependency
+  // that changes when the node appears, and nothing here does - the filter's own condition is true
+  // from the first render, so the effect ran once against a ref that had not attached yet and was
+  // never invited back. This fires when the node attaches, and its cleanup runs when it detaches.
+  const observePinnedBlock = useCallback((pinned: HTMLDivElement | null) => {
+    if (!pinned) return undefined
 
-    const pinned = pinnedRef.current
-    // Walked up from the pinned card rather than taken from a ref on the menu itself: `Menu` does
-    // not forward one to its DOM node, so a `ref` on it stays null and the effect bails without
-    // ever publishing. The release menu's root is a `Card`, which does forward, and needs no walk.
-    const root = pinned?.closest<HTMLElement>('[data-ui="Menu"]')
-    if (!root || !pinned) return undefined
+    // Walked up from the pinned card rather than taken from a ref on the menu: `Menu` does not
+    // forward one to its DOM node. The release menu's root is a `Card`, which does, so it needs
+    // no walk.
+    const root = pinned.closest<HTMLElement>('[data-ui="Menu"]')
+    if (!root) return undefined
 
     const publish = () =>
       root.style.setProperty(MENU_PINNED_BLOCK_HEIGHT_VAR, `${pinned.offsetHeight}px`)
 
     publish()
 
+    // The block changes height in use: the input can wrap.
+    if (typeof ResizeObserver === 'undefined') return undefined
     const observer = new ResizeObserver(publish)
     observer.observe(pinned)
     return () => observer.disconnect()
-  }, [showFilter])
+  }, [])
 
   return (
     <>
@@ -188,7 +193,7 @@ export function VariantsMenu({
           <StyledMenu data-testid="variants-nav-menu" padding={0}>
             {/* 4px and borderless, matching the release menu and the design's own filter block. */}
             {showFilter && (
-              <StickyFilterCard borderBottom padding={1} ref={pinnedRef}>
+              <StickyFilterCard borderBottom padding={1} ref={observePinnedBlock}>
                 <TextInput
                   border={false}
                   data-testid="variant-menu-filter"

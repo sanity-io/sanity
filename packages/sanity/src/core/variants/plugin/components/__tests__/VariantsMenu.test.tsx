@@ -6,6 +6,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {flushMicrotasksThisIsACodeSmell} from '../../../../../../test/testUtils/flushMicrotasks'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {type SingleWorkspace, type Tool} from '../../../../config/types'
+import {MENU_PINNED_BLOCK_HEIGHT_VAR} from '../../../../perspective/styles'
 import {createRouter} from '../../../../studio/router/router'
 import {variantAlphaAudience, variantNorwegianMarket} from '../../../__fixtures__/variants.fixture'
 import {variantsUsEnglishLocaleBundle} from '../../../i18n'
@@ -96,6 +97,25 @@ describe('VariantsMenu', () => {
     await renderMenu()
 
     expect(screen.getByTestId('variant-menu-filter')).toBeInTheDocument()
+  })
+
+  it('publishes the pinned filter block height for the section headings to pin below', async () => {
+    variantsMock.data = manyVariants(VARIANT_FILTER_THRESHOLD)
+
+    await renderMenu()
+
+    // Opened first: the popover keeps its content mounted while closed, but inside a hidden
+    // `<Activity>`, and React does not run effects in a hidden tree. Closed is therefore the wrong
+    // state to assert this in - nothing is on screen to pin under anything.
+    await userEvent.click(screen.getByTestId('trigger'))
+    await flushMicrotasksThisIsACodeSmell()
+
+    // The headings resolve their sticky offset from this property. jsdom has no layout, so the
+    // value is 0px; what is under test is that it is published at all - unset means the effect
+    // bailed, and the headings then pin at 0px, which is where the filter block itself sits.
+    const root = screen.getByTestId('variants-nav-menu')
+
+    expect(root.style.getPropertyValue(MENU_PINNED_BLOCK_HEIGHT_VAR)).toBe('0px')
   })
 
   it('drops the action block while filtering', async () => {
