@@ -3,7 +3,12 @@ import {useObservable} from 'react-rx'
 import {catchError, debounceTime, defer, map, of, startWith, switchMap} from 'rxjs'
 import {useAddonDataset, useDocumentStore} from 'sanity'
 
-import {COMMIT_COMMENTS_QUERY, type CommitComment, shaFromCommitDocumentId} from './comments'
+import {
+  COMMIT_COMMENTS_FILTER,
+  COMMIT_COMMENTS_QUERY,
+  type CommitComment,
+  shaFromCommitDocumentId,
+} from './comments'
 
 /**
  * Every comment on a commit, for the surfaces that need the whole set at once:
@@ -98,9 +103,11 @@ export function useLiveCommitComments(): CommitComment[] {
   const comments$ = useMemo(() => {
     if (!client) return of<CommitComment[]>([])
     const fetch$ = defer(() => client.observable.fetch<RawComment[]>(COMMIT_COMMENTS_QUERY))
+    // The listener takes a bare filter — no projection, no ordering — like
+    // the studio's own comments store; the projected fetch runs on each event
     return client.observable
       .listen(
-        COMMIT_COMMENTS_QUERY,
+        `*[${COMMIT_COMMENTS_FILTER}]`,
         {},
         {events: ['welcome', 'mutation', 'reconnect'], visibility: 'query', tag: 'radar.comments'},
       )

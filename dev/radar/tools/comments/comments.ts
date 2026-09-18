@@ -46,7 +46,8 @@ export interface CommitComment {
  * addon dataset is separate from the bench dataset, so the commit's date is
  * joined client-side (see useLiveCommitComments) rather than in GROQ.
  */
-export const COMMIT_COMMENTS_QUERY = `*[_type == "comment" && target.documentType == "gitCommit"]
+export const COMMIT_COMMENTS_FILTER = `_type == "comment" && target.documentType == "gitCommit"`
+export const COMMIT_COMMENTS_QUERY = `*[${COMMIT_COMMENTS_FILTER}]
   | order(_createdAt asc) {
   _id, threadId, parentCommentId, status, authorId, message,
   "createdAt": _createdAt,
