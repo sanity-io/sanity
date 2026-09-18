@@ -29,6 +29,30 @@ const StickyFilterCard = styled(Card)`
   background: var(--card-bg-color);
 `
 
+// Every element that can precede this card draws its own bottom border - a variant section or the
+// default row's card - so this card's top border landed against one and the pair read as a single
+// 2px rule. Pulling up by exactly one border width overlaps them, and the opaque background hides
+// the one underneath. Same fix, same reason, as the release menu's action card.
+const ActionCard = styled(Card)`
+  margin-top: -1px;
+  background: var(--card-bg-color);
+`
+
+/**
+ * The rhombus at the rows' own size.
+ *
+ * The shared MenuItem renders the icon it is given inside a `size={1}` Text, which put the same
+ * glyph one step smaller here than in the list directly above it. The wrapper accepts an element,
+ * so the size travels with the icon rather than needing a change to the wrapper.
+ */
+function ViewVariantsIcon(): React.JSX.Element {
+  return (
+    <Text size={2}>
+      <RhombusOutlinedIcon />
+    </Text>
+  )
+}
+
 const StyledMenu = styled(Menu)`
   min-width: 240px;
   max-width: 320px;
@@ -158,7 +182,7 @@ export function VariantsMenu({
                 {/* The release menu's own action block: a bordered 4px card rather than a
                     divider plus a padded box. It is not sticky here - this menu's actions scroll
                     with the list. */}
-                <Card borderTop padding={1}>
+                <ActionCard borderTop padding={1}>
                   {/* 8px, against the wrapper's hardcoded 12px: this puts the icon 12px from the
                       panel edge, where every row's icon and every section heading already sits.
                       The design aligns the action icons with the rest of the column (PopoverMenu
@@ -167,12 +191,12 @@ export function VariantsMenu({
                     as="a"
                     data-testid="view-variants-menu-item"
                     href={viewVariantsLink.href}
-                    icon={RhombusOutlinedIcon}
+                    icon={<ViewVariantsIcon />}
                     onClick={viewVariantsLink.onClick}
                     paddingLeft={2}
                     text={t('navbar.variant.view-all')}
                   />
-                </Card>
+                </ActionCard>
               </>
             )}
           </StyledMenu>
