@@ -90,7 +90,6 @@ export function VariantsMenu({
   trigger: JSX.Element
 }): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
-  const rootRef = useRef<HTMLDivElement | null>(null)
   const pinnedRef = useRef<HTMLDivElement | null>(null)
   const router = useRouter()
   const setVariant = useSetVariant()
@@ -162,8 +161,11 @@ export function VariantsMenu({
   useEffect(() => {
     if (!showFilter) return undefined
 
-    const root = rootRef.current
     const pinned = pinnedRef.current
+    // Walked up from the pinned card rather than taken from a ref on the menu itself: `Menu` does
+    // not forward one to its DOM node, so a `ref` on it stays null and the effect bails without
+    // ever publishing. The release menu's root is a `Card`, which does forward, and needs no walk.
+    const root = pinned?.closest<HTMLElement>('[data-ui="Menu"]')
     if (!root || !pinned) return undefined
 
     const publish = () =>
@@ -183,7 +185,7 @@ export function VariantsMenu({
         id="variants-nav-menu"
         onClose={handleMenuClose}
         menu={
-          <StyledMenu data-testid="variants-nav-menu" padding={0} ref={rootRef}>
+          <StyledMenu data-testid="variants-nav-menu" padding={0}>
             {/* 4px and borderless, matching the release menu and the design's own filter block. */}
             {showFilter && (
               <StickyFilterCard borderBottom padding={1} ref={pinnedRef}>
