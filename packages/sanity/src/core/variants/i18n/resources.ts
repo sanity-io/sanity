@@ -29,8 +29,6 @@ const variantsLocaleStrings = {
   'navbar.variant.has_other': 'Has {{count}} variants',
   /** Menu item that opens the variants overview. */
   'navbar.variant.view-all': 'View variants',
-  /** Menu item that creates a new variant definition. */
-  'navbar.variant.add': 'Add variant',
   /** Tooltip for clearing the selected variant. */
   'navbar.variant.clear': 'Clear variant selection',
   /** Tooltip for the button that clears the selected version */

@@ -1,4 +1,3 @@
-import {AddIcon} from '@sanity/icons/Add'
 import {Text, TextInput} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {type JSX, useCallback, useMemo, useState} from 'react'
@@ -13,11 +12,10 @@ import {RhombusOutlinedIcon} from '../../../components/temporary-icons/RhombusOu
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {usePerspectiveActiveDocument} from '../../../perspective/activeDocument/usePerspectiveActiveDocument'
 import {useSetVariant} from '../../../perspective/useSetVariant'
-import {CreateVariantDialog} from '../../components/dialog/CreateVariantDialog'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
 import {decodeVariantIdFromRoute} from '../../tool/util'
-import {isVariantId, type SystemVariant} from '../../types'
+import {type SystemVariant} from '../../types'
 import {rankVariantsForSearch, VARIANT_FILTER_THRESHOLD} from '../../util/rankVariantsForSearch'
 import {VARIANTS_TOOL_NAME} from '../index'
 import {VariantsMenuSections} from './VariantsMenuSections'
@@ -50,7 +48,6 @@ export function VariantsMenu({
   const {data: variants} = useAllVariants()
   const {activeDocument} = usePerspectiveActiveDocument()
   const [filterQuery, setFilterQuery] = useState('')
-  const [createVariantDialogOpen, setCreateVariantDialogOpen] = useState(false)
 
   const selectedVariantDocumentId = decodeVariantIdFromRoute(
     router.stickyParams.variant ?? undefined,
@@ -91,23 +88,6 @@ export function VariantsMenu({
   const handleMenuClose = useCallback(() => {
     setFilterQuery('')
   }, [])
-
-  const handleOpenCreateVariantDialog = useCallback(() => setCreateVariantDialogOpen(true), [])
-  const handleCancelCreateVariant = useCallback(() => setCreateVariantDialogOpen(false), [])
-
-  const handleVariantCreated = useCallback(
-    (createdVariantId: string) => {
-      setCreateVariantDialogOpen(false)
-      // Every other item in this menu changes the perspective, so a freshly
-      // created variant becomes the selected one rather than leaving the user
-      // where they were. Guarded rather than asserted: the dialog reports a bare
-      // string and only a well-formed id is a usable perspective.
-      if (isVariantId(createdVariantId)) {
-        setVariant({variantId: createdVariantId})
-      }
-    },
-    [setVariant],
-  )
 
   // Links straight at the tool rather than through the `variant` intent. That
   // intent exists to open one specific variant, so with no id there is nothing for
@@ -174,12 +154,6 @@ export function VariantsMenu({
                     onClick={viewVariantsLink.onClick}
                     text={t('navbar.variant.view-all')}
                   />
-                  <MenuItem
-                    data-testid="add-variant-menu-item"
-                    icon={AddIcon}
-                    onClick={handleOpenCreateVariantDialog}
-                    text={t('navbar.variant.add')}
-                  />
                 </Box>
               </>
             )}
@@ -201,9 +175,6 @@ export function VariantsMenu({
           zOffset: 3000,
         }}
       />
-      {createVariantDialogOpen && (
-        <CreateVariantDialog onCancel={handleCancelCreateVariant} onSubmit={handleVariantCreated} />
-      )}
     </>
   )
 }

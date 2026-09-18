@@ -108,7 +108,6 @@ describe('VariantsMenu', () => {
     await userEvent.type(screen.getByTestId('variant-menu-filter'), 'Bulk variant 1')
 
     expect(screen.queryByTestId('view-variants-menu-item')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('add-variant-menu-item')).not.toBeInTheDocument()
   })
 
   it('restores the action block when the filter is cleared', async () => {
