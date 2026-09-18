@@ -67,7 +67,7 @@ export const stickyMenuHeadingStyle = css`
  * | Menu | Action icons | Inset | Resulting ink | Aligned against |
  * | --- | --- | --- | --- | --- |
  * | Release | calendar, add (21px box, 11.8-12.6px ink) | 11px | 13.2-13.6px | dots 14.0-14.6px, release icons 12.6px |
- * | Variant | outlined rhombus (33px box, 12.2px ink) | 9.5px | 12.9px | rows 12.9px outlined, 13.6px filled |
+ * | Variant | outlined rhombus (33px box, 12.2px ink) | 7.5px | 10.9px | set by eye on review, 2px left of the rows |
  *
  * Re-measure both rows of that table when either changes - see the sibling-surfaces rule. A value
  * tuned against one fixture in one menu has repeatedly turned out to be wrong in the other.
