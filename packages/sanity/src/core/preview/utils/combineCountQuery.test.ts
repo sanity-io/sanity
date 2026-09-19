@@ -1,69 +1,42 @@
 import {describe, expect, it} from 'vitest'
 
 import {
+  COMBINED_COUNT_QUERY_MEMBER_SIZE,
   combineCountQuery,
   type CountDescriptor,
   demuxCountResult,
-  estimateCombinedCountQuerySize,
 } from './combineCountQuery'
 
 describe('combineCountQuery', () => {
   it('namespaces each descriptor by index to avoid param collisions', () => {
-    const {params} = combineCountQuery([
-      {filter: '_type == $type', params: {type: 'author'}},
-      {filter: '_type == $type', params: {type: 'book'}},
-    ])
+    const {params} = combineCountQuery([{type: 'author'}, {type: 'book'}])
 
     expect(params).toEqual({c0_type: 'author', c1_type: 'book'})
   })
 
-  it('rewrites $type to $c0_type in the filter', () => {
-    const {query} = combineCountQuery([{filter: '_type == $type', params: {type: 'author'}}])
+  it('carries the type name as a param, never as query text', () => {
+    const {query} = combineCountQuery([{type: 'author'}])
 
     expect(query).toContain('_type == $c0_type')
-    expect(query).not.toContain('$type')
+    expect(query).not.toContain('author')
   })
 
   it('keys the projection by the descriptor index', () => {
-    const {query} = combineCountQuery([
-      {filter: '_type == $type', params: {type: 'author'}},
-      {filter: 'defined(title)', params: {}},
-    ])
+    const {query} = combineCountQuery([{type: 'author'}, {type: 'book'}])
 
-    expect(query).toBe('{"0": count(*[_type == $c0_type]),"1": count(*[defined(title)])}')
-  })
-
-  it('namespaces every token in a multi-token filter', () => {
-    const {query, params} = combineCountQuery([
-      {filter: '_type == $type && category == $category', params: {type: 'post', category: 'news'}},
-    ])
-
-    expect(query).toContain('_type == $c0_type && category == $c0_category')
-    expect(params).toEqual({c0_type: 'post', c0_category: 'news'})
-  })
-
-  it('namespaces param keys without touching their values', () => {
-    const {params} = combineCountQuery([
-      {filter: '_type in $types', params: {types: ['a', 'b'], nested: {deep: true}}},
-    ])
-
-    expect(params).toEqual({c0_types: ['a', 'b'], c0_nested: {deep: true}})
+    expect(query).toBe('{"0": count(*[_type == $c0_type]),"1": count(*[_type == $c1_type])}')
   })
 })
 
-describe('estimateCombinedCountQuerySize', () => {
-  it.each([1, 50, 300, 587])(
+describe('COMBINED_COUNT_QUERY_MEMBER_SIZE', () => {
+  it.each([1, 50, 300, 286])(
     'sums to an upper bound on the real generated query length for %i descriptors',
     (memberCount) => {
       const descriptors: CountDescriptor[] = Array.from({length: memberCount}, () => ({
-        filter: '_type == $type',
-        params: {type: 'someType'},
+        type: 'someType',
       }))
 
-      const estimatedTotal = descriptors.reduce(
-        (total, descriptor) => total + estimateCombinedCountQuerySize(descriptor),
-        0,
-      )
+      const estimatedTotal = memberCount * COMBINED_COUNT_QUERY_MEMBER_SIZE
 
       expect(estimatedTotal).toBeGreaterThanOrEqual(combineCountQuery(descriptors).query.length)
     },

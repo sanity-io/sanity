@@ -35,12 +35,11 @@ beforeEach(() => {
   vi.clearAllMocks()
   setTabVisibility('visible')
   countSubjects = new Map()
-  observeDocumentCount = vi.fn((filter: string, params: {type: string}) => {
-    expect(filter).toBe('_type == $type')
-    const existing = countSubjects.get(params.type)
+  observeDocumentCount = vi.fn((typeName: string) => {
+    const existing = countSubjects.get(typeName)
     if (existing) return existing
     const subject = new Subject<number>()
-    countSubjects.set(params.type, subject)
+    countSubjects.set(typeName, subject)
     return subject
   })
   mockUseDocumentPreviewStore.mockReturnValue({
@@ -54,18 +53,15 @@ afterEach(() => {
 })
 
 describe('useListPaneCounts', () => {
-  it('authors the whole-type filter itself, from the type the descriptor names', async () => {
+  it('passes the descriptor type name straight through to unstable_observeDocumentCount', async () => {
     const items = [listItem('featured-authors', 'author')]
     renderHook(() => useListPaneCounts(items, true))
 
     await waitFor(() => expect(observeDocumentCount).toHaveBeenCalled())
 
-    expect(observeDocumentCount).toHaveBeenCalledWith(
-      '_type == $type',
-      {type: 'author'},
-      ['drafts'],
-      {tag: 'structure.list-pane-counts'},
-    )
+    expect(observeDocumentCount).toHaveBeenCalledWith('author', ['drafts'], {
+      tag: 'structure.list-pane-counts',
+    })
   })
 
   it('emits a record of counts from the observer emissions, keeping a resolved 0 as 0', async () => {

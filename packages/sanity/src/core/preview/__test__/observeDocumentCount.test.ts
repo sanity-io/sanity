@@ -16,12 +16,23 @@ interface FetchCall {
   tag: string | undefined
 }
 
-function parseFilters(query: string): string[] {
-  const matches = query.match(/count\(\*\[(.*?)\]\)/g) ?? []
-  return matches.map((match) => match.replace(/^count\(\*\[/, '').replace(/\]\)$/, ''))
+const TYPE_PARAM_PATTERN = /^c(\d+)_type$/
+
+function resolveCountsFromParams(
+  params: Record<string, unknown>,
+  countForType: (typeName: string) => number,
+): Record<string, number> {
+  return Object.entries(params).reduce<Record<string, number>>((accumulator, [key, value]) => {
+    const match = key.match(TYPE_PARAM_PATTERN)
+    if (!match) {
+      return accumulator
+    }
+    const [, projectionIndex] = match
+    return {...accumulator, [projectionIndex]: countForType(value as string)}
+  }, {})
 }
 
-function createMockClient(countForFilter: (filter: string) => number) {
+function createMockClient(countForType: (typeName: string) => number) {
   const fetchCalls: FetchCall[] = []
   const client = {
     observable: {
@@ -31,34 +42,27 @@ function createMockClient(countForFilter: (filter: string) => number) {
         options: {perspective?: StackablePerspective[]; tag?: string},
       ) => {
         fetchCalls.push({query, params, perspective: options?.perspective, tag: options?.tag})
-        const result = parseFilters(query).reduce<Record<string, number>>(
-          (accumulator, filterText, index) => ({
-            ...accumulator,
-            [String(index)]: countForFilter(filterText),
-          }),
-          {},
-        )
-        return of(result)
+        return of(resolveCountsFromParams(params, countForType))
       },
     },
   }
   return {client: client as unknown as SanityClient, fetchCalls}
 }
 
-const AUTHOR_FILTER = '_type == "author"'
-const BOOK_FILTER = '_type == "book"'
+const AUTHOR_TYPE = 'author'
+const BOOK_TYPE = 'book'
 
-function countForFilter(filterText: string): number {
-  if (filterText.includes('author')) {
+function countForType(typeName: string): number {
+  if (typeName === AUTHOR_TYPE) {
     return 5
   }
-  if (filterText.includes('book')) {
+  if (typeName === BOOK_TYPE) {
     return 3
   }
   return 0
 }
 
-function setup(countFor: (filter: string) => number = countForFilter) {
+function setup(countFor: (typeName: string) => number = countForType) {
   const {client, fetchCalls} = createMockClient(countFor)
   const invalidationChannel = new Subject<InvalidationChannelEvent>()
 
@@ -73,30 +77,15 @@ function mutationEvent(documentId: string): InvalidationChannelEvent {
   return {type: 'mutation', documentId, visibility: 'query'}
 }
 
-function buildDescriptorFilter(index: number, targetLength: number): string {
-  const marker = `_type == "type${index}"`
-  const paddingLength = Math.max(0, targetLength - marker.length - 1)
-  return `${marker} ${'a'.repeat(paddingLength)}`
-}
-
-function countByEmbeddedTypeIndex(filterText: string): number {
-  const match = filterText.match(/_type == "type(\d+)"/)
+function countByEmbeddedTypeIndex(typeName: string): number {
+  const match = typeName.match(/^type(\d+)$/)
   return match ? (Number(match[1]) + 1) * 7 : 0
 }
 
-// Filters short enough that the projection key and param namespacing dominate the query size, so an
-// under-estimate surfaces instead of hiding in the noise.
-const REALISTIC_SHORT_DESCRIPTORS = Array.from({length: 400}, (_unused, index) => ({
-  filter: '_type == $type',
-  params: {type: `type${index}`},
-}))
-
-// Each filter takes over a third of the query-size budget, so at most two fit in a chunk and five
-// descriptors must span several queries. Per-descriptor projection overhead only pushes toward more
-// chunks, so the split holds without the test having to mirror that constant.
-const CHUNK_TEST_FILTERS = Array.from({length: 5}, (_unused, index) =>
-  buildDescriptorFilter(index, Math.floor(MAX_DOCUMENT_ID_CHUNK_SIZE / 2.5)),
-)
+// The type name always travels as a param, so a combined query's length no longer depends on it -
+// only the descriptor count does. 400 descriptors comfortably exceeds a chunk's ~286-member budget,
+// forcing a split across multiple queries.
+const MANY_TYPE_NAMES = Array.from({length: 400}, (_unused, index) => `type${index}`)
 
 describe('observeDocumentCount', () => {
   beforeEach(() => {
@@ -110,10 +99,10 @@ describe('observeDocumentCount', () => {
   it('shares one cache entry and one query for identical descriptors', async () => {
     const {fetchCalls, invalidationChannel, observe} = setup()
 
-    expect(observe(AUTHOR_FILTER, {}, [])).toBe(observe(AUTHOR_FILTER, {}, []))
+    expect(observe(AUTHOR_TYPE, [])).toBe(observe(AUTHOR_TYPE, []))
 
-    const subscriptionOne = observe(AUTHOR_FILTER, {}, []).subscribe()
-    const subscriptionTwo = observe(AUTHOR_FILTER, {}, []).subscribe()
+    const subscriptionOne = observe(AUTHOR_TYPE, []).subscribe()
+    const subscriptionTwo = observe(AUTHOR_TYPE, []).subscribe()
 
     invalidationChannel.next({type: 'connected'})
     await vi.advanceTimersByTimeAsync(BATCH_DEBOUNCE_MS)
@@ -126,8 +115,8 @@ describe('observeDocumentCount', () => {
   it('merges two different descriptors requested in the same tick into one combined query', async () => {
     const {fetchCalls, invalidationChannel, observe} = setup()
 
-    const subscriptionAuthor = observe(AUTHOR_FILTER, {}, []).subscribe()
-    const subscriptionBook = observe(BOOK_FILTER, {}, []).subscribe()
+    const subscriptionAuthor = observe(AUTHOR_TYPE, []).subscribe()
+    const subscriptionBook = observe(BOOK_TYPE, []).subscribe()
 
     invalidationChannel.next({type: 'connected'})
     await vi.advanceTimersByTimeAsync(BATCH_DEBOUNCE_MS)
@@ -135,8 +124,9 @@ describe('observeDocumentCount', () => {
     subscriptionBook.unsubscribe()
 
     expect(fetchCalls).toHaveLength(1)
-    expect(fetchCalls[0].query).toContain('_type == "author"')
-    expect(fetchCalls[0].query).toContain('_type == "book"')
+    expect(Object.values(fetchCalls[0].params)).toEqual(
+      expect.arrayContaining([AUTHOR_TYPE, BOOK_TYPE]),
+    )
   })
 
   it('demuxes the combined result back to each caller', async () => {
@@ -144,12 +134,10 @@ describe('observeDocumentCount', () => {
 
     const authorEmissions: number[] = []
     const bookEmissions: number[] = []
-    const subscriptionAuthor = observe(AUTHOR_FILTER, {}, []).subscribe((count) =>
+    const subscriptionAuthor = observe(AUTHOR_TYPE, []).subscribe((count) =>
       authorEmissions.push(count),
     )
-    const subscriptionBook = observe(BOOK_FILTER, {}, []).subscribe((count) =>
-      bookEmissions.push(count),
-    )
+    const subscriptionBook = observe(BOOK_TYPE, []).subscribe((count) => bookEmissions.push(count))
 
     invalidationChannel.next({type: 'connected'})
     await vi.advanceTimersByTimeAsync(BATCH_DEBOUNCE_MS)
@@ -163,13 +151,13 @@ describe('observeDocumentCount', () => {
   it('evicts the cache entry on last unsubscribe so a fresh subscribe rebuilds', async () => {
     const {fetchCalls, invalidationChannel, observe} = setup()
 
-    const firstInstance = observe(AUTHOR_FILTER, {}, [])
+    const firstInstance = observe(AUTHOR_TYPE, [])
     const firstSubscription = firstInstance.subscribe()
     invalidationChannel.next({type: 'connected'})
     await vi.advanceTimersByTimeAsync(BATCH_DEBOUNCE_MS)
     firstSubscription.unsubscribe()
 
-    const secondInstance = observe(AUTHOR_FILTER, {}, [])
+    const secondInstance = observe(AUTHOR_TYPE, [])
     expect(secondInstance).not.toBe(firstInstance)
 
     const secondSubscription = secondInstance.subscribe()
@@ -183,7 +171,7 @@ describe('observeDocumentCount', () => {
   it('fetches on a connected event and refetches on a mutation event', async () => {
     const {fetchCalls, invalidationChannel, observe} = setup()
 
-    const subscription = observe(AUTHOR_FILTER, {}, []).subscribe()
+    const subscription = observe(AUTHOR_TYPE, []).subscribe()
 
     invalidationChannel.next({type: 'connected'})
     await vi.advanceTimersByTimeAsync(BATCH_DEBOUNCE_MS)
@@ -199,8 +187,8 @@ describe('observeDocumentCount', () => {
   it('fetches different perspectives requested in one tick as separate queries', async () => {
     const {fetchCalls, invalidationChannel, observe} = setup()
 
-    const subscriptionPublished = observe(AUTHOR_FILTER, {}, ['published']).subscribe()
-    const subscriptionDrafts = observe(AUTHOR_FILTER, {}, ['drafts']).subscribe()
+    const subscriptionPublished = observe(AUTHOR_TYPE, ['published']).subscribe()
+    const subscriptionDrafts = observe(AUTHOR_TYPE, ['drafts']).subscribe()
 
     invalidationChannel.next({type: 'connected'})
     await vi.advanceTimersByTimeAsync(BATCH_DEBOUNCE_MS)
@@ -213,29 +201,12 @@ describe('observeDocumentCount', () => {
     )
   })
 
-  it('splits a perspective group into multiple chunked queries once descriptors exceed the max query size, demuxing every descriptor to its own count', async () => {
+  it('splits a perspective group into multiple chunked queries once descriptors exceed the max query size, demuxing every descriptor to its own count and keeping every query at or under the max size', async () => {
     const {fetchCalls, invalidationChannel, observe} = setup(countByEmbeddedTypeIndex)
 
-    const emissionsByIndex = CHUNK_TEST_FILTERS.map(() => [] as number[])
-    const subscriptions = CHUNK_TEST_FILTERS.map((descriptorFilter, index) =>
-      observe(descriptorFilter, {}, []).subscribe((count) => emissionsByIndex[index].push(count)),
-    )
-
-    invalidationChannel.next({type: 'connected'})
-    await vi.advanceTimersByTimeAsync(BATCH_DEBOUNCE_MS)
-    subscriptions.forEach((subscription) => subscription.unsubscribe())
-
-    expect(fetchCalls.length).toBeGreaterThan(1)
-    emissionsByIndex.forEach((emissions, index) => {
-      expect(emissions).toEqual([(index + 1) * 7])
-    })
-  })
-
-  it('keeps every chunked query at or under the max size for a large group of short, realistic filters', async () => {
-    const {fetchCalls, invalidationChannel, observe} = setup()
-
-    const subscriptions = REALISTIC_SHORT_DESCRIPTORS.map(({filter: descriptorFilter, params}) =>
-      observe(descriptorFilter, params, []).subscribe(),
+    const emissionsByIndex = MANY_TYPE_NAMES.map(() => [] as number[])
+    const subscriptions = MANY_TYPE_NAMES.map((typeName, index) =>
+      observe(typeName, []).subscribe((count) => emissionsByIndex[index].push(count)),
     )
 
     invalidationChannel.next({type: 'connected'})
@@ -246,16 +217,19 @@ describe('observeDocumentCount', () => {
     fetchCalls.forEach((call) => {
       expect(call.query.length).toBeLessThanOrEqual(MAX_DOCUMENT_ID_CHUNK_SIZE)
     })
+    emissionsByIndex.forEach((emissions, index) => {
+      expect(emissions).toEqual([(index + 1) * 7])
+    })
   })
 
   it('does not re-emit to subscribers when an invalidation refetch resolves to the same count, but does when the count changes', async () => {
     let authorCount = 5
-    const {invalidationChannel, observe} = setup((filterText) =>
-      filterText.includes('author') ? authorCount : 0,
+    const {invalidationChannel, observe} = setup((typeName) =>
+      typeName === AUTHOR_TYPE ? authorCount : 0,
     )
 
     const emissions: number[] = []
-    const subscription = observe(AUTHOR_FILTER, {}, []).subscribe((count) => emissions.push(count))
+    const subscription = observe(AUTHOR_TYPE, []).subscribe((count) => emissions.push(count))
 
     invalidationChannel.next({type: 'connected'})
     await vi.advanceTimersByTimeAsync(BATCH_DEBOUNCE_MS)

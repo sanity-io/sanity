@@ -14,9 +14,6 @@ import {type PaneListItem, type PaneListItemDivider} from '../../types'
 
 const COUNTS_TAG = 'structure.list-pane-counts'
 
-/** The only filter a list pane count is ever fetched with: a list item names a type, never a query. */
-const COUNT_FILTER = '_type == $type'
-
 type ListPaneCounts = Record<string, number>
 
 const EMPTY_COUNTS: ListPaneCounts = {}
@@ -57,12 +54,7 @@ function observePaneCounts(
   return combineLatest(
     descriptors.map((descriptor) =>
       documentPreviewStore
-        .unstable_observeDocumentCount(
-          COUNT_FILTER,
-          {type: descriptor.typeName},
-          perspectiveStack,
-          {tag: COUNTS_TAG},
-        )
+        .unstable_observeDocumentCount(descriptor.typeName, perspectiveStack, {tag: COUNTS_TAG})
         .pipe(map((count) => [descriptor.id, count] as const)),
     ),
   ).pipe(map((entries) => Object.fromEntries(entries)))

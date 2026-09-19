@@ -12,14 +12,13 @@ import {
   toArray,
 } from 'rxjs/operators'
 
-import {canonicalHash} from '../util/canonicalHash'
 import {MAX_DOCUMENT_ID_CHUNK_SIZE} from '../util/const'
 import {bufferByByteSize} from './observeVersionDocumentIds'
 import {type InvalidationChannelEvent} from './types'
 import {
+  COMBINED_COUNT_QUERY_MEMBER_SIZE,
   combineCountQuery,
   demuxCountResult,
-  estimateCombinedCountQuerySize,
 } from './utils/combineCountQuery'
 import {debounceCollect} from './utils/debounceCollect'
 
@@ -36,16 +35,14 @@ interface ObserveOptions {
 }
 
 type CollectedArg = [
-  filter: string,
-  params: Record<string, unknown>,
+  type: string,
   perspective: StackablePerspective[],
   observeOptions?: ObserveOptions,
 ]
 
 interface GroupMember {
   originalIndex: number
-  filter: string
-  params: Record<string, unknown>
+  type: string
 }
 
 interface PerspectiveGroup {
@@ -66,10 +63,10 @@ function resolveTag(observeOptions?: ObserveOptions): string {
 /** One query carries one tag, so callers asking for different tags cannot share a batch. */
 function groupByPerspectiveAndTag(collectedArgs: CollectedArg[]): PerspectiveGroup[] {
   const groupsByKey = collectedArgs.reduce(
-    (accumulator, [descriptorFilter, params, perspective, observeOptions], originalIndex) => {
+    (accumulator, [type, perspective, observeOptions], originalIndex) => {
       const tag = resolveTag(observeOptions)
       const groupKey = `${perspective.join(',')}|${tag}`
-      const member: GroupMember = {originalIndex, filter: descriptorFilter, params}
+      const member: GroupMember = {originalIndex, type}
       const existing = accumulator.get(groupKey)
 
       if (existing) {
@@ -110,7 +107,10 @@ function fetchChunk(
 function fetchGroup(client: SanityClient, group: PerspectiveGroup): Observable<DemuxedCount[]> {
   return from(group.members).pipe(
     // Split into chunks small enough that each combined query stays within the max query size.
-    bufferByByteSize<GroupMember>(estimateCombinedCountQuerySize, MAX_DOCUMENT_ID_CHUNK_SIZE),
+    bufferByByteSize<GroupMember>(
+      () => COMBINED_COUNT_QUERY_MEMBER_SIZE,
+      MAX_DOCUMENT_ID_CHUNK_SIZE,
+    ),
     mergeMap(
       (chunk, chunkIndex) =>
         fetchChunk(client, group, chunk).pipe(map((entries) => ({chunkIndex, entries}))),
@@ -148,7 +148,7 @@ function batchFetch(client: SanityClient, collectedArgs: CollectedArg[]): Observ
 }
 
 /**
- * Create a function that observes the number of documents matching a groq filter under a given
+ * Create a function that observes the number of documents of a given schema type under a given
  * perspective.
  *
  * Like `createObserveVersionDocumentIds`, this is driven by the shared global
@@ -162,8 +162,7 @@ export function createObserveDocumentCount(options: {
   client: SanityClient
   invalidationChannel: Observable<InvalidationChannelEvent>
 }): (
-  filter: string,
-  params: Record<string, unknown>,
+  type: string,
   perspective: StackablePerspective[],
   observeOptions?: ObserveOptions,
 ) => Observable<number> {
@@ -177,13 +176,12 @@ export function createObserveDocumentCount(options: {
   const cache = new Map<string, Observable<number>>()
 
   return function observeDocumentCount(
-    descriptorFilter: string,
-    params: Record<string, unknown>,
+    type: string,
     perspective: StackablePerspective[],
     observeOptions?: ObserveOptions,
   ): Observable<number> {
     const tag = resolveTag(observeOptions)
-    const key = `${descriptorFilter}|${canonicalHash(params)}|${perspective.join(',')}|${tag}`
+    const key = JSON.stringify([type, perspective, tag])
     const cachedInstance = cache.get(key)
 
     if (cachedInstance) {
@@ -199,7 +197,7 @@ export function createObserveDocumentCount(options: {
         throttleTime(MUTATION_THROTTLE_MS, undefined, {leading: true, trailing: true}),
       ),
     ).pipe(
-      switchMap(() => fetchCount(descriptorFilter, params, perspective, observeOptions)),
+      switchMap(() => fetchCount(type, perspective, observeOptions)),
       distinctUntilChanged(),
       finalize(() => cache.delete(key)),
       shareReplay({refCount: true, bufferSize: 1}),

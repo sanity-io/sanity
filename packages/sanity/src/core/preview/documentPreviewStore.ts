@@ -147,14 +147,13 @@ export interface DocumentPreviewStore {
   unstable_observeVersionDocumentIds: (publishedId: string) => Observable<string[]>
 
   /**
-   * Observes the number of documents matching a groq filter under a given perspective.
+   * Observes the number of documents of a given schema type under a given perspective.
    *
    * @hidden
    * @beta
    */
   unstable_observeDocumentCount: (
-    filter: string,
-    params: QueryParams,
+    type: string,
     perspective: StackablePerspective[],
     options?: {tag?: string},
   ) => Observable<number>

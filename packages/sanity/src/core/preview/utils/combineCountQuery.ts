@@ -1,9 +1,8 @@
 import {type QueryParams} from '@sanity/client'
 
-/** A single count request: a groq filter and the params its `$token`s resolve against. */
+/** A single count request: the schema type name to count documents of. */
 export interface CountDescriptor {
-  filter: string
-  params: Record<string, unknown>
+  type: string
 }
 
 /** One aggregate query counting every descriptor, keyed by the descriptor's index. */
@@ -12,54 +11,33 @@ export interface CombinedCountQuery {
   params: QueryParams
 }
 
-const GROQ_PARAM_TOKEN = /\$([a-zA-Z_][a-zA-Z0-9_]*)/g
-
-interface NamespacedDescriptor {
-  filter: string
-  params: QueryParams
-}
-
-function namespaceDescriptor(descriptor: CountDescriptor, index: number): NamespacedDescriptor {
-  const prefix = `c${index}_`
-
-  return {
-    filter: descriptor.filter.replace(GROQ_PARAM_TOKEN, `$$${prefix}$1`),
-    params: Object.fromEntries(
-      Object.entries(descriptor.params).map(([key, value]) => [`${prefix}${key}`, value]),
-    ),
-  }
-}
-
 /**
- * Upper bound on the length a descriptor contributes to a combined query, used to size chunks before
- * `combineCountQuery` runs. Assumes a 4-digit projection index, which namespacing never reaches: the
- * smallest possible member (the 19-char projection overhead alone) caps a chunk at ~587 members.
+ * Upper bound on the length a descriptor contributes to a combined query, used to size chunks
+ * before `combineCountQuery` runs. The type name always travels as a param, so every member
+ * contributes the same query text regardless of type name - only the index's digit count varies.
+ * Assumes a 4-digit projection index, which chunking never reaches (`MAX_DOCUMENT_ID_CHUNK_SIZE`
+ * divided by this constant caps a chunk at 286 members).
  *
  * @internal
  */
-export function estimateCombinedCountQuerySize(descriptor: CountDescriptor): number {
-  const tokenCount = descriptor.filter.match(GROQ_PARAM_TOKEN)?.length ?? 0
-
-  return descriptor.filter.length + tokenCount * 'c9999_'.length + '"9999": count(*[]),'.length
-}
+export const COMBINED_COUNT_QUERY_MEMBER_SIZE = '"9999": count(*[_type == $c9999_type]),'.length
 
 /**
- * Combines a set of count descriptors into one aggregate query. Each descriptor's params are
- * namespaced by its index (`$type` becomes `$c0_type`) so independent descriptors never collide
- * in the shared params object, and the projection is keyed by the descriptor's index
- * (`{"0": count(...), "1": count(...)}`), so results demux back by position.
+ * Combines a set of count descriptors into one aggregate query. Each descriptor's type name
+ * travels as an indexed param (`$c0_type`, `$c1_type`, ...) rather than query text, so it can
+ * never collide with another descriptor's param or be misparsed as GROQ syntax. The projection is
+ * keyed by the descriptor's index (`{"0": count(...), "1": count(...)}`), so results demux back by
+ * position.
  *
  * @internal
  */
 export function combineCountQuery(descriptors: CountDescriptor[]): CombinedCountQuery {
-  const namespaced = descriptors.map(namespaceDescriptor)
-
-  const projections = namespaced
-    .map(({filter}, index) => `"${index}": count(*[${filter}])`)
+  const projections = descriptors
+    .map((_descriptor, index) => `"${index}": count(*[_type == $c${index}_type])`)
     .join(',')
 
   const params: QueryParams = Object.fromEntries(
-    namespaced.flatMap(({params: descriptorParams}) => Object.entries(descriptorParams)),
+    descriptors.map((descriptor, index) => [`c${index}_type`, descriptor.type]),
   )
 
   return {query: `{${projections}}`, params}
