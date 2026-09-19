@@ -31,6 +31,19 @@ function namespaceDescriptor(descriptor: CountDescriptor, index: number): Namesp
 }
 
 /**
+ * Upper bound on the length a descriptor contributes to a combined query, used to size chunks before
+ * `combineCountQuery` runs. Assumes a 4-digit projection index, which namespacing never reaches: the
+ * smallest possible member (the 19-char projection overhead alone) caps a chunk at ~587 members.
+ *
+ * @internal
+ */
+export function estimateCombinedCountQuerySize(descriptor: CountDescriptor): number {
+  const tokenCount = descriptor.filter.match(GROQ_PARAM_TOKEN)?.length ?? 0
+
+  return descriptor.filter.length + tokenCount * 'c9999_'.length + '"9999": count(*[]),'.length
+}
+
+/**
  * Combines a set of count descriptors into one aggregate query. Each descriptor's params are
  * namespaced by its index (`$type` becomes `$c0_type`) so independent descriptors never collide
  * in the shared params object, and the projection is keyed by the descriptor's index

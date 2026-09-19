@@ -1,10 +1,10 @@
 import {type ChildResolver} from '../ChildResolver'
 
 /**
- * Brands the child resolver that `getDocumentTypeListItem` attaches, so a list item can recognize
- * it as the canonical whole-type document list. A well-known symbol (`Symbol.for`) survives multiple
- * installed copies of the package, where a module-local symbol would leave the built-in child
- * unrecognized and silently withhold its count.
+ * Brands the child resolver that `getDocumentTypeListItem` attaches with the type name it lists, so
+ * a list item can recognize it as the canonical whole-type document list for that type. A well-known
+ * symbol (`Symbol.for`) survives multiple installed copies of the package, where a module-local
+ * symbol would leave the built-in child unrecognized and silently withhold its count.
  *
  * @internal
  */
@@ -13,18 +13,23 @@ const defaultDocumentTypeChildMarker: unique symbol = Symbol.for(
 )
 
 type DefaultDocumentTypeChild = ChildResolver & {
-  [defaultDocumentTypeChildMarker]: true
+  [defaultDocumentTypeChildMarker]: string
 }
 
 /** @internal */
-export function markDefaultDocumentTypeChild(child: ChildResolver): ChildResolver {
-  return Object.assign(child, {[defaultDocumentTypeChildMarker]: true as const})
+export function markDefaultDocumentTypeChild(
+  child: ChildResolver,
+  typeName: string,
+): ChildResolver {
+  return Object.assign(child, {[defaultDocumentTypeChildMarker]: typeName})
 }
 
 /** @internal */
-export function isDefaultDocumentTypeChild(child: unknown): child is DefaultDocumentTypeChild {
-  return (
-    typeof child === 'function' &&
-    (child as Partial<DefaultDocumentTypeChild>)[defaultDocumentTypeChildMarker] === true
-  )
+export function getDefaultDocumentTypeChildType(child: unknown): string | undefined {
+  if (typeof child !== 'function') {
+    return undefined
+  }
+
+  const brand = (child as Partial<DefaultDocumentTypeChild>)[defaultDocumentTypeChildMarker]
+  return typeof brand === 'string' ? brand : undefined
 }

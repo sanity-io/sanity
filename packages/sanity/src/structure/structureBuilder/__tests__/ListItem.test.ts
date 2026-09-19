@@ -218,4 +218,56 @@ describe('ListItemBuilder count descriptor', () => {
 
     expect(serialized.count).toEqual({type: 'book'})
   })
+
+  it('withholds the descriptor when the schema type is re-pointed away from the branded child', () => {
+    const serialized = S.documentTypeListItem('author').schemaType('book').showCount().serialize()
+
+    expect(serialized.count).toBeUndefined()
+    expect(getWithheldWarnings()).toEqual([
+      expect.stringContaining(
+        'list item "author": its child lists "author" while the item counts "book"',
+      ),
+    ])
+  })
+
+  it('withholds the descriptor when the branded child is transplanted onto a differently-typed item', () => {
+    const serialized = S.listItem()
+      .id('books')
+      .title('Books')
+      .schemaType('book')
+      .child(S.documentTypeListItem('author').getChild()!)
+      .showCount()
+      .serialize()
+
+    expect(serialized.count).toBeUndefined()
+    expect(getWithheldWarnings()).toEqual([
+      expect.stringContaining(
+        'list item "books": its child lists "author" while the item counts "book"',
+      ),
+    ])
+  })
+
+  it('emits the canonical descriptor for a plain document type list item with a customised title', () => {
+    const serialized = S.documentTypeListItem('author').title('Authors').showCount().serialize()
+
+    expect(serialized.count).toEqual(CANONICAL_COUNT)
+    expect(getWithheldWarnings()).toEqual([])
+  })
+
+  it('emits the canonical descriptor for a plain document type list item with a customised id', () => {
+    const serialized = S.documentTypeListItem('author').id('authors').showCount().serialize()
+
+    expect(serialized.count).toEqual(CANONICAL_COUNT)
+    expect(getWithheldWarnings()).toEqual([])
+  })
+
+  it('emits the canonical descriptor for a plain document type list item with a customised icon', () => {
+    const serialized = S.documentTypeListItem('author')
+      .icon(() => null)
+      .showCount()
+      .serialize()
+
+    expect(serialized.count).toEqual(CANONICAL_COUNT)
+    expect(getWithheldWarnings()).toEqual([])
+  })
 })

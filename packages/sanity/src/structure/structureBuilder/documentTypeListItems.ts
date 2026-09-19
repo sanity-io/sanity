@@ -74,7 +74,7 @@ export function getDocumentTypeListItem(
         }
 
         return list
-      }),
+      }, typeName),
     )
 }
 

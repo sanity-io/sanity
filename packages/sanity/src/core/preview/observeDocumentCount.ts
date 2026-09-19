@@ -16,7 +16,11 @@ import {canonicalHash} from '../util/canonicalHash'
 import {MAX_DOCUMENT_ID_CHUNK_SIZE} from '../util/const'
 import {bufferByByteSize} from './observeVersionDocumentIds'
 import {type InvalidationChannelEvent} from './types'
-import {combineCountQuery, demuxCountResult} from './utils/combineCountQuery'
+import {
+  combineCountQuery,
+  demuxCountResult,
+  estimateCombinedCountQuerySize,
+} from './utils/combineCountQuery'
 import {debounceCollect} from './utils/debounceCollect'
 
 const DEFAULT_TAG = 'preview.observe-document-count'
@@ -26,9 +30,6 @@ const BATCH_DEBOUNCE_MS = 100
 const MUTATION_THROTTLE_MS = 1000
 
 const MAX_CONCURRENT_BATCH_FETCHES = 10
-
-/** Approximate per-descriptor overhead added by its projection key and `count()` wrapper. */
-const COUNT_PROJECTION_OVERHEAD = '"000": count(*[]),'.length
 
 interface ObserveOptions {
   tag?: string
@@ -109,10 +110,7 @@ function fetchChunk(
 function fetchGroup(client: SanityClient, group: PerspectiveGroup): Observable<DemuxedCount[]> {
   return from(group.members).pipe(
     // Split into chunks small enough that each combined query stays within the max query size.
-    bufferByByteSize(
-      (member: GroupMember) => member.filter.length + COUNT_PROJECTION_OVERHEAD,
-      MAX_DOCUMENT_ID_CHUNK_SIZE,
-    ),
+    bufferByByteSize<GroupMember>(estimateCombinedCountQuerySize, MAX_DOCUMENT_ID_CHUNK_SIZE),
     mergeMap(
       (chunk, chunkIndex) =>
         fetchChunk(client, group, chunk).pipe(map((entries) => ({chunkIndex, entries}))),

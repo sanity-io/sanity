@@ -1,6 +1,11 @@
 import {describe, expect, it} from 'vitest'
 
-import {combineCountQuery, demuxCountResult} from './combineCountQuery'
+import {
+  combineCountQuery,
+  type CountDescriptor,
+  demuxCountResult,
+  estimateCombinedCountQuerySize,
+} from './combineCountQuery'
 
 describe('combineCountQuery', () => {
   it('namespaces each descriptor by index to avoid param collisions', () => {
@@ -44,6 +49,25 @@ describe('combineCountQuery', () => {
 
     expect(params).toEqual({c0_types: ['a', 'b'], c0_nested: {deep: true}})
   })
+})
+
+describe('estimateCombinedCountQuerySize', () => {
+  it.each([1, 50, 300, 587])(
+    'sums to an upper bound on the real generated query length for %i descriptors',
+    (memberCount) => {
+      const descriptors: CountDescriptor[] = Array.from({length: memberCount}, () => ({
+        filter: '_type == $type',
+        params: {type: 'someType'},
+      }))
+
+      const estimatedTotal = descriptors.reduce(
+        (total, descriptor) => total + estimateCombinedCountQuerySize(descriptor),
+        0,
+      )
+
+      expect(estimatedTotal).toBeGreaterThanOrEqual(combineCountQuery(descriptors).query.length)
+    },
+  )
 })
 
 describe('demuxCountResult', () => {

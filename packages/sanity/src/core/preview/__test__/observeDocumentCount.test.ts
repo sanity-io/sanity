@@ -84,6 +84,13 @@ function countByEmbeddedTypeIndex(filterText: string): number {
   return match ? (Number(match[1]) + 1) * 7 : 0
 }
 
+// Filters short enough that the projection key and param namespacing dominate the query size, so an
+// under-estimate surfaces instead of hiding in the noise.
+const REALISTIC_SHORT_DESCRIPTORS = Array.from({length: 400}, (_unused, index) => ({
+  filter: '_type == $type',
+  params: {type: `type${index}`},
+}))
+
 // Each filter takes over a third of the query-size budget, so at most two fit in a chunk and five
 // descriptors must span several queries. Per-descriptor projection overhead only pushes toward more
 // chunks, so the split holds without the test having to mirror that constant.
@@ -221,6 +228,23 @@ describe('observeDocumentCount', () => {
     expect(fetchCalls.length).toBeGreaterThan(1)
     emissionsByIndex.forEach((emissions, index) => {
       expect(emissions).toEqual([(index + 1) * 7])
+    })
+  })
+
+  it('keeps every chunked query at or under the max size for a large group of short, realistic filters', async () => {
+    const {fetchCalls, invalidationChannel, observe} = setup()
+
+    const subscriptions = REALISTIC_SHORT_DESCRIPTORS.map(({filter: descriptorFilter, params}) =>
+      observe(descriptorFilter, params, []).subscribe(),
+    )
+
+    invalidationChannel.next({type: 'connected'})
+    await vi.advanceTimersByTimeAsync(BATCH_DEBOUNCE_MS)
+    subscriptions.forEach((subscription) => subscription.unsubscribe())
+
+    expect(fetchCalls.length).toBeGreaterThan(1)
+    fetchCalls.forEach((call) => {
+      expect(call.query.length).toBeLessThanOrEqual(MAX_DOCUMENT_ID_CHUNK_SIZE)
     })
   })
 

@@ -11,7 +11,7 @@ import {
   type SerializeOptions,
 } from './StructureNodes'
 import {type StructureContext} from './types'
-import {isDefaultDocumentTypeChild} from './util/defaultDocumentTypeChild'
+import {getDefaultDocumentTypeChildType} from './util/defaultDocumentTypeChild'
 import {getStructureNodeId} from './util/getStructureNodeId'
 import {isSerializable, serializableMarker} from './util/isSerializable'
 import {validateId} from './util/validateId'
@@ -419,8 +419,9 @@ function hasDefaultDocumentTypeQuery(child: DocumentListShapedChild, typeName: s
 
 /**
  * Emits a count descriptor only for a child proven to list every document of the item's schema type:
- * no child, the built-in document type child, or a document list carrying the default whole-type
- * query. Any other child withholds the count, so a badge never contradicts the list it sits on.
+ * no child, the built-in document type child for that same type, or a document list carrying the
+ * default whole-type query. Any other child withholds the count, so a badge never contradicts the
+ * list it sits on.
  */
 function resolveListItemCount(
   child: PartialListItem['child'],
@@ -433,9 +434,18 @@ function resolveListItemCount(
   }
 
   const count: ListItemCount = {type: schemaType.name}
+  const brandedChildType = getDefaultDocumentTypeChildType(child)
 
-  if (child === undefined || isDefaultDocumentTypeChild(child)) {
+  if (child === undefined || brandedChildType === schemaType.name) {
     return count
+  }
+
+  if (brandedChildType !== undefined) {
+    warnCountWithheld(
+      id,
+      `its child lists "${brandedChildType}" while the item counts "${schemaType.name}", and ${COUNT_COVERS_WHOLE_TYPE}`,
+    )
+    return undefined
   }
 
   if (isDocumentListShapedChild(child)) {
