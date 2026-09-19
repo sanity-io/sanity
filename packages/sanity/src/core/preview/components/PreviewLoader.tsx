@@ -1,4 +1,4 @@
-import {type ComponentType, type CSSProperties, useMemo, useState} from 'react'
+import {type ComponentType, type CSSProperties, Suspense, useMemo, useState} from 'react'
 
 import {type PreviewProps} from '../../components/previews/types'
 import {type RenderPreviewCallbackProps} from '../../form/types/renderCallback'
@@ -8,6 +8,7 @@ import {useValuePreview} from '../useValuePreview'
 import {useVisibility} from '../useVisibility'
 import {_HIDE_DELAY} from './_constants'
 import {_extractUploadState} from './_extractUploadState'
+import {_previewComponents} from './_previewComponents'
 
 /**
  * This component is responsible for converting renderPreview() calls into an element.
@@ -91,17 +92,34 @@ export function PreviewLoader(
     return preview?.value?.media as any
   }, [preview, schemaType, uploadState, t])
 
+  // While a lazy preview component loads, show the built-in layout in its placeholder state so the
+  // fallback has the same footprint as the preview that replaces it.
+  const PlaceholderComponent = _previewComponents[layout || 'default'] as ComponentType<
+    Omit<PreviewProps, 'renderDefault'>
+  >
+
   return (
     <div ref={setElement} style={style}>
-      <Component
-        {...restProps}
-        {...(preview?.value || {})}
-        media={media}
-        error={preview?.error}
-        isPlaceholder={preview?.isLoading}
-        layout={layout}
-        schemaType={schemaType}
-      />
+      <Suspense
+        fallback={
+          <PlaceholderComponent
+            isPlaceholder
+            layout={layout}
+            media={media}
+            schemaType={schemaType}
+          />
+        }
+      >
+        <Component
+          {...restProps}
+          {...(preview?.value || {})}
+          media={media}
+          error={preview?.error}
+          isPlaceholder={preview?.isLoading}
+          layout={layout}
+          schemaType={schemaType}
+        />
+      </Suspense>
     </div>
   )
 }
