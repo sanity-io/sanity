@@ -1,7 +1,7 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronUpIcon} from '@sanity/icons/ChevronUp'
-import {Flex} from '@sanity/ui'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -23,7 +23,7 @@ export function ArrayItemsToggle(props: ArrayItemsToggleProps) {
   const {t} = useTranslation()
 
   return (
-    <Flex align="center" gap={2} data-testid="array-items-toggle">
+    <Flex alignItems="center" gap={2} data-testid="array-items-toggle">
       <Rule />
       <Button
         aria-expanded={expanded}
