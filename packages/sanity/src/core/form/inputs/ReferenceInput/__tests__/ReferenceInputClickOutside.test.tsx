@@ -188,7 +188,6 @@ async function renderReferenceInput(options: RenderReferenceInputOptions = {}) {
   const props = {
     changed: false,
     createOptions,
-    editReferenceLinkComponent: () => null,
     elementProps,
     focusPath,
     focused,
