@@ -21,6 +21,12 @@ const mockSchema: SchemaPluginOptions = {
       type: 'document',
       fields: [{name: 'title', type: 'string'}],
     },
+    {
+      name: 'address',
+      title: 'Address',
+      type: 'object',
+      fields: [{name: 'street', type: 'string'}],
+    },
   ],
 }
 
@@ -217,6 +223,20 @@ describe('ListItemBuilder count descriptor', () => {
       .serialize()
 
     expect(serialized.count).toEqual({type: 'book'})
+  })
+
+  it('withholds the descriptor when the schema type is an object rather than a document', () => {
+    const serialized = S.listItem()
+      .title('Address')
+      .id('address')
+      .schemaType('address')
+      .showCount()
+      .serialize()
+
+    expect(serialized.count).toBeUndefined()
+    expect(getWithheldWarnings()).toEqual([
+      expect.stringContaining('list item "address": it resolves no document type to count'),
+    ])
   })
 
   it('withholds the descriptor when the schema type is re-pointed away from the branded child', () => {

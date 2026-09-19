@@ -428,7 +428,7 @@ function resolveListItemCount(
   schemaType: SchemaType | undefined,
   id: string,
 ): ListItemCount | undefined {
-  if (schemaType === undefined) {
+  if (schemaType === undefined || schemaType.type?.name !== 'document') {
     warnCountWithheld(id, 'it resolves no document type to count')
     return undefined
   }
