@@ -25,6 +25,7 @@ import {
 
 import {type View} from '../../structureBuilder/types'
 import {type PaneMenuItem, type PaneMenuItemGroup} from '../../types'
+import {type DocumentHistoryOpenPath} from './__telemetry__/documentPanes.telemetry'
 
 /** @internal */
 export interface DocumentPaneContextValue extends Pick<NodeChronologyProps, 'hasUpstreamVersion'> {
@@ -59,7 +60,7 @@ export interface DocumentPaneContextValue extends Pick<NodeChronologyProps, 'has
   onChange: (event: PatchEvent) => void
   onFocus: (pathOrEvent: Path) => void
   onHistoryClose: () => void
-  onHistoryOpen: () => void
+  onHistoryOpen: (path: DocumentHistoryOpenPath) => void
   onInspectClose: () => void
   onMenuAction: (item: PaneMenuItem) => void
   onPaneClose: () => void
