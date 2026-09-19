@@ -25,10 +25,10 @@ effect of merged work; secondary: leads scanning health weekly.
   visible as such. This is the dashboard's version of the suite's fail-loud
   principle. What the score is (a fixed unthrottled CPU workload in the
   browser) is spelled out once (`CALIBRATION_EXPLAINER`) and reused by every
-  surface that mentions it: chart ⓘ, legend entry, tooltip, run popover.
+  surface that mentions it: chart ⓘ, legend entry, tooltip, run dialog.
 - Runs also record **host metadata** (`runner.os/arch/cpus/memGb/nodeVersion`,
   and from Aug 2026 `cpuModel`, `imageOs`/`imageVersion`, `browserVersion`;
-  `cpuModel` also per-scenario shard). The run popover shows it as a Host
+  `cpuModel` also per-scenario shard). The run dialog shows it as a Host
   section. `cpuModel` is the field that discriminates hosted-runner hardware
   generations (GitHub rotates CPU models under the same vCPU shape — cpus and
   memGb stayed identical across the Aug 2026 host-speed step), and
@@ -88,7 +88,7 @@ effect of merged work; secondary: leads scanning health weekly.
    host) and when comparing branches.
 2. **Run detail** (P2) — click-through from a dot: the PR-comment tables
    (absolute variant), soak slope chart, flake telemetry, run metadata.
-   Today's run popover already carries the investigation hand-offs: the
+   Today's run dialog already carries the investigation hand-offs: the
    GitHub compare of the gap to the previous distinct commit, **Copy A/B vs
    previous run** (the `gh workflow run bench.yml … ab_from/ab_to` command —
    GitHub has no URL that prefills dispatch inputs, so it is a command to
@@ -251,7 +251,7 @@ effect of merged work; secondary: leads scanning health weekly.
    Releases with no run fall back to the tag's own date, which is what every
    marker did before release runs existed. Both kinds render **identically**:
    the distinction is carried by wording (the tooltip says "measured release"
-   vs "release"; the popover says "released as" vs an after/before bracket), not
+   vs "release"; the dialog says "released as" vs an after/before bracket), not
    by a second visual language that would need its own legend entry to explain a
    difference only relevant once you are asking about a specific run. So a chart
    mixes anchored and date-placed markers without looking inconsistent — which
@@ -267,7 +267,7 @@ effect of merged work; secondary: leads scanning health weekly.
    an unanchored marker claims only "this release shipped here", never "this run
    measured this release".
 
-   The **run popover** states release context for every run. A release run says
+   The **run dialog** states release context for every run. A release run says
    "released as vX.Y.Z" — the one case where a number attributes to a shipped
    version. Every other run gets the bracket (`releaseContextAt`): newest
    release at or before it, and the next one after ("after v6.10.1 / not yet
@@ -366,6 +366,79 @@ effect of merged work; secondary: leads scanning health weekly.
    Test Studio link opens at — checking one repro across releases is a click per
    row.
 
+9. **Comments** — the place an investigation's findings get recorded, so the
+   next person to hover the same step reads the conclusion instead of redoing
+   the work. These are the studio's **native comments**: `comment` documents in
+   the workspace's comments addon dataset, targeting the commit's `gitCommit`
+   document (`git-commit-<sha>`). Radar adds no document type and no write
+   path of its own — the run dialog and the Bisect stepper mount the studio's
+   `CommentsProvider` and `CommentsList` on that document, which brings
+   threads, replies, edits, reactions, resolve and, the reason for choosing
+   it, **@mentions with notification emails**: a finding can pull a colleague
+   into the investigation from the chart. The same threads show in the commit
+   document's comments inspector in the Structure tool, and notification
+   links open it there (a place the studio router can always resolve).
+
+   Pinned to the **commit** rather than to a run or a chart point because that
+   is what a finding is about: "this commit regressed keystroke latency" is
+   true on every chart that plots the commit and in every bisect that visits
+   it. The cost, accepted: only commits with a `gitCommit` document can carry
+   a thread, so PR-branch runs (never synced) offer no comments. And the
+   studio has no document-level comments (a thread needs a field path that
+   resolves in the schema), so `gitCommit` carries a value-less `findings`
+   field for the threads to hang on; the same threads show on that field when
+   the commit document is opened in the Structure tool.
+
+   A thread can be **scoped to one chart**. A finding reached through one
+   metric's chart is usually about that metric, and a marker for it on all
+   40+ small multiples was noise — so the run dialog pins new threads to its
+   chart by default (a checkbox unpins, for a finding about the commit as a
+   whole: a runner change, a harness bump). The scope is `TrendSeries.key` in
+   the comment's `context.payload.seriesKey`, patched onto the document right
+   after the studio's create operation (which writes a fixed payload) and read
+   back by both the dialog (which hides other charts' threads) and the
+   aggregate. A scoped thread is still a thread on the commit: the bisect
+   stepper and the Structure inspector show every one.
+
+   On a chart a commented commit is a small comment bubble in the top gutter,
+   next to the release ticks — the same "annotation stays out of the plot"
+   rule, and the one annotation that takes a hue (primary): a person left it
+   on purpose for the next reader, so it has to be findable among the neutral
+   reference marks. Shape and position keep it apart from the tick it often
+   shares an x with. The marker anchors to the run that measured the commit
+   (`resolveCommentPositions`, the same resolution the release markers use)
+   and falls back to the commit's date for commits no run measured — a merge
+   commented from a bisect still lands in the right place on the trend.
+   A commit no run measured gets a dashed, lighter bubble, and clicking it
+   opens the threads on their own since there is no run dialog to open.
+   Hovering the run names the threads (author and an excerpt each); the
+   dialog has them in full. A `comments` legend entry toggles the layer
+   grid-wide like the others. The investigation prompt includes the threads
+   on the commit, so an agent builds on what was already found.
+
+   The markers need every comment at once, which the studio's per-document
+   store does not give: `useLiveCommitComments` listens to the addon dataset
+   for all `gitCommit`-targeted comments and joins each commit's date from the
+   bench dataset in a second realtime query (the two datasets cannot join in
+   GROQ). It reaches the charts, the legend and the bisect timeline through
+   context (`CommitCommentsContext`) rather than props — one array read in
+   five places that never varies within a tool. Debug data sources have no
+   comments: their shas have no `gitCommit` document to comment on.
+
+   The comments API is `@beta @hidden` in `sanity`; Radar lives in the
+   monorepo, so a breaking change there fails this build rather than a
+   deployed studio. Run detail is a dialog, not a popover anchored at the
+   clicked point: the panel's height changes after it opens (threads load, the
+   composer grows) and a popover re-positioned itself on every change, so the
+   panel jumped while it was being read. Dialog also guards its dismissal by
+   the layer stack, so the comments UI's own popovers and dialogs can open on
+   top of it. The provider is also
+   wrapped in an error boundary (message and a retry) — a failure on one
+   commit must cost that commit's panel, not the tool. The one such failure
+   met so far, a comment stored with an empty field path, is fixed at the
+   source: `buildCommentBreadcrumbs` in `sanity` treats an unparseable path as
+   "on the document" so the thread stays listed and deletable.
+
 ## Architecture
 
 - A custom **tool pane** (`defineTool`) in this studio, registered _first_ so
@@ -398,4 +471,4 @@ effect of merged work; secondary: leads scanning health weekly.
   error rates) as sibling document types with their own trends tabs — the
   `gitCommit`/`gitTag` documents (landed Aug 2026) are the join surface these
   build on. Release markers (above) are the first consumer, shipped; commit
-  subjects in the run popover are the obvious next one.
+  subjects in the run dialog are the obvious next one.

@@ -14,22 +14,26 @@ use `sanity-bench`.
 
 ## Tools (URL path = tool name)
 
-| Tool        | Path           | Shows                                                                                                                                                                              |
-| ----------- | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Trends      | `/trends`      | Small multiples per scenario·metric on main: p50 line, p75–p90 band, host calibration (dotted), drift baseline overlay (dashed before / solid after), release ticks. Default view. |
-| Releases    | `/releases`    | Every synced `v*` tag: dist-tags, downloads, changelog links, regressions bisect attributed to it.                                                                                 |
-| Bisect      | `/bisect`      | Guided first-parent bisect over `gitCommit` using each commit's test-studio preview build.                                                                                         |
-| Diagnostics | `/diagnostics` | Paste a studio diagnostics JSON, render it (in-studio twin of `dev/studio-diagnostics-viewer`).                                                                                    |
-| Structure   | `/structure`   | Raw documents.                                                                                                                                                                     |
-| Comparisons | `/comparisons` | Stored `mode: "ab"` runs from A/B dispatches, verdict per metric.                                                                                                                  |
+| Tool        | Path           | Shows                                                                                                                                                                                               |
+| ----------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Trends      | `/trends`      | Small multiples per scenario·metric on main: p50 line, p75–p90 band, host calibration (dotted), drift baseline overlay (dashed before / solid after), release ticks, comment bubbles. Default view. |
+| Releases    | `/releases`    | Every synced `v*` tag: dist-tags, downloads, changelog links, regressions bisect attributed to it.                                                                                                  |
+| Bisect      | `/bisect`      | Guided first-parent bisect over `gitCommit` using each commit's test-studio preview build; comments can be left on the commit under test and on the culprit.                                        |
+| Diagnostics | `/diagnostics` | Paste a studio diagnostics JSON, render it (in-studio twin of `dev/studio-diagnostics-viewer`).                                                                                                     |
+| Structure   | `/structure`   | Raw documents.                                                                                                                                                                                      |
+| Comparisons | `/comparisons` | Stored `mode: "ab"` runs from A/B dispatches, verdict per metric.                                                                                                                                   |
 
 Trends URL state, all shareable: `?range=30|90|all`, `?branches=main,<branch>`,
 `?layers=-band,-calibration` (hide layers), `?tab=<metric group>`, `?max=<series key>` (one chart maximized).
 Releases: `?path=<test-studio path>` (the path field under the header) opens every release's Test Studio link at that path.
-Clicking a point opens the run popover: value, percentiles, host, release context, links, and
+Clicking a point opens the run dialog: value, percentiles, host, release context, links, and
 under "Suspect a regression?" the GitHub compare of the gap, **Copy A/B vs previous run** (the
 `gh workflow run bench.yml … ab_from/ab_to` command) and **Copy investigation prompt** (a
-paste-ready brief for an agent).
+paste-ready brief for an agent, including any comment threads already on the commit). A
+**Comments** section holds the studio's native comment threads on the commit's `gitCommit`
+document (replies, reactions, resolve, @mentions with email notification) — the same threads the
+commit document shows in the Structure tool's comments inspector. Main-branch commits only: a
+PR-branch run has no `gitCommit` document to comment on.
 
 ## The data
 
@@ -46,6 +50,7 @@ dashes, no dots (a dot makes an id a path like `drafts.x`, which the API scopes 
 | `gitTag`        | same, releases and a daily npm floor           | `git-tag-v6-10-1`                               | `tag`, `sha`, `taggedAt`, `major/minor/patch/prerelease`, `npm{distTags, weeklyDownloads, publishedAt}`                                                                                                                                                                                                                                                                                                                                                                          |
 | `bisectSession` | Bisect tool (user-owned, liveEdit)             | `bisect-session-<uuid>`                         | `good/bad{sha}`, `releasesOnly`, `reproPath` (test-studio path appended to every preview URL), `marks[]`, `result{firstBadSha, suspectShas, regression}`                                                                                                                                                                                                                                                                                                                         |
 | `driftAck`      | Trends drift feed (user-owned)                 | `drift-ack-<slug of metricKey:branch>`          | `state` (`silenced`/`snoozed`/`fixed`), `baselineValue`, `until`                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `comment`       | Studio comments (addon dataset, user-owned)    | studio-assigned uuid                            | Native studio comments on a `gitCommit` document's `findings` field: `target.document._ref` = `git-commit-<sha>`, `target.path.field` = `findings`, `context.payload.seriesKey` = the one chart the thread is about (absent = every chart), `threadId`, `parentCommentId`, `status`, `authorId`, `message` (Portable Text). Live in the workspace's comments addon dataset, not in `bench`.                                                                                      |
 
 Rules that every consumer follows (the dashboard's queries are the reference, `tools/*/data.ts`):
 
