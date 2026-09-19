@@ -374,6 +374,95 @@ describe('presence-store', () => {
     })
   })
 
+  describe('debug: faking presence explicitly', () => {
+    it('shows a faked user at the given location and moves them when faked again', async () => {
+      const {store} = createHarness()
+      const {latest, subscription} = collect<DocumentPresence[]>(store.documentPresence('doc-1'))
+
+      store.debug.fakePresence('alice', [location('doc-1', {path: ['title']})])
+      await settle()
+      expect(latest()).toMatchObject([
+        {user: {id: 'alice'}, sessionId: 'fake-alice', path: ['title']},
+      ])
+
+      store.debug.fakePresence('alice', [location('doc-1', {path: ['body']})])
+      await settle()
+      expect(latest()).toMatchObject([{user: {id: 'alice'}, path: ['body']}])
+      subscription.unsubscribe()
+    })
+
+    it('carries an editor selection through, so a fake user can be placed at a cursor', async () => {
+      const {store} = createHarness()
+      const {latest, subscription} = collect<DocumentPresence[]>(store.documentPresence('doc-1'))
+
+      const selection = {
+        anchor: {path: [{_key: 'a'}, 'children', {_key: 'b'}], offset: 3},
+        focus: {path: [{_key: 'a'}, 'children', {_key: 'b'}], offset: 3},
+        backward: false,
+      }
+      store.debug.fakePresence('alice', [
+        location('doc-1', {path: ['body', {_key: 'a'}, 'children', {_key: 'b'}], selection}),
+      ])
+      await settle()
+
+      expect(latest()).toMatchObject([
+        {
+          user: {id: 'alice'},
+          sessionId: 'fake-alice',
+          path: ['body', {_key: 'a'}, 'children', {_key: 'b'}],
+          selection,
+        },
+      ])
+      subscription.unsubscribe()
+    })
+
+    it('keeps fake sessions apart from real ones of the same user', async () => {
+      const {store, incoming$} = createHarness()
+      const {latest, subscription} = collect<DocumentPresence[]>(store.documentPresence('doc-1'))
+
+      incoming$.next(stateEvent('alice', 'session-alice', [location('doc-1', {path: ['title']})]))
+      store.debug.fakePresence('alice', [location('doc-1', {path: ['body']})])
+      await settle()
+
+      expect(latest().map((p) => [p.sessionId, p.path])).toEqual([
+        ['session-alice', ['title']],
+        ['fake-alice', ['body']],
+      ])
+      subscription.unsubscribe()
+    })
+
+    it('removes one or all faked users', async () => {
+      const {store} = createHarness()
+      const {latest, subscription} = collect<DocumentPresence[]>(store.documentPresence('doc-1'))
+
+      store.debug.fakePresence('alice', [location('doc-1')])
+      store.debug.fakePresence('bob', [location('doc-1')])
+      store.debug.fakePresence('carol', [location('doc-1')])
+      await settle()
+      expect(latest().map((p) => p.user.id)).toEqual(['alice', 'bob', 'carol'])
+
+      store.debug.removeFakePresence('bob')
+      await settle()
+      expect(latest().map((p) => p.user.id)).toEqual(['alice', 'carol'])
+
+      store.debug.removeFakePresence()
+      await settle()
+      expect(latest()).toEqual([])
+      subscription.unsubscribe()
+    })
+
+    it('exposes the own location as reported through setLocation', () => {
+      const {store} = createHarness()
+      const {latest, subscription} = collect<PresenceLocation[]>(store.debug.ownLocation$)
+
+      expect(latest()).toEqual([])
+      const locations = [location('doc-1', {path: ['title']})]
+      store.setLocation(locations)
+      expect(latest()).toBe(locations)
+      subscription.unsubscribe()
+    })
+  })
+
   describe('connection status', () => {
     it('only listens to presence while connected', async () => {
       const {store, incoming$, connectionStatus$} = createHarness()
