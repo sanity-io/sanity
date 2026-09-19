@@ -83,6 +83,13 @@ describe('Comments', () => {
       void render(<CommentsInputHarness />)
       const $editable = page.getByTestId('comment-input-editable')
       await expect.element($editable).toBeVisible()
+
+      const divider = document.querySelector<HTMLElement>(
+        '#comment-input-root [data-ui="MenuDivider"]',
+      )!
+      const dividerStyle = getComputedStyle(divider)
+      expect(dividerStyle.height).toBe('20px')
+      expect(dividerStyle.width).toBe('1px')
     })
 
     it('Should be able to type into', async () => {
