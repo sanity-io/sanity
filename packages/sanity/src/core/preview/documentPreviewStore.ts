@@ -147,7 +147,8 @@ export interface DocumentPreviewStore {
   unstable_observeVersionDocumentIds: (publishedId: string) => Observable<string[]>
 
   /**
-   * Observes the number of documents of a given schema type under a given perspective.
+   * Observes the number of documents of a given schema type under a given perspective. Pass
+   * `variant` to count as seen through that editing variant, on top of the given perspective.
    *
    * @hidden
    * @beta
@@ -155,7 +156,7 @@ export interface DocumentPreviewStore {
   unstable_observeDocumentCount: (
     type: string,
     perspective: StackablePerspective[],
-    options?: {tag?: string},
+    options?: {tag?: string; variant?: string},
   ) => Observable<number>
 
   /**

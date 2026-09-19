@@ -64,6 +64,22 @@ describe('useListPaneCounts', () => {
     })
   })
 
+  it('passes the selected variant through to unstable_observeDocumentCount', async () => {
+    mockUsePerspective.mockReturnValue({
+      perspectiveStack: ['drafts'],
+      selectedVariantName: 'variant-a',
+    })
+    const items = [listItem('featured-authors', 'author')]
+    renderHook(() => useListPaneCounts(items, true))
+
+    await waitFor(() => expect(observeDocumentCount).toHaveBeenCalled())
+
+    expect(observeDocumentCount).toHaveBeenCalledWith('author', ['drafts'], {
+      tag: 'structure.list-pane-counts',
+      variant: 'variant-a',
+    })
+  })
+
   it('emits a record of counts from the observer emissions, keeping a resolved 0 as 0', async () => {
     const items = [listItem('author'), listItem('book')]
     const {result} = renderHook(() => useListPaneCounts(items, true))
@@ -133,6 +149,25 @@ describe('useListPaneCounts', () => {
 
     const withoutCount: PaneListItem[] = [{type: 'listItem', id: 'author', title: 'author'}]
     rerender({items: withoutCount})
+    await flushTimers()
+
+    expect(result.current).toEqual({})
+  })
+
+  it('does not show the previous type count while the new type count is pending, after an item id is reused with a different schema type', async () => {
+    const withAuthor = [listItem('shared-id', 'author')]
+    const {result, rerender} = renderHook(({items}) => useListPaneCounts(items, true), {
+      initialProps: {items: withAuthor},
+    })
+
+    await waitFor(() => expect(observeDocumentCount).toHaveBeenCalled())
+    act(() => {
+      countSubjects.get('author')?.next(5)
+    })
+    await waitFor(() => expect(result.current).toEqual({'shared-id': 5}))
+
+    const withBook = [listItem('shared-id', 'book')]
+    rerender({items: withBook})
     await flushTimers()
 
     expect(result.current).toEqual({})

@@ -1,7 +1,7 @@
 import {useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {BehaviorSubject, combineLatest, type Observable, of} from 'rxjs'
-import {catchError, distinctUntilChanged, map, scan, switchMap} from 'rxjs/operators'
+import {catchError, distinctUntilChanged, map, scan, startWith, switchMap} from 'rxjs/operators'
 import {
   type DocumentPreviewStore,
   type PerspectiveStack,
@@ -27,6 +27,7 @@ interface CountsInput {
   active: boolean
   descriptors: CountDescriptor[]
   perspectiveStack: PerspectiveStack
+  variant: string | undefined
   countsKey: string
 }
 
@@ -50,11 +51,15 @@ function observePaneCounts(
   documentPreviewStore: DocumentPreviewStore,
   descriptors: CountDescriptor[],
   perspectiveStack: PerspectiveStack,
+  variant: string | undefined,
 ): Observable<ListPaneCounts> {
   return combineLatest(
     descriptors.map((descriptor) =>
       documentPreviewStore
-        .unstable_observeDocumentCount(descriptor.typeName, perspectiveStack, {tag: COUNTS_TAG})
+        .unstable_observeDocumentCount(descriptor.typeName, perspectiveStack, {
+          tag: COUNTS_TAG,
+          variant,
+        })
         .pipe(map((count) => [descriptor.id, count] as const)),
     ),
   ).pipe(map((entries) => Object.fromEntries(entries)))
@@ -74,14 +79,24 @@ function getListPaneCounts(
     ),
     switchMap((input) => {
       const counts$ = input.active
-        ? observePaneCounts(documentPreviewStore, input.descriptors, input.perspectiveStack).pipe(
+        ? observePaneCounts(
+            documentPreviewStore,
+            input.descriptors,
+            input.perspectiveStack,
+            input.variant,
+          ).pipe(
             // catchError stays on this inner stream so the outer pipe keeps reacting to
             // descriptor-set and perspective changes after a failed fetch.
             catchError(() => of<ListPaneCounts>(EMPTY_COUNTS)),
           )
         : of<ListPaneCounts>(EMPTY_COUNTS)
 
-      return counts$.pipe(map((counts): TaggedCounts => ({countsKey: input.countsKey, counts})))
+      // Clears stale badges the instant countsKey changes: combineLatest otherwise holds its
+      // prior emission, tagged with the old key, until the new descriptor set resolves.
+      return counts$.pipe(
+        startWith(EMPTY_COUNTS),
+        map((counts): TaggedCounts => ({countsKey: input.countsKey, counts})),
+      )
     }),
     scan(
       (previous, next) =>
@@ -107,7 +122,7 @@ export function useListPaneCounts(
   enabled = true,
 ): ListPaneCounts {
   const documentPreviewStore = useDocumentPreviewStore()
-  const {perspectiveStack} = usePerspective()
+  const {perspectiveStack, selectedVariantName} = usePerspective()
 
   // Defer the initial fetch off first paint (product decision): the list must paint
   // immediately, badges fill in afterwards.
@@ -133,6 +148,7 @@ export function useListPaneCounts(
   const perspectiveKey = perspectiveStack.join(',')
   const countsKey = [
     perspectiveKey,
+    selectedVariantName ?? '',
     ...descriptors.map((descriptor) => `${descriptor.id}:${descriptor.typeName}`).toSorted(),
   ].join('|')
 
@@ -142,13 +158,14 @@ export function useListPaneCounts(
         active: false,
         descriptors: [],
         perspectiveStack: [],
+        variant: undefined,
         countsKey: '',
       }),
     [],
   )
   useEffect(() => {
-    input$.next({active, descriptors, perspectiveStack, countsKey})
-  }, [input$, active, descriptors, perspectiveStack, countsKey])
+    input$.next({active, descriptors, perspectiveStack, variant: selectedVariantName, countsKey})
+  }, [input$, active, descriptors, perspectiveStack, selectedVariantName, countsKey])
 
   const counts$ = useMemo(
     () => getListPaneCounts(documentPreviewStore, input$),

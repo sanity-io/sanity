@@ -14,6 +14,7 @@ interface FetchCall {
   params: Record<string, unknown>
   perspective: StackablePerspective[] | undefined
   tag: string | undefined
+  variant: string | undefined
 }
 
 const TYPE_PARAM_PATTERN = /^c(\d+)_type$/
@@ -39,12 +40,19 @@ function createMockClient(countForType: (typeName: string) => number) {
       fetch: (
         query: string,
         params: Record<string, unknown>,
-        options: {perspective?: StackablePerspective[]; tag?: string},
+        options: {perspective?: StackablePerspective[]; tag?: string; variant?: string},
       ) => {
-        fetchCalls.push({query, params, perspective: options?.perspective, tag: options?.tag})
+        fetchCalls.push({
+          query,
+          params,
+          perspective: options?.perspective,
+          tag: options?.tag,
+          variant: options?.variant,
+        })
         return of(resolveCountsFromParams(params, countForType))
       },
     },
+    withConfig: () => client,
   }
   return {client: client as unknown as SanityClient, fetchCalls}
 }
@@ -244,5 +252,28 @@ describe('observeDocumentCount', () => {
     subscription.unsubscribe()
 
     expect(emissions).toEqual([5, 6])
+  })
+
+  it('does not share a cache entry between the same descriptor with and without a variant', () => {
+    const {observe} = setup()
+
+    expect(observe(AUTHOR_TYPE, [], {variant: 'variant-a'})).not.toBe(observe(AUTHOR_TYPE, []))
+  })
+
+  it('fetches two variants of the same descriptor requested in one tick as separate queries and passes the variant through to the client', async () => {
+    const {fetchCalls, invalidationChannel, observe} = setup()
+
+    const subscriptionA = observe(AUTHOR_TYPE, [], {variant: 'variant-a'}).subscribe()
+    const subscriptionB = observe(AUTHOR_TYPE, [], {variant: 'variant-b'}).subscribe()
+
+    invalidationChannel.next({type: 'connected'})
+    await vi.advanceTimersByTimeAsync(BATCH_DEBOUNCE_MS)
+    subscriptionA.unsubscribe()
+    subscriptionB.unsubscribe()
+
+    expect(fetchCalls).toHaveLength(2)
+    expect(fetchCalls.map((call) => call.variant)).toEqual(
+      expect.arrayContaining(['variant-a', 'variant-b']),
+    )
   })
 })

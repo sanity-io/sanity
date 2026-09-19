@@ -12,7 +12,9 @@ import {
   toArray,
 } from 'rxjs/operators'
 
+import {versionedClient} from '../studioClient'
 import {MAX_DOCUMENT_ID_CHUNK_SIZE} from '../util/const'
+import {variantApiVersion} from '../variants/util/variantApiVersion'
 import {bufferByByteSize} from './observeVersionDocumentIds'
 import {type InvalidationChannelEvent} from './types'
 import {
@@ -32,6 +34,7 @@ const MAX_CONCURRENT_BATCH_FETCHES = 10
 
 interface ObserveOptions {
   tag?: string
+  variant?: string
 }
 
 type CollectedArg = [
@@ -48,6 +51,7 @@ interface GroupMember {
 interface PerspectiveGroup {
   perspective: StackablePerspective[]
   tag: string
+  variant?: string
   members: GroupMember[]
 }
 
@@ -60,19 +64,20 @@ function resolveTag(observeOptions?: ObserveOptions): string {
   return observeOptions?.tag ?? DEFAULT_TAG
 }
 
-/** One query carries one tag, so callers asking for different tags cannot share a batch. */
-function groupByPerspectiveAndTag(collectedArgs: CollectedArg[]): PerspectiveGroup[] {
+/** One query carries one tag and one variant, so callers asking for different ones cannot share a batch. */
+function groupByPerspectiveVariantAndTag(collectedArgs: CollectedArg[]): PerspectiveGroup[] {
   const groupsByKey = collectedArgs.reduce(
     (accumulator, [type, perspective, observeOptions], originalIndex) => {
       const tag = resolveTag(observeOptions)
-      const groupKey = `${perspective.join(',')}|${tag}`
+      const variant = observeOptions?.variant
+      const groupKey = `${perspective.join(',')}|${tag}|${variant ?? ''}`
       const member: GroupMember = {originalIndex, type}
       const existing = accumulator.get(groupKey)
 
       if (existing) {
         existing.members.push(member)
       } else {
-        accumulator.set(groupKey, {perspective, tag, members: [member]})
+        accumulator.set(groupKey, {perspective, tag, variant, members: [member]})
       }
 
       return accumulator
@@ -89,9 +94,14 @@ function fetchChunk(
   chunk: GroupMember[],
 ): Observable<DemuxedCount[]> {
   const {query, params} = combineCountQuery(chunk)
+  const apiClient = versionedClient(client, variantApiVersion(group.variant))
 
-  return client.observable
-    .fetch<unknown>(query, params, {perspective: group.perspective, tag: group.tag})
+  return apiClient.observable
+    .fetch<unknown>(query, params, {
+      perspective: group.perspective,
+      tag: group.tag,
+      variant: group.variant,
+    })
     .pipe(
       retry({delay: (_error: unknown, attempt) => timer(Math.min(30_000, attempt * 1000))}),
       map((result) => {
@@ -130,7 +140,7 @@ function batchFetch(client: SanityClient, collectedArgs: CollectedArg[]): Observ
     return of([])
   }
 
-  const groups = groupByPerspectiveAndTag(collectedArgs)
+  const groups = groupByPerspectiveVariantAndTag(collectedArgs)
 
   return combineLatest(groups.map((group) => fetchGroup(client, group))).pipe(
     // Realign the per-group results to the original `collectedArgs` order: `debounceCollect`
@@ -181,7 +191,7 @@ export function createObserveDocumentCount(options: {
     observeOptions?: ObserveOptions,
   ): Observable<number> {
     const tag = resolveTag(observeOptions)
-    const key = JSON.stringify([type, perspective, tag])
+    const key = JSON.stringify([type, perspective, tag, observeOptions?.variant])
     const cachedInstance = cache.get(key)
 
     if (cachedInstance) {
