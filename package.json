@@ -26,7 +26,7 @@
     "check": "npm-run-all build --parallel check:*",
     "check:deps": "knip --dependencies",
     "check:format": "oxfmt --check .",
-    "check:oxlint": "oxlint --disable-nested-config --quiet",
+    "check:oxlint": "oxlint --disable-nested-config --quiet && oxlint --config .oxlintrc.examples.json --disable-nested-config --quiet examples",
     "check:test": "pnpm test -- --silent",
     "chore:format:fix": "pnpm format",
     "chore:normalize-versions": "tsx scripts/normalizeDependencyVersions.ts",
