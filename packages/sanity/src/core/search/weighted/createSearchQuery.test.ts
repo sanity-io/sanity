@@ -2,6 +2,7 @@ import {Schema} from '@sanity/schema'
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
 import {describe, expect, it, test} from 'vitest'
 
+import {EXCLUDE_AGENT_VERSIONS_GROQ} from '../common/excludeAgentVersionsFilter'
 import {FINDABILITY_MVI} from '../constants'
 import {
   createSearchQuery,
@@ -325,6 +326,44 @@ describe('createSearchQuery', () => {
         '*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0) && (randomCondition == $customParam)]',
       )
       expect(params.customParam).toEqual('custom')
+    })
+
+    it('should exclude agent versions when perspective is raw', () => {
+      const {query} = createSearchQuery(
+        {
+          query: 'term',
+          types: [testType],
+        },
+        {perspective: 'raw'},
+      )
+
+      expect(query).toContain(EXCLUDE_AGENT_VERSIONS_GROQ)
+    })
+
+    it('should not exclude agent versions when perspective is not raw', () => {
+      const {query} = createSearchQuery(
+        {
+          query: 'term',
+          types: [testType],
+        },
+        {perspective: ['rSummer', 'drafts']},
+      )
+
+      expect(query).not.toContain(EXCLUDE_AGENT_VERSIONS_GROQ)
+    })
+
+    it('should AND agent-version exclusion with an existing filter when perspective is raw', () => {
+      const {query} = createSearchQuery(
+        {
+          query: 'term',
+          types: [testType],
+        },
+        {filter: 'randomCondition == $customParam', perspective: 'raw'},
+      )
+
+      expect(query).toContain(
+        `*[_type in $__types && (_id match $t0 || _type match $t0 || title match $t0) && ${EXCLUDE_AGENT_VERSIONS_GROQ} && (randomCondition == $customParam)]`,
+      )
     })
 
     it('should add configured common limit', () => {
