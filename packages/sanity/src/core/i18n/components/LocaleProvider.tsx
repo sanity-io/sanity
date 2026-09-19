@@ -6,9 +6,21 @@ import {LocaleContext, type LocaleContextValue} from 'sanity/_singletons'
 
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
 import {useSource} from '../../studio/source'
+import {getFallbackI18nInstance} from '../fallback'
 import {defaultLocale} from '../locales'
 import {storePreferredLocale} from '../localeStore'
 import {type Locale} from '../types'
+
+const fallbackI18n = getFallbackI18nInstance()
+
+/**
+ * Provides the synchronous core translations needed before a workspace source is available.
+ *
+ * @internal
+ */
+export function FallbackLocaleProvider({children}: PropsWithChildren) {
+  return <I18nextProvider i18n={fallbackI18n}>{children}</I18nextProvider>
+}
 
 /**
  * @internal
