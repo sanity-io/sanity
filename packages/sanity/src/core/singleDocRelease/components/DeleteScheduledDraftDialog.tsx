@@ -73,7 +73,7 @@ function getDialogDescription(
     }
   }
 
-  // An unresolved version means the read failed, not that nothing is at stake; copying is a no-op.
+  // The version is missing or unreadable; copying is a no-op, so prefer it over claiming nothing is at stake.
   return {
     bodyKey: 'release.dialog.delete-schedule-draft.body-with-choice',
     copy: {visible: false, default: true},
@@ -178,7 +178,7 @@ function DeleteScheduledDraftDialogContent({
           tone: 'critical',
           onClick: handleDeleteSchedule,
           disabled: isDeleting || confirmDisabled,
-          loading: isDeleting || confirmDisabled,
+          loading: isDeleting,
         },
       }}
     >

@@ -27,7 +27,7 @@ export function useUnstableObserveDocument<T extends SanityDocument>(
   const observable = useMemo(
     () =>
       documentPreviewStore.unstable_observeDocument(documentId, apiConfig).pipe(
-        map((document) => ({loading: false, document: document as T})),
+        map((document) => ({loading: false, document: (document ?? null) as T | null})),
         // react-rx rethrows source errors during render; treat an unreadable document as absent.
         catchError((error) => {
           console.error(`Failed to observe document ${documentId}:`, error)

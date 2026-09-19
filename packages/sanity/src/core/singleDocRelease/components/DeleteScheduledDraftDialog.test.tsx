@@ -89,8 +89,8 @@ const mockSchema = {
   get: vi.fn().mockReturnValue({name: 'article', title: 'Article', type: 'document'}),
 } as unknown as ReturnType<typeof useSchema>
 
-// Mirrors the real hook: `{loading: true, document: null}` until the first emission, then the
-// observable's `undefined` for an id the batch fetch did not return.
+// Mirrors the real hook: `{loading: true, document: null}` until the first emission, then `null`
+// for an id the batch fetch did not return.
 function mockObservedDocuments(
   documents: Record<string, object | undefined>,
   loadingIds: string[] = [],
@@ -99,7 +99,7 @@ function mockObservedDocuments(
     loadingIds.includes(documentId)
       ? {document: null, loading: true}
       : {
-          document: documents[documentId] as SanityDocument | undefined as SanityDocument | null,
+          document: (documents[documentId] ?? null) as SanityDocument | null,
           loading: false,
         },
   )
@@ -310,6 +310,43 @@ describe('DeleteScheduledDraftDialog', () => {
       expect(useScheduleDraftOperationsMockReturn.deleteScheduledDraft).toHaveBeenCalledWith(
         scheduledRelease._id,
         false,
+        'article-123',
+      )
+    })
+  })
+
+  it('scheduled draft edited while the dialog is open: re-checks the copy box', async () => {
+    const dialog = (release: typeof scheduledRelease) => (
+      <TestProvider>
+        <DeleteScheduledDraftDialog
+          documentId="article-123"
+          documentType="article"
+          release={release}
+          onClose={mockOnClose}
+        />
+      </TestProvider>
+    )
+
+    const {rerender} = render(dialog(scheduledRelease))
+
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument()
+
+    mockObservedDocuments({
+      [VERSION_ID]: scheduledDraftEditedWhilePaused,
+      [DRAFT_ID]: draftAtBaseRevision,
+    })
+    // React Compiler memoizes the dialog, so re-rendering with equal props is a no-op. The release
+    // document is live too, and bumping its `_rev` is how that re-render arrives in production.
+    rerender(dialog({...scheduledRelease, _rev: 'scheduledRevAfterEdit'}))
+
+    expect(screen.getByRole('checkbox')).toBeChecked()
+
+    await userEvent.click(screen.getByText('Yes, delete schedule'))
+
+    await waitFor(() => {
+      expect(useScheduleDraftOperationsMockReturn.deleteScheduledDraft).toHaveBeenCalledWith(
+        scheduledRelease._id,
+        true,
         'article-123',
       )
     })
