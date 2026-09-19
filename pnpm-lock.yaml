@@ -1086,7 +1086,7 @@ importers:
         version: link:../tsconfig
       '@sanity/ailf':
         specifier: ^7.37.0
-        version: 7.37.0(@aws-sdk/credential-provider-node@3.972.83)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.6)(@types/react@19.3.0)(debug@4.4.3)(pg@8.23.0)(playwright-core@1.63.0)(react-devtools-core@8.0.0)(socks@2.8.10)(supports-color@8.1.1)
+        version: 7.37.0(@aws-sdk/credential-provider-node@3.972.83)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.6)(@types/react@19.3.0)(debug@4.3.4)(pg@8.23.0)(playwright-core@1.63.0)(react-devtools-core@8.0.0)(socks@2.8.10)(supports-color@8.1.1)
       sanity:
         specifier: workspace:*
         version: link:../../sanity
@@ -2032,7 +2032,7 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2
       '@sanity/cli':
-        specifier: ^8.10.0
+        specifier: ^8.12.0
         version: 8.12.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.4.0)(@rolldown/plugin-babel@0.2.4)(@types/node@24.13.6)(@types/react@19.3.0)(@vitejs/devtools@0.7.5)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.149.0)(oxfmt@0.67.0)(react@19.3.0)(rolldown@1.2.9)(sanity@packages+sanity)(supports-color@8.1.1)(tsx@4.23.13)(typescript@7.0.2)(vitest@4.1.11)(xstate@5.33.2)
       '@sanity/client':
         specifier: 'catalog:'
@@ -19468,7 +19468,7 @@ snapshots:
     dependencies:
       '@oclif/core': 4.14.0
 
-  '@sanity/ailf@7.37.0(@aws-sdk/credential-provider-node@3.972.83)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.6)(@types/react@19.3.0)(debug@4.4.3)(pg@8.23.0)(playwright-core@1.63.0)(react-devtools-core@8.0.0)(socks@2.8.10)(supports-color@8.1.1)':
+  '@sanity/ailf@7.37.0(@aws-sdk/credential-provider-node@3.972.83)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.6)(@types/react@19.3.0)(debug@4.3.4)(pg@8.23.0)(playwright-core@1.63.0)(react-devtools-core@8.0.0)(socks@2.8.10)(supports-color@8.1.1)':
     dependencies:
       '@google-cloud/bigquery': 8.3.1(supports-color@8.1.1)
       '@google-cloud/storage': 7.22.0(supports-color@8.1.1)
@@ -19486,7 +19486,7 @@ snapshots:
       jiti: 2.7.0
       js-yaml: 4.3.2
       oxc-parser: 0.129.0
-      promptfoo: 0.120.27(@aws-sdk/credential-provider-node@3.972.83)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.6)(@types/react@19.3.0)(debug@4.4.3)(pg@8.23.0)(playwright-core@1.63.0)(react-devtools-core@8.0.0)(socks@2.8.10)(supports-color@8.1.1)
+      promptfoo: 0.120.27(@aws-sdk/credential-provider-node@3.972.83)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.6)(@types/react@19.3.0)(debug@4.3.4)(pg@8.23.0)(playwright-core@1.63.0)(react-devtools-core@8.0.0)(socks@2.8.10)(supports-color@8.1.1)
       zod: 4.6.5
     transitivePeerDependencies:
       - '@aws-sdk/client-rds-data'
@@ -20518,13 +20518,13 @@ snapshots:
   '@slack/types@2.22.0':
     optional: true
 
-  '@slack/web-api@7.19.0(debug@4.4.3)(supports-color@8.1.1)':
+  '@slack/web-api@7.19.0(debug@4.3.4)(supports-color@8.1.1)':
     dependencies:
       '@slack/logger': 4.0.1
       '@slack/types': 2.22.0
       '@types/node': 24.13.6
       '@types/retry': 0.12.0
-      axios: 1.20.0(debug@4.4.3)(supports-color@8.1.1)
+      axios: 1.20.0(debug@4.3.4)(supports-color@8.1.1)
       eventemitter3: 5.0.4
       form-data: 4.0.6
       is-electron: 2.2.2
@@ -22129,17 +22129,6 @@ snapshots:
       - supports-color
     optional: true
 
-  axios@1.20.0(debug@4.4.3)(supports-color@8.1.1):
-    dependencies:
-      follow-redirects: 1.16.0(debug@4.4.3)
-      form-data: 4.0.6
-      https-proxy-agent: 5.0.1(supports-color@8.1.1)
-      proxy-from-env: 2.1.0
-    transitivePeerDependencies:
-      - debug
-      - supports-color
-    optional: true
-
   b4a@1.9.0: {}
 
   babel-plugin-macros@3.1.0:
@@ -23711,11 +23700,6 @@ snapshots:
   follow-redirects@1.16.0(debug@4.3.4):
     optionalDependencies:
       debug: 4.3.4(supports-color@8.1.1)
-    optional: true
-
-  follow-redirects@1.16.0(debug@4.4.3):
-    optionalDependencies:
-      debug: 4.4.3(supports-color@8.1.1)
     optional: true
 
   for-in@0.1.8:
@@ -26067,7 +26051,7 @@ snapshots:
 
   promisepipe@3.0.0: {}
 
-  promptfoo@0.120.27(@aws-sdk/credential-provider-node@3.972.83)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.6)(@types/react@19.3.0)(debug@4.4.3)(pg@8.23.0)(playwright-core@1.63.0)(react-devtools-core@8.0.0)(socks@2.8.10)(supports-color@8.1.1):
+  promptfoo@0.120.27(@aws-sdk/credential-provider-node@3.972.83)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.6)(@types/react@19.3.0)(debug@4.3.4)(pg@8.23.0)(playwright-core@1.63.0)(react-devtools-core@8.0.0)(socks@2.8.10)(supports-color@8.1.1):
     dependencies:
       '@anthropic-ai/sdk': 0.78.0(zod@4.6.5)
       '@apidevtools/json-schema-ref-parser': 15.5.2(@types/json-schema@7.0.15)
@@ -26171,7 +26155,7 @@ snapshots:
       '@openai/codex-sdk': 0.110.0
       '@playwright/browser-chromium': 1.63.0
       '@rollup/rollup-linux-x64-gnu': 4.63.3
-      '@slack/web-api': 7.19.0(debug@4.4.3)(supports-color@8.1.1)
+      '@slack/web-api': 7.19.0(debug@4.3.4)(supports-color@8.1.1)
       '@smithy/node-http-handler': 4.12.1
       '@swc/core': 1.16.2
       '@swc/core-darwin-arm64': 1.16.2
