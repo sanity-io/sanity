@@ -109,7 +109,6 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                       flexBasis="0%"
                       flexGrow={1}
                     >
-
                       {member.kind === 'item' && (
                         <ArrayOfObjectsItem
                           member={member}
