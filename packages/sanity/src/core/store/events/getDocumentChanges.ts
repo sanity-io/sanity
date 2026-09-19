@@ -23,6 +23,7 @@ import {
   type EventsObservableValue,
   type EventsStoreRevision,
   isCreateDocumentVersionEvent,
+  isNonSelectableTerminalEvent,
 } from './types'
 
 /**
@@ -217,6 +218,9 @@ export function getDocumentChanges({
           const viewingLatest = !to?._rev
           const getTransactions = (): Observable<TransactionLogEventWithEffects[]> => {
             if (sinceDoc._rev === HISTORY_CLEARED_EVENT_ID) {
+              return of([])
+            }
+            if (viewingLatest && events[0] && isNonSelectableTerminalEvent(events[0])) {
               return of([])
             }
             const cached = transactionsCache.get({
