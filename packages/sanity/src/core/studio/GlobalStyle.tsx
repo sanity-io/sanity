@@ -2,6 +2,7 @@ import {getTheme_v2, rgba} from '@sanity/ui/theme'
 import {type ComponentType} from 'react'
 import {createGlobalStyle, css} from 'styled-components'
 
+import {useColorSchemeInternalValue} from './colorScheme'
 import {useWorkspace} from './workspace'
 
 const SCROLLBAR_SIZE = 12 // px
@@ -18,18 +19,37 @@ export const GlobalStyle: ComponentType = () => {
   const {
     advancedVersionControl: {enabled: advancedVersionControlEnabled},
   } = useWorkspace()
+  const scheme = useColorSchemeInternalValue()
 
-  return <GlobalStyleSheet $documentEditorGutterEnabled={advancedVersionControlEnabled} />
+  return (
+    <GlobalStyleSheet
+      $documentEditorGutterEnabled={advancedVersionControlEnabled}
+      // Only a chosen appearance pins the document. `system` leaves both allowed, and so does the
+      // render before the persisted-scheme store has initialized, where the value is not set yet
+      // despite its type: an unknown value must not become an invalid declaration.
+      $colorScheme={scheme === 'light' || scheme === 'dark' ? scheme : 'light dark'}
+    />
+  )
 }
 
 interface Props {
   $documentEditorGutterEnabled: boolean
+  $colorScheme: 'light' | 'dark' | 'light dark'
 }
 
-const GlobalStyleSheet = createGlobalStyle<Props>(({theme, $documentEditorGutterEnabled}) => {
+const GlobalStyleSheet = createGlobalStyle<Props>(({theme, $colorScheme}) => {
   const {color, font} = getTheme_v2(theme)
 
   return css`
+    /* @sanity/ui v5 resolves its colors with light-dark(), which follows the document's
+       color-scheme. Its reset leaves that at 'light dark', so the OS would decide; pin it to the
+       Studio appearance so ui5 surfaces follow the theme the rest of the studio renders in. Under
+       'system' both stay allowed and the OS decides, as it does for the theme itself.
+       html:root out-specifies the reset's :root whichever stylesheet loads last. */
+    html:root {
+      color-scheme: ${$colorScheme};
+    }
+
     ::-webkit-resizer {
       background-image: ${buildResizeHandleDataUri(color.icon)};
       background-repeat: no-repeat;
