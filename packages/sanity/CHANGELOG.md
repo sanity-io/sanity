@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.16.0](https://github.com/sanity-io/sanity/compare/v6.15.0...v6.16.0) (2026-09-19)
+
+### Features
+
+* **core:** mark schema-less Portable Text values with a visible affordance ([ea02de3](https://github.com/sanity-io/sanity/commit/ea02de38960a582229bc421f343681a04cdcedcf))
+
+### Bug Fixes
+
+* **comments-v2:** rematch persisted inline ranges after edits ([#14764](https://github.com/sanity-io/sanity/issues/14764)) ([1bf2357](https://github.com/sanity-io/sanity/commit/1bf2357f1a6c84928757e68e376a69cf0dc059ab))
+* **comments:** tolerate stored comment with unparseable field path ([#14778](https://github.com/sanity-io/sanity/issues/14778)) ([1bc591a](https://github.com/sanity-io/sanity/commit/1bc591adcff1b9dccc5d4bab0ae5277664daca6e))
+* **core:** render Portable Text values whose types left the schema ([d5bae96](https://github.com/sanity-io/sanity/commit/d5bae9658826dd6ec0173f4cc00d3b0f27e00aaa))
+* **deps:** update dependency @portabletext/sanity-bridge to ^4.1.1 ([#14779](https://github.com/sanity-io/sanity/issues/14779)) ([28159ea](https://github.com/sanity-io/sanity/commit/28159eabec13c4d6c8af7282569bfdf487254659))
+* **deps:** update sanity-sdk to ^3.3.0 ([#14770](https://github.com/sanity-io/sanity/issues/14770)) ([07b66f2](https://github.com/sanity-io/sanity/commit/07b66f2ed524fa65dc61cc9f18c67d872ea183b4))
+* **perspective:** reset sticky perspective for archived releases ([#14753](https://github.com/sanity-io/sanity/issues/14753)) ([aecb75e](https://github.com/sanity-io/sanity/commit/aecb75ec5954cfbac67c4911525fad04847243fa))
 ## [6.15.0](https://github.com/sanity-io/sanity/compare/v6.14.1...v6.15.0) (2026-09-17)
 
 ### Features
