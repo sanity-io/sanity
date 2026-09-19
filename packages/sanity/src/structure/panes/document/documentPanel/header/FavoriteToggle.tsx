@@ -2,8 +2,12 @@ import {StarIcon} from '@sanity/icons/Star'
 import {StarFilledIcon} from '@sanity/icons/StarFilled'
 import {Text} from '@sanity/ui'
 import {type ComponentType} from 'react'
-import {useManageFavorite, type UseManageFavoriteProps, useTranslation} from 'sanity'
+import {useTranslation} from 'sanity'
 
+import {
+  useManageFavorite,
+  type UseManageFavoriteProps,
+} from '../../../../../core/hooks/useManageFavorite'
 import {Button} from '../../../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../../../i18n'
 

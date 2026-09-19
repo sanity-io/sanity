@@ -5,16 +5,14 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {Menu} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo} from 'react'
-import {
-  getDraftId,
-  getTargetSiblings,
-  usePerspective,
-  useStudioUrl,
-  useTargetDocumentState,
-  useTranslation,
-} from 'sanity'
+import {getDraftId, usePerspective, useTranslation} from 'sanity'
 import {useRouter} from 'sanity/router'
 
+import {useStudioUrl} from '../../../../../core/hooks/useStudioUrl'
+import {
+  getTargetSiblings,
+  useTargetDocumentState,
+} from '../../../../../core/hooks/useTargetDocumentState'
 import {Button} from '../../../../../ui-components/button/Button'
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'

@@ -4,7 +4,9 @@ import {useCallback} from 'react'
 import {DEFAULT_MAX_RECURSION_DEPTH, resolveInitialValueForType} from '../../templates/resolve'
 import {useInitialValueResolverContext} from './useInitialValue'
 
-/** @internal */
+/**
+ * @hidden
+ * @beta */
 export function useResolveInitialValueForType<Params extends Record<string, unknown>>(): (
   /**
    * This is the name of the document.

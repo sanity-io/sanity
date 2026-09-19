@@ -1,15 +1,11 @@
 import {type ObjectSchemaType} from '@sanity/types'
 import {render, screen} from '@testing-library/react'
-import {
-  type SystemVariant,
-  type TargetDocumentState,
-  type TargetPerspective,
-  type VersionInfoDocumentStub,
-  usePerspective,
-} from 'sanity'
+import {type SystemVariant, type TargetPerspective, usePerspective} from 'sanity'
 import {beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {type TargetDocumentState} from '../../../../../../core/hooks/useTargetDocumentState'
+import {type VersionInfoDocumentStub} from '../../../../../../core/releases/store/types'
 import {useDocumentPane} from '../../../useDocumentPane'
 import {DocumentTargetBadges} from '../DocumentTargetBadges'
 

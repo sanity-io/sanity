@@ -1,4 +1,4 @@
-import {type DocumentLayoutProps} from 'sanity'
+import {type DocumentLayoutProps} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex} from 'ui5'
 
 export function DocumentLayout(props: DocumentLayoutProps & {testId: string}) {

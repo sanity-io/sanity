@@ -1,9 +1,10 @@
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {usePerspective, useTargetDocumentState} from 'sanity'
+import {usePerspective} from 'sanity'
 import {type Mock, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {useTargetDocumentState} from '../../../../../../core/hooks/useTargetDocumentState'
 import {usePaneRouter} from '../../../../../components/paneRouter/usePaneRouter'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
 import {useDocumentPaneInfo} from '../../../useDocumentPaneInfo'
@@ -53,13 +54,19 @@ function readyTarget(
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
   usePerspective: vi.fn(() => DEFAULT_PERSPECTIVE),
+  useTranslation: vi.fn(() => ({
+    t: (key: string) => key,
+  })),
+}))
+vi.mock('../../../../../../core/hooks/useTargetDocumentState', async (importOriginal) => ({
+  ...(await importOriginal()),
   useTargetDocumentState: vi.fn(() => readyTarget({draft: DRAFT_SIBLING})),
+}))
+vi.mock('../../../../../../core/hooks/useStudioUrl', async (importOriginal) => ({
+  ...(await importOriginal()),
   useStudioUrl: vi.fn(() => ({
     studioUrl: 'http://localhost:3333',
     buildIntentUrl: mockBuildIntentUrl,
-  })),
-  useTranslation: vi.fn(() => ({
-    t: (key: string) => key,
   })),
 }))
 

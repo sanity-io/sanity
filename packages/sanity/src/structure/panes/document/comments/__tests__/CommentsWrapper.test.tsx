@@ -1,7 +1,8 @@
 import {render} from '@testing-library/react'
-import {getTargetScopeId, usePerspective, useWorkspace} from 'sanity'
+import {usePerspective, useWorkspace} from 'sanity'
 import {type Mock, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {getTargetScopeId} from '../../../../../core/hooks/useTargetDocumentState'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {useDocumentPane} from '../../useDocumentPane'
 import {CommentsWrapper} from '../CommentsWrapper'
@@ -20,7 +21,6 @@ vi.mock('sanity', async () => {
   } = await import('@sanity/client/csm')
 
   return {
-    COMMENTS_INSPECTOR_NAME: 'sanity/comments',
     CommentsEnabledProvider: ({children}: {children: React.ReactNode}) => <>{children}</>,
     CommentsEnabledProviderV2: ({children}: {children: React.ReactNode}) => <>{children}</>,
     CommentsProvider: (props: Record<string, unknown>) => {
@@ -34,7 +34,6 @@ vi.mock('sanity', async () => {
     getDraftId: draftId,
     getPublishedId: publishedId,
     getVersionId: versionId,
-    getTargetScopeId: vi.fn(() => undefined),
     useCommentsEnabled: vi.fn(() => ({enabled: true})),
     useCommentsEnabledV2: vi.fn(() => ({enabled: true})),
     usePerspective: vi.fn(() => ({
@@ -50,6 +49,14 @@ vi.mock('sanity', async () => {
     })),
   }
 })
+vi.mock('../../../../../core/comments/constants', async (importOriginal) => ({
+  ...(await importOriginal()),
+  COMMENTS_INSPECTOR_NAME: 'sanity/comments',
+}))
+vi.mock('../../../../../core/hooks/useTargetDocumentState', async (importOriginal) => ({
+  ...(await importOriginal()),
+  getTargetScopeId: vi.fn(() => undefined),
+}))
 
 vi.mock('sanity/router', () => ({
   useRouter: vi.fn(() => ({
