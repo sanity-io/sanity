@@ -1,4 +1,5 @@
 import {Card, Stack, Text} from '@sanity/ui'
+import {LocaleProvider} from 'sanity'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
 import {type PaneRouterContextValue} from '../../paneRouter/types'
@@ -46,24 +47,29 @@ const CASES = [
  * Chromatic sentinel for the list-pane count badge: badge-to-chevron spacing, baseline
  * alignment against the title, and how a long title truncates beside a badge. The jsdom
  * tests assert badge text only, and runtime styles are disabled there.
+ *
+ * `TestWrapper` mounts no locale provider, so `PaneItem`'s `useNumberFormat` throws without
+ * this `LocaleProvider`.
  */
 export function PaneItemStory() {
   return (
     <TestWrapper schemaTypes={[]}>
-      <PaneRouterContext.Provider value={paneRouterContextValue}>
-        <Card padding={4} style={{maxWidth: 360}}>
-          <Stack gap={5}>
-            {CASES.map(({label, title, count}) => (
-              <Stack gap={2} key={label}>
-                <Text muted size={1} weight="medium">
-                  {label}
-                </Text>
-                <PaneItem id={label} title={title} count={count} />
-              </Stack>
-            ))}
-          </Stack>
-        </Card>
-      </PaneRouterContext.Provider>
+      <LocaleProvider>
+        <PaneRouterContext.Provider value={paneRouterContextValue}>
+          <Card padding={4} style={{maxWidth: 360}}>
+            <Stack gap={5}>
+              {CASES.map(({label, title, count}) => (
+                <Stack gap={2} key={label}>
+                  <Text muted size={1} weight="medium">
+                    {label}
+                  </Text>
+                  <PaneItem id={label} title={title} count={count} />
+                </Stack>
+              ))}
+            </Stack>
+          </Card>
+        </PaneRouterContext.Provider>
+      </LocaleProvider>
     </TestWrapper>
   )
 }

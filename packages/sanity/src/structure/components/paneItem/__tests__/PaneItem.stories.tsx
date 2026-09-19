@@ -1,4 +1,5 @@
 import {type Meta, type StoryObj} from '@storybook/react-vite'
+import {expect, waitFor, within} from 'storybook/test'
 
 import {PaneItemStory} from './PaneItemStory'
 
@@ -13,4 +14,10 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const States: Story = {}
+/** The locale provider suspends, so wait for the formatted badges before capturing. */
+export const States: Story = {
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement)
+    await waitFor(() => expect(canvas.getAllByTestId('pane-item-count')).toHaveLength(4))
+  },
+}
