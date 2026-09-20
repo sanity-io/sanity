@@ -134,11 +134,19 @@ describe('Portable Text Input', () => {
       'popovers escaping an annotation popover are bounded by the pane',
       {timeout: 30_000},
       async () => {
+        const {settleChromaticEndState} = testHelpers()
         captured.boundary = undefined
-        await openLinkAnnotation()
+        const $linkInput = await openLinkAnnotation()
 
         await expect.poll(() => captured.boundary).toBe(pane.scroller)
         expect(pane.scroller).not.toBeNull()
+
+        // The Link toolbar button that opened the dialog keeps focus, and its
+        // tooltip with it. Focus the dialog's own input so the archived state
+        // is the open dialog rather than a tooltip mid-open-delay.
+        $linkInput.element().focus()
+        await expect.element($linkInput).toHaveFocus()
+        await settleChromaticEndState()
       },
     )
 
@@ -146,6 +154,7 @@ describe('Portable Text Input', () => {
       'in fullscreen they are bounded by the editor scroll element instead',
       {timeout: 30_000},
       async () => {
+        const {settleChromaticEndState} = testHelpers()
         captured.boundary = undefined
         const $linkInput = await openLinkAnnotation()
         await $linkInput.fill('https://www.sanity.io')
@@ -160,6 +169,7 @@ describe('Portable Text Input', () => {
         )
         expect(editorScroller).not.toBeNull()
         await expect.poll(() => captured.boundary).toBe(editorScroller)
+        await settleChromaticEndState()
       },
     )
   })

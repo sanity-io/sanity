@@ -161,7 +161,8 @@ describe('Portable Text Input - focus path span suffix at depth', () => {
   it('reports spans with `.text` and inline objects without, at root and inside table cells', async () => {
     const paths: Path[] = []
     const pushPath = (path: Path) => paths.push(path)
-    const {getFocusedPortableTextEditor, waitForFocusedNodeText} = testHelpers()
+    const {getFocusedPortableTextEditor, settleChromaticEndState, waitForFocusedNodeText} =
+      testHelpers()
 
     void render(<FocusPathDepthHarness document={document} onPathFocus={pushPath} />)
 
@@ -216,5 +217,6 @@ describe('Portable Text Input - focus path span suffix at depth', () => {
         'children',
         {_key: 'cn0'},
       ])
+    await settleChromaticEndState()
   })
 })
