@@ -2,11 +2,13 @@
 // IntersectionObserver/ResizeObserver/matchMedia mocks.
 
 // Both @sanity/ui generations ship their static styles as stylesheets consumers import
-// themselves; load both for test files that do not import the `sanity` entry point. Those
-// tests would otherwise render `ui5` components without the v5 stylesheet — including its
-// `prefers-reduced-motion` rules that `vitest.browser.config.mts` relies on.
-import '@sanity/ui/styles.css'
+// themselves; load both for test files that do not import the `sanity` entry point, which
+// would otherwise render `ui5` components without the v5 stylesheet. Same order as the studio
+// entry point (`src/_exports/index.ts`) and the Storybook preview — `ui5` first, then
+// `@sanity/ui` — so the cascade Chromatic archives is the one production renders where the
+// two stylesheets overlap (resets, tokens, `prefers-reduced-motion` rules).
 import 'ui5/styles.css'
+import '@sanity/ui/styles.css'
 
 import {afterEach, beforeEach} from 'vitest'
 import {cleanup} from 'vitest-browser-react'
