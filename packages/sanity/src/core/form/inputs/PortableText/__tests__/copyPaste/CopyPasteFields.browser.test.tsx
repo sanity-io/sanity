@@ -1,7 +1,7 @@
 import {defineField, defineType, type Path, type SanityDocument} from '@sanity/types'
 import {afterEach, describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
-import {page, server, userEvent} from 'vitest/browser'
+import {page, userEvent} from 'vitest/browser'
 
 import {TestForm} from '../../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../../test/browser/testHelpers'
@@ -145,11 +145,9 @@ type Locator = ReturnType<typeof page.getByTestId>
 /**
  * Open a field-actions menu from the keyboard and activate one of its items.
  *
- * Enter on the trigger opens the menu with `shouldFocus: 'first'`, which
- * `@sanity/ui` marks via `data-selected` (and attempts `.focus()` two RAFs
- * later). In this browser suite the focus leg does not stick — `activeElement`
- * stays off the menu — so ArrowDown/Enter never reach the Menu key handler.
- * Wait for the open+selected paint, then click the visible target item.
+ * Enter on the trigger opens the menu. Closed menus stay mounted via
+ * `<Activity>`, so `getByRole('menuitem')` can match a hidden copy — wait for
+ * the painted visible item, focus it, assert focus, then press Enter.
  */
 async function activateFieldActionFromKeyboard(
   $trigger: Locator,
@@ -160,7 +158,6 @@ async function activateFieldActionFromKeyboard(
   await expect.element($trigger).toHaveFocus()
   await userEvent.keyboard('{Enter}')
 
-  // Closed menus stay mounted via `<Activity>`, so prefer the painted item.
   const visibleFieldActionItem = (name: 'Copy field' | 'Paste field') =>
     Array.from(window.document.querySelectorAll('[role="menuitem"]')).find(
       (el): el is HTMLElement =>
@@ -169,45 +166,12 @@ async function activateFieldActionFromKeyboard(
         (el.textContent ?? '').trim() === name,
     )
 
-  // Menu is open once the first action is painted as selected.
-  await expect
-    .poll(() => visibleFieldActionItem('Copy field')?.hasAttribute('data-selected') === true)
-    .toBe(true)
-  // #region agent log
-  const agentLog = async (message: string, data: Record<string, unknown>, hypothesisId: string) => {
-    const active = document.activeElement
-    const payload = JSON.stringify({
-      location: 'CopyPasteFields.browser.test.tsx:activateFieldActionFromKeyboard',
-      message,
-      data: {
-        ...data,
-        activeTag: active instanceof Element ? active.nodeName : 'null',
-        activeTestId: active instanceof HTMLElement ? (active.dataset.testid ?? '') : '',
-        copySelected: visibleFieldActionItem('Copy field')?.hasAttribute('data-selected') ?? false,
-        pasteSelected:
-          visibleFieldActionItem('Paste field')?.hasAttribute('data-selected') ?? false,
-        itemName,
-      },
-      timestamp: Date.now(),
-      hypothesisId,
-      runId: 'post-fix',
-    })
-    try {
-      await server.commands.appendDebugLog(payload)
-    } catch {
-      // oxlint-disable-next-line no-console -- debug instrumentation
-      console.log(`[agent-debug] ${payload}`)
-    }
-  }
-  await agentLog('menu open, before activate click', {}, 'H5')
-  // #endregion
-
-  const $item = visibleFieldActionItem(itemName)
-  expect($item).toBeTruthy()
-  $item!.click()
-  // #region agent log
-  await agentLog('after activate click', {clicked: itemName}, 'H5')
-  // #endregion
+  await expect.poll(() => Boolean(visibleFieldActionItem(itemName))).toBe(true)
+  const item = visibleFieldActionItem(itemName)!
+  const $item = page.elementLocator(item)
+  item.focus()
+  await expect.element($item).toHaveFocus()
+  await userEvent.keyboard('{Enter}')
 }
 
 /**

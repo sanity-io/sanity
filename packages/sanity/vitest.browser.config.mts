@@ -4,7 +4,7 @@ import viteReact from '@vitejs/plugin-react'
 import {playwright} from '@vitest/browser-playwright'
 import {defaultClientConditions, defineConfig} from 'vite'
 
-import {appendDebugLog, readFileAsBase64} from './test/browser/commands'
+import {readFileAsBase64} from './test/browser/commands'
 
 const ALL_BROWSERS = ['chromium', 'firefox', 'webkit'] as const
 
@@ -123,7 +123,7 @@ export default defineConfig({
       enabled: true,
       provider: playwright(),
       headless: true,
-      commands: {appendDebugLog, readFileAsBase64},
+      commands: {readFileAsBase64},
       // Desktop viewport so the Portable Text toolbar renders all buttons
       // instead of collapsing them into an overflow menu (matches the old
       // Playwright "Desktop" device presets).

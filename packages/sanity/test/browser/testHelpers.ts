@@ -78,9 +78,7 @@ const FLOATING_UI_SNAP_SELECTOR = [
   '[data-testid="inline-object-toolbar-popover"]',
   '[data-testid="comments-mentions-menu"]',
   '[data-ui="Popover"]',
-  // Intentionally omit `[data-ui="Tooltip"]`: rounding a focused tooltip's
-  // Floating UI transform unmounts/hides it without a blur+refocus cycle, so
-  // `expectTooltip` end states then hang forever on `present(tooltipSig)`.
+  '[data-ui="Tooltip"]',
   '[role="menu"]',
   '[role="listbox"]',
 ].join(', ')
@@ -780,14 +778,6 @@ export function testHelpers() {
     settleChromaticEndState: async (options?: {
       styleSelectText?: RegExp
       styleSelectRoot?: string
-      /**
-       * Text of the single tooltip the end state is expected to show. A
-       * focused icon button (e.g. the autofocused Close button of the popover
-       * edit dialog) opens its tooltip after the ui-components open delay and
-       * keeps it open until blur, so that tooltip is part of the archived
-       * state. By default no tooltip may be visible.
-       */
-      expectTooltip?: RegExp
     }) => {
       if (typeof document.fonts?.ready !== 'undefined') {
         await document.fonts.ready
@@ -881,81 +871,17 @@ export function testHelpers() {
       // still opens its tooltip up to `TOOLTIP_DELAY_PROPS.open` later, so a
       // single zero reading proves nothing: the count must hold at zero for
       // longer than that delay, measured from the park, the last trigger event
-      // this helper controls (the font wait above must not eat into it). A
-      // test whose end state legitimately shows a focus tooltip declares it
-      // with `expectTooltip`, and that one tooltip must then be the only one
-      // and stop moving like the other floating chrome.
-      const tooltipSig = boxSig('[data-ui="Tooltip"]')
-      const expectedTooltip = options?.expectTooltip
-      // Firefox headless shares one window focus across the pages parallel
-      // test files run in, so a focus-driven tooltip is not deterministic
-      // there; Chromatic archives on chromium only.
-      const verifyExpectedTooltip = expectedTooltip && server.browser !== 'firefox'
-      // #region agent log
-      const debugLog = async (
-        message: string,
-        data: Record<string, unknown>,
-        hypothesisId: string,
-      ) => {
-        const payload = JSON.stringify({
-          location: 'testHelpers.ts:settleChromaticEndState',
-          message,
-          data: {
-            ...data,
-            active:
-              document.activeElement instanceof HTMLElement
-                ? describeElement(document.activeElement)
-                : String(document.activeElement),
-            tooltips: visibleTooltips().map((el) => ({
-              text: el.textContent?.trim() ?? '',
-              sig: (() => {
-                const r = el.getBoundingClientRect()
-                return `${Math.round(r.x)},${Math.round(r.y)},${Math.round(r.width)},${Math.round(r.height)}`
-              })(),
-            })),
-            tooltipSig: String(tooltipSig()),
-          },
-          timestamp: Date.now(),
-          hypothesisId,
+      // this helper controls (the font wait above must not eat into it).
+      let tooltipFreeSince = parkedAt
+      await expect
+        .poll(() => {
+          if (visibleTooltips().length > 0) {
+            tooltipFreeSince = performance.now()
+            return false
+          }
+          return performance.now() - tooltipFreeSince >= TOOLTIP_FREE_WINDOW_MS
         })
-        try {
-          await server.commands.appendDebugLog(payload)
-        } catch {
-          // oxlint-disable-next-line no-console -- debug instrumentation
-          console.log(`[agent-debug] ${payload}`)
-        }
-      }
-      // #endregion
-      if (verifyExpectedTooltip) {
-        // #region agent log
-        await debugLog(
-          'expectTooltip: before first poll',
-          {expected: String(expectedTooltip)},
-          'H1-H4',
-        )
-        // #endregion
-        await expect
-          .poll(() => visibleTooltips().map((el) => el.textContent?.trim() ?? ''))
-          .toEqual([expect.stringMatching(expectedTooltip)])
-        // #region agent log
-        await debugLog('expectTooltip: matched, before first expectStable', {}, 'H2-H3')
-        // #endregion
-        await expectStable(present(tooltipSig))
-        // #region agent log
-        await debugLog('expectTooltip: after first expectStable', {}, 'H3')
-        // #endregion
-      } else if (!expectedTooltip) {
-        let tooltipFreeSince = parkedAt
-        await expect
-          .poll(() => {
-            if (visibleTooltips().length > 0) {
-              tooltipFreeSince = performance.now()
-              return false
-            }
-            return performance.now() - tooltipFreeSince >= TOOLTIP_FREE_WINDOW_MS
-          })
-          .toBe(true)
-      }
+        .toBe(true)
 
       // Floating chrome, menus, dialogs and the PTE toolbar must stop moving —
       // and, if they were open before parking, must still be open. An empty
@@ -975,63 +901,8 @@ export function testHelpers() {
       // The snap writes inline styles, which can cost one more layout pass, so
       // the snapped chrome must be re-read as stable before returning.
       snapFloatingUiToIntegerPixels()
-      // #region agent log
-      if (verifyExpectedTooltip) {
-        await debugLog('expectTooltip: after snapFloatingUi', {}, 'H3')
-      }
-      // #endregion
       if (settleFloating) await expectStable(present(floatingSig), 2)
       if (settleMenu) await expectStable(present(menuSig))
-      if (verifyExpectedTooltip) {
-        // #region agent log
-        await debugLog('expectTooltip: re-await after snap', {}, 'H3')
-        // #endregion
-        // Snapping dialog/popover Floating UI transforms dismisses an open
-        // focus tooltip without blurring its trigger, so the open delay never
-        // re-fires on its own. Cycle focus on the still-focused trigger to
-        // restart the delay, then require the expected tooltip again.
-        const focused = document.activeElement
-        if (focused instanceof HTMLElement) {
-          focused.blur()
-          focused.focus()
-        }
-        await expect
-          .poll(() => visibleTooltips().map((el) => el.textContent?.trim() ?? ''))
-          .toEqual([expect.stringMatching(expectedTooltip)])
-        // #region agent log
-        let lastSig: string | symbol | undefined
-        let samples = 0
-        const pendingLogs: Promise<void>[] = []
-        const wrapped = (): string | symbol => {
-          const next = present(tooltipSig)()
-          samples += 1
-          if (samples <= 8 || next !== lastSig) {
-            pendingLogs.push(
-              debugLog(
-                'expectTooltip: post-snap sample',
-                {samples, next: String(next), prev: String(lastSig)},
-                'H3',
-              ),
-            )
-          }
-          lastSig = next
-          return next
-        }
-        try {
-          await expectStable(wrapped)
-          await Promise.all(pendingLogs)
-          await debugLog('expectTooltip: post-snap expectStable OK', {samples}, 'H3')
-        } catch (err) {
-          await Promise.all(pendingLogs)
-          await debugLog(
-            'expectTooltip: post-snap expectStable FAILED',
-            {samples, lastSig: String(lastSig), err: String(err)},
-            'H3',
-          )
-          throw err
-        }
-        // #endregion
-      }
 
       // Style-select label (Normal ↔ No style), last: it must read as the
       // required text for the whole final stability window, with the toolbar

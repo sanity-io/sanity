@@ -191,14 +191,16 @@ describe('Portable Text Input', () => {
         })
         .toBe(true)
       // The edit button the pointer was on is gone, so whatever the dialog
-      // renders under that point would be `:hover`ed in the archive. Park the
-      // pointer and let the settle helper wait for the dialog's box (it fails
-      // if the hover onto the park closed the dialog). The dialog autofocuses
-      // its Close button, whose tooltip opens on focus after the tooltip delay
-      // and stays until blur — that tooltip is part of this end state.
-      await settleChromaticEndState({expectTooltip: /^Close$/})
+      // renders under that point would be `:hover`ed in the archive. Park via
+      // settle. Dialog autofocus lands on Close (tooltip on focus) — move to
+      // the Title field so the default tooltip-free settle applies.
+      const $title = $dialog.getByRole('textbox', {name: 'Title'})
+      await expect.element($title).toBeVisible()
+      $title.element().focus()
+      await expect.element($title).toHaveFocus()
+      await settleChromaticEndState()
       await expect.element($dialog).toBeVisible()
-      await expect.element(page.getByTestId('close-popover-edit-dialog-button')).toHaveFocus()
+      await expect.element($title).toHaveFocus()
       await takeSnapshot('inline-edit-dialog-open')
     })
 
