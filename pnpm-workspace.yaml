@@ -25,7 +25,7 @@ catalog:
   '@optique/core': ^1.1.1
   '@optique/run': ^1.1.1
   '@playwright/test': 1.63.0
-  '@sanity/client': ^8.6.1
+  '@sanity/client': ^8.6.2
   '@sanity/migrate': ^8.0.2
   '@sanity/telemetry': ^1.1.0
   '@sanity/tsdown-config': ^0.28.0
@@ -162,8 +162,7 @@ trustPolicyExclude:
   - '@octokit/plugin-paginate-rest@9.2.2'
   - '@reduxjs/toolkit@2.9.0 || 2.10.1 || 2.11.0'
   - '@sanity/cli'
-  # @sanity/cli 8.9.1 updates this official Sanity dependency to v7, @sanity/cli 8.10.0 retains it
-  - '@sanity/import@7.0.1'
+  - '@sanity/import@7.0.3'
   - '@sanity/mutate@0.11.0-canary.4'
   - '@sanity/sdk@3.0.0'
   - '@sanity/sdk-react@3.0.0'

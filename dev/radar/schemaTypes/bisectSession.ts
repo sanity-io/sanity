@@ -60,6 +60,12 @@ export const bisectSession = defineType({
       type: 'boolean',
     }),
     defineField({
+      name: 'reproPath',
+      description:
+        'Where in the test studio the issue reproduces, e.g. “/test/structure/author;abc” — appended to every preview build the tool proposes',
+      type: 'string',
+    }),
+    defineField({
       name: 'marks',
       description: 'Append-only verdict log — the last mark per sha wins; undo removes the tail',
       type: 'array',
@@ -110,6 +116,12 @@ export const bisectSession = defineType({
         defineField({
           name: 'linearIssue',
           description: 'Linear ticket id, e.g. SAPP-1234',
+          type: 'string',
+        }),
+        defineField({
+          name: 'fixedIn',
+          description:
+            'Release tag the regression was fixed in, e.g. v6.10.3 — set from the releases tool',
           type: 'string',
         }),
         defineField({name: 'concludedAt', type: 'datetime'}),

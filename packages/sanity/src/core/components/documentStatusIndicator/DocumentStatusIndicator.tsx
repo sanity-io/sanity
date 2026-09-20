@@ -1,6 +1,6 @@
-import {Flex} from '@sanity/ui'
 import {useMemo} from 'react'
 import {css, styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'

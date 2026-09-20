@@ -1,4 +1,5 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
+import {VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {ChangeBreadcrumb} from '../ChangeBreadcrumb'
@@ -12,34 +13,34 @@ export function ChangeTitleSegmentStory() {
   return (
     <TestWrapper schemaTypes={[]}>
       <Card padding={4} style={{maxWidth: 480}}>
-        <Stack gap={5}>
-          <Stack gap={2}>
+        <VStack gap={5}>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               unchanged index
             </Text>
             <ChangeBreadcrumb
               titlePath={['Authors', {hasMoved: false, fromIndex: 1, toIndex: 1}, 'Name']}
             />
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               item added
             </Text>
             <ChangeBreadcrumb titlePath={['Authors', {hasMoved: false, toIndex: 0}]} />
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               item removed
             </Text>
             <ChangeBreadcrumb titlePath={['Authors', {hasMoved: false, fromIndex: 3}]} />
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               item moved
             </Text>
             <ChangeBreadcrumb titlePath={['Authors', {hasMoved: true, fromIndex: 4, toIndex: 1}]} />
-          </Stack>
-        </Stack>
+          </VStack>
+        </VStack>
       </Card>
     </TestWrapper>
   )

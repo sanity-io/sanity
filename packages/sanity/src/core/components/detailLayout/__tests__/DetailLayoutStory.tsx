@@ -1,6 +1,7 @@
 import {CalendarIcon} from '@sanity/icons/Calendar'
 import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
+import {Flex} from 'ui5'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
 import {DetailIdentity} from '../DetailIdentity'
@@ -31,7 +32,7 @@ export function DetailLayoutStory() {
             <Text muted size={1} weight="medium">
               titled with description
             </Text>
-            <Flex align="flex-start" gap={4} justify="space-between">
+            <Flex alignItems="flex-start" gap={4} justifyContent="space-between">
               <DetailIdentity
                 description={CLAMPED_DESCRIPTION}
                 title="Summer editorial"

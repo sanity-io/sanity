@@ -439,6 +439,10 @@ Tests require a build first because some tests use compiled output:
 pnpm build && pnpm test
 ```
 
+On macOS, use `TMPDIR=/private/tmp pnpm test` if the E2E summary reporter test fails with a
+`/var` versus `/private/var` path mismatch. The test changes its working directory, which resolves
+the symlink; using a canonical temporary path keeps its expected and actual paths consistent.
+
 #### Test Timeouts
 
 When a test needs a custom timeout, use the Vitest options object as the second argument (not the deprecated third-argument form). Prefer numeric separators for readability:
@@ -717,9 +721,11 @@ Notes:
 
 ### Creating a New Test
 
-1. Create test file next to source: `MyComponent.test.tsx`
+1. Place the test next to its source (`MyComponent.test.tsx`) or in a `__tests__/` directory beside it — both conventions are in use, so match the sibling files
 2. Use existing test patterns from similar files
-3. Run `pnpm test -- MyComponent` to verify
+3. Run `pnpm vitest run --project=<project> <path>` to verify (not `pnpm test -- <path>`, which runs every project)
+
+For `packages/sanity`, see [packages/sanity/AGENTS.md](./packages/sanity/AGENTS.md) — it inventories the test helpers (`createTestProvider`, the `test/form` input harnesses, the client and router mocks) and the determinism rules for that package.
 
 ### Updating Snapshots
 

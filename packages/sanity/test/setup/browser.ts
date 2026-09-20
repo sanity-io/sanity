@@ -8,6 +8,7 @@
 // `prefers-reduced-motion` rules that `vitest.browser.config.mts` relies on.
 import 'ui5/styles.css'
 import '@sanity/ui/styles.css'
+import 'ui5/styles.css'
 
 import {afterEach, beforeEach} from 'vitest'
 import {cleanup} from 'vitest-browser-react'

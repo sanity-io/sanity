@@ -194,6 +194,8 @@ export {
   type RovingFocusNavigationType,
   type RovingFocusProps,
 } from '../core/components/rovingFocus/types'
+export {PortalBoundaryProvider} from '../core/components/portalBoundary/PortalBoundaryProvider'
+export {usePortalBoundary} from '../core/components/portalBoundary/usePortalBoundary'
 export {useRovingFocus} from '../core/components/rovingFocus/useRovingFocus'
 export {useOnScroll} from '../core/components/scroll/hooks'
 export {ScrollContainer, type ScrollContainerProps} from '../core/components/scroll/scrollContainer'
@@ -1165,6 +1167,7 @@ export {
   useSingleDocRelease,
 } from '../core/singleDocRelease/context/SingleDocReleaseProvider'
 export {usePausedScheduledDraft} from '../core/singleDocRelease/hooks/usePausedScheduledDraft'
+export {usePauseToEditScheduledDraft} from '../core/singleDocRelease/hooks/usePauseToEditScheduledDraft'
 export {useScheduledDraftDocument} from '../core/singleDocRelease/hooks/useScheduledDraftDocument'
 export {useScheduledDraftsEnabled} from '../core/singleDocRelease/hooks/useScheduledDraftsEnabled'
 export {isAgentBundleName} from '../core/store/agent/createAgentBundlesStore'
