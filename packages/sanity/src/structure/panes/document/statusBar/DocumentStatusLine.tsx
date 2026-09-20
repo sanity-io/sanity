@@ -8,20 +8,20 @@ import {AnimatePresence, motion} from 'motion/react'
 import {useEffect, useLayoutEffect, useState} from 'react'
 import {
   AvatarSkeleton,
-  getTargetScopeId,
-  isPublishedPerspective,
-  TIMELINE_ITEM_I18N_KEY_MAPPING,
-  useEvents,
   usePerspective,
   UserAvatar,
   useRelativeTime,
-  useSource,
   useSyncState,
-  useTimelineSelector,
   useTranslation,
 } from 'sanity'
 import {Flex, Box} from 'ui5'
 
+import {TIMELINE_ITEM_I18N_KEY_MAPPING} from '../../../../core/field/diff/components/constants'
+import {getTargetScopeId} from '../../../../core/hooks/useTargetDocumentState'
+import {isPublishedPerspective} from '../../../../core/releases/util/util'
+import {useEvents} from '../../../../core/store/events/EventsProvider'
+import {useTimelineSelector} from '../../../../core/store/history/useTimelineSelector'
+import {useSource} from '../../../../core/studio/source'
 import {HISTORY_INSPECTOR_NAME} from '../constants'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING as TIMELINE_ITEM_I18N_KEY_MAPPING_LEGACY} from '../timeline/timelineI18n'
 import {useDocumentPane} from '../useDocumentPane'

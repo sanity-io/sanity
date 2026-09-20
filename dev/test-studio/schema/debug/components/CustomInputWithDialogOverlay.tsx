@@ -7,12 +7,11 @@ import {
   useState,
   type RefAttributes,
 } from 'react'
+import {PresenceOverlay} from 'sanity'
 import {
   type DocumentPresence,
   FieldPresence,
-  PresenceOverlay,
-  // setIfMissing
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 export function CustomInputWithDialogOverlay(
   props: {

@@ -3,15 +3,11 @@ import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {Card, Container, Heading, Text, useClickOutsideEvent} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
-import {
-  getDocumentVariantType,
-  useCanvasCompanionDoc,
-  useNavigateToCanvasDoc,
-  useTranslation,
-} from 'sanity'
+import {getDocumentVariantType, useCanvasCompanionDoc, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
+import {useNavigateToCanvasDoc} from '../../../../../core/canvas/useNavigateToCanvasDoc'
 import {Button} from '../../../../../ui-components/button/Button'
 import {Popover} from '../../../../../ui-components/popover/Popover'
 import {structureLocaleNamespace} from '../../../../i18n'

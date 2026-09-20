@@ -1,26 +1,26 @@
 import {type BadgeTone} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {
-  getVariantTitle,
   getVersionFromId,
   isDraftId,
-  isGoingToUnpublish,
   isPublishedId,
-  isPublishedPerspective,
   isVersionId,
   type TargetPerspective,
-  useAgentVersionDisplay,
   useDocumentVersions,
-  useFilteredReleases,
   usePerspective,
   useSchema,
-  useSingleDocRelease,
   useWorkspace,
-  useAllVariants,
-  type VersionInfoDocumentStub,
-  useSetVariant,
 } from 'sanity'
 
+import {useFilteredReleases} from '../../core/hooks/useFilteredReleases'
+import {useSetVariant} from '../../core/perspective/useSetVariant'
+import {type VersionInfoDocumentStub} from '../../core/releases/store/types'
+import {isGoingToUnpublish} from '../../core/releases/util/isGoingToUnpublish'
+import {isPublishedPerspective} from '../../core/releases/util/util'
+import {useSingleDocRelease} from '../../core/singleDocRelease/context/SingleDocReleaseProvider'
+import {useAgentVersionDisplay} from '../../core/store/agent/useAgentVersionDisplay'
+import {useAllVariants} from '../../core/variants/store/useAllVariants'
+import {getVariantTitle} from '../../core/variants/tool/util'
 import {isLiveEditEnabled} from '../components/paneItem/helpers'
 import {usePaneRouter} from '../components/paneRouter/usePaneRouter'
 import {useDocumentPane} from '../panes/document/useDocumentPane'

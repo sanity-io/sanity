@@ -16,7 +16,6 @@ import {useSchema} from './useSchema'
  * ahead of creation because the variant-of-published sibling advertises it (`_system.draft`).
  *
  * @internal
- * @beta
  */
 export interface CreatableTargetDocument {
   /** The full version id (`versions.<scopeId>.<groupId>`) the draft variant will occupy. */
@@ -63,7 +62,6 @@ export interface TargetDocumentSiblings {
  *   `system.variant` definition. An error state, never silently treated as "no variant".
  *
  * @internal
- * @beta
  */
 export type TargetDocumentState =
   | {status: 'resolving'}
@@ -155,7 +153,6 @@ function getDocumentSiblings(
  * never the base pair, and never the published sibling.
  *
  * @internal
- * @beta
  */
 export function getTargetScopeId(state: TargetDocumentState): string | undefined {
   if (state.status === 'ready') {
@@ -174,7 +171,6 @@ export function getTargetScopeId(state: TargetDocumentState): string | undefined
  * read-only/banner/footer gating that otherwise applies to unresolved variant targets.
  *
  * @internal
- * @beta
  */
 export function getCreatableVariantTarget(
   state: TargetDocumentState,
@@ -187,7 +183,6 @@ export function getCreatableVariantTarget(
  * still resolving or the selected variant definition was not found.
  *
  * @internal
- * @beta
  */
 export function getTargetSiblings(state: TargetDocumentState): TargetDocumentSiblings | undefined {
   if (state.status === 'ready' || state.status === 'variant-missing') {
@@ -208,7 +203,6 @@ export function getTargetSiblings(state: TargetDocumentState): TargetDocumentSib
  * the advertised id, while publish/unpublish/discard stay disabled until the document exists.
  *
  * @internal
- * @beta
  */
 export function getPairTarget(state: TargetDocumentState): DocumentPairTarget | string | undefined {
   switch (state.status) {
@@ -351,7 +345,6 @@ export function getTargetDocumentState(options: {
  * Live-edit is read from the schema via version stubs (`_type`)
  *
  * @internal
- * @beta
  */
 export function useTargetDocumentState(documentGroupId: string): TargetDocumentState {
   const {versions, loading: versionsLoading} = useDocumentVersions({documentId: documentGroupId})

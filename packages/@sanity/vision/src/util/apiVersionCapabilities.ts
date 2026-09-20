@@ -1,5 +1,8 @@
 import {type ClientPerspective} from '@sanity/client'
-import {RELEASES_STUDIO_CLIENT_OPTIONS, VARIANTS_STUDIO_CLIENT_OPTIONS} from 'sanity'
+import {
+  RELEASES_STUDIO_CLIENT_OPTIONS,
+  VARIANTS_STUDIO_CLIENT_OPTIONS,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {type VisionLocaleResourceKeys} from '../i18n/resources'
 import {isApiVersionBelow} from './compareApiVersion'

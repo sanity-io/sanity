@@ -3,9 +3,6 @@ import {ReadOnlyIcon} from '@sanity/icons/ReadOnly'
 import {Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {
-  isDraftPerspective,
-  isPublishedPerspective,
-  isReleaseDocument,
   type ReleaseDocument,
   Translate,
   useDocumentOperation,
@@ -14,6 +11,8 @@ import {
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 
+import {isReleaseDocument} from '../../../../../core/releases/store/types'
+import {isDraftPerspective, isPublishedPerspective} from '../../../../../core/releases/util/util'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'
