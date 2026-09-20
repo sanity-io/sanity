@@ -1,4 +1,4 @@
-import {readFileSync} from 'node:fs'
+import {appendFileSync, readFileSync} from 'node:fs'
 import path from 'node:path'
 
 import {type BrowserCommand} from 'vitest/node'
@@ -16,4 +16,9 @@ export const readFileAsBase64: BrowserCommand<[filePath: string]> = ({testPath},
     : path.resolve(path.dirname(testPath), filePath)
   const buffer = readFileSync(resolved)
   return buffer.toString('base64')
+}
+
+/** Append one NDJSON debug line for Chromatic flake investigation (temporary). */
+export const appendDebugLog: BrowserCommand<[payload: string]> = (_ctx, payload) => {
+  appendFileSync('/opt/cursor/logs/debug.log', `${payload}\n`)
 }

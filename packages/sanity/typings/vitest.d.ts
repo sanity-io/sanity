@@ -16,3 +16,11 @@ declare module 'vitest' {
   interface Assertion<T = any> extends OperatorFunctionMatchers<T> {}
   interface AsymmetricMatchersContaining extends OperatorFunctionMatchers {}
 }
+
+declare module 'vitest/browser' {
+  interface BrowserCommands {
+    readFileAsBase64: (filePath: string) => Promise<string>
+    /** Temporary NDJSON debug sink for Chromatic flake investigation. */
+    appendDebugLog: (payload: string) => Promise<void>
+  }
+}
