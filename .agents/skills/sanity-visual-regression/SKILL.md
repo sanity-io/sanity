@@ -140,9 +140,13 @@ test is gone (see "Which source owns a state").
   asserts a hover-free tree and no open tooltip, waits for toolbar/popover geometry) and assert
   the exact state you want captured (`toBeEnabled()`, `data-focused="true"`, a visible menu)
   right before the test ends or before `takeSnapshot()`. Never fix a flaky snapshot with global
-  CSS from the test setup (zeroed transitions, hidden carets, forced opacity); reduced motion
-  comes from the Playwright `reducedMotion: 'reduce'` context option, which the `@sanity/ui` v5
-  stylesheet (`ui5/styles.css`) honors.
+  CSS from the test setup (zeroed transitions, hidden carets, forced opacity). Reduced motion is a
+  capture-time setting only: Chromatic renders the uploaded archive with
+  `prefersReducedMotion: 'reduce'` and `pauseAnimationAtEnd` (`vitest.browser.config.mts`), which
+  the `@sanity/ui` v5 stylesheet (`ui5/styles.css`) honors. The browser the tests run in — local
+  runs, the functional `browser-tests.yml` shards and the capture run alike — has no
+  reduced-motion emulation, so transitions run at full length there; wait for the settled state
+  instead of assuming the media query shortened it.
 - **Safe in every run.** The plugin is registered in `vitest.browser.config.mts` on every run, so
   both `@chromatic-com/vitest` helpers (`configure`, `takeSnapshot`) work in plain
   `pnpm --filter sanity test:browser` runs and in the functional `browser-tests.yml` shards; those

@@ -613,11 +613,16 @@ plugin warns about it. `list` is set explicitly so the order is stated in the co
 `afterEach` hooks registered inside a test file (clipboard restores, spies) also run after the
 archive rather than before it. Capture runs also set `retry: 0` (a retried test
 archives twice and Chromatic publishes `Snapshot #1 (2)`), `cropToViewport`, `delay: 0`,
-`pauseAnimationAtEnd` and `prefersReducedMotion: 'reduce'`; the Playwright provider emulates the
-same `prefers-reduced-motion: reduce` locally (the `@sanity/ui` v5 stylesheet, `ui5/styles.css`,
-collapses transitions and animations under it; `test/setup/browser.ts` loads it together with
-`@sanity/ui/styles.css` for every test file, as the studio entry point does), so the DOM a test
-asserts on is the DOM Chromatic renders.
+`pauseAnimationAtEnd` and `prefersReducedMotion: 'reduce'`. Those last two are capture-only: they
+tell Chromatic how to render the uploaded archive (animations paused at their end state, the
+`prefers-reduced-motion: reduce` rules of the `@sanity/ui` v5 stylesheet, `ui5/styles.css`,
+applied). The browser the tests run in — locally, in the functional `browser-tests.yml` shards
+and during the capture run itself — uses Playwright's default media (no reduced-motion
+emulation), so transitions run at full length there and a test that needs one finished must wait
+for the settled state (`expectStable`, `expect.poll`, `settleChromaticEndState()`); nothing in the
+test setup shortens them. `test/setup/browser.ts` loads `ui5/styles.css` together with
+`@sanity/ui/styles.css` for every test file so `ui5` components are styled in tests whose harness
+does not import the `sanity` entry point.
 
 Chromatic archives the DOM plus the elements matching `:hover` / `:focus` / `:active` at capture
 time and re-applies those states in its renderer, so the real pointer position and React
