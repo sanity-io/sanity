@@ -2,12 +2,11 @@
 // IntersectionObserver/ResizeObserver/matchMedia mocks.
 
 // Both @sanity/ui generations ship their static styles as stylesheets consumers import
-// themselves; load them here the same way the studio entry point (`src/_exports/index.ts`)
-// does. Test files run in separate iframes, so a harness that does not import the `sanity`
-// entry would otherwise render `ui5` components without the v5 stylesheet — including its
+// themselves; load both for test files that do not import the `sanity` entry point. Those
+// tests would otherwise render `ui5` components without the v5 stylesheet — including its
 // `prefers-reduced-motion` rules that `vitest.browser.config.mts` relies on.
-import 'ui5/styles.css'
 import '@sanity/ui/styles.css'
+import 'ui5/styles.css'
 
 import {afterEach, beforeEach} from 'vitest'
 import {cleanup} from 'vitest-browser-react'
