@@ -55,7 +55,24 @@ const IMAGE_ASSET = {
   },
 } as ImageAsset
 const IMAGE_URL_BUILDER = {
-  image: () => ({url: () => IMAGE_URL}),
+  auto() {
+    return this
+  },
+  dpr() {
+    return this
+  },
+  fit() {
+    return this
+  },
+  image() {
+    return this
+  },
+  url() {
+    return IMAGE_URL
+  },
+  width() {
+    return this
+  },
 } as unknown as BaseImageInputProps['imageUrlBuilder']
 
 function observeAsset() {
