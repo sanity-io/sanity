@@ -153,6 +153,9 @@ minimumReleaseAgeExclude:
 overrides:
   # Vite 8.3.0's bundled-dev client predates rolldown 1.2.9's requestLazy runtime API.
   # Keep Vite's compiler and inlined browser runtime paired until Vite ships the updated client.
+  # Counter-pin tsdown so the package compiler stays on 1.2.9; `vite>rolldown` would otherwise
+  # hoist one 1.2.8 copy into tsdown as well.
+  'tsdown>rolldown': '1.2.9'
   'vite>rolldown': '1.2.8'
   vitest: 'catalog:'
 
