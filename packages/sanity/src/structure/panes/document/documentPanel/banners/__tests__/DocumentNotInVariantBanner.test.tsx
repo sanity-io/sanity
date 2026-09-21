@@ -396,7 +396,7 @@ describe('DocumentNotInVariantBanner', () => {
         _rev: 'sibling-draft-rev',
         _system: {
           bundleId: 'drafts',
-          variant: {_ref: variantAlphaAudience._id, _weak: true},
+          variants: [{_ref: variantAlphaAudience._id, _key: 'k-123'}],
           group: {_ref: DOCUMENT_ID, _weak: true},
           scopeId: 'alpha-scope',
         },

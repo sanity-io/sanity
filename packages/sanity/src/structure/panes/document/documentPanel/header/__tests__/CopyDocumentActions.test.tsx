@@ -31,7 +31,10 @@ const SCHEDULED_SIBLING = {_id: 'versions.rScheduled.doc-123'}
 
 function readyTarget(
   siblings: {
-    published?: {_id: string; _system?: {draft?: {_ref: string}; variant?: {_ref: string}}}
+    published?: {
+      _id: string
+      _system?: {draft?: {_ref: string}; variants?: {_ref: string; _key: string}[]}
+    }
     draft?: {_id: string}
     version?: {_id: string}
   } = {},
@@ -352,7 +355,7 @@ describe('CopyDocumentActions', () => {
           published: {
             _id: 'versions.varscopePub.doc-123',
             _system: {
-              variant: {_ref: 'variant-1'},
+              variants: [{_ref: 'variant-1', _key: 'variant-1'}],
               draft: {_ref: advertisedDraftId},
             },
           },
@@ -512,7 +515,7 @@ describe('CopyDocumentActions', () => {
         readyTarget({
           published: {
             _id: 'versions.varscopePub.doc-123',
-            _system: {variant: {_ref: 'variant-1'}},
+            _system: {variants: [{_ref: 'variant-1', _key: 'variant-1'}]},
           },
         }),
       )
