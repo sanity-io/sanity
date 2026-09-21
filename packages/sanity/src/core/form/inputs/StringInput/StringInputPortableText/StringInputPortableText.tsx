@@ -10,14 +10,15 @@ import {defineBehavior, forward, raise} from '@portabletext/editor/behaviors'
 import {BehaviorPlugin, EventListenerPlugin} from '@portabletext/editor/plugins'
 import {OneLinePlugin} from '@portabletext/plugin-one-line'
 import {stegaClean} from '@sanity/client/stega'
-import {Card, useRootTheme} from '@sanity/ui'
-import {type RefObject, useCallback, useEffect, useState} from 'react'
-import {styled} from 'styled-components'
+import {Card, useRootTheme, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
+import {type ComponentProps, type RefObject, useCallback, useEffect, useState} from 'react'
 
 import {set, unset} from '../../../patch/patch'
 import {type StringInputProps} from '../../../types/inputProps'
 import {DeletedSegment} from '../../common/diff/string/segments'
-import {stringDiffContainerStyles} from '../../common/diff/string/styles'
+import {stringDiffContainerStyles} from '../../common/diff/string/styles.css'
 import {UpdateReadOnlyPlugin} from '../../PortableText/PortableTextInput'
 import {useOptimisticDiff} from './diff/useOptimisticDiff'
 import {packageValue} from './packageValue'
@@ -31,6 +32,7 @@ import {
   type TextInputResponsivePaddingStyleProps,
   textInputRootStyle,
 } from './styles'
+import {root} from './styles.css'
 import {unpackageValue} from './unpackageValue'
 
 const INVALID_CLASS_NAME = 'invalid'
@@ -39,30 +41,101 @@ const PADDING = [3]
 const RADIUS = [2]
 const SPACE = [3]
 
-const StyledRoot = styled.div`
-  flex: 1;
-  min-width: 0;
-  display: block;
-  position: relative;
-`
+function StyledInput(
+  props: TextInputInputStyleProps &
+    TextInputResponsivePaddingStyleProps &
+    ComponentProps<typeof PortableTextEditable>,
+) {
+  const {
+    $fontSize,
+    $iconLeft,
+    $iconRight,
+    $padding,
+    $scheme,
+    $space,
+    $tone,
+    $weight,
+    className,
+    style,
+    ...rest
+  } = props
+  const theme = useThemeV2()
+  const rootStyle = textInputRootStyle()
+  const baseStyle = textInputBaseStyle({$fontSize, $scheme, $tone, $weight}, theme)
+  const paddingStyle = responsiveInputPaddingStyle(
+    {$fontSize, $iconLeft, $iconRight, $padding, $space},
+    theme,
+  )
+  const fontSizeStyle = textInputFontSizeStyle({$fontSize, $scheme, $tone, $weight}, theme)
 
-const StyledInput = styled(PortableTextEditable)<
-  TextInputInputStyleProps & TextInputResponsivePaddingStyleProps
->`
-  ${textInputRootStyle}
-  ${textInputBaseStyle}
-  ${responsiveInputPaddingStyle}
-  ${textInputFontSizeStyle}
-  ${stringDiffContainerStyles}
-`
+  return (
+    <PortableTextEditable
+      {...rest}
+      className={clsx(
+        rootStyle.className,
+        baseStyle.className,
+        paddingStyle.className,
+        fontSizeStyle.className,
+        stringDiffContainerStyles,
+        className,
+      )}
+      style={{
+        ...assignInlineVars({
+          ...rootStyle.vars,
+          ...baseStyle.vars,
+          ...paddingStyle.vars,
+          ...fontSizeStyle.vars,
+        }),
+        ...style,
+      }}
+    />
+  )
+}
 
-const StyledEditorRepresentation = styled(Card)<TextInputRepresentationStyleProps>(
-  textInputRepresentationStyle,
-)
+function StyledEditorRepresentation(
+  props: TextInputRepresentationStyleProps & ComponentProps<typeof Card>,
+) {
+  const {
+    $hasPrefix,
+    $hasSuffix,
+    $scheme,
+    $tone,
+    $unstableDisableFocusRing,
+    className,
+    style,
+    ...rest
+  } = props
+  const theme = useThemeV2()
+  const representationStyle = textInputRepresentationStyle(
+    {$hasPrefix, $hasSuffix, $scheme, $tone, $unstableDisableFocusRing},
+    theme,
+  )
 
-const StyledPlaceholder = styled.span<TextInputResponsivePaddingStyleProps>`
-  ${responsiveInputPaddingStyle}
-`
+  return (
+    <Card
+      {...rest}
+      className={clsx(representationStyle.className, className)}
+      style={{...assignInlineVars(representationStyle.vars), ...style}}
+    />
+  )
+}
+
+function StyledPlaceholder(props: TextInputResponsivePaddingStyleProps & ComponentProps<'span'>) {
+  const {$fontSize, $iconLeft, $iconRight, $padding, $space, className, style, ...rest} = props
+  const theme = useThemeV2()
+  const paddingStyle = responsiveInputPaddingStyle(
+    {$fontSize, $iconLeft, $iconRight, $padding, $space},
+    theme,
+  )
+
+  return (
+    <span
+      {...rest}
+      className={clsx(paddingStyle.className, className)}
+      style={{...assignInlineVars(paddingStyle.vars), ...style}}
+    />
+  )
+}
 
 /**
  * This string input implementation is powered by the Portable Text Editor. It's used when inline
@@ -168,7 +241,7 @@ export function StringInputPortableText(props: StringInputProps) {
   }, [diff.fromValue, diff.toValue, diffSegments])
 
   return (
-    <StyledRoot>
+    <div className={root}>
       <EditorProvider initialConfig={initialConfig}>
         <OneLinePlugin />
         <EventListenerPlugin on={handleEditorEvent} />
@@ -199,7 +272,7 @@ export function StringInputPortableText(props: StringInputProps) {
         data-tone={rootTheme.tone}
         data-border
       />
-    </StyledRoot>
+    </div>
   )
 }
 
