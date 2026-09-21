@@ -1,16 +1,9 @@
-import {
-  type AvatarSize,
-  AvatarStack,
-  Skeleton,
-  Stack,
-  Text,
-  useTheme_v2 as useThemeV2,
-} from '@sanity/ui'
+import {type AvatarSize, AvatarStack, Skeleton, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {clsx} from 'clsx'
 import {type ComponentProps, useMemo} from 'react'
-import {Box, Flex} from 'ui5'
+import {Box, Flex, VStack} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
@@ -131,7 +124,7 @@ const UserLine = ({userId}: {userId: string}) => {
 const ChangesBy = ({collaborators}: {collaborators: string[]}) => {
   const {t} = useTranslation('studio')
   return (
-    <Stack paddingBottom={1}>
+    <Flex paddingBottom={1} flexDirection="column" flexShrink={0}>
       <Box padding={1} paddingBottom={2}>
         <Text size={1} weight="medium">
           {t('timeline.changes.title')}
@@ -140,7 +133,7 @@ const ChangesBy = ({collaborators}: {collaborators: string[]}) => {
       {collaborators.map((userId) => (
         <UserLine key={userId} userId={userId} />
       ))}
-    </Stack>
+    </Flex>
   )
 }
 
@@ -219,7 +212,7 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
             <Text size={0}>{IconComponent && <IconComponent />}</Text>
           </IconBox>
         </div>
-        <Stack gap={2}>
+        <VStack gap={2}>
           <Text size={1} weight="medium">
             {t(TIMELINE_ITEM_I18N_KEY_MAPPING[documentVariantType][type])}
             {isPublishDocumentVersionEvent(event) && documentVariantType === 'published' && (
@@ -233,7 +226,7 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
           <Text as="time" size={1} muted dateTime={timestamp} title={formattedTimestamp}>
             {updatedTimeAgo}
           </Text>
-        </Stack>
+        </VStack>
 
         {contributors.length > 0 && showChangesBy == 'tooltip' && (
           <Flex flexBasis="0%" flexGrow={1} justifyContent="flex-end" alignItems="center">

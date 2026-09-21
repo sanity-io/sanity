@@ -2,6 +2,7 @@ import {isValidTag} from '../assert'
 import {VALID_TAGS} from '../constants'
 import {cleanupVersions} from '../helpers/versionUtils'
 import {type DistTag, type ManifestPackage, type Semver} from '../types'
+import {isDeprecated} from './deprecateVersion'
 
 interface TagVersionOptions {
   setAsDefault?: boolean
@@ -21,6 +22,11 @@ export function tagVersion(
   if (!isValidTag(tag)) {
     throw new Error(`Invalid tag "${tag}". Must be one of: ${VALID_TAGS.join(', ')}"`)
   }
+  if (isDeprecated(manifestPackage.deprecated, tagEntry.version)) {
+    throw new Error(
+      `Version "${tagEntry.version}" is deprecated and cannot be tagged. Undeprecate it first.`,
+    )
+  }
 
   const existingTags = manifestPackage?.tags?.[tag] || []
 
@@ -37,7 +43,9 @@ export function tagVersion(
         ...manifestPackage,
         tags: {
           ...manifestPackage.tags,
-          [tag]: cleanupVersions([tagEntry, ...existingTags]),
+          [tag]: cleanupVersions([tagEntry, ...existingTags], {
+            deprecated: manifestPackage.deprecated,
+          }),
         },
       }
 

@@ -1,6 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Card, Stack, Text} from '@sanity/ui'
-import {Flex} from 'ui5'
+import {Card, Text} from '@sanity/ui'
+import {Flex, VStack} from 'ui5'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {ReleaseAvatar} from '../../../components/ReleaseAvatar'
@@ -14,7 +14,7 @@ export function ReleasePreviewCard({release}: {release: ReleaseDocument}) {
     <Card border padding={1} radius={2}>
       <Flex gap={3} padding={3}>
         <ReleaseAvatar release={release} padding={0} />
-        <Stack gap={2}>
+        <VStack gap={2}>
           <ReleaseTitle
             title={release.metadata.title}
             fallback={t('release.placeholder-untitled-release')}
@@ -23,7 +23,7 @@ export function ReleasePreviewCard({release}: {release: ReleaseDocument}) {
           <Text muted size={1}>
             <ReleaseTime release={release} />
           </Text>
-        </Stack>
+        </VStack>
       </Flex>
     </Card>
   )

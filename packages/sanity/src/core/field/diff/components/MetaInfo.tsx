@@ -1,4 +1,4 @@
-import {Stack, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {type ComponentProps, type ComponentType, type ReactNode} from 'react'
 import {Box, Flex} from 'ui5'
@@ -34,7 +34,7 @@ export function MetaInfo(props: MetaInfoProps) {
         </Box>
       )}
 
-      <Stack gap={2} paddingLeft={2}>
+      <Flex gap={2} paddingLeft={2} flexDirection="column">
         <MetaText size={1} weight="medium" as={markRemoved ? 'del' : 'h3'} textOverflow="ellipsis">
           {title}
         </MetaText>
@@ -44,7 +44,7 @@ export function MetaInfo(props: MetaInfoProps) {
         <MetaText size={0} textOverflow="ellipsis">
           {children}
         </MetaText>
-      </Stack>
+      </Flex>
     </Flex>
   )
 }

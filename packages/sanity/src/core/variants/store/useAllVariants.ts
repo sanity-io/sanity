@@ -14,12 +14,12 @@ export function useAllVariants(): {
   error?: Error
   loading: boolean
 } {
-  const {state$} = useVariantsStore()
+  const {state$, initialState} = useVariantsStore()
   // Kept synchronous: variant resolution feeds `useTargetDocumentState`'s
   // target scope, so a deferred snapshot could bind the form checkout to the
   // wrong variant after navigation. Executable proof:
   // perspective/__tests__/deferralSafety.test.tsx.
-  const {variants, error, state} = useSyncObservable(state$)!
+  const {variants, error, state} = useSyncObservable(state$, initialState)
 
   return useMemo(
     () => ({

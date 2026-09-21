@@ -1,8 +1,9 @@
 import {type ReleaseDocument, type ScheduleReleaseAction} from '@sanity/client'
-import {Stack, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {isPast} from 'date-fns/isPast'
 import {useCallback, useMemo, useState} from 'react'
+import {VStack} from 'ui5'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {useClient} from '../../../hooks/useClient'
@@ -94,7 +95,7 @@ export function ConfirmScheduledDraftsDialog({
         },
       }}
     >
-      <Stack gap={3}>
+      <VStack gap={3}>
         <Text size={1} muted>
           {t('confirm-active-scheduled-drafts-dialog.description')}
         </Text>
@@ -103,7 +104,7 @@ export function ConfirmScheduledDraftsDialog({
             {t('confirm-active-scheduled-drafts-dialog.past-dates-warning')}
           </Text>
         )}
-      </Stack>
+      </VStack>
     </Dialog>
   )
 }

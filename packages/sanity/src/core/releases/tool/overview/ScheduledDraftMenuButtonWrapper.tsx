@@ -83,7 +83,7 @@ export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocu
     }
 
     const editSchedule = showSchedule
-      ? [<MenuItem key={'edit-schedule'} {...actions.editSchedule} />]
+      ? [<MenuItem key={'pause-to-edit'} {...actions.pauseToEdit} />]
       : []
 
     return [...publishNow, ...editSchedule, ...deleteSchedule]

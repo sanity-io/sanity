@@ -23,6 +23,7 @@ import {
   isVersionId,
   LoadingBlock,
   PerspectiveProvider,
+  PortalBoundaryProvider,
   type TargetPerspective,
   useActiveReleases,
   useDocumentForm,
@@ -114,21 +115,25 @@ export function DiffViewPane({
                   } as CSSProperties
                 }
               >
-                <PortalProvider element={portalElement}>
-                  <DialogProvider position="absolute">
-                    <Container className={container} ref={containerElement} padding={4} width={1}>
-                      {/* Each pane renders exactly the document its URL id points at — a variant
+                {/* The pane is the visible region for everything portaled into it: popovers that
+                    escape dialogs use it as their boundary, see PortalBoundaryProvider. */}
+                <PortalBoundaryProvider element={boundaryElement} portalElement={portalElement}>
+                  <PortalProvider element={portalElement}>
+                    <DialogProvider position="absolute">
+                      <Container className={container} ref={containerElement} padding={4} width={1}>
+                        {/* Each pane renders exactly the document its URL id points at — a variant
                           version id carries its opaque scope in the id itself — so the globally
                           selected perspective and variant must not leak into the pane's form.
                           Scope the perspective to the pane's own bundle, with no variant
                           selected. */}
-                      <PerspectiveProvider selectedPerspectiveName={perspectiveName(documentId)}>
-                        {/* oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work */}
-                        <DocumentLayout documentId={documentId} documentType={documentType} />
-                      </PerspectiveProvider>
-                    </Container>
-                  </DialogProvider>
-                </PortalProvider>
+                        <PerspectiveProvider selectedPerspectiveName={perspectiveName(documentId)}>
+                          {/* oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work */}
+                          <DocumentLayout documentId={documentId} documentType={documentType} />
+                        </PerspectiveProvider>
+                      </Container>
+                    </DialogProvider>
+                  </PortalProvider>
+                </PortalBoundaryProvider>
               </Scroller>
               <div data-testid="diffView-document-panel-portal" ref={setPortalElement} />
             </Card>

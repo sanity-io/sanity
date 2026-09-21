@@ -20,7 +20,7 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
 import {useUser} from '../../../store/user/hooks'
 import {isDraftId, isPublishedId} from '../../../util/draftUtils'
-import {hasCommentMessageValue, isTextSelectionComment, useCommentHasChanged} from '../../helpers'
+import {hasCommentMessageValue, useCommentHasChanged} from '../../helpers'
 import {useComments} from '../../hooks/useComments'
 import {commentsLocaleNamespace} from '../../i18n'
 import {
@@ -392,7 +392,12 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
           )}
         </Flex>
 
-        {isTextSelectionComment(comment) && Boolean(comment?.contentSnapshot) && (
+        {/*
+         * Only inline comments carry a content snapshot, so its presence is the gate.
+         * A comment whose selection has been cleared must still render the snapshot, as
+         * that is the unlinked state `hasReferencedValue` exists to show.
+         */}
+        {Boolean(comment?.contentSnapshot) && (
           <Flex gap={FLEX_GAP} marginBottom={3}>
             {withAvatar && <SpacerAvatar $size={avatarSize} />}
 

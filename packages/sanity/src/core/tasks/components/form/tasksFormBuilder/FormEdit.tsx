@@ -12,7 +12,6 @@ import {Flex, Box} from 'ui5'
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
-import {CommentsProvider} from '../../../../comments/context/comments/CommentsProvider'
 import {ContextMenuButton} from '../../../../components/contextMenuButton/ContextMenuButton'
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
 import {set} from '../../../../form/patch/patch'
@@ -29,7 +28,6 @@ import {useActivityLog} from '../../../hooks/useActivityLog'
 import {useRemoveTask} from '../../../hooks/useRemoveTask'
 import {tasksLocaleNamespace} from '../../../i18n'
 import {type TaskDocument} from '../../../types'
-import {TasksActivityLog} from '../../activity/TasksActivityLog'
 import {CurrentWorkspaceProvider} from '../CurrentWorkspaceProvider'
 import {AssigneeEditFormField} from '../fields/assignee/AssigneeEditFormField'
 import {DateEditFormField} from '../fields/DateEditFormField'
@@ -38,6 +36,7 @@ import {Title} from '../fields/TitleField'
 import {RemoveTaskDialog} from '../RemoveTaskDialog'
 import {getMentionedUsers} from '../utils'
 import {firstRow, space2Var, space3Var} from './FormEdit.css'
+import {TasksCommentsActivity} from './TasksCommentsActivity'
 
 function FormActionsMenu({id, value}: {id: string; value: TaskDocument}) {
   const {setViewMode, handleCopyLinkToTask} = useTasksNavigation()
@@ -174,21 +173,11 @@ function FormEditInner(props: ObjectInputProps) {
 
       {props.renderDefault(props)}
       <CurrentWorkspaceProvider>
-        <CommentsProvider
-          documentId={value._id}
-          documentType="tasks.task"
-          sortOrder="asc"
-          type="task"
-        >
-          <Card borderTop paddingTop={4} marginTop={4} paddingBottom={6}>
-            <TasksActivityLog
-              value={value}
-              onChange={props.onChange}
-              path={['subscribers']}
-              activityData={activityData}
-            />
-          </Card>
-        </CommentsProvider>
+        <TasksCommentsActivity
+          value={value}
+          onChange={props.onChange}
+          activityData={activityData}
+        />
       </CurrentWorkspaceProvider>
     </>
   )

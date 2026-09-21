@@ -1,6 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {LockIcon} from '@sanity/icons/Lock'
-import {Stack, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {memo} from 'react'
 import {Flex} from 'ui5'
 
@@ -21,7 +21,7 @@ export const VersionContextMenuItem = memo(function VersionContextMenuItem(props
   return (
     <Flex gap={3} justifyContent="center" alignItems="center">
       <ReleaseAvatar padding={2} release={release} />
-      <Stack flex={1} gap={2}>
+      <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
         <ReleaseTitle
           title={release.metadata?.title}
           fallback={t('release.placeholder-untitled-release')}
@@ -38,7 +38,7 @@ export const VersionContextMenuItem = memo(function VersionContextMenuItem(props
             ))}
           {release.metadata.releaseType === 'undecided' && <>{t('release.type.undecided')}</>}
         </Text>
-      </Stack>
+      </Flex>
       {isScheduled && <LockIcon />}
     </Flex>
   )

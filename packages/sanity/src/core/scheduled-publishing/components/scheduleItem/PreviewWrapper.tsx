@@ -1,8 +1,8 @@
 import {type SchemaType} from '@sanity/types'
-import {Badge, Card, Stack, Text} from '@sanity/ui'
+import {Badge, Card, Text} from '@sanity/ui'
 import {type ComponentPropsWithoutRef, type ElementType, type ReactNode, useState} from 'react'
 import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Box, Flex, VStack} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {DocumentVersionsStatus} from '../../../components/documentStatus/DocumentVersionsStatus'
@@ -111,7 +111,7 @@ function PreviewWrapper<TLink extends ElementType | undefined = undefined>(props
 
               {/* Schedule date */}
               <Box display={['block', 'none']} style={{flexShrink: 0, width: '90px'}}>
-                <Stack gap={2}>
+                <VStack gap={2}>
                   {scheduleDate ? (
                     <>
                       <Text size={1}>
@@ -124,7 +124,7 @@ function PreviewWrapper<TLink extends ElementType | undefined = undefined>(props
                       <em>No date specified</em>
                     </Text>
                   )}
-                </Stack>
+                </VStack>
               </Box>
               <Box
                 display={['none', 'block']}
