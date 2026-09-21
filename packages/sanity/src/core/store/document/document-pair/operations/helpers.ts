@@ -109,7 +109,8 @@ export function createOperationsAPI(args: OperationArgs): OperationsAPI {
   // declared. Deliberately excluded:
   // - New documents (no draft, published, or version snapshots): typing must still create the
   //   release version locally via its deterministic id (create-on-first-edit).
-  // - `restore` (history restore into a release) legitimately creates missing versions.
+  // - `restore` (history restore into a release) legitimately creates missing versions. Variant
+  //   targets are the exception, see below.
   // - `delete` / `duplicate` operate on the whole document group.
   const targetVersionMissing = Boolean(
     args.idPair.versionId &&
@@ -126,6 +127,7 @@ export function createOperationsAPI(args: OperationArgs): OperationsAPI {
   // sibling), so typing must create it seeded from the published variant — exactly like the base
   // pair creates the draft from published. Only `patch` and `commit` are exempted: the document
   // still doesn't exist, so publish/unpublish/discardChanges stay `TARGET_NOT_FOUND` until it does.
+  const isVariantTarget = args.target?.kind === 'variant'
   const allowVersionCreate = args.target?.kind === 'variant' && args.target.allowCreate === true
 
   return {
@@ -135,5 +137,10 @@ export function createOperationsAPI(args: OperationArgs): OperationsAPI {
     publish: createTargetNotFoundOperation('publish'),
     unpublish: createTargetNotFoundOperation('unpublish'),
     discardChanges: createTargetNotFoundOperation('discardChanges'),
+    // A missing variant document cannot be created by restore: the restore path only sees the
+    // version id, whose opaque variant scope is indistinguishable from a release id, and the
+    // declared target is not available at execution time (`execute` re-reads the operation
+    // arguments from the live document stream). Release versions keep restore enabled.
+    restore: isVariantTarget ? createTargetNotFoundOperation('restore') : operations.restore,
   }
 }

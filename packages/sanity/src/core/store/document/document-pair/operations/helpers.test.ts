@@ -231,9 +231,40 @@ describe('createOperationsAPI — self-derived target guard', () => {
       expect(operations.commit.disabled).toBe(false)
 
       // The document still doesn't exist: everything that operates on it stays disabled.
-      for (const opName of ['publish', 'unpublish', 'discardChanges'] as const) {
+      for (const opName of ['publish', 'unpublish', 'discardChanges', 'restore'] as const) {
         expect(operations[opName].disabled, opName).toBe('TARGET_NOT_FOUND')
       }
+    })
+
+    it('guards restore for a variant target whose document does not exist yet', () => {
+      // `execute` re-derives the operation arguments from the live document stream without the
+      // declared target, so the variant discriminator is only available here. The release
+      // `version.create` restore path must not run against an opaque variant scope id.
+      const operations = createOperationsAPI(
+        createArgs({
+          idPair: PAIR_WITH_VERSION,
+          snapshots: {draft: null, published: doc(PUBLISHED_ID), version: null},
+          target: CREATABLE_TARGET,
+        }),
+      )
+
+      expect(operations.restore.disabled).toBe('TARGET_NOT_FOUND')
+      expect(() => (operations.restore.execute as () => void)()).toThrow(
+        /does not contain this document/,
+      )
+    })
+
+    it('keeps restore enabled for a release version target whose version does not exist yet', () => {
+      const operations = createOperationsAPI(
+        createArgs({
+          idPair: PAIR_WITH_VERSION,
+          snapshots: {draft: null, published: doc(PUBLISHED_ID), version: null},
+          target: {kind: 'version', scopeId: 'rel'},
+        }),
+      )
+
+      // Restoring a revision into a release legitimately creates the missing version.
+      expect(operations.restore.disabled).toBe(false)
     })
 
     it('keeps all mutating operations guarded for a variant target without allowCreate', () => {
@@ -245,7 +276,7 @@ describe('createOperationsAPI — self-derived target guard', () => {
         }),
       )
 
-      for (const opName of GUARDED_OPS) {
+      for (const opName of [...GUARDED_OPS, 'restore'] as const) {
         expect(operations[opName].disabled, opName).toBe('TARGET_NOT_FOUND')
       }
     })

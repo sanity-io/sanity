@@ -183,30 +183,6 @@ describe('server restore operation', () => {
       )
     })
 
-    it('refuses to restore into a creatable variant target that has no document yet', () => {
-      vi.mocked(isLiveEditEnabled).mockReturnValue(false)
-
-      const args = {
-        snapshots: {
-          draft: null,
-          published: {} as SanityDocument,
-          version: null,
-        },
-        historyStore: mockHistoryStore,
-        schema: {},
-        idPair: {
-          publishedId: 'existing-doc',
-          draftId: 'drafts.existing-doc',
-          versionId: 'versions.varscope.existing-doc',
-        },
-        target: {kind: 'variant', scopeId: 'varscope', variantId: 'french', allowCreate: true},
-        typeName: 'testType',
-      } as unknown as OperationArgs
-
-      expect(() => restore.execute(args, 'specific-rev' as DocumentRevision)).toThrow(/variant/)
-      expect(mockHistoryStore.restore).not.toHaveBeenCalled()
-    })
-
     it('handles lastRevision with live edit enabled documents', () => {
       vi.mocked(isLiveEditEnabled).mockReturnValue(true)
 
