@@ -3,7 +3,7 @@ import {Card, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {clsx} from 'clsx'
 import {type ComponentProps, type ComponentPropsWithRef} from 'react'
-import {Flex, Box, type BoxProps} from 'ui5'
+import {Box, type BoxProps, Flex} from 'ui5'
 
 import {
   blockActionsInner,
