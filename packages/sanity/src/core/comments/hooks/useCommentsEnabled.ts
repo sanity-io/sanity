@@ -7,8 +7,7 @@ import {CommentsEnabledContext} from 'sanity/_singletons'
  * mode, which `useCommentsMode()` hands out as a promise. `false` outside any
  * `CommentsEnabledProvider`, such as a form rendered without the plugin.
  *
- * @beta
- * @hidden
+ * @internal
  */
 export function useCommentsEnabled(): boolean {
   return use(CommentsEnabledContext)
