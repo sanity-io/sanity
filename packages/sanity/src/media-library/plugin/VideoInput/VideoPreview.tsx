@@ -134,7 +134,7 @@ export function VideoPreview(props: VideoAssetInputProps) {
   )
   // Kept synchronous: a deferred snapshot could pair the previous asset with a
   // newly selected reference, pointing open-in-source at the wrong asset.
-  const resolvedAsset = useSyncObservable(observable)
+  const resolvedAsset = useSyncObservable(observable, undefined)
 
   const openInSourceResult = useMemo(() => {
     if (resolvedAsset) {

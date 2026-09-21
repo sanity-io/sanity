@@ -1,5 +1,5 @@
-import {Flex} from '@sanity/ui'
 import {type ReactNode} from 'react'
+import {Flex} from 'ui5'
 
 /**
  * The top-right action rail of an entity detail page: optional secondary action(s), one prominent
@@ -19,7 +19,14 @@ export function DetailActionRail(props: {
 }): React.JSX.Element {
   const {secondary, primary, menu} = props
   return (
-    <Flex flex="none" gap={2} align="center" data-ui="detail-action-rail">
+    <Flex
+      flexBasis="auto"
+      flexGrow={0}
+      flexShrink={0}
+      gap={2}
+      alignItems="center"
+      data-ui="detail-action-rail"
+    >
       {secondary}
       {primary}
       {menu}

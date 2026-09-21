@@ -3,13 +3,13 @@ import {DesktopIcon} from '@sanity/icons/Desktop'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Flex, Spinner, Stack, Text} from '@sanity/ui'
+import {Card, Spinner, Stack, Text} from '@sanity/ui'
 import {type ComponentType, type ReactNode, useCallback, useContext, useState} from 'react'
 import {type ObjectSchemaType, useTranslation} from 'sanity'
 import {PresentationContext} from 'sanity/_singletons'
 import {useIntentLink} from 'sanity/router'
 import {usePaneRouter} from 'sanity/structure'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {DEFAULT_TOOL_NAME, DEFAULT_TOOL_TITLE} from '../constants'
 import {presentationLocaleNamespace} from '../i18n'
@@ -70,7 +70,7 @@ export function LocationsBanner(props: {
     <Card padding={1} radius={2} border tone={tone}>
       <div style={{margin: -1}}>
         {!locations && (
-          <Flex align="flex-start" gap={3} padding={3}>
+          <Flex alignItems="flex-start" gap={3} padding={3}>
             {tone && ToneIcon && (
               <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
                 <Text size={1}>

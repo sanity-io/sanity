@@ -1,4 +1,5 @@
-import {Flex, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
+import {Flex} from 'ui5'
 
 import {useDocumentLastEditedBy} from '../../store/translog/useDocumentLastEditedBy'
 import {useUser} from '../../store/user/hooks'
@@ -32,7 +33,7 @@ export function EditedByAvatar({
   }
 
   return (
-    <Flex align="center" gap={2} className={cellRoot}>
+    <Flex alignItems="center" gap={2} className={cellRoot}>
       <UserAvatar size={0} user={userId} withTooltip />
       {user?.displayName && (
         <Text muted size={1} textOverflow="ellipsis" className={nameText}>

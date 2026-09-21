@@ -1,5 +1,6 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
+import {VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
 import {createMockDocument} from '../../../../__fixtures__/documentInRelease.fixture'
@@ -26,9 +27,9 @@ export function ReleaseDocumentFilterTabsStory() {
   return (
     <TestWrapper schemaTypes={[]}>
       <Card padding={4}>
-        <Stack gap={5}>
+        <VStack gap={5}>
           {FILTER_TAB_CONFIGS.map(({key}) => (
-            <Stack gap={2} key={key}>
+            <VStack gap={2} key={key}>
               <Text muted size={1} weight="medium">
                 {key} selected
               </Text>
@@ -38,9 +39,9 @@ export function ReleaseDocumentFilterTabsStory() {
                 onFilterChange={noop}
                 releaseState="active"
               />
-            </Stack>
+            </VStack>
           ))}
-        </Stack>
+        </VStack>
       </Card>
     </TestWrapper>
   )
