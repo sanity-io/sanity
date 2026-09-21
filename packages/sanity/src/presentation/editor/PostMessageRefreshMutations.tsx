@@ -1,6 +1,7 @@
 import {memo, startTransition, useEffect, useMemo, useState} from 'react'
-import {getPublishedId, type SanityDocument, useEditState, usePerspective} from 'sanity'
+import {getPublishedId, type SanityDocument, usePerspective} from 'sanity'
 
+import {useEditState} from '../../core/hooks/useEditState'
 import {type ConnectionStatus, type VisualEditingConnection} from '../types'
 
 export interface PostMessageRefreshMutationsProps {

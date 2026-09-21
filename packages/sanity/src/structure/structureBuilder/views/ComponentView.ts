@@ -1,5 +1,4 @@
-import {isRecord} from 'sanity'
-
+import {isRecord} from '../../../core/util/isRecord'
 import {HELP_URL, SerializeError} from '../SerializeError'
 import {type SerializeOptions} from '../StructureNodes'
 import {type UserViewComponent} from '../types'

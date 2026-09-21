@@ -2,20 +2,11 @@ import {focusFirstDescendant, Spinner, Text} from '@sanity/ui'
 import {type FormEvent, useCallback, useEffect, useMemo, useState, type RefAttributes} from 'react'
 import {tap} from 'rxjs/operators'
 import {
-  createPatchChannel,
-  Delay,
   type DocumentMutationEvent,
   type DocumentRebaseEvent,
   FormBuilder,
-  FormContainer,
   type FormDocumentValue,
-  FormRow,
-  fromMutationPatches,
-  getTargetScopeId,
   type PatchMsg,
-  PresenceOverlay,
-  useConditionalToast,
-  useDocumentPresence,
   useDocumentStore,
   usePerspective,
   useTranslation,
@@ -23,6 +14,15 @@ import {
 import {Flex, Box} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
+import {Delay} from '../../../../../core/components/Delay'
+import {FormContainer} from '../../../../../core/form/components/layout/FormContainer'
+import {FormRow} from '../../../../../core/form/components/layout/FormRow'
+import {createPatchChannel} from '../../../../../core/form/patch/PatchChannel'
+import {fromMutationPatches} from '../../../../../core/form/utils/mutationPatch'
+import {useConditionalToast} from '../../../../../core/hooks/useConditionalToast'
+import {getTargetScopeId} from '../../../../../core/hooks/useTargetDocumentState'
+import {PresenceOverlay} from '../../../../../core/presence/overlay/PresenceOverlay'
+import {useDocumentPresence} from '../../../../../core/store/presence/useDocumentPresence'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentTitle} from '../../useDocumentTitle'

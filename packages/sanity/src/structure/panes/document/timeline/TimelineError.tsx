@@ -1,7 +1,9 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Stack} from '@sanity/ui'
-import {TextWithTone, useTranslation} from 'sanity'
+import {useTranslation} from 'sanity'
 import {Flex} from 'ui5'
+
+import {TextWithTone} from '../../../../core/components/textWithTone/TextWithTone'
 
 export function TimelineError({versionError}: {versionError?: boolean}) {
   const {t} = useTranslation('studio')

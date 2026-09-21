@@ -6,15 +6,13 @@ import {createTestProvider} from '../../../../../../../test/testUtils/TestProvid
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
 import {ScheduledDraftOverrideBanner} from '../ScheduledDraftOverrideBanner'
 
-vi.mock('sanity', async () => {
-  const actual = await vi.importActual('sanity')
-  return {
-    ...actual,
-    useScheduledDraftDocument: vi.fn(),
-  }
-})
+vi.mock('../../../../../../core/singleDocRelease/hooks/useScheduledDraftDocument', () => ({
+  useScheduledDraftDocument: vi.fn(),
+}))
 
-const {useScheduledDraftDocument: mockUseScheduledDraftDocument} = vi.mocked(await import('sanity'))
+const {useScheduledDraftDocument: mockUseScheduledDraftDocument} = vi.mocked(
+  await import('../../../../../../core/singleDocRelease/hooks/useScheduledDraftDocument'),
+)
 
 describe('ScheduledDraftOverrideBanner', () => {
   const mockReleaseId = '_.releases.scheduled-draft-release'

@@ -41,11 +41,13 @@ vi.stubGlobal(
 vi.mock('sanity', () => ({
   usePerspective: sanityMocks.usePerspective,
   useClient: sanityMocks.useClient,
-  useActiveReleases: vi.fn(() => ({data: [], loading: false})),
-  useScheduledDraftsEnabled: vi.fn(() => false),
   useWorkspace: vi.fn(() => ({document: {drafts: {enabled: true}}})),
   useTranslation: () => ({t: (key: string) => key}),
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
+}))
+vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => ({
+  useActiveReleases: vi.fn(() => ({data: [], loading: false})),
+  useScheduledDraftsEnabled: vi.fn(() => false),
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
   VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: 'X'},
   getReleaseIdFromReleaseDocumentId: (id: string) => id.replace(/^_.releases./, ''),

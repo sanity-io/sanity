@@ -16,7 +16,7 @@ const keyValueStore = {
   getKey: (key: string) => merge(of(stored.get(key) ?? null), NEVER),
   setKey,
 }
-vi.mock('sanity', () => ({
+vi.mock('../core/store/datastores', () => ({
   useKeyValueStore: () => keyValueStore,
 }))
 

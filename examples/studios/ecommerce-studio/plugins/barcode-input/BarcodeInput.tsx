@@ -3,7 +3,8 @@
 import {Box, Text} from '@sanity/ui'
 import {useState} from 'react'
 import Barcode from 'react-barcode'
-import {type FieldMember, MemberField, type ObjectInputProps} from 'sanity'
+import {type FieldMember, type ObjectInputProps} from 'sanity'
+import {MemberField} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {styled} from 'styled-components'
 
 const BarcodeRoot = styled(Box)`

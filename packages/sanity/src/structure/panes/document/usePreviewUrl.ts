@@ -3,7 +3,9 @@ import {useEffect, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {BehaviorSubject, from, of} from 'rxjs'
 import {catchError, debounceTime, distinctUntilChanged, switchMap} from 'rxjs/operators'
-import {isRecord, useSource} from 'sanity'
+
+import {useSource} from '../../../core/studio/source'
+import {isRecord} from '../../../core/util/isRecord'
 
 const isSanityDocument = (value: unknown): value is SanityDocument =>
   isRecord(value) && typeof value._id === 'string' && typeof value._type === 'string'

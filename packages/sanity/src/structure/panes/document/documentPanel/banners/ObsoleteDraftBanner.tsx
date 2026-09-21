@@ -3,16 +3,11 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Text} from '@sanity/ui'
 import {type ComponentType, useCallback, useState} from 'react'
-import {
-  getTargetSiblings,
-  type ObjectSchemaType,
-  Translate,
-  useDocumentOperation,
-  usePerspective,
-  useTranslation,
-} from 'sanity'
+import {type ObjectSchemaType, Translate, usePerspective, useTranslation} from 'sanity'
 import {Flex} from 'ui5'
 
+import {useDocumentOperation} from '../../../../../core/hooks/useDocumentOperation'
+import {getTargetSiblings} from '../../../../../core/hooks/useTargetDocumentState'
 import {Button} from '../../../../../ui-components/button/Button'
 import {useDiffViewRouter} from '../../../../diffView/hooks/useDiffViewRouter'
 import {

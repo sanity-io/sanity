@@ -1,5 +1,7 @@
 import {type Path, type SanityDocument, type SchemaType} from '@sanity/types'
-import {isArray, isRecord} from 'sanity'
+
+import {isArray} from '../../../../../core/util/isArray'
+import {isRecord} from '../../../../../core/util/isRecord'
 
 export function getPathTitles(options: {
   path: Path

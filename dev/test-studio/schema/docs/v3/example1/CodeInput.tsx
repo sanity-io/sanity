@@ -1,5 +1,6 @@
 import {Stack} from '@sanity/ui'
-import {type FieldMember, MemberField, type ObjectInputProps} from 'sanity'
+import {type FieldMember, type ObjectInputProps} from 'sanity'
+import {MemberField} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 export function CodeInput(props: ObjectInputProps) {
   const {members, renderField, renderItem} = props

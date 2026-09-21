@@ -1,17 +1,13 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Card, Text} from '@sanity/ui'
 import {type HTMLProps, useCallback, useMemo} from 'react'
-import {
-  getPreviewValueWithFallback,
-  PreviewCard,
-  SanityDefaultPreview,
-  Translate,
-  useSchema,
-  useTranslation,
-} from 'sanity'
+import {Translate, useSchema, useTranslation} from 'sanity'
 import {StateLink} from 'sanity/router'
 import {Flex, Box} from 'ui5'
 
+import {PreviewCard} from '../../core/components/previewCard/PreviewCard'
+import {SanityDefaultPreview} from '../../core/preview/components/SanityDefaultPreview'
+import {getPreviewValueWithFallback} from '../../core/preview/utils/getPreviewValueWithFallback'
 import {presentationLocaleNamespace} from '../i18n'
 import {
   type MainDocumentState,

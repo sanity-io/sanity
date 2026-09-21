@@ -1,14 +1,12 @@
 import {Card} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type Ref, useCallback, useMemo, useState} from 'react'
-import {
-  getCreatableVariantTarget,
-  isPublishedPerspective,
-  isReleaseDocument,
-  usePerspective,
-} from 'sanity'
+import {usePerspective} from 'sanity'
 import {Flex} from 'ui5'
 
+import {getCreatableVariantTarget} from '../../../../core/hooks/useTargetDocumentState'
+import {isReleaseDocument} from '../../../../core/releases/store/types'
+import {isPublishedPerspective} from '../../../../core/releases/util/util'
 import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
 import {SpacerButton} from '../../../components/spacerButton/SpacerButton'
 import {EMPTY_PARAMS} from '../constants'

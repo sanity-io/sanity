@@ -3,21 +3,20 @@ import {motion} from 'motion/react'
 import {memo, type RefAttributes, type SVGProps} from 'react'
 import {
   ReleaseAvatarIcon,
-  ReleaseTitle,
-  getReleaseTone,
-  getVariantTitle,
-  isDraftPerspective,
-  isPublishedPerspective,
-  isReleaseDocument,
   usePerspective,
   useTranslation,
   type SystemVariant,
-  type TargetDocumentState,
   type TargetPerspective,
 } from 'sanity'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
+import {type TargetDocumentState} from '../../../../../core/hooks/useTargetDocumentState'
+import {ReleaseTitle} from '../../../../../core/releases/components/ReleaseTitle'
+import {isReleaseDocument} from '../../../../../core/releases/store/types'
+import {getReleaseTone} from '../../../../../core/releases/util/getReleaseTone'
+import {isDraftPerspective, isPublishedPerspective} from '../../../../../core/releases/util/util'
+import {getVariantTitle} from '../../../../../core/variants/tool/util'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {isLiveEditEnabled} from '../../../../components/paneItem/helpers'
 import {structureLocaleNamespace} from '../../../../i18n'

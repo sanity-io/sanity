@@ -1,6 +1,6 @@
 import find from 'lodash-es/find.js'
-import {isRecord} from 'sanity'
 
+import {isRecord} from '../../core/util/isRecord'
 import {type ChildResolver, type ChildResolverOptions} from './ChildResolver'
 import {type DividerBuilder} from './Divider'
 import {

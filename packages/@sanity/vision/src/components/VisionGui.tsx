@@ -13,18 +13,20 @@ import {useToast} from '@sanity/ui/toast'
 import {isHotkey} from 'is-hotkey-esm'
 import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
-  getReleaseIdFromReleaseDocumentId,
-  isCardinalityOneRelease,
   type PerspectiveStack,
-  sortReleases,
-  useActiveReleases,
   useClient,
   usePerspective,
-  useScheduledDraftsEnabled,
   useTranslation,
   useWorkspace,
-  VARIANTS_STUDIO_CLIENT_OPTIONS,
 } from 'sanity'
+import {
+  getReleaseIdFromReleaseDocumentId,
+  isCardinalityOneRelease,
+  sortReleases,
+  useActiveReleases,
+  useScheduledDraftsEnabled,
+  VARIANTS_STUDIO_CLIENT_OPTIONS,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Box} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 

@@ -1,6 +1,11 @@
 import {Card, Heading, Stack, Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
-import {ChangeIndicatorsTracker, createPatchChannel, FormBuilder, useDocumentForm} from 'sanity'
+import {FormBuilder} from 'sanity'
+import {
+  ChangeIndicatorsTracker,
+  createPatchChannel,
+  useDocumentForm,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 export const FORM_BUILDER_REPRO_TYPE = 'formBuilderReproDoc'
 

@@ -1,4 +1,5 @@
-import {createAuthStore, defineConfig, type WorkspaceOptions} from 'sanity'
+import {defineConfig, type WorkspaceOptions} from 'sanity'
+import {createAuthStore} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {structureTool} from 'sanity/structure'
 
 // ── Environment toggle ──────────────────────────────────────────────────────

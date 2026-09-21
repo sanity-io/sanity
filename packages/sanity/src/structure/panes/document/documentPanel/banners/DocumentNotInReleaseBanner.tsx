@@ -1,21 +1,16 @@
 import {Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useState} from 'react'
-import {
-  getReleaseIdFromReleaseDocumentId,
-  getReleaseTone,
-  isAgentBundleName,
-  LATEST,
-  ReleaseTitle,
-  type SystemBundle,
-  type TargetPerspective,
-  Translate,
-  useConditionalToast,
-  useTranslation,
-  useVersionOperations,
-  VersionInlineBadge,
-} from 'sanity'
+import {type SystemBundle, type TargetPerspective, Translate, useTranslation} from 'sanity'
 
+import {useConditionalToast} from '../../../../../core/hooks/useConditionalToast'
+import {ReleaseTitle} from '../../../../../core/releases/components/ReleaseTitle'
+import {VersionInlineBadge} from '../../../../../core/releases/components/VersionInlineBadge'
+import {useVersionOperations} from '../../../../../core/releases/hooks/useVersionOperations'
+import {LATEST} from '../../../../../core/releases/util/const'
+import {getReleaseIdFromReleaseDocumentId} from '../../../../../core/releases/util/getReleaseIdFromReleaseDocumentId'
+import {getReleaseTone} from '../../../../../core/releases/util/getReleaseTone'
+import {isAgentBundleName} from '../../../../../core/store/agent/createAgentBundlesStore'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
 

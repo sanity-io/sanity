@@ -1,6 +1,6 @@
 import {Box, Button, Card, Heading, Stack, Text, TextArea} from '@sanity/ui'
 import {lazy, Suspense, type SyntheticEvent, useCallback, useId, useRef, useState} from 'react'
-import {type StudioDiagnostics} from 'sanity'
+import {type StudioDiagnostics} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex} from 'ui5'
 
 // Loaded on demand so the initial paste screen doesn't carry the sanity

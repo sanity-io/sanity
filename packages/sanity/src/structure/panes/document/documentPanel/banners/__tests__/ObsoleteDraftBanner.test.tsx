@@ -1,16 +1,16 @@
 import {type ObjectSchemaType} from '@sanity/types'
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {type TargetDocumentState, useDocumentOperation} from 'sanity'
 import {beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {useDocumentOperation} from '../../../../../../core/hooks/useDocumentOperation'
+import {type TargetDocumentState} from '../../../../../../core/hooks/useTargetDocumentState'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
 import {useDocumentPane} from '../../../useDocumentPane'
 import {ObsoleteDraftBanner} from '../ObsoleteDraftBanner'
 
-vi.mock('sanity', async (importOriginal) => ({
-  ...(await importOriginal()),
+vi.mock('../../../../../../core/hooks/useDocumentOperation', () => ({
   useDocumentOperation: vi.fn(),
 }))
 

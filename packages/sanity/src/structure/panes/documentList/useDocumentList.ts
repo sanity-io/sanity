@@ -22,14 +22,11 @@ import {
   takeUntil,
   withLatestFrom,
 } from 'rxjs/operators'
-import {
-  catchWithCount,
-  measureFirstMatch,
-  useSchema,
-  useSearchMaxFieldDepth,
-  useWorkspace,
-} from 'sanity'
+import {useSchema, useWorkspace} from 'sanity'
 
+import {useSearchMaxFieldDepth} from '../../../core/studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
+import {catchWithCount} from '../../../core/util/catchWithCount'
+import {measureFirstMatch} from '../../../core/util/measureFirstEmission'
 import {DocumentListLoadTimeMeasured} from './__telemetry__/documentListSearch.telemetry'
 import {DEFAULT_ORDERING, FULL_LIST_LIMIT, PARTIAL_PAGE_LIMIT} from './constants'
 import {findStaticTypesInFilter, removePublishedWithDrafts} from './helpers'

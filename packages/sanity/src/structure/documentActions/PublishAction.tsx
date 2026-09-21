@@ -6,23 +6,25 @@ import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type DocumentActionComponent,
+  type TFunction,
+  useCurrentUser,
+  usePerspective,
+  useTranslation,
+} from 'sanity'
+
+import {InsufficientPermissionsMessage} from '../../core/components/InsufficientPermissionsMessage'
+import {useDocumentOperation} from '../../core/hooks/useDocumentOperation'
+import {useEditState} from '../../core/hooks/useEditState'
+import {useRelativeTime} from '../../core/hooks/useRelativeTime'
+import {useSyncState} from '../../core/hooks/useSyncState'
+import {
   getPairTarget,
   getTargetScopeId,
   getTargetSiblings,
-  InsufficientPermissionsMessage,
-  isPublishedPerspective,
-  type TFunction,
-  useCurrentUser,
-  useDocumentOperation,
-  useDocumentPairPermissions,
-  useEditState,
-  usePerspective,
-  useRelativeTime,
-  useSyncState,
-  useTranslation,
-  useValidationStatus,
-} from 'sanity'
-
+} from '../../core/hooks/useTargetDocumentState'
+import {useValidationStatus} from '../../core/hooks/useValidationStatus'
+import {isPublishedPerspective} from '../../core/releases/util/util'
+import {useDocumentPairPermissions} from '../../core/store/grants/documentPairPermissions'
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 import {

@@ -3,17 +3,16 @@ import {Code} from '@sanity/ui/code'
 import {dequal as isEqual} from 'dequal/lite'
 import {memo, useCallback, useMemo, useState} from 'react'
 import {
-  EMPTY_ARRAY,
   type GeneralDocumentListLayoutKey,
   type ObjectSchemaType,
-  SourceProvider,
-  useI18nText,
   useSchema,
-  useShallowUnique,
-  useSource,
   useTranslation,
 } from 'sanity'
 
+import {useI18nText} from '../../../core/i18n/hooks/useI18nText'
+import {SourceProvider, useSource} from '../../../core/studio/source'
+import {EMPTY_ARRAY} from '../../../core/util/empty'
+import {useShallowUnique} from '../../../core/util/useShallowUnique'
 import {Pane} from '../../components/pane/Pane'
 import {_DEBUG} from '../../constants'
 import {structureLocaleNamespace} from '../../i18n'
