@@ -1,8 +1,10 @@
 import {Card, Stack, Text} from '@sanity/ui'
 
 import {TestWrapper} from '../../../../../../../../test/browser/TestWrapper'
+import {SearchProvider} from '../../contexts/search/SearchProvider'
 import {DateIncludeTimeFooter} from '../filters/filter/inputs/date/dateIncludeTimeFooter/DateIncludeTimeFooter'
 import {Instructions} from '../Instructions'
+import {SearchPopover} from '../SearchPopover'
 
 const NOOP = () => undefined
 
@@ -38,6 +40,9 @@ export function SearchChromeStory() {
           </Stack>
         </Stack>
       </Card>
+      <SearchProvider>
+        <SearchPopover disableFocusLock onClose={NOOP} open />
+      </SearchProvider>
     </TestWrapper>
   )
 }
