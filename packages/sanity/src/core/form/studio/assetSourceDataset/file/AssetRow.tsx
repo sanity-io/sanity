@@ -12,10 +12,18 @@ import {
   Text,
 } from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {type KeyboardEvent, type MouseEvent, useCallback, useMemo, useRef, useState} from 'react'
+import {clsx} from 'clsx'
+import {
+  type ComponentProps,
+  type KeyboardEvent,
+  type MouseEvent,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {type Subscription} from 'rxjs'
-import {css, styled} from 'styled-components'
-import {Flex, Grid, Box} from 'ui5'
+import {Grid, Flex, Box} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {getHumanFriendlyBytes} from '../../../../field/types/file/diff/helpers'
@@ -29,6 +37,15 @@ import {AssetMenu} from '../shared/AssetMenu'
 import {AssetUsageDialog} from '../shared/AssetUsageDialog'
 import {type AssetMenuAction} from '../types'
 import {formatMimeType} from '../utils/mimeType'
+import {
+  cardIconWrapper,
+  customCardSelected,
+  customFlex,
+  rowButton,
+  rowButtonSelected,
+  rowButtonUnselected,
+  typeText,
+} from './AssetRow.css'
 
 interface RowProps {
   isMobile?: boolean
@@ -39,90 +56,30 @@ interface RowProps {
   onDeleteFinished?: (assetId: string) => void
 }
 
-const CardIconWrapper = styled.span`
-  background-color: transparent;
-  flex-shrink: 0;
-`
+/**
+ * Both wrappers forward the row's own `onKeyPress` callback (declared on `RowProps`), so they take
+ * that prop from `RowProps` rather than from the primitive's DOM attributes.
+ */
+type CustomFlexProps = Omit<ComponentProps<typeof Flex>, 'onKeyPress'> &
+  Pick<RowProps, 'onKeyPress'>
 
-// These are here because using vanilla UI components caused a type issue inside of styled-components
-const CustomFlex = styled(Flex)``
+type RowButtonProps = Omit<ComponentProps<typeof Button<'button'>>, 'onKeyPress'> &
+  Pick<RowProps, 'isSelected' | 'onKeyPress'>
 
-interface SelectableStyleProps {
-  $isSelected?: boolean
+function CustomFlex(props: CustomFlexProps) {
+  const {className, ...rest} = props
+  return <Flex {...rest} className={clsx(customFlex, className)} />
 }
 
-const CustomCard = styled(Card)<SelectableStyleProps>`
-  ${(props) =>
-    props.$isSelected &&
-    css`
-      --card-muted-fg-color: var(--card-bg-color);
-      --card-fg-color: var(--card-bg-color);
-    `}
-`
-
-const RowButton = styled(Button)<SelectableStyleProps>`
-  box-shadow: none;
-  min-width: 0;
-  cursor: pointer;
-  position: initial;
-
-  &:before,
-  &:after {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 2;
-  }
-
-  &:before {
-    z-index: 0;
-    pointer-events: none;
-    border-radius: inherit;
-  }
-
-  ${(props) =>
-    props.$isSelected &&
-    css`
-      --card-muted-fg-color: var(--card-bg-color);
-      --card-fg-color: var(--card-bg-color);
-
-      &:before {
-        background-color: var(--card-focus-ring-color);
-      }
-
-      ${CardIconWrapper} {
-        --card-muted-fg-color: var(--card-bg-color);
-      }
-
-      ${CustomFlex} {
-        --card-muted-fg-color: var(--card-bg-color);
-        --card-fg-color: var(--card-bg-color);
-      }
-    `}
-
-  ${(props) =>
-    !props.$isSelected &&
-    css`
-      &:hover:before {
-        background-color: var(--card-bg-color);
-      }
-
-      &:focus:before {
-        background-color: var(--card-code-bg-color);
-      }
-
-      &:focus-within:before {
-        background-color: var(--card-bg-color);
-      }
-    `}
-`
-
-const TypeText = styled(Text)`
-  overflow-wrap: anywhere;
-`
+function RowButton(props: RowButtonProps) {
+  const {className, isSelected, ...rest} = props
+  return (
+    <Button
+      {...rest}
+      className={clsx(rowButton, isSelected ? rowButtonSelected : rowButtonUnselected, className)}
+    />
+  )
+}
 
 const STYLES_ROW_CARD = {
   position: 'relative',
@@ -272,7 +229,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
             radius={2}
           >
             <Flex gap={2} flexBasis="0%" flexGrow={2} alignItems="center">
-              <Card as={CardIconWrapper} padding={2} tone="transparent" radius={2}>
+              <Card as="span" className={cardIconWrapper} padding={2} tone="transparent" radius={2}>
                 <Text muted size={2} style={STYLES_ICON_CARD}>
                   <DocumentIcon />
                 </Text>
@@ -358,12 +315,12 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
   }
 
   return (
-    <CustomCard
+    <Card
+      className={isSelected ? customCardSelected : undefined}
       paddingBottom={1}
       style={STYLES_ROW_CARD}
       radius={0}
       overflow={'hidden'}
-      $isSelected={isSelected}
       aria-selected={Boolean(isSelected)}
     >
       <Grid
@@ -386,7 +343,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
           title={t('asset-source.file.asset-list.item.select-file-tooltip', {
             filename: originalFilename,
           })}
-          $isSelected={isSelected}
+          isSelected={isSelected}
           radius={2}
         >
           <CustomFlex
@@ -400,7 +357,8 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
             data-id={_id}
           >
             <Card
-              as={CardIconWrapper}
+              as="span"
+              className={cardIconWrapper}
               padding={2}
               tone="transparent"
               radius={2}
@@ -432,9 +390,9 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
         </CustomFlex>
         <CustomFlex alignItems="center">
           <Box>
-            <TypeText size={1} muted textOverflow="ellipsis">
+            <Text className={typeText} size={1} muted textOverflow="ellipsis">
               {formattedMimeType}
-            </TypeText>
+            </Text>
           </Box>
         </CustomFlex>
         <CustomFlex alignItems="center">
@@ -453,6 +411,6 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
         </CustomFlex>
       </Grid>
       {usageDialog || deleteDialog}
-    </CustomCard>
+    </Card>
   )
 }
