@@ -2513,7 +2513,7 @@ describe('sanity', () => {
     expectTypeOf<CommentsIntentProviderProps>().toBeObject()
   })
   test('CommentsList', () => {
-    expectTypeOf<typeof CommentsList>().not.toBeNever()
+    expectTypeOf<typeof CommentsList>().toBeFunction()
   })
   test('CommentsListBreadcrumbItem', () => {
     expectTypeOf<CommentsListBreadcrumbItem>().toBeObject()

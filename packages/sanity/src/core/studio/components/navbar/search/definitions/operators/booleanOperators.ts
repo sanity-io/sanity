@@ -1,4 +1,4 @@
-import {SearchFilterBooleanInput} from '../../components/filters/filter/inputs/boolean/Boolean'
+import {SearchFilterBooleanInput} from './lazyInputComponents'
 import {
   defineSearchOperator,
   type SearchOperatorInput,

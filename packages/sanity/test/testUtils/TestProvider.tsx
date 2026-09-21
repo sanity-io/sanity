@@ -77,6 +77,11 @@ export async function createTestProvider({
   const router = route.create('/', [route.intents('/intent')])
 
   await i18next.init()
+  // `prepareI18n` starts an `init()` of its own; a second `init()` resolves as soon as that one is
+  // in flight, before lazily loaded bundles (the studio strings, the structure bundle) have
+  // arrived, so wait for every configured namespace explicitly. Otherwise the first render under
+  // `LocaleProviderBase` suspends and synchronous assertions see the loading fallback.
+  await i18next.loadNamespaces(i18next.options.ns as string[])
 
   const routerState = {}
   const activeWorkspace = {name: 'default'} as WorkspaceSummary

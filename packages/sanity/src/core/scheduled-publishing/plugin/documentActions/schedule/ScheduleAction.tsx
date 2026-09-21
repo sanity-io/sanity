@@ -1,10 +1,11 @@
 import {CalendarIcon} from '@sanity/icons/Calendar'
 import {ClockIcon} from '@sanity/icons/Clock'
 import {Text} from '@sanity/ui'
-import {useCallback, useState} from 'react'
+import {lazy, Suspense, useCallback, useState} from 'react'
 import {Box} from 'ui5'
 
 import {InsufficientPermissionsMessage} from '../../../../components/InsufficientPermissionsMessage'
+import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
 import {
   type DocumentActionComponent,
   type DocumentActionDialogProps,
@@ -17,7 +18,6 @@ import {useCurrentUser} from '../../../../store/user/hooks'
 import {debugWithName} from '../../../../studio/timezones/utils/debug'
 import DialogFooter from '../../../components/dialogs/DialogFooter'
 import DialogHeader from '../../../components/dialogs/DialogHeader'
-import {EditScheduleForm} from '../../../components/editScheduleForm'
 import ErrorCallout from '../../../components/errorCallout/ErrorCallout'
 import {SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE} from '../../../constants'
 import {DocumentActionPropsProvider} from '../../../contexts/documentActionProps'
@@ -26,7 +26,17 @@ import useScheduleForm from '../../../hooks/useScheduleForm'
 import useScheduleOperation from '../../../hooks/useScheduleOperation'
 import {useSchedulePublishingUpsell} from '../../../tool/contexts/SchedulePublishingUpsellProvider'
 import {NewScheduleInfo} from './NewScheduleInfo'
-import Schedules from './Schedules'
+
+// The dialog content (schedule list, schedule form with its date inputs) pulls in the form field
+// chrome and its animations; the action itself is registered for every document, so the
+// content only loads once the dialog opens.
+const Schedules = lazy(() => import('./Schedules'))
+const EditScheduleForm = lazy(() =>
+  import('../../../components/editScheduleForm').then((module) => ({
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+    default: module.EditScheduleForm,
+  })),
+)
 
 const debug = debugWithName('ScheduleAction')
 
@@ -147,14 +157,15 @@ export const useScheduleAction: DocumentActionComponent = (props: DocumentAction
       />
     ) : (
       <DocumentActionPropsProvider value={props}>
-        {hasExistingSchedules ? (
-          <Schedules schedules={schedules} />
-        ) : (
-          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-          <EditScheduleForm onChange={onFormChange} value={formData}>
-            <NewScheduleInfo id={id} schemaType={type} />
-          </EditScheduleForm>
-        )}
+        <Suspense fallback={<LoadingBlock />}>
+          {hasExistingSchedules ? (
+            <Schedules schedules={schedules} />
+          ) : (
+            <EditScheduleForm onChange={onFormChange} value={formData}>
+              <NewScheduleInfo id={id} schemaType={type} />
+            </EditScheduleForm>
+          )}
+        </Suspense>
       </DocumentActionPropsProvider>
     ),
     footer: !hasExistingSchedules && (

@@ -52,7 +52,7 @@ exports[`exports snapshot 1`] = `
     "CommentsEnabledProvider": "object",
     "CommentsEnabledProviderV2": "object",
     "CommentsIntentProvider": "object",
-    "CommentsList": "object",
+    "CommentsList": "function",
     "CommentsProvider": "object",
     "CommentsProviderV2": "object",
     "CommentsSelectedPathProvider": "object",

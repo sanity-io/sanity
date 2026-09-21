@@ -17,6 +17,7 @@ import {AuthBoundary} from './AuthBoundary'
 import {ColorSchemeProvider} from './colorScheme'
 import {ComlinkRouteHandler} from './components/ComlinkRouteHandler'
 import {Z_OFFSET} from './constants'
+import {PreloadStudioShell} from './lazy'
 import {LiveUserApplicationProvider} from './liveUserApplication/LiveUserApplicationProvider'
 import {LiveManifestRegisterProvider} from './manifest'
 import {PackageVersionStatusProvider} from './packageVersionStatus/PackageVersionStatusProvider'
@@ -73,6 +74,7 @@ export function StudioProvider({
   const _children = useMemo(
     () => (
       <UserApplicationCacheProvider>
+        <PreloadStudioShell />
         <LiveUserApplicationProvider>
           <LiveManifestRegisterProvider />
           <WorkspaceLoader
