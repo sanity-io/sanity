@@ -15,7 +15,7 @@ export const restore: OperationImpl<[fromRevision: DocumentRevision]> = {
         : idPair.draftId
 
     return historyStore.restore(idPair.publishedId, targetId, fromRevision, {
-      fromDeleted: !snapshots.draft && !snapshots.published,
+      fromDeleted: !snapshots.draft && !snapshots.published && !snapshots.version,
       useServerDocumentActions: true,
     })
   },

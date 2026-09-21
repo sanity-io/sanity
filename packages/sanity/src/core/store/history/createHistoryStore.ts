@@ -270,18 +270,30 @@ function restore(
         isDraftId(targetDocumentId as DocumentId) || isVersionId(targetDocumentId as DocumentId)
 
       if (options?.useServerDocumentActions && canUseServerAction) {
-        const replaceDraftAction: Action = {
-          actionType: 'sanity.action.document.replaceDraft',
-          publishedId: documentId,
-          attributes: restoredDraft,
-        }
-        return actionsApiClient(
+        const actionsClient = actionsApiClient(
           client,
           // The pair derives from the *target* id: `documentId` is always the published group id
           // (its bundle segment is always undefined), while the target may be a version document
           // (release or variant scoped) whose actions require the versioned API client.
           getIdPair(documentId, {version: getVersionFromId(targetDocumentId)}),
-        ).observable.action(
+        )
+
+        // Version documents are not drafts. `document.create` + `replaceDraft` with a version
+        // `_id` trips the one-version-per-published-id guard (409 documentAlreadyExistsError).
+        if (isVersionId(targetDocumentId as DocumentId)) {
+          const replaceVersionAction: Action = {
+            actionType: 'sanity.action.document.version.replace',
+            document: restoredDraft,
+          }
+          return actionsClient.observable.action(replaceVersionAction)
+        }
+
+        const replaceDraftAction: Action = {
+          actionType: 'sanity.action.document.replaceDraft',
+          publishedId: documentId,
+          attributes: restoredDraft,
+        }
+        return actionsClient.observable.action(
           options.fromDeleted
             ? [
                 {
