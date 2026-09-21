@@ -1,5 +1,5 @@
 import {CopyIcon} from '@sanity/icons/Copy'
-import {Button, Card, Flex, Inline, Select, Stack, Text, TextInput} from '@sanity/ui'
+import {Button, Card, Inline, Select, Stack, Text, TextInput} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {
   type ChangeEvent,
@@ -17,7 +17,7 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
-import {Box, Grid} from 'ui5'
+import {Box, Flex, Grid} from 'ui5'
 
 import {API_VERSIONS} from '../apiVersions'
 import {visionLocaleNamespace} from '../i18n'
@@ -262,7 +262,7 @@ export function VisionGuiHeader({
                   </QueryCopyLink>
                 </StyledLabel>
               </Card>
-              <Flex flex={1} gap={1}>
+              <Flex flexBasis="0%" flexGrow={1} gap={1}>
                 <Box flexBasis="0%" flexGrow={1}>
                   <TextInput
                     data-testid="vision-query-url"

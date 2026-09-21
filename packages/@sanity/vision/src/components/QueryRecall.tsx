@@ -4,7 +4,7 @@ import {SearchIcon} from '@sanity/icons/Search'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
 import {UsersIcon} from '@sanity/icons/Users'
-import {Badge, Button, Card, Dialog, Flex, Stack, Tab, TabList, Text, TextInput} from '@sanity/ui'
+import {Badge, Button, Card, Dialog, Stack, Tab, TabList, Text, TextInput} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
@@ -12,7 +12,7 @@ import {Tooltip} from '@sanity/ui/tooltip'
 import {dequal as isEqual} from 'dequal/lite'
 import {type ComponentProps, type ReactElement, useCallback, useState} from 'react'
 import {ContextMenuButton, UserAvatar, useDateTimeFormat, useTranslation} from 'sanity'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {type QueryConfig, useSavedQueries} from '../hooks/useSavedQueries'
 import {visionLocaleNamespace} from '../i18n'
@@ -26,7 +26,14 @@ function FixedHeader(props: ComponentProps<typeof Stack>) {
 
 function ScrollContainer(props: ComponentProps<typeof Flex>) {
   return (
-    <Flex {...props} direction="column" flex={1} overflow="hidden" className={scrollContainer} />
+    <Flex
+      {...props}
+      flexDirection="column"
+      flexBasis="0%"
+      flexGrow={1}
+      overflow="hidden"
+      className={scrollContainer}
+    />
   )
 }
 
@@ -356,7 +363,13 @@ export function QueryRecall({
   return (
     <ScrollContainer>
       <FixedHeader gap={3}>
-        <Flex padding={3} paddingTop={2} paddingBottom={0} justify="space-between" align="center">
+        <Flex
+          padding={3}
+          paddingTop={2}
+          paddingBottom={0}
+          justifyContent="space-between"
+          alignItems="center"
+        >
           <StyledLabel muted>{t('label.saved-queries')}</StyledLabel>
           <Button
             aria-label={t('action.save-query')}
@@ -442,8 +455,12 @@ export function QueryRecall({
                 }}
               >
                 <Stack gap={compactMode ? 2 : 3}>
-                  <Flex justify="space-between" align={'center'} style={{minHeight: '25px'}}>
-                    <Flex align="center" gap={2} paddingRight={1} style={{minWidth: 0, flex: 1}}>
+                  <Flex
+                    justifyContent="space-between"
+                    alignItems={'center'}
+                    style={{minHeight: '25px'}}
+                  >
+                    <Flex alignItems="center" gap={2} paddingRight={1} style={{flex: 1}}>
                       {editingKey === q._key ? (
                         <TextInput
                           value={editingTitle}
@@ -499,7 +516,7 @@ export function QueryRecall({
                         />
                       )}
                     </Flex>
-                    <Flex align="center" gap={2}>
+                    <Flex alignItems="center" gap={2}>
                       <Box
                         data-query-actions="true"
                         style={{
@@ -579,7 +596,7 @@ export function QueryRecall({
 
                   {compactMode ? (
                     <Stack gap={1} style={{paddingTop: 0, minHeight: '30px'}}>
-                      <Flex align="center" gap={2} style={{minHeight: '18px'}}>
+                      <Flex alignItems="center" gap={2} style={{minHeight: '18px'}}>
                         <Box
                           style={{
                             display: 'flex',
@@ -621,7 +638,11 @@ export function QueryRecall({
                       </Text>
                     </Stack>
                   ) : (
-                    <Flex align="center" gap={2} style={{paddingTop: '2px', minHeight: '20px'}}>
+                    <Flex
+                      alignItems="center"
+                      gap={2}
+                      style={{paddingTop: '2px', minHeight: '20px'}}
+                    >
                       <Box
                         style={{
                           display: 'flex',
@@ -698,7 +719,7 @@ export function QueryRecall({
           header={t('label.share')}
           onClose={() => setShareDialogQuery(null)}
           footer={
-            <Flex justify="flex-end" gap={3} padding={3} align="center">
+            <Flex justifyContent="flex-end" gap={3} padding={3} alignItems="center">
               <Button
                 mode="bleed"
                 padding={2}
