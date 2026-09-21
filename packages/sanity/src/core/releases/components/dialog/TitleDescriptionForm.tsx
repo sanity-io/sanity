@@ -1,7 +1,8 @@
 import {type EditableReleaseDocument} from '@sanity/client'
-import {Stack, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type ChangeEvent, useCallback, useEffect, useRef, useState} from 'react'
+import {VStack} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useReleaseFormOptimisticUpdating} from '../../hooks/useReleaseFormOptimisticUpdating'
@@ -130,7 +131,7 @@ export function TitleDescriptionForm({
   const shouldShowDescription = isReleaseOpen || localData.description
 
   return (
-    <Stack gap={3}>
+    <VStack gap={3}>
       <textarea
         className={titleTextArea}
         style={titleVars}
@@ -165,6 +166,6 @@ export function TitleDescriptionForm({
           readOnly={!isReleaseOpen}
         />
       )}
-    </Stack>
+    </VStack>
   )
 }

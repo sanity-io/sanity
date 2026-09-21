@@ -28,8 +28,8 @@ export function deepEqualsIgnoreKey(a: unknown, b: unknown): boolean {
   }
 
   if (a && b && typeof a === 'object' && typeof b === 'object') {
-    const keys = Object.keys(a)
-    if (keys.length !== Object.keys(b).length) {
+    const keys = Object.keys(a).filter((key) => key !== '_key')
+    if (keys.length !== Object.keys(b).filter((key) => key !== '_key').length) {
       return false
     }
 
@@ -50,10 +50,6 @@ export function deepEqualsIgnoreKey(a: unknown, b: unknown): boolean {
     }
 
     for (let i = 0; i < keys.length; i++) {
-      if (keys[i] === '_key') {
-        continue
-      }
-
       if (!Object.prototype.hasOwnProperty.call(b, keys[i])) {
         return false
       }
@@ -61,10 +57,6 @@ export function deepEqualsIgnoreKey(a: unknown, b: unknown): boolean {
 
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i] as keyof typeof a
-      if (key === '_key') {
-        continue
-      }
-
       if (!deepEqualsIgnoreKey(a[key], b[key])) {
         return false
       }

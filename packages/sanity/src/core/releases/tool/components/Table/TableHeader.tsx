@@ -1,6 +1,6 @@
 import {ArrowUpIcon} from '@sanity/icons/ArrowUp'
 import {SearchIcon} from '@sanity/icons/Search'
-import {Card, Stack, Text, TextInput} from '@sanity/ui'
+import {Card, Text, TextInput} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type CSSProperties, useMemo} from 'react'
 import {Box, Flex} from 'ui5'
@@ -65,7 +65,14 @@ const TableHeaderSearch = ({
   const {setSearchTerm, searchTerm} = useTableContext()
 
   return (
-    <Stack {...headerProps} flex={1} paddingY={2} paddingRight={3} sizing="border">
+    <Flex
+      {...headerProps}
+      flexBasis="0%"
+      flexGrow={1}
+      paddingY={2}
+      paddingRight={3}
+      flexDirection="column"
+    >
       <TextInput
         border={false}
         fontSize={1}
@@ -78,7 +85,7 @@ const TableHeaderSearch = ({
         onClear={() => setSearchTerm('')}
         clearButton={!!searchTerm}
       />
-    </Stack>
+    </Flex>
   )
 }
 

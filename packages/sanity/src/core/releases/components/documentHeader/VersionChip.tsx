@@ -7,6 +7,7 @@ import {memo, type ReactNode, useEffect, useMemo, useRef} from 'react'
 import {useObservable} from 'react-rx'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
+import {INITIAL_COMPANION_DOCS} from '../../../canvas/store/createCanvasCompanionDocsStore'
 import {useCanvasCompanionDocsStore} from '../../../canvas/store/useCanvasCompanionDocsStore'
 import {useReleasesToolAvailable} from '../../../schedules/hooks/useReleasesToolAvailable'
 import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
@@ -30,13 +31,8 @@ const useVersionIsLinked = (documentId: string, fromRelease: string) => {
     () => companionDocsStore.getCompanionDocs(documentId),
     [documentId, companionDocsStore],
   )
-  // Deferred (per review): navigating to another document remounts the
-  // document pane (its `_key` changes), resetting this state, so a deferred
-  // read can't report linkage for a previous document. react-rx v5's
-  // identity-coherent deferral also falls back to the live value if the
-  // observable identity changes without a remount.
-  const companionDocs = useObservable(companionDocs$)
-  return companionDocs?.data.some((companion) => companion?.studioDocumentId === versionId)
+  const companionDocs = useObservable(companionDocs$, INITIAL_COMPANION_DOCS)
+  return companionDocs.data.some((companion) => companion?.studioDocumentId === versionId)
 }
 
 /**

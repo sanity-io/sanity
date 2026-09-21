@@ -66,21 +66,111 @@ export function baseVersionOf(
 }
 
 /**
- * Count confirmed regressions per INTRODUCING release: for each first-bad
- * sha from a regression-flagged bisect session, the oldest release whose
- * ancestry contains it gets the blame. Shas no release contains (unreleased
- * regressions) are not counted here.
+ * Group confirmed regressions by INTRODUCING release: for each item's
+ * first-bad sha, the oldest release whose ancestry contains it gets the
+ * blame. Items no release contains (unreleased regressions) are dropped.
+ * Order within a release follows the input.
  */
+export function regressionsByTag<T extends ReleaseTag, R extends {firstBadSha: string}>(
+  commitsBySha: Map<string, BisectCommit>,
+  tags: T[],
+  regressions: R[],
+): Map<string, R[]> {
+  const byTag = new Map<string, R[]>()
+  for (const regression of regressions) {
+    const introducing = releasesContaining(commitsBySha, tags, regression.firstBadSha)[0]
+    if (!introducing) continue
+    const list = byTag.get(introducing.tag) ?? []
+    list.push(regression)
+    byTag.set(introducing.tag, list)
+  }
+  return byTag
+}
+
+/** `regressionsByTag` reduced to counts, for the badge. */
 export function regressionCountByTag<T extends ReleaseTag>(
   commitsBySha: Map<string, BisectCommit>,
   tags: T[],
   firstBadShas: string[],
 ): Map<string, number> {
-  const counts = new Map<string, number>()
-  for (const sha of firstBadShas) {
-    const introducing = releasesContaining(commitsBySha, tags, sha)[0]
-    if (!introducing) continue
-    counts.set(introducing.tag, (counts.get(introducing.tag) ?? 0) + 1)
+  const grouped = regressionsByTag(
+    commitsBySha,
+    tags,
+    firstBadShas.map((firstBadSha) => ({firstBadSha})),
+  )
+  return new Map([...grouped].map(([tag, list]) => [tag, list.length]))
+}
+
+/**
+ * Semver order for `vMAJOR.MINOR.PATCH[-prerelease]` tags, newest first —
+ * the releases list is a version list, not a timeline, and tag dates put a
+ * maintenance patch cut last week above the minor it backports from.
+ * A prerelease sorts below its release (`v7.0.0-rc.1` < `v7.0.0`);
+ * prerelease identifiers compare numerically when both are numbers, else as
+ * strings. Anything that doesn't parse sorts last, by tag name.
+ */
+export function compareTagsSemverDesc(a: string, b: string): number {
+  const pa = parseSemverTag(a)
+  const pb = parseSemverTag(b)
+  if (!pa && !pb) return compareCodePointsDesc(a, b)
+  if (!pa) return 1
+  if (!pb) return -1
+  for (const key of ['major', 'minor', 'patch'] as const) {
+    if (pa[key] !== pb[key]) return pb[key] - pa[key]
   }
-  return counts
+  if (!pa.prerelease && !pb.prerelease) return 0
+  if (!pa.prerelease) return -1
+  if (!pb.prerelease) return 1
+  return comparePrereleaseDesc(pa.prerelease, pb.prerelease)
+}
+
+function parseSemverTag(
+  tag: string,
+): {major: number; minor: number; patch: number; prerelease?: string} | undefined {
+  const match = /^v?(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z.-]+))?$/.exec(tag)
+  if (!match) return undefined
+  const [, major, minor, patch, prerelease] = match
+  return {major: Number(major), minor: Number(minor), patch: Number(patch), prerelease}
+}
+
+function comparePrereleaseDesc(a: string, b: string): number {
+  const as = a.split('.')
+  const bs = b.split('.')
+  for (let i = 0; i < Math.max(as.length, bs.length); i++) {
+    // A shorter identifier list is the lower precedence (rc < rc.1)
+    if (as[i] === undefined) return 1
+    if (bs[i] === undefined) return -1
+    const an = /^\d+$/.test(as[i]) ? Number(as[i]) : undefined
+    const bn = /^\d+$/.test(bs[i]) ? Number(bs[i]) : undefined
+    if (an !== undefined && bn !== undefined) {
+      if (an !== bn) return bn - an
+    } else if (an !== undefined) {
+      return 1 // numeric identifiers rank below alphanumeric ones
+    } else if (bn !== undefined) {
+      return -1
+    } else if (as[i] !== bs[i]) {
+      return compareCodePointsDesc(as[i], bs[i])
+    }
+  }
+  return 0
+}
+
+/** SemVer wants ASCII order for non-numeric identifiers; `localeCompare` is locale- and case-folding-dependent. */
+function compareCodePointsDesc(a: string, b: string): number {
+  if (a === b) return 0
+  return a < b ? 1 : -1
+}
+
+/**
+ * The Bisect tool URL for a session, from the Releases tool's own location.
+ * Tools are top-level studio routes (`<basePath>/<tool name>`), and the
+ * Bisect tool reads `?session=` from the location rather than router state,
+ * so this is plain path surgery on the current pathname: swap the trailing
+ * `releases` segment for `bisect` and append the query. Router-based
+ * resolution is not an option here — `useRouter()` inside a tool is scoped
+ * to that tool, so a `{tool: 'bisect'}` state can't be encoded from it.
+ */
+export function bisectSessionPath(pathname: string, sessionId: string): string {
+  const base = pathname.replace(/\/releases(?:\/.*)?$/, '')
+  return `${base}/bisect?session=${encodeURIComponent(sessionId)}`
 }

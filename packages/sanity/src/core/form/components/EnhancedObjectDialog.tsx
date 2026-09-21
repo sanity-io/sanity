@@ -18,7 +18,6 @@ import {
 } from '../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
 import {useFormBuilder} from '../useFormBuilder'
 import {DialogBreadcrumbs} from './breadcrumbs/DialogBreadcrumbs'
-import {EditDialogOuterBoundaryProvider} from './EditDialogOuterBoundaryProvider'
 import {hiddenDialog} from './EnhancedObjectDialog.css'
 
 const PRESENCE_MARGINS: [number, number, number, number] = [0, 0, 1, 0]
@@ -201,11 +200,9 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
           animate={!shouldDisableAnimation}
           onClickOutside={handleCompleteDialogClose}
         >
-          <EditDialogOuterBoundaryProvider>
-            <BoundaryElementProvider element={documentScrollElement}>
-              {contents}
-            </BoundaryElementProvider>
-          </EditDialogOuterBoundaryProvider>
+          <BoundaryElementProvider element={documentScrollElement}>
+            {contents}
+          </BoundaryElementProvider>
         </Dialog>
       </VirtualizerScrollInstanceProvider>
     )
@@ -223,11 +220,9 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
         containerRef={setDocumentScrollElement}
         referenceElement={props.legacy_referenceElement}
       >
-        <EditDialogOuterBoundaryProvider>
-          <BoundaryElementProvider element={documentScrollElement}>
-            {contents}
-          </BoundaryElementProvider>
-        </EditDialogOuterBoundaryProvider>
+        <BoundaryElementProvider element={documentScrollElement}>
+          {contents}
+        </BoundaryElementProvider>
       </PopoverDialog>
     </VirtualizerScrollInstanceProvider>
   )

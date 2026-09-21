@@ -33,6 +33,10 @@ const INITIAL_STATE: VariantStoreState = {
 
 export interface VariantStore {
   state$: Observable<VariantStoreState>
+  /**
+   * What `state$` emits first; hooks render it until the subscription started on commit emits.
+   */
+  initialState: VariantStoreState
   dispatch: Dispatch<VariantStoreAction>
 }
 
@@ -58,6 +62,7 @@ export function createVariantsStore(context: {
 
     return {
       state$: of(disabledState),
+      initialState: disabledState,
       dispatch: () => {
         // noop
       },
@@ -102,6 +107,7 @@ export function createVariantsStore(context: {
 
   return {
     state$,
+    initialState: INITIAL_STATE,
     dispatch,
   }
 }

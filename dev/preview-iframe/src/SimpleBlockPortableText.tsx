@@ -1,8 +1,9 @@
 import {PortableText, type PortableTextComponents} from '@portabletext/react'
 import {stegaClean} from '@sanity/client/stega'
 import {type PortableTextBlock} from '@sanity/types'
-import {Flex, Spinner} from '@sanity/ui'
+import {Spinner} from '@sanity/ui'
 import {createDataAttribute} from '@sanity/visual-editing/create-data-attribute'
+import {Flex} from 'ui5'
 
 import {imageBuilder, useQuery} from './loader'
 
@@ -84,10 +85,10 @@ export function SimpleBlockPortableText(): React.JSX.Element {
   if (loading) {
     return (
       <Flex
-        align="center"
-        direction="column"
-        height="fill"
-        justify="center"
+        alignItems="center"
+        flexDirection="column"
+        height="100%"
+        justifyContent="center"
         style={{width: '100%'}}
       >
         <Spinner />

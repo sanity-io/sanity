@@ -14,7 +14,7 @@ import {
   urlSearchParamVercelProtectionBypass,
   urlSearchParamVercelSetBypassCookie,
 } from '@sanity/preview-url-secret/constants'
-import {BoundaryElementProvider, Flex, useMediaIndex} from '@sanity/ui'
+import {BoundaryElementProvider, useMediaIndex} from '@sanity/ui'
 import {useActorRef, useSelector} from '@xstate/react'
 import {lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
@@ -28,6 +28,7 @@ import {
   useWorkspace,
 } from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
+import {Flex} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {DEFAULT_TOOL_NAME, EDIT_INTENT_MODE, NARROW_MEDIA_INDEX} from './constants'
@@ -538,8 +539,8 @@ export default function PresentationTool(props: {
               <Flex
                 className={container}
                 data-testid="presentation-root"
-                direction="column"
-                height="fill"
+                flexDirection="column"
+                height="100%"
               >
                 {isNarrow && (
                   <PresentationNarrowTabBar
@@ -548,7 +549,7 @@ export default function PresentationTool(props: {
                     onTabChange={setActiveTab}
                   />
                 )}
-                <Flex direction="column" flex={1} style={{minHeight: 0}}>
+                <Flex flexDirection="column" flexBasis="0%" flexGrow={1}>
                   <Panels>
                     <PresentationNavigator
                       hidden={isNarrow && resolvedTab !== 'navigator'}
@@ -562,7 +563,13 @@ export default function PresentationTool(props: {
                       order={3}
                       hidden={isNarrow && resolvedTab !== 'preview'}
                     >
-                      <Flex direction="column" flex={1} height="fill" ref={setBoundaryElement}>
+                      <Flex
+                        flexDirection="column"
+                        flexBasis="0%"
+                        flexGrow={1}
+                        height="100%"
+                        ref={setBoundaryElement}
+                      >
                         <BoundaryElementProvider element={boundaryElement}>
                           <Preview
                             // @TODO move closer to the <iframe> element itself to allow for more precise handling of when to reload the iframe and when to reconnect when the target origin changes

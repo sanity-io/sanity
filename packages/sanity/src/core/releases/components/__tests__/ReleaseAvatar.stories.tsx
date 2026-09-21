@@ -1,5 +1,6 @@
-import {type BadgeTone, Card, Flex, Stack, Text} from '@sanity/ui'
+import {type BadgeTone, Card, Text} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
+import {VStack, Flex} from 'ui5'
 
 import {
   activeASAPRelease,
@@ -28,50 +29,50 @@ export const AllVariants: Story = {
   args: {releaseType: 'asap'},
   render: () => (
     <Card padding={4}>
-      <Stack gap={5}>
-        <Stack gap={2}>
+      <VStack gap={5}>
+        <VStack gap={2}>
           <Text muted size={1} weight="medium">
             by releaseType
           </Text>
-          <Flex align="center" gap={3}>
+          <Flex alignItems="center" gap={3}>
             <ReleaseAvatar releaseType="asap" />
             <ReleaseAvatar releaseType="scheduled" />
             <ReleaseAvatar releaseType="undecided" />
           </Flex>
-        </Stack>
-        <Stack gap={2}>
+        </VStack>
+        <VStack gap={2}>
           <Text muted size={1} weight="medium">
             by release document
           </Text>
-          <Flex align="center" gap={3}>
+          <Flex alignItems="center" gap={3}>
             <ReleaseAvatar release={activeASAPRelease} />
             <ReleaseAvatar release={activeScheduledRelease} />
             <ReleaseAvatar release={activeUndecidedRelease} />
             <ReleaseAvatar release={activeCardinalityOneRelease} />
             <ReleaseAvatar release="drafts" />
           </Flex>
-        </Stack>
-        <Stack gap={2}>
+        </VStack>
+        <VStack gap={2}>
           <Text muted size={1} weight="medium">
             by tone
           </Text>
-          <Flex align="center" gap={3}>
+          <Flex alignItems="center" gap={3}>
             {TONES.map((tone) => (
               // oxlint-disable-next-line no-deprecated -- deprecated tone path is still rendered in production
               <ReleaseAvatar key={tone} tone={tone} />
             ))}
           </Flex>
-        </Stack>
-        <Stack gap={2}>
+        </VStack>
+        <VStack gap={2}>
           <Text muted size={1} weight="medium">
             StatusItem
           </Text>
-          <Stack gap={2} style={{maxWidth: 280}}>
+          <VStack gap={2} style={{maxWidth: 280}}>
             <StatusItem avatar={<ReleaseAvatar padding={2} releaseType="asap" />} text="ASAP" />
             <StatusItem text="No avatar" />
-          </Stack>
-        </Stack>
-      </Stack>
+          </VStack>
+        </VStack>
+      </VStack>
     </Card>
   ),
 }
