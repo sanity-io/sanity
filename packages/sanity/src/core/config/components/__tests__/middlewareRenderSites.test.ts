@@ -62,11 +62,18 @@ function blankOutPreservingLines(text: string) {
   return text.replace(/[^\n]/g, ' ')
 }
 
+const sources = new Map<string, string>()
+
 /** Source with comments blanked out, so `<Suspense>` in prose does not count as a boundary. */
 function read(file: string) {
-  return readFileSync(file, 'utf8')
-    .replace(/\/\*[\s\S]*?\*\//g, blankOutPreservingLines)
-    .replace(/\/\/.*$/gm, blankOutPreservingLines)
+  let source = sources.get(file)
+  if (source === undefined) {
+    source = readFileSync(file, 'utf8')
+      .replace(/\/\*[\s\S]*?\*\//g, blankOutPreservingLines)
+      .replace(/\/\/.*$/gm, blankOutPreservingLines)
+    sources.set(file, source)
+  }
+  return source
 }
 
 function middlewareHooks(files: string[]): string[] {
