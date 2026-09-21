@@ -1,8 +1,12 @@
 import {AddIcon} from '@sanity/icons/Add'
+import {ArchiveIcon} from '@sanity/icons/Archive'
 import {BugIcon} from '@sanity/icons/Bug'
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {DocumentTextIcon} from '@sanity/icons/DocumentText'
 import {PackageIcon} from '@sanity/icons/Package'
+import {RestoreIcon} from '@sanity/icons/Restore'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Badge, Box, Button, Card, Container, Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
@@ -43,10 +47,13 @@ import {
   baseVersionOf,
   changelogUrl,
   compareTagsSemverDesc,
+  groupTagsByMajor,
+  majorOf,
   npmxUrl,
   regressionsByTag,
   type ReleaseRegressions,
 } from './releaseInfo'
+import {clearLineEol, markLineEol, RELEASE_LINES_QUERY, type ReleaseLineSlice} from './releaseLines'
 
 interface LiveState<T> {
   data: T | null
@@ -70,8 +77,15 @@ const ICON_IN_FLEX: CSSProperties = {marginLeft: 0, marginRight: 0}
  * (green) — a regression spans releases, and the three tones tell the span's
  * start and end apart from its middle. The changelog link needs the
  * release's base version — the previous release on the first-parent chain —
- * so off-mainline releases (maintenance lines) may lack it. Regressions found outside a bisect are added by hand via
- * AddRegressionDialog, stored as born-converged bisect sessions.
+ * so off-mainline releases (maintenance lines) may lack it. Regressions
+ * found outside a bisect are added by hand via AddRegressionDialog, stored
+ * as born-converged bisect sessions.
+ *
+ * Rows are grouped into release lines (one per major). A line can be marked
+ * end of life from its header — a `releaseLine` document, user-owned like the
+ * bisect sessions — which folds its releases into the header until expanded,
+ * so the list stays about the lines anyone still runs. The line holding the
+ * `latest` dist-tag cannot be marked.
  *
  * The path field under the header holds a test-studio path — where the
  * issue under investigation reproduces — that every release's Test Studio link
@@ -158,6 +172,26 @@ export function ReleasesTool() {
     {data: null, error: null},
   )
 
+  const linesLive = useObservable(
+    useMemo(
+      () =>
+        documentStore.listenQuery(RELEASE_LINES_QUERY, {}, {tag: 'metrics.releases.lines'}).pipe(
+          map((result): LiveState<ReleaseLineSlice[]> => ({
+            data: result as ReleaseLineSlice[],
+            error: null,
+          })),
+          catchError((error: unknown) =>
+            of<LiveState<ReleaseLineSlice[]>>({
+              data: null,
+              error: error instanceof Error ? error.message : String(error),
+            }),
+          ),
+        ),
+      [documentStore],
+    ),
+    {data: null, error: null},
+  )
+
   const commitsBySha = useMemo(
     () => new Map((commitsLive.data ?? []).map((slice) => [slice.sha, toBisectCommit(slice)])),
     [commitsLive.data],
@@ -173,6 +207,25 @@ export function ReleasesTool() {
     [tags],
   )
   const tagBySha = useMemo(() => new Map(tags.map((tag) => [tag.sha, tag.tag])), [tags])
+  const lines = useMemo(() => groupTagsByMajor(sortedTags), [sortedTags])
+  const eolByMajor = useMemo(
+    () => new Map((linesLive.data ?? []).map((line) => [line.major, line])),
+    [linesLive.data],
+  )
+  // The line people install by default can't be end of life, whatever else
+  // is true about it
+  const latestMajor = useMemo(() => {
+    const latest = tags.find((tag) => tag.npm?.distTags?.includes('latest'))
+    return latest ? majorOf(latest.tag) : undefined
+  }, [tags])
+  // EOL lines fold into their header; expanding is per line and per visit
+  const [expandedLines, setExpandedLines] = useState<ReadonlySet<number>>(() => new Set())
+  const toggleLine = (major: number) =>
+    setExpandedLines((current) => {
+      const next = new Set(current)
+      if (!next.delete(major)) next.add(major)
+      return next
+    })
 
   // Per-release base version (an O(chain) ancestry walk) — precomputed once
   // instead of per row per render across three live queries
@@ -215,7 +268,7 @@ export function ReleasesTool() {
   // live so a removal disappears without closing anything
   const [viewingRegressions, setViewingRegressions] = useState<string | null>(null)
 
-  const error = tagsLive.error ?? commitsLive.error ?? sessionsLive.error
+  const error = tagsLive.error ?? commitsLive.error ?? sessionsLive.error ?? linesLive.error
 
   const userName = currentUser?.name ?? currentUser?.email ?? 'unknown'
   // Async so the dialog can disable its submit until it settles
@@ -230,6 +283,25 @@ export function ReleasesTool() {
         description: err instanceof Error ? err.message : String(err),
       })
     }
+  }
+
+  const handleMarkEol = (major: number) => {
+    markLineEol(client, {major, markedBy: userName}).catch((err: unknown) =>
+      toast.push({
+        status: 'error',
+        title: `Could not mark v${major} end of life`,
+        description: err instanceof Error ? err.message : String(err),
+      }),
+    )
+  }
+  const handleClearEol = (major: number) => {
+    clearLineEol(client, major).catch((err: unknown) =>
+      toast.push({
+        status: 'error',
+        title: `Could not reinstate v${major}`,
+        description: err instanceof Error ? err.message : String(err),
+      }),
+    )
   }
 
   return (
@@ -308,20 +380,50 @@ export function ReleasesTool() {
             </Card>
           )}
 
-          {sortedTags.map((tag) => (
-            <ReleaseRow
-              key={tag._id}
-              tag={tag}
-              baseVersion={baseVersions.get(tag.tag)}
-              regressions={regressions.get(tag.tag)}
-              onShowRegressions={() => setViewingRegressions(tag.tag)}
-              previewUrl={commitsBySha.get(tag.sha)?.testStudioUrl}
-              previewPath={previewPath || undefined}
-              onAddRegression={
-                tagsLive.data && commitsLive.data ? () => setAddingRegression(tag.tag) : undefined
-              }
-            />
-          ))}
+          {lines.map((line) => {
+            const {major} = line
+            const eol = major === undefined ? undefined : eolByMajor.get(major)
+            const expanded = major !== undefined && expandedLines.has(major)
+            const introducedCount = line.tags.reduce(
+              (count, tag) => count + (regressions.get(tag.tag)?.introduced.length ?? 0),
+              0,
+            )
+            return (
+              <Stack key={major ?? 'unversioned'} gap={3}>
+                <ReleaseLineHeader
+                  major={major}
+                  releaseCount={line.tags.length}
+                  introducedCount={introducedCount}
+                  eol={eol}
+                  expanded={expanded}
+                  // Marking waits for the lines to load, or a mark could race
+                  // a reinstate this client has not seen yet
+                  canMark={linesLive.data !== null}
+                  isLatestLine={major !== undefined && major === latestMajor}
+                  onToggleExpanded={major === undefined ? undefined : () => toggleLine(major)}
+                  onMarkEol={major === undefined ? undefined : () => handleMarkEol(major)}
+                  onClearEol={major === undefined ? undefined : () => handleClearEol(major)}
+                />
+                {(!eol || expanded) &&
+                  line.tags.map((tag) => (
+                    <ReleaseRow
+                      key={tag._id}
+                      tag={tag}
+                      baseVersion={baseVersions.get(tag.tag)}
+                      regressions={regressions.get(tag.tag)}
+                      onShowRegressions={() => setViewingRegressions(tag.tag)}
+                      previewUrl={commitsBySha.get(tag.sha)?.testStudioUrl}
+                      previewPath={previewPath || undefined}
+                      onAddRegression={
+                        tagsLive.data && commitsLive.data
+                          ? () => setAddingRegression(tag.tag)
+                          : undefined
+                      }
+                    />
+                  ))}
+              </Stack>
+            )
+          })}
         </Stack>
       </Container>
 
@@ -346,6 +448,127 @@ export function ReleasesTool() {
         />
       )}
     </Box>
+  )
+}
+
+/**
+ * The heading of one release line (major): how many releases and how many
+ * regressions the line introduced, plus the end-of-life toggle. A live line is
+ * a plain heading with a quiet "Mark end of life" action; an EOL line becomes
+ * a card that stands in for its releases — when it was marked and by whom, a
+ * disclosure to show them anyway, and "Reinstate", which deletes the mark.
+ */
+function ReleaseLineHeader(props: {
+  major: number | undefined
+  releaseCount: number
+  introducedCount: number
+  eol: ReleaseLineSlice | undefined
+  expanded: boolean
+  canMark: boolean
+  isLatestLine: boolean
+  /** Absent for the trailing group of tags that don't parse as semver. */
+  onToggleExpanded: (() => void) | undefined
+  onMarkEol: (() => void) | undefined
+  onClearEol: (() => void) | undefined
+}) {
+  const {
+    major,
+    releaseCount,
+    introducedCount,
+    eol,
+    expanded,
+    canMark,
+    isLatestLine,
+    onToggleExpanded,
+    onMarkEol,
+    onClearEol,
+  } = props
+  const title = major === undefined ? 'Other tags' : `v${major}`
+  const summary = [
+    pluralize(releaseCount, 'release'),
+    ...(introducedCount > 0 ? [`${pluralize(introducedCount, 'regression')} introduced`] : []),
+  ].join(' · ')
+
+  if (eol) {
+    return (
+      <Card padding={3} radius={2} border tone="transparent">
+        <Flex alignItems="center" gap={3} flexWrap="wrap">
+          <Box style={{width: 110, flexShrink: 0}}>
+            <Text size={2} weight="medium" muted>
+              {title}
+            </Text>
+          </Box>
+          <Badge tone="default" fontSize={0}>
+            end of life
+          </Badge>
+          <Text size={1} muted>
+            {summary}
+          </Text>
+          {eol.eolMarkedAt && (
+            <Flex as={Text} size={1} muted alignItems="center" gap={1}>
+              <span>· marked by {eol.eolMarkedBy ?? 'unknown'}</span>
+              <RelativeDate dateTime={eol.eolMarkedAt} size={1} muted />
+            </Flex>
+          )}
+          <Box flex={1} />
+          <Button
+            mode="bleed"
+            fontSize={1}
+            padding={2}
+            icon={expanded ? ChevronDownIcon : ChevronRightIcon}
+            text={expanded ? 'Hide releases' : 'Show releases'}
+            aria-expanded={expanded}
+            onClick={onToggleExpanded}
+          />
+          <Button
+            mode="bleed"
+            fontSize={1}
+            padding={2}
+            icon={RestoreIcon}
+            text="Reinstate"
+            aria-label={`Reinstate ${title}: remove its end-of-life mark`}
+            disabled={!canMark}
+            onClick={onClearEol}
+          />
+        </Flex>
+      </Card>
+    )
+  }
+
+  return (
+    <Flex alignItems="center" gap={3} paddingTop={2} paddingX={1}>
+      <Text size={1} weight="semibold">
+        {title}
+      </Text>
+      <Text size={1} muted>
+        {summary}
+      </Text>
+      <Box flex={1} />
+      {onMarkEol && (
+        <Tooltip
+          content={
+            <Box padding={2}>
+              <Text size={1}>
+                {isLatestLine
+                  ? `${title} holds the latest dist-tag and cannot be end of life`
+                  : `Fold every ${title} release into this heading — reversible`}
+              </Text>
+            </Box>
+          }
+        >
+          <Button
+            mode="bleed"
+            fontSize={0}
+            padding={2}
+            icon={ArchiveIcon}
+            text="Mark end of life"
+            aria-label={`Mark ${title} end of life`}
+            disabled={!canMark || isLatestLine}
+            onClick={onMarkEol}
+          />
+        </Tooltip>
+      )}
+    </Flex>
   )
 }
 

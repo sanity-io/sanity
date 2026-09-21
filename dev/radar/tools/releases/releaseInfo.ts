@@ -173,6 +173,30 @@ export function compareTagsSemverDesc(a: string, b: string): number {
   return comparePrereleaseDesc(pa.prerelease, pb.prerelease)
 }
 
+/** The major version of a `vMAJOR.MINOR.PATCH[-prerelease]` tag; undefined when it doesn't parse. */
+export function majorOf(tag: string): number | undefined {
+  return parseSemverTag(tag)?.major
+}
+
+/**
+ * Split a semver-DESC sorted tag list into its release lines, one group per
+ * major in list order. Majors are contiguous in that order, so this is a
+ * single pass; tags that don't parse sort last and form one trailing group
+ * with `major: undefined`.
+ */
+export function groupTagsByMajor<T extends {tag: string}>(
+  sortedTags: T[],
+): {major: number | undefined; tags: T[]}[] {
+  const lines: {major: number | undefined; tags: T[]}[] = []
+  for (const tag of sortedTags) {
+    const major = majorOf(tag.tag)
+    const last = lines.at(-1)
+    if (last && last.major === major) last.tags.push(tag)
+    else lines.push({major, tags: [tag]})
+  }
+  return lines
+}
+
 function parseSemverTag(
   tag: string,
 ): {major: number; minor: number; patch: number; prerelease?: string} | undefined {

@@ -381,7 +381,16 @@ effect of merged work; secondary: leads scanning health weekly.
    test-studio path (same normalization as the bisect repro path, `?path=`
    in the URL so it is reload-safe and shareable) that every release's
    Test Studio link opens at — checking one repro across releases is a click per
-   row.
+   row. Rows are grouped into release lines, one heading per major with its
+   release and introduced-regression counts. A line can be marked **end of
+   life** from that heading (a `releaseLine` document keyed by major,
+   user-owned and liveEdit like `driftAck`; its existence is the mark and
+   "Reinstate" deletes it). An EOL line folds into its heading — when and by
+   whom it was marked, with a disclosure to show the releases anyway — so the
+   list stays about the lines anyone still runs, while the data underneath
+   (tags, npm state, regression spans) is untouched and keeps syncing. The
+   line holding the `latest` dist-tag cannot be marked. Its own type rather
+   than a flag on `gitTag` because the sync replaces tag documents whole.
 
 ## Architecture
 

@@ -7,6 +7,8 @@ import {
   baseVersionOf,
   changelogUrl,
   compareTagsSemverDesc,
+  groupTagsByMajor,
+  majorOf,
   npmxUrl,
   regressionsByTag,
 } from './releaseInfo'
@@ -192,6 +194,21 @@ test('compareTagsSemverDesc compares prerelease identifiers in code-point order,
     'v7.0.0-alpha',
     'v7.0.0-RC',
   ])
+})
+
+test('groupTagsByMajor splits a semver-sorted list into contiguous release lines', () => {
+  const tags = ['v7.0.0', 'v7.0.0-rc.1', 'v6.10.1', 'v6.0.0', 'v5.31.2', 'junk'].map((tag) => ({
+    tag,
+  }))
+  expect(groupTagsByMajor(tags).map((line) => [line.major, line.tags.map((t) => t.tag)])).toEqual([
+    [7, ['v7.0.0', 'v7.0.0-rc.1']],
+    [6, ['v6.10.1', 'v6.0.0']],
+    [5, ['v5.31.2']],
+    [undefined, ['junk']],
+  ])
+  expect(groupTagsByMajor([])).toEqual([])
+  expect(majorOf('v6.10.1')).toBe(6)
+  expect(majorOf('nope')).toBeUndefined()
 })
 
 test('bisectSessionPath swaps the tool segment and keeps the workspace base path', () => {
