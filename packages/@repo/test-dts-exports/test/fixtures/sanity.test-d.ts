@@ -1172,6 +1172,7 @@ import type {
   PortableTextPreviewLayoutKey,
   PortableTextSpan,
   PortableTextTextBlock,
+  PortalBoundaryProvider,
   Position,
   prefixPath,
   prepareConfig,
@@ -1692,7 +1693,9 @@ import type {
   useParseErrorForPath,
   useParseErrors,
   usePausedScheduledDraft,
+  usePauseToEditScheduledDraft,
   usePerspective,
+  usePortalBoundary,
   usePresenceStore,
   usePreviewCard,
   useProject,
@@ -5368,6 +5371,9 @@ describe('sanity', () => {
   test('PortableTextTextBlock', () => {
     expectTypeOf<PortableTextTextBlock<any>>().toBeObject()
   })
+  test('PortalBoundaryProvider', () => {
+    expectTypeOf<typeof PortalBoundaryProvider>().toBeFunction()
+  })
   test('Position', () => {
     expectTypeOf<Position>().not.toBeNever()
   })
@@ -6936,8 +6942,14 @@ describe('sanity', () => {
   test('usePausedScheduledDraft', () => {
     expectTypeOf<typeof usePausedScheduledDraft>().toBeFunction()
   })
+  test('usePauseToEditScheduledDraft', () => {
+    expectTypeOf<typeof usePauseToEditScheduledDraft>().toBeFunction()
+  })
   test('usePerspective', () => {
     expectTypeOf<typeof usePerspective>().toBeFunction()
+  })
+  test('usePortalBoundary', () => {
+    expectTypeOf<typeof usePortalBoundary>().toBeFunction()
   })
   test('usePresenceStore', () => {
     expectTypeOf<typeof usePresenceStore>().toBeFunction()

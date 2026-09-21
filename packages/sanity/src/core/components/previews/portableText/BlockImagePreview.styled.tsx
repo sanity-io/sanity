@@ -1,8 +1,8 @@
-import {Card, Flex, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {Card, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {clsx} from 'clsx'
 import {type ComponentProps, type ComponentPropsWithRef} from 'react'
-import {Box, type BoxProps} from 'ui5'
+import {Box, type BoxProps, Flex} from 'ui5'
 
 import {
   headerFlex,
@@ -14,7 +14,7 @@ import {
 
 export function HeaderFlex(props: ComponentProps<typeof Flex>) {
   const {className, ...rest} = props
-  return <Flex {...rest} align="center" className={clsx(headerFlex, className)} />
+  return <Flex {...rest} alignItems="center" className={clsx(headerFlex, className)} />
 }
 
 export function MediaCard(props: ComponentProps<typeof Card> & {$ratio: number}) {

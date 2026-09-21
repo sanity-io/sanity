@@ -1,7 +1,7 @@
 import {type Path} from '@sanity/types'
-import {Card, Inline, Stack, Text} from '@sanity/ui'
+import {Card, Inline, Text} from '@sanity/ui'
 import {type ReactNode} from 'react'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 import {Tooltip, type TooltipProps} from '../../../../ui-components/tooltip/Tooltip'
 import {LegacyLayerProvider} from '../../../components/transitional/LegacyLayerProvider'
@@ -50,17 +50,17 @@ function DiffTooltipWithAnnotation(props: DiffTooltipWithAnnotationsProps) {
   }
 
   const content = (
-    <Stack gap={2} style={{minWidth: '240px'}} paddingTop={1}>
+    <Flex gap={2} style={{minWidth: '240px'}} paddingTop={1} flexDirection="column" flexShrink={0}>
       <Text muted size={1} weight="medium">
         {description || t('changes.changed-label')}
       </Text>
-      <Stack gap={2}>
+      <VStack gap={2}>
         {annotations.map((annotation, idx) => (
           // oxlint-disable-next-line no-array-index-key
           <AnnotationItem key={idx} annotation={annotation} />
         ))}
-      </Stack>
-    </Stack>
+      </VStack>
+    </Flex>
   )
 
   return (

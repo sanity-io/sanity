@@ -1,5 +1,3 @@
-import compact from 'lodash-es/compact.js'
-
 import {type Expression} from './Expression'
 import {Matcher} from './Matcher'
 import {PlainProbe} from './PlainProbe'
@@ -33,18 +31,24 @@ function descend(matcher: Matcher, accessor: Probe) {
   }
 }
 
-function accessorsFromTarget(target: Expression, accessor: Probe) {
-  const result = []
+function accessorsFromTarget(target: Expression, accessor: Probe): Probe[] {
+  const result: Probe[] = []
   if (target.isIndexReference()) {
     target.toIndicies(accessor).forEach((i) => {
-      result.push(accessor.getIndex(i))
+      const item = accessor.getIndex(i)
+      if (item) {
+        result.push(item)
+      }
     })
   } else if (target.isAttributeReference()) {
-    result.push(accessor.getAttribute(target.name()))
+    const attribute = accessor.getAttribute(target.name())
+    if (attribute) {
+      result.push(attribute)
+    }
   } else if (target.isSelfReference()) {
     result.push(accessor)
   } else {
     throw new Error(`Unable to derive accessor for target ${target.toString()}`)
   }
-  return compact(result)
+  return result
 }

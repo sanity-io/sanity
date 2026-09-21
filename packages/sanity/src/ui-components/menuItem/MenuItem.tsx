@@ -1,9 +1,9 @@
 /* oxlint-disable no-restricted-imports */
-import {Badge, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, Stack, Text} from '@sanity/ui'
 import {MenuItem as UIMenuItem, type MenuItemProps as UIMenuItemProps} from '@sanity/ui/menu'
 import {type ElementType, isValidElement, type ReactNode, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Hotkeys} from '../../core/components/Hotkeys'
 import {Tooltip, type TooltipProps} from '../tooltip/Tooltip'
@@ -76,14 +76,14 @@ export function MenuItem<E extends ElementType = 'button'>({
 }: MenuItemProps<E>) {
   const menuItemContent = useMemo(() => {
     return (
-      <Flex align="center" gap={2}>
+      <Flex alignItems="center" gap={2}>
         {preview && (
           <Box
             className={previewWrapper}
             style={{opacity: disabled ? 0.25 : undefined}}
             paddingRight={__unstable_space ? 1 : 0}
           >
-            <Flex align="center" height="fill" justify="center">
+            <Flex alignItems="center" height="100%" justifyContent="center">
               {preview}
             </Flex>
           </Box>
@@ -115,7 +115,7 @@ export function MenuItem<E extends ElementType = 'button'>({
           </Stack>
         )}
         {(badgeText || hotkeys || IconRight) && (
-          <Flex align="center" gap={3} marginLeft={3}>
+          <Flex alignItems="center" gap={3} marginLeft={3}>
             {hotkeys && <Hotkeys keys={hotkeys} style={{marginTop: -4, marginBottom: -4}} />}
 
             {badgeText && (

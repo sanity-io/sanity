@@ -193,7 +193,7 @@ export function Editor(props: EditorProps): ReactNode {
       )}
 
       <EditableCard flex={1} tone={readOnly ? 'transparent' : 'default'}>
-        <Scroller ref={setScrollElement}>
+        <Scroller ref={setScrollElement} data-testid="pt-editor__scroller">
           <div>
             <EditableWrapper
               $isFullscreen={isFullscreen}

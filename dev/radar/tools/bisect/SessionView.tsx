@@ -1,11 +1,12 @@
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Badge, Box, Button, Card, Container, Dialog, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, Box, Button, Card, Container, Dialog, Stack, Text} from '@sanity/ui'
 import {type ToastContextValue, useToast} from '@sanity/ui/toast'
-import {useEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {type SanityClient, useDocumentStore} from 'sanity'
+import {Flex} from 'ui5'
 
 import {commitUrl, compareUrl} from '../trends/links'
 import {
@@ -113,6 +114,7 @@ export function SessionView(props: {
     [tags],
   )
   const releasesOnly = Boolean(session?.releasesOnly)
+  const reproPath = session?.reproPath ?? undefined
   // `null` = can't derive yet: a releases-only session must wait for the tags
   // to load. An empty candidate set is NOT "unrestricted" to the engine — it
   // is "nothing testable", which would derive a spurious `converged` and the
@@ -138,17 +140,17 @@ export function SessionView(props: {
     [chainResult, marks, bisectOptions],
   )
 
-  // Releases containing the commit in focus — the one under test while
-  // active, the culprit once converged
-  const focusSha =
-    state?.kind === 'converged'
-      ? state.firstBad.sha
-      : state?.kind === 'active'
-        ? state.next.sha
-        : undefined
+  // Releases containing a commit: the timeline asks for whichever commit it
+  // puts a test card on (the proposed step, or one picked out of turn), and
+  // the culprit's list is memoized here for the verdict card
+  const releasesFor = useCallback(
+    (sha: string) => releasesContaining(commitsBySha, tags ?? [], sha),
+    [commitsBySha, tags],
+  )
+  const firstBadSha = state?.kind === 'converged' ? state.firstBad.sha : undefined
   const releases = useMemo(
-    () => (focusSha ? releasesContaining(commitsBySha, tags ?? [], focusSha) : []),
-    [focusSha, commitsBySha, tags],
+    () => (firstBadSha ? releasesFor(firstBadSha) : []),
+    [firstBadSha, releasesFor],
   )
 
   const onError = (title: string) => toastError(toast, title)
@@ -237,6 +239,7 @@ export function SessionView(props: {
     createSession(client, {
       good: label(state.lastGood.sha),
       bad: label(state.firstBad.sha),
+      reproPath,
       createdBy: userName,
     })
       .then(onOpenSession)
@@ -250,12 +253,19 @@ export function SessionView(props: {
     <Box padding={4} style={{overflowY: 'auto', height: '100%'}}>
       <Container width={2}>
         <Stack gap={4}>
-          <Flex align="center" gap={3}>
+          <Flex alignItems="center" gap={3}>
             <Button mode="bleed" icon={ArrowLeftIcon} text="Sessions" onClick={onBack} />
-            <Box flex={1}>
-              <Text size={2} weight="semibold">
-                {session?.title ?? 'Bisect session'}
-              </Text>
+            <Box flex={1} style={{minWidth: 0}}>
+              <Stack gap={2}>
+                <Text size={2} weight="semibold">
+                  {session?.title ?? 'Bisect session'}
+                </Text>
+                {reproPath && (
+                  <Text size={0} muted textOverflow="ellipsis">
+                    Preview builds open at <code>{reproPath}</code>
+                  </Text>
+                )}
+              </Stack>
             </Box>
             {session && (
               <Button
@@ -318,7 +328,7 @@ export function SessionView(props: {
                   inconsistent session, so the resolution the copy asks for has
                   to be offered right here. Undo peels the newest mark; repeat
                   until the conflicting one is gone. */}
-              <Flex align="center" gap={3}>
+              <Flex alignItems="center" gap={3}>
                 <Box flex={1}>
                   <Text size={1}>
                     Conflicting marks: <code>{state.goodMarkSha.slice(0, 10)}</code> is marked good
@@ -340,8 +350,9 @@ export function SessionView(props: {
               onMark={mark}
               onUndo={marks.length > 0 ? undo : undefined}
               stepsLeft={state?.kind === 'active' ? state.stepsLeft : undefined}
-              currentReleases={state?.kind === 'active' ? releases : []}
+              releasesFor={releasesFor}
               versionBySha={versionBySha}
+              reproPath={reproPath}
               converged={
                 state?.kind === 'converged'
                   ? {
@@ -379,7 +390,7 @@ export function SessionView(props: {
                 Delete “{session?.title ?? sessionId}”? The session, its marks log, and any verdict
                 (including a regression pinned on a release) are permanently removed.
               </Text>
-              <Flex gap={2} justify="flex-end">
+              <Flex gap={2} justifyContent="flex-end">
                 <Button mode="ghost" text="Cancel" onClick={() => setConfirmingDelete(false)} />
                 <Button
                   tone="critical"
@@ -404,7 +415,7 @@ function RangeStatus(props: {
   const {state, releasesOnly} = props
   return (
     <Stack gap={3}>
-      <Flex align="center" gap={2} wrap="wrap">
+      <Flex alignItems="center" gap={2} flexWrap="wrap">
         <Text size={1} muted>
           The bad commit is between
         </Text>
