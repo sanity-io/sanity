@@ -90,9 +90,6 @@ function wrap<ExtraArgs extends any[], DisabledReason extends string>(
 }
 
 export function createOperationsAPI(args: OperationArgs): OperationsAPI {
-  const versionMissing = Boolean(args.idPair.versionId && !args.snapshots.version)
-  const isVariantTarget = args.target?.kind === 'variant'
-
   const operations: OperationsAPI = {
     commit: wrap('commit', commit, args),
     duplicate: wrap('duplicate', duplicate, args),
@@ -102,15 +99,7 @@ export function createOperationsAPI(args: OperationArgs): OperationsAPI {
     patch: wrap('patch', serverPatch, args),
     publish: wrap('publish', serverPublish, args),
     unpublish: wrap('unpublish', serverUnpublish, args),
-    // A missing variant document cannot be created by restore: the restore path only sees the
-    // version id, whose opaque variant scope is indistinguishable from a release id, and the
-    // declared target is not available at execution time (`execute` re-reads the operation
-    // arguments from the live document stream). Guarded regardless of the base pair, unlike the
-    // self-derived guard below. Release versions keep restore enabled.
-    restore:
-      isVariantTarget && versionMissing
-        ? createTargetNotFoundOperation('restore')
-        : wrap('restore', serverRestore, args),
+    restore: wrap('restore', serverRestore, args),
   }
 
   // Self-derived target guard: a version was requested for an existing document, but the version
@@ -119,14 +108,19 @@ export function createOperationsAPI(args: OperationArgs): OperationsAPI {
   // publish the draft), so the mutating operations are disabled regardless of what the caller
   // declared. Deliberately excluded:
   // - New documents (no draft, published, or version snapshots): typing must still create the
-  //   release version locally via its deterministic id (create-on-first-edit).
-  // - `restore` (history restore into a release) legitimately creates missing versions. Variant
-  //   targets are the exception, handled above.
+  //   release version locally via its deterministic id (create-on-first-edit). This does not
+  //   apply to a declared variant target: a variant document is never created from its id, so a
+  //   missing variant document is guarded regardless of the base pair.
+  // - `restore` (history restore into a release) legitimately creates missing versions.
   // - `delete` / `duplicate` operate on the whole document group.
-  const targetVersionMissing =
-    versionMissing && Boolean(args.snapshots.draft || args.snapshots.published)
+  const isVariantTarget = args.target?.kind === 'variant'
+  const targetMissing = Boolean(
+    args.idPair.versionId &&
+    !args.snapshots.version &&
+    (isVariantTarget || args.snapshots.draft || args.snapshots.published),
+  )
 
-  if (!targetVersionMissing) {
+  if (!targetMissing) {
     return operations
   }
 
@@ -144,5 +138,10 @@ export function createOperationsAPI(args: OperationArgs): OperationsAPI {
     publish: createTargetNotFoundOperation('publish'),
     unpublish: createTargetNotFoundOperation('unpublish'),
     discardChanges: createTargetNotFoundOperation('discardChanges'),
+    // Restore can create a missing release version, but not a variant document: the restore path
+    // only sees the version id, whose opaque variant scope is indistinguishable from a release id,
+    // and the declared target is not available at execution time (`execute` re-reads the operation
+    // arguments from the live document stream).
+    restore: isVariantTarget ? createTargetNotFoundOperation('restore') : operations.restore,
   }
 }

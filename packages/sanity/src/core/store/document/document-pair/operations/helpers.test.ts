@@ -254,9 +254,11 @@ describe('createOperationsAPI — self-derived target guard', () => {
       )
     })
 
-    it('guards restore for a variant target when the base pair has no snapshots either', () => {
-      // The self-derived guard below only fires when a draft or published snapshot exists; the
-      // variant restore guard must not depend on that (deleted document, or a variant of one).
+    it('guards a missing variant document when the base pair has no snapshots either', () => {
+      // The new-document carve-out (no draft, published, or version) exists so typing can create
+      // a release version from its deterministic id. A variant document is never created from its
+      // id, so a declared variant target is guarded regardless of the base pair — including
+      // restore, which would otherwise treat the opaque variant scope as a release id.
       const operations = createOperationsAPI(
         createArgs({
           idPair: PAIR_WITH_VERSION,
@@ -265,10 +267,12 @@ describe('createOperationsAPI — self-derived target guard', () => {
         }),
       )
 
-      expect(operations.restore.disabled).toBe('TARGET_NOT_FOUND')
-      // The new-document carve-out still applies to everything else.
+      for (const opName of ['publish', 'unpublish', 'discardChanges', 'restore'] as const) {
+        expect(operations[opName].disabled, opName).toBe('TARGET_NOT_FOUND')
+      }
+      // The creatable carve-out still lets typing create the variant document.
       expect(operations.patch.disabled).toBe(false)
-      expect(operations.publish.disabled).not.toBe('TARGET_NOT_FOUND')
+      expect(operations.commit.disabled).toBe(false)
     })
 
     it('keeps restore enabled for a release version target when the base pair has no snapshots', () => {
