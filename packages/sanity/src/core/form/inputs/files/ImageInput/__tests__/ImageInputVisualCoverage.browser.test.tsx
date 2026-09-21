@@ -64,6 +64,9 @@ const IMAGE_URL_BUILDER = {
   fit() {
     return this
   },
+  forceDownload() {
+    return this
+  },
   image() {
     return this
   },
