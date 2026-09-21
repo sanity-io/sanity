@@ -76,7 +76,7 @@ export function usePresenceCursorDecorations(
 
       return {
         component: ({children}) => (
-          <UserPresenceCursor user={presence.user}>{children}</UserPresenceCursor>
+          <UserPresenceCursor presence={presence}>{children}</UserPresenceCursor>
         ),
         selection: cursorPoint,
         onMoved: handleRangeDecorationMoved,

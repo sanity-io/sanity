@@ -36,6 +36,10 @@ export interface SessionEndpoint {
 export interface SessionSummary {
   _id: string
   title: string | null
+  /** What is broken. */
+  description: string | null
+  /** Id of the session this one refines — a chain counts as one regression (tools/bisect/sessionChains.ts). */
+  refines: string | null
   good: SessionEndpoint | null
   bad: SessionEndpoint | null
   createdAt: string | null
@@ -44,24 +48,39 @@ export interface SessionSummary {
   result: {
     firstBadSha: string | null
     regression: boolean | null
-    description: string | null
+    /** Notes on the verdict. */
+    note: string | null
+    severity: string | null
     linearIssue: string | null
     fixedIn: string | null
   } | null
   resultSubject: string | null
+  resultPrNumber: number | null
 }
 
 /** Summary only — `marks` is deliberately not projected here (SessionView fetches the full doc). */
 export const BISECT_SESSIONS_QUERY = `*[_type == "bisectSession"] | order(createdAt desc) {
-  _id, title, good{sha, label}, bad{sha, label}, createdAt, createdBy,
+  _id, title, description, "refines": refines._ref,
+  good{sha, label}, bad{sha, label}, createdAt, createdBy,
   "markCount": count(marks),
-  result{firstBadSha, regression, description, linearIssue, fixedIn},
-  "resultSubject": *[_type == "gitCommit" && sha == ^.result.firstBadSha][0].subject
+  result{firstBadSha, regression, note, severity, linearIssue, fixedIn},
+  "resultSubject": *[_type == "gitCommit" && sha == ^.result.firstBadSha][0].subject,
+  "resultPrNumber": *[_type == "gitCommit" && sha == ^.result.firstBadSha][0].prNumber
 }`
+
+export interface SessionLink {
+  _id: string
+  title: string | null
+}
 
 export interface SessionDocument {
   _id: string
   title: string | null
+  description: string | null
+  /** The session this one narrows down, when it still exists. */
+  refines: SessionLink | null
+  /** Sessions that narrow this one down. */
+  refinedBy: SessionLink[]
   good: SessionEndpoint | null
   bad: SessionEndpoint | null
   releasesOnly: boolean | null
@@ -70,7 +89,8 @@ export interface SessionDocument {
   result: {
     firstBadSha: string
     regression: boolean | null
-    description: string | null
+    note: string | null
+    severity: string | null
     linearIssue: string | null
   } | null
   createdAt: string | null
@@ -78,9 +98,12 @@ export interface SessionDocument {
 }
 
 export const BISECT_SESSION_QUERY = `*[_id == $id][0] {
-  _id, title, good{sha, label}, bad{sha, label}, releasesOnly, reproPath,
+  _id, title, description,
+  "refines": refines->{_id, title},
+  "refinedBy": *[_type == "bisectSession" && refines._ref == ^._id] | order(createdAt desc) {_id, title},
+  good{sha, label}, bad{sha, label}, releasesOnly, reproPath,
   marks[]{_key, sha, verdict},
-  result{firstBadSha, regression, description, linearIssue},
+  result{firstBadSha, regression, note, severity, linearIssue},
   createdAt, createdBy
 }`
 
@@ -93,11 +116,12 @@ export interface TagSlice {
     publishedAt: string | null
     distTags: string[] | null
     weeklyDownloads: number | null
+    deprecated: string | null
   } | null
 }
 
 export const BISECT_TAGS_QUERY = `*[_type == "gitTag"] | order(taggedAt desc) {
-  _id, tag, sha, taggedAt, npm{publishedAt, distTags, weeklyDownloads}
+  _id, tag, sha, taggedAt, npm{publishedAt, distTags, weeklyDownloads, deprecated}
 }`
 
 /** GROQ nulls → the engine's optional fields (tools/bisect/bisect.ts). */

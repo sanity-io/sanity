@@ -331,7 +331,18 @@ function formatMarkdown(items: Coverage[], noun: string): string {
     'covered: a committed `*.stories.tsx` (snapshotted by the "sanity studio" Chromatic project) or `*.browser.test.tsx` (end state snapshotted by "sanity studio vitest") imports the file, directly or through its `*Story.tsx` harness. ' +
     'pending: an open PR adds such a story; do not open a duplicate. uncovered: no story or browser test renders this file. ' +
     'How to add one: `.agents/skills/sanity-visual-coverage/SKILL.md`.'
-  return [heading, '', summaryLine(items, noun), '', table, '', legend].join('\n')
+  // Wide PRs list hundreds of files; collapsed, the sticky comment stays a few lines tall.
+  const details = [
+    '<details>',
+    `<summary>Per-file coverage (${items.length})</summary>`,
+    '',
+    table,
+    '',
+    legend,
+    '',
+    '</details>',
+  ].join('\n')
+  return [heading, '', summaryLine(items, noun), '', details].join('\n')
 }
 
 function renderTable(headers: string[], rows: string[][], format: Format): string {

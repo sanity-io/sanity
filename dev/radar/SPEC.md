@@ -38,7 +38,9 @@ effect of merged work; secondary: leads scanning health weekly.
   health; PR verdicts live in PR comments.
 - **Git history as data.** One `gitCommit` document per main-branch commit
   and one `gitTag` document per `v*` release tag, coverage starting at
-  v5.0.0.
+  v3.0.0 (it started at v5.0.0; extending the tags back was free, since
+  the npm enrichment is three package-wide requests, and the commit chain
+  back to v3 is a one-time backfill dispatch).
 
   Commit documents are metadata only: sha, first-parent sha (the exact
   mainline chain link the Bisect tool walks — `committedAt` ordering has
@@ -46,9 +48,12 @@ effect of merged work; secondary: leads scanning health weekly.
   conventional-commit parse plus PR number. Tag documents carry the
   dereferenced sha, a weak reference to their commit, and parsed semver so
   interleaved release lines group by major. Tags also carry npm data
-  (`publishedAt`, `distTags`, `weeklyDownloads`), collected on releases, the
-  daily cron, and dispatches — the cron is the floor because dist-tags
-  re-point and download counts roll without commits.
+  (`publishedAt`, `distTags`, `weeklyDownloads`, and `deprecated`, the npm
+  deprecation message, present only while it applies), collected on
+  releases, the daily cron, and dispatches — the cron is the floor because
+  dist-tags re-point, download counts roll and versions get deprecated
+  without commits. Every npm-collecting run rewrites every synced tag, so a
+  new npm field needs no backfill and a lifted deprecation clears itself.
 
   Sync (scripts/syncGitHistory.ts via sync-git-metrics.yml): every push to
   main re-upserts the last 50 commits — deterministic ids + createOrReplace
@@ -335,7 +340,38 @@ effect of merged work; secondary: leads scanning health weekly.
    mark per sha wins); one that contradicts the bounds surfaces as the usual
    conflict that undo resolves. Sessions can be deleted from the session
    view (hard delete behind a confirm — they're the only user-owned documents
-   here).
+   here). A confirmed regression carries a **severity** — minor, major or
+   critical, a human call on the verdict card (or when reporting by hand),
+   shown wherever the regression is listed and editable from the release's
+   regressions dialog; unrated is allowed. A session carries a **description**
+   of the issue (asked for at creation, editable on the verdict card), and a
+   verdict carries a **note** (`result.note`: why this commit, the fix, a
+   workaround — about the finding, not the issue), shown under the verdict
+   wherever the regression is listed. A session can
+   **refine** another (`refines`, a weak reference): the "bisect these
+   commits" drill-down from a releases-only verdict creates the new session
+   linked to the one it narrows down and hands the description along. A
+   refinement chain is ONE regression, resolved in `tools/bisect/
+sessionChains.ts` and shared by the sessions list and the Releases tool:
+   the deepest converged session names the commit (a refinement still in
+   progress does not un-name what its parent found), the regression flag
+   counts if set anywhere in the chain, the severity is the worst rated
+   anywhere in it (a parent and its refinement may both rate the same
+   regression — the chain shows the union), and each text annotation
+   (description, note, Linear issue, fix release) is the deepest one set.
+   The bisect overview shows that union once per box, on the root row:
+   affected releases (earliest start to latest end across the chain),
+   outcome, severity. Each session's own verdict card edits its own values.
+   Among several
+   refinements of one session the converged one is followed, newest first
+   among equals; the others are abandoned branches, listed but never counted.
+   Removing the regression from the Releases tool deletes the whole tree
+   under the root, abandoned branches included — deleting only the followed
+   path would resurface a sibling refinement as a regression of its own, and
+   deleting only the refinement would resurface its parent one step less
+   precise. Severity and fix release set from that tool are written to every
+   session in the tree for the same reason: the row shows the union, so a
+   change to one session alone could be outvoted by another and snap back.
 
 8. **Studio releases** — every synced release tag in semver order (newest
    version first, prereleases below their release — a version list, not a
@@ -345,18 +381,34 @@ effect of merged work; secondary: leads scanning health weekly.
    document in the structure tool. The changelog link is derived from the
    release's base version — the previous release on the first-parent chain,
    the same value release automation computes — so off-mainline releases
-   (maintenance lines) may lack it. Each release also shows the count of
-   confirmed regressions bisect sessions have attributed to it, blamed on the
-   release that FIRST shipped the offending commit. Regressions found outside
+   (maintenance lines) may lack it. Each release also shows the confirmed
+   regressions bisect sessions have attributed to it, along the span a
+   regression covers: **introduced** (this release FIRST shipped the
+   offending commit — the blame, a count with a bug icon toned by the worst
+   rated severity among them: red for critical, amber for major or while
+   unrated, plain for minor),
+   **inherited** (introduced by an earlier release and not fixed yet when
+   this one shipped — an amber count with a warning icon, red when one of them is rated critical, so every release inside the
+   span reads as affected without looking like a fresh break) and **fixed**
+   (a green count on the release named in `result.fixedIn`). Whether a
+   later release still carries a regression is ancestry, like the blame: it
+   inherits when its first-parent chain contains the culprit but not the
+   fix release's commit; an unfixed regression therefore marks every
+   release after the introducing one. A fix tag whose commit is off the
+   synced chain falls back to semver (every release at or above it counts as
+   fixed) so a recorded fix is never silently ignored. Regressions found outside
    a bisect (user reports) are added by hand via "Add regression" — from the
    header with a release picker, or from a release's own row with that
    release preselected — stored as a born-converged releases-only
    bisectSession (base release → blamed release, the commits between as
    suspects) so attribution and the bisect drill-down work unchanged. The
-   regression count on a row opens the list behind it — what broke, who
-   recorded it, a link into the Bisect tool — where each entry can be marked
-   fixed in a later release (`result.fixedIn`, a tag name; the candidates
-   are the synced releases newer than the introducing one) or removed, which
+   counts on a row open the list behind them, sectioned the same way
+   (introduced here / inherited, each naming its introducing release /
+   fixed here) — what broke, who recorded it, a link into the Bisect tool —
+   where each entry can be marked fixed in a later release
+   (`result.fixedIn`, a tag name; the candidates are the synced releases
+   newer than the INTRODUCING one, also when the entry is viewed from a
+   release that only inherited it) or removed, which
    deletes its session (the session is the regression; there is no separate
    record to unpin). The count on the introducing release does not drop when
    a fix ships — it answers "what did this release break", not "what is
@@ -364,7 +416,35 @@ effect of merged work; secondary: leads scanning health weekly.
    test-studio path (same normalization as the bisect repro path, `?path=`
    in the URL so it is reload-safe and shareable) that every release's
    Test Studio link opens at — checking one repro across releases is a click per
-   row.
+   row. Rows are grouped into release lines, one heading per major with its
+   release and introduced-regression counts. A line can be marked **end of
+   life** from that heading (a `releaseLine` document keyed by major,
+   user-owned and liveEdit like `driftAck`; its existence is the mark and
+   "Reinstate" deletes it). An EOL line folds into its heading — when and by
+   whom it was marked, with a disclosure to show the releases anyway — so the
+   list stays about the lines anyone still runs, while the data underneath
+   (tags, npm state, regression spans) is untouched and keeps syncing. The
+   line holding the `latest` dist-tag cannot be marked. Its own type rather
+   than a flag on `gitTag` because the sync replaces tag documents whole.
+   EOL releases are left out of every release picker — bisect endpoints,
+   the blamed release and the fix release of a hand-reported regression,
+   the "fixed in" candidates — but stay in attribution: the chain walks do
+   not care, and hiding an EOL release from them would misplace blame.
+   Next to its version a release shows what was broken in it — one badge
+   per severity over the regressions present in it, introduced there or
+   inherited, not the ones it fixed, worst first with unrated last:
+   "1 critical · 2 major · 1 minor · 1 unrated". The counts below tell
+   origin apart and are toned by it: the introduced count by the worst
+   regression this release caused (amber while unrated), the inherited
+   count red only when it carries a critical one, so a release that merely
+   carries a critical regression never reads as having caused it. A
+   deprecated release folds to its first line (version, npm badges, date)
+   with a disclosure to expand it; its severity badges wait behind the
+   disclosure too — nobody should install it, so its bugs are history, not
+   a warning. Neighbouring releases deprecated with the same message (npm
+   deprecations are usually stamped on a whole span at once) fold further
+   into one line — the version range, the count, the deprecation — that
+   expands to the releases themselves.
 
 ## Architecture
 
