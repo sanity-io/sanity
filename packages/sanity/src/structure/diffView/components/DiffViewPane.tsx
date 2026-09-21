@@ -1,11 +1,6 @@
 import {type Path, type SanityDocument} from '@sanity/types'
-import {
-  BoundaryElementProvider,
-  Card,
-  Container as UiContainer,
-  DialogProvider,
-  PortalProvider,
-} from '@sanity/ui'
+import {BoundaryElementProvider, Card, Container, DialogProvider, PortalProvider} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import noop from 'lodash-es/noop.js'
 import {
   type ComponentType,
@@ -37,22 +32,13 @@ import {
   VirtualizerScrollInstanceProvider,
 } from 'sanity'
 import {CommentsEnabledContext, ReviewChangesContext} from 'sanity/_singletons'
-import {styled} from 'styled-components'
 
 import {pickDocumentLayoutComponent} from '../../panes/document/document-layout/pickDocumentLayoutComponent'
 import {usePathSyncChannel} from '../hooks/usePathSyncChannel'
 import {type PathSyncChannel} from '../types/pathSyncChannel'
 import {findRelease} from '../utils/findRelease'
+import {container, diffViewPaneLayout, gridAreaVar} from './DiffViewPane.css'
 import {Scroller} from './Scroller'
-
-const DiffViewPaneLayout = styled(Card)`
-  position: relative;
-  grid-area: var(--grid-area);
-`
-
-const Container = styled(UiContainer)`
-  width: auto;
-`
 
 interface DiffViewPaneProps {
   documentType: string
@@ -113,11 +99,10 @@ export function DiffViewPane({
           containerElement={containerElement}
         >
           <BoundaryElementProvider element={boundaryElement}>
-            <DiffViewPaneLayout
+            <Card
+              className={diffViewPaneLayout}
               ref={setBoundaryElement}
-              style={{
-                '--grid-area': `${role}-document`,
-              }}
+              style={assignInlineVars({[gridAreaVar]: `${role}-document`})}
               borderLeft={role === 'next'}
             >
               <Scroller
@@ -135,7 +120,7 @@ export function DiffViewPane({
                 <PortalBoundaryProvider element={boundaryElement} portalElement={portalElement}>
                   <PortalProvider element={portalElement}>
                     <DialogProvider position="absolute">
-                      <Container ref={containerElement} padding={4} width={1}>
+                      <Container className={container} ref={containerElement} padding={4} width={1}>
                         {/* Each pane renders exactly the document its URL id points at — a variant
                           version id carries its opaque scope in the id itself — so the globally
                           selected perspective and variant must not leak into the pane's form.
@@ -151,7 +136,7 @@ export function DiffViewPane({
                 </PortalBoundaryProvider>
               </Scroller>
               <div data-testid="diffView-document-panel-portal" ref={setPortalElement} />
-            </DiffViewPaneLayout>
+            </Card>
           </BoundaryElementProvider>
         </VirtualizerScrollInstanceProvider>
       </ChangeIndicatorsTracker>
