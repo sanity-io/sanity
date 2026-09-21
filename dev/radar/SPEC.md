@@ -345,18 +345,32 @@ effect of merged work; secondary: leads scanning health weekly.
    document in the structure tool. The changelog link is derived from the
    release's base version — the previous release on the first-parent chain,
    the same value release automation computes — so off-mainline releases
-   (maintenance lines) may lack it. Each release also shows the count of
-   confirmed regressions bisect sessions have attributed to it, blamed on the
-   release that FIRST shipped the offending commit. Regressions found outside
+   (maintenance lines) may lack it. Each release also shows the confirmed
+   regressions bisect sessions have attributed to it, along the span a
+   regression covers: **introduced** (this release FIRST shipped the
+   offending commit — the blame, a bordered red count with a bug icon),
+   **inherited** (introduced by an earlier release and not fixed yet when
+   this one shipped — a borderless amber count with a warning icon, so every release inside the
+   span reads as affected without looking like a fresh break) and **fixed**
+   (a green count on the release named in `result.fixedIn`). Whether a
+   later release still carries a regression is ancestry, like the blame: it
+   inherits when its first-parent chain contains the culprit but not the
+   fix release's commit; an unfixed regression therefore marks every
+   release after the introducing one. A fix tag whose commit is off the
+   synced chain falls back to semver (every release at or above it counts as
+   fixed) so a recorded fix is never silently ignored. Regressions found outside
    a bisect (user reports) are added by hand via "Add regression" — from the
    header with a release picker, or from a release's own row with that
    release preselected — stored as a born-converged releases-only
    bisectSession (base release → blamed release, the commits between as
    suspects) so attribution and the bisect drill-down work unchanged. The
-   regression count on a row opens the list behind it — what broke, who
-   recorded it, a link into the Bisect tool — where each entry can be marked
-   fixed in a later release (`result.fixedIn`, a tag name; the candidates
-   are the synced releases newer than the introducing one) or removed, which
+   counts on a row open the list behind them, sectioned the same way
+   (introduced here / inherited, each naming its introducing release /
+   fixed here) — what broke, who recorded it, a link into the Bisect tool —
+   where each entry can be marked fixed in a later release
+   (`result.fixedIn`, a tag name; the candidates are the synced releases
+   newer than the INTRODUCING one, also when the entry is viewed from a
+   release that only inherited it) or removed, which
    deletes its session (the session is the regression; there is no separate
    record to unpin). The count on the introducing release does not drop when
    a fix ships — it answers "what did this release break", not "what is

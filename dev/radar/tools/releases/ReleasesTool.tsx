@@ -1,7 +1,9 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {BugIcon} from '@sanity/icons/Bug'
+import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {DocumentTextIcon} from '@sanity/icons/DocumentText'
 import {PackageIcon} from '@sanity/icons/Package'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Badge, Box, Button, Card, Container, Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {Tooltip} from '@sanity/ui/tooltip'
@@ -36,13 +38,14 @@ import {pluralize} from '../bisect/text'
 import {releaseUrl} from '../trends/links'
 import {useUrlState} from '../trends/useUrlState'
 import {AddRegressionDialog} from './AddRegressionDialog'
-import {RegressionsDialog} from './RegressionsDialog'
+import {type ReleaseRegression, RegressionsDialog} from './RegressionsDialog'
 import {
   baseVersionOf,
   changelogUrl,
   compareTagsSemverDesc,
   npmxUrl,
   regressionsByTag,
+  type ReleaseRegressions,
 } from './releaseInfo'
 
 interface LiveState<T> {
@@ -61,11 +64,13 @@ const ICON_IN_FLEX: CSSProperties = {marginLeft: 0, marginRight: 0}
  * Every release, newest first: when it shipped (npm publish time when known),
  * which dist-tags point at it, weekly downloads, links out (Vercel preview
  * build of dev/test-studio at the tagged commit, GitHub release, sanity.io
- * changelog, npmx.dev), and how many confirmed regressions bisect sessions
- * have attributed to it (blamed on the INTRODUCING release). The
- * changelog link needs the release's base version — the previous release on
- * the first-parent chain — so off-mainline releases (maintenance lines) may
- * lack it. Regressions found outside a bisect are added by hand via
+ * changelog, npmx.dev), and the confirmed regressions bisect sessions have
+ * attributed to it: the ones it INTRODUCED (blame, red), the ones it still
+ * carried from earlier releases (inherited, amber) and the ones it fixed
+ * (green) — a regression spans releases, and the three tones tell the span's
+ * start and end apart from its middle. The changelog link needs the
+ * release's base version — the previous release on the first-parent chain —
+ * so off-mainline releases (maintenance lines) may lack it. Regressions found outside a bisect are added by hand via
  * AddRegressionDialog, stored as born-converged bisect sessions.
  *
  * The path field under the header holds a test-studio path — where the
@@ -176,18 +181,33 @@ export function ReleasesTool() {
     [tags, commitsBySha, tagBySha],
   )
 
-  // Confirmed regressions grouped under the release that first shipped their
-  // culprit — the badge shows the count, the dialog behind it the sessions
+  // Confirmed regressions per release along their span (introduced,
+  // inherited, fixed) — the badges show the counts, the dialog behind them
+  // the sessions. Each entry knows its introducing release: that is what the
+  // dialog's "fixed in" candidates are relative to, also for inherited ones
   const regressions = useMemo(() => {
     const confirmed = (sessionsLive.data ?? []).flatMap((session) =>
       session.result?.regression && session.result.firstBadSha
-        ? [{firstBadSha: session.result.firstBadSha, session}]
+        ? [{firstBadSha: session.result.firstBadSha, fixedIn: session.result.fixedIn, session}]
         : [],
     )
-    return new Map(
-      [...regressionsByTag(commitsBySha, tags, confirmed)].map(([tag, list]) => [
+    const spans = regressionsByTag(commitsBySha, tags, confirmed)
+    const introducedIn = new Map<string, string>()
+    for (const [tag, {introduced}] of spans) {
+      for (const item of introduced) introducedIn.set(item.session._id, tag)
+    }
+    const toEntry = (item: (typeof confirmed)[number]): ReleaseRegression => ({
+      session: item.session,
+      introducedIn: introducedIn.get(item.session._id) ?? '',
+    })
+    return new Map<string, ReleaseRegressions<ReleaseRegression>>(
+      [...spans].map(([tag, span]) => [
         tag,
-        list.map((item) => item.session),
+        {
+          introduced: span.introduced.map(toEntry),
+          inherited: span.inherited.map(toEntry),
+          fixed: span.fixed.map(toEntry),
+        },
       ]),
     )
   }, [sessionsLive.data, commitsBySha, tags])
@@ -224,7 +244,8 @@ export function ReleasesTool() {
                 </Text>
                 <Text size={1} muted>
                   Every synced release tag with its npm state and the regressions bisect sessions
-                  have pinned on it (blamed on the release that first shipped the offending commit).
+                  have pinned on it: introduced (blamed on the release that first shipped the
+                  offending commit), inherited from an earlier release and not fixed yet, or fixed.
                 </Text>
               </Stack>
             </Box>
@@ -292,7 +313,7 @@ export function ReleasesTool() {
               key={tag._id}
               tag={tag}
               baseVersion={baseVersions.get(tag.tag)}
-              regressions={regressions.get(tag.tag)?.length ?? 0}
+              regressions={regressions.get(tag.tag)}
               onShowRegressions={() => setViewingRegressions(tag.tag)}
               previewUrl={commitsBySha.get(tag.sha)?.testStudioUrl}
               previewPath={previewPath || undefined}
@@ -307,7 +328,7 @@ export function ReleasesTool() {
       {viewingRegressions !== null && (
         <RegressionsDialog
           tag={viewingRegressions}
-          regressions={regressions.get(viewingRegressions) ?? []}
+          regressions={regressions.get(viewingRegressions)}
           tags={tags}
           client={client}
           onClose={() => setViewingRegressions(null)}
@@ -386,7 +407,8 @@ function GitHubLogo(props: SVGProps<SVGSVGElement>) {
 function ReleaseRow(props: {
   tag: TagSlice
   baseVersion: string | undefined
-  regressions: number
+  /** Absent when no confirmed regression touches this release. */
+  regressions: ReleaseRegressions<ReleaseRegression> | undefined
   previewUrl: string | undefined
   previewPath: string | undefined
   /** Absent while the data the dialog needs is still loading. */
@@ -422,16 +444,56 @@ function ReleaseRow(props: {
             {distTag}
           </Badge>
         ))}
-        {regressions > 0 && (
-          // The count opens the list behind it — that is also where a
-          // regression is removed again
+        {/* Where a regression's span starts (introduced), runs (inherited)
+            and ends (fixed), told apart by tone, icon and weight: the bordered red
+            count is the one to read, the borderless amber count says the
+            release still ships something older, the green count that it
+            closed a span. Each opens the list behind it — that is also where
+            a regression is removed again */}
+        {regressions && regressions.introduced.length > 0 && (
           <Button
             mode="ghost"
             tone="critical"
             fontSize={0}
             padding={2}
-            text={pluralize(regressions, 'regression')}
-            aria-label={`Show the ${pluralize(regressions, 'regression')} pinned on ${tag.tag}`}
+            icon={BugIcon}
+            text={`${regressions.introduced.length} introduced`}
+            aria-label={`Show the ${pluralize(regressions.introduced.length, 'regression')} introduced in ${tag.tag}`}
+            onClick={onShowRegressions}
+          />
+        )}
+        {regressions && regressions.inherited.length > 0 && (
+          <Tooltip
+            content={
+              <Box padding={2}>
+                <Text size={1}>
+                  {pluralize(regressions.inherited.length, 'regression')} introduced in an earlier
+                  release and not fixed yet when {tag.tag} shipped
+                </Text>
+              </Box>
+            }
+          >
+            <Button
+              mode="bleed"
+              tone="caution"
+              fontSize={0}
+              padding={2}
+              icon={WarningOutlineIcon}
+              text={`${regressions.inherited.length} inherited`}
+              aria-label={`Show the ${pluralize(regressions.inherited.length, 'regression')} ${tag.tag} inherited from earlier releases`}
+              onClick={onShowRegressions}
+            />
+          </Tooltip>
+        )}
+        {regressions && regressions.fixed.length > 0 && (
+          <Button
+            mode="bleed"
+            tone="positive"
+            fontSize={0}
+            padding={2}
+            icon={CheckmarkCircleIcon}
+            text={`${regressions.fixed.length} fixed`}
+            aria-label={`Show the ${pluralize(regressions.fixed.length, 'regression')} fixed in ${tag.tag}`}
             onClick={onShowRegressions}
           />
         )}

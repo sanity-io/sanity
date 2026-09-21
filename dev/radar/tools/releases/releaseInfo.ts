@@ -1,7 +1,8 @@
 /**
  * Pure helpers for the Releases tool: external URLs per release and the
  * regression attribution (which release first shipped each confirmed
- * regression, per the bisect sessions).
+ * regression, which ones still carried it and which one fixed it, per the
+ * bisect sessions).
  */
 import {type BisectCommit, type ReleaseTag, releasesContaining} from '../bisect/bisect'
 
@@ -65,40 +66,88 @@ export function baseVersionOf(
   return baseTagOf(commitsBySha, tagBySha, tag)?.replace(/^v/, '')
 }
 
+/** A confirmed regression as the release attribution needs it. */
+export interface RegressionSpan {
+  firstBadSha: string
+  /** Release tag it was fixed in, when known. */
+  fixedIn?: string | null
+}
+
 /**
- * Group confirmed regressions by INTRODUCING release: for each item's
- * first-bad sha, the oldest release whose ancestry contains it gets the
- * blame. Items no release contains (unreleased regressions) are dropped.
- * Order within a release follows the input.
+ * What one release has to say about the confirmed regressions: the ones it
+ * INTRODUCED (first shipped the culprit — the blame), the ones it INHERITED
+ * (introduced by an earlier release and not yet fixed when it shipped) and
+ * the ones it FIXED. A regression therefore marks a span of releases —
+ * introducing release, every release after it, up to and excluding the one
+ * that fixed it (every synced release when it is not fixed yet) — and the
+ * three lists keep the span's ends distinguishable from its middle.
  */
-export function regressionsByTag<T extends ReleaseTag, R extends {firstBadSha: string}>(
+export interface ReleaseRegressions<R> {
+  introduced: R[]
+  inherited: R[]
+  fixed: R[]
+}
+
+/**
+ * Group confirmed regressions by release along their span: for each item's
+ * first-bad sha, the oldest release whose ancestry contains it gets the
+ * blame (`introduced`); every other release containing the sha carries it
+ * (`inherited`) until the fix ships; the release named by `fixedIn` gets it
+ * under `fixed`. Containment of the fix is ancestry too, so a release that
+ * shipped before the fix keeps the regression however its version compares
+ * (mirrors the blame side); when the fix tag's commit is outside the synced
+ * chain — no ancestry to walk — every release at or above it by semver
+ * counts as fixed instead, so a stored fix is never silently ignored. Items
+ * no release contains (unreleased regressions) are dropped. Order within a
+ * list follows the input.
+ */
+export function regressionsByTag<T extends ReleaseTag, R extends RegressionSpan>(
   commitsBySha: Map<string, BisectCommit>,
   tags: T[],
   regressions: R[],
-): Map<string, R[]> {
-  const byTag = new Map<string, R[]>()
+): Map<string, ReleaseRegressions<R>> {
+  const byTag = new Map<string, ReleaseRegressions<R>>()
+  const entry = (tag: string) => {
+    const existing = byTag.get(tag)
+    if (existing) return existing
+    const created = {introduced: [], inherited: [], fixed: []}
+    byTag.set(tag, created)
+    return created
+  }
+  const tagByName = new Map(tags.map((tag) => [tag.tag, tag]))
   for (const regression of regressions) {
-    const introducing = releasesContaining(commitsBySha, tags, regression.firstBadSha)[0]
+    const [introducing, ...later] = releasesContaining(commitsBySha, tags, regression.firstBadSha)
     if (!introducing) continue
-    const list = byTag.get(introducing.tag) ?? []
-    list.push(regression)
-    byTag.set(introducing.tag, list)
+    entry(introducing.tag).introduced.push(regression)
+
+    const fixTag = regression.fixedIn ? tagByName.get(regression.fixedIn) : undefined
+    const fixedTags = fixTag ? releasesFixedBy(commitsBySha, tags, fixTag) : new Set<string>()
+    if (fixTag) entry(fixTag.tag).fixed.push(regression)
+    for (const release of later) {
+      if (fixedTags.has(release.tag)) continue
+      entry(release.tag).inherited.push(regression)
+    }
   }
   return byTag
 }
 
-/** `regressionsByTag` reduced to counts, for the badge. */
-export function regressionCountByTag<T extends ReleaseTag>(
+/**
+ * The releases that ship the fix tagged `fixTag`: those whose ancestry
+ * contains its commit, or — when that commit is not in the synced chain —
+ * those at or above it by semver.
+ */
+function releasesFixedBy<T extends ReleaseTag>(
   commitsBySha: Map<string, BisectCommit>,
   tags: T[],
-  firstBadShas: string[],
-): Map<string, number> {
-  const grouped = regressionsByTag(
-    commitsBySha,
-    tags,
-    firstBadShas.map((firstBadSha) => ({firstBadSha})),
+  fixTag: T,
+): Set<string> {
+  const byAncestry = releasesContaining(commitsBySha, tags, fixTag.sha)
+  if (byAncestry.length > 0) return new Set(byAncestry.map((tag) => tag.tag))
+  return new Set(
+    tags
+      .filter((candidate) => compareTagsSemverDesc(candidate.tag, fixTag.tag) <= 0)
+      .map((tag) => tag.tag),
   )
-  return new Map([...grouped].map(([tag, list]) => [tag, list.length]))
 }
 
 /**

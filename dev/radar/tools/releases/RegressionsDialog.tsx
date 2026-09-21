@@ -11,55 +11,86 @@ import {type SessionSummary, type TagSlice} from '../bisect/data'
 import {RelativeDate} from '../bisect/RelativeDate'
 import {deleteSession, updateResult} from '../bisect/sessions'
 import {pluralize} from '../bisect/text'
-import {bisectSessionPath, compareTagsSemverDesc} from './releaseInfo'
+import {bisectSessionPath, compareTagsSemverDesc, type ReleaseRegressions} from './releaseInfo'
+
+/** A confirmed regression with the release that gets the blame for it. */
+export interface ReleaseRegression {
+  session: SessionSummary
+  /** Tag name of the release that first shipped the culprit. */
+  introducedIn: string
+}
 
 /**
- * The regressions pinned on one release — each is a bisectSession (a real
- * bisect that converged inside this release, or a hand-added report). Lists
- * what broke, who recorded it and when, links into the Bisect tool for the
- * full record, and removes an entry outright: the session IS the regression,
- * so unpinning means deleting it, the same hard delete the session view
- * offers. Two-step inline confirm rather than a nested dialog.
+ * The regressions one release has a say in — each is a bisectSession (a real
+ * bisect that converged inside a release, or a hand-added report), grouped
+ * by what this release did with it: introduced it (the blame), inherited it
+ * from an earlier release without a fix yet, or fixed it. Lists what broke,
+ * who recorded it and when, links into the Bisect tool for the full record,
+ * and removes an entry outright: the session IS the regression, so unpinning
+ * means deleting it, the same hard delete the session view offers. Two-step
+ * inline confirm rather than a nested dialog.
  */
 export function RegressionsDialog(props: {
   tag: string
-  regressions: SessionSummary[]
-  /** Every synced release — the "fixed in" candidates are the ones newer than `tag`. */
+  /** Absent once the last regression touching `tag` is removed. */
+  regressions: ReleaseRegressions<ReleaseRegression> | undefined
+  /** Every synced release — the "fixed in" candidates are the ones newer than the introducing release. */
   tags: TagSlice[]
   client: SanityClient
   onClose: () => void
 }) {
   const {tag, regressions, tags, client, onClose} = props
-  // A fix can only ship after the release that introduced the regression
-  const fixCandidates = useMemo(
-    () =>
-      tags
-        .filter((candidate) => compareTagsSemverDesc(candidate.tag, tag) < 0)
-        .toSorted((a, b) => compareTagsSemverDesc(a.tag, b.tag)),
-    [tags, tag],
-  )
+  const introduced = regressions?.introduced ?? []
+  const inherited = regressions?.inherited ?? []
+  const fixed = regressions?.fixed ?? []
+  const total = introduced.length + inherited.length + fixed.length
+  const section = (title: string, hint: string, entries: ReleaseRegression[]) =>
+    entries.length > 0 && (
+      <Stack gap={3}>
+        <Stack gap={2}>
+          <Text size={1} weight="semibold">
+            {title}
+          </Text>
+          <Text size={0} muted>
+            {hint}
+          </Text>
+        </Stack>
+        {entries.map((entry) => (
+          <RegressionRow
+            key={entry.session._id}
+            entry={entry}
+            introducedHere={entry.introducedIn === tag}
+            tags={tags}
+            client={client}
+          />
+        ))}
+      </Stack>
+    )
   return (
     <Dialog
       id="releases-regressions"
-      header={`${pluralize(regressions.length, 'regression')} in ${tag}`}
+      header={`${pluralize(total, 'regression')} in ${tag}`}
       width={1}
       onClose={onClose}
     >
       <Box padding={4}>
-        <Stack gap={3}>
-          {regressions.length === 0 && (
+        <Stack gap={5}>
+          {total === 0 && (
             <Text size={1} muted>
-              No regressions are pinned on {tag} any more.
+              No regressions touch {tag} any more.
             </Text>
           )}
-          {regressions.map((session) => (
-            <RegressionRow
-              key={session._id}
-              session={session}
-              fixCandidates={fixCandidates}
-              client={client}
-            />
-          ))}
+          {section(
+            `Introduced in ${tag}`,
+            'This release first shipped the offending commit.',
+            introduced,
+          )}
+          {section(
+            'Inherited from earlier releases',
+            `Introduced before ${tag} and not fixed yet when it shipped — the blame stays on the introducing release.`,
+            inherited,
+          )}
+          {section(`Fixed in ${tag}`, 'Marked as fixed in this release.', fixed)}
         </Stack>
       </Box>
     </Dialog>
@@ -67,11 +98,23 @@ export function RegressionsDialog(props: {
 }
 
 function RegressionRow(props: {
-  session: SessionSummary
-  fixCandidates: TagSlice[]
+  entry: ReleaseRegression
+  /** False for inherited and fixed entries, which name their introducing release. */
+  introducedHere: boolean
+  tags: TagSlice[]
   client: SanityClient
 }) {
-  const {session, fixCandidates, client} = props
+  const {entry, introducedHere, tags, client} = props
+  const {session, introducedIn} = entry
+  // A fix can only ship after the release that introduced the regression —
+  // the introducing one, not the release this dialog is open for
+  const fixCandidates = useMemo(
+    () =>
+      tags
+        .filter((candidate) => compareTagsSemverDesc(candidate.tag, introducedIn) < 0)
+        .toSorted((a, b) => compareTagsSemverDesc(a.tag, b.tag)),
+    [tags, introducedIn],
+  )
   const toast = useToast()
   const [confirming, setConfirming] = useState(false)
   const [removing, setRemoving] = useState(false)
@@ -122,6 +165,11 @@ function RegressionRow(props: {
               <Text size={1} weight="medium">
                 {session.result?.description || session.title || session._id}
               </Text>
+              {!introducedHere && (
+                <Badge tone="critical" fontSize={0}>
+                  introduced in {introducedIn}
+                </Badge>
+              )}
               {fixedIn && (
                 <Badge tone="positive" fontSize={0}>
                   fixed in {fixedIn}
