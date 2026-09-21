@@ -30,6 +30,7 @@
     "ui5": "catalog:"
   },
   "devDependencies": {
+    "@sanity/vanilla-extract-vite-plugin": "catalog:",
     "@types/react": "catalog:"
   }
 }
