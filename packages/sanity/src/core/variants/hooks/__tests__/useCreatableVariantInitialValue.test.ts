@@ -85,6 +85,8 @@ describe('buildCreatableVariantInitialValue', () => {
       _system: {
         group: {_ref: PUBLISHED_ID, _weak: true},
         variants: [{_ref: variantAlphaAudience._id, _weak: true}],
+        // TODO: Remove this once we fully drop the legacy variant field in content lake.
+        variant: {_ref: variantAlphaAudience._id, _weak: true},
         bundleId: 'drafts',
         scopeId: DRAFT_TARGET.scopeId,
       },
@@ -104,6 +106,8 @@ describe('buildCreatableVariantInitialValue', () => {
     expect(seed._system).toEqual({
       group: {_ref: PUBLISHED_ID, _weak: true},
       variants: [{_ref: variantAlphaAudience._id, _weak: true}],
+      // TODO: Remove this once we fully drop the legacy variant field in content lake.
+      variant: {_ref: variantAlphaAudience._id, _weak: true},
       bundleId: 'drafts',
       scopeId: DRAFT_TARGET.scopeId,
     })

@@ -31,6 +31,7 @@ export function buildCreatableVariantInitialValue(options: {
 }): SanityDocumentLike {
   const {publishedSibling, target, variantId} = options
   const {_rev, ...content} = publishedSibling
+  const variantRef = {_ref: variantId, _weak: true as const}
   return {
     ...content,
     _id: target.id,
@@ -40,6 +41,8 @@ export function buildCreatableVariantInitialValue(options: {
         _weak: true as const,
       },
       variants: [{_ref: variantId, _weak: true as const}],
+      // oxlint-disable-next-line typescript/no-deprecated - We are keeping it backwards compatible, will be removed once we fully drop the legacy variant field in content lake.
+      variant: variantRef,
       bundleId: 'drafts',
       scopeId: getVersionFromId(target.id),
     },
