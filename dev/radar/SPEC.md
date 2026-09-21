@@ -46,9 +46,12 @@ effect of merged work; secondary: leads scanning health weekly.
   conventional-commit parse plus PR number. Tag documents carry the
   dereferenced sha, a weak reference to their commit, and parsed semver so
   interleaved release lines group by major. Tags also carry npm data
-  (`publishedAt`, `distTags`, `weeklyDownloads`), collected on releases, the
-  daily cron, and dispatches — the cron is the floor because dist-tags
-  re-point and download counts roll without commits.
+  (`publishedAt`, `distTags`, `weeklyDownloads`, and `deprecated`, the npm
+  deprecation message, present only while it applies), collected on
+  releases, the daily cron, and dispatches — the cron is the floor because
+  dist-tags re-point, download counts roll and versions get deprecated
+  without commits. Every npm-collecting run rewrites every synced tag, so a
+  new npm field needs no backfill and a lifted deprecation clears itself.
 
   Sync (scripts/syncGitHistory.ts via sync-git-metrics.yml): every push to
   main re-upserts the last 50 commits — deterministic ids + createOrReplace

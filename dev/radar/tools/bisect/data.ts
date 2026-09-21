@@ -93,11 +93,12 @@ export interface TagSlice {
     publishedAt: string | null
     distTags: string[] | null
     weeklyDownloads: number | null
+    deprecated: string | null
   } | null
 }
 
 export const BISECT_TAGS_QUERY = `*[_type == "gitTag"] | order(taggedAt desc) {
-  _id, tag, sha, taggedAt, npm{publishedAt, distTags, weeklyDownloads}
+  _id, tag, sha, taggedAt, npm{publishedAt, distTags, weeklyDownloads, deprecated}
 }`
 
 /** GROQ nulls → the engine's optional fields (tools/bisect/bisect.ts). */

@@ -139,7 +139,7 @@ async function collectGitHubInfo(shas: string[]): Promise<GitHubCollection> {
 
 /**
  * npm enrichment for the release tags (publish time, current dist-tags,
- * weekly downloads). Only runs with --npm — the workflow requests it on
+ * weekly downloads, deprecation). Only runs with --npm — the workflow requests it on
  * releases, the daily cron, and dispatches, not on every main push. npm
  * being down aborts the run before anything is written.
  */
@@ -154,7 +154,10 @@ async function collectNpmInfo(tagNames: string[]): Promise<Map<string, NpmVersio
       get('https://registry.npmjs.org/-/package/sanity/dist-tags') as Promise<
         Record<string, string>
       >,
-      get('https://registry.npmjs.org/sanity') as Promise<{time?: Record<string, string>}>,
+      get('https://registry.npmjs.org/sanity') as Promise<{
+        time?: Record<string, string>
+        versions?: Record<string, {deprecated?: string}>
+      }>,
       get('https://api.npmjs.org/versions/sanity/last-week') as Promise<{
         downloads?: Record<string, number>
       }>,
@@ -163,6 +166,7 @@ async function collectNpmInfo(tagNames: string[]): Promise<Map<string, NpmVersio
       distTags,
       time: packument.time,
       downloads: downloads.downloads,
+      versions: packument.versions,
     })
   } catch (error) {
     // Name the culprit subsystem; the `cause` chain keeps undici's

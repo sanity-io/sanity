@@ -86,7 +86,7 @@ export interface GitTagDocument {
   tag: string
   sha: string
   /** Merged in by syncGitHistory.ts on npm-collecting runs (see npmVersions.ts). */
-  npm?: {publishedAt?: string; distTags?: string[]; weeklyDownloads?: number}
+  npm?: {publishedAt?: string; distTags?: string[]; weeklyDownloads?: number; deprecated?: string}
   /** Weak: the commit may be off-main (release-branch tags) or not ingested yet. */
   commit: {_type: 'reference'; _ref: string; _weak: true}
   taggedAt: string
@@ -243,7 +243,7 @@ export function assembleSyncDocuments(input: {
   tags: GitTagDocument[]
   github: GitHubCollection
   /** Present only on npm-collecting runs. */
-  npmInfo?: Map<string, {publishedAt?: string; distTags?: string[]; weeklyDownloads?: number}>
+  npmInfo?: Map<string, NonNullable<GitTagDocument['npm']>>
 }): {
   documents: (GitCommitDocument | GitTagDocument)[]
   commitCount: number

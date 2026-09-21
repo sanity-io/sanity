@@ -444,6 +444,21 @@ function ReleaseRow(props: {
             {distTag}
           </Badge>
         ))}
+        {tag.npm?.deprecated && (
+          // npm state like the dist-tags, refreshed by every npm-collecting
+          // sync; the message is what `npm install` prints
+          <Tooltip
+            content={
+              <Box padding={2}>
+                <Text size={1}>{tag.npm.deprecated}</Text>
+              </Box>
+            }
+          >
+            <Badge tone="caution" fontSize={0}>
+              deprecated
+            </Badge>
+          </Tooltip>
+        )}
         {/* Where a regression's span starts (introduced), runs (inherited)
             and ends (fixed), told apart by tone, icon and weight: the bordered red
             count is the one to read, the borderless amber count says the
