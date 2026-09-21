@@ -108,6 +108,14 @@ export function CombinedAnnotationPopover(props: CombinedAnnotationPopoverProps)
 
     const range = sel.getRangeAt(0)
 
+    if (!range.collapsed) {
+      // Expanded selections belong to the comments plugin's floating
+      // "Add comment" popover; this one would cover the selected text.
+      setPopoverOpen(false)
+      setCursorRect(null)
+      return
+    }
+
     // Check if selection is within any of the registered annotation elements
     const isWithinAnnotation = annotations.some((annotation) =>
       annotation.referenceElement?.contains(range.commonAncestorContainer),

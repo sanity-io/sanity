@@ -1,8 +1,8 @@
-import {Flex, rem, Skeleton, Text, TextSkeleton, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {rem, Skeleton, Text, TextSkeleton, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {clsx} from 'clsx'
 import {type ComponentProps, type ComponentPropsWithRef} from 'react'
-import {Box, type BoxProps} from 'ui5'
+import {Box, type BoxProps, Flex} from 'ui5'
 
 import {
   descriptionSkeleton,
@@ -17,7 +17,7 @@ import {
 
 export function RootFlex(props: ComponentProps<typeof Flex>) {
   const {className, ...rest} = props
-  return <Flex {...rest} align="center" className={clsx(rootFlex, className)} />
+  return <Flex {...rest} alignItems="center" className={clsx(rootFlex, className)} />
 }
 
 type StatusBoxProps = BoxProps & Omit<ComponentPropsWithRef<'div'>, keyof BoxProps>

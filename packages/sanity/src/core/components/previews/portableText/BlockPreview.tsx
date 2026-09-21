@@ -1,5 +1,5 @@
-import {Flex, Stack, Text} from '@sanity/ui'
-import {Box} from 'ui5'
+import {Stack, Text} from '@sanity/ui'
+import {Box, Flex} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {LinearProgress} from '../../progress/LinearProgress'
@@ -36,7 +36,7 @@ export function BlockPreview(props: Omit<PreviewProps<'block'>, 'renderDefault'>
 
   return (
     <Stack data-testid="block-preview" gap={1}>
-      <Flex align="center" className={headerFlex} data-testid="block-preview__header">
+      <Flex alignItems="center" className={headerFlex} data-testid="block-preview__header">
         {media && <Media dimensions={mediaDimensions} layout="block" media={media as any} />}
 
         <Box flexBasis="0%" flexGrow={1} paddingLeft={media ? 2 : 1}>

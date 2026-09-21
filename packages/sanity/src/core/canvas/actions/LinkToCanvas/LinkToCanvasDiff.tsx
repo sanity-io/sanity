@@ -2,12 +2,12 @@ import {ArrowRightIcon} from '@sanity/icons/ArrowRight'
 import {ComposeSparklesIcon} from '@sanity/icons/ComposeSparkles'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type SanityDocument} from '@sanity/types'
-import {type BadgeTone, Card, Stack, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {type BadgeTone, Card, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {clsx} from 'clsx'
 import {motion} from 'motion/react'
 import {type ComponentProps} from 'react'
-import {Box, Flex} from 'ui5'
+import {Box, Flex, VStack} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {ReleaseAvatarIcon} from '../../../releases/components/ReleaseAvatar'
@@ -81,7 +81,7 @@ export function LinkToCanvasDiff({
               <WarningOutlineIcon />
             </Text>
           </Box>
-          <Stack gap={2}>
+          <VStack gap={2}>
             <Box padding={1}>
               <Text size={1} weight="semibold">
                 {t('dialog.confirm-document-changes.title')}
@@ -92,7 +92,7 @@ export function LinkToCanvasDiff({
                 {t('dialog.confirm-document-changes.description')}
               </Text>
             </Box>
-          </Stack>
+          </VStack>
         </Flex>
       </Card>
       <Card radius={3} border marginTop={3}>
