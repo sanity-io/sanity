@@ -49,6 +49,7 @@ export interface SessionSummary {
     firstBadSha: string | null
     regression: boolean | null
     description: string | null
+    severity: string | null
     linearIssue: string | null
     fixedIn: string | null
   } | null
@@ -60,7 +61,7 @@ export const BISECT_SESSIONS_QUERY = `*[_type == "bisectSession"] | order(create
   _id, title, description, "refines": refines._ref,
   good{sha, label}, bad{sha, label}, createdAt, createdBy,
   "markCount": count(marks),
-  result{firstBadSha, regression, description, linearIssue, fixedIn},
+  result{firstBadSha, regression, description, severity, linearIssue, fixedIn},
   "resultSubject": *[_type == "gitCommit" && sha == ^.result.firstBadSha][0].subject
 }`
 
@@ -86,6 +87,7 @@ export interface SessionDocument {
     firstBadSha: string
     regression: boolean | null
     description: string | null
+    severity: string | null
     linearIssue: string | null
   } | null
   createdAt: string | null
@@ -98,7 +100,7 @@ export const BISECT_SESSION_QUERY = `*[_id == $id][0] {
   "refinedBy": *[_type == "bisectSession" && refines._ref == ^._id] | order(createdAt desc) {_id, title},
   good{sha, label}, bad{sha, label}, releasesOnly, reproPath,
   marks[]{_key, sha, verdict},
-  result{firstBadSha, regression, description, linearIssue},
+  result{firstBadSha, regression, description, severity, linearIssue},
   createdAt, createdBy
 }`
 

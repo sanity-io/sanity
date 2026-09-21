@@ -19,6 +19,7 @@ function session(
           firstBadSha: null,
           regression: null,
           description: null,
+          severity: null,
           linearIssue: null,
           fixedIn: null,
           ...result,
@@ -79,15 +80,17 @@ test('the chain’s verdict is the deepest converged one, annotations the deepes
       fixedIn: 'v6.10.0',
     },
   })
-  const commits = session('ab', {refines: 'a', result: {firstBadSha: 'c3'}})
-  const inProgress = session('abc', {refines: 'ab'})
+  const commits = session('ab', {refines: 'a', result: {firstBadSha: 'c3', severity: 'critical'}})
+  const inProgress = session('abc', {refines: 'ab', result: {severity: 'bogus'}})
   const [chain] = resolveSessionChains([releases, commits, inProgress])
   expect(ids(chain)).toEqual(['a', 'ab', 'abc'])
+  // the unknown severity on the leaf is skipped, not treated as "set"
   expect(mergeChainVerdict(chain)).toEqual({
     firstBadSha: 'c3',
     verdictSessionId: 'ab',
     regression: true,
     description: 'Editor freezes on paste',
+    severity: 'critical',
     linearIssue: 'SAPP-1',
     fixedIn: 'v6.10.0',
   })
@@ -107,7 +110,18 @@ test('a legacy result.description still counts, below the session’s own', () =
     verdictSessionId: undefined,
     regression: false,
     description: undefined,
+    severity: undefined,
     linearIssue: undefined,
     fixedIn: undefined,
   })
+})
+
+test('worstSeverity ranks unrated as worst and minor as least', async () => {
+  const {worstSeverity} = await import('./severity')
+  expect(worstSeverity([])).toBeUndefined()
+  expect(worstSeverity(['minor'])).toBe('minor')
+  expect(worstSeverity(['minor', 'major'])).toBe('major')
+  expect(worstSeverity(['major', 'critical', 'minor'])).toBe('critical')
+  expect(worstSeverity(['minor', null])).toBe('critical')
+  expect(worstSeverity(['minor', 'bogus'])).toBe('critical')
 })

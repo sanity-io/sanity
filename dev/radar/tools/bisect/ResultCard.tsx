@@ -11,6 +11,7 @@ import {type TagSlice} from './data'
 import {IncludedIn} from './IncludedIn'
 import {withReproPath} from './reproPath'
 import {type ResultAnnotations} from './sessions'
+import {SEVERITIES, SEVERITY_LABEL, SEVERITY_TONE} from './severity'
 import {pluralize} from './text'
 
 /**
@@ -119,6 +120,30 @@ export function ResultCard(props: {
           onClick={() => onAnnotate({regression: !annotations.regression})}
         />
       </Flex>
+      {/* How bad — only meaningful once it IS a regression. Clicking the
+          selected step clears it, so an unrated regression stays possible */}
+      {annotations.regression && (
+        <Flex alignItems="center" gap={2} flexWrap="wrap">
+          <Text size={1} muted>
+            Severity
+          </Text>
+          {SEVERITIES.map((severity) => {
+            const selected = annotations.severity === severity
+            return (
+              <Button
+                key={severity}
+                mode={selected ? 'default' : 'ghost'}
+                tone={SEVERITY_TONE[severity]}
+                fontSize={0}
+                padding={2}
+                text={SEVERITY_LABEL[severity]}
+                aria-pressed={selected}
+                onClick={() => onAnnotate({severity: selected ? '' : severity})}
+              />
+            )
+          })}
+        </Flex>
+      )}
       {state.suspects.length > 0 && (
         <Card padding={3} radius={2} tone="caution">
           <Stack gap={3}>

@@ -39,6 +39,7 @@ import {normalizeReproPath, withReproPath} from '../bisect/reproPath'
 import {ReproPathInput} from '../bisect/ReproPathField'
 import {mergeChainVerdict, resolveSessionChains} from '../bisect/sessionChains'
 import {type ManualRegressionInput, reportRegression} from '../bisect/sessions'
+import {SEVERITY_LABEL, SEVERITY_TONE, worstSeverity} from '../bisect/severity'
 import {pluralize} from '../bisect/text'
 import {releaseUrl} from '../trends/links'
 import {useUrlState} from '../trends/useUrlState'
@@ -259,6 +260,7 @@ export function ReleasesTool() {
           firstBadSha: verdict.firstBadSha,
           regression: true,
           description: null,
+          severity: verdict.severity ?? null,
           linearIssue: verdict.linearIssue ?? null,
           fixedIn: verdict.fixedIn ?? null,
         },
@@ -680,6 +682,12 @@ function ReleaseRow(props: {
   const hasRegressions =
     regressions !== undefined &&
     regressions.introduced.length + regressions.inherited.length + regressions.fixed.length > 0
+  // The introduced count takes the tone of its worst regression, so a
+  // critical one stands out in the list and a release of minor ones calms
+  // down; an unrated regression keeps it red (see worstSeverity)
+  const worstIntroduced = worstSeverity(
+    (regressions?.introduced ?? []).map((entry) => entry.session.result?.severity),
+  )
   // The version opens the gitTag document in the structure tool — the raw
   // synced record behind the row
   const documentLink = useIntentLink({intent: 'edit', params: {id: tag._id, type: 'gitTag'}})
@@ -755,7 +763,7 @@ function ReleaseRow(props: {
               counts and the report action read as one thing: the label
               carries the noun, the counts say where a span starts
               (introduced), runs (inherited) and ends (fixed) — told apart by
-              tone and icon, the red count being the one to read — and "Add"
+              tone and icon, the introduced count toned by its worst severity — and "Add"
               pins a new one on this release. Each count
               opens the list behind it, which is also where a regression is
               removed again */}
@@ -768,17 +776,28 @@ function ReleaseRow(props: {
                 none
               </Text>
             )}
-            {regressions && regressions.introduced.length > 0 && (
-              <Button
-                mode="bleed"
-                tone="critical"
-                fontSize={0}
-                padding={2}
-                icon={BugIcon}
-                text={`${regressions.introduced.length} introduced`}
-                aria-label={`Show the ${pluralize(regressions.introduced.length, 'regression')} introduced in ${tag.tag}`}
-                onClick={onShowRegressions}
-              />
+            {regressions && regressions.introduced.length > 0 && worstIntroduced && (
+              <Tooltip
+                content={
+                  <Box padding={2}>
+                    <Text size={1}>
+                      {pluralize(regressions.introduced.length, 'regression')} first shipped in{' '}
+                      {tag.tag} — worst rated {SEVERITY_LABEL[worstIntroduced].toLowerCase()}
+                    </Text>
+                  </Box>
+                }
+              >
+                <Button
+                  mode="bleed"
+                  tone={SEVERITY_TONE[worstIntroduced]}
+                  fontSize={0}
+                  padding={2}
+                  icon={BugIcon}
+                  text={`${regressions.introduced.length} introduced`}
+                  aria-label={`Show the ${pluralize(regressions.introduced.length, 'regression')} introduced in ${tag.tag}`}
+                  onClick={onShowRegressions}
+                />
+              </Tooltip>
             )}
             {regressions && regressions.inherited.length > 0 && (
               <Tooltip

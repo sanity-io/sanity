@@ -5,6 +5,7 @@ import {Flex} from 'ui5'
 import {type BisectCommit, buildChain} from '../bisect/bisect'
 import {type TagSlice} from '../bisect/data'
 import {type ManualRegressionInput} from '../bisect/sessions'
+import {isSeverity, SEVERITIES, SEVERITY_LABEL} from '../bisect/severity'
 import {pluralize} from '../bisect/text'
 import {baseTagOf, compareTagsSemverDesc} from './releaseInfo'
 
@@ -31,6 +32,7 @@ export function AddRegressionDialog(props: {
   const {tags, commitsBySha, createdBy, initialTag, onClose, onCreate} = props
   const [selectedTagName, setSelectedTagName] = useState(initialTag ?? '')
   const [description, setDescription] = useState('')
+  const [severity, setSeverity] = useState('')
   const [linearIssue, setLinearIssue] = useState('')
   const [fixedIn, setFixedIn] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -132,6 +134,25 @@ export function AddRegressionDialog(props: {
 
           <Stack gap={2}>
             <Text size={1} weight="medium">
+              Severity (optional)
+            </Text>
+            <Select
+              fontSize={1}
+              aria-label="Severity"
+              value={severity}
+              onChange={(event) => setSeverity(event.currentTarget.value)}
+            >
+              <option value="">Not rated</option>
+              {SEVERITIES.map((step) => (
+                <option key={step} value={step}>
+                  {SEVERITY_LABEL[step]}
+                </option>
+              ))}
+            </Select>
+          </Stack>
+
+          <Stack gap={2}>
+            <Text size={1} weight="medium">
               Linear issue (optional)
             </Text>
             <TextInput
@@ -178,6 +199,7 @@ export function AddRegressionDialog(props: {
                   bad: {sha: selected.sha, label: selected.tag},
                   suspectShas: encoded.suspectShas,
                   description: description.trim(),
+                  severity: isSeverity(severity) ? severity : undefined,
                   linearIssue: linearIssue.trim() || undefined,
                   fixedIn: fixedInValid ? fixedIn : undefined,
                   createdBy,

@@ -6,6 +6,7 @@
  * release) made anywhere in the chain apply to it. Pure, so the Releases
  * attribution and the sessions list agree by construction.
  */
+import {isSeverity, type Severity} from './severity'
 
 export interface ChainSession {
   _id: string
@@ -16,6 +17,7 @@ export interface ChainSession {
     firstBadSha: string | null
     regression: boolean | null
     description: string | null
+    severity?: string | null
     linearIssue: string | null
     fixedIn: string | null
   } | null
@@ -77,6 +79,7 @@ export interface ChainVerdict {
   /** Confirmed anywhere in the chain. */
   regression: boolean
   description?: string
+  severity?: Severity
   linearIssue?: string
   fixedIn?: string
 }
@@ -103,6 +106,10 @@ export function mergeChainVerdict<S extends ChainSession>(chain: SessionChain<S>
     verdictSessionId: converged?._id,
     regression: chain.sessions.some((session) => session.result?.regression === true),
     description: first((session) => session.description ?? session.result?.description),
+    severity: first((session) => {
+      const value = session.result?.severity
+      return isSeverity(value) ? value : undefined
+    }) as Severity | undefined,
     linearIssue: first((session) => session.result?.linearIssue),
     fixedIn: first((session) => session.result?.fixedIn),
   }

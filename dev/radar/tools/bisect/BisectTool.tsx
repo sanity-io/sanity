@@ -21,6 +21,7 @@ import {NewSessionDialog} from './NewSessionDialog'
 import {RelativeDate} from './RelativeDate'
 import {createSession, type NewSessionInput} from './sessions'
 import {SessionView} from './SessionView'
+import {isSeverity, SEVERITY_LABEL, SEVERITY_TONE} from './severity'
 import {pluralize} from './text'
 
 interface LiveState<T> {
@@ -258,6 +259,11 @@ function SessionRow(props: {
             </Flex>
           </Stack>
         </Box>
+        {concluded && session.result?.regression && isSeverity(session.result.severity) && (
+          <Badge tone={SEVERITY_TONE[session.result.severity]} fontSize={0}>
+            {SEVERITY_LABEL[session.result.severity]}
+          </Badge>
+        )}
         {concluded ? (
           <Badge tone={session.result?.regression ? 'critical' : 'positive'} fontSize={0}>
             {session.result?.regression ? 'regression' : 'found'}{' '}

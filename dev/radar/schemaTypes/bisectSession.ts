@@ -131,6 +131,12 @@ export const bisectSession = defineType({
           rows: 2,
         }),
         defineField({
+          name: 'severity',
+          description: 'How bad the regression is — a human call',
+          type: 'string',
+          options: {list: ['minor', 'major', 'critical']},
+        }),
+        defineField({
           name: 'linearIssue',
           description: 'Linear ticket id, e.g. SAPP-1234',
           type: 'string',

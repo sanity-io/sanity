@@ -29,6 +29,7 @@ import {
   undoMark,
   updateResult,
 } from './sessions'
+import {isSeverity} from './severity'
 import {pluralize} from './text'
 import {Timeline} from './Timeline'
 
@@ -407,6 +408,9 @@ export function SessionView(props: {
                         regression: session?.result?.regression ?? undefined,
                         description:
                           session?.description ?? session?.result?.description ?? undefined,
+                        severity: isSeverity(session?.result?.severity)
+                          ? session.result.severity
+                          : undefined,
                         linearIssue: session?.result?.linearIssue ?? undefined,
                       },
                       onAnnotate: (patch: ResultAnnotations) =>

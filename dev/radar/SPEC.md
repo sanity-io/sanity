@@ -338,7 +338,10 @@ effect of merged work; secondary: leads scanning health weekly.
    mark per sha wins); one that contradicts the bounds surfaces as the usual
    conflict that undo resolves. Sessions can be deleted from the session
    view (hard delete behind a confirm — they're the only user-owned documents
-   here). A session carries a **description** of the issue (asked for at
+   here). A confirmed regression carries a **severity** — minor, major or
+   critical, a human call on the verdict card (or when reporting by hand),
+   shown wherever the regression is listed and editable from the release's
+   regressions dialog; unrated is allowed. A session carries a **description** of the issue (asked for at
    creation, editable on the verdict card; older sessions may only have it
    under `result.description`, which readers fall back to). A session can
    **refine** another (`refines`, a weak reference): the "bisect these
@@ -367,7 +370,9 @@ sessionChains.ts` and shared by the sessions list and the Releases tool:
    (maintenance lines) may lack it. Each release also shows the confirmed
    regressions bisect sessions have attributed to it, along the span a
    regression covers: **introduced** (this release FIRST shipped the
-   offending commit — the blame, a red count with a bug icon),
+   offending commit — the blame, a count with a bug icon toned by the worst
+   severity among them: red for critical or unrated, amber for major, plain
+   for minor),
    **inherited** (introduced by an earlier release and not fixed yet when
    this one shipped — an amber count with a warning icon, so every release inside the
    span reads as affected without looking like a fresh break) and **fixed**

@@ -3,6 +3,7 @@ import {type Patch} from '@sanity/client'
 import {type SanityClient} from 'sanity'
 
 import {type Verdict} from './bisect'
+import {type Severity} from './severity'
 
 /**
  * bisectSession writes (see schemaTypes/bisectSession.ts). All fire-and-forget
@@ -59,6 +60,7 @@ export interface ManualRegressionInput {
   /** Commits strictly between the two releases — the possible culprits. */
   suspectShas: string[]
   description: string
+  severity?: Severity
   linearIssue?: string
   /** Release tag it was already fixed in, when known at report time. */
   fixedIn?: string
@@ -91,6 +93,7 @@ export async function reportRegression(
       lastGoodSha: input.good.sha,
       suspectShas: input.suspectShas,
       regression: true,
+      ...(input.severity ? {severity: input.severity} : {}),
       ...(input.linearIssue ? {linearIssue: input.linearIssue} : {}),
       ...(input.fixedIn ? {fixedIn: input.fixedIn} : {}),
       concludedAt: new Date().toISOString(),
@@ -168,6 +171,8 @@ export interface ResultAnnotations {
   regression?: boolean
   /** Lives on the session itself (`description`), not under `result` — see updateResult. */
   description?: string
+  /** '' clears it. */
+  severity?: Severity | ''
   linearIssue?: string
   /** Release tag the regression was fixed in (releases tool). */
   fixedIn?: string

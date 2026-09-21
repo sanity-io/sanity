@@ -10,6 +10,7 @@ import {Flex} from 'ui5'
 import {type SessionSummary, type TagSlice} from '../bisect/data'
 import {RelativeDate} from '../bisect/RelativeDate'
 import {deleteSessions, updateResult} from '../bisect/sessions'
+import {isSeverity, SEVERITIES, SEVERITY_LABEL, SEVERITY_TONE} from '../bisect/severity'
 import {pluralize} from '../bisect/text'
 import {bisectSessionPath, compareTagsSemverDesc, type ReleaseRegressions} from './releaseInfo'
 
@@ -129,6 +130,17 @@ function RegressionRow(props: {
   const sessionLink = useLink({href: sessionHref})
 
   const fixedIn = session.result?.fixedIn ?? ''
+  const severity = isSeverity(session.result?.severity) ? session.result.severity : ''
+  const setSeverity = (next: string) => {
+    updateResult(client, session._id, {severity: isSeverity(next) ? next : ''}).catch(
+      (err: unknown) =>
+        toast.push({
+          status: 'error',
+          title: 'Could not save the severity',
+          description: err instanceof Error ? err.message : String(err),
+        }),
+    )
+  }
   // A stored value that isn't (or is no longer) a synced newer release still
   // has to be selectable, or the select would silently show "Not fixed yet"
   const fixedInIsKnown = fixCandidates.some((candidate) => candidate.tag === fixedIn)
@@ -170,6 +182,11 @@ function RegressionRow(props: {
               <Text size={1} weight="medium">
                 {session.description || session.result?.description || session.title || session._id}
               </Text>
+              {isSeverity(session.result?.severity) && (
+                <Badge tone={SEVERITY_TONE[session.result.severity]} fontSize={0}>
+                  {SEVERITY_LABEL[session.result.severity]}
+                </Badge>
+              )}
               {chainIds.length > 1 && (
                 <Badge tone="default" fontSize={0}>
                   {pluralize(chainIds.length, 'linked session')}
@@ -213,6 +230,22 @@ function RegressionRow(props: {
               </Text>
             </Flex>
           </Stack>
+        </Box>
+        <Box style={{flexShrink: 0}}>
+          <Select
+            fontSize={1}
+            padding={2}
+            value={severity}
+            aria-label="Severity"
+            onChange={(event) => setSeverity(event.currentTarget.value)}
+          >
+            <option value="">Not rated</option>
+            {SEVERITIES.map((step) => (
+              <option key={step} value={step}>
+                {SEVERITY_LABEL[step]}
+              </option>
+            ))}
+          </Select>
         </Box>
         <Box style={{flexShrink: 0}}>
           <Select
