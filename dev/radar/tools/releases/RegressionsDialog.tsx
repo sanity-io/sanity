@@ -175,11 +175,14 @@ function RegressionRow(props: {
 
   return (
     <Card padding={3} radius={2} border tone={confirming ? 'critical' : 'default'}>
-      <Flex alignItems="flex-start" gap={3}>
-        <Box flex={1} style={{minWidth: 0}}>
+      {/* What it is on top, full width (descriptions often carry a long
+          Slack or Linear URL — let it break anywhere rather than run under
+          the controls); the controls on a line of their own below */}
+      <Stack gap={3}>
+        <Box>
           <Stack gap={2}>
             <Flex alignItems="center" gap={2} flexWrap="wrap">
-              <Text size={1} weight="medium">
+              <Text size={1} weight="medium" style={{overflowWrap: 'anywhere'}}>
                 {session.description || session.result?.description || session.title || session._id}
               </Text>
               {isSeverity(session.result?.severity) && (
@@ -231,77 +234,79 @@ function RegressionRow(props: {
             </Flex>
           </Stack>
         </Box>
-        <Box style={{flexShrink: 0}}>
-          <Select
-            fontSize={1}
-            padding={2}
-            value={severity}
-            aria-label="Severity"
-            onChange={(event) => setSeverity(event.currentTarget.value)}
-          >
-            <option value="">Not rated</option>
-            {SEVERITIES.map((step) => (
-              <option key={step} value={step}>
-                {SEVERITY_LABEL[step]}
-              </option>
-            ))}
-          </Select>
-        </Box>
-        <Box style={{flexShrink: 0}}>
-          <Select
-            fontSize={1}
-            padding={2}
-            value={fixedIn}
-            aria-label="Fixed in release"
-            onChange={(event) => setFixedIn(event.currentTarget.value)}
-          >
-            <option value="">Not fixed yet</option>
-            {fixedIn && !fixedInIsKnown && <option value={fixedIn}>Fixed in {fixedIn}</option>}
-            {fixCandidates.map((candidate) => (
-              <option key={candidate._id} value={candidate.tag}>
-                Fixed in {candidate.tag}
-              </option>
-            ))}
-          </Select>
-        </Box>
-        {confirming ? (
-          <Flex gap={2} style={{flexShrink: 0}}>
-            <Button
-              mode="ghost"
+        <Flex alignItems="center" gap={2} justifyContent="flex-end" flexWrap="wrap">
+          <Box style={{flexShrink: 0}}>
+            <Select
               fontSize={1}
-              text="Cancel"
-              disabled={removing}
-              onClick={() => setConfirming(false)}
-            />
+              padding={2}
+              value={severity}
+              aria-label="Severity"
+              onChange={(event) => setSeverity(event.currentTarget.value)}
+            >
+              <option value="">Not rated</option>
+              {SEVERITIES.map((step) => (
+                <option key={step} value={step}>
+                  {SEVERITY_LABEL[step]}
+                </option>
+              ))}
+            </Select>
+          </Box>
+          <Box style={{flexShrink: 0}}>
+            <Select
+              fontSize={1}
+              padding={2}
+              value={fixedIn}
+              aria-label="Fixed in release"
+              onChange={(event) => setFixedIn(event.currentTarget.value)}
+            >
+              <option value="">Not fixed yet</option>
+              {fixedIn && !fixedInIsKnown && <option value={fixedIn}>Fixed in {fixedIn}</option>}
+              {fixCandidates.map((candidate) => (
+                <option key={candidate._id} value={candidate.tag}>
+                  Fixed in {candidate.tag}
+                </option>
+              ))}
+            </Select>
+          </Box>
+          {confirming ? (
+            <Flex gap={2} style={{flexShrink: 0}}>
+              <Button
+                mode="ghost"
+                fontSize={1}
+                text="Cancel"
+                disabled={removing}
+                onClick={() => setConfirming(false)}
+              />
+              <Button
+                tone="critical"
+                fontSize={1}
+                text={removing ? 'Removing…' : 'Remove'}
+                disabled={removing}
+                onClick={remove}
+              />
+            </Flex>
+          ) : (
             <Button
+              mode="bleed"
               tone="critical"
               fontSize={1}
-              text={removing ? 'Removing…' : 'Remove'}
-              disabled={removing}
-              onClick={remove}
+              padding={2}
+              icon={CloseIcon}
+              aria-label={
+                chainIds.length > 1
+                  ? `Remove this regression and its ${pluralize(chainIds.length, 'linked session')}`
+                  : 'Remove this regression'
+              }
+              title={
+                chainIds.length > 1
+                  ? `Remove this regression (deletes its ${pluralize(chainIds.length, 'linked session')})`
+                  : 'Remove this regression'
+              }
+              onClick={() => setConfirming(true)}
             />
-          </Flex>
-        ) : (
-          <Button
-            mode="bleed"
-            tone="critical"
-            fontSize={1}
-            padding={2}
-            icon={CloseIcon}
-            aria-label={
-              chainIds.length > 1
-                ? `Remove this regression and its ${pluralize(chainIds.length, 'linked session')}`
-                : 'Remove this regression'
-            }
-            title={
-              chainIds.length > 1
-                ? `Remove this regression (deletes its ${pluralize(chainIds.length, 'linked session')})`
-                : 'Remove this regression'
-            }
-            onClick={() => setConfirming(true)}
-          />
-        )}
-      </Flex>
+          )}
+        </Flex>
+      </Stack>
     </Card>
   )
 }
