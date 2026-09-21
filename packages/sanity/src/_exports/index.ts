@@ -7,24 +7,7 @@ import {createLegacyAuthStore as _createAuthStorePublic} from '../core/store/aut
 
 export {useCanvasCompanionDoc} from '../core/canvas/actions/useCanvasCompanionDoc'
 export {ChangeIndicator, type ChangeIndicatorProps} from '../core/changeIndicators/ChangeIndicator'
-export {CommentDeleteDialog} from '../core/comments-v2/components/CommentDeleteDialog'
-export {CommentDeleteDialog as CommentDeleteDialogLegacy} from '../core/comments/components/CommentDeleteDialog'
-export {CommentsList} from '../core/comments-v2/components/list/CommentsList'
-export {CommentsList as CommentsListLegacy} from '../core/comments/components/list/CommentsList'
-export {CommentsAuthoringPathProvider} from '../core/comments-v2/context/authoring-path/CommentsAuthoringPathProvider'
-export {CommentsAuthoringPathProvider as CommentsAuthoringPathProviderLegacy} from '../core/comments/context/authoring-path/CommentsAuthoringPathProvider'
-export {CommentsProvider} from '../core/comments-v2/context/comments/CommentsProvider'
-export {CommentsProvider as CommentsProviderLegacy} from '../core/comments/context/comments/CommentsProvider'
-export {CommentsEnabledProvider} from '../core/comments-v2/context/enabled/CommentsEnabledProvider'
-export {CommentsEnabledProvider as CommentsEnabledProviderLegacy} from '../core/comments/context/enabled/CommentsEnabledProvider'
-export {
-  CommentsIntentProvider,
-  type CommentsIntentProviderProps,
-} from '../core/comments/context/intent/CommentsIntentProvider'
-export {useComments} from '../core/comments-v2/hooks/useComments'
-export {useComments as useCommentsLegacy} from '../core/comments/hooks/useComments'
-export {useCommentsEnabled} from '../core/comments-v2/hooks/useCommentsEnabled'
-export {useCommentsEnabled as useCommentsEnabledLegacy} from '../core/comments/hooks/useCommentsEnabled'
+export {type CommentsIntentProviderProps} from '../core/comments/context/intent/CommentsIntentProvider'
 export {useCommentsMode} from '../core/comments-v2/hooks/useCommentsMode'
 export {useCommentsMode as useCommentsModeLegacy} from '../core/comments/hooks/useCommentsMode'
 export {

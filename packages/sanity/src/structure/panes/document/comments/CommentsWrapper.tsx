@@ -1,20 +1,14 @@
 import {useCallback, useLayoutEffect, useRef} from 'react'
-import {
-  CommentsEnabledProvider,
-  CommentsEnabledProviderLegacy,
-  CommentsProvider,
-  CommentsProviderLegacy,
-  getDraftId,
-  getPublishedId,
-  getVersionId,
-  useCommentsEnabled,
-  useCommentsEnabledLegacy,
-  usePerspective,
-  useWorkspace,
-} from 'sanity'
+import {getDraftId, getPublishedId, getVersionId, usePerspective, useWorkspace} from 'sanity'
 import {useRouter} from 'sanity/router'
 
-import {COMMENTS_INSPECTOR_NAME} from '../../../../core/comments/constants'
+import {CommentsProvider} from '../../../../core/comments-v2/context/comments/CommentsProvider'
+import {CommentsEnabledProvider} from '../../../../core/comments-v2/context/enabled/CommentsEnabledProvider'
+import {useCommentsEnabled} from '../../../../core/comments-v2/hooks/useCommentsEnabled'
+import {COMMENTS_INSPECTOR_NAME} from '../../../../core/comments-v2/constants'
+import {CommentsProvider as CommentsProviderLegacy} from '../../../../core/comments/context/comments/CommentsProvider'
+import {CommentsEnabledProvider as CommentsEnabledProviderLegacy} from '../../../../core/comments/context/enabled/CommentsEnabledProvider'
+import {useCommentsEnabled as useCommentsEnabledLegacy} from '../../../../core/comments/hooks/useCommentsEnabled'
 import {getTargetScopeId} from '../../../../core/hooks/useTargetDocumentState'
 import {getDefaultVariant} from '../../../../core/perspective/getDefaultVariant'
 import {encodeVariantLinkParam} from '../../../../core/variants/util/variantSelection'

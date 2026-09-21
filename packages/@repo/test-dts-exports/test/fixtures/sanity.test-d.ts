@@ -143,8 +143,6 @@ import type {
   CommentContextLegacy,
   CommentCreatePayload,
   CommentCreatePayloadLegacy,
-  CommentDeleteDialog,
-  CommentDeleteDialogLegacy,
   CommentDocument,
   CommentDocumentLegacy,
   CommentFieldCreatePayload,
@@ -166,18 +164,9 @@ import type {
   CommentReactionOptionLegacy,
   CommentReactionShortNames,
   CommentReactionShortNamesLegacy,
-  CommentsAuthoringPathProvider,
-  CommentsAuthoringPathProviderLegacy,
-  CommentsEnabledProvider,
-  CommentsEnabledProviderLegacy,
-  CommentsIntentProvider,
   CommentsIntentProviderProps,
-  CommentsList,
   CommentsListBreadcrumbItem,
   CommentsListBreadcrumbItemLegacy,
-  CommentsListLegacy,
-  CommentsProvider,
-  CommentsProviderLegacy,
   CommentStatus,
   CommentStatusLegacy,
   CommentsTextSelectionItem,
@@ -1108,10 +1097,6 @@ import type {
   useColorSchemeOptions,
   useColorSchemeSetValue,
   useColorSchemeValue,
-  useComments,
-  useCommentsEnabled,
-  useCommentsEnabledLegacy,
-  useCommentsLegacy,
   useCommentsMode,
   useCommentsModeLegacy,
   useCopyPaste,
@@ -1660,12 +1645,6 @@ describe('sanity', () => {
   test('CommentCreatePayloadLegacy', () => {
     expectTypeOf<CommentCreatePayloadLegacy>().not.toBeNever()
   })
-  test('CommentDeleteDialog', () => {
-    expectTypeOf<typeof CommentDeleteDialog>().toBeFunction()
-  })
-  test('CommentDeleteDialogLegacy', () => {
-    expectTypeOf<typeof CommentDeleteDialogLegacy>().toBeFunction()
-  })
   test('CommentDocument', () => {
     expectTypeOf<CommentDocument>().toBeObject()
   })
@@ -1729,41 +1708,14 @@ describe('sanity', () => {
   test('CommentReactionShortNamesLegacy', () => {
     expectTypeOf<CommentReactionShortNamesLegacy>().not.toBeNever()
   })
-  test('CommentsAuthoringPathProvider', () => {
-    expectTypeOf<typeof CommentsAuthoringPathProvider>().toBeFunction()
-  })
-  test('CommentsAuthoringPathProviderLegacy', () => {
-    expectTypeOf<typeof CommentsAuthoringPathProviderLegacy>().toBeFunction()
-  })
-  test('CommentsEnabledProvider', () => {
-    expectTypeOf<typeof CommentsEnabledProvider>().not.toBeNever()
-  })
-  test('CommentsEnabledProviderLegacy', () => {
-    expectTypeOf<typeof CommentsEnabledProviderLegacy>().not.toBeNever()
-  })
-  test('CommentsIntentProvider', () => {
-    expectTypeOf<typeof CommentsIntentProvider>().not.toBeNever()
-  })
   test('CommentsIntentProviderProps', () => {
     expectTypeOf<CommentsIntentProviderProps>().toBeObject()
-  })
-  test('CommentsList', () => {
-    expectTypeOf<typeof CommentsList>().not.toBeNever()
   })
   test('CommentsListBreadcrumbItem', () => {
     expectTypeOf<CommentsListBreadcrumbItem>().toBeObject()
   })
   test('CommentsListBreadcrumbItemLegacy', () => {
     expectTypeOf<CommentsListBreadcrumbItemLegacy>().toBeObject()
-  })
-  test('CommentsListLegacy', () => {
-    expectTypeOf<typeof CommentsListLegacy>().not.toBeNever()
-  })
-  test('CommentsProvider', () => {
-    expectTypeOf<typeof CommentsProvider>().not.toBeNever()
-  })
-  test('CommentsProviderLegacy', () => {
-    expectTypeOf<typeof CommentsProviderLegacy>().not.toBeNever()
   })
   test('CommentStatus', () => {
     expectTypeOf<CommentStatus>().not.toBeNever()
@@ -4575,18 +4527,6 @@ describe('sanity', () => {
   })
   test('useColorSchemeValue', () => {
     expectTypeOf<typeof useColorSchemeValue>().toBeFunction()
-  })
-  test('useComments', () => {
-    expectTypeOf<typeof useComments>().toBeFunction()
-  })
-  test('useCommentsEnabled', () => {
-    expectTypeOf<typeof useCommentsEnabled>().toBeFunction()
-  })
-  test('useCommentsEnabledLegacy', () => {
-    expectTypeOf<typeof useCommentsEnabledLegacy>().toBeFunction()
-  })
-  test('useCommentsLegacy', () => {
-    expectTypeOf<typeof useCommentsLegacy>().toBeFunction()
   })
   test('useCommentsMode', () => {
     expectTypeOf<typeof useCommentsMode>().toBeFunction()
