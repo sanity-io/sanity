@@ -761,7 +761,7 @@ export {
   defaultRenderInput,
   defaultRenderItem,
   defaultRenderPreview,
-} from '../core/form/lazy'
+} from '../core/form/studio/defaults'
 export {type FormBuilderProps} from '../core/form/studio/FormBuilder'
 export {type FormProviderProps} from '../core/form/studio/FormProvider'
 export {

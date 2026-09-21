@@ -436,11 +436,15 @@ a chunk contains. Rules that keep the graph small:
   groups are `src/core/studio/lazy.tsx` (`StudioLayoutComponent`, `StudioNavbar`),
   `src/core/form/lazy.tsx` (`FormBuilder`, `FormProvider`, `PortableTextInput`/`BlockEditor`,
   `UpdateReadOnlyPlugin`) and `src/core/comments/lazy.tsx` (`CommentsList`, `CommentInput`);
-  `src/core/form/studio/defaults.tsx` does the same for the `defaultRender*` callbacks. Only the
-  barrels (`index.ts` and the internals entry, which must point at the same declaration) import
-  the facades; internal code keeps importing the implementations directly, so the default
-  rendering path is unchanged. A facade group only pays off when every export reaching the same
-  modules is covered; check with the closure, not with a single export.
+  the exported `defaultRender*` callbacks in `src/core/form/studio/defaults.tsx` import the
+  input/field/item resolvers on first use the same way (nothing in the studio calls them; a test
+  that needs synchronous rendering builds its own callback from the resolver, see
+  `PrimitiveField.test.tsx`). Only the barrels (`index.ts` and the internals entry, which must
+  point at the same declaration) import the facades; internal code keeps importing the
+  implementations directly, so the default rendering path is unchanged. A facade group only pays
+  off when every export reaching the same modules is covered; check with the closure, not with a
+  single export. knip runs in full mode in CI: an implementation that only the barrel used to
+  export becomes an unused export once the barrel points at the facade.
 - Code that must be fetched right after login (layout, navbar) is preloaded from
   `PreloadStudioShell` (same file as the shell facades), mounted inside `AuthBoundary`, so the
   fetch overlaps with workspace loading.

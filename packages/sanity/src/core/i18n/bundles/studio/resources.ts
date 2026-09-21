@@ -8,7 +8,7 @@ import {defineLocalesResources} from '../../helpers'
  * @hidden
  */
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-export const studioLocaleStrings = defineLocalesResources('studio', {
+const studioLocaleStrings = defineLocalesResources('studio', {
   /** "Configuration issue" header */
   'about-dialog.configuration-issue.header': 'Configuration issue detected',
   /** Message shown if sanity.cli.ts is missing deployment.appId */

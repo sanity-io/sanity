@@ -428,7 +428,7 @@ export {
   defaultRenderInput,
   defaultRenderItem,
   defaultRenderPreview,
-} from '../core/form/lazy'
+} from '../core/form/studio/defaults'
 export {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   useEnhancedObjectDialog,

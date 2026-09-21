@@ -1,18 +1,9 @@
 import {lazy, Suspense} from 'react'
 
 import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
-import {Preview} from '../preview/components/Preview'
 import {type FormBuilderProps} from './studio/FormBuilder'
 import {type FormProviderProps} from './studio/FormProvider'
 import {type PortableTextInputProps} from './types/inputProps'
-import {
-  type RenderAnnotationCallback,
-  type RenderBlockCallback,
-  type RenderFieldCallback,
-  type RenderInputCallback,
-  type RenderItemCallback,
-  type RenderPreviewCallback,
-} from './types/renderCallback'
 
 // Code-split facades for the form components that `sanity` exports. The form runtime and the
 // Portable Text editor are the largest part of the package, and nothing renders them before a
@@ -98,106 +89,3 @@ export function UpdateReadOnlyPlugin(props: {readOnly: boolean}): React.JSX.Elem
     </Suspense>
   )
 }
-
-// The `defaultRender*` callbacks resolve the default component for a schema type and render it,
-// which reaches every default input, field and item component. The eager implementations in
-// `./studio/defaults` stay for internal use; these variants import the resolvers on first use.
-
-const DefaultAnnotation = lazy(() =>
-  import('./studio/inputResolver/blockResolver').then((module) => ({
-    default: function DefaultAnnotation(props: Parameters<RenderAnnotationCallback>[0]) {
-      const Annotation = module.defaultResolveAnnotationComponent(props.schemaType)
-      return <Annotation {...props} />
-    },
-  })),
-)
-
-/** @internal */
-export const defaultRenderAnnotation: RenderAnnotationCallback = (props) => (
-  <Suspense fallback={null}>
-    <DefaultAnnotation {...props} />
-  </Suspense>
-)
-
-const DefaultBlock = lazy(() =>
-  import('./studio/inputResolver/blockResolver').then((module) => ({
-    default: function DefaultBlock(props: Parameters<RenderBlockCallback>[0]) {
-      const Block = module.defaultResolveBlockComponent(props.schemaType)
-      return <Block {...props} />
-    },
-  })),
-)
-
-/** @internal */
-export const defaultRenderBlock: RenderBlockCallback = (props) => (
-  <Suspense fallback={null}>
-    <DefaultBlock {...props} />
-  </Suspense>
-)
-
-const DefaultInlineBlock = lazy(() =>
-  import('./studio/inputResolver/blockResolver').then((module) => ({
-    default: function DefaultInlineBlock(props: Parameters<RenderBlockCallback>[0]) {
-      const InlineBlock = module.defaultResolveInlineBlockComponent(props.schemaType)
-      return <InlineBlock {...props} />
-    },
-  })),
-)
-
-/** @internal */
-export const defaultRenderInlineBlock: RenderBlockCallback = (props) => (
-  <Suspense fallback={null}>
-    <DefaultInlineBlock {...props} />
-  </Suspense>
-)
-
-const DefaultField = lazy(() =>
-  import('./studio/inputResolver/fieldResolver').then((module) => ({
-    default: function DefaultField(props: Parameters<RenderFieldCallback>[0]) {
-      const Field = module.defaultResolveFieldComponent(props.schemaType)
-      return <Field {...props} />
-    },
-  })),
-)
-
-/** @internal */
-export const defaultRenderField: RenderFieldCallback = (props) => (
-  <Suspense fallback={null}>
-    <DefaultField {...props} />
-  </Suspense>
-)
-
-const DefaultInput = lazy(() =>
-  import('./studio/inputResolver/inputResolver').then((module) => ({
-    default: function DefaultInput(props: Parameters<RenderInputCallback>[0]) {
-      const Input = module.defaultResolveInputComponent(props.schemaType)
-      return <Input {...props} />
-    },
-  })),
-)
-
-/** @internal */
-export const defaultRenderInput: RenderInputCallback = (props) => (
-  <Suspense fallback={null}>
-    <DefaultInput {...props} />
-  </Suspense>
-)
-
-const DefaultItem = lazy(() =>
-  import('./studio/inputResolver/itemResolver').then((module) => ({
-    default: function DefaultItem(props: Parameters<RenderItemCallback>[0]) {
-      const Item = module.defaultResolveItemComponent(props.schemaType)
-      return <Item {...props} />
-    },
-  })),
-)
-
-/** @internal */
-export const defaultRenderItem: RenderItemCallback = (props) => (
-  <Suspense fallback={null}>
-    <DefaultItem {...props} />
-  </Suspense>
-)
-
-/** @internal */
-export const defaultRenderPreview: RenderPreviewCallback = (props) => <Preview {...props} />
