@@ -1,5 +1,6 @@
-import {Flex, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {type ReactNode} from 'react'
+import {Flex} from 'ui5'
 
 import {type TargetPerspective} from '../../perspective/types'
 import {usePerspective} from '../../perspective/usePerspective'
@@ -95,7 +96,7 @@ export function DocumentVersionsStatusIndicator({documentVersions}: DocumentStat
   }
 
   return (
-    <Flex align="center">
+    <Flex alignItems="center">
       {icons.map((icon) => renderDocumentStatusIcon(icon, selectedPerspective))}
     </Flex>
   )

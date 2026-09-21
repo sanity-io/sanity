@@ -1,7 +1,6 @@
 /* oxlint-disable no-restricted-imports, @sanity/i18n/no-i18next-import */
 import {
   Button as UIButton,
-  Flex,
   Text,
   useClickOutsideEvent,
   useGlobalKeyDown,
@@ -10,7 +9,7 @@ import {
 import {Popover as UIPopover, type PopoverProps as UIPopoverProps} from '@sanity/ui/popover'
 import {type ComponentType, type ReactNode, useCallback, useRef} from 'react'
 import {useTranslation} from 'react-i18next'
-import {Grid, Box} from 'ui5'
+import {Flex, Grid, Box} from 'ui5'
 
 export interface ConfirmPopoverProps {
   cancelButtonIcon?: ReactNode | ComponentType
@@ -99,7 +98,7 @@ function ConfirmPopoverContent({
   useClickOutsideEvent(isTopLayer && onCancel, () => [ref.current])
 
   return (
-    <Flex direction="column" ref={ref} style={{minWidth: 280, maxWidth: 350}}>
+    <Flex flexDirection="column" ref={ref} style={{minWidth: 280, maxWidth: 350}}>
       <Box flexBasis="0%" flexGrow={1} overflow="auto" padding={4}>
         <Text size={1}>{message}</Text>
       </Box>

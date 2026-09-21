@@ -1,4 +1,4 @@
-import {Card, Flex, Label, Stack} from '@sanity/ui'
+import {Card, Label, Stack} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {type ErrorInfo, useCallback, useEffect, useMemo, useState} from 'react'
 import {getPublishedId, useTranslation} from 'sanity'
@@ -9,6 +9,7 @@ import {
   type PaneNode,
   StructureToolProvider,
 } from 'sanity/structure'
+import {Flex} from 'ui5'
 
 import {ErrorBoundary} from '../../ui-components/errorBoundary/ErrorBoundary'
 import {ErrorCard} from '../components/ErrorCard'
@@ -172,7 +173,7 @@ export function DocumentListPane(props: {
             searchParams={searchParams}
             refs={refs}
           >
-            <Flex className={root} direction="column" flex={1}>
+            <Flex className={root} flexDirection="column" flexBasis="0%" flexGrow={1}>
               <StructureDocumentListPane
                 index={0}
                 itemId="$root"

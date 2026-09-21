@@ -1,7 +1,7 @@
-import {Card, Flex, Stack, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {Card, Stack, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {Fragment, type ReactNode} from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {
   glyphCell,
@@ -63,7 +63,7 @@ function PropertyRowsGrid({
           </Text>
           {/* Pure-text value on one left edge; a long value truncates (title tooltip shows the full
               text) rather than wrapping and breaking the single-line grid. */}
-          <Box style={{minWidth: 0}}>
+          <Box>
             {typeof row.value === 'string' ? (
               <Text size={1} textOverflow="ellipsis" title={row.value}>
                 {row.value}
@@ -135,7 +135,7 @@ export function DetailPropertiesPanel(props: {
                 </Text>
               )}
               {splitIntoColumns ? (
-                <Flex gap={4} wrap="wrap">
+                <Flex gap={4} flexWrap="wrap">
                   <PropertyRowsGrid hasGlyphs={hasGlyphs} rows={rows.slice(0, leftCount)} />
                   <PropertyRowsGrid hasGlyphs={hasGlyphs} rows={rows.slice(leftCount)} />
                 </Flex>

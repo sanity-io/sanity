@@ -28,6 +28,7 @@ export const CreateReleaseMenuItem: ComponentType<Props> = ({onCreateRelease}) =
         from(checkWithPermissionGuard(createRelease, createReleaseMetadata(getReleaseDefaults()))),
       [checkWithPermissionGuard, createRelease, createReleaseMetadata],
     ),
+    undefined,
   )
 
   const activeReleases = useActiveReleases()

@@ -1,6 +1,7 @@
-import {Box, Button, Card, Flex, Heading, Stack, Text, TextArea} from '@sanity/ui'
+import {Box, Button, Card, Heading, Stack, Text, TextArea} from '@sanity/ui'
 import {lazy, Suspense, type SyntheticEvent, useCallback, useId, useRef, useState} from 'react'
 import {type StudioDiagnostics} from 'sanity'
+import {Flex} from 'ui5'
 
 // Loaded on demand so the initial paste screen doesn't carry the sanity
 // package; the report and the parser share the same lazy chunk. Module-scope
@@ -99,7 +100,7 @@ export function App() {
                   </Card>
                 ) : null}
 
-                <Flex justify="flex-end">
+                <Flex justifyContent="flex-end">
                   <Button
                     loading={parsing}
                     mode="default"

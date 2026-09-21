@@ -1,9 +1,9 @@
 import {TranslateIcon} from '@sanity/icons/Translate'
-import {Button, Card, Checkbox, Flex, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Button, Card, Checkbox, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
 import {Popover} from '@sanity/ui/popover'
 import {type FormEvent, useCallback, useRef, useState} from 'react'
 import {type ObjectSchemaType} from 'sanity'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {type LanguageFilterPluginOptions} from './types'
 import {usePaneLanguages} from './usePaneLanguages'
@@ -75,7 +75,7 @@ export function LanguageFilterMenuButton(props: LanguageFilterMenuButtonProps) {
         </Box>
 
         <Card as="label">
-          <Flex align="center" gap={2}>
+          <Flex alignItems="center" gap={2}>
             <Checkbox checked={allSelected} name="_allSelected" onChange={handleToggleAll} />
             <Box flexBasis="0%" flexGrow={1}>
               <Text muted={!allSelected} weight="semibold">
@@ -125,7 +125,7 @@ function LanguageFilterOption(props: {
 
   return (
     <Card as="label">
-      <Flex align="center" gap={2}>
+      <Flex alignItems="center" gap={2}>
         <Checkbox checked={selected} name={`language-${id}`} onChange={handleChange} />
         <Box flexBasis="0%" flexGrow={1}>
           <Text muted={!selected}>{title}</Text>
