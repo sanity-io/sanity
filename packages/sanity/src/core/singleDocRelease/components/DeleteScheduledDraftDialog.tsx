@@ -38,6 +38,7 @@ interface DeleteScheduledDraftDialogWithCopyToDraftProps extends DeleteScheduled
 
 interface DialogDescription {
   bodyKey: string
+  explanationKey?: string
   copy: {
     visible: boolean
     default: boolean
@@ -53,7 +54,17 @@ function isSameDocumentContent(documentA: SanityDocument, documentB: SanityDocum
 function getDialogDescription(
   scheduledDraftDocument: SanityDocument | null,
   draftDocument: SanityDocument | null,
+  hasReadError: boolean,
 ): DialogDescription {
+  // An unreadable document is unknown, not absent: copying could overwrite a draft we never saw.
+  if (hasReadError) {
+    return {
+      bodyKey: 'release.dialog.delete-schedule-draft.body-with-choice',
+      explanationKey: 'release.dialog.delete-schedule-draft.unresolved-draft-explanation',
+      copy: {visible: true, default: false},
+    }
+  }
+
   if (scheduledDraftDocument && draftDocument) {
     return isSameDocumentContent(scheduledDraftDocument, draftDocument)
       ? {
@@ -62,6 +73,7 @@ function getDialogDescription(
         }
       : {
           bodyKey: 'release.dialog.delete-schedule-draft.body-with-choice',
+          explanationKey: 'release.dialog.delete-schedule-draft.different-changes-explanation',
           copy: {visible: true, default: true},
         }
   }
@@ -73,7 +85,7 @@ function getDialogDescription(
     }
   }
 
-  // The version is missing or unreadable; copying is a no-op, so prefer it over claiming nothing is at stake.
+  // The version is missing; copying is a no-op, so prefer it over claiming nothing is at stake.
   return {
     bodyKey: 'release.dialog.delete-schedule-draft.body-with-choice',
     copy: {visible: false, default: true},
@@ -208,16 +220,23 @@ function DeleteScheduledDraftDialogWithCopyToDraft({
   })
 
   // Same observer both sides: `useScheduledDraftDocument` decorates documents with extra keys.
-  const {document: scheduledDraftDocument, loading: scheduledDraftLoading} =
-    useUnstableObserveDocument<SanityDocument>(getVersionId(publishedId, releaseId))
-  const {document: draftDocument, loading: draftLoading} =
-    useUnstableObserveDocument<SanityDocument>(getDraftId(publishedId))
+  const {
+    document: scheduledDraftDocument,
+    loading: scheduledDraftLoading,
+    error: scheduledDraftError,
+  } = useUnstableObserveDocument<SanityDocument>(getVersionId(publishedId, releaseId))
+  const {
+    document: draftDocument,
+    loading: draftLoading,
+    error: draftError,
+  } = useUnstableObserveDocument<SanityDocument>(getDraftId(publishedId))
 
   const isLoading = scheduledDraftLoading || draftLoading
+  const hasReadError = Boolean(scheduledDraftError ?? draftError)
 
   const dialogDescription = useMemo(
-    () => getDialogDescription(scheduledDraftDocument, draftDocument),
-    [scheduledDraftDocument, draftDocument],
+    () => getDialogDescription(scheduledDraftDocument, draftDocument, hasReadError),
+    [scheduledDraftDocument, draftDocument, hasReadError],
   )
 
   const [copyOverride, setCopyOverride] = useState<boolean | undefined>(undefined)
@@ -263,11 +282,13 @@ function DeleteScheduledDraftDialogWithCopyToDraft({
           </Box>
           {dialogDescription.copy.visible && (
             <>
-              <Box paddingX={2}>
-                <Text size={1} muted>
-                  {t('release.dialog.delete-schedule-draft.different-changes-explanation')}
-                </Text>
-              </Box>
+              {dialogDescription.explanationKey && (
+                <Box paddingX={2}>
+                  <Text size={1} muted>
+                    {t(dialogDescription.explanationKey)}
+                  </Text>
+                </Box>
+              )}
               <Box paddingX={2}>
                 <Flex alignItems="center" gap={3} as="label">
                   <Checkbox

@@ -7,7 +7,7 @@ import {catchError, map} from 'rxjs/operators'
 import {useDocumentPreviewStore} from '../store/datastores'
 import {type ObserveDocumentAPIConfig} from './createObserveDocument'
 
-const INITIAL_STATE = {loading: true, document: null}
+const INITIAL_STATE = {loading: true, document: null, error: null}
 
 /**
  * @internal
@@ -22,16 +22,21 @@ export function useUnstableObserveDocument<T extends SanityDocument>(
 ): {
   document: T | null
   loading: boolean
+  error: unknown
 } {
   const documentPreviewStore = useDocumentPreviewStore()
   const observable = useMemo(
     () =>
       documentPreviewStore.unstable_observeDocument(documentId, apiConfig).pipe(
-        map((document) => ({loading: false, document: (document ?? null) as T | null})),
-        // react-rx rethrows source errors during render; treat an unreadable document as absent.
+        map((document) => ({
+          loading: false,
+          document: (document ?? null) as T | null,
+          error: null,
+        })),
+        // react-rx rethrows source errors during render, so catch and surface them.
         catchError((error) => {
           console.error(`Failed to observe document ${documentId}:`, error)
-          return of({loading: false, document: null})
+          return of({loading: false, document: null, error})
         }),
       ),
     [documentId, documentPreviewStore, apiConfig],

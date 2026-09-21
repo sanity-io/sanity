@@ -1707,6 +1707,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Your scheduled draft has different changes than your current draft.',
   /** Header for the dialog confirming deletion of a scheduled draft */
   'release.dialog.delete-schedule-draft.header': 'Delete scheduled draft',
+  /** Explanation text shown when the current draft could not be read */
+  'release.dialog.delete-schedule-draft.unresolved-draft-explanation':
+    'Your current draft could not be loaded. Copying your scheduled changes will overwrite it.',
   /** Body text for change schedule dialog */
   'release.dialog.edit-schedule.body': 'Select a new date and time for the scheduled publish.',
   /** Confirm button text for change schedule dialog */

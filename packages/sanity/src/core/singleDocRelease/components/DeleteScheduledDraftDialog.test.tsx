@@ -89,18 +89,20 @@ const mockSchema = {
   get: vi.fn().mockReturnValue({name: 'article', title: 'Article', type: 'document'}),
 } as unknown as ReturnType<typeof useSchema>
 
-// Mirrors the real hook: `{loading: true, document: null}` until the first emission, then `null`
-// for an id the batch fetch did not return.
+// Mirrors the real hook: `{loading: true, document: null, error: null}` until the first emission,
+// then `null` for an id the batch fetch did not return.
 function mockObservedDocuments(
   documents: Record<string, object | undefined>,
   loadingIds: string[] = [],
+  errorIds: string[] = [],
 ) {
   mockUseUnstableObserveDocument.mockImplementation((documentId: string) =>
     loadingIds.includes(documentId)
-      ? {document: null, loading: true}
+      ? {document: null, loading: true, error: null}
       : {
           document: (documents[documentId] ?? null) as SanityDocument | null,
           loading: false,
+          error: errorIds.includes(documentId) ? new Error(`Failed to read ${documentId}`) : null,
         },
   )
 }
@@ -378,6 +380,67 @@ describe('DeleteScheduledDraftDialog', () => {
     expect(
       screen.queryByText('Delete this scheduled draft? Your draft is already up to date.'),
     ).not.toBeInTheDocument()
+
+    await userEvent.click(screen.getByText('Yes, delete schedule'))
+
+    await waitFor(() => {
+      expect(useScheduleDraftOperationsMockReturn.deleteScheduledDraft).toHaveBeenCalledWith(
+        scheduledRelease._id,
+        true,
+        'article-123',
+      )
+    })
+  })
+
+  it('draft read fails: offers the copy checkbox unchecked by default, and skips copy on confirm', async () => {
+    mockObservedDocuments({[VERSION_ID]: scheduledDraft}, [], [DRAFT_ID])
+
+    render(
+      <TestProvider>
+        <DeleteScheduledDraftDialog
+          documentId="article-123"
+          documentType="article"
+          release={scheduledRelease}
+          onClose={mockOnClose}
+        />
+      </TestProvider>,
+    )
+
+    expect(
+      screen.getByText(
+        'Your current draft could not be loaded. Copying your scheduled changes will overwrite it.',
+      ),
+    ).toBeInTheDocument()
+    expect(screen.getByRole('checkbox')).not.toBeChecked()
+
+    await userEvent.click(screen.getByText('Yes, delete schedule'))
+
+    await waitFor(() => {
+      expect(useScheduleDraftOperationsMockReturn.deleteScheduledDraft).toHaveBeenCalledWith(
+        scheduledRelease._id,
+        false,
+        'article-123',
+      )
+    })
+  })
+
+  it('draft read fails: ticking the copy checkbox still lets the user opt in to copying', async () => {
+    mockObservedDocuments({[VERSION_ID]: scheduledDraft}, [], [DRAFT_ID])
+
+    render(
+      <TestProvider>
+        <DeleteScheduledDraftDialog
+          documentId="article-123"
+          documentType="article"
+          release={scheduledRelease}
+          onClose={mockOnClose}
+        />
+      </TestProvider>,
+    )
+
+    const checkbox = screen.getByRole('checkbox')
+    await userEvent.click(checkbox)
+    expect(checkbox).toBeChecked()
 
     await userEvent.click(screen.getByText('Yes, delete schedule'))
 

@@ -22,13 +22,14 @@ describe('useUnstableObserveDocument', () => {
     vi.restoreAllMocks()
   })
 
-  it('resolves a failed read to an absent document instead of throwing', async () => {
+  it('surfaces a failed read as an error instead of throwing', async () => {
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
-    mockObservedDocument(() => throwError(() => new Error('read failed')))
+    const error = new Error('read failed')
+    mockObservedDocument(() => throwError(() => error))
 
     const {result} = renderHook(() => useUnstableObserveDocument('article-123'))
 
-    await waitFor(() => expect(result.current).toEqual({loading: false, document: null}))
+    await waitFor(() => expect(result.current).toEqual({loading: false, document: null, error}))
     expect(consoleError).toHaveBeenCalled()
   })
 
@@ -37,7 +38,9 @@ describe('useUnstableObserveDocument', () => {
 
     const {result} = renderHook(() => useUnstableObserveDocument('article-123'))
 
-    await waitFor(() => expect(result.current).toEqual({loading: false, document: null}))
+    await waitFor(() =>
+      expect(result.current).toEqual({loading: false, document: null, error: null}),
+    )
   })
 
   it('passes a resolved document through', async () => {
@@ -46,6 +49,6 @@ describe('useUnstableObserveDocument', () => {
 
     const {result} = renderHook(() => useUnstableObserveDocument('article-123'))
 
-    await waitFor(() => expect(result.current).toEqual({loading: false, document}))
+    await waitFor(() => expect(result.current).toEqual({loading: false, document, error: null}))
   })
 })
