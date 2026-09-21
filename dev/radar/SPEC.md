@@ -420,11 +420,18 @@ sessionChains.ts` and shared by the sessions list and the Releases tool:
    (tags, npm state, regression spans) is untouched and keeps syncing. The
    line holding the `latest` dist-tag cannot be marked. Its own type rather
    than a flag on `gitTag` because the sync replaces tag documents whole.
-   Next to its version a release shows how many regressions it INTRODUCED
-   at each rated severity — "1 critical · 2 major · 1 minor", worst first —
-   its own blame, the one thing a reader scanning the list wants to know. Severity is always shown by origin: an inherited
-   critical regression turns the inherited count red instead, so a release
-   that merely carries one never reads as having caused it.
+   Next to its version a release shows what was broken in it — one badge
+   per severity over the regressions present in it, introduced there or
+   inherited, not the ones it fixed, worst first with unrated last:
+   "1 critical · 2 major · 1 minor · 1 unrated". The counts below tell
+   origin apart and are toned by it: the introduced count by the worst
+   regression this release caused (amber while unrated), the inherited
+   count red only when it carries a critical one, so a release that merely
+   carries a critical regression never reads as having caused it. A
+   deprecated release folds to its first line (version, npm badges, date)
+   with a disclosure to expand it; its severity badges wait behind the
+   disclosure too — nobody should install it, so its bugs are history, not
+   a warning.
 
 ## Architecture
 

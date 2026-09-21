@@ -228,6 +228,15 @@ export function ReleasesTool() {
   }, [tags])
   // EOL lines fold into their header; expanding is per line and per visit
   const [expandedLines, setExpandedLines] = useState<ReadonlySet<number>>(() => new Set())
+  // Deprecated releases fold to one line — nobody should be installing
+  // them, and their bugs still show on that line; expanding is per visit
+  const [expandedDeprecated, setExpandedDeprecated] = useState<ReadonlySet<string>>(() => new Set())
+  const toggleDeprecated = (id: string) =>
+    setExpandedDeprecated((current) => {
+      const next = new Set(current)
+      if (!next.delete(id)) next.add(id)
+      return next
+    })
   const toggleLine = (major: number) =>
     setExpandedLines((current) => {
       const next = new Set(current)
@@ -421,16 +430,11 @@ export function ReleasesTool() {
             const {major} = line
             const eol = major === undefined ? undefined : eolByMajor.get(major)
             const expanded = major !== undefined && expandedLines.has(major)
-            const introducedCount = line.tags.reduce(
-              (count, tag) => count + (regressions.get(tag.tag)?.introduced.length ?? 0),
-              0,
-            )
             return (
               <Stack key={major ?? 'unversioned'} gap={3}>
                 <ReleaseLineHeader
                   major={major}
                   releaseCount={line.tags.length}
-                  introducedCount={introducedCount}
                   eol={eol}
                   expanded={expanded}
                   // Marking waits for the lines to load, or a mark could race
@@ -448,6 +452,10 @@ export function ReleasesTool() {
                       tag={tag}
                       baseVersion={baseVersions.get(tag.tag)}
                       regressions={regressions.get(tag.tag)}
+                      collapsed={Boolean(tag.npm?.deprecated) && !expandedDeprecated.has(tag._id)}
+                      onToggleCollapsed={
+                        tag.npm?.deprecated ? () => toggleDeprecated(tag._id) : undefined
+                      }
                       onShowRegressions={() => setViewingRegressions(tag.tag)}
                       previewUrl={commitsBySha.get(tag.sha)?.testStudioUrl}
                       previewPath={previewPath || undefined}
@@ -498,7 +506,6 @@ export function ReleasesTool() {
 function ReleaseLineHeader(props: {
   major: number | undefined
   releaseCount: number
-  introducedCount: number
   eol: ReleaseLineSlice | undefined
   expanded: boolean
   canMark: boolean
@@ -511,7 +518,6 @@ function ReleaseLineHeader(props: {
   const {
     major,
     releaseCount,
-    introducedCount,
     eol,
     expanded,
     canMark,
@@ -521,10 +527,9 @@ function ReleaseLineHeader(props: {
     onClearEol,
   } = props
   const title = major === undefined ? 'Other tags' : `v${major}`
-  const summary = [
-    pluralize(releaseCount, 'release'),
-    ...(introducedCount > 0 ? [`${pluralize(introducedCount, 'regression')} introduced`] : []),
-  ].join(' · ')
+  // Releases only: what the line broke is on each release's own row, and
+  // a total here read as an accusation against the whole line
+  const summary = pluralize(releaseCount, 'release')
 
   if (eol) {
     return (
@@ -674,6 +679,10 @@ function ReleaseRow(props: {
   /** Absent while the data the dialog needs is still loading. */
   onAddRegression: (() => void) | undefined
   onShowRegressions: () => void
+  /** A deprecated release folded to its first line. */
+  collapsed: boolean
+  /** Present for deprecated releases only — the fold toggle. */
+  onToggleCollapsed: (() => void) | undefined
 }) {
   const {
     tag,
@@ -683,6 +692,8 @@ function ReleaseRow(props: {
     previewPath,
     onAddRegression,
     onShowRegressions,
+    collapsed,
+    onToggleCollapsed,
   } = props
   const version = tag.tag.replace(/^v/, '')
   const hasRegressions =
@@ -716,12 +727,18 @@ function ReleaseRow(props: {
   const documentLink = useIntentLink({intent: 'edit', params: {id: tag._id, type: 'gitTag'}})
 
   return (
-    <Card padding={3} radius={2} border>
+    <Card
+      padding={collapsed ? 2 : 3}
+      radius={2}
+      border
+      tone={collapsed ? 'transparent' : 'default'}
+    >
       {/* Two deliberate lines rather than one that wraps wherever the width
           runs out: the first is identity (which release, what npm calls it,
-          when and how much it is used), the second has the links out on the
-          left and everything about regressions — the span counts and the
-          report action — together on the right. */}
+          what was broken in it, when and how much it is used), the second has
+          the links out on the left and everything about regressions — the
+          span counts and the report action — together on the right. A
+          deprecated release keeps only the first line until expanded. */}
       <Stack gap={3}>
         <Flex alignItems="center" gap={3} flexWrap="wrap">
           {/* The version and what npm calls it read as one label */}
@@ -754,27 +771,30 @@ function ReleaseRow(props: {
             {/* The bugs in the release, next to its name — introduced here
                 or inherited — so a reader can spot at a glance what shipped
                 broken in it. Which of them are this release's own blame is
-                the count group's business below */}
-            {presentBySeverity.map(({severity, count}) => {
-              const label = severity ? SEVERITY_LABEL[severity].toLowerCase() : 'unrated'
-              return (
-                <Tooltip
-                  key={label}
-                  content={
-                    <Box padding={2}>
-                      <Text size={1}>
-                        {pluralize(count, `${label} regression`)} in {tag.tag} (introduced here or
-                        inherited)
-                      </Text>
-                    </Box>
-                  }
-                >
-                  <Badge tone={severity ? SEVERITY_TONE[severity] : 'default'} fontSize={0}>
-                    {count} {label}
-                  </Badge>
-                </Tooltip>
-              )
-            })}
+                the count group's business below. A folded deprecated
+                release keeps them behind the disclosure: it is out of the
+                running, so its bugs are history, not a warning */}
+            {!collapsed &&
+              presentBySeverity.map(({severity, count}) => {
+                const label = severity ? SEVERITY_LABEL[severity].toLowerCase() : 'unrated'
+                return (
+                  <Tooltip
+                    key={label}
+                    content={
+                      <Box padding={2}>
+                        <Text size={1}>
+                          {pluralize(count, `${label} regression`)} in {tag.tag} (introduced here or
+                          inherited)
+                        </Text>
+                      </Box>
+                    }
+                  >
+                    <Badge tone={severity ? SEVERITY_TONE[severity] : 'default'} fontSize={0}>
+                      {count} {label}
+                    </Badge>
+                  </Tooltip>
+                )
+              })}
           </Flex>
           <Box flex={1} />
           {typeof tag.npm?.weeklyDownloads === 'number' && (
@@ -783,30 +803,52 @@ function ReleaseRow(props: {
             </Text>
           )}
           <RelativeDate dateTime={tag.npm?.publishedAt ?? tag.taggedAt} size={1} muted />
+          {onToggleCollapsed && (
+            <Button
+              mode="bleed"
+              fontSize={1}
+              padding={2}
+              icon={collapsed ? ChevronRightIcon : ChevronDownIcon}
+              aria-label={collapsed ? `Show ${tag.tag}'s details` : `Fold ${tag.tag}`}
+              aria-expanded={!collapsed}
+              onClick={onToggleCollapsed}
+            />
+          )}
         </Flex>
 
-        <Flex alignItems="center" gap={3} flexWrap="wrap">
-          {/* One icon per destination so the line scans without reading the labels */}
-          <Flex gap={3} flexWrap="wrap">
-            {previewUrl && (
-              <IconLink href={withReproPath(previewUrl, previewPath)} icon={SanityMonogram}>
-                Test Studio
+        {/* The deprecation, in full, once the row is open: the badge on the
+            first line only says that it is, this says why — what npm prints */}
+        {!collapsed && tag.npm?.deprecated && (
+          <Card padding={3} radius={2} tone="caution">
+            <Flex as={Text} size={1} alignItems="flex-start" gap={2}>
+              <WarningOutlineIcon style={ICON_IN_FLEX} />
+              <span style={{overflowWrap: 'anywhere'}}>Deprecated: {tag.npm.deprecated}</span>
+            </Flex>
+          </Card>
+        )}
+        {!collapsed && (
+          <Flex alignItems="center" gap={3} flexWrap="wrap">
+            {/* One icon per destination so the line scans without reading the labels */}
+            <Flex gap={3} flexWrap="wrap">
+              {previewUrl && (
+                <IconLink href={withReproPath(previewUrl, previewPath)} icon={SanityMonogram}>
+                  Test Studio
+                </IconLink>
+              )}
+              <IconLink href={releaseUrl(tag.tag)} icon={GitHubLogo}>
+                GitHub
               </IconLink>
-            )}
-            <IconLink href={releaseUrl(tag.tag)} icon={GitHubLogo}>
-              GitHub
-            </IconLink>
-            {baseVersion && (
-              <IconLink href={changelogUrl(baseVersion)} icon={DocumentTextIcon}>
-                Changelog
+              {baseVersion && (
+                <IconLink href={changelogUrl(baseVersion)} icon={DocumentTextIcon}>
+                  Changelog
+                </IconLink>
+              )}
+              <IconLink href={npmxUrl(version)} icon={PackageIcon}>
+                npmx
               </IconLink>
-            )}
-            <IconLink href={npmxUrl(version)} icon={PackageIcon}>
-              npmx
-            </IconLink>
-          </Flex>
-          <Box flex={1} />
-          {/* One labelled group for everything about regressions, so the
+            </Flex>
+            <Box flex={1} />
+            {/* One labelled group for everything about regressions, so the
               counts and the report action read as one thing: the label
               carries the noun, the counts say where a span starts
               (introduced), runs (inherited) and ends (fixed) — told apart by
@@ -815,99 +857,95 @@ function ReleaseRow(props: {
               this release. Each count
               opens the list behind it, which is also where a regression is
               removed again */}
-          <Flex alignItems="center" gap={2} flexWrap="wrap">
-            <Text size={1} muted>
-              Regressions
-            </Text>
-            {!hasRegressions && (
+            <Flex alignItems="center" gap={2} flexWrap="wrap">
               <Text size={1} muted>
-                none
+                {hasRegressions ? 'Regressions' : 'No known regressions'}
               </Text>
-            )}
-            {regressions && regressions.introduced.length > 0 && (
+              {regressions && regressions.introduced.length > 0 && (
+                <Tooltip
+                  content={
+                    <Box padding={2}>
+                      <Text size={1}>
+                        {pluralize(regressions.introduced.length, 'regression')} first shipped in{' '}
+                        {tag.tag}
+                        {worstIntroduced
+                          ? ` — worst rated ${SEVERITY_LABEL[worstIntroduced].toLowerCase()}`
+                          : ' — not rated yet'}
+                      </Text>
+                    </Box>
+                  }
+                >
+                  <Button
+                    mode="bleed"
+                    tone={worstIntroduced ? SEVERITY_TONE[worstIntroduced] : 'caution'}
+                    fontSize={0}
+                    padding={2}
+                    icon={BugIcon}
+                    text={`${regressions.introduced.length} introduced`}
+                    aria-label={`Show the ${pluralize(regressions.introduced.length, 'regression')} introduced in ${tag.tag}`}
+                    onClick={onShowRegressions}
+                  />
+                </Tooltip>
+              )}
+              {regressions && regressions.inherited.length > 0 && (
+                <Tooltip
+                  content={
+                    <Box padding={2}>
+                      <Text size={1}>
+                        {pluralize(regressions.inherited.length, 'regression')} introduced in an
+                        earlier release and not fixed yet when {tag.tag} shipped
+                        {worstInherited
+                          ? ` — worst rated ${SEVERITY_LABEL[worstInherited].toLowerCase()}`
+                          : ''}
+                      </Text>
+                    </Box>
+                  }
+                >
+                  <Button
+                    mode="bleed"
+                    tone={worstInherited === 'critical' ? 'critical' : 'caution'}
+                    fontSize={0}
+                    padding={2}
+                    icon={WarningOutlineIcon}
+                    text={`${regressions.inherited.length} inherited`}
+                    aria-label={`Show the ${pluralize(regressions.inherited.length, 'regression')} ${tag.tag} inherited from earlier releases`}
+                    onClick={onShowRegressions}
+                  />
+                </Tooltip>
+              )}
+              {regressions && regressions.fixed.length > 0 && (
+                <Button
+                  mode="bleed"
+                  tone="positive"
+                  fontSize={0}
+                  padding={2}
+                  icon={CheckmarkCircleIcon}
+                  text={`${regressions.fixed.length} fixed`}
+                  aria-label={`Show the ${pluralize(regressions.fixed.length, 'regression')} fixed in ${tag.tag}`}
+                  onClick={onShowRegressions}
+                />
+              )}
               <Tooltip
                 content={
                   <Box padding={2}>
-                    <Text size={1}>
-                      {pluralize(regressions.introduced.length, 'regression')} first shipped in{' '}
-                      {tag.tag}
-                      {worstIntroduced
-                        ? ` — worst rated ${SEVERITY_LABEL[worstIntroduced].toLowerCase()}`
-                        : ' — not rated yet'}
-                    </Text>
+                    <Text size={1}>Report a regression introduced in {tag.tag}</Text>
                   </Box>
                 }
               >
                 <Button
                   mode="bleed"
-                  tone={worstIntroduced ? SEVERITY_TONE[worstIntroduced] : 'caution'}
                   fontSize={0}
                   padding={2}
-                  icon={BugIcon}
-                  text={`${regressions.introduced.length} introduced`}
-                  aria-label={`Show the ${pluralize(regressions.introduced.length, 'regression')} introduced in ${tag.tag}`}
-                  onClick={onShowRegressions}
+                  icon={AddIcon}
+                  text="Add"
+                  aria-label={`Report a regression introduced in ${tag.tag}`}
+                  disabled={!onAddRegression}
+                  onClick={onAddRegression}
                 />
               </Tooltip>
-            )}
-            {regressions && regressions.inherited.length > 0 && (
-              <Tooltip
-                content={
-                  <Box padding={2}>
-                    <Text size={1}>
-                      {pluralize(regressions.inherited.length, 'regression')} introduced in an
-                      earlier release and not fixed yet when {tag.tag} shipped
-                      {worstInherited
-                        ? ` — worst rated ${SEVERITY_LABEL[worstInherited].toLowerCase()}`
-                        : ''}
-                    </Text>
-                  </Box>
-                }
-              >
-                <Button
-                  mode="bleed"
-                  tone={worstInherited === 'critical' ? 'critical' : 'caution'}
-                  fontSize={0}
-                  padding={2}
-                  icon={WarningOutlineIcon}
-                  text={`${regressions.inherited.length} inherited`}
-                  aria-label={`Show the ${pluralize(regressions.inherited.length, 'regression')} ${tag.tag} inherited from earlier releases`}
-                  onClick={onShowRegressions}
-                />
-              </Tooltip>
-            )}
-            {regressions && regressions.fixed.length > 0 && (
-              <Button
-                mode="bleed"
-                tone="positive"
-                fontSize={0}
-                padding={2}
-                icon={CheckmarkCircleIcon}
-                text={`${regressions.fixed.length} fixed`}
-                aria-label={`Show the ${pluralize(regressions.fixed.length, 'regression')} fixed in ${tag.tag}`}
-                onClick={onShowRegressions}
-              />
-            )}
-            <Tooltip
-              content={
-                <Box padding={2}>
-                  <Text size={1}>Report a regression introduced in {tag.tag}</Text>
-                </Box>
-              }
-            >
-              <Button
-                mode="bleed"
-                fontSize={0}
-                padding={2}
-                icon={AddIcon}
-                text="Add"
-                aria-label={`Report a regression introduced in ${tag.tag}`}
-                disabled={!onAddRegression}
-                onClick={onAddRegression}
-              />
-            </Tooltip>
+            </Flex>
           </Flex>
-        </Flex>
+        )}
       </Stack>
     </Card>
   )
