@@ -8,9 +8,18 @@ import {
 } from '@sanity/types'
 import {Card, Text, useClickOutsideEvent} from '@sanity/ui'
 import {FOCUS_TERMINATOR, toString} from '@sanity/util/paths'
-import {type MouseEvent, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
+import {clsx} from 'clsx'
+import {
+  type ComponentProps,
+  type MouseEvent,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {DiffContext, ReviewChangesContext} from 'sanity/_singletons'
-import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
 import {Popover} from '../../../../../../ui-components/popover/Popover'
@@ -22,6 +31,7 @@ import {ChangeList} from '../../../../diff/components/ChangeList'
 import {DiffTooltip} from '../../../../diff/components/DiffTooltip'
 import {type ObjectDiff} from '../../../../types'
 import {isEmptyObject} from '../helpers'
+import {inlineObjectWrapper} from './InlineObject.css'
 import {InlineBox, InlineText, PopoverContainer, PreviewContainer} from './styledComponents'
 
 interface InlineObjectProps {
@@ -31,22 +41,11 @@ interface InlineObjectProps {
   schemaType?: ObjectSchemaType
 }
 
-const InlineObjectWrapper = styled(Card)`
-  &:not([hidden]) {
-    display: inline;
-    cursor: pointer;
-    white-space: nowrap;
-    align-items: center;
+function InlineObjectWrapper(props: ComponentProps<typeof Card>) {
+  const {className, ...rest} = props
 
-    &[data-removed] {
-      text-decoration: line-through;
-    }
-
-    ${InlineBox} {
-      display: inline-flex;
-    }
-  }
-`
+  return <Card {...rest} className={clsx(inlineObjectWrapper, className)} />
+}
 
 export function InlineObject({diff, object, schemaType, ...restProps}: InlineObjectProps) {
   const {t} = useTranslation()
