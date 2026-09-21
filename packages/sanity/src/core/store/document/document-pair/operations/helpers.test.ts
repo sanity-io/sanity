@@ -254,6 +254,36 @@ describe('createOperationsAPI — self-derived target guard', () => {
       )
     })
 
+    it('guards restore for a variant target when the base pair has no snapshots either', () => {
+      // The self-derived guard below only fires when a draft or published snapshot exists; the
+      // variant restore guard must not depend on that (deleted document, or a variant of one).
+      const operations = createOperationsAPI(
+        createArgs({
+          idPair: PAIR_WITH_VERSION,
+          snapshots: {draft: null, published: null, version: null},
+          target: CREATABLE_TARGET,
+        }),
+      )
+
+      expect(operations.restore.disabled).toBe('TARGET_NOT_FOUND')
+      // The new-document carve-out still applies to everything else.
+      expect(operations.patch.disabled).toBe(false)
+      expect(operations.publish.disabled).not.toBe('TARGET_NOT_FOUND')
+    })
+
+    it('keeps restore enabled for a release version target when the base pair has no snapshots', () => {
+      const operations = createOperationsAPI(
+        createArgs({
+          idPair: PAIR_WITH_VERSION,
+          snapshots: {draft: null, published: null, version: null},
+          target: {kind: 'version', scopeId: 'rel'},
+        }),
+      )
+
+      // Restoring a deleted document into a release creates the version.
+      expect(operations.restore.disabled).toBe(false)
+    })
+
     it('keeps restore enabled for a release version target whose version does not exist yet', () => {
       const operations = createOperationsAPI(
         createArgs({
