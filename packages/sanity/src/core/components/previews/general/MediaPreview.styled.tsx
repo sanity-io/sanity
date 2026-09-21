@@ -1,7 +1,7 @@
-import {Flex, Skeleton, Stack} from '@sanity/ui'
+import {Skeleton, Stack} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {type ComponentProps, type ComponentPropsWithRef} from 'react'
-import {Box, type BoxProps} from 'ui5'
+import {Box, type BoxProps, Flex} from 'ui5'
 
 import {
   mediaFlex,
@@ -20,7 +20,14 @@ export function RootBox(props: RootBoxProps) {
 
 export function MediaFlex(props: ComponentProps<typeof Flex>) {
   const {className, ...rest} = props
-  return <Flex {...rest} align="center" justify="center" className={clsx(mediaFlex, className)} />
+  return (
+    <Flex
+      {...rest}
+      alignItems="center"
+      justifyContent="center"
+      className={clsx(mediaFlex, className)}
+    />
+  )
 }
 
 export function MediaSkeleton(props: ComponentProps<typeof Skeleton>) {
@@ -31,7 +38,12 @@ export function MediaSkeleton(props: ComponentProps<typeof Skeleton>) {
 export function ProgressFlex(props: ComponentProps<typeof Flex>) {
   const {className, ...rest} = props
   return (
-    <Flex {...rest} align="center" justify="center" className={clsx(progressFlex, className)} />
+    <Flex
+      {...rest}
+      alignItems="center"
+      justifyContent="center"
+      className={clsx(progressFlex, className)}
+    />
   )
 }
 

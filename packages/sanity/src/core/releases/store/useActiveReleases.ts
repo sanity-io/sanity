@@ -4,6 +4,7 @@ import {useSyncObservable} from 'react-rx'
 
 import {sortReleases} from '../hooks/utils'
 import {ARCHIVED_RELEASE_STATES} from '../util/const'
+import {INITIAL_RELEASES_STATE} from './createReleaseStore'
 import {type ReleasesReducerAction} from './reducer'
 import {useReleasesStore} from './useReleasesStore'
 
@@ -29,7 +30,7 @@ export function useActiveReleases(): ReleasesState {
   // snapshot could tear the release identity (e.g. reference create-in-place
   // writing `_weak` or opening the wrong version). Executable proof:
   // perspective/__tests__/deferralSafety.test.tsx.
-  const state = useSyncObservable(state$)!
+  const state = useSyncObservable(state$, INITIAL_RELEASES_STATE)
   const releasesAsArray = useMemo(
     () =>
       sortReleases(

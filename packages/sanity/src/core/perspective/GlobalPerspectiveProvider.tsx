@@ -5,6 +5,7 @@ import {PUBLISHED} from '../releases/util/const'
 import {useWorkspace} from '../studio/workspace'
 import {EMPTY_ARRAY} from '../util/empty'
 import {PerspectiveProvider} from './PerspectiveProvider'
+import {ResetArchivedReleasePerspective} from './ResetArchivedReleasePerspective'
 import {type ReleaseId} from './types'
 
 /**
@@ -47,6 +48,7 @@ export function GlobalPerspectiveProvider({children}: {children: ReactNode}) {
       excludedPerspectives={excludedPerspectives}
     >
       {children}
+      <ResetArchivedReleasePerspective />
     </PerspectiveProvider>
   )
 }

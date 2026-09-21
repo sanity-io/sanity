@@ -82,10 +82,6 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
     selectedVariantName,
   ])
 
-  // Deferred: react-rx v5's deferral is identity-coherent, so when a
-  // (recycled) list item switches to a new document id the live snapshot for
-  // the new id wins and the previous document's title/media never renders
-  // next to the new document's version badges.
   const {
     snapshot,
     original,

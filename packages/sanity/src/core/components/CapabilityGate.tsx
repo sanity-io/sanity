@@ -2,12 +2,14 @@ import {type ComponentType, type PropsWithChildren} from 'react'
 import {useSyncObservable} from 'react-rx'
 
 import {useRenderingContextStore} from '../store/datastores'
-import {type Capability} from '../store/renderingContext/types'
+import {type Capability, type CapabilityRecord} from '../store/renderingContext/types'
 
 type Props = PropsWithChildren<{
   capability: Capability
   condition?: 'available' | 'unavailable'
 }>
+
+const EMPTY_CAPABILITIES: CapabilityRecord = {}
 
 /**
  * `CapabilityGate` only renders its children if the current Studio rendering context does not
@@ -24,10 +26,14 @@ export const CapabilityGate: ComponentType<Props> = ({
   capability,
   condition = 'unavailable',
 }) => {
-  const renderingContextStore = useRenderingContextStore()
-  // Kept synchronous: capabilities emit once at boot, so deferring only
-  // delays the gate flipping without any render-load benefit.
-  const renderingContextCapabilities = useSyncObservable(renderingContextStore.capabilities, {})
+  const {capabilities, getCapabilities} = useRenderingContextStore()
+  // Kept synchronous: capabilities emit once at boot, so deferring only delays the gate flipping
+  // without any render-load benefit. The store has already resolved them, so the mounting render
+  // gates correctly too rather than painting the local implementation for a commit.
+  const renderingContextCapabilities = useSyncObservable(
+    capabilities,
+    () => getCapabilities() ?? EMPTY_CAPABILITIES,
+  )
   const renderingContextHasCapability = renderingContextCapabilities[capability] === true
 
   if (condition === 'available' && !renderingContextHasCapability) {
