@@ -120,6 +120,7 @@ function createWorkspaces(env: {projectId: string; dataset: string; apiHost?: st
       name: `${prefix}sso-cookie`,
       title: `SSO (cookie)${titleSuffix}`,
       basePath: `${pathPrefix}/sso-cookie`,
+      // oxlint-disable-next-line no-deprecated -- auth-test-studio intentionally exercises createAuthStore
       auth: createAuthStore({
         ...env,
         loginMethod: 'cookie',
@@ -132,6 +133,7 @@ function createWorkspaces(env: {projectId: string; dataset: string; apiHost?: st
       name: `${prefix}sso-token`,
       title: `SSO (token)${titleSuffix}`,
       basePath: `${pathPrefix}/sso-token`,
+      // oxlint-disable-next-line no-deprecated -- auth-test-studio intentionally exercises createAuthStore
       auth: createAuthStore({
         ...env,
         loginMethod: 'token',
@@ -144,6 +146,7 @@ function createWorkspaces(env: {projectId: string; dataset: string; apiHost?: st
       name: `${prefix}sso-dual`,
       title: `SSO (dual)${titleSuffix}`,
       basePath: `${pathPrefix}/sso-dual`,
+      // oxlint-disable-next-line no-deprecated -- auth-test-studio intentionally exercises createAuthStore
       auth: createAuthStore({
         ...env,
         loginMethod: 'dual',
@@ -158,6 +161,7 @@ function createWorkspaces(env: {projectId: string; dataset: string; apiHost?: st
       name: `${prefix}sso-cookie-redirectOnSingle`,
       title: `SSO (cookie) + redirectOnSingle${titleSuffix}`,
       basePath: `${pathPrefix}/sso-cookie-redirectOnSingle`,
+      // oxlint-disable-next-line no-deprecated -- auth-test-studio intentionally exercises createAuthStore
       auth: createAuthStore({
         ...env,
         loginMethod: 'cookie',
@@ -171,6 +175,7 @@ function createWorkspaces(env: {projectId: string; dataset: string; apiHost?: st
       name: `${prefix}sso-token-redirectOnSingle`,
       title: `SSO (token) + redirectOnSingle${titleSuffix}`,
       basePath: `${pathPrefix}/sso-token-redirectOnSingle`,
+      // oxlint-disable-next-line no-deprecated -- auth-test-studio intentionally exercises createAuthStore
       auth: createAuthStore({
         ...env,
         loginMethod: 'token',
@@ -184,6 +189,7 @@ function createWorkspaces(env: {projectId: string; dataset: string; apiHost?: st
       name: `${prefix}sso-dual-redirectOnSingle`,
       title: `SSO (dual) + redirectOnSingle${titleSuffix}`,
       basePath: `${pathPrefix}/sso-dual-redirectOnSingle`,
+      // oxlint-disable-next-line no-deprecated -- auth-test-studio intentionally exercises createAuthStore
       auth: createAuthStore({
         ...env,
         loginMethod: 'dual',
