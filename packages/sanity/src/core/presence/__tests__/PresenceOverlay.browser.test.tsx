@@ -11,6 +11,7 @@ import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
 
 import {TestForm} from '../../../../test/browser/TestForm'
+import {testHelpers} from '../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../test/browser/TestWrapper'
 import {PresenceOverlay} from '../overlay/PresenceOverlay'
 
@@ -175,6 +176,12 @@ const settle = () => new Promise((resolve) => setTimeout(resolve, 100))
 const titles = (avatars: Element[]) =>
   avatars.map((a) => a.getAttribute('title') ?? '').toSorted((a, b) => a.localeCompare(b))
 
+async function settlePresenceSnapshot() {
+  const {settleChromaticEndState, waitForPresenceGeometry} = testHelpers()
+  await settleChromaticEndState()
+  await waitForPresenceGeometry()
+}
+
 // ---- tests -------------------------------------------------------------------------------------
 
 describe('PresenceOverlay', () => {
@@ -191,6 +198,7 @@ describe('PresenceOverlay', () => {
     pane().scrollTop = pane().scrollHeight
     await settle()
     expect(visibleAvatars()).toHaveLength(0)
+    await settlePresenceSnapshot()
   })
 
   it('stacks 10 users in one field into 3 avatars and a counter of 7', async () => {
@@ -203,6 +211,7 @@ describe('PresenceOverlay', () => {
     expect(dockAvatars('bottom')).toHaveLength(0)
     // The most recently active users are the visible ones
     expect(titles(fieldAvatars('field2'))).toEqual(['User u7', 'User u8', 'User u9'])
+    await settlePresenceSnapshot()
   })
 
   it('docks 10 users in a field below the fold as 2 avatars and a counter of 8, and hands them back to the field header when it scrolls into view', async () => {
@@ -220,6 +229,7 @@ describe('PresenceOverlay', () => {
     expect(fieldCounter('field25')).toHaveTextContent('7')
     expect(dockAvatars('bottom')).toHaveLength(0)
     expect(visibleAvatars()).toHaveLength(3)
+    await settlePresenceSnapshot()
   })
 
   it('shows 10 users in 10 different fields once per field, and stacks them in a dock once scrolled out', async () => {
@@ -246,6 +256,7 @@ describe('PresenceOverlay', () => {
     await expect.poll(() => arrowsOf(dockAvatars('top'))).toEqual(['top', 'top'])
     expect(dockAvatars('bottom')).toHaveLength(0)
     expect(visibleAvatars()).toHaveLength(2)
+    await settlePresenceSnapshot()
   })
 
   it('docks users above the view at the top, users below it at the bottom, and keeps the one in view at its field', async () => {
@@ -273,6 +284,7 @@ describe('PresenceOverlay', () => {
 
     // Every user is visible exactly once
     expect(titles(visibleAvatars())).toEqual(['User above', 'User below', 'User inside'])
+    await settlePresenceSnapshot()
   })
 
   it('never shows a user twice while a field scrolls from the middle of the pane into the top dock and back', async () => {
@@ -310,6 +322,7 @@ describe('PresenceOverlay', () => {
     await expect.poll(() => fieldAvatars('field15')).toHaveLength(1)
     expect(dockAvatars('top')).toHaveLength(0)
     await expect.poll(() => arrowsOf(fieldAvatars('field15'))).toEqual(['inside'])
+    await settlePresenceSnapshot()
   })
 
   it('moves the field avatar out of the way of the field actions on hover, and back', async () => {
@@ -339,6 +352,7 @@ describe('PresenceOverlay', () => {
         Math.abs((fieldAvatars('field2')[0]?.getBoundingClientRect().left ?? -1) - restingLeft),
       )
       .toBeLessThanOrEqual(1)
+    await settlePresenceSnapshot()
   })
 
   it('shows a user with several sessions once, in the field and in the dock', async () => {
@@ -361,6 +375,7 @@ describe('PresenceOverlay', () => {
     pane().scrollTop = pane().scrollHeight
     await expect.poll(() => titles(dockAvatars('top'))).toEqual(['User twice'])
     expect(visibleAvatars('User twice')).toHaveLength(1)
+    await settlePresenceSnapshot()
   })
 
   it('shows nested field presence on the nested header, array item presence on the item preview, and document-level presence nowhere', async () => {
@@ -392,6 +407,7 @@ describe('PresenceOverlay', () => {
     expect(visibleAvatars('User root')).toHaveLength(0)
     expect(dockAvatars('top')).toHaveLength(0)
     expect(dockAvatars('bottom')).toHaveLength(0)
+    await settlePresenceSnapshot()
   })
 
   it('follows users as they leave, arrive and move, whether in view or docked', async () => {
@@ -427,5 +443,6 @@ describe('PresenceOverlay', () => {
     await screen.rerender(<Harness presence={[]} />)
     await expect.poll(() => visibleAvatars()).toHaveLength(0)
     expect(dockAvatars('bottom')).toHaveLength(0)
+    await settlePresenceSnapshot()
   })
 })

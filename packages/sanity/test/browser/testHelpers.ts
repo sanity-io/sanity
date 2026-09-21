@@ -41,6 +41,33 @@ const fieldActionsSig = (): string =>
     .map((el) => el.getAttribute('data-actions-visible'))
     .join(',')
 
+const presenceGeometrySig = (): string =>
+  Array.from(
+    window.document.querySelectorAll<HTMLElement>(
+      '[data-ui="Avatar"], [data-ui="AvatarCounter"], [data-testid^="presence-cursor-"]',
+    ),
+  )
+    .filter(isShown)
+    .map((element) => {
+      const rect = element.getBoundingClientRect()
+      const dock = element.closest('[data-dock]')?.getAttribute('data-dock') ?? ''
+      const identity =
+        element.getAttribute('title') ??
+        element.getAttribute('data-testid') ??
+        element.getAttribute('data-ui') ??
+        ''
+      return [
+        identity,
+        dock,
+        element.getAttribute('data-arrow-position') ?? '',
+        rect.x.toFixed(3),
+        rect.y.toFixed(3),
+        rect.width.toFixed(3),
+        rect.height.toFixed(3),
+      ].join(':')
+    })
+    .join('|')
+
 /**
  * Geometry signature of every visible match: `x,y,w,h` per element, `''` when
  * none is visible. A match that is mounted but has no size yet (a portal whose
@@ -714,6 +741,15 @@ export function testHelpers() {
     },
 
     waitForPortableTextSelection,
+
+    /**
+     * Wait for visible presence cursors, avatars, counters, docks and arrow positions to stop
+     * moving. Call after `settleChromaticEndState`, which parks the pointer and flushes field
+     * action hover state that can move field-presence avatars.
+     */
+    waitForPresenceGeometry: async () => {
+      await expectStable(presenceGeometrySig)
+    },
 
     /**
      * Extend a collapsed selection over `text` with Shift+ArrowRight (or

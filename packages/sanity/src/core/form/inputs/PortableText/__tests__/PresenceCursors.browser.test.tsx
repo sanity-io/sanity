@@ -192,11 +192,19 @@ function getSiblingTextContent() {
   }
 }
 
+async function settlePresenceSnapshot(options?: {
+  styleSelectText?: RegExp
+  styleSelectRoot?: string
+}) {
+  const {settleChromaticEndState, waitForPresenceGeometry} = testHelpers()
+  await settleChromaticEndState(options)
+  await waitForPresenceGeometry()
+}
+
 describe('Portable Text Input', () => {
   describe('Presence Cursors', () => {
     it('should keep position when inserting text in the editor', async () => {
-      const {getFocusedPortableTextEditor, insertPortableText, settleChromaticEndState} =
-        testHelpers()
+      const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
 
       void render(<PresenceCursorsHarness document={DOCUMENT} presence={PRESENCE} />)
 
@@ -239,7 +247,7 @@ describe('Portable Text Input', () => {
       // Toolbar enablement/style-select muted vs dark text flipped between
       // identical-code captures when focus/selection briefly unsettled.
       await userEvent.click(editor$)
-      await settleChromaticEndState({
+      await settlePresenceSnapshot({
         styleSelectText: /^Normal$/,
         styleSelectRoot: '[data-testid="field-body"]',
       })
@@ -298,6 +306,7 @@ describe('Portable Text Input', () => {
       // Scroll back up: the field is below the fold again and the avatar floats again.
       scrollElement.scrollTop = 0
       await expect.poll(() => getPaneDockedAvatar('bottom', 'User A')).toBeDefined()
+      await settlePresenceSnapshot()
     })
 
     it('should dock the avatar inside the editor when only the cursor is off screen', async () => {
@@ -323,6 +332,7 @@ describe('Portable Text Input', () => {
       editorScroller.scrollTop = 0
       await expect.poll(() => getAvatarAtEditorEdge('bottom', 'User A')).toBeDefined()
       expect(getVisibleAvatars('User A')).toHaveLength(1)
+      await settlePresenceSnapshot()
     })
 
     it('should show every user whose cursor is hidden at the same editor edge', async () => {
@@ -339,6 +349,7 @@ describe('Portable Text Input', () => {
       expect(getVisibleAvatars('User A')).toHaveLength(1)
       expect(getVisibleAvatars('User B')).toHaveLength(1)
       expect(document.querySelector('[data-ui="AvatarCounter"]')).toBeNull()
+      await settlePresenceSnapshot()
     })
 
     it('should hand over between the editor and the pane docks without duplicates', async () => {
@@ -382,6 +393,7 @@ describe('Portable Text Input', () => {
 
       await expect.poll(() => getPaneDockedAvatar('top', 'User A')).toBeDefined()
       expect(getVisibleAvatars('User A')).toHaveLength(1)
+      await settlePresenceSnapshot()
     })
 
     it('should dock the avatar inside the fullscreen editor when the cursor is off screen', async () => {
@@ -407,6 +419,7 @@ describe('Portable Text Input', () => {
       // Scroll back to the start: the cursor is below the visible area and docks again.
       editorScroller.scrollTop = 0
       await expect.poll(() => getEditorDockedAvatar('bottom', 'User A')).not.toBeNull()
+      await settlePresenceSnapshot()
     })
   })
 })
