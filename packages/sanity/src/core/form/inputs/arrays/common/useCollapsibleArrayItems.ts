@@ -29,17 +29,34 @@ export interface CollapsibleArrayItems<TMember> {
   visibleMembers: TMember[]
 }
 
-/** A field's own schema option wins over the studio-wide configuration. */
+/**
+ * A limit has to be a whole number: it is used both to slice the members and to compare against a
+ * member index, and a fractional value makes those two disagree about the same item.
+ */
+function isUsableLimit(value: unknown): value is number {
+  return typeof value === 'number' && Number.isInteger(value) && value > 0
+}
+
+/**
+ * A field's own schema option wins over the studio-wide configuration.
+ *
+ * `collapseItemsAfter` is validated when the schema is compiled, so a value that is neither
+ * `false` nor a positive integer has already been reported as a schema error. Ignoring it here
+ * rather than acting on it keeps the field on the studio-wide setting instead of silently
+ * turning collapsing off, which is what `false` is for.
+ */
 function useItemLimit(schemaType: ArraySchemaType, layout: 'list' | 'grid'): number {
   const source = useContext(SourceContext)
   const collapseItems = source?.form?.arrays?.collapseItems ?? initialCollapseArrayItems
   const fieldLimit = schemaType.options?.collapseItemsAfter
 
+  if (fieldLimit === false) return NO_LIMIT
   // A per-field limit is taken literally, including for grids.
-  if (typeof fieldLimit === 'number') return fieldLimit > 0 ? fieldLimit : NO_LIMIT
-  if (fieldLimit === false || !collapseItems.enabled) return NO_LIMIT
+  if (isUsableLimit(fieldLimit)) return fieldLimit
+  if (!collapseItems.enabled) return NO_LIMIT
 
-  return layout === 'grid' ? collapseItems.gridLimit : collapseItems.limit
+  const configuredLimit = layout === 'grid' ? collapseItems.gridLimit : collapseItems.limit
+  return isUsableLimit(configuredLimit) ? configuredLimit : NO_LIMIT
 }
 
 /**

@@ -232,5 +232,26 @@ describe('ListArrayInput', () => {
       expect(renderedMemberKeys()).toHaveLength(50)
       expect(screen.queryByTestId('array-items-toggle')).toBeNull()
     })
+
+    // These are reported as schema errors when the schema is compiled. The input ignores them
+    // rather than acting on them, so a typo cannot silently switch collapsing off, and a
+    // fractional value cannot hide an item that focus handling still treats as visible.
+    describe('given a per-field limit that is not a positive integer', () => {
+      it.each([0, -1, 2.5, Number.NaN])('falls back to the default limit for %p', (value) => {
+        renderListArrayInput({collapseItemsAfter: value, memberCount: 10})
+
+        expect(renderedMemberKeys()).toEqual(['key-0', 'key-1', 'key-2', 'key-3'])
+      })
+
+      it('still expands when focus lands on any hidden item', () => {
+        renderListArrayInput({
+          collapseItemsAfter: 2.5,
+          focusPath: [{_key: 'key-4'}],
+          memberCount: 10,
+        })
+
+        expect(renderedMemberKeys()).toHaveLength(10)
+      })
+    })
   })
 })
