@@ -1,57 +1,25 @@
-import {getTheme_v2 as getThemeV2} from '@sanity/ui/theme'
-import {css, styled} from 'styled-components'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 
-export const Body = styled.div(({theme}) => {
-  const {space} = getThemeV2(theme)
+import {body, space4Var, space5Var} from './Body.css'
 
-  return css`
-    overflow-x: clip;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    padding: calc(${space[5]}px * 0.5) calc(${space[4]}px);
+export function Body(props: ComponentProps<'div'>) {
+  const {className, style, ...rest} = props
+  const {space} = useThemeV2()
 
-    @property --start-mask-color {
-      syntax: '<color>';
-      inherits: false;
-      initial-value: #000;
-    }
-
-    @property --end-mask-color {
-      syntax: '<color>';
-      inherits: false;
-      initial-value: #000;
-    }
-
-    @keyframes fade-mask {
-      0% {
-        --start-mask-color: #000;
-        --end-mask-color: transparent;
-      }
-      2%,
-      98% {
-        --start-mask-color: transparent;
-        --end-mask-color: transparent;
-      }
-      100% {
-        --start-mask-color: transparent;
-        --end-mask-color: #000;
-      }
-    }
-
-    --mask-size: 3rem;
-
-    mask-image: linear-gradient(
-      to var(--direction, bottom),
-      var(--start-mask-color),
-      #000 var(--mask-size),
-      #000 calc(100% - var(--mask-size)),
-      var(--end-mask-color)
-    );
-
-    mask-position: 0% 0%;
-    mask-repeat: no-repeat;
-    mask-size: 100% 100%;
-    animation: fade-mask;
-    animation-timeline: scroll(self y);
-  `
-})
+  return (
+    <div
+      {...rest}
+      className={clsx(body, className)}
+      style={{
+        ...assignInlineVars({
+          [space4Var]: `${space[4]}px`,
+          [space5Var]: `${space[5]}px`,
+        }),
+        ...style,
+      }}
+    />
+  )
+}
