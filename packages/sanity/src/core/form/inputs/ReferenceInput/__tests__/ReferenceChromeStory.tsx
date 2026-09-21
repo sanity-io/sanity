@@ -11,6 +11,7 @@ import {
 import {Card, Stack, Text} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
 import {type ReactNode} from 'react'
+import {of} from 'rxjs'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {DefaultPreview} from '../../../../components/previews/general/DefaultPreview'
@@ -18,8 +19,18 @@ import {useSchema} from '../../../../hooks/useSchema'
 import {type RenderPreviewCallback} from '../../../types/renderCallback'
 import {CrossDatasetReferencePreview} from '../../CrossDatasetReferenceInput/CrossDatasetReferencePreview'
 import {DisabledFeatureWarning} from '../../CrossDatasetReferenceInput/DisabledFeatureWarning'
+import {OptionPreview as CrossDatasetOptionPreview} from '../../CrossDatasetReferenceInput/OptionPreview'
+import {PreviewReferenceValue as CrossDatasetPreviewReferenceValue} from '../../CrossDatasetReferenceInput/PreviewReferenceValue'
+import {type CrossDatasetReferenceInfo} from '../../CrossDatasetReferenceInput/types'
 import {GlobalDocumentReferencePreview} from '../../GlobalDocumentReferenceInput/GlobalDocumentReferencePreview'
+import {OptionPreview as GlobalDocumentOptionPreview} from '../../GlobalDocumentReferenceInput/OptionPreview'
+import {PreviewReferenceValue as GlobalDocumentPreviewReferenceValue} from '../../GlobalDocumentReferenceInput/PreviewReferenceValue'
+import {type GlobalDocumentReferenceInfo} from '../../GlobalDocumentReferenceInput/types'
+import {OptionPreview} from '../OptionPreview'
 import {PreviewReferenceValue} from '../PreviewReferenceValue'
+import {ReferenceFinalizeAlertStrip} from '../ReferenceFinalizeAlertStrip'
+import {ReferenceMetadataLoadErrorAlertStrip} from '../ReferenceMetadataLoadFailure'
+import {ReferenceStrengthMismatchAlertStrip} from '../ReferenceStrengthMismatchAlertStrip'
 import {type ReferenceInfo} from '../types'
 import {type Loadable} from '../useReferenceInfo'
 
@@ -75,6 +86,21 @@ const IN_PLACE_REFERENCE: Reference = {
 
 const BOOK_PREVIEW = {
   published: {title: 'The Left Hand of Darkness', subtitle: 'Ursula K. Le Guin'},
+}
+
+const BOOK_REFERENCE_INFO = {
+  id: 'book-1',
+  type: 'book',
+  availability: READABLE,
+  preview: BOOK_PREVIEW,
+}
+
+function getCrossDatasetReferenceInfo() {
+  return of(BOOK_REFERENCE_INFO satisfies CrossDatasetReferenceInfo)
+}
+
+function getGlobalDocumentReferenceInfo() {
+  return of(BOOK_REFERENCE_INFO satisfies GlobalDocumentReferenceInfo)
 }
 
 function referenceInfo(overrides: Partial<ReferenceInfo>): Loadable<ReferenceInfo> {
@@ -217,6 +243,84 @@ function ReferenceChrome() {
               showTypeLabel
             />
           </Row>
+        </Labelled>
+
+        <Labelled label="reference search option">
+          <Row>
+            <OptionPreview
+              id="author-1"
+              referenceType={referenceType}
+              renderPreview={renderPreview}
+              type="author"
+            />
+          </Row>
+        </Labelled>
+
+        <Labelled label="cross dataset search option and selected value">
+          <Row>
+            <CrossDatasetOptionPreview
+              document={{_id: 'book-1', _type: 'book'}}
+              getReferenceInfo={getCrossDatasetReferenceInfo}
+              referenceType={crossDatasetType}
+            />
+          </Row>
+          <Row>
+            <CrossDatasetPreviewReferenceValue
+              referenceInfo={{
+                isLoading: false,
+                result: BOOK_REFERENCE_INFO,
+                error: undefined,
+                retry: noop,
+              }}
+              type={crossDatasetType}
+              value={{
+                _type: 'crossDatasetReference',
+                _ref: 'book-1',
+                _dataset: 'library',
+                _projectId: 'abc123',
+              }}
+            />
+          </Row>
+        </Labelled>
+
+        <Labelled label="global document search option and selected value">
+          <Row>
+            <GlobalDocumentOptionPreview
+              document={{_id: 'book-1', _type: 'book'}}
+              getReferenceInfo={getGlobalDocumentReferenceInfo}
+              referenceType={globalDocumentType}
+            />
+          </Row>
+          <Row>
+            <GlobalDocumentPreviewReferenceValue
+              referenceInfo={{
+                isLoading: false,
+                result: BOOK_REFERENCE_INFO,
+                error: undefined,
+                retry: noop,
+              }}
+              type={globalDocumentType}
+              value={{
+                _type: 'globalDocumentReference',
+                _ref: 'dataset:abc123.library:book-1',
+              }}
+            />
+          </Row>
+        </Labelled>
+
+        <Labelled label="reference alerts">
+          <ReferenceFinalizeAlertStrip
+            handleRemoveStrengthenOnPublish={noop}
+            schemaType={referenceType}
+          />
+          <ReferenceStrengthMismatchAlertStrip
+            actualStrength="weak"
+            handleFixStrengthMismatch={noop}
+          />
+          <ReferenceMetadataLoadErrorAlertStrip
+            errorMessage="The reference metadata could not be loaded."
+            onHandleRetry={noop}
+          />
         </Labelled>
 
         <Labelled label="cross dataset feature disabled (empty, with value)">

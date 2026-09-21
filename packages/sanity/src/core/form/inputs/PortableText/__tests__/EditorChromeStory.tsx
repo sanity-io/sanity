@@ -1,4 +1,4 @@
-import {EditorProvider, type HotkeyOptions} from '@portabletext/editor'
+import {EditorProvider, type HotkeyOptions, type InvalidValueResolution} from '@portabletext/editor'
 import {sanitySchemaToPortableTextSchema} from '@portabletext/sanity-bridge'
 import {
   type ArraySchemaType,
@@ -14,8 +14,10 @@ import {useMemo, useState} from 'react'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {useSchema} from '../../../../hooks/useSchema'
+import {DefaultMarkers} from '../_legacyDefaultParts/Markers'
 import {PortableTextMemberSchemaTypesProvider} from '../contexts/PortableTextMemberSchemaTypes'
 import {ToolbarCard} from '../Editor.styles'
+import {InvalidValue} from '../InvalidValue'
 import {PopoverEditDialog} from '../object/modals/PopoverModal'
 import {Toolbar} from '../toolbar/Toolbar'
 
@@ -49,6 +51,17 @@ const SCHEMA_TYPES = [
 ]
 
 const NO_HOTKEYS: HotkeyOptions = {}
+const INVALID_VALUE_RESOLUTION = {
+  action: 'resolve',
+  description: 'Block is missing a required key',
+  i18n: {
+    action: 'inputs.portable-text.invalid-value.missing-key.action',
+    description: 'inputs.portable-text.invalid-value.missing-key.description',
+    values: {},
+  },
+  item: {_type: 'block', children: [{_type: 'span', text: 'Missing keys'}]},
+  patches: [],
+} as unknown as InvalidValueResolution
 
 function Toolbars({schemaType}: {schemaType: ArraySchemaType<PortableTextBlock>}) {
   const initialConfig = useMemo(
@@ -156,6 +169,25 @@ function EditorChrome() {
             popover edit dialog
           </Text>
           <PopoverModal />
+        </Stack>
+        <Stack gap={2}>
+          <Text muted size={1} weight="medium">
+            invalid portable text value
+          </Text>
+          <InvalidValue onChange={noop} onIgnore={noop} resolution={INVALID_VALUE_RESOLUTION} />
+        </Stack>
+        <Stack gap={2}>
+          <Text muted size={1} weight="medium">
+            portable text validation markers
+          </Text>
+          <DefaultMarkers
+            markers={[]}
+            validation={[
+              {level: 'error', message: 'Alternative text is required', path: []},
+              {level: 'warning', message: 'Keep the excerpt concise', path: []},
+              {level: 'info', message: 'Formatting guidance', path: []},
+            ]}
+          />
         </Stack>
       </Stack>
     </Card>

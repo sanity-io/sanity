@@ -1,6 +1,7 @@
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 
 import {UploadChromeStory} from './UploadChromeStory'
+import {UploadDestinationPickerStory} from './UploadDestinationPickerStory'
 
 /**
  * Chromatic sentinel: upload placeholders (row, browse-only, collapsed
@@ -19,3 +20,7 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const States: Story = {}
+
+export const DestinationPicker: Story = {
+  render: () => <UploadDestinationPickerStory />,
+}
