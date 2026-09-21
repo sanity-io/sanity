@@ -95,13 +95,17 @@ const BOOK_REFERENCE_INFO = {
   availability: READABLE,
   preview: BOOK_PREVIEW,
 }
+const SEARCH_RESULT_REFERENCE_INFO = {
+  ...BOOK_REFERENCE_INFO,
+  preview: {published: {title: 'Search result fixture'}},
+}
 
 function getCrossDatasetReferenceInfo() {
-  return of(BOOK_REFERENCE_INFO satisfies CrossDatasetReferenceInfo)
+  return of(SEARCH_RESULT_REFERENCE_INFO satisfies CrossDatasetReferenceInfo)
 }
 
 function getGlobalDocumentReferenceInfo() {
-  return of(BOOK_REFERENCE_INFO satisfies GlobalDocumentReferenceInfo)
+  return of(SEARCH_RESULT_REFERENCE_INFO satisfies GlobalDocumentReferenceInfo)
 }
 
 function referenceInfo(overrides: Partial<ReferenceInfo>): Loadable<ReferenceInfo> {

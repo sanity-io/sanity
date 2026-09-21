@@ -1,4 +1,5 @@
 import {type Meta, type StoryObj} from '@storybook/react-vite'
+import {expect, waitFor, within} from 'storybook/test'
 
 import {ReferenceChromeStory} from './ReferenceChromeStory'
 
@@ -16,4 +17,11 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const States: Story = {}
+export const States: Story = {
+  play: async () => {
+    const canvas = within(document.body)
+    await waitFor(async () => {
+      await expect(canvas.getAllByText('Search result fixture')).toHaveLength(2)
+    })
+  },
+}

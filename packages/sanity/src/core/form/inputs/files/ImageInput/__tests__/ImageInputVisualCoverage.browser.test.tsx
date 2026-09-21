@@ -61,6 +61,16 @@ function observeAsset() {
   return of(IMAGE_ASSET)
 }
 
+async function waitForFixtureImage() {
+  await expect
+    .poll(() =>
+      Array.from(document.images).some(
+        (image) => image.src === IMAGE_URL && image.complete && image.naturalWidth > 0,
+      ),
+    )
+    .toBe(true)
+}
+
 function useBaseImageInputProps(props: ImageInputProps): BaseImageInputProps {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const {t} = useTranslation()
@@ -166,6 +176,7 @@ describe('image input visual coverage', () => {
     const {settleChromaticEndState} = testHelpers()
     void render(<ImageInputHarness schemaTypes={BASE_IMAGE_SCHEMA} />)
 
+    await waitForFixtureImage()
     await expect.element(page.getByText('Image', {exact: true})).toBeVisible()
     await settleChromaticEndState()
   })
@@ -174,6 +185,7 @@ describe('image input visual coverage', () => {
     const {settleChromaticEndState} = testHelpers()
     void render(<ImageInputHarness schemaTypes={HOTSPOT_SCHEMA} />)
 
+    await waitForFixtureImage()
     await expect.element(page.getByText('Edit hotspot and crop')).toBeVisible()
     await settleChromaticEndState()
   })
@@ -182,6 +194,7 @@ describe('image input visual coverage', () => {
     const {settleChromaticEndState} = testHelpers()
     void render(<ImageInputHarness schemaTypes={IMAGE_TOOL_SCHEMA} />)
 
+    await waitForFixtureImage()
     await expect.element(page.getByText('Hotspot & Crop')).toBeVisible()
     await settleChromaticEndState()
   })
