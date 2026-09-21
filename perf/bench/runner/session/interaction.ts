@@ -1,5 +1,6 @@
 import process from 'node:process'
 
+import {type StyleCensus} from '@repo/utils/style-systems'
 import {type Browser, type Locator, type Page} from 'playwright'
 
 import {type BenchEntries} from '../../instrumentation/types'
@@ -9,6 +10,7 @@ import {createSessionContext, type SessionContext} from '../browser'
 import {type RunningSide} from '../servers'
 import {SessionError} from './errors'
 import {awaitReadiness, gotoScenario} from './navigation'
+import {takePageStyleCensus} from './styles'
 
 /** Characters cycled through while typing (letters + digits only). */
 export const CHARACTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
@@ -102,6 +104,12 @@ export interface InteractionSessionResult {
   requests: SessionRequests
   cpu: SessionCpu | null
   memory: SessionMemory | null
+  /**
+   * Style-system census of the open document (report-only): UI v5 vs v4 nodes
+   * and the styled-components footprint — see @repo/utils/style-systems. Null
+   * when no probe was supplied or it failed.
+   */
+  styles: StyleCensus | null
 }
 
 /**
@@ -349,6 +357,8 @@ export async function runInteractionSession(options: {
   running: RunningSide
   scenario: BenchScenario
   instrumentation: string
+  /** The bundled style probe (runner/inject.ts); omitted = no style census. */
+  styleProbe?: string
   config?: Partial<SessionConfig>
 }): Promise<InteractionSessionResult> {
   const {browser, running, scenario, instrumentation} = options
@@ -458,6 +468,12 @@ export async function runInteractionSession(options: {
     const timeToEditableMs =
       bootEntries.measures.find((measure) => measure.name === 'bench:time-to-editable')?.duration ??
       null
+
+    // Style census (report-only): which styling systems built the page now
+    // that it is open and editable — before typing changes anything about it,
+    // and outside every measured window so the DOM walk never lands in a
+    // keystroke's latency
+    const styles = options.styleProbe ? await takePageStyleCensus(page, options.styleProbe) : null
 
     // CPU counters: cumulative main-thread task-time deltas across the
     // measured fields (report-only resources bucket)
@@ -650,6 +666,7 @@ export async function runInteractionSession(options: {
       requests,
       cpu,
       memory,
+      styles,
     }
   } finally {
     await context.close()

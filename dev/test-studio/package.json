@@ -20,6 +20,7 @@
     "@portabletext/plugin-character-pair-decorator": "^9.0.10",
     "@portabletext/react": "^8.0.1",
     "@portabletext/toolkit": "^6.0.0",
+    "@repo/utils": "workspace:*",
     "@sanity/assist": "^6.2.1",
     "@sanity/client": "catalog:",
     "@sanity/color": "^3.0.8",
