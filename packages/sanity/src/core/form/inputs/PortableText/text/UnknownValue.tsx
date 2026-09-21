@@ -3,7 +3,6 @@ import {getSanitySubSchema} from '@portabletext/sanity-bridge'
 import {isPortableTextTextBlock, type Path} from '@sanity/types'
 import {toString as pathToString} from '@sanity/util/paths'
 import {type ReactNode} from 'react'
-import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {getValueAtPath} from '../../../../field/paths/helpers'
@@ -11,20 +10,17 @@ import {useListFormat} from '../../../../hooks/useListFormat'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {warnOnce} from '../warnOnce'
-
-const Root = styled.span`
-  border: 1px dotted var(--card-muted-fg-color);
-  border-radius: 2px;
-`
+import {root} from './UnknownValue.css'
 
 type UnknownMarksProps = SpanRenderProps & {portableTextPath: Path}
 
 export function UnknownValue(props: {labels: string[]; block?: boolean; children: ReactNode}) {
   const listFormat = useListFormat({style: 'short', type: 'unit'})
+  const Root = props.block ? 'div' : 'span'
 
   return (
     <Tooltip content={listFormat.format(props.labels)} placement="top" portal>
-      <Root as={props.block ? 'div' : 'span'} data-testid="unknown-value">
+      <Root className={root} data-testid="unknown-value">
         {props.children}
       </Root>
     </Tooltip>

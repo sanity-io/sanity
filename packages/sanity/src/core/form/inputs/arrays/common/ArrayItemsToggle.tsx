@@ -1,16 +1,10 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronUpIcon} from '@sanity/icons/ChevronUp'
-import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-
-const Rule = styled.div`
-  flex: 1;
-  height: 1px;
-  background-color: var(--card-border-color);
-`
+import {rule} from './ArrayItemsToggle.css'
 
 interface ArrayItemsToggleProps {
   expanded: boolean
@@ -24,7 +18,7 @@ export function ArrayItemsToggle(props: ArrayItemsToggleProps) {
 
   return (
     <Flex alignItems="center" gap={2} data-testid="array-items-toggle">
-      <Rule />
+      <div className={rule} />
       <Button
         aria-expanded={expanded}
         iconRight={expanded ? ChevronUpIcon : ChevronDownIcon}
@@ -36,7 +30,7 @@ export function ArrayItemsToggle(props: ArrayItemsToggleProps) {
             : t('inputs.array.action.show-all-items', {count: totalCount})
         }
       />
-      <Rule />
+      <div className={rule} />
     </Flex>
   )
 }
