@@ -48,7 +48,8 @@ function _createMiddlewareComponent<T extends {}>(
  * (core plugins register lazy field, input, layout and navbar components), so the site that
  * renders the returned component either wraps it in `<Suspense>` with a fallback shaped like the
  * component it stands in for, or, where no fallback can know the right size (form nodes), leaves
- * it to an ancestor boundary and to the lazy component's own `<Suspense>`.
+ * it to the lazy component's own `<Suspense>` and to the one boundary `FormBuilder` keeps around
+ * the whole form.
  *
  * @example
  * Example usage of:

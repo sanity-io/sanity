@@ -4,8 +4,9 @@ import {
   type SanityDocument,
   type ValidationMarker,
 } from '@sanity/types'
-import {useCallback, useMemo, useRef} from 'react'
+import {Suspense, useCallback, useMemo, useRef} from 'react'
 
+import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
 import {type DocumentFieldAction} from '../../config/document/fieldActions/types'
 import {type TargetPerspective} from '../../perspective/types'
 import {type FormNodePresence} from '../../presence/types'
@@ -180,9 +181,13 @@ export function FormBuilder(props: FormBuilderProps) {
   const InlineBlock = useInlineBlockComponent()
   const Annotation = useAnnotationComponent()
 
-  // No Suspense boundary here on purpose: form nodes have unpredictable heights, so a lazy form
-  // component owns its own `<Suspense>` with a fallback sized for what it renders, and until it
-  // resolves the form suspends up to the pane that renders it.
+  // No boundary per node: form nodes have unpredictable heights, so a lazy form component owns
+  // its own `<Suspense>` with a fallback sized for what it renders. The one boundary is around
+  // the root input below, so a lazy component without one (core plugins register lazy input and
+  // field middleware) suspends the form rather than the pane that renders it. The form mounts
+  // into a pane that has already committed; hiding that pane would detach the refs it keeps in
+  // state, and a pane that gates on those elements would drop the form, re-show, remount it and
+  // suspend again in a loop.
   const renderInput = useCallback(
     (inputProps: Omit<InputProps, 'renderDefault'>) => (
       <FormBuilderInputErrorBoundary>
@@ -349,12 +354,14 @@ export function FormBuilder(props: FormBuilderProps) {
               <DialogStackProvider>
                 {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
                 <EnhancedObjectDialogProvider>
-                  <RootInput
-                    rootInputProps={rootInputProps}
-                    onPathOpen={onPathOpen}
-                    openPath={openPath}
-                    renderInput={renderInput}
-                  />
+                  <Suspense fallback={<LoadingBlock showText />}>
+                    <RootInput
+                      rootInputProps={rootInputProps}
+                      onPathOpen={onPathOpen}
+                      openPath={openPath}
+                      renderInput={renderInput}
+                    />
+                  </Suspense>
                 </EnhancedObjectDialogProvider>
               </DialogStackProvider>
             </FullscreenPTEProvider>

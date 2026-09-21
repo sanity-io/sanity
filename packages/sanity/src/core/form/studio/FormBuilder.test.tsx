@@ -46,8 +46,8 @@ interface RenderFormBuilderOptions {
   documentValue?: FormDocumentValue | undefined
   formNodeId?: string
   config?: Partial<SingleWorkspace>
-  /** Stands in for the pane boundary the form suspends up to when a form component is lazy. */
-  ancestorFallback?: ReactNode
+  /** Mounts the form inside {@link PaneStandIn} instead of directly under the provider. */
+  pane?: boolean
 }
 
 async function createFormBuilderTestProvider(config?: Partial<SingleWorkspace>) {
@@ -78,6 +78,25 @@ function PassThroughField(props: FieldProps) {
 
 function PassThroughInput(props: InputProps) {
   return props.renderDefault(props)
+}
+
+/**
+ * The pane the form mounts into, reduced to what matters: a Suspense boundary above the form and
+ * an element kept in state that gates the form, the way `DocumentPanel` gates on its portal and
+ * scroll elements. The form mounts here on an update, after the pane has committed. If a lazy form
+ * component suspended up to this boundary, React would hide the committed pane and detach its
+ * refs, the gate would drop the form, the boundary would re-show the pane, and the form would
+ * remount and suspend again, until "Maximum update depth exceeded".
+ */
+function PaneStandIn(props: {children: ReactNode}) {
+  const [element, setElement] = useState<HTMLDivElement | null>(null)
+  return (
+    <Suspense fallback={<div data-testid="pane-fallback" />}>
+      <div ref={setElement} data-testid="pane">
+        {element ? props.children : null}
+      </div>
+    </Suspense>
+  )
 }
 
 function FormBuilderHarness(props: RenderFormBuilderOptions) {
@@ -148,12 +167,12 @@ async function renderFormBuilder(options: RenderFormBuilderOptions = {}) {
   const TestProvider = await createFormBuilderTestProvider(options.config)
   const tree = (next: RenderFormBuilderOptions) => (
     <TestProvider>
-      {next.ancestorFallback === undefined ? (
-        <FormBuilderHarness {...next} />
-      ) : (
-        <Suspense fallback={next.ancestorFallback}>
+      {next.pane ? (
+        <PaneStandIn>
           <FormBuilderHarness {...next} />
-        </Suspense>
+        </PaneStandIn>
+      ) : (
+        <FormBuilderHarness {...next} />
       )}
     </TestProvider>
   )
@@ -318,19 +337,21 @@ describe('FormBuilder', () => {
     expect(inputAfterId).toHaveFocus()
   })
 
-  it('lets a lazy input component at the root suspend up to the ancestor boundary', async () => {
+  it('suspends the form, not the pane, while a lazy input component loads', async () => {
     mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
     const input = deferredComponent<InputProps>()
 
     await renderFormBuilder({
       documentValue: {_id: 'test', _type: 'test'},
       config: {form: {components: {input: input.Lazy}}},
-      ancestorFallback: <div data-testid="pane-fallback" />,
+      pane: true,
     })
 
-    // The form adds no boundary of its own: the ancestor shows its fallback, and the generic
-    // middleware skeleton is gone.
-    expect(screen.getByTestId('pane-fallback')).toBeInTheDocument()
+    // The form's own boundary shows its loading block; the pane above it stays committed, and
+    // the generic per-node middleware skeleton is gone.
+    expect(screen.getByTestId('loading-block')).toBeInTheDocument()
+    expect(screen.getByTestId('pane')).toBeInTheDocument()
+    expect(screen.queryByTestId('pane-fallback')).not.toBeInTheDocument()
     expect(document.querySelector('[data-ui="Skeleton"]')).toBeNull()
     expect(screen.queryByTestId('field-title')).not.toBeInTheDocument()
 
@@ -339,20 +360,22 @@ describe('FormBuilder', () => {
     })
 
     expect(await screen.findByTestId('string-input', {}, {timeout: 10_000})).toBeInTheDocument()
-    expect(screen.queryByTestId('pane-fallback')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
   })
 
-  it('lets a lazy field component suspend up to the ancestor boundary', async () => {
+  it('suspends the form, not the pane, while a lazy field component loads', async () => {
     mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
     const field = deferredComponent<FieldProps>()
 
     await renderFormBuilder({
       documentValue: {_id: 'test', _type: 'test'},
       config: {form: {components: {field: field.Lazy}}},
-      ancestorFallback: <div data-testid="pane-fallback" />,
+      pane: true,
     })
 
-    expect(screen.getByTestId('pane-fallback')).toBeInTheDocument()
+    expect(screen.getByTestId('loading-block')).toBeInTheDocument()
+    expect(screen.getByTestId('pane')).toBeInTheDocument()
+    expect(screen.queryByTestId('pane-fallback')).not.toBeInTheDocument()
     expect(document.querySelector('[data-ui="Skeleton"]')).toBeNull()
     expect(screen.queryByTestId('field-title')).not.toBeInTheDocument()
 
@@ -363,7 +386,7 @@ describe('FormBuilder', () => {
     expect(await screen.findByTestId('field-title', {}, {timeout: 10_000})).toHaveTextContent(
       'Title',
     )
-    expect(screen.queryByTestId('pane-fallback')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
   })
 })
 

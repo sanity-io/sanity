@@ -18,8 +18,9 @@ const MIDDLEWARE_HOOK = 'useMiddlewareComponents'
  * Sites that render a middleware component without a boundary of their own. Form nodes have
  * unpredictable heights, so no fallback the form could pick fits; a lazy form component owns its
  * own `<Suspense>` sized for what it renders, and until it resolves the form suspends up to the
- * document pane. The navbar tool menu likewise suspends up to the navbar boundary in
- * `StudioLayoutComponent`. Adding a site here is a decision, not a default.
+ * single boundary `FormBuilder` keeps around its root input. The navbar tool menu likewise
+ * suspends up to the navbar boundary in `StudioLayoutComponent`. Adding a site here is a
+ * decision, not a default.
  */
 const DEFERS_TO_ANCESTOR = [
   'core/form/inputs/PortableText/object/Plugins.tsx <RenderPlugins>',
