@@ -7,16 +7,18 @@ import {catchError, combineLatest, map, of, type Observable} from 'rxjs'
 import {
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
-  getTargetDocument,
-  getVariantTitle,
   isRecord,
-  useActiveReleases,
   useClient,
   useDateTimeFormat,
   useDocumentPreviewStore,
   useDocumentVersions,
   usePerspective,
 } from 'sanity'
+import {
+  getTargetDocument,
+  getVariantTitle,
+  useActiveReleases,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Box, Grid} from 'ui5'
 
 const DOCUMENT_QUERY = '*[_id == $id][0]'

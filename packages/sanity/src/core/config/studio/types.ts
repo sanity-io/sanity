@@ -37,7 +37,6 @@ interface Action extends NavbarActionBase {
 
 /**
  * @internal
- * @beta
  * An internal API for defining actions in the navbar.
  */
 export type NavbarAction = Action | ActionWithCustomRender

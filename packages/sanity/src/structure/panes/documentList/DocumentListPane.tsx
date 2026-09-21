@@ -5,21 +5,21 @@ import {useActorRef, useSelector} from '@xstate/react'
 import {Activity, memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
-  EMPTY_ARRAY,
   type GeneralPreviewLayoutKey,
-  useActiveReleases,
   useClient,
-  useI18nText,
   usePerspective,
-  useReconnectingToast,
   useSchema,
-  useShallowUnique,
   useTranslation,
-  useUnique,
 } from 'sanity'
 import {keyframes, styled} from 'styled-components'
 import {Box} from 'ui5'
 
+import {useReconnectingToast} from '../../../core/hooks/useReconnectingToast'
+import {useI18nText} from '../../../core/i18n/hooks/useI18nText'
+import {useActiveReleases} from '../../../core/releases/store/useActiveReleases'
+import {EMPTY_ARRAY} from '../../../core/util/empty'
+import {useShallowUnique} from '../../../core/util/useShallowUnique'
+import {useUnique} from '../../../core/util/useUnique'
 import {usePane} from '../../components/pane/usePane'
 import {structureLocaleNamespace} from '../../i18n'
 import {type BaseStructureToolPaneProps} from '../types'

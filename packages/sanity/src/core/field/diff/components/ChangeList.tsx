@@ -32,7 +32,7 @@ export interface ChangeListProps {
   fields?: string[]
 }
 
-/** @internal */
+/** @public */
 export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.JSX.Element | null {
   const {documentId, isComparingCurrent, value} = useDocumentChange()
   const targetDocumentState = useTargetDocumentState(documentId)

@@ -23,7 +23,6 @@ vi.mock('../DocumentListPaneContent', () => ({
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
-  useActiveReleases: vi.fn(() => ({loading: false, data: []})),
   usePerspective: vi.fn((): PerspectiveContextValue => ({
     perspectiveStack: ['drafts'],
     excludedPerspectives: [],
@@ -34,6 +33,13 @@ vi.mock('sanity', async (importOriginal) => ({
     selectedVariant: undefined,
     bundle: 'drafts',
   })),
+}))
+vi.mock('../../../../core/releases/store/useActiveReleases', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useActiveReleases: vi.fn(() => ({loading: false, data: []})),
+}))
+vi.mock('../../../../core/hooks/useReconnectingToast', async (importOriginal) => ({
+  ...(await importOriginal()),
   useReconnectingToast: vi.fn(),
 }))
 

@@ -11,15 +11,12 @@ import {
 } from '@sanity/types'
 import {Card, type CardTone, Stack, Text} from '@sanity/ui'
 import {type ErrorInfo, Fragment, type MouseEvent, useCallback, useMemo, useState} from 'react'
-import {
-  type DocumentInspectorProps,
-  isGoingToUnpublish,
-  mergeParseErrors,
-  useParseErrors,
-  useTranslation,
-} from 'sanity'
+import {type DocumentInspectorProps, useTranslation} from 'sanity'
 import {Flex, Box} from 'ui5'
 
+import {mergeParseErrors} from '../../../../../core/form/store/utils/mergeParseErrors'
+import {useParseErrors} from '../../../../../core/form/studio/contexts/ParseErrors'
+import {isGoingToUnpublish} from '../../../../../core/releases/util/isGoingToUnpublish'
 import {ErrorBoundary} from '../../../../../ui-components/errorBoundary/ErrorBoundary'
 import {DocumentInspectorHeader} from '../../documentInspector/DocumentInspectorHeader'
 import {useDocumentPane} from '../../useDocumentPane'
