@@ -1975,7 +1975,7 @@ importers:
         specifier: ^2.1.5
         version: 2.1.5
       '@mux/mux-player-react':
-        specifier: ^3.13.2
+        specifier: ^3.13.4
         version: 3.13.4(@types/react-dom@19.3.0)(@types/react@19.3.0)(react-dom@19.3.0)(react@19.3.0)
       '@portabletext/editor':
         specifier: ^8.1.5
