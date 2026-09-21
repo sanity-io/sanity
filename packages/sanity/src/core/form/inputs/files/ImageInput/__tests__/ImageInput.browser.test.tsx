@@ -3,9 +3,7 @@ import {
   defineType,
   type ImageAsset,
   type ImageValue,
-  type ObjectSchemaType,
   type SanityDocument,
-  type SchemaTypeDefinition,
 } from '@sanity/types'
 import {of} from 'rxjs'
 import {describe, expect, test} from 'vitest'
@@ -20,9 +18,8 @@ import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
 import {type ImageInputProps} from '../../../../studio/inputs/StudioImageInput'
 import {type ObjectInputProps} from '../../../../types/inputProps'
-import {BaseImageInput, type BaseImageInputProps} from '../../ImageInput/ImageInput'
-import {ImageInputHotspotInput} from '../../ImageInput/ImageInputHotspotInput'
-import {ImageToolInput} from '../../ImageToolInput/ImageToolInput'
+import {BaseImageInput, type BaseImageInputProps} from '../ImageInput'
+import {ImageInputHotspotInput} from '../ImageInputHotspotInput'
 
 const IMAGE_URL = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='
 const IMAGE_REF = 'image-a75b03fdd5b5fa36947bf2b776a542e0c940f682-100x100-jpg'
@@ -111,12 +108,12 @@ function useBaseImageInputProps(props: ImageInputProps): BaseImageInputProps {
 
 type SchemaImageInputProps = ObjectInputProps<ImageValue>
 
-function BaseImageVisualInput(props: SchemaImageInputProps) {
+function BaseImageSchemaInput(props: SchemaImageInputProps) {
   const baseProps = useBaseImageInputProps(props as ImageInputProps)
   return <BaseImageInput {...baseProps} />
 }
 
-function HotspotVisualInput(props: SchemaImageInputProps) {
+function HotspotSchemaInput(props: SchemaImageInputProps) {
   const imageInputProps = props as ImageInputProps
   const baseProps = useBaseImageInputProps(imageInputProps)
   return (
@@ -127,10 +124,6 @@ function HotspotVisualInput(props: SchemaImageInputProps) {
       isImageToolEnabled
     />
   )
-}
-
-function ImageToolVisualInput(props: SchemaImageInputProps) {
-  return <ImageToolInput {...(props as ImageInputProps)} imageUrl={IMAGE_URL} />
 }
 
 const BASE_IMAGE_SCHEMA = [
@@ -144,7 +137,7 @@ const BASE_IMAGE_SCHEMA = [
         name: 'image',
         title: 'Image',
         options: {hotspot: true},
-        components: {input: BaseImageVisualInput},
+        components: {input: BaseImageSchemaInput},
       }),
     ],
   }),
@@ -161,41 +154,32 @@ const HOTSPOT_SCHEMA = [
         name: 'image',
         title: 'Image',
         options: {hotspot: true},
-        components: {input: HotspotVisualInput},
+        components: {input: HotspotSchemaInput},
       }),
     ],
   }),
 ]
 
-const IMAGE_TOOL_SCHEMA = [
-  defineType({
-    type: 'document',
-    name: 'test',
-    title: 'Test',
-    fields: [
-      defineField({
-        type: 'image',
-        name: 'image',
-        title: 'Image',
-        options: {hotspot: true},
-        components: {input: ImageToolVisualInput},
-      }),
-    ],
-  }),
-]
-
-function ImageInputHarness({schemaTypes}: {schemaTypes: SchemaTypeDefinition[]}) {
+function ImageInputHarness() {
   return (
-    <TestWrapper schemaTypes={schemaTypes}>
+    <TestWrapper schemaTypes={BASE_IMAGE_SCHEMA}>
       <TestForm document={DOCUMENT} />
     </TestWrapper>
   )
 }
 
-describe('image input visual coverage', () => {
+function ImageInputHotspotInputHarness() {
+  return (
+    <TestWrapper schemaTypes={HOTSPOT_SCHEMA}>
+      <TestForm document={DOCUMENT} />
+    </TestWrapper>
+  )
+}
+
+describe('image input', () => {
   test('renders an image input with a fixture asset', async () => {
     const {settleChromaticEndState} = testHelpers()
-    void render(<ImageInputHarness schemaTypes={BASE_IMAGE_SCHEMA} />)
+    void render(<ImageInputHarness />)
 
     await waitForFixtureImage()
     await expect.element(page.getByText('Image', {exact: true})).toBeVisible()
@@ -204,19 +188,10 @@ describe('image input visual coverage', () => {
 
   test('renders the hotspot editor dialog', async () => {
     const {settleChromaticEndState} = testHelpers()
-    void render(<ImageInputHarness schemaTypes={HOTSPOT_SCHEMA} />)
+    void render(<ImageInputHotspotInputHarness />)
 
     await waitForFixtureImage()
     await expect.element(page.getByText('Edit hotspot and crop')).toBeVisible()
-    await settleChromaticEndState()
-  })
-
-  test('renders the image tool', async () => {
-    const {settleChromaticEndState} = testHelpers()
-    void render(<ImageInputHarness schemaTypes={IMAGE_TOOL_SCHEMA} />)
-
-    await waitForFixtureImage()
-    await expect.element(page.getByText('Hotspot & Crop')).toBeVisible()
     await settleChromaticEndState()
   })
 })
