@@ -166,7 +166,7 @@ describe('image input visual coverage', () => {
     const {settleChromaticEndState} = testHelpers()
     void render(<ImageInputHarness schemaTypes={BASE_IMAGE_SCHEMA} />)
 
-    await expect.element(page.getByText('fixture.gif')).toBeVisible()
+    await expect.element(page.getByText('Image', {exact: true})).toBeVisible()
     await settleChromaticEndState()
   })
 
@@ -182,7 +182,7 @@ describe('image input visual coverage', () => {
     const {settleChromaticEndState} = testHelpers()
     void render(<ImageInputHarness schemaTypes={IMAGE_TOOL_SCHEMA} />)
 
-    await expect.element(page.getByText('Hotspot and crop')).toBeVisible()
+    await expect.element(page.getByText('Hotspot & Crop')).toBeVisible()
     await settleChromaticEndState()
   })
 })

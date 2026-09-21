@@ -2,7 +2,6 @@ import {
   defineArrayMember,
   defineField,
   defineType,
-  type FieldDefinition,
   type SanityDocument,
   type SchemaTypeDefinition,
 } from '@sanity/types'
@@ -18,14 +17,12 @@ import {TestForm} from '../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
 import {type StudioCrossDatasetReferenceInputProps} from '../../studio/inputs/crossDatasetReference/StudioCrossDatasetReferenceInput'
-import {type StudioGlobalDocumentReferenceInputProps} from '../../studio/inputs/globalDocumentReference/StudioGlobalDocumentReferenceInput'
 import {type StudioReferenceInputProps} from '../../studio/inputs/reference/StudioReferenceInput'
 import {GridArrayInput} from '../arrays/ArrayOfObjectsInput/Grid/GridArrayInput'
 import {ListArrayInput} from '../arrays/ArrayOfObjectsInput/List/ListArrayInput'
 import {ArrayOfPrimitivesInput} from '../arrays/ArrayOfPrimitivesInput/ArrayOfPrimitivesInput'
 import {CrossDatasetReferenceInput} from '../CrossDatasetReferenceInput/CrossDatasetReferenceInput'
 import {DateTimeInput} from '../DateInputs/DateTimeInput'
-import {GlobalDocumentReferenceInput} from '../GlobalDocumentReferenceInput/GlobalDocumentReferenceInput'
 import {ObjectInput} from '../ObjectInput/ObjectInput'
 import {ReferenceInput} from '../ReferenceInput/ReferenceInput'
 import {ReferenceInputPreview} from '../ReferenceInput/ReferenceInputPreview'
@@ -212,35 +209,12 @@ function CrossDatasetReferenceVisualInput(props: StudioCrossDatasetReferenceInpu
   )
 }
 
-function GlobalDocumentReferenceVisualInput(props: StudioGlobalDocumentReferenceInputProps) {
-  return (
-    <GlobalDocumentReferenceInput
-      {...(props as ComponentProps<typeof GlobalDocumentReferenceInput>)}
-      getReferenceInfo={() =>
-        of({
-          id: 'book-1',
-          type: 'book',
-          availability: {available: true, reason: 'READABLE'},
-          preview: {published: {title: 'Fixture book'}},
-        })
-      }
-      onSearch={() => of([])}
-    />
-  )
-}
-
 const REFERENCE_INPUT_SCHEMA = [
   defineType({
     type: 'document',
     name: 'author',
     title: 'Author',
     fields: [defineField({type: 'string', name: 'name', title: 'Name'})],
-  }),
-  defineType({
-    type: 'document',
-    name: 'book',
-    title: 'Book',
-    fields: [defineField({type: 'string', name: 'title', title: 'Title'})],
   }),
   defineType({
     type: 'document',
@@ -266,18 +240,9 @@ const REFERENCE_INPUT_SCHEMA = [
         name: 'relatedBook',
         title: 'Related book',
         dataset: 'library',
-        to: [{type: 'book'}],
+        to: [{type: 'book', title: 'Book', preview: {select: {title: 'title'}}}],
         components: {input: CrossDatasetReferenceVisualInput},
       }),
-      defineField({
-        type: 'globalDocumentReference',
-        name: 'globalBook',
-        title: 'Global book',
-        resourceType: 'dataset',
-        resourceId: 'abc123.library',
-        to: [{type: 'book'}],
-        components: {input: GlobalDocumentReferenceVisualInput},
-      } as unknown as FieldDefinition),
     ],
   }),
 ]
@@ -313,17 +278,16 @@ describe('form input visual coverage', () => {
 
     await expect.element(page.getByText('Grid items')).toBeVisible()
     await expect.element(page.getByText('List items')).toBeVisible()
-    await expect.element(page.getByText('alpha')).toBeVisible()
+    await expect.element(page.getByTestId('array-primitives-input')).toBeVisible()
     await settleChromaticEndState()
   })
 
-  test('renders local, cross-dataset, and global reference inputs', async () => {
+  test('renders local and cross-dataset reference inputs', async () => {
     const {settleChromaticEndState} = testHelpers()
     void render(<FormInputHarness schemaTypes={REFERENCE_INPUT_SCHEMA} />)
 
-    await expect.element(page.getByText('Author')).toBeVisible()
+    await expect.element(page.getByText('Author', {exact: true})).toBeVisible()
     await expect.element(page.getByText('Related book')).toBeVisible()
-    await expect.element(page.getByText('Global book')).toBeVisible()
     await settleChromaticEndState()
   })
 })

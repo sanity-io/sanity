@@ -10,7 +10,7 @@ import {
 } from '@sanity/types'
 import {Card, Stack, Text} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
-import {type ReactNode} from 'react'
+import {type ComponentProps, type ReactNode} from 'react'
 import {of} from 'rxjs'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
@@ -22,6 +22,7 @@ import {DisabledFeatureWarning} from '../../CrossDatasetReferenceInput/DisabledF
 import {OptionPreview as CrossDatasetOptionPreview} from '../../CrossDatasetReferenceInput/OptionPreview'
 import {PreviewReferenceValue as CrossDatasetPreviewReferenceValue} from '../../CrossDatasetReferenceInput/PreviewReferenceValue'
 import {type CrossDatasetReferenceInfo} from '../../CrossDatasetReferenceInput/types'
+import {GlobalDocumentReferenceInput} from '../../GlobalDocumentReferenceInput/GlobalDocumentReferenceInput'
 import {GlobalDocumentReferencePreview} from '../../GlobalDocumentReferenceInput/GlobalDocumentReferencePreview'
 import {OptionPreview as GlobalDocumentOptionPreview} from '../../GlobalDocumentReferenceInput/OptionPreview'
 import {PreviewReferenceValue as GlobalDocumentPreviewReferenceValue} from '../../GlobalDocumentReferenceInput/PreviewReferenceValue'
@@ -243,6 +244,30 @@ function ReferenceChrome() {
               showTypeLabel
             />
           </Row>
+        </Labelled>
+
+        <Labelled label="global document reference input (empty)">
+          <GlobalDocumentReferenceInput
+            {...({
+              changed: false,
+              elementProps: {id: 'global-document-reference', onBlur: noop, onFocus: noop},
+              focusPath: [],
+              focused: false,
+              getReferenceInfo: getGlobalDocumentReferenceInfo,
+              id: 'global-document-reference',
+              level: 0,
+              onChange: noop,
+              onPathBlur: noop,
+              onPathFocus: noop,
+              onSearch: () => of([]),
+              path: [],
+              presence: [],
+              readOnly: false,
+              schemaType: globalDocumentType,
+              validation: [],
+              value: undefined,
+            } as unknown as ComponentProps<typeof GlobalDocumentReferenceInput>)}
+          />
         </Labelled>
 
         <Labelled label="reference search option">
