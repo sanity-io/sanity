@@ -685,7 +685,7 @@ pnpm test:e2e               # Run E2E tests
 pnpm test:e2e --ui          # Interactive mode
 ```
 
-`pnpm --filter e2e test:connection-ceiling` checks the browser connection ceiling against local HTTP/1.1 and HTTP/2 servers. Chromium queues the next request once six HTTP/1.1 connections, or the server HTTP/2 stream cap, are held by `EventSource`. The command does not start Studio, and it does not run as part of `pnpm test` or `pnpm test:e2e`.
+`pnpm --filter e2e test:connection-ceiling` checks the HTTP/2 stream cap against a local server. Chromium queues the next request once held `EventSource` streams reach the server cap. Studio requires HTTP/2, so the script does not cover HTTP/1.1. It does not start Studio, and it does not run as part of `pnpm test` or `pnpm test:e2e`.
 
 ## Pre-commit Hook
 

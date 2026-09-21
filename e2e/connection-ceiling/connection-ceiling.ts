@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict'
 import {spawnSync} from 'node:child_process'
 import {mkdtemp, readFile} from 'node:fs/promises'
-import {createServer, type IncomingMessage, type Server, type ServerResponse} from 'node:http'
 import {
   createSecureServer,
   type Http2SecureServer,
@@ -14,7 +13,6 @@ import {join} from 'node:path'
 import {chromium, type Browser, type Page} from '@playwright/test'
 
 const PING_MS = 3_000
-const HTTP1_CAP = 6
 const HTTP2_CAP = 100
 
 interface Probe {
@@ -32,21 +30,6 @@ const EVENT_HEADERS = {
   'cache-control': 'no-cache',
 } as const
 
-function handleHttp1(stats: {open: number}, req: IncomingMessage, res: ServerResponse) {
-  const url = new URL(req.url ?? '/', 'http://127.0.0.1')
-  if (url.pathname === '/events') {
-    stats.open += 1
-    res.on('close', () => {
-      stats.open -= 1
-    })
-    res.writeHead(200, EVENT_HEADERS)
-    res.write(': hello\n\n')
-    return
-  }
-  res.writeHead(200, {'content-type': 'text/plain'})
-  res.end(url.pathname === '/ping' ? 'ok' : 'ceiling')
-}
-
 function handleHttp2(stats: {open: number}, req: Http2ServerRequest, res: Http2ServerResponse) {
   const url = new URL(req.url ?? '/', 'http://127.0.0.1')
   if (url.pathname === '/events') {
@@ -62,7 +45,7 @@ function handleHttp2(stats: {open: number}, req: Http2ServerRequest, res: Http2S
   res.end(url.pathname === '/ping' ? 'ok' : 'ceiling')
 }
 
-function listen(server: Server | Http2SecureServer, protocol: 'http' | 'https'): Promise<string> {
+function listen(server: Http2SecureServer): Promise<string> {
   return new Promise((resolve, reject) => {
     server.once('error', reject)
     server.listen(0, '127.0.0.1', () => {
@@ -71,12 +54,12 @@ function listen(server: Server | Http2SecureServer, protocol: 'http' | 'https'):
         reject(new Error('expected a tcp port'))
         return
       }
-      resolve(`${protocol}://127.0.0.1:${address.port}/`)
+      resolve(`https://127.0.0.1:${address.port}/`)
     })
   })
 }
 
-function closeServer(server: Server | Http2SecureServer): Promise<void> {
+function closeServer(server: Http2SecureServer): Promise<void> {
   return new Promise((resolve) => {
     server.close(() => resolve())
   })
@@ -181,68 +164,37 @@ async function startHttp2(maxConcurrentStreams: number, stats: {open: number}) {
     },
     (req, res) => handleHttp2(stats, req, res),
   )
-  return {server, origin: await listen(server, 'https')}
-}
-
-async function assertCeiling(options: {
-  origin: string
-  secure: boolean
-  cap: number
-  belowCap: number
-  stats: {open: number}
-}) {
-  await withBrowser(async (browser) => {
-    const context = await browser.newContext({ignoreHTTPSErrors: options.secure})
-    const holder = await context.newPage()
-    const other = await context.newPage()
-    await holder.goto(options.origin)
-    await other.goto(options.origin)
-
-    await holdEventSources(holder, options.belowCap)
-    await pollEqual(() => options.stats.open, options.belowCap, 15_000)
-    const below = await ping(other)
-    assert.equal(below.status, 200)
-    assert.ok(below.ms < 1_000, `ping below the cap took ${below.ms}ms`)
-
-    await holdEventSources(holder, options.cap)
-    await pollEqual(() => options.stats.open, options.cap, 15_000)
-    const stalled = await ping(other)
-    assert.equal(stalled.error, 'AbortError')
-    assert.ok(stalled.ms > 2_000, `stalled ping returned in ${stalled.ms}ms`)
-
-    await releaseOneEventSource(holder)
-    await pollEqual(() => options.stats.open, options.cap - 1, 10_000)
-    const recovered = await ping(other)
-    assert.equal(recovered.status, 200)
-    assert.ok(recovered.ms < 1_000, `recovered ping took ${recovered.ms}ms`)
-  })
-}
-
-const http1Stats = {open: 0}
-const http1 = createServer((req, res) => handleHttp1(http1Stats, req, res))
-const http1Origin = await listen(http1, 'http')
-try {
-  await assertCeiling({
-    origin: http1Origin,
-    secure: false,
-    cap: HTTP1_CAP,
-    belowCap: HTTP1_CAP - 1,
-    stats: http1Stats,
-  })
-  console.log('http/1.1 cap', HTTP1_CAP)
-} finally {
-  await closeServer(http1)
+  return {server, origin: await listen(server)}
 }
 
 const http2Stats = {open: 0}
 const http2 = await startHttp2(HTTP2_CAP, http2Stats)
 try {
-  await assertCeiling({
-    origin: http2.origin,
-    secure: true,
-    cap: HTTP2_CAP,
-    belowCap: HTTP2_CAP - 10,
-    stats: http2Stats,
+  await withBrowser(async (browser) => {
+    const context = await browser.newContext({ignoreHTTPSErrors: true})
+    const holder = await context.newPage()
+    const other = await context.newPage()
+    await holder.goto(http2.origin)
+    await other.goto(http2.origin)
+
+    const belowCap = HTTP2_CAP - 10
+    await holdEventSources(holder, belowCap)
+    await pollEqual(() => http2Stats.open, belowCap, 15_000)
+    const below = await ping(other)
+    assert.equal(below.status, 200)
+    assert.ok(below.ms < 1_000, `ping below the cap took ${below.ms}ms`)
+
+    await holdEventSources(holder, HTTP2_CAP)
+    await pollEqual(() => http2Stats.open, HTTP2_CAP, 15_000)
+    const stalled = await ping(other)
+    assert.equal(stalled.error, 'AbortError')
+    assert.ok(stalled.ms > 2_000, `stalled ping returned in ${stalled.ms}ms`)
+
+    await releaseOneEventSource(holder)
+    await pollEqual(() => http2Stats.open, HTTP2_CAP - 1, 10_000)
+    const recovered = await ping(other)
+    assert.equal(recovered.status, 200)
+    assert.ok(recovered.ms < 1_000, `recovered ping took ${recovered.ms}ms`)
   })
   console.log('http/2 cap', HTTP2_CAP)
 } finally {
