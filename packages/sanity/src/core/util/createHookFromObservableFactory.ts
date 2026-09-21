@@ -65,22 +65,11 @@ export function createHookFromObservableFactory<T, TArg = void>(
         ),
       [arg],
     )
-    // react-rx v5 defers updates and keeps the deferral identity-coherent: on
-    // an identity change (e.g. a new document id) it falls back to the new
-    // observable's live value — which synchronously resets to the loading
-    // tuple — so the previous arg's value never renders as loaded state for
-    // the new one.
     const result = useObservable(observable, initialResult)
-    // Throw from the live snapshot so errors reach the error boundary as soon
-    // as the observable errors, instead of after the deferred value catches
-    // up. Both hooks share one store subscription per observable, so this
-    // sync read costs no extra subscription.
+    // Read errors synchronously so they reach the boundary before the deferred result catches up.
     const liveResult = useSyncObservable(observable, initialResult)
 
     if (liveResult.type === 'error') throw liveResult.error
-    // Unreachable within an identity (the deferred value lags the live one,
-    // which threw above) and across identities (the identity-coherent
-    // deferral falls back to the live value), but it narrows the type.
     if (result.type === 'error') throw result.error
 
     return result.tuple

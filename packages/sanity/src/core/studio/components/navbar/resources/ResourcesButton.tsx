@@ -34,6 +34,7 @@ export function ResourcesButton() {
     autoUpdatingVersion: autoUpdatingVersionStr,
     currentVersion: currentVersionStr,
     latestTaggedVersion: latestTaggedVersionStr,
+    versionDeprecation,
   } = usePackageVersionStatus()
 
   const currentVersion = semver.parse(currentVersionStr)!
@@ -44,6 +45,8 @@ export function ResourcesButton() {
     currentVersion && autoUpdatingVersion ? semver.neq(currentVersion, autoUpdatingVersion) : false
 
   const getButtonTone = () => {
+    // a deprecated version that a reload won't fix is a warning
+    if (versionDeprecation) return 'caution'
     if (newAutoUpdateVersionAvailable) return 'primary'
     if (!isLoadingUserApplication && !userApplication) return 'caution'
     return undefined
@@ -105,6 +108,7 @@ export function ResourcesButton() {
               currentVersion={currentVersion}
               latestTaggedVersion={latestTaggedVersion}
               newAutoUpdateVersion={newAutoUpdateVersionAvailable ? autoUpdatingVersion : undefined}
+              deprecatedVersion={versionDeprecation?.version}
               error={error}
               isLoading={isLoading}
               value={value}

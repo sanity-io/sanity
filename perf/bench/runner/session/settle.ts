@@ -15,7 +15,7 @@ import {foldLoafAttribution} from './pageLoad'
  * Settle session: open the scenario, wait for readiness, then measure how
  * long the page takes to go quiet — and whether it ever does. No typing:
  * the mode targets the render-loop bug class (per-render observable
- * identity churn, react-rx v5), whose direct symptom is a page that never
+ * identity churn), whose direct symptom is a page that never
  * reaches quiescence after opening a document. Staying read-only also
  * sidesteps the read-only-interruption machinery entirely.
  *

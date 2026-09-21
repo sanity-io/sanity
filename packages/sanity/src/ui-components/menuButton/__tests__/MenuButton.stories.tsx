@@ -3,10 +3,10 @@ import {CopyIcon} from '@sanity/icons/Copy'
 import {EditIcon} from '@sanity/icons/Edit'
 import {PublishIcon} from '@sanity/icons/Publish'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Flex} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {expect, userEvent, waitFor, within} from 'storybook/test'
+import {Flex} from 'ui5'
 
 import {Button} from '../../button/Button'
 import {MenuItem} from '../../menuItem/MenuItem'
@@ -26,7 +26,7 @@ const meta = {
   component: MenuButton,
   decorators: [
     (Story) => (
-      <Flex align="flex-start" justify="center" paddingTop={4} style={{minHeight: 320}}>
+      <Flex alignItems="flex-start" justifyContent="center" paddingTop={4} style={{minHeight: 320}}>
         <Story />
       </Flex>
     ),
