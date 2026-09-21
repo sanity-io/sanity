@@ -195,7 +195,23 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
     // Nothing focusable yet: the form's inputs are still behind FormBuilder's Suspense boundary
     // while a lazy form component (core plugins register lazy field and input middleware) loads.
     // Focus the first input once it is in the DOM instead of giving up on this one pass.
+    //
+    // The synchronous attempt above takes focus from whatever had it when the form committed
+    // (usually the list item that opened the document); the deferred attempt does the same, but
+    // not from something the user focused since — search, another pane, a menu button — while
+    // the form was loading. Focus on the body or on the same element as before is not a choice.
+    const {ownerDocument} = formRef
+    const focusedOnCommit = ownerDocument.activeElement
     const observer = new MutationObserver(() => {
+      const {activeElement} = ownerDocument
+      if (
+        activeElement &&
+        activeElement !== ownerDocument.body &&
+        activeElement !== focusedOnCommit
+      ) {
+        observer.disconnect()
+        return
+      }
       if (focusFirstDescendant(formRef)) {
         observer.disconnect()
       }
