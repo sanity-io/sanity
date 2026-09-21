@@ -1,7 +1,7 @@
 import {type BadgeTone} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {
-  getSystemVariantId,
+  getDocumentVersionVariantId,
   getVariantTitle,
   getVersionFromId,
   isDraftId,
@@ -218,7 +218,7 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
   )
   const getVersionDisplay = useCallback(
     (version: VersionInfoDocumentStub) => {
-      const variantId = getSystemVariantId(version._system)
+      const variantId = getDocumentVersionVariantId(version)
       if (!variantId) {
         return getAgentVersionDisplay(version._id)
       }
@@ -239,20 +239,20 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
           return false
         }
         const hasRelease = Boolean(version._system.release)
-        const hasVariant = Boolean(getSystemVariantId(version._system))
+        const hasVariant = Boolean(getDocumentVersionVariantId(version))
         return !hasRelease && !hasVariant
       }),
     [filteredVersions],
   )
 
   const variantVersions = useMemo(
-    () => filteredVersions.filter((version) => Boolean(getSystemVariantId(version._system))),
+    () => filteredVersions.filter((version) => Boolean(getDocumentVersionVariantId(version))),
     [filteredVersions],
   )
   const setVariant = useSetVariant()
   const handleVariantSelectionChange = useCallback(
     (version: VersionInfoDocumentStub) => {
-      const variantId = getSystemVariantId(version._system)
+      const variantId = getDocumentVersionVariantId(version)
       const variant = variantId ? variants.get(variantId) : undefined
       // Published version documents omit `bundleId`, so treat a missing bundle as published.
       // Passing the perspective alongside the variant updates both sticky params atomically.

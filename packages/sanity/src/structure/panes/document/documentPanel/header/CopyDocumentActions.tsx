@@ -7,7 +7,7 @@ import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo} from 'react'
 import {
   getDraftId,
-  getSystemVariantRef,
+  getDocumentVersionVariantId,
   getTargetSiblings,
   usePerspective,
   useStudioUrl,
@@ -63,7 +63,7 @@ export function CopyDocumentActions() {
     }
     const advertisedDraftId = siblings.published._system?.draft?._ref
 
-    return getSystemVariantRef(siblings.published._system)
+    return getDocumentVersionVariantId(siblings.published)
       ? advertisedDraftId
       : getDraftId(documentId)
   }, [

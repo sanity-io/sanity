@@ -9,8 +9,7 @@ import {
   Hotkeys,
   isGoingToUnpublish,
   isSanityDefinedAction,
-  getSystemVariantId,
-  isVariantId,
+  getDocumentVersionVariantId,
   readVersionType,
   useClient,
   useDocumentStore,
@@ -105,8 +104,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
           bundle = document._system.bundleId
       }
 
-      const variantRef = getSystemVariantId(document._system)
-      const variantId = isVariantId(variantRef) ? variantRef : undefined
+      const variantId = getDocumentVersionVariantId(document)
 
       setVariant({variantId, perspective: bundle})
     },

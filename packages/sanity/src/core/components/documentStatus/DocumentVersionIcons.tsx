@@ -6,7 +6,7 @@ import {ReleaseAvatar} from '../../releases/components/ReleaseAvatar'
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {useWorkspace} from '../../studio/workspace'
-import {getSystemVariantId} from '../../util/getSystemVariantRef'
+import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {useAllVariants} from '../../variants/store/useAllVariants'
 import {variantIconCard} from './DocumentVersionIcons.css'
 import {getReleasePerspective} from './getReleasePerspective'
@@ -26,8 +26,8 @@ export function DocumentVersionIcons({version}: {version: VersionInfoDocumentStu
   const releaseRef = version._system.release?._ref
   const release = releaseRef ? releasesById.get(releaseRef) : undefined
 
-  const variantRef = getSystemVariantId(version._system)
-  const variant = variantRef ? variantsById.get(variantRef) : undefined
+  const variantId = getDocumentVersionVariantId(version)
+  const variant = variantId ? variantsById.get(variantId) : undefined
 
   return (
     <Flex alignItems="center" flexBasis="auto" flexGrow={0} flexShrink={0} gap={1}>

@@ -2,7 +2,7 @@ import {type ReleaseDocument} from '@sanity/client'
 
 import {sortReleases} from '../../releases/hooks/utils'
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
-import {getSystemVariantId} from '../../util/getSystemVariantRef'
+import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {readVersionType} from '../../util/versionsUtils'
 import {type SystemVariant} from '../../variants/types'
 
@@ -105,8 +105,8 @@ function compareDocumentVersionsForStatus(
   releasesById: Map<string, ReleaseDocument>,
   sortedReleases: ReleaseDocument[],
 ): number {
-  const leftVariantId = getSystemVariantId(left._system) ?? ''
-  const rightVariantId = getSystemVariantId(right._system) ?? ''
+  const leftVariantId = getDocumentVersionVariantId(left) ?? ''
+  const rightVariantId = getDocumentVersionVariantId(right) ?? ''
 
   if (leftVariantId !== rightVariantId) {
     if (!leftVariantId) return -1
@@ -144,7 +144,7 @@ export function groupDocumentVersionsForStatus(
   const releases = Array.from(releasesById.values())
   const sortedReleases = sortReleases(releases)
   const visibleVersions = versions.filter((version) => {
-    if (!variantsEnabled && getSystemVariantId(version._system)) {
+    if (!variantsEnabled && getDocumentVersionVariantId(version)) {
       return false
     }
     if (!showAgentVersions && readVersionType(version) === 'agent') {
@@ -160,7 +160,7 @@ export function groupDocumentVersionsForStatus(
   const groups: DocumentVersionStatusGroup[] = []
 
   for (const version of sortedVersions) {
-    const variantId = getSystemVariantId(version._system)
+    const variantId = getDocumentVersionVariantId(version)
     const lastGroup = groups.at(-1)
 
     const item: DocumentVersionStatusItem = {

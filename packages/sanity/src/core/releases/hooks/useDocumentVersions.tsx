@@ -23,7 +23,6 @@ import {DOCUMENT_SYSTEM_FIELD} from '../../preview/constants'
 import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
 import {useDocumentPreviewStore} from '../../store/datastores'
 import {isDraftId, getPublishedId} from '../../util/draftUtils'
-import {getSystemVariantRef} from '../../util/getSystemVariantRef'
 import {isRecord} from '../../util/isRecord'
 import {createSWR} from '../../util/rxSwr'
 import {type VersionInfoDocumentStub} from '../store/types'
@@ -163,9 +162,18 @@ const buildDocumentSystem = (id: string, releases: ReleaseDocument[]): DocumentS
  * array so every stub consumer can read `variants[0]`.
  */
 const normalizeVariants = (system: DocumentSystem): DocumentSystem => {
+  // oxlint-disable-next-line typescript/no-deprecated - we need to destructure the variant fallback field.
   const {variant, ...rest} = system
-  const variantRef = getSystemVariantRef(system)
-  return variantRef ? {...rest, variants: [variantRef]} : rest
+  // Document has the new shape, remove legacy field and return the rest.
+  if (system.variants) return rest
+
+  // Document has the legacy shape, create the variants array with the legacy variant reference, strips the legacy field.
+  if (variant) {
+    return {...rest, variants: [{_ref: variant._ref, _weak: true}]}
+  }
+
+  // Document has no variant reference, return the rest.
+  return rest
 }
 
 const resolveVersionSystem = (

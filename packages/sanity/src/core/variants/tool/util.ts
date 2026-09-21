@@ -3,7 +3,7 @@ import {type DocumentSystem} from '@sanity/types'
 
 import {type PerspectiveBundle} from '../../perspective/types'
 import {DOCUMENT_SYSTEM_FIELD} from '../../preview/constants'
-import {getSystemVariantId} from '../../util/getSystemVariantRef'
+import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {VARIANT_DOCUMENTS_PATH} from '../store/constants'
 import {type SystemVariant} from '../types'
 
@@ -33,18 +33,6 @@ export function getVariantId(variantDocumentId: string): string {
   return variantDocumentId.startsWith(VARIANT_ID_PREFIX)
     ? variantDocumentId.slice(VARIANT_ID_PREFIX.length)
     : variantDocumentId
-}
-
-/**
- * Returns the short variant id for sticky params from a document's `_system.variants[0]._ref`.
- *
- * @internal
- */
-export function getVariantIdFromDocument(document: Record<string, unknown>): string | undefined {
-  const system = document[DOCUMENT_SYSTEM_FIELD] as DocumentSystem | undefined
-  const variantRef = getSystemVariantId(system)
-
-  return variantRef ? getVariantId(variantRef) : undefined
 }
 
 /**

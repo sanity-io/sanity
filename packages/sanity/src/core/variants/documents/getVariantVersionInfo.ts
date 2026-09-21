@@ -1,6 +1,6 @@
 import {type SanityDocument} from '@sanity/types'
 
-import {getSystemVariantId} from '../../util/getSystemVariantRef'
+import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {getVariantId} from '../tool/util'
 
 /**
@@ -30,7 +30,7 @@ export interface VariantVersionInfo {
 export function getVariantVersionInfo(
   version: SanityDocument | null | undefined,
 ): VariantVersionInfo | undefined {
-  const variantRef = getSystemVariantId(version?._system)
+  const variantRef = getDocumentVersionVariantId(version)
   if (!version || !variantRef) {
     return undefined
   }

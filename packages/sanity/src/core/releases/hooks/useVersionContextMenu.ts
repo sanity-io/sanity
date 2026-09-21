@@ -13,7 +13,7 @@ import {
   type UseScheduledDraftMenuActionsReturn,
 } from '../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {isDocumentGroupId} from '../../util/draftUtils'
-import {getSystemVariantId} from '../../util/getSystemVariantRef'
+import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {isCardinalityOneRelease} from '../../util/releaseUtils'
 import {useVariantDocumentOperations} from '../../variants/hooks/useVariantDocumentOperations'
 import {isVariantId} from '../../variants/types'
@@ -164,8 +164,7 @@ export function useVersionContextMenu(
 
   const {createVariantDocument} = useVariantDocumentOperations()
 
-  const stubVariantRef = getSystemVariantId(documentVersionInfoStub?._system)
-  const variantRef = isVariantId(stubVariantRef) ? stubVariantRef : undefined
+  const variantId = getDocumentVersionVariantId(documentVersionInfoStub)
 
   const [contextMenu, setContextMenu] = useState<VersionContextMenuState>({open: false})
   const popoverRef = useRef<HTMLDivElement | null>(null)
@@ -218,14 +217,14 @@ export function useVersionContextMenu(
   }, [])
 
   const handleCopyToDraftsNavigate = useCallback(() => {
-    if (variantRef) {
+    if (variantId) {
       // Keep the variant applied, otherwise the copy lands out of view.
-      setVariant({variantId: variantRef, perspective: 'drafts'})
+      setVariant({variantId: variantId, perspective: 'drafts'})
     } else {
       setPerspective('drafts')
     }
     onCopyToDraftsComplete?.()
-  }, [variantRef, setVariant, setPerspective, onCopyToDraftsComplete])
+  }, [variantId, setVariant, setPerspective, onCopyToDraftsComplete])
 
   const {handleCopyToDrafts} = useCopyToDrafts({
     documentGroupId,
@@ -243,13 +242,13 @@ export function useVersionContextMenu(
         if (!documentVersionInfoStub?._id) {
           throw new Error('Document version info stub is required')
         }
-        if (variantRef) {
+        if (variantId) {
           // A variant version can only be created through the variant action, otherwise
           // the new version would not belong to the variant.
           await createVariantDocument({
             baseId: documentVersionInfoStub._id,
             documentGroupId,
-            variant: {_id: variantRef},
+            variant: {_id: variantId},
             selectedPerspective: perspective,
           })
         } else {
@@ -266,8 +265,8 @@ export function useVersionContextMenu(
       try {
         await runCreateVersion()
         // Navigate to the newly created version in a single router update.
-        if (variantRef) {
-          setVariant({variantId: variantRef, perspective})
+        if (variantId) {
+          setVariant({variantId: variantId, perspective})
         } else {
           setPerspective(perspective)
         }
@@ -288,7 +287,7 @@ export function useVersionContextMenu(
       documentGroupId,
       setPerspective,
       setVariant,
-      variantRef,
+      variantId,
       t,
       toast,
       createVariantDocument,

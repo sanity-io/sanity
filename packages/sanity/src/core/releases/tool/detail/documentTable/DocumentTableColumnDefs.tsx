@@ -19,10 +19,10 @@ import {RhombusIcon} from '../../../../components/temporary-icons/Rhombus'
 import {AvatarSkeleton, UserAvatar} from '../../../../components/userAvatar/UserAvatar'
 import {useSchema} from '../../../../hooks/useSchema'
 import {SanityDefaultPreview} from '../../../../preview/components/SanityDefaultPreview'
-import {getSystemVariantId} from '../../../../util/getSystemVariantRef'
+import {getDocumentVersionVariantId} from '../../../../util/getDocumentVersionVariant'
 import {
   getVariantConditionsText,
-  getVariantIdFromDocument,
+  getVariantId,
   getVariantTitle,
 } from '../../../../variants/tool/util'
 import {type SystemVariant} from '../../../../variants/types'
@@ -50,8 +50,8 @@ const MemoReleaseDocumentPreview = memo(
     documentRevision?: string
   }) {
     const willUnpublish = isGoingToUnpublish(item.document)
-    const variantId = getVariantIdFromDocument(item.document)
-
+    const variantRef = getDocumentVersionVariantId({_system: item.document._system})
+    const variantId = variantRef ? getVariantId(variantRef) : undefined
     return (
       <ReleaseDocumentPreview
         documentId={item.document._id}
@@ -208,8 +208,8 @@ function resolveDocumentVariant(
   document: BundleDocumentRow['document'],
   variantsById: Map<string, SystemVariant>,
 ): SystemVariant | undefined {
-  const variantRef = getSystemVariantId(document._system)
-  return variantRef ? variantsById.get(variantRef) : undefined
+  const variantId = getDocumentVersionVariantId(document)
+  return variantId ? variantsById.get(variantId) : undefined
 }
 
 // Which variant a release document targets: ◆ diamond + the variant title, with the full
@@ -480,13 +480,15 @@ export const getDocumentTableColumnDefs: (
         // and focuses the field when the document opens.
         const firstError = errors.find((error) => error.path.length > 0) ?? errors[0]
         const focusPath = firstError ? pathToString(firstError.path) : undefined
+        const variantRef = getDocumentVersionVariantId({_system: datum.document._system})
+        const variantId = variantRef ? getVariantId(variantRef) : undefined
         const intent = getReleaseDocumentIntent({
           documentId: datum.document._id,
           documentTypeName: datum.document._type,
           releaseId,
           releaseState,
           documentRevision: datum.document._rev,
-          variantId: getVariantIdFromDocument(datum.document),
+          variantId: variantId,
           path: focusPath,
         })
         const errorLabel = t(

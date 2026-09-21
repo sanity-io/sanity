@@ -16,7 +16,7 @@ import {ReleaseAvatarIcon} from '../../../releases/components/ReleaseAvatar'
 import {getReleaseDocumentIdFromReleaseId} from '../../../releases/util/getReleaseDocumentIdFromReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isNotArchivedRelease, isReleaseScheduledOrScheduling} from '../../../releases/util/util'
-import {getSystemVariantId} from '../../../util/getSystemVariantRef'
+import {getDocumentVersionVariantId} from '../../../util/getDocumentVersionVariant'
 import {getVariantTitle} from '../../../variants/tool/util'
 import {type selectionMachine} from '../../machines/selectionMachine'
 import {type variantCreationMachine} from '../../machines/variantCreationMachine'
@@ -62,7 +62,7 @@ export const SelectBundle: ComponentType<Props> = ({variantCreationRef, selectio
         })
 
   const existingBundles = existingVariants.reduce((bundleKeys, variant) => {
-    const variantId = getSystemVariantId(variant.document?._system)
+    const variantId = getDocumentVersionVariantId(variant.document)
 
     if (typeof variantId !== 'undefined' && variantId === selectedVariantDefinition?._id) {
       bundleKeys.add(

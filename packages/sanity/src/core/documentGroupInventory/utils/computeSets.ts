@@ -4,7 +4,7 @@ import {type TFunction} from '../../i18n/types'
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {isAgentBundleName} from '../../store/agent/createAgentBundlesStore'
 import {getVersionFromId, type SystemBundle} from '../../util/draftUtils'
-import {getSystemVariantId} from '../../util/getSystemVariantRef'
+import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {readVersionType} from '../../util/versionsUtils'
 import {type SystemVariant} from '../../variants/types'
 import {type Meta, type VariantSet} from '../machines/documentGroupInventoryMachine'
@@ -39,7 +39,7 @@ export function computeSets({
 
   if (!variantsEnabled) {
     const hasVariants = meta.versionState.versions.some((version) =>
-      Boolean(getSystemVariantId(version._system)),
+      Boolean(getDocumentVersionVariantId(version)),
     )
 
     if (hasVariants) {
@@ -151,7 +151,7 @@ function getVariantName({
   document: VersionInfoDocumentStub
   variants: Map<string, SystemVariant>
 }): string {
-  const variantDocumentId = getSystemVariantId(document._system)
+  const variantDocumentId = getDocumentVersionVariantId(document)
   const variant = variantDocumentId ? variants.get(variantDocumentId) : undefined
   return variant?.metadata?.title ?? t('document-group.base-variant')
 }

@@ -233,6 +233,7 @@ describe('useDocumentVersions', () => {
       await setupMocks({
         releases: [],
         versionIds: ['versions.varscope.document-1'],
+        // oxlint-disable-next-line typescript/no-deprecated
         system: {variant: variantRef},
       })
       const {result} = renderHook(() => useDocumentVersions({documentId: 'document-1'}))
@@ -248,11 +249,12 @@ describe('useDocumentVersions', () => {
       expect(result.current.versions[0]._system).not.toHaveProperty('variant')
     })
 
-    it('prefers `variants` when an unmigrated document carries both fields', async () => {
+    it('prefers `variants` when a document carries both fields', async () => {
       const legacyRef = {_ref: '_.variants.legacy', _weak: true as const}
       await setupMocks({
         releases: [],
         versionIds: ['versions.varscope.document-1'],
+        // oxlint-disable-next-line typescript/no-deprecated
         system: {variants: [variantRef], variant: legacyRef},
       })
       const {result} = renderHook(() => useDocumentVersions({documentId: 'document-1'}))
@@ -274,6 +276,20 @@ describe('useDocumentVersions', () => {
         expect(result.current.loading).toBe(false)
       })
       expect(result.current.versions[0]._system.variants).toEqual([])
+      expect(result.current.versions[0]._system).not.toHaveProperty('variant')
+    })
+    it('strips a null legacy `_system.variant` from base documents', async () => {
+      await setupMocks({
+        releases: [],
+        versionIds: ['drafts.document-1'],
+        // oxlint-disable-next-line typescript/no-deprecated
+        system: {variant: undefined},
+      })
+      const {result} = renderHook(() => useDocumentVersions({documentId: 'document-1'}))
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false)
+      })
+      expect(result.current.versions[0]._system.variants).toBeUndefined()
       expect(result.current.versions[0]._system).not.toHaveProperty('variant')
     })
   })

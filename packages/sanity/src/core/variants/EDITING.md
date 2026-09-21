@@ -80,7 +80,7 @@ Inputs:
 - `useAllVariants().loading` — because definition loading and stub loading are **two separate async resolutions**; gating on only one reintroduces silent fallbacks.
 - Schema `liveEdit` — the hook reads it from version stubs (`_type`) + `schema.get` Live-edit documents pinned to drafts resolve as **published** (the variant-of-published is the edit target). Release perspectives are unchanged.
 
-Content Lake stores the variant a document belongs to in `_system.variants` (an array limited to one entry for now); documents that predate that change still carry the legacy single `_system.variant` reference. `useDocumentVersions` folds the legacy field into `variants` on every stub, and every other read goes through `getSystemVariantRef` / `getSystemVariantId` (`core/util/getSystemVariantRef.ts`), which prefer `variants[0]` and fall back to `variant`. Never read either field directly.
+Content Lake stores the variant a document belongs to in `_system.variants` (an array limited to one entry for now); documents that predate that change still carry the legacy single `_system.variant` reference. `useDocumentVersions` folds the legacy field into `variants` on every stub, and every other read goes through `getDocumentVersionVariantId` (`core/util/getDocumentVersionVariant.ts`), which prefers `variants[0]._ref` and falls back to `variant._ref`. Never read either field directly.
 
 The stub matching is pure (`core/util/getTargetDocument.ts`): a stub matches when its `_system.bundleId` equals the bundle (unset ≙ `'published'`) _and_ its `_system.variants[0]._ref` equals the selected variant (or is absent when no variant is selected). For live-edit + drafts, that lookup uses `published` so typing never creates a drafts-bundle sibling.
 

@@ -2,7 +2,7 @@ import {type DocumentSystem} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
-import {getSystemVariantId} from '../getSystemVariantRef'
+import {getDocumentVersionVariantId} from '../getDocumentVersionVariant'
 import {getTargetDocument} from '../getTargetDocument'
 
 const PUBLISHED_ID = 'article-1'
@@ -128,7 +128,7 @@ describe('getTargetDocument', () => {
         bundle: 'published',
         variant: undefined,
         documentVersions: documentVersions.filter(
-          (version) => version._system.bundleId || getSystemVariantId(version._system),
+          (version) => version._system.bundleId || getDocumentVersionVariantId(version),
         ),
       })
       expect(result).toBeUndefined()
@@ -146,7 +146,7 @@ describe('getTargetDocument', () => {
         documentVersions: documentVersions.filter(
           // Filter out the default draft.
           (version) =>
-            version._system.bundleId !== 'drafts' && !getSystemVariantId(version._system),
+            version._system.bundleId !== 'drafts' && !getDocumentVersionVariantId(version),
         ),
       })
       expect(result).toBeUndefined()
@@ -162,7 +162,8 @@ describe('getTargetDocument', () => {
         bundle: 'rASAP',
         variant: undefined,
         documentVersions: documentVersions.filter(
-          (version) => version._system.bundleId !== 'rASAP' && !getSystemVariantId(version._system),
+          (version) =>
+            version._system.bundleId !== 'rASAP' && !getDocumentVersionVariantId(version),
         ),
       })
       expect(result).toBeUndefined()
@@ -185,7 +186,7 @@ describe('getTargetDocument', () => {
         variant: VARIANT_ALPHA_ID,
         documentVersions: documentVersions.filter(
           (version) =>
-            version._system.bundleId || getSystemVariantId(version._system) !== VARIANT_ALPHA_ID,
+            version._system.bundleId || getDocumentVersionVariantId(version) !== VARIANT_ALPHA_ID,
         ),
       })
       expect(result).toBeUndefined()
@@ -207,7 +208,7 @@ describe('getTargetDocument', () => {
         documentVersions: documentVersions.filter(
           (version) =>
             version._system.bundleId !== 'drafts' &&
-            getSystemVariantId(version._system) !== VARIANT_ALPHA_ID,
+            getDocumentVersionVariantId(version) !== VARIANT_ALPHA_ID,
         ),
       })
       expect(result).toBeUndefined()
@@ -229,7 +230,7 @@ describe('getTargetDocument', () => {
         documentVersions: documentVersions.filter(
           (version) =>
             version._system.bundleId !== 'rASAP' &&
-            getSystemVariantId(version._system) !== VARIANT_ALPHA_ID,
+            getDocumentVersionVariantId(version) !== VARIANT_ALPHA_ID,
         ),
       })
       expect(result).toBeUndefined()
@@ -251,6 +252,7 @@ describe('getTargetDocument', () => {
       _id: 'drafts.baz.article-1',
       _system: {
         bundleId: 'drafts',
+        // oxlint-disable-next-line typescript/no-deprecated
         variant: variantRef(VARIANT_ALPHA_ID),
         group: groupRef,
         scopeId: 'baz',

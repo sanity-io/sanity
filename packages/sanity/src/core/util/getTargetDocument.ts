@@ -1,8 +1,8 @@
 import {type PerspectiveBundle} from '../perspective/types'
 import {type DocumentPerspectiveState} from '../releases/hooks/useDocumentVersions'
 import {type VersionInfoDocumentStub} from '../releases/store/types'
-import {getSystemVariantId} from './getSystemVariantRef'
-
+import {type VariantId} from '../variants/types'
+import {getDocumentVersionVariantId} from './getDocumentVersionVariant'
 /**
  * Finds the document version whose _system metadata matches the selected bundle and variant.
  *
@@ -17,14 +17,14 @@ export function getTargetDocument({
   documentVersions,
   variant,
 }: {
-  variant: string | undefined
+  variant: VariantId | undefined
   bundle: PerspectiveBundle
   documentVersions: DocumentPerspectiveState['versions']
 }): VersionInfoDocumentStub | undefined {
   return documentVersions.find((version) => {
     const inBundle =
       bundle === 'published' ? !version._system.bundleId : version._system.bundleId === bundle
-    const variantId = getSystemVariantId(version._system)
+    const variantId = getDocumentVersionVariantId(version)
     const inVariant = variant ? variantId === variant : !variantId
     return inBundle && inVariant
   })
@@ -44,7 +44,7 @@ export function getVariantPublishedSibling({
   documentVersions,
   variant,
 }: {
-  variant: string
+  variant: VariantId
   documentVersions: DocumentPerspectiveState['versions']
 }): VersionInfoDocumentStub | undefined {
   return getTargetDocument({bundle: 'published', variant, documentVersions})
