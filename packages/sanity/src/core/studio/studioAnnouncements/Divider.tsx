@@ -1,16 +1,8 @@
+import {clsx} from 'clsx'
 import {useEffect, useRef, useState} from 'react'
-import {styled} from 'styled-components'
 import {Box} from 'ui5'
 
-const Hr = styled.hr<{$show: boolean}>`
-  height: 1px;
-  background: var(--card-border-color);
-  width: 100%;
-  opacity: ${({$show}) => ($show ? 1 : 0)};
-  transition: opacity 0.3s ease;
-  margin: 0;
-  border: none;
-`
+import {dividerHr, dividerHrHidden} from './Divider.css'
 
 interface DividerProps {
   parentRef: React.RefObject<HTMLDivElement | null>
@@ -55,7 +47,7 @@ export function Divider({parentRef}: DividerProps): React.JSX.Element {
   return (
     <Box paddingBottom={4}>
       <Box paddingY={3} paddingX={3}>
-        <Hr ref={itemRef} $show={show} />
+        <hr ref={itemRef} className={clsx(dividerHr, !show && dividerHrHidden)} />
       </Box>
     </Box>
   )
