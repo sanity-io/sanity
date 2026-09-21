@@ -11,8 +11,8 @@ export type AuthProbeResult = {authenticated: false} | {authenticated: true; id:
  * The interface used by the Studio that produces a `SanityClient` and
  * `CurrentUser` that gets passed to the resulting `Workspace`s and `Source`s.
  *
- * NOTE: This interface is primarily for internal use. Refer to
- * `createAuthStore` instead.
+ * NOTE: This interface is primarily for internal use. Prefer configuring
+ * `auth` with an `AuthConfig` object rather than implementing `AuthStore`.
  *
  * @beta
  * @hidden

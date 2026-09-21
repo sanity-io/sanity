@@ -999,21 +999,36 @@ export function _createAuthStore({
 }
 
 /**
- * Public options for `createAuthStore`. The `getSessionId`, `consumeHashToken`,
- * `observeWorkbenchToken` and `refreshWorkbenchToken` dependencies are wired
- * automatically using the default implementations.
+ * Options for the default memoized auth-store factory. The `getSessionId`,
+ * `consumeHashToken`, `observeWorkbenchToken` and `refreshWorkbenchToken`
+ * dependencies are wired automatically using the default implementations.
+ *
  * @internal
  */
-export type CreateAuthStoreOptions = Omit<
+type DefaultAuthStoreOptions = Omit<
   AuthStoreOptions,
   'getSessionId' | 'consumeHashToken' | 'observeWorkbenchToken' | 'refreshWorkbenchToken'
 >
 
 /**
+ * Public options for `createAuthStore`. The `getSessionId`, `consumeHashToken`,
+ * `observeWorkbenchToken` and `refreshWorkbenchToken` dependencies are wired
+ * automatically using the default implementations.
+ *
+ * @internal
+ * @deprecated Use the `auth` config key with an {@link AuthConfig} object instead of `createAuthStore`. Deprecated since Studio v3.15.0.
+ */
+export type CreateAuthStoreOptions = DefaultAuthStoreOptions
+
+/**
+ * Memoized factory used when `auth` is a plain {@link AuthConfig}. Not a public
+ * API — consumers should pass `auth` in the studio config instead of calling
+ * this (or {@link createAuthStore}) themselves.
+ *
  * @internal
  */
-export const createAuthStore: (options: CreateAuthStoreOptions) => AuthStore = memoize(
-  (options: CreateAuthStoreOptions): AuthStore =>
+export const createDefaultAuthStore: (options: DefaultAuthStoreOptions) => AuthStore = memoize(
+  (options: DefaultAuthStoreOptions): AuthStore =>
     _createAuthStore({
       ...options,
       getSessionId: defaultGetSessionId,
@@ -1028,5 +1043,12 @@ export const createAuthStore: (options: CreateAuthStoreOptions) => AuthStore = m
     getRequestErrorHandler: _getRequestErrorHandler,
     getRequestFailureDiagnostics: _getRequestFailureDiagnostics,
     ...options
-  }: CreateAuthStoreOptions) => canonicalHash(options),
+  }: DefaultAuthStoreOptions) => canonicalHash(options),
 )
+
+/**
+ * @internal
+ * @deprecated Use the `auth` config key with an {@link AuthConfig} object instead of `createAuthStore`. Deprecated since Studio v3.15.0.
+ */
+export const createAuthStore: (options: DefaultAuthStoreOptions) => AuthStore =
+  createDefaultAuthStore

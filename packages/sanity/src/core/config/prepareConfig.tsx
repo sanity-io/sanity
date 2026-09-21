@@ -21,7 +21,10 @@ import {
 import {prepareI18n} from '../i18n/i18nConfig'
 import {type LocaleSource} from '../i18n/types'
 import {createSchema} from '../schema/createSchema'
-import {createAuthStore, type RequestFailureDiagnostics} from '../store/authStore/createAuthStore'
+import {
+  createDefaultAuthStore,
+  type RequestFailureDiagnostics,
+} from '../store/authStore/createAuthStore'
 import {type AuthStore} from '../store/authStore/types'
 import {isAuthStore} from '../store/authStore/utils/asserters'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
@@ -195,8 +198,8 @@ function fingerprintAuth(auth: unknown): string {
   if (auth === null || typeof auth !== 'object') return String(auth)
 
   // Pre-built `AuthStore` instances are compared by reference identity.
-  // `createAuthStore` is memoized by a canonical hash of its options, so two
-  // `createAuthStore(equivalentOptions)` calls return the same instance —
+  // `createDefaultAuthStore` is memoized by a canonical hash of its options, so two
+  // `createDefaultAuthStore(equivalentOptions)` calls return the same instance —
   // meaning reference identity is sufficient to detect "same auth" even when
   // the calls were made separately per workspace.
   if (isAuthStore(auth)) return `AuthStore@${getObjectId(auth)}`
@@ -451,7 +454,7 @@ function getAuthStore(
   const clientFactory = source.unstable_clientFactory ?? createClient
 
   const {projectId, dataset, apiHost} = source
-  return createAuthStore({
+  return createDefaultAuthStore({
     apiHost,
     ...source.auth,
     clientFactory: (config) => {
