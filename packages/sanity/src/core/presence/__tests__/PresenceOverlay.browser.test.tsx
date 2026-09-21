@@ -329,11 +329,16 @@ describe('PresenceOverlay', () => {
       .toBeLessThanOrEqual(actionsRect.left)
     expect(fieldAvatars('field2')[0].getBoundingClientRect().left).toBeLessThan(restingLeft)
 
-    // Leaving the field hides the actions again and the avatar returns to its resting place
+    // Leaving the field hides the actions again and the avatar returns to its resting place.
+    // Positions come from summed `offsetLeft`s and are re-measured after the round trip, which
+    // lands a sub-pixel off in Firefox and WebKit; the point is that it is not left sitting a
+    // whole actions card to the left, so allow a pixel.
     await page.getByTestId('field-field5').hover()
     await expect
-      .poll(() => Math.round(fieldAvatars('field2')[0]?.getBoundingClientRect().left ?? -1))
-      .toBe(Math.round(restingLeft))
+      .poll(() =>
+        Math.abs((fieldAvatars('field2')[0]?.getBoundingClientRect().left ?? -1) - restingLeft),
+      )
+      .toBeLessThanOrEqual(1)
   })
 
   it('shows a user with several sessions once, in the field and in the dock', async () => {
