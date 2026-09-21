@@ -135,14 +135,24 @@ export function BisectTool() {
 
   const error = commitsLive.error ?? sessionsLive.error ?? tagsLive.error
   const sessions = sessionsLive.data
-  // Refinement links for the list: a chain is one regression, so a row says
-  // which session it narrows down (or how many narrow it down)
-  const titleById = new Map((sessions ?? []).map((session) => [session._id, session.title ?? '']))
-  const refinedByCount = new Map<string, number>()
+  // Refinements nest under the session they narrow down (every one of them,
+  // abandoned branches included — the list is the full record; which branch
+  // counts as the regression is sessionChains.ts' business). Roots keep the
+  // query's newest-first order; refinements read oldest first, as the story
+  // unfolded. A refinement whose parent is gone is a root again.
+  const sessionIds = new Set((sessions ?? []).map((session) => session._id))
+  const roots: SessionSummary[] = []
+  const childrenOf = new Map<string, SessionSummary[]>()
   for (const session of sessions ?? []) {
-    if (session.refines) {
-      refinedByCount.set(session.refines, (refinedByCount.get(session.refines) ?? 0) + 1)
+    const parent = session.refines
+    if (parent && parent !== session._id && sessionIds.has(parent)) {
+      childrenOf.set(parent, [...(childrenOf.get(parent) ?? []), session])
+    } else {
+      roots.push(session)
     }
+  }
+  for (const children of childrenOf.values()) {
+    children.sort((a, b) => (a.createdAt ?? '').localeCompare(b.createdAt ?? ''))
   }
 
   return (
@@ -189,15 +199,12 @@ export function BisectTool() {
             </Card>
           )}
 
-          {sessions?.map((session) => (
-            <SessionRow
+          {roots.map((session) => (
+            <SessionTree
               key={session._id}
               session={session}
-              refinesTitle={
-                session.refines ? (titleById.get(session.refines) ?? session.refines) : undefined
-              }
-              refinedByCount={refinedByCount.get(session._id) ?? 0}
-              onOpen={() => setSessionId(session._id, 'push')}
+              childrenOf={childrenOf}
+              onOpen={(id) => setSessionId(id, 'push')}
             />
           ))}
         </Stack>
@@ -217,28 +224,86 @@ export function BisectTool() {
   )
 }
 
+/**
+ * One regression as one box, like a release on the Releases page: the root
+ * session and, indented under it, the sessions that narrow it down —
+ * recursively, since a refinement can be refined again. Only the outer box
+ * has a border; the rows inside are plain click targets, so the box reads as
+ * the unit and the indent as "refines". The visited set guards against a
+ * reference cycle in hand-edited data.
+ */
+function SessionTree(props: {
+  session: SessionSummary
+  childrenOf: Map<string, SessionSummary[]>
+  onOpen: (id: string) => void
+  visited?: ReadonlySet<string>
+  depth?: number
+}) {
+  const {session, childrenOf, onOpen, visited = new Set(), depth = 0} = props
+  const children = (childrenOf.get(session._id) ?? []).filter((child) => !visited.has(child._id))
+  const nextVisited = new Set(visited).add(session._id)
+  const body = (
+    <Stack gap={1}>
+      <SessionRow
+        session={session}
+        refinementCount={children.length}
+        onOpen={() => onOpen(session._id)}
+      />
+      {children.length > 0 && (
+        <Box paddingLeft={4}>
+          <Stack gap={1}>
+            {children.map((child) => (
+              <SessionTree
+                key={child._id}
+                session={child}
+                childrenOf={childrenOf}
+                onOpen={onOpen}
+                visited={nextVisited}
+                depth={depth + 1}
+              />
+            ))}
+          </Stack>
+        </Box>
+      )}
+    </Stack>
+  )
+  return depth === 0 ? (
+    <Card padding={1} radius={3} border>
+      {body}
+    </Card>
+  ) : (
+    body
+  )
+}
+
 function SessionRow(props: {
   session: SessionSummary
-  /** Title of the session this one narrows down, when it does. */
-  refinesTitle: string | undefined
-  refinedByCount: number
+  /** How many sessions narrow this one down — they are listed right under it. */
+  refinementCount: number
   onOpen: () => void
 }) {
-  const {session, refinesTitle, refinedByCount, onOpen} = props
+  const {session, refinementCount, onOpen} = props
   const concluded = Boolean(session.result?.firstBadSha)
   const description = session.description
+  const note = session.result?.note
 
   return (
-    <Card as="button" padding={4} radius={3} border onClick={onOpen} style={{textAlign: 'left'}}>
+    <Card as="button" padding={3} radius={2} onClick={onOpen} style={{textAlign: 'left'}}>
       <Flex alignItems="center" gap={3} flexWrap="wrap">
         <Box flex={1}>
           <Stack gap={2}>
             <Text size={1} weight="medium">
               {session.title ?? session._id}
             </Text>
+            {/* The issue, then the verdict note — what and why, one line each */}
             {description && (
-              <Text size={1} muted textOverflow="ellipsis">
+              <Text size={1} textOverflow="ellipsis">
                 {description}
+              </Text>
+            )}
+            {note && (
+              <Text size={1} muted textOverflow="ellipsis">
+                {note}
               </Text>
             )}
             <Flex alignItems="center" gap={2} flexWrap="wrap">
@@ -246,14 +311,10 @@ function SessionRow(props: {
               <Text size={0} muted>
                 · {session.createdBy}
               </Text>
-              {refinesTitle !== undefined && (
+              {refinementCount > 0 && (
                 <Text size={0} muted>
-                  · narrows down {refinesTitle || 'another session'}
-                </Text>
-              )}
-              {refinedByCount > 0 && (
-                <Text size={0} muted>
-                  · narrowed down by {pluralize(refinedByCount, 'session')}
+                  · narrowed down by the {pluralize(refinementCount, 'session')} below — counted as
+                  one regression
                 </Text>
               )}
             </Flex>
