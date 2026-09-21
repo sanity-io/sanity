@@ -2,6 +2,7 @@ import {type PerspectiveBundle} from '../../perspective/types'
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {isSystemBundle} from '../../util/draftUtils'
 import {getTargetDocument, getVariantPublishedSibling} from '../../util/getTargetDocument'
+import {type VariantId} from '../../variants/types'
 
 export type DocumentStatusIconKind = 'variant' | 'release' | 'draft' | 'published'
 
@@ -33,7 +34,7 @@ const DOCUMENT_STATUS_ICONS_BY_OUTCOME: Record<
 
 interface DocumentStatusIconsContext {
   bundle: PerspectiveBundle
-  variantId: string | undefined
+  variantId: VariantId | undefined
   documentVersions: VersionInfoDocumentStub[]
 }
 

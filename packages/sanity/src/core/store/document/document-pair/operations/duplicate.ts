@@ -8,7 +8,7 @@ import {operationsApiClient} from '../utils/operationsApiClient'
 import {variantsApiClient} from '../utils/variantsApiClient'
 import {type MapDocument, type OperationImpl} from './types'
 
-// `_system` is authoritative, server-managed metadata (`group`/`scopeId`/`release`/`variant`
+// `_system` is authoritative, server-managed metadata (`group`/`scopeId`/`release`/`variants`
 // references of the SOURCE document): copying it onto the duplicate would attach the new
 // document to the source's group and scope.
 const omitProps = ['_createdAt', '_updatedAt', '_system']

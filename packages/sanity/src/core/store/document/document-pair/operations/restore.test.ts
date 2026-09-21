@@ -31,7 +31,7 @@ describe('restore operation', () => {
           ...EMPTY_SNAPSHOTS,
           version: {
             _id: 'versions.varscope.doc-1',
-            _system: {variant: {_ref: '_.variants.french', _weak: true}},
+            _system: {variants: [{_ref: '_.variants.french', _key: 'k-123'}]},
           },
         },
       } as unknown as OperationArgs
