@@ -7,8 +7,10 @@ export const roundedCard = style({
   selectors: {
     // Rendered through `DiffCard as={RoundedCard}`, which sets its own border-radius on the same
     // element; `&&` keeps this rule winning without depending on stylesheet order.
-    '&&': {
+    // Card's `&:not([hidden]) { display: block }` is (0,2,0); beat it so string segments stay inline.
+    '&&:not([hidden])': {
       borderRadius: radius1Var,
+      display: 'inline',
     },
   },
 })
