@@ -3,11 +3,10 @@ import {LinkIcon} from '@sanity/icons/Link'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type PortableTextBlock} from '@sanity/types'
-import {Card, Stack} from '@sanity/ui'
+import {Card, Stack, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
-import {getTheme_v2} from '@sanity/ui/theme'
-import {useCallback, useMemo} from 'react'
-import {css, styled} from 'styled-components'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {type ReactNode, useCallback, useMemo} from 'react'
 import {Flex, Box} from 'ui5'
 
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
@@ -36,15 +35,8 @@ import {StatusSelector} from '../fields/StatusSelector'
 import {Title} from '../fields/TitleField'
 import {RemoveTaskDialog} from '../RemoveTaskDialog'
 import {getMentionedUsers} from '../utils'
+import {firstRow, space2Var, space3Var} from './FormEdit.css'
 import {TasksCommentsActivity} from './TasksCommentsActivity'
-
-const FirstRow = styled(Flex)((props) => {
-  const theme = getTheme_v2(props.theme)
-  return css`
-    column-gap: ${theme.space[2]}px;
-    row-gap: ${theme.space[3]}px;
-  `
-})
 
 function FormActionsMenu({id, value}: {id: string; value: TaskDocument}) {
   const {setViewMode, handleCopyLinkToTask} = useTasksNavigation()
@@ -106,6 +98,27 @@ function FormActionsMenu({id, value}: {id: string; value: TaskDocument}) {
   )
 }
 
+export function FormEditRow({children}: {children: ReactNode}) {
+  const {space} = useThemeV2()
+
+  return (
+    <Flex
+      className={firstRow}
+      paddingBottom={3}
+      paddingTop={4}
+      alignItems="flex-start"
+      justifyContent="flex-start"
+      flexWrap="wrap"
+      style={assignInlineVars({
+        [space2Var]: `${space[2]}px`,
+        [space3Var]: `${space[3]}px`,
+      })}
+    >
+      {children}
+    </Flex>
+  )
+}
+
 function FormEditInner(props: ObjectInputProps) {
   const statusField = props.schemaType.fields.find((f) => f.name === 'status')
   const value = props.value as TaskDocument
@@ -145,13 +158,7 @@ function FormEditInner(props: ObjectInputProps) {
       </Flex>
 
       <Card borderTop marginTop={3}>
-        <FirstRow
-          paddingBottom={3}
-          paddingTop={4}
-          alignItems="flex-start"
-          justifyContent="flex-start"
-          flexWrap="wrap"
-        >
+        <FormEditRow>
           <TooltipDelayGroupProvider>
             <StatusSelector
               value={props.value?.status}
@@ -170,7 +177,7 @@ function FormEditInner(props: ObjectInputProps) {
               path={['dueBy']}
             />
           </TooltipDelayGroupProvider>
-        </FirstRow>
+        </FormEditRow>
       </Card>
 
       {props.renderDefault(props)}
