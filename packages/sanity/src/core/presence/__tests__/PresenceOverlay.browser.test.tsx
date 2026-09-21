@@ -312,6 +312,35 @@ describe('PresenceOverlay', () => {
     await expect.poll(() => arrowsOf(fieldAvatars('field15'))).toEqual(['inside'])
   })
 
+  it('moves the field avatar out of the way of the field actions on hover, and back', async () => {
+    void render(<Harness presence={[presence('u1', ['field2'])]} />)
+    await expect.poll(() => fieldAvatars('field2')).toHaveLength(1)
+    const restingLeft = fieldAvatars('field2')[0].getBoundingClientRect().left
+
+    // Hovering the field reveals the actions card at the header's right edge; the avatar's
+    // placeholder shifts left to make room, and the drawn avatar has to follow it.
+    await page.getByTestId('field-field2').hover()
+    const actions = page.getByTestId('field-actions-menu-field2')
+    await expect.element(actions).toBeVisible()
+    const actionsRect = actions.element().getBoundingClientRect()
+
+    await expect
+      .poll(() => fieldAvatars('field2')[0]?.getBoundingClientRect().right)
+      .toBeLessThanOrEqual(actionsRect.left)
+    expect(fieldAvatars('field2')[0].getBoundingClientRect().left).toBeLessThan(restingLeft)
+
+    // Leaving the field hides the actions again and the avatar returns to its resting place.
+    // Positions come from summed `offsetLeft`s and are re-measured after the round trip, which
+    // lands a sub-pixel off in Firefox and WebKit; the point is that it is not left sitting a
+    // whole actions card to the left, so allow a pixel.
+    await page.getByTestId('field-field5').hover()
+    await expect
+      .poll(() =>
+        Math.abs((fieldAvatars('field2')[0]?.getBoundingClientRect().left ?? -1) - restingLeft),
+      )
+      .toBeLessThanOrEqual(1)
+  })
+
   it('shows a user with several sessions once, in the field and in the dock', async () => {
     void render(
       <Harness
