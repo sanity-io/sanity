@@ -1,9 +1,6 @@
 import {isPortableTextBlock, toPlainText} from '@portabletext/toolkit'
-import {type DocumentSystem} from '@sanity/types'
 
 import {type PerspectiveBundle} from '../../perspective/types'
-import {DOCUMENT_SYSTEM_FIELD} from '../../preview/constants'
-import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {VARIANT_DOCUMENTS_PATH} from '../store/constants'
 import {type SystemVariant} from '../types'
 

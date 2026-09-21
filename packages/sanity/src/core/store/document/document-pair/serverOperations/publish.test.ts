@@ -34,6 +34,23 @@ function variantVersion(bundleId: 'drafts' | 'rSummer' | undefined): SanityDocum
   }
 }
 
+/** Same as {@link variantVersion} but with the pre-migration `_system.variant` shape. */
+function unmigratedVariantVersion(bundleId: 'drafts' | 'rSummer' | undefined): SanityDocument {
+  const migrated = variantVersion(bundleId)
+  const variantRef = migrated._system?.variants?.[0]
+  const {variants: _variants, ...system} = migrated._system ?? {
+    group: {_ref: 'my-id', _weak: true},
+  }
+  return {
+    ...migrated,
+    _system: {
+      ...system,
+      // oxlint-disable-next-line typescript/no-deprecated -- unmigrated snapshot under test.
+      variant: variantRef,
+    },
+  }
+}
+
 describe('publish', () => {
   describe('disabled', () => {
     it('returns with LIVE_EDIT_ENABLED if isLiveEditEnabled', () => {
@@ -283,6 +300,33 @@ describe('publish', () => {
       }).toThrow('cannot execute "publish" when draft or version is missing')
 
       expect(client.$log).toMatchSnapshot()
+    })
+
+    it('routes an unmigrated variant-over-drafts version to the variant publish action', () => {
+      const client = createMockSanityClient()
+
+      publish.execute({
+        client,
+        idPair: {
+          draftId: 'drafts.my-id',
+          publishedId: 'my-id',
+          versionId: 'versions.varscope.my-id',
+        },
+        snapshots: {version: unmigratedVariantVersion('drafts')},
+      } as unknown as OperationArgs)
+
+      expect(client.$log.observable.action).toEqual([
+        {
+          actions: {
+            actionType: 'sanity.action.document.variant.publish',
+            publishedId: 'my-id',
+            variantId: 'french',
+            bundleId: 'drafts',
+            ifPublishedVariantRevisionId: undefined,
+          },
+          options: {tag: 'document.publish'},
+        },
+      ])
     })
 
     it('routes a variant-over-drafts version to the variant publish action', () => {

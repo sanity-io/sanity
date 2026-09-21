@@ -25,7 +25,8 @@ Every variant document carries authoritative metadata in `_system` (typed as `Do
 
 | `_system` field | Meaning                                                                                                   |
 | --------------- | --------------------------------------------------------------------------------------------------------- |
-| `variant`       | Reference to the variant definition (`_.variants.*`)                                                      |
+| `variants`      | Array of references to the variant definition (`_.variants.*`), currently only 1 entry supported          |
+| `variant`       | Reference to the variant definition (`_.variants.*`) (@deprecated)                                        |
 | `group`         | Reference to the base published id (the document group)                                                   |
 | `bundleId`      | Which bundle the document belongs to: `'drafts'`, a release id, or **unset for the variant-of-published** |
 | `scopeId`       | The opaque hash from the document's own id                                                                |

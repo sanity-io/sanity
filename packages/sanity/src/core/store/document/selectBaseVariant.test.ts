@@ -95,6 +95,7 @@ describe('selectBaseVariant', () => {
 
     it('returns null when the document carries the legacy `_system.variant` reference', () => {
       const variant = createDocument(baseVariantId, {
+        // oxlint-disable-next-line typescript/no-deprecated -- unmigrated snapshot under test.
         variant: {_ref: 'system.variant.nynorsk', _weak: true},
       })
 

@@ -165,7 +165,7 @@ const normalizeVariants = (system: DocumentSystem): DocumentSystem => {
   // oxlint-disable-next-line typescript/no-deprecated - we need to destructure the variant fallback field.
   const {variant, ...rest} = system
   // Document has the new shape, remove legacy field and return the rest.
-  if (system.variants) return rest
+  if (system.variants?.[0]) return rest
 
   // Document has the legacy shape, create the variants array with the legacy variant reference, strips the legacy field.
   if (variant) {

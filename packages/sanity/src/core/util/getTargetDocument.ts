@@ -3,6 +3,7 @@ import {type DocumentPerspectiveState} from '../releases/hooks/useDocumentVersio
 import {type VersionInfoDocumentStub} from '../releases/store/types'
 import {type VariantId} from '../variants/types'
 import {getDocumentVersionVariantId} from './getDocumentVersionVariant'
+
 /**
  * Finds the document version whose _system metadata matches the selected bundle and variant.
  *

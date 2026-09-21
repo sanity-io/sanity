@@ -8,7 +8,7 @@ import {type DocumentPairTarget} from '../store/document/types'
 import {getVersionFromId, isSystemBundle} from '../util/draftUtils'
 import {getTargetDocument} from '../util/getTargetDocument'
 import {useAllVariants} from '../variants/store/useAllVariants'
-import {type SystemVariant} from '../variants/types'
+import {type SystemVariant, type VariantId} from '../variants/types'
 import {useSchema} from './useSchema'
 
 /**
@@ -120,7 +120,7 @@ function getCreatableTarget(
 
 function getDocumentSiblings(
   versions: VersionInfoDocumentStub[],
-  variantId: string | undefined,
+  variantId: VariantId | undefined,
   bundle: PerspectiveBundle,
 ): TargetDocumentSiblings {
   return {

@@ -26,7 +26,9 @@ function variantVersionDoc(system: SanityDocument['_system'] = {variants: [varia
 }
 
 /** An unmigrated document still carrying the legacy single `_system.variant` reference. */
-const legacyVariantVersionDoc = () => variantVersionDoc({variant: variantRef})
+const legacyVariantVersionDoc = () =>
+  // oxlint-disable-next-line typescript/no-deprecated -- unmigrated snapshot under test.
+  variantVersionDoc({variant: variantRef})
 
 describe('disabledForVariantVersion', () => {
   it('returns VARIANT_VERSION for a variant-scoped version snapshot', () => {

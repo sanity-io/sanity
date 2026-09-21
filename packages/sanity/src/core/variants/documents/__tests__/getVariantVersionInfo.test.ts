@@ -29,7 +29,13 @@ describe('getVariantVersionInfo', () => {
   it('falls back to the legacy `_system.variant` reference on unmigrated documents', () => {
     expect(
       getVariantVersionInfo(
-        doc({bundleId: 'drafts', variant: variantRef, group: groupRef, scopeId: 'varscope'}),
+        doc({
+          bundleId: 'drafts',
+          // oxlint-disable-next-line typescript/no-deprecated -- unmigrated snapshot under test.
+          variant: variantRef,
+          group: groupRef,
+          scopeId: 'varscope',
+        }),
       ),
     ).toEqual({variantId: 'french', bundleId: 'drafts'})
   })

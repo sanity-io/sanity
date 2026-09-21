@@ -74,9 +74,9 @@ export interface DocumentSystem {
    */
   variants?: DocumentSystemRef[]
   /**
-   * @deprecated
-   * Legacy single-reference form of `variants`, only present on documents that have not been
-   * migrated yet. Read the variant through `variants[0]` and fall back to this field.
+   * @deprecated Use `variants[0]` instead. This single-reference field remains only on
+   * documents that have not been migrated yet; read it as a fallback from `variants[0]`,
+   * never as the primary source.
    */
   variant?: DocumentSystemRef
   /**
