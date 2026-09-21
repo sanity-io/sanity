@@ -1,6 +1,7 @@
-import {Box, Card} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {lazy, Suspense} from 'react'
 
+import {Button} from '../../../../ui-components/button/Button'
 import {type NavbarProps} from '../../../config/studio/types'
 
 // The navbar (search, releases menu, presence, user menu, help resources) is the heaviest part
@@ -12,11 +13,18 @@ const StudioNavbarComponent = lazy(() =>
 )
 
 // Same outer box as the real navbar (padding 3 around one row of default-size buttons) so the
-// tool area does not jump when it mounts.
+// tool area does not jump when it mounts. Use a real Button for the inner height so it tracks
+// theme space and font metrics instead of a hardcoded pixel value.
 function NavbarFallback() {
   return (
     <Card borderBottom data-testid="studio-navbar-loading" padding={3} sizing="border">
-      <Box style={{height: 33}} />
+      <Button
+        aria-hidden
+        disabled
+        mode="bleed"
+        style={{pointerEvents: 'none', visibility: 'hidden'}}
+        text="-"
+      />
     </Card>
   )
 }
