@@ -1,6 +1,7 @@
 import {
   type AssetFromSource,
   type AssetSourceUploader,
+  isArrayOfBlocksSchemaType,
   type Path,
   type SchemaType,
 } from '@sanity/types'
@@ -140,6 +141,15 @@ export function ArrayOfObjectsField(props: {
     valueRef.current = member.field.value
   }, [member.field.value])
 
+  // A Portable Text array owns its own emptiness: the editor emits a root
+  // `unset` when it genuinely becomes empty. The last-item-removal rewrite
+  // below must not run for it. `valueRef`/`member.field.value` lag the editor
+  // during a fast burst (patches arrive faster than the value round-trips back
+  // as a prop), so the rewrite can misread an ordinary block removal as
+  // emptying the array and escalate it to a whole-field `unset` that the editor
+  // never asked for, discarding every block the editor still holds.
+  const isPortableTextArray = isArrayOfBlocksSchemaType(member.field.schemaType)
+
   const handleChange = useCallback(
     (event: PatchEvent | PatchArg) => {
       const patches = PatchEvent.from(event).patches
@@ -148,7 +158,7 @@ export function ArrayOfObjectsField(props: {
         (patch) => patch.type === 'unset' && patch.path.length === 1,
       )
 
-      if (isRemovingLastItem) {
+      if (isRemovingLastItem && !isPortableTextArray) {
         // apply the patch to the current value
         valueRef.current = applyAll(valueRef.current || [], patches)
 
@@ -162,7 +172,7 @@ export function ArrayOfObjectsField(props: {
       // otherwise apply the patch
       onChange(PatchEvent.from(event).prepend(setIfMissing([])).prefixAll(member.name))
     },
-    [onChange, member.name, valueRef],
+    [onChange, member.name, valueRef, isPortableTextArray],
   )
   const resolveInitialValue = useResolveInitialValueForType()
 

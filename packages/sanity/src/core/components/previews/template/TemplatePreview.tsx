@@ -1,7 +1,7 @@
-import {Flex, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {Stack, Text, TextSkeleton} from '@sanity/ui'
 import {type ElementType, isValidElement, type ReactNode} from 'react'
 import {isValidElementType} from 'react-is'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {Media, type MediaProps} from '../_common/Media'
@@ -44,7 +44,7 @@ export function TemplatePreview(props: TemplatePreviewProps) {
   if (isPlaceholder) {
     return (
       <Box className={root}>
-        <Flex align="center" className={headerFlex}>
+        <Flex alignItems="center" className={headerFlex}>
           <Stack flex={1} gap={2}>
             <TextSkeleton animated className={titleSkeleton} radius={1} />
             <TextSkeleton animated className={subtitleSkeleton} radius={1} size={1} />
@@ -56,7 +56,7 @@ export function TemplatePreview(props: TemplatePreviewProps) {
 
   return (
     <Box className={root}>
-      <Flex align="center" className={headerFlex}>
+      <Flex alignItems="center" className={headerFlex}>
         <Stack flex={1} gap={2}>
           {isValidElementType(Title) && (
             <Text textOverflow="ellipsis">
@@ -78,7 +78,7 @@ export function TemplatePreview(props: TemplatePreviewProps) {
         </Stack>
 
         {media && (
-          <Flex align="flex-start" paddingLeft={2}>
+          <Flex alignItems="flex-start" paddingLeft={2}>
             <Media dimensions={mediaDimensions} layout="default" media={media} />
           </Flex>
         )}

@@ -5,6 +5,19 @@ import type {SemVer} from 'semver'
  * @hidden
  * @internal
  */
+export interface PackageVersionDeprecation {
+  /** The deprecated version: the running version, or the pinned version a reload would apply */
+  version: SemVer
+  /** Human readable explanation set when the version was deprecated, if any */
+  reason?: string
+  /** True when this Studio is auto-updating and pinned to the deprecated version */
+  isPinned: boolean
+}
+
+/**
+ * @hidden
+ * @internal
+ */
 export type PackageVersionInfoContextValue = {
   /**
    * Request a new update check
@@ -43,6 +56,14 @@ export type PackageVersionInfoContextValue = {
    * applies exactly this version — it may also be below the current version (e.g. a pinned rollback).
    */
   autoUpdatingVersion?: SemVer
+
+  /**
+   * Set when the user should be warned about a deprecated version: this Studio either is not
+   * auto-updating and runs a deprecated version, or is auto-updating but pinned (via manage) to a
+   * deprecated version so a reload would still land on it. Not set when a reload fixes it, since
+   * the regular "new version available" state already covers that.
+   */
+  versionDeprecation?: PackageVersionDeprecation
 }
 /**
  *

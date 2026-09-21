@@ -7,7 +7,7 @@ import {type PortableTextBlock} from '@sanity/types'
 import {Inline, Stack, Text, TextArea, TextInput} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
 import {type ChangeEvent, type ReactNode, useCallback, useId, useMemo, useState} from 'react'
-import {StateLink} from 'sanity/router'
+import {IntentLink} from 'sanity/router'
 import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
@@ -16,6 +16,7 @@ import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
 import {type VariantsLocaleResourceKeys, variantsLocaleNamespace} from '../../i18n'
+import {VARIANTS_INTENT} from '../../plugin'
 import {useAllVariants} from '../../store/useAllVariants'
 import {getVariantId, getVariantTitle} from '../../tool/util'
 import {type EditableSystemVariant, type SystemVariant} from '../../types'
@@ -131,7 +132,11 @@ function getPortableTextDescriptionValue(description?: PortableTextBlock[]): str
 }
 
 function DuplicateVariantLink(props: {children?: ReactNode; variantId?: string}) {
-  return <StateLink state={{variantId: props.variantId}}>{props.children}</StateLink>
+  return (
+    <IntentLink intent={VARIANTS_INTENT} params={{id: props.variantId}}>
+      {props.children}
+    </IntentLink>
+  )
 }
 
 const DUPLICATE_MESSAGE_COMPONENTS = {VariantLink: DuplicateVariantLink}

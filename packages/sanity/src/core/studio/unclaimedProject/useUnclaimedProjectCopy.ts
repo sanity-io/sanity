@@ -134,5 +134,5 @@ export function useUnclaimedProjectCopy(enabled: boolean): UnclaimedProjectCopy 
     )
   }, [client, enabled, localCopyUrl])
 
-  return useObservable(copy$)
+  return useObservable(copy$, undefined)
 }

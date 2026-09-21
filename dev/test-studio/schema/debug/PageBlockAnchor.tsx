@@ -1,9 +1,9 @@
 import {LinkIcon} from '@sanity/icons/Link'
-import {Button, Flex} from '@sanity/ui'
+import {Button} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback} from 'react'
 import {type ObjectItemProps, type Slug, useFormValue} from 'sanity'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 export function PageBlockAnchor(props: ObjectItemProps) {
   const slug = useFormValue(['slug']) as Slug | undefined
@@ -34,7 +34,7 @@ export function PageBlockAnchor(props: ObjectItemProps) {
   }, [hash, slug, toast])
 
   return (
-    <Flex gap={3} paddingRight={2} align="center">
+    <Flex gap={3} paddingRight={2} alignItems="center">
       <Box flexBasis="0%" flexGrow={1}>
         {props.renderDefault(props)}
       </Box>
