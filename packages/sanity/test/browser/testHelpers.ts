@@ -883,6 +883,15 @@ export function testHelpers() {
         })
         .toBe(true)
 
+      // Floating UI positions an overlay when it opens and then only on
+      // scroll / resize of the elements it observes. An overlay opened while
+      // its boundary was still laying out therefore keeps that first position
+      // for the rest of the test: stable, but computed against a layout that
+      // no longer exists, and a few tenths of a pixel away from where the
+      // same code positions it in the next run. Ask every `autoUpdate`
+      // subscriber to recompute against the final layout before sampling.
+      window.dispatchEvent(new Event('resize'))
+
       // Floating chrome, menus, dialogs and the PTE toolbar must stop moving —
       // and, if they were open before parking, must still be open. An empty
       // signature (hidden or unmounted) never counts as stable, so a popover

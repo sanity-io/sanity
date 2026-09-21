@@ -115,12 +115,15 @@ function Harness() {
 }
 
 async function openLinkAnnotation() {
-  const {getFocusedPortableTextEditor, insertPortableText} = testHelpers()
+  const {extendPortableTextSelection, getFocusedPortableTextEditor, insertPortableText} =
+    testHelpers()
   void render(<Harness />)
   const $pte = await getFocusedPortableTextEditor('field-body')
 
   await insertPortableText('Portal boundary link', $pte)
-  await userEvent.keyboard('{Shift>}{ArrowLeft}{ArrowLeft}{ArrowLeft}{ArrowLeft}{/Shift}')
+  // One Shift+ArrowLeft per editor sync window: four presses in a row race the
+  // editor's throttled selection sync, which annotated just "k" in some runs.
+  await extendPortableTextSelection('link', {reverse: true})
   await page.getByRole('button', {name: 'Link'}).click()
 
   const $linkInput = page.getByTestId('popover-edit-dialog').getByLabelText('Link')
