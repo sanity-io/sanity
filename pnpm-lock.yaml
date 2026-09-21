@@ -625,7 +625,7 @@ importers:
         specifier: 'catalog:'
         version: 6.1.3
       tsx:
-        specifier: ^4.23.13
+        specifier: ^4.23.15
         version: 4.23.15
       vitest:
         specifier: ^4.1.11
@@ -730,7 +730,7 @@ importers:
         specifier: 'catalog:'
         version: 4.1.11(playwright@1.63.0)(vite@8.3.0)(vitest@4.1.11)
       chromatic:
-        specifier: ^18.7.4
+        specifier: ^18.9.4
         version: 18.9.4(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.1)
       oxc-transform-react:
         specifier: 'catalog:'
@@ -824,10 +824,10 @@ importers:
         specifier: workspace:*
         version: link:../../packages/sanity
       sanity-plugin-internationalized-array:
-        specifier: ^5.2.4
+        specifier: ^5.3.0
         version: 5.3.0(@sanity/assist@6.2.0)(@sanity/language-filter@5.0.18)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
       sanity-plugin-media:
-        specifier: ^6.1.8
+        specifier: ^6.2.0
         version: 6.2.0(@types/react@19.3.0)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)(supports-color@8.1.1)(vitest@4.1.11)
       sanity-test-studio:
         specifier: workspace:*
@@ -883,8 +883,8 @@ importers:
         specifier: ^6.0.0
         version: 6.0.0
       '@sanity/assist':
-        specifier: ^6.1.21
-        version: 6.2.0(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)(vitest@4.1.11)
+        specifier: ^6.2.1
+        version: 6.2.1(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)(vitest@4.1.11)
       '@sanity/client':
         specifier: 'catalog:'
         version: 8.6.2(vitest@4.1.11)
@@ -895,8 +895,8 @@ importers:
         specifier: ^2.0.21
         version: 2.0.21(@sanity/client@8.6.2)(react@19.3.0)(sanity@packages+sanity)
       '@sanity/document-internationalization':
-        specifier: ^6.2.35
-        version: 6.2.36(react-dom@19.3.0)(react@19.3.0)(sanity-plugin-internationalized-array@5.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
+        specifier: ^6.2.37
+        version: 6.2.37(react-dom@19.3.0)(react@19.3.0)(sanity-plugin-internationalized-array@5.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
       '@sanity/google-maps-input':
         specifier: ^6.1.13
         version: 6.1.13(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
@@ -985,10 +985,10 @@ importers:
         specifier: ^7.0.25
         version: 7.0.25(@types/react@19.3.0)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
       sanity-plugin-internationalized-array:
-        specifier: ^5.2.4
-        version: 5.3.0(@sanity/assist@6.2.0)(@sanity/language-filter@5.0.18)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
+        specifier: ^5.3.0
+        version: 5.3.0(@sanity/assist@6.2.1)(@sanity/language-filter@5.0.18)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
       sanity-plugin-media:
-        specifier: ^6.1.8
+        specifier: ^6.2.0
         version: 6.2.0(@types/react@19.3.0)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)(supports-color@8.1.1)(vitest@4.1.11)
       styled-components:
         specifier: 'catalog:'
@@ -1013,20 +1013,20 @@ importers:
         specifier: 'catalog:'
         version: 1.21.2(babel-plugin-macros@3.1.0)
       '@vitejs/devtools':
-        specifier: ^0.7.3
+        specifier: ^0.7.5
         version: 0.7.5(@devframes/json-render@1.0.0)(@vitejs/devtools-oxc@0.7.5)(@vitejs/devtools-rolldown@0.7.5)(@vitejs/devtools-vite@0.7.5)(crossws@0.4.12)(srvx@1.0.5)(vite@8.3.0)
       '@vitejs/devtools-oxc':
-        specifier: ^0.7.3
+        specifier: ^0.7.5
         version: 0.7.5(@devframes/agentic@1.0.0)(crossws@0.4.12)(srvx@1.0.5)(vite@8.3.0)
       '@vitejs/devtools-rolldown':
-        specifier: ^0.7.3
+        specifier: ^0.7.5
         version: 0.7.5(@devframes/agentic@1.0.0)(cac@7.0.0)(crossws@0.4.12)(srvx@1.0.5)(vite@8.3.0)
       '@vitejs/devtools-vite':
-        specifier: ^0.7.3
+        specifier: ^0.7.5
         version: 0.7.5(@devframes/agentic@1.0.0)(cac@7.0.0)(crossws@0.4.12)(srvx@1.0.5)(vite@8.3.0)
       agent-react-devtools:
-        specifier: ^0.4.0
-        version: 0.4.0(react-devtools-core@8.0.0)(supports-color@8.1.1)(vite@8.3.0)
+        specifier: ^0.5.0
+        version: 0.5.0(react-devtools-core@8.0.0)(supports-color@8.1.1)(vite@8.3.0)
       oxc-transform-react:
         specifier: 'catalog:'
         version: 0.149.0
@@ -1037,7 +1037,7 @@ importers:
         specifier: 'catalog:'
         version: 6.1.3
       tsx:
-        specifier: ^4.23.13
+        specifier: ^4.23.15
         version: 4.23.15
       vite:
         specifier: 'catalog:'
@@ -7127,6 +7127,15 @@ packages:
       sanity: ^5 || ^6.0.0-0
       styled-components: ^6.1
 
+  '@sanity/assist@6.2.1':
+    resolution: {integrity: sha512-mU6jzaORyfrjbHH7jBCa24d10PZ5Yt3Wa8n3t56/OPqweRXPCT6mVVGL6wAj8X/HarqfYTS2J5a9THqRINExsQ==}
+    engines: {node: '>=20.19 <22 || >=22.12'}
+    peerDependencies:
+      react: ^19.2
+      react-dom: ^19.2
+      sanity: ^5 || ^6.0.0-0
+      styled-components: ^6.1
+
   '@sanity/bifur-client@1.0.0':
     resolution: {integrity: sha512-4cy7RytpkR0wm08EzEx9tL3XwoH7FqnAb9aUNskLmwpWzkFSs34amh19BvUq1TujmEqwCGLJARa+QWpOCoWpjw==}
     engines: {node: '>=20.19'}
@@ -7251,14 +7260,14 @@ packages:
     resolution: {integrity: sha512-oJ5kZQV6C/DAlcpRLEU7AcVWXrSPuJb3Z1TQ9tm/qZOVWJENwWln45jtepQEYolTIuGx9jUlhYUi3hGIkOt8RA==}
     engines: {node: '>=18.2'}
 
-  '@sanity/document-internationalization@6.2.36':
-    resolution: {integrity: sha512-6sWCimlITqQAi1bk4MTd0i/LTdaxQFsIN7Y8am/CIocrBXQVwpAw75LYOT6mYQCUrBKhK+cL4aHygBC0MRNEcQ==}
+  '@sanity/document-internationalization@6.2.37':
+    resolution: {integrity: sha512-CSdKFTIUUppToDdYz4hgh199PVaS0h91AuPUyZc33pF62HPowQ2ofy7VFMv9Jd9sLZYsuFD/uENWLI51RwCeKg==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       react: ^19.2
       react-dom: ^19.2
       sanity: ^5 || ^6.0.0-0
-      sanity-plugin-internationalized-array: ^5.3.0
+      sanity-plugin-internationalized-array: ^5.3.1
 
   '@sanity/eslint-plugin-i18n@1.1.0':
     resolution: {integrity: sha512-EpoqPVqaP2NSmG8vGa4zsD6BuyBTVHwmD3VigOya7roHB8GZXuJjDg6+SXzhb+cTVuZtWaAjt8NMYVYx4uWCIQ==}
@@ -8966,14 +8975,17 @@ packages:
     resolution: {integrity: sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==}
     engines: {node: '>= 14'}
 
-  agent-react-devtools@0.4.0:
-    resolution: {integrity: sha512-nq5VgJH/lRJOGd1kCQW3+hjzNLfv4vYrhZtpC5k554MthTGJnZ9PqVZf6tx5N++YVJsWUsyuDG/S2nOfUlHi0Q==}
+  agent-react-devtools@0.5.0:
+    resolution: {integrity: sha512-JaMnlIAqOySUrqyhiETZgJ8d9UFxyx5bdBw+EvCWQ2mevzCV2Pv3Ix7WEKbp/Q0uWO/BBdfyvae4jxwBFBf7qA==}
     hasBin: true
     peerDependencies:
       react-devtools-core: '>=5.0.0'
+      react-native: '>=0.0.0'
       vite: '>=5.0.0'
     peerDependenciesMeta:
       react-devtools-core:
+        optional: true
+      react-native:
         optional: true
       vite:
         optional: true
@@ -19481,6 +19493,27 @@ snapshots:
       styled-components: 6.5.3(react-dom@19.3.0)(react@19.3.0)
     transitivePeerDependencies:
       - vitest
+    optional: true
+
+  '@sanity/assist@6.2.1(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)(vitest@4.1.11)':
+    dependencies:
+      '@portabletext/types': 4.0.2
+      '@sanity/client': 8.6.2(vitest@4.1.11)
+      '@sanity/color': 3.0.8
+      '@sanity/icons': 5.2.2(react@19.3.0)
+      '@sanity/mutator': link:packages/@sanity/mutator
+      '@sanity/ui': 4.2.1(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
+      date-fns: 4.4.0
+      dequal: 2.0.3
+      lodash-es: 4.18.1
+      react: 19.3.0
+      react-dom: 19.3.0(react@19.3.0)
+      rxjs: 7.8.2
+      rxjs-exhaustmap-with-trailing: 2.1.1(rxjs@7.8.2)
+      sanity: link:packages/sanity
+      styled-components: 6.5.3(react-dom@19.3.0)(react@19.3.0)
+    transitivePeerDependencies:
+      - vitest
 
   '@sanity/bifur-client@1.0.0':
     dependencies:
@@ -19811,7 +19844,7 @@ snapshots:
     dependencies:
       '@sanity/diff-match-patch': 3.2.1
 
-  '@sanity/document-internationalization@6.2.36(react-dom@19.3.0)(react@19.3.0)(sanity-plugin-internationalized-array@5.3.0)(sanity@packages+sanity)(styled-components@6.5.3)':
+  '@sanity/document-internationalization@6.2.37(react-dom@19.3.0)(react@19.3.0)(sanity-plugin-internationalized-array@5.3.0)(sanity@packages+sanity)(styled-components@6.5.3)':
     dependencies:
       '@sanity/icons': 5.2.2(react@19.3.0)
       '@sanity/mutator': link:packages/@sanity/mutator
@@ -19822,7 +19855,7 @@ snapshots:
       react-dom: 19.3.0(react@19.3.0)
       rxjs: 7.8.2
       sanity: link:packages/sanity
-      sanity-plugin-internationalized-array: 5.3.0(@sanity/assist@6.2.0)(@sanity/language-filter@5.0.18)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
+      sanity-plugin-internationalized-array: 5.3.0(@sanity/assist@6.2.1)(@sanity/language-filter@5.0.18)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
       sanity-plugin-utils: 2.0.18(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
     transitivePeerDependencies:
       - styled-components
@@ -21821,7 +21854,7 @@ snapshots:
 
   agent-base@7.1.4: {}
 
-  agent-react-devtools@0.4.0(react-devtools-core@8.0.0)(supports-color@8.1.1)(vite@8.3.0):
+  agent-react-devtools@0.5.0(react-devtools-core@8.0.0)(supports-color@8.1.1)(vite@8.3.0):
     dependencies:
       '@modelcontextprotocol/sdk': 1.30.0(supports-color@8.1.1)(zod@3.25.76)
       ws: 8.21.3
@@ -26808,6 +26841,21 @@ snapshots:
       sanity: link:packages/sanity
     optionalDependencies:
       '@sanity/assist': 6.2.0(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)(vitest@4.1.11)
+    transitivePeerDependencies:
+      - styled-components
+
+  sanity-plugin-internationalized-array@5.3.0(@sanity/assist@6.2.1)(@sanity/language-filter@5.0.18)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3):
+    dependencies:
+      '@sanity/icons': 5.2.2(react@19.3.0)
+      '@sanity/language-filter': 5.0.18(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
+      '@sanity/ui': 4.2.1(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
+      '@sanity/util': link:packages/@sanity/util
+      lodash-es: 4.18.1
+      react: 19.3.0
+      react-dom: 19.3.0(react@19.3.0)
+      sanity: link:packages/sanity
+    optionalDependencies:
+      '@sanity/assist': 6.2.1(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)(vitest@4.1.11)
     transitivePeerDependencies:
       - styled-components
 
