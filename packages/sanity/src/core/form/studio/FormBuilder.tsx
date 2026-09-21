@@ -181,13 +181,6 @@ export function FormBuilder(props: FormBuilderProps) {
   const InlineBlock = useInlineBlockComponent()
   const Annotation = useAnnotationComponent()
 
-  // No boundary per node: form nodes have unpredictable heights, so a lazy form component owns
-  // its own `<Suspense>` with a fallback sized for what it renders. The one boundary is around
-  // the root input below, so a lazy component without one (core plugins register lazy input and
-  // field middleware) suspends the form rather than the pane that renders it. The form mounts
-  // into a pane that has already committed; hiding that pane would detach the refs it keeps in
-  // state, and a pane that gates on those elements would drop the form, re-show, remount it and
-  // suspend again in a loop.
   const renderInput = useCallback(
     (inputProps: Omit<InputProps, 'renderDefault'>) => (
       <FormBuilderInputErrorBoundary>
@@ -354,6 +347,9 @@ export function FormBuilder(props: FormBuilderProps) {
               <DialogStackProvider>
                 {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
                 <EnhancedObjectDialogProvider>
+                  {/* Form nodes have no fixed size, so a lazy form component brings its own boundary.
+                      This one catches the rest: suspending the pane instead would hide it after it
+                      committed, detach the refs it keeps in state, and remount the form in a loop. */}
                   <Suspense fallback={<LoadingBlock showText />}>
                     <RootInput
                       rootInputProps={rootInputProps}

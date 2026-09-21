@@ -44,12 +44,10 @@ function _createMiddlewareComponent<T extends {}>(
  *   The `renderDefault` function is added to the props of the middleware components so that they can render the default
  *   component and continue the middleware chain.
  *
- * The returned component has no Suspense boundary of its own. Middleware is often `lazy()`
- * (core plugins register lazy field, input, layout and navbar components), so the site that
- * renders the returned component either wraps it in `<Suspense>` with a fallback shaped like the
- * component it stands in for, or, where no fallback can know the right size (form nodes), leaves
- * it to the lazy component's own `<Suspense>` and to the one boundary `FormBuilder` keeps around
- * the whole form.
+ * The returned component has no Suspense boundary of its own. Middleware is often `lazy()`, so
+ * the render site wraps it in `<Suspense>` with a fallback shaped like the component it stands in
+ * for. Form nodes are the exception: no fallback knows their size, so they suspend up to the one
+ * boundary `FormBuilder` keeps around the whole form.
  *
  * @example
  * Example usage of:
