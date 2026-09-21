@@ -3,27 +3,15 @@ import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {Button} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {useCallback, useRef, useState} from 'react'
-import {styled} from 'styled-components'
 
 import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
 import {CreateReleaseDialog} from '../../releases/components/dialog/CreateReleaseDialog'
 import {useReleasesUpsell} from '../../releases/contexts/upsell/useReleasesUpsell'
-import {oversizedButtonStyle} from '../styles'
+import {oversizedButtonStyle} from '../styles.css'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
+import {styledMenu} from './GlobalPerspectiveMenu.css'
 import {ReleasesList} from './ReleasesList'
 import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
-
-const StyledMenu = styled(Menu)`
-  min-width: 200px;
-  max-width: 320px;
-  /* Remove the default menu gap*/
-  > [data-ui='Stack'] {
-    gap: 0;
-  }
-`
-const OversizedButton = styled(Button)`
-  ${oversizedButtonStyle}
-`
 
 export function GlobalPerspectiveMenu({
   selectedPerspectiveName,
@@ -64,7 +52,8 @@ export function GlobalPerspectiveMenu({
       <MenuButton
         button={
           trigger ?? (
-            <OversizedButton
+            <Button
+              className={oversizedButtonStyle}
               data-testid="global-perspective-menu-button"
               iconRight={ChevronDownIcon}
               mode="bleed"
@@ -76,7 +65,7 @@ export function GlobalPerspectiveMenu({
         id="releases-menu"
         onClose={resetRangeVisibility}
         menu={
-          <StyledMenu data-testid="release-menu" ref={styledMenuRef} padding={0}>
+          <Menu className={styledMenu} data-testid="release-menu" ref={styledMenuRef} padding={0}>
             <ReleasesList
               areReleasesEnabled={areReleasesEnabled}
               setScrollContainer={setScrollContainer}
@@ -86,7 +75,7 @@ export function GlobalPerspectiveMenu({
               handleOpenBundleDialog={handleOpenBundleDialog}
               menuItemProps={menuItemProps}
             />
-          </StyledMenu>
+          </Menu>
         }
         popover={{
           __unstable_margins: [0, 0, 32, 0],
