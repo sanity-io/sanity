@@ -7,6 +7,9 @@ import {
   formatTick,
   formatValue,
   settleViews,
+  styleLabel,
+  styleScenario,
+  styleViews,
   type TrendRun,
   type TrendSeries,
   vitalSections,
@@ -646,4 +649,206 @@ test('settle views split the group by question and drop empty views', () => {
   // Every settle series lands in exactly one view; none are lost
   expect(views.flatMap((view) => view.series).length).toBe(settle.length)
   expect(settleViews([])).toEqual([])
+})
+
+/**
+ * A run whose scenario reports carry the style-migration rows — as the
+ * interaction shard and the pageload shard of one scenario both do, plus a
+ * settle report of another scenario.
+ */
+function styleRun(options: {
+  id: string
+  sha: string
+  day: number
+  /** Omit the UI v5 rows, as a build without @sanity/ui v5 records them. */
+  ui5Available?: boolean
+  share?: number
+  styled?: number
+  /** Second report of the same scenario (a pageload shard), with its own styled count. */
+  pageloadStyled?: number
+}): TrendRun {
+  const {id, sha, day, ui5Available = true, share = 35, styled = 378, pageloadStyled} = options
+  const summary = (value: number) => ({summary: {median: value, p75: value, p90: value}})
+  const rows = (styledInstances: number) => [
+    ...(ui5Available
+      ? [
+          {label: 'UI v5 share', unit: 'percent' as const, experiment: summary(share)},
+          {label: 'UI v5 instances', unit: 'count' as const, experiment: summary(1081)},
+        ]
+      : []),
+    {label: 'UI v4 instances', unit: 'count' as const, experiment: summary(2023)},
+    {
+      label: 'styled-components instances',
+      unit: 'count' as const,
+      experiment: summary(styledInstances),
+    },
+    {label: 'styled-components CSS bytes', unit: 'bytes' as const, experiment: summary(794_690)},
+  ]
+  const styles = {experiment: {ui5Available, styledComponentsVersion: '6.5.3'}}
+  return {
+    _id: id,
+    startedAt: new Date(START + day * DAY).toISOString(),
+    mode: 'absolute',
+    git: {sha, branch: 'main', committedAt: new Date(START + day * DAY).toISOString()},
+    runner: {calibrationMs: 8, runId: id, runAttempt: 1},
+    bundle: null,
+    scenarios: [
+      {
+        scenario: 'singleString',
+        kind: 'interaction',
+        metrics: [{label: 'stringField', unit: 'ms', experiment: summary(32)}, ...rows(styled)],
+        styles,
+      },
+      ...(pageloadStyled === undefined
+        ? []
+        : [
+            {
+              scenario: 'singleString',
+              kind: 'pageload' as const,
+              metrics: [
+                {label: 'boot-cold · LCP', unit: 'ms' as const, experiment: summary(1800)},
+                ...rows(pageloadStyled),
+              ],
+              styles,
+            },
+          ]),
+      {
+        scenario: 'previewHeavy',
+        kind: 'pageload',
+        mode: 'settle',
+        settleExpectation: {expectedToSettle: false},
+        metrics: [
+          {label: 'sessions not settled', unit: 'count', experiment: summary(4)},
+          ...rows(900),
+        ],
+        styles,
+      },
+    ],
+  }
+}
+
+test('style rows chart under the styles group, keyed per scenario regardless of mode', () => {
+  const series = buildSeries([styleRun({id: 'a', sha: 'sha-1', day: 0})])
+  const styles = series.filter((entry) => entry.group === 'styles')
+  const keys = styles.map((entry) => entry.key)
+  expect(keys).toContain('styles:singleString:UI v5 share')
+  expect(keys).toContain('styles:singleString:styled-components instances')
+  // The settle report's rows are style rows too — not settle series
+  expect(keys).toContain('styles:previewHeavy:styled-components instances')
+  expect(keys.some((key) => key.startsWith('settle:') && key.includes('styled'))).toBe(false)
+  // …and the settle scenario's own tripwire is untouched
+  expect(series.map((entry) => entry.key)).toContain('settle:previewHeavy:sessions not settled')
+  // The evidence note belongs to settle series, never to a style row
+  for (const entry of styles) expect(entry.description).not.toContain('RED BY DESIGN')
+})
+
+test('style rows read the registry: adoption climbs, the escape hatch sinks', () => {
+  const series = buildSeries([styleRun({id: 'a', sha: 'sha-1', day: 0})])
+  const goalOf = (key: string) => series.find((entry) => entry.key === key)?.goal
+  expect(goalOf('styles:singleString:UI v5 share')).toBe('higher')
+  expect(goalOf('styles:singleString:UI v5 instances')).toBe('higher')
+  expect(goalOf('styles:singleString:UI v4 instances')).toBe('lower')
+  expect(goalOf('styles:singleString:styled-components instances')).toBe('lower')
+  expect(goalOf('styles:singleString:styled-components CSS bytes')).toBe('lower')
+  const share = series.find((entry) => entry.key === 'styles:singleString:UI v5 share')
+  expect(share?.unit).toBe('percent')
+  expect(share?.description).toContain('not applicable, not 0%')
+})
+
+test('the interaction and pageload shards of one scenario merge into one style point', () => {
+  const series = buildSeries([
+    styleRun({id: 'a', sha: 'sha-1', day: 0, styled: 378, pageloadStyled: 380}),
+  ])
+  const styled = series.find(
+    (entry) => entry.key === 'styles:singleString:styled-components instances',
+  )
+  expect(styled?.lines[0].points).toHaveLength(1)
+  // Median of the two shards' counts
+  expect(styled?.lines[0].points[0].value).toBe(379)
+  // The LCP row keeps its own pageload key, as before
+  expect(series.map((entry) => entry.key)).toContain('pageload:singleString:boot-cold · LCP')
+})
+
+test('a build without @sanity/ui v5 leaves a gap in the adoption series, never a 0% point', () => {
+  const series = buildSeries([
+    styleRun({id: 'a', sha: 'sha-1', day: 0, ui5Available: false}),
+    styleRun({id: 'b', sha: 'sha-2', day: 1, ui5Available: false}),
+    styleRun({id: 'c', sha: 'sha-3', day: 2, share: 3}),
+    styleRun({id: 'd', sha: 'sha-4', day: 3, share: 5}),
+  ])
+  const share = series.find((entry) => entry.key === 'styles:singleString:UI v5 share')
+  expect(share?.lines[0].points.map((point) => point.value)).toEqual([3, 5])
+  // The v4 backlog and the styled-components rows cover every run
+  const v4 = series.find((entry) => entry.key === 'styles:singleString:UI v4 instances')
+  expect(v4?.lines[0].points).toHaveLength(4)
+  const styled = series.find(
+    (entry) => entry.key === 'styles:singleString:styled-components instances',
+  )
+  expect(styled?.lines[0].points).toHaveLength(4)
+})
+
+test('style points carry the styled-components version, other points do not', () => {
+  const series = buildSeries([styleRun({id: 'a', sha: 'sha-1', day: 0})])
+  const styled = series.find(
+    (entry) => entry.key === 'styles:singleString:styled-components instances',
+  )
+  expect(styled?.lines[0].points[0].styledComponentsVersion).toBe('6.5.3')
+  const keystroke = series.find((entry) => entry.key === 'interaction:singleString:stringField')
+  expect(keystroke?.lines[0].points[0].styledComponentsVersion).toBeUndefined()
+})
+
+test('style views split the group by migration, one section per registry metric', () => {
+  const styles = buildSeries(generateDebugRuns('demo')).filter((entry) => entry.group === 'styles')
+  const views = styleViews(styles)
+  expect(views.map((view) => view.id)).toEqual(['ui5', 'styled'])
+  const labelsOf = (id: string) =>
+    views.find((view) => view.id === id)?.sections.map((section) => section.metric.label)
+  expect(labelsOf('ui5')).toEqual(['UI v5 share', 'UI v5 instances', 'UI v4 instances'])
+  expect(labelsOf('styled')).toEqual([
+    'styled-components instances',
+    'styled-components components',
+    'styled-components CSS rules',
+    'styled-components CSS bytes',
+    'styled-components CSS rule share',
+    'styled-components style tags',
+  ])
+  // Every style series lands in exactly one section; none are lost
+  expect(views.flatMap((view) => view.sections.flatMap((section) => section.series)).length).toBe(
+    styles.length,
+  )
+  // A section holds one card per scenario, titled by scenario
+  const shareSection = views[0].sections[0]
+  expect(shareSection.series.map(styleScenario)).toEqual([
+    'article',
+    'recipe',
+    'singleString',
+    'synthetic',
+  ])
+  expect(shareSection.series.every((entry) => styleLabel(entry) === 'UI v5 share')).toBe(true)
+  expect(styleViews([])).toEqual([])
+})
+
+test('demo data tells the migration story: no v5 rows before it ships, adoption climbing after', () => {
+  const styles = buildSeries(generateDebugRuns('demo')).filter((entry) => entry.group === 'styles')
+  const share = styles.find((entry) => entry.key === 'styles:singleString:UI v5 share')
+  const v4 = styles.find((entry) => entry.key === 'styles:singleString:UI v4 instances')
+  const main = (entry?: TrendSeries) =>
+    entry?.lines.find((line) => line.branch === 'main')?.points ?? []
+  // Ten days without v5 rows — the v4 backlog is recorded for every run
+  expect(main(share).length).toBe(main(v4).length - 10)
+  const values = main(share).map((point) => point.value)
+  expect(values[0]).toBeGreaterThan(0)
+  expect(values[0]).toBeLessThan(10)
+  expect(values.at(-1)).toBeGreaterThan(55)
+  // and the escape hatch shrinks
+  const styled = main(
+    styles.find((entry) => entry.key === 'styles:singleString:styled-components instances'),
+  )
+  expect(styled.at(-1)!.value).toBeLessThan(styled[0].value)
+})
+
+test('percent values render as whole percents', () => {
+  expect(formatValue(34.826, 'percent')).toBe('35%')
+  expect(formatValue(0, 'percent')).toBe('0%')
+  expect(formatTick(66.6, 'percent')).toBe('67%')
 })

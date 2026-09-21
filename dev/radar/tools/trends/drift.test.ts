@@ -66,6 +66,31 @@ test('improvement fires as improvement', () => {
 })
 
 // Below the relative floor: 320 → 330 is ~3% < 5%
+// A higher-is-better series (UI v5 adoption share): the same rise that is a
+// regression on a latency chart is the improvement here, and a drop regresses
+test('higher-is-better series read a rise as an improvement and a drop as a regression', () => {
+  const rise = [...Array.from({length: 21}, () => 30), ...Array.from({length: 9}, () => 42)]
+  const up = computeDrift([series(rise, {unit: 'percent', goal: 'higher'})])
+  expect(flagged(up)).toHaveLength(1)
+  expect(up[0].direction).toBe('improvement')
+  expect(up[0].baseline.delta).toBe(12)
+
+  const drop = [...Array.from({length: 21}, () => 42), ...Array.from({length: 9}, () => 30)]
+  const down = computeDrift([series(drop, {unit: 'percent', goal: 'higher'})])
+  expect(flagged(down)).toHaveLength(1)
+  expect(down[0].direction).toBe('regression')
+  expect(down[0].baseline.delta).toBe(-12)
+})
+
+// One whole point is the floor for a share; a 0.5-point move on a 35% share
+// clears neither floor
+test('percent metric needs a whole point to move', () => {
+  const tiny = [...Array.from({length: 21}, () => 35), ...Array.from({length: 9}, () => 35.5)]
+  expect(flagged(computeDrift([series(tiny, {unit: 'percent', goal: 'higher'})]))).toHaveLength(0)
+  const point = [...Array.from({length: 21}, () => 35), ...Array.from({length: 9}, () => 37)]
+  expect(flagged(computeDrift([series(point, {unit: 'percent', goal: 'higher'})]))).toHaveLength(1)
+})
+
 test('sub-threshold move stays quiet', () => {
   const values = [...Array.from({length: 21}, () => 320), ...Array.from({length: 9}, () => 330)]
   const drift = computeDrift([series(values)])

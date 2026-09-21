@@ -75,7 +75,7 @@ function metric(
   rng: () => number,
   label: string,
   median: number,
-  unit: 'ms' | 'count' | 'cls' = 'ms',
+  unit: 'ms' | 'count' | 'cls' | 'bytes' | 'percent' = 'ms',
 ): NonNullable<NonNullable<TrendRun['scenarios']>[number]['metrics']>[number] {
   return {
     label,
@@ -88,6 +88,71 @@ function metric(
 }
 
 type DemoScenario = NonNullable<TrendRun['scenarios']>[number]
+
+/** The day the demo's build starts shipping @sanity/ui v5 — earlier runs record no adoption rows. */
+const UI5_ARRIVES_DAY = 10
+
+/**
+ * The style-migration rows of one scenario page (see STYLE_METRICS in
+ * @repo/utils/style-systems), telling the migration story the tab exists to
+ * show: no @sanity/ui v5 in the build for the first ten days (the rows are
+ * absent, never 0%), then an S-curve of adoption climbing past 60% as the v4
+ * count falls by the same amount, while the styled-components escape hatch
+ * — instances, components, inserted CSS — shrinks week over week. A
+ * styled-components version bump lands at day 60 so the version context has
+ * something to show. `scale` sizes the page (an article renders more than a
+ * single string field); the base magnitudes are a local bench run of
+ * singleString (900 @sanity/ui nodes, 98 styled nodes, ~950 inserted rules).
+ */
+function styleRows(
+  rng: () => number,
+  day: number,
+  scale: number,
+): {metrics: NonNullable<DemoScenario['metrics']>; styles: DemoScenario['styles']} {
+  const ui5Available = day >= UI5_ARRIVES_DAY
+  const uiTotal = Math.round(900 * scale)
+  // Logistic adoption: ~3% on arrival, 50% around day 55, flattening near 65%
+  const adoption = ui5Available ? 0.65 / (1 + Math.exp(-(day - 55) / 9)) : 0
+  const ui5 = Math.round(uiTotal * adoption)
+  const ui4 = uiTotal - ui5
+  const progress = ui5Available ? (day - UI5_ARRIVES_DAY) / (DAYS - UI5_ARRIVES_DAY) : 0
+  // The escape hatch shrinks roughly linearly as components migrate
+  const styledInstances = Math.round((98 - 45 * progress) * scale + (rng() - 0.5) * 2)
+  const styledComponents = Math.round((50 - 22 * progress) * scale)
+  const cssRules = Math.round(950 - 480 * progress)
+  const totalRules = 2050 - 250 * progress
+  const cssBytes = Math.round(648_000 - 330_000 * progress)
+  const version = day < 60 ? '6.1.15' : '6.5.3'
+  return {
+    metrics: [
+      ...(ui5Available
+        ? [
+            metric(rng, 'UI v5 share', (ui5 / uiTotal) * 100, 'percent'),
+            metric(rng, 'UI v5 instances', ui5, 'count'),
+          ]
+        : []),
+      metric(rng, 'UI v4 instances', ui4, 'count'),
+      metric(rng, 'styled-components instances', styledInstances, 'count'),
+      metric(rng, 'styled-components components', styledComponents, 'count'),
+      metric(rng, 'styled-components CSS rules', cssRules, 'count'),
+      metric(rng, 'styled-components CSS bytes', cssBytes, 'bytes'),
+      metric(rng, 'styled-components CSS rule share', (cssRules / totalRules) * 100, 'percent'),
+      metric(rng, 'styled-components style tags', 1, 'count'),
+    ],
+    styles: {experiment: {ui5Available, styledComponentsVersion: version}},
+  }
+}
+
+/** Append the style rows to a scenario's own metrics. */
+function withStyleRows(
+  scenario: DemoScenario,
+  rng: () => number,
+  day: number,
+  scale: number,
+): DemoScenario {
+  const rows = styleRows(rng, day, scale)
+  return {...scenario, metrics: [...(scenario.metrics ?? []), ...rows.metrics], styles: rows.styles}
+}
 
 function settleScenarios(rng: () => number, day: number): DemoScenario[] {
   const settle = (
@@ -180,56 +245,85 @@ function generateDemo(branch = 'main', shift = 0): TrendRun[] {
         },
       },
       scenarios: [
-        {
-          scenario: 'singleString',
-          sourceFile: 'perf/bench/scenarios/singleString.ts',
-          kind: 'interaction',
-          metrics: [metric(rng, 'stringField', 32 + shift)], // steady (branch offset)
-        },
-        {
-          scenario: 'article',
-          sourceFile: 'perf/bench/scenarios/article.ts',
-          kind: 'interaction',
-          metrics: [
-            metric(rng, 'title', 30 + day * 0.09), // slow drift up
-            metric(rng, 'body', day < 60 ? 36 : 44), // step regression at day 60
-          ],
-        },
-        {
-          scenario: 'recipe',
-          sourceFile: 'perf/bench/scenarios/recipe.ts',
-          kind: 'interaction',
-          metrics: [metric(rng, 'name', day < 45 ? 40 : 33)], // improvement at day 45
-        },
-        {
-          scenario: 'synthetic',
-          sourceFile: 'perf/bench/scenarios/synthetic.ts',
-          kind: 'interaction',
-          // Tracks host speed — read against the calibration strip
-          metrics: [metric(rng, 'title', 34 * hostFactor)],
-        },
-        {
-          scenario: 'singleString',
-          sourceFile: 'perf/bench/scenarios/singleString.ts',
-          kind: 'pageload',
-          // CI measures two load conditions — boot-cold (first visit) and
-          // open-doc-warm (cached) — so demo both. Warm is faster (cache hits).
-          metrics: [
-            metric(rng, 'boot-cold · time to editable', day < 70 ? 4200 : 4600),
-            metric(rng, 'boot-cold · FCP', 1200 + (rng() - 0.5) * 200),
-            metric(rng, 'boot-cold · LCP', 1800 + (rng() - 0.5) * 300),
-            metric(rng, 'boot-cold · CLS', 0.04 + rng() * 0.03, 'cls'),
-            metric(rng, 'boot-cold · main-thread blocking', 620 + (rng() - 0.5) * 120),
-            // The auth story: a serialized round trip removed at day 50
-            metric(rng, 'boot-cold · auth round trips', day < 50 ? 2 : 1, 'count'),
-            metric(rng, 'boot-cold · auth in flight', day < 50 ? 84 : 42),
-            metric(rng, 'open-doc-warm · time to editable', day < 70 ? 1900 : 2100),
-            metric(rng, 'open-doc-warm · FCP', 520 + (rng() - 0.5) * 90),
-            metric(rng, 'open-doc-warm · LCP', 780 + (rng() - 0.5) * 140),
-            metric(rng, 'open-doc-warm · CLS', 0.01 + rng() * 0.015, 'cls'),
-            metric(rng, 'open-doc-warm · main-thread blocking', 240 + (rng() - 0.5) * 60),
-          ],
-        },
+        // Every scenario that opens a document carries the style census rows
+        // (interaction and pageload shards of one scenario count the same
+        // page, so their rows merge into one series per scenario — see
+        // buildSeries)
+        withStyleRows(
+          {
+            scenario: 'singleString',
+            sourceFile: 'perf/bench/scenarios/singleString.ts',
+            kind: 'interaction',
+            metrics: [metric(rng, 'stringField', 32 + shift)], // steady (branch offset)
+          },
+          rng,
+          day,
+          1,
+        ),
+        withStyleRows(
+          {
+            scenario: 'article',
+            sourceFile: 'perf/bench/scenarios/article.ts',
+            kind: 'interaction',
+            metrics: [
+              metric(rng, 'title', 30 + day * 0.09), // slow drift up
+              metric(rng, 'body', day < 60 ? 36 : 44), // step regression at day 60
+            ],
+          },
+          rng,
+          day,
+          1.6,
+        ),
+        withStyleRows(
+          {
+            scenario: 'recipe',
+            sourceFile: 'perf/bench/scenarios/recipe.ts',
+            kind: 'interaction',
+            metrics: [metric(rng, 'name', day < 45 ? 40 : 33)], // improvement at day 45
+          },
+          rng,
+          day,
+          1.3,
+        ),
+        withStyleRows(
+          {
+            scenario: 'synthetic',
+            sourceFile: 'perf/bench/scenarios/synthetic.ts',
+            kind: 'interaction',
+            // Tracks host speed — read against the calibration strip
+            metrics: [metric(rng, 'title', 34 * hostFactor)],
+          },
+          rng,
+          day,
+          2.2,
+        ),
+        withStyleRows(
+          {
+            scenario: 'singleString',
+            sourceFile: 'perf/bench/scenarios/singleString.ts',
+            kind: 'pageload',
+            // CI measures two load conditions — boot-cold (first visit) and
+            // open-doc-warm (cached) — so demo both. Warm is faster (cache hits).
+            metrics: [
+              metric(rng, 'boot-cold · time to editable', day < 70 ? 4200 : 4600),
+              metric(rng, 'boot-cold · FCP', 1200 + (rng() - 0.5) * 200),
+              metric(rng, 'boot-cold · LCP', 1800 + (rng() - 0.5) * 300),
+              metric(rng, 'boot-cold · CLS', 0.04 + rng() * 0.03, 'cls'),
+              metric(rng, 'boot-cold · main-thread blocking', 620 + (rng() - 0.5) * 120),
+              // The auth story: a serialized round trip removed at day 50
+              metric(rng, 'boot-cold · auth round trips', day < 50 ? 2 : 1, 'count'),
+              metric(rng, 'boot-cold · auth in flight', day < 50 ? 84 : 42),
+              metric(rng, 'open-doc-warm · time to editable', day < 70 ? 1900 : 2100),
+              metric(rng, 'open-doc-warm · FCP', 520 + (rng() - 0.5) * 90),
+              metric(rng, 'open-doc-warm · LCP', 780 + (rng() - 0.5) * 140),
+              metric(rng, 'open-doc-warm · CLS', 0.01 + rng() * 0.015, 'cls'),
+              metric(rng, 'open-doc-warm · main-thread blocking', 240 + (rng() - 0.5) * 60),
+            ],
+          },
+          rng,
+          day,
+          1,
+        ),
         {
           scenario: 'singleString',
           sourceFile: 'perf/bench/scenarios/singleString.ts',

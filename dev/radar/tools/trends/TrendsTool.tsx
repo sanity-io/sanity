@@ -1,9 +1,11 @@
+import {STYLE_SYSTEMS} from '@repo/utils/style-systems'
 /// <reference types="vite/client" />
 import {ActivityIcon} from '@sanity/icons/Activity'
 import {BoltIcon} from '@sanity/icons/Bolt'
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ClockIcon} from '@sanity/icons/Clock'
+import {ColorWheelIcon} from '@sanity/icons/ColorWheel'
 import {ControlsIcon} from '@sanity/icons/Controls'
 import {DropIcon} from '@sanity/icons/Drop'
 import {EllipsisVerticalIcon} from '@sanity/icons/EllipsisVertical'
@@ -51,6 +53,9 @@ import {
   calibrationSeries,
   filterByRange,
   formatValue,
+  styleLabel,
+  styleScenario,
+  styleViews,
   TAGS_QUERY,
   TREND_QUERY,
   TREND_GROUPS,
@@ -69,6 +74,7 @@ import {MAX_COMPARE_BRANCHES} from './palette'
 import {seriesHasCalibration, TrendChart} from './TrendChart'
 import {type DriftState, useDriftState} from './useDriftState'
 import {useUrlState} from './useUrlState'
+import {WeeklyCard, type WeeklyVariant} from './WeeklyBars'
 
 const RANGES = [
   {label: 'Last 30 days', days: 30},
@@ -82,10 +88,71 @@ const GROUP_ICONS: Record<TrendGroup, ComponentType> = {
   responsiveness: BoltIcon,
   load: ClockIcon,
   bundle: PackageIcon,
+  styles: ColorWheelIcon,
   soak: DropIcon,
   settle: SyncIcon,
   environment: ControlsIcon,
 }
+
+const systemColor = (id: 'ui5' | 'ui4' | 'styled') =>
+  STYLE_SYSTEMS.find((system) => system.id === id)!.color
+
+/**
+ * The weekly histograms of the style-migration tab, modelled on Linear's
+ * "StyleX adoption per week" charts: a 100%-stacked bar per week for the
+ * shares (the filled part climbing to the top is the point), a plain bar
+ * per week for the counts and sizes that should sink to the axis. Keyed by
+ * the bench metric label they redraw; the colors are the style systems' own,
+ * the same ones the test studio widget paints its donut and outlines with.
+ */
+const WEEKLY_CHARTS: {
+  label: string
+  title: string
+  description: string
+  goal: 'higher' | 'lower'
+  variant: WeeklyVariant
+}[] = [
+  {
+    label: 'UI v5 share',
+    title: 'UI v5 adoption per week',
+    description:
+      'Rendered @sanity/ui components that are v5, as a share of all @sanity/ui components on the page, per calendar week (median of that week\u2019s runs). The remainder is still on v4. Weeks before the build shipped @sanity/ui v5 draw no bar: there was nothing to adopt yet.',
+    goal: 'higher',
+    variant: {
+      kind: 'share',
+      fill: {label: '@sanity/ui v5', color: systemColor('ui5')},
+      remainder: {label: '@sanity/ui v4', color: systemColor('ui4')},
+    },
+  },
+  {
+    label: 'styled-components instances',
+    title: 'styled-components removal per week',
+    description:
+      'Rendered nodes still styled by styled-components on the page, per calendar week (median of that week\u2019s runs) — the escape hatch shrinking towards zero.',
+    goal: 'lower',
+    variant: {kind: 'level', color: systemColor('styled')},
+  },
+  {
+    label: 'styled-components CSS rule share',
+    title: 'styled-components share of CSS rules per week',
+    description:
+      'CSS rules styled-components inserted at runtime, as a share of every readable rule on the page, per calendar week. The remainder is static CSS the browser could cache.',
+    goal: 'lower',
+    variant: {
+      kind: 'share',
+      fill: {label: 'styled-components rules', color: systemColor('styled')},
+      remainder: {label: 'other CSS rules', color: 'var(--card-muted-fg-color, #727892)'},
+    },
+  },
+  {
+    label: 'styled-components CSS bytes',
+    title: 'styled-components CSS weight per week',
+    description:
+      'UTF-8 size of the CSS styled-components inserted at runtime, per calendar week (median of that week\u2019s runs) — work the browser does on every load instead of downloading a stylesheet.',
+    goal: 'lower',
+    variant: {kind: 'level', color: systemColor('styled')},
+  },
+]
 
 type DataSource = 'live' | DebugSource
 
@@ -326,7 +393,9 @@ function chartDomId(seriesKey: string): string {
 }
 
 function driftBadge(entry: DriftResult): {tone: 'caution' | 'positive'; label: string} {
-  const arrow = entry.direction === 'regression' ? '↑' : '↓'
+  // The arrow is the value's direction, the tone the verdict's: on a
+  // higher-is-better series (UI v5 share) a regression points down
+  const arrow = entry.baseline.delta > 0 ? '↑' : '↓'
   return {
     tone: entry.direction === 'regression' ? 'caution' : 'positive',
     label: `${arrow} ${deltaLabel(entry.baseline, entry.unit)}`,
@@ -772,6 +841,191 @@ function SettlePanel(props: {
 }
 
 /**
+ * The style-migration group behind sub-tabs: one per migration (UI v5
+ * adoption, styled-components), each laid out like the Vitals tab — a section
+ * per metric with a card per scenario, since the question is the same ("how
+ * is this number doing, everywhere?") — plus a "Per week" view that redraws
+ * the headline series of one scenario as weekly histograms (`WeeklyCard`),
+ * the reading a months-long migration deserves: a staircase, not a noisy line.
+ * The metric views keep the drift/ack plumbing the plain grid has (a share
+ * that drops is a regression worth a badge, see drift.ts on `goal: 'higher'`).
+ */
+function StylesPanel(props: {
+  series: TrendSeries[]
+  driftBySeries: Map<string, DriftResult>
+  silencedBySeries: Map<string, DriftResult>
+  baselineBySeries: Map<string, DriftResult>
+  drift: DriftState
+  focusedKey: string | null
+  onFocusMetric: (seriesKey: string) => void
+  layers: LayerState
+  tags: TrendTag[]
+  onExpand: (seriesKey: string) => void
+  /** Explicit `?styles=` sub-tab ('' = none) and the deep-linked `?chart=` key. */
+  view: string
+  onViewChange: (id: string) => void
+  chartKey: string
+  /** The focused chart lives in another sub-tab the user just left. */
+  onLeaveChart: () => void
+  /** `?scenario=` — which scenario the weekly view draws ('' = default). */
+  scenario: string
+  onScenarioChange: (scenario: string) => void
+}) {
+  const views = useMemo(() => styleViews(props.series), [props.series])
+  const scenarios = useMemo(
+    () => [...new Set(props.series.map(styleScenario))].sort(),
+    [props.series],
+  )
+  const tabs = [
+    ...views.map((view) => ({id: view.id as string, label: view.label})),
+    // The weekly view exists whenever any style series does: it redraws the
+    // same points, so it can never be emptier than the metric views
+    ...(scenarios.length > 0 ? [{id: 'weekly', label: 'Per week'}] : []),
+  ]
+  // Same rule as the group tabs: an explicit sub-tab wins, else the sub-tab
+  // holding the deep-linked/focused chart, else the first
+  const activeId =
+    tabs.find((tab) => tab.id === props.view)?.id ??
+    (props.chartKey
+      ? views.find((view) =>
+          view.sections.some((section) =>
+            section.series.some((entry) => entry.key === props.chartKey),
+          ),
+        )?.id
+      : undefined) ??
+    tabs[0]?.id
+
+  if (!activeId) {
+    return (
+      <EmptyGroup>
+        No style-migration data in this range. The style census rides along on every benchmark
+        scenario from the run that introduced it; try a longer range, or wait for the next daily
+        run.
+      </EmptyGroup>
+    )
+  }
+
+  // singleString is the scenario every mode runs, so it has the longest history
+  const selectedScenario = scenarios.includes(props.scenario)
+    ? props.scenario
+    : scenarios.includes('singleString')
+      ? 'singleString'
+      : scenarios[0]
+  const weeklySeries = new Map(
+    props.series
+      .filter((entry) => styleScenario(entry) === selectedScenario)
+      .map((entry) => [styleLabel(entry), entry]),
+  )
+  const weeklyCharts = WEEKLY_CHARTS.flatMap((chart) => {
+    const entry = weeklySeries.get(chart.label)
+    return entry ? [{...chart, series: entry}] : []
+  })
+  const activeView = views.find((view) => view.id === activeId)
+
+  return (
+    <Stack gap={3}>
+      <TabList gap={1}>
+        {tabs.map((tab) => (
+          <Tab
+            key={tab.id}
+            id={`styles-tab-${tab.id}`}
+            aria-controls={`styles-panel-${tab.id}`}
+            label={tab.label}
+            selected={tab.id === activeId}
+            onClick={() => {
+              props.onViewChange(tab.id)
+              const holdsChart = views
+                .find((view) => view.id === tab.id)
+                ?.sections.some((section) =>
+                  section.series.some((entry) => entry.key === props.chartKey),
+                )
+              if (props.chartKey && !holdsChart) props.onLeaveChart()
+            }}
+          />
+        ))}
+      </TabList>
+      <TabPanel id={`styles-panel-${activeId}`} aria-labelledby={`styles-tab-${activeId}`}>
+        {activeView ? (
+          <Stack gap={3}>
+            <Text size={1} muted>
+              {activeView.hint}
+            </Text>
+            <Stack gap={6} paddingTop={3}>
+              {activeView.sections.map((section) => (
+                <Stack key={section.metric.label} gap={4}>
+                  <Flex alignItems="baseline" gap={2}>
+                    <Text size={1} weight="semibold">
+                      {section.metric.label}
+                    </Text>
+                    <Text size={1} muted>
+                      {section.metric.goal} is better
+                    </Text>
+                  </Flex>
+                  <ChartGrid
+                    series={section.series}
+                    driftBySeries={props.driftBySeries}
+                    silencedBySeries={props.silencedBySeries}
+                    baselineBySeries={props.baselineBySeries}
+                    drift={props.drift}
+                    focusedKey={props.focusedKey}
+                    onFocusMetric={props.onFocusMetric}
+                    layers={props.layers}
+                    tags={props.tags}
+                    onExpand={props.onExpand}
+                  />
+                </Stack>
+              ))}
+            </Stack>
+          </Stack>
+        ) : (
+          <Stack gap={3}>
+            <Flex alignItems="center" justifyContent="space-between" gap={3} flexWrap="wrap">
+              <Text size={1} muted>
+                The migration week by week, for one scenario: each bar is the median of that
+                week&apos;s runs, an empty week had no run. Click a bar to open the week&apos;s
+                newest run.
+              </Text>
+              {scenarios.length > 1 && (
+                <Select
+                  value={selectedScenario}
+                  onChange={(event) => props.onScenarioChange(event.currentTarget.value)}
+                  aria-label="Scenario"
+                  fontSize={1}
+                  padding={2}
+                  radius={2}
+                >
+                  {scenarios.map((scenario) => (
+                    <option key={scenario} value={scenario}>
+                      {scenario}
+                    </option>
+                  ))}
+                </Select>
+              )}
+            </Flex>
+            <Grid
+              gridTemplateColumns={['repeat(1, minmax(0, 1fr))', 'repeat(2, minmax(0, 1fr))']}
+              gap={3}
+            >
+              {weeklyCharts.map((chart) => (
+                <WeeklyCard
+                  key={chart.label}
+                  title={`${selectedScenario} · ${chart.title}`}
+                  description={chart.description}
+                  series={chart.series}
+                  variant={chart.variant}
+                  goal={chart.goal}
+                  tags={props.tags}
+                />
+              ))}
+            </Grid>
+          </Stack>
+        )}
+      </TabPanel>
+    </Stack>
+  )
+}
+
+/**
  * One chart, maximized. The grid is 40+ small multiples — great for scanning,
  * too cramped for reading: at ~330px a 90-day window puts a release marker every
  * ~15px and the metric's own description has to hide behind an ⓘ. This is the
@@ -993,6 +1247,9 @@ export function TrendsTool() {
   // The settle sub-tab follows the same rule ('' = derive from the chart);
   // owned here so a focus jump can clear it alongside ?tab=.
   const [settleViewParam, setSettleViewParam] = useUrlState('settle', '')
+  // Likewise the style-migration sub-tab, and the scenario its weekly view draws
+  const [stylesViewParam, setStylesViewParam] = useUrlState('styles', '')
+  const [stylesScenarioParam, setStylesScenarioParam] = useUrlState('scenario', '')
   const activeTab =
     tabs.find((tab) => tab.id === tabParam) ??
     (chartParam ? tabs.find((tab) => tab.id === groupById.get(chartParam)) : undefined) ??
@@ -1019,6 +1276,7 @@ export function TrendsTool() {
     setChartParam(seriesKey, 'push')
     setTabParam('', 'replace')
     setSettleViewParam('', 'replace')
+    setStylesViewParam('', 'replace')
     setFocusedKey(seriesKey)
   }
   // Side-effects of a focus (DOM scroll + auto-clearing the ring) live in an
@@ -1282,6 +1540,25 @@ export function TrendsTool() {
                         onViewChange={setSettleViewParam}
                         chartKey={chartParam}
                         onLeaveChart={() => setChartParam('')}
+                      />
+                    ) : activeTab.id === 'styles' ? (
+                      <StylesPanel
+                        series={series.filter((entry) => entry.group === 'styles')}
+                        driftBySeries={driftBySeries}
+                        silencedBySeries={silencedBySeries}
+                        baselineBySeries={baselineBySeries}
+                        drift={drift}
+                        focusedKey={focusedKey}
+                        onFocusMetric={focusMetric}
+                        layers={layers}
+                        tags={tags}
+                        onExpand={expandMetric}
+                        view={stylesViewParam}
+                        onViewChange={setStylesViewParam}
+                        chartKey={chartParam}
+                        onLeaveChart={() => setChartParam('')}
+                        scenario={stylesScenarioParam}
+                        onScenarioChange={setStylesScenarioParam}
                       />
                     ) : activeTab.id === 'vitals' ? (
                       vitalGroups.length === 0 ? (

@@ -42,6 +42,9 @@ function thresholdFor(unit: TrendUnit): DriftThreshold {
   if (unit === 'ms') return {absolute: 16, relative: 0.05}
   if (unit === 'megabytes') return {absolute: 1, relative: 0.05}
   if (unit === 'bytes') return {absolute: 10 * 1024, relative: 0.05}
+  // Shares (0–100): one whole percentage point, so a migration that moves a
+  // page a point flags; the relative floor keeps a 1% → 1.04% wobble quiet
+  if (unit === 'percent') return {absolute: 1, relative: 0.05}
   // CLS is unitless and small (good ≤ 0.1) — a whole-unit absolute floor would
   // mean CLS drift could never fire; 0.02 mirrors the scale web.dev uses
   if (unit === 'cls') return {absolute: 0.02, relative: 0.05}
@@ -230,8 +233,10 @@ function classify(
     // cleared the floors is then real by definition
     Math.abs(delta) >= NOISE_Z * standardError
   if (!cleared || goal === 'context') return 'neutral'
-  // Lower is better: a rise is a regression
-  return delta > 0 ? 'regression' : 'improvement'
+  // Lower is better: a rise is a regression. Higher is better (the migration
+  // adoption series): a rise is the improvement, a drop the regression
+  const rose = delta > 0
+  return rose === (goal === 'lower') ? 'regression' : 'improvement'
 }
 
 /** Points sorted oldest→newest, most recent last. */

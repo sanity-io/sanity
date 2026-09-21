@@ -173,9 +173,9 @@ export function ChartLegend(props: {
         ))}
         {releasesItem}
         {goodItem}
-        {series.goal === 'lower' && (
+        {series.goal !== 'context' && (
           <Text size={0} muted>
-            · lower is better
+            · {series.goal} is better
           </Text>
         )}
       </Flex>
@@ -282,9 +282,9 @@ export function ChartLegend(props: {
       )}
       {releasesItem}
       {goodItem}
-      {series.goal === 'lower' && (
+      {series.goal !== 'context' && (
         <Text size={0} muted>
-          lower is better
+          {series.goal} is better
         </Text>
       )}
     </Flex>

@@ -637,9 +637,17 @@ export function TrendChart(props: {
           const extent = Math.max(0.5, ...values.map((value) => Math.abs(value))) * 1.2
           return [-extent, extent]
         })()
-      : [0, dataTop > 0 ? dataTop * 1.1 : 1],
+      : // A share is read against its whole: a 35% adoption drawn on a 0–40%
+        // axis looks nearly done, and a 41% styled-components rule share
+        // drawn on 0–45% looks like everything. The fixed axis is the point
+        // of a share chart — the distance to 100% (or to 0%) is the story
+        unit === 'percent'
+        ? [0, 100]
+        : [0, dataTop > 0 ? dataTop * 1.1 : 1],
     range: [innerHeight, 0],
-    nice: true,
+    // nice() would round a share axis to 0–100 anyway; skipped there so the
+    // domain stays exactly the one declared above
+    nice: unit !== 'percent',
   })
   const yDomainMax = yScale.domain().at(-1) ?? 0
 
@@ -1086,6 +1094,17 @@ export function TrendChart(props: {
                   </Text>
                 </Flex>
               ))}
+              {/* The styled-components runtime behind a style-migration point:
+                  a step in the CSS rows that lands with a version bump is the
+                  library changing its output, not the studio migrating */}
+              {hovered
+                .filter((entry) => entry.point.styledComponentsVersion)
+                .map((entry) => (
+                  <Text key={`styled-${entry.branch}`} size={0} muted>
+                    {lines.length > 1 ? `${entry.branch}: ` : ''}styled-components{' '}
+                    {entry.point.styledComponentsVersion}
+                  </Text>
+                ))}
               {/* The hovered run's host-speed score (higher = slower), on its
                   own labelled line so it never reads as part of the metric
                   value. Shown whenever the point knows its host — with the

@@ -2,6 +2,7 @@
  * Data layer for the Trends tool: one tightly-projected GROQ query (never
  * fetch `sessions` — see SPEC.md) and pure series derivation.
  */
+import {STYLE_METRICS, type StyleMetric, styleMetricFor} from '@repo/utils/style-systems'
 
 export interface TrendRun {
   _id: string
@@ -53,10 +54,22 @@ export interface TrendRun {
         metrics:
           | {
               label: string
-              unit: 'ms' | 'count' | 'cls'
+              unit: 'ms' | 'count' | 'cls' | 'bytes' | 'percent'
               experiment: {summary: {median: number; p75: number; p90: number} | null} | null
             }[]
           | null
+        /**
+         * Build facts behind the style-migration rows (perf/bench's
+         * `StyleContext`): whether the build ships @sanity/ui v5 — the
+         * reason the `UI v5 …` rows can be absent — and the styled-components
+         * runtime version on the page. Absent on runs before the probe.
+         */
+        styles?: {
+          experiment?: {
+            ui5Available?: boolean | null
+            styledComponentsVersion?: string | null
+          } | null
+        } | null
         soak?: {
           minutes: number
           samples:
@@ -96,6 +109,7 @@ export const TREND_QUERY = `*[_type == "benchRun" && mode == "absolute"] | order
     mode,
     settleExpectation{expectedToSettle},
     metrics[]{label, unit, experiment{summary{median, p75, p90}}},
+    styles{experiment{ui5Available, styledComponentsVersion}},
     soak{minutes, samples[]{minute, heapMb, domNodes, listeners, latencyP50Ms, cpuTaskMs, connections, requests}}
   }
 }`
@@ -105,6 +119,7 @@ export type TrendUnit =
   | 'count'
   | 'cls'
   | 'bytes'
+  | 'percent'
   | 'megabytes'
   | 'mb-per-min'
   | 'count-per-min'
@@ -123,6 +138,13 @@ export interface TrendPoint {
    * percentile rule wants at least INP_MIN_INTERACTIONS.
    */
   interactions?: number
+  /**
+   * Style-migration points only: the styled-components runtime version the
+   * measured page ran (`data-styled-version`), for the tooltip and popover —
+   * a jump in the styled-components rows that coincides with a version bump
+   * is the library changing how it emits CSS, not the studio migrating.
+   */
+  styledComponentsVersion?: string
   /**
    * Host-speed score of the machine that measured this point (higher = slower
    * host) — the scenario's own shard calibration on multi-shard CI runs,
@@ -177,8 +199,13 @@ export interface TrendSeries {
   unit: TrendUnit
   /** One plain-English sentence: what this metric measures. */
   description: string
-  /** How to read the trend: lower values are better, or context-only. */
-  goal: 'lower' | 'context'
+  /**
+   * How to read the trend: lower values are better (every performance
+   * metric), higher values are better (the migration adoption shares and
+   * counts, which climb as the studio moves to @sanity/ui v5), or
+   * context-only (host calibration).
+   */
+  goal: 'lower' | 'higher' | 'context'
   /** Section the chart is grouped under in the dashboard. */
   group: TrendGroup
   /** Repo-root-relative scenario source file, for a "view source" backlink. */
@@ -240,6 +267,7 @@ export type TrendGroup =
   | 'responsiveness'
   | 'load'
   | 'bundle'
+  | 'styles'
   | 'soak'
   | 'settle'
   | 'environment'
@@ -353,6 +381,17 @@ export const TREND_GROUPS: {id: TrendGroup; title: string; description: string}[
       'How much JavaScript the build ships, and how much of it booting actually downloads.',
   },
   {
+    id: 'styles',
+    title: 'Style migration',
+    description:
+      'Two migrations, counted on the rendered page of every benchmark scenario: @sanity/ui v5 ' +
+      'adoption (rendered v5 components as a share of all @sanity/ui components — higher is ' +
+      'better) and the styled-components escape hatch (rendered instances, distinct components, ' +
+      'and the CSS it inserts at runtime — lower is better). The same fingerprints the test ' +
+      "studio's Style migrations widget uses; the UI v5 rows are absent, not zero, on builds " +
+      'that predate @sanity/ui v5 (before studio v6.10).',
+  },
+  {
     id: 'soak',
     title: 'Soak (endurance)',
     description:
@@ -386,6 +425,15 @@ function describeSeries(
   label: string,
   mode?: string | null,
 ): Pick<TrendSeries, 'description' | 'goal' | 'group' | 'goodThreshold'> {
+  // Style-migration rows first: the same census runs in every mode (they ride
+  // along on interaction, pageload and settle reports alike), so the label
+  // decides the group before any mode does. The registry in @repo/utils is
+  // the join key with perf/bench, so a metric added there lands here with its
+  // wording and direction already attached.
+  const styleMetric = styleMetricFor(label)
+  if (styleMetric) {
+    return {group: 'styles', description: styleMetric.description, goal: styleMetric.goal}
+  }
   if (mode === 'settle') {
     if (label === 'sessions not settled') {
       return {
@@ -542,6 +590,9 @@ function describeSeries(
 export function formatValue(value: number, unit: TrendUnit): string {
   if (unit === 'count') return value.toFixed(0)
   if (unit === 'cls') return value.toFixed(3) // unitless layout-shift score
+  // Shares are stored 0–100. Whole percents: a migration moves in whole
+  // components, and the widget these numbers mirror rounds the same way
+  if (unit === 'percent') return `${value.toFixed(0)}%`
   // MB past 1 MiB: the total-JS series runs to megabytes, where "2368.1 KB"
   // buries the magnitude a reader actually wants
   if (unit === 'bytes') {
@@ -601,6 +652,7 @@ export function formatValue(value: number, unit: TrendUnit): string {
  */
 export function formatTick(value: number, unit: TrendUnit, domainMax = 0): string {
   if (isSignedUnit(unit)) return parseFloat(value.toFixed(2)).toString()
+  if (unit === 'percent') return `${Math.round(value)}%`
   if (unit === 'megabytes') return `${parseFloat(value.toFixed(1))}MB`
   if (unit === 'bytes') {
     return Math.abs(value) >= 1024 * 1024
@@ -1117,7 +1169,16 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
       'description' | 'goal' | 'group' | 'sourceFile' | 'lineLabel' | 'goodThreshold'
     >,
     run: TrendRun,
-    point: Pick<TrendPoint, 'value' | 'p75' | 'p90' | 'interactions' | 'calibrationMs' | 'host'>,
+    point: Pick<
+      TrendPoint,
+      | 'value'
+      | 'p75'
+      | 'p90'
+      | 'interactions'
+      | 'styledComponentsVersion'
+      | 'calibrationMs'
+      | 'host'
+    >,
   ) => {
     const existing = series.get(key) ?? {key, title, unit, ...meta, lines: []}
     const branch = run.git?.branch ?? 'unknown'
@@ -1142,6 +1203,8 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
       )?.experiment?.summary?.median
       const scenarioMeta = shardMeta(run, scenario.runner)
       const redByDesign = scenario.settleExpectation?.expectedToSettle === false
+      const styledComponentsVersion =
+        scenario.styles?.experiment?.styledComponentsVersion ?? undefined
       for (const metric of scenario.metrics ?? []) {
         if (metric.label === 'INP interactions') continue
         // Older documents carry a TTFB metric; skip it. Against the local
@@ -1160,15 +1223,21 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
         const summary = metric.experiment?.summary
         if (!summary) continue
         const meta = describeSeries(scenario.kind, metric.label, scenario.mode)
+        // Style rows are a property of the scenario's page, not of the mode
+        // that opened it: the interaction and pageload shards of one scenario
+        // (and its settle run) count the same DOM. One key per scenario, so
+        // the shards' identical points merge per commit instead of drawing
+        // two series that say the same thing.
+        const isStyleRow = meta.group === 'styles'
         push(
           // Settle reuses kind 'pageload'; the mode keeps its keys from ever
           // colliding with a real pageload metric of the same scenario.
-          `${scenario.mode === 'settle' ? 'settle' : scenario.kind}:${scenario.scenario}:${metric.label}`,
+          `${isStyleRow ? 'styles' : scenario.mode === 'settle' ? 'settle' : scenario.kind}:${scenario.scenario}:${metric.label}`,
           `${scenario.scenario} · ${metric.label}`,
           metric.unit,
           {
             ...meta,
-            ...(scenario.mode === 'settle' && redByDesign
+            ...(scenario.mode === 'settle' && redByDesign && !isStyleRow
               ? {
                   description: `${meta.description} RED BY DESIGN: this scenario exercises a known unfixed render-loop footgun (expectedToSettle: false) — its non-zero line is the standing evidence, and the bench warns when a fix lands.`,
                 }
@@ -1184,6 +1253,7 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
             ...(metric.label === 'INP' && inpInteractions !== undefined
               ? {interactions: inpInteractions}
               : {}),
+            ...(isStyleRow && styledComponentsVersion ? {styledComponentsVersion} : {}),
           },
         )
       }
@@ -1349,6 +1419,62 @@ export function settleViews(list: TrendSeries[]): SettleView[] {
   return Object.values(views)
     .filter((view) => view.series.length > 0)
     .map((view) => ({...view, series: [...view.series].sort(byTitle)}))
+}
+
+/** One style-migration metric across scenarios: the registry entry and a card per scenario. */
+export interface StyleSection {
+  metric: StyleMetric
+  series: TrendSeries[]
+}
+
+export interface StyleView {
+  id: 'ui5' | 'styled'
+  label: string
+  /** One-line reading guide shown above the view's sections. */
+  hint: string
+  sections: StyleSection[]
+}
+
+/** The metric label behind a style series key (`styles:<scenario>:<label>`). */
+export function styleLabel(entry: TrendSeries): string {
+  return entry.key.split(':').slice(2).join(':')
+}
+
+/** The scenario behind a style series key (`styles:<scenario>:<label>`). */
+export function styleScenario(entry: TrendSeries): string {
+  return entry.key.split(':')[1] ?? ''
+}
+
+/**
+ * The style-migration tab's sub-views, one per migration: UI v5 adoption and
+ * the styled-components escape hatch. Within a view, one section per registry
+ * metric (in registry order, headline share first) holding a card per
+ * scenario — the Vitals layout, since the question is the same: "how is this
+ * number doing, everywhere?" Views without data are dropped, like the soak
+ * and settle ones. There is no "Other": a series only reaches this group
+ * through the registry (see describeSeries), so every label is known.
+ */
+export function styleViews(list: TrendSeries[]): StyleView[] {
+  const views: Record<StyleView['id'], StyleView> = {
+    ui5: {
+      id: 'ui5',
+      label: 'UI v5 adoption',
+      hint: 'Rendered @sanity/ui v5 components as a share of all @sanity/ui components on each scenario\u2019s page, with the v5 and v4 counts behind it. Higher is better; 100% means the page is fully on v5. Builds without @sanity/ui v5 (before studio v6.10) record nothing here rather than 0%.',
+      sections: [],
+    },
+    styled: {
+      id: 'styled',
+      label: 'styled-components',
+      hint: 'The runtime-styling escape hatch on each scenario\u2019s page: rendered styled-components nodes, the distinct components behind them, and the CSS the library inserted at runtime (rules, bytes, share of all rules). Lower is better; every row applies to studio v5-era builds too.',
+      sections: [],
+    },
+  }
+  for (const metric of STYLE_METRICS) {
+    const series = list.filter((entry) => styleLabel(entry) === metric.label).sort(byTitle)
+    if (series.length === 0) continue
+    views[metric.track].sections.push({metric, series})
+  }
+  return Object.values(views).filter((view) => view.sections.length > 0)
 }
 
 /** The honesty overlay: host-speed score per run (higher = slower host). */
