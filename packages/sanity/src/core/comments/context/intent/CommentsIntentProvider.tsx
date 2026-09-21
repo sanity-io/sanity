@@ -13,8 +13,7 @@ export interface CommentsIntentProviderProps {
 }
 
 /**
- * @beta
- * @hidden
+ * @internal
  */
 export const CommentsIntentProvider = memo(function CommentsIntentProvider(
   props: CommentsIntentProviderProps,

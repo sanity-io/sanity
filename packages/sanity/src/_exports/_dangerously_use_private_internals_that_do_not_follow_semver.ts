@@ -42,6 +42,10 @@ export {
 } from '../core/changeIndicators/types'
 export {CommentDisabledIcon} from '../core/comments-v2/components/icons/CommentDisabledIcon'
 export {CommentDisabledIcon as CommentDisabledIconLegacy} from '../core/comments/components/icons/CommentDisabledIcon'
+export {CommentDeleteDialog} from '../core/comments-v2/components/CommentDeleteDialog'
+export {CommentDeleteDialog as CommentDeleteDialogLegacy} from '../core/comments/components/CommentDeleteDialog'
+export {CommentsList} from '../core/comments-v2/components/list/CommentsList'
+export {CommentsList as CommentsListLegacy} from '../core/comments/components/list/CommentsList'
 export {
   CommentInput,
   type CommentInputHandle,
@@ -56,6 +60,13 @@ export {CommentInlineHighlightSpan} from '../core/comments-v2/components/pte/Com
 export {CommentInlineHighlightSpan as CommentInlineHighlightSpanLegacy} from '../core/comments/components/pte/CommentInlineHighlightSpan'
 export {COMMENTS_INSPECTOR_NAME} from '../core/comments-v2/constants'
 export {COMMENTS_INSPECTOR_NAME as COMMENTS_INSPECTOR_NAME_LEGACY} from '../core/comments/constants'
+export {CommentsAuthoringPathProvider} from '../core/comments-v2/context/authoring-path/CommentsAuthoringPathProvider'
+export {CommentsAuthoringPathProvider as CommentsAuthoringPathProviderLegacy} from '../core/comments/context/authoring-path/CommentsAuthoringPathProvider'
+export {CommentsProvider} from '../core/comments-v2/context/comments/CommentsProvider'
+export {CommentsProvider as CommentsProviderLegacy} from '../core/comments/context/comments/CommentsProvider'
+export {CommentsEnabledProvider} from '../core/comments-v2/context/enabled/CommentsEnabledProvider'
+export {CommentsEnabledProvider as CommentsEnabledProviderLegacy} from '../core/comments/context/enabled/CommentsEnabledProvider'
+export {CommentsIntentProvider} from '../core/comments/context/intent/CommentsIntentProvider'
 export {CommentsSelectedPathProvider} from '../core/comments-v2/context/selected-path/CommentsSelectedPathProvider'
 export {CommentsSelectedPathProvider as CommentsSelectedPathProviderLegacy} from '../core/comments/context/selected-path/CommentsSelectedPathProvider'
 export {type CommentsSelectedPath} from '../core/comments-v2/context/selected-path/types'
@@ -65,6 +76,10 @@ export {
   hasCommentMessageValue as hasCommentMessageValueLegacy,
   isTextSelectionComment as isTextSelectionCommentLegacy,
 } from '../core/comments/helpers'
+export {useComments} from '../core/comments-v2/hooks/useComments'
+export {useComments as useCommentsLegacy} from '../core/comments/hooks/useComments'
+export {useCommentsEnabled} from '../core/comments-v2/hooks/useCommentsEnabled'
+export {useCommentsEnabled as useCommentsEnabledLegacy} from '../core/comments/hooks/useCommentsEnabled'
 export {useCommentsSelectedPath} from '../core/comments-v2/hooks/useCommentsSelectedPath'
 export {useCommentsSelectedPath as useCommentsSelectedPathLegacy} from '../core/comments/hooks/useCommentsSelectedPath'
 export {useCommentsTelemetry} from '../core/comments-v2/hooks/useCommentsTelemetry'
