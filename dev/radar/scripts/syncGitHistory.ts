@@ -2,7 +2,7 @@
 /**
  * Sync git history into the metrics dataset as `gitCommit` / `gitTag`
  * documents. Run by .github/workflows/sync-git-metrics.yml on pushes to main
- * and after releases; `--all` backfills from the v5.0.0 cutoff.
+ * and after releases; `--all` backfills from the v3.0.0 cutoff.
  *
  * Stateless and idempotent: deterministic ids + createOrReplace mean every
  * run blindly re-upserts its window — overlap is free, a failed run is
@@ -52,8 +52,8 @@ import {npmInfoForTags, type NpmVersionInfo} from './npmVersions'
 const METRICS_PROJECT_ID = 'mhfozd0z'
 const METRICS_DATASET = 'bench'
 
-/** Backfill start: the dataset deliberately covers v5.0.0 (2025-12-16) onward. */
-const BACKFILL_CUTOFF_TAG = 'v5.0.0'
+/** Backfill start: the dataset covers v3.0.0 (2022-11-25) onward — see MIN_TAG_MAJOR. */
+const BACKFILL_CUTOFF_TAG = 'v3.0.0'
 
 /**
  * Incremental window: one GitHub GraphQL batch, ~2 days of main. Failures
@@ -75,7 +75,7 @@ function collectDocuments(options: {all: boolean; maxCount: number; ref: string}
   commits: GitCommitDocument[]
   tags: GitTagDocument[]
 } {
-  // ^.. includes the cutoff commit itself (gitTag-v5.0.0's reference would
+  // ^.. includes the cutoff commit itself (the cutoff tag's reference would
   // otherwise dangle); --first-parent is the chain parentSha promises.
   // Refs go after --end-of-options so a hostile --ref can't become a flag.
   const logArgs = options.all

@@ -38,7 +38,9 @@ effect of merged work; secondary: leads scanning health weekly.
   health; PR verdicts live in PR comments.
 - **Git history as data.** One `gitCommit` document per main-branch commit
   and one `gitTag` document per `v*` release tag, coverage starting at
-  v5.0.0.
+  v3.0.0 (it started at v5.0.0; extending the tags back was free, since
+  the npm enrichment is three package-wide requests, and the commit chain
+  back to v3 is a one-time backfill dispatch).
 
   Commit documents are metadata only: sha, first-parent sha (the exact
   mainline chain link the Bisect tool walks — `committedAt` ordering has

@@ -22,8 +22,14 @@ export const COMMIT_LOG_FORMAT = '%H%x1f%an%x1f%ae%x1f%aI%x1f%cI%x1f%s%x1f%P%x1e
 export const TAG_REF_FORMAT =
   '%(refname:lstrip=2)%1f%(creatordate:iso-strict)%1f%(*objectname)%1f%(objectname)'
 
-/** The dataset covers v5.0.0 onward — same cutoff the commit backfill uses. */
-export const MIN_TAG_MAJOR = 5
+/**
+ * The dataset covers v3.0.0 (2022-11-25) onward — same cutoff the commit
+ * backfill uses. Tags below it are the v2 era and earlier, hundreds of them
+ * with nobody left on them. Extending the tag set is free on the npm side
+ * (the enrichment is three package-wide requests), and the commit backfill
+ * is a one-time dispatch.
+ */
+export const MIN_TAG_MAJOR = 3
 
 const FIELD_SEPARATOR = '\x1f'
 const RECORD_SEPARATOR = '\x1e'
