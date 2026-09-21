@@ -82,7 +82,7 @@ const STANDARD_INPUT_SCHEMA = [
         type: 'datetime',
         name: 'publishedAt',
         title: 'Published at',
-        options: {allowTimeZoneSwitch: false, displayTimeZone: 'UTC'},
+        options: {allowTimeZoneSwitch: false, displayTimeZone: 'Europe/Oslo'},
         components: {input: DateTimeVisualInput},
       }),
       defineField({

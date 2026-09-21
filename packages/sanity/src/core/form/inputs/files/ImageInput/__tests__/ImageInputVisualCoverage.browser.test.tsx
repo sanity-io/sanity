@@ -25,9 +25,10 @@ import {ImageInputHotspotInput} from '../../ImageInput/ImageInputHotspotInput'
 import {ImageToolInput} from '../../ImageToolInput/ImageToolInput'
 
 const IMAGE_URL = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='
+const IMAGE_REF = 'image-a75b03fdd5b5fa36947bf2b776a542e0c940f682-100x100-jpg'
 const IMAGE_VALUE = {
   _type: 'image',
-  asset: {_type: 'reference', _ref: 'image-fixture-100x100-gif'},
+  asset: {_type: 'reference', _ref: IMAGE_REF},
 }
 const DOCUMENT: SanityDocument = {
   _id: 'image-input-visual',
@@ -38,14 +39,14 @@ const DOCUMENT: SanityDocument = {
   image: IMAGE_VALUE,
 }
 const IMAGE_ASSET = {
-  _id: 'image-fixture-100x100-gif',
+  _id: IMAGE_REF,
   _type: 'sanity.imageAsset',
   _rev: 'image-asset-rev',
-  assetId: 'fixture',
-  extension: 'gif',
-  mimeType: 'image/gif',
-  originalFilename: 'fixture.gif',
-  path: 'images/test/test/fixture-100x100.gif',
+  assetId: 'a75b03fdd5b5fa36947bf2b776a542e0c940f682',
+  extension: 'jpg',
+  mimeType: 'image/jpeg',
+  originalFilename: 'fixture.jpg',
+  path: 'images/test/test/a75b03fdd5b5fa36947bf2b776a542e0c940f682-100x100.jpg',
   size: 43,
   url: IMAGE_URL,
   metadata: {
