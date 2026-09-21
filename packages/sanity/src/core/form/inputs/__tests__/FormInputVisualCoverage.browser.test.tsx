@@ -164,23 +164,38 @@ function EditReferenceLink(props: {children: ReactNode}) {
   return props.children
 }
 
+function authorReferenceInfo() {
+  return of({
+    id: 'author-1',
+    type: 'author',
+    isPublished: true,
+    availability: {available: true, reason: 'READABLE'} as const,
+    preview: {snapshot: null, original: null},
+  })
+}
+
+function bookReferenceInfo() {
+  return of({
+    id: 'book-1',
+    type: 'book',
+    availability: {available: true, reason: 'READABLE'} as const,
+    preview: {published: {title: 'Fixture book'}},
+  })
+}
+
+function emptySearch() {
+  return of([])
+}
+
 function ReferenceVisualInput(props: StudioReferenceInputProps) {
   return (
     <ReferenceInput
       {...(props as ComponentProps<typeof ReferenceInput>)}
       createOptions={[]}
       editReferenceLinkComponent={EditReferenceLink}
-      getReferenceInfo={() =>
-        of({
-          id: 'author-1',
-          type: 'author',
-          isPublished: true,
-          availability: {available: true, reason: 'READABLE'},
-          preview: {snapshot: null, original: null},
-        })
-      }
+      getReferenceInfo={authorReferenceInfo}
       onEditReference={noop}
-      onSearch={() => of([])}
+      onSearch={emptySearch}
     />
   )
 }
@@ -197,15 +212,8 @@ function CrossDatasetReferenceVisualInput(props: StudioCrossDatasetReferenceInpu
   return (
     <CrossDatasetReferenceInput
       {...(props as ComponentProps<typeof CrossDatasetReferenceInput>)}
-      getReferenceInfo={() =>
-        of({
-          id: 'book-1',
-          type: 'book',
-          availability: {available: true, reason: 'READABLE'},
-          preview: {published: {title: 'Fixture book'}},
-        })
-      }
-      onSearch={() => of([])}
+      getReferenceInfo={bookReferenceInfo}
+      onSearch={emptySearch}
     />
   )
 }

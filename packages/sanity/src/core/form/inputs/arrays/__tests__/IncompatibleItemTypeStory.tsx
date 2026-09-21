@@ -1,7 +1,6 @@
 import {Card, Stack, Text} from '@sanity/ui'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
-import {IncompatibleItemType as GridIncompatibleItemType} from '../ArrayOfObjectsInput/Grid/IncompatibleItemType'
 import {IncompatibleItemType} from '../ArrayOfObjectsInput/List/IncompatibleItemType'
 
 /**
@@ -36,16 +35,6 @@ export function IncompatibleItemTypeStory() {
             <div style={{maxWidth: 240}}>
               <IncompatibleItemType
                 value={{_type: 'legacyMarketingHeroBannerWithCallToActionBlock', title: 'Legacy'}}
-              />
-            </div>
-          </Stack>
-          <Stack gap={2}>
-            <Text muted size={1} weight="medium">
-              grid item
-            </Text>
-            <div style={{maxWidth: 180}}>
-              <GridIncompatibleItemType
-                value={{_type: 'legacyMarketingHero', title: 'Legacy hero'}}
               />
             </div>
           </Stack>
