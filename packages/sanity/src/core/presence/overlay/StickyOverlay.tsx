@@ -159,7 +159,7 @@ export function StickyOverlay(props: Props) {
   )
 
   const renderCallback = useCallback(
-    (regionsWithIntersectionDetails: RegionWithIntersectionDetails[], containerWidth: any) => {
+    (regionsWithIntersectionDetails: RegionWithIntersectionDetails[], _containerWidth: number) => {
       const grouped = group(
         regionsWithIntersectionDetails.filter((item) => item.region.presence.length > 0),
       )
@@ -193,10 +193,7 @@ export function StickyOverlay(props: Props) {
             regionsWithIntersectionDetails={grouped.top}
           />
           <Spacer height={topSpacing} />
-          <PresenceInside
-            containerWidth={containerWidth}
-            regionsWithIntersectionDetails={grouped.inside}
-          />
+          <PresenceInside regionsWithIntersectionDetails={grouped.inside} />
           <Spacer height={bottomSpacing} />
           <PresenceDock
             closeCount={counts.nearBottom}
@@ -277,22 +274,16 @@ const PresenceDock = memo(function PresenceDock(props: {
   )
 })
 
-function PresenceInside(props: {
-  containerWidth: number
-  regionsWithIntersectionDetails: RegionWithSpacerHeight[]
-}) {
-  const {regionsWithIntersectionDetails, containerWidth} = props
+function PresenceInside(props: {regionsWithIntersectionDetails: RegionWithSpacerHeight[]}) {
+  const {regionsWithIntersectionDetails} = props
 
   return (
     <>
       {regionsWithIntersectionDetails.map((withIntersection) => {
-        const originalLeft = withIntersection.region.rect.left
         const {distanceTop, distanceBottom} = withIntersection
 
         const nearTop = distanceTop <= SLIDE_RIGHT_THRESHOLD_TOP
         const nearBottom = distanceBottom <= SLIDE_RIGHT_THRESHOLD_BOTTOM
-
-        const diffRight = containerWidth - originalLeft - withIntersection.region.rect.width
 
         const {presence, maxAvatars} = withIntersection.region
         return (
@@ -301,9 +292,7 @@ function PresenceInside(props: {
               style={{
                 zIndex: 2,
                 position: 'absolute',
-                ...ITEM_TRANSITION,
-                left: originalLeft,
-                transform: `translate3d(${nearTop || nearBottom ? diffRight : 0}px, 0px, 0px)`,
+                left: withIntersection.region.rect.left,
                 height: withIntersection.region.rect.height,
                 top: withIntersection.region.rect.top,
               }}

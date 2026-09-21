@@ -16,6 +16,7 @@ import {
   type FormNodePresence,
   getExpandOperations,
   type PatchEvent,
+  PresenceOverlay,
   ScrollContainer,
   setAtPath,
   type StateTree,
@@ -52,7 +53,14 @@ interface TestFormProps {
   onPathFocus?: (path: Path) => void
   openPath?: Path
   presence?: FormNodePresence[]
+  withPresenceOverlay?: boolean
+  // Bounds the scroll container so a test can scroll it. Left unset the form grows to fit its
+  // content and an ancestor pane does the scrolling instead.
+  height?: number
 }
+
+// Matches the margins `DocumentPanel` passes in an expanded layout.
+const PRESENCE_OVERLAY_MARGINS: [number, number, number, number] = [0, 0, 2, 0]
 
 const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => {
   if ($disabled) {
@@ -77,6 +85,8 @@ export function TestForm(props: TestFormProps) {
     onPathFocus: onPathFocusFromProps,
     openPath: openPathFromProps = EMPTY_ARRAY,
     presence: presenceFromProps = EMPTY_ARRAY,
+    withPresenceOverlay = false,
+    height,
   } = props
 
   const {setDocumentMeta} = useCopyPaste()
@@ -323,7 +333,7 @@ export function TestForm(props: TestFormProps) {
     ],
   )
   return (
-    <div ref={setWrapperElement}>
+    <div ref={setWrapperElement} style={height === undefined ? undefined : {height}}>
       <BoundaryElementProvider element={documentScrollElement}>
         <VirtualizerScrollInstanceProvider
           scrollElement={documentScrollElement}
@@ -336,7 +346,13 @@ export function TestForm(props: TestFormProps) {
               ref={setDocumentScrollElement}
             >
               <Box ref={formContainerElement}>
-                <FormBuilder {...formBuilderProps} />
+                {withPresenceOverlay ? (
+                  <PresenceOverlay margins={PRESENCE_OVERLAY_MARGINS}>
+                    <FormBuilder {...formBuilderProps} />
+                  </PresenceOverlay>
+                ) : (
+                  <FormBuilder {...formBuilderProps} />
+                )}
               </Box>
             </Scroller>
           </PresenceProvider>
