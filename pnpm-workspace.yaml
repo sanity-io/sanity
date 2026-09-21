@@ -152,6 +152,11 @@ minimumReleaseAgeExclude:
 
 overrides:
   vitest: 'catalog:'
+  # vite 8.3.0 inlines rolldown ~1.2.6 in bundledDevClient.mjs (no `requestLazy`). A hoisted
+  # rolldown >= 1.2.9 emits `__rolldown_runtime__.requestLazy` in full-bundle dev output, which
+  # crashes the browser with "requestLazy is not a function". Align the compiler with the embedded
+  # runtime until vite ships a bundledDev client that includes requestLazy.
+  rolldown: 1.2.6
 
 preferWorkspacePackages: true
 
