@@ -1067,7 +1067,7 @@ importers:
         specifier: ^3.0.3
         version: 3.0.3
       chromatic:
-        specifier: ^18.7.2
+        specifier: ^18.9.4
         version: 18.9.4(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.1)
       fflate:
         specifier: ^0.8.3
@@ -2360,7 +2360,7 @@ importers:
         specifier: ^9.0.20240710
         version: 9.0.20240710
       chromatic:
-        specifier: ^18.7.2
+        specifier: ^18.9.4
         version: 18.9.4(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.1)
       jsdom:
         specifier: 'catalog:'
