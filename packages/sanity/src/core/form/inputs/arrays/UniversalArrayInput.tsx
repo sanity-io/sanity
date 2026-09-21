@@ -14,8 +14,7 @@ import {ArrayOfPrimitivesInput} from './ArrayOfPrimitivesInput/ArrayOfPrimitives
  * Useful as a fallback/last resort input for an array type
  *
  *
- * @hidden
- * @beta
+ * @internal
  */
 export function UniversalArrayInput(props: ArrayOfObjectsInputProps | ArrayOfPrimitivesInputProps) {
   const isArrayOfOptionsInput = useMemo(

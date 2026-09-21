@@ -2,7 +2,7 @@ import {type Path, type SanityDocument} from '@sanity/types'
 
 const INTERNAL_KEYS = ['_id', '_type', '_createdAt', '_updatedAt', '_rev']
 /**
- * @beta
+ * @internal
  * Given a document and a reference ID, returns the paths in which the reference is used within the document.
  *
  * For example:

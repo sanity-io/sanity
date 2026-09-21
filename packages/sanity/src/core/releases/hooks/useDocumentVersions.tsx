@@ -70,8 +70,7 @@ const TEARDOWN_GRACE_PERIOD = 1_000
  *
  * @param props - document Id of the document (might include release id)
  * @returns - data: document versions, loading, errors
- * @hidden
- * @beta
+ * @internal
  */
 export function useDocumentVersions(props: DocumentPerspectiveProps): DocumentPerspectiveState {
   const observable = useDocumentVersionsObservable(props)

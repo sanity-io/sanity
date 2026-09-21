@@ -18,8 +18,7 @@ const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
 }
 
 /**
- * @hidden
- * @beta */
+ * @internal */
 export function InlinePreview(props: InlinePreviewProps) {
   const {
     title,

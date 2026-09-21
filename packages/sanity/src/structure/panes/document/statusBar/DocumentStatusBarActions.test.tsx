@@ -15,12 +15,18 @@ import {DocumentStatusBarActions} from './DocumentStatusBarActions'
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
-  DocumentGroupInventoryAction: () => (
-    <button type="button" data-testid="action-document-group-inventory">
-      Manage versions
-    </button>
-  ),
 }))
+vi.mock(
+  '../../../../core/documentGroupInventory/components/DocumentGroupInventoryAction',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    DocumentGroupInventoryAction: () => (
+      <button type="button" data-testid="action-document-group-inventory">
+        Manage versions
+      </button>
+    ),
+  }),
+)
 vi.mock(
   '../../../../core/documentGroupInventory/components/DocumentGroupInventory',
   async (importOriginal) => ({

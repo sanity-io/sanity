@@ -66,6 +66,7 @@ type ReleaseAvatarIconProps =
       size?: IconSize
     }
 
+/** @internal */
 export const ReleaseAvatarIcon = ({
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   tone,
@@ -111,6 +112,7 @@ export const ReleaseAvatarIcon = ({
   return size === 'default' ? <DotIcon {...iconProps} /> : <CircleSmallIcon {...iconProps} />
 }
 
+/** @internal */
 export function ReleaseAvatar({
   fontSize = 1,
   padding = 3,

@@ -74,8 +74,7 @@ type SearchError = {
 
 /**
  *
- * @hidden
- * @beta
+ * @internal
  */
 export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetReferenceInputProps) {
   const {path, schemaType, readOnly} = props

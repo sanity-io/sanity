@@ -1,9 +1,10 @@
 import {useCallback, useId, useMemo} from 'react'
-import {getPublishedId, useDocumentVersions, useTranslation} from 'sanity'
+import {getPublishedId, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {LoadingBlock} from '../../../core/components/loadingBlock/LoadingBlock'
+import {useDocumentVersions} from '../../../core/releases/hooks/useDocumentVersions'
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {structureLocaleNamespace} from '../../i18n'
 import {DocTitle} from '../DocTitle'

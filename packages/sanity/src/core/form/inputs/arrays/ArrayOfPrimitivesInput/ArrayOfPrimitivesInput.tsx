@@ -24,8 +24,7 @@ interface State {
 /**
  * Note: this should be a class component until React provides support for a hook version of getSnapshotBeforeUpdate
  *
- * @hidden
- * @beta
+ * @internal
  */
 // oxlint-disable-next-line react/prefer-function-component -- needs getSnapshotBeforeUpdate (no hook equivalent)
 export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInputProps, State> {

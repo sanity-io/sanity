@@ -21,21 +21,9 @@ vi.mock('sanity', async () => {
   } = await import('@sanity/client/csm')
 
   return {
-    CommentsEnabledProvider: ({children}: {children: React.ReactNode}) => <>{children}</>,
-    CommentsEnabledProviderV2: ({children}: {children: React.ReactNode}) => <>{children}</>,
-    CommentsProvider: (props: Record<string, unknown>) => {
-      capturedCommentsProviderProps = props
-      return <>{props.children}</>
-    },
-    CommentsProviderV2: (props: Record<string, unknown>) => {
-      capturedCommentsProviderV2Props = props
-      return <>{props.children}</>
-    },
     getDraftId: draftId,
     getPublishedId: publishedId,
     getVersionId: versionId,
-    useCommentsEnabled: vi.fn(() => ({enabled: true})),
-    useCommentsEnabledV2: vi.fn(() => ({enabled: true})),
     usePerspective: vi.fn(() => ({
       selectedPerspectiveName: undefined,
       selectedReleaseId: undefined,
@@ -49,6 +37,48 @@ vi.mock('sanity', async () => {
     })),
   }
 })
+vi.mock(
+  '../../../../../core/comments/context/enabled/CommentsEnabledProvider',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    CommentsEnabledProvider: ({children}: {children: React.ReactNode}) => <>{children}</>,
+  }),
+)
+vi.mock(
+  '../../../../../core/comments-v2/context/enabled/CommentsEnabledProvider',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    CommentsEnabledProvider: ({children}: {children: React.ReactNode}) => <>{children}</>,
+  }),
+)
+vi.mock(
+  '../../../../../core/comments/context/comments/CommentsProvider',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    CommentsProvider: (props: Record<string, unknown>) => {
+      capturedCommentsProviderProps = props
+      return <>{props.children}</>
+    },
+  }),
+)
+vi.mock(
+  '../../../../../core/comments-v2/context/comments/CommentsProvider',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    CommentsProvider: (props: Record<string, unknown>) => {
+      capturedCommentsProviderV2Props = props
+      return <>{props.children}</>
+    },
+  }),
+)
+vi.mock('../../../../../core/comments/hooks/useCommentsEnabled', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useCommentsEnabled: vi.fn(() => ({enabled: true})),
+}))
+vi.mock('../../../../../core/comments-v2/hooks/useCommentsEnabled', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useCommentsEnabled: vi.fn(() => ({enabled: true})),
+}))
 vi.mock('../../../../../core/comments/constants', async (importOriginal) => ({
   ...(await importOriginal()),
   COMMENTS_INSPECTOR_NAME: 'sanity/comments',

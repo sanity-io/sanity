@@ -1,8 +1,9 @@
 import {render, screen} from '@testing-library/react'
-import {getReleaseIdFromReleaseDocumentId, type ReleaseDocument, useOnlyHasVersions} from 'sanity'
+import {getReleaseIdFromReleaseDocumentId, type ReleaseDocument} from 'sanity'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {useOnlyHasVersions} from '../../../../../../core/releases/hooks/useOnlyHasVersions'
 import {useActiveReleases} from '../../../../../../core/releases/store/useActiveReleases'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
 import {OpenReleaseToEditBanner} from '../OpenReleaseToEditBanner'
@@ -15,9 +16,12 @@ vi.mock('sanity', async () => {
   const sanity = await vi.importActual('sanity')
   return {
     ...sanity,
-    useOnlyHasVersions: vi.fn(),
   }
 })
+vi.mock('../../../../../../core/releases/hooks/useOnlyHasVersions', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useOnlyHasVersions: vi.fn(),
+}))
 vi.mock('../../../../../../core/releases/store/useReleasesIds', async (importOriginal) => ({
   ...(await importOriginal()),
   useReleasesIds: vi.fn(),

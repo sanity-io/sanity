@@ -30,8 +30,7 @@ const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
 }
 
 /**
- * @hidden
- * @beta */
+ * @internal */
 export function DetailPreview(props: DetailPreviewProps) {
   const {
     title,

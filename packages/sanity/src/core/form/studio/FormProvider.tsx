@@ -60,7 +60,7 @@ export interface FormProviderProps {
 /**
  * Default wiring for `FormBuilderProvider` when used with Sanity
  *
- * @alpha This API might change.
+ * @internal This API might change.
  */
 export function FormProvider(props: FormProviderProps) {
   const {

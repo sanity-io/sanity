@@ -2,7 +2,7 @@ import {LATEST, PUBLISHED} from '../releases/util/const'
 import {useWorkspace} from '../studio/workspace'
 
 /**
- * @beta
+ * @internal
  * Exposes the default perspective based on the draft model enabled status.
  * If the user hasn't opt out from draft, the default perspective is `drafts`
  * Otherwise, the default perspective is `published`

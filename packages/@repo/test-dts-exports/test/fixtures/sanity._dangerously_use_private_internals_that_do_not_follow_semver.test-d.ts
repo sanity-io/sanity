@@ -11,24 +11,36 @@ import type {
   ActiveWorkspaceMatcher,
   ActiveWorkspaceMatcherContextValue,
   ActiveWorkspaceMatcherProps,
+  AddonDatasetProvider,
   AgentVersionDisplay,
   ArrayDiff,
   ArrayItemMetadata,
+  ArrayOfObjectOptionsInput,
+  ArrayOfObjectsInput,
   ArrayOfObjectsInputMember,
   ArrayOfObjectsInputMembers,
   ArrayOfObjectsInputMembersProps,
   ArrayOfObjectsMemberProps,
+  ArrayOfOptionsInput,
+  ArrayOfPrimitiveOptionsInput,
+  ArrayOfPrimitivesFunctions,
+  ArrayOfPrimitivesInput,
+  ArrayOfPrimitivesItem,
   asLoadable,
   AsyncConfigPropertyReducer,
   AuthStoreOptions,
   AutoCollapseMenu,
   AvailabilityReason,
   AvailabilityResponse,
+  AvatarSkeleton,
   BaseResolvedPaneNode,
   BetaBadge,
   BetaBadgeProps,
   BetaFeatures,
+  BlockImagePreview,
+  BlockPreview,
   BooleanDiff,
+  BooleanInput,
   BufferedDocumentWrapper,
   buildCommentRangeDecorations,
   Builder,
@@ -53,6 +65,7 @@ import type {
   ChangeTitleSegment,
   checkoutPair,
   Chip,
+  CircularProgress,
   classifyConfigError,
   classifyRequestError,
   CollapseMenu,
@@ -73,18 +86,27 @@ import type {
   CommandListItemContext,
   CommandListProps,
   CommandListRenderItemCallback,
+  CommentDeleteDialog,
   CommentDisabledIcon,
   CommentInlineHighlightSpan,
   CommentInput,
   CommentInputHandle,
   CommentInputProps,
   COMMENTS_INSPECTOR_NAME,
+  CommentsAuthoringPathProvider,
+  CommentsEnabledProvider,
+  CommentsEnabledProviderV2,
+  CommentsIntentProvider,
+  CommentsList,
+  CommentsProvider,
+  CommentsProviderV2,
   CommentsSelectedPath,
   CommentsSelectedPathProvider,
   CommitError,
   CommitFunction,
   CommitRequest,
   CommonProps,
+  CompactPreview,
   compileFieldPath,
   component,
   ConcreteRuleClass,
@@ -108,6 +130,7 @@ import type {
   ConnectorContextValue,
   ContextMenuButton,
   CookielessCompatibleLoginMethod,
+  CopyPasteProvider,
   CorsCheckResult,
   CorsOriginErrorScreen,
   CorsProbeOutcome,
@@ -130,6 +153,8 @@ import type {
   CreateReferenceButton,
   CreateReferenceOption,
   createRequestErrorChannel,
+  createSanityMediaLibraryFileSource,
+  createSanityMediaLibraryImageSource,
   createSearch,
   createSourceFromConfig,
   createStructureBuilder,
@@ -138,8 +163,11 @@ import type {
   createUserStore,
   createWorkspaceFromConfig,
   CreateWorkspaceFromConfigOptions,
+  CrossDatasetReferenceInput,
   CrossDatasetReferencePreview,
   CustomComponentPaneNode,
+  DateInput,
+  DateTimeInput,
   decodeJsonParams,
   decodePath,
   DEFAULT_INTENT_HANDLER,
@@ -158,9 +186,13 @@ import type {
   defaultTemplatesForSchema,
   defaultTheme,
   defineLocalesResources,
+  defineSearchFilter,
+  defineSearchFilterOperators,
   defineSearchMachine,
+  defineSearchOperator,
   Delay,
   deriveDocumentSyncState,
+  DetailPreview,
   DiagnosticsReport,
   DiagnosticsReportProps,
   Diff,
@@ -185,6 +217,7 @@ import type {
   documentFromEditor,
   documentFromEditorWithInitialValue,
   DocumentGroupInventory,
+  DocumentGroupInventoryAction,
   DocumentGroupInventoryComponents,
   DocumentGroupInventoryPerspectiveList,
   DocumentGroupInventoryProps,
@@ -215,16 +248,19 @@ import type {
   DocumentVersionSnapshots,
   DocumentVersionsStatus,
   DocumentVersionsStatusIndicator,
+  EditPortal,
   EditReferenceLinkComponentProps,
   EditReferenceOptions,
   EditScheduleForm,
   editState,
+  EmailInput,
   emitOperation,
   EMPTY_ARRAY,
   EMPTY_OBJECT,
   emptyValuesByType,
   encodeJsonParams,
   encodePath,
+  EnhancedObjectDialog,
   ErrorActions,
   ErrorActionsProps,
   ErrorMessage,
@@ -265,6 +301,7 @@ import type {
   FieldPreviewComponent,
   FieldStatusProps,
   FieldValueError,
+  FileInput,
   Filters,
   findIndex,
   FIXME,
@@ -289,6 +326,7 @@ import type {
   FormFieldValidationWarning,
   FormInputAbsolutePathArg,
   FormInputRelativePathArg,
+  FormProvider,
   FormRow,
   FormState,
   FormValueContextValue,
@@ -305,6 +343,8 @@ import type {
   getConfigContextFromSource,
   getCreatableVariantTarget,
   getDocumentIdForCanvasLink,
+  getDocumentIsInPerspective,
+  getDocumentPairPermissions,
   getDocumentValuePermissions,
   getDocumentVersionType,
   getErrorMessage,
@@ -322,6 +362,7 @@ import type {
   getPairTarget,
   getPreviewPaths,
   getProjectGrants,
+  getReferencePaths,
   getReleaseDocumentIdFromReleaseId,
   getReleaseTone,
   getSchemaTypeTitle,
@@ -357,27 +398,38 @@ import type {
   Id,
   idMatchesPerspective,
   IdPair,
+  ImageInput,
   ImperativeToast,
   initialDocumentFieldActions,
   InitialSnapshotEvent,
   InitialValueState,
+  InlinePreview,
   InsufficientPermissionsMessageProps,
   InternalSearchParam,
   InterpolationProp,
   isAddedItemDiff,
   isAgentBundleName,
   isArray,
+  isArrayOfBlocksInputProps,
+  isArrayOfPrimitivesInputProps,
   isAuthStore,
+  isBooleanInputProps,
   isBuilder,
   isCardinalityOnePerspective,
   isCardinalityOneRelease,
   isClientRequestError,
   isCookielessCompatibleLoginMethod,
+  isCreateDocumentVersionEvent,
+  isCreateLiveDocumentEvent,
+  isDeleteDocumentGroupEvent,
+  isDeleteDocumentVersionEvent,
   isDocumentInSelectedVariant,
   isDocumentLimitError,
   isDocumentListItem,
   isDraft,
   isDraftPerspective,
+  isDraftVersion,
+  isEditDocumentVersionEvent,
   isEmptyObject,
   IsEqualFunction,
   isFieldChange,
@@ -388,15 +440,21 @@ import type {
   isNetworkError,
   isNewDocument,
   isNonNullable,
+  isNumberInputProps,
+  isObjectItemProps,
   isPausedCardinalityOneRelease,
   isPerspectiveRaw,
   isPerspectiveWriteable,
   isProd,
+  isPublishDocumentVersionEvent,
   isPublishedPerspective,
+  isPublishedVersion,
   isReleaseDocument,
   isReleasePerspective,
   isReleaseScheduledOrScheduling,
+  isReleaseVersion,
   isRemovedItemDiff,
+  isScheduleDocumentVersionEvent,
   isString,
   isSystemBundle,
   isSystemBundleName,
@@ -404,9 +462,13 @@ import type {
   isTruthy,
   isUnauthorizedError,
   isUnchangedDiff,
+  isUnpublishDocumentEvent,
+  isUnscheduleDocumentVersionEvent,
+  isUpdateLiveDocumentEvent,
   isValidAnnouncementAudience,
   isValidAnnouncementRole,
   isVariantId,
+  isVariantVersion,
   ItemDiff,
   joinPath,
   KeyValueStore,
@@ -439,6 +501,7 @@ import type {
   maybeSerializeView,
   measureFirstEmission,
   measureFirstMatch,
+  MediaPreview,
   MemberFieldProps,
   MemberFieldSet,
   menuItemsFromInitialValueTemplateItems,
@@ -461,6 +524,8 @@ import type {
   normalizePathSegment,
   NullDiff,
   NumberDiff,
+  NumberInput,
+  ObjectInput,
   ObjectInputMemberProps,
   ObjectInputMembers,
   ObjectMembers,
@@ -510,9 +575,11 @@ import type {
   PrimitiveFieldProps,
   PUBLISHED,
   ReactHook,
+  readVersionType,
   Rect,
   ReferenceAutocomplete,
   ReferenceDiff,
+  ReferenceInput,
   ReferenceInputOptions,
   ReferenceInputOptionsProvider,
   ReferenceInputPreviewCard,
@@ -520,6 +587,8 @@ import type {
   RelativeTime,
   RelativeTimeOptions,
   RelativeTimeProps,
+  ReleaseAvatar,
+  ReleaseAvatarIcon,
   RELEASES_INTENT,
   RELEASES_STUDIO_CLIENT_OPTIONS,
   ReleasesNav,
@@ -575,6 +644,7 @@ import type {
   SearchResultItemPreview,
   SearchSort,
   SearchTerms,
+  SelectInput,
   Selection,
   selectUpstreamVersion,
   Sentiment,
@@ -590,6 +660,7 @@ import type {
   SingleDocReleaseProvider,
   Size,
   sliceString,
+  SlugInput,
   snapshotPair,
   SortMenuItem,
   sortReleases,
@@ -601,6 +672,7 @@ import type {
   StrictVersionLayeringOptions,
   StringDiff,
   StringDiffSegment,
+  StringInput,
   StringSegmentChanged,
   StringSegmentUnchanged,
   StructureBuilderOptions,
@@ -618,13 +690,19 @@ import type {
   StudioFeedbackDialogProps,
   StudioFeedbackProvider,
   StudioLayoutComponent,
+  StudioLogo,
+  StudioNavbar,
+  StudioToolMenu,
   supportsTouch,
   SyncState,
+  TagsArrayInput,
   TargetDocumentState,
   TargetScopeIdOptions,
+  TelephoneInput,
   TemplateOption,
   TemplatePermissionsOptions,
   TemplatePermissionsResult,
+  TemplatePreview,
   TextWithToneProps,
   TimeAgoOpts,
   TIMELINE_ITEM_I18N_KEY_MAPPING,
@@ -637,8 +715,10 @@ import type {
   TrackedChange,
   TrackerContextGetSnapshot,
   TrackerContextStore,
+  TransformPatches,
   TypeChangeDiff,
   uncaughtErrorHandler,
+  UniversalArrayInput,
   UnresolvedPaneNode,
   unstable_useObserveDocument,
   unstable_useValuePreview,
@@ -650,17 +730,24 @@ import type {
   UpsellDialogUpgradeCtaClicked,
   UpsellDialogViewed,
   UpsellDialogViewedInfo,
+  UrlInput,
   useActiveReleases,
+  useAddonDataset,
   useAgentVersionDisplay,
   useAllReleases,
   useAllVariants,
   useArchivedReleases,
+  useCanvasCompanionDoc,
   useChangeIndicatorsReportedValues,
   useChangeIndicatorsReporter,
   useColorScheme,
   useColorSchemeInternalValue,
   useColorSchemeOptions,
+  useColorSchemeSetValue,
   useComlinkStore,
+  useComments,
+  useCommentsEnabled,
+  useCommentsEnabledV2,
   useCommentsSelectedPath,
   useCommentsTelemetry,
   useConditionalToast,
@@ -668,7 +755,10 @@ import type {
   useConnectionState,
   useConnectionStatusStore,
   useCopyErrorDetails,
+  useCopyPaste,
   useCreatableVariantInitialValue,
+  useDialogStack,
+  useDidUpdate,
   useDivergenceNavigator,
   useDocumentChange,
   useDocumentDivergences,
@@ -681,6 +771,9 @@ import type {
   useDocumentSyncState,
   useDocumentType,
   useDocumentValuePermissions,
+  useDocumentVersions,
+  useDocumentVersionTitle,
+  useDocumentVersionTypeSortedList,
   useEnhancedObjectDialog,
   useEvents,
   useEventsStore,
@@ -691,11 +784,15 @@ import type {
   useFieldActions,
   useFilteredReleases,
   useFormatRelativeLocalePublishDate,
+  useFormBuilder,
   useFormState,
   UseFormStateOptions,
+  useGetDefaultPerspective,
   useGetI18nText,
   useGlobalCopyPasteElementHandler,
   useGlobalPresence,
+  useGrantsStore,
+  useHistoryStore,
   useHoveredField,
   useI18nText,
   useInitialValue,
@@ -711,6 +808,7 @@ import type {
   useMiddlewareComponents,
   useNavigateToCanvasDoc,
   usEnglishLocale,
+  useOnlyHasVersions,
   useOnScroll,
   usePaneOptions,
   useParseErrorForPath,
@@ -718,9 +816,11 @@ import type {
   usePausedScheduledDraft,
   usePauseToEditScheduledDraft,
   usePortalBoundary,
+  usePresenceStore,
   usePreviewCard,
   useProject,
   useProjectDatasets,
+  useProjectStore,
   UserColor,
   UserColorHue,
   UserColorManager,
@@ -729,6 +829,7 @@ import type {
   UserColorManagerProviderProps,
   useReconnectingToast,
   useReferenceInputOptions,
+  useReferringDocuments,
   useReleasesIds,
   useRenderingContextStore,
   useReportParseError,
@@ -736,6 +837,7 @@ import type {
   useRetryCountdown,
   useReviewChanges,
   UserId,
+  useRovingFocus,
   UserSessionPair,
   UserStoreOptions,
   useScheduledDraftDocument,
@@ -766,6 +868,7 @@ import type {
   useUnstableObserveDocument,
   useUser,
   useUserColor,
+  useUserListWithPermissions,
   useValuePreview,
   useVariantDocumentOperations,
   useVersionOperations,
@@ -832,6 +935,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('ActiveWorkspaceMatcherProps', () => {
     expectTypeOf<ActiveWorkspaceMatcherProps>().toBeObject()
   })
+  test('AddonDatasetProvider', () => {
+    expectTypeOf<typeof AddonDatasetProvider>().toBeFunction()
+  })
   test('AgentVersionDisplay', () => {
     expectTypeOf<AgentVersionDisplay>().not.toBeNever()
   })
@@ -840,6 +946,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('ArrayItemMetadata', () => {
     expectTypeOf<ArrayItemMetadata>().toBeObject()
+  })
+  test('ArrayOfObjectOptionsInput', () => {
+    expectTypeOf<typeof ArrayOfObjectOptionsInput>().toBeFunction()
+  })
+  test('ArrayOfObjectsInput', () => {
+    expectTypeOf<typeof ArrayOfObjectsInput>().toBeFunction()
   })
   test('ArrayOfObjectsInputMember', () => {
     expectTypeOf<typeof ArrayOfObjectsInputMember>().toBeFunction()
@@ -852,6 +964,21 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('ArrayOfObjectsMemberProps', () => {
     expectTypeOf<ArrayOfObjectsMemberProps>().toBeObject()
+  })
+  test('ArrayOfOptionsInput', () => {
+    expectTypeOf<typeof ArrayOfOptionsInput>().toBeFunction()
+  })
+  test('ArrayOfPrimitiveOptionsInput', () => {
+    expectTypeOf<typeof ArrayOfPrimitiveOptionsInput>().toBeFunction()
+  })
+  test('ArrayOfPrimitivesFunctions', () => {
+    expectTypeOf<typeof ArrayOfPrimitivesFunctions>().toBeFunction()
+  })
+  test('ArrayOfPrimitivesInput', () => {
+    expectTypeOf<ArrayOfPrimitivesInput>().not.toBeNever()
+  })
+  test('ArrayOfPrimitivesItem', () => {
+    expectTypeOf<typeof ArrayOfPrimitivesItem>().toBeFunction()
   })
   test('asLoadable', () => {
     expectTypeOf<typeof asLoadable>().toBeFunction()
@@ -871,6 +998,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('AvailabilityResponse', () => {
     expectTypeOf<AvailabilityResponse>().toBeObject()
   })
+  test('AvatarSkeleton', () => {
+    expectTypeOf<typeof AvatarSkeleton>().not.toBeNever()
+  })
   test('BaseResolvedPaneNode', () => {
     expectTypeOf<BaseResolvedPaneNode<any>>().toBeObject()
   })
@@ -883,8 +1013,17 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('BetaFeatures', () => {
     expectTypeOf<BetaFeatures>().toBeObject()
   })
+  test('BlockImagePreview', () => {
+    expectTypeOf<typeof BlockImagePreview>().toBeFunction()
+  })
+  test('BlockPreview', () => {
+    expectTypeOf<typeof BlockPreview>().toBeFunction()
+  })
   test('BooleanDiff', () => {
     expectTypeOf<BooleanDiff>().not.toBeNever()
+  })
+  test('BooleanInput', () => {
+    expectTypeOf<typeof BooleanInput>().toBeFunction()
   })
   test('BufferedDocumentWrapper', () => {
     expectTypeOf<BufferedDocumentWrapper>().toBeObject()
@@ -958,6 +1097,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('Chip', () => {
     expectTypeOf<typeof Chip>().toBeFunction()
   })
+  test('CircularProgress', () => {
+    expectTypeOf<typeof CircularProgress>().toBeFunction()
+  })
   test('classifyConfigError', () => {
     expectTypeOf<typeof classifyConfigError>().toBeFunction()
   })
@@ -1018,6 +1160,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('CommandListRenderItemCallback', () => {
     expectTypeOf<CommandListRenderItemCallback<any>>().not.toBeNever()
   })
+  test('CommentDeleteDialog', () => {
+    expectTypeOf<typeof CommentDeleteDialog>().toBeFunction()
+  })
   test('CommentDisabledIcon', () => {
     expectTypeOf<typeof CommentDisabledIcon>().toBeFunction()
   })
@@ -1036,6 +1181,27 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('COMMENTS_INSPECTOR_NAME', () => {
     expectTypeOf<typeof COMMENTS_INSPECTOR_NAME>().not.toBeNever()
   })
+  test('CommentsAuthoringPathProvider', () => {
+    expectTypeOf<typeof CommentsAuthoringPathProvider>().toBeFunction()
+  })
+  test('CommentsEnabledProvider', () => {
+    expectTypeOf<typeof CommentsEnabledProvider>().not.toBeNever()
+  })
+  test('CommentsEnabledProviderV2', () => {
+    expectTypeOf<typeof CommentsEnabledProviderV2>().not.toBeNever()
+  })
+  test('CommentsIntentProvider', () => {
+    expectTypeOf<typeof CommentsIntentProvider>().not.toBeNever()
+  })
+  test('CommentsList', () => {
+    expectTypeOf<typeof CommentsList>().not.toBeNever()
+  })
+  test('CommentsProvider', () => {
+    expectTypeOf<typeof CommentsProvider>().not.toBeNever()
+  })
+  test('CommentsProviderV2', () => {
+    expectTypeOf<typeof CommentsProviderV2>().not.toBeNever()
+  })
   test('CommentsSelectedPath', () => {
     expectTypeOf<CommentsSelectedPath>().toBeObject()
   })
@@ -1053,6 +1219,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('CommonProps', () => {
     expectTypeOf<CommonProps>().toBeObject()
+  })
+  test('CompactPreview', () => {
+    expectTypeOf<typeof CompactPreview>().toBeFunction()
   })
   test('compileFieldPath', () => {
     expectTypeOf<typeof compileFieldPath>().toBeFunction()
@@ -1123,6 +1292,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('CookielessCompatibleLoginMethod', () => {
     expectTypeOf<CookielessCompatibleLoginMethod>().not.toBeNever()
   })
+  test('CopyPasteProvider', () => {
+    expectTypeOf<typeof CopyPasteProvider>().not.toBeNever()
+  })
   test('CorsCheckResult', () => {
     expectTypeOf<CorsCheckResult>().not.toBeNever()
   })
@@ -1189,6 +1361,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('createRequestErrorChannel', () => {
     expectTypeOf<typeof createRequestErrorChannel>().toBeFunction()
   })
+  test('createSanityMediaLibraryFileSource', () => {
+    expectTypeOf<typeof createSanityMediaLibraryFileSource>().toBeFunction()
+  })
+  test('createSanityMediaLibraryImageSource', () => {
+    expectTypeOf<typeof createSanityMediaLibraryImageSource>().toBeFunction()
+  })
   test('createSearch', () => {
     expectTypeOf<typeof createSearch>().not.toBeNever()
   })
@@ -1213,11 +1391,20 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('CreateWorkspaceFromConfigOptions', () => {
     expectTypeOf<CreateWorkspaceFromConfigOptions>().not.toBeNever()
   })
+  test('CrossDatasetReferenceInput', () => {
+    expectTypeOf<typeof CrossDatasetReferenceInput>().toBeFunction()
+  })
   test('CrossDatasetReferencePreview', () => {
     expectTypeOf<typeof CrossDatasetReferencePreview>().toBeFunction()
   })
   test('CustomComponentPaneNode', () => {
     expectTypeOf<CustomComponentPaneNode>().toBeObject()
+  })
+  test('DateInput', () => {
+    expectTypeOf<typeof DateInput>().toBeFunction()
+  })
+  test('DateTimeInput', () => {
+    expectTypeOf<typeof DateTimeInput>().toBeFunction()
   })
   test('decodeJsonParams', () => {
     expectTypeOf<typeof decodeJsonParams>().toBeFunction()
@@ -1273,14 +1460,26 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('defineLocalesResources', () => {
     expectTypeOf<typeof defineLocalesResources>().toBeFunction()
   })
+  test('defineSearchFilter', () => {
+    expectTypeOf<typeof defineSearchFilter>().toBeFunction()
+  })
+  test('defineSearchFilterOperators', () => {
+    expectTypeOf<typeof defineSearchFilterOperators>().toBeFunction()
+  })
   test('defineSearchMachine', () => {
     expectTypeOf<typeof defineSearchMachine>().toBeFunction()
+  })
+  test('defineSearchOperator', () => {
+    expectTypeOf<typeof defineSearchOperator>().toBeFunction()
   })
   test('Delay', () => {
     expectTypeOf<typeof Delay>().toBeFunction()
   })
   test('deriveDocumentSyncState', () => {
     expectTypeOf<typeof deriveDocumentSyncState>().toBeFunction()
+  })
+  test('DetailPreview', () => {
+    expectTypeOf<typeof DetailPreview>().toBeFunction()
   })
   test('DiagnosticsReport', () => {
     expectTypeOf<typeof DiagnosticsReport>().toBeFunction()
@@ -1353,6 +1552,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('DocumentGroupInventory', () => {
     expectTypeOf<typeof DocumentGroupInventory>().not.toBeNever()
+  })
+  test('DocumentGroupInventoryAction', () => {
+    expectTypeOf<typeof DocumentGroupInventoryAction>().not.toBeNever()
   })
   test('DocumentGroupInventoryComponents', () => {
     expectTypeOf<DocumentGroupInventoryComponents>().toBeObject()
@@ -1444,6 +1646,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('DocumentVersionsStatusIndicator', () => {
     expectTypeOf<typeof DocumentVersionsStatusIndicator>().toBeFunction()
   })
+  test('EditPortal', () => {
+    expectTypeOf<typeof EditPortal>().toBeFunction()
+  })
   test('EditReferenceLinkComponentProps', () => {
     expectTypeOf<EditReferenceLinkComponentProps>().toBeObject()
   })
@@ -1455,6 +1660,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('editState', () => {
     expectTypeOf<typeof editState>().not.toBeNever()
+  })
+  test('EmailInput', () => {
+    expectTypeOf<typeof EmailInput>().toBeFunction()
   })
   test('emitOperation', () => {
     expectTypeOf<typeof emitOperation>().toBeFunction()
@@ -1473,6 +1681,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('encodePath', () => {
     expectTypeOf<typeof encodePath>().toBeFunction()
+  })
+  test('EnhancedObjectDialog', () => {
+    expectTypeOf<typeof EnhancedObjectDialog>().toBeFunction()
   })
   test('ErrorActions', () => {
     expectTypeOf<typeof ErrorActions>().not.toBeNever()
@@ -1594,6 +1805,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('FieldValueError', () => {
     expectTypeOf<FieldValueError>().toBeObject()
   })
+  test('FileInput', () => {
+    expectTypeOf<typeof FileInput>().toBeFunction()
+  })
   test('Filters', () => {
     expectTypeOf<typeof Filters>().toBeFunction()
   })
@@ -1666,6 +1880,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('FormInputRelativePathArg', () => {
     expectTypeOf<FormInputRelativePathArg>().not.toBeNever()
   })
+  test('FormProvider', () => {
+    expectTypeOf<typeof FormProvider>().toBeFunction()
+  })
   test('FormRow', () => {
     expectTypeOf<typeof FormRow>().not.toBeNever()
   })
@@ -1713,6 +1930,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('getDocumentIdForCanvasLink', () => {
     expectTypeOf<typeof getDocumentIdForCanvasLink>().toBeFunction()
+  })
+  test('getDocumentIsInPerspective', () => {
+    expectTypeOf<typeof getDocumentIsInPerspective>().toBeFunction()
+  })
+  test('getDocumentPairPermissions', () => {
+    expectTypeOf<typeof getDocumentPairPermissions>().not.toBeNever()
   })
   test('getDocumentValuePermissions', () => {
     expectTypeOf<typeof getDocumentValuePermissions>().toBeFunction()
@@ -1764,6 +1987,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('getProjectGrants', () => {
     expectTypeOf<typeof getProjectGrants>().not.toBeNever()
+  })
+  test('getReferencePaths', () => {
+    expectTypeOf<typeof getReferencePaths>().toBeFunction()
   })
   test('getReleaseDocumentIdFromReleaseId', () => {
     expectTypeOf<typeof getReleaseDocumentIdFromReleaseId>().toBeFunction()
@@ -1870,6 +2096,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('IdPair', () => {
     expectTypeOf<IdPair>().toBeObject()
   })
+  test('ImageInput', () => {
+    expectTypeOf<typeof ImageInput>().toBeFunction()
+  })
   test('ImperativeToast', () => {
     expectTypeOf<typeof ImperativeToast>().toBeFunction()
   })
@@ -1881,6 +2110,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('InitialValueState', () => {
     expectTypeOf<InitialValueState>().toBeObject()
+  })
+  test('InlinePreview', () => {
+    expectTypeOf<typeof InlinePreview>().toBeFunction()
   })
   test('InsufficientPermissionsMessageProps', () => {
     expectTypeOf<InsufficientPermissionsMessageProps>().toBeObject()
@@ -1900,8 +2132,17 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('isArray', () => {
     expectTypeOf<typeof isArray>().toBeFunction()
   })
+  test('isArrayOfBlocksInputProps', () => {
+    expectTypeOf<typeof isArrayOfBlocksInputProps>().toBeFunction()
+  })
+  test('isArrayOfPrimitivesInputProps', () => {
+    expectTypeOf<typeof isArrayOfPrimitivesInputProps>().toBeFunction()
+  })
   test('isAuthStore', () => {
     expectTypeOf<typeof isAuthStore>().toBeFunction()
+  })
+  test('isBooleanInputProps', () => {
+    expectTypeOf<typeof isBooleanInputProps>().toBeFunction()
   })
   test('isBuilder', () => {
     expectTypeOf<typeof isBuilder>().toBeFunction()
@@ -1918,6 +2159,18 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('isCookielessCompatibleLoginMethod', () => {
     expectTypeOf<typeof isCookielessCompatibleLoginMethod>().toBeFunction()
   })
+  test('isCreateDocumentVersionEvent', () => {
+    expectTypeOf<typeof isCreateDocumentVersionEvent>().not.toBeNever()
+  })
+  test('isCreateLiveDocumentEvent', () => {
+    expectTypeOf<typeof isCreateLiveDocumentEvent>().not.toBeNever()
+  })
+  test('isDeleteDocumentGroupEvent', () => {
+    expectTypeOf<typeof isDeleteDocumentGroupEvent>().not.toBeNever()
+  })
+  test('isDeleteDocumentVersionEvent', () => {
+    expectTypeOf<typeof isDeleteDocumentVersionEvent>().not.toBeNever()
+  })
   test('isDocumentInSelectedVariant', () => {
     expectTypeOf<typeof isDocumentInSelectedVariant>().toBeFunction()
   })
@@ -1932,6 +2185,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('isDraftPerspective', () => {
     expectTypeOf<typeof isDraftPerspective>().toBeFunction()
+  })
+  test('isDraftVersion', () => {
+    expectTypeOf<typeof isDraftVersion>().toBeFunction()
+  })
+  test('isEditDocumentVersionEvent', () => {
+    expectTypeOf<typeof isEditDocumentVersionEvent>().not.toBeNever()
   })
   test('isEmptyObject', () => {
     expectTypeOf<typeof isEmptyObject>().toBeFunction()
@@ -1963,6 +2222,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('isNonNullable', () => {
     expectTypeOf<typeof isNonNullable>().toBeFunction()
   })
+  test('isNumberInputProps', () => {
+    expectTypeOf<typeof isNumberInputProps>().toBeFunction()
+  })
+  test('isObjectItemProps', () => {
+    expectTypeOf<typeof isObjectItemProps>().toBeFunction()
+  })
   test('isPausedCardinalityOneRelease', () => {
     expectTypeOf<typeof isPausedCardinalityOneRelease>().toBeFunction()
   })
@@ -1975,8 +2240,14 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('isProd', () => {
     expectTypeOf<typeof isProd>().not.toBeNever()
   })
+  test('isPublishDocumentVersionEvent', () => {
+    expectTypeOf<typeof isPublishDocumentVersionEvent>().not.toBeNever()
+  })
   test('isPublishedPerspective', () => {
     expectTypeOf<typeof isPublishedPerspective>().toBeFunction()
+  })
+  test('isPublishedVersion', () => {
+    expectTypeOf<typeof isPublishedVersion>().toBeFunction()
   })
   test('isReleaseDocument', () => {
     expectTypeOf<typeof isReleaseDocument>().toBeFunction()
@@ -1987,8 +2258,14 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('isReleaseScheduledOrScheduling', () => {
     expectTypeOf<typeof isReleaseScheduledOrScheduling>().toBeFunction()
   })
+  test('isReleaseVersion', () => {
+    expectTypeOf<typeof isReleaseVersion>().toBeFunction()
+  })
   test('isRemovedItemDiff', () => {
     expectTypeOf<typeof isRemovedItemDiff>().toBeFunction()
+  })
+  test('isScheduleDocumentVersionEvent', () => {
+    expectTypeOf<typeof isScheduleDocumentVersionEvent>().not.toBeNever()
   })
   test('isString', () => {
     expectTypeOf<typeof isString>().toBeFunction()
@@ -2011,6 +2288,15 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('isUnchangedDiff', () => {
     expectTypeOf<typeof isUnchangedDiff>().toBeFunction()
   })
+  test('isUnpublishDocumentEvent', () => {
+    expectTypeOf<typeof isUnpublishDocumentEvent>().not.toBeNever()
+  })
+  test('isUnscheduleDocumentVersionEvent', () => {
+    expectTypeOf<typeof isUnscheduleDocumentVersionEvent>().not.toBeNever()
+  })
+  test('isUpdateLiveDocumentEvent', () => {
+    expectTypeOf<typeof isUpdateLiveDocumentEvent>().not.toBeNever()
+  })
   test('isValidAnnouncementAudience', () => {
     expectTypeOf<typeof isValidAnnouncementAudience>().toBeFunction()
   })
@@ -2019,6 +2305,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('isVariantId', () => {
     expectTypeOf<typeof isVariantId>().toBeFunction()
+  })
+  test('isVariantVersion', () => {
+    expectTypeOf<typeof isVariantVersion>().toBeFunction()
   })
   test('ItemDiff', () => {
     expectTypeOf<ItemDiff>().not.toBeNever()
@@ -2116,6 +2405,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('measureFirstMatch', () => {
     expectTypeOf<typeof measureFirstMatch>().toBeFunction()
   })
+  test('MediaPreview', () => {
+    expectTypeOf<typeof MediaPreview>().toBeFunction()
+  })
   test('MemberFieldProps', () => {
     expectTypeOf<MemberFieldProps>().toBeObject()
   })
@@ -2181,6 +2473,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('NumberDiff', () => {
     expectTypeOf<NumberDiff>().not.toBeNever()
+  })
+  test('NumberInput', () => {
+    expectTypeOf<typeof NumberInput>().toBeFunction()
+  })
+  test('ObjectInput', () => {
+    expectTypeOf<typeof ObjectInput>().not.toBeNever()
   })
   test('ObjectInputMemberProps', () => {
     expectTypeOf<ObjectInputMemberProps>().toBeObject()
@@ -2329,6 +2627,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('ReactHook', () => {
     expectTypeOf<ReactHook<any, any>>().not.toBeNever()
   })
+  test('readVersionType', () => {
+    expectTypeOf<typeof readVersionType>().toBeFunction()
+  })
   test('Rect', () => {
     expectTypeOf<Rect>().toBeObject()
   })
@@ -2337,6 +2638,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('ReferenceDiff', () => {
     expectTypeOf<ReferenceDiff>().not.toBeNever()
+  })
+  test('ReferenceInput', () => {
+    expectTypeOf<typeof ReferenceInput>().toBeFunction()
   })
   test('ReferenceInputOptions', () => {
     expectTypeOf<ReferenceInputOptions>().toBeObject()
@@ -2358,6 +2662,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('RelativeTimeProps', () => {
     expectTypeOf<RelativeTimeProps>().toBeObject()
+  })
+  test('ReleaseAvatar', () => {
+    expectTypeOf<typeof ReleaseAvatar>().toBeFunction()
+  })
+  test('ReleaseAvatarIcon', () => {
+    expectTypeOf<typeof ReleaseAvatarIcon>().not.toBeNever()
   })
   test('RELEASES_INTENT', () => {
     expectTypeOf<typeof RELEASES_INTENT>().not.toBeNever()
@@ -2524,6 +2834,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('SearchTerms', () => {
     expectTypeOf<SearchTerms<any>>().toBeObject()
   })
+  test('SelectInput', () => {
+    expectTypeOf<typeof SelectInput>().toBeFunction()
+  })
   test('Selection', () => {
     expectTypeOf<Selection>().not.toBeNever()
   })
@@ -2569,6 +2882,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('sliceString', () => {
     expectTypeOf<typeof sliceString>().toBeFunction()
   })
+  test('SlugInput', () => {
+    expectTypeOf<typeof SlugInput>().toBeFunction()
+  })
   test('snapshotPair', () => {
     expectTypeOf<typeof snapshotPair>().not.toBeNever()
   })
@@ -2601,6 +2917,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('StringDiffSegment', () => {
     expectTypeOf<StringDiffSegment>().not.toBeNever()
+  })
+  test('StringInput', () => {
+    expectTypeOf<typeof StringInput>().toBeFunction()
   })
   test('StringSegmentChanged', () => {
     expectTypeOf<StringSegmentChanged>().not.toBeNever()
@@ -2653,17 +2972,32 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('StudioLayoutComponent', () => {
     expectTypeOf<typeof StudioLayoutComponent>().toBeFunction()
   })
+  test('StudioLogo', () => {
+    expectTypeOf<typeof StudioLogo>().toBeFunction()
+  })
+  test('StudioNavbar', () => {
+    expectTypeOf<typeof StudioNavbar>().toBeFunction()
+  })
+  test('StudioToolMenu', () => {
+    expectTypeOf<typeof StudioToolMenu>().toBeFunction()
+  })
   test('supportsTouch', () => {
     expectTypeOf<typeof supportsTouch>().not.toBeNever()
   })
   test('SyncState', () => {
     expectTypeOf<SyncState>().toBeObject()
   })
+  test('TagsArrayInput', () => {
+    expectTypeOf<typeof TagsArrayInput>().toBeFunction()
+  })
   test('TargetDocumentState', () => {
     expectTypeOf<TargetDocumentState>().not.toBeNever()
   })
   test('TargetScopeIdOptions', () => {
     expectTypeOf<TargetScopeIdOptions>().toBeObject()
+  })
+  test('TelephoneInput', () => {
+    expectTypeOf<typeof TelephoneInput>().toBeFunction()
   })
   test('TemplateOption', () => {
     expectTypeOf<TemplateOption>().toBeObject()
@@ -2673,6 +3007,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('TemplatePermissionsResult', () => {
     expectTypeOf<TemplatePermissionsResult<any>>().toBeObject()
+  })
+  test('TemplatePreview', () => {
+    expectTypeOf<typeof TemplatePreview>().toBeFunction()
   })
   test('TextWithToneProps', () => {
     expectTypeOf<TextWithToneProps>().not.toBeNever()
@@ -2710,11 +3047,17 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('TrackerContextStore', () => {
     expectTypeOf<TrackerContextStore<any>>().toBeObject()
   })
+  test('TransformPatches', () => {
+    expectTypeOf<typeof TransformPatches>().not.toBeNever()
+  })
   test('TypeChangeDiff', () => {
     expectTypeOf<TypeChangeDiff>().not.toBeNever()
   })
   test('uncaughtErrorHandler', () => {
     expectTypeOf<typeof uncaughtErrorHandler>().not.toBeNever()
+  })
+  test('UniversalArrayInput', () => {
+    expectTypeOf<typeof UniversalArrayInput>().toBeFunction()
   })
   test('UnresolvedPaneNode', () => {
     expectTypeOf<UnresolvedPaneNode>().not.toBeNever()
@@ -2749,8 +3092,14 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('UpsellDialogViewedInfo', () => {
     expectTypeOf<UpsellDialogViewedInfo>().toBeObject()
   })
+  test('UrlInput', () => {
+    expectTypeOf<typeof UrlInput>().toBeFunction()
+  })
   test('useActiveReleases', () => {
     expectTypeOf<typeof useActiveReleases>().toBeFunction()
+  })
+  test('useAddonDataset', () => {
+    expectTypeOf<typeof useAddonDataset>().toBeFunction()
   })
   test('useAgentVersionDisplay', () => {
     expectTypeOf<typeof useAgentVersionDisplay>().toBeFunction()
@@ -2763,6 +3112,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('useArchivedReleases', () => {
     expectTypeOf<typeof useArchivedReleases>().toBeFunction()
+  })
+  test('useCanvasCompanionDoc', () => {
+    expectTypeOf<typeof useCanvasCompanionDoc>().not.toBeNever()
   })
   test('useChangeIndicatorsReportedValues', () => {
     expectTypeOf<typeof useChangeIndicatorsReportedValues>().toBeFunction()
@@ -2779,8 +3131,20 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('useColorSchemeOptions', () => {
     expectTypeOf<typeof useColorSchemeOptions>().toBeFunction()
   })
+  test('useColorSchemeSetValue', () => {
+    expectTypeOf<typeof useColorSchemeSetValue>().toBeFunction()
+  })
   test('useComlinkStore', () => {
     expectTypeOf<typeof useComlinkStore>().toBeFunction()
+  })
+  test('useComments', () => {
+    expectTypeOf<typeof useComments>().toBeFunction()
+  })
+  test('useCommentsEnabled', () => {
+    expectTypeOf<typeof useCommentsEnabled>().toBeFunction()
+  })
+  test('useCommentsEnabledV2', () => {
+    expectTypeOf<typeof useCommentsEnabledV2>().toBeFunction()
   })
   test('useCommentsSelectedPath', () => {
     expectTypeOf<typeof useCommentsSelectedPath>().toBeFunction()
@@ -2803,8 +3167,17 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('useCopyErrorDetails', () => {
     expectTypeOf<typeof useCopyErrorDetails>().toBeFunction()
   })
+  test('useCopyPaste', () => {
+    expectTypeOf<typeof useCopyPaste>().not.toBeNever()
+  })
   test('useCreatableVariantInitialValue', () => {
     expectTypeOf<typeof useCreatableVariantInitialValue>().toBeFunction()
+  })
+  test('useDialogStack', () => {
+    expectTypeOf<typeof useDialogStack>().toBeFunction()
+  })
+  test('useDidUpdate', () => {
+    expectTypeOf<typeof useDidUpdate>().toBeFunction()
   })
   test('useDivergenceNavigator', () => {
     expectTypeOf<typeof useDivergenceNavigator>().toBeFunction()
@@ -2842,6 +3215,15 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('useDocumentValuePermissions', () => {
     expectTypeOf<typeof useDocumentValuePermissions>().toBeFunction()
   })
+  test('useDocumentVersions', () => {
+    expectTypeOf<typeof useDocumentVersions>().toBeFunction()
+  })
+  test('useDocumentVersionTitle', () => {
+    expectTypeOf<typeof useDocumentVersionTitle>().toBeFunction()
+  })
+  test('useDocumentVersionTypeSortedList', () => {
+    expectTypeOf<typeof useDocumentVersionTypeSortedList>().not.toBeNever()
+  })
   test('useEnhancedObjectDialog', () => {
     expectTypeOf<typeof useEnhancedObjectDialog>().toBeFunction()
   })
@@ -2872,11 +3254,17 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('useFormatRelativeLocalePublishDate', () => {
     expectTypeOf<typeof useFormatRelativeLocalePublishDate>().toBeFunction()
   })
+  test('useFormBuilder', () => {
+    expectTypeOf<typeof useFormBuilder>().toBeFunction()
+  })
   test('useFormState', () => {
     expectTypeOf<typeof useFormState>().toBeFunction()
   })
   test('UseFormStateOptions', () => {
     expectTypeOf<UseFormStateOptions>().toBeObject()
+  })
+  test('useGetDefaultPerspective', () => {
+    expectTypeOf<typeof useGetDefaultPerspective>().toBeFunction()
   })
   test('useGetI18nText', () => {
     expectTypeOf<typeof useGetI18nText>().toBeFunction()
@@ -2886,6 +3274,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('useGlobalPresence', () => {
     expectTypeOf<typeof useGlobalPresence>().toBeFunction()
+  })
+  test('useGrantsStore', () => {
+    expectTypeOf<typeof useGrantsStore>().toBeFunction()
+  })
+  test('useHistoryStore', () => {
+    expectTypeOf<typeof useHistoryStore>().toBeFunction()
   })
   test('useHoveredField', () => {
     expectTypeOf<typeof useHoveredField>().toBeFunction()
@@ -2933,6 +3327,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('usEnglishLocale', () => {
     expectTypeOf<typeof usEnglishLocale>().not.toBeNever()
   })
+  test('useOnlyHasVersions', () => {
+    expectTypeOf<typeof useOnlyHasVersions>().not.toBeNever()
+  })
   test('useOnScroll', () => {
     expectTypeOf<typeof useOnScroll>().toBeFunction()
   })
@@ -2954,6 +3351,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('usePortalBoundary', () => {
     expectTypeOf<typeof usePortalBoundary>().toBeFunction()
   })
+  test('usePresenceStore', () => {
+    expectTypeOf<typeof usePresenceStore>().toBeFunction()
+  })
   test('usePreviewCard', () => {
     expectTypeOf<typeof usePreviewCard>().toBeFunction()
   })
@@ -2962,6 +3362,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('useProjectDatasets', () => {
     expectTypeOf<typeof useProjectDatasets>().toBeFunction()
+  })
+  test('useProjectStore', () => {
+    expectTypeOf<typeof useProjectStore>().toBeFunction()
   })
   test('UserColor', () => {
     expectTypeOf<UserColor>().toBeObject()
@@ -2987,6 +3390,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('useReferenceInputOptions', () => {
     expectTypeOf<typeof useReferenceInputOptions>().toBeFunction()
   })
+  test('useReferringDocuments', () => {
+    expectTypeOf<typeof useReferringDocuments>().toBeFunction()
+  })
   test('useReleasesIds', () => {
     expectTypeOf<typeof useReleasesIds>().toBeFunction()
   })
@@ -3007,6 +3413,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('UserId', () => {
     expectTypeOf<UserId>().not.toBeNever()
+  })
+  test('useRovingFocus', () => {
+    expectTypeOf<typeof useRovingFocus>().toBeFunction()
   })
   test('UserSessionPair', () => {
     expectTypeOf<UserSessionPair>().toBeObject()
@@ -3097,6 +3506,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('useUserColor', () => {
     expectTypeOf<typeof useUserColor>().toBeFunction()
+  })
+  test('useUserListWithPermissions', () => {
+    expectTypeOf<typeof useUserListWithPermissions>().toBeFunction()
   })
   test('useValuePreview', () => {
     expectTypeOf<typeof useValuePreview>().toBeFunction()

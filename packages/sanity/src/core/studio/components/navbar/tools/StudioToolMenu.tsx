@@ -7,8 +7,7 @@ import {ToolCollapseMenu} from './ToolCollapseMenu'
 import {ToolVerticalMenu} from './ToolVerticalMenu'
 
 /**
- * @hidden
- * @beta */
+ * @internal */
 export function StudioToolMenu(props: ToolMenuProps) {
   const {context, isSidebarOpen, tools, ...restProps} = props
   const {enabled: scheduledPublishingEnabled} = useScheduledPublishingEnabled()

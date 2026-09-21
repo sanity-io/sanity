@@ -38,8 +38,7 @@ export interface PrimitiveMemberItemProps {
 
 /**
  *
- * @hidden
- * @beta
+ * @internal
  */
 export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
   const focusRef = useRef<{focus: () => void}>(undefined)
