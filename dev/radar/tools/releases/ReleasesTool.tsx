@@ -37,6 +37,7 @@ import {
 import {RelativeDate} from '../bisect/RelativeDate'
 import {normalizeReproPath, withReproPath} from '../bisect/reproPath'
 import {ReproPathInput} from '../bisect/ReproPathField'
+import {mergeChainVerdict, resolveSessionChains} from '../bisect/sessionChains'
 import {type ManualRegressionInput, reportRegression} from '../bisect/sessions'
 import {pluralize} from '../bisect/text'
 import {releaseUrl} from '../trends/links'
@@ -236,14 +237,41 @@ export function ReleasesTool() {
 
   // Confirmed regressions per release along their span (introduced,
   // inherited, fixed) — the badges show the counts, the dialog behind them
-  // the sessions. Each entry knows its introducing release: that is what the
-  // dialog's "fixed in" candidates are relative to, also for inherited ones
+  // the sessions. A refinement chain (a commit bisect narrowing a release
+  // bisect) is ONE regression: its deepest verdict names the commit, its
+  // annotations come from wherever in the chain they were made. Each entry
+  // knows its introducing release: that is what the dialog's "fixed in"
+  // candidates are relative to, also for inherited ones
   const regressions = useMemo(() => {
-    const confirmed = (sessionsLive.data ?? []).flatMap((session) =>
-      session.result?.regression && session.result.firstBadSha
-        ? [{firstBadSha: session.result.firstBadSha, fixedIn: session.result.fixedIn, session}]
-        : [],
-    )
+    const confirmed = resolveSessionChains(sessionsLive.data ?? []).flatMap((chain) => {
+      const verdict = mergeChainVerdict(chain)
+      if (!verdict.regression || !verdict.firstBadSha) return []
+      // The chain as one session-shaped record: the root's title (the
+      // readable "v6.9.1 → v6.9.2"), the merged annotations, and the id of
+      // the session that holds the verdict — where "fixed in" is written
+      const verdictSession =
+        chain.sessions.find((session) => session._id === verdict.verdictSessionId) ?? chain.leaf
+      const session: SessionSummary = {
+        ...verdictSession,
+        title: chain.root.title,
+        description: verdict.description ?? null,
+        result: {
+          firstBadSha: verdict.firstBadSha,
+          regression: true,
+          description: null,
+          linearIssue: verdict.linearIssue ?? null,
+          fixedIn: verdict.fixedIn ?? null,
+        },
+      }
+      return [
+        {
+          firstBadSha: verdict.firstBadSha,
+          fixedIn: verdict.fixedIn,
+          session,
+          chainIds: chain.sessions.map((member) => member._id),
+        },
+      ]
+    })
     const spans = regressionsByTag(commitsBySha, tags, confirmed)
     const introducedIn = new Map<string, string>()
     for (const [tag, {introduced}] of spans) {
@@ -252,6 +280,7 @@ export function ReleasesTool() {
     const toEntry = (item: (typeof confirmed)[number]): ReleaseRegression => ({
       session: item.session,
       introducedIn: introducedIn.get(item.session._id) ?? '',
+      chainIds: item.chainIds,
     })
     return new Map<string, ReleaseRegressions<ReleaseRegression>>(
       [...spans].map(([tag, span]) => [

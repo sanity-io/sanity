@@ -1,0 +1,113 @@
+import {expect, test} from 'vitest'
+
+import {type ChainSession, mergeChainVerdict, resolveSessionChains} from './sessionChains'
+
+function session(
+  id: string,
+  overrides: Omit<Partial<ChainSession>, 'result'> & {
+    result?: Partial<NonNullable<ChainSession['result']>>
+  } = {},
+): ChainSession {
+  const {result, ...rest} = overrides
+  return {
+    _id: id,
+    refines: null,
+    createdAt: `2026-09-0${id.length}T00:00:00Z`,
+    description: null,
+    result: result
+      ? {
+          firstBadSha: null,
+          regression: null,
+          description: null,
+          linearIssue: null,
+          fixedIn: null,
+          ...result,
+        }
+      : null,
+    ...rest,
+  }
+}
+
+const ids = (chain: {sessions: ChainSession[]}) => chain.sessions.map((s) => s._id)
+
+test('a refinement joins its parent’s chain instead of starting one', () => {
+  const releases = session('a', {result: {firstBadSha: 'rel', regression: true}})
+  const commits = session('ab', {refines: 'a', result: {firstBadSha: 'c3'}})
+  const chains = resolveSessionChains([commits, releases])
+  expect(chains.map(ids)).toEqual([['a', 'ab']])
+  expect(chains[0].leaf._id).toBe('ab')
+})
+
+test('a refinement whose parent is gone stands on its own', () => {
+  const orphan = session('b', {refines: 'deleted'})
+  expect(resolveSessionChains([orphan]).map(ids)).toEqual([['b']])
+})
+
+test('among several refinements a converged one wins, then the newest', () => {
+  const root = session('a')
+  const older = session('ab', {refines: 'a', createdAt: '2026-09-01T00:00:00Z'})
+  const newer = session('ac', {refines: 'a', createdAt: '2026-09-02T00:00:00Z'})
+  expect(resolveSessionChains([root, older, newer]).map(ids)).toEqual([['a', 'ac']])
+
+  const olderConverged = session('ab', {
+    refines: 'a',
+    createdAt: '2026-09-01T00:00:00Z',
+    result: {firstBadSha: 'c1'},
+  })
+  const chains = resolveSessionChains([root, olderConverged, newer])
+  expect(chains.map(ids)).toEqual([['a', 'ab']])
+  // the abandoned branch is neither in the chain nor a root of its own
+  expect(chains).toHaveLength(1)
+})
+
+test('a self-reference or cycle cannot loop', () => {
+  const self = session('a', {refines: 'a'})
+  expect(resolveSessionChains([self]).map(ids)).toEqual([['a']])
+  const x = session('x', {refines: 'y'})
+  const y = session('y', {refines: 'x'})
+  // neither is a root (both parents exist), so a cycle simply yields nothing
+  expect(resolveSessionChains([x, y])).toEqual([])
+})
+
+test('the chain’s verdict is the deepest converged one, annotations the deepest set', () => {
+  const releases = session('a', {
+    description: 'Editor freezes on paste',
+    result: {
+      firstBadSha: 'release-sha',
+      regression: true,
+      linearIssue: 'SAPP-1',
+      fixedIn: 'v6.10.0',
+    },
+  })
+  const commits = session('ab', {refines: 'a', result: {firstBadSha: 'c3'}})
+  const inProgress = session('abc', {refines: 'ab'})
+  const [chain] = resolveSessionChains([releases, commits, inProgress])
+  expect(ids(chain)).toEqual(['a', 'ab', 'abc'])
+  expect(mergeChainVerdict(chain)).toEqual({
+    firstBadSha: 'c3',
+    verdictSessionId: 'ab',
+    regression: true,
+    description: 'Editor freezes on paste',
+    linearIssue: 'SAPP-1',
+    fixedIn: 'v6.10.0',
+  })
+})
+
+test('a legacy result.description still counts, below the session’s own', () => {
+  const legacy = session('a', {result: {firstBadSha: 'x', description: 'old words'}})
+  expect(mergeChainVerdict(resolveSessionChains([legacy])[0]).description).toBe('old words')
+  const both = session('a', {
+    description: 'new words',
+    result: {firstBadSha: 'x', description: 'old words'},
+  })
+  expect(mergeChainVerdict(resolveSessionChains([both])[0]).description).toBe('new words')
+  const nothing = session('a')
+  expect(mergeChainVerdict(resolveSessionChains([nothing])[0])).toEqual({
+    firstBadSha: undefined,
+    verdictSessionId: undefined,
+    regression: false,
+    description: undefined,
+    linearIssue: undefined,
+    fixedIn: undefined,
+  })
+})

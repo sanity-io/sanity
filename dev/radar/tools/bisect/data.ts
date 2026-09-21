@@ -36,6 +36,10 @@ export interface SessionEndpoint {
 export interface SessionSummary {
   _id: string
   title: string | null
+  /** What is broken (the session's own field; older sessions may only have `result.description`). */
+  description: string | null
+  /** Id of the session this one refines — a chain counts as one regression (tools/bisect/sessionChains.ts). */
+  refines: string | null
   good: SessionEndpoint | null
   bad: SessionEndpoint | null
   createdAt: string | null
@@ -53,15 +57,26 @@ export interface SessionSummary {
 
 /** Summary only — `marks` is deliberately not projected here (SessionView fetches the full doc). */
 export const BISECT_SESSIONS_QUERY = `*[_type == "bisectSession"] | order(createdAt desc) {
-  _id, title, good{sha, label}, bad{sha, label}, createdAt, createdBy,
+  _id, title, description, "refines": refines._ref,
+  good{sha, label}, bad{sha, label}, createdAt, createdBy,
   "markCount": count(marks),
   result{firstBadSha, regression, description, linearIssue, fixedIn},
   "resultSubject": *[_type == "gitCommit" && sha == ^.result.firstBadSha][0].subject
 }`
 
+export interface SessionLink {
+  _id: string
+  title: string | null
+}
+
 export interface SessionDocument {
   _id: string
   title: string | null
+  description: string | null
+  /** The session this one narrows down, when it still exists. */
+  refines: SessionLink | null
+  /** Sessions that narrow this one down. */
+  refinedBy: SessionLink[]
   good: SessionEndpoint | null
   bad: SessionEndpoint | null
   releasesOnly: boolean | null
@@ -78,7 +93,10 @@ export interface SessionDocument {
 }
 
 export const BISECT_SESSION_QUERY = `*[_id == $id][0] {
-  _id, title, good{sha, label}, bad{sha, label}, releasesOnly, reproPath,
+  _id, title, description,
+  "refines": refines->{_id, title},
+  "refinedBy": *[_type == "bisectSession" && refines._ref == ^._id] | order(createdAt desc) {_id, title},
+  good{sha, label}, bad{sha, label}, releasesOnly, reproPath,
   marks[]{_key, sha, verdict},
   result{firstBadSha, regression, description, linearIssue},
   createdAt, createdBy

@@ -236,10 +236,14 @@ export function SessionView(props: {
       const version = versionBySha.get(sha)
       return version ? {sha, label: `v${version}`} : {sha}
     }
+    // Linked to this session: the two are one regression (sessionChains.ts),
+    // and the issue text travels along
     createSession(client, {
       good: label(state.lastGood.sha),
       bad: label(state.firstBad.sha),
       reproPath,
+      description: session?.description ?? session?.result?.description ?? undefined,
+      refines: sessionId,
       createdBy: userName,
     })
       .then(onOpenSession)
@@ -260,9 +264,49 @@ export function SessionView(props: {
                 <Text size={2} weight="semibold">
                   {session?.title ?? 'Bisect session'}
                 </Text>
+                {(session?.description || session?.result?.description) && (
+                  <Text size={1}>{session.description || session.result?.description}</Text>
+                )}
                 {reproPath && (
                   <Text size={0} muted textOverflow="ellipsis">
                     Preview builds open at <code>{reproPath}</code>
+                  </Text>
+                )}
+                {/* A refinement and its parent are one regression; say so
+                    both ways so neither reads as a duplicate */}
+                {session?.refines && (
+                  <Text size={0} muted>
+                    Narrows down{' '}
+                    <a
+                      href={`?session=${encodeURIComponent(session.refines._id)}`}
+                      onClick={(event) => {
+                        event.preventDefault()
+                        onOpenSession(session.refines!._id)
+                      }}
+                    >
+                      {session.refines.title ?? session.refines._id}
+                    </a>{' '}
+                    — counted as one regression
+                  </Text>
+                )}
+                {session && session.refinedBy.length > 0 && (
+                  <Text size={0} muted>
+                    Narrowed down by{' '}
+                    {session.refinedBy.map((child, index) => (
+                      <span key={child._id}>
+                        {index > 0 && ', '}
+                        <a
+                          href={`?session=${encodeURIComponent(child._id)}`}
+                          onClick={(event) => {
+                            event.preventDefault()
+                            onOpenSession(child._id)
+                          }}
+                        >
+                          {child.title ?? child._id}
+                        </a>
+                      </span>
+                    ))}{' '}
+                    — counted as one regression
                   </Text>
                 )}
               </Stack>
@@ -361,7 +405,8 @@ export function SessionView(props: {
                       releasesOnly,
                       annotations: {
                         regression: session?.result?.regression ?? undefined,
-                        description: session?.result?.description ?? undefined,
+                        description:
+                          session?.description ?? session?.result?.description ?? undefined,
                         linearIssue: session?.result?.linearIssue ?? undefined,
                       },
                       onAnnotate: (patch: ResultAnnotations) =>

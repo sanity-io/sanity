@@ -8,6 +8,7 @@ import {
   Select,
   Stack,
   Text,
+  TextArea,
   TextInput,
 } from '@sanity/ui'
 import {useMemo, useState} from 'react'
@@ -52,6 +53,7 @@ export function NewSessionDialog(props: {
   const [bad, setBad] = useState<Endpoint | null>(null)
   const [releasesOnly, setReleasesOnly] = useState(false)
   const [reproPathInput, setReproPathInput] = useState('')
+  const [description, setDescription] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const reproPath = normalizeReproPath(reproPathInput)
 
@@ -75,6 +77,23 @@ export function NewSessionDialog(props: {
     <Dialog id="bisect-new-session" header="Start bisect" width={1} onClose={onClose}>
       <Box padding={4}>
         <Stack gap={5}>
+          <Stack gap={3}>
+            <Text size={1} weight="medium">
+              Describe the issue
+            </Text>
+            <TextArea
+              rows={2}
+              fontSize={1}
+              placeholder="What is broken, in a sentence or two"
+              value={description}
+              onChange={(event) => setDescription(event.currentTarget.value)}
+            />
+            <Text size={0} muted>
+              Shown on the session and on the regression it pins on a release; a follow-up bisect
+              that narrows this one down inherits it.
+            </Text>
+          </Stack>
+
           <EndpointPicker
             badge="Bad"
             title="known broken"
@@ -156,9 +175,14 @@ export function NewSessionDialog(props: {
                 setSubmitting(true)
                 // On success the tool unmounts this dialog; on failure the
                 // button re-arms next to the error toast
-                void onCreate({good, bad, releasesOnly, reproPath, createdBy}).finally(() =>
-                  setSubmitting(false),
-                )
+                void onCreate({
+                  good,
+                  bad,
+                  releasesOnly,
+                  reproPath,
+                  description: description.trim() || undefined,
+                  createdBy,
+                }).finally(() => setSubmitting(false))
               }}
             />
           </Flex>

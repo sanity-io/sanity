@@ -9,15 +9,18 @@ import {Flex} from 'ui5'
 
 import {type SessionSummary, type TagSlice} from '../bisect/data'
 import {RelativeDate} from '../bisect/RelativeDate'
-import {deleteSession, updateResult} from '../bisect/sessions'
+import {deleteSessions, updateResult} from '../bisect/sessions'
 import {pluralize} from '../bisect/text'
 import {bisectSessionPath, compareTagsSemverDesc, type ReleaseRegressions} from './releaseInfo'
 
 /** A confirmed regression with the release that gets the blame for it. */
 export interface ReleaseRegression {
+  /** The session holding the verdict, carrying the chain's merged annotations. */
   session: SessionSummary
   /** Tag name of the release that first shipped the culprit. */
   introducedIn: string
+  /** Every session in the refinement chain, root first — removing the regression removes them all. */
+  chainIds: string[]
 }
 
 /**
@@ -105,7 +108,7 @@ function RegressionRow(props: {
   client: SanityClient
 }) {
   const {entry, introducedHere, tags, client} = props
-  const {session, introducedIn} = entry
+  const {session, introducedIn, chainIds} = entry
   // A fix can only ship after the release that introduced the regression —
   // the introducing one, not the release this dialog is open for
   const fixCandidates = useMemo(
@@ -145,8 +148,10 @@ function RegressionRow(props: {
   const remove = () => {
     setRemoving(true)
     // The realtime sessions query drops the row once the delete lands; on
-    // failure the confirm stays open next to the toast so it can be retried
-    deleteSession(client, session._id).catch((err: unknown) => {
+    // failure the confirm stays open next to the toast so it can be retried.
+    // The whole chain goes: deleting only the refinement would resurface
+    // its parent as the same regression, one step less precise
+    deleteSessions(client, chainIds).catch((err: unknown) => {
       setRemoving(false)
       toast.push({
         status: 'error',
@@ -163,8 +168,13 @@ function RegressionRow(props: {
           <Stack gap={2}>
             <Flex alignItems="center" gap={2} flexWrap="wrap">
               <Text size={1} weight="medium">
-                {session.result?.description || session.title || session._id}
+                {session.description || session.result?.description || session.title || session._id}
               </Text>
+              {chainIds.length > 1 && (
+                <Badge tone="default" fontSize={0}>
+                  {pluralize(chainIds.length, 'linked session')}
+                </Badge>
+              )}
               {!introducedHere && (
                 <Badge tone="critical" fontSize={0}>
                   introduced in {introducedIn}
@@ -245,8 +255,16 @@ function RegressionRow(props: {
             fontSize={1}
             padding={2}
             icon={CloseIcon}
-            aria-label="Remove this regression"
-            title="Remove this regression"
+            aria-label={
+              chainIds.length > 1
+                ? `Remove this regression and its ${pluralize(chainIds.length, 'linked session')}`
+                : 'Remove this regression'
+            }
+            title={
+              chainIds.length > 1
+                ? `Remove this regression (deletes its ${pluralize(chainIds.length, 'linked session')})`
+                : 'Remove this regression'
+            }
             onClick={() => setConfirming(true)}
           />
         )}

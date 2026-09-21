@@ -16,6 +16,10 @@ export interface NewSessionInput {
   releasesOnly?: boolean
   /** Already normalized (tools/bisect/reproPath.ts) — stored as-is. */
   reproPath?: string
+  /** What is broken — carried into refinements. */
+  description?: string
+  /** The session this one narrows down (a chain counts as one regression). */
+  refines?: string
   createdBy: string
 }
 
@@ -38,6 +42,8 @@ export async function createSession(client: SanityClient, input: NewSessionInput
     bad: input.bad,
     ...(input.releasesOnly ? {releasesOnly: true} : {}),
     ...(input.reproPath ? {reproPath: input.reproPath} : {}),
+    ...(input.description ? {description: input.description} : {}),
+    ...(input.refines ? {refines: {_type: 'reference', _ref: input.refines, _weak: true}} : {}),
     marks: [],
     createdAt: new Date().toISOString(),
     createdBy: input.createdBy,
@@ -78,13 +84,13 @@ export async function reportRegression(
     good: input.good,
     bad: input.bad,
     releasesOnly: true,
+    description: input.description,
     marks: [],
     result: {
       firstBadSha: input.bad.sha,
       lastGoodSha: input.good.sha,
       suspectShas: input.suspectShas,
       regression: true,
-      description: input.description,
       ...(input.linearIssue ? {linearIssue: input.linearIssue} : {}),
       ...(input.fixedIn ? {fixedIn: input.fixedIn} : {}),
       concludedAt: new Date().toISOString(),
@@ -98,6 +104,13 @@ export async function reportRegression(
 /** Sessions are the only user-owned documents here — plain hard delete. */
 export function deleteSession(client: SanityClient, sessionId: string): Promise<unknown> {
   return client.delete(sessionId)
+}
+
+/** Delete a whole refinement chain at once — the chain is the regression. */
+export function deleteSessions(client: SanityClient, sessionIds: string[]): Promise<unknown> {
+  let transaction = client.transaction()
+  for (const id of sessionIds) transaction = transaction.delete(id)
+  return transaction.commit()
 }
 
 /**
@@ -153,13 +166,19 @@ export function setResult(
 
 export interface ResultAnnotations {
   regression?: boolean
+  /** Lives on the session itself (`description`), not under `result` — see updateResult. */
   description?: string
   linearIssue?: string
   /** Release tag the regression was fixed in (releases tool). */
   fixedIn?: string
 }
 
-/** Human annotations on a concluded run — cleared string fields are unset, not stored empty. */
+/**
+ * Human annotations on a concluded run — cleared string fields are unset, not
+ * stored empty. `description` is the session's own field (set at creation,
+ * editable here); the rest live under `result`. A legacy `result.description`
+ * is unset whenever the description is written, so the two can't diverge.
+ */
 export function updateResult(
   client: SanityClient,
   sessionId: string,
@@ -168,8 +187,10 @@ export function updateResult(
   const sets: Record<string, boolean | string> = {}
   const unsets: string[] = []
   for (const [key, value] of Object.entries(patch)) {
-    if (value === '' || value === undefined) unsets.push(`result.${key}`)
-    else sets[`result.${key}`] = value
+    const path = key === 'description' ? 'description' : `result.${key}`
+    if (key === 'description') unsets.push('result.description')
+    if (value === '' || value === undefined) unsets.push(path)
+    else sets[path] = value
   }
   let mutation = client.patch(sessionId)
   if (Object.keys(sets).length > 0) mutation = mutation.set(sets)

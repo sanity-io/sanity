@@ -134,6 +134,15 @@ export function BisectTool() {
 
   const error = commitsLive.error ?? sessionsLive.error ?? tagsLive.error
   const sessions = sessionsLive.data
+  // Refinement links for the list: a chain is one regression, so a row says
+  // which session it narrows down (or how many narrow it down)
+  const titleById = new Map((sessions ?? []).map((session) => [session._id, session.title ?? '']))
+  const refinedByCount = new Map<string, number>()
+  for (const session of sessions ?? []) {
+    if (session.refines) {
+      refinedByCount.set(session.refines, (refinedByCount.get(session.refines) ?? 0) + 1)
+    }
+  }
 
   return (
     <Box padding={4} style={{overflowY: 'auto', height: '100%'}}>
@@ -183,6 +192,10 @@ export function BisectTool() {
             <SessionRow
               key={session._id}
               session={session}
+              refinesTitle={
+                session.refines ? (titleById.get(session.refines) ?? session.refines) : undefined
+              }
+              refinedByCount={refinedByCount.get(session._id) ?? 0}
               onOpen={() => setSessionId(session._id, 'push')}
             />
           ))}
@@ -203,9 +216,16 @@ export function BisectTool() {
   )
 }
 
-function SessionRow(props: {session: SessionSummary; onOpen: () => void}) {
-  const {session, onOpen} = props
+function SessionRow(props: {
+  session: SessionSummary
+  /** Title of the session this one narrows down, when it does. */
+  refinesTitle: string | undefined
+  refinedByCount: number
+  onOpen: () => void
+}) {
+  const {session, refinesTitle, refinedByCount, onOpen} = props
   const concluded = Boolean(session.result?.firstBadSha)
+  const description = session.description || session.result?.description
 
   return (
     <Card as="button" padding={4} radius={3} border onClick={onOpen} style={{textAlign: 'left'}}>
@@ -215,11 +235,26 @@ function SessionRow(props: {session: SessionSummary; onOpen: () => void}) {
             <Text size={1} weight="medium">
               {session.title ?? session._id}
             </Text>
-            <Flex alignItems="center" gap={2}>
+            {description && (
+              <Text size={1} muted textOverflow="ellipsis">
+                {description}
+              </Text>
+            )}
+            <Flex alignItems="center" gap={2} flexWrap="wrap">
               {session.createdAt && <RelativeDate dateTime={session.createdAt} size={0} muted />}
               <Text size={0} muted>
                 · {session.createdBy}
               </Text>
+              {refinesTitle !== undefined && (
+                <Text size={0} muted>
+                  · narrows down {refinesTitle || 'another session'}
+                </Text>
+              )}
+              {refinedByCount > 0 && (
+                <Text size={0} muted>
+                  · narrowed down by {pluralize(refinedByCount, 'session')}
+                </Text>
+              )}
             </Flex>
           </Stack>
         </Box>

@@ -29,6 +29,22 @@ export const bisectSession = defineType({
       type: 'string',
     }),
     defineField({
+      name: 'description',
+      title: 'Issue',
+      description:
+        'What is broken, in the bisector’s words — set at creation and carried into every refinement',
+      type: 'text',
+      rows: 2,
+    }),
+    defineField({
+      name: 'refines',
+      description:
+        'The session this one narrows down — e.g. the commits of a release a releases-only bisect blamed. A chain of refinements counts as ONE regression: the deepest verdict names the commit, annotations anywhere in the chain apply.',
+      type: 'reference',
+      to: [{type: 'bisectSession'}],
+      weak: true,
+    }),
+    defineField({
       name: 'good',
       description: 'The known-good endpoint (older)',
       type: 'object',
@@ -109,7 +125,8 @@ export const bisectSession = defineType({
         }),
         defineField({
           name: 'description',
-          description: 'What broke, in the bisector’s words',
+          description:
+            'Legacy: what broke, in the bisector’s words — newer sessions keep this on the session itself',
           type: 'text',
           rows: 2,
         }),

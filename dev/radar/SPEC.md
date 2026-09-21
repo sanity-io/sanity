@@ -338,7 +338,23 @@ effect of merged work; secondary: leads scanning health weekly.
    mark per sha wins); one that contradicts the bounds surfaces as the usual
    conflict that undo resolves. Sessions can be deleted from the session
    view (hard delete behind a confirm — they're the only user-owned documents
-   here).
+   here). A session carries a **description** of the issue (asked for at
+   creation, editable on the verdict card; older sessions may only have it
+   under `result.description`, which readers fall back to). A session can
+   **refine** another (`refines`, a weak reference): the "bisect these
+   commits" drill-down from a releases-only verdict creates the new session
+   linked to the one it narrows down and hands the description along. A
+   refinement chain is ONE regression, resolved in `tools/bisect/
+sessionChains.ts` and shared by the sessions list and the Releases tool:
+   the deepest converged session names the commit (a refinement still in
+   progress does not un-name what its parent found), the regression flag
+   counts if set anywhere in the chain, and each annotation (description,
+   Linear issue, fix release) is the deepest one set. Among several
+   refinements of one session the converged one is followed, newest first
+   among equals; the others are abandoned branches, listed but never counted.
+   Removing the regression from the Releases tool deletes the whole chain —
+   deleting only the refinement would resurface its parent as the same
+   regression, one step less precise.
 
 8. **Studio releases** — every synced release tag in semver order (newest
    version first, prereleases below their release — a version list, not a
