@@ -54,6 +54,10 @@ const AB_RUN: BenchRunDocument = {
         experiment: {requestCount: 10, requestBytes: 1000, byClass: {listen: 3}},
         reference: {requestCount: 12, requestBytes: 1200, byClass: {listen: 4}},
       },
+      styles: {
+        experiment: {ui5Available: true, styledComponentsVersion: '6.5.3', sessions: 6},
+        reference: {ui5Available: false, sessions: 6},
+      },
     },
   ],
   bundle: {
@@ -83,12 +87,23 @@ describe('toAbsolute', () => {
     expect(absolute.scenarios[0].metrics[0].experiment).toEqual(AB_METRIC.experiment)
   })
 
-  it('keeps only the experiment side of interruptions and resources', () => {
+  it('keeps only the experiment side of interruptions, resources and style context', () => {
     const absolute = toAbsolute(AB_RUN)
     expect(absolute.scenarios[0].interruptions).toEqual({experiment: {count: 1, totalMs: 200}})
     expect(absolute.scenarios[0].resources).toEqual({
       experiment: {requestCount: 10, requestBytes: 1000, byClass: {listen: 3}},
     })
+    expect(absolute.scenarios[0].styles).toEqual({
+      experiment: {ui5Available: true, styledComponentsVersion: '6.5.3', sessions: 6},
+    })
+  })
+
+  it('omits the style context when the scenario has none', () => {
+    const withoutStyles: BenchRunDocument = {
+      ...AB_RUN,
+      scenarios: [{...AB_RUN.scenarios[0], styles: undefined}],
+    }
+    expect(toAbsolute(withoutStyles).scenarios[0]).not.toHaveProperty('styles')
   })
 
   it('keeps only the experiment bundle', () => {
