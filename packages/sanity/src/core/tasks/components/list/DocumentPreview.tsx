@@ -1,24 +1,16 @@
 import {DocumentIcon} from '@sanity/icons/Document'
-import {Text, TextSkeleton} from '@sanity/ui'
-import {getTheme_v2} from '@sanity/ui/theme'
+import {Text, TextSkeleton, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
 import {useMemo, type RefAttributes} from 'react'
 import {IntentLink} from 'sanity/router'
-import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
 import {useSchema} from '../../../hooks/useSchema'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPreviewValues} from '../../hooks/useDocumentPreviewValues'
+import {inputBorderColorVar, styledIntentLink} from './DocumentPreview.css'
 
-const StyledIntentLink = styled(IntentLink)((props) => {
-  const theme = getTheme_v2(props.theme)
-
-  return `
-  text-decoration: underline;
-  text-decoration-color: ${theme.color.input.default.enabled.border};
-  text-underline-offset: 2px;
-`
-})
 export function DocumentPreview({
   documentId,
   documentType,
@@ -35,16 +27,19 @@ export function DocumentPreview({
     perspectiveStack,
     variant: selectedVariantName,
   })
+  const {color} = useThemeV2()
+  const inputBorderColor = color.input.default.enabled.border
 
   const Link = useMemo(
     () =>
       function LinkComponent(
         linkProps: React.ComponentPropsWithoutRef<'a'> & RefAttributes<HTMLAnchorElement>,
       ) {
-        const {ref, ...rest} = linkProps
+        const {className, ref, ...rest} = linkProps
         return (
-          <StyledIntentLink
+          <IntentLink
             {...rest}
+            className={clsx(styledIntentLink, className)}
             intent="edit"
             params={{id: documentId, type: documentType}}
             ref={ref}
@@ -66,7 +61,13 @@ export function DocumentPreview({
       {isLoading ? (
         <TextSkeleton size={1} muted />
       ) : (
-        <Text size={1} as={Link} weight="medium" style={{maxWidth: '20ch'}} textOverflow="ellipsis">
+        <Text
+          size={1}
+          as={Link}
+          weight="medium"
+          style={{maxWidth: '20ch', ...assignInlineVars({[inputBorderColorVar]: inputBorderColor})}}
+          textOverflow="ellipsis"
+        >
           {value?.title || 'Untitled'}
         </Text>
       )}
