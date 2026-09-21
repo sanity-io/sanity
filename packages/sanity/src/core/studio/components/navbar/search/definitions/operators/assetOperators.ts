@@ -1,5 +1,5 @@
 import {SearchButtonValueReference} from '../../components/filters/common/ButtonValue'
-import {SearchFilterAssetInput} from '../../components/filters/filter/inputs/asset/Asset'
+import {SearchFilterAssetInput} from './lazyInputComponents'
 import {defineSearchOperator} from './operatorTypes'
 import {toJSON} from './operatorUtils'
 

@@ -1,5 +1,4 @@
-import {SearchFilterStringInput} from '../../components/filters/filter/inputs/string/String'
-import {SearchFilterStringListInput} from '../../components/filters/filter/inputs/string/StringList'
+import {SearchFilterStringInput, SearchFilterStringListInput} from './lazyInputComponents'
 import {defineSearchOperator, type SearchOperatorInput} from './operatorTypes'
 import {toJSON} from './operatorUtils'
 

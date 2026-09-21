@@ -2076,13 +2076,13 @@ describe('sanity', () => {
     expectTypeOf<FormDocumentValue>().toBeObject()
   })
   test('FormField', () => {
-    expectTypeOf<typeof FormField>().not.toBeNever()
+    expectTypeOf<typeof FormField>().toBeFunction()
   })
   test('FormFieldGroup', () => {
     expectTypeOf<FormFieldGroup>().toBeObject()
   })
   test('FormFieldHeaderText', () => {
-    expectTypeOf<typeof FormFieldHeaderText>().not.toBeNever()
+    expectTypeOf<typeof FormFieldHeaderText>().toBeFunction()
   })
   test('FormFieldValidationStatus', () => {
     expectTypeOf<typeof FormFieldValidationStatus>().toBeFunction()
@@ -2091,7 +2091,7 @@ describe('sanity', () => {
     expectTypeOf<FormIncPatch>().toBeObject()
   })
   test('FormInput', () => {
-    expectTypeOf<typeof FormInput>().not.toBeNever()
+    expectTypeOf<typeof FormInput>().toBeFunction()
   })
   test('FormInsertPatch', () => {
     expectTypeOf<FormInsertPatch>().toBeObject()
@@ -2723,7 +2723,7 @@ describe('sanity', () => {
     expectTypeOf<MediaValidator<any>>().toBeObject()
   })
   test('MemberField', () => {
-    expectTypeOf<typeof MemberField>().not.toBeNever()
+    expectTypeOf<typeof MemberField>().toBeFunction()
   })
   test('MemberFieldError', () => {
     expectTypeOf<typeof MemberFieldError>().toBeFunction()
@@ -2849,7 +2849,7 @@ describe('sanity', () => {
     expectTypeOf<ObjectFormNode<any, any>>().toBeObject()
   })
   test('ObjectInputMember', () => {
-    expectTypeOf<typeof ObjectInputMember>().not.toBeNever()
+    expectTypeOf<typeof ObjectInputMember>().toBeFunction()
   })
   test('ObjectInputProps', () => {
     expectTypeOf<ObjectInputProps<any, any>>().toBeObject()

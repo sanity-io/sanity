@@ -199,7 +199,8 @@ describe('ReleasesNav', () => {
       it('allows for new release to be created', async () => {
         await userEvent.click(screen.getByText('New release'))
 
-        expect(screen.getByRole('dialog')).toHaveAttribute('id', 'create-release-dialog')
+        // The dialog is code-split and mounts once its chunk has loaded
+        expect(await screen.findByRole('dialog')).toHaveAttribute('id', 'create-release-dialog')
       })
 
       it('disables button when no permissions are met', async () => {

@@ -1,6 +1,6 @@
 import {UnlinkIcon} from '@sanity/icons/Unlink'
 import {useToast} from '@sanity/ui/toast'
-import {useCallback, useState} from 'react'
+import {lazy, Suspense, useCallback, useState} from 'react'
 
 import {
   type DocumentActionComponent,
@@ -13,7 +13,11 @@ import {canvasLocaleNamespace} from '../../i18n'
 import {useCanvasTelemetry} from '../../useCanvasTelemetry'
 import {getDocumentIdForCanvasLink} from '../../utils/getDocumentIdForCanvasLink'
 import {useCanvasCompanionDoc} from '../useCanvasCompanionDoc'
-import {UnlinkFromCanvasDialog} from './UnlinkFromCanvasDialog'
+
+// Same split as LinkToCanvasAction: the hook stays static, the dialog loads when invoked.
+const UnlinkFromCanvasDialog = lazy(() =>
+  import('./UnlinkFromCanvasDialog').then((module) => ({default: module.UnlinkFromCanvasDialog})),
+)
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 export const useUnlinkFromCanvasAction: DocumentActionComponent = (props: DocumentActionProps) => {
@@ -68,13 +72,15 @@ export const useUnlinkFromCanvasAction: DocumentActionComponent = (props: Docume
       ? {
           type: 'custom',
           component: (
-            <UnlinkFromCanvasDialog
-              onClose={handleCloseDialog}
-              document={document}
-              status={status}
-              error={error}
-              handleUnlink={handleUnlink}
-            />
+            <Suspense fallback={null}>
+              <UnlinkFromCanvasDialog
+                onClose={handleCloseDialog}
+                document={document}
+                status={status}
+                error={error}
+                handleUnlink={handleUnlink}
+              />
+            </Suspense>
           ),
         }
       : undefined,

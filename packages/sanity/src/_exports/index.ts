@@ -212,37 +212,36 @@ export {
   type DiffProps,
   type ObjectDiff,
 } from '../core/field/types'
-export {FormField} from '../core/form/components/formField/FormField'
-export {FormFieldHeaderText} from '../core/form/components/formField/FormFieldHeaderText'
-export {FormFieldValidationStatus} from '../core/form/components/formField/FormFieldValidationStatus'
-export {FormInput} from '../core/form/components/FormInput'
+export {
+  ArrayOfObjectsFunctions,
+  ArrayOfObjectsItem,
+  FormBuilder,
+  FormField,
+  FormFieldHeaderText,
+  FormFieldValidationStatus,
+  FormInput,
+  MemberField,
+  MemberFieldError,
+  MemberItemError,
+  ObjectInputMember,
+  PortableTextInput as BlockEditor,
+  PortableTextInput,
+} from '../core/form/lazy'
 export {useFormValue} from '../core/form/contexts/FormValue'
 export {useGetFormValue} from '../core/form/contexts/GetFormValue'
 export {type FormBuilderContextValue} from '../core/form/FormBuilderContext'
-export {ArrayOfObjectsFunctions} from '../core/form/inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsFunctions'
 export {VirtualizerScrollInstanceProvider} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 export {type DateInputProps} from '../core/form/inputs/DateInputs/DateInput'
 export {type DateTimeInputProps} from '../core/form/inputs/DateInputs/DateTimeInput'
 export {type EmailInputProps} from '../core/form/inputs/EmailInput'
 export {type AssetAccessPolicy} from '../core/form/inputs/files/types'
-export {
-  PortableTextInput as BlockEditor,
-  PortableTextInput,
-} from '../core/form/inputs/PortableText/PortableTextInput'
 export {type SlugInputProps} from '../core/form/inputs/Slug/SlugInput'
 export {type TagsArrayInputProps} from '../core/form/inputs/TagsArrayInput'
 export {type TelephoneInputProps} from '../core/form/inputs/TelephoneInput'
 export {TextInput, type TextInputProps} from '../core/form/inputs/TextInput'
 export {type UrlInputProps} from '../core/form/inputs/UrlInput'
-export {
-  ArrayOfObjectsItem,
-  type MemberItemProps,
-} from '../core/form/members/array/items/ArrayOfObjectsItem'
+export {type MemberItemProps} from '../core/form/members/array/items/ArrayOfObjectsItem'
 export {type PrimitiveMemberItemProps} from '../core/form/members/array/items/ArrayOfPrimitivesItem'
-export {MemberItemError} from '../core/form/members/array/MemberItemError'
-export {MemberField} from '../core/form/members/object/MemberField'
-export {MemberFieldError} from '../core/form/members/object/MemberFieldError'
-export {ObjectInputMember} from '../core/form/members/object/ObjectInputMember'
 export {dec, diffMatchPatch, inc, insert, set, setIfMissing, unset} from '../core/form/patch/patch'
 export {
   createPatchChannel,
@@ -311,7 +310,7 @@ export {
 } from '../core/form/store/types/nodes'
 export {type StateTree} from '../core/form/store/types/state'
 export {FormCallbacksProvider, useFormCallbacks} from '../core/form/studio/contexts/FormCallbacks'
-export {FormBuilder, type FormBuilderProps} from '../core/form/studio/FormBuilder'
+export {type FormBuilderProps} from '../core/form/studio/FormBuilder'
 export {type FormProviderProps} from '../core/form/studio/FormProvider'
 export {type StudioCrossDatasetReferenceInputProps as CrossDatasetReferenceInputProps} from '../core/form/studio/inputs/crossDatasetReference/StudioCrossDatasetReferenceInput'
 export {type StudioReferenceInputProps as ReferenceInputProps} from '../core/form/studio/inputs/reference/StudioReferenceInput'
