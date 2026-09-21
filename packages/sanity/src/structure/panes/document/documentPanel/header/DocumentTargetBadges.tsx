@@ -1,18 +1,13 @@
 import {Card, Text, type BadgeTone} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {memo, type RefAttributes, type SVGProps} from 'react'
-import {
-  ReleaseAvatarIcon,
-  usePerspective,
-  useTranslation,
-  type SystemVariant,
-  type TargetPerspective,
-} from 'sanity'
+import {usePerspective, useTranslation, type SystemVariant, type TargetPerspective} from 'sanity'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
 import {type TargetDocumentState} from '../../../../../core/hooks/useTargetDocumentState'
 import {getDefaultVariant} from '../../../../../core/perspective/getDefaultVariant'
+import {ReleaseAvatarIcon} from '../../../../../core/releases/components/ReleaseAvatar'
 import {ReleaseTitle} from '../../../../../core/releases/components/ReleaseTitle'
 import {isReleaseDocument} from '../../../../../core/releases/store/types'
 import {getReleaseTone} from '../../../../../core/releases/util/getReleaseTone'

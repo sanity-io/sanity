@@ -16,6 +16,7 @@
  */
 
 // From `sanity`
+export {useCanvasCompanionDoc} from '../core/canvas/actions/useCanvasCompanionDoc'
 export {useCanvasNavigate} from '../core/canvas/useCanvasNavigate'
 export {useNavigateToCanvasDoc} from '../core/canvas/useNavigateToCanvasDoc'
 export {getDocumentIdForCanvasLink} from '../core/canvas/utils/getDocumentIdForCanvasLink'
@@ -36,7 +37,9 @@ export {
   type TrackedArea,
   type TrackedChange,
 } from '../core/changeIndicators/types'
+export {CommentDeleteDialog} from '../core/comments/components/CommentDeleteDialog'
 export {CommentDisabledIcon} from '../core/comments/components/icons/CommentDisabledIcon'
+export {CommentsList} from '../core/comments/components/list/CommentsList'
 export {
   CommentInput,
   type CommentInputHandle,
@@ -44,14 +47,23 @@ export {
 } from '../core/comments/components/pte/comment-input/CommentInput'
 export {CommentInlineHighlightSpan} from '../core/comments/components/pte/CommentInlineHighlightSpan'
 export {COMMENTS_INSPECTOR_NAME} from '../core/comments/constants'
+export {CommentsAuthoringPathProvider} from '../core/comments/context/authoring-path/CommentsAuthoringPathProvider'
+export {CommentsProvider} from '../core/comments/context/comments/CommentsProvider'
+export {CommentsEnabledProvider} from '../core/comments/context/enabled/CommentsEnabledProvider'
+export {CommentsIntentProvider} from '../core/comments/context/intent/CommentsIntentProvider'
 export {CommentsSelectedPathProvider} from '../core/comments/context/selected-path/CommentsSelectedPathProvider'
 export {type CommentsSelectedPath} from '../core/comments/context/selected-path/types'
 export {hasCommentMessageValue, isTextSelectionComment} from '../core/comments/helpers'
+export {useComments} from '../core/comments/hooks/useComments'
+export {useCommentsEnabled} from '../core/comments/hooks/useCommentsEnabled'
 export {useCommentsSelectedPath} from '../core/comments/hooks/useCommentsSelectedPath'
 export {useCommentsTelemetry} from '../core/comments/hooks/useCommentsTelemetry'
 export {buildCommentRangeDecorations} from '../core/comments/utils/inline-comments/buildCommentRangeDecorations'
 export {buildRangeDecorationSelectionsFromComments} from '../core/comments/utils/inline-comments/buildRangeDecorationSelectionsFromComments'
 export {buildTextSelectionFromFragment} from '../core/comments/utils/inline-comments/buildTextSelectionFromFragment'
+export {CommentsProvider as CommentsProviderV2} from '../core/comments-v2/context/comments/CommentsProvider'
+export {CommentsEnabledProvider as CommentsEnabledProviderV2} from '../core/comments-v2/context/enabled/CommentsEnabledProvider'
+export {useCommentsEnabled as useCommentsEnabledV2} from '../core/comments-v2/hooks/useCommentsEnabled'
 export {BetaBadge, type BetaBadgeProps} from '../core/components/BetaBadge'
 export {CapabilityGate} from '../core/components/CapabilityGate'
 export {DashboardLink} from '../core/components/DashboardLink'
@@ -98,6 +110,14 @@ export {
   ReferenceInputPreviewCard,
   usePreviewCard,
 } from '../core/components/previewCard/PreviewCard'
+export {CompactPreview} from '../core/components/previews/general/CompactPreview'
+export {DetailPreview} from '../core/components/previews/general/DetailPreview'
+export {MediaPreview} from '../core/components/previews/general/MediaPreview'
+export {BlockImagePreview} from '../core/components/previews/portableText/BlockImagePreview'
+export {BlockPreview} from '../core/components/previews/portableText/BlockPreview'
+export {InlinePreview} from '../core/components/previews/portableText/InlinePreview'
+export {TemplatePreview} from '../core/components/previews/template/TemplatePreview'
+export {CircularProgress} from '../core/components/progress/CircularProgress'
 export {
   type TrackerContextGetSnapshot,
   type TrackerContextStore,
@@ -111,6 +131,7 @@ export {
 } from '../core/components/react-track-elements/types'
 export {RelativeTime, type RelativeTimeProps} from '../core/components/RelativeTime'
 export {Resizable} from '../core/components/resizer/Resizable'
+export {useRovingFocus} from '../core/components/rovingFocus/useRovingFocus'
 export {useOnScroll} from '../core/components/scroll/hooks'
 export {ScrollContainer, type ScrollContainerProps} from '../core/components/scroll/scrollContainer'
 export {type ScrollContextValue, type ScrollEventHandler} from '../core/components/scroll/types'
@@ -125,6 +146,7 @@ export {
   LegacyLayerProvider,
   type ZIndexContextValueKey,
 } from '../core/components/transitional/LegacyLayerProvider'
+export {AvatarSkeleton} from '../core/components/userAvatar/UserAvatar'
 export {type ZIndexContextValue} from '../core/components/zOffsets/types'
 export {useZIndex} from '../core/components/zOffsets/useZIndex'
 export {ZIndexProvider} from '../core/components/zOffsets/ZIndexProvider'
@@ -176,6 +198,7 @@ export {
   DocumentGroupInventory,
   type DocumentGroupInventoryProps,
 } from '../core/documentGroupInventory/components/DocumentGroupInventory'
+export {DocumentGroupInventoryAction} from '../core/documentGroupInventory/components/DocumentGroupInventoryAction'
 export {
   type DocumentGroupInventoryComponents,
   type DocumentGroupInventoryPerspectiveList,
@@ -289,6 +312,8 @@ export {
 } from '../core/field/types'
 export {type FieldValueError, getValueError} from '../core/field/validation'
 export {type FIXME} from '../core/FIXME'
+export {EditPortal} from '../core/form/components/EditPortal'
+export {EnhancedObjectDialog} from '../core/form/components/EnhancedObjectDialog'
 export {type FormFieldProps} from '../core/form/components/formField/FormField'
 export {type FormFieldHeaderTextProps} from '../core/form/components/formField/FormFieldHeaderText'
 export {FormFieldSet, type FormFieldSetProps} from '../core/form/components/formField/FormFieldSet'
@@ -328,12 +353,15 @@ export {
 export {useFieldActions} from '../core/form/field/actions/useFieldActions'
 export {HoveredFieldProvider} from '../core/form/field/HoveredFieldProvider'
 export {useHoveredField} from '../core/form/field/useHoveredField'
-export {
-  useVirtualizerScrollInstance,
-  type VirtualizerScrollInstance,
-} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/useVirtualizerScrollInstance'
+export {useDidUpdate} from '../core/form/hooks/useDidUpdate'
+export {BooleanInput} from '../core/form/inputs/BooleanInput'
 export {CrossDatasetReferencePreview} from '../core/form/inputs/CrossDatasetReferenceInput/CrossDatasetReferencePreview'
+export {DateInput} from '../core/form/inputs/DateInputs/DateInput'
+export {DateTimeInput} from '../core/form/inputs/DateInputs/DateTimeInput'
 export {getCalendarLabels} from '../core/form/inputs/DateInputs/utils'
+export {EmailInput} from '../core/form/inputs/EmailInput'
+export {NumberInput} from '../core/form/inputs/NumberInput/NumberInput'
+export {ObjectInput} from '../core/form/inputs/ObjectInput/ObjectInput'
 export {
   type PortableTextMemberItem,
   UpdateReadOnlyPlugin,
@@ -341,6 +369,23 @@ export {
 export {CreateButton as CreateReferenceButton} from '../core/form/inputs/ReferenceInput/CreateButton'
 export {ReferenceAutocomplete} from '../core/form/inputs/ReferenceInput/ReferenceAutocomplete'
 export {type CreateReferenceOption} from '../core/form/inputs/ReferenceInput/types'
+export {SelectInput} from '../core/form/inputs/SelectInput'
+export {SlugInput} from '../core/form/inputs/Slug/SlugInput'
+export {StringInput} from '../core/form/inputs/StringInput/StringInput'
+export {TagsArrayInput} from '../core/form/inputs/TagsArrayInput'
+export {TelephoneInput} from '../core/form/inputs/TelephoneInput'
+export {UrlInput} from '../core/form/inputs/UrlInput'
+export {ArrayOfObjectsInput} from '../core/form/inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsInput'
+export {
+  useVirtualizerScrollInstance,
+  type VirtualizerScrollInstance,
+} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/useVirtualizerScrollInstance'
+export {ArrayOfObjectOptionsInput} from '../core/form/inputs/arrays/ArrayOfOptionsInput/ArrayOfObjectOptionsInput'
+export {ArrayOfOptionsInput} from '../core/form/inputs/arrays/ArrayOfOptionsInput/ArrayOfOptionsInput'
+export {ArrayOfPrimitiveOptionsInput} from '../core/form/inputs/arrays/ArrayOfOptionsInput/ArrayOfPrimitiveOptionsInput'
+export {ArrayOfPrimitivesFunctions} from '../core/form/inputs/arrays/ArrayOfPrimitivesInput/ArrayOfPrimitivesFunctions'
+export {ArrayOfPrimitivesInput} from '../core/form/inputs/arrays/ArrayOfPrimitivesInput/ArrayOfPrimitivesInput'
+export {UniversalArrayInput} from '../core/form/inputs/arrays/UniversalArrayInput'
 export {
   ArrayOfObjectsInputMember,
   type ArrayOfObjectsMemberProps,
@@ -349,6 +394,7 @@ export {
   ArrayOfObjectsInputMembers,
   type ArrayOfObjectsInputMembersProps,
 } from '../core/form/members/array/ArrayOfObjectsInputMembers'
+export {ArrayOfPrimitivesItem} from '../core/form/members/array/items/ArrayOfPrimitivesItem'
 export {type MemberFieldProps} from '../core/form/members/object/MemberField'
 export {MemberFieldSet} from '../core/form/members/object/MemberFieldset'
 export {type ObjectInputMemberProps} from '../core/form/members/object/ObjectInputMember'
@@ -375,6 +421,11 @@ export {
   type SetActiveGroupOperation,
 } from '../core/form/store/utils/getExpandOperations'
 export {mergeParseErrors, type ParseError} from '../core/form/store/utils/mergeParseErrors'
+export {FormProvider} from '../core/form/studio/FormProvider'
+export {
+  createSanityMediaLibraryFileSource,
+  createSanityMediaLibraryImageSource,
+} from '../core/form/studio/assetSourceMediaLibrary/createAssetSource'
 export {type FormCallbacksValue} from '../core/form/studio/contexts/FormCallbacks'
 export {
   ParseErrorsProvider,
@@ -399,6 +450,10 @@ export {
   defaultRenderItem,
   defaultRenderPreview,
 } from '../core/form/studio/defaults'
+export {StudioFileInput as FileInput} from '../core/form/studio/inputs/StudioFileInput'
+export {StudioImageInput as ImageInput} from '../core/form/studio/inputs/StudioImageInput'
+export {StudioCrossDatasetReferenceInput as CrossDatasetReferenceInput} from '../core/form/studio/inputs/crossDatasetReference/StudioCrossDatasetReferenceInput'
+export {StudioReferenceInput as ReferenceInput} from '../core/form/studio/inputs/reference/StudioReferenceInput'
 export {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   useEnhancedObjectDialog,
@@ -406,11 +461,20 @@ export {
 export {type UploaderDef} from '../core/form/studio/uploads/types'
 export {type FormBuilderFilterFieldFn} from '../core/form/types/_transitional'
 export {
+  isArrayOfBlocksInputProps,
+  isArrayOfPrimitivesInputProps,
+  isBooleanInputProps,
+  isNumberInputProps,
+  isObjectItemProps,
+} from '../core/form/types/asserters'
+export {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   type FieldCommentsProps,
   type PrimitiveFieldProps,
 } from '../core/form/types/fieldProps'
 export {useDocumentForm} from '../core/form/useDocumentForm'
+export {useFormBuilder} from '../core/form/useFormBuilder'
+export {TransformPatches} from '../core/form/utils/TransformPatches'
 export {type MutationPatch, toMutationPatches} from '../core/form/utils/mutationPatch'
 export {decodePath, encodePath} from '../core/form/utils/path'
 export {useConditionalToast} from '../core/hooks/useConditionalToast'
@@ -419,6 +483,7 @@ export {
   type ConnectionState,
   useConnectionState,
 } from '../core/hooks/useConnectionState'
+export {useDialogStack} from '../core/hooks/useDialogStack'
 export {type DocumentIdStack, useDocumentIdStack} from '../core/hooks/useDocumentIdStack'
 export {useDocumentOperationEvent} from '../core/hooks/useDocumentOperationEvent'
 export {
@@ -426,6 +491,7 @@ export {
   type DocumentSyncState,
   useDocumentSyncState,
 } from '../core/hooks/useDocumentSyncState'
+export {useDocumentVersionTitle} from '../core/hooks/useDocumentVersionTitle'
 export {useFeatureEnabled} from '../core/hooks/useFeatureEnabled'
 export {useFilteredReleases} from '../core/hooks/useFilteredReleases'
 export {
@@ -434,6 +500,7 @@ export {
 } from '../core/hooks/useGlobalCopyPasteElementHandler'
 export {useManageFavorite, type UseManageFavoriteProps} from '../core/hooks/useManageFavorite'
 export {useReconnectingToast} from '../core/hooks/useReconnectingToast'
+export {useReferringDocuments} from '../core/hooks/useReferringDocuments'
 export {type RelativeTimeOptions} from '../core/hooks/useRelativeTime'
 export {useReviewChanges} from '../core/hooks/useReviewChanges'
 export {useStudioUrl} from '../core/hooks/useStudioUrl'
@@ -449,6 +516,7 @@ export {
 } from '../core/hooks/useTargetDocumentState'
 export {type TargetScopeIdOptions, useTargetScopeId} from '../core/hooks/useTargetScopeId'
 export {type TimeAgoOpts} from '../core/hooks/useTimeAgo'
+export {useUserListWithPermissions} from '../core/hooks/useUserListWithPermissions'
 export {useVersionRelease} from '../core/hooks/useVersionRelease'
 export {LocaleProvider, LocaleProviderBase} from '../core/i18n/components/LocaleProvider'
 export {
@@ -470,6 +538,7 @@ export {
 export {ReleasesNav} from '../core/perspective/navbar/ReleasesNav'
 export {type ReleasesNavMenuItemPropsGetter} from '../core/perspective/types'
 export {useExcludedPerspective} from '../core/perspective/useExcludedPerspective'
+export {useGetDefaultPerspective} from '../core/perspective/useGetDefaultPerspective'
 export {useSetPerspective} from '../core/perspective/useSetPerspective'
 export {useSetVariant} from '../core/perspective/useSetVariant'
 export {type DocumentPreviewPresenceProps} from '../core/presence/DocumentPreviewPresence'
@@ -517,13 +586,17 @@ export {getPreviewPaths} from '../core/preview/utils/getPreviewPaths'
 export {prepareForPreview} from '../core/preview/utils/prepareForPreview'
 export {Chip} from '../core/releases/components/Chip'
 export {VersionChip} from '../core/releases/components/documentHeader/VersionChip'
+export {ReleaseAvatar, ReleaseAvatarIcon} from '../core/releases/components/ReleaseAvatar'
 export {ReleaseTitle} from '../core/releases/components/ReleaseTitle'
 export {
   getVersionInlineBadge,
   VersionInlineBadge,
 } from '../core/releases/components/VersionInlineBadge'
+export {useDocumentVersionTypeSortedList} from '../core/releases/hooks/useDocumentVersionTypeSortedList'
+export {useDocumentVersions} from '../core/releases/hooks/useDocumentVersions'
 export {useFormatRelativeLocalePublishDate} from '../core/releases/hooks/useFormatRelativeLocalePublishDate'
 export {useIsReleaseActive} from '../core/releases/hooks/useIsReleaseActive'
+export {useOnlyHasVersions} from '../core/releases/hooks/useOnlyHasVersions'
 export {useVersionOperations} from '../core/releases/hooks/useVersionOperations'
 export {sortReleases} from '../core/releases/hooks/utils'
 export {RELEASES_INTENT} from '../core/releases/plugin'
@@ -542,6 +615,7 @@ export {
 } from '../core/releases/util/releasesClient'
 export {
   formatRelativeLocalePublishDate,
+  getDocumentIsInPerspective,
   isDraftPerspective,
   isPublishedPerspective,
   isReleaseScheduledOrScheduling,
@@ -616,7 +690,11 @@ export {
 export {
   useComlinkStore,
   useConnectionStatusStore,
+  useGrantsStore,
+  useHistoryStore,
   useKeyValueStore,
+  usePresenceStore,
+  useProjectStore,
   useRenderingContextStore,
 } from '../core/store/datastores'
 export {
@@ -674,11 +752,25 @@ export {
   useInitialValueResolverContext,
 } from '../core/store/document/useInitialValue'
 export {EventsProvider, useEvents} from '../core/store/events/EventsProvider'
-export {type DocumentVersionEventType, type EventsStore} from '../core/store/events/types'
+export {
+  type DocumentVersionEventType,
+  type EventsStore,
+  isCreateDocumentVersionEvent,
+  isCreateLiveDocumentEvent,
+  isDeleteDocumentGroupEvent,
+  isDeleteDocumentVersionEvent,
+  isEditDocumentVersionEvent,
+  isPublishDocumentVersionEvent,
+  isScheduleDocumentVersionEvent,
+  isUnpublishDocumentEvent,
+  isUnscheduleDocumentVersionEvent,
+  isUpdateLiveDocumentEvent,
+} from '../core/store/events/types'
 export {useEventsStore} from '../core/store/events/useEventsStore'
 export {
   type DocumentPairPermissionsOptions,
   type DocumentPermission,
+  getDocumentPairPermissions,
   useDocumentPairPermissionsFromHookFactory,
 } from '../core/store/grants/documentPairPermissions'
 export {
@@ -750,6 +842,8 @@ export {
   type MatchWorkspaceOptions,
   type MatchWorkspaceResult,
 } from '../core/studio/activeWorkspaceMatcher/matchWorkspace'
+export {AddonDatasetProvider} from '../core/studio/addonDataset/AddonDatasetProvider'
+export {useAddonDataset} from '../core/studio/addonDataset/useAddonDataset'
 export {
   ColorSchemeCustomProvider,
   ColorSchemeLocalStorageProvider,
@@ -759,7 +853,10 @@ export {
   useColorScheme,
   useColorSchemeInternalValue,
   useColorSchemeOptions,
+  useColorSchemeSetValue,
 } from '../core/studio/colorScheme'
+export {StudioLogo} from '../core/studio/components/navbar/StudioLogo'
+export {StudioNavbar} from '../core/studio/components/navbar/StudioNavbar'
 export {
   DiagnosticsReport,
   type DiagnosticsReportProps,
@@ -774,13 +871,20 @@ export {SearchResultItemPreview} from '../core/studio/components/navbar/search/c
 export {type SearchContextValue} from '../core/studio/components/navbar/search/contexts/search/SearchContext'
 export {SearchProvider} from '../core/studio/components/navbar/search/contexts/search/SearchProvider'
 export {useSearchState} from '../core/studio/components/navbar/search/contexts/search/useSearchState'
+export {
+  defineSearchFilter,
+  defineSearchFilterOperators,
+} from '../core/studio/components/navbar/search/definitions/filters'
 export {operatorDefinitions} from '../core/studio/components/navbar/search/definitions/operators/defaultOperators'
+export {defineSearchOperator} from '../core/studio/components/navbar/search/definitions/operators/operatorTypes'
 export {
   type PartialIndexSettings,
   useSearchMaxFieldDepth,
 } from '../core/studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
 export {SearchButton} from '../core/studio/components/navbar/search/SearchButton'
 export {SearchDialog} from '../core/studio/components/navbar/search/SearchDialog'
+export {StudioToolMenu} from '../core/studio/components/navbar/tools/StudioToolMenu'
+export {CopyPasteProvider, useCopyPaste} from '../core/studio/copyPaste/CopyPasteProvider'
 export {type StudioDiagnostics} from '../core/studio/diagnostics/gatherStudioDiagnostics'
 export {parseStudioDiagnostics} from '../core/studio/diagnostics/parseStudioDiagnostics'
 export {
@@ -921,6 +1025,7 @@ export {EMPTY_ARRAY, EMPTY_OBJECT} from '../core/util/empty'
 export {formatRelativeLocale} from '../core/util/formatRelativeLocale'
 export {getDocumentVersionVariantId} from '../core/util/getDocumentVersionVariant'
 export {getErrorMessage} from '../core/util/getErrorMessage'
+export {getReferencePaths} from '../core/util/getReferencePaths'
 export {getTargetDocument, getVariantPublishedSibling} from '../core/util/getTargetDocument'
 export {globalScope} from '../core/util/globalScope'
 export {isArray} from '../core/util/isArray'
@@ -963,6 +1068,13 @@ export {
   type StructureNodeIdValidationResult,
   validateStructureNodeId,
 } from '../core/util/validateStructureNodeId'
+export {
+  isDraftVersion,
+  isPublishedVersion,
+  isReleaseVersion,
+  isVariantVersion,
+  readVersionType,
+} from '../core/util/versionsUtils'
 export {isDocumentInSelectedVariant} from '../core/variants/documents/isDocumentInSelectedVariant'
 export {useCreatableVariantInitialValue} from '../core/variants/hooks/useCreatableVariantInitialValue'
 export {useVariantDocumentOperations} from '../core/variants/hooks/useVariantDocumentOperations'

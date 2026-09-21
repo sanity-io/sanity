@@ -2,11 +2,7 @@ import {LayerProvider, Text} from '@sanity/ui'
 import {lazy, memo, Suspense, use, useCallback, useEffect, useMemo, useState} from 'react'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
-  DocumentGroupInventoryAction,
   getReleaseIdFromReleaseDocumentId,
-  Hotkeys,
-  isSanityDefinedAction,
-  readVersionType,
   useClient,
   useDocumentStore,
   usePerspective,
@@ -14,7 +10,10 @@ import {
 import {TasksModePromiseContext} from 'sanity/_singletons'
 import {Flex, VStack} from 'ui5'
 
+import {Hotkeys} from '../../../../core/components/Hotkeys'
+import {isSanityDefinedAction} from '../../../../core/config/document/actions'
 import {DocumentGroupInventory} from '../../../../core/documentGroupInventory/components/DocumentGroupInventory'
+import {DocumentGroupInventoryAction} from '../../../../core/documentGroupInventory/components/DocumentGroupInventoryAction'
 import {type DocumentGroupInventoryComponents} from '../../../../core/documentGroupInventory/types'
 import {useSetVariant} from '../../../../core/perspective/useSetVariant'
 import {type VersionInfoDocumentStub} from '../../../../core/releases/store/types'
@@ -22,6 +21,7 @@ import {isGoingToUnpublish} from '../../../../core/releases/util/isGoingToUnpubl
 import {usePausedScheduledDraft} from '../../../../core/singleDocRelease/hooks/usePausedScheduledDraft'
 import {useSource} from '../../../../core/studio/source'
 import {getDocumentVersionVariantId} from '../../../../core/util/getDocumentVersionVariant'
+import {readVersionType} from '../../../../core/util/versionsUtils'
 import {Button} from '../../../../ui-components/button/Button'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {ReferencePreviewLink} from '../../../components/confirmDeleteDialog/ReferencePreviewLink'

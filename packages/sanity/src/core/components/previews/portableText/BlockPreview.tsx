@@ -21,8 +21,7 @@ const HeaderFlex = styled(Flex).attrs({alignItems: 'center'})`
 `
 
 /**
- * @hidden
- * @beta */
+ * @internal */
 export function BlockPreview(props: Omit<PreviewProps<'block'>, 'renderDefault'>) {
   const {
     actions,

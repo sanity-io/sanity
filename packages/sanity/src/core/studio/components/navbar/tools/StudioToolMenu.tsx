@@ -11,8 +11,7 @@ import {ToolCollapseMenu} from './ToolCollapseMenu'
 import {ToolVerticalMenu} from './ToolVerticalMenu'
 
 /**
- * @hidden
- * @beta */
+ * @internal */
 export function StudioToolMenu(props: ToolMenuProps) {
   const {context, isSidebarOpen, tools, ...restProps} = props
   // The Schedules tool is listed once the workspace has scheduled publishing enabled, the feature

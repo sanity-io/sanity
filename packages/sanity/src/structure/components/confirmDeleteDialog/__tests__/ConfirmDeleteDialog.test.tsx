@@ -1,14 +1,17 @@
 import {render, screen} from '@testing-library/react'
-import {useDocumentVersions} from 'sanity'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {useDocumentVersions} from '../../../../core/releases/hooks/useDocumentVersions'
 import {structureUsEnglishLocaleBundle} from '../../../i18n'
 import {ConfirmDeleteDialog} from '../ConfirmDeleteDialog'
 import {useReferringDocuments} from '../useReferringDocuments'
 
 vi.mock('sanity', async (importActual) => ({
   ...((await importActual()) as Record<string, unknown>),
+}))
+vi.mock('../../../../core/releases/hooks/useDocumentVersions', async (importOriginal) => ({
+  ...(await importOriginal()),
   useDocumentVersions: vi.fn(),
 }))
 

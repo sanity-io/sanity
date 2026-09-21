@@ -9,11 +9,11 @@ import {
   useDocumentOperation,
   useDocumentPairPermissions,
   useDocumentStore,
-  useDocumentVersionTypeSortedList,
   useTranslation,
 } from 'sanity'
 
 import {getPairTarget, getTargetScopeId} from '../../core/hooks/useTargetDocumentState'
+import {useDocumentVersionTypeSortedList} from '../../core/releases/hooks/useDocumentVersionTypeSortedList'
 import {isReleaseScheduledOrScheduling} from '../../core/releases/util/util'
 import {isAgentBundleName} from '../../core/store/agent/createAgentBundlesStore'
 import {ConfirmDeleteDialog} from '../components/confirmDeleteDialog'

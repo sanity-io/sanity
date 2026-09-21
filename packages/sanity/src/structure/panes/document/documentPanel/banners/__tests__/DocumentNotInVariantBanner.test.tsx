@@ -1,15 +1,12 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {
-  type SystemVariant,
-  useDocumentVersions,
-  useGetDefaultPerspective,
-  usePerspective,
-} from 'sanity'
+import {type SystemVariant, usePerspective} from 'sanity'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {useGetDefaultPerspective} from '../../../../../../core/perspective/useGetDefaultPerspective'
+import {useDocumentVersions} from '../../../../../../core/releases/hooks/useDocumentVersions'
 import {type VersionInfoDocumentStub} from '../../../../../../core/releases/store/types'
 import {useVariantDocumentOperations} from '../../../../../../core/variants/hooks/useVariantDocumentOperations'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
@@ -25,10 +22,16 @@ vi.mock('sanity', async () => {
   return {
     ...sanity,
     usePerspective: vi.fn(),
-    useDocumentVersions: vi.fn(),
-    useGetDefaultPerspective: vi.fn(),
   }
 })
+vi.mock('../../../../../../core/releases/hooks/useDocumentVersions', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useDocumentVersions: vi.fn(),
+}))
+vi.mock('../../../../../../core/perspective/useGetDefaultPerspective', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useGetDefaultPerspective: vi.fn(),
+}))
 vi.mock(
   '../../../../../../core/variants/hooks/useVariantDocumentOperations',
   async (importOriginal) => ({

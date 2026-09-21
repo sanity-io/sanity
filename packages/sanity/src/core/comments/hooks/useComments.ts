@@ -4,8 +4,7 @@ import {CommentsContext} from 'sanity/_singletons'
 import {type CommentsContextValue} from '../context/comments/types'
 
 /**
- * @beta
- * @hidden
+ * @internal
  */
 export function useComments(): CommentsContextValue {
   const value = useContext(CommentsContext)

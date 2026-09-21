@@ -8,13 +8,13 @@ import {
   type ReleaseDocument,
   type SanityDocumentLike,
   Translate,
-  useDateTimeFormat,
   type UseDateTimeFormatOptions,
   usePerspective,
   useTranslation,
 } from 'sanity'
 import {VStack} from 'ui5'
 
+import {useDateTimeFormat} from '../../../../../../core/hooks/useDateTimeFormat'
 import {VersionChip} from '../../../../../../core/releases/components/documentHeader/VersionChip'
 import {ReleaseTitle} from '../../../../../../core/releases/components/ReleaseTitle'
 import {useFormatRelativeLocalePublishDate} from '../../../../../../core/releases/hooks/useFormatRelativeLocalePublishDate'

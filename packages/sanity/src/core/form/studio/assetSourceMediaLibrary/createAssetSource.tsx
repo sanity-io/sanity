@@ -39,7 +39,7 @@ function openInSource(asset: Asset): AssetSourceOpenInSourceResult {
 /**
  * Create a new image asset source for the Media Library
  *
- * @beta
+ * @internal
  */
 export function createSanityMediaLibraryImageSource(
   props: CreateSanityMediaLibrarySourceProps,
@@ -59,7 +59,7 @@ export function createSanityMediaLibraryImageSource(
 /**
  * Create a new file asset source for the Media Library
  *
- * @beta
+ * @internal
  */
 export function createSanityMediaLibraryFileSource(
   props: CreateSanityMediaLibrarySourceProps,

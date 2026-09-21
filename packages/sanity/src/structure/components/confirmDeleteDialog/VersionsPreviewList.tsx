@@ -2,13 +2,11 @@ import {Card, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
-  getDocumentVariantType,
   getPreviewStateObservable,
   getPreviewValueWithFallback,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
   getVersionFromId,
-  ReleaseAvatarIcon,
   SanityDefaultPreview,
   type SchemaType,
   useDocumentPreviewStore,
@@ -17,9 +15,11 @@ import {
 } from 'sanity'
 import {Flex, VStack} from 'ui5'
 
+import {ReleaseAvatarIcon} from '../../../core/releases/components/ReleaseAvatar'
 import {ReleaseTitle} from '../../../core/releases/components/ReleaseTitle'
 import {useActiveReleases} from '../../../core/releases/store/useActiveReleases'
 import {getReleaseTone} from '../../../core/releases/util/getReleaseTone'
+import {getDocumentVariantType} from '../../../core/util/getDocumentVariantType'
 import {ellipsisText} from './VersionsPreviewList.css'
 
 const VersionItemPreview = ({

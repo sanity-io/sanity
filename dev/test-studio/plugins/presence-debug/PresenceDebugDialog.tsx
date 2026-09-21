@@ -1,13 +1,11 @@
 import {Box, Button, Card, Dialog, Spinner, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
+import {pathToString, UserAvatar, useCurrentUser} from 'sanity'
 import {
-  pathToString,
-  UserAvatar,
-  useCurrentUser,
+  type PresenceLocation,
   usePresenceStore,
   useUserListWithPermissions,
-} from 'sanity'
-import {type PresenceLocation} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex, VStack} from 'ui5'
 
 import {type PresenceDebugTarget} from './context'

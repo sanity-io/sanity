@@ -57,7 +57,7 @@ export function createFilterDefinitionDictionary(
 }
 
 /**
- * @alpha
+ * @internal
  */
 export function defineSearchFilter<TOperators = SearchOperatorType>(
   filterDef: SearchFilterDefinition<TOperators>,
@@ -66,7 +66,7 @@ export function defineSearchFilter<TOperators = SearchOperatorType>(
 }
 
 /**
- * @alpha
+ * @internal
  */
 export function defineSearchFilterOperators<TOperators = SearchOperatorType>(
   operators: Operator<TOperators>[],
