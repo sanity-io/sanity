@@ -230,9 +230,10 @@ describe('createHistoryStore', () => {
       })
     })
 
-    test('uses replaceDraft addressed at the version id for version targets (release or variant scoped)', async () => {
+    test('uses version.replace for version targets (release or variant scoped)', async () => {
       // Variant version ids carry an opaque scope hash as the bundle segment; the restore action
-      // must address the version document itself and use the versioned actions API client.
+      // must replace the version document itself (not create a draft / replaceDraft) and use the
+      // versioned actions API client.
       const variantVersionId = 'versions.a1b2c3d4e5.doc-id'
       const client = buildClient()
       const historyStore = createHistoryStore({client})
@@ -250,12 +251,40 @@ describe('createHistoryStore', () => {
       expect(mockCreateOrReplace).not.toHaveBeenCalled()
       const [actions] = mockAction.mock.calls[0]
       expect(actions).toMatchObject({
-        actionType: 'sanity.action.document.replaceDraft',
-        publishedId: 'doc-id',
-        attributes: expect.objectContaining({_id: variantVersionId}),
+        actionType: 'sanity.action.document.version.replace',
+        document: expect.objectContaining({_id: variantVersionId, title: 'Restored'}),
       })
+      expect(actions).not.toHaveProperty('publishedId')
       // The versioned actions API client is selected because the pair derives from the target id.
       expect(client.withConfig).toHaveBeenCalledWith({apiVersion: 'v2025-02-19'})
+    })
+
+    test('does not send document.create when restoring a version that already exists', async () => {
+      // Reproducing Skydio 409 documentAlreadyExistsError: fromDeleted is derived from missing
+      // draft/published snapshots, but restore attributes target the version id. create-if-exists-fail
+      // then trips the one-version-per-published-id guard.
+      const releaseVersionId = 'versions.rI4gmhsFL.doc-id'
+      const client = buildClient()
+      const historyStore = createHistoryStore({client})
+
+      await new Promise<void>((resolve, reject) => {
+        historyStore
+          .restore('doc-id', releaseVersionId, 'rev-1', {
+            fromDeleted: true,
+            useServerDocumentActions: true,
+          })
+          .subscribe({complete: resolve, error: reject})
+      })
+
+      expect(mockCreateOrReplace).not.toHaveBeenCalled()
+      expect(mockAction).toHaveBeenCalledTimes(1)
+      const [actions] = mockAction.mock.calls[0]
+      expect(Array.isArray(actions) ? actions : [actions]).toEqual([
+        expect.objectContaining({
+          actionType: 'sanity.action.document.version.replace',
+          document: expect.objectContaining({_id: releaseVersionId}),
+        }),
+      ])
     })
 
     test('falls back to createOrReplace when useServerDocumentActions is not set', async () => {
