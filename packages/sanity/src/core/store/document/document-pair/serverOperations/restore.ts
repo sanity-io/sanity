@@ -1,3 +1,4 @@
+import {getVariantVersionInfo} from '../../../../variants/documents/getVariantVersionInfo'
 import {type DocumentRevision} from '../../../history/createHistoryStore'
 import {type OperationImpl} from '../operations/types'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
@@ -5,7 +6,7 @@ import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 export const restore: OperationImpl<[fromRevision: DocumentRevision]> = {
   disabled: (): false => false,
   execute: (
-    {snapshots, historyStore, schema, idPair, typeName},
+    {snapshots, historyStore, schema, idPair, typeName, target},
     fromRevision: DocumentRevision,
   ) => {
     const targetId = idPair.versionId
@@ -13,6 +14,15 @@ export const restore: OperationImpl<[fromRevision: DocumentRevision]> = {
       : isLiveEditEnabled(schema, typeName)
         ? idPair.publishedId
         : idPair.draftId
+
+    // A creatable variant target without a document yet has nothing to restore into: the variant
+    // routing info lives on the version snapshot, and the release `version.create` path would
+    // treat the opaque scope hash as a release id.
+    if (idPair.versionId && !snapshots.version && target?.kind === 'variant') {
+      throw new Error(
+        `Cannot restore a revision into the variant "${target.variantId}": the variant document does not exist yet`,
+      )
+    }
 
     // `fromDeleted` means "the restore target does not exist yet", which for a version target is
     // decided by the version snapshot alone — a release version can be absent while the document
@@ -24,6 +34,7 @@ export const restore: OperationImpl<[fromRevision: DocumentRevision]> = {
     return historyStore.restore(idPair.publishedId, targetId, fromRevision, {
       fromDeleted,
       useServerDocumentActions: true,
+      variant: getVariantVersionInfo(snapshots.version),
     })
   },
 }

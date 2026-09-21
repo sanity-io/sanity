@@ -144,6 +144,69 @@ describe('server restore operation', () => {
       )
     })
 
+    it('passes the variant routing info for a variant-scoped version target', () => {
+      vi.mocked(isLiveEditEnabled).mockReturnValue(false)
+
+      const args = {
+        snapshots: {
+          draft: null,
+          published: {} as SanityDocument,
+          version: {
+            _id: 'versions.varscope.existing-doc',
+            _system: {
+              variant: {_ref: '_.variants.french', _weak: true},
+              bundleId: 'drafts',
+            },
+          } as SanityDocument,
+        },
+        historyStore: mockHistoryStore,
+        schema: {},
+        idPair: {
+          publishedId: 'existing-doc',
+          draftId: 'drafts.existing-doc',
+          versionId: 'versions.varscope.existing-doc',
+        },
+        typeName: 'testType',
+      } as unknown as OperationArgs
+
+      restore.execute(args, 'specific-rev' as DocumentRevision)
+
+      expect(mockHistoryStore.restore).toHaveBeenCalledWith(
+        'existing-doc',
+        'versions.varscope.existing-doc',
+        'specific-rev',
+        {
+          fromDeleted: false,
+          useServerDocumentActions: true,
+          variant: {variantId: 'french', bundleId: 'drafts'},
+        },
+      )
+    })
+
+    it('refuses to restore into a creatable variant target that has no document yet', () => {
+      vi.mocked(isLiveEditEnabled).mockReturnValue(false)
+
+      const args = {
+        snapshots: {
+          draft: null,
+          published: {} as SanityDocument,
+          version: null,
+        },
+        historyStore: mockHistoryStore,
+        schema: {},
+        idPair: {
+          publishedId: 'existing-doc',
+          draftId: 'drafts.existing-doc',
+          versionId: 'versions.varscope.existing-doc',
+        },
+        target: {kind: 'variant', scopeId: 'varscope', variantId: 'french', allowCreate: true},
+        typeName: 'testType',
+      } as unknown as OperationArgs
+
+      expect(() => restore.execute(args, 'specific-rev' as DocumentRevision)).toThrow(/variant/)
+      expect(mockHistoryStore.restore).not.toHaveBeenCalled()
+    })
+
     it('handles lastRevision with live edit enabled documents', () => {
       vi.mocked(isLiveEditEnabled).mockReturnValue(true)
 
