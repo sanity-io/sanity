@@ -9,7 +9,7 @@ import {Bar} from '@visx/shape'
 import {useRef, useState} from 'react'
 import {Box, Flex} from 'ui5'
 
-import {formatTick, formatValue, type TrendSeries, type TrendTag} from './data'
+import {formatTick, formatValue, type TrendSeries, type TrendTag, type TrendUnit} from './data'
 import {RunDetailPopover} from './RunDetailPopover'
 import {COLOR} from './TrendChart'
 import {
@@ -44,6 +44,22 @@ const MARGIN = {top: 8, right: 8, bottom: 26}
 /** The bar to read at pointer x: `scaleBand` has no invert, so step through the bands. */
 function bucketIndexAt(x: number, step: number, count: number): number {
   return Math.max(0, Math.min(count - 1, Math.floor(x / step)))
+}
+
+/**
+ * A week-over-week move, signed. Shares move in percentage points ("+4 pts"),
+ * not in percent of a percent — "35% → 39%" is a 4-point move, and calling it
+ * "+4%" would read as 4% of 35.
+ */
+export function formatDelta(
+  delta: number,
+  unit: TrendUnit,
+  options: {signed?: boolean} = {},
+): string {
+  const sign = options.signed === false ? '' : delta > 0 ? '+' : delta < 0 ? '−' : ''
+  const size = Math.abs(delta)
+  if (unit === 'percent') return `${sign}${size < 1 ? size.toFixed(1) : size.toFixed(0)} pts`
+  return `${sign}${formatValue(size, unit)}`
 }
 
 /**
@@ -205,7 +221,7 @@ export function WeeklyBars(props: {
             role="application"
             aria-label={`${series.title} per week: ${measured.length} of ${buckets.length} weeks measured${
               wow
-                ? `, latest ${formatValue(wow.latest.value!, unit)} (${wow.delta >= 0 ? '+' : '−'}${formatValue(Math.abs(wow.delta), unit)} vs the previous measured week)`
+                ? `, latest ${formatValue(wow.latest.value!, unit)} (${formatDelta(wow.delta, unit)} vs the previous measured week)`
                 : ''
             }. Arrow keys inspect weeks, Enter opens the week's newest run.`}
             onPointerMove={handleMove}
@@ -254,11 +270,9 @@ export function WeeklyBars(props: {
                   {(() => {
                     const previous = previousMeasured(hoverIndex!)
                     if (!previous || previous.value === null) return null
-                    const delta = hovered.value - previous.value
                     return (
                       <Text size={0} muted>
-                        {delta >= 0 ? '+' : '−'}
-                        {formatValue(Math.abs(delta), unit)} vs week of{' '}
+                        {formatDelta(hovered.value - previous.value, unit)} vs week of{' '}
                         {weekLabel(previous.weekStart)}
                       </Text>
                     )
@@ -382,8 +396,8 @@ export function WeeklyCard(props: {
             </Text>
             {wow && wow.delta !== 0 && (
               <Badge tone={improved ? 'positive' : 'caution'} fontSize={0} style={{flexShrink: 0}}>
-                {wow.delta > 0 ? '↑' : '↓'} {formatValue(Math.abs(wow.delta), series.unit)} vs
-                previous week
+                {wow.delta > 0 ? '↑' : '↓'} {formatDelta(wow.delta, series.unit, {signed: false})}{' '}
+                vs previous week
               </Badge>
             )}
           </Flex>
