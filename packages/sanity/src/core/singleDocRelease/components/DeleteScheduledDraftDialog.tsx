@@ -15,6 +15,7 @@ import {Translate} from '../../i18n/Translate'
 import {Preview} from '../../preview/components/Preview'
 import {useUnstableObserveDocument} from '../../preview/useObserveDocument'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases/util/releasesClient'
 import {getDraftId, getPublishedId, getVersionId} from '../../util/draftUtils'
 import {getErrorMessage} from '../../util/getErrorMessage'
 import {useScheduledDraftDocument} from '../hooks/useScheduledDraftDocument'
@@ -220,16 +221,23 @@ function DeleteScheduledDraftDialogWithCopyToDraft({
   })
 
   // Same observer both sides: `useScheduledDraftDocument` decorates documents with extra keys.
+  // The releases api config matches `useBundleDocuments`, so the version read shares its observable.
   const {
     document: scheduledDraftDocument,
     loading: scheduledDraftLoading,
     error: scheduledDraftError,
-  } = useUnstableObserveDocument<SanityDocument>(getVersionId(publishedId, releaseId))
+  } = useUnstableObserveDocument<SanityDocument>(
+    getVersionId(publishedId, releaseId),
+    RELEASES_STUDIO_CLIENT_OPTIONS,
+  )
   const {
     document: draftDocument,
     loading: draftLoading,
     error: draftError,
-  } = useUnstableObserveDocument<SanityDocument>(getDraftId(publishedId))
+  } = useUnstableObserveDocument<SanityDocument>(
+    getDraftId(publishedId),
+    RELEASES_STUDIO_CLIENT_OPTIONS,
+  )
 
   const isLoading = scheduledDraftLoading || draftLoading
   const hasReadError = Boolean(scheduledDraftError ?? draftError)
