@@ -1,10 +1,14 @@
+import {takeSnapshot} from '@chromatic-com/vitest'
 import {Card, ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
-import {beforeAll, describe, expect, it} from 'vitest'
+import {beforeAll, describe, expect, it, vi} from 'vitest'
 import {render} from 'vitest-browser-react'
+import {userEvent} from 'vitest/browser'
 
 import {RatioBox} from '../../../common/RatioBox'
 import {HotspotImage} from '../HotspotImage'
+import {ToolSVG} from '../ToolSVG'
+import {StyledSVG} from '../ToolSVG.styles'
 
 const theme = buildTheme()
 
@@ -70,4 +74,39 @@ describe('HotspotImage', () => {
       })
     }
   }
+})
+
+describe('ToolSVG', () => {
+  it('renders hover and focus states for the interactive crop and hotspot controls', async () => {
+    const image = new Image()
+    image.src = SRC
+    Object.defineProperties(image, {
+      naturalHeight: {value: 800},
+      naturalWidth: {value: 1200},
+    })
+
+    const {container} = await render(
+      <ThemeProvider theme={theme}>
+        <Card padding={4}>
+          <ToolSVG
+            image={image}
+            onChange={vi.fn()}
+            onChangeEnd={vi.fn()}
+            readOnly={false}
+            size={{height: 320, width: 480}}
+            value={{crop: CROP, hotspot: HOTSPOT}}
+          />
+        </Card>
+      </ThemeProvider>,
+    )
+
+    const hotspot = container.querySelector<SVGElement>("[data-handle='hotspot']")!
+    expect(StyledSVG).toBeTypeOf('function')
+    await userEvent.hover(hotspot)
+    await takeSnapshot('hotspot hovered')
+
+    const crop = container.querySelector<SVGElement>("[data-handle='crop'][tabindex='0']")!
+    crop.focus()
+    expect(crop).toBe(document.activeElement)
+  })
 })
