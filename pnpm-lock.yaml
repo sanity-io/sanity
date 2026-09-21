@@ -1807,7 +1807,7 @@ importers:
         specifier: ^6.20.3
         version: 6.20.3
       '@codemirror/commands':
-        specifier: ^6.11.0
+        specifier: ^6.11.1
         version: 6.11.1
       '@codemirror/lang-javascript':
         specifier: ^6.2.5
@@ -1819,10 +1819,10 @@ importers:
         specifier: ^6.7.2
         version: 6.7.2
       '@codemirror/state':
-        specifier: ^6.7.4
+        specifier: ^6.7.5
         version: 6.7.5
       '@codemirror/view':
-        specifier: ^6.43.11
+        specifier: ^6.43.12
         version: 6.43.12
       '@lezer/highlight':
         specifier: ^1.2.3
