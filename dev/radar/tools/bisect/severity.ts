@@ -19,14 +19,14 @@ export const SEVERITY_LABEL: Record<Severity, string> = {
 
 /**
  * The worst of several ratings, for toning a count that stands for many
- * regressions. An unrated one counts as the worst: nobody has said it is
- * anything less, so the count stays red until someone rates it down.
+ * regressions. Unrated ones are ignored: a tone means someone rated it, so
+ * a count that is red really does hold a critical regression.
  */
 export function worstSeverity(values: readonly unknown[]): Severity | undefined {
   let worst: Severity | undefined
   for (const value of values) {
-    const severity = isSeverity(value) ? value : 'critical'
-    if (!worst || SEVERITIES.indexOf(severity) > SEVERITIES.indexOf(worst)) worst = severity
+    if (!isSeverity(value)) continue
+    if (!worst || SEVERITIES.indexOf(value) > SEVERITIES.indexOf(worst)) worst = value
   }
   return worst
 }

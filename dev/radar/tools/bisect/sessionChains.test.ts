@@ -118,12 +118,12 @@ test('the verdict note is merged like the other annotations, deepest set wins', 
   })
 })
 
-test('worstSeverity ranks unrated as worst and minor as least', async () => {
+test('worstSeverity ranks critical over major over minor and ignores unrated', async () => {
   const {worstSeverity} = await import('./severity')
   expect(worstSeverity([])).toBeUndefined()
+  expect(worstSeverity([null, 'bogus'])).toBeUndefined()
   expect(worstSeverity(['minor'])).toBe('minor')
   expect(worstSeverity(['minor', 'major'])).toBe('major')
   expect(worstSeverity(['major', 'critical', 'minor'])).toBe('critical')
-  expect(worstSeverity(['minor', null])).toBe('critical')
-  expect(worstSeverity(['minor', 'bogus'])).toBe('critical')
+  expect(worstSeverity(['minor', null, 'bogus'])).toBe('minor')
 })

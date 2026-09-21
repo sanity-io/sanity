@@ -39,7 +39,13 @@ import {normalizeReproPath, withReproPath} from '../bisect/reproPath'
 import {ReproPathInput} from '../bisect/ReproPathField'
 import {mergeChainVerdict, resolveSessionChains} from '../bisect/sessionChains'
 import {type ManualRegressionInput, reportRegression} from '../bisect/sessions'
-import {SEVERITY_LABEL, SEVERITY_TONE, type Severity, worstSeverity} from '../bisect/severity'
+import {
+  isSeverity,
+  SEVERITIES,
+  SEVERITY_LABEL,
+  SEVERITY_TONE,
+  worstSeverity,
+} from '../bisect/severity'
 import {pluralize} from '../bisect/text'
 import {releaseUrl} from '../trends/links'
 import {useUrlState} from '../trends/useUrlState'
@@ -682,21 +688,29 @@ function ReleaseRow(props: {
   const hasRegressions =
     regressions !== undefined &&
     regressions.introduced.length + regressions.inherited.length + regressions.fixed.length > 0
-  // The introduced count takes the tone of its worst regression, so a
-  // critical one stands out in the list and a release of minor ones calms
-  // down; an unrated regression keeps it red (see worstSeverity)
-  const worstIntroduced = worstSeverity(
-    (regressions?.introduced ?? []).map((entry) => entry.session.result?.severity),
-  )
-  // What a reader of the list most wants to know about a release: does it
-  // ship anything major or critical — introduced here or inherited, not the
-  // ones fixed here. Shown as badges next to the version; minor and unrated
-  // ones don't get a badge of their own
+  // Severity is shown by ORIGIN, so a critical regression a release merely
+  // inherited never reads as one it introduced: the badges next to the
+  // version and the tone of the introduced count are about what this
+  // release broke; the inherited count takes the tone of what it carries.
+  // The introduced count is toned by its worst rated severity and reads as a
+  // warning (amber) while unrated — introducing a regression is a warning
+  // in itself; red always means someone rated it critical
+  const severities = (entries: ReleaseRegression[] | undefined) =>
+    (entries ?? []).map((entry) => entry.session.result?.severity)
+  const worstIntroduced = worstSeverity(severities(regressions?.introduced))
+  const worstInherited = worstSeverity(severities(regressions?.inherited))
+  // What bugs were IN the release — introduced here or inherited, not the
+  // ones it fixed — one badge per severity, worst first, unrated last:
+  // "1 critical · 2 major · 1 minor · 1 unrated". Origin is the count
+  // group's business below
   const present = [...(regressions?.introduced ?? []), ...(regressions?.inherited ?? [])]
-  const severityCount = (severity: Severity) =>
-    present.filter((entry) => entry.session.result?.severity === severity).length
-  const criticalCount = severityCount('critical')
-  const majorCount = severityCount('major')
+  const presentBySeverity = [...SEVERITIES.toReversed(), undefined].flatMap((severity) => {
+    const count = present.filter((entry) => {
+      const rated = entry.session.result?.severity
+      return severity === undefined ? !isSeverity(rated) : rated === severity
+    }).length
+    return count > 0 ? [{severity, count}] : []
+  })
   // The version opens the gitTag document in the structure tool — the raw
   // synced record behind the row
   const documentLink = useIntentLink({intent: 'edit', params: {id: tag._id, type: 'gitTag'}})
@@ -737,40 +751,30 @@ function ReleaseRow(props: {
                 </Badge>
               </Tooltip>
             )}
-            {/* The release's criticality, next to its name: how many major or
-                critical regressions it ships (introduced or inherited) */}
-            {criticalCount > 0 && (
-              <Tooltip
-                content={
-                  <Box padding={2}>
-                    <Text size={1}>
-                      {pluralize(criticalCount, 'critical regression')} present in {tag.tag}{' '}
-                      (introduced here or inherited)
-                    </Text>
-                  </Box>
-                }
-              >
-                <Badge tone={SEVERITY_TONE.critical} fontSize={0}>
-                  {criticalCount} critical
-                </Badge>
-              </Tooltip>
-            )}
-            {majorCount > 0 && (
-              <Tooltip
-                content={
-                  <Box padding={2}>
-                    <Text size={1}>
-                      {pluralize(majorCount, 'major regression')} present in {tag.tag} (introduced
-                      here or inherited)
-                    </Text>
-                  </Box>
-                }
-              >
-                <Badge tone={SEVERITY_TONE.major} fontSize={0}>
-                  {majorCount} major
-                </Badge>
-              </Tooltip>
-            )}
+            {/* The bugs in the release, next to its name — introduced here
+                or inherited — so a reader can spot at a glance what shipped
+                broken in it. Which of them are this release's own blame is
+                the count group's business below */}
+            {presentBySeverity.map(({severity, count}) => {
+              const label = severity ? SEVERITY_LABEL[severity].toLowerCase() : 'unrated'
+              return (
+                <Tooltip
+                  key={label}
+                  content={
+                    <Box padding={2}>
+                      <Text size={1}>
+                        {pluralize(count, `${label} regression`)} in {tag.tag} (introduced here or
+                        inherited)
+                      </Text>
+                    </Box>
+                  }
+                >
+                  <Badge tone={severity ? SEVERITY_TONE[severity] : 'default'} fontSize={0}>
+                    {count} {label}
+                  </Badge>
+                </Tooltip>
+              )
+            })}
           </Flex>
           <Box flex={1} />
           {typeof tag.npm?.weeklyDownloads === 'number' && (
@@ -806,8 +810,9 @@ function ReleaseRow(props: {
               counts and the report action read as one thing: the label
               carries the noun, the counts say where a span starts
               (introduced), runs (inherited) and ends (fixed) — told apart by
-              tone and icon, the introduced count toned by its worst severity — and "Add"
-              pins a new one on this release. Each count
+              tone and icon, the introduced count toned by its worst rated
+              severity and amber while unrated — and "Add" pins a new one on
+              this release. Each count
               opens the list behind it, which is also where a regression is
               removed again */}
           <Flex alignItems="center" gap={2} flexWrap="wrap">
@@ -819,20 +824,23 @@ function ReleaseRow(props: {
                 none
               </Text>
             )}
-            {regressions && regressions.introduced.length > 0 && worstIntroduced && (
+            {regressions && regressions.introduced.length > 0 && (
               <Tooltip
                 content={
                   <Box padding={2}>
                     <Text size={1}>
                       {pluralize(regressions.introduced.length, 'regression')} first shipped in{' '}
-                      {tag.tag} — worst rated {SEVERITY_LABEL[worstIntroduced].toLowerCase()}
+                      {tag.tag}
+                      {worstIntroduced
+                        ? ` — worst rated ${SEVERITY_LABEL[worstIntroduced].toLowerCase()}`
+                        : ' — not rated yet'}
                     </Text>
                   </Box>
                 }
               >
                 <Button
                   mode="bleed"
-                  tone={SEVERITY_TONE[worstIntroduced]}
+                  tone={worstIntroduced ? SEVERITY_TONE[worstIntroduced] : 'caution'}
                   fontSize={0}
                   padding={2}
                   icon={BugIcon}
@@ -849,13 +857,16 @@ function ReleaseRow(props: {
                     <Text size={1}>
                       {pluralize(regressions.inherited.length, 'regression')} introduced in an
                       earlier release and not fixed yet when {tag.tag} shipped
+                      {worstInherited
+                        ? ` — worst rated ${SEVERITY_LABEL[worstInherited].toLowerCase()}`
+                        : ''}
                     </Text>
                   </Box>
                 }
               >
                 <Button
                   mode="bleed"
-                  tone="caution"
+                  tone={worstInherited === 'critical' ? 'critical' : 'caution'}
                   fontSize={0}
                   padding={2}
                   icon={WarningOutlineIcon}

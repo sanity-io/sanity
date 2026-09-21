@@ -379,10 +379,10 @@ sessionChains.ts` and shared by the sessions list and the Releases tool:
    regressions bisect sessions have attributed to it, along the span a
    regression covers: **introduced** (this release FIRST shipped the
    offending commit — the blame, a count with a bug icon toned by the worst
-   severity among them: red for critical or unrated, amber for major, plain
-   for minor),
+   rated severity among them: red for critical, amber for major or while
+   unrated, plain for minor),
    **inherited** (introduced by an earlier release and not fixed yet when
-   this one shipped — an amber count with a warning icon, so every release inside the
+   this one shipped — an amber count with a warning icon, red when one of them is rated critical, so every release inside the
    span reads as affected without looking like a fresh break) and **fixed**
    (a green count on the release named in `result.fixedIn`). Whether a
    later release still carries a regression is ancestry, like the blame: it
@@ -420,9 +420,11 @@ sessionChains.ts` and shared by the sessions list and the Releases tool:
    (tags, npm state, regression spans) is untouched and keeps syncing. The
    line holding the `latest` dist-tag cannot be marked. Its own type rather
    than a flag on `gitTag` because the sync replaces tag documents whole.
-   Next to its version a release shows how many **critical** and **major**
-   regressions are present in it (introduced there or inherited, not the
-   ones it fixed) — the one thing a reader scanning the list wants to know.
+   Next to its version a release shows how many regressions it INTRODUCED
+   at each rated severity — "1 critical · 2 major · 1 minor", worst first —
+   its own blame, the one thing a reader scanning the list wants to know. Severity is always shown by origin: an inherited
+   critical regression turns the inherited count red instead, so a release
+   that merely carries one never reads as having caused it.
 
 ## Architecture
 
