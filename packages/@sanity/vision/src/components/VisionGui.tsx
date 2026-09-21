@@ -692,10 +692,9 @@ export function VisionGui(props: VisionGuiProps) {
 
   return (
     <Root
-      direction="column"
-      height="fill"
+      flexDirection="column"
+      height="100%"
       ref={visionRootRef}
-      sizing="border"
       overflow="hidden"
       data-testid="vision-root"
     >
