@@ -351,9 +351,9 @@ effect of merged work; secondary: leads scanning health weekly.
    (maintenance lines) may lack it. Each release also shows the confirmed
    regressions bisect sessions have attributed to it, along the span a
    regression covers: **introduced** (this release FIRST shipped the
-   offending commit — the blame, a bordered red count with a bug icon),
+   offending commit — the blame, a red count with a bug icon),
    **inherited** (introduced by an earlier release and not fixed yet when
-   this one shipped — a borderless amber count with a warning icon, so every release inside the
+   this one shipped — an amber count with a warning icon, so every release inside the
    span reads as affected without looking like a fresh break) and **fixed**
    (a green count on the release named in `result.fixedIn`). Whether a
    later release still carries a regression is ancestry, like the blame: it

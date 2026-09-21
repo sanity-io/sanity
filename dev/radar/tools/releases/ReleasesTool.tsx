@@ -425,140 +425,165 @@ function ReleaseRow(props: {
     onShowRegressions,
   } = props
   const version = tag.tag.replace(/^v/, '')
+  const hasRegressions =
+    regressions !== undefined &&
+    regressions.introduced.length + regressions.inherited.length + regressions.fixed.length > 0
   // The version opens the gitTag document in the structure tool — the raw
   // synced record behind the row
   const documentLink = useIntentLink({intent: 'edit', params: {id: tag._id, type: 'gitTag'}})
 
   return (
     <Card padding={3} radius={2} border>
-      <Flex alignItems="center" gap={3} flexWrap="wrap">
-        <Box style={{width: 110, flexShrink: 0}}>
-          <Text size={2} weight="medium">
-            <a href={documentLink.href} onClick={documentLink.onClick}>
-              {tag.tag}
-            </a>
-          </Text>
-        </Box>
-        {tag.npm?.distTags?.map((distTag) => (
-          <Badge key={distTag} tone="primary" fontSize={0}>
-            {distTag}
-          </Badge>
-        ))}
-        {tag.npm?.deprecated && (
-          // npm state like the dist-tags, refreshed by every npm-collecting
-          // sync; the message is what `npm install` prints
-          <Tooltip
-            content={
-              <Box padding={2}>
-                <Text size={1}>{tag.npm.deprecated}</Text>
-              </Box>
-            }
-          >
-            <Badge tone="caution" fontSize={0}>
-              deprecated
-            </Badge>
-          </Tooltip>
-        )}
-        {/* Where a regression's span starts (introduced), runs (inherited)
-            and ends (fixed), told apart by tone, icon and weight: the bordered red
-            count is the one to read, the borderless amber count says the
-            release still ships something older, the green count that it
-            closed a span. Each opens the list behind it — that is also where
-            a regression is removed again */}
-        {regressions && regressions.introduced.length > 0 && (
-          <Button
-            mode="ghost"
-            tone="critical"
-            fontSize={0}
-            padding={2}
-            icon={BugIcon}
-            text={`${regressions.introduced.length} introduced`}
-            aria-label={`Show the ${pluralize(regressions.introduced.length, 'regression')} introduced in ${tag.tag}`}
-            onClick={onShowRegressions}
-          />
-        )}
-        {regressions && regressions.inherited.length > 0 && (
-          <Tooltip
-            content={
-              <Box padding={2}>
-                <Text size={1}>
-                  {pluralize(regressions.inherited.length, 'regression')} introduced in an earlier
-                  release and not fixed yet when {tag.tag} shipped
-                </Text>
-              </Box>
-            }
-          >
-            <Button
-              mode="bleed"
-              tone="caution"
-              fontSize={0}
-              padding={2}
-              icon={WarningOutlineIcon}
-              text={`${regressions.inherited.length} inherited`}
-              aria-label={`Show the ${pluralize(regressions.inherited.length, 'regression')} ${tag.tag} inherited from earlier releases`}
-              onClick={onShowRegressions}
-            />
-          </Tooltip>
-        )}
-        {regressions && regressions.fixed.length > 0 && (
-          <Button
-            mode="bleed"
-            tone="positive"
-            fontSize={0}
-            padding={2}
-            icon={CheckmarkCircleIcon}
-            text={`${regressions.fixed.length} fixed`}
-            aria-label={`Show the ${pluralize(regressions.fixed.length, 'regression')} fixed in ${tag.tag}`}
-            onClick={onShowRegressions}
-          />
-        )}
-        <Box flex={1} />
-        {typeof tag.npm?.weeklyDownloads === 'number' && (
-          <Text size={0} muted>
-            {tag.npm.weeklyDownloads.toLocaleString('en-US')}/wk
-          </Text>
-        )}
-        <RelativeDate dateTime={tag.npm?.publishedAt ?? tag.taggedAt} size={0} muted />
-        {/* One icon per destination so a row scans without reading the labels */}
-        <Flex gap={3} flexWrap="wrap">
-          {previewUrl && (
-            <IconLink href={withReproPath(previewUrl, previewPath)} icon={SanityMonogram}>
-              Test Studio
-            </IconLink>
+      {/* Two deliberate lines rather than one that wraps wherever the width
+          runs out: the first is identity (which release, what npm calls it,
+          when and how much it is used), the second has the links out on the
+          left and everything about regressions — the span counts and the
+          report action — together on the right. */}
+      <Stack gap={3}>
+        <Flex alignItems="center" gap={3} flexWrap="wrap">
+          {/* The version and what npm calls it read as one label */}
+          <Flex alignItems="center" gap={2}>
+            <Text size={2} weight="medium">
+              <a href={documentLink.href} onClick={documentLink.onClick}>
+                {tag.tag}
+              </a>
+            </Text>
+            {tag.npm?.distTags?.map((distTag) => (
+              <Badge key={distTag} tone="primary" fontSize={0}>
+                {distTag}
+              </Badge>
+            ))}
+            {tag.npm?.deprecated && (
+              // npm state like the dist-tags, refreshed by every npm-collecting
+              // sync; the message is what `npm install` prints
+              <Tooltip
+                content={
+                  <Box padding={2}>
+                    <Text size={1}>{tag.npm.deprecated}</Text>
+                  </Box>
+                }
+              >
+                <Badge tone="caution" fontSize={0}>
+                  deprecated
+                </Badge>
+              </Tooltip>
+            )}
+          </Flex>
+          <Box flex={1} />
+          {typeof tag.npm?.weeklyDownloads === 'number' && (
+            <Text size={1} muted>
+              {tag.npm.weeklyDownloads.toLocaleString('en-US')}/wk
+            </Text>
           )}
-          <IconLink href={releaseUrl(tag.tag)} icon={GitHubLogo}>
-            GitHub
-          </IconLink>
-          {baseVersion && (
-            <IconLink href={changelogUrl(baseVersion)} icon={DocumentTextIcon}>
-              Changelog
-            </IconLink>
-          )}
-          <IconLink href={npmxUrl(version)} icon={PackageIcon}>
-            npmx
-          </IconLink>
+          <RelativeDate dateTime={tag.npm?.publishedAt ?? tag.taggedAt} size={1} muted />
         </Flex>
-        {/* Pin a regression on this release without picking it in the dialog */}
-        <Tooltip
-          content={
-            <Box padding={2}>
-              <Text size={1}>Report a regression introduced in {tag.tag}</Text>
-            </Box>
-          }
-        >
-          <Button
-            mode="bleed"
-            tone="critical"
-            fontSize={1}
-            padding={2}
-            icon={BugIcon}
-            text="Add regression"
-            aria-label={`Report a regression introduced in ${tag.tag}`}
-            disabled={!onAddRegression}
-            onClick={onAddRegression}
-          />
-        </Tooltip>
-      </Flex>
+
+        <Flex alignItems="center" gap={3} flexWrap="wrap">
+          {/* One icon per destination so the line scans without reading the labels */}
+          <Flex gap={3} flexWrap="wrap">
+            {previewUrl && (
+              <IconLink href={withReproPath(previewUrl, previewPath)} icon={SanityMonogram}>
+                Test Studio
+              </IconLink>
+            )}
+            <IconLink href={releaseUrl(tag.tag)} icon={GitHubLogo}>
+              GitHub
+            </IconLink>
+            {baseVersion && (
+              <IconLink href={changelogUrl(baseVersion)} icon={DocumentTextIcon}>
+                Changelog
+              </IconLink>
+            )}
+            <IconLink href={npmxUrl(version)} icon={PackageIcon}>
+              npmx
+            </IconLink>
+          </Flex>
+          <Box flex={1} />
+          {/* One labelled group for everything about regressions, so the
+              counts and the report action read as one thing: the label
+              carries the noun, the counts say where a span starts
+              (introduced), runs (inherited) and ends (fixed) — told apart by
+              tone and icon, the red count being the one to read — and "Add"
+              pins a new one on this release. Each count
+              opens the list behind it, which is also where a regression is
+              removed again */}
+          <Flex alignItems="center" gap={2} flexWrap="wrap">
+            <Text size={1} muted>
+              Regressions
+            </Text>
+            {!hasRegressions && (
+              <Text size={1} muted>
+                none
+              </Text>
+            )}
+            {regressions && regressions.introduced.length > 0 && (
+              <Button
+                mode="bleed"
+                tone="critical"
+                fontSize={0}
+                padding={2}
+                icon={BugIcon}
+                text={`${regressions.introduced.length} introduced`}
+                aria-label={`Show the ${pluralize(regressions.introduced.length, 'regression')} introduced in ${tag.tag}`}
+                onClick={onShowRegressions}
+              />
+            )}
+            {regressions && regressions.inherited.length > 0 && (
+              <Tooltip
+                content={
+                  <Box padding={2}>
+                    <Text size={1}>
+                      {pluralize(regressions.inherited.length, 'regression')} introduced in an
+                      earlier release and not fixed yet when {tag.tag} shipped
+                    </Text>
+                  </Box>
+                }
+              >
+                <Button
+                  mode="bleed"
+                  tone="caution"
+                  fontSize={0}
+                  padding={2}
+                  icon={WarningOutlineIcon}
+                  text={`${regressions.inherited.length} inherited`}
+                  aria-label={`Show the ${pluralize(regressions.inherited.length, 'regression')} ${tag.tag} inherited from earlier releases`}
+                  onClick={onShowRegressions}
+                />
+              </Tooltip>
+            )}
+            {regressions && regressions.fixed.length > 0 && (
+              <Button
+                mode="bleed"
+                tone="positive"
+                fontSize={0}
+                padding={2}
+                icon={CheckmarkCircleIcon}
+                text={`${regressions.fixed.length} fixed`}
+                aria-label={`Show the ${pluralize(regressions.fixed.length, 'regression')} fixed in ${tag.tag}`}
+                onClick={onShowRegressions}
+              />
+            )}
+            <Tooltip
+              content={
+                <Box padding={2}>
+                  <Text size={1}>Report a regression introduced in {tag.tag}</Text>
+                </Box>
+              }
+            >
+              <Button
+                mode="bleed"
+                fontSize={0}
+                padding={2}
+                icon={AddIcon}
+                text="Add"
+                aria-label={`Report a regression introduced in ${tag.tag}`}
+                disabled={!onAddRegression}
+                onClick={onAddRegression}
+              />
+            </Tooltip>
+          </Flex>
+        </Flex>
+      </Stack>
     </Card>
   )
 }
