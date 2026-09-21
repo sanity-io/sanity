@@ -22,9 +22,8 @@ vi.mock('./VirtualizedArrayList', () => ({
   VirtualizedArrayList: (props: Record<string, unknown>) => virtualizedArrayListMock(props),
 }))
 
-const itemComponentMock = vi.fn((_props: Record<string, unknown>) => null)
-function MockItemComponent(props: Record<string, unknown>) {
-  return itemComponentMock(props)
+function MockItemComponent() {
+  return null
 }
 vi.mock('../../../../form-components-hooks/useItemComponent', () => ({
   useItemComponent: () => MockItemComponent,
@@ -80,7 +79,6 @@ function renderListArrayInput(options: {
 describe('ListArrayInput', () => {
   beforeEach(() => {
     virtualizedArrayListMock.mockClear()
-    itemComponentMock.mockClear()
   })
 
   it('provides ArrayValidationContext to children', () => {
@@ -108,15 +106,16 @@ describe('ListArrayInput', () => {
     renderListArrayInput({memberCount: 1})
 
     const passedProps = virtualizedArrayListMock.mock.calls[0][0] as Record<string, unknown>
-    const renderItem = passedProps.renderItem as (props: Record<string, unknown>) => ReactNode
+    const renderItem = passedProps.renderItem as (props: Record<string, unknown>) => unknown
     const itemSchemaType = {name: 'myCustomItem', jsonType: 'object'}
 
-    render(<>{renderItem({schemaType: itemSchemaType})}</>)
+    const element = renderItem({schemaType: itemSchemaType}) as {
+      type: unknown
+      props: Record<string, unknown>
+    }
 
-    expect(itemComponentMock).toHaveBeenCalledTimes(1)
-    expect(itemComponentMock).toHaveBeenCalledWith(
-      expect.objectContaining({schemaType: itemSchemaType}),
-    )
+    expect(element.type).toBe(MockItemComponent)
+    expect(element.props).toEqual(expect.objectContaining({schemaType: itemSchemaType}))
   })
   it('applies critical tone to empty state card when there are validation errors', () => {
     const errorValidation: FormNodeValidation[] = [
