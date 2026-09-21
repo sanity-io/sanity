@@ -5,13 +5,40 @@ import {describe, expect, it} from 'vitest'
 
 /**
  * `useMiddlewareComponents` returns a component with no Suspense boundary of its own, so every
- * site that renders one has to wrap it. This walks the package source, finds each hook built on
- * `useMiddlewareComponents`, each component those hooks hand out, and checks that every JSX
- * render of such a component sits inside a `<Suspense>` element in the same file.
+ * site that renders one either wraps it or deliberately lets an ancestor boundary catch it. This
+ * walks the package source, finds each hook built on `useMiddlewareComponents`, each component
+ * those hooks hand out, and checks that every JSX render of such a component sits inside a
+ * `<Suspense>` element in the same file unless it is listed in `DEFERS_TO_ANCESTOR`.
  */
 
 const SRC_ROOT = join(import.meta.dirname, '../../../..')
 const MIDDLEWARE_HOOK = 'useMiddlewareComponents'
+
+/**
+ * Sites that render a middleware component without a boundary of their own. Form nodes have
+ * unpredictable heights, so no fallback the form could pick fits; a lazy form component owns its
+ * own `<Suspense>` sized for what it renders, and until it resolves the form suspends up to the
+ * document pane. The navbar tool menu likewise suspends up to the navbar boundary in
+ * `StudioLayoutComponent`. Adding a site here is a decision, not a default.
+ */
+const DEFERS_TO_ANCESTOR = [
+  'core/form/inputs/PortableText/object/Plugins.tsx <RenderPlugins>',
+  'core/form/inputs/arrays/ArrayOfObjectsInput/List/ListArrayInput.tsx <ItemComponent>',
+  'core/form/studio/FormBuilder.tsx <Annotation>',
+  'core/form/studio/FormBuilder.tsx <Block>',
+  'core/form/studio/FormBuilder.tsx <Field>',
+  'core/form/studio/FormBuilder.tsx <InlineBlock>',
+  'core/form/studio/FormBuilder.tsx <Input>',
+  'core/form/studio/FormBuilder.tsx <Item>',
+  'core/form/studio/FormProvider.tsx <Annotation>',
+  'core/form/studio/FormProvider.tsx <Block>',
+  'core/form/studio/FormProvider.tsx <Field>',
+  'core/form/studio/FormProvider.tsx <InlineBlock>',
+  'core/form/studio/FormProvider.tsx <Input>',
+  'core/form/studio/FormProvider.tsx <Item>',
+  'core/studio/components/navbar/StudioNavbar.tsx <ToolMenu>',
+  'core/studio/components/navbar/navDrawer/NavDrawer.tsx <ToolMenu>',
+]
 
 interface RenderSite {
   file: string
@@ -114,22 +141,23 @@ describe('middleware component render sites', () => {
     )
   })
 
-  it('wraps every rendered middleware component in a Suspense boundary', () => {
+  it('wraps every rendered middleware component in a Suspense boundary unless it defers to an ancestor', () => {
     const rendered = sites.filter(rendersInFile)
-    const unwrapped = rendered.flatMap((site) =>
-      unwrappedRenders(site).map((line) => `${site.file}:${line} <${site.component}>`),
-    )
+    const label = (site: RenderSite) => `${site.file} <${site.component}>`
+    const unwrapped = rendered.filter((site) => unwrappedRenders(site).length > 0).map(label)
+    const wrapped = rendered.filter((site) => unwrappedRenders(site).length === 0).map(label)
 
-    expect(rendered.map((site) => `${site.file} <${site.component}>`)).toEqual(
+    expect(wrapped).toEqual(
       expect.arrayContaining([
-        'core/form/studio/FormBuilder.tsx <Input>',
-        'core/form/studio/FormProvider.tsx <Field>',
-        'core/form/inputs/arrays/ArrayOfObjectsInput/List/ListArrayInput.tsx <ItemComponent>',
+        'core/studio/StudioLayout.tsx <Layout>',
         'core/studio/StudioLayoutComponent.tsx <Navbar>',
         'structure/panes/document/DocumentPane.tsx <DocumentLayout>',
+        'structure/diffView/components/DiffViewPane.tsx <DocumentLayout>',
       ]),
     )
-    expect(unwrapped).toEqual([])
+    // Exact match both ways: a new unwrapped site must be added here on purpose, and a site that
+    // gains its own boundary must be removed so the list stays true.
+    expect(unwrapped.toSorted()).toEqual(DEFERS_TO_ANCESTOR)
   })
 
   it('hands components it does not render to a component that owns the boundary', () => {

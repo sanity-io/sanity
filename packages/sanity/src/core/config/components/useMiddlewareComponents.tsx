@@ -46,8 +46,9 @@ function _createMiddlewareComponent<T extends {}>(
  *
  * The returned component has no Suspense boundary of its own. Middleware is often `lazy()`
  * (core plugins register lazy field, input, layout and navbar components), so the site that
- * renders the returned component must wrap it in `<Suspense>` with a fallback shaped like the
- * component it stands in for.
+ * renders the returned component either wraps it in `<Suspense>` with a fallback shaped like the
+ * component it stands in for, or, where no fallback can know the right size (form nodes), leaves
+ * it to an ancestor boundary and to the lazy component's own `<Suspense>`.
  *
  * @example
  * Example usage of:

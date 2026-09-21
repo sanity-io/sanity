@@ -4,18 +4,13 @@ import {
   type SanityDocument,
   type ValidationMarker,
 } from '@sanity/types'
-import {Suspense, useCallback, useMemo, useRef} from 'react'
+import {useCallback, useMemo, useRef} from 'react'
 
 import {type DocumentFieldAction} from '../../config/document/fieldActions/types'
 import {type TargetPerspective} from '../../perspective/types'
 import {type FormNodePresence} from '../../presence/types'
 import {PreviewLoader} from '../../preview/components/PreviewLoader'
 import {EMPTY_ARRAY} from '../../util/empty'
-import {FormBlockSkeleton} from '../components/skeletons/FormBlockSkeleton'
-import {FormFieldSkeleton} from '../components/skeletons/FormFieldSkeleton'
-import {FormInlineSkeleton} from '../components/skeletons/FormInlineSkeleton'
-import {FormInputFallback} from '../components/skeletons/FormInputFallback'
-import {FormItemSkeleton} from '../components/skeletons/FormItemSkeleton'
 import {FormValueProvider} from '../contexts/FormValue'
 import {GetFormValueProvider} from '../contexts/GetFormValue'
 import {useAnnotationComponent} from '../form-components-hooks/useAnnotationComponent'
@@ -185,29 +180,24 @@ export function FormBuilder(props: FormBuilderProps) {
   const InlineBlock = useInlineBlockComponent()
   const Annotation = useAnnotationComponent()
 
+  // No Suspense boundary here on purpose: form nodes have unpredictable heights, so a lazy form
+  // component owns its own `<Suspense>` with a fallback sized for what it renders, and until it
+  // resolves the form suspends up to the pane that renders it.
   const renderInput = useCallback(
     (inputProps: Omit<InputProps, 'renderDefault'>) => (
       <FormBuilderInputErrorBoundary>
-        <Suspense fallback={<FormInputFallback inputProps={inputProps} />}>
-          <Input {...inputProps} />
-        </Suspense>
+        <Input {...inputProps} />
       </FormBuilderInputErrorBoundary>
     ),
     [Input],
   )
   const renderField = useCallback(
-    (fieldProps: Omit<FieldProps, 'renderDefault'>) => (
-      <Suspense fallback={<FormFieldSkeleton />}>
-        <Field {...fieldProps} />
-      </Suspense>
-    ),
+    (fieldProps: Omit<FieldProps, 'renderDefault'>) => <Field {...fieldProps} />,
     [Field],
   )
   const renderItem = useCallback(
     (itemProps: Omit<ItemProps, 'renderDefault'>) => (
-      <Suspense key={itemProps.inputId} fallback={<FormItemSkeleton />}>
-        <Item {...itemProps} />
-      </Suspense>
+      <Item key={itemProps.inputId} {...itemProps} />
     ),
     [Item],
   )
@@ -218,26 +208,16 @@ export function FormBuilder(props: FormBuilderProps) {
     [Preview],
   )
   const renderBlock = useCallback(
-    (blockProps: Omit<BlockProps, 'renderDefault'>) => (
-      <Suspense fallback={<FormBlockSkeleton value={blockProps.value} />}>
-        <Block {...blockProps} />
-      </Suspense>
-    ),
+    (blockProps: Omit<BlockProps, 'renderDefault'>) => <Block {...blockProps} />,
     [Block],
   )
   const renderInlineBlock = useCallback(
-    (blockProps: Omit<BlockProps, 'renderDefault'>) => (
-      <Suspense fallback={<FormInlineSkeleton />}>
-        <InlineBlock {...blockProps} />
-      </Suspense>
-    ),
+    (blockProps: Omit<BlockProps, 'renderDefault'>) => <InlineBlock {...blockProps} />,
     [InlineBlock],
   )
   const renderAnnotation = useCallback(
     (annotationProps: Omit<BlockAnnotationProps, 'renderDefault'>) => (
-      <Suspense fallback={<FormInlineSkeleton />}>
-        <Annotation {...annotationProps} />
-      </Suspense>
+      <Annotation {...annotationProps} />
     ),
     [Annotation],
   )

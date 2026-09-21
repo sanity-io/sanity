@@ -7,7 +7,7 @@ import {
   PortalProvider,
   useMediaIndex,
 } from '@sanity/ui'
-import {Suspense, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
 import {NavbarContext} from 'sanity/_singletons'
 import {type RouterState, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
@@ -236,18 +236,14 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
             {/** Center flex */}
             <Flex alignItems="center" justifyContent="center" style={CENTER_TOOLS_STYLE}>
               {shouldRender.tools && (
-                // The navbar's height comes from the buttons on either side, so an empty center
-                // does not shift layout while a lazy tool menu loads.
-                <Suspense fallback={null}>
-                  {/* oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work */}
-                  <ToolMenu
-                    activeToolName={activeToolName}
-                    closeSidebar={handleCloseDrawer}
-                    context="topbar"
-                    isSidebarOpen={false}
-                    tools={tools}
-                  />
-                </Suspense>
+                // oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work
+                <ToolMenu
+                  activeToolName={activeToolName}
+                  closeSidebar={handleCloseDrawer}
+                  context="topbar"
+                  isSidebarOpen={false}
+                  tools={tools}
+                />
               )}
             </Flex>
 
