@@ -262,6 +262,7 @@ describe('PreviewLoader', () => {
             <PreviewLoader
               component={LazyPreview}
               schemaType={schemaType}
+              status={<span data-testid="preview-status" />}
               value={{_id: 'test', _type: 'testDoc'}}
               skipVisibilityCheck
             />
@@ -271,6 +272,8 @@ describe('PreviewLoader', () => {
 
       expect(screen.getByTestId('default-preview__heading')).toBeInTheDocument()
       expect(screen.queryByText('Test Title')).not.toBeInTheDocument()
+      // Layout props reach the placeholder too, so its footprint matches the loaded preview.
+      expect(screen.getByTestId('preview-status')).toBeInTheDocument()
 
       await act(async () => {
         resolveComponent((props) => (

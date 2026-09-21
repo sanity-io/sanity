@@ -92,8 +92,9 @@ export function PreviewLoader(
     return preview?.value?.media as any
   }, [preview, schemaType, uploadState, t])
 
-  // While a lazy preview component loads, show the built-in layout in its placeholder state so the
-  // fallback has the same footprint as the preview that replaces it.
+  // While a lazy preview component loads, show the built-in layout in its placeholder state with
+  // the same layout props (`mediaDimensions`, `withBorder`, ...) so the fallback has the same
+  // footprint as the preview that replaces it.
   const PlaceholderComponent = _previewComponents[layout || 'default'] as ComponentType<
     Omit<PreviewProps, 'renderDefault'>
   >
@@ -103,6 +104,7 @@ export function PreviewLoader(
       <Suspense
         fallback={
           <PlaceholderComponent
+            {...restProps}
             isPlaceholder
             layout={layout}
             media={media}
