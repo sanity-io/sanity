@@ -87,6 +87,7 @@ import {objectsDebug} from './debug/objectsDebug'
 import {patchOnMountDebug} from './debug/patchOnMount'
 import poppers from './debug/poppers'
 import presence, {objectWithNestedArray} from './debug/presence'
+import {presenceDebug} from './debug/presenceDebug'
 import previewImageUrlTest from './debug/previewImageUrlTest'
 import previewMediaTest from './debug/previewMediaTest'
 import {previewSelectBugRepro} from './debug/previewSelectBugRepro'
@@ -277,6 +278,7 @@ export function createSchemaTypes(projectId: string) {
     superlatives,
     inspectorsTestType,
     invalidPreviews,
+    presenceDebug,
     issue4516AddFilterIntentLink,
     issue13494I18nTitleKeyStylesLists,
     languageFilterDebugType,
