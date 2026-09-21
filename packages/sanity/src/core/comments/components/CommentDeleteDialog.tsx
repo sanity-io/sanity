@@ -38,8 +38,7 @@ export interface CommentDeleteDialogProps {
 }
 
 /**
- * @beta
- * @hidden
+ * @internal
  */
 export function CommentDeleteDialog(props: CommentDeleteDialogProps) {
   const {isParent, onClose, commentId, onConfirm, loading, error} = props
