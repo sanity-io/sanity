@@ -5,19 +5,21 @@ import {
   Card,
   Checkbox,
   Dialog,
-  Flex,
   Select,
   Stack,
   Text,
   TextInput,
 } from '@sanity/ui'
 import {useMemo, useState} from 'react'
+import {Flex} from 'ui5'
 
 import {compareUrl} from '../trends/links'
 import {AuthorAvatar} from './AuthorAvatar'
 import {type BisectCommit, buildChain, chainErrorCopy} from './bisect'
 import {filterCommits, type GitCommitSlice, type TagSlice} from './data'
 import {RelativeDate} from './RelativeDate'
+import {normalizeReproPath} from './reproPath'
+import {ReproPathField} from './ReproPathField'
 import {type NewSessionInput} from './sessions'
 import {pluralize} from './text'
 
@@ -49,7 +51,9 @@ export function NewSessionDialog(props: {
   const [good, setGood] = useState<Endpoint | null>(null)
   const [bad, setBad] = useState<Endpoint | null>(null)
   const [releasesOnly, setReleasesOnly] = useState(false)
+  const [reproPathInput, setReproPathInput] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const reproPath = normalizeReproPath(reproPathInput)
 
   const chainCheck = useMemo(() => {
     if (!good || !bad) return null
@@ -92,7 +96,7 @@ export function NewSessionDialog(props: {
 
           {good && bad && isSwapped && (
             <Card padding={3} radius={2} tone="caution">
-              <Flex align="center" gap={3}>
+              <Flex alignItems="center" gap={3}>
                 <Box flex={1}>
                   <Text size={1}>
                     Good ({shortLabel(good)}) is newer than bad ({shortLabel(bad)}) — the endpoints
@@ -127,7 +131,13 @@ export function NewSessionDialog(props: {
             </Text>
           )}
 
-          <Flex align="center" gap={2} as="label">
+          <ReproPathField
+            value={reproPathInput}
+            onChange={setReproPathInput}
+            appliesTo="every preview build the bisect proposes"
+          />
+
+          <Flex alignItems="center" gap={2} as="label">
             <Checkbox
               checked={releasesOnly}
               onChange={(event) => setReleasesOnly(event.currentTarget.checked)}
@@ -135,7 +145,7 @@ export function NewSessionDialog(props: {
             <Text size={1}>Bisect released versions only</Text>
           </Flex>
 
-          <Flex gap={2} justify="flex-end">
+          <Flex gap={2} justifyContent="flex-end">
             <Button mode="ghost" text="Cancel" onClick={onClose} />
             <Button
               tone="primary"
@@ -146,7 +156,7 @@ export function NewSessionDialog(props: {
                 setSubmitting(true)
                 // On success the tool unmounts this dialog; on failure the
                 // button re-arms next to the error toast
-                void onCreate({good, bad, releasesOnly, createdBy}).finally(() =>
+                void onCreate({good, bad, releasesOnly, reproPath, createdBy}).finally(() =>
                   setSubmitting(false),
                 )
               }}
@@ -174,7 +184,7 @@ function EndpointPicker(props: {
 
   return (
     <Stack gap={3}>
-      <Flex align="center" gap={2}>
+      <Flex alignItems="center" gap={2}>
         <Badge tone={tone} fontSize={0}>
           {badge}
         </Badge>
@@ -185,7 +195,7 @@ function EndpointPicker(props: {
 
       {value ? (
         <Card padding={3} radius={2} tone={tone} border>
-          <Flex align="center" gap={3}>
+          <Flex alignItems="center" gap={3}>
             <Box flex={1} style={{minWidth: 0}}>
               <Stack gap={2}>
                 <Text size={1}>
@@ -197,7 +207,7 @@ function EndpointPicker(props: {
                     <Text size={1} textOverflow="ellipsis">
                       {selected.subject}
                     </Text>
-                    <Flex align="center" gap={2}>
+                    <Flex alignItems="center" gap={2}>
                       <AuthorAvatar
                         name={selected.authorName ?? undefined}
                         email={selected.authorEmail ?? undefined}
@@ -266,7 +276,7 @@ function EndpointPicker(props: {
                 onClick={() => onChange({sha: commit.sha})}
                 style={{textAlign: 'left'}}
               >
-                <Flex align="center" gap={2}>
+                <Flex alignItems="center" gap={2}>
                   <Box style={{flexShrink: 0}}>
                     <Badge fontSize={0}>{commit.sha.slice(0, 7)}</Badge>
                   </Box>

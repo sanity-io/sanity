@@ -14,6 +14,8 @@ export interface NewSessionInput {
   good: {sha: string; label?: string}
   bad: {sha: string; label?: string}
   releasesOnly?: boolean
+  /** Already normalized (tools/bisect/reproPath.ts) — stored as-is. */
+  reproPath?: string
   createdBy: string
 }
 
@@ -35,6 +37,7 @@ export async function createSession(client: SanityClient, input: NewSessionInput
     good: input.good,
     bad: input.bad,
     ...(input.releasesOnly ? {releasesOnly: true} : {}),
+    ...(input.reproPath ? {reproPath: input.reproPath} : {}),
     marks: [],
     createdAt: new Date().toISOString(),
     createdBy: input.createdBy,
@@ -51,6 +54,8 @@ export interface ManualRegressionInput {
   suspectShas: string[]
   description: string
   linearIssue?: string
+  /** Release tag it was already fixed in, when known at report time. */
+  fixedIn?: string
   createdBy: string
 }
 
@@ -81,6 +86,7 @@ export async function reportRegression(
       regression: true,
       description: input.description,
       ...(input.linearIssue ? {linearIssue: input.linearIssue} : {}),
+      ...(input.fixedIn ? {fixedIn: input.fixedIn} : {}),
       concludedAt: new Date().toISOString(),
     },
     createdAt: new Date().toISOString(),
@@ -149,6 +155,8 @@ export interface ResultAnnotations {
   regression?: boolean
   description?: string
   linearIssue?: string
+  /** Release tag the regression was fixed in (releases tool). */
+  fixedIn?: string
 }
 
 /** Human annotations on a concluded run — cleared string fields are unset, not stored empty. */

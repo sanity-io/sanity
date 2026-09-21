@@ -1,4 +1,5 @@
 import {
+  isArrayOfObjectsSchemaType,
   type Rule,
   type RuleSpec,
   type RuleTypeConstraint,
@@ -65,6 +66,8 @@ function hasValueField(typeDef: SchemaType | undefined): boolean {
 }
 
 function extractValueFromListOption(option: unknown, typeDef: SchemaType): unknown {
+  if (isArrayOfObjectsSchemaType(typeDef)) return option
+
   // If you define a `list` option with object items, where the item has a `value` field,
   // we don't want to treat that as the value but rather the surrounding object
   // This differs from the case where you have a title/value pair setup for a string/number, for instance

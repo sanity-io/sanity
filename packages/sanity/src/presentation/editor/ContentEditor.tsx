@@ -1,5 +1,5 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Flex, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {type HTMLProps, useCallback, useMemo} from 'react'
 import {
   getPreviewValueWithFallback,
@@ -10,7 +10,7 @@ import {
   useTranslation,
 } from 'sanity'
 import {StateLink} from 'sanity/router'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {presentationLocaleNamespace} from '../i18n'
 import {
@@ -111,7 +111,7 @@ export function ContentEditor(props: {
   }
 
   return (
-    <Flex direction="column" flex={1} height="fill">
+    <Flex flexDirection="column" flexBasis="0%" flexGrow={1} height="100%">
       {mainDocumentState && (
         <Card padding={3} tone={mainDocumentState.document ? 'inherit' : 'caution'}>
           {mainDocumentState.document ? (

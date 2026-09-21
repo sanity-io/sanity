@@ -44,7 +44,9 @@ export interface SessionSummary {
   result: {
     firstBadSha: string | null
     regression: boolean | null
+    description: string | null
     linearIssue: string | null
+    fixedIn: string | null
   } | null
   resultSubject: string | null
 }
@@ -53,7 +55,7 @@ export interface SessionSummary {
 export const BISECT_SESSIONS_QUERY = `*[_type == "bisectSession"] | order(createdAt desc) {
   _id, title, good{sha, label}, bad{sha, label}, createdAt, createdBy,
   "markCount": count(marks),
-  result{firstBadSha, regression, linearIssue},
+  result{firstBadSha, regression, description, linearIssue, fixedIn},
   "resultSubject": *[_type == "gitCommit" && sha == ^.result.firstBadSha][0].subject
 }`
 
@@ -63,6 +65,7 @@ export interface SessionDocument {
   good: SessionEndpoint | null
   bad: SessionEndpoint | null
   releasesOnly: boolean | null
+  reproPath: string | null
   marks: {_key: string; sha: string; verdict: string}[] | null
   result: {
     firstBadSha: string
@@ -75,7 +78,7 @@ export interface SessionDocument {
 }
 
 export const BISECT_SESSION_QUERY = `*[_id == $id][0] {
-  _id, title, good{sha, label}, bad{sha, label}, releasesOnly,
+  _id, title, good{sha, label}, bad{sha, label}, releasesOnly, reproPath,
   marks[]{_key, sha, verdict},
   result{firstBadSha, regression, description, linearIssue},
   createdAt, createdBy

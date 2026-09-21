@@ -422,6 +422,22 @@ export default defineConfig([
   },
   {
     ...defaultWorkspace,
+    name: 'no-releases-no-variants',
+    title: 'No releases and no variants',
+    dataset: 'no-releases-no-variants',
+    basePath: '/no-releases-no-variants',
+    document: {
+      drafts: {enabled: true},
+    },
+    releases: {enabled: false},
+    beta: {
+      variants: {
+        enabled: false,
+      },
+    },
+  },
+  {
+    ...defaultWorkspace,
     name: 'secondary',
     title: 'Secondary test project',
     projectId: 'q5caobza',

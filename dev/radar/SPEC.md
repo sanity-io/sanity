@@ -310,9 +310,16 @@ effect of merged work; secondary: leads scanning health weekly.
    next, halving the range per good/bad verdict until the first bad commit is
    named. The chain is the exact first-parent walk (`gitCommit.parentSha`),
    not a date sort. Each run is a `bisectSession` document (studio-written,
-   liveEdit, like `driftAck`): endpoints, an append-only marks log (last mark
-   per sha wins; undo removes the tail), and — denormalized at convergence
-   only, for the session list — the result. Commits without a testable build
+   liveEdit, like `driftAck`): endpoints, an optional repro path, an
+   append-only marks log (last mark per sha wins; undo removes the tail), and
+   — denormalized at convergence only, for the session list — the result. The
+   repro path (`reproPath`, e.g. `/test/structure/author;abc?x=1`) is where in
+   the test studio the issue shows; it is entered at session start (a bare
+   path, or a full test-studio URL reduced to its path) and appended to every
+   preview build the tool opens, so no step needs manual navigation. It is
+   normalized to a single-slash same-origin path so it can never redirect the
+   preview to another origin or scheme, and a releases-only drill-down
+   inherits it. Commits without a testable build
    (skipped builds, one-sync URL lag) are never proposed and end up as
    explicit "suspects" in the verdict rather than silently blamed.
    Conflicting marks (a good newer than a bad) surface as an error state that
@@ -320,11 +327,19 @@ effect of merged work; secondary: leads scanning health weekly.
    endpoints, current bounds, every visited commit and the one under test,
    with the runs in between collapsed into gap rows labelled by what the
    bisect has already deduced (broken / untested / working), each linking to
-   the GitHub compare of the span. Sessions can be deleted from the session
+   the GitHub compare of the span. A gap row expands in place to list its
+   commits, and every listed or visited commit (bar the endpoints and a
+   concluded verdict) has a Test action that opens the same card as the
+   proposed step — preview build at the repro path, checkout/install chips,
+   good/bad/skip — so a suspicious commit can be checked out of turn. Such a mark joins the same log (last
+   mark per sha wins); one that contradicts the bounds surfaces as the usual
+   conflict that undo resolves. Sessions can be deleted from the session
    view (hard delete behind a confirm — they're the only user-owned documents
    here).
 
-8. **Studio releases** — every synced release tag, newest first: current
+8. **Studio releases** — every synced release tag in semver order (newest
+   version first, prereleases below their release — a version list, not a
+   timeline, so a maintenance patch sits with its minor): current
    dist-tags, weekly downloads, publish time, links out (GitHub release,
    sanity.io changelog, npmx.dev), and the version linking to the gitTag
    document in the structure tool. The changelog link is derived from the
@@ -333,10 +348,23 @@ effect of merged work; secondary: leads scanning health weekly.
    (maintenance lines) may lack it. Each release also shows the count of
    confirmed regressions bisect sessions have attributed to it, blamed on the
    release that FIRST shipped the offending commit. Regressions found outside
-   a bisect (user reports) are added by hand via "Add regression", stored as
-   a born-converged releases-only bisectSession (base release → blamed
-   release, the commits between as suspects) so attribution and the bisect
-   drill-down work unchanged.
+   a bisect (user reports) are added by hand via "Add regression" — from the
+   header with a release picker, or from a release's own row with that
+   release preselected — stored as a born-converged releases-only
+   bisectSession (base release → blamed release, the commits between as
+   suspects) so attribution and the bisect drill-down work unchanged. The
+   regression count on a row opens the list behind it — what broke, who
+   recorded it, a link into the Bisect tool — where each entry can be marked
+   fixed in a later release (`result.fixedIn`, a tag name; the candidates
+   are the synced releases newer than the introducing one) or removed, which
+   deletes its session (the session is the regression; there is no separate
+   record to unpin). The count on the introducing release does not drop when
+   a fix ships — it answers "what did this release break", not "what is
+   still broken". A path field under the header holds a
+   test-studio path (same normalization as the bisect repro path, `?path=`
+   in the URL so it is reload-safe and shareable) that every release's
+   Test Studio link opens at — checking one repro across releases is a click per
+   row.
 
 ## Architecture
 

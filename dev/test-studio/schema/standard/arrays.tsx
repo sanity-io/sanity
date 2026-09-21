@@ -762,16 +762,8 @@ export default defineType({
   preview: {
     select: {
       title: 'title',
-      strings: 'arrayOfStrings',
-      firstItem: 'arrayOfStrings.0',
-      length: 'arrayOfStrings.length',
     },
-    prepare({title, strings, firstItem, length}) {
-      console.log('arraysTest preview.prepare', {
-        strings,
-        firstItem,
-        length,
-      })
+    prepare({title}) {
       return {title}
     },
   },

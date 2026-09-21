@@ -78,6 +78,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
     latestTaggedVersion,
     versionCheckStatus,
     checkForUpdates,
+    versionDeprecation,
   } = usePackageVersionStatus()
 
   const isUpToDate =
@@ -132,8 +133,62 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
       </Card>
     ) : null
 
-  const versionBadgeTone =
-    currentVersionType === 'development'
+  const deprecationWarning = versionDeprecation ? (
+    <Card padding={4} tone="caution" data-testid="studio-version-deprecation-warning">
+      <Flex alignItems="flex-start" gap={3}>
+        <TextWithTone tone="caution">
+          <WarningOutlineIcon />
+        </TextWithTone>
+        <Stack gap={4}>
+          <TextWithTone size={1} tone="caution" weight="medium">
+            {t('about-dialog.version-info.deprecated.header')}
+          </TextWithTone>
+          <TextWithTone size={1} tone="caution">
+            {t('about-dialog.version-info.deprecated.current', {
+              version: versionDeprecation.version.version,
+            })}
+          </TextWithTone>
+          {versionDeprecation.reason ? (
+            <TextWithTone size={1} tone="caution">
+              {t('about-dialog.version-info.deprecated.reason', {
+                reason: versionDeprecation.reason,
+              })}
+            </TextWithTone>
+          ) : null}
+          <TextWithTone size={1} tone="caution">
+            {versionDeprecation.isPinned
+              ? // the "Manage version" button below the card leads to the pin settings
+                t('about-dialog.version-info.deprecated.next-step.pinned')
+              : t('about-dialog.version-info.deprecated.next-step.upgrade')}
+          </TextWithTone>
+          {versionDeprecation.isPinned ? null : (
+            <TextWithTone size={1} tone="caution">
+              <Text muted size={1}>
+                <a
+                  href="https://www.sanity.io/docs/studio/upgrade"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t('about-dialog.version-info.deprecated.next-step.upgrade.learn-how')} &rarr;
+                </a>
+              </Text>
+            </TextWithTone>
+          )}
+        </Stack>
+      </Flex>
+    </Card>
+  ) : null
+
+  const currentVersionDeprecated =
+    versionDeprecation !== undefined && semver.eq(versionDeprecation.version, currentVersion)
+  const autoUpdatingVersionDeprecated =
+    versionDeprecation !== undefined &&
+    autoUpdatingVersion !== undefined &&
+    semver.eq(versionDeprecation.version, autoUpdatingVersion)
+
+  const versionBadgeTone = currentVersionDeprecated
+    ? 'caution'
+    : currentVersionType === 'development'
       ? 'caution'
       : currentVersionType === 'prerelease'
         ? 'suggest'
@@ -167,11 +222,13 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
                     {ensureVersionPrefix(currentVersion.version)}
                   </Badge>
                   <Badge>
-                    {currentVersionType === 'development'
-                      ? t('about-dialog.version-info.tooltip.development')
-                      : currentVersionType === 'prerelease'
-                        ? t('about-dialog.version-info.tooltip.prerelease')
-                        : t('about-dialog.version-info.tooltip.up-to-date')}
+                    {currentVersionDeprecated
+                      ? t('about-dialog.version-info.tooltip.deprecated')
+                      : currentVersionType === 'development'
+                        ? t('about-dialog.version-info.tooltip.development')
+                        : currentVersionType === 'prerelease'
+                          ? t('about-dialog.version-info.tooltip.prerelease')
+                          : t('about-dialog.version-info.tooltip.up-to-date')}
                   </Badge>
                 </Inline>
               </Card>
@@ -205,7 +262,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
                 </Text>
               </Flex>
               <Flex justifyContent="flex-start" alignItems="center" gap={2}>
-                <Badge tone="primary">
+                <Badge tone={autoUpdatingVersionDeprecated ? 'caution' : 'primary'}>
                   {autoUpdatingVersion && ensureVersionPrefix(autoUpdatingVersion?.version)}
                 </Badge>
                 <Button
@@ -299,6 +356,7 @@ export function StudioInfoDialog(props: StudioInfoDialogProps) {
               </Flex>
             </Card>
           ) : null}
+          {deprecationWarning}
           {importMapWarning}
         </Stack>
         <Stack paddingX={3}>

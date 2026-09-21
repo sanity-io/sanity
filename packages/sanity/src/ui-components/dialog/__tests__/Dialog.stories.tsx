@@ -1,5 +1,7 @@
 import {Text} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
+import {expect, waitFor, within} from 'storybook/test'
+import {VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../test/browser/TestWrapper'
 import {Dialog} from '../Dialog'
@@ -41,5 +43,43 @@ export const Default: Story = {
       cancelButton: {text: 'Cancel'},
       confirmButton: {text: 'Unpublish', tone: 'critical'},
     },
+  },
+}
+
+const overflowingBody = (
+  <VStack gap={3}>
+    {Array.from({length: 40}, (_, index) => (
+      <Text key={index} size={1}>
+        Paragraph {index + 1}. Scroll to the end to check that body padding is still below this
+        text.
+      </Text>
+    ))}
+    <Text size={1}>End of dialog content.</Text>
+  </VStack>
+)
+
+/**
+ * Tall body scrolled to the end so Chromatic can see padding-bottom. ui5 Box
+ * with flex-basis 0% + flex-grow 1 (and its default minHeight 0) sizes to the
+ * scrollport, which drops that padding out of the scrollable overflow.
+ */
+export const OverflowingBody: Story = {
+  args: {
+    id: 'storybook-dialog-overflow',
+    header: 'Overflowing dialog',
+    width: 1,
+    onClose: () => null,
+    children: overflowingBody,
+  },
+  play: async () => {
+    const body = within(document.body)
+    const dialog = await body.findByRole('dialog', {}, {timeout: 5000})
+    const content = dialog.querySelector('[data-ui="DialogContent"]')
+    if (!(content instanceof HTMLElement)) {
+      throw new Error('expected [data-ui="DialogContent"]')
+    }
+    await waitFor(() => expect(content.scrollHeight).toBeGreaterThan(content.clientHeight))
+    content.scrollTop = content.scrollHeight
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur()
   },
 }

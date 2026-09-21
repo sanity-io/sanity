@@ -1,5 +1,5 @@
-import {Flex, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
-import {Box} from 'ui5'
+import {Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {Box, Flex} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -38,14 +38,14 @@ export function CompactPreview(props: CompactPreviewProps) {
   if (isPlaceholder) {
     return (
       <Flex
-        align="center"
+        alignItems="center"
         className={root}
         data-testid="default-preview"
         paddingLeft={media ? 1 : 2}
         paddingRight={2}
         paddingY={1}
       >
-        <Flex align="center" flex={1} gap={2}>
+        <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2}>
           {media && <Skeleton animated radius={2} style={PREVIEW_SIZES.compact.media} />}
 
           <Stack data-testid="compact-preview__heading" flex={1} gap={2}>
@@ -60,14 +60,14 @@ export function CompactPreview(props: CompactPreviewProps) {
 
   return (
     <Flex
-      align="center"
+      alignItems="center"
       className={root}
       data-testid="compact-preview"
       paddingLeft={media ? 1 : 2}
       paddingRight={2}
       paddingY={1}
     >
-      <Flex align="center" flex={1} gap={2}>
+      <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2}>
         {media && (
           <Media
             border={false}
