@@ -353,8 +353,14 @@ effect of merged work; secondary: leads scanning health weekly.
 sessionChains.ts` and shared by the sessions list and the Releases tool:
    the deepest converged session names the commit (a refinement still in
    progress does not un-name what its parent found), the regression flag
-   counts if set anywhere in the chain, and each annotation (description,
-   Linear issue, fix release) is the deepest one set. Among several
+   counts if set anywhere in the chain, the severity is the worst rated
+   anywhere in it (a parent and its refinement may both rate the same
+   regression — the chain shows the union), and each text annotation
+   (description, note, Linear issue, fix release) is the deepest one set.
+   The bisect overview shows that union once per box, on the root row:
+   affected releases (earliest start to latest end across the chain),
+   outcome, severity. Each session's own verdict card edits its own values.
+   Among several
    refinements of one session the converged one is followed, newest first
    among equals; the others are abandoned branches, listed but never counted.
    Removing the regression from the Releases tool deletes the whole chain —
@@ -414,6 +420,9 @@ sessionChains.ts` and shared by the sessions list and the Releases tool:
    (tags, npm state, regression spans) is untouched and keeps syncing. The
    line holding the `latest` dist-tag cannot be marked. Its own type rather
    than a flag on `gitTag` because the sync replaces tag documents whole.
+   Next to its version a release shows how many **critical** and **major**
+   regressions are present in it (introduced there or inherited, not the
+   ones it fixed) — the one thing a reader scanning the list wants to know.
 
 ## Architecture
 

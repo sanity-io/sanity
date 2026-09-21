@@ -156,6 +156,12 @@ export function SessionView(props: {
 
   const onError = (title: string) => toastError(toast, title)
 
+  // Annotations are this session's own: a parent and its refinement may
+  // both rate the same regression, and the overview and the Releases tool
+  // show the union of the chain (sessionChains.ts)
+  const annotate = (patch: ResultAnnotations) =>
+    updateResult(client, sessionId, patch).catch(onError('Could not save annotation'))
+
   // Sessions can be converged FROM BIRTH (adjacent endpoints, a drill-down
   // over an untestable range) — no converging mark ever fires, so appendMark
   // never persists the verdict and the sessions list would show them as
@@ -263,9 +269,13 @@ export function SessionView(props: {
             <Box flex={1} style={{minWidth: 0}}>
               <Stack gap={2}>
                 <Text size={2} weight="semibold">
-                  {session?.title ?? 'Bisect session'}
+                  {session?.description || session?.title || 'Bisect session'}
                 </Text>
-                {session?.description && <Text size={1}>{session.description}</Text>}
+                {session?.description && (
+                  <Text size={1} muted>
+                    {session.title ?? sessionId}
+                  </Text>
+                )}
                 {reproPath && (
                   <Text size={0} muted textOverflow="ellipsis">
                     Preview builds open at <code>{reproPath}</code>
@@ -411,10 +421,7 @@ export function SessionView(props: {
                           : undefined,
                         linearIssue: session?.result?.linearIssue ?? undefined,
                       },
-                      onAnnotate: (patch: ResultAnnotations) =>
-                        updateResult(client, sessionId, patch).catch(
-                          onError('Could not save annotation'),
-                        ),
+                      onAnnotate: annotate,
                       onContinue: releasesOnly ? continueBisect : undefined,
                     }
                   : undefined

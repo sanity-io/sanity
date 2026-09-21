@@ -55,6 +55,7 @@ export interface SessionSummary {
     fixedIn: string | null
   } | null
   resultSubject: string | null
+  resultPrNumber: number | null
 }
 
 /** Summary only — `marks` is deliberately not projected here (SessionView fetches the full doc). */
@@ -63,7 +64,8 @@ export const BISECT_SESSIONS_QUERY = `*[_type == "bisectSession"] | order(create
   good{sha, label}, bad{sha, label}, createdAt, createdBy,
   "markCount": count(marks),
   result{firstBadSha, regression, note, severity, linearIssue, fixedIn},
-  "resultSubject": *[_type == "gitCommit" && sha == ^.result.firstBadSha][0].subject
+  "resultSubject": *[_type == "gitCommit" && sha == ^.result.firstBadSha][0].subject,
+  "resultPrNumber": *[_type == "gitCommit" && sha == ^.result.firstBadSha][0].prNumber
 }`
 
 export interface SessionLink {

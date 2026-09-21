@@ -6,7 +6,7 @@
  * release) made anywhere in the chain apply to it. Pure, so the Releases
  * attribution and the sessions list agree by construction.
  */
-import {isSeverity, type Severity} from './severity'
+import {isSeverity, type Severity, worstSeverity} from './severity'
 
 export interface ChainSession {
   _id: string
@@ -88,8 +88,10 @@ export interface ChainVerdict {
 /**
  * What the chain says as a whole: the verdict of its deepest converged
  * session (a refinement in progress does not un-name the commit its parent
- * found), a regression if any session says so, and for each text annotation
- * the deepest one set, walking leaf to root.
+ * found), a regression if any session says so, the worst severity rated
+ * anywhere in it (a union — the same regression may be rated on the parent
+ * and on the refinement), and for each text annotation the deepest one set,
+ * walking leaf to root.
  */
 export function mergeChainVerdict<S extends ChainSession>(chain: SessionChain<S>): ChainVerdict {
   const leafFirst = chain.sessions.toReversed()
@@ -107,10 +109,9 @@ export function mergeChainVerdict<S extends ChainSession>(chain: SessionChain<S>
     regression: chain.sessions.some((session) => session.result?.regression === true),
     description: first((session) => session.description),
     note: first((session) => session.result?.note),
-    severity: first((session) => {
-      const value = session.result?.severity
-      return isSeverity(value) ? value : undefined
-    }) as Severity | undefined,
+    severity: worstSeverity(
+      chain.sessions.map((session) => session.result?.severity).filter(isSeverity),
+    ),
     linearIssue: first((session) => session.result?.linearIssue),
     fixedIn: first((session) => session.result?.fixedIn),
   }

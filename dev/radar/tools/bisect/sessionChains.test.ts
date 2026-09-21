@@ -70,21 +70,23 @@ test('a self-reference or cycle cannot loop', () => {
   expect(resolveSessionChains([x, y])).toEqual([])
 })
 
-test('the chain’s verdict is the deepest converged one, annotations the deepest set', () => {
+test('the chain’s verdict is the deepest converged one, annotations the deepest set, severity the worst', () => {
   const releases = session('a', {
     description: 'Editor freezes on paste',
     result: {
       firstBadSha: 'release-sha',
       regression: true,
+      severity: 'critical',
       linearIssue: 'SAPP-1',
       fixedIn: 'v6.10.0',
     },
   })
-  const commits = session('ab', {refines: 'a', result: {firstBadSha: 'c3', severity: 'critical'}})
+  const commits = session('ab', {refines: 'a', result: {firstBadSha: 'c3', severity: 'minor'}})
   const inProgress = session('abc', {refines: 'ab', result: {severity: 'bogus'}})
   const [chain] = resolveSessionChains([releases, commits, inProgress])
   expect(ids(chain)).toEqual(['a', 'ab', 'abc'])
-  // the unknown severity on the leaf is skipped, not treated as "set"
+  // severity is the worst rated anywhere in the chain (root says critical,
+  // the refinement minor); the unknown value on the leaf is ignored
   expect(mergeChainVerdict(chain)).toEqual({
     firstBadSha: 'c3',
     verdictSessionId: 'ab',

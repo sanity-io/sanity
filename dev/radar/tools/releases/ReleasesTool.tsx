@@ -39,7 +39,7 @@ import {normalizeReproPath, withReproPath} from '../bisect/reproPath'
 import {ReproPathInput} from '../bisect/ReproPathField'
 import {mergeChainVerdict, resolveSessionChains} from '../bisect/sessionChains'
 import {type ManualRegressionInput, reportRegression} from '../bisect/sessions'
-import {SEVERITY_LABEL, SEVERITY_TONE, worstSeverity} from '../bisect/severity'
+import {SEVERITY_LABEL, SEVERITY_TONE, type Severity, worstSeverity} from '../bisect/severity'
 import {pluralize} from '../bisect/text'
 import {releaseUrl} from '../trends/links'
 import {useUrlState} from '../trends/useUrlState'
@@ -688,6 +688,15 @@ function ReleaseRow(props: {
   const worstIntroduced = worstSeverity(
     (regressions?.introduced ?? []).map((entry) => entry.session.result?.severity),
   )
+  // What a reader of the list most wants to know about a release: does it
+  // ship anything major or critical — introduced here or inherited, not the
+  // ones fixed here. Shown as badges next to the version; minor and unrated
+  // ones don't get a badge of their own
+  const present = [...(regressions?.introduced ?? []), ...(regressions?.inherited ?? [])]
+  const severityCount = (severity: Severity) =>
+    present.filter((entry) => entry.session.result?.severity === severity).length
+  const criticalCount = severityCount('critical')
+  const majorCount = severityCount('major')
   // The version opens the gitTag document in the structure tool — the raw
   // synced record behind the row
   const documentLink = useIntentLink({intent: 'edit', params: {id: tag._id, type: 'gitTag'}})
@@ -725,6 +734,40 @@ function ReleaseRow(props: {
               >
                 <Badge tone="caution" fontSize={0}>
                   deprecated
+                </Badge>
+              </Tooltip>
+            )}
+            {/* The release's criticality, next to its name: how many major or
+                critical regressions it ships (introduced or inherited) */}
+            {criticalCount > 0 && (
+              <Tooltip
+                content={
+                  <Box padding={2}>
+                    <Text size={1}>
+                      {pluralize(criticalCount, 'critical regression')} present in {tag.tag}{' '}
+                      (introduced here or inherited)
+                    </Text>
+                  </Box>
+                }
+              >
+                <Badge tone={SEVERITY_TONE.critical} fontSize={0}>
+                  {criticalCount} critical
+                </Badge>
+              </Tooltip>
+            )}
+            {majorCount > 0 && (
+              <Tooltip
+                content={
+                  <Box padding={2}>
+                    <Text size={1}>
+                      {pluralize(majorCount, 'major regression')} present in {tag.tag} (introduced
+                      here or inherited)
+                    </Text>
+                  </Box>
+                }
+              >
+                <Badge tone={SEVERITY_TONE.major} fontSize={0}>
+                  {majorCount} major
                 </Badge>
               </Tooltip>
             )}
