@@ -1,6 +1,8 @@
 import {type CurrentUser} from '@sanity/types'
-import {getTheme_v2} from '@sanity/ui/theme'
-import {css, styled} from 'styled-components'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 
 import {CommentsListItem as CommentsListItemV2} from '../../../comments-v2/components/list/CommentsListItem'
 import {useComments as useCommentsV2} from '../../../comments-v2/hooks/useComments'
@@ -9,6 +11,7 @@ import {useComments} from '../../../comments/hooks/useComments'
 import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
 import {useWorkspace} from '../../../studio/workspace'
 import {useTasksEnabled} from '../../context/enabled/useTasksEnabled'
+import {commentListItemRoot, space2Var} from './TasksActivityCommentItem.css'
 import {ActivityItem} from './TasksActivityItem'
 import {type TaskCommentReply} from './types'
 
@@ -32,19 +35,17 @@ interface TasksActivityCommentItemProps {
   onReply: (reply: TaskCommentReply) => void
 }
 
-const CommentListItemRoot = styled.div((props) => {
-  const theme = getTheme_v2(props.theme)
-  return css`
-    [data-ui='CommentsListItem'] {
-      padding-right: ${theme.space[2]}px;
-    }
-
-    // Increase the padding when the comment input is focused
-    [data-ui='CommentInputEditableWrap']:focus-within {
-      padding-bottom: ${theme.space[2]}px;
-    }
-  `
-})
+function CommentListItemRoot(props: ComponentProps<'div'>) {
+  const {className, style, ...rest} = props
+  const {space} = useThemeV2()
+  return (
+    <div
+      {...rest}
+      className={clsx(commentListItemRoot, className)}
+      style={{...assignInlineVars({[space2Var]: `${space[2]}px`}), ...style}}
+    />
+  )
+}
 
 /**
  * Comment thread in the activity log. Picks v1 or v2 from `beta.comments.v2`.
