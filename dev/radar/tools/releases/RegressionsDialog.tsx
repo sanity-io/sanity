@@ -9,7 +9,7 @@ import {Flex} from 'ui5'
 
 import {type SessionSummary, type TagSlice} from '../bisect/data'
 import {RelativeDate} from '../bisect/RelativeDate'
-import {deleteSessions, updateResult} from '../bisect/sessions'
+import {deleteSessions, updateResults} from '../bisect/sessions'
 import {isSeverity, SEVERITIES, SEVERITY_LABEL, SEVERITY_TONE} from '../bisect/severity'
 import {pluralize} from '../bisect/text'
 import {bisectSessionPath, compareTagsSemverDesc, type ReleaseRegressions} from './releaseInfo'
@@ -20,7 +20,12 @@ export interface ReleaseRegression {
   session: SessionSummary
   /** Tag name of the release that first shipped the culprit. */
   introducedIn: string
-  /** Every session in the refinement chain, root first — removing the regression removes them all. */
+  /**
+   * Every session under the chain's root, abandoned branches included —
+   * removing the regression removes them all, and the chain-level fields
+   * (severity, fix release) are written to all of them, since what the row
+   * shows is the union of the chain and a change must hold everywhere.
+   */
   chainIds: string[]
 }
 
@@ -132,7 +137,7 @@ function RegressionRow(props: {
   const fixedIn = session.result?.fixedIn ?? ''
   const severity = isSeverity(session.result?.severity) ? session.result.severity : ''
   const setSeverity = (next: string) => {
-    updateResult(client, session._id, {severity: isSeverity(next) ? next : ''}).catch(
+    updateResults(client, chainIds, {severity: isSeverity(next) ? next : ''}).catch(
       (err: unknown) =>
         toast.push({
           status: 'error',
@@ -148,7 +153,7 @@ function RegressionRow(props: {
   // value, so a quick A → B → A would skip the write back to A. The change
   // event only fires for real changes, and a redundant set/unset is harmless
   const setFixedIn = (next: string) => {
-    updateResult(client, session._id, {fixedIn: next}).catch((err: unknown) =>
+    updateResults(client, chainIds, {fixedIn: next}).catch((err: unknown) =>
       toast.push({
         status: 'error',
         title: 'Could not save where it was fixed',

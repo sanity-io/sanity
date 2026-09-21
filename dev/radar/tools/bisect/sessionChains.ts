@@ -27,8 +27,14 @@ export interface SessionChain<S extends ChainSession> {
   root: S
   /** The deepest session — the one still being worked on when unconverged. */
   leaf: S
-  /** Root first. */
+  /** The followed path, root first. */
   sessions: S[]
+  /**
+   * Every session under the root, abandoned branches included — what
+   * removing the regression must delete, or a sibling refinement would
+   * come back as a root of its own.
+   */
+  treeIds: string[]
 }
 
 /**
@@ -67,7 +73,19 @@ export function resolveSessionChains<S extends ChainSession>(sessions: S[]): Ses
       visited.add(next._id)
       current = next
     }
-    return {root, leaf: chain.at(-1)!, sessions: chain}
+    // The whole tree under the root, breadth first; the visited set guards
+    // against a hand-edited cycle, same as the path walk above
+    const treeIds = [root._id]
+    const seen = new Set(treeIds)
+    for (let index = 0; index < treeIds.length; index++) {
+      for (const child of childrenOf.get(treeIds[index]) ?? []) {
+        if (!seen.has(child._id)) {
+          seen.add(child._id)
+          treeIds.push(child._id)
+        }
+      }
+    }
+    return {root, leaf: chain.at(-1)!, sessions: chain, treeIds}
   })
 }
 

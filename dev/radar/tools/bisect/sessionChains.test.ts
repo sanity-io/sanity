@@ -57,8 +57,20 @@ test('among several refinements a converged one wins, then the newest', () => {
   })
   const chains = resolveSessionChains([root, olderConverged, newer])
   expect(chains.map(ids)).toEqual([['a', 'ab']])
-  // the abandoned branch is neither in the chain nor a root of its own
+  // the abandoned branch is neither in the chain nor a root of its own —
+  // but it IS part of the tree that removing the regression deletes
   expect(chains).toHaveLength(1)
+  expect(chains[0].treeIds).toEqual(['a', 'ab', 'ac'])
+})
+
+test('the tree covers refinements of refinements and stops at a cycle', () => {
+  const root = session('a')
+  const child = session('ab', {refines: 'a'})
+  const grandchild = session('abc', {refines: 'ab'})
+  const cousin = session('ad', {refines: 'a'})
+  const [chain] = resolveSessionChains([root, child, grandchild, cousin])
+  expect(chain.treeIds).toEqual(['a', 'ab', 'ad', 'abc'])
+  expect(resolveSessionChains([session('x')])[0].treeIds).toEqual(['x'])
 })
 
 test('a self-reference or cycle cannot loop', () => {

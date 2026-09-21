@@ -285,7 +285,7 @@ export function ReleasesTool() {
           firstBadSha: verdict.firstBadSha,
           fixedIn: verdict.fixedIn,
           session,
-          chainIds: chain.sessions.map((member) => member._id),
+          chainIds: chain.treeIds,
         },
       ]
     })

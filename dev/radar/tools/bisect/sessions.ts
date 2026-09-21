@@ -203,6 +203,35 @@ export function updateResult(
   return mutation.commit()
 }
 
+/**
+ * The same annotation on every session of a refinement chain, in one
+ * transaction — for edits made where the chain is shown as one regression
+ * (the Releases tool): the reader merges the chain (worst severity, deepest
+ * fix release), so a change written to one session alone could be outvoted
+ * by another and snap back.
+ */
+export function updateResults(
+  client: SanityClient,
+  sessionIds: string[],
+  patch: ResultAnnotations,
+): Promise<unknown> {
+  const sets: Record<string, boolean | string> = {}
+  const unsets: string[] = []
+  for (const [key, value] of Object.entries(patch)) {
+    const path = key === 'description' ? 'description' : `result.${key}`
+    if (value === '' || value === undefined) unsets.push(path)
+    else sets[path] = value
+  }
+  let transaction = client.transaction()
+  for (const id of sessionIds) {
+    let mutation = client.patch(id)
+    if (Object.keys(sets).length > 0) mutation = mutation.set(sets)
+    if (unsets.length > 0) mutation = mutation.unset(unsets)
+    transaction = transaction.patch(mutation)
+  }
+  return transaction.commit()
+}
+
 /** Undo removes exactly one mark — and any result, since it may no longer hold. */
 export function undoMark(
   client: SanityClient,

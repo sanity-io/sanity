@@ -365,9 +365,13 @@ sessionChains.ts` and shared by the sessions list and the Releases tool:
    Among several
    refinements of one session the converged one is followed, newest first
    among equals; the others are abandoned branches, listed but never counted.
-   Removing the regression from the Releases tool deletes the whole chain —
-   deleting only the refinement would resurface its parent as the same
-   regression, one step less precise.
+   Removing the regression from the Releases tool deletes the whole tree
+   under the root, abandoned branches included — deleting only the followed
+   path would resurface a sibling refinement as a regression of its own, and
+   deleting only the refinement would resurface its parent one step less
+   precise. Severity and fix release set from that tool are written to every
+   session in the tree for the same reason: the row shows the union, so a
+   change to one session alone could be outvoted by another and snap back.
 
 8. **Studio releases** — every synced release tag in semver order (newest
    version first, prereleases below their release — a version list, not a
