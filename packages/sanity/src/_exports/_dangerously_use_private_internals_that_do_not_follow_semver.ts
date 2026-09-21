@@ -40,7 +40,9 @@ export {
   type TrackedArea,
   type TrackedChange,
 } from '../core/changeIndicators/types'
+export {CommentDeleteDialog} from '../core/comments/components/CommentDeleteDialog'
 export {CommentDisabledIcon} from '../core/comments/components/icons/CommentDisabledIcon'
+export {CommentsList} from '../core/comments/components/list/CommentsList'
 export {
   CommentInput,
   type CommentInputHandle,
@@ -48,14 +50,23 @@ export {
 } from '../core/comments/components/pte/comment-input/CommentInput'
 export {CommentInlineHighlightSpan} from '../core/comments/components/pte/CommentInlineHighlightSpan'
 export {COMMENTS_INSPECTOR_NAME} from '../core/comments/constants'
+export {CommentsAuthoringPathProvider} from '../core/comments/context/authoring-path/CommentsAuthoringPathProvider'
+export {CommentsProvider} from '../core/comments/context/comments/CommentsProvider'
+export {CommentsEnabledProvider} from '../core/comments/context/enabled/CommentsEnabledProvider'
+export {CommentsIntentProvider} from '../core/comments/context/intent/CommentsIntentProvider'
 export {CommentsSelectedPathProvider} from '../core/comments/context/selected-path/CommentsSelectedPathProvider'
 export {type CommentsSelectedPath} from '../core/comments/context/selected-path/types'
 export {hasCommentMessageValue, isTextSelectionComment} from '../core/comments/helpers'
+export {useComments} from '../core/comments/hooks/useComments'
+export {useCommentsEnabled} from '../core/comments/hooks/useCommentsEnabled'
 export {useCommentsSelectedPath} from '../core/comments/hooks/useCommentsSelectedPath'
 export {useCommentsTelemetry} from '../core/comments/hooks/useCommentsTelemetry'
 export {buildCommentRangeDecorations} from '../core/comments/utils/inline-comments/buildCommentRangeDecorations'
 export {buildRangeDecorationSelectionsFromComments} from '../core/comments/utils/inline-comments/buildRangeDecorationSelectionsFromComments'
 export {buildTextSelectionFromFragment} from '../core/comments/utils/inline-comments/buildTextSelectionFromFragment'
+export {CommentsProvider as CommentsProviderV2} from '../core/comments-v2/context/comments/CommentsProvider'
+export {CommentsEnabledProvider as CommentsEnabledProviderV2} from '../core/comments-v2/context/enabled/CommentsEnabledProvider'
+export {useCommentsEnabled as useCommentsEnabledV2} from '../core/comments-v2/hooks/useCommentsEnabled'
 export {BetaBadge, type BetaBadgeProps} from '../core/components/BetaBadge'
 export {CapabilityGate} from '../core/components/CapabilityGate'
 export {DashboardLink} from '../core/components/DashboardLink'
@@ -337,10 +348,6 @@ export {
 export {useFieldActions} from '../core/form/field/actions/useFieldActions'
 export {HoveredFieldProvider} from '../core/form/field/HoveredFieldProvider'
 export {useHoveredField} from '../core/form/field/useHoveredField'
-export {
-  useVirtualizerScrollInstance,
-  type VirtualizerScrollInstance,
-} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/useVirtualizerScrollInstance'
 export {CrossDatasetReferencePreview} from '../core/form/inputs/CrossDatasetReferenceInput/CrossDatasetReferencePreview'
 export {getCalendarLabels} from '../core/form/inputs/DateInputs/utils'
 export {
@@ -350,6 +357,10 @@ export {
 export {CreateButton as CreateReferenceButton} from '../core/form/inputs/ReferenceInput/CreateButton'
 export {ReferenceAutocomplete} from '../core/form/inputs/ReferenceInput/ReferenceAutocomplete'
 export {type CreateReferenceOption} from '../core/form/inputs/ReferenceInput/types'
+export {
+  useVirtualizerScrollInstance,
+  type VirtualizerScrollInstance,
+} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/useVirtualizerScrollInstance'
 export {
   ArrayOfObjectsInputMember,
   type ArrayOfObjectsMemberProps,
@@ -384,6 +395,7 @@ export {
   type SetActiveGroupOperation,
 } from '../core/form/store/utils/getExpandOperations'
 export {mergeParseErrors, type ParseError} from '../core/form/store/utils/mergeParseErrors'
+export {} from '../core/form/studio/assetSourceMediaLibrary/createAssetSource'
 export {type FormCallbacksValue} from '../core/form/studio/contexts/FormCallbacks'
 export {
   ParseErrorsProvider,
@@ -414,6 +426,7 @@ export {
 } from '../core/form/studio/tree-editing/context/enabled/useEnhancedObjectDialog'
 export {type UploaderDef} from '../core/form/studio/uploads/types'
 export {type FormBuilderFilterFieldFn} from '../core/form/types/_transitional'
+export {} from '../core/form/types/asserters'
 export {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   type FieldCommentsProps,
@@ -784,6 +797,7 @@ export {SearchResultItemPreview} from '../core/studio/components/navbar/search/c
 export {type SearchContextValue} from '../core/studio/components/navbar/search/contexts/search/SearchContext'
 export {SearchProvider} from '../core/studio/components/navbar/search/contexts/search/SearchProvider'
 export {useSearchState} from '../core/studio/components/navbar/search/contexts/search/useSearchState'
+export {} from '../core/studio/components/navbar/search/definitions/filters'
 export {operatorDefinitions} from '../core/studio/components/navbar/search/definitions/operators/defaultOperators'
 export {
   type PartialIndexSettings,
@@ -975,6 +989,7 @@ export {
   type StructureNodeIdValidationResult,
   validateStructureNodeId,
 } from '../core/util/validateStructureNodeId'
+export {} from '../core/util/versionsUtils'
 export {isDocumentInSelectedVariant} from '../core/variants/documents/isDocumentInSelectedVariant'
 export {useCreatableVariantInitialValue} from '../core/variants/hooks/useCreatableVariantInitialValue'
 export {useVariantDocumentOperations} from '../core/variants/hooks/useVariantDocumentOperations'

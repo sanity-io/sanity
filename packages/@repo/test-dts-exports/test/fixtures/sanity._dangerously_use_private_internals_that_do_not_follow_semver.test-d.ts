@@ -76,12 +76,20 @@ import type {
   CommandListItemContext,
   CommandListProps,
   CommandListRenderItemCallback,
+  CommentDeleteDialog,
   CommentDisabledIcon,
   CommentInlineHighlightSpan,
   CommentInput,
   CommentInputHandle,
   CommentInputProps,
   COMMENTS_INSPECTOR_NAME,
+  CommentsAuthoringPathProvider,
+  CommentsEnabledProvider,
+  CommentsEnabledProviderV2,
+  CommentsIntentProvider,
+  CommentsList,
+  CommentsProvider,
+  CommentsProviderV2,
   CommentsSelectedPath,
   CommentsSelectedPathProvider,
   CommitError,
@@ -728,6 +736,9 @@ import type {
   useColorSchemeInternalValue,
   useColorSchemeOptions,
   useComlinkStore,
+  useComments,
+  useCommentsEnabled,
+  useCommentsEnabledV2,
   useCommentsSelectedPath,
   useCommentsTelemetry,
   useConditionalToast,
@@ -1118,6 +1129,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('CommandListRenderItemCallback', () => {
     expectTypeOf<CommandListRenderItemCallback<any>>().not.toBeNever()
   })
+  test('CommentDeleteDialog', () => {
+    expectTypeOf<typeof CommentDeleteDialog>().toBeFunction()
+  })
   test('CommentDisabledIcon', () => {
     expectTypeOf<typeof CommentDisabledIcon>().toBeFunction()
   })
@@ -1135,6 +1149,27 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('COMMENTS_INSPECTOR_NAME', () => {
     expectTypeOf<typeof COMMENTS_INSPECTOR_NAME>().not.toBeNever()
+  })
+  test('CommentsAuthoringPathProvider', () => {
+    expectTypeOf<typeof CommentsAuthoringPathProvider>().toBeFunction()
+  })
+  test('CommentsEnabledProvider', () => {
+    expectTypeOf<typeof CommentsEnabledProvider>().not.toBeNever()
+  })
+  test('CommentsEnabledProviderV2', () => {
+    expectTypeOf<typeof CommentsEnabledProviderV2>().not.toBeNever()
+  })
+  test('CommentsIntentProvider', () => {
+    expectTypeOf<typeof CommentsIntentProvider>().not.toBeNever()
+  })
+  test('CommentsList', () => {
+    expectTypeOf<typeof CommentsList>().not.toBeNever()
+  })
+  test('CommentsProvider', () => {
+    expectTypeOf<typeof CommentsProvider>().not.toBeNever()
+  })
+  test('CommentsProviderV2', () => {
+    expectTypeOf<typeof CommentsProviderV2>().not.toBeNever()
   })
   test('CommentsSelectedPath', () => {
     expectTypeOf<CommentsSelectedPath>().toBeObject()
@@ -3076,6 +3111,15 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('useComlinkStore', () => {
     expectTypeOf<typeof useComlinkStore>().toBeFunction()
+  })
+  test('useComments', () => {
+    expectTypeOf<typeof useComments>().toBeFunction()
+  })
+  test('useCommentsEnabled', () => {
+    expectTypeOf<typeof useCommentsEnabled>().toBeFunction()
+  })
+  test('useCommentsEnabledV2', () => {
+    expectTypeOf<typeof useCommentsEnabledV2>().toBeFunction()
   })
   test('useCommentsSelectedPath', () => {
     expectTypeOf<typeof useCommentsSelectedPath>().toBeFunction()
