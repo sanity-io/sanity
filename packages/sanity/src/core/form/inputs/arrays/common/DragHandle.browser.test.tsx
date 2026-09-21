@@ -1,25 +1,28 @@
+import {configure} from '@chromatic-com/vitest'
 import {DndContext} from '@dnd-kit/core'
 import {SortableContext} from '@dnd-kit/sortable'
-import {studioTheme, ThemeProvider} from '@sanity/ui'
-import {render, screen} from '@testing-library/react'
+import {ThemeProvider} from '@sanity/ui'
+import {buildTheme} from '@sanity/ui/theme'
 import {SortableItemIdContext} from 'sanity/_singletons'
-import {describe, expect, it, vi} from 'vitest'
+import {describe, expect, it} from 'vitest'
+import {render} from 'vitest-browser-react'
+import {page} from 'vitest/browser'
 
 import {DragHandle} from './DragHandle'
 
-vi.mock('../../../../i18n/hooks/useTranslation', () => ({
-  useTranslation: () => ({t: (key: string) => key}),
-}))
+// The tests assert `touch-action`, which a snapshot of the handle cannot show
+configure({disableAutoSnapshot: true})
 
-function renderDragHandle(props: Partial<React.ComponentProps<typeof DragHandle>> = {}) {
+const theme = buildTheme()
+
+function renderDragHandle(readOnly: boolean) {
   const id = 'item-1'
   return render(
-    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-    <ThemeProvider theme={studioTheme}>
+    <ThemeProvider theme={theme}>
       <DndContext>
         <SortableContext items={[id]}>
           <SortableItemIdContext.Provider value={id}>
-            <DragHandle readOnly={false} {...props} />
+            <DragHandle readOnly={readOnly} />
           </SortableItemIdContext.Provider>
         </SortableContext>
       </DndContext>
@@ -39,15 +42,15 @@ describe('DragHandle', () => {
   //
   // dnd-kit docs:
   // https://docs.dndkit.com/api-documentation/sensors/pointer#recommendations
-  it('renders with touch-action: none so PointerSensor can receive touch input', () => {
-    renderDragHandle()
-    expect(screen.getByRole('button')).toHaveStyle('touch-action: none')
+  it('renders with touch-action: none so PointerSensor can receive touch input', async () => {
+    await renderDragHandle(false)
+    await expect.element(page.getByRole('button')).toHaveStyle({touchAction: 'none'})
   })
 
-  it('keeps touch-action: auto when readOnly', () => {
+  it('keeps touch-action: auto when readOnly', async () => {
     // The handle is non-interactive when readOnly, so native scrolling should
     // remain enabled when a touch gesture starts on the handle area.
-    renderDragHandle({readOnly: true})
-    expect(screen.getByRole('button')).toHaveStyle('touch-action: auto')
+    await renderDragHandle(true)
+    await expect.element(page.getByRole('button')).toHaveStyle({touchAction: 'auto'})
   })
 })
