@@ -1,11 +1,24 @@
-import {css, styled} from 'styled-components'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 
+import {
+  bottomRegionWrapper,
+  contentWrapper,
+  middleRegionWrapper,
+  overlayWrapper,
+  rootWrapper,
+  topRegionWrapper,
+  topVar,
+} from './RegionsWithIntersections.styled.css'
 import {WithIntersection} from './WithIntersection'
 
 interface StyleProps {
   $debug: boolean
   $margins?: [number, number, number, number]
 }
+
+type RegionWrapperProps = StyleProps & ComponentProps<typeof WithIntersection>
 
 /**
  * The in-flow children are the top sentinel, the content wrapper and the bottom sentinel. Laying
@@ -15,72 +28,55 @@ interface StyleProps {
  * rather than a grid: a grid item's containing block is its grid area, which would pin the sticky
  * sentinels to their own 1px rows, while a flex item's is the whole container.
  */
-export const RootWrapper = styled.div`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-`
+export function RootWrapper(props: ComponentProps<'div'>) {
+  const {className, ...rest} = props
+  return <div {...rest} className={clsx(rootWrapper, className)} />
+}
 
 /** Wraps the overlay's children; grows to fill the root, never shrinks below its content */
-export const ContentWrapper = styled.div`
-  flex: 1 1 auto;
-`
+export function ContentWrapper(props: ComponentProps<'div'>) {
+  const {className, ...rest} = props
+  return <div {...rest} className={clsx(contentWrapper, className)} />
+}
 
-export const OverlayWrapper = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  z-index: 13;
-`
+export function OverlayWrapper(props: ComponentProps<'div'>) {
+  const {className, ...rest} = props
+  return <div {...rest} className={clsx(overlayWrapper, className)} />
+}
 
-const RegionWrapper = css`
-  overflow: hidden;
-  overflow: clip;
-  pointer-events: none;
-  position: absolute;
-`
+export function TopRegionWrapper(props: RegionWrapperProps) {
+  const {$debug, $margins, className, style, ...rest} = props
 
-export const TopRegionWrapper = styled(WithIntersection)<StyleProps>(({$debug, $margins}) => {
-  return css`
-    ${RegionWrapper}
+  return (
+    <WithIntersection
+      {...rest}
+      className={clsx(topRegionWrapper[$debug ? 'debug' : 'default'], className)}
+      style={{
+        ...assignInlineVars({[topVar]: $margins ? `${$margins[0] - 1}px` : undefined}),
+        ...style,
+      }}
+    />
+  )
+}
 
-    z-index: 100;
-    position: sticky;
-    flex: none;
-    height: 1px;
-    top: ${$margins ? `${$margins[0] - 1}px` : 'auto'};
-    background-color: ${$debug ? 'red' : 'transparent'};
-  `
-})
+export function MiddleRegionWrapper(props: RegionWrapperProps) {
+  const {$debug, className, ...rest} = props
 
-export const MiddleRegionWrapper = styled(WithIntersection)<StyleProps>(({$debug}) => {
-  return css`
-    ${RegionWrapper}
+  return (
+    <WithIntersection
+      {...rest}
+      className={clsx(middleRegionWrapper[$debug ? 'debug' : 'default'], className)}
+    />
+  )
+}
 
-    visibility: none;
+export function BottomRegionWrapper(props: RegionWrapperProps) {
+  const {$debug, className, ...rest} = props
 
-    ${
-      $debug &&
-      css`
-        background: rgba(255, 0, 0, 0.25);
-        outline: 1px solid #00b;
-        visibility: visible;
-      `
-    }
-  `
-})
-
-export const BottomRegionWrapper = styled(WithIntersection)<StyleProps>(({$debug}) => {
-  return css`
-    ${RegionWrapper}
-
-    position: sticky;
-    flex: none;
-    bottom: -1px;
-    height: 1px;
-    background-color: ${$debug ? 'blue' : 'transparent'};
-  `
-})
+  return (
+    <WithIntersection
+      {...rest}
+      className={clsx(bottomRegionWrapper[$debug ? 'debug' : 'default'], className)}
+    />
+  )
+}
