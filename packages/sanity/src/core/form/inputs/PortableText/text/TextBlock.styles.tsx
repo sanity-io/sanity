@@ -1,10 +1,10 @@
 import {hues} from '@sanity/color'
-import {Flex, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {rgba} from '@sanity/ui/theme'
 import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {clsx} from 'clsx'
 import {type ComponentProps, type ComponentPropsWithRef} from 'react'
-import {Box, type BoxProps} from 'ui5'
+import {Box, type BoxProps, Flex} from 'ui5'
 
 import {TEXT_LEVELS} from './constants'
 import {

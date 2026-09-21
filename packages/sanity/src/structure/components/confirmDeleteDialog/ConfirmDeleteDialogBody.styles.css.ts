@@ -47,9 +47,9 @@ globalStyle(`${table} tr > *:last-child`, {
 
 export const documentIdFlex = style({
   selectors: {
-    // Flex (via Box) sets `min-height` on itself
+    // Flex applies its own min block size
     '&&': {
-      minHeight: '33px',
+      minBlockSize: '33px',
     },
   },
 })
