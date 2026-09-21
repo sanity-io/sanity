@@ -330,6 +330,10 @@ export function computeDrift(seriesList: TrendSeries[]): DriftResult[] {
     if (series.goal === 'context') continue
     const threshold = thresholdFor(series.unit)
     for (const line of series.lines) {
+      // A paired chart's secondary line (UI v4 next to v5) is the headline's
+      // complement or mirror; judging it too would flag every move twice, once
+      // in each direction
+      if (line.secondary) continue
       const points = [...line.points].sort((a, b) => a.date.getTime() - b.date.getTime())
       const baseline = computeBaseline(points, threshold, series.goal)
       if (!baseline) continue

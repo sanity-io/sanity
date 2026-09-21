@@ -9,7 +9,14 @@ import {Bar} from '@visx/shape'
 import {useRef, useState} from 'react'
 import {Box, Flex} from 'ui5'
 
-import {formatTick, formatValue, type TrendSeries, type TrendTag, type TrendUnit} from './data'
+import {
+  formatTick,
+  formatValue,
+  primaryLines,
+  type TrendSeries,
+  type TrendTag,
+  type TrendUnit,
+} from './data'
 import {RunDetailPopover} from './RunDetailPopover'
 import {COLOR} from './TrendChart'
 import {
@@ -334,7 +341,12 @@ export function WeeklyCard(props: {
 }) {
   const {title, description, series, variant, goal, tags} = props
   const height = props.height ?? 160
-  const points = series.lines.length === 1 ? series.lines[0].points : []
+  // The headline line: a lone line, or a paired chart's v5 line (the share
+  // variant draws its complement as the remainder, so one line is the whole
+  // story). Several judged lines mean branches are being compared, which the
+  // weekly view does not draw.
+  const judged = primaryLines(series)
+  const points = judged.length === 1 ? judged[0].points : []
   const buckets = weeklyBuckets(points)
   const wow = weekOverWeek(buckets)
   const latest = [...buckets].reverse().find((bucket) => bucket.value !== null)

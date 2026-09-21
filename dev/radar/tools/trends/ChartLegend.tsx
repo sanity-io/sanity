@@ -1,13 +1,14 @@
 import {Text} from '@sanity/ui'
 import {Flex} from 'ui5'
 
-import {CALIBRATION_EXPLAINER, formatValue, type TrendSeries, type TrendTag} from './data'
+import {CALIBRATION_EXPLAINER, formatValue, lineName, type TrendSeries, type TrendTag} from './data'
 import {baselineDetail, baselineLabel, type DriftResult} from './drift'
 import {ALL_LAYERS_VISIBLE, type Layer, type LayerState} from './layers'
-import {categoricalColor} from './palette'
 import {
   baselineToDraw,
   COLOR,
+  lineColorFor,
+  lineDashFor,
   seriesHasBand,
   seriesHasCalibration,
   seriesHasReleases,
@@ -158,19 +159,59 @@ export function ChartLegend(props: {
     />
   )
 
+  // The baseline entry: drawn for a lone line and for a paired chart's
+  // headline (see baselineToDraw), never across branches
+  const baselineItem = overlayBaseline && (
+    <LegendItem
+      layer="baseline"
+      layers={layers}
+      label={`baseline ${baselineLabel(overlayBaseline)}`}
+      hint={baselineDetail(overlayBaseline)}
+      swatch={
+        <>
+          {/* Two stacked strokes, dashed over solid — the before/after pair.
+              An explicit step glyph is illegible at 16×10px. */}
+          <line
+            x1={0}
+            y1={3}
+            x2={16}
+            y2={3}
+            stroke={overlayColor}
+            strokeWidth={1.5}
+            strokeDasharray="3 2"
+            opacity={0.55}
+          />
+          <line x1={0} y1={8} x2={16} y2={8} stroke={overlayColor} strokeWidth={2} opacity={0.9} />
+        </>
+      }
+    />
+  )
+
   if (comparing) {
+    // Several lines: branches being compared, or a paired chart's two majors
+    // (or both). Identity by color needs a key — every line is named, in its
+    // own color and dash, and the headline of a pair keeps its baseline entry.
     return (
       <Flex gap={3} flexWrap="wrap" alignItems="center">
         {series.lines.map((line, index) => (
-          <Flex key={line.branch} gap={1} alignItems="center">
+          <Flex key={`${line.branch}:${line.label ?? ''}`} gap={1} alignItems="center">
             <Swatch>
-              <line x1={0} y1={5} x2={16} y2={5} stroke={categoricalColor(index)} strokeWidth={2} />
+              <line
+                x1={0}
+                y1={5}
+                x2={16}
+                y2={5}
+                stroke={lineColorFor(series, index)}
+                strokeWidth={2}
+                strokeDasharray={lineDashFor(series, index)}
+              />
             </Swatch>
             <Text size={0} muted>
-              {line.branch}
+              {lineName(series, line)}
             </Text>
           </Flex>
         ))}
+        {baselineItem}
         {releasesItem}
         {goodItem}
         {series.goal !== 'context' && (
@@ -247,39 +288,7 @@ export function ChartLegend(props: {
           }
         />
       )}
-      {overlayBaseline && (
-        <LegendItem
-          layer="baseline"
-          layers={layers}
-          label={`baseline ${baselineLabel(overlayBaseline)}`}
-          hint={baselineDetail(overlayBaseline)}
-          swatch={
-            <>
-              {/* Two stacked strokes, dashed over solid — the before/after pair.
-                  An explicit step glyph is illegible at 16×10px. */}
-              <line
-                x1={0}
-                y1={3}
-                x2={16}
-                y2={3}
-                stroke={overlayColor}
-                strokeWidth={1.5}
-                strokeDasharray="3 2"
-                opacity={0.55}
-              />
-              <line
-                x1={0}
-                y1={8}
-                x2={16}
-                y2={8}
-                stroke={overlayColor}
-                strokeWidth={2}
-                opacity={0.9}
-              />
-            </>
-          }
-        />
-      )}
+      {baselineItem}
       {releasesItem}
       {goodItem}
       {series.goal !== 'context' && (

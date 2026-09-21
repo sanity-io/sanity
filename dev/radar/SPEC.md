@@ -470,6 +470,22 @@ sessionChains.ts` and shared by the sessions list and the Releases tool:
      the same page, so their rows share a `styles:<scenario>:<label>` key and
      merge into one point per commit (the `mergeRunsPerCommit` median) rather
      than drawing two series that say the same thing.
+   - **The two majors share a chart.** The three UI rows (`UI v5 share`,
+     `UI v5 instances`, `UI v4 instances`) become two paired charts per
+     scenario, `UI share` and `UI instances` (`UI_PAIRS`), each drawing v5 and
+     v4 as two lines in the style systems' own colors — the migration reads as
+     a crossing, v5 climbing past v4, that two single-line charts never show.
+     The share chart's v4 line is the complement of the stored v5 share (they
+     sum to 100% by construction); the instances chart draws both stored
+     counts, so its v4 line reaches back before v5 existed while v5 starts with
+     the first build that shipped it. This is the first series with several
+     measured lines per branch, hence `TrendLine.label` / `color` /
+     `secondary`: the v4 line is secondary — drawn for the crossing, but the
+     card's latest value, the drift verdict and the baseline overlay read the
+     v5 line only (judging both would flag every move twice, once per
+     direction). Legends and tooltips name lines by label, and by branch too
+     when several branches' pairs share a chart, where the second branch
+     dashes because the color already means the major.
    - **Higher is better exists now.** Adoption climbs, so `goal: 'higher'`
      makes a drop the regression and a rise the improvement (drift.ts
      `classify`); the badge arrow follows the value's direction and its tone the
@@ -485,14 +501,23 @@ sessionChains.ts` and shared by the sessions list and the Releases tool:
      and `styledComponentsVersion` names the runtime — surfaced on style points
      (tooltip, popover) because a step in the CSS rows that lands with a
      version bump is the library changing its output, not a migration.
-   - **Two sub-views plus "Per week".** UI v5 adoption and styled-components
-     each lay out like the Vitals tab (a section per metric, a card per
-     scenario). "Per week" redraws one scenario's headline series as weekly
-     histograms modelled on Linear's "StyleX adoption per week" chart
-     (`WeeklyBars.tsx`, buckets from `weekly.ts`): a 100%-stacked bar per
-     Monday-start UTC week for the shares (the filled part climbing to the top
-     is the celebration), plain bars for the counts and sizes that should sink.
-     A bar is the **median of that week's points**, an empty week stays a gap
+   - **Two sub-views plus "Per week".** UI v5 adoption (the two paired
+     sections) and styled-components (a section per registry metric) each lay
+     out like the Vitals tab, a card per scenario. "Per week" redraws the
+     headline series as weekly histograms modelled on Linear's "StyleX adoption
+     per week" chart (`WeeklyBars.tsx`, buckets from `weekly.ts`): a
+     100%-stacked bar per Monday-start UTC week for the shares (the filled part
+     climbing to the top is the celebration), plain bars for the counts and
+     sizes that should sink. It leads with **every scenario summed** and then
+     repeats the set per scenario, one scrolling page and no picker: the
+     aggregate (`aggregateStyleSeries`) sums the per-scenario points per
+     commit (rendered styled nodes, inserted bytes) and recomputes the shares
+     from the summed counts (Σ v5 ÷ Σ (v5 + v4); Σ inserted rules ÷ Σ readable
+     rules, the totals recovered from each scenario's rule count and share)
+     rather than averaging percentages. Sums count shared studio chrome once
+     per scenario page, so they read "across the benchmark's pages"; a failed
+     shard leaves a commit's sum short, which the weekly median absorbs. A bar
+     is the **median of that week's points**, an empty week stays a gap
      (interpolating would claim a measurement nobody took), and a bar opens
      the week's newest run in the same popover the trend charts use, so the
      histogram is a bisect surface too. Colors are the style systems' own,

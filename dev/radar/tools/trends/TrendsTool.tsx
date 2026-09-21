@@ -43,10 +43,13 @@ import {Box, Flex, Grid} from 'ui5'
 import {idSlug} from './acks'
 import {ChartLegend} from './ChartLegend'
 import {
+  aggregateStyleSeries,
+  ALL_SCENARIOS,
   availableBranches,
   buildSeries,
   CALIBRATION_EXPLAINER,
   latestSoakCharts,
+  primaryLines,
   settleViews,
   soakSlopeSeries,
   soakLatestValueSeries,
@@ -102,8 +105,9 @@ const systemColor = (id: 'ui5' | 'ui4' | 'styled') =>
  * "StyleX adoption per week" charts: a 100%-stacked bar per week for the
  * shares (the filled part climbing to the top is the point), a plain bar
  * per week for the counts and sizes that should sink to the axis. Keyed by
- * the bench metric label they redraw; the colors are the style systems' own,
- * the same ones the test studio widget paints its donut and outlines with.
+ * the series they redraw (`styles:<scenario>:<label>`, the headline line of a
+ * paired chart); the colors are the style systems' own, the same ones the
+ * test studio widget paints its donut and outlines with.
  */
 const WEEKLY_CHARTS: {
   label: string
@@ -113,7 +117,7 @@ const WEEKLY_CHARTS: {
   variant: WeeklyVariant
 }[] = [
   {
-    label: 'UI v5 share',
+    label: 'UI share',
     title: 'UI v5 adoption per week',
     description:
       'Rendered @sanity/ui components that are v5, as a share of all @sanity/ui components on the page, per calendar week (median of that week\u2019s runs). The remainder is still on v4. Weeks before the build shipped @sanity/ui v5 draw no bar: there was nothing to adopt yet.',
@@ -444,8 +448,10 @@ function SeriesCard(props: {
   // The overlay draws from any computed baseline; the badge and tint only from a
   // flagged one
   const overlay = baseline ?? drift ?? silenced
-  // Latest value of the first line — a headline number only when not comparing
-  const latest = series.lines.length === 1 ? series.lines[0].points.at(-1) : undefined
+  // Latest value of the judged line — a headline number only when there is
+  // exactly one: a lone line, or a paired chart's headline (its v5 line)
+  const judged = primaryLines(series)
+  const latest = judged.length === 1 ? judged[0].points.at(-1) : undefined
   const badge = drift ? driftBadge(drift) : null
   return (
     // A drifted chart tints its card so it stands out in the grid; the badge
@@ -845,13 +851,18 @@ function SettlePanel(props: {
  * adoption, styled-components), each laid out like the Vitals tab — a section
  * per metric with a card per scenario, since the question is the same ("how
  * is this number doing, everywhere?") — plus a "Per week" view that redraws
- * the headline series of one scenario as weekly histograms (`WeeklyCard`),
- * the reading a months-long migration deserves: a staircase, not a noisy line.
+ * the headline series as weekly histograms (`WeeklyCard`), the reading a
+ * months-long migration deserves: a staircase, not a noisy line. The weekly
+ * view leads with every scenario summed into one set of charts, then repeats
+ * the set per scenario — everything on one scrolling page, no picker to find.
  * The metric views keep the drift/ack plumbing the plain grid has (a share
  * that drops is a regression worth a badge, see drift.ts on `goal: 'higher'`).
  */
 function StylesPanel(props: {
+  /** Per-scenario style series (group `styles`). */
   series: TrendSeries[]
+  /** The cross-scenario aggregate (aggregateStyleSeries), for the weekly view. */
+  aggregate: TrendSeries[]
   driftBySeries: Map<string, DriftResult>
   silencedBySeries: Map<string, DriftResult>
   baselineBySeries: Map<string, DriftResult>
@@ -867,9 +878,6 @@ function StylesPanel(props: {
   chartKey: string
   /** The focused chart lives in another sub-tab the user just left. */
   onLeaveChart: () => void
-  /** `?scenario=` — which scenario the weekly view draws ('' = default). */
-  scenario: string
-  onScenarioChange: (scenario: string) => void
 }) {
   const views = useMemo(() => styleViews(props.series), [props.series])
   const scenarios = useMemo(
@@ -905,21 +913,32 @@ function StylesPanel(props: {
     )
   }
 
-  // singleString is the scenario every mode runs, so it has the longest history
-  const selectedScenario = scenarios.includes(props.scenario)
-    ? props.scenario
-    : scenarios.includes('singleString')
-      ? 'singleString'
-      : scenarios[0]
-  const weeklySeries = new Map(
-    props.series
-      .filter((entry) => styleScenario(entry) === selectedScenario)
-      .map((entry) => [styleLabel(entry), entry]),
-  )
-  const weeklyCharts = WEEKLY_CHARTS.flatMap((chart) => {
-    const entry = weeklySeries.get(chart.label)
-    return entry ? [{...chart, series: entry}] : []
-  })
+  // The weekly cards for one scope (a scenario, or the summed aggregate):
+  // WEEKLY_CHARTS order, dropping charts the scope has no series for
+  const weeklyCards = (scope: string, entries: TrendSeries[]) => {
+    const byLabel = new Map(entries.map((entry) => [styleLabel(entry), entry]))
+    return WEEKLY_CHARTS.flatMap((chart) => {
+      const entry = byLabel.get(chart.label)
+      return entry ? [{...chart, series: entry, scope}] : []
+    })
+  }
+  const weeklySections = [
+    {
+      id: ALL_SCENARIOS,
+      title: 'All scenarios',
+      note: 'summed over every scenario page per commit; shares weighted by what each page renders',
+      cards: weeklyCards(ALL_SCENARIOS, props.aggregate),
+    },
+    ...scenarios.map((scenario) => ({
+      id: scenario,
+      title: scenario,
+      note: undefined,
+      cards: weeklyCards(
+        scenario,
+        props.series.filter((entry) => styleScenario(entry) === scenario),
+      ),
+    })),
+  ].filter((section) => section.cards.length > 0)
   const activeView = views.find((view) => view.id === activeId)
 
   return (
@@ -952,13 +971,13 @@ function StylesPanel(props: {
             </Text>
             <Stack gap={6} paddingTop={3}>
               {activeView.sections.map((section) => (
-                <Stack key={section.metric.label} gap={4}>
+                <Stack key={section.id} gap={4}>
                   <Flex alignItems="baseline" gap={2}>
                     <Text size={1} weight="semibold">
-                      {section.metric.label}
+                      {section.label}
                     </Text>
                     <Text size={1} muted>
-                      {section.metric.goal} is better
+                      {section.goal} is better
                     </Text>
                   </Flex>
                   <ChartGrid
@@ -979,45 +998,43 @@ function StylesPanel(props: {
           </Stack>
         ) : (
           <Stack gap={3}>
-            <Flex alignItems="center" justifyContent="space-between" gap={3} flexWrap="wrap">
-              <Text size={1} muted>
-                The migration week by week, for one scenario: each bar is the median of that
-                week&apos;s runs, an empty week had no run. Click a bar to open the week&apos;s
-                newest run.
-              </Text>
-              {scenarios.length > 1 && (
-                <Select
-                  value={selectedScenario}
-                  onChange={(event) => props.onScenarioChange(event.currentTarget.value)}
-                  aria-label="Scenario"
-                  fontSize={1}
-                  padding={2}
-                  radius={2}
-                >
-                  {scenarios.map((scenario) => (
-                    <option key={scenario} value={scenario}>
-                      {scenario}
-                    </option>
-                  ))}
-                </Select>
-              )}
-            </Flex>
-            <Grid
-              gridTemplateColumns={['repeat(1, minmax(0, 1fr))', 'repeat(2, minmax(0, 1fr))']}
-              gap={3}
-            >
-              {weeklyCharts.map((chart) => (
-                <WeeklyCard
-                  key={chart.label}
-                  title={`${selectedScenario} · ${chart.title}`}
-                  description={chart.description}
-                  series={chart.series}
-                  variant={chart.variant}
-                  goal={chart.goal}
-                  tags={props.tags}
-                />
+            <Text size={1} muted>
+              The migration week by week: each bar is the median of that week&apos;s runs, an empty
+              week had no run. Every scenario summed first, then each scenario on its own. Click a
+              bar to open the week&apos;s newest run.
+            </Text>
+            <Stack gap={6} paddingTop={3}>
+              {weeklySections.map((section) => (
+                <Stack key={section.id} gap={4}>
+                  <Flex alignItems="baseline" gap={2}>
+                    <Text size={1} weight="semibold">
+                      {section.title}
+                    </Text>
+                    {section.note && (
+                      <Text size={1} muted>
+                        {section.note}
+                      </Text>
+                    )}
+                  </Flex>
+                  <Grid
+                    gridTemplateColumns={['repeat(1, minmax(0, 1fr))', 'repeat(2, minmax(0, 1fr))']}
+                    gap={3}
+                  >
+                    {section.cards.map((chart) => (
+                      <WeeklyCard
+                        key={`${section.id}:${chart.label}`}
+                        title={`${section.title} · ${chart.title}`}
+                        description={chart.description}
+                        series={chart.series}
+                        variant={chart.variant}
+                        goal={chart.goal}
+                        tags={props.tags}
+                      />
+                    ))}
+                  </Grid>
+                </Stack>
               ))}
-            </Grid>
+            </Stack>
           </Stack>
         )}
       </TabPanel>
@@ -1201,6 +1218,9 @@ export function TrendsTool() {
     () => vitalSections(series.filter((entry) => entry.group === 'vitals')),
     [series],
   )
+  const styleSeries = useMemo(() => series.filter((entry) => entry.group === 'styles'), [series])
+  // Every scenario summed per commit — the weekly view's leading section
+  const styleAggregate = useMemo(() => aggregateStyleSeries(styleSeries), [styleSeries])
 
   // Every metric group is a tab, always: a fixed layout is learnable, and a
   // group without data in the range renders a blank state saying so (see
@@ -1247,9 +1267,8 @@ export function TrendsTool() {
   // The settle sub-tab follows the same rule ('' = derive from the chart);
   // owned here so a focus jump can clear it alongside ?tab=.
   const [settleViewParam, setSettleViewParam] = useUrlState('settle', '')
-  // Likewise the style-migration sub-tab, and the scenario its weekly view draws
+  // Likewise the style-migration sub-tab
   const [stylesViewParam, setStylesViewParam] = useUrlState('styles', '')
-  const [stylesScenarioParam, setStylesScenarioParam] = useUrlState('scenario', '')
   const activeTab =
     tabs.find((tab) => tab.id === tabParam) ??
     (chartParam ? tabs.find((tab) => tab.id === groupById.get(chartParam)) : undefined) ??
@@ -1543,7 +1562,8 @@ export function TrendsTool() {
                       />
                     ) : activeTab.id === 'styles' ? (
                       <StylesPanel
-                        series={series.filter((entry) => entry.group === 'styles')}
+                        series={styleSeries}
+                        aggregate={styleAggregate}
                         driftBySeries={driftBySeries}
                         silencedBySeries={silencedBySeries}
                         baselineBySeries={baselineBySeries}
@@ -1557,8 +1577,6 @@ export function TrendsTool() {
                         onViewChange={setStylesViewParam}
                         chartKey={chartParam}
                         onLeaveChart={() => setChartParam('')}
-                        scenario={stylesScenarioParam}
-                        onScenarioChange={setStylesScenarioParam}
                       />
                     ) : activeTab.id === 'vitals' ? (
                       vitalGroups.length === 0 ? (

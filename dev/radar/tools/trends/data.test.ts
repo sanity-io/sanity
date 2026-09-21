@@ -1,11 +1,14 @@
 import {expect, test} from 'vitest'
 
 import {
+  aggregateStyleSeries,
   buildSeries,
   calibrationSeries,
   soakLatestValueSeries,
   formatTick,
   formatValue,
+  lineName,
+  primaryLines,
   settleViews,
   styleLabel,
   styleScenario,
@@ -731,7 +734,8 @@ test('style rows chart under the styles group, keyed per scenario regardless of 
   const series = buildSeries([styleRun({id: 'a', sha: 'sha-1', day: 0})])
   const styles = series.filter((entry) => entry.group === 'styles')
   const keys = styles.map((entry) => entry.key)
-  expect(keys).toContain('styles:singleString:UI v5 share')
+  expect(keys).toContain('styles:singleString:UI share')
+  expect(keys).toContain('styles:singleString:UI instances')
   expect(keys).toContain('styles:singleString:styled-components instances')
   // The settle report's rows are style rows too — not settle series
   expect(keys).toContain('styles:previewHeavy:styled-components instances')
@@ -742,16 +746,42 @@ test('style rows chart under the styles group, keyed per scenario regardless of 
   for (const entry of styles) expect(entry.description).not.toContain('RED BY DESIGN')
 })
 
+test('the three UI rows become two paired charts, v5 and v4 on one chart', () => {
+  const series = buildSeries([styleRun({id: 'a', sha: 'sha-1', day: 0, share: 35})])
+  const keys = series.map((entry) => entry.key)
+  // No single-line UI series survive
+  expect(keys.some((key) => /UI v[45] (share|instances)$/.test(key))).toBe(false)
+
+  const share = series.find((entry) => entry.key === 'styles:singleString:UI share')!
+  expect(share.unit).toBe('percent')
+  expect(share.goal).toBe('higher')
+  expect(share.lines.map((line) => line.label)).toEqual(['@sanity/ui v5', '@sanity/ui v4'])
+  // The v4 share is the complement of the stored v5 share, so the two sum to 100
+  expect(share.lines.map((line) => line.points[0].value)).toEqual([35, 65])
+  // Only the headline (v5) line is judged; v4 is drawn for the crossing
+  expect(share.lines.map((line) => Boolean(line.secondary))).toEqual([false, true])
+  expect(primaryLines(share).map((line) => line.label)).toEqual(['@sanity/ui v5'])
+  // Pair lines carry no percentiles — a complement of a percentile is not one
+  expect(share.lines[1].points[0].p75).toBeUndefined()
+  // Colors are the style systems' own
+  expect(share.lines.map((line) => line.color)).toEqual(['#3fb950', '#e2604f'])
+
+  const instances = series.find((entry) => entry.key === 'styles:singleString:UI instances')!
+  expect(instances.unit).toBe('count')
+  expect(instances.lines.map((line) => [line.label, line.points[0].value])).toEqual([
+    ['@sanity/ui v5', 1081],
+    ['@sanity/ui v4', 2023],
+  ])
+})
+
 test('style rows read the registry: adoption climbs, the escape hatch sinks', () => {
   const series = buildSeries([styleRun({id: 'a', sha: 'sha-1', day: 0})])
   const goalOf = (key: string) => series.find((entry) => entry.key === key)?.goal
-  expect(goalOf('styles:singleString:UI v5 share')).toBe('higher')
-  expect(goalOf('styles:singleString:UI v5 instances')).toBe('higher')
-  expect(goalOf('styles:singleString:UI v4 instances')).toBe('lower')
+  expect(goalOf('styles:singleString:UI share')).toBe('higher')
+  expect(goalOf('styles:singleString:UI instances')).toBe('higher')
   expect(goalOf('styles:singleString:styled-components instances')).toBe('lower')
   expect(goalOf('styles:singleString:styled-components CSS bytes')).toBe('lower')
-  const share = series.find((entry) => entry.key === 'styles:singleString:UI v5 share')
-  expect(share?.unit).toBe('percent')
+  const share = series.find((entry) => entry.key === 'styles:singleString:UI share')
   expect(share?.description).toContain('not applicable, not 0%')
 })
 
@@ -765,22 +795,29 @@ test('the interaction and pageload shards of one scenario merge into one style p
   expect(styled?.lines[0].points).toHaveLength(1)
   // Median of the two shards' counts
   expect(styled?.lines[0].points[0].value).toBe(379)
+  // Pair lines merge per commit too
+  const share = series.find((entry) => entry.key === 'styles:singleString:UI share')
+  expect(share?.lines.map((line) => line.points.length)).toEqual([1, 1])
   // The LCP row keeps its own pageload key, as before
   expect(series.map((entry) => entry.key)).toContain('pageload:singleString:boot-cold · LCP')
 })
 
-test('a build without @sanity/ui v5 leaves a gap in the adoption series, never a 0% point', () => {
+test('a build without @sanity/ui v5 leaves a gap in the v5 lines, never a 0% point', () => {
   const series = buildSeries([
     styleRun({id: 'a', sha: 'sha-1', day: 0, ui5Available: false}),
     styleRun({id: 'b', sha: 'sha-2', day: 1, ui5Available: false}),
     styleRun({id: 'c', sha: 'sha-3', day: 2, share: 3}),
     styleRun({id: 'd', sha: 'sha-4', day: 3, share: 5}),
   ])
-  const share = series.find((entry) => entry.key === 'styles:singleString:UI v5 share')
-  expect(share?.lines[0].points.map((point) => point.value)).toEqual([3, 5])
-  // The v4 backlog and the styled-components rows cover every run
-  const v4 = series.find((entry) => entry.key === 'styles:singleString:UI v4 instances')
-  expect(v4?.lines[0].points).toHaveLength(4)
+  const share = series.find((entry) => entry.key === 'styles:singleString:UI share')!
+  // Both share lines start where v5 did: a v4 line at 100% would imply v5 at 0%
+  expect(share.lines[0].points.map((point) => point.value)).toEqual([3, 5])
+  expect(share.lines[1].points.map((point) => point.value)).toEqual([97, 95])
+  // The instances chart's v4 line reaches back before v5 existed; v5 starts with it
+  const instances = series.find((entry) => entry.key === 'styles:singleString:UI instances')!
+  expect(instances.lines.find((line) => line.label === '@sanity/ui v5')?.points).toHaveLength(2)
+  expect(instances.lines.find((line) => line.label === '@sanity/ui v4')?.points).toHaveLength(4)
+  // The styled-components rows cover every run
   const styled = series.find(
     (entry) => entry.key === 'styles:singleString:styled-components instances',
   )
@@ -797,20 +834,45 @@ test('style points carry the styled-components version, other points do not', ()
   expect(keystroke?.lines[0].points[0].styledComponentsVersion).toBeUndefined()
 })
 
-test('style views split the group by migration, one section per registry metric', () => {
+test('paired lines are named by label, and by branch too when branches are compared', () => {
+  const series = buildSeries([styleRun({id: 'a', sha: 'sha-1', day: 0})])
+  const share = series.find((entry) => entry.key === 'styles:singleString:UI share')!
+  expect(share.lines.map((line) => lineName(share, line))).toEqual([
+    '@sanity/ui v5',
+    '@sanity/ui v4',
+  ])
+  const twoBranches: TrendSeries = {
+    ...share,
+    lines: [...share.lines, ...share.lines.map((line) => ({...line, branch: 'perf-bench'}))],
+  }
+  expect(twoBranches.lines.map((line) => lineName(twoBranches, line))).toEqual([
+    'main · @sanity/ui v5',
+    'main · @sanity/ui v4',
+    'perf-bench · @sanity/ui v5',
+    'perf-bench · @sanity/ui v4',
+  ])
+  // A plain series is named by branch
+  const keystroke = series.find((entry) => entry.key === 'interaction:singleString:stringField')!
+  expect(lineName(keystroke, keystroke.lines[0])).toBe('main')
+})
+
+test('style views: two paired UI sections, one styled-components section per metric', () => {
   const styles = buildSeries(generateDebugRuns('demo')).filter((entry) => entry.group === 'styles')
   const views = styleViews(styles)
   expect(views.map((view) => view.id)).toEqual(['ui5', 'styled'])
-  const labelsOf = (id: string) =>
-    views.find((view) => view.id === id)?.sections.map((section) => section.metric.label)
-  expect(labelsOf('ui5')).toEqual(['UI v5 share', 'UI v5 instances', 'UI v4 instances'])
-  expect(labelsOf('styled')).toEqual([
-    'styled-components instances',
-    'styled-components components',
-    'styled-components CSS rules',
-    'styled-components CSS bytes',
-    'styled-components CSS rule share',
-    'styled-components style tags',
+  const sectionsOf = (id: string) =>
+    views.find((view) => view.id === id)?.sections.map((section) => [section.id, section.goal])
+  expect(sectionsOf('ui5')).toEqual([
+    ['UI share', 'higher'],
+    ['UI instances', 'higher'],
+  ])
+  expect(sectionsOf('styled')).toEqual([
+    ['styled-components instances', 'lower'],
+    ['styled-components components', 'lower'],
+    ['styled-components CSS rules', 'lower'],
+    ['styled-components CSS bytes', 'lower'],
+    ['styled-components CSS rule share', 'lower'],
+    ['styled-components style tags', 'lower'],
   ])
   // Every style series lands in exactly one section; none are lost
   expect(views.flatMap((view) => view.sections.flatMap((section) => section.series)).length).toBe(
@@ -824,26 +886,94 @@ test('style views split the group by migration, one section per registry metric'
     'singleString',
     'synthetic',
   ])
-  expect(shareSection.series.every((entry) => styleLabel(entry) === 'UI v5 share')).toBe(true)
+  expect(shareSection.series.every((entry) => styleLabel(entry) === 'UI share')).toBe(true)
   expect(styleViews([])).toEqual([])
+})
+
+test('the aggregate sums every scenario per commit and recomputes the shares', () => {
+  // Two scenarios with different page sizes on the same commit
+  const run: TrendRun = {
+    ...styleRun({id: 'a', sha: 'sha-1', day: 0, share: 25, styled: 100}),
+  }
+  const scenarios = run.scenarios!
+  const single = scenarios[0]
+  const big = {
+    ...single,
+    scenario: 'article',
+    metrics: single.metrics!.map((metric) => {
+      const value =
+        metric.label === 'UI v5 share'
+          ? 75
+          : metric.label === 'UI v5 instances'
+            ? 300
+            : metric.label === 'UI v4 instances'
+              ? 100
+              : metric.label === 'styled-components instances'
+                ? 50
+                : metric.experiment!.summary!.median
+      return {...metric, experiment: {summary: {median: value, p75: value, p90: value}}}
+    }),
+  }
+  const styles = buildSeries([{...run, scenarios: [single, big]}]).filter(
+    (entry) => entry.group === 'styles',
+  )
+  const aggregate = aggregateStyleSeries(styles)
+  const byKey = new Map(aggregate.map((entry) => [entry.key, entry]))
+  expect([...byKey.keys()]).toEqual([
+    'styles:all:UI share',
+    'styles:all:UI instances',
+    'styles:all:styled-components instances',
+    'styles:all:styled-components CSS bytes',
+  ])
+  // Counts sum: 1081 + 300 v5 over (1081 + 300) + (2023 + 100)
+  const instances = byKey.get('styles:all:UI instances')!
+  expect(instances.lines.map((line) => [line.label, line.points[0].value])).toEqual([
+    ['@sanity/ui v5', 1381],
+    ['@sanity/ui v4', 2123],
+  ])
+  // The share is recomputed from the summed counts, not averaged (mean would be 50)
+  const share = byKey.get('styles:all:UI share')!
+  expect(share.lines[0].points[0].value).toBeCloseTo((1381 / (1381 + 2123)) * 100, 6)
+  expect(share.lines[1].points[0].value).toBeCloseTo((2123 / (1381 + 2123)) * 100, 6)
+  expect(share.lines.map((line) => Boolean(line.secondary))).toEqual([false, true])
+  expect(byKey.get('styles:all:styled-components instances')!.lines[0].points[0].value).toBe(150)
+  // The point keeps a real run's identity, so a bar still opens a document
+  expect(share.lines[0].points[0].runId).toBe('a')
+  expect(aggregateStyleSeries([])).toEqual([])
+})
+
+test('the aggregate follows the demo story and stays out of the metric views', () => {
+  const styles = buildSeries(generateDebugRuns('demo')).filter((entry) => entry.group === 'styles')
+  const aggregate = aggregateStyleSeries(styles)
+  expect(aggregate.every((entry) => styleScenario(entry) === 'all')).toBe(true)
+  expect(styleViews([...styles, ...aggregate])).toEqual(styleViews(styles))
+  const share = aggregate.find((entry) => entry.key === 'styles:all:UI share')!
+  const main = share.lines.find((line) => line.branch === 'main' && !line.secondary)!
+  const values = main.points.map((point) => point.value)
+  expect(values[0]).toBeLessThan(10)
+  expect(values.at(-1)).toBeGreaterThan(55)
+  // Rule share aggregate exists in the demo (rules and share rows are both present)
+  expect(aggregate.map((entry) => entry.key)).toContain(
+    'styles:all:styled-components CSS rule share',
+  )
 })
 
 test('demo data tells the migration story: no v5 rows before it ships, adoption climbing after', () => {
   const styles = buildSeries(generateDebugRuns('demo')).filter((entry) => entry.group === 'styles')
-  const share = styles.find((entry) => entry.key === 'styles:singleString:UI v5 share')
-  const v4 = styles.find((entry) => entry.key === 'styles:singleString:UI v4 instances')
-  const main = (entry?: TrendSeries) =>
-    entry?.lines.find((line) => line.branch === 'main')?.points ?? []
-  // Ten days without v5 rows — the v4 backlog is recorded for every run
-  expect(main(share).length).toBe(main(v4).length - 10)
-  const values = main(share).map((point) => point.value)
+  const share = styles.find((entry) => entry.key === 'styles:singleString:UI share')!
+  const instances = styles.find((entry) => entry.key === 'styles:singleString:UI instances')!
+  const main = (entry: TrendSeries, label: string) =>
+    entry.lines.find((line) => line.branch === 'main' && line.label === label)?.points ?? []
+  // Ten days without v5 rows — the v4 count is recorded for every run
+  expect(main(share, '@sanity/ui v5').length).toBe(main(instances, '@sanity/ui v4').length - 10)
+  const values = main(share, '@sanity/ui v5').map((point) => point.value)
   expect(values[0]).toBeGreaterThan(0)
   expect(values[0]).toBeLessThan(10)
   expect(values.at(-1)).toBeGreaterThan(55)
   // and the escape hatch shrinks
-  const styled = main(
-    styles.find((entry) => entry.key === 'styles:singleString:styled-components instances'),
-  )
+  const styled = styles.find(
+    (entry) => entry.key === 'styles:singleString:styled-components instances',
+  )!.lines[0].points
   expect(styled.at(-1)!.value).toBeLessThan(styled[0].value)
 })
 

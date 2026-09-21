@@ -82,6 +82,28 @@ test('higher-is-better series read a rise as an improvement and a drop as a regr
   expect(down[0].baseline.delta).toBe(-12)
 })
 
+// A paired chart judges its headline line only: the v4 complement of a
+// climbing v5 share falls by the same amount, and judging both would flag one
+// move twice, once in each direction
+test('secondary lines of a paired chart are drawn, not judged', () => {
+  const rise = [...Array.from({length: 21}, () => 30), ...Array.from({length: 9}, () => 42)]
+  const paired = series(rise, {unit: 'percent', goal: 'higher'})
+  paired.lines = [
+    {...paired.lines[0], label: '@sanity/ui v5', color: '#3fb950'},
+    {
+      branch: 'main',
+      label: '@sanity/ui v4',
+      color: '#e2604f',
+      secondary: true,
+      points: paired.lines[0].points.map((point) => ({...point, value: 100 - point.value})),
+    },
+  ]
+  const drift = computeDrift([paired])
+  expect(drift).toHaveLength(1)
+  expect(drift[0].direction).toBe('improvement')
+  expect(drift[0].branch).toBe('main')
+})
+
 // One whole point is the floor for a share; a 0.5-point move on a 35% share
 // clears neither floor
 test('percent metric needs a whole point to move', () => {
