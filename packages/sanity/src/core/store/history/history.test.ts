@@ -260,9 +260,9 @@ describe('createHistoryStore', () => {
     })
 
     test('does not send document.create when restoring a version that already exists', async () => {
-      // Reproducing Skydio 409 documentAlreadyExistsError: fromDeleted is derived from missing
-      // draft/published snapshots, but restore attributes target the version id. create-if-exists-fail
-      // then trips the one-version-per-published-id guard.
+      // Reproducing the reported 409 documentAlreadyExistsError: the draft write path sent
+      // `document.create` with `ifExists: fail` carrying the version id, which trips the
+      // one-version-per-published-id guard whenever that version is already in the release.
       const releaseVersionId = 'versions.rI4gmhsFL.doc-id'
       const client = buildClient()
       const historyStore = createHistoryStore({client})
@@ -270,7 +270,7 @@ describe('createHistoryStore', () => {
       await new Promise<void>((resolve, reject) => {
         historyStore
           .restore('doc-id', releaseVersionId, 'rev-1', {
-            fromDeleted: true,
+            fromDeleted: false,
             useServerDocumentActions: true,
           })
           .subscribe({complete: resolve, error: reject})
@@ -285,6 +285,29 @@ describe('createHistoryStore', () => {
           document: expect.objectContaining({_id: releaseVersionId}),
         }),
       ])
+    })
+
+    test('creates the version when restoring a revision into a release that has no version yet', async () => {
+      const releaseVersionId = 'versions.rI4gmhsFL.doc-id'
+      const client = buildClient()
+      const historyStore = createHistoryStore({client})
+
+      await new Promise<void>((resolve, reject) => {
+        historyStore
+          .restore('doc-id', releaseVersionId, 'rev-1', {
+            fromDeleted: true,
+            useServerDocumentActions: true,
+          })
+          .subscribe({complete: resolve, error: reject})
+      })
+
+      expect(mockCreateOrReplace).not.toHaveBeenCalled()
+      const [actions] = mockAction.mock.calls[0]
+      expect(actions).toMatchObject({
+        actionType: 'sanity.action.document.version.create',
+        publishedId: 'doc-id',
+        document: expect.objectContaining({_id: releaseVersionId, title: 'Restored'}),
+      })
     })
 
     test('falls back to createOrReplace when useServerDocumentActions is not set', async () => {

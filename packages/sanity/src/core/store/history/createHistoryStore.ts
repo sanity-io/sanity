@@ -281,11 +281,17 @@ function restore(
         // Version documents are not drafts. `document.create` + `replaceDraft` with a version
         // `_id` trips the one-version-per-published-id guard (409 documentAlreadyExistsError).
         if (isVersionId(targetDocumentId as DocumentId)) {
-          const replaceVersionAction: Action = {
-            actionType: 'sanity.action.document.version.replace',
-            document: restoredDraft,
-          }
-          return actionsClient.observable.action(replaceVersionAction)
+          const versionAction: Action = options.fromDeleted
+            ? {
+                actionType: 'sanity.action.document.version.create',
+                publishedId: documentId,
+                document: restoredDraft,
+              }
+            : {
+                actionType: 'sanity.action.document.version.replace',
+                document: restoredDraft,
+              }
+          return actionsClient.observable.action(versionAction)
         }
 
         const replaceDraftAction: Action = {

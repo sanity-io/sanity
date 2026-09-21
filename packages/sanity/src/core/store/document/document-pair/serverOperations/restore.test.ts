@@ -112,6 +112,38 @@ describe('server restore operation', () => {
       )
     })
 
+    it('marks restore as fromDeleted for a version target that has no version document yet', () => {
+      vi.mocked(isLiveEditEnabled).mockReturnValue(false)
+
+      const args = {
+        snapshots: {
+          draft: null,
+          published: {} as SanityDocument,
+          version: null,
+        },
+        historyStore: mockHistoryStore,
+        schema: {},
+        idPair: {
+          publishedId: 'existing-doc',
+          draftId: 'drafts.existing-doc',
+          versionId: 'versions.rI4gmhsFL.existing-doc',
+        },
+        typeName: 'testType',
+      } as unknown as OperationArgs
+
+      restore.execute(args, 'specific-rev' as DocumentRevision)
+
+      expect(mockHistoryStore.restore).toHaveBeenCalledWith(
+        'existing-doc',
+        'versions.rI4gmhsFL.existing-doc',
+        'specific-rev',
+        {
+          fromDeleted: true,
+          useServerDocumentActions: true,
+        },
+      )
+    })
+
     it('handles lastRevision with live edit enabled documents', () => {
       vi.mocked(isLiveEditEnabled).mockReturnValue(true)
 

@@ -14,8 +14,15 @@ export const restore: OperationImpl<[fromRevision: DocumentRevision]> = {
         ? idPair.publishedId
         : idPair.draftId
 
+    // `fromDeleted` means "the restore target does not exist yet", which for a version target is
+    // decided by the version snapshot alone — a release version can be absent while the document
+    // is published, and present while draft and published are not.
+    const fromDeleted = idPair.versionId
+      ? !snapshots.version
+      : !snapshots.draft && !snapshots.published
+
     return historyStore.restore(idPair.publishedId, targetId, fromRevision, {
-      fromDeleted: !snapshots.draft && !snapshots.published && !snapshots.version,
+      fromDeleted,
       useServerDocumentActions: true,
     })
   },
