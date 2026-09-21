@@ -1,5 +1,5 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {type ComponentType, type ReactNode, useEffect, useMemo, useState} from 'react'
+import {type ComponentType, type ReactNode, Suspense, useEffect, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 
@@ -167,7 +167,17 @@ export function AuthBoundary({
   // the exchange, so once the gate opens, `loggedIn` can be trusted.
   if (loggedIn === 'logged-out' && !callbackSettled) return <LoadingComponent />
 
-  if (loggedIn === 'logged-out') return <AuthenticateComponent />
+  // AuthenticateScreen (and custom AuthenticateComponent) call useTranslation for
+  // workspaces.* / login.logged-out.* keys. LocaleProvider's Suspense only mounts
+  // after auth, inside WorkspaceLoader — so wrap here while the studio locale
+  // bundle is still a lazy chunk that may not have arrived yet.
+  if (loggedIn === 'logged-out') {
+    return (
+      <Suspense fallback={<LoadingComponent />}>
+        <AuthenticateComponent />
+      </Suspense>
+    )
+  }
 
   return <>{children}</>
 }
