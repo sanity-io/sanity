@@ -140,7 +140,6 @@ import type {
   CommentBaseCreatePayload,
   CommentContext,
   CommentCreatePayload,
-  CommentDeleteDialog,
   CommentDocument,
   CommentFieldCreatePayload,
   CommentIntentGetter,
@@ -152,15 +151,8 @@ import type {
   CommentReactionItem,
   CommentReactionOption,
   CommentReactionShortNames,
-  CommentsAuthoringPathProvider,
-  CommentsEnabledProvider,
-  CommentsEnabledProviderV2,
-  CommentsIntentProvider,
   CommentsIntentProviderProps,
-  CommentsList,
   CommentsListBreadcrumbItem,
-  CommentsProvider,
-  CommentsProviderV2,
   CommentStatus,
   CommentsTextSelectionItem,
   CommentsType,
@@ -1069,9 +1061,6 @@ import type {
   useColorSchemeOptions,
   useColorSchemeSetValue,
   useColorSchemeValue,
-  useComments,
-  useCommentsEnabled,
-  useCommentsEnabledV2,
   useCommentsMode,
   useCommentsModeV2,
   useCopyPaste,
@@ -1607,9 +1596,6 @@ describe('sanity', () => {
   test('CommentCreatePayload', () => {
     expectTypeOf<CommentCreatePayload>().not.toBeNever()
   })
-  test('CommentDeleteDialog', () => {
-    expectTypeOf<typeof CommentDeleteDialog>().toBeFunction()
-  })
   test('CommentDocument', () => {
     expectTypeOf<CommentDocument>().toBeObject()
   })
@@ -1643,32 +1629,11 @@ describe('sanity', () => {
   test('CommentReactionShortNames', () => {
     expectTypeOf<CommentReactionShortNames>().not.toBeNever()
   })
-  test('CommentsAuthoringPathProvider', () => {
-    expectTypeOf<typeof CommentsAuthoringPathProvider>().toBeFunction()
-  })
-  test('CommentsEnabledProvider', () => {
-    expectTypeOf<typeof CommentsEnabledProvider>().not.toBeNever()
-  })
-  test('CommentsEnabledProviderV2', () => {
-    expectTypeOf<typeof CommentsEnabledProviderV2>().not.toBeNever()
-  })
-  test('CommentsIntentProvider', () => {
-    expectTypeOf<typeof CommentsIntentProvider>().not.toBeNever()
-  })
   test('CommentsIntentProviderProps', () => {
     expectTypeOf<CommentsIntentProviderProps>().toBeObject()
   })
-  test('CommentsList', () => {
-    expectTypeOf<typeof CommentsList>().not.toBeNever()
-  })
   test('CommentsListBreadcrumbItem', () => {
     expectTypeOf<CommentsListBreadcrumbItem>().toBeObject()
-  })
-  test('CommentsProvider', () => {
-    expectTypeOf<typeof CommentsProvider>().not.toBeNever()
-  })
-  test('CommentsProviderV2', () => {
-    expectTypeOf<typeof CommentsProviderV2>().not.toBeNever()
   })
   test('CommentStatus', () => {
     expectTypeOf<CommentStatus>().not.toBeNever()
@@ -4414,15 +4379,6 @@ describe('sanity', () => {
   })
   test('useColorSchemeValue', () => {
     expectTypeOf<typeof useColorSchemeValue>().toBeFunction()
-  })
-  test('useComments', () => {
-    expectTypeOf<typeof useComments>().toBeFunction()
-  })
-  test('useCommentsEnabled', () => {
-    expectTypeOf<typeof useCommentsEnabled>().toBeFunction()
-  })
-  test('useCommentsEnabledV2', () => {
-    expectTypeOf<typeof useCommentsEnabledV2>().toBeFunction()
   })
   test('useCommentsMode', () => {
     expectTypeOf<typeof useCommentsMode>().toBeFunction()
