@@ -1,3 +1,5 @@
+import {Reference} from '../reference/types'
+
 /** @public */
 export interface SanityDocument {
   _id: string
@@ -69,16 +71,16 @@ export interface DocumentSystem {
    */
   release?: DocumentSystemRef
   /**
-   * Weak references to the variant documents that the version belongs to. Content Lake currently
+   * References to the variant documents that the version belongs to. Content Lake currently
    * limits this to a single entry, so `variants[0]` is the variant of the document.
    */
-  variants?: DocumentSystemRef[]
+  variants?: (Omit<DocumentSystemRef, '_weak'> & {_key: string})[]
   /**
    * @deprecated Use `variants[0]` instead. This single-reference field remains only on
    * documents that have not been migrated yet; read it as a fallback from `variants[0]`,
    * never as the primary source.
    */
-  variant?: DocumentSystemRef
+  variant?: Omit<DocumentSystemRef, '_weak'>
   /**
    * A weak reference to the group document (aka published document).
    */

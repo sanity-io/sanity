@@ -17,6 +17,7 @@ import {
   timer,
 } from 'rxjs'
 
+import {randomKey} from '../../form/utils/randomKey'
 import {useDataset} from '../../hooks/useDataset'
 import {useProjectId} from '../../hooks/useProjectId'
 import {DOCUMENT_SYSTEM_FIELD} from '../../preview/constants'
@@ -169,7 +170,7 @@ const normalizeVariants = (system: DocumentSystem): DocumentSystem => {
 
   // Document has the legacy shape, create the variants array with the legacy variant reference, strips the legacy field.
   if (variant) {
-    return {...rest, variants: [{_ref: variant._ref, _weak: true}]}
+    return {...rest, variants: [{_ref: variant._ref, _key: randomKey()}]}
   }
 
   // Document has no variant reference, return the rest.

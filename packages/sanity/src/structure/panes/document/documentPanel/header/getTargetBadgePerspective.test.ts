@@ -13,7 +13,7 @@ import {
 } from './getTargetBadgePerspective'
 
 const groupRef = {_ref: 'doc-1', _weak: true as const}
-const variantRef = {_ref: '_.variants.alpha-audience', _weak: true as const}
+const variantRef = {_ref: '_.variants.alpha-audience', _key: '123'}
 
 const versionStub = (
   stub: Pick<VersionInfoDocumentStub, '_id' | '_system'>,

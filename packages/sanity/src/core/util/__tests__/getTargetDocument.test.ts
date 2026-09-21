@@ -13,7 +13,7 @@ const VARIANT_ALPHA_ID = '_.variants.alpha'
 const VARIANT_NORWEGIAN_ID = '_.variants.norwegian'
 
 const variantRef = (variantId: string) =>
-  ({_type: 'reference', _ref: variantId, _weak: true}) as const
+  ({_type: 'reference', _ref: variantId, _key: 'k-123'}) as const
 
 const versionStub = (
   stub: Pick<VersionInfoDocumentStub, '_id' | '_system'>,

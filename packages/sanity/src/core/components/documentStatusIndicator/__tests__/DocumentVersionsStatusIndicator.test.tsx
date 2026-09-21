@@ -24,7 +24,7 @@ const AGENT_BUNDLE_ID = 'agent-abc123'
 const VARIANT_ID = variantAlphaAudience._id
 
 const groupRef = {_ref: PUBLISHED_ID, _weak: true} as const
-const variantRef = {_ref: VARIANT_ID, _weak: true} as const
+const variantRef = {_ref: VARIANT_ID, _key: 'k-123'} as const
 
 function versionStub(id: string, system: Omit<DocumentSystem, 'group'>): VersionInfoDocumentStub {
   return {

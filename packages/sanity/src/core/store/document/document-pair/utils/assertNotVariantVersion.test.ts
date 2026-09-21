@@ -7,7 +7,7 @@ import {
   VARIANT_VERSION_DISABLED,
 } from './assertNotVariantVersion'
 
-const variantRef = {_ref: '_.variants.french', _weak: true as const}
+const variantRef = {_ref: '_.variants.french', _key: 'k-123'} as const
 
 function variantVersionDoc(system: SanityDocument['_system'] = {variants: [variantRef]}) {
   return {

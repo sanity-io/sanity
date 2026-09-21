@@ -26,7 +26,7 @@ function createVersion(
 const publishedBase = createVersion('doc1')
 
 const publishedVariant = createVersion('variant-doc', {
-  variants: [{_ref: '_.variants.a', _weak: true}],
+  variants: [{_ref: '_.variants.a', _key: 'k-123'}],
 })
 
 const draftBase = createVersion('drafts.doc1', {bundleId: 'drafts'})
@@ -36,7 +36,7 @@ const draftVariant = createVersion('drafts.variant-doc', {
   variants: [
     {
       _ref: '_.variants.a',
-      _weak: true,
+      _key: 'k-123',
     },
   ],
 })

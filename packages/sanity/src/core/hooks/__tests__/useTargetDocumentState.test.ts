@@ -21,7 +21,7 @@ const MISSING_RELEASE_ID = 'rAutumn'
 const AGENT_BUNDLE_ID = 'agent-run-1'
 const groupRef = {_type: 'reference', _ref: PUBLISHED_ID, _weak: true} as const
 const variantRef = (variantId: string) =>
-  ({_type: 'reference', _ref: variantId, _weak: true}) as const
+  ({_type: 'reference', _ref: variantId, _key: 'k-123', _weak: true}) as const
 
 const versionStub = (
   stub: Pick<VersionInfoDocumentStub, '_id' | '_system'>,

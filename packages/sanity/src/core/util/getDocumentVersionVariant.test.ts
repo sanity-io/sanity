@@ -4,8 +4,8 @@ import {describe, expect, it} from 'vitest'
 import {getDocumentVersionVariantId} from './getDocumentVersionVariant'
 
 const group = {_ref: 'doc1', _weak: true as const}
-const alpha = {_ref: '_.variants.alpha', _weak: true as const}
-const beta = {_ref: '_.variants.beta', _weak: true as const}
+const alpha = {_ref: '_.variants.alpha', _key: 'k-123'} as const
+const beta = {_ref: '_.variants.beta', _key: 'k-456'} as const
 
 function documentWithSystem(system?: Partial<DocumentSystem> | null) {
   return {_system: system}

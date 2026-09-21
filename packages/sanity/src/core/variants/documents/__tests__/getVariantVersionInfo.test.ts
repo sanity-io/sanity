@@ -15,7 +15,7 @@ function doc(system: SanityDocument['_system']): SanityDocument {
 }
 
 const groupRef = {_ref: 'article-1', _weak: true as const}
-const variantRef = {_ref: '_.variants.french', _weak: true as const}
+const variantRef = {_ref: '_.variants.french', _key: 'k-123'} as const
 
 describe('getVariantVersionInfo', () => {
   it('derives variantId and drafts bundle for a variant-over-drafts document', () => {

@@ -86,7 +86,7 @@ const variantVersion: VersionInfoDocumentStub = {
   _system: {
     bundleId: 'release1',
     release: {_ref: '_.releases.release1', _weak: true},
-    variants: [{_ref: '_.variants.test', _weak: true}],
+    variants: [{_ref: '_.variants.test', _key: 'k-123'}],
     group: {_ref: publishedId, _weak: true},
     scopeId: 'opaque-variant-scope',
   },
@@ -100,7 +100,7 @@ const variantDraftVersion: VersionInfoDocumentStub = {
   _type: 'article',
   _system: {
     bundleId: 'drafts',
-    variants: [{_ref: '_.variants.test', _weak: true}],
+    variants: [{_ref: '_.variants.test', _key: 'k-123'}],
     group: {_ref: publishedId, _weak: true},
     scopeId: 'opaque-variant-draft-scope',
   },

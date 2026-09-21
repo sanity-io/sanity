@@ -85,7 +85,7 @@ describe('publish', () => {
               _updatedAt: '2024-01-01T00:00:00Z',
               _system: {
                 bundleId: 'drafts',
-                variants: [{_ref: '_.variants.french', _weak: true}],
+                variants: [{_ref: '_.variants.french', _key: 'k-123'}],
                 group: {_ref: 'article-1', _weak: true},
                 scopeId: 'varscope',
               },

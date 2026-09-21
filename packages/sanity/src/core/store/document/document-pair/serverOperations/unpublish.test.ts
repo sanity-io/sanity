@@ -27,7 +27,7 @@ function variantVersion(bundleId: 'drafts' | 'rSummer' | undefined): SanityDocum
     _system: {
       ...(bundleId ? {bundleId} : {}),
       ...(isReleaseBundle ? {release: {_ref: `_.releases.${bundleId}`, _weak: true}} : {}),
-      variants: [{_ref: '_.variants.french', _weak: true}],
+      variants: [{_ref: '_.variants.french', _key: 'k-123'}],
       group: {_ref: 'my-id', _weak: true},
       scopeId: 'varscope',
     },

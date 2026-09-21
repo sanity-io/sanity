@@ -2771,7 +2771,7 @@ describe('checkoutPair -- version documents', () => {
     // since the group already exists (the published variant sibling at minimum).
     const system = {
       group: {_ref: 'publishedId', _weak: true as const},
-      variants: [{_ref: '_.variants.alpha', _weak: true as const}],
+      variants: [{_ref: '_.variants.alpha', _key: 'k-123'}],
       bundleId: 'drafts',
       scopeId: 'varscope',
     }
@@ -2843,7 +2843,7 @@ describe('checkoutPair -- version documents', () => {
 
     const system = {
       group: {_ref: 'publishedId', _weak: true as const},
-      variant: {_ref: '_.variants.alpha', _weak: true as const},
+      variant: {_ref: '_.variants.alpha'},
       bundleId: 'drafts',
       scopeId: 'varscope',
     }

@@ -32,7 +32,7 @@ function createVersion({
       bundleId,
       group: {_ref: GROUP_ID, _weak: true},
       release: releaseRef ? {_ref: releaseRef, _weak: true} : undefined,
-      variants: variantRef ? [{_ref: variantRef, _weak: true}] : undefined,
+      variants: variantRef ? [{_ref: variantRef, _key: 'k-123'}] : undefined,
     },
   }
 }

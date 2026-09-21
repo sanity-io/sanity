@@ -8,6 +8,7 @@ const groupRef = {_type: 'reference' as const, _ref: PUBLISHED_ID, _weak: true a
 const variantRef = (variantId: string) => ({
   _type: 'reference' as const,
   _ref: variantId,
+  _key: 'k-123',
   _weak: true as const,
 })
 

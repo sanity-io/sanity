@@ -27,6 +27,12 @@ vi.mock('../../../hooks/useProjectId', () => ({
 
 vi.mock('../../../store/datastores', () => ({useDocumentPreviewStore: vi.fn()}))
 
+const mockRandomKey = vi.hoisted(() => vi.fn(() => 'k-123'))
+
+vi.mock('../../../form/utils/randomKey', () => ({
+  randomKey: mockRandomKey,
+}))
+
 const initialReleasesState: ReleasesReducerState = {
   releases: new Map(),
   state: 'loaded',
@@ -209,7 +215,7 @@ describe('useDocumentVersions', () => {
   })
 
   describe('variant reference normalization', () => {
-    const variantRef = {_ref: '_.variants.alpha', _weak: true as const}
+    const variantRef = {_ref: '_.variants.alpha', _key: 'k-123'} as const
 
     it('passes `_system.variants` through untouched', async () => {
       await setupMocks({
