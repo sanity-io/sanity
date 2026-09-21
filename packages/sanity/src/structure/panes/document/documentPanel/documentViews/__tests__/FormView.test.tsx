@@ -1,5 +1,5 @@
 import {focusFirstDescendant} from '@sanity/ui'
-import {render, type RenderResult} from '@testing-library/react'
+import {render, type RenderResult, screen} from '@testing-library/react'
 import {EMPTY} from 'rxjs'
 import {test as baseTest, describe, expect, type Mock, type MockedFunction, vi} from 'vitest'
 
@@ -234,5 +234,52 @@ describe('FormView', () => {
 
       expect(focusFirstDescendantSpy).toHaveBeenCalledTimes(1)
     })
+
+    test('focuses the first descendant once the form content appears after mount', async ({
+      focusFirstDescendantSpy,
+      setDocumentPane,
+      renderFormView,
+    }) => {
+      // Lazy form middleware suspends FormBuilder on first render, so the form element commits
+      // with nothing focusable in it and the first attempt finds nothing.
+      focusFirstDescendantSpy.mockReturnValueOnce(false).mockReturnValue(true)
+      setDocumentPane({focusPath: []})
+      renderFormView()
+
+      expect(focusFirstDescendantSpy).toHaveBeenCalledTimes(1)
+
+      // The boundary resolves and the inputs land in the form.
+      const form = screen.getByTestId('form-view')
+      await appendAndFlush(form)
+
+      expect(focusFirstDescendantSpy).toHaveBeenCalledTimes(2)
+
+      // Focus landed, so later DOM changes in the form are left alone.
+      await appendAndFlush(form)
+
+      expect(focusFirstDescendantSpy).toHaveBeenCalledTimes(2)
+    })
+
+    test('does not watch the form once the first attempt focused a descendant', async ({
+      focusFirstDescendantSpy,
+      setDocumentPane,
+      renderFormView,
+    }) => {
+      focusFirstDescendantSpy.mockReturnValue(true)
+      setDocumentPane({focusPath: []})
+      renderFormView()
+
+      expect(focusFirstDescendantSpy).toHaveBeenCalledTimes(1)
+
+      await appendAndFlush(screen.getByTestId('form-view'))
+
+      expect(focusFirstDescendantSpy).toHaveBeenCalledTimes(1)
+    })
   })
 })
+
+/** Adds a node to `parent` and waits for MutationObserver callbacks to be delivered. */
+async function appendAndFlush(parent: HTMLElement) {
+  parent.appendChild(document.createElement('input'))
+  await new Promise((resolve) => setTimeout(resolve, 0))
+}
