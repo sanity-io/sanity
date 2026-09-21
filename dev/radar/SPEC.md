@@ -437,7 +437,10 @@ sessionChains.ts` and shared by the sessions list and the Releases tool:
    deprecated release folds to its first line (version, npm badges, date)
    with a disclosure to expand it; its severity badges wait behind the
    disclosure too — nobody should install it, so its bugs are history, not
-   a warning.
+   a warning. Neighbouring releases deprecated with the same message (npm
+   deprecations are usually stamped on a whole span at once) fold further
+   into one line — the version range, the count, the deprecation — that
+   expands to the releases themselves.
 
 ## Architecture
 

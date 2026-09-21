@@ -197,6 +197,45 @@ export function groupTagsByMajor<T extends {tag: string}>(
   return lines
 }
 
+export type DeprecatedRunEntry<T> =
+  | {kind: 'tag'; tag: T}
+  | {kind: 'run'; tags: T[]; message: string}
+
+/**
+ * Fold consecutive releases that carry the SAME deprecation message into one
+ * entry — npm deprecations are usually stamped on a whole span of versions
+ * at once ("upgrade to 6.10.3"), and one line says it better than ten. A
+ * lone deprecated release, or one whose message differs from its
+ * neighbour's, stays a plain entry. Order is preserved.
+ */
+export function groupDeprecatedRuns<T extends {npm: {deprecated: string | null} | null}>(
+  tags: T[],
+): DeprecatedRunEntry<T>[] {
+  const entries: DeprecatedRunEntry<T>[] = []
+  let run: {tags: T[]; message: string} | undefined
+  const flush = () => {
+    if (!run) return
+    if (run.tags.length > 1) entries.push({kind: 'run', ...run})
+    else entries.push({kind: 'tag', tag: run.tags[0]})
+    run = undefined
+  }
+  for (const tag of tags) {
+    const message = tag.npm?.deprecated || undefined
+    if (!message) {
+      flush()
+      entries.push({kind: 'tag', tag})
+      continue
+    }
+    if (run && run.message === message) run.tags.push(tag)
+    else {
+      flush()
+      run = {tags: [tag], message}
+    }
+  }
+  flush()
+  return entries
+}
+
 function parseSemverTag(
   tag: string,
 ): {major: number; minor: number; patch: number; prerelease?: string} | undefined {

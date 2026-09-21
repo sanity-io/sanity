@@ -7,6 +7,7 @@ import {
   baseVersionOf,
   changelogUrl,
   compareTagsSemverDesc,
+  groupDeprecatedRuns,
   groupTagsByMajor,
   majorOf,
   npmxUrl,
@@ -209,6 +210,38 @@ test('groupTagsByMajor splits a semver-sorted list into contiguous release lines
   expect(groupTagsByMajor([])).toEqual([])
   expect(majorOf('v6.10.1')).toBe(6)
   expect(majorOf('nope')).toBeUndefined()
+})
+
+test('groupDeprecatedRuns folds neighbours sharing a deprecation message, leaves the rest alone', () => {
+  const t = (tag: string, deprecated: string | null = null) => ({tag, npm: {deprecated}})
+  const tags = [
+    t('v6.11.0'),
+    t('v6.10.2', 'upgrade to 6.11.0'),
+    t('v6.10.1', 'upgrade to 6.11.0'),
+    t('v6.10.0', 'upgrade to 6.11.0'),
+    t('v6.9.2', 'data loss, use 6.9.3'),
+    t('v6.9.1'),
+    t('v6.9.0', 'old'),
+    t('v6.8.0', 'older'),
+  ]
+  const entries = groupDeprecatedRuns(tags)
+  expect(
+    entries.map((entry) =>
+      entry.kind === 'run' ? ['run', entry.message, entry.tags.map((x) => x.tag)] : entry.tag.tag,
+    ),
+  ).toEqual([
+    'v6.11.0',
+    ['run', 'upgrade to 6.11.0', ['v6.10.2', 'v6.10.1', 'v6.10.0']],
+    'v6.9.2', // deprecated alone — a plain entry
+    'v6.9.1',
+    'v6.9.0', // two deprecated neighbours with different messages stay apart
+    'v6.8.0',
+  ])
+  expect(groupDeprecatedRuns([])).toEqual([])
+  // a tag with no npm data at all
+  expect(groupDeprecatedRuns([{tag: 'v1.0.0', npm: null}])).toEqual([
+    {kind: 'tag', tag: {tag: 'v1.0.0', npm: null}},
+  ])
 })
 
 test('bisectSessionPath swaps the tool segment and keeps the workspace base path', () => {

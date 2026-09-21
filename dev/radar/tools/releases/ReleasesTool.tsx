@@ -55,6 +55,7 @@ import {
   baseVersionOf,
   changelogUrl,
   compareTagsSemverDesc,
+  groupDeprecatedRuns,
   groupTagsByMajor,
   majorOf,
   npmxUrl,
@@ -446,26 +447,53 @@ export function ReleasesTool() {
                   onClearEol={major === undefined ? undefined : () => handleClearEol(major)}
                 />
                 {(!eol || expanded) &&
-                  line.tags.map((tag) => (
-                    <ReleaseRow
-                      key={tag._id}
-                      tag={tag}
-                      baseVersion={baseVersions.get(tag.tag)}
-                      regressions={regressions.get(tag.tag)}
-                      collapsed={Boolean(tag.npm?.deprecated) && !expandedDeprecated.has(tag._id)}
-                      onToggleCollapsed={
-                        tag.npm?.deprecated ? () => toggleDeprecated(tag._id) : undefined
-                      }
-                      onShowRegressions={() => setViewingRegressions(tag.tag)}
-                      previewUrl={commitsBySha.get(tag.sha)?.testStudioUrl}
-                      previewPath={previewPath || undefined}
-                      onAddRegression={
-                        tagsLive.data && commitsLive.data
-                          ? () => setAddingRegression(tag.tag)
-                          : undefined
-                      }
-                    />
-                  ))}
+                  groupDeprecatedRuns(line.tags).map((entry) => {
+                    // Inside an expanded run the releases are shown in full:
+                    // the run's line already said they are deprecated and
+                    // why, so a second fold and a second warning per release
+                    // would only be clicking for its own sake
+                    const row = (tag: TagSlice, inRun = false) => (
+                      <ReleaseRow
+                        key={tag._id}
+                        tag={tag}
+                        baseVersion={baseVersions.get(tag.tag)}
+                        regressions={regressions.get(tag.tag)}
+                        collapsed={
+                          !inRun && Boolean(tag.npm?.deprecated) && !expandedDeprecated.has(tag._id)
+                        }
+                        onToggleCollapsed={
+                          !inRun && tag.npm?.deprecated
+                            ? () => toggleDeprecated(tag._id)
+                            : undefined
+                        }
+                        showDeprecation={!inRun}
+                        onShowRegressions={() => setViewingRegressions(tag.tag)}
+                        previewUrl={commitsBySha.get(tag.sha)?.testStudioUrl}
+                        previewPath={previewPath || undefined}
+                        onAddRegression={
+                          tagsLive.data && commitsLive.data
+                            ? () => setAddingRegression(tag.tag)
+                            : undefined
+                        }
+                      />
+                    )
+                    if (entry.kind === 'tag') return row(entry.tag)
+                    // Neighbouring releases deprecated with one message fold
+                    // into one line — the fold state is keyed by the run's
+                    // newest tag, so it survives the run growing at the old end
+                    const runKey = `run:${entry.tags[0]._id}`
+                    return (
+                      <DeprecatedRunRow
+                        key={runKey}
+                        tags={entry.tags}
+                        message={entry.message}
+                        expanded={expandedDeprecated.has(runKey)}
+                        onToggle={() => toggleDeprecated(runKey)}
+                      >
+                        {entry.tags.map((tag) => row(tag, true))}
+                      </DeprecatedRunRow>
+                    )
+                  })}
               </Stack>
             )
           })}
@@ -615,6 +643,65 @@ function ReleaseLineHeader(props: {
 }
 
 /**
+ * A span of neighbouring releases deprecated with the same message, as one
+ * line: the version range, how many, a deprecated badge carrying the message,
+ * a disclosure. Expanded, it shows the releases themselves in full; the
+ * badge's tooltip is where the message lives.
+ */
+function DeprecatedRunRow(props: {
+  /** Newest first, as the list is ordered. */
+  tags: TagSlice[]
+  message: string
+  expanded: boolean
+  onToggle: () => void
+  children: ReactNode
+}) {
+  const {tags, message, expanded, onToggle, children} = props
+  const newest = tags[0].tag
+  const oldest = tags.at(-1)!.tag
+  const range = `${oldest} – ${newest}`
+  return (
+    <Card padding={2} radius={2} border tone="transparent">
+      <Stack gap={2}>
+        <Flex alignItems="center" gap={3} flexWrap="wrap">
+          <Flex alignItems="center" gap={2}>
+            <Text size={2} weight="medium" muted>
+              {range}
+            </Text>
+            <Text size={1} muted>
+              {pluralize(tags.length, 'release')}
+            </Text>
+            <Tooltip
+              content={
+                <Box padding={2}>
+                  <Text size={1}>{message}</Text>
+                </Box>
+              }
+            >
+              <Badge tone="caution" fontSize={0}>
+                deprecated
+              </Badge>
+            </Tooltip>
+          </Flex>
+          <Box flex={1} />
+          <Button
+            mode="bleed"
+            fontSize={1}
+            padding={2}
+            icon={expanded ? ChevronDownIcon : ChevronRightIcon}
+            text={expanded ? 'Hide releases' : 'Show releases'}
+            aria-expanded={expanded}
+            aria-label={`${expanded ? 'Hide' : 'Show'} the ${pluralize(tags.length, 'deprecated release')} ${range}`}
+            onClick={onToggle}
+          />
+        </Flex>
+        {expanded && <Stack gap={2}>{children}</Stack>}
+      </Stack>
+    </Card>
+  )
+}
+
+/**
  * External link with a leading icon. Flex rather than inline SVG-in-text:
  * the @sanity/icons glyphs and the brand logos have different boxes, so
  * baseline alignment leaves them jittering against the label.
@@ -683,6 +770,8 @@ function ReleaseRow(props: {
   collapsed: boolean
   /** Present for deprecated releases only — the fold toggle. */
   onToggleCollapsed: (() => void) | undefined
+  /** False inside a deprecation run, whose heading already carries the message. */
+  showDeprecation: boolean
 }) {
   const {
     tag,
@@ -694,6 +783,7 @@ function ReleaseRow(props: {
     onShowRegressions,
     collapsed,
     onToggleCollapsed,
+    showDeprecation,
   } = props
   const version = tag.tag.replace(/^v/, '')
   const hasRegressions =
@@ -818,7 +908,7 @@ function ReleaseRow(props: {
 
         {/* The deprecation, in full, once the row is open: the badge on the
             first line only says that it is, this says why — what npm prints */}
-        {!collapsed && tag.npm?.deprecated && (
+        {!collapsed && showDeprecation && tag.npm?.deprecated && (
           <Card padding={3} radius={2} tone="caution">
             <Flex as={Text} size={1} alignItems="flex-start" gap={2}>
               <WarningOutlineIcon style={ICON_IN_FLEX} />
