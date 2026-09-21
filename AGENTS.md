@@ -685,6 +685,8 @@ pnpm test:e2e               # Run E2E tests
 pnpm test:e2e --ui          # Interactive mode
 ```
 
+`pnpm --filter e2e test:connection-ceiling` checks the browser connection ceiling against local HTTP/1.1 and HTTP/2 servers. Chromium queues the next request once six HTTP/1.1 connections, or the server HTTP/2 stream cap, are held by `EventSource`. The command does not start Studio, and it does not run as part of `pnpm test` or `pnpm test:e2e`.
+
 ## Pre-commit Hook
 
 Lefthook runs on commit (see `lefthook.yml`), which:
