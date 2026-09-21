@@ -41,9 +41,12 @@ describe('isUsingLegacyHttp', () => {
         responseStart: 0,
         secureConnectionStart: 0,
         serverTiming: [],
-        startTime: performance.now() + 1,
         transferSize: 0,
       }
+
+      // oxlint-disable-next-line typescript/no-extraneous-class
+      const FakePerformanceResourceTiming = class FakePerformanceResourceTiming {}
+      vi.stubGlobal('PerformanceResourceTiming', FakePerformanceResourceTiming)
 
       vi.mocked(fetch).mockResolvedValue(new Response('pong'))
       vi.stubGlobal(
@@ -54,17 +57,20 @@ describe('isUsingLegacyHttp', () => {
             this.callback = callback
           }
           observe() {
-            setTimeout(() => this.callback({getEntries: () => [mockEntry]}), 0)
+            setTimeout(() => {
+              // A fresh entry per delivery, timed after detectApiNetwork's startedAt.
+              const entry = Object.setPrototypeOf(
+                {...mockEntry, startTime: performance.now()},
+                FakePerformanceResourceTiming.prototype,
+              )
+              this.callback({getEntries: () => [entry]})
+            }, 0)
           }
           disconnect() {
             // noop
           }
         },
       )
-      // oxlint-disable-next-line typescript/no-extraneous-class
-      const FakePerformanceResourceTiming = class FakePerformanceResourceTiming {}
-      vi.stubGlobal('PerformanceResourceTiming', FakePerformanceResourceTiming)
-      Object.setPrototypeOf(mockEntry, FakePerformanceResourceTiming.prototype)
 
       const client = {
         getUrl: (path: string) => `https://test.api.sanity.io/v2025-02-19${path}`,
@@ -130,7 +136,7 @@ describe('isUsingLegacyHttp', () => {
         responseStart: 40,
         secureConnectionStart: 20,
         serverTiming: [],
-        startTime: performance.now() + 1,
+        startTime: 0,
         transferSize: 304,
       }
       const mockObserve = vi.fn()
@@ -147,6 +153,7 @@ describe('isUsingLegacyHttp', () => {
             mockObserve()
             // Emit the entry async so the fetch can resolve first
             setTimeout(() => {
+              mockEntry.startTime = performance.now()
               this.callback({getEntries: () => [mockEntry]})
             }, 0)
           }
@@ -210,7 +217,7 @@ describe('isUsingLegacyHttp', () => {
         responseStart: 0,
         secureConnectionStart: 0,
         serverTiming: [],
-        startTime: performance.now() + 1,
+        startTime: 0,
         transferSize: 0,
       }
 
@@ -223,7 +230,10 @@ describe('isUsingLegacyHttp', () => {
             this.callback = callback
           }
           observe() {
-            setTimeout(() => this.callback({getEntries: () => [mockEntry]}), 0)
+            setTimeout(() => {
+              mockEntry.startTime = performance.now()
+              this.callback({getEntries: () => [mockEntry]})
+            }, 0)
           }
           disconnect() {
             // noop

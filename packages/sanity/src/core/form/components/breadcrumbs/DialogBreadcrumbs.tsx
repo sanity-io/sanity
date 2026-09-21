@@ -107,7 +107,7 @@ function BreadcrumbButton({
       aria-current={isSelected ? 'location' : false}
       data-testid={`breadcrumb-item-${title?.toLowerCase().replace(/ /g, '-')}`}
     >
-      <Flex alignItems="center">
+      <Flex alignItems="center" style={{minWidth: 0}}>
         {siblingInfo && (
           <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
             <Badge>#{siblingInfo.index}</Badge>
@@ -116,6 +116,7 @@ function BreadcrumbButton({
         <Box
           padding={1}
           style={{
+            minWidth: 0,
             overflow: 'hidden',
           }}
         >
@@ -160,7 +161,7 @@ function BreadcrumbMenuItem({
 
   return (
     <MenuItem padding={1} onClick={handleClick}>
-      <Flex alignItems="center" style={{maxWidth: '250px'}}>
+      <Flex alignItems="center" style={{minWidth: 0, maxWidth: '250px'}}>
         {siblingInfo && <Badge>#{siblingInfo.index}</Badge>}
         <Box
           paddingLeft={siblingInfo?.index ? 1 : 0}

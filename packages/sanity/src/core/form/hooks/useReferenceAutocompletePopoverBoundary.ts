@@ -1,34 +1,33 @@
 import {useBoundaryElement} from '@sanity/ui'
-import {useContext} from 'react'
-import {EditDialogOuterBoundaryContext} from 'sanity/_singletons'
 
+import {usePortalBoundary} from '../../components/portalBoundary/usePortalBoundary'
 import {AUTOCOMPLETE_POPOVER_BOUNDARY} from '../inputs/referenceAutocompletePopoverBoundary'
 
 /**
- * Floating UI boundary for a reference autocomplete popover.
+ * Floating UI boundary for a reference autocomplete popover (used as both `floatingBoundary` and
+ * `referenceBoundary`), in order of preference:
  *
- * Prefer the edit-dialog outer boundary when present so results can overflow the dialog's own
- * scroll box. If that element does not contain the input (portaled dialogs), use the document
- * root — using the pane would mark the reference `referenceHidden`. Otherwise reuse the nearest
- * `BoundaryElementProvider` that contains the input.
+ * 1. The boundary declared by the hosting surface through `PortalBoundaryProvider` — the document
+ *    pane declares its scroll container. It wins regardless of where the input sits in the DOM:
+ *    dialogs and Portable Text object popovers are portaled, so no containment test can find
+ *    the pane from inside them, and dialogs must not shadow it with their own scroll box. Results
+ *    may escape the dialog but stay between the pane header and footer (#14661, #14726).
+ * 2. Otherwise the ambient `BoundaryElementProvider`, when it actually contains the input.
+ * 3. Otherwise the document root, so a popover in a body-portaled dialog (Media Library,
+ *    create-new document) is positioned against the viewport instead of being marked hidden.
+ *
+ * Shared by same-dataset, cross-dataset, and global-document reference autocompletes.
  *
  * @internal
  */
 export function useReferenceAutocompletePopoverBoundary(
   referenceElement: HTMLElement | null,
 ): HTMLElement | null {
+  const portalBoundary = usePortalBoundary()
   const {element: contextElement} = useBoundaryElement()
-  const editDialogOuterBoundary = useContext(EditDialogOuterBoundaryContext)
 
-  if (editDialogOuterBoundary) {
-    if (
-      editDialogOuterBoundary.element &&
-      referenceElement &&
-      editDialogOuterBoundary.element.contains(referenceElement)
-    ) {
-      return editDialogOuterBoundary.element
-    }
-    return AUTOCOMPLETE_POPOVER_BOUNDARY ?? null
+  if (portalBoundary) {
+    return portalBoundary
   }
 
   if (contextElement && referenceElement && contextElement.contains(referenceElement)) {

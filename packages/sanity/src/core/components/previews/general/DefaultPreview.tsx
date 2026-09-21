@@ -1,6 +1,6 @@
-import {Flex, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
 import {clsx} from 'clsx'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -55,13 +55,13 @@ export function DefaultPreview(props: DefaultPreviewProps) {
   if (isPlaceholder) {
     return (
       <Flex
-        align="center"
+        alignItems="center"
         className={clsx(root, styles?.placeholder)}
         data-testid="default-preview"
         padding={2}
         paddingLeft={media ? 2 : 3}
       >
-        <Flex align="center" flex={1} gap={2}>
+        <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2}>
           {media && (
             <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
               <Skeleton
@@ -100,13 +100,13 @@ export function DefaultPreview(props: DefaultPreviewProps) {
 
   return (
     <Flex
-      align="center"
+      alignItems="center"
       className={rootClassName}
       data-testid="default-preview"
       padding={2}
       paddingLeft={media ? 2 : 3}
     >
-      <Flex align="center" flex={1} gap={2}>
+      <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2}>
         {media && (
           <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
             <Media

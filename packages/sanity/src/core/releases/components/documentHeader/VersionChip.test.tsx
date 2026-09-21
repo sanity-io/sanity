@@ -48,7 +48,7 @@ function mockContextMenu(sourceReleasePerspective: typeof LATEST | typeof PUBLIS
     scheduledDraftMenuActions: {
       actions: {
         publishNow: emptyMenuAction,
-        editSchedule: emptyMenuAction,
+        pauseToEdit: emptyMenuAction,
         deleteSchedule: {...emptyMenuAction, tone: 'critical'},
         schedulePublish: emptyMenuAction,
       },

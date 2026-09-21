@@ -1,9 +1,10 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {AxisBottom, AxisLeft} from '@visx/axis'
 import {Group} from '@visx/group'
 import {scaleLinear, scaleTime} from '@visx/scale'
 import {Area, LinePath} from '@visx/shape'
 import {useRef, useState} from 'react'
+import {Flex} from 'ui5'
 
 import {
   CALIBRATION_EXPLAINER,
@@ -1035,7 +1036,7 @@ export function TrendChart(props: {
           <Card radius={2} shadow={2} padding={2}>
             <Stack gap={2}>
               {hovered.map((entry) => (
-                <Flex key={entry.branch} align="center" gap={2}>
+                <Flex key={entry.branch} alignItems="center" gap={2}>
                   {lines.length > 1 && (
                     <span
                       aria-hidden="true"
@@ -1108,7 +1109,7 @@ export function TrendChart(props: {
                       // of what?" is a fair question there
                       <Flex
                         key={`calibration-${entry.branch}`}
-                        align="center"
+                        alignItems="center"
                         gap={2}
                         title={CALIBRATION_EXPLAINER}
                       >
@@ -1149,7 +1150,7 @@ export function TrendChart(props: {
                   built that exact commit. */}
               {measuredRelease && (
                 <Flex
-                  align="center"
+                  alignItems="center"
                   gap={2}
                   title="This run measured the release commit, so the value is that release."
                 >
@@ -1173,7 +1174,7 @@ export function TrendChart(props: {
                   were not necessarily what this run measured. */}
               {hoveredReleases.length > 0 && (
                 <Flex
-                  align="center"
+                  alignItems="center"
                   gap={2}
                   title="Release tags near this run. Unmeasured releases are placed by tag date, so a release near a run does not mean that run measured it."
                 >

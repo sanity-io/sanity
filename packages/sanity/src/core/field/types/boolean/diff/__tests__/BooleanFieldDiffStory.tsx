@@ -1,6 +1,7 @@
 import {type BooleanSchemaType} from '@sanity/types'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {DocumentChangeContext} from 'sanity/_singletons'
+import {VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
 import {type DocumentChangeContextInstance} from '../../../../diff/contexts/DocumentChangeContext'
@@ -59,26 +60,26 @@ export function BooleanFieldDiffStory() {
     <TestWrapper schemaTypes={[]}>
       <DocumentChangeContext.Provider value={DOCUMENT_CHANGE}>
         <Card padding={4} style={{maxWidth: 420}}>
-          <Stack gap={5}>
-            <Stack gap={2}>
+          <VStack gap={5}>
+            <VStack gap={2}>
               <Text muted size={1} weight="medium">
                 switch changed
               </Text>
               <BooleanFieldDiff diff={CHANGED} schemaType={SWITCH_SCHEMA} />
-            </Stack>
-            <Stack gap={2}>
+            </VStack>
+            <VStack gap={2}>
               <Text muted size={1} weight="medium">
                 checkbox changed
               </Text>
               <BooleanFieldDiff diff={CHANGED} schemaType={CHECKBOX_SCHEMA} />
-            </Stack>
-            <Stack gap={2}>
+            </VStack>
+            <VStack gap={2}>
               <Text muted size={1} weight="medium">
                 switch added
               </Text>
               <BooleanFieldDiff diff={ADDED} schemaType={SWITCH_SCHEMA} />
-            </Stack>
-          </Stack>
+            </VStack>
+          </VStack>
         </Card>
       </DocumentChangeContext.Provider>
     </TestWrapper>
