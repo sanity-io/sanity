@@ -1,38 +1,14 @@
-import {Card, rem} from '@sanity/ui'
+import {Card, rem, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useStateLink} from 'sanity/router'
-import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
 import {focusRingStyle} from '../../../../form/components/withFocusRing/helpers'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher/useActiveWorkspace'
 import {WorkspacePreviewIcon} from '../workspace/WorkspacePreview'
+import {focusRingBoxShadowVar, homeButtonCard, logoMarkContainer, radiusVar} from './HomeButton.css'
 
-const LOGO_MARK_SIZE = 25 // width and height, px
 const RADIUS = 2
-
-const LogoMarkContainer = styled(Card).attrs({
-  overflow: 'hidden',
-  radius: RADIUS,
-})`
-  height: ${LOGO_MARK_SIZE}px;
-  width: ${LOGO_MARK_SIZE}px;
-`
-
-const StyledCard = styled(Card)`
-  border-radius: ${({theme}) => rem(theme.sanity.radius[RADIUS]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-  display: flex;
-  outline: none;
-  text-decoration: none;
-  &:focus-visible {
-    box-shadow: ${({theme}) =>
-      focusRingStyle({
-        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-        base: theme.sanity.color.base,
-        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-        focusRing: {...theme.sanity.focusRing, offset: 1},
-      })};
-  }
-`
 
 /**
  * Home button in the main navbar.
@@ -42,16 +18,31 @@ const StyledCard = styled(Card)`
 export function HomeButton() {
   const {activeWorkspace} = useActiveWorkspace()
   const {href: rootHref, onClick: handleRootClick} = useStateLink({state: {}})
+  // Read from the parent context, like the styled wrapper did (not from the card's own tone)
+  const {color, input, radius} = useThemeV2()
 
   return (
-    <StyledCard as="a" href={rootHref} onClick={handleRootClick}>
+    <Card
+      as="a"
+      className={homeButtonCard}
+      href={rootHref}
+      onClick={handleRootClick}
+      style={assignInlineVars({
+        // `rem()` returns `0` for a zero radius; the variable needs the string form
+        [radiusVar]: `${rem(radius[RADIUS])}`,
+        [focusRingBoxShadowVar]: focusRingStyle({
+          base: color,
+          focusRing: {...input.text.focusRing, offset: 1},
+        }),
+      })}
+    >
       <Flex alignItems="center">
-        <LogoMarkContainer>
+        <Card className={logoMarkContainer} overflow="hidden" radius={RADIUS}>
           <Flex alignItems="center" height="100%" justifyContent="center">
             <WorkspacePreviewIcon icon={activeWorkspace.icon} size="small" />
           </Flex>
-        </LogoMarkContainer>
+        </Card>
       </Flex>
-    </StyledCard>
+    </Card>
   )
 }
