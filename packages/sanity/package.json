@@ -238,7 +238,7 @@
     "use-hot-module-reload": "^2.0.0",
     "use-sync-external-store": "^1.7.0",
     "uuid": "^14.0.2",
-    "web-vitals": "^6.2.1",
+    "web-vitals": "^6.2.2",
     "xstate": "^5.32.6"
   },
   "devDependencies": {
