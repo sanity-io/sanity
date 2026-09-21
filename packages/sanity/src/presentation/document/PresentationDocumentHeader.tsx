@@ -1,27 +1,12 @@
-import {rem} from '@sanity/ui'
-import {getTheme_v2} from '@sanity/ui/theme'
+import {rem, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type ReactNode, useContext} from 'react'
 import {FormRow, type ObjectSchemaType, type PublishedId} from 'sanity'
 import {PresentationDocumentContext} from 'sanity/_singletons'
-import {css, styled} from 'styled-components'
 
 import {type PresentationPluginOptions} from '../types'
 import {LocationsBanner} from './LocationsBanner'
-
-const LocationStack = styled.div((props) => {
-  const theme = getTheme_v2(props.theme)
-  return css`
-    display: flex;
-    flex-direction: column;
-    gap: ${rem(theme.space[2])};
-    min-height: ${rem(42)};
-    margin-bottom: ${rem(theme.space[5])};
-
-    &:empty {
-      display: none;
-    }
-  `
-})
+import {locationStack, space2Var, space5Var} from './PresentationDocumentHeader.css'
 
 export function PresentationDocumentHeader(props: {
   documentId: PublishedId
@@ -31,6 +16,7 @@ export function PresentationDocumentHeader(props: {
 }): ReactNode {
   const {documentId, options, schemaType, version} = props
   const context = useContext(PresentationDocumentContext)
+  const {space} = useThemeV2()
 
   const contextOptions = context?.options || []
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -43,7 +29,13 @@ export function PresentationDocumentHeader(props: {
 
   return (
     <FormRow>
-      <LocationStack>
+      <div
+        className={locationStack}
+        style={assignInlineVars({
+          [space2Var]: `${rem(space[2])}`,
+          [space5Var]: `${rem(space[5])}`,
+        })}
+      >
         {contextOptions.map((_options, idx) => (
           <LocationsBanner
             // oxlint-disable-next-line no-array-index-key
@@ -56,7 +48,7 @@ export function PresentationDocumentHeader(props: {
             version={version}
           />
         ))}
-      </LocationStack>
+      </div>
     </FormRow>
   )
 }
