@@ -1361,7 +1361,7 @@ importers:
         specifier: ^4.1.11
         version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@24.13.6)(@vitest/browser-playwright@4.1.11)(@vitest/coverage-v8@4.1.11)(jsdom@29.1.1)(vite@8.3.0)
       zod:
-        specifier: ^4.5.4
+        specifier: ^4.6.5
         version: 4.6.5
 
   packages/@repo/test-exports:
