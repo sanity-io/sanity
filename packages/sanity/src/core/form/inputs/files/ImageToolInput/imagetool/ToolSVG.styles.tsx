@@ -1,157 +1,159 @@
-import {type ThemeProps} from '@sanity/ui'
-import {getTheme_v2 as getThemeV2} from '@sanity/ui/theme'
-import {css, styled} from 'styled-components'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 
-export const SVGContainer = styled.div`
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  touch-action: none;
-  -webkit-touch-callout: none;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-  -webkit-user-select: none;
-`
+import {
+  cropDimensionsBadgeGroup,
+  cropDimensionsBadgeGroupVisibility,
+  cropDimensionsBadgeRect,
+  cropDimensionsBadgeText,
+  cropRect,
+  cropRectFocused,
+  cropRectHovered,
+  darkenedOverlay,
+  fontTextFamilyVar,
+  fontTextSize0FontSizeVar,
+  fontTextSize0LetterSpacingVar,
+  fontTextWeightMediumVar,
+  guidelines,
+  handle,
+  handleFocused,
+  hotspotEllipse,
+  hotspotEllipseFocused,
+  hotspotEllipseHovered,
+  interactionArea,
+  radius1Var,
+  styledSVG,
+  svgContainer,
+} from './ToolSVG.css'
 
-export const StyledSVG = styled.svg`
-  display: block;
-  overflow: visible;
-  shape-rendering: crispEdges;
-`
+export function SVGContainer(props: ComponentProps<'div'>) {
+  const {className, ...rest} = props
+  return <div {...rest} className={clsx(svgContainer, className)} />
+}
 
-export const DarkenedOverlay = styled.rect`
-  fill: rgba(0, 0, 0, 0.5);
-  pointer-events: none;
-`
+export function StyledSVG(props: ComponentProps<'svg'>) {
+  const {className, ...rest} = props
+  return <svg {...rest} className={clsx(styledSVG, className)} />
+}
+
+export function DarkenedOverlay(props: ComponentProps<'rect'>) {
+  const {className, ...rest} = props
+  return <rect {...rest} className={clsx(darkenedOverlay, className)} />
+}
 
 export interface StyledElementProps {
   $focused?: boolean
   $hovered?: boolean
 }
 
-const getCropStrokeColor = (props: StyledElementProps & ThemeProps): string => {
-  const {color} = getThemeV2(props.theme)
-  if (props.$focused) return color.focusRing
-  if (props.$hovered) return 'rgba(255, 255, 255, 1)'
-  return 'rgba(255, 255, 255, .5)'
+export function CropRect(props: ComponentProps<'rect'> & StyledElementProps) {
+  const {$focused, $hovered, className, ...rest} = props
+  return (
+    <rect
+      {...rest}
+      className={clsx(
+        cropRect,
+        $hovered && cropRectHovered,
+        $focused && cropRectFocused,
+        className,
+      )}
+    />
+  )
 }
 
-const getHotspotStrokeColor = (props: StyledElementProps & ThemeProps): string => {
-  const {color} = getThemeV2(props.theme)
-  if (props.$focused) return color.focusRing
-  if (props.$hovered) return 'rgba(255, 255, 255, 1)'
-  return 'rgba(255, 255, 255, .5)'
+// The handles only react to `$focused`; `$hovered` is accepted for prop-API parity and dropped
+// so it never reaches the DOM.
+
+export function CropCornerHandle(props: ComponentProps<'path'> & StyledElementProps) {
+  const {$focused, $hovered: _hovered, className, ...rest} = props
+  return <path {...rest} className={clsx(handle, $focused && handleFocused, className)} />
 }
 
-const getHandleStrokeColor = (props: StyledElementProps & ThemeProps): string => {
-  const {color} = getThemeV2(props.theme)
-  if (props.$focused) return color.focusRing
-  return '#000'
+export function CropEdgeHandle(props: ComponentProps<'rect'> & StyledElementProps) {
+  const {$focused, $hovered: _hovered, className, ...rest} = props
+  return <rect {...rest} className={clsx(handle, $focused && handleFocused, className)} />
 }
 
-export const CropRect = styled.rect<StyledElementProps>`
-  fill: none;
-  stroke: ${getCropStrokeColor};
-  stroke-opacity: 1;
-  stroke-width: 1px;
-  outline: none;
-  ${(props) =>
-    props.$focused &&
-    css`
-      stroke-width: 2px;
-      filter: drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.3));
-    `}
-`
+export function HotspotEllipse(props: ComponentProps<'ellipse'> & StyledElementProps) {
+  const {$focused, $hovered, className, ...rest} = props
+  return (
+    <ellipse
+      {...rest}
+      className={clsx(
+        hotspotEllipse,
+        $hovered && hotspotEllipseHovered,
+        $focused && hotspotEllipseFocused,
+        className,
+      )}
+    />
+  )
+}
 
-export const CropCornerHandle = styled.path<StyledElementProps>`
-  fill: #fff;
-  stroke: ${getHandleStrokeColor};
-  stroke-width: 1;
-  outline: none;
-`
+export function HotspotHandle(props: ComponentProps<'circle'> & StyledElementProps) {
+  const {$focused, $hovered: _hovered, className, ...rest} = props
+  return <circle {...rest} className={clsx(handle, $focused && handleFocused, className)} />
+}
 
-export const CropEdgeHandle = styled.rect<StyledElementProps>`
-  fill: #fff;
-  stroke: ${getHandleStrokeColor};
-  stroke-width: 1;
-  outline: none;
-`
+export function CropHandleInteractionArea(props: ComponentProps<'rect'> & StyledElementProps) {
+  const {$focused: _focused, $hovered: _hovered, className, ...rest} = props
+  return <rect {...rest} className={clsx(interactionArea, className)} />
+}
 
-export const HotspotEllipse = styled.ellipse<StyledElementProps>`
-  fill: transparent;
-  stroke: ${getHotspotStrokeColor};
-  stroke-opacity: 1;
-  stroke-width: 1px;
-  outline: none;
-  ${(props) =>
-    props.$focused &&
-    css`
-      stroke-width: 2px;
-    `}
-`
+export function HotspotHandleInteractionArea(props: ComponentProps<'circle'>) {
+  const {className, ...rest} = props
+  return <circle {...rest} className={clsx(interactionArea, className)} />
+}
 
-export const HotspotHandle = styled.circle<StyledElementProps>`
-  fill: #fff;
-  stroke: ${getHandleStrokeColor};
-  stroke-width: 1;
-  outline: none;
-`
+export function Guidelines(props: ComponentProps<'g'>) {
+  const {className, ...rest} = props
+  return <g {...rest} className={clsx(guidelines, className)} />
+}
 
-export const CropHandleInteractionArea = styled.rect<StyledElementProps>`
-  fill: transparent;
-  stroke: transparent;
-  pointer-events: all;
-`
+export function CropDimensionsBadgeGroup(props: ComponentProps<'g'> & {$visible: boolean}) {
+  const {$visible, className, ...rest} = props
+  return (
+    <g
+      {...rest}
+      className={clsx(
+        cropDimensionsBadgeGroup,
+        cropDimensionsBadgeGroupVisibility[$visible ? 'visible' : 'hidden'],
+        className,
+      )}
+    />
+  )
+}
 
-export const HotspotHandleInteractionArea = styled.circle`
-  fill: transparent;
-  stroke: transparent;
-  pointer-events: all;
-`
+export function CropDimensionsBadgeRect(props: ComponentProps<'rect'>) {
+  const {className, style, ...rest} = props
+  const {radius} = useThemeV2()
+  return (
+    <rect
+      {...rest}
+      className={clsx(cropDimensionsBadgeRect, className)}
+      style={{...assignInlineVars({[radius1Var]: `${radius[1]}px`}), ...style}}
+    />
+  )
+}
 
-export const Guidelines = styled.g`
-  ${(props) => {
-    const {color} = getThemeV2(props.theme)
-    return css`
-      stroke: ${color.fg};
-      stroke-opacity: 0.2;
-      stroke-width: 1px;
-      stroke-dasharray: 3, 3;
-      pointer-events: none;
-    `
-  }}
-`
-
-export const CropDimensionsBadgeGroup = styled.g<{$visible: boolean}>`
-  opacity: ${(props) => (props.$visible ? 1 : 0)};
-  transition: opacity 0.15s;
-`
-
-export const CropDimensionsBadgeRect = styled.rect`
-  ${(props) => {
-    const {color, radius} = getThemeV2(props.theme)
-    return css`
-      fill: ${color.focusRing};
-      rx: ${radius[1]}px;
-    `
-  }}
-`
-
-export const CropDimensionsBadgeText = styled.text`
-  ${(props) => {
-    const {font} = getThemeV2(props.theme)
-    const textSize = font.text.sizes[0]
-    return css`
-      fill: #fff;
-      font-family: ${font.text.family};
-      font-size: ${textSize.fontSize}px;
-      letter-spacing: ${textSize.letterSpacing}px;
-      font-weight: ${font.text.weights.medium};
-      pointer-events: none;
-    `
-  }}
-`
+export function CropDimensionsBadgeText(props: ComponentProps<'text'>) {
+  const {className, style, ...rest} = props
+  const {font} = useThemeV2()
+  const textSize = font.text.sizes[0]
+  return (
+    <text
+      {...rest}
+      className={clsx(cropDimensionsBadgeText, className)}
+      style={{
+        ...assignInlineVars({
+          [fontTextFamilyVar]: font.text.family,
+          [fontTextSize0FontSizeVar]: `${textSize.fontSize}px`,
+          [fontTextSize0LetterSpacingVar]: `${textSize.letterSpacing}px`,
+          [fontTextWeightMediumVar]: String(font.text.weights.medium),
+        }),
+        ...style,
+      }}
+    />
+  )
+}
