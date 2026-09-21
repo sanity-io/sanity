@@ -171,6 +171,8 @@ export interface ResultAnnotations {
   regression?: boolean
   /** Lives on the session itself (`description`), not under `result` — see updateResult. */
   description?: string
+  /** Notes on the verdict — why this commit, the fix, a workaround. */
+  note?: string
   /** '' clears it. */
   severity?: Severity | ''
   linearIssue?: string
@@ -181,8 +183,7 @@ export interface ResultAnnotations {
 /**
  * Human annotations on a concluded run — cleared string fields are unset, not
  * stored empty. `description` is the session's own field (set at creation,
- * editable here); the rest live under `result`. A legacy `result.description`
- * is unset whenever the description is written, so the two can't diverge.
+ * editable here); the rest live under `result`.
  */
 export function updateResult(
   client: SanityClient,
@@ -193,7 +194,6 @@ export function updateResult(
   const unsets: string[] = []
   for (const [key, value] of Object.entries(patch)) {
     const path = key === 'description' ? 'description' : `result.${key}`
-    if (key === 'description') unsets.push('result.description')
     if (value === '' || value === undefined) unsets.push(path)
     else sets[path] = value
   }

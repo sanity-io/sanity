@@ -18,7 +18,7 @@ function session(
       ? {
           firstBadSha: null,
           regression: null,
-          description: null,
+          note: null,
           severity: null,
           linearIssue: null,
           fixedIn: null,
@@ -90,26 +90,26 @@ test('the chain’s verdict is the deepest converged one, annotations the deepes
     verdictSessionId: 'ab',
     regression: true,
     description: 'Editor freezes on paste',
+    note: undefined,
     severity: 'critical',
     linearIssue: 'SAPP-1',
     fixedIn: 'v6.10.0',
   })
 })
 
-test('a legacy result.description still counts, below the session’s own', () => {
-  const legacy = session('a', {result: {firstBadSha: 'x', description: 'old words'}})
-  expect(mergeChainVerdict(resolveSessionChains([legacy])[0]).description).toBe('old words')
-  const both = session('a', {
-    description: 'new words',
-    result: {firstBadSha: 'x', description: 'old words'},
-  })
-  expect(mergeChainVerdict(resolveSessionChains([both])[0]).description).toBe('new words')
+test('the verdict note is merged like the other annotations, deepest set wins', () => {
+  const root = session('a', {result: {firstBadSha: 'x', note: 'root note'}})
+  const leaf = session('ab', {refines: 'a', result: {firstBadSha: 'y', note: 'leaf note'}})
+  expect(mergeChainVerdict(resolveSessionChains([root, leaf])[0]).note).toBe('leaf note')
+  const quietLeaf = session('ab', {refines: 'a', result: {firstBadSha: 'y'}})
+  expect(mergeChainVerdict(resolveSessionChains([root, quietLeaf])[0]).note).toBe('root note')
   const nothing = session('a')
   expect(mergeChainVerdict(resolveSessionChains([nothing])[0])).toEqual({
     firstBadSha: undefined,
     verdictSessionId: undefined,
     regression: false,
     description: undefined,
+    note: undefined,
     severity: undefined,
     linearIssue: undefined,
     fixedIn: undefined,

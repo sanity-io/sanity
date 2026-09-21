@@ -36,7 +36,7 @@ export interface SessionEndpoint {
 export interface SessionSummary {
   _id: string
   title: string | null
-  /** What is broken (the session's own field; older sessions may only have `result.description`). */
+  /** What is broken. */
   description: string | null
   /** Id of the session this one refines — a chain counts as one regression (tools/bisect/sessionChains.ts). */
   refines: string | null
@@ -48,7 +48,8 @@ export interface SessionSummary {
   result: {
     firstBadSha: string | null
     regression: boolean | null
-    description: string | null
+    /** Notes on the verdict. */
+    note: string | null
     severity: string | null
     linearIssue: string | null
     fixedIn: string | null
@@ -61,7 +62,7 @@ export const BISECT_SESSIONS_QUERY = `*[_type == "bisectSession"] | order(create
   _id, title, description, "refines": refines._ref,
   good{sha, label}, bad{sha, label}, createdAt, createdBy,
   "markCount": count(marks),
-  result{firstBadSha, regression, description, severity, linearIssue, fixedIn},
+  result{firstBadSha, regression, note, severity, linearIssue, fixedIn},
   "resultSubject": *[_type == "gitCommit" && sha == ^.result.firstBadSha][0].subject
 }`
 
@@ -86,7 +87,7 @@ export interface SessionDocument {
   result: {
     firstBadSha: string
     regression: boolean | null
-    description: string | null
+    note: string | null
     severity: string | null
     linearIssue: string | null
   } | null
@@ -100,7 +101,7 @@ export const BISECT_SESSION_QUERY = `*[_id == $id][0] {
   "refinedBy": *[_type == "bisectSession" && refines._ref == ^._id] | order(createdAt desc) {_id, title},
   good{sha, label}, bad{sha, label}, releasesOnly, reproPath,
   marks[]{_key, sha, verdict},
-  result{firstBadSha, regression, description, severity, linearIssue},
+  result{firstBadSha, regression, note, severity, linearIssue},
   createdAt, createdBy
 }`
 

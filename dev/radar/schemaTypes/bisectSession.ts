@@ -124,9 +124,10 @@ export const bisectSession = defineType({
           type: 'boolean',
         }),
         defineField({
-          name: 'description',
+          name: 'note',
+          title: 'Notes on the verdict',
           description:
-            'Legacy: what broke, in the bisector’s words — newer sessions keep this on the session itself',
+            'Why this commit, the fix, a workaround — about the verdict, not the issue (that is the session’s description)',
           type: 'text',
           rows: 2,
         }),
@@ -154,12 +155,23 @@ export const bisectSession = defineType({
     defineField({name: 'createdBy', type: 'string'}),
   ],
   preview: {
-    select: {title: 'title', firstBadSha: 'result.firstBadSha', markCount: 'marks'},
-    prepare: ({title, firstBadSha, markCount}) => ({
-      title,
-      subtitle: firstBadSha
+    select: {
+      title: 'title',
+      description: 'description',
+      firstBadSha: 'result.firstBadSha',
+      markCount: 'marks',
+    },
+    // The issue is what a session is about; the endpoints title and the
+    // verdict move to the subtitle
+    prepare: ({title, description, firstBadSha, markCount}) => {
+      const issue = description
+      const status = firstBadSha
         ? `found ${firstBadSha.slice(0, 10)}`
-        : `${Array.isArray(markCount) ? markCount.length : 0} mark${Array.isArray(markCount) && markCount.length === 1 ? '' : 's'}`,
-    }),
+        : `${Array.isArray(markCount) ? markCount.length : 0} mark${Array.isArray(markCount) && markCount.length === 1 ? '' : 's'}`
+      return {
+        title: issue || title,
+        subtitle: issue ? `${title} · ${status}` : status,
+      }
+    },
   },
 })

@@ -16,7 +16,7 @@ export interface ChainSession {
   result: {
     firstBadSha: string | null
     regression: boolean | null
-    description: string | null
+    note?: string | null
     severity?: string | null
     linearIssue: string | null
     fixedIn: string | null
@@ -79,6 +79,7 @@ export interface ChainVerdict {
   /** Confirmed anywhere in the chain. */
   regression: boolean
   description?: string
+  note?: string
   severity?: Severity
   linearIssue?: string
   fixedIn?: string
@@ -88,8 +89,7 @@ export interface ChainVerdict {
  * What the chain says as a whole: the verdict of its deepest converged
  * session (a refinement in progress does not un-name the commit its parent
  * found), a regression if any session says so, and for each text annotation
- * the deepest one set — walking leaf to root, a session's own `description`
- * before its legacy `result.description`.
+ * the deepest one set, walking leaf to root.
  */
 export function mergeChainVerdict<S extends ChainSession>(chain: SessionChain<S>): ChainVerdict {
   const leafFirst = chain.sessions.toReversed()
@@ -105,7 +105,8 @@ export function mergeChainVerdict<S extends ChainSession>(chain: SessionChain<S>
     firstBadSha: converged?.result?.firstBadSha ?? undefined,
     verdictSessionId: converged?._id,
     regression: chain.sessions.some((session) => session.result?.regression === true),
-    description: first((session) => session.description ?? session.result?.description),
+    description: first((session) => session.description),
+    note: first((session) => session.result?.note),
     severity: first((session) => {
       const value = session.result?.severity
       return isSeverity(value) ? value : undefined

@@ -243,7 +243,7 @@ export function SessionView(props: {
       good: label(state.lastGood.sha),
       bad: label(state.firstBad.sha),
       reproPath,
-      description: session?.description ?? session?.result?.description ?? undefined,
+      description: session?.description ?? undefined,
       refines: sessionId,
       createdBy: userName,
     })
@@ -265,9 +265,7 @@ export function SessionView(props: {
                 <Text size={2} weight="semibold">
                   {session?.title ?? 'Bisect session'}
                 </Text>
-                {(session?.description || session?.result?.description) && (
-                  <Text size={1}>{session.description || session.result?.description}</Text>
-                )}
+                {session?.description && <Text size={1}>{session.description}</Text>}
                 {reproPath && (
                   <Text size={0} muted textOverflow="ellipsis">
                     Preview builds open at <code>{reproPath}</code>
@@ -406,8 +404,8 @@ export function SessionView(props: {
                       releasesOnly,
                       annotations: {
                         regression: session?.result?.regression ?? undefined,
-                        description:
-                          session?.description ?? session?.result?.description ?? undefined,
+                        description: session?.description ?? undefined,
+                        note: session?.result?.note ?? undefined,
                         severity: isSeverity(session?.result?.severity)
                           ? session.result.severity
                           : undefined,

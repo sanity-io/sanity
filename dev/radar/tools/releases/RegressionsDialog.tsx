@@ -183,7 +183,7 @@ function RegressionRow(props: {
           <Stack gap={2}>
             <Flex alignItems="center" gap={2} flexWrap="wrap">
               <Text size={1} weight="medium" style={{overflowWrap: 'anywhere'}}>
-                {session.description || session.result?.description || session.title || session._id}
+                {session.description || session.title || session._id}
               </Text>
               {isSeverity(session.result?.severity) && (
                 <Badge tone={SEVERITY_TONE[session.result.severity]} fontSize={0}>
@@ -209,6 +209,11 @@ function RegressionRow(props: {
             {session.resultSubject && (
               <Text size={1} muted textOverflow="ellipsis">
                 {session.result?.firstBadSha?.slice(0, 7)} {session.resultSubject}
+              </Text>
+            )}
+            {session.result?.note && (
+              <Text size={1} muted style={{overflowWrap: 'anywhere'}}>
+                {session.result.note}
               </Text>
             )}
             <Flex alignItems="center" gap={2} flexWrap="wrap">

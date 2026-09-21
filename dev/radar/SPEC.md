@@ -341,9 +341,11 @@ effect of merged work; secondary: leads scanning health weekly.
    here). A confirmed regression carries a **severity** — minor, major or
    critical, a human call on the verdict card (or when reporting by hand),
    shown wherever the regression is listed and editable from the release's
-   regressions dialog; unrated is allowed. A session carries a **description** of the issue (asked for at
-   creation, editable on the verdict card; older sessions may only have it
-   under `result.description`, which readers fall back to). A session can
+   regressions dialog; unrated is allowed. A session carries a **description**
+   of the issue (asked for at creation, editable on the verdict card), and a
+   verdict carries a **note** (`result.note`: why this commit, the fix, a
+   workaround — about the finding, not the issue), shown under the verdict
+   wherever the regression is listed. A session can
    **refine** another (`refines`, a weak reference): the "bisect these
    commits" drill-down from a releases-only verdict creates the new session
    linked to the one it narrows down and hands the description along. A

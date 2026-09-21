@@ -226,7 +226,7 @@ function SessionRow(props: {
 }) {
   const {session, refinesTitle, refinedByCount, onOpen} = props
   const concluded = Boolean(session.result?.firstBadSha)
-  const description = session.description || session.result?.description
+  const description = session.description
 
   return (
     <Card as="button" padding={4} radius={3} border onClick={onOpen} style={{textAlign: 'left'}}>

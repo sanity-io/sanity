@@ -120,6 +120,18 @@ export function ResultCard(props: {
           onClick={() => onAnnotate({regression: !annotations.regression})}
         />
       </Flex>
+      {/* About the verdict rather than the issue: why this commit, the fix,
+          a workaround. Same save-on-blur as the description */}
+      <TextArea
+        rows={2}
+        fontSize={1}
+        placeholder="Notes on the verdict — why this commit, the fix, a workaround…"
+        defaultValue={annotations.note ?? ''}
+        onBlur={(event) => {
+          const value = event.currentTarget.value.trim()
+          if (value !== (annotations.note ?? '')) onAnnotate({note: value})
+        }}
+      />
       {/* How bad — only meaningful once it IS a regression. Clicking the
           selected step clears it, so an unrated regression stays possible */}
       {annotations.regression && (

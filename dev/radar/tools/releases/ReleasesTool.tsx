@@ -259,7 +259,7 @@ export function ReleasesTool() {
         result: {
           firstBadSha: verdict.firstBadSha,
           regression: true,
-          description: null,
+          note: verdict.note ?? null,
           severity: verdict.severity ?? null,
           linearIssue: verdict.linearIssue ?? null,
           fixedIn: verdict.fixedIn ?? null,
