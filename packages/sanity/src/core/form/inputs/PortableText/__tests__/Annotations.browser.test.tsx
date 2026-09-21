@@ -115,6 +115,37 @@ function positionOfWord(element: Element, word: string): {x: number; y: number} 
   throw new Error(`"${word}" not found in ${JSON.stringify(element.textContent)}`)
 }
 
+/**
+ * Double-click `$target` to select `word`, retrying the click itself.
+ *
+ * WebKit under CI load drops the selection the double-click should have made:
+ * the DOM selection stays empty, so the editor never syncs one and every later
+ * step acts on the caret instead of the word. Re-issuing the double-click
+ * recovers it. The wait afterwards still requires exactly `word`, so a click
+ * that lands on the wrong word fails here rather than annotating it.
+ */
+async function selectWordByDoubleClick(
+  $target: ReturnType<typeof page.elementLocator>,
+  word: string,
+  position?: {x: number; y: number},
+) {
+  const {waitForPortableTextSelection} = testHelpers()
+  const domSelectionLanded = async () => {
+    const deadline = performance.now() + 2_000
+    while (performance.now() < deadline) {
+      if ((window.getSelection()?.toString() ?? '') === word) return true
+      await new Promise((resolve) => setTimeout(resolve, 50))
+    }
+    return false
+  }
+
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    await userEvent.dblClick($target, position ? {position} : {})
+    if (await domSelectionLanded()) break
+  }
+  await waitForPortableTextSelection(word)
+}
+
 // vitest-browser's `.not.toBeVisible()` throws on a missing element, so this
 // treats the popover being unmounted the same as it being hidden.
 async function expectPopoverAbsentOrHidden() {
@@ -565,8 +596,11 @@ describe('Portable Text Input', () => {
         // the whole text span, so aim the pointer at the word itself: a
         // double-click at the element center lands on "multiple".
         const $text = $pte.getByText('Text with multiple annotations.')
-        await userEvent.dblClick($text, {position: positionOfWord($text.element(), 'annotations')})
-        await waitForPortableTextSelection('annotations')
+        await selectWordByDoubleClick(
+          $text,
+          'annotations',
+          positionOfWord($text.element(), 'annotations'),
+        )
 
         // Add link annotation
         await page.getByRole('button', {name: 'Link'}).click()
@@ -588,10 +622,10 @@ describe('Portable Text Input', () => {
         // Double-click on the linked text to reselect it and add highlight annotation
         // Use document.querySelector because after adding highlight, there will be nested span[data-link] elements
         const $linkedText = page.elementLocator($pte.element().querySelector('span[data-link]')!)
-        await userEvent.dblClick($linkedText)
-        // Without this the click below can run against the caret the editor
-        // still holds from the Escape above, add nothing, and open no dialog.
-        await waitForPortableTextSelection('annotations')
+        // Without the wait inside this, the click below can run against the
+        // caret the editor still holds from the Escape above, add nothing, and
+        // open no dialog.
+        await selectWordByDoubleClick($linkedText, 'annotations')
 
         // Add highlight annotation (the second annotation type)
         await page.getByRole('button', {name: 'Highlight'}).click()
