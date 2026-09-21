@@ -157,7 +157,7 @@ overrides:
   # (vite#23483). It is on Vite main but not in a published release yet (npm still at 8.3.0).
   # Counter-pin tsdown so the package compiler stays on 1.2.9; `vite>rolldown` would otherwise
   # hoist one 1.2.8 copy into tsdown as well.
-  'tsdown>rolldown': '1.2.9'
+  'tsdown>rolldown': '~1.2.9'
   'vite>rolldown': '1.2.8'
   vitest: 'catalog:'
 

@@ -212,7 +212,7 @@ catalogs:
       version: 2.3.0
 
 overrides:
-  tsdown>rolldown: 1.2.9
+  tsdown>rolldown: ~1.2.9
   vite>rolldown: 1.2.8
   vitest: ^4.1.11
 
