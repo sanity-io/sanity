@@ -103,7 +103,7 @@ describe('toAbsolute', () => {
       ...AB_RUN,
       scenarios: [{...AB_RUN.scenarios[0], styles: undefined}],
     }
-    expect(toAbsolute(withoutStyles).scenarios[0]).not.toHaveProperty('styles')
+    expect(toAbsolute(withoutStyles).scenarios[0].styles).toBeUndefined()
   })
 
   it('keeps only the experiment bundle', () => {
@@ -141,6 +141,9 @@ describe('toAbsolute', () => {
           metrics: [{...AB_METRIC, reference: undefined, comparison: undefined}],
           interruptions: {experiment: {count: 1, totalMs: 200}},
           resources: {experiment: {requestCount: 10, requestBytes: 1000, byClass: {listen: 3}}},
+          styles: {
+            experiment: {ui5Available: true, styledComponentsVersion: '6.5.3', sessions: 6},
+          },
         },
       ],
       bundle: {experiment: {initialJsBytes: 100, totalJsBytes: 200, chunkCount: 3}},
