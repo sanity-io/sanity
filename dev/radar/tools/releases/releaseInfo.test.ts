@@ -12,6 +12,7 @@ import {
   majorOf,
   npmxUrl,
   regressionsByTag,
+  withoutEolLines,
 } from './releaseInfo'
 
 function sha(index: number): string {
@@ -242,6 +243,12 @@ test('groupDeprecatedRuns folds neighbours sharing a deprecation message, leaves
   expect(groupDeprecatedRuns([{tag: 'v1.0.0', npm: null}])).toEqual([
     {kind: 'tag', tag: {tag: 'v1.0.0', npm: null}},
   ])
+})
+
+test('withoutEolLines drops the releases of end-of-life majors and nothing else', () => {
+  const tags = ['v6.10.1', 'v5.31.2', 'v4.10.1', 'junk'].map((tag) => ({tag}))
+  expect(withoutEolLines(tags, new Set([4, 5])).map((t) => t.tag)).toEqual(['v6.10.1', 'junk'])
+  expect(withoutEolLines(tags, new Set())).toBe(tags)
 })
 
 test('bisectSessionPath swaps the tool segment and keeps the workspace base path', () => {

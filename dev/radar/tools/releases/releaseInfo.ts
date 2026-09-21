@@ -197,6 +197,23 @@ export function groupTagsByMajor<T extends {tag: string}>(
   return lines
 }
 
+/**
+ * Drop the releases of end-of-life lines — for pickers (bisect endpoints,
+ * the blamed release, the fix release), not for attribution: the chain
+ * walks do not care whether a line is EOL, and hiding an EOL release from
+ * `releasesContaining` would misplace blame onto the next release.
+ */
+export function withoutEolLines<T extends {tag: string}>(
+  tags: T[],
+  eolMajors: ReadonlySet<number>,
+): T[] {
+  if (eolMajors.size === 0) return tags
+  return tags.filter((tag) => {
+    const major = majorOf(tag.tag)
+    return major === undefined || !eolMajors.has(major)
+  })
+}
+
 export type DeprecatedRunEntry<T> =
   | {kind: 'tag'; tag: T}
   | {kind: 'run'; tags: T[]; message: string}

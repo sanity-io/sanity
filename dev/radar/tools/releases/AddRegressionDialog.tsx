@@ -20,7 +20,13 @@ import {baseTagOf, compareTagsSemverDesc} from './releaseInfo'
  * be encoded that way and are called out instead of silently allowed.
  */
 export function AddRegressionDialog(props: {
+  /** The releases that can be picked — EOL lines left out. */
   tags: TagSlice[]
+  /**
+   * Every synced release, for finding a release's base: the base of the
+   * oldest pickable release may itself be end of life.
+   */
+  allTags?: TagSlice[]
   commitsBySha: Map<string, BisectCommit>
   createdBy: string
   /** Opened from a release row — that release starts selected (still changeable). */
@@ -29,7 +35,7 @@ export function AddRegressionDialog(props: {
   /** Must settle (the tool toasts failures) — the submit stays disabled until it does. */
   onCreate: (input: ManualRegressionInput) => Promise<unknown>
 }) {
-  const {tags, commitsBySha, createdBy, initialTag, onClose, onCreate} = props
+  const {tags, allTags = tags, commitsBySha, createdBy, initialTag, onClose, onCreate} = props
   const [selectedTagName, setSelectedTagName] = useState(initialTag ?? '')
   const [description, setDescription] = useState('')
   const [severity, setSeverity] = useState('')
@@ -37,7 +43,7 @@ export function AddRegressionDialog(props: {
   const [fixedIn, setFixedIn] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
-  const tagBySha = useMemo(() => new Map(tags.map((tag) => [tag.sha, tag.tag])), [tags])
+  const tagBySha = useMemo(() => new Map(allTags.map((tag) => [tag.sha, tag.tag])), [allTags])
   const selected = tags.find((tag) => tag.tag === selectedTagName)
 
   // The blamed release's endpoints: base release → this release, with the
@@ -46,7 +52,7 @@ export function AddRegressionDialog(props: {
   const encoded = useMemo(() => {
     if (!selected) return null
     const baseTagName = baseTagOf(commitsBySha, tagBySha, selected)
-    const baseTag = baseTagName ? tags.find((tag) => tag.tag === baseTagName) : undefined
+    const baseTag = baseTagName ? allTags.find((tag) => tag.tag === baseTagName) : undefined
     if (!baseTag) return {ok: false as const}
     const chain = buildChain(commitsBySha, baseTag.sha, selected.sha)
     if (!chain.ok) return {ok: false as const}
@@ -55,7 +61,7 @@ export function AddRegressionDialog(props: {
       baseTag,
       suspectShas: chain.chain.slice(1, -1).map((commit) => commit.sha),
     }
-  }, [selected, commitsBySha, tagBySha, tags])
+  }, [selected, commitsBySha, tagBySha, allTags])
 
   // A fix can only ship after the release that introduced the regression
   const fixCandidates = useMemo(

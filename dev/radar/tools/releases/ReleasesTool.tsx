@@ -61,6 +61,7 @@ import {
   npmxUrl,
   regressionsByTag,
   type ReleaseRegressions,
+  withoutEolLines,
 } from './releaseInfo'
 import {clearLineEol, markLineEol, RELEASE_LINES_QUERY, type ReleaseLineSlice} from './releaseLines'
 
@@ -220,6 +221,13 @@ export function ReleasesTool() {
   const eolByMajor = useMemo(
     () => new Map((linesLive.data ?? []).map((line) => [line.major, line])),
     [linesLive.data],
+  )
+  // Releases still worth picking: nobody reports a regression against, or
+  // fixes one in, a line that is end of life. The full list stays for
+  // attribution — the chain walks do not care about EOL
+  const activeTags = useMemo(
+    () => withoutEolLines(tags, new Set(eolByMajor.keys())),
+    [tags, eolByMajor],
   )
   // The line people install by default can't be end of life, whatever else
   // is true about it
@@ -504,7 +512,7 @@ export function ReleasesTool() {
         <RegressionsDialog
           tag={viewingRegressions}
           regressions={regressions.get(viewingRegressions)}
-          tags={tags}
+          tags={activeTags}
           client={client}
           onClose={() => setViewingRegressions(null)}
         />
@@ -512,7 +520,8 @@ export function ReleasesTool() {
 
       {addingRegression !== null && (
         <AddRegressionDialog
-          tags={tags}
+          tags={activeTags}
+          allTags={tags}
           commitsBySha={commitsBySha}
           createdBy={userName}
           initialTag={addingRegression || undefined}

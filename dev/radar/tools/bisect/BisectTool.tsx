@@ -8,7 +8,8 @@ import {catchError, map, of} from 'rxjs'
 import {useClient, useCurrentUser, useDocumentStore} from 'sanity'
 import {Flex} from 'ui5'
 
-import {compareTagsSemverDesc, regressionsByTag} from '../releases/releaseInfo'
+import {compareTagsSemverDesc, regressionsByTag, withoutEolLines} from '../releases/releaseInfo'
+import {RELEASE_LINES_QUERY, type ReleaseLineSlice} from '../releases/releaseLines'
 import {commitUrl, prUrl} from '../trends/links'
 import {useUrlState} from '../trends/useUrlState'
 import {
@@ -99,6 +100,35 @@ export function BisectTool() {
     [documentStore],
   )
   const tagsLive = useObservable(tagsLive$, {data: null, error: null})
+
+  const linesLive$ = useMemo(
+    () =>
+      documentStore.listenQuery(RELEASE_LINES_QUERY, {}, {tag: 'metrics.bisect.lines'}).pipe(
+        map((result): LiveState<ReleaseLineSlice[]> => ({
+          data: result as ReleaseLineSlice[],
+          error: null,
+        })),
+        catchError((error: unknown) =>
+          of<LiveState<ReleaseLineSlice[]>>({
+            data: null,
+            error: error instanceof Error ? error.message : String(error),
+          }),
+        ),
+      ),
+    [documentStore],
+  )
+  const linesLive = useObservable(linesLive$, {data: null, error: null})
+  // Endpoints on offer: releases of end-of-life lines are not among them.
+  // The session view keeps the full list — attribution and the releases-only
+  // candidate set must see every release
+  const activeTags = useMemo(
+    () =>
+      withoutEolLines(
+        tagsLive.data ?? [],
+        new Set((linesLive.data ?? []).map((line) => line.major)),
+      ),
+    [tagsLive.data, linesLive.data],
+  )
 
   const commitsBySha = useMemo(
     () => new Map((commitsLive.data ?? []).map((slice) => [slice.sha, toBisectCommit(slice)])),
@@ -273,7 +303,7 @@ export function BisectTool() {
       {creating && (
         <NewSessionDialog
           commits={commitsLive.data ?? []}
-          tags={tagsLive.data ?? []}
+          tags={activeTags}
           commitsBySha={commitsBySha}
           onClose={() => setCreating(false)}
           onCreate={handleCreate}

@@ -426,6 +426,10 @@ sessionChains.ts` and shared by the sessions list and the Releases tool:
    (tags, npm state, regression spans) is untouched and keeps syncing. The
    line holding the `latest` dist-tag cannot be marked. Its own type rather
    than a flag on `gitTag` because the sync replaces tag documents whole.
+   EOL releases are left out of every release picker — bisect endpoints,
+   the blamed release and the fix release of a hand-reported regression,
+   the "fixed in" candidates — but stay in attribution: the chain walks do
+   not care, and hiding an EOL release from them would misplace blame.
    Next to its version a release shows what was broken in it — one badge
    per severity over the regressions present in it, introduced there or
    inherited, not the ones it fixed, worst first with unrated last:
