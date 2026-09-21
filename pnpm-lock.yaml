@@ -2032,7 +2032,7 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2
       '@sanity/cli':
-        specifier: ^8.10.0
+        specifier: ^8.12.0
         version: 8.12.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.4.0)(@rolldown/plugin-babel@0.2.4)(@types/node@24.13.6)(@types/react@19.3.0)(@vitejs/devtools@0.7.5)(esbuild@0.28.2)(jiti@2.7.0)(oxc-transform-react@0.149.0)(oxfmt@0.67.0)(react@19.3.0)(rolldown@1.2.9)(sanity@packages+sanity)(supports-color@8.1.1)(tsx@4.23.15)(typescript@7.0.2)(vitest@4.1.11)(xstate@5.33.2)
       '@sanity/client':
         specifier: 'catalog:'
