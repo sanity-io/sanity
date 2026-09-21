@@ -1253,6 +1253,10 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
         ) {
           continue
         }
+        // Style rows the registry records but does not chart (the style-tag
+        // count: 1 on every page) stay on the document and out of the charts,
+        // the drift feed and the deep links alike.
+        if (styleMetricFor(metric.label)?.charted === false) continue
         const summary = metric.experiment?.summary
         if (!summary) continue
         const meta = describeSeries(scenario.kind, metric.label, scenario.mode)
@@ -1626,9 +1630,9 @@ export function styleViews(list: TrendSeries[]): StyleView[] {
       id: 'styled',
       label: 'styled-components',
       hint: 'The runtime-styling escape hatch on each scenario\u2019s page: rendered styled-components nodes, the distinct components behind them, and the CSS the library inserted at runtime (rules, bytes, share of all rules). Lower is better; every row applies to studio v5-era builds too.',
-      sections: STYLE_METRICS.filter((metric) => metric.track === 'styled').map((metric) =>
-        section(metric.label, metric.label, metric.goal),
-      ),
+      sections: STYLE_METRICS.filter(
+        (metric) => metric.track === 'styled' && metric.charted !== false,
+      ).map((metric) => section(metric.label, metric.label, metric.goal)),
     },
   ]
   return views
@@ -1752,7 +1756,7 @@ export function aggregateStyleSeries(list: TrendSeries[]): TrendSeries[] {
   }
 
   for (const metric of STYLE_METRICS) {
-    if (metric.track !== 'styled') continue
+    if (metric.track !== 'styled' || metric.charted === false) continue
     const groups = gather(metric.label)
     if (groups.size === 0) continue
     if (metric.unit === 'percent') {

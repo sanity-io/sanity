@@ -156,4 +156,12 @@ describe('registry', () => {
       )
     }
   })
+
+  test('the style-tag count is recorded but not charted', () => {
+    const uncharted = STYLE_METRICS.filter((metric) => metric.charted === false)
+    expect(uncharted.map((metric) => metric.label)).toEqual(['styled-components style tags'])
+    // Still read off the census, so the row lands on the run document
+    renderPage()
+    expect(uncharted[0].read(takeStyleCensus(document))).toBe(1)
+  })
 })

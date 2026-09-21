@@ -243,6 +243,11 @@ export interface StyleMetric {
   /** Plain-English explanation, for chart ⓘ buttons. */
   description: string
   /**
+   * False for a row that is recorded on the run document but never charted
+   * (see the style-tags entry). Absent means charted.
+   */
+  charted?: boolean
+  /**
    * Read the metric off a census. Null means "not applicable for this page or
    * build" and the row is left out — never written as zero.
    */
@@ -334,6 +339,10 @@ export const STYLE_METRICS: readonly StyleMetric[] = [
     goal: 'lower',
     description:
       '<style data-styled> elements on the page — one per styled-components runtime. More than one means a plugin bundles its own copy of the library.',
+    // Recorded for the run document (a second runtime shows up here, and the
+    // diagnostics dialog reports the same number) but not charted: it is 1 on
+    // every page, and a flat line of ones tells no migration story.
+    charted: false,
     read: (census) => census.styledComponents.styleTags,
   },
 ]

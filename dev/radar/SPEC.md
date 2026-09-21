@@ -464,7 +464,11 @@ sessionChains.ts` and shared by the sessions list and the Releases tool:
      bench), units, direction and descriptions; `describeSeries` consults it
      first, before any mode. The same module owns the DOM fingerprints the
      test studio's "Style migrations" widget draws from, so the widget, the
-     bench and this tab cannot count three different things.
+     bench and this tab cannot count three different things. A registry entry
+     can be `charted: false` — recorded on the document, never a series: the
+     `<style data-styled>` tag count is one on every page (two would mean a
+     second styled-components runtime, which the document still shows), and a
+     flat line of ones tells no story.
    - **Keyed per scenario, not per mode.** The census rides on the interaction,
      pageload and settle reports alike, and the shards of one scenario count
      the same page, so their rows share a `styles:<scenario>:<label>` key and

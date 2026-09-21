@@ -774,6 +774,25 @@ test('the three UI rows become two paired charts, v5 and v4 on one chart', () =>
   ])
 })
 
+test('uncharted style rows stay on the document and out of every series', () => {
+  const run = styleRun({id: 'a', sha: 'sha-1', day: 0})
+  run.scenarios![0].metrics!.push({
+    label: 'styled-components style tags',
+    unit: 'count',
+    experiment: {summary: {median: 1, p75: 1, p90: 1}},
+  })
+  const series = buildSeries([run])
+  expect(series.some((entry) => entry.key.includes('style tags'))).toBe(false)
+  // …and so out of the sections and the aggregate too
+  const styles = series.filter((entry) => entry.group === 'styles')
+  expect(
+    styleViews(styles).flatMap((view) => view.sections.map((section) => section.id)),
+  ).not.toContain('styled-components style tags')
+  expect(aggregateStyleSeries(styles).map((entry) => entry.key)).not.toContain(
+    'styles:all:styled-components style tags',
+  )
+})
+
 test('style rows read the registry: adoption climbs, the escape hatch sinks', () => {
   const series = buildSeries([styleRun({id: 'a', sha: 'sha-1', day: 0})])
   const goalOf = (key: string) => series.find((entry) => entry.key === key)?.goal
@@ -866,13 +885,13 @@ test('style views: two paired UI sections, one styled-components section per met
     ['UI share', 'higher'],
     ['UI instances', 'higher'],
   ])
+  // Style tags are recorded but not charted — no section, see the registry
   expect(sectionsOf('styled')).toEqual([
     ['styled-components instances', 'lower'],
     ['styled-components components', 'lower'],
     ['styled-components CSS rules', 'lower'],
     ['styled-components CSS bytes', 'lower'],
     ['styled-components CSS rule share', 'lower'],
-    ['styled-components style tags', 'lower'],
   ])
   // Every style series lands in exactly one section; none are lost
   expect(views.flatMap((view) => view.sections.flatMap((section) => section.series)).length).toBe(
