@@ -90,7 +90,7 @@ async function hasPermissionFromAnyGrant(
 }
 
 /**
- * @beta
+ * @internal
  * Returns a list of users with the specified permission on the document.
  * If no document is provided it will return all as `granted: true`
  */

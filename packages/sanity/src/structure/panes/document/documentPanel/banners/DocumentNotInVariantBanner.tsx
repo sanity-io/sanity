@@ -1,15 +1,11 @@
 import {Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo, useState} from 'react'
-import {
-  Translate,
-  useDocumentVersions,
-  useGetDefaultPerspective,
-  usePerspective,
-  useTranslation,
-} from 'sanity'
+import {Translate, usePerspective, useTranslation} from 'sanity'
 
 import {useConditionalToast} from '../../../../../core/hooks/useConditionalToast'
+import {useGetDefaultPerspective} from '../../../../../core/perspective/useGetDefaultPerspective'
+import {useDocumentVersions} from '../../../../../core/releases/hooks/useDocumentVersions'
 import {isReleaseDocument} from '../../../../../core/releases/store/types'
 import {isDraftPerspective, isPublishedPerspective} from '../../../../../core/releases/util/util'
 import {useVariantDocumentOperations} from '../../../../../core/variants/hooks/useVariantDocumentOperations'

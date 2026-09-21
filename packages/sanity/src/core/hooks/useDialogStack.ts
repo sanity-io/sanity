@@ -9,7 +9,7 @@ const noop = (): void => {
 /**
  * Hook to register a dialog in the stack and check if it's the top-most one.
  *
- * @beta
+ * @internal
  */
 export function useDialogStack({path}: {path?: Path} = {}) {
   const context = useContext(DialogStackContext)

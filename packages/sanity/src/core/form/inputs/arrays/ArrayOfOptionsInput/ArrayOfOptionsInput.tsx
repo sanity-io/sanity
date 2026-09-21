@@ -8,8 +8,7 @@ import {ArrayOfPrimitiveOptionsInput} from './ArrayOfPrimitiveOptionsInput'
 
 /**
  *
- * @hidden
- * @beta
+ * @internal
  */
 export function ArrayOfOptionsInput(props: ArrayOfObjectsInputProps | ArrayOfPrimitivesInputProps) {
   return isArrayOfObjectsInputProps(props) ? (

@@ -14,7 +14,7 @@ import {getReleaseIdFromReleaseDocumentId} from './getReleaseIdFromReleaseDocume
 export type NotArchivedRelease = ReleaseDocument & {state: Exclude<ReleaseState, 'archived'>}
 
 /**
- * @beta
+ * @internal
  * @param documentId - The document id, e.g. `my-document-id` or `drafts.my-document-id` or `summer.my-document-id`
  * @param perspective - The current perspective, e.g. `release.summer` or undefined, it can be obtained from `useRouter().stickyParams.perspective`
  * @returns boolean - `true` if the document is in the current perspective.

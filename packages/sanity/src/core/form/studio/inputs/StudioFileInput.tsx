@@ -19,8 +19,7 @@ export type FileInputProps = Omit<
 >
 
 /**
- * @hidden
- * @beta */
+ * @internal */
 export function StudioFileInput(props: FileInputProps) {
   const sourcesFromSchema = props.schemaType.options?.sources
   const documentPreviewStore = useDocumentPreviewStore()

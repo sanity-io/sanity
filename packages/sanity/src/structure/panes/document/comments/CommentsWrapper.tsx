@@ -1,20 +1,14 @@
 import {useCallback, useLayoutEffect, useRef} from 'react'
-import {
-  CommentsEnabledProvider,
-  CommentsEnabledProviderV2,
-  CommentsProvider,
-  CommentsProviderV2,
-  getDraftId,
-  getPublishedId,
-  getVersionId,
-  useCommentsEnabled,
-  useCommentsEnabledV2,
-  usePerspective,
-  useWorkspace,
-} from 'sanity'
+import {getDraftId, getPublishedId, getVersionId, usePerspective, useWorkspace} from 'sanity'
 import {useRouter} from 'sanity/router'
 
+import {CommentsProvider as CommentsProviderV2} from '../../../../core/comments-v2/context/comments/CommentsProvider'
+import {CommentsEnabledProvider as CommentsEnabledProviderV2} from '../../../../core/comments-v2/context/enabled/CommentsEnabledProvider'
+import {useCommentsEnabled as useCommentsEnabledV2} from '../../../../core/comments-v2/hooks/useCommentsEnabled'
 import {COMMENTS_INSPECTOR_NAME} from '../../../../core/comments/constants'
+import {CommentsProvider} from '../../../../core/comments/context/comments/CommentsProvider'
+import {CommentsEnabledProvider} from '../../../../core/comments/context/enabled/CommentsEnabledProvider'
+import {useCommentsEnabled} from '../../../../core/comments/hooks/useCommentsEnabled'
 import {getTargetScopeId} from '../../../../core/hooks/useTargetDocumentState'
 import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
 import {useDocumentPane} from '../useDocumentPane'

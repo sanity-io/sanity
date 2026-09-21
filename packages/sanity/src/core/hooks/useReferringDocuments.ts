@@ -16,7 +16,7 @@ const INITIAL_STATE: ReferringDocumentsState<never> = {referringDocuments: [], i
 const DEFAULT_FIELDS: DocumentField[] = ['_id', '_type']
 
 /**
- * @beta
+ * @internal
  * Subscribe to a live-updating list document referring to the document of the passed ID
  * A new list of document will be emitted every time a document refers or no longer refers to the document of the given ID
  *

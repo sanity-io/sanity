@@ -7,7 +7,7 @@ import {useCanvasCompanionDocsStore} from '../store/useCanvasCompanionDocsStore'
 
 /**
  * Given a document id, returns whether it is linked to canvas and the companion doc if it exists.
- * @beta
+ * @internal
  */
 export const useCanvasCompanionDoc = (documentId: string) => {
   const companionDocsStore = useCanvasCompanionDocsStore()

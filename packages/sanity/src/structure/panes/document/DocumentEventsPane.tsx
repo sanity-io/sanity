@@ -8,10 +8,10 @@ import {
   PerspectiveProvider,
   usePerspective,
   useSchema,
-  useDocumentVersions,
 } from 'sanity'
 
 import {useTargetDocumentState} from '../../../core/hooks/useTargetDocumentState'
+import {useDocumentVersions} from '../../../core/releases/hooks/useDocumentVersions'
 import {useArchivedReleases} from '../../../core/releases/store/useArchivedReleases'
 import {EventsProvider} from '../../../core/store/events/EventsProvider'
 import {useEventsStore} from '../../../core/store/events/useEventsStore'

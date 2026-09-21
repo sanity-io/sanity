@@ -19,8 +19,7 @@ const deserialize = (value: string) => parse(value, DEFAULT_DATE_FORMAT)
 const serialize = (date: Date) => format(date, DEFAULT_DATE_FORMAT)
 
 /**
- * @hidden
- * @beta */
+ * @internal */
 export function DateInput(props: DateInputProps) {
   const {readOnly, onChange, schemaType, elementProps, value, id, path, validationError} = props
   const dateFormat = schemaType.options?.dateFormat || DEFAULT_DATE_FORMAT

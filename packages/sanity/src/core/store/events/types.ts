@@ -159,80 +159,70 @@ export type DocumentGroupEvent =
   | HistoryClearedEvent
 
 /**
- * @hidden
- * @beta
+ * @internal
  */
 export const isCreateDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,
 ): event is CreateDocumentVersionEvent => event.type === 'createDocumentVersion'
 
 /**
- * @hidden
- * @beta
+ * @internal
  */
 export const isDeleteDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,
 ): event is DeleteDocumentVersionEvent => event.type === 'deleteDocumentVersion'
 
 /**
- * @hidden
- * @beta
+ * @internal
  */
 export const isPublishDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,
 ): event is PublishDocumentVersionEvent => event.type === 'publishDocumentVersion'
 
 /**
- * @hidden
- * @beta
+ * @internal
  */
 export const isUnpublishDocumentEvent = (
   event: Partial<DocumentGroupEvent>,
 ): event is UnpublishDocumentEvent => event.type === 'unpublishDocument'
 
 /**
- * @hidden
- * @beta
+ * @internal
  */
 export const isScheduleDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,
 ): event is ScheduleDocumentVersionEvent => event.type === 'scheduleDocumentVersion'
 
 /**
- * @hidden
- * @beta
+ * @internal
  */
 export const isUnscheduleDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,
 ): event is UnscheduleDocumentVersionEvent => event.type === 'unscheduleDocumentVersion'
 
 /**
- * @hidden
- * @beta
+ * @internal
  */
 export const isDeleteDocumentGroupEvent = (
   event: Partial<DocumentGroupEvent>,
 ): event is DeleteDocumentGroupEvent => event.type === 'deleteDocumentGroup'
 
 /**
- * @hidden
- * @beta
+ * @internal
  */
 export const isCreateLiveDocumentEvent = (
   event: Partial<DocumentGroupEvent>,
 ): event is CreateLiveDocumentEvent => event.type === 'createLiveDocument'
 
 /**
- * @hidden
- * @beta
+ * @internal
  */
 export const isUpdateLiveDocumentEvent = (
   event: Partial<DocumentGroupEvent>,
 ): event is UpdateLiveDocumentEvent => event.type === 'updateLiveDocument'
 
 /**
- * @hidden
- * @beta
+ * @internal
  */
 export const isEditDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,

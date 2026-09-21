@@ -40,7 +40,7 @@ export type VersionType = 'draft' | 'published' | 'release' | 'agent'
  * By default, any published variant will match. Use the constraint options to
  * limit matching to the base variant, or to a particular variant id.
  *
- * @beta
+ * @internal
  */
 export function isPublishedVersion(
   version: VersionInfoDocumentStub,
@@ -77,7 +77,7 @@ export function isPublishedVersion(
  * By default, any draft variant will match. Use the constraint options to
  * limit matching to the base variant, or to a particular variant id.
  *
- * @beta
+ * @internal
  */
 export function isDraftVersion(
   version: VersionInfoDocumentStub,
@@ -110,7 +110,7 @@ export function isDraftVersion(
 
 /**
  * Uses the _system field to check if a version is a variant version
- * @beta
+ * @internal
  */
 export function isVariantVersion(version: VersionInfoDocumentStub): boolean {
   return Boolean(version._system?.variant)
@@ -118,7 +118,7 @@ export function isVariantVersion(version: VersionInfoDocumentStub): boolean {
 
 /**
  * Uses the _system field to check if a version is a release version
- * @beta
+ * @internal
  */
 export function isReleaseVersion(version: VersionInfoDocumentStub): boolean {
   return Boolean(version._system?.release)
@@ -126,7 +126,7 @@ export function isReleaseVersion(version: VersionInfoDocumentStub): boolean {
 
 /**
  * Uses the _system field to determine the version type of a document.
- * @beta
+ * @internal
  */
 export function readVersionType(
   version: VersionInfoDocumentStub | undefined,

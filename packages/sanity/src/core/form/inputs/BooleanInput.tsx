@@ -16,8 +16,7 @@ const CenterAlignedBox = styled(Box)`
 
 /**
  *
- * @hidden
- * @beta
+ * @internal
  */
 export function BooleanInput(props: BooleanInputProps) {
   const {t} = useTranslation()

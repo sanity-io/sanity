@@ -67,8 +67,7 @@ const NavGrid = styled(Grid)`
 `
 
 /**
- * @hidden
- * @beta */
+ * @internal */
 export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
   const {__internal_actions: actions = EMPTY_ARRAY} = props
 

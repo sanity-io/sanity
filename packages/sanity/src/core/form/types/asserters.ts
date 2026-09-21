@@ -20,8 +20,7 @@ import {
 import {type ItemProps, type ObjectItemProps} from './itemProps'
 
 /**
- * @hidden
- * @beta */
+ * @internal */
 export function isObjectItemProps(
   item: ItemProps | Omit<ItemProps, 'renderDefault'>,
 ): item is ObjectItemProps {
@@ -47,8 +46,7 @@ export function isStringInputProps(
 }
 
 /**
- * @hidden
- * @beta */
+ * @internal */
 export function isNumberInputProps(
   inputProps: InputProps | Omit<InputProps, 'renderDefault'>,
 ): inputProps is NumberInputProps {
@@ -56,8 +54,7 @@ export function isNumberInputProps(
 }
 
 /**
- * @hidden
- * @beta */
+ * @internal */
 export function isBooleanInputProps(
   inputProps: InputProps | Omit<InputProps, 'renderDefault'>,
 ): inputProps is BooleanInputProps {
@@ -74,8 +71,7 @@ export function isArrayOfObjectsInputProps(
 }
 
 /**
- * @hidden
- * @beta */
+ * @internal */
 export function isArrayOfBlocksInputProps(
   inputProps: InputProps | Omit<InputProps, 'renderDefault'>,
 ): inputProps is ArrayOfObjectsInputProps {
@@ -83,8 +79,7 @@ export function isArrayOfBlocksInputProps(
 }
 
 /**
- * @hidden
- * @beta */
+ * @internal */
 export function isArrayOfPrimitivesInputProps(
   inputProps: InputProps | Omit<InputProps, 'renderDefault'>,
 ): inputProps is ArrayOfPrimitivesInputProps {

@@ -25,10 +25,8 @@ import {
   getReleaseIdFromReleaseDocumentId,
   getVersionFromId,
   getVersionId,
-  ReleaseAvatar,
   type ReleaseDocument,
   type TargetPerspective,
-  useDocumentVersions,
   useEditState,
   useTranslation,
   useWorkspace,
@@ -37,7 +35,9 @@ import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {type DocumentLayoutProps} from '../../../../core/config/types'
+import {ReleaseAvatar} from '../../../../core/releases/components/ReleaseAvatar'
 import {ReleaseTitle} from '../../../../core/releases/components/ReleaseTitle'
+import {useDocumentVersions} from '../../../../core/releases/hooks/useDocumentVersions'
 import {useFormatRelativeLocalePublishDate} from '../../../../core/releases/hooks/useFormatRelativeLocalePublishDate'
 import {isReleaseDocument} from '../../../../core/releases/store/types'
 import {useActiveReleases} from '../../../../core/releases/store/useActiveReleases'
