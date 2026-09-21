@@ -1,6 +1,7 @@
 import {Text} from '@sanity/ui'
 import {Flex} from 'ui5'
 
+import {useCommitComments} from '../comments/CommitCommentsContext'
 import {CALIBRATION_EXPLAINER, formatValue, type TrendSeries, type TrendTag} from './data'
 import {baselineDetail, baselineLabel, type DriftResult} from './drift'
 import {ALL_LAYERS_VISIBLE, type Layer, type LayerState} from './layers'
@@ -8,8 +9,10 @@ import {categoricalColor} from './palette'
 import {
   baselineToDraw,
   COLOR,
+  CommentGlyph,
   seriesHasBand,
   seriesHasCalibration,
+  seriesHasComments,
   seriesHasReleases,
 } from './TrendChart'
 
@@ -88,6 +91,7 @@ export function ChartLegend(props: {
   tags?: TrendTag[]
 }) {
   const {series, drift, layers = ALL_LAYERS_VISIBLE, tags = []} = props
+  const comments = useCommitComments()
   const comparing = series.lines.length > 1
   // Whether this chart *has* a baseline to explain — independent of whether the
   // layer is currently visible, so toggling it off doesn't remove the control
@@ -158,6 +162,23 @@ export function ChartLegend(props: {
     />
   )
 
+  // Comments are pinned to commits, so like releases they are global context that
+  // survives branch comparison. Same capability predicate as the plot.
+  const commentsItem = seriesHasComments(series, comments) && (
+    <LegendItem
+      layer="comments"
+      layers={layers}
+      label="comments"
+      hint="Comment threads left on a commit — on the run that measured it, or (dashed) at the commit's date when no run did. Hover a run to read them, click the bubble to join in"
+      swatch={
+        // The bubble alone, filling the swatch. At 7px over a baseline the tail
+        // merged with the line and the whole read as a blob on legs; the tick's
+        // baseline says "sits on the plot edge", which a bubble does not need.
+        <CommentGlyph x={8} y={10} height={10} />
+      }
+    />
+  )
+
   if (comparing) {
     return (
       <Flex gap={3} flexWrap="wrap" alignItems="center">
@@ -172,6 +193,7 @@ export function ChartLegend(props: {
           </Flex>
         ))}
         {releasesItem}
+        {commentsItem}
         {goodItem}
         {series.goal === 'lower' && (
           <Text size={0} muted>
@@ -281,6 +303,7 @@ export function ChartLegend(props: {
         />
       )}
       {releasesItem}
+      {commentsItem}
       {goodItem}
       {series.goal === 'lower' && (
         <Text size={0} muted>

@@ -9,6 +9,8 @@ import {Badge, type BadgeTone, Box, Button, Card, Stack, Text} from '@sanity/ui'
 import {type ReactNode, useMemo, useState} from 'react'
 import {Flex} from 'ui5'
 
+import {CommitCommentCount} from '../comments/CommitComments'
+import {CommitCommentsPanel} from '../comments/CommitCommentsPanel'
 import {commitUrl, compareUrl} from '../trends/links'
 import {AuthorAvatar} from './AuthorAvatar'
 import {
@@ -342,6 +344,10 @@ function TestCard(props: {
           />
         </Flex>
       </Flex>
+      {/* What this step showed, in words — "bad, but only on the second
+          load", "skipped: build 404s" — a comment thread on the commit, so it
+          is there for whoever looks at this commit next, here or on a chart */}
+      <CommitCommentsPanel sha={commit.sha} title={commit.subject} />
     </CommitCard>
   )
 }
@@ -374,6 +380,8 @@ function CommitRow(props: {commit: BisectCommit; badge: RowBadge; onPick?: () =>
             </a>
           </Text>
         </Box>
+        {/* A visited commit with comments says so; the excerpts are its tooltip */}
+        <CommitCommentCount sha={commit.sha} />
         {onPick && (
           <Button
             mode="bleed"

@@ -7,6 +7,15 @@ import {useRef, useState} from 'react'
 import {Flex} from 'ui5'
 
 import {
+  commentsNearRun,
+  type CommitComment,
+  type ResolvedCommitComments,
+  resolveCommentPositions,
+} from '../comments/comments'
+import {CommentExcerpt} from '../comments/CommitComments'
+import {useCommitComments} from '../comments/CommitCommentsContext'
+import {CommitCommentsDialog} from '../comments/CommitCommentsDialog'
+import {
   CALIBRATION_EXPLAINER,
   formatTick,
   formatValue,
@@ -26,15 +35,20 @@ import {
 import {baselineDetail, type DriftBaseline, type DriftResult} from './drift'
 import {ALL_LAYERS_VISIBLE, type LayerState} from './layers'
 import {categoricalColor} from './palette'
-import {RunDetailPopover} from './RunDetailPopover'
+import {RunDetailDialog} from './RunDetailDialog'
 
 // Left gutter is computed per chart from its tick labels — see marginLeft
-// top: 12 so the release markers' 6px ticks (drawn above the plot, at negative
-// y) clear the SVG's own edge with a little room rather than touching it — paid
-// unconditionally so the plot never resizes when the releases layer is toggled.
+// top: 20 — two rows of annotation above the plot: the release markers' 6px
+// ticks touching the plot edge, and the 10px comment bubbles floating above
+// them (a bubble drawn *over* a tick read as a blob on legs, the tick poking
+// out under it), plus a little room to the SVG's own edge. Paid unconditionally
+// so the plot never resizes when either layer is toggled.
 // bottom: 22 for the axis line + its tick labels, plus 4 so the last row of
 // glyphs isn't shaved by the SVG's own edge.
-const MARGIN = {top: 12, right: 8, bottom: 26}
+const MARGIN = {top: 20, right: 8, bottom: 26}
+/** Where the comment bubbles' tails end: just above the release ticks' tops. */
+const COMMENT_BUBBLE_BOTTOM = -7.5
+const COMMENT_BUBBLE_HEIGHT = 10
 
 /**
  * Top gutter on a chart that can draw release labels.
@@ -61,9 +75,14 @@ const TAG_LABEL_MARGIN_TOP = 112
  * earlier distinct commit (first point, soak minutes, local runs).
  */
 function previousPointFor(lines: TrendLine[], selected: TrendPoint): TrendPoint | undefined {
-  const line = lines.find((candidate) => candidate.points.includes(selected))
+  // By run id, not object identity: the lines are rebuilt on every realtime
+  // emit while the selected point is held across them
+  const line = lines.find((candidate) =>
+    candidate.points.some((point) => point.runId === selected.runId),
+  )
   if (!line) return undefined
-  for (let i = line.points.indexOf(selected) - 1; i >= 0; i--) {
+  const index = line.points.findIndex((point) => point.runId === selected.runId)
+  for (let i = index - 1; i >= 0; i--) {
     const candidate = line.points[i]
     if (candidate.sha !== selected.sha && candidate.sha !== 'unknown') return candidate
   }
@@ -161,6 +180,17 @@ export const COLOR = {
    * the other.
    */
   release: 'var(--card-fg-color, #101112)',
+  /**
+   * Comment markers. The one annotation that *does* take a hue: a comment is
+   * something a person left on purpose for the next reader, and it has to be
+   * findable among the neutral reference marks. Primary rather than a
+   * caution/critical tone (those are claimed by the drift directions and the
+   * good-threshold bar, and a comment carries no verdict of its own). It lives in
+   * the top gutter like the release ticks, so it never competes with the
+   * series inside the plot even though it shares the accent hue — position
+   * separates them, and the comment-bubble shape separates it from the tick.
+   */
+  comment: 'var(--card-badge-primary-fg-color, #556bfc)',
 }
 
 /**
@@ -220,6 +250,17 @@ export function seriesHasCalibration(series: TrendSeries): boolean {
 export function seriesHasReleases(series: TrendSeries, tags: TrendTag[]): boolean {
   if (series.xKind === 'minute') return false
   return tags.length > 0
+}
+
+/**
+ * Whether this chart can carry comment markers — the same capability test as
+ * releases (a comment is pinned to a commit, and a minute-axis soak chart has no
+ * commit positions), gated on any comment existing at all rather than on comments
+ * landing in this chart's window, so the legend toggle stays reachable.
+ */
+export function seriesHasComments(series: TrendSeries, comments: CommitComment[]): boolean {
+  if (series.xKind === 'minute') return false
+  return comments.length > 0
 }
 
 /** Per-line color: the studio accent for a lone line, categorical when comparing. */
@@ -462,9 +503,21 @@ function ReleaseMarkers(props: {
   xScale: (ms: number) => number
   /** Resting text labels above the plot — only where there is room for them. */
   showLabels?: boolean
+  /**
+   * Pixel x positions of comment bubbles. A label whose tick shares an x with
+   * a bubble starts above the bubble row instead of running through it — the
+   * bubble stays exactly on its run, and the label yields.
+   */
+  liftLabelsAt?: number[]
 }) {
-  const {tags, xScale, showLabels} = props
+  const {tags, xScale, showLabels, liftLabelsAt = []} = props
   if (tags.length === 0) return null
+  // The label's own row is the bubble's, so lift by the bubble's height plus
+  // a hair, once a bubble is close enough to touch the text's first glyphs
+  const labelY = (x: number) =>
+    liftLabelsAt.some((bubbleX) => Math.abs(bubbleX - x) < 8)
+      ? COMMENT_BUBBLE_BOTTOM - COMMENT_BUBBLE_HEIGHT - 2
+      : -7
   // Two gaps, because marks and text need different room. Marks merge below 6px,
   // where two ticks stop reading as two; labels need 14px, since at -60° a
   // 7-glyph tag leans ~19px sideways (~12px perpendicular to its neighbour,
@@ -529,7 +582,7 @@ function ReleaseMarkers(props: {
               // against the mark it names instead of drifting away from it as
               // the tag gets longer.
               <text
-                transform={`translate(${x + 1}, -7) rotate(-60)`}
+                transform={`translate(${x + 1}, ${labelY(x)}) rotate(-60)`}
                 textAnchor="start"
                 fontSize={9}
                 fill={COLOR.axis}
@@ -540,6 +593,132 @@ function ReleaseMarkers(props: {
                 {labelFor(labels.get(index)!)}
               </text>
             )}
+          </g>
+        )
+      })}
+    </g>
+  )
+}
+
+/**
+ * The speech-bubble outline of `@sanity/icons`' CommentIcon (25×25 viewBox;
+ * the glyph spans x 5.5–19.5, y 6.5–20.5 with its tail at the bottom left).
+ * Redrawn here rather than rendering the icon component: the marker has to be
+ * placed by a chart coordinate and scaled to a gutter of a few pixels, which a
+ * `1em` icon does not do.
+ */
+const COMMENT_GLYPH_PATH =
+  'M7.5 16.5H9.5V20.5L13.5 16.5H17.5C18.6046 16.5 19.5 15.6046 19.5 14.5V8.5C19.5 7.39543 18.6046 6.5 17.5 6.5H7.5C6.39543 6.5 5.5 7.39543 5.5 8.5V14.5C5.5 15.6046 6.39543 16.5 7.5 16.5Z'
+const COMMENT_GLYPH = {left: 5.5, top: 6.5, width: 14, height: 14}
+
+/**
+ * A comment bubble, `height` px tall, whose bottom edge (the tail's tip) sits
+ * at (`x` horizontally centred, `y`). Shared by the chart marker and the legend
+ * swatch so the two always agree on the shape.
+ */
+export function CommentGlyph(props: {
+  x: number
+  y: number
+  height: number
+  /**
+   * The commit was not measured by any run in the chart — the bubble sits at
+   * the commit's own date. Drawn dashed and lighter, so it reads as "a comment
+   * exists near here" rather than "this run has a comment".
+   */
+  unmeasured?: boolean
+}) {
+  const {x, y, height, unmeasured = false} = props
+  const scale = height / COMMENT_GLYPH.height
+  const left = x - (COMMENT_GLYPH.left + COMMENT_GLYPH.width / 2) * scale
+  const top = y - (COMMENT_GLYPH.top + COMMENT_GLYPH.height) * scale
+  // Outlined, on an opaque card-coloured fill, rather than solid: a solid
+  // bubble at ~10px lost its tail into whatever sat under it (the release
+  // tick of the same commit) and read as a blob on legs. The outline keeps
+  // the shape everyone knows as "a comment", and the fill hides the tick
+  // where the two coincide. The stroke is in screen pixels, not scaled with
+  // the glyph, so it stays legible at any gutter size.
+  return (
+    <path
+      d={COMMENT_GLYPH_PATH}
+      transform={`translate(${left}, ${top}) scale(${scale})`}
+      fill="var(--card-bg-color, #fff)"
+      stroke={COLOR.comment}
+      strokeWidth={1.5}
+      strokeLinejoin="round"
+      strokeDasharray={unmeasured ? '2 1.5' : undefined}
+      opacity={unmeasured ? 0.6 : 1}
+      vectorEffect="non-scaling-stroke"
+    />
+  )
+}
+
+/**
+ * Comment markers: a small comment bubble in the top gutter per commit that
+ * carries a comment, so "did someone already look at this?" is answerable from
+ * the chart — and answerable as *that*: the glyph is the one everyone already
+ * reads as "a comment", so it needs no legend to decode.
+ *
+ * Same gutter and the same reasoning as the release ticks — annotation stays
+ * out of the plot — but a bubble, not a tick, and in the accent hue (see
+ * COLOR.comment): the two often share an x (a release and a finding about it),
+ * and shape plus color keep them apart. The bubble floats in its own row above
+ * the ticks, tail pointing down at the run, so the two never overlap. It never
+ * moves off its x — a marker beside the run it annotates reads as a different
+ * run; in the maximized view the release label at that x lifts above the bubble
+ * instead (see ReleaseMarkers).
+ *
+ * One bubble per position, however many threads it holds: the tooltip lists
+ * them, and the run dialog has them in full. No resting text at any size — a
+ * comment is a sentence, and the marker's job is only to say "there is one here".
+ *
+ * Unlike the other annotation layers, the bubble is a control: hovering it
+ * puts the crosshair on its run (so the tooltip reads the threads), and
+ * clicking or pressing Enter opens the threads — in that run's dialog when a
+ * run measured the commit, or on their own when none did (a merge commented
+ * from the Bisect stepper). The unmeasured bubble is drawn dashed and lighter
+ * so the two cases tell apart before the click.
+ */
+function CommentMarkers(props: {
+  comments: ResolvedCommitComments[]
+  xScale: (ms: number) => number
+  onHover: (atMs: number | null) => void
+  onOpen: (entry: ResolvedCommitComments) => void
+}) {
+  const {comments, xScale, onHover, onOpen} = props
+  if (comments.length === 0) return null
+  return (
+    <g>
+      {comments.map((entry) => {
+        const count = entry.threads.length
+        const label = `${count} comment ${count === 1 ? 'thread' : 'threads'} on commit ${entry.sha.slice(0, 7)}${
+          entry.measured ? '. Open the run' : '. No run measured this commit — open the comments'
+        }`
+        return (
+          <g
+            key={entry.sha}
+            role="button"
+            aria-label={label}
+            tabIndex={0}
+            style={{cursor: 'pointer'}}
+            onPointerEnter={() => onHover(entry.atMs)}
+            onPointerLeave={() => onHover(null)}
+            onFocus={() => onHover(entry.atMs)}
+            onBlur={() => onHover(null)}
+            onClick={() => onOpen(entry)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault()
+                onOpen(entry)
+              }
+            }}
+          >
+            <title>{label}</title>
+            <CommentGlyph
+              x={xScale(entry.atMs)}
+              y={COMMENT_BUBBLE_BOTTOM}
+              height={COMMENT_BUBBLE_HEIGHT}
+              unmeasured={!entry.measured}
+            />
           </g>
         )
       })}
@@ -591,16 +770,18 @@ export function TrendChart(props: {
   } = props
   const {lines, unit} = series
   const [hoverMs, setHoverMs] = useState<number | null>(null)
-  // The selected point only — its anchor coords are derived from the current
-  // scales on every render, so an open popover follows the dot across a resize
-  // or a domain change instead of pointing at a stale pixel position
+  // The run whose detail dialog is open
   const [selected, setSelected] = useState<TrendPoint | null>(null)
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+  // A commented commit no run measured, whose threads open on their own
+  const [commentsSha, setCommentsSha] = useState<string | null>(null)
   const captureRef = useRef<SVGRectElement>(null)
+  // Comments come through context, not props — see CommentsContext for why
+  const comments = useCommitComments()
   const allPoints = lines.flatMap((line) => line.points)
   if (width < 10 || allPoints.length === 0) return null
 
   const showReleases = layers.visible('releases') && seriesHasReleases(series, tags)
+  const showComments = layers.visible('comments') && seriesHasComments(series, comments)
   // Reserved by *capability*, not by what is currently drawn: keyed on the
   // layer's visibility (or on the label lengths) the plot resized when releases
   // were toggled, and charts in one grid disagreed on height depending on
@@ -678,6 +859,12 @@ export function TrendChart(props: {
   // (~54 documents for all of v5+v6), so one O(n) pass per chart render costs
   // nothing next to the plot itself.
   const visibleTags = showReleases ? resolveTagPositions(tags, allPoints, minDate, maxDate) : []
+  // Comments pinned to commits: on the run that measured the commit where one
+  // exists, at the commit's own date otherwise — the same resolution the
+  // release markers use, and cheap for the same reason (a handful of comments)
+  const visibleComments = showComments
+    ? resolveCommentPositions(comments, allPoints, minDate, maxDate, series.key)
+    : []
   // The band only reads when there's one line — overlapping bands across branches
   // would be mud, so comparison mode shows lines only (see seriesHasBand for the
   // low-sample case)
@@ -736,8 +923,8 @@ export function TrendChart(props: {
   // layer's y-value — a dot on the median is anchored to nothing once the median
   // layer is toggled off.
   const snappedIndex = hoverMs === null ? -1 : nearestTimeIndex(stepTimes, hoverMs)
-  // While a run's popover is open the marker stays on that run: reaching the
-  // popover means moving the pointer out of the plot, which clears `hoverMs`, and
+  // While a run's dialog is open the marker stays on that run: reaching the
+  // dialog means moving the pointer out of the plot, which clears `hoverMs`, and
   // the line vanishing is exactly when you most need to see which run you opened.
   const snappedMs =
     snappedIndex === -1 ? (selected?.date.getTime() ?? null) : stepTimes[snappedIndex]
@@ -780,6 +967,20 @@ export function TrendChart(props: {
   const measuredIsLatest = visibleTags.some(
     (entry) => entry.tag.tag === measuredRelease && entry.tag.distTags?.includes('latest'),
   )
+  // The comments the crosshair is standing next to — same tolerance as the
+  // release markers, since both mark commits along the same axis
+  const commentedThreads = visibleComments.reduce((sum, entry) => sum + entry.threads.length, 0)
+  const hoveredComments =
+    snappedMs === null || visibleComments.length === 0
+      ? []
+      : commentsNearRun(
+          visibleComments,
+          snappedMs,
+          Math.max(medianGapMs(stepTimes) / 2, 60 * 60 * 1000),
+        )
+
+  // The opening comment of every thread under the crosshair, oldest first
+  const hoveredThreads = hoveredComments.flatMap((entry) => entry.threads)
 
   return (
     <div style={{position: 'relative', width, height}}>
@@ -837,6 +1038,22 @@ export function TrendChart(props: {
             tags={visibleTags}
             xScale={(ms) => xScale(new Date(ms))}
             showLabels={canLabelReleases}
+            liftLabelsAt={visibleComments.map((entry) => xScale(new Date(entry.atMs)))}
+          />
+          <CommentMarkers
+            comments={visibleComments}
+            xScale={(ms) => xScale(new Date(ms))}
+            onHover={setHoverMs}
+            // The run that measured the commented commit — the bubble is
+            // anchored on it, so the nearest point at that time is that run
+            onOpen={(entry) => {
+              if (!entry.measured) {
+                setCommentsSha(entry.sha)
+                return
+              }
+              const best = nearestPointAcrossLines(lines, entry.atMs)
+              if (best) setSelected(best)
+            }}
           />
           {showBand && (
             <>
@@ -1003,6 +1220,12 @@ export function TrendChart(props: {
                 : visibleTags.length > 1
                   ? ` ${visibleTags.length} releases marked, ${visibleTags[0].tag.tag} to ${visibleTags.at(-1)!.tag.tag}.`
                   : ''
+            }${
+              // Same treatment as the release count: the dots are decoration,
+              // the count says the annotation exists, the tooltip reads them
+              commentedThreads > 0
+                ? ` ${commentedThreads} comment ${commentedThreads === 1 ? 'thread' : 'threads'} on the chart.`
+                : ''
             } Arrow keys inspect runs, Enter opens details.`}
             onPointerMove={handleMove}
             onPointerLeave={() => setHoverMs(null)}
@@ -1020,8 +1243,8 @@ export function TrendChart(props: {
         </Group>
       </svg>
       {/* Tied to actual hovering, not to the marker: the marker also stands on
-          the selected run while its popover is open, and a hover tooltip on top
-          of that popover would report the same run twice. */}
+          the selected run while its dialog is open, and a hover tooltip on top
+          of that dialog would report the same run twice. */}
       {hoverMs !== null && anchor !== null && hovered.length > 0 && (
         <div
           style={{
@@ -1078,7 +1301,7 @@ export function TrendChart(props: {
                         ? `minute ${Math.round(entry.point.date.getTime() / 60_000)}`
                         : entry.point.date.toISOString().slice(0, 10)}
                     {/* Provenance as text — PR number only; a truncated sha is
-                        noise at hover speed, and the run popover (click) has
+                        noise at hover speed, and the run dialog (click) has
                         the full commit link */}
                     {series.xKind !== 'minute' && entry.point.prNumber
                       ? ` · PR #${entry.point.prNumber}`
@@ -1126,7 +1349,7 @@ export function TrendChart(props: {
                       in on documents that predate it), and the versions line
                       names the toolchain and the measuring instrument — a
                       Chromium bump moves vitals with no studio change. The
-                      full detail (image version) stays in the run popover. */}
+                      full detail (image version) stays in the run dialog. */}
                   {hovered
                     .filter((entry) => hostSummary(entry.point.host))
                     .map((entry) => (
@@ -1195,6 +1418,28 @@ export function TrendChart(props: {
                   )}
                 </Flex>
               )}
+              {/* Comments left on the commit under the crosshair — an excerpt
+                  each, the first two, so a finding is readable at hover speed
+                  and the dialog (click) has the full text and the composer. */}
+              {hoveredThreads.length > 0 && (
+                <Stack gap={1}>
+                  {hoveredThreads.slice(0, 2).map((thread) => (
+                    <CommentExcerpt key={thread._id} comment={thread} color={COLOR.comment} />
+                  ))}
+                  {hoveredThreads.length > 2 && (
+                    <Text size={0} muted>
+                      +{hoveredThreads.length - 2} more — click the bubble to read them
+                    </Text>
+                  )}
+                  {/* Why the bubble is dashed: the comment is on a commit
+                      between runs, so it opens on its own, not with a run */}
+                  {hoveredComments.some((entry) => !entry.measured) && (
+                    <Text size={0} muted>
+                      no run measured this commit — click the bubble to read the comments
+                    </Text>
+                  )}
+                </Stack>
+              )}
               {/* No baseline medians here: the legend names the baseline and
                   its window, the overlay draws the levels, and repeating the
                   same two labelled rows in every chart's tooltip was noise. */}
@@ -1202,42 +1447,35 @@ export function TrendChart(props: {
           </Card>
         </div>
       )}
+      {commentsSha && (
+        <CommitCommentsDialog
+          sha={commentsSha}
+          scope={{seriesKey: series.key}}
+          onClose={() => {
+            setCommentsSha(null)
+            captureRef.current?.focus()
+          }}
+        />
+      )}
       {selected && (
-        <>
-          {/* Invisible anchor at the selected dot — coords derived from the
-              current scales (MARGIN offsets the Group), so it tracks the dot
-              through resizes and domain changes. The popover positions against it. */}
-          <div
-            ref={setAnchorEl}
-            style={{
-              position: 'absolute',
-              left: marginLeft + x(selected),
-              top: marginTop + yScale(selected.value),
-              width: 1,
-              height: 1,
-              pointerEvents: 'none',
-            }}
-          />
-          <RunDetailPopover
-            key={selected.runId}
-            series={series}
-            point={selected}
-            previousPoint={previousPointFor(lines, selected)}
-            // The *full* tag list, not `visibleTags`: the release a run comes
-            // after is often older than the plotted window (a 30-day view of a
-            // month with no release), and the popover states release context
-            // unconditionally. Independent of the `releases` layer toggle too —
-            // that hides marks on the plot, it doesn't make the fact untrue.
-            tags={tags}
-            referenceElement={anchorEl}
-            onClose={() => {
-              setSelected(null)
-              // Restore focus to the chart so keyboard users continue where
-              // they were, rather than being dropped at the top of the page
-              captureRef.current?.focus()
-            }}
-          />
-        </>
+        <RunDetailDialog
+          key={selected.runId}
+          series={series}
+          point={selected}
+          previousPoint={previousPointFor(lines, selected)}
+          // The *full* tag list, not `visibleTags`: the release a run comes
+          // after is often older than the plotted window (a 30-day view of a
+          // month with no release), and the dialog states release context
+          // unconditionally. Independent of the `releases` layer toggle too —
+          // that hides marks on the plot, it doesn't make the fact untrue.
+          tags={tags}
+          onClose={() => {
+            setSelected(null)
+            // Restore focus to the chart so keyboard users continue where
+            // they were, rather than being dropped at the top of the page
+            captureRef.current?.focus()
+          }}
+        />
       )}
     </div>
   )

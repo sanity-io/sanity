@@ -24,9 +24,12 @@ export function radarIdSlug(value: string): string {
     .replace(/^-+|-+$/g, '')
 }
 
+/** Prefix of every `gitCommit` document id — for readers mapping an id back to its sha. */
+export const GIT_COMMIT_ID_PREFIX = 'git-commit-'
+
 /** `gitCommit` document for a main-branch commit (full 40-char sha). */
 export function gitCommitId(sha: string): string {
-  return `git-commit-${sha.toLowerCase()}`
+  return `${GIT_COMMIT_ID_PREFIX}${sha.toLowerCase()}`
 }
 
 /** `gitTag` document for a `v*` release tag, e.g. `v6.10.1` → `git-tag-v6-10-1`. */

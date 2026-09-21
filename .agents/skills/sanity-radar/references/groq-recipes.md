@@ -116,7 +116,7 @@ Resources (request counts, DOM nodes, listeners, heap) sit on interaction scenar
 (By-date, like the dashboard's release bracket: it says "shipped after", not "contained in".
 Containment needs the first-parent walk.)
 
-## Bisect sessions and acks
+## Bisect sessions, acks and comments
 
 ```groq
 *[_type == "bisectSession" && defined(result.firstBadSha)] | order(createdAt desc){
@@ -127,3 +127,18 @@ Containment needs the first-parent walk.)
 ```groq
 *[_type == "driftAck"]{metricKey, branch, state, until, note, ackedBy, ackedAt}
 ```
+
+Comment threads on commits are the studio's native comments and live in the **comments addon
+dataset** of `bench` (find its name with `GET /projects/mhfozd0z/datasets?datasetProfile=comments&addonFor=bench`),
+not in `bench` itself — query that dataset instead:
+
+```groq
+// Threads people left on a commit — read these before re-investigating a step
+*[_type == "comment" && target.document._ref == "git-commit-" + $sha]
+  | order(_createdAt asc){
+  _createdAt, authorId, status, threadId, parentCommentId, message
+}
+```
+
+(`message` is Portable Text; `parentCommentId` is set on replies. The two datasets cannot be
+joined in GROQ — the dashboard joins commit dates client-side.)

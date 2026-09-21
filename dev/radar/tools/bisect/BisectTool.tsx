@@ -7,6 +7,7 @@ import {catchError, map, of} from 'rxjs'
 import {useClient, useCurrentUser, useDocumentStore} from 'sanity'
 import {Flex} from 'ui5'
 
+import {CommitCommentsProvider, useLiveCommitComments} from '../comments/CommitCommentsContext'
 import {useUrlState} from '../trends/useUrlState'
 import {
   BISECT_COMMITS_QUERY,
@@ -37,6 +38,17 @@ interface LiveState<T> {
  * stepper lives behind `?session=<id>`.
  */
 export function BisectTool() {
+  // Comment threads on commits reach the stepper through context — see
+  // CommitCommentsContext
+  const comments = useLiveCommitComments()
+  return (
+    <CommitCommentsProvider comments={comments}>
+      <BisectToolBody />
+    </CommitCommentsProvider>
+  )
+}
+
+function BisectToolBody() {
   const documentStore = useDocumentStore()
   const client = useClient({apiVersion: '2025-02-19'})
   const currentUser = useCurrentUser()
