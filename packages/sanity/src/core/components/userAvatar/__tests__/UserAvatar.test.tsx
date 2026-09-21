@@ -10,12 +10,14 @@ import {type UserStore} from '../../../store/user/userStore'
 import {ColorSchemeProvider} from '../../../studio/colorScheme'
 import {UserColorManagerProvider} from '../../../user-color/provider'
 import {UserAvatar} from '../UserAvatar'
+import {avatarSizeVar} from '../UserAvatar.css'
 
 vi.mock('../../../store/datastores', () => ({useUserStore: vi.fn()}))
 vi.mock('../../../store/user/hooks', () => ({useCurrentUser: vi.fn()}))
 
 const SKELETON = '[data-ui="Skeleton"]'
 const AVATAR = '[data-ui="Avatar"]'
+const avatarSizeVarName = avatarSizeVar.slice('var('.length, -1)
 
 const ada: User = {id: 'pAda', displayName: 'Ada Lovelace'}
 const grace: User = {id: 'pGrace', displayName: 'Grace Hopper'}
@@ -245,8 +247,9 @@ describe('UserAvatar', () => {
         </>,
       )
 
-      const [legacy, small, medium] = [...container.querySelectorAll(SKELETON)].map(
-        (skeleton) => getComputedStyle(skeleton).width,
+      // jsdom applies no vanilla-extract stylesheets, so read the size the skeleton is given
+      const [legacy, small, medium] = [...container.querySelectorAll<HTMLElement>(SKELETON)].map(
+        (skeleton) => skeleton.style.getPropertyValue(avatarSizeVarName),
       )
       expect(legacy).toBe(small)
       expect(legacy).not.toBe(medium)

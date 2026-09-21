@@ -1,5 +1,4 @@
 import {type ReactNode} from 'react'
-import {styled} from 'styled-components'
 import {Flex, Icon} from 'ui5'
 
 import {getDefaultVariant} from '../../perspective/getDefaultVariant'
@@ -10,42 +9,12 @@ import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {CircleSmallIcon} from '../temporary-icons/CircleSmall'
 import {RhombusIcon} from '../temporary-icons/Rhombus'
 import {RingIcon} from '../temporary-icons/Ring'
+import {iconSlotRoot} from './DocumentVersionsStatusIndicator.css'
 import {type DocumentStatusIconKind, resolveDocumentStatusIcons} from './resolveDocumentStatusIcons'
 
 interface DocumentStatusProps {
   documentVersions: VersionInfoDocumentStub[]
 }
-
-const IconSlotRoot = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 15px;
-  flex-shrink: 0;
-
-  &[data-status='published'] {
-    --card-icon-color: var(--card-badge-positive-dot-color);
-  }
-  &[data-status='published'] svg {
-    --icon-color: var(--card-badge-positive-dot-color);
-  }
-  &[data-status='draft'] {
-    --card-icon-color: var(--card-badge-caution-dot-color);
-  }
-  &[data-status='draft'] svg {
-    --icon-color: var(--card-badge-caution-dot-color);
-  }
-  &[data-status='variant'] {
-    --card-icon-color: var(--card-badge-suggest-dot-color);
-  }
-  &[data-status='variant'] svg {
-    --icon-color: var(--card-badge-suggest-dot-color);
-  }
-
-  & svg {
-    flex-shrink: 0;
-  }
-`
 
 /**
  * Centers a status glyph in a fixed 15px column. Draft, published, and variant slots set
@@ -61,7 +30,11 @@ function IconSlot({
   status?: 'published' | 'draft' | 'variant'
   children: ReactNode
 }) {
-  return <IconSlotRoot data-status={status}>{children}</IconSlotRoot>
+  return (
+    <div className={iconSlotRoot} data-status={status}>
+      {children}
+    </div>
+  )
 }
 
 function VariantIcon() {

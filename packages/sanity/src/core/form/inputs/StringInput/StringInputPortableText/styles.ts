@@ -1,24 +1,70 @@
-import {_responsive, type CardTone, rem, type ThemeProps} from '@sanity/ui'
-import {getTheme_v2, type ThemeColorSchemeKey, type ThemeFontWeightKey} from '@sanity/ui/theme'
-import {css, type CSSObject} from 'styled-components'
+import {type CardTone, rem} from '@sanity/ui'
+import {type Theme_v2, type ThemeColorSchemeKey, type ThemeFontWeightKey} from '@sanity/ui/theme'
+import {clsx} from 'clsx'
 
 import {focusRingBorderStyle, focusRingStyle} from '../../../components/formField/styles'
+import {
+  inputDisabledBgVar,
+  inputDisabledBorderShadowVar,
+  inputDisabledFgVar,
+  inputDisabledPlaceholderVar,
+  inputEnabledBgVar,
+  inputEnabledBorderShadowVar,
+  inputEnabledFgVar,
+  inputEnabledPlaceholderVar,
+  inputFocusBorderShadowVar,
+  inputFocusNoBorderShadowVar,
+  inputHoveredBgVar,
+  inputHoveredBorderShadowVar,
+  inputHoveredFgVar,
+  inputInvalidDisabledBgVar,
+  inputInvalidDisabledBorderShadowVar,
+  inputInvalidDisabledFgVar,
+  inputInvalidEnabledBgVar,
+  inputInvalidEnabledBorderShadowVar,
+  inputInvalidEnabledFgVar,
+  inputInvalidEnabledPlaceholderVar,
+  inputInvalidHoveredBgVar,
+  inputInvalidHoveredBorderShadowVar,
+  inputInvalidHoveredFgVar,
+  inputInvalidReadOnlyBgVar,
+  inputInvalidReadOnlyFgVar,
+  inputPaddingBottomVar,
+  inputPaddingLeftVar,
+  inputPaddingRightVar,
+  inputPaddingTopVar,
+  inputReadOnlyBgVar,
+  inputReadOnlyFgVar,
+  inputReadOnlyPlaceholderVar,
+  responsiveInputPadding,
+  textInputBase,
+  textInputFontFamilyVar,
+  textInputFontSize,
+  textInputFontSizeVar,
+  textInputFontWeightVar,
+  textInputLineHeightVar,
+  textInputRepresentation,
+  textInputRepresentationFocusRing,
+  textInputRepresentationHasPrefix,
+  textInputRepresentationHasSuffix,
+  textInputRoot,
+} from './styles.css'
+
+/**
+ * A vanilla-extract class plus the inline custom properties that bridge theme values into it.
+ * Wrappers merge `className` with `clsx` and pass `vars` to `assignInlineVars`.
+ */
+export interface TextInputStyle {
+  className: string
+  vars: Record<string, string>
+}
+
+const ROOT_STYLE: TextInputStyle = {className: textInputRoot, vars: {}}
 
 /**
  * Heavily based on the styling provided by Sanity UI.
  */
-const ROOT_STYLE = css`
-  &:not([hidden]) {
-    display: flex;
-  }
-
-  align-items: center;
-`
-
-/**
- * Heavily based on the styling provided by Sanity UI.
- */
-export function textInputRootStyle(): ReturnType<typeof css> {
+export function textInputRootStyle(): TextInputStyle {
   return ROOT_STYLE
 }
 
@@ -26,76 +72,27 @@ export function textInputRootStyle(): ReturnType<typeof css> {
  * Heavily based on the styling provided by Sanity UI.
  */
 export function textInputBaseStyle(
-  props: TextInputInputStyleProps & ThemeProps,
-): ReturnType<typeof css> {
-  const {$scheme, $tone, $weight} = props
-  const {color, font} = getTheme_v2(props.theme)
+  props: TextInputInputStyleProps,
+  theme: Theme_v2,
+): TextInputStyle {
+  const {$weight} = props
+  const {color, font} = theme
 
-  return css`
-    appearance: none;
-    background: none;
-    border: 0;
-    border-radius: 0;
-    outline: none;
-    width: 100%;
-    box-sizing: border-box;
-    font-family: ${font.text.family};
-    font-weight: ${($weight && font.text.weights[$weight]) || font.text.weights.regular};
-    margin: 0;
-    position: relative;
-    z-index: 1;
-    display: block;
-
-    /* NOTE: This is a hack to disable Chrome’s autofill styles */
-    &:-webkit-autofill,
-    &:-webkit-autofill:hover,
-    &:-webkit-autofill:focus,
-    &:-webkit-autofill:active {
-      -webkit-text-fill-color: var(--input-fg-color) !important;
-      transition: background-color 5000s;
-      transition-delay: 86400s /* 24h */;
-    }
-
-    /* &:is(textarea) */
-    &[data-as='textarea'] {
-      resize: none;
-    }
-
-    color: var(--input-fg-color);
-
-    &::placeholder {
-      color: var(--input-placeholder-color);
-    }
-
-    &[data-scheme='${$scheme}'][data-tone='${$tone}'] {
-      --input-fg-color: ${color.input.default.enabled.fg};
-      --input-placeholder-color: ${color.input.default.enabled.placeholder};
-
-      /* enabled */
-      &:not(:invalid):not(:disabled):not([data-read-only='true']) {
-        --input-fg-color: ${color.input.default.enabled.fg};
-        --input-placeholder-color: ${color.input.default.enabled.placeholder};
-      }
-
-      /* disabled */
-      &:not(:invalid):disabled {
-        --input-fg-color: ${color.input.default.disabled.fg};
-        --input-placeholder-color: ${color.input.default.disabled.placeholder};
-      }
-
-      /* invalid */
-      &:invalid {
-        --input-fg-color: ${color.input.invalid.enabled.fg};
-        --input-placeholder-color: ${color.input.invalid.enabled.placeholder};
-      }
-
-      /* readOnly */
-      &[data-read-only='true'] {
-        --input-fg-color: ${color.input.default.readOnly.fg};
-        --input-placeholder-color: ${color.input.default.readOnly.placeholder};
-      }
-    }
-  `
+  return {
+    className: textInputBase,
+    vars: {
+      [textInputFontFamilyVar]: font.text.family,
+      [textInputFontWeightVar]: `${($weight && font.text.weights[$weight]) || font.text.weights.regular}`,
+      [inputEnabledFgVar]: color.input.default.enabled.fg,
+      [inputEnabledPlaceholderVar]: color.input.default.enabled.placeholder,
+      [inputDisabledFgVar]: color.input.default.disabled.fg,
+      [inputDisabledPlaceholderVar]: color.input.default.disabled.placeholder,
+      [inputInvalidEnabledFgVar]: color.input.invalid.enabled.fg,
+      [inputInvalidEnabledPlaceholderVar]: color.input.invalid.enabled.placeholder,
+      [inputReadOnlyFgVar]: color.input.default.readOnly.fg,
+      [inputReadOnlyPlaceholderVar]: color.input.default.readOnly.placeholder,
+    },
+  }
 }
 
 /**
@@ -113,145 +110,74 @@ export interface TextInputRepresentationStyleProps {
  * Heavily based on the styling provided by Sanity UI.
  */
 export function textInputRepresentationStyle(
-  props: TextInputRepresentationStyleProps & ThemeProps,
-): ReturnType<typeof css> {
-  const {$hasPrefix, $hasSuffix, $scheme, $tone, $unstableDisableFocusRing} = props
-  const {color, input} = getTheme_v2(props.theme)
+  props: TextInputRepresentationStyleProps,
+  theme: Theme_v2,
+): TextInputStyle {
+  const {$hasPrefix, $hasSuffix, $unstableDisableFocusRing} = props
+  const {color, input} = theme
+  const width = input.border.width
 
-  return css`
-    --input-box-shadow: none;
-
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: block;
-    pointer-events: none;
-    z-index: 0;
-
-    background-color: var(--card-bg-color);
-    box-shadow: var(--input-box-shadow);
-
-    border-top-left-radius: ${$hasPrefix ? 0 : undefined};
-    border-bottom-left-radius: ${$hasPrefix ? 0 : undefined};
-    border-top-right-radius: ${$hasSuffix ? 0 : undefined};
-    border-bottom-right-radius: ${$hasSuffix ? 0 : undefined};
-
-    &[data-scheme='${$scheme}'][data-tone='${$tone}'] {
-      --card-bg-color: ${color.input.default.enabled.bg};
-      --card-fg-color: ${color.input.default.enabled.fg};
-
+  return {
+    className: clsx(
+      textInputRepresentation,
+      $hasPrefix && textInputRepresentationHasPrefix,
+      $hasSuffix && textInputRepresentationHasSuffix,
+      !$unstableDisableFocusRing && textInputRepresentationFocusRing,
+    ),
+    vars: {
+      [inputEnabledBgVar]: color.input.default.enabled.bg,
+      [inputEnabledFgVar]: color.input.default.enabled.fg,
       /* enabled */
-      *:not(:disabled) + &[data-border] {
-        --input-box-shadow: ${focusRingBorderStyle({
-          color: color.input.default.enabled.border,
-          width: input.border.width,
-        })};
-      }
-
+      [inputEnabledBorderShadowVar]: focusRingBorderStyle({
+        color: color.input.default.enabled.border,
+        width,
+      }),
       /* invalid */
-      *:not(:disabled).invalid + & {
-        --card-bg-color: ${color.input.invalid.enabled.bg};
-        --card-fg-color: ${color.input.invalid.enabled.fg};
-
-        &[data-border] {
-          --input-box-shadow: ${focusRingBorderStyle({
-            color: color.input.invalid.enabled.border,
-            width: input.border.width,
-          })};
-        }
-      }
-
+      [inputInvalidEnabledBgVar]: color.input.invalid.enabled.bg,
+      [inputInvalidEnabledFgVar]: color.input.invalid.enabled.fg,
+      [inputInvalidEnabledBorderShadowVar]: focusRingBorderStyle({
+        color: color.input.invalid.enabled.border,
+        width,
+      }),
       /* focused */
-      *:not(:disabled):focus + & {
-        &[data-border] {
-          --input-box-shadow: ${
-            $unstableDisableFocusRing
-              ? undefined
-              : focusRingStyle({
-                  border: {color: color.input.default.enabled.border, width: input.border.width},
-                  focusRing: input.text.focusRing,
-                })
-          };
-        }
-
-        &:not([data-border]) {
-          --input-box-shadow: ${
-            $unstableDisableFocusRing
-              ? undefined
-              : focusRingStyle({focusRing: input.text.focusRing})
-          };
-        }
-      }
-
+      [inputFocusBorderShadowVar]: focusRingStyle({
+        border: {color: color.input.default.enabled.border, width},
+        focusRing: input.text.focusRing,
+      }),
+      [inputFocusNoBorderShadowVar]: focusRingStyle({focusRing: input.text.focusRing}),
       /* disabled */
-      *:not(.invalid):disabled + & {
-        --card-bg-color: ${color.input.default.disabled.bg} !important;
-        --card-fg-color: ${color.input.default.disabled.fg} !important;
-        --card-icon-color: ${color.input.default.disabled.fg} !important;
-
-        &[data-border] {
-          --input-box-shadow: ${focusRingBorderStyle({
-            color: color.input.default.disabled.border,
-            width: input.border.width,
-          })};
-        }
-      }
-
-      *.invalid:disabled + & {
-        --card-bg-color: ${color.input.invalid.disabled.bg} !important;
-        --card-fg-color: ${color.input.invalid.disabled.fg} !important;
-        --card-icon-color: ${color.input.invalid.disabled.fg} !important;
-
-        &[data-border] {
-          --input-box-shadow: ${focusRingBorderStyle({
-            color: color.input.invalid.disabled.border,
-            width: input.border.width,
-          })};
-        }
-      }
-
+      [inputDisabledBgVar]: color.input.default.disabled.bg,
+      [inputDisabledFgVar]: color.input.default.disabled.fg,
+      [inputDisabledBorderShadowVar]: focusRingBorderStyle({
+        color: color.input.default.disabled.border,
+        width,
+      }),
+      [inputInvalidDisabledBgVar]: color.input.invalid.disabled.bg,
+      [inputInvalidDisabledFgVar]: color.input.invalid.disabled.fg,
+      [inputInvalidDisabledBorderShadowVar]: focusRingBorderStyle({
+        color: color.input.invalid.disabled.border,
+        width,
+      }),
       /* readOnly */
-      *:not(.invalid)[data-read-only='true'] + & {
-        --card-bg-color: ${color.input.default.readOnly.bg} !important;
-        --card-fg-color: ${color.input.default.readOnly.fg} !important;
-      }
-
-      *.invalid[data-read-only='true'] + & {
-        --card-bg-color: ${color.input.invalid.readOnly.bg} !important;
-        --card-fg-color: ${color.input.invalid.readOnly.fg} !important;
-      }
-
+      [inputReadOnlyBgVar]: color.input.default.readOnly.bg,
+      [inputReadOnlyFgVar]: color.input.default.readOnly.fg,
+      [inputInvalidReadOnlyBgVar]: color.input.invalid.readOnly.bg,
+      [inputInvalidReadOnlyFgVar]: color.input.invalid.readOnly.fg,
       /* hovered */
-      @media (hover: hover) {
-        *:not(:disabled):not([data-read-only='true']):not(.invalid):hover + & {
-          --card-bg-color: ${color.input.default.hovered.bg};
-          --card-fg-color: ${color.input.default.hovered.fg};
-        }
-
-        *.invalid:not(:disabled):not([data-read-only='true']):hover + & {
-          --card-bg-color: ${color.input.invalid.hovered.bg};
-          --card-fg-color: ${color.input.invalid.hovered.fg};
-        }
-
-        *:not(:disabled):not([data-read-only='true']):not(.invalid):not(:focus):hover
-          + &[data-border] {
-          --input-box-shadow: ${focusRingBorderStyle({
-            color: color.input.default.hovered.border,
-            width: input.border.width,
-          })};
-        }
-
-        *.invalid:not(:disabled):not([data-read-only='true']):not(:focus):hover + &[data-border] {
-          --input-box-shadow: ${focusRingBorderStyle({
-            color: color.input.invalid.hovered.border,
-            width: input.border.width,
-          })};
-        }
-      }
-    }
-  `
+      [inputHoveredBgVar]: color.input.default.hovered.bg,
+      [inputHoveredFgVar]: color.input.default.hovered.fg,
+      [inputHoveredBorderShadowVar]: focusRingBorderStyle({
+        color: color.input.default.hovered.border,
+        width,
+      }),
+      [inputInvalidHoveredBgVar]: color.input.invalid.hovered.bg,
+      [inputInvalidHoveredFgVar]: color.input.invalid.hovered.fg,
+      [inputInvalidHoveredBorderShadowVar]: focusRingBorderStyle({
+        color: color.input.invalid.hovered.border,
+        width,
+      }),
+    },
+  }
 }
 
 /**
@@ -267,41 +193,32 @@ export interface TextInputResponsivePaddingStyleProps {
 
 /**
  * Heavily based on the styling provided by Sanity UI.
+ *
+ * Media queries cannot read custom properties, so only the first (base breakpoint) entry of each
+ * responsive array is applied. `StringInputPortableText` passes single-entry arrays, for which the
+ * original `_responsive()` expansion collapsed to the same base rule.
  */
 export function responsiveInputPaddingStyle(
-  props: TextInputResponsivePaddingStyleProps & ThemeProps,
-): CSSObject[] {
+  props: TextInputResponsivePaddingStyleProps,
+  theme: Theme_v2,
+): TextInputStyle {
   const {$fontSize, $iconLeft, $iconRight, $padding, $space} = props
-  const {font, media, space} = getTheme_v2(props.theme)
-  const len = Math.max($padding.length, $space.length, $fontSize.length)
-  const _padding: number[] = []
-  const _space: number[] = []
-  const _fontSize: number[] = []
+  const {font, space} = theme
 
-  for (let i = 0; i < len; i += 1) {
-    _fontSize[i] = $fontSize[i] === undefined ? _fontSize[i - 1] : $fontSize[i]
-    _padding[i] = $padding[i] === undefined ? _padding[i - 1] : $padding[i]
-    _space[i] = $space[i] === undefined ? _space[i - 1] : $space[i]
+  const size = font.text.sizes[$fontSize[0]] || font.text.sizes[2]
+  const emSize = size.lineHeight - size.ascenderHeight - size.descenderHeight
+  const p = space[$padding[0]]
+  const s = space[$space[0]]
+
+  return {
+    className: responsiveInputPadding,
+    vars: {
+      [inputPaddingTopVar]: `${rem(p - size.ascenderHeight)}`,
+      [inputPaddingRightVar]: `${rem($iconRight ? p + emSize + s : p)}`,
+      [inputPaddingBottomVar]: `${rem(p - size.descenderHeight)}`,
+      [inputPaddingLeftVar]: `${rem($iconLeft ? p + emSize + s : p)}`,
+    },
   }
-
-  return _responsive(media, _padding, (_, i) => {
-    const size = font.text.sizes[_fontSize[i]] || font.text.sizes[2]
-    const emSize = size.lineHeight - size.ascenderHeight - size.descenderHeight
-    const p = space[_padding[i]]
-    const s = space[_space[i]]
-
-    const styles = {
-      paddingTop: rem(p - size.ascenderHeight),
-      paddingRight: rem(p),
-      paddingBottom: rem(p - size.descenderHeight),
-      paddingLeft: rem(p),
-    }
-
-    if ($iconRight) styles.paddingRight = rem(p + emSize + s)
-    if ($iconLeft) styles.paddingLeft = rem(p + emSize + s)
-
-    return styles
-  })
 }
 
 /**
@@ -316,16 +233,21 @@ export interface TextInputInputStyleProps {
 
 /**
  * Heavily based on the styling provided by Sanity UI.
+ *
+ * Only the first (base breakpoint) `$fontSize` entry is applied; see `responsiveInputPaddingStyle`.
  */
-export function textInputFontSizeStyle(props: TextInputInputStyleProps & ThemeProps): CSSObject[] {
-  const {font, media} = getTheme_v2(props.theme)
+export function textInputFontSizeStyle(
+  props: TextInputInputStyleProps,
+  theme: Theme_v2,
+): TextInputStyle {
+  const {font} = theme
+  const size = font.text.sizes[props.$fontSize[0]] || font.text.sizes[2]
 
-  return _responsive(media, props.$fontSize, (sizeIndex) => {
-    const size = font.text.sizes[sizeIndex] || font.text.sizes[2]
-
-    return {
-      fontSize: rem(size.fontSize),
-      lineHeight: size.lineHeight / size.fontSize,
-    }
-  })
+  return {
+    className: textInputFontSize,
+    vars: {
+      [textInputFontSizeVar]: `${rem(size.fontSize)}`,
+      [textInputLineHeightVar]: `${size.lineHeight / size.fontSize}`,
+    },
+  }
 }
