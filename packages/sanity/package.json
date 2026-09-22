@@ -188,7 +188,7 @@
     "@sanity/uuid": "^3.0.3",
     "@sanity/validation": "workspace:*",
     "@sentry/react": "^10.75.0",
-    "@tanstack/react-virtual": "^3.14.11",
+    "@tanstack/react-virtual": "^3.14.13",
     "@vanilla-extract/dynamic": "catalog:",
     "@xstate/react": "^6.1.0",
     "clsx": "^2.1.1",

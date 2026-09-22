@@ -2127,7 +2127,7 @@ importers:
         specifier: ^10.75.0
         version: 10.75.0(react@19.3.0)
       '@tanstack/react-virtual':
-        specifier: ^3.14.11
+        specifier: ^3.14.13
         version: 3.14.13(react-dom@19.3.0)(react@19.3.0)
       '@vanilla-extract/dynamic':
         specifier: 'catalog:'
