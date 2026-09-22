@@ -2,7 +2,7 @@
 
 This document describes the current architecture of the Variants Studio tool, what functionality is already covered, and the main work that is still pending.
 
-For how variant _document editing_ works through the document pair (target resolution, store guards, operation routing, publish-state UI), see [`EDITING.md`](./EDITING.md). For the underlying plan and per-workstream checklists, see [`EDITING_PLAN.md`](./EDITING_PLAN.md). For the user-facing guide (what variants are and how editors work with them), see [`USER_GUIDE.md`](./USER_GUIDE.md).
+For how variant _document editing_ works through the document pair (target resolution, store guards, operation routing, publish-state UI), see [`EDITING.md`](./EDITING.md). For the underlying plan and per-workstream checklists, see [`EDITING_PLAN.md`](./EDITING_PLAN.md). For the user-facing guide (what variants are and how editors work with them), see [`USER_GUIDE.md`](./USER_GUIDE.md). For the planned move from one variant per document to multiple typed variants — what Studio can land now versus what waits on Content Lake — see [`VARIANT_TYPES.md`](./VARIANT_TYPES.md).
 
 ## Scope
 
@@ -246,3 +246,4 @@ Local browser execution has previously hit `EMFILE: too many open files, watch` 
 - Drop the local `SanityClientWithVariantsActions` typing wrapper once `@sanity/client` exports the variant definition action types.
 - Expand the detail-specific actions menu independently from the overview row menu.
 - Reassess whether inline detail editing is needed after the dialog-based edit flow has been used.
+- Multiple variant types: see [`VARIANT_TYPES.md`](./VARIANT_TYPES.md). Do not ship a root `beta.variants.conditions` key; fold the in-flight resolver under `types`.
