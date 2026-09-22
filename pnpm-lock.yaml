@@ -353,7 +353,7 @@ importers:
         specifier: ^4.23.15
         version: 4.23.15
       turbo:
-        specifier: ^2.10.12
+        specifier: ^2.11.2
         version: 2.11.2
       typescript:
         specifier: 'catalog:'
