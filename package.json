@@ -128,7 +128,7 @@
     "eslint-plugin-testing-library": "^7.16.2",
     "eslint-plugin-tsdoc": "^0.5.2",
     "knip": "^6.37.0",
-    "lefthook": "^2.1.12",
+    "lefthook": "^2.1.14",
     "npm-run-all2": "^9.0.3",
     "only-allow": "^1.2.2",
     "oxfmt": "^0.67.0",
