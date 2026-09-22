@@ -25,6 +25,7 @@ export const States: Story = {
       location: 'FormChrome.stories.tsx:play:start',
       message: 'play function entered',
       data: {
+        runId: 'post-fix',
         bodyTextLength: document.body?.innerText?.length ?? 0,
         bodySnippet: (document.body?.innerText || '').slice(0, 240),
         hasPreparing: /preparing/i.test(document.body?.innerText || ''),
@@ -33,12 +34,22 @@ export const States: Story = {
     // #endregion
     const body = within(document.body)
     try {
+      // ErrorCard renders the i18n string `Error: {{message}}`, so match a
+      // substring (same pattern as the incompatible-item assertion below).
       await waitFor(
-        () => expect(body.getByText('The fixture input could not render')).toBeVisible(),
+        () => expect(body.getByText(/The fixture input could not render/)).toBeVisible(),
         {
           timeout: 5000,
         },
       )
+      // #region agent log
+      agentDebugLog({
+        hypothesisId: 'E',
+        location: 'FormChrome.stories.tsx:play:waitOk',
+        message: 'waitFor fixture error text succeeded',
+        data: {runId: 'post-fix'},
+      })
+      // #endregion
     } catch (err) {
       // #region agent log
       agentDebugLog({
@@ -46,9 +57,9 @@ export const States: Story = {
         location: 'FormChrome.stories.tsx:play:waitFailed',
         message: 'waitFor fixture error text failed',
         data: {
+          runId: 'post-fix',
           error: err instanceof Error ? err.message.slice(0, 400) : String(err),
           bodySnippet: (document.body?.innerText || '').slice(0, 400),
-          // Exact translated ErrorCard copy is "Error: The fixture input could not render"
           hasExactFixture: Boolean(
             document.body?.innerText?.includes('The fixture input could not render'),
           ),
