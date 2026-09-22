@@ -11,7 +11,7 @@ import {
   useState,
   type RefAttributes,
 } from 'react'
-import {IsLastPaneProvider, LegacyLayerProvider} from 'sanity'
+import {IsLastPaneProvider, LazyActivity, LegacyLayerProvider} from 'sanity'
 import {PaneContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'
@@ -227,11 +227,14 @@ export function Pane(
               )}
 
               <BoundaryElementProvider element={rootElement}>
-                {!hidden && (
+                {/* On layout collapse (narrow viewports) non-last panes are kept mounted but
+                    hidden, so their state (scroll position, list state, form UI) survives
+                    navigating back and forth in the pane stack. */}
+                <LazyActivity visible={!hidden}>
                   <Flex flexDirection="column" height="100%">
                     {children}
                   </Flex>
-                )}
+                </LazyActivity>
               </BoundaryElementProvider>
             </Root>
           </IsLastPaneProvider>
