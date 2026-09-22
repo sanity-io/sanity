@@ -1151,7 +1151,7 @@ importers:
         specifier: ^1.52.0
         version: 1.52.0
       eventsource-parser:
-        specifier: ^4.1.0
+        specifier: ^4.1.1
         version: 4.1.1
       rxjs:
         specifier: ^7.8.2
