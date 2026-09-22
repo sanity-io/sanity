@@ -198,6 +198,9 @@ jobs:
           path: ~/.cache/ms-playwright
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-chromium-firefox
 
+      # Only this shard's browser: global setup launches the browser of the
+      # project under test (e2e/globalSetup.ts), so a Firefox shard never needs
+      # Chromium. The shared cache above holds both.
       - name: Install Playwright Browsers
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: pnpm exec playwright install --with-deps ${{ matrix.project }}
