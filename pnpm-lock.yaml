@@ -1108,8 +1108,8 @@ importers:
   e2e:
     devDependencies:
       '@chromatic-com/playwright':
-        specifier: ^0.14.12
-        version: 0.14.12(@playwright/test@1.63.0)(@testing-library/dom@10.4.2)(prettier@3.9.8)(react@19.3.0)
+        specifier: ^0.15.0
+        version: 0.15.0(@playwright/test@1.63.0)(@testing-library/dom@10.4.2)(prettier@3.9.8)(react@19.3.0)
       '@playwright/test':
         specifier: 'catalog:'
         version: 1.63.0
@@ -1130,7 +1130,7 @@ importers:
         version: 3.0.3
       chromatic:
         specifier: ^18.9.4
-        version: 18.9.4(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.1)
+        version: 18.9.4(@chromatic-com/playwright@0.15.0)(@chromatic-com/vitest@1.0.1)
       fflate:
         specifier: ^0.8.3
         version: 0.8.3
@@ -3675,6 +3675,13 @@ packages:
 
   '@chromatic-com/playwright@0.14.12':
     resolution: {integrity: sha512-TZk3ZtMkhAnkKXNWi9R/CJKGFmRSNDVB6yHmLluiT8rau2tdCL0GSzwBo95iWLY2Jl8jcGyZjBywaiRDNWfcig==}
+    hasBin: true
+    peerDependencies:
+      '@playwright/test': ^1.0.0
+
+  '@chromatic-com/playwright@0.15.0':
+    resolution: {integrity: sha512-JrDVJHQrrpezc7JKRxGHojENOX8e+1KRjzMK+8aKvE2V0Fk6CbPjWjEsU/lbGM076qkW95B/WpMBDvL+CaB+jg==}
+    engines: {node: '>=22'}
     hasBin: true
     peerDependencies:
       '@playwright/test': ^1.0.0
@@ -16654,6 +16661,19 @@ snapshots:
       - prettier
       - react
       - utf-8-validate
+    optional: true
+
+  '@chromatic-com/playwright@0.15.0(@playwright/test@1.63.0)(@testing-library/dom@10.4.2)(prettier@3.9.8)(react@19.3.0)':
+    dependencies:
+      '@chromaui/rrweb-snapshot': 2.0.0-alpha.19-noAbsolute
+      '@playwright/test': 1.63.0
+      storybook: 10.2.13(@testing-library/dom@10.4.2)(prettier@3.9.8)(react@19.3.0)
+    transitivePeerDependencies:
+      - '@testing-library/dom'
+      - bufferutil
+      - prettier
+      - react
+      - utf-8-validate
 
   '@chromatic-com/storybook@5.3.1(@chromatic-com/playwright@0.14.12)(@chromatic-com/vitest@1.0.1)(storybook@10.6.0)':
     dependencies:
@@ -22564,6 +22584,13 @@ snapshots:
       semver: 7.8.5
     optionalDependencies:
       '@chromatic-com/playwright': 0.14.12(@playwright/test@1.63.0)(@testing-library/dom@10.4.2)(prettier@3.9.8)(react@19.3.0)
+      '@chromatic-com/vitest': 1.0.1(@testing-library/dom@10.4.2)(prettier@3.9.8)(react@19.3.0)(vitest@4.1.11)
+
+  chromatic@18.9.4(@chromatic-com/playwright@0.15.0)(@chromatic-com/vitest@1.0.1):
+    dependencies:
+      semver: 7.8.5
+    optionalDependencies:
+      '@chromatic-com/playwright': 0.15.0(@playwright/test@1.63.0)(@testing-library/dom@10.4.2)(prettier@3.9.8)(react@19.3.0)
       '@chromatic-com/vitest': 1.0.1(@testing-library/dom@10.4.2)(prettier@3.9.8)(react@19.3.0)(vitest@4.1.11)
 
   cjs-module-lexer@1.2.3: {}
