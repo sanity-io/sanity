@@ -425,7 +425,6 @@ export default defineConfig([
     ...defaultWorkspace,
     name: 'no-releases-no-variants',
     title: 'No releases and no variants',
-    dataset: 'no-releases-no-variants',
     basePath: '/no-releases-no-variants',
     document: {
       drafts: {enabled: true},
