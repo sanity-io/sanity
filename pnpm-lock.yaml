@@ -11034,15 +11034,6 @@ packages:
     resolution: {integrity: sha512-IfkbWqOGO2kd2Ccgiz/NIzk3bcwjtVqBm3RNa3j/veHg2q7c1DgS3EXrCrvIWH0jbNTbhkdblnxBP7Dm8CiH+A==}
     engines: {node: '>=14.0.0'}
 
-  get-it@9.5.4:
-    resolution: {integrity: sha512-LXbU86HfKWzssHTTsQtUphDh5RB9ilOvncCPPDjaJTbli8zPIJBv4KA9EMB/Wv8GfPXy0dpulfRJzd76n7c3bg==}
-    engines: {node: '>=22.12.0'}
-    peerDependencies:
-      vitest: ^4.1.11
-    peerDependenciesMeta:
-      vitest:
-        optional: true
-
   get-it@9.5.5:
     resolution: {integrity: sha512-Pl8de7i64Dggbx5YXVqj9xJeP+uOg32KUM7ZhYA8TLK89dUVnb39K0oHnTKl/YM1BuNI0n7idyTKNOnIQuwrMQ==}
     engines: {node: '>=22.12.0'}
@@ -19813,7 +19804,7 @@ snapshots:
       '@sanity/client': 8.6.2(vitest@4.1.11)
       boxen: 8.0.1
       empathic: 2.1.0
-      get-it: 9.5.4(vitest@4.1.11)
+      get-it: 9.5.5(vitest@4.1.11)
       get-tsconfig: 4.14.3
       import-meta-resolve: 4.2.0
       jiti: 2.7.0
@@ -19954,7 +19945,7 @@ snapshots:
   '@sanity/client@8.6.2(vitest@4.1.11)':
     dependencies:
       eventsource: 5.1.1
-      get-it: 9.5.4(vitest@4.1.11)
+      get-it: 9.5.5(vitest@4.1.11)
       obug: 3.0.0
       rxjs: 7.8.2
     transitivePeerDependencies:
@@ -20140,7 +20131,7 @@ snapshots:
       '@sanity/client': 8.6.2(vitest@4.1.11)
       '@sanity/generate-help-url': 4.0.0
       '@sanity/mutator': link:packages/@sanity/mutator
-      get-it: 9.5.4(vitest@4.1.11)
+      get-it: 9.5.5(vitest@4.1.11)
       modern-tar: 0.8.5
       obug: 3.0.0
       p-map: 7.0.8
@@ -20192,7 +20183,7 @@ snapshots:
       '@sanity/types': link:packages/@sanity/types
       '@sanity/util': link:packages/@sanity/util
       arrify: 3.0.0
-      get-it: 9.5.4(vitest@4.1.11)
+      get-it: 9.5.5(vitest@4.1.11)
       groq-js: 2.0.0
       modern-tar: 0.8.5
       obug: 3.0.0
@@ -23991,12 +23982,6 @@ snapshots:
       is-retry-allowed: 2.2.0
       through2: 4.0.2
       tunnel-agent: 0.6.0
-
-  get-it@9.5.4(vitest@4.1.11):
-    dependencies:
-      undici: 7.29.1
-    optionalDependencies:
-      vitest: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@24.13.6)(@vitest/browser-playwright@4.1.11)(@vitest/coverage-v8@4.1.11)(jsdom@29.1.1)(vite@8.3.0)
 
   get-it@9.5.5(vitest@4.1.11):
     dependencies:
