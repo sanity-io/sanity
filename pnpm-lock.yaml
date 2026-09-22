@@ -941,6 +941,9 @@ importers:
       '@portabletext/toolkit':
         specifier: ^6.0.0
         version: 6.0.0
+      '@repo/utils':
+        specifier: workspace:*
+        version: link:../../packages/@repo/utils
       '@sanity/assist':
         specifier: ^6.2.1
         version: 6.2.1(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)(vitest@4.1.11)
@@ -1507,12 +1510,21 @@ importers:
         specifier: ^9.4.0
         version: 9.4.1
     devDependencies:
+      '@repo/test-config':
+        specifier: workspace:*
+        version: link:../test-config
       '@repo/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12
+      jsdom:
+        specifier: 'catalog:'
+        version: 29.1.1(@noble/hashes@2.4.0)
+      vitest:
+        specifier: ^4.1.11
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@24.13.6)(@vitest/browser-playwright@4.1.11)(@vitest/coverage-v8@4.1.11)(jsdom@29.1.1)(vite@8.3.0)
 
   packages/@sanity/access-ui:
     dependencies:

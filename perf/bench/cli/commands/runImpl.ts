@@ -4,6 +4,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 
+import {type StyleCensus} from '@repo/utils/style-systems'
 import chalk from 'chalk'
 
 import {EXPERIMENT, REFERENCE} from '../../constants'
@@ -19,7 +20,11 @@ import {
 import {type BenchRunDocument, type ScenarioReport} from '../../report/types'
 import {calibrateHost, launchBrowser} from '../../runner/browser'
 import {measureBundleSize} from '../../runner/bundleSize'
-import {bundleInstrumentation, bundleSettleInstrumentation} from '../../runner/inject'
+import {
+  bundleInstrumentation,
+  bundleSettleInstrumentation,
+  bundleStyleProbe,
+} from '../../runner/inject'
 import {runAbScenario} from '../../runner/orchestrator'
 import {startSide} from '../../runner/servers'
 import {SessionError} from '../../runner/session/errors'
@@ -36,6 +41,7 @@ import {
   runPageLoadSample,
 } from '../../runner/session/pageLoad'
 import {runSettleSession, type SettleSessionResult} from '../../runner/session/settle'
+import {describeStyleCensus} from '../../runner/session/styles'
 import {getScenario, SCENARIOS} from '../../scenarios'
 import {bootstrapDiffOfMedians} from '../../stats/bootstrap'
 import {gate, isDecidedVerdict, PAGELOAD_THRESHOLDS} from '../../stats/gate'
@@ -96,6 +102,21 @@ async function withSessionRetries<T>(label: string, run: () => Promise<T>): Prom
   }
 }
 
+/**
+ * One log line for a scenario's style census (the style-migration rows): the
+ * first session's numbers — a build renders the same page every session, so
+ * one is representative — or a warning when every session's probe failed, so
+ * a silently missing row set is visible in the run log.
+ */
+function logStyleCensus(sessions: {styles: StyleCensus | null}[]): void {
+  const census = sessions.find((session) => session.styles !== null)?.styles
+  console.log(
+    census
+      ? `  ${chalk.bold('styles')}: ${describeStyleCensus(census)}`
+      : chalk.yellow('  styles: census unavailable (the style probe failed in every session)'),
+  )
+}
+
 /** Flags stamped into a dist by its build script (absent = pristine build). */
 function readBuildFlags(dist: string): {customizations?: boolean} {
   try {
@@ -148,6 +169,9 @@ export async function runBench(argv: RunArgs): Promise<void> {
   }
 
   const instrumentation = await bundleInstrumentation()
+  // The style census (UI v5 adoption, styled-components footprint) is taken
+  // once per session in every mode that opens a document
+  const styleProbe = await bundleStyleProbe()
   const running = await startSide(EXPERIMENT, dist)
   const reference = referenceDist ? await startSide(REFERENCE, referenceDist) : undefined
   const browser = await launchBrowser(!argv.headed, (await getBenchTls()).spki)
@@ -232,6 +256,7 @@ export async function runBench(argv: RunArgs): Promise<void> {
               scenario,
               instrumentation,
               settleInstrumentation,
+              styleProbe,
               config: {cpuThrottleRate: argv.throttle},
             }),
           )
@@ -275,6 +300,9 @@ export async function runBench(argv: RunArgs): Promise<void> {
               ? `, time-to-settle p50 ${summarize(settleTimes).median.toFixed(0)}ms`
               : ''),
         )
+        // Only ready sessions take the census; a scenario that never opened
+        // its pane has nothing to count, and that is not a probe failure
+        if (results.some((result) => result.ready)) logStyleCensus(results)
         if (
           settleMismatch({
             expectedToSettle: expected,
@@ -382,6 +410,7 @@ export async function runBench(argv: RunArgs): Promise<void> {
                 running: side,
                 scenario,
                 instrumentation,
+                styleProbe,
                 config: {
                   cpuThrottleRate: argv.throttle,
                   ...(argv.networkEmulation ? {} : {network: null}),
@@ -459,6 +488,7 @@ export async function runBench(argv: RunArgs): Promise<void> {
             )
           }
         }
+        logStyleCensus(bySide.get('experiment') ?? [])
         scenarioReports.push(
           collectPageLoad(scenario.name, bySide, conditionComparisons, scenario.sourceFile, {
             experiment: sizesByPath,
@@ -476,6 +506,7 @@ export async function runBench(argv: RunArgs): Promise<void> {
             reference,
             experiment: running,
             instrumentation,
+            styleProbe,
             rng: mulberry32(argv.seed),
             config: {
               minSessionsPerSide: argv.sessions,
@@ -494,6 +525,7 @@ export async function runBench(argv: RunArgs): Promise<void> {
           console.log(
             `  stopped by: ${result.stoppedBy} (${result.reference.sessions.length}+${result.experiment.sessions.length} sessions, ${result.failures.length} retried failure(s))`,
           )
+          logStyleCensus(result.experiment.sessions)
           scenarioReports.push(collectAbInteraction(result, scenario.sourceFile))
           continue
         }
@@ -507,6 +539,7 @@ export async function runBench(argv: RunArgs): Promise<void> {
               running,
               scenario,
               instrumentation,
+              styleProbe,
               config: {cpuThrottleRate: argv.throttle},
             }),
           )
@@ -554,6 +587,7 @@ export async function runBench(argv: RunArgs): Promise<void> {
               `blocking p50 ${summarize(results.map((r) => r.blockingMs)).median.toFixed(0)}ms`,
           )
         }
+        logStyleCensus(results)
         scenarioReports.push(
           collectAbsoluteInteraction(scenario.name, results, scenario.sourceFile),
         )

@@ -25,7 +25,9 @@ function DriftRow(props: {
   return (
     <Flex alignItems="center" gap={2} flexWrap="wrap">
       <Badge tone={entry.direction === 'regression' ? 'critical' : 'positive'} fontSize={0}>
-        {entry.direction === 'regression' ? '↑ regression' : '↓ improvement'}
+        {/* Arrow = which way the value moved; word = what that means for
+            the metric (a UI v5 share that fell is a "↓ regression") */}
+        {entry.baseline.delta > 0 ? '↑' : '↓'} {entry.direction}
       </Badge>
       {/* The metric name navigates to its chart (one pushed history entry, so
           Back returns) — looks like a button, behaves like a link */}
