@@ -1,8 +1,8 @@
 /* eslint-disable i18next/no-literal-string */
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {type ReactNode, startTransition, useCallback, useEffect, useState} from 'react'
-import {Flex, Box} from 'ui5'
+import {VStack,Flex,Box} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {type RequestErrorClaim} from './types'
@@ -39,11 +39,11 @@ const NETWORK_TROUBLESHOOTING: {key: string; content: ReactNode}[] = [
 function NetworkTroubleshooting() {
   return (
     <Card border radius={2} padding={3} tone="transparent">
-      <Stack gap={3}>
+      <VStack gap={3}>
         <Text size={1} weight="medium">
           Troubleshooting
         </Text>
-        <Stack as="ul" gap={3} style={{margin: 0, paddingLeft: '1.25em'}}>
+        <VStack as="ul" gap={3} style={{margin: 0, paddingLeft: '1.25em'}}>
           {NETWORK_TROUBLESHOOTING.map((tip) => (
             <Box as="li" key={tip.key}>
               <Text size={1} muted>
@@ -51,8 +51,8 @@ function NetworkTroubleshooting() {
               </Text>
             </Box>
           ))}
-        </Stack>
-      </Stack>
+        </VStack>
+      </VStack>
     </Card>
   )
 }
@@ -154,7 +154,7 @@ export function RequestErrorDialog(props: {
             }
       }
     >
-      <Stack gap={4}>
+      <VStack gap={4}>
         <Text>{message}</Text>
         {claim.type === 'networkError' ? <NetworkTroubleshooting /> : null}
         {claim.type === 'serverError' ? (
@@ -172,7 +172,7 @@ export function RequestErrorDialog(props: {
             </a>
           </Text>
         ) : null}
-      </Stack>
+      </VStack>
     </Dialog>
   )
 }
@@ -215,9 +215,9 @@ function RateLimitedDialog(props: {
           },
         }}
       >
-        <Stack gap={4}>
+        <VStack gap={4}>
           <Text>Too many requests at once. Reload the Studio to try again.</Text>
-        </Stack>
+        </VStack>
       </Dialog>
     )
   }
@@ -244,9 +244,9 @@ function RateLimitedDialog(props: {
         },
       }}
     >
-      <Stack gap={4}>
+      <VStack gap={4}>
         <Text>Too many requests at once. You can try again shortly.</Text>
-      </Stack>
+      </VStack>
     </Dialog>
   )
 }
