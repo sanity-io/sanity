@@ -38,7 +38,9 @@ effect of merged work; secondary: leads scanning health weekly.
   health; PR verdicts live in PR comments.
 - **Git history as data.** One `gitCommit` document per main-branch commit
   and one `gitTag` document per `v*` release tag, coverage starting at
-  v5.0.0.
+  v3.0.0 (it started at v5.0.0; extending the tags back was free, since
+  the npm enrichment is three package-wide requests, and the commit chain
+  back to v3 is a one-time backfill dispatch).
 
   Commit documents are metadata only: sha, first-parent sha (the exact
   mainline chain link the Bisect tool walks — `committedAt` ordering has
@@ -46,9 +48,12 @@ effect of merged work; secondary: leads scanning health weekly.
   conventional-commit parse plus PR number. Tag documents carry the
   dereferenced sha, a weak reference to their commit, and parsed semver so
   interleaved release lines group by major. Tags also carry npm data
-  (`publishedAt`, `distTags`, `weeklyDownloads`), collected on releases, the
-  daily cron, and dispatches — the cron is the floor because dist-tags
-  re-point and download counts roll without commits.
+  (`publishedAt`, `distTags`, `weeklyDownloads`, and `deprecated`, the npm
+  deprecation message, present only while it applies), collected on
+  releases, the daily cron, and dispatches — the cron is the floor because
+  dist-tags re-point, download counts roll and versions get deprecated
+  without commits. Every npm-collecting run rewrites every synced tag, so a
+  new npm field needs no backfill and a lifted deprecation clears itself.
 
   Sync (scripts/syncGitHistory.ts via sync-git-metrics.yml): every push to
   main re-upserts the last 50 commits — deterministic ids + createOrReplace
@@ -335,7 +340,38 @@ effect of merged work; secondary: leads scanning health weekly.
    mark per sha wins); one that contradicts the bounds surfaces as the usual
    conflict that undo resolves. Sessions can be deleted from the session
    view (hard delete behind a confirm — they're the only user-owned documents
-   here).
+   here). A confirmed regression carries a **severity** — minor, major or
+   critical, a human call on the verdict card (or when reporting by hand),
+   shown wherever the regression is listed and editable from the release's
+   regressions dialog; unrated is allowed. A session carries a **description**
+   of the issue (asked for at creation, editable on the verdict card), and a
+   verdict carries a **note** (`result.note`: why this commit, the fix, a
+   workaround — about the finding, not the issue), shown under the verdict
+   wherever the regression is listed. A session can
+   **refine** another (`refines`, a weak reference): the "bisect these
+   commits" drill-down from a releases-only verdict creates the new session
+   linked to the one it narrows down and hands the description along. A
+   refinement chain is ONE regression, resolved in `tools/bisect/
+sessionChains.ts` and shared by the sessions list and the Releases tool:
+   the deepest converged session names the commit (a refinement still in
+   progress does not un-name what its parent found), the regression flag
+   counts if set anywhere in the chain, the severity is the worst rated
+   anywhere in it (a parent and its refinement may both rate the same
+   regression — the chain shows the union), and each text annotation
+   (description, note, Linear issue, fix release) is the deepest one set.
+   The bisect overview shows that union once per box, on the root row:
+   affected releases (earliest start to latest end across the chain),
+   outcome, severity. Each session's own verdict card edits its own values.
+   Among several
+   refinements of one session the converged one is followed, newest first
+   among equals; the others are abandoned branches, listed but never counted.
+   Removing the regression from the Releases tool deletes the whole tree
+   under the root, abandoned branches included — deleting only the followed
+   path would resurface a sibling refinement as a regression of its own, and
+   deleting only the refinement would resurface its parent one step less
+   precise. Severity and fix release set from that tool are written to every
+   session in the tree for the same reason: the row shows the union, so a
+   change to one session alone could be outvoted by another and snap back.
 
 8. **Studio releases** — every synced release tag in semver order (newest
    version first, prereleases below their release — a version list, not a
@@ -345,18 +381,34 @@ effect of merged work; secondary: leads scanning health weekly.
    document in the structure tool. The changelog link is derived from the
    release's base version — the previous release on the first-parent chain,
    the same value release automation computes — so off-mainline releases
-   (maintenance lines) may lack it. Each release also shows the count of
-   confirmed regressions bisect sessions have attributed to it, blamed on the
-   release that FIRST shipped the offending commit. Regressions found outside
+   (maintenance lines) may lack it. Each release also shows the confirmed
+   regressions bisect sessions have attributed to it, along the span a
+   regression covers: **introduced** (this release FIRST shipped the
+   offending commit — the blame, a count with a bug icon toned by the worst
+   rated severity among them: red for critical, amber for major or while
+   unrated, plain for minor),
+   **inherited** (introduced by an earlier release and not fixed yet when
+   this one shipped — an amber count with a warning icon, red when one of them is rated critical, so every release inside the
+   span reads as affected without looking like a fresh break) and **fixed**
+   (a green count on the release named in `result.fixedIn`). Whether a
+   later release still carries a regression is ancestry, like the blame: it
+   inherits when its first-parent chain contains the culprit but not the
+   fix release's commit; an unfixed regression therefore marks every
+   release after the introducing one. A fix tag whose commit is off the
+   synced chain falls back to semver (every release at or above it counts as
+   fixed) so a recorded fix is never silently ignored. Regressions found outside
    a bisect (user reports) are added by hand via "Add regression" — from the
    header with a release picker, or from a release's own row with that
    release preselected — stored as a born-converged releases-only
    bisectSession (base release → blamed release, the commits between as
    suspects) so attribution and the bisect drill-down work unchanged. The
-   regression count on a row opens the list behind it — what broke, who
-   recorded it, a link into the Bisect tool — where each entry can be marked
-   fixed in a later release (`result.fixedIn`, a tag name; the candidates
-   are the synced releases newer than the introducing one) or removed, which
+   counts on a row open the list behind them, sectioned the same way
+   (introduced here / inherited, each naming its introducing release /
+   fixed here) — what broke, who recorded it, a link into the Bisect tool —
+   where each entry can be marked fixed in a later release
+   (`result.fixedIn`, a tag name; the candidates are the synced releases
+   newer than the INTRODUCING one, also when the entry is viewed from a
+   release that only inherited it) or removed, which
    deletes its session (the session is the regression; there is no separate
    record to unpin). The count on the introducing release does not drop when
    a fix ships — it answers "what did this release break", not "what is
@@ -364,7 +416,128 @@ effect of merged work; secondary: leads scanning health weekly.
    test-studio path (same normalization as the bisect repro path, `?path=`
    in the URL so it is reload-safe and shareable) that every release's
    Test Studio link opens at — checking one repro across releases is a click per
-   row.
+   row. Rows are grouped into release lines, one heading per major with its
+   release and introduced-regression counts. A line can be marked **end of
+   life** from that heading (a `releaseLine` document keyed by major,
+   user-owned and liveEdit like `driftAck`; its existence is the mark and
+   "Reinstate" deletes it). An EOL line folds into its heading — when and by
+   whom it was marked, with a disclosure to show the releases anyway — so the
+   list stays about the lines anyone still runs, while the data underneath
+   (tags, npm state, regression spans) is untouched and keeps syncing. The
+   line holding the `latest` dist-tag cannot be marked. Its own type rather
+   than a flag on `gitTag` because the sync replaces tag documents whole.
+   EOL releases are left out of every release picker — bisect endpoints,
+   the blamed release and the fix release of a hand-reported regression,
+   the "fixed in" candidates — but stay in attribution: the chain walks do
+   not care, and hiding an EOL release from them would misplace blame.
+   Next to its version a release shows what was broken in it — one badge
+   per severity over the regressions present in it, introduced there or
+   inherited, not the ones it fixed, worst first with unrated last:
+   "1 critical · 2 major · 1 minor · 1 unrated". The counts below tell
+   origin apart and are toned by it: the introduced count by the worst
+   regression this release caused (amber while unrated), the inherited
+   count red only when it carries a critical one, so a release that merely
+   carries a critical regression never reads as having caused it. A
+   deprecated release folds to its first line (version, npm badges, date)
+   with a disclosure to expand it; its severity badges wait behind the
+   disclosure too — nobody should install it, so its bugs are history, not
+   a warning. Neighbouring releases deprecated with the same message (npm
+   deprecations are usually stamped on a whole span at once) fold further
+   into one line — the version range, the count, the deprecation — that
+   expands to the releases themselves.
+
+9. **Style migration** — the Trends tab that tracks the studio's two styling
+   migrations, per scenario, on the same runs that record INP and LCP: **UI v5
+   adoption** (rendered `@sanity/ui` v5 components as a share of all
+   `@sanity/ui` components — the headline — with the v5 and v4 counts behind
+   it) and the **styled-components** escape hatch (rendered nodes, distinct
+   components, `<style data-styled>` tags, CSS rules and bytes inserted at
+   runtime, share of all CSS rules). The bench takes a style census of each
+   session's page once it has gone quiet (perf/bench README, "Style migration
+   census") and stores it as ordinary metric rows, so nothing here is a new
+   document shape: the rows flow through `buildSeries` like every other metric
+   and get drift, acks, deep links, the run popover and its bisect hand-offs
+   for free. What is specific:
+
+   - **The metric registry is shared, not mirrored.** `STYLE_METRICS` in
+     `@repo/utils/style-systems` holds the labels (the join key with the
+     bench), units, direction and descriptions; `describeSeries` consults it
+     first, before any mode. The same module owns the DOM fingerprints the
+     test studio's "Style migrations" widget draws from, so the widget, the
+     bench and this tab cannot count three different things. A registry entry
+     can be `charted: false` — recorded on the document, never a series: the
+     `<style data-styled>` tag count is one on every page (two would mean a
+     second styled-components runtime, which the document still shows), and a
+     flat line of ones tells no story.
+   - **Keyed per scenario, not per mode.** The census rides on the interaction,
+     pageload and settle reports alike, and the shards of one scenario count
+     the same page, so their rows share a `styles:<scenario>:<label>` key and
+     merge into one point per commit (the `mergeRunsPerCommit` median) rather
+     than drawing two series that say the same thing.
+   - **The two majors share a chart.** The three UI rows (`UI v5 share`,
+     `UI v5 instances`, `UI v4 instances`) become paired series per scenario
+     (`UI_PAIRS`), each drawing v5 and v4 as two lines in the style systems'
+     own colors — the migration reads as a crossing, v5 climbing past v4, that
+     two single-line charts never show. Only the **share** pair is charted:
+     its v4 line is the complement of the stored v5 share (they sum to 100% by
+     construction). The **instances** pair is the same picture before the
+     division, so it is built `hidden` (`TrendSeries.hidden`: no card, no
+     drift row, no deep link) and exists to be summed. This is the first series
+     with several measured lines per branch, hence `TrendLine.label` /
+     `color` / `secondary`: the v4 line is secondary — drawn for the crossing,
+     but the card's latest value, the drift verdict and the baseline overlay
+     read the v5 line only (judging both would flag every move twice, once per
+     direction). Legends and tooltips name lines by label, and by branch too
+     when several branches' pairs share a chart, where the second branch
+     dashes because the color already means the major.
+   - **The overview score.** The UI v5 adoption view leads with one full-width
+     card, `all scenarios · UI v5 vs v4 share` (`UI_OVERVIEW_KEY`): every
+     scenario's hidden instance counts summed per commit, then divided —
+     Σ v5 ÷ Σ (v5 + v4) — so it is weighted by how much each page renders,
+     not an average of the pages' percentages. Built by `aggregateStyleSeries`
+     from the full history as well, so it is judged like any chart and a batch
+     of migrated components badges the score the day it lands. The
+     per-scenario share cards follow as its breakdown. The styled-components
+     view leads the same way: an "All scenarios" grid with one summed card per
+     metric (instances, components, CSS rules, CSS bytes; the rule share
+     weighted by rules), so the whole escape hatch is readable before the
+     per-scenario sections.
+   - **Higher is better exists now.** Adoption climbs, so `goal: 'higher'`
+     makes a drop the regression and a rise the improvement (drift.ts
+     `classify`); the badge arrow follows the value's direction and its tone the
+     verdict, so a falling share reads "↓ regression". Shares are stored 0–100
+     (`unit: 'percent'`) and drawn on a **fixed 0–100 axis**: the distance to
+     100% (or to 0%) is the story, and an auto-scaled axis would make 35%
+     look nearly done. The drift floor for a share is one whole point.
+   - **Not applicable is absent, never zero.** A build without `@sanity/ui` v5
+     (studio before v6.10) records no `UI v5 …` rows, so a backfill or bisect
+     into that era leaves the adoption series empty where v5 did not exist
+     instead of drawing a 0% floor; the styled-components rows cover every era.
+     The scenario's `styles.experiment.ui5Available` says which case it was,
+     and `styledComponentsVersion` names the runtime — surfaced on style points
+     (tooltip, popover) because a step in the CSS rows that lands with a
+     version bump is the library changing its output, not a migration.
+   - **Two sub-views plus "Per week".** UI v5 adoption (the two paired
+     sections) and styled-components (a section per registry metric) each lay
+     out like the Vitals tab, a card per scenario. "Per week" redraws the
+     headline series as weekly histograms modelled on Linear's "StyleX adoption
+     per week" chart (`WeeklyBars.tsx`, buckets from `weekly.ts`): a
+     100%-stacked bar per Monday-start UTC week for the shares (the filled part
+     climbing to the top is the celebration), plain bars for the counts and
+     sizes that should sink. It leads with **every scenario summed** and then
+     repeats the set per scenario, one scrolling page and no picker: the
+     aggregate (`aggregateStyleSeries`) sums the per-scenario points per
+     commit (rendered styled nodes, inserted bytes) and recomputes the shares
+     from the summed counts (Σ v5 ÷ Σ (v5 + v4); Σ inserted rules ÷ Σ readable
+     rules, the totals recovered from each scenario's rule count and share)
+     rather than averaging percentages. Sums count shared studio chrome once
+     per scenario page, so they read "across the benchmark's pages"; a failed
+     shard leaves a commit's sum short, which the weekly median absorbs. A bar
+     is the **median of that week's points**, an empty week stays a gap
+     (interpolating would claim a measurement nobody took), and a bar opens
+     the week's newest run in the same popover the trend charts use, so the
+     histogram is a bisect surface too. Colors are the style systems' own,
+     shared with the widget's donut and outlines.
 
 ## Architecture
 
