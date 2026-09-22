@@ -1,4 +1,11 @@
-import {defineField, defineType, isArraySchemaType, type FormNodeValidation} from '@sanity/types'
+import {
+  defineArrayMember,
+  defineField,
+  defineType,
+  isArraySchemaType,
+  isObjectSchemaType,
+  type FormNodeValidation,
+} from '@sanity/types'
 import {Card, Stack, Text, TextInput} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
 
@@ -15,15 +22,21 @@ import {FormFieldSet} from '../formField/FormFieldSet'
 
 const SCHEMA_TYPES = [
   defineType({
-    name: 'fixtureItems',
-    title: 'Related items',
-    description: 'A fixture array used to show form error chrome.',
-    type: 'array',
-    of: [
-      defineType({
-        name: 'fixtureItem',
-        type: 'object',
-        fields: [defineField({name: 'title', type: 'string'})],
+    name: 'fixtureDocument',
+    type: 'document',
+    fields: [
+      defineField({
+        name: 'items',
+        title: 'Related items',
+        description: 'A fixture array used to show form error chrome.',
+        type: 'array',
+        of: [
+          defineArrayMember({
+            name: 'fixtureItem',
+            type: 'object',
+            fields: [defineField({name: 'title', type: 'string'})],
+          }),
+        ],
       }),
     ],
   }),
@@ -34,9 +47,13 @@ const VALIDATION: FormNodeValidation[] = [
 ]
 
 function FormChrome() {
-  const schemaType = useSchema().get('fixtureItems')
+  const documentType = useSchema().get('fixtureDocument')
+  if (!isObjectSchemaType(documentType)) {
+    throw new Error('Expected fixtureDocument to compile as an object schema type')
+  }
+  const schemaType = documentType.fields.find((field) => field.name === 'items')?.type
   if (!isArraySchemaType(schemaType)) {
-    throw new Error('Expected fixtureItems to compile as an array schema type')
+    throw new Error('Expected items to compile as an array schema type')
   }
 
   return (
