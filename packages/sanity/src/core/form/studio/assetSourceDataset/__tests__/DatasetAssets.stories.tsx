@@ -22,7 +22,11 @@ type Story = StoryObj<typeof meta>
 
 export const FileList: Story = {
   play: async () => {
-    const mobileRow = within(document.body).getByTestId('mobile-asset-row')
+    const body = within(document.body)
+    await waitFor(() => expect(body.getByTestId('mobile-asset-row')).toBeVisible(), {
+      timeout: 5000,
+    })
+    const mobileRow = body.getByTestId('mobile-asset-row')
     const [, expandButton] = within(mobileRow).getAllByRole('button')
     await userEvent.click(expandButton)
     await waitFor(() => expect(within(mobileRow).getByText('Show usage')).toBeVisible())

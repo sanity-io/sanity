@@ -26,6 +26,13 @@ export const States: Story = {
       },
     )
 
+    for (const detailsButton of body.getAllByRole('button', {name: 'Developer info'})) {
+      if (detailsButton.nextElementSibling?.hasAttribute('hidden')) {
+        await userEvent.click(detailsButton)
+      }
+    }
+
+    // Open last so outside clicks from Developer info don't collapse it.
     await userEvent.click(
       body.getByRole('button', {name: /Item of type .* not valid for this list/}),
     )
@@ -34,12 +41,6 @@ export const States: Story = {
         expect(body.getByText(/The current schema does not declare items of type/)).toBeVisible(),
       {timeout: 5000},
     )
-
-    for (const detailsButton of body.getAllByRole('button', {name: 'Developer info'})) {
-      if (detailsButton.nextElementSibling?.hasAttribute('hidden')) {
-        await userEvent.click(detailsButton)
-      }
-    }
 
     if (document.activeElement instanceof HTMLElement) document.activeElement.blur()
   },
