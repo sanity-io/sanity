@@ -293,7 +293,7 @@ importers:
         specifier: workspace:*
         version: link:packages/sanity
       tsx:
-        specifier: ^4.23.13
+        specifier: ^4.23.15
         version: 4.23.15
       turbo:
         specifier: ^2.10.12
@@ -1075,7 +1075,7 @@ importers:
         specifier: ^0.8.3
         version: 0.8.3
       tsx:
-        specifier: ^4.23.13
+        specifier: ^4.23.15
         version: 4.23.15
       vitest:
         specifier: ^4.1.11
@@ -1167,7 +1167,7 @@ importers:
         specifier: 'catalog:'
         version: 24.13.6
       tsx:
-        specifier: ^4.23.13
+        specifier: ^4.23.15
         version: 4.23.15
       vite:
         specifier: 'catalog:'
@@ -2389,7 +2389,7 @@ importers:
         specifier: 'catalog:'
         version: 0.23.0(@vitejs/devtools@0.7.5)(oxc-resolver@11.24.2)(publint@0.3.24)(tsx@4.23.15)(typescript@7.0.2)
       tsx:
-        specifier: ^4.23.13
+        specifier: ^4.23.15
         version: 4.23.15
       typescript:
         specifier: 'catalog:'
@@ -2476,7 +2476,7 @@ importers:
         specifier: 'catalog:'
         version: 6.5.3(react-dom@19.3.0)(react@19.3.0)
       tsx:
-        specifier: ^4.23.13
+        specifier: ^4.23.15
         version: 4.23.15
       yaml:
         specifier: ^2.9.0
@@ -2569,7 +2569,7 @@ importers:
         specifier: 0.28.2
         version: 0.28.2
       tsx:
-        specifier: ^4.23.13
+        specifier: ^4.23.15
         version: 4.23.15
       vite:
         specifier: 'catalog:'
