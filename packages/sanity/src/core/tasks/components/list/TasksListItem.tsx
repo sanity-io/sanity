@@ -8,7 +8,6 @@ import {
 import {isThisISOWeek} from 'date-fns/isThisISOWeek'
 import {isToday} from 'date-fns/isToday'
 import {useMemo} from 'react'
-import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -16,6 +15,7 @@ import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../../../hooks/u
 import {type TaskDocument} from '../../types'
 import {TasksUserAvatar} from '../TasksUserAvatar'
 import {DocumentPreview} from './DocumentPreview'
+import {taskDetailsRoot, titleButton} from './TasksListItem.css'
 import {TasksStatus} from './TasksStatus'
 
 interface TasksListItemProps extends Pick<
@@ -25,16 +25,6 @@ interface TasksListItemProps extends Pick<
   documentId: string
   onSelect: () => void
 }
-
-const TitleButton = styled(UIButton)`
-  width: 100%;
-  max-width: 100%;
-`
-
-const TaskDetailsRoot = styled(Flex)`
-  /* Checkbox width is 17px and first row gap is 12px. */
-  margin-left: 29px;
-`
 
 function getTargetDocumentMeta(target?: TaskDocument['target']) {
   if (!target?.document?._ref) {
@@ -101,18 +91,18 @@ export function TasksListItem(props: TasksListItemProps) {
         </Box>
 
         <Flex flexBasis="0%" flexGrow={1}>
-          <TitleButton onClick={onSelect} mode="bleed" padding={2}>
+          <UIButton className={titleButton} onClick={onSelect} mode="bleed" padding={2}>
             <Text size={1} textOverflow="ellipsis" weight="semibold">
               {title || 'Untitled'}
             </Text>
-          </TitleButton>
+          </UIButton>
         </Flex>
 
         <TasksUserAvatar user={assignedTo ? {id: assignedTo} : undefined} withTooltip />
       </Flex>
 
       {(dueBy || targetDocument) && (
-        <TaskDetailsRoot alignItems="center" gap={2} paddingX={0}>
+        <Flex className={taskDetailsRoot} alignItems="center" gap={2} paddingX={0}>
           {dueBy && <TaskDueDate dueBy={dueBy} />}
 
           {targetDocument && (
@@ -123,7 +113,7 @@ export function TasksListItem(props: TasksListItemProps) {
               />
             </Box>
           )}
-        </TaskDetailsRoot>
+        </Flex>
       )}
     </Stack>
   )
