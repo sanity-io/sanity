@@ -2337,7 +2337,7 @@ importers:
         specifier: ^6.2.2
         version: 6.2.2
       xstate:
-        specifier: ^5.32.6
+        specifier: ^5.33.2
         version: 5.33.2
     devDependencies:
       '@chromatic-com/vitest':
