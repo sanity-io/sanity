@@ -29,7 +29,7 @@ catalog:
   '@sanity/migrate': ^8.0.5
   '@sanity/telemetry': ^1.1.0
   '@sanity/tsdown-config': ^0.28.1
-  '@sanity/ui': ^4.2.1
+  '@sanity/ui': ^4.2.3
   '@types/node': ^24.13.3
   '@types/react': ^19.3.0
   '@types/react-dom': ^19.3.0
@@ -42,7 +42,7 @@ catalog:
   dequal: ^2.0.3
   get-it: ^9.5.5
   jsdom: ^29.1.1
-  oxc-transform-react: ^0.150.0
+  oxc-transform-react: ^0.151.0
   playwright: 1.63.0
   react: ^19.3.0
   react-dom: ^19.3.0

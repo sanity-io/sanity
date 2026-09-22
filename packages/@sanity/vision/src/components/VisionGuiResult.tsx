@@ -56,7 +56,7 @@ export function VisionGuiResult({
   const hasResult = !error && !queryInProgress && typeof queryResult !== 'undefined'
 
   return (
-    <ResultOuterContainer direction="column" data-testid="vision-result">
+    <ResultOuterContainer flexDirection="column" data-testid="vision-result">
       <ResultInnerContainer flexBasis="0%" flexGrow={1}>
         <ResultContainer
           flex={1}
@@ -94,9 +94,9 @@ export function VisionGuiResult({
       </ResultInnerContainer>
       {/* Execution time */}
       <ResultFooter
-        justify={compactFooter ? 'flex-start' : 'space-between'}
-        align={compactFooter ? 'stretch' : undefined}
-        direction={compactFooter ? 'column' : ['column', 'column', 'row']}
+        justifyContent={compactFooter ? 'flex-start' : 'space-between'}
+        alignItems={compactFooter ? 'stretch' : undefined}
+        flexDirection={compactFooter ? 'column' : ['column', 'column', 'row']}
       >
         <TimingsCard
           paddingX={compactFooter ? 3 : 4}
@@ -104,7 +104,7 @@ export function VisionGuiResult({
           sizing="border"
           style={compactFooter ? {width: '100%'} : {minWidth: 0}}
         >
-          <TimingsTextContainer align="center">
+          <TimingsTextContainer alignItems="center">
             <Box>
               <Text muted size={compactFooter ? 1 : 2}>
                 {t('result.execution-time-label')}:{' '}

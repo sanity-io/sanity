@@ -15,9 +15,9 @@
     "start": "sanity preview"
   },
   "dependencies": {
-    "@portabletext/editor": "^8.1.6",
+    "@portabletext/editor": "^8.1.8",
     "@portabletext/html": "^2.0.0",
-    "@portabletext/plugin-character-pair-decorator": "^9.0.11",
+    "@portabletext/plugin-character-pair-decorator": "^9.0.13",
     "@portabletext/react": "^8.0.1",
     "@portabletext/toolkit": "^6.0.0",
     "@repo/utils": "workspace:*",
@@ -33,7 +33,7 @@
     "@sanity/migrate": "catalog:",
     "@sanity/preview-url-secret": "^4.1.5",
     "@sanity/react-loader": "^2.2.2",
-    "@sanity/themer": "^0.3.13",
+    "@sanity/themer": "^0.3.15",
     "@sanity/types": "workspace:*",
     "@sanity/ui": "catalog:",
     "@sanity/util": "workspace:*",
