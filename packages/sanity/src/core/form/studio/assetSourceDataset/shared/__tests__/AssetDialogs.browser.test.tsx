@@ -3,7 +3,7 @@ import {type Asset, type AssetSource} from '@sanity/types'
 import noop from 'lodash-es/noop.js'
 import {type ComponentType, type PropsWithChildren} from 'react'
 import {of} from 'rxjs'
-import {describe, expect, test} from 'vitest'
+import {describe, expect, test, vi} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
 
@@ -13,12 +13,14 @@ import {createTestProvider} from '../../../../../../../test/testUtils/TestProvid
 import {AssetDeleteDialog} from '../AssetDeleteDialog'
 import {SelectAssetsDialog} from '../SelectAssetsDialog'
 
+vi.mock('lodash-es/uniqueId.js', () => ({default: () => 'fixture-id'}))
+
 const FILE_ASSET: Asset = {
   _id: 'file-fixture-quarterly-report',
   _type: 'sanity.fileAsset',
   _rev: 'fixture-revision',
-  _createdAt: '',
-  _updatedAt: '',
+  _createdAt: '2024-01-01T12:00:00.000Z',
+  _updatedAt: '2024-01-01T12:00:00.000Z',
   assetId: 'quarterly-report',
   extension: 'pdf',
   mimeType: 'application/pdf',
