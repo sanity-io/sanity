@@ -95,9 +95,11 @@ const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum
             </Stack>
           </Flex>
         </Card>
-        <Box paddingTop={2}>
-          <ConditionMismatchIndicator mismatches={mismatches} />
-        </Box>
+        {mismatches.length > 0 ? (
+          <Box paddingTop={2}>
+            <ConditionMismatchIndicator mismatches={mismatches} />
+          </Box>
+        ) : null}
       </Flex>
     </Box>
   )
