@@ -3,7 +3,7 @@
     "@sanity/client": "^8.6.2"
   },
   "devDependencies": {
-    "@sanity/blueprints": "^0.24.0",
+    "@sanity/blueprints": "^0.27.0",
     "@sanity/functions": "^1.7.2",
     "sanity": "workspace:*",
     "vite": "catalog:"
