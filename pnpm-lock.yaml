@@ -317,7 +317,7 @@ importers:
         specifier: ^7.16.2
         version: 7.16.2(eslint@10.11.0)(supports-color@8.1.1)(typescript@7.0.2)
       eslint-plugin-tsdoc:
-        specifier: ^0.5.2
+        specifier: ^0.5.3
         version: 0.5.3(eslint@10.11.0)(supports-color@8.1.1)(typescript@7.0.2)
       knip:
         specifier: ^6.37.0
