@@ -1,6 +1,4 @@
 import humanizeList from 'humanize-list'
-import flatten from 'lodash-es/flatten.js'
-import partition from 'lodash-es/partition.js'
 
 import {coreTypeNames} from '../../coreTypes'
 import {error, HELP_IDS, warning} from '../createValidationResult'
@@ -117,7 +115,7 @@ export default (typeDef: any, visitorContext: any) => {
     }
   }
 
-  const problems = flatten([
+  const problems = [
     ofIsArray
       ? getDupes(typeDef.of, (t) => `${t.name};${t.type}`).map((dupes) =>
           error(
@@ -129,8 +127,8 @@ export default (typeDef: any, visitorContext: any) => {
           'The array type is missing or having an invalid value for the required "of" property',
           HELP_IDS.ARRAY_OF_INVALID,
         ),
-  ])
-  const of = ofIsArray ? typeDef.of : []
+  ].flat()
+  const of: {type: string; name?: string}[] = ofIsArray ? typeDef.of : []
 
   // Don't allow object types without a name in block arrays
   const hasObjectTypesWithoutName = of.some(
@@ -146,12 +144,18 @@ export default (typeDef: any, visitorContext: any) => {
     )
   }
 
-  const [primitiveTypes, objectTypes] = partition(
-    of,
-    (ofType) =>
+  const primitiveTypes: typeof of = []
+  const objectTypes: typeof of = []
+  for (const ofType of of) {
+    if (
       isPrimitiveTypeName(ofType.type) ||
-      isPrimitiveTypeName(visitorContext.getType(ofType.type)?.jsonType),
-  )
+      isPrimitiveTypeName(visitorContext.getType(ofType.type)?.jsonType)
+    ) {
+      primitiveTypes.push(ofType)
+    } else {
+      objectTypes.push(ofType)
+    }
+  }
 
   const isMixedArray = primitiveTypes.length > 0 && objectTypes.length > 0
 

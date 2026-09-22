@@ -1,14 +1,3 @@
-import pick from 'lodash-es/pick.js'
-
-function isEmpty(object: any) {
-  for (const key in object) {
-    if (object.hasOwnProperty(key)) {
-      return false
-    }
-  }
-  return true
-}
-
 function _stringify(value: any, options: any, depth: any): any {
   if (depth > options.maxDepth) {
     return '...'
@@ -31,7 +20,7 @@ function _stringify(value: any, options: any, depth: any): any {
       (key) => !options.ignoreKeys.includes(key) && typeof value[key] !== 'undefined',
     )
 
-    if (isEmpty(pick(value, keys))) {
+    if (keys.length === 0) {
       return '{empty}'
     }
 
