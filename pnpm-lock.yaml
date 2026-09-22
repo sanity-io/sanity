@@ -2334,7 +2334,7 @@ importers:
         specifier: ^14.0.2
         version: 14.0.2
       web-vitals:
-        specifier: ^6.2.1
+        specifier: ^6.2.2
         version: 6.2.2
       xstate:
         specifier: ^5.32.6
