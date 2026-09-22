@@ -1687,9 +1687,6 @@ importers:
       lodash-es:
         specifier: ^4.18.1
         version: 4.18.1
-      object-inspect:
-        specifier: ^1.13.4
-        version: 1.13.4
     devDependencies:
       '@repo/test-config':
         specifier: workspace:*
@@ -1706,9 +1703,6 @@ importers:
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12
-      '@types/object-inspect':
-        specifier: ^1.13.0
-        version: 1.13.0
       '@types/react':
         specifier: 'catalog:'
         version: 19.3.0
@@ -8270,9 +8264,6 @@ packages:
 
   '@types/normalize-package-data@2.4.4':
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
-
-  '@types/object-inspect@1.13.0':
-    resolution: {integrity: sha512-lwGTVESDDV+XsQ1pH4UifpJ1f7OtXzQ6QBOX2Afq2bM/T3oOt8hF6exJMjjIjtEWeAN2YAo25J7HxWh97CCz9w==}
 
   '@types/parse-json@4.0.2':
     resolution: {integrity: sha512-dISoDXWWQwUquiKsyZ4Ng+HX2KsPL7LyHKHQwgGFEA3IaKac4Obd+h2a/a6waisAoepJlBcx9paWqjA8/HVjCw==}
@@ -21158,8 +21149,6 @@ snapshots:
       undici-types: 7.18.2
 
   '@types/normalize-package-data@2.4.4': {}
-
-  '@types/object-inspect@1.13.0': {}
 
   '@types/parse-json@4.0.2': {}
 
