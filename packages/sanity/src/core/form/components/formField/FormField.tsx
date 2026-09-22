@@ -1,6 +1,6 @@
 import {type Path, type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
 import {type HTMLProps, memo, type ReactNode} from 'react'
-import {VStack} from 'ui5'
+import {Box, VStack} from 'ui5'
 
 import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
 import {type FormNodePresence} from '../../../presence/types'
@@ -117,7 +117,7 @@ export const FormField = memo(function FormField(
               }
             />
           )}
-          <div>{children}</div>
+          <Box>{children}</Box>
         </VStack>
       </FormRow>
     </FormNodeDivergenceDetail>
