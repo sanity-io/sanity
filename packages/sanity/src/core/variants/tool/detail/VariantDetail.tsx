@@ -17,10 +17,11 @@ import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {RelativeTime} from '../../../components/RelativeTime'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {ConditionMismatchIndicator} from '../../components/ConditionMismatchIndicator'
-import {useVariantConditionMismatches} from '../../hooks/useVariantConditions'
+import {useVariantConditionMismatches, useVariantTypes} from '../../hooks/useVariantConditions'
 import {useVariantDocuments} from '../../hooks/useVariantDocuments'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
+import {getVariantType} from '../../util/variantType'
 import {
   decodeVariantIdFromRoute,
   getVariantDescription,
@@ -35,13 +36,18 @@ import {VariantDocumentsTable} from './VariantDocumentsTable'
 export function VariantDetail() {
   const router = useRouter()
   const {t} = useTranslation(variantsLocaleNamespace)
+  const variantTypes = useVariantTypes()
+  const showVariantType = variantTypes.status === 'ready' && variantTypes.types.length > 1
   const variantIdRaw =
     typeof router.state.variantId === 'string' ? router.state.variantId : undefined
   const variantId = decodeVariantIdFromRoute(variantIdRaw)
   const {byId, loading} = useAllVariants()
 
   const variant = variantId ? byId.get(variantId) : undefined
-  const conditionMismatches = useVariantConditionMismatches(variant?.conditions ?? {})
+  const conditionMismatches = useVariantConditionMismatches(
+    variant?.conditions ?? {},
+    getVariantType(variant),
+  )
   const {
     loading: documentsLoading,
     results: variantDocuments,
@@ -154,6 +160,16 @@ export function VariantDetail() {
             label: t('detail.metadata.unpublished-changes'),
             value: countValue(unpublishedCount),
           },
+          variant &&
+            showVariantType && {
+              icon: (
+                <Text muted size={1}>
+                  <DocumentsIcon />
+                </Text>
+              ),
+              label: t('detail.metadata.type'),
+              value: getVariantType(variant),
+            },
           variant && {
             // Resolution priority — the tiebreaker when several definitions match. Shown here (it is
             // authored in the create/edit dialog) so the detail page reflects the full definition.
@@ -184,7 +200,7 @@ export function VariantDetail() {
         ],
       },
     ]
-  }, [documentsLoading, t, tableRows.length, unpublishedCount, variant])
+  }, [documentsLoading, showVariantType, t, tableRows.length, unpublishedCount, variant])
 
   if (loading) {
     return <LoadingBlock fill title={t('detail.loading')} />

@@ -36,3 +36,18 @@ export function assertOnlyVariantType(key: string): void {
     )
   }
 }
+
+/**
+ * The type a definition belongs to. Missing `metadata.type` reads as `variant`.
+ *
+ * @internal
+ */
+export function getVariantType(variant: {metadata?: {type?: unknown}} | null | undefined): string {
+  const type = variant?.metadata?.type
+
+  if (typeof type === 'string' && type.trim()) {
+    return type.trim()
+  }
+
+  return DEFAULT_VARIANT_TYPE_KEY
+}
