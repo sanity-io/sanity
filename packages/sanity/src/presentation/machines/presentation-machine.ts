@@ -204,6 +204,12 @@ export const presentationMachine = setup({
           description:
             'The iframe is loaded, watch the visual editing overlays connection and escalate to the connection status overlay, and eventually the error card, if it stays pending for too long',
           on: {
+            'iframe loaded': {
+              // A src change or in-frame navigation fires load while we are already idle; the new
+              // page has never connected overlays. Soft refreshes go through `refreshing` first and
+              // do not hit this path; explicit reloads clear the flag on `iframe reload` instead.
+              actions: 'forget overlays connection',
+            },
             'overlays status': [
               {
                 // A disconnect that leaves no connections behind carries no new information about

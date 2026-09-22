@@ -467,6 +467,38 @@ describe('Presentation machine', () => {
       expect(snapshot.hasTag('show loading overlay')).toBe(true)
       expect(snapshot.hasTag('prevent iframe interaction')).toBe(true)
     })
+
+    test('an iframe load while idle forgets that the overlays had connected (src change or in-frame navigation)', () => {
+      const {actor} = createTestActor()
+      actor.send({type: 'iframe loaded'})
+      actor.send(overlaysStatus('connected', 'connection-a'))
+
+      // New page: load event without an intervening reload (src change / in-frame navigation)
+      actor.send({type: 'iframe loaded'})
+      actor.send(overlaysStatus('disconnected', 'connection-a'))
+      actor.send(overlaysStatus('handshaking', 'connection-b'))
+
+      const snapshot = actor.getSnapshot()
+      expect(snapshot.matches({loaded: {idle: 'connecting'}})).toBe(true)
+      expect(snapshot.hasTag('show loading overlay')).toBe(true)
+      expect(snapshot.hasTag('prevent iframe interaction')).toBe(true)
+    })
+
+    test('a soft refresh does not forget that the overlays had connected', () => {
+      const {actor} = createTestActor()
+      actor.send({type: 'iframe loaded'})
+      actor.send(overlaysStatus('connected', 'connection-a'))
+
+      actor.send({type: 'iframe refresh'})
+      actor.send({type: 'iframe loaded'})
+      actor.send(overlaysStatus('disconnected', 'connection-a'))
+      actor.send(overlaysStatus('handshaking', 'connection-b'))
+
+      const snapshot = actor.getSnapshot()
+      expect(snapshot.matches({loaded: {idle: 'reconnecting'}})).toBe(true)
+      expect(snapshot.hasTag('show loading overlay')).toBe(false)
+      expect(snapshot.hasTag('prevent iframe interaction')).toBe(false)
+    })
   })
 
   describe('visual editing overlays toggle', () => {
