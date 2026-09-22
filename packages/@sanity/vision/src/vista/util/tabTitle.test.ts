@@ -13,6 +13,10 @@ describe('deriveTabTitle', () => {
     expect(deriveTabTitle("*[_type=='post' && defined(slug)]")).toBe('post')
   })
 
+  it('uses the filtered document id', () => {
+    expect(deriveTabTitle('*[_id == "vista-live-test"]{_id, name}')).toBe('vista-live-test')
+  })
+
   it('joins the types of an "in" filter', () => {
     expect(deriveTabTitle('*[_type in ["post", "author"]]')).toBe('post, author')
   })

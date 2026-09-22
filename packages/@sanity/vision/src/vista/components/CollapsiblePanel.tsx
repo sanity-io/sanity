@@ -12,7 +12,7 @@ export const PANEL_HEADER_HEIGHT = 35
 
 export interface CollapsiblePanelTab {
   id: string
-  label: string
+  label: ReactNode
   /** Rendered after the label, for instance a count or a warning icon */
   icon?: ReactNode
   content: ReactNode

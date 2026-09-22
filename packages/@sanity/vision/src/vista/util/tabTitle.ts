@@ -1,9 +1,10 @@
 const MAX_TITLE_LENGTH = 32
 const TYPE_FILTER = /_type\s*==\s*(["'])([^"']+)\1/
 const TYPE_IN_FILTER = /_type\s+in\s+\[([^\]]+)\]/
+const ID_FILTER = /_id\s*==\s*(["'])([^"']+)\1/
 
 /**
- * Derives a short tab title from a GROQ query: the filtered document type when there is one
+ * Derives a short tab title from a GROQ query: the filtered document type or id when there is one
  * (`*[_type == "author"]` becomes `author`), otherwise the first non-empty line, truncated.
  */
 export function deriveTabTitle(query: string): string | undefined {
@@ -15,6 +16,11 @@ export function deriveTabTitle(query: string): string | undefined {
   const typeMatch = trimmed.match(TYPE_FILTER)
   if (typeMatch) {
     return typeMatch[2]
+  }
+
+  const idMatch = trimmed.match(ID_FILTER)
+  if (idMatch) {
+    return truncate(idMatch[2])
   }
 
   const typeInMatch = trimmed.match(TYPE_IN_FILTER)

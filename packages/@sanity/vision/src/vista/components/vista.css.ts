@@ -126,7 +126,14 @@ export const tab = style({
   },
 })
 
+export const tabTitleButton = style({
+  minWidth: 0,
+  flexShrink: 1,
+  overflow: 'hidden',
+})
+
 export const tabCloseButton = style({
+  flexShrink: 0,
   opacity: 0,
   transition: 'opacity 100ms',
   selectors: {
@@ -166,8 +173,38 @@ export const noWrap = style({
   whiteSpace: 'nowrap',
 })
 
+/**
+ * Single-line, ellipsized query preview. @sanity/ui's Code trims its line box with
+ * pseudo-elements, so the ellipsis is applied to a wrapper with the code rendered inline.
+ */
 export const previewCode = style({
+  display: 'block',
+  minWidth: 0,
+  maxWidth: '100%',
   whiteSpace: 'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
+})
+
+globalStyle(`${previewCode} pre, ${previewCode} code`, {
+  display: 'inline',
+  whiteSpace: 'inherit',
+})
+
+globalStyle(`${previewCode} pre::before, ${previewCode} pre::after`, {
+  content: 'none',
+})
+
+/** A bleed button holding a stack of texts that must truncate rather than overflow the list */
+export const listItemButton = style({
+  minWidth: 0,
+})
+
+globalStyle(`${listItemButton} [data-ui="Box"], ${listItemButton} [data-ui="Flex"]`, {
+  minWidth: 0,
+  maxWidth: '100%',
+})
+
+globalStyle(`${listItemButton} > [data-ui="Box"]`, {
+  width: '100%',
 })

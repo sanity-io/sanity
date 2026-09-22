@@ -6,7 +6,7 @@ import {SearchIcon} from '@sanity/icons/Search'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
 import {UsersIcon} from '@sanity/icons/Users'
-import {Button, Card, Dialog, Stack, Text, TextInput} from '@sanity/ui'
+import {Button, Card, Dialog, Text, TextInput} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {Menu, MenuButton, MenuDivider, MenuItem} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
@@ -24,7 +24,7 @@ import {useVistaActor, useVistaSelector} from '../../store/VistaActorContext'
 import {selectActiveTab} from '../../store/vistaMachine'
 import {parseQueryUrl} from '../../util/parseQueryUrl'
 import {savedQueryToTabInit, tabMatchesSavedQuery} from '../../util/savedQueryTab'
-import {previewCode, scrollArea} from '../vista.css'
+import {listItemButton, previewCode, scrollArea} from '../vista.css'
 
 interface QueryListPanelProps {
   mode: VistaDrawer
@@ -198,7 +198,7 @@ export function QueryListPanel({mode, datasets}: QueryListPanelProps) {
             </Text>
           </Box>
         ) : (
-          <Stack>
+          <Flex flexDirection="column" minWidth="0">
             {visibleQueries.map((query) => {
               const parsed = parseQueryUrl(query.url, datasets)
               const preview = (parsed?.query || '').split('\n')[0].split('{')[0].trim()
@@ -233,6 +233,7 @@ export function QueryListPanel({mode, datasets}: QueryListPanelProps) {
                         </Box>
                       ) : (
                         <Button
+                          className={listItemButton}
                           data-testid="vista-saved-query-open"
                           justify="flex-start"
                           mode="bleed"
@@ -241,14 +242,14 @@ export function QueryListPanel({mode, datasets}: QueryListPanelProps) {
                           selected={isOpen}
                           width="fill"
                         >
-                          <Stack gap={2}>
+                          <Flex flexDirection="column" gap={2} minWidth="0">
                             <Text size={1} textOverflow="ellipsis" weight="medium">
                               {query.title || t('label.untitled-query')}
                             </Text>
                             {preview && (
-                              <Code className={previewCode} size={0}>
-                                {preview}
-                              </Code>
+                              <Box className={previewCode}>
+                                <Code size={0}>{preview}</Code>
+                              </Box>
                             )}
                             <Flex alignItems="center" gap={2}>
                               {query.shared && query.authorId && (
@@ -258,7 +259,7 @@ export function QueryListPanel({mode, datasets}: QueryListPanelProps) {
                                 {query.savedAt ? formatDate.format(new Date(query.savedAt)) : ''}
                               </Text>
                             </Flex>
-                          </Stack>
+                          </Flex>
                         </Button>
                       )}
                     </Box>
@@ -316,7 +317,7 @@ export function QueryListPanel({mode, datasets}: QueryListPanelProps) {
                 </Card>
               )
             })}
-          </Stack>
+          </Flex>
         )}
       </Box>
 

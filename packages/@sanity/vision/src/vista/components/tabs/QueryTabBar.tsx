@@ -9,7 +9,7 @@ import {visionLocaleNamespace} from '../../../i18n'
 import {type VistaTab} from '../../store/types'
 import {useVistaActor, useVistaSelector} from '../../store/VistaActorContext'
 import {deriveTabTitle} from '../../util/tabTitle'
-import {tab as tabStyle, tabBar, tabCloseButton, tabTitleInput} from '../vista.css'
+import {tab as tabStyle, tabBar, tabCloseButton, tabTitleButton, tabTitleInput} from '../vista.css'
 
 export function getTabTitle(tab: VistaTab, fallback: string): string {
   return tab.title || deriveTabTitle(tab.query) || fallback
@@ -82,6 +82,7 @@ function TabHandle(props: TabHandleProps) {
         </Box>
       ) : (
         <Button
+          className={tabTitleButton}
           data-testid="vista-tab-button"
           fontSize={1}
           mode="bleed"
@@ -94,9 +95,11 @@ function TabHandle(props: TabHandleProps) {
         />
       )}
       {tab.autoRefetch && (
-        <Badge fontSize={0} tone="positive">
-          {t('vista.live.active')}
-        </Badge>
+        <Box flexShrink={0}>
+          <Badge fontSize={0} tone="positive">
+            {t('vista.live.active')}
+          </Badge>
+        </Box>
       )}
       <Button
         aria-label={t('vista.tabs.close-tab')}

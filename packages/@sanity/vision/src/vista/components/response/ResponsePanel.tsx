@@ -72,8 +72,15 @@ export function ResponsePanel({tab, runnerRef, resolved}: ResponsePanelProps) {
       },
       {
         id: 'history',
-        label: t('vista.panel.history'),
-        icon: history.length > 0 ? <Badge fontSize={0}>{history.length}</Badge> : undefined,
+        label:
+          history.length > 0 ? (
+            <Flex alignItems="center" as="span" gap={2}>
+              {t('vista.panel.history')}
+              <Badge fontSize={0}>{history.length}</Badge>
+            </Flex>
+          ) : (
+            t('vista.panel.history')
+          ),
         content: <HistoryTab history={history} />,
       },
     ],
