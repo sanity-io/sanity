@@ -296,6 +296,8 @@ pnpm test:e2e --ui          # Interactive mode
 
 **Note:** E2E tests are typically run in CI, not locally during development. Most changes can be verified with unit tests.
 
+Each browser has its own project, its own studio workspace (`/chromium`, `/firefox` — separate `basePath` and dataset, see `dev/studio-e2e-testing/sanity.config.ts`) and its own CI shards. `e2e/globalSetup.ts` warms that workspace before the specs run, and resolves the project from the `--project` filter itself: Playwright hands global setup the **unfiltered** project list, so `config.projects[0]` is Chromium on every run. Keep it that way — a run must never launch a browser the selected project does not use, or CI shards start needing every browser installed instead of `playwright install <project>`.
+
 When CI e2e fails, the hosted Playwright report also serves a machine-readable digest at `<report-url>/agent-report.md` (error messages, code snippets, and Playwright `error-context` page snapshots). The PR comment includes a **Share with an AI agent** fenced prompt pointing at that URL (GitHub's copy button copies the whole prompt).
 
 #### Diagnosing e2e flake: failure diagnostics and the flake report
