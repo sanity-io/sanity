@@ -121,8 +121,8 @@ catalogs:
       specifier: ^8.6.2
       version: 8.6.2
     '@sanity/migrate':
-      specifier: ^8.0.2
-      version: 8.0.4
+      specifier: ^8.0.5
+      version: 8.0.5
     '@sanity/telemetry':
       specifier: ^1.1.0
       version: 1.1.0
@@ -913,7 +913,7 @@ importers:
         version: 2.2.5(react@19.3.0)
       '@sanity/migrate':
         specifier: 'catalog:'
-        version: 8.0.4(vitest@4.1.11)(xstate@5.33.2)
+        version: 8.0.5(vitest@4.1.11)(xstate@5.33.2)
       '@sanity/preview-url-secret':
         specifier: ^4.1.5
         version: 4.1.5(@sanity/client@8.6.2)
@@ -2080,7 +2080,7 @@ importers:
         version: 0.24.0
       '@sanity/migrate':
         specifier: 'catalog:'
-        version: 8.0.4(vitest@4.1.11)(xstate@5.33.2)
+        version: 8.0.5(vitest@4.1.11)(xstate@5.33.2)
       '@sanity/mutate':
         specifier: ^0.18.2
         version: 0.18.2(vitest@4.1.11)(xstate@5.33.2)
@@ -7446,8 +7446,8 @@ packages:
     resolution: {integrity: sha512-F/MwFVc3fN8uVvCIGuTxHN5EVo148wLhjL7h/u6wbShWJGMKgcGx0n6MwfCPyi6ftpdvRXsPZVDgZ1GMeeBf2Q==}
     engines: {node: '>=20.0.0'}
 
-  '@sanity/migrate@8.0.4':
-    resolution: {integrity: sha512-EfBJsjQOR39CKMZ1b8loxg0cXbsCs8pn1MTjSt8QGr3Z+0WOVHFPQF+Z7gfz3AWdA1ntFiB3gNrbYn8tk3JZsQ==}
+  '@sanity/migrate@8.0.5':
+    resolution: {integrity: sha512-kOksEqR6kfSOqr46Bzdj59Qo3heN6Okjy9cXx2LJXDxsOVFGX5817zi1S1M8KMKscCfLqS/yMFZoWDg9RL3Vqw==}
     engines: {node: '>=22.12'}
 
   '@sanity/mutate@0.18.2':
@@ -19792,7 +19792,7 @@ snapshots:
       '@sanity/generate-help-url': 4.0.0
       '@sanity/id-utils': 1.1.0
       '@sanity/import': 7.0.4(@sanity/client@8.6.2)(vitest@4.1.11)
-      '@sanity/migrate': 8.0.4(vitest@4.1.11)(xstate@5.33.2)
+      '@sanity/migrate': 8.0.5(vitest@4.1.11)(xstate@5.33.2)
       '@sanity/runtime-cli': 17.14.0(@babel/core@7.29.7)(@babel/runtime@7.29.7)(@noble/hashes@2.4.0)(@types/node@24.13.6)(@vitejs/devtools@0.7.5)(esbuild@0.28.2)(oxc-transform-react@0.149.0)(rolldown@1.2.9)(sanity@packages+sanity)(tsx@4.23.15)(typescript@7.0.2)(vitest@4.1.11)(yaml@2.9.1)
       '@sanity/schema': link:packages/@sanity/schema
       '@sanity/telemetry': 1.1.0(react@19.3.0)
@@ -20119,7 +20119,7 @@ snapshots:
     dependencies:
       '@sanity/comlink': 4.0.3
 
-  '@sanity/migrate@8.0.4(vitest@4.1.11)(xstate@5.33.2)':
+  '@sanity/migrate@8.0.5(vitest@4.1.11)(xstate@5.33.2)':
     dependencies:
       '@sanity/client': 8.6.2(vitest@4.1.11)
       '@sanity/mutate': 0.18.2(vitest@4.1.11)(xstate@5.33.2)
