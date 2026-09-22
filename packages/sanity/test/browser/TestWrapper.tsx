@@ -36,6 +36,7 @@ import {PaneLayout} from '../../src/structure/components/pane/PaneLayout'
 import {structureUsEnglishLocaleBundle} from '../../src/structure/i18n'
 import {createMockSanityClient} from '../../test/mocks/mockSanityClient'
 import {getMockWorkspace} from '../../test/testUtils/getMockWorkspaceFromConfig'
+import {agentDebugLog} from './agentDebugLog'
 import {changeConnectorRoot} from './TestWrapper.css'
 
 interface TestWrapperProps {
@@ -130,8 +131,35 @@ export const TestWrapper = (props: TestWrapperProps): React.JSX.Element | null =
     i18nBundles: props.i18nBundles,
   }))
 
+  // #region agent log
+  agentDebugLog({
+    hypothesisId: 'A',
+    location: 'TestWrapper.tsx:TestWrapper',
+    message: 'TestWrapper render (outer Suspense)',
+    data: {
+      schemaTypeCount: schemaTypes.length,
+      hasClientProp: Boolean(clientProp),
+      i18nBundleCount: i18nBundles?.length ?? 0,
+    },
+  })
+  // #endregion
+
   return (
-    <Suspense fallback={null}>
+    <Suspense
+      fallback={
+        // #region agent log
+        (() => {
+          agentDebugLog({
+            hypothesisId: 'A',
+            location: 'TestWrapper.tsx:Suspense',
+            message: 'outer Suspense fallback rendering (workspace promise pending)',
+            data: {},
+          })
+          return null
+        })()
+        // #endregion
+      }
+    >
       <TestWrapperContents
         client={client}
         schemaTypes={schemaTypes}
@@ -150,11 +178,58 @@ const TestWrapperContents = (
   },
 ): React.JSX.Element | null => {
   const {children, schemaTypes, betaFeatures, i18nBundles, client} = props
-  const {i18next, workspace: mockWorkspace} = use(
-    getCachedMockWorkspace(client, schemaTypes, betaFeatures, i18nBundles),
+  // #region agent log
+  const workspacePromise = getCachedMockWorkspace(client, schemaTypes, betaFeatures, i18nBundles)
+  agentDebugLog({
+    hypothesisId: 'A',
+    location: 'TestWrapper.tsx:TestWrapperContents:beforeUse',
+    message: 'about to use(workspacePromise)',
+    data: {schemaTypeCount: schemaTypes?.length ?? 0},
+  })
+  void Promise.resolve(workspacePromise).then(
+    () => {
+      agentDebugLog({
+        hypothesisId: 'A',
+        location: 'TestWrapper.tsx:workspacePromise',
+        message: 'workspacePromise resolved',
+        data: {},
+      })
+    },
+    (err: unknown) => {
+      agentDebugLog({
+        hypothesisId: 'A',
+        location: 'TestWrapper.tsx:workspacePromise',
+        message: 'workspacePromise rejected',
+        data: {error: err instanceof Error ? err.message : String(err)},
+      })
+    },
   )
+  // #endregion
+  const {i18next, workspace: mockWorkspace} = use(workspacePromise)
+
+  // #region agent log
+  agentDebugLog({
+    hypothesisId: 'A',
+    location: 'TestWrapper.tsx:TestWrapperContents:afterUse',
+    message: 'use(workspacePromise) returned',
+    data: {
+      hasWorkspace: Boolean(mockWorkspace),
+      hasI18next: Boolean(i18next),
+      i18nLanguage: i18next?.language,
+      sourceCount: mockWorkspace?.unstable_sources?.length ?? 0,
+    },
+  })
+  // #endregion
 
   if (!mockWorkspace) {
+    // #region agent log
+    agentDebugLog({
+      hypothesisId: 'A',
+      location: 'TestWrapper.tsx:TestWrapperContents:null',
+      message: 'mockWorkspace falsy — returning null',
+      data: {},
+    })
+    // #endregion
     return null
   }
 
