@@ -120,13 +120,13 @@ describe('resolveDocumentStatusIcons', () => {
       ).toBe('defaultPublished')
     })
 
-    it('defaultUnpublished for a document that has never been published', () => {
+    it('defaultDraftOnly for a document that has never been published', () => {
       expect(
         resolveDocumentStatusIconsOutcome({
           ...context,
           documentVersions: [draftDefault],
         }),
-      ).toBe('defaultUnpublished')
+      ).toBe('defaultDraftOnly')
     })
 
     it('defaultUnpublished when there are no versions', () => {

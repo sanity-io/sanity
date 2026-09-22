@@ -163,8 +163,8 @@ describe('DocumentVersionsStatusIndicator', () => {
       expect(renderIndicator([publishedDefault])).toEqual([GREEN_DISC])
     })
 
-    it('renders nothing for a document that has never been published', () => {
-      expect(renderIndicator([draftDefault])).toEqual([])
+    it('renders the yellow ring for a document that has never been published', () => {
+      expect(renderIndicator([draftDefault])).toEqual([YELLOW_RING])
     })
 
     it('renders nothing when there are no versions', () => {
