@@ -131,11 +131,10 @@ export const DivergenceDetail: ComponentType<DivergenceDetailProps> = ({
               />
             ) : (
               <>
-                {diff &&
-                  DiffComponent && (
-                    // oxlint-disable-next-line react/static-components -- pre-existing violation, to be fixed in a follow-up
-                    <DiffComponent diff={diff} schemaType={divergence.schemaType} />
-                  )}
+                {diff && DiffComponent && (
+                  // oxlint-disable-next-line react/static-components -- pre-existing violation, to be fixed in a follow-up
+                  <DiffComponent diff={diff} schemaType={divergence.schemaType} />
+                )}
               </>
             )}
           </Card>
