@@ -858,6 +858,61 @@ test('style points carry the styled-components version, other points do not', ()
   expect(keystroke?.lines[0].points[0].styledComponentsVersion).toBeUndefined()
 })
 
+test('a same-commit merge medians the readable-rule total and unions the runtime versions', () => {
+  const summary = (value: number) => ({summary: {median: value, p75: value, p90: value}})
+  const shard = (
+    id: string,
+    kind: 'interaction' | 'pageload',
+    rules: number,
+    readable: number,
+    version: string,
+  ): TrendRun => ({
+    _id: id,
+    startedAt: new Date(START).toISOString(),
+    mode: 'absolute',
+    git: {sha: 'sha-1', branch: 'main', committedAt: new Date(START).toISOString()},
+    runner: {calibrationMs: 8, runId: id, runAttempt: 1},
+    bundle: null,
+    scenarios: [
+      {
+        scenario: 'singleString',
+        kind,
+        metrics: [
+          {label: 'styled-components CSS rules', unit: 'count', experiment: summary(rules)},
+        ],
+        styles: {
+          experiment: {
+            ui5Available: true,
+            styledComponentsVersion: version,
+            readableCssRules: readable,
+          },
+        },
+      },
+    ],
+  })
+  // Three shards of one commit: the merged numerator is the median (956), so
+  // the denominator must be the median too (2055) — not whichever shard sorted
+  // last (2400) — or the aggregate share would mix pages
+  const series = buildSeries([
+    shard('a', 'interaction', 950, 2000, '6.5.3'),
+    shard('b', 'pageload', 956, 2055, '6.5.3'),
+    shard('c', 'pageload', 1100, 2400, '6.1.15'),
+  ])
+  const rules = series.find(
+    (entry) => entry.key === 'styles:singleString:styled-components CSS rules',
+  )!
+  const [point] = rules.lines[0].points
+  expect(rules.lines[0].points).toHaveLength(1)
+  expect(point.value).toBe(956)
+  expect(point.readableCssRules).toBe(2055)
+  // Every version the shards saw, not only the last shard's
+  expect(point.styledComponentsVersion).toBe('6.1.15, 6.5.3')
+  const share = aggregateStyleSeries(series).find(
+    (entry) => entry.key === 'styles:all:styled-components CSS rule share',
+  )!
+  expect(share.lines[0].points[0].value).toBeCloseTo((956 / 2055) * 100, 6)
+})
+
 test('paired lines are named by label, and by branch too when branches are compared', () => {
   const series = buildSeries([styleRun({id: 'a', sha: 'sha-1', day: 0})])
   const share = series.find((entry) => entry.key === 'styles:singleString:UI share')!

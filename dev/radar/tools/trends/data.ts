@@ -1186,6 +1186,19 @@ function mergeRunsPerCommit(points: TrendPoint[]): TrendPoint[] {
     // 05:00; the release run measures the tag hours later), and the merged point
     // has to keep the tag for the marker, tooltip and popover to attribute it.
     const releaseTag = group.find((point) => point.releaseTag)?.releaseTag
+    // Style context merges like the values it describes: the readable-rule
+    // total by median (it is the denominator of the merged rule count in
+    // aggregateStyleSeries, so pairing a median numerator with one shard's
+    // total would mix pages), the runtime version as the union of what the
+    // shards saw — the bench already comma-joins several versions on one page,
+    // so "6.1.15, 6.5.3" reads the same whether the two came from one shard or
+    // from two.
+    const readableTotals = group
+      .map((point) => point.readableCssRules)
+      .filter((v): v is number => v !== undefined)
+    const versions = [
+      ...new Set(group.flatMap((point) => point.styledComponentsVersion?.split(', ') ?? [])),
+    ].sort()
     merged.push({
       ...last,
       ...(releaseTag ? {releaseTag} : {}),
@@ -1198,6 +1211,8 @@ function mergeRunsPerCommit(points: TrendPoint[]): TrendPoint[] {
       // unmerged per-run spread stays visible in the Calibration tab.
       calibrationMs: calibrations.length > 0 ? medianOf(calibrations) : undefined,
       host: hostKeys.size === 1 ? last.host : undefined,
+      readableCssRules: readableTotals.length > 0 ? medianOf(readableTotals) : undefined,
+      styledComponentsVersion: versions.length > 0 ? versions.join(', ') : undefined,
     })
   }
   return merged.sort((a, b) => a.date.getTime() - b.date.getTime())
