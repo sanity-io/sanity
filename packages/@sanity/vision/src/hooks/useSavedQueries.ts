@@ -6,7 +6,7 @@ import {type KeyValueStoreValue, useClient, useCurrentUser, useKeyValueStore} fr
 
 import {DEFAULT_API_VERSION} from '../apiVersions'
 
-const STORED_QUERIES_NAMESPACE = 'studio.vision-tool.saved-queries'
+export const STORED_QUERIES_NAMESPACE = 'studio.vision-tool.saved-queries'
 const SHARED_QUERY_DOCUMENT_TYPE = 'vision.sharedQuery'
 const SHARED_QUERIES_QUERY = `*[_type == $sharedQueryType]{
   _id,

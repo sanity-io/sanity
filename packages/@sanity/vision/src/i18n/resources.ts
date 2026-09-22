@@ -157,6 +157,188 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'settings.perspectives.scheduled-drafts': 'Scheduled drafts',
   /** Title for popover that explains what "Perspectives" are */
   'settings.perspectives.title': 'Perspectives',
+
+  /** Accessible label for the button that closes the sidebar drawer */
+  'vista.drawer.close': 'Close panel',
+  /** Toast shown after a code snippet was copied */
+  'vista.export-query.copied': 'Snippet copied to clipboard',
+  /** Label for the button that copies a code snippet */
+  'vista.export-query.copy': 'Copy snippet',
+  /** Explanation at the top of the export query dialog */
+  'vista.export-query.description':
+    'Run this query outside of the studio with one of these snippets.',
+  /** Title of the dialog that exports the query as code snippets */
+  'vista.export-query.title': 'Export query',
+  /** Note about authentication in the export query dialog */
+  'vista.export-query.token-note':
+    'Private datasets need an API token. Public datasets can drop the Authorization header.',
+  /** Toast shown after the generated code was copied */
+  'vista.export-types.copied': 'Code copied to clipboard',
+  /** Label for the button that copies the generated code */
+  'vista.export-types.copy': 'Copy code',
+  /** Shown in the types dialog when there is neither a schema evaluation nor a result */
+  'vista.export-types.empty': 'Fetch the query first so there is a result to derive types from.',
+  /** Note shown when the types were derived from the fetched result instead of the schema */
+  'vista.export-types.source.result':
+    'Inferred from the fetched result, since the query could not be evaluated against the workspace schema.',
+  /** Note shown when the types were derived from the workspace schema */
+  'vista.export-types.source.schema':
+    'Inferred from the workspace schema, the same way sanity typegen does it.',
+  /** Title of the dialog exporting TypeScript types for the result */
+  'vista.export-types.title-typescript': 'Export TypeScript',
+  /** Title of the dialog exporting a Zod schema for the result */
+  'vista.export-types.title-zod': 'Export Zod',
+  /** Empty state of the history panel */
+  'vista.history.empty': 'Nothing fetched yet',
+  /** Status label for a failed fetch in the history */
+  'vista.history.failed': 'Failed',
+  /** Label in front of the sync tags that triggered a live refetch */
+  'vista.history.matched-tags': 'Matched tags',
+  /** History reason: a live event matched the query's sync tags */
+  'vista.history.reason.live': 'Live update',
+  /** History reason: the live connection asked every client to refetch */
+  'vista.history.reason.live-restart': 'Live connection restarted',
+  /** History reason: the fetch button was pressed */
+  'vista.history.reason.manual': 'Fetch button',
+  /** History reason: dataset, API version or perspective changed while refetching automatically */
+  'vista.history.reason.options': 'Options changed',
+  /** History reason: the keyboard shortcut was used */
+  'vista.history.reason.shortcut': 'Keyboard shortcut',
+  /** Badge shown while a tab refetches automatically */
+  'vista.live.active': 'Live',
+  /** Error shown when the live connection breaks */
+  'vista.live.error': 'Live updates disconnected: {{message}}',
+  /** Label for the "Include content source map" switch */
+  'vista.options.include-source-map': 'Include content source map',
+  /** Description for the "Include content source map" switch */
+  'vista.options.include-source-map.description':
+    'Adds resultSourceMap to the response, shown in the Content Source Map tab.',
+  /** Accessible label for collapsing a bottom panel */
+  'vista.panel.collapse': 'Collapse panel',
+  /** Accessible label for expanding a bottom panel */
+  'vista.panel.expand': 'Expand panel',
+  /** Label of the "History" tab in the response panel */
+  'vista.panel.history': 'History',
+  /** Label of the "Options" tab in the request panel */
+  'vista.panel.options': 'Options',
+  /** Label of the "Response" tab in the response panel */
+  'vista.panel.response': 'Response',
+  /** Label of the "Content Source Map" tab in the response panel */
+  'vista.panel.source-map': 'Content Source Map',
+  /** Toast shown after a query URL was pasted and loaded into the tab */
+  'vista.paste.parsed': 'Loaded query from pasted URL',
+  /** Toast shown when the perspective of a pasted URL cannot be used */
+  'vista.paste.unsupported-perspective':
+    'The perspective in the pasted URL is not supported here, keeping the current one.',
+  /** Accessible label for the query actions menu */
+  'vista.query.actions': 'Query actions',
+  /** Menu item toggling automatic refetching through sync tags */
+  'vista.query.auto-refetch': 'Refetch automatically',
+  /** Tooltip when automatic refetching is not available for the API version */
+  'vista.query.auto-refetch.unsupported':
+    'Refetching automatically needs API version v2021-03-25 or later.',
+  /** Toast shown after the query was copied */
+  'vista.query.copied': 'Query copied to clipboard',
+  /** Menu item copying the query text */
+  'vista.query.copy': 'Copy query',
+  /** Menu item opening the export query dialog */
+  'vista.query.export': 'Export query…',
+  /** Menu item reformatting the query */
+  'vista.query.prettify': 'Prettify query',
+  /** Toast shown when the query could not be reformatted */
+  'vista.query.prettify.failed': 'Could not prettify the query',
+  /** Menu item saving the query to the personal saved queries */
+  'vista.query.save': 'Save query',
+  /** Accessible label for the button that stops a running fetch */
+  'vista.query.stop': 'Stop fetching',
+  /** Empty state of the response panel before anything was fetched */
+  'vista.response.empty': 'Nothing fetched yet',
+  /** Label for the payload size in the response tab */
+  'vista.response.payload-size': 'Payload size',
+  /** Label for the sync tags in the response tab */
+  'vista.response.sync-tags': 'Sync tags',
+  /** Shown when the response carried no sync tags */
+  'vista.response.sync-tags.none': 'No sync tags in the response',
+  /** Accessible label for the result actions menu */
+  'vista.result.actions': 'Result actions',
+  /** Toast shown after the result was copied */
+  'vista.result.copied': 'Result copied to clipboard',
+  /** Menu item copying the result as JSON */
+  'vista.result.copy': 'Copy result',
+  /** Empty state of the result view */
+  'vista.result.empty': 'Run the query to see its result here',
+  /** Button exporting the result as CSV */
+  'vista.result.export-csv': 'Export CSV',
+  /** Button exporting the result as JSON */
+  'vista.result.export-json': 'Export JSON',
+  /** Menu item opening the TypeScript export dialog */
+  'vista.result.export-typescript': 'Export TypeScript…',
+  /** Menu item opening the Zod export dialog */
+  'vista.result.export-zod': 'Export Zod…',
+  /** Empty state of the saved queries panel */
+  'vista.saved.empty': 'No saved queries yet. Save the current query with the + button.',
+  /** Empty state of a query list when the search matches nothing */
+  'vista.saved.empty-search': 'No queries match your search',
+  /** Menu item loading a saved query into the active tab */
+  'vista.saved.load-in-current-tab': 'Load into current tab',
+  /** Menu item opening a saved query in a new tab */
+  'vista.saved.open-in-new-tab': 'Open in new tab',
+  /** Menu item renaming a saved query */
+  'vista.saved.rename': 'Rename',
+  /** Accessible label for the button saving the current query */
+  'vista.saved.save-current': 'Save current query',
+  /** Button in the settings dialog that clears the stored state */
+  'vista.settings.clear-storage': 'Clear storage',
+  /** Confirmation button for clearing the storage */
+  'vista.settings.clear-storage.confirm': 'Yes, clear storage',
+  /** Explanation of what clearing the storage does */
+  'vista.settings.clear-storage.description':
+    'Resets the open tabs, these defaults and your saved queries in this browser. Shared queries are kept.',
+  /** Toast shown when the saved queries could not be cleared */
+  'vista.settings.clear-storage.error': 'Could not clear the saved queries',
+  /** Toast shown after the storage was cleared */
+  'vista.settings.clear-storage.success': 'Storage cleared',
+  /** Explanation at the top of the settings dialog */
+  'vista.settings.description': 'Defaults for new tabs. Open tabs keep their own options.',
+  /** Title of the settings dialog */
+  'vista.settings.title': 'Settings',
+  /** Empty state of the shared queries panel */
+  'vista.shared.empty':
+    'No shared queries yet. Share a saved query to make it available to everyone using this dataset.',
+  /** Shortcut description: close dialogs and menus */
+  'vista.shortcuts.close': 'Close dialogs and menus',
+  /** Shortcut description: copy the query */
+  'vista.shortcuts.copy-query': 'Copy the query',
+  /** Shortcut description: run the query */
+  'vista.shortcuts.fetch': 'Fetch the query',
+  /** Shortcut description: reformat the query */
+  'vista.shortcuts.prettify': 'Prettify the query',
+  /** Title of the keyboard shortcuts dialog */
+  'vista.shortcuts.title': 'Keyboard shortcuts',
+  /** Sidebar toggle: show icons only */
+  'vista.sidebar.collapse': 'Collapse sidebar',
+  /** Sidebar toggle: show labels next to the icons */
+  'vista.sidebar.expand': 'Expand sidebar',
+  /** Accessible label for the sidebar navigation */
+  'vista.sidebar.label': 'Vista sidebar',
+  /** Sidebar item and drawer title for personal saved queries */
+  'vista.sidebar.saved-queries': 'Saved queries',
+  /** Sidebar item opening the settings dialog */
+  'vista.sidebar.settings': 'Settings',
+  /** Sidebar item and drawer title for shared queries */
+  'vista.sidebar.shared-queries': 'Shared queries',
+  /** Sidebar item opening the keyboard shortcuts dialog */
+  'vista.sidebar.shortcuts': 'Keyboard shortcuts',
+  /** Accessible label for the button closing a query tab */
+  'vista.tabs.close-tab': 'Close tab',
+  /** Accessible label for the list of query tabs */
+  'vista.tabs.label': 'Query tabs',
+  /** Accessible label for the button opening a new query tab */
+  'vista.tabs.new-tab': 'New tab',
+  /** Placeholder of the input renaming a tab */
+  'vista.tabs.title-placeholder': 'Tab title',
+  /** Title of a tab whose query is still empty */
+  'vista.tabs.untitled': 'Untitled query',
 } as const)
 
 /**

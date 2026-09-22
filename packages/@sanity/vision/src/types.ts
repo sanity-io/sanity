@@ -18,4 +18,11 @@ export interface VisionToolConfig extends Partial<VisionConfig> {
   icon?: ComponentType
 }
 
+/**
+ * Configuration for the experimental Vista tool. Accepts the same options as {@link VisionToolConfig}.
+ *
+ * @beta
+ */
+export type VistaToolConfig = VisionToolConfig
+
 export type {VisionLocaleResourceKeys} from './i18n/resources'

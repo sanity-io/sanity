@@ -1,0 +1,61 @@
+import {Stack, Switch, Text} from '@sanity/ui'
+import {useTranslation} from 'sanity'
+import {Box, Flex, Grid} from 'ui5'
+
+import {visionLocaleNamespace} from '../../../i18n'
+import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
+import {type VistaTabOptions} from '../../store/types'
+import {ApiVersionField, DatasetSelect, PerspectiveSelect} from './OptionFields'
+
+export interface OptionsTabProps {
+  options: VistaTabOptions
+  resolved: ResolvedRequest
+  datasets: string[]
+  onChange: (options: Partial<VistaTabOptions>) => void
+}
+
+export function OptionsTab({options, resolved, datasets, onChange}: OptionsTabProps) {
+  const {t} = useTranslation(visionLocaleNamespace)
+
+  return (
+    <Box data-testid="vista-options" padding={3}>
+      <Stack gap={4}>
+        <Grid gap={3} gridTemplateColumns={['minmax(0, 1fr)', 'repeat(3, minmax(0, 1fr))']}>
+          <DatasetSelect
+            datasets={datasets}
+            id="vista-option-dataset"
+            onChange={(dataset) => onChange({dataset})}
+            value={options.dataset}
+          />
+          <ApiVersionField
+            apiVersion={options.apiVersion}
+            customApiVersion={options.customApiVersion}
+            id="vista-option-api-version"
+            locked={resolved.isApiVersionLocked}
+            onChange={(next) => onChange(next)}
+          />
+          <PerspectiveSelect
+            id="vista-option-perspective"
+            onChange={(perspective) => onChange({perspective})}
+            value={options.perspective}
+          />
+        </Grid>
+        <Flex alignItems="center" as="label" gap={3}>
+          <Switch
+            checked={options.includeSourceMap}
+            data-testid="vista-option-source-map"
+            onChange={(event) => onChange({includeSourceMap: event.currentTarget.checked})}
+          />
+          <Stack gap={2}>
+            <Text size={1} weight="medium">
+              {t('vista.options.include-source-map')}
+            </Text>
+            <Text muted size={1}>
+              {t('vista.options.include-source-map.description')}
+            </Text>
+          </Stack>
+        </Flex>
+      </Stack>
+    </Box>
+  )
+}

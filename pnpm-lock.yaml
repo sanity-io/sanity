@@ -1925,6 +1925,9 @@ importers:
       '@sanity/lezer-groq':
         specifier: ^1.0.4
         version: 1.0.4
+      '@sanity/schema':
+        specifier: workspace:*
+        version: link:../schema
       '@sanity/ui':
         specifier: 'catalog:'
         version: 4.2.3(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
@@ -1937,9 +1940,15 @@ importers:
       '@vanilla-extract/dynamic':
         specifier: 'catalog:'
         version: 2.1.5
+      '@xstate/react':
+        specifier: ^6.1.0
+        version: 6.1.0(@types/react@19.3.0)(react@19.3.0)(xstate@5.33.2)
       dequal:
         specifier: 'catalog:'
         version: 2.0.3
+      groq-js:
+        specifier: ^2.0.0
+        version: 2.0.0
       is-hotkey-esm:
         specifier: ^1.0.0
         version: 1.0.0
@@ -1967,6 +1976,9 @@ importers:
       use-effect-event:
         specifier: ^2.0.4
         version: 2.0.4(react@19.3.0)
+      xstate:
+        specifier: ^5.33.2
+        version: 5.33.2
     devDependencies:
       '@repo/package.bundle':
         specifier: workspace:*
