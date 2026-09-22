@@ -1,0 +1,571 @@
+import {type LiveEvent, type SanityClient} from '@sanity/client'
+import {LayerProvider, ThemeProvider} from '@sanity/ui'
+import {buildTheme} from '@sanity/ui/theme'
+import {ToastProvider} from '@sanity/ui/toast'
+import {act, cleanup, fireEvent, render, screen, waitFor, within} from '@testing-library/react'
+import {type ReactNode, type RefAttributes, useImperativeHandle, useRef} from 'react'
+import {Subject} from 'rxjs'
+import {type PerspectiveContextValue} from 'sanity'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
+
+import {type VisionCodeMirrorHandle} from '../../codemirror/VisionCodeMirror'
+import {createInitialState, createTab, saveVistaState} from '../store/vistaStorage'
+import {VistaGui} from './VistaGui'
+
+const theme = buildTheme()
+
+// `usePerspective` is backed by a tiny external store so that changing the navbar perspective
+// re-renders subscribers, as the real context-based hook does
+const sanityMocks = vi.hoisted(() => {
+  let perspective: unknown = null
+  const listeners = new Set<() => void>()
+  return {
+    setPerspective: (next: unknown) => {
+      perspective = next
+      listeners.forEach((listener) => listener())
+    },
+    subscribePerspective: (listener: () => void) => {
+      listeners.add(listener)
+      return () => listeners.delete(listener)
+    },
+    getPerspective: () => perspective,
+    useClient: vi.fn(),
+    setKey: vi.fn(() => Promise.resolve({queries: []})),
+  }
+})
+
+class ResizeObserverMock {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
+vi.stubGlobal('ResizeObserver', ResizeObserverMock)
+vi.stubGlobal(
+  'matchMedia',
+  vi.fn((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+)
+
+vi.mock('sanity', async () => {
+  const {useSyncExternalStore} = await import('react')
+  return {
+    usePerspective: () =>
+      useSyncExternalStore(sanityMocks.subscribePerspective, sanityMocks.getPerspective),
+    useClient: sanityMocks.useClient,
+    useActiveReleases: vi.fn(() => ({data: [], loading: false})),
+    useScheduledDraftsEnabled: vi.fn(() => false),
+    useWorkspace: vi.fn(() => ({document: {drafts: {enabled: true}}})),
+    useTranslation: () => ({
+      t: (key: string, options?: {message?: string}) =>
+        options?.message ? `${key}:${options.message}` : key,
+    }),
+    defineLocaleResourceBundle: (bundle: unknown) => bundle,
+    defineLocalesResources: (_namespace: string, resources: unknown) => resources,
+    VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: 'X'},
+    RELEASES_STUDIO_CLIENT_OPTIONS: {apiVersion: '2025-02-19'},
+    getReleaseIdFromReleaseDocumentId: (id: string) => id.replace(/^_.releases./, ''),
+    isCardinalityOneRelease: () => false,
+    sortReleases: <T,>(releases: T[]) => releases,
+    getVariantTitle: (variant: {title?: string}) => variant.title,
+    useSchema: () => undefined,
+    useKeyValueStore: () => ({getKey: vi.fn(), setKey: sanityMocks.setKey}),
+    useCurrentUser: () => ({id: 'user-1'}),
+    useDateTimeFormat: () => ({format: () => 'a date'}),
+    ContextMenuButton: (props: Record<string, unknown>) => <button type="button" {...props} />,
+    UserAvatar: () => null,
+  }
+})
+
+vi.mock('sanity/router', () => ({
+  IntentLink: ({children}: {children: ReactNode}) => <a href="#intent">{children}</a>,
+}))
+
+vi.mock('../../hooks/useSavedQueries', () => ({
+  STORED_QUERIES_NAMESPACE: 'studio.vision-tool.saved-queries',
+  useSavedQueries: () => ({
+    queries: [],
+    saveQuery: vi.fn(),
+    updateQuery: vi.fn(),
+    deleteQuery: vi.fn(),
+    saving: false,
+    deleting: [],
+    saveQueryError: undefined,
+    deleteQueryError: undefined,
+    error: undefined,
+  }),
+}))
+
+vi.mock('../../components/ResultView', () => ({
+  ResultView: ({data}: {data: unknown}) => (
+    <pre data-testid="result-json">{JSON.stringify(data)}</pre>
+  ),
+}))
+
+vi.mock('../../codemirror/VisionCodeMirror', () => ({
+  VisionCodeMirror: function VisionCodeMirrorMock({
+    initialValue,
+    onChange,
+    ref,
+  }: {
+    initialValue?: string
+    onChange?: (value: string) => void
+  } & RefAttributes<VisionCodeMirrorHandle>) {
+    const textareaRef = useRef<HTMLTextAreaElement>(null)
+    useImperativeHandle(ref, () => ({
+      resetEditorContent: (content: string) => {
+        if (textareaRef.current) textareaRef.current.value = content
+      },
+    }))
+    return (
+      <textarea
+        data-testid="codemirror-mock"
+        defaultValue={initialValue}
+        onChange={(event) => onChange?.(event.target.value)}
+        ref={textareaRef}
+      />
+    )
+  },
+}))
+
+vi.mock('@rexxars/react-split-pane', () => ({
+  SplitPane: function SplitPaneMock({children}: {children: ReactNode}) {
+    return <div>{children}</div>
+  },
+}))
+
+const BASE_PERSPECTIVE: PerspectiveContextValue = {
+  perspectiveStack: ['published'],
+  excludedPerspectives: [],
+  selectedPerspective: 'published',
+  selectedPerspectiveName: 'published',
+  selectedReleaseId: undefined,
+  selectedVariantName: undefined,
+  selectedVariant: undefined,
+  bundle: 'published',
+}
+
+const PROJECT_ID = 'test-project'
+const STORAGE_KEY = `sanityVista:${PROJECT_ID}`
+const DEFAULTS = {
+  datasets: ['test', 'staging'],
+  defaultDataset: 'test',
+  defaultApiVersion: '2025-02-19',
+}
+
+type ClientConfig = Record<string, unknown>
+
+interface FetchCall {
+  config: ClientConfig
+  query: string
+  params: Record<string, unknown>
+  options: Record<string, unknown>
+}
+
+function createMockClient(initial: ClientConfig = {apiVersion: 'v2025-02-19', dataset: 'test'}) {
+  const fetchCalls: FetchCall[] = []
+  const liveEvents = new Subject<LiveEvent>()
+  let liveSubscriptions = 0
+  let nextResponse: Record<string, unknown> = {
+    result: [{title: 'Variant title'}],
+    ms: 12,
+    syncTags: ['s1:abc'],
+  }
+  let nextError: Error | undefined
+
+  const create = (config: ClientConfig): SanityClient =>
+    ({
+      config: () => config,
+      withConfig: (next: ClientConfig) => create({...config, ...next}),
+      getDataUrl: (operation: string, qs: string) =>
+        `/${String(config.apiVersion)}/data/${operation}/${String(config.dataset)}${qs}`,
+      getUrl: (path: string) => `https://test.api.sanity.io${path}`,
+      fetch: (query: string, params: Record<string, unknown>, options: Record<string, unknown>) => {
+        fetchCalls.push({config, query, params, options})
+        return nextError ? Promise.reject(nextError) : Promise.resolve({query, ...nextResponse})
+      },
+      live: {
+        events: () => {
+          liveSubscriptions++
+          return liveEvents
+        },
+      },
+    }) as unknown as SanityClient
+
+  return {
+    client: create(initial),
+    fetchCalls,
+    liveEvents,
+    liveSubscriptionCount: () => liveSubscriptions,
+    respondWith: (response: Record<string, unknown>) => {
+      nextResponse = response
+      nextError = undefined
+    },
+    failWith: (error: Error) => {
+      nextError = error
+    },
+  }
+}
+
+function renderVista(perspective: PerspectiveContextValue = BASE_PERSPECTIVE) {
+  const mockClient = createMockClient()
+  sanityMocks.setPerspective(perspective)
+  sanityMocks.useClient.mockReturnValue(mockClient.client)
+
+  const ui = () => (
+    <ThemeProvider theme={theme}>
+      <ToastProvider>
+        <LayerProvider>
+          <VistaGui
+            config={{defaultApiVersion: '2025-02-19'}}
+            datasets={DEFAULTS.datasets}
+            projectId={PROJECT_ID}
+            defaultDataset="test"
+          />
+        </LayerProvider>
+      </ToastProvider>
+    </ThemeProvider>
+  )
+  const view = render(ui())
+
+  return {
+    ...view,
+    ...mockClient,
+    setPerspective: (next: PerspectiveContextValue) => {
+      act(() => sanityMocks.setPerspective(next))
+    },
+  }
+}
+
+function getQueryEditor(): HTMLTextAreaElement {
+  return within(screen.getByTestId('vista-query-editor')).getByTestId(
+    'codemirror-mock',
+  ) as HTMLTextAreaElement
+}
+
+function typeQuery(query: string) {
+  fireEvent.change(getQueryEditor(), {target: {value: query}})
+}
+
+function openOptionsTab() {
+  fireEvent.click(document.getElementById('vista-request-options-tab') as HTMLElement)
+}
+
+function getStoredState() {
+  return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null')
+}
+
+function text(element: HTMLElement): string {
+  return element.textContent || ''
+}
+
+function isDisabled(element: HTMLElement): boolean {
+  return (element as HTMLButtonElement).disabled
+}
+
+function selectValue(testId: string): string {
+  return (screen.getByTestId(testId) as HTMLSelectElement).value
+}
+
+describe('VistaGui', () => {
+  afterEach(() => {
+    cleanup()
+    vi.clearAllMocks()
+  })
+
+  beforeEach(() => {
+    localStorage.clear()
+    sanityMocks.setPerspective(BASE_PERSPECTIVE)
+  })
+
+  it('starts with one empty tab and a disabled fetch button', () => {
+    renderVista()
+
+    expect(screen.getAllByTestId('vista-tab')).toHaveLength(1)
+    expect(text(screen.getByTestId('vista-tab-button'))).toContain('vista.tabs.untitled')
+    expect(isDisabled(screen.getByTestId('vista-fetch-button'))).toBe(true)
+    expect(text(screen.getByTestId('vista-result'))).toContain('vista.result.empty')
+  })
+
+  it('fetches the raw response, shows its metadata and records the history', async () => {
+    const {fetchCalls} = renderVista()
+
+    typeQuery('*[_type == "author"]')
+    await waitFor(() => expect(isDisabled(screen.getByTestId('vista-fetch-button'))).toBe(false))
+    expect(text(screen.getByTestId('vista-tab-button'))).toContain('author')
+
+    fireEvent.click(screen.getByTestId('vista-fetch-button'))
+
+    await waitFor(() => expect(screen.getByTestId('result-json')).toBeTruthy())
+    expect(fetchCalls).toHaveLength(1)
+    expect(fetchCalls[0]).toMatchObject({
+      query: '*[_type == "author"]',
+      params: {},
+      options: {filterResponse: false, tag: 'vista'},
+      config: {apiVersion: 'v2025-02-19', dataset: 'test', perspective: 'raw'},
+    })
+    expect(text(screen.getByTestId('result-json'))).toContain('[{"title":"Variant title"}]')
+
+    expect(text(screen.getByTestId('vista-meta-execution'))).toContain('12ms')
+    expect(text(screen.getByTestId('vista-meta-sync-tags'))).toContain('s1:abc')
+    const url = new URL((screen.getByTestId('vista-query-url') as HTMLInputElement).value)
+    expect(url.pathname).toBe('/v2025-02-19/data/query/test')
+    expect(url.searchParams.get('query')).toBe('*[_type == "author"]')
+    expect(url.searchParams.get('perspective')).toBe('raw')
+
+    fireEvent.click(document.getElementById('vista-response-history-tab') as HTMLElement)
+    const entries = screen.getAllByTestId('vista-history-entry')
+    expect(entries).toHaveLength(1)
+    expect(text(entries[0])).toContain('vista.history.reason.manual')
+  })
+
+  it('runs the query with the keyboard shortcut and marks the reason', async () => {
+    const {fetchCalls} = renderVista()
+    typeQuery('*')
+
+    fireEvent.keyDown(getQueryEditor(), {key: 'Enter', ctrlKey: true, which: 13, keyCode: 13})
+
+    await waitFor(() => expect(fetchCalls).toHaveLength(1))
+    fireEvent.click(document.getElementById('vista-response-history-tab') as HTMLElement)
+    await waitFor(() =>
+      expect(text(screen.getByTestId('vista-history-entry'))).toContain(
+        'vista.history.reason.shortcut',
+      ),
+    )
+  })
+
+  it('shows fetch errors in the result panel and the history', async () => {
+    const {failWith} = renderVista()
+    failWith(new Error('Syntax error in GROQ query'))
+    typeQuery('*[')
+
+    fireEvent.click(screen.getByTestId('vista-fetch-button'))
+
+    await waitFor(() =>
+      expect(text(screen.getByTestId('vista-result'))).toContain('Syntax error in GROQ query'),
+    )
+    fireEvent.click(document.getElementById('vista-response-history-tab') as HTMLElement)
+    expect(text(screen.getByTestId('vista-history-entry'))).toContain('vista.history.failed')
+  })
+
+  it('opens, switches, renames and closes tabs, and persists them', async () => {
+    renderVista()
+    typeQuery('*[_type == "author"]')
+
+    fireEvent.click(screen.getByTestId('vista-new-tab'))
+    let tabs = screen.getAllByTestId('vista-tab')
+    expect(tabs).toHaveLength(2)
+    expect(tabs[1].getAttribute('aria-selected')).toBe('true')
+    expect(getQueryEditor().value).toBe('')
+
+    fireEvent.click(within(tabs[0]).getByTestId('vista-tab-button'))
+    expect(screen.getAllByTestId('vista-tab')[0].getAttribute('aria-selected')).toBe('true')
+    expect(getQueryEditor().value).toBe('*[_type == "author"]')
+
+    fireEvent.doubleClick(
+      within(screen.getAllByTestId('vista-tab')[0]).getByTestId('vista-tab-button'),
+    )
+    const input = screen.getByTestId('vista-tab-title-input') as HTMLInputElement
+    fireEvent.change(input, {target: {value: 'Authors'}})
+    fireEvent.keyDown(input, {key: 'Enter'})
+    expect(
+      text(within(screen.getAllByTestId('vista-tab')[0]).getByTestId('vista-tab-button')),
+    ).toContain('Authors')
+
+    await waitFor(() => {
+      const stored = getStoredState()
+      expect(stored.tabs).toHaveLength(2)
+      expect(stored.tabs[0]).toMatchObject({title: 'Authors', query: '*[_type == "author"]'})
+      expect(stored.activeTabId).toBe(stored.tabs[0].id)
+    })
+
+    fireEvent.click(within(screen.getAllByTestId('vista-tab')[1]).getByTestId('vista-tab-close'))
+    tabs = screen.getAllByTestId('vista-tab')
+    expect(tabs).toHaveLength(1)
+    expect(text(tabs[0])).toContain('Authors')
+
+    // Closing the last tab leaves a fresh one
+    fireEvent.click(within(tabs[0]).getByTestId('vista-tab-close'))
+    expect(screen.getAllByTestId('vista-tab')).toHaveLength(1)
+    expect(text(screen.getByTestId('vista-tab-button'))).toContain('vista.tabs.untitled')
+  })
+
+  it('restores persisted tabs and settings on mount', () => {
+    const initial = createInitialState(DEFAULTS)
+    const tab = createTab(initial.settings, {
+      id: 'restored',
+      title: 'Restored',
+      query: '*[_type == "book"]',
+      options: {dataset: 'staging', perspective: 'drafts'},
+    })
+    saveVistaState(PROJECT_ID, {
+      ...initial,
+      tabs: [tab],
+      activeTabId: 'restored',
+      sidebar: {expanded: true, drawer: null},
+    })
+
+    renderVista()
+
+    expect(text(screen.getByTestId('vista-tab-button'))).toContain('Restored')
+    expect(getQueryEditor().value).toBe('*[_type == "book"]')
+    openOptionsTab()
+    expect(selectValue('vista-option-dataset-select')).toBe('staging')
+    expect(selectValue('vista-option-perspective-select')).toBe('drafts')
+    expect(text(screen.getByTestId('vista-sidebar-toggle'))).toContain('vista.sidebar.collapse')
+  })
+
+  it('refetches from live events that carry one of the response sync tags', async () => {
+    const {fetchCalls, liveEvents, liveSubscriptionCount, respondWith} = renderVista()
+    typeQuery('*[_type == "author"]')
+    fireEvent.click(screen.getByTestId('vista-fetch-button'))
+    await waitFor(() => expect(fetchCalls).toHaveLength(1))
+
+    fireEvent.click(screen.getByTestId('vista-query-menu-button'))
+    fireEvent.click(screen.getByTestId('vista-auto-refetch'))
+
+    await waitFor(() => expect(liveSubscriptionCount()).toBe(1))
+    expect(screen.getAllByText('vista.live.active').length).toBeGreaterThan(0)
+
+    respondWith({result: [{title: 'Updated'}], ms: 3, syncTags: ['s1:def']})
+    act(() => {
+      liveEvents.next({type: 'message', id: '1', tags: ['s1:nope']})
+    })
+    expect(fetchCalls).toHaveLength(1)
+
+    act(() => {
+      liveEvents.next({type: 'message', id: '2', tags: ['s1:abc']})
+    })
+    await waitFor(() => expect(fetchCalls).toHaveLength(2))
+    await waitFor(() => expect(text(screen.getByTestId('result-json'))).toContain('Updated'))
+
+    fireEvent.click(document.getElementById('vista-response-history-tab') as HTMLElement)
+    const entries = screen.getAllByTestId('vista-history-entry')
+    expect(text(entries[0])).toContain('vista.history.reason.live')
+    expect(text(entries[0])).toContain('s1:abc')
+    expect(text(entries[1])).toContain('vista.history.reason.manual')
+
+    // The next response's tags are the ones that count now
+    act(() => {
+      liveEvents.next({type: 'message', id: '3', tags: ['s1:abc']})
+    })
+    expect(fetchCalls).toHaveLength(2)
+    act(() => {
+      liveEvents.next({type: 'message', id: '4', tags: ['s1:def']})
+    })
+    await waitFor(() => expect(fetchCalls).toHaveLength(3))
+  })
+
+  it('locks the API version to vX and sends the variant for the pinned release perspective', async () => {
+    const initial = createInitialState(DEFAULTS)
+    const tab = createTab(initial.settings, {
+      id: 'pinned',
+      query: '*[_id == "a"]',
+      options: {perspective: 'pinnedRelease'},
+    })
+    saveVistaState(PROJECT_ID, {...initial, tabs: [tab], activeTabId: 'pinned'})
+
+    const {fetchCalls} = renderVista({...BASE_PERSPECTIVE, selectedVariantName: 'french'})
+
+    openOptionsTab()
+    const apiVersionSelect = screen.getByTestId(
+      'vista-option-api-version-select',
+    ) as HTMLSelectElement
+    expect(apiVersionSelect.value).toBe('vX')
+    expect(apiVersionSelect.disabled).toBe(true)
+
+    fireEvent.click(screen.getByTestId('vista-fetch-button'))
+    await waitFor(() => expect(fetchCalls).toHaveLength(1))
+    expect(fetchCalls[0].config).toMatchObject({
+      apiVersion: 'vX',
+      perspective: ['published'],
+      variant: 'french',
+    })
+    const url = new URL((screen.getByTestId('vista-query-url') as HTMLInputElement).value)
+    expect(url.pathname).toContain('/vX/')
+    expect(url.searchParams.get('variant')).toBe('french')
+    expect(url.searchParams.get('perspective')).toBe('published')
+  })
+
+  it('does not attach a variant while the tab is on a local perspective', async () => {
+    const {fetchCalls} = renderVista({
+      ...BASE_PERSPECTIVE,
+      perspectiveStack: [],
+      selectedPerspectiveName: undefined,
+      selectedVariantName: 'french',
+    })
+    typeQuery('*')
+    openOptionsTab()
+    expect(selectValue('vista-option-perspective-select')).toBe('raw')
+    expect(isDisabled(screen.getByTestId('vista-option-api-version-select'))).toBe(false)
+
+    fireEvent.click(screen.getByTestId('vista-fetch-button'))
+    await waitFor(() => expect(fetchCalls).toHaveLength(1))
+    expect(fetchCalls[0].config.perspective).toBe('raw')
+    expect(fetchCalls[0].config.variant).toBeUndefined()
+    const url = new URL((screen.getByTestId('vista-query-url') as HTMLInputElement).value)
+    expect(url.searchParams.get('variant')).toBeNull()
+  })
+
+  it('follows the navbar to the pinned release perspective when the stack changes', async () => {
+    const {setPerspective} = renderVista()
+    openOptionsTab()
+    expect(selectValue('vista-option-perspective-select')).toBe('raw')
+
+    setPerspective({
+      ...BASE_PERSPECTIVE,
+      perspectiveStack: ['rSummer', 'drafts'],
+      selectedPerspectiveName: 'rSummer',
+      selectedReleaseId: 'rSummer',
+    })
+
+    await waitFor(() =>
+      expect(selectValue('vista-option-perspective-select')).toBe('pinnedRelease'),
+    )
+  })
+
+  it('loads a pasted query URL into the active tab', async () => {
+    renderVista()
+    const url =
+      'https://abc.api.sanity.io/v2021-10-21/data/query/staging?query=*%5B_id+%3D%3D+%24id%5D&%24id=%22a%22&perspective=published'
+
+    fireEvent.paste(document.body, {clipboardData: {getData: () => url}})
+
+    await waitFor(() => expect(getQueryEditor().value).toBe('*[_id == $id]'))
+    expect(text(screen.getByTestId('vista-tab-button'))).toContain('*[_id == $id]')
+    openOptionsTab()
+    expect(selectValue('vista-option-dataset-select')).toBe('staging')
+    expect(selectValue('vista-option-api-version-select')).toBe('v2021-10-21')
+    expect(selectValue('vista-option-perspective-select')).toBe('published')
+  })
+
+  it('clears the storage from the settings dialog', {timeout: 15_000}, async () => {
+    renderVista()
+    typeQuery('*[_type == "author"]')
+    fireEvent.click(screen.getByTestId('vista-new-tab'))
+    await waitFor(() => expect(getStoredState().tabs).toHaveLength(2))
+
+    fireEvent.click(screen.getByTestId('vista-sidebar-settings'))
+    fireEvent.click(await screen.findByTestId('vista-clear-storage'))
+    fireEvent.click(screen.getByTestId('vista-clear-storage-confirm'))
+
+    await waitFor(() => expect(screen.getAllByTestId('vista-tab')).toHaveLength(1))
+    expect(getQueryEditor().value).toBe('')
+    expect(sanityMocks.setKey).toHaveBeenCalledWith('studio.vision-tool.saved-queries', {
+      queries: [],
+    })
+    await waitFor(() => {
+      const stored = getStoredState()
+      expect(stored.tabs).toHaveLength(1)
+      expect(stored.tabs[0].query).toBe('')
+    })
+  })
+})
