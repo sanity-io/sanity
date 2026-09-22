@@ -4,7 +4,7 @@
   },
   "devDependencies": {
     "@sanity/blueprints": "^0.27.0",
-    "@sanity/functions": "^1.7.2",
+    "@sanity/functions": "^1.8.0",
     "sanity": "workspace:*",
     "vite": "catalog:"
   }
