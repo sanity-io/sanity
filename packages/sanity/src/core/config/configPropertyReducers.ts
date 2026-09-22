@@ -567,6 +567,48 @@ export const documentGroupInventoryEnabledReducer = ({
   }, initialValue)
 }
 
+export const keepInactiveToolsMountedEnabledReducer = ({
+  config,
+  initialValue,
+}: {
+  config: PluginOptions
+  initialValue: boolean
+}): boolean => {
+  const flattenedConfig = flattenConfig(config, [])
+
+  return flattenedConfig.reduce<boolean>((value, {config: innerConfig}) => {
+    const keepInactiveToolsMounted: unknown = innerConfig.beta?.keepInactiveToolsMounted
+
+    if (typeof keepInactiveToolsMounted === 'undefined') {
+      return value
+    }
+
+    if (!isRecord(keepInactiveToolsMounted)) {
+      throw new Error(
+        `Expected \`beta.keepInactiveToolsMounted\` to be an object, but received ${getPrintableType(
+          keepInactiveToolsMounted,
+        )}`,
+      )
+    }
+
+    const enabled = keepInactiveToolsMounted.enabled
+
+    if (typeof enabled === 'undefined') {
+      return value
+    }
+
+    if (typeof enabled === 'boolean') {
+      return enabled
+    }
+
+    throw new Error(
+      `Expected \`beta.keepInactiveToolsMounted.enabled\` to be a boolean, but received ${getPrintableType(
+        enabled,
+      )}`,
+    )
+  }, initialValue)
+}
+
 export const mediaLibraryEnabledReducer = (opts: {
   config: PluginOptions
   initialValue: boolean

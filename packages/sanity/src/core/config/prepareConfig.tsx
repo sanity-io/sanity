@@ -55,6 +55,7 @@ import {
   initialDocumentBadges,
   initialLanguageFilter,
   internalTasksReducer,
+  keepInactiveToolsMountedEnabledReducer,
   mediaLibraryEnabledReducer,
   mediaLibraryFrontendHostReducer,
   mediaLibraryLibraryIdReducer,
@@ -938,6 +939,9 @@ function resolveSource({
         // It cannot be switched off while variants are switched on.
         enabled:
           documentGroupInventoryEnabledReducer({config, initialValue: false}) || variantsEnabled,
+      },
+      keepInactiveToolsMounted: {
+        enabled: keepInactiveToolsMountedEnabledReducer({config, initialValue: false}),
       },
     },
 

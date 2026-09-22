@@ -1377,4 +1377,22 @@ export interface BetaFeatures {
   documentGroupInventory?: {
     enabled?: boolean
   }
+  /**
+   * Keep recently used tools mounted while another tool is active.
+   *
+   * By default the Studio unmounts a tool as soon as you switch to another one, and mounts it
+   * again from scratch when you come back. With this switched on, the three most recently used
+   * tools stay mounted: inactive ones are hidden with React's `<Activity>` boundary instead of
+   * being unmounted, so their state survives the round trip, and switching back to one of them
+   * restores the URL it was last at instead of resetting it to the tool's start page. Going from
+   * Presentation to Structure and back, for example, keeps the preview iframe loaded and the
+   * document you were editing open.
+   *
+   * Tools stay mounted least-recently-used first: opening a fourth tool unmounts the one you have
+   * not used for the longest time. Hidden tools have their effects paused, as with any hidden
+   * `<Activity>` boundary.
+   */
+  keepInactiveToolsMounted?: {
+    enabled?: boolean
+  }
 }

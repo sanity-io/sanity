@@ -2,17 +2,19 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Card} from '@sanity/ui'
 import startCase from 'lodash-es/startCase.js'
-import {lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {NavbarContext} from 'sanity/_singletons'
+import {Activity, lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {MountedToolsContext, NavbarContext, RouterContext} from 'sanity/_singletons'
 import {RouteScope, useRouter, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
 import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
 import {isDefaultRouteTool} from '../config/isDefaultRouteTool'
+import {type Tool} from '../config/types'
 import {DocumentLimitsUpsellPanel} from '../limits/context/documents/DocumentLimitsUpsellPanel'
 import {isDocumentLimitError} from '../limits/context/documents/isDocumentLimitError'
 import {StudioReadyMeasured} from './__telemetry__/bootstrap.telemetry'
+import {useMountedTools} from './mountedTools/useMountedTools'
 import {useNetworkProtocolCheck} from './networkCheck/useNetworkProtocolCheck'
 import {NoToolsScreen} from './screens/NoToolsScreen'
 import {RedirectingScreen} from './screens/RedirectingScreen'
@@ -54,7 +56,7 @@ let studioReadyFired = false
  * The default Studio Layout component
  * */
 export function StudioLayoutComponent() {
-  const {name, title, tools} = useWorkspace()
+  const {beta, name, title, tools} = useWorkspace()
   const telemetry = useTelemetry()
 
   // In the background, check if the network protocol used to communicate with the
@@ -74,6 +76,14 @@ export function StudioLayoutComponent() {
     () => tools.find((tool) => tool.name === activeToolName),
     [activeToolName, tools],
   )
+  // With `beta.keepInactiveToolsMounted`, the tools used most recently stay mounted inside a
+  // hidden `<Activity>` boundary instead of being unmounted when another tool takes over.
+  const keepInactiveToolsMounted = beta?.keepInactiveToolsMounted?.enabled === true
+  const {mountedTools, contextValue: mountedToolsContextValue} = useMountedTools({
+    enabled: keepInactiveToolsMounted,
+    tools,
+    activeTool,
+  })
   // Track T0 for tool-mount timing. Because React Compiler forbids impure
   // calls like `performance.now()` during render, we capture the timestamp
   // in an effect that runs when `activeToolName` changes. The effect runs
@@ -184,46 +194,70 @@ export function StudioLayoutComponent() {
     return null
   }, [])
 
+  const renderTool = (tool: Tool) => (
+    <RouteScope
+      scope={tool.name}
+      __unsafe_disableScopedSearchParams={tool.router?.__unsafe_disableScopedSearchParams}
+    >
+      <Suspense fallback={<LoadingBlock showText />}>
+        <ActiveToolLayout activeTool={tool} />
+        <ToolMountTimer toolName={tool.name} t0Ref={toolMountT0Ref} />
+      </Suspense>
+    </RouteScope>
+  )
+
   return (
-    <Flex data-ui="ToolScreen" flexDirection="column" height="100%" data-testid="studio-layout">
-      <NavbarContext.Provider value={navbarContextValue}>
-        {/* oxlint-disable-next-line react/static-components -- Navbar comes from useNavbarComponent(), stable per workspace */}
-        <Navbar />
-      </NavbarContext.Provider>
-      <UnclaimedProjectNudge />
-      {isLegacyDeskRedirect && <RedirectingScreen />}
-      {!activeTool && defaultRouteTools.length === 0 && <NoToolsScreen />}
-      {tools.length > 0 && !activeTool && activeToolName && !isLegacyDeskRedirect && (
-        <ToolNotFoundScreen toolName={activeToolName} />
-      )}
-      {searchFullscreenOpen && (
-        <SearchFullscreenPortalCard ref={setSearchFullscreenPortalEl} overflow="auto" />
-      )}
-      {/* By using the tool name as the key on the error boundary, we force it to re-render
-          when switching tools, which ensures we don't show the wrong tool having crashed */}
-      <StudioErrorBoundary
-        key={activeTool?.name}
-        heading={`The ${activeTool?.name} tool crashed`}
-        getErrorScreen={getErrorScreen}
-      >
-        {detectViteDevServerStopped && <DetectViteDevServerStopped />}
-        <Card flex={1} hidden={searchFullscreenOpen}>
-          {activeTool && activeToolName && (
-            <RouteScope
-              scope={activeToolName}
-              __unsafe_disableScopedSearchParams={
-                activeTool.router?.__unsafe_disableScopedSearchParams
-              }
-            >
-              <Suspense fallback={<LoadingBlock showText />}>
-                {/* oxlint-disable-next-line react/static-components -- ActiveToolLayout comes from useActiveToolLayoutComponent(), stable per workspace */}
-                <ActiveToolLayout activeTool={activeTool} />
-                <ToolMountTimer toolName={activeTool.name} t0Ref={toolMountT0Ref} />
-              </Suspense>
-            </RouteScope>
-          )}
-        </Card>
-      </StudioErrorBoundary>
-    </Flex>
+    <MountedToolsContext.Provider value={mountedToolsContextValue}>
+      <Flex data-ui="ToolScreen" flexDirection="column" height="100%" data-testid="studio-layout">
+        <NavbarContext.Provider value={navbarContextValue}>
+          {/* oxlint-disable-next-line react/static-components -- Navbar comes from useNavbarComponent(), stable per workspace */}
+          <Navbar />
+        </NavbarContext.Provider>
+        <UnclaimedProjectNudge />
+        {isLegacyDeskRedirect && <RedirectingScreen />}
+        {!activeTool && defaultRouteTools.length === 0 && <NoToolsScreen />}
+        {tools.length > 0 && !activeTool && activeToolName && !isLegacyDeskRedirect && (
+          <ToolNotFoundScreen toolName={activeToolName} />
+        )}
+        {searchFullscreenOpen && (
+          <SearchFullscreenPortalCard ref={setSearchFullscreenPortalEl} overflow="auto" />
+        )}
+        {keepInactiveToolsMounted ? (
+          <StudioErrorBoundary>
+            {detectViteDevServerStopped && <DetectViteDevServerStopped />}
+            <Card flex={1} hidden={searchFullscreenOpen}>
+              {mountedTools.map(({tool, router: toolRouter}) => (
+                // Each tool keeps the root router context it last rendered with while active, so
+                // a hidden tool holds on to its own URL state instead of picking up the active
+                // tool's. `useMountedTools` keeps the active tool's entry on the live router.
+                <Activity key={tool.name} mode={tool === activeTool ? 'visible' : 'hidden'}>
+                  <RouterContext.Provider value={toolRouter}>
+                    <StudioErrorBoundary
+                      heading={`The ${tool.name} tool crashed`}
+                      getErrorScreen={getErrorScreen}
+                    >
+                      {renderTool(tool)}
+                    </StudioErrorBoundary>
+                  </RouterContext.Provider>
+                </Activity>
+              ))}
+            </Card>
+          </StudioErrorBoundary>
+        ) : (
+          // By using the tool name as the key on the error boundary, we force it to re-render
+          // when switching tools, which ensures we don't show the wrong tool having crashed
+          <StudioErrorBoundary
+            key={activeTool?.name}
+            heading={`The ${activeTool?.name} tool crashed`}
+            getErrorScreen={getErrorScreen}
+          >
+            {detectViteDevServerStopped && <DetectViteDevServerStopped />}
+            <Card flex={1} hidden={searchFullscreenOpen}>
+              {activeTool && renderTool(activeTool)}
+            </Card>
+          </StudioErrorBoundary>
+        )}
+      </Flex>
+    </MountedToolsContext.Provider>
   )
 }

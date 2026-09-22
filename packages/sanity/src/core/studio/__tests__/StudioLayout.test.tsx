@@ -44,7 +44,13 @@ vi.mock('sanity/router', () => ({
 }))
 
 vi.mock('sanity/_singletons', () => ({
+  MountedToolsContext: {
+    Provider: ({children}: {children: React.ReactNode}) => <>{children}</>,
+  },
   NavbarContext: {
+    Provider: ({children}: {children: React.ReactNode}) => <>{children}</>,
+  },
+  RouterContext: {
     Provider: ({children}: {children: React.ReactNode}) => <>{children}</>,
   },
 }))
