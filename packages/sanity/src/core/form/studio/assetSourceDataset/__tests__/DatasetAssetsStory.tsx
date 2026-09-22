@@ -48,7 +48,7 @@ const FILE_ASSETS: Asset[] = [
 
 const mockClient = createMockSanityClient()
 mockClient.observable.fetch = (query: string) =>
-  of(query.includes('references(') ? [] : FILE_ASSETS)
+  of(query.includes('_type == "sanity.fileAsset"') ? FILE_ASSETS : [])
 
 const client = mockClient as unknown as SanityClient
 const assetSource: AssetSource = {
@@ -84,6 +84,14 @@ export function DatasetFileListStory() {
               standalone unselected row
             </Text>
             <AssetRow asset={FILE_ASSETS[1]} onDeleteFinished={noop} />
+          </Stack>
+          <Stack gap={2}>
+            <Text muted size={1} weight="medium">
+              expanded mobile row
+            </Text>
+            <div data-testid="mobile-asset-row">
+              <AssetRow asset={FILE_ASSETS[0]} isMobile onDeleteFinished={noop} />
+            </div>
           </Stack>
         </Stack>
       </Card>

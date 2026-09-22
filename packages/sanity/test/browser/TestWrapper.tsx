@@ -58,6 +58,23 @@ function StyledChangeConnectorRoot(props: ComponentProps<typeof ChangeConnectorR
 // "Open in new tab" IntentLinks kept mounted by @sanity/ui Activity) can
 // resolve hrefs without throwing during render.
 const router = route.create('/', [route.intents('/intent')])
+
+const memoKeyByObject = new WeakMap<object, number>()
+let nextMemoKey = 0
+
+function getMemoKey(value: unknown): string {
+  if ((typeof value === 'object' && value !== null) || typeof value === 'function') {
+    const object = value as object
+    let key = memoKeyByObject.get(object)
+    if (key === undefined) {
+      key = nextMemoKey++
+      memoKeyByObject.set(object, key)
+    }
+    return `object:${key}`
+  }
+  return `${typeof value}:${String(value)}`
+}
+
 const getCachedMockWorkspace = memoize(
   (
     client: SanityClient,
@@ -80,6 +97,7 @@ const getCachedMockWorkspace = memoize(
 
     return getMockWorkspace({client, config})
   },
+  (...args) => args.map(getMemoKey).join('|'),
 )
 
 /**
@@ -87,10 +105,15 @@ const getCachedMockWorkspace = memoize(
  * Sanity client and a mock workspace.
  */
 export const TestWrapper = (props: TestWrapperProps): React.JSX.Element | null => {
-  const {children, schemaTypes, betaFeatures, client: clientProp, i18nBundles} = props
+  const {children, client: clientProp} = props
   const [client] = useState(
     () => clientProp || (createMockSanityClient() as unknown as SanityClient),
   )
+  const [{schemaTypes, betaFeatures, i18nBundles}] = useState(() => ({
+    schemaTypes: props.schemaTypes,
+    betaFeatures: props.betaFeatures,
+    i18nBundles: props.i18nBundles,
+  }))
 
   return (
     <Suspense fallback={null}>

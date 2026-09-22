@@ -15,6 +15,10 @@ const inactiveClient = createMockSanityClient({
   },
 }) as unknown as SanityClient
 
+const provisionErrorClient = createMockSanityClient({
+  requests: {'/projects/test': {}},
+}) as unknown as SanityClient
+
 const unexpectedErrorClient = createMockSanityClient()
 unexpectedErrorClient.observable.request = () =>
   throwError(() => new Error('Fixture media service unavailable'))
@@ -31,8 +35,8 @@ function UnexpectedErrorFixture() {
 
 /**
  * Chromatic sentinel for media-library provisioning states touched by the
- * misc form Stack migration. Both clients are local deterministic fixtures:
- * one returns no libraries and one returns a fixed unexpected error.
+ * misc form Stack migration. The clients are local deterministic fixtures
+ * for inactive, expected provisioning-error, and unexpected-error states.
  */
 export function MediaLibraryProvisioningStory() {
   return (
@@ -43,6 +47,17 @@ export function MediaLibraryProvisioningStory() {
             no media library provisioned
           </Text>
           <TestWrapper client={inactiveClient} schemaTypes={[]}>
+            <EnsureMediaLibrary
+              mediaLibraryInfo={{from: 'project', projectId: 'test'}}
+              onSetMediaLibraryIds={noop}
+            />
+          </TestWrapper>
+        </Stack>
+        <Stack gap={2}>
+          <Text muted size={1} weight="medium">
+            organization could not be resolved
+          </Text>
+          <TestWrapper client={provisionErrorClient} schemaTypes={[]}>
             <EnsureMediaLibrary
               mediaLibraryInfo={{from: 'project', projectId: 'test'}}
               onSetMediaLibraryIds={noop}

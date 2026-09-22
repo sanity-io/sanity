@@ -8,7 +8,7 @@ import {IncompatibleItemType} from '../../members/array/IncompatibleItemType'
 import {DuplicateKeysAlert} from '../../members/object/errors/DuplicateKeysAlert'
 import {MissingKeysAlert} from '../../members/object/errors/MissingKeysAlert'
 import {MixedArrayAlert} from '../../members/object/errors/MixedArrayAlert'
-import {FormBuilderInputErrorBoundary} from '../../studio/FormBuilderInputErrorBoundary'
+import {ErrorCard, FormBuilderInputErrorBoundary} from '../../studio/FormBuilderInputErrorBoundary'
 import {FormField} from '../formField/FormField'
 import {FormFieldHeaderText} from '../formField/FormFieldHeaderText'
 import {FormFieldSet} from '../formField/FormFieldSet'
@@ -32,13 +32,6 @@ const SCHEMA_TYPES = [
 const VALIDATION: FormNodeValidation[] = [
   {level: 'error', message: 'A title is required', path: ['title']},
 ]
-
-const FIXTURE_ERROR = new Error('The fixture input could not render')
-FIXTURE_ERROR.stack = 'Error: The fixture input could not render\n    at FixtureInput'
-
-function FixtureInput(): never {
-  throw FIXTURE_ERROR
-}
 
 function FormChrome() {
   const schemaType = useSchema().get('fixtureItems')
@@ -130,8 +123,15 @@ function FormChrome() {
             input error boundary
           </Text>
           <FormBuilderInputErrorBoundary>
-            <FixtureInput />
+            <Text size={1}>Healthy fixture input</Text>
           </FormBuilderInputErrorBoundary>
+          <ErrorCard
+            error={{
+              message: 'The fixture input could not render',
+              stack: 'Error: The fixture input could not render\n    at FixtureInput',
+            }}
+            onRetry={noop}
+          />
         </Stack>
       </Stack>
     </Card>

@@ -1,5 +1,5 @@
 import {type Meta, type StoryObj} from '@storybook/react-vite'
-import {expect, waitFor, within} from 'storybook/test'
+import {expect, userEvent, waitFor, within} from 'storybook/test'
 
 import {
   AssetDeleteDialogStory,
@@ -20,7 +20,15 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const FileList: Story = {}
+export const FileList: Story = {
+  play: async () => {
+    const mobileRow = within(document.body).getByTestId('mobile-asset-row')
+    const [, expandButton] = within(mobileRow).getAllByRole('button')
+    await userEvent.click(expandButton)
+    await waitFor(() => expect(within(mobileRow).getByText('Show usage')).toBeVisible())
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur()
+  },
+}
 
 export const DeleteDialog: Story = {
   render: () => <AssetDeleteDialogStory />,
