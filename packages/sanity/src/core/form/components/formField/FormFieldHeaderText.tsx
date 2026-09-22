@@ -4,7 +4,6 @@ import {memo, type ReactNode} from 'react'
 import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
-import {agentDebugLog} from '../../../../../test/browser/agentDebugLog'
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {createDescriptionId} from '../../members/common/createDescriptionId'
@@ -47,24 +46,8 @@ const EMPTY_ARRAY: never[] = []
 export const FormFieldHeaderText = memo(function FormFieldHeaderText(
   props: FormFieldHeaderTextProps,
 ) {
-  // #region agent log
-  agentDebugLog({
-    hypothesisId: 'C',
-    location: 'FormFieldHeaderText.tsx:entry',
-    message: 'FormFieldHeaderText render before useTranslation',
-    data: {title: typeof props.title === 'string' ? props.title : typeof props.title},
-  })
-  // #endregion
   const {description, inputId, title, deprecated, validation = EMPTY_ARRAY, suffix} = props
   const {t} = useTranslation()
-  // #region agent log
-  agentDebugLog({
-    hypothesisId: 'C',
-    location: 'FormFieldHeaderText.tsx:afterTranslation',
-    message: 'FormFieldHeaderText passed useTranslation',
-    data: {},
-  })
-  // #endregion
   const hasValidations = validation.length > 0
 
   return (
