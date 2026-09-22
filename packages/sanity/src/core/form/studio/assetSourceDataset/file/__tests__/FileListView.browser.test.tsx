@@ -85,7 +85,7 @@ describe('dataset file list', () => {
       throw new Error('Expected the mobile asset-row expand button')
     }
     await userEvent.click(expandButton)
-    await expect.element(page.getByText('Show usage')).toBeVisible()
+    await expect.element(page.getByTestId('mobile-asset-row').getByText('Show usage')).toBeVisible()
     await settleChromaticEndState()
   })
 })

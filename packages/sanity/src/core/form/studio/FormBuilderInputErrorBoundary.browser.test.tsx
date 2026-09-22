@@ -28,7 +28,9 @@ describe('form builder input error boundary', () => {
     const {settleChromaticEndState} = testHelpers()
     void render(<FormBuilderInputErrorBoundaryHarness />)
 
-    await expect.element(page.getByText('Error: The fixture input could not render')).toBeVisible()
+    await expect
+      .element(page.getByText('Error: The fixture input could not render', {exact: true}))
+      .toBeVisible()
     await expect.element(page.getByText('Call stack')).toBeVisible()
     await settleChromaticEndState()
   })
