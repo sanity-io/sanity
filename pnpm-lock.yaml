@@ -981,8 +981,8 @@ importers:
         specifier: ^2.2.2
         version: 2.2.2(@sanity/types@packages+@sanity+types)(react@19.3.0)(typescript@7.0.2)
       '@sanity/themer':
-        specifier: ^0.3.13
-        version: 0.3.13(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
+        specifier: ^0.3.15
+        version: 0.3.15(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
       '@sanity/types':
         specifier: workspace:*
         version: link:../../packages/@sanity/types
@@ -7580,8 +7580,8 @@ packages:
     engines: {node: '>=18.0.0'}
     hasBin: true
 
-  '@sanity/themer@0.3.13':
-    resolution: {integrity: sha512-xixJmsENsPB6JRCh7FON+yXXG+aPI75vz+Rc9ErfZ2c95QtUMFXyMssww4xY5iWC5X+FbuMO0NXqO35hzb+mgA==}
+  '@sanity/themer@0.3.15':
+    resolution: {integrity: sha512-II4ZyfWH7dY6kZfGADqcnA6YkVwyEauZ30CxrPEx6jjAAj2lFf6xgBmPyxOb0Xi9VlmoZcXskaY7MU2D9DjuNA==}
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
       react: ^18 || ^19
@@ -7623,6 +7623,14 @@ packages:
 
   '@sanity/ui@4.2.2':
     resolution: {integrity: sha512-iOomRI0HmhvImg0FAuegaowirD3SIE29CLvfVNIK7qvDTysd072a83ZJUNJKL6OiWgvvImB59RP8zY4U2KZ0aw==}
+    engines: {node: '>=22.12'}
+    peerDependencies:
+      react: ^19.2
+      react-dom: ^19.2
+      styled-components: ^6.1
+
+  '@sanity/ui@4.2.3':
+    resolution: {integrity: sha512-pxIshNSZGE40/YvRpsHmU1B5hSRLDpLfKgvrGkUltKgcb/lgzoksCM6rcbwTPNT/o1A5OQChYlHYklLOsGv5vA==}
     engines: {node: '>=22.12'}
     peerDependencies:
       react: ^19.2
@@ -20357,11 +20365,11 @@ snapshots:
     dependencies:
       yaml: 2.9.1
 
-  '@sanity/themer@0.3.13(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)':
+  '@sanity/themer@0.3.15(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)':
     dependencies:
       '@sanity/color': 3.0.8
       '@sanity/icons': 5.2.2(react@19.3.0)
-      '@sanity/ui': 4.2.2(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
+      '@sanity/ui': 4.2.3(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
       react: 19.3.0
       react-compiler-runtime: 1.0.0(react@19.3.0)
       react-refractor: 4.0.0(react@19.3.0)
@@ -20403,6 +20411,22 @@ snapshots:
       '@types/react': 19.3.0
 
   '@sanity/ui@4.2.2(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)':
+    dependencies:
+      '@floating-ui/react-dom': 2.1.9(react-dom@19.3.0)(react@19.3.0)
+      '@sanity/color': 3.0.8
+      '@sanity/icons': 5.2.2(react@19.3.0)
+      '@vanilla-extract/dynamic': 2.1.5
+      clsx: 2.1.1
+      csstype: 3.2.3
+      motion: 13.4.0(react-dom@19.3.0)(react@19.3.0)
+      react: 19.3.0
+      react-dom: 19.3.0(react@19.3.0)
+      react-is: 19.3.0
+      react-refractor: 4.0.0(react@19.3.0)
+      styled-components: 6.5.3(react-dom@19.3.0)(react@19.3.0)
+      use-effect-event: 2.0.4(react@19.3.0)
+
+  '@sanity/ui@4.2.3(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)':
     dependencies:
       '@floating-ui/react-dom': 2.1.9(react-dom@19.3.0)(react@19.3.0)
       '@sanity/color': 3.0.8
