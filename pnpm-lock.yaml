@@ -1662,7 +1662,7 @@ importers:
         specifier: 'catalog:'
         version: 8.6.2(vitest@4.1.11)
       '@sanity/media-library-types':
-        specifier: ^1.6.0
+        specifier: ^1.7.0
         version: 1.7.0(@sanity/types@packages+@sanity+types)
     devDependencies:
       '@repo/test-config':
@@ -2073,7 +2073,7 @@ importers:
         specifier: ^2.2.5
         version: 2.2.5(react@19.3.0)
       '@sanity/media-library-types':
-        specifier: ^1.6.0
+        specifier: ^1.7.0
         version: 1.7.0(@sanity/types@packages+@sanity+types)
       '@sanity/message-protocol':
         specifier: ^0.24.0
