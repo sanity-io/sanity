@@ -15,7 +15,11 @@ interface UseMountedToolsOptions {
 }
 
 interface UseMountedToolsResult {
-  /** Least recently used first; the active tool, when there is one, is the last entry. */
+  /**
+   * The tools to render, in workspace `tools` order. The order is deliberately not the
+   * least-recently-used order used for eviction: reordering keyed children makes React move their
+   * DOM nodes, and re-inserting an `<iframe>` (Presentation's preview) reloads it.
+   */
   mountedTools: MountedTool[]
   /** Value for `MountedToolsContext`, consumed by `ToolLink`. */
   contextValue: MountedToolsContextValue
@@ -36,20 +40,25 @@ export function useMountedTools(options: UseMountedToolsOptions): UseMountedTool
   // during render (React's "storing information from previous renders" pattern) rather than in
   // an effect. This way the tool that just became inactive keeps its frozen router context in
   // the same render that hides it; an effect would first commit it with the new tool's state.
-  const mountedTools = enabled ? updateMountedTools(mounted, {tools, activeTool, router}) : NONE
-  if (mountedTools !== mounted) {
-    setMounted(mountedTools)
+  const next = enabled ? updateMountedTools(mounted, {tools, activeTool, router}) : NONE
+  if (next !== mounted) {
+    setMounted(next)
   }
+
+  const mountedTools = useMemo(
+    () => next.toSorted((a, b) => tools.indexOf(a.tool) - tools.indexOf(b.tool)),
+    [next, tools],
+  )
 
   const contextValue = useMemo<MountedToolsContextValue>(() => {
     const inactiveToolStates: Record<string, RouterState> = {}
-    for (const entry of mountedTools) {
+    for (const entry of next) {
       if (entry.tool !== activeTool) {
         inactiveToolStates[entry.tool.name] = entry.router.state
       }
     }
     return {inactiveToolStates}
-  }, [activeTool, mountedTools])
+  }, [activeTool, next])
 
   return {mountedTools, contextValue}
 }

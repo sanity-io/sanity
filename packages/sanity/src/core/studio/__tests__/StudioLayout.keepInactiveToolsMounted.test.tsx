@@ -233,6 +233,20 @@ describe('StudioLayoutComponent with beta.keepInactiveToolsMounted', () => {
       expect(screen.getByTestId('tool-structure')).toBe(structureBefore)
     })
 
+    it('renders mounted tools in workspace order, not in order of use, so their DOM is never moved', async () => {
+      renderStudio({enabled: true})
+      await switchTo('vision')
+      await switchTo('presentation')
+      await switchTo('structure')
+      await switchTo('vision')
+
+      const toolScreen = screen.getByTestId('studio-layout')
+      const order = Array.from(toolScreen.querySelectorAll('[data-testid^="tool-"]'))
+        .map((el) => el.getAttribute('data-testid'))
+        .filter((id) => /^tool-(structure|presentation|vision|media)$/.test(id ?? ''))
+      expect(order).toEqual(['tool-structure', 'tool-presentation', 'tool-vision'])
+    })
+
     it('still links the active tool to its start page', async () => {
       renderStudio({enabled: true})
       await openDocument('structure')
