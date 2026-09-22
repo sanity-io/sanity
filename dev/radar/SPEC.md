@@ -446,6 +446,99 @@ sessionChains.ts` and shared by the sessions list and the Releases tool:
    into one line — the version range, the count, the deprecation — that
    expands to the releases themselves.
 
+9. **Style migration** — the Trends tab that tracks the studio's two styling
+   migrations, per scenario, on the same runs that record INP and LCP: **UI v5
+   adoption** (rendered `@sanity/ui` v5 components as a share of all
+   `@sanity/ui` components — the headline — with the v5 and v4 counts behind
+   it) and the **styled-components** escape hatch (rendered nodes, distinct
+   components, `<style data-styled>` tags, CSS rules and bytes inserted at
+   runtime, share of all CSS rules). The bench takes a style census of each
+   session's page once it has gone quiet (perf/bench README, "Style migration
+   census") and stores it as ordinary metric rows, so nothing here is a new
+   document shape: the rows flow through `buildSeries` like every other metric
+   and get drift, acks, deep links, the run popover and its bisect hand-offs
+   for free. What is specific:
+
+   - **The metric registry is shared, not mirrored.** `STYLE_METRICS` in
+     `@repo/utils/style-systems` holds the labels (the join key with the
+     bench), units, direction and descriptions; `describeSeries` consults it
+     first, before any mode. The same module owns the DOM fingerprints the
+     test studio's "Style migrations" widget draws from, so the widget, the
+     bench and this tab cannot count three different things. A registry entry
+     can be `charted: false` — recorded on the document, never a series: the
+     `<style data-styled>` tag count is one on every page (two would mean a
+     second styled-components runtime, which the document still shows), and a
+     flat line of ones tells no story.
+   - **Keyed per scenario, not per mode.** The census rides on the interaction,
+     pageload and settle reports alike, and the shards of one scenario count
+     the same page, so their rows share a `styles:<scenario>:<label>` key and
+     merge into one point per commit (the `mergeRunsPerCommit` median) rather
+     than drawing two series that say the same thing.
+   - **The two majors share a chart.** The three UI rows (`UI v5 share`,
+     `UI v5 instances`, `UI v4 instances`) become paired series per scenario
+     (`UI_PAIRS`), each drawing v5 and v4 as two lines in the style systems'
+     own colors — the migration reads as a crossing, v5 climbing past v4, that
+     two single-line charts never show. Only the **share** pair is charted:
+     its v4 line is the complement of the stored v5 share (they sum to 100% by
+     construction). The **instances** pair is the same picture before the
+     division, so it is built `hidden` (`TrendSeries.hidden`: no card, no
+     drift row, no deep link) and exists to be summed. This is the first series
+     with several measured lines per branch, hence `TrendLine.label` /
+     `color` / `secondary`: the v4 line is secondary — drawn for the crossing,
+     but the card's latest value, the drift verdict and the baseline overlay
+     read the v5 line only (judging both would flag every move twice, once per
+     direction). Legends and tooltips name lines by label, and by branch too
+     when several branches' pairs share a chart, where the second branch
+     dashes because the color already means the major.
+   - **The overview score.** The UI v5 adoption view leads with one full-width
+     card, `all scenarios · UI v5 vs v4 share` (`UI_OVERVIEW_KEY`): every
+     scenario's hidden instance counts summed per commit, then divided —
+     Σ v5 ÷ Σ (v5 + v4) — so it is weighted by how much each page renders,
+     not an average of the pages' percentages. Built by `aggregateStyleSeries`
+     from the full history as well, so it is judged like any chart and a batch
+     of migrated components badges the score the day it lands. The
+     per-scenario share cards follow as its breakdown. The styled-components
+     view leads the same way: an "All scenarios" grid with one summed card per
+     metric (instances, components, CSS rules, CSS bytes; the rule share
+     weighted by rules), so the whole escape hatch is readable before the
+     per-scenario sections.
+   - **Higher is better exists now.** Adoption climbs, so `goal: 'higher'`
+     makes a drop the regression and a rise the improvement (drift.ts
+     `classify`); the badge arrow follows the value's direction and its tone the
+     verdict, so a falling share reads "↓ regression". Shares are stored 0–100
+     (`unit: 'percent'`) and drawn on a **fixed 0–100 axis**: the distance to
+     100% (or to 0%) is the story, and an auto-scaled axis would make 35%
+     look nearly done. The drift floor for a share is one whole point.
+   - **Not applicable is absent, never zero.** A build without `@sanity/ui` v5
+     (studio before v6.10) records no `UI v5 …` rows, so a backfill or bisect
+     into that era leaves the adoption series empty where v5 did not exist
+     instead of drawing a 0% floor; the styled-components rows cover every era.
+     The scenario's `styles.experiment.ui5Available` says which case it was,
+     and `styledComponentsVersion` names the runtime — surfaced on style points
+     (tooltip, popover) because a step in the CSS rows that lands with a
+     version bump is the library changing its output, not a migration.
+   - **Two sub-views plus "Per week".** UI v5 adoption (the two paired
+     sections) and styled-components (a section per registry metric) each lay
+     out like the Vitals tab, a card per scenario. "Per week" redraws the
+     headline series as weekly histograms modelled on Linear's "StyleX adoption
+     per week" chart (`WeeklyBars.tsx`, buckets from `weekly.ts`): a
+     100%-stacked bar per Monday-start UTC week for the shares (the filled part
+     climbing to the top is the celebration), plain bars for the counts and
+     sizes that should sink. It leads with **every scenario summed** and then
+     repeats the set per scenario, one scrolling page and no picker: the
+     aggregate (`aggregateStyleSeries`) sums the per-scenario points per
+     commit (rendered styled nodes, inserted bytes) and recomputes the shares
+     from the summed counts (Σ v5 ÷ Σ (v5 + v4); Σ inserted rules ÷ Σ readable
+     rules, the totals recovered from each scenario's rule count and share)
+     rather than averaging percentages. Sums count shared studio chrome once
+     per scenario page, so they read "across the benchmark's pages"; a failed
+     shard leaves a commit's sum short, which the weekly median absorbs. A bar
+     is the **median of that week's points**, an empty week stays a gap
+     (interpolating would claim a measurement nobody took), and a bar opens
+     the week's newest run in the same popover the trend charts use, so the
+     histogram is a bisect surface too. Colors are the style systems' own,
+     shared with the widget's donut and outlines.
+
 ## Architecture
 
 - A custom **tool pane** (`defineTool`) in this studio, registered _first_ so

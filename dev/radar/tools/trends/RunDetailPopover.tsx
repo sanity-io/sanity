@@ -218,6 +218,14 @@ export function RunDetailPopover(props: {
                   {INP_MIN_INTERACTIONS})
                 </Badge>
               )}
+              {/* Style-migration points name the styled-components runtime the
+                  page ran: a step that coincides with a version bump is the
+                  library's output changing, not a migration */}
+              {point.styledComponentsVersion && (
+                <Text size={1} muted>
+                  styled-components {point.styledComponentsVersion} on this page
+                </Text>
+              )}
             </Stack>
 
             {/* Where this run sits in the release timeline. Stated for every

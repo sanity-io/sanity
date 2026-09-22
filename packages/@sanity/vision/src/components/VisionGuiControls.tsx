@@ -1,9 +1,9 @@
 import {PlayIcon} from '@sanity/icons/Play'
 import {StopIcon} from '@sanity/icons/Stop'
-import {Button, Card, Flex, Hotkeys, Text} from '@sanity/ui'
+import {Button, Card, Hotkeys, Text} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {useTranslation} from 'sanity'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {visionLocaleNamespace} from '../i18n'
 import {ControlsContainer} from './VisionGui.styled'
@@ -44,7 +44,7 @@ export function VisionGuiControls({
           disabled={hasValidParams}
           portal
         >
-          <Flex justify="space-evenly">
+          <Flex justifyContent="space-evenly">
             <Box flexBasis="0%" flexGrow={1}>
               <Tooltip
                 content={

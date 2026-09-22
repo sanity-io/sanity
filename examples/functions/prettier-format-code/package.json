@@ -4,8 +4,8 @@
   "main": "index.ts",
   "dependencies": {
     "@sanity/client": "^8.6.2",
-    "@sanity/functions": "^1.7.2",
-    "prettier": "^3.9.6"
+    "@sanity/functions": "^1.8.0",
+    "prettier": "^3.9.8"
   },
   "blueprintResourceItem": {
     "name": "prettier-format-code",

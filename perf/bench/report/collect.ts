@@ -2,6 +2,8 @@ import {execFileSync} from 'node:child_process'
 import os from 'node:os'
 import process from 'node:process'
 
+import {STYLE_METRICS, type StyleCensus} from '@repo/utils/style-systems'
+
 import {type AbScenarioResult} from '../runner/orchestrator'
 import {type InpSessionResult} from '../runner/session/inp'
 import {type InteractionSessionResult} from '../runner/session/interaction'
@@ -16,6 +18,7 @@ import {
   type MetricReport,
   type ResourceSide,
   type ScenarioReport,
+  type StyleContext,
 } from './types'
 
 function git(args: string[]): string {
@@ -223,38 +226,120 @@ function collectResourceSide(sessions: InteractionSessionResult[]): ResourceSide
   }
 }
 
+/** The censuses a side's sessions took (sessions without one contribute nothing). */
+function censusesOf(sessions: {styles: StyleCensus | null}[]): StyleCensus[] {
+  return sessions.map((session) => session.styles).filter((census) => census !== null)
+}
+
+/**
+ * Style-migration rows (report-only, never gated): one row per
+ * `STYLE_METRICS` entry, one value per session, summarized like every other
+ * row — a median over sessions, so a transient popover adding a few nodes to
+ * one session cannot move the point. A metric that does not apply — the UI v5
+ * rows on a build without v5, a share without a denominator — is left out of
+ * the row set rather than written as zero (see `StyleMetric.read`).
+ *
+ * Both sides where an A/B run has both, without a `comparison`: the numbers
+ * are exact counts of a build, so the bootstrap verdict has nothing to
+ * decide, and the PR comment only lists gated regressions anyway.
+ */
+export function collectStyleMetrics(
+  experiment: StyleCensus[],
+  reference: StyleCensus[] = [],
+): MetricReport[] {
+  const values = (censuses: StyleCensus[], read: (census: StyleCensus) => number | null) =>
+    censuses
+      .map((census) => read(census))
+      .filter((value): value is number => value !== null)
+      .map((value) => [value])
+  return STYLE_METRICS.flatMap((metric): MetricReport[] => {
+    const experimentValues = values(experiment, metric.read)
+    if (experimentValues.length === 0) return []
+    const referenceValues = values(reference, metric.read)
+    return [
+      {
+        label: metric.label,
+        unit: metric.unit,
+        presentAsEfps: false,
+        experiment: {sessions: experimentValues, summary: summarize(experimentValues.flat())},
+        ...(referenceValues.length > 0
+          ? {reference: {sessions: referenceValues, summary: summarize(referenceValues.flat())}}
+          : {}),
+      },
+    ]
+  })
+}
+
+/** The build facts behind a side's style rows; undefined when no session took the census. */
+export function collectStyleContext(censuses: StyleCensus[]): StyleContext | undefined {
+  if (censuses.length === 0) return undefined
+  const versions = [
+    ...new Set(censuses.flatMap((census) => census.styledComponents.versions)),
+  ].sort()
+  const readable = censuses
+    .map((census) => census.stylesheets.totalRules)
+    .filter((total) => total > 0)
+  return {
+    ui5Available: censuses.some((census) => census.ui5Available),
+    ...(versions.length > 0 ? {styledComponentsVersion: versions.join(', ')} : {}),
+    ...(readable.length > 0 ? {readableCssRules: median(readable)} : {}),
+    sessions: censuses.length,
+  }
+}
+
+/** The `styles` block of a scenario report, or nothing when no side has a census. */
+function styleBlock(
+  experiment: StyleCensus[],
+  reference: StyleCensus[] = [],
+): Pick<ScenarioReport, 'styles'> {
+  const experimentContext = collectStyleContext(experiment)
+  if (!experimentContext) return {}
+  const referenceContext = collectStyleContext(reference)
+  return {
+    styles: {
+      experiment: experimentContext,
+      ...(referenceContext ? {reference: referenceContext} : {}),
+    },
+  }
+}
+
 /** Interaction A/B result → scenario report. */
 export function collectAbInteraction(
   result: AbScenarioResult,
   sourceFile?: string,
 ): ScenarioReport {
+  const experimentCensuses = censusesOf(result.experiment.sessions)
+  const referenceCensuses = censusesOf(result.reference.sessions)
   return {
     scenario: result.scenario,
     ...(sourceFile ? {sourceFile} : {}),
     kind: 'interaction',
-    metrics: result.comparisons.map((comparison): MetricReport => {
-      const experimentSessions = fieldSessions(result.experiment.sessions, comparison.label)
-      const referenceSessions = fieldSessions(result.reference.sessions, comparison.label)
-      return {
-        label: comparison.label,
-        unit: 'ms',
-        presentAsEfps: true,
-        experiment: {
-          sessions: experimentSessions,
-          summary: summarize(experimentSessions.flat()),
-        },
-        reference: {
-          sessions: referenceSessions,
-          summary: summarize(referenceSessions.flat()),
-        },
-        comparison: {
-          diff: comparison.interval.diff,
-          lo: comparison.interval.lo,
-          hi: comparison.interval.hi,
-          verdict: comparison.verdict,
-        },
-      }
-    }),
+    metrics: [
+      ...result.comparisons.map((comparison): MetricReport => {
+        const experimentSessions = fieldSessions(result.experiment.sessions, comparison.label)
+        const referenceSessions = fieldSessions(result.reference.sessions, comparison.label)
+        return {
+          label: comparison.label,
+          unit: 'ms',
+          presentAsEfps: true,
+          experiment: {
+            sessions: experimentSessions,
+            summary: summarize(experimentSessions.flat()),
+          },
+          reference: {
+            sessions: referenceSessions,
+            summary: summarize(referenceSessions.flat()),
+          },
+          comparison: {
+            diff: comparison.interval.diff,
+            lo: comparison.interval.lo,
+            hi: comparison.interval.hi,
+            verdict: comparison.verdict,
+          },
+        }
+      }),
+      ...collectStyleMetrics(experimentCensuses, referenceCensuses),
+    ],
     stoppedBy: result.stoppedBy,
     failures: result.failures.map((failure) => ({side: failure.side, reason: failure.reason})),
     interruptions: {
@@ -272,6 +357,7 @@ export function collectAbInteraction(
           },
         }
       : {}),
+    ...styleBlock(experimentCensuses, referenceCensuses),
   }
 }
 
@@ -282,25 +368,30 @@ export function collectAbsoluteInteraction(
   sourceFile?: string,
 ): ScenarioReport {
   const labels = sessions[0]?.fields.map((field) => field.label) ?? []
+  const censuses = censusesOf(sessions)
   return {
     scenario,
     ...(sourceFile ? {sourceFile} : {}),
     kind: 'interaction',
-    metrics: labels.map((label): MetricReport => {
-      const sessionSamples = fieldSessions(sessions, label)
-      return {
-        label,
-        unit: 'ms',
-        presentAsEfps: true,
-        experiment: {sessions: sessionSamples, summary: summarize(sessionSamples.flat())},
-      }
-    }),
+    metrics: [
+      ...labels.map((label): MetricReport => {
+        const sessionSamples = fieldSessions(sessions, label)
+        return {
+          label,
+          unit: 'ms',
+          presentAsEfps: true,
+          experiment: {sessions: sessionSamples, summary: summarize(sessionSamples.flat())},
+        }
+      }),
+      ...collectStyleMetrics(censuses),
+    ],
     failures: [],
     interruptions: {experiment: sumInterruptions(sessions)},
     loafAttribution: topAttribution(sessions),
     ...(collectResourceSide(sessions)
       ? {resources: {experiment: collectResourceSide(sessions)!}}
       : {}),
+    ...styleBlock(censuses),
   }
 }
 
@@ -524,17 +615,23 @@ export function collectPageLoad(
     }
   }
 
+  // The style census does not depend on the load condition (the same page
+  // renders cold or warm), so every sample of a side feeds one row set
+  const experimentCensuses = censusesOf(experiment)
+  const referenceCensuses = censusesOf(reference ?? [])
+
   return {
     scenario,
     ...(sourceFile ? {sourceFile} : {}),
     kind: 'pageload',
-    metrics,
+    metrics: [...metrics, ...collectStyleMetrics(experimentCensuses, referenceCensuses)],
     failures: [],
     interruptions: {experiment: {count: 0, totalMs: 0}},
     loafAttribution: [...byScript.values()].sort((a, b) => b.totalMs - a.totalMs).slice(0, 5),
     clsAttribution: [...byShiftSource.values()]
       .sort((a, b) => b.totalValue - a.totalValue)
       .slice(0, 5),
+    ...styleBlock(experimentCensuses, referenceCensuses),
   }
 }
 
@@ -609,6 +706,9 @@ export function collectSettle(
           sessions.map((session) => [session.renderMarks[name] ?? 0]),
         ),
       ),
+    // The customization workspaces are pages of their own — their style
+    // census covers component kinds the pristine scenarios never render
+    ...collectStyleMetrics(censusesOf(sessions)),
   ]
 
   const byScript = new Map<string, {sourceUrl: string; functionName: string; totalMs: number}>()
@@ -633,5 +733,6 @@ export function collectSettle(
     failures: [],
     interruptions: {experiment: {count: 0, totalMs: 0}},
     loafAttribution: [...byScript.values()].sort((a, b) => b.totalMs - a.totalMs).slice(0, 5),
+    ...styleBlock(censusesOf(sessions)),
   }
 }

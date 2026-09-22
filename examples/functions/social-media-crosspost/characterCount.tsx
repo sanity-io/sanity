@@ -1,5 +1,6 @@
-import {Badge, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, Card, Stack, Text} from '@sanity/ui'
 import {useFormValue} from 'sanity'
+import {Flex} from 'ui5'
 
 import {platformConfig, type Platform} from '../schemaTypes/documents/socialPost'
 
@@ -25,7 +26,7 @@ export function CharacterCount(props: any) {
   return (
     <Card shadow={1} padding={3} radius={2}>
       <Stack gap={3}>
-        <Flex gap={3} direction="row" align="center" wrap="wrap">
+        <Flex gap={3} flexDirection="row" alignItems="center" flexWrap="wrap">
           {platformsToDisplay.map((platform: Platform) => {
             const platformSetting = Array.isArray(doc.platformOverrides)
               ? doc.platformOverrides.find((setting: any) => setting.platform === platform)
@@ -36,7 +37,7 @@ export function CharacterCount(props: any) {
             const isOverLimit = text.length > limit
 
             return (
-              <Flex key={platform} gap={2} direction="row" align="center">
+              <Flex key={platform} gap={2} flexDirection="row" alignItems="center">
                 <Text size={1} weight="medium">
                   {label}
                 </Text>
