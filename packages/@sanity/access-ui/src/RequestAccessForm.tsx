@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Avatar, Button, Card, Flex, Spinner, Stack, Text, TextArea} from '@sanity/ui'
+import {Avatar, Button, Card, Spinner, Stack, Text, TextArea} from '@sanity/ui'
 import {
   type ReactNode,
   type SubmitEvent,
@@ -10,7 +10,7 @@ import {
   useState,
   useTransition,
 } from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {
   fetchAccessRequestStatus,
@@ -90,7 +90,7 @@ export function RequestAccessForm(props: RequestAccessFormProps) {
     <Card border height="fill" overflow="hidden" radius={3} tone="default">
       <Suspense
         fallback={
-          <Flex align="center" height="fill" justify="center" padding={5}>
+          <Flex alignItems="center" height="100%" justifyContent="center" padding={5}>
             <Spinner muted />
           </Flex>
         }
@@ -307,10 +307,10 @@ function RequestAccessFormContent(
   }
 
   return (
-    <Flex direction="column" height="fill">
-      <Flex direction="column" flex={1} gap={4} padding={4}>
+    <Flex flexDirection="column" height="100%">
+      <Flex flexDirection="column" flexBasis="0%" flexGrow={1} gap={4} padding={4}>
         {preview ? (
-          <Flex justify="center" padding={2}>
+          <Flex justifyContent="center" padding={2}>
             {preview}
           </Flex>
         ) : null}
@@ -391,8 +391,8 @@ function RequestAccessFormContent(
 
       {currentUser ? (
         <Card borderTop padding={3}>
-          <Flex align="center" direction="column" gap={3}>
-            <Flex align="center" gap={2} justify="center">
+          <Flex alignItems="center" flexDirection="column" gap={3}>
+            <Flex alignItems="center" gap={2} justifyContent="center">
               <Avatar initials={getInitials(currentUser)} size={0} src={currentUser.profileImage} />
               <Box>
                 <Text muted size={1} textOverflow="ellipsis">
