@@ -58,6 +58,7 @@ import {
   formatValue,
   styleLabel,
   styleScenario,
+  type StyleView,
   styleViews,
   TAGS_QUERY,
   TREND_QUERY,
@@ -892,15 +893,15 @@ function StylesPanel(props: {
     ...(scenarios.length > 0 ? [{id: 'weekly', label: 'Per week'}] : []),
   ]
   // Same rule as the group tabs: an explicit sub-tab wins, else the sub-tab
-  // holding the deep-linked/focused chart (the overview score lives on the
-  // UI view), else the first
-  const holdsChart = (viewId: string, key: string) =>
-    (viewId === 'ui5' && key === UI_OVERVIEW_KEY) ||
-    Boolean(
-      views
-        .find((view) => view.id === viewId)
-        ?.sections.some((section) => section.series.some((entry) => entry.key === key)),
-    )
+  // holding the deep-linked/focused chart — including the all-scenarios cards,
+  // which sit on the view whose sections they total — else the first
+  const holdsChart = (viewId: string, key: string) => {
+    const view = views.find((candidate) => candidate.id === viewId)
+    if (!view) return false
+    if (viewId === 'ui5' && key === UI_OVERVIEW_KEY) return true
+    if (styledTotals(view).some((entry) => entry.key === key)) return true
+    return view.sections.some((section) => section.series.some((entry) => entry.key === key))
+  }
   const activeId =
     tabs.find((tab) => tab.id === props.view)?.id ??
     (props.chartKey ? tabs.find((tab) => holdsChart(tab.id, props.chartKey))?.id : undefined) ??
@@ -926,6 +927,13 @@ function StylesPanel(props: {
     })
   }
   const overview = props.aggregate.find((entry) => entry.key === UI_OVERVIEW_KEY)
+  // The styled-components totals: one summed card per metric the view has a
+  // section for, in section order, so the top of the page answers "how is the
+  // escape hatch doing overall?" before the per-scenario breakdown
+  const styledTotals = (view: StyleView) =>
+    view.sections.flatMap((section) =>
+      props.aggregate.filter((entry) => styleLabel(entry) === section.id),
+    )
   const weeklySections = [
     {
       id: ALL_SCENARIOS,
@@ -1004,6 +1012,34 @@ function StylesPanel(props: {
                     layers={props.layers}
                     tags={props.tags}
                     onExpand={() => props.onExpand(overview.key)}
+                  />
+                </Stack>
+              )}
+              {/* The styled-components totals lead their view the same way:
+                  every scenario page summed per commit, one card per metric,
+                  so the whole escape hatch is readable before the breakdown */}
+              {activeView.id === 'styled' && styledTotals(activeView).length > 0 && (
+                <Stack gap={4}>
+                  <Flex alignItems="baseline" gap={2}>
+                    <Text size={1} weight="semibold">
+                      All scenarios
+                    </Text>
+                    <Text size={1} muted>
+                      summed over every scenario page per commit; the rule share weighted by rules ·
+                      lower is better
+                    </Text>
+                  </Flex>
+                  <ChartGrid
+                    series={styledTotals(activeView)}
+                    driftBySeries={props.driftBySeries}
+                    silencedBySeries={props.silencedBySeries}
+                    baselineBySeries={props.baselineBySeries}
+                    drift={props.drift}
+                    focusedKey={props.focusedKey}
+                    onFocusMetric={props.onFocusMetric}
+                    layers={props.layers}
+                    tags={props.tags}
+                    onExpand={props.onExpand}
                   />
                 </Stack>
               )}

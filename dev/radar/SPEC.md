@@ -497,7 +497,11 @@ sessionChains.ts` and shared by the sessions list and the Releases tool:
      not an average of the pages' percentages. Built by `aggregateStyleSeries`
      from the full history as well, so it is judged like any chart and a batch
      of migrated components badges the score the day it lands. The
-     per-scenario share cards follow as its breakdown.
+     per-scenario share cards follow as its breakdown. The styled-components
+     view leads the same way: an "All scenarios" grid with one summed card per
+     metric (instances, components, CSS rules, CSS bytes; the rule share
+     weighted by rules), so the whole escape hatch is readable before the
+     per-scenario sections.
    - **Higher is better exists now.** Adoption climbs, so `goal: 'higher'`
      makes a drop the regression and a rise the improvement (drift.ts
      `classify`); the badge arrow follows the value's direction and its tone the
