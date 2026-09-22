@@ -34,18 +34,24 @@ const NOOP = () => undefined
 const resolverIds = new WeakMap<ConditionsResolver, number>()
 let nextResolverId = 0
 
+interface ResolverCacheScope {
+  context: VariantConditionsContext
+  workspaceName: string
+}
+
 /**
- * `memoize` keys by string, so each resolver function gets a stable numeric id. Two workspaces
- * on the same project/dataset with different resolvers must not share one cached stream.
+ * `memoize` keys by string, so each resolver function gets a stable numeric id. The workspace
+ * name splits two workspaces that share a resolver, project, and dataset. Each stream closes
+ * over that workspace's `getClient`.
  */
-function resolverKey(resolver: ConditionsResolver, context: VariantConditionsContext): string {
+function resolverKey(resolver: ConditionsResolver, scope: ResolverCacheScope): string {
   let id = resolverIds.get(resolver)
   if (id === undefined) {
     id = nextResolverId++
     resolverIds.set(resolver, id)
   }
 
-  return `${id}:${context.projectId}:${context.dataset}`
+  return `${id}:${scope.workspaceName}:${scope.context.projectId}:${scope.context.dataset}`
 }
 
 function toError(error: unknown): Error {
@@ -80,8 +86,9 @@ function resolveConditions$(
  */
 const getResolverResult$ = memoize(function getResolverResult$(
   resolver: ConditionsResolver,
-  context: VariantConditionsContext,
+  scope: ResolverCacheScope,
 ): Observable<UseVariantConditionsResult> {
+  const {context} = scope
   const retry$ = new Subject<void>()
   const retry = () => retry$.next()
 
@@ -95,6 +102,7 @@ const getResolverResult$ = memoize(function getResolverResult$(
 function getVariantConditions$(
   conditions: VariantConditions | undefined,
   context: VariantConditionsContext,
+  workspaceName: string,
 ): Observable<UseVariantConditionsResult> {
   if (typeof conditions === 'undefined') {
     return of({mode: 'freeform'})
@@ -109,7 +117,7 @@ function getVariantConditions$(
   }
 
   if (typeof conditions === 'function') {
-    return getResolverResult$(conditions, context)
+    return getResolverResult$(conditions, {context, workspaceName})
   }
 
   // Unreachable after `variantsConditionsReducer` has validated the config; kept as a type guard.
@@ -137,7 +145,10 @@ export function useVariantConditions(): UseVariantConditionsResult {
       getClient: workspace.getClient,
     }
   }, [workspace.dataset, workspace.getClient, workspace.projectId])
-  const result$ = useMemo(() => getVariantConditions$(conditions, context), [conditions, context])
+  const result$ = useMemo(
+    () => getVariantConditions$(conditions, context, workspace.name),
+    [conditions, context, workspace.name],
+  )
 
   return useObservable(result$, LOADING_RESULT)
 }

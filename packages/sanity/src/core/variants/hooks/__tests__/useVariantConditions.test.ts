@@ -196,6 +196,35 @@ describe('useVariantConditions', () => {
     expect(second).toHaveBeenCalledTimes(1)
   })
 
+  it('does not share a resolve between workspaces that reuse one resolver', async () => {
+    const clients = new Set<VariantConditionsContext['getClient']>()
+    const conditions = vi.fn(async (context: VariantConditionsContext) => {
+      clients.add(context.getClient)
+      return [{name: 'locale', values: ['en-US']}]
+    })
+    const editorial = await createTestProvider({
+      config: {name: 'editorial', beta: {variants: {enabled: true, conditions}}},
+    })
+    const marketing = await createTestProvider({
+      config: {name: 'marketing', beta: {variants: {enabled: true, conditions}}},
+    })
+
+    const {result: editorialResult} = renderHook(() => useVariantConditions(), {
+      wrapper: editorial,
+    })
+    const {result: marketingResult} = renderHook(() => useVariantConditions(), {
+      wrapper: marketing,
+    })
+
+    await waitFor(() => {
+      expect(editorialResult.current).toMatchObject({mode: 'mapped', status: 'ready'})
+      expect(marketingResult.current).toMatchObject({mode: 'mapped', status: 'ready'})
+    })
+
+    expect(conditions).toHaveBeenCalledTimes(2)
+    expect(clients.size).toBe(2)
+  })
+
   it('shares one async resolve across consumers', async () => {
     const conditions = vi.fn().mockResolvedValue([{name: 'locale', values: ['en-US']}])
     const wrapper = await createTestProvider({
