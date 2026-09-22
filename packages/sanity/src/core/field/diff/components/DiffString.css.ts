@@ -10,6 +10,12 @@ export const roundedCard = style({
     '&&&': {
       borderRadius: radius1Var,
     },
+    // Card's own `&:not([hidden]) {display: block}` is (0,2,0). Previously `styled(Card)` with
+    // `as={RoundedCard}` replaced Card so the span stayed inline; now Card forwards `as` and its
+    // display:block lands on the same element.
+    '&&:not([hidden])': {
+      display: 'inline',
+    },
   },
 })
 
