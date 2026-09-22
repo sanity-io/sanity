@@ -44,7 +44,7 @@ export function FormBuilderInputErrorBoundary(
  * when there are no errors.
  * @internal
  */
-export function ErrorCard(props: {error: unknown; info?: React.ErrorInfo; onRetry: () => void}) {
+function ErrorCard(props: {error: unknown; info?: React.ErrorInfo; onRetry: () => void}) {
   const {error, info, onRetry} = props
 
   // If a schema error, rethrow and let the StudioErrorBoundary handle it

@@ -22,10 +22,6 @@ import {
   WorkspaceProvider,
 } from 'sanity'
 
-import {studioDefaultLocaleResources} from '../../src/core/i18n/bundles/studio'
-import {LocaleProviderBase} from '../../src/core/i18n/components/LocaleProvider'
-import {prepareI18n} from '../../src/core/i18n/i18nConfig'
-import {usEnglishLocale} from '../../src/core/i18n/locales'
 import {AssetLimitUpsellProvider} from '../../src/core/limits/context/assets/AssetLimitUpsellProvider'
 import {PerspectiveProvider} from '../../src/core/perspective/PerspectiveProvider'
 import {route} from '../../src/router/route'
@@ -41,7 +37,6 @@ import {changeConnectorRoot} from './TestWrapper.css'
 interface TestWrapperProps {
   children?: ReactNode
   betaFeatures?: WorkspaceOptions['beta']
-  client?: SanityClient
   schemaTypes: SchemaTypeDefinition[]
   /**
    * Plugin locale bundles (e.g. presentation, variants) to load alongside the
@@ -62,23 +57,6 @@ function StyledChangeConnectorRoot(props: ComponentProps<typeof ChangeConnectorR
 // "Open in new tab" IntentLinks kept mounted by @sanity/ui Activity) can
 // resolve hrefs without throwing during render.
 const router = route.create('/', [route.intents('/intent')])
-
-const memoKeyByObject = new WeakMap<object, number>()
-let nextMemoKey = 0
-
-function getMemoKey(value: unknown): string {
-  if ((typeof value === 'object' && value !== null) || typeof value === 'function') {
-    const object = value as object
-    let key = memoKeyByObject.get(object)
-    if (key === undefined) {
-      key = nextMemoKey++
-      memoKeyByObject.set(object, key)
-    }
-    return `object:${key}`
-  }
-  return `${typeof value}:${String(value)}`
-}
-
 const getCachedMockWorkspace = memoize(
   (
     client: SanityClient,
@@ -99,20 +77,8 @@ const getCachedMockWorkspace = memoize(
       ...(betaFeatures ? {beta: betaFeatures} : {}),
     }) as SingleWorkspace
 
-    const {i18next} = prepareI18n({
-      projectId: 'test',
-      dataset: 'test',
-      name: 'default',
-      i18n: {
-        bundles: [studioDefaultLocaleResources, structureUsEnglishLocaleBundle, ...i18nBundles],
-      },
-    })
-
-    return Promise.all([getMockWorkspace({client, config}), i18next.init()]).then(
-      ([workspace]) => ({i18next, workspace}),
-    )
+    return getMockWorkspace({client, config})
   },
-  (...args) => args.map(getMemoKey).join('|'),
 )
 
 /**
@@ -120,15 +86,8 @@ const getCachedMockWorkspace = memoize(
  * Sanity client and a mock workspace.
  */
 export const TestWrapper = (props: TestWrapperProps): React.JSX.Element | null => {
-  const {children, client: clientProp} = props
-  const [client] = useState(
-    () => clientProp || (createMockSanityClient() as unknown as SanityClient),
-  )
-  const [{schemaTypes, betaFeatures, i18nBundles}] = useState(() => ({
-    schemaTypes: props.schemaTypes,
-    betaFeatures: props.betaFeatures,
-    i18nBundles: props.i18nBundles,
-  }))
+  const {children, schemaTypes, betaFeatures, i18nBundles} = props
+  const [client] = useState(() => createMockSanityClient() as unknown as SanityClient)
 
   return (
     <Suspense fallback={null}>
@@ -150,9 +109,7 @@ const TestWrapperContents = (
   },
 ): React.JSX.Element | null => {
   const {children, schemaTypes, betaFeatures, i18nBundles, client} = props
-  const {i18next, workspace: mockWorkspace} = use(
-    getCachedMockWorkspace(client, schemaTypes, betaFeatures, i18nBundles),
-  )
+  const mockWorkspace = use(getCachedMockWorkspace(client, schemaTypes, betaFeatures, i18nBundles))
 
   if (!mockWorkspace) {
     return null
@@ -161,49 +118,42 @@ const TestWrapperContents = (
   return (
     <RouterProvider router={router} state={{}} onNavigate={noop}>
       <ThemeProvider theme={studioThemeConfig}>
-        <LocaleProviderBase
-          locales={[usEnglishLocale]}
-          i18next={i18next}
-          projectId="test"
-          sourceId="test"
-        >
-          <ToastProvider>
-            <LayerProvider>
-              <WorkspaceProvider workspace={mockWorkspace}>
-                <ResourceCacheProvider>
-                  <SourceProvider source={mockWorkspace.unstable_sources[0]}>
-                    <AssetLimitUpsellProvider>
-                      <CopyPasteProvider>
-                        <ColorSchemeProvider>
-                          <UserColorManagerProvider>
-                            <StyledChangeConnectorRoot
-                              isReviewChangesOpen={false}
-                              onOpenReviewChanges={noop}
-                              onSetFocus={noop}
+        <ToastProvider>
+          <LayerProvider>
+            <WorkspaceProvider workspace={mockWorkspace}>
+              <ResourceCacheProvider>
+                <SourceProvider source={mockWorkspace.unstable_sources[0]}>
+                  <AssetLimitUpsellProvider>
+                    <CopyPasteProvider>
+                      <ColorSchemeProvider>
+                        <UserColorManagerProvider>
+                          <StyledChangeConnectorRoot
+                            isReviewChangesOpen={false}
+                            onOpenReviewChanges={noop}
+                            onSetFocus={noop}
+                          >
+                            <PerspectiveProvider
+                              selectedPerspectiveName={undefined}
+                              excludedPerspectives={EMPTY_ARRAY}
                             >
-                              <PerspectiveProvider
-                                selectedPerspectiveName={undefined}
-                                excludedPerspectives={EMPTY_ARRAY}
-                              >
-                                <PaneLayout height="fill">
-                                  <Pane id="test-pane">
-                                    <PaneContent>
-                                      <Card padding={3}>{children}</Card>
-                                    </PaneContent>
-                                  </Pane>
-                                </PaneLayout>
-                              </PerspectiveProvider>
-                            </StyledChangeConnectorRoot>
-                          </UserColorManagerProvider>
-                        </ColorSchemeProvider>
-                      </CopyPasteProvider>
-                    </AssetLimitUpsellProvider>
-                  </SourceProvider>
-                </ResourceCacheProvider>
-              </WorkspaceProvider>
-            </LayerProvider>
-          </ToastProvider>
-        </LocaleProviderBase>
+                              <PaneLayout height="fill">
+                                <Pane id="test-pane">
+                                  <PaneContent>
+                                    <Card padding={3}>{children}</Card>
+                                  </PaneContent>
+                                </Pane>
+                              </PaneLayout>
+                            </PerspectiveProvider>
+                          </StyledChangeConnectorRoot>
+                        </UserColorManagerProvider>
+                      </ColorSchemeProvider>
+                    </CopyPasteProvider>
+                  </AssetLimitUpsellProvider>
+                </SourceProvider>
+              </ResourceCacheProvider>
+            </WorkspaceProvider>
+          </LayerProvider>
+        </ToastProvider>
       </ThemeProvider>
     </RouterProvider>
   )
