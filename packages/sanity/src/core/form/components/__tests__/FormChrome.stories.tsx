@@ -34,10 +34,11 @@ export const States: Story = {
     // #endregion
     const body = within(document.body)
     try {
-      // ErrorCard renders the i18n string `Error: {{message}}`, so match a
-      // substring (same pattern as the incompatible-item assertion below).
+      // ErrorCard renders `Error: {{message}}` in a span; the call-stack <code>
+      // also contains the raw message. Match the full translated line so
+      // getByText resolves a single element.
       await waitFor(
-        () => expect(body.getByText(/The fixture input could not render/)).toBeVisible(),
+        () => expect(body.getByText('Error: The fixture input could not render')).toBeVisible(),
         {
           timeout: 5000,
         },
