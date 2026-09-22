@@ -8,6 +8,7 @@ import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {DocumentTable} from '../../../releases/tool/components/Table/DocumentTable'
 import {CreateVariantDialog} from '../../components/dialog/CreateVariantDialog'
+import {useVariantTypes} from '../../hooks/useVariantConditions'
 import {useVariantsDocumentCounts} from '../../hooks/useVariantsDocumentCounts'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
@@ -47,7 +48,12 @@ export function VariantsOverview(): React.JSX.Element {
     [router],
   )
 
-  const columnDefs = useMemo(() => variantsOverviewColumnDefs(t), [t])
+  const variantTypes = useVariantTypes()
+  const showTypeColumn = variantTypes.status === 'ready' && variantTypes.types.length > 1
+  const columnDefs = useMemo(
+    () => variantsOverviewColumnDefs(t, showTypeColumn),
+    [showTypeColumn, t],
+  )
 
   const renderRowActions = useCallback(
     ({datum}: {datum: unknown}) => (

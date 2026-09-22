@@ -76,6 +76,12 @@ describe('VariantDialog', () => {
     expect(screen.getByRole('button', {name: 'Cancel'})).toBeInTheDocument()
   })
 
+  it('hides the type picker when only one type is configured', async () => {
+    await renderDialog()
+
+    expect(screen.queryByTestId('variant-form-type-menu-button')).not.toBeInTheDocument()
+  })
+
   it('does not render a cancel button in create mode', async () => {
     await renderDialog({renderCancelButton: false})
 

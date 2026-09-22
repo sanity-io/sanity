@@ -23,6 +23,7 @@ interface VariantDialogProps {
   id: string
   initialValue: EditableSystemVariant
   onCancel: () => void
+  lockType?: boolean
   onSubmit: (variant: EditableSystemVariant) => Promise<void>
   renderCancelButton?: boolean
 }
@@ -36,6 +37,7 @@ export function VariantDialog(props: VariantDialogProps): React.JSX.Element {
     id,
     initialValue,
     onCancel,
+    lockType = false,
     onSubmit,
     renderCancelButton = false,
   } = props
@@ -109,6 +111,7 @@ export function VariantDialog(props: VariantDialogProps): React.JSX.Element {
             <VariantForm
               duplicateConditionsOf={duplicateConditionsOf}
               duplicateTitleOf={duplicateTitleOf}
+              lockType={lockType}
               onChange={handleVariantChange}
               onConditionValidityChange={setConditionsInvalid}
               onPriorityValidityChange={setPriorityInvalid}

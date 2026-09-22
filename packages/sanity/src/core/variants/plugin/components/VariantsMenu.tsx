@@ -11,7 +11,6 @@ import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
 import {RhombusOutlinedIcon} from '../../../components/temporary-icons/RhombusOutlined'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {getDefaultVariant} from '../../../perspective/getDefaultVariant'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useSetVariant} from '../../../perspective/useSetVariant'
 import {getConditionMismatchMessage} from '../../components/ConditionMismatchIndicator'
@@ -20,6 +19,7 @@ import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
 import {filterVariantsForSearch, getVariantId, getVariantTitle} from '../../tool/util'
 import {type SystemVariant} from '../../types'
+import {DEFAULT_VARIANT_TYPE_KEY, getVariantType} from '../../util/variantType'
 import {menuIconSpacer, suggestIconColor} from './VariantsNav.css'
 
 const StyledMenu = styled(Menu)`
@@ -43,7 +43,7 @@ function VariantMenuItem(props: {
 }) {
   const {isSelected, onSelect, variant} = props
   const {t} = useTranslation(variantsLocaleNamespace)
-  const mismatches = useVariantConditionMismatches(variant.conditions)
+  const mismatches = useVariantConditionMismatches(variant.conditions, getVariantType(variant))
   const mismatchMessage =
     mismatches.length > 0 ? getConditionMismatchMessage(t, mismatches) : undefined
 
@@ -84,30 +84,46 @@ function VariantMenuItem(props: {
 /**
  * @internal
  */
-export function VariantsMenu({trigger}: {trigger: JSX.Element}): React.JSX.Element {
+export function VariantsMenu({
+  trigger,
+  typeKey = DEFAULT_VARIANT_TYPE_KEY,
+}: {
+  trigger: JSX.Element
+  typeKey?: string
+}): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
   const setVariant = useSetVariant()
   const {data: variants} = useAllVariants()
   const [filterQuery, setFilterQuery] = useState('')
   const {selectedVariants} = usePerspective()
-  const selectedVariant = getDefaultVariant(selectedVariants)
+  const typeVariants = useMemo(
+    () => variants.filter((variant) => getVariantType(variant) === typeKey),
+    [typeKey, variants],
+  )
+  const selectedVariant = useMemo(
+    () =>
+      typeVariants.find((variant) =>
+        selectedVariants.some((selected) => selected?._id === variant._id),
+      ),
+    [selectedVariants, typeVariants],
+  )
 
   const filteredVariants = useMemo(
-    () => filterVariantsForSearch(variants, filterQuery),
-    [filterQuery, variants],
+    () => filterVariantsForSearch(typeVariants, filterQuery),
+    [filterQuery, typeVariants],
   )
 
   const handleSelectDefault = useCallback(() => {
-    setVariant({variantId: undefined})
+    setVariant({type: typeKey, variantId: undefined})
     setFilterQuery('')
-  }, [setVariant])
+  }, [setVariant, typeKey])
 
   const handleSelectVariant = useCallback(
     (variant: SystemVariant) => {
-      setVariant({variantId: variant._id})
+      setVariant({type: typeKey, variantId: variant._id})
       setFilterQuery('')
     },
-    [setVariant],
+    [setVariant, typeKey],
   )
 
   const handleFilterChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -123,10 +139,17 @@ export function VariantsMenu({trigger}: {trigger: JSX.Element}): React.JSX.Eleme
   return (
     <MenuButton
       button={trigger}
-      id="variants-nav-menu"
+      id={`variants-nav-menu-${typeKey}`}
       onClose={handleMenuClose}
       menu={
-        <StyledMenu data-testid="variants-nav-menu" padding={0}>
+        <StyledMenu
+          data-testid={
+            typeKey === DEFAULT_VARIANT_TYPE_KEY
+              ? 'variants-nav-menu'
+              : `variants-nav-menu-${typeKey}`
+          }
+          padding={0}
+        >
           <Box padding={2}>
             <TextInput
               fontSize={1}
