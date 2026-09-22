@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.16.0](https://github.com/sanity-io/sanity/compare/v6.15.0...v6.16.0) (2026-09-22)
+
+### Features
+
+* **core:** mark schema-less Portable Text values with a visible affordance ([ea02de3](https://github.com/sanity-io/sanity/commit/ea02de38960a582229bc421f343681a04cdcedcf))
+* **core:** read document variants from `_system.variants` with legacy fallback ([#14762](https://github.com/sanity-io/sanity/issues/14762)) ([4913ff6](https://github.com/sanity-io/sanity/commit/4913ff6c3247a4d3fe2778625db72390090c6353))
+
+### Bug Fixes
+
+* **auth:** add missing deprecated tag to createAuthStore ([#14842](https://github.com/sanity-io/sanity/issues/14842)) ([b049d30](https://github.com/sanity-io/sanity/commit/b049d30a812db5cbf4b1e218edd96e3a293fc40f))
+* **comments-v2:** rematch persisted inline ranges after edits ([#14764](https://github.com/sanity-io/sanity/issues/14764)) ([1bf2357](https://github.com/sanity-io/sanity/commit/1bf2357f1a6c84928757e68e376a69cf0dc059ab))
+* **comments:** tolerate stored comment with unparseable field path ([#14778](https://github.com/sanity-io/sanity/issues/14778)) ([1bc591a](https://github.com/sanity-io/sanity/commit/1bc591adcff1b9dccc5d4bab0ae5277664daca6e))
+* **core:** keep field presence avatar in place when field actions appear on hover ([#14761](https://github.com/sanity-io/sanity/issues/14761)) ([06af50f](https://github.com/sanity-io/sanity/commit/06af50f9ef5f81cdc4ca6b68ce26316a1fa3271c))
+* **core:** PTE should display presence inline and in field ([#14751](https://github.com/sanity-io/sanity/issues/14751)) ([98573ad](https://github.com/sanity-io/sanity/commit/98573ad3a6d71cee66a42cbac8de039f32aba74b))
+* **core:** render Portable Text values whose types left the schema ([d5bae96](https://github.com/sanity-io/sanity/commit/d5bae9658826dd6ec0173f4cc00d3b0f27e00aaa))
+* **deps:** update dependency @portabletext/sanity-bridge to ^4.1.1 ([#14779](https://github.com/sanity-io/sanity/issues/14779)) ([28159ea](https://github.com/sanity-io/sanity/commit/28159eabec13c4d6c8af7282569bfdf487254659))
+* **deps:** update dependency @sanity/cli to ^8.11.0 ([#14540](https://github.com/sanity-io/sanity/issues/14540)) ([c2256fa](https://github.com/sanity-io/sanity/commit/c2256fa6d8577539a642fe231a18acc901e18158))
+* **deps:** update dependency motion to ^13.4.0 ([#14816](https://github.com/sanity-io/sanity/issues/14816)) ([dd52505](https://github.com/sanity-io/sanity/commit/dd525051a3e29090d83764643ddd13aed47dd9f3))
+* **deps:** update dependency xstate to ^5.33.2 ([#14817](https://github.com/sanity-io/sanity/issues/14817)) ([d256660](https://github.com/sanity-io/sanity/commit/d2566601510ba69d43e2196744d7d68c6258cecf))
+* **deps:** update portabletext ([#14855](https://github.com/sanity-io/sanity/issues/14855)) ([d8afd5d](https://github.com/sanity-io/sanity/commit/d8afd5d3a30706e3bcfd1ef5235bfa4a6f9a0f58))
+* **deps:** update portabletext ([#14871](https://github.com/sanity-io/sanity/issues/14871)) ([07a638b](https://github.com/sanity-io/sanity/commit/07a638b4e40d5bd5e51d10b30b58a81520aa0666))
+* **deps:** update sanity-sdk to ^3.3.0 ([#14770](https://github.com/sanity-io/sanity/issues/14770)) ([07b66f2](https://github.com/sanity-io/sanity/commit/07b66f2ed524fa65dc61cc9f18c67d872ea183b4))
+* **history:** restore release revisions with version.replace ([#14813](https://github.com/sanity-io/sanity/issues/14813)) ([16a557c](https://github.com/sanity-io/sanity/commit/16a557c40643dc520fe370d6801982ad015b4028))
+* **perspective:** reset sticky perspective for archived releases ([#14753](https://github.com/sanity-io/sanity/issues/14753)) ([aecb75e](https://github.com/sanity-io/sanity/commit/aecb75ec5954cfbac67c4911525fad04847243fa))
+* **test:** stabilize chromatic vitest snapshots ([#14710](https://github.com/sanity-io/sanity/issues/14710)) ([044e422](https://github.com/sanity-io/sanity/commit/044e4224ea5fadd0bacb3fcb49fb0cf7591e278c))
+
+### Performance Improvements
+
+* **preview:** stream useValuePreview inputs through one subject ([#14720](https://github.com/sanity-io/sanity/issues/14720)) ([e44cd25](https://github.com/sanity-io/sanity/commit/e44cd25bb829c566331cbf7f188298d133dd3a2c))
 ## [6.15.0](https://github.com/sanity-io/sanity/compare/v6.14.1...v6.15.0) (2026-09-17)
 
 ### Features
