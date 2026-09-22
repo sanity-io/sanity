@@ -114,6 +114,12 @@ const styleContextFields = [
     type: 'string',
   }),
   defineField({
+    name: 'readableCssRules',
+    description:
+      'Readable CSS rules on the page across every stylesheet (median over sessions) — the denominator behind the "styled-components CSS rule share" row',
+    type: 'number',
+  }),
+  defineField({
     name: 'sessions',
     description: 'Sessions the style rows summarize over',
     type: 'number',

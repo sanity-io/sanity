@@ -242,16 +242,25 @@ export function lineColorFor(series: TrendSeries, index: number): string {
 }
 
 /**
+ * One dash pattern per compared branch after the first — as many as the
+ * branch picker allows (MAX_COMPARE_BRANCHES), each distinguishable from the
+ * others at 1.5px: long dashes, short dashes, dots, dash-dot, long-short.
+ */
+const BRANCH_DASHES = ['6 3', '2 3', '1 3', '7 3 2 3', '10 3 3 3']
+
+/**
  * Dash pattern for a line, or none. Paired lines keep their major's color on
  * every branch (the color says v5 or v4), so when several branches' pairs
- * share a chart the branch is told apart by dashing every branch after the
- * first — four solid lines in two hues would be two lines each drawn twice.
+ * share a chart the branch is told apart by dash instead: solid for the first
+ * branch, a different pattern for each further one — the same two hues drawn
+ * solid twice would be two lines each drawn twice.
  */
 export function lineDashFor(series: TrendSeries, index: number): string | undefined {
   const line = series.lines[index]
   if (!line?.label) return undefined
   const branches = [...new Set(series.lines.map((candidate) => candidate.branch))]
-  return branches.indexOf(line.branch) > 0 ? '5 3' : undefined
+  const position = branches.indexOf(line.branch)
+  return position > 0 ? BRANCH_DASHES[(position - 1) % BRANCH_DASHES.length] : undefined
 }
 
 /**

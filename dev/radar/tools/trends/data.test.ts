@@ -969,6 +969,63 @@ test('the aggregate sums every scenario per commit and recomputes the shares', (
   expect(aggregateStyleSeries([])).toEqual([])
 })
 
+test('the aggregate rule share is Σ inserted ÷ Σ readable, pairing each page with its own total', () => {
+  const summary = (value: number) => ({summary: {median: value, p75: value, p90: value}})
+  const page = (
+    scenario: string,
+    inserted: number,
+    readable: number | undefined,
+  ): NonNullable<TrendRun['scenarios']>[number] => ({
+    scenario,
+    kind: 'interaction',
+    metrics: [
+      {label: 'styled-components CSS rules', unit: 'count', experiment: summary(inserted)},
+      // Each page's own share, as the bench stores it — deliberately NOT what
+      // the aggregate reads, since it cannot be paired back to its page
+      {
+        label: 'styled-components CSS rule share',
+        unit: 'percent',
+        experiment: summary(readable ? (inserted / readable) * 100 : 0),
+      },
+    ],
+    styles: {
+      experiment: {
+        ui5Available: true,
+        ...(readable === undefined ? {} : {readableCssRules: readable}),
+      },
+    },
+  })
+  const run: TrendRun = {
+    _id: 'a',
+    startedAt: new Date(START).toISOString(),
+    mode: 'absolute',
+    git: {sha: 'sha-1', branch: 'main', committedAt: new Date(START).toISOString()},
+    runner: {calibrationMs: 8, runId: 'a', runAttempt: 1},
+    bundle: null,
+    scenarios: [
+      page('singleString', 800, 2000), // 40%
+      page('article', 300, 3000), // 10%
+      // A fully migrated page inserts nothing but its stylesheet still counts
+      page('recipe', 0, 1000), // 0%
+      // A document from before the total was stored is left out of both sums
+      page('synthetic', 500, undefined),
+    ],
+  }
+  const styles = buildSeries([run]).filter((entry) => entry.group === 'styles')
+  const rulesPoint = styles.find(
+    (entry) => entry.key === 'styles:recipe:styled-components CSS rules',
+  )!.lines[0].points[0]
+  expect(rulesPoint.readableCssRules).toBe(1000)
+  const share = aggregateStyleSeries(styles).find(
+    (entry) => entry.key === 'styles:all:styled-components CSS rule share',
+  )!
+  // (800 + 300 + 0) ÷ (2000 + 3000 + 1000): a mean of the pages' shares (16.7%)
+  // or a runId-paired mix-up would give a different number
+  expect(share.lines[0].points[0].value).toBeCloseTo((1100 / 6000) * 100, 6)
+  // Summed points carry no page-level context
+  expect(share.lines[0].points[0].readableCssRules).toBeUndefined()
+})
+
 test('the aggregate follows the demo story and stays out of the metric views', () => {
   const styles = buildSeries(generateDebugRuns('demo')).filter((entry) => entry.group === 'styles')
   const aggregate = aggregateStyleSeries(styles)

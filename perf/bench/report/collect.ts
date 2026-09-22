@@ -276,9 +276,13 @@ export function collectStyleContext(censuses: StyleCensus[]): StyleContext | und
   const versions = [
     ...new Set(censuses.flatMap((census) => census.styledComponents.versions)),
   ].sort()
+  const readable = censuses
+    .map((census) => census.stylesheets.totalRules)
+    .filter((total) => total > 0)
   return {
     ui5Available: censuses.some((census) => census.ui5Available),
     ...(versions.length > 0 ? {styledComponentsVersion: versions.join(', ')} : {}),
+    ...(readable.length > 0 ? {readableCssRules: median(readable)} : {}),
     sessions: censuses.length,
   }
 }

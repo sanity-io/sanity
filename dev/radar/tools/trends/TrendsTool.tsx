@@ -1,5 +1,5 @@
-import {STYLE_SYSTEMS} from '@repo/utils/style-systems'
 /// <reference types="vite/client" />
+import {STYLE_SYSTEMS} from '@repo/utils/style-systems'
 import {ActivityIcon} from '@sanity/icons/Activity'
 import {BoltIcon} from '@sanity/icons/Bolt'
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
@@ -892,6 +892,16 @@ function StylesPanel(props: {
     // same points, so it can never be emptier than the metric views
     ...(scenarios.length > 0 ? [{id: 'weekly', label: 'Per week'}] : []),
   ]
+  // The all-scenarios cards each view leads with: the adoption overview score
+  // on the UI view, and for styled-components one summed card per metric the
+  // view has a section for, in section order — so the top of the page answers
+  // "how is the escape hatch doing overall?" before the per-scenario breakdown.
+  // Declared before the sub-tab resolution below, which reads them.
+  const overview = props.aggregate.find((entry) => entry.key === UI_OVERVIEW_KEY)
+  const styledTotals = (view: StyleView) =>
+    view.sections.flatMap((section) =>
+      props.aggregate.filter((entry) => styleLabel(entry) === section.id),
+    )
   // Same rule as the group tabs: an explicit sub-tab wins, else the sub-tab
   // holding the deep-linked/focused chart — including the all-scenarios cards,
   // which sit on the view whose sections they total — else the first
@@ -926,14 +936,6 @@ function StylesPanel(props: {
       return entry ? [{...chart, series: entry, scope}] : []
     })
   }
-  const overview = props.aggregate.find((entry) => entry.key === UI_OVERVIEW_KEY)
-  // The styled-components totals: one summed card per metric the view has a
-  // section for, in section order, so the top of the page answers "how is the
-  // escape hatch doing overall?" before the per-scenario breakdown
-  const styledTotals = (view: StyleView) =>
-    view.sections.flatMap((section) =>
-      props.aggregate.filter((entry) => styleLabel(entry) === section.id),
-    )
   const weeklySections = [
     {
       id: ALL_SCENARIOS,

@@ -200,6 +200,14 @@ export interface StyleContext {
   ui5Available: boolean
   /** styled-components runtime version(s) seen on the page (`data-styled-version`), comma-joined. */
   styledComponentsVersion?: string
+  /**
+   * Readable CSS rules on the page across every stylesheet (median over
+   * sessions) — the denominator of the `styled-components CSS rule share`
+   * row, stored so a cross-scenario share can be recomputed from sums
+   * (Σ inserted ÷ Σ readable) rather than averaged. Absent when no sheet was
+   * readable.
+   */
+  readableCssRules?: number
   /** Sessions the style rows summarize over. */
   sessions: number
 }

@@ -469,12 +469,6 @@ export async function runInteractionSession(options: {
       bootEntries.measures.find((measure) => measure.name === 'bench:time-to-editable')?.duration ??
       null
 
-    // Style census (report-only): which styling systems built the page now
-    // that it is open and editable — before typing changes anything about it,
-    // and outside every measured window so the DOM walk never lands in a
-    // keystroke's latency
-    const styles = options.styleProbe ? await takePageStyleCensus(page, options.styleProbe) : null
-
     // CPU counters: cumulative main-thread task-time deltas across the
     // measured fields (report-only resources bucket)
     const cpuStart = await readCpuMetrics(session.cdp)
@@ -626,6 +620,15 @@ export async function runInteractionSession(options: {
           }
         : null
     const memory = await readMemorySnapshot(session.cdp)
+
+    // Style census (report-only): which styling systems built this page.
+    // Taken LAST, after the workload and the resource counters: the probe
+    // waits for the DOM to go quiet before it counts, and doing that before
+    // the keystrokes would let the lazy panes finish loading ahead of the
+    // warmup — a harness-induced improvement in keystroke latency that would
+    // put a step in the series unrelated to any studio change. By now the
+    // page has been open for a minute, so the wait is only its quiet window.
+    const styles = options.styleProbe ? await takePageStyleCensus(page, options.styleProbe) : null
 
     // Session-level invariants
     if (session.violations.length > 0) {

@@ -48,9 +48,20 @@ export type WeeklyVariant =
 // cards in a grid; bottom leaves room for the year-month ticks
 const MARGIN = {top: 8, right: 8, bottom: 26}
 
-/** The bar to read at pointer x: `scaleBand` has no invert, so step through the bands. */
-function bucketIndexAt(x: number, step: number, count: number): number {
-  return Math.max(0, Math.min(count - 1, Math.floor(x / step)))
+/**
+ * The bar to read at pointer x: `scaleBand` has no invert, so measure from the
+ * first band's center in whole steps. The scale's own step and offset, not
+ * `width / count` — the outer padding shifts every band and the inner padding
+ * makes the step wider than a bar, so a plain division drifts by a few pixels
+ * per band and lands on the neighbour near a boundary.
+ */
+function bucketIndexAt(
+  x: number,
+  xScale: {(index: number): number | undefined; step(): number; bandwidth(): number},
+  count: number,
+): number {
+  const firstCenter = (xScale(0) ?? 0) + xScale.bandwidth() / 2
+  return Math.max(0, Math.min(count - 1, Math.round((x - firstCenter) / xScale.step())))
 }
 
 /**
@@ -127,11 +138,25 @@ export function WeeklyBars(props: {
     }
     return undefined
   }
+  /** The tooltip's content as one sentence — what the live region announces. */
+  const describeBucket = (bucket: WeekBucket, index: number): string => {
+    const week = `week of ${weekLabel(bucket.weekStart)}`
+    if (bucket.value === null) return `${week}: no run this week`
+    const value =
+      variant.kind === 'share'
+        ? `${variant.fill.label} ${formatValue(bucket.value, unit)}, ${variant.remainder.label} ${formatValue(100 - bucket.value, unit)}`
+        : formatValue(bucket.value, unit)
+    const previous = previousMeasured(index)
+    const move =
+      previous && previous.value !== null
+        ? `, ${formatDelta(bucket.value - previous.value, unit)} vs week of ${weekLabel(previous.weekStart)}`
+        : ''
+    return `${week}: ${value}${move}, median of ${bucket.runs} ${bucket.runs === 1 ? 'run' : 'runs'}`
+  }
 
-  const step = innerWidth / buckets.length
   const handleMove = (event: React.PointerEvent<SVGRectElement>) => {
     const rect = event.currentTarget.getBoundingClientRect()
-    setHoverIndex(bucketIndexAt(event.clientX - rect.left, step, buckets.length))
+    setHoverIndex(bucketIndexAt(event.clientX - rect.left, xScale, buckets.length))
   }
   const open = (index: number) => {
     const bucket = buckets[index]
@@ -237,11 +262,30 @@ export function WeeklyBars(props: {
             onKeyDown={handleKeyDown}
             onClick={(event) => {
               const rect = event.currentTarget.getBoundingClientRect()
-              open(bucketIndexAt(event.clientX - rect.left, step, buckets.length))
+              open(bucketIndexAt(event.clientX - rect.left, xScale, buckets.length))
             }}
           />
         </Group>
       </svg>
+      {/* What the crosshair is on, for assistive tech: the tooltip below is
+          visual only (pointerEvents none, never focused), and the capture
+          rect's name is a static summary, so a keyboard user stepping through
+          the weeks would otherwise hear nothing change. Announced politely so
+          arrow-key repeats do not interrupt each other. */}
+      <div
+        role="status"
+        aria-live="polite"
+        style={{
+          position: 'absolute',
+          width: 1,
+          height: 1,
+          overflow: 'hidden',
+          clipPath: 'inset(50%)',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {hovered ? describeBucket(hovered, hoverIndex!) : ''}
+      </div>
       {hovered && hoverX !== null && (
         <div
           style={{

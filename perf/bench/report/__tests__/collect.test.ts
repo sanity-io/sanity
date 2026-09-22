@@ -504,7 +504,12 @@ describe('collectSettle', () => {
     ])
     expect(styleLabels(report)).toEqual(STYLE_METRICS.map((metric) => metric.label))
     expect(report.styles).toEqual({
-      experiment: {ui5Available: true, styledComponentsVersion: '6.5.3', sessions: 2},
+      experiment: {
+        ui5Available: true,
+        styledComponentsVersion: '6.5.3',
+        readableCssRules: 1966,
+        sessions: 2,
+      },
     })
   })
 
@@ -590,7 +595,7 @@ describe('collectStyleMetrics', () => {
 })
 
 describe('collectStyleContext', () => {
-  it('records availability, the runtime versions seen and the session count', () => {
+  it('records availability, the runtime versions seen, the readable rules and the session count', () => {
     expect(
       collectStyleContext([
         census(),
@@ -602,19 +607,39 @@ describe('collectStyleContext', () => {
             cssBytes: 800_000,
             versions: ['6.1.15', '6.5.3'],
           },
+          stylesheets: {totalRules: 2100, inaccessible: 0},
         }),
       ]),
-    ).toEqual({ui5Available: true, styledComponentsVersion: '6.1.15, 6.5.3', sessions: 2})
+    ).toEqual({
+      ui5Available: true,
+      styledComponentsVersion: '6.1.15, 6.5.3',
+      // Median of the sessions' readable totals (1966 and 2100)
+      readableCssRules: 2033,
+      sessions: 2,
+    })
   })
 
-  it('omits the version when no styled-components runtime stamped one', () => {
+  it('omits the version when no runtime stamped one, and the readable total when nothing was readable', () => {
     const context = collectStyleContext([
       census({
         ui5Available: false,
         styledComponents: {components: 0, styleTags: 0, cssRules: 0, cssBytes: 0, versions: []},
+        stylesheets: {totalRules: 0, inaccessible: 2},
       }),
     ])
     expect(context).toEqual({ui5Available: false, sessions: 1})
+  })
+
+  it('keeps the readable total for a page that inserted no styled rules', () => {
+    // The rule share's denominator must survive a fully migrated page: its
+    // readable stylesheet still counts when shares are summed across pages
+    const context = collectStyleContext([
+      census({
+        styledComponents: {components: 0, styleTags: 0, cssRules: 0, cssBytes: 0, versions: []},
+        stylesheets: {totalRules: 1500, inaccessible: 0},
+      }),
+    ])
+    expect(context?.readableCssRules).toBe(1500)
   })
 })
 
@@ -638,7 +663,12 @@ describe('collectPageLoad style rows', () => {
     // Two samples took the census, one probe failed — two values, not three
     expect(share?.experiment.sessions).toHaveLength(2)
     expect(report.styles).toEqual({
-      experiment: {ui5Available: true, styledComponentsVersion: '6.5.3', sessions: 2},
+      experiment: {
+        ui5Available: true,
+        styledComponentsVersion: '6.5.3',
+        readableCssRules: 1966,
+        sessions: 2,
+      },
     })
   })
 })

@@ -68,6 +68,8 @@ export interface TrendRun {
           experiment?: {
             ui5Available?: boolean | null
             styledComponentsVersion?: string | null
+            /** Readable CSS rules on the page — the rule share's denominator. */
+            readableCssRules?: number | null
           } | null
         } | null
         soak?: {
@@ -109,7 +111,7 @@ export const TREND_QUERY = `*[_type == "benchRun" && mode == "absolute"] | order
     mode,
     settleExpectation{expectedToSettle},
     metrics[]{label, unit, experiment{summary{median, p75, p90}}},
-    styles{experiment{ui5Available, styledComponentsVersion}},
+    styles{experiment{ui5Available, styledComponentsVersion, readableCssRules}},
     soak{minutes, samples[]{minute, heapMb, domNodes, listeners, latencyP50Ms, cpuTaskMs, connections, requests}}
   }
 }`
@@ -145,6 +147,14 @@ export interface TrendPoint {
    * is the library changing how it emits CSS, not the studio migrating.
    */
   styledComponentsVersion?: string
+  /**
+   * `styled-components CSS rules` points only: the readable CSS rules on the
+   * page the count is a part of. Carried on the point so the all-scenarios
+   * rule share can be Σ inserted ÷ Σ readable (aggregateStyleSeries), with
+   * every page's stylesheet in the denominator — a page with no styled rules
+   * still has readable ones.
+   */
+  readableCssRules?: number
   /**
    * Host-speed score of the machine that measured this point (higher = slower
    * host) — the scenario's own shard calibration on multi-shard CI runs,
@@ -1211,6 +1221,7 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
       | 'p90'
       | 'interactions'
       | 'styledComponentsVersion'
+      | 'readableCssRules'
       | 'calibrationMs'
       | 'host'
     >,
@@ -1245,6 +1256,7 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
       const redByDesign = scenario.settleExpectation?.expectedToSettle === false
       const styledComponentsVersion =
         scenario.styles?.experiment?.styledComponentsVersion ?? undefined
+      const readableCssRules = scenario.styles?.experiment?.readableCssRules ?? undefined
       for (const metric of scenario.metrics ?? []) {
         if (metric.label === 'INP interactions') continue
         // Older documents carry a TTFB metric; skip it. Against the local
@@ -1340,6 +1352,10 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
               ? {interactions: inpInteractions}
               : {}),
             ...(isStyleRow && styledComponentsVersion ? {styledComponentsVersion} : {}),
+            ...(metric.label === 'styled-components CSS rules' &&
+            typeof readableCssRules === 'number'
+              ? {readableCssRules}
+              : {}),
           },
         )
       }
@@ -1704,8 +1720,16 @@ export function aggregateStyleSeries(list: TrendSeries[]): TrendSeries[] {
       const anchor = newest(points)
       const branch = key.slice(0, key.indexOf('|'))
       const line = byBranch.get(branch) ?? {branch, points: [], ...lineMeta}
-      const {p75: _p75, p90: _p90, ...identity} = anchor
-      line.points.push({...identity, value: aggregated, styledComponentsVersion: undefined})
+      // A summed point is no longer one page's measurement: no percentiles,
+      // no page-level context (runtime version, readable-rule total)
+      const {
+        p75: _p75,
+        p90: _p90,
+        styledComponentsVersion: _version,
+        readableCssRules: _readable,
+        ...identity
+      } = anchor
+      line.points.push({...identity, value: aggregated})
       byBranch.set(branch, line)
     }
     for (const line of byBranch.values()) {
@@ -1773,22 +1797,21 @@ export function aggregateStyleSeries(list: TrendSeries[]): TrendSeries[] {
 
   for (const metric of STYLE_METRICS) {
     if (metric.track !== 'styled' || metric.charted === false) continue
-    const groups = gather(metric.label)
-    if (groups.size === 0) continue
     if (metric.unit === 'percent') {
-      // The rule share is Σ inserted rules ÷ Σ readable rules; a scenario's
-      // readable total is its rule count over its share (both stored)
+      // The rule share is Σ inserted rules ÷ Σ readable rules, both read off
+      // the `CSS rules` points (each carries its page's readable total, see
+      // TrendPoint.readableCssRules) — never derived from the per-scenario
+      // shares, which cannot be paired back to their scenario and lose a
+      // page's readable rules entirely when it inserted none. A point without
+      // the total (documents before the field) is left out of both sums.
       const rules = gather('styled-components CSS rules')
-      const lines = linesFrom(groups, (points, commit) => {
-        const ruleCounts = rules.get(commit)
-        if (!ruleCounts) return null
+      const lines = linesFrom(rules, (points) => {
         let inserted = 0
         let readable = 0
-        for (const point of ruleCounts) {
-          const share = points.find((candidate) => candidate.runId === point.runId)?.value
-          if (share === undefined || share <= 0) continue
+        for (const point of points) {
+          if (typeof point.readableCssRules !== 'number' || point.readableCssRules <= 0) continue
           inserted += point.value
-          readable += point.value / (share / 100)
+          readable += point.readableCssRules
         }
         return readable === 0 ? null : (inserted / readable) * 100
       })
@@ -1805,6 +1828,8 @@ export function aggregateStyleSeries(list: TrendSeries[]): TrendSeries[] {
       }
       continue
     }
+    const groups = gather(metric.label)
+    if (groups.size === 0) continue
     result.push({
       key: key(metric.label),
       title: title(metric.label),

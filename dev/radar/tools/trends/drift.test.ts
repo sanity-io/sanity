@@ -104,13 +104,18 @@ test('secondary lines of a paired chart are drawn, not judged', () => {
   expect(drift[0].branch).toBe('main')
 })
 
-// One whole point is the floor for a share; a 0.5-point move on a 35% share
-// clears neither floor
-test('percent metric needs a whole point to move', () => {
+// One whole point is the floor for a share, at any level: a 0.5-point move on
+// a 35% share clears it on neither side, while a 3-point drop from 80% must
+// flag — a relative floor would have swallowed it (5% of 80 is 4 points)
+test('percent metric needs a whole point to move, with no relative floor', () => {
   const tiny = [...Array.from({length: 21}, () => 35), ...Array.from({length: 9}, () => 35.5)]
   expect(flagged(computeDrift([series(tiny, {unit: 'percent', goal: 'higher'})]))).toHaveLength(0)
   const point = [...Array.from({length: 21}, () => 35), ...Array.from({length: 9}, () => 37)]
   expect(flagged(computeDrift([series(point, {unit: 'percent', goal: 'higher'})]))).toHaveLength(1)
+  const highDrop = [...Array.from({length: 21}, () => 80), ...Array.from({length: 9}, () => 77)]
+  const drift = computeDrift([series(highDrop, {unit: 'percent', goal: 'higher'})])
+  expect(flagged(drift)).toHaveLength(1)
+  expect(drift[0].direction).toBe('regression')
 })
 
 test('sub-threshold move stays quiet', () => {

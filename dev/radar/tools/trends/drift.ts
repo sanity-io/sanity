@@ -42,9 +42,11 @@ function thresholdFor(unit: TrendUnit): DriftThreshold {
   if (unit === 'ms') return {absolute: 16, relative: 0.05}
   if (unit === 'megabytes') return {absolute: 1, relative: 0.05}
   if (unit === 'bytes') return {absolute: 10 * 1024, relative: 0.05}
-  // Shares (0–100): one whole percentage point, so a migration that moves a
-  // page a point flags; the relative floor keeps a 1% → 1.04% wobble quiet
-  if (unit === 'percent') return {absolute: 1, relative: 0.05}
+  // Shares (0–100): one whole percentage point, and no relative floor — a
+  // share is already normalized, and a relative floor would let a 3-point
+  // drop pass unflagged at an 80% baseline. Sub-point wobble is the noise
+  // test's job (`noiseSigma`), not the floor's.
+  if (unit === 'percent') return {absolute: 1, relative: 0}
   // CLS is unitless and small (good ≤ 0.1) — a whole-unit absolute floor would
   // mean CLS drift could never fire; 0.02 mirrors the scale web.dev uses
   if (unit === 'cls') return {absolute: 0.02, relative: 0.05}

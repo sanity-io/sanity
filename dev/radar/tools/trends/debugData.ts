@@ -139,7 +139,13 @@ function styleRows(
       metric(rng, 'styled-components CSS rule share', (cssRules / totalRules) * 100, 'percent'),
       metric(rng, 'styled-components style tags', 1, 'count'),
     ],
-    styles: {experiment: {ui5Available, styledComponentsVersion: version}},
+    styles: {
+      experiment: {
+        ui5Available,
+        styledComponentsVersion: version,
+        readableCssRules: Math.round(totalRules),
+      },
+    },
   }
 }
 
