@@ -5,5 +5,5 @@ import type {MountedToolsContextValue} from '../../core/studio/mountedTools/type
 /** @internal */
 export const MountedToolsContext = createContext<MountedToolsContextValue>(
   'sanity/_singletons/context/mountedTools',
-  {inactiveToolStates: {}},
+  {inactiveToolStates: new Map()},
 )

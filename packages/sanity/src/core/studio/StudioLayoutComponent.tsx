@@ -2,7 +2,17 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Card} from '@sanity/ui'
 import startCase from 'lodash-es/startCase.js'
-import {Activity, lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {
+  Activity,
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {MountedToolsContext, NavbarContext, RouterContext} from 'sanity/_singletons'
 import {RouteScope, useRouter, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
@@ -86,13 +96,18 @@ export function StudioLayoutComponent() {
   })
   // Track T0 for tool-mount timing. Because React Compiler forbids impure
   // calls like `performance.now()` during render, we capture the timestamp
-  // in an effect that runs when `activeToolName` changes. The effect runs
-  // before the tool's `<Suspense>` resolves (since the Suspense fallback
-  // renders first), so the delta captured in `ToolMountTimer` still
-  // includes lazy-chunk fetch time.
+  // in an effect that runs when `activeToolName` changes. A layout effect,
+  // because `ToolMountTimer` reads the ref from a passive effect: React runs
+  // every layout effect of a commit before any passive effect, so the
+  // timestamp is in place even when the tool commits in the same pass as the
+  // switch (an already loaded chunk, or a hidden `<Activity>` boundary being
+  // shown again). A passive effect here would run after the child's, since
+  // passive effects run child first. When the tool's lazy chunk still has to
+  // load, the Suspense fallback commits first and the delta still includes
+  // the fetch time.
   const toolMountT0Ref = useRef<number | null>(null)
   const lastToolNameRef = useRef<string | undefined>(undefined)
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (activeToolName !== lastToolNameRef.current) {
       lastToolNameRef.current = activeToolName
       toolMountT0Ref.current = activeToolName ? performance.now() : null
@@ -230,7 +245,10 @@ export function StudioLayoutComponent() {
                 // Each tool keeps the root router context it last rendered with while active, so
                 // a hidden tool holds on to its own URL state instead of picking up the active
                 // tool's. `useMountedTools` keeps the active tool's entry on the live router.
-                <Activity key={tool.name} mode={tool === activeTool ? 'visible' : 'hidden'}>
+                <Activity
+                  key={tool.name}
+                  mode={tool.name === activeToolName ? 'visible' : 'hidden'}
+                >
                   <RouterContext.Provider value={toolRouter}>
                     <StudioErrorBoundary
                       heading={`The ${tool.name} tool crashed`}

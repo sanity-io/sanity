@@ -132,6 +132,33 @@ describe('updateMountedTools', () => {
     ).toBe(mounted)
   })
 
+  it('matches tools by name, so re-resolved tool objects do not unmount hidden tools', () => {
+    const structureRouter = makeRouter('structure')
+    const presentationRouter = makeRouter('presentation')
+    let mounted = updateMountedTools([], {tools, activeTool: structure, router: structureRouter})
+    mounted = updateMountedTools(mounted, {
+      tools,
+      activeTool: presentation,
+      router: presentationRouter,
+    })
+
+    // The workspace config re-resolves (e.g. the auth state emitted): same names, new objects
+    const refreshedTools = tools.map((tool) => ({...tool}))
+    const refreshedPresentation = refreshedTools[1]
+    const next = updateMountedTools(mounted, {
+      tools: refreshedTools,
+      activeTool: refreshedPresentation,
+      router: presentationRouter,
+    })
+
+    expect(next.map((entry) => entry.tool.name)).toEqual(['structure', 'presentation'])
+    // entries point at the current tool objects, with their frozen routers intact
+    expect(next[0].tool).toBe(refreshedTools[0])
+    expect(next[0].router).toBe(structureRouter)
+    expect(next[1].tool).toBe(refreshedPresentation)
+    expect(next[1].router).toBe(presentationRouter)
+  })
+
   it('drops tools that are no longer part of the workspace', () => {
     let mounted = updateMountedTools([], {
       tools,

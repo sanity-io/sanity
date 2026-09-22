@@ -138,13 +138,18 @@ describe('StudioLayoutComponent telemetry', () => {
     )
   }
 
+  // `ToolMountTimer` logs its own event for the mounted tool; these tests only care about the
+  // Studio Ready event.
+  const studioReadyCalls = () =>
+    telemetryLog.mock.calls.filter(([event]) => event === StudioReadyMeasured)
+
   it('fires Studio Ready Measured once when active tool resolves', async () => {
     await setupWorkspace([makeTool('structure'), makeTool('vision')], 'structure')
 
     render(<StudioLayoutComponent />, {wrapper})
 
     await waitFor(() => {
-      expect(telemetryLog).toHaveBeenCalledTimes(1)
+      expect(studioReadyCalls()).toHaveLength(1)
     })
 
     expect(telemetryLog).toHaveBeenCalledWith(
@@ -159,7 +164,7 @@ describe('StudioLayoutComponent telemetry', () => {
         firstHiddenTime: null,
       }),
     )
-    expect(telemetryLog.mock.calls[0][1].durationMs).toBeGreaterThanOrEqual(0)
+    expect(studioReadyCalls()[0][1].durationMs).toBeGreaterThanOrEqual(0)
   })
 
   it('does not fire Studio Ready Measured when no active tool is resolved', async () => {
@@ -170,7 +175,7 @@ describe('StudioLayoutComponent telemetry', () => {
     // Give effects a chance to run.
     await new Promise((resolve) => setTimeout(resolve, 0))
 
-    expect(telemetryLog).not.toHaveBeenCalled()
+    expect(studioReadyCalls()).toHaveLength(0)
   })
 
   it('fires Studio Ready Measured only once across re-renders', async () => {
@@ -179,13 +184,13 @@ describe('StudioLayoutComponent telemetry', () => {
     const {rerender} = render(<StudioLayoutComponent />, {wrapper})
 
     await waitFor(() => {
-      expect(telemetryLog).toHaveBeenCalledTimes(1)
+      expect(studioReadyCalls()).toHaveLength(1)
     })
 
     rerender(<StudioLayoutComponent />)
     rerender(<StudioLayoutComponent />)
 
     await new Promise((resolve) => setTimeout(resolve, 0))
-    expect(telemetryLog).toHaveBeenCalledTimes(1)
+    expect(studioReadyCalls()).toHaveLength(1)
   })
 })

@@ -6,6 +6,7 @@ import {route, RouterProvider, useRouter, useRouterState} from 'sanity/router'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type Tool} from '../../config/types'
+import {StudioToolMountTimeMeasured} from '../__telemetry__/tools.telemetry'
 import {ToolLink} from '../components/navbar/tools/ToolLink'
 import {createRouter} from '../router/router'
 import {StudioLayoutComponent} from '../StudioLayoutComponent'
@@ -15,8 +16,10 @@ const workspace = vi.hoisted(() => ({
   keepInactiveToolsMounted: false,
 }))
 
+const telemetryLog = vi.hoisted(() => vi.fn())
+
 vi.mock('@sanity/telemetry/react', () => ({
-  useTelemetry: () => ({log: vi.fn()}),
+  useTelemetry: () => ({log: telemetryLog}),
 }))
 
 vi.mock('../workspace', () => ({
@@ -245,6 +248,30 @@ describe('StudioLayoutComponent with beta.keepInactiveToolsMounted', () => {
         .map((el) => el.getAttribute('data-testid'))
         .filter((id) => /^tool-(structure|presentation|vision|media)$/.test(id ?? ''))
       expect(order).toEqual(['tool-structure', 'tool-presentation', 'tool-vision'])
+    })
+
+    it('measures a revealed tool from the switch, not from the previous activation', async () => {
+      const now = vi.spyOn(performance, 'now').mockReturnValue(1_000)
+      renderStudio({enabled: true})
+
+      now.mockReturnValue(2_000)
+      await switchTo('presentation')
+
+      // Time passes while presentation is active
+      now.mockReturnValue(9_000)
+      telemetryLog.mockClear()
+      await switchTo('structure')
+
+      const revealed = telemetryLog.mock.calls.find(
+        ([event, data]) =>
+          event === StudioToolMountTimeMeasured &&
+          (data as {toolName: string}).toolName === 'structure',
+      )
+      expect(revealed?.[1]).toMatchObject({toolName: 'structure', isFirstMount: false})
+      // T0 is captured in a layout effect when the tool switch commits, so a hidden tool that is
+      // shown again is measured from that switch (9000) rather than from its earlier activation
+      expect((revealed?.[1] as {durationMs: number}).durationMs).toBe(0)
+      now.mockRestore()
     })
 
     it('still links the active tool to its start page', async () => {

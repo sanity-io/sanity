@@ -10,5 +10,5 @@ import {type RouterState} from 'sanity/router'
  * @internal
  */
 export function useInactiveToolState(toolName: string): RouterState | undefined {
-  return useContext(MountedToolsContext).inactiveToolStates[toolName]
+  return useContext(MountedToolsContext).inactiveToolStates.get(toolName)
 }

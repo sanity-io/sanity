@@ -45,16 +45,17 @@ export function useMountedTools(options: UseMountedToolsOptions): UseMountedTool
     setMounted(next)
   }
 
-  const mountedTools = useMemo(
-    () => next.toSorted((a, b) => tools.indexOf(a.tool) - tools.indexOf(b.tool)),
-    [next, tools],
-  )
+  const mountedTools = useMemo(() => {
+    const position = (entry: MountedTool) =>
+      tools.findIndex((tool) => tool.name === entry.tool.name)
+    return next.toSorted((a, b) => position(a) - position(b))
+  }, [next, tools])
 
   const contextValue = useMemo<MountedToolsContextValue>(() => {
-    const inactiveToolStates: Record<string, RouterState> = {}
+    const inactiveToolStates = new Map<string, RouterState>()
     for (const entry of next) {
-      if (entry.tool !== activeTool) {
-        inactiveToolStates[entry.tool.name] = entry.router.state
+      if (entry.tool.name !== activeTool?.name) {
+        inactiveToolStates.set(entry.tool.name, entry.router.state)
       }
     }
     return {inactiveToolStates}

@@ -21,7 +21,7 @@ export interface MountedTool {
 }
 
 interface UpdateMountedToolsOptions {
-  /** The workspace's tools; mounted entries for tools no longer in this list are dropped. */
+  /** The workspace's tools; mounted entries for tool names no longer in this list are dropped. */
   tools: Tool[]
   activeTool: Tool | undefined
   /** The root router context of the current render. */
@@ -34,6 +34,10 @@ interface UpdateMountedToolsOptions {
  * most `limit` entries (least recently used first). Returns `mounted` itself when nothing changed,
  * so the result can be compared by reference and the update applied during render.
  *
+ * Tools are matched by name, not identity: the workspace re-resolves its config (and so rebuilds
+ * the `Tool` objects) whenever the auth state emits, and that must not unmount the hidden tools.
+ * Kept entries are refreshed to the current `Tool` object of the same name.
+ *
  * @internal
  */
 export function updateMountedTools(
@@ -42,11 +46,21 @@ export function updateMountedTools(
 ): MountedTool[] {
   const {tools, activeTool, router, limit = MAX_MOUNTED_TOOLS} = options
 
-  const next = mounted.filter((entry) => entry.tool !== activeTool && tools.includes(entry.tool))
+  const next: MountedTool[] = []
+  for (const entry of mounted) {
+    if (entry.tool.name === activeTool?.name) continue
+    const tool = tools.find((candidate) => candidate.name === entry.tool.name)
+    if (!tool) continue
+    next.push(tool === entry.tool ? entry : {tool, router: entry.router})
+  }
 
   if (activeTool) {
-    const current = mounted.find((entry) => entry.tool === activeTool)
-    next.push(current?.router === router ? current : {tool: activeTool, router})
+    const current = mounted.find((entry) => entry.tool.name === activeTool.name)
+    next.push(
+      current?.tool === activeTool && current.router === router
+        ? current
+        : {tool: activeTool, router},
+    )
   }
 
   const limited = next.length > limit ? next.slice(next.length - limit) : next
