@@ -393,6 +393,22 @@ this for object literals in the JSX attribute; maps built during render via `use
 functions are equally wrong even though the rule cannot see them. See the `sanity-i18n-translate`
 skill (`.agents/skills/sanity-i18n-translate/SKILL.md`) for the full conversion patterns.
 
+### `<Activity mode="hidden">`: effects are torn down, DOM and state stay
+
+React's `<Activity>` is used for closed `@sanity/ui` overlays, collapsed document lists, and the
+top-level tools when `beta.keepInactiveToolsMounted` is on (`StudioLayoutComponent`). Hiding runs
+every effect cleanup in the subtree and showing runs the effects again, without a remount, so:
+
+- Anything that lives only in an effect-created object is lost on reveal unless the effect can
+  rebuild it from render-time data. `@uiw/react-codemirror` destroys its `EditorView` on cleanup
+  and re-creates it from `value`; `VisionCodeMirror` mirrors the latest document into state for
+  that reason. Mount-only effects (`useEffect(..., [])`) run again on every reveal.
+- Never reorder keyed siblings that hold an `<iframe>`. React moves the DOM node when the key
+  order changes, and a re-inserted iframe reloads. `useMountedTools` renders tools in workspace
+  order for this reason even though eviction is least-recently-used.
+- Hidden content keeps `display: none` on its topmost host nodes only, and portals under the
+  boundary are hidden too (`hideOrUnhideNearestPortals`); descendants report their own `display`.
+
 ### Refs: use `props.ref`, not `forwardRef`
 
 React 19 passes `ref` as a regular prop. Do not use `forwardRef` — destructure `ref` from props
