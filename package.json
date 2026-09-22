@@ -138,7 +138,7 @@
     "playwright": "catalog:",
     "sanity": "workspace:*",
     "tsx": "^4.23.15",
-    "turbo": "^2.10.12",
+    "turbo": "^2.11.2",
     "typescript": "catalog:",
     "vercel": "^57.0.0",
     "vite": "catalog:",
