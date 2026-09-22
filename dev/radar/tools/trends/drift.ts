@@ -328,6 +328,9 @@ export function computeDrift(seriesList: TrendSeries[]): DriftResult[] {
   const results: DriftResult[] = []
   for (const series of seriesList) {
     if (series.goal === 'context') continue
+    // A series built only to derive others from is never shown, so a finding
+    // on it would point at a chart that does not exist
+    if (series.hidden) continue
     const threshold = thresholdFor(series.unit)
     for (const line of series.lines) {
       // A paired chart's secondary line (UI v4 next to v5) is the headline's

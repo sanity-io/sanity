@@ -15,6 +15,7 @@ import {
   styleViews,
   type TrendRun,
   type TrendSeries,
+  UI_OVERVIEW_KEY,
   vitalSections,
 } from './data'
 import {generateDebugRuns} from './debugData'
@@ -766,7 +767,11 @@ test('the three UI rows become two paired charts, v5 and v4 on one chart', () =>
   // Colors are the style systems' own
   expect(share.lines.map((line) => line.color)).toEqual(['#3fb950', '#e2604f'])
 
+  // The instances pair is built (the aggregate sums it) but never shown: it
+  // is the share pair before the division, so charting it repeats the share
   const instances = series.find((entry) => entry.key === 'styles:singleString:UI instances')!
+  expect(instances.hidden).toBe(true)
+  expect(share.hidden).toBeUndefined()
   expect(instances.unit).toBe('count')
   expect(instances.lines.map((line) => [line.label, line.points[0].value])).toEqual([
     ['@sanity/ui v5', 1081],
@@ -881,10 +886,9 @@ test('style views: two paired UI sections, one styled-components section per met
   expect(views.map((view) => view.id)).toEqual(['ui5', 'styled'])
   const sectionsOf = (id: string) =>
     views.find((view) => view.id === id)?.sections.map((section) => [section.id, section.goal])
-  expect(sectionsOf('ui5')).toEqual([
-    ['UI share', 'higher'],
-    ['UI instances', 'higher'],
-  ])
+  // One section: the hidden instances pair gets none (the panel puts the
+  // all-scenarios adoption score above it instead)
+  expect(sectionsOf('ui5')).toEqual([['UI share', 'higher']])
   // Style tags are recorded but not charted — no section, see the registry
   expect(sectionsOf('styled')).toEqual([
     ['styled-components instances', 'lower'],
@@ -893,9 +897,9 @@ test('style views: two paired UI sections, one styled-components section per met
     ['styled-components CSS bytes', 'lower'],
     ['styled-components CSS rule share', 'lower'],
   ])
-  // Every style series lands in exactly one section; none are lost
+  // Every visible style series lands in exactly one section; none are lost
   expect(views.flatMap((view) => view.sections.flatMap((section) => section.series)).length).toBe(
-    styles.length,
+    styles.filter((entry) => !entry.hidden).length,
   )
   // A section holds one card per scenario, titled by scenario
   const shareSection = views[0].sections[0]
@@ -955,6 +959,10 @@ test('the aggregate sums every scenario per commit and recomputes the shares', (
   expect(share.lines[0].points[0].value).toBeCloseTo((1381 / (1381 + 2123)) * 100, 6)
   expect(share.lines[1].points[0].value).toBeCloseTo((2123 / (1381 + 2123)) * 100, 6)
   expect(share.lines.map((line) => Boolean(line.secondary))).toEqual([false, true])
+  // The score is the one shown; the summed counts behind it stay hidden
+  expect(share.key).toBe(UI_OVERVIEW_KEY)
+  expect(share.hidden).toBeUndefined()
+  expect(instances.hidden).toBe(true)
   expect(byKey.get('styles:all:styled-components instances')!.lines[0].points[0].value).toBe(150)
   // The point keeps a real run's identity, so a bar still opens a document
   expect(share.lines[0].points[0].runId).toBe('a')

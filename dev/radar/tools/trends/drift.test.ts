@@ -476,3 +476,12 @@ test('deltaLabel shows a signed percentage for finite baselines', () => {
   const down = computeDrift([series([...Array(21).fill(400), ...Array(9).fill(300)])])
   expect(deltaLabel(down[0].baseline, 'ms')).toBe('−25%')
 })
+
+// A series built only to derive others from (the paired UI instances behind
+// the adoption score) is never shown, so it must never produce a finding that
+// points at a chart nobody can open
+test('hidden series are not judged', () => {
+  const rise = [...Array.from({length: 21}, () => 300), ...Array.from({length: 9}, () => 420)]
+  expect(computeDrift([series(rise, {unit: 'count', goal: 'higher', hidden: true})])).toEqual([])
+  expect(computeDrift([series(rise, {unit: 'count', goal: 'higher'})])).toHaveLength(1)
+})

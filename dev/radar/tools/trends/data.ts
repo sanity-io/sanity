@@ -261,6 +261,13 @@ export interface TrendSeries {
    * pass/fail verdict.
    */
   goodThreshold?: number
+  /**
+   * Built for derivation, never shown: no card, no drift row, no deep link.
+   * The paired `UI instances` series is the share pair before the division,
+   * so charting it repeats the share chart — but its summed counts are what
+   * the cross-scenario adoption score is computed from (aggregateStyleSeries).
+   */
+  hidden?: boolean
   /** One line per branch (usually just one — comparison overlays several). */
   lines: TrendLine[]
 }
@@ -1194,7 +1201,7 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
     unit: TrendUnit,
     meta: Pick<
       TrendSeries,
-      'description' | 'goal' | 'group' | 'sourceFile' | 'lineLabel' | 'goodThreshold'
+      'description' | 'goal' | 'group' | 'sourceFile' | 'lineLabel' | 'goodThreshold' | 'hidden'
     >,
     run: TrendRun,
     point: Pick<
@@ -1284,6 +1291,7 @@ export function buildSeries(runs: TrendRun[]): TrendSeries[] {
             goal: 'higher' as const,
             description: pair.description,
             sourceFile: scenario.sourceFile,
+            ...(pair.hidden ? {hidden: true} : {}),
           }
           push(
             key,
@@ -1528,7 +1536,7 @@ const UI_LINES = {
 const UI_SHARE_DESCRIPTION =
   'Rendered @sanity/ui components by major version, as shares of all @sanity/ui components on the page (v5 + v4 = 100%). The v5 line is the headline of the migration and the one the latest value and the drift verdict read; where the lines cross, v5 became the majority. Absent on builds that do not ship @sanity/ui v5 (studio releases before v6.10) — not applicable, not 0%.'
 const UI_INSTANCES_DESCRIPTION =
-  'Rendered @sanity/ui components by major version, as counts: v5 climbs as v4 falls, and the crossing is where the page tipped to v5. The v4 line reaches back before @sanity/ui v5 existed; the v5 line starts with the first build that shipped it (studio v6.10). The latest value and the drift verdict read the v5 line.'
+  'Rendered @sanity/ui components by major version, as counts — the share pair before the division. Never charted on its own (it would repeat the share chart); its summed counts are what the all-scenarios adoption score is computed from.'
 
 const UI_PAIRS: Record<
   string,
@@ -1539,6 +1547,8 @@ const UI_PAIRS: Record<
     line: keyof typeof UI_LINES
     /** Also draw the other major as 100 minus this row (the share chart). */
     complement?: boolean
+    /** Built for the aggregate only, never shown (see TrendSeries.hidden). */
+    hidden?: boolean
     description: string
   }
 > = {
@@ -1555,6 +1565,7 @@ const UI_PAIRS: Record<
     title: 'UI v5 vs v4 instances',
     unit: 'count',
     line: 'ui5',
+    hidden: true,
     description: UI_INSTANCES_DESCRIPTION,
   },
   'UI v4 instances': {
@@ -1562,9 +1573,13 @@ const UI_PAIRS: Record<
     title: 'UI v5 vs v4 instances',
     unit: 'count',
     line: 'ui4',
+    hidden: true,
     description: UI_INSTANCES_DESCRIPTION,
   },
 }
+
+/** The all-scenarios adoption score: `styles:all:UI share` (see aggregateStyleSeries). */
+export const UI_OVERVIEW_KEY = 'styles:all:UI share'
 
 /** One style-migration metric across scenarios: a section header and a card per scenario. */
 export interface StyleSection {
@@ -1599,17 +1614,20 @@ export const ALL_SCENARIOS = 'all'
 
 /**
  * The style-migration tab's sub-views, one per migration. UI v5 adoption is
- * two sections — share and instances — each a paired v5/v4 chart per scenario
- * (see `UI_PAIRS`); styled-components is one section per registry metric, in
- * registry order. Within a section, one card per scenario — the Vitals
- * layout, since the question is the same: "how is this number doing,
- * everywhere?" Views without data are dropped, like the soak and settle ones.
- * There is no "Other": a series only reaches this group through the registry
- * (see describeSeries), so every label is known. The `all` aggregate stays
- * out — it is the weekly view's, see aggregateStyleSeries.
+ * the paired v5/v4 share chart per scenario (see `UI_PAIRS`; the panel puts
+ * the all-scenarios adoption score above it, see UI_OVERVIEW_KEY);
+ * styled-components is one section per registry metric, in registry order.
+ * Within a section, one card per scenario — the Vitals layout, since the
+ * question is the same: "how is this number doing, everywhere?" Views without
+ * data are dropped, like the soak and settle ones. There is no "Other": a
+ * series only reaches this group through the registry (see describeSeries),
+ * so every label is known. Hidden series and the `all` aggregate stay out —
+ * the aggregate is placed by the panel, see aggregateStyleSeries.
  */
 export function styleViews(list: TrendSeries[]): StyleView[] {
-  const perScenario = list.filter((entry) => styleScenario(entry) !== ALL_SCENARIOS)
+  const perScenario = list.filter(
+    (entry) => styleScenario(entry) !== ALL_SCENARIOS && !entry.hidden,
+  )
   const section = (id: string, label: string, goal: 'higher' | 'lower'): StyleSection => ({
     id,
     label,
@@ -1620,11 +1638,8 @@ export function styleViews(list: TrendSeries[]): StyleView[] {
     {
       id: 'ui5',
       label: 'UI v5 adoption',
-      hint: 'Rendered @sanity/ui components by major version on each scenario\u2019s page, v5 and v4 on one chart so the crossing shows: as shares (summing to 100%) and as counts. Higher v5 is better; 100% means the page is fully on v5. Builds without @sanity/ui v5 (before studio v6.10) record no v5 rows rather than 0%, so the v5 line starts where v5 did.',
-      sections: [
-        section('UI share', 'UI v5 vs v4 share', 'higher'),
-        section('UI instances', 'UI v5 vs v4 instances', 'higher'),
-      ],
+      hint: 'Rendered @sanity/ui components by major version, v5 and v4 on one chart so the crossing shows: first every scenario\u2019s counts summed into one adoption score, then each scenario\u2019s page on its own. Higher v5 is better; 100% means fully on v5. Builds without @sanity/ui v5 (before studio v6.10) record no v5 rows rather than 0%, so the v5 line starts where v5 did.',
+      sections: [section('UI share', 'UI v5 vs v4 share', 'higher')],
     },
     {
       id: 'styled',
@@ -1720,7 +1735,7 @@ export function aggregateStyleSeries(list: TrendSeries[]): TrendSeries[] {
         unit: 'percent',
         goal: 'higher',
         ...base,
-        description: `${UI_PAIRS['UI v5 share'].description} Summed over every scenario page (Σ v5 ÷ Σ (v5 + v4)), so it is weighted by how much each page renders.`,
+        description: `The migration\u2019s overview score: every scenario page\u2019s rendered @sanity/ui components summed per commit, v5 against v4 (Σ v5 ÷ Σ (v5 + v4)) — weighted by how much each page renders, not an average of the pages\u2019 percentages. ${UI_PAIRS['UI v5 share'].description}`,
         lines: [
           ...linesFrom(
             only(v5),
@@ -1746,6 +1761,7 @@ export function aggregateStyleSeries(list: TrendSeries[]): TrendSeries[] {
         unit: 'count',
         goal: 'higher',
         ...base,
+        hidden: true,
         description: `${UI_PAIRS['UI v5 instances'].description} Summed over every scenario page.`,
         lines: [
           ...linesFrom(only(v5), (points) => sum(points), UI_LINES.ui5),

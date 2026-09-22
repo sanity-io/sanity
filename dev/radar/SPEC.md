@@ -475,21 +475,29 @@ sessionChains.ts` and shared by the sessions list and the Releases tool:
      merge into one point per commit (the `mergeRunsPerCommit` median) rather
      than drawing two series that say the same thing.
    - **The two majors share a chart.** The three UI rows (`UI v5 share`,
-     `UI v5 instances`, `UI v4 instances`) become two paired charts per
-     scenario, `UI share` and `UI instances` (`UI_PAIRS`), each drawing v5 and
-     v4 as two lines in the style systems' own colors — the migration reads as
-     a crossing, v5 climbing past v4, that two single-line charts never show.
-     The share chart's v4 line is the complement of the stored v5 share (they
-     sum to 100% by construction); the instances chart draws both stored
-     counts, so its v4 line reaches back before v5 existed while v5 starts with
-     the first build that shipped it. This is the first series with several
-     measured lines per branch, hence `TrendLine.label` / `color` /
-     `secondary`: the v4 line is secondary — drawn for the crossing, but the
-     card's latest value, the drift verdict and the baseline overlay read the
-     v5 line only (judging both would flag every move twice, once per
+     `UI v5 instances`, `UI v4 instances`) become paired series per scenario
+     (`UI_PAIRS`), each drawing v5 and v4 as two lines in the style systems'
+     own colors — the migration reads as a crossing, v5 climbing past v4, that
+     two single-line charts never show. Only the **share** pair is charted:
+     its v4 line is the complement of the stored v5 share (they sum to 100% by
+     construction). The **instances** pair is the same picture before the
+     division, so it is built `hidden` (`TrendSeries.hidden`: no card, no
+     drift row, no deep link) and exists to be summed. This is the first series
+     with several measured lines per branch, hence `TrendLine.label` /
+     `color` / `secondary`: the v4 line is secondary — drawn for the crossing,
+     but the card's latest value, the drift verdict and the baseline overlay
+     read the v5 line only (judging both would flag every move twice, once per
      direction). Legends and tooltips name lines by label, and by branch too
      when several branches' pairs share a chart, where the second branch
      dashes because the color already means the major.
+   - **The overview score.** The UI v5 adoption view leads with one full-width
+     card, `all scenarios · UI v5 vs v4 share` (`UI_OVERVIEW_KEY`): every
+     scenario's hidden instance counts summed per commit, then divided —
+     Σ v5 ÷ Σ (v5 + v4) — so it is weighted by how much each page renders,
+     not an average of the pages' percentages. Built by `aggregateStyleSeries`
+     from the full history as well, so it is judged like any chart and a batch
+     of migrated components badges the score the day it lands. The
+     per-scenario share cards follow as its breakdown.
    - **Higher is better exists now.** Adoption climbs, so `goal: 'higher'`
      makes a drop the regression and a rise the improvement (drift.ts
      `classify`); the badge arrow follows the value's direction and its tone the

@@ -66,6 +66,7 @@ import {
   type TrendRun,
   type TrendSeries,
   type TrendTag,
+  UI_OVERVIEW_KEY,
   vitalSections,
 } from './data'
 import {DEBUG_SOURCES, type DebugSource, generateDebugRuns, generateDebugTags} from './debugData'
@@ -891,16 +892,18 @@ function StylesPanel(props: {
     ...(scenarios.length > 0 ? [{id: 'weekly', label: 'Per week'}] : []),
   ]
   // Same rule as the group tabs: an explicit sub-tab wins, else the sub-tab
-  // holding the deep-linked/focused chart, else the first
+  // holding the deep-linked/focused chart (the overview score lives on the
+  // UI view), else the first
+  const holdsChart = (viewId: string, key: string) =>
+    (viewId === 'ui5' && key === UI_OVERVIEW_KEY) ||
+    Boolean(
+      views
+        .find((view) => view.id === viewId)
+        ?.sections.some((section) => section.series.some((entry) => entry.key === key)),
+    )
   const activeId =
     tabs.find((tab) => tab.id === props.view)?.id ??
-    (props.chartKey
-      ? views.find((view) =>
-          view.sections.some((section) =>
-            section.series.some((entry) => entry.key === props.chartKey),
-          ),
-        )?.id
-      : undefined) ??
+    (props.chartKey ? tabs.find((tab) => holdsChart(tab.id, props.chartKey))?.id : undefined) ??
     tabs[0]?.id
 
   if (!activeId) {
@@ -922,6 +925,7 @@ function StylesPanel(props: {
       return entry ? [{...chart, series: entry, scope}] : []
     })
   }
+  const overview = props.aggregate.find((entry) => entry.key === UI_OVERVIEW_KEY)
   const weeklySections = [
     {
       id: ALL_SCENARIOS,
@@ -953,12 +957,7 @@ function StylesPanel(props: {
             selected={tab.id === activeId}
             onClick={() => {
               props.onViewChange(tab.id)
-              const holdsChart = views
-                .find((view) => view.id === tab.id)
-                ?.sections.some((section) =>
-                  section.series.some((entry) => entry.key === props.chartKey),
-                )
-              if (props.chartKey && !holdsChart) props.onLeaveChart()
+              if (props.chartKey && !holdsChart(tab.id, props.chartKey)) props.onLeaveChart()
             }}
           />
         ))}
@@ -970,6 +969,44 @@ function StylesPanel(props: {
               {activeView.hint}
             </Text>
             <Stack gap={6} paddingTop={3}>
+              {/* The adoption overview score leads the UI view: every scenario's
+                  v5 and v4 counts summed per commit, then divided — one number
+                  for the whole migration, drawn full width because it is the
+                  headline the per-scenario cards below break down. Same
+                  SeriesCard as the grid, so it drifts, acks, maximizes and
+                  opens runs like every other chart. */}
+              {activeView.id === 'ui5' && overview && (
+                <Stack gap={4}>
+                  <Flex alignItems="baseline" gap={2}>
+                    <Text size={1} weight="semibold">
+                      Overall adoption
+                    </Text>
+                    <Text size={1} muted>
+                      every scenario summed per commit, Σ v5 ÷ Σ (v5 + v4) · higher is better
+                    </Text>
+                  </Flex>
+                  <SeriesCard
+                    series={overview}
+                    height={200}
+                    drift={props.driftBySeries.get(overview.key)}
+                    silenced={props.silencedBySeries.get(overview.key)}
+                    baseline={props.baselineBySeries.get(overview.key)}
+                    focused={props.focusedKey === overview.key}
+                    onFocus={() => props.onFocusMetric(overview.key)}
+                    onAck={(state) => {
+                      const entry = props.driftBySeries.get(overview.key)
+                      if (entry) props.drift.ack(entry, state)
+                    }}
+                    onUnack={() => {
+                      const entry = props.silencedBySeries.get(overview.key)
+                      if (entry) props.drift.clear(entry)
+                    }}
+                    layers={props.layers}
+                    tags={props.tags}
+                    onExpand={() => props.onExpand(overview.key)}
+                  />
+                </Stack>
+              )}
               {activeView.sections.map((section) => (
                 <Stack key={section.id} gap={4}>
                   <Flex alignItems="baseline" gap={2}>
@@ -1177,7 +1214,23 @@ export function TrendsTool() {
     () => inRange.filter((run) => run.git && selectedBranches.includes(run.git.branch)),
     [inRange, selectedBranches],
   )
-  const series = useMemo(() => buildSeries(filtered), [filtered])
+  // Every series, hidden ones included (the paired UI instances series exists
+  // only to be summed into the all-scenarios adoption score); `series` is what
+  // gets charted, deep-linked and judged
+  const allSeries = useMemo(() => buildSeries(filtered), [filtered])
+  const series = useMemo(() => allSeries.filter((entry) => !entry.hidden), [allSeries])
+  const styleSeries = useMemo(() => series.filter((entry) => entry.group === 'styles'), [series])
+  // Every scenario summed per commit — the adoption overview score and the
+  // weekly view's leading section. Built from the hidden series too: the
+  // summed counts are what the score divides.
+  const styleAggregate = useMemo(
+    () => aggregateStyleSeries(allSeries.filter((entry) => entry.group === 'styles')),
+    [allSeries],
+  )
+  const visibleAggregate = useMemo(
+    () => styleAggregate.filter((entry) => !entry.hidden),
+    [styleAggregate],
+  )
   /**
    * Drift is computed over *all* history for the selected branches, never the
    * range-filtered view. Its baseline is defined in runs (last 7 vs prior 21),
@@ -1185,15 +1238,15 @@ export function TrendsTool() {
    * visible runs and — worse — make the verdict a function of the range picker:
    * the same metric could flag at 90d and not at 30d. The charts still render
    * `series` (the range the user chose); only the drift math reads the full
-   * history.
+   * history. The adoption overview score is judged too, from the same full
+   * history, so a batch of migrated components badges the score the day it lands.
    */
-  const driftSeries = useMemo(
-    () =>
-      buildSeries(
-        (runs ?? []).filter((run) => run.git && selectedBranches.includes(run.git.branch)),
-      ),
-    [runs, selectedBranches],
-  )
+  const driftSeries = useMemo(() => {
+    const all = buildSeries(
+      (runs ?? []).filter((run) => run.git && selectedBranches.includes(run.git.branch)),
+    )
+    return [...all, ...aggregateStyleSeries(all.filter((entry) => entry.group === 'styles'))]
+  }, [runs, selectedBranches])
   const soakSlopes = useMemo(() => soakSlopeSeries(filtered), [filtered])
   // End-of-run soak values across runs — the "where did it land" history that
   // complements the slope view
@@ -1218,30 +1271,31 @@ export function TrendsTool() {
     () => vitalSections(series.filter((entry) => entry.group === 'vitals')),
     [series],
   )
-  const styleSeries = useMemo(() => series.filter((entry) => entry.group === 'styles'), [series])
-  // Every scenario summed per commit — the weekly view's leading section
-  const styleAggregate = useMemo(() => aggregateStyleSeries(styleSeries), [styleSeries])
 
   // Every metric group is a tab, always: a fixed layout is learnable, and a
   // group without data in the range renders a blank state saying so (see
   // EmptyGroup) rather than quietly disappearing — a new mode stays
   // discoverable before its first run lands.
   const tabs = TREND_GROUPS
-  // Includes calibration, which lives outside `series` — a deep link to it
-  // must still resolve to the Calibration tab.
+  // Includes calibration and the style aggregate, which live outside `series`
+  // — a deep link to either must still resolve to its tab.
   const groupById = useMemo(() => {
     const map = new Map<string, TrendGroup>()
-    for (const entry of [...series, calibration]) map.set(entry.key, entry.group)
+    for (const entry of [...series, ...visibleAggregate, calibration]) {
+      map.set(entry.key, entry.group)
+    }
     return map
-  }, [series, calibration])
+  }, [series, visibleAggregate, calibration])
 
   // Every chart the tool can show, by key — what `?max=` resolves against.
-  // The soak views and the environment tab build their series outside `series`,
-  // so a maximize link into one of those has to find them here.
+  // The soak views, the environment tab and the style aggregate build their
+  // series outside `series`, so a maximize link into one of those has to find
+  // them here.
   const seriesByKey = useMemo(() => {
     const map = new Map<string, TrendSeries>()
     for (const entry of [
       ...series,
+      ...visibleAggregate,
       ...environmentSeries,
       ...soakSlopes,
       ...soakEndValues,
@@ -1250,7 +1304,7 @@ export function TrendsTool() {
       map.set(entry.key, entry)
     }
     return map
-  }, [series, environmentSeries, soakSlopes, soakEndValues, latestSoak])
+  }, [series, visibleAggregate, environmentSeries, soakSlopes, soakEndValues, latestSoak])
 
   // Deep-linkable focused chart: the `chart` URL param names the series to
   // jump to (shareable). Jumping from a drift-feed row or a chart header writes
@@ -1563,7 +1617,7 @@ export function TrendsTool() {
                     ) : activeTab.id === 'styles' ? (
                       <StylesPanel
                         series={styleSeries}
-                        aggregate={styleAggregate}
+                        aggregate={visibleAggregate}
                         driftBySeries={driftBySeries}
                         silencedBySeries={silencedBySeries}
                         baselineBySeries={baselineBySeries}
