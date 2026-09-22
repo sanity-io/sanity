@@ -451,6 +451,21 @@ On macOS, use `TMPDIR=/private/tmp pnpm test` if the E2E summary reporter test f
 `/var` versus `/private/var` path mismatch. The test changes its working directory, which resolves
 the symlink; using a canonical temporary path keeps its expected and actual paths consistent.
 
+#### Vitest 5 specifics
+
+- Every Vitest artifact lives under `.vitest/` (gitignored): sharded blob reports in
+  `.vitest/blob/` (what `test.yml` uploads and `--merge-reports` reads), browser-mode attachments
+  and failure screenshots in `packages/sanity/.vitest/attachments/`.
+- `clearMocks` is on by default: mock call history is cleared before every test, so never assert
+  on calls recorded in `beforeAll` or at module scope.
+- `expect.poll` fails as soon as its `timeout` elapses (no more passing on a late attempt); give it
+  an explicit `timeout` when the polled state is produced behind a debounce or a slow effect.
+- In browser mode, `expect.element(...).toHaveTextContent()` is a full-string equality check and
+  rejects `RegExp`; use `toMatchTextContent()` for substring or regex matches. Locators keep the
+  Vitest 4 substring, case-insensitive matching (`browser.locators.exact: false` in
+  `vitest.browser.config.mts`); pass `{exact: true}` per call when a full match matters. Custom
+  matcher typings augment `Matchers<R, T>` from `vitest`, not `Assertion`.
+
 #### Test Timeouts
 
 When a test needs a custom timeout, use the Vitest options object as the second argument (not the deprecated third-argument form). Prefer numeric separators for readability:
@@ -546,7 +561,9 @@ while closed (hidden with `display: none`). Consequences for tests:
 
 - Plain text / test-id queries can match **closed** overlay content. Prefer scoping to the
   visible element under test (or assert visibility) instead of `getByText` / `getByTestId` on
-  the whole document.
+  the whole document. In browser mode this is a hard failure: a `page.getByText(...)` that also
+  hits a closed tooltip's copy of the text resolves to two elements and trips the locator's
+  strict-mode check, so scope it (`page.getByTestId('field-publishedAt').getByText(...)`).
 - In jsdom, asserting that closed content is hidden works (`expect(...).not.toBeVisible()`), but
   selecting the **open** overlay by visibility does not. Runtime styles are disabled there, so
   nothing overrides the `hidden` attribute `@sanity/ui` puts on an open popover, and
