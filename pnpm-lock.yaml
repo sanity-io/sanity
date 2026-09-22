@@ -1527,7 +1527,7 @@ importers:
   packages/@sanity/diff:
     dependencies:
       '@sanity/diff-match-patch':
-        specifier: ^3.2.0
+        specifier: ^3.2.1
         version: 3.2.1
     devDependencies:
       '@repo/tsconfig':
@@ -1546,7 +1546,7 @@ importers:
   packages/@sanity/mutator:
     dependencies:
       '@sanity/diff-match-patch':
-        specifier: ^3.2.0
+        specifier: ^3.2.1
         version: 3.2.1
       '@sanity/types':
         specifier: workspace:*
@@ -2049,7 +2049,7 @@ importers:
         specifier: workspace:*
         version: link:../@sanity/diff
       '@sanity/diff-match-patch':
-        specifier: ^3.2.0
+        specifier: ^3.2.1
         version: 3.2.1
       '@sanity/diff-patch':
         specifier: ^5.0.0
