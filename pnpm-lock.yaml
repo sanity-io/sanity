@@ -2217,7 +2217,7 @@ importers:
         specifier: ^2.13.7
         version: 2.13.7(@types/react@19.3.0)(react@19.3.0)
       react-i18next:
-        specifier: ^17.0.13
+        specifier: ^17.0.14
         version: 17.0.14(i18next@26.4.2)(react-dom@19.3.0)(react@19.3.0)(typescript@7.0.2)
       react-is:
         specifier: 'catalog:'
