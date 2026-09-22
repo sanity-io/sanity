@@ -1,18 +1,10 @@
 import {type SanityClient} from '@sanity/client'
-import {
-  defineArrayMember,
-  defineField,
-  defineType,
-  isArraySchemaType,
-  isObjectSchemaType,
-  type FormNodeValidation,
-} from '@sanity/types'
+import {type ArraySchemaType, type FormNodeValidation} from '@sanity/types'
 import {Card, Stack, Text, TextInput} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
 import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
-import {useSchema} from '../../../hooks/useSchema'
 import {IncompatibleItemType} from '../../members/array/IncompatibleItemType'
 import {DuplicateKeysAlert} from '../../members/object/errors/DuplicateKeysAlert'
 import {MissingKeysAlert} from '../../members/object/errors/MissingKeysAlert'
@@ -22,27 +14,13 @@ import {FormField} from '../formField/FormField'
 import {FormFieldHeaderText} from '../formField/FormFieldHeaderText'
 import {FormFieldSet} from '../formField/FormFieldSet'
 
-const SCHEMA_TYPES = [
-  defineType({
-    name: 'fixtureDocument',
-    type: 'document',
-    fields: [
-      defineField({
-        name: 'items',
-        title: 'Related items',
-        description: 'A fixture array used to show form error chrome.',
-        type: 'array',
-        of: [
-          defineArrayMember({
-            name: 'fixtureItem',
-            type: 'object',
-            fields: [defineField({name: 'title', type: 'string'})],
-          }),
-        ],
-      }),
-    ],
-  }),
-]
+const ARRAY_SCHEMA_TYPE = {
+  jsonType: 'array',
+  name: 'fixtureItems',
+  title: 'Related items',
+  description: 'A fixture array used to show form error chrome.',
+  of: [],
+} as unknown as ArraySchemaType
 
 const VALIDATION: FormNodeValidation[] = [
   {level: 'error', message: 'A title is required', path: ['title']},
@@ -51,15 +29,6 @@ const VALIDATION: FormNodeValidation[] = [
 const client = createMockSanityClient() as unknown as SanityClient
 
 function FormChrome() {
-  const documentType = useSchema().get('fixtureDocument')
-  if (!isObjectSchemaType(documentType)) {
-    throw new Error('Expected fixtureDocument to compile as an object schema type')
-  }
-  const schemaType = documentType.fields.find((field) => field.name === 'items')?.type
-  if (!isArraySchemaType(schemaType)) {
-    throw new Error('Expected items to compile as an array schema type')
-  }
-
   return (
     <Card padding={4} style={{maxWidth: 720}}>
       <Stack gap={6}>
@@ -85,7 +54,7 @@ function FormChrome() {
             inputId="metadata"
             level={1}
             path={['metadata']}
-            schemaType={schemaType}
+            schemaType={ARRAY_SCHEMA_TYPE}
             title="Metadata"
             validation={VALIDATION}
           >
@@ -110,7 +79,7 @@ function FormChrome() {
           <DuplicateKeysAlert
             error={{
               type: 'DUPLICATE_KEYS',
-              schemaType,
+              schemaType: ARRAY_SCHEMA_TYPE,
               duplicates: [
                 [0, 'duplicate-key'],
                 [1, 'duplicate-key'],
@@ -122,7 +91,7 @@ function FormChrome() {
           <MissingKeysAlert
             error={{
               type: 'MISSING_KEYS',
-              schemaType,
+              schemaType: ARRAY_SCHEMA_TYPE,
               value: [{}, {}],
             }}
             onChange={noop}
@@ -131,7 +100,7 @@ function FormChrome() {
           <MixedArrayAlert
             error={{
               type: 'MIXED_ARRAY',
-              schemaType,
+              schemaType: ARRAY_SCHEMA_TYPE,
               value: [{_type: 'fixtureItem', title: 'Valid fixture'}, 'Unexpected primitive'],
             }}
             onChange={noop}
@@ -166,7 +135,7 @@ function FormChrome() {
  */
 export function FormChromeStory() {
   return (
-    <TestWrapper client={client} schemaTypes={SCHEMA_TYPES}>
+    <TestWrapper client={client} schemaTypes={[]}>
       <FormChrome />
     </TestWrapper>
   )
