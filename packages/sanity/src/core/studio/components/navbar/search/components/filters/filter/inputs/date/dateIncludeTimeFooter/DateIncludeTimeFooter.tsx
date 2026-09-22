@@ -1,6 +1,6 @@
-import {Stack, Switch, Text} from '@sanity/ui'
+import {Switch, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 import {useTranslation} from '../../../../../../../../../../i18n/hooks/useTranslation'
 
@@ -17,11 +17,11 @@ export function DateIncludeTimeFooter({onChange, value}: DateIncludeTimeFooterPr
   const {t} = useTranslation()
   return (
     <Flex alignItems="center" gap={2} justifyContent="flex-end" marginTop={1}>
-      <Stack>
+      <VStack>
         <TimeLabelText muted onClick={onChange} size={1} weight="medium">
           {t('calendar.action.include-time-label')}
         </TimeLabelText>
-      </Stack>
+      </VStack>
       <Switch checked={value} label={t('calendar.action.include-time-label')} onChange={onChange} />
     </Flex>
   )
