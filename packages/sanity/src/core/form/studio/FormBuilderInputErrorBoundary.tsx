@@ -4,7 +4,6 @@ import {useState} from 'react'
 import {Box} from 'ui5'
 import {useHotModuleReload} from 'use-hot-module-reload'
 
-import {agentDebugLog} from '../../../../test/browser/agentDebugLog'
 import {ErrorBoundary} from '../../../ui-components/errorBoundary/ErrorBoundary'
 import {SchemaError} from '../../config/SchemaError'
 import {isDev} from '../../environment'
@@ -48,29 +47,8 @@ export function FormBuilderInputErrorBoundary(
 export function ErrorCard(props: {error: unknown; info?: React.ErrorInfo; onRetry: () => void}) {
   const {error, info, onRetry} = props
 
-  // #region agent log
-  agentDebugLog({
-    hypothesisId: 'D',
-    location: 'FormBuilderInputErrorBoundary.tsx:ErrorCard:entry',
-    message: 'ErrorCard render entry',
-    data: {
-      errorType: error == null ? 'nullish' : typeof error,
-      isSchemaError: error instanceof SchemaError,
-      hasMessage: isRecord(error) && typeof error.message === 'string',
-    },
-  })
-  // #endregion
-
   // If a schema error, rethrow and let the StudioErrorBoundary handle it
   if (error instanceof SchemaError) {
-    // #region agent log
-    agentDebugLog({
-      hypothesisId: 'D',
-      location: 'FormBuilderInputErrorBoundary.tsx:ErrorCard:schemaError',
-      message: 'ErrorCard rethrowing SchemaError',
-      data: {},
-    })
-    // #endregion
     throw error
   }
 
@@ -78,20 +56,6 @@ export function ErrorCard(props: {error: unknown; info?: React.ErrorInfo; onRetr
   const message = isRecord(error) && typeof error.message === 'string' && error.message
   const callStack = isRecord(error) && typeof error.stack === 'string' && error.stack
   const componentStack = typeof info?.componentStack === 'string' && info.componentStack
-
-  // #region agent log
-  agentDebugLog({
-    hypothesisId: 'C',
-    location: 'FormBuilderInputErrorBoundary.tsx:ErrorCard:afterTranslation',
-    message: 'ErrorCard passed useTranslation',
-    data: {
-      message: typeof message === 'string' ? message : null,
-      translatedSample: t('form.error.unhandled-runtime-error.error-message', {
-        message: message || 'n/a',
-      }),
-    },
-  })
-  // #endregion
 
   useHotModuleReload(onRetry)
 
