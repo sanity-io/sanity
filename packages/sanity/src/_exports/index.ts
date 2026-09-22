@@ -3,6 +3,8 @@ import '@sanity/ui/styles.css'
 // oxlint-disable-next-line import/no-unassigned-import -- side effect: keeps the module augmentations declared by this module on the public type surface
 import '../core/form/types/definitionExtensions'
 
+import {createAuthStore as _createAuthStorePublic} from '../core/store/authStore/createAuthStore'
+
 export {useCanvasCompanionDoc} from '../core/canvas/actions/useCanvasCompanionDoc'
 export {useNavigateToCanvasDoc} from '../core/canvas/useNavigateToCanvasDoc'
 export {getDocumentIdForCanvasLink} from '../core/canvas/utils/getDocumentIdForCanvasLink'
@@ -1178,10 +1180,14 @@ export {
 export {
   _createAuthStore,
   type AuthStoreOptions,
-  createAuthStore,
   type CreateAuthStoreOptions,
   type RequestFailureDiagnostics,
 } from '../core/store/authStore/createAuthStore'
+/**
+ * @internal
+ * @deprecated Use the `auth` config key with an `AuthConfig` object instead. Deprecated since Studio v3.15.0.
+ */
+export const createAuthStore = _createAuthStorePublic
 export {
   createMockAuthStore,
   type MockAuthStoreOptions,
