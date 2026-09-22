@@ -1,5 +1,4 @@
 import {render, waitFor} from '@testing-library/react'
-import {type RefObject} from 'react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type StudioToolMountTimeMeasured as StudioToolMountTimeMeasuredType} from '../__telemetry__/tools.telemetry'
@@ -8,10 +7,6 @@ import {type ToolMountTimer as ToolMountTimerType} from '../ToolMountTimer'
 vi.mock('@sanity/telemetry/react', () => ({
   useTelemetry: vi.fn(),
 }))
-
-function makeRef<T>(value: T): RefObject<T> {
-  return {current: value}
-}
 
 describe('ToolMountTimer', () => {
   let telemetryLog: ReturnType<typeof vi.fn>
@@ -36,8 +31,7 @@ describe('ToolMountTimer', () => {
   })
 
   it('fires Studio Tool Mount Time Measured on mount with isFirstMount=true', async () => {
-    const t0Ref = makeRef<number | null>(performance.now())
-    render(<ToolMountTimer toolName="structure" t0Ref={t0Ref} />)
+    render(<ToolMountTimer toolName="structure" t0={performance.now()} />)
 
     await waitFor(() => {
       expect(telemetryLog).toHaveBeenCalledTimes(1)
@@ -55,9 +49,7 @@ describe('ToolMountTimer', () => {
   })
 
   it('reports isFirstMount=false on a second mount of the same tool', async () => {
-    const {unmount} = render(
-      <ToolMountTimer toolName="structure" t0Ref={makeRef<number | null>(performance.now())} />,
-    )
+    const {unmount} = render(<ToolMountTimer toolName="structure" t0={performance.now()} />)
 
     await waitFor(() => {
       expect(telemetryLog).toHaveBeenCalledTimes(1)
@@ -71,9 +63,7 @@ describe('ToolMountTimer', () => {
     unmount()
 
     // Second mount of the same tool — should log with isFirstMount=false
-    render(
-      <ToolMountTimer toolName="structure" t0Ref={makeRef<number | null>(performance.now())} />,
-    )
+    render(<ToolMountTimer toolName="structure" t0={performance.now()} />)
 
     await waitFor(() => {
       expect(telemetryLog).toHaveBeenCalledTimes(2)
@@ -86,15 +76,13 @@ describe('ToolMountTimer', () => {
   })
 
   it('reports isFirstMount=true for each distinct tool', async () => {
-    const {unmount} = render(
-      <ToolMountTimer toolName="structure" t0Ref={makeRef<number | null>(performance.now())} />,
-    )
+    const {unmount} = render(<ToolMountTimer toolName="structure" t0={performance.now()} />)
     await waitFor(() => {
       expect(telemetryLog).toHaveBeenCalledTimes(1)
     })
     unmount()
 
-    render(<ToolMountTimer toolName="vision" t0Ref={makeRef<number | null>(performance.now())} />)
+    render(<ToolMountTimer toolName="vision" t0={performance.now()} />)
     await waitFor(() => {
       expect(telemetryLog).toHaveBeenCalledTimes(2)
     })
@@ -111,8 +99,7 @@ describe('ToolMountTimer', () => {
 
   it('measures durationMs as the delta from the provided t0', async () => {
     // Set t0 to 42ms ago.
-    const t0Ref = makeRef<number | null>(performance.now() - 42)
-    render(<ToolMountTimer toolName="structure" t0Ref={t0Ref} />)
+    render(<ToolMountTimer toolName="structure" t0={performance.now() - 42} />)
 
     await waitFor(() => {
       expect(telemetryLog).toHaveBeenCalledTimes(1)
@@ -125,9 +112,8 @@ describe('ToolMountTimer', () => {
     expect(durationMs).toBeLessThan(5_000)
   })
 
-  it('does not fire when t0Ref.current is null (parent has not yet set it)', async () => {
-    const t0Ref = makeRef<number | null>(null)
-    render(<ToolMountTimer toolName="structure" t0Ref={t0Ref} />)
+  it('does not fire when t0 is null (parent has not yet set it)', async () => {
+    render(<ToolMountTimer toolName="structure" t0={null} />)
 
     // Give the effect a chance to run.
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -135,9 +121,7 @@ describe('ToolMountTimer', () => {
   })
 
   it('renders nothing', () => {
-    const {container} = render(
-      <ToolMountTimer toolName="structure" t0Ref={makeRef<number | null>(performance.now())} />,
-    )
+    const {container} = render(<ToolMountTimer toolName="structure" t0={performance.now()} />)
     expect(container.firstChild).toBeNull()
   })
 })

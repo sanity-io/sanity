@@ -44,7 +44,7 @@ export function useMountedTools(options: UseMountedToolsOptions): UseMountedTool
   const contextValue = useMemo<MountedToolsContextValue>(() => {
     const inactiveToolStates: Record<string, RouterState> = {}
     for (const entry of mountedTools) {
-      if (entry.tool !== activeTool) {
+      if (entry.tool.name !== activeTool?.name) {
         inactiveToolStates[entry.tool.name] = entry.router.state
       }
     }

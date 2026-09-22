@@ -34,6 +34,11 @@ interface UpdateMountedToolsOptions {
  * most `limit` entries (least recently used first). Returns `mounted` itself when nothing changed,
  * so the result can be compared by reference and the update applied during render.
  *
+ * Membership and identity are by `tool.name`: `resolveSource` rebuilds the `tools` array (new
+ * objects, same names) whenever `auth.state` emits, so comparing by object identity would drop
+ * every hidden tool on a refresh. When a name still exists, the stored `tool` reference is
+ * refreshed to the current object from `tools`.
+ *
  * @internal
  */
 export function updateMountedTools(
@@ -41,12 +46,23 @@ export function updateMountedTools(
   options: UpdateMountedToolsOptions,
 ): MountedTool[] {
   const {tools, activeTool, router, limit = MAX_MOUNTED_TOOLS} = options
+  const activeName = activeTool?.name
 
-  const next = mounted.filter((entry) => entry.tool !== activeTool && tools.includes(entry.tool))
+  const next: MountedTool[] = []
+  for (const entry of mounted) {
+    if (entry.tool.name === activeName) continue
+    const tool = tools.find((candidate) => candidate.name === entry.tool.name)
+    if (!tool) continue
+    next.push(entry.tool === tool ? entry : {tool, router: entry.router})
+  }
 
   if (activeTool) {
-    const current = mounted.find((entry) => entry.tool === activeTool)
-    next.push(current?.router === router ? current : {tool: activeTool, router})
+    const current = mounted.find((entry) => entry.tool.name === activeTool.name)
+    next.push(
+      current?.router === router && current.tool === activeTool
+        ? current
+        : {tool: activeTool, router},
+    )
   }
 
   const limited = next.length > limit ? next.slice(next.length - limit) : next

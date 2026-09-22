@@ -2,7 +2,7 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Card} from '@sanity/ui'
 import startCase from 'lodash-es/startCase.js'
-import {Activity, lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {Activity, lazy, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {MountedToolsContext, NavbarContext, RouterContext} from 'sanity/_singletons'
 import {RouteScope, useRouter, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
@@ -84,20 +84,24 @@ export function StudioLayoutComponent() {
     tools,
     activeTool,
   })
-  // Track T0 for tool-mount timing. Because React Compiler forbids impure
-  // calls like `performance.now()` during render, we capture the timestamp
-  // in an effect that runs when `activeToolName` changes. The effect runs
-  // before the tool's `<Suspense>` resolves (since the Suspense fallback
-  // renders first), so the delta captured in `ToolMountTimer` still
-  // includes lazy-chunk fetch time.
-  const toolMountT0Ref = useRef<number | null>(null)
-  const lastToolNameRef = useRef<string | undefined>(undefined)
-  useEffect(() => {
-    if (activeToolName !== lastToolNameRef.current) {
-      lastToolNameRef.current = activeToolName
-      toolMountT0Ref.current = activeToolName ? performance.now() : null
-    }
-  }, [activeToolName])
+  // Track T0 for tool-mount timing. Capture during render via the "adjusting
+  // state when props change" pattern (not in an effect) so the timestamp is
+  // committed before child effects flush. With `beta.keepInactiveToolsMounted`,
+  // revealing a hidden `<Activity>` tool re-creates its effects, and those run
+  // *before* parent effects — an effect-based t0 would still hold the previous
+  // tool switch, inflating `durationMs`. First mounts still see this t0 before
+  // `<Suspense>` resolves, so the delta includes lazy-chunk fetch time.
+  const [toolMountTiming, setToolMountTiming] = useState<{
+    name: string | undefined
+    t0: number | null
+  }>(() => ({name: undefined, t0: null}))
+  if (activeToolName !== toolMountTiming.name) {
+    setToolMountTiming({
+      name: activeToolName,
+      // oxlint-disable-next-line react/purity -- wall-clock t0 for tool-mount telemetry
+      t0: activeToolName ? performance.now() : null,
+    })
+  }
   const [searchFullscreenOpen, setSearchFullscreenOpen] = useState<boolean>(false)
   const [searchFullscreenPortalEl, setSearchFullscreenPortalEl] = useState<HTMLDivElement | null>(
     null,
@@ -201,7 +205,7 @@ export function StudioLayoutComponent() {
     >
       <Suspense fallback={<LoadingBlock showText />}>
         <ActiveToolLayout activeTool={tool} />
-        <ToolMountTimer toolName={tool.name} t0Ref={toolMountT0Ref} />
+        <ToolMountTimer toolName={tool.name} t0={toolMountTiming.t0} />
       </Suspense>
     </RouteScope>
   )
@@ -230,7 +234,10 @@ export function StudioLayoutComponent() {
                 // Each tool keeps the root router context it last rendered with while active, so
                 // a hidden tool holds on to its own URL state instead of picking up the active
                 // tool's. `useMountedTools` keeps the active tool's entry on the live router.
-                <Activity key={tool.name} mode={tool === activeTool ? 'visible' : 'hidden'}>
+                <Activity
+                  key={tool.name}
+                  mode={tool.name === activeTool?.name ? 'visible' : 'hidden'}
+                >
                   <RouterContext.Provider value={toolRouter}>
                     <StudioErrorBoundary
                       heading={`The ${tool.name} tool crashed`}

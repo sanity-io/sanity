@@ -152,4 +152,37 @@ describe('updateMountedTools', () => {
 
     expect(next.map((entry) => entry.tool.name)).toEqual(['presentation'])
   })
+
+  it('keeps hidden tools when the tools array is rebuilt with new object identities', () => {
+    const structureRouter = makeRouter('structure')
+    const presentationRouter = makeRouter('presentation')
+    let mounted = updateMountedTools([], {tools, activeTool: structure, router: structureRouter})
+    mounted = updateMountedTools(mounted, {
+      tools,
+      activeTool: presentation,
+      router: presentationRouter,
+    })
+
+    // `resolveSource` / `toolsReducer` allocate new Tool objects on every auth.state emission
+    const refreshedStructure = makeTool('structure')
+    const refreshedPresentation = makeTool('presentation')
+    const refreshedVision = makeTool('vision')
+    const refreshedMedia = makeTool('media')
+    const refreshedTools = [
+      refreshedStructure,
+      refreshedPresentation,
+      refreshedVision,
+      refreshedMedia,
+    ]
+
+    const next = updateMountedTools(mounted, {
+      tools: refreshedTools,
+      activeTool: refreshedPresentation,
+      router: presentationRouter,
+    })
+
+    expect(next.map((entry) => entry.tool.name)).toEqual(['structure', 'presentation'])
+    expect(next[0]).toEqual({tool: refreshedStructure, router: structureRouter})
+    expect(next[1]).toEqual({tool: refreshedPresentation, router: presentationRouter})
+  })
 })

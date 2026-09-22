@@ -144,11 +144,12 @@ describe('StudioLayoutComponent telemetry', () => {
     render(<StudioLayoutComponent />, {wrapper})
 
     await waitFor(() => {
-      expect(telemetryLog).toHaveBeenCalledTimes(1)
+      expect(telemetryLog.mock.calls.some(([event]) => event === StudioReadyMeasured)).toBe(true)
     })
 
-    expect(telemetryLog).toHaveBeenCalledWith(
-      StudioReadyMeasured,
+    const readyCalls = telemetryLog.mock.calls.filter(([event]) => event === StudioReadyMeasured)
+    expect(readyCalls).toHaveLength(1)
+    expect(readyCalls[0][1]).toEqual(
       expect.objectContaining({
         activeToolName: 'structure',
         toolsCount: 2,
@@ -159,7 +160,7 @@ describe('StudioLayoutComponent telemetry', () => {
         firstHiddenTime: null,
       }),
     )
-    expect(telemetryLog.mock.calls[0][1].durationMs).toBeGreaterThanOrEqual(0)
+    expect(readyCalls[0][1].durationMs).toBeGreaterThanOrEqual(0)
   })
 
   it('does not fire Studio Ready Measured when no active tool is resolved', async () => {
@@ -170,7 +171,7 @@ describe('StudioLayoutComponent telemetry', () => {
     // Give effects a chance to run.
     await new Promise((resolve) => setTimeout(resolve, 0))
 
-    expect(telemetryLog).not.toHaveBeenCalled()
+    expect(telemetryLog.mock.calls.some(([event]) => event === StudioReadyMeasured)).toBe(false)
   })
 
   it('fires Studio Ready Measured only once across re-renders', async () => {
@@ -179,13 +180,15 @@ describe('StudioLayoutComponent telemetry', () => {
     const {rerender} = render(<StudioLayoutComponent />, {wrapper})
 
     await waitFor(() => {
-      expect(telemetryLog).toHaveBeenCalledTimes(1)
+      expect(telemetryLog.mock.calls.some(([event]) => event === StudioReadyMeasured)).toBe(true)
     })
 
     rerender(<StudioLayoutComponent />)
     rerender(<StudioLayoutComponent />)
 
     await new Promise((resolve) => setTimeout(resolve, 0))
-    expect(telemetryLog).toHaveBeenCalledTimes(1)
+    expect(telemetryLog.mock.calls.filter(([event]) => event === StudioReadyMeasured)).toHaveLength(
+      1,
+    )
   })
 })

@@ -1,5 +1,5 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {type RefObject, useEffect} from 'react'
+import {useEffect} from 'react'
 
 import {StudioToolMountTimeMeasured} from './__telemetry__/tools.telemetry'
 
@@ -12,12 +12,13 @@ const mountedTools = new Set<string>()
 interface ToolMountTimerProps {
   toolName: string
   /**
-   * Ref holding the ms-since-navigation-start timestamp captured when this
-   * tool was selected. The parent sets this in an effect when `activeToolName`
-   * changes; we read it in our own effect (after Suspense resolves and the
-   * tool's first commit lands), avoiding impure reads during render.
+   * ms-since-navigation-start when this tool was selected. The parent
+   * captures it during render when `activeToolName` changes (so it is
+   * available before Activity-revealed child effects flush); we read it
+   * in our own effect (after Suspense resolves and the tool's first
+   * commit lands).
    */
-  t0Ref: RefObject<number | null>
+  t0: number | null
 }
 
 /**
@@ -34,11 +35,10 @@ interface ToolMountTimerProps {
  * React re-creates its effects on reveal, so each activation still logs
  * exactly one event (`isFirstMount: false`).
  */
-export function ToolMountTimer({toolName, t0Ref}: ToolMountTimerProps): null {
+export function ToolMountTimer({toolName, t0}: ToolMountTimerProps): null {
   const telemetry = useTelemetry()
 
   useEffect(() => {
-    const t0 = t0Ref.current
     if (t0 === null) return
     const isFirstMount = !mountedTools.has(toolName)
     mountedTools.add(toolName)
@@ -47,9 +47,10 @@ export function ToolMountTimer({toolName, t0Ref}: ToolMountTimerProps): null {
       durationMs: performance.now() - t0,
       isFirstMount,
     })
-    // Intentionally mount-only: we want exactly one event per mount of
-    // this component, and the parent re-keys per tool activation.
-  }, [telemetry, toolName, t0Ref])
+    // Intentionally mount-only / reveal-only: we want exactly one event per
+    // activation. The parent re-keys per tool when tools unmount; with
+    // keepInactiveToolsMounted, Activity re-creates this effect on reveal.
+  }, [telemetry, toolName, t0])
 
   return null
 }
