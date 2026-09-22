@@ -3,6 +3,18 @@ import {expect} from '@playwright/test'
 import {takeChromaticSnapshot, test} from '../../studio-visual-test'
 
 test.describe('@sanity/default-layout: Navbar', () => {
+  // The root structure list opens with a `documentListItem` for the
+  // `validation` document, so its first row is dataset-dependent content — the
+  // one thing an e2e archive is not supposed to contain. It cannot be waited
+  // out either: the Chromatic fixture instruments the page over CDP, which
+  // breaks the studio's streaming connections, so the preview resolved in 2 of
+  // 13 local runs and kept its media and text skeletons indefinitely in the
+  // rest. Both outcomes are pixel-different, so keep that row out of the
+  // comparison rather than letting it flip the build.
+  test.use({
+    ignoreSelectors: ['[data-testid="structure-tool-list-pane"] a[href$="/content/validation"]'],
+  })
+
   test.beforeEach(async ({page, baseURL}) => {
     await page.goto(baseURL ?? '')
   })
