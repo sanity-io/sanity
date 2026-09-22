@@ -345,6 +345,9 @@ const defaultWorkspace = defineConfig({
     variants: {
       enabled: true,
     },
+    keepInactiveToolsMounted: {
+      enabled: true,
+    },
   },
 })
 
