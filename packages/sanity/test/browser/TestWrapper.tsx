@@ -51,7 +51,6 @@ interface TestWrapperProps {
   i18nBundles?: LocaleResourceBundle[]
 }
 const studioThemeConfig: RootTheme = buildTheme()
-const defaultClient = createMockSanityClient() as unknown as SanityClient
 
 function StyledChangeConnectorRoot(props: ComponentProps<typeof ChangeConnectorRoot>) {
   const {className, ...restProps} = props
@@ -122,7 +121,9 @@ const getCachedMockWorkspace = memoize(
  */
 export const TestWrapper = (props: TestWrapperProps): React.JSX.Element | null => {
   const {children, client: clientProp} = props
-  const client = clientProp || defaultClient
+  const [client] = useState(
+    () => clientProp || (createMockSanityClient() as unknown as SanityClient),
+  )
   const [{schemaTypes, betaFeatures, i18nBundles}] = useState(() => ({
     schemaTypes: props.schemaTypes,
     betaFeatures: props.betaFeatures,

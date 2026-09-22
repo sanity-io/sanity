@@ -1,3 +1,4 @@
+import {type SanityClient} from '@sanity/client'
 import {
   defineArrayMember,
   defineField,
@@ -10,6 +11,7 @@ import {Card, Stack, Text, TextInput} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
+import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
 import {useSchema} from '../../../hooks/useSchema'
 import {IncompatibleItemType} from '../../members/array/IncompatibleItemType'
 import {DuplicateKeysAlert} from '../../members/object/errors/DuplicateKeysAlert'
@@ -45,6 +47,8 @@ const SCHEMA_TYPES = [
 const VALIDATION: FormNodeValidation[] = [
   {level: 'error', message: 'A title is required', path: ['title']},
 ]
+
+const client = createMockSanityClient() as unknown as SanityClient
 
 function FormChrome() {
   const documentType = useSchema().get('fixtureDocument')
@@ -162,7 +166,7 @@ function FormChrome() {
  */
 export function FormChromeStory() {
   return (
-    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+    <TestWrapper client={client} schemaTypes={SCHEMA_TYPES}>
       <FormChrome />
     </TestWrapper>
   )
