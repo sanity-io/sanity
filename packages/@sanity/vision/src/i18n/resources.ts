@@ -192,8 +192,6 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.history.empty': 'Nothing fetched yet',
   /** Status label for a failed fetch in the history */
   'vista.history.failed': 'Failed',
-  /** Label in front of the sync tags that triggered a live refetch */
-  'vista.history.matched-tags': 'Matched tags',
   /** History reason: a live event matched the query's sync tags */
   'vista.history.reason.live': 'Live update',
   /** History reason: the live connection asked every client to refetch */
