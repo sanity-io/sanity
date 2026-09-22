@@ -403,6 +403,13 @@ every effect cleanup in the subtree and showing runs the effects again, without 
   rebuild it from render-time data. `@uiw/react-codemirror` destroys its `EditorView` on cleanup
   and re-creates it from `value`; `VisionCodeMirror` mirrors the latest document into state for
   that reason. Mount-only effects (`useEffect(..., [])`) run again on every reveal.
+- Loading states come back on reveal unless the code remembers it already loaded. A comlink
+  channel recreated by an effect handshakes as a brand new connection (the presentation machine
+  tracks `overlaysHaveConnected` so that reads as a reconnect, not a first connect); a
+  `startWith(loading)` observable re-emits its initial value when `useObservable` re-subscribes
+  it (`useDocumentLocations` skips the `startWith` once the resolver has emitted); and a context
+  populated by registering in an effect empties out while hidden, unmounting whatever renders
+  from it (`PresentationDocumentProvider` lists its own options at render time).
 - Never reorder keyed siblings that hold an `<iframe>`. React moves the DOM node when the key
   order changes, and a re-inserted iframe reloads. `useMountedTools` renders tools in workspace
   order for this reason even though eviction is least-recently-used.
