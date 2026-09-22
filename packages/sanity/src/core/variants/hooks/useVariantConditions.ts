@@ -95,7 +95,7 @@ const getResolverResult$ = memoize(function getResolverResult$(
   return retry$.pipe(
     startWith(undefined),
     switchMap(() => resolveConditions$(resolver, context, retry)),
-    shareReplay({bufferSize: 1, refCount: true}),
+    shareReplay({bufferSize: 1, refCount: false}),
   )
 }, resolverKey)
 

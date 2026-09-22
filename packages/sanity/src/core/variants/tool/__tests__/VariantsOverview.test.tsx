@@ -412,7 +412,9 @@ describe('VariantsOverview', () => {
       expect(screen.getAllByTestId('table-row')).toHaveLength(1)
     })
 
-    expect(screen.getByTestId('variant-condition-mismatch')).toBeInTheDocument()
+    expect(screen.getByTestId('variant-condition-mismatch')).toHaveAccessibleName(
+      'The condition "audience" is not in the configured list. Edit the variant to fix it.',
+    )
   })
 
   it('does not show a mismatch error in freeform mode', async () => {

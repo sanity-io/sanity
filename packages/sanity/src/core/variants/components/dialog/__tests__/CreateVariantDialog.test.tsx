@@ -86,6 +86,34 @@ describe('CreateVariantDialog', () => {
     expect(screen.getByRole('button', {name: 'Add condition'})).toBeDisabled()
   })
 
+  it('replaces the last condition with a blank editable row when it is removed', async () => {
+    const user = userEvent.setup()
+
+    await renderDialog()
+
+    await user.type(screen.getByRole('combobox', {name: 'Key'}), 'audience')
+    await user.type(screen.getByRole('combobox', {name: 'Value'}), 'loyal-customers')
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', {name: 'Add condition'})).toBeEnabled()
+    })
+
+    await user.click(screen.getByTestId('variant-form-remove-condition'))
+
+    expect(screen.getAllByRole('combobox', {name: 'Key'})).toHaveLength(1)
+    expect(screen.getByRole('combobox', {name: 'Key'})).toHaveValue('')
+    expect(screen.getByRole('combobox', {name: 'Value'})).toHaveValue('')
+    expect(screen.getByRole('combobox', {name: 'Key'})).toBeEnabled()
+    expect(screen.getByRole('button', {name: 'Add condition'})).toBeDisabled()
+
+    await user.type(screen.getByRole('combobox', {name: 'Key'}), 'locale')
+    await user.type(screen.getByRole('combobox', {name: 'Value'}), 'en-US')
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', {name: 'Add condition'})).toBeEnabled()
+    })
+  })
+
   it('requires a title and complete condition before submit', async () => {
     const user = userEvent.setup()
 
@@ -570,8 +598,10 @@ describe('CreateVariantDialog mapped conditions', () => {
     const valueMenuButton = screen.getByTestId('variant-form-condition-value-menu-button')
 
     expect(keyMenuButton).toHaveTextContent('Choose a condition')
+    expect(keyMenuButton).toHaveAccessibleName('Key, Choose a condition')
     expect(keyMenuButton).toHaveAttribute('aria-expanded', 'false')
     expect(valueMenuButton).toHaveTextContent('Choose a value')
+    expect(valueMenuButton).toHaveAccessibleName('Value, Choose a value')
     expect(valueMenuButton).toBeDisabled()
     expect(screen.getByRole('button', {name: 'Add condition'})).toBeDisabled()
 
@@ -590,6 +620,7 @@ describe('CreateVariantDialog mapped conditions', () => {
 
     expect(keyMenuButton).toHaveAttribute('aria-expanded', 'false')
     expect(keyMenuButton).toHaveTextContent('Audience')
+    expect(keyMenuButton).toHaveAccessibleName('Key, Audience')
     expect(valueMenuButton).toBeEnabled()
     expect(screen.getByRole('button', {name: 'Add condition'})).toBeDisabled()
 
@@ -606,6 +637,7 @@ describe('CreateVariantDialog mapped conditions', () => {
     await user.click(loyalOption)
 
     expect(valueMenuButton).toHaveTextContent('Loyal customers')
+    expect(valueMenuButton).toHaveAccessibleName('Value, Loyal customers')
     expect(screen.getByRole('button', {name: 'Add condition'})).toBeEnabled()
 
     await user.type(screen.getByTestId('variant-form-title'), 'Loyal customers')

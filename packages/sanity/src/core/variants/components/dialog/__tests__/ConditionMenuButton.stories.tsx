@@ -57,6 +57,7 @@ function Labelled({caption, children}: {caption: string; children: ReactNode}) {
 /** Closed triggers: every state keeps the same single-line height. */
 export const Trigger: Story = {
   args: {
+    label: 'Key',
     onSelect: noop,
     options: KEY_OPTIONS,
     placeholder: 'Choose a condition',
@@ -67,6 +68,7 @@ export const Trigger: Story = {
       <Stack gap={4} style={{maxWidth: 360}}>
         <Labelled caption="empty">
           <ConditionMenuButton
+            label="Key"
             onSelect={noop}
             options={KEY_OPTIONS}
             placeholder="Choose a condition"
@@ -75,6 +77,7 @@ export const Trigger: Story = {
         </Labelled>
         <Labelled caption="selected key">
           <ConditionMenuButton
+            label="Key"
             onSelect={noop}
             options={KEY_OPTIONS}
             placeholder="Choose a condition"
@@ -84,6 +87,7 @@ export const Trigger: Story = {
         </Labelled>
         <Labelled caption="selected value">
           <ConditionMenuButton
+            label="Value"
             onSelect={noop}
             options={VALUE_OPTIONS}
             placeholder="Choose a value"
@@ -94,6 +98,7 @@ export const Trigger: Story = {
         <Labelled caption="invalid (stored key no longer configured)">
           <ConditionMenuButton
             invalid
+            label="Key"
             onSelect={noop}
             options={KEY_OPTIONS}
             placeholder="Choose a condition"
@@ -104,6 +109,7 @@ export const Trigger: Story = {
         <Labelled caption="disabled (no key picked yet)">
           <ConditionMenuButton
             disabled
+            label="Value"
             onSelect={noop}
             options={[]}
             placeholder="Choose a value"
@@ -112,6 +118,7 @@ export const Trigger: Story = {
         </Labelled>
         <Labelled caption="loading">
           <ConditionMenuButton
+            label="Key"
             loading
             onSelect={noop}
             options={[]}
@@ -129,6 +136,7 @@ export const OpenMenu: Story = {
   args: {
     onSelect: noop,
     options: KEY_OPTIONS,
+    label: 'Key',
     placeholder: 'Choose a condition',
     testId: 'story-condition',
   },

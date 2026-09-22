@@ -224,7 +224,9 @@ describe('VariantDialog', () => {
 
     expect(keyMenuButton).toHaveTextContent('legacy')
     expect(keyMenuButton).toBeEnabled()
+    expect(keyMenuButton).toHaveAttribute('aria-invalid', 'true')
     expect(valueMenuButton).toHaveTextContent('old-value')
+    expect(valueMenuButton).not.toHaveAttribute('aria-invalid')
     // No configured values exist for an unknown key, so only the key can be retargeted.
     expect(valueMenuButton).toBeDisabled()
     expect(screen.getByTestId('variant-form-condition-mismatch')).toHaveTextContent(
@@ -244,7 +246,9 @@ describe('VariantDialog', () => {
     await user.click(screen.getByTestId('variant-form-condition-key-option-audience'))
 
     expect(keyMenuButton).toHaveTextContent('Audience')
+    expect(keyMenuButton).not.toHaveAttribute('aria-invalid')
     expect(valueMenuButton).toHaveTextContent('Choose a value')
+    expect(valueMenuButton).toHaveAttribute('aria-invalid', 'true')
     expect(valueMenuButton).toBeEnabled()
     // Validation is showing after the failed save, so the row now asks for a value instead.
     expect(screen.getByTestId('variant-form-condition-mismatch')).toHaveTextContent(
@@ -255,6 +259,7 @@ describe('VariantDialog', () => {
     await user.click(screen.getByTestId('variant-form-condition-value-option-loyal'))
 
     expect(valueMenuButton).toHaveTextContent('Loyal customers')
+    expect(valueMenuButton).not.toHaveAttribute('aria-invalid')
     expect(screen.queryByTestId('variant-form-condition-mismatch')).not.toBeInTheDocument()
 
     await user.click(screen.getByTestId('save-variant-button'))
@@ -289,11 +294,12 @@ describe('VariantDialog', () => {
       },
     })
 
-    expect(screen.getByTestId('variant-form-condition-key-menu-button')).toHaveTextContent(
-      'Audience',
-    )
+    const keyMenuButton = screen.getByTestId('variant-form-condition-key-menu-button')
+    expect(keyMenuButton).toHaveTextContent('Audience')
+    expect(keyMenuButton).not.toHaveAttribute('aria-invalid')
     const valueMenuButton = screen.getByTestId('variant-form-condition-value-menu-button')
     expect(valueMenuButton).toHaveTextContent('old-value')
+    expect(valueMenuButton).toHaveAttribute('aria-invalid', 'true')
     expect(valueMenuButton).toBeEnabled()
     expect(screen.getByTestId('variant-form-condition-mismatch')).toHaveTextContent(
       'The value "old-value" is not valid for "audience".',
@@ -309,6 +315,7 @@ describe('VariantDialog', () => {
     await user.click(screen.getByTestId('variant-form-condition-value-option-loyal'))
 
     expect(valueMenuButton).toHaveTextContent('Loyal customers')
+    expect(valueMenuButton).not.toHaveAttribute('aria-invalid')
     expect(screen.queryByTestId('variant-form-condition-mismatch')).not.toBeInTheDocument()
   })
 

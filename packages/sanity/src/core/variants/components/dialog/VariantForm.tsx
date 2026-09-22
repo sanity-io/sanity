@@ -536,6 +536,7 @@ export function VariantForm(props: {
                       />
                     </Box>
                     <Button
+                      data-testid="variant-form-remove-condition"
                       disabled={isConditionRowEmpty(row) && conditionRows.length === 1}
                       icon={TrashIcon}
                       mode="bleed"

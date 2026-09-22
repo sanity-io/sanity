@@ -46,9 +46,18 @@ export function ConditionMismatchIndicator(props: {
     return null
   }
 
+  const message = getConditionMismatchMessage(t, mismatches)
+
   return (
-    <Tooltip content={getConditionMismatchMessage(t, mismatches)} placement="top" portal>
-      <Text size={1} data-testid={testId}>
+    <Tooltip content={message} placement="top" portal>
+      <Text
+        aria-label={message}
+        data-testid={testId}
+        role="img"
+        size={1}
+        // The icon is the only place this message appears, and the tooltip opens on focus.
+        tabIndex={0}
+      >
         <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
       </Text>
     </Tooltip>

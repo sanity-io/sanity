@@ -225,6 +225,29 @@ describe('useVariantConditions', () => {
     expect(clients.size).toBe(2)
   })
 
+  it('reuses a resolved list after the last subscriber unmounts', async () => {
+    const conditions = vi.fn().mockResolvedValue([{name: 'locale', values: ['en-US']}])
+    const wrapper = await createTestProvider({
+      config: {beta: {variants: {enabled: true, conditions}}},
+    })
+
+    const first = renderHook(() => useVariantConditions(), {wrapper})
+
+    await waitFor(() => {
+      expect(first.result.current).toMatchObject({mode: 'mapped', status: 'ready'})
+    })
+
+    first.unmount()
+
+    const second = renderHook(() => useVariantConditions(), {wrapper})
+
+    await waitFor(() => {
+      expect(second.result.current).toMatchObject({mode: 'mapped', status: 'ready'})
+    })
+
+    expect(conditions).toHaveBeenCalledTimes(1)
+  })
+
   it('shares one async resolve across consumers', async () => {
     const conditions = vi.fn().mockResolvedValue([{name: 'locale', values: ['en-US']}])
     const wrapper = await createTestProvider({

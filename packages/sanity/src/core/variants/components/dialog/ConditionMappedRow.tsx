@@ -55,6 +55,7 @@ export function ConditionMappedRow(props: ConditionMappedRowProps): React.JSX.El
         <Box flexBasis="0%" flexGrow={1}>
           <ConditionMenuButton
             invalid={Boolean(keyError)}
+            label={t('dialog.create.condition-key.label')}
             loading={loading}
             onSelect={onSelectKey}
             options={keyOptions}
@@ -71,6 +72,7 @@ export function ConditionMappedRow(props: ConditionMappedRowProps): React.JSX.El
           <ConditionMenuButton
             disabled={!definition}
             invalid={Boolean(valueError)}
+            label={t('dialog.create.condition-value.label')}
             onSelect={onSelectValue}
             options={valueOptions}
             placeholder={t('dialog.create.conditions.choose-value')}

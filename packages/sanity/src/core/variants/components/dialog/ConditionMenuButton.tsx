@@ -46,6 +46,8 @@ type ConditionMenuProps = ConditionMenuOwnProps &
 interface ConditionMenuButtonProps extends ConditionMenuOwnProps {
   disabled?: boolean
   invalid?: boolean
+  /** Stable field name. Stays in the accessible name after a value is chosen. */
+  label: string
   loading?: boolean
   placeholder: string
 }
@@ -101,6 +103,7 @@ export function ConditionMenuButton(props: ConditionMenuButtonProps): React.JSX.
   const {
     disabled = false,
     invalid = false,
+    label,
     loading = false,
     onSelect,
     options,
@@ -110,11 +113,14 @@ export function ConditionMenuButton(props: ConditionMenuButtonProps): React.JSX.
   } = props
   const id = useId()
   const SelectedIcon = selected?.icon
+  const accessibleName = `${label}, ${selected ? selected.title : placeholder}`
 
   return (
     <MenuButton
       button={
         <UIButton
+          aria-invalid={invalid ? 'true' : undefined}
+          aria-label={accessibleName}
           data-testid={`${testId}-menu-button`}
           disabled={disabled || loading}
           mode="ghost"

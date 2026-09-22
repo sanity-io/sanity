@@ -1311,7 +1311,8 @@ export interface VariantConditionMap {
   /** Picker heading; falls back to {@link VariantConditionMap.name}. */
   title?: string
   description?: string
-  values: string[] | VariantConditionValue[]
+  /** Allowed values. String entries and `{value, title}` objects may be mixed in one list. */
+  values: (string | VariantConditionValue)[]
 }
 
 /**
@@ -1398,12 +1399,14 @@ export interface BetaFeatures {
     enabled?: boolean
     /**
      * Optional list of known variant condition keys and values.
-     * When set, the create/edit form shows a card picker instead of free-text fields.
-     * And validates the condition values against the known keys and values.
+     * When set, the create/edit form shows a dropdown for the condition key and a dropdown
+     * for its value, instead of free-text fields, and validates stored pairs against this list.
      *
      * Accepts a static array or a function that may return a promise (for example to
      * load conditions from a CDP). The function receives {@link VariantConditionsContext}
-     * and is called when the form opens, not at studio boot.
+     * and is called when a variant surface first needs the list (the create/edit form,
+     * the variants overview, the variant detail page, or the variants navbar), not at
+     * studio boot.
      *
      * @example
      * ```ts
