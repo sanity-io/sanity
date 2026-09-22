@@ -37,6 +37,7 @@ import {changeConnectorRoot} from './TestWrapper.css'
 interface TestWrapperProps {
   children?: ReactNode
   betaFeatures?: WorkspaceOptions['beta']
+  client?: SanityClient
   schemaTypes: SchemaTypeDefinition[]
   /**
    * Plugin locale bundles (e.g. presentation, variants) to load alongside the
@@ -86,8 +87,10 @@ const getCachedMockWorkspace = memoize(
  * Sanity client and a mock workspace.
  */
 export const TestWrapper = (props: TestWrapperProps): React.JSX.Element | null => {
-  const {children, schemaTypes, betaFeatures, i18nBundles} = props
-  const [client] = useState(() => createMockSanityClient() as unknown as SanityClient)
+  const {children, schemaTypes, betaFeatures, client: clientProp, i18nBundles} = props
+  const [client] = useState(
+    () => clientProp || (createMockSanityClient() as unknown as SanityClient),
+  )
 
   return (
     <Suspense fallback={null}>
