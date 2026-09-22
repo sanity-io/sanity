@@ -2,7 +2,7 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {Card, Text} from '@sanity/ui'
 import {type ReactNode, startTransition, useCallback, useEffect, useState} from 'react'
-import {VStack,Flex,Box} from 'ui5'
+import {VStack, Flex, Box} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {type RequestErrorClaim} from './types'

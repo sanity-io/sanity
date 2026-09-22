@@ -4,7 +4,7 @@ import {Card, Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useEffect} from 'react'
 import {css, keyframes, styled} from 'styled-components'
-import {VStack,Box} from 'ui5'
+import {VStack, Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {Popover} from '../../../ui-components/popover/Popover'

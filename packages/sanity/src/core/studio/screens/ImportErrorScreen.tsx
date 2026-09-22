@@ -6,7 +6,7 @@ import {useEffect, useMemo} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {of, take, timer} from 'rxjs'
 import {map} from 'rxjs/operators'
-import {VStack,Flex} from 'ui5'
+import {VStack, Flex} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {isDev} from '../../environment'

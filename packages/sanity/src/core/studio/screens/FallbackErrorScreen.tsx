@@ -1,7 +1,7 @@
 /* oxlint-disable i18next/no-literal-string */
 import {Card, Container, Heading, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
-import {VStack,Flex} from 'ui5'
+import {VStack, Flex} from 'ui5'
 
 import {ErrorActions} from '../../components/errorActions/ErrorActions'
 import {isDev, isProd} from '../../environment'

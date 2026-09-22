@@ -8,7 +8,7 @@ import {Breadcrumbs} from '@sanity/ui/breadcrumbs'
 import capitalize from 'lodash-es/capitalize.js'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
-import {VStack,Flex,Box} from 'ui5'
+import {VStack, Flex, Box} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getTypeInfo} from './getTypeInfo'

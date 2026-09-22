@@ -2,7 +2,7 @@ import {type Schema} from '@sanity/types'
 import {Card, Container, Heading} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useEffect} from 'react'
-import {VStack,Flex} from 'ui5'
+import {VStack, Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
