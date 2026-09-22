@@ -23,7 +23,10 @@ type Story = StoryObj<typeof meta>
 export const FileList: Story = {
   play: async () => {
     const mobileRow = within(document.body).getByTestId('mobile-asset-row')
-    const [, expandButton] = within(mobileRow).getAllByRole('button')
+    const expandButton = mobileRow.querySelector('button:not([data-id])')
+    if (!(expandButton instanceof HTMLButtonElement)) {
+      throw new Error('Expected the mobile asset-row expand button')
+    }
     await userEvent.click(expandButton)
     await waitFor(() => expect(within(mobileRow).getByText('Show usage')).toBeVisible())
     if (document.activeElement instanceof HTMLElement) document.activeElement.blur()

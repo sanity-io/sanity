@@ -131,7 +131,7 @@ function FormChrome() {
 /**
  * Chromatic sentinel for form-field, member-error, and input-error chrome
  * touched by the misc form Stack migration. All values and error text are
- * fixed fixtures; the incompatible-item popover stays closed.
+ * fixed fixtures; the story play step opens the migration-critical details.
  */
 export function FormChromeStory() {
   return (
