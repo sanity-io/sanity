@@ -32,6 +32,13 @@ test.describe('@sanity/default-layout: Navbar', () => {
     // Chromatic archive does not flip between gray skeleton and colored initials.
     await expect(page.locator('#user-menu [data-ui="Avatar"]')).toBeVisible()
 
+    // The structure tool's root pane starts as a LOADING_PANE and
+    // StructureToolPane lazy-loads the pane component, so the tool area can
+    // still be empty (no LoadingBlock yet) when the navbar is settled.
+    // takeChromaticSnapshot only waits out visible loading blocks — assert
+    // the resolved list pane so the archive is not an empty studio.
+    await expect(page.getByTestId('structure-tool-list-pane')).toBeVisible()
+
     // Snapshot before opening the help menu: its contents are fetched
     // remotely and change over time, while the navbar itself is stable.
     await takeChromaticSnapshot(page, 'studio navbar', testInfo)
