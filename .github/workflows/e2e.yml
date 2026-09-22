@@ -198,9 +198,12 @@ jobs:
           path: ~/.cache/ms-playwright
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-chromium-firefox
 
+      # globalSetup always launches Chromium (e2e/globalSetup.ts) to wait for the
+      # studio bundle, even on Firefox shards. A shared-cache miss used to install
+      # only matrix.project, so Firefox jobs died before any specs ran.
       - name: Install Playwright Browsers
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-        run: pnpm exec playwright install --with-deps ${{ matrix.project }}
+        run: pnpm exec playwright install --with-deps chromium ${{ matrix.project }}
 
       - name: Run E2E tests
         env:

@@ -15,6 +15,9 @@ const FALLBACK_URL = 'http://localhost:3333/'
  */
 export default async function globalSetup(config: FullConfig): Promise<void> {
   const {baseURL = FALLBACK_URL, contextOptions} = config.projects[0].use
+  // Always Chromium (projects[0] in playwright.config.ts), including when the
+  // suite is `--project firefox`. CI Firefox shards must therefore install
+  // Chromium as well on a Playwright browser-cache miss.
   const browser = await chromium.launch()
 
   const context = await browser.newContext(contextOptions)

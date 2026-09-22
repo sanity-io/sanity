@@ -312,6 +312,8 @@ pnpm --filter e2e test:unit                              # classifier unit tests
 
 It lists recent `End-to-End Tests` runs, downloads the blob reports of failed shards (cached under the OS temp dir), classifies each failed attempt as degraded / healthy / unknown from its capture, attributes every failed run to `platform`, `test-side`, `mixed`, or `unknown`, reads failed setup-job logs for rate-limit and network signatures, and flags correlated failure windows across unrelated branches. Thresholds and the verdict rules live in `e2e/scripts/flakeReport/classify.ts` and are restated in the report's Method section. The `E2E flake report` workflow (`.github/workflows/e2e-flake-report.yml`) runs it weekly and on demand, publishing the markdown as the job summary plus an artifact.
 
+**Firefox shards still need Chromium.** `e2e/globalSetup.ts` always calls `chromium.launch()` (Playwright `projects[0]` is Chromium) even when the job is `--project firefox`. If `~/.cache/ms-playwright` misses the shared `1.x.x-playwright-browsers-chromium-firefox` key — common when many deps PRs run at once — the fallback install must include Chromium, not only Firefox. Otherwise every Firefox shard fails in global setup with `Executable doesn't exist .../chromium_headless_shell-*/chrome-headless-shell` and the report shows 0 test failures. Cache hits mask this; a rerun can pass without a product change. See `.github/workflows/e2e.yml`.
+
 Staging rate-limits per IP, so `pnpm e2e:setup` retries 429/5xx responses with backoff (`e2e/scripts/rateLimitRetry.ts`, honoring `Retry-After`) and sends the `x-sanity-ratelimit-bypass` header when `SANITY_CLI_API_RATE_LIMIT_BYPASS` is set, as the `dataset-setup` CI job does.
 
 ### Important Note for AI Agents

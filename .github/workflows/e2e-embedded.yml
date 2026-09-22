@@ -78,9 +78,11 @@ jobs:
           path: ~/.cache/ms-playwright
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-chromium-firefox
 
+      # globalSetup in the main e2e suite launches Chromium; keep the same
+      # cache-miss install list here so Firefox shards are not Chromium-less.
       - name: Install Playwright Browsers
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-        run: pnpm exec playwright install --with-deps ${{ matrix.project }}
+        run: pnpm exec playwright install --with-deps chromium ${{ matrix.project }}
 
       - name: Build
         run: pnpm build
