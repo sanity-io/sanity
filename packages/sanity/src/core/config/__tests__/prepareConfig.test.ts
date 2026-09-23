@@ -208,3 +208,19 @@ describe('prepareConfig — studio request handler', () => {
     }
   })
 })
+
+describe('prepareConfig — auth.unstable_oauth', () => {
+  it('uses the OAuth auth store for a workspace that sets it', () => {
+    const {workspaces} = prepareConfig(
+      createWorkspace({auth: {unstable_oauth: {clientId: 'oc-test-client'}}}),
+    )
+
+    expect(workspaces[0].auth.LoginComponent?.name).toBe('OAuthLoginComponent')
+  })
+
+  it('keeps the provider login for a workspace that does not', () => {
+    const {workspaces} = prepareConfig(createWorkspace({auth: {loginMethod: 'token'}}))
+
+    expect(workspaces[0].auth.LoginComponent?.name).not.toBe('OAuthLoginComponent')
+  })
+})

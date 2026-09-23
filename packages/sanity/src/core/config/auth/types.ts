@@ -54,6 +54,36 @@ export interface AuthConfig {
    * but can be set if using custom cname for API domain.
    */
   apiHost?: string
+
+  /**
+   * Sign in with OAuth 2.1 (authorization code with PKCE), using an OAuth application registered
+   * for this Studio in Manage, instead of the login providers. Users get short-lived access tokens
+   * that the Studio renews in the background, and refresh tokens that rotate on every use.
+   *
+   * When set, `loginMethod`, `providers` and `redirectOnSingle` are ignored.
+   *
+   * @beta
+   */
+  unstable_oauth?: OAuthConfig
+}
+
+/**
+ * Options for signing in to the Studio with OAuth 2.1.
+ *
+ * @beta
+ */
+export interface OAuthConfig {
+  /**
+   * Client ID of the OAuth application registered for this Studio in Manage.
+   */
+  clientId: string
+
+  /**
+   * The URL the user returns to after signing in. Must match one of the application's registered
+   * redirect URLs exactly. Defaults to the Studio URL: the origin it is served from, followed by
+   * the workspace base path.
+   */
+  redirectUri?: string
 }
 
 /**

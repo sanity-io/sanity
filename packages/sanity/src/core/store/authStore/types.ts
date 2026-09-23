@@ -139,8 +139,11 @@ export interface HandleCallbackResult {
   exchangeDurationMs?: number
   /** Time spent on the /users/me probe calls. Only set for `'exchange'` flow. */
   probeDurationMs?: number
-  /** Which auth method was selected by the probes. Only set when `success` is `true` and flow is `'exchange'`. */
-  authMethod?: 'cookie' | 'token'
+  /**
+   * Which auth method was selected by the probes, or `'oauth'` for an OAuth code exchange
+   * (`auth.unstable_oauth`). Only set when `success` is `true` and flow is `'exchange'`.
+   */
+  authMethod?: 'cookie' | 'token' | 'oauth'
   /**
    * Time from applying the exchanged credential until the post-exchange
    * state was probed and emitted. Only set for the successful `'exchange'`
