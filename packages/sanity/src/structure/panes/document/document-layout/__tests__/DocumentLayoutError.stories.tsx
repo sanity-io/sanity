@@ -9,6 +9,11 @@ import {DocumentLayoutError} from '../DocumentLayoutError'
  * with asymmetric padding, so this pins that spacing against the pane header.
  * The JSON representation card is dev-only (`isDev`): local Storybook and
  * addon-vitest render it, the production Chromatic build does not.
+ *
+ * The title and body currently render as raw `panes.document-pane.
+ * document-unknown-type.*` keys: the component resolves them through the
+ * studio namespace while the strings live in the structure bundle. That is
+ * the paint the studio ships today, so it is what the baseline pins.
  */
 const meta = {
   title: 'Structure/Document Layout Error',

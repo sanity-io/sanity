@@ -21,7 +21,7 @@ const runtimeCause = new TypeError("Cannot read properties of undefined (reading
 runtimeCause.stack = [
   "TypeError: Cannot read properties of undefined (reading 'schemaType')",
   '    at resolveDocumentNode (structure.ts:42:11)',
-  '    at S.list(...).items(...).child (structure.ts:18:5)',
+  '    at child (structure.ts:18:5)',
   '    at resolveIntent (structureResolvers/resolveIntent.ts:77:20)',
 ].join('\n')
 
