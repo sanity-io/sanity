@@ -231,8 +231,9 @@ export function _createOAuthAuthStore({
     hostOptions.apiHost = 'https://api.sanity.work'
   }
 
-  const endpoints =
-    endpointsOption ?? createOAuthEndpoints(hostOptions.apiHost ?? 'https://api.sanity.io')
+  // The authorization server's issuer identifier is the API origin it is served from.
+  const issuer = hostOptions.apiHost ?? 'https://api.sanity.io'
+  const endpoints = endpointsOption ?? createOAuthEndpoints(issuer)
   const clientFactory = clientFactoryOption ?? createSanityClient
   const flowStorageKey = getOAuthFlowStorageKey(projectId)
 
@@ -374,11 +375,18 @@ export function _createOAuthAuthStore({
     return {client, authenticated: Boolean(currentUser?.id), currentUser: currentUser || null}
   }
 
-  const tokens$ = tokenStorage.value.pipe(
+  // The state changes with the access token only. A renewal can rotate the refresh token and the
+  // expiry while keeping the access token, and the schedule has to follow that too.
+  const accessTokens$ = tokenStorage.value.pipe(
     distinctUntilChanged((a, b) => a?.accessToken === b?.accessToken),
   )
+  const renewals$ = tokenStorage.value.pipe(
+    distinctUntilChanged(
+      (a, b) => a?.refreshToken === b?.refreshToken && a?.refreshAt === b?.refreshAt,
+    ),
+  )
 
-  const authState$ = tokens$.pipe(
+  const authState$ = accessTokens$.pipe(
     switchMap((tokens): Observable<AuthState> => {
       if (!tokens) return of(unauthenticated)
       return from(probeAuthState(tokens)).pipe(
@@ -396,7 +404,7 @@ export function _createOAuthAuthStore({
 
   // Renews ahead of expiry while anything is subscribed to the state. Failures are left to the
   // invalid-session handler above, which retries on the next rejected request.
-  const scheduledRefresh$ = tokens$.pipe(
+  const scheduledRefresh$ = renewals$.pipe(
     switchMap((tokens) =>
       tokens?.refreshToken
         ? timer(Math.max(tokens.refreshAt - Date.now(), 0)).pipe(
@@ -516,6 +524,16 @@ export function _createOAuthAuthStore({
       return fail(OAUTH_ERROR_CODE.test(error) ? error : 'authorization server error')
     }
 
+    // RFC 9207: a response that names an issuer must name this one, or it may be a code from
+    // another authorization server replayed at this Studio. A response without `iss` is accepted,
+    // since the server does not advertise support for it.
+    const iss = params.get('iss')
+    if (iss !== null && iss.replace(/\/+$/, '') !== issuer.replace(/\/+$/, '')) {
+      return fail('issuer mismatch')
+    }
+
+    // Captured before the exchange, like in `refresh`: a logout while it is out must win.
+    const generation = sessionGeneration
     const exchangeStart = performance.now()
     let tokens: OAuthTokens
     try {
@@ -534,7 +552,23 @@ export function _createOAuthAuthStore({
     // Snapshot before the settle wait, with the same meaning as in `createAuthStore`.
     const durationMs = Math.round(performance.now() - startTime)
 
-    tokenStorage.update(tokens)
+    // Under the refresh lock, so a logout or refresh in another tab finishes before this pair
+    // lands, and cannot clear or overwrite it halfway.
+    const published = await withLock(refreshLockName, async () => {
+      if (generation !== sessionGeneration) return false
+      const replaced = latestTokens()
+      tokenStorage.update(tokens)
+      // The pair this sign-in replaces is no longer used by any tab. Revoked in the background,
+      // so the sign-in does not wait for it.
+      if (replaced && replaced.refreshToken !== tokens.refreshToken) void revokeTokens(replaced)
+      return true
+    })
+    if (!published) {
+      // The user logged out while the code was being exchanged. The pair is valid on the server
+      // and known only here, so revoke it rather than drop it.
+      await revokeTokens(tokens)
+      return fail('logged out during sign-in', exchangeDurationMs)
+    }
     const settle = await waitForAuthenticatedState(tokens)
     if (flow.redirectPath) replaceUrl(flow.redirectPath)
 

@@ -412,6 +412,76 @@ describe('createOAuthAuthStore', () => {
       ])
     })
 
+    it('refuses a response issued by another authorization server', async () => {
+      const exchange = async (iss: string) => {
+        sessionStorage.setItem(
+          FLOW_KEY,
+          JSON.stringify({codeVerifier: 'verifier', state: 'expected-state', redirectUri: ORIGIN}),
+        )
+        const {factory} = createMockClientFactory(new Set(['access-1']))
+        const endpoints = createMockEndpoints()
+        const store = _createOAuthAuthStore({
+          projectId: PROJECT_ID,
+          dataset: DATASET,
+          clientId: CLIENT_ID,
+          clientFactory: factory,
+          endpoints,
+          ...createEnvironment(
+            `?code=the-code&state=expected-state&iss=${encodeURIComponent(iss)}`,
+          ),
+        })
+        return {result: await store.handleCallbackUrl!(), endpoints}
+      }
+
+      const mixedUp = await exchange('https://auth.example.com')
+      expect(mixedUp.result).toMatchObject({success: false, failureReason: 'issuer mismatch'})
+      expect(mixedUp.endpoints.exchangeCode).not.toHaveBeenCalled()
+
+      const expected = await exchange('https://api.sanity.io')
+      expect(expected.result).toMatchObject({success: true})
+      expect(expected.endpoints.exchangeCode).toHaveBeenCalledTimes(1)
+    })
+
+    it('does not sign in when the user logs out while the code is being exchanged', async () => {
+      sessionStorage.setItem(
+        FLOW_KEY,
+        JSON.stringify({codeVerifier: 'verifier', state: 'expected-state', redirectUri: ORIGIN}),
+      )
+      const {factory} = createMockClientFactory(new Set(['access-1']))
+      let resolveExchange: (response: OAuthTokenResponse) => void = () => {}
+      const endpoints = createMockEndpoints({
+        exchangeCode: vi.fn(
+          () =>
+            new Promise<OAuthTokenResponse>((resolve) => {
+              resolveExchange = resolve
+            }),
+        ),
+      })
+      const store = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints,
+        ...createEnvironment('?code=the-code&state=expected-state'),
+      })
+
+      const callback = store.handleCallbackUrl!()
+      await vi.waitFor(() => expect(endpoints.exchangeCode).toHaveBeenCalled())
+      await store.logout!()
+      resolveExchange(tokenResponse('access-1', 'refresh-1'))
+
+      await expect(callback).resolves.toMatchObject({
+        success: false,
+        failureReason: 'logged out during sign-in',
+      })
+      expect(localStorage.getItem(TOKENS_KEY)).toBeNull()
+      await expect(firstValueFrom(store.state)).resolves.toMatchObject({authenticated: false})
+      // The pair the exchange obtained is live on the server, so it is revoked, not just dropped.
+      expect(endpoints.revoke).toHaveBeenCalledWith({clientId: CLIENT_ID, token: 'access-1'})
+      expect(endpoints.revoke).toHaveBeenCalledWith({clientId: CLIENT_ID, token: 'refresh-1'})
+    })
+
     it('rejects a response with another state, and leaves the URL and the flow alone', async () => {
       const flow = {codeVerifier: 'verifier', state: 'expected-state', redirectUri: ORIGIN}
       sessionStorage.setItem(FLOW_KEY, JSON.stringify(flow))
@@ -639,6 +709,46 @@ describe('createOAuthAuthStore', () => {
       expect(endpoints.revoke).toHaveBeenCalledWith({clientId: CLIENT_ID, token: 'refresh-2'})
       await expect(firstValueFrom(store.state)).resolves.toMatchObject({authenticated: true})
       expect((await firstValueFrom(store.state)).client.config().token).toBe('access-3')
+    })
+
+    it('keeps renewing ahead of expiry when a renewal rotates only the refresh token', async () => {
+      vi.useFakeTimers()
+      try {
+        localStorage.setItem(
+          TOKENS_KEY,
+          JSON.stringify({...storedTokens('access-1', 'refresh-1'), refreshAt: Date.now()}),
+        )
+        const {factory} = createMockClientFactory(new Set(['access-1']))
+        let rotation = 1
+        const endpoints = createMockEndpoints({
+          refresh: vi.fn(async () => ({
+            ...tokenResponse('access-1', `refresh-${++rotation}`),
+            expires_in: 60,
+          })),
+        })
+        const store = _createOAuthAuthStore({
+          projectId: PROJECT_ID,
+          dataset: DATASET,
+          clientId: CLIENT_ID,
+          clientFactory: factory,
+          endpoints,
+          ...createEnvironment(),
+        })
+        const subscription = store.state.subscribe()
+
+        await vi.advanceTimersByTimeAsync(0)
+        expect(endpoints.refresh).toHaveBeenCalledTimes(1)
+        // The renewed pair is due at 80% of its 60s lifetime.
+        await vi.advanceTimersByTimeAsync(48_000)
+        expect(endpoints.refresh).toHaveBeenCalledTimes(2)
+        expect(endpoints.refresh).toHaveBeenLastCalledWith({
+          clientId: CLIENT_ID,
+          refreshToken: 'refresh-2',
+        })
+        subscription.unsubscribe()
+      } finally {
+        vi.useRealTimers()
+      }
     })
 
     it('retries a request rejected with an invalid session once, with the renewed token', async () => {
