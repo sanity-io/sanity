@@ -61,8 +61,10 @@ export function Resizable(
     [minWidth, maxWidth, targetWidth],
   )
 
+  // Use forwardedAs so styled-components keeps rendering Box (which filters layout
+  // props via getProps) instead of replacing it with the raw DOM element via `as`.
   return (
-    <Root as={forwardedAs} {...restProps} ref={setElement} style={style}>
+    <Root forwardedAs={forwardedAs} {...restProps} ref={setElement} style={style}>
       {resizerPosition === 'left' && (
         <Resizer onResize={handleResize} onResizeStart={handleResizeStart} position="left" />
       )}
