@@ -4,23 +4,15 @@ import {type ComponentType, useCallback} from 'react'
 import {useIntentLink} from 'sanity/router'
 
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
-import {FEATURES, useFeatureEnabled} from '../../hooks/useFeatureEnabled'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {NavigatedToScheduledDrafts} from '../../releases/__telemetry__/navigation.telemetry'
-import {useScheduledDraftsEnabled} from '../../singleDocRelease/hooks/useScheduledDraftsEnabled'
 import {RELEASES_SCHEDULED_DRAFTS_INTENT} from '../../singleDocRelease/plugin'
-import {useWorkspace} from '../../studio/workspace'
+import {useScheduledDraftsAvailable} from './useScheduledDraftsAvailable'
 
 export const ScheduledDraftsMenuItem: ComponentType = () => {
   const {t} = useTranslation()
   const telemetry = useTelemetry()
-  const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
-  const {enabled: isSingleDocReleaseEnabled} = useFeatureEnabled(FEATURES.singleDocRelease)
-  const {
-    document: {
-      drafts: {enabled: isDraftModelEnabled},
-    },
-  } = useWorkspace()
+  const isAvailable = useScheduledDraftsAvailable()
 
   const logNavigationTelemetry = useCallback(() => {
     telemetry.log(NavigatedToScheduledDrafts, {source: 'menu'})
@@ -32,7 +24,7 @@ export const ScheduledDraftsMenuItem: ComponentType = () => {
     onClick: logNavigationTelemetry,
   })
 
-  if (!isScheduledDraftsEnabled || !isSingleDocReleaseEnabled || !isDraftModelEnabled) return null
+  if (!isAvailable) return null
 
   return (
     <MenuItem

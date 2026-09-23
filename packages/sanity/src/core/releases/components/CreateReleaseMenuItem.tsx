@@ -14,9 +14,15 @@ import {getReleaseDefaults} from '../util/util'
 
 interface Props {
   onCreateRelease: () => void
+  /**
+   * Overrides the default label. The perspective menu's action block reads as a list of things to
+   * go and do ("View scheduled drafts", "View content releases"), so it asks for a verb the
+   * releases overview's own primary button does not need.
+   */
+  text?: string
 }
 
-export const CreateReleaseMenuItem: ComponentType<Props> = ({onCreateRelease}) => {
+export const CreateReleaseMenuItem: ComponentType<Props> = ({onCreateRelease, text}) => {
   const {t} = useTranslation()
   const {createRelease} = useReleaseOperations()
   const {checkWithPermissionGuard} = useReleasePermissions()
@@ -44,14 +50,13 @@ export const CreateReleaseMenuItem: ComponentType<Props> = ({onCreateRelease}) =
     'icon': AddIcon,
     'onClick': onCreateRelease,
     'data-testid': 'create-new-release-button',
-    'text': t('release.action.create-new'),
+    'text': text ?? t('release.action.create-new'),
   }
 
   if (isWorkspaceReleaseLimitReached) {
     return (
       <MenuItem
         {...menuItemProps}
-        text={t('release.action.create-new')}
         tooltipProps={{
           content: t('release.action.new-release.limit-reached', {
             count: workspaceReleaseLimit,

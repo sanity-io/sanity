@@ -52,7 +52,7 @@ export const ReleasesNav: ComponentType<Props> = ({
 }) => {
   const releasesToolAvailable = useReleasesToolAvailable()
   const isReleasesEnabled = !!useWorkspace().releases?.enabled
-  const {selectedPerspective, selectedPerspectiveName} = usePerspective()
+  const {selectedPerspective} = usePerspective()
   return (
     <ReleasesNavContainer
       flex="none"
@@ -64,7 +64,6 @@ export const ReleasesNav: ComponentType<Props> = ({
       {withReleasesToolButton && releasesToolAvailable && <ReleasesToolLink />}
       <CurrentGlobalPerspectiveLabel selectedPerspective={selectedPerspective} />
       <GlobalPerspectiveMenu
-        selectedPerspectiveName={selectedPerspectiveName}
         areReleasesEnabled={releasesToolAvailable && isReleasesEnabled}
         menuItemProps={menuItemProps}
       />
