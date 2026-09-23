@@ -2,10 +2,11 @@ import {type CurrentUser} from '@sanity/types'
 import {
   // oxlint-disable-next-line no-restricted-imports
   Button, // Button with specific styling and children behavior.
+  useTheme_v2 as useThemeV2,
 } from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
-import {css, styled} from 'styled-components'
 import {Flex, VStack} from 'ui5'
 
 import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
@@ -19,24 +20,9 @@ import {
   type CommentsUIMode,
 } from '../../types'
 import {CommentBreadcrumbs} from '../CommentBreadcrumbs'
+import {baseFgVar, breadcrumbsButton, headerFlex} from './CommentThreadLayout.css'
 import {CreateNewThreadInput} from './CreateNewThreadInput'
 import {ThreadCard} from './styles'
-
-const HeaderFlex = styled(Flex)`
-  min-height: 25px;
-`
-
-const BreadcrumbsButton = styled(Button)(({theme}) => {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const fg = theme.sanity.color.base.fg
-  return css`
-    --card-fg-color: ${fg};
-
-    // The width is needed to make the text ellipsis work
-    // in the breadcrumbs component
-    max-width: 100%;
-  `
-})
 
 interface CommentThreadLayoutProps {
   breadcrumbs?: CommentListBreadcrumbs
@@ -68,6 +54,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
   } = props
 
   const {t} = useTranslation(commentsLocaleNamespace)
+  const {color} = useThemeV2()
 
   const handleNewThreadCreate = useCallback(
     (payload: CommentMessage) => {
@@ -125,23 +112,25 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
 
   return (
     <VStack gap={2}>
-      <HeaderFlex alignItems="center" gap={2} paddingRight={1}>
+      <Flex alignItems="center" gap={2} paddingRight={1} className={headerFlex}>
         <Flex flexBasis="0%" flexGrow={1} flexDirection="column">
           <Flex alignItems="center">
-            <BreadcrumbsButton
+            <Button
               aria-label={t('list-item.breadcrumb-button-go-to-field-aria-label', {
                 field: lastCrumb,
               })}
+              className={breadcrumbsButton}
               mode="bleed"
               onClick={handleBreadcrumbsClick}
               padding={2}
               gap={2}
+              style={assignInlineVars({[baseFgVar]: color.fg})}
             >
               <CommentBreadcrumbs maxLength={3} titlePath={crumbsTitlePath} />
-            </BreadcrumbsButton>
+            </Button>
           </Flex>
         </Flex>
-      </HeaderFlex>
+      </Flex>
 
       {canCreateNewThread && (
         <ThreadCard onClick={handleNewThreadClick} data-active={isSelected}>
