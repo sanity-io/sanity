@@ -53,6 +53,7 @@ import {usePortableTextMemberSchemaTypes} from './contexts/PortableTextMemberSch
 import {SelectedAnnotationsProvider} from './contexts/SelectedAnnotationsContext'
 import {Editor} from './Editor'
 import {useHotkeys} from './hooks/useHotKeys'
+import {usePortableTextMemberItems} from './hooks/usePortableTextMembers'
 import {useTrackFocusPath} from './hooks/useTrackFocusPath'
 import {Annotation} from './object/Annotation'
 import {BlockObject} from './object/BlockObject'
@@ -139,7 +140,18 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
 
   // Covers the window before `member.open` propagates, during which the inline
   // object is already focused and would otherwise surface its toolbar.
-  const [inlineObjectEditModalActive, setInlineObjectEditModalActive] = useState(false)
+  const [inlineObjectEditModalOpening, setInlineObjectEditModalOpening] = useState(false)
+  const portableTextMemberItems = usePortableTextMemberItems()
+  const hasOpenInlineObject = useMemo(
+    () => portableTextMemberItems.some((item) => item.kind === 'inlineObject' && item.member.open),
+    [portableTextMemberItems],
+  )
+
+  // Form state now reflects the inline object as open, so the opening window is
+  // over and `member.open` takes over suppressing the toolbar.
+  if (inlineObjectEditModalOpening && hasOpenInlineObject) {
+    setInlineObjectEditModalOpening(false)
+  }
 
   const handleItemOpen = useCallback(
     (itemPath: Path) => {
@@ -148,7 +160,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         annotationOpeningRef.current = true
       }
       if (relativePath.some((segment) => segment === 'children')) {
-        setInlineObjectEditModalActive(true)
+        setInlineObjectEditModalOpening(true)
       }
       onItemOpen(itemPath)
     },
@@ -157,16 +169,16 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
 
   const handleItemClose = useCallback(() => {
     annotationOpeningRef.current = false
-    setInlineObjectEditModalActive(false)
+    setInlineObjectEditModalOpening(false)
     onItemClose()
   }, [onItemClose])
 
   const inlineObjectEditModalContext = useMemo(
     () => ({
-      active: inlineObjectEditModalActive,
-      setActive: setInlineObjectEditModalActive,
+      active: inlineObjectEditModalOpening || hasOpenInlineObject,
+      setOpening: setInlineObjectEditModalOpening,
     }),
-    [inlineObjectEditModalActive],
+    [hasOpenInlineObject, inlineObjectEditModalOpening],
   )
 
   // Wrap the consumer's onPaste to enrich PasteData.schemaTypes with

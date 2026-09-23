@@ -1,8 +1,10 @@
 import {createContext} from 'sanity/_createContext'
 
 export interface InlineObjectEditModalContextValue {
+  /** An inline object edit modal is open, or is opening and not yet reflected in form state. */
   active: boolean
-  setActive: (active: boolean) => void
+  /** Marks a modal as opening. Cleared once `member.open` propagates, or on item close. */
+  setOpening: (opening: boolean) => void
 }
 
 /**

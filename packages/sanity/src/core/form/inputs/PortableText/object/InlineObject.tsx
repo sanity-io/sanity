@@ -24,7 +24,6 @@ import {
   type RenderPreviewCallback,
 } from '../../../types/renderCallback'
 import {useFormBuilder} from '../../../useFormBuilder'
-import {useInlineObjectEditModal} from '../contexts/InlineObjectEditModalContext'
 import {type SetPortableTextMemberItemElementRef} from '../contexts/PortableTextMemberItemElementRefsProvider'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 import {useMemberValidation} from '../hooks/useMemberValidation'
@@ -249,7 +248,6 @@ export const InlineObject = (props: InlineObjectProps): React.JSX.Element => {
 }
 
 export const DefaultInlineObjectComponent = (props: BlockProps): React.JSX.Element => {
-  const {active: inlineObjectEditModalActive} = useInlineObjectEditModal()
   const {
     __unstable_floatingBoundary: floatingBoundary,
     __unstable_referenceBoundary: referenceBoundary,
@@ -318,7 +316,6 @@ export const DefaultInlineObjectComponent = (props: BlockProps): React.JSX.Eleme
       {referenceElement && (
         <InlineObjectToolbarPopover
           floatingBoundary={floatingBoundary}
-          inlineObjectEditModalActive={inlineObjectEditModalActive}
           inlineObjectFocused={focused}
           inlineObjectOpen={open}
           onOpenInlineObject={onOpen}

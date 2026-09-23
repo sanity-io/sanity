@@ -175,7 +175,7 @@ const InnerToolbar = memo(function InnerToolbar({
 
 export function Toolbar(props: ToolbarProps) {
   const {collapsible, hotkeys, isFullscreen, readOnly, onMemberOpen, onToggleFullscreen} = props
-  const {setActive: setInlineObjectEditModalActive} = useInlineObjectEditModal()
+  const {setOpening: setInlineObjectEditModalOpening} = useInlineObjectEditModal()
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const editor = usePortableTextEditor()
   const schemaTypes = usePortableTextMemberSchemaTypes()
@@ -242,7 +242,7 @@ export function Toolbar(props: ToolbarProps) {
     async (type: ObjectSchemaType) => {
       // Must be set before insertChild: that call focuses the new inline object,
       // which surfaces its toolbar before `member.open` propagates.
-      setInlineObjectEditModalActive(true)
+      setInlineObjectEditModalOpening(true)
       try {
         const initialValue = await resolveInitialValue(type)
         // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -250,14 +250,14 @@ export function Toolbar(props: ToolbarProps) {
         if (path) {
           onMemberOpen(path)
         } else {
-          setInlineObjectEditModalActive(false)
+          setInlineObjectEditModalOpening(false)
         }
       } catch (error) {
-        setInlineObjectEditModalActive(false)
+        setInlineObjectEditModalOpening(false)
         throw error
       }
     },
-    [editor, onMemberOpen, resolveInitialValue, setInlineObjectEditModalActive],
+    [editor, onMemberOpen, resolveInitialValue, setInlineObjectEditModalOpening],
   )
 
   const actionGroups = useActionGroups({
