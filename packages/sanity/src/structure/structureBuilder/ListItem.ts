@@ -1,6 +1,6 @@
 import {type SchemaType} from '@sanity/types'
 import {type Observable} from 'rxjs'
-import {type I18nTextRecord} from 'sanity'
+import {type I18nTextRecord, isRecord} from 'sanity'
 
 import {type ChildResolver, type ItemChild} from './ChildResolver'
 import {HELP_URL, SerializeError} from './SerializeError'
@@ -11,7 +11,10 @@ import {
   type SerializeOptions,
 } from './StructureNodes'
 import {type StructureContext} from './types'
-import {getDefaultDocumentTypeChildType} from './util/defaultDocumentTypeChild'
+import {
+  copyDefaultDocumentTypeChildMark,
+  getDefaultDocumentTypeChildType,
+} from './util/defaultDocumentTypeChild'
 import {getStructureNodeId} from './util/getStructureNodeId'
 import {isSerializable, serializableMarker} from './util/isSerializable'
 import {validateId} from './util/validateId'
@@ -357,9 +360,9 @@ export class ListItemBuilder implements Serializable<ListItem> {
     // context, so we may lazily resolve it at some point in the future without losing context
     if (typeof listChild === 'function') {
       const originalChild = listChild
-      listChild = (itemId, childOptions) => {
+      listChild = copyDefaultDocumentTypeChildMark(originalChild, (itemId, childOptions) => {
         return originalChild(itemId, {...childOptions, serializeOptions})
-      }
+      })
     }
 
     const count = this.spec.displayOptions?.showCount
@@ -397,6 +400,11 @@ function warnCountWithheld(id: string, reason: string): void {
   }
 }
 
+interface DocumentListQuery {
+  filter: string | undefined
+  params: Record<string, unknown> | undefined
+}
+
 interface DocumentListShapedChild {
   getFilter(): string | undefined
   getParams(): Record<string, unknown> | undefined
@@ -411,11 +419,28 @@ function isDocumentListShapedChild(child: unknown): child is DocumentListShapedC
   return false
 }
 
-function hasDefaultDocumentTypeQuery(child: DocumentListShapedChild, typeName: string): boolean {
-  const params = child.getParams() ?? {}
+function isSerializedDocumentList(child: unknown): child is {options?: Partial<DocumentListQuery>} {
+  return isRecord(child) && child.type === 'documentList'
+}
+
+/** A re-inserted item carries the serialized form, which would otherwise look uninspectable. */
+function getDocumentListQuery(child: unknown): DocumentListQuery | undefined {
+  if (isDocumentListShapedChild(child)) {
+    return {filter: child.getFilter(), params: child.getParams()}
+  }
+
+  if (isSerializedDocumentList(child)) {
+    return {filter: child.options?.filter, params: child.options?.params}
+  }
+
+  return undefined
+}
+
+function hasDefaultDocumentTypeQuery(query: DocumentListQuery, typeName: string): boolean {
+  const params = query.params ?? {}
 
   return (
-    child.getFilter() === DEFAULT_DOCUMENT_TYPE_FILTER &&
+    query.filter === DEFAULT_DOCUMENT_TYPE_FILTER &&
     Object.keys(params).length === 1 &&
     params.type === typeName
   )
@@ -454,8 +479,10 @@ export function resolveListItemCount(
     return undefined
   }
 
-  if (isDocumentListShapedChild(child)) {
-    if (hasDefaultDocumentTypeQuery(child, schemaType.name)) {
+  const documentListQuery = getDocumentListQuery(child)
+
+  if (documentListQuery) {
+    if (hasDefaultDocumentTypeQuery(documentListQuery, schemaType.name)) {
       return count
     }
 

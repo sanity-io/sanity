@@ -174,7 +174,7 @@ describe('ListItemBuilder count descriptor', () => {
     ])
   })
 
-  it('withholds the descriptor when the child is an already-serialized collection', () => {
+  it('withholds the descriptor when the child is an already-serialized filtered list', () => {
     const serialized = S.documentTypeListItem('author')
       .showCount()
       .child(S.documentTypeList('author').filter('featured == true').serialize())
@@ -182,9 +182,7 @@ describe('ListItemBuilder count descriptor', () => {
 
     expect(serialized.count).toBeUndefined()
     expect(getWithheldWarnings()).toEqual([
-      expect.stringContaining(
-        'list item "author": its child cannot be inspected at serialize time',
-      ),
+      expect.stringContaining('list item "author": its child document list is filtered'),
     ])
   })
 
@@ -368,6 +366,64 @@ describe('raw list item count descriptor', () => {
     expect(serialized.count).toBeUndefined()
     expect(getWithheldWarnings()).toEqual([
       expect.stringContaining('list item "featured": it resolves no document type to count'),
+    ])
+  })
+})
+
+describe('serialized list item re-entering a list', () => {
+  let S: StructureBuilder
+  let schema: Schema
+
+  beforeEach(async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const source = await getMockSource({config: {schema: mockSchema}})
+    schema = source.schema
+    S = createStructureBuilder({source, perspectiveStack: []})
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  function reinsert(item: ListItem): ListItem {
+    const [serialized] = S.list().id('root').title('Root').items([item]).serialize().items
+    return serialized as ListItem
+  }
+
+  it('keeps the count when a branded default child is serialized then re-inserted', () => {
+    const once = S.documentTypeListItem('author').showCount().serialize()
+
+    expect(reinsert(once).count).toEqual(CANONICAL_COUNT)
+    expect(getWithheldWarnings()).toEqual([])
+  })
+
+  it('keeps the count when an unfiltered document list child is serialized then re-inserted', () => {
+    const once = S.documentTypeListItem('author')
+      .showCount()
+      .child(S.documentTypeList('author'))
+      .serialize()
+
+    expect(reinsert(once).count).toEqual(CANONICAL_COUNT)
+    expect(getWithheldWarnings()).toEqual([])
+  })
+
+  it('still withholds the count when a filtered document list child is re-inserted', () => {
+    const once = S.documentTypeListItem('author')
+      .showCount()
+      .child(S.documentTypeList('author').filter('_type == $type && featured == true'))
+      .serialize()
+
+    expect(once.count).toBeUndefined()
+    expect(reinsert(once).count).toBeUndefined()
+  })
+
+  it('still withholds the count when a re-inserted branded child lists another type', () => {
+    const once = S.documentTypeListItem('author').showCount().serialize()
+    const transplanted = {...once, schemaType: schema.get('book') as SchemaType}
+
+    expect(reinsert(transplanted).count).toBeUndefined()
+    expect(getWithheldWarnings()).toEqual([
+      expect.stringContaining('its child lists "author" while the item counts "book"'),
     ])
   })
 })

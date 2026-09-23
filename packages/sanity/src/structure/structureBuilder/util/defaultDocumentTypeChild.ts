@@ -24,6 +24,20 @@ export function markDefaultDocumentTypeChild(
   return Object.assign(child, {[defaultDocumentTypeChildMarker]: typeName})
 }
 
+/**
+ * Carries the brand onto the bound wrapper `ListItemBuilder.serialize` creates, so re-inspecting an
+ * already-serialized item still recognizes the built-in child.
+ *
+ * @internal
+ */
+export function copyDefaultDocumentTypeChildMark(
+  source: unknown,
+  target: ChildResolver,
+): ChildResolver {
+  const typeName = getDefaultDocumentTypeChildType(source)
+  return typeName === undefined ? target : markDefaultDocumentTypeChild(target, typeName)
+}
+
 /** @internal */
 export function getDefaultDocumentTypeChildType(child: unknown): string | undefined {
   if (typeof child !== 'function') {
