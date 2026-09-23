@@ -48,6 +48,8 @@ interface Props {
   deletionRef: ActorRefFromLogic<typeof deletionMachine>
   /** How many selected rows `document.actions` withheld the delete action from. */
   excludedCount: number
+  /** How many selected rows are left out only because their action identity had not resolved yet. */
+  pendingCount: number
   portalElementName: string
   components: DocumentGroupInventoryComponents
 }
@@ -57,6 +59,7 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
   documentType,
   deletionRef,
   excludedCount,
+  pendingCount,
   portalElementName,
   components,
 }) => {
@@ -135,11 +138,20 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
           </Card>
         ) : null}
         <VersionsPreviewList documentType={documentType} documentVersions={variantIds} />
-        {excludedCount > 0 && (
-          <Card padding={3} radius={2} tone="caution" flex="none" data-testid="excluded-count">
-            <Text size={1}>
-              {t('document-group.delete.excluded-count.text', {count: excludedCount})}
-            </Text>
+        {(excludedCount > 0 || pendingCount > 0) && (
+          <Card padding={3} radius={2} tone="caution" flex="none">
+            <VStack gap={3}>
+              {excludedCount > 0 && (
+                <Text size={1} data-testid="excluded-count">
+                  {t('document-group.delete.excluded-count.text', {count: excludedCount})}
+                </Text>
+              )}
+              {pendingCount > 0 && (
+                <Text size={1} data-testid="pending-count">
+                  {t('document-group.delete.pending-count.text', {count: pendingCount})}
+                </Text>
+              )}
+            </VStack>
           </Card>
         )}
         {warnIncomingReferences && (

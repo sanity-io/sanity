@@ -45,7 +45,7 @@ describe('partitionBulkActionSelection', () => {
       getActionIds: () => DELETE_IDS,
     })
 
-    expect(result).toEqual({included: [], excluded: [], shouldShowControl: false})
+    expect(result).toEqual({included: [], excluded: [], pending: [], shouldShowControl: false})
   })
 
   it('includes every row and shows the control when all rows have the id', () => {
@@ -56,7 +56,7 @@ describe('partitionBulkActionSelection', () => {
       getActionIds: () => DELETE_IDS,
     })
 
-    expect(result).toEqual({included: items, excluded: [], shouldShowControl: true})
+    expect(result).toEqual({included: items, excluded: [], pending: [], shouldShowControl: true})
   })
 
   it('excludes every row and hides the control when no row has the id', () => {
@@ -67,7 +67,7 @@ describe('partitionBulkActionSelection', () => {
       getActionIds: (item) => (item === 'version' ? EMPTY_IDS : DUPLICATE_IDS),
     })
 
-    expect(result).toEqual({included: [], excluded: items, shouldShowControl: false})
+    expect(result).toEqual({included: [], excluded: items, pending: [], shouldShowControl: false})
   })
 
   it('shows the control and keeps only allowed rows for a mixed selection', () => {
@@ -81,11 +81,12 @@ describe('partitionBulkActionSelection', () => {
     expect(result).toEqual({
       included: ['draft', 'published'],
       excluded: ['version'],
+      pending: [],
       shouldShowControl: true,
     })
   })
 
-  it('treats a null action-id set as the id being absent', () => {
+  it('reports a null action-id set as pending rather than excluded, and keeps it out', () => {
     const items = ['unready']
     const result = partitionBulkActionSelection({
       items,
@@ -93,7 +94,7 @@ describe('partitionBulkActionSelection', () => {
       getActionIds: () => null,
     })
 
-    expect(result).toEqual({included: [], excluded: items, shouldShowControl: false})
+    expect(result).toEqual({included: [], excluded: [], pending: items, shouldShowControl: false})
   })
 
   it('shows the control when some rows are ready and allowed and others are unready', () => {
@@ -106,7 +107,8 @@ describe('partitionBulkActionSelection', () => {
 
     expect(result).toEqual({
       included: ['draft'],
-      excluded: ['unready'],
+      excluded: [],
+      pending: ['unready'],
       shouldShowControl: true,
     })
   })

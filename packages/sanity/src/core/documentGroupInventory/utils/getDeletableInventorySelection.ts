@@ -17,11 +17,18 @@ export function getDeletableInventorySelection(options: {
   releases: ReadonlyMap<string, ReleaseDocument>
   schemaType: string | undefined
   resolveActions: Source['document']['actions']
-}): {deletableIds: string[]; excludedCount: number; shouldShowDelete: boolean} {
+}): {
+  deletableIds: string[]
+  /** Rows `document.actions` withheld the delete action from. */
+  excludedCount: number
+  /** Rows left out only because their action identity has not resolved yet. */
+  pendingCount: number
+  shouldShowDelete: boolean
+} {
   const {selectedIds, variants, releases, schemaType, resolveActions} = options
   const selected = variants.filter((variant) => selectedIds.has(variant.id))
 
-  const {included, excluded, shouldShowControl} = partitionBulkActionSelection({
+  const {included, excluded, pending, shouldShowControl} = partitionBulkActionSelection({
     items: selected,
     actionId: 'delete',
     getActionIds: (variant) => {
@@ -51,6 +58,7 @@ export function getDeletableInventorySelection(options: {
   return {
     deletableIds: included.map((variant) => variant.id),
     excludedCount: excluded.length,
+    pendingCount: pending.length,
     shouldShowDelete: shouldShowControl,
   }
 }

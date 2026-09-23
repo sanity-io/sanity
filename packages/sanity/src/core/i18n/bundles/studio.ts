@@ -625,6 +625,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Text in the tooltip of this component if hovering over the info icon */
   'document-group.delete.other-reference-count.tooltip':
     "We can't display metadata for these references due to a missing access token for the related datasets.",
+  /** Tells the user that some of the versions they selected are left out of the deletion while the studio is still resolving whether they can be deleted (singular) */
+  'document-group.delete.pending-count.text_one':
+    '1 selected version will not be deleted. This studio is still checking whether deleting it is allowed.',
+  /** Tells the user that some of the versions they selected are left out of the deletion while the studio is still resolving whether they can be deleted (plural) */
+  'document-group.delete.pending-count.text_other':
+    '{{count}} selected versions will not be deleted. This studio is still checking whether deleting them is allowed.',
   /** Appears when unable to render a document preview in the referring document list */
   'document-group.delete.preview-item.preview-unavailable.subtitle': 'ID: {{documentId}}',
   /** Appears when unable to render a document preview in the referring document list */

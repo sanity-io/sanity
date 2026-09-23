@@ -164,11 +164,16 @@ describe('getDeletableInventorySelection', () => {
       resolveActions,
     })
 
-    expect(result).toEqual({deletableIds: [], excludedCount: 1, shouldShowDelete: false})
+    expect(result).toEqual({
+      deletableIds: [],
+      excludedCount: 0,
+      pendingCount: 1,
+      shouldShowDelete: false,
+    })
     expect(resolveActions).not.toHaveBeenCalled()
   })
 
-  it('excludes a release row until its release has loaded', async () => {
+  it('holds back a row whose release is missing and includes a row whose release is present', async () => {
     const source = await getMockSource({
       config: {
         document: {
@@ -188,7 +193,12 @@ describe('getDeletableInventorySelection', () => {
       resolveActions: source.document.actions,
     })
 
-    expect(pending).toEqual({deletableIds: [], excludedCount: 1, shouldShowDelete: false})
+    expect(pending).toEqual({
+      deletableIds: [],
+      excludedCount: 0,
+      pendingCount: 1,
+      shouldShowDelete: false,
+    })
 
     const loaded = getDeletableInventorySelection({
       selectedIds: new Set([versionVariant.id]),
@@ -201,6 +211,33 @@ describe('getDeletableInventorySelection', () => {
     expect(loaded).toEqual({
       deletableIds: [versionVariant.id],
       excludedCount: 0,
+      pendingCount: 0,
+      shouldShowDelete: true,
+    })
+  })
+
+  it('counts a config-denied row and an unloaded release row apart', async () => {
+    const source = await getMockSource({
+      config: {
+        document: {
+          actions: (prev, context) =>
+            context.versionType === 'draft' ? [...prev, deleteAction] : prev,
+        },
+      },
+    })
+
+    const result = getDeletableInventorySelection({
+      selectedIds: new Set([draftVariant.id, versionVariant.id, scheduledDraftVariant.id]),
+      variants: [draftVariant, versionVariant, scheduledDraftVariant],
+      releases: new Map([[activeScheduledRelease._id, activeScheduledRelease]]),
+      schemaType: 'article',
+      resolveActions: source.document.actions,
+    })
+
+    expect(result).toEqual({
+      deletableIds: [draftVariant.id],
+      excludedCount: 1,
+      pendingCount: 1,
       shouldShowDelete: true,
     })
   })
@@ -222,7 +259,12 @@ describe('getDeletableInventorySelection', () => {
       resolveActions: source.document.actions,
     })
 
-    expect(result).toEqual({deletableIds: [], excludedCount: 0, shouldShowDelete: false})
+    expect(result).toEqual({
+      deletableIds: [],
+      excludedCount: 0,
+      pendingCount: 0,
+      shouldShowDelete: false,
+    })
   })
 
   it('fails the hide assertion when the all-denied resolver is forced to include delete', async () => {

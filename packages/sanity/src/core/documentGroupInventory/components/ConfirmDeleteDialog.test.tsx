@@ -76,6 +76,7 @@ describe('ConfirmDeleteDialog', () => {
         documentType="author"
         deletionRef={deletionRef}
         excludedCount={0}
+        pendingCount={0}
         portalElementName="default"
         components={{
           DocTitle: () => <span>Title</span>,
@@ -105,6 +106,7 @@ describe('ConfirmDeleteDialog', () => {
         documentType="author"
         deletionRef={deletionRef}
         excludedCount={0}
+        pendingCount={0}
         portalElementName="default"
         components={{
           DocTitle: () => <span>Title</span>,
@@ -131,6 +133,7 @@ describe('ConfirmDeleteDialog', () => {
         documentType="author"
         deletionRef={deletionRef}
         excludedCount={4}
+        pendingCount={0}
         portalElementName="default"
         components={{
           DocTitle: () => <span>Title</span>,
@@ -143,6 +146,63 @@ describe('ConfirmDeleteDialog', () => {
 
     expect(screen.getByTestId('excluded-count')).toHaveTextContent(
       '4 selected versions will not be deleted. This studio does not allow deleting them.',
+    )
+    expect(screen.queryByTestId('pending-count')).not.toBeInTheDocument()
+  })
+
+  it('blames the studio configuration for nothing while a row is still resolving', async () => {
+    const wrapper = await createTestProvider()
+    const deletionRef = createDeletionActor(['drafts.foo'])
+
+    render(
+      <ConfirmDeleteDialog
+        documentId="foo"
+        documentType="author"
+        deletionRef={deletionRef}
+        excludedCount={0}
+        pendingCount={1}
+        portalElementName="default"
+        components={{
+          DocTitle: () => <span>Title</span>,
+          ReferencePreviewLink: () => null,
+          VersionsPreviewList,
+        }}
+      />,
+      {wrapper},
+    )
+
+    expect(screen.getByTestId('pending-count')).toHaveTextContent(
+      '1 selected version will not be deleted. This studio is still checking whether deleting it is allowed.',
+    )
+    expect(screen.queryByTestId('excluded-count')).not.toBeInTheDocument()
+  })
+
+  it('states both reasons when the configuration and an unresolved row each leave rows out', async () => {
+    const wrapper = await createTestProvider()
+    const deletionRef = createDeletionActor(['drafts.foo'])
+
+    render(
+      <ConfirmDeleteDialog
+        documentId="foo"
+        documentType="author"
+        deletionRef={deletionRef}
+        excludedCount={2}
+        pendingCount={3}
+        portalElementName="default"
+        components={{
+          DocTitle: () => <span>Title</span>,
+          ReferencePreviewLink: () => null,
+          VersionsPreviewList,
+        }}
+      />,
+      {wrapper},
+    )
+
+    expect(screen.getByTestId('excluded-count')).toHaveTextContent(
+      '2 selected versions will not be deleted. This studio does not allow deleting them.',
+    )
+    expect(screen.getByTestId('pending-count')).toHaveTextContent(
+      '3 selected versions will not be deleted. This studio is still checking whether deleting them is allowed.',
     )
   })
 })

@@ -74,6 +74,7 @@ import {DocumentGroupSet} from './DocumentGroupSet'
 import {Footer} from './Footer'
 import {Header} from './Header'
 import {TextButton} from './TextButton'
+import {useDeletionSelectionSync} from './useDeletionSelectionSync'
 import {useVariantPendingReleases} from './useVariantPendingReleases'
 import {VariantCheckbox} from './VariantSet/VariantCheckbox'
 
@@ -333,7 +334,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
   const selectedIds = useSelector(selectionRef, ({context}) => context.selectedIds)
   const selectedVariants = useSelector(selectionRef, ({context}) => context.variants)
   const inventoryReleases = useSelector(inventoryRef, ({context}) => context.releases)
-  const {deletableIds, excludedCount, shouldShowDelete} = useMemo(
+  const {deletableIds, excludedCount, pendingCount, shouldShowDelete} = useMemo(
     () =>
       getDeletableInventorySelection({
         selectedIds,
@@ -353,20 +354,14 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
   )
 
   const isDeletionActive = useSelector(deletionRef, (snapshot) => snapshot.matches('active'))
-  const [excludedAtRequest, setExcludedAtRequest] = useState(0)
+  const [countsAtRequest, setCountsAtRequest] = useState({excluded: 0, pending: 0})
 
-  useLayoutEffect(() => {
-    deletableAllowlistRef.current = new Set(deletableIds)
-
-    // The deletion machine takes `selection.changed` at the root, so resyncing
-    // mid-flow would rewrite the ids the dialog has already listed, counted and
-    // reference-checked.
-    if (isDeletionActive) {
-      return
-    }
-
-    deletionRef.send({type: 'selection.changed', selectedIds: new Set(deletableIds)})
-  }, [deletionRef, deletableIds, isDeletionActive])
+  useDeletionSelectionSync({
+    deletionRef,
+    deletableIds,
+    isDeletionActive,
+    allowlistRef: deletableAllowlistRef,
+  })
 
   const canRequestDeletion = useSelector(deletionRef, (machine) =>
     machine.can({type: 'delete.request'}),
@@ -477,7 +472,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                     onClick={() => {
                       const allowedIds = new Set(deletableIds)
                       deletableAllowlistRef.current = allowedIds
-                      setExcludedAtRequest(excludedCount)
+                      setCountsAtRequest({excluded: excludedCount, pending: pendingCount})
                       deletionRef.send({type: 'selection.changed', selectedIds: allowedIds})
                       deletionRef.send({type: 'delete.request'})
                     }}
@@ -499,7 +494,8 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
             documentId={documentId}
             documentType={documentType}
             deletionRef={deletionRef}
-            excludedCount={excludedAtRequest}
+            excludedCount={countsAtRequest.excluded}
+            pendingCount={countsAtRequest.pending}
             portalElementName={portalElementName}
             components={components}
           />
