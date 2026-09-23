@@ -1,7 +1,7 @@
 import {type Browser} from 'playwright'
 
 import {type BenchEntries} from '../../instrumentation/types'
-import {type BenchScenario} from '../../scenarios/types'
+import {type BenchScenario, scenarioFixture} from '../../scenarios/types'
 import {computeInp, INP_MIN_INTERACTIONS, type InpResult} from '../../stats/inp'
 import {createSessionContext} from '../browser'
 import {type RunningSide} from '../servers'
@@ -76,7 +76,7 @@ export async function runInpSession(options: {
   running.mock.hub.closeAll()
   running.mock.store.reset()
   running.mock.ledger.reset()
-  running.mock.store.seed(scenario.fixture())
+  running.mock.store.seed(scenarioFixture(scenario))
 
   const session = await createSessionContext(browser, running.side, running.studioUrl, {
     cpuThrottleRate: config.cpuThrottleRate,

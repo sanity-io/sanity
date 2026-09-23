@@ -476,6 +476,21 @@ jobs:
             sessions: 8
           - scenario: syntheticLarge
             sessions: 3
+          # Load scenarios (scenarios/load.ts) on the structureTool and emptyTool
+          # workspaces: short loads, full session count. loginTo* sample cold only
+          - scenario: loginReady
+            sessions: 8
+          - scenario: loginToTool
+            sessions: 8
+          - scenario: toolReady
+            sessions: 8
+          - scenario: emptyToolReady
+            sessions: 8
+          - scenario: loginToEmptyTool
+            sessions: 8
+          # 1/5 of syntheticLarge's document; waits for every field to be editable
+          - scenario: synthetic
+            sessions: 4
     steps:
       - uses: actions/checkout@v7
         with:
@@ -580,7 +595,7 @@ jobs:
           # missing. Keep in sync with the bench-interaction matrix and the
           # bench-pageload --scenario flags above.
           BENCH_EXPECTED_INTERACTION_SCENARIOS: singleString,arrayI18n,article,recipe,synthetic
-          BENCH_EXPECTED_PAGELOAD_SCENARIOS: singleString,syntheticLarge
+          BENCH_EXPECTED_PAGELOAD_SCENARIOS: singleString,syntheticLarge,loginReady,loginToTool,toolReady,emptyToolReady,loginToEmptyTool,synthetic
         run: pnpm bench report
 
       # Always posted/updated in place - all-neutral is information, silence
@@ -656,7 +671,7 @@ jobs:
         env:
           # Keep in sync with the report job / shard matrices above
           BENCH_EXPECTED_INTERACTION_SCENARIOS: singleString,arrayI18n,article,recipe,synthetic
-          BENCH_EXPECTED_PAGELOAD_SCENARIOS: singleString,syntheticLarge
+          BENCH_EXPECTED_PAGELOAD_SCENARIOS: singleString,syntheticLarge,loginReady,loginToTool,toolReady,emptyToolReady,loginToEmptyTool,synthetic
         run: pnpm bench report
 
       - name: Publish report to the run summary
