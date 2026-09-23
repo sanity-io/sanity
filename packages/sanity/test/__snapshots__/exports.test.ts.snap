@@ -357,6 +357,7 @@ exports[`exports snapshot 1`] = `
     "getCalendarLabels": "function",
     "getConfigContextFromSource": "function",
     "getCreatableVariantTarget": "function",
+    "getDefaultVariant": "function",
     "getDiffAtPath": "function",
     "getDocumentIdForCanvasLink": "function",
     "getDocumentIsInPerspective": "function",
