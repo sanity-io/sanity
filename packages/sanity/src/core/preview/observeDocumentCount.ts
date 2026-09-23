@@ -1,6 +1,7 @@
 import {type SanityClient, type StackablePerspective} from '@sanity/client'
-import {combineLatest, from, merge, type Observable, of, retry, timer} from 'rxjs'
+import {combineLatest, EMPTY, from, merge, type Observable, of, retry, timer} from 'rxjs'
 import {
+  catchError,
   distinctUntilChanged,
   filter,
   finalize,
@@ -32,8 +33,7 @@ const MUTATION_THROTTLE_MS = 1000
 
 const MAX_CONCURRENT_BATCH_FETCHES = 10
 
-// `debounceCollect` subscribes without retaining a handle, so an unbounded retry can never be torn
-// down. Bounding it also lets a genuine failure reach the caller's `catchError`.
+// `debounceCollect` subscribes without a handle, so an unbounded retry could never be torn down.
 const MAX_FETCH_RETRIES = 3
 
 interface ObserveOptions {
@@ -214,7 +214,8 @@ export function createObserveDocumentCount(options: {
         throttleTime(MUTATION_THROTTLE_MS, undefined, {leading: true, trailing: true}),
       ),
     ).pipe(
-      switchMap(() => fetchCount(type, perspective, observeOptions)),
+      // Swallowing the error keeps the invalidation subscription alive, so the next event retries.
+      switchMap(() => fetchCount(type, perspective, observeOptions).pipe(catchError(() => EMPTY))),
       distinctUntilChanged(),
       finalize(() => cache.delete(key)),
       shareReplay({refCount: true, bufferSize: 1}),

@@ -39,7 +39,16 @@ function resolveCountsFromParams(
   }, {})
 }
 
-function createMockClient(countForType: (typeName: string) => number, fetchError?: Error) {
+type FetchErrorSource = Error | (() => Error | undefined)
+
+function resolveFetchError(source: FetchErrorSource | undefined): Error | undefined {
+  return typeof source === 'function' ? source() : source
+}
+
+function createMockClient(
+  countForType: (typeName: string) => number,
+  fetchError?: FetchErrorSource,
+) {
   const fetchCalls: FetchCall[] = []
   const client = {
     observable: {
@@ -58,9 +67,8 @@ function createMockClient(countForType: (typeName: string) => number, fetchError
             tag: options?.tag,
             variant: options?.variant,
           })
-          return fetchError
-            ? throwError(() => fetchError)
-            : of(resolveCountsFromParams(params, countForType))
+          const error = resolveFetchError(fetchError)
+          return error ? throwError(() => error) : of(resolveCountsFromParams(params, countForType))
         }),
     },
     withConfig: () => client,
@@ -81,7 +89,10 @@ function countForType(typeName: string): number {
   return 0
 }
 
-function setup(countFor: (typeName: string) => number = countForType, fetchError?: Error) {
+function setup(
+  countFor: (typeName: string) => number = countForType,
+  fetchError?: FetchErrorSource,
+) {
   const {client, fetchCalls} = createMockClient(countFor, fetchError)
   const invalidationChannel = new Subject<InvalidationChannelEvent>()
 
@@ -265,7 +276,7 @@ describe('observeDocumentCount', () => {
     expect(emissions).toEqual([5, 6])
   })
 
-  it('stops retrying a failing fetch and hands the error to a downstream catchError', async () => {
+  it('stops retrying a failing fetch without erroring the stream', async () => {
     const fetchError = new Error('fetch rejected')
     const {fetchCalls, invalidationChannel, observe} = setup(countForType, fetchError)
 
@@ -282,15 +293,38 @@ describe('observeDocumentCount', () => {
 
     invalidationChannel.next({type: 'connected'})
     await vi.advanceTimersByTimeAsync(BATCH_DEBOUNCE_MS + RETRY_LADDER_MS)
-    subscription.unsubscribe()
 
     expect(fetchCalls).toHaveLength(MAX_FETCH_RETRIES + 1)
-    expect(caughtErrors).toEqual([fetchError])
-    expect(emissions).toEqual([0])
+    expect(caughtErrors).toEqual([])
+    expect(emissions).toEqual([])
 
     // A loop that ignored `count` would still be firing after the ladder has run out.
     await vi.advanceTimersByTimeAsync(RETRY_LADDER_MS)
     expect(fetchCalls).toHaveLength(MAX_FETCH_RETRIES + 1)
+
+    subscription.unsubscribe()
+  })
+
+  it('refetches on the next invalidation after a fetch exhausted its retries', async () => {
+    let fetchError: Error | undefined = new Error('fetch rejected')
+    const {fetchCalls, invalidationChannel, observe} = setup(countForType, () => fetchError)
+
+    const emissions: number[] = []
+    const subscription = observe(AUTHOR_TYPE, []).subscribe((count) => emissions.push(count))
+
+    invalidationChannel.next({type: 'connected'})
+    await vi.advanceTimersByTimeAsync(BATCH_DEBOUNCE_MS + RETRY_LADDER_MS)
+
+    expect(fetchCalls).toHaveLength(MAX_FETCH_RETRIES + 1)
+    expect(emissions).toEqual([])
+
+    fetchError = undefined
+    invalidationChannel.next(mutationEvent('author-1'))
+    await vi.advanceTimersByTimeAsync(MUTATION_THROTTLE_MS + BATCH_DEBOUNCE_MS)
+
+    expect(emissions).toEqual([5])
+
+    subscription.unsubscribe()
   })
 
   it('does not share a cache entry between the same descriptor with and without a variant', () => {
