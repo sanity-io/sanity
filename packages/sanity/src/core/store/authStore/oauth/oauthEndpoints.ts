@@ -42,6 +42,19 @@ export class OAuthRequestError extends Error {
 }
 
 /**
+ * An OAuth request that did not answer in time. Transient, like a network error: it says nothing
+ * about the session.
+ *
+ * @internal
+ */
+export class OAuthRequestTimeoutError extends Error {
+  constructor(url: string, timeoutMs: number, cause: unknown) {
+    super(`OAuth request timed out after ${timeoutMs}ms: ${url}`, {cause})
+    this.name = 'OAuthRequestTimeoutError'
+  }
+}
+
+/**
  * Checks that a successful token endpoint body is a usable bearer token response. A 200 alone
  * does not guarantee it, and persisting a malformed body would store a credential that can never
  * authenticate.
@@ -108,11 +121,7 @@ export function createOAuthEndpoints(
     try {
       return await request<T>(url, fields, controller.signal)
     } catch (err) {
-      // Transient, like a network error: it says nothing about the session, so callers keep the
-      // tokens and retry later.
-      if (controller.signal.aborted) {
-        throw new Error(`OAuth request timed out after ${timeoutMs}ms: ${url}`, {cause: err})
-      }
+      if (controller.signal.aborted) throw new OAuthRequestTimeoutError(url, timeoutMs, err)
       throw err
     } finally {
       clearTimeout(timeoutId)

@@ -1,6 +1,6 @@
 import {describe, expect, it, vi} from 'vitest'
 
-import {createOAuthEndpoints, OAuthRequestError} from '../oauthEndpoints'
+import {createOAuthEndpoints, OAuthRequestError, OAuthRequestTimeoutError} from '../oauthEndpoints'
 
 function respond(status: number, body: unknown) {
   return vi.fn<typeof fetch>(
@@ -72,7 +72,7 @@ describe('oauthEndpoints', () => {
 
     const error = await endpoints.refresh({clientId: 'oc-1', refreshToken: 'r'}).catch((e) => e)
 
+    expect(error).toBeInstanceOf(OAuthRequestTimeoutError)
     expect(error).not.toBeInstanceOf(OAuthRequestError)
-    expect(String(error.message)).toContain('timed out')
   })
 })

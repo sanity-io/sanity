@@ -18,6 +18,7 @@ import {
 import {
   type OAuthEndpoints,
   OAuthRequestError,
+  OAuthRequestTimeoutError,
   type OAuthTokenResponse,
 } from '../oauth/oauthEndpoints'
 import {type AuthState} from '../types'
@@ -375,6 +376,42 @@ describe('createOAuthAuthStore', () => {
       expect(sessionStorage.getItem(FLOW_KEY)).toBeNull()
     })
 
+    it('reports only the error code or a fixed category of a failed code exchange', async () => {
+      const failures = [
+        new OAuthRequestError(400, {
+          error: 'invalid_grant',
+          error_description: 'Code abc123 was issued to another client',
+        }),
+        new OAuthRequestError(502, 'Bad gateway at https://internal.example.com'),
+        new OAuthRequestTimeoutError('https://api.example.com/v1/auth/oauth/token', 30_000, null),
+        new Error('Failed to fetch https://api.example.com'),
+      ]
+      const reasons: unknown[] = []
+      for (const failure of failures) {
+        sessionStorage.setItem(
+          FLOW_KEY,
+          JSON.stringify({codeVerifier: 'verifier', state: 'expected-state', redirectUri: ORIGIN}),
+        )
+        const {factory} = createMockClientFactory(new Set())
+        const store = _createOAuthAuthStore({
+          projectId: PROJECT_ID,
+          dataset: DATASET,
+          clientId: CLIENT_ID,
+          clientFactory: factory,
+          endpoints: createMockEndpoints({exchangeCode: vi.fn().mockRejectedValue(failure)}),
+          ...createEnvironment('?code=the-code&state=expected-state'),
+        })
+        reasons.push((await store.handleCallbackUrl!()).failureReason)
+      }
+
+      expect(reasons).toEqual([
+        'invalid_grant',
+        'token endpoint error (502)',
+        'token endpoint timeout',
+        'code exchange failed',
+      ])
+    })
+
     it('rejects a response with another state, and leaves the URL and the flow alone', async () => {
       const flow = {codeVerifier: 'verifier', state: 'expected-state', redirectUri: ORIGIN}
       sessionStorage.setItem(FLOW_KEY, JSON.stringify(flow))
@@ -538,6 +575,70 @@ describe('createOAuthAuthStore', () => {
 
       expect(endpoints.refresh).not.toHaveBeenCalled()
       expect(state.client.config().token).toBe('access-from-other-tab')
+    })
+
+    it('does not publish a renewal over a pair a sign-in exchanged meanwhile', async () => {
+      localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('access-1', 'refresh-1')))
+      const environment = createEnvironment()
+      const {factory, configs} = createMockClientFactory(
+        new Set(['access-1', 'access-2', 'access-3']),
+      )
+      let resolveRefresh: (response: OAuthTokenResponse) => void = () => {}
+      const endpoints = createMockEndpoints({
+        exchangeCode: vi.fn(async () => tokenResponse('access-3', 'refresh-3')),
+        refresh: vi.fn(
+          () =>
+            new Promise<OAuthTokenResponse>((resolve) => {
+              resolveRefresh = resolve
+            }),
+        ),
+      })
+      const store = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints,
+        ...environment,
+      })
+      await authenticatedState(store.state)
+      const requestHandler = configs.find((config) => config.token === 'access-1')
+        ?.requestHandler as RequestHandler
+
+      // A rejected request starts a refresh; a sign-in completes before the refresh answers.
+      const next = vi
+        .fn()
+        .mockRejectedValueOnce(createExpiredSessionError())
+        .mockResolvedValue({ok: true})
+      const retried = requestHandler(
+        {url: '/data/query', headers: {Authorization: 'Bearer access-1'}},
+        next,
+      )
+      await vi.waitFor(() => expect(endpoints.refresh).toHaveBeenCalled())
+      sessionStorage.setItem(
+        FLOW_KEY,
+        JSON.stringify({codeVerifier: 'verifier', state: 'expected-state', redirectUri: ORIGIN}),
+      )
+      environment.location.search = '?code=the-code&state=expected-state'
+      await expect(store.handleCallbackUrl!()).resolves.toMatchObject({
+        success: true,
+        stateSettleTimedOut: false,
+      })
+      resolveRefresh(tokenResponse('access-2', 'refresh-2'))
+      await retried
+
+      expect(JSON.parse(localStorage.getItem(TOKENS_KEY)!)).toMatchObject({
+        accessToken: 'access-3',
+        refreshToken: 'refresh-3',
+      })
+      expect(next).toHaveBeenLastCalledWith(
+        expect.objectContaining({headers: {Authorization: 'Bearer access-3'}}),
+      )
+      // The renewed pair of the replaced session is live on the server, so it is revoked.
+      expect(endpoints.revoke).toHaveBeenCalledWith({clientId: CLIENT_ID, token: 'access-2'})
+      expect(endpoints.revoke).toHaveBeenCalledWith({clientId: CLIENT_ID, token: 'refresh-2'})
+      await expect(firstValueFrom(store.state)).resolves.toMatchObject({authenticated: true})
+      expect((await firstValueFrom(store.state)).client.config().token).toBe('access-3')
     })
 
     it('retries a request rejected with an invalid session once, with the renewed token', async () => {

@@ -6,7 +6,17 @@ import {
   type SanityClient,
 } from '@sanity/client'
 import memoize from 'lodash-es/memoize.js'
-import {EMPTY, firstValueFrom, from, merge, type Observable, of, ReplaySubject, timer} from 'rxjs'
+import {
+  EMPTY,
+  firstValueFrom,
+  from,
+  merge,
+  type Observable,
+  of,
+  race,
+  ReplaySubject,
+  timer,
+} from 'rxjs'
 import {
   catchError,
   distinctUntilChanged,
@@ -40,6 +50,7 @@ import {
   createOAuthEndpoints,
   type OAuthEndpoints,
   OAuthRequestError,
+  OAuthRequestTimeoutError,
   type OAuthTokenResponse,
 } from './oauth/oauthEndpoints'
 import {createCodeChallenge, createCodeVerifier, createState} from './oauth/pkce'
@@ -53,6 +64,9 @@ const REFRESH_AT_LIFETIME_FRACTION = 0.8
 
 /** Never renew sooner than this after a token was issued, so a very short lifetime can't spin. */
 const MIN_REFRESH_DELAY_MS = 5_000
+
+/** The shape of an RFC 6749 error code. Anything else from a server is free text. */
+const OAUTH_ERROR_CODE = /^[a-z_]{1,64}$/
 
 /**
  * The token pair a signed-in Studio holds, persisted per project and client.
@@ -123,6 +137,20 @@ function toTokens(response: OAuthTokenResponse, previousRefreshToken?: string): 
     expiresAt: issuedAt + lifetimeMs,
     refreshAt: issuedAt + Math.max(lifetimeMs * REFRESH_AT_LIFETIME_FRACTION, MIN_REFRESH_DELAY_MS),
   }
+}
+
+/**
+ * The telemetry `failureReason` of a failed code exchange: the RFC 6749 error code, or a fixed
+ * category. Never the error message, which carries the server's free-text description and URLs.
+ */
+function exchangeFailureReason(err: unknown): string {
+  if (err instanceof OAuthRequestError) {
+    return err.error && OAUTH_ERROR_CODE.test(err.error)
+      ? err.error
+      : `token endpoint error (${err.statusCode})`
+  }
+  if (err instanceof OAuthRequestTimeoutError) return 'token endpoint timeout'
+  return 'code exchange failed'
 }
 
 function bearerTokenOf(request: RequestHandlerOptions): string | undefined {
@@ -262,11 +290,17 @@ export function _createOAuthAuthStore({
       }
       try {
         const response = await endpoints.refresh({clientId, refreshToken: stored.refreshToken})
-        if (generation !== sessionGeneration) {
-          // The user logged out while this refresh was in flight. The pair it obtained is valid
-          // on the server and known only here, so revoke it rather than drop it.
+        // The session this renewed ended while the request was out: the user logged out, or a
+        // sign-in replaced the pair (a code exchange does not wait for this lock). The pair it
+        // obtained is valid on the server and known only here, so revoke it rather than drop it
+        // or publish it over the current one. The check and the write below are synchronous, so
+        // nothing in this tab can slip in between.
+        if (
+          generation !== sessionGeneration ||
+          latestTokens()?.refreshToken !== stored.refreshToken
+        ) {
           await revokeTokens(toTokens(response))
-          return undefined
+          return generation === sessionGeneration ? latestTokens() : undefined
         }
         const next = toTokens(response, stored.refreshToken)
         tokenStorage.update(next)
@@ -479,7 +513,7 @@ export function _createOAuthAuthStore({
     // telemetry is no place for it.
     const error = params.get('error')
     if (error) {
-      return fail(/^[a-z_]{1,64}$/.test(error) ? error : 'authorization server error')
+      return fail(OAUTH_ERROR_CODE.test(error) ? error : 'authorization server error')
     }
 
     const exchangeStart = performance.now()
@@ -494,10 +528,7 @@ export function _createOAuthAuthStore({
         }),
       )
     } catch (err) {
-      return fail(
-        err instanceof Error ? err.message : 'code exchange failed',
-        Math.round(performance.now() - exchangeStart),
-      )
+      return fail(exchangeFailureReason(err), Math.round(performance.now() - exchangeStart))
     }
     const exchangeDurationMs = Math.round(performance.now() - exchangeStart)
     // Snapshot before the settle wait, with the same meaning as in `createAuthStore`.
@@ -531,21 +562,20 @@ export function _createOAuthAuthStore({
     stateSettleTimedOut: boolean
   }> {
     const start = performance.now()
-    let timeoutId: ReturnType<typeof setTimeout> | undefined
-    const timeout = new Promise<'timeout'>((resolve) => {
-      timeoutId = setTimeout(() => resolve('timeout'), AUTH_STATE_SETTLE_TIMEOUT_MS)
-    })
-    const result = await Promise.race([
-      firstValueFrom(
+    // Raced as observables, so whichever loses is unsubscribed. A promise race would keep the
+    // subscription to `state` alive after a timeout, for a token that may never authenticate.
+    const result = await firstValueFrom(
+      race(
         state.pipe(
           filter(
             (authState) =>
               authState.authenticated && authState.client.config().token === tokens.accessToken,
           ),
+          map(() => 'settled' as const),
         ),
+        timer(AUTH_STATE_SETTLE_TIMEOUT_MS).pipe(map(() => 'timeout' as const)),
       ),
-      timeout,
-    ]).finally(() => clearTimeout(timeoutId))
+    )
     return {
       stateSettleDurationMs: Math.round(performance.now() - start),
       stateSettleTimedOut: result === 'timeout',
