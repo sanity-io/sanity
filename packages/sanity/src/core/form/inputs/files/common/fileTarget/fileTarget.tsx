@@ -296,7 +296,7 @@ export function fileTarget<ComponentProps>(
     })
 
     useEffect(() => {
-      if (disabled) {
+      if (disabled || !onFilesOver) {
         return undefined
       }
 
@@ -320,7 +320,7 @@ export function fileTarget<ComponentProps>(
         window.removeEventListener('dragend', handleWindowDragEnd)
         window.removeEventListener('keydown', handleWindowKeyDown, true)
       }
-    }, [disabled])
+    }, [disabled, onFilesOver])
 
     const prevShowPasteInput = useRef(false)
     useEffect(() => {
