@@ -27,6 +27,7 @@ describe('Resizable', () => {
     expect(aside).toHaveAttribute('data-ui', 'DocumentInspectorPanel')
     expect(attrNames).not.toContain('flexgrow')
     expect(attrNames).not.toContain('flexbasis')
+    expect(aside.querySelector('[position]')).toBeNull()
     expect(screen.getByText('inspector body')).toBeInTheDocument()
   })
 })
