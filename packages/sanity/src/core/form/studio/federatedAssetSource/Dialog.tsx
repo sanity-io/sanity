@@ -1,13 +1,14 @@
 // oxlint-disable-next-line no-restricted-imports -- This has some special implementation needed from @sanity/ui
 import {Dialog} from '@sanity/ui'
-import {styled} from 'styled-components'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 
-export const AppDialog = styled(Dialog)`
-  padding: 1.5rem;
-  [data-ui='Card']:first-child {
-    flex: 1;
-  }
-`
+import {appDialog, fullSurfaceAppDialog} from './Dialog.css'
+
+export function AppDialog(props: ComponentProps<typeof Dialog>) {
+  const {className, ...rest} = props
+  return <Dialog {...rest} className={clsx(appDialog, className)} />
+}
 
 /**
  * Full-surface variant for the federated view dialogs: the view mounts the
@@ -17,10 +18,7 @@ export const AppDialog = styled(Dialog)`
  * 1920px and reads as a centered box on wider displays). The explicit
  * max-width keeps it sane on ultrawide monitors.
  */
-export const FullSurfaceAppDialog = styled(AppDialog)`
-  [data-ui='DialogCard'] {
-    width: 100%;
-    height: 100%;
-    max-width: 2560px;
-  }
-`
+export function FullSurfaceAppDialog(props: ComponentProps<typeof Dialog>) {
+  const {className, ...rest} = props
+  return <AppDialog {...rest} className={clsx(fullSurfaceAppDialog, className)} />
+}

@@ -1,29 +1,42 @@
-import {getTheme_v2} from '@sanity/ui/theme'
+import {useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
 import {type ComponentProps, type ComponentType} from 'react'
-import {css, styled} from 'styled-components'
 
 import {useFormGutterEnabled} from '../../hooks/useFormGutterEnabled'
-import {formGutterCustomProperties} from './formGutterCustomProperties'
+import {
+  container1Var,
+  formContainerRoot,
+  space4Var,
+  space5Var,
+  space9Var,
+} from './FormContainer.css'
+import {gutterSpace3Var, gutterSpace4Var} from './formGutterCustomProperties.css'
 
 /**
  * @internal
  */
-export const FormContainer: ComponentType<ComponentProps<typeof FormContainerRoot>> = (props) => {
+export const FormContainer: ComponentType<ComponentProps<'div'>> = (props) => {
+  const {className, style, ...rest} = props
   const gutterEnabled = useFormGutterEnabled()
-  return <FormContainerRoot {...props} data-gutter={gutterEnabled ? 'true' : undefined} />
+  const {container, space} = useThemeV2()
+
+  return (
+    <div
+      {...rest}
+      className={clsx(formContainerRoot, className)}
+      data-gutter={gutterEnabled ? 'true' : undefined}
+      style={{
+        ...assignInlineVars({
+          [gutterSpace4Var]: `${space[4]}px`,
+          [gutterSpace3Var]: `${space[3]}px`,
+          [space4Var]: `${space[4]}px`,
+          [space5Var]: `${space[5]}px`,
+          [space9Var]: `${space[9]}px`,
+          [container1Var]: `${container[1]}px`,
+        }),
+        ...style,
+      }}
+    />
+  )
 }
-
-const FormContainerRoot = styled.div((props) => {
-  const {space, container} = getTheme_v2(props.theme)
-
-  return css`
-    ${formGutterCustomProperties(props.theme)}
-
-    box-sizing: border-box;
-    margin-inline: auto;
-    padding-inline: ${space[4]}px;
-    padding-block-start: ${space[5]}px;
-    padding-block-end: ${space[9]}px;
-    max-width: calc(${container[1]}px + (var(--formGutterSize) * 2) + (var(--formGutterGap) * 2));
-  `
-})
