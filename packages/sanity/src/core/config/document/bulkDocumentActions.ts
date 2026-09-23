@@ -1,25 +1,8 @@
 import {type DocumentActionComponent, type DocumentActionKeys} from './actions'
 
 /**
- * Bulk-selection rule for `document.actions`. Both halves are required:
- *
- * 1. Hide a bulk control only when `actionId` is absent for every selected row
- *    (or the selection is empty).
- * 2. Exclude any row whose resolved id set does not contain `actionId` from the
- *    operation - the transaction, dialog list, and counts.
- *
- * A mixed selection therefore shows the control and operates only on `included`.
- * `getActionIds` must return `null` when the row's action identity (schemaType +
- * versionType) is not ready; those rows are treated as the id being absent.
- *
- * Resolve ids with `source.document.actions(ctx)` and `.has(id)`. Do not render
- * resolved action descriptions outside the document pane.
- *
- * Permanent ceiling: this reaches config-array omission and nothing else. An
- * action left in the array that returns `null` from its own hook for a given
- * document keeps its id here, so that row stays included and still gets mutated.
- * Detecting it means calling the action hook per row, which a variable-length
- * selection cannot do. A bulk control can be no more exact than a presence check.
+ * The bulk-selection rule for `document.actions` is documented under "Bulk selections" in
+ * `docs/CORE_CONCEPTS.md`.
  *
  * @internal
  */
@@ -64,9 +47,6 @@ export function partitionBulkActionSelection<T>(options: {
 }
 
 /**
- * Second half of the bulk rule: the transaction, dialog list, and counts may
- * only include ids that survived {@link partitionBulkActionSelection}.
- *
  * @internal
  */
 export function restrictIdsToConfiguredAction(
