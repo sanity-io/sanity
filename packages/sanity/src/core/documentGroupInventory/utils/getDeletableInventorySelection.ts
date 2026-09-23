@@ -17,11 +17,11 @@ export function getDeletableInventorySelection(options: {
   releases: ReadonlyMap<string, ReleaseDocument>
   schemaType: string | undefined
   resolveActions: Source['document']['actions']
-}): {deletableIds: string[]; shouldShowDelete: boolean} {
+}): {deletableIds: string[]; excludedCount: number; shouldShowDelete: boolean} {
   const {selectedIds, variants, releases, schemaType, resolveActions} = options
   const selected = variants.filter((variant) => selectedIds.has(variant.id))
 
-  const {included, shouldShowControl} = partitionBulkActionSelection({
+  const {included, excluded, shouldShowControl} = partitionBulkActionSelection({
     items: selected,
     actionId: 'delete',
     getActionIds: (variant) => {
@@ -31,6 +31,13 @@ export function getDeletableInventorySelection(options: {
 
       const releaseRef = variant.document._system.release?._ref
       const release = releaseRef ? releases.get(releaseRef) : undefined
+
+      // Until the release loads, a cardinality-one row is indistinguishable from
+      // a plain version, so its action identity is not ready.
+      if (releaseRef && release === undefined) {
+        return null
+      }
+
       const context = getInventoryRowActionsContext({
         document: variant.document,
         release,
@@ -43,6 +50,7 @@ export function getDeletableInventorySelection(options: {
 
   return {
     deletableIds: included.map((variant) => variant.id),
+    excludedCount: excluded.length,
     shouldShowDelete: shouldShowControl,
   }
 }

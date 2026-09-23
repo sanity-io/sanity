@@ -75,6 +75,7 @@ describe('ConfirmDeleteDialog', () => {
         documentId="foo"
         documentType="author"
         deletionRef={deletionRef}
+        excludedCount={0}
         portalElementName="default"
         components={{
           DocTitle: () => <span>Title</span>,
@@ -103,6 +104,7 @@ describe('ConfirmDeleteDialog', () => {
         documentId="foo"
         documentType="author"
         deletionRef={deletionRef}
+        excludedCount={0}
         portalElementName="default"
         components={{
           DocTitle: () => <span>Title</span>,
@@ -116,5 +118,31 @@ describe('ConfirmDeleteDialog', () => {
     expect(screen.getByTestId('versions-preview')).toHaveTextContent('drafts.foo')
     expect(screen.getByTestId('versions-preview')).not.toHaveTextContent('drafts.foo,foo')
     expect(screen.getByRole('button', {name: 'Delete (1)'})).toBeInTheDocument()
+    expect(screen.queryByTestId('excluded-count')).not.toBeInTheDocument()
+  })
+
+  it('names the rows the configuration left out', async () => {
+    const wrapper = await createTestProvider()
+    const deletionRef = createDeletionActor(['drafts.foo'])
+
+    render(
+      <ConfirmDeleteDialog
+        documentId="foo"
+        documentType="author"
+        deletionRef={deletionRef}
+        excludedCount={4}
+        portalElementName="default"
+        components={{
+          DocTitle: () => <span>Title</span>,
+          ReferencePreviewLink: () => null,
+          VersionsPreviewList,
+        }}
+      />,
+      {wrapper},
+    )
+
+    expect(screen.getByTestId('excluded-count')).toHaveTextContent(
+      '4 selected versions will not be deleted. This studio does not allow deleting them.',
+    )
   })
 })

@@ -46,6 +46,8 @@ interface Props {
   documentId: string
   documentType: string
   deletionRef: ActorRefFromLogic<typeof deletionMachine>
+  /** How many selected rows `document.actions` withheld the delete action from. */
+  excludedCount: number
   portalElementName: string
   components: DocumentGroupInventoryComponents
 }
@@ -54,6 +56,7 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
   documentId,
   documentType,
   deletionRef,
+  excludedCount,
   portalElementName,
   components,
 }) => {
@@ -132,6 +135,13 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
           </Card>
         ) : null}
         <VersionsPreviewList documentType={documentType} documentVersions={variantIds} />
+        {excludedCount > 0 && (
+          <Card padding={3} radius={2} tone="caution" flex="none" data-testid="excluded-count">
+            <Text size={1}>
+              {t('document-group.delete.excluded-count.text', {count: excludedCount})}
+            </Text>
+          </Card>
+        )}
         {warnIncomingReferences && (
           <>
             <Card padding={3} radius={2} tone="caution" flex="none">

@@ -164,8 +164,45 @@ describe('getDeletableInventorySelection', () => {
       resolveActions,
     })
 
-    expect(result).toEqual({deletableIds: [], shouldShowDelete: false})
+    expect(result).toEqual({deletableIds: [], excludedCount: 1, shouldShowDelete: false})
     expect(resolveActions).not.toHaveBeenCalled()
+  })
+
+  it('excludes a release row until its release has loaded', async () => {
+    const source = await getMockSource({
+      config: {
+        document: {
+          actions: (prev, context) =>
+            context.versionType === 'scheduled-draft' ? prev : [...prev, deleteAction],
+        },
+      },
+    })
+
+    // An absent release makes a cardinality-one row look like a plain version,
+    // which this config allows deleting.
+    const pending = getDeletableInventorySelection({
+      selectedIds: new Set([scheduledDraftVariant.id]),
+      variants: [scheduledDraftVariant],
+      releases: new Map(),
+      schemaType: 'article',
+      resolveActions: source.document.actions,
+    })
+
+    expect(pending).toEqual({deletableIds: [], excludedCount: 1, shouldShowDelete: false})
+
+    const loaded = getDeletableInventorySelection({
+      selectedIds: new Set([versionVariant.id]),
+      variants: [versionVariant],
+      releases,
+      schemaType: 'article',
+      resolveActions: source.document.actions,
+    })
+
+    expect(loaded).toEqual({
+      deletableIds: [versionVariant.id],
+      excludedCount: 0,
+      shouldShowDelete: true,
+    })
   })
 
   it('hides delete when nothing is selected', async () => {
@@ -185,7 +222,7 @@ describe('getDeletableInventorySelection', () => {
       resolveActions: source.document.actions,
     })
 
-    expect(result).toEqual({deletableIds: [], shouldShowDelete: false})
+    expect(result).toEqual({deletableIds: [], excludedCount: 0, shouldShowDelete: false})
   })
 
   it('fails the hide assertion when the all-denied resolver is forced to include delete', async () => {

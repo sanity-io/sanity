@@ -612,6 +612,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** The message shown after deletion fails */
   'document-group.delete.error.message':
     'An error occurred while attempting to delete this document. This usually means that there are other documents that refer to it.',
+  /** Tells the user that some of the versions they selected are left out of the deletion (singular) */
+  'document-group.delete.excluded-count.text_one':
+    '1 selected version will not be deleted. This studio does not allow deleting it.',
+  /** Tells the user that some of the versions they selected are left out of the deletion (plural) */
+  'document-group.delete.excluded-count.text_other':
+    '{{count}} selected versions will not be deleted. This studio does not allow deleting them.',
   /** Shown if there are references to other documents but the user does not have the permission to see the relevant document IDs */
   'document-group.delete.other-reference-count.title_one': '1 other reference not show',
   /** Shown if there are references to other documents but the user does not have the permission to see the relevant document IDs */

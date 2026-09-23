@@ -333,7 +333,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
   const selectedIds = useSelector(selectionRef, ({context}) => context.selectedIds)
   const selectedVariants = useSelector(selectionRef, ({context}) => context.variants)
   const inventoryReleases = useSelector(inventoryRef, ({context}) => context.releases)
-  const {deletableIds, shouldShowDelete} = useMemo(
+  const {deletableIds, excludedCount, shouldShowDelete} = useMemo(
     () =>
       getDeletableInventorySelection({
         selectedIds,
@@ -352,16 +352,25 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
     ],
   )
 
+  const isDeletionActive = useSelector(deletionRef, (snapshot) => snapshot.matches('active'))
+  const [excludedAtRequest, setExcludedAtRequest] = useState(0)
+
   useLayoutEffect(() => {
     deletableAllowlistRef.current = new Set(deletableIds)
+
+    // The deletion machine takes `selection.changed` at the root, so resyncing
+    // mid-flow would rewrite the ids the dialog has already listed, counted and
+    // reference-checked.
+    if (isDeletionActive) {
+      return
+    }
+
     deletionRef.send({type: 'selection.changed', selectedIds: new Set(deletableIds)})
-  }, [deletionRef, deletableIds, deletableAllowlistRef])
+  }, [deletionRef, deletableIds, isDeletionActive])
 
   const canRequestDeletion = useSelector(deletionRef, (machine) =>
     machine.can({type: 'delete.request'}),
   )
-
-  const isDeletionActive = useSelector(deletionRef, (snapshot) => snapshot.matches('active'))
   const isFeedbackActive = useSelector(inventoryRef, (snapshot) => snapshot.matches('feedback'))
 
   const isVariantCreationActive = useSelector(inventoryRef, (snapshot) =>
@@ -468,6 +477,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                     onClick={() => {
                       const allowedIds = new Set(deletableIds)
                       deletableAllowlistRef.current = allowedIds
+                      setExcludedAtRequest(excludedCount)
                       deletionRef.send({type: 'selection.changed', selectedIds: allowedIds})
                       deletionRef.send({type: 'delete.request'})
                     }}
@@ -489,6 +499,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
             documentId={documentId}
             documentType={documentType}
             deletionRef={deletionRef}
+            excludedCount={excludedAtRequest}
             portalElementName={portalElementName}
             components={components}
           />
