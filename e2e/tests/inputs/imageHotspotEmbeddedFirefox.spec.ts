@@ -66,15 +66,14 @@ const HOSTED_STUDIO_SHELL_HTML =
  * Firefox partitions third-party `localStorage` by top-level site, so the session token the
  * suite seeds through `storageState` is not visible to a Studio embedded under another site.
  * This same-origin document writes the same entry into the iframe's partition and then
- * navigates to the Studio.
+ * navigates to the Studio. The token itself is fetched through a `page.exposeFunction` binding
+ * rather than inlined: fulfilled response bodies end up in Playwright traces, which CI uploads.
  */
+const SESSION_TOKEN_BINDING = '__cldx5653SessionToken'
+
 function authBootstrapHtml(studioUrl: string): string {
   const key = `__studio_auth_token_${process.env.SANITY_E2E_PROJECT_ID}`
-  const value = JSON.stringify({
-    token: process.env.SANITY_E2E_SESSION_TOKEN,
-    time: new Date().toISOString(),
-  })
-  return `<!doctype html><html><body><script>localStorage.setItem(${JSON.stringify(key)}, ${JSON.stringify(value)});location.replace(${JSON.stringify(studioUrl)})</script></body></html>`
+  return `<!doctype html><html><body><script>window.${SESSION_TOKEN_BINDING}().then((token) => {localStorage.setItem(${JSON.stringify(key)}, JSON.stringify({token, time: new Date().toISOString()}));location.replace(${JSON.stringify(studioUrl)})})</script></body></html>`
 }
 
 function describeCdnResponse(response: Response | undefined, body: string): string {
@@ -173,6 +172,7 @@ test.describe('CLDX-5653: image hotspot in a Studio embedded cross-site (Firefox
     await page.route(authBootstrapUrl, (route) =>
       route.fulfill({contentType: 'text/html', body: authBootstrapHtml(studioUrl)}),
     )
+    await page.exposeFunction(SESSION_TOKEN_BINDING, () => process.env.SANITY_E2E_SESSION_TOKEN)
     const cdnResponses = collectCdnResponses(page, asset.url)
 
     await page.goto(dashboardUrl)
