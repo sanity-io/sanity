@@ -1,4 +1,4 @@
-import {Stack, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Text, useClickOutsideEvent} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {uuid} from '@sanity/uuid'
 import {
@@ -10,6 +10,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import {Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {ReferenceInputPreviewCard} from '../../../components/previewCard/PreviewCard'
@@ -374,19 +375,19 @@ export function ReferenceInput(props: ReferenceInputProps) {
   return (
     <div style={props.elementProps.style}>
       <ReferenceInputPreview {...props}>
-        <Stack gap={1} data-testid="reference-input" ref={clickOutsideBoundaryRef}>
-          <Stack gap={2}>
+        <VStack gap={1} data-testid="reference-input" ref={clickOutsideBoundaryRef}>
+          <VStack gap={2}>
             {isWeakRefToNonexistent ? (
               <Alert
                 data-testid="alert-nonexistent-document"
                 title={t('inputs.reference.error.nonexistent-document-title')}
                 suffix={
-                  <Stack padding={2}>
+                  <Flex padding={2} flexDirection="column">
                     <Button
                       text={t('inputs.reference.error.nonexistent-document.clear-button-label')}
                       onClick={handleClear}
                     />
-                  </Stack>
+                  </Flex>
                 }
               >
                 <Text size={1}>
@@ -435,8 +436,8 @@ export function ReferenceInput(props: ReferenceInputProps) {
                 />
               )}
             </AutocompleteContainer>
-          </Stack>
-        </Stack>
+          </VStack>
+        </VStack>
       </ReferenceInputPreview>
     </div>
   )

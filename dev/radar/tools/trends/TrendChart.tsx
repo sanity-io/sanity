@@ -14,7 +14,9 @@ import {
   isSignedUnit,
   clusterTags,
   labelledClusters,
+  lineName,
   medianGapMs,
+  primaryLines,
   type TagCluster,
   type ResolvedTag,
   resolveTagPositions,
@@ -222,14 +224,43 @@ export function seriesHasReleases(series: TrendSeries, tags: TrendTag[]): boolea
   return tags.length > 0
 }
 
-/** Per-line color: the studio accent for a lone line, categorical when comparing. */
-function lineColorFor(series: TrendSeries, index: number): string {
+/**
+ * Per-line color: a line's own color where it has one (the UI v5/v4 pair,
+ * whose hues are the style systems' — the same green and red the test studio
+ * widget paints), the studio accent for a lone line, categorical when
+ * comparing branches.
+ */
+export function lineColorFor(series: TrendSeries, index: number): string {
+  const own = series.lines[index]?.color
+  if (own) return own
   // Comparing branches always wins — each branch gets its own categorical
   // color so two trails never collapse to one hue (even for context charts
   // like host calibration, where each branch ran on its own host).
   if (series.lines.length > 1) return categoricalColor(index)
   if (series.goal === 'context') return COLOR.context
   return COLOR.line
+}
+
+/**
+ * One dash pattern per compared branch after the first — as many as the
+ * branch picker allows (MAX_COMPARE_BRANCHES), each distinguishable from the
+ * others at 1.5px: long dashes, short dashes, dots, dash-dot, long-short.
+ */
+const BRANCH_DASHES = ['6 3', '2 3', '1 3', '7 3 2 3', '10 3 3 3']
+
+/**
+ * Dash pattern for a line, or none. Paired lines keep their major's color on
+ * every branch (the color says v5 or v4), so when several branches' pairs
+ * share a chart the branch is told apart by dash instead: solid for the first
+ * branch, a different pattern for each further one — the same two hues drawn
+ * solid twice would be two lines each drawn twice.
+ */
+export function lineDashFor(series: TrendSeries, index: number): string | undefined {
+  const line = series.lines[index]
+  if (!line?.label) return undefined
+  const branches = [...new Set(series.lines.map((candidate) => candidate.branch))]
+  const position = branches.indexOf(line.branch)
+  return position > 0 ? BRANCH_DASHES[(position - 1) % BRANCH_DASHES.length] : undefined
 }
 
 /**
@@ -298,9 +329,12 @@ export function baselineToDraw(
   drift: DriftResult | undefined,
 ): DriftBaseline | null {
   if (!drift) return null
-  if (series.lines.length !== 1) return null
+  // One judged line: a lone line, or the headline of a paired chart (its v4
+  // companion is drawn but never judged, see computeDrift)
+  const judged = primaryLines(series)
+  if (judged.length !== 1) return null
   if (series.xKind === 'minute') return null
-  if (series.lines[0].branch !== drift.branch) return null
+  if (judged[0].branch !== drift.branch) return null
   return drift.baseline
 }
 
@@ -637,9 +671,17 @@ export function TrendChart(props: {
           const extent = Math.max(0.5, ...values.map((value) => Math.abs(value))) * 1.2
           return [-extent, extent]
         })()
-      : [0, dataTop > 0 ? dataTop * 1.1 : 1],
+      : // A share is read against its whole: a 35% adoption drawn on a 0–40%
+        // axis looks nearly done, and a 41% styled-components rule share
+        // drawn on 0–45% looks like everything. The fixed axis is the point
+        // of a share chart — the distance to 100% (or to 0%) is the story
+        unit === 'percent'
+        ? [0, 100]
+        : [0, dataTop > 0 ? dataTop * 1.1 : 1],
     range: [innerHeight, 0],
-    nice: true,
+    // nice() would round a share axis to 0–100 anyway; skipped there so the
+    // domain stays exactly the one declared above
+    nice: unit !== 'percent',
   })
   const yDomainMax = yScale.domain().at(-1) ?? 0
 
@@ -750,12 +792,21 @@ export function TrendChart(props: {
       : lines
           .map((line, index) => ({
             branch: line.branch,
+            name: lineName(series, line),
             color: lineColorFor(series, index),
             point: nearestPoint(line, snappedMs),
           }))
-          .filter((entry): entry is {branch: string; color: string; point: TrendPoint} =>
-            Boolean(entry.point),
+          .filter(
+            (entry): entry is {branch: string; name: string; color: string; point: TrendPoint} =>
+              Boolean(entry.point),
           )
+  // Host, calibration and runtime rows describe the run, not the line: a
+  // paired chart's two lines share one run per branch, so those rows are
+  // listed once per branch, and name the branch only when there are several
+  const perBranch = hovered.filter(
+    (entry, index) => hovered.findIndex((other) => other.branch === entry.branch) === index,
+  )
+  const comparingBranches = new Set(lines.map((line) => line.branch)).size > 1
   // The release the crosshair is standing next to, named in the tooltip — this
   // is how a marker gets identified at grid-card size, where resting labels
   // don't fit. The floor keeps a very dense history (several runs an hour) from
@@ -891,7 +942,7 @@ export function TrendChart(props: {
           {lines.map((line, index) => {
             const color = lineColorFor(series, index)
             return (
-              <g key={line.branch}>
+              <g key={`${line.branch}:${line.label ?? ''}`}>
                 {line.points.length > 1 && layers.visible('median') && (
                   <LinePath<TrendPoint>
                     data={line.points}
@@ -904,7 +955,8 @@ export function TrendChart(props: {
                     // dotting the in-chart calibration overlay uses. The darker
                     // context color separates them from the muted-gray axes;
                     // reduced opacity keeps them recessive despite being darker.
-                    strokeDasharray={series.goal === 'context' ? '1 3' : undefined}
+                    // Paired lines dash to tell a second branch apart instead.
+                    strokeDasharray={series.goal === 'context' ? '1 3' : lineDashFor(series, index)}
                     strokeLinecap={series.goal === 'context' ? 'round' : undefined}
                     opacity={series.goal === 'context' ? 0.55 : 1}
                   />
@@ -1036,7 +1088,7 @@ export function TrendChart(props: {
           <Card radius={2} shadow={2} padding={2}>
             <Stack gap={2}>
               {hovered.map((entry) => (
-                <Flex key={entry.branch} alignItems="center" gap={2}>
+                <Flex key={entry.name} alignItems="center" gap={2}>
                   {lines.length > 1 && (
                     <span
                       aria-hidden="true"
@@ -1073,7 +1125,7 @@ export function TrendChart(props: {
                   )}
                   <Text size={0} muted>
                     {lines.length > 1
-                      ? entry.branch
+                      ? entry.name
                       : series.xKind === 'minute'
                         ? `minute ${Math.round(entry.point.date.getTime() / 60_000)}`
                         : entry.point.date.toISOString().slice(0, 10)}
@@ -1086,6 +1138,27 @@ export function TrendChart(props: {
                   </Text>
                 </Flex>
               ))}
+              {/* With several lines the rows above are spent naming them, so
+                  the run's date gets its own row — once, it is one run */}
+              {lines.length > 1 && series.xKind !== 'minute' && (
+                <Text size={0} muted>
+                  {new Date(snappedMs!).toISOString().slice(0, 10)}
+                  {!comparingBranches && hovered[0]?.point.prNumber
+                    ? ` · PR #${hovered[0].point.prNumber}`
+                    : ''}
+                </Text>
+              )}
+              {/* The styled-components runtime behind a style-migration point:
+                  a step in the CSS rows that lands with a version bump is the
+                  library changing its output, not the studio migrating */}
+              {perBranch
+                .filter((entry) => entry.point.styledComponentsVersion)
+                .map((entry) => (
+                  <Text key={`styled-${entry.branch}`} size={0} muted>
+                    {comparingBranches ? `${entry.branch}: ` : ''}styled-components{' '}
+                    {entry.point.styledComponentsVersion}
+                  </Text>
+                ))}
               {/* The hovered run's host-speed score (higher = slower), on its
                   own labelled line so it never reads as part of the metric
                   value. Shown whenever the point knows its host — with the
@@ -1097,11 +1170,11 @@ export function TrendChart(props: {
                   no calibrationMs (their value IS the score — a labelled row
                   would just repeat it), but their machine identity must still
                   show on the one chart whose job is host spread. */}
-              {hovered.some(
+              {perBranch.some(
                 (entry) => entry.point.calibrationMs !== undefined || entry.point.host,
               ) && (
                 <Stack gap={1}>
-                  {hovered
+                  {perBranch
                     .filter((entry) => entry.point.calibrationMs !== undefined)
                     .map((entry) => (
                       // title spells out what the score is — the tooltip is the
@@ -1114,7 +1187,7 @@ export function TrendChart(props: {
                         title={CALIBRATION_EXPLAINER}
                       >
                         <Text size={0} muted>
-                          host calibration{lines.length > 1 ? ` · ${entry.branch}` : ''}
+                          host calibration{comparingBranches ? ` · ${entry.branch}` : ''}
                         </Text>
                         <Text size={0} weight="semibold">
                           {formatValue(entry.point.calibrationMs!, 'ms')}
@@ -1127,19 +1200,19 @@ export function TrendChart(props: {
                       names the toolchain and the measuring instrument — a
                       Chromium bump moves vitals with no studio change. The
                       full detail (image version) stays in the run popover. */}
-                  {hovered
+                  {perBranch
                     .filter((entry) => hostSummary(entry.point.host))
                     .map((entry) => (
                       <Text key={`host-${entry.branch}`} size={0} muted>
-                        {lines.length > 1 ? `${entry.branch}: ` : ''}
+                        {comparingBranches ? `${entry.branch}: ` : ''}
                         {hostSummary(entry.point.host)}
                       </Text>
                     ))}
-                  {hovered
+                  {perBranch
                     .filter((entry) => hostVersions(entry.point.host))
                     .map((entry) => (
                       <Text key={`versions-${entry.branch}`} size={0} muted>
-                        {lines.length > 1 ? `${entry.branch}: ` : ''}
+                        {comparingBranches ? `${entry.branch}: ` : ''}
                         {hostVersions(entry.point.host)}
                       </Text>
                     ))}

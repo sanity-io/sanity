@@ -1,6 +1,6 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Stack, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
@@ -60,7 +60,7 @@ export function useNetworkProtocolCheck(): undefined {
     enabled: Boolean(isOnLegacyHttp && !isWarningSnoozed),
     title,
     description: (
-      <Stack gap={4} paddingY={1}>
+      <Flex gap={4} paddingY={1} flexDirection="column">
         <Flex>
           <Text size={1}>{t('network-check.slow-protocol-warning.description')} </Text>
         </Flex>
@@ -87,7 +87,7 @@ export function useNetworkProtocolCheck(): undefined {
             onClick={handleSnooze}
           />
         </Flex>
-      </Stack>
+      </Flex>
     ),
   })
 }

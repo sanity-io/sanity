@@ -1,3 +1,9 @@
+import {
+  type StyleCensus,
+  styledRuleShare,
+  takeStyleCensus,
+  ui5Share,
+} from '@repo/utils/style-systems'
 import {useEffect, useState} from 'react'
 
 import {
@@ -34,19 +40,6 @@ import {
 interface PanelState {
   open: boolean
   active: StyleSystemId[]
-}
-
-type Counts = ReadonlyMap<StyleSystemId, number>
-
-interface StyleSheetCounts {
-  inaccessible: number
-  styled: number
-  total: number
-}
-
-interface Metrics {
-  nodes: Counts
-  stylesheets: StyleSheetCounts
 }
 
 const DEFAULT_STATE: PanelState = {open: false, active: []}
@@ -86,63 +79,19 @@ function toggleId(active: StyleSystemId[], id: StyleSystemId): StyleSystemId[] {
   return inRegistryOrder(next)
 }
 
-function countNodes(): Counts {
-  return new Map(
-    STYLE_SYSTEMS.map((system): [StyleSystemId, number] => [
-      system.id,
-      document.querySelectorAll(system.selector).length,
-    ]),
-  )
-}
-
-function countStylesheetRules(): StyleSheetCounts {
-  let inaccessible = 0
-  let styled = 0
-  let total = 0
-
-  for (const sheet of document.styleSheets) {
-    try {
-      const ruleCount = sheet.cssRules.length
-      total += ruleCount
-      if (
-        sheet.ownerNode instanceof HTMLStyleElement &&
-        sheet.ownerNode.matches('style[data-styled]')
-      ) {
-        styled += ruleCount
-      }
-    } catch {
-      inaccessible += 1
-    }
-  }
-
-  return {inaccessible, styled, total}
-}
-
-function countMetrics(): Metrics {
-  return {nodes: countNodes(), stylesheets: countStylesheetRules()}
-}
-
-function sameMetrics(a: Metrics | null, b: Metrics): boolean {
-  return (
-    a !== null &&
-    STYLE_SYSTEMS.every((system) => a.nodes.get(system.id) === b.nodes.get(system.id)) &&
-    a.stylesheets.inaccessible === b.stylesheets.inaccessible &&
-    a.stylesheets.styled === b.stylesheets.styled &&
-    a.stylesheets.total === b.stylesheets.total
-  )
-}
-
-function percentage(part: number, total: number): number | null {
-  return total === 0 ? null : Math.round((part / total) * 100)
+// The census is a plain JSON tree of counts and strings, so a structural
+// comparison is what "nothing changed" means for the panel.
+function sameMetrics(a: StyleCensus | null, b: StyleCensus): boolean {
+  return a !== null && JSON.stringify(a) === JSON.stringify(b)
 }
 
 function formatPercentage(value: number | null): string {
-  return value === null ? '—' : `${value}%`
+  return value === null ? '—' : `${Math.round(value)}%`
 }
 
 export default function StyleOutlinePanel() {
   const [state, setState] = useState(readStoredState)
-  const [metrics, setMetrics] = useState<Metrics | null>(null)
+  const [metrics, setMetrics] = useState<StyleCensus | null>(null)
   const {open, active} = state
 
   useEffect(() => {
@@ -161,7 +110,7 @@ export default function StyleOutlinePanel() {
     let frame: number | null = null
     const recount = () => {
       frame = null
-      const next = countMetrics()
+      const next = takeStyleCensus(document)
       setMetrics((prev) => (sameMetrics(prev, next) ? prev : next))
     }
     const schedule = () => {
@@ -192,15 +141,14 @@ export default function StyleOutlinePanel() {
     }
   }, [open])
 
-  const ui5Count = metrics?.nodes.get('ui5') ?? 0
-  const ui4Count = metrics?.nodes.get('ui4') ?? 0
-  const styledCount = metrics?.nodes.get('styled')
-  const uiTotal = ui5Count + ui4Count
-  const ui5Percentage = percentage(ui5Count, uiTotal)
-  const ui4Percentage = percentage(ui4Count, uiTotal)
-  const styledRulePercentage = metrics
-    ? percentage(metrics.stylesheets.styled, metrics.stylesheets.total)
-    : null
+  const ui5Count = metrics?.nodes.ui5 ?? 0
+  const ui4Count = metrics?.nodes.ui4 ?? 0
+  const styledCount = metrics?.nodes.styled
+  // Shares come from the shared census helpers so the widget, the bench probe
+  // and Radar can never round or compute them differently
+  const ui5Percentage = metrics ? ui5Share(metrics) : null
+  const ui4Percentage = ui5Percentage === null ? null : 100 - ui5Percentage
+  const styledRulePercentage = metrics ? styledRuleShare(metrics) : null
   const toggleOpen = () => setState((prev) => ({...prev, open: !prev.open}))
   const toggleSystem = (id: StyleSystemId) =>
     setState((prev) => ({...prev, active: toggleId(prev.active, id)}))

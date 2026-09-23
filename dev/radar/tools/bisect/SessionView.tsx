@@ -29,6 +29,7 @@ import {
   undoMark,
   updateResult,
 } from './sessions'
+import {isSeverity} from './severity'
 import {pluralize} from './text'
 import {Timeline} from './Timeline'
 
@@ -155,6 +156,12 @@ export function SessionView(props: {
 
   const onError = (title: string) => toastError(toast, title)
 
+  // Annotations are this session's own: a parent and its refinement may
+  // both rate the same regression, and the overview and the Releases tool
+  // show the union of the chain (sessionChains.ts)
+  const annotate = (patch: ResultAnnotations) =>
+    updateResult(client, sessionId, patch).catch(onError('Could not save annotation'))
+
   // Sessions can be converged FROM BIRTH (adjacent endpoints, a drill-down
   // over an untestable range) — no converging mark ever fires, so appendMark
   // never persists the verdict and the sessions list would show them as
@@ -236,10 +243,14 @@ export function SessionView(props: {
       const version = versionBySha.get(sha)
       return version ? {sha, label: `v${version}`} : {sha}
     }
+    // Linked to this session: the two are one regression (sessionChains.ts),
+    // and the issue text travels along
     createSession(client, {
       good: label(state.lastGood.sha),
       bad: label(state.firstBad.sha),
       reproPath,
+      description: session?.description ?? undefined,
+      refines: sessionId,
       createdBy: userName,
     })
       .then(onOpenSession)
@@ -258,11 +269,53 @@ export function SessionView(props: {
             <Box flex={1} style={{minWidth: 0}}>
               <Stack gap={2}>
                 <Text size={2} weight="semibold">
-                  {session?.title ?? 'Bisect session'}
+                  {session?.description || session?.title || 'Bisect session'}
                 </Text>
+                {session?.description && (
+                  <Text size={1} muted>
+                    {session.title ?? sessionId}
+                  </Text>
+                )}
                 {reproPath && (
                   <Text size={0} muted textOverflow="ellipsis">
                     Preview builds open at <code>{reproPath}</code>
+                  </Text>
+                )}
+                {/* A refinement and its parent are one regression; say so
+                    both ways so neither reads as a duplicate */}
+                {session?.refines && (
+                  <Text size={0} muted>
+                    Narrows down{' '}
+                    <a
+                      href={`?session=${encodeURIComponent(session.refines._id)}`}
+                      onClick={(event) => {
+                        event.preventDefault()
+                        onOpenSession(session.refines!._id)
+                      }}
+                    >
+                      {session.refines.title ?? session.refines._id}
+                    </a>{' '}
+                    — counted as one regression
+                  </Text>
+                )}
+                {session && session.refinedBy.length > 0 && (
+                  <Text size={0} muted>
+                    Narrowed down by{' '}
+                    {session.refinedBy.map((child, index) => (
+                      <span key={child._id}>
+                        {index > 0 && ', '}
+                        <a
+                          href={`?session=${encodeURIComponent(child._id)}`}
+                          onClick={(event) => {
+                            event.preventDefault()
+                            onOpenSession(child._id)
+                          }}
+                        >
+                          {child.title ?? child._id}
+                        </a>
+                      </span>
+                    ))}{' '}
+                    — counted as one regression
                   </Text>
                 )}
               </Stack>
@@ -361,13 +414,14 @@ export function SessionView(props: {
                       releasesOnly,
                       annotations: {
                         regression: session?.result?.regression ?? undefined,
-                        description: session?.result?.description ?? undefined,
+                        description: session?.description ?? undefined,
+                        note: session?.result?.note ?? undefined,
+                        severity: isSeverity(session?.result?.severity)
+                          ? session.result.severity
+                          : undefined,
                         linearIssue: session?.result?.linearIssue ?? undefined,
                       },
-                      onAnnotate: (patch: ResultAnnotations) =>
-                        updateResult(client, sessionId, patch).catch(
-                          onError('Could not save annotation'),
-                        ),
+                      onAnnotate: annotate,
                       onContinue: releasesOnly ? continueBisect : undefined,
                     }
                   : undefined

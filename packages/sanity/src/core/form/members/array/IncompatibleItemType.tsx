@@ -1,11 +1,11 @@
 import {BulbOutlineIcon} from '@sanity/icons/BulbOutline'
 import {UnknownIcon} from '@sanity/icons/Unknown'
-import {Card, Stack, Text, type Theme, useClickOutsideEvent} from '@sanity/ui'
+import {Card, Text, type Theme, useClickOutsideEvent} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {resolveTypeName} from '@sanity/util/content'
 import {type FocusEvent, useCallback, useRef, useState} from 'react'
 import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {VStack, Flex, Box} from 'ui5'
 
 import {Popover} from '../../../../ui-components/popover/Popover'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -54,7 +54,7 @@ export function IncompatibleItemType(props: Props) {
       tone="default"
       content={
         <PopoverCard margin={1} padding={3} onKeyDown={handleKeyDown} tabIndex={0} overflow="auto">
-          <Stack gap={4}>
+          <VStack gap={4}>
             <Text weight="medium">
               <Translate
                 t={t}
@@ -77,7 +77,7 @@ export function IncompatibleItemType(props: Props) {
                 <BulbOutlineIcon /> {t('inputs.array.error.can-delete-but-no-edit-description')}
               </Text>
             </Box>
-            <Stack gap={2}>
+            <VStack gap={2}>
               <Text size={1} weight="medium">
                 {t('inputs.array.error.json-representation-description')}
               </Text>
@@ -86,8 +86,8 @@ export function IncompatibleItemType(props: Props) {
                   {JSON.stringify(value, null, 2)}
                 </Code>
               </Card>
-            </Stack>
-          </Stack>
+            </VStack>
+          </VStack>
         </PopoverCard>
       }
     >

@@ -23,25 +23,13 @@ import {
   useTranslation,
 } from 'sanity'
 import {DocumentChangeContext} from 'sanity/_singletons'
-import {styled} from 'styled-components'
 import {Flex, Box, Grid} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {EventsTimelineMenu} from '../../timeline/events/EventsTimelineMenu'
 import {useDocumentPane} from '../../useDocumentPane'
-
-const Scroller = styled(ScrollContainer)`
-  height: 100%;
-  overflow: auto;
-  position: relative;
-  scroll-behavior: smooth;
-`
-
-const SpinnerContainer = styled(Flex)`
-  width: 100%;
-  position: absolute;
-  bottom: -4px;
-`
+import {spinnerContainer} from './EventsInspector.css'
+import {scroller} from './Scroller.css'
 
 const DIFF_INITIAL_VALUE = {
   diff: null,
@@ -231,19 +219,19 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
             initial={{opacity: 0}}
             transition={{delay: 0.2, duration: 0.2}}
           >
-            <SpinnerContainer justifyContent="center" alignItems="center" gap={2}>
+            <Flex className={spinnerContainer} justifyContent="center" alignItems="center" gap={2}>
               <Text muted size={0}>
                 {t('changes.loading-changes')}
               </Text>
               <Spinner size={0} />
-            </SpinnerContainer>
+            </Flex>
           </motion.div>
         )}
       </Box>
 
       <Card flex={1} paddingX={2} paddingY={2}>
         <BoundaryElementProvider element={scrollRef}>
-          <Scroller data-ui="Scroller" ref={setScrollRef}>
+          <ScrollContainer className={scroller} data-ui="Scroller" ref={setScrollRef}>
             <Box flexBasis="0%" flexGrow={1} paddingX={3} height="100%">
               {showChanges && (
                 <Content
@@ -256,7 +244,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
                 />
               )}
             </Box>
-          </Scroller>
+          </ScrollContainer>
         </BoundaryElementProvider>
       </Card>
     </Flex>

@@ -17,7 +17,7 @@ full reference; this skill is the operating card. Stored results are read throug
 ```bash
 pnpm build:bench                                              # required first: packages + bench studio
 pnpm bench help                                               # commands; `pnpm bench run --help` for flags
-pnpm bench scenarios                                          # singleString, arrayI18n, article, recipe, synthetic, syntheticLarge
+pnpm bench scenarios                                          # singleString, arrayI18n, article, recipe, synthetic, syntheticLarge, loginReady, loginToTool, toolReady, emptyToolReady, loginToEmptyTool (+ customization scenarios)
 pnpm bench run --scenario singleString --sessions 4           # absolute interaction run
 pnpm bench run --mode pageload --scenario singleString        # load vitals + bundle size
 pnpm bench run --mode inp --scenario singleString --sessions 3
