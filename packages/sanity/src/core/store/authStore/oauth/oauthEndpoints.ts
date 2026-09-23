@@ -41,6 +41,30 @@ export class OAuthRequestError extends Error {
   }
 }
 
+/**
+ * Checks that a successful token endpoint body is a usable bearer token response. A 200 alone
+ * does not guarantee it, and persisting a malformed body would store a credential that can never
+ * authenticate.
+ */
+function toTokenResponse(body: unknown): OAuthTokenResponse {
+  const response =
+    typeof body === 'object' && body !== null ? (body as Record<string, unknown>) : {}
+  const {access_token, token_type, expires_in, refresh_token} = response
+  if (
+    typeof access_token !== 'string' ||
+    access_token.length === 0 ||
+    typeof token_type !== 'string' ||
+    token_type.toLowerCase() !== 'bearer' ||
+    typeof expires_in !== 'number' ||
+    !Number.isFinite(expires_in) ||
+    expires_in <= 0 ||
+    (refresh_token !== undefined && (typeof refresh_token !== 'string' || !refresh_token))
+  ) {
+    throw new Error('OAuth token endpoint returned a malformed token response')
+  }
+  return {access_token, token_type, expires_in, refresh_token}
+}
+
 /** @internal */
 export interface OAuthEndpoints {
   authorizeUrl: (params: {
@@ -106,21 +130,25 @@ export function createOAuthEndpoints(
       return url.toString()
     },
 
-    exchangeCode: ({clientId, redirectUri, code, codeVerifier}) =>
-      postForm(endpoint('token'), {
-        grant_type: 'authorization_code',
-        client_id: clientId,
-        redirect_uri: redirectUri,
-        code,
-        code_verifier: codeVerifier,
-      }),
+    exchangeCode: async ({clientId, redirectUri, code, codeVerifier}) =>
+      toTokenResponse(
+        await postForm(endpoint('token'), {
+          grant_type: 'authorization_code',
+          client_id: clientId,
+          redirect_uri: redirectUri,
+          code,
+          code_verifier: codeVerifier,
+        }),
+      ),
 
-    refresh: ({clientId, refreshToken}) =>
-      postForm(endpoint('token'), {
-        grant_type: 'refresh_token',
-        client_id: clientId,
-        refresh_token: refreshToken,
-      }),
+    refresh: async ({clientId, refreshToken}) =>
+      toTokenResponse(
+        await postForm(endpoint('token'), {
+          grant_type: 'refresh_token',
+          client_id: clientId,
+          refresh_token: refreshToken,
+        }),
+      ),
 
     // RFC 7009: the server answers 200 whether or not the token was valid.
     revoke: async ({clientId, token}) => {

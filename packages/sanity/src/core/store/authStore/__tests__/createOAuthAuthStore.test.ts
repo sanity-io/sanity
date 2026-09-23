@@ -41,10 +41,14 @@ const MOCK_USER: CurrentUser = {
 
 const PROJECT_ID = 'test-project'
 const DATASET = 'test-dataset'
-const CLIENT_ID = 'oc-test-client'
 const ORIGIN = 'http://localhost:3333'
-const TOKENS_KEY = getOAuthTokensStorageKey(PROJECT_ID, CLIENT_ID)
 const FLOW_KEY = getOAuthFlowStorageKey(PROJECT_ID)
+
+// A client ID per test: stores are never disposed, and a store left over from an earlier test
+// would otherwise receive this test's token broadcasts and act on them.
+let testCount = 0
+let CLIENT_ID = ''
+let TOKENS_KEY = ''
 
 /** A 401 the API tags as an expired session, as the client throws it. */
 function createExpiredSessionError(): ClientError {
@@ -135,6 +139,8 @@ describe('createOAuthAuthStore', () => {
   beforeEach(() => {
     localStorage.clear()
     sessionStorage.clear()
+    CLIENT_ID = `oc-test-client-${++testCount}`
+    TOKENS_KEY = getOAuthTokensStorageKey(PROJECT_ID, CLIENT_ID)
   })
 
   afterEach(() => {
@@ -239,6 +245,58 @@ describe('createOAuthAuthStore', () => {
       expect(sessionStorage.getItem(FLOW_KEY)).toBeNull()
       // Settle-before-resolve: the state already reflects the exchange.
       await expect(firstValueFrom(store.state)).resolves.toMatchObject({authenticated: true})
+    })
+
+    it('settles on the exchanged session, not on a session the user already had', async () => {
+      localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('access-0', 'refresh-0')))
+      sessionStorage.setItem(
+        FLOW_KEY,
+        JSON.stringify({codeVerifier: 'verifier', state: 'expected-state', redirectUri: ORIGIN}),
+      )
+      // The probe for the exchanged token answers only when the test lets it.
+      let answerNewProbe: () => void = () => {}
+      const newProbe = new Promise<void>((resolve) => {
+        answerNewProbe = resolve
+      })
+      const factory = (config: SanityClientConfig): SanityClient =>
+        ({
+          config: () => config,
+          request: vi.fn(async ({url}: {url: string}) => {
+            if (url !== '/users/me') return {}
+            if (config.token === 'access-0') return MOCK_USER
+            if (config.token === 'access-1') {
+              await newProbe
+              return MOCK_USER
+            }
+            throw createExpiredSessionError()
+          }),
+        }) as unknown as SanityClient
+      const store = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints: createMockEndpoints(),
+        ...createEnvironment('?code=the-code&state=expected-state'),
+      })
+      // Already signed in, and the state replays that session.
+      const subscription = store.state.subscribe()
+      await authenticatedState(store.state)
+
+      let settled = false
+      const callback = store.handleCallbackUrl!().then((result) => {
+        settled = true
+        return result
+      })
+      await vi.waitFor(() => expect(localStorage.getItem(TOKENS_KEY)).toContain('access-1'))
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      expect(settled).toBe(false)
+
+      answerNewProbe()
+      await expect(callback).resolves.toMatchObject({success: true, stateSettleTimedOut: false})
+      const state = await firstValueFrom(store.state)
+      expect(state.client.config().token).toBe('access-1')
+      subscription.unsubscribe()
     })
 
     it('exchanges a single-use code once when called twice concurrently', async () => {

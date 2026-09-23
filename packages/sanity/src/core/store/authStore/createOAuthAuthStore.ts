@@ -462,7 +462,7 @@ export function _createOAuthAuthStore({
     const durationMs = Math.round(performance.now() - startTime)
 
     tokenStorage.update(tokens)
-    const settle = await waitForAuthenticatedState()
+    const settle = await waitForAuthenticatedState(tokens)
     if (flow.redirectPath) replaceUrl(flow.redirectPath)
 
     return {
@@ -479,8 +479,12 @@ export function _createOAuthAuthStore({
   /**
    * Waits until the state reflects the exchanged tokens, so the AuthBoundary does not open onto a
    * stale logged-out state. Bounded like the callback settle wait in `createAuthStore`.
+   *
+   * Matched on the client's token, not just `authenticated`: `state` replays its last value, so a
+   * user who was already signed in would otherwise settle on the previous session before the new
+   * token was probed.
    */
-  async function waitForAuthenticatedState(): Promise<{
+  async function waitForAuthenticatedState(tokens: OAuthTokens): Promise<{
     stateSettleDurationMs: number
     stateSettleTimedOut: boolean
   }> {
@@ -490,7 +494,14 @@ export function _createOAuthAuthStore({
       timeoutId = setTimeout(() => resolve('timeout'), AUTH_STATE_SETTLE_TIMEOUT_MS)
     })
     const result = await Promise.race([
-      firstValueFrom(state.pipe(filter((authState) => authState.authenticated))),
+      firstValueFrom(
+        state.pipe(
+          filter(
+            (authState) =>
+              authState.authenticated && authState.client.config().token === tokens.accessToken,
+          ),
+        ),
+      ),
       timeout,
     ]).finally(() => clearTimeout(timeoutId))
     return {
