@@ -2,7 +2,6 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
 import {BoundaryElementProvider, type ResponsiveWidthProps, useGlobalKeyDown} from '@sanity/ui'
 import {type DragEvent, type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
-import {styled} from 'styled-components'
 import {Box} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
@@ -19,26 +18,7 @@ import {
 } from '../studio/tree-editing/__telemetry__/nestedObjects.telemetry'
 import {useFormBuilder} from '../useFormBuilder'
 import {DialogBreadcrumbs} from './breadcrumbs/DialogBreadcrumbs'
-
-/**
- * Styled Dialog component that conditionally hides the dialog card and backdrop.
- * Used to keep non-top dialogs in the DOM but hidden from view.
- */
-const StyledDialog = styled(Dialog)<{$isHidden: boolean}>`
-  ${(props) =>
-    props.$isHidden &&
-    `
-    /* Hide the backdrop (the semi-transparent overlay) */
-    background: transparent !important;
-
-    /* Hide the dialog card */
-    [data-ui='DialogCard'] {
-      opacity: 0 !important;
-      pointer-events: none !important;
-      transform: scale(0.95) !important;
-    }
-  `}
-`
+import {hiddenDialog} from './EnhancedObjectDialog.css'
 
 const PRESENCE_MARGINS: [number, number, number, number] = [0, 0, 1, 0]
 
@@ -200,8 +180,8 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
         scrollElement={documentScrollElement}
         containerElement={containerElement}
       >
-        <StyledDialog
-          $isHidden={!isTop}
+        <Dialog
+          className={isTop ? undefined : hiddenDialog}
           __unstable_autoFocus={isTop ? props.autofocus : false}
           contentRef={handleContentRef}
           data-testid="nested-object-dialog"
@@ -223,7 +203,7 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
           <BoundaryElementProvider element={documentScrollElement}>
             {contents}
           </BoundaryElementProvider>
-        </StyledDialog>
+        </Dialog>
       </VirtualizerScrollInstanceProvider>
     )
   }
