@@ -157,7 +157,7 @@ describe('CopyDocumentActions', () => {
     it('copies URL with variant search param when a variant is selected', async () => {
       mockUsePerspective.mockReturnValue({
         ...DEFAULT_PERSPECTIVE,
-        selectedVariantName: 'alpha-audience',
+        selectedVariantsName: ['alpha-audience'],
       })
 
       render(<CopyDocumentActions />, {wrapper})
@@ -173,7 +173,7 @@ describe('CopyDocumentActions', () => {
         ...DEFAULT_PERSPECTIVE,
         selectedPerspectiveName: 'rMyRelease',
         selectedReleaseId: 'rMyRelease',
-        selectedVariantName: 'alpha-audience',
+        selectedVariantsName: ['alpha-audience'],
         selectedPerspective: 'rMyRelease',
         perspectiveStack: ['rMyRelease', 'drafts'],
       })
@@ -217,7 +217,7 @@ describe('CopyDocumentActions', () => {
         ...DEFAULT_PERSPECTIVE,
         selectedPerspectiveName: 'rScheduled',
         selectedReleaseId: 'rScheduled',
-        selectedVariantName: 'alpha-audience',
+        selectedVariantsName: ['alpha-audience'],
         selectedPerspective: 'rScheduled',
         perspectiveStack: ['rScheduled', 'drafts'],
       })

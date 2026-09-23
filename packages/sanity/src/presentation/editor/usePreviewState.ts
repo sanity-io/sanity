@@ -3,6 +3,7 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 import {
+  getDefaultVariant,
   getPreviewStateObservable,
   type PreviewValue,
   type SanityDocument,
@@ -19,7 +20,8 @@ const EMPTY_STATE: PreviewState = {}
 
 export default function usePreviewState(documentId: string, schemaType?: SchemaType): PreviewState {
   const documentPreviewStore = useDocumentPreviewStore()
-  const {perspectiveStack, selectedVariantName} = usePerspective()
+  const {perspectiveStack, selectedVariantsName} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantsName)
 
   const preview$ = useMemo(
     () =>

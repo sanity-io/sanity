@@ -4,6 +4,7 @@ import {memo, type RefAttributes, type SVGProps} from 'react'
 import {
   ReleaseAvatarIcon,
   ReleaseTitle,
+  getDefaultVariant,
   getReleaseTone,
   getVariantTitle,
   isDraftPerspective,
@@ -152,7 +153,8 @@ const VariantBadgeLabel = memo(function VariantBadgeLabel({variant}: {variant: S
 
 export const DocumentTargetBadges = memo(function DocumentTargetBadges() {
   const {displayed, schemaType, targetDocumentState} = useDocumentPane()
-  const {bundle, selectedPerspective, selectedVariant} = usePerspective()
+  const {bundle, selectedPerspective, selectedVariants} = usePerspective()
+  const selectedVariant = getDefaultVariant(selectedVariants)
   const {t} = useTranslation(structureLocaleNamespace)
   const isLiveEdit = isLiveEditEnabled(schemaType)
 

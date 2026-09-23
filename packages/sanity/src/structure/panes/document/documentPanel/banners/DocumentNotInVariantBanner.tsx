@@ -2,6 +2,7 @@ import {Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo, useState} from 'react'
 import {
+  getDefaultVariant,
   getVariantTitle,
   isDraftPerspective,
   isPublishedPerspective,
@@ -30,7 +31,8 @@ export function DocumentNotInVariantBanner() {
   const {t} = useTranslation(structureLocaleNamespace)
   const {t: tCore} = useTranslation()
   const {value, documentId, schemaType} = useDocumentPane()
-  const {selectedPerspective, selectedVariant, selectedReleaseId} = usePerspective()
+  const {selectedPerspective, selectedVariants, selectedReleaseId} = usePerspective()
+  const selectedVariant = getDefaultVariant(selectedVariants)
   const {versions} = useDocumentVersions({documentId})
 
   const {createVariantDocument} = useVariantDocumentOperations()
@@ -113,6 +115,7 @@ export function DocumentNotInVariantBanner() {
     value,
     selectedVariant,
     createPerspective,
+    setStatus,
     t,
     toast,
     versions,
