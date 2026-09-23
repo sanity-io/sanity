@@ -1,6 +1,6 @@
 import {ClockIcon} from '@sanity/icons/Clock'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Badge, Card, Stack, Text} from '@sanity/ui'
+import {Badge, Card, Text} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 import {Flex} from 'ui5'
 
@@ -114,7 +114,7 @@ function UnclaimedProjectNudgeInner({
       ''
     ),
     description: claimable && copy && (
-      <Stack gap={4} paddingY={2}>
+      <Flex gap={4} paddingY={2} flexDirection="column">
         <Text size={1} weight="regular">
           {claimable.claimUrl || claimable.claimLinkSpent
             ? copy.toast.description
@@ -151,7 +151,7 @@ function UnclaimedProjectNudgeInner({
             style={{fontSize: '0.6875rem'}}
           />
         </Flex>
-      </Stack>
+      </Flex>
     ),
   })
 
