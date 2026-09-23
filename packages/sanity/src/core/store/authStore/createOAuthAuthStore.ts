@@ -209,7 +209,7 @@ export function _createOAuthAuthStore({
   const flowStorageKey = getOAuthFlowStorageKey(projectId)
 
   // The storage is kept alongside the broadcast state so a refresh can read what another tab
-  // wrote, before that tab's broadcast has arrived here. See `refresh`.
+  // wrote, before that tab's broadcast has arrived here. See `latestTokens`.
   const tokensStorageKey = getOAuthTokensStorageKey(projectId, clientId)
   const persistedTokens = supportsLocalStorage
     ? createLocalStorageStorage<OAuthTokens>(tokensStorageKey)
@@ -219,6 +219,14 @@ export function _createOAuthAuthStore({
     (current) => current,
     persistedTokens,
   )
+
+  /**
+   * The latest pair any tab wrote. localStorage is shared, so it can be ahead of this tab's
+   * broadcast state. The memory fallback is private to the tab and never sees a broadcast, so
+   * there the broadcast state is the latest this tab knows.
+   */
+  const latestTokens = (): OAuthTokens | undefined =>
+    supportsLocalStorage ? persistedTokens.load() : tokenStorage.get()
 
   let inflightRefresh: Promise<OAuthTokens | undefined> | undefined
 
@@ -239,7 +247,7 @@ export function _createOAuthAuthStore({
   function refresh(rejected: OAuthTokens): Promise<OAuthTokens | undefined> {
     const generation = sessionGeneration
     inflightRefresh ??= withLock(refreshLockName, async () => {
-      const stored = persistedTokens.load()
+      const stored = latestTokens()
       if (!stored) {
         tokenStorage.update(undefined)
         return undefined
@@ -372,8 +380,15 @@ export function _createOAuthAuthStore({
   async function login(redirectPath: string): Promise<void> {
     const codeVerifier = createCodeVerifier()
     const oauthState = createState()
-    const redirectUri =
-      redirectUriOption ?? `${getLocation().origin}${basePath.replace(/\/+$/, '')}`
+    const {origin} = getLocation()
+    const redirectUri = redirectUriOption ?? `${origin}${basePath.replace(/\/+$/, '')}`
+    // The verifier and `state` live in this origin's sessionStorage, so the response has to come
+    // back here to be exchanged.
+    if (new URL(redirectUri, origin).origin !== origin) {
+      throw new Error(
+        `auth.unstable_oauth.redirectUri must be on the Studio origin (${origin}), got ${redirectUri}`,
+      )
+    }
     writeFlow(flowStorageKey, {codeVerifier, state: oauthState, redirectUri, redirectPath})
     navigate(
       endpoints.authorizeUrl({
@@ -551,7 +566,7 @@ export function _createOAuthAuthStore({
     // Under the refresh lock, so a refresh in flight in any tab settles first, and the pair
     // revoked here is the latest one rather than the one it was about to replace.
     await withLock(refreshLockName, async () => {
-      const tokens = persistedTokens.load() ?? tokenStorage.get()
+      const tokens = latestTokens() ?? tokenStorage.get()
       // Best-effort, like `createAuthStore`: a forced logout reacting to a 401 revokes tokens
       // that are already dead, and a failed revocation must not keep the user signed in locally.
       if (tokens) await revokeTokens(tokens)

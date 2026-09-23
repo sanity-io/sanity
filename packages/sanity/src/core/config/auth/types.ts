@@ -80,8 +80,9 @@ export interface OAuthConfig {
 
   /**
    * The URL the user returns to after signing in. Must match one of the application's registered
-   * redirect URLs exactly. Defaults to the Studio URL: the origin it is served from, followed by
-   * the workspace base path.
+   * redirect URLs exactly, and be on the origin the Studio is served from, which is where the
+   * sign-in request is kept until the user returns. Defaults to the Studio URL: that origin,
+   * followed by the workspace base path.
    */
   redirectUri?: string
 }

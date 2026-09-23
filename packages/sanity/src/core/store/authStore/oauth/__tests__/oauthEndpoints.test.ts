@@ -60,4 +60,19 @@ describe('oauthEndpoints', () => {
     expect(error).toBeInstanceOf(OAuthRequestError)
     expect(error).toMatchObject({statusCode: 400, error: 'invalid_grant'})
   })
+
+  it('times out a request that never answers, as a transient error', async () => {
+    const hanging = vi.fn<typeof fetch>(
+      (_url, init) =>
+        new Promise((_resolve, reject) => {
+          init?.signal?.addEventListener('abort', () => reject(new DOMException('', 'AbortError')))
+        }),
+    )
+    const endpoints = createOAuthEndpoints('https://api.sanity.io', hanging, 10)
+
+    const error = await endpoints.refresh({clientId: 'oc-1', refreshToken: 'r'}).catch((e) => e)
+
+    expect(error).not.toBeInstanceOf(OAuthRequestError)
+    expect(String(error.message)).toContain('timed out')
+  })
 })

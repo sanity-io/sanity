@@ -84,18 +84,48 @@ export interface OAuthEndpoints {
 }
 
 /**
+ * How long an OAuth request may take. A refresh runs under a cross-tab lock that logout waits for,
+ * so a request that never settles must not be able to hold it forever.
+ */
+const OAUTH_REQUEST_TIMEOUT_MS = 30_000
+
+/**
  * @param apiHost - The API origin, e.g. `https://api.sanity.io`
  * @param fetchImpl - `fetch`, injectable for tests
+ * @param timeoutMs - Request timeout, injectable for tests
  * @internal
  */
 export function createOAuthEndpoints(
   apiHost: string,
   fetchImpl: typeof fetch = (...args) => fetch(...args),
+  timeoutMs: number = OAUTH_REQUEST_TIMEOUT_MS,
 ): OAuthEndpoints {
   const endpoint = (name: 'authorize' | 'token' | 'revoke') => `${apiHost}/v1/auth/oauth/${name}`
 
   async function postForm<T>(url: string, fields: Record<string, string>): Promise<T> {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
+    try {
+      return await request<T>(url, fields, controller.signal)
+    } catch (err) {
+      // Transient, like a network error: it says nothing about the session, so callers keep the
+      // tokens and retry later.
+      if (controller.signal.aborted) {
+        throw new Error(`OAuth request timed out after ${timeoutMs}ms: ${url}`, {cause: err})
+      }
+      throw err
+    } finally {
+      clearTimeout(timeoutId)
+    }
+  }
+
+  async function request<T>(
+    url: string,
+    fields: Record<string, string>,
+    signal: AbortSignal,
+  ): Promise<T> {
     const response = await fetchImpl(url, {
+      signal,
       method: 'POST',
       headers: {
         'accept': 'application/json',
