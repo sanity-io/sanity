@@ -4,7 +4,7 @@ import {type RouterState} from 'sanity/router'
 
 /**
  * The root router state to restore when navigating to `toolName`, when that tool is kept mounted
- * while inactive (see `beta.keepInactiveToolsMounted`). `undefined` for the active tool, for tools
+ * while inactive (see `beta.performance.reactActivityMode`). `undefined` for the active tool, for tools
  * that are not mounted, and when the feature is off.
  *
  * @internal

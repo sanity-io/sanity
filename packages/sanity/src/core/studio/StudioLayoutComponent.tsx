@@ -86,11 +86,11 @@ export function StudioLayoutComponent() {
     () => tools.find((tool) => tool.name === activeToolName),
     [activeToolName, tools],
   )
-  // With `beta.keepInactiveToolsMounted`, the tools used most recently stay mounted inside a
+  // With `beta.performance.reactActivityMode`, the tools used most recently stay mounted inside a
   // hidden `<Activity>` boundary instead of being unmounted when another tool takes over.
-  const keepInactiveToolsMounted = beta?.keepInactiveToolsMounted?.enabled === true
+  const reactActivityMode = beta?.performance?.reactActivityMode === true
   const {mountedTools, contextValue: mountedToolsContextValue} = useMountedTools({
-    enabled: keepInactiveToolsMounted,
+    enabled: reactActivityMode,
     tools,
     activeTool,
   })
@@ -237,7 +237,7 @@ export function StudioLayoutComponent() {
         {searchFullscreenOpen && (
           <SearchFullscreenPortalCard ref={setSearchFullscreenPortalEl} overflow="auto" />
         )}
-        {keepInactiveToolsMounted ? (
+        {reactActivityMode ? (
           <StudioErrorBoundary>
             {detectViteDevServerStopped && <DetectViteDevServerStopped />}
             <Card flex={1} hidden={searchFullscreenOpen}>

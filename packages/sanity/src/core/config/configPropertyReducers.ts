@@ -567,7 +567,7 @@ export const documentGroupInventoryEnabledReducer = ({
   }, initialValue)
 }
 
-export const keepInactiveToolsMountedEnabledReducer = ({
+export const reactActivityModeReducer = ({
   config,
   initialValue,
 }: {
@@ -577,33 +577,31 @@ export const keepInactiveToolsMountedEnabledReducer = ({
   const flattenedConfig = flattenConfig(config, [])
 
   return flattenedConfig.reduce<boolean>((value, {config: innerConfig}) => {
-    const keepInactiveToolsMounted: unknown = innerConfig.beta?.keepInactiveToolsMounted
+    const performance: unknown = innerConfig.beta?.performance
 
-    if (typeof keepInactiveToolsMounted === 'undefined') {
+    if (typeof performance === 'undefined') {
       return value
     }
 
-    if (!isRecord(keepInactiveToolsMounted)) {
+    if (!isRecord(performance)) {
       throw new Error(
-        `Expected \`beta.keepInactiveToolsMounted\` to be an object, but received ${getPrintableType(
-          keepInactiveToolsMounted,
-        )}`,
+        `Expected \`beta.performance\` to be an object, but received ${getPrintableType(performance)}`,
       )
     }
 
-    const enabled = keepInactiveToolsMounted.enabled
+    const reactActivityMode = performance.reactActivityMode
 
-    if (typeof enabled === 'undefined') {
+    if (typeof reactActivityMode === 'undefined') {
       return value
     }
 
-    if (typeof enabled === 'boolean') {
-      return enabled
+    if (typeof reactActivityMode === 'boolean') {
+      return reactActivityMode
     }
 
     throw new Error(
-      `Expected \`beta.keepInactiveToolsMounted.enabled\` to be a boolean, but received ${getPrintableType(
-        enabled,
+      `Expected \`beta.performance.reactActivityMode\` to be a boolean, but received ${getPrintableType(
+        reactActivityMode,
       )}`,
     )
   }, initialValue)

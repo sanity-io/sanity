@@ -55,13 +55,13 @@ import {
   initialDocumentBadges,
   initialLanguageFilter,
   internalTasksReducer,
-  keepInactiveToolsMountedEnabledReducer,
   mediaLibraryEnabledReducer,
   mediaLibraryFrontendHostReducer,
   mediaLibraryLibraryIdReducer,
   newDocumentOptionsResolver,
   onUncaughtErrorResolver,
   partialIndexingEnabledReducer,
+  reactActivityModeReducer,
   releaseActionsReducer,
   resolveProductionUrlReducer,
   scheduledDraftsEnabledReducer,
@@ -940,8 +940,8 @@ function resolveSource({
         enabled:
           documentGroupInventoryEnabledReducer({config, initialValue: false}) || variantsEnabled,
       },
-      keepInactiveToolsMounted: {
-        enabled: keepInactiveToolsMountedEnabledReducer({config, initialValue: false}),
+      performance: {
+        reactActivityMode: reactActivityModeReducer({config, initialValue: false}),
       },
     },
 

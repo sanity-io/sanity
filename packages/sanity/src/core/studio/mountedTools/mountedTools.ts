@@ -3,7 +3,7 @@ import {type RouterContextValue} from 'sanity/router'
 import {type Tool} from '../../config/types'
 
 /**
- * How many tools stay mounted at once when `beta.keepInactiveToolsMounted` is enabled: the active
+ * How many tools stay mounted at once when `beta.performance.reactActivityMode` is enabled: the active
  * tool plus the two most recently used before it.
  */
 export const MAX_MOUNTED_TOOLS = 3

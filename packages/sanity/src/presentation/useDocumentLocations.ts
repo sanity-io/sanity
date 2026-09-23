@@ -93,7 +93,7 @@ export function useDocumentLocations(props: {
     )
     // Only a subscription that has never seen the resolver emit starts out `resolving`. The same
     // observable is unsubscribed and subscribed again without a remount when the tool is hidden
-    // and shown inside an `<Activity>` boundary (`beta.keepInactiveToolsMounted`); `useObservable`
+    // and shown inside an `<Activity>` boundary (`beta.performance.reactActivityMode`); `useObservable`
     // keeps the last value across that, and re-emitting the initial status would flash
     // "Resolving locations..." over locations that are already known.
     return defer(() => (hasResolved ? resolved$ : resolved$.pipe(startWith(initialResult))))

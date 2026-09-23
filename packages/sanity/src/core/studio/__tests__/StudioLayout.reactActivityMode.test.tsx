@@ -13,7 +13,7 @@ import {StudioLayoutComponent} from '../StudioLayoutComponent'
 
 const workspace = vi.hoisted(() => ({
   tools: [] as Tool[],
-  keepInactiveToolsMounted: false,
+  reactActivityMode: false,
 }))
 
 const telemetryLog = vi.hoisted(() => vi.fn())
@@ -27,7 +27,7 @@ vi.mock('../workspace', () => ({
     name: 'test-workspace',
     title: 'Test Workspace',
     tools: workspace.tools,
-    beta: {keepInactiveToolsMounted: {enabled: workspace.keepInactiveToolsMounted}},
+    beta: {performance: {reactActivityMode: workspace.reactActivityMode}},
   }),
 }))
 
@@ -151,7 +151,7 @@ function TestRouter({
 }
 
 function renderStudio(options: {enabled: boolean}) {
-  workspace.keepInactiveToolsMounted = options.enabled
+  workspace.reactActivityMode = options.enabled
 
   return render(
     <TestRouter tools={workspace.tools} initialPath="/structure">
@@ -172,7 +172,7 @@ function switchTo(toolName: string) {
   return userEvent.click(screen.getByTestId(`tool-link-${toolName}`))
 }
 
-describe('StudioLayoutComponent with beta.keepInactiveToolsMounted', () => {
+describe('StudioLayoutComponent with beta.performance.reactActivityMode', () => {
   beforeEach(() => {
     workspace.tools = ['structure', 'presentation', 'vision', 'media'].map(makeTool)
   })

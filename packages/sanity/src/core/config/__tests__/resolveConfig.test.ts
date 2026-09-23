@@ -734,24 +734,24 @@ describe('beta document group inventory config', () => {
   })
 })
 
-describe('beta keep inactive tools mounted config', () => {
+describe('beta performance react activity mode config', () => {
   const projectId = 'ppsg7ml5'
   const dataset = 'production'
 
   it('defaults to false', async () => {
     const source = await createSourceFromConfig({projectId, dataset})
 
-    expect(source.beta?.keepInactiveToolsMounted?.enabled).toBe(false)
+    expect(source.beta?.performance?.reactActivityMode).toBe(false)
   })
 
   it('resolves from root config', async () => {
     const source = await createSourceFromConfig({
       projectId,
       dataset,
-      beta: {keepInactiveToolsMounted: {enabled: true}},
+      beta: {performance: {reactActivityMode: true}},
     })
 
-    expect(source.beta?.keepInactiveToolsMounted?.enabled).toBe(true)
+    expect(source.beta?.performance?.reactActivityMode).toBe(true)
   })
 
   it('resolves from plugin config', async () => {
@@ -760,13 +760,13 @@ describe('beta keep inactive tools mounted config', () => {
       dataset,
       plugins: [
         definePlugin({
-          name: 'sanity/beta-keep-inactive-tools-mounted',
-          beta: {keepInactiveToolsMounted: {enabled: true}},
+          name: 'sanity/beta-react-activity-mode',
+          beta: {performance: {reactActivityMode: true}},
         })(),
       ],
     })
 
-    expect(source.beta?.keepInactiveToolsMounted?.enabled).toBe(true)
+    expect(source.beta?.performance?.reactActivityMode).toBe(true)
   })
 
   it('lets root config override plugin config', async () => {
@@ -775,45 +775,43 @@ describe('beta keep inactive tools mounted config', () => {
       dataset,
       plugins: [
         definePlugin({
-          name: 'sanity/beta-keep-inactive-tools-mounted',
-          beta: {keepInactiveToolsMounted: {enabled: true}},
+          name: 'sanity/beta-react-activity-mode',
+          beta: {performance: {reactActivityMode: true}},
         })(),
       ],
-      beta: {keepInactiveToolsMounted: {enabled: false}},
+      beta: {performance: {reactActivityMode: false}},
     })
 
-    expect(source.beta?.keepInactiveToolsMounted?.enabled).toBe(false)
+    expect(source.beta?.performance?.reactActivityMode).toBe(false)
   })
 
-  it('throws when the namespace is not an object', async () => {
+  it('throws when the performance namespace is not an object', async () => {
     await expect(
       createSourceFromConfig({
         projectId,
         dataset,
         beta: {
           // @ts-expect-error should be an object
-          keepInactiveToolsMounted: true,
+          performance: true,
         },
       }),
-    ).rejects.toThrow(
-      'Expected `beta.keepInactiveToolsMounted` to be an object, but received boolean',
-    )
+    ).rejects.toThrow('Expected `beta.performance` to be an object, but received boolean')
   })
 
-  it('throws when enabled is not a boolean', async () => {
+  it('throws when reactActivityMode is not a boolean', async () => {
     await expect(
       createSourceFromConfig({
         projectId,
         dataset,
         beta: {
-          keepInactiveToolsMounted: {
+          performance: {
             // @ts-expect-error should be a boolean
-            enabled: 'yes',
+            reactActivityMode: 'yes',
           },
         },
       }),
     ).rejects.toThrow(
-      'Expected `beta.keepInactiveToolsMounted.enabled` to be a boolean, but received string',
+      'Expected `beta.performance.reactActivityMode` to be a boolean, but received string',
     )
   })
 })
