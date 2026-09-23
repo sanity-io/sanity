@@ -209,6 +209,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
                 openPopup={openPopup}
                 previewLocationOrigin={previewLocationOrigin}
                 previewLocationRoute={previewLocationRoute}
+                previewUrlRef={previewUrlRef}
                 perspective={perspective}
                 variant={variant}
                 targetOrigin={targetOrigin}
