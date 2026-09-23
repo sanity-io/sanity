@@ -109,7 +109,11 @@ export interface ListItem {
   displayOptions?: ListItemDisplayOptions
   /** List item schema type. See {@link SchemaType} */
   schemaType?: SchemaType
-  /** Document schema type to show a live count for. See {@link ListItemCount} */
+  /**
+   * Document schema type to show a live count for. Derived during serialization from
+   * `displayOptions.showCount` and the item's schema type and child; authoring it directly has no
+   * effect. See {@link ListItemCount}
+   */
   count?: ListItemCount
 }
 
@@ -422,8 +426,10 @@ function hasDefaultDocumentTypeQuery(child: DocumentListShapedChild, typeName: s
  * no child, the built-in document type child for that same type, or a document list carrying the
  * default whole-type query. Any other child withholds the count, so a badge never contradicts the
  * list it sits on.
+ *
+ * @internal
  */
-function resolveListItemCount(
+export function resolveListItemCount(
   child: PartialListItem['child'],
   schemaType: SchemaType | undefined,
   id: string,

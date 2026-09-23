@@ -1,9 +1,11 @@
+import {type Schema, type SchemaType} from '@sanity/types'
 import {of} from 'rxjs'
 import {type SchemaPluginOptions} from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {getMockSource} from '../../../../test/testUtils/getMockWorkspaceFromConfig'
 import {createStructureBuilder} from '../createStructureBuilder'
+import {type ListItem} from '../ListItem'
 import {type StructureBuilder} from '../types'
 
 const mockSchema: SchemaPluginOptions = {
@@ -289,5 +291,83 @@ describe('ListItemBuilder count descriptor', () => {
 
     expect(serialized.count).toEqual(CANONICAL_COUNT)
     expect(getWithheldWarnings()).toEqual([])
+  })
+})
+
+describe('raw list item count descriptor', () => {
+  let S: StructureBuilder
+  let schema: Schema
+
+  beforeEach(async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const source = await getMockSource({config: {schema: mockSchema}})
+    schema = source.schema
+    S = createStructureBuilder({source, perspectiveStack: []})
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  function serializeRawItem(item: ListItem): ListItem {
+    const [serialized] = S.list().id('root').title('Root').items([item]).serialize().items
+    return serialized as ListItem
+  }
+
+  function authorType(): SchemaType {
+    return schema.get('author') as SchemaType
+  }
+
+  it('drops an authored count when the raw item never asked to show one', () => {
+    const serialized = serializeRawItem({
+      id: 'authors',
+      type: 'listItem',
+      title: 'Authors',
+      schemaType: authorType(),
+      count: {type: 'book'},
+    })
+
+    expect(serialized.count).toBeUndefined()
+  })
+
+  it('re-derives the count from the raw item schema type, ignoring the authored one', () => {
+    const serialized = serializeRawItem({
+      id: 'authors',
+      type: 'listItem',
+      title: 'Authors',
+      schemaType: authorType(),
+      displayOptions: {showCount: true},
+      count: {type: 'book'},
+    })
+
+    expect(serialized.count).toEqual(CANONICAL_COUNT)
+  })
+
+  it('emits the canonical descriptor for a legitimate raw item', () => {
+    const serialized = serializeRawItem({
+      id: 'authors',
+      type: 'listItem',
+      title: 'Authors',
+      schemaType: authorType(),
+      displayOptions: {showCount: true},
+    })
+
+    expect(serialized.count).toEqual(CANONICAL_COUNT)
+    expect(getWithheldWarnings()).toEqual([])
+  })
+
+  it('withholds the count when the raw item resolves no document type', () => {
+    const serialized = serializeRawItem({
+      id: 'featured',
+      type: 'listItem',
+      title: 'Featured',
+      displayOptions: {showCount: true},
+      count: {type: 'author'},
+    })
+
+    expect(serialized.count).toBeUndefined()
+    expect(getWithheldWarnings()).toEqual([
+      expect.stringContaining('list item "featured": it resolves no document type to count'),
+    ])
   })
 })
