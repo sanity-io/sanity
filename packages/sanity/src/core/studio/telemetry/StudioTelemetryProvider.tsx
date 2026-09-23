@@ -1,3 +1,5 @@
+import {version as portableTextEditorVersion} from '@portabletext/editor/package.json'
+import {version as appSdkVersion} from '@sanity/sdk-react/package.json'
 import {
   createBatchedStore,
   type CreateBatchedStoreOptions,
@@ -117,6 +119,8 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
       },
       studioVersion: SANITY_VERSION,
       reactVersion,
+      portableTextEditorVersion,
+      appSdkVersion,
       environment: isProd ? 'production' : 'development',
       connection: getConnection(),
 

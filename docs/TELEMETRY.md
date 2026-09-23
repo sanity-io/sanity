@@ -200,6 +200,8 @@ Every event in a batch is enriched with a `TelemetryContext` object before sendi
         screen: { density: 2, height: 1080, width: 1920, innerHeight: 900, innerWidth: 1600 },
         studioVersion: "5.18.0",
         reactVersion: "19.2.3",
+        portableTextEditorVersion: "8.1.5",
+        appSdkVersion: "3.3.0",
         environment: "production",
         connection: { effectiveType: "4g", downlink: 10, rtt: 50, saveData: false },
 
@@ -219,7 +221,7 @@ Every event in a batch is enriched with a `TelemetryContext` object before sendi
 ```
 
 The context is stored in a `useRef` so that dynamic values (workspace, tool, org) can update without re-creating the batched store.
-Workspace, plugin, and schema type counts are derived from the already-resolved Studio configuration. Connection quality uses the browser Network Information API when available. None of these fields add Sanity API requests.
+The Portable Text Editor and App SDK versions come from those packages' own `package.json`. `sanity` declares both as semver ranges, so each install resolves its own version. Workspace, plugin, and schema type counts are derived from the already-resolved Studio configuration. Connection quality uses the browser Network Information API when available. None of these fields add Sanity API requests.
 
 ## Consent
 

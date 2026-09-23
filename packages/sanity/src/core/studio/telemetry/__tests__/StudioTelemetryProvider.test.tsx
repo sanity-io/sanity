@@ -185,6 +185,8 @@ describe('StudioTelemetryProvider', () => {
               context: expect.objectContaining({
                 // Static context
                 studioVersion: '3.0.0-test',
+                portableTextEditorVersion: expect.stringMatching(/^\d+\.\d+\.\d+/),
+                appSdkVersion: expect.stringMatching(/^\d+\.\d+\.\d+/),
                 environment: 'development',
                 // Dynamic context
                 orgId: 'org-123',
