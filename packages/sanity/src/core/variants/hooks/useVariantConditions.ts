@@ -25,7 +25,7 @@ import {
 export type UseVariantConditionsResult =
   | {mode: 'freeform'}
   | {mode: 'mapped'; status: 'loading'}
-  | {mode: 'mapped'; status: 'error'; error: Error; retry: () => void}
+  | {mode: 'mapped'; status: 'error'; error: Error; retry?: () => void}
   | {mode: 'mapped'; status: 'ready'; definitions: NormalizedVariantConditionMap[]}
 
 const RESOLVE_VARIANT_CONDITIONS_TIMEOUT_MS = 30_000
@@ -33,7 +33,6 @@ const RESOLVE_VARIANT_CONDITIONS_TIMEOUT_MS = 30_000
 type ConditionsResolver = Exclude<VariantConditions, unknown[]>
 
 const LOADING_RESULT: UseVariantConditionsResult = {mode: 'mapped', status: 'loading'}
-const NOOP = () => undefined
 
 const resolverIds = new WeakMap<ConditionsResolver, number>()
 let nextResolverId = 0
@@ -92,12 +91,14 @@ function toReadyResult(value: unknown): Extract<UseVariantConditionsResult, {sta
 
 function toResolveError(
   resolveError: unknown,
-  retry: () => void,
+  retry?: () => void,
 ): Extract<UseVariantConditionsResult, {status: 'error'}> {
   const error = toError(resolveError)
   console.error('[sanity] Failed to resolve `beta.variants.conditions`', error)
 
-  return {mode: 'mapped', status: 'error', error, retry}
+  return retry
+    ? {mode: 'mapped', status: 'error', error, retry}
+    : {mode: 'mapped', status: 'error', error}
 }
 
 function resolveConditions$(
@@ -142,7 +143,7 @@ const getStaticResult$ = memoize(function getStaticResult$(
   try {
     return of(toReadyResult(conditions))
   } catch (error) {
-    return of(toResolveError(error, NOOP))
+    return of(toResolveError(error))
   }
 }, staticConditionsKey)
 
@@ -168,7 +169,6 @@ function getVariantConditions$(
     mode: 'mapped',
     status: 'error',
     error: new Error('Expected conditions to be an array or a function'),
-    retry: NOOP,
   })
 }
 

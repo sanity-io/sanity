@@ -118,9 +118,15 @@ describe('useVariantConditions', () => {
     shouldFail = false
 
     await act(async () => {
-      if (result.current.mode === 'mapped' && result.current.status === 'error') {
-        result.current.retry()
+      if (
+        result.current.mode !== 'mapped' ||
+        result.current.status !== 'error' ||
+        !result.current.retry
+      ) {
+        throw new Error('Expected a retryable error result')
       }
+
+      result.current.retry()
     })
 
     await waitFor(() => {
@@ -324,6 +330,10 @@ describe('useVariantConditions', () => {
         message: 'Expected `beta.variants.conditions` to include at least one valid entry',
       }),
     })
+    if (result.current.mode !== 'mapped' || result.current.status !== 'error') {
+      throw new Error('Expected a static conditions error')
+    }
+    expect(result.current.retry).toBeUndefined()
     expect(console.error).toHaveBeenCalledWith(
       '[sanity] Failed to resolve `beta.variants.conditions`',
       expect.objectContaining({
@@ -353,6 +363,10 @@ describe('useVariantConditions', () => {
         message: 'Expected `beta.variants.conditions` to include at least one valid entry',
       }),
     })
+    if (result.current.mode !== 'mapped' || result.current.status !== 'error') {
+      throw new Error('Expected a static conditions error')
+    }
+    expect(result.current.retry).toBeUndefined()
   })
 
   it('treats an empty resolved list as an error that can be retried', async () => {
@@ -390,9 +404,15 @@ describe('useVariantConditions', () => {
     empty = false
 
     await act(async () => {
-      if (result.current.mode === 'mapped' && result.current.status === 'error') {
-        result.current.retry()
+      if (
+        result.current.mode !== 'mapped' ||
+        result.current.status !== 'error' ||
+        !result.current.retry
+      ) {
+        throw new Error('Expected a retryable error result')
       }
+
+      result.current.retry()
     })
 
     await waitFor(() => {

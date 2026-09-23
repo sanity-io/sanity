@@ -766,6 +766,7 @@ describe('CreateVariantDialog mapped conditions', () => {
     })
 
     expect(await screen.findByTestId('variant-form-conditions-error')).toBeInTheDocument()
+    expect(screen.getByText('Unable to load conditions')).toBeInTheDocument()
     expect(screen.queryByTestId('variant-form-condition-key')).not.toBeInTheDocument()
     expect(screen.queryByTestId('variant-form-condition-key-menu-button')).not.toBeInTheDocument()
 
@@ -781,6 +782,8 @@ describe('CreateVariantDialog mapped conditions', () => {
     await renderMappedDialog([])
 
     expect(await screen.findByTestId('variant-form-conditions-error')).toBeInTheDocument()
+    expect(screen.getByText('No valid conditions are configured')).toBeInTheDocument()
+    expect(screen.queryByRole('button', {name: 'Retry'})).not.toBeInTheDocument()
     expect(screen.queryByTestId('variant-form-condition-key-menu-button')).not.toBeInTheDocument()
     expect(screen.queryByTestId('variant-form-condition-value-menu-button')).not.toBeInTheDocument()
 

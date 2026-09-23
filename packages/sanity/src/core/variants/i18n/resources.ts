@@ -157,6 +157,8 @@ const variantsLocaleStrings = {
   'dialog.create.conditions.loading': 'Loading conditions',
   /** Error message when configured conditions fail to load. */
   'dialog.create.conditions.error': 'Unable to load conditions',
+  /** Error message when the static conditions list is empty or has no valid entries. */
+  'dialog.create.conditions.invalid': 'No valid conditions are configured',
   /** Retry action when configured conditions fail to load. */
   'dialog.create.conditions.retry': 'Retry',
   /** Remove condition action for the create variant dialog. */
