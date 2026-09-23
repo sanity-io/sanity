@@ -4,7 +4,6 @@ import {Code} from '@sanity/ui/code'
 import {type ErrorInfo, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {type Path, useTranslation} from 'sanity'
 import {PaneLayout} from 'sanity/structure'
-import {styled} from 'styled-components'
 
 import {decodeJsonParams} from '../../router/utils/jsonParamsEncoding'
 import {DocumentPane as StructureDocumentPane} from '../../structure/panes/document/DocumentPane'
@@ -21,10 +20,7 @@ import {
   type StructureDocumentPaneParams,
 } from '../types'
 import {usePresentationTool} from '../usePresentationTool'
-
-const WrappedCode = styled(Code)`
-  white-space: pre-wrap;
-`
+import {wrappedCode} from './DocumentPane.css'
 
 export function DocumentPane(props: {
   documentId: string
@@ -99,7 +95,9 @@ export function DocumentPane(props: {
               <Label muted size={0}>
                 {t('presentation-error.label')}
               </Label>
-              <WrappedCode size={1}>{errorParams.error.message}</WrappedCode>
+              <Code className={wrappedCode} size={1}>
+                {errorParams.error.message}
+              </Code>
             </Stack>
           </Card>
         )}

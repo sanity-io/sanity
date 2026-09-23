@@ -1,10 +1,11 @@
-import {Box, Button, Card, Dialog, Flex, Spinner, Stack, Text} from '@sanity/ui'
+import {Box, Button, Card, Dialog, Spinner, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {UserAvatar, useCurrentUser, usePresenceStore, useUserListWithPermissions} from 'sanity'
 import {
   pathToString,
   type PresenceLocation,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {Flex} from 'ui5'
 
 import {type PresenceDebugTarget} from './context'
 
@@ -61,7 +62,7 @@ export function PresenceDebugDialog(props: PresenceDebugDialogProps) {
       onClose={onClose}
       width={0}
       footer={
-        <Flex justify="space-between" padding={2}>
+        <Flex justifyContent="space-between" padding={2}>
           <Button fontSize={1} mode="ghost" text="Remove all" onClick={clearAll} />
           <Button fontSize={1} text="Done" tone="primary" onClick={onClose} />
         </Flex>
@@ -78,7 +79,7 @@ export function PresenceDebugDialog(props: PresenceDebugDialogProps) {
         </Card>
 
         {loading && (
-          <Flex justify="center" padding={3}>
+          <Flex justifyContent="center" padding={3}>
             <Spinner muted />
           </Flex>
         )}
@@ -97,7 +98,7 @@ export function PresenceDebugDialog(props: PresenceDebugDialogProps) {
                   onClick={() => place(user.id)}
                   padding={1}
                 >
-                  <Flex align="center" gap={2}>
+                  <Flex alignItems="center" gap={2}>
                     <UserAvatar user={user} size={0} />
                     <Box flex={1}>
                       <Text size={1} textOverflow="ellipsis">

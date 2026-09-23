@@ -4,12 +4,11 @@ import {
   // oxlint-disable-next-line no-restricted-imports
   Button,
   Card,
-  Stack,
   Text,
 } from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useCallback} from 'react'
-import {Grid, Box} from 'ui5'
+import {Box, Flex, Grid, VStack} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
@@ -53,7 +52,7 @@ export function InvalidValue(props: InvalidValueProps) {
     <Alert
       title={<>{t('inputs.portable-text.invalid-value.title')}</>}
       suffix={
-        <Stack padding={2}>
+        <Flex padding={2} flexDirection="column">
           {resolution.action && (
             <Grid
               gridTemplateColumns={['repeat(1, minmax(0, 1fr))', 'repeat(2, minmax(0, 1fr))']}
@@ -88,10 +87,10 @@ export function InvalidValue(props: InvalidValueProps) {
               </Text>
             )}
           </Box>
-        </Stack>
+        </Flex>
       }
     >
-      <Stack gap={3}>
+      <VStack gap={3}>
         <Text as="p" muted size={1}>
           <Translate t={t} i18nKey={resolution.i18n.description} values={resolution.i18n.values} />
         </Text>
@@ -99,7 +98,7 @@ export function InvalidValue(props: InvalidValueProps) {
         <Card border overflow="auto" padding={2} tone="inherit">
           <Code language="json">{JSON.stringify(resolution.item, null, 2)}</Code>
         </Card>
-      </Stack>
+      </VStack>
     </Alert>
   )
 }

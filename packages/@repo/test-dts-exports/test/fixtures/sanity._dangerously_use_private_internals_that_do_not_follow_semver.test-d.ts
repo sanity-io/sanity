@@ -114,8 +114,6 @@ import type {
   CorsOriginErrorScreen,
   CorsProbeOutcome,
   CreatableTargetDocument,
-  createAuthStore,
-  CreateAuthStoreOptions,
   createBufferedDocument,
   createConnectionStatusStore,
   createDefaultIcon,
@@ -1212,12 +1210,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('CreatableTargetDocument', () => {
     expectTypeOf<CreatableTargetDocument>().toBeObject()
-  })
-  test('createAuthStore', () => {
-    expectTypeOf<typeof createAuthStore>().not.toBeNever()
-  })
-  test('CreateAuthStoreOptions', () => {
-    expectTypeOf<CreateAuthStoreOptions>().not.toBeNever()
   })
   test('createBufferedDocument', () => {
     expectTypeOf<typeof createBufferedDocument>().not.toBeNever()

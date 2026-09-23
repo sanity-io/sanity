@@ -89,11 +89,13 @@ export async function runAbScenario(options: {
   reference: RunningSide
   experiment: RunningSide
   instrumentation: string
+  /** The bundled style probe (runner/inject.ts), taken on both sides. */
+  styleProbe?: string
   rng: Rng
   config?: Partial<OrchestratorConfig>
   log?: (message: string) => void
 }): Promise<AbScenarioResult> {
-  const {browser, scenario, reference, experiment, instrumentation, rng} = options
+  const {browser, scenario, reference, experiment, instrumentation, styleProbe, rng} = options
   const config = {...DEFAULT_ORCHESTRATOR_CONFIG, ...options.config}
   const log = options.log ?? (() => {})
 
@@ -119,6 +121,7 @@ export async function runAbScenario(options: {
           running,
           scenario,
           instrumentation,
+          styleProbe,
           config: config.sessionConfig,
         })
         bucket.push(result)
