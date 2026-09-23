@@ -1,31 +1,23 @@
-import {styled} from 'styled-components'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 import {Box} from 'ui5'
 
-export const InlineBox = styled(Box)`
-  &:not([hidden]) {
-    display: inline;
-    align-items: center;
+import {inlineBox, popoverContainer, previewContainer} from './styledComponents.css'
 
-    &[data-changed] {
-      cursor: pointer;
-    }
-  }
-`
+export function InlineBox(props: ComponentProps<typeof Box>) {
+  const {className, ...rest} = props
 
-export const PreviewContainer = styled(Box)`
-  &:not([hidden]) {
-    display: inline-flex;
-    align-items: center;
+  return <Box {...rest} className={clsx(inlineBox, className)} />
+}
 
-    ${InlineBox} [data-ui='Text'],
-    ${InlineBox} [data-ui="Icon"] {
-      opacity: 0.5;
-    }
-  }
-`
+export function PreviewContainer(props: ComponentProps<typeof Box>) {
+  const {className, ...rest} = props
 
-export const PopoverContainer = styled(Box)`
-  min-width: 160px;
-  max-height: 40vh;
-  overflow-y: auto;
-`
+  return <Box {...rest} className={clsx(previewContainer, className)} />
+}
+
+export function PopoverContainer(props: ComponentProps<typeof Box>) {
+  const {className, ...rest} = props
+
+  return <Box {...rest} className={clsx(popoverContainer, className)} />
+}
