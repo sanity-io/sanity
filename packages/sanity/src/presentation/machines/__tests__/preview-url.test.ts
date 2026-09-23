@@ -1,7 +1,7 @@
 import {of, Subject} from 'rxjs'
 import {type PermissionCheckResult, type SanityClient} from 'sanity'
 import {describe, expect, test, vi} from 'vitest'
-import {createActor, fromObservable, fromPromise, waitFor} from 'xstate'
+import {createActor, fromObservable, fromPromise, SimulatedClock, waitFor} from 'xstate'
 
 import {promiseWithResolvers} from '../../../core/util/promiseWithResolvers'
 import {defineResolveAllowPatternsActor} from '../../actors/resolve-allow-patterns'
@@ -1118,6 +1118,60 @@ describe('Preview URL machine', () => {
       })
       snapshot = await waitFor(actor, (state) => !state.hasTag('busy'))
       expect(snapshot.context.previewUrl?.origin).toBe('http://localhost:5173')
+    })
+
+    test('clears preview mode and its secret when switching to an origin without preview mode', async () => {
+      const clock = new SimulatedClock()
+      const ttl = 1000 * 60 * 60
+      let createdSecrets = 0
+      const actor = createActor(
+        previewUrlMachine.provide({
+          actors: {
+            ...mockActors({
+              allowOption: ['http://localhost:*'],
+              previewUrlOption: {
+                initial: 'http://localhost:3000',
+                previewMode: ({targetOrigin}) =>
+                  targetOrigin === 'http://localhost:3000'
+                    ? {enable: '/api/draft-mode/enable'}
+                    : false,
+              },
+            }),
+            'create preview secret': fromPromise(async () => ({
+              secret: `secret-${++createdSecrets}`,
+              expiresAt: new Date(Date.now() + ttl),
+            })),
+          },
+        }),
+        {clock, input: {previewSearchParam: null}},
+      ).start()
+
+      let snapshot = await waitFor(actor, (state) => !state.hasTag('busy'))
+      expect(snapshot.value).toEqual({previewMode: 'success'})
+      expect(snapshot.context.previewUrlSecret?.secret).toBe('secret-1')
+
+      /**
+       * While preview mode is active, an expired secret is replaced
+       */
+      clock.increment(ttl)
+      snapshot = await waitFor(actor, (state) => !state.hasTag('busy'))
+      expect(snapshot.context.previewUrlSecret?.secret).toBe('secret-2')
+
+      actor.send({
+        type: 'set preview search param',
+        previewSearchParam: 'http://localhost:3333/blog',
+      })
+      snapshot = await waitFor(actor, (state) => !state.hasTag('busy'))
+      expect(snapshot.value).toBe('success')
+      expect(snapshot.context.previewUrl?.toString()).toBe('http://localhost:3333/blog')
+
+      /**
+       * Once preview mode is off, the expiry of the previous secret no longer replaces it
+       */
+      clock.increment(ttl)
+      snapshot = actor.getSnapshot()
+      expect(createdSecrets).toBe(2)
+      expect(snapshot.context).toMatchObject({previewMode: null, previewUrlSecret: null})
     })
   })
 })
