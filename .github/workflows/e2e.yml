@@ -378,6 +378,7 @@ jobs:
           retention-days: 30
 
   deploy-report:
+    timeout-minutes: 10
     needs: [install, deploy-preview, playwright-test, merge-reports]
     if: always() && needs.install.outputs.has_code_changes == 'true' && needs.merge-reports.result == 'success'
     runs-on: ubuntu-latest
