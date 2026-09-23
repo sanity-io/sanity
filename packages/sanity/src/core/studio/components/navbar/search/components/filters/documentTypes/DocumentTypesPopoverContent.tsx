@@ -1,10 +1,10 @@
 import {type Schema, type SchemaType} from '@sanity/types'
-import {Stack, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {MenuDivider} from '@sanity/ui/menu'
 import partition from 'lodash-es/partition.js'
 import {type ChangeEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Box, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../../../../ui-components/button/Button'
 import {CommandList} from '../../../../../../../components/commandList/CommandList'
@@ -180,7 +180,7 @@ function ClearButton({onClick, selectedTypes}: {onClick: () => void; selectedTyp
 
   return (
     <ClearButtonBox padding={1}>
-      <Stack>
+      <VStack>
         <Button
           aria-label={t('search.action.clear-type-filters-aria-label')}
           data-name="type-filter-button"
@@ -190,7 +190,7 @@ function ClearButton({onClick, selectedTypes}: {onClick: () => void; selectedTyp
           text={t('search.action.clear-type-filters-label')}
           tone="primary"
         />
-      </Stack>
+      </VStack>
     </ClearButtonBox>
   )
 }

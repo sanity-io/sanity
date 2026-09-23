@@ -1,18 +1,8 @@
 /* oxlint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-string-literals -- Diagnostics uses fixed English terminology so support and users see the same technical labels. */
-import {
-  Badge,
-  type BadgeTone,
-  Box,
-  Card,
-  Heading,
-  Stack,
-  Switch,
-  Text,
-  type TextAlign,
-} from '@sanity/ui'
+import {Badge, type BadgeTone, Box, Card, Heading, Switch, Text, type TextAlign} from '@sanity/ui'
 import {type ReactNode, useState} from 'react'
 import {styled} from 'styled-components'
-import {Grid, Flex, type GapProps} from 'ui5'
+import {Flex, Grid, type GapProps, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {type StudioDiagnostics} from '../../../diagnostics/gatherStudioDiagnostics'
@@ -71,7 +61,7 @@ export function DiagnosticsReport({
   ].filter(Boolean)
 
   return (
-    <Stack gap={5}>
+    <VStack gap={5}>
       <Card padding={3} radius={2} tone="transparent">
         <Flex alignItems="stretch" flexDirection={['column', 'row']} gap={5}>
           <Box flex={1}>
@@ -93,7 +83,7 @@ export function DiagnosticsReport({
             />
           </Box>
           <Flex alignItems="stretch" flexDirection={['column', 'row']} gap={4}>
-            <Stack gap={2}>
+            <VStack gap={2}>
               <Text muted size={1}>
                 UTC time
               </Text>
@@ -102,13 +92,13 @@ export function DiagnosticsReport({
                 checked={useUtc}
                 onChange={() => setUseUtc((current) => !current)}
               />
-            </Stack>
-            <Stack gap={2}>
+            </VStack>
+            <VStack gap={2}>
               <Text aria-hidden="true" muted size={1} style={{visibility: 'hidden'}}>
                 {runAgainLabel}
               </Text>
               <Button mode="default" onClick={onRunAgain} text={runAgainLabel} />
-            </Stack>
+            </VStack>
           </Flex>
         </Flex>
       </Card>
@@ -171,7 +161,7 @@ export function DiagnosticsReport({
         ) : null}
       </Grid>
 
-      <Stack gap={3}>
+      <VStack gap={3}>
         <RequestPerformanceReport
           diagnosticsCompletedAt={diagnostics.generatedAt}
           diagnosticsStartedAt={diagnostics.startedAt}
@@ -179,7 +169,7 @@ export function DiagnosticsReport({
           useUtc={useUtc}
         />
 
-        <Stack gap={2}>
+        <VStack gap={2}>
           <Heading as="h2" size={1}>
             Listen connection tests
           </Heading>
@@ -202,13 +192,13 @@ export function DiagnosticsReport({
               />
             </Card>
           </Grid>
-        </Stack>
+        </VStack>
 
-        <Stack gap={2}>
+        <VStack gap={2}>
           <Heading as="h2" size={1}>
             API request tests
           </Heading>
-          <Stack gap={2}>
+          <VStack gap={2}>
             {network.requests.map((request) => (
               <Card border key={request.path} padding={3} radius={2}>
                 <Flex
@@ -217,7 +207,7 @@ export function DiagnosticsReport({
                   gap={3}
                   justifyContent="space-between"
                 >
-                  <Stack flex={1} gap={2}>
+                  <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
                     <Text size={1} weight="semibold">
                       <CodeValue>{request.path}</CodeValue>
                     </Text>
@@ -226,7 +216,7 @@ export function DiagnosticsReport({
                         {request.detail || request.error}
                       </Text>
                     ) : null}
-                  </Stack>
+                  </Flex>
                   <Flex alignItems="center" gap={3}>
                     <Text muted size={1}>
                       {formatMilliseconds(request.durationMs)}
@@ -236,10 +226,10 @@ export function DiagnosticsReport({
                 </Flex>
               </Card>
             ))}
-          </Stack>
-        </Stack>
-      </Stack>
-    </Stack>
+          </VStack>
+        </VStack>
+      </VStack>
+    </VStack>
   )
 }
 
@@ -254,12 +244,12 @@ function ReportSection({
 }) {
   return (
     <Card border data-testid={testId} padding={4} radius={2}>
-      <Stack gap={4}>
+      <VStack gap={4}>
         <Heading as="h2" size={1}>
           {title}
         </Heading>
-        <Stack gap={3}>{children}</Stack>
-      </Stack>
+        <VStack gap={3}>{children}</VStack>
+      </VStack>
     </Card>
   )
 }
@@ -399,7 +389,7 @@ function ListenReport({
   title: string
 }) {
   return (
-    <Stack gap={4}>
+    <VStack gap={4}>
       <Flex alignItems="center" gap={2} flexWrap="wrap">
         <Text size={1} weight="semibold">
           {title}
@@ -428,7 +418,7 @@ function ListenReport({
           {result.error}
         </Text>
       ) : null}
-    </Stack>
+    </VStack>
   )
 }
 
@@ -459,14 +449,14 @@ function getMetricAlignment(index: number): TextAlign {
 
 function Metric({align, label, value}: MetricProps & {align: TextAlign[]}) {
   return (
-    <Stack gap={2}>
+    <VStack gap={2}>
       <Text align={align} muted size={1}>
         {label}
       </Text>
       <Text align={align} size={1} weight="semibold">
         {value ?? 'Unknown'}
       </Text>
-    </Stack>
+    </VStack>
   )
 }
 

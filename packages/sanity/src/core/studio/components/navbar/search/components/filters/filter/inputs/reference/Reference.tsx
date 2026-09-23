@@ -4,9 +4,9 @@ import {
   type ReferenceValue,
   type SchemaType,
 } from '@sanity/types'
-import {Card, Stack} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
-import {Box} from 'ui5'
+import {Box, VStack} from 'ui5'
 
 import {Button} from '../../../../../../../../../../ui-components/button/Button'
 import {useSchema} from '../../../../../../../../../hooks/useSchema'
@@ -72,7 +72,7 @@ export function SearchFilterReferenceInput({
   return (
     <Box style={{width: 'min(calc(100vw - 40px), 420px)'}}>
       {value?._ref && value?._type ? (
-        <Stack gap={3}>
+        <VStack gap={3}>
           <Card padding={1} radius={1} shadow={1}>
             <SearchResultItem
               documentId={value._ref}
@@ -87,7 +87,7 @@ export function SearchFilterReferenceInput({
             text={t('search.filter-reference-clear')}
             tone="critical"
           />
-        </Stack>
+        </VStack>
       ) : (
         <ReferenceAutocomplete onSelect={handleChange} types={searchableTypes} value={value} />
       )}
