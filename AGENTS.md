@@ -449,11 +449,16 @@ a chunk contains. Rules that keep the graph small:
   `PreloadStudioShell` (same file as the shell facades), mounted inside `AuthBoundary`, so the
   fetch overlaps with workspace loading.
 - Locale bundles for the studio's own namespaces use `resources: () => import('./resources')`
-  (`src/core/i18n/bundles/studio/`, like structure, presentation and releases); the login screen
-  does not use them. Tests that build an i18n instance themselves and assert synchronously must
-  wait for the namespaces (`createTestProvider` does `await i18next.loadNamespaces(…)` after
-  `init()`: `prepareI18n` already started an `init()`, and a second `init()` resolves as soon as
-  the first is in flight, before lazy bundles have arrived).
+  (`src/core/i18n/bundles/studio/`, like structure, presentation and releases). The fetch starts
+  with `prepareI18n`, before login, but the login screen (`WorkspaceAuth`, `LoggedOutToast`) and
+  the config, CORS and schema error screens translate before `LocaleProvider` and its `Suspense`
+  mount, so `StudioProvider` wraps the whole tree in a `Suspense` with the loading block as
+  fallback: a `useTranslation` that suspends before login shows that instead of suspending the
+  root (`StudioProvider.test.tsx` covers the logged-out case). Tests that build an i18n instance
+  themselves and assert synchronously must wait for the namespaces (`createTestProvider` does
+  `await i18next.loadNamespaces(…)` after `init()`: `prepareI18n` already started an `init()`,
+  and a second `init()` resolves as soon as the first is in flight, before lazy bundles have
+  arrived).
 - Exporting a `memo()`-wrapped component through a facade changes `typeof` from `object` to
   `function` in `test/__snapshots__/exports.test.ts.snap`, and the generated d.ts fixtures in
   `@repo/test-dts-exports` switch from `not.toBeNever()` to `toBeFunction()`; regenerate both.
