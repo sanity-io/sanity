@@ -221,7 +221,16 @@ Every event in a batch is enriched with a `TelemetryContext` object before sendi
 ```
 
 The context is stored in a `useRef` so that dynamic values (workspace, tool, org) can update without re-creating the batched store.
-The Portable Text Editor and App SDK versions come from those packages' own `package.json`. `sanity` declares both as semver ranges, so each install resolves its own version. Workspace, plugin, and schema type counts are derived from the already-resolved Studio configuration. Connection quality uses the browser Network Information API when available. None of these fields add Sanity API requests.
+Workspace, plugin, and schema type counts are derived from the already-resolved Studio configuration. Connection quality uses the browser Network Information API when available. None of these fields add Sanity API requests.
+
+### Dependency versions
+
+`portableTextEditorVersion` and `appSdkVersion` come from `@portabletext/editor` and `@sanity/sdk-react`'s own `package.json`. The `sanity` npm build leaves that JSON import external, which has two consequences for reading the data:
+
+- A studio built from its own `node_modules` reports the versions it resolved. `sanity` declares both as semver ranges, so these can run ahead of the versions `sanity` was released against.
+- An auto-updating studio reports the versions the CDN bundle was built against. That bundle inlines both manifests, so every studio on a given bundle reports the same pair regardless of what the project installed.
+
+The published ESM therefore carries an `import ... with {type: 'json'}` statement. A studio embedded in another app needs a bundler that supports import attributes; the Sanity CLI's own build does.
 
 ## Consent
 
