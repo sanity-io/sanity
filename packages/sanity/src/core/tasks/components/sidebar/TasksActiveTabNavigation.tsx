@@ -1,9 +1,8 @@
 import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
-import {Text} from '@sanity/ui'
-import {getTheme_v2} from '@sanity/ui/theme'
+import {Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {useCallback} from 'react'
-import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
@@ -13,20 +12,11 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useTasksNavigation} from '../../context/navigation/useTasksNavigation'
 import {tasksLocaleNamespace} from '../../i18n'
 import {type TaskDocument} from '../../types'
+import {divider, inputBorderColorVar} from './TasksActiveTabNavigation.css'
 
 interface TasksActiveTabNavigationProps {
   items: TaskDocument[]
 }
-
-const Divider = styled.div((props) => {
-  const theme = getTheme_v2(props.theme)
-
-  return `
-    height: 25px;
-    width: 1px;
-    background-color: ${theme.color.input.default.enabled.border};
-  `
-})
 
 /**
  * @internal
@@ -52,6 +42,7 @@ export function TasksActiveTabNavigation(props: TasksActiveTabNavigationProps) {
   }, [currentItemIndex, items, setViewMode])
 
   const {t} = useTranslation(tasksLocaleNamespace)
+  const {color} = useThemeV2()
 
   if (!items.length) return null
   return (
@@ -76,7 +67,10 @@ export function TasksActiveTabNavigation(props: TasksActiveTabNavigationProps) {
           icon={ChevronRightIcon}
           onClick={goToNextTask}
         />
-        <Divider />
+        <div
+          className={divider}
+          style={assignInlineVars({[inputBorderColorVar]: color.input.default.enabled.border})}
+        />
       </Flex>
     </TooltipDelayGroupProvider>
   )
