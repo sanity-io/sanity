@@ -22,6 +22,7 @@ const DEFAULT_PERSPECTIVE = {
   selectedPerspective: 'drafts' as const,
   perspectiveStack: ['drafts'],
   excludedPerspectives: [],
+  selectedVariantsName: [] as string[],
 }
 
 const DRAFT_SIBLING = {_id: 'drafts.doc-123'}

@@ -24,6 +24,7 @@ vi.mock('sanity', () => ({
       ? title
       : variant._id.replace(/^_\.variants\./, '')
   },
+  getDefaultVariant: <T,>(selected?: readonly T[]) => selected?.[0],
 }))
 
 vi.stubGlobal(

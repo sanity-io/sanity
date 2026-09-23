@@ -51,6 +51,7 @@ vi.mock('sanity', () => ({
   getReleaseIdFromReleaseDocumentId: (id: string) => id.replace(/^_.releases./, ''),
   isCardinalityOneRelease: () => false,
   sortReleases: <T,>(releases: T[]) => releases,
+  getDefaultVariant: <T,>(selected?: readonly T[]) => selected?.[0],
 }))
 
 vi.mock('./QueryRecall', () => ({
