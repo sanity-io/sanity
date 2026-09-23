@@ -1,6 +1,7 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {type CardTone, Card, Stack, Text} from '@sanity/ui'
+import {type CardTone, Card, Text} from '@sanity/ui'
+import {VStack} from 'ui5'
 
 import {Banner} from '../Banner'
 
@@ -14,9 +15,9 @@ const TONES: CardTone[] = ['transparent', 'primary', 'caution', 'critical', 'sug
 export function DocumentBannerStory() {
   return (
     <Card padding={4} style={{maxWidth: 560}}>
-      <Stack gap={3}>
+      <VStack gap={3}>
         {TONES.map((tone) => (
-          <Stack key={tone} gap={2}>
+          <VStack key={tone} gap={2}>
             <Text muted size={1} weight="medium">
               tone="{tone}"
             </Text>
@@ -28,15 +29,15 @@ export function DocumentBannerStory() {
               }
               tone={tone}
             />
-          </Stack>
+          </VStack>
         ))}
-        <Stack gap={2}>
+        <VStack gap={2}>
           <Text muted size={1} weight="medium">
             content only
           </Text>
           <Banner content={<Text size={1}>Linked to Canvas</Text>} />
-        </Stack>
-      </Stack>
+        </VStack>
+      </VStack>
     </Card>
   )
 }
