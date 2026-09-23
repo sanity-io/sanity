@@ -354,7 +354,7 @@ describe('DeleteScheduledDraftDialog', () => {
     })
   })
 
-  it('scheduled draft could not be read: copies rather than claiming the draft is up to date', async () => {
+  it('scheduled draft is missing: copies rather than claiming the draft is up to date', async () => {
     mockUseScheduledDraftDocument.mockReturnValue({
       firstDocument: undefined,
       firstDocumentPreview: undefined,
@@ -448,6 +448,43 @@ describe('DeleteScheduledDraftDialog', () => {
       expect(useScheduleDraftOperationsMockReturn.deleteScheduledDraft).toHaveBeenCalledWith(
         scheduledRelease._id,
         true,
+        'article-123',
+      )
+    })
+  })
+
+  it('scheduled draft read fails: warns about the scheduled draft rather than the current draft', async () => {
+    mockObservedDocuments({[DRAFT_ID]: draftAtBaseRevision}, [], [VERSION_ID])
+
+    render(
+      <TestProvider>
+        <DeleteScheduledDraftDialog
+          documentId="article-123"
+          documentType="article"
+          release={scheduledRelease}
+          onClose={mockOnClose}
+        />
+      </TestProvider>,
+    )
+
+    expect(
+      screen.getByText(
+        'Your scheduled draft could not be loaded. Copying it could overwrite your draft with the wrong content.',
+      ),
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByText(
+        'Your current draft could not be loaded. Copying your scheduled changes will overwrite it.',
+      ),
+    ).not.toBeInTheDocument()
+    expect(screen.getByRole('checkbox')).not.toBeChecked()
+
+    await userEvent.click(screen.getByText('Yes, delete schedule'))
+
+    await waitFor(() => {
+      expect(useScheduleDraftOperationsMockReturn.deleteScheduledDraft).toHaveBeenCalledWith(
+        scheduledRelease._id,
+        false,
         'article-123',
       )
     })

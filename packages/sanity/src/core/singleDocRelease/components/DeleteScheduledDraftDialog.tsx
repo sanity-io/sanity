@@ -55,13 +55,23 @@ function isSameDocumentContent(documentA: SanityDocument, documentB: SanityDocum
 function getDialogDescription(
   scheduledDraftDocument: SanityDocument | null,
   draftDocument: SanityDocument | null,
-  hasReadError: boolean,
+  scheduledDraftError: unknown,
+  draftError: unknown,
 ): DialogDescription {
-  // An unreadable document is unknown, not absent: copying could overwrite a draft we never saw.
-  if (hasReadError) {
+  // An unreadable document is unknown, not absent: copying could overwrite a draft we never saw,
+  // or copy content from a scheduled draft we never saw.
+  if (draftError) {
     return {
       bodyKey: 'release.dialog.delete-schedule-draft.body-with-choice',
       explanationKey: 'release.dialog.delete-schedule-draft.unresolved-draft-explanation',
+      copy: {visible: true, default: false},
+    }
+  }
+
+  if (scheduledDraftError) {
+    return {
+      bodyKey: 'release.dialog.delete-schedule-draft.body-with-choice',
+      explanationKey: 'release.dialog.delete-schedule-draft.unresolved-scheduled-draft-explanation',
       copy: {visible: true, default: false},
     }
   }
@@ -240,11 +250,11 @@ function DeleteScheduledDraftDialogWithCopyToDraft({
   )
 
   const isLoading = scheduledDraftLoading || draftLoading
-  const hasReadError = Boolean(scheduledDraftError ?? draftError)
 
   const dialogDescription = useMemo(
-    () => getDialogDescription(scheduledDraftDocument, draftDocument, hasReadError),
-    [scheduledDraftDocument, draftDocument, hasReadError],
+    () =>
+      getDialogDescription(scheduledDraftDocument, draftDocument, scheduledDraftError, draftError),
+    [scheduledDraftDocument, draftDocument, scheduledDraftError, draftError],
   )
 
   const [copyOverride, setCopyOverride] = useState<boolean | undefined>(undefined)
