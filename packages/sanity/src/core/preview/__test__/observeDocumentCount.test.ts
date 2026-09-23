@@ -1,5 +1,6 @@
 import {type SanityClient, type StackablePerspective} from '@sanity/client'
-import {of, Subject} from 'rxjs'
+import {defer, of, Subject, throwError} from 'rxjs'
+import {catchError} from 'rxjs/operators'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {MAX_DOCUMENT_ID_CHUNK_SIZE} from '../../util/const'
@@ -8,6 +9,11 @@ import {type InvalidationChannelEvent} from '../types'
 
 const BATCH_DEBOUNCE_MS = 100
 const MUTATION_THROTTLE_MS = 1000
+
+const MAX_FETCH_RETRIES = 3
+
+// The retry delay ladder is `attempt * 1000`, so three retries span 1s + 2s + 3s.
+const RETRY_LADDER_MS = 6000
 
 interface FetchCall {
   query: string
@@ -33,7 +39,7 @@ function resolveCountsFromParams(
   }, {})
 }
 
-function createMockClient(countForType: (typeName: string) => number) {
+function createMockClient(countForType: (typeName: string) => number, fetchError?: Error) {
   const fetchCalls: FetchCall[] = []
   const client = {
     observable: {
@@ -41,16 +47,21 @@ function createMockClient(countForType: (typeName: string) => number) {
         query: string,
         params: Record<string, unknown>,
         options: {perspective?: StackablePerspective[]; tag?: string; variant?: string},
-      ) => {
-        fetchCalls.push({
-          query,
-          params,
-          perspective: options?.perspective,
-          tag: options?.tag,
-          variant: options?.variant,
-        })
-        return of(resolveCountsFromParams(params, countForType))
-      },
+      ) =>
+        // `defer` keeps the request cold, so a retry's resubscribe counts as another call the way
+        // it would against a real client.
+        defer(() => {
+          fetchCalls.push({
+            query,
+            params,
+            perspective: options?.perspective,
+            tag: options?.tag,
+            variant: options?.variant,
+          })
+          return fetchError
+            ? throwError(() => fetchError)
+            : of(resolveCountsFromParams(params, countForType))
+        }),
     },
     withConfig: () => client,
   }
@@ -70,8 +81,8 @@ function countForType(typeName: string): number {
   return 0
 }
 
-function setup(countFor: (typeName: string) => number = countForType) {
-  const {client, fetchCalls} = createMockClient(countFor)
+function setup(countFor: (typeName: string) => number = countForType, fetchError?: Error) {
+  const {client, fetchCalls} = createMockClient(countFor, fetchError)
   const invalidationChannel = new Subject<InvalidationChannelEvent>()
 
   return {
@@ -252,6 +263,34 @@ describe('observeDocumentCount', () => {
     subscription.unsubscribe()
 
     expect(emissions).toEqual([5, 6])
+  })
+
+  it('stops retrying a failing fetch and hands the error to a downstream catchError', async () => {
+    const fetchError = new Error('fetch rejected')
+    const {fetchCalls, invalidationChannel, observe} = setup(countForType, fetchError)
+
+    const caughtErrors: unknown[] = []
+    const emissions: number[] = []
+    const subscription = observe(AUTHOR_TYPE, [])
+      .pipe(
+        catchError((error) => {
+          caughtErrors.push(error)
+          return of(0)
+        }),
+      )
+      .subscribe((count) => emissions.push(count))
+
+    invalidationChannel.next({type: 'connected'})
+    await vi.advanceTimersByTimeAsync(BATCH_DEBOUNCE_MS + RETRY_LADDER_MS)
+    subscription.unsubscribe()
+
+    expect(fetchCalls).toHaveLength(MAX_FETCH_RETRIES + 1)
+    expect(caughtErrors).toEqual([fetchError])
+    expect(emissions).toEqual([0])
+
+    // A loop that ignored `count` would still be firing after the ladder has run out.
+    await vi.advanceTimersByTimeAsync(RETRY_LADDER_MS)
+    expect(fetchCalls).toHaveLength(MAX_FETCH_RETRIES + 1)
   })
 
   it('does not share a cache entry between the same descriptor with and without a variant', () => {

@@ -32,6 +32,10 @@ const MUTATION_THROTTLE_MS = 1000
 
 const MAX_CONCURRENT_BATCH_FETCHES = 10
 
+// `debounceCollect` subscribes without retaining a handle, so an unbounded retry can never be torn
+// down. Bounding it also lets a genuine failure reach the caller's `catchError`.
+const MAX_FETCH_RETRIES = 3
+
 interface ObserveOptions {
   tag?: string
   variant?: string
@@ -103,7 +107,10 @@ function fetchChunk(
       variant: group.variant,
     })
     .pipe(
-      retry({delay: (_error: unknown, attempt) => timer(Math.min(30_000, attempt * 1000))}),
+      retry({
+        count: MAX_FETCH_RETRIES,
+        delay: (_error: unknown, attempt) => timer(attempt * 1000),
+      }),
       map((result) => {
         const counts = demuxCountResult(result, chunk.length)
         return chunk.map((member, withinChunkIndex) => ({
