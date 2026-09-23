@@ -121,7 +121,7 @@ exports[`exports snapshot 1`] = `
     "Filters": "function",
     "FormBuilder": "function",
     "FormCallbacksProvider": "object",
-    "FormCell": "object",
+    "FormCell": "function",
     "FormContainer": "function",
     "FormField": "object",
     "FormFieldHeaderText": "object",
