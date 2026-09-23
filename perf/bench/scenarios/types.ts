@@ -66,15 +66,20 @@ export interface BenchScenario {
    * pristine dist every other mode measures never includes these workspaces.
    */
   requiresCustomizations?: boolean
-  documentType: string
-  /** Published id of the document under test (draft is `drafts.<id>`). */
-  documentId: string
   /**
-   * Documents seeded into the mock before every session. Must be
-   * deterministic — no randomness without a fixed seed, no shared mutable
-   * state (see scenarios/fixtures/prng.ts).
+   * Type of the document under test. Required by every mode that opens or
+   * types into a document; load scenarios that never open one leave it out
+   * (see `scenarioDocument`).
    */
-  fixture: () => BenchDocument[]
+  documentType?: string
+  /** Published id of the document under test (draft is `drafts.<id>`). */
+  documentId?: string
+  /**
+   * Documents seeded into the mock before every session (none when absent).
+   * Must be deterministic — no randomness without a fixed seed, no shared
+   * mutable state (see scenarios/fixtures/prng.ts).
+   */
+  fixture?: () => BenchDocument[]
   /** Fields measured by interaction mode, in fixed execution order. */
   interactions: InteractionTarget[]
   /**
@@ -83,6 +88,30 @@ export interface BenchScenario {
    * target. Interaction mode ignores steps: it measures keystrokes only.
    */
   steps?: ScenarioStep[]
+  /**
+   * Load choreography for pageload mode (runner/session/pageLoad.ts), run
+   * once per load from navigation start. Steps carrying a `milestone` record
+   * the time it was reached as a `<condition> · <milestone>` row. Absent ⇒
+   * wait for `readySelector`, then `awaitEditable` on `interactions[0]` —
+   * the `time to editable` headline.
+   */
+  load?: {
+    steps: ScenarioStep[]
+    /**
+     * `logged-out` boots without a stored token against a mock that signs in
+     * only token-carrying requests, so the studio shows its login screen; a
+     * login click lands on the route guard's fake provider, which redirects
+     * back with a session id the mock exchanges for the token. Default
+     * `authenticated`.
+     */
+    auth?: 'authenticated' | 'logged-out'
+    /**
+     * Which load conditions to sample (default both). Drop `open-doc-warm`
+     * when the cold load changes state the warm page would inherit, e.g. a
+     * login that stores a token in the shared context.
+     */
+    conditions?: ('boot-cold' | 'open-doc-warm')[]
+  }
   /**
    * Per-scenario keystroke counts, overriding the session defaults. For
    * scenarios with pathologically slow keystrokes (synthetic: ~10× the
@@ -111,6 +140,10 @@ export interface StepContext {
   running: RunningSide
   timeoutMs: number
   interruptions: ReadOnlyInterruptions
+  /** Appended to step failure messages in parens, e.g. a load condition. */
+  label?: string
+  /** Console/page/http errors gathered so far, attached to step failures. */
+  diagnostics?: () => string[]
 }
 
 /**
@@ -130,8 +163,56 @@ export type ScenarioStep =
       keystrokes?: number
       readback?: StepReadback
     }
-  | {kind: 'click'; label?: string; selector: StepSelector; readback?: StepReadback}
-  | {kind: 'awaitVisible'; selector: StepSelector}
+  | {
+      kind: 'click'
+      label?: string
+      selector: StepSelector
+      readback?: StepReadback
+      /** Pageload: record reaching this step, once the target is actionable and before the click. */
+      milestone?: string
+    }
+  | {
+      kind: 'awaitVisible'
+      selector: StepSelector
+      /** Pageload: record reaching this step, once the target is visible. */
+      milestone?: string
+    }
+  | {
+      /**
+       * Wait until the target is clickable (visible, stable, enabled,
+       * receiving events) without clicking it — Playwright's trial click.
+       */
+      kind: 'awaitClickable'
+      selector: StepSelector
+      /** Pageload: record reaching this step. */
+      milestone?: string
+    }
+  | {
+      /**
+       * Wait until every visible `data-testid="field-<path>"` element in the
+       * document form holds an enabled, non-read-only control (input,
+       * textarea, select, button or contenteditable) outside its header
+       * chrome (field actions, comments, presence); a collapsed object's
+       * expand toggle counts. Evaluated in-page each
+       * animation frame and recorded from there, so the milestone carries
+       * no Playwright round trip. Catches field components that load lazily
+       * after the first field is editable.
+       */
+      kind: 'awaitAllFieldsEditable'
+      milestone: string
+      /** Don't pass before at least this many fields have rendered. */
+      minFields?: number
+    }
+  | {
+      /**
+       * The editable probe: click the field's text input, press one key and
+       * wait for the `input` event, which records `bench:time-to-editable`
+       * (navigation start → the keystroke landed). Pageload's headline.
+       */
+      kind: 'awaitEditable'
+      /** `data-testid="field-<path>"` of a string, text or PTE field. */
+      field: string
+    }
   | {kind: 'hover'; selector: StepSelector}
   | {
       /**
@@ -166,6 +247,25 @@ export type ScenarioStep =
       drive: (context: StepContext) => Promise<{interactions: number}>
       readback?: StepReadback
     }
+
+/** The scenario's document under test; throws for a scenario without one. */
+export function scenarioDocument(scenario: BenchScenario): {
+  documentId: string
+  documentType: string
+} {
+  const {documentId, documentType} = scenario
+  if (documentId === undefined || documentType === undefined) {
+    throw new Error(
+      `Scenario "${scenario.name}" has no document under test (documentId/documentType)`,
+    )
+  }
+  return {documentId, documentType}
+}
+
+/** The documents to seed for a scenario (its fixture, or none). */
+export function scenarioFixture(scenario: BenchScenario): BenchDocument[] {
+  return scenario.fixture?.() ?? []
+}
 
 export function defineScenario(scenario: BenchScenario): BenchScenario {
   return scenario

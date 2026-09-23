@@ -1,7 +1,7 @@
 import {describe, expect, it} from 'vitest'
 
 import {type ScenarioStep, type StepContext} from '../../../scenarios/types'
-import {resolveLocator, runStep, toTypeStep} from '../steps'
+import {milestoneMeasureName, resolveLocator, runStep, toTypeStep} from '../steps'
 
 interface FakeLocator {
   selector: string
@@ -12,7 +12,8 @@ interface FakeLocator {
   getByLabel: (label: string, options?: {exact?: boolean}) => FakeLocator
   waitFor: () => Promise<void>
   hover: () => Promise<void>
-  click: () => Promise<void>
+  click: (options?: {trial?: boolean}) => Promise<void>
+  evaluate: () => Promise<void>
 }
 
 interface FakePageLog {
@@ -22,6 +23,10 @@ interface FakePageLog {
   presses: string[]
   typed: string[]
   waits: number
+  /** Measure names recorded in-page (milestones). */
+  measures: string[]
+  /** Arguments passed to waitForFunction. */
+  waitedFor: unknown[]
 }
 
 function makeLocator(
@@ -41,16 +46,27 @@ function makeLocator(
     hover: async () => {
       log.hovers.push(selector)
     },
-    click: async () => {
-      log.clicks.push(selector)
+    click: async (options) => {
+      log.clicks.push(options?.trial ? `trial:${selector}` : selector)
     },
+    evaluate: async () => {},
   }
   return locator
 }
 
-function createFakePage(pageOptions: {readOnly?: boolean} = {}) {
-  const log: FakePageLog = {clicks: [], hovers: [], wheels: [], presses: [], typed: [], waits: 0}
+function createFakePage(pageOptions: {readOnly?: boolean; probeLands?: boolean} = {}) {
+  const {probeLands = true} = pageOptions
   let readOnly = pageOptions.readOnly ?? false
+  const log: FakePageLog = {
+    clicks: [],
+    hovers: [],
+    wheels: [],
+    presses: [],
+    typed: [],
+    waits: 0,
+    measures: [],
+    waitedFor: [],
+  }
   const page = {
     log,
     locator: (selector: string) => makeLocator(log, selector),
@@ -69,10 +85,17 @@ function createFakePage(pageOptions: {readOnly?: boolean} = {}) {
         log.wheels.push(deltaY)
       },
     },
-    // The read-only gate evaluates in-page ("editable" unless readOnly),
-    // then waits until the form leaves read-only
-    evaluate: async () => readOnly,
-    waitForFunction: async () => {
+    // The read-only gate evaluates in-page ("editable" unless readOnly);
+    // milestones pass their measure name as the argument.
+    evaluate: async (_fn: unknown, arg?: unknown) => {
+      if (typeof arg === 'string') log.measures.push(arg)
+      return readOnly
+    },
+    // The read-only gate waits for the form to leave read-only; the
+    // editable probe and all-fields check wait for their measure in-page
+    waitForFunction: async (_fn: unknown, arg?: unknown) => {
+      log.waitedFor.push(arg)
+      if (!probeLands) throw new Error('Timeout 20000ms exceeded')
       readOnly = false
     },
     waitForTimeout: async () => {
@@ -224,6 +247,96 @@ describe('runStep interaction counts', () => {
     expect(await runStep(context, step)).toEqual({interactions: 2})
     expect(context.page.log.clicks).toEqual(['Search'])
     expect(context.page.log.presses).toEqual(['Enter'])
+  })
+})
+
+describe('runStep load steps', () => {
+  it('awaitVisible records its milestone once visible', async () => {
+    const context = fakeContext()
+    const step: ScenarioStep = {
+      kind: 'awaitVisible',
+      selector: {testId: 'pane'},
+      milestone: 'tool visible',
+    }
+    expect(await runStep(context, step)).toEqual({interactions: 0})
+    expect(context.page.log.measures).toEqual([milestoneMeasureName('tool visible')])
+  })
+
+  it('awaitVisible without a milestone records nothing', async () => {
+    const context = fakeContext()
+    await runStep(context, {kind: 'awaitVisible', selector: {testId: 'pane'}})
+    expect(context.page.log.measures).toEqual([])
+  })
+
+  it('click with a milestone trial-clicks, records, then clicks', async () => {
+    const context = fakeContext()
+    const step: ScenarioStep = {
+      kind: 'click',
+      selector: {css: 'a.login'},
+      milestone: 'login clickable',
+    }
+    expect(await runStep(context, step)).toEqual({interactions: 1})
+    expect(context.page.log.clicks).toEqual(['trial:a.login', 'a.login'])
+    expect(context.page.log.measures).toEqual([milestoneMeasureName('login clickable')])
+  })
+
+  it('click without a milestone skips the trial click', async () => {
+    const context = fakeContext()
+    await runStep(context, {kind: 'click', selector: {css: '.x'}})
+    expect(context.page.log.clicks).toEqual(['.x'])
+  })
+
+  it('awaitClickable trial-clicks and records without clicking', async () => {
+    const context = fakeContext()
+    const step: ScenarioStep = {
+      kind: 'awaitClickable',
+      selector: {css: 'a.login'},
+      milestone: 'login clickable',
+    }
+    expect(await runStep(context, step)).toEqual({interactions: 0})
+    expect(context.page.log.clicks).toEqual(['trial:a.login'])
+    expect(context.page.log.measures).toEqual([milestoneMeasureName('login clickable')])
+  })
+
+  it('awaitAllFieldsEditable waits in-page with the milestone measure and field floor', async () => {
+    const context = fakeContext()
+    const step: ScenarioStep = {
+      kind: 'awaitAllFieldsEditable',
+      milestone: 'all fields editable',
+      minFields: 3,
+    }
+    expect(await runStep(context, step)).toEqual({interactions: 0})
+    expect(context.page.log.waitedFor).toEqual([
+      {measureName: milestoneMeasureName('all fields editable'), min: 3},
+    ])
+    // Recorded in-page by the predicate, not by a follow-up evaluate
+    expect(context.page.log.measures).toEqual([])
+  })
+
+  it('awaitEditable clicks the field input and presses one key', async () => {
+    const context = fakeContext()
+    expect(await runStep(context, {kind: 'awaitEditable', field: 'stringField'})).toEqual({
+      interactions: 2,
+    })
+    expect(context.page.log.clicks).toEqual([
+      '[data-testid="field-stringField"] input[type="text"], ' +
+        '[data-testid="field-stringField"] textarea, ' +
+        '[data-testid="field-stringField"] [contenteditable="true"]',
+    ])
+    expect(context.page.log.presses).toEqual(['a'])
+  })
+
+  it('awaitEditable throws a probe-timeout naming the label when the keystroke never lands', async () => {
+    const context = {
+      ...fakeContext(createFakePage({probeLands: false})),
+      label: 'boot-cold',
+      diagnostics: () => ['console: boom'],
+    }
+    await expect(runStep(context, {kind: 'awaitEditable', field: 'title'})).rejects.toMatchObject({
+      reason: 'probe-timeout',
+      message: '[probe-timeout] probe keystroke never landed (boot-cold)',
+      diagnostics: ['console: boom'],
+    })
   })
 })
 

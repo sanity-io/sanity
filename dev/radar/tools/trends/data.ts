@@ -547,6 +547,39 @@ function describeSeries(
       goal: 'lower',
     }
   }
+  // Load-step milestones (perf/bench/scenarios/load.ts, synthetic)
+  if (label.includes('login clickable')) {
+    return {
+      group: 'load',
+      description:
+        'Signed out: from navigation start until the login button can be clicked (visible, stable, enabled).',
+      goal: 'lower',
+    }
+  }
+  if (label.includes('tool visible after login')) {
+    return {
+      group: 'load',
+      description:
+        "From the login callback page load (the redirect back after clicking log in) until the tool renders: the structure tool's items, or the empty tool's marker (loginToEmptyTool). The HTTP cache is primed by the login screen.",
+      goal: 'lower',
+    }
+  }
+  if (label.includes('tool visible')) {
+    return {
+      group: 'load',
+      description:
+        "Already signed in: from navigation start until the tool renders: the structure tool's items, or the empty tool's marker (emptyToolReady, the studio shell baseline).",
+      goal: 'lower',
+    }
+  }
+  if (label.includes('all fields editable')) {
+    return {
+      group: 'load',
+      description:
+        'From navigation start until every field in the form holds an enabled control. Catches field components lazy-loaded after the first field is editable.',
+      goal: 'lower',
+    }
+  }
   if (label.includes('main-thread blocking')) {
     return {
       group: 'load',
@@ -595,7 +628,7 @@ function describeSeries(
     return {
       group: 'bundle',
       description:
-        'Exact gzip sum of the JS chunks fetched before the document was editable (boot-cold): what booting actually downloads. The entry-chunk chart counts only what index.html references.',
+        "Exact gzip sum of the JS chunks fetched before the load ended — the document editable, or the scenario's last milestone (boot-cold): what booting actually downloads. The entry-chunk chart counts only what index.html references.",
       goal: 'lower',
     }
   }
