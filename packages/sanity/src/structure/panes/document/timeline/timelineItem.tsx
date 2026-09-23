@@ -1,6 +1,8 @@
-import {Card, Skeleton, Stack, Text} from '@sanity/ui'
-import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
-import {type MouseEvent, useCallback, useMemo} from 'react'
+import {Card, Skeleton, Stack, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
+import {type ComponentProps, type MouseEvent, useCallback, useMemo} from 'react'
 import {
   AvatarSkeleton,
   type ChunkType,
@@ -11,32 +13,33 @@ import {
   useTranslation,
   useUser,
 } from 'sanity'
-import {css, styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {getTimelineEventIconComponent} from './helpers'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'
+import {
+  avatarSize0Var,
+  iconBox,
+  iconBoxColor,
+  nameSkeleton,
+  textLineHeight0Var,
+} from './timelineItem.css'
 import {UserAvatarStack} from './userAvatarStack'
 import {type ChunksWithCollapsedDrafts} from './utils'
 
-const IconBox = styled(Flex)<{$color: ThemeColorAvatarColorKey}>((props) => {
-  const theme = getTheme_v2(props.theme)
-  const color = props.$color
+function IconBox(props: ComponentProps<typeof Flex> & {$color: ThemeColorAvatarColorKey}) {
+  const {$color, className, style, ...rest} = props
+  const {avatar} = useThemeV2()
 
-  return css`
-    --card-icon-color: ${theme.color.avatar[color].fg};
-    background-color: ${theme.color.avatar[color].bg};
-    box-shadow: 0 0 0 1px var(--card-bg-color);
-
-    position: absolute;
-    width: ${theme.avatar.sizes[0].size}px;
-    height: ${theme.avatar.sizes[0].size}px;
-    right: -3px;
-    bottom: -3px;
-    border-radius: 50%;
-  `
-})
+  return (
+    <Flex
+      {...rest}
+      className={clsx(iconBox, iconBoxColor[$color], className)}
+      style={{...assignInlineVars({[avatarSize0Var]: `${avatar.sizes[0].size}px`}), ...style}}
+    />
+  )
+}
 
 const TIMELINE_ITEM_EVENT_TONE: Record<ChunkType | 'withinSelection', ThemeColorAvatarColorKey> = {
   initial: 'blue',
@@ -63,13 +66,21 @@ const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {
   useTemporalPhrase: true,
 }
 
-const NameSkeleton = styled(Skeleton)((props) => {
-  const theme = getTheme_v2(props.theme)
-  return css`
-    width: 6ch;
-    height: ${theme.font.text.sizes[0].lineHeight}px;
-  `
-})
+function NameSkeleton(props: ComponentProps<typeof Skeleton>) {
+  const {className, style, ...rest} = props
+  const {font} = useThemeV2()
+
+  return (
+    <Skeleton
+      {...rest}
+      className={clsx(nameSkeleton, className)}
+      style={{
+        ...assignInlineVars({[textLineHeight0Var]: `${font.text.sizes[0].lineHeight}px`}),
+        ...style,
+      }}
+    />
+  )
+}
 
 const UserLine = ({userId}: {userId: string}) => {
   const [user, loading] = useUser(userId)
