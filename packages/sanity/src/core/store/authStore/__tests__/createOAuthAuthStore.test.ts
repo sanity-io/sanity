@@ -482,6 +482,48 @@ describe('createOAuthAuthStore', () => {
       expect(endpoints.revoke).toHaveBeenCalledWith({clientId: CLIENT_ID, token: 'refresh-1'})
     })
 
+    it('does not sign in when another tab logs out while the code is being exchanged', async () => {
+      sessionStorage.setItem(
+        FLOW_KEY,
+        JSON.stringify({codeVerifier: 'verifier', state: 'expected-state', redirectUri: ORIGIN}),
+      )
+      const {factory} = createMockClientFactory(new Set(['access-1']))
+      let resolveExchange: (response: OAuthTokenResponse) => void = () => {}
+      const endpoints = createMockEndpoints({
+        exchangeCode: vi.fn(
+          () =>
+            new Promise<OAuthTokenResponse>((resolve) => {
+              resolveExchange = resolve
+            }),
+        ),
+      })
+      const options = {
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints,
+      }
+      const signingIn = _createOAuthAuthStore({
+        ...options,
+        ...createEnvironment('?code=the-code&state=expected-state'),
+      })
+      const otherTab = _createOAuthAuthStore({...options, ...createEnvironment()})
+
+      const callback = signingIn.handleCallbackUrl!()
+      await vi.waitFor(() => expect(endpoints.exchangeCode).toHaveBeenCalled())
+      await otherTab.logout!()
+      resolveExchange(tokenResponse('access-1', 'refresh-1'))
+
+      await expect(callback).resolves.toMatchObject({
+        success: false,
+        failureReason: 'logged out during sign-in',
+      })
+      expect(localStorage.getItem(TOKENS_KEY)).toBeNull()
+      expect(endpoints.revoke).toHaveBeenCalledWith({clientId: CLIENT_ID, token: 'access-1'})
+      expect(endpoints.revoke).toHaveBeenCalledWith({clientId: CLIENT_ID, token: 'refresh-1'})
+    })
+
     it('rejects a response with another state, and leaves the URL and the flow alone', async () => {
       const flow = {codeVerifier: 'verifier', state: 'expected-state', redirectUri: ORIGIN}
       sessionStorage.setItem(FLOW_KEY, JSON.stringify(flow))

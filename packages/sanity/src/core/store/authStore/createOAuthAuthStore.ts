@@ -259,10 +259,22 @@ export function _createOAuthAuthStore({
 
   let inflightRefresh: Promise<OAuthTokens | undefined> | undefined
 
-  // Bumped by `logout`. A refresh that started before a logout must not write its result back,
-  // or it would sign the user in again. The cross-tab lock covers other tabs; this covers this
-  // tab when Web Locks are unavailable and the lock is not exclusive.
+  // Changed by every `logout`. A refresh or code exchange that started before a logout must not
+  // write its result back, or it would sign the user in again. The local counter covers this tab,
+  // also when Web Locks are unavailable and the lock is not exclusive. The stored epoch covers a
+  // logout in another tab, which the lock alone does not: that tab can take the lock, clear the
+  // pair, and release it while a request here is still out.
   let sessionGeneration = 0
+  const logoutEpochKey = `${tokensStorageKey}_logout`
+  const sessionEpoch = (): string => {
+    let shared: string | null = null
+    try {
+      shared = supportsLocalStorage ? localStorage.getItem(logoutEpochKey) : null
+    } catch {
+      // Unreadable storage: only this tab's logouts are seen.
+    }
+    return `${sessionGeneration}:${shared ?? ''}`
+  }
   const refreshLockName = `${tokensStorageKey}_refresh`
 
   /**
@@ -274,7 +286,7 @@ export function _createOAuthAuthStore({
    * token that no longer works.
    */
   function refresh(rejected: OAuthTokens): Promise<OAuthTokens | undefined> {
-    const generation = sessionGeneration
+    const epoch = sessionEpoch()
     inflightRefresh ??= withLock(refreshLockName, async () => {
       const stored = latestTokens()
       if (!stored) {
@@ -296,12 +308,9 @@ export function _createOAuthAuthStore({
         // obtained is valid on the server and known only here, so revoke it rather than drop it
         // or publish it over the current one. The check and the write below are synchronous, so
         // nothing in this tab can slip in between.
-        if (
-          generation !== sessionGeneration ||
-          latestTokens()?.refreshToken !== stored.refreshToken
-        ) {
+        if (epoch !== sessionEpoch() || latestTokens()?.refreshToken !== stored.refreshToken) {
           await revokeTokens(toTokens(response))
-          return generation === sessionGeneration ? latestTokens() : undefined
+          return epoch === sessionEpoch() ? latestTokens() : undefined
         }
         const next = toTokens(response, stored.refreshToken)
         tokenStorage.update(next)
@@ -533,7 +542,7 @@ export function _createOAuthAuthStore({
     }
 
     // Captured before the exchange, like in `refresh`: a logout while it is out must win.
-    const generation = sessionGeneration
+    const epoch = sessionEpoch()
     const exchangeStart = performance.now()
     let tokens: OAuthTokens
     try {
@@ -555,7 +564,7 @@ export function _createOAuthAuthStore({
     // Under the refresh lock, so a logout or refresh in another tab finishes before this pair
     // lands, and cannot clear or overwrite it halfway.
     const published = await withLock(refreshLockName, async () => {
-      if (generation !== sessionGeneration) return false
+      if (epoch !== sessionEpoch()) return false
       const replaced = latestTokens()
       tokenStorage.update(tokens)
       // The pair this sign-in replaces is no longer used by any tab. Revoked in the background,
@@ -627,6 +636,11 @@ export function _createOAuthAuthStore({
 
   async function logout(): Promise<void> {
     sessionGeneration++
+    try {
+      if (supportsLocalStorage) localStorage.setItem(logoutEpochKey, createState())
+    } catch {
+      // Best-effort: other tabs then only stop at the lock.
+    }
     // Under the refresh lock, so a refresh in flight in any tab settles first, and the pair
     // revoked here is the latest one rather than the one it was about to replace.
     await withLock(refreshLockName, async () => {
