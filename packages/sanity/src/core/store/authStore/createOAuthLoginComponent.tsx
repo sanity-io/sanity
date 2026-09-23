@@ -43,6 +43,9 @@ export function createOAuthLoginComponent({login}: CreateOAuthLoginComponentOpti
         </Heading>
         <Button
           autoFocus
+          // Disabled as well as loading: a second click would start a second authorization
+          // request and overwrite the stored verifier of the first.
+          disabled={isRedirecting}
           loading={isRedirecting}
           onClick={handleSignIn}
           size="large"

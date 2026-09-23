@@ -293,7 +293,11 @@ describe('createOAuthAuthStore', () => {
       expect(endpoints.exchangeCode).not.toHaveBeenCalled()
     })
 
-    it('reports an error returned by the authorization server', async () => {
+    it('reports the error code returned by the authorization server for this tab', async () => {
+      sessionStorage.setItem(
+        FLOW_KEY,
+        JSON.stringify({codeVerifier: 'verifier', state: 'expected-state', redirectUri: ORIGIN}),
+      )
       const {factory} = createMockClientFactory(new Set())
       const store = _createOAuthAuthStore({
         projectId: PROJECT_ID,
@@ -301,13 +305,36 @@ describe('createOAuthAuthStore', () => {
         clientId: CLIENT_ID,
         clientFactory: factory,
         endpoints: createMockEndpoints(),
-        ...createEnvironment('?error=access_denied&error_description=The+user+declined'),
+        ...createEnvironment(
+          '?error=access_denied&error_description=The+user+declined&state=expected-state',
+        ),
       })
 
       await expect(store.handleCallbackUrl!()).resolves.toMatchObject({
         success: false,
-        failureReason: 'The user declined',
+        failureReason: 'access_denied',
       })
+      expect(sessionStorage.getItem(FLOW_KEY)).toBeNull()
+    })
+
+    it('ignores an error response that does not belong to this tab, and keeps its flow', async () => {
+      const flow = {codeVerifier: 'verifier', state: 'expected-state', redirectUri: ORIGIN}
+      sessionStorage.setItem(FLOW_KEY, JSON.stringify(flow))
+      const {factory} = createMockClientFactory(new Set())
+      const store = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints: createMockEndpoints(),
+        ...createEnvironment('?error=access_denied&error_description=Click+evil.example'),
+      })
+
+      await expect(store.handleCallbackUrl!()).resolves.toMatchObject({
+        success: false,
+        failureReason: 'state mismatch',
+      })
+      expect(JSON.parse(sessionStorage.getItem(FLOW_KEY)!)).toEqual(flow)
     })
   })
 
@@ -335,6 +362,28 @@ describe('createOAuthAuthStore', () => {
       expect(JSON.parse(localStorage.getItem(TOKENS_KEY)!)).toMatchObject({
         accessToken: 'access-2',
         refreshToken: 'refresh-2',
+      })
+    })
+
+    it('keeps the tokens when the token endpoint fails for another reason', async () => {
+      localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('expired', 'refresh-1')))
+      const {factory} = createMockClientFactory(new Set())
+      const store = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints: createMockEndpoints({
+          refresh: vi.fn(async () => {
+            throw new OAuthRequestError(400, {error: 'invalid_request'})
+          }),
+        }),
+        ...createEnvironment(),
+      })
+
+      await expect(firstValueFrom(store.state)).rejects.toThrow('invalid_request')
+      expect(JSON.parse(localStorage.getItem(TOKENS_KEY)!)).toMatchObject({
+        refreshToken: 'refresh-1',
       })
     })
 
@@ -463,6 +512,45 @@ describe('createOAuthAuthStore', () => {
 
       expect(endpoints.revoke).toHaveBeenCalledWith({clientId: CLIENT_ID, token: 'access-1'})
       expect(endpoints.revoke).toHaveBeenCalledWith({clientId: CLIENT_ID, token: 'refresh-1'})
+      expect(localStorage.getItem(TOKENS_KEY)).toBeNull()
+      await expect(firstValueFrom(store.state)).resolves.toMatchObject({authenticated: false})
+    })
+
+    it('does not let a refresh that was in flight sign the user back in', async () => {
+      localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('access-1', 'refresh-1')))
+      const {factory, configs} = createMockClientFactory(new Set(['access-1', 'access-2']))
+      let resolveRefresh: (response: OAuthTokenResponse) => void = () => {}
+      const endpoints = createMockEndpoints({
+        refresh: vi.fn(
+          () =>
+            new Promise<OAuthTokenResponse>((resolve) => {
+              resolveRefresh = resolve
+            }),
+        ),
+      })
+      const store = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints,
+        // Not exclusive, like a browser without Web Locks.
+        ...createEnvironment(),
+      })
+      await authenticatedState(store.state)
+      const requestHandler = configs.find((config) => config.token === 'access-1')
+        ?.requestHandler as RequestHandler
+
+      // A request is rejected and starts a refresh; the user logs out before it answers.
+      const retried = requestHandler(
+        {url: '/data/query', headers: {Authorization: 'Bearer access-1'}},
+        vi.fn().mockRejectedValue(createExpiredSessionError()),
+      )
+      await vi.waitFor(() => expect(endpoints.refresh).toHaveBeenCalled())
+      await store.logout!()
+      resolveRefresh(tokenResponse('access-2', 'refresh-2'))
+      await expect(retried).rejects.toThrow()
+
       expect(localStorage.getItem(TOKENS_KEY)).toBeNull()
       await expect(firstValueFrom(store.state)).resolves.toMatchObject({authenticated: false})
     })

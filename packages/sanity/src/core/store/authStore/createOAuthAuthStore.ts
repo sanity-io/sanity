@@ -147,12 +147,20 @@ function readFlow(key: string): OAuthFlow | undefined {
   }
 }
 
-function writeFlow(key: string, flow: OAuthFlow | undefined): void {
+/**
+ * Throws when the flow can't be stored: the verifier and `state` must survive the redirect, so a
+ * login that goes ahead without them is bound to fail on return.
+ */
+function writeFlow(key: string, flow: OAuthFlow): void {
+  sessionStorage.setItem(key, JSON.stringify(flow))
+}
+
+/** Best-effort: a flow left behind is harmless, it only matches its own `state`. */
+function clearFlow(key: string): void {
   try {
-    if (flow) sessionStorage.setItem(key, JSON.stringify(flow))
-    else sessionStorage.removeItem(key)
-  } catch (err) {
-    console.error(`Failed to persist the OAuth authorization request: ${err.message}`)
+    sessionStorage.removeItem(key)
+  } catch {
+    // Storage unavailable, so there is nothing to clear either.
   }
 }
 
@@ -211,6 +219,12 @@ export function _createOAuthAuthStore({
 
   let inflightRefresh: Promise<OAuthTokens | undefined> | undefined
 
+  // Bumped by `logout`. A refresh that started before a logout must not write its result back,
+  // or it would sign the user in again. The cross-tab lock covers other tabs; this covers this
+  // tab when Web Locks are unavailable and the lock is not exclusive.
+  let sessionGeneration = 0
+  const refreshLockName = `${tokensStorageKey}_refresh`
+
   /**
    * Redeems the refresh token of `rejected`, the pair that just failed or is due for renewal, and
    * returns the pair to use from now on. Resolves `undefined` when the session is over.
@@ -220,7 +234,8 @@ export function _createOAuthAuthStore({
    * token that no longer works.
    */
   function refresh(rejected: OAuthTokens): Promise<OAuthTokens | undefined> {
-    inflightRefresh ??= withLock(`${tokensStorageKey}_refresh`, async () => {
+    const generation = sessionGeneration
+    inflightRefresh ??= withLock(refreshLockName, async () => {
       const stored = persistedTokens.load()
       if (!stored) {
         tokenStorage.update(undefined)
@@ -236,13 +251,15 @@ export function _createOAuthAuthStore({
       }
       try {
         const response = await endpoints.refresh({clientId, refreshToken: stored.refreshToken})
+        if (generation !== sessionGeneration) return undefined
         const next = toTokens(response, stored.refreshToken)
         tokenStorage.update(next)
         return next
       } catch (err) {
-        // A 400 is `invalid_grant`: the refresh token expired, was used already, or its session
-        // was revoked in Manage. Anything else (network, 5xx) may pass, so keep the tokens.
-        if (err instanceof OAuthRequestError && err.statusCode === 400) {
+        // `invalid_grant`: the refresh token expired, was used already, or its session was
+        // revoked in Manage. Anything else (a request or client error, network, 5xx) says
+        // nothing about the session, so keep the tokens and let the caller see the failure.
+        if (err instanceof OAuthRequestError && err.error === 'invalid_grant') {
           tokenStorage.update(undefined)
           return undefined
         }
@@ -395,7 +412,6 @@ export function _createOAuthAuthStore({
     startTime: number,
   ): Promise<HandleCallbackResult> {
     const flow = readFlow(flowStorageKey)
-    writeFlow(flowStorageKey, undefined)
 
     const fail = (failureReason: string, exchangeDurationMs?: number): HandleCallbackResult => ({
       loginMethod: 'token',
@@ -410,10 +426,19 @@ export function _createOAuthAuthStore({
       },
     })
 
-    const error = params.get('error')
-    if (error) return fail(params.get('error_description') ?? error)
+    // The response has to belong to the request this tab made, whether it carries a code or an
+    // error. A mismatch leaves the stored flow alone: it may still be waiting for its own
+    // response.
     if (!flow) return fail('no authorization request in this tab')
     if (params.get('state') !== flow.state) return fail('state mismatch')
+    clearFlow(flowStorageKey)
+
+    // Report the RFC 6749 error code only. `error_description` is free text from the URL, and
+    // telemetry is no place for it.
+    const error = params.get('error')
+    if (error) {
+      return fail(/^[a-z_]{1,64}$/.test(error) ? error : 'authorization server error')
+    }
 
     const exchangeStart = performance.now()
     let tokens: OAuthTokens
@@ -475,18 +500,23 @@ export function _createOAuthAuthStore({
   }
 
   async function logout(): Promise<void> {
-    const tokens = tokenStorage.get()
-    // Best-effort, like `createAuthStore`: a forced logout reacting to a 401 revokes tokens that
-    // are already dead, and a failed revocation must not keep the user signed in locally.
-    if (tokens) {
-      await Promise.allSettled(
-        [tokens.accessToken, tokens.refreshToken]
-          .filter((token): token is string => Boolean(token))
-          .map((token) => endpoints.revoke({clientId, token})),
-      )
-    }
-    writeFlow(flowStorageKey, undefined)
-    tokenStorage.update(undefined)
+    sessionGeneration++
+    // Under the refresh lock, so a refresh in flight in any tab settles first, and the pair
+    // revoked here is the latest one rather than the one it was about to replace.
+    await withLock(refreshLockName, async () => {
+      const tokens = persistedTokens.load() ?? tokenStorage.get()
+      // Best-effort, like `createAuthStore`: a forced logout reacting to a 401 revokes tokens
+      // that are already dead, and a failed revocation must not keep the user signed in locally.
+      if (tokens) {
+        await Promise.allSettled(
+          [tokens.accessToken, tokens.refreshToken]
+            .filter((token): token is string => Boolean(token))
+            .map((token) => endpoints.revoke({clientId, token})),
+        )
+      }
+      clearFlow(flowStorageKey)
+      tokenStorage.update(undefined)
+    })
   }
 
   return {

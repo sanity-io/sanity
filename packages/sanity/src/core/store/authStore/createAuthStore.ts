@@ -149,8 +149,7 @@ export interface RequestFailureDiagnostics {
   ) => void
 }
 
-/** @internal */
-export function withoutRequestHandler(client: SanityClient): SanityClient {
+function withoutRequestHandler(client: SanityClient): SanityClient {
   return typeof client.withConfig === 'function'
     ? client.withConfig({requestHandler: undefined})
     : client

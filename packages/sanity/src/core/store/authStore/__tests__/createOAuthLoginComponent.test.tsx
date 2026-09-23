@@ -17,6 +17,7 @@ function createAnonymousClient(config: SanityClientConfig): SanityClient {
 
 describe('OAuth login component', () => {
   afterEach(() => {
+    vi.restoreAllMocks()
     sessionStorage.clear()
   })
 
@@ -90,5 +91,39 @@ describe('OAuth login component', () => {
     expect(new URL(navigate.mock.calls[0][0]).searchParams.get('redirect_uri')).toBe(
       `${ORIGIN}/oauth`,
     )
+  })
+
+  it('does not leave for the authorization server when the request cannot be stored', async () => {
+    const navigate = vi.fn()
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('QuotaExceededError')
+    })
+    const {LoginComponent} = _createOAuthAuthStore({
+      projectId: PROJECT_ID,
+      dataset: 'test-dataset',
+      clientId: 'oc-test-client',
+      clientFactory: createAnonymousClient,
+      endpoints: createOAuthEndpoints('https://api.sanity.io'),
+      getLocation: () => ({origin: ORIGIN, pathname: '/', search: ''}),
+      navigate,
+      replaceUrl: vi.fn(),
+      withLock: (_name, task) => task(),
+    })
+    if (!LoginComponent) throw new Error('expected a LoginComponent')
+    const TestProvider = await createTestProvider()
+    const onError = vi.fn((event: ErrorEvent) => event.preventDefault())
+    window.addEventListener('error', onError)
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    render(
+      <TestProvider>
+        <LoginComponent projectId={PROJECT_ID} redirectPath="/" />
+      </TestProvider>,
+    )
+    await userEvent.click(screen.getByRole('button', {name: 'Sign in with Sanity'}))
+
+    await waitFor(() => expect(onError).toHaveBeenCalled())
+    expect(navigate).not.toHaveBeenCalled()
+    window.removeEventListener('error', onError)
   })
 })

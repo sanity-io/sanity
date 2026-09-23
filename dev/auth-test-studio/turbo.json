@@ -3,7 +3,7 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "env": ["REACT_PRODUCTION_PROFILING"],
+      "env": ["REACT_PRODUCTION_PROFILING", "SANITY_STUDIO_OAUTH_CLIENT_ID"],
       "outputs": [".sanity/**", "dist/**"]
     },
     "start": {
