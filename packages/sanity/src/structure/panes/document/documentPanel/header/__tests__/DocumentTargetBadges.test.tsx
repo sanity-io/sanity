@@ -24,7 +24,7 @@ const mockUsePerspective = usePerspective as Mock<typeof usePerspective>
 const mockUseDocumentPane = useDocumentPane as Mock<typeof useDocumentPane>
 
 const groupRef = {_ref: 'doc-1', _weak: true as const}
-const variantRef = {_ref: '_.variants.alpha-audience', _weak: true as const}
+const variantRef = {_ref: '_.variants.alpha-audience', _key: 'k-123'}
 
 const versionStub = (
   stub: Pick<VersionInfoDocumentStub, '_id' | '_system'>,
@@ -49,7 +49,7 @@ const draftDocument = versionStub({
 const publishedVariant = versionStub({
   _id: 'versions.varscope.doc-1',
   _system: {
-    variant: variantRef,
+    variants: [variantRef],
     group: groupRef,
     scopeId: 'varscope',
   },
@@ -85,7 +85,11 @@ const readyState = (
   targetDocument,
   scopeId: targetDocument?._system.scopeId,
   variant,
-  publishedSibling: variant ? publishedVariant : undefined,
+  siblings: {
+    published: variant ? publishedVariant : undefined,
+    draft: undefined,
+    version: undefined,
+  },
 })
 
 const DEFAULT_PERSPECTIVE = {
@@ -238,7 +242,7 @@ describe('DocumentTargetBadges', () => {
         status: 'variant-missing',
         variant: variantAlphaAudience,
         bundle: 'drafts',
-        publishedSibling: publishedVariant,
+        siblings: {published: publishedVariant, draft: undefined, version: undefined},
       },
     })
 

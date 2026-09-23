@@ -3,6 +3,7 @@ import {expect, test as baseTest} from '@playwright/test'
 import {createClient, type MultipleMutationResult, type SanityClient} from '@sanity/client'
 import {uuid} from '@sanity/uuid'
 
+import {captureStudioDiagnosticsOnFailure} from './helpers/failureDiagnostics'
 import {watchForStudioErrors} from './helpers/studioErrors'
 
 class _TestSanityContext {
@@ -62,6 +63,14 @@ interface SanityFixtures {
    * ```
    */
   createDraftDocument: (navigationPath: string) => Promise<string>
+  /**
+   * Auto fixture that attaches a Studio diagnostics report
+   * (`studio-diagnostics.json`) to failed test attempts, so CI artifacts show
+   * how the Sanity API behaved from the failing browser.
+   *
+   * @internal
+   */
+  _failureDiagnostics: void
 }
 
 export const test = baseTest.extend<SanityFixtures>({
@@ -132,6 +141,15 @@ export const test = baseTest.extend<SanityFixtures>({
 
     await _use(createDraftDocument)
   },
+
+  _failureDiagnostics: [
+    async ({page}, _use, testInfo) => {
+      await _use()
+
+      await captureStudioDiagnosticsOnFailure(page, testInfo)
+    },
+    {auto: true},
+  ],
 
   async _testContext({sanityClient}, _use) {
     const _testContext = new _TestSanityContext()

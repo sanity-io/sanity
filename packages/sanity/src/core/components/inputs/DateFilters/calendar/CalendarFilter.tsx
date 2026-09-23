@@ -1,6 +1,6 @@
 import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
-import {Flex, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {addDays} from 'date-fns/addDays'
 import {addMonths} from 'date-fns/addMonths'
 import {setHours} from 'date-fns/setHours'
@@ -15,7 +15,7 @@ import {
   useState,
   type RefAttributes,
 } from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
@@ -172,7 +172,7 @@ export function CalendarFilter(props: CalendarProps & RefAttributes<HTMLDivEleme
     <Box data-ui="Calendar" {...restProps} ref={ref}>
       {/* Month + Year header */}
       <Flex
-        align="center"
+        alignItems="center"
         paddingLeft={4}
         style={{
           borderBottom: '1px solid var(--card-border-color)',
@@ -181,7 +181,7 @@ export function CalendarFilter(props: CalendarProps & RefAttributes<HTMLDivEleme
           top: 0,
         }}
       >
-        <Flex align="center" flex={1} justify="space-between">
+        <Flex alignItems="center" flexBasis="0%" flexGrow={1} justifyContent="space-between">
           <Text weight="medium" size={1}>
             {DEFAULT_MONTH_NAMES[focusedDate?.getMonth()]} {focusedDate?.getFullYear()}
           </Text>

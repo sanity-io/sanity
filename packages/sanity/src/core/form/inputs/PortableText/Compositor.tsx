@@ -6,6 +6,7 @@ import {
   defineBlockObject,
   defineDecorator,
   defineInlineObject,
+  defineSpan,
   defineTextBlock,
   type EditorSelection,
   type HotkeyOptions,
@@ -15,6 +16,7 @@ import {
   type PasteData as EditorPasteData,
   type RangeDecoration,
   type RegistrableNode,
+  type SpanRenderProps,
   type TextBlockRenderProps,
   useEditor,
 } from '@portabletext/editor'
@@ -30,11 +32,15 @@ import {
   useBoundaryElement,
   usePortal,
 } from '@sanity/ui'
+import {toString as pathToString} from '@sanity/util/paths'
 import {type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
 import {InlineObjectEditModalContext} from 'sanity/_singletons'
 import {Box} from 'ui5'
 
 import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
+import {PortalBoundaryProvider} from '../../../components/portalBoundary/PortalBoundaryProvider'
+import {usePortalBoundary} from '../../../components/portalBoundary/usePortalBoundary'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {EMPTY_ARRAY} from '../../../util/empty'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {type RenderCustomMarkers, type RenderBlockActionsCallback} from '../../types/_transitional'
@@ -57,6 +63,8 @@ import {Decorator} from './text/Decorator'
 import {ListItem} from './text/ListItem'
 import {Style} from './text/Style'
 import {TextBlock} from './text/TextBlock'
+import {UnknownMarks, UnknownValue} from './text/UnknownValue'
+import {warnOnce} from './warnOnce'
 
 interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   elementRef: React.RefObject<HTMLDivElement | null>
@@ -118,6 +126,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const setElementRef = useSetPortableTextMemberItemElementRef()
   const editor = useEditor()
+  const {t} = useTranslation()
 
   // Tracks that an annotation object edit modal has been requested to open,
   // but the form state doesn't reflect it as open yet. Inserting an annotation
@@ -179,6 +188,11 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(null)
   const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
   const floatingBoundary = isFullscreen ? scrollElement : boundaryElement
+  // In fullscreen the editor covers the pane's content area and its own scroll element is the
+  // region popovers that escape object modals must respect (below the fullscreen toolbar),
+  // so it replaces the pane's declared portal boundary while expanded.
+  const inheritedPortalBoundary = usePortalBoundary()
+  const portalBoundary = isFullscreen ? scrollElement : inheritedPortalBoundary
 
   const handleToggleFullscreen = useCallback(() => {
     onToggleFullscreen()
@@ -208,19 +222,74 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       const {attributes, focused: blockFocused, node, path: blockPath, selected} = textBlockProps
       const block = node
       const fullyQualifiedPath = path.concat(blockPath)
+      // The position's sub-schema is the single source for resolving the
+      // block's vocabulary: `Style` and `ListItem` receive the resolved
+      // types instead of looking them up themselves, so the affordance and
+      // the rendering can never disagree (a merged-schema lookup could
+      // resolve a style the block's own sub-schema doesn't declare).
+      const subSchema = getSanitySubSchema(
+        schemaTypes.portableText,
+        editor.getSnapshot().context.value,
+        blockPath,
+      )
+      const styleSchemaType =
+        block.style !== undefined
+          ? subSchema.styles.find((style) => style.value === block.style)
+          : undefined
+      const listSchemaType =
+        block.listItem !== undefined
+          ? subSchema.lists.find((list) => list.value === block.listItem)
+          : undefined
+
       let inner = textBlockProps.children
       if (block.style !== undefined) {
         inner = (
-          <Style block={block} focused={blockFocused} selected={selected}>
+          <Style
+            block={block}
+            focused={blockFocused}
+            sanitySchemaType={styleSchemaType}
+            selected={selected}
+          >
             {inner}
           </Style>
         )
       }
       if (block.listItem !== undefined) {
         inner = (
-          <ListItem block={block} focused={blockFocused} selected={selected}>
+          <ListItem
+            block={block}
+            focused={blockFocused}
+            sanitySchemaType={listSchemaType}
+            selected={selected}
+          >
             {inner}
           </ListItem>
+        )
+      }
+
+      // One affordance per block, with the labels joined, so an
+      // unknown style and an unknown list type on the same block don't nest
+      // two bordered wrappers with two competing tooltips.
+      const unknownValueLabels: string[] = []
+      if (block.style !== undefined && styleSchemaType === undefined) {
+        warnOnce(
+          `Could not find schema type for style: ${block.style} at ${pathToString(fullyQualifiedPath)}`,
+        )
+        unknownValueLabels.push(t('inputs.portable-text.unknown-value.style', {name: block.style}))
+      }
+      if (block.listItem !== undefined && listSchemaType === undefined) {
+        warnOnce(
+          `Could not find schema type for list item: ${block.listItem} at ${pathToString(fullyQualifiedPath)}`,
+        )
+        unknownValueLabels.push(
+          t('inputs.portable-text.unknown-value.list-item', {name: block.listItem}),
+        )
+      }
+      if (unknownValueLabels.length > 0) {
+        inner = (
+          <UnknownValue block labels={unknownValueLabels}>
+            {inner}
+          </UnknownValue>
         )
       }
 
@@ -231,6 +300,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
             floatingBoundary={floatingBoundary}
             focused={blockFocused}
             isFullscreen={isFullscreen}
+            listItem={listSchemaType !== undefined ? block.listItem : undefined}
             onItemClose={handleItemClose}
             onItemOpen={handleItemOpen}
             onItemRemove={onItemRemove}
@@ -263,6 +333,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     [
       _renderBlockActions,
       _renderCustomMarkers,
+      editor,
       floatingBoundary,
       isFullscreen,
       handleItemClose,
@@ -279,8 +350,10 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderItem,
       renderPreview,
       schemaTypes.block,
+      schemaTypes.portableText,
       scrollElement,
       setElementRef,
+      t,
     ],
   )
 
@@ -291,7 +364,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         schemaTypes.portableText,
         editor.getSnapshot().context.value,
         blockPath,
-      ).blockObjects.find((t) => t.name === node._type)
+      ).blockObjects.find((memberType) => memberType.name === node._type)
       if (!sanitySchemaType) {
         // `getSanitySubSchema` returned the sub-schema at this path, but no
         // block-object type in it matches `node._type`.
@@ -365,7 +438,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         schemaTypes.portableText,
         editor.getSnapshot().context.value,
         childPath,
-      ).inlineObjects.find((t) => t.name === node._type)
+      ).inlineObjects.find((memberType) => memberType.name === node._type)
       if (!sanitySchemaType) {
         // `getSanitySubSchema` returned the sub-schema at this path, but no
         // inline-object type in it matches `node._type`.
@@ -424,9 +497,16 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     ],
   )
 
+  const renderSpan = useCallback(
+    (spanProps: SpanRenderProps) => <UnknownMarks {...spanProps} portableTextPath={path} />,
+    [path],
+  )
+
   const renderDecoratorNode = useCallback(
-    (decoratorProps: DecoratorRenderProps) => <Decorator {...decoratorProps} />,
-    [],
+    (decoratorProps: DecoratorRenderProps) => (
+      <Decorator {...decoratorProps} portableTextPath={path} />
+    ),
+    [path],
   )
 
   const renderAnnotationNode = useCallback(
@@ -445,8 +525,16 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         annotationPath,
       ).annotations.find((t) => t.name === annotation._type)
       if (!sanitySchemaType) {
-        // This should never happen
-        throw new Error(`Could not find Sanity schema type for annotation: ${annotation._type}`)
+        // The value predates a schema change (for example an annotation type
+        // that was removed). Render the annotated text plainly instead of
+        // crashing.
+        warnOnce(
+          `Could not find schema type for annotation: ${annotation._type} at ${pathToString(path.concat(aPath))}`,
+        )
+        // No affordance here: the span render (`UnknownMarks`) resolves the
+        // annotation type against the same sub-schema and already wraps the
+        // text, so wrapping again would nest two affordances.
+        return <>{children}</>
       }
       return (
         <Annotation
@@ -506,6 +594,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       defineTextBlock({type: '*', render: renderTextBlock}),
       defineBlockObject({type: '*', render: renderBlockObject}),
       defineInlineObject({type: '*', render: renderInlineObject}),
+      defineSpan({type: '*', render: renderSpan}),
       defineDecorator({type: '*', render: renderDecoratorNode}),
       defineAnnotation({type: '*', render: renderAnnotationNode}),
     ],
@@ -513,11 +602,11 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderTextBlock,
       renderBlockObject,
       renderInlineObject,
+      renderSpan,
       renderDecoratorNode,
       renderAnnotationNode,
     ],
   )
-
   const ariaDescribedBy = elementProps['aria-describedby']
 
   // Create an initial editor selection based on the focusPath
@@ -642,42 +731,44 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         <ListIndexProvider>
           <NodePlugin nodes={catchAllNodes} />
           <PortalProvider __unstable_elements={portalElements} element={portal.element}>
-            <BoundaryElementProvider element={floatingBoundary}>
-              <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
-                <ChangeIndicator
-                  disabled={isFullscreen}
-                  hasFocus={Boolean(focused)}
-                  isChanged={changed}
-                  path={path}
-                >
-                  <Root
-                    data-focused={editorFocused ? '' : undefined}
-                    data-read-only={readOnly ? '' : undefined}
+            <PortalBoundaryProvider element={portalBoundary} portalElement={portal.element}>
+              <BoundaryElementProvider element={floatingBoundary}>
+                <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
+                  <ChangeIndicator
+                    disabled={isFullscreen}
+                    hasFocus={Boolean(focused)}
+                    isChanged={changed}
+                    path={path}
                   >
-                    <Box data-wrapper="" ref={setWrapperElement}>
-                      <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
-                        {isFullscreen ? (
-                          <ExpandedLayer>{editorNodeWithInlineObjectEditModal}</ExpandedLayer>
-                        ) : (
-                          editorNodeWithInlineObjectEditModal
-                        )}
-                        <AnnotationObjectEditModal
-                          annotationOpeningRef={annotationOpeningRef}
-                          focused={focused}
-                          onItemClose={handleItemClose}
-                          referenceBoundary={scrollElement}
-                        />
-                        <CombinedAnnotationPopover
-                          annotationOpeningRef={annotationOpeningRef}
-                          referenceBoundary={scrollElement}
-                        />
-                      </Portal>
-                    </Box>
-                    <div data-border="" />
-                  </Root>
-                </ChangeIndicator>
-              </ActivateOnFocus>
-            </BoundaryElementProvider>
+                    <Root
+                      data-focused={editorFocused ? '' : undefined}
+                      data-read-only={readOnly ? '' : undefined}
+                    >
+                      <Box data-wrapper="" ref={setWrapperElement}>
+                        <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
+                          {isFullscreen ? (
+                            <ExpandedLayer>{editorNodeWithInlineObjectEditModal}</ExpandedLayer>
+                          ) : (
+                            editorNodeWithInlineObjectEditModal
+                          )}
+                          <AnnotationObjectEditModal
+                            annotationOpeningRef={annotationOpeningRef}
+                            focused={focused}
+                            onItemClose={handleItemClose}
+                            referenceBoundary={scrollElement}
+                          />
+                          <CombinedAnnotationPopover
+                            annotationOpeningRef={annotationOpeningRef}
+                            referenceBoundary={scrollElement}
+                          />
+                        </Portal>
+                      </Box>
+                      <div data-border="" />
+                    </Root>
+                  </ChangeIndicator>
+                </ActivateOnFocus>
+              </BoundaryElementProvider>
+            </PortalBoundaryProvider>
           </PortalProvider>
         </ListIndexProvider>
       </DndProvider>

@@ -1,8 +1,8 @@
 import {type ArraySchemaType, isKeyedObject} from '@sanity/types'
-import {Card, Checkbox, Flex, Grid} from '@sanity/ui'
+import {Card, Checkbox} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
 import {useCallback, useMemo} from 'react'
-import {Box} from 'ui5'
+import {Grid, Flex, Box} from 'ui5'
 
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {IncompatibleItemType} from '../../../members/array/IncompatibleItemType'
@@ -110,7 +110,7 @@ export function ArrayOfObjectOptionsInput(props: ArrayOfObjectsInputProps) {
     <ChangeIndicator path={path} isChanged={changed} hasFocus={false}>
       <Grid
         gap={2}
-        gridTemplateColumns={isGrid ? Math.min(options.length, 4) : 1}
+        gridTemplateColumns={`repeat(${isGrid ? Math.min(options.length, 4) : 1}, minmax(0, 1fr))`}
         tabIndex={0}
         {...elementProps}
       >
@@ -121,7 +121,7 @@ export function ArrayOfObjectOptionsInput(props: ArrayOfObjectsInputProps) {
 
           return (
             // oxlint-disable-next-line no-array-index-key
-            <Flex key={index} align="center" as="label">
+            <Flex key={index} alignItems="center" as="label">
               <Checkbox
                 disabled={disabled}
                 checked={checked}

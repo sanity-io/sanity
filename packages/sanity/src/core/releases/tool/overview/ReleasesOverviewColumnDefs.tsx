@@ -20,6 +20,12 @@ import {ReleaseNameCell} from './columnCells/ReleaseName'
 import {type Mode} from './queryParamUtils'
 import {type TableRelease} from './ReleasesOverview'
 
+export const RELEASES_OVERVIEW_TITLE_COLUMN_MIN_WIDTH = 200
+
+const RELEASES_OVERVIEW_TITLE_COLUMN_STYLE = {
+  minWidth: RELEASES_OVERVIEW_TITLE_COLUMN_MIN_WIDTH,
+} as const
+
 const enableColumnFormMode =
   (currentMode: Mode) => (column: Column<TableRelease>, expectedMode: Mode | 'all') => {
     if (!currentMode) throw new Error('currentMode is required')
@@ -40,7 +46,7 @@ export const releasesOverviewColumnDefs: (
         id: 'metadata.title',
         sorting: true,
         width: null,
-        style: {minWidth: 'min(50%, calc(100vw - 80px))', maxWidth: 'min(50%, calc(100vw - 80px))'},
+        style: RELEASES_OVERVIEW_TITLE_COLUMN_STYLE,
         header: (props) => (
           <Flex
             {...props.headerProps}

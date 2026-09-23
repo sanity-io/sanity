@@ -1,10 +1,10 @@
 import {type SchemaType} from '@sanity/types'
-import {type EditStateFor, type Workspace} from 'sanity'
+import {type Workspace, type TargetDocumentState} from 'sanity'
 
 import {isLiveEditEnabled} from './components/paneItem/helpers'
 
 export interface Context {
-  editState: Pick<EditStateFor, 'ready' | 'draft' | 'published' | 'version'> | null
+  targetDocumentState: TargetDocumentState | undefined
   workspace: {
     document: {
       drafts: Pick<Workspace['document']['drafts'], 'enabled'>
@@ -15,22 +15,23 @@ export interface Context {
 
 /**
  * Determine whether a document has an obsolete draft. This occurs if a document has a draft while
- * the draft model is inactive, or if a live-edit document has a draft.
+ * the draft model is inactive, or if a live-edit document has a draft (base or variant-scoped).
  */
-export function hasObsoleteDraft({editState, workspace, schemaType}: Context):
+export function hasObsoleteDraft({targetDocumentState, workspace, schemaType}: Context):
   | {
       result: true
       reason: 'LIVE_EDIT_ACTIVE' | 'DRAFT_MODEL_INACTIVE'
     }
   | {result: false}
   | {result: undefined} {
-  if (!editState?.ready) {
+  if (
+    targetDocumentState?.status === 'resolving' ||
+    targetDocumentState?.status === 'variant-definition-document-not-found'
+  ) {
     return {
       result: undefined,
     }
   }
-
-  const draftExists = editState.draft !== null
 
   const {
     document: {
@@ -38,7 +39,7 @@ export function hasObsoleteDraft({editState, workspace, schemaType}: Context):
     },
   } = workspace
 
-  if (!draftExists) {
+  if (!targetDocumentState?.siblings.draft) {
     return {
       result: false,
     }

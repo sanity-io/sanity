@@ -46,7 +46,9 @@ import {formBuilderReproTool} from './plugins/form-builder-repro/plugin'
 import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
 import {wave} from './plugins/input/wave-plugin'
 import {languageFilter} from './plugins/language-filter/plugin'
+import {presenceDebug} from './plugins/presence-debug/plugin'
 import {routerDebugTool} from './plugins/router-debug/plugin'
+import {styleOutline} from './plugins/style-outline/plugin'
 import {useArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
 import {createSchemaTypes} from './schema'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
@@ -262,8 +264,11 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       }),
       themerTool(),
       routerDebugTool(),
+      // Opt-in (Vercel test-studio). Must stay this exact member expression.
+      ...(process.env.SANITY_STUDIO_STYLE_OUTLINE === 'true' ? [styleOutline()] : []),
       formBuilderReproTool(),
       errorReportingTestPlugin(),
+      presenceDebug(),
       media(),
       wave(),
       autoCloseBrackets(),
@@ -410,12 +415,26 @@ export default defineConfig([
     ...defaultWorkspace,
     name: 'no-releases',
     title: 'No releases',
-    dataset: 'no-releases',
     basePath: '/no-releases',
     document: {
       drafts: {enabled: true},
     },
     releases: {enabled: false},
+  },
+  {
+    ...defaultWorkspace,
+    name: 'no-releases-no-variants',
+    title: 'No releases and no variants',
+    basePath: '/no-releases-no-variants',
+    document: {
+      drafts: {enabled: true},
+    },
+    releases: {enabled: false},
+    beta: {
+      variants: {
+        enabled: false,
+      },
+    },
   },
   {
     ...defaultWorkspace,

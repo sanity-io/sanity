@@ -1,5 +1,6 @@
 import process from 'node:process'
 
+import {type StyleCensus} from '@repo/utils/style-systems'
 import {type Browser, type Locator, type Page} from 'playwright'
 
 import {type BenchEntries} from '../../instrumentation/types'
@@ -7,6 +8,9 @@ import {type BenchScenario, type InteractionTarget} from '../../scenarios/types'
 import {median} from '../../stats/quantiles'
 import {createSessionContext, type SessionContext} from '../browser'
 import {type RunningSide} from '../servers'
+import {SessionError} from './errors'
+import {awaitReadiness, gotoScenario} from './navigation'
+import {takePageStyleCensus} from './styles'
 
 /** Characters cycled through while typing (letters + digits only). */
 export const CHARACTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
@@ -100,27 +104,12 @@ export interface InteractionSessionResult {
   requests: SessionRequests
   cpu: SessionCpu | null
   memory: SessionMemory | null
-}
-
-export type SessionFailureReason =
-  | 'readiness-timeout'
-  | 'probe-timeout'
-  | 'page-error'
-  | 'console-error'
-  | 'hermeticity-violation'
-  | 'sample-count-mismatch'
-  | 'readback-mismatch'
-  | 'unexpected-endpoint'
-
-export class SessionError extends Error {
-  constructor(
-    public reason: SessionFailureReason,
-    message: string,
-    public diagnostics: string[] = [],
-  ) {
-    super(`[${reason}] ${message}`)
-    this.name = 'SessionError'
-  }
+  /**
+   * Style-system census of the open document (report-only): UI v5 vs v4 nodes
+   * and the styled-components footprint — see @repo/utils/style-systems. Null
+   * when no probe was supplied or it failed.
+   */
+  styles: StyleCensus | null
 }
 
 /**
@@ -368,6 +357,8 @@ export async function runInteractionSession(options: {
   running: RunningSide
   scenario: BenchScenario
   instrumentation: string
+  /** The bundled style probe (runner/inject.ts); omitted = no style census. */
+  styleProbe?: string
   config?: Partial<SessionConfig>
 }): Promise<InteractionSessionResult> {
   const {browser, running, scenario, instrumentation} = options
@@ -416,21 +407,13 @@ export async function runInteractionSession(options: {
   try {
     await page.addInitScript(instrumentation)
 
-    await page.goto(
-      `${running.studioUrl}/${scenario.workspace ?? scenario.name}/intent/edit/id=${encodeURIComponent(scenario.documentId)};type=${encodeURIComponent(scenario.documentType)}`,
-      {waitUntil: 'domcontentloaded', timeout: config.readinessTimeoutMs},
-    )
+    await gotoScenario(page, running.studioUrl, scenario, config.readinessTimeoutMs)
 
     // Readiness: the form claims to be editable…
-    await page
-      .locator('[data-testid="form-view"]:not([data-read-only="true"])')
-      .waitFor({state: 'visible', timeout: config.readinessTimeoutMs})
-      .catch(() => {
-        throw new SessionError('readiness-timeout', 'form-view never became editable', [
-          ...session.consoleErrors,
-          ...session.pageErrors,
-        ])
-      })
+    await awaitReadiness(page, scenario, {
+      timeoutMs: config.readinessTimeoutMs,
+      diagnostics: () => [...session.consoleErrors, ...session.pageErrors],
+    })
 
     // …and a probe keystroke actually lands (the editability oracle). The
     // time-to-editable measure is emitted from inside the page on the input event, so
@@ -638,6 +621,15 @@ export async function runInteractionSession(options: {
         : null
     const memory = await readMemorySnapshot(session.cdp)
 
+    // Style census (report-only): which styling systems built this page.
+    // Taken LAST, after the workload and the resource counters: the probe
+    // waits for the DOM to go quiet before it counts, and doing that before
+    // the keystrokes would let the lazy panes finish loading ahead of the
+    // warmup — a harness-induced improvement in keystroke latency that would
+    // put a step in the series unrelated to any studio change. By now the
+    // page has been open for a minute, so the wait is only its quiet window.
+    const styles = options.styleProbe ? await takePageStyleCensus(page, options.styleProbe) : null
+
     // Session-level invariants
     if (session.violations.length > 0) {
       throw new SessionError(
@@ -677,6 +669,7 @@ export async function runInteractionSession(options: {
       requests,
       cpu,
       memory,
+      styles,
     }
   } finally {
     await context.close()
@@ -732,13 +725,11 @@ export async function runSoakSession(options: {
 
   try {
     await page.addInitScript(instrumentation)
-    await page.goto(
-      `${running.studioUrl}/${scenario.workspace ?? scenario.name}/intent/edit/id=${encodeURIComponent(scenario.documentId)};type=${encodeURIComponent(scenario.documentType)}`,
-      {waitUntil: 'domcontentloaded', timeout: config.readinessTimeoutMs},
-    )
-    await page
-      .locator('[data-testid="form-view"]:not([data-read-only="true"])')
-      .waitFor({state: 'visible', timeout: config.readinessTimeoutMs})
+    await gotoScenario(page, running.studioUrl, scenario, config.readinessTimeoutMs)
+    await awaitReadiness(page, scenario, {
+      timeoutMs: config.readinessTimeoutMs,
+      diagnostics: () => [...session.consoleErrors, ...session.pageErrors],
+    })
 
     const target = scenario.interactions[0]
     await focusField(page, target, config.readinessTimeoutMs)

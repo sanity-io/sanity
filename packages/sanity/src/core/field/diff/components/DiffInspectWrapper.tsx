@@ -1,8 +1,8 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 import {type ExecutionProps, styled} from 'styled-components'
-import {Box, type BoxProps} from 'ui5'
+import {VStack, Box, type BoxProps} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {pathToString} from '../../paths/helpers'
@@ -69,7 +69,7 @@ const MetaLabel = ({title}: {title: string}) => (
 function DiffInspector({change}: {change: FieldChangeNode}): React.JSX.Element | null {
   const {t} = useTranslation()
   return (
-    <Stack gap={3}>
+    <VStack gap={3}>
       <Card padding={3} tone="transparent" as={CodeWrapper} radius={1}>
         <MetaLabel title={t('changes.inspector.meta-label')} />
         <Code language="json" size={1}>
@@ -98,7 +98,7 @@ function DiffInspector({change}: {change: FieldChangeNode}): React.JSX.Element |
           {jsonify(change.diff.toValue)}
         </Code>
       </Card>
-    </Stack>
+    </VStack>
   )
 }
 

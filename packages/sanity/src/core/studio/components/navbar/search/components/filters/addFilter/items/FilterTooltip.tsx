@@ -1,6 +1,7 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import startCase from 'lodash-es/startCase.js'
 import uniq from 'lodash-es/uniq.js'
+import {Flex, VStack} from 'ui5'
 
 import {Tooltip} from '../../../../../../../../../ui-components/tooltip/Tooltip'
 import {TextWithTone} from '../../../../../../../../components/textWithTone/TextWithTone'
@@ -77,10 +78,10 @@ export function FilterTooltip({
     <Tooltip
       content={
         <Card tone="default" radius={2} style={{maxWidth: '250px'}}>
-          <Stack gap={4}>
+          <VStack gap={4}>
             {/* Field name */}
             {fieldDefinition && (
-              <Stack gap={3}>
+              <VStack gap={3}>
                 <Text muted size={1} weight="medium">
                   {t('search.filter-field-tooltip-name')}
                 </Text>
@@ -92,19 +93,19 @@ export function FilterTooltip({
                 >
                   {fieldDefinition?.name}
                 </TextWithTone>
-              </Stack>
+              </VStack>
             )}
 
             {/* Field description */}
             {fieldDefinitionDescription && (
-              <Stack gap={3}>
+              <VStack gap={3}>
                 <Text muted size={1} weight="medium">
                   {t('search.filter-field-tooltip-description')}
                 </Text>
                 <Text muted size={1}>
                   {truncateString(fieldDefinitionDescription, 256)}
                 </Text>
-              </Stack>
+              </VStack>
             )}
 
             {/* Filter description */}
@@ -116,8 +117,8 @@ export function FilterTooltip({
 
             {/* Field document titles */}
             {!documentTypesNarrowed.length && fieldDefinitionDocumentTypeTitles.length > 0 && (
-              <Stack gap={2}>
-                <Flex align="center" gap={1}>
+              <VStack gap={2}>
+                <Flex alignItems="center" gap={1}>
                   <Text muted size={1} weight="medium">
                     {t('search.filter-field-tooltip-used-in-document-types')}
                   </Text>
@@ -133,9 +134,9 @@ export function FilterTooltip({
                     ? ` +${fieldDefinitionDocumentTypeTitles.length - MAX_VISIBLE_TYPES} more`
                     : ''}
                 </Text>
-              </Stack>
+              </VStack>
             )}
-          </Stack>
+          </VStack>
         </Card>
       }
       disabled={!visible}

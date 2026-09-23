@@ -1,4 +1,4 @@
-import {type MutationEvent} from '@sanity/client'
+import {type ClientPerspective, type MutationEvent} from '@sanity/client'
 import {Text} from '@sanity/ui'
 import {Translate, useTranslation} from 'sanity'
 import {Box} from 'ui5'
@@ -25,6 +25,9 @@ import {
 
 interface VisionGuiResultProps {
   error?: Error | undefined
+  apiVersion: string
+  perspective: ClientPerspective | undefined
+  variant: string | undefined
   queryInProgress: boolean
   queryResult?: unknown | undefined
   listenInProgress: boolean
@@ -37,6 +40,9 @@ interface VisionGuiResultProps {
 
 export function VisionGuiResult({
   error,
+  apiVersion,
+  perspective,
+  variant,
   queryInProgress,
   queryResult,
   listenInProgress,
@@ -50,7 +56,7 @@ export function VisionGuiResult({
   const hasResult = !error && !queryInProgress && typeof queryResult !== 'undefined'
 
   return (
-    <ResultOuterContainer direction="column" data-testid="vision-result">
+    <ResultOuterContainer flexDirection="column" data-testid="vision-result">
       <ResultInnerContainer flexBasis="0%" flexGrow={1}>
         <ResultContainer
           flex={1}
@@ -70,7 +76,14 @@ export function VisionGuiResult({
                   <DelayedSpinner />
                 </Box>
               )}
-              {error && <QueryErrorDialog error={error} />}
+              {error && (
+                <QueryErrorDialog
+                  apiVersion={apiVersion}
+                  error={error}
+                  perspective={perspective}
+                  variant={variant}
+                />
+              )}
               {hasResult && <ResultView data={queryResult} datasetName={dataset} />}
               {listenInProgress && listenMutations.length > 0 && (
                 <ResultView data={listenMutations} datasetName={dataset} />
@@ -81,9 +94,9 @@ export function VisionGuiResult({
       </ResultInnerContainer>
       {/* Execution time */}
       <ResultFooter
-        justify={compactFooter ? 'flex-start' : 'space-between'}
-        align={compactFooter ? 'stretch' : undefined}
-        direction={compactFooter ? 'column' : ['column', 'column', 'row']}
+        justifyContent={compactFooter ? 'flex-start' : 'space-between'}
+        alignItems={compactFooter ? 'stretch' : undefined}
+        flexDirection={compactFooter ? 'column' : ['column', 'column', 'row']}
       >
         <TimingsCard
           paddingX={compactFooter ? 3 : 4}
@@ -91,7 +104,7 @@ export function VisionGuiResult({
           sizing="border"
           style={compactFooter ? {width: '100%'} : {minWidth: 0}}
         >
-          <TimingsTextContainer align="center">
+          <TimingsTextContainer alignItems="center">
             <Box>
               <Text muted size={compactFooter ? 1 : 2}>
                 {t('result.execution-time-label')}:{' '}

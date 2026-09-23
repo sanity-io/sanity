@@ -1,11 +1,12 @@
 import {isKeySegment} from '@sanity/types'
-import {Stack} from '@sanity/ui'
 import last from 'lodash-es/last.js'
 import {type FocusEvent, Fragment, memo, useCallback, useMemo, useRef} from 'react'
 import {styled} from 'styled-components'
+import {VStack} from 'ui5'
 
 import {EMPTY_ARRAY} from '../../../util/empty'
 import {FormRow} from '../../components/layout/FormRow'
+import {getGridTemplateColumns} from '../../components/layout/getGridTemplateColumns'
 import {ObjectInputMembers} from '../../members/object/ObjectInputMembers'
 import {useRenderMembers} from '../../members/object/useRenderMembers'
 import {type ObjectInputProps} from '../../types/inputProps'
@@ -13,7 +14,7 @@ import {FieldGroupTabs} from './fieldGroups/FieldGroupTabs'
 import {AlignedBottomGrid, FieldGroupTabsWrapper} from './ObjectInput.styled'
 import {UnknownFields} from './UnknownFields'
 
-const RootStack = styled(Stack)`
+const RootStack = styled(VStack)`
   /* Disable focus ring for the object block. We instead highlight the left border on the fieldset
   for level > 0 to signal that you have focused on the object */
   &:focus {
@@ -153,7 +154,11 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
         key={selectedGroup?.name}
       >
         {columns ? (
-          <AlignedBottomGrid gridTemplateColumns={columns} gap={4} marginTop={1}>
+          <AlignedBottomGrid
+            gridTemplateColumns={getGridTemplateColumns(columns)}
+            gap={4}
+            marginTop={1}
+          >
             {renderObjectMembers()}
           </AlignedBottomGrid>
         ) : (

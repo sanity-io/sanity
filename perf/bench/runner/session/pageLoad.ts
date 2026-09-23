@@ -1,9 +1,13 @@
-import {type Browser, type Page} from 'playwright'
+import {type StyleCensus} from '@repo/utils/style-systems'
+import {type Browser} from 'playwright'
 
 import {type BenchScenario} from '../../scenarios/types'
 import {type AttachedPage, attachPage, createSessionContext} from '../browser'
 import {type RunningSide} from '../servers'
-import {HERMETICITY_HINT, SessionError} from './interaction'
+import {SessionError} from './errors'
+import {HERMETICITY_HINT} from './interaction'
+import {awaitReadiness, scenarioUrl} from './navigation'
+import {takePageStyleCensus} from './styles'
 
 export type LoadCondition = 'boot-cold' | 'open-doc-warm'
 
@@ -66,6 +70,12 @@ export interface PageLoadSample {
     /** Union of in-flight windows of those requests (network/server share). */
     inFlightMs: number
   }
+  /**
+   * Style-system census of the loaded document (report-only) — see
+   * @repo/utils/style-systems. Independent of the load condition (the same
+   * page renders either way); null when no probe was supplied or it failed.
+   */
+  styles: StyleCensus | null
 }
 
 /**
@@ -190,23 +200,20 @@ async function measureLoad(options: {
   scenario: BenchScenario
   condition: LoadCondition
   instrumentation: string
+  styleProbe?: string
   config: PageLoadConfig
 }): Promise<PageLoadSample> {
-  const {attached, url, scenario, condition, instrumentation, config} = options
+  const {attached, url, scenario, condition, instrumentation, styleProbe, config} = options
   const {page} = attached
 
   await page.addInitScript(instrumentation)
   await page.goto(url, {waitUntil: 'domcontentloaded', timeout: config.readinessTimeoutMs})
 
-  await page
-    .locator('[data-testid="form-view"]:not([data-read-only="true"])')
-    .waitFor({state: 'visible', timeout: config.readinessTimeoutMs})
-    .catch(() => {
-      throw new SessionError('readiness-timeout', `form never became editable (${condition})`, [
-        ...attached.consoleErrors,
-        ...attached.httpErrors,
-      ])
-    })
+  await awaitReadiness(page, scenario, {
+    timeoutMs: config.readinessTimeoutMs,
+    context: condition,
+    diagnostics: () => [...attached.consoleErrors, ...attached.httpErrors],
+  })
 
   const firstField = scenario.interactions[0]
   const input = page
@@ -249,6 +256,10 @@ async function measureLoad(options: {
   }
   const fcp = entries.paints.find((paint) => paint.name === 'first-contentful-paint')
 
+  // Style census once the document is editable: every load metric above is
+  // already measured, so the DOM walk cannot land in any of them
+  const styles = styleProbe ? await takePageStyleCensus(page, styleProbe) : null
+
   // Per-page invariants — validated before this page's teardown can abort
   // anything (navigation/close aborts in-flight requests and would log
   // spurious "network error"s otherwise)
@@ -272,6 +283,7 @@ async function measureLoad(options: {
     blockingMs: entries.loafs.reduce((sum, loaf) => sum + loaf.blockingDuration, 0),
     loafAttribution: foldLoafAttribution(entries.loafs),
     auth: deriveAuthMilestones(entries.resources, timeToEditable.duration),
+    styles,
   }
 }
 
@@ -287,9 +299,11 @@ export async function runPageLoadSample(options: {
   running: RunningSide
   scenario: BenchScenario
   instrumentation: string
+  /** The bundled style probe (runner/inject.ts); omitted = no style census. */
+  styleProbe?: string
   config?: Partial<PageLoadConfig>
 }): Promise<PageLoadSample[]> {
-  const {browser, running, scenario, instrumentation} = options
+  const {browser, running, scenario, instrumentation, styleProbe} = options
   const config = {...DEFAULT_PAGELOAD_CONFIG, ...options.config}
 
   running.mock.hub.closeAll()
@@ -302,7 +316,7 @@ export async function runPageLoadSample(options: {
   })
   const {context} = session
 
-  const url = `${running.studioUrl}/${scenario.workspace ?? scenario.name}/intent/edit/id=${encodeURIComponent(scenario.documentId)};type=${encodeURIComponent(scenario.documentType)}`
+  const url = scenarioUrl(running.studioUrl, scenario)
 
   try {
     await applyNetworkEmulation(session, config.network)
@@ -312,6 +326,7 @@ export async function runPageLoadSample(options: {
       scenario,
       condition: 'boot-cold',
       instrumentation,
+      styleProbe,
       config,
     })
     await session.page.close()
@@ -324,6 +339,7 @@ export async function runPageLoadSample(options: {
       scenario,
       condition: 'open-doc-warm',
       instrumentation,
+      styleProbe,
       config,
     })
 

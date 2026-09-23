@@ -11,7 +11,7 @@ import {
   urlSearchParamVercelSetBypassCookie,
   type VercelSetBypassCookieValue,
 } from '@sanity/preview-url-secret/constants'
-import {Card, Flex, Label, Spinner, Stack, Text, usePrefersReducedMotion} from '@sanity/ui'
+import {Card, Label, Spinner, Stack, Text, usePrefersReducedMotion} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
@@ -29,6 +29,7 @@ import {
 } from 'react'
 import {flushSync} from 'react-dom'
 import {Translate, useTranslation} from 'sanity'
+import {Flex} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {Button} from '../../ui-components/button/Button'
@@ -100,6 +101,7 @@ export const Preview = memo(function PreviewComponent(
     previewUrlRef,
     handlesPerspectiveChange,
     handlesVariantChange,
+    targetOrigin,
   } = props
 
   const [stablePerspective, setStablePerspective] = useState<typeof perspective | null>(null)
@@ -277,6 +279,15 @@ export const Preview = memo(function PreviewComponent(
   const [checkOrigin, setCheckOrigin] = useState<false | string>(false)
   const [reportedMismatches] = useState(new Set<string>())
   const reportMismatchingOrigin = useEffectEvent((reportedOrigin: string) => {
+    if (reportedOrigin === targetOrigin) {
+      // The reported origin is the one the visual editing channel already
+      // targets, so there is no misconfiguration to recover from — the
+      // pending handshake can complete on its own. Connecting the recovery
+      // channel here would open a second `presentation` channel to the same
+      // node, and the two channels would fight over the node's single
+      // connection (#14344).
+      return
+    }
     if (allowOrigins.some((allow) => allow.test(reportedOrigin))) {
       setCheckOrigin(reportedOrigin)
       return
@@ -394,11 +405,10 @@ export const Preview = memo(function PreviewComponent(
         {previewHeader}
         <Card flex={1} tone="transparent">
           <Flex
-            align="center"
-            height="fill"
-            justify="center"
+            alignItems="center"
+            height="100%"
+            justifyContent="center"
             padding={(canUseViewTransition ? currentViewport : viewport) === 'desktop' ? 0 : 2}
-            sizing="border"
             style={{
               position: 'relative',
               cursor: iframeIsBusy ? 'wait' : undefined,
@@ -411,8 +421,8 @@ export const Preview = memo(function PreviewComponent(
                   animate="animate"
                   exit="exit"
                   variants={spinnerVariants}
-                  justify="center"
-                  align="center"
+                  justifyContent="center"
+                  alignItems="center"
                   style={{
                     inset: '0',
                     position: 'absolute',
@@ -430,9 +440,9 @@ export const Preview = memo(function PreviewComponent(
                 >
                   <Flex
                     style={{...sizes[viewport]}}
-                    justify="center"
-                    align="center"
-                    direction="column"
+                    justifyContent="center"
+                    alignItems="center"
+                    flexDirection="column"
                     gap={4}
                   >
                     {overlaysConnectionTimedOut && (
@@ -449,7 +459,12 @@ export const Preview = memo(function PreviewComponent(
                       padding={4}
                       shadow={1}
                     >
-                      <Flex justify="center" align="center" direction="column" gap={4}>
+                      <Flex
+                        justifyContent="center"
+                        alignItems="center"
+                        flexDirection="column"
+                        gap={4}
+                      >
                         <Spinner muted />
                         <Text muted size={1}>
                           {overlaysConnectionTimedOut
@@ -474,8 +489,8 @@ export const Preview = memo(function PreviewComponent(
                   animate="animate"
                   exit="exit"
                   variants={spinnerVariants}
-                  justify="center"
-                  align="center"
+                  justifyContent="center"
+                  alignItems="center"
                   style={{
                     inset: '0',
                     position: 'absolute',
@@ -484,9 +499,9 @@ export const Preview = memo(function PreviewComponent(
                 >
                   <Flex
                     style={{...sizes[viewport]}}
-                    justify="center"
-                    align="center"
-                    direction="column"
+                    justifyContent="center"
+                    alignItems="center"
+                    flexDirection="column"
                     gap={4}
                   >
                     <Spinner muted />
@@ -501,8 +516,8 @@ export const Preview = memo(function PreviewComponent(
                   animate="animate"
                   exit="exit"
                   variants={errorVariants}
-                  justify="center"
-                  align="center"
+                  justifyContent="center"
+                  alignItems="center"
                   style={{
                     background: 'var(--card-bg-color)',
                     inset: '0',

@@ -1,6 +1,7 @@
-import {Card, type CardTone, Stack} from '@sanity/ui'
+import {Card, type CardTone} from '@sanity/ui'
 import get from 'lodash-es/get.js'
 import {PureComponent} from 'react'
+import {VStack} from 'ui5'
 
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {ArrayOfPrimitivesItem} from '../../../members/array/items/ArrayOfPrimitivesItem'
@@ -177,7 +178,7 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
 
     return (
       <ArrayValidationProvider schemaType={schemaType} itemCount={members.length}>
-        <Stack gap={2} data-testid="array-primitives-input">
+        <VStack gap={2} data-testid="array-primitives-input">
           <UploadTargetCard
             types={schemaType.of}
             resolveUploader={resolveUploader}
@@ -185,7 +186,7 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
             {...elementProps}
             tabIndex={0}
           >
-            <Stack gap={1}>
+            <VStack gap={1}>
               {membersWithSortIds.length === 0 ? (
                 <NoItemsPlaceholder schemaType={schemaType} validation={validation} />
               ) : (
@@ -197,7 +198,15 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
                     items={membersWithSortIds.map((m) => m.id)}
                     sortable={isSortable}
                     gap={isGrid ? 3 : 1}
-                    gridTemplateColumns={isGrid ? [2, 3, 4] : 1}
+                    gridTemplateColumns={
+                      isGrid
+                        ? [
+                            'repeat(2, minmax(0, 1fr))',
+                            'repeat(3, minmax(0, 1fr))',
+                            'repeat(4, minmax(0, 1fr))',
+                          ]
+                        : ['repeat(1, minmax(0, 1fr))']
+                    }
                     padding={isGrid ? 1 : undefined}
                     margin={isGrid ? 1 : undefined}
                   >
@@ -236,7 +245,7 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
                   </List>
                 </Card>
               )}
-            </Stack>
+            </VStack>
           </UploadTargetCard>
 
           <ArrayFunctions
@@ -249,7 +258,7 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
             value={this.props.value}
             path={this.props.path}
           />
-        </Stack>
+        </VStack>
       </ArrayValidationProvider>
     )
   }

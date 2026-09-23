@@ -15,13 +15,20 @@ export {
 export {ColorSchemeSetValueContext} from '../_singletons/context/ColorSchemeSetValueContext'
 export {ColorSchemeValueContext} from '../_singletons/context/ColorSchemeValueContext'
 export {CommentInputContext} from '../_singletons/context/CommentInputContext'
+export {CommentInputContextV2} from '../_singletons/context/CommentInputContextV2'
 export {CommentsAuthoringPathContext} from '../_singletons/context/CommentsAuthoringPathContext'
+export {CommentsAuthoringPathContextV2} from '../_singletons/context/CommentsAuthoringPathContextV2'
 export {CommentsContext} from '../_singletons/context/CommentsContext'
+export {CommentsContextV2} from '../_singletons/context/CommentsContextV2'
 export {CommentsEnabledContext} from '../_singletons/context/CommentsEnabledContext'
+export {CommentsEnabledContextV2} from '../_singletons/context/CommentsEnabledContextV2'
 export {CommentsIntentContext} from '../_singletons/context/CommentsIntentContext'
 export {CommentsOnboardingContext} from '../_singletons/context/CommentsOnboardingContext'
+export {CommentsOnboardingContextV2} from '../_singletons/context/CommentsOnboardingContextV2'
 export {CommentsSelectedPathContext} from '../_singletons/context/CommentsSelectedPathContext'
+export {CommentsSelectedPathContextV2} from '../_singletons/context/CommentsSelectedPathContextV2'
 export {CommentsUpsellContext} from '../_singletons/context/CommentsUpsellContext'
+export {CommentsUpsellContextV2} from '../_singletons/context/CommentsUpsellContextV2'
 export {ConfigErrorContext, type ConfigErrorValue} from '../_singletons/context/ConfigErrorContext'
 export {CopyPasteContext} from '../_singletons/context/CopyPasteContext'
 export {
@@ -51,6 +58,7 @@ export {
 } from '../_singletons/context/DocumentLimitContext'
 export {DocumentPaneContext} from '../_singletons/context/DocumentPaneContext'
 export {DocumentPaneInfoContext} from '../_singletons/context/DocumentPaneInfoContext'
+// oxlint-disable-next-line no-deprecated -- kept exported to avoid a breaking change; remove in the next major
 export {EditDialogOuterBoundaryContext} from '../_singletons/context/EditDialogOuterBoundaryContext'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {EnhancedObjectDialogContext} from '../_singletons/context/EnhancedObjectDialogContext'
@@ -98,6 +106,10 @@ export {
 export {PaneContext} from '../_singletons/context/PaneContext'
 export {PaneLayoutContext} from '../_singletons/context/PaneLayoutContext'
 export {PaneRouterContext} from '../_singletons/context/PaneRouterContext'
+export {
+  PortalBoundaryContext,
+  type PortalBoundaryContextValue,
+} from '../_singletons/context/PortalBoundaryContext'
 export {ParseErrorsContext, type SetParseError} from '../_singletons/context/ParseErrorsContext'
 export {PerspectiveContext} from '../_singletons/context/PerspectiveContext'
 export {PortableTextMarkersContext} from '../_singletons/context/PortableTextMarkersContext'

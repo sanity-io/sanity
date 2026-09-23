@@ -1,10 +1,10 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
-import {Container, Flex, rem, Stack} from '@sanity/ui'
+import {Container, rem} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useState} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
@@ -60,7 +60,7 @@ export function WorkspaceAuth() {
   if (LoginComponent && selectedWorkspace && !showChooser) {
     return (
       <Container width={0}>
-        <Stack gap={2}>
+        <VStack gap={2}>
           {canChooseAnotherWorkspace && (
             <Flex>
               <Button
@@ -83,7 +83,7 @@ export function WorkspaceAuth() {
               </Box>
             }
           >
-            <Stack padding={2} paddingBottom={3} paddingTop={4}>
+            <Flex padding={2} paddingBottom={3} paddingTop={4} flexDirection="column">
               <LoginComponent
                 key={selectedWorkspace.name}
                 projectId={selectedWorkspace.projectId}
@@ -99,9 +99,9 @@ export function WorkspaceAuth() {
                 // the workspace chooser without a full reload.
                 onChooseAnotherWorkspace={canChooseAnotherWorkspace ? handleBack : undefined}
               />
-            </Stack>
+            </Flex>
           </Layout>
-        </Stack>
+        </VStack>
       </Container>
     )
   }
@@ -111,7 +111,7 @@ export function WorkspaceAuth() {
       <Layout
         header={t('workspaces.choose-your-workspace-label')}
         footer={
-          <Stack padding={1}>
+          <Flex padding={1} flexDirection="column">
             <Button
               as="a"
               href={WORKSPACES_DOCS_URL}
@@ -122,10 +122,10 @@ export function WorkspaceAuth() {
               target="__blank"
               text={t('workspaces.action.add-workspace')}
             />
-          </Stack>
+          </Flex>
         }
       >
-        <Stack gap={1} paddingX={1} paddingY={2}>
+        <Flex gap={1} paddingX={1} paddingY={2} flexDirection="column">
           {visibleWorkspaces.map((workspace) => (
             <WorkspaceAuthCard
               key={workspace.name}
@@ -133,7 +133,7 @@ export function WorkspaceAuth() {
               onSelect={(state) => handleCardSelect(workspace.name, state)}
             />
           ))}
-        </Stack>
+        </Flex>
       </Layout>
     </StyledContainer>
   )

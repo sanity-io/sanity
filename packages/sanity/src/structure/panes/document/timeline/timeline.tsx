@@ -188,7 +188,11 @@ export const Timeline = ({
       )}
 
       {filteredChunks.length > 0 && (
-        <ListWrapper direction="column" $maxHeight={listMaxHeight} id={TIMELINE_LIST_WRAPPER_ID}>
+        <ListWrapper
+          flexDirection="column"
+          $maxHeight={listMaxHeight}
+          id={TIMELINE_LIST_WRAPPER_ID}
+        >
           <CommandList
             activeItemDataAttr="data-hovered"
             ariaLabel={t('timeline.list.aria-label')}

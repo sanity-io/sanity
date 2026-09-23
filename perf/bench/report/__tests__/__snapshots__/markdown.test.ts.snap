@@ -15,6 +15,6 @@ xychart-beta
   bar [8.0]
 \`\`\`
 
-[📊 View on the trends dashboard](https://studio-metrics.sanity.dev/trends?branches=main%2Cperf-bench) for the full tables, percentiles, and history.
+[📊 View on the trends dashboard](https://radar.sanity.dev/trends?branches=main%2Cperf-bench) for the full tables, percentiles, and history.
 "
 `;

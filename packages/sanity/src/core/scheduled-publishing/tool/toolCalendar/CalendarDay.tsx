@@ -1,9 +1,9 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {Badge, Card, type CardTone, Inline, Label, Stack, Text} from '@sanity/ui'
+import {Badge, Card, type CardTone, Inline, Label, Text} from '@sanity/ui'
 import {format} from 'date-fns/format'
 import {isWeekend} from 'date-fns/isWeekend'
 import {useCallback, useMemo} from 'react'
-import {Flex, Box} from 'ui5'
+import {Box, Flex, VStack} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useTimeZone} from '../../../hooks/useTimeZone'
@@ -143,18 +143,18 @@ function TooltipContent(props: TooltipContentProps) {
           {format(date, 'd MMMM yyyy')}
         </Text>
       </Box>
-      <Stack gap={3}>
+      <VStack gap={3}>
         {(Object.keys(schedulesByState) as Array<keyof typeof schedulesByState>).map((key) => {
           const stateSchedules = schedulesByState[key]
           if (stateSchedules.length === 0) {
             return null
           }
           return (
-            <Stack key={key} gap={2}>
+            <VStack key={key} gap={2}>
               <Label muted size={0}>
                 {SCHEDULE_STATE_DICTIONARY[key].title}
               </Label>
-              <Stack gap={1}>
+              <VStack gap={1}>
                 {stateSchedules
                   .filter((schedule) => schedule.executeAt)
                   .map((schedule) => {
@@ -185,11 +185,11 @@ function TooltipContent(props: TooltipContentProps) {
                       </Inline>
                     )
                   })}
-              </Stack>
-            </Stack>
+              </VStack>
+            </VStack>
           )
         })}
-      </Stack>
+      </VStack>
     </Box>
   )
 }

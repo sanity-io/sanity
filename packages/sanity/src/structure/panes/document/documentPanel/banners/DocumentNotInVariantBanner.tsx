@@ -29,7 +29,7 @@ type VariantDocumentCreateStatus = 'idle' | 'in-progress' | 'success' | 'failed'
 export function DocumentNotInVariantBanner() {
   const {t} = useTranslation(structureLocaleNamespace)
   const {t: tCore} = useTranslation()
-  const {value, documentId} = useDocumentPane()
+  const {value, documentId, schemaType} = useDocumentPane()
   const {selectedPerspective, selectedVariant, selectedReleaseId} = usePerspective()
   const {versions} = useDocumentVersions({documentId})
 
@@ -56,6 +56,13 @@ export function DocumentNotInVariantBanner() {
     return String(selectedPerspective)
   }, [selectedPerspective, tCore])
 
+  // Live-edit documents have no drafts sibling: create the variant-of-published even when the
+  // studio is pinned to drafts. Release perspectives still target the release.
+  const createPerspective =
+    schemaType?.liveEdit && isDraftPerspective(selectedPerspective)
+      ? 'published'
+      : selectedPerspective
+
   const handleAddToVariant = useCallback(async () => {
     if (!selectedVariant) {
       return
@@ -71,7 +78,7 @@ export function DocumentNotInVariantBanner() {
           document: document,
           documentGroupId: documentId,
           variant: selectedVariant,
-          selectedPerspective,
+          selectedPerspective: createPerspective,
         })
       } else {
         const baseDocument = findVariantCreateBaseDocument({
@@ -85,7 +92,7 @@ export function DocumentNotInVariantBanner() {
           ifBaseRevisionId: baseDocument._rev,
           documentGroupId: documentId,
           variant: selectedVariant,
-          selectedPerspective,
+          selectedPerspective: createPerspective,
         })
       }
       setStatus('success')
@@ -105,7 +112,7 @@ export function DocumentNotInVariantBanner() {
     documentId,
     value,
     selectedVariant,
-    selectedPerspective,
+    createPerspective,
     t,
     toast,
     versions,

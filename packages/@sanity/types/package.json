@@ -1,6 +1,6 @@
 {
   "name": "@sanity/types",
-  "version": "6.11.0",
+  "version": "6.16.0",
   "description": "Type definitions for common Sanity data structures",
   "keywords": [
     "cms",
@@ -50,7 +50,7 @@
   },
   "dependencies": {
     "@sanity/client": "catalog:",
-    "@sanity/media-library-types": "^1.6.0"
+    "@sanity/media-library-types": "^1.7.0"
   },
   "devDependencies": {
     "@repo/test-config": "workspace:*",

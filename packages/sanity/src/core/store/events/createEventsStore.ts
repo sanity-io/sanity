@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {type Observable} from 'rxjs'
+import {type Observable, of, Subscription} from 'rxjs'
 
 import {createEventsObservable} from './createEventsObservable'
 import {getDocumentChanges} from './getDocumentChanges'
@@ -10,9 +10,27 @@ import {type EventsStoreRevision} from './types'
 
 interface EventsStoreOptions {
   client: SanityClient
-  documentId: string
+  documentId: string | undefined
   documentType: string
   isLiveEdit: boolean
+}
+
+const IDLE_EVENTS = {events: [], nextCursor: '', loading: false, error: null}
+
+/**
+ * Idle store used when there is no document to observe (e.g. a missing variant with no
+ * creatable target). No events, translog, or history requests are made.
+ */
+function createIdleEventsStore() {
+  const eventsObservable$ = of(IDLE_EVENTS)
+  return {
+    eventsObservable$,
+    getDocumentChanges: () => of({diff: null, loading: false, error: null}),
+    handleExpandEvent: async () => {},
+    loadMoreEvents: () => {},
+    reloadEvents: () => {},
+    remoteTransactionsListener: () => new Subscription(),
+  }
 }
 
 /**
@@ -21,6 +39,9 @@ interface EventsStoreOptions {
  * - `getExpandEvents`: on-demand expansion of publish/delete events,
  * - `getRemoteTransactionsSubscription`: real-time remote mutations (append or trigger refetch),
  * - `createEventsObservable`: merge, sort and per-variant post-processing.
+ *
+ * When `documentId` is missing, returns an idle store (`events: []`, `loading: false`) and does
+ * not subscribe to the document pair or hit the events/history APIs.
  *
  * Returns:
  * - `eventsObservable$`: the final `{events, nextCursor, loading, error}` stream for the UI.
@@ -37,6 +58,10 @@ export function createEventsStore({
   documentType,
   isLiveEdit,
 }: EventsStoreOptions) {
+  if (!documentId) {
+    return createIdleEventsStore()
+  }
+
   const initialEvents = getInitialFetchEvents({client, documentId})
   const {expandedEvents$, handleExpandEvent} = getExpandEvents({client, documentId})
   const {remoteEdits$, remoteTransactions$, subscribe} = getRemoteTransactionsSubscription({

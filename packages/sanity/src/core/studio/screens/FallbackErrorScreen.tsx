@@ -1,7 +1,7 @@
 /* oxlint-disable i18next/no-literal-string */
-import {Card, Container, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Container, Heading, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
-import {Flex} from 'ui5'
+import {VStack, Flex} from 'ui5'
 
 import {ErrorActions} from '../../components/errorActions/ErrorActions'
 import {isDev, isProd} from '../../environment'
@@ -42,8 +42,8 @@ export function FallbackErrorScreen(props: {
     >
       <Flex alignItems="center" height="100%">
         <Container width={3}>
-          <Stack gap={6}>
-            <Stack gap={4}>
+          <VStack gap={6}>
+            <VStack gap={4}>
               <Heading>{heading}</Heading>
               <Text>An error occurred that Sanity Studio was unable to recover from.</Text>
               {isProd && (
@@ -54,7 +54,7 @@ export function FallbackErrorScreen(props: {
               )}
               {isDev && (
                 <Card border radius={2} overflow="auto" padding={4} tone="critical">
-                  <Stack gap={4}>
+                  <VStack gap={4}>
                     {message && (
                       <Code weight={'bold'} size={1}>
                         {message}
@@ -62,12 +62,12 @@ export function FallbackErrorScreen(props: {
                     )}
                     {stack && <Code size={1}>{stack}</Code>}
                     {eventId && <Code size={1}>Event ID: {eventId}</Code>}
-                  </Stack>
+                  </VStack>
                 </Card>
               )}
               {showRequestErrorTip && (
                 <Card border radius={2} padding={4} tone="caution">
-                  <Stack gap={3}>
+                  <VStack gap={3}>
                     <Text size={1} weight="medium">
                       Developer tip
                     </Text>
@@ -82,12 +82,12 @@ export function FallbackErrorScreen(props: {
                     <Text size={1} muted>
                       This tip is only shown in development.
                     </Text>
-                  </Stack>
+                  </VStack>
                 </Card>
               )}
-            </Stack>
+            </VStack>
             <ErrorActions error={error} eventId={eventId} onRetry={onReset} size="large" />
-          </Stack>
+          </VStack>
         </Container>
       </Flex>
     </Card>

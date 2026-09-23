@@ -1,4 +1,4 @@
-import {BoundaryElementProvider, Card, Flex} from '@sanity/ui'
+import {BoundaryElementProvider, Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useState} from 'react'
 import {
@@ -14,6 +14,7 @@ import {
   useTranslation,
 } from 'sanity'
 import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {EventsTimeline} from '../../timeline/events/EventsTimeline'
 import {TimelineError} from '../../timeline/TimelineError'
@@ -91,7 +92,7 @@ export function EventsSelector({showList}: {showList: boolean}) {
 
   const initialLoad = loading && !events.length
   return (
-    <Flex data-testid="review-changes-pane" direction="column" height="fill">
+    <Flex data-testid="review-changes-pane" flexDirection="column" height="100%">
       <Card flex={1} padding={2} paddingTop={0}>
         {error ? (
           <TimelineError />

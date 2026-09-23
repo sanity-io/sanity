@@ -57,7 +57,7 @@ const variantVersion: VersionInfoDocumentStub = {
   _type: 'article',
   _system: {
     bundleId: 'drafts',
-    variant: {_ref: '_.variants.test', _weak: true},
+    variants: [{_ref: '_.variants.test', _key: 'k-123'}],
     group: {_ref: publishedId, _weak: true},
     scopeId: 'scope1',
   },

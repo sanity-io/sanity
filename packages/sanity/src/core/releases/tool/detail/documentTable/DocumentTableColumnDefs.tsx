@@ -19,9 +19,10 @@ import {RhombusIcon} from '../../../../components/temporary-icons/Rhombus'
 import {AvatarSkeleton, UserAvatar} from '../../../../components/userAvatar/UserAvatar'
 import {useSchema} from '../../../../hooks/useSchema'
 import {SanityDefaultPreview} from '../../../../preview/components/SanityDefaultPreview'
+import {getDocumentVersionVariantId} from '../../../../util/getDocumentVersionVariant'
 import {
   getVariantConditionsText,
-  getVariantIdFromDocument,
+  getVariantId,
   getVariantTitle,
 } from '../../../../variants/tool/util'
 import {type SystemVariant} from '../../../../variants/types'
@@ -49,8 +50,8 @@ const MemoReleaseDocumentPreview = memo(
     documentRevision?: string
   }) {
     const willUnpublish = isGoingToUnpublish(item.document)
-    const variantId = getVariantIdFromDocument(item.document)
-
+    const variantRef = getDocumentVersionVariantId({_system: item.document._system})
+    const variantId = variantRef ? getVariantId(variantRef) : undefined
     return (
       <ReleaseDocumentPreview
         documentId={item.document._id}
@@ -202,13 +203,13 @@ const documentActionColumn: (
 const VARIANT_ICON_CARD_STYLE: CSSProperties = {backgroundColor: 'transparent'}
 const VARIANT_ICON_STYLE: CSSProperties = {color: 'var(--card-icon-color)'}
 
-/** Resolves a document's variant definition from its `_system.variant._ref` (full variant id). */
+/** Resolves a document's variant definition from its `_system.variants[0]._ref` (full variant id). */
 function resolveDocumentVariant(
   document: BundleDocumentRow['document'],
   variantsById: Map<string, SystemVariant>,
 ): SystemVariant | undefined {
-  const variantRef = (document as {_system?: {variant?: {_ref?: string}}})._system?.variant?._ref
-  return variantRef ? variantsById.get(variantRef) : undefined
+  const variantId = getDocumentVersionVariantId(document)
+  return variantId ? variantsById.get(variantId) : undefined
 }
 
 // Which variant a release document targets: ◆ diamond + the variant title, with the full
@@ -479,13 +480,15 @@ export const getDocumentTableColumnDefs: (
         // and focuses the field when the document opens.
         const firstError = errors.find((error) => error.path.length > 0) ?? errors[0]
         const focusPath = firstError ? pathToString(firstError.path) : undefined
+        const variantRef = getDocumentVersionVariantId({_system: datum.document._system})
+        const variantId = variantRef ? getVariantId(variantRef) : undefined
         const intent = getReleaseDocumentIntent({
           documentId: datum.document._id,
           documentTypeName: datum.document._type,
           releaseId,
           releaseState,
           documentRevision: datum.document._rev,
-          variantId: getVariantIdFromDocument(datum.document),
+          variantId: variantId,
           path: focusPath,
         })
         const errorLabel = t(

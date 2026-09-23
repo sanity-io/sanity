@@ -16,8 +16,12 @@ import {useActiveWorkspace} from '../studio/activeWorkspaceMatcher/useActiveWork
 export function useComlinkViewHistory({editState}: {editState: EditStateFor}): void {
   const renderingContextStore = useRenderingContextStore()
   // Kept synchronous: capabilities emit once at boot and gate the history
-  // recording effect below; deferring only delays it.
-  const capabilities = useSyncObservable(renderingContextStore.capabilities)
+  // recording effect below; deferring only delays it. The store has already
+  // resolved them, so the effect can record on the mounting commit.
+  const capabilities = useSyncObservable(
+    renderingContextStore.capabilities,
+    renderingContextStore.getCapabilities,
+  )
   const {activeWorkspace} = useActiveWorkspace()
   const displayed = editState.version ?? editState.draft ?? editState.published
 

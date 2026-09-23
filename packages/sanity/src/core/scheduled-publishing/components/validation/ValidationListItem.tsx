@@ -2,12 +2,12 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type Path, type ValidationMarker} from '@sanity/types'
-import {type ButtonTone, Stack, Text} from '@sanity/ui'
+import {type ButtonTone, Text} from '@sanity/ui'
 // oxlint-disable-next-line no-restricted-imports
 import {MenuItem} from '@sanity/ui/menu'
 import {useCallback} from 'react'
 import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 const StyledText = styled(Text)`
   white-space: initial;
@@ -54,7 +54,7 @@ export function ValidationListItem(props: ValidationListItemProps) {
         </Text>
       </Box>
 
-      <Stack gap={2} flex={1} paddingLeft={3}>
+      <Flex gap={2} flexBasis="0%" flexGrow={1} paddingLeft={3} flexDirection="column">
         {path && (
           <StyledText size={1} weight="semibold">
             {path}
@@ -65,7 +65,7 @@ export function ValidationListItem(props: ValidationListItemProps) {
             {message}
           </StyledText>
         )}
-      </Stack>
+      </Flex>
     </Flex>
   )
   return (

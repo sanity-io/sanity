@@ -30,20 +30,19 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
   const schemaType = schema.get(options.type) as ObjectSchemaType | undefined
   const liveEdit = Boolean(schemaType?.liveEdit)
 
-  const {selectedPerspectiveName, selectedPerspective, selectedVariantName} = usePerspective()
+  const {selectedPerspectiveName, selectedPerspective, selectedVariant} = usePerspective()
   const {data: archivedReleases} = useArchivedReleases()
   const {versions} = useDocumentVersions({documentId: getPublishedId(options.id)})
   const targetDocumentState = useTargetDocumentState(getPublishedId(options.id))
   const draftVersion = getTargetDocument({
     bundle: 'draft',
-    variant: selectedVariantName,
+    variant: selectedVariant?._id,
     documentVersions: versions,
   })
 
   const showingPublishedOnDraft = liveEdit && selectedPerspective === 'drafts' && !draftVersion
   const {rev, since} = params
   const historyVersion = params.historyVersion
-
   const documentId = useMemo(() => {
     if (showingPublishedOnDraft) {
       return getPublishedId(options.id)
@@ -67,6 +66,14 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
       targetDocumentState.targetDocument
     ) {
       return targetDocumentState.targetDocument._id
+    }
+    if (targetDocumentState.status === 'variant-missing') {
+      // Creatable targets (e.g. viewing published on a draft perspective) use the id of the
+      // document that will be created on edit. Otherwise there is no document to fetch events
+      // for — `useEventsStore` idles with an empty list.
+      // TODO: Find a way to get the id of the variant when the document is missing.
+      // This will allow us to show the history for deleted documents.
+      return targetDocumentState.creatableTarget?.id
     }
     if (typeof selectedPerspectiveName === 'undefined') {
       return getDraftId(options.id)

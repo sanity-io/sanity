@@ -1,18 +1,134 @@
-import {type Path, type SanityDocument} from '@sanity/types'
+import {defineField, defineType, type Path, type SanityDocument} from '@sanity/types'
 import {afterEach, describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
 
+import {TestForm} from '../../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../../test/browser/testHelpers'
-import CopyPasteFieldsStory from './CopyPasteFieldsStory'
+import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
+
+const SCHEMA_TYPES = [
+  defineType({
+    type: 'document',
+    name: 'test',
+    title: 'Test',
+    fields: [
+      defineField({
+        type: 'string',
+        name: 'title',
+        title: 'Title',
+      }),
+      defineField({
+        type: 'object',
+        name: 'objectWithColumns',
+        title: 'Object with columns',
+        options: {
+          columns: 4,
+        },
+        fields: [
+          {
+            type: 'string',
+            title: 'String 1',
+            description: 'this is a king kong description',
+            name: 'string1',
+          },
+          {
+            type: 'string',
+            title: 'String 2',
+            name: 'string2',
+          },
+          {
+            type: 'number',
+            title: 'Number 1',
+            name: 'number1',
+          },
+          {
+            type: 'number',
+            title: 'Number 2',
+            name: 'number2',
+          },
+          {
+            type: 'image',
+            title: 'Image 1',
+            name: 'image1',
+          },
+          {
+            name: 'file',
+            type: 'file',
+            title: 'File',
+          },
+        ],
+      }),
+      defineField({
+        name: 'arrayOfPrimitives',
+        type: 'array',
+        of: [
+          {
+            type: 'string',
+            title: 'A string',
+          },
+          {
+            type: 'number',
+            title: 'A number',
+          },
+          {
+            type: 'boolean',
+            title: 'A boolean',
+          },
+        ],
+      }),
+      defineField({
+        name: 'arrayOfMultipleTypes',
+        title: 'Array of multiple types',
+        type: 'array',
+        of: [
+          {
+            type: 'image',
+          },
+          {
+            type: 'object',
+            name: 'color',
+            title: 'Color with a long title',
+            fields: [
+              {
+                name: 'title',
+                type: 'string',
+              },
+              {
+                name: 'name',
+                type: 'string',
+              },
+            ],
+          },
+        ],
+      }),
+    ],
+  }),
+]
+
+function CopyPasteFieldsHarness({
+  focusPath,
+  document,
+}: {
+  focusPath?: Path
+  document?: SanityDocument
+}) {
+  return (
+    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+      <TestForm document={document} focusPath={focusPath} />
+    </TestWrapper>
+  )
+}
 
 export type UpdateFn = () => {focusPath: Path; document: SanityDocument}
 
 const document: SanityDocument = {
   _id: '123',
   _type: 'test',
-  _createdAt: new Date().toISOString(),
-  _updatedAt: new Date().toISOString(),
+  // Fixed timestamps — module-load `new Date()` is a nondeterministic input if
+  // anything in the tree ever surfaces them (and keeps archive DOM stable).
+  _createdAt: '2024-01-01T00:00:00.000Z',
+  _updatedAt: '2024-01-01T00:00:00.000Z',
   _rev: '123',
   arrayOfPrimitives: ['One', 'Two', true],
   arrayOfMultipleTypes: [
@@ -24,15 +140,68 @@ const document: SanityDocument = {
   ],
 }
 
+type Locator = ReturnType<typeof page.getByTestId>
+
+/**
+ * Open a field-actions menu from the keyboard and activate one of its items.
+ *
+ * Enter on the trigger opens the menu. Closed menus stay mounted via
+ * `<Activity>`, so `getByRole('menuitem')` can match a hidden copy — wait for
+ * the painted visible item, focus it, assert focus, then press Enter.
+ */
+async function activateFieldActionFromKeyboard(
+  $trigger: Locator,
+  itemName: 'Copy field' | 'Paste field',
+) {
+  await expect.element($trigger).toBeVisible()
+  $trigger.element().focus()
+  await expect.element($trigger).toHaveFocus()
+  await userEvent.keyboard('{Enter}')
+
+  const visibleFieldActionItem = (name: 'Copy field' | 'Paste field') =>
+    Array.from(window.document.querySelectorAll('[role="menuitem"]')).find(
+      (el): el is HTMLElement =>
+        el instanceof HTMLElement &&
+        el.checkVisibility({visibilityProperty: true}) &&
+        (el.textContent ?? '').trim() === name,
+    )
+
+  await expect.poll(() => Boolean(visibleFieldActionItem(itemName))).toBe(true)
+  const item = visibleFieldActionItem(itemName)!
+  const $item = page.elementLocator(item)
+  item.focus()
+  await expect.element($item).toHaveFocus()
+  await userEvent.keyboard('{Enter}')
+}
+
+/**
+ * No Copy/Paste field-actions menu item is rendered visible any more. The
+ * menus stay mounted while closed (`@sanity/ui` `<Activity>`), so this checks
+ * visibility rather than presence.
+ */
+async function expectFieldActionsMenuClosed() {
+  await expect
+    .poll(
+      () =>
+        Array.from(window.document.querySelectorAll('[role="menuitem"]')).filter(
+          (el) =>
+            el instanceof HTMLElement &&
+            el.checkVisibility() &&
+            /Copy field|Paste field/.test(el.textContent || ''),
+        ).length,
+    )
+    .toBe(0)
+}
+
 describe('Copy and pasting fields', () => {
-  const {mockClipboard} = testHelpers()
+  const {mockClipboard, settleChromaticEndState} = testHelpers()
   let clipboard: {restore: () => void}
   afterEach(() => clipboard?.restore())
 
   describe('Object input', () => {
     it(`Copy and paste via field actions`, async () => {
       clipboard = mockClipboard()
-      void render(<CopyPasteFieldsStory document={document} />)
+      void render(<CopyPasteFieldsHarness document={document} />)
 
       await expect.element(page.getByTestId(`field-objectWithColumns`)).toBeVisible()
 
@@ -57,13 +226,9 @@ describe('Copy and pasting fields', () => {
         .getByTestId('field-actions-menu-objectWithColumns')
         .getByTestId('field-actions-trigger')
 
-      await $fieldActions.element().focus()
-      await expect.element($fieldActions).toHaveFocus()
-      await userEvent.keyboard('{Enter}')
-
-      await expect.element(page.getByRole('menuitem', {name: 'Copy field'})).toBeVisible()
-      await page.getByRole('menuitem', {name: 'Copy field'}).element().focus()
-      await userEvent.keyboard('{Enter}')
+      // Keyboard path: the field-actions trigger and its items must be
+      // operable with focus + Enter, not only by pointer.
+      await activateFieldActionFromKeyboard($fieldActions, 'Copy field')
 
       // Clear string1 so we can verify paste restores it
       await userEvent.fill(
@@ -75,21 +240,21 @@ describe('Copy and pasting fields', () => {
         .getByTestId('field-actions-menu-objectWithColumns')
         .getByTestId('field-actions-trigger')
 
-      await $fieldActions.element().focus()
-
-      await expect.element($fieldActions).toBeVisible()
-
-      await userEvent.keyboard('{Enter}')
-
-      await expect.element(page.getByRole('menuitem', {name: 'Paste field'})).toBeVisible()
-      await page.getByRole('menuitem', {name: 'Paste field'}).element().focus()
-      await userEvent.keyboard('{Enter}')
+      await activateFieldActionFromKeyboard($fieldActions, 'Paste field')
 
       // Assertion: the copied value was pasted back. (The studio no longer shows
       // success toasts for copy/paste — see #8612 — so assert on the field value.)
-      await expect
-        .element(page.getByTestId('field-objectWithColumns.string1').getByRole('textbox'))
-        .toHaveValue('A string to copy')
+      const $string1 = page.getByTestId('field-objectWithColumns.string1').getByRole('textbox')
+      await expect.element($string1).toHaveValue('A string to copy')
+
+      // End state for the archive: no field-actions menu left open, the pasted
+      // field focused, and the pointer parked.
+      await userEvent.keyboard('{Escape}')
+      await expectFieldActionsMenuClosed()
+      await userEvent.click($string1)
+      await expect.element($string1).toHaveValue('A string to copy')
+      await expect.element($string1).toHaveFocus()
+      await settleChromaticEndState()
     })
 
     // TODO: native Ctrl+C/Ctrl+V is handled by the browser and bypasses
@@ -98,7 +263,7 @@ describe('Copy and pasting fields', () => {
     it.skip(`Copy via keyboard shortcut`, async () => {
       const {findBySelector} = testHelpers()
       clipboard = mockClipboard()
-      void render(<CopyPasteFieldsStory document={document} />)
+      void render(<CopyPasteFieldsHarness document={document} />)
 
       await expect.element(page.getByTestId(`field-objectWithColumns`)).toBeVisible()
 
@@ -142,7 +307,7 @@ describe('Copy and pasting fields', () => {
   describe('String input', () => {
     it(`Copy and pasting via field actions`, async () => {
       clipboard = mockClipboard()
-      void render(<CopyPasteFieldsStory document={document} />)
+      void render(<CopyPasteFieldsHarness document={document} />)
 
       await expect.element(page.getByTestId(`field-title`)).toBeVisible()
 
@@ -157,29 +322,28 @@ describe('Copy and pasting fields', () => {
       const fieldActionsId = 'field-actions-menu-title'
       const fieldActionsTriggerId = 'field-actions-trigger'
 
-      await page.getByTestId(fieldActionsId).getByTestId(fieldActionsTriggerId).element().focus()
-      await userEvent.keyboard('{Enter}')
+      const $titleActions = page.getByTestId(fieldActionsId).getByTestId(fieldActionsTriggerId)
 
-      await expect.element(page.getByRole('menuitem', {name: 'Copy field'})).toBeVisible()
-      await page.getByRole('menuitem', {name: 'Copy field'}).element().focus()
-      await userEvent.keyboard('{Enter}')
+      // Keyboard path (focus + Enter) — same coverage as the object-field test.
+      await activateFieldActionFromKeyboard($titleActions, 'Copy field')
 
       await userEvent.fill(page.getByTestId('field-title').getByRole('textbox').element(), '')
 
-      // Trigger the field actions menu
-      await page.getByTestId(fieldActionsId).getByTestId(fieldActionsTriggerId).element().focus()
-      await userEvent.keyboard('{Enter}')
-
-      // Click on the "Paste field" option in the menu
-      await expect.element(page.getByRole('menuitem', {name: 'Paste field'})).toBeVisible()
-      await page.getByRole('menuitem', {name: 'Paste field'}).element().focus()
-      await userEvent.keyboard('{Enter}')
+      await activateFieldActionFromKeyboard($titleActions, 'Paste field')
 
       // Verify that the field content is updated with the pasted value. (No
       // success toast any more — see #8612 — so assert on the field value.)
-      await expect
-        .element(page.getByTestId('field-title').getByRole('textbox'))
-        .toHaveValue('A string to copy')
+      const $title = page.getByTestId('field-title').getByRole('textbox')
+      await expect.element($title).toHaveValue('A string to copy')
+
+      // End state for the archive: no field-actions menu left open, the pasted
+      // field focused, and the pointer parked.
+      await userEvent.keyboard('{Escape}')
+      await expectFieldActionsMenuClosed()
+      await userEvent.click($title)
+      await expect.element($title).toHaveValue('A string to copy')
+      await expect.element($title).toHaveFocus()
+      await settleChromaticEndState()
     })
   })
 
@@ -189,7 +353,7 @@ describe('Copy and pasting fields', () => {
     it.skip(`Copy and pasting via field actions`, async () => {
       const {findBySelector} = testHelpers()
       clipboard = mockClipboard()
-      void render(<CopyPasteFieldsStory document={document} />)
+      void render(<CopyPasteFieldsHarness document={document} />)
 
       await expect.element(page.getByTestId(`field-arrayOfPrimitives`)).toBeVisible()
 

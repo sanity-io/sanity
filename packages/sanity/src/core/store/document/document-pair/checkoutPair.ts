@@ -26,6 +26,7 @@ import {
 
 import {isInvalidSessionError} from '../../../util/apiErrors'
 import {type DocumentVariantType} from '../../../util/getDocumentVariantType'
+import {getDocumentVersionVariantId} from '../../../util/getDocumentVersionVariant'
 import {getVariantId} from '../../../variants/tool/util'
 import {
   type BufferedDocumentEvent,
@@ -185,11 +186,12 @@ function toActions(idPair: IdPair, mutationParams: Mutation['params']): Action[]
       // the actions API requires attributes._id to be set, while it's optional in the mutation API
       requireId(mutations.create)
       const createSystem = (mutations.create as SanityDocumentLike)._system
-      if (mutations.create._id === idPair.versionId && createSystem?.variant) {
+      const createVariantRef = getDocumentVersionVariantId({_system: createSystem})
+      if (mutations.create._id === idPair.versionId && createSystem && createVariantRef) {
         return {
           actionType: 'sanity.action.document.variant.create',
           publishedId: idPair.publishedId,
-          variantId: getVariantId(createSystem.variant._ref),
+          variantId: getVariantId(createVariantRef),
           document: mutations.create,
           bundleId: createSystem.bundleId,
         }

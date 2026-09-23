@@ -1,3 +1,4 @@
+import {Features, transform} from 'lightningcss'
 import {describe, expect, it} from 'vitest'
 
 import {cleanupCssOutputPlugin, createDefaultConfig} from '../package.bundle'
@@ -6,6 +7,57 @@ describe('createDefaultConfig()', () => {
   it('injects the provided version as the __PKG_VERSION__ define', () => {
     const config = createDefaultConfig({version: '9.9.9-test.1'})
     expect(config.define?.['__PKG_VERSION__']).toBe('"9.9.9-test.1"')
+  })
+
+  it('excludes the Lightning CSS light-dark polyfill', () => {
+    const config = createDefaultConfig({version: '9.9.9-test.1'})
+    expect(config.css?.lightningcss?.exclude).toBe(Features.LightDark)
+  })
+})
+
+/**
+ * Vite 8's default CSS minify target (`baseline-widely-available`): Chrome 111,
+ * Edge 111, Firefox 114, Safari 16.4. Those browsers predate native `light-dark()`.
+ */
+const VITE_BASELINE_WIDELY_AVAILABLE_TARGETS = {
+  chrome: 111 << 16,
+  edge: 111 << 16,
+  firefox: 114 << 16,
+  safari: (16 << 16) | (4 << 8),
+  ios_saf: (16 << 16) | (4 << 8),
+}
+
+const LIGHT_DARK_CSS = '.x{color:light-dark(white,black)}'
+
+describe('Lightning CSS light-dark minify', () => {
+  it('rewrites light-dark() when the polyfill is left enabled', () => {
+    const {code} = transform({
+      filename: 'theme.css',
+      code: Buffer.from(LIGHT_DARK_CSS),
+      minify: true,
+      targets: VITE_BASELINE_WIDELY_AVAILABLE_TARGETS,
+    })
+    const css = code.toString()
+
+    expect(css).toContain('--lightningcss-light')
+    expect(css).toContain('--lightningcss-dark')
+    expect(css).not.toContain('light-dark(')
+  })
+
+  it('preserves light-dark() when the bundle config exclude is applied', () => {
+    const config = createDefaultConfig({version: '9.9.9-test.1'})
+    const {code} = transform({
+      filename: 'theme.css',
+      code: Buffer.from(LIGHT_DARK_CSS),
+      minify: true,
+      targets: VITE_BASELINE_WIDELY_AVAILABLE_TARGETS,
+      exclude: config.css?.lightningcss?.exclude,
+    })
+    const css = code.toString()
+
+    expect(css).toContain('light-dark(')
+    expect(css).not.toContain('--lightningcss-light')
+    expect(css).not.toContain('--lightningcss-dark')
   })
 })
 

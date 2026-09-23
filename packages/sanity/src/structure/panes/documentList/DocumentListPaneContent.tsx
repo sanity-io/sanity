@@ -1,5 +1,5 @@
 import {type SanityDocument} from '@sanity/types'
-import {Container, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {Container, Heading, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   CommandList,
@@ -16,7 +16,7 @@ import {
   useTranslation,
 } from 'sanity'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {PaneContent} from '../../components/pane/PaneContent'
 import {usePane} from '../../components/pane/usePane'
@@ -186,7 +186,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
   const noDocumentsContent = useMemo(() => {
     if (hasSearchQuery) {
       return (
-        <Flex align="center" direction="column" height="fill" justify="center">
+        <Flex alignItems="center" flexDirection="column" height="100%" justifyContent="center">
           <Container width={1}>
             <Box paddingX={4} paddingY={5}>
               <Text align="center" muted>
@@ -199,7 +199,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     }
 
     return (
-      <Flex align="center" direction="column" height="fill" justify="center">
+      <Flex alignItems="center" flexDirection="column" height="100%" justifyContent="center">
         <Container width={1}>
           <Box paddingX={4} paddingY={5}>
             <Text align="center" muted>
@@ -221,7 +221,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     const isOnline = window.navigator.onLine
     if (error) {
       return (
-        <Flex align="center" direction="column" height="fill" justify="center">
+        <Flex alignItems="center" flexDirection="column" height="100%" justifyContent="center">
           <Container width={1}>
             <Stack paddingX={4} paddingY={5} gap={4}>
               <Heading as="h3">{t('panes.document-list-pane.error.title')}</Heading>
