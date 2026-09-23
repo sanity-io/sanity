@@ -8,6 +8,7 @@ import {Button} from '../../../../ui-components/button/Button'
 import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
 import {type NavbarProps} from '../../../config/studio/types'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {getDefaultVariant} from '../../../perspective/getDefaultVariant'
 import {GlobalPerspectiveMenu} from '../../../perspective/navbar/GlobalPerspectiveMenu'
 import {useGetDefaultPerspective} from '../../../perspective/useGetDefaultPerspective'
 import {usePerspective} from '../../../perspective/usePerspective'
@@ -27,7 +28,7 @@ import {VariantsMenu} from './VariantsMenu'
 export function VariantsStudioNavbar(props: NavbarProps) {
   const {t} = useTranslation(variantsLocaleNamespace)
   const {t: coreT} = useTranslation()
-  const {selectedPerspective, selectedPerspectiveName, selectedVariant} = usePerspective()
+  const {selectedPerspective, selectedPerspectiveName, selectedVariants} = usePerspective()
   const router = useRouter()
   const releasesToolAvailable = useReleasesToolAvailable()
   const isReleasesEnabled = !!useWorkspace().releases?.enabled
@@ -43,6 +44,7 @@ export function VariantsStudioNavbar(props: NavbarProps) {
     [selectedPerspective, coreT, bundles],
   )
 
+  const selectedVariant = getDefaultVariant(selectedVariants)
   const variantLabel = selectedVariant
     ? getVariantTitle(selectedVariant)
     : t('navbar.variant.default')

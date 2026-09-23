@@ -11,6 +11,7 @@ import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
 import {RhombusOutlinedIcon} from '../../../components/temporary-icons/RhombusOutlined'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {getDefaultVariant} from '../../../perspective/getDefaultVariant'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useSetVariant} from '../../../perspective/useSetVariant'
 import {getConditionMismatchMessage} from '../../components/ConditionMismatchIndicator'
@@ -88,7 +89,8 @@ export function VariantsMenu({trigger}: {trigger: JSX.Element}): React.JSX.Eleme
   const setVariant = useSetVariant()
   const {data: variants} = useAllVariants()
   const [filterQuery, setFilterQuery] = useState('')
-  const {selectedVariant} = usePerspective()
+  const {selectedVariants} = usePerspective()
+  const selectedVariant = getDefaultVariant(selectedVariants)
 
   const filteredVariants = useMemo(
     () => filterVariantsForSearch(variants, filterQuery),

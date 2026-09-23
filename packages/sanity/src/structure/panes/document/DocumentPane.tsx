@@ -5,6 +5,7 @@ import {memo, useMemo} from 'react'
 import {
   CopyPasteProvider,
   getCreatableVariantTarget,
+  getDefaultVariant,
   getPublishedId,
   ReferenceInputOptionsProvider,
   SourceProvider,
@@ -52,7 +53,8 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
   const {pane, paneKey} = props
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {resolveNewDocumentOptions} = useSource().document
-  const {selectedPerspectiveName, selectedVariantName} = usePerspective()
+  const {selectedPerspectiveName, selectedVariantsName} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantsName)
   const paneRouter = usePaneRouter()
   const options = usePaneOptions(pane.options, paneRouter.params)
   const {documentType, isLoaded: isDocumentLoaded} = useDocumentType(options.id, options.type)

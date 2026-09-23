@@ -1,5 +1,6 @@
 import {useMemo} from 'react'
 
+import {getDefaultVariant} from '../perspective/getDefaultVariant'
 import {type ReleaseId} from '../perspective/types'
 import {usePerspective} from '../perspective/usePerspective'
 import {useDocumentVersions} from '../releases/hooks/useDocumentVersions'
@@ -40,7 +41,8 @@ export function useTargetScopeId(options: TargetScopeIdOptions): string | undefi
   const {documentId, selectedPerspectiveName} = options
 
   const {data: documentVersions} = useDocumentVersions({documentId})
-  const {selectedVariantName} = usePerspective()
+  const {selectedVariantsName} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantsName)
   const targetDocumentState = useTargetDocumentState(documentId)
   const onlyHasVersions = useOnlyHasVersions({documentId})
 

@@ -1,6 +1,7 @@
 import {Button, Stack, Text} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 import {
+  getDefaultVariant,
   getDraftId,
   getTargetSiblings,
   useClient,
@@ -11,7 +12,8 @@ import {useDocumentPane} from 'sanity/structure'
 
 export function CreateDraft() {
   const {documentId, documentType, value, targetDocumentState} = useDocumentPane()
-  const {selectedVariant} = usePerspective()
+  const {selectedVariants} = usePerspective()
+  const selectedVariant = getDefaultVariant(selectedVariants)
   const {createVariantDocument} = useVariantDocumentOperations()
   const client = useClient({apiVersion: '2025-01-30'})
   const [creatingDraft, setCreatingDraft] = useState(false)

@@ -37,6 +37,52 @@ describe('useSetVariant', () => {
     })
   })
 
+  it('updates one type and keeps the other', () => {
+    mockRouter.stickyParams = {variant: 'language:Fr12'}
+    const {result} = renderHook(() => useSetVariant())
+
+    result.current({variantId: variantAlphaAudience._id})
+
+    expect(mockNavigate).toHaveBeenCalledWith({
+      stickyParams: {
+        variant: 'language:Fr12,variant:alpha-audience',
+      },
+    })
+  })
+
+  it('clears one type and keeps the other', () => {
+    mockRouter.stickyParams = {variant: 'language:Fr12,variant:alpha-audience'}
+    const {result} = renderHook(() => useSetVariant())
+
+    result.current({type: 'language', variantId: undefined})
+
+    expect(mockNavigate).toHaveBeenCalledWith({
+      stickyParams: {
+        variant: 'variant:alpha-audience',
+      },
+    })
+  })
+
+  it('removes the sticky param after each selected type is cleared', () => {
+    mockRouter.stickyParams = {variant: 'language:Fr12,variant:alpha-audience'}
+    const {result} = renderHook(() => useSetVariant())
+
+    result.current({type: 'language', variantId: undefined})
+    mockRouter.stickyParams = {variant: 'variant:alpha-audience'}
+    result.current({variantId: undefined})
+
+    expect(mockNavigate).toHaveBeenNthCalledWith(1, {
+      stickyParams: {
+        variant: 'variant:alpha-audience',
+      },
+    })
+    expect(mockNavigate).toHaveBeenNthCalledWith(2, {
+      stickyParams: {
+        variant: null,
+      },
+    })
+  })
+
   it('clears the variant sticky param when no variant is provided', () => {
     const {result} = renderHook(() => useSetVariant())
 
