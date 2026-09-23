@@ -89,16 +89,23 @@ function toReadyResult(value: unknown): Extract<UseVariantConditionsResult, {sta
   return {mode: 'mapped', status: 'ready', definitions}
 }
 
+function toConfigError(
+  configError: unknown,
+): Extract<UseVariantConditionsResult, {status: 'error'}> {
+  const error = toError(configError)
+  console.error('[sanity] Invalid `beta.variants.conditions`', error)
+
+  return {mode: 'mapped', status: 'error', error}
+}
+
 function toResolveError(
   resolveError: unknown,
-  retry?: () => void,
+  retry: () => void,
 ): Extract<UseVariantConditionsResult, {status: 'error'}> {
   const error = toError(resolveError)
   console.error('[sanity] Failed to resolve `beta.variants.conditions`', error)
 
-  return retry
-    ? {mode: 'mapped', status: 'error', error, retry}
-    : {mode: 'mapped', status: 'error', error}
+  return {mode: 'mapped', status: 'error', error, retry}
 }
 
 function resolveConditions$(
@@ -143,7 +150,7 @@ const getStaticResult$ = memoize(function getStaticResult$(
   try {
     return of(toReadyResult(conditions))
   } catch (error) {
-    return of(toResolveError(error))
+    return of(toConfigError(error))
   }
 }, staticConditionsKey)
 

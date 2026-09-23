@@ -335,7 +335,7 @@ describe('useVariantConditions', () => {
     }
     expect(result.current.retry).toBeUndefined()
     expect(console.error).toHaveBeenCalledWith(
-      '[sanity] Failed to resolve `beta.variants.conditions`',
+      '[sanity] Invalid `beta.variants.conditions`',
       expect.objectContaining({
         message: 'Expected `beta.variants.conditions` to include at least one valid entry',
       }),
@@ -367,6 +367,12 @@ describe('useVariantConditions', () => {
       throw new Error('Expected a static conditions error')
     }
     expect(result.current.retry).toBeUndefined()
+    expect(console.error).toHaveBeenCalledWith(
+      '[sanity] Invalid `beta.variants.conditions`',
+      expect.objectContaining({
+        message: 'Expected `beta.variants.conditions` to include at least one valid entry',
+      }),
+    )
   })
 
   it('treats an empty resolved list as an error that can be retried', async () => {
