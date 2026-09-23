@@ -2,7 +2,7 @@ import {CloseIcon} from '@sanity/icons/Close'
 import {DocumentIcon} from '@sanity/icons/Document'
 import {Card, LayerProvider, Stack, Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
-import {useCallback, useMemo, useState, type RefAttributes} from 'react'
+import {useCallback, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {css, styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
@@ -97,34 +97,24 @@ function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
   const schemaType = schema.get(value.documentType)
   const documentPresence = useDocumentPresence(documentId)
   const {t} = useTranslation(tasksLocaleNamespace)
-  const CardLink = useMemo(
-    () =>
-      function LinkComponent(
-        linkProps: React.ComponentPropsWithoutRef<'a'> & RefAttributes<HTMLAnchorElement>,
-      ) {
-        const {ref, ...rest} = linkProps
-        const versionId = getVersionFromId(documentId)
 
-        return (
-          <StyledIntentLink
-            {...rest}
-            intent="edit"
-            params={{id: getPublishedId(documentId), type: documentType}}
-            ref={ref}
-            searchParams={versionId ? [['perspective', versionId]] : undefined}
-          />
-        )
-      },
-    [documentId, documentType],
-  )
   if (!schemaType) {
     return <Text>{t('form.input.target.error.schema-not-found')}</Text>
   }
 
+  const versionId = getVersionFromId(documentId)
+
   return (
     <TargetRoot border radius={2} data-testid="task-target-field-preview">
       <Flex gap={1} alignItems={'center'} justifyContent={'space-between'}>
-        <Card as={CardLink} radius={2} data-as="button">
+        <Card
+          as={StyledIntentLink}
+          radius={2}
+          data-as="button"
+          intent="edit"
+          params={{id: getPublishedId(documentId), type: documentType}}
+          searchParams={versionId ? [['perspective', versionId]] : undefined}
+        >
           <SearchResultItemPreview
             documentType={documentType}
             documentId={value.document._ref}
