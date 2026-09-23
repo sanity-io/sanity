@@ -593,8 +593,6 @@ export default defineConfig({
 
 ### Action Context
 
-Two types:
-
 **Resolver context** - `DocumentActionsContext`, argument to `document.actions(prev, ctx)`. This is where `versionType` and `releaseId` live (`DocumentActionsContext` also extends `ConfigContext`).
 
 ```typescript
@@ -656,7 +654,7 @@ return {
 
 1. **Keyed on the resolver's id set, not on what the footer renders.** Footer _hiding_ is placement; config _removing_ an id is permission. Only the second binds.
 2. **One-directional.** Presence licenses rendering; it never compels it. An action hook may still return `null`.
-3. **Behavioural.** A control mirrors an id even when nothing in its file names that id (`CanvasLinkedBanner` ↔ `editInCanvas`).
+3. **Behavioural.** A control mirrors an id even when nothing in its file names it.
 
 ### In-pane versus out-of-pane
 
@@ -666,29 +664,34 @@ return {
 | **Outside the pane** (chip, inventory, release table, banners that reproduce an id) | Gate on the mirrored id via `useConfiguredDocumentActionIds(ctx)` for **that control's** `ctx`.                             |
 
 - Hook path: `packages/sanity/src/core/config/document/useConfiguredDocumentActionIds.ts`
-- The hook shipped with the gating work in #14244. This docs change does not add it.
 - `src/core` must not import `src/structure`. Out-of-pane core surfaces cannot invoke structure action hooks.
 
 ### Four availability questions
 
 A document action answers four questions. The configured array carries one, the action's own return value carries three.
 
-| Question                      | Answer                                       | Channel      |
-| ----------------------------- | -------------------------------------------- | ------------ |
-| Allowed by config             | absent from `document.actions(prev, ctx)`    | the array    |
-| This document's action at all | `null`                                       | return value |
-| Anything to do right now      | rendered `disabled`                          | return value |
-| Forbidden                     | rendered `disabled` with a reason in `title` | return value |
+| Question                                   | How "no" is signalled                        | Channel      |
+| ------------------------------------------ | -------------------------------------------- | ------------ |
+| Is this action allowed by config?          | absent from `document.actions(prev, ctx)`    | the array    |
+| Does this document have the action at all? | `null`                                       | return value |
+| Is there anything to do right now?         | rendered `disabled`                          | return value |
+| Is the user permitted to do it?            | rendered `disabled` with a reason in `title` | return value |
 
 `useConfiguredDocumentActionIds` reads the array and nothing else.
 
-The built-ins split the last three inconsistently. "Nothing published to unpublish" greys (`disabled: !isPublished || !isTargetReady`, `UnpublishVersionAction.tsx:112`). "Already published" greys with `ALREADY_PUBLISHED` as the reason (`PublishAction.tsx:249-252`), so a nothing-to-do condition arrives through the forbidden channel. "Scheduled draft is paused" hides, returning `null` (`ScheduledDraftDocumentActions.tsx:47-49`, wired at `:91-94`), and that file supplies no reason anywhere: its `title` is the menu label. UX owns the choice between hiding and greying. This document records the split.
+The built-ins split the last three inconsistently. UX owns the choice between hiding and greying.
+
+| Condition                      | Behaviour                                                                                                        | Source                                                       |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| Nothing published to unpublish | greys (`disabled: !isPublished \|\| !isTargetReady`)                                                             | `UnpublishVersionAction.tsx:112`                             |
+| Already published              | greys with `ALREADY_PUBLISHED` as the reason, so a nothing-to-do condition arrives through the forbidden channel | `PublishAction.tsx:249-252`                                  |
+| Scheduled draft is paused      | hides, returning `null`, and supplies no reason anywhere - its `title` is the menu label                         | `ScheduledDraftDocumentActions.tsx:47-49`, wired at `:91-94` |
 
 ### What the gate cannot see
 
 `useConfiguredDocumentActionIds` collects the `action` ids off the array `document.actions(prev, ctx)` returns. It never invokes the action components. Four limits follow, and all four are accepted at the call site.
 
-**Presence only.** An action a filter removes loses its id from the set, and the gate hides the mirror. An action that stays in the array and returns `null` from its own hook keeps its id in the set, so the mirror can render a live item while the footer renders nothing. `PauseToEditScheduledDraftAction` is the live case. `createScheduledDraftAction` returns `null` when its `visibilityCheck` fails, and `PauseToEditScheduledDraftAction` supplies `(release) => !isPausedCardinalityOneRelease(release)`. The id `schedule` stays in the set either way, so each mirror has to re-derive the predicate: `ScheduledDraftContextMenu` and `ScheduledDraftMenuButtonWrapper` both call `isPausedCardinalityOneRelease` themselves. One rule, three copies, nothing connecting them.
+**Presence only.** Removing an action from the array drops its id, and the gate hides the mirror. An action that stays in the array and returns `null` from its own hook keeps its id, so the mirror can render a live item while the footer renders nothing. `PauseToEditScheduledDraftAction` is the live case: `createScheduledDraftAction` returns `null` when `visibilityCheck` fails, and it supplies `(release) => !isPausedCardinalityOneRelease(release)`. `schedule` stays in the set either way, so `ScheduledDraftContextMenu` and `ScheduledDraftMenuButtonWrapper` each re-derive the predicate, calling `isPausedCardinalityOneRelease` themselves. One rule, three copies, nothing connecting them.
 
 **Ids are not unique.** Three ids are claimed by seven actions between them:
 
@@ -706,15 +709,13 @@ Two of the three collisions never reach the same resolved array. `releases` filt
 
 **Removal propagates, addition does not.** These menus render a fixed set of built-in items and test literal ids (`has('publish')`, `has('schedule')`, `has('discardVersion')`, `has('unpublishVersion')`). Removing an id hides the matching mirror. An action a plugin adds never appears in one, even though `DocumentActionKeys` is open to plugin-registered keys through declaration merging.
 
-Making the gate exact needs a declarative availability filter separate from the render half, which is a public API change. See SAPP-4373. Even an exact signal leaves the replacement case above open, so no gate closes the whole class.
-
-SAPP-4372 would have consolidated the out-of-pane gate into one primitive. It was closed unbuilt on 2026-08-26, so its residue lives here permanently: no gate reaches a surface that never asks the policy question. SAPP-4400 records one, where `ToolPreview.tsx:46` hard-codes `execute: isScheduled` and consults `document.actions` nowhere.
+Making the gate exact needs a declarative availability filter separate from the render half, which is a public API change (SAPP-4373). Even an exact signal leaves the replacement case open, and no gate reaches a surface that never asks the policy question at all. No gate closes the whole class.
 
 ### Why descriptions cannot be resolved out of pane
 
 Do **not** render resolved `DocumentActionDescription[]` outside the pane.
 
-1. **Structure hooks throw outside the pane provider.** The six built-ins in `packages/sanity/src/structure/documentActions/` - `useDeleteAction`, `useDiscardChangesAction`, `useDuplicateAction`, `useHistoryRestoreAction`, `usePublishAction`, `useUnpublishAction` - call `useDocumentPane()`, which throws `'DocumentPane: missing context value'` outside the pane provider (`packages/sanity/src/structure/panes/document/useDocumentPane.tsx`). Combined with the `core ↛ structure` boundary, core surfaces cannot invoke them anyway.
+1. **Structure hooks throw outside the pane provider.** The built-ins in `packages/sanity/src/structure/documentActions/` call `useDocumentPane()`, which throws `'DocumentPane: missing context value'` outside the pane provider (`packages/sanity/src/structure/panes/document/useDocumentPane.tsx`).
 2. **Version-action hooks read ambient perspective, not the chip's release.** `useDiscardVersionAction` reads `usePerspective()` and `useTargetDocumentState()`. `useUnpublishVersionAction` reads `useTargetDocumentState()`. Running them for a chip that represents a different release mislabels / mis-targets the dialog. Nesting `PerspectiveProvider` per chip was rejected: it introduces a `usePerspective` / router / `useDocumentPane().targetDocumentState` three-way divergence.
 3. **Each distinct version id opens a document-pair listener.** `editState` is memoised per `(client, idPair, typeName)` (`packages/sanity/src/core/store/document/document-pair/editState.ts`). Resolving a description requires that pair. With `@sanity/ui` v4 keeping closed overlays mounted (`<Activity>`), resolving per chip costs one listener per chip for as long as the overlay tree stays mounted.
 
@@ -739,7 +740,13 @@ Presence of an exemption does not weaken the invariant for a control that _does_
 | Deleted-document Restore | **Gate** `restore`. Keep the informational banner                                                          |
 | Canvas Edit in Canvas    | **Gate** `editInCanvas`                                                                                    |
 
-**5. Deprecated scheduled publishing (`sanity/scheduled-publishing`).** `ContextMenuItems` (Schedules tool and the in-pane Schedule dialog) gates none of its items on `document.actions`. Publish now, Edit, Delete and Clear, and all of `FallbackContextMenu` (no-schema rows), stay ungated. `ToolPreview.tsx:46` hard-codes `execute: isScheduled` for Publish now; a code comment on `ContextMenuItems.tsx:29-37` documents the intent to gate it, but no call site reads `document.actions` yet. They predate the action-id vocabulary and mutate schedule records through the schedules HTTP API (`useScheduleOperation`), not document operations. Edit / Delete / Clear have no honest Sanity-defined id: they are not `delete` (the document is unchanged) and not `discardVersion` (legacy schedules are not versions). Publish now is a document publish via `POST /schedules/…/publish`, so SAPP-4400 tracks gating its call site on `publish`. Once added, that gate would reach config-array omission only, the same presence-only ceiling the shipped out-of-pane gates accept. The plugin is `@deprecated` (enabled only when `scheduledPublishing.enabled` or `hasUsedScheduledPublishing`). In-pane Edit/Delete are already behind `useScheduleAction.action = 'schedule'`. The no-schema fallback cannot build `{schemaType, documentId, versionType, releaseId}`. Studios that want these controls to honour `document.actions` should use scheduled drafts (`singleDocRelease`), where Publish now → `publish`, Edit schedule → `schedule`, Delete schedule → `discardVersion`. See SAPP-4342 and the file comments on `packages/sanity/src/core/scheduled-publishing/components/scheduleContextMenu/ContextMenuItems.tsx` and `FallbackContextMenu.tsx`.
+**5. Deprecated scheduled publishing (`sanity/scheduled-publishing`).** The plugin is `@deprecated`, enabled only under `scheduledPublishing.enabled` or `hasUsedScheduledPublishing`. `ContextMenuItems` (Schedules tool, in-pane Schedule dialog) and `FallbackContextMenu` (no-schema rows) gate no item on `document.actions`. The items predate the action-id vocabulary and mutate schedule records through the schedules HTTP API (`useScheduleOperation`).
+
+- **Publish now** is ungated: `ToolPreview.tsx:46` hard-codes `execute: isScheduled`, and the comment at `ContextMenuItems.tsx:29-37` states an intent to gate that no call site implements. It publishes a document via `POST /schedules/…/publish`, so SAPP-4400 tracks gating it on `publish` - at the presence-only ceiling, like every shipped out-of-pane gate.
+- **Edit, Delete and Clear** have no honest id: not `delete` (the document is unchanged), not `discardVersion` (legacy schedules are not versions). In-pane Edit and Delete already sit behind `useScheduleAction.action = 'schedule'`.
+- **No-schema rows** cannot build `{schemaType, documentId, versionType, releaseId}` at all.
+
+Studios that need these controls to honour `document.actions` should move to scheduled drafts (`singleDocRelease`): Publish now → `publish`, Edit schedule → `schedule`, Delete schedule → `discardVersion`. See the file comments on `ContextMenuItems.tsx` and `FallbackContextMenu.tsx`.
 
 ### Reference implementations
 
