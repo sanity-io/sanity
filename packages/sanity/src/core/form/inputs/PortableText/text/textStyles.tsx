@@ -1,6 +1,9 @@
-import {Heading, Text} from '@sanity/ui'
-import {type ComponentType, type HTMLProps} from 'react'
-import {styled} from 'styled-components'
+import {Heading, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
+import {type ComponentProps, type ComponentType, type HTMLProps} from 'react'
+
+import {blockQuoteRoot, space3Var, textContainer} from './textStyles.css'
 
 type TextStyleProps = Omit<HTMLProps<HTMLDivElement>, 'as' | 'ref'>
 type BlockQuoteStyleProps = Omit<HTMLProps<HTMLQuoteElement>, 'as' | 'ref'>
@@ -8,9 +11,10 @@ type BlockQuoteStyleProps = Omit<HTMLProps<HTMLQuoteElement>, 'as' | 'ref'>
 /**
  * Without this container, editing with Android breaks due to how Text is styled via `responsiveFont` in `@sanity/ui`
  */
-export const TextContainer = styled.div`
-  display: block;
-`
+export function TextContainer(props: ComponentProps<'div'>) {
+  const {className, ...rest} = props
+  return <div {...rest} className={clsx(textContainer, className)} />
+}
 
 /**
  * Portable Text Input built in style
@@ -75,31 +79,23 @@ export const Heading6 = ({children, ...rest}: TextStyleProps) => (
   </Heading>
 )
 
-const BlockQuoteRoot = styled.blockquote`
-  position: relative;
-  display: block;
-  margin: 0;
-  padding-left: ${({theme}) => theme.sanity.space[3] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px;
-
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: -4px;
-    bottom: -4px;
-    width: 3px;
-    background: var(--card-border-color);
-  }
-`
-
 /**
  * Styled component for Portable Text 'blockquote' style
  */
-export const BlockQuote = ({children, ...rest}: TextStyleProps) => (
-  <BlockQuoteRoot data-testid="text-style--blockquote" {...(rest as BlockQuoteStyleProps)}>
-    <Text as="p">{children}</Text>
-  </BlockQuoteRoot>
-)
+export const BlockQuote = ({children, className, style, ...rest}: TextStyleProps) => {
+  const {space} = useThemeV2()
+
+  return (
+    <blockquote
+      data-testid="text-style--blockquote"
+      {...(rest as BlockQuoteStyleProps)}
+      className={clsx(blockQuoteRoot, className)}
+      style={{...assignInlineVars({[space3Var]: `${space[3]}px`}), ...style}}
+    >
+      <Text as="p">{children}</Text>
+    </blockquote>
+  )
+}
 
 /**
  * Portable Text built in styles.
