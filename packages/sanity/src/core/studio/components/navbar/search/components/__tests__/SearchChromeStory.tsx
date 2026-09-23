@@ -32,8 +32,8 @@ export function SearchChromeStory() {
               no results
             </Text>
             <NoResults />
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               include time off
             </Text>
