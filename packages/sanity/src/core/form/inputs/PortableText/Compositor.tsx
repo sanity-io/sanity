@@ -159,9 +159,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       if (relativePath.some((segment) => segment === 'markDefs')) {
         annotationOpeningRef.current = true
       }
-      if (relativePath.some((segment) => segment === 'children')) {
-        setInlineObjectEditModalOpening(true)
-      }
+      setInlineObjectEditModalOpening(relativePath.some((segment) => segment === 'children'))
       onItemOpen(itemPath)
     },
     [onItemOpen, path],
