@@ -51,4 +51,8 @@ export function projectData(projectId: string): Record<string, unknown> {
   }
 }
 
+// One dataset-agnostic store backs every dataset, so this single entry also
+// answers the comments addon-dataset handshake (`?datasetProfile=comments`):
+// the studio reuses the bench dataset as its addon dataset and never reaches
+// `/comments/<dataset>/setup`.
 export const DATASETS = [{name: DATASET, aclMode: 'public'}]
