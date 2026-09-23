@@ -6,8 +6,13 @@ import {useSetVariant} from '../useSetVariant'
 
 const mockNavigate = vi.fn()
 
+const mockRouter = {
+  navigate: mockNavigate,
+  stickyParams: {} as {variant?: string},
+}
+
 vi.mock('sanity/router', () => ({
-  useRouter: vi.fn(() => ({navigate: mockNavigate})),
+  useRouter: vi.fn(() => mockRouter),
 }))
 
 vi.mock('../useGetDefaultPerspective', () => ({
@@ -17,6 +22,7 @@ vi.mock('../useGetDefaultPerspective', () => ({
 describe('useSetVariant', () => {
   beforeEach(() => {
     mockNavigate.mockClear()
+    mockRouter.stickyParams = {}
   })
 
   it('sets the variant sticky param without touching the perspective', () => {
@@ -26,7 +32,7 @@ describe('useSetVariant', () => {
 
     expect(mockNavigate).toHaveBeenCalledWith({
       stickyParams: {
-        variant: 'alpha-audience',
+        variant: 'variant:alpha-audience',
       },
     })
   })
@@ -51,7 +57,7 @@ describe('useSetVariant', () => {
     expect(mockNavigate).toHaveBeenCalledTimes(1)
     expect(mockNavigate).toHaveBeenCalledWith({
       stickyParams: {
-        variant: 'alpha-audience',
+        variant: 'variant:alpha-audience',
         excludedPerspectives: null,
         perspective: 'published',
       },
@@ -65,7 +71,7 @@ describe('useSetVariant', () => {
 
     expect(mockNavigate).toHaveBeenCalledWith({
       stickyParams: {
-        variant: 'alpha-audience',
+        variant: 'variant:alpha-audience',
         excludedPerspectives: null,
         perspective: '',
       },
@@ -79,7 +85,7 @@ describe('useSetVariant', () => {
 
     expect(mockNavigate).toHaveBeenCalledWith({
       stickyParams: {
-        variant: 'alpha-audience',
+        variant: 'variant:alpha-audience',
         excludedPerspectives: null,
         perspective: 'rSomeRelease',
       },

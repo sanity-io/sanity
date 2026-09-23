@@ -7,6 +7,8 @@ import {useWorkspace} from '../studio/workspace'
 import {EMPTY_ARRAY} from '../util/empty'
 import {getBundleIdFromPerspective} from '../variants/documents/getBundleIdFromPerspective'
 import {useAllVariants} from '../variants/store/useAllVariants'
+import {parseVariantStickyParam} from '../variants/util/variantSelection'
+import {DEFAULT_VARIANT_TYPE_KEY} from '../variants/util/variantType'
 import {getSelectedPerspective} from './getSelectedPerspective'
 import {getSelectedReleaseId} from './getSelectedReleaseId'
 import {getSelectedVariant} from './getSelectedVariant'
@@ -51,9 +53,21 @@ export function PerspectiveProvider({
     [releases, selectedPerspectiveName, excludedPerspectives, isDraftModelEnabled],
   )
 
+  const selectedVariantId = useMemo(() => {
+    // `variant:<id>` is the current param. A bare `<id>` is a previous consumer and means type `variant`.
+    const selections = parseVariantStickyParam(selectedVariantName)
+    return (
+      selections.find((selection) => selection.type === DEFAULT_VARIANT_TYPE_KEY)?.name ??
+      (selections.length === 1 ? selections[0]?.name : undefined)
+    )
+  }, [selectedVariantName])
   const selectedVariant = useMemo(
-    () => getSelectedVariant({selectedVariantName, variantsById}),
-    [selectedVariantName, variantsById],
+    () =>
+      getSelectedVariant({
+        selectedVariantName: selectedVariantId,
+        variantsById,
+      }),
+    [selectedVariantId, variantsById],
   )
 
   const value: PerspectiveContextValue = useMemo(() => {
@@ -64,7 +78,7 @@ export function PerspectiveProvider({
       selectedReleaseId: getSelectedReleaseId(selectedPerspectiveName, releases),
       perspectiveStack,
       excludedPerspectives,
-      selectedVariantName,
+      selectedVariantName: selectedVariantId,
       selectedVariant,
       bundle: getBundleIdFromPerspective(selectedPerspective),
     }
@@ -74,7 +88,7 @@ export function PerspectiveProvider({
     selectedPerspective,
     perspectiveStack,
     excludedPerspectives,
-    selectedVariantName,
+    selectedVariantId,
     selectedVariant,
   ])
 

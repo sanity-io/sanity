@@ -12,6 +12,7 @@ import {getReleaseIdFromReleaseDocumentId} from '../../../../releases/util/getRe
 import {useDocumentPresence} from '../../../../store/presence/useDocumentPresence'
 import {useDocumentPreviewValues} from '../../../../tasks/hooks/useDocumentPreviewValues'
 import {getPublishedId} from '../../../../util/draftUtils'
+import {encodeVariantLinkParam} from '../../../util/variantSelection'
 import {isPublishedBundleId} from '../../util'
 import {getPrimaryBundle} from '../releaseLane'
 import {type DocumentInVariantGroup} from '../types'
@@ -89,7 +90,9 @@ function getVersionPerspectiveNavigation(
   perspectiveStack: string[]
   searchParams: Array<[string, string]> | undefined
 } {
-  const searchParams: Array<[string, string]> = variantId ? [['variant', variantId]] : []
+  const searchParams: Array<[string, string]> = variantId
+    ? [['variant', encodeVariantLinkParam(variantId)]]
+    : []
 
   if (isPublishedBundleId(bundleId)) {
     return {

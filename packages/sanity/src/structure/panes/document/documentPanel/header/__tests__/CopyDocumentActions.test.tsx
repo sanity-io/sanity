@@ -164,7 +164,7 @@ describe('CopyDocumentActions', () => {
       await clickMenuItem('copy-link-to-document')
 
       expect(mockResolveIntentLink).toHaveBeenCalledWith('edit', {id: 'doc-123', type: 'article'}, [
-        ['variant', 'alpha-audience'],
+        ['variant', 'variant:alpha-audience'],
       ])
     })
 
@@ -184,7 +184,7 @@ describe('CopyDocumentActions', () => {
 
       expect(mockResolveIntentLink).toHaveBeenCalledWith('edit', {id: 'doc-123', type: 'article'}, [
         ['perspective', 'rMyRelease'],
-        ['variant', 'alpha-audience'],
+        ['variant', 'variant:alpha-audience'],
       ])
     })
 
@@ -233,7 +233,7 @@ describe('CopyDocumentActions', () => {
       expect(mockResolveIntentLink).toHaveBeenCalledWith(
         'edit',
         {id: 'doc-123', type: 'article', scheduledDraft: 'rScheduled'},
-        [['variant', 'alpha-audience']],
+        [['variant', 'variant:alpha-audience']],
       )
     })
 

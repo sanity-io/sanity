@@ -344,34 +344,38 @@ const defaultWorkspace = defineConfig({
   beta: {
     variants: {
       enabled: true,
-      conditions: async () => {
-        // Mimics an api call to get the conditions
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-        return [
-          {
-            name: 'audience',
-            title: 'Audience',
-            description: 'The group of visitors this content targets.',
-            values: [
+      types: {
+        variant: {
+          conditions: async () => {
+            // Mimics an api call to get the conditions
+            await new Promise((resolve) => setTimeout(resolve, 1000))
+            return [
               {
-                value: 'loyal',
-                title: 'Loyal customers',
-                description: 'Repeat purchasers and members.',
+                name: 'audience',
+                title: 'Audience',
+                description: 'The group of visitors this content targets.',
+                values: [
+                  {
+                    value: 'loyal',
+                    title: 'Loyal customers',
+                    description: 'Repeat purchasers and members.',
+                  },
+                  {
+                    value: 'new',
+                    title: 'New visitors',
+                    description: 'First-time visitors to the site.',
+                  },
+                ],
               },
               {
-                value: 'new',
-                title: 'New visitors',
-                description: 'First-time visitors to the site.',
+                name: 'locale',
+                title: 'Locale',
+                description: 'The visitor language and region.',
+                values: ['en-US', 'nb-NO', 'de-DE'],
               },
-            ],
+            ]
           },
-          {
-            name: 'locale',
-            title: 'Locale',
-            description: 'The visitor language and region.',
-            values: ['en-US', 'nb-NO', 'de-DE'],
-          },
-        ]
+        },
       },
     },
   },

@@ -4,6 +4,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {type SingleWorkspace} from '../../../../config/types'
+import {perspectiveContextValueMock} from '../../../../perspective/__mocks__/usePerspective.mock'
 import {variantAlphaAudience} from '../../../__fixtures__/variants.fixture'
 import {variantsUsEnglishLocaleBundle} from '../../../i18n'
 import {getVariantId} from '../../../tool/util'
@@ -32,6 +33,8 @@ describe('VariantsMenu', () => {
     vi.clearAllMocks()
     variantsMock.data = [variantAlphaAudience]
     variantsMock.byId = new Map([[variantAlphaAudience._id, variantAlphaAudience]])
+    perspectiveContextValueMock.selectedVariant = undefined
+    perspectiveContextValueMock.selectedVariantName = undefined
   })
 
   const renderMenu = async (config?: Partial<SingleWorkspace>) => {
@@ -47,12 +50,24 @@ describe('VariantsMenu', () => {
     return view
   }
 
+  it('marks the variant selected by the perspective provider', async () => {
+    perspectiveContextValueMock.selectedVariant = variantAlphaAudience
+    perspectiveContextValueMock.selectedVariantName = getVariantId(variantAlphaAudience._id)
+
+    await renderMenu()
+
+    expect(screen.getByTestId(`variant-${getVariantId(variantAlphaAudience._id)}`)).toHaveAttribute(
+      'data-selected',
+    )
+    expect(screen.getByTestId('variant-default')).not.toHaveAttribute('data-selected')
+  })
+
   it('shows a mismatch error when a stored condition is not in the configured list', async () => {
     await renderMenu({
       beta: {
         variants: {
           enabled: true,
-          conditions: [{name: 'locale', values: ['en-US']}],
+          types: {variant: {conditions: [{name: 'locale', values: ['en-US']}]}},
         },
       },
     })
@@ -71,7 +86,7 @@ describe('VariantsMenu', () => {
       beta: {
         variants: {
           enabled: true,
-          conditions: () => new Promise(() => undefined),
+          types: {variant: {conditions: () => new Promise(() => undefined)}},
         },
       },
     })
@@ -92,7 +107,7 @@ describe('VariantsMenu', () => {
       beta: {
         variants: {
           enabled: true,
-          conditions: [],
+          types: {variant: {conditions: []}},
         },
       },
     })

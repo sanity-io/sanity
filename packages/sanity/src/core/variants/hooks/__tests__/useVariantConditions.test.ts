@@ -3,7 +3,11 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {type VariantConditionsContext} from '../../../config/types'
-import {useVariantConditionMismatches, useVariantConditions} from '../useVariantConditions'
+import {
+  useVariantConditionMismatches,
+  useVariantConditions,
+  useVariantTypes,
+} from '../useVariantConditions'
 
 describe('useVariantConditions', () => {
   beforeEach(() => {
@@ -33,7 +37,7 @@ describe('useVariantConditions', () => {
         beta: {
           variants: {
             enabled: true,
-            conditions: [{name: 'audience', values: ['loyal']}],
+            types: {variant: {conditions: [{name: 'audience', values: ['loyal']}]}},
           },
         },
       },
@@ -60,7 +64,7 @@ describe('useVariantConditions', () => {
         beta: {
           variants: {
             enabled: true,
-            conditions: [{name: 'audience', values: ['loyal']}],
+            types: {variant: {conditions: [{name: 'audience', values: ['loyal']}]}},
           },
         },
       },
@@ -97,7 +101,7 @@ describe('useVariantConditions', () => {
         beta: {
           variants: {
             enabled: true,
-            conditions,
+            types: {variant: {conditions}},
           },
         },
       },
@@ -150,7 +154,7 @@ describe('useVariantConditions', () => {
         beta: {
           variants: {
             enabled: true,
-            conditions: () => [{name: 'locale', values: ['en-US', 'nb-NO']}],
+            types: {variant: {conditions: () => [{name: 'locale', values: ['en-US', 'nb-NO']}]}},
           },
         },
       },
@@ -182,8 +186,12 @@ describe('useVariantConditions', () => {
         beta: {
           variants: {
             enabled: true,
-            conditions: () => {
-              throw new Error('bad resolver')
+            types: {
+              variant: {
+                conditions: () => {
+                  throw new Error('bad resolver')
+                },
+              },
             },
           },
         },
@@ -205,10 +213,10 @@ describe('useVariantConditions', () => {
     const first = vi.fn().mockResolvedValue([{name: 'locale', values: ['en-US']}])
     const second = vi.fn().mockResolvedValue([{name: 'audience', values: ['loyal']}])
     const firstWrapper = await createTestProvider({
-      config: {beta: {variants: {enabled: true, conditions: first}}},
+      config: {beta: {variants: {enabled: true, types: {variant: {conditions: first}}}}},
     })
     const secondWrapper = await createTestProvider({
-      config: {beta: {variants: {enabled: true, conditions: second}}},
+      config: {beta: {variants: {enabled: true, types: {variant: {conditions: second}}}}},
     })
 
     const {result: firstResult} = renderHook(() => useVariantConditions(), {
@@ -240,10 +248,16 @@ describe('useVariantConditions', () => {
       return [{name: 'locale', values: ['en-US']}]
     })
     const editorial = await createTestProvider({
-      config: {name: 'editorial', beta: {variants: {enabled: true, conditions}}},
+      config: {
+        name: 'editorial',
+        beta: {variants: {enabled: true, types: {variant: {conditions}}}},
+      },
     })
     const marketing = await createTestProvider({
-      config: {name: 'marketing', beta: {variants: {enabled: true, conditions}}},
+      config: {
+        name: 'marketing',
+        beta: {variants: {enabled: true, types: {variant: {conditions}}}},
+      },
     })
 
     const {result: editorialResult} = renderHook(() => useVariantConditions(), {
@@ -265,7 +279,7 @@ describe('useVariantConditions', () => {
   it('reuses a resolved list after the last subscriber unmounts', async () => {
     const conditions = vi.fn().mockResolvedValue([{name: 'locale', values: ['en-US']}])
     const wrapper = await createTestProvider({
-      config: {beta: {variants: {enabled: true, conditions}}},
+      config: {beta: {variants: {enabled: true, types: {variant: {conditions}}}}},
     })
 
     const first = renderHook(() => useVariantConditions(), {wrapper})
@@ -292,7 +306,7 @@ describe('useVariantConditions', () => {
         beta: {
           variants: {
             enabled: true,
-            conditions,
+            types: {variant: {conditions}},
           },
         },
       },
@@ -315,7 +329,7 @@ describe('useVariantConditions', () => {
         beta: {
           variants: {
             enabled: true,
-            conditions: [],
+            types: {variant: {conditions: []}},
           },
         },
       },
@@ -327,7 +341,8 @@ describe('useVariantConditions', () => {
       mode: 'mapped',
       status: 'error',
       error: expect.objectContaining({
-        message: 'Expected `beta.variants.conditions` to include at least one valid entry',
+        message:
+          'Expected `beta.variants.types.variant.conditions` to include at least one valid entry',
       }),
     })
     if (result.current.mode !== 'mapped' || result.current.status !== 'error') {
@@ -335,11 +350,30 @@ describe('useVariantConditions', () => {
     }
     expect(result.current.retry).toBeUndefined()
     expect(console.error).toHaveBeenCalledWith(
-      '[sanity] Invalid `beta.variants.conditions`',
+      '[sanity] Invalid `beta.variants.types.variant.conditions`',
       expect.objectContaining({
-        message: 'Expected `beta.variants.conditions` to include at least one valid entry',
+        message:
+          'Expected `beta.variants.types.variant.conditions` to include at least one valid entry',
       }),
     )
+  })
+  it('treats an undefined conditions function as a freeform mode', async () => {
+    const wrapper = await createTestProvider({
+      config: {
+        beta: {
+          variants: {
+            enabled: true,
+            types: {variant: {conditions: undefined}},
+          },
+        },
+      },
+    })
+
+    const {result} = renderHook(() => useVariantConditions(), {wrapper})
+
+    expect(result.current).toMatchObject({
+      mode: 'freeform',
+    })
   })
 
   it('treats a static list of only invalid entries as an error', async () => {
@@ -348,7 +382,7 @@ describe('useVariantConditions', () => {
         beta: {
           variants: {
             enabled: true,
-            conditions: [{name: '_system', values: ['ok']}],
+            types: {variant: {conditions: [{name: '_system', values: ['ok']}]}},
           },
         },
       },
@@ -360,7 +394,8 @@ describe('useVariantConditions', () => {
       mode: 'mapped',
       status: 'error',
       error: expect.objectContaining({
-        message: 'Expected `beta.variants.conditions` to include at least one valid entry',
+        message:
+          'Expected `beta.variants.types.variant.conditions` to include at least one valid entry',
       }),
     })
     if (result.current.mode !== 'mapped' || result.current.status !== 'error') {
@@ -368,9 +403,10 @@ describe('useVariantConditions', () => {
     }
     expect(result.current.retry).toBeUndefined()
     expect(console.error).toHaveBeenCalledWith(
-      '[sanity] Invalid `beta.variants.conditions`',
+      '[sanity] Invalid `beta.variants.types.variant.conditions`',
       expect.objectContaining({
-        message: 'Expected `beta.variants.conditions` to include at least one valid entry',
+        message:
+          'Expected `beta.variants.types.variant.conditions` to include at least one valid entry',
       }),
     )
   })
@@ -389,7 +425,7 @@ describe('useVariantConditions', () => {
         beta: {
           variants: {
             enabled: true,
-            conditions,
+            types: {variant: {conditions}},
           },
         },
       },
@@ -402,7 +438,8 @@ describe('useVariantConditions', () => {
         mode: 'mapped',
         status: 'error',
         error: expect.objectContaining({
-          message: 'Expected `beta.variants.conditions` to include at least one valid entry',
+          message:
+            'Expected `beta.variants.types.variant.conditions` to include at least one valid entry',
         }),
       })
     })
@@ -442,7 +479,7 @@ describe('useVariantConditions', () => {
         beta: {
           variants: {
             enabled: true,
-            conditions: [],
+            types: {variant: {conditions: []}},
           },
         },
       },
@@ -453,5 +490,118 @@ describe('useVariantConditions', () => {
     })
 
     expect(result.current).toEqual([])
+  })
+
+  it('reports a types resolver that returns a non-object as an error that can be retried', async () => {
+    let resolved: unknown = null
+    const wrapper = await createTestProvider({
+      config: {
+        beta: {
+          variants: {
+            enabled: true,
+            types: async () => resolved as Record<string, {label: string}>,
+          },
+        },
+      },
+    })
+
+    const {result} = renderHook(() => useVariantTypes(), {wrapper})
+
+    await waitFor(() => {
+      expect(result.current).toMatchObject({
+        status: 'error',
+        error: expect.objectContaining({
+          message: 'Expected `beta.variants.types` to resolve to an object, but received null',
+        }),
+      })
+    })
+
+    resolved = 'variant'
+    await act(async () => {
+      if (result.current.status === 'error') {
+        result.current.retry()
+      }
+    })
+
+    await waitFor(() => {
+      expect(result.current).toMatchObject({
+        status: 'error',
+        error: expect.objectContaining({
+          message: 'Expected `beta.variants.types` to resolve to an object, but received string',
+        }),
+      })
+    })
+
+    resolved = {variant: {label: 'Variant'}}
+    await act(async () => {
+      if (result.current.status === 'error') {
+        result.current.retry()
+      }
+    })
+
+    await waitFor(() => {
+      expect(result.current).toMatchObject({
+        status: 'ready',
+        types: [
+          expect.objectContaining({
+            key: 'variant',
+            label: 'Variant',
+            conditions: {mode: 'freeform'},
+          }),
+        ],
+      })
+    })
+  })
+
+  it('reports a types resolver that returns a non-object type entry as an error', async () => {
+    const wrapper = await createTestProvider({
+      config: {
+        beta: {
+          variants: {
+            enabled: true,
+            types: async () => ({variant: null}) as unknown as Record<string, {label: string}>,
+          },
+        },
+      },
+    })
+
+    const {result} = renderHook(() => useVariantTypes(), {wrapper})
+
+    await waitFor(() => {
+      expect(result.current).toMatchObject({
+        status: 'error',
+        error: expect.objectContaining({
+          message: 'Expected `beta.variants.types.variant` to be an object, but received null',
+        }),
+      })
+    })
+  })
+
+  it('rejects a resolved type other than variant', async () => {
+    const wrapper = await createTestProvider({
+      config: {
+        beta: {
+          variants: {
+            enabled: true,
+            types: async () => ({
+              variant: {label: 'Variant'},
+              language: {label: 'Language'},
+            }),
+          },
+        },
+      },
+    })
+
+    const {result} = renderHook(() => useVariantTypes(), {wrapper})
+
+    await waitFor(() => {
+      expect(result.current).toMatchObject({
+        status: 'error',
+        error: expect.objectContaining({
+          message:
+            'Expected `beta.variants.types` to only include "variant", but received "language"',
+        }),
+      })
+    })
   })
 })
