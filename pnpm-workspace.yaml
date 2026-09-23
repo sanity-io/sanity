@@ -29,7 +29,10 @@ catalog:
   '@sanity/migrate': ^8.0.5
   '@sanity/telemetry': ^1.1.0
   '@sanity/tsdown-config': ^0.28.1
-  '@sanity/ui': ^4.2.3
+  # TEMP (verification only, do not merge): sanity-io/ui#2757 pkg.pr.new build, commit 89bfe85.
+  # Was `^4.2.3`. Workspace consumers use `catalog:`, which pnpm override selectors do not match,
+  # so the catalog entry itself has to point at the tarball.
+  '@sanity/ui': https://pkg.pr.new/sanity-io/ui/@sanity/ui@89bfe85
   '@types/node': ^24.13.3
   '@types/react': ^19.3.0
   '@types/react-dom': ^19.3.0
@@ -148,6 +151,18 @@ overrides:
   'tsdown>rolldown': '~1.2.9'
   'vite>rolldown': '1.2.8'
   vitest: 'catalog:'
+  # TEMP (verification only, do not merge): sanity-io/ui#2757 pkg.pr.new builds, commit 89bfe85.
+  # The @sanity/ui override is scoped to the v4 line so the `ui5` alias (5.0.0-alpha.10) is untouched;
+  # it covers npm transitive dependents (@sanity/themer, studio plugins) whose declared range is ^4.x.
+  '@sanity/color': 'https://pkg.pr.new/sanity-io/ui/@sanity/color@89bfe85'
+  '@sanity/icons': 'https://pkg.pr.new/sanity-io/ui/@sanity/icons@89bfe85'
+  '@sanity/logos': 'https://pkg.pr.new/sanity-io/ui/@sanity/logos@89bfe85'
+  '@sanity/ui@4': 'https://pkg.pr.new/sanity-io/ui/@sanity/ui@89bfe85'
+
+# TEMP (verification only): pnpm 12 refuses URL-resolved subdependencies by default; the pkg.pr.new
+# tarballs above are subdeps of every workspace package (and @sanity/ui itself depends on the
+# color/icons tarballs by URL), so the policy must be relaxed for this experiment.
+blockExoticSubdeps: false
 
 preferWorkspacePackages: true
 
