@@ -1,45 +1,6 @@
 import {SanityMonogram} from '@sanity/logos'
-import {styled} from 'styled-components'
 
-const Root = styled.div`
-  position: absolute;
-  width: 18px;
-  height: 18px;
-  background: var(--card-bg-color);
-  bottom: -4px;
-  right: -4px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 1px solid var(--card-bg-color);
-  box-sizing: content-box;
-
-  svg {
-    box-sizing: content-box;
-    border: 1px solid var(--card-hairline-soft-color);
-    border-radius: 50%;
-    padding: 2px;
-    width: 12px;
-    height: 12px;
-  }
-
-  &[data-logo='github'] {
-    svg {
-      path {
-        fill: var(--card-fg-color);
-      }
-    }
-  }
-
-  &[data-logo='saml'] {
-    svg {
-      path {
-        fill: var(--card-fg-color);
-      }
-    }
-  }
-`
+import {root} from './LoginProviderLogo.css'
 
 const Google = (
   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -102,11 +63,11 @@ export const LoginProviderLogo = ({provider}: Props) => {
   const logoName = isSaml ? 'saml' : provider
 
   return (
-    <Root data-logo={logoName}>
+    <div className={root} data-logo={logoName}>
       {provider === 'google' && Google}
       {provider === 'github' && GitHub}
       {provider === 'sanity' && <SanityMonogram />}
       {isSaml && Saml}
-    </Root>
+    </div>
   )
 }
