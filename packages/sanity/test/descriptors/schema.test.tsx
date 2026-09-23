@@ -6,6 +6,7 @@ import {
   type FieldsetDefinition,
   type SchemaTypeDefinition,
 } from '@sanity/types'
+import {Rule} from '@sanity/validation/_internal'
 import {type ReactNode} from 'react'
 import {assert, describe, expect, test} from 'vitest'
 
@@ -15,7 +16,6 @@ import {
 } from '../../../@sanity/schema/src/descriptors/types'
 import {builtinSchema, createSchema} from '../../src/core/schema/createSchema'
 import {DESCRIPTOR_CONVERTER} from '../../src/core/schema/descriptors'
-import {Rule} from '../../src/core/validation'
 import {expectManifestSchemaConversion} from './utils'
 
 type Descriptor =

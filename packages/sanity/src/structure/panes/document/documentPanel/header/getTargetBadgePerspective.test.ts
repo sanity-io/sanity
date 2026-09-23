@@ -13,7 +13,7 @@ import {
 } from './getTargetBadgePerspective'
 
 const groupRef = {_ref: 'doc-1', _weak: true as const}
-const variantRef = {_ref: '_.variants.alpha-audience', _weak: true as const}
+const variantRef = {_ref: '_.variants.alpha-audience', _key: '123'}
 
 const versionStub = (
   stub: Pick<VersionInfoDocumentStub, '_id' | '_system'>,
@@ -38,7 +38,7 @@ const draftDocument = versionStub({
 const publishedVariant = versionStub({
   _id: 'versions.varscope.doc-1',
   _system: {
-    variant: variantRef,
+    variants: [variantRef],
     group: groupRef,
     scopeId: 'varscope',
   },
@@ -48,7 +48,7 @@ const draftVariant = versionStub({
   _id: 'versions.varscopeDraft.doc-1',
   _system: {
     bundleId: 'drafts',
-    variant: variantRef,
+    variants: [variantRef],
     group: groupRef,
     scopeId: 'varscopeDraft',
   },
@@ -83,7 +83,7 @@ const readyState = (
   targetDocument,
   scopeId: targetDocument?._system.scopeId,
   variant: undefined,
-  publishedSibling: undefined,
+  siblings: {published: undefined, draft: undefined, version: undefined},
 })
 
 const variantMissingState = (
@@ -93,7 +93,7 @@ const variantMissingState = (
   status: 'variant-missing',
   variant: variantAlphaAudience,
   bundle,
-  publishedSibling,
+  siblings: {published: publishedSibling, draft: undefined, version: undefined},
 })
 
 describe('getTargetBadgePerspective', () => {

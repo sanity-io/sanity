@@ -1,11 +1,11 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {CloseIcon} from '@sanity/icons/Close'
-import {Card, Flex, Layer, Text, useLayer} from '@sanity/ui'
+import {Card, Layer, Text, useLayer} from '@sanity/ui'
 import {AnimatePresence, motion} from 'motion/react'
 import {useEffect} from 'react'
 import TrapFocus from 'react-focus-lock'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
@@ -63,8 +63,8 @@ export function ReleaseDashboardActivityPanel({
   const {t: tCore} = useTranslation()
 
   const content = (
-    <MotionFlex flex="none" height="fill" direction="column">
-      <Flex align="center" gap={2} justify="space-between" padding={4}>
+    <MotionFlex flexBasis="auto" flexGrow={0} flexShrink={0} height="100%" flexDirection="column">
+      <Flex alignItems="center" gap={2} justifyContent="space-between" padding={4}>
         <Text size={1} weight="medium">
           {t('activity.panel.title')}
         </Text>

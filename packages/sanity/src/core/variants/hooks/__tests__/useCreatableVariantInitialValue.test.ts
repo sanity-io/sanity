@@ -18,9 +18,14 @@ const documentPreviewStoreMock = vi.hoisted(() => ({
     of(undefined),
   ),
 }))
+const mockRandomKey = vi.hoisted(() => vi.fn(() => 'k-123'))
 
 vi.mock('../../../store/datastores', () => ({
   useDocumentPreviewStore: vi.fn(() => documentPreviewStoreMock),
+}))
+
+vi.mock('../../../form/utils/randomKey', () => ({
+  randomKey: mockRandomKey,
 }))
 
 const PUBLISHED_ID = 'article-1'
@@ -35,7 +40,7 @@ const siblingStub: VersionInfoDocumentStub = {
   _type: 'article',
   _system: {
     group: {_ref: PUBLISHED_ID, _weak: true},
-    variant: {_ref: variantAlphaAudience._id, _weak: true},
+    variants: [{_ref: variantAlphaAudience._id, _key: 'k-123'}],
     scopeId: 'varscopePub',
     draft: {_ref: DRAFT_TARGET.id, _weak: true},
   },
@@ -49,7 +54,7 @@ const siblingDocument = {
   _updatedAt: '2026-01-02T00:00:00Z',
   _system: {
     group: {_ref: PUBLISHED_ID, _weak: true as const},
-    variant: {_ref: variantAlphaAudience._id, _weak: true as const},
+    variants: [{_ref: variantAlphaAudience._id, _key: 'k-123'}],
     scopeId: 'varscopePub',
     draft: {_ref: DRAFT_TARGET.id, _weak: true as const},
   },
@@ -60,8 +65,7 @@ const creatableState: TargetDocumentState = {
   status: 'variant-missing',
   variant: variantAlphaAudience,
   bundle: 'drafts',
-  publishedSibling: siblingStub,
-  creatableTarget: DRAFT_TARGET,
+  siblings: {published: siblingStub, draft: undefined, version: undefined},
 }
 
 const fallback: InitialValueState = {
@@ -85,7 +89,9 @@ describe('buildCreatableVariantInitialValue', () => {
       _updatedAt: '2026-01-02T00:00:00Z',
       _system: {
         group: {_ref: PUBLISHED_ID, _weak: true},
-        variant: {_ref: variantAlphaAudience._id, _weak: true},
+        variants: [{_ref: variantAlphaAudience._id, _key: 'k-123'}],
+        // TODO: Remove this once we fully drop the legacy variant field in content lake.
+        variant: {_ref: variantAlphaAudience._id, _key: 'k-123'},
         bundleId: 'drafts',
         scopeId: DRAFT_TARGET.scopeId,
       },
@@ -104,7 +110,9 @@ describe('buildCreatableVariantInitialValue', () => {
 
     expect(seed._system).toEqual({
       group: {_ref: PUBLISHED_ID, _weak: true},
-      variant: {_ref: variantAlphaAudience._id, _weak: true},
+      variants: [{_ref: variantAlphaAudience._id, _key: 'k-123'}],
+      // TODO: Remove this once we fully drop the legacy variant field in content lake.
+      variant: {_ref: variantAlphaAudience._id, _key: 'k-123'},
       bundleId: 'drafts',
       scopeId: DRAFT_TARGET.scopeId,
     })
@@ -124,7 +132,7 @@ describe('useCreatableVariantInitialValue', () => {
       targetDocument: undefined,
       scopeId: undefined,
       variant: undefined,
-      publishedSibling: undefined,
+      siblings: {published: undefined, draft: undefined, version: undefined},
     }
 
     const {result} = renderHook(() => useCreatableVariantInitialValue(readyState, fallback), {
@@ -135,16 +143,33 @@ describe('useCreatableVariantInitialValue', () => {
     expect(documentPreviewStoreMock.unstable_observeDocument).not.toHaveBeenCalled()
   })
 
-  it('passes the fallback through for a variant-missing state without a creatable target', async () => {
+  it('passes the fallback through for a variant-missing state without a published sibling', async () => {
     const wrapper = await createTestProvider()
     const missingState: TargetDocumentState = {
       status: 'variant-missing',
       variant: variantAlphaAudience,
       bundle: 'drafts',
-      publishedSibling: siblingStub,
+      siblings: {published: undefined, draft: undefined, version: undefined},
     }
 
     const {result} = renderHook(() => useCreatableVariantInitialValue(missingState, fallback), {
+      wrapper,
+    })
+
+    expect(result.current).toBe(fallback)
+    expect(documentPreviewStoreMock.unstable_observeDocument).not.toHaveBeenCalled()
+  })
+
+  it('passes the fallback through for a missing variant on a release, even when the published sibling advertises a draft id', async () => {
+    const wrapper = await createTestProvider()
+    const missingOnRelease: TargetDocumentState = {
+      status: 'variant-missing',
+      variant: variantAlphaAudience,
+      bundle: 'rSummer',
+      siblings: {published: siblingStub, draft: undefined, version: undefined},
+    }
+
+    const {result} = renderHook(() => useCreatableVariantInitialValue(missingOnRelease, fallback), {
       wrapper,
     })
 

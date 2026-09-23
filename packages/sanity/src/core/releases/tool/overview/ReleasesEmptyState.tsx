@@ -1,4 +1,5 @@
-import {Flex, Inline, Text} from '@sanity/ui'
+import {Inline, Text} from '@sanity/ui'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -19,8 +20,14 @@ export const ReleasesEmptyState = ({createReleaseButton}: ReleasesEmptyStateProp
   }
 
   return (
-    <Flex direction="column" flex={1} justify={'center'} align={'center'}>
-      <Flex gap={3} direction="column" align="center" style={{maxWidth: '300px'}}>
+    <Flex
+      flexDirection="column"
+      flexBasis="0%"
+      flexGrow={1}
+      justifyContent={'center'}
+      alignItems={'center'}
+    >
+      <Flex gap={3} flexDirection="column" alignItems="center" style={{maxWidth: '300px'}}>
         <ReleaseIllustration />
         <Text as="h1" size={1} weight="semibold" data-testid="no-releases-info-text">
           {t('overview.title')}

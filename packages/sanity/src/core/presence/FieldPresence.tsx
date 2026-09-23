@@ -85,6 +85,14 @@ export const FieldPresenceInner = memo(function FieldPresenceInner({
 export interface FieldPresenceProps {
   presence: FormNodePresence[]
   maxAvatars: number
+  /**
+   * The presence overlay draws the avatars where this component's placeholder was last measured,
+   * and it re-measures when this component re-renders (the reporter publishes on every render).
+   * Pass a value that changes whenever the surrounding layout moves the placeholder without
+   * otherwise re-rendering this component (e.g. a field header making room for its actions on
+   * hover): the changed prop is enough to trigger the re-render, it is not read.
+   */
+  layoutKey?: string
 }
 
 /** @internal */

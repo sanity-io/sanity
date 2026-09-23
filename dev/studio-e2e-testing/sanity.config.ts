@@ -18,6 +18,7 @@ import {presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 
 import {customComponents} from './components-api'
+import {diagnosticsBridge} from './diagnosticsBridge'
 import {e2eI18nBundles} from './i18n/bundles'
 import {schemaTypes} from './schemaTypes'
 
@@ -81,6 +82,7 @@ const defaultConfig = defineConfig({
     newDocumentOptions,
   },
   plugins: [
+    diagnosticsBridge(),
     customComponents(),
     structureTool({
       icon: BookIcon,

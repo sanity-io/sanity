@@ -1,26 +1,4 @@
-/**
- * Regression guard for a render loop reported from the field (customer
- * profile showed ~60 update passes/second, sustained, studio-wide slowdown).
- *
- * `useDocumentValues(documentId, paths)` used to memoize its observable on
- * the `paths` ARRAY REFERENCE. A caller passing an inline literal — the
- * natural call shape, e.g. `useDocumentValues(id, ['title'])` — busted the
- * memo every render: each render built a new observable (the preview store's
- * observePaths returns a fresh pipeline per call), react-rx treated it as a
- * brand-new external store whose warm-up replays the cached value
- * synchronously, and the fresh snapshot forced another render — around again
- * forever (~22k renders in 500ms before the fix; the hook now keys the memo
- * on path CONTENTS via useShallowUnique).
- *
- * Version-linked: under react-rx v4 (studio before 6.9.0) the unfixed inline case
- * rendered exactly twice and settled — the footgun was latent. Under v5
- * (adopted in 6.9.0 via #13799 + #13814) each new identity's deferred pass
- * re-rendered and minted another identity, closing the loop (verified by
- * swapping the react-rx resolution to 4.2.5 and re-running).
- *
- * Mounted via a raw createRoot with IS_REACT_ACT_ENVIRONMENT disabled: act
- * would flush and mask the loop's scheduling.
- */
+/** Uses a raw root because `act` masks the scheduling that caused the original loop. */
 import {createRoot, type Root} from 'react-dom/client'
 import {BehaviorSubject} from 'rxjs'
 import {map} from 'rxjs/operators'
@@ -32,11 +10,8 @@ declare global {
   var IS_REACT_ACT_ENVIRONMENT: boolean | undefined
 }
 
-// Mirrors the real preview store's shape: the underlying value is cached and
-// replays synchronously to new subscribers, but every observePaths() call
-// returns a NEW observable identity (createPathObserver builds a fresh
-// pipeline per call)
 const cachedValue$ = new BehaviorSubject<Record<string, unknown>>({title: 'hello'})
+// Each call must return a new observable identity to reproduce the original bug.
 const observePaths = vi.fn(() => cachedValue$.pipe(map((value) => value)))
 const mockPreviewStore = {observePaths}
 vi.mock('../../../datastores', () => ({
@@ -48,7 +23,6 @@ const counters = {inline: 0, stable: 0}
 function InlineProbe() {
   // oxlint-disable-next-line react/immutability -- deliberate render counter: this guard exists to make a loop measurable
   counters.inline++
-  // The footgun call shape: fresh array literal every render
   const {value} = useDocumentValues<{title?: string}>('doc-inline', ['title'])
   return <div data-testid="inline">{value?.title}</div>
 }

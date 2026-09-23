@@ -1,6 +1,6 @@
 /* oxlint-disable no-deprecated -- this module implements the deprecated legacy document timeline */
 import {type ObjectDiff} from '@sanity/diff'
-import {BoundaryElementProvider, Card, Flex, Text} from '@sanity/ui'
+import {BoundaryElementProvider, Card, Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {
   ChangeFieldWrapper,
@@ -16,7 +16,7 @@ import {
 } from 'sanity'
 import {DocumentChangeContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
-import {Box, Grid} from 'ui5'
+import {Flex, Box, Grid} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {TimelineError} from '../../timeline/TimelineError'
@@ -63,7 +63,7 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): React.J
 
   if (selectedReleaseId) {
     return (
-      <Flex data-testid="review-changes-pane" direction="column" height="fill">
+      <Flex data-testid="review-changes-pane" flexDirection="column" height="100%">
         <Card flex={1} padding={2} paddingTop={0}>
           <TimelineError versionError />
         </Card>
@@ -72,7 +72,7 @@ export function ChangesInspector({showChanges}: {showChanges: boolean}): React.J
   }
 
   return (
-    <Flex data-testid="review-changes-pane" direction="column" height="fill" overflow="hidden">
+    <Flex data-testid="review-changes-pane" flexDirection="column" height="100%" overflow="hidden">
       <Box padding={3}>
         <Grid
           paddingX={2}

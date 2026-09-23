@@ -1,7 +1,6 @@
 import {type SanityClient} from '@sanity/client'
-import {type Observable} from 'rxjs'
+import {type Observable, of, Subscription} from 'rxjs'
 
-import {type useReleasesStore} from '../../releases/store/useReleasesStore'
 import {createEventsObservable} from './createEventsObservable'
 import {getDocumentChanges} from './getDocumentChanges'
 import {getExpandEvents} from './getExpandEvents'
@@ -11,25 +10,58 @@ import {type EventsStoreRevision} from './types'
 
 interface EventsStoreOptions {
   client: SanityClient
-  documentId: string
+  documentId: string | undefined
   documentType: string
-  releases$: ReturnType<typeof useReleasesStore>['state$']
   isLiveEdit: boolean
 }
 
+const IDLE_EVENTS = {events: [], nextCursor: '', loading: false, error: null}
+
 /**
- * Creates an event store for a document.
- * If you want to use this in a React component, consider using `useEventsStore` instead.
+ * Idle store used when there is no document to observe (e.g. a missing variant with no
+ * creatable target). No events, translog, or history requests are made.
+ */
+function createIdleEventsStore() {
+  const eventsObservable$ = of(IDLE_EVENTS)
+  return {
+    eventsObservable$,
+    getDocumentChanges: () => of({diff: null, loading: false, error: null}),
+    handleExpandEvent: async () => {},
+    loadMoreEvents: () => {},
+    reloadEvents: () => {},
+    remoteTransactionsListener: () => new Subscription(),
+  }
+}
+
+/**
+ * Creates the (non-React) events store for a document variant, wiring together:
+ * - `getInitialFetchEvents`: fetching/paginating events + synthesizing edit events,
+ * - `getExpandEvents`: on-demand expansion of publish/delete events,
+ * - `getRemoteTransactionsSubscription`: real-time remote mutations (append or trigger refetch),
+ * - `createEventsObservable`: merge, sort and per-variant post-processing.
  *
- * Consider subscribing the remoteEventsListener to get updates on remote transactions.
+ * When `documentId` is missing, returns an idle store (`events: []`, `loading: false`) and does
+ * not subscribe to the document pair or hit the events/history APIs.
+ *
+ * Returns:
+ * - `eventsObservable$`: the final `{events, nextCursor, loading, error}` stream for the UI.
+ * - `getDocumentChanges(revision$, since$)`: annotated diff stream between two revisions.
+ * - `handleExpandEvent`, `loadMoreEvents`, `reloadEvents`: imperative actions.
+ * - `remoteTransactionsListener`: call to activate the remote listener; returns the subscription
+ *   (the caller owns unsubscription — `useEventsStore` ties it to the component lifecycle).
+ *
+ * If you want to use this in a React component, use `useEventsStore` instead.
  */
 export function createEventsStore({
   client,
   documentId,
   documentType,
-  releases$,
   isLiveEdit,
 }: EventsStoreOptions) {
+  if (!documentId) {
+    return createIdleEventsStore()
+  }
+
   const initialEvents = getInitialFetchEvents({client, documentId})
   const {expandedEvents$, handleExpandEvent} = getExpandEvents({client, documentId})
   const {remoteEdits$, remoteTransactions$, subscribe} = getRemoteTransactionsSubscription({
@@ -44,7 +76,6 @@ export function createEventsStore({
     events$: initialEvents.events$,
     remoteEdits$,
     expandedEvents$,
-    releases$,
   })
 
   return {

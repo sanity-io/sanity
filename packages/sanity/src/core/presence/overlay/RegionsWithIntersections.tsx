@@ -23,6 +23,7 @@ import {
 import {createIntersectionObserver} from './intersectionObserver'
 import {
   BottomRegionWrapper,
+  ContentWrapper,
   MiddleRegionWrapper,
   OverlayWrapper,
   RootWrapper,
@@ -165,9 +166,9 @@ export function RegionsWithIntersections(
         io={io}
         id="::top"
         onIntersection={onIntersection}
-        margins={margins}
+        $margins={margins}
       />
-      <div>{children}</div>
+      <ContentWrapper>{children}</ContentWrapper>
       <OverlayWrapper ref={overlayRef}>
         {overlayWidth && render(regionsWithIntersectionDetails, overlayWidth)}
       </OverlayWrapper>

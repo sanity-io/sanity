@@ -1,7 +1,7 @@
-import {Card, type CardTone, Flex} from '@sanity/ui'
+import {Card, type CardTone} from '@sanity/ui'
 import {type ComponentProps, type ReactNode} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {DragHandle} from '../common/DragHandle'
 import {MOVING_ITEM_CLASS_NAME} from '../common/list'
@@ -33,6 +33,11 @@ const DragHandleCard = styled(Card)`
   left: 0;
 `
 const Root = styled(Card)`
+  /* Until Card is migrated, this is needed to keep its display styling from overriding Flex */
+  &&:not([hidden]) {
+    display: flex;
+  }
+
   transition: border-color 250ms;
   box-sizing: border-box;
   position: relative;
@@ -83,7 +88,7 @@ export function CellLayout(props: RowLayoutProps & ComponentProps<typeof Root>) 
   return (
     <Root
       forwardedAs={Flex}
-      direction="column"
+      flexDirection="column"
       border
       selected={selected}
       aria-selected={selected}
@@ -106,12 +111,12 @@ export function CellLayout(props: RowLayoutProps & ComponentProps<typeof Root>) 
       )}
 
       {presence && (
-        <PresenceFlex align="center" marginX={1}>
+        <PresenceFlex alignItems="center" marginX={1}>
           {presence}
         </PresenceFlex>
       )}
 
-      <FooterFlex align="center" paddingX={1} sizing="border" justify="space-between">
+      <FooterFlex alignItems="center" paddingX={1} justifyContent="space-between">
         <Flex>{validation}</Flex>
         <Box>{footer}</Box>
         {menu}

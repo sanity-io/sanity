@@ -1,8 +1,106 @@
-import {type SanityDocument} from '@sanity/types'
+import {
+  defineArrayMember,
+  defineField,
+  defineType,
+  type PortableTextBlock,
+  type SanityDocument,
+} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
+import {page, userEvent} from 'vitest/browser'
 
+import {TestForm} from '../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../test/browser/testHelpers'
-import {TableValidationDepthStory} from './TableValidationDepthStory'
+import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
+
+// The same custom rule guards root blocks and cell blocks, so validation
+// marker rendering can be compared across depths.
+const noBadWords = (block: PortableTextBlock | undefined) => {
+  const hasBad =
+    Array.isArray(block?.children) &&
+    block.children.some((child) => typeof child.text === 'string' && child.text.includes('bad'))
+  return hasBad ? 'No bad words' : true
+}
+
+const SCHEMA_TYPES = [
+  defineType({
+    type: 'document',
+    name: 'test',
+    title: 'Test',
+    fields: [
+      defineField({
+        type: 'array',
+        name: 'body',
+        of: [
+          defineArrayMember({
+            type: 'block',
+            validation: (Rule) => Rule.custom(noBadWords),
+          }),
+          defineArrayMember({
+            type: 'object',
+            name: 'table',
+            fields: [
+              defineField({type: 'number', name: 'headerRows'}),
+              defineField({
+                type: 'array',
+                name: 'rows',
+                of: [
+                  defineArrayMember({
+                    type: 'object',
+                    name: 'row',
+                    fields: [
+                      defineField({
+                        type: 'array',
+                        name: 'cells',
+                        of: [
+                          defineArrayMember({
+                            type: 'object',
+                            name: 'cell',
+                            fields: [
+                              defineField({
+                                type: 'array',
+                                name: 'value',
+                                of: [
+                                  defineArrayMember({
+                                    type: 'block',
+                                    validation: (Rule) => Rule.custom(noBadWords),
+                                  }),
+                                ],
+                              }),
+                            ],
+                          }),
+                        ],
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ],
+        components: {
+          portableText: {
+            plugins: (props) =>
+              props.renderDefault({
+                ...props,
+                plugins: {
+                  ...props.plugins,
+                  table: {enabled: true},
+                },
+              }),
+          },
+        },
+      }),
+    ],
+  }),
+]
+
+function TableValidationDepthHarness(props: {document?: SanityDocument}) {
+  return (
+    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+      <TestForm document={props.document} />
+    </TestWrapper>
+  )
+}
 
 const {render} = await import('vitest-browser-react')
 
@@ -17,8 +115,8 @@ const block = (key: string, text: string) => ({
 const document: SanityDocument = {
   _id: '123',
   _type: 'test',
-  _createdAt: new Date().toISOString(),
-  _updatedAt: new Date().toISOString(),
+  _createdAt: '2024-01-01T00:00:00.000Z',
+  _updatedAt: '2024-01-01T00:00:00.000Z',
   _rev: '123',
   body: [
     block('b0', 'bad root text'),
@@ -43,9 +141,9 @@ const document: SanityDocument = {
 
 describe('Portable Text Input - validation markers at depth', () => {
   it('renders the error marker on failing blocks at root and inside table cells alike', async () => {
-    const {getFocusedPortableTextEditor} = testHelpers()
+    const {getFocusedPortableTextEditor, settleChromaticEndState} = testHelpers()
 
-    void render(<TableValidationDepthStory document={document} />)
+    void render(<TableValidationDepthHarness document={document} />)
 
     const $pte = await getFocusedPortableTextEditor('field-body')
     await expect.element($pte).toHaveTextContent('bad cell text')
@@ -58,6 +156,16 @@ describe('Portable Text Input - validation markers at depth', () => {
       'clean root text': false,
       'bad cell text': true,
       'clean cell text': false,
+    })
+
+    // Focus can land on the table (column insert chrome / style select flicker).
+    // Click a clean text block so Chromatic always archives the same selection,
+    // then park the pointer (still over that text) and wait for the toolbar
+    // and style select to hold on Normal.
+    await userEvent.click(page.getByText('clean root text', {exact: true}))
+    await settleChromaticEndState({
+      styleSelectText: /^Normal$/,
+      styleSelectRoot: '[data-testid="field-body"]',
     })
   })
 })

@@ -1,5 +1,6 @@
-import {Card, Stack} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useState} from 'react'
+import {VStack} from 'ui5'
 
 import {useTimeZone} from '../../../hooks/useTimeZone'
 import {SCHEDULED_PUBLISHING_TIME_ZONE_SCOPE} from '../../constants'
@@ -35,7 +36,7 @@ const ScheduleForm = (props: Props) => {
   }
 
   return (
-    <Stack gap={4}>
+    <VStack gap={4}>
       <Card>
         <DateTimeInput
           level={0}
@@ -53,7 +54,7 @@ const ScheduleForm = (props: Props) => {
           timeZoneScope={timeZoneScope}
         />
       </Card>
-    </Stack>
+    </VStack>
   )
 }
 

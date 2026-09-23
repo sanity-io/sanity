@@ -36,6 +36,21 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'about-dialog.version-info.copy-to-clipboard-button.text': 'Copy to Clipboard',
   /** "Current version" header in version info dialog  */
   'about-dialog.version-info.current-version.header': 'Current version',
+  /** Deprecation warning in About-dialog: the running (or pinned) version is deprecated */
+  'about-dialog.version-info.deprecated.current':
+    'v{{version}} has been deprecated and should no longer be used.',
+  /** Deprecation warning in About-dialog: header */
+  'about-dialog.version-info.deprecated.header': 'Deprecated version',
+  /** Deprecation warning in About-dialog: what to do when the studio is auto-updating but pinned to the deprecated version */
+  'about-dialog.version-info.deprecated.next-step.pinned':
+    'This Studio is pinned to a deprecated version. Choose a different version in Manage.',
+  /** Deprecation warning in About-dialog: what to do when the studio is not auto-updating */
+  'about-dialog.version-info.deprecated.next-step.upgrade':
+    'Update the sanity package to a newer version and redeploy the Studio.',
+  /** Deprecation warning in About-dialog: link to the upgrade guide for studios that are not auto-updating */
+  'about-dialog.version-info.deprecated.next-step.upgrade.learn-how': 'Learn how to update',
+  /** Deprecation warning in About-dialog: the reason given when the version was deprecated */
+  'about-dialog.version-info.deprecated.reason': 'Reason: {{reason}}',
   /** @deprecated "How to upgrade" link text */
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'about-dialog.version-info.how-to-upgrade': 'Update now',
@@ -50,6 +65,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'about-dialog.version-info.reload': 'Reload',
   /** "Reload to update"-tooltip when auto updates is enabled and a new version is available */
   'about-dialog.version-info.reload-to-update': 'Reload Studio to update',
+  /** "Deprecated" tooltip in About-dialog */
+  'about-dialog.version-info.tooltip.deprecated': 'Deprecated',
   /** "Development" tooltip in About-dialog */
   'about-dialog.version-info.tooltip.development': 'Development',
   /** "New version available" tooltip in About-dialog */
@@ -595,6 +612,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** The message shown after deletion fails */
   'document-group.delete.error.message':
     'An error occurred while attempting to delete this document. This usually means that there are other documents that refer to it.',
+  /** Tells the user that some of the versions they selected are left out of the deletion (singular) */
+  'document-group.delete.excluded-count.text_one':
+    '1 selected version will not be deleted. This studio does not allow deleting it.',
+  /** Tells the user that some of the versions they selected are left out of the deletion (plural) */
+  'document-group.delete.excluded-count.text_other':
+    '{{count}} selected versions will not be deleted. This studio does not allow deleting them.',
   /** Shown if there are references to other documents but the user does not have the permission to see the relevant document IDs */
   'document-group.delete.other-reference-count.title_one': '1 other reference not show',
   /** Shown if there are references to other documents but the user does not have the permission to see the relevant document IDs */
@@ -602,6 +625,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Text in the tooltip of this component if hovering over the info icon */
   'document-group.delete.other-reference-count.tooltip':
     "We can't display metadata for these references due to a missing access token for the related datasets.",
+  /** Tells the user that some of the versions they selected are left out of the deletion while the studio is still resolving whether they can be deleted (singular) */
+  'document-group.delete.pending-count.text_one':
+    '1 selected version will not be deleted. This studio is still checking whether deleting it is allowed.',
+  /** Tells the user that some of the versions they selected are left out of the deletion while the studio is still resolving whether they can be deleted (plural) */
+  'document-group.delete.pending-count.text_other':
+    '{{count}} selected versions will not be deleted. This studio is still checking whether deleting them is allowed.',
   /** Appears when unable to render a document preview in the referring document list */
   'document-group.delete.preview-item.preview-unavailable.subtitle': 'ID: {{documentId}}',
   /** Appears when unable to render a document preview in the referring document list */
@@ -788,6 +817,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** Information for what studio version the current studio is running */
   'help-resources.studio-version': 'Sanity Studio v{{studioVersion}}',
+  /** Subtitle for the studio version menu item when the running or pinned version is deprecated */
+  'help-resources.studio-version-deprecated': 'v{{version}} is deprecated',
 
   /** Title for help and resources menus */
   'help-resources.title': 'Help and resources',
@@ -1241,6 +1272,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.portable-text.style.normal': 'Normal',
   /** Title of the "quote" block style */
   'inputs.portable-text.style.quote': 'Quote',
+  /** Tooltip on text whose annotation type is not defined in the schema */
+  'inputs.portable-text.unknown-value.annotation': 'Annotation not defined in the schema: {{name}}',
+  /** Tooltip on a block whose list type is not defined in the schema */
+  'inputs.portable-text.unknown-value.list-item': 'List type not defined in the schema: {{name}}',
+  /** Tooltip on text carrying a mark that is not defined in the schema */
+  'inputs.portable-text.unknown-value.mark': 'Mark not defined in the schema: {{name}}',
+  /** Tooltip on a block whose style is not defined in the schema */
+  'inputs.portable-text.unknown-value.style': 'Style not defined in the schema: {{name}}',
   /** Label for the table lane that appends a column */
   'inputs.portable-text.table.add-column': 'Add column at end',
   /** Label for the table lane that appends a row */
@@ -1574,6 +1613,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.new-release.limit-reached': 'This workspace is limited to {{count}} release',
   'release.action.new-release.limit-reached_other':
     'This workspace is limited to {{count}} releases',
+  /** Action message for pausing a scheduled draft so it can be edited */
+  'release.action.pause-to-edit': 'Pause to edit',
   /** Tooltip message for not having permissions for creating new releases */
   'release.action.permission.error': 'You do not have permission to perform this action',
   /** Action message for running a scheduled draft immediately */
@@ -1722,15 +1763,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.schedule-dialog.publish-date-in-past-warning': 'Schedule for a future time and date.',
   /** Label for date picker when scheduling a release */
   'release.schedule-dialog.select-publish-date-label': 'Publish on',
-  /** The toast description that will be shown when the user has a release perspective which is now archived
-   * @deprecated – no longer needed
-   * */
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  /** The toast description that will be shown when the user has a release perspective which is now archived */
   'release.toast.archived-release.description': 'This release has been unpinned',
-  /** The toast title that will be shown when the user has a release perspective which is now archived
-   * @deprecated – no longer needed
-   * */
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  /** The toast title that will be shown when the user has a release perspective which is now archived */
   'release.toast.archived-release.title': "The '{{title}}' release was archived",
   /** The toast title that will be shown the creating a release fails */
   'release.toast.create-release-error.title': 'Failed to create release',
@@ -1756,15 +1791,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Success toast for running a scheduled publish immediately */
   'release.toast.publish-scheduled-draft.success':
     'The scheduled draft document <strong>{{title}}</strong> has been published.',
-  /** The toast description that will be shown when the user has a release perspective which is now published
-   * @deprecated – no longer needed
-   **/
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  /** The toast description that will be shown when the user has a release perspective which is now published */
   'release.toast.published-release.description': 'This release has been unpinned',
-  /** The toast title that will be shown when the user has a release perspective which is now deleted
-   * @deprecated – no longer needed
-   **/
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  /** The toast title that will be shown when the user has a release perspective which is now published */
   'release.toast.published-release.title': "The '{{title}}' release was published",
   /** Error toast for rescheduling a draft */
   'release.toast.reschedule-scheduled-draft.error':
@@ -1776,10 +1805,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.toast.schedule-publish.error': 'Failed to schedule draft: {{error}}',
   /** Success toast for scheduling a paused draft */
   'release.toast.schedule-publish.success': 'Scheduled draft successfully',
-  /** The toast title that will be shown when the user has a scheduled draft perspective which is now published
-   * @deprecated – no longer needed
-   * */
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  /** The toast title that will be shown when the user has a scheduled draft perspective which is now published */
   'release.toast.scheduled-draft-published.title': 'The scheduled draft was published',
   /** Label for when a version of a document has already been added to the release */
   'release.tooltip.already-added': 'A version of this document has already been added',

@@ -1,17 +1,120 @@
-import {type Path, type SanityDocument} from '@sanity/types'
+import {
+  defineArrayMember,
+  defineField,
+  defineType,
+  type Path,
+  type SanityDocument,
+} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 import {page, userEvent} from 'vitest/browser'
 
+import {TestForm} from '../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../test/browser/testHelpers'
-import {FocusPathDepthStory} from './FocusPathDepthStory'
+import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
+
+// A table-enabled field whose cells hold spans and inline objects, for
+// pinning the focus-path span suffix (`.text`) at container depth.
+const SCHEMA_TYPES = [
+  defineType({
+    type: 'document',
+    name: 'test',
+    title: 'Test',
+    fields: [
+      defineField({
+        type: 'array',
+        name: 'body',
+        of: [
+          defineArrayMember({type: 'block'}),
+          defineArrayMember({
+            type: 'object',
+            name: 'table',
+            fields: [
+              defineField({type: 'number', name: 'headerRows'}),
+              defineField({
+                type: 'array',
+                name: 'rows',
+                of: [
+                  defineArrayMember({
+                    type: 'object',
+                    name: 'row',
+                    fields: [
+                      defineField({
+                        type: 'array',
+                        name: 'cells',
+                        of: [
+                          defineArrayMember({
+                            type: 'object',
+                            name: 'cell',
+                            fields: [
+                              defineField({
+                                type: 'array',
+                                name: 'value',
+                                of: [
+                                  defineArrayMember({
+                                    type: 'block',
+                                    of: [
+                                      defineArrayMember({
+                                        type: 'object',
+                                        name: 'inlineNote',
+                                        title: 'Inline note',
+                                        fields: [
+                                          defineField({
+                                            type: 'string',
+                                            name: 'note',
+                                          }),
+                                        ],
+                                        preview: {select: {title: 'note'}},
+                                      }),
+                                    ],
+                                  }),
+                                ],
+                              }),
+                            ],
+                          }),
+                        ],
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ],
+        components: {
+          portableText: {
+            plugins: (props) =>
+              props.renderDefault({
+                ...props,
+                plugins: {
+                  ...props.plugins,
+                  table: {enabled: true},
+                },
+              }),
+          },
+        },
+      }),
+    ],
+  }),
+]
+
+function FocusPathDepthHarness(props: {
+  document?: SanityDocument
+  onPathFocus?: (path: Path) => void
+}) {
+  return (
+    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+      <TestForm document={props.document} onPathFocus={props.onPathFocus} />
+    </TestWrapper>
+  )
+}
 
 const {render} = await import('vitest-browser-react')
 
 const document: SanityDocument = {
   _id: '123',
   _type: 'test',
-  _createdAt: new Date().toISOString(),
-  _updatedAt: new Date().toISOString(),
+  _createdAt: '2024-01-01T00:00:00.000Z',
+  _updatedAt: '2024-01-01T00:00:00.000Z',
   _rev: '123',
   body: [
     {
@@ -58,9 +161,10 @@ describe('Portable Text Input - focus path span suffix at depth', () => {
   it('reports spans with `.text` and inline objects without, at root and inside table cells', async () => {
     const paths: Path[] = []
     const pushPath = (path: Path) => paths.push(path)
-    const {getFocusedPortableTextEditor, waitForFocusedNodeText} = testHelpers()
+    const {getFocusedPortableTextEditor, settleChromaticEndState, waitForFocusedNodeText} =
+      testHelpers()
 
-    void render(<FocusPathDepthStory document={document} onPathFocus={pushPath} />)
+    void render(<FocusPathDepthHarness document={document} onPathFocus={pushPath} />)
 
     const $pte = await getFocusedPortableTextEditor('field-body')
     await expect.element($pte).toHaveTextContent('cell span')
@@ -113,5 +217,6 @@ describe('Portable Text Input - focus path span suffix at depth', () => {
         'children',
         {_key: 'cn0'},
       ])
+    await settleChromaticEndState()
   })
 })

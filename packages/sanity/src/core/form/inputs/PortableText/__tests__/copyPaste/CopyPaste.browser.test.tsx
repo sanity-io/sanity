@@ -1,10 +1,17 @@
-import {type Path, type SanityDocument} from '@sanity/types'
-import {beforeEach, describe, expect, it} from 'vitest'
+import {
+  defineArrayMember,
+  defineField,
+  defineType,
+  type Path,
+  type SanityDocument,
+} from '@sanity/types'
+import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
-import {page, server} from 'vitest/browser'
+import {page, server, userEvent} from 'vitest/browser'
 
+import {TestForm} from '../../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../../test/browser/testHelpers'
-import CopyPasteStory from './CopyPasteStory'
+import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
 import {
   CLEANED_UNICODE_INPUT_SNAPSHOT,
   GDOCS_INPUT,
@@ -12,6 +19,78 @@ import {
   REMOVED_INPUT_SNAPSHOT,
   UNICODE_TEXT,
 } from './input'
+
+const SCHEMA_TYPES = [
+  defineType({
+    type: 'document',
+    name: 'test',
+    title: 'Test',
+    fields: [
+      defineField({
+        type: 'array',
+        name: 'body',
+        of: [
+          defineArrayMember({
+            type: 'block',
+            options: {
+              unstable_whitespaceOnPasteMode: 'remove',
+            },
+          }),
+          defineArrayMember({
+            type: 'image',
+            name: 'image',
+            title: 'Image block',
+            preview: {
+              select: {
+                fileName: 'asset.originalFilename',
+                image: 'asset',
+              },
+              prepare({fileName, image}) {
+                return {
+                  media: image,
+                  title: fileName,
+                }
+              },
+            },
+          }),
+          defineArrayMember({
+            type: 'file',
+            name: 'filePDF',
+            title: 'PDF file block',
+            options: {
+              accept: 'application/pdf',
+            },
+            preview: {
+              select: {
+                tile: 'asset.originalFilename',
+              },
+            },
+          }),
+        ],
+      }),
+      defineField({
+        type: 'array',
+        name: 'bodyNormalized',
+        of: [
+          defineArrayMember({
+            type: 'block',
+            options: {
+              unstable_whitespaceOnPasteMode: 'normalize',
+            },
+          }),
+        ],
+      }),
+    ],
+  }),
+]
+
+function CopyPasteHarness({focusPath, document}: {focusPath?: Path; document?: SanityDocument}) {
+  return (
+    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+      <TestForm document={document} focusPath={focusPath} />
+    </TestWrapper>
+  )
+}
 
 export type UpdateFn = () => {focusPath: Path; document: SanityDocument}
 
@@ -42,8 +121,8 @@ async function loadTestFile(relativePath: string): Promise<{
 const document: SanityDocument = {
   _id: '123',
   _type: 'test',
-  _createdAt: new Date().toISOString(),
-  _updatedAt: new Date().toISOString(),
+  _createdAt: '2024-01-01T00:00:00.000Z',
+  _updatedAt: '2024-01-01T00:00:00.000Z',
   _rev: '123',
   body: [],
 }
@@ -52,16 +131,16 @@ const document: SanityDocument = {
 // honoured by Chromium; WebKit ignores it, so these paste tests can't run there
 // (matches the original Playwright `test.skip(browserName === 'webkit')`).
 describe.skipIf(server.browser === 'webkit')('Portable Text Input', () => {
-  beforeEach(() => {
-    window.localStorage.debug = 'sanity-pte:*'
-  })
-
   describe('Should be able to paste from Google Docs and get correct formatting', () => {
     it(`Removed whitespace`, async () => {
-      const {getFocusedPortableTextEditor, insertPortableTextCopyPaste, waitForDocumentState} =
-        testHelpers()
+      const {
+        getFocusedPortableTextEditor,
+        insertPortableTextCopyPaste,
+        waitForDocumentState,
+        settleChromaticEndState,
+      } = testHelpers()
 
-      void render(<CopyPasteStory document={document} />)
+      void render(<CopyPasteHarness document={document} />)
 
       const $pte = await getFocusedPortableTextEditor('field-body')
 
@@ -79,13 +158,26 @@ describe.skipIf(server.browser === 'webkit')('Portable Text Input', () => {
       // We therefore compare the length of the body to the snapshot length here instead.
       // This will make sure we don't have extra whitespace blocks
       expect(documentState?.body?.length || 0).toEqual(snapshotLength)
+
+      // Paste can leave the caret on a style-less span so the style select
+      // flickers between "Normal" and "No style"; click into the field and wait
+      // for Normal specifically before Chromatic archives.
+      await userEvent.click($pte)
+      await settleChromaticEndState({
+        styleSelectText: /^Normal$/,
+        styleSelectRoot: '[data-testid="field-body"]',
+      })
     })
 
     it(`Normalized whitespace`, async () => {
-      const {getFocusedPortableTextEditor, insertPortableTextCopyPaste, waitForDocumentState} =
-        testHelpers()
+      const {
+        getFocusedPortableTextEditor,
+        insertPortableTextCopyPaste,
+        waitForDocumentState,
+        settleChromaticEndState,
+      } = testHelpers()
 
-      void render(<CopyPasteStory document={document} />)
+      void render(<CopyPasteHarness document={document} />)
 
       const $pte = await getFocusedPortableTextEditor('field-bodyNormalized')
 
@@ -99,6 +191,15 @@ describe.skipIf(server.browser === 'webkit')('Portable Text Input', () => {
       const snapshotLength = NORMALIZED_INPUT_SNAPSHOT.length
 
       expect(documentState?.bodyNormalized?.length || 0).toEqual(snapshotLength)
+
+      // Paste can leave the caret on a style-less span so the style select
+      // flickers between "Normal" and "No style"; click into the field and wait
+      // for Normal specifically before Chromatic archives.
+      await userEvent.click($pte)
+      await settleChromaticEndState({
+        styleSelectText: /^Normal$/,
+        styleSelectRoot: '[data-testid="field-bodyNormalized"]',
+      })
     })
   })
 
@@ -107,7 +208,7 @@ describe.skipIf(server.browser === 'webkit')('Portable Text Input', () => {
       const {getFocusedPortableTextEditor, insertPortableTextCopyPaste, waitForDocumentState} =
         testHelpers()
 
-      void render(<CopyPasteStory document={document} />)
+      void render(<CopyPasteHarness document={document} />)
 
       const $pte = await getFocusedPortableTextEditor('field-body')
 
@@ -133,16 +234,29 @@ describe.skipIf(server.browser === 'webkit')('Portable Text Input', () => {
     // Pasting a file via synthetic ClipboardEvent doesn't work in Firefox
     // (matches the original Playwright `test.skip(browserName === 'firefox')`).
     it.skipIf(server.browser === 'firefox')(`Added pasted image as a block`, async () => {
-      const {getFocusedPortableTextEditor, pasteFileOverPortableTextEditor} = testHelpers()
+      const {
+        getFocusedPortableTextEditor,
+        pasteFileOverPortableTextEditor,
+        settleChromaticEndState,
+      } = testHelpers()
 
-      void render(<CopyPasteStory document={document} />)
+      void render(<CopyPasteHarness document={document} />)
 
       const fileData = await loadTestFile('./static/dummy-image-1.jpg')
       const $pte = await getFocusedPortableTextEditor('field-body')
 
       await pasteFileOverPortableTextEditor(fileData, $pte)
       await page.getByTestId('upload-destination-sanity-default').click()
-      await expect.element($pte.getByTestId('block-preview')).toBeVisible()
+      const $preview = $pte.getByTestId('block-preview')
+      await expect.element($preview).toBeVisible()
+      await expect.poll(() => $preview.element().getBoundingClientRect().height).toBeGreaterThan(0)
+      // Focus the image block so the style select consistently shows "No style"
+      // (object blocks have no style) instead of flickering with "Normal".
+      await userEvent.click($preview)
+      await settleChromaticEndState({
+        styleSelectText: /^No style$/,
+        styleSelectRoot: '[data-testid="field-body"]',
+      })
     })
 
     it(`Added dropped image as a block`, async () => {
@@ -150,9 +264,10 @@ describe.skipIf(server.browser === 'webkit')('Portable Text Input', () => {
         getFocusedPortableTextEditor,
         dropFileOverPortableTextEditor,
         hoverFileOverPortableTextEditor,
+        settleChromaticEndState,
       } = testHelpers()
 
-      void render(<CopyPasteStory document={document} />)
+      void render(<CopyPasteHarness document={document} />)
 
       const fileData = await loadTestFile('./static/dummy-image-1.jpg')
       const $pte = await getFocusedPortableTextEditor('field-body')
@@ -168,13 +283,22 @@ describe.skipIf(server.browser === 'webkit')('Portable Text Input', () => {
 
       await page.getByTestId('upload-destination-sanity-default').click()
 
-      await expect.element($pte.getByTestId('block-preview')).toBeVisible()
+      const $preview = $pte.getByTestId('block-preview')
+      await expect.element($preview).toBeVisible()
+      await expect.poll(() => $preview.element().getBoundingClientRect().height).toBeGreaterThan(0)
+      // Focus the image block so the style select consistently shows "No style"
+      // (object blocks have no style) instead of flickering with "Normal".
+      await userEvent.click($preview)
+      await settleChromaticEndState({
+        styleSelectText: /^No style$/,
+        styleSelectRoot: '[data-testid="field-body"]',
+      })
     })
 
     it(`Display error message on drag over if file is not accepted`, async () => {
       const {getFocusedPortableTextEditor, hoverFileOverPortableTextEditor} = testHelpers()
 
-      void render(<CopyPasteStory document={document} />)
+      void render(<CopyPasteHarness document={document} />)
 
       const fileData = await loadTestFile('./static/dummy.zip')
       const $pte = await getFocusedPortableTextEditor('field-body')

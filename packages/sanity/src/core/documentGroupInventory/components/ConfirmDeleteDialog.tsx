@@ -3,12 +3,11 @@ import {CopyIcon} from '@sanity/icons/Copy'
 import {DocumentsIcon} from '@sanity/icons/Documents'
 import {UnknownIcon} from '@sanity/icons/Unknown'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {getPublishedId} from '@sanity/id-utils'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
 import {type ComponentType, type ReactNode, useCallback, useMemo} from 'react'
-import {Box, Flex} from 'ui5'
+import {VStack, Box, Flex} from 'ui5'
 import {type ActorRefFromLogic} from 'xstate'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -23,7 +22,6 @@ import {
   type deletionMachine,
   type InternalReferences,
 } from '../machines/deletionMachine'
-import {type selectionMachine} from '../machines/selectionMachine'
 import {
   type DocumentGroupInventoryComponents,
   type DocumentGroupInventoryReferencePreviewLinkProps,
@@ -48,7 +46,10 @@ interface Props {
   documentId: string
   documentType: string
   deletionRef: ActorRefFromLogic<typeof deletionMachine>
-  selectionRef: ActorRefFromLogic<typeof selectionMachine>
+  /** How many selected rows `document.actions` withheld the delete action from. */
+  excludedCount: number
+  /** How many selected rows are left out only because their action identity had not resolved yet. */
+  pendingCount: number
   portalElementName: string
   components: DocumentGroupInventoryComponents
 }
@@ -57,14 +58,15 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
   documentId,
   documentType,
   deletionRef,
-  selectionRef,
+  excludedCount,
+  pendingCount,
   portalElementName,
   components,
 }) => {
   const {t} = useTranslation(studioLocaleNamespace)
   const {DocTitle, ReferencePreviewLink, VersionsPreviewList} = components
 
-  const variantIds = useSelector(selectionRef, ({context}) => context.selectedIds)
+  const variantIds = useSelector(deletionRef, ({context}) => context.ids)
 
   const internalReferences =
     useSelector(deletionRef, ({context}) => context.internalReferences) ?? EMPTY_INTERNAL_REFERENCES
@@ -93,7 +95,7 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
     snapshot.can({type: 'delete.confirm'}),
   )
 
-  const subjectCount = variantIds.size
+  const subjectCount = variantIds.length
   const subject = t('document-group.subject.version', {count: subjectCount})
 
   const totalCount = internalReferences.totalCount + crossDatasetReferences.totalCount
@@ -129,13 +131,29 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
       }}
       onClose={() => deletionRef.send({type: 'delete.cancel'})}
     >
-      <Stack gap={4}>
+      <VStack gap={4}>
         {error ? (
           <Card tone="critical" padding={3}>
             <Text size={1}>{t('document-group.delete.error.message')}</Text>
           </Card>
         ) : null}
-        <VersionsPreviewList documentType={documentType} documentVersions={[...variantIds]} />
+        <VersionsPreviewList documentType={documentType} documentVersions={variantIds} />
+        {(excludedCount > 0 || pendingCount > 0) && (
+          <Card padding={3} radius={2} tone="caution" flex="none">
+            <VStack gap={3}>
+              {excludedCount > 0 && (
+                <Text size={1} data-testid="excluded-count">
+                  {t('document-group.delete.excluded-count.text', {count: excludedCount})}
+                </Text>
+              )}
+              {pendingCount > 0 && (
+                <Text size={1} data-testid="pending-count">
+                  {t('document-group.delete.pending-count.text', {count: pendingCount})}
+                </Text>
+              )}
+            </VStack>
+          </Card>
+        )}
         {warnIncomingReferences && (
           <>
             <Card padding={3} radius={2} tone="caution" flex="none">
@@ -167,7 +185,7 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
             />
           </>
         )}
-      </Stack>
+      </VStack>
     </Dialog>
   )
 }
@@ -253,7 +271,7 @@ const References: ComponentType<ReferencesProps> = ({
       <Card radius={2} shadow={1} flex="auto" padding={1}>
         <Flex flexDirection="column">
           {internalReferences.totalCount > 0 && (
-            <Stack as="ul" gap={2} data-testid="internal-references">
+            <VStack as="ul" gap={2} data-testid="internal-references">
               {internalReferences.references.map((item) => (
                 <Box key={item._id} as="li">
                   {renderPreviewItem(item)}
@@ -264,7 +282,7 @@ const References: ComponentType<ReferencesProps> = ({
                   <OtherReferenceCount {...internalReferences} />
                 </Box>
               )}
-            </Stack>
+            </VStack>
           )}
           {crossDatasetReferences.totalCount > 0 && (
             <CrossDatasetReferencesDetails
@@ -289,7 +307,7 @@ const References: ComponentType<ReferencesProps> = ({
                     <Text size={1}>
                       <DocumentsIcon />
                     </Text>
-                    <Stack gap={2}>
+                    <VStack gap={2}>
                       <Text textOverflow="ellipsis" size={1}>
                         {t('document-group.delete.cdr-summary.title', {
                           count: normalizedDatasetNames.length,
@@ -301,7 +319,7 @@ const References: ComponentType<ReferencesProps> = ({
                       <Text title={datasetSubtitle} textOverflow="ellipsis" size={1} muted>
                         {datasetSubtitle}
                       </Text>
-                    </Stack>
+                    </VStack>
                     <ChevronWrapper>
                       <Text muted size={1}>
                         <ChevronDownIcon />

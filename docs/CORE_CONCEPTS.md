@@ -628,6 +628,12 @@ interface DocumentActionProps extends EditStateFor {
 
 `EditStateFor` is the document pair handed to an invoked action hook. Its members include `id`, `type`, `draft`, `published`, `version`, `liveEdit`, `ready` and `release`, which is a required key typed `string | undefined` (`packages/sanity/src/core/store/document/document-pair/editState.ts`).
 
+### Bulk selections
+
+`document.actions` resolves per document, so a control over many rows has no single context. Hide that control only when the mirrored action id is absent for every selected row, and exclude any row that lacks the id from the operation (transaction, dialog list, and counts). A mixed selection therefore still shows the control and acts only on the allowed subset. A row whose action identity has not resolved yet counts as lacking the id, so it stays out until it has. See `packages/sanity/src/core/config/document/bulkDocumentActions.ts`.
+
+The rule reaches config-array omission and nothing else. An action left in the array that returns `null` from its own hook for a given document keeps its id in the resolved set, so that row stays in the selection and in the operation. Reading that second mechanism means calling the action hook once per row, which a variable-length selection cannot do. Treat the presence check as the ceiling for any bulk control.
+
 ### Dialogs
 
 Actions can show dialogs for confirmation or additional input:
@@ -722,7 +728,7 @@ Presence of an exemption does not weaken the invariant for a control that _does_
 
 **2. Non-document entity.** Release and variant actions are governed by `releases.actions` or by nothing. `document.actions` is the wrong authority.
 
-**3. Bulk over a selection.** No single `ctx`. Hide the control only when the id is absent for every selected row; exclude rows where it is absent from the transaction. Do not invent a per-row resolver twin.
+**3. Bulk over a selection.** No single `ctx`. See [Bulk selections](#bulk-selections) for the rule.
 
 **4. Remediation UI.** Banners that appear because the footer cannot offer the action. Polarity is per-banner:
 

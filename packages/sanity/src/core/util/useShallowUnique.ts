@@ -1,5 +1,6 @@
 import {useState} from 'react'
-import shallowEquals from 'shallow-equals'
+
+import {shallowEquals} from './shallowEquals'
 
 /**
  * Returns the previous value whenever the next one is shallow-equal to it, so

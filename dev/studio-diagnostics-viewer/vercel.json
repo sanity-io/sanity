@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "buildCommand": "cd ../.. && pnpm exec turbo run build --filter=studio-diagnostics-viewer",
+  "outputDirectory": "dist",
+  "routes": [
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}

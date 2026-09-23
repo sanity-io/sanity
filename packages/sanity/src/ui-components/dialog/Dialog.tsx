@@ -3,18 +3,11 @@ import {
   Button as UIButton,
   Dialog as UIDialog,
   type DialogProps as UIDialogProps,
-  Flex,
   Text,
 } from '@sanity/ui'
-import {
-  type ComponentProps,
-  type HTMLProps,
-  type ReactNode,
-  type Ref,
-  type RefAttributes,
-} from 'react'
+import {type ComponentProps, type HTMLProps, type ReactNode, type RefAttributes} from 'react'
 import {useTranslation} from 'react-i18next'
-import {Box, type BoxProps} from 'ui5'
+import {Flex, Box, type BoxProps} from 'ui5'
 
 /** @internal */
 export type DialogProps = Pick<
@@ -82,7 +75,7 @@ export function Dialog({
       ref={ref}
       footer={
         (footer?.confirmButton || footer?.cancelButton) && (
-          <Flex gap={3} justify="flex-end" padding={3} align="center">
+          <Flex gap={3} justifyContent="flex-end" padding={3} alignItems="center">
             {footer?.description && (
               <Box flexBasis="0%" flexGrow={1} paddingLeft={1}>
                 <Text size={1} muted>
@@ -115,7 +108,12 @@ export function Dialog({
         )
       }
     >
-      <Box height={bodyHeight} padding={padding ? 4 : 0}>
+      <Box
+        height={bodyHeight}
+        //  oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
+        minHeight={bodyHeight === undefined ? 'min-content' : undefined}
+        padding={padding ? 4 : 0}
+      >
         {children}
       </Box>
     </UIDialog>

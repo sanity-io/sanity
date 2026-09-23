@@ -23,11 +23,8 @@ export function _getModalOption(
   const width = parseResponsiveWidth(raw.width)
   return {
     type: parseModalType(raw.type),
-    // Return `undefined` (not an empty array) when no width is configured, so the
-    // edit modal components fall back to their own width defaults (popover 960px /
-    // dialog 640px). An empty array is "defined" and would otherwise collapse the
-    // popover to content/auto width — making e.g. a reference field inside an
-    // annotation render uselessly narrow.
+    // Empty arrays are defined, so they skip the edit-modal width defaults and
+    // collapse the popover to content/auto width.
     width: width.length > 0 ? width : undefined,
   }
 }

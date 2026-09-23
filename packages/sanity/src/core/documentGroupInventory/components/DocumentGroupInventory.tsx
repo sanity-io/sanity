@@ -1,7 +1,7 @@
 import CloseIcon from '@sanity/icons/Close'
 import {FeedbackIcon} from '@sanity/icons/Feedback'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {PortalProvider, Stack, Text} from '@sanity/ui'
+import {PortalProvider, Text} from '@sanity/ui'
 import {useActorRef, useSelector} from '@xstate/react'
 import {
   type ChangeEvent,
@@ -9,9 +9,9 @@ import {
   useEffect,
   useLayoutEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
-import {useSyncObservable} from 'react-rx'
 import {
   combineLatest,
   debounceTime,
@@ -23,7 +23,7 @@ import {
   Subject,
   timeout,
 } from 'rxjs'
-import {Flex} from 'ui5'
+import {VStack, Flex} from 'ui5'
 import {type ActorRefFromLogic, fromObservable, fromPromise} from 'xstate'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -46,12 +46,15 @@ import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseI
 import {useReleasesToolAvailable} from '../../schedules/hooks/useReleasesToolAvailable'
 import {useAgentBundlesStore} from '../../store/agent/useAgentBundles'
 import {useDocumentStore} from '../../store/datastores'
+import {useSource} from '../../studio/source'
 import {useWorkspace} from '../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getPublishedId, type SystemBundle} from '../../util/draftUtils'
+import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {useVariantDocumentOperations} from '../../variants/hooks/useVariantDocumentOperations'
 import {CreateVariantIcon} from '../../variants/plugin/components/PersonalizationIcons'
 import {useVariantsStore} from '../../variants/store/useVariantsStore'
+import {createInventoryDeletionMachine} from '../machines/createInventoryDeletionMachine'
 import {deletionMachine, type ReferringDocuments} from '../machines/deletionMachine'
 import {documentGroupInventoryMachine} from '../machines/documentGroupInventoryMachine'
 import {selectionMachine, type Variant} from '../machines/selectionMachine'
@@ -60,6 +63,7 @@ import {
   type DocumentGroupInventoryComponents,
   type DocumentGroupInventoryPerspectiveList,
 } from '../types'
+import {getDeletableInventorySelection} from '../utils/getDeletableInventorySelection'
 import {Body} from './Body'
 import {ConfirmDeleteDialog} from './ConfirmDeleteDialog'
 import {Container} from './Container'
@@ -70,6 +74,7 @@ import {DocumentGroupSet} from './DocumentGroupSet'
 import {Footer} from './Footer'
 import {Header} from './Header'
 import {TextButton} from './TextButton'
+import {useDeletionSelectionSync} from './useDeletionSelectionSync'
 import {useVariantPendingReleases} from './useVariantPendingReleases'
 import {VariantCheckbox} from './VariantSet/VariantCheckbox'
 
@@ -157,6 +162,8 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
   const {t} = useTranslation(studioLocaleNamespace)
   const {t: feedbackT} = useTranslation(feedbackLocaleNamespace)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  // oxlint-disable-next-line typescript/no-deprecated -- deprecated for external consumers; inventory resolves document.actions from this same source instance
+  const source = useSource()
   const schema = useSchema().get(documentType)
   const versionState = useDocumentVersionsObservable({documentId})
   const {state$: releases} = useReleasesStore()
@@ -169,6 +176,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
   const setVariant = useSetVariant()
   const {createVariantDocument} = useVariantDocumentOperations()
   const documentStore = useDocumentStore()
+  const deletableAllowlistRef = useRef(new Set<string>())
 
   const filterString = useMemo(
     () =>
@@ -214,29 +222,18 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
       // Read-only mode passes the machines unprovided: their actors are
       // unreachable, because the guards refuse every event that would invoke
       // them, so there is nothing for the caller to wire up.
-      deletionMachine: useMemo(
-        () =>
-          typeof referringDocuments$ === 'undefined'
-            ? deletionMachine
-            : deletionMachine.provide({
-                actors: {
-                  referringDocuments: fromObservable(() => referringDocuments$),
-                  deleteVariants: fromPromise(({input, signal}) => {
-                    return input.ids
-                      .reduce(
-                        (pendingTransaction, id) => pendingTransaction.delete(id),
-                        client.transaction(),
-                      )
-                      .commit({
-                        tag: 'document.delete',
-                        skipCrossDatasetReferenceValidation: true,
-                        signal,
-                      })
-                  }),
-                },
-              }),
-        [referringDocuments$, client],
-      ),
+      deletionMachine: useMemo(() => {
+        if (typeof referringDocuments$ === 'undefined') {
+          return deletionMachine
+        }
+
+        // oxlint-disable-next-line react/refs -- read on confirm, not during render; the ref is the latest allowlist
+        return createInventoryDeletionMachine({
+          client,
+          referringDocuments$,
+          getDeletableIds: () => deletableAllowlistRef.current,
+        })
+      }, [referringDocuments$, client, deletableAllowlistRef]),
       variantCreationMachine: useMemo(
         () =>
           readOnly
@@ -265,9 +262,19 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                         timeout({first: 30_000}),
                       )
 
-                    const targetPair = await firstValueFrom(readTargetPair)
-                    const baseVariant = targetPair[editStateSlot]
+                    // Live-edit documents have no drafts sibling: create the variant-of-published
+                    // even when the selected bundle is drafts. Release bundles still target the release.
+                    const createPerspective =
+                      schema?.liveEdit && input.bundle === ('drafts' satisfies SystemBundle)
+                        ? 'published'
+                        : input.bundle
 
+                    const targetPair = await firstValueFrom(readTargetPair)
+                    const baseVariant =
+                      editStateSlot === 'draft'
+                        ? // in drafts fallback to published, the ui shows the published when seeing a "non existent" draft
+                          targetPair[editStateSlot] || targetPair.published
+                        : targetPair[editStateSlot]
                     // If there is no base variant, create an empty variant.
                     if (baseVariant === null) {
                       await createVariantDocument({
@@ -276,7 +283,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                           _type: documentType,
                         },
                         variant: input.variantDefinition,
-                        selectedPerspective: input.bundle,
+                        selectedPerspective: createPerspective,
                         signal,
                       })
                     }
@@ -287,7 +294,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                         documentGroupId: getPublishedId(documentId),
                         baseId: baseVariant._id,
                         variant: input.variantDefinition,
-                        selectedPerspective: input.bundle,
+                        selectedPerspective: createPerspective,
                         signal,
                       })
                     }
@@ -312,6 +319,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
           documentType,
           documentId,
           documentStore.pair,
+          schema,
         ],
       ),
     },
@@ -322,9 +330,42 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
   const variantCreationRef = useSelector(inventoryRef, ({context}) => context.variantCreationRef)
   const metaState = useSelector(inventoryRef, ({context}) => context.metaState)
 
-  const selectionCount = useSelector(selectionRef, ({context}) => context.selectedIds.size)
   const isLocked = useSelector(selectionRef, (snapshot) => snapshot.matches('locked'))
+  const selectedIds = useSelector(selectionRef, ({context}) => context.selectedIds)
+  const selectedVariants = useSelector(selectionRef, ({context}) => context.variants)
+  const inventoryReleases = useSelector(inventoryRef, ({context}) => context.releases)
+  const {deletableIds, excludedCount, pendingCount, shouldShowDelete} = useMemo(
+    () =>
+      getDeletableInventorySelection({
+        selectedIds,
+        variants: selectedVariants,
+        releases: inventoryReleases,
+        schemaType: schema ? documentType : undefined,
+        resolveActions: source.document.actions,
+      }),
+    [
+      selectedIds,
+      selectedVariants,
+      inventoryReleases,
+      schema,
+      documentType,
+      source.document.actions,
+    ],
+  )
+
   const isDeletionActive = useSelector(deletionRef, (snapshot) => snapshot.matches('active'))
+  const [countsAtRequest, setCountsAtRequest] = useState({excluded: 0, pending: 0})
+
+  useDeletionSelectionSync({
+    deletionRef,
+    deletableIds,
+    isDeletionActive,
+    allowlistRef: deletableAllowlistRef,
+  })
+
+  const canRequestDeletion = useSelector(deletionRef, (machine) =>
+    machine.can({type: 'delete.request'}),
+  )
   const isFeedbackActive = useSelector(inventoryRef, (snapshot) => snapshot.matches('feedback'))
 
   const isVariantCreationActive = useSelector(inventoryRef, (snapshot) =>
@@ -333,10 +374,6 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
 
   const isVariantCreationPending = useSelector(variantCreationRef, (snapshot) =>
     snapshot.matches({active: 'creating'}),
-  )
-
-  const canRequestDeletion = useSelector(deletionRef, (machine) =>
-    machine.can({type: 'delete.request'}),
   )
 
   const canCreateVariant = useSelector(variantCreationRef, (machine) =>
@@ -367,7 +404,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
         {!isVariantCreationActive && (
           <>
             <Header>
-              <Stack gap={4}>
+              <VStack gap={4}>
                 {!readOnly && (
                   <Flex gap={4} alignItems="center" justifyContent="flex-end">
                     <TextButton
@@ -394,7 +431,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                   readOnly={isLocked}
                   onChange={(event: ChangeEvent<HTMLInputElement>) => filterStringEvent.next(event)}
                 />
-              </Stack>
+              </VStack>
             </Header>
             <Body>
               {schema && (
@@ -427,10 +464,18 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                     onClick={() => variantCreationRef.send({type: 'createVariant.request'})}
                   />
                 )}
-                {canRequestDeletion && (
+                {shouldShowDelete && canRequestDeletion && (
                   <Button
-                    text={t('document-group.delete.confirm-button.text', {count: selectionCount})}
-                    onClick={() => deletionRef.send({type: 'delete.request'})}
+                    text={t('document-group.delete.confirm-button.text', {
+                      count: deletableIds.length,
+                    })}
+                    onClick={() => {
+                      const allowedIds = new Set(deletableIds)
+                      deletableAllowlistRef.current = allowedIds
+                      setCountsAtRequest({excluded: excludedCount, pending: pendingCount})
+                      deletionRef.send({type: 'selection.changed', selectedIds: allowedIds})
+                      deletionRef.send({type: 'delete.request'})
+                    }}
                     tone="critical"
                     size="large"
                     icon={TrashIcon}
@@ -449,7 +494,8 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
             documentId={documentId}
             documentType={documentType}
             deletionRef={deletionRef}
-            selectionRef={selectionRef}
+            excludedCount={countsAtRequest.excluded}
+            pendingCount={countsAtRequest.pending}
             portalElementName={portalElementName}
             components={components}
           />
@@ -504,7 +550,7 @@ const Select: ComponentType<{
   const isSelectable = useSelector(machine, ({context}) => !context.readOnly)
 
   return (
-    <Stack gap={5}>
+    <VStack gap={5}>
       {sets.map((set) => (
         <DocumentGroupSet
           key={set.key}
@@ -553,7 +599,7 @@ const Select: ComponentType<{
             )}
         </DocumentGroupSet>
       ))}
-    </Stack>
+    </VStack>
   )
 }
 
@@ -628,7 +674,7 @@ const ManagedVariantRow: ComponentType<{
 
   const pendingReleases = useVariantPendingReleases({
     documentId: documentGroupId,
-    variantRef: document._system.variant?._ref,
+    variantId: getDocumentVersionVariantId(document),
   })
 
   const {
@@ -716,6 +762,8 @@ const ManagedVariantRow: ComponentType<{
   )
 }
 
+const INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY = '--intrinsic-block-size'
+
 /**
  * Preserve the intrinsic block size of an element by maintaining an `--intrinsic-block-size`
  * custom property. This custom property must be used by styles to control the element's size.
@@ -727,41 +775,30 @@ function usePreserveIntrinsicBlockSize({
   isActive: boolean
   element: HTMLElement | null
 }): void {
-  const size = useMemo(() => new Subject<DOMRect | undefined>(), [])
-  // Kept synchronous: this drives an imperative style write
-  // (`--intrinsic-block-size`) that preserves layout during activation, so a
-  // deferred snapshot lagging the latest ResizeObserver measurement could
-  // cause visible layout jumps.
-  const currentSize = useSyncObservable(size)
+  const heightRef = useRef(0)
 
   useEffect(() => {
+    if (!isActive || !element) {
+      return undefined
+    }
+
+    const setHeight = (height: number) => {
+      heightRef.current = height
+      element.style.setProperty(INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY, `${height}px`)
+    }
+
     const resizeObserver = new ResizeObserver(([entry]) => {
-      if (!isActive) {
-        size.next(entry.contentRect)
-      }
+      setHeight(entry.contentRect.height)
     })
 
-    if (element) {
-      resizeObserver.observe(element)
+    if (heightRef.current) {
+      setHeight(heightRef.current)
     }
+    resizeObserver.observe(element)
 
-    return () => resizeObserver.disconnect()
-  }, [isActive, element, size])
-
-  useEffect(() => {
-    if (!element || !currentSize) {
-      return () => {}
+    return () => {
+      element.style.removeProperty(INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY)
+      resizeObserver.disconnect()
     }
-
-    const INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY = '--intrinsic-block-size'
-    const cleanUp = () => element.style.removeProperty(INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY)
-
-    if (isActive) {
-      element?.style.setProperty(INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY, `${currentSize.height}px`)
-      return cleanUp
-    }
-
-    cleanUp()
-    return () => {}
-  }, [element, currentSize, isActive])
+  }, [isActive, element])
 }

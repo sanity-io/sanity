@@ -7,7 +7,7 @@ import {isDocumentInSelectedVariant} from '../isDocumentInSelectedVariant'
 const PUBLISHED_ID = 'article-1'
 const groupRef = {_type: 'reference', _ref: PUBLISHED_ID, _weak: true} as const
 const variantRef = (variantId: string) =>
-  ({_type: 'reference', _ref: variantId, _weak: true}) as const
+  ({_type: 'reference', _ref: variantId, _key: 'k-123'}) as const
 
 const versionStub = (
   stub: Pick<VersionInfoDocumentStub, '_id' | '_system'>,
@@ -22,7 +22,7 @@ const versionStub = (
 const draftDefault = versionStub({
   _id: 'drafts.article-1',
   // @ts-expect-error -- pre-existing, fix later
-  _system: {bundleId: 'drafts', release: null, variant: null, group: groupRef, scopeId: null},
+  _system: {bundleId: 'drafts', release: null, variants: null, group: groupRef, scopeId: null},
 })
 const draftAlpha = versionStub({
   _id: 'drafts.scope.article-1',
@@ -30,7 +30,7 @@ const draftAlpha = versionStub({
     bundleId: 'drafts',
     // @ts-expect-error -- pre-existing, fix later
     release: null,
-    variant: variantRef(variantAlphaAudience._id),
+    variants: [variantRef(variantAlphaAudience._id)],
     group: groupRef,
     scopeId: 'scope',
   },
@@ -42,7 +42,7 @@ const publishedAlpha = versionStub({
     bundleId: null,
     // @ts-expect-error -- pre-existing, fix later
     release: null,
-    variant: variantRef(variantAlphaAudience._id),
+    variants: [variantRef(variantAlphaAudience._id)],
     group: groupRef,
     scopeId: 'scope',
   },

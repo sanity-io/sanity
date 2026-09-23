@@ -1,10 +1,10 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Container, Heading, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, VStack, Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
@@ -145,14 +145,14 @@ function WorkspaceChooserScreen(props: {
       data-error="Config error workspace chooser"
       height="fill"
     >
-      <CenteredContainer align="center" justify="center" padding={4}>
+      <CenteredContainer alignItems="center" justifyContent="center" padding={4}>
         <Container width={1}>
-          <Stack gap={2}>
+          <VStack gap={2}>
             <Flex>
               <Button icon={ArrowLeftIcon} mode="bleed" onClick={onBack} text="Back" />
             </Flex>
             <Layout header={t('workspaces.choose-your-workspace-label')}>
-              <Stack gap={1} paddingX={1} paddingY={2}>
+              <Flex gap={1} paddingX={1} paddingY={2} flexDirection="column">
                 {visibleWorkspaces.map((workspace) => (
                   <WorkspaceAuthCard
                     key={workspace.name}
@@ -160,9 +160,9 @@ function WorkspaceChooserScreen(props: {
                     onSelect={() => onSelect(workspace.name)}
                   />
                 ))}
-              </Stack>
+              </Flex>
             </Layout>
-          </Stack>
+          </VStack>
         </Container>
       </CenteredContainer>
     </Card>
@@ -196,9 +196,9 @@ function ConfigErrorLayout(props: {
 }) {
   return (
     <Card data-testid="studio-error-screen" data-error={props.errorLabel} height="fill">
-      <CenteredContainer align="center" justify="center" padding={4}>
+      <CenteredContainer alignItems="center" justifyContent="center" padding={4}>
         <ContentWrapper paddingBottom={5}>
-          <Stack gap={4}>
+          <VStack gap={4}>
             <ChooseAnotherWorkspaceButton
               onChooseAnotherWorkspace={props.onChooseAnotherWorkspace}
             />
@@ -214,7 +214,7 @@ function ConfigErrorLayout(props: {
             </Text>
             <Flex paddingTop={2}>{props.action}</Flex>
             <DocsLink />
-          </Stack>
+          </VStack>
         </ContentWrapper>
       </CenteredContainer>
     </Card>
@@ -227,18 +227,18 @@ function ConfigDetails(props: {rows: Array<{label: string; value?: string}>}) {
   if (rows.length === 0) return null
   return (
     <Card border radius={2} padding={3} tone="transparent">
-      <Stack gap={3}>
+      <VStack gap={3}>
         {rows.map((row) => (
-          <Stack key={row.label} gap={2}>
+          <VStack key={row.label} gap={2}>
             <Text size={0} muted weight="medium">
               {row.label}
             </Text>
             <Text size={1}>
               <InlineCode>{row.value}</InlineCode>
             </Text>
-          </Stack>
+          </VStack>
         ))}
-      </Stack>
+      </VStack>
     </Card>
   )
 }
@@ -340,7 +340,7 @@ function DatasetNotFoundScreen(props: {
 
 function DocsLink() {
   return (
-    <Flex justify="flex-end" paddingTop={2}>
+    <Flex justifyContent="flex-end" paddingTop={2}>
       <Text size={1}>
         <HelpLink
           href="https://www.sanity.io/docs/configuration"

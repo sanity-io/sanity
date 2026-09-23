@@ -1,6 +1,6 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {type SanityDocument, type SchemaType} from '@sanity/types'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {Suspense, use, useCallback, useEffect, useMemo, useState} from 'react'
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
@@ -19,7 +19,7 @@ import {
   useSource,
   useTranslation,
 } from 'sanity'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../i18n'
@@ -249,8 +249,8 @@ function IncomingReferencesTypeList({
         ) : (
           <>
             <Flex
-              align="center"
-              justify="center"
+              alignItems="center"
+              justifyContent="center"
               padding={2}
               hidden={isAdding || Boolean(newReferenceId)}
             >

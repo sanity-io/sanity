@@ -7,9 +7,9 @@ import {PinIcon} from '@sanity/icons/Pin'
 import {PinFilledIcon} from '@sanity/icons/PinFilled'
 import {UserIcon} from '@sanity/icons/User'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Container, Flex, Skeleton, Stack, Text} from '@sanity/ui'
+import {Card, Container, Skeleton, Text} from '@sanity/ui'
 import {useCallback, useEffect, useRef, useState} from 'react'
-import {Box} from 'ui5'
+import {Box, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
@@ -77,8 +77,8 @@ function ReleaseDashboardDetailsProduction({
 
   return (
     <Container width={3}>
-      <Stack padding={3} paddingY={[3, 3, 4, 5]}>
-        <Flex gap={1} align="center">
+      <Flex padding={3} paddingY={[3, 3, 4, 5]} flexDirection="column">
+        <Flex gap={1} alignItems="center">
           {isReleaseOpen && (
             <Button
               icon={isSelected ? PinFilledIcon : PinIcon}
@@ -134,7 +134,7 @@ function ReleaseDashboardDetailsProduction({
               <Text size={1}>
                 <ErrorOutlineIcon />
               </Text>
-              <Stack gap={4}>
+              <VStack gap={4}>
                 <Text size={1} weight="semibold">
                   {isAtTimeRelease
                     ? tRelease('failed-schedule-title')
@@ -145,7 +145,7 @@ function ReleaseDashboardDetailsProduction({
                     <code>{release.error?.message}</code>
                   </Text>
                 </Details>
-              </Stack>
+              </VStack>
             </Flex>
           </Card>
         )}
@@ -156,18 +156,18 @@ function ReleaseDashboardDetailsProduction({
               <Text size={1}>
                 <WarningOutlineIcon />
               </Text>
-              <Stack gap={3}>
+              <VStack gap={3}>
                 <Text size={1}>{tRelease('permission-missing-title')}</Text>
                 <Text size={1} muted>
                   {tRelease('permission-missing-description')}
                 </Text>
-              </Stack>
+              </VStack>
             </Flex>
           </Card>
         )}
 
         {!isReleaseOpen && <ArchivedReleaseBanner release={release} />}
-      </Stack>
+      </Flex>
     </Container>
   )
 }
@@ -266,12 +266,12 @@ export function ReleaseDashboardDetails({
     <Container width={3}>
       {/* Tight top padding: the header above already pads its bottom, so the title sits close under
           the breadcrumb instead of floating in a doubled gap. */}
-      <Stack paddingX={3} paddingBottom={3} paddingTop={1} gap={4}>
+      <Flex paddingX={3} paddingBottom={3} paddingTop={1} gap={4} flexDirection="column">
         {/* Clear zones: identity (title + description) on the left; a label -> value metadata panel
             on the right. Wraps to a single column on narrow widths (metadata stacks under the
             description). The pin control was removed (it's a global-perspective mode that belongs in
             the perspective bar, matching the Variants pin removal). */}
-        <Flex align="flex-start" gap={4} wrap="wrap">
+        <Flex alignItems="flex-start" gap={4} flexWrap="wrap">
           <Box flexBasis="0%" flexGrow={1} minWidth={RELEASE_IDENTITY_MIN_WIDTH}>
             <ReleaseDetailsEditor release={release} />
           </Box>
@@ -335,7 +335,7 @@ export function ReleaseDashboardDetails({
               <Text size={1}>
                 <ErrorOutlineIcon />
               </Text>
-              <Stack gap={4}>
+              <VStack gap={4}>
                 <Text size={1} weight="semibold">
                   {isAtTimeRelease
                     ? tRelease('failed-schedule-title')
@@ -346,7 +346,7 @@ export function ReleaseDashboardDetails({
                     <code>{release.error?.message}</code>
                   </Text>
                 </Details>
-              </Stack>
+              </VStack>
             </Flex>
           </Card>
         )}
@@ -362,18 +362,18 @@ export function ReleaseDashboardDetails({
               <Text size={1}>
                 <WarningOutlineIcon />
               </Text>
-              <Stack gap={3}>
+              <VStack gap={3}>
                 <Text size={1}>{tRelease('permission-missing-title')}</Text>
                 <Text size={1} muted>
                   {tRelease('permission-missing-description')}
                 </Text>
-              </Stack>
+              </VStack>
             </Flex>
           </Card>
         )}
 
         {!isReleaseOpen && <ArchivedReleaseBanner release={release} />}
-      </Stack>
+      </Flex>
     </Container>
   )
 }
