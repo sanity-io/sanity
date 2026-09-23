@@ -18,7 +18,6 @@ import {useSearchState} from '../../../contexts/search/useSearchState'
 import {type DocumentTypeMenuItem} from '../../../types'
 import {getSelectableOmnisearchTypes} from '../../../utils/selectors'
 import {FilterPopoverContentHeader} from '../common/FilterPopoverContentHeader'
-import {clearButtonBox} from './DocumentTypesPopoverContent.css'
 import {DocumentTypeFilterItem} from './items/DocumentTypeFilterItem'
 
 const POPOVER_STYLES = {width: '250px'}
@@ -173,7 +172,7 @@ function ClearButton({onClick, selectedTypes}: {onClick: () => void; selectedTyp
   const {t} = useTranslation()
 
   return (
-    <Box className={clearButtonBox} padding={1}>
+    <Box borderTop flexShrink={0} padding={1}>
       <VStack>
         <Button
           aria-label={t('search.action.clear-type-filters-aria-label')}

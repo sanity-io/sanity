@@ -5,7 +5,7 @@ import {Flex, Box} from 'ui5'
 import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {CustomTextInput} from '../../common/CustomTextInput'
-import {searchHeaderBox, searchHeaderContentFlex} from './FilterPopoverContentHeader.css'
+import {searchHeaderContentFlex} from './FilterPopoverContentHeader.css'
 
 interface FilterPopoverContentHeaderProps {
   ariaInputLabel: string
@@ -27,7 +27,7 @@ export function FilterPopoverContentHeader({
   const {t} = useTranslation()
 
   return (
-    <Box className={searchHeaderBox}>
+    <Box borderBottom flexShrink={0}>
       <Flex
         alignItems="center"
         className={searchHeaderContentFlex}
