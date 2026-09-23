@@ -648,8 +648,6 @@ export {
 export {
   _createAuthStore,
   type AuthStoreOptions,
-  createAuthStore,
-  type CreateAuthStoreOptions,
   type RequestFailureDiagnostics,
 } from '../core/store/authStore/createAuthStore'
 export {

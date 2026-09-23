@@ -3,7 +3,6 @@ import {BoundaryElementProvider, Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useState} from 'react'
 import {type Chunk, usePerspective, useTranslation} from 'sanity'
-import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
 import {ScrollContainer} from '../../../../../core/components/scroll/scrollContainer'
@@ -11,13 +10,7 @@ import {useTimelineSelector} from '../../../../../core/store/history/useTimeline
 import {Timeline} from '../../timeline/timeline'
 import {TimelineError} from '../../timeline/TimelineError'
 import {useDocumentPane} from '../../useDocumentPane'
-
-const Scroller = styled(ScrollContainer)`
-  height: 100%;
-  overflow: auto;
-  position: relative;
-  scroll-behavior: smooth;
-`
+import {scroller} from './Scroller.css'
 
 export function HistorySelector({showList}: {showList: boolean}) {
   const {timelineError, setTimelineRange, timelineStore} = useDocumentPane()
@@ -78,7 +71,7 @@ export function HistorySelector({showList}: {showList: boolean}) {
           <TimelineError versionError={Boolean(selectedReleaseId)} />
         ) : (
           <BoundaryElementProvider element={scrollRef}>
-            <Scroller data-ui="Scroller" ref={getScrollerRef}>
+            <ScrollContainer className={scroller} data-ui="Scroller" ref={getScrollerRef}>
               {listHeight &&
               // This forces the list to unmount and remount, which is needed to reset the scroll position
               showList ? (
@@ -91,7 +84,7 @@ export function HistorySelector({showList}: {showList: boolean}) {
                   listMaxHeight={`${listHeight}px`}
                 />
               ) : null}
-            </Scroller>
+            </ScrollContainer>
           </BoundaryElementProvider>
         )}
       </Card>

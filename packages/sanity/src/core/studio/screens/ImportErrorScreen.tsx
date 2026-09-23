@@ -1,12 +1,12 @@
 /* oxlint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {SyncIcon} from '@sanity/icons/Sync'
-import {Card, Container, Heading, Inline, Stack, Text} from '@sanity/ui'
+import {Card, Container, Heading, Inline, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useEffect, useMemo} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {of, take, timer} from 'rxjs'
 import {map} from 'rxjs/operators'
-import {Flex} from 'ui5'
+import {VStack, Flex} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {isDev} from '../../environment'
@@ -51,13 +51,13 @@ export function ImportErrorScreen(props: {error: Error; eventId?: string; autoRe
     >
       <Flex alignItems="center" height="100%">
         <Container width={3}>
-          <Stack gap={6}>
-            <Stack gap={4}>
+          <VStack gap={6}>
+            <VStack gap={4}>
               <Heading>Import error</Heading>
               <Text>An error occurred during dynamic import.</Text>
               {isDev && (
                 <Card border radius={2} overflow="auto" padding={4} tone="critical">
-                  <Stack gap={4}>
+                  <VStack gap={4}>
                     {error.message && (
                       <Code weight={'bold'} size={1}>
                         {error.message}
@@ -65,7 +65,7 @@ export function ImportErrorScreen(props: {error: Error; eventId?: string; autoRe
                     )}
                     {error.stack && <Code size={1}>{error.stack}</Code>}
                     {eventId && <Code size={1}>Event ID: {eventId}</Code>}
-                  </Stack>
+                  </VStack>
                 </Card>
               )}
               {autoReload ? (
@@ -82,8 +82,8 @@ export function ImportErrorScreen(props: {error: Error; eventId?: string; autoRe
                   size="large"
                 />
               </Inline>
-            </Stack>
-          </Stack>
+            </VStack>
+          </VStack>
         </Container>
       </Flex>
     </Card>

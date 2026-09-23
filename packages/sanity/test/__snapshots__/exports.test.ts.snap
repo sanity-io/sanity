@@ -969,7 +969,6 @@ exports[`exports snapshot 1`] = `
     "compileFieldPath": "function",
     "component": "function",
     "connectionState": "function",
-    "createAuthStore": "function",
     "createBufferedDocument": "function",
     "createConnectionStatusStore": "function",
     "createDefaultIcon": "function",

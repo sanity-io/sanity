@@ -1,23 +1,13 @@
 import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
-import {Badge, Stack, Text} from '@sanity/ui'
+import {Badge, Text} from '@sanity/ui'
 import {memo, type ReactNode} from 'react'
-import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Box, Flex, VStack} from 'ui5'
 
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {createDescriptionId} from '../../members/common/createDescriptionId'
+import {labelSuffix} from './FormFieldHeaderText.css'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
-
-const LabelSuffix = styled(Flex)`
-  /*
-       * Prevent the block size of appended elements (such as the deprecated field badge) affecting
-       * the intrinsic block size of the label, while still allowing the inline size (width) to
-       * expand naturally to fit its content.
-       */
-  height: 0;
-  overflow: visible;
-`
 
 /** @internal */
 export interface FormFieldHeaderTextProps {
@@ -51,7 +41,7 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
   const hasValidations = validation.length > 0
 
   return (
-    <Stack gap={3}>
+    <VStack gap={3}>
       <Flex alignItems="center" paddingY={1}>
         <Flex alignItems="center">
           <Text as="label" htmlFor={inputId} weight="medium" size={1}>
@@ -70,7 +60,7 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
         )}
 
         {(deprecated || hasValidations) && (
-          <LabelSuffix alignItems="center">
+          <Flex alignItems="center" className={labelSuffix}>
             {deprecated && (
               <Box marginLeft={2}>
                 <Badge data-testid={`deprecated-badge-${title}`} tone="caution">
@@ -89,7 +79,7 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
                 />
               </Box>
             )}
-          </LabelSuffix>
+          </Flex>
         )}
       </Flex>
 
@@ -104,6 +94,6 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
           {description}
         </Text>
       )}
-    </Stack>
+    </VStack>
   )
 })

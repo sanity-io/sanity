@@ -1,7 +1,8 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {LeaveIcon} from '@sanity/icons/Leave'
-import {Card, Stack} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {MenuDivider} from '@sanity/ui/menu'
+import {VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
@@ -56,7 +57,7 @@ function UserMenuAuthActionInner({
   if (layout === 'drawer') {
     return (
       <Card flex="none" padding={2} borderTop>
-        <Stack>
+        <VStack>
           <Button
             iconRight={icon}
             justify="flex-start"
@@ -65,7 +66,7 @@ function UserMenuAuthActionInner({
             text={text}
             {...actionProps}
           />
-        </Stack>
+        </VStack>
       </Card>
     )
   }

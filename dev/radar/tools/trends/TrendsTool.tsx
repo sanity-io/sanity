@@ -1,9 +1,11 @@
 /// <reference types="vite/client" />
+import {STYLE_SYSTEMS} from '@repo/utils/style-systems'
 import {ActivityIcon} from '@sanity/icons/Activity'
 import {BoltIcon} from '@sanity/icons/Bolt'
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ClockIcon} from '@sanity/icons/Clock'
+import {ColorWheelIcon} from '@sanity/icons/ColorWheel'
 import {ControlsIcon} from '@sanity/icons/Controls'
 import {DropIcon} from '@sanity/icons/Drop'
 import {EllipsisVerticalIcon} from '@sanity/icons/EllipsisVertical'
@@ -41,16 +43,23 @@ import {Box, Flex, Grid} from 'ui5'
 import {idSlug} from './acks'
 import {ChartLegend} from './ChartLegend'
 import {
+  aggregateStyleSeries,
+  ALL_SCENARIOS,
   availableBranches,
   buildSeries,
   CALIBRATION_EXPLAINER,
   latestSoakCharts,
+  primaryLines,
   settleViews,
   soakSlopeSeries,
   soakLatestValueSeries,
   calibrationSeries,
   filterByRange,
   formatValue,
+  styleLabel,
+  styleScenario,
+  type StyleView,
+  styleViews,
   TAGS_QUERY,
   TREND_QUERY,
   TREND_GROUPS,
@@ -58,6 +67,7 @@ import {
   type TrendRun,
   type TrendSeries,
   type TrendTag,
+  UI_OVERVIEW_KEY,
   vitalSections,
 } from './data'
 import {DEBUG_SOURCES, type DebugSource, generateDebugRuns, generateDebugTags} from './debugData'
@@ -69,6 +79,7 @@ import {MAX_COMPARE_BRANCHES} from './palette'
 import {seriesHasCalibration, TrendChart} from './TrendChart'
 import {type DriftState, useDriftState} from './useDriftState'
 import {useUrlState} from './useUrlState'
+import {WeeklyCard, type WeeklyVariant} from './WeeklyBars'
 
 const RANGES = [
   {label: 'Last 30 days', days: 30},
@@ -82,10 +93,72 @@ const GROUP_ICONS: Record<TrendGroup, ComponentType> = {
   responsiveness: BoltIcon,
   load: ClockIcon,
   bundle: PackageIcon,
+  styles: ColorWheelIcon,
   soak: DropIcon,
   settle: SyncIcon,
   environment: ControlsIcon,
 }
+
+const systemColor = (id: 'ui5' | 'ui4' | 'styled') =>
+  STYLE_SYSTEMS.find((system) => system.id === id)!.color
+
+/**
+ * The weekly histograms of the style-migration tab, modelled on Linear's
+ * "StyleX adoption per week" charts: a 100%-stacked bar per week for the
+ * shares (the filled part climbing to the top is the point), a plain bar
+ * per week for the counts and sizes that should sink to the axis. Keyed by
+ * the series they redraw (`styles:<scenario>:<label>`, the headline line of a
+ * paired chart); the colors are the style systems' own, the same ones the
+ * test studio widget paints its donut and outlines with.
+ */
+const WEEKLY_CHARTS: {
+  label: string
+  title: string
+  description: string
+  goal: 'higher' | 'lower'
+  variant: WeeklyVariant
+}[] = [
+  {
+    label: 'UI share',
+    title: 'UI v5 adoption per week',
+    description:
+      'Rendered @sanity/ui components that are v5, as a share of all @sanity/ui components on the page, per calendar week (median of that week\u2019s runs). The remainder is still on v4. Weeks before the build shipped @sanity/ui v5 draw no bar: there was nothing to adopt yet.',
+    goal: 'higher',
+    variant: {
+      kind: 'share',
+      fill: {label: '@sanity/ui v5', color: systemColor('ui5')},
+      remainder: {label: '@sanity/ui v4', color: systemColor('ui4')},
+    },
+  },
+  {
+    label: 'styled-components instances',
+    title: 'styled-components removal per week',
+    description:
+      'Rendered nodes still styled by styled-components on the page, per calendar week (median of that week\u2019s runs) — the escape hatch shrinking towards zero.',
+    goal: 'lower',
+    variant: {kind: 'level', color: systemColor('styled')},
+  },
+  {
+    label: 'styled-components CSS rule share',
+    title: 'styled-components share of CSS rules per week',
+    description:
+      'CSS rules styled-components inserted at runtime, as a share of every readable rule on the page, per calendar week. The remainder is static CSS the browser could cache.',
+    goal: 'lower',
+    variant: {
+      kind: 'share',
+      fill: {label: 'styled-components rules', color: systemColor('styled')},
+      remainder: {label: 'other CSS rules', color: 'var(--card-muted-fg-color, #727892)'},
+    },
+  },
+  {
+    label: 'styled-components CSS bytes',
+    title: 'styled-components CSS weight per week',
+    description:
+      'UTF-8 size of the CSS styled-components inserted at runtime, per calendar week (median of that week\u2019s runs) — work the browser does on every load instead of downloading a stylesheet.',
+    goal: 'lower',
+    variant: {kind: 'level', color: systemColor('styled')},
+  },
+]
 
 type DataSource = 'live' | DebugSource
 
@@ -326,7 +399,9 @@ function chartDomId(seriesKey: string): string {
 }
 
 function driftBadge(entry: DriftResult): {tone: 'caution' | 'positive'; label: string} {
-  const arrow = entry.direction === 'regression' ? '↑' : '↓'
+  // The arrow is the value's direction, the tone the verdict's: on a
+  // higher-is-better series (UI v5 share) a regression points down
+  const arrow = entry.baseline.delta > 0 ? '↑' : '↓'
   return {
     tone: entry.direction === 'regression' ? 'caution' : 'positive',
     label: `${arrow} ${deltaLabel(entry.baseline, entry.unit)}`,
@@ -375,8 +450,10 @@ function SeriesCard(props: {
   // The overlay draws from any computed baseline; the badge and tint only from a
   // flagged one
   const overlay = baseline ?? drift ?? silenced
-  // Latest value of the first line — a headline number only when not comparing
-  const latest = series.lines.length === 1 ? series.lines[0].points.at(-1) : undefined
+  // Latest value of the judged line — a headline number only when there is
+  // exactly one: a lone line, or a paired chart's headline (its v5 line)
+  const judged = primaryLines(series)
+  const latest = judged.length === 1 ? judged[0].points.at(-1) : undefined
   const badge = drift ? driftBadge(drift) : null
   return (
     // A drifted chart tints its card so it stands out in the grid; the badge
@@ -772,6 +849,275 @@ function SettlePanel(props: {
 }
 
 /**
+ * The style-migration group behind sub-tabs: one per migration (UI v5
+ * adoption, styled-components), each laid out like the Vitals tab — a section
+ * per metric with a card per scenario, since the question is the same ("how
+ * is this number doing, everywhere?") — plus a "Per week" view that redraws
+ * the headline series as weekly histograms (`WeeklyCard`), the reading a
+ * months-long migration deserves: a staircase, not a noisy line. The weekly
+ * view leads with every scenario summed into one set of charts, then repeats
+ * the set per scenario — everything on one scrolling page, no picker to find.
+ * The metric views keep the drift/ack plumbing the plain grid has (a share
+ * that drops is a regression worth a badge, see drift.ts on `goal: 'higher'`).
+ */
+function StylesPanel(props: {
+  /** Per-scenario style series (group `styles`). */
+  series: TrendSeries[]
+  /** The cross-scenario aggregate (aggregateStyleSeries), for the weekly view. */
+  aggregate: TrendSeries[]
+  driftBySeries: Map<string, DriftResult>
+  silencedBySeries: Map<string, DriftResult>
+  baselineBySeries: Map<string, DriftResult>
+  drift: DriftState
+  focusedKey: string | null
+  onFocusMetric: (seriesKey: string) => void
+  layers: LayerState
+  tags: TrendTag[]
+  onExpand: (seriesKey: string) => void
+  /** Explicit `?styles=` sub-tab ('' = none) and the deep-linked `?chart=` key. */
+  view: string
+  onViewChange: (id: string) => void
+  chartKey: string
+  /** The focused chart lives in another sub-tab the user just left. */
+  onLeaveChart: () => void
+}) {
+  const views = useMemo(() => styleViews(props.series), [props.series])
+  const scenarios = useMemo(
+    () => [...new Set(props.series.map(styleScenario))].sort(),
+    [props.series],
+  )
+  const tabs = [
+    ...views.map((view) => ({id: view.id as string, label: view.label})),
+    // The weekly view exists whenever any style series does: it redraws the
+    // same points, so it can never be emptier than the metric views
+    ...(scenarios.length > 0 ? [{id: 'weekly', label: 'Per week'}] : []),
+  ]
+  // The all-scenarios cards each view leads with: the adoption overview score
+  // on the UI view, and for styled-components one summed card per metric the
+  // view has a section for, in section order — so the top of the page answers
+  // "how is the escape hatch doing overall?" before the per-scenario breakdown.
+  // Declared before the sub-tab resolution below, which reads them.
+  const overview = props.aggregate.find((entry) => entry.key === UI_OVERVIEW_KEY)
+  const styledTotals = (view: StyleView) =>
+    view.sections.flatMap((section) =>
+      props.aggregate.filter((entry) => styleLabel(entry) === section.id),
+    )
+  // Same rule as the group tabs: an explicit sub-tab wins, else the sub-tab
+  // holding the deep-linked/focused chart — including the all-scenarios cards,
+  // which sit on the view whose sections they total — else the first
+  const holdsChart = (viewId: string, key: string) => {
+    const view = views.find((candidate) => candidate.id === viewId)
+    if (!view) return false
+    if (viewId === 'ui5' && key === UI_OVERVIEW_KEY) return true
+    if (styledTotals(view).some((entry) => entry.key === key)) return true
+    return view.sections.some((section) => section.series.some((entry) => entry.key === key))
+  }
+  const activeId =
+    tabs.find((tab) => tab.id === props.view)?.id ??
+    (props.chartKey ? tabs.find((tab) => holdsChart(tab.id, props.chartKey))?.id : undefined) ??
+    tabs[0]?.id
+
+  if (!activeId) {
+    return (
+      <EmptyGroup>
+        No style-migration data in this range. The style census rides along on every benchmark
+        scenario from the run that introduced it; try a longer range, or wait for the next daily
+        run.
+      </EmptyGroup>
+    )
+  }
+
+  // The weekly cards for one scope (a scenario, or the summed aggregate):
+  // WEEKLY_CHARTS order, dropping charts the scope has no series for
+  const weeklyCards = (scope: string, entries: TrendSeries[]) => {
+    const byLabel = new Map(entries.map((entry) => [styleLabel(entry), entry]))
+    return WEEKLY_CHARTS.flatMap((chart) => {
+      const entry = byLabel.get(chart.label)
+      return entry ? [{...chart, series: entry, scope}] : []
+    })
+  }
+  const weeklySections = [
+    {
+      id: ALL_SCENARIOS,
+      title: 'All scenarios',
+      note: 'summed over every scenario page per commit; shares weighted by what each page renders',
+      cards: weeklyCards(ALL_SCENARIOS, props.aggregate),
+    },
+    ...scenarios.map((scenario) => ({
+      id: scenario,
+      title: scenario,
+      note: undefined,
+      cards: weeklyCards(
+        scenario,
+        props.series.filter((entry) => styleScenario(entry) === scenario),
+      ),
+    })),
+  ].filter((section) => section.cards.length > 0)
+  const activeView = views.find((view) => view.id === activeId)
+
+  return (
+    <Stack gap={3}>
+      <TabList gap={1}>
+        {tabs.map((tab) => (
+          <Tab
+            key={tab.id}
+            id={`styles-tab-${tab.id}`}
+            aria-controls={`styles-panel-${tab.id}`}
+            label={tab.label}
+            selected={tab.id === activeId}
+            onClick={() => {
+              props.onViewChange(tab.id)
+              if (props.chartKey && !holdsChart(tab.id, props.chartKey)) props.onLeaveChart()
+            }}
+          />
+        ))}
+      </TabList>
+      <TabPanel id={`styles-panel-${activeId}`} aria-labelledby={`styles-tab-${activeId}`}>
+        {activeView ? (
+          <Stack gap={3}>
+            <Text size={1} muted>
+              {activeView.hint}
+            </Text>
+            <Stack gap={6} paddingTop={3}>
+              {/* The adoption overview score leads the UI view: every scenario's
+                  v5 and v4 counts summed per commit, then divided — one number
+                  for the whole migration, drawn full width because it is the
+                  headline the per-scenario cards below break down. Same
+                  SeriesCard as the grid, so it drifts, acks, maximizes and
+                  opens runs like every other chart. */}
+              {activeView.id === 'ui5' && overview && (
+                <Stack gap={4}>
+                  <Flex alignItems="baseline" gap={2}>
+                    <Text size={1} weight="semibold">
+                      Overall adoption
+                    </Text>
+                    <Text size={1} muted>
+                      every scenario summed per commit, Σ v5 ÷ Σ (v5 + v4) · higher is better
+                    </Text>
+                  </Flex>
+                  <SeriesCard
+                    series={overview}
+                    height={200}
+                    drift={props.driftBySeries.get(overview.key)}
+                    silenced={props.silencedBySeries.get(overview.key)}
+                    baseline={props.baselineBySeries.get(overview.key)}
+                    focused={props.focusedKey === overview.key}
+                    onFocus={() => props.onFocusMetric(overview.key)}
+                    onAck={(state) => {
+                      const entry = props.driftBySeries.get(overview.key)
+                      if (entry) props.drift.ack(entry, state)
+                    }}
+                    onUnack={() => {
+                      const entry = props.silencedBySeries.get(overview.key)
+                      if (entry) props.drift.clear(entry)
+                    }}
+                    layers={props.layers}
+                    tags={props.tags}
+                    onExpand={() => props.onExpand(overview.key)}
+                  />
+                </Stack>
+              )}
+              {/* The styled-components totals lead their view the same way:
+                  every scenario page summed per commit, one card per metric,
+                  so the whole escape hatch is readable before the breakdown */}
+              {activeView.id === 'styled' && styledTotals(activeView).length > 0 && (
+                <Stack gap={4}>
+                  <Flex alignItems="baseline" gap={2}>
+                    <Text size={1} weight="semibold">
+                      All scenarios
+                    </Text>
+                    <Text size={1} muted>
+                      summed over every scenario page per commit; the rule share weighted by rules ·
+                      lower is better
+                    </Text>
+                  </Flex>
+                  <ChartGrid
+                    series={styledTotals(activeView)}
+                    driftBySeries={props.driftBySeries}
+                    silencedBySeries={props.silencedBySeries}
+                    baselineBySeries={props.baselineBySeries}
+                    drift={props.drift}
+                    focusedKey={props.focusedKey}
+                    onFocusMetric={props.onFocusMetric}
+                    layers={props.layers}
+                    tags={props.tags}
+                    onExpand={props.onExpand}
+                  />
+                </Stack>
+              )}
+              {activeView.sections.map((section) => (
+                <Stack key={section.id} gap={4}>
+                  <Flex alignItems="baseline" gap={2}>
+                    <Text size={1} weight="semibold">
+                      {section.label}
+                    </Text>
+                    <Text size={1} muted>
+                      {section.goal} is better
+                    </Text>
+                  </Flex>
+                  <ChartGrid
+                    series={section.series}
+                    driftBySeries={props.driftBySeries}
+                    silencedBySeries={props.silencedBySeries}
+                    baselineBySeries={props.baselineBySeries}
+                    drift={props.drift}
+                    focusedKey={props.focusedKey}
+                    onFocusMetric={props.onFocusMetric}
+                    layers={props.layers}
+                    tags={props.tags}
+                    onExpand={props.onExpand}
+                  />
+                </Stack>
+              ))}
+            </Stack>
+          </Stack>
+        ) : (
+          <Stack gap={3}>
+            <Text size={1} muted>
+              The migration week by week: each bar is the median of that week&apos;s runs, an empty
+              week had no run. Every scenario summed first, then each scenario on its own. Click a
+              bar to open the week&apos;s newest run.
+            </Text>
+            <Stack gap={6} paddingTop={3}>
+              {weeklySections.map((section) => (
+                <Stack key={section.id} gap={4}>
+                  <Flex alignItems="baseline" gap={2}>
+                    <Text size={1} weight="semibold">
+                      {section.title}
+                    </Text>
+                    {section.note && (
+                      <Text size={1} muted>
+                        {section.note}
+                      </Text>
+                    )}
+                  </Flex>
+                  <Grid
+                    gridTemplateColumns={['repeat(1, minmax(0, 1fr))', 'repeat(2, minmax(0, 1fr))']}
+                    gap={3}
+                  >
+                    {section.cards.map((chart) => (
+                      <WeeklyCard
+                        key={`${section.id}:${chart.label}`}
+                        title={`${section.title} · ${chart.title}`}
+                        description={chart.description}
+                        series={chart.series}
+                        variant={chart.variant}
+                        goal={chart.goal}
+                        tags={props.tags}
+                      />
+                    ))}
+                  </Grid>
+                </Stack>
+              ))}
+            </Stack>
+          </Stack>
+        )}
+      </TabPanel>
+    </Stack>
+  )
+}
+
+/**
  * One chart, maximized. The grid is 40+ small multiples — great for scanning,
  * too cramped for reading: at ~330px a 90-day window puts a release marker every
  * ~15px and the metric's own description has to hide behind an ⓘ. This is the
@@ -906,7 +1252,23 @@ export function TrendsTool() {
     () => inRange.filter((run) => run.git && selectedBranches.includes(run.git.branch)),
     [inRange, selectedBranches],
   )
-  const series = useMemo(() => buildSeries(filtered), [filtered])
+  // Every series, hidden ones included (the paired UI instances series exists
+  // only to be summed into the all-scenarios adoption score); `series` is what
+  // gets charted, deep-linked and judged
+  const allSeries = useMemo(() => buildSeries(filtered), [filtered])
+  const series = useMemo(() => allSeries.filter((entry) => !entry.hidden), [allSeries])
+  const styleSeries = useMemo(() => series.filter((entry) => entry.group === 'styles'), [series])
+  // Every scenario summed per commit — the adoption overview score and the
+  // weekly view's leading section. Built from the hidden series too: the
+  // summed counts are what the score divides.
+  const styleAggregate = useMemo(
+    () => aggregateStyleSeries(allSeries.filter((entry) => entry.group === 'styles')),
+    [allSeries],
+  )
+  const visibleAggregate = useMemo(
+    () => styleAggregate.filter((entry) => !entry.hidden),
+    [styleAggregate],
+  )
   /**
    * Drift is computed over *all* history for the selected branches, never the
    * range-filtered view. Its baseline is defined in runs (last 7 vs prior 21),
@@ -914,15 +1276,15 @@ export function TrendsTool() {
    * visible runs and — worse — make the verdict a function of the range picker:
    * the same metric could flag at 90d and not at 30d. The charts still render
    * `series` (the range the user chose); only the drift math reads the full
-   * history.
+   * history. The adoption overview score is judged too, from the same full
+   * history, so a batch of migrated components badges the score the day it lands.
    */
-  const driftSeries = useMemo(
-    () =>
-      buildSeries(
-        (runs ?? []).filter((run) => run.git && selectedBranches.includes(run.git.branch)),
-      ),
-    [runs, selectedBranches],
-  )
+  const driftSeries = useMemo(() => {
+    const all = buildSeries(
+      (runs ?? []).filter((run) => run.git && selectedBranches.includes(run.git.branch)),
+    )
+    return [...all, ...aggregateStyleSeries(all.filter((entry) => entry.group === 'styles'))]
+  }, [runs, selectedBranches])
   const soakSlopes = useMemo(() => soakSlopeSeries(filtered), [filtered])
   // End-of-run soak values across runs — the "where did it land" history that
   // complements the slope view
@@ -953,21 +1315,25 @@ export function TrendsTool() {
   // EmptyGroup) rather than quietly disappearing — a new mode stays
   // discoverable before its first run lands.
   const tabs = TREND_GROUPS
-  // Includes calibration, which lives outside `series` — a deep link to it
-  // must still resolve to the Calibration tab.
+  // Includes calibration and the style aggregate, which live outside `series`
+  // — a deep link to either must still resolve to its tab.
   const groupById = useMemo(() => {
     const map = new Map<string, TrendGroup>()
-    for (const entry of [...series, calibration]) map.set(entry.key, entry.group)
+    for (const entry of [...series, ...visibleAggregate, calibration]) {
+      map.set(entry.key, entry.group)
+    }
     return map
-  }, [series, calibration])
+  }, [series, visibleAggregate, calibration])
 
   // Every chart the tool can show, by key — what `?max=` resolves against.
-  // The soak views and the environment tab build their series outside `series`,
-  // so a maximize link into one of those has to find them here.
+  // The soak views, the environment tab and the style aggregate build their
+  // series outside `series`, so a maximize link into one of those has to find
+  // them here.
   const seriesByKey = useMemo(() => {
     const map = new Map<string, TrendSeries>()
     for (const entry of [
       ...series,
+      ...visibleAggregate,
       ...environmentSeries,
       ...soakSlopes,
       ...soakEndValues,
@@ -976,7 +1342,7 @@ export function TrendsTool() {
       map.set(entry.key, entry)
     }
     return map
-  }, [series, environmentSeries, soakSlopes, soakEndValues, latestSoak])
+  }, [series, visibleAggregate, environmentSeries, soakSlopes, soakEndValues, latestSoak])
 
   // Deep-linkable focused chart: the `chart` URL param names the series to
   // jump to (shareable). Jumping from a drift-feed row or a chart header writes
@@ -993,6 +1359,8 @@ export function TrendsTool() {
   // The settle sub-tab follows the same rule ('' = derive from the chart);
   // owned here so a focus jump can clear it alongside ?tab=.
   const [settleViewParam, setSettleViewParam] = useUrlState('settle', '')
+  // Likewise the style-migration sub-tab
+  const [stylesViewParam, setStylesViewParam] = useUrlState('styles', '')
   const activeTab =
     tabs.find((tab) => tab.id === tabParam) ??
     (chartParam ? tabs.find((tab) => tab.id === groupById.get(chartParam)) : undefined) ??
@@ -1019,6 +1387,7 @@ export function TrendsTool() {
     setChartParam(seriesKey, 'push')
     setTabParam('', 'replace')
     setSettleViewParam('', 'replace')
+    setStylesViewParam('', 'replace')
     setFocusedKey(seriesKey)
   }
   // Side-effects of a focus (DOM scroll + auto-clearing the ring) live in an
@@ -1280,6 +1649,24 @@ export function TrendsTool() {
                         onExpand={expandMetric}
                         view={settleViewParam}
                         onViewChange={setSettleViewParam}
+                        chartKey={chartParam}
+                        onLeaveChart={() => setChartParam('')}
+                      />
+                    ) : activeTab.id === 'styles' ? (
+                      <StylesPanel
+                        series={styleSeries}
+                        aggregate={visibleAggregate}
+                        driftBySeries={driftBySeries}
+                        silencedBySeries={silencedBySeries}
+                        baselineBySeries={baselineBySeries}
+                        drift={drift}
+                        focusedKey={focusedKey}
+                        onFocusMetric={focusMetric}
+                        layers={layers}
+                        tags={tags}
+                        onExpand={expandMetric}
+                        view={stylesViewParam}
+                        onViewChange={setStylesViewParam}
                         chartKey={chartParam}
                         onLeaveChart={() => setChartParam('')}
                       />

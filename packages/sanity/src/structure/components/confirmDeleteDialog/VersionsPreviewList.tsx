@@ -11,7 +11,6 @@ import {
   useSchema,
   useTranslation,
 } from 'sanity'
-import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
 import {SanityDefaultPreview} from '../../../core/preview/components/SanityDefaultPreview'
@@ -21,13 +20,7 @@ import {ReleaseTitle} from '../../../core/releases/components/ReleaseTitle'
 import {useActiveReleases} from '../../../core/releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../../core/releases/util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../../core/releases/util/getReleaseTone'
-
-const EllipsisText = styled(Text)`
-  /* text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap; */
-  max-width: 120px;
-`
+import {ellipsisText} from './VersionsPreviewList.css'
 
 const VersionItemPreview = ({
   versionId,
@@ -114,15 +107,15 @@ const VersionItemPreview = ({
                   fallback={getVersionFromId(versionId) as string}
                 >
                   {({displayTitle}) => (
-                    <EllipsisText size={1} weight="medium" textOverflow="ellipsis">
+                    <Text className={ellipsisText} size={1} weight="medium" textOverflow="ellipsis">
                       {displayTitle}
-                    </EllipsisText>
+                    </Text>
                   )}
                 </ReleaseTitle>
               ) : (
-                <EllipsisText size={1} weight="medium" textOverflow="ellipsis">
+                <Text className={ellipsisText} size={1} weight="medium" textOverflow="ellipsis">
                   {systemTitle}
-                </EllipsisText>
+                </Text>
               )}
             </Flex>
           </Card>
