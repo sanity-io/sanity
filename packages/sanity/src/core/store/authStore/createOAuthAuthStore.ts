@@ -45,6 +45,9 @@ import {
 import {createCodeChallenge, createCodeVerifier, createState} from './oauth/pkce'
 import {type AuthState, type AuthStore, type HandleCallbackResult} from './types'
 
+/** Parameters of an authorization response (RFC 6749 section 4.1.2, RFC 9207 `iss`). */
+const OAUTH_RESPONSE_PARAMS = ['code', 'state', 'error', 'error_description', 'error_uri', 'iss']
+
 /** Renew the access token once this fraction of its lifetime has passed. */
 const REFRESH_AT_LIFETIME_FRACTION = 0.8
 
@@ -251,7 +254,12 @@ export function _createOAuthAuthStore({
       }
       try {
         const response = await endpoints.refresh({clientId, refreshToken: stored.refreshToken})
-        if (generation !== sessionGeneration) return undefined
+        if (generation !== sessionGeneration) {
+          // The user logged out while this refresh was in flight. The pair it obtained is valid
+          // on the server and known only here, so revoke it rather than drop it.
+          await revokeTokens(toTokens(response))
+          return undefined
+        }
         const next = toTokens(response, stored.refreshToken)
         tokenStorage.update(next)
         return next
@@ -381,39 +389,12 @@ export function _createOAuthAuthStore({
   // code is single-use, so a second call must join the exchange, not start another.
   let inflightCallback: Promise<HandleCallbackResult> | undefined
 
-  function handleCallbackUrl(): Promise<HandleCallbackResult> {
-    const startTime = performance.now()
-    const {pathname, search} = getLocation()
-    const params = new URLSearchParams(search)
-
-    if (!params.has('code') && !params.has('error')) {
-      return (
-        inflightCallback ??
-        Promise.resolve({
-          loginMethod: 'token',
-          flow: 'already-authenticated',
-          success: true,
-          durationMs: Math.round(performance.now() - startTime),
-        })
-      )
-    }
-
-    // Out of the address bar, history, and Referer before anything else can read the code.
-    replaceUrl(pathname)
-    const callbackProcessed = processCallback(params, startTime).finally(() => {
-      if (inflightCallback === callbackProcessed) inflightCallback = undefined
-    })
-    inflightCallback = callbackProcessed
-    return callbackProcessed
-  }
-
-  async function processCallback(
-    params: URLSearchParams,
+  function failedCallback(
     startTime: number,
-  ): Promise<HandleCallbackResult> {
-    const flow = readFlow(flowStorageKey)
-
-    const fail = (failureReason: string, exchangeDurationMs?: number): HandleCallbackResult => ({
+    failureReason: string,
+    exchangeDurationMs?: number,
+  ): HandleCallbackResult {
+    return {
       loginMethod: 'token',
       flow: 'exchange',
       success: false,
@@ -424,14 +405,60 @@ export function _createOAuthAuthStore({
         type: 'auth-failed',
         message: 'Signing in with OAuth did not complete. Please try logging in again.',
       },
-    })
+    }
+  }
+
+  function handleCallbackUrl(): Promise<HandleCallbackResult> {
+    const startTime = performance.now()
+    const {pathname, search} = getLocation()
+    const params = new URLSearchParams(search)
+
+    // An authorization response carries `state` and either a code or an error. Anything else is
+    // an ordinary Studio URL, even one with an unrelated `error` parameter.
+    if (!params.has('state') || (!params.has('code') && !params.has('error'))) {
+      return (
+        inflightCallback ??
+        Promise.resolve({
+          loginMethod: 'token',
+          flow: 'already-authenticated',
+          success: true,
+          durationMs: Math.round(performance.now() - startTime),
+        })
+      )
+    }
+    if (inflightCallback) return inflightCallback
 
     // The response has to belong to the request this tab made, whether it carries a code or an
-    // error. A mismatch leaves the stored flow alone: it may still be waiting for its own
-    // response.
-    if (!flow) return fail('no authorization request in this tab')
-    if (params.get('state') !== flow.state) return fail('state mismatch')
+    // error. A mismatch touches neither the URL nor the stored flow, which may still be waiting
+    // for its own response.
+    const flow = readFlow(flowStorageKey)
+    if (!flow) return Promise.resolve(failedCallback(startTime, 'no authorization request'))
+    if (params.get('state') !== flow.state) {
+      return Promise.resolve(failedCallback(startTime, 'state mismatch'))
+    }
     clearFlow(flowStorageKey)
+
+    // Out of the address bar, history, and Referer before anything else can read the code. Only
+    // the OAuth parameters go; anything else the URL carried stays.
+    const remaining = new URLSearchParams(search)
+    for (const name of OAUTH_RESPONSE_PARAMS) remaining.delete(name)
+    const query = remaining.toString()
+    replaceUrl(query ? `${pathname}?${query}` : pathname)
+
+    const callbackProcessed = processCallback(params, flow, startTime).finally(() => {
+      if (inflightCallback === callbackProcessed) inflightCallback = undefined
+    })
+    inflightCallback = callbackProcessed
+    return callbackProcessed
+  }
+
+  async function processCallback(
+    params: URLSearchParams,
+    flow: OAuthFlow,
+    startTime: number,
+  ): Promise<HandleCallbackResult> {
+    const fail = (failureReason: string, exchangeDurationMs?: number) =>
+      failedCallback(startTime, failureReason, exchangeDurationMs)
 
     // Report the RFC 6749 error code only. `error_description` is free text from the URL, and
     // telemetry is no place for it.
@@ -510,6 +537,15 @@ export function _createOAuthAuthStore({
     }
   }
 
+  /** Best-effort revocation of both tokens (RFC 7009 answers 200 whatever happened). */
+  function revokeTokens(tokens: OAuthTokens): Promise<unknown> {
+    return Promise.allSettled(
+      [tokens.accessToken, tokens.refreshToken]
+        .filter((token): token is string => Boolean(token))
+        .map((token) => endpoints.revoke({clientId, token})),
+    )
+  }
+
   async function logout(): Promise<void> {
     sessionGeneration++
     // Under the refresh lock, so a refresh in flight in any tab settles first, and the pair
@@ -518,13 +554,7 @@ export function _createOAuthAuthStore({
       const tokens = persistedTokens.load() ?? tokenStorage.get()
       // Best-effort, like `createAuthStore`: a forced logout reacting to a 401 revokes tokens
       // that are already dead, and a failed revocation must not keep the user signed in locally.
-      if (tokens) {
-        await Promise.allSettled(
-          [tokens.accessToken, tokens.refreshToken]
-            .filter((token): token is string => Boolean(token))
-            .map((token) => endpoints.revoke({clientId, token})),
-        )
-      }
+      if (tokens) await revokeTokens(tokens)
       clearFlow(flowStorageKey)
       tokenStorage.update(undefined)
     })

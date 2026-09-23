@@ -375,17 +375,20 @@ describe('createOAuthAuthStore', () => {
       expect(sessionStorage.getItem(FLOW_KEY)).toBeNull()
     })
 
-    it('ignores an error response that does not belong to this tab, and keeps its flow', async () => {
+    it('rejects a response with another state, and leaves the URL and the flow alone', async () => {
       const flow = {codeVerifier: 'verifier', state: 'expected-state', redirectUri: ORIGIN}
       sessionStorage.setItem(FLOW_KEY, JSON.stringify(flow))
       const {factory} = createMockClientFactory(new Set())
+      const environment = createEnvironment(
+        '?error=access_denied&error_description=Click+evil.example&state=forged',
+      )
       const store = _createOAuthAuthStore({
         projectId: PROJECT_ID,
         dataset: DATASET,
         clientId: CLIENT_ID,
         clientFactory: factory,
         endpoints: createMockEndpoints(),
-        ...createEnvironment('?error=access_denied&error_description=Click+evil.example'),
+        ...environment,
       })
 
       await expect(store.handleCallbackUrl!()).resolves.toMatchObject({
@@ -393,6 +396,48 @@ describe('createOAuthAuthStore', () => {
         failureReason: 'state mismatch',
       })
       expect(JSON.parse(sessionStorage.getItem(FLOW_KEY)!)).toEqual(flow)
+      expect(environment.replaceUrl).not.toHaveBeenCalled()
+    })
+
+    it('treats a URL without state as an ordinary Studio URL', async () => {
+      const {factory} = createMockClientFactory(new Set())
+      const environment = createEnvironment('?error=not-an-oauth-response')
+      const store = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints: createMockEndpoints(),
+        ...environment,
+      })
+
+      await expect(store.handleCallbackUrl!()).resolves.toMatchObject({
+        flow: 'already-authenticated',
+      })
+      expect(environment.replaceUrl).not.toHaveBeenCalled()
+    })
+
+    it('removes only the OAuth parameters from the URL', async () => {
+      sessionStorage.setItem(
+        FLOW_KEY,
+        JSON.stringify({codeVerifier: 'verifier', state: 'expected-state', redirectUri: ORIGIN}),
+      )
+      const {factory} = createMockClientFactory(new Set(['access-1']))
+      const environment = createEnvironment(
+        '?perspective=drafts&code=the-code&state=expected-state',
+      )
+      const store = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints: createMockEndpoints(),
+        ...environment,
+      })
+
+      await store.handleCallbackUrl!()
+
+      expect(environment.replaceUrl).toHaveBeenNthCalledWith(1, '/?perspective=drafts')
     })
   })
 
@@ -611,6 +656,11 @@ describe('createOAuthAuthStore', () => {
 
       expect(localStorage.getItem(TOKENS_KEY)).toBeNull()
       await expect(firstValueFrom(store.state)).resolves.toMatchObject({authenticated: false})
+      // The pair the refresh obtained is live on the server, so it is revoked, not just dropped.
+      await vi.waitFor(() =>
+        expect(endpoints.revoke).toHaveBeenCalledWith({clientId: CLIENT_ID, token: 'access-2'}),
+      )
+      expect(endpoints.revoke).toHaveBeenCalledWith({clientId: CLIENT_ID, token: 'refresh-2'})
     })
 
     it('clears local state even when revocation fails', async () => {
