@@ -3,6 +3,7 @@ import {EditIcon} from '@sanity/icons/Edit'
 import {Card, Stack, Text} from '@sanity/ui'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
+import {InlinePreview} from '../../portableText/InlinePreview'
 import {CompactPreview} from '../CompactPreview'
 import {DefaultPreview} from '../DefaultPreview'
 import {DetailPreview} from '../DetailPreview'
@@ -66,6 +67,18 @@ export function DocumentPreviewsStory() {
               subtitle="Article"
               title="Summer launch"
             />
+          </Stack>
+          <Stack gap={2}>
+            <Text muted size={1} weight="medium">
+              inline / media
+            </Text>
+            <InlinePreview media={<DocumentIcon />} title="Summer launch" />
+          </Stack>
+          <Stack gap={2}>
+            <Text muted size={1} weight="medium">
+              inline / fallback title
+            </Text>
+            <InlinePreview />
           </Stack>
         </Stack>
       </Card>
