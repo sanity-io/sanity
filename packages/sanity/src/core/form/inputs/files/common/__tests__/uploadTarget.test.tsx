@@ -549,4 +549,24 @@ describe('uploadTarget - drag and drop', () => {
       window.removeEventListener('keydown', globalEscape)
     }
   })
+
+  it('does not register window dragend/keydown listeners when onFilesOver is absent (readOnly)', async () => {
+    const assetSource = createMockAssetSourceWithMediaLibraryUploader()
+    const addEventListenerSpy = vi.spyOn(window, 'addEventListener')
+
+    try {
+      await renderFileInput({
+        assetSources: [assetSource],
+        configOverrides: {mediaLibrary: {enabled: false}},
+        fieldDefinition: {name: 'someFile', title: 'A file', type: 'file'},
+        observeAsset: observeFileAssetStub,
+        render: (inputProps) => <BaseFileInput {...inputProps} readOnly />,
+      })
+
+      expect(addEventListenerSpy).not.toHaveBeenCalledWith('dragend', expect.anything())
+      expect(addEventListenerSpy).not.toHaveBeenCalledWith('keydown', expect.anything(), true)
+    } finally {
+      addEventListenerSpy.mockRestore()
+    }
+  })
 })
