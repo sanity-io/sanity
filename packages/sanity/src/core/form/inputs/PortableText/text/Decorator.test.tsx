@@ -1,10 +1,14 @@
 import {type Path} from '@sanity/types'
+import {ThemeProvider} from '@sanity/ui'
+import {buildTheme} from '@sanity/ui/theme'
 import {toString as pathToString} from '@sanity/util/paths'
 import {render} from '@testing-library/react'
 import {type ComponentProps} from 'react'
 import {expect, it, vi} from 'vitest'
 
 import {Decorator} from './Decorator'
+
+const theme = buildTheme()
 
 vi.mock('@portabletext/editor', () => ({
   useEditor: () => ({
@@ -43,10 +47,10 @@ it('warns once for identical decorator locations in separate form fields', () =>
 
   try {
     render(
-      <>
+      <ThemeProvider theme={theme}>
         <Decorator {...DECORATOR_PROPS} portableTextPath={['primaryBody']} />
         <Decorator {...DECORATOR_PROPS} portableTextPath={['secondaryBody']} />
-      </>,
+      </ThemeProvider>,
     )
 
     const expectedWarnings = ['primaryBody', 'secondaryBody'].map((fieldName) => {
