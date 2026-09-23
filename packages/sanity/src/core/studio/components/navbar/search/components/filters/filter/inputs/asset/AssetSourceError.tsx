@@ -1,6 +1,5 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Flex, Stack} from '@sanity/ui'
-import {Box, type PaddingProps} from 'ui5'
+import {Box, Flex, type PaddingProps, VStack} from 'ui5'
 
 import {TextWithTone} from '../../../../../../../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../../../../../../../i18n/hooks/useTranslation'
@@ -10,11 +9,11 @@ export function AssetSourceError(props: PaddingProps) {
 
   return (
     <Box {...props}>
-      <Flex align="flex-start" gap={3}>
+      <Flex alignItems="flex-start" gap={3}>
         <TextWithTone tone="caution">
           <WarningOutlineIcon />
         </TextWithTone>
-        <Stack gap={4}>
+        <VStack gap={4}>
           <TextWithTone size={1} tone="caution" weight="medium">
             {t('search.error.no-valid-asset-source-title')}
           </TextWithTone>
@@ -24,7 +23,7 @@ export function AssetSourceError(props: PaddingProps) {
           <TextWithTone size={1} tone="caution">
             {t('search.error.no-valid-asset-source-check-config-description')}
           </TextWithTone>
-        </Stack>
+        </VStack>
       </Flex>
     </Box>
   )

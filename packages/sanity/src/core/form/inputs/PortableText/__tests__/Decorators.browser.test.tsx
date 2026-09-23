@@ -1,9 +1,89 @@
+import {BulbOutlineIcon} from '@sanity/icons/BulbOutline'
+import {defineArrayMember, defineField, defineType} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
 
+import {TestForm} from '../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../test/browser/testHelpers'
-import {DecoratorsStory} from './DecoratorsStory'
+import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
+import {type BlockDecoratorProps} from '../../../types/blockProps'
+
+function Highlight(props: BlockDecoratorProps) {
+  return (
+    <span
+      data-testid="custom-highlight-decorator"
+      data-title={props.title}
+      data-value={props.value}
+    >
+      {props.renderDefault(props)}
+    </span>
+  )
+}
+
+function Spoiler(props: BlockDecoratorProps) {
+  return (
+    <span data-testid="custom-spoiler-decorator" style={{color: 'red'}}>
+      {props.children}
+    </span>
+  )
+}
+
+const DEFAULT_DECORATORS_FIELD = defineField({
+  type: 'array',
+  name: 'defaultDecorators',
+  of: [
+    defineArrayMember({
+      type: 'block',
+    }),
+  ],
+})
+
+const CUSTOM_DECORATOR_FIELD = defineField({
+  type: 'array',
+  name: 'customDecorator',
+  of: [
+    defineArrayMember({
+      type: 'block',
+      marks: {
+        decorators: [
+          {
+            title: 'Highlight',
+            value: 'highlight',
+            icon: BulbOutlineIcon,
+            component: Highlight,
+          },
+          {
+            title: 'Spoiler',
+            value: 'spoiler',
+            component: Spoiler,
+          },
+        ],
+      },
+    }),
+  ],
+})
+
+/** Mount only the field under test — a sibling empty PTE's style select
+ * otherwise flips Normal ↔ No style and shifts Chromatic captures. */
+function DecoratorsHarness({fields}: {fields: Array<'defaultDecorators' | 'customDecorator'>}) {
+  const schemaFields = fields.map((name) =>
+    name === 'defaultDecorators' ? DEFAULT_DECORATORS_FIELD : CUSTOM_DECORATOR_FIELD,
+  )
+  const schemaTypes = [
+    defineType({
+      type: 'document',
+      name: 'test',
+      title: 'Test',
+      fields: schemaFields,
+    }),
+  ]
+  return (
+    <TestWrapper schemaTypes={schemaTypes}>
+      <TestForm />
+    </TestWrapper>
+  )
+}
 
 const DEFAULT_DECORATORS = [
   {
@@ -47,9 +127,10 @@ describe('Portable Text Input', () => {
         getFocusedPortableTextEditor,
         getFocusedPortableTextInput,
         insertPortableText,
+        settleChromaticEndState,
         toggleHotkey,
       } = testHelpers()
-      void render(<DecoratorsStory />)
+      void render(<DecoratorsHarness fields={['defaultDecorators']} />)
       const $portableTextInput = await getFocusedPortableTextInput('field-defaultDecorators')
       const $pte = await getFocusedPortableTextEditor('field-defaultDecorators')
       const modifierKey = getModifierKey()
@@ -80,12 +161,18 @@ describe('Portable Text Input', () => {
           await expect.element($decoratedText).toHaveTextContent(`${decorator.name} text 123`)
         }
       }
+      // The last keystrokes leave a validation run in flight; wait for it (and
+      // the Normal style label) so the archive is not taken mid re-render.
+      await settleChromaticEndState({
+        styleSelectText: /^Normal$/,
+        styleSelectRoot: '[data-testid="field-defaultDecorators"]',
+      })
     })
 
     describe('Toolbar buttons', () => {
       it('Should display all default decorator buttons', async () => {
-        const {getFocusedPortableTextInput} = testHelpers()
-        void render(<DecoratorsStory />)
+        const {getFocusedPortableTextInput, settleChromaticEndState} = testHelpers()
+        void render(<DecoratorsHarness fields={['defaultDecorators']} />)
         const $portableTextInput = await getFocusedPortableTextInput('field-defaultDecorators')
 
         // Assertion: All buttons in the menu bar should be visible and have icon
@@ -97,11 +184,16 @@ describe('Portable Text Input', () => {
           )
           await expect.element($icon).toBeVisible()
         }
+        // Empty focused PTE can briefly report "No style" before Normal resolves.
+        await settleChromaticEndState({
+          styleSelectText: /^Normal$/,
+          styleSelectRoot: '[data-testid="field-defaultDecorators"]',
+        })
       })
 
       it('Should display custom decorator button and icon', async () => {
-        const {getFocusedPortableTextInput} = testHelpers()
-        void render(<DecoratorsStory />)
+        const {getFocusedPortableTextInput, settleChromaticEndState} = testHelpers()
+        void render(<DecoratorsHarness fields={['customDecorator']} />)
         const $portableTextInput = await getFocusedPortableTextInput('field-customDecorator')
         // Assertion: Button for highlight should exist
         const $highlightButton = $portableTextInput.getByRole('button', {name: 'Highlight'})
@@ -111,6 +203,12 @@ describe('Portable Text Input', () => {
           $highlightButton.element().querySelector(`svg[data-sanity-icon='bulb-outline']`)!,
         )
         await expect.element($icon).toBeVisible()
+        // Empty focused PTE can briefly report "No style" before the block style
+        // resolves to Normal — wait so Chromatic does not archive either label.
+        await settleChromaticEndState({
+          styleSelectText: /^Normal$/,
+          styleSelectRoot: '[data-testid="field-customDecorator"]',
+        })
       })
     })
 
@@ -120,8 +218,9 @@ describe('Portable Text Input', () => {
         getFocusedPortableTextInput,
         getFocusedPortableTextEditor,
         insertPortableText,
+        settleChromaticEndState,
       } = testHelpers()
-      void render(<DecoratorsStory />)
+      void render(<DecoratorsHarness fields={['customDecorator']} />)
       const $portableTextInput = await getFocusedPortableTextInput('field-customDecorator')
       const $pte = await getFocusedPortableTextEditor('field-customDecorator')
 
@@ -146,6 +245,12 @@ describe('Portable Text Input', () => {
       )
       await expect.element($defaultMarkup).toBeVisible()
       await expect.element($defaultMarkup).toHaveTextContent('highlighted text')
+      // Selected Highlight toolbar pill background was a pairwise AA/hover flake.
+      // Force Normal so the style select cannot archive as No style.
+      await settleChromaticEndState({
+        styleSelectText: /^Normal$/,
+        styleSelectRoot: '[data-testid="field-customDecorator"]',
+      })
     })
 
     it('Renders a custom decorator component that renders only its children', async () => {
@@ -154,8 +259,9 @@ describe('Portable Text Input', () => {
         getFocusedPortableTextInput,
         getFocusedPortableTextEditor,
         insertPortableText,
+        settleChromaticEndState,
       } = testHelpers()
-      void render(<DecoratorsStory />)
+      void render(<DecoratorsHarness fields={['customDecorator']} />)
       const $portableTextInput = await getFocusedPortableTextInput('field-customDecorator')
       const $pte = await getFocusedPortableTextEditor('field-customDecorator')
 
@@ -168,6 +274,12 @@ describe('Portable Text Input', () => {
       )
       await expect.element($customComponent).toBeVisible()
       await expect.element($customComponent).toHaveTextContent('spoiler text')
+      // Spoiler stays selected on the caret; clear hover so Chromatic does not
+      // archive a mid-hover pill around the selected toolbar button.
+      await settleChromaticEndState({
+        styleSelectText: /^Normal$/,
+        styleSelectRoot: '[data-testid="field-customDecorator"]',
+      })
     })
   })
 })

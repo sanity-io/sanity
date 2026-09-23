@@ -1,7 +1,7 @@
 import CloseIcon from '@sanity/icons/Close'
 import {FeedbackIcon} from '@sanity/icons/Feedback'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {PortalProvider, Stack, Text} from '@sanity/ui'
+import {PortalProvider, Text} from '@sanity/ui'
 import {useActorRef, useSelector} from '@xstate/react'
 import {
   type ChangeEvent,
@@ -9,9 +9,9 @@ import {
   useEffect,
   useLayoutEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
-import {useSyncObservable} from 'react-rx'
 import {
   combineLatest,
   debounceTime,
@@ -23,7 +23,7 @@ import {
   Subject,
   timeout,
 } from 'rxjs'
-import {Flex} from 'ui5'
+import {VStack, Flex} from 'ui5'
 import {type ActorRefFromLogic, fromObservable, fromPromise} from 'xstate'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -49,6 +49,7 @@ import {useDocumentStore} from '../../store/datastores'
 import {useWorkspace} from '../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getPublishedId, type SystemBundle} from '../../util/draftUtils'
+import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {useVariantDocumentOperations} from '../../variants/hooks/useVariantDocumentOperations'
 import {CreateVariantIcon} from '../../variants/plugin/components/PersonalizationIcons'
 import {useVariantsStore} from '../../variants/store/useVariantsStore'
@@ -265,9 +266,19 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                         timeout({first: 30_000}),
                       )
 
-                    const targetPair = await firstValueFrom(readTargetPair)
-                    const baseVariant = targetPair[editStateSlot]
+                    // Live-edit documents have no drafts sibling: create the variant-of-published
+                    // even when the selected bundle is drafts. Release bundles still target the release.
+                    const createPerspective =
+                      schema?.liveEdit && input.bundle === ('drafts' satisfies SystemBundle)
+                        ? 'published'
+                        : input.bundle
 
+                    const targetPair = await firstValueFrom(readTargetPair)
+                    const baseVariant =
+                      editStateSlot === 'draft'
+                        ? // in drafts fallback to published, the ui shows the published when seeing a "non existent" draft
+                          targetPair[editStateSlot] || targetPair.published
+                        : targetPair[editStateSlot]
                     // If there is no base variant, create an empty variant.
                     if (baseVariant === null) {
                       await createVariantDocument({
@@ -276,7 +287,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                           _type: documentType,
                         },
                         variant: input.variantDefinition,
-                        selectedPerspective: input.bundle,
+                        selectedPerspective: createPerspective,
                         signal,
                       })
                     }
@@ -287,7 +298,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                         documentGroupId: getPublishedId(documentId),
                         baseId: baseVariant._id,
                         variant: input.variantDefinition,
-                        selectedPerspective: input.bundle,
+                        selectedPerspective: createPerspective,
                         signal,
                       })
                     }
@@ -312,6 +323,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
           documentType,
           documentId,
           documentStore.pair,
+          schema,
         ],
       ),
     },
@@ -367,7 +379,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
         {!isVariantCreationActive && (
           <>
             <Header>
-              <Stack gap={4}>
+              <VStack gap={4}>
                 {!readOnly && (
                   <Flex gap={4} alignItems="center" justifyContent="flex-end">
                     <TextButton
@@ -394,7 +406,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                   readOnly={isLocked}
                   onChange={(event: ChangeEvent<HTMLInputElement>) => filterStringEvent.next(event)}
                 />
-              </Stack>
+              </VStack>
             </Header>
             <Body>
               {schema && (
@@ -504,7 +516,7 @@ const Select: ComponentType<{
   const isSelectable = useSelector(machine, ({context}) => !context.readOnly)
 
   return (
-    <Stack gap={5}>
+    <VStack gap={5}>
       {sets.map((set) => (
         <DocumentGroupSet
           key={set.key}
@@ -553,7 +565,7 @@ const Select: ComponentType<{
             )}
         </DocumentGroupSet>
       ))}
-    </Stack>
+    </VStack>
   )
 }
 
@@ -628,7 +640,7 @@ const ManagedVariantRow: ComponentType<{
 
   const pendingReleases = useVariantPendingReleases({
     documentId: documentGroupId,
-    variantRef: document._system.variant?._ref,
+    variantId: getDocumentVersionVariantId(document),
   })
 
   const {
@@ -716,6 +728,8 @@ const ManagedVariantRow: ComponentType<{
   )
 }
 
+const INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY = '--intrinsic-block-size'
+
 /**
  * Preserve the intrinsic block size of an element by maintaining an `--intrinsic-block-size`
  * custom property. This custom property must be used by styles to control the element's size.
@@ -727,41 +741,30 @@ function usePreserveIntrinsicBlockSize({
   isActive: boolean
   element: HTMLElement | null
 }): void {
-  const size = useMemo(() => new Subject<DOMRect | undefined>(), [])
-  // Kept synchronous: this drives an imperative style write
-  // (`--intrinsic-block-size`) that preserves layout during activation, so a
-  // deferred snapshot lagging the latest ResizeObserver measurement could
-  // cause visible layout jumps.
-  const currentSize = useSyncObservable(size)
+  const heightRef = useRef(0)
 
   useEffect(() => {
+    if (!isActive || !element) {
+      return undefined
+    }
+
+    const setHeight = (height: number) => {
+      heightRef.current = height
+      element.style.setProperty(INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY, `${height}px`)
+    }
+
     const resizeObserver = new ResizeObserver(([entry]) => {
-      if (!isActive) {
-        size.next(entry.contentRect)
-      }
+      setHeight(entry.contentRect.height)
     })
 
-    if (element) {
-      resizeObserver.observe(element)
+    if (heightRef.current) {
+      setHeight(heightRef.current)
     }
+    resizeObserver.observe(element)
 
-    return () => resizeObserver.disconnect()
-  }, [isActive, element, size])
-
-  useEffect(() => {
-    if (!element || !currentSize) {
-      return () => {}
+    return () => {
+      element.style.removeProperty(INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY)
+      resizeObserver.disconnect()
     }
-
-    const INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY = '--intrinsic-block-size'
-    const cleanUp = () => element.style.removeProperty(INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY)
-
-    if (isActive) {
-      element?.style.setProperty(INTRINSIC_BLOCK_SIZE_CUSTOM_PROPERTY, `${currentSize.height}px`)
-      return cleanUp
-    }
-
-    cleanUp()
-    return () => {}
-  }, [element, currentSize, isActive])
+  }, [isActive, element])
 }

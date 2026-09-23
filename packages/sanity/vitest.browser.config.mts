@@ -8,14 +8,27 @@ import {readFileAsBase64} from './test/browser/commands'
 
 const ALL_BROWSERS = ['chromium', 'firefox', 'webkit'] as const
 
-// Chromatic visual regression capture (early access). When CHROMATIC=1 the
-// @chromatic-com/vitest plugin archives each test's end state while the suite
-// runs, for upload to Chromatic via `chromatic --vitest` (see
-// .github/workflows/chromatic.yml). Normal runs (flag unset) are unaffected.
+// Chromatic visual regression. The @chromatic-com/vitest plugin is always
+// registered so that `configure()` / `takeSnapshot()` from
+// '@chromatic-com/vitest' work in any test file (`takeSnapshot()` throws in a
+// chromium test the plugin is not registered for; both are no-ops on firefox
+// and webkit). Capturing is opt-in: with CHROMATIC=1 the plugin archives each
+// test's end state while the suite runs, for upload to the "sanity studio
+// vitest" Chromatic project via `chromatic --vitest` (see
+// .github/workflows/chromatic.yml). This is the visual snapshot source for the
+// browser tests — their harness components live inside the test files and
+// are not re-exported as Storybook stories. Without the flag no automatic
+// snapshots are taken, no TurboSnap stats are written, the plugin's reporter
+// stays quiet and Chromatic's anonymous telemetry is off; only an explicit
+// `takeSnapshot()` still writes an archive (gitignored, never uploaded).
 // Chromatic re-renders archives in its own standardized cloud browser, so
 // capture runs are chromium-only — capturing from firefox/webkit would only
 // multiply identical archives.
 const chromaticEnabled = Boolean(process.env.CHROMATIC)
+if (!chromaticEnabled) {
+  // Read by the plugin when it is constructed below.
+  process.env.CHROMATIC_DISABLE_TELEMETRY ??= '1'
+}
 
 // CI shards by browser (one runner each) to avoid contention. Set
 // SANITY_VITEST_BROWSER to a single browser name to run only that instance;
@@ -45,7 +58,37 @@ export default defineConfig({
     // `compiler` runs React Compiler through `oxc-transform-react`, in the same native pass
     // as the TypeScript/JSX transform (no babel in the pipeline)
     viteReact({compiler: {target: '19'}}),
-    ...(chromaticEnabled ? [chromaticPlugin()] : []),
+    chromaticPlugin({
+      // Every test's end state is a snapshot on capture runs; tests opt out
+      // with `configure({disableAutoSnapshot: true})`.
+      disableAutoSnapshot: !chromaticEnabled,
+      // `turboSnap` writes `preview-stats.json` (the Vite module graph per
+      // test file) next to the archives. The upload in chromatic.yml runs with
+      // `--only-changed`, which requires that file once Chromatic unlocks
+      // TurboSnap for the project — without it the CLI fails the upload rather
+      // than falling back to a full build.
+      turboSnap: chromaticEnabled,
+      // Outside capture runs, skip the per-test wait for fonts and network idle
+      // that only matters for archiving resources.
+      ...(chromaticEnabled
+        ? {
+            // Content-box crops change height when a portal menu opens or a
+            // line of text wraps; viewport crops keep the frame at the test's
+            // viewport and include portaled overlays. That is 1280×900 (see
+            // `browser.viewport`) unless the test set its own — the toolbar
+            // collapse tests archive at 350×500 / 800×1000 on purpose; the
+            // setup's `afterEach` restores the default only after the archive.
+            cropToViewport: true,
+            // Do not add a post-test delay: 1000ms was long enough for hover
+            // tooltips, primary-button fills, and Floating UI to drift after
+            // settleChromaticEndState. Layout waits belong in that helper.
+            delay: 0,
+            pauseAnimationAtEnd: true,
+            prefersReducedMotion: 'reduce',
+          }
+        : {resourceArchiveTimeout: 0}),
+      reporter: chromaticEnabled,
+    }),
   ],
   resolve: {
     conditions: ['monorepo', ...defaultClientConditions],
@@ -54,12 +97,24 @@ export default defineConfig({
   test: {
     name: 'sanity-browser',
     include: ['./src/**/*.browser.test.{ts,tsx}'],
+    // Chromatic and the React test setup both register `afterEach` hooks:
+    // Chromatic captures the automatic snapshot, then the test setup unmounts
+    // the rendered tree. Vitest's default is `stack` (after-hooks run in
+    // reverse registration order); the Chromatic plugin adapts to either by
+    // appending its setup file under `stack` and prepending it under `list`,
+    // and only warns under `parallel`. `list` is set explicitly so the order
+    // is stated here rather than inferred, and so that `afterEach` hooks
+    // registered inside a test file (clipboard restores, spies) also run after
+    // the archive instead of before it.
+    sequence: {hooks: 'list'},
     // Browser tests are slower and flakier than jsdom tests, especially on
     // WebKit/Firefox in CI where all three browsers share one runner. Give
     // them generous timeouts and retry once (the old Playwright CT setup used
-    // `retries: 1`).
+    // `retries: 1`). Chromatic capture runs must not retry: a failed attempt
+    // still runs the plugin's `afterEach` archive, and the retry archives again
+    // as `Snapshot #1 (2)` (seen as an ADDED story on Vitest Chromatic builds).
     testTimeout: 30_000,
-    retry: 1,
+    retry: chromaticEnabled ? 0 : 1,
     // Element matchers (`expect.element(...).toBeVisible()`, `expect.poll`)
     // retry until this timeout; the default (~1s) is too tight for a loaded
     // CI runner running three browsers at once.
@@ -75,7 +130,22 @@ export default defineConfig({
       viewport: {width: 1280, height: 900},
       instances: browsers.map((browser) => ({browser})),
     },
-    setupFiles: ['./test/setup/browser.ts'],
+    // `idleCallback.ts` routes `requestIdleCallback` through a timer (headless
+    // Chromium fires it only after a frame, so idle-gated validation can stall
+    // on a page that paints nothing); it is its own entry, ahead of the rest,
+    // so that it runs before any module binds the native function.
+    setupFiles: ['./test/setup/idleCallback.ts', './test/setup/browser.ts'],
+    deps: {
+      optimizer: {
+        client: {
+          // Pre-bundle the Chromatic test helpers so that the first test file
+          // to import `configure()`/`takeSnapshot()` cannot trigger a mid-run
+          // dependency re-optimization, which reloads the browser page and
+          // fails the file with "Vitest failed to find the current suite".
+          include: ['@chromatic-com/vitest'],
+        },
+      },
+    },
     typecheck: {
       enabled: true,
       ignoreSourceErrors: true,

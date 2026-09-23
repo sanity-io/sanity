@@ -4,7 +4,7 @@ import {type SummaryStats} from '../stats/quantiles'
 /**
  * The result document: written as the CI artifact (one per shard, merged by
  * mergeShards.ts), rendered to the PR comment (markdown.ts), and — with
- * `_id` assigned — stored as a `benchRun` document in the studio-metrics
+ * `_id` assigned — stored as a `benchRun` document in the Studio Radar
  * project for main-branch time-series tracking.
  */
 export interface BenchRunDocument {
@@ -124,8 +124,17 @@ export interface ScenarioReport {
    * `pageload`) key-collide with the interaction/pageLoad reports and the
    * merge throws.
    */
-  mode?: 'interaction' | 'pageload' | 'soak' | 'inp'
+  mode?: 'interaction' | 'pageload' | 'soak' | 'inp' | 'settle'
   metrics: MetricReport[]
+  /**
+   * Settle mode only: the scenario's declared expectation. `expectedToSettle:
+   * false` marks a red-by-design scenario (a known, unfixed render-loop
+   * footgun) whose non-settling sessions are evidence, not failures. Reports
+   * warn on any expected-vs-observed mismatch — in either direction, so a
+   * scenario that starts settling after a hook hardening lands is flagged
+   * until the flag is flipped.
+   */
+  settleExpectation?: {expectedToSettle: boolean}
   /** Why A/B sampling stopped (absent in absolute mode). */
   stoppedBy?: 'converged' | 'budget' | 'max-sessions'
   /** Discarded-and-retried sessions — the flake telemetry. */
@@ -148,6 +157,16 @@ export interface ScenarioReport {
     experiment: ResourceSide
     reference?: ResourceSide
   }
+  /**
+   * Build facts behind the style-migration metric rows (the `UI v5 …` and
+   * `styled-components …` labels from `STYLE_METRICS` in
+   * `@repo/utils/style-systems`, recorded per session and summarized like
+   * every other row). Present whenever a session took the style census.
+   */
+  styles?: {
+    experiment: StyleContext
+    reference?: StyleContext
+  }
   /** Soak series (soak mode only) — every value should stay flat over time. */
   soak?: {
     minutes: number
@@ -168,6 +187,31 @@ export interface ScenarioReport {
   }
 }
 
+/**
+ * What the style census found about the build itself — the part of the
+ * census that is not a number to chart but explains the numbers.
+ */
+export interface StyleContext {
+  /**
+   * Whether the build ships `@sanity/ui` v5. False is why the `UI v5 share`
+   * and `UI v5 instances` rows are absent: on such a build (studio before
+   * v6.10) the answer is "not applicable", never 0%.
+   */
+  ui5Available: boolean
+  /** styled-components runtime version(s) seen on the page (`data-styled-version`), comma-joined. */
+  styledComponentsVersion?: string
+  /**
+   * Readable CSS rules on the page across every stylesheet (median over
+   * sessions) — the denominator of the `styled-components CSS rule share`
+   * row, stored so a cross-scenario share can be recomputed from sums
+   * (Σ inserted ÷ Σ readable) rather than averaged. Absent when no sheet was
+   * readable.
+   */
+  readableCssRules?: number
+  /** Sessions the style rows summarize over. */
+  sessions: number
+}
+
 /** Per-session medians so counts stay comparable across session counts. */
 export interface ResourceSide {
   requestCount: number
@@ -184,8 +228,11 @@ export interface ResourceSide {
 export interface MetricReport {
   /** e.g. "title", "body", "boot-cold · time to editable" */
   label: string
-  /** 'cls' is the unitless layout-shift score (~0–0.25), shown to 3 decimals. */
-  unit: 'ms' | 'count' | 'cls' | 'bytes'
+  /**
+   * 'cls' is the unitless layout-shift score (~0–0.25), shown to 3 decimals;
+   * 'percent' is a 0–100 share (the style-migration rows).
+   */
+  unit: 'ms' | 'count' | 'cls' | 'bytes' | 'percent'
   /** Present the median as eFPS (1000/ms) in reports. */
   presentAsEfps: boolean
   experiment: SideMetric

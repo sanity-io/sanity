@@ -1,49 +1,189 @@
-import {type PortableTextBlock} from '@sanity/types'
+import {configure, takeSnapshot} from '@chromatic-com/vitest'
+import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
+import noop from 'lodash-es/noop.js'
+import {useCallback, useState} from 'react'
+import {CommentInput} from 'sanity'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
-import {page, userEvent} from 'vitest/browser'
+import {page, server, userEvent} from 'vitest/browser'
 
-import {testHelpers} from '../../../../../../../test/browser/testHelpers'
-import {CommentsInputStory} from './CommentInputStory'
+import {expectStable, testHelpers} from '../../../../../../../test/browser/testHelpers'
+import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
+import {type UserListWithPermissionsHookValue} from '../../../../../hooks/useUserListWithPermissions'
+
+const currentUser: CurrentUser = {
+  email: '',
+  id: '',
+  name: '',
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  role: '',
+  roles: [],
+  profileImage: '',
+  provider: '',
+}
+
+const SCHEMA_TYPES: [] = []
+
+const MENTION_DATA: UserListWithPermissionsHookValue = {
+  data: [
+    {
+      id: 'l33t',
+      displayName: 'Test Person',
+      email: 'test@test.com',
+      granted: true,
+    },
+  ],
+  loading: false,
+  error: null,
+}
+
+function CommentsInputHarness({
+  onDiscardCancel = noop,
+  onDiscardConfirm = noop,
+  onSubmit = noop,
+  value = null,
+}: {
+  onDiscardCancel?: () => void
+  onDiscardConfirm?: () => void
+  onSubmit?: (value: PortableTextBlock[]) => void
+  value?: PortableTextBlock[] | null
+}) {
+  const [valueState, setValueState] = useState<PortableTextBlock[] | null>(value)
+
+  const handleSubmit = useCallback(
+    (nextValue: PortableTextBlock[]) => {
+      // The Studio resets the `value` it passes to `CommentInput` after each
+      // submit; the harness does the same.
+      setValueState(null)
+      onSubmit(nextValue)
+    },
+    [onSubmit],
+  )
+
+  return (
+    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+      <CommentInput
+        focusOnMount
+        placeholder="Your comment..."
+        focusLock
+        currentUser={currentUser}
+        onChange={setValueState}
+        value={valueState}
+        mentionOptions={MENTION_DATA}
+        onDiscardConfirm={onDiscardConfirm}
+        onDiscardCancel={onDiscardCancel}
+        onSubmit={handleSubmit}
+      />
+    </TestWrapper>
+  )
+}
+
+/**
+ * The input card paints its focus ring from React's `focused` state
+ * (`data-focused`) combined with `:focus-within`, and lets `:hover` override
+ * it with the hover border. Chromatic re-applies the recorded `:hover` /
+ * `:focus` states when it renders the archive, so assert the ring's inputs
+ * explicitly (after `settleChromaticEndState` has parked the pointer) instead
+ * of relying on the editable's `toHaveFocus()` alone.
+ *
+ * Chromatic archives on chromium only. Firefox headless shares one window
+ * focus across the pages Vitest runs test files in, so input in another
+ * file's page blurs this editor (the editor emits `blurred` and `data-focused`
+ * flips to `false`) while `document.activeElement` is unchanged; `toHaveFocus()`
+ * still holds there, but the ring inputs cannot be asserted reliably.
+ */
+const commentInputRoot = () => window.document.getElementById('comment-input-root')
+
+async function expectFocusRingSettled() {
+  if (server.browser === 'firefox') return
+  await expect.poll(() => commentInputRoot()?.getAttribute('data-focused')).toBe('true')
+  await expect.poll(() => commentInputRoot()?.matches(':focus-within')).toBe(true)
+  await expect.poll(() => commentInputRoot()?.matches(':hover')).toBe(false)
+}
+
+/** The mentions popover is positioned by Floating UI after it opens; wait for
+ * it to be laid out at a size that stops changing before archiving it. */
+async function expectMentionsMenuLaidOut() {
+  const menuHeight = () => {
+    const el = window.document.querySelector('[data-testid="comments-mentions-menu"]')
+    return el instanceof HTMLElement ? Math.round(el.getBoundingClientRect().height) : 0
+  }
+  await expect.poll(menuHeight).toBeGreaterThan(0)
+  expect(await expectStable(menuHeight)).toBeGreaterThan(0)
+}
 
 describe('Comments', () => {
   describe('CommentInput', () => {
     it('Should render', async () => {
-      void render(<CommentsInputStory />)
+      const {settleChromaticEndState} = testHelpers()
+      void render(<CommentsInputHarness />)
       const $editable = page.getByTestId('comment-input-editable')
       await expect.element($editable).toBeVisible()
+      await expect.element($editable).toHaveFocus()
+      await settleChromaticEndState()
+      await expectFocusRingSettled()
     })
 
     it('Should be able to type into', async () => {
-      const {insertPortableText} = testHelpers()
-      void render(<CommentsInputStory />)
+      const {insertPortableText, settleChromaticEndState} = testHelpers()
+      void render(<CommentsInputHarness />)
       const $editable = page.getByTestId('comment-input-editable')
       await expect.element($editable).toBeVisible()
       await insertPortableText('My first comment!', $editable)
       await expect.element($editable).toHaveTextContent('My first comment!')
+      await expect.element($editable).toHaveFocus()
+      // Typing enables the primary-tone send button; wait for that state
+      // before archiving so the snapshot does not race the debounced change.
+      await expect.element(page.getByTestId('comment-input-send-button')).toBeEnabled()
+      await settleChromaticEndState()
+      await expectFocusRingSettled()
     })
 
     it('Should bring up mentions menu when typing @', async () => {
-      void render(<CommentsInputStory />)
+      // Accepting the mention leaves an animated loading skeleton that cannot
+      // be archived deterministically, so snapshot the open mentions menu
+      // explicitly and keep the Enter-to-accept behaviour as a plain assertion.
+      configure({disableAutoSnapshot: true})
+      const {settleChromaticEndState} = testHelpers()
+      void render(<CommentsInputHarness />)
       const $editable = page.getByTestId('comment-input-editable')
       await expect.element($editable).toBeVisible()
       await userEvent.keyboard('@')
       const $mentionsMenu = page.getByTestId('comments-mentions-menu')
       await expect.element($mentionsMenu).toBeVisible()
+      await expectMentionsMenuLaidOut()
+      await settleChromaticEndState()
+      await expect.element($mentionsMenu).toBeVisible()
+      await expect.element($editable).toHaveFocus()
+      await expectFocusRingSettled()
+      await takeSnapshot('mentions-menu-open')
+
+      // Enter accepts the highlighted mention: the menu closes and the mention
+      // renders (its user lookup shows the loading skeleton in this harness).
+      // `takeSnapshot` serialized the DOM synchronously above, so nothing from
+      // here on reaches that archive.
       await userEvent.keyboard('{Enter}')
       await expect.element($mentionsMenu).not.toBeInTheDocument()
       await expect.element(page.getByTestId('comment-mentions-loading-skeleton')).toBeVisible()
+      await expect.element($editable).toHaveFocus()
     })
 
     it('Should bring up mentions menu when pressing the @ button, whilst retaining focus on PTE', async () => {
-      void render(<CommentsInputStory />)
+      const {settleChromaticEndState} = testHelpers()
+      void render(<CommentsInputHarness />)
       const $editable = page.getByTestId('comment-input-editable')
       await expect.element($editable).toBeVisible()
       const $mentionButton = page.getByTestId('comment-input-mention-button')
       await expect.element($mentionButton).toBeVisible()
       await userEvent.click($mentionButton)
-      await expect.element(page.getByTestId('comments-mentions-menu')).toBeVisible()
+      const $mentionsMenu = page.getByTestId('comments-mentions-menu')
+      await expect.element($mentionsMenu).toBeVisible()
       await expect.element($editable).toHaveFocus()
+      await expectMentionsMenuLaidOut()
+      await settleChromaticEndState()
+      await expect.element($mentionsMenu).toBeVisible()
+      await expect.element($editable).toHaveFocus()
+      await expectFocusRingSettled()
     })
 
     it('Should be able to submit', async () => {
@@ -51,7 +191,7 @@ describe('Comments', () => {
       let resolve!: () => void
       const submitted = Object.assign(new Promise<void>((r) => (resolve = r)), {resolve})
 
-      void render(<CommentsInputStory onSubmit={submitted.resolve} />)
+      void render(<CommentsInputHarness onSubmit={submitted.resolve} />)
       const $editable = page.getByTestId('comment-input-editable')
       await expect.element($editable).toBeVisible()
       await userEvent.keyboard('{Enter}')
@@ -65,7 +205,7 @@ describe('Comments', () => {
 
     it('Should keep typed text on both sides of a mention, and remove only the mention on backspace', async () => {
       const {insertPortableText} = testHelpers()
-      void render(<CommentsInputStory />)
+      void render(<CommentsInputHarness />)
       const $editable = page.getByTestId('comment-input-editable')
       await expect.element($editable).toBeVisible()
 
@@ -104,6 +244,10 @@ describe('Comments', () => {
         .element(page.getByTestId('comment-mentions-loading-skeleton'))
         .not.toBeInTheDocument()
       await expect.element($editable).toHaveTextContent(/^before$/)
+      await expect.element(page.getByTestId('comment-input-send-button')).toBeEnabled()
+      const {settleChromaticEndState} = testHelpers()
+      await settleChromaticEndState()
+      await expectFocusRingSettled()
     })
 
     it('Should start the next comment empty after submitting the previous one', async () => {
@@ -111,7 +255,7 @@ describe('Comments', () => {
       let resolve!: (value: PortableTextBlock[]) => void
       const submitted = new Promise<PortableTextBlock[]>((r) => (resolve = r))
 
-      void render(<CommentsInputStory onSubmit={resolve} />)
+      void render(<CommentsInputHarness onSubmit={resolve} />)
       const $editable = page.getByTestId('comment-input-editable')
       await expect.element($editable).toBeVisible()
       await insertPortableText('First comment', $editable)

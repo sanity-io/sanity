@@ -1,5 +1,5 @@
-import {Grid} from '@sanity/ui'
 import {FormInput, type ObjectInputProps} from 'sanity'
+import {Grid} from 'ui5'
 
 export const formInputDebug = {
   name: 'formInputDebug',
@@ -55,7 +55,7 @@ export const formInputDebug = {
 
 function CustomObjectInput(props: ObjectInputProps) {
   return (
-    <Grid gap={4} gridTemplateColumns={2}>
+    <Grid gap={4} gridTemplateColumns="repeat(2, minmax(0, 1fr))">
       <FormInput {...props} absolutePath={['arrayWithObjects']} />
       <FormInput {...props} absolutePath={['address', 'country']} />
     </Grid>

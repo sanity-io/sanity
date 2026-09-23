@@ -2,15 +2,16 @@ import {type ReleaseDocument} from '@sanity/client'
 import {ClockIcon} from '@sanity/icons/Clock'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {format} from 'date-fns/format'
 import {isBefore} from 'date-fns/isBefore'
 import {isValid} from 'date-fns/isValid'
 import {parse} from 'date-fns/parse'
 import {startOfMinute} from 'date-fns/startOfMinute'
-import isEqual from 'lodash-es/isEqual.js'
+import {dequal as isEqual} from 'dequal/lite'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -238,14 +239,14 @@ export const ReleaseScheduleButton = ({
           },
         }}
       >
-        <Stack gap={3}>
+        <VStack gap={3}>
           {_isScheduledDateInPast && (
             <Card marginBottom={1} padding={2} radius={2} shadow={1} tone="critical">
               <Text size={1}>{tCore('release.schedule-dialog.publish-date-in-past-warning')}</Text>
             </Card>
           )}
-          <Stack gap={3}>
-            <Flex align="center" justify="space-between" gap={2}>
+          <VStack gap={3}>
+            <Flex alignItems="center" justifyContent="space-between" gap={2}>
               <label>
                 <Text size={1} weight="semibold">
                   {tCore('release.schedule-dialog.select-publish-date-label')}
@@ -284,7 +285,7 @@ export const ReleaseScheduleButton = ({
               isPastDisabled
               timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
             />
-          </Stack>
+          </VStack>
           <Text muted size={1}>
             <Translate
               t={t}
@@ -295,7 +296,7 @@ export const ReleaseScheduleButton = ({
               }}
             />
           </Text>
-        </Stack>
+        </VStack>
       </Dialog>
     )
   }, [
@@ -360,7 +361,7 @@ export const ReleaseScheduleButton = ({
   const scheduleTooltipContent = useMemo(() => {
     return (
       <Text muted size={1}>
-        <Flex align="center" gap={3} padding={1}>
+        <Flex alignItems="center" gap={3} padding={1}>
           <ToneIcon icon={ErrorOutlineIcon} tone={isValidatingDocuments ? 'default' : 'critical'} />
           {tooltipText}
         </Flex>

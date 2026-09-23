@@ -65,7 +65,7 @@ function agentVersion(bundleId: string): VersionInfoDocumentStub {
 function variantDraft(variant: SystemVariant, scopeId: string): VersionInfoDocumentStub {
   return stub(`drafts.${scopeId}.${PUBLISHED_ID}`, {
     bundleId: 'drafts',
-    variant: {_ref: variant._id, _weak: true},
+    variants: [{_ref: variant._id, _key: 'k-123'}],
     scopeId,
   })
 }
@@ -73,7 +73,7 @@ function variantDraft(variant: SystemVariant, scopeId: string): VersionInfoDocum
 // A published variant, outside any release.
 function variantPublished(variant: SystemVariant, scopeId: string): VersionInfoDocumentStub {
   return stub(`published.${scopeId}.${PUBLISHED_ID}`, {
-    variant: {_ref: variant._id, _weak: true},
+    variants: [{_ref: variant._id, _key: 'k-123'}],
     scopeId,
   })
 }
@@ -87,7 +87,7 @@ function variantInRelease(
   return stub(`versions.${releaseId}.${scopeId}.${PUBLISHED_ID}`, {
     bundleId: releaseId,
     release: {_ref: getReleaseDocumentIdFromReleaseId(releaseId), _weak: true},
-    variant: {_ref: variant._id, _weak: true},
+    variants: [{_ref: variant._id, _key: 'k-123'}],
     scopeId,
   })
 }

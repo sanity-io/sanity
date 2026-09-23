@@ -1,0 +1,11 @@
+{
+  "name": "bench-studio-customizations",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Nested studio project for the bench customization build — kept separate so the default build's input graph (and therefore the pristine dist) is untouched. Not a workspace package (pnpm-workspace.yaml matches perf/* only); modules resolve from perf/bench/node_modules — the dependencies below are declarations for the Sanity CLI's manifest check, never installed here.",
+  "type": "module",
+  "dependencies": {
+    "sanity": "*",
+    "styled-components": "^6.5.3"
+  }
+}

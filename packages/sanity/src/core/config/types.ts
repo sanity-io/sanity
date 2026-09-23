@@ -101,6 +101,25 @@ export interface SanityFormConfig {
    */
   components?: FormComponents
 
+  /**
+   * Array-related functionality.
+   * @hidden
+   * @beta
+   */
+  arrays?: {
+    /**
+     * Renders long arrays with a limited number of items, collapsing the rest behind a
+     * "show all items" toggle so that a single long array doesn't push the rest of the
+     * document form out of view.
+     */
+    collapseItems?: {
+      /** @defaultValue `true` */
+      enabled?: boolean
+      /** @defaultValue `4` */
+      limit?: number
+    }
+  }
+
   file?: {
     /**
      * @hidden
@@ -936,6 +955,25 @@ export interface Source {
    */
   form: {
     /**
+     * Array-related functionality.
+     * @hidden
+     * @beta
+     */
+    arrays: {
+      /** Collapsing of long arrays in the form. */
+      collapseItems: {
+        /** Whether long arrays are collapsed. */
+        enabled: boolean
+
+        /** The number of items rendered before the remaining items are collapsed. */
+        limit: number
+
+        /** The same, for arrays using the grid layout. Follows `limit` when one is configured. */
+        gridLimit: number
+      }
+    }
+
+    /**
      * File-related functionality.
      * @hidden
      * @beta
@@ -1239,6 +1277,7 @@ export type {AuthConfig} from './auth/types'
 
 /** @beta */
 export type DefaultPluginsWorkspaceOptions = {
+  comments: {v2: boolean}
   tasks: {enabled: boolean}
   scheduledDrafts: {enabled: boolean}
   variants: {enabled: boolean}
@@ -1354,6 +1393,14 @@ export interface BetaFeatures {
    */
   variants?: {
     enabled?: boolean
+  }
+  /**
+   * Config for the opt-in Comments API implementation.
+   *
+   * @internal
+   */
+  comments?: {
+    v2?: boolean
   }
   /**
    * Control whether the preview of the new document group inventory is

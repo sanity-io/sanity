@@ -1,11 +1,5 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {
-  Flex,
-  type Placement,
-  PortalProvider,
-  useClickOutsideEvent,
-  useGlobalKeyDown,
-} from '@sanity/ui'
+import {type Placement, PortalProvider, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo, useState} from 'react'
 import {
@@ -19,13 +13,14 @@ import {
   useEvents,
   useTranslation,
 } from 'sanity'
-import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Popover} from '../../../../../ui-components/popover/Popover'
 import {useDocumentPane} from '../../useDocumentPane'
 import {TimelineError} from '../TimelineError'
 import {EventsTimeline} from './EventsTimeline'
+import {root} from './EventsTimelineMenu.css'
 
 interface TimelineMenuProps {
   event: DocumentGroupEvent | null
@@ -33,11 +28,6 @@ interface TimelineMenuProps {
   mode: 'rev' | 'since'
   placement?: Placement
 }
-
-const Root = styled(Popover)`
-  overflow: hidden;
-  overflow: clip;
-`
 
 const TIMELINE_MENU_PORTAL = 'timeline-menu'
 
@@ -193,7 +183,8 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
 
   return (
     <PortalProvider __unstable_elements={portalElements}>
-      <Root
+      <Popover
+        className={root}
         data-testid="timeline-menu"
         constrainSize
         content={open && content}
@@ -222,7 +213,7 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
             text={loading ? t('timeline.loading-history') : buttonLabel}
           />
         </Flex>
-      </Root>
+      </Popover>
     </PortalProvider>
   )
 }

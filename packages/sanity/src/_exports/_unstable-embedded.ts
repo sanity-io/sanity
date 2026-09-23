@@ -65,7 +65,7 @@ export {CopyPasteProvider} from '../core/studio/copyPaste/CopyPasteProvider'
 export {SourceProvider} from '../core/studio/source'
 export {useWorkspace, WorkspaceProvider} from '../core/studio/workspace'
 export {EMPTY_ARRAY} from '../core/util/empty'
-export {validateDocument} from '../core/validation/validateDocument'
+export {validateDocument} from '../core/validation'
 export {type FIXME} from '../core/FIXME'
 export {
   defineArrayMember,

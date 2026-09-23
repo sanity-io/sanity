@@ -16,8 +16,8 @@ interface Props {
  * 'Fallback' context menu used with schedules that don't have any valid associated documentType.
  * Currently, all users can delete schedules that don't have any associated documents, so we don't need to check for permissions here.
  *
- * Ungated by `document.actions`: with no `schemaType` there is no context to resolve against, and
- * delete-schedule has no honest action id.
+ * Intentionally not gated on `document.actions`: without a `schemaType` there is no context to
+ * resolve against, and delete-schedule has no document action id either way.
  */
 export const FallbackContextMenu = (props: Props) => {
   const {onDelete, schedule} = props

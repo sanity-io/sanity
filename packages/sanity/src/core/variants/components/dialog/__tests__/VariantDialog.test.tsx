@@ -3,8 +3,9 @@ import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {variantAlphaAudience} from '../../../__fixtures__/variants.fixture'
 import {variantsUsEnglishLocaleBundle} from '../../../i18n'
-import {type EditableSystemVariant} from '../../../types'
+import {type EditableSystemVariant, type SystemVariant} from '../../../types'
 import {getVariantDefaults} from '../../../util/variantDefaults'
 import {VariantDialog} from '../VariantDialog'
 
@@ -12,9 +13,20 @@ const toastMock = vi.hoisted(() => ({
   push: vi.fn(),
 }))
 
+const variantsMock = vi.hoisted(() => ({
+  data: [] as SystemVariant[],
+  byId: new Map<string, SystemVariant>(),
+  loading: false,
+  error: undefined as Error | undefined,
+}))
+
 vi.mock('@sanity/ui/toast', async (importOriginal) => ({
   ...(await importOriginal()),
   useToast: vi.fn(() => toastMock),
+}))
+
+vi.mock('../../../store/useAllVariants', () => ({
+  useAllVariants: vi.fn(() => variantsMock),
 }))
 
 describe('VariantDialog', () => {
@@ -24,6 +36,10 @@ describe('VariantDialog', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     onSubmit.mockResolvedValue(undefined)
+    variantsMock.data = []
+    variantsMock.byId = new Map()
+    variantsMock.loading = false
+    variantsMock.error = undefined
   })
 
   const renderDialog = async (props?: {
@@ -118,6 +134,31 @@ describe('VariantDialog', () => {
       'Priority must be a number',
     )
     expect(onSubmit).not.toHaveBeenCalled()
+  })
+
+  it('submits an unchanged variant without flagging it as its own duplicate', async () => {
+    const user = userEvent.setup()
+    variantsMock.data = [variantAlphaAudience]
+    variantsMock.byId = new Map([[variantAlphaAudience._id, variantAlphaAudience]])
+
+    await renderDialog({
+      initialValue: {
+        _id: variantAlphaAudience._id,
+        _type: variantAlphaAudience._type,
+        conditions: variantAlphaAudience.conditions,
+        priority: variantAlphaAudience.priority,
+        metadata: variantAlphaAudience.metadata,
+      },
+      renderCancelButton: true,
+    })
+
+    await user.click(screen.getByTestId('save-variant-button'))
+
+    await waitFor(() => {
+      expect(onSubmit).toHaveBeenCalledTimes(1)
+    })
+    expect(screen.queryByTestId('variant-form-title-error')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('variant-form-conditions-duplicate-error')).not.toBeInTheDocument()
   })
 
   it('shows an error toast and keeps the dialog open when submit fails', async () => {

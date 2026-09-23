@@ -34,7 +34,8 @@ export function useFilteredReleases({
   const {data: releases} = useActiveReleases()
   const {data: archivedReleases} = useArchivedReleases()
   const {data: documentVersions} = useDocumentVersions({documentId})
-  const isCreatingDocument = displayed && !displayed._createdAt
+  const displayedId = displayed?._id ?? ''
+  const isCreatingDocument = Boolean(displayed && !displayed._createdAt)
 
   if (!documentVersions) return {notCurrentReleases: [], currentReleases: [], inCreation: null}
   // Gets the releases ids from the document versions, it means, the releases that the document belongs to
@@ -45,7 +46,7 @@ export function useFilteredReleases({
       const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
       const isCreatingThisVersion =
         isCreatingDocument &&
-        releaseId === getVersionFromId(displayed._id || '') &&
+        releaseId === getVersionFromId(displayedId) &&
         releaseId === selectedReleaseId
 
       if (isCreatingThisVersion) {
@@ -60,7 +61,7 @@ export function useFilteredReleases({
           // some other ASAP version will be published first.
           if (
             getDocumentIsInPerspective(
-              displayed?._id ?? '',
+              displayedId,
               getReleaseIdFromReleaseDocumentId(release._id),
             ) ||
             release.metadata.releaseType === 'scheduled'

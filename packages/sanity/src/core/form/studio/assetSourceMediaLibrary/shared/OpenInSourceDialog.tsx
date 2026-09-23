@@ -1,8 +1,8 @@
 import {type PluginPayload} from '@sanity/media-library-types'
 import {type Asset} from '@sanity/types'
-import {Card, Flex, useTheme} from '@sanity/ui'
+import {Card, useTheme} from '@sanity/ui'
 import {type ReactNode, useCallback, useMemo} from 'react'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -100,14 +100,14 @@ export function OpenInSourceDialog(props: OpenInSourceDialogProps): ReactNode {
             minHeight: '2dvh',
           }}
         >
-          <Flex gap={3} align="center" justify="space-between">
+          <Flex gap={3} alignItems="center" justifyContent="space-between">
             <Button
               onClick={onSelectNewAsset}
               text={selectNewAssetButtonLabel}
               size="large"
               tone="neutral"
             />
-            <Flex gap={2} align="center">
+            <Flex gap={2} alignItems="center">
               <Button
                 mode="bleed"
                 onClick={onClose}

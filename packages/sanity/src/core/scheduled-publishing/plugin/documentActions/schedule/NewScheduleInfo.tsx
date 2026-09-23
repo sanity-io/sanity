@@ -1,5 +1,5 @@
-import {Card, Stack, Text} from '@sanity/ui'
-import {Flex} from 'ui5'
+import {Card, Text} from '@sanity/ui'
+import {Flex, VStack} from 'ui5'
 
 import {useValidationStatus} from '../../../../hooks/useValidationStatus'
 import {getDraftId, getPublishedId} from '../../../../util/draftUtils'
@@ -15,7 +15,7 @@ interface Props {
 
 export function NewScheduleInfo({id, schemaType}: Props) {
   return (
-    <Stack gap={4}>
+    <VStack gap={4}>
       <Text size={1}>
         Schedule this document to be published at any time in the future.
         <br />
@@ -23,7 +23,7 @@ export function NewScheduleInfo({id, schemaType}: Props) {
       </Text>
       <Text size={1}>Visit the Schedules page to get an overview of all schedules.</Text>
       <ValidationWarning id={id} type={schemaType} />
-    </Stack>
+    </VStack>
   )
 }
 

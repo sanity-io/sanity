@@ -1,9 +1,9 @@
 import {type EditableReleaseDocument} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, Flex, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useState} from 'react'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -139,7 +139,7 @@ export function CopyToNewReleaseDialog(props: {
         marginBottom={2}
         style={{borderBottom: '1px solid var(--card-border-color)'}}
       >
-        <Flex align="center" padding={4} paddingTop={1} justify="space-between">
+        <Flex alignItems="center" padding={4} paddingTop={1} justifyContent="space-between">
           {schemaType ? (
             <Preview value={{_id: versionId}} schemaType={schemaType} />
           ) : (
@@ -147,7 +147,7 @@ export function CopyToNewReleaseDialog(props: {
           )}
 
           <Flex
-            align="center"
+            alignItems="center"
             gap={2}
             padding={1}
             paddingRight={2}
@@ -175,7 +175,7 @@ export function CopyToNewReleaseDialog(props: {
         )}
         <ReleaseForm onChange={handleOnChange} value={release} />
 
-        <Flex gap={3} justify="flex-end" paddingTop={3} align="center">
+        <Flex gap={3} justifyContent="flex-end" paddingTop={3} alignItems="center">
           <Button
             disabled={isSubmitting}
             text={t('common.dialog.cancel-button.text')}

@@ -9,12 +9,12 @@ import {
   useMemo,
   useState,
 } from 'react'
-import deepCompare from 'react-fast-compare'
 import {ReviewChangesContext} from 'sanity/_singletons'
 
 import {useZIndex} from '../components/zOffsets/useZIndex'
 import {pathToString} from '../field/paths/helpers'
 import {DEBUG} from './constants'
+import {isEqualTrackedChange} from './isEqualTrackedChange'
 import {useChangeIndicatorsReporter} from './tracker'
 
 /**
@@ -57,12 +57,7 @@ export const ChangeFieldWrapper = (props: {
     }),
     [element, path, hasHover, zIndex.popover, hasRevertHover],
   )
-  useChangeIndicatorsReporter(
-    reporterId,
-    reporterGetSnapshot,
-    // note: deepCompare should be ok here since we're not comparing deep values
-    deepCompare,
-  )
+  useChangeIndicatorsReporter(reporterId, reporterGetSnapshot, isEqualTrackedChange)
 
   const handleClick = useCallback(
     (event: SyntheticEvent) => {

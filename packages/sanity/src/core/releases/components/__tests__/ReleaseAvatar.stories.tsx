@@ -1,0 +1,78 @@
+import {type BadgeTone, Card, Text} from '@sanity/ui'
+import {type Meta, type StoryObj} from '@storybook/react-vite'
+import {VStack, Flex} from 'ui5'
+
+import {
+  activeASAPRelease,
+  activeCardinalityOneRelease,
+  activeScheduledRelease,
+  activeUndecidedRelease,
+} from '../../__fixtures__/release.fixture'
+import {StatusItem} from '../../tool/components/StatusItem'
+import {ReleaseAvatar} from '../ReleaseAvatar'
+
+const TONES: BadgeTone[] = ['default', 'primary', 'positive', 'caution', 'critical']
+
+/**
+ * Chromatic sentinel for ui5 Box padding and badge-tone icon colors on
+ * ReleaseAvatar / StatusItem. Icon color comes from `--card-badge-*-icon-color`.
+ */
+const meta = {
+  title: 'Releases/Release Avatar',
+  component: ReleaseAvatar,
+} satisfies Meta<typeof ReleaseAvatar>
+
+export default meta
+type Story = StoryObj<typeof meta>
+
+export const AllVariants: Story = {
+  args: {releaseType: 'asap'},
+  render: () => (
+    <Card padding={4}>
+      <VStack gap={5}>
+        <VStack gap={2}>
+          <Text muted size={1} weight="medium">
+            by releaseType
+          </Text>
+          <Flex alignItems="center" gap={3}>
+            <ReleaseAvatar releaseType="asap" />
+            <ReleaseAvatar releaseType="scheduled" />
+            <ReleaseAvatar releaseType="undecided" />
+          </Flex>
+        </VStack>
+        <VStack gap={2}>
+          <Text muted size={1} weight="medium">
+            by release document
+          </Text>
+          <Flex alignItems="center" gap={3}>
+            <ReleaseAvatar release={activeASAPRelease} />
+            <ReleaseAvatar release={activeScheduledRelease} />
+            <ReleaseAvatar release={activeUndecidedRelease} />
+            <ReleaseAvatar release={activeCardinalityOneRelease} />
+            <ReleaseAvatar release="drafts" />
+          </Flex>
+        </VStack>
+        <VStack gap={2}>
+          <Text muted size={1} weight="medium">
+            by tone
+          </Text>
+          <Flex alignItems="center" gap={3}>
+            {TONES.map((tone) => (
+              // oxlint-disable-next-line no-deprecated -- deprecated tone path is still rendered in production
+              <ReleaseAvatar key={tone} tone={tone} />
+            ))}
+          </Flex>
+        </VStack>
+        <VStack gap={2}>
+          <Text muted size={1} weight="medium">
+            StatusItem
+          </Text>
+          <VStack gap={2} style={{maxWidth: 280}}>
+            <StatusItem avatar={<ReleaseAvatar padding={2} releaseType="asap" />} text="ASAP" />
+            <StatusItem text="No avatar" />
+          </VStack>
+        </VStack>
+      </VStack>
+    </Card>
+  ),
+}

@@ -1,7 +1,6 @@
-import {Flex} from '@sanity/ui'
 import {type ReactNode} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {TextWithTone} from '../../../../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../../../../i18n/hooks/useTranslation'
@@ -94,14 +93,14 @@ export function FilterLabel({filter, fontSize = 1, showContent = true}: FilterLa
 
   if (!showContent || !operator?.descriptionKey) {
     return (
-      <Flex align="center" gap={1}>
+      <Flex alignItems="center" gap={1}>
         <Field {...componentProps} />
       </Flex>
     )
   }
 
   return (
-    <Flex align="center" gap={1}>
+    <Flex alignItems="center" gap={1}>
       <Translate
         t={t}
         i18nKey={operator?.descriptionKey}

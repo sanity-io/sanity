@@ -1,4 +1,4 @@
-import isEqual from 'lodash-es/isEqual.js'
+import {dequal as isEqual} from 'dequal/lite'
 import {useEffect, useMemo, useRef} from 'react'
 import {useRouter} from 'sanity/router'
 

@@ -1,7 +1,8 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {memo, type ReactNode, useMemo} from 'react'
 import {styled} from 'styled-components'
+import {Flex, VStack} from 'ui5'
 
 import {UserAvatar} from '../../../components/userAvatar/UserAvatar'
 import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
@@ -50,14 +51,14 @@ const ReleaseEventDocumentPreview = ({
   event: AddDocumentToReleaseEvent | DiscardDocumentFromReleaseEvent
 }) => {
   return (
-    <Stack gap={2}>
+    <VStack gap={2}>
       <ReleaseDocumentPreview
         releaseId={releaseId}
         documentId={event.documentId}
         documentTypeName={event.documentType}
         layout="block"
       />
-    </Stack>
+    </VStack>
   )
 }
 
@@ -134,10 +135,10 @@ export const ReleaseActivityListItem = memo(
         animate={{opacity: 1}}
         transition={{type: 'spring', bounce: 0, duration: 0.4}}
       >
-        <Flex align="center" gap={2}>
+        <Flex alignItems="center" gap={2}>
           <UserAvatar user={event.author} />
-          <Stack flex={1}>
-            <Flex gap={2} align="center">
+          <Flex flexBasis="0%" flexGrow={1} flexDirection="column">
+            <Flex gap={2} alignItems="center">
               <StatusText muted size={1}>
                 <Translate
                   t={t}
@@ -152,7 +153,7 @@ export const ReleaseActivityListItem = memo(
             {isAddDocumentToReleaseEvent(event) || isDiscardDocumentFromReleaseEvent(event) ? (
               <ReleaseEventDocumentPreview event={event} releaseId={releaseId} />
             ) : null}
-          </Stack>
+          </Flex>
         </Flex>
       </FadeInCard>
     )

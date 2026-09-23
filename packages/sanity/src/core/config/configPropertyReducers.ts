@@ -272,6 +272,85 @@ export const directUploadsReducer = (opts: {
   return result
 }
 
+/**
+ * @internal
+ */
+export interface CollapseArrayItemsConfig {
+  enabled: boolean
+  limit: number
+  /**
+   * Grid layouts fit several items per row, so they get a roomier default than lists. There is no
+   * separate option for it: a configured `limit` replaces both, so one number means one thing.
+   */
+  gridLimit: number
+}
+
+/**
+ * @internal
+ */
+export const initialCollapseArrayItems: CollapseArrayItemsConfig = {
+  enabled: true,
+  limit: 4,
+  gridLimit: 8,
+}
+
+/**
+ * @internal
+ */
+export const collapseArrayItemsReducer = (opts: {
+  config: PluginOptions
+  initialValue: CollapseArrayItemsConfig
+}): CollapseArrayItemsConfig => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  return flattenedConfig.reduce((acc, {config: innerConfig}) => {
+    const collapseItems = innerConfig.form?.arrays?.collapseItems
+
+    if (typeof collapseItems === 'undefined') return acc
+
+    if (!isRecord(collapseItems)) {
+      throw new Error(
+        `Expected \`form.arrays.collapseItems\` to be an object, but received ${getPrintableType(
+          collapseItems,
+        )}`,
+      )
+    }
+
+    const {enabled, limit} = collapseItems
+
+    if (typeof enabled !== 'undefined' && typeof enabled !== 'boolean') {
+      throw new Error(
+        `Expected \`form.arrays.collapseItems.enabled\` to be a boolean, but received ${getPrintableType(
+          enabled,
+        )}`,
+      )
+    }
+
+    if (typeof limit !== 'undefined') {
+      if (typeof limit !== 'number') {
+        throw new Error(
+          `Expected \`form.arrays.collapseItems.limit\` to be a number, but received ${getPrintableType(
+            limit,
+          )}`,
+        )
+      }
+
+      if (!Number.isInteger(limit) || limit < 1) {
+        throw new Error(
+          `Expected \`form.arrays.collapseItems.limit\` to be a positive integer, but received ${limit}`,
+        )
+      }
+    }
+
+    return {
+      enabled: enabled ?? acc.enabled,
+      limit: limit ?? acc.limit,
+      gridLimit: limit ?? acc.gridLimit,
+    }
+  }, initialValue)
+}
+
 export const imageAssetSourceResolver: ConfigPropertyReducer<AssetSource[], ConfigContext> = (
   prev,
   {form},
@@ -495,6 +574,34 @@ export const variantsEnabledReducer = (opts: {
   }, initialValue)
 
   return result
+}
+
+export const commentsV2EnabledReducer = (opts: {
+  config: PluginOptions
+  initialValue: boolean
+}): boolean => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  return flattenedConfig.reduce((value: boolean, {config: innerConfig}) => {
+    const comments: unknown = innerConfig.beta?.comments
+
+    if (typeof comments === 'undefined') return value
+    if (!isRecord(comments)) {
+      throw new Error(
+        `Expected \`beta.comments\` to be an object, but received ${getPrintableType(comments)}`,
+      )
+    }
+
+    const v2 = comments.v2
+
+    if (typeof v2 === 'undefined') return value
+    if (typeof v2 === 'boolean') return v2
+
+    throw new Error(
+      `Expected \`beta.comments.v2\` to be a boolean, but received ${getPrintableType(v2)}`,
+    )
+  }, initialValue)
 }
 
 export const documentGroupInventoryEnabledReducer = ({

@@ -1,12 +1,12 @@
 /* oxlint-disable i18next/no-literal-string */
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Container, Flex, Stack, Text} from '@sanity/ui'
-import {Box} from 'ui5'
+import {Card, Container, Text} from '@sanity/ui'
+import {Flex, Box} from 'ui5'
 
 export function NoToolsScreen() {
   return (
     <Card height="fill">
-      <Flex align="center" height="fill" justify="center" padding={4} sizing="border">
+      <Flex alignItems="center" height="100%" justifyContent="center" padding={4}>
         <Container width={0}>
           <Card padding={4} radius={2} shadow={1} tone="caution">
             <Flex>
@@ -15,7 +15,7 @@ export function NoToolsScreen() {
                   <WarningOutlineIcon />
                 </Text>
               </Box>
-              <Stack flex={1} marginLeft={3} gap={3}>
+              <Flex flexBasis="0%" flexGrow={1} marginLeft={3} gap={3} flexDirection="column">
                 <Text as="h1" size={1} weight="medium">
                   No configured tools
                 </Text>
@@ -31,7 +31,7 @@ export function NoToolsScreen() {
                     Learn how to add a tool &rarr;
                   </a>
                 </Text>
-              </Stack>
+              </Flex>
             </Flex>
           </Card>
         </Container>

@@ -18,7 +18,7 @@ export default defineConfig({
     'presentation.js',
     'router.js',
     'structure.js',
-    'workbench.js',
+    'dashboard.js',
   ],
   // `transform: 'oxc'` runs the React Compiler through `oxc-transform-react` (the native Rust
   // port) in the same pass that strips TypeScript and lowers JSX, instead of a separate

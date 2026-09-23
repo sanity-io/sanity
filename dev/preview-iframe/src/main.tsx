@@ -2,21 +2,11 @@ import 'ui5/styles.css'
 import './preview.css'
 
 import {type ClientPerspective} from '@sanity/client'
-import {
-  Card,
-  Flex,
-  Stack,
-  studioTheme,
-  Tab,
-  TabList,
-  TabPanel,
-  Text,
-  ThemeProvider,
-} from '@sanity/ui'
+import {Card, Stack, studioTheme, Tab, TabList, TabPanel, Text, ThemeProvider} from '@sanity/ui'
 import {enableVisualEditing} from '@sanity/visual-editing'
 import {Suspense, useEffect, useState} from 'react'
 import {createRoot} from 'react-dom/client'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {FieldGroups} from './FieldGroups'
 import {InitialValues} from './InitialValues'
@@ -33,7 +23,7 @@ function Main() {
   return (
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     <ThemeProvider theme={studioTheme}>
-      <Flex direction={'column'}>
+      <Flex flexDirection={'column'}>
         <Box padding={4}>
           <TabList gap={2}>
             <Tab

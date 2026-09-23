@@ -113,6 +113,54 @@ const examples: PatchExample[] = [
       scores: [{a: 1}, {a: 'hello'}, {a: 3}],
     },
   },
+  {
+    name: 'Insert anchored to an index of a non-array',
+    before: {
+      a: 'string',
+    },
+    patch: {
+      id: 'a',
+      insert: {
+        after: 'a[-1]',
+        items: [1],
+      },
+    },
+    after: {
+      a: 'string',
+    },
+  },
+  {
+    name: 'Insert before a negative-index range anchor',
+    before: {
+      a: [1, 2, 3],
+    },
+    patch: {
+      id: 'a',
+      insert: {
+        before: 'a[-2:-1]',
+        items: [9],
+      },
+    },
+    after: {
+      a: [1, 9, 2, 3],
+    },
+  },
+  {
+    name: 'Insert after an open-ended range anchor',
+    before: {
+      a: [1, 2, 3],
+    },
+    patch: {
+      id: 'a',
+      insert: {
+        after: 'a[1:]',
+        items: [9],
+      },
+    },
+    after: {
+      a: [1, 2, 3, 9],
+    },
+  },
 ]
 
 export default examples

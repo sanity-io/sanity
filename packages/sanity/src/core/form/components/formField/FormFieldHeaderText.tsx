@@ -1,8 +1,8 @@
 import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
-import {Badge, Flex, Stack, Text} from '@sanity/ui'
+import {Badge, Text} from '@sanity/ui'
 import {memo, type ReactNode} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {VStack, Flex, Box} from 'ui5'
 
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -51,9 +51,9 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
   const hasValidations = validation.length > 0
 
   return (
-    <Stack gap={3}>
-      <Flex align="center" paddingY={1}>
-        <Flex align="center">
+    <VStack gap={3}>
+      <Flex alignItems="center" paddingY={1}>
+        <Flex alignItems="center">
           <Text as="label" htmlFor={inputId} weight="medium" size={1}>
             {title || (
               <span style={{color: 'var(--card-muted-fg-color)'}}>
@@ -70,7 +70,7 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
         )}
 
         {(deprecated || hasValidations) && (
-          <LabelSuffix align="center">
+          <LabelSuffix alignItems="center">
             {deprecated && (
               <Box marginLeft={2}>
                 <Badge data-testid={`deprecated-badge-${title}`} tone="caution">
@@ -104,6 +104,6 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
           {description}
         </Text>
       )}
-    </Stack>
+    </VStack>
   )
 })

@@ -26,11 +26,12 @@ interface Props {
 }
 
 /**
- * Edit, Delete and Clear stay ungated by `document.actions` because none of them maps to an
- * honest document action id: deleting a schedule doesn't delete the document, and legacy
- * schedules aren't versions, so there's no `discardVersion` either. Edit's in-pane call site
- * already sits behind `useScheduleAction.action = 'schedule'`. Publish now hits the same
- * schedules API, but it resolves to a real document publish, so its call site gates on `publish`.
+ * Edit, Delete and Clear are intentionally not gated on `document.actions`: none of them maps to a
+ * document action id. Delete and Clear leave the document alive, and legacy schedules are not
+ * versions, so neither `delete` nor `discardVersion` applies. Edit patches a schedule record, and
+ * its in-pane call site already sits behind `useScheduleAction.action = 'schedule'`.
+ * Publish now resolves to a document publish, so its call site gates it on `publish`.
+ * Grant checks stay on `useDocumentPairPermissions({permission: 'publish'})`.
  */
 const ContextMenuItems = (props: Props) => {
   const {actions, onDelete, onEdit, schedule, schemaType} = props

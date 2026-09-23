@@ -1,10 +1,48 @@
-import {type SanityDocument} from '@sanity/types'
+import {configure, takeSnapshot} from '@chromatic-com/vitest'
+import {defineArrayMember, defineField, defineType, type SanityDocument} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
 
+import {TestForm} from '../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../test/browser/testHelpers'
-import {StylesStory} from './StylesStory'
+import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
+
+const SCHEMA_TYPES = [
+  defineType({
+    type: 'document',
+    name: 'test',
+    title: 'Test',
+    fields: [
+      defineField({
+        type: 'array',
+        name: 'defaultStyles',
+        of: [
+          defineArrayMember({
+            type: 'block',
+          }),
+        ],
+      }),
+      defineField({
+        type: 'array',
+        name: 'oneStyle',
+        of: [
+          defineArrayMember({
+            type: 'block',
+            styles: [{title: 'Normal', value: 'normal'}],
+          }),
+        ],
+      }),
+    ],
+  }),
+]
+function StylesHarness(props: {document?: SanityDocument}) {
+  return (
+    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+      <TestForm document={props.document} />
+    </TestWrapper>
+  )
+}
 
 const DEFAULT_STYLE_NAMES = [
   'Normal',
@@ -21,8 +59,10 @@ describe('Portable Text Input', () => {
   describe('Styles', () => {
     describe('Toolbar', () => {
       it('Should display all default styles in style selector when clicked', async () => {
-        const {getFocusedPortableTextInput} = testHelpers()
-        void render(<StylesStory />)
+        // Menu open/closed races the auto snapshot; capture while open.
+        configure({disableAutoSnapshot: true})
+        const {getFocusedPortableTextInput, settleChromaticEndState} = testHelpers()
+        void render(<StylesHarness />)
         const $portableTextInput = await getFocusedPortableTextInput('field-defaultStyles')
         const $styleSelectButton = $portableTextInput.getByTestId('block-style-select')
         await $styleSelectButton.click()
@@ -34,24 +74,36 @@ describe('Portable Text Input', () => {
           // by visible text within the open menu (mirrors `.filter({hasText})`).
           await expect.element($menu.getByText(styleName, {exact: true})).toBeVisible()
         }
+        await settleChromaticEndState()
+        await expect.element($menu.getByText('Normal', {exact: true})).toBeVisible()
+        await takeSnapshot('default-styles-menu-open')
       })
 
       it('Should not display block style button when no block styles are present', async () => {
-        const {getFocusedPortableTextInput} = testHelpers()
-        void render(<StylesStory />)
+        const {getFocusedPortableTextInput, settleChromaticEndState} = testHelpers()
+        void render(<StylesHarness />)
         const $portableTextInput = await getFocusedPortableTextInput('field-oneStyle')
         const styleSelectButton = $portableTextInput
           .element()
           .querySelector('button#block-style-select')
         expect(styleSelectButton).toBeNull()
+        // The toolbar's action buttons render only once the editor selection
+        // has landed (asynchronously after focus) and CollapseMenu has
+        // measured them; an identical-code Chromatic pair archived this toolbar
+        // once with and once without its buttons. Assert the archived state
+        // (by role: CollapseMenu's aria-hidden measurement rows repeat the
+        // button, so a test-id query is ambiguous).
+        await expect.element($portableTextInput.getByRole('button', {name: 'Strong'})).toBeVisible()
+        await settleChromaticEndState()
+        expect($portableTextInput.element().querySelector('button#block-style-select')).toBeNull()
       })
 
       it('Applies the chosen style to every block in the selection, not just the focus block', async () => {
         const documentValue: SanityDocument = {
           _id: '123',
           _type: 'test',
-          _createdAt: new Date().toISOString(),
-          _updatedAt: new Date().toISOString(),
+          _createdAt: '2024-01-01T00:00:00.000Z',
+          _updatedAt: '2024-01-01T00:00:00.000Z',
           _rev: '123',
           defaultStyles: [
             {
@@ -71,21 +123,31 @@ describe('Portable Text Input', () => {
           ],
         }
 
-        const {getFocusedPortableTextInput, waitForFocusedNodeText, waitForDocumentState} =
+        const {getFocusedPortableTextInput, waitForDocumentState, waitForPortableTextSelection} =
           testHelpers()
-        void render(<StylesStory document={documentValue} />)
+        void render(<StylesHarness document={documentValue} />)
         const $portableTextInput = await getFocusedPortableTextInput('field-defaultStyles')
 
         const $headingText = [...$portableTextInput.element().querySelectorAll('*')].find(
           (node) => node.childElementCount === 0 && node.textContent === 'Heading text',
         )
         await userEvent.click($headingText as HTMLElement)
+        await waitForPortableTextSelection('')
         // Place the selection anchor at the end of the `h2` block, then extend
         // the focus down into the `normal` block below it, so the selection
-        // spans both blocks with its focus outside the `h2` block.
+        // spans both blocks with its focus outside the `h2` block. Let the
+        // editor pick up the caret before extending it: a Shift+ArrowDown
+        // inside the sync window of the `End` keystroke is written back over
+        // by the editor's `validateSelection` and the focus never leaves the `h2`.
         await userEvent.keyboard('{End}')
+        await waitForPortableTextSelection('')
         await userEvent.keyboard('{Shift>}{ArrowDown}{/Shift}')
-        await waitForFocusedNodeText('Normal text')
+        // Then let the editor take the extended selection over before the
+        // toolbar acts on it; where the focus lands in the next block depends
+        // on layout, so match the focus node rather than the selected text.
+        await waitForPortableTextSelection(
+          (selection) => selection.focusNode?.textContent === 'Normal text',
+        )
 
         const $styleSelectButton = $portableTextInput.getByTestId('block-style-select')
         await $styleSelectButton.click()
@@ -117,8 +179,8 @@ describe('Portable Text Input', () => {
         const documentValue: SanityDocument = {
           _id: '123',
           _type: 'test',
-          _createdAt: new Date().toISOString(),
-          _updatedAt: new Date().toISOString(),
+          _createdAt: '2024-01-01T00:00:00.000Z',
+          _updatedAt: '2024-01-01T00:00:00.000Z',
           _rev: '123',
           defaultStyles: [
             {
@@ -137,17 +199,23 @@ describe('Portable Text Input', () => {
           ],
         }
 
-        const {getFocusedPortableTextInput, waitForFocusedNodeText, waitForDocumentState} =
+        const {getFocusedPortableTextInput, waitForDocumentState, waitForPortableTextSelection} =
           testHelpers()
-        void render(<StylesStory document={documentValue} />)
+        void render(<StylesHarness document={documentValue} />)
         const $portableTextInput = await getFocusedPortableTextInput('field-defaultStyles')
         const $firstText = [...$portableTextInput.element().querySelectorAll('*')].find(
           (node) => node.childElementCount === 0 && node.textContent === 'Explicit normal text',
         )
         await userEvent.click($firstText as HTMLElement)
+        await waitForPortableTextSelection('')
+        // Same as above: let the editor pick up each caret move before the
+        // next keystroke, and the extended selection before the toolbar acts.
         await userEvent.keyboard('{End}')
+        await waitForPortableTextSelection('')
         await userEvent.keyboard('{Shift>}{ArrowDown}{/Shift}')
-        await waitForFocusedNodeText('Unstyled text')
+        await waitForPortableTextSelection(
+          (selection) => selection.focusNode?.textContent === 'Unstyled text',
+        )
 
         const $styleSelectButton = $portableTextInput.getByTestId('block-style-select')
         await $styleSelectButton.click()

@@ -1,5 +1,6 @@
-import {Flex, Stack} from '@sanity/ui'
+import {Stack} from '@sanity/ui'
 import {IntentLink} from 'sanity/router'
+import {Flex} from 'ui5'
 
 export function MovieTitleInput(props) {
   return (

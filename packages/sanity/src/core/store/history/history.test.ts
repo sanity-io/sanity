@@ -230,9 +230,37 @@ describe('createHistoryStore', () => {
       })
     })
 
-    test('uses replaceDraft addressed at the version id for version targets (release or variant scoped)', async () => {
-      // Variant version ids carry an opaque scope hash as the bundle segment; the restore action
-      // must address the version document itself and use the versioned actions API client.
+    test('uses version.replace for release version targets', async () => {
+      const releaseVersionId = 'versions.rI4gmhsFL.doc-id'
+      const client = buildClient()
+      const historyStore = createHistoryStore({client})
+
+      await new Promise<void>((resolve, reject) => {
+        historyStore
+          .restore('doc-id', releaseVersionId, 'rev-1', {
+            fromDeleted: false,
+            useServerDocumentActions: true,
+          })
+          .subscribe({complete: resolve, error: reject})
+      })
+
+      expect(mockAction).toHaveBeenCalledTimes(1)
+      expect(mockCreateOrReplace).not.toHaveBeenCalled()
+      const [actions] = mockAction.mock.calls[0]
+      expect(actions).toMatchObject({
+        actionType: 'sanity.action.document.version.replace',
+        document: expect.objectContaining({_id: releaseVersionId, title: 'Restored'}),
+      })
+      expect(actions).not.toHaveProperty('publishedId')
+      // The versioned actions API client is selected because the pair derives from the target id.
+      expect(client.withConfig).toHaveBeenCalledWith({apiVersion: 'v2025-02-19'})
+    })
+
+    test('keeps replaceDraft addressed at the version id for variant-scoped targets', async () => {
+      // Variant version ids carry an opaque scope hash as the bundle segment and are
+      // indistinguishable from release ids by shape. There is no `document.variant.replace`
+      // action, so variant documents keep the raw-id draft actions instead of the release-only
+      // `document.version.*` family.
       const variantVersionId = 'versions.a1b2c3d4e5.doc-id'
       const client = buildClient()
       const historyStore = createHistoryStore({client})
@@ -242,6 +270,7 @@ describe('createHistoryStore', () => {
           .restore('doc-id', variantVersionId, 'rev-1', {
             fromDeleted: false,
             useServerDocumentActions: true,
+            variant: {variantId: 'french', bundleId: 'drafts'},
           })
           .subscribe({complete: resolve, error: reject})
       })
@@ -254,8 +283,58 @@ describe('createHistoryStore', () => {
         publishedId: 'doc-id',
         attributes: expect.objectContaining({_id: variantVersionId}),
       })
-      // The versioned actions API client is selected because the pair derives from the target id.
       expect(client.withConfig).toHaveBeenCalledWith({apiVersion: 'v2025-02-19'})
+    })
+
+    test('does not send document.create when restoring a version that already exists', async () => {
+      // Reproducing the reported 409 documentAlreadyExistsError: the draft write path sent
+      // `document.create` with `ifExists: fail` carrying the version id, which trips the
+      // one-version-per-published-id guard whenever that version is already in the release.
+      const releaseVersionId = 'versions.rI4gmhsFL.doc-id'
+      const client = buildClient()
+      const historyStore = createHistoryStore({client})
+
+      await new Promise<void>((resolve, reject) => {
+        historyStore
+          .restore('doc-id', releaseVersionId, 'rev-1', {
+            fromDeleted: false,
+            useServerDocumentActions: true,
+          })
+          .subscribe({complete: resolve, error: reject})
+      })
+
+      expect(mockCreateOrReplace).not.toHaveBeenCalled()
+      expect(mockAction).toHaveBeenCalledTimes(1)
+      const [actions] = mockAction.mock.calls[0]
+      expect(Array.isArray(actions) ? actions : [actions]).toEqual([
+        expect.objectContaining({
+          actionType: 'sanity.action.document.version.replace',
+          document: expect.objectContaining({_id: releaseVersionId}),
+        }),
+      ])
+    })
+
+    test('creates the version when restoring a revision into a release that has no version yet', async () => {
+      const releaseVersionId = 'versions.rI4gmhsFL.doc-id'
+      const client = buildClient()
+      const historyStore = createHistoryStore({client})
+
+      await new Promise<void>((resolve, reject) => {
+        historyStore
+          .restore('doc-id', releaseVersionId, 'rev-1', {
+            fromDeleted: true,
+            useServerDocumentActions: true,
+          })
+          .subscribe({complete: resolve, error: reject})
+      })
+
+      expect(mockCreateOrReplace).not.toHaveBeenCalled()
+      const [actions] = mockAction.mock.calls[0]
+      expect(actions).toMatchObject({
+        actionType: 'sanity.action.document.version.create',
+        publishedId: 'doc-id',
+        document: expect.objectContaining({_id: releaseVersionId, title: 'Restored'}),
+      })
     })
 
     test('falls back to createOrReplace when useServerDocumentActions is not set', async () => {

@@ -172,7 +172,6 @@ export const useSchedulePublishAction: DocumentActionComponent = (
         <ScheduleDraftDialog
           onClose={handleCloseDialog}
           onSchedule={handleSchedule}
-          variant="schedule"
           loading={isScheduling}
           initialDate={initialDate}
         />

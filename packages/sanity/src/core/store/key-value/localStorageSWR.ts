@@ -1,4 +1,4 @@
-import isEqual from 'lodash-es/isEqual.js'
+import {dequal as isEqual} from 'dequal/lite'
 import {merge, of} from 'rxjs'
 import {distinctUntilChanged, tap} from 'rxjs/operators'
 
