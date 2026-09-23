@@ -16,6 +16,7 @@ import {
   type SessionConfig,
 } from './interaction'
 import {awaitReadiness, gotoScenario} from './navigation'
+import {resetMockForScenario} from './seed'
 import {runStep, toTypeStep} from './steps'
 
 export interface InpSessionResult extends InpResult {
@@ -73,10 +74,7 @@ export async function runInpSession(options: {
   const {browser, running, scenario, instrumentation} = options
   const config = {...DEFAULT_INP_CONFIG, ...options.config}
 
-  running.mock.hub.closeAll()
-  running.mock.store.reset()
-  running.mock.ledger.reset()
-  running.mock.store.seed(scenarioFixture(scenario))
+  resetMockForScenario(running, scenario)
 
   const session = await createSessionContext(browser, running.side, running.studioUrl, {
     cpuThrottleRate: config.cpuThrottleRate,

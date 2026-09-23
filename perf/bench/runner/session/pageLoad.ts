@@ -7,6 +7,7 @@ import {type RunningSide} from '../servers'
 import {SessionError} from './errors'
 import {HERMETICITY_HINT, UNEXPECTED_ENDPOINT_HINT} from './interaction'
 import {awaitReadiness, scenarioUrl} from './navigation'
+import {resetMockForScenario} from './seed'
 import {milestoneMeasureName, runStep} from './steps'
 import {takePageStyleCensus} from './styles'
 
@@ -364,11 +365,8 @@ export async function runPageLoadSample(options: {
   const auth = scenario.load?.auth ?? 'authenticated'
   const conditions = scenario.load?.conditions ?? ['boot-cold', 'open-doc-warm']
 
-  running.mock.hub.closeAll()
-  running.mock.store.reset()
-  running.mock.ledger.reset()
+  resetMockForScenario(running, scenario)
   running.mock.setRequireToken(auth === 'logged-out')
-  running.mock.store.seed(scenarioFixture(scenario))
 
   const session = await createSessionContext(browser, running.side, running.studioUrl, {
     cpuThrottleRate: config.cpuThrottleRate,

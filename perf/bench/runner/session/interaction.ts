@@ -15,6 +15,7 @@ import {createSessionContext, type SessionContext} from '../browser'
 import {type RunningSide} from '../servers'
 import {SessionError} from './errors'
 import {awaitReadiness, gotoScenario} from './navigation'
+import {resetMockForScenario} from './seed'
 import {takePageStyleCensus} from './styles'
 
 /** Characters cycled through while typing (letters + digits only). */
@@ -388,11 +389,7 @@ export async function runInteractionSession(options: {
   const {documentId, documentType} = scenarioDocument(scenario)
   const draftId = `drafts.${documentId}`
 
-  // Fresh state, in-process — no HTTP round-trips to our own mock
-  running.mock.hub.closeAll()
-  running.mock.store.reset()
-  running.mock.ledger.reset()
-  running.mock.store.seed(scenarioFixture(scenario))
+  resetMockForScenario(running, scenario)
 
   // Pre-typing field text, needed by the Portable Text readback (typed
   // characters are validated as a delta over the seeded content)
@@ -722,10 +719,7 @@ export async function runSoakSession(options: {
   const config = {...DEFAULT_SESSION_CONFIG, ...options.config}
   const log = options.log ?? (() => {})
 
-  running.mock.hub.closeAll()
-  running.mock.store.reset()
-  running.mock.ledger.reset()
-  running.mock.store.seed(scenarioFixture(scenario))
+  resetMockForScenario(running, scenario)
 
   const session = await createSessionContext(browser, running.side, running.studioUrl, {
     cpuThrottleRate: config.cpuThrottleRate,

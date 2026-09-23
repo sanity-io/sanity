@@ -11,6 +11,7 @@ import {SessionError} from './errors'
 import {DEFAULT_SESSION_CONFIG, HERMETICITY_HINT, readCpuMetrics} from './interaction'
 import {awaitReadiness, gotoScenario} from './navigation'
 import {foldLoafAttribution} from './pageLoad'
+import {resetMockForScenario} from './seed'
 import {takePageStyleCensus} from './styles'
 
 /**
@@ -134,10 +135,7 @@ export async function runSettleSession(options: {
   const {browser, running, scenario, instrumentation, settleInstrumentation, styleProbe} = options
   const config = {...DEFAULT_SETTLE_CONFIG, ...options.config}
 
-  running.mock.hub.closeAll()
-  running.mock.store.reset()
-  running.mock.ledger.reset()
-  running.mock.store.seed(scenarioFixture(scenario))
+  resetMockForScenario(running, scenario)
 
   const session = await createSessionContext(browser, running.side, running.studioUrl, {
     cpuThrottleRate: config.cpuThrottleRate,
