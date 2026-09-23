@@ -3,13 +3,13 @@ import {SearchIcon} from '@sanity/icons/Search'
 import {ThLargeIcon} from '@sanity/icons/ThLarge'
 import {UlistIcon} from '@sanity/icons/Ulist'
 import {type InsertMenuOptions, type SchemaType} from '@sanity/types'
-import {Button, Flex, Grid, Stack, Tab, TabList, Text, TextInput} from '@sanity/ui'
+import {Button, Stack, Tab, TabList, Text, TextInput} from '@sanity/ui'
 import {Menu, MenuItem, type MenuItemProps} from '@sanity/ui/menu'
 import {Tooltip} from '@sanity/ui/tooltip'
 import startCase from 'lodash-es/startCase.js'
 import {useReducer, useState, type ChangeEvent, type CSSProperties} from 'react'
 import {isValidElementType} from 'react-is'
-import {Box} from 'ui5'
+import {Flex, Grid, Box} from 'ui5'
 
 import {getSchemaTypeIcon} from './getSchemaTypeIcon'
 
@@ -94,7 +94,7 @@ export function InsertMenu(props: InsertMenuProps): React.JSX.Element {
 
   return (
     <Menu padding={0}>
-      <Flex direction="column" height="fill">
+      <Flex flexDirection="column" height="100%">
         <Box
           {...(showingAnyOptions
             ? {
@@ -105,7 +105,15 @@ export function InsertMenu(props: InsertMenuProps): React.JSX.Element {
         >
           {/* filter and views button */}
           {showingFilterOrViews ? (
-            <Flex flex="none" align="center" paddingTop={1} paddingX={1} gap={1}>
+            <Flex
+              flexBasis="auto"
+              flexGrow={0}
+              flexShrink={0}
+              alignItems="center"
+              paddingTop={1}
+              paddingX={1}
+              gap={1}
+            >
               {showFilter ? (
                 <Box flexBasis="0%" flexGrow={1}>
                   <TextInput
@@ -165,7 +173,7 @@ export function InsertMenu(props: InsertMenuProps): React.JSX.Element {
               </Text>
             </Box>
           ) : !selectedView ? null : selectedView.name === 'grid' ? (
-            <Grid autoRows="auto" flex={1} gap={1} style={gridStyle}>
+            <Grid gridAutoRows="auto" flexBasis="0%" flexGrow={1} gap={1} style={gridStyle}>
               {filteredSchemaTypes.map((schemaType) => (
                 <GridMenuItem
                   key={schemaType.name}
@@ -256,7 +264,7 @@ function GridMenuItem(props: GridMenuItemProps) {
 
   return (
     <MenuItem padding={0} radius={2} onClick={props.onClick} style={{overflow: 'hidden'}}>
-      <Flex direction="column" gap={1} padding={1}>
+      <Flex flexDirection="column" gap={1} padding={1}>
         <Box
           flexBasis="auto"
           flexGrow={0}
@@ -269,8 +277,8 @@ function GridMenuItem(props: GridMenuItemProps) {
         >
           {isValidElementType(Icon) && !hasPreviewImage ? (
             <Flex
-              align="center"
-              justify="center"
+              alignItems="center"
+              justifyContent="center"
               style={{
                 position: 'absolute',
                 top: 0,

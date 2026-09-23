@@ -1,7 +1,7 @@
-import {Card, Flex} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
@@ -242,8 +242,8 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
 
   return (
     <Root
-      align="flex-end"
-      justify="space-between"
+      alignItems="flex-end"
+      justifyContent="space-between"
       $floatingCardVisible={shouldShowFloatingCard}
       $floatingCardWidth={floatingCardWidth}
       $slotWidth={slotWidth}
@@ -260,7 +260,12 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
 
       {presence && presence.length > 0 && (
         <Box data-ui="PresenceBox" flexBasis="auto" flexGrow={0} flexShrink={0}>
-          <FieldPresence maxAvatars={MAX_AVATARS} presence={presence} />
+          <FieldPresence
+            maxAvatars={MAX_AVATARS}
+            presence={presence}
+            // The box above moves (see `Root`) whenever these change; the overlay must re-measure
+            layoutKey={`${shouldShowFloatingCard}:${floatingCardWidth}:${slotWidth}`}
+          />
         </Box>
       )}
 
@@ -281,7 +286,7 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
           >
             {hasActions && (
               <FieldActionsFlex
-                align="center"
+                alignItems="center"
                 data-ui="FieldActionsFlex"
                 data-testid={inputId ? `field-actions-menu-${inputId}` : `field-actions-menu`}
               >

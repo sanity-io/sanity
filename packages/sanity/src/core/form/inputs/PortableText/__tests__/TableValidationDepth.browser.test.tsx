@@ -6,6 +6,7 @@ import {
   type SanityDocument,
 } from '@sanity/types'
 import {describe, expect, it} from 'vitest'
+import {page, userEvent} from 'vitest/browser'
 
 import {TestForm} from '../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../test/browser/testHelpers'
@@ -114,8 +115,8 @@ const block = (key: string, text: string) => ({
 const document: SanityDocument = {
   _id: '123',
   _type: 'test',
-  _createdAt: new Date().toISOString(),
-  _updatedAt: new Date().toISOString(),
+  _createdAt: '2024-01-01T00:00:00.000Z',
+  _updatedAt: '2024-01-01T00:00:00.000Z',
   _rev: '123',
   body: [
     block('b0', 'bad root text'),
@@ -140,7 +141,7 @@ const document: SanityDocument = {
 
 describe('Portable Text Input - validation markers at depth', () => {
   it('renders the error marker on failing blocks at root and inside table cells alike', async () => {
-    const {getFocusedPortableTextEditor} = testHelpers()
+    const {getFocusedPortableTextEditor, settleChromaticEndState} = testHelpers()
 
     void render(<TableValidationDepthHarness document={document} />)
 
@@ -155,6 +156,16 @@ describe('Portable Text Input - validation markers at depth', () => {
       'clean root text': false,
       'bad cell text': true,
       'clean cell text': false,
+    })
+
+    // Focus can land on the table (column insert chrome / style select flicker).
+    // Click a clean text block so Chromatic always archives the same selection,
+    // then park the pointer (still over that text) and wait for the toolbar
+    // and style select to hold on Normal.
+    await userEvent.click(page.getByText('clean root text', {exact: true}))
+    await settleChromaticEndState({
+      styleSelectText: /^Normal$/,
+      styleSelectRoot: '[data-testid="field-body"]',
     })
   })
 })

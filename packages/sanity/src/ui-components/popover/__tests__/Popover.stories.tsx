@@ -1,5 +1,6 @@
-import {Box, Flex, Grid, Stack, Text} from '@sanity/ui'
+import {Box, Stack, Text} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
+import {Flex, Grid} from 'ui5'
 
 import {Button} from '../../button/Button'
 import {Popover} from '../Popover'
@@ -35,7 +36,7 @@ const popoverContent = (
 
 export const Default: Story = {
   render: () => (
-    <Flex align="center" justify="center" style={{minHeight: 240}}>
+    <Flex alignItems="center" justifyContent="center" style={{minHeight: 240}}>
       <Popover content={popoverContent} open placement="bottom" portal>
         <Button mode="ghost" text="Anchor" />
       </Popover>
@@ -51,7 +52,7 @@ const placementContent = (
 
 function PlacementCell(props: {placement: 'top' | 'right' | 'bottom' | 'left'}) {
   return (
-    <Flex justify="center" paddingY={5}>
+    <Flex justifyContent="center" paddingY={5}>
       <Popover content={placementContent} open placement={props.placement} portal>
         <Button mode="ghost" text={props.placement} />
       </Popover>
@@ -66,7 +67,7 @@ function PlacementCell(props: {placement: 'top' | 'right' | 'bottom' | 'left'}) 
  */
 export const Placements: Story = {
   render: () => (
-    <Grid gap={6} gridTemplateColumns={2} paddingX={4} paddingY={6}>
+    <Grid gap={6} gridTemplateColumns="repeat(2, minmax(0, 1fr))" paddingX={4} paddingY={6}>
       {(['top', 'right', 'bottom', 'left'] as const).map((placement) => (
         <PlacementCell key={placement} placement={placement} />
       ))}

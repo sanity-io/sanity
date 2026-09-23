@@ -58,10 +58,7 @@ describe('uploadImages()', () => {
               "_key": "key-7",
               "_type": "span",
               "marks": [],
-              "text": "In markdown’s gentle, ticking time,
-      I shape my thoughts in simple rhyme—
-      With hashes bold and asterisks bright,
-      I carve out headings in the night.",
+              "text": "In markdown’s gentle, ticking time, I shape my thoughts in simple rhyme— With hashes bold and asterisks bright, I carve out headings in the night.",
             },
           ],
           "markDefs": [],
@@ -114,8 +111,7 @@ describe('uploadImages()', () => {
               "_key": "key-14",
               "_type": "span",
               "marks": [],
-              "text": "Some gifs:
-      ",
+              "text": "Some gifs: ",
             },
             {
               "_key": "key-15",

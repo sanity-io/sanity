@@ -3,6 +3,7 @@ import {useMemo} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {map, of} from 'rxjs'
 
+import {randomKey} from '../../form/utils/randomKey'
 import {getTargetSiblings, type TargetDocumentState} from '../../hooks/useTargetDocumentState'
 import {useDocumentPreviewStore} from '../../store/datastores'
 import {type InitialValueState} from '../../store/document/initialValue/types'
@@ -11,7 +12,7 @@ import {getPublishedId, getVersionFromId} from '../../util/draftUtils'
 /**
  * Builds the initial value for a creatable missing draft variant from its published sibling: the
  * sibling's content re-identified as the draft target, with `_system` rewritten for the draft
- * (`{variant, bundleId: 'drafts', scopeId, group}`) and the sibling's `_rev` dropped (the
+ * (`{variants, bundleId: 'drafts', scopeId, group}`) and the sibling's `_rev` dropped (the
  * draft-to-be has no revision).
  *
  * The value serves double duty through the form's `initialValue`: it is displayed until the
@@ -31,6 +32,7 @@ export function buildCreatableVariantInitialValue(options: {
 }): SanityDocumentLike {
   const {publishedSibling, target, variantId} = options
   const {_rev, ...content} = publishedSibling
+  const variantRef = {_ref: variantId, _key: randomKey()}
   return {
     ...content,
     _id: target.id,
@@ -39,7 +41,9 @@ export function buildCreatableVariantInitialValue(options: {
         _ref: getPublishedId(target.id),
         _weak: true as const,
       },
-      variant: {_ref: variantId, _weak: true as const},
+      variants: [variantRef],
+      // oxlint-disable-next-line typescript/no-deprecated - We are keeping it backwards compatible, will be removed once we fully drop the legacy variant field in content lake.
+      variant: variantRef,
       bundleId: 'drafts',
       scopeId: getVersionFromId(target.id),
     },

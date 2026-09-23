@@ -141,12 +141,8 @@ async function validateSlugUniqueness(
   }
 }
 
-export const defaultSlugUniquenessValidator: CustomValidator = (value, context) =>
-  validateSlugUniqueness(value, context, defaultIsUnique)
-
-export const customSlugUniquenessValidator: CustomValidator = (value, context) => {
+export const slugUniquenessValidator: CustomValidator = (value, context) => {
   const options = context.type?.options
-  return hasCustomSlugUniqueness(options)
-    ? validateSlugUniqueness(value, context, options.isUnique)
-    : true
+  const isUnique = hasCustomSlugUniqueness(options) ? options.isUnique : defaultIsUnique
+  return validateSlugUniqueness(value, context, isUnique)
 }

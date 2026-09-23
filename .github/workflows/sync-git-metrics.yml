@@ -37,7 +37,7 @@ on:
   workflow_dispatch:
     inputs:
       backfill:
-        description: "Full backfill since v5.0.0 (instead of the incremental window)"
+        description: "Full backfill since v3.0.0 (instead of the incremental window)"
         required: false
         type: boolean
         default: false

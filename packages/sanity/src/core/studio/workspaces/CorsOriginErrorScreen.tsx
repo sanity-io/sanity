@@ -1,9 +1,9 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Card, Grid, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Heading, Text} from '@sanity/ui'
 import {type ReactNode, useMemo} from 'react'
 import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Flex, VStack, Grid, Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {isProd} from '../../environment'
@@ -153,7 +153,7 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
       <Card data-testid="studio-error-screen" data-error="CORS credentials disabled" height="fill">
         <CenteredContainer alignItems="center" justifyContent="center" padding={4}>
           <ContentWrapper paddingBottom={5}>
-            <Stack gap={5}>
+            <VStack gap={5}>
               <Heading as="h1" size={2}>
                 Enable credentials for this Studio
               </Heading>
@@ -182,7 +182,7 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
                   Need help with CORS? &rarr;
                 </DocsHelpLink>
               </Flex>
-            </Stack>
+            </VStack>
           </ContentWrapper>
         </CenteredContainer>
       </Card>
@@ -193,22 +193,32 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
     <Card data-testid="studio-error-screen" data-error="CORS origin error" height="fill">
       <CenteredContainer alignItems="center" justifyContent="center" padding={4}>
         <ContentWrapper paddingBottom={5}>
-          <Stack gap={5}>
+          <VStack gap={5}>
             <Heading as="h1" size={2}>
               Connect this Studio to your project
             </Heading>
-
             <Text size={2} muted>
               This Studio isn&apos;t connected to your project yet. Pick an option below to connect
               it.
             </Text>
-
-            <Grid gridTemplateColumns={showRegisterOption ? [1, 1, 2] : 1} gapX={4} gapY={3}>
+            <Grid
+              gridTemplateColumns={
+                showRegisterOption
+                  ? [
+                      'repeat(1, minmax(0, 1fr))',
+                      'repeat(1, minmax(0, 1fr))',
+                      'repeat(2, minmax(0, 1fr))',
+                    ]
+                  : 'repeat(1, minmax(0, 1fr))'
+              }
+              columnGap={4}
+              rowGap={3}
+            >
               {/* Register Studio Option */}
               {showRegisterOption && (
                 <Card border padding={4} radius={4}>
                   <Flex flexDirection="column" gap={4} height="100%">
-                    <Stack gap={4} flex={1}>
+                    <Flex gap={4} flexBasis="0%" flexGrow={1} flexDirection="column">
                       <Text size={2} weight="medium">
                         Register Studio
                       </Text>
@@ -222,7 +232,7 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
                         schema and manifest with the project. Required for schema-aware search,
                         Content Agent, and other features that read the deployed schema.
                       </Text>
-                    </Stack>
+                    </Flex>
                     <Button
                       as="a"
                       href={registerUrl}
@@ -239,7 +249,7 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
               {/* Add CORS origin */}
               <Card border padding={4} radius={4}>
                 <Flex flexDirection="column" gap={4} height="100%">
-                  <Stack gap={4} flex={1}>
+                  <Flex gap={4} flexBasis="0%" flexGrow={1} flexDirection="column">
                     <Text size={2} weight="medium">
                       Add CORS origin
                     </Text>
@@ -248,7 +258,7 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
                       For URLs that don&apos;t need schema syncing or other registered-Studio
                       features (localhost, preview deploys, and other one-off origins).
                     </Text>
-                  </Stack>
+                  </Flex>
 
                   <Button
                     as="a"
@@ -264,7 +274,6 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
                 </Flex>
               </Card>
             </Grid>
-
             <Flex gap={4} justifyContent="flex-end" flexWrap="wrap">
               <DocsHelpLink
                 href={STUDIO_REGISTRATION_DOCS_URL}
@@ -276,7 +285,7 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
                 Learn about CORS &rarr;
               </DocsHelpLink>
             </Flex>
-          </Stack>
+          </VStack>
         </ContentWrapper>
       </CenteredContainer>
     </Card>

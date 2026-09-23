@@ -1,6 +1,6 @@
 import {type Schema, type SchemaType, type SchemaValidationValue} from '@sanity/types'
 
-import {normalizeValidationRules} from './util/normalizeValidationRules'
+import {compileValidationRules} from './util/normalizeValidationRules'
 
 // NOTE: this overload is for TS API compatibility with a previous implementation
 export function inferFromSchemaType(
@@ -28,7 +28,7 @@ function traverse(typeDef: SchemaType, visited: Set<SchemaType>) {
   // Only normalize validation at schema-compile time when it doesn't rely on runtime context.
   // Context-aware validation functions must be evaluated during validation, where context exists.
   if (!usesValidationContext) {
-    typeDef.validation = normalizeValidationRules(typeDef)
+    typeDef.validation = compileValidationRules(typeDef)
   }
 
   if ('fields' in typeDef) {
@@ -53,13 +53,13 @@ function traverse(typeDef: SchemaType, visited: Set<SchemaType>) {
 }
 
 /**
- * Checks if a validation function uses the context parameter.
+ * Checks if a validation function may use the context parameter.
  *
  * Functions with 2+ parameters like `(rule, context) => ...` need runtime context
  * (e.g., `context.hidden`, `context.document`) and cannot be pre-evaluated at schema compile time.
  *
- * Functions with 1 parameter like `(rule) => rule.required()` don't need context
- * and can be normalized immediately for better performance.
+ * Simple functions with only a rule parameter can be normalized immediately.
+ * Unrecognized signatures are deferred because their arity may hide context usage.
  *
  * @internal
  */
@@ -73,8 +73,12 @@ export function hasValidationContext(validation: SchemaValidationValue | undefin
   // Check declared parameter count first (most common case)
   if (validation.length >= 2) return true
 
-  // Function.length doesn't count rest parameters, so check the signature for patterns like
-  // `(rule, ...args)` which would have length === 1 but still expects context
+  // Default and rest parameters do not contribute to Function.length. Only compile
+  // recognizable zero/one-parameter signatures; wrappers and unknown forms stay at runtime.
   const signature = Function.prototype.toString.call(validation)
-  return /\(\s*\w+\s*,\s*\.\.\./.test(signature)
+  if (/\barguments\b|\[native code\]/.test(signature)) return true
+
+  const simpleArrow = /^\s*(?:[\w$]+|\(\s*(?:[\w$]+\s*)?\))\s*=>/
+  const simpleFunction = /^\s*(?:function(?:\s+[\w$]+)?|[\w$]+)\s*\(\s*(?:[\w$]+\s*)?\)\s*\{/
+  return !simpleArrow.test(signature) && !simpleFunction.test(signature)
 }

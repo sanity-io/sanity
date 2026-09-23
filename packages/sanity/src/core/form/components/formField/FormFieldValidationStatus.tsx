@@ -1,7 +1,7 @@
 import {type FormNodeValidation} from '@sanity/types'
-import {Flex, type Placement, Stack, Text} from '@sanity/ui'
+import {type Placement, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {VStack, Flex, Box} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useListFormat} from '../../../hooks/useListFormat'
@@ -34,7 +34,7 @@ export interface FormFieldValidationStatusProps {
 
 const EMPTY_ARRAY: never[] = []
 
-const StyledStack = styled(Stack)`
+const StyledStack = styled(VStack)`
   max-width: 200px;
 `
 

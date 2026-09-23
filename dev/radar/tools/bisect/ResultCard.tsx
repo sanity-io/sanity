@@ -1,6 +1,7 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {UndoIcon} from '@sanity/icons/Undo'
-import {Badge, Box, Button, Card, Flex, Stack, Text, TextArea} from '@sanity/ui'
+import {Badge, Box, Button, Card, Stack, Text, TextArea} from '@sanity/ui'
+import {Flex} from 'ui5'
 
 import {commitUrl, compareUrl} from '../trends/links'
 import {type deriveBisectState} from './bisect'
@@ -8,7 +9,9 @@ import {CommandChip, InstallChip} from './chips'
 import {CommitCard} from './CommitCard'
 import {type TagSlice} from './data'
 import {IncludedIn} from './IncludedIn'
+import {withReproPath} from './reproPath'
 import {type ResultAnnotations} from './sessions'
+import {SEVERITIES, SEVERITY_LABEL, SEVERITY_TONE} from './severity'
 import {pluralize} from './text'
 
 /**
@@ -24,20 +27,31 @@ export function ResultCard(props: {
   releasesOnly?: boolean
   /** npm version if the first bad commit is itself a release */
   version?: string
+  /** Session's repro path — the test studio link opens the preview build there */
+  reproPath?: string
   annotations: ResultAnnotations
   onAnnotate: (patch: ResultAnnotations) => void
   /** Start a commit-granular session over the suspect range (releases-only drill-down) */
   onContinue?: () => void
   onUndo?: () => void
 }) {
-  const {state, releases, releasesOnly, version, annotations, onAnnotate, onContinue, onUndo} =
-    props
+  const {
+    state,
+    releases,
+    releasesOnly,
+    version,
+    reproPath,
+    annotations,
+    onAnnotate,
+    onContinue,
+    onUndo,
+  } = props
   return (
     <CommitCard
       commit={state.firstBad}
       tone="critical"
       heading={
-        <Flex align="center" gap={2}>
+        <Flex alignItems="center" gap={2}>
           <Badge tone="critical" fontSize={0}>
             first bad commit
           </Badge>
@@ -55,11 +69,11 @@ export function ResultCard(props: {
       }
     >
       <IncludedIn releases={releases} />
-      <Flex align="center" gap={3} wrap="wrap">
+      <Flex alignItems="center" gap={3} flexWrap="wrap">
         {state.firstBad.testStudioUrl && (
           <Button
             as="a"
-            href={state.firstBad.testStudioUrl}
+            href={withReproPath(state.firstBad.testStudioUrl, reproPath)}
             target="_blank"
             rel="noreferrer"
             aria-label="Open test studio (opens in a new tab)"
@@ -85,7 +99,7 @@ export function ResultCard(props: {
         {version && <InstallChip version={version} />}
       </Flex>
       {/* stretch: the toggle matches the textarea's height */}
-      <Flex gap={2} align="stretch" wrap="wrap">
+      <Flex gap={2} alignItems="stretch" flexWrap="wrap">
         <Box flex={1} style={{minWidth: 220}}>
           <TextArea
             rows={2}
@@ -106,6 +120,42 @@ export function ResultCard(props: {
           onClick={() => onAnnotate({regression: !annotations.regression})}
         />
       </Flex>
+      {/* About the verdict rather than the issue: why this commit, the fix,
+          a workaround. Same save-on-blur as the description */}
+      <TextArea
+        rows={2}
+        fontSize={1}
+        placeholder="Notes on the verdict — why this commit, the fix, a workaround…"
+        defaultValue={annotations.note ?? ''}
+        onBlur={(event) => {
+          const value = event.currentTarget.value.trim()
+          if (value !== (annotations.note ?? '')) onAnnotate({note: value})
+        }}
+      />
+      {/* How bad — only meaningful once it IS a regression. Clicking the
+          selected step clears it, so an unrated regression stays possible */}
+      {annotations.regression && (
+        <Flex alignItems="center" gap={2} flexWrap="wrap">
+          <Text size={1} muted>
+            Severity
+          </Text>
+          {SEVERITIES.map((severity) => {
+            const selected = annotations.severity === severity
+            return (
+              <Button
+                key={severity}
+                mode={selected ? 'default' : 'ghost'}
+                tone={SEVERITY_TONE[severity]}
+                fontSize={0}
+                padding={2}
+                text={SEVERITY_LABEL[severity]}
+                aria-pressed={selected}
+                onClick={() => onAnnotate({severity: selected ? '' : severity})}
+              />
+            )
+          })}
+        </Flex>
+      )}
       {state.suspects.length > 0 && (
         <Card padding={3} radius={2} tone="caution">
           <Stack gap={3}>

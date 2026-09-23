@@ -155,6 +155,12 @@
       "allowedVersions": "/^6\\./"
     },
     {
+      "description": "Hold rexxars/bundle-stats on v1: v2 measures with Rolldown, which removed CSS bundling and does not externalize CSS, so every sanity scenario fails on `sanity/bundle.css`. Digest and v1 updates still flow. Drop this rule once v2 externalizes CSS, and move the workflow inputs to a bundle-stats.config.ts at the same time",
+      "matchDepNames": ["rexxars/bundle-stats"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
+    {
       "description": "Always upgrade oxlint together",
       "groupName": "oxlint",
       "matchPackageNames": ["oxlint", "oxlint-tsgolint"]

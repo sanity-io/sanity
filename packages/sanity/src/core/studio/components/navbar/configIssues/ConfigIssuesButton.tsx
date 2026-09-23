@@ -1,7 +1,8 @@
 /* oxlint-disable i18next/no-literal-string */
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {useCallback, useId, useState} from 'react'
+import {VStack} from 'ui5'
 
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
 import {StatusButton} from '../../../../components/StatusButton'
@@ -66,8 +67,8 @@ export function ConfigIssuesButton() {
           scheme={scheme}
           id={dialogId}
         >
-          <Stack gap={4}>
-            <Stack gap={3}>
+          <VStack gap={4}>
+            <VStack gap={3}>
               <Text as="h2" size={1} weight="medium">
                 Found {totalWarnings} configuration warning{totalWarnings === 1 ? '' : 's'}
               </Text>{' '}
@@ -75,10 +76,10 @@ export function ConfigIssuesButton() {
                 Configuration checks are only performed during development and will not be visible
                 in production builds
               </Text>
-            </Stack>
+            </VStack>
 
             {configWarnings.length > 0 && (
-              <Stack gap={3}>
+              <VStack gap={3}>
                 {configWarnings.map((warning, index) => (
                   <Card
                     key={`${warning.type}-${warning.projectId}-${index}`}
@@ -87,23 +88,23 @@ export function ConfigIssuesButton() {
                     shadow={1}
                     tone="caution"
                   >
-                    <Stack gap={2}>
+                    <VStack gap={2}>
                       <Text size={1} weight="medium">
                         Divergent auth config
                       </Text>
                       <Text size={1} style={{whiteSpace: 'pre-wrap'}}>
                         {warning.message}
                       </Text>
-                    </Stack>
+                    </VStack>
                   </Card>
                 ))}
-              </Stack>
+              </VStack>
             )}
 
             {groupsWithWarnings.length > 0 && (
               <SchemaProblemGroups problemGroups={groupsWithWarnings} />
             )}
-          </Stack>
+          </VStack>
         </Dialog>
       )}
     </>

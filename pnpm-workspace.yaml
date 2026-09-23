@@ -25,39 +25,40 @@ catalog:
   '@optique/core': ^1.1.1
   '@optique/run': ^1.1.1
   '@playwright/test': 1.63.0
-  '@sanity/client': ^8.5.0
-  '@sanity/migrate': ^8.0.2
+  '@sanity/client': ^8.6.2
+  '@sanity/migrate': ^8.0.5
   '@sanity/telemetry': ^1.1.0
-  '@sanity/tsdown-config': ^0.27.1
-  '@sanity/ui': ^4.1.0
+  '@sanity/tsdown-config': ^0.28.1
+  '@sanity/ui': ^4.2.3
   '@types/node': ^24.13.3
-  '@types/react': ^19.2.18
-  '@types/react-dom': ^19.2.4
-  '@types/react-is': ^19.2.0
-  '@sanity/vanilla-extract-vite-plugin': ^0.2.17
+  '@types/react': ^19.3.0
+  '@types/react-dom': ^19.3.0
+  '@types/react-is': ^19.3.0
+  '@sanity/vanilla-extract-vite-plugin': ^0.2.19
   '@vanilla-extract/css': ^1.21.2
   '@vanilla-extract/dynamic': ^2.1.5
   '@vitejs/plugin-react': ^6.1.1
   '@vitest/browser-playwright': ^4.1.11
   dequal: ^2.0.3
+  get-it: ^9.5.5
   jsdom: ^29.1.1
-  oxc-transform-react: ^0.148.0
+  oxc-transform-react: ^0.151.0
   playwright: 1.63.0
-  react: ^19.2.8
-  react-dom: ^19.2.8
-  react-is: ^19.2.8
-  react-rx: ^6.0.1
+  react: ^19.3.0
+  react-dom: ^19.3.0
+  react-is: ^19.3.0
+  react-rx: ^7.0.0
   rimraf: ^6.1.3
   storybook: ^10.6.0
   styled-components: ^6.5.3
   # Exact version on purpose (like @sanity/workbench): bumps are explicit so published
   # packages ship the version we validated instead of whatever the alpha dist-tag points to
-  ui5: npm:@sanity/ui@5.0.0-alpha.8
-  tsdown: ^0.22.14
+  ui5: npm:@sanity/ui@5.0.0-alpha.10
+  tsdown: ^0.23.0
   typescript: ^7.0.2
-  vite: ^8.2.2
+  vite: ^8.3.0
   vitest: ^4.1.11
-  vitest-browser-react: ^2.2.0
+  vitest-browser-react: ^2.3.0
 
 dedupePeers: true
 linkWorkspacePackages: deep
@@ -75,14 +76,6 @@ minimumReleaseAgeExclude:
   - '@vitejs/plugin-react'
   - '@portabletext/*'
   - '@sanity/*'
-  # @sentry/react and its SDK dependencies publish in lockstep
-  - '@sentry/browser-utils@10.73.0'
-  - '@sentry/browser@10.73.0'
-  - '@sentry/core@10.73.0'
-  - '@sentry/feedback@10.73.0'
-  - '@sentry/react@10.73.0'
-  - '@sentry/replay-canvas@10.73.0'
-  - '@sentry/replay@10.73.0'
   - '@yuku-codegen/*'
   - '@yuku-parser/*'
   - '@yuku-toolchain/types'
@@ -102,11 +95,6 @@ minimumReleaseAgeExclude:
   # in lockstep; @sanity/tsdown-config tracks its latest so builds pick up new bindings together
   - 'lightningcss'
   - 'lightningcss-*'
-  # Fresh motion patch pulled in by @sanity/ui@4.0.6; exclude so 13.1.1 can
-  # install before the 3-day age gate
-  - 'framer-motion@13.1.1'
-  - 'motion-dom@13.1.1'
-  - 'motion@13.1.1'
   # oxc-transform-react and its per-platform native bindings (@oxc-transform-react/binding-*)
   # release in lockstep with the oxc toolchain; @vitejs/plugin-react and
   # @sanity/cli/@sanity/tsdown-config pin fresh versions as peers for the React Compiler oxc transform
@@ -118,11 +106,12 @@ minimumReleaseAgeExclude:
   - 'react'
   - 'react-dom'
   - 'react-hook-form'
-  # Fresh patch; exclude so 17.0.13 can install before the age gate
-  - 'react-i18next@17.0.13'
+  # Fresh major; exclude so 8.0.0 can install before the age gate
+  - 'react-devtools-core@8.0.0'
   - 'react-is'
   - 'react-rx'
-  - 'i18next@26.4.1'
+  # Fresh patch; exclude so 0.28.0 can install before the age gate
+  - 'scheduler@0.28.0'
   # tsdown and its rolldown/rolldown-plugin-dts/yuku toolchain release frequently and in
   # lockstep, so new releases are often younger than minimumReleaseAge
   - 'rolldown'
@@ -138,6 +127,8 @@ minimumReleaseAgeExclude:
   - 'tsdown'
   # Fresh patch; exclude so 2.0.4 can install before the age gate
   - 'use-effect-event@2.0.4'
+  # Fresh minor; exclude so 1.7.0 can install before the age gate
+  - 'use-sync-external-store@1.7.0'
   # verkit is part of the tsdown toolchain (tsdown dependency since 0.22.12)
   - 'verkit'
   - 'vitest'
@@ -146,15 +137,17 @@ minimumReleaseAgeExclude:
   - 'web-vitals'
   # covers yuku-ast/yuku-codegen/yuku-parser, which ship together with rolldown-plugin-dts
   - 'yuku-*'
-  - '@oxc-project/types@0.147.0'
 
 overrides:
+  # Vite 8.3.0's bundled-dev client predates rolldown 1.2.9's requestLazy runtime API.
+  # Keep Vite's compiler and inlined browser runtime paired until Vite ships the updated client.
+  # Matching upstream fix: https://github.com/vitejs/vite/commit/9aecbbfa5fb5da4b9981c099cb9746a9fd210806
+  # (vite#23483). It is on Vite main but not in a published release yet (npm still at 8.3.0).
+  # Counter-pin tsdown so the package compiler stays on 1.2.9; `vite>rolldown` would otherwise
+  # hoist one 1.2.8 copy into tsdown as well.
+  'tsdown>rolldown': '~1.2.9'
+  'vite>rolldown': '1.2.8'
   vitest: 'catalog:'
-  # vite 8.2.2 inlines a bundledDev runtime whose `registerModule(id, exportsHolder)` has no default,
-  # while rolldown >= 1.2.6 emits `registerModule(id)` for export-less modules (rolldown#10772), so
-  # `unstable_bundledDev` crashes with "Cannot read properties of undefined (reading 'exports')" on the
-  # first lazy chunk containing one. Drop once the catalog vite ships a runtime that defaults the holder.
-  'vite>rolldown': '1.2.5'
 
 preferWorkspacePackages: true
 
@@ -165,6 +158,7 @@ trustPolicyExclude:
   - '@octokit/plugin-paginate-rest@9.2.2'
   - '@reduxjs/toolkit@2.9.0 || 2.10.1 || 2.11.0'
   - '@sanity/cli'
+  - '@sanity/import@7.0.3'
   - '@sanity/mutate@0.11.0-canary.4'
   - '@sanity/sdk@3.0.0'
   - '@sanity/sdk-react@3.0.0'

@@ -4,16 +4,19 @@ import {
   type SchemaType,
   type SortOrdering,
 } from '@sanity/types'
-import {useMemo} from 'react'
+import {dequal} from 'dequal/lite'
+import {useEffect, useMemo, useState} from 'react'
+import isEqual from 'react-fast-compare'
 import {useSyncObservable} from 'react-rx'
-import {type Observable, of} from 'rxjs'
-import {catchError, map} from 'rxjs/operators'
+import {BehaviorSubject, type Observable, of} from 'rxjs'
+import {catchError, distinctUntilChanged, map, switchMap} from 'rxjs/operators'
 
 import {type PerspectiveStack} from '../perspective/types'
 import {usePerspective} from '../perspective/usePerspective'
 import {isGoingToUnpublish} from '../releases/util/isGoingToUnpublish'
 import {useDocumentPreviewStore} from '../store/datastores'
 import {getPublishedId} from '../util/draftUtils'
+import {type ObserveForPreviewFn} from './documentPreviewStore'
 import {type Previewable} from './types'
 
 /**
@@ -38,6 +41,121 @@ const IDLE_STATE: State = {
     description: undefined,
   },
 }
+
+const IDLE_STATE_OBSERVABLE = of(IDLE_STATE)
+
+/**
+ * Everything the preview is derived from apart from the schema type and the identity of the
+ * previewed document. These stream into the live preview observable, so a change updates the
+ * preview in place instead of restarting the subscription. The perspective and variant are the
+ * effective ones, so a context change a caller's own selection overrides never reaches the stream.
+ */
+interface PreviewInputs {
+  value: unknown
+  perspective: PerspectiveStack
+  variant: string | undefined
+  ordering: SortOrdering | undefined
+}
+
+interface PreviewTarget {
+  previewable: Previewable
+  perspective: PerspectiveStack
+  variant: string | undefined
+}
+
+/**
+ * Identifies the document `observeForPreview` will observe for a value. A change means a different
+ * document is being previewed, which restarts the preview so the previous document's preview is
+ * never shown for the new one. A cross-dataset reference is identified by its dataset as well, and
+ * a version slated for unpublishing by its own key, so it never continues the published document's
+ * subscription.
+ */
+function getPreviewDocumentKey(value: unknown): string | undefined {
+  if (!value || typeof value !== 'object') return undefined
+  const document = value as SanityDocument & {_ref?: string; _dataset?: string; _projectId?: string}
+  if (isGoingToUnpublish(document)) return `unpublish:${getPublishedId(document._id)}`
+  const id = document._id ?? document._ref
+  return document._dataset ? `${document._projectId}/${document._dataset}/${id}` : id
+}
+
+function resolvePreviewTarget(inputs: PreviewInputs): PreviewTarget | undefined {
+  const {value, perspective, variant} = inputs
+  if (!value) return undefined
+
+  const document = value as SanityDocument
+  // A document slated for unpublishing is previewed as its published version, which is outside
+  // of any variant.
+  if (isGoingToUnpublish(document)) {
+    return {previewable: {_id: getPublishedId(document._id)}, perspective: [], variant: undefined}
+  }
+  return {previewable: {_id: document._id, ...(value as Previewable)}, perspective, variant}
+}
+
+function isSameState(a: State, b: State): boolean {
+  return a.isLoading === b.isLoading && a.error === b.error && isEqual(a.value, b.value)
+}
+
+function createPreviewObservable(
+  inputs$: Observable<PreviewInputs>,
+  schemaType: SchemaType,
+  observeForPreview: ObserveForPreviewFn,
+): Observable<State> {
+  return inputs$.pipe(
+    distinctUntilChanged(dequal),
+    switchMap((inputs) => {
+      const target = resolvePreviewTarget(inputs)
+      // this will render previews as "loaded" (i.e. not in loading state) – typically with "Untitled" text
+      if (!target) return IDLE_STATE_OBSERVABLE
+
+      return observeForPreview(target.previewable, schemaType, {
+        perspective: target.perspective,
+        variant: target.variant,
+        viewOptions: {ordering: inputs.ordering},
+      }).pipe(
+        map((event): State => ({isLoading: false, value: event.snapshot || undefined})),
+        catchError((error) => of<State>({isLoading: false, error})),
+      )
+    }),
+    distinctUntilChanged(isSameState),
+  )
+}
+
+/**
+ * A subject holding the latest inputs. It is replaced together with the observable that reads it,
+ * whenever `enabled`, the schema type or the previewed document changes, and seeded with the current
+ * render's inputs so the new observable never previews the inputs of an earlier render. Every other
+ * change is pushed into the existing subject after commit.
+ */
+function useInputsSubject(
+  enabled: boolean,
+  schemaType: SchemaType | undefined,
+  inputs: PreviewInputs,
+): BehaviorSubject<PreviewInputs> {
+  const documentKey = getPreviewDocumentKey(inputs.value)
+  const [current, setCurrent] = useState(() => ({
+    enabled,
+    schemaType,
+    documentKey,
+    inputs$: new BehaviorSubject(inputs),
+  }))
+
+  let {inputs$} = current
+  if (
+    current.enabled !== enabled ||
+    current.schemaType !== schemaType ||
+    current.documentKey !== documentKey
+  ) {
+    inputs$ = new BehaviorSubject(inputs)
+    setCurrent({enabled, schemaType, documentKey, inputs$})
+  }
+
+  useEffect(() => {
+    inputs$.next(inputs)
+  }, [inputs$, inputs])
+
+  return inputs$
+}
+
 /**
  * @internal
  */
@@ -60,63 +178,32 @@ export function useValuePreview(props: {
     enabled = true,
     ordering,
     schemaType,
-    value: previewValue,
+    value,
     perspectiveStack: chosenPerspectiveStack,
     variant: chosenVariant,
   } = props || {}
   const {observeForPreview} = useDocumentPreviewStore()
   const {perspectiveStack, selectedVariantName} = usePerspective()
-  const observable = useMemo<Observable<State>>(() => {
-    // this will render previews as "loaded" (i.e. not in loading state) – typically with "Untitled" text
-    if (!enabled || !previewValue || !schemaType) return of(IDLE_STATE)
 
-    const goingToUnpublish = isGoingToUnpublish(previewValue as SanityDocument)
+  const perspective = chosenPerspectiveStack ?? perspectiveStack
+  // The variant follows the perspective: only inherited from the context when the perspective is too.
+  const variant = chosenVariant ?? (chosenPerspectiveStack ? undefined : selectedVariantName)
+  const inputs = useMemo<PreviewInputs>(
+    () => ({value, perspective, variant, ordering}),
+    [value, perspective, variant, ordering],
+  )
+  const inputs$ = useInputsSubject(enabled, schemaType, inputs)
 
-    const updatedStack = goingToUnpublish ? [] : (chosenPerspectiveStack ?? perspectiveStack)
-    // A document slated for unpublishing is previewed as its published version, which is outside
-    // of any variant. Otherwise the variant follows the perspective: only inherited from the
-    // context when the perspective is too.
-    const updatedVariant = goingToUnpublish
-      ? undefined
-      : (chosenVariant ?? (chosenPerspectiveStack ? undefined : selectedVariantName))
-    const updatedDocId = goingToUnpublish
-      ? getPublishedId((previewValue as SanityDocument)._id)
-      : (previewValue as SanityDocument)._id
-
-    // allow for previewing the published document when a version is slated for unpublishing
-    // but if it's not for unpublishing, then we want to preview the content as was before
-    const restPreviewValue = goingToUnpublish
-      ? {}
-      : {
-          ...(previewValue as Previewable),
-        }
-
-    return observeForPreview(
-      {
-        _id: updatedDocId,
-        ...restPreviewValue,
-      },
-      schemaType,
-      {
-        perspective: updatedStack,
-        variant: updatedVariant,
-        viewOptions: {ordering: ordering},
-      },
-    ).pipe(
-      map((event) => ({isLoading: false, value: event.snapshot || undefined})),
-      catchError((error) => of({isLoading: false, error})),
-    )
-  }, [
-    enabled,
-    previewValue,
-    schemaType,
-    chosenPerspectiveStack,
-    perspectiveStack,
-    chosenVariant,
-    selectedVariantName,
-    observeForPreview,
-    ordering,
-  ])
+  // Only `enabled`, the schema type and the previewed document change the observable's identity,
+  // which is what restarts the subscription and renders the loading state. Everything else
+  // streams through `inputs$` into the observable that is already subscribed.
+  const observable = useMemo<Observable<State>>(
+    () =>
+      enabled && schemaType
+        ? createPreviewObservable(inputs$, schemaType, observeForPreview)
+        : IDLE_STATE_OBSERVABLE,
+    [enabled, inputs$, observeForPreview, schemaType],
+  )
 
   // Do not defer: search/reference UIs assert on preview titles synchronously after selection.
   return useSyncObservable(observable, INITIAL_STATE)

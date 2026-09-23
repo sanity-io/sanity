@@ -1,8 +1,8 @@
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {type ErrorInfo, useCallback, useState} from 'react'
 import FocusLock from 'react-focus-lock'
-import {Flex, Box} from 'ui5'
+import {Box, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../../../../ui-components/button/Button'
 import {ErrorBoundary} from '../../../../../../../../ui-components/errorBoundary/ErrorBoundary'
@@ -85,7 +85,7 @@ export function FilterForm({filter}: FilterFormProps) {
 
           {/* Title, description and operator */}
           <Card padding={3}>
-            <Stack gap={3}>
+            <VStack gap={3}>
               <Flex alignItems="flex-start" gap={3} justifyContent="space-between">
                 <Box paddingLeft={1} paddingRight={2} paddingY={1}>
                   <FilterDetails filter={filter} />
@@ -109,7 +109,7 @@ export function FilterForm({filter}: FilterFormProps) {
                 </Card>
               )}
               <OperatorsMenuButton filter={filter} operator={operator} />
-            </Stack>
+            </VStack>
           </Card>
         </Flex>
       </FocusLock>

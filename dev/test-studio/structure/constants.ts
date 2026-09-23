@@ -68,6 +68,7 @@ export const DEBUG_INPUT_TYPES = [
   'hiddenCurrentUserTest',
   'hiddenFieldValidationTest',
   'patchOnMountDebug',
+  'presenceDebug',
   'formInputDebug',
   'initialValuesTest',
   'inspectorsTest',

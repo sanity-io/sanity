@@ -1,19 +1,17 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {
-  // oxlint-disable-next-line no-restricted-imports
-  Button as UIButton,
-  Stack,
-  Text,
-} from '@sanity/ui'
+// oxlint-disable-next-line no-restricted-imports
+import {Button as UIButton, Text} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
-import {useCallback, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
+import {useObservablePromise} from 'react-rx'
 import {take} from 'rxjs/operators'
-import {Box, Flex} from 'ui5'
+import {Box, Flex, VStack} from 'ui5'
 
 import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {probeWorkspaceAuth} from '../../../../store/authStore/probeWorkspaceAuth'
+import {useProjectStore} from '../../../../store/datastores'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher/useActiveWorkspace'
 import {useVisibleWorkspaces} from '../../../workspaces/useVisibleWorkspaces'
 import {ManageMenu} from './ManageMenu'
@@ -31,6 +29,11 @@ export function WorkspaceMenuButton() {
   const {activeWorkspace} = useActiveWorkspace()
   const {t} = useTranslation()
   const [scrollbarWidth, setScrollbarWidth] = useState(0)
+
+  const projectStore = useProjectStore()
+  const projectNamePromise = useObservablePromise(
+    useMemo(() => projectStore.getProjectName(), [projectStore]),
+  )
 
   const stackRef = useCallback((node: HTMLDivElement | null) => {
     if (node) {
@@ -77,7 +80,10 @@ export function WorkspaceMenuButton() {
       id="workspace-menu"
       menu={
         <Menu padding={0} style={{maxWidth: '350px', minWidth: '250px', overflowY: 'hidden'}}>
-          <ManageMenu multipleWorkspaces={visibleWorkspaces.length > 1} />
+          <ManageMenu
+            multipleWorkspaces={visibleWorkspaces.length > 1}
+            projectNamePromise={projectNamePromise}
+          />
           {visibleWorkspaces.length > 1 && (
             <>
               <MenuDivider style={{padding: 0}} />
@@ -88,7 +94,7 @@ export function WorkspaceMenuButton() {
                   </Text>
                 </Box>
 
-                <Stack ref={stackRef} gap={1} style={{overflowY: 'auto', maxHeight: '40vh'}}>
+                <VStack ref={stackRef} gap={1} style={{overflowY: 'auto', maxHeight: '40vh'}}>
                   {visibleWorkspaces.map((workspace) => (
                     <WorkspaceMenuItem
                       key={workspace.name}
@@ -97,7 +103,7 @@ export function WorkspaceMenuButton() {
                       scrollbarWidth={scrollbarWidth}
                     />
                   ))}
-                </Stack>
+                </VStack>
               </Box>
             </>
           )}

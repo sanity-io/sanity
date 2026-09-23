@@ -1,10 +1,10 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {SearchIcon} from '@sanity/icons/Search'
 import {isDeprecatedSchemaType} from '@sanity/types'
-import {Card, Stack, Text, TextInput, type TextInputProps, useClickOutsideEvent} from '@sanity/ui'
+import {Card, Text, TextInput, type TextInputProps, useClickOutsideEvent} from '@sanity/ui'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import ReactFocusLock from 'react-focus-lock'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 import {Button, type ButtonProps} from '../../../../../ui-components/button/Button'
 import {Tooltip, type TooltipProps} from '../../../../../ui-components/tooltip/Tooltip'
@@ -252,11 +252,11 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
           returnFocus
         >
           <PopoverHeaderCard sizing="border">
-            <Stack>
+            <VStack>
               <Card borderBottom padding={1}>
                 <TextInput {...sharedTextInputProps} fontSize={1} radius={1} />
               </Card>
-            </Stack>
+            </VStack>
           </PopoverHeaderCard>
 
           <PopoverListFlex

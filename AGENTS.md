@@ -143,6 +143,11 @@ pnpm test -- --project=sanity
 
 **Important:** Do NOT use `pnpm test -- path/to/file.test.ts` for running a single file — it runs all tests across all projects. Use `pnpm vitest run --project=<project> <path>` instead.
 
+The headless validation package is registered as `@sanity/validation`: run its full suite with
+`pnpm vitest run --project=@sanity/validation`. When testing inherited validation, cover Studio's
+compilation path too: call `inferFromSchema` on the built-in schema before compiling custom types,
+then call it on the compiled custom schema. Studio inherits already-normalized built-in rules.
+
 Components that need auth context use `createMockAuthStore` in tests, so no real authentication is needed. This is the recommended way to verify most code changes.
 
 ### Running the Dev Studio (Auth Required)
@@ -193,9 +198,17 @@ How it works:
 - The flag is declared in `dev/test-studio/turbo.json` so turbo-cached builds are invalidated when it changes
 - Enabling devtools makes `sanity build` noticeably slower; that's why it's opt-in via the env flag
 
+### Debugging presence with fake users
+
+**Field action (test studio).** Open a `Presence debug` document (`presenceDebug`, under Debug in the structure). Every field has a `Presence` button in its header with **Fake presence here**: pick a user in the dialog and they show up as present at that field. Inside a Portable Text field the user is placed at your last cursor position in that editor, so different users can be put at different spots. **Remove all fake presence** clears them. The plugin lives in `dev/test-studio/plugins/presence-debug` and uses the presence store's `@internal` `debug` API (`fakePresence`, `removeFakePresence`, `ownLocation$`), so the fake sessions go through the real presence code path (user lookup, form routing, overlay docking).
+
+**URL hash flags.** The presence store also reads two older debug flags from the URL hash (`packages/sanity/src/core/store/presence/presence-store.ts`), comma separated after `#_debug_presence=`: `fake_others` (random mock users at fixed paths in a document with `_id: "presence-debug"`) and `show_own` (also show your own session).
+
 ### Profiling studio re-renders with React DevTools (agent-react-devtools)
 
 The test studio can register with a local [agent-react-devtools](https://github.com/callstackincubator/agent-react-devtools) daemon, which exposes the React component tree and render profiling over a CLI — made for AI agents to inspect props/state/hooks and hunt unnecessary re-renders. The `react-devtools` skill (`.agents/skills/react-devtools/SKILL.md`) documents the CLI; read it before profiling.
+
+For `useObservable`, `useSyncObservable` and `useObservablePromise` call sites whose observable identity churns, the `react-rx-hook-audit` skill (`.agents/skills/react-rx-hook-audit/SKILL.md`) covers finding them, counting renders and subscriptions at runtime, and the `useValuePreview` refactor and test pattern.
 
 ```bash
 # 1. Start the daemon (port 8097)
@@ -231,6 +244,10 @@ pnpm analyze:sanity
 
 The report is written to `packages/sanity/lib/analyze-data.md` (gitignored with `lib/`). The flag is opt-in because analysis adds work to the package build; it is declared in `packages/sanity/turbo.json` so turbo-cached builds are invalidated when it changes. Wiring is `@sanity/tsdown-config`'s `bundleAnalyzer` option (`true` selects markdown).
 
+### Auto-updating studio CSS (Lightning CSS `light-dark()`)
+
+The CDN / auto-update bundle Vite config lives in `@repo/package.bundle` (`createDefaultConfig`). Vite 8 minifies that CSS with Lightning CSS against `baseline-widely-available` (Chrome 111 / Safari 16.4), which down-transpiles `light-dark()` into `--lightningcss-light` / `--lightningcss-dark` toggled only by `prefers-color-scheme`. That breaks Studio theme colors when OS appearance ≠ Studio theme (ui5 sets `color-scheme` independently). The shared config excludes `Features.LightDark` so the function is left native — same workaround as Tailwind; see [lightningcss#873](https://github.com/parcel-bundler/lightningcss/issues/873). Do not re-enable that polyfill. The `sanity build` / `sanity preview` Vite config lives in `sanity-io/cli`, not this repo.
+
 ### Studio performance benchmarks (perf/bench — No Auth Required)
 
 The `perf/bench` suite benchmarks a built studio against a **local mock** of the Sanity API — fully hermetic, no tokens, no network:
@@ -245,6 +262,8 @@ pnpm bench dev                                     # mock + `sanity dev` for int
 ```
 
 See `perf/bench/README.md` for A/B comparisons, scenarios, and CI details. (The legacy `dev/efps` suite has been decommissioned; perf/bench replaces it.)
+
+Three skills cover this area: `sanity-bench` (`.agents/skills/sanity-bench/SKILL.md`, running and dispatching the suite, the `trigger:perf-bench` label, dispatch inputs), `sanity-radar` (`.agents/skills/sanity-radar/SKILL.md`, the Studio Radar dashboard in `dev/radar` and how to query its dataset) and `sanity-radar-investigate` (`.agents/skills/sanity-radar-investigate/SKILL.md`, the regression-hunting procedure from a drift flag or investigation prompt to a confirmed culprit).
 
 ### E2E Tests (Token Required)
 
@@ -342,8 +361,26 @@ Import `useEffectEvent` from `use-effect-event`, never from `react`. On React 19
 returns first-render values when the calling component is wrapped in `forwardRef` or `memo`
 ([facebook/react#34818](https://github.com/facebook/react/issues/34818), fixed in 19.3 canaries).
 `eslint/no-restricted-imports` in `.oxlintrc.json` enforces this. The bug reaches any dependency that
-wraps the native hook, so check the implementation before trusting one — `react-rx` is safe on both
-v4 and v5 because `useObservableEvent` builds on the same `use-effect-event` ponyfill.
+wraps the native hook, so check the implementation before trusting one.
+
+### react-rx: stable observables, explicit initial values
+
+`react-rx` v7 never subscribes during render. `useObservable` / `useSyncObservable` render the
+`initialValue` (required — pass `undefined` explicitly when there is nothing better) until the
+subscription started on commit delivers a value, and a synchronous emission arrives one pass later.
+Two rules follow:
+
+- **The observable identity must be stable across renders**: build it with `useMemo`, keep it on a
+  store, or hoist it to module scope, and key memos on primitives (a path string, an id) rather than
+  on arrays or objects recreated every render. An observable rebuilt each render is torn down and
+  re-subscribed each commit; when it synchronously replays a value that differs from the
+  `initialValue`, React aborts with "Maximum update depth exceeded"
+  (`useDocumentValuesRenderLoop.repro.test.tsx` guards one such case).
+- **Never rely on a synchronous first emission.** `useSyncObservable(obs$, undefined)!` is a
+  first-render crash. Pass the value the observable emits first (`GUARDED`, the releases store's
+  exported `INITIAL_RELEASES_STATE`, `useVariantsStore().initialState`), or derive it per render
+  when it depends on the observable's parameters (`useEditState`), since react-rx captures
+  `initialValue` once per hook instance.
 
 ### Translate: never define `components` inline
 
@@ -410,6 +447,10 @@ Tests require a build first because some tests use compiled output:
 pnpm build && pnpm test
 ```
 
+On macOS, use `TMPDIR=/private/tmp pnpm test` if the E2E summary reporter test fails with a
+`/var` versus `/private/var` path mismatch. The test changes its working directory, which resolves
+the symlink; using a canonical temporary path keeps its expected and actual paths consistent.
+
 #### Test Timeouts
 
 When a test needs a custom timeout, use the Vitest options object as the second argument (not the deprecated third-argument form). Prefer numeric separators for readability:
@@ -444,6 +485,30 @@ Two traps when unit testing a component or hook that suspends on a promise with 
   React throws `Update hook called on initial render` as a recoverable error — which vitest can
   catch as an unhandled error and fail the run. Once a load has started, keep calling `use()` on
   the same cached promise on every render instead of re-checking the environment.
+- **`use()` inside a hidden `<Activity>` tree can trip React's "A component suspended inside an
+  `act` scope, but the `act` call was not awaited" warning even when the thenable is already
+  fulfilled.** A sync `act` (what `render` uses) stops flushing as soon as a yielded render has
+  called `use()` with any thenable (`didUsePromise`), and a closed popover's pre-render yields
+  once its tree is big enough. Nothing actually suspended; mount with
+  `await act(async () => { render(...) })` (see `WorkspaceMenuButton.test.tsx`).
+
+#### react-rx: `useObservablePromise` and `use()` live in different components
+
+react-rx v7 ([react-rx#515](https://github.com/sanity-io/react-rx/pull/515)) never subscribes
+during a mounting render, and a hidden `<Activity>` tree never subscribes at all until it is
+revealed. Two consequences for Suspense code:
+
+- Never `use()` the promise returned by `useObservablePromise` in the same component. The
+  component suspends before the commit that would start the fetch and deadlocks (verified against
+  the v7 build). Call the hook in a parent and pass the promise to a child that reads it under a
+  `<Suspense>` boundary.
+- For content inside a closed popover or any other hidden `<Activity>` tree, call the hook in a
+  visible ancestor and pass the promise down, as `WorkspaceMenuButton` does for `ManageMenu`.
+  The fetch then starts when the ancestor commits, and the data is settled before the reveal.
+
+`useObservable` and `useSyncObservable` require an `initialValue` in v7 and render it on the first
+pass regardless of synchronous emissions, so do not rely on a replayed value winning the first
+paint through them; that is what `useObservablePromise` plus `use()` is for.
 
 #### Custom matchers shipped in node_modules (e.g. `get-it/vitest`)
 
@@ -547,6 +612,71 @@ Both work in every run (no-ops on firefox/webkit); only `CHROMATIC=1` runs captu
 See the `sanity-visual-regression` skill (`.agents/skills/sanity-visual-regression/SKILL.md`)
 for how to add coverage, which source owns a state, and determinism rules.
 
+Keep `test.sequence.hooks: 'list'` in `packages/sanity/vitest.browser.config.mts`. Vitest defaults
+hooks to `stack` (after-hooks run in reverse registration order) and the Chromatic plugin adapts to
+either ordering: it appends its setup file under `stack` and prepends it under `list`, so the
+automatic snapshot runs before `packages/sanity/test/setup/browser.ts` unmounts the tree in both
+cases; only `parallel` lets them race (partially unmounted, blank, or duplicate captures) and the
+plugin warns about it. `list` is set explicitly so the order is stated in the config, and so that
+`afterEach` hooks registered inside a test file (clipboard restores, spies) also run after the
+archive rather than before it. Capture runs also set `retry: 0` (a retried test
+archives twice and Chromatic publishes `Snapshot #1 (2)`), `cropToViewport`, `delay: 0`,
+`pauseAnimationAtEnd` and `prefersReducedMotion: 'reduce'`. Those last two are capture-only: they
+tell Chromatic how to render the uploaded archive (animations paused at their end state, the
+`prefers-reduced-motion: reduce` rules of the `@sanity/ui` v5 stylesheet, `ui5/styles.css`,
+applied). The browser the tests run in — locally, in the functional `browser-tests.yml` shards
+and during the capture run itself — uses Playwright's default media (no reduced-motion
+emulation), so transitions run at full length there and a test that needs one finished must wait
+for the settled state (`expectStable`, `expect.poll`, `settleChromaticEndState()`); nothing in the
+test setup shortens them. `test/setup/browser.ts` loads `ui5/styles.css` together with
+`@sanity/ui/styles.css` for every test file so `ui5` components are styled in tests whose harness
+does not import the `sanity` entry point.
+
+Chromatic archives the DOM plus the elements matching `:hover` / `:focus` / `:active` at capture
+time and re-applies those states in its renderer, so the real pointer position and React
+hover/focus state are part of every snapshot. Make them deterministic in the test, never with
+global CSS overrides from the browser setup (no `transition: 0s`, hidden carets, forced
+opacity, or `!important` focus rings — they hide the state the snapshot is meant to show and
+mask real regressions):
+
+- End interactive tests with `settleChromaticEndState()` from
+  `packages/sanity/test/browser/testHelpers.ts`. It moves the real pointer onto a transparent park
+  element, asserts nothing in the rendered tree is `:hover`ed and no tooltip is open, waits for
+  field-actions / PTE toolbar / floating popover geometry to stop changing, and rounds Floating UI
+  offsets. The shared `beforeEach` in `test/setup/browser.ts` mounts that topmost 4×4 park in the
+  bottom-right corner and parks the pointer on it before the test renders anything, and leaves it
+  mounted until the shared `afterEach`, which restores the viewport, parks the pointer on it once
+  more (now back in the default viewport's corner) and then removes it — so every test starts
+  with the pointer on the park rather than over the previous test's last click, its
+  reduced-viewport corner or the harness's first control, and content rendered under that
+  coordinate later never starts out `:hover`ed. Do
+  not globally `display:none` tooltips — PreviewTooltip and similar tests assert on them.
+- Assert the state you want archived right before the end of the test (or before
+  `takeSnapshot`): e.g. `toBeEnabled()` on a button whose tone changes with pending input,
+  `data-focused="true"` plus `:focus-within` on a card whose focus ring comes from React state,
+  or `styleSelectText: /^No style$/` when PTE focus can land on a text block or an object block.
+- Wait for layout with `expectStable(sample)` (same helpers file): it polls until the sampled
+  geometry / signature is unchanged on several consecutive re-reads. A single re-read that happens
+  to match (`const x = f(); await expect.poll(f).toBe(x)`) is not a stability check — Floating UI
+  and CollapseMenu can agree once and move on the next frame.
+- Assertions on React focus state (`data-focused`, editor `focused`/`blurred` events) are
+  chromium-only in practice: Firefox headless shares one window focus across the pages Vitest runs
+  test files in, so input in another file blurs the editor while `document.activeElement` (and
+  `toHaveFocus()`) is unchanged. Guard them with `server.browser === 'firefox'`; Chromatic archives
+  on chromium only, so nothing is lost.
+- Tests that leave a menu open on purpose must assert a _visible_ overlay (closed `@sanity/ui`
+  menus stay mounted). The automatic afterEach capture archives whatever the DOM looks like after
+  the test's last statement, so when that end state could race a dismiss, use
+  `configure({disableAutoSnapshot: true})` and `takeSnapshot('state')` at the asserted state
+  instead. `takeSnapshot()` serializes the DOM and its `:hover`/`:focus` ids synchronously when
+  called (only the upload is awaited), so the test may keep exercising behavior afterwards — e.g.
+  the `CommentInput` browser tests snapshot `mentions-menu-open`, then press Enter and assert the
+  mention was accepted. Settle (`settleChromaticEndState()`) and assert the state _before_ the
+  `takeSnapshot()` call; interactions after it never reach that archive.
+- Interaction-only tests whose end state is a loading or error flash should
+  `configure({disableAutoSnapshot: true})`. Do not set `localStorage.debug` in browser tests —
+  debug overlay noise shows up in Chromatic archives.
+
 ### E2E Tests (Playwright)
 
 ```bash
@@ -604,9 +734,11 @@ Notes:
 
 ### Creating a New Test
 
-1. Create test file next to source: `MyComponent.test.tsx`
+1. Place the test next to its source (`MyComponent.test.tsx`) or in a `__tests__/` directory beside it — both conventions are in use, so match the sibling files
 2. Use existing test patterns from similar files
-3. Run `pnpm test -- MyComponent` to verify
+3. Run `pnpm vitest run --project=<project> <path>` to verify (not `pnpm test -- <path>`, which runs every project)
+
+For `packages/sanity`, see [packages/sanity/AGENTS.md](./packages/sanity/AGENTS.md) — it inventories the test helpers (`createTestProvider`, the `test/form` input harnesses, the client and router mocks) and the determinism rules for that package.
 
 ### Updating Snapshots
 
@@ -834,8 +966,11 @@ No Docker, databases, or other local services are required for unit tests, lint,
   ```
 
 - **Node version:** the VM runs Node 22.x, which satisfies the repo engine range (`>=22.12`). A couple of internal tooling packages print a harmless `Unsupported engine` warning wanting Node `>=22.18`; it does not affect testing or running the studio. However, **`pnpm build` requires Node >= 22.18**: the packages build with `tsdown`, which loads its `tsdown.config.ts` through Node's native TypeScript support and fails on older Node 22.x (e.g. the VM default `v22.14.0`) with `Failed to import module "unrun"`. A new enough runtime is available via nvm: `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH"`.
+- **`pnpm build` can fail in the VM with `unable to spawn child process: Exec format error (os error 8)`.** Turbo itself starts (it prints its version and the task graph) but cannot spawn the per-package build, so every task fails within milliseconds. Reproducible on a clean `main` and independent of the Node version, so it is an environment artifact, not your change. Build through pnpm instead — `-r run` executes in topological order, same as turbo: `pnpm -r --filter="./packages/*" --filter="./packages/@sanity/*" run build`.
 - **`pnpm build` may dirty `packages/sanity/package.json`.** tsdown auto-generates the `inlinedDependencies` field on every build, and in this VM the computed set can differ from what is committed (e.g. `@sanity/sdk` and `zustand` get dropped) even on a clean checkout of `main`. That churn is an environment artifact, not part of your change — revert it with `git checkout -- packages/sanity/package.json` (re-applying any edits of your own) instead of committing it.
-- **Timezone-sensitive snapshots in `@sanity/validation`.** `test/dates.test.ts` snapshots render datetimes in `America/Los_Angeles`, and the VM defaults to UTC, so those 4 snapshot tests fail locally with times shifted by the `America/Los_Angeles` offset on any branch. Run with `TZ=America/Los_Angeles pnpm test` or treat the failures as environment artifacts, like the lockfile drift below.
+- **Timezone-sensitive snapshots in `@sanity/validation`.** `test/dates.test.ts` snapshots render datetimes in `America/Los_Angeles`. The package Vitest config sets that timezone for its workers, including when run through the root suite.
+- **`isUsingLegacyHttp.test.ts` fails in the VM on any branch.** The "reuses one legacy protocol probe across callers and subscriptions" case resolves `[undefined, undefined, undefined]` instead of `[false, false, false]`. It reproduces on a clean detached `main` with main's own lockfile, and the `Unit tests` job is green on the same commit in CI, so treat it as an environment artifact like the timezone snapshots above rather than a regression in your change.
+- **`pnpm lint:workflows` needs zizmor installed first.** It is not in the image and is not an npm package: `pip3 install --user zizmor`, then run it with `PATH="$HOME/.local/bin:$PATH"`. Baseline before blaming your change — a clean `main` currently reports 11 high-severity findings with zizmor 1.30.1 (CI pins an older version), so compare finding counts with and without your change rather than requiring zero.
 - **`pnpm depcheck` fails on a clean checkout of `main` in the VM** (knip reports the root `lefthook` devDependency as unused, plus a `knip.jsonc` config hint). Baseline before blaming your change: `git stash push -u && pnpm depcheck; git stash pop`.
 - **Snapshot lockfile drift can fail `pnpm check:oxlint` in untouched files.** The VM image may have `node_modules` resolved to newer in-range versions than the committed `pnpm-lock.yaml` (e.g. `@sanity/client` 8.4.0 vs the locked 8.3.0), and `pnpm install` — even with `--frozen-lockfile` — keeps rewriting the lockfile to match instead of downgrading. Type errors in files you never touched (e.g. `@sanity/vision`'s `useDatasets.test.ts` missing a `description` field) are this drift, not your change: revert the churn with `git checkout -- pnpm-lock.yaml`, never commit it, and rely on CI (which installs from the committed lockfile) for the authoritative type check of those files.
 - **Do not run oxlint type checking (`pnpm check:oxlint`) while the dev studio is running.** Both are memory-hungry and running them concurrently has exhausted the VM's memory and frozen it for hours (unkillable thrashing). Stop `sanity dev` first (Ctrl-C in its tmux session), run the checks, then restart the studio.
@@ -891,3 +1026,5 @@ Debugging notes:
 - The failure video is written to `e2e/results/<test>/video.webm`; extract frames with the bundled ffmpeg: `~/.cache/ms-playwright/ffmpeg-*/ffmpeg-linux -i video.webm -r 1 /tmp/frame_%03d.png` (this build has no `-vf fps=` filter).
 - CI e2e failures publish a plain-markdown digest at `<report-url>/agent-report.md` (same Vercel deployment as the HTML report). Fetch that URL instead of the HTML report — it includes the error, code snippet, `error-context` page snapshot, and a local repro command. The PR comment's **Share with an AI agent** fenced prompt is the paste-ready prompt (one-click copy).
 - To reproduce load-related flakiness, throttle the browser from within the spec: `const cdp = await page.context().newCDPSession(page); await cdp.send('Emulation.setCPUThrottlingRate', {rate: 8})` (chromium only). Stub a slow or eventually-consistent backend with `page.route('**/data/query/**', …)`; the global search query is identifiable by its `findability-source: global` GROQ comment.
+- Every branch with a PR gets its own `End-to-End Tests` run (8 shards) against the same staging project, and the shards share GitHub's runner IP range. Pushing a whole stack of PRs at once therefore rate-limits the runs against each other: the failed attempts show the studio's "Too many requests" dialog in the `error-context` page snapshot and in `studio-request-error.txt`, with dozens of flaky retries. Push (or re-run) stacked branches a few at a time instead of all at once, and treat a run whose failures all show that dialog as platform-caused, not as a regression.
+- A new Playwright version means a new browser-cache key. The `install` job creates it, but when several runs start together only one can reserve the key and the others log `Unable to reserve cache with key … another job may be creating this cache`; their `playwright-test` shards then miss the restore and fall back to installing browsers themselves. `e2e/globalSetup.ts` always launches chromium (it warms the preview with the first configured project), so that fallback installs chromium alongside the matrix browser — a firefox shard without chromium fails in global setup with `browserType.launch: Executable doesn't exist` before running a single test.

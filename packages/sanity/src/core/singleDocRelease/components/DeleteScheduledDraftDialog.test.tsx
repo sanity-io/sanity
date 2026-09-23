@@ -52,7 +52,7 @@ const mockDraftDocument = {
   _system: {
     bundleId: 'drafts',
     release: null,
-    variant: null,
+    variants: null,
     group: {_ref: 'article-123', _weak: true},
     scopeId: null,
   },
@@ -66,7 +66,7 @@ const mockDraftDocumentSameRev = {
   _system: {
     bundleId: 'drafts',
     release: null,
-    variant: null,
+    variants: null,
     group: {_ref: 'article-123', _weak: true},
     scopeId: null,
   },

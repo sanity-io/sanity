@@ -8,7 +8,7 @@ const INSTRUMENTATION_DIR = path.join(
   'instrumentation',
 )
 
-async function bundleEntry(entry: string): Promise<string> {
+async function bundleEntry(entry: string, options: {globalName?: string} = {}): Promise<string> {
   const result = await build({
     entryPoints: [path.join(INSTRUMENTATION_DIR, entry)],
     bundle: true,
@@ -16,6 +16,7 @@ async function bundleEntry(entry: string): Promise<string> {
     format: 'iife',
     platform: 'browser',
     target: 'es2022',
+    ...(options.globalName ? {globalName: options.globalName} : {}),
   })
   const output = result.outputFiles[0]
   if (!output) {
@@ -40,4 +41,18 @@ export async function bundleInstrumentation(): Promise<string> {
  */
 export async function bundleSettleInstrumentation(): Promise<string> {
   return bundleEntry('settle.ts')
+}
+
+/** The global the style probe bundle assigns its exports to; session/styles.ts reads it back. */
+export const STYLE_PROBE_GLOBAL = '__benchStyleProbe'
+
+/**
+ * The style census probe (instrumentation/styles.ts), bundled as an IIFE that
+ * assigns its exports to `STYLE_PROBE_GLOBAL`. Evaluated on demand by
+ * runner/session/styles.ts rather than installed as an init script — it
+ * measures a finished page, and the shared collector must not grow a DOM
+ * walker every session pays for.
+ */
+export async function bundleStyleProbe(): Promise<string> {
+  return bundleEntry('styles.ts', {globalName: STYLE_PROBE_GLOBAL})
 }

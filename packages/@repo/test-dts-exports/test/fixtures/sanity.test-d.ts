@@ -706,6 +706,7 @@ import type {
   getDocumentValuePermissions,
   getDocumentVariantType,
   getDocumentVersionType,
+  getDocumentVersionVariantId,
   getDraftId,
   getErrorMessage,
   getExpandOperations,
@@ -1172,6 +1173,7 @@ import type {
   PortableTextPreviewLayoutKey,
   PortableTextSpan,
   PortableTextTextBlock,
+  PortalBoundaryProvider,
   Position,
   prefixPath,
   prepareConfig,
@@ -1489,6 +1491,7 @@ import type {
   TagValue,
   TargetDocumentState,
   TargetPerspective,
+  TargetScopeIdOptions,
   TelephoneInput,
   TelephoneInputProps,
   Template,
@@ -1691,7 +1694,9 @@ import type {
   useParseErrorForPath,
   useParseErrors,
   usePausedScheduledDraft,
+  usePauseToEditScheduledDraft,
   usePerspective,
+  usePortalBoundary,
   usePresenceStore,
   usePreviewCard,
   useProject,
@@ -1746,6 +1751,7 @@ import type {
   useStudioUrl,
   useSyncState,
   useTargetDocumentState,
+  useTargetScopeId,
   useTelemetryConsent,
   useTemplatePermissions,
   useTemplatePermissionsFromHookFactory,
@@ -3964,6 +3970,9 @@ describe('sanity', () => {
   test('getDocumentVersionType', () => {
     expectTypeOf<typeof getDocumentVersionType>().toBeFunction()
   })
+  test('getDocumentVersionVariantId', () => {
+    expectTypeOf<typeof getDocumentVersionVariantId>().toBeFunction()
+  })
   test('getDraftId', () => {
     expectTypeOf<typeof getDraftId>().toBeFunction()
   })
@@ -5366,6 +5375,9 @@ describe('sanity', () => {
   test('PortableTextTextBlock', () => {
     expectTypeOf<PortableTextTextBlock<any>>().toBeObject()
   })
+  test('PortalBoundaryProvider', () => {
+    expectTypeOf<typeof PortalBoundaryProvider>().toBeFunction()
+  })
   test('Position', () => {
     expectTypeOf<Position>().not.toBeNever()
   })
@@ -6321,6 +6333,9 @@ describe('sanity', () => {
   test('TargetPerspective', () => {
     expectTypeOf<TargetPerspective>().not.toBeNever()
   })
+  test('TargetScopeIdOptions', () => {
+    expectTypeOf<TargetScopeIdOptions>().toBeObject()
+  })
   test('TelephoneInput', () => {
     expectTypeOf<typeof TelephoneInput>().toBeFunction()
   })
@@ -6931,8 +6946,14 @@ describe('sanity', () => {
   test('usePausedScheduledDraft', () => {
     expectTypeOf<typeof usePausedScheduledDraft>().toBeFunction()
   })
+  test('usePauseToEditScheduledDraft', () => {
+    expectTypeOf<typeof usePauseToEditScheduledDraft>().toBeFunction()
+  })
   test('usePerspective', () => {
     expectTypeOf<typeof usePerspective>().toBeFunction()
+  })
+  test('usePortalBoundary', () => {
+    expectTypeOf<typeof usePortalBoundary>().toBeFunction()
   })
   test('usePresenceStore', () => {
     expectTypeOf<typeof usePresenceStore>().toBeFunction()
@@ -7095,6 +7116,9 @@ describe('sanity', () => {
   })
   test('useTargetDocumentState', () => {
     expectTypeOf<typeof useTargetDocumentState>().toBeFunction()
+  })
+  test('useTargetScopeId', () => {
+    expectTypeOf<typeof useTargetScopeId>().toBeFunction()
   })
   test('useTelemetryConsent', () => {
     expectTypeOf<typeof useTelemetryConsent>().toBeFunction()

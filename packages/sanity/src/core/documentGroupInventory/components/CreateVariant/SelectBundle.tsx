@@ -1,11 +1,11 @@
 import {type ReleaseDocument} from '@sanity/client/stega'
 import ChevronLeftIcon from '@sanity/icons/ChevronLeft'
 // oxlint-disable-next-line no-restricted-imports -- `Button` requires fine-grained control
-import {Button, Label, Spinner, Stack, Text} from '@sanity/ui'
+import {Button, Label, Spinner, Text} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
 import {type ComponentType} from 'react'
 import {styled} from 'styled-components'
-import {Flex} from 'ui5'
+import {VStack, Flex} from 'ui5'
 import {type ActorRefFromLogic} from 'xstate'
 
 import {Delay} from '../../../components/Delay'
@@ -16,6 +16,7 @@ import {ReleaseAvatarIcon} from '../../../releases/components/ReleaseAvatar'
 import {getReleaseDocumentIdFromReleaseId} from '../../../releases/util/getReleaseDocumentIdFromReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isNotArchivedRelease, isReleaseScheduledOrScheduling} from '../../../releases/util/util'
+import {getDocumentVersionVariantId} from '../../../util/getDocumentVersionVariant'
 import {getVariantTitle} from '../../../variants/tool/util'
 import {type selectionMachine} from '../../machines/selectionMachine'
 import {type variantCreationMachine} from '../../machines/variantCreationMachine'
@@ -61,7 +62,7 @@ export const SelectBundle: ComponentType<Props> = ({variantCreationRef, selectio
         })
 
   const existingBundles = existingVariants.reduce((bundleKeys, variant) => {
-    const variantId = variant.document?._system.variant?._ref
+    const variantId = getDocumentVersionVariantId(variant.document)
 
     if (typeof variantId !== 'undefined' && variantId === selectedVariantDefinition?._id) {
       bundleKeys.add(
@@ -95,11 +96,11 @@ export const SelectBundle: ComponentType<Props> = ({variantCreationRef, selectio
         </TextButton>
       </Header>
       <Body>
-        <Stack gap={4}>
+        <VStack gap={4}>
           {!existingBundles.has('drafts') && (
-            <Stack gap={3}>
+            <VStack gap={3}>
               <Label as="h3">{t('document-group.create-variant.target-drafts')}</Label>
-              <Stack gap={1}>
+              <VStack gap={1}>
                 <Button
                   mode="bleed"
                   justify="flex-start"
@@ -128,12 +129,12 @@ export const SelectBundle: ComponentType<Props> = ({variantCreationRef, selectio
                     })
                   }}
                 />
-              </Stack>
-            </Stack>
+              </VStack>
+            </VStack>
           )}
-          <Stack gap={3}>
+          <VStack gap={3}>
             <Label as="h3">{t('document-group.create-variant.target-releases')}</Label>
-            <Stack gap={1}>
+            <VStack gap={1}>
               {[...bundles.entries()]
                 .filter(
                   ([, bundle]) =>
@@ -173,12 +174,12 @@ export const SelectBundle: ComponentType<Props> = ({variantCreationRef, selectio
                     }}
                   />
                 ))}
-            </Stack>
-          </Stack>
+            </VStack>
+          </VStack>
           {existingBundles.size !== 0 && (
-            <Stack gap={3}>
+            <VStack gap={3}>
               <Label as="h3">{t('document-group.create-variant.view-existing-variants')}</Label>
-              <Stack gap={1}>
+              <VStack gap={1}>
                 {[...existingBundles.values()].map((bundleKey) => {
                   const bundle = bundles.get(getReleaseDocumentIdFromReleaseId(bundleKey))
 
@@ -208,10 +209,10 @@ export const SelectBundle: ComponentType<Props> = ({variantCreationRef, selectio
                     />
                   )
                 })}
-              </Stack>
-            </Stack>
+              </VStack>
+            </VStack>
           )}
-        </Stack>
+        </VStack>
       </Body>
     </>
   )

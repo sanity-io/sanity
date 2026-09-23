@@ -3,11 +3,11 @@ import {CopyIcon} from '@sanity/icons/Copy'
 import {DocumentsIcon} from '@sanity/icons/Documents'
 import {UnknownIcon} from '@sanity/icons/Unknown'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
 import {type ComponentType, type ReactNode, useCallback, useMemo} from 'react'
-import {Box, Flex} from 'ui5'
+import {VStack, Box, Flex} from 'ui5'
 import {type ActorRefFromLogic} from 'xstate'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -125,7 +125,7 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
       }}
       onClose={() => deletionRef.send({type: 'delete.cancel'})}
     >
-      <Stack gap={4}>
+      <VStack gap={4}>
         {error ? (
           <Card tone="critical" padding={3}>
             <Text size={1}>{t('document-group.delete.error.message')}</Text>
@@ -163,7 +163,7 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
             />
           </>
         )}
-      </Stack>
+      </VStack>
     </Dialog>
   )
 }
@@ -249,7 +249,7 @@ const References: ComponentType<ReferencesProps> = ({
       <Card radius={2} shadow={1} flex="auto" padding={1}>
         <Flex flexDirection="column">
           {internalReferences.totalCount > 0 && (
-            <Stack as="ul" gap={2} data-testid="internal-references">
+            <VStack as="ul" gap={2} data-testid="internal-references">
               {internalReferences.references.map((item) => (
                 <Box key={item._id} as="li">
                   {renderPreviewItem(item)}
@@ -260,7 +260,7 @@ const References: ComponentType<ReferencesProps> = ({
                   <OtherReferenceCount {...internalReferences} />
                 </Box>
               )}
-            </Stack>
+            </VStack>
           )}
           {crossDatasetReferences.totalCount > 0 && (
             <CrossDatasetReferencesDetails
@@ -285,7 +285,7 @@ const References: ComponentType<ReferencesProps> = ({
                     <Text size={1}>
                       <DocumentsIcon />
                     </Text>
-                    <Stack gap={2}>
+                    <VStack gap={2}>
                       <Text textOverflow="ellipsis" size={1}>
                         {t('document-group.delete.cdr-summary.title', {
                           count: normalizedDatasetNames.length,
@@ -297,7 +297,7 @@ const References: ComponentType<ReferencesProps> = ({
                       <Text title={datasetSubtitle} textOverflow="ellipsis" size={1} muted>
                         {datasetSubtitle}
                       </Text>
-                    </Stack>
+                    </VStack>
                     <ChevronWrapper>
                       <Text muted size={1}>
                         <ChevronDownIcon />

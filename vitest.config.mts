@@ -30,6 +30,7 @@ export default defineConfig({
       'packages/@sanity/schema',
       'packages/@sanity/types',
       'packages/@sanity/util',
+      'packages/@sanity/validation',
       'packages/@sanity/vision',
       'packages/sanity',
       // NOTE: the browser-mode project (packages/sanity/vitest.browser.config.mts)

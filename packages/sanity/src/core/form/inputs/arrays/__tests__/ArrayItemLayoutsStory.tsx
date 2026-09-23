@@ -1,10 +1,10 @@
 import {ImageIcon} from '@sanity/icons/Image'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type FormNodeValidation} from '@sanity/types'
-import {Card, Stack, Text, TextInput} from '@sanity/ui'
+import {Card, Text, TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {type ReactNode} from 'react'
-import {Box} from 'ui5'
+import {Box, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
@@ -59,12 +59,12 @@ const presence = <FieldPresenceInner presence={PRESENCE} maxAvatars={1} />
 function CellPreview({title, media}: {title: string; media?: ReactNode}) {
   return (
     <Card flex={1} padding={3} tone="inherit">
-      <Stack gap={3}>
+      <VStack gap={3}>
         {media}
         <Text size={1} textOverflow="ellipsis" weight="medium">
           {title}
         </Text>
-      </Stack>
+      </VStack>
     </Card>
   )
 }
@@ -91,15 +91,15 @@ export function ArrayItemLayoutsStory() {
   return (
     <TestWrapper schemaTypes={[]}>
       <Card padding={4} style={{maxWidth: 640}}>
-        <Stack gap={5}>
-          <Stack gap={2}>
+        <VStack gap={5}>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               grid cells (default, presence, error + selected)
             </Text>
             <Card border padding={1} radius={1}>
               <List
                 gap={3}
-                gridTemplateColumns={3}
+                gridTemplateColumns="repeat(3, minmax(0, 1fr))"
                 items={GRID_ITEMS}
                 margin={1}
                 padding={1}
@@ -134,9 +134,9 @@ export function ArrayItemLayoutsStory() {
                 </Item>
               </List>
             </Card>
-          </Stack>
+          </VStack>
 
-          <Stack gap={2}>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               rows (default, presence + error + selected, read-only + footer)
             </Text>
@@ -178,8 +178,8 @@ export function ArrayItemLayoutsStory() {
                 </Item>
               </List>
             </Card>
-          </Stack>
-        </Stack>
+          </VStack>
+        </VStack>
       </Card>
     </TestWrapper>
   )
