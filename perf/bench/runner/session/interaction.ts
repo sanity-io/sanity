@@ -191,7 +191,7 @@ function toLatencies(
   }
 }
 
-function fieldInput(page: Page, target: InteractionTarget): Locator {
+export function fieldInput(page: Page, target: InteractionTarget): Locator {
   if (target.kind === 'pte') {
     return page
       .locator(`[data-testid="field-${target.fieldPath}"] [contenteditable="true"]`)
@@ -278,7 +278,10 @@ const isFormReadOnly = () =>
  * keystrokes while it lasts (see ReadOnlyInterruptions). Pause rather than
  * type into the void — the wait is not keystroke latency.
  */
-async function waitUntilEditable(page: Page, interruptions: ReadOnlyInterruptions): Promise<void> {
+export async function waitUntilEditable(
+  page: Page,
+  interruptions: ReadOnlyInterruptions,
+): Promise<void> {
   if (!(await page.evaluate(isFormReadOnly))) return
   const waitStart = Date.now()
   await page.waitForFunction(

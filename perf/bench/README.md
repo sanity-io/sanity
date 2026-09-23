@@ -126,7 +126,7 @@ Useful `bench run` flags: `--headed`, `--throttle 1` (disable CPU throttle), `--
 ## Adding a scenario
 
 1. Schema: `studio/schemas/<name>.ts` exporting a workspace partial; register in `sanity.config.ts`.
-2. Scenario: `scenarios/<name>.ts` via `defineScenario` — deterministic fixture (use `scenarios/fixtures/prng.ts`, never `Math.random`), `interactions` (fields to type into; `kind: 'pte'` for Portable Text; `readbackText` if the value isn't a plain string at the field path), seeded image assets if needed (`cdn.sanity.io/images/*` is served a constant PNG by the route guard).
+2. Scenario: `scenarios/<name>.ts` via `defineScenario` — deterministic fixture (use `scenarios/fixtures/prng.ts`, never `Math.random`), `interactions` (fields to type into; `kind: 'pte'` for Portable Text; `readbackText` if the value isn't a plain string at the field path), seeded image assets if needed (`cdn.sanity.io/images/*` is served a constant PNG by the route guard). For INP mode a scenario may declare `steps` (`runner/session/steps.ts`): a choreography of `type` / `click` / `hover` / `awaitVisible` / `scroll` / `press` steps over `{field}` / `{testId}` / `{label}` / `{css}` selectors, run to completion each pass, with `raw` as the escape hatch and an optional `readback` per step checked against the mock store. Without `steps`, INP mode types into each interaction target in turn.
 3. Register in `scenarios/index.ts`; add the scenario to the `bench-interaction` matrix in `.github/workflows/bench.yml`.
 4. Verify: one absolute session passes with no failures — readback, console errors, hermeticity and endpoint drift are all hard session failures.
 

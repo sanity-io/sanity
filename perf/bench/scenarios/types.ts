@@ -1,4 +1,9 @@
+import {type Page} from 'playwright'
+
+import {type DocumentStore} from '../mock-api/store'
 import {type BenchDocument} from '../mock-api/types'
+import {type RunningSide} from '../runner/servers'
+import {type ReadOnlyInterruptions} from '../runner/session/interaction'
 
 /** A field the interaction mode types into. */
 export interface InteractionTarget {
@@ -73,6 +78,12 @@ export interface BenchScenario {
   /** Fields measured by interaction mode, in fixed execution order. */
   interactions: InteractionTarget[]
   /**
+   * Component-interaction choreography for INP mode (runner/session/steps.ts),
+   * run to completion each pass. Absent ⇒ one `type` step per interaction
+   * target. Interaction mode ignores steps: it measures keystrokes only.
+   */
+  steps?: ScenarioStep[]
+  /**
    * Per-scenario keystroke counts, overriding the session defaults. For
    * scenarios with pathologically slow keystrokes (synthetic: ~10× the
    * others), the default counts make each session cost minutes without
@@ -82,6 +93,79 @@ export interface BenchScenario {
    */
   keystrokes?: {warmup?: number; measured?: number; burst?: number}
 }
+
+/**
+ * Where a step acts. `field` reuses interaction mode's focus/input logic for
+ * a `data-testid="field-<path>"` field; `testId` and `label` (accessible
+ * name, exact) optionally scope under a `within` test id; `css` is the escape
+ * hatch.
+ */
+export type StepSelector =
+  | {field: string; kind: 'string' | 'pte'}
+  | {testId: string; within?: string}
+  | {label: string; within?: string}
+  | {css: string}
+
+export interface StepContext {
+  page: Page
+  running: RunningSide
+  timeoutMs: number
+  interruptions: ReadOnlyInterruptions
+}
+
+/**
+ * Readback for a step: checked against the mock's document store after the
+ * session has driven all its passes, the step's effect must have landed
+ * (like interaction mode's typed-text readback).
+ */
+export type StepReadback = (store: DocumentStore) => boolean
+
+export type ScenarioStep =
+  | {
+      kind: 'type'
+      label?: string
+      selector: StepSelector
+      /** Literal text to type; otherwise `keystrokes` characters from the bench alphabet. */
+      text?: string
+      keystrokes?: number
+      readback?: StepReadback
+    }
+  | {kind: 'click'; label?: string; selector: StepSelector; readback?: StepReadback}
+  | {kind: 'awaitVisible'; selector: StepSelector}
+  | {kind: 'hover'; selector: StepSelector}
+  | {
+      /**
+       * Wheel-scroll over an element: hover it, then `repeat` wheel ticks of
+       * `deltaY` pixels (negative scrolls up), one paint apart. Scrolls have
+       * no interaction id, so they add nothing to the driven count — the work
+       * they trigger (scroll listeners, overlay geometry) lands on the next
+       * interaction's latency instead.
+       */
+      kind: 'scroll'
+      label?: string
+      selector: StepSelector
+      deltaY: number
+      repeat?: number
+    }
+  | {
+      /**
+       * Press a key `repeat` times (e.g. ArrowDown ×5 through a results list),
+       * one paint apart. Optionally click `selector` first to focus it. Each
+       * press is one interaction.
+       */
+      kind: 'press'
+      label?: string
+      key: string
+      repeat?: number
+      selector?: StepSelector
+      readback?: StepReadback
+    }
+  | {
+      kind: 'raw'
+      label: string
+      drive: (context: StepContext) => Promise<{interactions: number}>
+      readback?: StepReadback
+    }
 
 export function defineScenario(scenario: BenchScenario): BenchScenario {
   return scenario
