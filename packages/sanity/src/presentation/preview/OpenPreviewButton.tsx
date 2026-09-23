@@ -16,6 +16,7 @@ export function OpenPreviewButton(
   props: Pick<PreviewProps, 'openPopup' | 'previewUrlRef'> & {
     previewLocationOrigin?: string
     previewLocationRoute: string
+    previewUrlSecret: string | null
     perspective: PresentationPerspective
     variant: string | undefined
     targetOrigin: string
@@ -26,15 +27,17 @@ export function OpenPreviewButton(
     previewLocationOrigin,
     previewLocationRoute,
     previewUrlRef,
+    previewUrlSecret,
     perspective,
     variant,
     targetOrigin,
   } = props
   const previewMode = useSelector(previewUrlRef, (state) => state.context.previewMode)
-  const previewUrlSecret = useSelector(
+  const previewUrlSecretFromState = useSelector(
     previewUrlRef,
     (state) => state.context.previewUrlSecret?.secret ?? null,
   )
+  const sessionSecret = previewUrlSecret || previewUrlSecretFromState
 
   const openPreviewLink = useMemo(
     () =>
@@ -43,7 +46,7 @@ export function OpenPreviewButton(
         previewLocationOrigin,
         previewLocationRoute,
         previewMode,
-        previewUrlSecret,
+        previewUrlSecret: sessionSecret,
         targetOrigin,
         variant,
       }),
@@ -52,7 +55,7 @@ export function OpenPreviewButton(
       previewLocationOrigin,
       previewLocationRoute,
       previewMode,
-      previewUrlSecret,
+      sessionSecret,
       targetOrigin,
       variant,
     ],
