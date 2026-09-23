@@ -336,53 +336,23 @@ export function prepareConfig(
     })
 
     const resolvedSources = sources.map((source): InternalSource => {
-      const {projectId, dataset} = source
-
-      let schemaTypes
-      try {
-        schemaTypes = resolveSchemaTypes({
-          config: source,
-          context: {projectId, dataset},
-        })
-      } catch (e) {
-        throw new ConfigResolutionError({
-          name: source.name,
-          type: 'source',
-          causes: [e],
-        })
-      }
-
-      const schema = createSchema({
-        name: source.name,
-        types: schemaTypes,
-      })
-
-      const schemaValidationProblemGroups = schema._validation
-      const schemaErrors = schemaValidationProblemGroups?.filter((msg) =>
-        msg.problems.some(isError),
-      )
-
-      if (schemaValidationProblemGroups && schemaErrors?.length) {
-        // TODO: consider using the `ConfigResolutionError`
-        throw new SchemaError(schema)
-      }
-
+      const getSchema = createSchemaGetter(source)
       const auth = getAuthStore(source, {
         createStudioRequestHandler: options?.createStudioRequestHandler,
         requestErrorChannel: options?.requestErrorChannel,
         requestFailureDiagnostics: options?.requestFailureDiagnostics,
       })
-      const i18n = prepareI18n(source)
+      const getI18n = createMemoizedGetter(() => prepareI18n(source))
       const source$ = auth.state.pipe(
         map(({client, authenticated, currentUser}) => {
           return resolveSource({
             config: source,
             client,
             currentUser,
-            schema,
+            schema: getSchema(),
             authenticated,
             auth,
-            i18n,
+            i18n: getI18n(),
           })
         }),
         shareReplay(1),
@@ -394,8 +364,12 @@ export function prepareConfig(
         dataset: source.dataset,
         title: source.title || startCase(source.name),
         auth,
-        schema,
-        i18n: i18n.source,
+        get schema() {
+          return getSchema()
+        },
+        get i18n() {
+          return getI18n().source
+        },
         source: source$,
       }
     })
@@ -408,8 +382,12 @@ export function prepareConfig(
       basePath: joinBasePath(rootPath, rootSource.basePath),
       dataset: rootSource.dataset,
       apiHost: rootSource.apiHost,
-      schema: resolvedSources[0].schema,
-      i18n: resolvedSources[0].i18n,
+      get schema() {
+        return resolvedSources[0].schema
+      },
+      get i18n() {
+        return resolvedSources[0].i18n
+      },
       customIcon: !!rootSource.icon,
       icon: normalizeIcon(rootSource.icon, title, `${rootSource.projectId} ${rootSource.dataset}`),
       name: rootSource.name || 'default',
@@ -430,6 +408,58 @@ export function prepareConfig(
   })
 
   return {type: 'prepared-config', workspaces}
+}
+
+function createSchemaGetter(source: SourceOptions): () => Schema {
+  return createMemoizedGetter(() => {
+    const {projectId, dataset} = source
+    let schemaTypes
+    try {
+      schemaTypes = resolveSchemaTypes({
+        config: source,
+        context: {projectId, dataset},
+      })
+    } catch (error) {
+      throw new ConfigResolutionError({
+        name: source.name,
+        type: 'source',
+        causes: [error],
+      })
+    }
+
+    const schema = createSchema({
+      name: source.name,
+      types: schemaTypes,
+    })
+    const schemaErrors = schema._validation?.filter((message) => message.problems.some(isError))
+
+    if (schemaErrors?.length) {
+      // TODO: consider using the `ConfigResolutionError`
+      throw new SchemaError(schema)
+    }
+
+    return schema
+  })
+}
+
+type MemoizedResult<T> = {type: 'success'; value: T} | {type: 'failure'; error: unknown}
+
+function createMemoizedGetter<T>(factory: () => T): () => T {
+  let result: MemoizedResult<T> | undefined
+
+  return function getMemoizedValue(): T {
+    if (result?.type === 'success') return result.value
+    if (result?.type === 'failure') throw result.error
+
+    try {
+      const value = factory()
+      result = {type: 'success', value}
+      return value
+    } catch (error) {
+      result = {type: 'failure', error}
+      throw error
+    }
+  }
 }
 
 function getAuthStore(

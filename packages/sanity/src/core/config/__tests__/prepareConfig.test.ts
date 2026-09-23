@@ -1,6 +1,9 @@
 import {createClient, type RequestHandler} from '@sanity/client'
+import {firstValueFrom} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {type LocaleDefinition} from '../../i18n/types'
+import {createMockAuthStore} from '../../store/authStore/createMockAuthStore'
 import {getCollectedConfigWarnings} from '../configWarnings'
 import {prepareConfig} from '../prepareConfig'
 import {type WorkspaceOptions} from '../types'
@@ -190,6 +193,67 @@ describe('prepareConfig — workspace hidden property', () => {
     ])
 
     expect(workspaces.find((w) => w.name === 'callback')?.hidden).toBe(hidden)
+  })
+})
+
+describe('prepareConfig — lazy schema resolution', () => {
+  it('compiles a workspace schema only on first access', () => {
+    const types = vi.fn(() => [])
+    const {workspaces} = prepareConfig(createWorkspace({schema: {types}}))
+
+    expect(types).not.toHaveBeenCalled()
+
+    const schema = workspaces[0].schema
+    expect(types).toHaveBeenCalledOnce()
+    expect(workspaces[0].schema).toBe(schema)
+    expect(types).toHaveBeenCalledOnce()
+  })
+
+  it('defers and memoizes schema compilation errors', () => {
+    const error = new Error('invalid schema')
+    const types = vi.fn(() => {
+      throw error
+    })
+    const {workspaces} = prepareConfig(createWorkspace({schema: {types}}))
+
+    expect(types).not.toHaveBeenCalled()
+    expect(() => workspaces[0].schema).toThrow('invalid schema')
+    expect(() => workspaces[0].schema).toThrow('invalid schema')
+    expect(types).toHaveBeenCalledOnce()
+  })
+
+  it('surfaces a deferred schema error when the authenticated source loads', async () => {
+    const types = vi.fn(() => {
+      throw new Error('invalid authenticated schema')
+    })
+    const client = createClient({
+      projectId: 'test',
+      dataset: 'test',
+      apiVersion: '2024-01-01',
+      useCdn: false,
+    })
+    const auth = createMockAuthStore({client, currentUser: null})
+    const {workspaces} = prepareConfig(createWorkspace({auth, schema: {types}}))
+
+    expect(types).not.toHaveBeenCalled()
+
+    // oxlint-disable-next-line no-deprecated -- source observable is the integration boundary under test
+    await expect(firstValueFrom(workspaces[0].__internal.sources[0].source)).rejects.toThrow(
+      'invalid authenticated schema',
+    )
+    expect(types).toHaveBeenCalledOnce()
+  })
+
+  it('initializes workspace i18n only on first access', () => {
+    const locales = vi.fn((previous: LocaleDefinition[]) => previous)
+    const {workspaces} = prepareConfig(createWorkspace({i18n: {locales}}))
+
+    expect(locales).not.toHaveBeenCalled()
+
+    const i18n = workspaces[0].i18n
+    expect(locales).toHaveBeenCalledOnce()
+    expect(workspaces[0].i18n).toBe(i18n)
+    expect(locales).toHaveBeenCalledOnce()
   })
 })
 
