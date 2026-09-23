@@ -41,6 +41,7 @@ import {type InitialValueTemplateItem, type Template, type TemplateItem} from '.
 import {canonicalHash} from '../util/canonicalHash'
 import {EMPTY_ARRAY} from '../util/empty'
 import {isNonNullable} from '../util/isNonNullable'
+import {type AuthConfig} from './auth/types'
 import {composeRequestHandlers} from './composeRequestHandlers'
 import {
   advancedVersionControlEnabledReducer,
@@ -149,6 +150,9 @@ function warnOnDivergentProjectAuth(
   for (const workspace of workspaces) {
     const {projectId, auth, name} = workspace as WorkspaceOptions & {auth?: unknown}
     if (!projectId || auth === undefined) continue
+    // OAuth tokens are stored per project and OAuth client, so an OAuth workspace does not share
+    // its session with the other workspaces of the project.
+    if (getOAuthClientId(auth)) continue
     const list = byProject.get(projectId) ?? []
     list.push({name: name ?? 'default', auth})
     byProject.set(projectId, list)
@@ -196,6 +200,12 @@ function warnOnDivergentProjectAuth(
       message,
     })
   }
+}
+
+/** The OAuth client of a workspace `auth` config, when it signs in with OAuth. */
+function getOAuthClientId(auth: unknown): string | undefined {
+  if (!auth || typeof auth !== 'object' || isAuthStore(auth)) return undefined
+  return (auth as AuthConfig).unstable_oauth?.clientId
 }
 
 function fingerprintAuth(auth: unknown): string {
@@ -416,6 +426,7 @@ export function prepareConfig(
       basePath: joinBasePath(rootPath, rootSource.basePath),
       dataset: rootSource.dataset,
       apiHost: rootSource.apiHost,
+      oauthClientId: getOAuthClientId(rootSource.auth),
       schema: resolvedSources[0].schema,
       i18n: resolvedSources[0].i18n,
       customIcon: !!rootSource.icon,

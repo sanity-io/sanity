@@ -437,6 +437,10 @@ describe('createOAuthAuthStore', () => {
       expect(mixedUp.result).toMatchObject({success: false, failureReason: 'issuer mismatch'})
       expect(mixedUp.endpoints.exchangeCode).not.toHaveBeenCalled()
 
+      // Compared exactly (RFC 9207): a trailing slash is another issuer.
+      const trailingSlash = await exchange('https://api.sanity.io/')
+      expect(trailingSlash.result).toMatchObject({success: false, failureReason: 'issuer mismatch'})
+
       const expected = await exchange('https://api.sanity.io')
       expect(expected.result).toMatchObject({success: true})
       expect(expected.endpoints.exchangeCode).toHaveBeenCalledTimes(1)

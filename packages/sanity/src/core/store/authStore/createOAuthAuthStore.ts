@@ -7,6 +7,7 @@ import {
 } from '@sanity/client'
 import memoize from 'lodash-es/memoize.js'
 import {
+  BehaviorSubject,
   EMPTY,
   firstValueFrom,
   from,
@@ -41,9 +42,9 @@ import {
 } from './constants'
 import {getCurrentUser, type RequestFailureDiagnostics} from './createAuthStore'
 import {
+  type BroadcastedState,
   createBroadcastState,
   createLocalStorageStorage,
-  createMemoryStorage,
 } from './createBroadcastState'
 import {createOAuthLoginComponent} from './createOAuthLoginComponent'
 import {
@@ -153,6 +154,39 @@ function exchangeFailureReason(err: unknown): string {
   return 'code exchange failed'
 }
 
+/** State kept in this tab only, with the shape of a broadcast state. */
+function createTabState<T>(): Pick<BroadcastedState<T>, 'value' | 'get' | 'update'> {
+  const subject = new BehaviorSubject<T | undefined>(undefined)
+  return {
+    value: subject.asObservable(),
+    get: () => subject.getValue(),
+    update: (value) => subject.next(value),
+  }
+}
+
+/**
+ * Refuses a redirect URI the authorization server would reject, before the flow is stored: it has
+ * to be absolute and without a fragment (RFC 6749 section 3.1.2). It also has to be on the Studio
+ * origin, because the verifier and `state` live in this origin's sessionStorage and the response
+ * has to come back here to be exchanged.
+ */
+function assertRedirectUri(redirectUri: string, origin: string): void {
+  let url: URL
+  try {
+    url = new URL(redirectUri)
+  } catch {
+    throw new Error(`auth.unstable_oauth.redirectUri must be an absolute URL, got ${redirectUri}`)
+  }
+  if (redirectUri.includes('#')) {
+    throw new Error(`auth.unstable_oauth.redirectUri must not have a fragment, got ${redirectUri}`)
+  }
+  if (url.origin !== origin) {
+    throw new Error(
+      `auth.unstable_oauth.redirectUri must be on the Studio origin (${origin}), got ${redirectUri}`,
+    )
+  }
+}
+
 function bearerTokenOf(request: RequestHandlerOptions): string | undefined {
   const header = Object.entries(request.headers ?? {}).find(
     ([name]) => name.toLowerCase() === 'authorization',
@@ -231,28 +265,36 @@ export function _createOAuthAuthStore({
     hostOptions.apiHost = 'https://api.sanity.work'
   }
 
-  // The authorization server's issuer identifier is the API origin it is served from.
-  const issuer = hostOptions.apiHost ?? 'https://api.sanity.io'
+  // The authorization server's issuer identifier is the API origin it is served from, without a
+  // trailing slash. Canonicalized once here, so the callback can compare `iss` exactly.
+  const issuer = (hostOptions.apiHost ?? 'https://api.sanity.io').replace(/\/+$/, '')
   const endpoints = endpointsOption ?? createOAuthEndpoints(issuer)
   const clientFactory = clientFactoryOption ?? createSanityClient
   const flowStorageKey = getOAuthFlowStorageKey(projectId)
 
-  // The storage is kept alongside the broadcast state so a refresh can read what another tab
-  // wrote, before that tab's broadcast has arrived here. See `latestTokens`.
+  // With localStorage, the pair is shared by the tabs of this origin, and the storage is kept
+  // alongside the broadcast state so a refresh can read what another tab wrote before that tab's
+  // broadcast has arrived here. See `latestTokens`.
+  //
+  // Without it, the pair stays private to this tab. A broadcast is delivered asynchronously and
+  // is not ordered with the refresh lock, so a tab waiting for the lock could still hold a pair
+  // another tab already rotated, redeem its used refresh token, and sign both tabs out.
   const tokensStorageKey = getOAuthTokensStorageKey(projectId, clientId)
-  const persistedTokens = supportsLocalStorage
-    ? createLocalStorageStorage<OAuthTokens>(tokensStorageKey)
-    : createMemoryStorage<OAuthTokens>()
-  const tokenStorage = createBroadcastState<OAuthTokens>(
-    `${tokensStorageKey}_broadcast`,
-    (current) => current,
-    persistedTokens,
-  )
+  const persistedTokens = createLocalStorageStorage<OAuthTokens>(tokensStorageKey)
+  const tokenStorage: Pick<
+    BroadcastedState<OAuthTokens>,
+    'value' | 'get' | 'update'
+  > = supportsLocalStorage
+    ? createBroadcastState<OAuthTokens>(
+        `${tokensStorageKey}_broadcast`,
+        (current) => current,
+        persistedTokens,
+      )
+    : createTabState<OAuthTokens>()
 
   /**
    * The latest pair any tab wrote. localStorage is shared, so it can be ahead of this tab's
-   * broadcast state. The memory fallback is private to the tab and never sees a broadcast, so
-   * there the broadcast state is the latest this tab knows.
+   * broadcast state. Without it, this tab's own state is all there is.
    */
   const latestTokens = (): OAuthTokens | undefined =>
     supportsLocalStorage ? persistedTokens.load() : tokenStorage.get()
@@ -433,13 +475,7 @@ export function _createOAuthAuthStore({
     const oauthState = createState()
     const {origin} = getLocation()
     const redirectUri = redirectUriOption ?? `${origin}${basePath.replace(/\/+$/, '')}`
-    // The verifier and `state` live in this origin's sessionStorage, so the response has to come
-    // back here to be exchanged.
-    if (new URL(redirectUri, origin).origin !== origin) {
-      throw new Error(
-        `auth.unstable_oauth.redirectUri must be on the Studio origin (${origin}), got ${redirectUri}`,
-      )
-    }
+    assertRedirectUri(redirectUri, origin)
     writeFlow(flowStorageKey, {codeVerifier, state: oauthState, redirectUri, redirectPath})
     navigate(
       endpoints.authorizeUrl({
@@ -537,7 +573,7 @@ export function _createOAuthAuthStore({
     // another authorization server replayed at this Studio. A response without `iss` is accepted,
     // since the server does not advertise support for it.
     const iss = params.get('iss')
-    if (iss !== null && iss.replace(/\/+$/, '') !== issuer.replace(/\/+$/, '')) {
+    if (iss !== null && iss !== issuer) {
       return fail('issuer mismatch')
     }
 

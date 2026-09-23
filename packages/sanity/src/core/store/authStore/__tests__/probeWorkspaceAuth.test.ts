@@ -2,7 +2,7 @@ import {type ClientConfig as SanityClientConfig, type SanityClient} from '@sanit
 import {firstValueFrom, lastValueFrom, take, toArray} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {getAuthTokenStorageKey, getCookieAuthStateKey} from '../constants'
+import {getAuthTokenStorageKey, getCookieAuthStateKey, getOAuthTokensStorageKey} from '../constants'
 import {_probeWorkspaceAuthForTest, _resetProbeWorkspaceAuthCache} from '../probeWorkspaceAuth'
 
 // Match the convention from createAuthStore.test.ts: ensure localStorage is
@@ -176,6 +176,40 @@ describe('probeWorkspaceAuth', () => {
     const config = mock.configs()[0]
     expect(config.token).toBe('mock-token-abc')
     expect(config.withCredentials).toBeUndefined()
+  })
+
+  it('uses the access token of an OAuth workspace', async () => {
+    localStorage.setItem(getAuthTokenStorageKey('p1'), JSON.stringify({token: 'provider-token'}))
+    localStorage.setItem(
+      getOAuthTokensStorageKey('p1', 'oc-1'),
+      JSON.stringify({accessToken: 'oauth-access-token', refreshToken: 'oauth-refresh-token'}),
+    )
+
+    const mock = createMockFactory({authenticated: true})
+    const result = await firstValueFrom(
+      _probeWorkspaceAuthForTest(
+        {projectId: 'p1', dataset: 'd1', oauthClientId: 'oc-1'},
+        {clientFactory: mock.factory},
+      ),
+    )
+
+    expect(result).toEqual({authenticated: true})
+    expect(mock.configs()[0].token).toBe('oauth-access-token')
+  })
+
+  it('reports an OAuth workspace without tokens as signed out, without probing the cookie', async () => {
+    localStorage.setItem(getAuthTokenStorageKey('p1'), JSON.stringify({token: 'provider-token'}))
+
+    const mock = createMockFactory({authenticated: true})
+    const result = await firstValueFrom(
+      _probeWorkspaceAuthForTest(
+        {projectId: 'p1', dataset: 'd1', oauthClientId: 'oc-1'},
+        {clientFactory: mock.factory},
+      ),
+    )
+
+    expect(result).toEqual({authenticated: false})
+    expect(mock.callCount()).toBe(0)
   })
 
   it('does not write to localStorage when probing', async () => {

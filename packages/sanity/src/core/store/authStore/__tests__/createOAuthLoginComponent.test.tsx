@@ -127,13 +127,17 @@ describe('OAuth login component', () => {
     window.removeEventListener('error', onError)
   })
 
-  it('refuses a redirect URL on another origin', async () => {
+  it.each([
+    ['on another origin', 'https://elsewhere.example.com', 'must be on the Studio origin'],
+    ['that is relative', '/callback', 'must be an absolute URL'],
+    ['with a fragment', `${ORIGIN}/callback#done`, 'must not have a fragment'],
+  ])('refuses a redirect URL %s', async (_case, redirectUri, message) => {
     const navigate = vi.fn()
     const {LoginComponent} = _createOAuthAuthStore({
       projectId: PROJECT_ID,
       dataset: 'test-dataset',
       clientId: 'oc-test-client',
-      redirectUri: 'https://elsewhere.example.com',
+      redirectUri,
       clientFactory: createAnonymousClient,
       endpoints: createOAuthEndpoints('https://api.sanity.io'),
       getLocation: () => ({origin: ORIGIN, pathname: '/', search: ''}),
@@ -155,7 +159,7 @@ describe('OAuth login component', () => {
     await userEvent.click(screen.getByRole('button', {name: 'Sign in with Sanity'}))
 
     await waitFor(() => expect(onError).toHaveBeenCalled())
-    expect(onError.mock.calls[0][0].error.message).toContain('must be on the Studio origin')
+    expect(onError.mock.calls[0][0].error.message).toContain(message)
     expect(navigate).not.toHaveBeenCalled()
     expect(sessionStorage.getItem(getOAuthFlowStorageKey(PROJECT_ID))).toBeNull()
     window.removeEventListener('error', onError)
