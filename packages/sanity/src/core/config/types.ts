@@ -1290,6 +1290,48 @@ export interface MediaLibraryConfig {
 }
 
 /**
+ * A selectable value for a known variant condition key.
+ *
+ * @internal
+ */
+export interface VariantConditionValue {
+  value: string
+  title?: string
+  description?: string
+}
+
+/**
+ * A known variant condition key and the values it may take.
+ *
+ * @internal
+ */
+export interface VariantConditionMap {
+  /** Persisted condition key. */
+  name: string
+  /** Picker heading; falls back to {@link VariantConditionMap.name}. */
+  title?: string
+  description?: string
+  /** Allowed values. String entries and `{value, title}` objects may be mixed in one list. */
+  values: (string | VariantConditionValue)[]
+}
+
+/**
+ * Context passed to a `beta.variants.conditions` resolver.
+ *
+ * @internal
+ */
+export type VariantConditionsContext = Pick<ConfigContext, 'projectId' | 'dataset' | 'getClient'>
+
+/**
+ * Static or resolved list of known variant conditions.
+ *
+ * @internal
+ */
+export type VariantConditions =
+  | VariantConditionMap[]
+  | ((context: VariantConditionsContext) => VariantConditionMap[] | Promise<VariantConditionMap[]>)
+
+/**
  * @internal
  * Configuration for studio beta features.
  * */
@@ -1355,6 +1397,26 @@ export interface BetaFeatures {
    */
   variants?: {
     enabled?: boolean
+    /**
+     * Optional list of known variant condition keys and values.
+     * When set, the create/edit form shows a dropdown for the condition key and a dropdown
+     * for its value, instead of free-text fields, and validates stored pairs against this list.
+     *
+     * Accepts a static array or a function that may return a promise (for example to
+     * load conditions from a CDP). The function receives {@link VariantConditionsContext}
+     * and is called when a variant surface first needs the list (the create/edit form,
+     * the variants overview, the variant detail page, or the variants navbar), not at
+     * studio boot.
+     *
+     * @example
+     * ```ts
+     * conditions: async ({getClient}) => {
+     *    const client = getClient({apiVersion: '2024-01-01'})
+     *    return await client.fetch(CONDITIONS_QUERY)
+     * }
+     * ```
+     */
+    conditions?: VariantConditions
   }
   /**
    * Config for the opt-in Comments API implementation.

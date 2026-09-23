@@ -67,6 +67,7 @@ import {
   schemaTemplatesReducer,
   searchStrategyReducer,
   toolsReducer,
+  variantsConditionsReducer,
   variantsEnabledReducer,
 } from './configPropertyReducers'
 import {ConfigResolutionError} from './ConfigResolutionError'
@@ -932,6 +933,7 @@ function resolveSource({
       },
       variants: {
         enabled: variantsEnabled,
+        conditions: variantsConditionsReducer({config, initialValue: undefined}),
       },
       documentGroupInventory: {
         // The document group inventory is an inherent part of the variants experience.
