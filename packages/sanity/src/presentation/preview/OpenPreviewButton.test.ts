@@ -1,6 +1,6 @@
 import {describe, expect, test} from 'vitest'
 
-import {resolveOpenPreviewUrl} from './OpenPreviewButton'
+import {resolveOpenPreviewUrl} from './resolveOpenPreviewUrl'
 
 describe('resolveOpenPreviewUrl', () => {
   test('routes through preview mode with the current secret and preview state', () => {

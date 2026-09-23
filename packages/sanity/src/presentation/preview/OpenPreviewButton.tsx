@@ -1,10 +1,4 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {
-  urlSearchParamPreviewPathname,
-  urlSearchParamPreviewPerspective,
-  urlSearchParamPreviewSecret,
-  urlSearchParamPreviewVariant,
-} from '@sanity/preview-url-secret/constants'
 import {Text} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
 import {useCallback, useMemo} from 'react'
@@ -13,63 +7,9 @@ import {useTranslation} from 'sanity'
 import {Button} from '../../ui-components/button/Button'
 import {Tooltip} from '../../ui-components/tooltip/Tooltip'
 import {presentationLocaleNamespace} from '../i18n'
-import {type PresentationPerspective, type PreviewUrlPreviewMode} from '../types'
-import {encodeStudioPerspective} from '../util/encodeStudioPerspective'
+import {type PresentationPerspective} from '../types'
 import {type PreviewProps} from './Preview'
-
-interface OpenPreviewUrlOptions {
-  previewLocationOrigin?: string
-  previewLocationRoute: string
-  perspective: PresentationPerspective
-  previewMode: PreviewUrlPreviewMode | null
-  previewUrlSecret: string | null
-  targetOrigin: string
-  variant: string | undefined
-}
-
-/** @internal */
-export function resolveOpenPreviewUrl(options: OpenPreviewUrlOptions): string {
-  const {
-    perspective,
-    previewLocationOrigin,
-    previewLocationRoute,
-    previewMode,
-    previewUrlSecret,
-    targetOrigin,
-    variant,
-  } = options
-  const previewUrl = new URL(previewLocationRoute, previewLocationOrigin || targetOrigin)
-
-  previewUrl.searchParams.set(
-    urlSearchParamPreviewPerspective,
-    encodeStudioPerspective(perspective),
-  )
-  if (variant) {
-    previewUrl.searchParams.set(urlSearchParamPreviewVariant, variant)
-  } else {
-    previewUrl.searchParams.delete(urlSearchParamPreviewVariant)
-  }
-
-  if (!previewMode || !previewUrlSecret) {
-    const {pathname, search} = previewUrl
-    return `${previewLocationOrigin}${pathname}${search}`
-  }
-
-  const enableUrl = new URL(previewMode.enable, previewUrl)
-  enableUrl.searchParams.set(urlSearchParamPreviewSecret, previewUrlSecret)
-  enableUrl.searchParams.set(
-    urlSearchParamPreviewPathname,
-    `${previewUrl.pathname}${previewUrl.search}${previewUrl.hash}`,
-  )
-  enableUrl.searchParams.set(urlSearchParamPreviewPerspective, encodeStudioPerspective(perspective))
-  if (variant) {
-    enableUrl.searchParams.set(urlSearchParamPreviewVariant, variant)
-  } else {
-    enableUrl.searchParams.delete(urlSearchParamPreviewVariant)
-  }
-
-  return enableUrl.toString()
-}
+import {resolveOpenPreviewUrl} from './resolveOpenPreviewUrl'
 
 /** @internal */
 export function OpenPreviewButton(
