@@ -196,6 +196,25 @@ export default (typeDef: any, visitorContext: any) => {
     }
   }
 
+  const collapseItemsAfter = typeDef?.options?.collapseItemsAfter
+  if (typeof collapseItemsAfter !== 'undefined' && collapseItemsAfter !== false) {
+    const isPositiveInteger =
+      typeof collapseItemsAfter === 'number' &&
+      Number.isInteger(collapseItemsAfter) &&
+      collapseItemsAfter > 0
+
+    if (!isPositiveInteger) {
+      problems.push(
+        error(
+          `The array type's "options.collapseItemsAfter" must be a positive integer, or false to always render every item. Found ${format(
+            collapseItemsAfter,
+          )}`,
+          HELP_IDS.ARRAY_COLLAPSE_ITEMS_AFTER_INVALID,
+        ),
+      )
+    }
+  }
+
   const list = typeDef?.options?.list
   if (!isMixedArray && Array.isArray(list)) {
     const isArrayOfPrimitives = primitiveTypes.length > 0

@@ -1,6 +1,6 @@
 import {BinaryDocumentIcon} from '@sanity/icons/BinaryDocument'
 import {type FileAsset, type ReferenceValue} from '@sanity/types'
-import {Card, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {Card, Text, TextSkeleton} from '@sanity/ui'
 import {useCallback} from 'react'
 import {Flex} from 'ui5'
 
@@ -40,14 +40,14 @@ function FilePreview({asset}: {asset: FileAsset}) {
             <BinaryDocumentIcon />
           </Text>
         </Card>
-        <Stack flex={1} gap={2} marginLeft={3}>
+        <Flex flexBasis="0%" flexGrow={1} gap={2} marginLeft={3} flexDirection="column">
           <Text muted size={1} textOverflow="ellipsis" weight="medium">
             {asset?.originalFilename || asset._id}
           </Text>
           <Text size={1} muted>
             {formatBytes(asset.size)}
           </Text>
-        </Stack>
+        </Flex>
       </Flex>
     </Card>
   )
@@ -62,10 +62,10 @@ function FileSkeleton() {
             <BinaryDocumentIcon />
           </Text>
         </Card>
-        <Stack flex={1} gap={2} marginLeft={3}>
+        <Flex flexBasis="0%" flexGrow={1} gap={2} marginLeft={3} flexDirection="column">
           <TextSkeleton animated style={{width: '100%'}} radius={1} />
           <TextSkeleton animated style={{width: '100%'}} radius={1} />
-        </Stack>
+        </Flex>
       </Flex>
     </Card>
   )

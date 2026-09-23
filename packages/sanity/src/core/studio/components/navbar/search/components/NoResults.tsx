@@ -1,4 +1,5 @@
-import {Container, Stack, Text} from '@sanity/ui'
+import {Container, Text} from '@sanity/ui'
+import {Flex} from 'ui5'
 
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 
@@ -7,14 +8,14 @@ export function NoResults() {
 
   return (
     <Container width={0}>
-      <Stack aria-live="assertive" gap={4} paddingX={4} paddingY={5}>
+      <Flex aria-live="assertive" gap={4} paddingX={4} paddingY={5} flexDirection="column">
         <Text align="center" muted size={1} weight="medium">
           {t('search.no-results-title')}
         </Text>
         <Text align="center" muted size={1}>
           {t('search.no-results-help-description')}
         </Text>
-      </Stack>
+      </Flex>
     </Container>
   )
 }

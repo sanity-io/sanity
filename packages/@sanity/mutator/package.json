@@ -1,6 +1,6 @@
 {
   "name": "@sanity/mutator",
-  "version": "6.15.0",
+  "version": "6.16.0",
   "description": "A set of models to make it easier to utilize the powerful real time collaborative features of Sanity",
   "keywords": [
     "cms",
@@ -48,7 +48,7 @@
     "watch": "tsdown --watch"
   },
   "dependencies": {
-    "@sanity/diff-match-patch": "^3.2.0",
+    "@sanity/diff-match-patch": "^3.2.1",
     "@sanity/types": "workspace:*",
     "@sanity/uuid": "^3.0.3",
     "dequal": "catalog:",

@@ -18,6 +18,10 @@ export interface TelemetryContext {
   studioVersion: string
   /** React version */
   reactVersion: string
+  /** Portable Text Editor version */
+  portableTextEditorVersion: string
+  /** App SDK version (`@sanity/sdk-react`) */
+  appSdkVersion: string
   /** Environment: production or development */
   environment: 'production' | 'development'
   /** Browser network quality, when available */

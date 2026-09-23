@@ -26,23 +26,23 @@ catalog:
   '@optique/run': ^1.1.1
   '@playwright/test': 1.63.0
   '@sanity/client': ^8.6.2
-  '@sanity/migrate': ^8.0.2
+  '@sanity/migrate': ^8.0.5
   '@sanity/telemetry': ^1.1.0
   '@sanity/tsdown-config': ^0.28.1
-  '@sanity/ui': ^4.2.1
+  '@sanity/ui': ^4.2.3
   '@types/node': ^24.13.3
   '@types/react': ^19.3.0
   '@types/react-dom': ^19.3.0
   '@types/react-is': ^19.3.0
-  '@sanity/vanilla-extract-vite-plugin': ^0.2.18
+  '@sanity/vanilla-extract-vite-plugin': ^0.2.19
   '@vanilla-extract/css': ^1.21.2
   '@vanilla-extract/dynamic': ^2.1.5
   '@vitejs/plugin-react': ^6.1.1
   '@vitest/browser-playwright': ^4.1.11
   dequal: ^2.0.3
-  get-it: ^9.5.4
+  get-it: ^9.5.7
   jsdom: ^29.1.1
-  oxc-transform-react: ^0.149.0
+  oxc-transform-react: ^0.151.0
   playwright: 1.63.0
   react: ^19.3.0
   react-dom: ^19.3.0
@@ -76,14 +76,6 @@ minimumReleaseAgeExclude:
   - '@vitejs/plugin-react'
   - '@portabletext/*'
   - '@sanity/*'
-  # @sentry/react and its SDK dependencies publish in lockstep
-  - '@sentry/browser-utils@10.73.0'
-  - '@sentry/browser@10.73.0'
-  - '@sentry/core@10.73.0'
-  - '@sentry/feedback@10.73.0'
-  - '@sentry/react@10.73.0'
-  - '@sentry/replay-canvas@10.73.0'
-  - '@sentry/replay@10.73.0'
   - '@yuku-codegen/*'
   - '@yuku-parser/*'
   - '@yuku-toolchain/types'
@@ -116,13 +108,10 @@ minimumReleaseAgeExclude:
   - 'react-hook-form'
   # Fresh major; exclude so 8.0.0 can install before the age gate
   - 'react-devtools-core@8.0.0'
-  # Fresh patch; exclude so 17.0.13 can install before the age gate
-  - 'react-i18next@17.0.13'
   - 'react-is'
   - 'react-rx'
   # Fresh patch; exclude so 0.28.0 can install before the age gate
   - 'scheduler@0.28.0'
-  - 'i18next@26.4.1'
   # tsdown and its rolldown/rolldown-plugin-dts/yuku toolchain release frequently and in
   # lockstep, so new releases are often younger than minimumReleaseAge
   - 'rolldown'
@@ -148,9 +137,16 @@ minimumReleaseAgeExclude:
   - 'web-vitals'
   # covers yuku-ast/yuku-codegen/yuku-parser, which ship together with rolldown-plugin-dts
   - 'yuku-*'
-  - '@oxc-project/types@0.147.0'
 
 overrides:
+  # Vite 8.3.0's bundled-dev client predates rolldown 1.2.9's requestLazy runtime API.
+  # Keep Vite's compiler and inlined browser runtime paired until Vite ships the updated client.
+  # Matching upstream fix: https://github.com/vitejs/vite/commit/9aecbbfa5fb5da4b9981c099cb9746a9fd210806
+  # (vite#23483). It is on Vite main but not in a published release yet (npm still at 8.3.0).
+  # Counter-pin tsdown so the package compiler stays on 1.2.9; `vite>rolldown` would otherwise
+  # hoist one 1.2.8 copy into tsdown as well.
+  'tsdown>rolldown': '~1.2.9'
+  'vite>rolldown': '1.2.8'
   vitest: 'catalog:'
 
 preferWorkspacePackages: true

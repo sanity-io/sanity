@@ -1,5 +1,5 @@
 /* oxlint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-string-literals -- Diagnostics uses fixed English terminology so support and users see the same technical labels. */
-import {Card, Spinner, Stack, Text} from '@sanity/ui'
+import {Card, Spinner, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {
   useCallback,
@@ -10,7 +10,7 @@ import {
   useState,
   version as reactVersion,
 } from 'react'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -143,7 +143,7 @@ export function DiagnosticsDialog({onClose}: DiagnosticsDialogProps) {
       onClose={onClose}
       width={2}
     >
-      <Stack gap={4} height="fill">
+      <Flex gap={4} height="100%" flexDirection="column">
         {!diagnostics && !error ? (
           <Flex
             alignItems="center"
@@ -162,12 +162,12 @@ export function DiagnosticsDialog({onClose}: DiagnosticsDialogProps) {
 
         {error ? (
           <Card padding={4} radius={2} tone="critical">
-            <Stack gap={4}>
+            <VStack gap={4}>
               <Text size={1}>Could not gather diagnostics: {error}</Text>
               <Flex>
                 <Button mode="ghost" onClick={handleRunAgain} text="Run again" />
               </Flex>
-            </Stack>
+            </VStack>
           </Card>
         ) : null}
 
@@ -176,7 +176,7 @@ export function DiagnosticsDialog({onClose}: DiagnosticsDialogProps) {
             <DiagnosticsReport diagnostics={diagnostics} onRunAgain={handleRunAgain} />
           </Card>
         ) : null}
-      </Stack>
+      </Flex>
     </Dialog>
   )
 }

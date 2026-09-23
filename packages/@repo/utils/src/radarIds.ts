@@ -53,6 +53,11 @@ export function driftAckId(metricKey: string, branch: string): string {
   return `drift-ack-${radarIdSlug(`${metricKey}:${branch}`)}`
 }
 
+/** `releaseLine` document — one per major (`v5`), so marking a line updates in place. */
+export function releaseLineId(major: number): string {
+  return `release-line-v${major}`
+}
+
 /** `bisectSession` document — user-created, so a random uuid rather than a derived id. */
 export function bisectSessionId(uuid: string): string {
   return `bisect-session-${radarIdSlug(uuid)}`

@@ -80,6 +80,115 @@ describe('server restore operation', () => {
       )
     })
 
+    it('does not mark restore as fromDeleted when a version snapshot exists', () => {
+      vi.mocked(isLiveEditEnabled).mockReturnValue(false)
+
+      const args = {
+        snapshots: {
+          draft: null,
+          published: null,
+          version: {_id: 'versions.rI4gmhsFL.existing-doc'} as SanityDocument,
+        },
+        historyStore: mockHistoryStore,
+        schema: {},
+        idPair: {
+          publishedId: 'existing-doc',
+          draftId: 'drafts.existing-doc',
+          versionId: 'versions.rI4gmhsFL.existing-doc',
+        },
+        typeName: 'testType',
+      } as unknown as OperationArgs
+
+      restore.execute(args, 'specific-rev' as DocumentRevision)
+
+      expect(mockHistoryStore.restore).toHaveBeenCalledWith(
+        'existing-doc',
+        'versions.rI4gmhsFL.existing-doc',
+        'specific-rev',
+        {
+          fromDeleted: false,
+          useServerDocumentActions: true,
+        },
+      )
+    })
+
+    it('marks restore as fromDeleted for a version target that has no version document yet', () => {
+      vi.mocked(isLiveEditEnabled).mockReturnValue(false)
+
+      const args = {
+        snapshots: {
+          draft: null,
+          published: {} as SanityDocument,
+          version: null,
+        },
+        historyStore: mockHistoryStore,
+        schema: {},
+        idPair: {
+          publishedId: 'existing-doc',
+          draftId: 'drafts.existing-doc',
+          versionId: 'versions.rI4gmhsFL.existing-doc',
+        },
+        typeName: 'testType',
+      } as unknown as OperationArgs
+
+      restore.execute(args, 'specific-rev' as DocumentRevision)
+
+      expect(mockHistoryStore.restore).toHaveBeenCalledWith(
+        'existing-doc',
+        'versions.rI4gmhsFL.existing-doc',
+        'specific-rev',
+        {
+          fromDeleted: true,
+          useServerDocumentActions: true,
+        },
+      )
+    })
+
+    it('passes the variant routing info for a variant-scoped version target', () => {
+      vi.mocked(isLiveEditEnabled).mockReturnValue(false)
+
+      const args = {
+        snapshots: {
+          draft: null,
+          published: {} as SanityDocument,
+          version: {
+            _id: 'versions.varscope.existing-doc',
+            _type: 'testType',
+            _rev: 'rev-1',
+            _createdAt: '2021-09-14T22:48:02.303Z',
+            _updatedAt: '2021-09-14T22:48:02.303Z',
+            _system: {
+              variants: [{_ref: '_.variants.french', _key: 'k-123'}],
+              group: {_ref: 'existing-doc', _weak: true},
+              scopeId: 'varscope',
+              bundleId: 'drafts',
+            },
+          } satisfies SanityDocument,
+        },
+        historyStore: mockHistoryStore,
+        schema: {},
+        idPair: {
+          publishedId: 'existing-doc',
+          draftId: 'drafts.existing-doc',
+          versionId: 'versions.varscope.existing-doc',
+        },
+        typeName: 'testType',
+      } as unknown as OperationArgs
+
+      restore.execute(args, 'specific-rev' as DocumentRevision)
+
+      expect(mockHistoryStore.restore).toHaveBeenCalledWith(
+        'existing-doc',
+        'versions.varscope.existing-doc',
+        'specific-rev',
+        {
+          fromDeleted: false,
+          useServerDocumentActions: true,
+          variant: {variantId: 'french', bundleId: 'drafts'},
+        },
+      )
+    })
+
     it('handles lastRevision with live edit enabled documents', () => {
       vi.mocked(isLiveEditEnabled).mockReturnValue(true)
 

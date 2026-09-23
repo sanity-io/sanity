@@ -1,7 +1,8 @@
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
+import {VStack} from 'ui5'
 
 import {WorkspacePreview} from '../WorkspacePreview'
 
@@ -27,14 +28,14 @@ export const States: Story = {
   args: {title: 'Production'},
   render: () => (
     <Card padding={4} style={{maxWidth: 360}}>
-      <Stack gap={5}>
-        <Stack gap={2}>
+      <VStack gap={5}>
+        <VStack gap={2}>
           <Text muted size={1} weight="medium">
             login header (icon, title, subtitle)
           </Text>
           <WorkspacePreview icon={EarthGlobeIcon} title="Production" subtitle="blog" />
-        </Stack>
-        <Stack gap={2}>
+        </VStack>
+        <VStack gap={2}>
           <Text muted size={1} weight="medium">
             auth card, logged in (chevron)
           </Text>
@@ -45,8 +46,8 @@ export const States: Story = {
             subtitle="blog"
             title="Production"
           />
-        </Stack>
-        <Stack gap={2}>
+        </VStack>
+        <VStack gap={2}>
           <Text muted size={1} weight="medium">
             auth card, signed out (label + chevron)
           </Text>
@@ -56,8 +57,8 @@ export const States: Story = {
             state="logged-out"
             title="Staging"
           />
-        </Stack>
-      </Stack>
+        </VStack>
+      </VStack>
     </Card>
   ),
 }
