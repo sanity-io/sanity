@@ -142,7 +142,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                 radius={radius}
               />
             ) : null}
-            {collapsible && (
+            {isVisible && collapsible && (
               <ArrayItemsToggle
                 expanded={expanded}
                 onToggle={onToggle}
