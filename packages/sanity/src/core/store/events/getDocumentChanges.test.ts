@@ -55,14 +55,13 @@ const revision = (revisionId: string, document: SanityDocument | null): EventsSt
   document,
 })
 
-const publishedDoc: SanityDocument = {
-  ...sinceDoc,
-  _id: DOCUMENT_ID,
-  _rev: 'publish-revision-id',
-}
-
 const staleDraftTx = editTransaction({before: {name: 'foo'}, after: {name: 'foo bar'}})
 
+const olderPublishEvent = publishDocumentVersionEvent({
+  id: 'older-publish-event-id',
+  revisionId: 'older-publish-revision-id',
+  timestamp: minutesAfterBase(5),
+})
 const publishEvent = publishDocumentVersionEvent({
   id: 'publish-event-id',
   revisionId: 'publish-revision-id',
@@ -78,15 +77,27 @@ const discardVersionEvent = deleteDocumentVersionEvent({
 })
 const discardGroupEvent = deleteDocumentGroupEvent({timestamp: minutesAfterBase(30)})
 
-async function collectDiff(events: EventsObservableValue['events']) {
+// A document fetched at an event's revision carries that event's id as its `_rev`
+// (see `addEventId`), which is what the events store matches revisions against.
+const publishedDoc: SanityDocument = {...sinceDoc, _id: DOCUMENT_ID, _rev: publishEvent.id}
+const olderPublishedDoc: SanityDocument = {
+  ...publishedDoc,
+  _rev: olderPublishEvent.id,
+  name: 'older',
+}
+
+async function collectDiff(
+  events: EventsObservableValue['events'],
+  since: SanityDocument = publishedDoc,
+) {
   return firstValueFrom(
     getDocumentChanges({
       eventsObservable$: of(eventsValue(events)),
       to$: of(null),
       since$: of({
-        document: publishedDoc,
+        document: since,
         loading: false,
-        revisionId: publishedDoc._rev,
+        revisionId: since._rev,
       }),
       remoteTransactions$: of([staleDraftTx]),
       documentId: DRAFT_ID,
@@ -391,6 +402,26 @@ describe('getDocumentChanges', () => {
       expect(mockGetDocumentTransactions).not.toHaveBeenCalled()
       expect(result.error).toBeNull()
       expect(result.diff?.isChanged).toBe(false)
+    })
+
+    it('caps the range at the last publish when comparing against an older publish', async () => {
+      mockGetDocumentTransactions.mockResolvedValue([
+        editTransaction({id: 'tx-republish', before: {name: 'older'}, after: {name: 'foo'}}),
+      ])
+
+      const result = await collectDiff(
+        [discardVersionEvent, editEvent, publishEvent, olderPublishEvent],
+        olderPublishedDoc,
+      )
+
+      expect(mockGetDocumentTransactions).toHaveBeenCalledWith({
+        documentId: DRAFT_ID,
+        client: expect.anything(),
+        toTransaction: publishEvent.id,
+        fromTransaction: olderPublishEvent.id,
+      })
+      expect(result.error).toBeNull()
+      expect(result.diff?.isChanged).toBe(true)
     })
 
     it('does not replay a stale draft translog after a deleteDocumentGroup event', async () => {
