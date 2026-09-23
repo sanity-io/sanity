@@ -1,6 +1,7 @@
 import {type Path} from '@sanity/types'
-import {Stack, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {useCallback} from 'react'
+import {Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {isDev} from '../../../../environment'
@@ -43,13 +44,13 @@ export function DuplicateKeysAlert(props: Props) {
       <Alert
         status="warning"
         suffix={
-          <Stack padding={2}>
+          <Flex padding={2} flexDirection="column">
             <Button
               onClick={handleFixDuplicateKeys}
               text={t('form.error.duplicate-keys-alert.generate-button.text')}
               tone="caution"
             />
-          </Stack>
+          </Flex>
         }
         title={t('form.error.duplicate-keys-alert.title')}
       >
@@ -62,7 +63,7 @@ export function DuplicateKeysAlert(props: Props) {
           open={isDev}
           title={t('form.error.duplicate-keys-alert.details.title')}
         >
-          <Stack gap={3}>
+          <VStack gap={3}>
             <Text as="p" muted size={1}>
               <Translate t={t} i18nKey="form.error.duplicate-keys-alert.details.description" />
             </Text>
@@ -73,7 +74,7 @@ export function DuplicateKeysAlert(props: Props) {
                 i18nKey="form.error.duplicate-keys-alert.details.additional-description"
               />
             </Text>
-          </Stack>
+          </VStack>
           {/* TODO: render array items and highlight the items with duplicate keys (sc-26255) */}
         </Details>
       </Alert>
