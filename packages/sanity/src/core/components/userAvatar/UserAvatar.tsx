@@ -6,15 +6,17 @@ import {
   type AvatarSize,
   type AvatarStatus,
   Skeleton,
+  useTheme_v2 as useThemeV2,
 } from '@sanity/ui'
-import {getTheme_v2} from '@sanity/ui/theme'
-import {useState, type RefAttributes} from 'react'
-import {css, styled} from 'styled-components'
+import {assignInlineVars} from '@vanilla-extract/dynamic'
+import {clsx} from 'clsx'
+import {type ComponentProps, type RefAttributes, useState} from 'react'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {useUser} from '../../store/user/hooks'
 import {useUserColor} from '../../user-color/hooks'
 import {isRecord} from '../../util/isRecord'
+import {avatarSizeVar, avatarSkeleton} from './UserAvatar.css'
 
 interface AvatarSkeletonProps {
   $size?: AvatarSize
@@ -24,15 +26,19 @@ interface AvatarSkeletonProps {
  * A loading skeleton element representing a user avatar
  * @beta
  */
-export const AvatarSkeleton = styled(Skeleton)<AvatarSkeletonProps>((props) => {
-  const theme = getTheme_v2(props.theme)
-  const size = props.$size ?? 1
-  return css`
-    border-radius: 50%;
-    width: ${theme.avatar.sizes[size].size}px;
-    height: ${theme.avatar.sizes[size].size}px;
-  `
-})
+export function AvatarSkeleton(props: AvatarSkeletonProps & ComponentProps<typeof Skeleton>) {
+  const {$size, className, style, ...rest} = props
+  const {avatar} = useThemeV2()
+  const size = $size ?? 1
+
+  return (
+    <Skeleton
+      {...rest}
+      className={clsx(avatarSkeleton, className)}
+      style={{...assignInlineVars({[avatarSizeVar]: `${avatar.sizes[size].size}px`}), ...style}}
+    />
+  )
+}
 
 /**
  * @hidden
