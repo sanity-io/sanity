@@ -2,28 +2,10 @@ import {useSortable} from '@dnd-kit/sortable'
 import {DragHandleIcon} from '@sanity/icons/DragHandle'
 import {useContext} from 'react'
 import {SortableItemIdContext} from 'sanity/_singletons'
-import {css, styled} from 'styled-components'
 
 import {Button, type ButtonProps} from '../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-
-const DragHandleButton = styled(Button)<{$grid?: boolean; disabled?: boolean}>((props) => {
-  const {$grid, disabled} = props
-  // touch-action: none is required for @dnd-kit's PointerSensor (configured in
-  // ./list.tsx) to receive touch input. Without it, the browser's default
-  // touch action (scrolling) wins on mobile and array items can't be
-  // reordered. See https://github.com/sanity-io/sanity/issues/12931 and
-  // https://docs.dndkit.com/api-documentation/sensors/pointer#recommendations.
-  // Keep default touch behavior when disabled/readOnly so scrolling still works.
-  if (disabled)
-    return css`
-      touch-action: auto;
-    `
-  return css`
-    cursor: ${$grid ? 'move' : 'ns-resize'};
-    touch-action: none;
-  `
-})
+import {dragHandleButton} from './DragHandle.css'
 
 interface DragHandleProps {
   $grid?: boolean
@@ -33,14 +15,21 @@ interface DragHandleProps {
   readOnly: boolean
 }
 
+function getVariant($grid: boolean | undefined, disabled: boolean) {
+  if (disabled) return 'disabled'
+  return $grid ? 'grid' : 'list'
+}
+
 export const DragHandle = function DragHandle(props: DragHandleProps) {
   const id = useContext(SortableItemIdContext)!
-  const {mode = 'bleed', readOnly, ...rest} = props
+  const {$grid, mode = 'bleed', readOnly, ...rest} = props
   const {listeners, attributes} = useSortable({id, disabled: readOnly})
   const {t} = useTranslation()
+  const variant = getVariant($grid, readOnly)
 
   return (
-    <DragHandleButton
+    <Button
+      className={dragHandleButton[variant]}
       icon={DragHandleIcon}
       tooltipProps={{
         content: t('inputs.array.action.drag.tooltip'),
@@ -49,6 +38,8 @@ export const DragHandle = function DragHandle(props: DragHandleProps) {
       }}
       mode={mode}
       data-ui="DragHandleButton"
+      // Mirrors the `touch-action` value of the class above so tests can assert on it
+      data-touch-action={variant === 'disabled' ? 'auto' : 'none'}
       {...rest}
       {...attributes}
       {...listeners}

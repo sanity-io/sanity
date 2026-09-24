@@ -1,6 +1,9 @@
-import {styled} from 'styled-components'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 
-export const HotspotImageContainer = styled.div`
-  position: relative;
-  width: 100%;
-`
+import {hotspotImageContainer} from './HotspotImage.css'
+
+export function HotspotImageContainer(props: ComponentProps<'div'>) {
+  const {className, ...rest} = props
+  return <div {...rest} className={clsx(hotspotImageContainer, className)} />
+}
