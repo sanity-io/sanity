@@ -1,13 +1,8 @@
 import {type Schema} from '@sanity/types'
 import {useActorRef, useSelector} from '@xstate/react'
 import {dequal} from 'dequal/lite'
-import {
-  useCallback,
-  useEffect,
-  // oxlint-disable-next-line no-restricted-imports -- useSearch is only called from a plain function component (the search filter ReferenceAutocomplete), so facebook/react#34818 does not apply
-  useEffectEvent,
-  useState,
-} from 'react'
+import {useCallback, useEffect, useState} from 'react'
+import {useEffectEvent} from 'use-effect-event'
 import {fromObservable} from 'xstate'
 
 import {isEqualSearchTerms} from '../../../../../search/common/isEqualSearchTerms'
@@ -97,6 +92,7 @@ export function useSearch({
       actorRef.on('search failed', (event) => handleSearchFailed(event.error)),
     ]
     return () => subscriptions.forEach((subscription) => subscription.unsubscribe())
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- use-effect-event functions are stable, and react-hooks/exhaustive-deps forbids listing them
   }, [actorRef])
 
   // Captured once to mirror the useState mirror this replaces: the caller
