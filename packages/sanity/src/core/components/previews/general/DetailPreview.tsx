@@ -52,6 +52,10 @@ export function DetailPreview(props: DetailPreviewProps) {
   )
 
   if (isPlaceholder) {
+    // Both rows while the value is still loading; once it is known (a lazy preview component
+    // loading in front of a resolved value), only the rows it will have.
+    const showSubtitleSkeleton = title === undefined || Boolean(subtitle)
+
     return (
       <RootFlex
         data-testid="detail-preview"
@@ -70,7 +74,7 @@ export function DetailPreview(props: DetailPreviewProps) {
           >
             <Stack flex={1} gap={2}>
               <TitleSkeleton />
-              <SubtitleSkeleton />
+              {showSubtitleSkeleton && <SubtitleSkeleton />}
               {description && (
                 <Box marginTop={1}>
                   <DescriptionSkeleton />

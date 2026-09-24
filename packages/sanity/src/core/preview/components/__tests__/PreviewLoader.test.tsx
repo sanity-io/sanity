@@ -14,6 +14,10 @@ import {PreviewLoader} from '../PreviewLoader'
 // Mock dependencies
 vi.mock('../../useValuePreview')
 vi.mock('../../useVisibility')
+// The lazy-component fallback renders `SanityDefaultPreview`, which builds an image URL builder
+// from the studio client; neither is exercised with icon media.
+vi.mock('../../../hooks/useClient', () => ({useClient: () => ({})}))
+vi.mock('@sanity/image-url', () => ({createImageUrlBuilder: () => ({})}))
 vi.mock('react-i18next', async (importOriginal) => ({
   ...(await importOriginal()),
   useTranslation: () => ({t: (key: string) => key}),
@@ -242,11 +246,9 @@ describe('PreviewLoader', () => {
   })
 
   describe('lazy preview component', () => {
-    it('shows the layout placeholder until the component loads', async () => {
-      type LoadedPreview = ComponentType<Omit<PreviewProps, 'renderDefault'>>
-      const schemaType = {name: 'testDoc', icon: DocumentIcon} as unknown as SchemaType
-      vi.mocked(useValuePreview).mockReturnValue({isLoading: false, value: {title: 'Test Title'}})
+    type LoadedPreview = ComponentType<Omit<PreviewProps, 'renderDefault'>>
 
+    function renderLazyPreview(schemaType: SchemaType) {
       let resolveComponent!: (component: LoadedPreview) => void
       const LazyPreview = lazy(
         () =>
@@ -256,7 +258,7 @@ describe('PreviewLoader', () => {
       )
 
       // oxlint-disable-next-line testing-library/no-unnecessary-act -- the lazy preview suspends during mount, and React only resumes work that suspended inside an awaited async `act`
-      await act(async () => {
+      const mounted = act(async () => {
         render(
           <ThemeProvider theme={theme}>
             <PreviewLoader
@@ -269,14 +271,27 @@ describe('PreviewLoader', () => {
           </ThemeProvider>,
         )
       })
+      return {mounted, resolve: (component: LoadedPreview) => resolveComponent(component)}
+    }
 
-      expect(screen.getByTestId('default-preview__heading')).toBeInTheDocument()
+    it('shows the default preview placeholder until the component loads', async () => {
+      const schemaType = {name: 'testDoc', icon: DocumentIcon} as unknown as SchemaType
+      vi.mocked(useValuePreview).mockReturnValue({isLoading: false, value: {title: 'Test Title'}})
+
+      const {mounted, resolve} = renderLazyPreview(schemaType)
+      await mounted
+
+      const placeholder = screen.getByTestId('default-preview')
       expect(screen.queryByText('Test Title')).not.toBeInTheDocument()
       // Layout props reach the placeholder too, so its footprint matches the loaded preview.
       expect(screen.getByTestId('preview-status')).toBeInTheDocument()
+      // The loaded preview shows the type icon on the left and one text row, so the placeholder
+      // reserves the media slot and draws a single row.
+      expect(placeholder.querySelectorAll('[data-ui="Skeleton"]')).toHaveLength(1)
+      expect(placeholder.querySelectorAll('[data-ui="TextSkeleton"]')).toHaveLength(1)
 
       await act(async () => {
-        resolveComponent((props) => (
+        resolve((props) => (
           <div data-testid="loaded-preview">
             {typeof props.title === 'string' ? props.title : null}
           </div>
@@ -284,7 +299,23 @@ describe('PreviewLoader', () => {
       })
 
       expect(screen.getByTestId('loaded-preview')).toHaveTextContent('Test Title')
-      expect(screen.queryByTestId('default-preview__heading')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('default-preview')).not.toBeInTheDocument()
+    })
+
+    it('reserves the media slot when the type has no icon, like the loaded fallback icon does', async () => {
+      const schemaType = {name: 'testDoc'} as unknown as SchemaType
+      vi.mocked(useValuePreview).mockReturnValue({
+        isLoading: false,
+        value: {title: 'Test Title', subtitle: 'Second row'},
+      })
+
+      const {mounted} = renderLazyPreview(schemaType)
+      await mounted
+
+      const placeholder = screen.getByTestId('default-preview')
+      expect(placeholder.querySelectorAll('[data-ui="Skeleton"]')).toHaveLength(1)
+      // A value with a subtitle gets both rows.
+      expect(placeholder.querySelectorAll('[data-ui="TextSkeleton"]')).toHaveLength(2)
     })
   })
 })

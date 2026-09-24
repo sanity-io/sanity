@@ -67,6 +67,10 @@ export function DefaultPreview(props: DefaultPreviewProps) {
   )
 
   if (isPlaceholder) {
+    // Both rows while the value is still loading; once it is known (a lazy preview component
+    // loading in front of a resolved value), only the rows it will have.
+    const showSubtitleSkeleton = title === undefined || Boolean(subtitle)
+
     return (
       <Root
         alignItems="center"
@@ -89,7 +93,7 @@ export function DefaultPreview(props: DefaultPreviewProps) {
 
           <Stack data-testid="default-preview__heading" flex={1} gap={2}>
             <TitleSkeleton delay={SKELETON_DELAY} />
-            <SubtitleSkeleton delay={SKELETON_DELAY} />
+            {showSubtitleSkeleton && <SubtitleSkeleton delay={SKELETON_DELAY} />}
           </Stack>
 
           <Box flexBasis="auto" flexGrow={0} flexShrink={0} padding={1}>

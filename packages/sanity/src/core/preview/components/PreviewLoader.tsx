@@ -8,7 +8,7 @@ import {useValuePreview} from '../useValuePreview'
 import {useVisibility} from '../useVisibility'
 import {_HIDE_DELAY} from './_constants'
 import {_extractUploadState} from './_extractUploadState'
-import {_previewComponents} from './_previewComponents'
+import {SanityDefaultPreview} from './SanityDefaultPreview'
 
 /**
  * This component is responsible for converting renderPreview() calls into an element.
@@ -92,18 +92,15 @@ export function PreviewLoader(
     return preview?.value?.media as any
   }, [preview, schemaType, uploadState, t])
 
-  // The built-in layout in its placeholder state, with the same layout props, while a lazy
-  // preview component loads.
-  const PlaceholderComponent = _previewComponents[layout || 'default'] as ComponentType<
-    Omit<PreviewProps, 'renderDefault'>
-  >
-
+  // While a lazy preview component loads: the default preview in its placeholder state, with the
+  // resolved value, so the fallback has the rows and media slot of the preview that replaces it.
   return (
     <div ref={setElement} style={style}>
       <Suspense
         fallback={
-          <PlaceholderComponent
+          <SanityDefaultPreview
             {...restProps}
+            {...(preview?.value || {})}
             isPlaceholder
             layout={layout}
             media={media}
