@@ -382,4 +382,15 @@ describe('comments feature module (real @sanity/client)', () => {
   it('throws on an unknown feature name', () => {
     expect(() => mock.setActiveFeatures(['bogus'])).toThrow(/bogus/)
   })
+
+  it('reports the Comments API as unexpected rather than allowlisting it', async () => {
+    // comments-v2 serves comments from /collaboration/comments. A 404 there degrades gracefully,
+    // which makes UNIMPLEMENTED_BUT_GRACEFUL the tempting fix and the wrong one: it would leave
+    // commentsField measuring a comments UI with no backend. Keep the failure loud.
+    await client
+      .request({url: '/collaboration/comments/query', query: {organizationId: 'bench-org'}})
+      .catch(() => null)
+    const paths = mock.ledger.snapshot().unexpected.map((entry) => entry.path)
+    expect(paths.some((path) => path.includes('/collaboration/comments'))).toBe(true)
+  })
 })

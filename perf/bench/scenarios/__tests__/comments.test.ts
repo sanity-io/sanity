@@ -1,6 +1,7 @@
 import {describe, expect, it} from 'vitest'
 
 import {DEFAULT_INP_CONFIG} from '../../runner/session/inp'
+import {UNEXPECTED_ENDPOINT_HINT, unexpectedEndpointHint} from '../../runner/session/interaction'
 import {runStep} from '../../runner/session/steps'
 import {addCommentSteps} from '../features/comments'
 import {type StepContext} from '../types'
@@ -56,5 +57,21 @@ describe('addCommentSteps', () => {
     expect(send.readback(store([]))).toBe(false)
     expect(send.readback(store([{_type: 'commentsField'}]))).toBe(false)
     expect(send.readback(store([{_type: 'comment'}]))).toBe(true)
+    // The Comments API writes `sanity.comment`; the readback already accepts it, so that
+    // migration needs no edit here.
+    expect(send.readback(store([{_type: 'sanity.comment'}]))).toBe(true)
+  })
+})
+
+describe('unexpectedEndpointHint', () => {
+  it('names the Comments API migration instead of reporting generic drift', () => {
+    const hint = unexpectedEndpointHint(['/vX/collaboration/comments/query'])
+    expect(hint).not.toBe(UNEXPECTED_ENDPOINT_HINT)
+    expect(hint.join(' ')).toMatch(/comments-v2/)
+    expect(hint.join(' ')).toMatch(/Do NOT take the allowlist branch/)
+  })
+
+  it('falls back to the generic hint for any other endpoint', () => {
+    expect(unexpectedEndpointHint(['/vX/data/unknown'])).toBe(UNEXPECTED_ENDPOINT_HINT)
   })
 })

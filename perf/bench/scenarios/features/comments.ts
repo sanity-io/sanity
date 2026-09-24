@@ -14,18 +14,26 @@ const COMMENT_KEYSTROKES = 64
 /** Accessible name of the add-comment field button (comments `field-button.aria-label-add`). */
 const ADD_COMMENT_LABEL = 'Add comment'
 
+/** The addon-dataset transport writes `comment`, the Comments API `sanity.comment`. */
+const COMMENT_TYPES = new Set(['comment', 'sanity.comment'])
+
 function commentPosted(store: DocumentStore): boolean {
-  return store.getAll().some((doc) => doc._type === 'comment')
+  return store.getAll().some((doc) => COMMENT_TYPES.has(doc._type))
 }
 
 /**
  * The first-comment choreography on a field: reveal the hover-gated button,
  * open the composer, type a comment, send it. Two interactions carry the
  * cost — the composer click, which mounts a Portable Text editor inside a
- * popover, and the send click, which commits through the addon-dataset
- * client AND mounts the comments inspector pane (`handleCommentAdd` calls
- * `onCommentsOpen`), so a regression attributed to "send" may live in the
- * pane, not the mutation.
+ * popover, and the send click, which commits the comment AND mounts the
+ * comments inspector pane (`handleCommentAdd` calls `onCommentsOpen`), so a
+ * regression attributed to "send" may live in the pane, not the mutation.
+ *
+ * The steps are transport-agnostic: the selectors below are identical in
+ * `core/comments` and `core/comments-v2`, and the readback accepts either
+ * document type. The mock is not. It leaves the Comments API surface
+ * `comments-v2` uses unimplemented, so a session reaching it fails with
+ * `unexpected-endpoint` (see runner/session/interaction.ts).
  *
  * Requires the `comments` mock feature module (see mock-api/features);
  * without it the button still clicks but the composer never opens.
