@@ -4,20 +4,10 @@ import {format} from 'date-fns/format'
 import {useContext} from 'react'
 import {Translate, useTranslation} from 'sanity'
 import {EventsContext} from 'sanity/_singletons'
-import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {useDocumentPane} from '../useDocumentPane'
-
-const StatusText = styled(Text)`
-  color: var(--card-muted-fg-color);
-
-  em {
-    color: var(--card-fg-color);
-    font-weight: 500;
-    font-style: normal;
-  }
-`
+import {statusText} from './RevisionStatusLine.css'
 
 export function RevisionStatusLine(): React.JSX.Element {
   const {displayed, revisionNotFound} = useDocumentPane()
@@ -53,13 +43,13 @@ export function RevisionStatusLine(): React.JSX.Element {
           </Text>
         </Box>
         <Box flexBasis="0%" flexGrow={1}>
-          <StatusText size={1} textOverflow="ellipsis">
+          <Text size={1} textOverflow="ellipsis" className={statusText}>
             {revisionNotFound ? (
               <Translate t={t} i18nKey="document-status.revision-not-found" />
             ) : (
               message.text
             )}
-          </StatusText>
+          </Text>
         </Box>
       </Flex>
     </>
