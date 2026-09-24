@@ -158,7 +158,7 @@ describe('Portable Text Input', () => {
           // Assertion: text has the correct decorator value
           const $decoratedText = await findBySelector($pte, `[data-mark="${decorator.name}"]`)
           await expect.element($decoratedText).toBeVisible()
-          await expect.element($decoratedText).toHaveTextContent(`${decorator.name} text 123`)
+          await expect.element($decoratedText).toMatchTextContent(`${decorator.name} text 123`)
         }
       }
       // The last keystrokes leave a validation run in flight; wait for it (and
@@ -232,7 +232,7 @@ describe('Portable Text Input', () => {
         '[data-testid="custom-highlight-decorator"]',
       )
       await expect.element($customComponent).toBeVisible()
-      await expect.element($customComponent).toHaveTextContent('highlighted text')
+      await expect.element($customComponent).toMatchTextContent('highlighted text')
 
       await expect.element($customComponent).toHaveAttribute('data-title', 'Highlight')
       await expect.element($customComponent).toHaveAttribute('data-value', 'highlight')
@@ -244,7 +244,7 @@ describe('Portable Text Input', () => {
         $customComponent.element().querySelector('[data-mark="highlight"]')!,
       )
       await expect.element($defaultMarkup).toBeVisible()
-      await expect.element($defaultMarkup).toHaveTextContent('highlighted text')
+      await expect.element($defaultMarkup).toMatchTextContent('highlighted text')
       // Selected Highlight toolbar pill background was a pairwise AA/hover flake.
       // Force Normal so the style select cannot archive as No style.
       await settleChromaticEndState({
@@ -273,7 +273,7 @@ describe('Portable Text Input', () => {
         '[data-testid="custom-spoiler-decorator"]',
       )
       await expect.element($customComponent).toBeVisible()
-      await expect.element($customComponent).toHaveTextContent('spoiler text')
+      await expect.element($customComponent).toMatchTextContent('spoiler text')
       // Spoiler stays selected on the caret; clear hover so Chromatic does not
       // archive a mid-hover pill around the selected toolbar button.
       await settleChromaticEndState({

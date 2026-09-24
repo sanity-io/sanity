@@ -286,7 +286,7 @@ async function renderToolbar(schemaTypes: ReturnType<typeof defineSchemaTypes>) 
   )
 
   const $pte = await getFocusedPortableTextEditor('field-body')
-  await expect.element($pte).toHaveTextContent('cell text')
+  await expect.element($pte).toMatchTextContent('cell text')
 
   const $portableTextInput = page.getByTestId('field-body')
 

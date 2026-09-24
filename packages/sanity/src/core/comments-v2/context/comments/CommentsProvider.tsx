@@ -157,6 +157,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   } = useCommentsStore({
     groupId,
     versionId,
+    type,
     client: commentsClient,
     transactionsIdMap,
     onLatestTransactionIdReceived: handleOnLatestTransactionIdReceived,
