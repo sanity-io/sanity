@@ -1,7 +1,7 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {CloseIcon} from '@sanity/icons/Close'
 import {Badge, Button, TextInput} from '@sanity/ui'
-import {type KeyboardEvent, type MouseEvent, useCallback, useRef, useState} from 'react'
+import {type KeyboardEvent, type MouseEvent, useCallback, useEffect, useRef, useState} from 'react'
 import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
@@ -154,10 +154,17 @@ export function QueryTabBar() {
   const activeTabId = useVistaSelector((snapshot) => snapshot.context.activeTabId)
   const [editingId, setEditingId] = useState<string | null>(null)
   const listRef = useRef<HTMLDivElement | null>(null)
+  // The tab to focus after a close is not in the DOM yet when the last tab is replaced by a
+  // fresh one, so the move waits for the render. A new object per request always re-runs it.
+  const [focusRequest, setFocusRequest] = useState<{tabId: string} | null>(null)
 
   const focusTab = useCallback((id: string) => {
     listRef.current?.querySelector<HTMLElement>(`#${getQueryTabId(id)}`)?.focus()
   }, [])
+
+  useEffect(() => {
+    if (focusRequest) focusTab(focusRequest.tabId)
+  }, [focusRequest, focusTab])
 
   // The ARIA tabs keyboard pattern: arrows, Home and End move between tabs and activate them,
   // Delete closes the focused tab (the close button itself stays out of the tab order)
@@ -167,7 +174,7 @@ export function QueryTabBar() {
       if (event.key === 'Delete') {
         event.preventDefault()
         actorRef.send({type: 'tab.close', id: activeTabId})
-        focusTab(actorRef.getSnapshot().context.activeTabId)
+        setFocusRequest({tabId: actorRef.getSnapshot().context.activeTabId})
         return
       }
       const index = tabs.findIndex((tab) => tab.id === activeTabId)

@@ -435,6 +435,14 @@ describe('VistaGui', () => {
     fireEvent.click(within(tabs[0]).getByTestId('vista-tab-close'))
     expect(screen.getAllByTestId('vista-tab')).toHaveLength(1)
     expect(text(screen.getByTestId('vista-tab-button'))).toContain('vista.tabs.untitled')
+
+    // Deleting the sole remaining tab keeps the keyboard on the replacement tab
+    fireEvent.keyDown(within(screen.getAllByTestId('vista-tab')[0]).getByRole('tab'), {
+      key: 'Delete',
+    })
+    expect(document.activeElement).toBe(
+      within(screen.getAllByTestId('vista-tab')[0]).getByRole('tab'),
+    )
   })
 
   it('only derives types from a result that was fetched for the current query', async () => {
