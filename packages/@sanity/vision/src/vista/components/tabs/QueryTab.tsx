@@ -1,6 +1,7 @@
 import {SplitPane} from '@rexxars/react-split-pane'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
+import debounce from 'lodash-es/debounce.js'
 import {type RefObject, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useClient, usePerspective, useTranslation} from 'sanity'
 import {Box} from 'ui5'
@@ -26,6 +27,7 @@ import {paneFill, splitPaneContainer} from '../vista.css'
 
 const NARROW_BREAKPOINT = 900
 const MIN_PANE_SIZE = 280
+const PARAMS_DEBOUNCE_MS = 333
 
 interface QueryTabProps {
   tab: VistaTab
@@ -50,9 +52,11 @@ export function QueryTab({tab, rootRef, projectId}: QueryTabProps) {
   const datasets = useVistaSelector((snapshot) => snapshot.context.defaults.datasets)
   const runnerRef = useVistaSelector((snapshot) => snapshot.context.runners[tab.id])
   const isNarrow = useIsNarrow(rootRef, NARROW_BREAKPOINT)
+  const layout = isNarrow ? 'stacked' : 'columns'
   const splitContainerRef = useRef<HTMLDivElement | null>(null)
   const splitContainerSize = useElementSize(splitContainerRef)
-  const [splitSize, setSplitSize] = useState<number | undefined>(undefined)
+  // Kept per layout, so a dragged width is never reused as a height when the layout flips
+  const [splitSizes, setSplitSizes] = useState<Partial<Record<typeof layout, number>>>({})
   const defaultSplitSize = Math.max(
     MIN_PANE_SIZE,
     Math.floor((isNarrow ? splitContainerSize.height : splitContainerSize.width) / 2),
@@ -61,26 +65,46 @@ export function QueryTab({tab, rootRef, projectId}: QueryTabProps) {
   const queryEditorRef = useRef<VisionCodeMirrorHandle>(null)
   const paramsEditorRef = useRef<VisionCodeMirrorHandle>(null)
 
-  const {resolved, params, request} = useQueryRequestBuilder(tab)
+  const {resolved, params, request, buildRequest} = useQueryRequestBuilder(tab)
   const isFetching = useSelector(runnerRef, (snapshot) => snapshot.matches({request: 'fetching'}))
   const liveError = useSelector(runnerRef, (snapshot) => snapshot.context.liveError)
 
+  // Params are parsed on every change, so reaching the tab is debounced like in Vision. The
+  // editor's own value is kept here as well, so a fetch started inside that window uses what the
+  // editor shows instead of the params the tab last picked up
+  const editorRawParams = useRef<string | null>(null)
+  const commitParams = useMemo(
+    () =>
+      debounce(
+        (rawParams: string) => actorRef.send({type: 'tab.setParams', id: tab.id, rawParams}),
+        PARAMS_DEBOUNCE_MS,
+      ),
+    [actorRef, tab.id],
+  )
+  useEffect(() => () => commitParams.flush(), [commitParams])
+  const setParams = useCallback(
+    (rawParams: string) => {
+      editorRawParams.current = rawParams
+      commitParams(rawParams)
+    },
+    [commitParams],
+  )
+
   const run = useCallback(
     (reason: FetchReason) => {
-      if (request) {
-        runnerRef.send({type: 'fetch', request, reason})
+      const rawParams = editorRawParams.current
+      commitParams.flush()
+      const fetchRequest = rawParams === null ? request : buildRequest(rawParams)
+      if (fetchRequest) {
+        runnerRef.send({type: 'fetch', request: fetchRequest, reason})
       }
     },
-    [request, runnerRef],
+    [buildRequest, commitParams, request, runnerRef],
   )
   const cancel = useCallback(() => runnerRef.send({type: 'cancel'}), [runnerRef])
 
   const setQuery = useCallback(
     (query: string) => actorRef.send({type: 'tab.setQuery', id: tab.id, query}),
-    [actorRef, tab.id],
-  )
-  const setParams = useCallback(
-    (rawParams: string) => actorRef.send({type: 'tab.setParams', id: tab.id, rawParams}),
     [actorRef, tab.id],
   )
   const setOptions = useCallback(
@@ -248,10 +272,10 @@ export function QueryTab({tab, rootRef, projectId}: QueryTabProps) {
   return (
     <Box className={splitPaneContainer} data-testid="vista-query-tab" ref={splitContainerRef}>
       <SplitPane
-        key={isNarrow ? 'stacked' : 'columns'}
+        key={layout}
         minSize={MIN_PANE_SIZE}
-        onChange={setSplitSize}
-        size={splitSize ?? defaultSplitSize}
+        onChange={(size: number) => setSplitSizes((current) => ({...current, [layout]: size}))}
+        size={splitSizes[layout] ?? defaultSplitSize}
         // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals -- layout mode, not user-facing text
         split={isNarrow ? 'horizontal' : 'vertical'}
       >

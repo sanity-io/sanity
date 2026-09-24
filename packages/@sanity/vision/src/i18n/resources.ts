@@ -327,6 +327,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.sidebar.shared-queries': 'Shared queries',
   /** Sidebar item opening the keyboard shortcuts dialog */
   'vista.sidebar.shortcuts': 'Keyboard shortcuts',
+  /** Empty state of the content source map tab */
+  'vista.source-map.empty': 'The response carried no content source map',
   /** Accessible label for the button closing a query tab */
   'vista.tabs.close-tab': 'Close tab',
   /** Accessible label for the list of query tabs */
