@@ -4,12 +4,7 @@ import {type StyleCensus} from '@repo/utils/style-systems'
 import {type Browser, type Locator, type Page} from 'playwright'
 
 import {type BenchEntries} from '../../instrumentation/types'
-import {
-  type BenchScenario,
-  type InteractionTarget,
-  scenarioDocument,
-  scenarioFixture,
-} from '../../scenarios/types'
+import {type BenchScenario, type InteractionTarget, scenarioDocument} from '../../scenarios/types'
 import {median} from '../../stats/quantiles'
 import {createSessionContext, type SessionContext} from '../browser'
 import {type RunningSide} from '../servers'

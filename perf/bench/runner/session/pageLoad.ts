@@ -1,7 +1,7 @@
 import {type StyleCensus} from '@repo/utils/style-systems'
 import {type Browser} from 'playwright'
 
-import {type BenchScenario, scenarioFixture, type ScenarioStep} from '../../scenarios/types'
+import {type BenchScenario, type ScenarioStep} from '../../scenarios/types'
 import {type AttachedPage, attachPage, createSessionContext} from '../browser'
 import {type RunningSide} from '../servers'
 import {SessionError} from './errors'
