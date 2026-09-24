@@ -1,7 +1,6 @@
-// The widget docks in a viewport corner, and each corner hides some studio chrome:
-// bottom-left sits on the structure pane's create button, bottom-right on the
-// document footer, the top ones on the navbar. Dragging it between corners lets a
-// studio surface underneath be inspected without turning the widget off.
+// The widget floats above the studio and covers whatever sits in the corner it is
+// docked in, so it can be moved between all four corners instead of having to be
+// turned off to see what is behind it.
 
 export const PANEL_CORNERS = ['top-left', 'top-right', 'bottom-left', 'bottom-right'] as const
 

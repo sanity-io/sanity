@@ -206,8 +206,8 @@ export default function StyleOutlinePanel() {
   const toggleSystem = (id: StyleSystemId) =>
     setState((prev) => ({...prev, active: toggleId(prev.active, id)}))
 
-  // Only a drag past the threshold counts; until then the handle stays put so a
-  // click on it is not a one-pixel jump of the widget.
+  // Nothing moves below the threshold, so a click on the handle cannot nudge the
+  // widget on its way to toggling the panel.
   const activeDrag = drag?.moved === true ? drag : null
 
   const startDrag = (event: PointerEvent<HTMLElement>) => {

@@ -45,13 +45,15 @@ export const rootDragging = style({
   boxShadow: '0 16px 36px rgba(0, 0, 0, 0.5)',
 })
 
-// Docked in a corner, but the panel is not part of the studio layout, so the drag
-// affordance has to be the cursor plus the title on the handle.
+// Worn by whichever element starts a drag: the panel header when open, the trigger
+// when collapsed. `touch-action: none` so a touch drag moves the widget instead of
+// scrolling the studio behind it.
 const handle = style({
   cursor: 'grab',
   touchAction: 'none',
 })
 
+// Declared after `handle` so its cursor wins while a drag is live.
 export const handleDragging = style({
   cursor: 'grabbing',
 })
