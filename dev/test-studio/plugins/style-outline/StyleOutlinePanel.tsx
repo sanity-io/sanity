@@ -36,6 +36,7 @@ import {
   handleDragging,
   header,
   legend,
+  lifted,
   metricLabel,
   panel,
   root,
@@ -316,7 +317,11 @@ export default function StyleOutlinePanel() {
       data-testid="style-outline"
     >
       {open ? (
-        <fieldset className={panel} aria-label="Style outline" data-testid="style-outline-panel">
+        <fieldset
+          className={classNames(panel, dragging && lifted)}
+          aria-label="Style outline"
+          data-testid="style-outline-panel"
+        >
           <button
             type="button"
             className={classNames(header, dragging && handleDragging)}
@@ -414,7 +419,7 @@ export default function StyleOutlinePanel() {
       ) : (
         <button
           type="button"
-          className={classNames(trigger, dragging && handleDragging)}
+          className={classNames(trigger, dragging && handleDragging, dragging && lifted)}
           title="Drag to a corner, or click to open"
           aria-label="Style migrations"
           aria-expanded={false}

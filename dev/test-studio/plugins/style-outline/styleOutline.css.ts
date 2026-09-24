@@ -34,6 +34,12 @@ export const root = style({
 
 export const rootDragging = style({
   userSelect: 'none',
+})
+
+// Worn by the panel or the trigger rather than by the wrapper around them, so the
+// shadow of a widget being carried keeps the shape it belongs to — the panel's
+// rounded corners, the collapsed trigger's circle.
+export const lifted = style({
   boxShadow: '0 16px 36px rgba(0, 0, 0, 0.5)',
 })
 
