@@ -18,7 +18,7 @@ export function getQueryTabId(tabId: string): string {
   return `vista-query-tab-${tabId}`
 }
 
-export function getTabTitle(tab: VistaTab, fallback: string): string {
+function getTabTitle(tab: VistaTab, fallback: string): string {
   return tab.title || deriveTabTitle(tab.query) || fallback
 }
 

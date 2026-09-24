@@ -120,7 +120,7 @@ export const scrollArea = style({
   overflow: 'auto',
 })
 
-export const SIDEBAR_RAIL_WIDTH = 49
+const SIDEBAR_RAIL_WIDTH = 49
 
 export const sidebarRail = style({
   flexShrink: 0,

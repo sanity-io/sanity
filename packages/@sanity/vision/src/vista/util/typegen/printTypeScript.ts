@@ -26,7 +26,7 @@ function printObject(node: ObjectTypeNode, depth: number): string {
   return rest?.type === 'inline' ? `${body} & ${toTypeName(rest.name)}` : body
 }
 
-export function printNode(node: TypeNode, depth = 0): string {
+function printNode(node: TypeNode, depth = 0): string {
   switch (node.type) {
     case 'string':
       return node.value === undefined ? 'string' : JSON.stringify(node.value)

@@ -5,7 +5,7 @@ import {Box, Flex} from 'ui5'
 import {visionLocaleNamespace} from '../../../i18n'
 import {type FetchHistoryEntry, type FetchReason} from '../../store/types'
 
-export function describeFetchReason(reason: FetchReason, t: TFunction<'vision'>): string {
+function describeFetchReason(reason: FetchReason, t: TFunction<'vision'>): string {
   switch (reason.type) {
     case 'manual':
       return t('vista.history.reason.manual')

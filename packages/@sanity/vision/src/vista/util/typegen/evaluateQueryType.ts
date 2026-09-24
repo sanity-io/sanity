@@ -7,7 +7,7 @@ import {inferTypeFromValue} from './inferTypeFromValue'
 const groqSchemaCache = new WeakMap<Schema, SchemaType>()
 
 /** The workspace schema in groq-js form, extracted once per schema instance */
-export function getGroqSchema(schema: Schema): SchemaType {
+function getGroqSchema(schema: Schema): SchemaType {
   let extracted = groqSchemaCache.get(schema)
   if (!extracted) {
     extracted = extractSchema(schema)

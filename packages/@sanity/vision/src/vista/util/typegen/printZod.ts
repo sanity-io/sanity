@@ -46,7 +46,7 @@ function printReference(name: string, context: PrintContext): string {
     : reference
 }
 
-export function printZodNode(node: TypeNode, depth: number, context: PrintContext): string {
+function printZodNode(node: TypeNode, depth: number, context: PrintContext): string {
   switch (node.type) {
     case 'string':
       return node.value === undefined ? 'z.string()' : `z.literal(${JSON.stringify(node.value)})`
