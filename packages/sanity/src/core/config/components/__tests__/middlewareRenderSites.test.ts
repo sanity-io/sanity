@@ -17,10 +17,12 @@ const MIDDLEWARE_HOOK = 'useMiddlewareComponents'
 /**
  * Sites that render a middleware component without a boundary of their own. Form nodes have
  * unpredictable heights, so no fallback the form could pick fits; a lazy form component owns its
- * own `<Suspense>` sized for what it renders, and until it resolves the form suspends up to the
- * single boundary `FormBuilder` keeps around its root input. The navbar tool menu likewise
- * suspends up to the navbar boundary in `StudioLayoutComponent`. Adding a site here is a
- * decision, not a default.
+ * own `<Suspense>` sized for what it renders, and until it resolves it suspends up to the nearest
+ * boundary that knows the shape: the per-block boundary the Portable Text `Compositor` keeps
+ * around each top-level block (block, inline object and annotation components), or the single
+ * boundary `FormBuilder` keeps around its root input (input, field and item components). The
+ * navbar and its tool menu suspend up to `StudioLayout`'s loading screen, since the navbar's
+ * height depends on what it renders. Adding a site here is a decision, not a default.
  */
 const DEFERS_TO_ANCESTOR = [
   'core/form/inputs/PortableText/object/Plugins.tsx <RenderPlugins>',
@@ -37,6 +39,7 @@ const DEFERS_TO_ANCESTOR = [
   'core/form/studio/FormProvider.tsx <InlineBlock>',
   'core/form/studio/FormProvider.tsx <Input>',
   'core/form/studio/FormProvider.tsx <Item>',
+  'core/studio/StudioLayoutComponent.tsx <Navbar>',
   'core/studio/components/navbar/StudioNavbar.tsx <ToolMenu>',
   'core/studio/components/navbar/navDrawer/NavDrawer.tsx <ToolMenu>',
 ]
@@ -158,7 +161,7 @@ describe('middleware component render sites', () => {
     expect(wrapped).toEqual(
       expect.arrayContaining([
         'core/studio/StudioLayout.tsx <Layout>',
-        'core/studio/StudioLayoutComponent.tsx <Navbar>',
+        'core/studio/StudioLayoutComponent.tsx <ActiveToolLayout>',
         'structure/panes/document/DocumentPane.tsx <DocumentLayout>',
         'structure/diffView/components/DiffViewPane.tsx <DocumentLayout>',
       ]),
