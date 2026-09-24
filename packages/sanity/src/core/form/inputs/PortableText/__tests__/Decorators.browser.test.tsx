@@ -1,5 +1,6 @@
 import {BulbOutlineIcon} from '@sanity/icons/BulbOutline'
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
+import {Card} from '@sanity/ui'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
@@ -26,6 +27,14 @@ function Spoiler(props: BlockDecoratorProps) {
     <span data-testid="custom-spoiler-decorator" style={{color: 'red'}}>
       {props.children}
     </span>
+  )
+}
+
+function DarkCode(props: BlockDecoratorProps) {
+  return (
+    <Card as="span" data-testid="dark-code-decorator" scheme="dark">
+      {props.renderDefault(props)}
+    </Card>
   )
 }
 
@@ -64,12 +73,31 @@ const CUSTOM_DECORATOR_FIELD = defineField({
   ],
 })
 
+const DARK_CODE_DECORATOR_FIELD = defineField({
+  type: 'array',
+  name: 'darkCodeDecorator',
+  of: [
+    defineArrayMember({
+      type: 'block',
+      marks: {
+        decorators: [{title: 'Code', value: 'code', component: DarkCode}],
+      },
+    }),
+  ],
+})
+
 /** Mount only the field under test — a sibling empty PTE's style select
  * otherwise flips Normal ↔ No style and shifts Chromatic captures. */
-function DecoratorsHarness({fields}: {fields: Array<'defaultDecorators' | 'customDecorator'>}) {
-  const schemaFields = fields.map((name) =>
-    name === 'defaultDecorators' ? DEFAULT_DECORATORS_FIELD : CUSTOM_DECORATOR_FIELD,
-  )
+function DecoratorsHarness({
+  fields,
+}: {
+  fields: Array<'defaultDecorators' | 'customDecorator' | 'darkCodeDecorator'>
+}) {
+  const schemaFields = fields.map((name) => {
+    if (name === 'defaultDecorators') return DEFAULT_DECORATORS_FIELD
+    if (name === 'customDecorator') return CUSTOM_DECORATOR_FIELD
+    return DARK_CODE_DECORATOR_FIELD
+  })
   const schemaTypes = [
     defineType({
       type: 'document',
@@ -250,6 +278,35 @@ describe('Portable Text Input', () => {
       await settleChromaticEndState({
         styleSelectText: /^Normal$/,
         styleSelectRoot: '[data-testid="field-customDecorator"]',
+      })
+    })
+
+    it('Styles a code mark by the scheme a custom decorator renders it in', async () => {
+      const {
+        findBySelector,
+        getFocusedPortableTextInput,
+        getFocusedPortableTextEditor,
+        insertPortableText,
+        settleChromaticEndState,
+      } = testHelpers()
+      void render(<DecoratorsHarness fields={['darkCodeDecorator']} />)
+      const $portableTextInput = await getFocusedPortableTextInput('field-darkCodeDecorator')
+      const $pte = await getFocusedPortableTextEditor('field-darkCodeDecorator')
+
+      await $portableTextInput.getByRole('button', {name: 'Code'}).click()
+      await insertPortableText('code text', $pte)
+
+      const $mark = await findBySelector(
+        $pte,
+        '[data-testid="dark-code-decorator"] [data-mark="code"]',
+      )
+      await expect.element($mark).toMatchTextContent('code text')
+      // The studio renders in the light scheme; the mark sits inside the custom component's dark
+      // Card, so it has to take the dark scheme's blend mode (`screen`, not `multiply`)
+      await expect.poll(() => getComputedStyle($mark.element()).mixBlendMode).toBe('screen')
+      await settleChromaticEndState({
+        styleSelectText: /^Normal$/,
+        styleSelectRoot: '[data-testid="field-darkCodeDecorator"]',
       })
     })
 
