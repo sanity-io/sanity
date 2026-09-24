@@ -144,9 +144,15 @@ const playwrightConfig: PlaywrightTestConfig<ChromaticConfig> = {
     : {
         /**
          * If it is running in CI just start the production build assuming that studio is already build
-         * Locally run the dev server
+         * Locally run the dev server.
+         *
+         * Run from the studio package with `node --run`, not `pnpm`. pnpm 12.6+
+         * (@pnpm/exe) detaches the script into its own process group, so
+         * Playwright's teardown kill never reaps the server and the runner
+         * hangs. CI against a `.sanity.dev` URL never starts this server.
          */
-        command: CI ? 'pnpm start' : 'pnpm dev',
+        command: CI ? 'node --run start' : 'node --run dev',
+        cwd: '../dev/studio-e2e-testing',
         port: 3339,
         reuseExistingServer: !CI,
         stdout: 'pipe',
