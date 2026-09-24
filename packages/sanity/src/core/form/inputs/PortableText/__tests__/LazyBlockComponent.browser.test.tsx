@@ -1,11 +1,12 @@
 import {defineArrayMember, defineField, defineType, type SanityDocument} from '@sanity/types'
 import {type ComponentType, lazy} from 'react'
-import {type BlockProps, definePlugin, type PluginOptions} from 'sanity'
+import {type BlockProps, definePlugin, type InputProps, type PluginOptions} from 'sanity'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
 
 import {TestForm} from '../../../../../../test/browser/TestForm'
+import {testHelpers} from '../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 
 const SCHEMA_TYPES = [
@@ -82,17 +83,19 @@ const DOCUMENT: SanityDocument = {
   ],
 }
 
-function PassThrough(props: BlockProps) {
+function PassThrough<Props extends {renderDefault: (props: Props) => React.JSX.Element}>(
+  props: Props,
+) {
   return props.renderDefault(props)
 }
 
 // Stays pending until the test resolves it, like a plugin's `lazy()` component that has no
 // `<Suspense>` of its own while its chunk downloads.
-function pendingComponent() {
-  let resolve: (module: {default: ComponentType<BlockProps>}) => void = () => {}
+function pendingComponent<Props extends {renderDefault: (props: Props) => React.JSX.Element}>() {
+  let resolve: (module: {default: ComponentType<Props>}) => void = () => {}
   const Lazy = lazy(
     () =>
-      new Promise<{default: ComponentType<BlockProps>}>((res) => {
+      new Promise<{default: ComponentType<Props>}>((res) => {
         resolve = res
       }),
   )
@@ -112,7 +115,7 @@ const countTestIds = (testId: string) => () =>
 
 describe('lazy Portable Text components', () => {
   it('gives every top-level block its own boundary, so the form and the editor stay visible', async () => {
-    const block = pendingComponent()
+    const block = pendingComponent<BlockProps>()
     void render(
       <Harness
         plugins={[definePlugin({name: 'lazy-block', form: {components: {block: block.Lazy}}})()]}
@@ -137,7 +140,7 @@ describe('lazy Portable Text components', () => {
   })
 
   it('holds up only the block that contains a lazy inline object', async () => {
-    const inlineBlock = pendingComponent()
+    const inlineBlock = pendingComponent<BlockProps>()
     void render(
       <Harness
         plugins={[
@@ -161,5 +164,41 @@ describe('lazy Portable Text components', () => {
     await expect.element(page.getByText('Rocket')).toBeVisible()
     await expect.element(page.getByText('Second paragraph with an')).toBeVisible()
     await expect.poll(countTestIds('text-block-fallback')).toBe(0)
+  })
+
+  it('keeps a block object edit modal open while a lazy input inside it loads', async () => {
+    const {getFocusedPortableTextInput} = testHelpers()
+    const input = pendingComponent<InputProps>()
+    // Lazy only for inputs inside the editor's objects, so the form itself renders and the
+    // suspension happens where the modal shows the object's fields.
+    function InsideObjectInput(props: InputProps) {
+      return props.path.length > 2 ? <input.Lazy {...props} /> : props.renderDefault(props)
+    }
+    void render(
+      <Harness
+        plugins={[
+          definePlugin({
+            name: 'lazy-object-input',
+            form: {components: {input: InsideObjectInput}},
+          })(),
+        ]}
+      />,
+    )
+
+    await getFocusedPortableTextInput('field-body')
+    await page.getByRole('button', {name: 'Insert Callout (block)'}).first().click()
+
+    // The modal owns the boundary: it stays open with its own loading block, and the block that
+    // opened it is not swapped for the block fallback.
+    const dialog = page.getByTestId('nested-object-dialog')
+    await expect.element(dialog).toBeVisible()
+    await expect.element(dialog.getByTestId('loading-block')).toBeVisible()
+    expect(countTestIds('block-object-fallback')()).toBe(0)
+    await expect.poll(countTestIds('pte-block-object')).toBe(2)
+
+    input.resolve()
+
+    await expect.element(dialog.getByTestId('string-input')).toBeVisible()
+    await expect.element(dialog.getByTestId('loading-block')).not.toBeInTheDocument()
   })
 })
