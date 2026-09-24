@@ -4,7 +4,7 @@ import {
   enqueueActions,
   setup,
   type SnapshotFrom,
-  stopChild,
+  type Spawner,
 } from 'xstate'
 
 import {queryRunnerMachine, type QueryRunnerRef} from './queryRunnerMachine'
@@ -66,8 +66,18 @@ export interface VistaInput {
   defaults: VistaStorageDefaults
 }
 
-function runnerId(tabId: string): string {
-  return `runner:${tabId}`
+type RunnerSpawner = Spawner<{
+  src: 'queryRunner'
+  logic: typeof queryRunnerMachine
+  id: string | undefined
+}>
+
+function spawnRunner(spawn: RunnerSpawner, tabId: string): QueryRunnerRef {
+  return spawn('queryRunner', {id: `runner:${tabId}`, input: {tabId}})
+}
+
+function spawnRunners(spawn: RunnerSpawner, tabs: VistaTab[]): Record<string, QueryRunnerRef> {
+  return Object.fromEntries(tabs.map((tab) => [tab.id, spawnRunner(spawn, tab.id)]))
 }
 
 function updateTab(tabs: VistaTab[], id: string, update: (tab: VistaTab) => VistaTab): VistaTab[] {
@@ -119,10 +129,7 @@ export const vistaMachine = setup({
       return {
         tabs: [...context.tabs, tab],
         activeTabId: tab.id,
-        runners: {
-          ...context.runners,
-          [tab.id]: spawn('queryRunner', {id: runnerId(tab.id), input: {tabId: tab.id}}),
-        },
+        runners: {...context.runners, [tab.id]: spawnRunner(spawn, tab.id)},
       }
     }),
     closeTab: enqueueActions(({context, event, enqueue}) => {
@@ -145,13 +152,7 @@ export const vistaMachine = setup({
         enqueue.assign(({spawn}) => ({
           tabs: [fallback],
           activeTabId: fallback.id,
-          runners: {
-            ...runners,
-            [fallback.id]: spawn('queryRunner', {
-              id: runnerId(fallback.id),
-              input: {tabId: fallback.id},
-            }),
-          },
+          runners: {...runners, [fallback.id]: spawnRunner(spawn, fallback.id)},
         }))
         return
       }
@@ -174,12 +175,7 @@ export const vistaMachine = setup({
           tabs: fresh.tabs,
           activeTabId: fresh.activeTabId,
           settings: fresh.settings,
-          runners: Object.fromEntries(
-            fresh.tabs.map((tab) => [
-              tab.id,
-              spawn('queryRunner', {id: runnerId(tab.id), input: {tabId: tab.id}}),
-            ]),
-          ),
+          runners: spawnRunners(spawn, fresh.tabs),
         }
       })
     }),
@@ -193,12 +189,7 @@ export const vistaMachine = setup({
     tabs: input.persisted.tabs,
     activeTabId: input.persisted.activeTabId,
     settings: input.persisted.settings,
-    runners: Object.fromEntries(
-      input.persisted.tabs.map((tab) => [
-        tab.id,
-        spawn('queryRunner', {id: runnerId(tab.id), input: {tabId: tab.id}}),
-      ]),
-    ),
+    runners: spawnRunners(spawn, input.persisted.tabs),
     loadRevisions: {},
     restoredSidebar: input.persisted.sidebar,
   }),
@@ -363,6 +354,14 @@ export function selectPersistedState(snapshot: VistaSnapshot): VistaPersistedSta
 export function selectActiveTab(snapshot: VistaSnapshot): VistaTab {
   const {tabs, activeTabId} = snapshot.context
   return tabs.find((tab) => tab.id === activeTabId) || tabs[0]
+}
+
+export function selectDatasets(snapshot: VistaSnapshot): string[] {
+  return snapshot.context.defaults.datasets
+}
+
+export function selectProjectId(snapshot: VistaSnapshot): string {
+  return snapshot.context.projectId
 }
 
 export function selectOpenDialog(snapshot: VistaSnapshot): VistaDialog | null {

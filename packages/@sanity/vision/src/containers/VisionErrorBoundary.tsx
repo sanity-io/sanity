@@ -9,13 +9,7 @@ import {clearLocalStorage} from '../util/localStorage'
 /**
  * @internal
  */
-export type VisionErrorBoundaryProps = PropsWithChildren<{
-  /**
-   * Clears the persisted state that may have caused the crash. Defaults to clearing Vision's
-   * `localStorage` namespace.
-   */
-  onClearCache?: () => void
-}>
+export type VisionErrorBoundaryProps = PropsWithChildren
 
 /**
  * @internal
@@ -46,11 +40,7 @@ export class VisionErrorBoundary extends Component<
     this.setState((prev) => ({error: null, numRetries: prev.numRetries + 1}))
 
   handleRetryWithCacheClear = () => {
-    if (this.props.onClearCache) {
-      this.props.onClearCache()
-    } else {
-      clearLocalStorage()
-    }
+    clearLocalStorage()
     this.handleRetryRender()
   }
 

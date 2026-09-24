@@ -2,12 +2,15 @@ import {
   isSupportedPerspective,
   isVirtualPerspective,
   type SupportedPerspective,
-} from '../../perspectives'
-import {parseApiQueryString} from '../../util/parseApiQueryString'
-import {validateApiVersion} from '../../util/validateApiVersion'
+} from '../perspectives'
+import {parseApiQueryString} from './parseApiQueryString'
+import {validateApiVersion} from './validateApiVersion'
 
-// Match Sanity API URLs with any domain (supports custom CDN domains)
-const SANITY_QUERY_URL = /\/(vX|v1|v\d{4}-\d\d-\d\d)\/.*?(?:query|listen)\/(.*?)\?(.*)/
+/**
+ * Matches Content Lake query and listen URLs on any domain (custom CDN domains included),
+ * capturing the API version, the dataset and the query string.
+ */
+export const SANITY_QUERY_URL = /\/(vX|v1|v\d{4}-\d\d-\d\d)\/.*?(?:query|listen)\/(.*?)\?(.*)/
 
 export interface ParsedQueryUrl {
   query: string

@@ -3,43 +3,39 @@ import {TrashIcon} from '@sanity/icons/Trash'
 import {Button, Card, Dialog, Stack, Switch, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useState} from 'react'
-import {type KeyValueStoreValue, useKeyValueStore, useTranslation} from 'sanity'
+import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
-import {API_VERSIONS} from '../../../apiVersions'
-import {STORED_QUERIES_NAMESPACE} from '../../../hooks/useSavedQueries'
 import {visionLocaleNamespace} from '../../../i18n'
 import {validateApiVersion} from '../../../util/validateApiVersion'
-import {useVistaActor, useVistaExperience, useVistaSelector} from '../../store/VistaActorContext'
-import {createTabOptions} from '../../store/vistaStorage'
+import {
+  useSavedQueriesApi,
+  useVistaActor,
+  useVistaExperience,
+  useVistaSelector,
+} from '../../store/VistaActorContext'
+import {selectDatasets} from '../../store/vistaMachine'
 import {ApiVersionField, DatasetSelect, PerspectiveSelect} from '../request/OptionFields'
 
-export function SettingsDialog({datasets}: {datasets: string[]}) {
+export function SettingsDialog() {
   const {t} = useTranslation(visionLocaleNamespace)
   const toast = useToast()
   const actorRef = useVistaActor()
   const {switchToClassic} = useVistaExperience()
-  const keyValueStore = useKeyValueStore()
+  const {clearQueries} = useSavedQueriesApi()
+  const datasets = useVistaSelector(selectDatasets)
   const settings = useVistaSelector((snapshot) => snapshot.context.settings)
   const [confirmClear, setConfirmClear] = useState(false)
-  // Lets the "Other" input hold an unfinished version without it reaching the settings
-  const [customApiVersion, setCustomApiVersion] = useState<string | false>(
-    () => createTabOptions(settings).customApiVersion,
-  )
+  // The "Other" input may hold an unfinished version; only usable ones become the default
+  const [apiVersionDraft, setApiVersionDraft] = useState(settings.apiVersion)
 
   const close = useCallback(() => actorRef.send({type: 'dialog.close'}), [actorRef])
 
   const handleApiVersionChange = useCallback(
-    (next: {apiVersion: string; customApiVersion: string | false}) => {
-      setCustomApiVersion(next.customApiVersion)
-      const effective =
-        next.customApiVersion !== false && validateApiVersion(next.customApiVersion)
-          ? next.customApiVersion
-          : next.customApiVersion === false
-            ? next.apiVersion
-            : undefined
-      if (effective) {
-        actorRef.send({type: 'settings.update', settings: {apiVersion: effective}})
+    (apiVersion: string) => {
+      setApiVersionDraft(apiVersion)
+      if (validateApiVersion(apiVersion)) {
+        actorRef.send({type: 'settings.update', settings: {apiVersion}})
       }
     },
     [actorRef],
@@ -47,16 +43,9 @@ export function SettingsDialog({datasets}: {datasets: string[]}) {
 
   const handleClearStorage = useCallback(async () => {
     setConfirmClear(false)
-    actorRef.send({type: 'storage.clear'})
+    // The saved queries live on the server; nothing local is dropped until they are gone
     try {
-      await keyValueStore.setKey(STORED_QUERIES_NAMESPACE, {
-        queries: [],
-      } as unknown as KeyValueStoreValue)
-      toast.push({
-        closable: true,
-        status: 'success',
-        title: t('vista.settings.clear-storage.success'),
-      })
+      await clearQueries()
     } catch (err) {
       toast.push({
         closable: true,
@@ -64,14 +53,17 @@ export function SettingsDialog({datasets}: {datasets: string[]}) {
         title: t('vista.settings.clear-storage.error'),
         description: err instanceof Error ? err.message : String(err),
       })
+      return
     }
+    actorRef.send({type: 'storage.clear'})
+    toast.push({
+      closable: true,
+      status: 'success',
+      title: t('vista.settings.clear-storage.success'),
+    })
     // Clearing storage also ends the redesigned experience, which unmounts this dialog
     switchToClassic()
-  }, [actorRef, keyValueStore, switchToClassic, t, toast])
-
-  const listedApiVersion = API_VERSIONS.includes(settings.apiVersion)
-    ? settings.apiVersion
-    : createTabOptions(settings).apiVersion
+  }, [actorRef, clearQueries, switchToClassic, t, toast])
 
   return (
     <Dialog
@@ -96,11 +88,10 @@ export function SettingsDialog({datasets}: {datasets: string[]}) {
           />
 
           <ApiVersionField
-            apiVersion={listedApiVersion}
-            customApiVersion={customApiVersion}
             id="vista-settings-api-version"
             locked={false}
             onChange={handleApiVersionChange}
+            value={apiVersionDraft}
           />
 
           <PerspectiveSelect

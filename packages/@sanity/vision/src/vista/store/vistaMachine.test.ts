@@ -9,7 +9,7 @@ import {
   selectPersistedState,
   vistaMachine,
 } from './vistaMachine'
-import {createInitialState, createTab, saveVistaState} from './vistaStorage'
+import {createInitialState, createTab, getVistaStorageKey, saveVistaState} from './vistaStorage'
 
 const defaults = {
   datasets: ['production', 'staging'],
@@ -223,6 +223,6 @@ describe('vistaMachine', () => {
     expect(harness.runnerIds()).toEqual([tabs[0].id])
     expect(harness.snapshot().matches({sidebar: 'collapsed'})).toBe(true)
     expect(selectOpenDialog(harness.snapshot())).toBeNull()
-    expect(localStorage.getItem('sanityVista:proj')).toBeNull()
+    expect(localStorage.getItem(getVistaStorageKey('proj'))).toBeNull()
   })
 })

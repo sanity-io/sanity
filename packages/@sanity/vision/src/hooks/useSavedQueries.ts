@@ -6,7 +6,7 @@ import {type KeyValueStoreValue, useClient, useCurrentUser, useKeyValueStore} fr
 
 import {DEFAULT_API_VERSION} from '../apiVersions'
 
-export const STORED_QUERIES_NAMESPACE = 'studio.vision-tool.saved-queries'
+const STORED_QUERIES_NAMESPACE = 'studio.vision-tool.saved-queries'
 const SHARED_QUERY_DOCUMENT_TYPE = 'vision.sharedQuery'
 const SHARED_QUERIES_QUERY = `*[_type == $sharedQueryType]{
   _id,
@@ -54,6 +54,12 @@ export function useSavedQueries(): {
   saveQuery: (query: Omit<QueryConfig, '_key'>) => Promise<void>
   updateQuery: (query: QueryConfig) => Promise<void>
   deleteQuery: (key: string) => Promise<void>
+  /** Moves a personal query to the shared list, keeping its title */
+  shareQuery: (key: string) => Promise<void>
+  /** Moves a shared query the current user owns back to their personal list */
+  unshareQuery: (key: string) => Promise<void>
+  /** Removes every personal query; shared ones are left alone */
+  clearQueries: () => Promise<void>
   saving: boolean
   deleting: string[]
   saveQueryError: Error | undefined
@@ -312,11 +318,53 @@ export function useSavedQueries(): {
     [workspaceClient, currentUser, keyValueStore, sharedQueries, value.queries],
   )
 
+  const shareQuery = useCallback(
+    async (key: string) => {
+      const query = value.queries.find((q) => q._key === key)
+      if (!query) {
+        throw new Error(`No personal saved query with key "${key}"`)
+      }
+      await saveQuery({
+        shared: true,
+        title: query.title,
+        url: query.url,
+        savedAt: new Date().toISOString(),
+      })
+      await deleteQuery(key)
+    },
+    [deleteQuery, saveQuery, value.queries],
+  )
+
+  const unshareQuery = useCallback(
+    async (key: string) => {
+      const query = sharedQueries.find((q) => q._key === key)
+      if (!query) {
+        throw new Error(`No shared query with key "${key}"`)
+      }
+      await saveQuery({
+        shared: false,
+        title: query.title,
+        url: query.url,
+        savedAt: new Date().toISOString(),
+      })
+      await deleteQuery(key)
+    },
+    [deleteQuery, saveQuery, sharedQueries],
+  )
+
+  const clearQueries = useCallback(async () => {
+    setValue(defaultValue)
+    await keyValueStore.setKey(keyValueStoreKey, defaultValue as unknown as KeyValueStoreValue)
+  }, [keyValueStore])
+
   return {
     queries,
     saveQuery,
     updateQuery,
     deleteQuery,
+    shareQuery,
+    unshareQuery,
+    clearQueries,
     saving,
     deleting,
     saveQueryError,

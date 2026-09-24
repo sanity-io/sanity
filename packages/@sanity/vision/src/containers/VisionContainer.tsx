@@ -1,14 +1,25 @@
-import {Suspense, use} from 'react'
+import {Fragment, type ReactNode, Suspense, use} from 'react'
 import {type ObservablePromise} from 'react-rx'
 import {useClient} from 'sanity'
 import {Flex} from 'ui5'
 
 import {DelayedSpinner} from '../components/DelayedSpinner'
-import {VisionGui} from '../components/VisionGui'
 import {useDatasets} from '../hooks/useDatasets'
 import {type VisionProps} from '../types'
 
-export function VisionContainer(props: VisionProps) {
+/** What both Vision experiences need to know about the project before they can render */
+export interface LoadedVisionProps {
+  datasets: string[]
+  projectId: string
+  defaultDataset: string
+}
+
+export interface VisionContainerProps extends VisionProps {
+  /** Rendered once the datasets are known, and remounted when the project changes */
+  children: (loaded: LoadedVisionProps) => ReactNode
+}
+
+export function VisionContainer(props: VisionContainerProps) {
   const datasetsClient = useClient({apiVersion: 'v2025-06-27'})
   const datasetsPromise = useDatasets({client: datasetsClient, datasets: props.config.datasets})
 
@@ -26,28 +37,23 @@ export function VisionContainer(props: VisionProps) {
 }
 
 function LoadedVisionContainer({
+  children,
+  client,
+  config,
   datasetsPromise,
-  ...props
-}: VisionProps & {datasetsPromise: ObservablePromise<string[] | Error>}) {
+}: VisionContainerProps & {datasetsPromise: ObservablePromise<string[] | Error>}) {
   const loadedDatasets = use(datasetsPromise)
+  const clientConfig = client.config()
 
   const datasets =
     loadedDatasets instanceof Error
       ? // On error, use the clients configured dataset
-        [props.client.config().dataset || 'production']
+        [clientConfig.dataset || 'production']
       : // Otherwise use the loaded list, obviously
         loadedDatasets
 
-  const projectId = props.client.config().projectId
-  const defaultDataset = props.config.defaultDataset || props.client.config().dataset || datasets[0]
+  const projectId = clientConfig.projectId || 'default'
+  const defaultDataset = config.defaultDataset || clientConfig.dataset || datasets[0]
 
-  return (
-    <VisionGui
-      key={projectId}
-      {...props}
-      datasets={datasets}
-      projectId={projectId}
-      defaultDataset={defaultDataset}
-    />
-  )
+  return <Fragment key={projectId}>{children({datasets, projectId, defaultDataset})}</Fragment>
 }

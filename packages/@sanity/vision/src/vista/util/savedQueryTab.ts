@@ -1,45 +1,31 @@
 import JSON5 from 'json5'
 
-import {API_VERSIONS} from '../../apiVersions'
 import {type QueryConfig} from '../../hooks/useSavedQueries'
+import {type ParsedQueryUrl, parseQueryUrl} from '../../util/parseQueryUrl'
 import {type VistaTab, type VistaTabInit, type VistaTabOptions} from '../store/types'
-import {parseQueryUrl} from './parseQueryUrl'
 
 /**
- * Turns a saved query (stored as its query URL) into the fields of a tab. Options the URL does
- * not carry (or carries in an unsupported form) are left to the receiving tab.
+ * The fields of a tab for a parsed query URL (a saved query or a paste). Options the URL does not
+ * carry (or carries in an unsupported form) are left to the receiving tab.
  */
-export function savedQueryToTabInit(
-  saved: QueryConfig,
-  datasets: readonly string[],
-): VistaTabInit | null {
-  const parsed = parseQueryUrl(saved.url, datasets)
-  if (!parsed) {
-    return null
-  }
-
+export function parsedQueryToTabInit(parsed: ParsedQueryUrl): VistaTabInit {
   const options: Partial<VistaTabOptions> = {}
   if (parsed.dataset) {
     options.dataset = parsed.dataset
   }
   if (parsed.apiVersion) {
-    if (API_VERSIONS.includes(parsed.apiVersion)) {
-      options.apiVersion = parsed.apiVersion
-      options.customApiVersion = false
-    } else {
-      options.customApiVersion = parsed.apiVersion
-    }
+    options.apiVersion = parsed.apiVersion
   }
   if (parsed.perspective) {
     options.perspective = parsed.perspective
   }
 
-  return {
-    title: saved.title,
-    query: parsed.query,
-    rawParams: parsed.rawParams,
-    options,
-  }
+  return {query: parsed.query, rawParams: parsed.rawParams, options}
+}
+
+/** Like `parsedQueryToTabInit`, also applying the saved query's title (clearing a stale one) */
+export function savedQueryToTabInit(saved: QueryConfig, parsed: ParsedQueryUrl): VistaTabInit {
+  return {...parsedQueryToTabInit(parsed), title: saved.title}
 }
 
 /** Whether a tab already shows the given saved query (same query text and params) */
@@ -49,9 +35,11 @@ export function tabMatchesSavedQuery(
   datasets: readonly string[],
 ): boolean {
   const parsed = parseQueryUrl(saved.url, datasets)
-  if (!parsed) {
-    return false
-  }
+  return parsed !== null && tabMatchesParsedQuery(tab, parsed)
+}
+
+/** Same as `tabMatchesSavedQuery`, for callers that already parsed the saved query's URL */
+export function tabMatchesParsedQuery(tab: VistaTab, parsed: ParsedQueryUrl): boolean {
   return (
     tab.query === parsed.query &&
     normalizeParams(tab.rawParams) === normalizeParams(parsed.rawParams)

@@ -1,25 +1,14 @@
 import {Dialog, Hotkeys, Stack, Text} from '@sanity/ui'
-import {useMemo} from 'react'
 import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {useVistaActor} from '../../store/VistaActorContext'
-import {getVistaShortcuts, type VistaShortcutId} from '../../util/shortcuts'
-
-const LABEL_KEYS: Record<
-  VistaShortcutId,
-  'vista.shortcuts.fetch' | 'vista.shortcuts.prettify' | 'vista.shortcuts.copy-query'
-> = {
-  'fetch': 'vista.shortcuts.fetch',
-  'prettify': 'vista.shortcuts.prettify',
-  'copy-query': 'vista.shortcuts.copy-query',
-}
+import {VISTA_SHORTCUT_LIST} from '../../util/shortcuts'
 
 export function ShortcutsDialog() {
   const {t} = useTranslation(visionLocaleNamespace)
   const actorRef = useVistaActor()
-  const shortcuts = useMemo(() => getVistaShortcuts(), [])
   const close = () => actorRef.send({type: 'dialog.close'})
 
   return (
@@ -33,9 +22,9 @@ export function ShortcutsDialog() {
     >
       <Box padding={4}>
         <Stack gap={4}>
-          {shortcuts.map((shortcut) => (
+          {VISTA_SHORTCUT_LIST.map((shortcut) => (
             <Flex alignItems="center" gap={3} justifyContent="space-between" key={shortcut.id}>
-              <Text size={1}>{t(LABEL_KEYS[shortcut.id])}</Text>
+              <Text size={1}>{t(shortcut.labelKey)}</Text>
               <Hotkeys fontSize={1} keys={shortcut.keys} />
             </Flex>
           ))}

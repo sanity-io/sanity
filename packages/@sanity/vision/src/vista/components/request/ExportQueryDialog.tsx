@@ -9,6 +9,8 @@ import {visionLocaleNamespace} from '../../../i18n'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {type QueryRequest, type VistaTab} from '../../store/types'
+import {useVistaSelector} from '../../store/VistaActorContext'
+import {selectProjectId} from '../../store/vistaMachine'
 import {buildExportSnippets, type ExportSnippetId} from '../../util/exportSnippets'
 import {codeBlock} from '../vista.css'
 
@@ -16,19 +18,13 @@ export interface ExportQueryDialogProps {
   tab: VistaTab
   request: QueryRequest
   resolved: ResolvedRequest
-  projectId: string
   onClose: () => void
 }
 
-export function ExportQueryDialog({
-  tab,
-  request,
-  resolved,
-  projectId,
-  onClose,
-}: ExportQueryDialogProps) {
+export function ExportQueryDialog({tab, request, resolved, onClose}: ExportQueryDialogProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const copyToClipboard = useCopyToClipboard()
+  const projectId = useVistaSelector(selectProjectId)
   const [activeId, setActiveId] = useState<ExportSnippetId>('client')
 
   const snippets = useMemo(

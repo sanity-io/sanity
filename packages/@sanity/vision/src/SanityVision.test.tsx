@@ -3,6 +3,7 @@ import {LayerProvider, ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {ToastProvider} from '@sanity/ui/toast'
 import {act, cleanup, fireEvent, render, screen, waitFor} from '@testing-library/react'
+import {type ReactNode} from 'react'
 import {type Tool} from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -35,14 +36,20 @@ vi.mock('sanity', () => ({
   useTranslation: () => ({t: (key: string) => key}),
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
+  VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: 'X'},
 }))
 
 vi.mock('./containers/VisionContainer', () => ({
-  VisionContainer: () => <div data-testid="classic-vision" />,
+  VisionContainer: ({children}: {children: (loaded: unknown) => ReactNode}) =>
+    children({datasets: ['test'], projectId: 'switch-project', defaultDataset: 'test'}),
 }))
 
-vi.mock('./vista/VistaContainer', () => ({
-  VistaContainer: ({onSwitchToClassic}: {onSwitchToClassic: () => void}) => (
+vi.mock('./components/VisionGui', () => ({
+  VisionGui: () => <div data-testid="classic-vision" />,
+}))
+
+vi.mock('./vista/components/VistaGui', () => ({
+  VistaGui: ({onSwitchToClassic}: {onSwitchToClassic: () => void}) => (
     <button data-testid="vista" onClick={onSwitchToClassic} type="button">
       vista
     </button>

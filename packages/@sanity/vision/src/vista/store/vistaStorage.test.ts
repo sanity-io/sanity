@@ -1,13 +1,14 @@
 import {beforeEach, describe, expect, it} from 'vitest'
 
 import {DEFAULT_API_VERSION} from '../../apiVersions'
-import {clearAllVistaState} from '../storageNamespace'
+import {clearLocalStorage} from '../../util/localStorage'
 import {
   clearVistaState,
   createInitialState,
   createTab,
   createTabOptions,
   DEFAULT_PARAMS,
+  getVistaStorageKey,
   loadVistaState,
   resolveDefaultSettings,
   saveVistaState,
@@ -48,15 +49,24 @@ describe('vistaStorage', () => {
     })
   })
 
-  it('turns an unlisted default API version into a custom API version on new tabs', () => {
+  it('keeps an unlisted default API version on new tabs', () => {
     const options = createTabOptions({
       dataset: 'production',
       apiVersion: 'v2022-01-01',
       perspective: 'raw',
       includeSourceMap: false,
     })
-    expect(options.apiVersion).toBe(DEFAULT_API_VERSION)
-    expect(options.customApiVersion).toBe('v2022-01-01')
+    expect(options.apiVersion).toBe('v2022-01-01')
+  })
+
+  it('drops stored API versions that do not validate', () => {
+    const state = createInitialState(defaults)
+    const tab = createTab(state.settings, {id: 'tab', options: {apiVersion: 'v20'}})
+    localStorage.setItem(getVistaStorageKey('proj'), JSON.stringify({...state, tabs: [tab]}))
+
+    expect(loadVistaState('proj', defaults).tabs[0].options.apiVersion).toBe(
+      state.settings.apiVersion,
+    )
   })
 
   it('creates an initial state with a single empty tab', () => {
@@ -93,10 +103,10 @@ describe('vistaStorage', () => {
   it('returns a fresh state for missing, malformed or outdated storage', () => {
     expect(loadVistaState('missing', defaults).tabs).toHaveLength(1)
 
-    localStorage.setItem('sanityVista:broken', '{not json')
+    localStorage.setItem(getVistaStorageKey('broken'), '{not json')
     expect(loadVistaState('broken', defaults).tabs).toHaveLength(1)
 
-    localStorage.setItem('sanityVista:old', JSON.stringify({version: 0, tabs: []}))
+    localStorage.setItem(getVistaStorageKey('old'), JSON.stringify({version: 0, tabs: []}))
     expect(loadVistaState('old', defaults).tabs).toHaveLength(1)
   })
 
@@ -104,7 +114,7 @@ describe('vistaStorage', () => {
     const state = createInitialState(defaults)
     const valid = createTab(state.settings, {id: 'valid', options: {dataset: 'gone'}})
     localStorage.setItem(
-      'sanityVista:proj',
+      getVistaStorageKey('proj'),
       JSON.stringify({
         ...state,
         tabs: [valid, {noId: true}, 'garbage'],
@@ -121,17 +131,21 @@ describe('vistaStorage', () => {
     expect(loaded.settings.perspective).toBeUndefined()
   })
 
-  it('clears a single project or every project', () => {
+  it('stores state under the classic Vision prefix so "Clear cache" resets both tools', () => {
     saveVistaState('a', createInitialState(defaults))
     saveVistaState('b', createInitialState(defaults))
-    localStorage.setItem('sanityVision:a', '{}')
+    localStorage.setItem('sanityVision:classic', '{}')
+    localStorage.setItem('unrelated', 'keep')
+
+    expect(getVistaStorageKey('a')).toBe('sanityVision:vista:a')
 
     clearVistaState('a')
-    expect(localStorage.getItem('sanityVista:a')).toBeNull()
-    expect(localStorage.getItem('sanityVista:b')).not.toBeNull()
+    expect(localStorage.getItem(getVistaStorageKey('a'))).toBeNull()
+    expect(localStorage.getItem(getVistaStorageKey('b'))).not.toBeNull()
 
-    clearAllVistaState()
-    expect(localStorage.getItem('sanityVista:b')).toBeNull()
-    expect(localStorage.getItem('sanityVision:a')).toBe('{}')
+    clearLocalStorage()
+    expect(localStorage.getItem(getVistaStorageKey('b'))).toBeNull()
+    expect(localStorage.getItem('sanityVision:classic')).toBeNull()
+    expect(localStorage.getItem('unrelated')).toBe('keep')
   })
 })

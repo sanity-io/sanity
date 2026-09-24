@@ -1,6 +1,14 @@
 import {type LiveEvent, type RawQueryResponse, type SanityClient} from '@sanity/client'
 import {uuid} from '@sanity/uuid'
-import {type ActorRefFromLogic, assign, fromObservable, fromPromise, raise, setup} from 'xstate'
+import {
+  type ActorRefFromLogic,
+  assign,
+  fromObservable,
+  fromPromise,
+  raise,
+  setup,
+  type SnapshotFrom,
+} from 'xstate'
 
 import {getPayloadBytes} from '../util/payloadSize'
 import {getLiveRefetchTags} from '../util/syncTags'
@@ -241,3 +249,17 @@ export const queryRunnerMachine = setup({
 })
 
 export type QueryRunnerRef = ActorRefFromLogic<typeof queryRunnerMachine>
+export type QueryRunnerSnapshot = SnapshotFrom<typeof queryRunnerMachine>
+
+export type RequestStatus = 'idle' | 'fetching' | 'settled' | 'failed'
+
+export function selectRequestStatus(snapshot: QueryRunnerSnapshot): RequestStatus {
+  if (snapshot.matches({request: 'fetching'})) return 'fetching'
+  if (snapshot.matches({request: 'failed'})) return 'failed'
+  if (snapshot.matches({request: 'settled'})) return 'settled'
+  return 'idle'
+}
+
+export function selectIsFetching(snapshot: QueryRunnerSnapshot): boolean {
+  return snapshot.matches({request: 'fetching'})
+}

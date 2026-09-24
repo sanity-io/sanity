@@ -1,3 +1,7 @@
+import {VARIANTS_STUDIO_CLIENT_OPTIONS} from 'sanity'
+
+import {prefixApiVersion} from './util/prefixApiVersion'
+
 export const API_VERSIONS = [
   'v1',
   'vX',
@@ -8,3 +12,6 @@ export const API_VERSIONS = [
   `v${new Date().toISOString().split('T')[0]}`,
 ]
 export const [DEFAULT_API_VERSION] = API_VERSIONS.slice(-1)
+
+/** Variants only exist on the experimental API, so a selected variant forces this version */
+export const VARIANTS_API_VERSION = prefixApiVersion(VARIANTS_STUDIO_CLIENT_OPTIONS.apiVersion)

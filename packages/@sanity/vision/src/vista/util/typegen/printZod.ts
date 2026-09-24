@@ -1,9 +1,7 @@
 import {type ObjectTypeNode, type SchemaType, type TypeNode} from 'groq-js'
 
+import {flattenObject, indent, printKey, uniqueMembers} from './printUtils'
 import {collectReferencedTypes, resolveSchemaType, toTypeName} from './schemaTypes'
-
-const INDENT = '  '
-const IDENTIFIER = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/
 
 export interface PrintZodOptions {
   /** Name of the query result type; the schema constant gets a `Schema` suffix */
@@ -22,18 +20,9 @@ function schemaName(typeName: string): string {
   return `${toTypeName(typeName)}Schema`
 }
 
-function printKey(key: string): string {
-  return IDENTIFIER.test(key) ? key : JSON.stringify(key)
-}
-
 function printObject(node: ObjectTypeNode, depth: number, context: PrintContext): string {
-  const inner = INDENT.repeat(depth + 1)
-  const attributes = {...node.attributes}
-  let rest = node.rest
-  while (rest && rest.type === 'object') {
-    Object.assign(attributes, rest.attributes)
-    rest = rest.rest
-  }
+  const {attributes, rest} = flattenObject(node)
+  const inner = indent(depth + 1)
 
   const lines = Object.entries(attributes).map(([key, attribute]) => {
     const value = printZodNode(attribute.value, depth + 1, context)
@@ -41,9 +30,7 @@ function printObject(node: ObjectTypeNode, depth: number, context: PrintContext)
   })
 
   let output =
-    lines.length === 0
-      ? 'z.object({})'
-      : `z.object({\n${lines.join('\n')}\n${INDENT.repeat(depth)}})`
+    lines.length === 0 ? 'z.object({})' : `z.object({\n${lines.join('\n')}\n${indent(depth)}})`
   if (rest?.type === 'unknown') {
     output += '.passthrough()'
   } else if (rest?.type === 'inline') {
@@ -77,20 +64,18 @@ export function printZodNode(node: TypeNode, depth: number, context: PrintContex
       return `z.array(${printZodNode(node.of, depth, context)})`
     case 'union': {
       const nullable = node.of.some((member) => member.type === 'null')
-      const members = [
-        ...new Set(
-          node.of
-            .filter((member) => member.type !== 'null')
-            .map((member) => printZodNode(member, depth, context)),
-        ),
-      ]
+      const members = uniqueMembers(
+        node.of
+          .filter((member) => member.type !== 'null')
+          .map((member) => printZodNode(member, depth, context)),
+      )
       if (members.length === 0) {
         return 'z.null()'
       }
       const union =
         members.length === 1
           ? members[0]
-          : `z.union([\n${members.map((member) => `${INDENT.repeat(depth + 1)}${member},`).join('\n')}\n${INDENT.repeat(depth)}])`
+          : `z.union([\n${members.map((member) => `${indent(depth + 1)}${member},`).join('\n')}\n${indent(depth)}])`
       return nullable ? `${union}.nullable()` : union
     }
     case 'object':

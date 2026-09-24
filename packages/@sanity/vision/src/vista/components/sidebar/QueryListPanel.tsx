@@ -17,29 +17,37 @@ import {Box, Flex} from 'ui5'
 
 import {type QueryConfig} from '../../../hooks/useSavedQueries'
 import {visionLocaleNamespace} from '../../../i18n'
+import {type ParsedQueryUrl, parseQueryUrl} from '../../../util/parseQueryUrl'
 import {useQueryRequestBuilder} from '../../hooks/useQueryRequestBuilder'
 import {useSaveCurrentQuery} from '../../hooks/useSaveCurrentQuery'
 import {type VistaDrawer} from '../../store/types'
 import {useSavedQueriesApi, useVistaActor, useVistaSelector} from '../../store/VistaActorContext'
-import {selectActiveTab} from '../../store/vistaMachine'
-import {parseQueryUrl} from '../../util/parseQueryUrl'
-import {savedQueryToTabInit, tabMatchesSavedQuery} from '../../util/savedQueryTab'
+import {selectActiveTab, selectDatasets} from '../../store/vistaMachine'
+import {savedQueryToTabInit, tabMatchesParsedQuery} from '../../util/savedQueryTab'
 import {listItemButton, previewCode, scrollArea} from '../vista.css'
 
 interface QueryListPanelProps {
   mode: VistaDrawer
-  datasets: string[]
 }
 
-export function QueryListPanel({mode, datasets}: QueryListPanelProps) {
+/** A saved query with its URL parsed once, so rendering and matching do not parse it again */
+interface QueryListItem {
+  query: QueryConfig
+  parsed: ParsedQueryUrl | null
+  /** First line of the GROQ, up to the projection */
+  preview: string
+}
+
+export function QueryListPanel({mode}: QueryListPanelProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const toast = useToast()
   const actorRef = useVistaActor()
   const activeTab = useVistaSelector(selectActiveTab)
   const tabs = useVistaSelector((snapshot) => snapshot.context.tabs)
+  const datasets = useVistaSelector(selectDatasets)
   const {request} = useQueryRequestBuilder(activeTab)
-  const {queries, saveQuery, updateQuery, deleteQuery} = useSavedQueriesApi()
-  const {saveCurrent, canSave} = useSaveCurrentQuery(activeTab, request, datasets)
+  const {queries, updateQuery, deleteQuery, shareQuery, unshareQuery} = useSavedQueriesApi()
+  const {saveCurrent, canSave} = useSaveCurrentQuery(activeTab, request)
   const formatDate = useDateTimeFormat({dateStyle: 'medium', timeStyle: 'short'})
 
   const [search, setSearch] = useState('')
@@ -47,19 +55,31 @@ export function QueryListPanel({mode, datasets}: QueryListPanelProps) {
   const [editingTitle, setEditingTitle] = useState('')
   const [shareCandidate, setShareCandidate] = useState<QueryConfig | null>(null)
 
-  const visibleQueries = useMemo(() => {
-    const term = search.trim().toLowerCase()
+  const items = useMemo((): QueryListItem[] => {
     return queries
       .filter((query) => (mode === 'shared' ? query.shared : !query.shared))
-      .filter((query) => {
-        if (!term) return true
+      .map((query) => {
         const parsed = parseQueryUrl(query.url, datasets)
-        return (
-          (query.title || '').toLowerCase().includes(term) ||
-          (parsed?.query || '').toLowerCase().includes(term)
-        )
+        const preview = (parsed?.query || '').split('\n')[0].split('{')[0].trim()
+        return {query, parsed, preview}
       })
-  }, [datasets, mode, queries, search])
+  }, [datasets, mode, queries])
+
+  const visibleItems = useMemo(() => {
+    const term = search.trim().toLowerCase()
+    if (!term) return items
+    return items.filter(
+      ({query, parsed}) =>
+        (query.title || '').toLowerCase().includes(term) ||
+        (parsed?.query || '').toLowerCase().includes(term),
+    )
+  }, [items, search])
+
+  const isOpenInTab = useCallback(
+    (parsed: ParsedQueryUrl | null) =>
+      parsed !== null && tabs.some((tab) => tabMatchesParsedQuery(tab, parsed)),
+    [tabs],
+  )
 
   const reportError = useCallback(
     (err: unknown) => {
@@ -74,28 +94,24 @@ export function QueryListPanel({mode, datasets}: QueryListPanelProps) {
   )
 
   const openInNewTab = useCallback(
-    (query: QueryConfig) => {
-      const existing = tabs.find((tab) => tabMatchesSavedQuery(tab, query, datasets))
+    ({query, parsed}: QueryListItem) => {
+      if (!parsed) return
+      const existing = tabs.find((tab) => tabMatchesParsedQuery(tab, parsed))
       if (existing) {
         actorRef.send({type: 'tab.select', id: existing.id})
-        return
-      }
-      const init = savedQueryToTabInit(query, datasets)
-      if (init) {
-        actorRef.send({type: 'tab.add', tab: init})
+      } else {
+        actorRef.send({type: 'tab.add', tab: savedQueryToTabInit(query, parsed)})
       }
     },
-    [actorRef, datasets, tabs],
+    [actorRef, tabs],
   )
 
   const loadIntoCurrentTab = useCallback(
-    (query: QueryConfig) => {
-      const init = savedQueryToTabInit(query, datasets)
-      if (init) {
-        actorRef.send({type: 'tab.load', id: activeTab.id, tab: init})
-      }
+    ({query, parsed}: QueryListItem) => {
+      if (!parsed) return
+      actorRef.send({type: 'tab.load', id: activeTab.id, tab: savedQueryToTabInit(query, parsed)})
     },
-    [actorRef, activeTab.id, datasets],
+    [actorRef, activeTab.id],
   )
 
   const startRename = useCallback((query: QueryConfig) => {
@@ -122,35 +138,23 @@ export function QueryListPanel({mode, datasets}: QueryListPanelProps) {
     const candidate = shareCandidate
     setShareCandidate(null)
     try {
-      await saveQuery({
-        shared: true,
-        title: candidate.title || t('label.untitled-query'),
-        url: candidate.url,
-        savedAt: new Date().toISOString(),
-      })
-      await deleteQuery(candidate._key)
+      await shareQuery(candidate._key)
       toast.push({closable: true, status: 'success', title: t('save-query.shared-success')})
     } catch (err) {
       reportError(err)
     }
-  }, [deleteQuery, reportError, saveQuery, shareCandidate, t, toast])
+  }, [reportError, shareCandidate, shareQuery, t, toast])
 
   const handleUnshare = useCallback(
     async (query: QueryConfig) => {
       try {
-        await saveQuery({
-          shared: false,
-          title: query.title || t('label.untitled-query'),
-          url: query.url,
-          savedAt: new Date().toISOString(),
-        })
-        await deleteQuery(query._key)
+        await unshareQuery(query._key)
         toast.push({closable: true, status: 'success', title: t('save-query.unshared-success')})
       } catch (err) {
         reportError(err)
       }
     },
-    [deleteQuery, reportError, saveQuery, t, toast],
+    [reportError, t, toast, unshareQuery],
   )
 
   const emptyText = search.trim()
@@ -188,7 +192,7 @@ export function QueryListPanel({mode, datasets}: QueryListPanelProps) {
       </Flex>
 
       <Box className={scrollArea} flexBasis="0%" flexGrow={1}>
-        {visibleQueries.length === 0 ? (
+        {visibleItems.length === 0 ? (
           <Box padding={4}>
             <Text muted size={1}>
               {emptyText}
@@ -196,12 +200,11 @@ export function QueryListPanel({mode, datasets}: QueryListPanelProps) {
           </Box>
         ) : (
           <Flex flexDirection="column" minWidth="0">
-            {visibleQueries.map((query) => {
-              const parsed = parseQueryUrl(query.url, datasets)
-              const preview = (parsed?.query || '').split('\n')[0].split('{')[0].trim()
+            {visibleItems.map((item) => {
+              const {query, parsed, preview} = item
               const canMutate = !query.shared || query.isOwnedByCurrentUser
               const isEditing = editingKey === query._key
-              const isOpen = tabs.some((tab) => tabMatchesSavedQuery(tab, query, datasets))
+              const isOpen = isOpenInTab(parsed)
 
               return (
                 <Card
@@ -234,7 +237,7 @@ export function QueryListPanel({mode, datasets}: QueryListPanelProps) {
                           data-testid="vista-saved-query-open"
                           justify="flex-start"
                           mode="bleed"
-                          onClick={() => openInNewTab(query)}
+                          onClick={() => openInNewTab(item)}
                           padding={2}
                           selected={isOpen}
                           width="fill"
@@ -268,12 +271,12 @@ export function QueryListPanel({mode, datasets}: QueryListPanelProps) {
                           <Menu>
                             <MenuItem
                               icon={LaunchIcon}
-                              onClick={() => openInNewTab(query)}
+                              onClick={() => openInNewTab(item)}
                               text={t('vista.saved.open-in-new-tab')}
                             />
                             <MenuItem
                               icon={RetrieveIcon}
-                              onClick={() => loadIntoCurrentTab(query)}
+                              onClick={() => loadIntoCurrentTab(item)}
                               text={t('vista.saved.load-in-current-tab')}
                             />
                             {canMutate && (

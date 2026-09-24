@@ -8,43 +8,30 @@ import {SyncIcon} from '@sanity/icons/Sync'
 import {Button, Text} from '@sanity/ui'
 import {Menu, MenuButton, MenuDivider, MenuItem} from '@sanity/ui/menu'
 import {Tooltip} from '@sanity/ui/tooltip'
-import {useMemo, useState} from 'react'
+import {useState} from 'react'
 import {useTranslation} from 'sanity'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {useSaveCurrentQuery} from '../../hooks/useSaveCurrentQuery'
 import {type QueryRequest, type VistaTab} from '../../store/types'
-import {getVistaShortcuts} from '../../util/shortcuts'
+import {VISTA_SHORTCUTS} from '../../util/shortcuts'
 import {ExportQueryDialog} from './ExportQueryDialog'
 
 export interface QueryActionsMenuProps {
   tab: VistaTab
   request: QueryRequest | null
   resolved: ResolvedRequest
-  datasets: string[]
-  projectId: string
   onCopyQuery: () => void
   onPrettify: () => void
   onToggleAutoRefetch: () => void
 }
 
 export function QueryActionsMenu(props: QueryActionsMenuProps) {
-  const {
-    tab,
-    request,
-    resolved,
-    datasets,
-    projectId,
-    onCopyQuery,
-    onPrettify,
-    onToggleAutoRefetch,
-  } = props
+  const {tab, request, resolved, onCopyQuery, onPrettify, onToggleAutoRefetch} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const [exportOpen, setExportOpen] = useState(false)
-  const {saveCurrent, canSave} = useSaveCurrentQuery(tab, request, datasets)
-  const shortcuts = useMemo(() => getVistaShortcuts(), [])
-  const hotkeysFor = (id: string) => shortcuts.find((shortcut) => shortcut.id === id)?.keys
+  const {saveCurrent, canSave} = useSaveCurrentQuery(tab, request)
 
   const autoRefetchItem = (
     <MenuItem
@@ -74,13 +61,13 @@ export function QueryActionsMenu(props: QueryActionsMenuProps) {
         menu={
           <Menu>
             <MenuItem
-              hotkeys={hotkeysFor('copy-query')}
+              hotkeys={VISTA_SHORTCUTS['copy-query'].keys}
               icon={CopyIcon}
               onClick={onCopyQuery}
               text={t('vista.query.copy')}
             />
             <MenuItem
-              hotkeys={hotkeysFor('prettify')}
+              hotkeys={VISTA_SHORTCUTS.prettify.keys}
               icon={CodeBlockIcon}
               onClick={onPrettify}
               text={t('vista.query.prettify')}
@@ -119,7 +106,6 @@ export function QueryActionsMenu(props: QueryActionsMenuProps) {
       {exportOpen && request && (
         <ExportQueryDialog
           onClose={() => setExportOpen(false)}
-          projectId={projectId}
           request={request}
           resolved={resolved}
           tab={tab}

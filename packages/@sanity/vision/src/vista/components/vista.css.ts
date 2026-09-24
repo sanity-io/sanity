@@ -85,12 +85,10 @@ export const panelTabs = style({
   scrollbarWidth: 'none',
 })
 
+// TabList is an Inline (inline-block children), so it wraps like text unless told otherwise; the
+// panel scrolls horizontally instead
 globalStyle(`${panelTabs} [data-ui="TabList"]`, {
-  flexWrap: 'nowrap',
-})
-
-globalStyle(`${panelTabs} [data-ui="Tab"]`, {
-  flexShrink: 0,
+  whiteSpace: 'nowrap',
 })
 
 /** Option fields flow into as many columns as fit the request column */

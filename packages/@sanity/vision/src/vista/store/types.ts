@@ -8,10 +8,11 @@ import {type SupportedPerspective} from '../../perspectives'
  */
 export interface VistaTabOptions {
   dataset: string
-  /** One of `API_VERSIONS`. Ignored while `customApiVersion` holds a valid version. */
+  /**
+   * Any API version, listed in `API_VERSIONS` or typed into the "Other" input. May be unfinished
+   * (and therefore invalid) while the user is typing; the request builder refuses to run then.
+   */
   apiVersion: string
-  /** `false` while a listed API version is selected, otherwise the text of the "Other" input */
-  customApiVersion: string | false
   perspective: SupportedPerspective | undefined
   includeSourceMap: boolean
 }

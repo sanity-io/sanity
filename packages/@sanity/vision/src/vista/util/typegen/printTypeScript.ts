@@ -1,9 +1,7 @@
 import {type ObjectTypeNode, type SchemaType, type TypeNode} from 'groq-js'
 
+import {flattenObject, indent, printKey, uniqueMembers} from './printUtils'
 import {collectReferencedTypes, resolveSchemaType, toTypeName} from './schemaTypes'
-
-const INDENT = '  '
-const IDENTIFIER = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/
 
 export interface PrintTypeScriptOptions {
   /** Name of the exported type for the query result */
@@ -12,32 +10,19 @@ export interface PrintTypeScriptOptions {
   schema?: SchemaType
 }
 
-function printKey(key: string): string {
-  return IDENTIFIER.test(key) ? key : JSON.stringify(key)
-}
-
 function printObject(node: ObjectTypeNode, depth: number): string {
-  const inner = INDENT.repeat(depth + 1)
-  const lines: string[] = []
-  let rest = node.rest
-  const attributes = {...node.attributes}
+  const {attributes, rest} = flattenObject(node)
+  const inner = indent(depth + 1)
 
-  // An object rest merges into the same block
-  while (rest && rest.type === 'object') {
-    Object.assign(attributes, rest.attributes)
-    rest = rest.rest
-  }
-
-  for (const [key, attribute] of Object.entries(attributes)) {
-    lines.push(
+  const lines = Object.entries(attributes).map(
+    ([key, attribute]) =>
       `${inner}${printKey(key)}${attribute.optional ? '?' : ''}: ${printNode(attribute.value, depth + 1)};`,
-    )
-  }
+  )
   if (rest?.type === 'unknown') {
     lines.push(`${inner}[key: string]: unknown;`)
   }
 
-  const body = lines.length === 0 ? '{}' : `{\n${lines.join('\n')}\n${INDENT.repeat(depth)}}`
+  const body = lines.length === 0 ? '{}' : `{\n${lines.join('\n')}\n${indent(depth)}}`
   return rest?.type === 'inline' ? `${body} & ${toTypeName(rest.name)}` : body
 }
 
@@ -58,7 +43,7 @@ export function printNode(node: TypeNode, depth = 0): string {
     case 'array':
       return `Array<${printNode(node.of, depth)}>`
     case 'union': {
-      const members = [...new Set(node.of.map((member) => printNode(member, depth)))]
+      const members = uniqueMembers(node.of.map((member) => printNode(member, depth)))
       return members.length === 1 ? members[0] : members.join(' | ')
     }
     case 'object':

@@ -1,19 +1,21 @@
 import {SplitPane} from '@rexxars/react-split-pane'
-import {Tab, TabList} from '@sanity/ui'
+import {Tab, TabList, useElementSize} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
-import {type RefObject, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {useClient, usePerspective, useTranslation} from 'sanity'
+import {useCallback, useRef, useState} from 'react'
+import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
-import {useEffectEvent} from 'use-effect-event'
 
-import {API_VERSIONS} from '../../../apiVersions'
 import {type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
 import {visionLocaleNamespace} from '../../../i18n'
-import {isVisionPasteTarget} from '../../../util/isVisionPasteTarget'
+import {parseQueryUrl} from '../../../util/parseQueryUrl'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
-import {useElementSize} from '../../hooks/useElementSize'
+import {useFollowNavbarPerspective} from '../../hooks/useFollowNavbarPerspective'
+import {useLiveSubscription} from '../../hooks/useLiveSubscription'
+import {useOnValueChange} from '../../hooks/useOnValueChange'
 import {useQueryRequestBuilder} from '../../hooks/useQueryRequestBuilder'
+import {useVistaDocumentEvents} from '../../hooks/useVistaDocumentEvents'
+import {selectIsFetching} from '../../store/queryRunnerMachine'
 import {type FetchReason, type VistaTab, type VistaTabOptions} from '../../store/types'
 import {
   useVistaActor,
@@ -21,11 +23,11 @@ import {
   useVistaSelector,
   type VistaLayout,
 } from '../../store/VistaActorContext'
+import {selectDatasets} from '../../store/vistaMachine'
 import {cx} from '../../util/cx'
 import {formatGroq} from '../../util/formatGroq'
-import {parseQueryUrl} from '../../util/parseQueryUrl'
-import {matchVistaShortcut} from '../../util/shortcuts'
-import {LIVE_EVENTS_API_VERSION} from '../../util/syncTags'
+import {parsedQueryToTabInit} from '../../util/savedQueryTab'
+import {type VistaShortcutId} from '../../util/shortcuts'
 import {RequestPanel} from '../request/RequestPanel'
 import {ResponsePanel} from '../response/ResponsePanel'
 import {hiddenPane, paneFill, splitPaneContainer} from '../vista.css'
@@ -37,12 +39,8 @@ type MobilePane = 'request' | 'response'
 
 interface QueryTabProps {
   tab: VistaTab
-  rootRef: RefObject<HTMLDivElement | null>
-  projectId: string
-}
-
-function nodeContains(node: Node | null, other: EventTarget | null): boolean {
-  return Boolean(node && other && (node === other || node.contains(other as Node)))
+  /** The tool's root element; keyboard shortcuts and pastes outside it are ignored */
+  rootElement: HTMLDivElement | null
 }
 
 /**
@@ -50,18 +48,18 @@ function nodeContains(node: Node | null, other: EventTarget | null): boolean {
  * the active tab is mounted, so this component also owns the keyboard shortcuts and the
  * paste-a-query-URL handler.
  */
-export function QueryTab({tab, rootRef, projectId}: QueryTabProps) {
+export function QueryTab({tab, rootElement}: QueryTabProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const toast = useToast()
   const copyToClipboard = useCopyToClipboard()
   const actorRef = useVistaActor()
   const {layout} = useVistaExperience()
-  const datasets = useVistaSelector((snapshot) => snapshot.context.defaults.datasets)
+  const datasets = useVistaSelector(selectDatasets)
   const runnerRef = useVistaSelector((snapshot) => snapshot.context.runners[tab.id])
   const loadRevision = useVistaSelector((snapshot) => snapshot.context.loadRevisions[tab.id] || 0)
 
-  const splitContainerRef = useRef<HTMLDivElement | null>(null)
-  const splitContainerSize = useElementSize(splitContainerRef)
+  const [splitContainer, setSplitContainer] = useState<HTMLDivElement | null>(null)
+  const splitContainerSize = useElementSize(splitContainer)
   // Dragged sizes are remembered per layout: a column width makes no sense as a stacked height
   const [splitSizes, setSplitSizes] = useState<Partial<Record<VistaLayout, number>>>({})
   const [mobilePane, setMobilePane] = useState<MobilePane>('request')
@@ -70,8 +68,7 @@ export function QueryTab({tab, rootRef, projectId}: QueryTabProps) {
   const paramsEditorRef = useRef<VisionCodeMirrorHandle>(null)
 
   const {resolved, params, request} = useQueryRequestBuilder(tab)
-  const isFetching = useSelector(runnerRef, (snapshot) => snapshot.matches({request: 'fetching'}))
-  const liveError = useSelector(runnerRef, (snapshot) => snapshot.context.liveError)
+  const isFetching = useSelector(runnerRef, selectIsFetching)
 
   const run = useCallback(
     (reason: FetchReason) => {
@@ -122,44 +119,18 @@ export function QueryTab({tab, rootRef, projectId}: QueryTabProps) {
 
   // A query loaded from outside the editors (saved query, pasted URL) replaces their content
   // and drops the previous response
-  const applyLoadedQuery = useEffectEvent(() => {
+  useOnValueChange(loadRevision, () => {
     queryEditorRef.current?.resetEditorContent(tab.query)
     paramsEditorRef.current?.resetEditorContent(tab.rawParams)
     runnerRef.send({type: 'clear'})
   })
-  const previousLoadRevision = useRef(loadRevision)
-  useEffect(() => {
-    if (previousLoadRevision.current === loadRevision) return
-    previousLoadRevision.current = loadRevision
-    applyLoadedQuery()
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- useEffectEvent callbacks must not be listed
-  }, [loadRevision])
 
-  // Live refetching through sync tags: the subscription follows the toggle and the dataset
-  const liveBaseClient = useClient({apiVersion: LIVE_EVENTS_API_VERSION})
-  const liveClient = useMemo(
-    () => liveBaseClient.withConfig({dataset: tab.options.dataset}),
-    [liveBaseClient, tab.options.dataset],
-  )
-  const liveEnabled = tab.autoRefetch && resolved.supportsSyncTags
-  useEffect(() => {
-    if (liveEnabled) {
-      runnerRef.send({type: 'live.enable', client: liveClient})
-    } else {
-      runnerRef.send({type: 'live.disable'})
-    }
-  }, [liveClient, liveEnabled, runnerRef])
-
-  useEffect(() => {
-    if (liveError) {
-      toast.push({
-        closable: true,
-        id: `vista-live-error-${tab.id}`,
-        status: 'warning',
-        title: t('vista.live.error', {message: liveError.message}),
-      })
-    }
-  }, [liveError, t, tab.id, toast])
+  useLiveSubscription({
+    runnerRef,
+    dataset: tab.options.dataset,
+    enabled: tab.autoRefetch && resolved.supportsSyncTags,
+    tabId: tab.id,
+  })
 
   // While refetching automatically, changed options are applied right away
   const optionsKey = JSON.stringify([
@@ -169,107 +140,59 @@ export function QueryTab({tab, rootRef, projectId}: QueryTabProps) {
     resolved.variant,
     tab.options.includeSourceMap,
   ])
-  const refetchForOptions = useEffectEvent(() => {
+  useOnValueChange(optionsKey, () => {
     if (tab.autoRefetch && request) {
       runnerRef.send({type: 'fetch', request, reason: {type: 'options'}})
     }
   })
-  const previousOptionsKey = useRef(optionsKey)
-  useEffect(() => {
-    if (previousOptionsKey.current === optionsKey) return
-    previousOptionsKey.current = optionsKey
-    refetchForOptions()
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- useEffectEvent callbacks must not be listed
-  }, [optionsKey])
 
-  // Follow the studio navbar: pinning another release or perspective there switches the tab to
-  // the "Pinned release" perspective, as the classic tool does
-  const {perspectiveStack} = usePerspective()
-  const stackKey = perspectiveStack.join(',')
-  const followNavbar = useEffectEvent(() => {
-    if (perspectiveStack.length > 0 && tab.options.perspective !== 'pinnedRelease') {
-      setOptions({perspective: 'pinnedRelease'})
-    }
-  })
-  const previousStackKey = useRef(stackKey)
-  useEffect(() => {
-    if (previousStackKey.current === stackKey) return
-    previousStackKey.current = stackKey
-    followNavbar()
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- useEffectEvent callbacks must not be listed
-  }, [stackKey])
+  useFollowNavbarPerspective(tab.options.perspective, (perspective) => setOptions({perspective}))
 
-  const loadFromUrl = useEffectEvent((text: string): boolean => {
-    const parsed = parseQueryUrl(text, datasets)
-    if (!parsed) {
-      return false
-    }
-    const options: Partial<VistaTabOptions> = {}
-    if (parsed.dataset) options.dataset = parsed.dataset
-    if (parsed.apiVersion) {
-      if (API_VERSIONS.includes(parsed.apiVersion)) {
-        options.apiVersion = parsed.apiVersion
-        options.customApiVersion = false
-      } else {
-        options.customApiVersion = parsed.apiVersion
+  useVistaDocumentEvents({
+    rootElement,
+    onShortcut: (shortcut: VistaShortcutId) => {
+      switch (shortcut) {
+        case 'fetch':
+          run({type: 'shortcut'})
+          break
+        case 'prettify':
+          prettify()
+          break
+        case 'copy-query':
+          copyQuery()
+          break
+        default: {
+          const unhandled: never = shortcut
+          throw new Error(`Unhandled shortcut: ${String(unhandled)}`)
+        }
       }
-    }
-    if (parsed.perspective) options.perspective = parsed.perspective
-
-    actorRef.send({
-      type: 'tab.load',
-      id: tab.id,
-      tab: {query: parsed.query, rawParams: parsed.rawParams, options},
-    })
-    toast.push({closable: true, id: 'vista-paste', status: 'info', title: t('vista.paste.parsed')})
-    if (parsed.hasUnsupportedPerspective) {
+    },
+    onPaste: (text) => {
+      const parsed = parseQueryUrl(text, datasets)
+      if (!parsed) {
+        return false
+      }
+      actorRef.send({type: 'tab.load', id: tab.id, tab: parsedQueryToTabInit(parsed)})
       toast.push({
         closable: true,
-        id: 'vista-paste-perspective',
-        status: 'warning',
-        title: t('vista.paste.unsupported-perspective'),
+        id: 'vista-paste',
+        status: 'info',
+        title: t('vista.paste.parsed'),
       })
-    }
-    return true
-  })
-
-  const handleShortcut = useEffectEvent((event: KeyboardEvent) => {
-    if (!nodeContains(rootRef.current, event.target)) return
-    const shortcut = matchVistaShortcut(event)
-    if (!shortcut) return
-    event.preventDefault()
-    event.stopPropagation()
-    if (shortcut === 'fetch') {
-      run({type: 'shortcut'})
-    } else if (shortcut === 'prettify') {
-      prettify()
-    } else if (shortcut === 'copy-query') {
-      copyQuery()
-    }
-  })
-
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => handleShortcut(event)
-    const onPaste = (event: ClipboardEvent) => {
-      if (!event.clipboardData || !isVisionPasteTarget(rootRef.current, event)) return
-      // Only claim the paste once the clipboard is known to hold a query URL, so anything else
-      // still pastes natively
-      if (loadFromUrl(event.clipboardData.getData('text/plain'))) {
-        event.preventDefault()
+      if (parsed.hasUnsupportedPerspective) {
+        toast.push({
+          closable: true,
+          id: 'vista-paste-perspective',
+          status: 'warning',
+          title: t('vista.paste.unsupported-perspective'),
+        })
       }
-    }
-    window.document.addEventListener('keydown', onKeyDown)
-    window.document.addEventListener('paste', onPaste)
-    return () => {
-      window.document.removeEventListener('keydown', onKeyDown)
-      window.document.removeEventListener('paste', onPaste)
-    }
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- useEffectEvent callbacks must not be listed
-  }, [rootRef])
+      return true
+    },
+  })
 
   const requestPanel = (
     <RequestPanel
-      datasets={datasets}
       isFetching={isFetching}
       onCancel={cancel}
       onCopyQuery={copyQuery}
@@ -281,7 +204,6 @@ export function QueryTab({tab, rootRef, projectId}: QueryTabProps) {
       onToggleAutoRefetch={() => setAutoRefetch(!tab.autoRefetch)}
       params={params}
       paramsEditorRef={paramsEditorRef}
-      projectId={projectId}
       queryEditorRef={queryEditorRef}
       request={request}
       resolved={resolved}
@@ -344,13 +266,12 @@ export function QueryTab({tab, rootRef, projectId}: QueryTabProps) {
   }
 
   const minSize = MIN_PANE_SIZE[layout]
-  const defaultSplitSize = Math.max(
-    minSize,
-    Math.floor((layout === 'stacked' ? splitContainerSize.height : splitContainerSize.width) / 2),
-  )
+  const containerExtent =
+    layout === 'stacked' ? splitContainerSize?.content.height : splitContainerSize?.content.width
+  const defaultSplitSize = Math.max(minSize, Math.floor((containerExtent || 0) / 2))
 
   return (
-    <Box {...panelProps} className={splitPaneContainer} ref={splitContainerRef}>
+    <Box {...panelProps} className={splitPaneContainer} ref={setSplitContainer}>
       <SplitPane
         key={layout}
         minSize={minSize}

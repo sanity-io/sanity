@@ -10,9 +10,9 @@ import {
   usePerspective,
   useScheduledDraftsEnabled,
   useWorkspace,
-  VARIANTS_STUDIO_CLIENT_OPTIONS,
 } from 'sanity'
 
+import {DEFAULT_API_VERSION, VARIANTS_API_VERSION} from '../../apiVersions'
 import {getActivePerspective, getActiveVariant} from '../../perspectives'
 import {isApiVersionBelow} from '../../util/compareApiVersion'
 import {prefixApiVersion} from '../../util/prefixApiVersion'
@@ -20,12 +20,10 @@ import {validateApiVersion} from '../../util/validateApiVersion'
 import {type VistaTabOptions} from '../store/types'
 import {SYNC_TAGS_API_VERSION} from '../util/syncTags'
 
-export const VARIANTS_API_VERSION = prefixApiVersion(VARIANTS_STUDIO_CLIENT_OPTIONS.apiVersion)
-
 export interface ResolvedRequest {
   /** The API version requests are sent with, `vX` while a variant is selected */
   apiVersion: string
-  /** Whether the "Other" API version input holds a usable version */
+  /** Whether the tab's API version is usable (the "Other" input may hold an unfinished one) */
   isValidApiVersion: boolean
   /** The API version is forced to `vX` because the navbar has a variant selected */
   isApiVersionLocked: boolean
@@ -64,13 +62,11 @@ export function useResolvedRequest(options: VistaTabOptions): ResolvedRequest {
   }, [releases, isDraftModelEnabled, isScheduledDraftsEnabled])
 
   const variant = getActiveVariant(options.perspective, selectedVariantName)
-  const isValidCustomApiVersion = options.customApiVersion
-    ? validateApiVersion(options.customApiVersion)
-    : true
-  const userApiVersion =
-    options.customApiVersion && isValidCustomApiVersion
-      ? prefixApiVersion(options.customApiVersion)
-      : options.apiVersion
+  const isValidApiVersion = validateApiVersion(options.apiVersion)
+  // An unfinished "Other" version still needs a client to exist; requests are refused meanwhile
+  const userApiVersion = isValidApiVersion
+    ? prefixApiVersion(options.apiVersion)
+    : DEFAULT_API_VERSION
   const apiVersion = variant ? VARIANTS_API_VERSION : userApiVersion
 
   const perspective = getActivePerspective({
@@ -94,7 +90,7 @@ export function useResolvedRequest(options: VistaTabOptions): ResolvedRequest {
 
   return {
     apiVersion,
-    isValidApiVersion: Boolean(variant) || isValidCustomApiVersion,
+    isValidApiVersion: Boolean(variant) || isValidApiVersion,
     isApiVersionLocked: Boolean(variant),
     perspective,
     variant,

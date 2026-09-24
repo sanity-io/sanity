@@ -1,10 +1,8 @@
-import {SplitPane} from '@rexxars/react-split-pane'
 import {DocumentSheetIcon} from '@sanity/icons/DocumentSheet'
 import {JsonIcon} from '@sanity/icons/Json'
-import {Badge, Button, Card, Label, Text} from '@sanity/ui'
-import {Tooltip} from '@sanity/ui/tooltip'
+import {Badge, Card, Label, Text} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
-import {useMemo, useState} from 'react'
+import {useMemo} from 'react'
 import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
@@ -14,12 +12,13 @@ import {ResultView} from '../../../components/ResultView'
 import {visionLocaleNamespace} from '../../../i18n'
 import {getCsvBlobUrl, getJsonBlobUrl} from '../../../util/getBlobUrl'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
-import {type QueryRunnerRef} from '../../store/queryRunnerMachine'
+import {type QueryRunnerRef, selectRequestStatus} from '../../store/queryRunnerMachine'
 import {type VistaTab} from '../../store/types'
-import {useVistaExperience} from '../../store/VistaActorContext'
 import {ActionRail} from '../ActionRail'
-import {CollapsiblePanel, PANEL_HEADER_HEIGHT} from '../CollapsiblePanel'
-import {paneFill, resultContainer, resultLabel, splitPaneContainer} from '../vista.css'
+import {type CollapsiblePanelTab} from '../CollapsiblePanel'
+import {SplitWithBottomPanel} from '../SplitWithBottomPanel'
+import {resultContainer, resultLabel} from '../vista.css'
+import {DownloadButton} from './DownloadButton'
 import {HistoryTab} from './HistoryTab'
 import {ResponseMetaTab} from './ResponseMetaTab'
 import {ResultActionsMenu} from './ResultActionsMenu'
@@ -35,20 +34,8 @@ export interface ResponsePanelProps {
 
 export function ResponsePanel({tab, runnerRef, resolved}: ResponsePanelProps) {
   const {t} = useTranslation(visionLocaleNamespace)
-  const [activePanelTab, setActivePanelTab] = useState('response')
-  const [collapsed, setCollapsed] = useState(false)
-  const {layout} = useVistaExperience()
-  const [bottomSize, setBottomSize] = useState(() => DEFAULT_BOTTOM_PANEL_SIZE[layout])
 
-  const status = useSelector(runnerRef, (snapshot) =>
-    snapshot.matches({request: 'fetching'})
-      ? 'fetching'
-      : snapshot.matches({request: 'failed'})
-        ? 'failed'
-        : snapshot.matches({request: 'settled'})
-          ? 'settled'
-          : 'idle',
-  )
+  const status = useSelector(runnerRef, selectRequestStatus)
   const result = useSelector(runnerRef, (snapshot) => snapshot.context.result)
   const error = useSelector(runnerRef, (snapshot) => snapshot.context.error)
   const meta = useSelector(runnerRef, (snapshot) => snapshot.context.meta)
@@ -61,7 +48,7 @@ export function ResponsePanel({tab, runnerRef, resolved}: ResponsePanelProps) {
   const csvUrl = hasResult ? getCsvBlobUrl(result) : undefined
 
   const panelTabs = useMemo(
-    () => [
+    (): CollapsiblePanelTab[] => [
       {
         id: 'response',
         label: t('vista.panel.response'),
@@ -90,135 +77,73 @@ export function ResponsePanel({tab, runnerRef, resolved}: ResponsePanelProps) {
   )
 
   return (
-    <Flex data-testid="vista-response-panel" flexDirection="column" height="100%">
-      <Box className={splitPaneContainer}>
-        <SplitPane
-          allowResize={!collapsed}
-          maxSize={-120}
-          minSize={PANEL_HEADER_HEIGHT}
-          onChange={(size: number) => setBottomSize(size)}
-          primary="second"
-          size={collapsed ? PANEL_HEADER_HEIGHT : bottomSize}
-          split="horizontal"
-        >
-          <Flex className={paneFill}>
-            <Card
-              className={resultContainer}
-              data-testid="vista-result"
-              tone={status === 'failed' ? 'critical' : 'default'}
-            >
-              <Box className={resultLabel}>
-                <Flex alignItems="center" gap={2}>
-                  <Label muted size={1}>
-                    {t('result.label')}
-                  </Label>
-                  {isLive && (
-                    <Badge fontSize={0} tone="positive">
-                      {t('vista.live.active')}
-                    </Badge>
-                  )}
-                </Flex>
-              </Box>
-              <Box padding={3} paddingTop={5}>
-                {status === 'fetching' && (
-                  <Box marginTop={3}>
-                    <DelayedSpinner />
-                  </Box>
-                )}
-                {status === 'failed' && error && (
-                  <QueryErrorDialog
-                    apiVersion={resolved.apiVersion}
-                    error={error}
-                    perspective={resolved.perspective}
-                    variant={resolved.variant}
-                  />
-                )}
-                {(status === 'settled' || (status === 'fetching' && meta)) && (
-                  <ResultView data={result} datasetName={tab.options.dataset} />
-                )}
-                {status === 'idle' && (
-                  <Text muted size={1}>
-                    {t('vista.result.empty')}
-                  </Text>
-                )}
-              </Box>
-            </Card>
-            <ActionRail testId="vista-result-actions">
-              <Tooltip
-                content={<Text size={1}>{t('vista.result.export-json')}</Text>}
-                placement="left"
-                portal
-              >
-                {jsonUrl ? (
-                  <Button
-                    aria-label={t('vista.result.export-json')}
-                    as="a"
-                    data-testid="vista-export-json"
-                    download="query-result.json"
-                    href={jsonUrl}
-                    icon={JsonIcon}
-                    mode="bleed"
-                    padding={2}
-                  />
-                ) : (
-                  <Button
-                    aria-label={t('vista.result.export-json')}
-                    data-testid="vista-export-json"
-                    disabled
-                    icon={JsonIcon}
-                    mode="bleed"
-                    padding={2}
-                  />
-                )}
-              </Tooltip>
-              <Tooltip
-                content={
-                  <Text size={1}>
-                    {hasResult && !csvUrl
-                      ? t('result.save-result-as-csv.not-csv-encodable')
-                      : t('vista.result.export-csv')}
-                  </Text>
-                }
-                placement="left"
-                portal
-              >
-                {csvUrl ? (
-                  <Button
-                    aria-label={t('vista.result.export-csv')}
-                    as="a"
-                    data-testid="vista-export-csv"
-                    download="query-result.csv"
-                    href={csvUrl}
-                    icon={DocumentSheetIcon}
-                    mode="bleed"
-                    padding={2}
-                  />
-                ) : (
-                  <Button
-                    aria-label={t('vista.result.export-csv')}
-                    data-testid="vista-export-csv"
-                    disabled
-                    icon={DocumentSheetIcon}
-                    mode="bleed"
-                    padding={2}
-                  />
-                )}
-              </Tooltip>
-              <ResultActionsMenu hasResult={hasResult} result={result} tab={tab} />
-            </ActionRail>
+    <SplitWithBottomPanel
+      defaultBottomSize={DEFAULT_BOTTOM_PANEL_SIZE}
+      id="vista-response"
+      tabs={panelTabs}
+      testId="vista-response-panel"
+    >
+      <Card
+        className={resultContainer}
+        data-testid="vista-result"
+        tone={status === 'failed' ? 'critical' : 'default'}
+      >
+        <Box className={resultLabel}>
+          <Flex alignItems="center" gap={2}>
+            <Label muted size={1}>
+              {t('result.label')}
+            </Label>
+            {isLive && (
+              <Badge fontSize={0} tone="positive">
+                {t('vista.live.active')}
+              </Badge>
+            )}
           </Flex>
-          <Box className={paneFill}>
-            <CollapsiblePanel
-              activeTabId={activePanelTab}
-              collapsed={collapsed}
-              id="vista-response"
-              onTabChange={setActivePanelTab}
-              onToggle={() => setCollapsed((current) => !current)}
-              tabs={panelTabs}
+        </Box>
+        <Box padding={3} paddingTop={5}>
+          {status === 'fetching' && (
+            <Box marginTop={3}>
+              <DelayedSpinner />
+            </Box>
+          )}
+          {status === 'failed' && error && (
+            <QueryErrorDialog
+              apiVersion={resolved.apiVersion}
+              error={error}
+              perspective={resolved.perspective}
+              variant={resolved.variant}
             />
-          </Box>
-        </SplitPane>
-      </Box>
-    </Flex>
+          )}
+          {(status === 'settled' || (status === 'fetching' && meta)) && (
+            <ResultView data={result} datasetName={tab.options.dataset} />
+          )}
+          {status === 'idle' && (
+            <Text muted size={1}>
+              {t('vista.result.empty')}
+            </Text>
+          )}
+        </Box>
+      </Card>
+      <ActionRail testId="vista-result-actions">
+        <DownloadButton
+          download="query-result.json"
+          href={jsonUrl}
+          icon={JsonIcon}
+          label={t('vista.result.export-json')}
+          testId="vista-export-json"
+        />
+        <DownloadButton
+          download="query-result.csv"
+          href={csvUrl}
+          icon={DocumentSheetIcon}
+          label={t('vista.result.export-csv')}
+          testId="vista-export-csv"
+          tooltip={
+            hasResult && !csvUrl ? t('result.save-result-as-csv.not-csv-encodable') : undefined
+          }
+        />
+        <ResultActionsMenu hasResult={hasResult} result={result} tab={tab} />
+      </ActionRail>
+    </SplitWithBottomPanel>
   )
 }

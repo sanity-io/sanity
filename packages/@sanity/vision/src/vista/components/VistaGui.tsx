@@ -1,10 +1,10 @@
+import {useElementSize} from '@sanity/ui'
 import {useActorRef, useSelector} from '@xstate/react'
-import {useMemo, useRef, useState} from 'react'
+import {useMemo, useState} from 'react'
 import {Flex} from 'ui5'
 
 import {useSavedQueries} from '../../hooks/useSavedQueries'
 import {type VisionConfig} from '../../types'
-import {useElementSize} from '../hooks/useElementSize'
 import {
   SavedQueriesContext,
   usePersistVistaState,
@@ -42,11 +42,12 @@ export interface VistaGuiProps {
 
 export function VistaGui(props: VistaGuiProps) {
   const {config, datasets, projectId, defaultDataset, onSwitchToClassic} = props
-  const rootRef = useRef<HTMLDivElement | null>(null)
-  const rootSize = useElementSize(rootRef)
+  const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
+  const rootSize = useElementSize(rootElement)
   // Until measured, fall back to the viewport so the first paint is close to the final layout
   const layout = getVistaLayout(
-    rootSize.width || (typeof window === 'undefined' ? STACKED_BREAKPOINT : window.innerWidth),
+    rootSize?.content.width ||
+      (typeof window === 'undefined' ? STACKED_BREAKPOINT : window.innerWidth),
   )
 
   const defaults = useMemo(
@@ -80,20 +81,15 @@ export function VistaGui(props: VistaGuiProps) {
             data-vista-layout={layout}
             height="100%"
             overflow="hidden"
-            ref={rootRef}
+            ref={setRootElement}
           >
-            <VistaSidebar datasets={datasets} />
+            <VistaSidebar />
             <Flex flexBasis="0%" flexDirection="column" flexGrow={1} minWidth="0" overflow="hidden">
               <QueryTabBar />
-              <QueryTab
-                key={activeTab.id}
-                tab={activeTab}
-                rootRef={rootRef}
-                projectId={projectId}
-              />
+              <QueryTab key={activeTab.id} tab={activeTab} rootElement={rootElement} />
             </Flex>
           </Flex>
-          <VistaDialogs datasets={datasets} />
+          <VistaDialogs />
         </SavedQueriesContext.Provider>
       </VistaExperienceContext.Provider>
     </VistaActorContext.Provider>

@@ -5,18 +5,20 @@ import {Box, Flex} from 'ui5'
 import {visionLocaleNamespace} from '../../../i18n'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {type VistaTabOptions} from '../../store/types'
+import {useVistaSelector} from '../../store/VistaActorContext'
+import {selectDatasets} from '../../store/vistaMachine'
 import {optionsGrid} from '../vista.css'
 import {ApiVersionField, DatasetSelect, PerspectiveSelect} from './OptionFields'
 
 export interface OptionsTabProps {
   options: VistaTabOptions
   resolved: ResolvedRequest
-  datasets: string[]
   onChange: (options: Partial<VistaTabOptions>) => void
 }
 
-export function OptionsTab({options, resolved, datasets, onChange}: OptionsTabProps) {
+export function OptionsTab({options, resolved, onChange}: OptionsTabProps) {
   const {t} = useTranslation(visionLocaleNamespace)
+  const datasets = useVistaSelector(selectDatasets)
 
   return (
     <Box data-testid="vista-options" padding={3}>
@@ -29,11 +31,10 @@ export function OptionsTab({options, resolved, datasets, onChange}: OptionsTabPr
             value={options.dataset}
           />
           <ApiVersionField
-            apiVersion={options.apiVersion}
-            customApiVersion={options.customApiVersion}
             id="vista-option-api-version"
             locked={resolved.isApiVersionLocked}
-            onChange={(next) => onChange(next)}
+            onChange={(apiVersion) => onChange({apiVersion})}
+            value={options.apiVersion}
           />
           <PerspectiveSelect
             id="vista-option-perspective"

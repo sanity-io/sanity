@@ -53,14 +53,18 @@ export function ExportTypesDialog({
       result,
     })
     if (evaluation.source === 'none') {
-      return {source: evaluation.source, code: undefined}
+      return {source: evaluation.source, code: undefined, schemaError: evaluation.schemaError}
     }
     const typeName = toResultTypeName(tab.query)
     const code =
       format === 'typescript'
         ? printTypeScript(evaluation.node, {typeName, schema: evaluation.schema})
         : printZod(evaluation.node, {typeName, schema: evaluation.schema})
-    return {source: evaluation.source, code}
+    return {
+      source: evaluation.source,
+      code,
+      schemaError: evaluation.source === 'result' ? evaluation.schemaError : undefined,
+    }
   }, [format, hasResult, result, schema, t, tab.query, tab.rawParams])
 
   const sourceNote =
@@ -88,6 +92,13 @@ export function ExportTypesDialog({
           <Text data-testid="vista-export-types-source" muted size={1}>
             {sourceNote}
           </Text>
+          {output.schemaError && (
+            <Card border padding={3} radius={2} tone="caution">
+              <Text data-testid="vista-export-types-schema-error" size={1}>
+                {t('vista.export-types.schema-error', {message: output.schemaError.message})}
+              </Text>
+            </Card>
+          )}
           {output.code && (
             <>
               <Card

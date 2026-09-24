@@ -1,7 +1,9 @@
 import {isPlainObject} from './isPlainObject'
 
+/** Every `localStorage` key Vision writes (classic and redesign alike) starts with this prefix */
+export const VISION_STORAGE_KEY_PREFIX = 'sanityVision:'
+
 const hasLocalStorage = supportsLocalStorage()
-const keyPrefix = 'sanityVision:'
 
 export interface LocalStorageish {
   get: <T>(key: string, defaultVal: T) => T
@@ -9,21 +11,30 @@ export interface LocalStorageish {
   merge: <T>(props: T) => T
 }
 
+/** The `localStorage` instance when it is available and writable, `undefined` otherwise */
+export function getStorage(): Storage | undefined {
+  return hasLocalStorage ? globalThis.localStorage : undefined
+}
+
 export function clearLocalStorage() {
-  if (!hasLocalStorage) {
+  const storage = getStorage()
+  if (!storage) {
     return
   }
 
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i)
-    if (key?.startsWith(keyPrefix)) {
-      localStorage.removeItem(key)
+  // Collect first: removing while iterating shifts the indices and skips every other key
+  const keys: string[] = []
+  for (let i = 0; i < storage.length; i++) {
+    const key = storage.key(i)
+    if (key?.startsWith(VISION_STORAGE_KEY_PREFIX)) {
+      keys.push(key)
     }
   }
+  keys.forEach((key) => storage.removeItem(key))
 }
 
 export function getLocalStorage(namespace: string): LocalStorageish {
-  const storageKey = `${keyPrefix}${namespace}`
+  const storageKey = `${VISION_STORAGE_KEY_PREFIX}${namespace}`
   let loadedState: Record<string, unknown> | null = null
 
   return {get, set, merge}

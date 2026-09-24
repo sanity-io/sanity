@@ -4,21 +4,22 @@ import {useTranslation} from 'sanity'
 
 import {visionLocaleNamespace} from '../../i18n'
 import {type QueryRequest, type VistaTab} from '../store/types'
-import {useSavedQueriesApi} from '../store/VistaActorContext'
+import {useSavedQueriesApi, useVistaSelector} from '../store/VistaActorContext'
+import {selectDatasets} from '../store/vistaMachine'
 import {tabMatchesSavedQuery} from '../util/savedQueryTab'
 import {deriveTabTitle} from '../util/tabTitle'
 
 /**
- * Saves the active tab as a personal saved query (stored by its query URL, like the classic tool
- * does), refusing duplicates. Uses the tool-wide saved queries subscription.
+ * Saves a tab as a personal saved query (stored by its query URL, like the classic tool does),
+ * refusing duplicates. Uses the tool-wide saved queries subscription.
  */
 export function useSaveCurrentQuery(
   tab: VistaTab,
   request: QueryRequest | null,
-  datasets: readonly string[],
 ): {saveCurrent: () => Promise<void>; canSave: boolean} {
   const {t} = useTranslation(visionLocaleNamespace)
   const toast = useToast()
+  const datasets = useVistaSelector(selectDatasets)
   const {queries, saveQuery, saving} = useSavedQueriesApi()
 
   const saveCurrent = useCallback(async () => {

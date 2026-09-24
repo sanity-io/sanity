@@ -54,34 +54,25 @@ export function DatasetSelect({id, value, datasets, onChange}: DatasetSelectProp
 
 interface ApiVersionFieldProps {
   id: string
-  apiVersion: string
-  customApiVersion: string | false
+  /** Any version; one not in `API_VERSIONS` shows up in the "Other" input */
+  value: string
   /** Locked to `vX` while a variant is selected in the navbar */
   locked: boolean
-  onChange: (next: {apiVersion: string; customApiVersion: string | false}) => void
+  onChange: (apiVersion: string) => void
 }
 
-export function ApiVersionField({
-  id,
-  apiVersion,
-  customApiVersion,
-  locked,
-  onChange,
-}: ApiVersionFieldProps) {
+export function ApiVersionField({id, value, locked, onChange}: ApiVersionFieldProps) {
   const {t} = useTranslation(visionLocaleNamespace)
-  const isCustom = customApiVersion !== false
-  const isValid = isCustom ? validateApiVersion(customApiVersion) : true
+  const isCustom = !API_VERSIONS.includes(value)
+  const isValid = validateApiVersion(value)
 
   const handleSelect = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
       const next = event.currentTarget.value
-      if (next === 'other') {
-        onChange({apiVersion, customApiVersion: 'v'})
-      } else {
-        onChange({apiVersion: next, customApiVersion: false})
-      }
+      // Start the "Other" input with the prefix, so the API version is typed the way it is sent
+      onChange(next === 'other' ? 'v' : next)
     },
-    [apiVersion, onChange],
+    [onChange],
   )
 
   return (
@@ -101,7 +92,7 @@ export function ApiVersionField({
             id={id}
             onChange={handleSelect}
             padding={2}
-            value={locked ? 'vX' : isCustom ? 'other' : apiVersion}
+            value={locked ? 'vX' : isCustom ? 'other' : value}
           >
             {API_VERSIONS.map((version) => (
               <option key={version} value={version}>
@@ -120,11 +111,11 @@ export function ApiVersionField({
           fontSize={1}
           maxLength={11}
           onChange={(event: ChangeEvent<HTMLInputElement>) =>
-            onChange({apiVersion, customApiVersion: event.currentTarget.value || 'v'})
+            onChange(event.currentTarget.value || 'v')
           }
           padding={2}
           placeholder="v2025-02-19"
-          value={customApiVersion}
+          value={value}
         />
       )}
     </Stack>

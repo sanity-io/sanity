@@ -65,7 +65,7 @@ function SidebarItem({icon, label, expanded, selected, testId, onClick}: Sidebar
   )
 }
 
-export function VistaSidebar({datasets}: {datasets: string[]}) {
+export function VistaSidebar() {
   const {t} = useTranslation(visionLocaleNamespace)
   const actorRef = useVistaActor()
   const {layout, switchToClassic} = useVistaExperience()
@@ -151,7 +151,7 @@ export function VistaSidebar({datasets}: {datasets: string[]}) {
   return (
     <Flex flexShrink={0} height="100%" minHeight="0">
       {isMobile ? <div className={sidebarSlot}>{rail}</div> : rail}
-      {drawer && <SidebarDrawer datasets={datasets} drawer={drawer} overlay={isMobile} />}
+      {drawer && <SidebarDrawer drawer={drawer} overlay={isMobile} />}
     </Flex>
   )
 }

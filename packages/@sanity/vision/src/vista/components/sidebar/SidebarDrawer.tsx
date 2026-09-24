@@ -12,12 +12,11 @@ import {QueryListPanel} from './QueryListPanel'
 
 export interface SidebarDrawerProps {
   drawer: VistaDrawer
-  datasets: string[]
   /** Float over the tabs area instead of taking a column, for phones */
   overlay: boolean
 }
 
-export function SidebarDrawer({drawer, datasets, overlay}: SidebarDrawerProps) {
+export function SidebarDrawer({drawer, overlay}: SidebarDrawerProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const actorRef = useVistaActor()
 
@@ -52,7 +51,7 @@ export function SidebarDrawer({drawer, datasets, overlay}: SidebarDrawerProps) {
           padding={2}
         />
       </Flex>
-      <QueryListPanel key={drawer} mode={drawer} datasets={datasets} />
+      <QueryListPanel key={drawer} mode={drawer} />
     </Flex>
   )
 }

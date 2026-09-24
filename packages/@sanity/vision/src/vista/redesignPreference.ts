@@ -1,6 +1,7 @@
 import {useSyncExternalStore} from 'react'
 
 import {isPlainObject} from '../util/isPlainObject'
+import {getStorage, VISION_STORAGE_KEY_PREFIX} from '../util/localStorage'
 
 /**
  * Whether a user chose the redesigned Vision experience for a project, and whether they dismissed
@@ -11,14 +12,13 @@ export interface RedesignPreference {
   dismissed: boolean
 }
 
-const KEY_PREFIX = 'sanityVision:redesign:'
 const DEFAULT_PREFERENCE: RedesignPreference = {optedIn: false, dismissed: false}
 
 const cache = new Map<string, RedesignPreference>()
 const listeners = new Set<() => void>()
 
 function storageKey(projectId: string): string {
-  return `${KEY_PREFIX}${projectId}`
+  return `${VISION_STORAGE_KEY_PREFIX}redesign:${projectId}`
 }
 
 function notify(): void {
@@ -38,14 +38,12 @@ export function readRedesignPreference(projectId: string): RedesignPreference {
 
   let preference = DEFAULT_PREFERENCE
   try {
-    const stored: unknown = JSON.parse(
-      globalThis.localStorage.getItem(storageKey(projectId)) || 'null',
-    )
+    const stored: unknown = JSON.parse(getStorage()?.getItem(storageKey(projectId)) || 'null')
     if (isPlainObject(stored)) {
       preference = {optedIn: stored.optedIn === true, dismissed: stored.dismissed === true}
     }
   } catch {
-    // Storage unavailable or malformed: fall back to the default
+    // Malformed JSON: fall back to the default
   }
   cache.set(projectId, preference)
   return preference
@@ -58,9 +56,9 @@ export function writeRedesignPreference(
   const next = {...readRedesignPreference(projectId), ...patch}
   cache.set(projectId, next)
   try {
-    globalThis.localStorage.setItem(storageKey(projectId), JSON.stringify(next))
+    getStorage()?.setItem(storageKey(projectId), JSON.stringify(next))
   } catch {
-    // Storage unavailable: the choice still applies for this session
+    // Quota exceeded: the choice still applies for this session
   }
   notify()
   return next
@@ -69,11 +67,7 @@ export function writeRedesignPreference(
 /** Forgets both the opt-in and the dismissal, so the classic tool offers the redesign again */
 export function clearRedesignPreference(projectId: string): void {
   cache.set(projectId, DEFAULT_PREFERENCE)
-  try {
-    globalThis.localStorage.removeItem(storageKey(projectId))
-  } catch {
-    // Storage unavailable: nothing to remove
-  }
+  getStorage()?.removeItem(storageKey(projectId))
   notify()
 }
 

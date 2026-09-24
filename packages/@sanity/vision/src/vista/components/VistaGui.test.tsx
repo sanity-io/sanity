@@ -9,7 +9,12 @@ import {type PerspectiveContextValue} from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type VisionCodeMirrorHandle} from '../../codemirror/VisionCodeMirror'
-import {createInitialState, createTab, saveVistaState} from '../store/vistaStorage'
+import {
+  createInitialState,
+  createTab,
+  getVistaStorageKey,
+  saveVistaState,
+} from '../store/vistaStorage'
 import {VistaGui} from './VistaGui'
 
 const theme = buildTheme()
@@ -30,7 +35,7 @@ const sanityMocks = vi.hoisted(() => {
     },
     getPerspective: () => perspective,
     useClient: vi.fn(),
-    setKey: vi.fn(() => Promise.resolve({queries: []})),
+    clearQueries: vi.fn(() => Promise.resolve()),
   }
 })
 
@@ -77,7 +82,7 @@ vi.mock('sanity', async () => {
     sortReleases: <T,>(releases: T[]) => releases,
     getVariantTitle: (variant: {title?: string}) => variant.title,
     useSchema: () => undefined,
-    useKeyValueStore: () => ({getKey: vi.fn(), setKey: sanityMocks.setKey}),
+    useKeyValueStore: () => ({getKey: vi.fn(), setKey: vi.fn()}),
     useCurrentUser: () => ({id: 'user-1'}),
     useDateTimeFormat: () => ({format: () => 'a date'}),
     ContextMenuButton: (props: Record<string, unknown>) => <button type="button" {...props} />,
@@ -90,12 +95,14 @@ vi.mock('sanity/router', () => ({
 }))
 
 vi.mock('../../hooks/useSavedQueries', () => ({
-  STORED_QUERIES_NAMESPACE: 'studio.vision-tool.saved-queries',
   useSavedQueries: () => ({
     queries: [],
     saveQuery: vi.fn(),
     updateQuery: vi.fn(),
     deleteQuery: vi.fn(),
+    shareQuery: vi.fn(),
+    unshareQuery: vi.fn(),
+    clearQueries: sanityMocks.clearQueries,
     saving: false,
     deleting: [],
     saveQueryError: undefined,
@@ -154,7 +161,7 @@ const BASE_PERSPECTIVE: PerspectiveContextValue = {
 }
 
 const PROJECT_ID = 'test-project'
-const STORAGE_KEY = `sanityVista:${PROJECT_ID}`
+const STORAGE_KEY = getVistaStorageKey(PROJECT_ID)
 const DEFAULTS = {
   datasets: ['test', 'staging'],
   defaultDataset: 'test',
@@ -581,9 +588,7 @@ describe('VistaGui', () => {
 
     await waitFor(() => expect(screen.getAllByTestId('vista-tab')).toHaveLength(1))
     expect(getQueryEditor().value).toBe('')
-    expect(sanityMocks.setKey).toHaveBeenCalledWith('studio.vision-tool.saved-queries', {
-      queries: [],
-    })
+    expect(sanityMocks.clearQueries).toHaveBeenCalledTimes(1)
     await waitFor(() => {
       const stored = getStoredState()
       expect(stored.tabs).toHaveLength(1)

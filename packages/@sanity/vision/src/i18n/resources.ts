@@ -178,6 +178,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.export-types.copy': 'Copy code',
   /** Shown in the types dialog when there is neither a schema evaluation nor a result */
   'vista.export-types.empty': 'Fetch the query first so there is a result to derive types from.',
+  /** Why the workspace schema could not be used for the types; shown with the result fallback */
+  'vista.export-types.schema-error': 'Schema evaluation failed: {{message}}',
   /** Note shown when the types were derived from the fetched result instead of the schema */
   'vista.export-types.source.result':
     'Inferred from the fetched result, since the query could not be evaluated against the workspace schema.',
@@ -307,7 +309,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.settings.clear-storage.confirm': 'Yes, clear storage',
   /** Explanation of what clearing the storage does */
   'vista.settings.clear-storage.description':
-    'Resets the open tabs, these defaults and your saved queries in this browser, and returns to the classic Vision tool. Shared queries are kept.',
+    'Deletes your personal saved queries, resets the open tabs and these defaults in this browser, and returns to the classic Vision tool. Shared queries are kept.',
   /** Toast shown when the saved queries could not be cleared */
   'vista.settings.clear-storage.error': 'Could not clear the saved queries',
   /** Toast shown after the storage was cleared */
@@ -343,6 +345,9 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.sidebar.shared-queries': 'Shared queries',
   /** Sidebar item opening the keyboard shortcuts dialog */
   'vista.sidebar.shortcuts': 'Keyboard shortcuts',
+  /** Empty state of the content source map panel */
+  'vista.source-map.empty':
+    'No content source map in the response. Turn on "Include content source map" under Options and fetch again.',
   /** Accessible label for the button closing a query tab */
   'vista.tabs.close-tab': 'Close tab',
   /** Accessible label for the list of query tabs */

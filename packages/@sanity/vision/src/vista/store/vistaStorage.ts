@@ -1,11 +1,11 @@
 import {uuid} from '@sanity/uuid'
 
-import {API_VERSIONS, DEFAULT_API_VERSION} from '../../apiVersions'
+import {DEFAULT_API_VERSION} from '../../apiVersions'
 import {isSupportedPerspective, type SupportedPerspective} from '../../perspectives'
 import {isPlainObject} from '../../util/isPlainObject'
+import {getStorage, VISION_STORAGE_KEY_PREFIX} from '../../util/localStorage'
 import {prefixApiVersion} from '../../util/prefixApiVersion'
 import {validateApiVersion} from '../../util/validateApiVersion'
-import {getVistaStorage, VISTA_STORAGE_KEY_PREFIX} from '../storageNamespace'
 import {
   type VistaPersistedState,
   type VistaSettings,
@@ -26,8 +26,9 @@ export interface VistaStorageDefaults {
   defaultApiVersion: string
 }
 
-function getStorageKey(projectId: string): string {
-  return `${VISTA_STORAGE_KEY_PREFIX}${projectId}`
+/** Lives under the classic tool's prefix so its error boundary's "Clear cache" resets both */
+export function getVistaStorageKey(projectId: string): string {
+  return `${VISION_STORAGE_KEY_PREFIX}vista:${projectId}`
 }
 
 export function resolveDefaultSettings(defaults: VistaStorageDefaults): VistaSettings {
@@ -43,11 +44,9 @@ export function resolveDefaultSettings(defaults: VistaStorageDefaults): VistaSet
 }
 
 export function createTabOptions(settings: VistaSettings): VistaTabOptions {
-  const listed = API_VERSIONS.includes(settings.apiVersion)
   return {
     dataset: settings.dataset,
-    apiVersion: listed ? settings.apiVersion : DEFAULT_API_VERSION,
-    customApiVersion: listed ? false : settings.apiVersion,
+    apiVersion: settings.apiVersion,
     perspective: settings.perspective,
     includeSourceMap: settings.includeSourceMap,
   }
@@ -111,11 +110,9 @@ function sanitizeTab(value: unknown, settings: VistaSettings, datasets: string[]
   }
   const options = isPlainObject(value.options) ? value.options : {}
   const apiVersion =
-    typeof options.apiVersion === 'string' && API_VERSIONS.includes(options.apiVersion)
+    typeof options.apiVersion === 'string' && validateApiVersion(options.apiVersion)
       ? options.apiVersion
       : undefined
-  const customApiVersion =
-    typeof options.customApiVersion === 'string' ? options.customApiVersion : false
 
   return createTab(settings, {
     id: value.id,
@@ -129,7 +126,6 @@ function sanitizeTab(value: unknown, settings: VistaSettings, datasets: string[]
         ? {dataset: options.dataset}
         : {}),
       ...(apiVersion ? {apiVersion} : {}),
-      customApiVersion,
       ...('perspective' in options ? {perspective: sanitizePerspective(options.perspective)} : {}),
       ...(typeof options.includeSourceMap === 'boolean'
         ? {includeSourceMap: options.includeSourceMap}
@@ -157,14 +153,14 @@ export function loadVistaState(
   defaults: VistaStorageDefaults,
 ): VistaPersistedState {
   const initial = createInitialState(defaults)
-  const storage = getVistaStorage()
+  const storage = getStorage()
   if (!storage) {
     return initial
   }
 
   let stored: unknown
   try {
-    stored = JSON.parse(storage.getItem(getStorageKey(projectId)) || 'null')
+    stored = JSON.parse(storage.getItem(getVistaStorageKey(projectId)) || 'null')
   } catch {
     return initial
   }
@@ -197,18 +193,13 @@ export function loadVistaState(
 }
 
 export function saveVistaState(projectId: string, state: VistaPersistedState): void {
-  const storage = getVistaStorage()
-  if (!storage) {
-    return
-  }
   try {
-    storage.setItem(getStorageKey(projectId), JSON.stringify(state))
+    getStorage()?.setItem(getVistaStorageKey(projectId), JSON.stringify(state))
   } catch {
-    // Quota exceeded or storage disabled: the session keeps working, it just will not be restored
+    // Quota exceeded: the session keeps working, it just will not be restored
   }
 }
 
 export function clearVistaState(projectId: string): void {
-  const storage = getVistaStorage()
-  storage?.removeItem(getStorageKey(projectId))
+  getStorage()?.removeItem(getVistaStorageKey(projectId))
 }

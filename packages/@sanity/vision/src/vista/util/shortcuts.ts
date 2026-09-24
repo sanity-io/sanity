@@ -6,25 +6,41 @@ export interface VistaShortcut {
   id: VistaShortcutId
   /** `is-hotkey` patterns, any of which triggers the shortcut */
   hotkeys: string[]
-  /** Keys as shown in the shortcuts dialog, with the platform's modifier key */
+  /** Keys as shown in the shortcuts dialog and menus, with the platform's modifier key */
   keys: string[]
+  /** Locale key of the shortcut's description */
+  labelKey: 'vista.shortcuts.fetch' | 'vista.shortcuts.prettify' | 'vista.shortcuts.copy-query'
 }
 
-function isApplePlatform(): boolean {
-  return typeof navigator !== 'undefined' && /Mac|iPhone|iPad|iPod/.test(navigator.platform)
+const MOD_KEY =
+  typeof navigator !== 'undefined' && /Mac|iPhone|iPad|iPod/.test(navigator.platform) ? '⌘' : 'Ctrl'
+
+export const VISTA_SHORTCUTS: Record<VistaShortcutId, VistaShortcut> = {
+  'fetch': {
+    id: 'fetch',
+    hotkeys: ['mod+enter', 'ctrl+enter'],
+    keys: [MOD_KEY, 'Enter'],
+    labelKey: 'vista.shortcuts.fetch',
+  },
+  'prettify': {
+    id: 'prettify',
+    hotkeys: ['mod+shift+p'],
+    keys: [MOD_KEY, 'Shift', 'P'],
+    labelKey: 'vista.shortcuts.prettify',
+  },
+  'copy-query': {
+    id: 'copy-query',
+    hotkeys: ['mod+shift+c'],
+    keys: [MOD_KEY, 'Shift', 'C'],
+    labelKey: 'vista.shortcuts.copy-query',
+  },
 }
 
-export function getVistaShortcuts(): VistaShortcut[] {
-  const mod = isApplePlatform() ? '⌘' : 'Ctrl'
-  return [
-    {id: 'fetch', hotkeys: ['mod+enter', 'ctrl+enter'], keys: [mod, 'Enter']},
-    {id: 'prettify', hotkeys: ['mod+shift+p'], keys: [mod, 'Shift', 'P']},
-    {id: 'copy-query', hotkeys: ['mod+shift+c'], keys: [mod, 'Shift', 'C']},
-  ]
-}
+/** The shortcuts in the order the shortcuts dialog lists them */
+export const VISTA_SHORTCUT_LIST: VistaShortcut[] = Object.values(VISTA_SHORTCUTS)
 
 export function matchVistaShortcut(event: KeyboardEvent): VistaShortcutId | null {
-  const shortcut = getVistaShortcuts().find(({hotkeys}) =>
+  const shortcut = VISTA_SHORTCUT_LIST.find(({hotkeys}) =>
     hotkeys.some((hotkey) => isHotkey(hotkey, event)),
   )
   return shortcut ? shortcut.id : null
