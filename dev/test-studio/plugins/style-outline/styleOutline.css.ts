@@ -1,5 +1,6 @@
-import {globalStyle, style} from '@vanilla-extract/css'
+import {type ComplexStyleRule, globalStyle, style, styleVariants} from '@vanilla-extract/css'
 
+import {type PanelCorner} from './corners'
 import {STYLE_OUTLINE_ATTRIBUTE, STYLE_SYSTEMS} from './styleSystems'
 
 // Overlapping nodes (eg a `styled(ui5Box)`) match several systems at once, and styled-components
@@ -19,10 +20,17 @@ const glass = style({
   boxShadow: '0 8px 24px rgba(0, 0, 0, 0.35)',
 })
 
+const EDGE_GAP = 12
+
+const cornerOffsets: Record<PanelCorner, ComplexStyleRule> = {
+  'top-left': {top: EDGE_GAP, left: EDGE_GAP},
+  'top-right': {top: EDGE_GAP, right: EDGE_GAP},
+  'bottom-left': {bottom: EDGE_GAP, left: EDGE_GAP},
+  'bottom-right': {bottom: EDGE_GAP, right: EDGE_GAP},
+}
+
 export const root = style({
   position: 'fixed',
-  bottom: 12,
-  left: 12,
   zIndex: 10000,
   fontSize: 13,
   fontWeight: 500,
@@ -30,8 +38,51 @@ export const root = style({
   colorScheme: 'dark',
 })
 
+export const rootCorner = styleVariants(cornerOffsets)
+
+export const rootDragging = style({
+  userSelect: 'none',
+  boxShadow: '0 16px 36px rgba(0, 0, 0, 0.5)',
+})
+
+// Docked in a corner, but the panel is not part of the studio layout, so the drag
+// affordance has to be the cursor plus the title on the handle.
+const handle = style({
+  cursor: 'grab',
+  touchAction: 'none',
+})
+
+export const handleDragging = style({
+  cursor: 'grabbing',
+})
+
+export const dropZoneLayer = style({
+  position: 'fixed',
+  inset: 0,
+  zIndex: 9999,
+  pointerEvents: 'none',
+})
+
+export const dropZone = style({
+  position: 'absolute',
+  width: 40,
+  height: 40,
+  borderRadius: 12,
+  border: '1px dashed rgba(255, 255, 255, 0.35)',
+  background: 'rgba(18, 18, 22, 0.35)',
+})
+
+export const dropZoneCorner = styleVariants(cornerOffsets)
+
+export const dropZoneActive = style({
+  borderStyle: 'solid',
+  borderColor: '#5e6ad2',
+  background: 'rgba(94, 106, 210, 0.35)',
+})
+
 export const trigger = style([
   glass,
+  handle,
   {
     display: 'flex',
     alignItems: 'center',
@@ -41,7 +92,6 @@ export const trigger = style([
     height: 36,
     padding: 0,
     borderRadius: '50%',
-    cursor: 'pointer',
   },
 ])
 
@@ -56,21 +106,23 @@ export const panel = style([
   },
 ])
 
-export const header = style({
-  'display': 'block',
-  'width': '100%',
-  'font': 'inherit',
-  'fontWeight': 600,
-  'textAlign': 'left',
-  'padding': '2px 0 8px',
-  'border': 0,
-  'background': 'transparent',
-  'color': 'inherit',
-  'cursor': 'pointer',
-  ':hover': {
-    color: '#ffffff',
+export const header = style([
+  handle,
+  {
+    'display': 'block',
+    'width': '100%',
+    'font': 'inherit',
+    'fontWeight': 600,
+    'textAlign': 'left',
+    'padding': '2px 0 8px',
+    'border': 0,
+    'background': 'transparent',
+    'color': 'inherit',
+    ':hover': {
+      color: '#ffffff',
+    },
   },
-})
+])
 
 export const group = style({
   padding: '4px 0',
