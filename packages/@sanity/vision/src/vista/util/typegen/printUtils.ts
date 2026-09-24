@@ -9,7 +9,8 @@ export function indent(depth: number): string {
 
 /** Object keys as written in source: bare when they are valid identifiers, quoted otherwise */
 export function printKey(key: string): string {
-  return IDENTIFIER.test(key) ? key : JSON.stringify(key)
+  // A bare `__proto__` key in an object literal sets the prototype instead of defining a property
+  return IDENTIFIER.test(key) && key !== '__proto__' ? key : JSON.stringify(key)
 }
 
 export interface FlatObject {

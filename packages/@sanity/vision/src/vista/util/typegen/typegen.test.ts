@@ -149,7 +149,8 @@ describe('inferTypeFromValue', () => {
       value: {type: 'number'},
       optional: true,
     })
-    expect(printTypeScript(node, {typeName: 'R'})).toContain('  __proto__?: number;')
+    expect(printTypeScript(node, {typeName: 'R'})).toContain('  "__proto__"?: number;')
+    expect(printZod(node, {typeName: 'R'})).toContain('  "__proto__": z.number().optional(),')
   })
 })
 
