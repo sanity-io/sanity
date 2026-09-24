@@ -13,10 +13,9 @@ import {resolveOpenPreviewUrl} from './resolveOpenPreviewUrl'
 
 /** @internal */
 export function OpenPreviewButton(
-  props: Pick<PreviewProps, 'openPopup' | 'previewUrlRef'> & {
+  props: Pick<PreviewProps, 'openPopup' | 'openPreviewUrlRef'> & {
     previewLocationOrigin?: string
     previewLocationRoute: string
-    previewUrlSecret: string | null
     perspective: PresentationPerspective
     variant: string | undefined
     targetOrigin: string
@@ -24,20 +23,22 @@ export function OpenPreviewButton(
 ): React.ReactNode {
   const {
     openPopup,
+    openPreviewUrlRef,
     previewLocationOrigin,
     previewLocationRoute,
-    previewUrlRef,
-    previewUrlSecret,
     perspective,
     variant,
     targetOrigin,
   } = props
-  const previewMode = useSelector(previewUrlRef, (state) => state.context.previewMode)
-  const previewUrlSecretFromState = useSelector(
-    previewUrlRef,
+  /**
+   * Both are `null` unless preview mode is on for the current target origin and the secret is valid,
+   * in which case the link goes through the enable route. Otherwise it opens the preview directly.
+   */
+  const previewMode = useSelector(openPreviewUrlRef, (state) => state.context.previewMode)
+  const previewUrlSecret = useSelector(
+    openPreviewUrlRef,
     (state) => state.context.previewUrlSecret?.secret ?? null,
   )
-  const sessionSecret = previewUrlSecret || previewUrlSecretFromState
 
   const openPreviewLink = useMemo(
     () =>
@@ -46,7 +47,7 @@ export function OpenPreviewButton(
         previewLocationOrigin,
         previewLocationRoute,
         previewMode,
-        previewUrlSecret: sessionSecret,
+        previewUrlSecret,
         targetOrigin,
         variant,
       }),
@@ -55,7 +56,7 @@ export function OpenPreviewButton(
       previewLocationOrigin,
       previewLocationRoute,
       previewMode,
-      sessionSecret,
+      previewUrlSecret,
       targetOrigin,
       variant,
     ],

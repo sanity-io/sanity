@@ -36,6 +36,7 @@ import {Button} from '../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {ErrorCard} from '../components/ErrorCard'
 import {presentationLocaleNamespace} from '../i18n'
+import {type OpenPreviewUrlRef} from '../machines/open-preview-url'
 import {type PresentationMachineRef} from '../machines/presentation-machine'
 import {type PreviewUrlRef} from '../machines/preview-url'
 import {
@@ -65,6 +66,10 @@ export interface PreviewProps {
   onPathChange: (nextPath: string) => void
   onRefresh: (fallback: () => void) => void
   openPopup: (url: string) => void
+  /**
+   * Resolves preview mode for the current target origin and keeps a valid preview secret for the "Open preview" link
+   */
+  openPreviewUrlRef: OpenPreviewUrlRef
   overlaysConnection: ConnectionStatus
   presentationRef: PresentationMachineRef
   perspective: PresentationPerspective

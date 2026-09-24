@@ -2,7 +2,6 @@ import {DesktopIcon} from '@sanity/icons/Desktop'
 import {MobileDeviceIcon} from '@sanity/icons/MobileDevice'
 import {PanelLeftIcon} from '@sanity/icons/PanelLeft'
 import {RefreshIcon} from '@sanity/icons/Refresh'
-import {urlSearchParamPreviewSecret} from '@sanity/preview-url-secret/constants'
 import {getRedirectTo} from '@sanity/preview-url-secret/get-redirect-to'
 import {withoutSecretSearchParams} from '@sanity/preview-url-secret/without-secret-search-params'
 import {Card, Hotkeys, Switch, Text} from '@sanity/ui'
@@ -38,6 +37,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
     onPathChange,
     onRefresh,
     openPopup,
+    openPreviewUrlRef,
     overlaysConnection,
     presentationRef,
     perspective,
@@ -90,9 +90,6 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
     const {pathname, search} = withoutSecretSearchParams(getRedirectTo(previewURL))
 
     return `${pathname}${search}`
-  }, [previewUrl, targetOrigin])
-  const previewUrlSecret = useMemo(() => {
-    return new URL(previewUrl || '/', targetOrigin).searchParams.get(urlSearchParamPreviewSecret)
   }, [previewUrl, targetOrigin])
 
   const perspectiveToggleTooltipId = useId()
@@ -212,10 +209,9 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
             <Box padding={1}>
               <OpenPreviewButton
                 openPopup={openPopup}
+                openPreviewUrlRef={openPreviewUrlRef}
                 previewLocationOrigin={previewLocationOrigin}
                 previewLocationRoute={previewLocationRoute}
-                previewUrlRef={previewUrlRef}
-                previewUrlSecret={previewUrlSecret}
                 perspective={perspective}
                 variant={variant}
                 targetOrigin={targetOrigin}
