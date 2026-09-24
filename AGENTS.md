@@ -766,9 +766,16 @@ When making intentional changes that affect snapshots:
 # Update all snapshots
 pnpm test -- -u
 
-# Update specific test's snapshots
-pnpm test -- -u MyComponent
+# Update a specific test's snapshots — the filter MUST come before -u
+pnpm test -- MyComponent -u
+pnpm vitest run --project=sanity path/to/MyComponent.test.tsx -u
 ```
+
+**`-u` / `--update` swallows the argument that follows it.** Vitest parses it as a flag
+that takes a value, so `-u MyComponent` silently drops the filter and updates every
+snapshot in the repo (`vitest list --filesOnly -u CollapseTabList` lists all 804 files;
+`vitest list --filesOnly CollapseTabList -u` lists one). Put every path or name filter
+before the flag.
 
 Review snapshot changes carefully before committing.
 
