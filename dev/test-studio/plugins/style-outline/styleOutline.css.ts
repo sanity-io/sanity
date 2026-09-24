@@ -1,6 +1,5 @@
-import {type ComplexStyleRule, globalStyle, style, styleVariants} from '@vanilla-extract/css'
+import {globalStyle, style} from '@vanilla-extract/css'
 
-import {type PanelCorner} from './corners'
 import {STYLE_OUTLINE_ATTRIBUTE, STYLE_SYSTEMS} from './styleSystems'
 
 // Overlapping nodes (eg a `styled(ui5Box)`) match several systems at once, and styled-components
@@ -20,25 +19,18 @@ const glass = style({
   boxShadow: '0 8px 24px rgba(0, 0, 0, 0.35)',
 })
 
-const EDGE_GAP = 12
-
-const cornerOffsets: Record<PanelCorner, ComplexStyleRule> = {
-  'top-left': {top: EDGE_GAP, left: EDGE_GAP},
-  'top-right': {top: EDGE_GAP, right: EDGE_GAP},
-  'bottom-left': {bottom: EDGE_GAP, left: EDGE_GAP},
-  'bottom-right': {bottom: EDGE_GAP, right: EDGE_GAP},
-}
-
+// The corner it is docked in lives in a transform written by Motion (see
+// `corners.ts`), so the widget itself only ever sits at the viewport origin.
 export const root = style({
   position: 'fixed',
+  top: 0,
+  left: 0,
   zIndex: 10000,
   fontSize: 13,
   fontWeight: 500,
   lineHeight: 1.4,
   colorScheme: 'dark',
 })
-
-export const rootCorner = styleVariants(cornerOffsets)
 
 export const rootDragging = style({
   userSelect: 'none',
@@ -47,44 +39,16 @@ export const rootDragging = style({
 
 // Worn by whichever element starts a drag: the panel header when open, the trigger
 // when collapsed. `touch-action: none` so a touch drag moves the widget instead of
-// scrolling the studio behind it.
+// scrolling the studio behind it, and no text selection to swallow a quick drag.
 const handle = style({
   cursor: 'grab',
   touchAction: 'none',
+  userSelect: 'none',
 })
 
 // Declared after `handle` so its cursor wins while a drag is live.
 export const handleDragging = style({
   cursor: 'grabbing',
-})
-
-// Above the widget (which is on 10000) so the corner it is being dragged over is
-// still shown as the drop target rather than hidden underneath it.
-export const dropZoneLayer = style({
-  position: 'fixed',
-  inset: 0,
-  zIndex: 10001,
-  pointerEvents: 'none',
-})
-
-// Indigo rather than the panel's white-on-dark palette: these sit on studio chrome,
-// which is light in the default theme.
-export const dropZone = style({
-  position: 'absolute',
-  width: 64,
-  height: 64,
-  borderRadius: 16,
-  border: '3px dashed rgba(94, 106, 210, 0.85)',
-  background: 'rgba(94, 106, 210, 0.22)',
-})
-
-export const dropZoneCorner = styleVariants(cornerOffsets)
-
-export const dropZoneActive = style({
-  borderStyle: 'solid',
-  borderColor: '#5e6ad2',
-  background: 'rgba(94, 106, 210, 0.55)',
-  boxShadow: 'inset 0 0 0 3px #5e6ad2, 0 0 0 6px rgba(94, 106, 210, 0.28)',
 })
 
 export const trigger = style([
