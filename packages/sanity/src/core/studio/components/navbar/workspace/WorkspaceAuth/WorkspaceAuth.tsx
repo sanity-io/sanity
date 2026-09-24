@@ -21,6 +21,7 @@ const StyledContainer = styled(Container)((props) => {
   return {
     width: 'auto',
     minWidth: rem(container[0]),
+    minHeight: 0,
   }
 })
 
@@ -59,7 +60,7 @@ export function WorkspaceAuth() {
 
   if (LoginComponent && selectedWorkspace && !showChooser) {
     return (
-      <Container size={0}>
+      <StyledContainer size={0}>
         <VStack gap={2}>
           {canChooseAnotherWorkspace && (
             <Flex>
@@ -102,7 +103,7 @@ export function WorkspaceAuth() {
             </Flex>
           </Layout>
         </VStack>
-      </Container>
+      </StyledContainer>
     )
   }
 
