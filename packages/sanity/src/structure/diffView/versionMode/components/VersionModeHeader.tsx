@@ -8,7 +8,6 @@ import {
   // oxlint-disable-next-line no-restricted-imports -- the resolved menu button props are spread onto the `@sanity/ui` Button above
   type ButtonProps,
   type ButtonTone,
-  Stack,
   Text,
 } from '@sanity/ui'
 import {
@@ -327,7 +326,14 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
     <MenuItem padding={1} paddingRight={3} onClick={onClick} pressed={isSelected}>
       <Flex gap={1}>
         <ReleaseAvatar padding={2} release={release} />
-        <Stack flex={1} paddingY={2} paddingRight={2} gap={2} style={{minWidth: 0}}>
+        <Flex
+          flexBasis="0%"
+          flexGrow={1}
+          paddingY={2}
+          paddingRight={2}
+          gap={2}
+          flexDirection="column"
+        >
           <ReleaseTitle
             title={release.metadata.title}
             fallback={tCore('release.placeholder-untitled-release')}
@@ -343,7 +349,7 @@ const VersionMenuItem: ComponentType<VersionMenuItemProps> = ({
               {formatPublishDate(release)}
             </Text>
           )}
-        </Stack>
+        </Flex>
         <Flex flexBasis="auto" flexGrow={0} flexShrink={0}>
           {isReleaseScheduledOrScheduling(release) && (
             <Box padding={2}>
