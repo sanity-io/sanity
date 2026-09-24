@@ -3,7 +3,7 @@ import {type Browser} from 'playwright'
 
 import {COMMIT_BUCKET_MS, type SettleEntries} from '../../instrumentation/settleShared'
 import {type BenchEntries} from '../../instrumentation/types'
-import {type BenchScenario, scenarioFixture} from '../../scenarios/types'
+import {type BenchScenario} from '../../scenarios/types'
 import {computeSettle, DEFAULT_SETTLE_WINDOW, type SettleWindowConfig} from '../../stats/settle'
 import {createSessionContext} from '../browser'
 import {type RunningSide} from '../servers'

@@ -1,7 +1,7 @@
 import {type Browser} from 'playwright'
 
 import {type BenchEntries} from '../../instrumentation/types'
-import {type BenchScenario, scenarioFixture} from '../../scenarios/types'
+import {type BenchScenario} from '../../scenarios/types'
 import {computeInp, INP_MIN_INTERACTIONS, type InpResult} from '../../stats/inp'
 import {createSessionContext} from '../browser'
 import {type RunningSide} from '../servers'

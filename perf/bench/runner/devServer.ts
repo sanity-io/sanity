@@ -55,6 +55,9 @@ export async function startBenchDev(options: {
 
   const studioUrl = `http://localhost:${EXPERIMENT.studioPort}`
   mock.setActiveFeatures(scenarios.flatMap((scenario) => scenario.features ?? []))
+  // Without this the mock signs every request in, and a logged-out scenario's
+  // URL opens the authenticated tool. The provider link dead-ends in dev.
+  mock.setRequireToken(scenarios.some((scenario) => scenario.load?.auth === 'logged-out'))
   const urls = scenarios.map((scenario) => {
     mock.store.seed(scenarioFixture(scenario))
     return `${scenario.name.padEnd(16)} ${scenarioUrl(studioUrl, scenario)}`

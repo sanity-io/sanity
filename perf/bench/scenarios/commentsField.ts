@@ -7,9 +7,14 @@ const DOCUMENT_ID = 'bench-comments-field'
  * The comments plugin's cost on a field, measured two ways.
  *
  * Interaction mode (the gated, A/B-compared one) types into a plain string
- * field with comments active — the controlled twin of `singleString`, which
- * has it off, so the delta is the per-field overhead of a plugin that wraps
- * every field.
+ * field with the `studioComments` flag active, so the field takes the
+ * plugin's real path. Its series is the commit-to-commit A/B, as for every
+ * other interaction scenario. `singleString` is not a comments-off control:
+ * comments is an unconditional default plugin and
+ * `document.comments.enabled` defaults to true, so it wraps every field
+ * there too, in upsell mode, with `CommentsUpsellProvider` around the layout
+ * on top. A comments-off control would need a workspace that disables it in
+ * config.
  *
  * INP mode runs the `steps` choreography below. Read its headline with care:
  * `computeInp` reports the `floor(driven / 50)`-th worst interaction, and at
