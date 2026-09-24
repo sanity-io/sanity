@@ -1,14 +1,45 @@
 # E2E Testing in the Studio
 
+The Playwright suite drives `dev/studio-e2e-testing` (not the test studio on port 3333). Start that studio the same way you start the test studio — one long-running `sanity dev` — then run specs against it.
+
 ## Required Env Variables
 
-The tests expects to find the below env variables. Either define it in your shell, or add it to the `.env.local` file in the repository root.
+The tests expect to find the below env variables. Either define them in your shell, or add them to the `.env.local` file in the **repository root** (Playwright and the e2e studio's `sanity.cli.ts` load env from the monorepo root). `pnpm e2e:setup` uses dotenv-flow with cwd `e2e/`, so it will not see a root `.env.local` — export the same vars in the shell for that script.
 
-- `SANITY_E2E_SESSION_TOKEN`: Before you get started with writing and running tests, you need to get hold of a token - either using your own Sanity user token (`sanity debug --secrets` will give you the CLI token provided you are logged in `sanity login`), or by creating a project API token using https://sanity.io/manage.
-- `SANITY_E2E_PROJECT_ID`: Project ID of the studio
+- `SANITY_E2E_SESSION_TOKEN`: Before you get started with writing and running tests, you need to get hold of a token — either using your own Sanity user token (`export SANITY_INTERNAL_ENV=staging` followed by `sanity login` and `sanity debug --secrets`), or by creating a project API token at https://www.sanity.work/manage.
+- `SANITY_E2E_PROJECT_ID`: Project ID of the studio (staging default: `ittbm412`)
 - `SANITY_E2E_DATASET`: Dataset name of the studio
 
-Make sure that the project that you are running in the e2e tests allows the origin of your local studio (this is default **http://localhost:3339**) in https://sanity.io/manage > your project > API > Add CORS origin
+Optional when you need a dataset per browser workspace: `SANITY_E2E_DATASET_CHROMIUM` and `SANITY_E2E_DATASET_FIREFOX`. Playwright's API client always uses `SANITY_E2E_DATASET`, so that value must match the workspace under test (`/chromium` or `/firefox`).
+
+Make sure that the project that you are running in the e2e tests allows the origin of your local studio (this is default **http://localhost:3339**) in https://www.sanity.work/manage > your project > API > Add CORS origin.
+
+## Running the E2E studio
+
+```sh
+# Build packages first — `sanity dev` needs packages/sanity/lib/cli.js
+pnpm build
+
+# Create the dataset if it does not exist
+pnpm e2e:setup
+
+# Starts studio-e2e-testing at http://localhost:3339
+pnpm e2e:dev
+```
+
+- Serves two workspaces: `/chromium` and `/firefox`. Dataset names are baked into the Vite client at **server start** from `SANITY_E2E_DATASET` / `SANITY_E2E_DATASET_CHROMIUM` / `SANITY_E2E_DATASET_FIREFOX` — restart the studio if you change them.
+- Playwright authenticates by seeding `SANITY_E2E_SESSION_TOKEN` into local storage. To open the studio in a browser yourself, append `#token=<token>` to `/chromium` or `/firefox` (Sanity consumes it on load and strips it from the address bar).
+- The studio talks to **staging** (`api.sanity.work`). A production session token will 401.
+- `pnpm test:e2e` will start this server itself when port 3339 is free, and will reuse it when it is already running. Starting it yourself lets you watch compile logs, the same as `pnpm dev` for the test studio.
+- Auth specs are a different studio (`dev/auth-test-studio` on port 3340). See [tests/auth/README.md](./tests/auth/README.md).
+
+Do not point Playwright at `https://e2e-studio.sanity.dev` unless `SANITY_E2E_DATASET` matches the datasets compiled into that deploy. Those names are fixed at Vercel build time (`main-chromium-<run_id>` / `main-firefox-<run_id>` on main); a local dataset will not match.
+
+Playwright browsers are not installed by `pnpm install`:
+
+```sh
+pnpm --filter e2e exec playwright install chromium firefox
+```
 
 ## Running tests
 
@@ -39,7 +70,8 @@ To run E2E tests run the following commands from the root of the project
 
 Other useful helper commands
 
-- "e2e:dev": Starts the E2E studio using `sanity dev`
+- "e2e:dev": Starts the E2E studio using `sanity dev` (needs a package build first; see above)
+- "e2e:setup": Creates `SANITY_E2E_DATASET` on the staging project if it does not exist
 - "e2e:build": Runs `sanity build` on E2E studio
 - "e2e:codegen": Runs [playwright codegen](https://playwright.dev/docs/codegen). **Note: Requires the studio to be running. Run `pnpm e2e:dev` in another terminal first**
 - "e2e:start": Runs `sanity preview` on E2E studio (preview server, requires a build)

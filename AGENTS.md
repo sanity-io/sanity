@@ -21,6 +21,9 @@ pnpm build
 # Run dev studio (requires auth, see below)
 pnpm dev
 
+# Run e2e studio (requires token + dataset, see below)
+pnpm e2e:dev
+
 # Format code (MUST pass CI)
 pnpm chore:format:fix
 
@@ -81,6 +84,7 @@ sanity/
 │   └── @repo/            # Internal tooling (test-config, tsconfig, etc.)
 ├── dev/                  # Development studios for testing
 │   ├── test-studio/      # Primary dev studio (pnpm dev runs this)
+│   ├── studio-e2e-testing/ # E2E Playwright studio (pnpm e2e:dev, port 3339)
 │   ├── studio-diagnostics-viewer/ # Standalone viewer for pasted diagnostics JSON
 │   └── preview-iframe/   # Presentation preview iframe (vanilla Vite, port 3334)
 ├── e2e/                  # End-to-end Playwright tests
@@ -170,6 +174,27 @@ Use the dev studio when you need to:
 - Test real document editing workflows
 - Debug issues that only appear with real data
 - Exercise Presentation / visual editing against the local preview iframe
+
+### Running the E2E Studio (Auth Required)
+
+```bash
+pnpm e2e:dev  # Starts studio-e2e-testing at http://localhost:3339
+```
+
+This is a different studio from `pnpm dev`. It lives in `dev/studio-e2e-testing`, serves on **port 3339**, and is the app Playwright drives. Do not point e2e specs at the test studio on 3333.
+
+- **Requires a write token and a dataset** before the studio is useful — there is no interactive "log in with a Sanity account" path in the default e2e flow. Playwright authenticates by seeding `SANITY_E2E_SESSION_TOKEN` into local storage (`storageState` in `e2e/playwright.config.ts`). To open the studio in a browser yourself, put that same token in the URL hash (`#token=…`); Sanity consumes it on load and strips it from the address bar, same as the test studio.
+- Connects to the **staging** project `ittbm412` on `api.sanity.work` (see `.env.example`). Production tokens (`STUDIO_AUTH_TOKEN`, `SANITY_TEST_STUDIO_AUTH_TOKEN`) return 401 "Session not found" here.
+- Two workspaces: `/chromium` and `/firefox`. Each workspace's dataset is `SANITY_E2E_DATASET_CHROMIUM` / `SANITY_E2E_DATASET_FIREFOX`, falling back to `SANITY_E2E_DATASET`. `dev/studio-e2e-testing/sanity.cli.ts` bakes those values into the Vite client at **server start** — changing the dataset requires restarting the studio.
+- **Build packages first.** `sanity dev` loads `packages/sanity/lib/cli.js`. A clean checkout fails with `Cannot find module '…/sanity/lib/cli.js'` until `pnpm build` (or the Cloud VM `pnpm -r` workaround) has run.
+- `pnpm test:e2e` will start this studio itself on port 3339 unless `SANITY_E2E_BASE_URL` is a `*.sanity.dev` URL. Locally it reuses an already-running server (`reuseExistingServer: true`).
+- Auth e2e specs (`pnpm --filter e2e test:auth`) are a **different** studio: `dev/auth-test-studio` on port 3340. See `e2e/tests/auth/README.md`.
+
+Use the e2e studio when you need to:
+
+- Run or debug Playwright specs against this checkout
+- Visually verify e2e-only schema, plugins, or workspaces (`/chromium`, `/firefox`)
+- Confirm a spec's UI against the same studio CI deploys (`https://e2e-studio.sanity.dev` on main — see the Cloud notes before pointing tests at it)
 
 ### Inspecting Production Builds with Vite DevTools
 
@@ -268,7 +293,7 @@ Three skills cover this area: `sanity-bench` (`.agents/skills/sanity-bench/SKILL
 
 ### E2E Tests (Token Required)
 
-E2E tests require authentication tokens. Add these to `.env.local` in the repo root:
+E2E tests require authentication tokens **and** a running e2e studio (or a `*.sanity.dev` URL whose baked-in dataset matches yours). Add these to `.env.local` in the **repo root** (Playwright and `sanity.cli.ts` load env from the monorepo root via `loadEnvFiles`). `pnpm e2e:setup` uses dotenv-flow from `e2e/`, so it will not see a root `.env.local` — export the same vars in the shell for that script, or put a copy under `e2e/`.
 
 ```bash
 SANITY_E2E_SESSION_TOKEN=<your-token>
@@ -276,26 +301,44 @@ SANITY_E2E_PROJECT_ID=<project-id>
 SANITY_E2E_DATASET=<dataset-name>
 ```
 
+Optional when running both Playwright projects in one process: `SANITY_E2E_DATASET_CHROMIUM` and `SANITY_E2E_DATASET_FIREFOX`. Playwright's API client always uses `SANITY_E2E_DATASET`, so that value must match the workspace the browser opens (`/chromium` or `/firefox`). CI (and local full-suite runs) use one dataset per browser and run `--project chromium` / `--project firefox` separately.
+
 **How to get a token:**
 
 ```bash
-# Option 1: Use your CLI token
+# Option 1: Use your CLI token against staging
+export SANITY_INTERNAL_ENV=staging
 sanity login
 sanity debug --secrets  # Look for "Auth token"
 
-# Option 2: Create a project token at https://sanity.io/manage
+# Option 2: Create a project token at https://www.sanity.work/manage
 # Navigate to: Project Settings → API → Tokens → Add API token
 ```
 
-Then run E2E tests:
+**Stand up the studio, then run tests:**
 
 ```bash
-pnpm e2e:build              # Build E2E studio
-pnpm test:e2e               # Run E2E tests
+# 1. Build packages (required — sanity dev needs packages/sanity/lib/cli.js)
+pnpm build
+
+# 2. Create the dataset if it does not exist
+pnpm e2e:setup
+
+# 3. Start the e2e studio (http://localhost:3339) and leave it running
+pnpm e2e:dev
+
+# 4. In another terminal, same env vars:
+pnpm test:e2e               # Chromium + Firefox; reuses the server on 3339
 pnpm test:e2e --ui          # Interactive mode
 ```
 
-**Note:** E2E tests are typically run in CI, not locally during development. Most changes can be verified with unit tests.
+`pnpm test:e2e` starts `pnpm e2e:dev` itself when port 3339 is free. Starting it yourself is the same pattern as `pnpm dev` for the test studio: you can watch compile logs, and Playwright will reuse the server.
+
+Playwright browsers are not installed by `pnpm install`. One-time: `pnpm --filter e2e exec playwright install chromium firefox`.
+
+**Note:** E2E tests are typically run in CI, not locally during development. Most changes can be verified with unit tests. When you do run them locally, prefer a fresh dataset over the shared `staging` one — specs that need content seed it themselves.
+
+Do not point local Playwright at `https://e2e-studio.sanity.dev` unless `SANITY_E2E_DATASET` (and the chromium/firefox overrides) match the datasets **baked into that deploy**. The production studio compiles `SANITY_E2E_DATASET_*` into the client at Vercel build time; a fresh `cursor_ci_*` dataset will not match, so the UI and the Sanity client talk to different datasets.
 
 When CI e2e fails, the hosted Playwright report also serves a machine-readable digest at `<report-url>/agent-report.md` (error messages, code snippets, and Playwright `error-context` page snapshots). The PR comment includes a **Share with an AI agent** fenced prompt pointing at that URL (GitHub's copy button copies the whole prompt).
 
@@ -320,6 +363,7 @@ Staging rate-limits per IP, so `pnpm e2e:setup` retries 429/5xx responses with b
 **What requires authentication:**
 
 - Running the dev studio (`pnpm dev`)
+- Running the e2e studio (`pnpm e2e:dev`)
 - E2E tests (`pnpm test:e2e`)
 - Any command that connects to Sanity APIs
 
@@ -681,10 +725,14 @@ mask real regressions):
 ### E2E Tests (Playwright)
 
 ```bash
-pnpm e2e:build              # Build E2E studio
-pnpm test:e2e               # Run E2E tests
+pnpm build                  # Required before e2e:dev (sanity CLI lives in packages/sanity/lib)
+pnpm e2e:setup              # Create SANITY_E2E_DATASET if missing
+pnpm e2e:dev                # E2E studio at http://localhost:3339 (leave running)
+pnpm test:e2e               # Run Playwright (reuses the server on 3339)
 pnpm test:e2e --ui          # Interactive mode
 ```
+
+Auth specs are excluded from `pnpm test:e2e`. They use `dev/auth-test-studio` on port 3340: `pnpm --filter e2e test:auth`. See [e2e/README.md](./e2e/README.md) and [e2e/tests/auth/README.md](./e2e/tests/auth/README.md).
 
 ## Pre-commit Hook
 
@@ -938,11 +986,13 @@ When a Linear issue is provided during the session, include its lowercased id in
 
 ### Services
 
-| Service                                           | Port | Purpose                                          |
-| ------------------------------------------------- | ---- | ------------------------------------------------ |
-| Test studio (`pnpm dev` / `pnpm dev:test-studio`) | 3333 | Local Sanity Studio for manual verification      |
-| Preview iframe (`pnpm dev:preview-iframe`)        | 3334 | Cross-origin Presentation preview (vanilla Vite) |
-| Storybook (`pnpm dev:storybook`)                  | 6006 | Visual regression stories (Chromatic)            |
+| Service                                                            | Port | Purpose                                          |
+| ------------------------------------------------------------------ | ---- | ------------------------------------------------ |
+| Test studio (`pnpm dev` / `pnpm dev:test-studio`)                  | 3333 | Local Sanity Studio for manual verification      |
+| Preview iframe (`pnpm dev:preview-iframe`)                         | 3334 | Cross-origin Presentation preview (vanilla Vite) |
+| E2E studio (`pnpm e2e:dev`)                                        | 3339 | Playwright e2e studio (`/chromium`, `/firefox`)  |
+| Auth e2e studio (`pnpm --filter auth-test-studio dev --port 3340`) | 3340 | Auth-flow e2e specs (mocked APIs)                |
+| Storybook (`pnpm dev:storybook`)                                   | 6006 | Visual regression stories (Chromatic)            |
 
 No Docker, databases, or other local services are required for unit tests, lint, or build. CI-style verification (`pnpm lint`, `pnpm build`, `pnpm test`) runs entirely in-process.
 
@@ -986,11 +1036,23 @@ No Docker, databases, or other local services are required for unit tests, lint,
   - If a control moves after the first interaction (for example a toggle pushed down by expanding content), activate it the second time with `page.keyboard.press('Enter')` instead of clicking. The element keeps focus, and this avoids Playwright's auto-scroll shoving the result off-screen.
   - Have the script log the state it observes (button labels, bounding boxes) so the run is self-checking rather than relying on reviewing frames.
 
+### Running the e2e studio in the VM
+
+Same idea as the test studio on 3333, different project, port, token, and dataset rules.
+
+- **Token:** `STUDIO_E2E_AUTH_TOKEN` (injected). Map it to the name the studio and Playwright read: `export SANITY_E2E_SESSION_TOKEN=$STUDIO_E2E_AUTH_TOKEN`. Do not use `STUDIO_AUTH_TOKEN` or `SANITY_TEST_STUDIO_AUTH_TOKEN` — those are production tokens and get 401 "Session not found" on `api.sanity.work`.
+- **Project / API:** `ittbm412` on `https://api.sanity.work`. Workspaces are `/chromium` and `/firefox`, not `/test`.
+- **Build first.** `pnpm e2e:dev` / `pnpm --filter studio-e2e-testing dev` runs `sanity dev --port 3339`, which loads `packages/sanity/lib/cli.js`. Without a package build it exits immediately (`Cannot find module '…/sanity/lib/cli.js'`). Use Node `>=22.18` (`export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH"`). If `pnpm build` hits the Turbo `Exec format error`, use `pnpm -r --filter="./packages/*" --filter="./packages/@sanity/*" run build`, then `git checkout -- packages/sanity/package.json`.
+- **Export dataset env vars before starting the studio.** `sanity.cli.ts` inlines `SANITY_E2E_DATASET`, `SANITY_E2E_DATASET_CHROMIUM`, and `SANITY_E2E_DATASET_FIREFOX` into the client. Changing them later does nothing until you restart. There is no root `.env.local` in the VM; `pnpm e2e:setup` also will not load one from the repo root (dotenv-flow runs with cwd `e2e/`). Export in the shell.
+- **Open it in a browser** the same way as the test studio — hash token, not interactive login. Build `http://localhost:3339/chromium#token=` + `encodeURIComponent(process.env.STUDIO_E2E_AUTH_TOKEN)` from inside a script (the Read tool redacts the token). The local HTTP-server-that-`location.replace`s trick from the test-studio note keeps the secret out of prompts. After load you land in `/chromium` (or `/firefox`). Playwright does **not** need this: it seeds local storage itself.
+- **`unstable_bundledDev` is off** in `studio-e2e-testing` (unlike test-studio / auth-test-studio). The 300 MB-per-lazy-chunk leak does not apply here. Still do not run `pnpm check:oxlint` while this studio is up — same memory constraint.
+- **Do not use `https://e2e-studio.sanity.dev` as a shortcut** unless you extract the baked dataset names from that deploy's JS (`dataset:\`main-chromium-<run_id>\``) and set `SANITY_E2E_DATASET`to match. A locally created`cursor_ci_*` dataset will not be what that studio shows.
+
 ### Running e2e (Playwright) tests in the VM
 
-The e2e suite runs against the staging project `ittbm412` (see `.env.example`) on `api.sanity.work`. `STUDIO_E2E_AUTH_TOKEN` is injected into the VM for exactly this: it is a `manage-datasets` robot token on that project, so specs run the way CI runs them, with no source edits. Do not reach for `STUDIO_AUTH_TOKEN` or `SANITY_TEST_STUDIO_AUTH_TOKEN` here — those are production tokens and get 401 "Session not found" against `api.sanity.work`.
+The e2e suite runs against the staging project `ittbm412` (see `.env.example`) on `api.sanity.work`. `STUDIO_E2E_AUTH_TOKEN` is injected into the VM for exactly this: it is a `manage-datasets` robot token on that project, so specs run the way CI runs them, with no source edits.
 
-1. **Build the packages.** `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH" && pnpm build`, then `git checkout packages/sanity/package.json` — the build rewrites its `inlinedDependencies`.
+1. **Build the packages** (see above). `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH"` first. Then `git checkout -- packages/sanity/package.json` if tsdown rewrote `inlinedDependencies`.
 
 2. **Install the browsers** (not preinstalled): `pnpm --filter e2e exec playwright install chromium firefox`.
 
@@ -1003,13 +1065,16 @@ The e2e suite runs against the staging project `ittbm412` (see `.env.example`) o
    pnpm e2e:setup # creates $SANITY_E2E_DATASET (public ACL) unless it already exists
    ```
 
+   For a full chromium+firefox run, create two datasets and export `SANITY_E2E_DATASET_CHROMIUM` / `SANITY_E2E_DATASET_FIREFOX` as well, then set `SANITY_E2E_DATASET` to the chromium one when running `--project=chromium` and to the firefox one when running `--project=firefox`.
+
 4. **Start the studio** with those variables still exported. It serves on port 3339, which `playwright.config.ts` reuses instead of starting its own server:
 
    ```bash
-   pnpm --filter studio-e2e-testing dev
+   pnpm e2e:dev
+   # same as: pnpm --filter studio-e2e-testing dev
    ```
 
-   `sanity dev` needs no token of its own: Playwright authenticates the browser by seeding `SANITY_E2E_SESSION_TOKEN` into local storage through `storageState`.
+   Wait until Vite has finished "bundling dependencies…" as well as "ready" — the first specs otherwise share a cold compile and are prone to timeouts. `sanity dev` needs no token of its own: Playwright authenticates the browser by seeding `SANITY_E2E_SESSION_TOKEN` into local storage through `storageState`.
 
 5. **Run specs**, again with those variables exported:
 
@@ -1017,7 +1082,7 @@ The e2e suite runs against the staging project `ittbm412` (see `.env.example`) o
    cd e2e && pnpm exec playwright test --project=chromium tests/navbar/search.spec.ts --retries=0
    ```
 
-   Keep `--retries=0` so a flake stays visible, and add `--repeat-each=N` when chasing one. `--project=firefox` runs the other browser CI uses. CI gives each browser its own dataset through `SANITY_E2E_DATASET_CHROMIUM` / `SANITY_E2E_DATASET_FIREFOX`; both fall back to `SANITY_E2E_DATASET`, so run one project at a time unless you create a dataset per browser — specs that touch per-user state (key-value keys such as recent searches or sort orders) otherwise interfere across browsers.
+   Keep `--retries=0` so a flake stays visible, and add `--repeat-each=N` when chasing one. `--project=firefox` runs the other browser CI uses. Run one project at a time unless you created a dataset per browser — specs that touch per-user state (key-value keys such as recent searches or sort orders) otherwise interfere across browsers. `pnpm test:e2e` runs both projects and excludes `tests/auth/**`.
 
 6. **Delete the dataset when you are done:**
 
@@ -1031,6 +1096,7 @@ The e2e suite runs against the staging project `ittbm412` (see `.env.example`) o
 Debugging notes:
 
 - A fresh dataset is empty. Specs that need content seed it themselves; if one assumes documents exist, that is a bug in the spec, not a reason to point at the shared `staging` dataset.
+- Many Firefox cases are skipped on purpose (`skipIfBrowser` / `test.skip(browserName === 'firefox')`). A higher skip count on Firefox than Chromium is expected, not a setup failure.
 - The failure video is written to `e2e/results/<test>/video.webm`; extract frames with the bundled ffmpeg: `~/.cache/ms-playwright/ffmpeg-*/ffmpeg-linux -i video.webm -r 1 /tmp/frame_%03d.png` (this build has no `-vf fps=` filter).
 - CI e2e failures publish a plain-markdown digest at `<report-url>/agent-report.md` (same Vercel deployment as the HTML report). Fetch that URL instead of the HTML report — it includes the error, code snippet, `error-context` page snapshot, and a local repro command. The PR comment's **Share with an AI agent** fenced prompt is the paste-ready prompt (one-click copy).
 - To reproduce load-related flakiness, throttle the browser from within the spec: `const cdp = await page.context().newCDPSession(page); await cdp.send('Emulation.setCPUThrottlingRate', {rate: 8})` (chromium only). Stub a slow or eventually-consistent backend with `page.route('**/data/query/**', …)`; the global search query is identifiable by its `findability-source: global` GROQ comment.
