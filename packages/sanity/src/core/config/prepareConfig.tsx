@@ -46,6 +46,7 @@ import {composeRequestHandlers} from './composeRequestHandlers'
 import {
   advancedVersionControlEnabledReducer,
   announcementsEnabledReducer,
+  collapseArrayItemsReducer,
   commentsV2EnabledReducer,
   directUploadsReducer,
   documentActionsReducer,
@@ -59,6 +60,7 @@ import {
   eventsAPIReducer,
   fileAssetSourceResolver,
   imageAssetSourceResolver,
+  initialCollapseArrayItems,
   initialDocumentActions,
   initialDocumentBadges,
   initialLanguageFilter,
@@ -890,6 +892,12 @@ function resolveSource({
     },
 
     form: {
+      arrays: {
+        collapseItems: collapseArrayItemsReducer({
+          config,
+          initialValue: initialCollapseArrayItems,
+        }),
+      },
       file: {
         assetSources: resolveConfigProperty({
           config,

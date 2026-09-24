@@ -855,6 +855,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.array.action.remove': 'Remove',
   /** Label for removing action when an array item has an error  */
   'inputs.array.action.remove-invalid-item': 'Remove',
+  /** Label for expanding a collapsed array to show every item */
+  'inputs.array.action.show-all-items_one': 'Show 1 item',
+  /** Label for expanding a collapsed array to show every item */
+  'inputs.array.action.show-all-items_other': 'Show all {{count}} items',
+  /** Label for collapsing an expanded array back to a limited number of items */
+  'inputs.array.action.show-fewer-items': 'Show fewer items',
   /** Label for viewing the item of a specific type, eg "View Person" */
   'inputs.array.action.view': 'View {{itemTypeTitle}}',
   /** Error description for the array item tooltip that explains that the current item can still be moved or deleted but not edited since the schema definition is not found */
@@ -1711,6 +1717,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Your scheduled draft has different changes than your current draft.',
   /** Header for the dialog confirming deletion of a scheduled draft */
   'release.dialog.delete-schedule-draft.header': 'Delete scheduled draft',
+  /** Explanation text shown when the current draft could not be read */
+  'release.dialog.delete-schedule-draft.unresolved-draft-explanation':
+    'Your current draft could not be loaded. Copying your scheduled changes will overwrite it.',
+  /** Explanation text shown when the scheduled draft could not be read */
+  'release.dialog.delete-schedule-draft.unresolved-scheduled-draft-explanation':
+    'Your scheduled draft could not be loaded. Copying it could overwrite your draft with the wrong content.',
   /** Body text for change schedule dialog */
   'release.dialog.edit-schedule.body': 'Select a new date and time for the scheduled publish.',
   /** Confirm button text for change schedule dialog */
