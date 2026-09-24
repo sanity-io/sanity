@@ -703,6 +703,8 @@ pnpm test:e2e               # Run E2E tests
 pnpm test:e2e --ui          # Interactive mode
 ```
 
+Playwright `webServer.command` must be `node --run <script>`, never `pnpm`. pnpm 12.6+ (`@pnpm/exe`) detaches the script into its own process group, so Playwright's teardown `kill(-pid)` never reaps vite/sanity, the runner never prints its summary, and the GHA job sits until `timeout-minutes` (auth 15m, embedded 30m). `node --run` stays in the webServer process group and dies with it.
+
 ## Pre-commit Hook
 
 Lefthook runs on commit (see `lefthook.yml`), which:
