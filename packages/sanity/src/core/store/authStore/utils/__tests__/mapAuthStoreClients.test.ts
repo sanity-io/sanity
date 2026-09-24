@@ -1,27 +1,17 @@
-import {createClient, type SanityClient} from '@sanity/client'
-import {firstValueFrom, type Observable, of} from 'rxjs'
+import {type SanityClient} from '@sanity/client'
+import {firstValueFrom, of} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 
+import {
+  CALLBACK_RESULT,
+  ClassAuthStore,
+  createBareClient,
+} from '../../../../../../test/fixtures/authStore'
 import {createMockAuthStore} from '../../createMockAuthStore'
-import {type AuthState, type AuthStore, type HandleCallbackResult} from '../../types'
+import {type AuthStore} from '../../types'
 import {mapAuthStoreClients} from '../mapAuthStoreClients'
 
-const CALLBACK_RESULT: HandleCallbackResult = {
-  loginMethod: 'dual',
-  flow: 'already-authenticated',
-  success: true,
-  durationMs: 0,
-}
 const LoginComponent = () => null
-
-function createBareClient() {
-  return createClient({
-    projectId: 'abc123',
-    dataset: 'test',
-    apiVersion: '2025-01-01',
-    useCdn: false,
-  })
-}
 
 const tag = (client: SanityClient) => client.withConfig({apiVersion: '2026-01-01'})
 
@@ -91,28 +81,6 @@ describe('mapAuthStoreClients', () => {
   })
 
   it('keeps prototype methods of a class-based store reachable, bound to the store', async () => {
-    // `AuthStore` is duck-typed, so a class instance is a valid store. Its
-    // methods live on the prototype and read `this`; an object spread would
-    // drop them.
-    class ClassAuthStore implements AuthStore {
-      state: Observable<AuthState>
-      loggedOut = 0
-      callbacks = 0
-
-      constructor(client: SanityClient) {
-        this.state = of({client, authenticated: true, currentUser: null})
-      }
-
-      logout() {
-        this.loggedOut += 1
-        return Promise.resolve()
-      }
-
-      handleCallbackUrl() {
-        this.callbacks += 1
-        return Promise.resolve(CALLBACK_RESULT)
-      }
-    }
     const store = new ClassAuthStore(createBareClient())
 
     const auth = mapAuthStoreClients(store, tag)

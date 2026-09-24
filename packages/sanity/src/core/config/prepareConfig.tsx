@@ -292,7 +292,6 @@ export function prepareConfig(
   }
 
   const rootPath = getRootPath(options?.basePath)
-  const authStoreOptions: GetAuthStoreOptions = options ?? {}
   const workspaceOptions: WorkspaceOptions[] | [SingleWorkspace] = Array.isArray(config)
     ? config
     : [{...config, name: config.name ?? 'default'}]
@@ -374,7 +373,7 @@ export function prepareConfig(
         throw new SchemaError(schema)
       }
 
-      const auth = getAuthStore(source, authStoreOptions)
+      const auth = getAuthStore(source, options)
       const i18n = prepareI18n(source)
       const source$ = auth.state.pipe(
         map(({client, authenticated, currentUser}) => {

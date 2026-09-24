@@ -2,16 +2,16 @@ import {ClientError, createClient} from '@sanity/client'
 import {filter, firstValueFrom} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {
+  createBareClient,
+  createPrebuiltStore,
+  passthroughRequestHandler as passthrough,
+} from '../../../../test/fixtures/authStore'
 import {createRequestErrorChannel} from '../../studio/requestErrors/createRequestErrorChannel'
 import {createStudioRequestHandler} from '../../studio/requestErrors/createStudioRequestHandler'
 import {getCollectedConfigWarnings} from '../configWarnings'
 import {prepareConfig} from '../prepareConfig'
 import {type WorkspaceOptions} from '../types'
-import {
-  createBareClient,
-  createPrebuiltStore,
-  passthroughRequestHandler as passthrough,
-} from './fixtures/prebuiltAuthStore'
 
 // Minimum viable workspace for prepareConfig — avoids pulling in real
 // schema/client resolution. projectId is randomized per test so the
@@ -226,6 +226,8 @@ describe('prepareConfig — studio request handler', () => {
     const first = prepareConfig(workspace, {createStudioRequestHandler: () => passthrough})
     const second = prepareConfig(workspace, {createStudioRequestHandler: () => passthrough})
 
+    // Precondition: the summary really was rebuilt, so the identity below is
+    // the wrapper cache's doing and not `prepareConfig`'s own workspace cache.
     expect(second.workspaces[0]).not.toBe(first.workspaces[0])
     expect(second.workspaces[0].auth).toBe(first.workspaces[0].auth)
   })

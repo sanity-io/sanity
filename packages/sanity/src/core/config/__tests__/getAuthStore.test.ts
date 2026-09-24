@@ -1,16 +1,17 @@
 import {type RequestHandler, type SanityClient} from '@sanity/client'
-import {firstValueFrom, type Observable, of} from 'rxjs'
+import {firstValueFrom, of} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 
-import {createMockAuthStore} from '../../store/authStore/createMockAuthStore'
-import {type AuthState, type AuthStore} from '../../store/authStore/types'
-import {getAuthStore} from '../getAuthStore'
-import {type SourceOptions} from '../types'
 import {
+  ClassAuthStore,
   createBareClient,
   createPrebuiltStore,
   passthroughRequestHandler,
-} from './fixtures/prebuiltAuthStore'
+} from '../../../../test/fixtures/authStore'
+import {createMockAuthStore} from '../../store/authStore/createMockAuthStore'
+import {type AuthStore} from '../../store/authStore/types'
+import {getAuthStore} from '../getAuthStore'
+import {type SourceOptions} from '../types'
 
 const createPassthroughHandler = () => passthroughRequestHandler
 
@@ -112,19 +113,6 @@ describe('getAuthStore — pre-built auth store', () => {
     // The `logout` gate reads the prototype; the wrapper must too, or the
     // handler attaches while `logout` disappears and a claimed 401 parks
     // forever with nothing to log the user out.
-    class ClassAuthStore implements AuthStore {
-      state: Observable<AuthState>
-      loggedOut = 0
-
-      constructor(client: SanityClient) {
-        this.state = of({client, authenticated: true, currentUser: null})
-      }
-
-      logout() {
-        this.loggedOut += 1
-        return Promise.resolve()
-      }
-    }
     const store = new ClassAuthStore(createBareClient())
 
     const auth = getAuthStore(createSource(store), {

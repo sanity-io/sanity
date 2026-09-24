@@ -1,10 +1,10 @@
-import {createClient, type RequestHandler, type SanityClient} from '@sanity/client'
+import {createClient, type SanityClient} from '@sanity/client'
 
 import {createAuthStore, type RequestFailureDiagnostics} from '../store/authStore/createAuthStore'
 import {type AuthStore} from '../store/authStore/types'
 import {isAuthStore} from '../store/authStore/utils/asserters'
 import {mapAuthStoreClients} from '../store/authStore/utils/mapAuthStoreClients'
-import {withRequestHandler} from '../store/authStore/utils/requestHandler'
+import {composeRequestHandlers, withRequestHandler} from '../store/authStore/utils/requestHandler'
 import {
   type RequestErrorChannel,
   type StudioRequestHandlerFactory,
@@ -35,7 +35,11 @@ export interface GetAuthStoreOptions {
  */
 export function getAuthStore(
   source: SourceOptions,
-  {createStudioRequestHandler, requestErrorChannel, requestFailureDiagnostics}: GetAuthStoreOptions,
+  {
+    createStudioRequestHandler,
+    requestErrorChannel,
+    requestFailureDiagnostics,
+  }: GetAuthStoreOptions = {},
 ): AuthStore {
   if (isAuthStore(source.auth)) {
     // A pre-built store has already constructed its clients, so the handler is
@@ -99,10 +103,10 @@ function withStudioRequestHandler(
       const ownHandler = source.config().requestHandler
       let client: SanityClient
       const studioHandler = createStudioRequestHandler(() => client)
-      const requestHandler: RequestHandler = ownHandler
-        ? (request, next) => studioHandler(request, (req) => ownHandler(req, next))
-        : studioHandler
-      client = withRequestHandler(source, requestHandler)
+      client = withRequestHandler(
+        source,
+        ownHandler ? composeRequestHandlers(studioHandler, ownHandler) : studioHandler,
+      )
       return client
     })
     studioHandledAuthStores.set(auth, wrapped)
