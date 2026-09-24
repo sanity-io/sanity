@@ -1,12 +1,12 @@
 /* oxlint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-string-literals -- Diagnostics uses fixed English terminology so support and users see the same technical labels. */
 import {Badge, type BadgeTone, Box, Card, Heading, Switch, Text, type TextAlign} from '@sanity/ui'
 import {type ReactNode, useState} from 'react'
-import {styled} from 'styled-components'
 import {Flex, Grid, type GapProps, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {type StudioDiagnostics} from '../../../diagnostics/gatherStudioDiagnostics'
 import {type StyleSheetDiagnostic} from '../../../diagnostics/getStylesDiagnostics'
+import {codeValue} from './DiagnosticsReport.css'
 import {RequestPerformanceReport} from './RequestPerformanceReport'
 
 type DiagnosticStatus = StudioDiagnostics['network']['protocol']['status']
@@ -19,11 +19,6 @@ const DIAGNOSTIC_STATUS_LABELS: Record<DiagnosticStatus, string> = {
 }
 
 const BYTE_UNITS = ['B', 'kB', 'MB', 'GB', 'TB', 'PB'] as const
-
-const CodeValue = styled.span`
-  font-family: var(--card-code-family, monospace);
-  overflow-wrap: anywhere;
-`
 
 /** @internal */
 export interface DiagnosticsReportProps {
@@ -209,7 +204,7 @@ export function DiagnosticsReport({
                 >
                   <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
                     <Text size={1} weight="semibold">
-                      <CodeValue>{request.path}</CodeValue>
+                      <span className={codeValue}>{request.path}</span>
                     </Text>
                     {request.detail || request.error ? (
                       <Text muted size={1}>
@@ -282,7 +277,7 @@ function DetailRow({
           textOverflow={truncate ? 'ellipsis' : undefined}
           title={truncate && typeof displayValue === 'string' ? displayValue : undefined}
         >
-          {monospace ? <CodeValue>{displayValue}</CodeValue> : displayValue}
+          {monospace ? <span className={codeValue}>{displayValue}</span> : displayValue}
         </Text>
       </Box>
     </Flex>
@@ -307,7 +302,7 @@ function StyledComponentsReport({sheets}: {sheets: StyleSheetDiagnostic[]}) {
         value={versions.join(', ')}
       />
       <DetailRow
-        label={<CodeValue>{'<style data-styled>'}</CodeValue>}
+        label={<span className={codeValue}>{'<style data-styled>'}</span>}
         wideLabel
         value={
           multipleRuntimes ? (
