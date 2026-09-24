@@ -20,7 +20,7 @@
     "test:unit": "vitest run"
   },
   "devDependencies": {
-    "@chromatic-com/playwright": "^0.14.12",
+    "@chromatic-com/playwright": "^0.15.0",
     "@playwright/test": "catalog:",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",

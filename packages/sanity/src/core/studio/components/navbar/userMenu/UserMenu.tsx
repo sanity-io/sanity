@@ -1,12 +1,6 @@
 import {getProviderTitle} from '@sanity/access-ui'
-import {
-  // oxlint-disable-next-line no-restricted-imports
-  Button,
-  // Button with specific styling, user avatar.
-  Card,
-  Stack,
-  Text,
-} from '@sanity/ui'
+// oxlint-disable-next-line no-restricted-imports -- Button with specific styling, user avatar.
+import {Button, Card, Text} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
@@ -78,7 +72,7 @@ export function UserMenu() {
                 </AvatarBox>
               </Tooltip>
 
-              <Stack gap={2} flex={1}>
+              <Flex gap={2} flexBasis="0%" flexGrow={1} flexDirection="column">
                 <Text size={1} weight="medium" textOverflow="ellipsis">
                   {currentUser?.name}
                 </Text>
@@ -86,7 +80,7 @@ export function UserMenu() {
                 <Text size={1} muted textOverflow="ellipsis">
                   {currentUser?.email}
                 </Text>
-              </Stack>
+              </Flex>
             </Flex>
           </Card>
 

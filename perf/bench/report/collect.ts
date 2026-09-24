@@ -514,42 +514,66 @@ export function collectPageLoad(
 
   const metrics = (['boot-cold', 'open-doc-warm'] as LoadCondition[]).flatMap(
     (condition): MetricReport[] => {
-      const experimentValues = experiment
-        .filter((sample) => sample.condition === condition)
-        .map((sample) => [sample.timeToEditableMs])
-      if (experimentValues.length === 0) return []
-      const referenceValues = reference
-        ?.filter((sample) => sample.condition === condition)
-        .map((sample) => [sample.timeToEditableMs])
+      const editableValues = (samples: PageLoadSample[] | undefined) =>
+        (samples ?? []).flatMap((sample) =>
+          sample.condition === condition && sample.timeToEditableMs !== null
+            ? [[sample.timeToEditableMs]]
+            : [],
+        )
+      const experimentValues = editableValues(experiment)
+      const referenceValues = editableValues(reference)
       const comparison = comparisons.get(condition)
+      const milestoneNames = [
+        ...new Set(
+          experiment
+            .filter((sample) => sample.condition === condition)
+            .flatMap((sample) => sample.milestones.map((milestone) => milestone.name)),
+        ),
+      ]
+      if (!experiment.some((sample) => sample.condition === condition)) return []
       return [
-        {
-          label: `${condition} · time to editable`,
-          unit: 'ms',
-          presentAsEfps: false,
-          experiment: {
-            sessions: experimentValues,
-            summary: summarize(experimentValues.flat()),
-          },
-          ...(referenceValues && referenceValues.length > 0
-            ? {
-                reference: {
-                  sessions: referenceValues,
-                  summary: summarize(referenceValues.flat()),
+        ...(experimentValues.length > 0
+          ? [
+              {
+                label: `${condition} · time to editable`,
+                unit: 'ms' as const,
+                presentAsEfps: false,
+                experiment: {
+                  sessions: experimentValues,
+                  summary: summarize(experimentValues.flat()),
                 },
-              }
-            : {}),
-          ...(comparison
-            ? {
-                comparison: {
-                  diff: comparison.interval.diff,
-                  lo: comparison.interval.lo,
-                  hi: comparison.interval.hi,
-                  verdict: comparison.verdict,
-                },
-              }
-            : {}),
-        },
+                ...(referenceValues.length > 0
+                  ? {
+                      reference: {
+                        sessions: referenceValues,
+                        summary: summarize(referenceValues.flat()),
+                      },
+                    }
+                  : {}),
+                ...(comparison
+                  ? {
+                      comparison: {
+                        diff: comparison.interval.diff,
+                        lo: comparison.interval.lo,
+                        hi: comparison.interval.hi,
+                        verdict: comparison.verdict,
+                      },
+                    }
+                  : {}),
+              },
+            ]
+          : []),
+        // Load-step milestones (report-only): navigation start → each
+        // `milestone` the scenario's load steps reached
+        ...milestoneNames.flatMap((name) =>
+          reportOnly(
+            condition,
+            name,
+            'ms',
+            (sample) =>
+              sample.milestones.find((milestone) => milestone.name === name)?.atMs ?? null,
+          ),
+        ),
         // Core Web Vitals (report-only) — captured per sample but previously
         // only logged; surface them so the dashboard tracks load quality, not
         // just time-to-editable. No TTFB: against the local mock it's a
@@ -574,7 +598,7 @@ export function collectPageLoad(
         ),
         ...reportOnly(condition, 'auth in flight', 'ms', (sample) => sample.auth.inFlightMs),
         // What booting actually downloads: exact gzip sum of the chunks this
-        // sample fetched before editable. boot-cold only — the warm page
+        // sample fetched before the load ended (editable or last milestone). boot-cold only — the warm page
         // replays the same set from cache. (The bundle report's entry-chunk
         // number is only what index.html references.)
         ...(condition === 'boot-cold' && chunkGzipSizes

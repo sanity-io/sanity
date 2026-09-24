@@ -186,8 +186,32 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
     // auto-focusing the first descendant after blurring a path that was focused
     // for any reason (e.g. by this auto-focus mechanism itself, or by
     // navigating to a deep-link).
-    if (!hasFocusedAnyPath && ready && !formState?.focusPath.length && formRef) {
-      focusFirstDescendant(formRef)
+    if (hasFocusedAnyPath || !ready || formState?.focusPath.length || !formRef) {
+      return undefined
+    }
+    if (focusFirstDescendant(formRef)) {
+      return undefined
+    }
+    // Nothing focusable yet: the inputs are behind FormBuilder's Suspense boundary while a lazy
+    // form component loads. Retry when they land, unless focus has moved anywhere since the form
+    // committed: whatever held focus before that (the list item that opened the document) is not
+    // a choice the user made while waiting, but any focus after it is.
+    const {ownerDocument} = formRef
+    let focusMoved = false
+    const handleFocusIn = () => {
+      focusMoved = true
+    }
+    ownerDocument.addEventListener('focusin', handleFocusIn, true)
+    const observer = new MutationObserver(() => {
+      if (focusMoved || focusFirstDescendant(formRef)) {
+        observer.disconnect()
+        ownerDocument.removeEventListener('focusin', handleFocusIn, true)
+      }
+    })
+    observer.observe(formRef, {childList: true, subtree: true})
+    return () => {
+      observer.disconnect()
+      ownerDocument.removeEventListener('focusin', handleFocusIn, true)
     }
   }, [hasFocusedAnyPath, formRef, formState?.focusPath.length, ready])
 

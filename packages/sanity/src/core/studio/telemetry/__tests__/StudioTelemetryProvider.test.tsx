@@ -1,6 +1,8 @@
-import type * as SanityTelemetry from '@sanity/telemetry'
 /* oxlint-disable import/first */
 // Regular imports first
+import portableTextEditorManifest from '@portabletext/editor/package.json' with {type: 'json'}
+import appSdkManifest from '@sanity/sdk-react/package.json' with {type: 'json'}
+import type * as SanityTelemetry from '@sanity/telemetry'
 import {render} from '@testing-library/react'
 import {StrictMode, type ReactNode} from 'react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
@@ -185,6 +187,8 @@ describe('StudioTelemetryProvider', () => {
               context: expect.objectContaining({
                 // Static context
                 studioVersion: '3.0.0-test',
+                portableTextEditorVersion: portableTextEditorManifest.version,
+                appSdkVersion: appSdkManifest.version,
                 environment: 'development',
                 // Dynamic context
                 orgId: 'org-123',
