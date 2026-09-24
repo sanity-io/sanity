@@ -135,6 +135,22 @@ describe('inferTypeFromValue', () => {
       ]),
     ).toEqual({type: 'array', of: {type: 'number'}})
   })
+
+  it('keeps a "__proto__" projection key as an ordinary attribute', () => {
+    const items: unknown[] = JSON.parse('[{"__proto__": 1, "a": "x"}, {"a": "y"}]')
+    const node = inferTypeFromValue(items)
+    expect(node.type).toBe('array')
+    const item = node.type === 'array' ? node.of : undefined
+    expect(item?.type).toBe('object')
+    if (item?.type !== 'object') return
+    expect(Object.keys(item.attributes).sort()).toEqual(['__proto__', 'a'])
+    expect(item.attributes.__proto__).toEqual({
+      type: 'objectAttribute',
+      value: {type: 'number'},
+      optional: true,
+    })
+    expect(printTypeScript(node, {typeName: 'R'})).toContain('  __proto__?: number;')
+  })
 })
 
 describe('schemaTypes', () => {

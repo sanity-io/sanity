@@ -167,7 +167,10 @@ export function QueryTabBar() {
       if (event.key === 'Delete') {
         event.preventDefault()
         actorRef.send({type: 'tab.close', id: activeTabId})
-        focusTab(actorRef.getSnapshot().context.activeTabId)
+        // The tab that takes over may be brand new (closing the last tab), so it only exists
+        // after React has rendered the new snapshot
+        const nextId = actorRef.getSnapshot().context.activeTabId
+        requestAnimationFrame(() => focusTab(nextId))
         return
       }
       const index = tabs.findIndex((tab) => tab.id === activeTabId)

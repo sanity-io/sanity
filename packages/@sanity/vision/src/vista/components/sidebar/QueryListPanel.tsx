@@ -18,6 +18,7 @@ import {Box, Flex} from 'ui5'
 import {type QueryConfig} from '../../../hooks/useSavedQueries'
 import {visionLocaleNamespace} from '../../../i18n'
 import {type ParsedQueryUrl, parseQueryUrl} from '../../../util/parseQueryUrl'
+import {useOnValueChange} from '../../hooks/useOnValueChange'
 import {useQueryRequestBuilder} from '../../hooks/useQueryRequestBuilder'
 import {useSaveCurrentQuery} from '../../hooks/useSaveCurrentQuery'
 import {type VistaDrawer} from '../../store/types'
@@ -46,7 +47,8 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
   const tabs = useVistaSelector((snapshot) => snapshot.context.tabs)
   const datasets = useVistaSelector(selectDatasets)
   const {request} = useQueryRequestBuilder(activeTab)
-  const {queries, updateQuery, deleteQuery, shareQuery, unshareQuery} = useSavedQueriesApi()
+  const {queries, updateQuery, deleteQuery, deleteQueryError, shareQuery, unshareQuery} =
+    useSavedQueriesApi()
   const {saveCurrent, canSave} = useSaveCurrentQuery(activeTab, request)
   const formatDate = useDateTimeFormat({dateStyle: 'medium', timeStyle: 'short'})
 
@@ -92,6 +94,11 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
     },
     [t, toast],
   )
+
+  // `deleteQuery` resolves either way and reports failures through this state instead
+  useOnValueChange(deleteQueryError, (error) => {
+    if (error) reportError(error)
+  })
 
   const openInNewTab = useCallback(
     ({query, parsed}: QueryListItem) => {

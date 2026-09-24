@@ -29,8 +29,13 @@ export function inferTypeFromValue(value: unknown): TypeNode {
   }
 }
 
+// Null-prototype maps: a projection may legitimately be keyed "__proto__"
+function createAttributeMap(): Record<string, ObjectAttribute> {
+  return Object.create(null) as Record<string, ObjectAttribute>
+}
+
 function inferObject(value: Record<string, unknown>): ObjectTypeNode {
-  const attributes: Record<string, ObjectAttribute> = {}
+  const attributes = createAttributeMap()
   for (const [key, attributeValue] of Object.entries(value)) {
     const inferred = inferTypeFromValue(attributeValue)
     attributes[key] = {
@@ -103,7 +108,7 @@ function mergeObjectNodes(nodes: ObjectTypeNode[]): ObjectTypeNode {
   if (nodes.length === 1) {
     return nodes[0]
   }
-  const attributes: Record<string, ObjectAttribute> = {}
+  const attributes = createAttributeMap()
   const keys = new Set(nodes.flatMap((node) => Object.keys(node.attributes)))
   for (const key of keys) {
     const present = nodes.filter((node) => key in node.attributes)
