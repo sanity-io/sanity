@@ -150,6 +150,9 @@ describe('inferTypeFromValue', () => {
       optional: true,
     })
     expect(printTypeScript(node, {typeName: 'R'})).toContain('  __proto__?: number;')
+    // In an object literal even a quoted `__proto__` key sets the prototype; only a computed
+    // key defines the property
+    expect(printZod(node, {typeName: 'R'})).toContain('  ["__proto__"]: z.number().optional(),')
   })
 })
 

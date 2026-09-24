@@ -1,6 +1,6 @@
 import {type ObjectTypeNode, type SchemaType, type TypeNode} from 'groq-js'
 
-import {flattenObject, indent, printKey, uniqueMembers} from './printUtils'
+import {flattenObject, indent, printLiteralKey, uniqueMembers} from './printUtils'
 import {collectReferencedTypes, createTypeNames, resolveSchemaType, toTypeName} from './schemaTypes'
 
 export interface PrintZodOptions {
@@ -28,7 +28,7 @@ function printObject(node: ObjectTypeNode, depth: number, context: PrintContext)
 
   const lines = Object.entries(attributes).map(([key, attribute]) => {
     const value = printZodNode(attribute.value, depth + 1, context)
-    return `${inner}${printKey(key)}: ${attribute.optional ? `${value}.optional()` : value},`
+    return `${inner}${printLiteralKey(key)}: ${attribute.optional ? `${value}.optional()` : value},`
   })
 
   let output =

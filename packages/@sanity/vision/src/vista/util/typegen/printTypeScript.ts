@@ -1,6 +1,6 @@
 import {type ObjectTypeNode, type SchemaType, type TypeNode} from 'groq-js'
 
-import {flattenObject, indent, printKey, uniqueMembers} from './printUtils'
+import {flattenObject, indent, printTypeKey, uniqueMembers} from './printUtils'
 import {collectReferencedTypes, createTypeNames, resolveSchemaType, toTypeName} from './schemaTypes'
 
 export interface PrintTypeScriptOptions {
@@ -25,7 +25,7 @@ function printObject(node: ObjectTypeNode, depth: number, context: PrintContext)
 
   const lines = Object.entries(attributes).map(
     ([key, attribute]) =>
-      `${inner}${printKey(key)}${attribute.optional ? '?' : ''}: ${printNode(attribute.value, depth + 1, context)};`,
+      `${inner}${printTypeKey(key)}${attribute.optional ? '?' : ''}: ${printNode(attribute.value, depth + 1, context)};`,
   )
   if (rest?.type === 'unknown') {
     lines.push(`${inner}[key: string]: unknown;`)

@@ -7,9 +7,17 @@ export function indent(depth: number): string {
   return INDENT.repeat(depth)
 }
 
-/** Object keys as written in source: bare when they are valid identifiers, quoted otherwise */
-export function printKey(key: string): string {
+/** Member keys of a TypeScript type literal: bare when valid identifiers, quoted otherwise */
+export function printTypeKey(key: string): string {
   return IDENTIFIER.test(key) ? key : JSON.stringify(key)
+}
+
+/**
+ * Property keys of a JavaScript object literal. `__proto__` (bare or quoted) would set the
+ * prototype instead of defining a property, so it is written as a computed key.
+ */
+export function printLiteralKey(key: string): string {
+  return key === '__proto__' ? `[${JSON.stringify(key)}]` : printTypeKey(key)
 }
 
 export interface FlatObject {
