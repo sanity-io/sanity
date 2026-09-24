@@ -1,4 +1,9 @@
-import {type LiveEvent, type RawQueryResponse, type SanityClient} from '@sanity/client'
+import {
+  type LiveEvent,
+  type RawQueryResponse,
+  type SanityClient,
+  type SyncTag,
+} from '@sanity/client'
 import {uuid} from '@sanity/uuid'
 import {
   type ActorRefFromLogic,
@@ -25,6 +30,10 @@ export interface QueryRunnerContext {
   tabId: string
   /** The request of the latest fetch; live refetches replay it */
   request: QueryRequest | undefined
+  /** The request the shown `result` and `meta` belong to */
+  settledRequest: QueryRequest | undefined
+  /** Sync tags of the last successful response, kept across failures so live events keep matching */
+  syncTags: SyncTag[] | undefined
   reason: FetchReason
   startedAt: number
   /** URL of the latest request, available as soon as a fetch starts */
@@ -86,7 +95,7 @@ export const queryRunnerMachine = setup({
     ),
   },
   guards: {
-    hasResponse: ({context}) => context.meta !== undefined,
+    hasResponse: ({context}) => context.settledRequest !== undefined,
   },
   actions: {
     storeRequest: assign({
@@ -98,7 +107,16 @@ export const queryRunnerMachine = setup({
       url: ({context}) => context.request?.url,
       error: undefined,
     }),
+    // A cancelled fetch leaves the previous response on screen, so the request goes back to it
+    restoreSettledRequest: assign({
+      request: ({context}) => context.settledRequest,
+      url: ({context}) => context.settledRequest?.url,
+      error: undefined,
+    }),
     clearResponse: assign({
+      request: undefined,
+      settledRequest: undefined,
+      syncTags: undefined,
       url: undefined,
       result: undefined,
       error: undefined,
@@ -116,6 +134,8 @@ export const queryRunnerMachine = setup({
   context: ({input}) => ({
     tabId: input.tabId,
     request: undefined,
+    settledRequest: undefined,
+    syncTags: undefined,
     reason: {type: 'manual'},
     startedAt: 0,
     url: undefined,
@@ -154,6 +174,8 @@ export const queryRunnerMachine = setup({
                   resultSourceMap: response.resultSourceMap,
                 }
                 return {
+                  settledRequest: context.request,
+                  syncTags: meta.syncTags,
                   result: response.result,
                   error: undefined,
                   meta,
@@ -174,8 +196,10 @@ export const queryRunnerMachine = setup({
               actions: assign(({context, event}) => {
                 const error = toError(event.error)
                 return {
+                  // The previous response is gone from the screen; only its sync tags live on so
+                  // relevant content changes still retry the query
+                  settledRequest: undefined,
                   result: undefined,
-                  // The previous response's timings and tags no longer describe what is shown
                   meta: undefined,
                   error,
                   history: appendHistory(context.history, {
@@ -192,7 +216,10 @@ export const queryRunnerMachine = setup({
             },
           },
           on: {
-            cancel: [{guard: 'hasResponse', target: 'settled'}, {target: 'idle'}],
+            cancel: [
+              {guard: 'hasResponse', target: 'settled', actions: 'restoreSettledRequest'},
+              {target: 'idle', actions: 'clearResponse'},
+            ],
           },
         },
         settled: {},
@@ -215,14 +242,13 @@ export const queryRunnerMachine = setup({
             onSnapshot: {
               guard: ({context, event}) =>
                 context.request !== undefined &&
-                getLiveRefetchTags(event.snapshot.context, context.meta?.syncTags) !== null,
+                getLiveRefetchTags(event.snapshot.context, context.syncTags) !== null,
               actions: raise(({context, event}) => ({
                 type: 'fetch' as const,
                 request: context.request as QueryRequest,
                 reason: {
                   type: 'live' as const,
-                  matchedTags:
-                    getLiveRefetchTags(event.snapshot.context, context.meta?.syncTags) || [],
+                  matchedTags: getLiveRefetchTags(event.snapshot.context, context.syncTags) || [],
                 },
               })),
             },

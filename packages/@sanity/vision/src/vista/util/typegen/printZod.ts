@@ -1,7 +1,7 @@
 import {type ObjectTypeNode, type SchemaType, type TypeNode} from 'groq-js'
 
 import {flattenObject, indent, printKey, uniqueMembers} from './printUtils'
-import {collectReferencedTypes, resolveSchemaType, toTypeName} from './schemaTypes'
+import {collectReferencedTypes, createTypeNames, resolveSchemaType, toTypeName} from './schemaTypes'
 
 export interface PrintZodOptions {
   /** Name of the query result type; the schema constant gets a `Schema` suffix */
@@ -10,14 +10,16 @@ export interface PrintZodOptions {
 }
 
 interface PrintContext {
+  /** Identifier of each referenced schema type, unique across the output */
+  typeNames: Map<string, string>
   /** Referenced schema types that close a cycle and therefore need `z.lazy` */
   cyclic: Set<string>
   /** Whether schema type declarations are being printed; the result schema comes after them all */
   inDeclarations: boolean
 }
 
-function schemaName(typeName: string): string {
-  return `${toTypeName(typeName)}Schema`
+function schemaName(typeName: string, context: PrintContext): string {
+  return `${context.typeNames.get(typeName) ?? toTypeName(typeName)}Schema`
 }
 
 function printObject(node: ObjectTypeNode, depth: number, context: PrintContext): string {
@@ -40,7 +42,7 @@ function printObject(node: ObjectTypeNode, depth: number, context: PrintContext)
 }
 
 function printReference(name: string, context: PrintContext): string {
-  const reference = schemaName(name)
+  const reference = schemaName(name, context)
   return context.inDeclarations && context.cyclic.has(name)
     ? `z.lazy(() => ${reference})`
     : reference
@@ -91,7 +93,11 @@ function printZodNode(node: TypeNode, depth: number, context: PrintContext): str
  */
 export function printZod(node: TypeNode, options: PrintZodOptions): string {
   const {order, cyclic} = collectReferencedTypes(node, options.schema)
-  const context: PrintContext = {cyclic, inDeclarations: true}
+  const context: PrintContext = {
+    typeNames: createTypeNames(order, [options.typeName]),
+    cyclic,
+    inDeclarations: true,
+  }
   const declarations = [`import {z} from 'zod'`]
 
   for (const name of order) {
@@ -99,7 +105,7 @@ export function printZod(node: TypeNode, options: PrintZodOptions): string {
     const value = resolved ? printZodNode(resolved, 0, context) : 'z.unknown()'
     // Recursive schemas need an explicit type, since TypeScript cannot infer through `z.lazy`
     const typeAnnotation = cyclic.has(name) ? ': z.ZodTypeAny' : ''
-    declarations.push(`export const ${schemaName(name)}${typeAnnotation} = ${value}`)
+    declarations.push(`export const ${schemaName(name, context)}${typeAnnotation} = ${value}`)
   }
 
   const resultSchema = `${options.typeName}Schema`

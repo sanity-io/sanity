@@ -1,8 +1,11 @@
+import {act, renderHook} from '@testing-library/react'
 import {beforeEach, describe, expect, it} from 'vitest'
 
+import {clearLocalStorage} from '../util/localStorage'
 import {
   clearRedesignPreference,
   readRedesignPreference,
+  useRedesignPreference,
   writeRedesignPreference,
 } from './redesignPreference'
 
@@ -43,5 +46,16 @@ describe('redesignPreference', () => {
     clearRedesignPreference('c')
     expect(readRedesignPreference('c')).toEqual({optedIn: false, dismissed: false})
     expect(localStorage.getItem('sanityVision:redesign:c')).toBeNull()
+  })
+
+  it('follows the classic "Clear cache" flow, which removes the key behind its back', () => {
+    writeRedesignPreference('d', {optedIn: true})
+    const {result} = renderHook(() => useRedesignPreference('d'))
+    expect(result.current.optedIn).toBe(true)
+
+    act(() => clearLocalStorage())
+
+    expect(readRedesignPreference('d')).toEqual({optedIn: false, dismissed: false})
+    expect(result.current.optedIn).toBe(false)
   })
 })

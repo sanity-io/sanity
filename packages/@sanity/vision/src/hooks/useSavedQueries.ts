@@ -280,42 +280,50 @@ export function useSavedQueries(): {
     [workspaceClient, currentUser, keyValueStore, mapSharedQueries, value.queries],
   )
 
+  // Rejects when the document could not be deleted; `deleteQuery` turns that into state
+  const deleteSharedQuery = useCallback(
+    async (key: string) => {
+      const sharedQuery = sharedQueries.find((query) => query._key === key && query.shared)
+      if (!sharedQuery) {
+        throw new Error(`No shared query with key "${key}"`)
+      }
+      if (!currentUser?.id || sharedQuery.authorId !== currentUser.id) {
+        throw new Error('Only the author can delete a shared query.')
+      }
+      await workspaceClient.delete(key)
+      setSharedQueries((prev) => prev.filter((query) => query._key !== key))
+    },
+    [currentUser, sharedQueries, workspaceClient],
+  )
+
+  // Optimistic like the other personal mutations; rejects when the store write fails
+  const deletePersonalQuery = useCallback(
+    async (key: string) => {
+      const filteredQueries = value.queries.filter((q) => q._key !== key)
+      setValue({queries: filteredQueries})
+      await keyValueStore.setKey(keyValueStoreKey, {
+        queries: filteredQueries,
+      } as unknown as KeyValueStoreValue)
+    },
+    [keyValueStore, value.queries],
+  )
+
   const deleteQuery = useCallback(
     async (key: string) => {
       setDeleting((prev) => [...prev, key])
       setDeleteQueryError(undefined)
-      const clearDeleting = () => setDeleting((prev) => prev.filter((k) => k !== key))
-
-      const sharedQuery = sharedQueries.find((query) => query._key === key && query.shared)
-      if (sharedQuery) {
-        if (!currentUser?.id || sharedQuery.authorId !== currentUser.id) {
-          setDeleteQueryError(new Error('Only the author can delete a shared query.'))
-          clearDeleting()
-          return
-        }
-
-        try {
-          await workspaceClient.delete(key)
-          setSharedQueries((prev) => prev.filter((query) => query._key !== key))
-        } catch (err) {
-          setDeleteQueryError(err as Error)
-        }
-        clearDeleting()
-        return
-      }
-
       try {
-        const filteredQueries = value.queries.filter((q) => q._key !== key)
-        setValue({queries: filteredQueries})
-        await keyValueStore.setKey(keyValueStoreKey, {
-          queries: filteredQueries,
-        } as unknown as KeyValueStoreValue)
+        if (sharedQueries.some((query) => query._key === key && query.shared)) {
+          await deleteSharedQuery(key)
+        } else {
+          await deletePersonalQuery(key)
+        }
       } catch (err) {
-        setDeleteQueryError(err as Error)
+        setDeleteQueryError(err instanceof Error ? err : new Error(String(err)))
       }
-      clearDeleting()
+      setDeleting((prev) => prev.filter((k) => k !== key))
     },
-    [workspaceClient, currentUser, keyValueStore, sharedQueries, value.queries],
+    [deletePersonalQuery, deleteSharedQuery, sharedQueries],
   )
 
   const shareQuery = useCallback(
@@ -330,9 +338,9 @@ export function useSavedQueries(): {
         url: query.url,
         savedAt: new Date().toISOString(),
       })
-      await deleteQuery(key)
+      await deletePersonalQuery(key)
     },
-    [deleteQuery, saveQuery, value.queries],
+    [deletePersonalQuery, saveQuery, value.queries],
   )
 
   const unshareQuery = useCallback(
@@ -347,14 +355,15 @@ export function useSavedQueries(): {
         url: query.url,
         savedAt: new Date().toISOString(),
       })
-      await deleteQuery(key)
+      await deleteSharedQuery(key)
     },
-    [deleteQuery, saveQuery, sharedQueries],
+    [deleteSharedQuery, saveQuery, sharedQueries],
   )
 
   const clearQueries = useCallback(async () => {
-    setValue(defaultValue)
+    // Nothing disappears from the list until the store confirms the write
     await keyValueStore.setKey(keyValueStoreKey, defaultValue as unknown as KeyValueStoreValue)
+    setValue(defaultValue)
   }, [keyValueStore])
 
   return {

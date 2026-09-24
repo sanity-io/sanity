@@ -63,7 +63,7 @@ interface TabHandleProps {
   onStartRename: () => void
   onRename: (title: string) => void
   onCancelRename: () => void
-  onArrowKey: (event: KeyboardEvent<HTMLButtonElement>) => void
+  onKeyDown: (event: KeyboardEvent<HTMLButtonElement>) => void
 }
 
 function TabHandle(props: TabHandleProps) {
@@ -76,7 +76,7 @@ function TabHandle(props: TabHandleProps) {
     onStartRename,
     onRename,
     onCancelRename,
-    onArrowKey,
+    onKeyDown,
   } = props
   const {t} = useTranslation(visionLocaleNamespace)
   const title = getTabTitle(tab, t('vista.tabs.untitled'))
@@ -117,7 +117,7 @@ function TabHandle(props: TabHandleProps) {
           onAuxClick={handleAuxClick}
           onClick={onSelect}
           onDoubleClick={onStartRename}
-          onKeyDown={onArrowKey}
+          onKeyDown={onKeyDown}
           padding={2}
           role="tab"
           tabIndex={selected ? 0 : -1}
@@ -155,22 +155,34 @@ export function QueryTabBar() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const listRef = useRef<HTMLDivElement | null>(null)
 
-  // Roving focus per the ARIA tabs pattern: arrows move between tabs and activate them
-  const handleArrowKey = useCallback(
+  const focusTab = useCallback((id: string) => {
+    listRef.current?.querySelector<HTMLElement>(`#${getQueryTabId(id)}`)?.focus()
+  }, [])
+
+  // The ARIA tabs keyboard pattern: arrows, Home and End move between tabs and activate them,
+  // Delete closes the focused tab (the close button itself stays out of the tab order)
+  const handleTabKeyDown = useCallback(
     (event: KeyboardEvent<HTMLButtonElement>) => {
+      if (tabs.length === 0) return
+      if (event.key === 'Delete') {
+        event.preventDefault()
+        actorRef.send({type: 'tab.close', id: activeTabId})
+        focusTab(actorRef.getSnapshot().context.activeTabId)
+        return
+      }
       const index = tabs.findIndex((tab) => tab.id === activeTabId)
       let nextIndex: number | undefined
       if (event.key === 'ArrowRight') nextIndex = (index + 1) % tabs.length
       if (event.key === 'ArrowLeft') nextIndex = (index - 1 + tabs.length) % tabs.length
       if (event.key === 'Home') nextIndex = 0
       if (event.key === 'End') nextIndex = tabs.length - 1
-      if (nextIndex === undefined || tabs.length === 0) return
+      if (nextIndex === undefined) return
       event.preventDefault()
       const next = tabs[nextIndex]
       actorRef.send({type: 'tab.select', id: next.id})
-      listRef.current?.querySelector<HTMLElement>(`#${getQueryTabId(next.id)}`)?.focus()
+      focusTab(next.id)
     },
-    [activeTabId, actorRef, tabs],
+    [activeTabId, actorRef, focusTab, tabs],
   )
 
   return (
@@ -187,7 +199,7 @@ export function QueryTabBar() {
           <TabHandle
             editing={editingId === tab.id}
             key={tab.id}
-            onArrowKey={handleArrowKey}
+            onKeyDown={handleTabKeyDown}
             onCancelRename={() => setEditingId(null)}
             onClose={() => actorRef.send({type: 'tab.close', id: tab.id})}
             onRename={(title) => {

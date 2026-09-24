@@ -230,6 +230,46 @@ describe('printTypeScript', () => {
       'export type R = Missing;\n\nexport type Missing = unknown;',
     )
   })
+
+  it('keeps identifiers unique when schema names normalise to the same one', () => {
+    const colliding: SchemaType = [
+      {name: 'foo-bar', type: 'type', value: {type: 'string'}},
+      {name: 'foo.bar', type: 'type', value: {type: 'number'}},
+      {name: 'result', type: 'type', value: {type: 'boolean'}},
+    ]
+    const node: TypeNode = {
+      type: 'object',
+      attributes: {
+        a: {type: 'objectAttribute', value: {type: 'inline', name: 'foo-bar'}},
+        b: {type: 'objectAttribute', value: {type: 'inline', name: 'foo.bar'}},
+        c: {type: 'objectAttribute', value: {type: 'inline', name: 'result'}},
+      },
+    }
+
+    expect(printTypeScript(node, {typeName: 'Result', schema: colliding})).toBe(
+      [
+        'export type Result = {',
+        '  a: FooBar;',
+        '  b: FooBar2;',
+        '  c: Result2;',
+        '};',
+        '',
+        'export type FooBar = string;',
+        '',
+        'export type FooBar2 = number;',
+        '',
+        'export type Result2 = boolean;',
+      ].join('\n'),
+    )
+
+    const zod = printZod(node, {typeName: 'Result', schema: colliding})
+    expect(zod).toContain('export const FooBarSchema = z.string()')
+    expect(zod).toContain('export const FooBar2Schema = z.number()')
+    expect(zod).toContain('export const Result2Schema = z.boolean()')
+    expect(zod).toContain('  b: FooBar2Schema,')
+    expect(zod).toContain('  c: Result2Schema,')
+    expect(zod).toContain('export const ResultSchema = z.object({')
+  })
 })
 
 describe('printZod', () => {

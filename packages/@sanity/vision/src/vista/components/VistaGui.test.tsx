@@ -421,10 +421,52 @@ describe('VistaGui', () => {
     expect(tabs).toHaveLength(1)
     expect(text(tabs[0])).toContain('Authors')
 
-    // Closing the last tab leaves a fresh one
+    // Delete closes the focused tab (the close button is not a tab stop); the last tab is
+    // replaced by a fresh one
+    fireEvent.click(screen.getByTestId('vista-new-tab'))
+    expect(screen.getAllByTestId('vista-tab')).toHaveLength(2)
+    fireEvent.keyDown(within(screen.getAllByTestId('vista-tab')[1]).getByRole('tab'), {
+      key: 'Delete',
+    })
+    tabs = screen.getAllByTestId('vista-tab')
+    expect(tabs).toHaveLength(1)
+    expect(text(tabs[0])).toContain('Authors')
+
     fireEvent.click(within(tabs[0]).getByTestId('vista-tab-close'))
     expect(screen.getAllByTestId('vista-tab')).toHaveLength(1)
     expect(text(screen.getByTestId('vista-tab-button'))).toContain('vista.tabs.untitled')
+  })
+
+  it('only derives types from a result that was fetched for the current query', async () => {
+    renderVista()
+    typeQuery('*[_type == "author"]')
+    await waitFor(() => expect(isDisabled(screen.getByTestId('vista-fetch-button'))).toBe(false))
+    fireEvent.click(screen.getByTestId('vista-fetch-button'))
+    await waitFor(() => expect(screen.getByTestId('result-json')).toBeTruthy())
+
+    fireEvent.click(screen.getByTestId('vista-result-menu-button'))
+    fireEvent.click(await screen.findByTestId('vista-export-typescript'))
+    // No schema in the test studio mock, so the fetched result is what the types come from
+    await waitFor(() =>
+      expect(text(screen.getByTestId('vista-export-types-source'))).toContain(
+        'vista.export-types.source.result',
+      ),
+    )
+    expect(text(screen.getByTestId('vista-export-types-code'))).toContain(
+      'export type AuthorQueryResult = Array<{\n  title: string;\n}>;',
+    )
+    fireEvent.keyDown(screen.getByTestId('vista-export-types-dialog'), {key: 'Escape'})
+
+    // The shown result no longer belongs to the edited query
+    typeQuery('*[_type == "book"]')
+    fireEvent.click(screen.getByTestId('vista-result-menu-button'))
+    fireEvent.click(await screen.findByTestId('vista-export-typescript'))
+    await waitFor(() =>
+      expect(text(screen.getByTestId('vista-export-types-source'))).toContain(
+        'vista.export-types.stale-result',
+      ),
+    )
+    expect(screen.queryByTestId('vista-export-types-code')).toBeNull()
   })
 
   it('restores persisted tabs and settings on mount', () => {

@@ -4,6 +4,7 @@ import {isPlainObject} from './isPlainObject'
 export const VISION_STORAGE_KEY_PREFIX = 'sanityVision:'
 
 const hasLocalStorage = supportsLocalStorage()
+const clearListeners = new Set<() => void>()
 
 export interface LocalStorageish {
   get: <T>(key: string, defaultVal: T) => T
@@ -14,6 +15,14 @@ export interface LocalStorageish {
 /** The `localStorage` instance when it is available and writable, `undefined` otherwise */
 export function getStorage(): Storage | undefined {
   return hasLocalStorage ? globalThis.localStorage : undefined
+}
+
+/** Runs `listener` after `clearLocalStorage`, so in-memory copies of stored values can drop too */
+export function onLocalStorageCleared(listener: () => void): () => void {
+  clearListeners.add(listener)
+  return () => {
+    clearListeners.delete(listener)
+  }
 }
 
 export function clearLocalStorage() {
@@ -31,6 +40,7 @@ export function clearLocalStorage() {
     }
   }
   keys.forEach((key) => storage.removeItem(key))
+  clearListeners.forEach((listener) => listener())
 }
 
 export function getLocalStorage(namespace: string): LocalStorageish {

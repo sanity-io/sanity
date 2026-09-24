@@ -2,7 +2,8 @@ import {SplitPane} from '@rexxars/react-split-pane'
 import {Tab, TabList, useElementSize} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
-import {useCallback, useRef, useState} from 'react'
+import debounce from 'lodash-es/debounce.js'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
@@ -34,6 +35,8 @@ import {hiddenPane, paneFill, splitPaneContainer} from '../vista.css'
 import {getQueryTabId, QUERY_TAB_PANEL_ID} from './QueryTabBar'
 
 const MIN_PANE_SIZE = {columns: 280, stacked: 160}
+/** Params are parsed on every change, so typing is debounced like in the classic tool */
+const PARAMS_DEBOUNCE_MS = 333
 
 type MobilePane = 'request' | 'response'
 
@@ -86,10 +89,12 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     (query: string) => actorRef.send({type: 'tab.setQuery', id: tab.id, query}),
     [actorRef, tab.id],
   )
-  const setParams = useCallback(
+  const setParamsNow = useCallback(
     (rawParams: string) => actorRef.send({type: 'tab.setParams', id: tab.id, rawParams}),
     [actorRef, tab.id],
   )
+  const setParams = useMemo(() => debounce(setParamsNow, PARAMS_DEBOUNCE_MS), [setParamsNow])
+  useEffect(() => () => setParams.flush(), [setParams])
   const setOptions = useCallback(
     (options: Partial<VistaTabOptions>) =>
       actorRef.send({type: 'tab.setOptions', id: tab.id, options}),
@@ -118,8 +123,10 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   )
 
   // A query loaded from outside the editors (saved query, pasted URL) replaces their content
-  // and drops the previous response
+  // and drops the previous response; an edit still waiting in the debounce belongs to the
+  // replaced params and must not write them back
   useOnValueChange(loadRevision, () => {
+    setParams.cancel()
     queryEditorRef.current?.resetEditorContent(tab.query)
     paramsEditorRef.current?.resetEditorContent(tab.rawParams)
     runnerRef.send({type: 'clear'})
@@ -210,7 +217,9 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
       tab={tab}
     />
   )
-  const responsePanel = <ResponsePanel resolved={resolved} runnerRef={runnerRef} tab={tab} />
+  const responsePanel = (
+    <ResponsePanel request={request} resolved={resolved} runnerRef={runnerRef} tab={tab} />
+  )
 
   const panelProps = {
     'aria-labelledby': getQueryTabId(tab.id),

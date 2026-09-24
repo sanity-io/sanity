@@ -16,9 +16,16 @@ export interface ResultActionsMenuProps {
   tab: VistaTab
   result: unknown
   hasResult: boolean
+  /** Whether the shown result was fetched for the tab's current query and params */
+  resultIsCurrent: boolean
 }
 
-export function ResultActionsMenu({tab, result, hasResult}: ResultActionsMenuProps) {
+export function ResultActionsMenu({
+  tab,
+  result,
+  hasResult,
+  resultIsCurrent,
+}: ResultActionsMenuProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const copyToClipboard = useCopyToClipboard()
   const [exportFormat, setExportFormat] = useState<TypesExportFormat | null>(null)
@@ -69,6 +76,7 @@ export function ResultActionsMenu({tab, result, hasResult}: ResultActionsMenuPro
           hasResult={hasResult}
           onClose={() => setExportFormat(null)}
           result={result}
+          resultIsCurrent={resultIsCurrent}
           tab={tab}
         />
       )}

@@ -23,6 +23,8 @@ export interface ExportTypesDialogProps {
   format: TypesExportFormat
   result: unknown
   hasResult: boolean
+  /** Only a result fetched for the current query and params may stand in for the schema */
+  resultIsCurrent: boolean
   onClose: () => void
 }
 
@@ -37,6 +39,7 @@ export function ExportTypesDialog({
   format,
   result,
   hasResult,
+  resultIsCurrent,
   onClose,
 }: ExportTypesDialogProps) {
   const {t} = useTranslation(visionLocaleNamespace)
@@ -49,7 +52,7 @@ export function ExportTypesDialog({
       query: tab.query,
       params: params.parsed || {},
       schema,
-      hasResult,
+      hasResult: hasResult && resultIsCurrent,
       result,
     })
     if (evaluation.source === 'none') {
@@ -65,14 +68,16 @@ export function ExportTypesDialog({
       code,
       schemaError: evaluation.source === 'result' ? evaluation.schemaError : undefined,
     }
-  }, [format, hasResult, result, schema, t, tab.query, tab.rawParams])
+  }, [format, hasResult, result, resultIsCurrent, schema, t, tab.query, tab.rawParams])
 
   const sourceNote =
     output.source === 'schema'
       ? t('vista.export-types.source.schema')
       : output.source === 'result'
         ? t('vista.export-types.source.result')
-        : t('vista.export-types.empty')
+        : hasResult
+          ? t('vista.export-types.stale-result')
+          : t('vista.export-types.empty')
 
   return (
     <Dialog

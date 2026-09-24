@@ -186,6 +186,9 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Note shown when the types were derived from the workspace schema */
   'vista.export-types.source.schema':
     'Inferred from the workspace schema, the same way sanity typegen does it.',
+  /** Shown when the schema cannot be evaluated and the shown result belongs to an older query */
+  'vista.export-types.stale-result':
+    'The result shown was fetched for a different query or params. Fetch the current query first so there is a result to derive types from.',
   /** Title of the dialog exporting TypeScript types for the result */
   'vista.export-types.title-typescript': 'Export TypeScript',
   /** Title of the dialog exporting a Zod schema for the result */

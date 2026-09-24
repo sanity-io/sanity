@@ -13,7 +13,8 @@ import {visionLocaleNamespace} from '../../../i18n'
 import {getCsvBlobUrl, getJsonBlobUrl} from '../../../util/getBlobUrl'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {type QueryRunnerRef, selectRequestStatus} from '../../store/queryRunnerMachine'
-import {type VistaTab} from '../../store/types'
+import {type QueryRequest, type VistaTab} from '../../store/types'
+import {haveSameQuery} from '../../util/queryRequest'
 import {ActionRail} from '../ActionRail'
 import {type CollapsiblePanelTab} from '../CollapsiblePanel'
 import {SplitWithBottomPanel} from '../SplitWithBottomPanel'
@@ -30,13 +31,16 @@ export interface ResponsePanelProps {
   tab: VistaTab
   runnerRef: QueryRunnerRef
   resolved: ResolvedRequest
+  /** What the tab would fetch right now; tells whether the shown result is for the current query */
+  request: QueryRequest | null
 }
 
-export function ResponsePanel({tab, runnerRef, resolved}: ResponsePanelProps) {
+export function ResponsePanel({tab, runnerRef, resolved, request}: ResponsePanelProps) {
   const {t} = useTranslation(visionLocaleNamespace)
 
   const status = useSelector(runnerRef, selectRequestStatus)
   const result = useSelector(runnerRef, (snapshot) => snapshot.context.result)
+  const settledRequest = useSelector(runnerRef, (snapshot) => snapshot.context.settledRequest)
   const error = useSelector(runnerRef, (snapshot) => snapshot.context.error)
   const meta = useSelector(runnerRef, (snapshot) => snapshot.context.meta)
   const url = useSelector(runnerRef, (snapshot) => snapshot.context.url)
@@ -44,6 +48,11 @@ export function ResponsePanel({tab, runnerRef, resolved}: ResponsePanelProps) {
   const isLive = useSelector(runnerRef, (snapshot) => snapshot.matches({live: 'on'}))
 
   const hasResult = status === 'settled' && meta !== undefined
+  const resultIsCurrent =
+    hasResult &&
+    settledRequest !== undefined &&
+    request !== null &&
+    haveSameQuery(settledRequest, request)
   const jsonUrl = hasResult ? getJsonBlobUrl(result) : undefined
   const csvUrl = hasResult ? getCsvBlobUrl(result) : undefined
 
@@ -142,7 +151,12 @@ export function ResponsePanel({tab, runnerRef, resolved}: ResponsePanelProps) {
             hasResult && !csvUrl ? t('result.save-result-as-csv.not-csv-encodable') : undefined
           }
         />
-        <ResultActionsMenu hasResult={hasResult} result={result} tab={tab} />
+        <ResultActionsMenu
+          hasResult={hasResult}
+          result={result}
+          resultIsCurrent={resultIsCurrent}
+          tab={tab}
+        />
       </ActionRail>
     </SplitWithBottomPanel>
   )

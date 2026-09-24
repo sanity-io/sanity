@@ -13,6 +13,29 @@ export function toTypeName(name: string): string {
   return /^[0-9]/.test(pascal) ? `_${pascal}` : pascal
 }
 
+/**
+ * One identifier per schema type name. Different names can normalise to the same identifier
+ * (`foo-bar` and `foo.bar` both want `FooBar`), so later ones get a numeric suffix; `reserved`
+ * identifiers (the result type's own name) are never handed out.
+ */
+export function createTypeNames(
+  names: readonly string[],
+  reserved: readonly string[] = [],
+): Map<string, string> {
+  const taken = new Set(reserved)
+  const identifiers = new Map<string, string>()
+  for (const name of names) {
+    const base = toTypeName(name)
+    let candidate = base
+    for (let suffix = 2; taken.has(candidate); suffix++) {
+      candidate = `${base}${suffix}`
+    }
+    taken.add(candidate)
+    identifiers.set(name, candidate)
+  }
+  return identifiers
+}
+
 /** The type node a schema entry stands for, documents being objects of their attributes */
 export function resolveSchemaType(
   schema: SchemaType | undefined,

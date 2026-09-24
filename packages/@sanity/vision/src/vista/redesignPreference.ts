@@ -1,7 +1,7 @@
 import {useSyncExternalStore} from 'react'
 
 import {isPlainObject} from '../util/isPlainObject'
-import {getStorage, VISION_STORAGE_KEY_PREFIX} from '../util/localStorage'
+import {getStorage, onLocalStorageCleared, VISION_STORAGE_KEY_PREFIX} from '../util/localStorage'
 
 /**
  * Whether a user chose the redesigned Vision experience for a project, and whether they dismissed
@@ -14,7 +14,11 @@ export interface RedesignPreference {
 
 const DEFAULT_PREFERENCE: RedesignPreference = {optedIn: false, dismissed: false}
 
-const cache = new Map<string, RedesignPreference>()
+/**
+ * Storage is the source of truth (so "Clear cache and retry" in the error boundary is honoured);
+ * the parsed object is cached per raw string only to keep `useSyncExternalStore` snapshots stable.
+ */
+const cache = new Map<string, {raw: string | null; preference: RedesignPreference}>()
 const listeners = new Set<() => void>()
 
 function storageKey(projectId: string): string {
@@ -27,25 +31,40 @@ function notify(): void {
 
 function subscribe(listener: () => void): () => void {
   listeners.add(listener)
-  return () => listeners.delete(listener)
+  const unsubscribeClear = onLocalStorageCleared(listener)
+  return () => {
+    listeners.delete(listener)
+    unsubscribeClear()
+  }
+}
+
+function parsePreference(raw: string | null): RedesignPreference {
+  if (raw === null) {
+    return DEFAULT_PREFERENCE
+  }
+  try {
+    const stored: unknown = JSON.parse(raw)
+    return isPlainObject(stored)
+      ? {optedIn: stored.optedIn === true, dismissed: stored.dismissed === true}
+      : DEFAULT_PREFERENCE
+  } catch {
+    return DEFAULT_PREFERENCE
+  }
 }
 
 export function readRedesignPreference(projectId: string): RedesignPreference {
+  const storage = getStorage()
   const cached = cache.get(projectId)
-  if (cached) {
-    return cached
+  if (!storage) {
+    // Without storage the in-memory choice is all there is
+    return cached?.preference ?? DEFAULT_PREFERENCE
   }
-
-  let preference = DEFAULT_PREFERENCE
-  try {
-    const stored: unknown = JSON.parse(getStorage()?.getItem(storageKey(projectId)) || 'null')
-    if (isPlainObject(stored)) {
-      preference = {optedIn: stored.optedIn === true, dismissed: stored.dismissed === true}
-    }
-  } catch {
-    // Malformed JSON: fall back to the default
+  const raw = storage.getItem(storageKey(projectId))
+  if (cached && cached.raw === raw) {
+    return cached.preference
   }
-  cache.set(projectId, preference)
+  const preference = parsePreference(raw)
+  cache.set(projectId, {raw, preference})
   return preference
 }
 
@@ -54,20 +73,23 @@ export function writeRedesignPreference(
   patch: Partial<RedesignPreference>,
 ): RedesignPreference {
   const next = {...readRedesignPreference(projectId), ...patch}
-  cache.set(projectId, next)
+  const storage = getStorage()
+  let raw: string | null = JSON.stringify(next)
   try {
-    getStorage()?.setItem(storageKey(projectId), JSON.stringify(next))
+    storage?.setItem(storageKey(projectId), raw)
   } catch {
-    // Quota exceeded: the choice still applies for this session
+    // Quota exceeded: the choice still applies for this session, keyed on what storage holds
+    raw = storage?.getItem(storageKey(projectId)) ?? null
   }
+  cache.set(projectId, {raw, preference: next})
   notify()
   return next
 }
 
 /** Forgets both the opt-in and the dismissal, so the classic tool offers the redesign again */
 export function clearRedesignPreference(projectId: string): void {
-  cache.set(projectId, DEFAULT_PREFERENCE)
   getStorage()?.removeItem(storageKey(projectId))
+  cache.delete(projectId)
   notify()
 }
 

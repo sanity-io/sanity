@@ -144,6 +144,9 @@ describe('queryRunnerMachine', () => {
     harness.actor.send({type: 'cancel'})
     expect(harness.snapshot().matches({request: 'idle'})).toBe(true)
     expect(harness.fetches[0].signal.aborted).toBe(true)
+    // Nothing is shown, so there is nothing for live events to replay either
+    expect(harness.snapshot().context.request).toBeUndefined()
+    expect(harness.snapshot().context.url).toBeUndefined()
 
     harness.actor.send({type: 'fetch', request: harness.request(), reason: {type: 'manual'}})
     harness.fetches[1].resolve({result: 'kept'})
@@ -155,10 +158,35 @@ describe('queryRunnerMachine', () => {
     expect(harness.snapshot().context.result).toBe('kept')
   })
 
-  it('clears the response on demand', async () => {
+  it('restores the settled request when a later fetch is cancelled', async () => {
+    const harness = createHarness()
+    const first = harness.request({query: '*[_type == "a"]', url: 'https://x/a'})
+    const second = harness.request({query: '*[_type == "b"]', url: 'https://x/b'})
+
+    harness.actor.send({type: 'fetch', request: first, reason: {type: 'manual'}})
+    harness.fetches[0].resolve({result: 'a', syncTags: ['s1:a']})
+    await waitFor(harness.actor, (snapshot) => snapshot.matches({request: 'settled'}))
+
+    harness.actor.send({type: 'fetch', request: second, reason: {type: 'manual'}})
+    expect(harness.snapshot().context.url).toBe('https://x/b')
+    harness.actor.send({type: 'cancel'})
+
+    const {context} = harness.snapshot()
+    expect(harness.snapshot().matches({request: 'settled'})).toBe(true)
+    expect(context.request).toBe(first)
+    expect(context.settledRequest).toBe(first)
+    expect(context.url).toBe('https://x/a')
+
+    // A live restart replays the request whose result is shown, not the cancelled one
+    harness.actor.send({type: 'live.enable', client: {} as SanityClient})
+    harness.liveEvents.next({type: 'restart', id: 'r'})
+    expect(harness.fetches[2].request).toBe(first)
+  })
+
+  it('clears the response on demand, including the request live events would replay', async () => {
     const harness = createHarness()
     harness.actor.send({type: 'fetch', request: harness.request(), reason: {type: 'manual'}})
-    harness.fetches[0].resolve({result: 'x'})
+    harness.fetches[0].resolve({result: 'x', syncTags: ['s1:a']})
     await waitFor(harness.actor, (snapshot) => snapshot.matches({request: 'settled'}))
 
     harness.actor.send({type: 'clear'})
@@ -166,7 +194,33 @@ describe('queryRunnerMachine', () => {
     expect(harness.snapshot().matches({request: 'idle'})).toBe(true)
     expect(context.result).toBeUndefined()
     expect(context.meta).toBeUndefined()
+    expect(context.request).toBeUndefined()
+    expect(context.syncTags).toBeUndefined()
     expect(context.history).toHaveLength(1)
+
+    harness.actor.send({type: 'live.enable', client: {} as SanityClient})
+    harness.liveEvents.next({type: 'restart', id: 'r'})
+    harness.liveEvents.next({type: 'message', id: '1', tags: ['s1:a']})
+    expect(harness.fetches).toHaveLength(1)
+  })
+
+  it('keeps matching live events on the last successful sync tags after a failed fetch', async () => {
+    const harness = createHarness()
+    harness.actor.send({type: 'fetch', request: harness.request(), reason: {type: 'manual'}})
+    harness.fetches[0].resolve({result: 1, syncTags: ['s1:a']})
+    await waitFor(harness.actor, (snapshot) => snapshot.matches({request: 'settled'}))
+
+    harness.actor.send({type: 'fetch', request: harness.request(), reason: {type: 'manual'}})
+    harness.fetches[1].reject(new Error('Syntax error'))
+    await waitFor(harness.actor, (snapshot) => snapshot.matches({request: 'failed'}))
+    expect(harness.snapshot().context.meta).toBeUndefined()
+
+    harness.actor.send({type: 'live.enable', client: {} as SanityClient})
+    harness.liveEvents.next({type: 'message', id: '1', tags: ['s1:other']})
+    expect(harness.fetches).toHaveLength(2)
+    harness.liveEvents.next({type: 'message', id: '2', tags: ['s1:a']})
+    expect(harness.fetches).toHaveLength(3)
+    expect(harness.snapshot().context.reason).toEqual({type: 'live', matchedTags: ['s1:a']})
   })
 
   it('caps the history', async () => {
