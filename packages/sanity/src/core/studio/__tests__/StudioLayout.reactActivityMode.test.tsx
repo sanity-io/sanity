@@ -27,7 +27,7 @@ vi.mock('../workspace', () => ({
     name: 'test-workspace',
     title: 'Test Workspace',
     tools: workspace.tools,
-    beta: {performance: {reactActivityMode: workspace.reactActivityMode}},
+    beta: {reactActivityMode: {enabled: workspace.reactActivityMode}},
   }),
 }))
 
@@ -172,7 +172,7 @@ function switchTo(toolName: string) {
   return userEvent.click(screen.getByTestId(`tool-link-${toolName}`))
 }
 
-describe('StudioLayoutComponent with beta.performance.reactActivityMode', () => {
+describe('StudioLayoutComponent with beta.reactActivityMode', () => {
   beforeEach(() => {
     workspace.tools = ['structure', 'presentation', 'vision', 'media'].map(makeTool)
   })

@@ -86,9 +86,9 @@ export function StudioLayoutComponent() {
     () => tools.find((tool) => tool.name === activeToolName),
     [activeToolName, tools],
   )
-  // With `beta.performance.reactActivityMode`, the tools used most recently stay mounted inside a
+  // With `beta.reactActivityMode`, the tools used most recently stay mounted inside a
   // hidden `<Activity>` boundary instead of being unmounted when another tool takes over.
-  const reactActivityMode = beta?.performance?.reactActivityMode === true
+  const reactActivityMode = beta?.reactActivityMode?.enabled === true
   const {mountedTools, contextValue: mountedToolsContextValue} = useMountedTools({
     enabled: reactActivityMode,
     tools,

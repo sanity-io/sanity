@@ -345,8 +345,8 @@ const defaultWorkspace = defineConfig({
     variants: {
       enabled: true,
     },
-    performance: {
-      reactActivityMode: true,
+    reactActivityMode: {
+      enabled: true,
     },
   },
 })

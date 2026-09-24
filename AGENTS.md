@@ -396,7 +396,7 @@ skill (`.agents/skills/sanity-i18n-translate/SKILL.md`) for the full conversion 
 ### `<Activity mode="hidden">`: effects are torn down, DOM and state stay
 
 React's `<Activity>` is used for closed `@sanity/ui` overlays, collapsed document lists, and the
-top-level tools when `beta.performance.reactActivityMode` is on (`StudioLayoutComponent`). Hiding runs
+top-level tools when `beta.reactActivityMode` is on (`StudioLayoutComponent`). Hiding runs
 every effect cleanup in the subtree and showing runs the effects again, without a remount, so:
 
 - Anything that lives only in an effect-created object is lost on reveal unless the effect can

@@ -734,24 +734,24 @@ describe('beta document group inventory config', () => {
   })
 })
 
-describe('beta performance react activity mode config', () => {
+describe('beta react activity mode config', () => {
   const projectId = 'ppsg7ml5'
   const dataset = 'production'
 
   it('defaults to false', async () => {
     const source = await createSourceFromConfig({projectId, dataset})
 
-    expect(source.beta?.performance?.reactActivityMode).toBe(false)
+    expect(source.beta?.reactActivityMode?.enabled).toBe(false)
   })
 
   it('resolves from root config', async () => {
     const source = await createSourceFromConfig({
       projectId,
       dataset,
-      beta: {performance: {reactActivityMode: true}},
+      beta: {reactActivityMode: {enabled: true}},
     })
 
-    expect(source.beta?.performance?.reactActivityMode).toBe(true)
+    expect(source.beta?.reactActivityMode?.enabled).toBe(true)
   })
 
   it('resolves from plugin config', async () => {
@@ -761,12 +761,12 @@ describe('beta performance react activity mode config', () => {
       plugins: [
         definePlugin({
           name: 'sanity/beta-react-activity-mode',
-          beta: {performance: {reactActivityMode: true}},
+          beta: {reactActivityMode: {enabled: true}},
         })(),
       ],
     })
 
-    expect(source.beta?.performance?.reactActivityMode).toBe(true)
+    expect(source.beta?.reactActivityMode?.enabled).toBe(true)
   })
 
   it('lets root config override plugin config', async () => {
@@ -776,42 +776,42 @@ describe('beta performance react activity mode config', () => {
       plugins: [
         definePlugin({
           name: 'sanity/beta-react-activity-mode',
-          beta: {performance: {reactActivityMode: true}},
+          beta: {reactActivityMode: {enabled: true}},
         })(),
       ],
-      beta: {performance: {reactActivityMode: false}},
+      beta: {reactActivityMode: {enabled: false}},
     })
 
-    expect(source.beta?.performance?.reactActivityMode).toBe(false)
+    expect(source.beta?.reactActivityMode?.enabled).toBe(false)
   })
 
-  it('throws when the performance namespace is not an object', async () => {
+  it('throws when the namespace is not an object', async () => {
     await expect(
       createSourceFromConfig({
         projectId,
         dataset,
         beta: {
           // @ts-expect-error should be an object
-          performance: true,
+          reactActivityMode: true,
         },
       }),
-    ).rejects.toThrow('Expected `beta.performance` to be an object, but received boolean')
+    ).rejects.toThrow('Expected `beta.reactActivityMode` to be an object, but received boolean')
   })
 
-  it('throws when reactActivityMode is not a boolean', async () => {
+  it('throws when enabled is not a boolean', async () => {
     await expect(
       createSourceFromConfig({
         projectId,
         dataset,
         beta: {
-          performance: {
+          reactActivityMode: {
             // @ts-expect-error should be a boolean
-            reactActivityMode: 'yes',
+            enabled: 'yes',
           },
         },
       }),
     ).rejects.toThrow(
-      'Expected `beta.performance.reactActivityMode` to be a boolean, but received string',
+      'Expected `beta.reactActivityMode.enabled` to be a boolean, but received string',
     )
   })
 })

@@ -8,7 +8,7 @@ import {type MountedToolsContextValue} from './types'
 const NONE: MountedTool[] = []
 
 interface UseMountedToolsOptions {
-  /** `beta.performance.reactActivityMode`; while false, nothing is tracked. */
+  /** `beta.reactActivityMode`; while false, nothing is tracked. */
   enabled: boolean
   tools: Tool[]
   activeTool: Tool | undefined
@@ -26,7 +26,7 @@ interface UseMountedToolsResult {
 }
 
 /**
- * Tracks the tools that stay mounted while inactive (see `beta.performance.reactActivityMode`), each
+ * Tracks the tools that stay mounted while inactive (see `beta.reactActivityMode`), each
  * with the root router context it last rendered with while active.
  *
  * @internal

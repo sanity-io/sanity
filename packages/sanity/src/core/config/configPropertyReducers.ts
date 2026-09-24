@@ -567,7 +567,7 @@ export const documentGroupInventoryEnabledReducer = ({
   }, initialValue)
 }
 
-export const reactActivityModeReducer = ({
+export const reactActivityModeEnabledReducer = ({
   config,
   initialValue,
 }: {
@@ -577,31 +577,33 @@ export const reactActivityModeReducer = ({
   const flattenedConfig = flattenConfig(config, [])
 
   return flattenedConfig.reduce<boolean>((value, {config: innerConfig}) => {
-    const performance: unknown = innerConfig.beta?.performance
-
-    if (typeof performance === 'undefined') {
-      return value
-    }
-
-    if (!isRecord(performance)) {
-      throw new Error(
-        `Expected \`beta.performance\` to be an object, but received ${getPrintableType(performance)}`,
-      )
-    }
-
-    const reactActivityMode = performance.reactActivityMode
+    const reactActivityMode: unknown = innerConfig.beta?.reactActivityMode
 
     if (typeof reactActivityMode === 'undefined') {
       return value
     }
 
-    if (typeof reactActivityMode === 'boolean') {
-      return reactActivityMode
+    if (!isRecord(reactActivityMode)) {
+      throw new Error(
+        `Expected \`beta.reactActivityMode\` to be an object, but received ${getPrintableType(
+          reactActivityMode,
+        )}`,
+      )
+    }
+
+    const enabled = reactActivityMode.enabled
+
+    if (typeof enabled === 'undefined') {
+      return value
+    }
+
+    if (typeof enabled === 'boolean') {
+      return enabled
     }
 
     throw new Error(
-      `Expected \`beta.performance.reactActivityMode\` to be a boolean, but received ${getPrintableType(
-        reactActivityMode,
+      `Expected \`beta.reactActivityMode.enabled\` to be a boolean, but received ${getPrintableType(
+        enabled,
       )}`,
     )
   }, initialValue)

@@ -61,7 +61,7 @@ import {
   newDocumentOptionsResolver,
   onUncaughtErrorResolver,
   partialIndexingEnabledReducer,
-  reactActivityModeReducer,
+  reactActivityModeEnabledReducer,
   releaseActionsReducer,
   resolveProductionUrlReducer,
   scheduledDraftsEnabledReducer,
@@ -940,8 +940,8 @@ function resolveSource({
         enabled:
           documentGroupInventoryEnabledReducer({config, initialValue: false}) || variantsEnabled,
       },
-      performance: {
-        reactActivityMode: reactActivityModeReducer({config, initialValue: false}),
+      reactActivityMode: {
+        enabled: reactActivityModeEnabledReducer({config, initialValue: false}),
       },
     },
 

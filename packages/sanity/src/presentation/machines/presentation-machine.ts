@@ -35,7 +35,7 @@ interface Context {
    * that starts handshaking after that is a reconnect rather than a first connection, even when
    * it is a brand new comlink connection: the channel is torn down and recreated whenever the
    * tool's effects are, which React does without a remount when a hidden `<Activity>` boundary
-   * is shown again (`beta.performance.reactActivityMode`), and that must not bring the first-connection
+   * is shown again (`beta.reactActivityMode`), and that must not bring the first-connection
    * loading overlay back over a preview that is already interactive.
    */
   overlaysHaveConnected: boolean

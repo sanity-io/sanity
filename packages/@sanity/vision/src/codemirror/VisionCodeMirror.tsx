@@ -60,7 +60,7 @@ export function VisionCodeMirror({
   // `resetEditorContent`. The latest document is still mirrored into state because
   // `@uiw/react-codemirror` destroys its `EditorView` when its effects are cleaned up and rebuilds
   // it from `value` when they run again, which happens without a remount when the tool is hidden
-  // and shown again inside an `<Activity>` boundary (`beta.performance.reactActivityMode`). While the
+  // and shown again inside an `<Activity>` boundary (`beta.reactActivityMode`). While the
   // view is alive `value` always equals its document, so the value sync never dispatches.
   const [value, setValue] = useState(initialValueProp)
   const handleChange = useCallback<NonNullable<ReactCodeMirrorProps['onChange']>>(
