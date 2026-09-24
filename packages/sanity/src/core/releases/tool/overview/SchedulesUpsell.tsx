@@ -1,7 +1,6 @@
 import {motion} from 'motion/react'
 import {Suspense, use, useCallback} from 'react'
 import {type ObservablePromise} from 'react-rx'
-import {styled} from 'styled-components'
 import {Container, Box, Flex} from 'ui5'
 
 import {NO_UPSELL_DATA} from '../../../hooks/useUpsellData'
@@ -12,11 +11,7 @@ import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
 import {ReleaseIllustration} from '../resources/ReleaseIllustration'
 import {type CardinalityView} from './queryParamUtils'
-
-const Panel = styled(Container)`
-  width: auto;
-  flex-shrink: 0;
-`
+import {panel} from './SchedulesUpsell.css'
 
 interface UpsellIllustrationPanelProps {
   upsellDataPromise: ObservablePromise<UpsellDataResult> | null
@@ -51,7 +46,7 @@ function UpsellIllustrationPanel({
         animate={{opacity: 1}}
         transition={{duration: 0.3, ease: 'easeInOut'}}
       >
-        <Panel size={0} padding={4} paddingY={1}>
+        <Container className={panel} size={0} padding={4} paddingY={1}>
           <Flex alignItems={'center'} flexDirection="column">
             <ReleaseIllustration />
             <Box paddingTop={2}>
@@ -65,7 +60,7 @@ function UpsellIllustrationPanel({
               />
             </Box>
           </Flex>
-        </Panel>
+        </Container>
       </motion.div>
     </Flex>
   )
