@@ -1,4 +1,4 @@
-import {type ReactNode, useCallback, useEffect, useMemo, useRef} from 'react'
+import {type ReactNode, useCallback, useMemo} from 'react'
 import {RouterContext} from 'sanity/_singletons'
 
 import {
@@ -74,17 +74,18 @@ export const RouteScope = function RouteScope(props: RouteScopeProps): React.JSX
   const {resolvePathFromState: parent_resolvePathFromState, navigate: parent_navigate} =
     parentRouter
 
-  const parentStateRef = useRef(parentRouter.state)
-  useEffect(() => {
-    parentStateRef.current = parentRouter.state
-  }, [parentRouter.state])
+  // Read off the current render rather than a ref updated in an effect: with
+  // `beta.reactActivityMode` a scope stays mounted while hidden, so such a ref still holds the
+  // parent state from when the scope was last visible once it is revealed at a different URL,
+  // and merging onto that writes the previous URL back over the one just navigated to.
+  const parentState = parentRouter.state
 
   const resolveNextParentState = useCallback(
     (_nextState: RouterState | null) => {
       if (_nextState === null) return null
 
       const {_searchParams, ...nextState} = _nextState || {}
-      const nextParentState = addScope(parentStateRef.current, scope, nextState)
+      const nextParentState = addScope(parentState, scope, nextState)
       if (__unsafe_disableScopedSearchParams) {
         // Move search params to parent scope
         nextParentState._searchParams = _searchParams
@@ -93,7 +94,7 @@ export const RouteScope = function RouteScope(props: RouteScopeProps): React.JSX
       }
       return nextParentState
     },
-    [scope, __unsafe_disableScopedSearchParams],
+    [parentState, scope, __unsafe_disableScopedSearchParams],
   )
 
   const resolvePathFromState = useCallback(
@@ -131,7 +132,6 @@ export const RouteScope = function RouteScope(props: RouteScopeProps): React.JSX
   )
 
   const childRouter: RouterContextValue = useMemo(() => {
-    const parentState = parentRouter.state
     const childState =
       typeof parentState[scope] === 'object' ? ({...parentState[scope]} as RouterState) : {}
     if (__unsafe_disableScopedSearchParams) {
@@ -143,7 +143,14 @@ export const RouteScope = function RouteScope(props: RouteScopeProps): React.JSX
       resolvePathFromState,
       state: childState,
     }
-  }, [scope, parentRouter, navigate, resolvePathFromState, __unsafe_disableScopedSearchParams])
+  }, [
+    scope,
+    parentRouter,
+    parentState,
+    navigate,
+    resolvePathFromState,
+    __unsafe_disableScopedSearchParams,
+  ])
 
   return <RouterContext.Provider value={childRouter}>{children}</RouterContext.Provider>
 }
