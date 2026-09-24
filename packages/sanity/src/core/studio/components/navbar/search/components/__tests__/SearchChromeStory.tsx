@@ -2,9 +2,11 @@ import {Card, Text} from '@sanity/ui'
 import {VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../../../test/browser/TestWrapper'
+import {SearchProvider} from '../../contexts/search/SearchProvider'
 import {DateIncludeTimeFooter} from '../filters/filter/inputs/date/dateIncludeTimeFooter/DateIncludeTimeFooter'
 import {Instructions} from '../Instructions'
 import {NoResults} from '../NoResults'
+import {SearchPopover} from '../SearchPopover'
 
 const NOOP = () => undefined
 
@@ -47,6 +49,9 @@ export function SearchChromeStory() {
           </VStack>
         </VStack>
       </Card>
+      <SearchProvider>
+        <SearchPopover disableFocusLock onClose={NOOP} open />
+      </SearchProvider>
     </TestWrapper>
   )
 }
