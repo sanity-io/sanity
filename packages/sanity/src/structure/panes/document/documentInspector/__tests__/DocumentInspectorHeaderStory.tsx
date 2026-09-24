@@ -1,4 +1,5 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
+import {VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {DocumentInspectorHeader} from '../DocumentInspectorHeader'
@@ -19,8 +20,8 @@ export function DocumentInspectorHeaderStory() {
   return (
     <TestWrapper schemaTypes={[]}>
       <Card padding={4} style={{maxWidth: 420}}>
-        <Stack gap={5}>
-          <Stack gap={2}>
+        <VStack gap={5}>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               title only
             </Text>
@@ -29,8 +30,8 @@ export function DocumentInspectorHeaderStory() {
               onClose={NOOP}
               title="Validation"
             />
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               wrapping title
             </Text>
@@ -39,8 +40,8 @@ export function DocumentInspectorHeaderStory() {
               onClose={NOOP}
               title={WRAPPING_TITLE}
             />
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               title and slot
             </Text>
@@ -55,8 +56,8 @@ export function DocumentInspectorHeaderStory() {
                 </Text>
               </Card>
             </DocumentInspectorHeader>
-          </Stack>
-        </Stack>
+          </VStack>
+        </VStack>
       </Card>
     </TestWrapper>
   )
