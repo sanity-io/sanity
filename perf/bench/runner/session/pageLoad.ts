@@ -5,7 +5,7 @@ import {type BenchScenario, type ScenarioStep} from '../../scenarios/types'
 import {type AttachedPage, attachPage, createSessionContext} from '../browser'
 import {type RunningSide} from '../servers'
 import {SessionError} from './errors'
-import {HERMETICITY_HINT, UNEXPECTED_ENDPOINT_HINT} from './interaction'
+import {HERMETICITY_HINT, unexpectedEndpointHint} from './interaction'
 import {awaitReadiness, scenarioUrl} from './navigation'
 import {resetMockForScenario} from './seed'
 import {milestoneMeasureName, runStep} from './steps'
@@ -413,7 +413,7 @@ export async function runPageLoadSample(options: {
       throw new SessionError(
         'unexpected-endpoint',
         unexpected.map((entry) => `${entry.method} ${entry.path}`).join(', '),
-        UNEXPECTED_ENDPOINT_HINT,
+        unexpectedEndpointHint(unexpected.map((entry) => entry.path)),
       )
     }
 

@@ -22,9 +22,12 @@ const DOCUMENT_ID = 'bench-comments-field'
  * composer and send clicks is more expensive is discarded. Useful for a
  * local before/after on a known change, not as a regression series.
  *
- * Measures the default implementation (`core/comments`); the
- * `beta.comments.v2` opt-in renders `core/comments-v2` and would need its
- * own workspace.
+ * Deliberately measures whichever implementation the studio resolves, so the
+ * scenario tracks what ships instead of pinning `beta.comments.v2`. Today that
+ * is `core/comments`, on the addon-dataset transport. When `core/comments-v2`
+ * becomes the default it serves comments from the Comments API, which the bench
+ * mock does not implement; the session then fails by name with the migration
+ * hint instead of quietly measuring a dead backend.
  */
 export const commentsField = defineScenario({
   name: 'commentsField',

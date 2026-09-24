@@ -126,6 +126,23 @@ export const UNEXPECTED_ENDPOINT_HINT = [
   'Verify with: pnpm build:bench && pnpm bench:test -- --scenario singleString --sessions 2',
 ]
 
+const COMMENTS_API_HINT = [
+  'The studio served comments from the Comments API (/collaboration/comments), which the bench mock does not implement.',
+  'That is the comments-v2 transport, selected by `beta.comments.v2`; the commentsField scenario was built against the',
+  'addon-dataset one, where comments are ordinary documents in the dataset.',
+  'Do NOT take the allowlist branch above. Comments do degrade gracefully when the API 404s, so allowlisting turns the',
+  'shard green while leaving commentsField measuring a comments UI with no backend - a silent, permanent false reading.',
+  'Implement it instead: query and listen map onto the existing handleQuery and ListenHub, writes onto the DocumentStore.',
+  'Comments arrive as `_type: "sanity.comment"`, which the scenario readback already accepts alongside v1 `comment`.',
+  'Verify with: pnpm build:bench && pnpm bench:test -- --scenario commentsField --sessions 2',
+]
+
+/** Comments moving to its own API is a known, in-flight migration - name it instead of reporting generic drift. */
+export function unexpectedEndpointHint(paths: readonly string[]): string[] {
+  const isCommentsApi = paths.some((path) => path.includes('/collaboration/comments'))
+  return isCommentsApi ? COMMENTS_API_HINT : UNEXPECTED_ENDPOINT_HINT
+}
+
 export const HERMETICITY_HINT = [
   'The page contacted a non-local host the bench does not recognize.',
   'Fix in the same PR that adds the request: in perf/bench/runner/browser.ts, either add the host to',
@@ -650,7 +667,7 @@ export async function runInteractionSession(options: {
       throw new SessionError(
         'unexpected-endpoint',
         ledgerSnapshot.unexpected.map((entry) => `${entry.method} ${entry.path}`).join(', '),
-        UNEXPECTED_ENDPOINT_HINT,
+        unexpectedEndpointHint(ledgerSnapshot.unexpected.map((entry) => entry.path)),
       )
     }
     const requests: SessionRequests = {byClass: {}, total: ledgerSnapshot.entries.length}

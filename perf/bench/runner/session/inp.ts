@@ -14,6 +14,7 @@ import {
   interactionMaxDurations,
   type ReadOnlyInterruptions,
   type SessionConfig,
+  unexpectedEndpointHint,
 } from './interaction'
 import {awaitReadiness, gotoScenario} from './navigation'
 import {resetMockForScenario} from './seed'
@@ -142,6 +143,17 @@ export async function runInpSession(options: {
         if (driven >= config.targetInteractions || round >= config.maxRounds) break
       }
       if (runToCompletion) round += 1
+    }
+
+    // Before the readback wait, not after: an endpoint the mock lacks would otherwise
+    // surface as an anonymous readback timeout.
+    const ledgerSnapshot = running.mock.ledger.snapshot()
+    if (ledgerSnapshot.unexpected.length > 0) {
+      throw new SessionError(
+        'unexpected-endpoint',
+        ledgerSnapshot.unexpected.map((entry) => `${entry.method} ${entry.path}`).join(', '),
+        unexpectedEndpointHint(ledgerSnapshot.unexpected.map((entry) => entry.path)),
+      )
     }
 
     // Step readback: every declared check must see its effect in the mock's store.
