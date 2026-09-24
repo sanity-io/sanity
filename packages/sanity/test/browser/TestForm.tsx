@@ -6,7 +6,17 @@ import {
   type ValidationMarker,
 } from '@sanity/types'
 import {BoundaryElementProvider} from '@sanity/ui'
-import {useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState} from 'react'
+import {clsx} from 'clsx'
+import {
+  type RefAttributes,
+  useCallback,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {
   createPatchChannel,
   type DocumentFieldAction,
@@ -17,6 +27,7 @@ import {
   getExpandOperations,
   type PatchEvent,
   ScrollContainer,
+  type ScrollContainerProps,
   setAtPath,
   type StateTree,
   useCopyPaste,
@@ -28,13 +39,13 @@ import {
   VirtualizerScrollInstanceProvider,
   type Workspace,
 } from 'sanity'
-import {css, styled} from 'styled-components'
 import {Box} from 'ui5'
 
 import {applyAll} from '../../src/core/form/patch/applyPatch'
 import {PresenceProvider} from '../../src/core/form/studio/contexts/Presence'
 import {type FormDocumentValue} from '../../src/core/form/types/formDocumentValue'
 import {createMockSanityClient} from './createMockSanityClient'
+import {scroller, scrollerEnabled} from './TestForm.css'
 import {setValidationPending} from './validationPending'
 
 const NOOP = () => null
@@ -56,19 +67,19 @@ interface TestFormProps {
   presence?: FormNodePresence[]
 }
 
-const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => {
-  if ($disabled) {
-    return {height: '100%'}
-  }
+function Scroller(
+  props: ScrollContainerProps<'div'> & RefAttributes<HTMLDivElement> & {$disabled: boolean},
+) {
+  const {$disabled, className, ref, ...rest} = props
 
-  return css`
-    height: 100%;
-    overflow: auto;
-    position: relative;
-    scroll-behavior: smooth;
-    outline: none;
-  `
-})
+  return (
+    <ScrollContainer
+      {...rest}
+      className={clsx(scroller, !$disabled && scrollerEnabled, className)}
+      ref={ref}
+    />
+  )
+}
 
 export function TestForm(props: TestFormProps) {
   const {
