@@ -1,3 +1,4 @@
+import {clsx} from 'clsx'
 import difference from 'lodash-es/difference.js'
 import {
   Children,
@@ -11,12 +12,18 @@ import {
   useState,
   type RefAttributes,
 } from 'react'
-import {css, styled} from 'styled-components'
-import {Flex, type MarginProps, type GapProps} from 'ui5'
+import {Flex, type GapProps, type MarginProps} from 'ui5'
 
 import {type MenuButtonProps} from '../../../ui-components/menuButton/MenuButton'
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {ContextMenuButton} from '../contextMenuButton/ContextMenuButton'
+import {
+  FOCUS_RING_PADDING,
+  optionObserveElement,
+  outerFlex,
+  rootFlex,
+  rowFlex,
+} from './CollapseMenu.css'
 import {CollapseMenuDivider} from './CollapseMenuDivider'
 import {CollapseOverflowMenu} from './CollapseOverflowMenu'
 import {ObserveElement, type ObservedIntersection} from './ObserveElement'
@@ -35,45 +42,7 @@ export interface CollapseMenuProps {
   onMenuClose?: () => void
 }
 
-const FOCUS_RING_PADDING = 3
-
 const NO_ELEMENTS: React.JSX.Element[] = []
-
-const OPTION_STYLE = css`
-  list-style: none;
-  display: flex;
-  white-space: nowrap;
-
-  &[data-hidden='true'] {
-    opacity: 0;
-    visibility: hidden;
-  }
-`
-
-const OuterFlex = styled(Flex)`
-  padding: ${FOCUS_RING_PADDING}px;
-  margin: -${FOCUS_RING_PADDING}px;
-  box-sizing: border-box;
-`
-
-const RootFlex = styled(Flex)`
-  border-radius: inherit;
-  position: relative;
-`
-
-const RowFlex = styled(Flex)`
-  width: max-content;
-  &[data-hidden='true'] {
-    visibility: hidden;
-    position: relative;
-    margin-top: -1px;
-    height: 1px;
-  }
-`
-
-const OptionObserveElement = styled(ObserveElement)`
-  ${OPTION_STYLE}
-`
 
 function _isReactElement(node: unknown): node is React.JSX.Element {
   return Boolean(node)
@@ -133,12 +102,14 @@ export function CollapseMenu(props: CollapseMenuProps & RefAttributes<any>) {
 /** @internal */
 export function AutoCollapseMenu(
   props: Omit<CollapseMenuProps, 'children' | 'collapsed'> & {
+    className?: string
     menuOptions: React.JSX.Element[]
   } & RefAttributes<HTMLDivElement>,
 ) {
   const {
     ref,
     collapseText = true,
+    className,
     disableRestoreFocusOnClose,
     gap,
     menuOptions,
@@ -299,16 +270,23 @@ export function AutoCollapseMenu(
   )
 
   return (
-    <OuterFlex
+    <Flex
       alignItems="center"
       data-ui="CollapseMenu"
       overflow="hidden"
       ref={setRootRef}
       {...rest}
+      className={clsx(outerFlex, className)}
     >
-      <RootFlex flexDirection="column" flexBasis="0%" flexGrow={1} justifyContent="center">
+      <Flex
+        className={rootFlex}
+        flexDirection="column"
+        flexBasis="0%"
+        flexGrow={1}
+        justifyContent="center"
+      >
         {/* The actual visible options */}
-        <RowFlex gap={gap}>
+        <Flex className={rowFlex} gap={gap}>
           {pendingIntersections.length === 0 &&
             visibleMenuOptions.map((optionElement, index) => {
               const {dividerBefore, tooltipText = '', tooltipProps = {}} = optionElement.props
@@ -330,7 +308,7 @@ export function AutoCollapseMenu(
                 </Fragment>
               )
             })}
-        </RowFlex>
+        </Flex>
         {/* The hidden rows measure against the outer element, known after the first commit.
             Mounting them then, rather than with a viewport root they would re-measure against a
             commit later, keeps it to one measurement; both commits happen before the first paint. */}
@@ -358,7 +336,7 @@ export function AutoCollapseMenu(
             />
           </>
         )}
-      </RootFlex>
+      </Flex>
 
       {/* Show the collapsed items that doesn't fit in a menu */}
       {overflowingCollapsedOptionElements.length > 0 && (
@@ -372,7 +350,7 @@ export function AutoCollapseMenu(
           />
         </Flex>
       )}
-    </OuterFlex>
+    </Flex>
   )
 }
 
@@ -386,7 +364,7 @@ const RenderHidden = memo(function RenderHidden(props: {
 }) {
   const {elements, gap, intersectionOptions, leading, onIntersectionChange} = props
   return (
-    <RowFlex data-hidden aria-hidden="true" gap={gap} overflow="hidden">
+    <Flex className={rowFlex} data-hidden aria-hidden="true" gap={gap} overflow="hidden">
       {leading &&
         // A footprint only: it must not answer queries meant for the element it stands in for,
         // nor reach the caller through that element's ref (`cloneElement` keeps it otherwise)
@@ -404,7 +382,8 @@ const RenderHidden = memo(function RenderHidden(props: {
           <Fragment key={element.key}>
             {dividerBefore && index !== 0 && <CollapseMenuDivider hidden />}
 
-            <OptionObserveElement
+            <ObserveElement
+              className={optionObserveElement}
               options={intersectionOptions}
               // Entries are delivered oldest first, so the last one is current
               onIntersectionChange={(e) => onIntersectionChange(e[e.length - 1], element)}
@@ -415,10 +394,10 @@ const RenderHidden = memo(function RenderHidden(props: {
                   'aria-hidden': true,
                 })}
               </Flex>
-            </OptionObserveElement>
+            </ObserveElement>
           </Fragment>
         )
       })}
-    </RowFlex>
+    </Flex>
   )
 })
