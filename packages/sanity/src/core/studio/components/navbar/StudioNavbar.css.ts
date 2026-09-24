@@ -22,12 +22,17 @@ export const rootCard = style({
 })
 
 export const navGrid = style({
-  // Allow the tools column to shrink below its content so CollapseTabList can collapse into the overflow menu.
-  'gridTemplateColumns': 'auto minmax(0, 1fr) auto',
-  '@media': {
-    // media[4]
-    'screen and (min-width: 1800px)': {
-      gridTemplateColumns: '1fr auto 1fr',
+  selectors: {
+    // `&&` beats ui5 Grid's own column template regardless of stylesheet order
+    '&&': {
+      // Allow the tools column to shrink below its content so CollapseTabList can collapse into the overflow menu.
+      'gridTemplateColumns': 'auto minmax(0, 1fr) auto',
+      '@media': {
+        // media[4]
+        'screen and (min-width: 1800px)': {
+          gridTemplateColumns: '1fr auto 1fr',
+        },
+      },
     },
   },
 })
