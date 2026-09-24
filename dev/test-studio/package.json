@@ -62,6 +62,7 @@
     "ui5": "catalog:"
   },
   "devDependencies": {
+    "@repo/test-config": "workspace:*",
     "@sanity/vanilla-extract-vite-plugin": "catalog:",
     "@types/lodash-es": "^4.17.12",
     "@types/react": "catalog:",
@@ -77,6 +78,7 @@
     "react-devtools-core": "^8.0.0",
     "rimraf": "catalog:",
     "tsx": "^4.23.15",
-    "vite": "catalog:"
+    "vite": "catalog:",
+    "vitest": "catalog:"
   }
 }

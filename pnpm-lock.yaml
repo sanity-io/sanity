@@ -1062,6 +1062,9 @@ importers:
         specifier: 'catalog:'
         version: '@sanity/ui@5.0.0-alpha.10(react-dom@19.3.0)(react@19.3.0)'
     devDependencies:
+      '@repo/test-config':
+        specifier: workspace:*
+        version: link:../../packages/@repo/test-config
       '@sanity/vanilla-extract-vite-plugin':
         specifier: 'catalog:'
         version: 0.2.19(babel-plugin-macros@3.1.0)(vite@8.3.0)
@@ -1107,6 +1110,9 @@ importers:
       vite:
         specifier: 'catalog:'
         version: 8.3.0(@types/node@24.13.6)(@vitejs/devtools@0.7.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
+      vitest:
+        specifier: ^4.1.11
+        version: 4.1.11(@opentelemetry/api@1.9.1)(@types/node@24.13.6)(@vitest/browser-playwright@4.1.11)(@vitest/coverage-v8@4.1.11)(jsdom@29.1.1)(vite@8.3.0)
 
   e2e:
     devDependencies:
