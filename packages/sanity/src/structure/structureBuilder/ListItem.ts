@@ -1,6 +1,6 @@
 import {type SchemaType} from '@sanity/types'
 import {type Observable} from 'rxjs'
-import {type I18nTextRecord, isRecord} from 'sanity'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS, type I18nTextRecord, isRecord} from 'sanity'
 
 import {type ChildResolver, type ItemChild} from './ChildResolver'
 import {HELP_URL, SerializeError} from './SerializeError'
@@ -252,8 +252,8 @@ export class ListItemBuilder implements Serializable<ListItem> {
    *
    * The badge counts every document of the item's schema type. It is withheld, with a development
    * warning, unless the item resolves a document schema type and its child is proven to list every
-   * document of that type: no child, the built-in document type child, or a document list carrying
-   * the default whole-type query.
+   * document of that type: the built-in document type child, or a document list carrying the
+   * default whole-type query at the default api version.
    *
    * @returns list item builder based on showCount provided. See {@link ListItemBuilder}
    */
@@ -403,11 +403,13 @@ function warnCountWithheld(id: string, reason: string): void {
 interface DocumentListQuery {
   filter: string | undefined
   params: Record<string, unknown> | undefined
+  apiVersion: string | undefined
 }
 
 interface DocumentListShapedChild {
   getFilter(): string | undefined
   getParams(): Record<string, unknown> | undefined
+  getApiVersion?(): string | undefined
 }
 
 function isDocumentListShapedChild(child: unknown): child is DocumentListShapedChild {
@@ -426,14 +428,28 @@ function isSerializedDocumentList(child: unknown): child is {options?: Partial<D
 /** A re-inserted item carries the serialized form, which would otherwise look uninspectable. */
 function getDocumentListQuery(child: unknown): DocumentListQuery | undefined {
   if (isDocumentListShapedChild(child)) {
-    return {filter: child.getFilter(), params: child.getParams()}
+    return {
+      filter: child.getFilter(),
+      params: child.getParams(),
+      apiVersion: child.getApiVersion?.(),
+    }
   }
 
   if (isSerializedDocumentList(child)) {
-    return {filter: child.options?.filter, params: child.options?.params}
+    return {
+      filter: child.options?.filter,
+      params: child.options?.params,
+      apiVersion: child.options?.apiVersion,
+    }
   }
 
   return undefined
+}
+
+function pinsNonDefaultApiVersion(query: DocumentListQuery): boolean {
+  return (
+    query.apiVersion !== undefined && query.apiVersion !== DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion
+  )
 }
 
 function hasDefaultDocumentTypeQuery(query: DocumentListQuery, typeName: string): boolean {
@@ -467,7 +483,12 @@ export function resolveListItemCount(
   const count: ListItemCount = {type: schemaType.name}
   const brandedChildType = getDefaultDocumentTypeChildType(child)
 
-  if (child === undefined || brandedChildType === schemaType.name) {
+  if (child === undefined) {
+    warnCountWithheld(id, 'it has no child list to agree with')
+    return undefined
+  }
+
+  if (brandedChildType === schemaType.name) {
     return count
   }
 
@@ -482,6 +503,14 @@ export function resolveListItemCount(
   const documentListQuery = getDocumentListQuery(child)
 
   if (documentListQuery) {
+    if (pinsNonDefaultApiVersion(documentListQuery)) {
+      warnCountWithheld(
+        id,
+        `its child list pins api version "${documentListQuery.apiVersion}" while the count queries "${DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion}"`,
+      )
+      return undefined
+    }
+
     if (hasDefaultDocumentTypeQuery(documentListQuery, schemaType.name)) {
       return count
     }

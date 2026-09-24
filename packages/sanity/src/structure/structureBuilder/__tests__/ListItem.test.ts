@@ -68,11 +68,25 @@ describe('ListItemBuilder count descriptor', () => {
     expect(getWithheldWarnings()).toEqual([])
   })
 
-  it('emits the canonical descriptor for an item with no child at all', () => {
+  it('withholds the descriptor for an item with no child at all', () => {
     const serialized = S.listItem().title('Authors').schemaType('author').showCount().serialize()
 
-    expect(serialized.count).toEqual(CANONICAL_COUNT)
-    expect(getWithheldWarnings()).toEqual([])
+    expect(serialized.count).toBeUndefined()
+    expect(getWithheldWarnings()).toEqual([
+      expect.stringContaining('list item "authors": it has no child list to agree with'),
+    ])
+  })
+
+  it('withholds the descriptor when the child pins a non-default api version', () => {
+    const serialized = S.documentTypeListItem('author')
+      .showCount()
+      .child(S.documentTypeList('author').apiVersion('v1'))
+      .serialize()
+
+    expect(serialized.count).toBeUndefined()
+    expect(getWithheldWarnings()).toEqual([
+      expect.stringContaining('its child list pins api version "v1"'),
+    ])
   })
 
   it('emits the canonical descriptor when the child is a default document type list', () => {
@@ -334,6 +348,7 @@ describe('raw list item count descriptor', () => {
       type: 'listItem',
       title: 'Authors',
       schemaType: authorType(),
+      child: S.documentTypeList('author').serialize(),
       displayOptions: {showCount: true},
       count: {type: 'book'},
     })
@@ -347,6 +362,7 @@ describe('raw list item count descriptor', () => {
       type: 'listItem',
       title: 'Authors',
       schemaType: authorType(),
+      child: S.documentTypeList('author').serialize(),
       displayOptions: {showCount: true},
     })
 

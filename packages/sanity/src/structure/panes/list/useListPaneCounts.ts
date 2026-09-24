@@ -23,6 +23,11 @@ interface CountDescriptor {
   typeName: string
 }
 
+/** Two list items can share an id, so the type name is part of the key or one count wins both. */
+export function getCountKey(itemId: string, typeName: string): string {
+  return `${itemId}:${typeName}`
+}
+
 interface CountsInput {
   active: boolean
   descriptors: CountDescriptor[]
@@ -60,7 +65,7 @@ function observePaneCounts(
           tag: COUNTS_TAG,
           variant,
         })
-        .pipe(map((count) => [descriptor.id, count] as const)),
+        .pipe(map((count) => [getCountKey(descriptor.id, descriptor.typeName), count] as const)),
     ),
   ).pipe(map((entries) => Object.fromEntries(entries)))
 }
@@ -149,7 +154,7 @@ export function useListPaneCounts(
   const countsKey = [
     perspectiveKey,
     selectedVariantName ?? '',
-    ...descriptors.map((descriptor) => `${descriptor.id}:${descriptor.typeName}`).toSorted(),
+    ...descriptors.map((descriptor) => getCountKey(descriptor.id, descriptor.typeName)).toSorted(),
   ].join('|')
 
   const input$ = useMemo(

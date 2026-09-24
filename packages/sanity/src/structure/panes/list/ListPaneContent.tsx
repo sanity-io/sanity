@@ -14,7 +14,7 @@ import {PaneContent} from '../../components/pane/PaneContent'
 import {usePaneLayout} from '../../components/pane/usePaneLayout'
 import {PaneItem} from '../../components/paneItem/PaneItem'
 import {type PaneListItem, type PaneListItemDivider} from '../../types'
-import {useListPaneCounts} from './useListPaneCounts'
+import {getCountKey, useListPaneCounts} from './useListPaneCounts'
 
 interface ListPaneContentProps {
   childItemId?: string
@@ -118,7 +118,7 @@ export function ListPaneContent(props: ListPaneContentProps) {
       return (
         <PaneItem
           key={item.id}
-          count={item.count ? counts[item.id] : undefined}
+          count={item.count ? counts[getCountKey(item.id, item.count.type)] : undefined}
           icon={shouldShowIconForItem(item) ? item.icon : false}
           id={item.id}
           layout={layout}

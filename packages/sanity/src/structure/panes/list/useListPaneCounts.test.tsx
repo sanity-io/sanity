@@ -94,7 +94,7 @@ describe('useListPaneCounts', () => {
       countSubjects.get('book')?.next(0)
     })
 
-    await waitFor(() => expect(result.current).toEqual({author: 3, book: 0}))
+    await waitFor(() => expect(result.current).toEqual({'author:author': 3, 'book:book': 0}))
   })
 
   it('does not subscribe while disabled and returns the retained (empty) record', async () => {
@@ -127,12 +127,12 @@ describe('useListPaneCounts', () => {
     act(() => {
       countSubjects.get('author')?.next(5)
     })
-    await waitFor(() => expect(result.current).toEqual({author: 5}))
+    await waitFor(() => expect(result.current).toEqual({'author:author': 5}))
 
     rerender({enabled: false})
     await flushTimers()
 
-    expect(result.current).toEqual({author: 5})
+    expect(result.current).toEqual({'author:author': 5})
   })
 
   it('drops a resolved count once the item stops carrying a count descriptor', async () => {
@@ -145,13 +145,28 @@ describe('useListPaneCounts', () => {
     act(() => {
       countSubjects.get('author')?.next(5)
     })
-    await waitFor(() => expect(result.current).toEqual({author: 5}))
+    await waitFor(() => expect(result.current).toEqual({'author:author': 5}))
 
     const withoutCount: PaneListItem[] = [{type: 'listItem', id: 'author', title: 'author'}]
     rerender({items: withoutCount})
     await flushTimers()
 
     expect(result.current).toEqual({})
+  })
+
+  it('keeps both counts when two items share an id', async () => {
+    const items = [listItem('shared-id', 'author'), listItem('shared-id', 'book')]
+    const {result} = renderHook(() => useListPaneCounts(items, true))
+
+    await waitFor(() => expect(observeDocumentCount).toHaveBeenCalled())
+    act(() => {
+      countSubjects.get('author')?.next(12)
+      countSubjects.get('book')?.next(2594)
+    })
+
+    await waitFor(() =>
+      expect(result.current).toEqual({'shared-id:author': 12, 'shared-id:book': 2594}),
+    )
   })
 
   it('does not show the previous type count while the new type count is pending, after an item id is reused with a different schema type', async () => {
@@ -164,7 +179,7 @@ describe('useListPaneCounts', () => {
     act(() => {
       countSubjects.get('author')?.next(5)
     })
-    await waitFor(() => expect(result.current).toEqual({'shared-id': 5}))
+    await waitFor(() => expect(result.current).toEqual({'shared-id:author': 5}))
 
     const withBook = [listItem('shared-id', 'book')]
     rerender({items: withBook})

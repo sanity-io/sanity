@@ -13,6 +13,7 @@ import {
   toArray,
 } from 'rxjs/operators'
 
+import {isReleasePerspective, RELEASES_STUDIO_CLIENT_OPTIONS} from '../releases/util/releasesClient'
 import {versionedClient} from '../studioClient'
 import {MAX_DOCUMENT_ID_CHUNK_SIZE} from '../util/const'
 import {variantApiVersion} from '../variants/util/variantApiVersion'
@@ -98,7 +99,15 @@ function fetchChunk(
   chunk: GroupMember[],
 ): Observable<DemuxedCount[]> {
   const {query, params} = combineCountQuery(chunk)
-  const apiClient = versionedClient(client, variantApiVersion(group.variant))
+  const apiClient = versionedClient(
+    client,
+    variantApiVersion(
+      group.variant,
+      isReleasePerspective(group.perspective)
+        ? RELEASES_STUDIO_CLIENT_OPTIONS.apiVersion
+        : undefined,
+    ),
+  )
 
   return apiClient.observable
     .fetch<unknown>(query, params, {
