@@ -15,7 +15,14 @@ import {visionLocaleNamespace} from '../../../i18n'
 import {type VistaDrawer} from '../../store/types'
 import {useVistaActor, useVistaExperience, useVistaSelector} from '../../store/VistaActorContext'
 import {selectOpenDrawer} from '../../store/vistaMachine'
-import {sidebarRail, sidebarRailCollapsed, sidebarRailExpanded} from '../vista.css'
+import {cx} from '../../util/cx'
+import {
+  sidebarRail,
+  sidebarRailCollapsed,
+  sidebarRailExpanded,
+  sidebarRailOverlay,
+  sidebarSlot,
+} from '../vista.css'
 import {SidebarDrawer} from './SidebarDrawer'
 
 interface SidebarItemProps {
@@ -61,81 +68,90 @@ function SidebarItem({icon, label, expanded, selected, testId, onClick}: Sidebar
 export function VistaSidebar({datasets}: {datasets: string[]}) {
   const {t} = useTranslation(visionLocaleNamespace)
   const actorRef = useVistaActor()
-  const {switchToClassic} = useVistaExperience()
+  const {layout, switchToClassic} = useVistaExperience()
   const expanded = useVistaSelector((snapshot) => snapshot.matches({sidebar: 'expanded'}))
   const drawer = useVistaSelector(selectOpenDrawer)
+  const isMobile = layout === 'mobile'
 
   const toggleDrawer = useCallback(
     (target: VistaDrawer) => actorRef.send({type: 'drawer.toggle', drawer: target}),
     [actorRef],
   )
 
+  const rail = (
+    <Flex
+      aria-label={t('vista.sidebar.label')}
+      as="nav"
+      borderRight
+      className={cx(
+        sidebarRail,
+        expanded ? sidebarRailExpanded : sidebarRailCollapsed,
+        isMobile && expanded && sidebarRailOverlay,
+      )}
+      data-testid="vista-sidebar"
+      flexDirection="column"
+      gap={1}
+      height="100%"
+      justifyContent="space-between"
+      padding={2}
+    >
+      <Flex flexDirection="column" gap={1}>
+        <SidebarItem
+          expanded={expanded}
+          icon={UsersIcon}
+          label={t('vista.sidebar.shared-queries')}
+          onClick={() => toggleDrawer('shared')}
+          selected={drawer === 'shared'}
+          testId="vista-sidebar-shared"
+        />
+        <SidebarItem
+          expanded={expanded}
+          icon={BookmarkIcon}
+          label={t('vista.sidebar.saved-queries')}
+          onClick={() => toggleDrawer('saved')}
+          selected={drawer === 'saved'}
+          testId="vista-sidebar-saved"
+        />
+      </Flex>
+      <Flex flexDirection="column" gap={1}>
+        <SidebarItem
+          expanded={expanded}
+          icon={BoltIcon}
+          label={t('vista.sidebar.shortcuts')}
+          onClick={() => actorRef.send({type: 'dialog.open', dialog: 'shortcuts'})}
+          testId="vista-sidebar-shortcuts"
+        />
+        <SidebarItem
+          expanded={expanded}
+          icon={CogIcon}
+          label={t('vista.sidebar.settings')}
+          onClick={() => actorRef.send({type: 'dialog.open', dialog: 'settings'})}
+          testId="vista-sidebar-settings"
+        />
+        <SidebarItem
+          expanded={expanded}
+          icon={RestoreIcon}
+          label={t('vista.redesign.switch-to-classic')}
+          onClick={switchToClassic}
+          testId="vista-sidebar-classic"
+        />
+        <Box borderTop paddingTop={1}>
+          <SidebarItem
+            expanded={expanded}
+            icon={expanded ? DoubleChevronLeftIcon : DoubleChevronRightIcon}
+            label={expanded ? t('vista.sidebar.collapse') : t('vista.sidebar.expand')}
+            onClick={() => actorRef.send({type: 'sidebar.toggle'})}
+            testId="vista-sidebar-toggle"
+          />
+        </Box>
+      </Flex>
+    </Flex>
+  )
+
   return (
     <Flex flexShrink={0} height="100%" minHeight="0">
-      <Flex
-        aria-label={t('vista.sidebar.label')}
-        as="nav"
-        borderRight
-        className={`${sidebarRail} ${expanded ? sidebarRailExpanded : sidebarRailCollapsed}`}
-        data-testid="vista-sidebar"
-        flexDirection="column"
-        gap={1}
-        height="100%"
-        justifyContent="space-between"
-        padding={2}
-      >
-        <Flex flexDirection="column" gap={1}>
-          <SidebarItem
-            expanded={expanded}
-            icon={UsersIcon}
-            label={t('vista.sidebar.shared-queries')}
-            onClick={() => toggleDrawer('shared')}
-            selected={drawer === 'shared'}
-            testId="vista-sidebar-shared"
-          />
-          <SidebarItem
-            expanded={expanded}
-            icon={BookmarkIcon}
-            label={t('vista.sidebar.saved-queries')}
-            onClick={() => toggleDrawer('saved')}
-            selected={drawer === 'saved'}
-            testId="vista-sidebar-saved"
-          />
-        </Flex>
-        <Flex flexDirection="column" gap={1}>
-          <SidebarItem
-            expanded={expanded}
-            icon={BoltIcon}
-            label={t('vista.sidebar.shortcuts')}
-            onClick={() => actorRef.send({type: 'dialog.open', dialog: 'shortcuts'})}
-            testId="vista-sidebar-shortcuts"
-          />
-          <SidebarItem
-            expanded={expanded}
-            icon={CogIcon}
-            label={t('vista.sidebar.settings')}
-            onClick={() => actorRef.send({type: 'dialog.open', dialog: 'settings'})}
-            testId="vista-sidebar-settings"
-          />
-          <SidebarItem
-            expanded={expanded}
-            icon={RestoreIcon}
-            label={t('vista.redesign.switch-to-classic')}
-            onClick={switchToClassic}
-            testId="vista-sidebar-classic"
-          />
-          <Box borderTop paddingTop={1}>
-            <SidebarItem
-              expanded={expanded}
-              icon={expanded ? DoubleChevronLeftIcon : DoubleChevronRightIcon}
-              label={expanded ? t('vista.sidebar.collapse') : t('vista.sidebar.expand')}
-              onClick={() => actorRef.send({type: 'sidebar.toggle'})}
-              testId="vista-sidebar-toggle"
-            />
-          </Box>
-        </Flex>
-      </Flex>
-      {drawer && <SidebarDrawer drawer={drawer} datasets={datasets} />}
+      {isMobile ? <div className={sidebarSlot}>{rail}</div> : rail}
+      {drawer && <SidebarDrawer datasets={datasets} drawer={drawer} overlay={isMobile} />}
     </Flex>
   )
 }

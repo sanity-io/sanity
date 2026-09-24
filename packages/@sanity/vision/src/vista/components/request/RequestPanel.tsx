@@ -14,6 +14,7 @@ import {type Params} from '../../../components/VisionGui'
 import {visionLocaleNamespace} from '../../../i18n'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {type QueryRequest, type VistaTab, type VistaTabOptions} from '../../store/types'
+import {useVistaExperience} from '../../store/VistaActorContext'
 import {getVistaShortcuts} from '../../util/shortcuts'
 import {ActionRail} from '../ActionRail'
 import {CollapsiblePanel, PANEL_HEADER_HEIGHT} from '../CollapsiblePanel'
@@ -22,7 +23,7 @@ import {OptionsTab} from './OptionsTab'
 import {ParamsTab} from './ParamsTab'
 import {QueryActionsMenu} from './QueryActionsMenu'
 
-const DEFAULT_BOTTOM_PANEL_SIZE = 260
+const DEFAULT_BOTTOM_PANEL_SIZE = {columns: 260, stacked: 200, mobile: 180}
 
 export interface RequestPanelProps {
   tab: VistaTab
@@ -67,7 +68,8 @@ export function RequestPanel(props: RequestPanelProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const [activePanelTab, setActivePanelTab] = useState('params')
   const [collapsed, setCollapsed] = useState(false)
-  const [bottomSize, setBottomSize] = useState(DEFAULT_BOTTOM_PANEL_SIZE)
+  const {layout} = useVistaExperience()
+  const [bottomSize, setBottomSize] = useState(() => DEFAULT_BOTTOM_PANEL_SIZE[layout])
   const fetchShortcut = useMemo(
     () => getVistaShortcuts().find((shortcut) => shortcut.id === 'fetch'),
     [],

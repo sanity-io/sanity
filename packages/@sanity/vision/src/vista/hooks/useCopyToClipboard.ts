@@ -37,10 +37,14 @@ function copyWithTextarea(text: string): void {
   textarea.style.opacity = '0'
   document.body.appendChild(textarea)
   textarea.select()
+  let copied = false
   try {
     // oxlint-disable-next-line no-deprecated -- fallback for environments without navigator.clipboard
-    document.execCommand('copy')
+    copied = document.execCommand('copy')
   } finally {
     textarea.remove()
+  }
+  if (!copied) {
+    throw new Error('Copying to the clipboard is not allowed here')
   }
 }

@@ -3,9 +3,10 @@ import {ChevronUpIcon} from '@sanity/icons/ChevronUp'
 import {Button, Tab, TabList, TabPanel} from '@sanity/ui'
 import {type ReactNode} from 'react'
 import {useTranslation} from 'sanity'
-import {Flex} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../i18n'
+import {panelTabs} from './vista.css'
 
 /** Height of the tab header, which is all that remains of a collapsed panel */
 export const PANEL_HEADER_HEIGHT = 35
@@ -48,24 +49,26 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
         justifyContent="space-between"
         paddingX={2}
       >
-        <TabList gap={1}>
-          {tabs.map((tab) => (
-            <Tab
-              aria-controls={`${idPrefix}-${tab.id}-panel`}
-              fontSize={1}
-              icon={tab.icon}
-              id={`${idPrefix}-${tab.id}-tab`}
-              key={tab.id}
-              label={tab.label}
-              onClick={() => {
-                onTabChange(tab.id)
-                if (collapsed) onToggle()
-              }}
-              padding={2}
-              selected={!collapsed && tab.id === activeTab.id}
-            />
-          ))}
-        </TabList>
+        <Box className={panelTabs}>
+          <TabList gap={1}>
+            {tabs.map((tab) => (
+              <Tab
+                aria-controls={`${idPrefix}-${tab.id}-panel`}
+                fontSize={1}
+                icon={tab.icon}
+                id={`${idPrefix}-${tab.id}-tab`}
+                key={tab.id}
+                label={tab.label}
+                onClick={() => {
+                  onTabChange(tab.id)
+                  if (collapsed) onToggle()
+                }}
+                padding={2}
+                selected={!collapsed && tab.id === activeTab.id}
+              />
+            ))}
+          </TabList>
+        </Box>
         <Button
           aria-label={collapsed ? t('vista.panel.expand') : t('vista.panel.collapse')}
           data-testid={`${idPrefix}-panel-toggle`}

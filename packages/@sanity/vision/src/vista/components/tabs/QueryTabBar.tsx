@@ -1,7 +1,7 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {CloseIcon} from '@sanity/icons/Close'
 import {Badge, Button, TextInput} from '@sanity/ui'
-import {type KeyboardEvent, type MouseEvent, useCallback, useState} from 'react'
+import {type KeyboardEvent, type MouseEvent, useCallback, useRef, useState} from 'react'
 import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
@@ -11,8 +11,47 @@ import {useVistaActor, useVistaSelector} from '../../store/VistaActorContext'
 import {deriveTabTitle} from '../../util/tabTitle'
 import {tab as tabStyle, tabBar, tabCloseButton, tabTitleButton, tabTitleInput} from '../vista.css'
 
+/** The element id of the active tab's content, referenced by every tab's `aria-controls` */
+export const QUERY_TAB_PANEL_ID = 'vista-query-tabpanel'
+
+export function getQueryTabId(tabId: string): string {
+  return `vista-query-tab-${tabId}`
+}
+
 export function getTabTitle(tab: VistaTab, fallback: string): string {
   return tab.title || deriveTabTitle(tab.query) || fallback
+}
+
+interface TabTitleInputProps {
+  title: string
+  onCommit: (title: string) => void
+  onCancel: () => void
+}
+
+/** Mounted only while renaming, so the draft always starts from the current title */
+function TabTitleInput({title, onCommit, onCancel}: TabTitleInputProps) {
+  const {t} = useTranslation(visionLocaleNamespace)
+  const [draft, setDraft] = useState(title)
+
+  return (
+    <Box className={tabTitleInput} paddingY={1}>
+      <TextInput
+        autoFocus
+        data-testid="vista-tab-title-input"
+        fontSize={1}
+        onBlur={() => onCommit(draft)}
+        onChange={(event) => setDraft(event.currentTarget.value)}
+        onFocus={(event) => event.currentTarget.select()}
+        onKeyDown={(event: KeyboardEvent<HTMLInputElement>) => {
+          if (event.key === 'Enter') onCommit(draft)
+          if (event.key === 'Escape') onCancel()
+        }}
+        padding={2}
+        placeholder={t('vista.tabs.title-placeholder')}
+        value={draft}
+      />
+    </Box>
+  )
 }
 
 interface TabHandleProps {
@@ -24,13 +63,23 @@ interface TabHandleProps {
   onStartRename: () => void
   onRename: (title: string) => void
   onCancelRename: () => void
+  onArrowKey: (event: KeyboardEvent<HTMLButtonElement>) => void
 }
 
 function TabHandle(props: TabHandleProps) {
-  const {tab, selected, editing, onSelect, onClose, onStartRename, onRename, onCancelRename} = props
+  const {
+    tab,
+    selected,
+    editing,
+    onSelect,
+    onClose,
+    onStartRename,
+    onRename,
+    onCancelRename,
+    onArrowKey,
+  } = props
   const {t} = useTranslation(visionLocaleNamespace)
   const title = getTabTitle(tab, t('vista.tabs.untitled'))
-  const [draft, setDraft] = useState(title)
 
   const handleAuxClick = useCallback(
     (event: MouseEvent) => {
@@ -43,53 +92,35 @@ function TabHandle(props: TabHandleProps) {
     [onClose],
   )
 
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent<HTMLInputElement>) => {
-      if (event.key === 'Enter') {
-        onRename(draft)
-      } else if (event.key === 'Escape') {
-        onCancelRename()
-      }
-    },
-    [draft, onCancelRename, onRename],
-  )
-
   return (
     <Flex
       alignItems="center"
-      aria-selected={selected}
       className={tabStyle}
+      data-selected={selected ? 'true' : undefined}
       data-testid="vista-tab"
       gap={1}
       paddingLeft={1}
       paddingRight={1}
-      role="tab"
+      role="presentation"
     >
       {editing ? (
-        <Box className={tabTitleInput} paddingY={1}>
-          <TextInput
-            autoFocus
-            data-testid="vista-tab-title-input"
-            fontSize={1}
-            onBlur={() => onRename(draft)}
-            onChange={(event) => setDraft(event.currentTarget.value)}
-            onFocus={(event) => event.currentTarget.select()}
-            onKeyDown={handleKeyDown}
-            padding={2}
-            placeholder={t('vista.tabs.title-placeholder')}
-            value={draft}
-          />
-        </Box>
+        <TabTitleInput onCancel={onCancelRename} onCommit={onRename} title={title} />
       ) : (
         <Button
+          aria-controls={QUERY_TAB_PANEL_ID}
+          aria-selected={selected}
           className={tabTitleButton}
           data-testid="vista-tab-button"
           fontSize={1}
+          id={getQueryTabId(tab.id)}
           mode="bleed"
           onAuxClick={handleAuxClick}
           onClick={onSelect}
           onDoubleClick={onStartRename}
+          onKeyDown={onArrowKey}
           padding={2}
+          role="tab"
+          tabIndex={selected ? 0 : -1}
           text={title}
           textWeight={selected ? 'medium' : 'regular'}
         />
@@ -110,6 +141,7 @@ function TabHandle(props: TabHandleProps) {
         mode="bleed"
         onClick={onClose}
         padding={1}
+        tabIndex={-1}
       />
     </Flex>
   )
@@ -121,6 +153,25 @@ export function QueryTabBar() {
   const tabs = useVistaSelector((snapshot) => snapshot.context.tabs)
   const activeTabId = useVistaSelector((snapshot) => snapshot.context.activeTabId)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const listRef = useRef<HTMLDivElement | null>(null)
+
+  // Roving focus per the ARIA tabs pattern: arrows move between tabs and activate them
+  const handleArrowKey = useCallback(
+    (event: KeyboardEvent<HTMLButtonElement>) => {
+      const index = tabs.findIndex((tab) => tab.id === activeTabId)
+      let nextIndex: number | undefined
+      if (event.key === 'ArrowRight') nextIndex = (index + 1) % tabs.length
+      if (event.key === 'ArrowLeft') nextIndex = (index - 1 + tabs.length) % tabs.length
+      if (event.key === 'Home') nextIndex = 0
+      if (event.key === 'End') nextIndex = tabs.length - 1
+      if (nextIndex === undefined || tabs.length === 0) return
+      event.preventDefault()
+      const next = tabs[nextIndex]
+      actorRef.send({type: 'tab.select', id: next.id})
+      listRef.current?.querySelector<HTMLElement>(`#${getQueryTabId(next.id)}`)?.focus()
+    },
+    [activeTabId, actorRef, tabs],
+  )
 
   return (
     <Flex
@@ -131,11 +182,12 @@ export function QueryTabBar() {
       flexShrink={0}
       paddingX={1}
     >
-      <Flex alignItems="stretch" aria-label={t('vista.tabs.label')} role="tablist">
+      <Flex alignItems="stretch" aria-label={t('vista.tabs.label')} ref={listRef} role="tablist">
         {tabs.map((tab) => (
           <TabHandle
             editing={editingId === tab.id}
             key={tab.id}
+            onArrowKey={handleArrowKey}
             onCancelRename={() => setEditingId(null)}
             onClose={() => actorRef.send({type: 'tab.close', id: tab.id})}
             onRename={(title) => {

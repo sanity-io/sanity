@@ -126,10 +126,10 @@ describe('SanityVision experience switch', () => {
   it('opens the redesign directly for an opted-in project and can switch back', async () => {
     writeRedesignPreference('switch-project', {optedIn: true})
     renderTool({beta: {redesign: {enabled: true}}})
-    expect(screen.getByTestId('vista')).toBeTruthy()
+    const vista = await screen.findByTestId('vista')
 
     await act(async () => {
-      fireEvent.click(screen.getByTestId('vista'))
+      fireEvent.click(vista)
     })
 
     await waitFor(() => expect(screen.getByTestId('classic-vision')).toBeTruthy())

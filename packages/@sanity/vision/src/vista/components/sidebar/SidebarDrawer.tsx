@@ -6,17 +6,25 @@ import {Flex} from 'ui5'
 import {visionLocaleNamespace} from '../../../i18n'
 import {type VistaDrawer} from '../../store/types'
 import {useVistaActor} from '../../store/VistaActorContext'
-import {sidebarDrawer} from '../vista.css'
+import {cx} from '../../util/cx'
+import {sidebarDrawer, sidebarDrawerOverlay} from '../vista.css'
 import {QueryListPanel} from './QueryListPanel'
 
-export function SidebarDrawer({drawer, datasets}: {drawer: VistaDrawer; datasets: string[]}) {
+export interface SidebarDrawerProps {
+  drawer: VistaDrawer
+  datasets: string[]
+  /** Float over the tabs area instead of taking a column, for phones */
+  overlay: boolean
+}
+
+export function SidebarDrawer({drawer, datasets, overlay}: SidebarDrawerProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const actorRef = useVistaActor()
 
   return (
     <Flex
       borderRight
-      className={sidebarDrawer}
+      className={cx(sidebarDrawer, overlay && sidebarDrawerOverlay)}
       data-testid={`vista-drawer-${drawer}`}
       flexDirection="column"
       height="100%"

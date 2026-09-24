@@ -366,17 +366,36 @@ describe('VistaGui', () => {
     fireEvent.click(screen.getByTestId('vista-new-tab'))
     let tabs = screen.getAllByTestId('vista-tab')
     expect(tabs).toHaveLength(2)
-    expect(tabs[1].getAttribute('aria-selected')).toBe('true')
+    expect(within(tabs[1]).getByRole('tab').getAttribute('aria-selected')).toBe('true')
+    expect(within(tabs[1]).getByRole('tab').getAttribute('aria-controls')).toBe(
+      screen.getByTestId('vista-query-tab').id,
+    )
+    expect(screen.getByTestId('vista-query-tab').getAttribute('role')).toBe('tabpanel')
     expect(getQueryEditor().value).toBe('')
 
+    const selectedTab = () =>
+      screen
+        .getAllByTestId('vista-tab')
+        .findIndex((tab) => within(tab).getByRole('tab').getAttribute('aria-selected') === 'true')
     fireEvent.click(within(tabs[0]).getByTestId('vista-tab-button'))
-    expect(screen.getAllByTestId('vista-tab')[0].getAttribute('aria-selected')).toBe('true')
+    expect(selectedTab()).toBe(0)
+    expect(getQueryEditor().value).toBe('*[_type == "author"]')
+
+    // Arrow keys move between tabs and activate them
+    fireEvent.keyDown(within(screen.getAllByTestId('vista-tab')[0]).getByRole('tab'), {
+      key: 'ArrowRight',
+    })
+    expect(selectedTab()).toBe(1)
+    fireEvent.keyDown(within(screen.getAllByTestId('vista-tab')[1]).getByRole('tab'), {key: 'Home'})
+    expect(selectedTab()).toBe(0)
     expect(getQueryEditor().value).toBe('*[_type == "author"]')
 
     fireEvent.doubleClick(
       within(screen.getAllByTestId('vista-tab')[0]).getByTestId('vista-tab-button'),
     )
     const input = screen.getByTestId('vista-tab-title-input') as HTMLInputElement
+    // The rename starts from the current, query-derived title
+    expect(input.value).toBe('author')
     fireEvent.change(input, {target: {value: 'Authors'}})
     fireEvent.keyDown(input, {key: 'Enter'})
     expect(

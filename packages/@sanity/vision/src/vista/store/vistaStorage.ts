@@ -5,6 +5,7 @@ import {isSupportedPerspective, type SupportedPerspective} from '../../perspecti
 import {isPlainObject} from '../../util/isPlainObject'
 import {prefixApiVersion} from '../../util/prefixApiVersion'
 import {validateApiVersion} from '../../util/validateApiVersion'
+import {getVistaStorage, VISTA_STORAGE_KEY_PREFIX} from '../storageNamespace'
 import {
   type VistaPersistedState,
   type VistaSettings,
@@ -14,7 +15,6 @@ import {
   type VistaTabOptions,
 } from './types'
 
-const KEY_PREFIX = 'sanityVista:'
 const STATE_VERSION = 1
 
 export const DEFAULT_PARAMS = '{\n  \n}'
@@ -27,19 +27,7 @@ export interface VistaStorageDefaults {
 }
 
 function getStorageKey(projectId: string): string {
-  return `${KEY_PREFIX}${projectId}`
-}
-
-function getStorage(): Storage | undefined {
-  try {
-    const storage = globalThis.localStorage
-    const probe = `${KEY_PREFIX}probe`
-    storage.setItem(probe, probe)
-    storage.removeItem(probe)
-    return storage
-  } catch {
-    return undefined
-  }
+  return `${VISTA_STORAGE_KEY_PREFIX}${projectId}`
 }
 
 export function resolveDefaultSettings(defaults: VistaStorageDefaults): VistaSettings {
@@ -169,7 +157,7 @@ export function loadVistaState(
   defaults: VistaStorageDefaults,
 ): VistaPersistedState {
   const initial = createInitialState(defaults)
-  const storage = getStorage()
+  const storage = getVistaStorage()
   if (!storage) {
     return initial
   }
@@ -209,7 +197,7 @@ export function loadVistaState(
 }
 
 export function saveVistaState(projectId: string, state: VistaPersistedState): void {
-  const storage = getStorage()
+  const storage = getVistaStorage()
   if (!storage) {
     return
   }
@@ -221,22 +209,6 @@ export function saveVistaState(projectId: string, state: VistaPersistedState): v
 }
 
 export function clearVistaState(projectId: string): void {
-  const storage = getStorage()
+  const storage = getVistaStorage()
   storage?.removeItem(getStorageKey(projectId))
-}
-
-/** Removes every Vista namespace, for the error boundary's "clear cache" recovery path */
-export function clearAllVistaState(): void {
-  const storage = getStorage()
-  if (!storage) {
-    return
-  }
-  const keys: string[] = []
-  for (let i = 0; i < storage.length; i++) {
-    const key = storage.key(i)
-    if (key?.startsWith(KEY_PREFIX)) {
-      keys.push(key)
-    }
-  }
-  keys.forEach((key) => storage.removeItem(key))
 }

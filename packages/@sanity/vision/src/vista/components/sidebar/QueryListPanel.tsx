@@ -20,7 +20,7 @@ import {visionLocaleNamespace} from '../../../i18n'
 import {useQueryRequestBuilder} from '../../hooks/useQueryRequestBuilder'
 import {useSaveCurrentQuery} from '../../hooks/useSaveCurrentQuery'
 import {type VistaDrawer} from '../../store/types'
-import {useVistaActor, useVistaSelector} from '../../store/VistaActorContext'
+import {useSavedQueriesApi, useVistaActor, useVistaSelector} from '../../store/VistaActorContext'
 import {selectActiveTab} from '../../store/vistaMachine'
 import {parseQueryUrl} from '../../util/parseQueryUrl'
 import {savedQueryToTabInit, tabMatchesSavedQuery} from '../../util/savedQueryTab'
@@ -38,11 +38,8 @@ export function QueryListPanel({mode, datasets}: QueryListPanelProps) {
   const activeTab = useVistaSelector(selectActiveTab)
   const tabs = useVistaSelector((snapshot) => snapshot.context.tabs)
   const {request} = useQueryRequestBuilder(activeTab)
-  const {queries, saveQuery, updateQuery, deleteQuery, saveCurrent, canSave} = useSaveCurrentQuery(
-    activeTab,
-    request,
-    datasets,
-  )
+  const {queries, saveQuery, updateQuery, deleteQuery} = useSavedQueriesApi()
+  const {saveCurrent, canSave} = useSaveCurrentQuery(activeTab, request, datasets)
   const formatDate = useDateTimeFormat({dateStyle: 'medium', timeStyle: 'short'})
 
   const [search, setSearch] = useState('')

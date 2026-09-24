@@ -1,10 +1,11 @@
 import {Stack, Switch, Text} from '@sanity/ui'
 import {useTranslation} from 'sanity'
-import {Box, Flex, Grid} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {type VistaTabOptions} from '../../store/types'
+import {optionsGrid} from '../vista.css'
 import {ApiVersionField, DatasetSelect, PerspectiveSelect} from './OptionFields'
 
 export interface OptionsTabProps {
@@ -20,7 +21,7 @@ export function OptionsTab({options, resolved, datasets, onChange}: OptionsTabPr
   return (
     <Box data-testid="vista-options" padding={3}>
       <Stack gap={4}>
-        <Grid gap={3} gridTemplateColumns={['minmax(0, 1fr)', 'repeat(3, minmax(0, 1fr))']}>
+        <div className={optionsGrid}>
           <DatasetSelect
             datasets={datasets}
             id="vista-option-dataset"
@@ -39,7 +40,7 @@ export function OptionsTab({options, resolved, datasets, onChange}: OptionsTabPr
             onChange={(perspective) => onChange({perspective})}
             value={options.perspective}
           />
-        </Grid>
+        </div>
         <Flex alignItems="center" as="label" gap={3}>
           <Switch
             checked={options.includeSourceMap}

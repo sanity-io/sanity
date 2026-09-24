@@ -110,6 +110,7 @@ describe('queryRunnerMachine', () => {
 
     const {context} = harness.snapshot()
     expect(context.result).toBeUndefined()
+    expect(context.meta).toBeUndefined()
     expect(context.error?.message).toBe('Syntax error')
     expect(context.history.map((entry) => entry.status)).toEqual(['error', 'ok'])
     expect(context.history[0]).toMatchObject({

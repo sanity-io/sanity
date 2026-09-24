@@ -33,6 +33,30 @@ const schema: SchemaType = [
   },
   {
     type: 'type',
+    name: 'chapter',
+    value: {
+      type: 'object',
+      attributes: {
+        title: {type: 'objectAttribute', value: {type: 'string'}},
+        book: {type: 'objectAttribute', value: {type: 'inline', name: 'book'}},
+      },
+    },
+  },
+  {
+    type: 'type',
+    name: 'book',
+    value: {
+      type: 'object',
+      attributes: {
+        chapters: {
+          type: 'objectAttribute',
+          value: {type: 'array', of: {type: 'inline', name: 'chapter'}},
+        },
+      },
+    },
+  },
+  {
+    type: 'type',
     name: 'treeNode',
     value: {
       type: 'object',
@@ -131,6 +155,11 @@ describe('schemaTypes', () => {
     expect(collectReferencedTypes({type: 'inline', name: 'treeNode'}, schema)).toEqual({
       order: ['treeNode'],
       cyclic: new Set(['treeNode']),
+    })
+    // Every member of a mutual cycle is cyclic, whichever one the traversal enters first
+    expect(collectReferencedTypes({type: 'inline', name: 'book'}, schema)).toEqual({
+      order: ['chapter', 'book'],
+      cyclic: new Set(['book', 'chapter']),
     })
   })
 })
@@ -265,5 +294,20 @@ describe('printZod', () => {
     expect(printZod({type: 'union', of: [{type: 'null'}]}, {typeName: 'N'})).toContain(
       'export const NSchema = z.null()',
     )
+  })
+
+  it('defers every reference inside a mutual cycle so no schema is read before its declaration', () => {
+    const output = printZod({type: 'inline', name: 'book'}, {typeName: 'BookResult', schema})
+    const chapterIndex = output.indexOf('export const ChapterSchema')
+    const bookIndex = output.indexOf('export const BookSchema')
+    expect(chapterIndex).toBeGreaterThan(-1)
+    expect(chapterIndex).toBeLessThan(bookIndex)
+    // ChapterSchema is declared first and points forward at BookSchema, which must be lazy
+    expect(output).toContain('export const ChapterSchema: z.ZodTypeAny = z.object({')
+    expect(output).toContain('  book: z.lazy(() => BookSchema),')
+    expect(output).toContain('export const BookSchema: z.ZodTypeAny = z.object({')
+    expect(output).toContain('  chapters: z.array(z.lazy(() => ChapterSchema)),')
+    // The result schema comes after both declarations, so it references them directly
+    expect(output).toContain('export const BookResultSchema = BookSchema')
   })
 })

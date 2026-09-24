@@ -2,12 +2,16 @@ import {useActorRef, useSelector} from '@xstate/react'
 import {useMemo, useRef, useState} from 'react'
 import {Flex} from 'ui5'
 
+import {useSavedQueries} from '../../hooks/useSavedQueries'
 import {type VisionConfig} from '../../types'
+import {useElementSize} from '../hooks/useElementSize'
 import {
+  SavedQueriesContext,
   usePersistVistaState,
   VistaActorContext,
   type VistaExperience,
   VistaExperienceContext,
+  type VistaLayout,
 } from '../store/VistaActorContext'
 import {selectActiveTab, vistaMachine} from '../store/vistaMachine'
 import {loadVistaState, type VistaStorageDefaults} from '../store/vistaStorage'
@@ -16,6 +20,17 @@ import {QueryTab} from './tabs/QueryTab'
 import {QueryTabBar} from './tabs/QueryTabBar'
 import {root} from './vista.css'
 import {VistaDialogs} from './VistaDialogs'
+
+/** Below this width the request and response columns stack */
+const STACKED_BREAKPOINT = 900
+/** Below this width one column shows at a time and the sidebar floats over the content */
+const MOBILE_BREAKPOINT = 600
+
+export function getVistaLayout(width: number): VistaLayout {
+  if (width < MOBILE_BREAKPOINT) return 'mobile'
+  if (width < STACKED_BREAKPOINT) return 'stacked'
+  return 'columns'
+}
 
 export interface VistaGuiProps {
   config: VisionConfig
@@ -28,6 +43,11 @@ export interface VistaGuiProps {
 export function VistaGui(props: VistaGuiProps) {
   const {config, datasets, projectId, defaultDataset, onSwitchToClassic} = props
   const rootRef = useRef<HTMLDivElement | null>(null)
+  const rootSize = useElementSize(rootRef)
+  // Until measured, fall back to the viewport so the first paint is close to the final layout
+  const layout = getVistaLayout(
+    rootSize.width || (typeof window === 'undefined' ? STACKED_BREAKPOINT : window.innerWidth),
+  )
 
   const defaults = useMemo(
     (): VistaStorageDefaults => ({
@@ -45,27 +65,36 @@ export function VistaGui(props: VistaGuiProps) {
 
   const activeTab = useSelector(actorRef, selectActiveTab)
   const experience = useMemo(
-    (): VistaExperience => ({switchToClassic: onSwitchToClassic}),
-    [onSwitchToClassic],
+    (): VistaExperience => ({layout, switchToClassic: onSwitchToClassic}),
+    [layout, onSwitchToClassic],
   )
+  const savedQueries = useSavedQueries()
 
   return (
     <VistaActorContext.Provider value={actorRef}>
       <VistaExperienceContext.Provider value={experience}>
-        <Flex
-          className={root}
-          data-testid="vista-root"
-          height="100%"
-          overflow="hidden"
-          ref={rootRef}
-        >
-          <VistaSidebar datasets={datasets} />
-          <Flex flexBasis="0%" flexDirection="column" flexGrow={1} minWidth="0" overflow="hidden">
-            <QueryTabBar />
-            <QueryTab key={activeTab.id} tab={activeTab} rootRef={rootRef} projectId={projectId} />
+        <SavedQueriesContext.Provider value={savedQueries}>
+          <Flex
+            className={root}
+            data-testid="vista-root"
+            data-vista-layout={layout}
+            height="100%"
+            overflow="hidden"
+            ref={rootRef}
+          >
+            <VistaSidebar datasets={datasets} />
+            <Flex flexBasis="0%" flexDirection="column" flexGrow={1} minWidth="0" overflow="hidden">
+              <QueryTabBar />
+              <QueryTab
+                key={activeTab.id}
+                tab={activeTab}
+                rootRef={rootRef}
+                projectId={projectId}
+              />
+            </Flex>
           </Flex>
-        </Flex>
-        <VistaDialogs datasets={datasets} />
+          <VistaDialogs datasets={datasets} />
+        </SavedQueriesContext.Provider>
       </VistaExperienceContext.Provider>
     </VistaActorContext.Provider>
   )

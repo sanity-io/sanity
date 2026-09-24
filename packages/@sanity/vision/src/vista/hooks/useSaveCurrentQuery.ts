@@ -2,25 +2,24 @@ import {useToast} from '@sanity/ui/toast'
 import {useCallback} from 'react'
 import {useTranslation} from 'sanity'
 
-import {useSavedQueries} from '../../hooks/useSavedQueries'
 import {visionLocaleNamespace} from '../../i18n'
 import {type QueryRequest, type VistaTab} from '../store/types'
+import {useSavedQueriesApi} from '../store/VistaActorContext'
 import {tabMatchesSavedQuery} from '../util/savedQueryTab'
 import {deriveTabTitle} from '../util/tabTitle'
 
 /**
- * Saves the active tab as a personal saved query (stored by its query URL, like Vision does),
- * refusing duplicates. Also exposes the underlying saved queries API for the list panels.
+ * Saves the active tab as a personal saved query (stored by its query URL, like the classic tool
+ * does), refusing duplicates. Uses the tool-wide saved queries subscription.
  */
 export function useSaveCurrentQuery(
   tab: VistaTab,
   request: QueryRequest | null,
   datasets: readonly string[],
-) {
+): {saveCurrent: () => Promise<void>; canSave: boolean} {
   const {t} = useTranslation(visionLocaleNamespace)
   const toast = useToast()
-  const savedQueries = useSavedQueries()
-  const {queries, saveQuery, saving} = savedQueries
+  const {queries, saveQuery, saving} = useSavedQueriesApi()
 
   const saveCurrent = useCallback(async () => {
     if (!request) return
@@ -54,5 +53,5 @@ export function useSaveCurrentQuery(
     }
   }, [datasets, queries, request, saveQuery, t, tab, toast])
 
-  return {...savedQueries, saveCurrent, canSave: Boolean(request) && !saving}
+  return {saveCurrent, canSave: Boolean(request) && !saving}
 }

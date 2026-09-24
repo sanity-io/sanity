@@ -1,8 +1,8 @@
 import {beforeEach, describe, expect, it} from 'vitest'
 
 import {DEFAULT_API_VERSION} from '../../apiVersions'
+import {clearAllVistaState} from '../storageNamespace'
 import {
-  clearAllVistaState,
   clearVistaState,
   createInitialState,
   createTab,

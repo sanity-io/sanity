@@ -152,6 +152,10 @@ describe('vistaMachine', () => {
       rawParams: '{}',
       options: {perspective: 'published', dataset: 'production'},
     })
+    expect(harness.snapshot().context.loadRevisions[tab.id]).toBe(1)
+
+    harness.actor.send({type: 'tab.load', id: tab.id, tab: {query: '*[]'}})
+    expect(harness.snapshot().context.loadRevisions[tab.id]).toBe(2)
   })
 
   it('restores and toggles the sidebar, drawer and dialogs', () => {

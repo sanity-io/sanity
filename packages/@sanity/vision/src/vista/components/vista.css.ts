@@ -75,6 +75,40 @@ export const editorLabel = style({
   userSelect: 'none',
 })
 
+/** Result label at the same height as the editor label, aligned with the result's own padding */
+export const resultLabel = style([editorLabel, {left: '12px'}])
+
+/** Tab headers of the bottom panels scroll sideways rather than wrap when space is tight */
+export const panelTabs = style({
+  minWidth: 0,
+  overflowX: 'auto',
+  scrollbarWidth: 'none',
+})
+
+globalStyle(`${panelTabs} [data-ui="TabList"]`, {
+  flexWrap: 'nowrap',
+})
+
+globalStyle(`${panelTabs} [data-ui="Tab"]`, {
+  flexShrink: 0,
+})
+
+/** Option fields flow into as many columns as fit the request column */
+export const optionsGrid = style({
+  display: 'grid',
+  gap: '12px',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+})
+
+/** Hides the request or response pane in the single-column phone layout */
+export const hiddenPane = style({
+  selectors: {
+    '&&': {
+      display: 'none',
+    },
+  },
+})
+
 export const editorContainer = style({
   position: 'relative',
   height: '100%',
@@ -88,23 +122,56 @@ export const scrollArea = style({
   overflow: 'auto',
 })
 
+export const SIDEBAR_RAIL_WIDTH = 49
+
 export const sidebarRail = style({
   flexShrink: 0,
   transition: 'width 120ms ease-out',
 })
 
 export const sidebarRailCollapsed = style({
-  width: '49px',
+  width: `${SIDEBAR_RAIL_WIDTH}px`,
 })
 
 export const sidebarRailExpanded = style({
   width: '224px',
 })
 
+/** On phones the expanded rail floats over the content instead of squeezing it */
+export const sidebarRailOverlay = style({
+  position: 'absolute',
+  top: 0,
+  bottom: 0,
+  left: 0,
+  // Above the floating editor labels (10) and the split pane resizers
+  zIndex: 21,
+  background: 'var(--card-bg-color)',
+  boxShadow: '0 0 0 1px var(--card-border-color)',
+})
+
+/** Keeps the collapsed rail's room reserved while the expanded rail floats over the content */
+export const sidebarSlot = style({
+  position: 'relative',
+  flexShrink: 0,
+  width: `${SIDEBAR_RAIL_WIDTH}px`,
+})
+
 export const sidebarDrawer = style({
   width: '300px',
   flexShrink: 0,
   minHeight: 0,
+  background: 'var(--card-bg-color)',
+})
+
+/** On phones the drawer covers the tabs area instead of leaving it a sliver */
+export const sidebarDrawerOverlay = style({
+  position: 'absolute',
+  top: 0,
+  bottom: 0,
+  left: `${SIDEBAR_RAIL_WIDTH}px`,
+  right: 0,
+  width: 'auto',
+  zIndex: 20,
 })
 
 export const tabBar = style({
@@ -120,7 +187,7 @@ export const tab = style({
   maxWidth: '240px',
   borderBottom: '2px solid transparent',
   selectors: {
-    '&[aria-selected="true"]': {
+    '&[data-selected="true"]': {
       borderBottomColor: 'var(--card-fg-color)',
     },
   },
@@ -137,7 +204,7 @@ export const tabCloseButton = style({
   opacity: 0,
   transition: 'opacity 100ms',
   selectors: {
-    [`${tab}:hover &, ${tab}:focus-within &, ${tab}[aria-selected="true"] &`]: {
+    [`${tab}:hover &, ${tab}:focus-within &, ${tab}[data-selected="true"] &`]: {
       opacity: 1,
     },
   },
@@ -155,22 +222,9 @@ export const resultContainer = style({
   overflow: 'auto',
 })
 
-export const resultCode = style({
-  whiteSpace: 'pre-wrap',
-  wordBreak: 'break-word',
-})
-
-export const metaValue = style({
-  wordBreak: 'break-all',
-})
-
 export const codeBlock = style({
   maxHeight: '50vh',
   overflow: 'auto',
-})
-
-export const noWrap = style({
-  whiteSpace: 'nowrap',
 })
 
 /**

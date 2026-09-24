@@ -167,6 +167,8 @@ export const queryRunnerMachine = setup({
                 const error = toError(event.error)
                 return {
                   result: undefined,
+                  // The previous response's timings and tags no longer describe what is shown
+                  meta: undefined,
                   error,
                   history: appendHistory(context.history, {
                     id: uuid(),

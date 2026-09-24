@@ -16,15 +16,16 @@ import {getCsvBlobUrl, getJsonBlobUrl} from '../../../util/getBlobUrl'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {type QueryRunnerRef} from '../../store/queryRunnerMachine'
 import {type VistaTab} from '../../store/types'
+import {useVistaExperience} from '../../store/VistaActorContext'
 import {ActionRail} from '../ActionRail'
 import {CollapsiblePanel, PANEL_HEADER_HEIGHT} from '../CollapsiblePanel'
-import {editorLabel, paneFill, resultContainer, splitPaneContainer} from '../vista.css'
+import {paneFill, resultContainer, resultLabel, splitPaneContainer} from '../vista.css'
 import {HistoryTab} from './HistoryTab'
 import {ResponseMetaTab} from './ResponseMetaTab'
 import {ResultActionsMenu} from './ResultActionsMenu'
 import {SourceMapTab} from './SourceMapTab'
 
-const DEFAULT_BOTTOM_PANEL_SIZE = 220
+const DEFAULT_BOTTOM_PANEL_SIZE = {columns: 220, stacked: 180, mobile: 160}
 
 export interface ResponsePanelProps {
   tab: VistaTab
@@ -36,7 +37,8 @@ export function ResponsePanel({tab, runnerRef, resolved}: ResponsePanelProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const [activePanelTab, setActivePanelTab] = useState('response')
   const [collapsed, setCollapsed] = useState(false)
-  const [bottomSize, setBottomSize] = useState(DEFAULT_BOTTOM_PANEL_SIZE)
+  const {layout} = useVistaExperience()
+  const [bottomSize, setBottomSize] = useState(() => DEFAULT_BOTTOM_PANEL_SIZE[layout])
 
   const status = useSelector(runnerRef, (snapshot) =>
     snapshot.matches({request: 'fetching'})
@@ -105,7 +107,7 @@ export function ResponsePanel({tab, runnerRef, resolved}: ResponsePanelProps) {
               data-testid="vista-result"
               tone={status === 'failed' ? 'critical' : 'default'}
             >
-              <Box className={editorLabel}>
+              <Box className={resultLabel}>
                 <Flex alignItems="center" gap={2}>
                   <Label muted size={1}>
                     {t('result.label')}

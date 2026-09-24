@@ -1,7 +1,9 @@
-import {useCallback} from 'react'
+import {lazy, Suspense, useCallback} from 'react'
 import {type Tool, useClient} from 'sanity'
+import {Flex} from 'ui5'
 
 import {DEFAULT_API_VERSION} from './apiVersions'
+import {DelayedSpinner} from './components/DelayedSpinner'
 import {VisionContainer} from './containers/VisionContainer'
 import {VisionErrorBoundary} from './containers/VisionErrorBoundary'
 import {type VisionConfig} from './types'
@@ -11,8 +13,12 @@ import {
   useRedesignPreference,
   writeRedesignPreference,
 } from './vista/redesignPreference'
-import {clearAllVistaState} from './vista/store/vistaStorage'
-import {VistaContainer} from './vista/VistaContainer'
+import {clearAllVistaState} from './vista/storageNamespace'
+
+// The redesign (XState, groq-js type evaluation, its own UI) only loads once someone opts in
+const VistaContainer = lazy(() =>
+  import('./vista/VistaContainer').then((module) => ({default: module.VistaContainer})),
+)
 
 interface SanityVisionProps {
   tool: Tool<VisionConfig>
@@ -49,7 +55,15 @@ function SanityVision(props: SanityVisionProps) {
   if (showRedesign) {
     return (
       <VisionErrorBoundary onClearCache={clearRedesignCache}>
-        <VistaContainer client={client} config={config} onSwitchToClassic={switchToClassic} />
+        <Suspense
+          fallback={
+            <Flex alignItems="center" height="100%" justifyContent="center">
+              <DelayedSpinner />
+            </Flex>
+          }
+        >
+          <VistaContainer client={client} config={config} onSwitchToClassic={switchToClassic} />
+        </Suspense>
       </VisionErrorBoundary>
     )
   }

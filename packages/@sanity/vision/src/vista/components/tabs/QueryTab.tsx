@@ -1,9 +1,10 @@
 import {SplitPane} from '@rexxars/react-split-pane'
+import {Tab, TabList} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
 import {type RefObject, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useClient, usePerspective, useTranslation} from 'sanity'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {API_VERSIONS} from '../../../apiVersions'
@@ -12,20 +13,27 @@ import {visionLocaleNamespace} from '../../../i18n'
 import {isVisionPasteTarget} from '../../../util/isVisionPasteTarget'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
 import {useElementSize} from '../../hooks/useElementSize'
-import {useIsNarrow} from '../../hooks/useIsNarrow'
 import {useQueryRequestBuilder} from '../../hooks/useQueryRequestBuilder'
 import {type FetchReason, type VistaTab, type VistaTabOptions} from '../../store/types'
-import {useVistaActor, useVistaSelector} from '../../store/VistaActorContext'
+import {
+  useVistaActor,
+  useVistaExperience,
+  useVistaSelector,
+  type VistaLayout,
+} from '../../store/VistaActorContext'
+import {cx} from '../../util/cx'
 import {formatGroq} from '../../util/formatGroq'
 import {parseQueryUrl} from '../../util/parseQueryUrl'
 import {matchVistaShortcut} from '../../util/shortcuts'
 import {LIVE_EVENTS_API_VERSION} from '../../util/syncTags'
 import {RequestPanel} from '../request/RequestPanel'
 import {ResponsePanel} from '../response/ResponsePanel'
-import {paneFill, splitPaneContainer} from '../vista.css'
+import {hiddenPane, paneFill, splitPaneContainer} from '../vista.css'
+import {getQueryTabId, QUERY_TAB_PANEL_ID} from './QueryTabBar'
 
-const NARROW_BREAKPOINT = 900
-const MIN_PANE_SIZE = 280
+const MIN_PANE_SIZE = {columns: 280, stacked: 160}
+
+type MobilePane = 'request' | 'response'
 
 interface QueryTabProps {
   tab: VistaTab
@@ -47,16 +55,16 @@ export function QueryTab({tab, rootRef, projectId}: QueryTabProps) {
   const toast = useToast()
   const copyToClipboard = useCopyToClipboard()
   const actorRef = useVistaActor()
+  const {layout} = useVistaExperience()
   const datasets = useVistaSelector((snapshot) => snapshot.context.defaults.datasets)
   const runnerRef = useVistaSelector((snapshot) => snapshot.context.runners[tab.id])
-  const isNarrow = useIsNarrow(rootRef, NARROW_BREAKPOINT)
+  const loadRevision = useVistaSelector((snapshot) => snapshot.context.loadRevisions[tab.id] || 0)
+
   const splitContainerRef = useRef<HTMLDivElement | null>(null)
   const splitContainerSize = useElementSize(splitContainerRef)
-  const [splitSize, setSplitSize] = useState<number | undefined>(undefined)
-  const defaultSplitSize = Math.max(
-    MIN_PANE_SIZE,
-    Math.floor((isNarrow ? splitContainerSize.height : splitContainerSize.width) / 2),
-  )
+  // Dragged sizes are remembered per layout: a column width makes no sense as a stacked height
+  const [splitSizes, setSplitSizes] = useState<Partial<Record<VistaLayout, number>>>({})
+  const [mobilePane, setMobilePane] = useState<MobilePane>('request')
 
   const queryEditorRef = useRef<VisionCodeMirrorHandle>(null)
   const paramsEditorRef = useRef<VisionCodeMirrorHandle>(null)
@@ -69,9 +77,11 @@ export function QueryTab({tab, rootRef, projectId}: QueryTabProps) {
     (reason: FetchReason) => {
       if (request) {
         runnerRef.send({type: 'fetch', request, reason})
+        // On a phone the result lives behind the other pane; bring it forward
+        if (layout === 'mobile') setMobilePane('response')
       }
     },
-    [request, runnerRef],
+    [layout, request, runnerRef],
   )
   const cancel = useCallback(() => runnerRef.send({type: 'cancel'}), [runnerRef])
 
@@ -109,6 +119,21 @@ export function QueryTab({tab, rootRef, projectId}: QueryTabProps) {
     () => void copyToClipboard(tab.query, t('vista.query.copied')),
     [copyToClipboard, t, tab.query],
   )
+
+  // A query loaded from outside the editors (saved query, pasted URL) replaces their content
+  // and drops the previous response
+  const applyLoadedQuery = useEffectEvent(() => {
+    queryEditorRef.current?.resetEditorContent(tab.query)
+    paramsEditorRef.current?.resetEditorContent(tab.rawParams)
+    runnerRef.send({type: 'clear'})
+  })
+  const previousLoadRevision = useRef(loadRevision)
+  useEffect(() => {
+    if (previousLoadRevision.current === loadRevision) return
+    previousLoadRevision.current = loadRevision
+    applyLoadedQuery()
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- useEffectEvent callbacks must not be listed
+  }, [loadRevision])
 
   // Live refetching through sync tags: the subscription follows the toggle and the dataset
   const liveBaseClient = useClient({apiVersion: LIVE_EVENTS_API_VERSION})
@@ -158,7 +183,7 @@ export function QueryTab({tab, rootRef, projectId}: QueryTabProps) {
   }, [optionsKey])
 
   // Follow the studio navbar: pinning another release or perspective there switches the tab to
-  // the "Pinned release" perspective, as Vision does
+  // the "Pinned release" perspective, as the classic tool does
   const {perspectiveStack} = usePerspective()
   const stackKey = perspectiveStack.join(',')
   const followNavbar = useEffectEvent(() => {
@@ -196,9 +221,6 @@ export function QueryTab({tab, rootRef, projectId}: QueryTabProps) {
       id: tab.id,
       tab: {query: parsed.query, rawParams: parsed.rawParams, options},
     })
-    queryEditorRef.current?.resetEditorContent(parsed.query)
-    paramsEditorRef.current?.resetEditorContent(parsed.rawParams)
-    runnerRef.send({type: 'clear'})
     toast.push({closable: true, id: 'vista-paste', status: 'info', title: t('vista.paste.parsed')})
     if (parsed.hasUnsupportedPerspective) {
       toast.push({
@@ -245,40 +267,100 @@ export function QueryTab({tab, rootRef, projectId}: QueryTabProps) {
     // oxlint-disable-next-line react/exhaustive-effect-dependencies -- useEffectEvent callbacks must not be listed
   }, [rootRef])
 
+  const requestPanel = (
+    <RequestPanel
+      datasets={datasets}
+      isFetching={isFetching}
+      onCancel={cancel}
+      onCopyQuery={copyQuery}
+      onOptionsChange={setOptions}
+      onParamsChange={setParams}
+      onPrettify={prettify}
+      onQueryChange={setQuery}
+      onRun={() => run({type: 'manual'})}
+      onToggleAutoRefetch={() => setAutoRefetch(!tab.autoRefetch)}
+      params={params}
+      paramsEditorRef={paramsEditorRef}
+      projectId={projectId}
+      queryEditorRef={queryEditorRef}
+      request={request}
+      resolved={resolved}
+      tab={tab}
+    />
+  )
+  const responsePanel = <ResponsePanel resolved={resolved} runnerRef={runnerRef} tab={tab} />
+
+  const panelProps = {
+    'aria-labelledby': getQueryTabId(tab.id),
+    'data-testid': 'vista-query-tab',
+    'id': QUERY_TAB_PANEL_ID,
+    'role': 'tabpanel',
+  } as const
+
+  if (layout === 'mobile') {
+    // Both panes stay mounted so the editors keep their state while hidden
+    return (
+      <Flex {...panelProps} flexBasis="0%" flexDirection="column" flexGrow={1} minHeight="0">
+        <Flex borderBottom flexShrink={0} justifyContent="center" paddingY={1}>
+          <TabList gap={1}>
+            <Tab
+              aria-controls="vista-mobile-request-pane"
+              fontSize={1}
+              id="vista-mobile-request-tab"
+              label={t('query.label')}
+              onClick={() => setMobilePane('request')}
+              padding={2}
+              selected={mobilePane === 'request'}
+            />
+            <Tab
+              aria-controls="vista-mobile-response-pane"
+              fontSize={1}
+              id="vista-mobile-response-tab"
+              label={t('result.label')}
+              onClick={() => setMobilePane('response')}
+              padding={2}
+              selected={mobilePane === 'response'}
+            />
+          </TabList>
+        </Flex>
+        <Box
+          className={cx(paneFill, mobilePane !== 'request' && hiddenPane)}
+          flexBasis="0%"
+          flexGrow={1}
+          id="vista-mobile-request-pane"
+        >
+          {requestPanel}
+        </Box>
+        <Box
+          className={cx(paneFill, mobilePane !== 'response' && hiddenPane)}
+          flexBasis="0%"
+          flexGrow={1}
+          id="vista-mobile-response-pane"
+        >
+          {responsePanel}
+        </Box>
+      </Flex>
+    )
+  }
+
+  const minSize = MIN_PANE_SIZE[layout]
+  const defaultSplitSize = Math.max(
+    minSize,
+    Math.floor((layout === 'stacked' ? splitContainerSize.height : splitContainerSize.width) / 2),
+  )
+
   return (
-    <Box className={splitPaneContainer} data-testid="vista-query-tab" ref={splitContainerRef}>
+    <Box {...panelProps} className={splitPaneContainer} ref={splitContainerRef}>
       <SplitPane
-        key={isNarrow ? 'stacked' : 'columns'}
-        minSize={MIN_PANE_SIZE}
-        onChange={setSplitSize}
-        size={splitSize ?? defaultSplitSize}
+        key={layout}
+        minSize={minSize}
+        onChange={(size: number) => setSplitSizes((sizes) => ({...sizes, [layout]: size}))}
+        size={splitSizes[layout] ?? defaultSplitSize}
         // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals -- layout mode, not user-facing text
-        split={isNarrow ? 'horizontal' : 'vertical'}
+        split={layout === 'stacked' ? 'horizontal' : 'vertical'}
       >
-        <Box className={paneFill}>
-          <RequestPanel
-            datasets={datasets}
-            isFetching={isFetching}
-            onCancel={cancel}
-            onCopyQuery={copyQuery}
-            onOptionsChange={setOptions}
-            onParamsChange={setParams}
-            onPrettify={prettify}
-            onQueryChange={setQuery}
-            onRun={() => run({type: 'manual'})}
-            onToggleAutoRefetch={() => setAutoRefetch(!tab.autoRefetch)}
-            params={params}
-            paramsEditorRef={paramsEditorRef}
-            projectId={projectId}
-            queryEditorRef={queryEditorRef}
-            request={request}
-            resolved={resolved}
-            tab={tab}
-          />
-        </Box>
-        <Box className={paneFill}>
-          <ResponsePanel resolved={resolved} runnerRef={runnerRef} tab={tab} />
-        </Box>
+        <Box className={paneFill}>{requestPanel}</Box>
+        <Box className={paneFill}>{responsePanel}</Box>
       </SplitPane>
     </Box>
   )

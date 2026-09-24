@@ -30,14 +30,15 @@ export function resolveSchemaType(
 
 /**
  * Names of the schema types referenced (transitively) by `node`, in dependency order: a type is
- * listed after every type it references, except for references that close a cycle.
+ * listed after every type it references, except within cycles. Every type that takes part in a
+ * cycle is reported in `cyclic`, since any of them may be emitted before a type it references.
  */
 export function collectReferencedTypes(
   node: TypeNode,
   schema: SchemaType | undefined,
 ): {order: string[]; cyclic: Set<string>} {
   const order: string[] = []
-  const visiting = new Set<string>()
+  const visiting: string[] = []
   const done = new Set<string>()
   const cyclic = new Set<string>()
 
@@ -62,16 +63,18 @@ export function collectReferencedTypes(
 
   const visitName = (name: string): void => {
     if (done.has(name)) return
-    if (visiting.has(name)) {
-      cyclic.add(name)
+    const cycleStart = visiting.indexOf(name)
+    if (cycleStart !== -1) {
+      // A back-edge: everything from the revisited type up to the current one forms the cycle
+      visiting.slice(cycleStart).forEach((member) => cyclic.add(member))
       return
     }
-    visiting.add(name)
+    visiting.push(name)
     const resolved = resolveSchemaType(schema, name)
     if (resolved) {
       visitNode(resolved)
     }
-    visiting.delete(name)
+    visiting.pop()
     done.add(name)
     order.push(name)
   }

@@ -33,6 +33,11 @@ export interface VistaContext {
   settings: VistaSettings
   /** One query runner per open tab, keyed by tab id */
   runners: Record<string, QueryRunnerRef>
+  /**
+   * Bumped whenever a query is loaded into a tab from outside its editors (saved query, pasted
+   * URL), so the mounted editors know to replace their content. Not persisted.
+   */
+  loadRevisions: Record<string, number>
   /** Sidebar state as restored from storage, consumed once by the `restoring` states */
   restoredSidebar: VistaSidebarState
 }
@@ -194,6 +199,7 @@ export const vistaMachine = setup({
         spawn('queryRunner', {id: runnerId(tab.id), input: {tabId: tab.id}}),
       ]),
     ),
+    loadRevisions: {},
     restoredSidebar: input.persisted.sidebar,
   }),
   on: {
@@ -251,6 +257,10 @@ export const vistaMachine = setup({
             ...event.tab,
             options: {...tab.options, ...event.tab.options},
           })),
+        loadRevisions: ({context, event}) => ({
+          ...context.loadRevisions,
+          [event.id]: (context.loadRevisions[event.id] || 0) + 1,
+        }),
       }),
     },
     'settings.update': {
