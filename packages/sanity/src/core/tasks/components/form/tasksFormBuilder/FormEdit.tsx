@@ -3,7 +3,7 @@ import {LinkIcon} from '@sanity/icons/Link'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type PortableTextBlock} from '@sanity/types'
-import {Card, Stack} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useMemo} from 'react'
@@ -133,14 +133,14 @@ function FormEditInner(props: ObjectInputProps) {
   return (
     <>
       <Flex alignItems="flex-start" gap={3}>
-        <Stack flex={1}>
+        <Flex flexBasis="0%" flexGrow={1} flexDirection="column">
           <Title
             onChange={handleChangeAndSubscribe}
             value={props.value?.title}
             path={['title']}
             placeholder={t('form.input.title.placeholder')}
           />
-        </Stack>
+        </Flex>
         <FormActionsMenu id={props.value?._id} value={value} />
       </Flex>
 

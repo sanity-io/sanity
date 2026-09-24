@@ -2,7 +2,6 @@ import {type ReferenceValue, type SchemaType} from '@sanity/types'
 import {Text} from '@sanity/ui'
 import {Autocomplete} from '@sanity/ui/autocomplete'
 import {useCallback, useId, useMemo, useRef, useState, type Ref, type RefAttributes} from 'react'
-import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {Popover} from '../../../../../../../../../../ui-components/popover/Popover'
@@ -16,6 +15,7 @@ import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {useSearch} from '../../../../../hooks/useSearch'
 import {getDocumentTypesTruncated} from '../../../../../utils/documentTypesTruncated'
 import {SearchResultItem} from '../../../../searchResults/item/SearchResultItem'
+import {styledText} from './ReferenceAutocomplete.css'
 
 type AutocompleteSearchHit = {value: string} & SearchHit
 
@@ -33,10 +33,6 @@ interface ReferenceAutocompleteProps {
 }
 
 const NO_FILTER = () => true
-
-const StyledText = styled(Text)`
-  word-break: break-word;
-`
 
 export function ReferenceAutocomplete({
   ref,
@@ -162,13 +158,13 @@ export function ReferenceAutocomplete({
                 : searchState.terms.query && (
                     <Box padding={4}>
                       <Flex alignItems="center" height="100%" justifyContent="center">
-                        <StyledText align="center" muted>
+                        <Text align="center" className={styledText} muted>
                           <Translate
                             t={t}
                             i18nKey="new-document.no-results"
                             values={{searchQuery: searchState.terms.query}}
                           />
-                        </StyledText>
+                        </Text>
                       </Flex>
                     </Box>
                   )}

@@ -5,7 +5,7 @@ import {
   type GlobalDocumentReferenceValue,
   isGlobalDocumentReference,
 } from '@sanity/types'
-import {Card, Inline, Stack, useClickOutsideEvent} from '@sanity/ui'
+import {Card, Inline, useClickOutsideEvent} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
 import {
@@ -20,7 +20,7 @@ import {
   useState,
 } from 'react'
 import {type Observable} from 'rxjs'
-import {Flex, Box} from 'ui5'
+import {Box, Flex, VStack} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
@@ -278,9 +278,9 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
   ])
 
   return (
-    <Stack gap={1}>
+    <VStack gap={1}>
       {isEditing ? (
-        <Stack gap={2} ref={clickOutsideBoundaryRef}>
+        <VStack gap={2} ref={clickOutsideBoundaryRef}>
           <ChangeIndicator path={path} isChanged={changed} hasFocus={!!focused}>
             <div ref={setAutocompletePopoverReferenceElement}>
               <ReferenceAutocomplete
@@ -310,7 +310,7 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
               />
             </div>
           </ChangeIndicator>
-        </Stack>
+        </VStack>
       ) : (
         <ChangeIndicator path={path} isChanged={changed} hasFocus={!!focused}>
           <Card
@@ -420,6 +420,6 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
           </Card>
         </ChangeIndicator>
       )}
-    </Stack>
+    </VStack>
   )
 }

@@ -45,6 +45,8 @@ export default defineConfig({
       'perf/bench',
       // The dashboard's drift/ack math — pure modules, plain node environment
       'dev/radar',
+      // The style widget's corner math — likewise pure, likewise plain node
+      'dev/test-studio',
       'packages/@repo/debug-proxy',
       'packages/@repo/release-notes',
       'packages/@repo/bundle-manager',

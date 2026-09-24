@@ -1,7 +1,7 @@
 import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
-import {Box} from 'ui5'
+import {Box, VStack} from 'ui5'
 
 import {WorkspacePreview} from '../../WorkspacePreview'
 import {Layout} from '../Layout'
@@ -48,28 +48,28 @@ export const States: Story = {
   args: {header: 'Production', children: BODY},
   render: () => (
     <Card padding={4} style={{maxWidth: 420}}>
-      <Stack gap={5}>
-        <Stack gap={2}>
+      <VStack gap={5}>
+        <VStack gap={2}>
           <Text muted size={1} weight="medium">
             string header
           </Text>
           <Layout header="Production">{BODY}</Layout>
-        </Stack>
-        <Stack gap={2}>
+        </VStack>
+        <VStack gap={2}>
           <Text muted size={1} weight="medium">
             string header and footer (workspace chooser)
           </Text>
           <Layout footer={FOOTER} header="Staging">
             {BODY}
           </Layout>
-        </Stack>
-        <Stack gap={2}>
+        </VStack>
+        <VStack gap={2}>
           <Text muted size={1} weight="medium">
             node header (login screen)
           </Text>
           <Layout header={NODE_HEADER}>{BODY}</Layout>
-        </Stack>
-      </Stack>
+        </VStack>
+      </VStack>
     </Card>
   ),
 }

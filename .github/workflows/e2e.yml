@@ -198,9 +198,13 @@ jobs:
           path: ~/.cache/ms-playwright
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-chromium-firefox
 
+      # e2e/globalSetup.ts warms the preview deployment with chromium regardless of the
+      # matrix project, so a shard whose cache restore missed needs chromium as well as
+      # its own browser. The restore misses whenever the `install` job could not save the
+      # cache (e.g. concurrent runs racing to reserve a new Playwright version's key).
       - name: Install Playwright Browsers
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-        run: pnpm exec playwright install --with-deps ${{ matrix.project }}
+        run: pnpm exec playwright install --with-deps ${{ matrix.project == 'chromium' && 'chromium' || format('chromium {0}', matrix.project) }}
 
       - name: Run E2E tests
         env:
@@ -374,6 +378,7 @@ jobs:
           retention-days: 30
 
   deploy-report:
+    timeout-minutes: 10
     needs: [install, deploy-preview, playwright-test, merge-reports]
     if: always() && needs.install.outputs.has_code_changes == 'true' && needs.merge-reports.result == 'success'
     runs-on: ubuntu-latest

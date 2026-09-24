@@ -1,5 +1,6 @@
 import {CalendarIcon} from '@sanity/icons/Calendar'
-import {Inline, Stack, Text} from '@sanity/ui'
+import {Inline, Text} from '@sanity/ui'
+import {Flex} from 'ui5'
 
 interface Props {
   body?: string
@@ -9,7 +10,7 @@ interface Props {
 const ToastDescription = (props: Props) => {
   const {body, title} = props
   return (
-    <Stack paddingY={1} gap={3}>
+    <Flex paddingY={1} gap={3} flexDirection="column">
       <Inline gap={2}>
         <CalendarIcon />
         {title && (
@@ -19,7 +20,7 @@ const ToastDescription = (props: Props) => {
         )}
       </Inline>
       {body && <Text size={1}>{body}</Text>}
-    </Stack>
+    </Flex>
   )
 }
 
