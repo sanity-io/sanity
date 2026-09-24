@@ -260,6 +260,16 @@ const createDatasetAssetSources = (config: SourceOptions, client: SanityClient) 
 }
 
 /**
+ * Options for {@link prepareConfig}. The auth-store wiring is forwarded
+ * verbatim to `getAuthStore` for each source.
+ *
+ * @internal
+ */
+export interface PrepareConfigOptions extends GetAuthStoreOptions {
+  basePath?: string
+}
+
+/**
  * Takes in a config (created from the `defineConfig` function) and returns
  * an array of `WorkspaceSummary`. Note: this only partially resolves a config.
  *
@@ -271,7 +281,7 @@ const createDatasetAssetSources = (config: SourceOptions, client: SanityClient) 
  */
 export function prepareConfig(
   config: Config | MissingConfigFile,
-  options?: {basePath?: string} & GetAuthStoreOptions,
+  options?: PrepareConfigOptions,
 ): PreparedConfig {
   if (!Array.isArray(config) && 'missingConfigFile' in config) {
     throw new ConfigResolutionError({
@@ -282,6 +292,7 @@ export function prepareConfig(
   }
 
   const rootPath = getRootPath(options?.basePath)
+  const authStoreOptions: GetAuthStoreOptions = options ?? {}
   const workspaceOptions: WorkspaceOptions[] | [SingleWorkspace] = Array.isArray(config)
     ? config
     : [{...config, name: config.name ?? 'default'}]
@@ -363,7 +374,7 @@ export function prepareConfig(
         throw new SchemaError(schema)
       }
 
-      const auth = getAuthStore(source, options ?? {})
+      const auth = getAuthStore(source, authStoreOptions)
       const i18n = prepareI18n(source)
       const source$ = auth.state.pipe(
         map(({client, authenticated, currentUser}) => {

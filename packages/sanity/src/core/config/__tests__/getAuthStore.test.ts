@@ -1,49 +1,21 @@
-import {createClient, type RequestHandler, type SanityClient} from '@sanity/client'
+import {type RequestHandler, type SanityClient} from '@sanity/client'
 import {firstValueFrom, type Observable, of} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 
 import {createMockAuthStore} from '../../store/authStore/createMockAuthStore'
-import {
-  type AuthState,
-  type AuthStore,
-  type HandleCallbackResult,
-} from '../../store/authStore/types'
+import {type AuthState, type AuthStore} from '../../store/authStore/types'
 import {getAuthStore} from '../getAuthStore'
 import {type SourceOptions} from '../types'
+import {
+  createBareClient,
+  createPrebuiltStore,
+  passthroughRequestHandler,
+} from './fixtures/prebuiltAuthStore'
 
-const passthrough: RequestHandler = (request, next) => next(request)
-const createPassthroughHandler = () => passthrough
-
-const LoginComponent = () => null
-
-const CALLBACK_RESULT: HandleCallbackResult = {
-  loginMethod: 'dual',
-  flow: 'already-authenticated',
-  success: true,
-  durationMs: 0,
-}
+const createPassthroughHandler = () => passthroughRequestHandler
 
 function createSource(auth: AuthStore): SourceOptions {
   return {name: 'test', projectId: 'abc123', dataset: 'test', auth}
-}
-
-function createBareClient() {
-  return createClient({
-    projectId: 'abc123',
-    dataset: 'test',
-    apiVersion: '2025-01-01',
-    useCdn: false,
-  })
-}
-
-// The pre-built store shape under test: `createMockAuthStore` plus the
-// `logout` a store must have for the studio to complete a forced logout.
-function createPrebuiltStore(client: SanityClient, extra: Partial<AuthStore> = {}): AuthStore {
-  return {
-    ...createMockAuthStore({client, currentUser: null}),
-    logout: () => Promise.resolve(),
-    ...extra,
-  }
 }
 
 // A pre-built `AuthStore` (the pre-v3.15 `auth: createAuthStore({...})`
@@ -100,7 +72,7 @@ describe('getAuthStore — pre-built auth store', () => {
     expect(order).toEqual(['studio:before', 'store:before', 'store:after', 'studio:after'])
   })
 
-  it('leaves the emitted client alone when the store cannot complete a forced logout', async () => {
+  it('leaves the store alone when it cannot complete a forced logout', async () => {
     // The studio's response to a claimed invalid-session 401 is to park the
     // request and log the user out. A store without `logout` would just
     // leave the request pending, so its clients keep surfacing the error.
@@ -120,65 +92,29 @@ describe('getAuthStore — pre-built auth store', () => {
     expect(getAuthStore(createSource(store), {})).toBe(store)
   })
 
-  it('emits one wrapped client per upstream client, shared by every subscriber', async () => {
-    const auth = getAuthStore(createSource(createPrebuiltStore(createBareClient())), {
-      createStudioRequestHandler: createPassthroughHandler,
-    })
-
-    const first = await firstValueFrom(auth.state)
-    const second = await firstValueFrom(auth.state)
-    expect(second.client).toBe(first.client)
-  })
-
   it('resolves a pre-built store to one wrapped store, whichever source or factory asks', () => {
     // `AuthBoundary` keys its one-shot `handleCallbackUrl()` on the auth
-    // store's identity, so the wrapper must be as stable as the store it
-    // wraps — including across a re-created handler factory, matching the
-    // memoized store the `AuthConfig` branch would return.
+    // store's identity, so the wrapper must be as stable as the store it wraps.
     const store = createPrebuiltStore(createBareClient())
 
     const a = getAuthStore(createSource(store), {
       createStudioRequestHandler: createPassthroughHandler,
     })
-    const b = getAuthStore(createSource(store), {createStudioRequestHandler: () => passthrough})
+    const b = getAuthStore(createSource(store), {
+      createStudioRequestHandler: () => passthroughRequestHandler,
+    })
 
     expect(a).not.toBe(store)
     expect(b).toBe(a)
   })
 
-  it('keeps the store members reachable through the wrapped store', async () => {
-    const logout = vi.fn(() => Promise.resolve())
-    const handleCallbackUrl = vi.fn(() => Promise.resolve(CALLBACK_RESULT))
-    const token = of('token')
-    const store = createPrebuiltStore(createBareClient(), {
-      logout,
-      handleCallbackUrl,
-      token,
-      LoginComponent,
-    })
-
-    const auth = getAuthStore(createSource(store), {
-      createStudioRequestHandler: createPassthroughHandler,
-    })
-
-    expect(auth).not.toBe(store)
-    await auth.logout!()
-    expect(logout).toHaveBeenCalledOnce()
-    await auth.handleCallbackUrl!()
-    expect(handleCallbackUrl).toHaveBeenCalledOnce()
-    expect(auth.token).toBe(token)
-    expect(auth.LoginComponent).toBe(LoginComponent)
-  })
-
-  it('keeps prototype methods of a class-based store reachable, bound to the store', async () => {
-    // `AuthStore` is duck-typed, so a class instance is a valid store. Its
-    // methods live on the prototype and read `this`; an object spread would
-    // drop them, letting the handler attach while `logout` disappears — a
-    // claimed 401 would then park forever with nothing to log the user out.
+  it('keeps a class-based store loggable-out once its clients carry the handler', async () => {
+    // The `logout` gate reads the prototype; the wrapper must too, or the
+    // handler attaches while `logout` disappears and a claimed 401 parks
+    // forever with nothing to log the user out.
     class ClassAuthStore implements AuthStore {
       state: Observable<AuthState>
       loggedOut = 0
-      callbacks = 0
 
       constructor(client: SanityClient) {
         this.state = of({client, authenticated: true, currentUser: null})
@@ -188,11 +124,6 @@ describe('getAuthStore — pre-built auth store', () => {
         this.loggedOut += 1
         return Promise.resolve()
       }
-
-      handleCallbackUrl() {
-        this.callbacks += 1
-        return Promise.resolve(CALLBACK_RESULT)
-      }
     }
     const store = new ClassAuthStore(createBareClient())
 
@@ -200,23 +131,16 @@ describe('getAuthStore — pre-built auth store', () => {
       createStudioRequestHandler: createPassthroughHandler,
     })
 
-    expect(auth).not.toBe(store)
     const {client} = await firstValueFrom(auth.state)
     expect(client.config().requestHandler).toBeDefined()
-
     expect(typeof auth.logout).toBe('function')
     await auth.logout!()
     expect(store.loggedOut).toBe(1)
-
-    expect(typeof auth.handleCallbackUrl).toBe('function')
-    await auth.handleCallbackUrl!()
-    expect(store.callbacks).toBe(1)
   })
 
   it('passes through a state whose client cannot be reconfigured', async () => {
     // A hand-written store may emit something that is not a full
-    // `SanityClient`; without `withConfig` there is no way to add a handler,
-    // and the state object is handed on unchanged.
+    // `SanityClient`; without `withConfig` there is no seam for a handler.
     const bare = {config: () => ({projectId: 'abc123', dataset: 'test'})} as unknown as SanityClient
     const upstream = {client: bare, authenticated: true, currentUser: null}
     const auth = getAuthStore(

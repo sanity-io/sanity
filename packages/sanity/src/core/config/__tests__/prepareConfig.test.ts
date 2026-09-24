@@ -1,14 +1,17 @@
-import {ClientError, createClient, type RequestHandler} from '@sanity/client'
+import {ClientError, createClient} from '@sanity/client'
 import {filter, firstValueFrom} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {createMockAuthStore} from '../../store/authStore/createMockAuthStore'
-import {type AuthStore} from '../../store/authStore/types'
 import {createRequestErrorChannel} from '../../studio/requestErrors/createRequestErrorChannel'
 import {createStudioRequestHandler} from '../../studio/requestErrors/createStudioRequestHandler'
 import {getCollectedConfigWarnings} from '../configWarnings'
 import {prepareConfig} from '../prepareConfig'
 import {type WorkspaceOptions} from '../types'
+import {
+  createBareClient,
+  createPrebuiltStore,
+  passthroughRequestHandler as passthrough,
+} from './fixtures/prebuiltAuthStore'
 
 // Minimum viable workspace for prepareConfig — avoids pulling in real
 // schema/client resolution. projectId is randomized per test so the
@@ -198,20 +201,6 @@ describe('prepareConfig — workspace hidden property', () => {
   })
 })
 
-const passthrough: RequestHandler = (request, next) => next(request)
-
-// A pre-built store: `createMockAuthStore` plus the `logout` the studio needs
-// to complete a forced logout.
-function createPrebuiltStore(projectId: string): AuthStore {
-  return {
-    ...createMockAuthStore({
-      client: createClient({projectId, dataset: 'test', apiVersion: '2025-01-01', useCdn: false}),
-      currentUser: null,
-    }),
-    logout: () => Promise.resolve(),
-  }
-}
-
 describe('prepareConfig — studio request handler', () => {
   it('passes the handler to a custom client factory', () => {
     const clientFactory = vi.fn(createClient)
@@ -232,7 +221,7 @@ describe('prepareConfig — studio request handler', () => {
     // one-shot `handleCallbackUrl()` on `activeWorkspace.auth`, so a wrapper
     // rebuilt per render would re-run the credential exchange every render
     // and never settle the callback gate.
-    const workspace = createWorkspace({auth: createPrebuiltStore('abc123')})
+    const workspace = createWorkspace({auth: createPrebuiltStore(createBareClient())})
 
     const first = prepareConfig(workspace, {createStudioRequestHandler: () => passthrough})
     const second = prepareConfig(workspace, {createStudioRequestHandler: () => passthrough})
@@ -253,7 +242,7 @@ describe('prepareConfig — studio request handler', () => {
       // Hostname-shaped, so the channel can attribute the claim to a project.
       projectId: `abc${Math.random().toString(36).slice(2, 8)}`,
     })
-    const auth = createPrebuiltStore(workspace.projectId)
+    const auth = createPrebuiltStore(createBareClient(workspace.projectId))
     const channel = createRequestErrorChannel()
 
     const {workspaces} = prepareConfig(
@@ -280,17 +269,24 @@ describe('prepareConfig — studio request handler', () => {
       url,
     })
 
-    let settled = false
-    void dataClient.config().requestHandler!(
+    const parked = dataClient.config().requestHandler!(
       {method: 'GET', url},
       vi.fn().mockRejectedValue(sessionNotFound),
-    ).finally(() => {
-      settled = true
-    })
+    )
 
     await expect(
       firstValueFrom(channel.claim$.pipe(filter((claim) => claim !== undefined))),
     ).resolves.toMatchObject({type: 'unauthorized', projectId: workspace.projectId})
-    expect(settled).toBe(false)
+    // Crosses a macrotask boundary, so a rejection that merely lost the race
+    // against the claim above would still be caught here.
+    await expect(
+      Promise.race([
+        parked.then(
+          () => 'settled',
+          () => 'settled',
+        ),
+        new Promise((resolve) => setTimeout(() => resolve('parked'), 0)),
+      ]),
+    ).resolves.toBe('parked')
   })
 })
