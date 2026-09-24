@@ -6,7 +6,7 @@ import {
   type SanityDocument,
 } from '@sanity/types'
 import {describe, expect, it} from 'vitest'
-import {userEvent} from 'vitest/browser'
+import {page, userEvent} from 'vitest/browser'
 
 import {TestForm} from '../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../test/browser/testHelpers'
@@ -191,7 +191,7 @@ const document: SanityDocument = {
 
 describe('Portable Text Input - toolbar reflects the positional schema', () => {
   it('disables actions the caret position cannot honor, membership unchanged', async () => {
-    const clickText = await renderToolbar(NARROWER_CELL)
+    const {clickText} = await renderToolbar(NARROWER_CELL)
 
     await clickText('root text')
     // The narrow cell config removes nothing from the toolbar; at the
@@ -227,7 +227,7 @@ describe('Portable Text Input - toolbar reflects the positional schema', () => {
   })
 
   it('adds the actions only the caret position declares', async () => {
-    const clickText = await renderToolbar(WIDER_CELL)
+    const {clickAction, clickText, waitForDocumentState} = await renderToolbar(WIDER_CELL)
 
     await clickText('root text')
     // `em`, `footnote` and `number` belong to the cell alone: nothing out
@@ -251,15 +251,27 @@ describe('Portable Text Input - toolbar reflects the positional schema', () => {
         bullet: 'enabled',
         number: 'enabled',
       })
+
+    // An enabled button that no-ops would pass the assertion above, so
+    // press one of the cell's own and read the result off the value.
+    await clickAction('number')
+    await waitForDocumentState(
+      (state) => state?.body?.[1]?.rows?.[0]?.cells?.[0]?.value?.[0]?.listItem === 'number',
+    )
   })
 })
 
 /**
- * Mount the editor on `schemaTypes` and hand back a way to put the caret
- * on a given piece of text.
+ * Mount the editor on `schemaTypes` and hand back the interactions the
+ * assertions need.
  */
 async function renderToolbar(schemaTypes: ReturnType<typeof defineSchemaTypes>) {
-  const {getFocusedPortableTextEditor, waitForFocusedNodeText} = testHelpers()
+  const {
+    findBySelector,
+    getFocusedPortableTextEditor,
+    waitForDocumentState,
+    waitForFocusedNodeText,
+  } = testHelpers()
 
   void render(
     <TestWrapper schemaTypes={schemaTypes}>
@@ -270,12 +282,24 @@ async function renderToolbar(schemaTypes: ReturnType<typeof defineSchemaTypes>) 
   const $pte = await getFocusedPortableTextEditor('field-body')
   await expect.element($pte).toHaveTextContent('cell text')
 
-  return async (text: string) => {
-    const node = [...$pte.element().querySelectorAll('*')].find(
-      (candidate) => candidate.childElementCount === 0 && candidate.textContent === text,
-    )
-    await userEvent.click(node as HTMLElement)
-    await waitForFocusedNodeText(text)
+  const $portableTextInput = page.getByTestId('field-body')
+
+  return {
+    clickText: async (text: string) => {
+      const node = [...$pte.element().querySelectorAll('*')].find(
+        (candidate) => candidate.childElementCount === 0 && candidate.textContent === text,
+      )
+      await userEvent.click(node as HTMLElement)
+      await waitForFocusedNodeText(text)
+    },
+    clickAction: async (key: string) => {
+      const $button = await findBySelector(
+        $portableTextInput,
+        `button[data-testid="action-button-${key}"]:not([disabled])`,
+      )
+      await userEvent.click($button)
+    },
+    waitForDocumentState,
   }
 }
 
