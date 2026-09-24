@@ -1,5 +1,5 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
-import {Badge, Button, Card, Stack, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Badge, Button, Card, Text, useClickOutsideEvent} from '@sanity/ui'
 import {Popover} from '@sanity/ui/popover'
 import {AxisBottom, AxisLeft} from '@visx/axis'
 import {Group} from '@visx/group'
@@ -7,7 +7,7 @@ import {ParentSize} from '@visx/responsive'
 import {scaleBand, scaleLinear} from '@visx/scale'
 import {Bar} from '@visx/shape'
 import {useRef, useState} from 'react'
-import {Box, Flex} from 'ui5'
+import {Box, Flex, VStack} from 'ui5'
 
 import {
   formatTick,
@@ -297,7 +297,7 @@ export function WeeklyBars(props: {
           }}
         >
           <Card radius={2} shadow={2} padding={2}>
-            <Stack gap={2}>
+            <VStack gap={2}>
               <Text size={0} muted>
                 week of {weekLabel(hovered.weekStart)}
               </Text>
@@ -333,7 +333,7 @@ export function WeeklyBars(props: {
                   </Text>
                 </>
               )}
-            </Stack>
+            </VStack>
           </Card>
         </div>
       )}
@@ -407,7 +407,7 @@ export function WeeklyCard(props: {
 
   return (
     <Card border padding={3} radius={2}>
-      <Stack gap={3}>
+      <VStack gap={3}>
         <Flex alignItems="center" justifyContent="space-between" gap={3}>
           <Box flexBasis="0%" flexGrow={1} style={{minWidth: 0}}>
             <Text size={1} weight="medium">
@@ -519,7 +519,7 @@ export function WeeklyCard(props: {
             {goal} is better
           </Text>
         </Flex>
-      </Stack>
+      </VStack>
     </Card>
   )
 }

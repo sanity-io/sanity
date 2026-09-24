@@ -1,11 +1,11 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Badge, Box, Button, Card, Dialog, Select, Stack, Text} from '@sanity/ui'
+import {Badge, Box, Button, Card, Dialog, Select, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useMemo, useState} from 'react'
 import {type SanityClient} from 'sanity'
 import {useLink} from 'sanity/router'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 import {type SessionSummary, type TagSlice} from '../bisect/data'
 import {RelativeDate} from '../bisect/RelativeDate'
@@ -55,15 +55,15 @@ export function RegressionsDialog(props: {
   const total = introduced.length + inherited.length + fixed.length
   const section = (title: string, hint: string, entries: ReleaseRegression[]) =>
     entries.length > 0 && (
-      <Stack gap={3}>
-        <Stack gap={2}>
+      <VStack gap={3}>
+        <VStack gap={2}>
           <Text size={1} weight="semibold">
             {title}
           </Text>
           <Text size={0} muted>
             {hint}
           </Text>
-        </Stack>
+        </VStack>
         {entries.map((entry) => (
           <RegressionRow
             key={entry.session._id}
@@ -73,7 +73,7 @@ export function RegressionsDialog(props: {
             client={client}
           />
         ))}
-      </Stack>
+      </VStack>
     )
   return (
     <Dialog
@@ -83,7 +83,7 @@ export function RegressionsDialog(props: {
       onClose={onClose}
     >
       <Box padding={4}>
-        <Stack gap={5}>
+        <VStack gap={5}>
           {total === 0 && (
             <Text size={1} muted>
               No regressions touch {tag} any more.
@@ -100,7 +100,7 @@ export function RegressionsDialog(props: {
             inherited,
           )}
           {section(`Fixed in ${tag}`, 'Marked as fixed in this release.', fixed)}
-        </Stack>
+        </VStack>
       </Box>
     </Dialog>
   )
@@ -183,9 +183,9 @@ function RegressionRow(props: {
       {/* What it is on top, full width (descriptions often carry a long
           Slack or Linear URL — let it break anywhere rather than run under
           the controls); the controls on a line of their own below */}
-      <Stack gap={3}>
+      <VStack gap={3}>
         <Box>
-          <Stack gap={2}>
+          <VStack gap={2}>
             <Flex alignItems="center" gap={2} flexWrap="wrap">
               <Text size={1} weight="medium" style={{overflowWrap: 'anywhere'}}>
                 {session.description || session.title || session._id}
@@ -242,7 +242,7 @@ function RegressionRow(props: {
                 </a>
               </Text>
             </Flex>
-          </Stack>
+          </VStack>
         </Box>
         <Flex alignItems="center" gap={2} justifyContent="flex-end" flexWrap="wrap">
           <Box style={{flexShrink: 0}}>
@@ -316,7 +316,7 @@ function RegressionRow(props: {
             />
           )}
         </Flex>
-      </Stack>
+      </VStack>
     </Card>
   )
 }

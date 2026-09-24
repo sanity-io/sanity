@@ -1,12 +1,12 @@
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Badge, Box, Button, Card, Container, Dialog, Stack, Text} from '@sanity/ui'
+import {Badge, Box, Button, Card, Container, Dialog, Text} from '@sanity/ui'
 import {type ToastContextValue, useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {type SanityClient, useDocumentStore} from 'sanity'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 import {commitUrl, compareUrl} from '../trends/links'
 import {
@@ -263,11 +263,11 @@ export function SessionView(props: {
   return (
     <Box padding={4} style={{overflowY: 'auto', height: '100%'}}>
       <Container width={2}>
-        <Stack gap={4}>
+        <VStack gap={4}>
           <Flex alignItems="center" gap={3}>
             <Button mode="bleed" icon={ArrowLeftIcon} text="Sessions" onClick={onBack} />
             <Box flex={1} style={{minWidth: 0}}>
-              <Stack gap={2}>
+              <VStack gap={2}>
                 <Text size={2} weight="semibold">
                   {session?.description || session?.title || 'Bisect session'}
                 </Text>
@@ -318,7 +318,7 @@ export function SessionView(props: {
                     — counted as one regression
                   </Text>
                 )}
-              </Stack>
+              </VStack>
             </Box>
             {session && (
               <Button
@@ -428,7 +428,7 @@ export function SessionView(props: {
               }
             />
           )}
-        </Stack>
+        </VStack>
       </Container>
 
       {confirmingDelete && (
@@ -439,7 +439,7 @@ export function SessionView(props: {
           onClose={() => setConfirmingDelete(false)}
         >
           <Box padding={4}>
-            <Stack gap={4}>
+            <VStack gap={4}>
               <Text size={1}>
                 Delete “{session?.title ?? sessionId}”? The session, its marks log, and any verdict
                 (including a regression pinned on a release) are permanently removed.
@@ -453,7 +453,7 @@ export function SessionView(props: {
                   onClick={removeSession}
                 />
               </Flex>
-            </Stack>
+            </VStack>
           </Box>
         </Dialog>
       )}
@@ -468,7 +468,7 @@ function RangeStatus(props: {
 }) {
   const {state, releasesOnly} = props
   return (
-    <Stack gap={3}>
+    <VStack gap={3}>
       <Flex alignItems="center" gap={2} flexWrap="wrap">
         <Text size={1} muted>
           The bad commit is between
@@ -512,6 +512,6 @@ function RangeStatus(props: {
           </Text>
         )
       )}
-    </Stack>
+    </VStack>
   )
 }

@@ -1,6 +1,7 @@
-import {Button, Card, Dialog, Stack, Text} from '@sanity/ui'
+import {Button, Card, Dialog, Text} from '@sanity/ui'
 import {useState} from 'react'
 import {type DocumentActionComponent, type DocumentActionDescription} from 'sanity'
+import {Flex} from 'ui5'
 
 export const useTestCustomComponentAction: DocumentActionComponent = () => {
   const [open, setOpen] = useState<boolean>(false)
@@ -20,9 +21,9 @@ export const useTestCustomComponentAction: DocumentActionComponent = () => {
           onClose={toggleOpen}
           width={1}
           footer={
-            <Stack padding={2}>
+            <Flex padding={2} flexDirection="column">
               <Button onClick={toggleOpen} text="Close" />
-            </Stack>
+            </Flex>
           }
         >
           <Card padding={5}>

@@ -1,10 +1,10 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Badge, Button, Card, Stack, Text} from '@sanity/ui'
+import {Badge, Button, Card, Text} from '@sanity/ui'
 import {MenuButton, Menu, MenuItem} from '@sanity/ui/menu'
 import {useState} from 'react'
-import {Flex, Box} from 'ui5'
+import {Flex, Box, VStack} from 'ui5'
 
 import {idSlug, SNOOZE_DAYS} from './acks'
 import {formatValue} from './data'
@@ -125,7 +125,7 @@ export function DriftFeed(props: {
       padding={3}
       radius={2}
     >
-      <Stack gap={expanded ? 3 : 0}>
+      <VStack gap={expanded ? 3 : 0}>
         {/* The whole header row is the expander */}
         <Button
           mode="bleed"
@@ -143,7 +143,7 @@ export function DriftFeed(props: {
         </Button>
 
         {expanded && active.length > 0 && (
-          <Stack gap={2}>
+          <VStack gap={2}>
             {active.map((entry) => (
               <DriftRow
                 key={`${entry.seriesKey}:${entry.branch}`}
@@ -155,10 +155,10 @@ export function DriftFeed(props: {
                 onFocus={() => onFocusMetric(entry.seriesKey)}
               />
             ))}
-          </Stack>
+          </VStack>
         )}
         {expanded && silenced.length > 0 && (
-          <Stack gap={2}>
+          <VStack gap={2}>
             <Button
               mode="bleed"
               fontSize={1}
@@ -182,9 +182,9 @@ export function DriftFeed(props: {
                   onFocus={() => onFocusMetric(entry.seriesKey)}
                 />
               ))}
-          </Stack>
+          </VStack>
         )}
-      </Stack>
+      </VStack>
     </Card>
   )
 }

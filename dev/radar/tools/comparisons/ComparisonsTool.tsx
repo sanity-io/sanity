@@ -1,12 +1,12 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Badge, type BadgeTone, Button, Card, Container, Stack, Text} from '@sanity/ui'
+import {Badge, type BadgeTone, Button, Card, Container, Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useDocumentStore} from 'sanity'
-import {Flex, Box} from 'ui5'
+import {Flex, Box, VStack} from 'ui5'
 
 import {formatValue} from '../trends/data'
 import {ciRunUrl, commitUrl, dispatchRunsUrl} from '../trends/links'
@@ -72,8 +72,8 @@ export function ComparisonsTool() {
   return (
     <Box padding={4} style={{overflowY: 'auto', height: '100%'}}>
       <Container width={2}>
-        <Stack gap={4}>
-          <Stack gap={3}>
+        <VStack gap={4}>
+          <VStack gap={3}>
             <Text size={3} weight="semibold">
               A/B comparisons
             </Text>
@@ -105,7 +105,7 @@ export function ComparisonsTool() {
                 text="Dispatched runs"
               />
             </Flex>
-          </Stack>
+          </VStack>
 
           {live.error && (
             <Card padding={4} radius={3} tone="critical">
@@ -133,7 +133,7 @@ export function ComparisonsTool() {
               onToggle={() => setExpandedId((current) => (current === run._id ? null : run._id))}
             />
           ))}
-        </Stack>
+        </VStack>
       </Container>
     </Box>
   )
@@ -147,7 +147,7 @@ function ComparisonCard(props: {run: ComparisonRun; expanded: boolean; onToggle:
 
   return (
     <Card padding={4} radius={3} border>
-      <Stack gap={4}>
+      <VStack gap={4}>
         <Flex alignItems="center" gap={3} flexWrap="wrap">
           <Button
             mode="bleed"
@@ -192,18 +192,18 @@ function ComparisonCard(props: {run: ComparisonRun; expanded: boolean; onToggle:
 
         {expanded &&
           (run.scenarios ?? []).map((scenario) => (
-            <Stack key={`${scenario.mode ?? scenario.kind}-${scenario.scenario}`} gap={3}>
+            <VStack key={`${scenario.mode ?? scenario.kind}-${scenario.scenario}`} gap={3}>
               <Text size={1} weight="medium">
                 {scenario.scenario} · {scenario.mode ?? scenario.kind}
               </Text>
-              <Stack gap={2}>
+              <VStack gap={2}>
                 {(scenario.metrics ?? []).map((metric) => (
                   <MetricRow key={metric.label} metric={metric} />
                 ))}
-              </Stack>
-            </Stack>
+              </VStack>
+            </VStack>
           ))}
-      </Stack>
+      </VStack>
     </Card>
   )
 }

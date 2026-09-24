@@ -3,11 +3,11 @@ import {CloseIcon} from '@sanity/icons/Close'
 import {CopyIcon} from '@sanity/icons/Copy'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {RobotIcon} from '@sanity/icons/Robot'
-import {Badge, Button, Stack, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
+import {Badge, Button, Text, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
 import {Popover} from '@sanity/ui/popover'
 import {useEffect, useRef, useState} from 'react'
 import {useIntentLink} from 'sanity/router'
-import {Flex, Box} from 'ui5'
+import {Flex, Box, VStack} from 'ui5'
 
 import {
   CALIBRATION_EXPLAINER,
@@ -156,7 +156,7 @@ export function RunDetailPopover(props: {
       tone="default"
       content={
         <Box ref={setContentEl} padding={4} style={{width: 320, maxWidth: '92vw'}}>
-          <Stack gap={4}>
+          <VStack gap={4}>
             {/* Header: series title as a quiet eyebrow, close button aligned */}
             <Flex alignItems="flex-start" gap={3}>
               <Box flexBasis="0%" flexGrow={1} paddingTop={1}>
@@ -177,36 +177,36 @@ export function RunDetailPopover(props: {
 
             {/* The value is the headline; the when-line sits beneath it, and
                 the percentiles read as a labelled stat row rather than a run-on */}
-            <Stack gap={3}>
-              <Stack gap={2}>
+            <VStack gap={3}>
+              <VStack gap={2}>
                 <Text size={4} weight="semibold">
                   {formatValue(point.value, series.unit)}
                 </Text>
                 <Text size={1} muted>
                   {when}
                 </Text>
-              </Stack>
+              </VStack>
               {(point.p75 !== undefined || point.p90 !== undefined) && (
                 <Flex gap={4}>
-                  <Stack gap={2}>
+                  <VStack gap={2}>
                     <Text size={0} muted>
                       p75
                     </Text>
                     <Text size={1}>{formatValue(point.p75 ?? point.value, series.unit)}</Text>
-                  </Stack>
-                  <Stack gap={2}>
+                  </VStack>
+                  <VStack gap={2}>
                     <Text size={0} muted>
                       p90
                     </Text>
                     <Text size={1}>{formatValue(point.p90 ?? point.value, series.unit)}</Text>
-                  </Stack>
+                  </VStack>
                   {point.interactions !== undefined && (
-                    <Stack gap={2}>
+                    <VStack gap={2}>
                       <Text size={0} muted>
                         interactions
                       </Text>
                       <Text size={1}>{point.interactions}</Text>
-                    </Stack>
+                    </VStack>
                   )}
                 </Flex>
               )}
@@ -226,7 +226,7 @@ export function RunDetailPopover(props: {
                   styled-components {point.styledComponentsVersion} on this page
                 </Text>
               )}
-            </Stack>
+            </VStack>
 
             {/* Where this run sits in the release timeline. Stated for every
                 run (not only ones next to a marker), because "is this before or
@@ -241,7 +241,7 @@ export function RunDetailPopover(props: {
                 rather than to "main around then". Stated plainly, and
                 deliberately distinct from the after/before bracket below. */}
             {measuredTag && (
-              <Stack gap={2}>
+              <VStack gap={2}>
                 <Text size={0} muted weight="medium">
                   Release
                 </Text>
@@ -256,15 +256,15 @@ export function RunDetailPopover(props: {
                 <Text size={0} muted>
                   This run measured the release commit.
                 </Text>
-              </Stack>
+              </VStack>
             )}
 
             {(releaseContext.previous || releaseContext.next) && (
-              <Stack gap={2}>
+              <VStack gap={2}>
                 <Text size={0} muted weight="medium">
                   Release
                 </Text>
-                <Stack gap={2}>
+                <VStack gap={2}>
                   {releaseContext.previous && (
                     <Flex alignItems="center" gap={2}>
                       <Text size={1} muted>
@@ -292,19 +292,19 @@ export function RunDetailPopover(props: {
                       not yet released
                     </Text>
                   )}
-                </Stack>
-              </Stack>
+                </VStack>
+              </VStack>
             )}
 
             {/* The machine that produced this run — the context every absolute
                 number depends on. cpuModel/image/browser exist on documents
                 from Aug 2026 on; older runs show what they recorded. */}
             {(host || point.calibrationMs !== undefined) && (
-              <Stack gap={2}>
+              <VStack gap={2}>
                 <Text size={0} muted weight="medium">
                   Host
                 </Text>
-                <Stack gap={2}>
+                <VStack gap={2}>
                   {host?.cpuModel && (
                     <Text size={1} muted>
                       {host.cpuModel}
@@ -344,12 +344,12 @@ export function RunDetailPopover(props: {
                       <Text size={1}>{formatValue(point.calibrationMs, 'ms')}</Text>
                     </Flex>
                   )}
-                </Stack>
-              </Stack>
+                </VStack>
+              </VStack>
             )}
 
             {(backlinks.length > 0 || scenarioHref) && (
-              <Stack gap={2}>
+              <VStack gap={2}>
                 <Text size={0} muted weight="medium">
                   Links
                 </Text>
@@ -382,11 +382,11 @@ export function RunDetailPopover(props: {
                     />
                   )}
                 </Flex>
-              </Stack>
+              </VStack>
             )}
 
             {compareHref && (
-              <Stack gap={2}>
+              <VStack gap={2}>
                 <Text size={0} muted weight="medium">
                   Suspect a regression?
                 </Text>
@@ -444,7 +444,7 @@ export function RunDetailPopover(props: {
                     promptCopy.copy(buildInvestigationPrompt(series, point, previousPoint))
                   }
                 />
-              </Stack>
+              </VStack>
             )}
 
             {/* Divider before the footer action so it reads as a distinct row */}
@@ -467,7 +467,7 @@ export function RunDetailPopover(props: {
                 />
               </Flex>
             </Box>
-          </Stack>
+          </VStack>
         </Box>
       }
     />

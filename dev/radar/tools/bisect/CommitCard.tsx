@@ -1,6 +1,6 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {type ReactNode} from 'react'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 import {commitUrl, prUrl} from '../trends/links'
 import {AuthorAvatar} from './AuthorAvatar'
@@ -17,7 +17,7 @@ export function CommitCard(props: {
   const {commit, tone, heading, children} = props
   return (
     <Card padding={4} radius={3} border tone={tone}>
-      <Stack gap={3}>
+      <VStack gap={3}>
         {heading}
         <Text size={2} weight="medium">
           <a href={commitUrl(commit.sha)} target="_blank" rel="noreferrer">
@@ -51,7 +51,7 @@ export function CommitCard(props: {
           <RelativeDate dateTime={commit.committedAt} muted />
         </Flex>
         {children}
-      </Stack>
+      </VStack>
     </Card>
   )
 }
