@@ -1,25 +1,6 @@
-import {hues} from '@sanity/color'
-import {Card, type Theme} from '@sanity/ui'
-import {css, styled} from 'styled-components'
+import {Card, useTheme_v2 as useThemeV2} from '@sanity/ui'
 
-const STROKE_WIDTH = 0.5
-
-const Root = styled(Card)`
-  overflow: hidden;
-  overflow: clip;
-`
-
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-const Bar = styled(Card)(({theme}: {theme: Theme}) => {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {color} = theme.sanity
-
-  return css`
-    height: ${STROKE_WIDTH}rem;
-    background: ${hues.blue[color.dark ? 400 : 500].hex};
-    transition: transform 75ms;
-  `
-})
+import {bar, root} from './LinearProgress.css'
 
 /**
  * @hidden
@@ -29,10 +10,16 @@ export function LinearProgress(props: {
   value: number
 }) {
   const {value} = props
+  const {color} = useThemeV2()
+  const scheme = color._dark ? 'dark' : 'light'
 
   return (
-    <Root radius={5}>
-      <Bar radius={5} style={{transform: `translate3d(${value - 100}%, 0, 0)`}} />
-    </Root>
+    <Card className={root} radius={5}>
+      <Card
+        className={bar[scheme]}
+        radius={5}
+        style={{transform: `translate3d(${value - 100}%, 0, 0)`}}
+      />
+    </Card>
   )
 }
