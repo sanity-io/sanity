@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import {Stack, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {fromString as pathFromString} from '@sanity/util/paths'
 import {memo, Suspense, useMemo} from 'react'
 import {
@@ -16,6 +16,7 @@ import {
   useTemplatePermissions,
   useTranslation,
 } from 'sanity'
+import {VStack} from 'ui5'
 
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {DiffViewDocumentLayout} from '../../diffView/plugin/DiffViewDocumentLayout'
@@ -124,7 +125,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
         paneKey={paneKey}
         title={t('panes.document-pane.document-not-found.title')}
       >
-        <Stack gap={4}>
+        <VStack gap={4}>
           <Text as="p">
             <Translate
               t={t}
@@ -133,7 +134,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
               components={{Code: 'code'}}
             />
           </Text>
-        </Stack>
+        </VStack>
       </ErrorPane>
     )
   }

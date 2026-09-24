@@ -1,11 +1,11 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, DialogProvider, Stack, Text, TextInput} from '@sanity/ui'
+import {Card, DialogProvider, Text, TextInput} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useId, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {catchError, map, type Observable, of, startWith} from 'rxjs'
 import {type Role, useClient, useProjectId, useTranslation, useZIndex} from 'sanity'
-import {Box} from 'ui5'
+import {Box, Flex, VStack} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {structureLocaleNamespace} from '../../i18n'
@@ -136,7 +136,7 @@ export function RequestPermissionDialog({
         onClickOutside={onClose}
       >
         <Box className={dialogBody}>
-          <Stack gap={4}>
+          <VStack gap={4}>
             <Text>{t('request-permission-dialog.description.text')}</Text>
             {hasTooManyRequests || hasBeenDenied ? (
               <Card tone={'caution'} padding={3} radius={2} shadow={1}>
@@ -150,7 +150,7 @@ export function RequestPermissionDialog({
                 </Text>
               </Card>
             ) : (
-              <Stack gap={3} paddingBottom={0}>
+              <Flex gap={3} paddingBottom={0} flexDirection="column">
                 <TextInput
                   placeholder={t('request-permission-dialog.note-input.placeholder.text')}
                   disabled={isSubmitting}
@@ -165,9 +165,9 @@ export function RequestPermissionDialog({
                 />
 
                 <Text align="right" muted size={1}>{`${note.length}/${MAX_NOTE_LENGTH}`}</Text>
-              </Stack>
+              </Flex>
             )}
-          </Stack>
+          </VStack>
         </Box>
       </Dialog>
     </DialogProvider>
