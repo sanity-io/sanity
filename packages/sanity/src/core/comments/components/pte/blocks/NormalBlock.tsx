@@ -1,10 +1,7 @@
 import {type ReactNode} from 'react'
-import {styled} from 'styled-components'
 import {Text} from 'ui5'
 
-const NormalText = styled(Text)`
-  word-break: break-word;
-`
+import {normalText} from './NormalBlock.css'
 
 interface NormalBlockProps {
   children: ReactNode
@@ -14,8 +11,8 @@ export function NormalBlock(props: NormalBlockProps): React.JSX.Element {
   const {children} = props
 
   return (
-    <NormalText size={1} forwardedAs="div" trim={true}>
+    <Text className={normalText} size={1} as="div" trim={true}>
       {children}
-    </NormalText>
+    </Text>
   )
 }
