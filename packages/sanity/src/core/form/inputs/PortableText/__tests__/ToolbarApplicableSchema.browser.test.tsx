@@ -227,7 +227,8 @@ describe('Portable Text Input - toolbar reflects the positional schema', () => {
   })
 
   it('adds the actions only the caret position declares', async () => {
-    const {clickAction, clickText, waitForDocumentState} = await renderToolbar(WIDER_CELL)
+    const {clickAction, clickText, settleChromaticEndState, waitForDocumentState} =
+      await renderToolbar(WIDER_CELL)
 
     await clickText('root text')
     // `em`, `footnote` and `number` belong to the cell alone: nothing out
@@ -258,6 +259,10 @@ describe('Portable Text Input - toolbar reflects the positional schema', () => {
     await waitForDocumentState(
       (state) => state?.body?.[1]?.rows?.[0]?.cells?.[0]?.value?.[0]?.listItem === 'number',
     )
+
+    // The click leaves the pointer on the button and the mutation leaves a
+    // validation run in flight; both would reach the Chromatic archive.
+    await settleChromaticEndState()
   })
 })
 
@@ -269,6 +274,7 @@ async function renderToolbar(schemaTypes: ReturnType<typeof defineSchemaTypes>) 
   const {
     findBySelector,
     getFocusedPortableTextEditor,
+    settleChromaticEndState,
     waitForDocumentState,
     waitForFocusedNodeText,
   } = testHelpers()
@@ -299,6 +305,7 @@ async function renderToolbar(schemaTypes: ReturnType<typeof defineSchemaTypes>) 
       )
       await userEvent.click($button)
     },
+    settleChromaticEndState,
     waitForDocumentState,
   }
 }
