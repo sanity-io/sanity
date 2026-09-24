@@ -1,4 +1,6 @@
 import {type SanityClient} from '@sanity/client'
+import {Schema as SchemaBuilder} from '@sanity/schema'
+import {type Schema} from '@sanity/types'
 import {act, render} from '@testing-library/react'
 import {Subject} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
@@ -12,7 +14,8 @@ import {type SearchContextValue} from '../SearchContext'
 import {SearchProvider} from '../SearchProvider'
 import {useSearchSelector, useSearchState} from '../useSearchState'
 
-const {searchMock, telemetryLog} = vi.hoisted(() => ({
+const {schemaOverride, searchMock, telemetryLog} = vi.hoisted(() => ({
+  schemaOverride: {current: null as Schema | null},
   searchMock: vi.fn(),
   telemetryLog: vi.fn(),
 }))
@@ -25,6 +28,16 @@ vi.mock('@sanity/telemetry/react', async (importOriginal) => ({
 vi.mock('../../../hooks/useGlobalSearchFunction', () => ({
   useGlobalSearchFunction: () => searchMock,
 }))
+
+vi.mock('../../../../../../../hooks/useSchema', async (importOriginal) => {
+  const {useSchema} = await importOriginal<{useSchema: () => Schema}>()
+  return {
+    useSchema: () => {
+      const schema = useSchema()
+      return schemaOverride.current ?? schema
+    },
+  }
+})
 
 const onSearchContext = vi.fn<(context: SearchContextValue) => void>()
 const onQueryRender = vi.fn<(query: string) => void>()
@@ -85,6 +98,7 @@ describe('SearchProvider', () => {
   })
 
   afterEach(() => {
+    schemaOverride.current = null
     vi.useRealTimers()
     vi.clearAllMocks()
   })
@@ -144,6 +158,33 @@ describe('SearchProvider', () => {
     expect(onQueryRender.mock.calls).toEqual([['h'], ['he']])
     expect(onFiltersRender).not.toHaveBeenCalled()
     expect(onSearchContext).not.toHaveBeenCalled()
+  })
+
+  it('starts a new search when the schema changes', async () => {
+    const TestProvider = await createProvider()
+    const renderSearch = () => (
+      <TestProvider>
+        <SearchProvider>
+          <SearchContextConsumer />
+        </SearchProvider>
+      </TestProvider>
+    )
+
+    const {rerender} = render(renderSearch())
+    const {searchActorRef: firstActorRef} = getSearchContext()
+    act(() => firstActorRef.send({type: 'TERMS_QUERY_SET', query: 'foo'}))
+
+    const nextSchema = SchemaBuilder.compile({
+      name: 'default',
+      types: [{name: 'author', type: 'document', fields: [{name: 'name', type: 'string'}]}],
+    })
+    schemaOverride.current = nextSchema
+    rerender(renderSearch())
+
+    const {searchActorRef} = getSearchContext()
+    expect(searchActorRef).not.toBe(firstActorRef)
+    expect(searchActorRef.getSnapshot().context.schema).toBe(nextSchema)
+    expect(searchActorRef.getSnapshot().context.terms.query).toBe('')
   })
 
   it('follows the open state of the search and gives its contents a close handler', async () => {

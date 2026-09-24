@@ -51,31 +51,45 @@ function logSearchEvent(inspectionEvent: InspectionEvent) {
 /**
  * @internal
  */
-export function SearchProvider({
-  children,
-  fullscreen,
-  disabledDocumentIds,
-  canDisableAction,
-}: SearchProviderProps) {
+export function SearchProvider(props: SearchProviderProps) {
   const schema = useSchema()
   const {
     search: {operators, filters, strategy},
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   } = useSource()
-  const telemetry = useTelemetry()
-  const search = useGlobalSearchFunction(schema)
 
-  // Read once when the actor is created
-  const [input] = useState((): GlobalSearchMachineInput => ({
-    schema,
-    definitions: {
-      fields: createFieldDefinitionDictionary(createFieldDefinitions(schema, filters)),
-      filters: createFilterDefinitionDictionary(filters),
-      operators: createOperatorDefinitionDictionary(operators),
-    },
-    strategy,
-    debug: isDebugMode(),
-  }))
+  const input = useMemo(
+    (): GlobalSearchMachineInput => ({
+      schema,
+      definitions: {
+        fields: createFieldDefinitionDictionary(createFieldDefinitions(schema, filters)),
+        filters: createFilterDefinitionDictionary(filters),
+        operators: createOperatorDefinitionDictionary(operators),
+      },
+      strategy,
+      debug: isDebugMode(),
+    }),
+    [filters, operators, schema, strategy],
+  )
+
+  // The actor reads its input when it's created, so a changed configuration starts a new one
+  const [actorInput, setActorInput] = useState({input, key: 0})
+  if (actorInput.input !== input) {
+    setActorInput({input, key: actorInput.key + 1})
+  }
+
+  return <SearchActorProvider key={actorInput.key} input={input} {...props} />
+}
+
+function SearchActorProvider({
+  children,
+  fullscreen,
+  disabledDocumentIds,
+  canDisableAction,
+  input,
+}: SearchProviderProps & {input: GlobalSearchMachineInput}) {
+  const telemetry = useTelemetry()
+  const search = useGlobalSearchFunction(input.schema)
 
   const searchActorRef = useActorRef(
     globalSearchMachine.provide({
