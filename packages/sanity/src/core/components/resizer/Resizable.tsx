@@ -1,7 +1,8 @@
+import {clsx} from 'clsx'
 import {type ElementType, type HTMLProps, useCallback, useMemo, useRef, useState} from 'react'
-import {styled} from 'styled-components'
 import {Box, type BoxProps} from 'ui5'
 
+import {root} from './Resizable.css'
 import {Resizer} from './Resizer'
 
 interface ResizableProps {
@@ -11,12 +12,6 @@ interface ResizableProps {
   resizerPosition?: 'left' | 'right'
 }
 
-const Root = styled(Box)`
-  position: relative;
-  flex: 1;
-  padding-left: 1px;
-`
-
 /**
  * @internal
  * Provides a resizable container with a resizer handle.
@@ -24,11 +19,13 @@ const Root = styled(Box)`
 export function Resizable(
   props: ResizableProps &
     Omit<BoxProps<ElementType>, 'maxWidth' | 'minWidth'> &
-    Omit<HTMLProps<HTMLDivElement>, 'as'>,
+    // `height` and `width` are `Box` layout props, which the HTML attributes would widen to `number`
+    Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'width'>,
 ) {
   const {
     as: forwardedAs,
     children,
+    className,
     minWidth,
     maxWidth,
     initialWidth,
@@ -61,10 +58,14 @@ export function Resizable(
     [minWidth, maxWidth, targetWidth],
   )
 
-  // Use forwardedAs so styled-components keeps rendering Box (which filters layout
-  // props via getProps) instead of replacing it with the raw DOM element via `as`.
   return (
-    <Root forwardedAs={forwardedAs} {...restProps} ref={setElement} style={style}>
+    <Box
+      as={forwardedAs}
+      {...restProps}
+      className={clsx(root, className)}
+      ref={setElement}
+      style={style}
+    >
       {resizerPosition === 'left' && (
         <Resizer onResize={handleResize} onResizeStart={handleResizeStart} position="left" />
       )}
@@ -72,6 +73,6 @@ export function Resizable(
       {resizerPosition === 'right' && (
         <Resizer onResize={handleResize} onResizeStart={handleResizeStart} position="right" />
       )}
-    </Root>
+    </Box>
   )
 }
