@@ -59,7 +59,11 @@ export function buildInvestigationPrompt(
     point.p90 !== undefined ? `p90 ${formatValue(point.p90, series.unit)}` : undefined,
   ].filter(Boolean)
   const goal =
-    series.goal === 'lower' ? 'Lower is better.' : 'Context metric — no better/worse direction.'
+    series.goal === 'lower'
+      ? 'Lower is better.'
+      : series.goal === 'higher'
+        ? 'Higher is better.'
+        : 'Context metric — no better/worse direction.'
   const valueLabel = series.lineLabel ?? 'median (p50)'
   const repro = localReproCommand(series.key)
 

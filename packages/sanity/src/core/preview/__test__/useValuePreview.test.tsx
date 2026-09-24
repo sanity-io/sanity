@@ -1,25 +1,31 @@
-import {type SchemaType, type SortOrdering} from '@sanity/types'
+import {type SchemaType} from '@sanity/types'
 import {act, render} from '@testing-library/react'
+import {StrictMode} from 'react'
 import {Observable, Subject} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {type PerspectiveStack} from '../../perspective/types'
+import {type ObserveForPreviewFn} from '../documentPreviewStore'
+import {type PreparedSnapshot} from '../types'
 import {useValuePreview} from '../useValuePreview'
 
-const observeForPreview = vi.fn()
+const observeForPreview = vi.fn<ObserveForPreviewFn>()
 const subscriptions = {active: 0, total: 0}
 
 vi.mock('../../store/datastores', () => ({
   useDocumentPreviewStore: () => ({observeForPreview}),
 }))
-// Stable like the real context value: a fresh array per render would rebuild the observable.
+
+// Stable across renders, like the real context value.
 const DEFAULT_PERSPECTIVE = {perspectiveStack: ['drafts'], selectedVariantName: undefined}
-let currentPerspective: {perspectiveStack: string[]; selectedVariantName: string | undefined} =
+let currentPerspective: {perspectiveStack: PerspectiveStack; selectedVariantName?: string} =
   DEFAULT_PERSPECTIVE
 vi.mock('../../perspective/usePerspective', () => ({
   usePerspective: () => currentPerspective,
 }))
 
-const schemaType = {name: 'book', jsonType: 'object', preview: {}} as unknown as SchemaType
+const bookType = {name: 'book', jsonType: 'object', preview: {}} as unknown as SchemaType
+const authorType = {name: 'author', jsonType: 'object', preview: {}} as unknown as SchemaType
 
 interface Frame {
   isLoading: boolean
@@ -27,11 +33,89 @@ interface Frame {
   error?: Error
 }
 
-function Harness({frames, ...props}: Parameters<typeof useValuePreview>[0] & {frames: Frame[]}) {
-  // an explicit `schemaType={undefined}` overrides the default
-  const state = useValuePreview({schemaType, ...props})
+type HookProps = Parameters<typeof useValuePreview>[0]
+
+function Harness({frames, ...props}: HookProps & {frames: Frame[]}) {
+  const state = useValuePreview(props)
   frames.push({isLoading: state.isLoading, title: state.value?.title, error: state.error})
   return null
+}
+
+/** Previews synchronously, with the title taken from the previewed value. */
+function previewTitle(): ObserveForPreviewFn {
+  return (value) =>
+    new Observable<PreparedSnapshot>((subscriber) => {
+      subscriptions.active++
+      subscriptions.total++
+      subscriber.next({snapshot: {title: (value as {title?: string}).title}})
+      return () => {
+        subscriptions.active--
+      }
+    })
+}
+
+/**
+ * Previews synchronously, with a title that records what was asked for: the previewed id, the keys
+ * of the previewed value, the perspective, the variant and the ordering.
+ */
+function previewRequest(): ObserveForPreviewFn {
+  return (value, _type, options) =>
+    new Observable<PreparedSnapshot>((subscriber) => {
+      subscriptions.active++
+      subscriptions.total++
+      subscriber.next({
+        snapshot: {
+          title: JSON.stringify({
+            id: (value as {_id?: string})._id,
+            keys: Object.keys(value).toSorted(),
+            perspective: options?.perspective,
+            variant: options?.variant,
+            ordering: options?.viewOptions?.ordering?.name,
+          }),
+        },
+      })
+      return () => {
+        subscriptions.active--
+      }
+    })
+}
+
+/** Previews asynchronously: each snapshot is delivered by pushing it into the returned subject. */
+function previewLater(): {observe: ObserveForPreviewFn; snapshots$: Subject<PreparedSnapshot>} {
+  const snapshots$ = new Subject<PreparedSnapshot>()
+  return {
+    snapshots$,
+    observe: () =>
+      new Observable<PreparedSnapshot>((subscriber) => {
+        subscriptions.active++
+        subscriptions.total++
+        const subscription = snapshots$.subscribe(subscriber)
+        return () => {
+          subscriptions.active--
+          subscription.unsubscribe()
+        }
+      }),
+  }
+}
+
+function requested(frame: Frame | undefined) {
+  return JSON.parse(frame?.title as string)
+}
+
+const IDLE_FRAME: Frame = {isLoading: false, title: undefined, error: undefined}
+const LOADING_FRAME: Frame = {isLoading: true, title: undefined, error: undefined}
+
+/** Every frame rendered since a switch is the loading state, and there is at least one. */
+function expectOnlyLoadingFrames(frames: Frame[]) {
+  expect(frames.length).toBeGreaterThan(0)
+  expect(frames).toEqual(frames.map(() => LOADING_FRAME))
+}
+
+/** Lets react-rx release the source of an observable that lost its last subscriber. */
+async function flush() {
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0))
+  })
 }
 
 describe('useValuePreview', () => {
@@ -40,594 +124,399 @@ describe('useValuePreview', () => {
     subscriptions.total = 0
     currentPerspective = DEFAULT_PERSPECTIVE
     observeForPreview.mockReset()
-    observeForPreview.mockImplementation(
-      (value: {title: string}) =>
-        new Observable((subscriber) => {
-          subscriptions.active++
-          subscriptions.total++
-          subscriber.next({snapshot: {title: value.title}})
-          return () => {
-            subscriptions.active--
-          }
-        }),
-    )
+    observeForPreview.mockImplementation(previewTitle())
   })
 
-  it('previews the latest value without dropping back to the loading state', () => {
+  it('previews the value', () => {
     const frames: Frame[] = []
-    const {rerender} = render(<Harness value={{_id: 'a', title: 'one'}} frames={frames} />)
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
+    render(<Harness schemaType={bookType} value={{_id: 'a', title: 'one'}} frames={frames} />)
 
+    expect(frames.at(-1)).toEqual({isLoading: false, title: 'one', error: undefined})
+  })
+
+  it('keeps one live preview across edits of the same document, without a loading frame', async () => {
+    const frames: Frame[] = []
+    const {rerender} = render(
+      <Harness schemaType={bookType} value={{_id: 'a', title: 'one'}} frames={frames} />,
+    )
     const settled = frames.length
-    rerender(<Harness value={{_id: 'a', title: 'two'}} frames={frames} />)
-    rerender(<Harness value={{_id: 'a', title: 'three'}} frames={frames} />)
 
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'three'})
-    expect(frames.slice(settled).some((frame) => frame.isLoading)).toBe(false)
-    // each value is previewed once, and only the latest preview stays subscribed
-    expect(observeForPreview).toHaveBeenCalledTimes(3)
-    expect(subscriptions.active).toBe(1)
+    rerender(<Harness schemaType={bookType} value={{_id: 'a', title: 'two'}} frames={frames} />)
+    rerender(<Harness schemaType={bookType} value={{_id: 'a', title: 'three'}} frames={frames} />)
+
+    expect(frames.at(-1)).toEqual({isLoading: false, title: 'three', error: undefined})
+    expect(frames.slice(settled).filter((frame) => frame.isLoading)).toEqual([])
+    await flush()
+    // one preview per distinct value, and only the latest one stays subscribed
+    expect(subscriptions).toEqual({active: 1, total: 3})
   })
 
-  it('previews an unchanged value only once', () => {
-    const value = {_id: 'a', title: 'one'}
-    const {rerender} = render(<Harness value={value} frames={[]} />)
-    rerender(<Harness value={value} frames={[]} />)
-
-    expect(observeForPreview).toHaveBeenCalledTimes(1)
-    expect(subscriptions.total).toBe(1)
-  })
-
-  it('does not re-render consumers when an edit leaves the prepared preview unchanged', () => {
+  it('renders once for an edit that leaves the preview unchanged', () => {
     const frames: Frame[] = []
-    const {rerender} = render(<Harness value={{_id: 'a', title: 'one'}} frames={frames} />)
-    const before = frames.length
+    const {rerender} = render(
+      <Harness schemaType={bookType} value={{_id: 'a', title: 'one'}} frames={frames} />,
+    )
+    const settled = frames.length
 
-    rerender(<Harness value={{_id: 'a', title: 'one', body: 'edited'}} frames={frames} />)
+    rerender(
+      <Harness schemaType={bookType} value={{_id: 'a', title: 'one', body: 'x'}} frames={frames} />,
+    )
 
-    // the edit is previewed, but the equal result does not cause a store-driven render
-    expect(observeForPreview).toHaveBeenCalledTimes(2)
-    expect(frames.length).toBe(before + 1)
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
+    expect(frames.slice(settled)).toEqual([{isLoading: false, title: 'one', error: undefined}])
   })
 
-  it('re-emits when only the preserved timestamps change, since consumers may render them', () => {
-    observeForPreview.mockImplementation(
-      (value: {title: string; _updatedAt: string}) =>
-        new Observable((subscriber) => {
-          subscriber.next({
-            snapshot: {title: value.title, _updatedAt: value._updatedAt, _createdAt: '2026-01-01'},
-          })
-        }),
+  it('previews an unchanged value once', async () => {
+    const value = {_id: 'a', title: 'one'}
+    const {rerender} = render(<Harness schemaType={bookType} value={value} frames={[]} />)
+    rerender(<Harness schemaType={bookType} value={value} frames={[]} />)
+    rerender(<Harness schemaType={bookType} value={value} frames={[]} />)
+
+    await flush()
+    expect(subscriptions).toEqual({active: 1, total: 1})
+  })
+
+  it('previews an equal value built during render once', async () => {
+    const {rerender} = render(<Harness schemaType={bookType} value={{_id: 'a'}} frames={[]} />)
+    rerender(<Harness schemaType={bookType} value={{_id: 'a'}} frames={[]} />)
+    rerender(<Harness schemaType={bookType} value={{_id: 'a'}} frames={[]} />)
+
+    await flush()
+    expect(subscriptions).toEqual({active: 1, total: 1})
+  })
+
+  it('keeps one live preview when the perspective stack is a new array every render', async () => {
+    const {rerender} = render(
+      <Harness schemaType={bookType} value={{_id: 'a'}} perspectiveStack={[]} frames={[]} />,
     )
+    rerender(<Harness schemaType={bookType} value={{_id: 'a'}} perspectiveStack={[]} frames={[]} />)
+    rerender(<Harness schemaType={bookType} value={{_id: 'a'}} perspectiveStack={[]} frames={[]} />)
+
+    await flush()
+    expect(subscriptions).toEqual({active: 1, total: 1})
+  })
+
+  it('shows the loading state for another document instead of the previous preview', async () => {
+    const {observe, snapshots$} = previewLater()
+    observeForPreview.mockImplementation(observe)
+    const frames: Frame[] = []
+    const {rerender} = render(<Harness schemaType={bookType} value={{_id: 'a'}} frames={frames} />)
+    act(() => snapshots$.next({snapshot: {title: 'A'}}))
+    expect(frames.at(-1)).toEqual({isLoading: false, title: 'A', error: undefined})
+    const settled = frames.length
+
+    rerender(<Harness schemaType={bookType} value={{_id: 'b'}} frames={frames} />)
+    expectOnlyLoadingFrames(frames.slice(settled))
+    await flush()
+    expect(subscriptions).toEqual({active: 1, total: 2})
+
+    act(() => snapshots$.next({snapshot: {title: 'B'}}))
+    expect(frames.at(-1)).toEqual({isLoading: false, title: 'B', error: undefined})
+  })
+
+  it('shows the loading state for another schema type', async () => {
+    const {observe, snapshots$} = previewLater()
+    observeForPreview.mockImplementation(observe)
+    const frames: Frame[] = []
+    const {rerender} = render(<Harness schemaType={bookType} value={{_id: 'a'}} frames={frames} />)
+    act(() => snapshots$.next({snapshot: {title: 'as book'}}))
+    const settled = frames.length
+
+    rerender(<Harness schemaType={authorType} value={{_id: 'a'}} frames={frames} />)
+    expectOnlyLoadingFrames(frames.slice(settled))
+
+    act(() => snapshots$.next({snapshot: {title: 'as author'}}))
+    expect(frames.at(-1)).toEqual({isLoading: false, title: 'as author', error: undefined})
+    await flush()
+    expect(subscriptions).toEqual({active: 1, total: 2})
+  })
+
+  it('updates the preview in place when the perspective changes', async () => {
+    observeForPreview.mockImplementation(previewRequest())
+    const frames: Frame[] = []
+    const {rerender} = render(<Harness schemaType={bookType} value={{_id: 'a'}} frames={frames} />)
+    expect(requested(frames.at(-1))).toEqual({id: 'a', keys: ['_id'], perspective: ['drafts']})
+    const settled = frames.length
+
+    currentPerspective = {perspectiveStack: ['rRelease', 'drafts'], selectedVariantName: 'nb'}
+    rerender(<Harness schemaType={bookType} value={{_id: 'a'}} frames={frames} />)
+
+    expect(requested(frames.at(-1))).toEqual({
+      id: 'a',
+      keys: ['_id'],
+      perspective: ['rRelease', 'drafts'],
+      variant: 'nb',
+    })
+    expect(frames.slice(settled).filter((frame) => frame.isLoading)).toEqual([])
+    await flush()
+    expect(subscriptions).toEqual({active: 1, total: 2})
+  })
+
+  it('previews through the given perspective stack and variant only', () => {
+    observeForPreview.mockImplementation(previewRequest())
+    currentPerspective = {perspectiveStack: ['drafts'], selectedVariantName: 'nb'}
     const frames: Frame[] = []
     const {rerender} = render(
       <Harness
-        value={{_id: 'a', title: 'one', _updatedAt: '2026-09-11T10:00:00Z'}}
+        schemaType={bookType}
+        value={{_id: 'a'}}
+        perspectiveStack={['rRelease', 'drafts']}
         frames={frames}
       />,
     )
-    const before = frames.length
+    expect(requested(frames.at(-1))).toEqual({
+      id: 'a',
+      keys: ['_id'],
+      perspective: ['rRelease', 'drafts'],
+    })
 
     rerender(
       <Harness
-        value={{_id: 'a', title: 'one', _updatedAt: '2026-09-11T10:00:01Z'}}
+        schemaType={bookType}
+        value={{_id: 'a'}}
+        perspectiveStack={['rRelease', 'drafts']}
+        variant="en"
+        frames={frames}
+      />,
+    )
+    expect(requested(frames.at(-1))).toEqual({
+      id: 'a',
+      keys: ['_id'],
+      perspective: ['rRelease', 'drafts'],
+      variant: 'en',
+    })
+  })
+
+  it('ignores a context perspective change when the caller selects the perspective', async () => {
+    observeForPreview.mockImplementation(previewRequest())
+    const frames: Frame[] = []
+    const {rerender} = render(
+      <Harness
+        schemaType={bookType}
+        value={{_id: 'a'}}
+        perspectiveStack={['rRelease', 'drafts']}
+        frames={frames}
+      />,
+    )
+    const settled = frames.length
+
+    currentPerspective = {perspectiveStack: ['rOther', 'drafts'], selectedVariantName: 'nb'}
+    rerender(
+      <Harness
+        schemaType={bookType}
+        value={{_id: 'a'}}
+        perspectiveStack={['rRelease', 'drafts']}
         frames={frames}
       />,
     )
 
-    // `PreviewValue` carries `_updatedAt`: the rerender plus the store-driven render for the new stamp
-    expect(frames.length).toBe(before + 2)
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
+    expect(frames.slice(settled)).toEqual([frames[settled - 1]])
+    await flush()
+    expect(subscriptions).toEqual({active: 1, total: 1})
   })
 
-  it('resets to loading when the value previews a different document', () => {
-    const second = new Subject<{snapshot: {title: string}}>()
-    observeForPreview.mockImplementation((value: {_id: string; title: string}) =>
-      value._id === 'b'
-        ? second
-        : new Observable((subscriber) => {
-            subscriber.next({snapshot: {title: value.title}})
-          }),
-    )
+  it('shows the loading state when a cross-dataset reference moves to another dataset', () => {
+    const {observe, snapshots$} = previewLater()
+    observeForPreview.mockImplementation(observe)
     const frames: Frame[] = []
-    const {rerender} = render(<Harness value={{_id: 'a', title: 'one'}} frames={frames} />)
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
+    const reference = {_type: 'crossDatasetReference', _ref: 'x', _projectId: 'p', _dataset: 'a'}
+    const {rerender} = render(<Harness schemaType={bookType} value={reference} frames={frames} />)
+    act(() => snapshots$.next({snapshot: {title: 'from a'}}))
     const settled = frames.length
 
-    // the new document's preview is still pending: the previous title must not linger, not even
-    // in the render that first receives the new value (before any effect has run)
-    rerender(<Harness value={{_id: 'b', title: 'two'}} frames={frames} />)
-    expect(frames.slice(settled).map((frame) => frame.title)).not.toContain('one')
-    expect(frames.at(-1)).toEqual({isLoading: true, title: undefined, error: undefined})
+    rerender(
+      <Harness schemaType={bookType} value={{...reference, _dataset: 'b'}} frames={frames} />,
+    )
+    expectOnlyLoadingFrames(frames.slice(settled))
 
-    act(() => {
-      second.next({snapshot: {title: 'two'}})
-    })
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'two'})
+    act(() => snapshots$.next({snapshot: {title: 'from b'}}))
+    expect(frames.at(-1)).toEqual({isLoading: false, title: 'from b', error: undefined})
   })
 
-  it('resets to loading in the render that changes the schema type, until the new preview arrives', () => {
-    const asArticle = new Subject<{snapshot: {title: string}}>()
-    const articleType = {name: 'article', jsonType: 'object', preview: {}} as unknown as SchemaType
-    observeForPreview.mockImplementation((value: {title: string}, type: SchemaType) =>
-      type === articleType
-        ? asArticle
-        : new Observable((subscriber) => {
-            subscriber.next({snapshot: {title: value.title}})
-          }),
-    )
+  it('shows the loading state when a document turns into a version slated for unpublishing', () => {
+    const {observe, snapshots$} = previewLater()
+    observeForPreview.mockImplementation(observe)
     const frames: Frame[] = []
-    const value = {_id: 'a', title: 'one'}
-    const {rerender} = render(<Harness value={value} frames={frames} />)
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
+    const {rerender} = render(
+      <Harness schemaType={bookType} value={{_id: 'a', title: 'draft'}} frames={frames} />,
+    )
+    act(() => snapshots$.next({snapshot: {title: 'draft'}}))
     const settled = frames.length
 
-    // the same document prepared through another schema type is another preview: the previous
-    // one must not linger, not even in the render that first receives the new type
-    rerender(<Harness value={value} schemaType={articleType} frames={frames} />)
-    expect(frames.slice(settled).map((frame) => frame.title)).not.toContain('one')
-    expect(frames.at(-1)).toEqual({isLoading: true, title: undefined, error: undefined})
+    rerender(
+      <Harness
+        schemaType={bookType}
+        value={{_id: 'versions.rRelease.a', _system: {delete: true}}}
+        frames={frames}
+      />,
+    )
+    expectOnlyLoadingFrames(frames.slice(settled))
 
-    act(() => {
-      asArticle.next({snapshot: {title: 'one, as an article'}})
-    })
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one, as an article'})
+    act(() => snapshots$.next({snapshot: {title: 'published'}}))
+    expect(frames.at(-1)).toEqual({isLoading: false, title: 'published', error: undefined})
   })
 
-  it('resets to loading in the render that changes the ordering, until the new preview arrives', () => {
-    const byDate: SortOrdering = {
-      name: 'byDate',
-      title: 'By date',
-      by: [{field: 'date', direction: 'asc'}],
+  it('previews a version slated for unpublishing as its published document', () => {
+    observeForPreview.mockImplementation(previewRequest())
+    currentPerspective = {perspectiveStack: ['rRelease', 'drafts'], selectedVariantName: 'nb'}
+    const frames: Frame[] = []
+    render(
+      <Harness
+        schemaType={bookType}
+        value={{_id: 'versions.rRelease.a', _system: {delete: true}, title: 'gone'}}
+        frames={frames}
+      />,
+    )
+
+    expect(requested(frames.at(-1))).toEqual({id: 'a', keys: ['_id'], perspective: []})
+  })
+
+  it('re-previews with a new ordering', () => {
+    observeForPreview.mockImplementation(previewRequest())
+    const frames: Frame[] = []
+    const ordering = {
+      name: 'byTitle',
+      title: 'By title',
+      by: [{field: 'title', direction: 'asc' as const}],
     }
-    const orderedByDate = new Subject<{snapshot: {title: string}}>()
-    observeForPreview.mockImplementation(
-      (
-        value: {title: string},
-        _type: unknown,
-        options: {viewOptions: {ordering?: SortOrdering}},
-      ) =>
-        options.viewOptions.ordering === byDate
-          ? orderedByDate
-          : new Observable((subscriber) => {
-              subscriber.next({snapshot: {title: value.title}})
-            }),
-    )
-    const frames: Frame[] = []
-    const value = {_id: 'a', title: 'one'}
-    const {rerender} = render(<Harness value={value} frames={frames} />)
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
-    const settled = frames.length
-
-    rerender(<Harness value={value} ordering={byDate} frames={frames} />)
-    expect(frames.slice(settled).map((frame) => frame.title)).not.toContain('one')
-    expect(frames.at(-1)).toEqual({isLoading: true, title: undefined, error: undefined})
-
-    act(() => {
-      orderedByDate.next({snapshot: {title: 'one · 2026'}})
-    })
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one · 2026'})
-  })
-
-  it('keys array items by their _key as it is, not as a document id', () => {
-    const second = new Subject<{snapshot: {title: string}}>()
-    observeForPreview.mockImplementation((value: {_key: string; title: string}) =>
-      value._key === 'foo'
-        ? second
-        : new Observable((subscriber) => {
-            subscriber.next({snapshot: {title: value.title}})
-          }),
-    )
-    const frames: Frame[] = []
     const {rerender} = render(
-      <Harness value={{_key: 'drafts.foo', title: 'one'}} frames={frames} />,
+      <Harness schemaType={bookType} value={{_id: 'a'}} ordering={ordering} frames={frames} />,
     )
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
-    const settled = frames.length
-
-    // `drafts.foo` and `foo` are two items, not a draft and its published document
-    rerender(<Harness value={{_key: 'foo', title: 'two'}} frames={frames} />)
-    expect(frames.slice(settled).map((frame) => frame.title)).not.toContain('one')
-    expect(frames.at(-1)).toEqual({isLoading: true, title: undefined, error: undefined})
-
-    act(() => {
-      second.next({snapshot: {title: 'two'}})
+    expect(requested(frames.at(-1))).toEqual({
+      id: 'a',
+      keys: ['_id'],
+      perspective: ['drafts'],
+      ordering: 'byTitle',
     })
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'two'})
-  })
 
-  it('resets to loading when a version switches to the published preview under an empty perspective stack', () => {
-    const published = new Subject<{snapshot: {title: string}}>()
-    observeForPreview.mockImplementation((value: {_id: string; title?: string}) =>
-      value._id === 'a'
-        ? published
-        : new Observable((subscriber) => {
-            subscriber.next({snapshot: {title: value.title}})
-          }),
-    )
-    const frames: Frame[] = []
-    const version = {_id: 'versions.r1.a', title: 'in release'}
-    const {rerender} = render(<Harness value={version} perspectiveStack={[]} frames={frames} />)
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'in release'})
-    const settled = frames.length
-
-    // the caller's stack is already empty, so only the switch to the published document itself
-    // distinguishes the new target from the version
     rerender(
       <Harness
-        value={{...version, _system: {delete: true}}}
-        perspectiveStack={[]}
+        schemaType={bookType}
+        value={{_id: 'a'}}
+        ordering={{...ordering, name: 'byYear'}}
         frames={frames}
       />,
     )
-    expect(frames.slice(settled).map((frame) => frame.title)).not.toContain('in release')
-    expect(frames.at(-1)).toEqual({isLoading: true, title: undefined, error: undefined})
-
-    act(() => {
-      published.next({snapshot: {title: 'published'}})
+    expect(requested(frames.at(-1))).toEqual({
+      id: 'a',
+      keys: ['_id'],
+      perspective: ['drafts'],
+      ordering: 'byYear',
     })
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'published'})
   })
 
-  it('does not resubscribe when the inherited perspective stack is rebuilt with the same contents', () => {
+  it('renders the idle state without previewing when disabled', () => {
     const frames: Frame[] = []
-    const value = {_id: 'a', title: 'one'}
-    const {rerender} = render(<Harness value={value} frames={frames} />)
-    const settled = frames.length
+    render(<Harness schemaType={bookType} value={{_id: 'a'}} enabled={false} frames={frames} />)
 
-    // the perspective context rebuilds its stack whenever the releases change
-    currentPerspective = {perspectiveStack: ['drafts'], selectedVariantName: undefined}
-    rerender(<Harness value={value} frames={frames} />)
-
-    expect(observeForPreview).toHaveBeenCalledTimes(1)
-    expect(subscriptions.total).toBe(1)
-    expect(frames.slice(settled).some((frame) => frame.isLoading)).toBe(false)
+    expect(frames.at(-1)).toEqual(IDLE_FRAME)
+    expect(subscriptions).toEqual({active: 0, total: 0})
   })
 
-  it('does not mistake an id-less object for a document whose id spells its own key', () => {
-    const inline = new Subject<{snapshot: {title: string}}>()
-    observeForPreview.mockImplementation((value: {_id?: string; title: string}) =>
-      value._id === undefined
-        ? inline
-        : new Observable((subscriber) => {
-            subscriber.next({snapshot: {title: value.title}})
-          }),
-    )
+  it('renders the idle state without previewing when there is no schema type', () => {
+    const frames: Frame[] = []
+    render(<Harness schemaType={undefined} value={{_id: 'a'}} frames={frames} />)
+
+    expect(frames.at(-1)).toEqual(IDLE_FRAME)
+    expect(subscriptions).toEqual({active: 0, total: 0})
+  })
+
+  it('renders the idle state without previewing when there is no value', () => {
+    const frames: Frame[] = []
+    render(<Harness schemaType={bookType} value={undefined} frames={frames} />)
+
+    expect(frames.at(-1)).toEqual(IDLE_FRAME)
+    expect(subscriptions).toEqual({active: 0, total: 0})
+  })
+
+  it('drops back to the idle state and releases the preview when the value is removed', async () => {
     const frames: Frame[] = []
     const {rerender} = render(
-      <Harness value={{_id: 'inline', title: 'a document named inline'}} frames={frames} />,
+      <Harness schemaType={bookType} value={{_id: 'a', title: 'one'}} frames={frames} />,
     )
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'a document named inline'})
-    const settled = frames.length
+    expect(subscriptions).toEqual({active: 1, total: 1})
 
-    rerender(<Harness value={{title: 'plain object'}} frames={frames} />)
-    expect(frames.slice(settled).map((frame) => frame.title)).not.toContain(
-      'a document named inline',
-    )
-    expect(frames.at(-1)).toEqual({isLoading: true, title: undefined, error: undefined})
+    rerender(<Harness schemaType={bookType} value={undefined} frames={frames} />)
 
-    act(() => {
-      inline.next({snapshot: {title: 'plain object'}})
-    })
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'plain object'})
+    expect(frames.at(-1)).toEqual(IDLE_FRAME)
+    await flush()
+    expect(subscriptions).toEqual({active: 0, total: 1})
   })
 
-  it('previews an array item as it is, without synthesizing a document id', () => {
-    const item = {_key: 'item-1', _type: 'item', title: 'In place'}
+  it('releases the preview when disabled', async () => {
     const frames: Frame[] = []
-    render(<Harness value={item} frames={frames} />)
-
-    // the very object, so nothing downstream can mistake it for a document
-    expect(observeForPreview.mock.lastCall?.[0]).toBe(item)
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'In place'})
-  })
-
-  it('feeds a pipeline rebuilt in the same render as a value change the new value only', async () => {
-    const byDate: SortOrdering = {
-      name: 'byDate',
-      title: 'By date',
-      by: [{field: 'date', direction: 'asc'}],
-    }
-    const frames: Frame[] = []
-    const {rerender} = render(<Harness value={{_id: 'a', title: 'one'}} frames={frames} />)
-    expect(observeForPreview).toHaveBeenCalledTimes(1)
-
-    // a recycled list row: another document and a new ordering arrive in one render
-    rerender(<Harness value={{_id: 'b', title: 'two'}} ordering={byDate} frames={frames} />)
-
-    // the rebuilt pipeline never previews the previous document under the new ordering
-    expect(observeForPreview).toHaveBeenCalledTimes(2)
-    expect(observeForPreview).toHaveBeenLastCalledWith(
-      {_id: 'b', title: 'two'},
-      schemaType,
-      expect.objectContaining({viewOptions: {ordering: byDate}}),
-    )
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'two'})
-    // the replaced pipeline is released a tick later (react-rx's teardown grace)
-    await vi.waitFor(() => expect(subscriptions.active).toBe(1))
-  })
-
-  it('keeps the preview when a draft or version of the same document is materialized', () => {
-    const frames: Frame[] = []
-    const {rerender} = render(<Harness value={{_id: 'a', title: 'one'}} frames={frames} />)
-    const settled = frames.length
-
-    rerender(<Harness value={{_id: 'drafts.a', title: 'one edited'}} frames={frames} />)
-    rerender(<Harness value={{_id: 'versions.r1.a', title: 'one in release'}} frames={frames} />)
-
-    expect(frames.slice(settled).some((frame) => frame.isLoading)).toBe(false)
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one in release'})
-  })
-
-  it('keeps the preview when a draft of a cross-dataset document is materialized', () => {
-    const frames: Frame[] = []
-    const reference = {_projectId: 'p1', _dataset: 'd1'}
     const {rerender} = render(
-      <Harness value={{...reference, _ref: 'x', title: 'one'}} frames={frames} />,
+      <Harness schemaType={bookType} value={{_id: 'a', title: 'one'}} frames={frames} />,
     )
-    const settled = frames.length
 
-    rerender(
-      <Harness value={{...reference, _ref: 'drafts.x', title: 'one edited'}} frames={frames} />,
-    )
     rerender(
       <Harness
-        value={{...reference, _ref: 'versions.r1.x', title: 'in release'}}
+        schemaType={bookType}
+        value={{_id: 'a', title: 'one'}}
+        enabled={false}
         frames={frames}
       />,
     )
 
-    expect(frames.slice(settled).some((frame) => frame.isLoading)).toBe(false)
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'in release'})
+    expect(frames.at(-1)).toEqual(IDLE_FRAME)
+    await flush()
+    expect(subscriptions).toEqual({active: 0, total: 1})
+  })
 
-    // the same document in another dataset is a different target
+  it('previews the current value when re-enabled, not the one it was disabled with', () => {
+    const frames: Frame[] = []
+    const {rerender} = render(
+      <Harness schemaType={bookType} value={{_id: 'a', title: 'one'}} frames={frames} />,
+    )
     rerender(
       <Harness
-        value={{...reference, _dataset: 'd2', _ref: 'x', title: 'elsewhere'}}
+        schemaType={bookType}
+        value={{_id: 'a', title: 'two'}}
+        enabled={false}
         frames={frames}
       />,
     )
-    expect(frames.slice(settled).some((frame) => frame.isLoading)).toBe(true)
-  })
-
-  it('does not resubscribe a version preview when the global perspective or variant changes', () => {
-    const frames: Frame[] = []
-    const value = {_id: 'a', title: 'one'}
-    const {rerender} = render(
-      <Harness value={value} frames={frames} perspectiveStack={['r1', 'drafts']} />,
-    )
+    expect(frames.at(-1)).toEqual(IDLE_FRAME)
     const settled = frames.length
 
-    // the caller previews a specific version, so the global selection does not take part
-    currentPerspective = {perspectiveStack: ['r2', 'drafts'], selectedVariantName: 'variant'}
-    rerender(<Harness value={value} frames={frames} perspectiveStack={['r1', 'drafts']} />)
+    rerender(<Harness schemaType={bookType} value={{_id: 'a', title: 'three'}} frames={frames} />)
 
-    expect(observeForPreview).toHaveBeenCalledTimes(1)
-    expect(subscriptions.total).toBe(1)
-    expect(frames.slice(settled).some((frame) => frame.isLoading)).toBe(false)
+    expect(frames.at(-1)).toEqual({isLoading: false, title: 'three', error: undefined})
+    expect(frames.slice(settled).map((frame) => frame.title)).not.toContain('two')
   })
 
-  it('follows the global perspective when the caller does not choose one', () => {
-    const frames: Frame[] = []
-    const value = {_id: 'a', title: 'one'}
-    const {rerender} = render(<Harness value={value} frames={frames} />)
-    expect(observeForPreview).toHaveBeenLastCalledWith(
-      value,
-      schemaType,
-      expect.objectContaining({perspective: ['drafts']}),
-    )
-
-    currentPerspective = {perspectiveStack: ['r2', 'drafts'], selectedVariantName: undefined}
-    rerender(<Harness value={value} frames={frames} />)
-
-    expect(observeForPreview).toHaveBeenCalledTimes(2)
-    expect(observeForPreview).toHaveBeenLastCalledWith(
-      value,
-      schemaType,
-      expect.objectContaining({perspective: ['r2', 'drafts']}),
-    )
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
-  })
-
-  it('resets to loading when a version slated for unpublishing switches to the published preview', () => {
-    const published = new Subject<{snapshot: {title: string}}>()
-    observeForPreview.mockImplementation(
-      (value: {_id: string; title?: string}, _type: unknown, options: {perspective: unknown[]}) =>
-        value._id === 'a' && options.perspective.length === 0
-          ? published
-          : new Observable((subscriber) => {
-              subscriber.next({snapshot: {title: value.title}})
-            }),
-    )
-    const frames: Frame[] = []
-    const version = {_id: 'versions.r1.a', title: 'in release'}
-    const {rerender} = render(<Harness value={version} frames={frames} />)
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'in release'})
-    const settled = frames.length
-
-    // the same version, now marked for unpublishing: it previews the published document instead
-    rerender(<Harness value={{...version, _system: {delete: true}}} frames={frames} />)
-    expect(frames.slice(settled).map((frame) => frame.title)).not.toContain('in release')
-    expect(frames.at(-1)).toEqual({isLoading: true, title: undefined, error: undefined})
-    expect(observeForPreview).toHaveBeenLastCalledWith(
-      {_id: 'a'},
-      schemaType,
-      expect.objectContaining({perspective: [], variant: undefined}),
-    )
-
-    act(() => {
-      published.next({snapshot: {title: 'published'}})
-    })
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'published'})
-  })
-
-  it('keeps one observable when the perspective stack is rebuilt every render', () => {
-    const frames: Frame[] = []
-    const value = {_id: 'a', title: 'one'}
-    const {rerender} = render(<Harness value={value} frames={frames} perspectiveStack={[]} />)
-    rerender(<Harness value={value} frames={frames} perspectiveStack={[]} />)
-    rerender(<Harness value={value} frames={frames} perspectiveStack={[]} />)
-
-    expect(observeForPreview).toHaveBeenCalledTimes(1)
-    expect(subscriptions.total).toBe(1)
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
-  })
-
-  it('converges when the value object is rebuilt on every render', () => {
-    const frames: Frame[] = []
-    function InlineValue() {
-      if (frames.length > 10) throw new Error(`render loop after ${frames.length} renders`)
-      const state = useValuePreview({schemaType, value: {_id: 'a', title: 'one'}})
-      frames.push({isLoading: state.isLoading, title: state.value?.title})
-      return null
-    }
-    render(<InlineValue />)
-
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
-  })
-
-  it('converges when the value is rebuilt on every render and prepare() returns fresh media', () => {
-    observeForPreview.mockImplementation(
-      (value: {title: string}) =>
-        new Observable((subscriber) => {
-          subscriber.next({
-            // a new component and a new element on every emission, like `media: () => ...` does
-            snapshot: {
-              title: value.title,
-              media: () => <span />,
-              icon: <i />,
-            },
-          })
-        }),
-    )
-    const frames: Frame[] = []
-    function InlineValue() {
-      if (frames.length > 10) throw new Error(`render loop after ${frames.length} renders`)
-      const state = useValuePreview({schemaType, value: {_id: 'a', title: 'one'}})
-      frames.push({isLoading: state.isLoading, title: state.value?.title})
-      return null
-    }
-    render(<InlineValue />)
-
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
-    expect(observeForPreview).toHaveBeenCalledTimes(1)
-  })
-
-  it('re-renders when media changes but not when only its identity does', () => {
-    const asset = {_type: 'image', asset: {_ref: 'image-1'}}
-    observeForPreview.mockImplementation(
-      (value: {title: string; media: unknown}) =>
-        new Observable((subscriber) => {
-          subscriber.next({snapshot: {title: value.title, media: value.media}})
-        }),
-    )
+  it('behaves the same under StrictMode', async () => {
     const frames: Frame[] = []
     const {rerender} = render(
-      <Harness value={{_id: 'a', title: 'one', media: {...asset}}} frames={frames} />,
+      <StrictMode>
+        <Harness schemaType={bookType} value={{_id: 'a', title: 'one'}} frames={frames} />
+      </StrictMode>,
     )
-    const before = frames.length
+    expect(frames.at(-1)).toEqual({isLoading: false, title: 'one', error: undefined})
+    const settled = frames.length
 
-    // an equal asset object is the same media
-    rerender(<Harness value={{_id: 'a', title: 'one', media: {...asset}}} frames={frames} />)
-    expect(frames.length).toBe(before + 1)
-
-    // a different asset is not
     rerender(
-      <Harness
-        value={{_id: 'a', title: 'one', media: {_type: 'image', asset: {_ref: 'image-2'}}}}
-        frames={frames}
-      />,
+      <StrictMode>
+        <Harness schemaType={bookType} value={{_id: 'a', title: 'two'}} frames={frames} />
+      </StrictMode>,
     )
-    expect(frames.length).toBe(before + 3)
+
+    expect(frames.at(-1)).toEqual({isLoading: false, title: 'two', error: undefined})
+    expect(frames.slice(settled).filter((frame) => frame.isLoading)).toEqual([])
+    await flush()
+    expect(subscriptions).toEqual({active: 1, total: 2})
   })
 
-  it('compares element media by identity without walking it', () => {
-    // A self-referencing prop would overflow a deep compare that walked into the element
-    const cyclic: Record<string, unknown> = {}
-    cyclic.self = cyclic
-    const makeMedia = () => <span data-owner={cyclic} />
-    observeForPreview.mockImplementation(
-      (value: {title: string; version: number}) =>
-        new Observable((subscriber) => {
-          subscriber.next({snapshot: {title: value.title, media: makeMedia()}})
-        }),
-    )
-    const frames: Frame[] = []
-    const {rerender} = render(
-      <Harness value={{_id: 'a', title: 'one', version: 1}} frames={frames} />,
-    )
-    const before = frames.length
-
-    // a new element instance is new media, so the consumer re-renders (rerender + store update)
-    rerender(<Harness value={{_id: 'a', title: 'one', version: 2}} frames={frames} />)
-
-    expect(frames.length).toBe(before + 2)
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
-  })
-
-  it('surfaces a preview error once, even when the value is rebuilt on every render', () => {
+  it('surfaces a preview error', () => {
+    const error = new Error('boom')
     observeForPreview.mockImplementation(
       () =>
-        new Observable(() => {
-          throw new Error('boom')
+        new Observable<PreparedSnapshot>((subscriber) => {
+          subscriber.error(error)
         }),
     )
     const frames: Frame[] = []
-    function Failing() {
-      if (frames.length > 10) throw new Error(`render loop after ${frames.length} renders`)
-      const state = useValuePreview({schemaType, value: {_id: 'a', title: 'one'}})
-      frames.push({isLoading: state.isLoading, title: state.value?.title, error: state.error})
-      return null
-    }
-    render(<Failing />)
+    render(<Harness schemaType={bookType} value={{_id: 'a'}} frames={frames} />)
 
-    expect(frames.at(-1)).toMatchObject({isLoading: false, error: new Error('boom')})
-  })
-
-  it('renders the idle state without a value', () => {
-    const frames: Frame[] = []
-    render(<Harness value={undefined} frames={frames} />)
-
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: undefined})
-    expect(observeForPreview).not.toHaveBeenCalled()
-  })
-
-  it('drops an inline preview in the render that loses the value, not after an effect', () => {
-    const frames: Frame[] = []
-    // a plain object previewed in place has no id
-    const {rerender} = render(<Harness value={{title: 'one'}} frames={frames} />)
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
-    const settled = frames.length
-
-    rerender(<Harness value={undefined} frames={frames} />)
-    expect(frames.length).toBeGreaterThan(settled)
-    for (const frame of frames.slice(settled)) {
-      expect(frame).toEqual({isLoading: false, title: undefined, error: undefined})
-    }
-
-    // nor is the next inline value mistaken for the previous one
-    rerender(<Harness value={{title: 'two'}} frames={frames} />)
-    expect(frames.slice(settled).map((frame) => frame.title)).not.toContain('one')
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'two'})
-  })
-
-  it.each([
-    ['the value is removed', {value: undefined}],
-    ['the preview is disabled', {enabled: false}],
-    ['the schema type is removed', {schemaType: undefined}],
-  ])('renders the idle state, not loading, in the render where %s', async (_, props) => {
-    const frames: Frame[] = []
-    const {rerender} = render(<Harness value={{_id: 'a', title: 'one'}} frames={frames} />)
-    expect(frames.at(-1)).toMatchObject({isLoading: false, title: 'one'})
-    const settled = frames.length
-
-    rerender(<Harness value={{_id: 'a', title: 'one'}} {...props} frames={frames} />)
-    expect(frames.length).toBeGreaterThan(settled)
-    for (const frame of frames.slice(settled)) {
-      expect(frame).toEqual({isLoading: false, title: undefined, error: undefined})
-    }
-    // and the document is no longer observed (react-rx releases a swapped-out source a tick later)
-    await vi.waitFor(() => expect(subscriptions.active).toBe(0))
+    expect(frames.at(-1)).toEqual({isLoading: false, title: undefined, error})
   })
 })

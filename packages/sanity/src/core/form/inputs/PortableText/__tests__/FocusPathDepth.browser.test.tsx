@@ -113,8 +113,8 @@ const {render} = await import('vitest-browser-react')
 const document: SanityDocument = {
   _id: '123',
   _type: 'test',
-  _createdAt: new Date().toISOString(),
-  _updatedAt: new Date().toISOString(),
+  _createdAt: '2024-01-01T00:00:00.000Z',
+  _updatedAt: '2024-01-01T00:00:00.000Z',
   _rev: '123',
   body: [
     {
@@ -161,7 +161,8 @@ describe('Portable Text Input - focus path span suffix at depth', () => {
   it('reports spans with `.text` and inline objects without, at root and inside table cells', async () => {
     const paths: Path[] = []
     const pushPath = (path: Path) => paths.push(path)
-    const {getFocusedPortableTextEditor, waitForFocusedNodeText} = testHelpers()
+    const {getFocusedPortableTextEditor, settleChromaticEndState, waitForFocusedNodeText} =
+      testHelpers()
 
     void render(<FocusPathDepthHarness document={document} onPathFocus={pushPath} />)
 
@@ -216,5 +217,6 @@ describe('Portable Text Input - focus path span suffix at depth', () => {
         'children',
         {_key: 'cn0'},
       ])
+    await settleChromaticEndState()
   })
 })

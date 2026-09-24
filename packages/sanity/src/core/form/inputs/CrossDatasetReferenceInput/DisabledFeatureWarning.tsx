@@ -1,9 +1,9 @@
 import {ResetIcon} from '@sanity/icons/Reset'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type CrossDatasetReferenceValue} from '@sanity/types'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {useMemo} from 'react'
-import {Flex, Box} from 'ui5'
+import {Box, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -48,26 +48,26 @@ export function DisabledFeatureWarning({value, onClearValue}: Props) {
             <WarningOutlineIcon />
           </Text>
         </Box>
-        <Stack gap={3}>
+        <VStack gap={3}>
           <Text as="h2" size={1} weight="medium">
             {t('inputs.reference.cross-dataset.feature-unavailable-title')}
           </Text>
           {hasRef && (
-            <Stack gap={3}>
+            <VStack gap={3}>
               <Text as="p" size={1}>
                 {description}
               </Text>
               <Text as="p" size={1}>
                 {t('inputs.reference.cross-dataset.feature-disabled-actions')}
               </Text>
-            </Stack>
+            </VStack>
           )}
           {!hasRef && (
             <Text as="p" size={1}>
               {description}
             </Text>
           )}
-        </Stack>
+        </VStack>
       </Flex>
       {onClearValue && hasRef && (
         <Button

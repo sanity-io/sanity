@@ -1,4 +1,5 @@
 import {BoundaryElementProvider, PortalProvider, usePortal} from '@sanity/ui'
+import {clsx} from 'clsx'
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
@@ -13,6 +14,7 @@ import {
   isReleaseScheduledOrScheduling,
   isSystemBundle,
   LegacyLayerProvider,
+  PortalBoundaryProvider,
   type ReleaseDocument,
   ScrollContainer,
   useArchivedReleases,
@@ -22,7 +24,6 @@ import {
   useWorkspace,
   VirtualizerScrollInstanceProvider,
 } from 'sanity'
-import {css, styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {PaneContent} from '../../../components/pane/PaneContent'
@@ -52,6 +53,7 @@ import {ScheduledDraftOverrideBanner} from './banners/ScheduledDraftOverrideBann
 import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
 import {UnpublishedDocumentBanner} from './banners/UnpublishedDocumentBanner'
 import {VariantDefinitionNotFoundBanner} from './banners/VariantDefinitionNotFoundBanner'
+import {documentBox, scroller, scrollerEnabled} from './DocumentPanel.css'
 import {FormView} from './documentViews/FormView'
 import {DocumentPanelSubHeader} from './header/DocumentPanelSubHeader'
 
@@ -63,24 +65,6 @@ interface DocumentPanelProps {
   setDocumentPanelPortalElement: (el: HTMLElement | null) => void
   footer: React.ReactNode
 }
-
-const DocumentBox = styled(Box)({
-  position: 'relative',
-})
-
-const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => {
-  if ($disabled) {
-    return {height: '100%'}
-  }
-
-  return css`
-    height: 100%;
-    overflow: auto;
-    position: relative;
-    scroll-behavior: smooth;
-    outline: none;
-  `
-})
 
 export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {
@@ -242,6 +226,8 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       return <ArchivedReleaseDocumentBanner releaseId={archivedReleaseId} />
     }
 
+    const deletedDocumentBanners = activeView.type === 'form' ? <DeletedDocumentBanners /> : null
+
     const isScheduledRelease =
       isReleaseDocument(selectedPerspective) && isReleaseScheduledOrScheduling(selectedPerspective)
 
@@ -264,13 +250,16 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       })
     ) {
       return (
-        !isSelectedPerspectiveWriteable.result && (
-          <ChooseNewDocumentDestinationBanner
-            schemaType={schemaType}
-            selectedPerspective={selectedPerspective}
-            reason={isSelectedPerspectiveWriteable.reason}
-          />
-        )
+        <>
+          {!isSelectedPerspectiveWriteable.result && (
+            <ChooseNewDocumentDestinationBanner
+              schemaType={schemaType}
+              selectedPerspective={selectedPerspective}
+              reason={isSelectedPerspectiveWriteable.reason}
+            />
+          )}
+          {deletedDocumentBanners}
+        </>
       )
     }
 
@@ -379,7 +368,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
         <ReferenceChangedBanner />
         <DeprecatedDocumentTypeBanner />
         <CanvasLinkedBanner />
-        <DeletedDocumentBanners />
+        {deletedDocumentBanners}
         <UnpublishedDocumentBanner />
         <OpenReleaseToEditBanner
           documentId={displayed?._id ?? documentId}
@@ -426,33 +415,38 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
               {banners}
               <DocumentPanelSubHeader />
             </LegacyLayerProvider>
-            <DocumentBox flexBasis="0%" flexGrow={2}>
-              <PortalProvider element={portalElement} __unstable_elements={portalElements}>
-                <BoundaryElementProvider element={documentScrollElement}>
-                  <VirtualizerScrollInstanceProvider
-                    scrollElement={documentScrollElement}
-                    containerElement={formContainerElement}
-                  >
-                    <Scroller
-                      $disabled={layoutCollapsed || false}
-                      data-testid="document-panel-scroller"
-                      ref={setDocumentScrollElement}
+            <Box className={documentBox} flexBasis="0%" flexGrow={2}>
+              {/* The scroll container is the visible region for everything portaled into the pane
+                  (between the sticky header and footer): popovers that escape dialogs use it as
+                  their boundary, see PortalBoundaryProvider. */}
+              <PortalBoundaryProvider element={documentScrollElement} portalElement={portalElement}>
+                <PortalProvider element={portalElement} __unstable_elements={portalElements}>
+                  <BoundaryElementProvider element={documentScrollElement}>
+                    <VirtualizerScrollInstanceProvider
+                      scrollElement={documentScrollElement}
+                      containerElement={formContainerElement}
                     >
-                      <FormView
-                        hidden={formViewHidden}
-                        margins={margins}
-                        ref={formContainerElement}
-                      />
-                      {activeViewNode}
-                    </Scroller>
+                      <ScrollContainer
+                        className={clsx(scroller, !layoutCollapsed && scrollerEnabled)}
+                        data-testid="document-panel-scroller"
+                        ref={setDocumentScrollElement}
+                      >
+                        <FormView
+                          hidden={formViewHidden}
+                          margins={margins}
+                          ref={formContainerElement}
+                        />
+                        {activeViewNode}
+                      </ScrollContainer>
 
-                    {inspectDialog}
+                      {inspectDialog}
 
-                    <div data-testid="document-panel-portal" ref={setPortalElement} />
-                  </VirtualizerScrollInstanceProvider>
-                </BoundaryElementProvider>
-              </PortalProvider>
-            </DocumentBox>
+                      <div data-testid="document-panel-portal" ref={setPortalElement} />
+                    </VirtualizerScrollInstanceProvider>
+                  </BoundaryElementProvider>
+                </PortalProvider>
+              </PortalBoundaryProvider>
+            </Box>
 
             {footer}
           </Flex>

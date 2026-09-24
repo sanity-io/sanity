@@ -1,8 +1,7 @@
 import {type SchemaType} from '@sanity/types'
-import {Badge, Card, Stack, Text} from '@sanity/ui'
+import {Badge, Card, Text} from '@sanity/ui'
 import {type ComponentPropsWithoutRef, type ElementType, type ReactNode, useState} from 'react'
-import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Box, Flex, VStack} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {DocumentVersionsStatus} from '../../../components/documentStatus/DocumentVersionsStatus'
@@ -22,12 +21,10 @@ import {EMPTY_VALIDATION_STATUS, useValidationState} from '../../utils/validatio
 import {ValidateScheduleDoc} from '../validation/SchedulesValidation'
 import {ValidationInfo} from '../validation/ValidationInfo'
 import DateWithTooltip from './dateWithTooltip/DateWithTooltip'
+import {statusDotPlaceholder} from './PreviewWrapper.css'
 import StateReasonFailedInfo from './StateReasonFailedInfo'
 import User from './User'
 
-const StatusDotPlaceholder = styled(Box)`
-  width: 9px;
-`
 interface Props<TLink extends ElementType | undefined = undefined> {
   children?: ReactNode
   contextMenu?: ReactNode
@@ -111,7 +108,7 @@ function PreviewWrapper<TLink extends ElementType | undefined = undefined>(props
 
               {/* Schedule date */}
               <Box display={['block', 'none']} style={{flexShrink: 0, width: '90px'}}>
-                <Stack gap={2}>
+                <VStack gap={2}>
                   {scheduleDate ? (
                     <>
                       <Text size={1}>
@@ -124,7 +121,7 @@ function PreviewWrapper<TLink extends ElementType | undefined = undefined>(props
                       <em>No date specified</em>
                     </Text>
                   )}
-                </Stack>
+                </VStack>
               </Box>
               <Box
                 display={['none', 'block']}
@@ -157,7 +154,7 @@ function PreviewWrapper<TLink extends ElementType | undefined = undefined>(props
                   {publishedDocumentId ? (
                     <ScheduleItemStatusIndicator publishedDocumentId={publishedDocumentId} />
                   ) : (
-                    <StatusDotPlaceholder />
+                    <Box className={statusDotPlaceholder} />
                   )}
                 </Box>
               </Flex>

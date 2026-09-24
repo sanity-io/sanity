@@ -1,7 +1,7 @@
 import CloseIcon from '@sanity/icons/Close'
 import {FeedbackIcon} from '@sanity/icons/Feedback'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {PortalProvider, Stack, Text} from '@sanity/ui'
+import {PortalProvider, Text} from '@sanity/ui'
 import {useActorRef, useSelector} from '@xstate/react'
 import {
   type ChangeEvent,
@@ -23,7 +23,7 @@ import {
   Subject,
   timeout,
 } from 'rxjs'
-import {Flex} from 'ui5'
+import {VStack, Flex} from 'ui5'
 import {type ActorRefFromLogic, fromObservable, fromPromise} from 'xstate'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -49,6 +49,7 @@ import {useDocumentStore} from '../../store/datastores'
 import {useWorkspace} from '../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getPublishedId, type SystemBundle} from '../../util/draftUtils'
+import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {useVariantDocumentOperations} from '../../variants/hooks/useVariantDocumentOperations'
 import {CreateVariantIcon} from '../../variants/plugin/components/PersonalizationIcons'
 import {useVariantsStore} from '../../variants/store/useVariantsStore'
@@ -378,7 +379,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
         {!isVariantCreationActive && (
           <>
             <Header>
-              <Stack gap={4}>
+              <VStack gap={4}>
                 {!readOnly && (
                   <Flex gap={4} alignItems="center" justifyContent="flex-end">
                     <TextButton
@@ -405,7 +406,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                   readOnly={isLocked}
                   onChange={(event: ChangeEvent<HTMLInputElement>) => filterStringEvent.next(event)}
                 />
-              </Stack>
+              </VStack>
             </Header>
             <Body>
               {schema && (
@@ -515,7 +516,7 @@ const Select: ComponentType<{
   const isSelectable = useSelector(machine, ({context}) => !context.readOnly)
 
   return (
-    <Stack gap={5}>
+    <VStack gap={5}>
       {sets.map((set) => (
         <DocumentGroupSet
           key={set.key}
@@ -564,7 +565,7 @@ const Select: ComponentType<{
             )}
         </DocumentGroupSet>
       ))}
-    </Stack>
+    </VStack>
   )
 }
 
@@ -639,7 +640,7 @@ const ManagedVariantRow: ComponentType<{
 
   const pendingReleases = useVariantPendingReleases({
     documentId: documentGroupId,
-    variantRef: document._system.variant?._ref,
+    variantId: getDocumentVersionVariantId(document),
   })
 
   const {

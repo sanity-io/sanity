@@ -4,20 +4,19 @@ import {
   type SchemaType,
   type SortOrdering,
 } from '@sanity/types'
-import {dequal} from 'dequal'
-import isPlainObject from 'lodash-es/isPlainObject.js'
-import {useCallback, useEffect, useMemo} from 'react'
+import {dequal} from 'dequal/lite'
+import {useEffect, useMemo, useState} from 'react'
+import isEqual from 'react-fast-compare'
 import {useSyncObservable} from 'react-rx'
-import {concat, type Observable, of, Subject} from 'rxjs'
-import {catchError, distinctUntilChanged, map, scan, switchMap} from 'rxjs/operators'
+import {BehaviorSubject, type Observable, of} from 'rxjs'
+import {catchError, distinctUntilChanged, map, switchMap} from 'rxjs/operators'
 
 import {type PerspectiveStack} from '../perspective/types'
 import {usePerspective} from '../perspective/usePerspective'
 import {isGoingToUnpublish} from '../releases/util/isGoingToUnpublish'
 import {useDocumentPreviewStore} from '../store/datastores'
 import {getPublishedId} from '../util/draftUtils'
-import {shallowEquals} from '../util/shallowEquals'
-import {useShallowUnique} from '../util/useShallowUnique'
+import {type ObserveForPreviewFn} from './documentPreviewStore'
 import {type Previewable} from './types'
 
 /**
@@ -43,109 +42,120 @@ const IDLE_STATE: State = {
   },
 }
 
-function isSameError(a: Error | undefined, b: Error | undefined): boolean {
-  return a === b || (!!a && !!b && a.name === b.name && a.message === b.message)
-}
+const IDLE_STATE_OBSERVABLE = of(IDLE_STATE)
 
-// React elements and portals are plain objects too, recognisable by `$$typeof`.
-function isReactNodeObject(value: unknown): boolean {
-  return typeof value === 'object' && value !== null && '$$typeof' in value
-}
-
-// Plain media values such as image assets compare by content. Anything else — components,
-// elements, arrays of elements, portals — compares by identity: walking React internals (an
-// element's props or `_owner`) is not safe, and `prepare()` may build a fresh one per emission,
-// in which case the preview simply re-renders as it did before.
-function isSameMedia(a: unknown, b: unknown): boolean {
-  if (a === b) return true
-  if (!isPlainObject(a) || !isPlainObject(b)) return false
-  if (isReactNodeObject(a) || isReactNodeObject(b)) return false
-  return dequal(a, b)
-}
-
-// Every field takes part, the `_createdAt` / `_updatedAt` that `prepareForPreview` preserves
-// included: `PreviewValue` is public and `PreviewLoader` forwards the whole value, so a custom
-// preview component may well render them.
-function isSamePreview(a: PreviewValue | undefined, b: PreviewValue | undefined): boolean {
-  if (a === b) return true
-  if (!a || !b) return false
-  const recordA = a as Record<string, unknown>
-  const recordB = b as Record<string, unknown>
-  for (const key of new Set([...Object.keys(recordA), ...Object.keys(recordB)])) {
-    const same =
-      key === 'media' ? isSameMedia(recordA[key], recordB[key]) : dequal(recordA[key], recordB[key])
-    if (!same) return false
-  }
-  return true
-}
-
-// Prepared previews are small, so comparing them is cheap: an emission that prepares to the same
-// preview as the last one leaves the rendered state alone instead of re-rendering every consumer.
-function isSameState(a: State, b: State): boolean {
-  return (
-    a.isLoading === b.isLoading && isSameError(a.error, b.error) && isSamePreview(a.value, b.value)
-  )
+/**
+ * Everything the preview is derived from apart from the schema type and the identity of the
+ * previewed document. These stream into the live preview observable, so a change updates the
+ * preview in place instead of restarting the subscription. The perspective and variant are the
+ * effective ones, so a context change a caller's own selection overrides never reaches the stream.
+ */
+interface PreviewInputs {
+  value: unknown
+  perspective: PerspectiveStack
+  variant: string | undefined
+  ordering: SortOrdering | undefined
 }
 
 interface PreviewTarget {
   previewable: Previewable
   perspective: PerspectiveStack
   variant: string | undefined
-  /**
-   * What the preview shows, independent of the input's shape. A change resets the preview to
-   * loading; edits to the same target keep the current preview until the next one arrives.
-   */
-  key: string
 }
 
 /**
- * A state together with the key of the target it was computed for; `null` when there was nothing
- * to preview (disabled, no value, no schema type), which never matches a target.
+ * Identifies the document `observeForPreview` will observe for a value. A change means a different
+ * document is being previewed, which restarts the preview so the previous document's preview is
+ * never shown for the new one. A cross-dataset reference is identified by its dataset as well, and
+ * a version slated for unpublishing by its own key, so it never continues the published document's
+ * subscription.
  */
-interface Emission {
-  key: string | null
-  state: State
+function getPreviewDocumentKey(value: unknown): string | undefined {
+  if (!value || typeof value !== 'object') return undefined
+  const document = value as SanityDocument & {_ref?: string; _dataset?: string; _projectId?: string}
+  if (isGoingToUnpublish(document)) return `unpublish:${getPublishedId(document._id)}`
+  const id = document._id ?? document._ref
+  return document._dataset ? `${document._projectId}/${document._dataset}/${id}` : id
 }
 
-const INITIAL_EMISSION: Emission = {key: null, state: INITIAL_STATE}
+function resolvePreviewTarget(inputs: PreviewInputs): PreviewTarget | undefined {
+  const {value, perspective, variant} = inputs
+  if (!value) return undefined
 
-// Plain objects previewed in place carry no identifier; they all share this document segment.
-const INLINE_TARGET_KEY = 'inline'
-
-/**
- * Keys a target by the document it previews and the perspective it is seen through: a document
- * or reference by its published id — so `drafts.x`, `versions.*.x` and `x` are one document and
- * materializing a draft does not reset the preview — per project and dataset for cross-dataset
- * references, an array item by its `_key` as it is (an item key is not a document id). Values
- * without any identifier (plain objects previewed in place) all count as one target. The
- * perspective is part of the key, and so is previewing the published document in place of a
- * version slated for unpublishing: that switch must reset even when the perspective stack is
- * already empty.
- */
-function getPreviewTargetKey(
-  previewable: Previewable,
-  perspective: PerspectiveStack,
-  variant: string | undefined,
-  publishedOnly: boolean,
-): string {
-  const {_id, _ref, _key, _projectId, _dataset} = previewable as {
-    _id?: string
-    _ref?: string
-    _key?: string
-    _projectId?: string
-    _dataset?: string
+  const document = value as SanityDocument
+  // A document slated for unpublishing is previewed as its published version, which is outside
+  // of any variant.
+  if (isGoingToUnpublish(document)) {
+    return {previewable: {_id: getPublishedId(document._id)}, perspective: [], variant: undefined}
   }
-  // Each kind of identity has its own prefix: `inline` is a valid document id, and only prefixes
-  // keep a document, an array item and an id-less object from ever sharing a segment.
-  const documentId = _id ?? _ref
-  const document =
-    documentId === undefined
-      ? _key === undefined
-        ? INLINE_TARGET_KEY
-        : `key:${_key}`
-      : `doc:${_dataset ? `${_projectId}/${_dataset}/` : ''}${getPublishedId(documentId)}`
-  return `${document}|${perspective.join(',')}|${variant ?? ''}|${publishedOnly ? 'published' : ''}`
+  return {previewable: {_id: document._id, ...(value as Previewable)}, perspective, variant}
 }
+
+function isSameState(a: State, b: State): boolean {
+  return a.isLoading === b.isLoading && a.error === b.error && isEqual(a.value, b.value)
+}
+
+function createPreviewObservable(
+  inputs$: Observable<PreviewInputs>,
+  schemaType: SchemaType,
+  observeForPreview: ObserveForPreviewFn,
+): Observable<State> {
+  return inputs$.pipe(
+    distinctUntilChanged(dequal),
+    switchMap((inputs) => {
+      const target = resolvePreviewTarget(inputs)
+      // this will render previews as "loaded" (i.e. not in loading state) – typically with "Untitled" text
+      if (!target) return IDLE_STATE_OBSERVABLE
+
+      return observeForPreview(target.previewable, schemaType, {
+        perspective: target.perspective,
+        variant: target.variant,
+        viewOptions: {ordering: inputs.ordering},
+      }).pipe(
+        map((event): State => ({isLoading: false, value: event.snapshot || undefined})),
+        catchError((error) => of<State>({isLoading: false, error})),
+      )
+    }),
+    distinctUntilChanged(isSameState),
+  )
+}
+
+/**
+ * A subject holding the latest inputs. It is replaced together with the observable that reads it,
+ * whenever `enabled`, the schema type or the previewed document changes, and seeded with the current
+ * render's inputs so the new observable never previews the inputs of an earlier render. Every other
+ * change is pushed into the existing subject after commit.
+ */
+function useInputsSubject(
+  enabled: boolean,
+  schemaType: SchemaType | undefined,
+  inputs: PreviewInputs,
+): BehaviorSubject<PreviewInputs> {
+  const documentKey = getPreviewDocumentKey(inputs.value)
+  const [current, setCurrent] = useState(() => ({
+    enabled,
+    schemaType,
+    documentKey,
+    inputs$: new BehaviorSubject(inputs),
+  }))
+
+  let {inputs$} = current
+  if (
+    current.enabled !== enabled ||
+    current.schemaType !== schemaType ||
+    current.documentKey !== documentKey
+  ) {
+    inputs$ = new BehaviorSubject(inputs)
+    setCurrent({enabled, schemaType, documentKey, inputs$})
+  }
+
+  useEffect(() => {
+    inputs$.next(inputs)
+  }, [inputs$, inputs])
+
+  return inputs$
+}
+
 /**
  * @internal
  */
@@ -168,103 +178,33 @@ export function useValuePreview(props: {
     enabled = true,
     ordering,
     schemaType,
-    value: previewValue,
-    perspectiveStack: chosenPerspectiveStackProp,
+    value,
+    perspectiveStack: chosenPerspectiveStack,
     variant: chosenVariant,
   } = props || {}
   const {observeForPreview} = useDocumentPreviewStore()
   const {perspectiveStack, selectedVariantName} = usePerspective()
-  // A caller previewing a specific version is not affected by the global selection, so resolve
-  // which perspective and variant apply up front: only those take part in the pipeline's identity,
-  // and a global perspective or variant change does not resubscribe such a preview. The stack is
-  // keyed by contents — callers build theirs inline (`useDocumentTitle` passes `[]`) and the
-  // perspective context rebuilds its own whenever the releases change — so a fresh array with the
-  // same entries does not rebuild the observable and resubscribe every preview.
-  const perspective = useShallowUnique(chosenPerspectiveStackProp ?? perspectiveStack)
-  const variant = chosenVariant ?? (chosenPerspectiveStackProp ? undefined : selectedVariantName)
 
-  const resolveTarget = useCallback(
-    (value: unknown): PreviewTarget | undefined => {
-      if (!enabled || !value || !schemaType) return undefined
+  const perspective = chosenPerspectiveStack ?? perspectiveStack
+  // The variant follows the perspective: only inherited from the context when the perspective is too.
+  const variant = chosenVariant ?? (chosenPerspectiveStack ? undefined : selectedVariantName)
+  const inputs = useMemo<PreviewInputs>(
+    () => ({value, perspective, variant, ordering}),
+    [value, perspective, variant, ordering],
+  )
+  const inputs$ = useInputsSubject(enabled, schemaType, inputs)
 
-      const goingToUnpublish = isGoingToUnpublish(value as SanityDocument)
-
-      // A document slated for unpublishing is previewed as its published version — outside of any
-      // perspective or variant — and none of its own content. Anything else is previewed as it is:
-      // a document or reference by its id, an array item (`_key` only) or a plain object in place.
-      const previewable: Previewable = goingToUnpublish
-        ? {_id: getPublishedId((value as SanityDocument)._id)}
-        : (value as Previewable)
-      const targetPerspective = goingToUnpublish ? [] : perspective
-      const targetVariant = goingToUnpublish ? undefined : variant
-
-      return {
-        previewable,
-        perspective: targetPerspective,
-        variant: targetVariant,
-        key: getPreviewTargetKey(previewable, targetPerspective, targetVariant, goingToUnpublish),
-      }
-    },
-    [enabled, schemaType, perspective, variant],
+  // Only `enabled`, the schema type and the previewed document change the observable's identity,
+  // which is what restarts the subscription and renders the loading state. Everything else
+  // streams through `inputs$` into the observable that is already subscribed.
+  const observable = useMemo<Observable<State>>(
+    () =>
+      enabled && schemaType
+        ? createPreviewObservable(inputs$, schemaType, observeForPreview)
+        : IDLE_STATE_OBSERVABLE,
+    [enabled, inputs$, observeForPreview, schemaType],
   )
 
-  // The value is a new object on every edit. It enters the pipeline through a subject so the
-  // observable identity — and with it the subscription and the field observers it holds — survives
-  // keystrokes; a new identity per value would resubscribe and refetch every reference it follows.
-  // Each pipeline has its own subject, fed from the effect below `useSyncObservable`: react-rx
-  // keeps a replaced pipeline subscribed for a tick after its successor took over, and a shared
-  // subject would feed the new value to both.
-  const [observable, feed] = useMemo((): [Observable<Emission>, (value: unknown) => void] => {
-    const value$ = new Subject<unknown>()
-    const emissions$ = value$.pipe(
-      // An edit replaces the changed field on the document, so a shallow compare catches every
-      // real change while an equal object built during render (`{_id}` in a dialog) is not
-      // previewed again — which would loop whenever `prepare()` returns a fresh media component.
-      distinctUntilChanged(shallowEquals),
-      scan<unknown, {target: PreviewTarget | undefined; targetChanged: boolean}>(
-        (previous, value) => {
-          const target = resolveTarget(value)
-          return {target, targetChanged: target?.key !== previous.target?.key}
-        },
-        {target: undefined, targetChanged: false},
-      ),
-      switchMap(({target, targetChanged}): Observable<Emission> => {
-        // this will render previews as "loaded" (i.e. not in loading state) – typically with "Untitled" text
-        if (!target || !schemaType) return of({key: null, state: IDLE_STATE})
-
-        const {key} = target
-        const preview$ = observeForPreview(target.previewable, schemaType, {
-          perspective: target.perspective,
-          variant: target.variant,
-          viewOptions: {ordering: ordering},
-        }).pipe(
-          map((event) => ({key, state: {isLoading: false, value: event.snapshot || undefined}})),
-          catchError((error) => of({key, state: {isLoading: false, error}})),
-        )
-
-        // A different target must not keep showing the previous one's preview while it loads.
-        return targetChanged ? concat(of({key, state: INITIAL_STATE}), preview$) : preview$
-      }),
-      distinctUntilChanged((a, b) => a.key === b.key && isSameState(a.state, b.state)),
-    )
-    return [emissions$, (value) => value$.next(value)]
-  }, [resolveTarget, schemaType, observeForPreview, ordering])
-
   // Do not defer: search/reference UIs assert on preview titles synchronously after selection.
-  const emission = useSyncObservable(observable, INITIAL_EMISSION)
-
-  // Declared after `useSyncObservable` on purpose: effects run in order, so a pipeline (re)built in
-  // this commit is subscribed by the time it is fed. Nothing is replayed, so a pipeline rebuilt
-  // together with a new value sees only the new value, and exactly once.
-  useEffect(() => {
-    feed(previewValue)
-  }, [feed, previewValue])
-
-  // The subject is fed after commit, so the render that first receives a new value still holds
-  // the previous target's emission. Nothing to preview needs no emission at all; otherwise compare
-  // against the target this render previews and show loading until the emission catches up, so
-  // nothing stale is ever painted.
-  const target = resolveTarget(previewValue)
-  if (!target) return IDLE_STATE
-  return emission.key === target.key ? emission.state : INITIAL_STATE
+  return useSyncObservable(observable, INITIAL_STATE)
 }

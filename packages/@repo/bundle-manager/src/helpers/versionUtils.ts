@@ -4,16 +4,29 @@ import uniqBy from 'lodash-es/uniqBy.js'
 import semver from 'semver'
 
 import {STALE_TAGS_EXPIRY_SECONDS} from '../constants'
-import {type VersionEntry} from '../types'
+import {isDeprecated} from '../operations/deprecateVersion'
+import {type DeprecatedDict, type VersionEntry} from '../types'
 import {currentUnixTime} from '../utils'
+
+interface CleanupOptions {
+  /**
+   * Deprecated versions are never chosen as the "highest outside TTL" fallback entry, so a
+   * deprecated tag entry does not survive pruning at the expense of a good one. If every
+   * outside-TTL entry for a major is deprecated, the highest one is kept as before.
+   */
+  deprecated?: DeprecatedDict
+}
 
 /**
  * Cleans up version entries using TTL strategy:
  * For all major versions:
  *  - Keep all versions within TTL window
- *  - Keep highest version outside of TTL
+ *  - Keep highest (non-deprecated) version outside of TTL
  */
-export function cleanupVersions(allVersions: VersionEntry[]): VersionEntry[] {
+export function cleanupVersions(
+  allVersions: VersionEntry[],
+  options: CleanupOptions = {},
+): VersionEntry[] {
   const uniqueVersions = deduplicateByVersion(allVersions)
 
   const currentTime = currentUnixTime()
@@ -24,7 +37,10 @@ export function cleanupVersions(allVersions: VersionEntry[]): VersionEntry[] {
       majorVersions,
       (entry) => currentTime - entry.timestamp < STALE_TAGS_EXPIRY_SECONDS,
     )
-    const highestOutsideTtl = outsideTtl.toSorted(sortByVersionDesc)[0]
+    const sortedOutsideTtl = outsideTtl.toSorted(sortByVersionDesc)
+    const highestOutsideTtl =
+      sortedOutsideTtl.find((entry) => !isDeprecated(options.deprecated, entry.version)) ??
+      sortedOutsideTtl[0]
 
     return deduplicateByVersion(highestOutsideTtl ? [...withinTtl, highestOutsideTtl] : withinTtl)
   })

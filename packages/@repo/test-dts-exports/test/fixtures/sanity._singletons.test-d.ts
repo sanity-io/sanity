@@ -90,6 +90,8 @@ import type {
   PortableTextMemberItemElementRefsContext,
   PortableTextMemberItemsContext,
   PortableTextMemberSchemaTypesContext,
+  PortalBoundaryContext,
+  PortalBoundaryContextValue,
   PresenceContext,
   PresenceTrackerContextGetSnapshot,
   PresenceTrackerContextStore,
@@ -413,6 +415,12 @@ describe('sanity/_singletons', () => {
   })
   test('PortableTextMemberSchemaTypesContext', () => {
     expectTypeOf<typeof PortableTextMemberSchemaTypesContext>().not.toBeNever()
+  })
+  test('PortalBoundaryContext', () => {
+    expectTypeOf<typeof PortalBoundaryContext>().not.toBeNever()
+  })
+  test('PortalBoundaryContextValue', () => {
+    expectTypeOf<PortalBoundaryContextValue>().toBeObject()
   })
   test('PresenceContext', () => {
     expectTypeOf<typeof PresenceContext>().not.toBeNever()

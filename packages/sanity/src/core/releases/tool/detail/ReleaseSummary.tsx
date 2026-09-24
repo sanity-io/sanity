@@ -1,10 +1,10 @@
 import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons/Add'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, Container, Stack, Text} from '@sanity/ui'
+import {Card, Container, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {type CSSProperties, useCallback, useEffect, useMemo, useState} from 'react'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {getDocumentVersionType} from '../../../config/document/useConfiguredDocumentActionIds'
@@ -77,7 +77,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   // production Releases until the flag is on.
   const {beta} = useWorkspace()
   const variantsEnabled = Boolean(beta?.variants?.enabled)
-  // Resolves each document's variant (via `_system.variant._ref`) to its definition for the
+  // Resolves each document's variant (via `_system.variants[0]._ref`) to its definition for the
   // "Variant" column. Provider-free + cached; returns empty when variants are disabled.
   const {byId: variantsById, loading: variantsLoading} = useAllVariants()
 
@@ -229,14 +229,14 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
         style={FULL_HEIGHT_STYLE}
         data-testid="cardinality-one-empty-state"
       >
-        <Stack gap={3} style={{textAlign: 'center', maxWidth: '300px'}}>
+        <VStack gap={3} style={{textAlign: 'center', maxWidth: '300px'}}>
           <Text size={1} weight="semibold">
             {t('summary.no-documents-cardinality-one.title')}
           </Text>
           <Text size={1} muted>
             {t('summary.no-documents-cardinality-one.description')}
           </Text>
-        </Stack>
+        </VStack>
       </Flex>
     )
   }

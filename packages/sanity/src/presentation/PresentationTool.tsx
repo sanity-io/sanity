@@ -14,7 +14,7 @@ import {
   urlSearchParamVercelProtectionBypass,
   urlSearchParamVercelSetBypassCookie,
 } from '@sanity/preview-url-secret/constants'
-import {BoundaryElementProvider, Flex, useMediaIndex} from '@sanity/ui'
+import {BoundaryElementProvider, useMediaIndex} from '@sanity/ui'
 import {useActorRef, useSelector} from '@xstate/react'
 import {lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
@@ -28,7 +28,7 @@ import {
   useWorkspace,
 } from 'sanity'
 import {type RouterContextValue, useRouter} from 'sanity/router'
-import {styled} from 'styled-components'
+import {Flex} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {DEFAULT_TOOL_NAME, EDIT_INTENT_MODE, NARROW_MEDIA_INDEX} from './constants'
@@ -48,6 +48,7 @@ import {PresentationNavigateProvider} from './PresentationNavigateProvider'
 import {usePresentationNavigator} from './PresentationNavigator'
 import {PresentationParamsProvider} from './PresentationParamsProvider'
 import {PresentationProvider} from './PresentationProvider'
+import {container} from './PresentationTool.css'
 import {Preview} from './preview/Preview'
 import {
   type FrameState,
@@ -77,10 +78,6 @@ const PostMessagePerspective = lazy(() => import('./PostMessagePerspective'))
 const PostMessagePreviewSnapshots = lazy(() => import('./editor/PostMessagePreviewSnapshots'))
 const PostMessageSchema = lazy(() => import('./overlays/schema/PostMessageSchema'))
 const PostMessageTelemetry = lazy(() => import('./PostMessageTelemetry'))
-
-const Container = styled(Flex)`
-  overflow-x: auto;
-`
 
 // Fall back to the preview if the navigator tab is selected but no longer enabled.
 function resolveActiveTab(
@@ -539,7 +536,12 @@ export default function PresentationTool(props: {
         <PresentationNavigateProvider navigate={navigate}>
           <PresentationParamsProvider params={params}>
             <SharedStateProvider comlink={visualEditingComlink}>
-              <Container data-testid="presentation-root" direction="column" height="fill">
+              <Flex
+                className={container}
+                data-testid="presentation-root"
+                flexDirection="column"
+                height="100%"
+              >
                 {isNarrow && (
                   <PresentationNarrowTabBar
                     activeTab={resolvedTab}
@@ -547,7 +549,7 @@ export default function PresentationTool(props: {
                     onTabChange={setActiveTab}
                   />
                 )}
-                <Flex direction="column" flex={1} style={{minHeight: 0}}>
+                <Flex flexDirection="column" flexBasis="0%" flexGrow={1}>
                   <Panels>
                     <PresentationNavigator
                       hidden={isNarrow && resolvedTab !== 'navigator'}
@@ -561,7 +563,13 @@ export default function PresentationTool(props: {
                       order={3}
                       hidden={isNarrow && resolvedTab !== 'preview'}
                     >
-                      <Flex direction="column" flex={1} height="fill" ref={setBoundaryElement}>
+                      <Flex
+                        flexDirection="column"
+                        flexBasis="0%"
+                        flexGrow={1}
+                        height="100%"
+                        ref={setBoundaryElement}
+                      >
                         <BoundaryElementProvider element={boundaryElement}>
                           <Preview
                             // @TODO move closer to the <iframe> element itself to allow for more precise handling of when to reload the iframe and when to reconnect when the target origin changes
@@ -614,7 +622,7 @@ export default function PresentationTool(props: {
                     />
                   </Panels>
                 </Flex>
-              </Container>
+              </Flex>
             </SharedStateProvider>
           </PresentationParamsProvider>
         </PresentationNavigateProvider>

@@ -2,7 +2,7 @@ import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {Badge, Box, Button, Card, Container, Dialog, Stack, Text} from '@sanity/ui'
 import {type ToastContextValue, useToast} from '@sanity/ui/toast'
-import {useEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {type SanityClient, useDocumentStore} from 'sanity'
@@ -29,6 +29,7 @@ import {
   undoMark,
   updateResult,
 } from './sessions'
+import {isSeverity} from './severity'
 import {pluralize} from './text'
 import {Timeline} from './Timeline'
 
@@ -114,6 +115,7 @@ export function SessionView(props: {
     [tags],
   )
   const releasesOnly = Boolean(session?.releasesOnly)
+  const reproPath = session?.reproPath ?? undefined
   // `null` = can't derive yet: a releases-only session must wait for the tags
   // to load. An empty candidate set is NOT "unrestricted" to the engine — it
   // is "nothing testable", which would derive a spurious `converged` and the
@@ -139,20 +141,26 @@ export function SessionView(props: {
     [chainResult, marks, bisectOptions],
   )
 
-  // Releases containing the commit in focus — the one under test while
-  // active, the culprit once converged
-  const focusSha =
-    state?.kind === 'converged'
-      ? state.firstBad.sha
-      : state?.kind === 'active'
-        ? state.next.sha
-        : undefined
+  // Releases containing a commit: the timeline asks for whichever commit it
+  // puts a test card on (the proposed step, or one picked out of turn), and
+  // the culprit's list is memoized here for the verdict card
+  const releasesFor = useCallback(
+    (sha: string) => releasesContaining(commitsBySha, tags ?? [], sha),
+    [commitsBySha, tags],
+  )
+  const firstBadSha = state?.kind === 'converged' ? state.firstBad.sha : undefined
   const releases = useMemo(
-    () => (focusSha ? releasesContaining(commitsBySha, tags ?? [], focusSha) : []),
-    [focusSha, commitsBySha, tags],
+    () => (firstBadSha ? releasesFor(firstBadSha) : []),
+    [firstBadSha, releasesFor],
   )
 
   const onError = (title: string) => toastError(toast, title)
+
+  // Annotations are this session's own: a parent and its refinement may
+  // both rate the same regression, and the overview and the Releases tool
+  // show the union of the chain (sessionChains.ts)
+  const annotate = (patch: ResultAnnotations) =>
+    updateResult(client, sessionId, patch).catch(onError('Could not save annotation'))
 
   // Sessions can be converged FROM BIRTH (adjacent endpoints, a drill-down
   // over an untestable range) — no converging mark ever fires, so appendMark
@@ -235,9 +243,14 @@ export function SessionView(props: {
       const version = versionBySha.get(sha)
       return version ? {sha, label: `v${version}`} : {sha}
     }
+    // Linked to this session: the two are one regression (sessionChains.ts),
+    // and the issue text travels along
     createSession(client, {
       good: label(state.lastGood.sha),
       bad: label(state.firstBad.sha),
+      reproPath,
+      description: session?.description ?? undefined,
+      refines: sessionId,
       createdBy: userName,
     })
       .then(onOpenSession)
@@ -253,10 +266,59 @@ export function SessionView(props: {
         <Stack gap={4}>
           <Flex alignItems="center" gap={3}>
             <Button mode="bleed" icon={ArrowLeftIcon} text="Sessions" onClick={onBack} />
-            <Box flex={1}>
-              <Text size={2} weight="semibold">
-                {session?.title ?? 'Bisect session'}
-              </Text>
+            <Box flex={1} style={{minWidth: 0}}>
+              <Stack gap={2}>
+                <Text size={2} weight="semibold">
+                  {session?.description || session?.title || 'Bisect session'}
+                </Text>
+                {session?.description && (
+                  <Text size={1} muted>
+                    {session.title ?? sessionId}
+                  </Text>
+                )}
+                {reproPath && (
+                  <Text size={0} muted textOverflow="ellipsis">
+                    Preview builds open at <code>{reproPath}</code>
+                  </Text>
+                )}
+                {/* A refinement and its parent are one regression; say so
+                    both ways so neither reads as a duplicate */}
+                {session?.refines && (
+                  <Text size={0} muted>
+                    Narrows down{' '}
+                    <a
+                      href={`?session=${encodeURIComponent(session.refines._id)}`}
+                      onClick={(event) => {
+                        event.preventDefault()
+                        onOpenSession(session.refines!._id)
+                      }}
+                    >
+                      {session.refines.title ?? session.refines._id}
+                    </a>{' '}
+                    — counted as one regression
+                  </Text>
+                )}
+                {session && session.refinedBy.length > 0 && (
+                  <Text size={0} muted>
+                    Narrowed down by{' '}
+                    {session.refinedBy.map((child, index) => (
+                      <span key={child._id}>
+                        {index > 0 && ', '}
+                        <a
+                          href={`?session=${encodeURIComponent(child._id)}`}
+                          onClick={(event) => {
+                            event.preventDefault()
+                            onOpenSession(child._id)
+                          }}
+                        >
+                          {child.title ?? child._id}
+                        </a>
+                      </span>
+                    ))}{' '}
+                    — counted as one regression
+                  </Text>
+                )}
+              </Stack>
             </Box>
             {session && (
               <Button
@@ -341,8 +403,9 @@ export function SessionView(props: {
               onMark={mark}
               onUndo={marks.length > 0 ? undo : undefined}
               stepsLeft={state?.kind === 'active' ? state.stepsLeft : undefined}
-              currentReleases={state?.kind === 'active' ? releases : []}
+              releasesFor={releasesFor}
               versionBySha={versionBySha}
+              reproPath={reproPath}
               converged={
                 state?.kind === 'converged'
                   ? {
@@ -351,13 +414,14 @@ export function SessionView(props: {
                       releasesOnly,
                       annotations: {
                         regression: session?.result?.regression ?? undefined,
-                        description: session?.result?.description ?? undefined,
+                        description: session?.description ?? undefined,
+                        note: session?.result?.note ?? undefined,
+                        severity: isSeverity(session?.result?.severity)
+                          ? session.result.severity
+                          : undefined,
                         linearIssue: session?.result?.linearIssue ?? undefined,
                       },
-                      onAnnotate: (patch: ResultAnnotations) =>
-                        updateResult(client, sessionId, patch).catch(
-                          onError('Could not save annotation'),
-                        ),
+                      onAnnotate: annotate,
                       onContinue: releasesOnly ? continueBisect : undefined,
                     }
                   : undefined

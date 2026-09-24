@@ -198,9 +198,17 @@ How it works:
 - The flag is declared in `dev/test-studio/turbo.json` so turbo-cached builds are invalidated when it changes
 - Enabling devtools makes `sanity build` noticeably slower; that's why it's opt-in via the env flag
 
+### Debugging presence with fake users
+
+**Field action (test studio).** Open a `Presence debug` document (`presenceDebug`, under Debug in the structure). Every field has a `Presence` button in its header with **Fake presence here**: pick a user in the dialog and they show up as present at that field. Inside a Portable Text field the user is placed at your last cursor position in that editor, so different users can be put at different spots. **Remove all fake presence** clears them. The plugin lives in `dev/test-studio/plugins/presence-debug` and uses the presence store's `@internal` `debug` API (`fakePresence`, `removeFakePresence`, `ownLocation$`), so the fake sessions go through the real presence code path (user lookup, form routing, overlay docking).
+
+**URL hash flags.** The presence store also reads two older debug flags from the URL hash (`packages/sanity/src/core/store/presence/presence-store.ts`), comma separated after `#_debug_presence=`: `fake_others` (random mock users at fixed paths in a document with `_id: "presence-debug"`) and `show_own` (also show your own session).
+
 ### Profiling studio re-renders with React DevTools (agent-react-devtools)
 
 The test studio can register with a local [agent-react-devtools](https://github.com/callstackincubator/agent-react-devtools) daemon, which exposes the React component tree and render profiling over a CLI — made for AI agents to inspect props/state/hooks and hunt unnecessary re-renders. The `react-devtools` skill (`.agents/skills/react-devtools/SKILL.md`) documents the CLI; read it before profiling.
+
+For `useObservable`, `useSyncObservable` and `useObservablePromise` call sites whose observable identity churns, the `react-rx-hook-audit` skill (`.agents/skills/react-rx-hook-audit/SKILL.md`) covers finding them, counting renders and subscriptions at runtime, and the `useValuePreview` refactor and test pattern.
 
 ```bash
 # 1. Start the daemon (port 8097)
@@ -439,6 +447,10 @@ Tests require a build first because some tests use compiled output:
 pnpm build && pnpm test
 ```
 
+On macOS, use `TMPDIR=/private/tmp pnpm test` if the E2E summary reporter test fails with a
+`/var` versus `/private/var` path mismatch. The test changes its working directory, which resolves
+the symlink; using a canonical temporary path keeps its expected and actual paths consistent.
+
 #### Test Timeouts
 
 When a test needs a custom timeout, use the Vitest options object as the second argument (not the deprecated third-argument form). Prefer numeric separators for readability:
@@ -600,6 +612,71 @@ Both work in every run (no-ops on firefox/webkit); only `CHROMATIC=1` runs captu
 See the `sanity-visual-regression` skill (`.agents/skills/sanity-visual-regression/SKILL.md`)
 for how to add coverage, which source owns a state, and determinism rules.
 
+Keep `test.sequence.hooks: 'list'` in `packages/sanity/vitest.browser.config.mts`. Vitest defaults
+hooks to `stack` (after-hooks run in reverse registration order) and the Chromatic plugin adapts to
+either ordering: it appends its setup file under `stack` and prepends it under `list`, so the
+automatic snapshot runs before `packages/sanity/test/setup/browser.ts` unmounts the tree in both
+cases; only `parallel` lets them race (partially unmounted, blank, or duplicate captures) and the
+plugin warns about it. `list` is set explicitly so the order is stated in the config, and so that
+`afterEach` hooks registered inside a test file (clipboard restores, spies) also run after the
+archive rather than before it. Capture runs also set `retry: 0` (a retried test
+archives twice and Chromatic publishes `Snapshot #1 (2)`), `cropToViewport`, `delay: 0`,
+`pauseAnimationAtEnd` and `prefersReducedMotion: 'reduce'`. Those last two are capture-only: they
+tell Chromatic how to render the uploaded archive (animations paused at their end state, the
+`prefers-reduced-motion: reduce` rules of the `@sanity/ui` v5 stylesheet, `ui5/styles.css`,
+applied). The browser the tests run in — locally, in the functional `browser-tests.yml` shards
+and during the capture run itself — uses Playwright's default media (no reduced-motion
+emulation), so transitions run at full length there and a test that needs one finished must wait
+for the settled state (`expectStable`, `expect.poll`, `settleChromaticEndState()`); nothing in the
+test setup shortens them. `test/setup/browser.ts` loads `ui5/styles.css` together with
+`@sanity/ui/styles.css` for every test file so `ui5` components are styled in tests whose harness
+does not import the `sanity` entry point.
+
+Chromatic archives the DOM plus the elements matching `:hover` / `:focus` / `:active` at capture
+time and re-applies those states in its renderer, so the real pointer position and React
+hover/focus state are part of every snapshot. Make them deterministic in the test, never with
+global CSS overrides from the browser setup (no `transition: 0s`, hidden carets, forced
+opacity, or `!important` focus rings — they hide the state the snapshot is meant to show and
+mask real regressions):
+
+- End interactive tests with `settleChromaticEndState()` from
+  `packages/sanity/test/browser/testHelpers.ts`. It moves the real pointer onto a transparent park
+  element, asserts nothing in the rendered tree is `:hover`ed and no tooltip is open, waits for
+  field-actions / PTE toolbar / floating popover geometry to stop changing, and rounds Floating UI
+  offsets. The shared `beforeEach` in `test/setup/browser.ts` mounts that topmost 4×4 park in the
+  bottom-right corner and parks the pointer on it before the test renders anything, and leaves it
+  mounted until the shared `afterEach`, which restores the viewport, parks the pointer on it once
+  more (now back in the default viewport's corner) and then removes it — so every test starts
+  with the pointer on the park rather than over the previous test's last click, its
+  reduced-viewport corner or the harness's first control, and content rendered under that
+  coordinate later never starts out `:hover`ed. Do
+  not globally `display:none` tooltips — PreviewTooltip and similar tests assert on them.
+- Assert the state you want archived right before the end of the test (or before
+  `takeSnapshot`): e.g. `toBeEnabled()` on a button whose tone changes with pending input,
+  `data-focused="true"` plus `:focus-within` on a card whose focus ring comes from React state,
+  or `styleSelectText: /^No style$/` when PTE focus can land on a text block or an object block.
+- Wait for layout with `expectStable(sample)` (same helpers file): it polls until the sampled
+  geometry / signature is unchanged on several consecutive re-reads. A single re-read that happens
+  to match (`const x = f(); await expect.poll(f).toBe(x)`) is not a stability check — Floating UI
+  and CollapseMenu can agree once and move on the next frame.
+- Assertions on React focus state (`data-focused`, editor `focused`/`blurred` events) are
+  chromium-only in practice: Firefox headless shares one window focus across the pages Vitest runs
+  test files in, so input in another file blurs the editor while `document.activeElement` (and
+  `toHaveFocus()`) is unchanged. Guard them with `server.browser === 'firefox'`; Chromatic archives
+  on chromium only, so nothing is lost.
+- Tests that leave a menu open on purpose must assert a _visible_ overlay (closed `@sanity/ui`
+  menus stay mounted). The automatic afterEach capture archives whatever the DOM looks like after
+  the test's last statement, so when that end state could race a dismiss, use
+  `configure({disableAutoSnapshot: true})` and `takeSnapshot('state')` at the asserted state
+  instead. `takeSnapshot()` serializes the DOM and its `:hover`/`:focus` ids synchronously when
+  called (only the upload is awaited), so the test may keep exercising behavior afterwards — e.g.
+  the `CommentInput` browser tests snapshot `mentions-menu-open`, then press Enter and assert the
+  mention was accepted. Settle (`settleChromaticEndState()`) and assert the state _before_ the
+  `takeSnapshot()` call; interactions after it never reach that archive.
+- Interaction-only tests whose end state is a loading or error flash should
+  `configure({disableAutoSnapshot: true})`. Do not set `localStorage.debug` in browser tests —
+  debug overlay noise shows up in Chromatic archives.
+
 ### E2E Tests (Playwright)
 
 ```bash
@@ -657,9 +734,11 @@ Notes:
 
 ### Creating a New Test
 
-1. Create test file next to source: `MyComponent.test.tsx`
+1. Place the test next to its source (`MyComponent.test.tsx`) or in a `__tests__/` directory beside it — both conventions are in use, so match the sibling files
 2. Use existing test patterns from similar files
-3. Run `pnpm test -- MyComponent` to verify
+3. Run `pnpm vitest run --project=<project> <path>` to verify (not `pnpm test -- <path>`, which runs every project)
+
+For `packages/sanity`, see [packages/sanity/AGENTS.md](./packages/sanity/AGENTS.md) — it inventories the test helpers (`createTestProvider`, the `test/form` input harnesses, the client and router mocks) and the determinism rules for that package.
 
 ### Updating Snapshots
 
@@ -895,9 +974,16 @@ No Docker, databases, or other local services are required for unit tests, lint,
 - **`pnpm depcheck` fails on a clean checkout of `main` in the VM** (knip reports the root `lefthook` devDependency as unused, plus a `knip.jsonc` config hint). Baseline before blaming your change: `git stash push -u && pnpm depcheck; git stash pop`.
 - **Snapshot lockfile drift can fail `pnpm check:oxlint` in untouched files.** The VM image may have `node_modules` resolved to newer in-range versions than the committed `pnpm-lock.yaml` (e.g. `@sanity/client` 8.4.0 vs the locked 8.3.0), and `pnpm install` — even with `--frozen-lockfile` — keeps rewriting the lockfile to match instead of downgrading. Type errors in files you never touched (e.g. `@sanity/vision`'s `useDatasets.test.ts` missing a `description` field) are this drift, not your change: revert the churn with `git checkout -- pnpm-lock.yaml`, never commit it, and rely on CI (which installs from the committed lockfile) for the authoritative type check of those files.
 - **Do not run oxlint type checking (`pnpm check:oxlint`) while the dev studio is running.** Both are memory-hungry and running them concurrently has exhausted the VM's memory and frozen it for hours (unkillable thrashing). Stop `sanity dev` first (Ctrl-C in its tmux session), run the checks, then restart the studio.
+  - This has bitten agents more than once. The freeze is unrecoverable in practice: the shell stops spawning processes and even file reads time out, and the VM is eventually rebuilt, **losing every uncommitted change**. Sequence the work so linting happens before the studio starts, and commit and push before starting any manual verification.
 - **`sanity dev` in bundledDev mode (`unstable_bundledDev: true`, on by default in `dev/test-studio`, `dev/design-studio`, `dev/radar`, `dev/auth-test-studio`) grows by roughly 300 MB of RSS per distinct lazy chunk (`/@vite/lazy?id=...`) it compiles, on top of a ~2 GB baseline.** Page reloads, fresh client ids and re-requests of an already compiled chunk cost nothing, but a studio session that touches every plugin's lazy entry points can push the server past 10 GB (13.6 GB observed on vite 8.2.2, freezing the 16 GB VM). Classic mode sits at ~1 GB for the same actions. When you need a long-running studio or plan to exercise many tools, either flip `unstable_bundledDev` off locally or run the server with a PID watchdog (`while sleep 5; do r=$(ps -o rss= -p $PID) || break; [ "${r:-0}" -gt 5000000 ] && kill $PID; done`) and restart it when it trips. This is upstream vite/rolldown behavior, not something the studio config can tune.
 - **Simulating Presentation preview failure states.** The `/test` workspace's presentation tool allows any localhost origin (`allowOrigins: ['https://*.sanity.dev', 'http://localhost:*']`), so failure UIs can be triggered deterministically by pointing the preview at a throwaway local server via the `?preview=` search param, e.g. `http://localhost:3333/test/presentation?preview=http%3A%2F%2Flocalhost%3A3398%2F`. A plain HTML page that never runs `@sanity/visual-editing` exercises the overlays connection timeout path (loading overlay → "connecting" status card after 5s → caution card with "Continue anyway" after 3s more); a server that accepts connections but never responds (`createServer(() => {})`) keeps the iframe `load` event from firing and exercises the 15s load timeout → error card → "Retry" path. Note the demo screen recordings are time-compressed, so verify real timings from the `sanity dev` terminal log — the studio pipes browser `console.error` output there with timestamps.
 - **Verifying a production studio build (`sanity build`) must happen on an allow-listed origin.** `sanity build` for `dev/test-studio` bundles the _built_ `sanity` package (run `pnpm build` first — only `sanity dev` resolves monorepo sources via the `monorepo` export condition). Serve `dev/test-studio/dist` statically on **port 3333** (e.g. `python3 -m http.server 3333`, after stopping the dev server): project `ppsg7ml5` only allow-lists `http://localhost:3333`, so from any other port API requests fail CORS and the bifur `/socket/` WebSocket is rejected during its handshake (close code 1006 + retry loop). The static server has no SPA fallback, so load `http://localhost:3333/#token=…` (root path) and let the client-side router redirect, rather than deep-linking to a workspace path.
+- **Recording demo videos: drive the browser with Playwright rather than the screen recorder.** The screen recorder auto-zooms toward cursor activity and has truncated clips mid-interaction, producing unusable artifacts. Playwright records a fixed viewport, so the framing cannot drift:
+  - Use the repo's existing Playwright with the system Chrome (`chromium.launch({channel: 'chrome'})`) so no browser download is needed. Video recording additionally needs `npx playwright install ffmpeg` (~2 MB); `/usr/bin/ffmpeg` handles the webm-to-mp4 conversion afterwards.
+  - Create the context with `recordVideo: {dir, size}` matching the viewport. The video spans the whole context lifetime, so trim the studio load off the front with `ffmpeg -ss`.
+  - Click `data-testid="focus-pane-button-focus"` to maximise the document pane so the form fills the frame instead of competing with the navigation and list panes.
+  - If a control moves after the first interaction (for example a toggle pushed down by expanding content), activate it the second time with `page.keyboard.press('Enter')` instead of clicking. The element keeps focus, and this avoids Playwright's auto-scroll shoving the result off-screen.
+  - Have the script log the state it observes (button labels, bounding boxes) so the run is self-checking rather than relying on reviewing frames.
 
 ### Running e2e (Playwright) tests in the VM
 
@@ -947,3 +1033,5 @@ Debugging notes:
 - The failure video is written to `e2e/results/<test>/video.webm`; extract frames with the bundled ffmpeg: `~/.cache/ms-playwright/ffmpeg-*/ffmpeg-linux -i video.webm -r 1 /tmp/frame_%03d.png` (this build has no `-vf fps=` filter).
 - CI e2e failures publish a plain-markdown digest at `<report-url>/agent-report.md` (same Vercel deployment as the HTML report). Fetch that URL instead of the HTML report — it includes the error, code snippet, `error-context` page snapshot, and a local repro command. The PR comment's **Share with an AI agent** fenced prompt is the paste-ready prompt (one-click copy).
 - To reproduce load-related flakiness, throttle the browser from within the spec: `const cdp = await page.context().newCDPSession(page); await cdp.send('Emulation.setCPUThrottlingRate', {rate: 8})` (chromium only). Stub a slow or eventually-consistent backend with `page.route('**/data/query/**', …)`; the global search query is identifiable by its `findability-source: global` GROQ comment.
+- Every branch with a PR gets its own `End-to-End Tests` run (8 shards) against the same staging project, and the shards share GitHub's runner IP range. Pushing a whole stack of PRs at once therefore rate-limits the runs against each other: the failed attempts show the studio's "Too many requests" dialog in the `error-context` page snapshot and in `studio-request-error.txt`, with dozens of flaky retries. Push (or re-run) stacked branches a few at a time instead of all at once, and treat a run whose failures all show that dialog as platform-caused, not as a regression.
+- A new Playwright version means a new browser-cache key. The `install` job creates it, but when several runs start together only one can reserve the key and the others log `Unable to reserve cache with key … another job may be creating this cache`; their `playwright-test` shards then miss the restore and fall back to installing browsers themselves. `e2e/globalSetup.ts` always launches chromium (it warms the preview with the first configured project), so that fallback installs chromium alongside the matrix browser — a firefox shard without chromium fails in global setup with `browserType.launch: Executable doesn't exist` before running a single test.

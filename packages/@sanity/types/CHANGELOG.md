@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.16.0](https://github.com/sanity-io/sanity/compare/v6.15.0...v6.16.0) (2026-09-22)
+
+### Features
+
+* **core:** read document variants from `_system.variants` with legacy fallback ([#14762](https://github.com/sanity-io/sanity/issues/14762)) ([4913ff6](https://github.com/sanity-io/sanity/commit/4913ff6c3247a4d3fe2778625db72390090c6353))
 ## [6.13.0](https://github.com/sanity-io/sanity/compare/v6.12.0...v6.13.0) (2026-09-08)
 
 ### Features

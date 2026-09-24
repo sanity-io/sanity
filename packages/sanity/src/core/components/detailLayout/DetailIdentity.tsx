@@ -1,8 +1,8 @@
-import {Flex, Stack, Text} from '@sanity/ui'
+import {Stack, Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ElementType} from 'react'
 import {css, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Flex, Box} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 
@@ -52,7 +52,7 @@ export function DetailIdentity(props: {
 
   return (
     <Stack gap={3}>
-      <Flex align="center" gap={2}>
+      <Flex alignItems="center" gap={2}>
         {/* Box flex={1} lets the title shrink and truncate instead of overflowing its
             zone; the full title is available on hover. */}
         <Box flexBasis="0%" flexGrow={1}>

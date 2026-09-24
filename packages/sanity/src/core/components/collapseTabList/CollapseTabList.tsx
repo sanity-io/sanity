@@ -1,4 +1,3 @@
-import {Flex} from '@sanity/ui'
 import {
   Children,
   cloneElement,
@@ -9,39 +8,21 @@ import {
   useState,
   type RefAttributes,
 } from 'react'
-import {styled} from 'styled-components'
+import {Flex, type GapProps} from 'ui5'
 
 import {type MenuButtonProps} from '../../../ui-components/menuButton/MenuButton'
 import {CollapseOverflowMenu} from '../collapseMenu/CollapseOverflowMenu'
 import {ObserveElement} from '../collapseMenu/ObserveElement'
 import {ContextMenuButton} from '../contextMenuButton/ContextMenuButton'
+import {hiddenRow, menuButtonPlaceholder, optionObserveElement} from './CollapseTabList.css'
 
 function _isReactElement(node: unknown): node is React.JSX.Element {
   return Boolean(node)
 }
 
-const OptionObserveElement = styled(ObserveElement)`
-  list-style: none;
-  white-space: nowrap;
-  flex-shrink: 0;
-  opacity: 0;
-  visibility: hidden;
-`
-
-const HiddenRow = styled(Flex)`
-  opacity: 0;
-  height: 0.1px;
-  overflow: hidden;
-`
-
-const MenuButtonPlaceholder = styled.div`
-  display: flex;
-  visibility: hidden;
-`
-
 interface CollapseTabListProps {
   children: ReactNode
-  gap?: number | number[]
+  gap?: GapProps['gap']
   menuButtonProps?: Omit<MenuButtonProps, 'id' | 'menu' | 'button'> & {
     id?: string
     button?: React.JSX.Element
@@ -120,13 +101,15 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
 
   return (
     <Flex
-      direction="column"
+      flexDirection="column"
       ref={ref}
-      sizing="border"
       {...rest}
-      style={{position: 'relative', minWidth: 0, ...style}}
+      style={{
+        position: 'relative',
+        ...style,
+      }}
     >
-      <Flex justify="center" gap={gap} flex={1}>
+      <Flex justifyContent="center" gap={gap} flexBasis="0%" flexGrow={1}>
         {hasMeasured ? displayChildren : null}
         {hiddenChildren.length > 0 ? (
           <CollapseOverflowMenu
@@ -141,24 +124,36 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
           // that footprint here keeps a content-sized container (the navbar's
           // wide-regime `auto` grid track) wide enough on its own, and makes the
           // swap with the real menu button layout-stable.
-          <MenuButtonPlaceholder aria-hidden="true" data-testid="collapse-tab-list-placeholder">
+          <div
+            className={menuButtonPlaceholder}
+            aria-hidden="true"
+            data-testid="collapse-tab-list-placeholder"
+          >
             {cloneElement(menuButton, {
               'disabled': true,
               'aria-hidden': true,
               'tabIndex': -1,
             })}
-          </MenuButtonPlaceholder>
+          </div>
         )}
       </Flex>
 
       {/* Element that always render all the children to keep track of their position and if the available space to render them */}
-      <HiddenRow justify="flex-start" gap={gap} ref={setRootEl} data-hidden aria-hidden="true">
+      <Flex
+        className={hiddenRow}
+        justifyContent="flex-start"
+        gap={gap}
+        ref={setRootEl}
+        data-hidden
+        aria-hidden="true"
+      >
         {cloneElement(menuButton, {
           'disabled': true,
           'aria-hidden': true,
         })}
         {children?.map((child) => (
-          <OptionObserveElement
+          <ObserveElement
+            className={optionObserveElement}
             key={`${child.key}_observer`}
             options={intersectionOptions}
             // Entries are delivered oldest first, so the last one is current
@@ -169,9 +164,9 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
               'aria-hidden': true,
               'tabIndex': -1,
             })}
-          </OptionObserveElement>
+          </ObserveElement>
         ))}
-      </HiddenRow>
+      </Flex>
     </Flex>
   )
 }

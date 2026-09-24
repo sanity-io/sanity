@@ -1,6 +1,6 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
-import {Box} from 'ui5'
+import {VStack, Box} from 'ui5'
 
 import {Alert} from '../Alert'
 import {AlertStrip} from '../AlertStrip'
@@ -30,40 +30,40 @@ export const States: Story = {
   args: {title: 'Incompatible value'},
   render: () => (
     <Card padding={4} style={{maxWidth: 480}}>
-      <Stack gap={5}>
-        <Stack gap={2}>
+      <VStack gap={5}>
+        <VStack gap={2}>
           <Text muted size={1} weight="medium">
             alert warning
           </Text>
           <Alert status="warning" title="Incompatible value">
             <Text size={1}>Expected type string, got number.</Text>
           </Alert>
-        </Stack>
-        <Stack gap={2}>
+        </VStack>
+        <VStack gap={2}>
           <Text muted size={1} weight="medium">
             alert error with suffix
           </Text>
           <Alert status="error" suffix={SUFFIX} title="Could not resolve value">
             <Text size={1}>The stored value does not match the schema.</Text>
           </Alert>
-        </Stack>
-        <Stack gap={2}>
+        </VStack>
+        <VStack gap={2}>
           <Text muted size={1} weight="medium">
             alert strip closed
           </Text>
           <AlertStrip status="warning" title="Missing keys">
             Array items are missing required _key values.
           </AlertStrip>
-        </Stack>
-        <Stack gap={2}>
+        </VStack>
+        <VStack gap={2}>
           <Text muted size={1} weight="medium">
             details open
           </Text>
           <Details open title="Validation details">
             <Text size={1}>Title is required.</Text>
           </Details>
-        </Stack>
-      </Stack>
+        </VStack>
+      </VStack>
     </Card>
   ),
 }

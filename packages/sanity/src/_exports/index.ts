@@ -3,6 +3,8 @@ import '@sanity/ui/styles.css'
 // oxlint-disable-next-line import/no-unassigned-import -- side effect: keeps the module augmentations declared by this module on the public type surface
 import '../core/form/types/definitionExtensions'
 
+import {createAuthStore as _createAuthStorePublic} from '../core/store/authStore/createAuthStore'
+
 export {useCanvasCompanionDoc} from '../core/canvas/actions/useCanvasCompanionDoc'
 export {useNavigateToCanvasDoc} from '../core/canvas/useNavigateToCanvasDoc'
 export {getDocumentIdForCanvasLink} from '../core/canvas/utils/getDocumentIdForCanvasLink'
@@ -194,6 +196,8 @@ export {
   type RovingFocusNavigationType,
   type RovingFocusProps,
 } from '../core/components/rovingFocus/types'
+export {PortalBoundaryProvider} from '../core/components/portalBoundary/PortalBoundaryProvider'
+export {usePortalBoundary} from '../core/components/portalBoundary/usePortalBoundary'
 export {useRovingFocus} from '../core/components/rovingFocus/useRovingFocus'
 export {useOnScroll} from '../core/components/scroll/hooks'
 export {ScrollContainer, type ScrollContainerProps} from '../core/components/scroll/scrollContainer'
@@ -1165,6 +1169,7 @@ export {
   useSingleDocRelease,
 } from '../core/singleDocRelease/context/SingleDocReleaseProvider'
 export {usePausedScheduledDraft} from '../core/singleDocRelease/hooks/usePausedScheduledDraft'
+export {usePauseToEditScheduledDraft} from '../core/singleDocRelease/hooks/usePauseToEditScheduledDraft'
 export {useScheduledDraftDocument} from '../core/singleDocRelease/hooks/useScheduledDraftDocument'
 export {useScheduledDraftsEnabled} from '../core/singleDocRelease/hooks/useScheduledDraftsEnabled'
 export {isAgentBundleName} from '../core/store/agent/createAgentBundlesStore'
@@ -1175,10 +1180,14 @@ export {
 export {
   _createAuthStore,
   type AuthStoreOptions,
-  createAuthStore,
   type CreateAuthStoreOptions,
   type RequestFailureDiagnostics,
 } from '../core/store/authStore/createAuthStore'
+/**
+ * @internal
+ * @deprecated Use the `auth` config key with an `AuthConfig` object instead. Deprecated since Studio v3.15.0.
+ */
+export const createAuthStore = _createAuthStorePublic
 export {
   createMockAuthStore,
   type MockAuthStoreOptions,
@@ -1719,6 +1728,7 @@ export {
 export {EMPTY_ARRAY, EMPTY_OBJECT} from '../core/util/empty'
 export {formatRelativeLocale} from '../core/util/formatRelativeLocale'
 export {type DocumentVariantType, getDocumentVariantType} from '../core/util/getDocumentVariantType'
+export {getDocumentVersionVariantId} from '../core/util/getDocumentVersionVariant'
 export {getErrorMessage} from '../core/util/getErrorMessage'
 export {getReferencePaths} from '../core/util/getReferencePaths'
 export {getTargetDocument, getVariantPublishedSibling} from '../core/util/getTargetDocument'

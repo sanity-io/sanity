@@ -1,4 +1,5 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
+import {VStack} from 'ui5'
 
 import {NumberPreview} from '../types/number/preview/NumberPreview'
 import {SlugPreview} from '../types/slug/preview/SlugPreview'
@@ -15,8 +16,8 @@ const UNUSED_SCHEMA_TYPE = {name: 'unknown'} as never
 export function FieldPreviewsStory() {
   return (
     <Card padding={4} style={{maxWidth: 420}}>
-      <Stack gap={5}>
-        <Stack gap={2}>
+      <VStack gap={5}>
+        <VStack gap={2}>
           <Text muted size={1} weight="medium">
             string
           </Text>
@@ -25,14 +26,14 @@ export function FieldPreviewsStory() {
             schemaType={UNUSED_SCHEMA_TYPE}
             value="A wrapped string that should break across lines because it is long enough to overflow the preview box padding."
           />
-        </Stack>
-        <Stack gap={2}>
+        </VStack>
+        <VStack gap={2}>
           <Text muted size={1} weight="medium">
             number
           </Text>
           <NumberPreview schemaType={UNUSED_SCHEMA_TYPE} value="1280" />
-        </Stack>
-        <Stack gap={2}>
+        </VStack>
+        <VStack gap={2}>
           <Text muted size={1} weight="medium">
             slug
           </Text>
@@ -40,8 +41,8 @@ export function FieldPreviewsStory() {
             schemaType={UNUSED_SCHEMA_TYPE}
             value={{_type: 'slug', current: 'article-title'}}
           />
-        </Stack>
-      </Stack>
+        </VStack>
+      </VStack>
     </Card>
   )
 }

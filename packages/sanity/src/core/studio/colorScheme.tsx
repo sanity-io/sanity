@@ -7,6 +7,7 @@ import {
   type ReactNode,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useSyncExternalStore,
 } from 'react'
@@ -14,7 +15,8 @@ import {ColorSchemeSetValueContext, ColorSchemeValueContext} from 'sanity/_singl
 
 import {type TFunction} from '../i18n/types'
 import {type StudioThemeColorSchemeKey} from '../theme/types'
-import {getSnapshot, setSnapshot, subscribe} from './colorSchemeStore'
+import {getSnapshot, LOCAL_STORAGE_KEY, setSnapshot, subscribe} from './colorSchemeStore'
+import {setDocumentColorScheme} from './documentColorScheme'
 
 /** @internal */
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -34,6 +36,20 @@ function ColorThemeProvider({
   const systemScheme = useSystemScheme()
   const scheme = _scheme === 'system' ? systemScheme : _scheme
 
+  useLayoutEffect(() => {
+    // Act only on an explicitly pinned scheme. In system mode the browser's own
+    // `prefers-color-scheme` resolution is already correct for both native and down-leveled
+    // `light-dark()`, and on a cold mount the store snapshot is undefined until the subscribe
+    // effect initialises it - writing then would pin a scheme nobody chose.
+    if (_scheme === 'light' || _scheme === 'dark') {
+      return setDocumentColorScheme(_scheme)
+    }
+    return undefined
+    // systemScheme is deliberate: the helper's mismatch check reads matchMedia, so an OS flip
+    // while the appearance is pinned must re-run the write
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- see above
+  }, [_scheme, systemScheme])
+
   return (
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     <ThemeProvider scheme={scheme} theme={studioTheme}>
@@ -45,8 +61,6 @@ function ColorThemeProvider({
     </ThemeProvider>
   )
 }
-
-const LOCAL_STORAGE_KEY = 'sanityStudio:ui:colorScheme'
 
 /** @internal */
 export interface ColorSchemeProviderProps {

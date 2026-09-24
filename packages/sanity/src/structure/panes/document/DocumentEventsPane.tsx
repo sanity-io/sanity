@@ -30,13 +30,13 @@ export const DocumentEventsPane = (props: DocumentPaneProviderProps) => {
   const schemaType = schema.get(options.type) as ObjectSchemaType | undefined
   const liveEdit = Boolean(schemaType?.liveEdit)
 
-  const {selectedPerspectiveName, selectedPerspective, selectedVariantName} = usePerspective()
+  const {selectedPerspectiveName, selectedPerspective, selectedVariant} = usePerspective()
   const {data: archivedReleases} = useArchivedReleases()
   const {versions} = useDocumentVersions({documentId: getPublishedId(options.id)})
   const targetDocumentState = useTargetDocumentState(getPublishedId(options.id))
   const draftVersion = getTargetDocument({
     bundle: 'draft',
-    variant: selectedVariantName,
+    variant: selectedVariant?._id,
     documentVersions: versions,
   })
 
