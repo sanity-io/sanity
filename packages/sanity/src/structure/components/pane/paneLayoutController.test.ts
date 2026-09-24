@@ -81,4 +81,22 @@ describe('paneLayoutController', () => {
     // Not the left pane's 640 for both panes
     expect(states.at(-1)?.panes.map((pane) => pane.currentMaxWidth)).toEqual([450, 250])
   })
+
+  it('stops notifying an observer once it unsubscribes', () => {
+    const ctrl = createPaneLayoutController()
+    const unsubscribed = vi.fn()
+    const subscribed = vi.fn()
+    const unsubscribe = ctrl.subscribe(unsubscribed)
+    ctrl.subscribe(subscribed)
+
+    const rootElement = document.createElement('div')
+    ctrl.setRootElement(rootElement)
+    mountPane(ctrl, rootElement, {flex: 1, id: 'pane', minWidth: 100}, 300)
+
+    unsubscribe()
+    ctrl.setRootWidth(300)
+
+    expect(unsubscribed).not.toHaveBeenCalled()
+    expect(subscribed).toHaveBeenCalledTimes(1)
+  })
 })

@@ -190,7 +190,7 @@ export function createPaneLayoutController(): PaneLayoutController {
     observers.push(observer)
 
     return () => {
-      const idx = observers.push(observer)
+      const idx = observers.indexOf(observer)
 
       if (idx > -1) {
         observers.splice(idx, 1)
