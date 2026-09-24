@@ -17,6 +17,7 @@
     "start": "pnpm --filter studio-e2e-testing preview",
     "test": "playwright test",
     "test:auth": "playwright test --config=playwright.auth.config.ts",
+    "test:connection-ceiling": "tsx connection-ceiling/connection-ceiling.ts",
     "test:unit": "vitest run"
   },
   "devDependencies": {
