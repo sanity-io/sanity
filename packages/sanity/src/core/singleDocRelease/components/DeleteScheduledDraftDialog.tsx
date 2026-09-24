@@ -1,6 +1,6 @@
 import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
 import {type PreviewValue} from '@sanity/types'
-import {Checkbox, Stack, Text} from '@sanity/ui'
+import {Checkbox, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {dequal} from 'dequal/lite'
 import omit from 'lodash-es/omit.js'
@@ -205,9 +205,9 @@ function DeleteScheduledDraftDialogContent({
         },
       }}
     >
-      <Stack gap={3} paddingX={3} marginBottom={2}>
+      <Flex gap={3} paddingX={3} marginBottom={2} flexDirection="column">
         {children}
-      </Stack>
+      </Flex>
     </Dialog>
   )
 }

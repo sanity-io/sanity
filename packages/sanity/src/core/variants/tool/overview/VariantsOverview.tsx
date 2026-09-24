@@ -1,8 +1,8 @@
 import {AddIcon} from '@sanity/icons/Add'
-import {Card, Container, Stack, Text} from '@sanity/ui'
+import {Card, Container, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -140,14 +140,14 @@ export function VariantsOverview(): React.JSX.Element {
         <Flex flexDirection="column" paddingX={3}>
           <Card flex="none" paddingBottom={4} paddingTop={5}>
             <Flex alignItems="flex-start" gap={4} justifyContent="space-between">
-              <Stack gap={2}>
+              <VStack gap={2}>
                 <Text as="h1" size={4} weight="bold">
                   {t('overview.title')}
                 </Text>
                 <Text muted size={1}>
                   {t('overview.description')}
                 </Text>
-              </Stack>
+              </VStack>
               {createVariantButton}
             </Flex>
           </Card>

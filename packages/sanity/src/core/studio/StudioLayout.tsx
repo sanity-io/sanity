@@ -1,3 +1,6 @@
+import {Suspense} from 'react'
+
+import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
 import {useLayoutComponent} from './studio-components-hooks/useLayoutComponent'
 
 /** @internal */
@@ -35,6 +38,12 @@ export function StudioLayout() {
   // The default component is `StudioLayoutComponent`.
   const Layout = useLayoutComponent()
 
-  // oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work
-  return <Layout />
+  // Same loading screen `WorkspaceLoader` shows right before this mounts, so a lazy layout
+  // continues it instead of flashing a different placeholder.
+  return (
+    <Suspense fallback={<LoadingBlock />}>
+      {/* oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work */}
+      <Layout />
+    </Suspense>
+  )
 }
