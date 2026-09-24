@@ -1,8 +1,8 @@
 import {red} from '@sanity/color'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {type CardTone, Container, Text} from '@sanity/ui'
+import {type CardTone, Text} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
-import {Flex} from 'ui5'
+import {Container, Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
@@ -37,7 +37,7 @@ const StateReasonFailedInfo = (props: Props) => {
       }
       menu={
         <Menu padding={1}>
-          <Container padding={2} width={0}>
+          <Container padding={2} size={0}>
             <Text size={1}>{SCHEDULE_FAILED_TEXT}</Text>
             <Flex gap={3} marginTop={4} padding={1}>
               <Text size={1} style={{color: red[700].hex}}>

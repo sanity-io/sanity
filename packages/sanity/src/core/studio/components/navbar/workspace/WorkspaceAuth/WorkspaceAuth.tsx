@@ -1,10 +1,10 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
-import {Container, rem} from '@sanity/ui'
+import {rem} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useState} from 'react'
 import {styled} from 'styled-components'
-import {Box, Flex, VStack} from 'ui5'
+import {Container, Box, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
@@ -59,7 +59,7 @@ export function WorkspaceAuth() {
 
   if (LoginComponent && selectedWorkspace && !showChooser) {
     return (
-      <Container width={0}>
+      <Container size={0}>
         <VStack gap={2}>
           {canChooseAnotherWorkspace && (
             <Flex>
@@ -107,7 +107,7 @@ export function WorkspaceAuth() {
   }
 
   return (
-    <StyledContainer width={1}>
+    <StyledContainer size={1}>
       <Layout
         header={t('workspaces.choose-your-workspace-label')}
         footer={

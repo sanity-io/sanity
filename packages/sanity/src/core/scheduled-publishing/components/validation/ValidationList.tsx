@@ -6,8 +6,8 @@ import {
   type Path,
   type ValidationMarker,
 } from '@sanity/types'
-import {Container} from '@sanity/ui'
 import {useCallback} from 'react'
+import {Container} from 'ui5'
 
 import {ValidationListItem} from './ValidationListItem'
 
@@ -52,7 +52,7 @@ export function ValidationList(props: ValidationListProps) {
   }
 
   return (
-    <Container width={0} data-kind={kind} data-testid="validation-list">
+    <Container size={0} data-kind={kind} data-testid="validation-list">
       {hasErrors &&
         errors.map((_error, i) => (
           <ValidationListItem

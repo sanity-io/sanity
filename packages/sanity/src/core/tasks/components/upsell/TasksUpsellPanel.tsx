@@ -1,5 +1,4 @@
-import {Container} from '@sanity/ui'
-import {Box} from 'ui5'
+import {Container, Box} from 'ui5'
 
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
 import {useTasksUpsell} from '../../context/upsell/useTasksUpsell'
@@ -12,7 +11,7 @@ export function TasksUpsellPanel() {
 
   if (!data) return null
   return (
-    <Container width={1}>
+    <Container size={1}>
       <Box marginBottom={6}>
         <UpsellPanel
           data={data}
