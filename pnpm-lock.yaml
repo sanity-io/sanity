@@ -1893,10 +1893,10 @@ importers:
         specifier: ^6.7.2
         version: 6.7.2
       '@codemirror/state':
-        specifier: ^6.7.5
+        specifier: ^6.7.6
         version: 6.7.6
       '@codemirror/view':
-        specifier: ^6.43.12
+        specifier: ^6.43.13
         version: 6.43.13
       '@lezer/highlight':
         specifier: ^1.2.3
