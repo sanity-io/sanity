@@ -130,7 +130,7 @@ describe('Comments', () => {
       const $editable = page.getByTestId('comment-input-editable')
       await expect.element($editable).toBeVisible()
       await insertPortableText('My first comment!', $editable)
-      await expect.element($editable).toHaveTextContent('My first comment!')
+      await expect.element($editable).toMatchTextContent('My first comment!')
       await expect.element($editable).toHaveFocus()
       // Typing enables the primary-tone send button; wait for that state
       // before archiving so the snapshot does not race the debounced change.
@@ -196,7 +196,7 @@ describe('Comments', () => {
       await expect.element($editable).toBeVisible()
       await userEvent.keyboard('{Enter}')
       await insertPortableText('This is a comment!', $editable)
-      await expect.element($editable).toHaveTextContent('This is a comment!')
+      await expect.element($editable).toMatchTextContent('This is a comment!')
       const $sendButton = page.getByTestId('comment-input-send-button')
       await expect.element($sendButton).toBeEnabled()
       await userEvent.keyboard('{Enter}')
@@ -217,7 +217,7 @@ describe('Comments', () => {
       await expect.element(page.getByTestId('comment-mentions-loading-skeleton')).toBeVisible()
 
       await userEvent.keyboard('foo')
-      await expect.element($editable).toHaveTextContent(/^before foo$/)
+      await expect.element($editable).toMatchTextContent(/^before foo$/)
 
       // The mention registration must render its `children`: they carry the
       // editor's caret spacer, without which the caret cannot land on the
@@ -243,7 +243,7 @@ describe('Comments', () => {
       await expect
         .element(page.getByTestId('comment-mentions-loading-skeleton'))
         .not.toBeInTheDocument()
-      await expect.element($editable).toHaveTextContent(/^before$/)
+      await expect.element($editable).toMatchTextContent(/^before$/)
       await expect.element(page.getByTestId('comment-input-send-button')).toBeEnabled()
       const {settleChromaticEndState} = testHelpers()
       await settleChromaticEndState()
@@ -266,10 +266,10 @@ describe('Comments', () => {
       await userEvent.keyboard('{Enter}')
       expect(textOf(await submitted)).toBe('First comment typed')
 
-      await expect.element($editable).not.toHaveTextContent('First comment')
+      await expect.element($editable).not.toMatchTextContent('First comment')
 
       await insertPortableText('Second comment', $editable)
-      await expect.element($editable).toHaveTextContent(/^Second comment$/)
+      await expect.element($editable).toMatchTextContent(/^Second comment$/)
     })
   })
 })
