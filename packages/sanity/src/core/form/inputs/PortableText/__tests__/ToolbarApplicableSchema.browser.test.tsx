@@ -1,4 +1,10 @@
-import {defineArrayMember, defineField, defineType, type SanityDocument} from '@sanity/types'
+import {
+  type ArrayOfType,
+  defineArrayMember,
+  defineField,
+  defineType,
+  type SanityDocument,
+} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 import {userEvent} from 'vitest/browser'
 
@@ -6,92 +12,137 @@ import {TestForm} from '../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 
+/**
+ * A document whose `body` field holds one root text block and one native
+ * table, with the root and cell block configs supplied by the caller.
+ */
+function defineSchemaTypes(blocks: {root: ArrayOfType; cell: ArrayOfType}) {
+  return [
+    defineType({
+      type: 'document',
+      name: 'test',
+      title: 'Test',
+      fields: [
+        defineField({
+          type: 'array',
+          name: 'body',
+          of: [
+            blocks.root,
+            defineArrayMember({
+              type: 'object',
+              name: 'table',
+              fields: [
+                defineField({type: 'number', name: 'headerRows'}),
+                defineField({
+                  type: 'array',
+                  name: 'rows',
+                  of: [
+                    defineArrayMember({
+                      type: 'object',
+                      name: 'row',
+                      fields: [
+                        defineField({
+                          type: 'array',
+                          name: 'cells',
+                          of: [
+                            defineArrayMember({
+                              type: 'object',
+                              name: 'cell',
+                              fields: [
+                                defineField({type: 'array', name: 'value', of: [blocks.cell]}),
+                              ],
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+          components: {
+            portableText: {
+              plugins: (props) =>
+                props.renderDefault({
+                  ...props,
+                  plugins: {
+                    ...props.plugins,
+                    table: {enabled: true},
+                  },
+                }),
+            },
+          },
+        }),
+      ],
+    }),
+  ]
+}
+
 // The root field allows the default decorators, annotations, and lists;
 // the cell's block config allows only `strong`, no annotations, no
-// lists. Toolbar membership stays field-stable, so the cell's narrower
-// config must surface as disabled actions, not missing ones.
-const SCHEMA_TYPES = [
-  defineType({
-    type: 'document',
-    name: 'test',
-    title: 'Test',
-    fields: [
-      defineField({
-        type: 'array',
-        name: 'body',
-        of: [
-          defineArrayMember({type: 'block'}),
-          defineArrayMember({
-            type: 'object',
-            name: 'table',
-            fields: [
-              defineField({type: 'number', name: 'headerRows'}),
-              defineField({
-                type: 'array',
-                name: 'rows',
-                of: [
-                  defineArrayMember({
-                    type: 'object',
-                    name: 'row',
-                    fields: [
-                      defineField({
-                        type: 'array',
-                        name: 'cells',
-                        of: [
-                          defineArrayMember({
-                            type: 'object',
-                            name: 'cell',
-                            fields: [
-                              defineField({
-                                type: 'array',
-                                name: 'value',
-                                of: [
-                                  defineArrayMember({
-                                    type: 'block',
-                                    styles: [{title: 'Normal', value: 'normal'}],
-                                    lists: [],
-                                    marks: {
-                                      decorators: [{title: 'Strong', value: 'strong'}],
-                                      annotations: [],
-                                    },
-                                  }),
-                                ],
-                              }),
-                            ],
-                          }),
-                        ],
-                      }),
-                    ],
-                  }),
-                ],
-              }),
-            ],
-          }),
-        ],
-        components: {
-          portableText: {
-            plugins: (props) =>
-              props.renderDefault({
-                ...props,
-                plugins: {
-                  ...props.plugins,
-                  table: {enabled: true},
-                },
-              }),
-          },
-        },
-      }),
-    ],
+// lists. Root members stay in the toolbar, so the cell's narrower config
+// must surface as disabled actions, not missing ones.
+const NARROWER_CELL = defineSchemaTypes({
+  root: defineArrayMember({type: 'block'}),
+  cell: defineArrayMember({
+    type: 'block',
+    styles: [{title: 'Normal', value: 'normal'}],
+    lists: [],
+    marks: {
+      decorators: [{title: 'Strong', value: 'strong'}],
+      annotations: [],
+    },
   }),
-]
+})
 
-function ToolbarApplicableSchemaHarness(props: {document?: SanityDocument}) {
-  return (
-    <TestWrapper schemaTypes={SCHEMA_TYPES}>
-      <TestForm document={props.document} />
-    </TestWrapper>
-  )
-}
+// The mirror image: the cell declares a list, a decorator and an
+// annotation the root field does not. The cell is an independent
+// Portable Text schema, so those have to be actionable while the caret
+// is in it.
+const WIDER_CELL = defineSchemaTypes({
+  root: defineArrayMember({
+    type: 'block',
+    styles: [{title: 'Normal', value: 'normal'}],
+    lists: [{title: 'Bulleted', value: 'bullet'}],
+    marks: {
+      decorators: [{title: 'Strong', value: 'strong'}],
+      annotations: [
+        defineArrayMember({
+          type: 'object',
+          name: 'link',
+          fields: [defineField({type: 'string', name: 'href'})],
+        }),
+      ],
+    },
+  }),
+  cell: defineArrayMember({
+    type: 'block',
+    styles: [{title: 'Normal', value: 'normal'}],
+    lists: [
+      {title: 'Bulleted', value: 'bullet'},
+      {title: 'Numbered', value: 'number'},
+    ],
+    marks: {
+      decorators: [
+        {title: 'Strong', value: 'strong'},
+        {title: 'Emphasis', value: 'em'},
+      ],
+      annotations: [
+        defineArrayMember({
+          type: 'object',
+          name: 'link',
+          fields: [defineField({type: 'string', name: 'href'})],
+        }),
+        defineArrayMember({
+          type: 'object',
+          name: 'footnote',
+          fields: [defineField({type: 'string', name: 'text'})],
+        }),
+      ],
+    },
+  }),
+})
 
 const {render} = await import('vitest-browser-react')
 
@@ -140,20 +191,7 @@ const document: SanityDocument = {
 
 describe('Portable Text Input - toolbar reflects the positional schema', () => {
   it('disables actions the caret position cannot honor, membership unchanged', async () => {
-    const {getFocusedPortableTextEditor, waitForFocusedNodeText} = testHelpers()
-
-    void render(<ToolbarApplicableSchemaHarness document={document} />)
-
-    const $pte = await getFocusedPortableTextEditor('field-body')
-    await expect.element($pte).toHaveTextContent('cell text')
-
-    const clickText = async (text: string) => {
-      const node = [...$pte.element().querySelectorAll('*')].find(
-        (candidate) => candidate.childElementCount === 0 && candidate.textContent === text,
-      )
-      await userEvent.click(node as HTMLElement)
-      await waitForFocusedNodeText(text)
-    }
+    const clickText = await renderToolbar(NARROWER_CELL)
 
     await clickText('root text')
     // The narrow cell config removes nothing from the toolbar; at the
@@ -187,7 +225,59 @@ describe('Portable Text Input - toolbar reflects the positional schema', () => {
         'number': 'disabled',
       })
   })
+
+  it('adds the actions only the caret position declares', async () => {
+    const clickText = await renderToolbar(WIDER_CELL)
+
+    await clickText('root text')
+    // `em`, `footnote` and `number` belong to the cell alone: nothing out
+    // here can apply them, so the root toolbar does not offer them.
+    await expect
+      .poll(() => actionState())
+      .toEqual({
+        strong: 'enabled',
+        link: 'enabled',
+        bullet: 'enabled',
+      })
+
+    await clickText('cell text')
+    await expect
+      .poll(() => actionState())
+      .toEqual({
+        strong: 'enabled',
+        em: 'enabled',
+        link: 'enabled',
+        footnote: 'enabled',
+        bullet: 'enabled',
+        number: 'enabled',
+      })
+  })
 })
+
+/**
+ * Mount the editor on `schemaTypes` and hand back a way to put the caret
+ * on a given piece of text.
+ */
+async function renderToolbar(schemaTypes: ReturnType<typeof defineSchemaTypes>) {
+  const {getFocusedPortableTextEditor, waitForFocusedNodeText} = testHelpers()
+
+  void render(
+    <TestWrapper schemaTypes={schemaTypes}>
+      <TestForm document={document} />
+    </TestWrapper>,
+  )
+
+  const $pte = await getFocusedPortableTextEditor('field-body')
+  await expect.element($pte).toHaveTextContent('cell text')
+
+  return async (text: string) => {
+    const node = [...$pte.element().querySelectorAll('*')].find(
+      (candidate) => candidate.childElementCount === 0 && candidate.textContent === text,
+    )
+    await userEvent.click(node as HTMLElement)
+    await waitForFocusedNodeText(text)
+  }
+}
 
 /**
  * The responsive toolbar renders extra copies of each action button for
