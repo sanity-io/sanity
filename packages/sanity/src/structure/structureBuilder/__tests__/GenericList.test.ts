@@ -58,5 +58,22 @@ describe('GenericListBuilder', () => {
         maxWidth: 560,
       })
     })
+
+    it('serializes document list pane width constraints given as input', async () => {
+      const S = await getStructureBuilder()
+      const builder = S.documentTypeList({
+        schemaType: 'book',
+        minWidth: 240,
+        currentMaxWidth: 300,
+        maxWidth: 560,
+      })
+
+      expect(builder.serialize()).toMatchObject({
+        type: 'documentList',
+        minWidth: 240,
+        currentMaxWidth: 300,
+        maxWidth: 560,
+      })
+    })
   })
 })
