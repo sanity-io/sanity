@@ -193,27 +193,26 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
       return undefined
     }
     // Nothing focusable yet: the inputs are behind FormBuilder's Suspense boundary while a lazy
-    // form component loads. Retry when they land, unless the user has focused something else in
-    // the meantime; focus still on the body or on the element that opened the document is not a
-    // choice they made.
+    // form component loads. Retry when they land, unless focus has moved anywhere since the form
+    // committed: whatever held focus before that (the list item that opened the document) is not
+    // a choice the user made while waiting, but any focus after it is.
     const {ownerDocument} = formRef
-    const focusedOnCommit = ownerDocument.activeElement
+    let focusMoved = false
+    const handleFocusIn = () => {
+      focusMoved = true
+    }
+    ownerDocument.addEventListener('focusin', handleFocusIn, true)
     const observer = new MutationObserver(() => {
-      const {activeElement} = ownerDocument
-      if (
-        activeElement &&
-        activeElement !== ownerDocument.body &&
-        activeElement !== focusedOnCommit
-      ) {
+      if (focusMoved || focusFirstDescendant(formRef)) {
         observer.disconnect()
-        return
-      }
-      if (focusFirstDescendant(formRef)) {
-        observer.disconnect()
+        ownerDocument.removeEventListener('focusin', handleFocusIn, true)
       }
     })
     observer.observe(formRef, {childList: true, subtree: true})
-    return () => observer.disconnect()
+    return () => {
+      observer.disconnect()
+      ownerDocument.removeEventListener('focusin', handleFocusIn, true)
+    }
   }, [hasFocusedAnyPath, formRef, formState?.focusPath.length, ready])
 
   useEffect(() => {

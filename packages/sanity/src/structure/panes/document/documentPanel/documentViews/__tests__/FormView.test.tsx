@@ -305,6 +305,35 @@ describe('FormView', () => {
       search.remove()
     })
 
+    test('stands down when focus visited another control and came back to the opener', async ({
+      focusFirstDescendantSpy,
+      setDocumentPane,
+      renderFormView,
+    }) => {
+      const listItem = appendFocusable(document.body)
+      listItem.focus()
+
+      focusFirstDescendantSpy.mockReturnValue(false)
+      setDocumentPane({focusPath: []})
+      renderFormView()
+
+      expect(focusFirstDescendantSpy).toHaveBeenCalledTimes(1)
+
+      // The user clicks into search and then back onto the list item while the form loads. At
+      // mutation time focus sits where it did on commit, but the user has been interacting.
+      const search = appendFocusable(document.body)
+      search.focus()
+      listItem.focus()
+      expect(listItem).toHaveFocus()
+
+      await appendAndFlush(screen.getByTestId('form-view'))
+
+      expect(focusFirstDescendantSpy).toHaveBeenCalledTimes(1)
+      expect(listItem).toHaveFocus()
+      search.remove()
+      listItem.remove()
+    })
+
     test('still focuses the form when the element focused before it mounted keeps focus', async ({
       focusFirstDescendantSpy,
       setDocumentPane,
