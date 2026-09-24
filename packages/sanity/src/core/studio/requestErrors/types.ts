@@ -1,4 +1,4 @@
-import {type HttpError} from '@sanity/client'
+import {type HttpError, type RequestHandler, type SanityClient} from '@sanity/client'
 import {type Observable} from 'rxjs'
 
 /**
@@ -135,3 +135,11 @@ export interface RequestErrorChannel extends StudioErrorHandler {
   /** Re-runs all parked retryable requests and clears the claim. */
   retry(): void
 }
+
+/**
+ * Builds the studio request handler for one client; `getClient` returns the
+ * client the handler is installed on.
+ *
+ * @internal
+ */
+export type StudioRequestHandlerFactory = (getClient: () => SanityClient) => RequestHandler

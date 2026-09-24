@@ -31,6 +31,7 @@ import {
   type RequestFailureResult,
 } from '../requestErrors/diagnoseRequestFailure'
 import {RequestErrorDialog} from '../requestErrors/RequestErrorDialog'
+import {type StudioRequestHandlerFactory} from '../requestErrors/types'
 import {type CorsCheckCache, checkCors} from './corsCheck'
 import {CorsOriginErrorView} from './CorsOriginErrorView'
 import {type WorkspacesContextValue} from './WorkspacesContext'
@@ -182,8 +183,8 @@ export function WorkspacesProvider({
     [applyRequestFailure, corsCache],
   )
 
-  const createStudioRequestHandler = useCallback(
-    (getClient: () => SanityClient) =>
+  const createStudioRequestHandler = useCallback<StudioRequestHandlerFactory>(
+    (getClient) =>
       createStudioRequestHandlerFactory({
         channel: requestErrorChannel,
         diagnostics: requestFailureDiagnostics,

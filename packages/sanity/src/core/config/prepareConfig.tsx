@@ -1,5 +1,5 @@
 import {fromUrl} from '@sanity/bifur-client'
-import {createClient, type RequestHandler, type SanityClient} from '@sanity/client'
+import {type SanityClient} from '@sanity/client'
 import {type CurrentUser, type Schema, type SchemaValidationProblem} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
@@ -21,14 +21,17 @@ import {
 import {prepareI18n} from '../i18n/i18nConfig'
 import {type LocaleSource} from '../i18n/types'
 import {createSchema} from '../schema/createSchema'
-import {createAuthStore, type RequestFailureDiagnostics} from '../store/authStore/createAuthStore'
+import {type RequestFailureDiagnostics} from '../store/authStore/createAuthStore'
 import {type AuthStore} from '../store/authStore/types'
 import {isAuthStore} from '../store/authStore/utils/asserters'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
 import {fetchCanDeployStudio} from '../studio/manifest/canDeployStudio'
 import {uploadSchema} from '../studio/manifest/uploadSchema'
-import {type RequestErrorChannel} from '../studio/requestErrors/types'
+import {
+  type RequestErrorChannel,
+  type StudioRequestHandlerFactory,
+} from '../studio/requestErrors/types'
 import {validateWorkspaces} from '../studio/workspaces/validateWorkspaces'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates/types'
@@ -76,6 +79,7 @@ import {recordConfigWarning} from './configWarnings'
 import {createDefaultIcon} from './createDefaultIcon'
 import {initialDocumentFieldActions} from './document/fieldActions'
 import {documentFieldActionsReducer} from './document/fieldActions/reducer'
+import {getAuthStore} from './getAuthStore'
 import {resolveConfigProperty} from './resolveConfigProperty'
 import {getDefaultPlugins, getDefaultPluginsOptions} from './resolveDefaultPlugins'
 import {resolveSchemaTypes} from './resolveSchemaTypes'
@@ -274,7 +278,7 @@ export function prepareConfig(
   config: Config | MissingConfigFile,
   options?: {
     basePath?: string
-    createStudioRequestHandler?: (getClient: () => SanityClient) => RequestHandler
+    createStudioRequestHandler?: StudioRequestHandlerFactory
     requestErrorChannel?: RequestErrorChannel
     requestFailureDiagnostics?: RequestFailureDiagnostics
   },
@@ -432,128 +436,6 @@ export function prepareConfig(
   })
 
   return {type: 'prepared-config', workspaces}
-}
-
-function getAuthStore(
-  source: SourceOptions,
-  {
-    createStudioRequestHandler,
-    requestErrorChannel,
-    requestFailureDiagnostics,
-  }: {
-    createStudioRequestHandler?: (getClient: () => SanityClient) => RequestHandler
-    requestErrorChannel?: RequestErrorChannel
-    requestFailureDiagnostics?: RequestFailureDiagnostics
-  },
-): AuthStore {
-  if (isAuthStore(source.auth)) {
-    return createStudioRequestHandler
-      ? withStudioRequestHandler(source.auth, createStudioRequestHandler)
-      : source.auth
-  }
-
-  const clientFactory = source.unstable_clientFactory ?? createClient
-
-  const {projectId, dataset, apiHost} = source
-  return createAuthStore({
-    apiHost,
-    ...source.auth,
-    clientFactory: (config) => {
-      let client: SanityClient
-      client = clientFactory({
-        ...config,
-        ...(createStudioRequestHandler
-          ? {requestHandler: createStudioRequestHandler(() => client)}
-          : {}),
-      })
-      return client
-    },
-    // Passed as getters so this unhashable runtime wiring stays out of the
-    // auth-store memo key.
-    getRequestErrorHandler: () => requestErrorChannel,
-    getRequestFailureDiagnostics: () => requestFailureDiagnostics,
-    dataset,
-    projectId,
-  })
-}
-
-type StudioRequestHandlerFactory = (getClient: () => SanityClient) => RequestHandler
-
-// One wrapped store per (store, handler factory) pair, so every source that
-// shares a pre-built store — and every `prepareConfig` call within a studio
-// session — resolves to the same wrapped instance and the same client per
-// emission, keeping downstream identity-based caches stable.
-const studioHandledAuthStores = new WeakMap<
-  AuthStore,
-  WeakMap<StudioRequestHandlerFactory, AuthStore>
->()
-
-/**
- * Gives the clients a pre-built `AuthStore` emits the studio request handler.
- *
- * For a plain `AuthConfig` the handler is injected through the client
- * factory (see {@link getAuthStore}), so every client the store builds — and
- * every `withConfig` derivative the source hands out — carries it. A store
- * built ahead of time (the `auth: createAuthStore({...})` recipe) has already
- * constructed its clients by the time `prepareConfig` runs, so without this
- * step none of the studio's data requests on that workspace are routed
- * through the handler: an invalid-session 401 is never claimed, no forced
- * logout happens, and the error surfaces as a crash in whichever pane made
- * the request instead of the login screen.
- *
- * Only applied when the store can complete a forced logout. Claiming a 401
- * parks the request until the studio calls `logout()`; a store without one
- * would leave the request pending forever, which is worse than the error
- * the pane would otherwise show.
- *
- * A `requestHandler` the store configured itself is kept, running inside the
- * studio's so the studio sees the outcome after the store's own handling.
- */
-function withStudioRequestHandler(
-  auth: AuthStore,
-  createStudioRequestHandler: StudioRequestHandlerFactory,
-): AuthStore {
-  if (typeof auth.logout !== 'function') return auth
-
-  let byFactory = studioHandledAuthStores.get(auth)
-  if (!byFactory) {
-    byFactory = new WeakMap()
-    studioHandledAuthStores.set(auth, byFactory)
-  }
-  const cached = byFactory.get(createStudioRequestHandler)
-  if (cached) return cached
-
-  // `map` runs once per subscriber, so the wrapped client is cached per
-  // emitted client: every subscriber sees the same instance for the same
-  // upstream emission, as they would with an unwrapped store.
-  const wrappedClients = new WeakMap<SanityClient, SanityClient>()
-  const wrapClient = (source: SanityClient): SanityClient => {
-    const existing = wrappedClients.get(source)
-    if (existing) return existing
-    const ownHandler = source.config().requestHandler
-    let client: SanityClient
-    const studioHandler = createStudioRequestHandler(() => client)
-    const requestHandler: RequestHandler = ownHandler
-      ? (request, next) => studioHandler(request, (req) => ownHandler(req, next))
-      : studioHandler
-    client = source.withConfig({requestHandler})
-    wrappedClients.set(source, client)
-    return client
-  }
-
-  const wrapped: AuthStore = {
-    ...auth,
-    state: auth.state.pipe(
-      map((state) => {
-        // Custom `unstable_clientFactory` clients may not implement
-        // `withConfig`; those cannot be given a handler after the fact.
-        if (typeof state.client.withConfig !== 'function') return state
-        return {...state, client: wrapClient(state.client)}
-      }),
-    ),
-  }
-  byFactory.set(createStudioRequestHandler, wrapped)
-  return wrapped
 }
 
 interface ResolveSourceOptions {
