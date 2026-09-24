@@ -26,7 +26,7 @@ const StyledMenu = styled(Menu)`
   min-width: 240px;
   max-width: 320px;
 
-  > [data-ui='Stack'] {
+  > [data-ui='VStack'] {
     gap: 0;
   }
 `

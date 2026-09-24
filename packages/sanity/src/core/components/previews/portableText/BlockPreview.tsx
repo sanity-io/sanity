@@ -1,6 +1,6 @@
-import {rem, Stack, Text} from '@sanity/ui'
+import {rem, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Flex, Box, VStack} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {LinearProgress} from '../../progress/LinearProgress'
@@ -39,7 +39,7 @@ export function BlockPreview(props: Omit<PreviewProps<'block'>, 'renderDefault'>
   const isUploading = typeof progress === 'number' && progress > -1
 
   return (
-    <Stack data-testid="block-preview" gap={1}>
+    <VStack data-testid="block-preview" gap={1}>
       <HeaderFlex data-testid="block-preview__header">
         {media && <Media dimensions={mediaDimensions} layout="block" media={media as any} />}
 
@@ -83,6 +83,6 @@ export function BlockPreview(props: Omit<PreviewProps<'block'>, 'renderDefault'>
       </HeaderFlex>
 
       {children && <div data-testid="block-preview__children">{children}</div>}
-    </Stack>
+    </VStack>
   )
 }
