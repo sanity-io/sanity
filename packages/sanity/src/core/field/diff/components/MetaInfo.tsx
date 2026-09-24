@@ -1,6 +1,8 @@
-import {type ComponentType, type ReactNode} from 'react'
-import {styled} from 'styled-components'
+import {clsx} from 'clsx'
+import {type ComponentProps, type ComponentType, type ReactNode} from 'react'
 import {Text, Box, Flex, Icon, type IconProps} from 'ui5'
+
+import {metaText} from './MetaInfo.css'
 
 /** @internal */
 export interface MetaInfoProps {
@@ -11,9 +13,11 @@ export interface MetaInfoProps {
   markRemoved?: boolean
 }
 
-const MetaText = styled(Text)`
-  color: inherit;
-`
+function MetaText(props: ComponentProps<typeof Text>) {
+  const {className, ...rest} = props
+
+  return <Text {...rest} className={clsx(metaText, className)} />
+}
 
 /** @internal */
 export function MetaInfo(props: MetaInfoProps) {
@@ -28,19 +32,13 @@ export function MetaInfo(props: MetaInfoProps) {
       )}
 
       <Flex gap={2} paddingLeft={2} flexDirection="column">
-        <MetaText
-          size={1}
-          weight="medium"
-          forwardedAs={markRemoved ? 'del' : 'h3'}
-          truncate={1}
-          trim={true}
-        >
+        <MetaText size={1} weight="medium" as={markRemoved ? 'del' : 'h3'} truncate={1} trim={true}>
           {title}
         </MetaText>
 
         {action && <div>{action}</div>}
 
-        <MetaText size={0} truncate={1} forwardedAs="div" trim={true}>
+        <MetaText size={0} truncate={1} as="div" trim={true}>
           {children}
         </MetaText>
       </Flex>
