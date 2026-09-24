@@ -3,6 +3,7 @@ import {Flex} from 'ui5'
 
 interface ObserveElementProps {
   children: React.JSX.Element
+  className?: string
   options?: IntersectionObserverInit
   onIntersectionChange: IntersectionObserverCallback
 }

@@ -1,6 +1,6 @@
 import {ResetIcon} from '@sanity/icons/Reset'
 import {isTitledListValue, type TitledListValue} from '@sanity/types'
-import {Card, type CardTone, Inline, Radio, Select, Stack, Text} from '@sanity/ui'
+import {Card, type CardTone, Radio, Select, Text} from '@sanity/ui'
 import capitalize from 'lodash-es/capitalize.js'
 import {
   type ChangeEvent,
@@ -10,7 +10,7 @@ import {
   useMemo,
   type RefAttributes,
 } from 'react'
-import {Flex, Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {ChangeIndicator} from '../../changeIndicators/ChangeIndicator'
@@ -154,7 +154,6 @@ function RadioSelect(
   }, [onChange])
 
   const isHorizontal = direction === 'horizontal'
-  const Layout = isHorizontal ? Inline : Stack
   const showClearButton = !readOnly && value
 
   return (
@@ -164,7 +163,13 @@ function RadioSelect(
         gap={3}
         justifyContent="space-between"
       >
-        <Layout gap={3} role="group" paddingY={1}>
+        <Flex
+          gap={3}
+          role="group"
+          paddingY={1}
+          flexDirection={isHorizontal ? 'row' : 'column'}
+          flexWrap={isHorizontal ? 'wrap' : undefined}
+        >
           {items.map((item, index) => (
             <RadioSelectItem
               // oxlint-disable-next-line no-array-index-key
@@ -179,7 +184,7 @@ function RadioSelect(
               value={value}
             />
           ))}
-        </Layout>
+        </Flex>
         {showClearButton && (
           <Button
             icon={ResetIcon}

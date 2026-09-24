@@ -767,4 +767,35 @@ describe('Validation test', () => {
       expect(blockType.marks.annotations[1]._problems).toHaveLength(0)
     })
   })
+
+  describe('array options.collapseItemsAfter', () => {
+    const collapseErrors = (collapseItemsAfter: unknown) => {
+      const validation = validateSchema([
+        {
+          type: 'array',
+          name: 'myArray',
+          of: [{type: 'string'}],
+          options: {collapseItemsAfter},
+        },
+      ])
+
+      return validation
+        .get('myArray')
+        ._problems.filter(
+          (problem: any) =>
+            problem.severity === 'error' &&
+            problem.helpId === 'schema-array-collapse-items-after-invalid',
+        )
+    }
+
+    test.each([[undefined], [false], [1], [4], [50]])('accepts %p', (value) => {
+      expect(collapseErrors(value)).toHaveLength(0)
+    })
+
+    // A fractional limit would slice the members at one position but compare focus against
+    // another, so the same item would be both hidden and treated as visible.
+    test.each([[0], [-1], [2.5], [true], ['4'], [null]])('rejects %p', (value) => {
+      expect(collapseErrors(value)).toHaveLength(1)
+    })
+  })
 })
