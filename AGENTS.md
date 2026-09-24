@@ -162,6 +162,7 @@ pnpm dev  # Starts test-studio at http://localhost:3333 and preview-iframe at ht
 - Session persists in browser, so subsequent visits won't require re-authentication
 - `pnpm dev` / `pnpm dev:test-studio` also starts `dev/preview-iframe` (vanilla Vite on port 3334) so Presentation can load its cross-origin iframe. Studio-only: `pnpm dev:test-studio:studio`. Preview-only: `pnpm dev:preview-iframe`.
 - Deployed preview iframe: Sanity Sandbox Vercel project `test-studio-preview-iframe` (`https://test-studio-preview-iframe.sanity.dev`)
+- **Edits to a `.css.ts` (vanilla-extract) file do not reach a running dev server.** With `unstable_bundledDev: true` (the default in `dev/test-studio`), the generated CSS of a changed `.css.ts` module keeps being served as it was at startup — a full page reload does not help, and nothing in the terminal says so. Restart `sanity dev` after changing one, then confirm with `getComputedStyle` rather than by eye.
 
 Use the dev studio when you need to:
 
