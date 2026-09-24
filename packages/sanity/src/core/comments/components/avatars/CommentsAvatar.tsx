@@ -1,13 +1,9 @@
 import {type User} from '@sanity/types'
 import {Avatar, type AvatarProps} from '@sanity/ui'
+import {clsx} from 'clsx'
 import {useMemo} from 'react'
-import {styled} from 'styled-components'
 
-const StyledAvatar = styled(Avatar)`
-  svg > ellipse {
-    stroke: transparent;
-  }
-`
+import {commentsAvatar} from './CommentsAvatar.css'
 
 const SYMBOLS = /[^\p{Alpha}\p{White_Space}]/gu
 const WHITESPACE = /\p{White_Space}+/u
@@ -27,18 +23,19 @@ interface CommentsAvatarProps extends AvatarProps {
 }
 
 export function CommentsAvatar(props: CommentsAvatarProps) {
-  const {user: userProp, ...restProps} = props
+  const {user: userProp, className, ...restProps} = props
   const user = userProp as User
   const initials = useMemo(() => nameToInitials(user?.displayName || ''), [user?.displayName])
 
-  if (!user) return <StyledAvatar {...restProps} />
+  if (!user) return <Avatar {...restProps} className={clsx(commentsAvatar, className)} />
 
   return (
-    <StyledAvatar
+    <Avatar
       initials={initials}
       src={user?.imageUrl}
       title={user?.displayName}
       {...restProps}
+      className={clsx(commentsAvatar, className)}
     />
   )
 }
