@@ -4,7 +4,6 @@ import {CloseIcon} from '@sanity/icons/Close'
 import {Card} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {useCallback, type RefAttributes} from 'react'
-import {styled} from 'styled-components'
 import {Text, Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
@@ -13,12 +12,7 @@ import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentStatus, type CommentsUIMode} from '../../types'
-
-const Root = styled(Card)({
-  position: 'relative',
-  zIndex: '1',
-  lineHeight: '0',
-})
+import {root} from './CommentsInspectorHeader.css'
 
 interface CommentsInspectorHeaderProps {
   onClose: () => void
@@ -37,7 +31,7 @@ export function CommentsInspectorHeader(
   const handleSetResolvedView = useCallback(() => onViewChange('resolved'), [onViewChange])
 
   return (
-    <Root ref={ref}>
+    <Card className={root} ref={ref}>
       <Flex padding={2}>
         <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2} paddingY={2} padding={3}>
           <Text as="h1" size={1} weight="medium" trim={true}>
@@ -91,6 +85,6 @@ export function CommentsInspectorHeader(
           />
         </Flex>
       </Flex>
-    </Root>
+    </Card>
   )
 }
