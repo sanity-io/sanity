@@ -56,20 +56,24 @@ export const handleDragging = style({
   cursor: 'grabbing',
 })
 
+// Above the widget (which is on 10000) so the corner it is being dragged over is
+// still shown as the drop target rather than hidden underneath it.
 export const dropZoneLayer = style({
   position: 'fixed',
   inset: 0,
-  zIndex: 9999,
+  zIndex: 10001,
   pointerEvents: 'none',
 })
 
+// Indigo rather than the panel's white-on-dark palette: these sit on studio chrome,
+// which is light in the default theme.
 export const dropZone = style({
   position: 'absolute',
-  width: 40,
-  height: 40,
-  borderRadius: 12,
-  border: '1px dashed rgba(255, 255, 255, 0.35)',
-  background: 'rgba(18, 18, 22, 0.35)',
+  width: 64,
+  height: 64,
+  borderRadius: 16,
+  border: '3px dashed rgba(94, 106, 210, 0.85)',
+  background: 'rgba(94, 106, 210, 0.22)',
 })
 
 export const dropZoneCorner = styleVariants(cornerOffsets)
@@ -77,7 +81,8 @@ export const dropZoneCorner = styleVariants(cornerOffsets)
 export const dropZoneActive = style({
   borderStyle: 'solid',
   borderColor: '#5e6ad2',
-  background: 'rgba(94, 106, 210, 0.35)',
+  background: 'rgba(94, 106, 210, 0.55)',
+  boxShadow: 'inset 0 0 0 3px #5e6ad2, 0 0 0 6px rgba(94, 106, 210, 0.28)',
 })
 
 export const trigger = style([
