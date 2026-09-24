@@ -8046,13 +8046,6 @@ packages:
     resolution: {integrity: sha512-yzr2S9HyAIdhz2/6qHgbs665Q7PKVcDF05vsOlHPxG1mo36gKVesdYVeDLnXgfjJ03CrKRk08knc6+E/9m8v2Q==}
     engines: {node: '>=18'}
 
-  '@testing-library/jest-dom@6.10.0':
-    resolution: {integrity: sha512-HQwu0KaB2zyT0iLzBL+8CLyZDL3KlZlZJ+2iyc9uCUnlJVskJU/UlPuVCyIPhtukjPQdT2QNoR5nCP5FqTmmDQ==}
-    engines: {node: '>=22', npm: '>=6', yarn: '>=1'}
-    deprecated: Incorrect minor release with breaking changes (Node >=22 and required @testing-library/dom peer). Use 6.9.1 for the 6.x line, or upgrade to 7.0.0.
-    peerDependencies:
-      '@testing-library/dom': '>=10 <11'
-
   '@testing-library/jest-dom@6.9.1':
     resolution: {integrity: sha512-zIcONa+hVtVSSep9UT3jZ5rizo2BsxgyDYU7WFD5eICBE7no3881HGeb/QkGfsJs6JTkY1aQhT7rIPC7e+0nnA==}
     engines: {node: '>=14', npm: '>=6', yarn: '>=1'}
@@ -11084,15 +11077,6 @@ packages:
   get-it@8.8.3:
     resolution: {integrity: sha512-IfkbWqOGO2kd2Ccgiz/NIzk3bcwjtVqBm3RNa3j/veHg2q7c1DgS3EXrCrvIWH0jbNTbhkdblnxBP7Dm8CiH+A==}
     engines: {node: '>=14.0.0'}
-
-  get-it@9.5.5:
-    resolution: {integrity: sha512-Pl8de7i64Dggbx5YXVqj9xJeP+uOg32KUM7ZhYA8TLK89dUVnb39K0oHnTKl/YM1BuNI0n7idyTKNOnIQuwrMQ==}
-    engines: {node: '>=22.12.0'}
-    peerDependencies:
-      vitest: ^5.0.1
-    peerDependenciesMeta:
-      vitest:
-        optional: true
 
   get-it@9.5.7:
     resolution: {integrity: sha512-yNk7XDcPuUwJcVx0KQDn3icIqUDWJaopZ9eJ1ntUpg/uHJP7A6ActAD07bmxEaGAGRc2B3QAEuQFe/yyk6XU3g==}
@@ -19845,7 +19829,7 @@ snapshots:
       '@sanity/client': 8.6.2(vitest@5.0.1)
       boxen: 8.0.1
       empathic: 2.1.0
-      get-it: 9.5.5(vitest@5.0.1)
+      get-it: 9.5.7(vitest@5.0.1)
       get-tsconfig: 4.14.3
       import-meta-resolve: 4.2.0
       jiti: 2.7.0
@@ -19986,7 +19970,7 @@ snapshots:
   '@sanity/client@8.6.2(vitest@5.0.1)':
     dependencies:
       eventsource: 5.1.1
-      get-it: 9.5.5(vitest@5.0.1)
+      get-it: 9.5.7(vitest@5.0.1)
       obug: 3.0.0
       rxjs: 7.8.2
     transitivePeerDependencies:
@@ -20172,7 +20156,7 @@ snapshots:
       '@sanity/client': 8.6.2(vitest@5.0.1)
       '@sanity/generate-help-url': 4.0.0
       '@sanity/mutator': link:packages/@sanity/mutator
-      get-it: 9.5.5(vitest@5.0.1)
+      get-it: 9.5.7(vitest@5.0.1)
       modern-tar: 0.8.5
       obug: 3.0.0
       p-map: 7.0.8
@@ -20224,7 +20208,7 @@ snapshots:
       '@sanity/types': link:packages/@sanity/types
       '@sanity/util': link:packages/@sanity/util
       arrify: 3.0.0
-      get-it: 9.5.5(vitest@5.0.1)
+      get-it: 9.5.7(vitest@5.0.1)
       groq-js: 2.0.0
       modern-tar: 0.8.5
       obug: 3.0.0
@@ -20949,16 +20933,6 @@ snapshots:
       lz-string: 1.5.0
       picocolors: 1.1.1
       pretty-format: 27.5.1
-
-  '@testing-library/jest-dom@6.10.0(@testing-library/dom@10.4.2)':
-    dependencies:
-      '@adobe/css-tools': 4.5.0
-      '@testing-library/dom': 10.4.2
-      aria-query: 5.3.2
-      css.escape: 1.5.1
-      dom-accessibility-api: 0.6.3
-      picocolors: 1.1.1
-      redent: 3.0.0
 
   '@testing-library/jest-dom@6.9.1':
     dependencies:
@@ -24087,12 +24061,6 @@ snapshots:
       is-retry-allowed: 2.2.0
       through2: 4.0.2
       tunnel-agent: 0.6.0
-
-  get-it@9.5.5(vitest@5.0.1):
-    dependencies:
-      undici: 7.29.1
-    optionalDependencies:
-      vitest: 5.0.1(@opentelemetry/api@1.9.1)(@types/node@24.13.6)(@vitest/browser-playwright@5.0.1)(@vitest/coverage-v8@5.0.1)(@vitest/ui@5.0.1)(jsdom@29.1.1)(vite@8.3.0)
 
   get-it@9.5.7(vitest@5.0.1):
     dependencies:
@@ -27558,7 +27526,7 @@ snapshots:
     dependencies:
       '@storybook/global': 5.0.0
       '@storybook/icons': 2.1.0(react@19.3.0)
-      '@testing-library/jest-dom': 6.10.0(@testing-library/dom@10.4.2)
+      '@testing-library/jest-dom': 6.9.1
       '@testing-library/user-event': 14.6.7(@testing-library/dom@10.4.2)
       '@vitest/expect': 3.2.4
       '@vitest/spy': 3.2.4
