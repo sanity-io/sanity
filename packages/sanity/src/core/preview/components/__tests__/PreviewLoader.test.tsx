@@ -302,6 +302,32 @@ describe('PreviewLoader', () => {
       expect(screen.queryByTestId('default-preview')).not.toBeInTheDocument()
     })
 
+    it('draws one row for a resolved value without a title, like the loaded title fallback', async () => {
+      const schemaType = {name: 'testDoc', icon: DocumentIcon} as unknown as SchemaType
+      // `useValuePreview` settled, but the document has nothing to show for a title or subtitle.
+      vi.mocked(useValuePreview).mockReturnValue({
+        isLoading: false,
+        value: {title: undefined, subtitle: undefined},
+      })
+
+      const {mounted} = renderLazyPreview(schemaType)
+      await mounted
+
+      const placeholder = screen.getByTestId('default-preview')
+      expect(placeholder.querySelectorAll('[data-ui="TextSkeleton"]')).toHaveLength(1)
+    })
+
+    it('draws both rows while the value itself is still loading', async () => {
+      const schemaType = {name: 'testDoc', icon: DocumentIcon} as unknown as SchemaType
+      vi.mocked(useValuePreview).mockReturnValue({isLoading: true, value: undefined})
+
+      const {mounted} = renderLazyPreview(schemaType)
+      await mounted
+
+      const placeholder = screen.getByTestId('default-preview')
+      expect(placeholder.querySelectorAll('[data-ui="TextSkeleton"]')).toHaveLength(2)
+    })
+
     it('reserves the media slot when the type has no icon, like the loaded fallback icon does', async () => {
       const schemaType = {name: 'testDoc'} as unknown as SchemaType
       vi.mocked(useValuePreview).mockReturnValue({

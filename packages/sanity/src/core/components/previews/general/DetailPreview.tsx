@@ -52,9 +52,10 @@ export function DetailPreview(props: DetailPreviewProps) {
   )
 
   if (isPlaceholder) {
-    // Both rows while the value is still loading; once it is known (a lazy preview component
-    // loading in front of a resolved value), only the rows it will have.
-    const showSubtitleSkeleton = title === undefined || Boolean(subtitle)
+    // `subtitle` is `undefined` while the value is still loading (both rows), `null` when the
+    // resolved value has none (a lazy preview component loading in front of it), so the
+    // placeholder has the rows the preview will have.
+    const showSubtitleSkeleton = subtitle === undefined || Boolean(subtitle)
 
     return (
       <RootFlex

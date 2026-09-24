@@ -94,6 +94,10 @@ export function PreviewLoader(
 
   // While a lazy preview component loads: the default preview in its placeholder state, with the
   // resolved value, so the fallback has the rows and media slot of the preview that replaces it.
+  // A resolved value without a subtitle passes `null`, which the placeholder reads as "no second
+  // row"; `undefined` means the value itself is still loading.
+  const placeholderSubtitle = preview?.value ? (preview.value.subtitle ?? null) : undefined
+
   return (
     <div ref={setElement} style={style}>
       <Suspense
@@ -105,6 +109,7 @@ export function PreviewLoader(
             layout={layout}
             media={media}
             schemaType={schemaType}
+            subtitle={placeholderSubtitle}
           />
         }
       >
