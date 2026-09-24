@@ -249,6 +249,22 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.query.save': 'Save query',
   /** Accessible label for the button that stops a running fetch */
   'vista.query.stop': 'Stop fetching',
+  /** Explanation in the settings section about the redesigned experience */
+  'vista.redesign.settings.description':
+    'You are using the redesigned Vision tool. Switching back keeps your tabs and settings in this browser for the next time you try it.',
+  /** Title of the settings section about the redesigned experience */
+  'vista.redesign.settings.title': 'Redesigned Vision (beta)',
+  /** Sidebar item and settings button that return to the classic Vision tool */
+  'vista.redesign.switch-to-classic': 'Switch to classic Vision',
+  /** Toast button that switches to the redesigned tool */
+  'vista.redesign.toast.accept': 'Try it now',
+  /** Body of the toast inviting users of the classic tool to try the redesign */
+  'vista.redesign.toast.description':
+    'Query tabs, live refetching, response details and exports. You can switch back at any time.',
+  /** Toast button that hides the invitation */
+  'vista.redesign.toast.dismiss': 'Not now',
+  /** Title of the toast inviting users of the classic tool to try the redesign */
+  'vista.redesign.toast.title': 'Try the redesigned Vision',
   /** Empty state of the response panel before anything was fetched */
   'vista.response.empty': 'Nothing fetched yet',
   /** Label for the payload size in the response tab */
@@ -291,7 +307,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.settings.clear-storage.confirm': 'Yes, clear storage',
   /** Explanation of what clearing the storage does */
   'vista.settings.clear-storage.description':
-    'Resets the open tabs, these defaults and your saved queries in this browser. Shared queries are kept.',
+    'Resets the open tabs, these defaults and your saved queries in this browser, and returns to the classic Vision tool. Shared queries are kept.',
   /** Toast shown when the saved queries could not be cleared */
   'vista.settings.clear-storage.error': 'Could not clear the saved queries',
   /** Toast shown after the storage was cleared */

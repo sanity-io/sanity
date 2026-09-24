@@ -98,7 +98,7 @@ export const sidebarRailCollapsed = style({
 })
 
 export const sidebarRailExpanded = style({
-  width: '200px',
+  width: '224px',
 })
 
 export const sidebarDrawer = style({

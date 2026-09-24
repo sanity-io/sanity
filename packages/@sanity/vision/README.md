@@ -77,37 +77,35 @@ export default defineConfig({
 })
 ```
 
-## Experimental: Vista
+## Beta: the redesigned Vision
 
-Vista is an opt-in redesign of the Vision tool. It is exported separately, so `visionTool` keeps working exactly as before and both tools can run side by side in the same studio (Vista registers as `vista` by default).
+Vision ships an opt-in redesign behind the `beta.redesign` option. It is off by default. When enabled, the classic tool shows a dismissible toast inviting users to try the redesign; users who accept get the redesigned tool, remembered per project in their browser, and can switch back at any time from its sidebar or settings (or by clearing its storage).
 
 ```ts
 // `sanity.config.ts` / `sanity.config.js`:
 import {defineConfig} from 'sanity'
-import {experimental_vistaTool} from '@sanity/vision'
+import {visionTool} from '@sanity/vision'
 
 export default defineConfig({
   // ...
   plugins: [
-    experimental_vistaTool({
-      // Same options as visionTool, all optional
-      defaultApiVersion: 'v2025-02-19',
-      defaultDataset: 'some-dataset',
+    visionTool({
+      beta: {redesign: {enabled: true}},
     }),
   ],
 })
 ```
 
-What is different:
+What is different in the redesign:
 
 - **Query tabs**, each with its own query, params and options (dataset, API version, perspective, content source map). Tabs are persisted per project in `localStorage`.
-- **A collapsible sidebar** with your saved queries, the queries shared in the dataset, the keyboard shortcuts and the settings. Saved queries are shared with the Vision tool.
+- **A collapsible sidebar** with your saved queries, the queries shared in the dataset, the keyboard shortcuts and the settings. Saved queries are shared with the classic tool.
 - **Refetch automatically**: the response's `syncTags` are matched against the Live Content API, so the result updates when the documents it depends on change. The History panel records every fetch and why it happened.
 - **Response details**: execution and end-to-end time, payload size, sync tags, the query URL and the content source map when requested.
 - **Exports**: the query as `curl`, `@sanity/client` and `next-sanity` snippets; the result as JSON or CSV, and as TypeScript types or a Zod schema inferred from the workspace schema (falling back to the fetched result).
 - **Prettify** reformats the query, and pasting a query URL from the network tab loads it into the active tab.
 
-The API of `experimental_vistaTool` may change or the export may be removed in a future release.
+The redesign is in beta: its look and feature set may still change.
 
 ## License
 

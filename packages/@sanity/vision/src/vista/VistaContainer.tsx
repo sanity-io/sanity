@@ -8,7 +8,12 @@ import {useDatasets} from '../hooks/useDatasets'
 import {type VisionProps} from '../types'
 import {VistaGui} from './components/VistaGui'
 
-export function VistaContainer(props: VisionProps) {
+export interface VistaContainerProps extends VisionProps {
+  /** Leaves the redesigned experience and returns to the classic Vision tool */
+  onSwitchToClassic: () => void
+}
+
+export function VistaContainer(props: VistaContainerProps) {
   const datasetsClient = useClient({apiVersion: 'v2025-06-27'})
   const datasetsPromise = useDatasets({client: datasetsClient, datasets: props.config.datasets})
 
@@ -28,7 +33,7 @@ export function VistaContainer(props: VisionProps) {
 function LoadedVistaContainer({
   datasetsPromise,
   ...props
-}: VisionProps & {datasetsPromise: ObservablePromise<string[] | Error>}) {
+}: VistaContainerProps & {datasetsPromise: ObservablePromise<string[] | Error>}) {
   const loadedDatasets = use(datasetsPromise)
 
   const datasets =
@@ -47,6 +52,7 @@ function LoadedVistaContainer({
       datasets={datasets}
       projectId={projectId}
       defaultDataset={defaultDataset}
+      onSwitchToClassic={props.onSwitchToClassic}
     />
   )
 }

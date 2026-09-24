@@ -8,7 +8,7 @@ import {MobileDeviceIcon} from '@sanity/icons/MobileDevice'
 import {PresentationIcon} from '@sanity/icons/Presentation'
 import {SanityMonogram} from '@sanity/logos'
 import {themerTool} from '@sanity/themer/tool'
-import {experimental_vistaTool, visionTool} from '@sanity/vision'
+import {visionTool} from '@sanity/vision'
 import {defineConfig, definePlugin, type AuthProvider, type WorkspaceOptions} from 'sanity'
 import {unsplashAssetSource, UnsplashIcon} from 'sanity-plugin-asset-source-unsplash'
 import {internationalizedArray} from 'sanity-plugin-internationalized-array'
@@ -261,8 +261,8 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       visionTool({
         // uncomment to test
         //defaultApiVersion: '2025-02-05',
+        beta: {redesign: {enabled: true}},
       }),
-      experimental_vistaTool(),
       themerTool(),
       routerDebugTool(),
       // Opt-in (Vercel test-studio). Must stay this exact member expression.
@@ -753,8 +753,7 @@ export default defineConfig([
           unstable_navigator: {minWidth: 120, maxWidth: 240, component: CustomNavigator},
         },
       }),
-      visionTool(),
-      experimental_vistaTool(),
+      visionTool({beta: {redesign: {enabled: true}}}),
     ],
     mediaLibrary: {
       enabled: true,
@@ -781,8 +780,7 @@ export default defineConfig([
           previewMode: {enable: '/api/draft-mode/enable'},
         },
       }),
-      visionTool(),
-      experimental_vistaTool(),
+      visionTool({beta: {redesign: {enabled: true}}}),
     ],
     mediaLibrary: {
       enabled: true,

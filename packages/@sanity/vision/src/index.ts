@@ -1,3 +1,2 @@
-export type {VisionLocaleResourceKeys, VisionToolConfig, VistaToolConfig} from './types'
+export type {VisionBetaConfig, VisionLocaleResourceKeys, VisionToolConfig} from './types'
 export {visionTool} from './visionTool'
-export {experimental_vistaTool} from './vistaTool'

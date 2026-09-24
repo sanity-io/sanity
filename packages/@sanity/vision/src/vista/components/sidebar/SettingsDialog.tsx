@@ -1,3 +1,4 @@
+import {RestoreIcon} from '@sanity/icons/Restore'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {Button, Card, Dialog, Stack, Switch, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
@@ -9,7 +10,7 @@ import {API_VERSIONS} from '../../../apiVersions'
 import {STORED_QUERIES_NAMESPACE} from '../../../hooks/useSavedQueries'
 import {visionLocaleNamespace} from '../../../i18n'
 import {validateApiVersion} from '../../../util/validateApiVersion'
-import {useVistaActor, useVistaSelector} from '../../store/VistaActorContext'
+import {useVistaActor, useVistaExperience, useVistaSelector} from '../../store/VistaActorContext'
 import {createTabOptions} from '../../store/vistaStorage'
 import {ApiVersionField, DatasetSelect, PerspectiveSelect} from '../request/OptionFields'
 
@@ -17,6 +18,7 @@ export function SettingsDialog({datasets}: {datasets: string[]}) {
   const {t} = useTranslation(visionLocaleNamespace)
   const toast = useToast()
   const actorRef = useVistaActor()
+  const {switchToClassic} = useVistaExperience()
   const keyValueStore = useKeyValueStore()
   const settings = useVistaSelector((snapshot) => snapshot.context.settings)
   const [confirmClear, setConfirmClear] = useState(false)
@@ -63,8 +65,9 @@ export function SettingsDialog({datasets}: {datasets: string[]}) {
         description: err instanceof Error ? err.message : String(err),
       })
     }
-    close()
-  }, [actorRef, close, keyValueStore, t, toast])
+    // Clearing storage also ends the redesigned experience, which unmounts this dialog
+    switchToClassic()
+  }, [actorRef, keyValueStore, switchToClassic, t, toast])
 
   const listedApiVersion = API_VERSIONS.includes(settings.apiVersion)
     ? settings.apiVersion
@@ -127,6 +130,26 @@ export function SettingsDialog({datasets}: {datasets: string[]}) {
               </Text>
             </Stack>
           </Flex>
+
+          <Card border padding={3} radius={2}>
+            <Stack gap={3}>
+              <Text size={1} weight="medium">
+                {t('vista.redesign.settings.title')}
+              </Text>
+              <Text muted size={1}>
+                {t('vista.redesign.settings.description')}
+              </Text>
+              <Flex>
+                <Button
+                  data-testid="vista-settings-classic"
+                  icon={RestoreIcon}
+                  mode="ghost"
+                  onClick={switchToClassic}
+                  text={t('vista.redesign.switch-to-classic')}
+                />
+              </Flex>
+            </Stack>
+          </Card>
 
           <Card border padding={3} radius={2} tone={confirmClear ? 'critical' : 'default'}>
             <Stack gap={3}>

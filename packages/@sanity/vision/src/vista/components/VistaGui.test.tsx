@@ -219,6 +219,7 @@ function renderVista(perspective: PerspectiveContextValue = BASE_PERSPECTIVE) {
   const mockClient = createMockClient()
   sanityMocks.setPerspective(perspective)
   sanityMocks.useClient.mockReturnValue(mockClient.client)
+  const onSwitchToClassic = vi.fn()
 
   const ui = () => (
     <ThemeProvider theme={theme}>
@@ -229,6 +230,7 @@ function renderVista(perspective: PerspectiveContextValue = BASE_PERSPECTIVE) {
             datasets={DEFAULTS.datasets}
             projectId={PROJECT_ID}
             defaultDataset="test"
+            onSwitchToClassic={onSwitchToClassic}
           />
         </LayerProvider>
       </ToastProvider>
@@ -239,6 +241,7 @@ function renderVista(perspective: PerspectiveContextValue = BASE_PERSPECTIVE) {
   return {
     ...view,
     ...mockClient,
+    onSwitchToClassic,
     setPerspective: (next: PerspectiveContextValue) => {
       act(() => sanityMocks.setPerspective(next))
     },
@@ -548,7 +551,7 @@ describe('VistaGui', () => {
   })
 
   it('clears the storage from the settings dialog', {timeout: 15_000}, async () => {
-    renderVista()
+    const {onSwitchToClassic} = renderVista()
     typeQuery('*[_type == "author"]')
     fireEvent.click(screen.getByTestId('vista-new-tab'))
     await waitFor(() => expect(getStoredState().tabs).toHaveLength(2))
@@ -567,5 +570,19 @@ describe('VistaGui', () => {
       expect(stored.tabs).toHaveLength(1)
       expect(stored.tabs[0].query).toBe('')
     })
+    expect(onSwitchToClassic).toHaveBeenCalledTimes(1)
+  })
+
+  it('switches back to the classic tool from the sidebar and from the settings dialog', async () => {
+    const {onSwitchToClassic} = renderVista()
+
+    fireEvent.click(screen.getByTestId('vista-sidebar-classic'))
+    expect(onSwitchToClassic).toHaveBeenCalledTimes(1)
+
+    fireEvent.click(screen.getByTestId('vista-sidebar-settings'))
+    fireEvent.click(await screen.findByTestId('vista-settings-classic'))
+    expect(onSwitchToClassic).toHaveBeenCalledTimes(2)
+    // Switching back keeps the stored tabs for the next visit
+    await waitFor(() => expect(getStoredState().tabs).toHaveLength(1))
   })
 })

@@ -8,6 +8,21 @@ const PERSIST_DEBOUNCE_MS = 200
 
 export const VistaActorContext = createContext<VistaActorRef | null>(null)
 
+export interface VistaExperience {
+  /** Leaves the redesigned experience and returns to the classic Vision tool */
+  switchToClassic: () => void
+}
+
+export const VistaExperienceContext = createContext<VistaExperience | null>(null)
+
+export function useVistaExperience(): VistaExperience {
+  const experience = useContext(VistaExperienceContext)
+  if (!experience) {
+    throw new Error('useVistaExperience must be used within a VistaExperienceContext provider')
+  }
+  return experience
+}
+
 export function useVistaActor(): VistaActorRef {
   const actorRef = useContext(VistaActorContext)
   if (!actorRef) {

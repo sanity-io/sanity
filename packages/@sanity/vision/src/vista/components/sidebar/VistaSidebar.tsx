@@ -3,6 +3,7 @@ import {BookmarkIcon} from '@sanity/icons/Bookmark'
 import {CogIcon} from '@sanity/icons/Cog'
 import {DoubleChevronLeftIcon} from '@sanity/icons/DoubleChevronLeft'
 import {DoubleChevronRightIcon} from '@sanity/icons/DoubleChevronRight'
+import {RestoreIcon} from '@sanity/icons/Restore'
 import {UsersIcon} from '@sanity/icons/Users'
 import {Button, Text} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
@@ -12,7 +13,7 @@ import {Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type VistaDrawer} from '../../store/types'
-import {useVistaActor, useVistaSelector} from '../../store/VistaActorContext'
+import {useVistaActor, useVistaExperience, useVistaSelector} from '../../store/VistaActorContext'
 import {selectOpenDrawer} from '../../store/vistaMachine'
 import {sidebarRail, sidebarRailCollapsed, sidebarRailExpanded} from '../vista.css'
 import {SidebarDrawer} from './SidebarDrawer'
@@ -60,6 +61,7 @@ function SidebarItem({icon, label, expanded, selected, testId, onClick}: Sidebar
 export function VistaSidebar({datasets}: {datasets: string[]}) {
   const {t} = useTranslation(visionLocaleNamespace)
   const actorRef = useVistaActor()
+  const {switchToClassic} = useVistaExperience()
   const expanded = useVistaSelector((snapshot) => snapshot.matches({sidebar: 'expanded'}))
   const drawer = useVistaSelector(selectOpenDrawer)
 
@@ -114,6 +116,13 @@ export function VistaSidebar({datasets}: {datasets: string[]}) {
             label={t('vista.sidebar.settings')}
             onClick={() => actorRef.send({type: 'dialog.open', dialog: 'settings'})}
             testId="vista-sidebar-settings"
+          />
+          <SidebarItem
+            expanded={expanded}
+            icon={RestoreIcon}
+            label={t('vista.redesign.switch-to-classic')}
+            onClick={switchToClassic}
+            testId="vista-sidebar-classic"
           />
           <Box borderTop paddingTop={1}>
             <SidebarItem
