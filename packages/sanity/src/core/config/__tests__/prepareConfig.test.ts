@@ -198,19 +198,47 @@ describe('prepareConfig — workspace hidden property', () => {
   })
 })
 
+const passthrough: RequestHandler = (request, next) => next(request)
+
+// A pre-built store: `createMockAuthStore` plus the `logout` the studio needs
+// to complete a forced logout.
+function createPrebuiltStore(projectId: string): AuthStore {
+  return {
+    ...createMockAuthStore({
+      client: createClient({projectId, dataset: 'test', apiVersion: '2025-01-01', useCdn: false}),
+      currentUser: null,
+    }),
+    logout: () => Promise.resolve(),
+  }
+}
+
 describe('prepareConfig — studio request handler', () => {
   it('passes the handler to a custom client factory', () => {
-    const requestHandler: RequestHandler = (request, next) => next(request)
     const clientFactory = vi.fn(createClient)
 
     prepareConfig(createWorkspace({unstable_clientFactory: clientFactory}), {
-      createStudioRequestHandler: () => requestHandler,
+      createStudioRequestHandler: () => passthrough,
     })
 
     expect(clientFactory).toHaveBeenCalled()
     for (const [config] of clientFactory.mock.calls) {
-      expect(config.requestHandler).toBe(requestHandler)
+      expect(config.requestHandler).toBe(passthrough)
     }
+  })
+
+  it('keeps `workspace.auth` identity stable across prepareConfig calls', () => {
+    // `WorkspacesProvider` calls `prepareConfig` during render, and a single
+    // (non-array) config is re-prepared every call — `AuthBoundary` keys its
+    // one-shot `handleCallbackUrl()` on `activeWorkspace.auth`, so a wrapper
+    // rebuilt per render would re-run the credential exchange every render
+    // and never settle the callback gate.
+    const workspace = createWorkspace({auth: createPrebuiltStore('abc123')})
+
+    const first = prepareConfig(workspace, {createStudioRequestHandler: () => passthrough})
+    const second = prepareConfig(workspace, {createStudioRequestHandler: () => passthrough})
+
+    expect(second.workspaces[0]).not.toBe(first.workspaces[0])
+    expect(second.workspaces[0].auth).toBe(first.workspaces[0].auth)
   })
 
   // End-to-end guard for the pre-built store decorator (unit-tested in
@@ -225,18 +253,7 @@ describe('prepareConfig — studio request handler', () => {
       // Hostname-shaped, so the channel can attribute the claim to a project.
       projectId: `abc${Math.random().toString(36).slice(2, 8)}`,
     })
-    const auth: AuthStore = {
-      ...createMockAuthStore({
-        client: createClient({
-          projectId: workspace.projectId,
-          dataset: 'test',
-          apiVersion: '2025-01-01',
-          useCdn: false,
-        }),
-        currentUser: null,
-      }),
-      logout: () => Promise.resolve(),
-    }
+    const auth = createPrebuiltStore(workspace.projectId)
     const channel = createRequestErrorChannel()
 
     const {workspaces} = prepareConfig(

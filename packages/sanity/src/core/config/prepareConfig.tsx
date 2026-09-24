@@ -21,17 +21,12 @@ import {
 import {prepareI18n} from '../i18n/i18nConfig'
 import {type LocaleSource} from '../i18n/types'
 import {createSchema} from '../schema/createSchema'
-import {type RequestFailureDiagnostics} from '../store/authStore/createAuthStore'
 import {type AuthStore} from '../store/authStore/types'
 import {isAuthStore} from '../store/authStore/utils/asserters'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
 import {fetchCanDeployStudio} from '../studio/manifest/canDeployStudio'
 import {uploadSchema} from '../studio/manifest/uploadSchema'
-import {
-  type RequestErrorChannel,
-  type StudioRequestHandlerFactory,
-} from '../studio/requestErrors/types'
 import {validateWorkspaces} from '../studio/workspaces/validateWorkspaces'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates/types'
@@ -79,7 +74,7 @@ import {recordConfigWarning} from './configWarnings'
 import {createDefaultIcon} from './createDefaultIcon'
 import {initialDocumentFieldActions} from './document/fieldActions'
 import {documentFieldActionsReducer} from './document/fieldActions/reducer'
-import {getAuthStore} from './getAuthStore'
+import {getAuthStore, type GetAuthStoreOptions} from './getAuthStore'
 import {resolveConfigProperty} from './resolveConfigProperty'
 import {getDefaultPlugins, getDefaultPluginsOptions} from './resolveDefaultPlugins'
 import {resolveSchemaTypes} from './resolveSchemaTypes'
@@ -276,12 +271,7 @@ const createDatasetAssetSources = (config: SourceOptions, client: SanityClient) 
  */
 export function prepareConfig(
   config: Config | MissingConfigFile,
-  options?: {
-    basePath?: string
-    createStudioRequestHandler?: StudioRequestHandlerFactory
-    requestErrorChannel?: RequestErrorChannel
-    requestFailureDiagnostics?: RequestFailureDiagnostics
-  },
+  options?: {basePath?: string} & GetAuthStoreOptions,
 ): PreparedConfig {
   if (!Array.isArray(config) && 'missingConfigFile' in config) {
     throw new ConfigResolutionError({
@@ -373,11 +363,7 @@ export function prepareConfig(
         throw new SchemaError(schema)
       }
 
-      const auth = getAuthStore(source, {
-        createStudioRequestHandler: options?.createStudioRequestHandler,
-        requestErrorChannel: options?.requestErrorChannel,
-        requestFailureDiagnostics: options?.requestFailureDiagnostics,
-      })
+      const auth = getAuthStore(source, options ?? {})
       const i18n = prepareI18n(source)
       const source$ = auth.state.pipe(
         map(({client, authenticated, currentUser}) => {

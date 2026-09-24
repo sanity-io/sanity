@@ -4,13 +4,23 @@ import {map} from 'rxjs/operators'
 import {createAuthStore, type RequestFailureDiagnostics} from '../store/authStore/createAuthStore'
 import {type AuthStore} from '../store/authStore/types'
 import {isAuthStore} from '../store/authStore/utils/asserters'
+import {withRequestHandler} from '../store/authStore/utils/requestHandler'
 import {
   type RequestErrorChannel,
   type StudioRequestHandlerFactory,
 } from '../studio/requestErrors/types'
 import {type SourceOptions} from './types'
 
-/** @internal */
+/**
+ * Studio wiring handed to the auth store of each source.
+ *
+ * `createStudioRequestHandler` applies to every source. The other two only
+ * reach a store built here from an `AuthConfig`; a pre-built `AuthStore` has
+ * no seam left to receive them, so its own `/users/me` probe runs without
+ * the channel and the failure diagnostics.
+ *
+ * @internal
+ */
 export interface GetAuthStoreOptions {
   createStudioRequestHandler?: StudioRequestHandlerFactory
   requestErrorChannel?: RequestErrorChannel
@@ -28,15 +38,12 @@ export function getAuthStore(
   {createStudioRequestHandler, requestErrorChannel, requestFailureDiagnostics}: GetAuthStoreOptions,
 ): AuthStore {
   if (isAuthStore(source.auth)) {
-    // The two branches attach the handler differently. A pre-built store has
-    // already constructed its clients, so it is decorated at the store
-    // boundary and cached per (store, factory) — a remounted
-    // `WorkspacesProvider` with a new channel gets a fresh wrapper. The
-    // `AuthConfig` branch below bakes the factory into the client factory
-    // closure of a store memoized on its options, so the first factory a
-    // studio session sees is the one that store keeps. Unifying both on
-    // `withStudioRequestHandler` is a follow-up: it changes what an
-    // `unstable_clientFactory` receives in its config.
+    // A pre-built store has already constructed its clients, so the handler is
+    // attached at the store boundary. The `AuthConfig` branch installs it via
+    // the client factory instead, which also covers the clients
+    // `createAuthStore` builds for its own probe / exchange / logout traffic —
+    // coverage a store-boundary decorator can't reach, and the reason the two
+    // branches are not unified on `withStudioRequestHandler`.
     return createStudioRequestHandler
       ? withStudioRequestHandler(source.auth, createStudioRequestHandler)
       : source.auth
@@ -67,14 +74,24 @@ export function getAuthStore(
   })
 }
 
-// One wrapped store per (store, handler factory) pair, so every source that
-// shares a pre-built store — and every `prepareConfig` call within a studio
-// session — resolves to the same wrapped instance and the same client per
-// emission, keeping downstream identity-based caches stable.
-const studioHandledAuthStores = new WeakMap<
-  AuthStore,
-  WeakMap<StudioRequestHandlerFactory, AuthStore>
->()
+// One wrapped store per pre-built store. This is not just a cache:
+// `prepareConfig` re-runs per render for single-workspace configs, and
+// `AuthBoundary` keys its one-shot `handleCallbackUrl()` on the auth store's
+// identity — a wrapper rebuilt per render would re-run the credential
+// exchange every render and never settle the callback gate.
+//
+// Keyed on the store alone, so the first handler factory a studio session
+// sees is the one the wrapper keeps. That matches the `AuthConfig` branch
+// (whose store is memoized on its options) and `prepareConfig`'s own
+// per-workspace cache: a remounted `WorkspacesProvider` keeps routing through
+// the channel of the first mount on every path.
+const studioHandledAuthStores = new WeakMap<AuthStore, AuthStore>()
+
+// Every member of `AuthStore` is mandatory in this literal (while keeping the
+// optional ones' `| undefined`), so a member added to the interface fails to
+// compile here instead of being silently dropped by the wrapper. Do not
+// "simplify" back to `: AuthStore` — only `state` is required on it.
+type ExhaustiveAuthStore = {[K in keyof Required<AuthStore>]: AuthStore[K]}
 
 /**
  * Attaches the studio request handler to the clients emitted by a pre-built
@@ -82,25 +99,23 @@ const studioHandledAuthStores = new WeakMap<
  * has already constructed its clients, so the handler cannot be injected
  * through the client factory the way `getAuthStore` does for an `AuthConfig`.
  *
- * Only applied when the store has `logout`: a claimed 401 parks the request
- * until the studio logs out, and a store that can't would leave it pending.
+ * Only applied when the store has `logout`: a claimed invalid-session 401
+ * parks the request until the studio logs out, and a store that can't would
+ * leave it pending with no dialog. The gate is wider than that one path —
+ * skipping the handler also drops CORS / project-not-found /
+ * dataset-not-found detection and request-performance tracking for the
+ * store's clients (see `createStudioRequestHandler`).
+ *
  * A `requestHandler` the store configured itself keeps running, inside the
  * studio's.
- *
- * @internal
  */
-export function withStudioRequestHandler(
+function withStudioRequestHandler(
   auth: AuthStore,
   createStudioRequestHandler: StudioRequestHandlerFactory,
 ): AuthStore {
   if (typeof auth.logout !== 'function') return auth
 
-  let byFactory = studioHandledAuthStores.get(auth)
-  if (!byFactory) {
-    byFactory = new WeakMap()
-    studioHandledAuthStores.set(auth, byFactory)
-  }
-  const cached = byFactory.get(createStudioRequestHandler)
+  const cached = studioHandledAuthStores.get(auth)
   if (cached) return cached
 
   // `map` runs once per subscriber, so the wrapped client is cached per
@@ -116,7 +131,7 @@ export function withStudioRequestHandler(
     const requestHandler: RequestHandler = ownHandler
       ? (request, next) => studioHandler(request, (req) => ownHandler(req, next))
       : studioHandler
-    client = source.withConfig({requestHandler})
+    client = withRequestHandler(source, requestHandler)
     wrappedClients.set(source, client)
     return client
   }
@@ -124,13 +139,11 @@ export function withStudioRequestHandler(
   // Members are delegated explicitly rather than spread: `AuthStore` is a
   // duck-typed interface, so a class-based store keeps its methods on the
   // prototype (which a spread drops) and reads `this` inside them.
-  const wrapped: AuthStore = {
+  const wrapped: ExhaustiveAuthStore = {
     state: auth.state.pipe(
       map((state) => {
-        // Custom `unstable_clientFactory` clients may not implement
-        // `withConfig`; those cannot be given a handler after the fact.
-        if (typeof state.client.withConfig !== 'function') return state
-        return {...state, client: wrapClient(state.client)}
+        const client = wrapClient(state.client)
+        return client === state.client ? state : {...state, client}
       }),
     ),
     token: auth.token,
@@ -138,6 +151,6 @@ export function withStudioRequestHandler(
     logout: auth.logout.bind(auth),
     handleCallbackUrl: auth.handleCallbackUrl?.bind(auth),
   }
-  byFactory.set(createStudioRequestHandler, wrapped)
+  studioHandledAuthStores.set(auth, wrapped)
   return wrapped
 }

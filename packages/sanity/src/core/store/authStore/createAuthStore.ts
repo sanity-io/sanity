@@ -63,6 +63,7 @@ import {
 } from './types'
 import {recordHashClaimUrl} from './unclaimedProjectStorage'
 import {isCookielessCompatibleLoginMethod} from './utils/asserters'
+import {withoutRequestHandler} from './utils/requestHandler'
 import {
   observeWorkbenchToken as defaultObserveWorkbenchToken,
   refreshWorkbenchToken as defaultRefreshWorkbenchToken,
@@ -147,12 +148,6 @@ export interface RequestFailureDiagnostics {
     result: Exclude<RequestFailureResult, {type: 'unknown'}>,
     client: SanityClient,
   ) => void
-}
-
-function withoutRequestHandler(client: SanityClient): SanityClient {
-  return typeof client.withConfig === 'function'
-    ? client.withConfig({requestHandler: undefined})
-    : client
 }
 
 const getCurrentUser = async (

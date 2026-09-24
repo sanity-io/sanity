@@ -3,24 +3,33 @@ import {firstValueFrom, type Observable, of} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 
 import {createMockAuthStore} from '../../store/authStore/createMockAuthStore'
-import {type AuthState, type AuthStore} from '../../store/authStore/types'
+import {
+  type AuthState,
+  type AuthStore,
+  type HandleCallbackResult,
+} from '../../store/authStore/types'
 import {getAuthStore} from '../getAuthStore'
 import {type SourceOptions} from '../types'
 
 const passthrough: RequestHandler = (request, next) => next(request)
+const createPassthroughHandler = () => passthrough
+
+const LoginComponent = () => null
+
+const CALLBACK_RESULT: HandleCallbackResult = {
+  loginMethod: 'dual',
+  flow: 'already-authenticated',
+  success: true,
+  durationMs: 0,
+}
 
 function createSource(auth: AuthStore): SourceOptions {
-  return {
-    name: 'test',
-    projectId: `test-${Math.random().toString(36).slice(2)}`,
-    dataset: 'test',
-    auth,
-  }
+  return {name: 'test', projectId: 'abc123', dataset: 'test', auth}
 }
 
 function createBareClient() {
   return createClient({
-    projectId: `test-${Math.random().toString(36).slice(2)}`,
+    projectId: 'abc123',
     dataset: 'test',
     apiVersion: '2025-01-01',
     useCdn: false,
@@ -97,7 +106,7 @@ describe('getAuthStore — pre-built auth store', () => {
     // leave the request pending, so its clients keep surfacing the error.
     const store = createMockAuthStore({client: createBareClient(), currentUser: null})
     const auth = getAuthStore(createSource(store), {
-      createStudioRequestHandler: () => passthrough,
+      createStudioRequestHandler: createPassthroughHandler,
     })
 
     expect(auth).toBe(store)
@@ -113,7 +122,7 @@ describe('getAuthStore — pre-built auth store', () => {
 
   it('emits one wrapped client per upstream client, shared by every subscriber', async () => {
     const auth = getAuthStore(createSource(createPrebuiltStore(createBareClient())), {
-      createStudioRequestHandler: () => passthrough,
+      createStudioRequestHandler: createPassthroughHandler,
     })
 
     const first = await firstValueFrom(auth.state)
@@ -121,40 +130,26 @@ describe('getAuthStore — pre-built auth store', () => {
     expect(second.client).toBe(first.client)
   })
 
-  it('resolves sources that share a pre-built store to the same wrapped store', () => {
+  it('resolves a pre-built store to one wrapped store, whichever source or factory asks', () => {
+    // `AuthBoundary` keys its one-shot `handleCallbackUrl()` on the auth
+    // store's identity, so the wrapper must be as stable as the store it
+    // wraps — including across a re-created handler factory, matching the
+    // memoized store the `AuthConfig` branch would return.
     const store = createPrebuiltStore(createBareClient())
-    const createStudioRequestHandler = () => passthrough
 
-    const a = getAuthStore(createSource(store), {createStudioRequestHandler})
-    const b = getAuthStore(createSource(store), {createStudioRequestHandler})
+    const a = getAuthStore(createSource(store), {
+      createStudioRequestHandler: createPassthroughHandler,
+    })
+    const b = getAuthStore(createSource(store), {createStudioRequestHandler: () => passthrough})
 
     expect(a).not.toBe(store)
     expect(b).toBe(a)
   })
 
-  it('wraps a store once per handler factory', () => {
-    // A remounted `WorkspacesProvider` brings a new channel and therefore a
-    // new factory; its requests must not route into the old channel.
-    const store = createPrebuiltStore(createBareClient())
-
-    const a = getAuthStore(createSource(store), {createStudioRequestHandler: () => passthrough})
-    const b = getAuthStore(createSource(store), {createStudioRequestHandler: () => passthrough})
-
-    expect(b).not.toBe(a)
-  })
-
-  it('keeps the store methods reachable through the wrapped store', async () => {
+  it('keeps the store members reachable through the wrapped store', async () => {
     const logout = vi.fn(() => Promise.resolve())
-    const handleCallbackUrl = vi.fn(() =>
-      Promise.resolve({
-        loginMethod: 'dual' as const,
-        flow: 'already-authenticated' as const,
-        success: true,
-        durationMs: 0,
-      }),
-    )
+    const handleCallbackUrl = vi.fn(() => Promise.resolve(CALLBACK_RESULT))
     const token = of('token')
-    const LoginComponent = () => null
     const store = createPrebuiltStore(createBareClient(), {
       logout,
       handleCallbackUrl,
@@ -163,7 +158,7 @@ describe('getAuthStore — pre-built auth store', () => {
     })
 
     const auth = getAuthStore(createSource(store), {
-      createStudioRequestHandler: () => passthrough,
+      createStudioRequestHandler: createPassthroughHandler,
     })
 
     expect(auth).not.toBe(store)
@@ -196,18 +191,13 @@ describe('getAuthStore — pre-built auth store', () => {
 
       handleCallbackUrl() {
         this.callbacks += 1
-        return Promise.resolve({
-          loginMethod: 'dual' as const,
-          flow: 'already-authenticated' as const,
-          success: true,
-          durationMs: 0,
-        })
+        return Promise.resolve(CALLBACK_RESULT)
       }
     }
     const store = new ClassAuthStore(createBareClient())
 
     const auth = getAuthStore(createSource(store), {
-      createStudioRequestHandler: () => passthrough,
+      createStudioRequestHandler: createPassthroughHandler,
     })
 
     expect(auth).not.toBe(store)
@@ -223,15 +213,19 @@ describe('getAuthStore — pre-built auth store', () => {
     expect(store.callbacks).toBe(1)
   })
 
-  it('leaves clients that cannot be reconfigured as they are', async () => {
-    // A custom `unstable_clientFactory` may hand out a client without
-    // `withConfig`; there is no way to add a handler to it after the fact.
-    const bare = {config: () => ({projectId: 'x', dataset: 'y'})} as unknown as SanityClient
-    const auth = getAuthStore(createSource(createPrebuiltStore(bare)), {
-      createStudioRequestHandler: () => passthrough,
-    })
+  it('passes through a state whose client cannot be reconfigured', async () => {
+    // A hand-written store may emit something that is not a full
+    // `SanityClient`; without `withConfig` there is no way to add a handler,
+    // and the state object is handed on unchanged.
+    const bare = {config: () => ({projectId: 'abc123', dataset: 'test'})} as unknown as SanityClient
+    const upstream = {client: bare, authenticated: true, currentUser: null}
+    const auth = getAuthStore(
+      createSource({state: of(upstream), logout: () => Promise.resolve()}),
+      {
+        createStudioRequestHandler: createPassthroughHandler,
+      },
+    )
 
-    const {client} = await firstValueFrom(auth.state)
-    expect(client).toBe(bare)
+    expect(await firstValueFrom(auth.state)).toBe(upstream)
   })
 })
