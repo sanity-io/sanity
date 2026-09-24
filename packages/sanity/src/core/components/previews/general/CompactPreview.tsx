@@ -1,5 +1,4 @@
-import {rem, Skeleton, Text, TextSkeleton} from '@sanity/ui'
-import {styled} from 'styled-components'
+import {Skeleton, Text, TextSkeleton} from '@sanity/ui'
 import {Flex, Box} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
@@ -8,6 +7,7 @@ import {Media} from '../_common/Media'
 import {PREVIEW_SIZES} from '../constants'
 import {renderPreviewNode} from '../helpers'
 import {type PreviewMediaDimensions, type PreviewProps} from '../types'
+import {root, titleSkeleton} from './CompactPreview.css'
 
 /**
  * @hidden
@@ -20,16 +20,6 @@ const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
   fit: 'crop',
   dpr: getDevicePixelRatio(),
 }
-
-const Root = styled(Flex)`
-  height: ${rem(PREVIEW_SIZES.compact.media.height)};
-  box-sizing: content-box;
-`
-
-const TitleSkeleton = styled(TextSkeleton).attrs({animated: true, radius: 1, size: 1})`
-  max-width: ${rem(160)};
-  width: 80%;
-`
 
 /**
  * @hidden
@@ -47,8 +37,9 @@ export function CompactPreview(props: CompactPreviewProps) {
 
   if (isPlaceholder) {
     return (
-      <Root
+      <Flex
         alignItems="center"
+        className={root}
         data-testid="default-preview"
         paddingLeft={media ? 1 : 2}
         paddingRight={2}
@@ -64,18 +55,19 @@ export function CompactPreview(props: CompactPreviewProps) {
             gap={2}
             flexDirection="column"
           >
-            <TitleSkeleton />
+            <TextSkeleton animated className={titleSkeleton} radius={1} size={1} />
           </Flex>
 
           {statusNode}
         </Flex>
-      </Root>
+      </Flex>
     )
   }
 
   return (
-    <Root
+    <Flex
       alignItems="center"
+      className={root}
       data-testid="compact-preview"
       paddingLeft={media ? 1 : 2}
       paddingRight={2}
@@ -111,6 +103,6 @@ export function CompactPreview(props: CompactPreviewProps) {
       </Flex>
 
       {children && <Box marginLeft={1}>{children}</Box>}
-    </Root>
+    </Flex>
   )
 }
