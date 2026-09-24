@@ -3,15 +3,19 @@ import {ControlsIcon} from '@sanity/icons/Controls'
 import {SearchIcon} from '@sanity/icons/Search'
 import {SpinnerIcon} from '@sanity/icons/Spinner'
 import {Card} from '@sanity/ui'
-import {type ChangeEvent, useCallback, useEffect, useRef, type RefAttributes} from 'react'
+import {type ChangeEvent, useCallback, type RefAttributes} from 'react'
 import {keyframes, styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../../ui-components/button/Button'
 import {StatusButton} from '../../../../../components/StatusButton'
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
-import {useSearchState} from '../contexts/search/useSearchState'
-import {hasSearchableTerms} from '../utils/hasSearchableTerms'
+import {selectHasSearchableTerms} from '../contexts/search/searchSelectors'
+import {
+  useSearchFiltersVisible,
+  useSearchSelector,
+  useSearchState,
+} from '../contexts/search/useSearchState'
 import {CustomTextInput} from './common/CustomTextInput'
 
 const rotate = keyframes`
@@ -47,54 +51,33 @@ export function SearchHeader({
   ariaInputLabel,
   onClose,
 }: SearchHeaderProps & RefAttributes<HTMLInputElement>) {
-  const isMountedRef = useRef(false)
-
   const {t} = useTranslation()
-  const {
-    dispatch,
-    state: {
-      filters,
-      filtersVisible,
-      fullscreen,
-      result: {loading},
-      terms,
-    },
-  } = useSearchState()
-  const {types, query} = terms
+  const {fullscreen, searchActorRef} = useSearchState()
+  const query = useSearchSelector((snapshot) => snapshot.context.terms.query)
+  const loading = useSearchSelector((snapshot) => snapshot.context.result.loading)
+  const hasValidTerms = useSearchSelector(selectHasSearchableTerms)
+  const notificationBadgeVisible = useSearchSelector(
+    (snapshot) => snapshot.context.filters.length > 0 || snapshot.context.terms.types.length > 0,
+  )
+  const filtersVisible = useSearchFiltersVisible()
 
-  const hasValidTerms = hasSearchableTerms({terms})
   const ariaLabel =
     ariaInputLabel || hasValidTerms
       ? t('search.search-results-aria-label')
       : t('search.recent-searches-aria-label')
 
   const handleFiltersToggle = useCallback(
-    () => dispatch({type: 'FILTERS_VISIBLE_SET', visible: !filtersVisible}),
-    [dispatch, filtersVisible],
+    () => searchActorRef.send({type: 'FILTERS_VISIBLE_SET', visible: !filtersVisible}),
+    [searchActorRef, filtersVisible],
   )
   const handleQueryChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) =>
-      dispatch({type: 'TERMS_QUERY_SET', query: e.currentTarget.value}),
-    [dispatch],
+      searchActorRef.send({type: 'TERMS_QUERY_SET', query: e.currentTarget.value}),
+    [searchActorRef],
   )
   const handleQueryClear = useCallback(() => {
-    dispatch({type: 'TERMS_QUERY_SET', query: ''})
-  }, [dispatch])
-
-  /**
-   * Always show filters on non-fullscreen mode
-   */
-  useEffect(() => {
-    if (!fullscreen) {
-      dispatch({type: 'FILTERS_VISIBLE_SET', visible: true})
-    }
-  }, [dispatch, fullscreen])
-
-  useEffect(() => {
-    isMountedRef.current = true
-  }, [])
-
-  const notificationBadgeVisible = filters.length > 0 || types.length > 0
+    searchActorRef.send({type: 'TERMS_QUERY_SET', query: ''})
+  }, [searchActorRef])
 
   return (
     <Card flex="none">

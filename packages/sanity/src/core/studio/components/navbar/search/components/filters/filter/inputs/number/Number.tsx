@@ -8,9 +8,7 @@ import {type OperatorInputComponentProps} from '../../../../../definitions/opera
 export function SearchFilterNumberInput({value, onChange}: OperatorInputComponentProps<number>) {
   const [uncontrolledValue, setUncontrolledValue] = useState(value ?? '')
 
-  const {
-    state: {fullscreen},
-  } = useSearchState()
+  const {fullscreen} = useSearchState()
   const {t} = useTranslation()
 
   const handleChange = useCallback(

@@ -11,7 +11,8 @@ import {MenuItem} from '../../../../../../../../../../ui-components/menuItem/Men
 import {useSchema} from '../../../../../../../../../hooks/useSchema'
 import {useTranslation} from '../../../../../../../../../i18n/hooks/useTranslation'
 import {isNonNullable} from '../../../../../../../../../util/isNonNullable'
-import {useSearchState} from '../../../../../contexts/search/useSearchState'
+import {selectDocumentTypesNarrowed} from '../../../../../contexts/search/searchSelectors'
+import {useSearchSelector} from '../../../../../contexts/search/useSearchState'
 import {type OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
 import {getSchemaField} from '../../../../../utils/getSchemaField'
 
@@ -47,9 +48,7 @@ export function SearchFilterStringListInput({
 }: OperatorInputComponentProps<number | string>) {
   const menuButtonId = useId()
 
-  const {
-    state: {documentTypesNarrowed},
-  } = useSearchState()
+  const documentTypesNarrowed = useSearchSelector(selectDocumentTypesNarrowed)
   const {t} = useTranslation()
 
   const schema = useSchema()

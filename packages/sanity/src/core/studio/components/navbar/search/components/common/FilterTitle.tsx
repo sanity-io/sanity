@@ -1,6 +1,7 @@
 import {useMemo} from 'react'
 
-import {useSearchState} from '../../contexts/search/useSearchState'
+import {selectDefinitions} from '../../contexts/search/searchSelectors'
+import {useSearchSelector} from '../../contexts/search/useSearchState'
 import {getFilterDefinition} from '../../definitions/filters'
 import {type SearchFilter} from '../../types'
 import {getFieldFromFilter} from '../../utils/filterUtils'
@@ -11,9 +12,7 @@ interface FilterTitleProps {
 }
 
 export function FilterTitle({filter, maxLength}: FilterTitleProps) {
-  const {
-    state: {definitions},
-  } = useSearchState()
+  const definitions = useSearchSelector(selectDefinitions)
 
   const title = useMemo(() => {
     const filterDef = getFilterDefinition(definitions.filters, filter.filterName)

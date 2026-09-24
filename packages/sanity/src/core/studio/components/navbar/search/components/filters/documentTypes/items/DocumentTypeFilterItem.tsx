@@ -16,15 +16,15 @@ export const DocumentTypeFilterItem = memo(function TypeFilterItem({
   type,
   ...rest
 }: DocumentTypeFilterItemProps) {
-  const {dispatch} = useSearchState()
+  const {searchActorRef} = useSearchState()
 
   const handleTypeAdd = useCallback(() => {
-    dispatch({type: 'TERMS_TYPE_ADD', schemaType: type})
-  }, [dispatch, type])
+    searchActorRef.send({type: 'TERMS_TYPE_ADD', schemaType: type})
+  }, [searchActorRef, type])
 
   const handleTypeRemove = useCallback(() => {
-    dispatch({type: 'TERMS_TYPE_REMOVE', schemaType: type})
-  }, [dispatch, type])
+    searchActorRef.send({type: 'TERMS_TYPE_REMOVE', schemaType: type})
+  }, [searchActorRef, type])
 
   const handleClick = useCallback(() => {
     if (selected) {
