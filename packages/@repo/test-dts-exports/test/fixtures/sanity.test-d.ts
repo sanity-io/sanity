@@ -7296,7 +7296,7 @@ describe('sanity', () => {
     expectTypeOf<VersionInfoDocumentStub>().toBeObject()
   })
   test('VersionInlineBadge', () => {
-    expectTypeOf<typeof VersionInlineBadge>().not.toBeNever()
+    expectTypeOf<typeof VersionInlineBadge>().toBeFunction()
   })
   test('VersionType', () => {
     expectTypeOf<VersionType>().not.toBeNever()

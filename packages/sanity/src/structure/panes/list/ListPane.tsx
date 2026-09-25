@@ -16,18 +16,27 @@ type ListPaneProps = BaseStructureToolPaneProps<'list'>
 export function ListPane(props: ListPaneProps) {
   const {childItemId, index, isActive, isSelected, pane, paneKey} = props
 
-  const {defaultLayout, displayOptions, items, menuItems, menuItemGroups} = pane
+  const {
+    currentMaxWidth = 350,
+    defaultLayout,
+    displayOptions,
+    items,
+    maxWidth = 640,
+    menuItems,
+    menuItemGroups,
+    minWidth = 320,
+  } = pane
   const showIcons = displayOptions?.showIcons !== false
   const {title} = useI18nText(pane)
 
   return (
     <Pane
-      currentMaxWidth={350}
+      currentMaxWidth={currentMaxWidth}
       data-testid="structure-tool-list-pane"
       data-ui="ListPane"
       id={paneKey}
-      maxWidth={640}
-      minWidth={320}
+      maxWidth={maxWidth}
+      minWidth={minWidth}
       selected={isSelected}
     >
       {_DEBUG && (

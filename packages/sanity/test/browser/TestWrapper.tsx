@@ -13,6 +13,7 @@ import {
   defineConfig,
   EMPTY_ARRAY,
   type LocaleResourceBundle,
+  type PluginOptions,
   ResourceCacheProvider,
   type SchemaTypeDefinition,
   type SingleWorkspace,
@@ -44,6 +45,11 @@ interface TestWrapperProps {
    * `createTestProvider({resources})`.
    */
   i18nBundles?: LocaleResourceBundle[]
+  /**
+   * Plugins for the mock workspace, e.g. one that registers Components API middleware
+   * (`form.components`, `studio.components`) the test wants exercised.
+   */
+  plugins?: PluginOptions[]
 }
 const studioThemeConfig: RootTheme = buildTheme()
 
@@ -63,11 +69,13 @@ const getCachedMockWorkspace = memoize(
     schemaTypes: SchemaTypeDefinition[],
     betaFeatures: WorkspaceOptions['beta'] | undefined,
     i18nBundles: LocaleResourceBundle[] = EMPTY_ARRAY,
+    plugins: PluginOptions[] = EMPTY_ARRAY,
   ) => {
     const config = defineConfig({
       name: 'default',
       projectId: 'test',
       dataset: 'test',
+      plugins,
       schema: {
         types: schemaTypes,
       },
@@ -86,7 +94,7 @@ const getCachedMockWorkspace = memoize(
  * Sanity client and a mock workspace.
  */
 export const TestWrapper = (props: TestWrapperProps): React.JSX.Element | null => {
-  const {children, schemaTypes, betaFeatures, i18nBundles} = props
+  const {children, schemaTypes, betaFeatures, i18nBundles, plugins} = props
   const [client] = useState(() => createMockSanityClient() as unknown as SanityClient)
 
   return (
@@ -96,6 +104,7 @@ export const TestWrapper = (props: TestWrapperProps): React.JSX.Element | null =
         schemaTypes={schemaTypes}
         betaFeatures={betaFeatures}
         i18nBundles={i18nBundles}
+        plugins={plugins}
       >
         {children}
       </TestWrapperContents>
@@ -108,8 +117,10 @@ const TestWrapperContents = (
     client: SanityClient
   },
 ): React.JSX.Element | null => {
-  const {children, schemaTypes, betaFeatures, i18nBundles, client} = props
-  const mockWorkspace = use(getCachedMockWorkspace(client, schemaTypes, betaFeatures, i18nBundles))
+  const {children, schemaTypes, betaFeatures, i18nBundles, plugins, client} = props
+  const mockWorkspace = use(
+    getCachedMockWorkspace(client, schemaTypes, betaFeatures, i18nBundles, plugins),
+  )
 
   if (!mockWorkspace) {
     return null

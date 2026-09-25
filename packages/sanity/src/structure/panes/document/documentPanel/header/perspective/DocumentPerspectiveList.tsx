@@ -1,4 +1,4 @@
-import {Stack, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {memo} from 'react'
 import {
   getDraftId,
@@ -20,6 +20,7 @@ import {
   useTranslation,
   VersionChip,
 } from 'sanity'
+import {VStack} from 'ui5'
 
 import {useDocumentPerspectiveList} from '../../../../../hooks/useDocumentPerspectiveList'
 import {useDocumentPane} from '../../../useDocumentPane'
@@ -192,12 +193,12 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
             <VersionChip
               tooltipContent={
                 isTruncated ? (
-                  <Stack gap={2} style={{maxWidth: '300px'}}>
+                  <VStack gap={2} style={{maxWidth: '300px'}}>
                     <Text size={1} weight="medium">
                       {fullTitle}
                     </Text>
                     <TooltipContent release={filteredReleases.inCreation!} />
-                  </Stack>
+                  </VStack>
                 ) : (
                   <TooltipContent release={filteredReleases.inCreation!} />
                 )
@@ -239,12 +240,12 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
               <VersionChip
                 tooltipContent={
                   isTruncated ? (
-                    <Stack gap={2} style={{maxWidth: '300px'}}>
+                    <VStack gap={2} style={{maxWidth: '300px'}}>
                       <Text size={1} weight="medium">
                         {fullTitle}
                       </Text>
                       <TooltipContent release={release} />
-                    </Stack>
+                    </VStack>
                   ) : (
                     <TooltipContent release={release} />
                   )

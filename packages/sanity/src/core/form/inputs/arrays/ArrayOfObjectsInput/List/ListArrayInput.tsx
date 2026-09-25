@@ -63,8 +63,8 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   const [activeDragItemIndex, setActiveDragItemIndex] = useState<number | null>(null)
 
   const parentRef = useRef<HTMLDivElement>(null)
-  // Detect visibility changes to remount virtualizer when becoming visible
-  const {isVisible, mountKey} = useVisibilityDetection(parentRef)
+  // Remount the virtualizer when a hidden ancestor reveals the field, so it measures a laid-out list
+  const {mountKey} = useVisibilityDetection(parentRef)
 
   const focusPathKey = useMemo(() => getFocusedMemberKey(focusPath), [focusPath])
   const focusedIndex = useFocusedMemberIndex(members, focusPath)
@@ -116,7 +116,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                   {schemaType.placeholder || <>{t('inputs.array.no-items-label')}</>}
                 </Text>
               </Card>
-            ) : isVisible ? (
+            ) : (
               <VirtualizedArrayList
                 key={mountKey}
                 members={visibleMembers}
@@ -141,8 +141,8 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                 paddingY={paddingY}
                 radius={radius}
               />
-            ) : null}
-            {isVisible && collapsible && (
+            )}
+            {collapsible && (
               <ArrayItemsToggle
                 expanded={expanded}
                 onToggle={onToggle}

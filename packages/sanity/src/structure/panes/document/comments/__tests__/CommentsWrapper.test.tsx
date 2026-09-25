@@ -11,47 +11,36 @@ const mockResolveIntentLink = vi.hoisted(() => vi.fn(() => '/mock-intent-link'))
 let capturedCommentsProviderProps: Record<string, unknown> | undefined
 let capturedCommentsProviderV2Props: Record<string, unknown> | undefined
 
-vi.mock('sanity', async () => {
-  // Use the real id helpers so the derived target reflects production behaviour.
-  const {
-    getDraftId: draftId,
-    getPublishedId: publishedId,
-    getVersionId: versionId,
-  } = await import('@sanity/client/csm')
+vi.mock('sanity', async (importOriginal) => ({
+  ...(await importOriginal()),
+  CommentsEnabledProvider: ({children}: {children: React.ReactNode}) => <>{children}</>,
+  CommentsEnabledProviderV2: ({children}: {children: React.ReactNode}) => <>{children}</>,
+  CommentsProvider: (props: Record<string, unknown>) => {
+    capturedCommentsProviderProps = props
+    return <>{props.children}</>
+  },
+  CommentsProviderV2: (props: Record<string, unknown>) => {
+    capturedCommentsProviderV2Props = props
+    return <>{props.children}</>
+  },
+  getTargetScopeId: vi.fn(() => undefined),
+  useCommentsEnabled: vi.fn(() => ({enabled: true})),
+  useCommentsEnabledV2: vi.fn(() => ({enabled: true})),
+  usePerspective: vi.fn(() => ({
+    selectedPerspectiveName: undefined,
+    selectedReleaseId: undefined,
+    selectedVariantNames: [],
+    selectedPerspective: 'drafts',
+    perspectiveStack: ['drafts'],
+    excludedPerspectives: [],
+  })),
+  useWorkspace: vi.fn(() => ({
+    beta: {comments: {v2: false}},
+  })),
+}))
 
-  return {
-    COMMENTS_INSPECTOR_NAME: 'sanity/comments',
-    CommentsEnabledProvider: ({children}: {children: React.ReactNode}) => <>{children}</>,
-    CommentsEnabledProviderV2: ({children}: {children: React.ReactNode}) => <>{children}</>,
-    CommentsProvider: (props: Record<string, unknown>) => {
-      capturedCommentsProviderProps = props
-      return <>{props.children}</>
-    },
-    CommentsProviderV2: (props: Record<string, unknown>) => {
-      capturedCommentsProviderV2Props = props
-      return <>{props.children}</>
-    },
-    getDraftId: draftId,
-    getPublishedId: publishedId,
-    getVersionId: versionId,
-    getTargetScopeId: vi.fn(() => undefined),
-    useCommentsEnabled: vi.fn(() => ({enabled: true})),
-    useCommentsEnabledV2: vi.fn(() => ({enabled: true})),
-    usePerspective: vi.fn(() => ({
-      selectedPerspectiveName: undefined,
-      selectedReleaseId: undefined,
-      selectedVariantName: undefined,
-      selectedPerspective: 'drafts',
-      perspectiveStack: ['drafts'],
-      excludedPerspectives: [],
-    })),
-    useWorkspace: vi.fn(() => ({
-      beta: {comments: {v2: false}},
-    })),
-  }
-})
-
-vi.mock('sanity/router', () => ({
+vi.mock('sanity/router', async (importOriginal) => ({
+  ...(await importOriginal()),
   useRouter: vi.fn(() => ({
     state: {},
     resolveIntentLink: mockResolveIntentLink,
@@ -110,7 +99,7 @@ function draftsPerspective(overrides: Record<string, unknown> = {}) {
   return {
     selectedPerspectiveName: undefined,
     selectedReleaseId: undefined,
-    selectedVariantName: undefined,
+    selectedVariantNames: [],
     selectedPerspective: 'drafts',
     perspectiveStack: ['drafts'],
     excludedPerspectives: [],
@@ -169,7 +158,7 @@ describe('CommentsWrapper', () => {
       mockUsePerspective.mockReturnValue({
         selectedPerspectiveName: 'rSomeRelease',
         selectedReleaseId: 'rSomeRelease',
-        selectedVariantName: undefined,
+        selectedVariantNames: [],
         selectedPerspective: 'rSomeRelease',
         perspectiveStack: ['rSomeRelease', 'drafts'],
         excludedPerspectives: [],
@@ -204,7 +193,7 @@ describe('CommentsWrapper', () => {
       mockUsePerspective.mockReturnValue({
         selectedPerspectiveName: undefined,
         selectedReleaseId: undefined,
-        selectedVariantName: 'alpha-audience',
+        selectedVariantNames: ['alpha-audience'],
         selectedPerspective: 'drafts',
         perspectiveStack: ['drafts'],
         excludedPerspectives: [],
@@ -230,14 +219,16 @@ describe('CommentsWrapper', () => {
         comment: 'comment-variant',
       })
       // @ts-expect-error -- pre-existing, fix later
-      expect(mockResolveIntentLink.mock.calls[0][2]).toEqual([['variant', 'alpha-audience']])
+      expect(mockResolveIntentLink.mock.calls[0][2]).toEqual([
+        ['variant', 'variant:alpha-audience'],
+      ])
     })
 
     it('passes both perspective and variant search params for a release with a variant', () => {
       mockUsePerspective.mockReturnValue({
         selectedPerspectiveName: 'rSomeRelease',
         selectedReleaseId: 'rSomeRelease',
-        selectedVariantName: 'alpha-audience',
+        selectedVariantNames: ['alpha-audience'],
         selectedPerspective: 'rSomeRelease',
         perspectiveStack: ['rSomeRelease', 'drafts'],
         excludedPerspectives: [],
@@ -258,7 +249,7 @@ describe('CommentsWrapper', () => {
       // @ts-expect-error -- pre-existing, fix later
       expect(mockResolveIntentLink.mock.calls[0][2]).toEqual([
         ['perspective', 'rSomeRelease'],
-        ['variant', 'alpha-audience'],
+        ['variant', 'variant:alpha-audience'],
       ])
     })
 
@@ -266,7 +257,7 @@ describe('CommentsWrapper', () => {
       mockUsePerspective.mockReturnValue({
         selectedPerspectiveName: 'rScheduledDraft',
         selectedReleaseId: 'rScheduledDraft',
-        selectedVariantName: undefined,
+        selectedVariantNames: [],
         selectedPerspective: 'rScheduledDraft',
         perspectiveStack: ['rScheduledDraft', 'drafts'],
         excludedPerspectives: [],
@@ -366,7 +357,7 @@ describe('CommentsWrapper', () => {
         draftsPerspective({
           selectedPerspectiveName: 'rSomeRelease',
           selectedReleaseId: 'rSomeRelease',
-          selectedVariantName: 'alpha-audience',
+          selectedVariantNames: ['alpha-audience'],
           selectedPerspective: 'rSomeRelease',
           perspectiveStack: ['rSomeRelease', 'drafts'],
         }),
@@ -390,7 +381,7 @@ describe('CommentsWrapper', () => {
         draftsPerspective({
           selectedPerspectiveName: 'rSomeRelease',
           selectedReleaseId: 'rSomeRelease',
-          selectedVariantName: 'alpha-audience',
+          selectedVariantNames: ['alpha-audience'],
           selectedPerspective: 'rSomeRelease',
           perspectiveStack: ['rSomeRelease', 'drafts'],
         }),
@@ -533,7 +524,9 @@ describe('CommentsWrapper', () => {
     it('uses the resolved document id for a variant, rather than deriving a draft', () => {
       // Variant scopes are opaque and server-assigned; deriving `drafts.doc-1` here would file the
       // comment against the base pair instead of the variant document on screen.
-      mockUsePerspective.mockReturnValue(draftsPerspective({selectedVariantName: 'alpha-audience'}))
+      mockUsePerspective.mockReturnValue(
+        draftsPerspective({selectedVariantNames: ['alpha-audience']}),
+      )
       mockUseDocumentPane.mockReturnValue(documentPane({value: {_id: 'versions.varscope.doc-1'}}))
 
       expect(renderWrapper()).toBe('versions.varscope.doc-1')
@@ -544,7 +537,7 @@ describe('CommentsWrapper', () => {
         draftsPerspective({
           selectedPerspectiveName: 'rSomeRelease',
           selectedReleaseId: 'rSomeRelease',
-          selectedVariantName: 'alpha-audience',
+          selectedVariantNames: ['alpha-audience'],
           selectedPerspective: 'rSomeRelease',
           perspectiveStack: ['rSomeRelease', 'drafts'],
         }),

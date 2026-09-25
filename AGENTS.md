@@ -452,6 +452,21 @@ On macOS, use `TMPDIR=/private/tmp pnpm test` if the E2E summary reporter test f
 `/var` versus `/private/var` path mismatch. The test changes its working directory, which resolves
 the symlink; using a canonical temporary path keeps its expected and actual paths consistent.
 
+#### Vitest 5 specifics
+
+- Every Vitest artifact lives under `.vitest/` (gitignored): sharded blob reports in
+  `.vitest/blob/` (what `test.yml` uploads and `--merge-reports` reads), browser-mode attachments
+  and failure screenshots in `packages/sanity/.vitest/attachments/`.
+- `clearMocks` is on by default: mock call history is cleared before every test, so never assert
+  on calls recorded in `beforeAll` or at module scope.
+- `expect.poll` fails as soon as its `timeout` elapses (no more passing on a late attempt); give it
+  an explicit `timeout` when the polled state is produced behind a debounce or a slow effect.
+- In browser mode, `expect.element(...).toHaveTextContent()` is a full-string equality check and
+  rejects `RegExp`; use `toMatchTextContent()` for substring or regex matches. Locators keep the
+  Vitest 4 substring, case-insensitive matching (`browser.locators.exact: false` in
+  `vitest.browser.config.mts`); pass `{exact: true}` per call when a full match matters. Custom
+  matcher typings augment `Matchers<R, T>` from `vitest`, not `Assertion`.
+
 #### Test Timeouts
 
 When a test needs a custom timeout, use the Vitest options object as the second argument (not the deprecated third-argument form). Prefer numeric separators for readability:
@@ -547,7 +562,9 @@ while closed (hidden with `display: none`). Consequences for tests:
 
 - Plain text / test-id queries can match **closed** overlay content. Prefer scoping to the
   visible element under test (or assert visibility) instead of `getByText` / `getByTestId` on
-  the whole document.
+  the whole document. In browser mode this is a hard failure: a `page.getByText(...)` that also
+  hits a closed tooltip's copy of the text resolves to two elements and trips the locator's
+  strict-mode check, so scope it (`page.getByTestId('field-publishedAt').getByText(...)`).
 - In jsdom, asserting that closed content is hidden works (`expect(...).not.toBeVisible()`), but
   selecting the **open** overlay by visibility does not. Runtime styles are disabled there, so
   nothing overrides the `hidden` attribute `@sanity/ui` puts on an open popover, and
@@ -686,6 +703,8 @@ pnpm test:e2e               # Run E2E tests
 pnpm test:e2e --ui          # Interactive mode
 ```
 
+Playwright `webServer.command` must be `node --run <script>`, never `pnpm`. pnpm 12.6+ (`@pnpm/exe`) detaches the script into its own process group, so Playwright's teardown `kill(-pid)` never reaps vite/sanity, the runner never prints its summary, and the GHA job sits until `timeout-minutes` (auth 15m, embedded 30m). `node --run` stays in the webServer process group and dies with it.
+
 ## Pre-commit Hook
 
 Lefthook runs on commit (see `lefthook.yml`), which:
@@ -749,9 +768,16 @@ When making intentional changes that affect snapshots:
 # Update all snapshots
 pnpm test -- -u
 
-# Update specific test's snapshots
-pnpm test -- -u MyComponent
+# Update a specific test's snapshots — the filter MUST come before -u
+pnpm test -- MyComponent -u
+pnpm vitest run --project=sanity path/to/MyComponent.test.tsx -u
 ```
+
+**`-u` / `--update` swallows the argument that follows it.** Vitest parses it as a flag
+that takes a value, so `-u MyComponent` silently drops the filter and updates every
+snapshot in the repo (`vitest list --filesOnly -u CollapseTabList` lists all 804 files;
+`vitest list --filesOnly CollapseTabList -u` lists one). Put every path or name filter
+before the flag.
 
 Review snapshot changes carefully before committing.
 
@@ -956,6 +982,7 @@ No Docker, databases, or other local services are required for unit tests, lint,
 - **Seeding test documents for the `/test` workspace via API.** In local dev (non-staging), the `/test` workspace talks to the production API host, so `STUDIO_AUTH_TOKEN` works as a Bearer token against `https://ppsg7ml5.api.sanity.io/v2024-01-01/data/mutate/test` (it returns 401 "Session not found" on `api.sanity.work`). Caveat when testing history/review-changes features: documents created by raw API mutations (e.g. `createOrReplace` of a published id) do not produce publish events, so the Review changes inspector shows "There are no changes" / "Same revision selected". Instead, create only the draft (`drafts.<id>`) via the API, click Publish in the studio UI to create a real publish event, then edit fields in the form to create draft changes.
 - **Seeding releases for the `/test` workspace via API.** Releases and document versions are created through the actions endpoint (`POST https://ppsg7ml5.api.sanity.io/v2025-02-19/data/actions/test` with `{"actions": [...]}`, same Bearer token). Useful action types: `sanity.action.release.create`, `sanity.action.document.version.create` (pass `publishedId` plus a `document` with `_id: versions.<releaseId>.<publishedId>`), `sanity.action.document.version.unpublish`, `sanity.action.document.version.discard`, `sanity.action.release.archive`, `sanity.action.release.delete`. Note that a version created by the unpublish action alone is an empty tombstone carrying only `_system.delete: true` — to get a version with content, create the version first and then unpublish it. `/test` is a shared dataset, so archive and delete any release you seed once you are done.
 - **Vitest browser mode (`*.browser.test.tsx`) needs a Playwright browser install first.** The VM has no browsers preinstalled: run `pnpm --filter sanity exec playwright install chromium`, then run a single file with `SANITY_VITEST_BROWSER=chromium pnpm --filter sanity exec vitest run -c vitest.browser.config.mts <path>`. Without `SANITY_VITEST_BROWSER` the config tries chromium, firefox, and webkit. No package build is required for these tests (they resolve monorepo sources).
+  - **Use the suite's failure screenshots for before/after walkthrough artifacts** when the change is only observable in browser mode. Vitest writes a full-viewport PNG of the failing state to the gitignored `src/**/__tests__/__screenshots__/<test file>/` and prints the paths, so running the new (red) test on a stashed fix and again on the applied fix yields a matched pair with no extra tooling. Delete the directory afterwards.
 - **The Storybook addon-vitest suite (`pnpm --filter sanity-storybook test`) dies mid-run in the VM.** After roughly 45 story files the headless chromium page goes away and vitest reports `Browser connection was closed while running tests` as an unhandled error (reproducible on a clean `main`, so it is not your change). Run the suite in chunks of about 20 story files instead: `cd dev/storybook && pnpm exec vitest run <absolute paths...>`. Same Playwright chromium install as above; `pnpm --filter sanity-storybook exec storybook build` (about 20s, no package build needed) is the quick check that every remaining story still compiles into the index.
 - **Install agent skills with `pnpm dlx skills`, not `npx skills`.** This repo is pnpm-only, and the Cloud VM's `npx` wrapper often fails with `sh: 1: skills: not found`. Use the pnpm equivalent and skip prompts:
 
@@ -978,7 +1005,7 @@ No Docker, databases, or other local services are required for unit tests, lint,
 - **Snapshot lockfile drift can fail `pnpm check:oxlint` in untouched files.** The VM image may have `node_modules` resolved to newer in-range versions than the committed `pnpm-lock.yaml` (e.g. `@sanity/client` 8.4.0 vs the locked 8.3.0), and `pnpm install` — even with `--frozen-lockfile` — keeps rewriting the lockfile to match instead of downgrading. Type errors in files you never touched (e.g. `@sanity/vision`'s `useDatasets.test.ts` missing a `description` field) are this drift, not your change: revert the churn with `git checkout -- pnpm-lock.yaml`, never commit it, and rely on CI (which installs from the committed lockfile) for the authoritative type check of those files.
 - **Do not run oxlint type checking (`pnpm check:oxlint`) while the dev studio is running.** Both are memory-hungry and running them concurrently has exhausted the VM's memory and frozen it for hours (unkillable thrashing). Stop `sanity dev` first (Ctrl-C in its tmux session), run the checks, then restart the studio.
   - This has bitten agents more than once. The freeze is unrecoverable in practice: the shell stops spawning processes and even file reads time out, and the VM is eventually rebuilt, **losing every uncommitted change**. Sequence the work so linting happens before the studio starts, and commit and push before starting any manual verification.
-- **`sanity dev` in bundledDev mode (`unstable_bundledDev: true`, on by default in `dev/test-studio`, `dev/design-studio`, `dev/radar`, `dev/auth-test-studio`) grows by roughly 300 MB of RSS per distinct lazy chunk (`/@vite/lazy?id=...`) it compiles, on top of a ~2 GB baseline.** Page reloads, fresh client ids and re-requests of an already compiled chunk cost nothing, but a studio session that touches every plugin's lazy entry points can push the server past 10 GB (13.6 GB observed on vite 8.2.2, freezing the 16 GB VM). Classic mode sits at ~1 GB for the same actions. When you need a long-running studio or plan to exercise many tools, either flip `unstable_bundledDev` off locally or run the server with a PID watchdog (`while sleep 5; do r=$(ps -o rss= -p $PID) || break; [ "${r:-0}" -gt 5000000 ] && kill $PID; done`) and restart it when it trips. This is upstream vite/rolldown behavior, not something the studio config can tune.
+- **`sanity dev` in bundledDev mode (`unstable_bundledDev: true`, on by default in `dev/test-studio`, `dev/design-studio`, `dev/radar`, `dev/auth-test-studio`) grows by roughly 300 MB of RSS per distinct lazy chunk (`/@vite/lazy?id=...`) it compiles, on top of a ~2 GB baseline.** Page reloads, fresh client ids and re-requests of an already compiled chunk cost nothing, but a studio session that touches every plugin's lazy entry points can push the server past 10 GB (13.6 GB observed on vite 8.2.2, freezing the 16 GB VM). Classic mode sits at ~1 GB for the same actions. When you need a long-running studio or plan to exercise many tools, either flip `unstable_bundledDev` off locally or run the server with a PID watchdog (`while sleep 5; do r=$(ps -o rss= -p $PID) || break; [ "${r:-0}" -gt 5000000 ] && kill $PID; done`) and restart it when it trips. Note that opening a single `/test` page already compiles enough chunks to pass that 5 GB threshold (6.1 GB observed on vite 8.3.0), so a watchdog set that low kills the server mid-load and the browser only reports `ViteDevServerStoppedError`; for a short scripted verification, flipping `unstable_bundledDev: false` in `dev/test-studio/sanity.cli.ts` is the cheaper option (1.3 GB for the same session). This is upstream vite/rolldown behavior, not something the studio config can tune.
 - **Simulating Presentation preview failure states.** The `/test` workspace's presentation tool allows any localhost origin (`allowOrigins: ['https://*.sanity.dev', 'http://localhost:*']`), so failure UIs can be triggered deterministically by pointing the preview at a throwaway local server via the `?preview=` search param, e.g. `http://localhost:3333/test/presentation?preview=http%3A%2F%2Flocalhost%3A3398%2F`. A plain HTML page that never runs `@sanity/visual-editing` exercises the overlays connection timeout path (loading overlay → "connecting" status card after 5s → caution card with "Continue anyway" after 3s more); a server that accepts connections but never responds (`createServer(() => {})`) keeps the iframe `load` event from firing and exercises the 15s load timeout → error card → "Retry" path. Note the demo screen recordings are time-compressed, so verify real timings from the `sanity dev` terminal log — the studio pipes browser `console.error` output there with timestamps.
 - **Verifying a production studio build (`sanity build`) must happen on an allow-listed origin.** `sanity build` for `dev/test-studio` bundles the _built_ `sanity` package (run `pnpm build` first — only `sanity dev` resolves monorepo sources via the `monorepo` export condition). Serve `dev/test-studio/dist` statically on **port 3333** (e.g. `python3 -m http.server 3333`, after stopping the dev server): project `ppsg7ml5` only allow-lists `http://localhost:3333`, so from any other port API requests fail CORS and the bifur `/socket/` WebSocket is rejected during its handshake (close code 1006 + retry loop). The static server has no SPA fallback, so load `http://localhost:3333/#token=…` (root path) and let the client-side router redirect, rather than deep-linking to a workspace path.
 - **Recording demo videos: drive the browser with Playwright rather than the screen recorder.** The screen recorder auto-zooms toward cursor activity and has truncated clips mid-interaction, producing unusable artifacts. Playwright records a fixed viewport, so the framing cannot drift:
