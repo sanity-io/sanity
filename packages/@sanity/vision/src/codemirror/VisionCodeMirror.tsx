@@ -56,9 +56,20 @@ export function VisionCodeMirror({
   initialValue: ReactCodeMirrorProps['value']
   extensions: Extension[]
 } & RefAttributes<VisionCodeMirrorHandle>) {
-  // The value prop is only passed for initial value, and is not updated when the parent component updates the value.
-  // If you need to update the value, use the resetEditorContent function.
-  const [initialValue] = useState(initialValueProp)
+  // The `initialValue` prop only seeds the editor; later parent updates go through
+  // `resetEditorContent`. The latest document is still mirrored into state because
+  // `@uiw/react-codemirror` destroys its `EditorView` when its effects are cleaned up and rebuilds
+  // it from `value` when they run again, which happens without a remount when the tool is hidden
+  // and shown again inside an `<Activity>` boundary (`beta.reactActivityMode`). While the
+  // view is alive `value` always equals its document, so the value sync never dispatches.
+  const [value, setValue] = useState(initialValueProp)
+  const handleChange = useCallback<NonNullable<ReactCodeMirrorProps['onChange']>>(
+    (nextValue, viewUpdate) => {
+      setValue(nextValue)
+      onChange?.(nextValue, viewUpdate)
+    },
+    [onChange],
+  )
   const sanityTheme = useTheme()
   const theme = useCodemirrorTheme(sanityTheme)
   const codeMirrorRef = useRef<ReactCodeMirrorRef>(null)
@@ -91,8 +102,8 @@ export function VisionCodeMirror({
         basicSetup={false}
         theme={theme}
         extensions={extensions}
-        value={initialValue}
-        onChange={onChange}
+        value={value}
+        onChange={handleChange}
       />
     </EditorRoot>
   )
