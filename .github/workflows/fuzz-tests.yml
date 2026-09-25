@@ -1,0 +1,66 @@
+name: Fuzz tests
+permissions: {}
+
+# Runs the fuzz tests (`*.fuzz.test.*` in packages/sanity), which the regular
+# unit test run leaves out because they take minutes. Fixed seeds on every pull
+# request and push to main (deterministic, so a failure is always real and
+# reproduces locally), and random seeds when started by hand. Fuzz tests read
+# `FUZZ_SEED`, `FUZZ_RANDOM` and `FUZZ_RUNS` from the environment.
+#
+# There is no paths filter: what a fuzz test covers can break from changes
+# almost anywhere, such as a dependency bump or a change to shared code.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      runs:
+        description: "Cases per check, per process"
+        default: "300"
+        required: false
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  fuzz:
+    name: Fuzz (${{ matrix.label }})
+    runs-on: ubuntu-8core
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      # Long campaigns need more heap than Node's default.
+      NODE_OPTIONS: --max-old-space-size=8192
+    strategy:
+      fail-fast: false
+      matrix:
+        # Pull requests and pushes: fixed seeds. Manual runs: random seeds (the
+        # seed is printed on failure), four processes in parallel.
+        include: ${{ fromJSON(github.event_name == 'workflow_dispatch' &&'[{"label":"random 1","seed":""},{"label":"random 2","seed":""},{"label":"random 3","seed":""},{"label":"random 4","seed":""}]' || '[{"label":"seed 1","seed":"1"},{"label":"seed 2","seed":"2"},{"label":"seed 3","seed":"3"}]') }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+        with:
+          node-version: 24
+
+      - name: Build packages
+        run: pnpm build --output-logs=errors-only
+
+      - name: Run the fuzz tests
+        env:
+          FUZZ_SEED: ${{ matrix.seed }}
+          FUZZ_RUNS: ${{ inputs.runs || (matrix.seed == '' && '300' || '150') }}
+        run: |
+          if [ -z "$FUZZ_SEED" ]; then
+            unset FUZZ_SEED
+            export FUZZ_RANDOM=1
+          fi
+          pnpm --filter sanity test:fuzz
