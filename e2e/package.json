@@ -27,7 +27,7 @@
     "@repo/utils": "workspace:*",
     "@sanity/client": "catalog:",
     "@sanity/uuid": "^3.0.3",
-    "chromatic": "^18.9.4",
+    "chromatic": "^18.9.5",
     "fflate": "^0.8.3",
     "tsx": "^4.23.15",
     "vitest": "catalog:"
