@@ -233,10 +233,12 @@ export const tab = style({
   },
 })
 
+/** The tab title doubles as the drag handle, so the browser leaves horizontal touches to motion */
 export const tabTitleButton = style({
   minWidth: 0,
   flexShrink: 1,
   overflow: 'hidden',
+  touchAction: 'pan-y',
 })
 
 export const tabCloseButton = style({

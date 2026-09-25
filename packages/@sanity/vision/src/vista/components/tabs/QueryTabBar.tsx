@@ -1,8 +1,15 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {CloseIcon} from '@sanity/icons/Close'
 import {Badge, Button, TextInput} from '@sanity/ui'
-import {Reorder} from 'motion/react'
-import {type KeyboardEvent, type MouseEvent, useCallback, useRef, useState} from 'react'
+import {Reorder, useDragControls} from 'motion/react'
+import {
+  type KeyboardEvent,
+  type MouseEvent,
+  type RefObject,
+  useCallback,
+  useRef,
+  useState,
+} from 'react'
 import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
@@ -67,6 +74,7 @@ interface TabHandleProps {
   tab: VistaTab
   selected: boolean
   editing: boolean
+  dragConstraints: RefObject<HTMLDivElement | null>
   onSelect: () => void
   onClose: () => void
   onStartRename: () => void
@@ -80,6 +88,7 @@ function TabHandle(props: TabHandleProps) {
     tab,
     selected,
     editing,
+    dragConstraints,
     onSelect,
     onClose,
     onStartRename,
@@ -89,6 +98,8 @@ function TabHandle(props: TabHandleProps) {
   } = props
   const {t} = useTranslation(visionLocaleNamespace)
   const title = getTabTitle(tab, t('vista.tabs.untitled'))
+  const dragControls = useDragControls()
+  const [dragging, setDragging] = useState(false)
 
   const handleAuxClick = useCallback(
     (event: MouseEvent) => {
@@ -102,57 +113,76 @@ function TabHandle(props: TabHandleProps) {
   )
 
   return (
-    <Flex
-      alignItems="center"
-      className={tabStyle}
-      data-selected={selected ? 'true' : undefined}
-      data-testid="vista-tab"
-      gap={1}
-      paddingLeft={1}
-      paddingRight={1}
-      role="presentation"
+    <Reorder.Item
+      as="div"
+      className={tabItem}
+      data-dragging={dragging ? 'true' : undefined}
+      data-testid="vista-tab-item"
+      // Keep the dragged tab inside the strip, which clips whatever leaves it
+      dragConstraints={dragConstraints}
+      dragControls={dragControls}
+      dragElastic={0.1}
+      // Only the title starts a drag, so a press on the close button or in the rename field
+      // keeps its own behaviour instead of moving the tab
+      dragListener={false}
+      layout="position"
+      onDragEnd={() => setDragging(false)}
+      onDragStart={() => setDragging(true)}
+      value={tab}
     >
-      {editing ? (
-        <TabTitleInput onCancel={onCancelRename} onCommit={onRename} title={title} />
-      ) : (
+      <Flex
+        alignItems="center"
+        className={tabStyle}
+        data-selected={selected ? 'true' : undefined}
+        data-testid="vista-tab"
+        gap={1}
+        paddingLeft={1}
+        paddingRight={1}
+        role="presentation"
+      >
+        {editing ? (
+          <TabTitleInput onCancel={onCancelRename} onCommit={onRename} title={title} />
+        ) : (
+          <Button
+            aria-controls={QUERY_TAB_PANEL_ID}
+            aria-selected={selected}
+            className={tabTitleButton}
+            data-testid="vista-tab-button"
+            fontSize={1}
+            id={getQueryTabId(tab.id)}
+            mode="bleed"
+            onAuxClick={handleAuxClick}
+            onClick={onSelect}
+            onDoubleClick={onStartRename}
+            onKeyDown={onKeyDown}
+            onPointerDown={(event) => dragControls.start(event)}
+            padding={2}
+            role="tab"
+            tabIndex={selected ? 0 : -1}
+            text={title}
+            textWeight={selected ? 'medium' : 'regular'}
+          />
+        )}
+        {tab.autoRefetch && (
+          <Box flexShrink={0}>
+            <Badge fontSize={0} tone="positive">
+              {t('vista.live.active')}
+            </Badge>
+          </Box>
+        )}
         <Button
-          aria-controls={QUERY_TAB_PANEL_ID}
-          aria-selected={selected}
-          className={tabTitleButton}
-          data-testid="vista-tab-button"
+          aria-label={t('vista.tabs.close-tab')}
+          className={tabCloseButton}
+          data-testid="vista-tab-close"
           fontSize={1}
-          id={getQueryTabId(tab.id)}
+          icon={CloseIcon}
           mode="bleed"
-          onAuxClick={handleAuxClick}
-          onClick={onSelect}
-          onDoubleClick={onStartRename}
-          onKeyDown={onKeyDown}
-          padding={2}
-          role="tab"
-          tabIndex={selected ? 0 : -1}
-          text={title}
-          textWeight={selected ? 'medium' : 'regular'}
+          onClick={onClose}
+          padding={1}
+          tabIndex={-1}
         />
-      )}
-      {tab.autoRefetch && (
-        <Box flexShrink={0}>
-          <Badge fontSize={0} tone="positive">
-            {t('vista.live.active')}
-          </Badge>
-        </Box>
-      )}
-      <Button
-        aria-label={t('vista.tabs.close-tab')}
-        className={tabCloseButton}
-        data-testid="vista-tab-close"
-        fontSize={1}
-        icon={CloseIcon}
-        mode="bleed"
-        onClick={onClose}
-        padding={1}
-        tabIndex={-1}
-      />
-    </Flex>
+      </Flex>
+    </Reorder.Item>
   )
 }
 
@@ -162,7 +192,6 @@ export function QueryTabBar() {
   const tabs = useVistaSelector((snapshot) => snapshot.context.tabs)
   const activeTabId = useVistaSelector((snapshot) => snapshot.context.activeTabId)
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [draggingId, setDraggingId] = useState<string | null>(null)
   const listRef = useRef<HTMLDivElement | null>(null)
 
   const focusTab = useCallback((id: string) => {
@@ -233,35 +262,22 @@ export function QueryTabBar() {
         values={tabs}
       >
         {tabs.map((tab) => (
-          <Reorder.Item
-            as="div"
-            className={tabItem}
-            data-dragging={draggingId === tab.id ? 'true' : undefined}
-            data-testid="vista-tab-item"
-            // Keep the dragged tab inside the strip, which clips whatever leaves it
+          <TabHandle
             dragConstraints={listRef}
-            dragElastic={0.1}
+            editing={editingId === tab.id}
             key={tab.id}
-            layout="position"
-            onDragEnd={() => setDraggingId(null)}
-            onDragStart={() => setDraggingId(tab.id)}
-            value={tab}
-          >
-            <TabHandle
-              editing={editingId === tab.id}
-              onKeyDown={handleTabKeyDown}
-              onCancelRename={() => setEditingId(null)}
-              onClose={() => actorRef.send({type: 'tab.close', id: tab.id})}
-              onRename={(title) => {
-                setEditingId(null)
-                actorRef.send({type: 'tab.rename', id: tab.id, title})
-              }}
-              onSelect={() => actorRef.send({type: 'tab.select', id: tab.id})}
-              onStartRename={() => setEditingId(tab.id)}
-              selected={tab.id === activeTabId}
-              tab={tab}
-            />
-          </Reorder.Item>
+            onKeyDown={handleTabKeyDown}
+            onCancelRename={() => setEditingId(null)}
+            onClose={() => actorRef.send({type: 'tab.close', id: tab.id})}
+            onRename={(title) => {
+              setEditingId(null)
+              actorRef.send({type: 'tab.rename', id: tab.id, title})
+            }}
+            onSelect={() => actorRef.send({type: 'tab.select', id: tab.id})}
+            onStartRename={() => setEditingId(tab.id)}
+            selected={tab.id === activeTabId}
+            tab={tab}
+          />
         ))}
       </Reorder.Group>
       <Flex alignItems="center" paddingX={1}>
