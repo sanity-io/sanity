@@ -13,6 +13,13 @@
  * internals entry exports it: the deliberate exceptions that stay off the entry (deprecated
  * utilities such as `createAuthStore`, see `PUBLIC_BY_USAGE` in that test) have no other import
  * path and are imported from `sanity`.
+ *
+ * Covered forms: named imports; namespace imports (`import * as S from 'sanity'` followed by
+ * `S.name` in value or type position); dynamic imports of an entry, directly or through a
+ * module-scope `const load = () => import('sanity')` alias, when the module is destructured
+ * (`const {name} = await load()`), accessed (`(await import('sanity')).name`) or handed to
+ * `.then((m) => m.name)` / `.then(({name}) => …)`. Other ways of reaching the module object are
+ * not analysed, so do not introduce them for these entries.
  */
 import fs from 'node:fs'
 import path from 'node:path'
@@ -88,32 +95,148 @@ function* walk(dir: string): Generator<string> {
   }
 }
 
-function importedNames(
-  file: string,
-  entries: Record<string, Set<string>>,
-): {specifier: string; names: string[]}[] {
+type Hit = {specifier: string; names: string[]}
+
+/** Climbs out of `await`, parentheses, `as` casts and `!` so the parent is the real consumer. */
+function consumerOf(node: ts.Node): ts.Node {
+  let current = node
+  while (
+    ts.isAwaitExpression(current.parent) ||
+    ts.isParenthesizedExpression(current.parent) ||
+    ts.isAsExpression(current.parent) ||
+    ts.isNonNullExpression(current.parent)
+  ) {
+    current = current.parent
+  }
+  return current
+}
+
+function bindingNames(pattern: ts.ObjectBindingPattern): string[] {
+  return pattern.elements.flatMap((element) => {
+    const name = element.propertyName ?? element.name
+    return ts.isIdentifier(name) ? [name.text] : []
+  })
+}
+
+/** `S.name` (value position) and `S.Name` (type position) for the identifier `namespace`. */
+function memberNames(scope: ts.Node, namespace: string): string[] {
+  const names: string[] = []
+  const visit = (node: ts.Node) => {
+    if (
+      ts.isPropertyAccessExpression(node) &&
+      ts.isIdentifier(node.expression) &&
+      node.expression.text === namespace
+    ) {
+      names.push(node.name.text)
+    } else if (
+      ts.isQualifiedName(node) &&
+      ts.isIdentifier(node.left) &&
+      node.left.text === namespace
+    ) {
+      names.push(node.right.text)
+    }
+    ts.forEachChild(node, visit)
+  }
+  visit(scope)
+  return names
+}
+
+/** Names read off the module object that `moduleExpression` (an `import()` call) evaluates to. */
+function dynamicModuleNames(moduleExpression: ts.Node): string[] {
+  const expression = consumerOf(moduleExpression)
+  const consumer = expression.parent
+  if (ts.isVariableDeclaration(consumer) && ts.isObjectBindingPattern(consumer.name)) {
+    return bindingNames(consumer.name)
+  }
+  if (ts.isPropertyAccessExpression(consumer) && consumer.expression === expression) {
+    if (consumer.name.text !== 'then') return [consumer.name.text]
+    const call = consumer.parent
+    if (!ts.isCallExpression(call) || call.expression !== consumer) return []
+    const [callback] = call.arguments
+    if (!callback || (!ts.isArrowFunction(callback) && !ts.isFunctionExpression(callback))) {
+      return []
+    }
+    const [parameter] = callback.parameters
+    if (!parameter) return []
+    if (ts.isObjectBindingPattern(parameter.name)) return bindingNames(parameter.name)
+    if (ts.isIdentifier(parameter.name)) return memberNames(callback.body, parameter.name.text)
+  }
+  return []
+}
+
+/** The entry an `import('…')` call (or a call of a module-scope alias for one) loads. */
+function dynamicImportSpecifier(node: ts.Node, aliases: Map<string, string>): string | undefined {
+  if (!ts.isCallExpression(node)) return undefined
+  if (node.expression.kind === ts.SyntaxKind.ImportKeyword) {
+    const [argument] = node.arguments
+    return argument && ts.isStringLiteral(argument) ? argument.text : undefined
+  }
+  return ts.isIdentifier(node.expression) ? aliases.get(node.expression.text) : undefined
+}
+
+/** `const load = () => import('sanity')` (expression or single-`return` body) → `load` → 'sanity'. */
+function importAliases(source: ts.SourceFile): Map<string, string> {
+  const aliases = new Map<string, string>()
+  for (const statement of source.statements) {
+    if (!ts.isVariableStatement(statement)) continue
+    for (const declaration of statement.declarationList.declarations) {
+      const initializer = declaration.initializer
+      if (!ts.isIdentifier(declaration.name) || !initializer) continue
+      if (!ts.isArrowFunction(initializer) && !ts.isFunctionExpression(initializer)) continue
+      let body: ts.Node | undefined = initializer.body
+      if (ts.isBlock(body)) {
+        const [only] = body.statements
+        body = only && ts.isReturnStatement(only) ? only.expression : undefined
+      }
+      while (body && ts.isParenthesizedExpression(body)) body = body.expression
+      const specifier = body && dynamicImportSpecifier(body, new Map())
+      if (specifier) aliases.set(declaration.name.text, specifier)
+    }
+  }
+  return aliases
+}
+
+function importedNames(file: string, entries: Record<string, Set<string>>): Hit[] {
   const source = ts.createSourceFile(
     file,
     fs.readFileSync(file, 'utf8'),
     ts.ScriptTarget.Latest,
-    false,
+    true,
     file.endsWith('x') ? ts.ScriptKind.TSX : ts.ScriptKind.TS,
   )
-  const hits: {specifier: string; names: string[]}[] = []
+  const hits: Hit[] = []
+  const report = (specifier: string, candidates: string[]) => {
+    const internal = entries[specifier]
+    if (!internal) return
+    const names = [...new Set(candidates.filter((name) => internal.has(name)))]
+    if (names.length > 0) hits.push({specifier, names})
+  }
+
   for (const statement of source.statements) {
     if (!ts.isImportDeclaration(statement) || !ts.isStringLiteral(statement.moduleSpecifier)) {
       continue
     }
     const specifier = statement.moduleSpecifier.text
-    const internal = entries[specifier]
-    if (!internal) continue
     const bindings = statement.importClause?.namedBindings
-    if (!bindings || !ts.isNamedImports(bindings)) continue
-    const names = bindings.elements
-      .map((element) => (element.propertyName ?? element.name).text)
-      .filter((name) => internal.has(name))
-    if (names.length > 0) hits.push({specifier, names})
+    if (!bindings) continue
+    if (ts.isNamedImports(bindings)) {
+      report(
+        specifier,
+        bindings.elements.map((element) => (element.propertyName ?? element.name).text),
+      )
+    } else if (entries[specifier]) {
+      report(specifier, memberNames(source, bindings.name.text))
+    }
   }
+
+  const aliases = importAliases(source)
+  const visit = (node: ts.Node) => {
+    const specifier = dynamicImportSpecifier(node, aliases)
+    if (specifier && entries[specifier]) report(specifier, dynamicModuleNames(node))
+    ts.forEachChild(node, visit)
+  }
+  visit(source)
+
   return hits
 }
 

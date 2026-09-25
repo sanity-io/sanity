@@ -6,7 +6,8 @@ import {Flex} from 'ui5'
 // Loaded on demand so the initial paste screen doesn't carry the sanity
 // package; the report and the parser share the same lazy chunk. Module-scope
 // because React Compiler cannot lower import() inside a component body.
-const loadSanityModule = () => import('sanity')
+const loadSanityModule = () =>
+  import('sanity/_dangerously_use_private_internals_that_do_not_follow_semver')
 
 const DiagnosticsReport = lazy(() =>
   loadSanityModule().then((module) => ({default: module.DiagnosticsReport})),
