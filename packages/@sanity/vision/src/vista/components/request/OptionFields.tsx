@@ -21,6 +21,7 @@ import {
   type VistaPerspective,
   type VistaVariantMode,
 } from '../../store/types'
+import {getEffectivePerspective} from '../../util/tabPerspective'
 
 function FieldLabel({children, htmlFor}: {children: string; htmlFor: string}) {
   return (
@@ -201,6 +202,9 @@ export function PerspectiveSelect({id, value, onChange}: PerspectiveSelectProps)
   const {t} = useTranslation(visionLocaleNamespace)
   const globalName = useGlobalPerspectiveName()
   const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
+  // Shows what the request runs with: a stored scheduled drafts choice reads as Global where
+  // this workspace has no scheduled drafts, and the option is not listed
+  const shownValue = getEffectivePerspective(value, isScheduledDraftsEnabled)
 
   return (
     <Stack gap={2}>
@@ -214,7 +218,7 @@ export function PerspectiveSelect({id, value, onChange}: PerspectiveSelectProps)
           onChange(next === 'default' ? undefined : (next as Exclude<VistaPerspective, undefined>))
         }}
         padding={2}
-        value={value ?? 'default'}
+        value={shownValue ?? 'default'}
       >
         <option value="global">{t('vista.options.perspective.global', {name: globalName})}</option>
         <option value="default">{t('settings.perspectives.default')}</option>
