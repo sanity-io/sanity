@@ -215,6 +215,19 @@ export function QueryTabBar() {
     listRef.current?.querySelector<HTMLElement>(`#${getQueryTabId(id)}`)?.focus()
   }, [])
 
+  // Enter and Escape unmount the rename field without moving focus, so it goes back to the tab
+  // that replaces it, like after Delete. The tab only exists once React has rendered without the
+  // field; a rename ended by clicking elsewhere has already placed focus, and keeps it.
+  const endRename = useCallback(
+    (id: string) => {
+      setEditingId(null)
+      requestAnimationFrame(() => {
+        if (document.activeElement === document.body) focusTab(id)
+      })
+    },
+    [focusTab],
+  )
+
   const reorder = useCallback(
     (ordered: VistaTab[]) =>
       actorRef.send({type: 'tab.reorder', ids: ordered.map((tab) => tab.id)}),
@@ -289,10 +302,10 @@ export function QueryTabBar() {
             key={tab.id}
             listRef={listRef}
             onKeyDown={handleTabKeyDown}
-            onCancelRename={() => setEditingId(null)}
+            onCancelRename={() => endRename(tab.id)}
             onClose={() => actorRef.send({type: 'tab.close', id: tab.id})}
             onRename={(title) => {
-              setEditingId(null)
+              endRename(tab.id)
               actorRef.send({type: 'tab.rename', id: tab.id, title})
             }}
             onSelect={() => actorRef.send({type: 'tab.select', id: tab.id})}

@@ -431,6 +431,12 @@ describe('VistaGui', () => {
     fireEvent.keyDown(within(screen.getAllByTestId('vista-tab')[0]).getByRole('tab'), {key: 'F2'})
     fireEvent.keyDown(screen.getByTestId('vista-tab-title-input'), {key: 'Escape'})
     expect(screen.queryByTestId('vista-tab-title-input')).toBeNull()
+    // Ending the rename hands focus back to the tab, so the strip keeps the keyboard
+    await waitFor(() =>
+      expect(document.activeElement).toBe(
+        within(screen.getAllByTestId('vista-tab')[0]).getByRole('tab'),
+      ),
+    )
     fireEvent.doubleClick(
       within(screen.getAllByTestId('vista-tab')[0]).getByTestId('vista-tab-button'),
     )
