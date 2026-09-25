@@ -95,12 +95,17 @@ function normalizeConditionValues(values: unknown, key: string): NormalizedVaria
 }
 
 /**
- * Validates and normalizes a resolved `beta.variants.conditions` array.
+ * Validates and normalizes a resolved conditions array.
  * Invalid keys and values are dropped with a warning so the picker never offers them.
+ * `path` names the config location when an entry is not an object, for example
+ * `beta.variants.types.variant.conditions`.
  *
  * @internal
  */
-export function normalizeVariantConditions(input: unknown): NormalizedVariantConditionMap[] {
+export function normalizeVariantConditions(
+  input: unknown,
+  path: string,
+): NormalizedVariantConditionMap[] {
   if (!Array.isArray(input)) {
     throw new Error('Expected conditions to resolve to an array')
   }
@@ -111,7 +116,7 @@ export function normalizeVariantConditions(input: unknown): NormalizedVariantCon
   for (const item of input) {
     if (!isRecord(item) || typeof item.name !== 'string') {
       console.warn(
-        '[sanity] Dropped invalid beta.variants.conditions entry: expected an object with a name string',
+        `[sanity] Dropped invalid \`${path}\` entry: expected an object with a name string`,
       )
       continue
     }
