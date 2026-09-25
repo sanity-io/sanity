@@ -820,6 +820,14 @@ describe('VistaGui', () => {
 
     await waitFor(() => expect(fetchCalls).toHaveLength(1))
     expect(fetchCalls[0].params).toEqual({id: 'fresh'})
+
+    // The same goes for turning automatic refetching on: the session starts from the params
+    // typed just before, not from the ones still waiting in the debounce
+    fireEvent.change(paramsEditor, {target: {value: '{"id": "fresher"}'}})
+    fireEvent.click(screen.getByTestId('vista-query-menu-button'))
+    fireEvent.click(screen.getByTestId('vista-auto-refetch'))
+    await waitFor(() => expect(fetchCalls).toHaveLength(2))
+    expect(fetchCalls[1].params).toEqual({id: 'fresher'})
   })
 
   it('locks the API version to vX and sends the navbar variant with the global perspective', async () => {
