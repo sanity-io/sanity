@@ -44,6 +44,24 @@ describe('resolveOpenPreviewUrl', () => {
     expect(url.searchParams.get('sanity-preview-variant')).toBeNull()
   })
 
+  test('does not redirect back to the enable route when it is also the preview page', () => {
+    const url = new URL(
+      resolveOpenPreviewUrl({
+        perspective: 'drafts',
+        previewLocationRoute: '/api/preview',
+        previewMode: {enable: '/api/preview'},
+        previewUrlSecret: 'session-secret',
+        targetOrigin: 'https://example.com',
+        variant: undefined,
+      }),
+    )
+
+    expect(url.pathname).toBe('/api/preview')
+    expect(url.searchParams.get('sanity-preview-secret')).toBe('session-secret')
+    expect(url.searchParams.get('sanity-preview-perspective')).toBe('drafts')
+    expect(url.searchParams.has('sanity-preview-pathname')).toBe(false)
+  })
+
   test.each([
     ['preview mode is unavailable', null, 'session-secret'],
     ['the preview secret is unavailable', {enable: '/api/draft-mode/enable'}, null],

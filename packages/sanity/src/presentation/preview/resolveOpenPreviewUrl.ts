@@ -1,11 +1,10 @@
 import {
-  urlSearchParamPreviewPathname,
   urlSearchParamPreviewPerspective,
-  urlSearchParamPreviewSecret,
   urlSearchParamPreviewVariant,
 } from '@sanity/preview-url-secret/constants'
 
 import {type PresentationPerspective, type PreviewUrlPreviewMode} from '../types'
+import {createPreviewModeEnableUrl} from '../util/createPreviewModeEnableUrl'
 import {encodeStudioPerspective} from '../util/encodeStudioPerspective'
 
 interface OpenPreviewUrlOptions {
@@ -46,18 +45,11 @@ export function resolveOpenPreviewUrl(options: OpenPreviewUrlOptions): string {
     return `${previewLocationOrigin}${pathname}${search}${hash}`
   }
 
-  const enableUrl = new URL(previewMode.enable, previewUrl)
-  enableUrl.searchParams.set(urlSearchParamPreviewSecret, previewUrlSecret)
-  enableUrl.searchParams.set(
-    urlSearchParamPreviewPathname,
-    `${previewUrl.pathname}${previewUrl.search}${previewUrl.hash}`,
-  )
-  enableUrl.searchParams.set(urlSearchParamPreviewPerspective, encodeStudioPerspective(perspective))
-  if (variant) {
-    enableUrl.searchParams.set(urlSearchParamPreviewVariant, variant)
-  } else {
-    enableUrl.searchParams.delete(urlSearchParamPreviewVariant)
-  }
-
-  return enableUrl.toString()
+  return createPreviewModeEnableUrl({
+    enable: previewMode.enable,
+    perspective,
+    previewUrl,
+    previewUrlSecret,
+    variant,
+  }).toString()
 }
