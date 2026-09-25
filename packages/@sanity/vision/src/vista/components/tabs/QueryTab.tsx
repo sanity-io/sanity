@@ -37,6 +37,14 @@ import {hiddenPane, paneFill, splitPaneContainer} from '../vista.css'
 import {getQueryTabId, QUERY_TAB_PANEL_ID} from './QueryTabBar'
 
 const MIN_PANE_SIZE = {columns: 280, stacked: 160}
+
+function countLines(text: string): number {
+  let lines = 1
+  for (let index = text.indexOf('\n'); index !== -1; index = text.indexOf('\n', index + 1)) {
+    lines++
+  }
+  return lines
+}
 /**
  * The request pane's initial share of the split. Stacked, it holds the query editor and the
  * params and options panels, so it starts out taller than the result.
@@ -132,10 +140,20 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
 
   const prettify = useCallback(async () => {
     const {query} = tab
-    // Wrap at the width the editor has right now, so the result needs no sideways scrolling
-    const width = queryEditorRef.current?.getVisibleColumns()
+    const editor = queryEditorRef.current
     try {
-      const formatted = await formatGroq(query, width)
+      // Wrap at the width the editor has, so the result needs no sideways scrolling. Formatting
+      // changes the line count, and with it the line-number gutter's width and whether a
+      // vertical scrollbar takes space, so measure again for the result and format once more
+      // while that leaves fewer columns
+      let width = editor?.getVisibleColumns()
+      let formatted = await formatGroq(query, width)
+      for (let pass = 0; pass < 2 && width !== undefined; pass++) {
+        const nextWidth = editor?.getVisibleColumns(countLines(formatted))
+        if (nextWidth === undefined || nextWidth >= width) break
+        width = nextWidth
+        formatted = await formatGroq(query, width)
+      }
       // The formatter loads lazily; a query edited meanwhile is not overwritten
       const latest = actorRef.getSnapshot().context.tabs.find((it) => it.id === tab.id)
       if (latest?.query !== query || formatted === query) return

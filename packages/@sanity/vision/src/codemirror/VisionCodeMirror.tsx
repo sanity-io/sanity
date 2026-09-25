@@ -51,10 +51,11 @@ export interface VisionCodeMirrorHandle {
   /** Selects a range of the document, scrolls it into view and focuses the editor */
   selectRange: (from: number, to: number) => void
   /**
-   * How many characters fit on a line right now without scrolling sideways; `undefined` while
-   * the editor has no layout (hidden, or not mounted yet)
+   * How many characters fit on a line without scrolling sideways, for the document as it is or,
+   * with `lines`, as it will be with that many lines (a wider line-number gutter, a vertical
+   * scrollbar); `undefined` while the editor has no layout (hidden, or not mounted yet)
    */
-  getVisibleColumns: () => number | undefined
+  getVisibleColumns: (lines?: number) => number | undefined
 }
 
 export function VisionCodeMirror({
@@ -119,9 +120,9 @@ export function VisionCodeMirror({
     editorView.focus()
   }, [])
 
-  const getVisibleColumnsOfEditor = useCallback(() => {
+  const getVisibleColumnsOfEditor = useCallback((lines?: number) => {
     const editorView = codeMirrorRef.current?.view
-    return editorView ? getVisibleColumns(editorView) : undefined
+    return editorView ? getVisibleColumns(editorView, {lines}) : undefined
   }, [])
 
   useImperativeHandle(

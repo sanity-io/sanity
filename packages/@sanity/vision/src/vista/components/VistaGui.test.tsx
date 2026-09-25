@@ -39,8 +39,13 @@ const sanityMocks = vi.hoisted(() => {
   }
 })
 
-/** What the mocked editors report as their width, in characters; `undefined` means no layout */
-const editorMocks = vi.hoisted(() => ({visibleColumns: undefined as number | undefined}))
+/**
+ * What the mocked editors report as their width, in characters, optionally depending on the
+ * line count asked about; `undefined` means no layout
+ */
+const editorMocks = vi.hoisted(() => ({
+  visibleColumns: undefined as number | ((lines: number | undefined) => number) | undefined,
+}))
 
 class ResizeObserverMock {
   observe() {}
@@ -139,7 +144,10 @@ vi.mock('../../codemirror/VisionCodeMirror', () => ({
         textareaRef.current?.setSelectionRange(from, to)
         textareaRef.current?.focus()
       },
-      getVisibleColumns: () => editorMocks.visibleColumns,
+      getVisibleColumns: (lines?: number) =>
+        typeof editorMocks.visibleColumns === 'function'
+          ? editorMocks.visibleColumns(lines)
+          : editorMocks.visibleColumns,
     }))
     return (
       <textarea
@@ -700,9 +708,16 @@ describe('VistaGui', () => {
     await waitFor(() => expect(getQueryEditor().value).toBe(formatted))
     await waitFor(() => expect(getStoredState().tabs[0].query).toBe(formatted))
 
-    // A narrow editor wraps at its own width, so the result needs no sideways scrolling
+    // A narrow editor wraps at its own width, so the result needs no sideways scrolling. The
+    // width is measured again for the formatted line count: here the one-line query measures
+    // 40 columns, but the seven lines that gives leave only 30 (a wider gutter, a scrollbar),
+    // so the query is formatted once more at 30
     typeQuery(compact)
-    editorMocks.visibleColumns = 30
+    const widthsAsked: (number | undefined)[] = []
+    editorMocks.visibleColumns = (lines) => {
+      widthsAsked.push(lines)
+      return (lines ?? 1) > 5 ? 30 : 40
+    }
     fireEvent.click(screen.getByTestId('vista-query-menu-button'))
     fireEvent.click(screen.getByTestId('vista-prettify'))
 
@@ -717,6 +732,8 @@ describe('VistaGui', () => {
       '}',
     ].join('\n')
     await waitFor(() => expect(getQueryEditor().value).toBe(narrow))
+    // Measured for the current document, then for the 7 lines of the first pass and the 8 of the second
+    expect(widthsAsked).toEqual([undefined, 7, 8])
 
     typeQuery('*[_type == "author"')
     fireEvent.click(screen.getByTestId('vista-query-menu-button'))
