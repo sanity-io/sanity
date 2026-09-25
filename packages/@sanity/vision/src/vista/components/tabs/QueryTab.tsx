@@ -26,7 +26,7 @@ import {
   useVistaSelector,
   type VistaLayout,
 } from '../../store/VistaActorContext'
-import {selectDatasets} from '../../store/vistaMachine'
+import {isPanelExpanded, selectDatasets} from '../../store/vistaMachine'
 import {cx} from '../../util/cx'
 import {type QueryLintFinding} from '../../util/groqLint'
 import {formatGroq, GroqSyntaxError} from '../../util/groqWasm'
@@ -101,6 +101,12 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   )
   const setParams = useMemo(() => debounce(setParamsNow, PARAMS_DEBOUNCE_MS), [setParamsNow])
   useEffect(() => () => setParams.flush(), [setParams])
+  // Collapsing the Params panel unmounts its editor, and expanding it seeds a new one from the
+  // tab; an edit still waiting in the debounce is committed first so the new editor shows it
+  const paramsExpanded = useVistaSelector((snapshot) => isPanelExpanded(snapshot, 'params'))
+  useOnValueChange(paramsExpanded, (expanded) => {
+    if (!expanded) setParams.flush()
+  })
 
   const run = useCallback(
     (reason: FetchReason) => {
