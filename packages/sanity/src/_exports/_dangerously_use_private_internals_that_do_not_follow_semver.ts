@@ -170,6 +170,13 @@ export {
   type DocumentLayoutProps,
   type FormBuilderComponentResolverContext,
   type PreparedConfig,
+  type VariantConditionMap,
+  type VariantConditions,
+  type VariantConditionsContext,
+  type VariantConditionValue,
+  type VariantTypeConfig,
+  type VariantTypeContext,
+  type VariantTypesConfig,
   type WorkspaceSummary,
 } from '../core/config/types'
 export {
@@ -504,6 +511,7 @@ export {useLocale} from '../core/i18n/hooks/useLocale'
 export {defaultLocale, usEnglishLocale} from '../core/i18n/locales'
 export {useDocumentLimitsUpsellContext} from '../core/limits/context/documents/DocumentLimitUpsellProvider'
 export {isDocumentLimitError} from '../core/limits/context/documents/isDocumentLimitError'
+export {getDefaultVariant} from '../core/perspective/getDefaultVariant'
 export {getSelectedVariant} from '../core/perspective/getSelectedVariant'
 export {
   isPerspectiveWriteable,
@@ -1043,12 +1051,17 @@ export {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   useUnique,
 } from '../core/util/useUnique'
+export {
+  type StructureNodeIdValidationResult,
+  validateStructureNodeId,
+} from '../core/util/validateStructureNodeId'
 export {isDocumentInSelectedVariant} from '../core/variants/documents/isDocumentInSelectedVariant'
 export {useCreatableVariantInitialValue} from '../core/variants/hooks/useCreatableVariantInitialValue'
 export {useVariantDocumentOperations} from '../core/variants/hooks/useVariantDocumentOperations'
 export {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../core/variants/store/constants'
 export {useAllVariants} from '../core/variants/store/useAllVariants'
 export {getVariantTitle} from '../core/variants/tool/util'
+export {encodeVariantLinkParam} from '../core/variants/util/variantSelection'
 export {isVariantId} from '../core/variants/types'
 
 // From `sanity/structure`
