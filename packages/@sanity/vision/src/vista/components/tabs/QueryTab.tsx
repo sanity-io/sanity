@@ -19,7 +19,12 @@ import {useOnValueChange} from '../../hooks/useOnValueChange'
 import {useQueryRequestBuilder} from '../../hooks/useQueryRequestBuilder'
 import {useVistaDocumentEvents} from '../../hooks/useVistaDocumentEvents'
 import {selectIsFetching} from '../../store/queryRunnerMachine'
-import {type FetchReason, type VistaTab, type VistaTabOptions} from '../../store/types'
+import {
+  type FetchReason,
+  type QueryRequest,
+  type VistaTab,
+  type VistaTabOptions,
+} from '../../store/types'
 import {
   useVistaActor,
   useVistaExperience,
@@ -53,6 +58,12 @@ function countLines(text: string): number {
 const DEFAULT_REQUEST_SHARE = {columns: 0.5, stacked: 0.6}
 /** Params are parsed on every change, so typing is debounced like in the classic tool */
 const PARAMS_DEBOUNCE_MS = 333
+
+/** The part of a request that comes from outside the editors: the options it was built with */
+function requestOptionsKey(request: QueryRequest): string {
+  const {apiVersion, dataset, perspective, variant} = request.client.config()
+  return JSON.stringify([apiVersion, dataset, perspective, variant, request.includeSourceMap])
+}
 
 type MobilePane = 'request' | 'response'
 
@@ -219,15 +230,14 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   })
 
   // A tab that refetches automatically resumes with a current result when it mounts: after a
-  // reload its runner has nothing to replay, and while the tab was in the background its request
-  // may have changed under it (a navbar perspective change reaches every tab)
+  // reload its runner has nothing to replay, and while the tab was in the background its options
+  // may have changed under it (a navbar perspective change reaches every tab). Only the options
+  // are compared, so a query or params edited but never run stays unsent, as it would have while
+  // the tab was shown
   const resumeAutoRefetch = useEffectEvent(() => {
     if (!tab.autoRefetch || !request) return
     const lastRequest = runnerRef.getSnapshot().context.request
-    if (
-      lastRequest?.url !== request.url ||
-      lastRequest.includeSourceMap !== request.includeSourceMap
-    ) {
+    if (!lastRequest || requestOptionsKey(lastRequest) !== requestOptionsKey(request)) {
       runnerRef.send({type: 'fetch', request, reason: {type: 'resume'}})
     }
   })

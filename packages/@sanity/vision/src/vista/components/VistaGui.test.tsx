@@ -845,6 +845,14 @@ describe('VistaGui', () => {
     fireEvent.click(within(screen.getAllByTestId('vista-tab')[0]).getByTestId('vista-tab-button'))
     await new Promise((resolve) => setTimeout(resolve, 50))
     expect(fetchCalls).toHaveLength(2)
+
+    // A query edited but never run is not the resume's to fetch, just as it would not be while
+    // the tab stayed shown
+    typeQuery('*[_type == "book"]')
+    fireEvent.click(within(screen.getAllByTestId('vista-tab')[1]).getByTestId('vista-tab-button'))
+    fireEvent.click(within(screen.getAllByTestId('vista-tab')[0]).getByTestId('vista-tab-button'))
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(fetchCalls).toHaveLength(2)
   })
 
   it('fetches with params typed just before running, ahead of the debounce', async () => {
