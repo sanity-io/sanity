@@ -770,6 +770,43 @@ describe('VistaGui', () => {
     expect(fetchCalls).toHaveLength(2)
   })
 
+  it('fetches a query loaded into a tab that refetches automatically', async () => {
+    const {fetchCalls} = renderVista()
+    typeQuery('*[_type == "author"]')
+    fireEvent.click(screen.getByTestId('vista-query-menu-button'))
+    fireEvent.click(screen.getByTestId('vista-auto-refetch'))
+    await waitFor(() => expect(fetchCalls).toHaveLength(1))
+
+    // A pasted URL loads a new query and pins its dataset in one go; live refetches replay the
+    // runner's last request, which the load clears, so the loaded query is fetched right away,
+    // once, and for the loaded options
+    const url =
+      'https://abc.api.sanity.io/v2025-02-19/data/query/staging?query=*%5B_type+%3D%3D+%22post%22%5D&perspective=published'
+    fireEvent.paste(document.body, {clipboardData: {getData: () => url}})
+    await waitFor(() => expect(fetchCalls).toHaveLength(2))
+    expect(fetchCalls[1]).toMatchObject({
+      query: '*[_type == "post"]',
+      config: {dataset: 'staging', perspective: 'published'},
+    })
+    fireEvent.click(document.getElementById('vista-response-history-tab') as HTMLElement)
+    await waitFor(() => {
+      const entries = screen.getAllByTestId('vista-history-entry')
+      expect(entries).toHaveLength(2)
+      expect(text(entries[0])).toContain('vista.history.reason.load')
+    })
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(fetchCalls).toHaveLength(2)
+
+    // Without automatic refetching a load only replaces the query
+    fireEvent.click(screen.getByTestId('vista-query-menu-button'))
+    fireEvent.click(screen.getByTestId('vista-auto-refetch'))
+    await waitFor(() => expect(getStoredState().tabs[0].autoRefetch).toBe(false))
+    fireEvent.paste(document.body, {clipboardData: {getData: () => url.replace('post', 'page')}})
+    await waitFor(() => expect(getQueryEditor().value).toBe('*[_type == "page"]'))
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(fetchCalls).toHaveLength(2)
+  })
+
   it('fetches with params typed just before running, ahead of the debounce', async () => {
     const {fetchCalls} = renderVista()
     typeQuery('*[_id == $id]')

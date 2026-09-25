@@ -1,6 +1,12 @@
 import {describe, expect, it} from 'vitest'
 
-import {createByteOffsetConverter, formatGroq, GroqSyntaxError, lintGroq} from './groqWasm'
+import {
+  createByteOffsetConverter,
+  formatGroq,
+  GroqSyntaxError,
+  lintGroq,
+  toGroqFindings,
+} from './groqWasm'
 
 async function syntaxErrorOf(promise: Promise<unknown>): Promise<GroqSyntaxError> {
   try {
@@ -82,6 +88,22 @@ describe('lintGroq', () => {
     const error = await syntaxErrorOf(lintGroq('*[_type == "a"'))
     expect(error.message).toBe("expected ']' following expression")
     expect([error.from, error.to]).toEqual([1, 14])
+  })
+
+  it('covers the whole query with a finding that has no span, whatever its characters', () => {
+    const query = '*[title == "wörld — ünïcödé"]'
+    const spanless = {ruleId: 'very-large-query', message: ' Too big ', severity: 'error'} as const
+    const spanned = {...spanless, ruleId: 'x', span: {start: {offset: 2}, end: {offset: 7}}}
+    expect(toGroqFindings([spanless, spanned], query)).toEqual([
+      {
+        ruleId: 'very-large-query',
+        message: 'Too big',
+        severity: 'error',
+        from: 0,
+        to: query.length,
+      },
+      {ruleId: 'x', message: 'Too big', severity: 'error', from: 2, to: 7},
+    ])
   })
 })
 
