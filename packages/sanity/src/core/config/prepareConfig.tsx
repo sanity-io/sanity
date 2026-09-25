@@ -63,6 +63,7 @@ import {
   newDocumentOptionsResolver,
   onUncaughtErrorResolver,
   partialIndexingEnabledReducer,
+  reactActivityModeEnabledReducer,
   releaseActionsReducer,
   resolveProductionUrlReducer,
   scheduledDraftsEnabledReducer,
@@ -948,6 +949,9 @@ function resolveSource({
         // It cannot be switched off while variants are switched on.
         enabled:
           documentGroupInventoryEnabledReducer({config, initialValue: false}) || variantsEnabled,
+      },
+      reactActivityMode: {
+        enabled: reactActivityModeEnabledReducer({config, initialValue: false}),
       },
     },
 
