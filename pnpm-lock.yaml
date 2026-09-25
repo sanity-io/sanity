@@ -1156,8 +1156,8 @@ importers:
         specifier: workspace:*
         version: link:../tsconfig
       '@sanity/ailf':
-        specifier: ^7.37.0
-        version: 7.37.0(@aws-sdk/credential-provider-node@3.972.83)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.6)(@types/react@19.3.0)(debug@4.4.3)(pg@8.23.0)(playwright-core@1.63.0)(react-devtools-core@8.0.0)(socks@2.8.10)(supports-color@8.1.1)
+        specifier: ^7.38.1
+        version: 7.38.1(@aws-sdk/credential-provider-node@3.972.83)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.6)(@types/react@19.3.0)(debug@4.4.3)(pg@8.23.0)(playwright-core@1.63.0)(react-devtools-core@8.0.0)(socks@2.8.10)(supports-color@8.1.1)
       sanity:
         specifier: workspace:*
         version: link:../../sanity
@@ -7314,8 +7314,8 @@ packages:
     peerDependencies:
       '@oclif/core': ^4.0.0
 
-  '@sanity/ailf@7.37.0':
-    resolution: {integrity: sha512-/Vx7yRNTuxtbI9kupZ8lLatcF2YHjw8zX1+HiwVnfjfOY+WwvsOS4tYecpykoP4lqAvMMtYiEZUDiNSiFJNyLA==}
+  '@sanity/ailf@7.38.1':
+    resolution: {integrity: sha512-dL19KSlNLQc0UshiACGC9SX0gJSO+E7RRxuSkhfHkPBPvwdfTqLi2P7I4L0WK3wL9Wtu/Y4lKr+ebPLlBYVBTQ==}
     hasBin: true
 
   '@sanity/asset-utils@2.3.0':
@@ -19714,7 +19714,7 @@ snapshots:
     dependencies:
       '@oclif/core': 4.14.0
 
-  '@sanity/ailf@7.37.0(@aws-sdk/credential-provider-node@3.972.83)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.6)(@types/react@19.3.0)(debug@4.4.3)(pg@8.23.0)(playwright-core@1.63.0)(react-devtools-core@8.0.0)(socks@2.8.10)(supports-color@8.1.1)':
+  '@sanity/ailf@7.38.1(@aws-sdk/credential-provider-node@3.972.83)(@noble/hashes@2.4.0)(@smithy/signature-v4@5.7.3)(@types/json-schema@7.0.15)(@types/node@24.13.6)(@types/react@19.3.0)(debug@4.4.3)(pg@8.23.0)(playwright-core@1.63.0)(react-devtools-core@8.0.0)(socks@2.8.10)(supports-color@8.1.1)':
     dependencies:
       '@google-cloud/bigquery': 8.3.1(supports-color@8.1.1)
       '@google-cloud/storage': 7.22.0(supports-color@8.1.1)
