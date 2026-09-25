@@ -22,12 +22,13 @@
  * not analysed, so do not introduce them for these entries.
  */
 import fs from 'node:fs'
+import os from 'node:os'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 import {type ExportedDeclarations, Node, Project} from 'ts-morph'
 import ts from 'typescript'
-import {describe, expect, test} from 'vitest'
+import {afterAll, beforeAll, describe, expect, test} from 'vitest'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(__dirname, '../../../..')
@@ -263,6 +264,119 @@ describe('repo code does not import @internal symbols from the public entries', 
         offenders,
         `Import @internal symbols relatively (inside packages/sanity) or from sanity/_dangerously_use_private_internals_that_do_not_follow_semver (everywhere else), not from the public entries.`,
       ).toEqual([])
+    })
+  }
+})
+
+/**
+ * The scanner itself, on fixtures: one case per import form it claims to cover, each with a
+ * public name as a control, plus the forms it must leave alone. Without this the repo-wide
+ * tests above would stay green if `importedNames` stopped finding anything.
+ */
+describe('importedNames', () => {
+  const entries: Record<string, Set<string>> = {
+    'sanity': new Set(['useEditState', 'LoadingBlock']),
+    'sanity/structure': new Set(['useDocumentPane']),
+    'sanity/router': new Set(['decodeJsonParams']),
+  }
+
+  const cases: {name: string; source: string; expected: Hit[]}[] = [
+    {
+      name: 'named import',
+      source: `import {defineConfig, useEditState, type LoadingBlock} from 'sanity'\n`,
+      expected: [{specifier: 'sanity', names: ['useEditState', 'LoadingBlock']}],
+    },
+    {
+      name: 'named import with an alias',
+      source: `import {useEditState as useState} from 'sanity'\n`,
+      expected: [{specifier: 'sanity', names: ['useEditState']}],
+    },
+    {
+      name: 'namespace import, value and type position',
+      source: [
+        `import * as S from 'sanity'`,
+        `export const a = S.useEditState`,
+        `export const b = S.defineConfig({})`,
+        `export type C = S.Schema`,
+        `export type D = S.LoadingBlock`,
+      ].join('\n'),
+      expected: [{specifier: 'sanity', names: ['useEditState', 'LoadingBlock']}],
+    },
+    {
+      name: 'dynamic import, destructured',
+      source: `export async function f() { const {useDocumentPane, usePaneRouter} = await import('sanity/structure'); return [useDocumentPane, usePaneRouter] }\n`,
+      expected: [{specifier: 'sanity/structure', names: ['useDocumentPane']}],
+    },
+    {
+      name: 'dynamic import, property access through await, parentheses and a non-null assertion',
+      source: `export async function f() { return (await import('sanity/router'))!.decodeJsonParams }\n`,
+      expected: [{specifier: 'sanity/router', names: ['decodeJsonParams']}],
+    },
+    {
+      name: 'dynamic import handed to then() with a parameter',
+      source: `export const p = import('sanity').then((m) => ({default: m.useEditState, other: m.defineConfig}))\n`,
+      expected: [{specifier: 'sanity', names: ['useEditState']}],
+    },
+    {
+      name: 'dynamic import handed to then() with a destructuring parameter',
+      source: `export const p = import('sanity').then(({useEditState, defineConfig}) => [useEditState, defineConfig])\n`,
+      expected: [{specifier: 'sanity', names: ['useEditState']}],
+    },
+    {
+      name: 'dynamic import through a module-scope arrow alias',
+      source: [
+        `const load = () => import('sanity')`,
+        `export async function f() { const {useEditState} = await load(); return useEditState }`,
+        `export const p = load().then((m) => m.LoadingBlock)`,
+      ].join('\n'),
+      expected: [
+        {specifier: 'sanity', names: ['useEditState']},
+        {specifier: 'sanity', names: ['LoadingBlock']},
+      ],
+    },
+    {
+      name: 'dynamic import through a module-scope alias with a return statement',
+      source: [
+        `const load = function () { return import('sanity/structure') }`,
+        `export const p = load().then(({useDocumentPane}) => useDocumentPane)`,
+      ].join('\n'),
+      expected: [{specifier: 'sanity/structure', names: ['useDocumentPane']}],
+    },
+    {
+      name: 'public names only',
+      source: [
+        `import {defineConfig} from 'sanity'`,
+        `import * as S from 'sanity/structure'`,
+        `export const a = S.usePaneRouter`,
+        `export const p = import('sanity/router').then((m) => m.useRouter)`,
+      ].join('\n'),
+      expected: [],
+    },
+    {
+      name: 'other modules',
+      source: [
+        `import {useEditState} from 'other'`,
+        `import * as S from 'sanity-plugin-x'`,
+        `export const a = S.useEditState`,
+        `export const p = import('./local').then((m) => m.useEditState)`,
+      ].join('\n'),
+      expected: [],
+    },
+  ]
+
+  let dir: string
+  beforeAll(() => {
+    dir = fs.mkdtempSync(path.join(os.tmpdir(), 'no-internal-imports-'))
+  })
+  afterAll(() => {
+    fs.rmSync(dir, {recursive: true, force: true})
+  })
+
+  for (const [index, {name, source, expected}] of cases.entries()) {
+    test(name, () => {
+      const file = path.join(dir, `case-${index}.tsx`)
+      fs.writeFileSync(file, source)
+      expect(importedNames(file, entries)).toEqual(expected)
     })
   }
 })
