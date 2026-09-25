@@ -28,7 +28,9 @@ function failingConditionsResolver(): never {
 function VariantFormErrorHarness(props: {conditions: VariantConditions}) {
   return (
     <TestWrapper
-      betaFeatures={{variants: {enabled: true, conditions: props.conditions}}}
+      betaFeatures={{
+        variants: {enabled: true, types: {variant: {conditions: props.conditions}}},
+      }}
       i18nBundles={[variantsUsEnglishLocaleBundle]}
       schemaTypes={SCHEMA_TYPES}
     >
@@ -46,7 +48,7 @@ function VariantFormErrorHarness(props: {conditions: VariantConditions}) {
 
 /**
  * Chromatic sentinel for the mapped-conditions error on the create/edit form
- * when `beta.variants.conditions` is empty or all-invalid: critical copy,
+ * when `beta.variants.types.variant.conditions` is empty or all-invalid: critical copy,
  * no Retry. `useVariantConditions` first paints loading, so the CSF play
  * waits for the error before capture.
  */

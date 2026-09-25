@@ -2,8 +2,9 @@ import {useCallback} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {type SystemBundle} from '../util/draftUtils'
-import {getVariantId} from '../variants/tool/util'
 import {type SystemVariant} from '../variants/types'
+import {serializeVariantStickyParam} from '../variants/util/variantSelection'
+import {DEFAULT_VARIANT_TYPE_KEY} from '../variants/util/variantType'
 import {type ReleaseId} from './types'
 import {useGetDefaultPerspective} from './useGetDefaultPerspective'
 import {getPerspectiveParam} from './useSetPerspective'
@@ -39,7 +40,10 @@ export function useSetVariant(): SetVariant {
     ({variantId, perspective}) => {
       router.navigate({
         stickyParams: {
-          variant: variantId ? getVariantId(variantId) : null,
+          variant: variantId
+            ? // Currently supports only 1 variant selection. Follow up changes will support multiple selections.
+              serializeVariantStickyParam([{type: DEFAULT_VARIANT_TYPE_KEY, name: variantId}])
+            : null,
           ...(perspective
             ? {
                 excludedPerspectives: null,

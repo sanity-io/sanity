@@ -367,6 +367,9 @@ export {
   type VariantConditions,
   type VariantConditionsContext,
   type VariantConditionValue,
+  type VariantTypeConfig,
+  type VariantTypeContext,
+  type VariantTypesConfig,
   type Workspace,
   type WorkspaceHiddenContext,
   type WorkspaceHiddenProperty,
@@ -1789,6 +1792,7 @@ export {useCreatableVariantInitialValue} from '../core/variants/hooks/useCreatab
 export {useVariantDocumentOperations} from '../core/variants/hooks/useVariantDocumentOperations'
 export {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../core/variants/store/constants'
 export {useAllVariants} from '../core/variants/store/useAllVariants'
+export {encodeVariantLinkParam} from '../core/variants/util/variantSelection'
 export {getVariantTitle} from '../core/variants/tool/util'
 export {isVariantId, type SystemVariant} from '../core/variants/types'
 export {SANITY_VERSION} from '../core/version'

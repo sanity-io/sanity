@@ -558,7 +558,7 @@ describe('CreateVariantDialog mapped conditions', () => {
         beta: {
           variants: {
             enabled: true,
-            conditions,
+            types: {variant: {conditions}},
           },
         },
       },

@@ -1354,20 +1354,58 @@ export interface VariantConditionMap {
 }
 
 /**
- * Context passed to a `beta.variants.conditions` resolver.
+ * Context passed to a `beta.variants.types` resolver.
  *
  * @internal
  */
-export type VariantConditionsContext = Pick<ConfigContext, 'projectId' | 'dataset' | 'getClient'>
+export type VariantTypeContext = Pick<ConfigContext, 'projectId' | 'dataset' | 'getClient'>
 
 /**
- * Static or resolved list of known variant conditions.
+ * Context passed to a per-type `conditions` resolver. `type` is the variant type key
+ * (`variant`, `language`, …) whose conditions are being loaded.
+ *
+ * @internal
+ */
+export type VariantConditionsContext = VariantTypeContext & {type: string}
+
+/**
+ * Static or resolved list of known variant conditions for one variant type.
  *
  * @internal
  */
 export type VariantConditions =
   | VariantConditionMap[]
   | ((context: VariantConditionsContext) => VariantConditionMap[] | Promise<VariantConditionMap[]>)
+
+/**
+ * One orthogonal variant dimension. Condition keys declared here must not appear on another type.
+ *
+ * @internal
+ */
+export interface VariantTypeConfig {
+  /** Navbar label. Falls back to the type key. */
+  label?: string
+  description?: string
+  /**
+   * Known condition keys for this type. Omit for free-text keys and values.
+   * A function receives {@link VariantConditionsContext}.
+   */
+  conditions?: VariantConditions
+}
+
+/**
+ * Variant types supplied in config.
+ *
+ * The object form only types `variant`. Other keys are rejected until `assertOnlyVariantType`
+ * is removed.
+ *
+ * @internal
+ */
+export type VariantTypesConfig =
+  | {variant?: VariantTypeConfig}
+  | ((
+      context: VariantTypeContext,
+    ) => Record<string, VariantTypeConfig> | Promise<Record<string, VariantTypeConfig>>)
 
 /**
  * @internal
@@ -1436,25 +1474,27 @@ export interface BetaFeatures {
   variants?: {
     enabled?: boolean
     /**
-     * Optional list of known variant condition keys and values.
-     * When set, the create/edit form shows a dropdown for the condition key and a dropdown
-     * for its value, instead of free-text fields, and validates stored pairs against this list.
+     * Variant types and the condition keys each type owns.
      *
-     * Accepts a static array or a function that may return a promise (for example to
-     * load conditions from a CDP). The function receives {@link VariantConditionsContext}
-     * and is called when a variant surface first needs the list (the create/edit form,
-     * the variants overview, the variant detail page, or the variants navbar), not at
-     * studio boot.
+     * Omit to use a single freeform `variant` type. Only the `variant` key is accepted.
+     *
+     * A function may return a promise and is called when a variant surface first needs the
+     * types, not at studio boot. It receives {@link VariantTypeContext}.
      *
      * @example
      * ```ts
-     * conditions: async ({getClient}) => {
-     *    const client = getClient({apiVersion: '2024-01-01'})
-     *    return await client.fetch(CONDITIONS_QUERY)
+     * types: {
+     *   variant: {
+     *     label: 'Variant',
+     *     conditions: async ({getClient, type}) => {
+     *       const client = getClient({apiVersion: '2024-01-01'})
+     *       return await client.fetch(CONDITIONS_QUERY, {type})
+     *     },
+     *   },
      * }
      * ```
      */
-    conditions?: VariantConditions
+    types?: VariantTypesConfig
   }
   /**
    * Config for the opt-in Comments API implementation.

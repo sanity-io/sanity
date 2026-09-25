@@ -2,7 +2,6 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Text, TextInput} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useMemo, useState, type JSX} from 'react'
-import {useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
@@ -12,17 +11,13 @@ import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
 import {RhombusOutlinedIcon} from '../../../components/temporary-icons/RhombusOutlined'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {usePerspective} from '../../../perspective/usePerspective'
 import {useSetVariant} from '../../../perspective/useSetVariant'
 import {getConditionMismatchMessage} from '../../components/ConditionMismatchIndicator'
 import {useVariantConditionMismatches} from '../../hooks/useVariantConditions'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
-import {
-  decodeVariantIdFromRoute,
-  filterVariantsForSearch,
-  getVariantId,
-  getVariantTitle,
-} from '../../tool/util'
+import {filterVariantsForSearch, getVariantId, getVariantTitle} from '../../tool/util'
 import {type SystemVariant} from '../../types'
 import {menuIconSpacer, suggestIconColor} from './VariantsNav.css'
 
@@ -90,21 +85,10 @@ function VariantMenuItem(props: {
  */
 export function VariantsMenu({trigger}: {trigger: JSX.Element}): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
-  const router = useRouter()
   const setVariant = useSetVariant()
   const {data: variants} = useAllVariants()
   const [filterQuery, setFilterQuery] = useState('')
-
-  const selectedVariantDocumentId = decodeVariantIdFromRoute(
-    router.stickyParams.variant ?? undefined,
-  )
-  const selectedVariant = useMemo(
-    () =>
-      selectedVariantDocumentId
-        ? variants.find((variant) => variant._id === selectedVariantDocumentId)
-        : undefined,
-    [selectedVariantDocumentId, variants],
-  )
+  const {selectedVariant} = usePerspective()
 
   const filteredVariants = useMemo(
     () => filterVariantsForSearch(variants, filterQuery),

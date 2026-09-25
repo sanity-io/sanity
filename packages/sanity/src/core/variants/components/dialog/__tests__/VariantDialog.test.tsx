@@ -202,13 +202,17 @@ describe('VariantDialog', () => {
         beta: {
           variants: {
             enabled: true,
-            conditions: [
-              {
-                name: 'audience',
-                title: 'Audience',
-                values: [{value: 'loyal', title: 'Loyal customers'}],
+            types: {
+              variant: {
+                conditions: [
+                  {
+                    name: 'audience',
+                    title: 'Audience',
+                    values: [{value: 'loyal', title: 'Loyal customers'}],
+                  },
+                ],
               },
-            ],
+            },
           },
         },
       },
@@ -285,13 +289,17 @@ describe('VariantDialog', () => {
         beta: {
           variants: {
             enabled: true,
-            conditions: [
-              {
-                name: 'audience',
-                title: 'Audience',
-                values: [{value: 'loyal', title: 'Loyal customers'}],
+            types: {
+              variant: {
+                conditions: [
+                  {
+                    name: 'audience',
+                    title: 'Audience',
+                    values: [{value: 'loyal', title: 'Loyal customers'}],
+                  },
+                ],
               },
-            ],
+            },
           },
         },
       },
@@ -334,13 +342,17 @@ describe('VariantDialog', () => {
         beta: {
           variants: {
             enabled: true,
-            conditions: [
-              {
-                name: 'audience',
-                title: 'Audience',
-                values: [{value: 'loyal', title: 'Loyal customers'}],
+            types: {
+              variant: {
+                conditions: [
+                  {
+                    name: 'audience',
+                    title: 'Audience',
+                    values: [{value: 'loyal', title: 'Loyal customers'}],
+                  },
+                ],
               },
-            ],
+            },
           },
         },
       },
@@ -373,13 +385,17 @@ describe('VariantDialog', () => {
         beta: {
           variants: {
             enabled: true,
-            conditions: [
-              {
-                name: 'audience',
-                title: 'Audience',
-                values: [{value: 'loyal', title: 'Loyal customers'}],
+            types: {
+              variant: {
+                conditions: [
+                  {
+                    name: 'audience',
+                    title: 'Audience',
+                    values: [{value: 'loyal', title: 'Loyal customers'}],
+                  },
+                ],
               },
-            ],
+            },
           },
         },
       },
@@ -413,7 +429,7 @@ describe('VariantDialog', () => {
         beta: {
           variants: {
             enabled: true,
-            conditions: () => new Promise(() => undefined),
+            types: {variant: {conditions: () => new Promise(() => undefined)}},
           },
         },
       },

@@ -2,6 +2,8 @@ import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {normalizeVariantConditions} from '../normalizeVariantConditions'
 
+const conditionsPath = 'beta.variants.types.variant.conditions'
+
 describe('normalizeVariantConditions', () => {
   afterEach(() => {
     vi.restoreAllMocks()
@@ -9,18 +11,21 @@ describe('normalizeVariantConditions', () => {
 
   it('normalizes string values and object values', () => {
     expect(
-      normalizeVariantConditions([
-        {
-          name: 'audience',
-          title: 'Audience',
-          description: 'Who this content is for.',
-          values: [
-            {value: 'loyal', title: 'Loyal customers', description: 'Repeat purchasers.'},
-            'new',
-          ],
-        },
-        {name: 'locale', values: ['en-US']},
-      ]),
+      normalizeVariantConditions(
+        [
+          {
+            name: 'audience',
+            title: 'Audience',
+            description: 'Who this content is for.',
+            values: [
+              {value: 'loyal', title: 'Loyal customers', description: 'Repeat purchasers.'},
+              'new',
+            ],
+          },
+          {name: 'locale', values: ['en-US']},
+        ],
+        conditionsPath,
+      ),
     ).toEqual([
       {
         name: 'audience',
@@ -43,15 +48,18 @@ describe('normalizeVariantConditions', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 
     expect(
-      normalizeVariantConditions([
-        {name: '_system', values: ['ok']},
-        {name: 'Audience', values: ['ok']},
-        {name: 'audience', values: ['loyal,customers', '', 'loyal', 'loyal']},
-        {name: 'audience', values: ['other']},
-        {name: 'empty', values: []},
-        {name: 'bad-values'},
-        'nope',
-      ]),
+      normalizeVariantConditions(
+        [
+          {name: '_system', values: ['ok']},
+          {name: 'Audience', values: ['ok']},
+          {name: 'audience', values: ['loyal,customers', '', 'loyal', 'loyal']},
+          {name: 'audience', values: ['other']},
+          {name: 'empty', values: []},
+          {name: 'bad-values'},
+          'nope',
+        ],
+        conditionsPath,
+      ),
     ).toEqual([
       {
         name: 'audience',
@@ -60,11 +68,13 @@ describe('normalizeVariantConditions', () => {
       },
     ])
 
-    expect(warn).toHaveBeenCalled()
+    expect(warn).toHaveBeenCalledWith(
+      `[sanity] Dropped invalid \`${conditionsPath}\` entry: expected an object with a name string`,
+    )
   })
 
   it('throws when the resolved value is not an array', () => {
-    expect(() => normalizeVariantConditions({name: 'audience'})).toThrow(
+    expect(() => normalizeVariantConditions({name: 'audience'}, conditionsPath)).toThrow(
       'Expected conditions to resolve to an array',
     )
   })

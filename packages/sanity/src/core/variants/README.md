@@ -111,7 +111,7 @@ Covered behavior:
 
 ## Condition Autocomplete
 
-When `beta.variants.conditions` is **not** set, condition key/value autocomplete is data-driven. We do not maintain a separate list of allowed keys or values.
+When a variant type's `conditions` is **not** set, condition key/value autocomplete is data-driven. We do not maintain a separate list of allowed keys or values. Types are configured on `beta.variants.types`. Omitting `types` uses a single freeform `variant` type.
 
 `components/dialog/conditionSuggestions.ts` derives suggestions from existing variants:
 
@@ -134,7 +134,7 @@ The autocomplete is a consistency aid, not a schema constraint. Users can still 
 
 ## Configured conditions picker
 
-When `beta.variants.conditions` is set (a static array or a function that may return a promise), the form switches to an exclusive dropdown picker. The function receives `projectId`, `dataset`, and `getClient`, and is resolved when a surface needs the list, not during studio boot.
+When a type's `conditions` is set (a static array or a function that may return a promise), the form switches to an exclusive dropdown picker for that type. The function receives `projectId`, `dataset`, `getClient`, and the type key, and is resolved when a surface needs the list, not during studio boot. Condition keys must be unique across types.
 
 - each row is two select-like `MenuButton`s (`ConditionMenuButton`): the key, then its value
 - menu rows follow the workspace switcher (`MenuItem` with icon, title, and description as subtitle); the current choice is checked

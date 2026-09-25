@@ -5,6 +5,7 @@ import {
   CommentsEnabledProviderV2,
   CommentsProvider,
   CommentsProviderV2,
+  encodeVariantLinkParam,
   getDraftId,
   getPublishedId,
   getTargetScopeId,
@@ -89,7 +90,7 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
         selectedReleaseId && !scheduledDraft ? [['perspective', selectedReleaseId]] : []
 
       if (selectedVariantName) {
-        searchParams.push(['variant', selectedVariantName])
+        searchParams.push(['variant', encodeVariantLinkParam(selectedVariantName)])
       }
 
       const intentLink = resolveIntentLink(

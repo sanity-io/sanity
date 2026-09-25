@@ -24,7 +24,7 @@ async function waitForConditionsError() {
   return body
 }
 
-/** Empty static `beta.variants.conditions`: configuration copy, no Retry. */
+/** Empty static `beta.variants.types.variant.conditions`: configuration copy, no Retry. */
 export const InvalidConfig: Story = {
   play: async () => {
     const body = await waitForConditionsError()

@@ -403,7 +403,7 @@ describe('VariantsOverview', () => {
       beta: {
         variants: {
           enabled: true,
-          conditions: [{name: 'locale', values: ['en-US']}],
+          types: {variant: {conditions: [{name: 'locale', values: ['en-US']}]}},
         },
       },
     })
@@ -436,7 +436,7 @@ describe('VariantsOverview', () => {
       beta: {
         variants: {
           enabled: true,
-          conditions: () => new Promise(() => undefined),
+          types: {variant: {conditions: () => new Promise(() => undefined)}},
         },
       },
     })

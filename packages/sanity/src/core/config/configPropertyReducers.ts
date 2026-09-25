@@ -15,6 +15,7 @@ import {
 import {type Template, type TemplateItem} from '../templates/types'
 import {getPrintableType} from '../util/getPrintableType'
 import {isRecord} from '../util/isRecord'
+import {assertOnlyVariantType} from '../variants/util/variantType'
 import {type DocumentActionComponent} from './document/actions'
 import {type DocumentBadgeComponent} from './document/badges'
 import {type DocumentInspector} from './document/inspector'
@@ -35,7 +36,7 @@ import {
   type PluginOptions,
   type ResolveProductionUrlContext,
   type Tool,
-  type VariantConditions,
+  type VariantTypesConfig,
 } from './types'
 
 export const initialDocumentBadges: DocumentBadgeComponent[] = []
@@ -577,18 +578,45 @@ export const variantsEnabledReducer = (opts: {
   return result
 }
 
-function isVariantConditions(value: unknown): value is VariantConditions {
+const VARIANT_TYPE_KEY_PATTERN = /^[a-z][a-z0-9_-]{0,63}$/
+
+function isVariantConditions(value: unknown): boolean {
   return Array.isArray(value) || typeof value === 'function'
 }
 
-export const variantsConditionsReducer = (opts: {
+function assertVariantTypeEntry(key: string, value: unknown): void {
+  if (!VARIANT_TYPE_KEY_PATTERN.test(key) || key.includes(':')) {
+    throw new Error(
+      `Expected \`beta.variants.types\` keys to match ${VARIANT_TYPE_KEY_PATTERN}, but received ${JSON.stringify(key)}`,
+    )
+  }
+
+  // Single variant only accepts the `variant` type. Delete this function to allow multi variants.
+  assertOnlyVariantType(key)
+
+  if (!isRecord(value)) {
+    throw new Error(
+      `Expected \`beta.variants.types.${key}\` to be an object, but received ${getPrintableType(value)}`,
+    )
+  }
+
+  if (typeof value.conditions !== 'undefined' && !isVariantConditions(value.conditions)) {
+    throw new Error(
+      `Expected \`beta.variants.types.${key}.conditions\` to be an array or a function, but received ${getPrintableType(
+        value.conditions,
+      )}`,
+    )
+  }
+}
+
+export const variantsTypesReducer = (opts: {
   config: PluginOptions
-  initialValue: VariantConditions | undefined
-}): VariantConditions | undefined => {
+  initialValue: VariantTypesConfig | undefined
+}): VariantTypesConfig | undefined => {
   const {config, initialValue} = opts
   const flattenedConfig = flattenConfig(config, [])
 
-  return flattenedConfig.reduce<VariantConditions | undefined>((acc, {config: innerConfig}) => {
+  return flattenedConfig.reduce<VariantTypesConfig | undefined>((acc, {config: innerConfig}) => {
     const variants: unknown = innerConfig.beta?.variants
 
     if (typeof variants === 'undefined') return acc
@@ -598,18 +626,24 @@ export const variantsConditionsReducer = (opts: {
       )
     }
 
-    const conditions = variants.conditions
+    const types = variants.types
 
-    if (typeof conditions === 'undefined') return acc
-    if (isVariantConditions(conditions)) {
-      return conditions
+    if (typeof types === 'undefined') return acc
+    if (typeof types === 'function') return types as VariantTypesConfig
+
+    if (!isRecord(types)) {
+      throw new Error(
+        `Expected \`beta.variants.types\` to be an object or a function, but received ${getPrintableType(
+          types,
+        )}`,
+      )
     }
 
-    throw new Error(
-      `Expected \`beta.variants.conditions\` to be an array or a function, but received ${getPrintableType(
-        conditions,
-      )}`,
-    )
+    for (const [key, value] of Object.entries(types)) {
+      assertVariantTypeEntry(key, value)
+    }
+
+    return types as VariantTypesConfig
   }, initialValue)
 }
 

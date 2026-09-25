@@ -11,47 +11,36 @@ const mockResolveIntentLink = vi.hoisted(() => vi.fn(() => '/mock-intent-link'))
 let capturedCommentsProviderProps: Record<string, unknown> | undefined
 let capturedCommentsProviderV2Props: Record<string, unknown> | undefined
 
-vi.mock('sanity', async () => {
-  // Use the real id helpers so the derived target reflects production behaviour.
-  const {
-    getDraftId: draftId,
-    getPublishedId: publishedId,
-    getVersionId: versionId,
-  } = await import('@sanity/client/csm')
+vi.mock('sanity', async (importOriginal) => ({
+  ...(await importOriginal()),
+  CommentsEnabledProvider: ({children}: {children: React.ReactNode}) => <>{children}</>,
+  CommentsEnabledProviderV2: ({children}: {children: React.ReactNode}) => <>{children}</>,
+  CommentsProvider: (props: Record<string, unknown>) => {
+    capturedCommentsProviderProps = props
+    return <>{props.children}</>
+  },
+  CommentsProviderV2: (props: Record<string, unknown>) => {
+    capturedCommentsProviderV2Props = props
+    return <>{props.children}</>
+  },
+  getTargetScopeId: vi.fn(() => undefined),
+  useCommentsEnabled: vi.fn(() => ({enabled: true})),
+  useCommentsEnabledV2: vi.fn(() => ({enabled: true})),
+  usePerspective: vi.fn(() => ({
+    selectedPerspectiveName: undefined,
+    selectedReleaseId: undefined,
+    selectedVariantName: undefined,
+    selectedPerspective: 'drafts',
+    perspectiveStack: ['drafts'],
+    excludedPerspectives: [],
+  })),
+  useWorkspace: vi.fn(() => ({
+    beta: {comments: {v2: false}},
+  })),
+}))
 
-  return {
-    COMMENTS_INSPECTOR_NAME: 'sanity/comments',
-    CommentsEnabledProvider: ({children}: {children: React.ReactNode}) => <>{children}</>,
-    CommentsEnabledProviderV2: ({children}: {children: React.ReactNode}) => <>{children}</>,
-    CommentsProvider: (props: Record<string, unknown>) => {
-      capturedCommentsProviderProps = props
-      return <>{props.children}</>
-    },
-    CommentsProviderV2: (props: Record<string, unknown>) => {
-      capturedCommentsProviderV2Props = props
-      return <>{props.children}</>
-    },
-    getDraftId: draftId,
-    getPublishedId: publishedId,
-    getVersionId: versionId,
-    getTargetScopeId: vi.fn(() => undefined),
-    useCommentsEnabled: vi.fn(() => ({enabled: true})),
-    useCommentsEnabledV2: vi.fn(() => ({enabled: true})),
-    usePerspective: vi.fn(() => ({
-      selectedPerspectiveName: undefined,
-      selectedReleaseId: undefined,
-      selectedVariantName: undefined,
-      selectedPerspective: 'drafts',
-      perspectiveStack: ['drafts'],
-      excludedPerspectives: [],
-    })),
-    useWorkspace: vi.fn(() => ({
-      beta: {comments: {v2: false}},
-    })),
-  }
-})
-
-vi.mock('sanity/router', () => ({
+vi.mock('sanity/router', async (importOriginal) => ({
+  ...(await importOriginal()),
   useRouter: vi.fn(() => ({
     state: {},
     resolveIntentLink: mockResolveIntentLink,
@@ -230,7 +219,9 @@ describe('CommentsWrapper', () => {
         comment: 'comment-variant',
       })
       // @ts-expect-error -- pre-existing, fix later
-      expect(mockResolveIntentLink.mock.calls[0][2]).toEqual([['variant', 'alpha-audience']])
+      expect(mockResolveIntentLink.mock.calls[0][2]).toEqual([
+        ['variant', 'variant:alpha-audience'],
+      ])
     })
 
     it('passes both perspective and variant search params for a release with a variant', () => {
@@ -258,7 +249,7 @@ describe('CommentsWrapper', () => {
       // @ts-expect-error -- pre-existing, fix later
       expect(mockResolveIntentLink.mock.calls[0][2]).toEqual([
         ['perspective', 'rSomeRelease'],
-        ['variant', 'alpha-audience'],
+        ['variant', 'variant:alpha-audience'],
       ])
     })
 

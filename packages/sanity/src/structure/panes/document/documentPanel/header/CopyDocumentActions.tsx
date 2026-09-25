@@ -6,6 +6,7 @@ import {Menu} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo} from 'react'
 import {
+  encodeVariantLinkParam,
   getDraftId,
   getDocumentVersionVariantId,
   getTargetSiblings,
@@ -82,7 +83,7 @@ export function CopyDocumentActions() {
       selectedReleaseId && !scheduledDraft ? [['perspective', selectedReleaseId]] : []
 
     if (selectedVariantName) {
-      searchParams.push(['variant', selectedVariantName])
+      searchParams.push(['variant', encodeVariantLinkParam(selectedVariantName)])
     }
 
     const intentParams = {
