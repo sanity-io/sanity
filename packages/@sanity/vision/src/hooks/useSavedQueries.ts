@@ -302,11 +302,18 @@ export function useSavedQueries(): {
   // Optimistic like the other personal mutations; rejects when the store write fails
   const deletePersonalQuery = useCallback(
     async (key: string) => {
-      const filteredQueries = value.queries.filter((q) => q._key !== key)
+      const queriesBefore = value.queries
+      const filteredQueries = queriesBefore.filter((q) => q._key !== key)
       setValue({queries: filteredQueries})
-      await keyValueStore.setKey(keyValueStoreKey, {
-        queries: filteredQueries,
-      } as unknown as KeyValueStoreValue)
+      try {
+        await keyValueStore.setKey(keyValueStoreKey, {
+          queries: filteredQueries,
+        } as unknown as KeyValueStoreValue)
+      } catch (err) {
+        // The store still holds the query, so the list shows it again
+        setValue({queries: queriesBefore})
+        throw err
+      }
     },
     [keyValueStore, value.queries],
   )
