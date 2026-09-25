@@ -1383,7 +1383,7 @@ export type VariantConditions =
  * @internal
  */
 export interface VariantTypeConfig {
-  /** Navbar label. Falls back to the type key. */
+  /** Navbar label. The built-in `variant` type falls back to "Variant". Other types fall back to the type key. */
   label?: string
   description?: string
   /**

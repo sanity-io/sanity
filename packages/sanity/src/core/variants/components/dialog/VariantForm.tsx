@@ -23,7 +23,11 @@ import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
-import {useVariantConditions} from '../../hooks/useVariantConditions'
+import {
+  type ResolvedVariantType,
+  useVariantConditions,
+  useVariantTypes,
+} from '../../hooks/useVariantConditions'
 import {type VariantsLocaleResourceKeys, variantsLocaleNamespace} from '../../i18n'
 import {VARIANTS_INTENT} from '../../plugin'
 import {useAllVariants} from '../../store/useAllVariants'
@@ -37,8 +41,10 @@ import {getVariantTitleValue} from '../../util/getIsVariantInvalid'
 import {type NormalizedVariantConditionMap} from '../../util/normalizeVariantConditions'
 import {getPriorityInputValidationError} from '../../util/priorityValidation'
 import {createPortableTextDescription} from '../../util/variantDefaults'
+import {getVariantType} from '../../util/variantType'
 import {ConditionAutocompleteInput} from './ConditionAutocompleteInput'
 import {ConditionMappedRow} from './ConditionMappedRow'
+import {ConditionMenuButton} from './ConditionMenuButton'
 import {
   buildConditionSuggestionIndex,
   getConditionKeyOptions,
@@ -57,6 +63,7 @@ interface ConditionRowValidation {
 }
 
 const EMPTY_DEFINITIONS: readonly NormalizedVariantConditionMap[] = []
+const NO_RESOLVED_TYPES: ResolvedVariantType[] = []
 
 function getConditionRows(conditions: EditableSystemVariant['conditions']): ConditionRow[] {
   const rows = Object.entries(conditions).map(([key, value]) => ({
@@ -186,6 +193,8 @@ export type VariantFormChangeHandler = (path: Path, value: unknown) => void
 export function VariantForm(props: {
   duplicateConditionsOf?: SystemVariant
   duplicateTitleOf?: SystemVariant
+  /** Edit dialogs lock the type. Create shows a picker only when more than one type is resolved. */
+  lockType?: boolean
   onChange: VariantFormChangeHandler
   onConditionValidityChange: (invalid: boolean) => void
   onPriorityValidityChange: (invalid: boolean) => void
@@ -195,6 +204,7 @@ export function VariantForm(props: {
   const {
     duplicateConditionsOf,
     duplicateTitleOf,
+    lockType = false,
     onChange,
     onConditionValidityChange,
     onPriorityValidityChange,
@@ -203,8 +213,24 @@ export function VariantForm(props: {
   } = props
   const {t} = useTranslation(variantsLocaleNamespace)
   const {data: variants} = useAllVariants()
-  const conditionsConfig = useVariantConditions()
-  const suggestionIndex = useMemo(() => buildConditionSuggestionIndex(variants), [variants])
+  const variantTypes = useVariantTypes()
+  const typeKey = getVariantType(value)
+  const conditionsConfig = useVariantConditions(typeKey)
+  const resolvedTypes = variantTypes.status === 'ready' ? variantTypes.types : NO_RESOLVED_TYPES
+  const showTypePicker = resolvedTypes.length > 1
+  const typeOptions = resolvedTypes.map((type) => ({
+    value: type.key,
+    title: type.label,
+    description: type.description,
+  }))
+  const selectedTypeOption = typeOptions.find((option) => option.value === typeKey)
+  const suggestionIndex = useMemo(
+    () =>
+      buildConditionSuggestionIndex(
+        variants.filter((variant) => getVariantType(variant) === typeKey),
+      ),
+    [typeKey, variants],
+  )
   const mappedDefinitions =
     conditionsConfig.mode === 'mapped' && conditionsConfig.status === 'ready'
       ? conditionsConfig.definitions
@@ -297,6 +323,19 @@ export function VariantForm(props: {
       )
     },
     [onChange],
+  )
+
+  const handleTypeChange = useCallback(
+    (nextType: string) => {
+      if (lockType || nextType === typeKey) {
+        return
+      }
+
+      onChange(['metadata', 'type'], nextType)
+      setConditionRows(getConditionRows({}))
+      onChange(['conditions'], {})
+    },
+    [lockType, onChange, typeKey],
   )
 
   const handlePriorityChange = useCallback(
@@ -434,6 +473,23 @@ export function VariantForm(props: {
           </TextWithTone>
         )}
       </VStack>
+
+      {showTypePicker ? (
+        <VStack gap={3}>
+          <Text size={1} weight="medium">
+            {t('dialog.create.type.label')}
+          </Text>
+          <ConditionMenuButton
+            disabled={lockType}
+            label={t('dialog.create.type.label')}
+            onSelect={handleTypeChange}
+            options={typeOptions}
+            placeholder={t('dialog.create.type.placeholder')}
+            selected={selectedTypeOption}
+            testId="variant-form-type"
+          />
+        </VStack>
+      ) : null}
 
       <VStack gap={3}>
         <Text size={1} weight="medium">

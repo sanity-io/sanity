@@ -67,6 +67,8 @@ const variantsLocaleStrings = {
   'overview.filter.no-matching-definitions': 'No variant definitions match the active filters',
   /** Column header for the variant title column in the overview table. */
   'overview.table.variant': 'Variant definition',
+  /** Column header for the variant type column in the overview table. */
+  'overview.table.type': 'Type',
   /** Column header for the documents count column in the overview table. */
   'overview.table.documents': 'Documents',
   /** Fallback text when a variant has no conditions. */
@@ -96,6 +98,8 @@ const variantsLocaleStrings = {
   'detail.metadata.total-documents': 'Total documents',
   /** Label for the count of documents with unpublished (draft) changes. */
   'detail.metadata.unpublished-changes': 'Unpublished changes',
+  /** Label for the variant definition's type on the detail page. */
+  'detail.metadata.type': 'Variant type',
   /** Label for the variant definition's resolution priority on the detail page. */
   'detail.metadata.priority': 'Priority',
   /** Created status label in the Variant detail footer. */
@@ -176,6 +180,10 @@ const variantsLocaleStrings = {
   'dialog.create.description.label': 'Description',
   /** Placeholder for the description field in the create variant dialog. */
   'dialog.create.description.placeholder': 'Describe who this variant definition targets',
+  /** Label for the variant type field in the variant dialog. */
+  'dialog.create.type.label': 'Type',
+  /** Placeholder for the variant type picker. */
+  'dialog.create.type.placeholder': 'Choose type',
   /** Label for the priority field in the variant dialog. */
   'dialog.create.priority.label': 'Priority',
   /** Tooltip explaining how priority affects variant matching. */

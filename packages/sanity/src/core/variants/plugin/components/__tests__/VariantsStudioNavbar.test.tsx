@@ -7,6 +7,7 @@ import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {usePerspectiveMockReturn} from '../../../../perspective/__mocks__/usePerspective.mock'
 import {activeASAPRelease} from '../../../../releases/__fixtures__/release.fixture'
 import {variantAlphaAudience} from '../../../__fixtures__/variants.fixture'
+import * as variantConditions from '../../../hooks/useVariantConditions'
 import {variantsUsEnglishLocaleBundle} from '../../../i18n'
 import {getVariantId} from '../../../tool/util'
 import {VariantsStudioNavbar} from '../VariantsStudioNavbar'
@@ -125,6 +126,22 @@ describe('VariantsStudioNavbar', () => {
         perspective: '',
       },
     })
+  })
+
+  it('renders one menu per resolved variant type', async () => {
+    const spy = vi.spyOn(variantConditions, 'useVariantTypes').mockReturnValue({
+      status: 'ready',
+      types: [
+        {key: 'variant', label: 'Variant', conditions: {mode: 'freeform'}},
+        {key: 'language', label: 'Language', conditions: {mode: 'freeform'}},
+      ],
+    })
+
+    await renderNavbar()
+
+    expect(screen.getByText('Language')).toBeInTheDocument()
+    expect(screen.getAllByTestId('variants-menu')).toHaveLength(2)
+    spy.mockRestore()
   })
 
   it('clears variant when variant remove is clicked', async () => {

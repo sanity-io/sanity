@@ -62,6 +62,12 @@ describe('VariantsMenu', () => {
     expect(screen.getByTestId('variant-default')).not.toHaveAttribute('data-selected')
   })
 
+  it('names the unselected option All users (Default)', async () => {
+    await renderMenu()
+
+    expect(screen.getByTestId('variant-default')).toHaveTextContent('All users (Default)')
+  })
+
   it('shows a mismatch error when a stored condition is not in the configured list', async () => {
     await renderMenu({
       beta: {
