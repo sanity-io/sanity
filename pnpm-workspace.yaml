@@ -157,8 +157,6 @@ trustPolicy: no-downgrade
 trustPolicyExcludePrune: true
 trustPolicyExclude:
   - '@sanity/cli'
-  - '@sanity/sdk@3.5.0'
-  - '@sanity/sdk-react@3.5.0'
   - rxjs@7.8.2
   - semver@5.7.2 || 6.3.1
   - undici@5.29.0
