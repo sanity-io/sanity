@@ -1,7 +1,9 @@
-import {type ReleaseDocument} from '@sanity/client'
+import {type ReleaseDocument, type SanityDocument} from '@sanity/client'
 import {type PreviewValue} from '@sanity/types'
-import {Checkbox, Stack, Text} from '@sanity/ui'
+import {Checkbox, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
+import {dequal} from 'dequal/lite'
+import omit from 'lodash-es/omit.js'
 import {type ChangeEvent, type ReactNode, useCallback, useMemo, useState} from 'react'
 import {Box, Flex} from 'ui5'
 
@@ -11,10 +13,10 @@ import {useSchema} from '../../hooks/useSchema'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {Translate} from '../../i18n/Translate'
 import {Preview} from '../../preview/components/Preview'
-import {useDocumentVersions} from '../../releases/hooks/useDocumentVersions'
-import {type VersionInfoDocumentStub} from '../../releases/store/types'
-import {getDocumentVersionInfoFromVersions} from '../../releases/util/getDocumentVersionInfoFromVersions'
-import {getPublishedId} from '../../util/draftUtils'
+import {useUnstableObserveDocument} from '../../preview/useObserveDocument'
+import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
+import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases/util/releasesClient'
+import {getDraftId, getPublishedId, getVersionId} from '../../util/draftUtils'
 import {getErrorMessage} from '../../util/getErrorMessage'
 import {useScheduledDraftDocument} from '../hooks/useScheduledDraftDocument'
 import {useScheduleDraftOperations} from '../hooks/useScheduleDraftOperations'
@@ -37,37 +39,67 @@ interface DeleteScheduledDraftDialogWithCopyToDraftProps extends DeleteScheduled
 
 interface DialogDescription {
   bodyKey: string
+  explanationKey?: string
   copy: {
     visible: boolean
     default: boolean
   }
 }
 
+const NON_CONTENT_FIELDS = ['_id', '_rev', '_createdAt', '_updatedAt', '_system']
+
+function isSameDocumentContent(documentA: SanityDocument, documentB: SanityDocument): boolean {
+  return dequal(omit(documentA, NON_CONTENT_FIELDS), omit(documentB, NON_CONTENT_FIELDS))
+}
+
 function getDialogDescription(
-  draftVersionInfo: VersionInfoDocumentStub | undefined,
-  scheduledDraftBaseRev: string | undefined,
+  scheduledDraftDocument: SanityDocument | null,
+  draftDocument: SanityDocument | null,
+  scheduledDraftError: unknown,
+  draftError: unknown,
 ): DialogDescription {
-  // No draft exists - automatically copy the scheduled draft
-  if (!draftVersionInfo) {
+  // An unreadable document is unknown, not absent: copying could overwrite a draft we never saw,
+  // or copy content from a scheduled draft we never saw.
+  if (draftError) {
+    return {
+      bodyKey: 'release.dialog.delete-schedule-draft.body-with-choice',
+      explanationKey: 'release.dialog.delete-schedule-draft.unresolved-draft-explanation',
+      copy: {visible: true, default: false},
+    }
+  }
+
+  if (scheduledDraftError) {
+    return {
+      bodyKey: 'release.dialog.delete-schedule-draft.body-with-choice',
+      explanationKey: 'release.dialog.delete-schedule-draft.unresolved-scheduled-draft-explanation',
+      copy: {visible: true, default: false},
+    }
+  }
+
+  if (scheduledDraftDocument && draftDocument) {
+    return isSameDocumentContent(scheduledDraftDocument, draftDocument)
+      ? {
+          bodyKey: 'release.dialog.delete-schedule-draft.body-already-current',
+          copy: {visible: false, default: false},
+        }
+      : {
+          bodyKey: 'release.dialog.delete-schedule-draft.body-with-choice',
+          explanationKey: 'release.dialog.delete-schedule-draft.different-changes-explanation',
+          copy: {visible: true, default: true},
+        }
+  }
+
+  if (scheduledDraftDocument) {
     return {
       bodyKey: 'release.dialog.delete-schedule-draft.body-will-save-to-draft',
       copy: {visible: false, default: true},
     }
   }
 
-  // Revisions match - automatically skip copying (already current)
-  const revisionsMatch = scheduledDraftBaseRev === draftVersionInfo._rev
-  if (revisionsMatch) {
-    return {
-      bodyKey: 'release.dialog.delete-schedule-draft.body-already-current',
-      copy: {visible: false, default: false},
-    }
-  }
-
-  // Different content - let user decide
+  // The version is missing; copying is a no-op, so prefer it over claiming nothing is at stake.
   return {
     bodyKey: 'release.dialog.delete-schedule-draft.body-with-choice',
-    copy: {visible: true, default: true},
+    copy: {visible: false, default: true},
   }
 }
 
@@ -141,11 +173,13 @@ function DeleteScheduledDraftDialogContent({
   onClose,
   handleDeleteSchedule,
   isDeleting,
+  confirmDisabled = false,
   children,
 }: {
   onClose: () => void
   handleDeleteSchedule: () => void
   isDeleting: boolean
+  confirmDisabled?: boolean
   children: ReactNode
 }) {
   const {t} = useTranslation()
@@ -166,14 +200,14 @@ function DeleteScheduledDraftDialogContent({
           text: t('release.dialog.delete-schedule-draft.confirm'),
           tone: 'critical',
           onClick: handleDeleteSchedule,
-          disabled: isDeleting,
+          disabled: isDeleting || confirmDisabled,
           loading: isDeleting,
         },
       }}
     >
-      <Stack gap={3} paddingX={3} marginBottom={2}>
+      <Flex gap={3} paddingX={3} marginBottom={2} flexDirection="column">
         {children}
-      </Stack>
+      </Flex>
     </Dialog>
   )
 }
@@ -189,20 +223,42 @@ function DeleteScheduledDraftDialogWithCopyToDraft({
   const schema = useSchema()
   const operations = useScheduleDraftOperations()
 
+  const publishedId = getPublishedId(documentId)
+  const releaseId = getReleaseIdFromReleaseDocumentId(release._id)
+
   const {firstDocument, firstDocumentPreview} = useScheduledDraftDocument(release._id, {
     includePreview: true,
   })
 
-  const publishedId = useMemo(() => getPublishedId(documentId), [documentId])
-  const {versions} = useDocumentVersions({documentId: publishedId})
-  const versionsInfo = useMemo(() => getDocumentVersionInfoFromVersions(versions), [versions])
+  // Same observer both sides: `useScheduledDraftDocument` decorates documents with extra keys.
+  // The releases api config matches `useBundleDocuments`, so the version read shares its observable.
+  const {
+    document: scheduledDraftDocument,
+    loading: scheduledDraftLoading,
+    error: scheduledDraftError,
+  } = useUnstableObserveDocument<SanityDocument>(
+    getVersionId(publishedId, releaseId),
+    RELEASES_STUDIO_CLIENT_OPTIONS,
+  )
+  const {
+    document: draftDocument,
+    loading: draftLoading,
+    error: draftError,
+  } = useUnstableObserveDocument<SanityDocument>(
+    getDraftId(publishedId),
+    RELEASES_STUDIO_CLIENT_OPTIONS,
+  )
 
-  const dialogDescription = useMemo(() => {
-    const scheduledDraftBaseRev = firstDocument?._system?.base?.rev
-    return getDialogDescription(versionsInfo.draft, scheduledDraftBaseRev)
-  }, [versionsInfo.draft, firstDocument])
+  const isLoading = scheduledDraftLoading || draftLoading
 
-  const [shouldCopyToDraft, setShouldCopyToDraft] = useState(dialogDescription.copy.default)
+  const dialogDescription = useMemo(
+    () =>
+      getDialogDescription(scheduledDraftDocument, draftDocument, scheduledDraftError, draftError),
+    [scheduledDraftDocument, draftDocument, scheduledDraftError, draftError],
+  )
+
+  const [copyOverride, setCopyOverride] = useState<boolean | undefined>(undefined)
+  const shouldCopyToDraft = copyOverride ?? dialogDescription.copy.default
 
   const deleteOperation = useCallback(async () => {
     const shouldCopy = dialogDescription.copy.visible
@@ -226,37 +282,46 @@ function DeleteScheduledDraftDialogWithCopyToDraft({
       onClose={onClose}
       handleDeleteSchedule={handleDeleteSchedule}
       isDeleting={isDeleting}
+      confirmDisabled={isLoading}
     >
       {schemaType && firstDocument ? (
         <Preview value={firstDocument} schemaType={schemaType} />
       ) : (
         <LoadingBlock />
       )}
-      <Box paddingX={2}>
-        <Text size={1} muted>
-          {t(dialogDescription.bodyKey)}
-        </Text>
-      </Box>
-      {dialogDescription.copy.visible && (
+      {isLoading ? (
+        <LoadingBlock />
+      ) : (
         <>
           <Box paddingX={2}>
             <Text size={1} muted>
-              {t('release.dialog.delete-schedule-draft.different-changes-explanation')}
+              {t(dialogDescription.bodyKey)}
             </Text>
           </Box>
-          <Box paddingX={2}>
-            <Flex alignItems="center" gap={3} as="label">
-              <Checkbox
-                checked={shouldCopyToDraft}
-                onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                  setShouldCopyToDraft(event.currentTarget.checked)
-                }
-              />
-              <Text size={1} muted>
-                {t('release.dialog.delete-schedule-draft.copy-checkbox')}
-              </Text>
-            </Flex>
-          </Box>
+          {dialogDescription.copy.visible && (
+            <>
+              {dialogDescription.explanationKey && (
+                <Box paddingX={2}>
+                  <Text size={1} muted>
+                    {t(dialogDescription.explanationKey)}
+                  </Text>
+                </Box>
+              )}
+              <Box paddingX={2}>
+                <Flex alignItems="center" gap={3} as="label">
+                  <Checkbox
+                    checked={shouldCopyToDraft}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                      setCopyOverride(event.currentTarget.checked)
+                    }
+                  />
+                  <Text size={1} muted>
+                    {t('release.dialog.delete-schedule-draft.copy-checkbox')}
+                  </Text>
+                </Flex>
+              </Box>
+            </>
+          )}
         </>
       )}
     </DeleteScheduledDraftDialogContent>
@@ -264,7 +329,7 @@ function DeleteScheduledDraftDialogWithCopyToDraft({
 }
 
 /**
- * Used when there's no document in the release, avoiding unnecessary calls to useDocumentVersions.
+ * Used when there's no document in the release, avoiding unnecessary document fetches.
  */
 function DeleteScheduledDraftDialogWithEmptyRelease({
   onClose,

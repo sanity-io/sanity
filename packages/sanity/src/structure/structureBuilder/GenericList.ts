@@ -57,6 +57,12 @@ export interface BaseGenericList extends StructureNode {
   child: Child
   /** List initial values array. See {@link InitialValueTemplateItem} and {@link InitialValueTemplateItemBuilder} */
   initialValueTemplates?: (InitialValueTemplateItem | InitialValueTemplateItemBuilder)[]
+  /** Minimum width of the list pane in pixels. Defaults to 320 */
+  minWidth?: number
+  /** Maximum width of the list pane before it is manually resized, in pixels. Defaults to 350 */
+  currentMaxWidth?: number
+  /** Maximum width of the list pane in pixels. Defaults to 640 */
+  maxWidth?: number
 }
 
 /**
@@ -110,6 +116,12 @@ export interface GenericListInput extends StructureNode {
   canHandleIntent?: IntentChecker
   /** Input child of type {@link Child} */
   child?: Child
+  /** Minimum width of the list pane in pixels. Defaults to 320 */
+  minWidth?: number
+  /** Maximum width of the list pane before it is manually resized, in pixels. Defaults to 350 */
+  currentMaxWidth?: number
+  /** Maximum width of the list pane in pixels. Defaults to 640 */
+  maxWidth?: number
 }
 
 /**
@@ -265,6 +277,51 @@ export abstract class GenericListBuilder<
     return this.spec.displayOptions ? this.spec.displayOptions.showIcons : undefined
   }
 
+  /** Set the minimum width of the list pane
+   * @param minWidth - Minimum width in pixels
+   * @returns generic list builder with the minimum width applied
+   */
+  minWidth(minWidth: number): ConcreteImpl {
+    return this.clone({minWidth})
+  }
+
+  /** Get the minimum width of the list pane
+   * @returns minimum width in pixels
+   */
+  getMinWidth(): TList['minWidth'] {
+    return this.spec.minWidth
+  }
+
+  /** Set the maximum width of the list pane before it is manually resized
+   * @param currentMaxWidth - Maximum width in pixels before manual resizing
+   * @returns generic list builder with the current maximum width applied
+   */
+  currentMaxWidth(currentMaxWidth: number): ConcreteImpl {
+    return this.clone({currentMaxWidth})
+  }
+
+  /** Get the maximum width of the list pane before it is manually resized
+   * @returns current maximum width in pixels
+   */
+  getCurrentMaxWidth(): TList['currentMaxWidth'] {
+    return this.spec.currentMaxWidth
+  }
+
+  /** Set the maximum width of the list pane
+   * @param maxWidth - Maximum width in pixels
+   * @returns generic list builder with the maximum width applied
+   */
+  maxWidth(maxWidth: number): ConcreteImpl {
+    return this.clone({maxWidth})
+  }
+
+  /** Get the maximum width of the list pane
+   * @returns maximum width in pixels
+   */
+  getMaxWidth(): TList['maxWidth'] {
+    return this.spec.maxWidth
+  }
+
   /** Set generic list initial value templates
    * @param templates - generic list initial value templates. See {@link InitialValueTemplateItemBuilder}
    * @returns generic list builder based on templates provided.
@@ -317,6 +374,9 @@ export abstract class GenericListBuilder<
       child: this.spec.child || noChildResolver,
       canHandleIntent: this.spec.canHandleIntent || shallowIntentChecker,
       displayOptions: this.spec.displayOptions,
+      minWidth: this.spec.minWidth,
+      currentMaxWidth: this.spec.currentMaxWidth,
+      maxWidth: this.spec.maxWidth,
       initialValueTemplates,
       menuItems: (this.spec.menuItems || []).map((item, i) =>
         maybeSerializeMenuItem(item, i, path),

@@ -1,5 +1,5 @@
-import {Card, Stack, Text} from '@sanity/ui'
-import {Flex} from 'ui5'
+import {Card, Text} from '@sanity/ui'
+import {Flex, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {Button} from '../../../../../ui-components/button/Button'
@@ -18,24 +18,24 @@ export function VariantsEmptyStateStory() {
   return (
     <TestWrapper i18nBundles={[variantsUsEnglishLocaleBundle]} schemaTypes={[]}>
       <Card padding={4}>
-        <Stack gap={5}>
-          <Stack gap={2}>
+        <VStack gap={5}>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               docs link only
             </Text>
             <Flex justifyContent="center">
               <VariantsEmptyState />
             </Flex>
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               with create action
             </Text>
             <Flex justifyContent="center">
               <VariantsEmptyState createVariantButton={<Button text="Create variant" />} />
             </Flex>
-          </Stack>
-        </Stack>
+          </VStack>
+        </VStack>
       </Card>
     </TestWrapper>
   )

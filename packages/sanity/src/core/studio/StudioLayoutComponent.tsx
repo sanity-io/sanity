@@ -187,6 +187,9 @@ export function StudioLayoutComponent() {
   return (
     <Flex data-ui="ToolScreen" flexDirection="column" height="100%" data-testid="studio-layout">
       <NavbarContext.Provider value={navbarContextValue}>
+        {/* No boundary here on purpose: the navbar's height depends on what it renders (the
+            perspective bar with variants enabled, for one), so a lazy navbar suspends up to
+            StudioLayout's loading screen rather than reserving a row of the wrong height. */}
         {/* oxlint-disable-next-line react/static-components -- Navbar comes from useNavbarComponent(), stable per workspace */}
         <Navbar />
       </NavbarContext.Provider>

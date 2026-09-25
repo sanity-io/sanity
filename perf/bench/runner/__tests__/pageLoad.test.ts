@@ -1,7 +1,13 @@
 // @vitest-environment node
 import {describe, expect, it} from 'vitest'
 
-import {deriveAuthMilestones, unionDurationMs} from '../session/pageLoad'
+import {defineScenario} from '../../scenarios/types'
+import {
+  collectMilestones,
+  defaultLoadSteps,
+  deriveAuthMilestones,
+  unionDurationMs,
+} from '../session/pageLoad'
 
 describe('unionDurationMs', () => {
   it('sums disjoint windows', () => {
@@ -63,5 +69,46 @@ describe('deriveAuthMilestones', () => {
       firstRequestMs: null,
       inFlightMs: 0,
     })
+  })
+})
+
+describe('collectMilestones', () => {
+  it('keeps milestone measures only, first hit per name, in reached order', () => {
+    expect(
+      collectMilestones([
+        {name: 'bench:milestone:tool visible', duration: 2400},
+        {name: 'bench:time-to-editable', duration: 3000},
+        {name: 'bench:milestone:login clickable', duration: 900},
+        {name: 'bench:milestone:tool visible', duration: 5000},
+      ]),
+    ).toEqual([
+      {name: 'login clickable', atMs: 900},
+      {name: 'tool visible', atMs: 2400},
+    ])
+  })
+})
+
+describe('defaultLoadSteps', () => {
+  const base = {
+    name: 'x',
+    sourceFile: 'perf/bench/scenarios/x.ts',
+    documentType: 'x',
+    documentId: 'x',
+    fixture: () => [],
+  }
+
+  it('probes the first interaction target', () => {
+    const scenario = defineScenario({
+      ...base,
+      interactions: [
+        {fieldPath: 'title', kind: 'string'},
+        {fieldPath: 'body', kind: 'pte'},
+      ],
+    })
+    expect(defaultLoadSteps(scenario)).toEqual([{kind: 'awaitEditable', field: 'title'}])
+  })
+
+  it('is empty without interaction targets', () => {
+    expect(defaultLoadSteps(defineScenario({...base, interactions: []}))).toEqual([])
   })
 })
