@@ -1353,6 +1353,7 @@ exports[`exports snapshot 1`] = `
     "DocumentChangeContext": "object",
     "DocumentDivergencesContext": "object",
     "DocumentFieldActionsContext": "object",
+    "DocumentHistoryContext": "object",
     "DocumentIdContext": "object",
     "DocumentLimitUpsellContext": "object",
     "DocumentPaneContext": "object",

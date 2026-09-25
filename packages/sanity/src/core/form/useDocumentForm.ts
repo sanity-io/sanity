@@ -74,7 +74,7 @@ import {type StateTree} from './store/types/state'
 import {type FormState, useFormState} from './store/useFormState'
 import {getExpandOperations} from './store/utils/getExpandOperations'
 import {type OnPathFocusPayload} from './types/inputProps'
-import {useComlinkViewHistory} from './useComlinkViewHistory'
+import {useDocumentViewHistory} from './useDocumentViewHistory'
 import {toMutationPatches} from './utils/mutationPatch'
 
 interface DocumentFormOptions {
@@ -613,7 +613,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     formStateRef.current = formState
   }, [formState])
 
-  useComlinkViewHistory({editState})
+  useDocumentViewHistory({editState})
 
   const handleSetOpenPath = (path: Path) => {
     if (!formStateRef.current) return

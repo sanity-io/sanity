@@ -48,6 +48,7 @@ export {
   DocumentFieldActionsContext,
   type DocumentFieldActionsContextValue,
 } from '../_singletons/context/DocumentFieldActionsContext'
+export {DocumentHistoryContext} from '../_singletons/context/DocumentHistoryContext'
 export {
   DocumentIdContext,
   type DocumentIdContextValue,
