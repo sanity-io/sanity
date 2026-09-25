@@ -53,6 +53,7 @@ export const capabilities = [
   'globalWorkspaceControl',
   'comlink',
   'dashboard',
+  'favorites',
 ] as const
 
 /**

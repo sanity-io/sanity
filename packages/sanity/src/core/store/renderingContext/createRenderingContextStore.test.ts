@@ -57,7 +57,7 @@ describe('capabilities', () => {
     expect(createRenderingContextStore().getCapabilities()).toEqual({})
   })
 
-  it('provides dashboard for a `core-ui` URL rendered in a frame', () => {
+  it('provides dashboard and favorites for a `core-ui` URL rendered in a frame', () => {
     stubRenderedInFrame()
 
     expect(createRenderingContextStore(CORE_UI_SEARCH).getCapabilities()).toEqual({
@@ -65,6 +65,7 @@ describe('capabilities', () => {
       globalWorkspaceControl: true,
       comlink: true,
       dashboard: true,
+      favorites: true,
     })
   })
 })

@@ -28,7 +28,7 @@ export function listCapabilities(): OperatorFunction<StudioRenderingContext, Cap
     // A `core-ui` URL opened outside a frame has no host to talk to.
     return of(
       renderingContext.name === 'coreUi' && isRenderedInFrame()
-        ? {...capabilities, dashboard: true}
+        ? {...capabilities, dashboard: true, favorites: true}
         : capabilities,
     )
   })
