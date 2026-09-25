@@ -30,6 +30,15 @@ interface Context {
    * of the failed load), this survives iframe reloads and is only cleared once the overlays connect.
    */
   overlaysDismissed: boolean
+  /**
+   * Whether the overlays have connected at all since the iframe last loaded a page. A connection
+   * that starts handshaking after that is a reconnect rather than a first connection, even when
+   * it is a brand new comlink connection: the channel is torn down and recreated whenever the
+   * tool's effects are, which React does without a remount when a hidden `<Activity>` boundary
+   * is shown again (`beta.reactActivityMode`), and that must not bring the first-connection
+   * loading overlay back over a preview that is already interactive.
+   */
+  overlaysHaveConnected: boolean
 }
 
 type Event =
@@ -61,9 +70,11 @@ export const presentationMachine = setup({
         overlaysConnection,
         // A successful connection resolves whatever failure the user previously dismissed
         overlaysDismissed: overlaysConnection === 'connected' ? false : context.overlaysDismissed,
+        overlaysHaveConnected: context.overlaysHaveConnected || overlaysConnection === 'connected',
       }
     }),
     'assign overlays dismissed': assign({overlaysDismissed: true}),
+    'forget overlays connection': assign({overlaysHaveConnected: false}),
     'notify iframe load timeout': () => {
       console.error(
         `The preview iframe hasn't finished loading after ${MAX_TIME_TO_IFRAME_LOAD}ms. If the preview keeps reloading itself, note that Next.js dev servers older than 16.3.0 enter an infinite reload loop in Firefox when embedded cross-origin (https://github.com/vercel/next.js/pull/94128) — upgrade Next.js, or add \`experimental: {reactDebugChannel: false}\` to your Next.js config as a workaround.`,
@@ -77,8 +88,13 @@ export const presentationMachine = setup({
   },
   guards: {
     'overlays connected': ({context}) => context.overlaysConnection === 'connected',
-    'overlays connecting': ({context}) => context.overlaysConnection === 'connecting',
-    'overlays reconnecting': ({context}) => context.overlaysConnection === 'reconnecting',
+    'overlays connecting for the first time': ({context}) =>
+      context.overlaysConnection === 'connecting' && !context.overlaysHaveConnected,
+    // Either an existing connection re-handshaking, or a new one on a page whose overlays had
+    // already connected (the channel was recreated, see `overlaysHaveConnected`)
+    'overlays reconnecting': ({context}) =>
+      context.overlaysConnection === 'reconnecting' ||
+      (context.overlaysConnection === 'connecting' && context.overlaysHaveConnected),
     'overlays dismissed': ({context}) => context.overlaysDismissed,
     'status event resolves to idle': ({context, event}) => {
       if (event.type !== 'overlays status') {
@@ -112,10 +128,13 @@ export const presentationMachine = setup({
     overlaysStatusMap: new Map<string, ChannelConnectionStatus>(),
     overlaysConnection: 'idle',
     overlaysDismissed: false,
+    overlaysHaveConnected: false,
   }),
 
   on: {
     'iframe reload': {
+      // A reload brings a fresh page whose overlays connect for the first time again
+      actions: 'forget overlays connection',
       target: '.loading',
     },
     'overlays status': {
@@ -175,6 +194,7 @@ export const presentationMachine = setup({
           target: '.refreshing',
         },
         'iframe reload': {
+          actions: 'forget overlays connection',
           target: '.reloading',
         },
       },
@@ -212,7 +232,7 @@ export const presentationMachine = setup({
               always: [
                 {guard: 'overlays connected', target: 'ok'},
                 {guard: 'overlays dismissed', target: 'dismissed'},
-                {guard: 'overlays connecting', target: 'connecting'},
+                {guard: 'overlays connecting for the first time', target: 'connecting'},
                 {guard: 'overlays reconnecting', target: 'reconnecting'},
                 {target: 'ok'},
               ],
@@ -224,7 +244,8 @@ export const presentationMachine = setup({
                 'The user chose to continue despite an overlays connection failure. Suppress connection UI — also across reloads — until the overlays connect.',
             },
             connecting: {
-              description: 'The overlays have never connected on the current preview',
+              description:
+                'The overlays have never connected since the iframe last loaded a page, so the preview is not interactive yet',
               tags: ['prevent iframe interaction'],
               initial: 'pending',
               states: {
@@ -257,7 +278,8 @@ export const presentationMachine = setup({
               },
             },
             reconnecting: {
-              description: 'The overlays were connected before, but the connection was lost',
+              description:
+                'The overlays were connected before on this page, but the connection was lost or the channel was recreated; the preview stays interactive meanwhile',
               initial: 'pending',
               states: {
                 pending: {
