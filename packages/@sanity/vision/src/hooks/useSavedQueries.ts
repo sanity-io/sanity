@@ -338,7 +338,8 @@ export function useSavedQueries(): {
 
   // Moving a query between the personal store and the shared documents takes two writes. When
   // the second one fails, the first is taken back so the query is never in both places and a
-  // retry cannot pile up copies; the move then rejects with the original error.
+  // retry cannot pile up copies; the move then rejects with the original error. Should taking it
+  // back fail as well, the lists keep showing both copies, as the stores do, so nothing is hidden.
   const shareQuery = useCallback(
     async (key: string) => {
       const query = value.queries.find((q) => q._key === key)
@@ -354,8 +355,12 @@ export function useSavedQueries(): {
       try {
         await deletePersonalQuery(key)
       } catch (err) {
-        setSharedQueries((prev) => prev.filter((q) => q._key !== sharedKey))
-        await workspaceClient.delete(sharedKey).catch(() => undefined)
+        try {
+          await workspaceClient.delete(sharedKey)
+          setSharedQueries((prev) => prev.filter((q) => q._key !== sharedKey))
+        } catch {
+          // The shared copy stays, in the dataset and in the list
+        }
         throw err
       }
     },
@@ -378,12 +383,14 @@ export function useSavedQueries(): {
       try {
         await deleteSharedQuery(key)
       } catch (err) {
-        setValue({queries: personalQueriesBefore})
-        await keyValueStore
-          .setKey(keyValueStoreKey, {
+        try {
+          await keyValueStore.setKey(keyValueStoreKey, {
             queries: personalQueriesBefore,
           } as unknown as KeyValueStoreValue)
-          .catch(() => undefined)
+          setValue({queries: personalQueriesBefore})
+        } catch {
+          // The personal copy stays, in the store and in the list
+        }
         throw err
       }
     },

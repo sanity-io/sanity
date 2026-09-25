@@ -62,6 +62,11 @@ function printNode(node: TypeNode, depth: number, context: PrintContext): string
   }
 }
 
+/** Prints one node as a TypeScript type, naming the schema types it references through `typeNames` */
+export function printTypeScriptNode(node: TypeNode, typeNames: Map<string, string>): string {
+  return printNode(node, 0, {typeNames})
+}
+
 /**
  * Prints a query result type as TypeScript, followed by the schema types it references, in the
  * style of `sanity typegen`.

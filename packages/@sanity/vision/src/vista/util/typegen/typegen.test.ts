@@ -363,9 +363,16 @@ describe('printZod', () => {
 
   it('breaks cycles with z.lazy and handles null-only unions', () => {
     const output = printZod({type: 'inline', name: 'treeNode'}, {typeName: 'Tree', schema})
-    expect(output).toContain('export const TreeNodeSchema: z.ZodTypeAny = z.object({')
+    // The explicit type keeps z.infer meaningful where TypeScript cannot see through z.lazy
+    expect(output).toContain(
+      ['export type TreeNode = {', '  label: string;', '  children?: Array<TreeNode>;', '};'].join(
+        '\n',
+      ),
+    )
+    expect(output).toContain('export const TreeNodeSchema: z.ZodType<TreeNode> = z.object({')
     expect(output).toContain('  children: z.array(z.lazy(() => TreeNodeSchema)).optional(),')
     expect(output).toContain('export const TreeSchema = TreeNodeSchema')
+    expect(output).not.toContain('ZodTypeAny')
 
     expect(printZod({type: 'union', of: [{type: 'null'}]}, {typeName: 'N'})).toContain(
       'export const NSchema = z.null()',
@@ -379,9 +386,12 @@ describe('printZod', () => {
     expect(chapterIndex).toBeGreaterThan(-1)
     expect(chapterIndex).toBeLessThan(bookIndex)
     // ChapterSchema is declared first and points forward at BookSchema, which must be lazy
-    expect(output).toContain('export const ChapterSchema: z.ZodTypeAny = z.object({')
+    expect(output).toContain('export const ChapterSchema: z.ZodType<Chapter> = z.object({')
     expect(output).toContain('  book: z.lazy(() => BookSchema),')
-    expect(output).toContain('export const BookSchema: z.ZodTypeAny = z.object({')
+    expect(output).toContain('export const BookSchema: z.ZodType<Book> = z.object({')
+    // Both types are declared, so either annotation resolves whatever it mentions
+    expect(output).toContain('export type Chapter = {')
+    expect(output).toContain('export type Book = {')
     expect(output).toContain('  chapters: z.array(z.lazy(() => ChapterSchema)),')
     // The result schema comes after both declarations, so it references them directly
     expect(output).toContain('export const BookResultSchema = BookSchema')

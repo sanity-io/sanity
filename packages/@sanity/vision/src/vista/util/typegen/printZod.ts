@@ -1,5 +1,6 @@
 import {type ObjectTypeNode, type SchemaType, type TypeNode} from 'groq-js'
 
+import {printTypeScriptNode} from './printTypeScript'
 import {flattenObject, indent, printLiteralKey, uniqueMembers} from './printUtils'
 import {collectReferencedTypes, createTypeNames, resolveSchemaType, toTypeName} from './schemaTypes'
 
@@ -18,8 +19,12 @@ interface PrintContext {
   inDeclarations: boolean
 }
 
+function typeAliasName(typeName: string, context: PrintContext): string {
+  return context.typeNames.get(typeName) ?? toTypeName(typeName)
+}
+
 function schemaName(typeName: string, context: PrintContext): string {
-  return `${context.typeNames.get(typeName) ?? toTypeName(typeName)}Schema`
+  return `${typeAliasName(typeName, context)}Schema`
 }
 
 function printObject(node: ObjectTypeNode, depth: number, context: PrintContext): string {
@@ -100,11 +105,21 @@ export function printZod(node: TypeNode, options: PrintZodOptions): string {
   }
   const declarations = [`import {z} from 'zod'`]
 
+  // TypeScript cannot infer a type through `z.lazy`, so recursive schemas are annotated with an
+  // explicit type: the referenced schema types are declared as TypeScript types first (all of
+  // them, since a recursive type may mention the others), and `z.infer` keeps working downstream
+  if (cyclic.size > 0) {
+    for (const name of order) {
+      const resolved = resolveSchemaType(options.schema, name)
+      const type = resolved ? printTypeScriptNode(resolved, context.typeNames) : 'unknown'
+      declarations.push(`export type ${typeAliasName(name, context)} = ${type};`)
+    }
+  }
+
   for (const name of order) {
     const resolved = resolveSchemaType(options.schema, name)
     const value = resolved ? printZodNode(resolved, 0, context) : 'z.unknown()'
-    // Recursive schemas need an explicit type, since TypeScript cannot infer through `z.lazy`
-    const typeAnnotation = cyclic.has(name) ? ': z.ZodTypeAny' : ''
+    const typeAnnotation = cyclic.has(name) ? `: z.ZodType<${typeAliasName(name, context)}>` : ''
     declarations.push(`export const ${schemaName(name, context)}${typeAnnotation} = ${value}`)
   }
 
