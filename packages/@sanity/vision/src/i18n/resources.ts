@@ -228,6 +228,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.panel.response': 'Response',
   /** Label of the "Content Source Map" tab in the response panel */
   'vista.panel.source-map': 'Content Source Map',
+  /** Value announced for the params resize handle while the panel sizes itself to its content */
+  'vista.params.fit-height': 'Sized to the content, {{height}} pixels',
   /** Accessible label and tooltip of the handle for resizing the params panel */
   'vista.params.resize':
     'Resize params: drag or use the arrow keys; double-click or press Enter to fit the content again',

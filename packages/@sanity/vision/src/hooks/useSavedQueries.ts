@@ -51,7 +51,8 @@ interface SharedQueryDocument {
 
 export function useSavedQueries(): {
   queries: QueryConfig[]
-  saveQuery: (query: Omit<QueryConfig, '_key'>) => Promise<void>
+  /** Resolves with the key of the saved query (the document id of a shared one) */
+  saveQuery: (query: Omit<QueryConfig, '_key'>) => Promise<string>
   updateQuery: (query: QueryConfig) => Promise<void>
   deleteQuery: (key: string) => Promise<void>
   /** Moves a personal query to the shared list, keeping its title */
@@ -172,8 +173,9 @@ export function useSavedQueries(): {
     })
   }, [sharedQueries, value.queries])
 
+  // Resolves with the key of the saved query (the document id of a shared one)
   const saveQuery = useCallback(
-    async (query: Omit<QueryConfig, '_key'>) => {
+    async (query: Omit<QueryConfig, '_key'>): Promise<string> => {
       setSaving(true)
       setSaveQueryError(undefined)
 
@@ -195,7 +197,7 @@ export function useSavedQueries(): {
           })) as SharedQueryDocument
           setSharedQueries((prev) => [...mapSharedQueries([createdDoc]), ...prev])
           setSaving(false)
-          return
+          return createdDoc._id
         } catch (err) {
           const saveError = err instanceof Error ? err : new Error(String(err))
           setSaveQueryError(saveError)
@@ -204,8 +206,8 @@ export function useSavedQueries(): {
         }
       }
 
+      const newQuery = {...query, _key: uuid()} // Add a unique _key to the query
       try {
-        const newQuery = {...query, _key: uuid()} // Add a unique _key to the query
         const newQueries = [newQuery, ...value.queries]
         setValue({queries: newQueries})
         await keyValueStore.setKey(keyValueStoreKey, {
@@ -218,6 +220,7 @@ export function useSavedQueries(): {
         throw saveError
       }
       setSaving(false)
+      return newQuery._key
     },
     [currentUser, workspaceClient, keyValueStore, mapSharedQueries, value.queries],
   )
@@ -326,21 +329,30 @@ export function useSavedQueries(): {
     [deletePersonalQuery, deleteSharedQuery, sharedQueries],
   )
 
+  // Moving a query between the personal store and the shared documents takes two writes. When
+  // the second one fails, the first is taken back so the query is never in both places and a
+  // retry cannot pile up copies; the move then rejects with the original error.
   const shareQuery = useCallback(
     async (key: string) => {
       const query = value.queries.find((q) => q._key === key)
       if (!query) {
         throw new Error(`No personal saved query with key "${key}"`)
       }
-      await saveQuery({
+      const sharedKey = await saveQuery({
         shared: true,
         title: query.title,
         url: query.url,
         savedAt: new Date().toISOString(),
       })
-      await deletePersonalQuery(key)
+      try {
+        await deletePersonalQuery(key)
+      } catch (err) {
+        setSharedQueries((prev) => prev.filter((q) => q._key !== sharedKey))
+        await workspaceClient.delete(sharedKey).catch(() => undefined)
+        throw err
+      }
     },
-    [deletePersonalQuery, saveQuery, value.queries],
+    [deletePersonalQuery, saveQuery, value.queries, workspaceClient],
   )
 
   const unshareQuery = useCallback(
@@ -349,15 +361,26 @@ export function useSavedQueries(): {
       if (!query) {
         throw new Error(`No shared query with key "${key}"`)
       }
+      const personalQueriesBefore = value.queries
       await saveQuery({
         shared: false,
         title: query.title,
         url: query.url,
         savedAt: new Date().toISOString(),
       })
-      await deleteSharedQuery(key)
+      try {
+        await deleteSharedQuery(key)
+      } catch (err) {
+        setValue({queries: personalQueriesBefore})
+        await keyValueStore
+          .setKey(keyValueStoreKey, {
+            queries: personalQueriesBefore,
+          } as unknown as KeyValueStoreValue)
+          .catch(() => undefined)
+        throw err
+      }
     },
-    [deleteSharedQuery, saveQuery, sharedQueries],
+    [deleteSharedQuery, keyValueStore, saveQuery, sharedQueries, value.queries],
   )
 
   const clearQueries = useCallback(async () => {

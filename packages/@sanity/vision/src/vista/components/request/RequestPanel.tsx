@@ -96,6 +96,7 @@ export function RequestPanel(props: RequestPanelProps) {
   const paramsRef = useRef<HTMLElement>(null)
   const optionsRef = useRef<HTMLElement>(null)
   const paramsResize = useDragResize({containerRef, sectionRef: paramsRef, siblingRef: optionsRef})
+  const paramsHeightNow = paramsResize.height ?? paramsResize.measured?.current
 
   const runLabel = isFetching ? t('vista.query.stop') : t('action.query-execute')
 
@@ -162,12 +163,19 @@ export function RequestPanel(props: RequestPanelProps) {
             <div
               aria-label={t('vista.params.resize')}
               aria-orientation="horizontal"
+              aria-valuemax={paramsResize.measured?.max}
               aria-valuemin={SECTION_MIN_HEIGHT}
-              aria-valuenow={paramsResize.height ?? undefined}
+              aria-valuenow={paramsHeightNow}
+              aria-valuetext={
+                paramsResize.height === null && paramsHeightNow !== undefined
+                  ? t('vista.params.fit-height', {height: paramsHeightNow})
+                  : undefined
+              }
               className={sectionResizer}
               data-dragging={paramsResize.dragging}
               data-testid="vista-request-params-resizer"
               onDoubleClick={paramsResize.reset}
+              onFocus={paramsResize.onFocus}
               onKeyDown={paramsResize.onKeyDown}
               onPointerDown={paramsResize.onPointerDown}
               role="separator"

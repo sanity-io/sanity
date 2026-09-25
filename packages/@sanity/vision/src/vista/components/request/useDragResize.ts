@@ -28,9 +28,15 @@ export interface DragResize {
   /** The dragged height, or `null` while the section sizes itself to its content */
   height: number | null
   dragging: boolean
+  /**
+   * The section's height and the largest one the drag allows, measured when the handle is
+   * focused and after each resize, for the separator's `aria-valuenow` and `aria-valuemax`
+   */
+  measured: {current: number; max: number} | null
   onPointerDown: (event: ReactPointerEvent<HTMLElement>) => void
   /** Arrow keys resize by a line (five with Shift), Home and End go to the bounds, Enter resets */
   onKeyDown: (event: ReactKeyboardEvent<HTMLElement>) => void
+  onFocus: () => void
   /** Back to the automatic height */
   reset: () => void
 }
@@ -58,6 +64,7 @@ export function useDragResize({
 }: DragResizeOptions): DragResize {
   const [height, setHeight] = useState<number | null>(null)
   const [dragging, setDragging] = useState(false)
+  const [measured, setMeasured] = useState<Bounds | null>(null)
 
   const measure = useCallback((): Bounds | null => {
     const section = sectionRef.current
@@ -65,14 +72,22 @@ export function useDragResize({
     if (!section || !container) return null
     const siblingHeight = siblingRef.current?.getBoundingClientRect().height ?? 0
     return {
-      current: section.getBoundingClientRect().height,
+      current: Math.round(section.getBoundingClientRect().height),
       min: SECTION_MIN_HEIGHT,
-      max: Math.max(
-        SECTION_MIN_HEIGHT,
-        container.getBoundingClientRect().height - siblingHeight - QUERY_MIN_HEIGHT,
+      max: Math.round(
+        Math.max(
+          SECTION_MIN_HEIGHT,
+          container.getBoundingClientRect().height - siblingHeight - QUERY_MIN_HEIGHT,
+        ),
       ),
     }
   }, [containerRef, sectionRef, siblingRef])
+
+  const onFocus = useCallback(() => setMeasured(measure()), [measure])
+  // A resize changes the layout only once React has rendered it
+  const measureAfterRender = useCallback(() => {
+    requestAnimationFrame(() => setMeasured(measure()))
+  }, [measure])
 
   const onPointerDown = useCallback(
     (event: ReactPointerEvent<HTMLElement>) => {
@@ -90,6 +105,7 @@ export function useDragResize({
         handle.removeEventListener('pointerup', onEnd)
         handle.removeEventListener('pointercancel', onEnd)
         setDragging(false)
+        measureAfterRender()
       }
       handle.setPointerCapture(event.pointerId)
       handle.addEventListener('pointermove', onMove)
@@ -97,7 +113,7 @@ export function useDragResize({
       handle.addEventListener('pointercancel', onEnd)
       setDragging(true)
     },
-    [measure],
+    [measure, measureAfterRender],
   )
 
   const onKeyDown = useCallback(
@@ -125,11 +141,15 @@ export function useDragResize({
       if (target === bounds.current) return
       event.preventDefault()
       setHeight(target === null ? null : clamp(target, bounds))
+      measureAfterRender()
     },
-    [measure],
+    [measure, measureAfterRender],
   )
 
-  const reset = useCallback(() => setHeight(null), [])
+  const reset = useCallback(() => {
+    setHeight(null)
+    measureAfterRender()
+  }, [measureAfterRender])
 
-  return {height, dragging, onPointerDown, onKeyDown, reset}
+  return {height, dragging, measured, onPointerDown, onKeyDown, onFocus, reset}
 }

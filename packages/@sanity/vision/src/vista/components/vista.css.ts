@@ -231,15 +231,20 @@ export const sidebarDrawer = style({
   background: 'var(--card-bg-color)',
 })
 
-/** On phones the drawer covers the tabs area instead of leaving it a sliver */
+/**
+ * On phones the drawer covers the whole width, rail included, instead of leaving the tabs area a
+ * sliver: it closes from its own header, and an expanded rail floating over it would otherwise
+ * hide most of its list.
+ */
 export const sidebarDrawerOverlay = style({
   position: 'absolute',
   top: 0,
   bottom: 0,
-  left: `${SIDEBAR_RAIL_WIDTH}px`,
+  left: 0,
   right: 0,
   width: 'auto',
-  zIndex: 20,
+  // Above the expanded rail (21)
+  zIndex: 22,
 })
 
 /**
