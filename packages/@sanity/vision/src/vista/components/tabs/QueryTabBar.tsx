@@ -1,6 +1,7 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {CloseIcon} from '@sanity/icons/Close'
 import {Badge, Button, TextInput} from '@sanity/ui'
+import {useSelector} from '@xstate/react'
 import {Reorder, useDragControls} from 'motion/react'
 import {
   type KeyboardEvent,
@@ -106,6 +107,10 @@ function TabHandle(props: TabHandleProps) {
   const title = getTabTitle(tab, t('vista.tabs.untitled'))
   const dragControls = useDragControls()
   const [dragging, setDragging] = useState(false)
+  // The badge reports the runner's actual subscription, which only the active tab holds, rather
+  // than the stored auto-refetch preference
+  const runnerRef = useVistaSelector((snapshot) => snapshot.context.runners[tab.id])
+  const isLive = useSelector(runnerRef, (snapshot) => snapshot.matches({live: 'on'}))
 
   const handleAuxClick = useCallback(
     (event: MouseEvent) => {
@@ -175,7 +180,7 @@ function TabHandle(props: TabHandleProps) {
             textWeight={selected ? 'medium' : 'regular'}
           />
         )}
-        {tab.autoRefetch && (
+        {isLive && (
           <Box flexShrink={0}>
             <Badge fontSize={0} tone="positive">
               {t('vista.live.active')}

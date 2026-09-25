@@ -544,7 +544,11 @@ describe('VistaGui', () => {
     fireEvent.click(screen.getByTestId('vista-auto-refetch'))
 
     await waitFor(() => expect(liveSubscriptionCount()).toBe(1))
-    expect(screen.getAllByText('vista.live.active').length).toBeGreaterThan(0)
+    // Both the tab and the result carry the badge while the subscription is up
+    expect(screen.getAllByText('vista.live.active')).toHaveLength(2)
+    const tabBadge = () =>
+      within(screen.getByTestId('vista-tab-bar')).queryByText('vista.live.active')
+    expect(tabBadge()).not.toBeNull()
 
     respondWith({result: [{title: 'Updated'}], ms: 3, syncTags: ['s1:def']})
     act(() => {
@@ -574,16 +578,18 @@ describe('VistaGui', () => {
     })
     await waitFor(() => expect(fetchCalls).toHaveLength(3))
 
-    // A background tab does not keep refetching: switching away ends the subscription, and
-    // coming back restarts it
+    // A background tab does not keep refetching: switching away ends the subscription (and the
+    // tab's badge with it), and coming back restarts it
     fireEvent.click(screen.getByTestId('vista-new-tab'))
     await waitFor(() => expect(liveEvents.observed).toBe(false))
+    expect(tabBadge()).toBeNull()
     act(() => {
       liveEvents.next({type: 'message', id: '5', tags: ['s1:def']})
     })
     expect(fetchCalls).toHaveLength(3)
     fireEvent.click(within(screen.getAllByTestId('vista-tab')[0]).getByTestId('vista-tab-button'))
     await waitFor(() => expect(liveSubscriptionCount()).toBe(2))
+    expect(tabBadge()).not.toBeNull()
   })
 
   it('fetches with params typed just before running, ahead of the debounce', async () => {
