@@ -213,6 +213,23 @@ export function useSavedQueries(): {
   }, [])
 
   /**
+   * Writes the personal list to the store. A failed server write does not reject there: the
+   * store logs it and resolves `null`, which is turned back into an error here so callers can
+   * roll back and report it.
+   */
+  const storePersonalQueries = useCallback(
+    async (queries: QueryConfig[]) => {
+      const stored = await keyValueStore.setKey(keyValueStoreKey, {
+        queries,
+      } as unknown as KeyValueStoreValue)
+      if (stored === null) {
+        throw new Error('The saved queries could not be stored.')
+      }
+    },
+    [keyValueStore],
+  )
+
+  /**
    * Replaces the personal list with `update(latest)`, optimistically in the UI and then in the
    * store; a failed store write puts the previous list back. Resolves with the written list.
    */
@@ -224,9 +241,7 @@ export function useSavedQueries(): {
         latestQueriesRef.current = next
         setValue({queries: next})
         try {
-          await keyValueStore.setKey(keyValueStoreKey, {
-            queries: next,
-          } as unknown as KeyValueStoreValue)
+          await storePersonalQueries(next)
         } catch (err) {
           // The store kept the previous list, so the UI shows it again
           latestQueriesRef.current = before
@@ -235,7 +250,7 @@ export function useSavedQueries(): {
         }
         return next
       }),
-    [enqueuePersonalWrite, keyValueStore],
+    [enqueuePersonalWrite, storePersonalQueries],
   )
 
   const queries = useMemo(() => {
@@ -450,11 +465,11 @@ export function useSavedQueries(): {
     () =>
       enqueuePersonalWrite(async () => {
         // Nothing disappears from the list until the store confirms the write
-        await keyValueStore.setKey(keyValueStoreKey, defaultValue as unknown as KeyValueStoreValue)
+        await storePersonalQueries(defaultValue.queries)
         latestQueriesRef.current = defaultValue.queries
         setValue(defaultValue)
       }),
-    [enqueuePersonalWrite, keyValueStore],
+    [enqueuePersonalWrite, storePersonalQueries],
   )
 
   return {

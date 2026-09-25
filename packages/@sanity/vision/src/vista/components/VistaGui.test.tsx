@@ -365,6 +365,19 @@ describe('VistaGui', () => {
     fireEvent.click(screen.getByTestId('vista-request-params-toggle'))
     expect(screen.queryByTestId('vista-params-editor')).toBeNull()
     await waitFor(() => expect(getStoredState().panels).toEqual({params: false, options: true}))
+
+    // Params typed right before collapsing are still in the debounce; collapsing commits them,
+    // so the editor that comes back with the panel shows them
+    fireEvent.click(screen.getByTestId('vista-request-params-toggle'))
+    const paramsEditor = () =>
+      within(screen.getByTestId('vista-params-editor')).getByTestId(
+        'codemirror-mock',
+      ) as HTMLTextAreaElement
+    fireEvent.change(paramsEditor(), {target: {value: '{"id": "pending"}'}})
+    fireEvent.click(screen.getByTestId('vista-request-params-toggle'))
+    await waitFor(() => expect(getStoredState().tabs[0].rawParams).toBe('{"id": "pending"}'))
+    fireEvent.click(screen.getByTestId('vista-request-params-toggle'))
+    expect(paramsEditor().value).toBe('{"id": "pending"}')
   })
 
   it('fetches the raw response, shows its metadata and records the history', async () => {
