@@ -2,11 +2,11 @@
 import {type AuthProvider, type AuthProviderResponse, type SanityClient} from '@sanity/client'
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Badge, Card, Heading, Stack, Text} from '@sanity/ui'
+import {Badge, Card, Heading, Text} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
-import {Box, Flex} from 'ui5'
+import {Box, Flex, VStack} from 'ui5'
 
 import {Button, type ButtonProps} from '../../../ui-components/button/Button'
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
@@ -203,7 +203,7 @@ export function createLoginComponent({
                 <WarningOutlineIcon />
               </Text>
             </Box>
-            <Stack flex={1} marginLeft={3} gap={4}>
+            <Flex flexBasis="0%" flexGrow={1} marginLeft={3} gap={4} flexDirection="column">
               <Text as="h1" size={1} weight="medium">
                 No login providers available
               </Text>
@@ -235,19 +235,19 @@ export function createLoginComponent({
                   Learn about auth configuration &rarr;
                 </a>
               </Text>
-            </Stack>
+            </Flex>
           </Flex>
         </Card>
       )
     }
 
     return (
-      <Stack gap={4}>
+      <VStack gap={4}>
         <Heading align="center" size={1}>
           Choose login provider
         </Heading>
 
-        <Stack>
+        <VStack>
           {lastUsedProvider && (
             <LastUsedProviderButton
               provider={lastUsedProvider}
@@ -260,7 +260,7 @@ export function createLoginComponent({
             />
           )}
 
-          <Stack gap={2}>
+          <VStack gap={2}>
             {providerList?.map((provider, index) => (
               <ProviderButton
                 key={`${provider.url}_${index}`}
@@ -273,9 +273,9 @@ export function createLoginComponent({
                 })}
               />
             ))}
-          </Stack>
-        </Stack>
-      </Stack>
+          </VStack>
+        </VStack>
+      </VStack>
     )
   }
 

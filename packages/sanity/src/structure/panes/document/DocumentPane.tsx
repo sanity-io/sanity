@@ -1,7 +1,7 @@
 import {type Path} from '@sanity/types'
-import {Stack, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {fromString as pathFromString} from '@sanity/util/paths'
-import {memo, useMemo} from 'react'
+import {memo, Suspense, useMemo} from 'react'
 import {
   CopyPasteProvider,
   getCreatableVariantTarget,
@@ -16,6 +16,7 @@ import {
   useTemplatePermissions,
   useTranslation,
 } from 'sanity'
+import {VStack} from 'ui5'
 
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {DiffViewDocumentLayout} from '../../diffView/plugin/DiffViewDocumentLayout'
@@ -124,7 +125,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
         paneKey={paneKey}
         title={t('panes.document-pane.document-not-found.title')}
       >
-        <Stack gap={4}>
+        <VStack gap={4}>
           <Text as="p">
             <Translate
               t={t}
@@ -133,7 +134,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
               components={{Code: 'code'}}
             />
           </Text>
-        </Stack>
+        </VStack>
       </ErrorPane>
     )
   }
@@ -187,8 +188,19 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
       >
         <DiffViewDocumentLayout documentId={options.id} documentType={options.type}>
           <CommentsWrapper documentId={options.id} documentType={options.type}>
-            {/* oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work */}
-            <DocumentLayout documentId={options.id} documentType={options.type} />
+            <Suspense
+              fallback={
+                <LoadingPane
+                  flex={2.5}
+                  minWidth={320}
+                  paneKey={paneKey}
+                  title={t('panes.document-pane.document-not-found.loading')}
+                />
+              }
+            >
+              {/* oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work */}
+              <DocumentLayout documentId={options.id} documentType={options.type} />
+            </Suspense>
           </CommentsWrapper>
         </DiffViewDocumentLayout>
       </ReferenceInputOptionsProvider>

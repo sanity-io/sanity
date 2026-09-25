@@ -60,6 +60,11 @@ export interface FormProviderProps {
 /**
  * Default wiring for `FormBuilderProvider` when used with Sanity
  *
+ * The form components this resolves (`renderInput`, `renderField`, ...) carry no Suspense
+ * boundary of their own, and neither does this provider. `FormBuilder` wraps its root input in
+ * one; a consumer that renders them under this provider directly wraps them in `<Suspense>`
+ * itself, since a Components API component may be `lazy()`.
+ *
  * @alpha This API might change.
  */
 export function FormProvider(props: FormProviderProps) {

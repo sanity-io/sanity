@@ -7,8 +7,13 @@ import {ArrayOfObjectsItem} from '../../../../members/array/items/ArrayOfObjects
 import {type ArrayOfObjectsInputProps} from '../../../../types/inputProps'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types/itemProps'
 import {UploadTargetCard} from '../../../files/common/uploadTarget/UploadTargetCard'
+import {ArrayItemsToggle} from '../../common/ArrayItemsToggle'
 import {ArrayValidationProvider} from '../../common/ArrayValidationContext'
 import {Item, List} from '../../common/list'
+import {
+  useCollapsibleArrayItems,
+  useFocusedMemberIndex,
+} from '../../common/useCollapsibleArrayItems'
 import {ArrayOfObjectsFunctions} from '../ArrayOfObjectsFunctions'
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {ErrorItem} from './ErrorItem'
@@ -20,6 +25,7 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   const {
     arrayFunctions: ArrayFunctions = ArrayOfObjectsFunctions,
     elementProps,
+    focusPath,
     members,
     onChange,
     onItemPrepend,
@@ -50,7 +56,16 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
     return <GridItem {...itemProps} />
   }, [])
 
-  const memberKeys = useMemo(() => members.map((member) => member.key), [members])
+  const focusedIndex = useFocusedMemberIndex(members, focusPath)
+
+  const {collapsible, expanded, onToggle, visibleMembers} = useCollapsibleArrayItems({
+    members,
+    schemaType,
+    layout: 'grid',
+    focusedIndex,
+  })
+
+  const memberKeys = useMemo(() => visibleMembers.map((member) => member.key), [visibleMembers])
 
   return (
     <ArrayValidationProvider schemaType={schemaType} itemCount={members.length}>
@@ -87,7 +102,7 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                   onItemMove={onItemMove}
                   sortable={sortable}
                 >
-                  {members.map((member) => (
+                  {visibleMembers.map((member) => (
                     <Item
                       key={member.key}
                       sortable={sortable}
@@ -114,6 +129,13 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                   ))}
                 </List>
               </Card>
+            )}
+            {collapsible && (
+              <ArrayItemsToggle
+                expanded={expanded}
+                onToggle={onToggle}
+                totalCount={members.length}
+              />
             )}
           </VStack>
         </UploadTargetCard>

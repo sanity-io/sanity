@@ -1,9 +1,9 @@
 import {type Path, type PortableTextBlock} from '@sanity/types'
-import {Stack, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {AnimatePresence, motion, type Variants} from 'motion/react'
 import {useMemo, useState} from 'react'
-import {Flex, Box} from 'ui5'
+import {Box, Flex, VStack} from 'ui5'
 
 import {CommentDeleteDialog as CommentDeleteDialogV2} from '../../../comments-v2/components/CommentDeleteDialog'
 import {useComments as useCommentsV2} from '../../../comments-v2/hooks/useComments'
@@ -40,7 +40,7 @@ const VARIANTS: Variants = {
   visible: {opacity: 1, x: 0},
 }
 
-const MotionStack = motion.create(Stack)
+const MotionStack = motion.create(VStack)
 
 interface TasksActivityLogProps {
   onChange: (patch: FormPatch | PatchEvent | FormPatch[]) => void
@@ -375,7 +375,7 @@ function TasksActivityLogFeed(props: TasksActivityLogFeedProps) {
         />
       )}
 
-      <Stack gap={5}>
+      <VStack gap={5}>
         <Flex alignItems="center">
           <Box flexBasis="0%" flexGrow={1}>
             <Text size={2} weight="semibold">
@@ -399,16 +399,16 @@ function TasksActivityLogFeed(props: TasksActivityLogFeedProps) {
           {!loading && (
             <MotionStack animate="visible" initial="hidden" gap={4} variants={VARIANTS}>
               {value.createdByUser && (
-                <Stack paddingBottom={1}>
+                <Flex paddingBottom={1} flexDirection="column">
                   <TasksActivityCreatedAt
                     createdAt={value.createdByUser}
                     authorId={value.authorId}
                   />
-                </Stack>
+                </Flex>
               )}
 
               {currentUser && (
-                <Stack gap={4} marginTop={1}>
+                <Flex gap={4} marginTop={1} flexDirection="column">
                   {activity.map((item) => {
                     if (item._type === 'activity') {
                       return <EditedAt key={item.timestamp} activity={item.payload} />
@@ -432,12 +432,12 @@ function TasksActivityLogFeed(props: TasksActivityLogFeedProps) {
                     mentionOptions={mentionOptions}
                     onSubmit={handleCommentCreate}
                   />
-                </Stack>
+                </Flex>
               )}
             </MotionStack>
           )}
         </AnimatePresence>
-      </Stack>
+      </VStack>
     </>
   )
 }
