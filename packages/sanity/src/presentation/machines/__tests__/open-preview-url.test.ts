@@ -5,7 +5,7 @@ import {type Actor, createActor, fromObservable, fromPromise, SimulatedClock, wa
 
 import {promiseWithResolvers} from '../../../core/util/promiseWithResolvers'
 import {defineResolvePreviewModeActor} from '../../actors/resolve-preview-mode'
-import {type PreviewUrlOption} from '../../types'
+import {type PreviewUrlOption, type PreviewUrlPreviewMode} from '../../types'
 import {openPreviewUrlMachine} from '../open-preview-url'
 import {type CheckPermissionInput} from '../preview-url'
 
@@ -22,6 +22,8 @@ const previewModePerOrigin: PreviewUrlOption = {
   previewMode: ({targetOrigin}) =>
     targetOrigin === enabledOrigin ? {enable: '/api/draft-mode/enable'} : false,
 }
+const resolvedPreviewModeFor = (targetOrigin: string): PreviewUrlPreviewMode | false =>
+  targetOrigin === enabledOrigin ? {enable: '/api/draft-mode/enable', shareAccess: true} : false
 
 const createSecrets = () => {
   let count = 0
@@ -250,6 +252,43 @@ describe('Open preview URL machine', () => {
     expect(snapshot.value).toBe('unavailable')
     expect(snapshot.context.previewUrlSecret).toBeNull()
   })
+
+  test.each([
+    ['without', enabledOrigin, disabledOrigin],
+    ['with', disabledOrigin, enabledOrigin],
+  ])(
+    'discards the preview mode still being resolved for the previous origin when moving to an origin %s preview mode',
+    async (_, previousOrigin, targetOrigin) => {
+      const previous = promiseWithResolvers<PreviewUrlPreviewMode | false>()
+      const actor = createActor(
+        openPreviewUrlMachine.provide({
+          actors: {
+            ...mockActors(),
+            'resolve preview mode': fromPromise<
+              PreviewUrlPreviewMode | false,
+              {targetOrigin: string}
+            >(({input}) =>
+              input.targetOrigin === previousOrigin
+                ? previous.promise
+                : Promise.resolve(resolvedPreviewModeFor(input.targetOrigin)),
+            ),
+          },
+        }),
+        {input: {targetOrigin: previousOrigin}},
+      ).start()
+
+      await waitFor(actor, (state) => state.matches('resolvingPreviewMode'))
+      actor.send({type: 'set target origin', targetOrigin})
+      const resolved = await settled(actor)
+      expect(resolved.context.previewMode).toEqual(resolvedPreviewModeFor(targetOrigin) || null)
+
+      previous.resolve(resolvedPreviewModeFor(previousOrigin))
+      await previous.promise
+      const snapshot = actor.getSnapshot()
+      expect(snapshot.value).toEqual(resolved.value)
+      expect(snapshot.context).toEqual(resolved.context)
+    },
+  )
 
   test('applies a target origin that changes while permissions are still loading', async () => {
     const permissions = new Subject<PermissionCheckResult>()
