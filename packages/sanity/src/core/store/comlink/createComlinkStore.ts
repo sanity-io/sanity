@@ -1,5 +1,8 @@
-import {createNode} from '@sanity/comlink'
+import {type Node} from '@sanity/comlink'
 import {type FrameMessages, type WindowMessages} from '@sanity/message-protocol'
+import {createSanityInstance} from '@sanity/sdk'
+import {getNodeState, getOrCreateNode} from '@sanity/sdk/comlink'
+import {type Subscription} from 'rxjs'
 
 import {type CapabilityRecord} from '../renderingContext/types'
 import {type ComlinkStore} from './types'
@@ -15,33 +18,33 @@ interface Options {
 const SDK_CHANNEL_NAME = 'dashboard/channels/sdk'
 const SDK_NODE_NAME = 'dashboard/nodes/sdk'
 
+const SDK_NODE = {name: SDK_NODE_NAME, connectTo: SDK_CHANNEL_NAME}
+
 function noop() {}
 
 /**
- * Create a Comlink node if Comlink is provided by the Studio rendering context. The node is not
- * started here — the store is created during render — but by the first `start()` call, which
- * `useComlinkStore` makes once the consumer has committed.
+ * Share the SDK's Comlink node when Studio has a host to talk to over Comlink: a second node with
+ * the same name would handle every message twice.
  *
  * @internal
  */
 export function createComlinkStore({capabilities}: Options): ComlinkStore {
-  if (!capabilities.comlink) {
+  // `comlink` without `dashboard` is a `core-ui` URL opened outside a frame, with no host.
+  if (!capabilities.comlink || !capabilities.dashboard) {
     return {start: noop}
   }
 
-  const node = createNode<FrameMessages, WindowMessages>({
-    name: SDK_NODE_NAME,
-    connectTo: SDK_CHANNEL_NAME,
-  })
-
-  let started = false
+  // Never disposed, so the SDK keeps its node for the lifetime of the page.
+  const instance = createSanityInstance()
+  // TODO: Drop the cast once the SDK's `getOrCreateNode` takes message type arguments (sanity-io/sdk#1323).
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- the SDK types its node without message types
+  const node = getOrCreateNode(instance, SDK_NODE) as Node<FrameMessages, WindowMessages>
+  let subscription: Subscription | undefined
 
   return {
     node,
     start: () => {
-      if (started) return
-      started = true
-      node.start()
+      subscription ??= getNodeState(instance, SDK_NODE).observable.subscribe()
     },
   }
 }
