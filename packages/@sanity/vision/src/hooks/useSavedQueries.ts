@@ -338,6 +338,7 @@ export function useSavedQueries(): {
       if (!query) {
         throw new Error(`No personal saved query with key "${key}"`)
       }
+      const personalQueriesBefore = value.queries
       const sharedKey = await saveQuery({
         shared: true,
         title: query.title,
@@ -347,6 +348,8 @@ export function useSavedQueries(): {
       try {
         await deletePersonalQuery(key)
       } catch (err) {
+        // The store write is the one that failed, so only the optimistic state needs putting back
+        setValue({queries: personalQueriesBefore})
         setSharedQueries((prev) => prev.filter((q) => q._key !== sharedKey))
         await workspaceClient.delete(sharedKey).catch(() => undefined)
         throw err
