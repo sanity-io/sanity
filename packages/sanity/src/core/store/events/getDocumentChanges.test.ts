@@ -1,11 +1,16 @@
+import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
-import {BehaviorSubject, of} from 'rxjs'
+import {BehaviorSubject, filter, firstValueFrom, of} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {collectEmissions} from './__fixtures__/collect.fixture'
 import {
   createDocumentVersionEvent,
+  deleteDocumentGroupEvent,
+  deleteDocumentVersionEvent,
+  DOCUMENT_ID,
   DRAFT_ID,
+  editDocumentVersionEvent,
   minutesAfterBase,
   publishDocumentVersionEvent,
 } from './__fixtures__/events.fixture'
@@ -21,7 +26,7 @@ import {
 } from './getDocumentChanges'
 import {getDocumentTransactions} from './getDocumentTransactions'
 import {HISTORY_CLEARED_EVENT_ID} from './getInitialFetchEvents'
-import {type EventsStoreRevision} from './types'
+import {type EventsObservableValue, type EventsStoreRevision} from './types'
 
 vi.mock('./getDocumentTransactions', () => ({
   getDocumentTransactions: vi.fn(),
@@ -39,12 +44,67 @@ const sinceDoc: SanityDocument = {
 }
 const toDoc: SanityDocument = {...sinceDoc, _rev: 'rev-to', name: 'bar'}
 
-const noEvents = of({events: [], nextCursor: '', loading: false, error: null})
+function eventsValue(events: EventsObservableValue['events']): EventsObservableValue {
+  return {events, nextCursor: '', loading: false, error: null}
+}
+
+const noEvents = of(eventsValue([]))
 const revision = (revisionId: string, document: SanityDocument | null): EventsStoreRevision => ({
   revisionId,
   loading: false,
   document,
 })
+
+const staleDraftTx = editTransaction({before: {name: 'foo'}, after: {name: 'foo bar'}})
+
+const olderPublishEvent = publishDocumentVersionEvent({
+  id: 'older-publish-event-id',
+  revisionId: 'older-publish-revision-id',
+  timestamp: minutesAfterBase(5),
+})
+const publishEvent = publishDocumentVersionEvent({
+  id: 'publish-event-id',
+  revisionId: 'publish-revision-id',
+  timestamp: minutesAfterBase(10),
+})
+const editEvent = editDocumentVersionEvent({
+  revisionId: 'edit-revision-id',
+  timestamp: minutesAfterBase(20),
+})
+const discardVersionEvent = deleteDocumentVersionEvent({
+  id: 'discard-event-id',
+  timestamp: minutesAfterBase(30),
+})
+const discardGroupEvent = deleteDocumentGroupEvent({timestamp: minutesAfterBase(30)})
+
+// A document fetched at an event's revision carries that event's id as its `_rev`
+// (see `addEventId`), which is what the events store matches revisions against.
+const publishedDoc: SanityDocument = {...sinceDoc, _id: DOCUMENT_ID, _rev: publishEvent.id}
+const olderPublishedDoc: SanityDocument = {
+  ...publishedDoc,
+  _rev: olderPublishEvent.id,
+  name: 'older',
+}
+
+async function collectDiff(
+  events: EventsObservableValue['events'],
+  since: SanityDocument = publishedDoc,
+) {
+  return firstValueFrom(
+    getDocumentChanges({
+      eventsObservable$: of(eventsValue(events)),
+      to$: of(null),
+      since$: of({
+        document: since,
+        loading: false,
+        revisionId: since._rev,
+      }),
+      remoteTransactions$: of([staleDraftTx]),
+      documentId: DRAFT_ID,
+      client: {} as SanityClient,
+    }).pipe(filter((value) => !value.loading)),
+  )
+}
 
 describe('buildDocumentForDiffInput', () => {
   it('strips internal fields and undefined values', () => {
@@ -210,7 +270,7 @@ describe('getDocumentChanges', () => {
     const changes$ = getDocumentChanges({
       client,
       documentId: DRAFT_ID,
-      eventsObservable$: of({events: [createEvent], nextCursor: '', loading: false, error: null}),
+      eventsObservable$: of(eventsValue([createEvent])),
       to$: of(revision('rev-to', toDoc)),
       since$: of(null),
       remoteTransactions$: new BehaviorSubject([]),
@@ -329,5 +389,74 @@ describe('getDocumentChanges', () => {
     )
     expect(mockGetDocumentTransactions).toHaveBeenCalledTimes(1)
     subscription.unsubscribe()
+  })
+
+  describe('when the newest event is a discard', () => {
+    beforeEach(() => {
+      mockGetDocumentTransactions.mockResolvedValue([staleDraftTx])
+    })
+
+    it('does not replay a stale draft translog after discarding a published document draft', async () => {
+      const result = await collectDiff([discardVersionEvent, editEvent, publishEvent])
+
+      expect(mockGetDocumentTransactions).not.toHaveBeenCalled()
+      expect(result.error).toBeNull()
+      expect(result.diff?.isChanged).toBe(false)
+    })
+
+    it('caps the range at the last publish when comparing against an older publish', async () => {
+      mockGetDocumentTransactions.mockResolvedValue([
+        editTransaction({id: 'tx-republish', before: {name: 'older'}, after: {name: 'foo'}}),
+      ])
+
+      const result = await collectDiff(
+        [discardVersionEvent, editEvent, publishEvent, olderPublishEvent],
+        olderPublishedDoc,
+      )
+
+      expect(mockGetDocumentTransactions).toHaveBeenCalledWith({
+        documentId: DRAFT_ID,
+        client: expect.anything(),
+        toTransaction: publishEvent.id,
+        fromTransaction: olderPublishEvent.id,
+      })
+      expect(result.error).toBeNull()
+      expect(result.diff?.isChanged).toBe(true)
+    })
+
+    it('does not replay a stale draft translog after a deleteDocumentGroup event', async () => {
+      const result = await collectDiff([discardGroupEvent, editEvent])
+
+      expect(mockGetDocumentTransactions).not.toHaveBeenCalled()
+      expect(result.error).toBeNull()
+      expect(result.diff?.isChanged).toBe(false)
+    })
+
+    it('stops replaying already-fetched draft transactions when a discard arrives while viewing latest', async () => {
+      const events$ = new BehaviorSubject(eventsValue([editEvent, publishEvent]))
+      const changes$ = getDocumentChanges({
+        eventsObservable$: events$,
+        to$: of(null),
+        since$: of({
+          document: publishedDoc,
+          loading: false,
+          revisionId: publishedDoc._rev,
+        }),
+        remoteTransactions$: of([staleDraftTx]),
+        documentId: DRAFT_ID,
+        client: {} as SanityClient,
+      })
+      const {values, subscription} = collectEmissions(changes$)
+
+      await vi.waitFor(() => expect(values.at(-1)?.loading).toBe(false))
+      expect(mockGetDocumentTransactions).toHaveBeenCalledTimes(1)
+      expect(values.at(-1)?.diff?.isChanged).toBe(true)
+
+      events$.next(eventsValue([discardVersionEvent, editEvent, publishEvent]))
+
+      await vi.waitFor(() => expect(values.at(-1)?.diff?.isChanged).toBe(false))
+      expect(mockGetDocumentTransactions).toHaveBeenCalledTimes(1)
+      subscription.unsubscribe()
+    })
   })
 })
