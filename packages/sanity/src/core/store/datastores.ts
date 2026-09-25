@@ -450,8 +450,7 @@ export function useComlinkStore(): ComlinkStore {
   const renderingContext = useRenderingContextStore()
   // Kept synchronous: the comlink node is created when `capabilities.comlink`
   // is true, so a deferred snapshot would delay comlink initialization.
-  // Capabilities emit once at boot; there is nothing to gain from deferring
-  // them. The store has already resolved them, so the comlink store is created
+  // The store has already resolved them, so the comlink store is created
   // for the actual capabilities right away instead of once for `{}` and again
   // after the first emission.
   const capabilities = useSyncObservable(

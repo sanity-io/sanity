@@ -3,6 +3,7 @@ import {of, shareReplay} from 'rxjs'
 import {coreUiRenderingContext} from './coreUiRenderingContext'
 import {defaultRenderingContext} from './defaultRenderingContext'
 import {listCapabilities} from './listCapabilities'
+import {messageBusRenderingContext} from './messageBusRenderingContext'
 import {
   type CapabilityRecord,
   type RenderingContextStore,
@@ -24,6 +25,7 @@ import {
 export function createRenderingContextStore(urlSearch?: string): RenderingContextStore {
   const renderingContext = of(undefined).pipe(
     coreUiRenderingContext(urlSearch),
+    messageBusRenderingContext(),
     defaultRenderingContext(),
     shareReplay(1),
   )
@@ -37,6 +39,7 @@ export function createRenderingContextStore(urlSearch?: string): RenderingContex
   renderingContext.subscribe((value) => {
     resolvedRenderingContext = value
   })
+  // A message bus host can change its capabilities later, and this subscription keeps them current.
   let resolvedCapabilities: CapabilityRecord | undefined
   capabilities.subscribe((value) => {
     resolvedCapabilities = value

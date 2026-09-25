@@ -27,9 +27,9 @@ export const CapabilityGate: ComponentType<Props> = ({
   condition = 'unavailable',
 }) => {
   const {capabilities, getCapabilities} = useRenderingContextStore()
-  // Kept synchronous: capabilities emit once at boot, so deferring only delays the gate flipping
-  // without any render-load benefit. The store has already resolved them, so the mounting render
-  // gates correctly too rather than painting the local implementation for a commit.
+  // Kept synchronous: deferring only delays the gate flipping without any render-load benefit. The
+  // store has already resolved the capabilities, so the mounting render gates correctly too rather
+  // than painting the local implementation for a commit.
   const renderingContextCapabilities = useSyncObservable(
     capabilities,
     () => getCapabilities() ?? EMPTY_CAPABILITIES,
