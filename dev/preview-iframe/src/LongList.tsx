@@ -1,5 +1,5 @@
-import {Card, Heading, Stack, Text} from '@sanity/ui'
-import {Flex, Box} from 'ui5'
+import {Card, Heading, Text} from '@sanity/ui'
+import {Flex, Box, VStack} from 'ui5'
 
 import {useQuery} from './loader'
 
@@ -32,7 +32,7 @@ export function LongList(): React.JSX.Element {
   }
 
   return (
-    <Stack padding={4} gap={4}>
+    <Flex padding={4} gap={4} flexDirection="column">
       <Box>
         <Heading as="h1" size={1}>
           {data.title}
@@ -41,15 +41,15 @@ export function LongList(): React.JSX.Element {
       {data.objectArrayWithPrefinedStringField.map((item, i) => (
         <Card key={item._key} padding={4} shadow={2} radius={2}>
           <Flex alignItems="flex-start" justifyContent="space-between" gap={3}>
-            <Stack gap={2}>
+            <VStack gap={2}>
               <Text>{item.fieldA || 'N/A'}</Text>
               <Text>{item.fieldB || 'N/A'}</Text>
               <Text>{item.fieldC || 'N/A'}</Text>
-            </Stack>
+            </VStack>
             <Text size={1}>{i + 1}</Text>
           </Flex>
         </Card>
       ))}
-    </Stack>
+    </Flex>
   )
 }

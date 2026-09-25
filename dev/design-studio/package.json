@@ -36,6 +36,7 @@
     "react-dom": "catalog:",
     "sanity": "workspace:*",
     "styled-components": "catalog:",
+    "ui5": "catalog:",
     "vite": "catalog:"
   },
   "devDependencies": {

@@ -1,10 +1,10 @@
 import {type ClientError, ServerError} from '@sanity/client'
-import {Button, Card, Container, Heading, Stack, Tab, TabList, TabPanel, Text} from '@sanity/ui'
+import {Button, Card, Container, Heading, Tab, TabList, TabPanel, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {lazy, type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {CorsOriginErrorScreen, useClient, useProjectId, useStudioErrorHandler} from 'sanity'
 import {useRouter} from 'sanity/router'
-import {Flex, Box} from 'ui5'
+import {Flex, Box, VStack} from 'ui5'
 
 import {
   installCheckCorsFetchInterceptor,
@@ -109,7 +109,7 @@ export function ErrorReportingTest() {
   return (
     <Box overflow="auto" padding={[3, 4, 5]}>
       <Container width={1}>
-        <Stack gap={4}>
+        <VStack gap={4}>
           <TabList gap={2}>
             <Tab
               aria-controls="errors-panel-boundary"
@@ -146,7 +146,7 @@ export function ErrorReportingTest() {
           >
             <RequestErrorsDemo />
           </TabPanel>
-        </Stack>
+        </VStack>
       </Container>
 
       {triggerReactLazyImportError && <ReactLazyError />}
@@ -222,21 +222,21 @@ interface DemoEntry {
 function DemoSection(props: {heading: string; description?: ReactNode; demos: DemoEntry[]}) {
   return (
     <Card padding={4} radius={3} shadow={1}>
-      <Stack gap={4}>
-        <Stack gap={3}>
+      <VStack gap={4}>
+        <VStack gap={3}>
           <Heading size={2}>{props.heading}</Heading>
           {props.description && (
             <Text muted size={1}>
               {props.description}
             </Text>
           )}
-        </Stack>
-        <Stack gap={2}>
+        </VStack>
+        <VStack gap={2}>
           {props.demos.map((demo) => (
             <DemoRow key={demo.label} demo={demo} />
           ))}
-        </Stack>
-      </Stack>
+        </VStack>
+      </VStack>
     </Card>
   )
 }
@@ -244,18 +244,18 @@ function DemoSection(props: {heading: string; description?: ReactNode; demos: De
 function DemoRow({demo}: {demo: DemoEntry}) {
   return (
     <Card border padding={4} radius={2} tone="transparent">
-      <Stack gap={3}>
+      <VStack gap={3}>
         <Flex alignItems="center" gap={4} flexWrap="wrap">
           <Box flexBasis="0%" flexGrow={1} style={{minWidth: 240}}>
             {demo.description ? (
-              <Stack gap={3}>
+              <VStack gap={3}>
                 <Text size={1} weight="medium">
                   {demo.label}
                 </Text>
                 <Text muted size={1}>
                   {demo.description}
                 </Text>
-              </Stack>
+              </VStack>
             ) : (
               <Text size={1} weight="medium">
                 {demo.label}
@@ -272,17 +272,17 @@ function DemoRow({demo}: {demo: DemoEntry}) {
         </Flex>
         {demo.result && (
           <Card padding={3} radius={2} tone="transparent" border>
-            <Stack gap={2}>
+            <VStack gap={2}>
               <Text muted size={0} weight="semibold">
                 Result
               </Text>
               <Code size={1} style={{whiteSpace: 'pre-wrap'}}>
                 {demo.result}
               </Code>
-            </Stack>
+            </VStack>
           </Card>
         )}
-      </Stack>
+      </VStack>
     </Card>
   )
 }
@@ -648,8 +648,8 @@ function RequestErrorsDemo() {
 
   return (
     <Card padding={4} radius={3} shadow={1}>
-      <Stack gap={4}>
-        <Stack gap={3}>
+      <VStack gap={4}>
+        <VStack gap={3}>
           <Heading size={2}>Request errors</Heading>
           <Text muted size={1}>
             Each button issues a real request through the studio&apos;s client pipeline. The call
@@ -657,13 +657,13 @@ function RequestErrorsDemo() {
             studio&apos;s error UI via <InlineCode>useStudioErrorHandler()</InlineCode>. Locally
             handled outcomes are shown in place under each row.
           </Text>
-        </Stack>
-        <Stack gap={2}>
+        </VStack>
+        <VStack gap={2}>
           {demos.map((demo) => (
             <DemoRow key={demo.label} demo={demo} />
           ))}
-        </Stack>
-      </Stack>
+        </VStack>
+      </VStack>
     </Card>
   )
 }

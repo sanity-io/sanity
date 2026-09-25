@@ -2,11 +2,11 @@ import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {ControlsIcon} from '@sanity/icons/Controls'
 import {LinkIcon} from '@sanity/icons/Link'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useMemo, useState, type ComponentType} from 'react'
 import {usePaneRouter, type UserComponent} from 'sanity/structure'
-import {Flex, Box} from 'ui5'
+import {Flex, Box, VStack} from 'ui5'
 
 function usePaneChildLinkComponent(props: {
   id: string
@@ -57,18 +57,18 @@ export const DebugPane: UserComponent = function DebugPane(props) {
   return (
     <Box height="100%">
       <Box padding={4} paddingTop={0}>
-        <Stack gap={3}>
+        <VStack gap={3}>
           <Text muted size={1} textOverflow="ellipsis">
             Random ID: <code>{randomId}</code>
           </Text>
           <Text textOverflow="ellipsis" size={1} muted>
             Assigned on pane component mount
           </Text>
-        </Stack>
+        </VStack>
       </Box>
 
       <Card borderBottom padding={2}>
-        <Stack gap={1}>
+        <VStack gap={1}>
           <Card
             as={ChildLink as ComponentType<Record<string, unknown>>}
             data-as="a"
@@ -121,7 +121,7 @@ export const DebugPane: UserComponent = function DebugPane(props) {
               </Box>
             </Flex>
           </Card>
-        </Stack>
+        </VStack>
       </Card>
 
       <Card padding={4}>
