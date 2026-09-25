@@ -18,9 +18,9 @@ interface LiveSubscriptionOptions {
 }
 
 /**
- * Keeps the runner's live-events subscription in sync with the tab: on while the tab refetches
- * automatically (and its API version returns sync tags), off otherwise. Reports subscription
- * failures through a toast.
+ * Keeps the runner's live-events subscription in sync with the tab: on while the shown tab
+ * refetches automatically (and its API version returns sync tags), off otherwise. Reports
+ * subscription failures through a toast.
  */
 export function useLiveSubscription({
   runnerRef,
@@ -40,6 +40,13 @@ export function useLiveSubscription({
       runnerRef.send({type: 'live.enable', client: liveClient})
     } else {
       runnerRef.send({type: 'live.disable'})
+    }
+    // Only the active tab mounts this hook, so leaving the tab ends its subscription too
+    return () => {
+      // Closing the tab already stopped its runner, and a stopped actor takes no events
+      if (runnerRef.getSnapshot().status === 'active') {
+        runnerRef.send({type: 'live.disable'})
+      }
     }
   }, [enabled, liveClient, runnerRef])
 
