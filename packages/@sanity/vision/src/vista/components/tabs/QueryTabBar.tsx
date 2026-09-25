@@ -222,11 +222,16 @@ export function QueryTabBar() {
   )
 
   // The ARIA tabs keyboard pattern: arrows, Home and End move between tabs and activate them,
-  // Delete closes the focused tab (the close button itself stays out of the tab order). Shift
-  // with an arrow moves the tab instead, the keyboard counterpart of dragging it.
+  // Delete closes the focused tab (the close button itself stays out of the tab order) and F2
+  // renames it. Shift with an arrow moves the tab instead, the keyboard counterpart of dragging it.
   const handleTabKeyDown = useCallback(
     (event: KeyboardEvent<HTMLButtonElement>) => {
       if (tabs.length === 0) return
+      if (event.key === 'F2') {
+        event.preventDefault()
+        setEditingId(activeTabId)
+        return
+      }
       if (event.key === 'Delete') {
         event.preventDefault()
         actorRef.send({type: 'tab.close', id: activeTabId})

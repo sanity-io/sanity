@@ -98,7 +98,7 @@ export default defineConfig({
 
 What is different in the redesign:
 
-- **Query tabs**, each with its own query, params and options (dataset, API version, perspective, content source map). Drag a tab (or press Shift with an arrow key) to reorder them; tabs and their order are persisted per project in `localStorage`.
+- **Query tabs**, each with its own query, params and options (dataset, API version, perspective, content source map). Drag a tab (or press Shift with an arrow key) to reorder them, double-click a title (or press F2) to rename it; tabs and their order are persisted per project in `localStorage`.
 - **Query, Params and Options stacked** in the request column, all visible at once: the editor takes whatever the two panels leave over, Params grow with their JSON (drag their top edge for another height, double-click it to fit the content again) and Options are as tall as their fields. Both panels collapse to a header, remembered per project.
 - **A collapsible sidebar** with your saved queries, the queries shared in the dataset, the keyboard shortcuts and the settings. Saved queries are shared with the classic tool.
 - **Refetch automatically**: the response's `syncTags` are matched against the Live Content API, so the result updates when the documents it depends on change. The History panel records every fetch and why it happened.

@@ -60,8 +60,13 @@ export function ResponsePanel({tab, runnerRef, resolved, request}: ResponsePanel
   // Document links in the result must point at the dataset it was fetched from, which the tab's
   // options may already have moved away from
   const resultDataset = settledRequest?.client.config().dataset || tab.options.dataset
-  const jsonUrl = hasResult ? getJsonBlobUrl(result) : undefined
-  const csvUrl = hasResult ? getCsvBlobUrl(result) : undefined
+  // Serializing a large result is not free even when the helpers then reuse their blob, and this
+  // panel re-renders with every keystroke in the editors
+  const jsonUrl = useMemo(
+    () => (hasResult ? getJsonBlobUrl(result) : undefined),
+    [hasResult, result],
+  )
+  const csvUrl = useMemo(() => (hasResult ? getCsvBlobUrl(result) : undefined), [hasResult, result])
 
   const panelTabs = useMemo(
     (): CollapsiblePanelTab[] => [

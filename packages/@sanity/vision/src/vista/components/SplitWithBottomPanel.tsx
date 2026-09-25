@@ -23,14 +23,16 @@ export interface SplitWithBottomPanelProps {
 
 /**
  * A column of the query tab: the main area (editor or result) above a resizable, collapsible
- * tabbed panel. Owns the panel's active tab, collapsed flag and dragged height.
+ * tabbed panel. Owns the panel's active tab, collapsed flag and dragged height; the height is
+ * remembered per layout, since one dragged for two columns rarely suits a stacked pane.
  */
 export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
   const {id, testId, children, tabs, defaultBottomSize} = props
   const {layout} = useVistaExperience()
   const [activeTabId, setActiveTabId] = useState(() => tabs[0].id)
   const [collapsed, setCollapsed] = useState(false)
-  const [bottomSize, setBottomSize] = useState(() => defaultBottomSize[layout])
+  const [bottomSizes, setBottomSizes] = useState<Partial<Record<VistaLayout, number>>>({})
+  const bottomSize = bottomSizes[layout] ?? defaultBottomSize[layout]
 
   return (
     <Flex data-testid={testId} flexDirection="column" height="100%">
@@ -39,7 +41,7 @@ export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
           allowResize={!collapsed}
           maxSize={-MIN_MAIN_HEIGHT}
           minSize={PANEL_HEADER_HEIGHT}
-          onChange={(size: number) => setBottomSize(size)}
+          onChange={(size: number) => setBottomSizes((sizes) => ({...sizes, [layout]: size}))}
           primary="second"
           size={collapsed ? PANEL_HEADER_HEIGHT : bottomSize}
           split="horizontal"
