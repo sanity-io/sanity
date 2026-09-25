@@ -24,12 +24,11 @@ import {
   useScheduledDraftsEnabled,
   useTranslation,
   useWorkspace,
-  VARIANTS_STUDIO_CLIENT_OPTIONS,
 } from 'sanity'
 import {Flex, Box} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
-import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
+import {API_VERSIONS, DEFAULT_API_VERSION, VARIANTS_API_VERSION} from '../apiVersions'
 import {groqExtensions} from '../codemirror/extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
 import {visionLocaleNamespace} from '../i18n'
@@ -45,6 +44,7 @@ import {encodeQueryString} from '../util/encodeQueryString'
 import {isVisionPasteTarget} from '../util/isVisionPasteTarget'
 import {getLocalStorage} from '../util/localStorage'
 import {parseApiQueryString, type ParsedApiQueryString} from '../util/parseApiQueryString'
+import {SANITY_QUERY_URL} from '../util/parseQueryUrl'
 import {prefixApiVersion} from '../util/prefixApiVersion'
 import {validateApiVersion} from '../util/validateApiVersion'
 import {ParamsEditor, parseParams} from './ParamsEditor'
@@ -70,10 +70,6 @@ function nodeContains(node: Node, other: EventTarget | Node | null): boolean {
 
   return node === other || !!(node.compareDocumentPosition(other as Node) & 16)
 }
-
-// Match Sanity API URLs with any domain (supports custom CDN domains like foolcdn.com)
-const sanityUrl = /\/(vX|v1|v\d{4}-\d\d-\d\d)\/.*?(?:query|listen)\/(.*?)\?(.*)/
-const VARIANTS_API_VERSION = prefixApiVersion(VARIANTS_STUDIO_CLIENT_OPTIONS.apiVersion)
 
 const isRunHotkey = (event: KeyboardEvent) =>
   isHotkey('ctrl+enter', event) || isHotkey('mod+enter', event)
@@ -505,7 +501,7 @@ export function VisionGui(props: VisionGuiProps) {
   // Get object of state values from provided URL
   const getStateFromUrl = useCallback(
     (data: string): ParsedUrlState | null => {
-      const match = data.match(sanityUrl)
+      const match = data.match(SANITY_QUERY_URL)
       if (!match) {
         return null
       }
