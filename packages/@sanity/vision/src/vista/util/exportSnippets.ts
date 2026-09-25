@@ -32,8 +32,16 @@ function toSingleQuoted(value: string): string {
   return `'${value.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`
 }
 
+/**
+ * JSON is a valid object literal, except that a `__proto__` key in a literal sets the object's
+ * prototype instead of a property; such params are parsed from a string so the snippet sends
+ * what Vision sent.
+ */
 function toJsObject(value: Record<string, unknown>, indent = ''): string {
   const json = JSON.stringify(value, null, 2)
+  if (/"__proto__"\s*:/.test(json)) {
+    return `JSON.parse(${toSingleQuoted(JSON.stringify(value))})`
+  }
   return json.replace(/\n/g, `\n${indent}`)
 }
 

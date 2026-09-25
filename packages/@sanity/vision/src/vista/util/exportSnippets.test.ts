@@ -91,6 +91,20 @@ describe('buildExportSnippets', () => {
     expect(nextSanity.code).toContain(`  variant: 'french',`)
   })
 
+  it('parses params holding a __proto__ key from JSON instead of writing a literal', () => {
+    const params = JSON.parse('{"id": "a", "__proto__": {"polluted": true}}') as Record<
+      string,
+      unknown
+    >
+    const [, client, nextSanity] = buildExportSnippets({...base, params})
+
+    const expected = `JSON.parse('{"id":"a","__proto__":{"polluted":true}}')`
+    expect(client.code).toContain(`const params = ${expected}`)
+    expect(nextSanity.code).toContain(`  params: ${expected},`)
+    // A plain object stays a literal
+    expect(buildExportSnippets(base)[1].code).toContain('const params = {\n  "id": "abc"\n}')
+  })
+
   it('leaves the unsupported raw perspective out of the next-sanity snippet and says so', () => {
     const [, client, nextSanity] = buildExportSnippets({...base, perspective: 'raw'})
 
