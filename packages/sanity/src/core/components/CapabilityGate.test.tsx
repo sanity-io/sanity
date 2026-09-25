@@ -1,7 +1,8 @@
-import {render, screen} from '@testing-library/react'
+import {act, render, screen} from '@testing-library/react'
 import {of} from 'rxjs'
 import {beforeEach, expect, it, vi} from 'vitest'
 
+import {stubMessageBusHost} from '../../../test/testUtils/stubMessageBusHost'
 import {createTestProvider} from '../../../test/testUtils/TestProvider'
 import {useRenderingContextStore} from '../store/datastores'
 import {createRenderingContextStore} from '../store/renderingContext/createRenderingContextStore'
@@ -118,4 +119,27 @@ it('does not render the child if the capability is not provided by the rendering
   )
 
   expect(screen.queryByTestId('user-menu')).toBeFalsy()
+})
+
+it('hides the local implementation from the first render while a message bus host provides it, and shows it once withdrawn', async () => {
+  const wrapper = await createTestProvider()
+  const host = stubMessageBusHost()
+  host.publish('applications.capabilities', {globalUserMenu: true})
+  vi.mocked(useRenderingContextStore).mockReturnValue(createRenderingContextStore())
+  const childRenders: true[] = []
+  function LocalUserMenu() {
+    childRenders.push(true)
+    return <div data-testid="user-menu">User</div>
+  }
+
+  render(
+    <CapabilityGate capability="globalUserMenu" condition="unavailable">
+      <LocalUserMenu />
+    </CapabilityGate>,
+    {wrapper},
+  )
+  expect(childRenders).toHaveLength(0)
+
+  act(() => host.publish('applications.capabilities', {}))
+  expect(screen.getByTestId('user-menu')).toBeTruthy()
 })

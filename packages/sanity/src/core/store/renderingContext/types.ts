@@ -1,3 +1,4 @@
+import {type MessageBusConnection} from '@sanity/sdk/dashboard'
 import {type Observable} from 'rxjs'
 
 /**
@@ -29,12 +30,30 @@ export type CoreUiRenderingContext = BaseStudioRenderingContext<
 /**
  * @internal
  */
-export type StudioRenderingContext = DefaultRenderingContext | CoreUiRenderingContext
+export type MessageBusRenderingContext = BaseStudioRenderingContext<
+  'messageBus',
+  {
+    connection: MessageBusConnection
+  }
+>
 
 /**
  * @internal
  */
-export const capabilities = ['globalUserMenu', 'globalWorkspaceControl', 'comlink'] as const
+export type StudioRenderingContext =
+  | DefaultRenderingContext
+  | CoreUiRenderingContext
+  | MessageBusRenderingContext
+
+/**
+ * @internal
+ */
+export const capabilities = [
+  'globalUserMenu',
+  'globalWorkspaceControl',
+  'comlink',
+  'dashboard',
+] as const
 
 /**
  * @internal
