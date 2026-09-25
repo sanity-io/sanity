@@ -207,6 +207,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.history.reason.manual': 'Fetch button',
   /** History reason: dataset, API version or perspective changed while refetching automatically */
   'vista.history.reason.options': 'Options changed',
+  /** History reason: a tab that refetches automatically was opened again, or the studio reloaded */
+  'vista.history.reason.resume': 'Automatic refetching resumed',
   /** History reason: the keyboard shortcut was used */
   'vista.history.reason.shortcut': 'Keyboard shortcut',
   /** Shown in the Lint panel while the query has no lint findings */
