@@ -11,7 +11,7 @@ import {
   urlSearchParamVercelSetBypassCookie,
   type VercelSetBypassCookieValue,
 } from '@sanity/preview-url-secret/constants'
-import {Card, Label, Spinner, Stack, Text, usePrefersReducedMotion} from '@sanity/ui'
+import {Card, Label, Spinner, Text, usePrefersReducedMotion} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
@@ -29,7 +29,7 @@ import {
 } from 'react'
 import {flushSync} from 'react-dom'
 import {Translate, useTranslation} from 'sanity'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {Button} from '../../ui-components/button/Button'
@@ -542,27 +542,27 @@ export const Preview = memo(function PreviewComponent(
                       <>
                         {overlaysConnection !== 'connected' && (
                           <Card padding={3} radius={2} tone="critical">
-                            <Stack gap={3}>
+                            <VStack gap={3}>
                               <Label muted size={0}>
                                 {t('preview-frame.overlay.connection-status.label')}
                               </Label>
                               <Code size={1}>
                                 {t('channel.status', {context: overlaysConnection})}
                               </Code>
-                            </Stack>
+                            </VStack>
                           </Card>
                         )}
 
                         {loadersConnection !== 'connected' && (
                           <Card padding={3} radius={2} tone="critical">
-                            <Stack gap={3}>
+                            <VStack gap={3}>
                               <Label muted size={0}>
                                 {t('preview-frame.loader.connection-status.label')}
                               </Label>
                               <Code size={1}>
                                 {t('channel.status', {context: loadersConnection})}
                               </Code>
-                            </Stack>
+                            </VStack>
                           </Card>
                         )}
                       </>

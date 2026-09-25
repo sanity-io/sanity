@@ -4,7 +4,7 @@ import {SearchIcon} from '@sanity/icons/Search'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
 import {UsersIcon} from '@sanity/icons/Users'
-import {Badge, Button, Card, Dialog, Stack, Tab, TabList, Text, TextInput} from '@sanity/ui'
+import {Badge, Button, Card, Dialog, Tab, TabList, Text, TextInput} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
@@ -12,7 +12,7 @@ import {Tooltip} from '@sanity/ui/tooltip'
 import {dequal as isEqual} from 'dequal/lite'
 import {type ComponentProps, type ReactElement, useCallback, useState} from 'react'
 import {ContextMenuButton, UserAvatar, useDateTimeFormat, useTranslation} from 'sanity'
-import {Flex, Box} from 'ui5'
+import {Flex, Box, VStack} from 'ui5'
 
 import {type QueryConfig, useSavedQueries} from '../hooks/useSavedQueries'
 import {visionLocaleNamespace} from '../i18n'
@@ -20,8 +20,8 @@ import {fixedHeader, queryList, scrollContainer} from './QueryRecall.css'
 import {type ParsedUrlState} from './VisionGui'
 import {StyledLabel} from './VisionGui.styled'
 
-function FixedHeader(props: ComponentProps<typeof Stack>) {
-  return <Stack {...props} className={fixedHeader} />
+function FixedHeader(props: ComponentProps<typeof VStack>) {
+  return <VStack {...props} className={fixedHeader} />
 }
 
 function ScrollContainer(props: ComponentProps<typeof Flex>) {
@@ -414,7 +414,7 @@ export function QueryRecall({
         </Box>
       </FixedHeader>
       <QueryList id="vision-query-recall-list">
-        <Stack paddingY={3}>
+        <Flex paddingY={3} flexDirection="column">
           {filteredQueries?.map((q, index) => {
             const queryObj = getStateFromUrl(q.url)
             const fullQueryPreview = queryObj?.query || ''
@@ -454,7 +454,7 @@ export function QueryRecall({
                   cursor: 'pointer',
                 }}
               >
-                <Stack gap={compactMode ? 2 : 3}>
+                <VStack gap={compactMode ? 2 : 3}>
                   <Flex
                     justifyContent="space-between"
                     alignItems={'center'}
@@ -595,7 +595,7 @@ export function QueryRecall({
                   )}
 
                   {compactMode ? (
-                    <Stack gap={1} style={{paddingTop: 0, minHeight: '30px'}}>
+                    <VStack gap={1} style={{paddingTop: 0, minHeight: '30px'}}>
                       <Flex alignItems="center" gap={2} style={{minHeight: '18px'}}>
                         <Box
                           style={{
@@ -636,7 +636,7 @@ export function QueryRecall({
                       <Text size={1} muted>
                         {formatDate.format(new Date(q.savedAt || ''))}
                       </Text>
-                    </Stack>
+                    </VStack>
                   ) : (
                     <Flex
                       alignItems="center"
@@ -706,11 +706,11 @@ export function QueryRecall({
                       }}
                     />
                   )}
-                </Stack>
+                </VStack>
               </Card>
             )
           })}
-        </Stack>
+        </Flex>
       </QueryList>
       {shareDialogQuery && (
         <Dialog

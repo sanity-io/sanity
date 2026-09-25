@@ -1,18 +1,9 @@
 import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
-import {
-  Badge,
-  Button,
-  Card,
-  type CardTone,
-  Inline,
-  Stack,
-  Text,
-  useClickOutsideEvent,
-} from '@sanity/ui'
+import {Badge, Button, Card, type CardTone, Inline, Text, useClickOutsideEvent} from '@sanity/ui'
 import {Popover} from '@sanity/ui/popover'
 import {type ComponentProps, useCallback, useRef, useState} from 'react'
 import {Translate, useTranslation} from 'sanity'
-import {Box} from 'ui5'
+import {Box, VStack} from 'ui5'
 
 import {visionLocaleNamespace} from '../i18n'
 import {dot, perspectivePopoverContent, perspectivePopoverLink} from './PerspectivePopover.css'
@@ -49,7 +40,7 @@ export function PerspectivePopover() {
     <Popover
       content={
         <PerspectivePopoverContent>
-          <Stack gap={4}>
+          <VStack gap={4}>
             <Inline gap={2}>
               <Text weight="medium">{t('settings.perspectives.title')}</Text>
             </Inline>
@@ -58,7 +49,7 @@ export function PerspectivePopover() {
               <Text muted>{t('settings.perspectives.description')}</Text>
             </Card>
             <Card>
-              <Stack gap={2}>
+              <VStack gap={2}>
                 <Box>
                   <Badge tone="primary">{t('label.new')}</Badge>
                 </Box>
@@ -68,7 +59,7 @@ export function PerspectivePopover() {
                     i18nKey="settings.perspective.preview-drafts-renamed-to-drafts.description"
                   />
                 </Text>
-              </Stack>
+              </VStack>
             </Card>
             {SHOW_DEFAULT_PERSPECTIVE_NOTIFICATION ? (
               <Card>
@@ -92,7 +83,7 @@ export function PerspectivePopover() {
                 </PerspectivePopoverLink>
               </Text>
             </Card>
-          </Stack>
+          </VStack>
         </PerspectivePopoverContent>
       }
       placement="bottom-start"
