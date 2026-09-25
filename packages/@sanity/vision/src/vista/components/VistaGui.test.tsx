@@ -427,10 +427,18 @@ describe('VistaGui', () => {
     expect(selectedTab()).toBe(0)
     expect(getQueryEditor().value).toBe('*[_type == "author"]')
 
-    // F2 renames from the keyboard, double-click with the pointer
+    // F2 renames from the keyboard, double-click with the pointer; leaving the input with the
+    // keyboard puts focus back on the tab
     fireEvent.keyDown(within(screen.getAllByTestId('vista-tab')[0]).getByRole('tab'), {key: 'F2'})
-    fireEvent.keyDown(screen.getByTestId('vista-tab-title-input'), {key: 'Escape'})
+    const titleInput = screen.getByTestId('vista-tab-title-input')
+    titleInput.focus()
+    fireEvent.keyDown(titleInput, {key: 'Escape'})
     expect(screen.queryByTestId('vista-tab-title-input')).toBeNull()
+    await waitFor(() =>
+      expect(document.activeElement).toBe(
+        within(screen.getAllByTestId('vista-tab')[0]).getByRole('tab'),
+      ),
+    )
     fireEvent.doubleClick(
       within(screen.getAllByTestId('vista-tab')[0]).getByTestId('vista-tab-button'),
     )

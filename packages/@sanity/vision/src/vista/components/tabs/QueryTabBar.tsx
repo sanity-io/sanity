@@ -215,6 +215,18 @@ export function QueryTabBar() {
     listRef.current?.querySelector<HTMLElement>(`#${getQueryTabId(id)}`)?.focus()
   }, [])
 
+  // Renaming swaps the tab button for an input. When Enter or Escape ends it, focus is still
+  // in the strip and returns to the button once React has rendered it again, so Tab does not
+  // leave the strip; a click elsewhere (blur) keeps the focus where the user put it.
+  const stopRenaming = useCallback(
+    (id: string) => {
+      const focusInStrip = listRef.current?.contains(document.activeElement) ?? false
+      setEditingId(null)
+      if (focusInStrip) requestAnimationFrame(() => focusTab(id))
+    },
+    [focusTab],
+  )
+
   const reorder = useCallback(
     (ordered: VistaTab[]) =>
       actorRef.send({type: 'tab.reorder', ids: ordered.map((tab) => tab.id)}),
@@ -289,10 +301,10 @@ export function QueryTabBar() {
             key={tab.id}
             listRef={listRef}
             onKeyDown={handleTabKeyDown}
-            onCancelRename={() => setEditingId(null)}
+            onCancelRename={() => stopRenaming(tab.id)}
             onClose={() => actorRef.send({type: 'tab.close', id: tab.id})}
             onRename={(title) => {
-              setEditingId(null)
+              stopRenaming(tab.id)
               actorRef.send({type: 'tab.rename', id: tab.id, title})
             }}
             onSelect={() => actorRef.send({type: 'tab.select', id: tab.id})}
