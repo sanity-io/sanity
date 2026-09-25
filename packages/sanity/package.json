@@ -133,6 +133,7 @@
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
     "test:browser": "vitest run -c vitest.browser.config.mts",
+    "test:fuzz": "vitest run -c vitest.fuzz.config.mts",
     "watch": "tsdown --watch"
   },
   "dependencies": {
@@ -273,6 +274,7 @@
     "@vitest/browser-playwright": "catalog:",
     "blob-polyfill": "^9.0.20240710",
     "chromatic": "^18.9.4",
+    "fast-check": "^4.10.2",
     "jsdom": "catalog:",
     "oxc-transform-react": "catalog:",
     "react": "catalog:",
