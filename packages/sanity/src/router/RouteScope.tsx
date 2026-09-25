@@ -1,4 +1,4 @@
-import {type ReactNode, useCallback, useEffect, useMemo, useRef} from 'react'
+import {type ReactNode, useCallback, useLayoutEffect, useMemo, useRef} from 'react'
 import {RouterContext} from 'sanity/_singletons'
 
 import {
@@ -75,7 +75,11 @@ export const RouteScope = function RouteScope(props: RouteScopeProps): React.JSX
     parentRouter
 
   const parentStateRef = useRef(parentRouter.state)
-  useEffect(() => {
+  // A layout effect so the ref is current before any passive effect of the same commit runs:
+  // passive effects run child first, so a descendant navigating from its effect in the commit
+  // that changed the parent state (a deep link, an intent, or a tool shown again from a hidden
+  // `<Activity>` boundary with a new URL) would otherwise merge onto the previous parent state.
+  useLayoutEffect(() => {
     parentStateRef.current = parentRouter.state
   }, [parentRouter.state])
 
