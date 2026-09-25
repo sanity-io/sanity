@@ -211,6 +211,25 @@ describe('vistaStorage', () => {
     })
   })
 
+  it('keeps the API default perspective of a tab and of the settings across a reload', () => {
+    const initial = createInitialState(defaults)
+    expect(initial.settings.perspective).toBe('global')
+
+    // A tab on the API default while the settings say Global: the tab must not fall back to them
+    const tab = createTab(initial.settings, {id: 'default', options: {perspective: undefined}})
+    saveVistaState('tab', {...initial, tabs: [tab], activeTabId: 'default'})
+    // JSON has no undefined, so the choice is written as null rather than left out
+    expect(localStorage.getItem(getVistaStorageKey('tab'))).toContain('"perspective":null')
+    expect(loadVistaState('tab', defaults).tabs[0].options.perspective).toBeUndefined()
+
+    // Settings on the API default must not fall back to the built-in Global either
+    saveVistaState('settings', {
+      ...initial,
+      settings: {...initial.settings, perspective: undefined},
+    })
+    expect(loadVistaState('settings', defaults).settings.perspective).toBeUndefined()
+  })
+
   it('stores state under the classic Vision prefix so "Clear cache" resets both tools', () => {
     saveVistaState('a', createInitialState(defaults))
     saveVistaState('b', createInitialState(defaults))

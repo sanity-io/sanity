@@ -93,9 +93,13 @@ export function createInitialState(defaults: VistaStorageDefaults): VistaPersist
   }
 }
 
-/** The classic tool's `pinnedRelease` (and state saved before `global` existed) reads as `global` */
+/**
+ * The classic tool's `pinnedRelease` (and state saved before `global` existed) reads as `global`;
+ * `null` is how the API default is stored (see `saveVistaState`)
+ */
 function sanitizePerspective(value: unknown): VistaPerspective {
   if (value === 'pinnedRelease') return 'global'
+  if (value === null) return undefined
   return VISTA_PERSPECTIVES.includes(value as VistaPerspective)
     ? (value as VistaPerspective)
     : undefined
@@ -241,9 +245,18 @@ export function loadVistaState(
   }
 }
 
+/**
+ * The API default perspective is `undefined`, which `JSON.stringify` leaves out, and a missing
+ * field reads as "not stored" and falls back to the settings' perspective on load; written as
+ * `null` the choice survives
+ */
+function persistPerspective(key: string, value: unknown): unknown {
+  return key === 'perspective' && value === undefined ? null : value
+}
+
 export function saveVistaState(projectId: string, state: VistaPersistedState): void {
   try {
-    getStorage()?.setItem(getVistaStorageKey(projectId), JSON.stringify(state))
+    getStorage()?.setItem(getVistaStorageKey(projectId), JSON.stringify(state, persistPerspective))
   } catch {
     // Quota exceeded: the session keeps working, it just will not be restored
   }
