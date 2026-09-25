@@ -93,6 +93,12 @@ export function useSavedQueries(): {
   // render's snapshot: overlapping saves, deletes and moves cannot lose each other's changes
   const latestQueriesRef = useRef<QueryConfig[]>(defaultValue.queries)
   const personalWritesRef = useRef<Promise<unknown>>(Promise.resolve())
+  // The store forwards its events only once its initial read has resolved, so a write made while
+  // that read is in flight is never echoed here and the read then emits the list from before the
+  // write. The queue's list is the newer one while a write is in flight, and for good once one
+  // has landed, so store emissions must not replace it from then on
+  const pendingPersonalWritesRef = useRef(0)
+  const wrotePersonalQueriesRef = useRef(false)
 
   const personalQueries = useMemo(() => {
     return keyValueStore.getKey(keyValueStoreKey)
@@ -128,6 +134,9 @@ export function useSavedQueries(): {
       )
       .subscribe({
         next: (data: StoredQueries) => {
+          if (pendingPersonalWritesRef.current > 0 || wrotePersonalQueriesRef.current) {
+            return
+          }
           latestQueriesRef.current = data.queries
           setValue(data)
         },
@@ -187,7 +196,17 @@ export function useSavedQueries(): {
 
   /** Runs `task` after every personal write queued so far, whatever their outcome */
   const enqueuePersonalWrite = useCallback(<T>(task: () => Promise<T>): Promise<T> => {
-    const result = personalWritesRef.current.then(task, task)
+    pendingPersonalWritesRef.current += 1
+    const run = () =>
+      task()
+        .then((written) => {
+          wrotePersonalQueriesRef.current = true
+          return written
+        })
+        .finally(() => {
+          pendingPersonalWritesRef.current -= 1
+        })
+    const result = personalWritesRef.current.then(run, run)
     personalWritesRef.current = result.catch(() => undefined)
     return result
   }, [])

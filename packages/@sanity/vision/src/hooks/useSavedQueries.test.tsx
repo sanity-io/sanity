@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {act, renderHook, waitFor} from '@testing-library/react'
-import {NEVER, of} from 'rxjs'
+import {concat, NEVER, of, Subject} from 'rxjs'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {type StoredQueries, useSavedQueries} from './useSavedQueries'
@@ -16,9 +16,13 @@ const mocks = vi.hoisted(() => ({
   deleteDoc: vi.fn(),
 }))
 
+// Everything the store emits after its initial read: a read that resolves late, a write's own
+// event, a write made elsewhere
+let storeEvents = new Subject<StoredQueries | null>()
+
 // The hook keys its subscriptions on these objects, so they must be stable across renders
 const keyValueStore = {
-  getKey: () => of(mocks.store.value),
+  getKey: () => concat(of(mocks.store.value), storeEvents),
   setKey: mocks.setKey,
 }
 const client = {
@@ -44,6 +48,7 @@ describe('useSavedQueries', () => {
     mocks.store.value = null
     mocks.store.failWrite = undefined
     mocks.sharedDocs = []
+    storeEvents = new Subject()
   })
 
   function setup() {
@@ -84,6 +89,52 @@ describe('useSavedQueries', () => {
 
     expect(mocks.store.value?.queries.map((query) => query.url)).toEqual(['https://b', 'https://a'])
     expect(result.current.queries.map((query) => query.url)).toEqual(['https://b', 'https://a'])
+  })
+
+  it('keeps a saved query when a store read from before the save lands after it', async () => {
+    const {result} = setup()
+
+    await act(async () => {
+      await result.current.saveQuery({url: 'https://a', savedAt: '2026-01-01T00:00:00Z'})
+    })
+    act(() => {
+      storeEvents.next({queries: []})
+    })
+    await act(async () => {
+      await result.current.saveQuery({url: 'https://b', savedAt: '2026-01-02T00:00:00Z'})
+    })
+
+    expect(mocks.store.value?.queries.map((query) => query.url)).toEqual(['https://b', 'https://a'])
+    expect(result.current.queries.map((query) => query.url)).toEqual(['https://b', 'https://a'])
+  })
+
+  it('keeps the queries when clearing them fails, store event and all', async () => {
+    mocks.store.value = {
+      queries: [{_key: 'p1', url: 'https://a', savedAt: '2026-01-01T00:00:00Z'}],
+    }
+    const {result} = setup()
+    await waitFor(() => expect(result.current.queries).toHaveLength(1))
+    mocks.store.failWrite = () => true
+
+    let clear: Promise<unknown>
+    act(() => {
+      clear = result.current.clearQueries()
+      // The store emits the list a write holds before it knows whether the write went through
+      storeEvents.next({queries: []})
+    })
+    await act(async () => {
+      await expect(clear).rejects.toThrow('store is read-only')
+    })
+
+    expect(result.current.queries.map((query) => query.url)).toEqual(['https://a'])
+
+    // The next write starts from the list the store still holds, rather than from the empty one
+    mocks.store.failWrite = undefined
+    await act(async () => {
+      await result.current.saveQuery({url: 'https://b', savedAt: '2026-01-02T00:00:00Z'})
+    })
+
+    expect(mocks.store.value?.queries.map((query) => query.url)).toEqual(['https://b', 'https://a'])
   })
 
   it('moves both queries when unshares overlap', async () => {
