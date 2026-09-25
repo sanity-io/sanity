@@ -47,16 +47,18 @@ export function isVariantTypeKey(key: string): boolean {
 }
 
 /**
- * Phase 1 only accepts the `variant` type. Delete this function to allow other type keys.
+ * The type a definition belongs to. Missing `metadata.type` reads as `variant`.
  *
  * @internal
  */
-export function assertOnlyVariantType(key: string): void {
-  if (key !== DEFAULT_VARIANT_TYPE_KEY) {
-    throw new Error(
-      `Expected \`beta.variants.types\` to only include "${DEFAULT_VARIANT_TYPE_KEY}", but received ${JSON.stringify(key)}`,
-    )
+export function getVariantType(variant: {metadata?: {type?: unknown}} | null | undefined): string {
+  const type = variant?.metadata?.type
+
+  if (typeof type === 'string' && type.trim()) {
+    return type.trim()
   }
+
+  return DEFAULT_VARIANT_TYPE_KEY
 }
 
 /**

@@ -24,7 +24,6 @@ import {
   normalizeVariantConditions,
 } from '../util/normalizeVariantConditions'
 import {
-  assertOnlyVariantType,
   DEFAULT_VARIANT_TYPE_KEY,
   defaultVariantTypesRecord,
   isVariantTypeKey,
@@ -178,9 +177,6 @@ function readTypesRecord(value: unknown): Record<string, VariantTypeConfig> {
         `Expected \`beta.variants.types\` keys to be lowercase identifiers, but received ${JSON.stringify(key)}`,
       )
     }
-
-    // TODO: Remove this once we support multiple variant types
-    assertOnlyVariantType(key)
 
     if (!isRecord(entry)) {
       throw new Error(

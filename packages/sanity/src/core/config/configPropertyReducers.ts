@@ -15,7 +15,6 @@ import {
 import {type Template, type TemplateItem} from '../templates/types'
 import {getPrintableType} from '../util/getPrintableType'
 import {isRecord} from '../util/isRecord'
-import {assertOnlyVariantType} from '../variants/util/variantType'
 import {type DocumentActionComponent} from './document/actions'
 import {type DocumentBadgeComponent} from './document/badges'
 import {type DocumentInspector} from './document/inspector'
@@ -590,9 +589,6 @@ function assertVariantTypeEntry(key: string, value: unknown): void {
       `Expected \`beta.variants.types\` keys to match ${VARIANT_TYPE_KEY_PATTERN}, but received ${JSON.stringify(key)}`,
     )
   }
-
-  // Single variant only accepts the `variant` type. Delete this function to allow multi variants.
-  assertOnlyVariantType(key)
 
   if (!isRecord(value)) {
     throw new Error(

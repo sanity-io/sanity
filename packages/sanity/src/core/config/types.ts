@@ -1396,13 +1396,16 @@ export interface VariantTypeConfig {
 /**
  * Variant types supplied in config.
  *
- * The object form only types `variant`. Other keys are rejected until `assertOnlyVariantType`
- * is removed.
+ * Each key is a type. `variant` is the built-in type; any other key uses the same
+ * {@link VariantTypeConfig} shape.
  *
  * @internal
  */
 export type VariantTypesConfig =
-  | {variant?: VariantTypeConfig}
+  | {
+      variant?: VariantTypeConfig
+      [type: string]: VariantTypeConfig | undefined
+    }
   | ((
       context: VariantTypeContext,
     ) => Record<string, VariantTypeConfig> | Promise<Record<string, VariantTypeConfig>>)
@@ -1476,7 +1479,7 @@ export interface BetaFeatures {
     /**
      * Variant types and the condition keys each type owns.
      *
-     * Omit to use a single freeform `variant` type. Only the `variant` key is accepted.
+     * Omit to use a single freeform `variant` type. Each key is one type.
      *
      * A function may return a promise and is called when a variant surface first needs the
      * types, not at studio boot. It receives {@link VariantTypeContext}.

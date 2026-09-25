@@ -58,6 +58,7 @@ import {types as presentationPreviewKitSchemaTypes} from './schema/presentation/
 import {newDocumentOptions} from './structure/resolveNewDocumentOptions'
 import {structure} from './structure/resolveStructure'
 import {defaultDocumentNode} from './structure/resolveStructureDocumentNode'
+import {previewVariantTypes} from './variantTypesPreview'
 
 // @ts-expect-error - defined by vite
 const isStaging = globalThis.__SANITY_STAGING__ === true
@@ -391,6 +392,19 @@ export default defineConfig([
     hidden: true,
   },
   defaultWorkspace,
+  {
+    ...defaultWorkspace,
+    name: 'variant-types',
+    title: 'Variant types',
+    subtitle: 'Preview of multiple variant types',
+    basePath: '/variant-types',
+    beta: {
+      variants: {
+        enabled: true,
+        types: previewVariantTypes,
+      },
+    },
+  },
   {
     ...defaultWorkspace,
     title: 'Test Studio (variants disabled)',
