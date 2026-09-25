@@ -6,6 +6,7 @@ import debounce from 'lodash-es/debounce.js'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
+import {useEffectEvent} from 'use-effect-event'
 
 import {type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
 import {visionLocaleNamespace} from '../../../i18n'
@@ -216,6 +217,24 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     enabled: tab.autoRefetch && resolved.supportsSyncTags,
     tabId: tab.id,
   })
+
+  // A tab that refetches automatically resumes with a current result when it mounts: after a
+  // reload its runner has nothing to replay, and while the tab was in the background its request
+  // may have changed under it (a navbar perspective change reaches every tab)
+  const resumeAutoRefetch = useEffectEvent(() => {
+    if (!tab.autoRefetch || !request) return
+    const lastRequest = runnerRef.getSnapshot().context.request
+    if (
+      lastRequest?.url !== request.url ||
+      lastRequest.includeSourceMap !== request.includeSourceMap
+    ) {
+      runnerRef.send({type: 'fetch', request, reason: {type: 'resume'}})
+    }
+  })
+  useEffect(() => {
+    resumeAutoRefetch()
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- once per tab mount; useEffectEvent callbacks must not be listed
+  }, [])
 
   // While refetching automatically, a request that changed outside the editors is fetched right
   // away: changed options, or a loaded query (live refetches replay the runner's last request,
