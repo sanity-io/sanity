@@ -189,6 +189,28 @@ describe('createPathObserver', () => {
     })
   })
 
+  describe('values without a document id', () => {
+    it('previews an array item in place, even when it carries an own undefined _id', () => {
+      const observeFields = vi.fn()
+      const observePaths = createPathObserver({observeFields})
+
+      const {values, unsubscribe} = collectEmissions(
+        observePaths(
+          // the shape `{_id: document._id, ...item}` produces for an item that only has a `_key`
+          {_id: undefined, _key: 'item-1', _type: 'item', title: 'In place'} as never,
+          ['title', '_createdAt', '_updatedAt'],
+        ),
+      )
+
+      // nothing to look up: the missing document fields resolve locally to `undefined`
+      expect(observeFields).not.toHaveBeenCalled()
+      expect(values).toHaveLength(1)
+      expect(values[0]).toMatchObject({title: 'In place', _createdAt: undefined})
+
+      unsubscribe()
+    })
+  })
+
   describe('primitive arrays in preview paths', () => {
     it('resolves numeric segments and length on string arrays without wiping index 0', () => {
       const observeFields = vi.fn()
