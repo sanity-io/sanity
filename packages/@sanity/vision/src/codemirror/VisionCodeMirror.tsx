@@ -20,22 +20,24 @@ import {
   contentBorderRightWidthVar,
   contentPaddingTopVar,
   editorRoot,
+  editorRootAutoHeight,
   linePaddingLeftVar,
 } from './VisionCodeMirror.css'
 
-function EditorRoot({children}: {children: ReactNode}) {
+function EditorRoot({autoHeight, children}: {autoHeight: boolean; children: ReactNode}) {
   const {sanity} = useTheme()
 
   return (
     <div
-      className={editorRoot}
+      className={autoHeight ? `${editorRoot} ${editorRootAutoHeight}` : editorRoot}
       style={assignInlineVars({
         // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         [linePaddingLeftVar]: `${rem(sanity.space[3])}`,
         // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
         [contentBorderRightWidthVar]: `${rem(sanity.space[4])}`,
+        // The tall top padding makes room for the label floating over a pane-filling editor
         // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-        [contentPaddingTopVar]: `${rem(sanity.space[5])}`,
+        [contentPaddingTopVar]: `${rem(sanity.space[autoHeight ? 3 : 5])}`,
       })}
     >
       {children}
@@ -52,9 +54,15 @@ export function VisionCodeMirror({
   onChange,
   initialValue: initialValueProp,
   extensions,
+  autoHeight = false,
 }: Pick<ReactCodeMirrorProps, 'onChange'> & {
   initialValue: ReactCodeMirrorProps['value']
   extensions: Extension[]
+  /**
+   * Sizes the editor to its document instead of filling its container, for an editor that sits
+   * under a header (no floating label, so the content also gets less top padding)
+   */
+  autoHeight?: boolean
 } & RefAttributes<VisionCodeMirrorHandle>) {
   // The value prop is only passed for initial value, and is not updated when the parent component updates the value.
   // If you need to update the value, use the resetEditorContent function.
@@ -85,7 +93,7 @@ export function VisionCodeMirror({
   )
 
   return (
-    <EditorRoot>
+    <EditorRoot autoHeight={autoHeight}>
       <CodeMirror
         ref={codeMirrorRef}
         basicSetup={false}

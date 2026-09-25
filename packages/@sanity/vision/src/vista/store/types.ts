@@ -49,6 +49,12 @@ export interface VistaSidebarState {
   drawer: VistaDrawer | null
 }
 
+/** The collapsible panels below the query editor */
+export type VistaPanel = 'params' | 'options'
+
+/** Whether each collapsible panel is expanded */
+export type VistaPanelsState = Record<VistaPanel, boolean>
+
 /** The part of the state that survives reloads (per project, in `localStorage`) */
 export interface VistaPersistedState {
   version: 1
@@ -56,6 +62,7 @@ export interface VistaPersistedState {
   activeTabId: string
   settings: VistaSettings
   sidebar: VistaSidebarState
+  panels: VistaPanelsState
 }
 
 export type FetchReason =

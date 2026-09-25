@@ -10,13 +10,13 @@ import {selectDatasets} from '../../store/vistaMachine'
 import {optionsGrid} from '../vista.css'
 import {ApiVersionField, DatasetSelect, PerspectiveSelect} from './OptionFields'
 
-export interface OptionsTabProps {
+export interface OptionsPanelProps {
   options: VistaTabOptions
   resolved: ResolvedRequest
   onChange: (options: Partial<VistaTabOptions>) => void
 }
 
-export function OptionsTab({options, resolved, onChange}: OptionsTabProps) {
+export function OptionsPanel({options, resolved, onChange}: OptionsPanelProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const datasets = useVistaSelector(selectDatasets)
 

@@ -35,6 +35,11 @@ import {hiddenPane, paneFill, splitPaneContainer} from '../vista.css'
 import {getQueryTabId, QUERY_TAB_PANEL_ID} from './QueryTabBar'
 
 const MIN_PANE_SIZE = {columns: 280, stacked: 160}
+/**
+ * The request pane's initial share of the split. Stacked, it holds the query editor and the
+ * params and options panels, so it starts out taller than the result.
+ */
+const DEFAULT_REQUEST_SHARE = {columns: 0.5, stacked: 0.6}
 /** Params are parsed on every change, so typing is debounced like in the classic tool */
 const PARAMS_DEBOUNCE_MS = 333
 
@@ -282,7 +287,10 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   const minSize = MIN_PANE_SIZE[layout]
   const containerExtent =
     layout === 'stacked' ? splitContainerSize?.content.height : splitContainerSize?.content.width
-  const defaultSplitSize = Math.max(minSize, Math.floor((containerExtent || 0) / 2))
+  const defaultSplitSize = Math.max(
+    minSize,
+    Math.floor((containerExtent || 0) * DEFAULT_REQUEST_SHARE[layout]),
+  )
 
   return (
     <Box {...panelProps} className={splitPaneContainer} ref={setSplitContainer}>

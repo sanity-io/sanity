@@ -270,10 +270,6 @@ function typeQuery(query: string) {
   fireEvent.change(getQueryEditor(), {target: {value: query}})
 }
 
-function openOptionsTab() {
-  fireEvent.click(document.getElementById('vista-request-options-tab') as HTMLElement)
-}
-
 function getStoredState() {
   return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null')
 }
@@ -308,6 +304,35 @@ describe('VistaGui', () => {
     expect(text(screen.getByTestId('vista-tab-button'))).toContain('vista.tabs.untitled')
     expect(isDisabled(screen.getByTestId('vista-fetch-button'))).toBe(true)
     expect(text(screen.getByTestId('vista-result'))).toContain('vista.result.empty')
+  })
+
+  it('shows the query, params and options panels at once, and remembers collapsed ones', async () => {
+    const {unmount} = renderVista()
+
+    expect(screen.getByTestId('vista-query-editor')).toBeTruthy()
+    expect(screen.getByTestId('vista-params-editor')).toBeTruthy()
+    expect(screen.getByTestId('vista-options')).toBeTruthy()
+    const optionsToggle = () => screen.getByTestId('vista-request-options-toggle')
+    expect(optionsToggle().getAttribute('aria-expanded')).toBe('true')
+
+    fireEvent.click(optionsToggle())
+    expect(screen.queryByTestId('vista-options')).toBeNull()
+    expect(optionsToggle().getAttribute('aria-expanded')).toBe('false')
+    // Collapsing one panel leaves the other alone, and the query editor stays put
+    expect(screen.getByTestId('vista-params-editor')).toBeTruthy()
+    expect(screen.getByTestId('vista-query-editor')).toBeTruthy()
+    await waitFor(() => expect(getStoredState().panels).toEqual({params: true, options: false}))
+
+    unmount()
+    renderVista()
+    expect(screen.queryByTestId('vista-options')).toBeNull()
+    expect(screen.getByTestId('vista-params-editor')).toBeTruthy()
+
+    fireEvent.click(screen.getByTestId('vista-request-options-toggle'))
+    expect(screen.getByTestId('vista-options')).toBeTruthy()
+    fireEvent.click(screen.getByTestId('vista-request-params-toggle'))
+    expect(screen.queryByTestId('vista-params-editor')).toBeNull()
+    await waitFor(() => expect(getStoredState().panels).toEqual({params: false, options: true}))
   })
 
   it('fetches the raw response, shows its metadata and records the history', async () => {
@@ -528,7 +553,6 @@ describe('VistaGui', () => {
 
     expect(text(screen.getByTestId('vista-tab-button'))).toContain('Restored')
     expect(getQueryEditor().value).toBe('*[_type == "book"]')
-    openOptionsTab()
     expect(selectValue('vista-option-dataset-select')).toBe('staging')
     expect(selectValue('vista-option-perspective-select')).toBe('drafts')
     expect(text(screen.getByTestId('vista-sidebar-toggle'))).toContain('vista.sidebar.collapse')
@@ -618,7 +642,6 @@ describe('VistaGui', () => {
 
     const {fetchCalls} = renderVista({...BASE_PERSPECTIVE, selectedVariantNames: ['french']})
 
-    openOptionsTab()
     const apiVersionSelect = screen.getByTestId(
       'vista-option-api-version-select',
     ) as HTMLSelectElement
@@ -646,7 +669,6 @@ describe('VistaGui', () => {
       selectedVariantNames: ['french'],
     })
     typeQuery('*')
-    openOptionsTab()
     expect(selectValue('vista-option-perspective-select')).toBe('raw')
     expect(isDisabled(screen.getByTestId('vista-option-api-version-select'))).toBe(false)
 
@@ -660,7 +682,6 @@ describe('VistaGui', () => {
 
   it('follows the navbar to the pinned release perspective when the stack changes', async () => {
     const {setPerspective} = renderVista()
-    openOptionsTab()
     expect(selectValue('vista-option-perspective-select')).toBe('raw')
 
     setPerspective({
@@ -684,7 +705,6 @@ describe('VistaGui', () => {
 
     await waitFor(() => expect(getQueryEditor().value).toBe('*[_id == $id]'))
     expect(text(screen.getByTestId('vista-tab-button'))).toContain('*[_id == $id]')
-    openOptionsTab()
     expect(selectValue('vista-option-dataset-select')).toBe('staging')
     expect(selectValue('vista-option-api-version-select')).toBe('v2021-10-21')
     expect(selectValue('vista-option-perspective-select')).toBe('published')

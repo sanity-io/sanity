@@ -3,6 +3,7 @@ import {createActor, createMachine} from 'xstate'
 
 import {type VistaPersistedState, type VistaTab} from './types'
 import {
+  isPanelExpanded,
   selectActiveTab,
   selectOpenDialog,
   selectOpenDrawer,
@@ -216,10 +217,30 @@ describe('vistaMachine', () => {
     expect(selectOpenDialog(harness.snapshot())).toBe('shortcuts')
   })
 
+  it('restores and toggles the params and options panels independently', () => {
+    const harness = createHarness({
+      ...createInitialState(defaults),
+      panels: {params: true, options: false},
+    })
+
+    expect(isPanelExpanded(harness.snapshot(), 'params')).toBe(true)
+    expect(isPanelExpanded(harness.snapshot(), 'options')).toBe(false)
+
+    harness.actor.send({type: 'panel.toggle', panel: 'params'})
+    expect(isPanelExpanded(harness.snapshot(), 'params')).toBe(false)
+    expect(isPanelExpanded(harness.snapshot(), 'options')).toBe(false)
+
+    harness.actor.send({type: 'panel.toggle', panel: 'options'})
+    harness.actor.send({type: 'panel.toggle', panel: 'params'})
+    expect(isPanelExpanded(harness.snapshot(), 'params')).toBe(true)
+    expect(isPanelExpanded(harness.snapshot(), 'options')).toBe(true)
+  })
+
   it('derives the persisted slice from context and UI states', () => {
     const harness = createHarness()
     harness.actor.send({type: 'sidebar.toggle'})
     harness.actor.send({type: 'drawer.toggle', drawer: 'saved'})
+    harness.actor.send({type: 'panel.toggle', panel: 'options'})
 
     const persisted = selectPersistedState(harness.snapshot())
     expect(persisted).toEqual({
@@ -228,6 +249,7 @@ describe('vistaMachine', () => {
       activeTabId: harness.snapshot().context.activeTabId,
       settings: harness.snapshot().context.settings,
       sidebar: {expanded: true, drawer: 'saved'},
+      panels: {params: true, options: false},
     })
   })
 
@@ -240,6 +262,7 @@ describe('vistaMachine', () => {
     harness.actor.send({type: 'settings.update', settings: {perspective: 'drafts'}})
     harness.actor.send({type: 'tab.add', tab: {query: 'extra'}})
     harness.actor.send({type: 'sidebar.toggle'})
+    harness.actor.send({type: 'panel.toggle', panel: 'params'})
     harness.actor.send({type: 'dialog.open', dialog: 'settings'})
 
     harness.actor.send({type: 'storage.clear'})
@@ -251,6 +274,7 @@ describe('vistaMachine', () => {
     expect(harness.snapshot().context.settings.perspective).toBe('raw')
     expect(harness.runnerIds()).toEqual([tabs[0].id])
     expect(harness.snapshot().matches({sidebar: 'collapsed'})).toBe(true)
+    expect(isPanelExpanded(harness.snapshot(), 'params')).toBe(true)
     expect(selectOpenDialog(harness.snapshot())).toBeNull()
     expect(localStorage.getItem(getVistaStorageKey('proj'))).toBeNull()
   })

@@ -91,6 +91,71 @@ globalStyle(`${panelTabs} [data-ui="TabList"]`, {
   whiteSpace: 'nowrap',
 })
 
+/** The query editor takes whatever height the panels below leave over, and never less than this */
+export const querySection = style({
+  position: 'relative',
+  display: 'flex',
+  flex: '1 1 0%',
+  minHeight: '120px',
+})
+
+/**
+ * A collapsible panel below the query editor: a header row and, while expanded, a body that
+ * scrolls once the panel hits its cap. The panel is as tall as its content wants, so the
+ * stacking distributes the column's height by need.
+ */
+export const collapsibleSection = style({
+  position: 'relative',
+  display: 'flex',
+  flexDirection: 'column',
+  flex: '0 1 auto',
+  minHeight: 0,
+  borderTop: '1px solid var(--card-border-color)',
+})
+
+/** Params grow with their JSON until they would claim too much of the column */
+export const paramsSection = style({
+  maxHeight: '40%',
+})
+
+/** A dragged params height replaces the automatic one; the cap is enforced while dragging */
+export const paramsSectionResized = style({
+  maxHeight: 'none',
+})
+
+/** The options are finite and rarely reach this; when they do, they scroll */
+export const optionsSection = style({
+  maxHeight: '45%',
+})
+
+export const sectionBody = style({
+  position: 'relative',
+  flex: '1 1 auto',
+  minHeight: 0,
+  overflow: 'auto',
+})
+
+/**
+ * Drag handle straddling the params panel's top border, laid out like the split pane resizers:
+ * an 11px hit area whose visible part is the border itself.
+ */
+export const sectionResizer = style({
+  position: 'absolute',
+  top: '-6px',
+  left: 0,
+  right: 0,
+  height: '11px',
+  cursor: 'row-resize',
+  // Above the editor label (10) so the whole width can be grabbed, below the sidebar (20)
+  zIndex: 11,
+  touchAction: 'none',
+  selectors: {
+    '&:hover, &[data-dragging="true"]': {
+      background: 'var(--card-shadow-ambient-color)',
+    },
+  },
+})
+
 /** Option fields flow into as many columns as fit the request column */
 export const optionsGrid = style({
   display: 'grid',

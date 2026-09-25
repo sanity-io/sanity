@@ -7,6 +7,7 @@ import {getStorage, VISION_STORAGE_KEY_PREFIX} from '../../util/localStorage'
 import {prefixApiVersion} from '../../util/prefixApiVersion'
 import {validateApiVersion} from '../../util/validateApiVersion'
 import {
+  type VistaPanelsState,
   type VistaPersistedState,
   type VistaSettings,
   type VistaSidebarState,
@@ -18,6 +19,9 @@ import {
 const STATE_VERSION = 1
 
 export const DEFAULT_PARAMS = '{\n  \n}'
+
+/** Every panel starts out expanded */
+const DEFAULT_PANELS: VistaPanelsState = {params: true, options: true}
 
 export interface VistaStorageDefaults {
   datasets: string[]
@@ -73,6 +77,7 @@ export function createInitialState(defaults: VistaStorageDefaults): VistaPersist
     activeTabId: tab.id,
     settings,
     sidebar: {expanded: false, drawer: null},
+    panels: {...DEFAULT_PANELS},
   }
 }
 
@@ -144,6 +149,12 @@ function sanitizeSidebar(value: unknown): VistaSidebarState {
   }
 }
 
+/** A panel stays expanded unless it was explicitly collapsed; state saved before panels existed reads as expanded */
+function sanitizePanels(value: unknown): VistaPanelsState {
+  const panels = isPlainObject(value) ? value : {}
+  return {params: panels.params !== false, options: panels.options !== false}
+}
+
 /**
  * Loads the persisted state for a project, dropping anything that no longer validates (unknown
  * datasets, malformed tabs, ...). Returns a fresh state when nothing usable is stored.
@@ -174,8 +185,10 @@ export function loadVistaState(
     .map((tab) => sanitizeTab(tab, settings, defaults.datasets))
     .filter((tab): tab is VistaTab => tab !== null)
 
+  const sidebar = sanitizeSidebar(stored.sidebar)
+  const panels = sanitizePanels(stored.panels)
   if (tabs.length === 0) {
-    return {...initial, settings, sidebar: sanitizeSidebar(stored.sidebar)}
+    return {...initial, settings, sidebar, panels}
   }
 
   const activeTabId =
@@ -188,7 +201,8 @@ export function loadVistaState(
     tabs,
     activeTabId,
     settings,
-    sidebar: sanitizeSidebar(stored.sidebar),
+    sidebar,
+    panels,
   }
 }
 

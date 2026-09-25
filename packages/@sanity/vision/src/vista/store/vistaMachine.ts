@@ -11,6 +11,8 @@ import {queryRunnerMachine, type QueryRunnerRef} from './queryRunnerMachine'
 import {
   type VistaDialog,
   type VistaDrawer,
+  type VistaPanel,
+  type VistaPanelsState,
   type VistaPersistedState,
   type VistaSettings,
   type VistaSidebarState,
@@ -40,6 +42,8 @@ export interface VistaContext {
   loadRevisions: Record<string, number>
   /** Sidebar state as restored from storage, consumed once by the `restoring` states */
   restoredSidebar: VistaSidebarState
+  /** Panel state as restored from storage, consumed once by the `restoring` states */
+  restoredPanels: VistaPanelsState
 }
 
 export type VistaEvent =
@@ -56,6 +60,7 @@ export type VistaEvent =
   | {type: 'tab.load'; id: string; tab: Omit<VistaTabInit, 'id'>}
   | {type: 'settings.update'; settings: Partial<VistaSettings>}
   | {type: 'sidebar.toggle'}
+  | {type: 'panel.toggle'; panel: VistaPanel}
   | {type: 'drawer.toggle'; drawer: VistaDrawer}
   | {type: 'drawer.close'}
   | {type: 'dialog.open'; dialog: VistaDialog}
@@ -122,8 +127,12 @@ export const vistaMachine = setup({
       )
     },
     wasSidebarExpanded: ({context}) => context.restoredSidebar.expanded,
+    wasPanelExpanded: ({context}, params: {panel: VistaPanel}) =>
+      context.restoredPanels[params.panel],
     wasDrawerOpen: ({context}, params: {drawer: VistaDrawer}) =>
       context.restoredSidebar.drawer === params.drawer,
+    isPanel: ({event}, params: {panel: VistaPanel}) =>
+      event.type === 'panel.toggle' && event.panel === params.panel,
     isDrawer: ({event}, params: {drawer: VistaDrawer}) =>
       event.type === 'drawer.toggle' && event.drawer === params.drawer,
     isDialog: ({event}, params: {dialog: VistaDialog}) =>
@@ -204,6 +213,7 @@ export const vistaMachine = setup({
     runners: spawnRunners(spawn, input.persisted.tabs),
     loadRevisions: {},
     restoredSidebar: input.persisted.sidebar,
+    restoredPanels: input.persisted.panels,
   }),
   on: {
     'tab.add': {actions: 'addTab'},
@@ -281,7 +291,13 @@ export const vistaMachine = setup({
       }),
     },
     'storage.clear': {
-      target: ['.sidebar.collapsed', '.drawer.closed', '.dialog.closed'],
+      target: [
+        '.sidebar.collapsed',
+        '.paramsPanel.expanded',
+        '.optionsPanel.expanded',
+        '.drawer.closed',
+        '.dialog.closed',
+      ],
       actions: 'clearStorage',
     },
   },
@@ -294,6 +310,60 @@ export const vistaMachine = setup({
         },
         collapsed: {on: {'sidebar.toggle': {target: 'expanded'}}},
         expanded: {on: {'sidebar.toggle': {target: 'collapsed'}}},
+      },
+    },
+    paramsPanel: {
+      initial: 'restoring',
+      states: {
+        restoring: {
+          always: [
+            {guard: {type: 'wasPanelExpanded', params: {panel: 'params'}}, target: 'expanded'},
+            {target: 'collapsed'},
+          ],
+        },
+        collapsed: {
+          on: {
+            'panel.toggle': {
+              guard: {type: 'isPanel', params: {panel: 'params'}},
+              target: 'expanded',
+            },
+          },
+        },
+        expanded: {
+          on: {
+            'panel.toggle': {
+              guard: {type: 'isPanel', params: {panel: 'params'}},
+              target: 'collapsed',
+            },
+          },
+        },
+      },
+    },
+    optionsPanel: {
+      initial: 'restoring',
+      states: {
+        restoring: {
+          always: [
+            {guard: {type: 'wasPanelExpanded', params: {panel: 'options'}}, target: 'expanded'},
+            {target: 'collapsed'},
+          ],
+        },
+        collapsed: {
+          on: {
+            'panel.toggle': {
+              guard: {type: 'isPanel', params: {panel: 'options'}},
+              target: 'expanded',
+            },
+          },
+        },
+        expanded: {
+          on: {
+            'panel.toggle': {
+              guard: {type: 'isPanel', params: {panel: 'options'}},
+              target: 'collapsed',
+            },
+          },
+        },
       },
     },
     drawer: {
@@ -369,7 +439,17 @@ export function selectPersistedState(snapshot: VistaSnapshot): VistaPersistedSta
           ? 'shared'
           : null,
     },
+    panels: {
+      params: isPanelExpanded(snapshot, 'params'),
+      options: isPanelExpanded(snapshot, 'options'),
+    },
   }
+}
+
+export function isPanelExpanded(snapshot: VistaSnapshot, panel: VistaPanel): boolean {
+  return panel === 'params'
+    ? snapshot.matches({paramsPanel: 'expanded'})
+    : snapshot.matches({optionsPanel: 'expanded'})
 }
 
 export function selectActiveTab(snapshot: VistaSnapshot): VistaTab {

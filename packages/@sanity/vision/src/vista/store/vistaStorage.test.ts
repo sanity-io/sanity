@@ -94,10 +94,18 @@ describe('vistaStorage', () => {
       tabs: [tab],
       activeTabId: tab.id,
       sidebar: {expanded: true, drawer: 'saved' as const},
+      panels: {params: true, options: false},
     }
     saveVistaState('proj', saved)
 
     expect(loadVistaState('proj', defaults)).toEqual(saved)
+  })
+
+  it('reads state saved before the panels existed as having them expanded', () => {
+    const {panels: _panels, ...withoutPanels} = createInitialState(defaults)
+    localStorage.setItem(getVistaStorageKey('proj'), JSON.stringify(withoutPanels))
+
+    expect(loadVistaState('proj', defaults).panels).toEqual({params: true, options: true})
   })
 
   it('returns a fresh state for missing, malformed or outdated storage', () => {

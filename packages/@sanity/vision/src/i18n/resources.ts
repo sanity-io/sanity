@@ -222,12 +222,14 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.panel.expand': 'Expand panel',
   /** Label of the "History" tab in the response panel */
   'vista.panel.history': 'History',
-  /** Label of the "Options" tab in the request panel */
+  /** Label of the "Options" panel in the request column */
   'vista.panel.options': 'Options',
   /** Label of the "Response" tab in the response panel */
   'vista.panel.response': 'Response',
   /** Label of the "Content Source Map" tab in the response panel */
   'vista.panel.source-map': 'Content Source Map',
+  /** Accessible label and tooltip of the handle for dragging the params panel taller or shorter */
+  'vista.params.resize': 'Resize params (double-click to fit the content again)',
   /** Toast shown after a query URL was pasted and loaded into the tab */
   'vista.paste.parsed': 'Loaded query from pasted URL',
   /** Toast shown when the perspective of a pasted URL cannot be used */
