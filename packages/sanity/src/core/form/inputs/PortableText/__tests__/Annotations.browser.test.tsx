@@ -186,7 +186,7 @@ describe('Portable Text Input', () => {
       // Assertion: Wait for link to be re-rendered / PTE internal state to be done
       const $link = page.elementLocator($pte.element().querySelector('span[data-link]')!)
       await expect.element($link).toBeVisible()
-      await expect.element($link).toHaveTextContent(/^link$/)
+      await expect.element($link).toMatchTextContent(/^link$/)
 
       // Assertion: the annotation toolbar popover should not be present yet.
       // (vitest-browser's `.not.toBeVisible()` throws on a missing element, so
@@ -322,7 +322,7 @@ describe('Portable Text Input', () => {
           // Wait for the annotation to be rendered and the edit popover to open.
           const $link = page.elementLocator($pte.element().querySelector('span[data-link]')!)
           await expect.element($link).toBeVisible()
-          await expect.element($link).toHaveTextContent(/^link$/)
+          await expect.element($link).toMatchTextContent(/^link$/)
           const $linkInput = page.getByTestId('popover-edit-dialog').getByLabelText('Link')
           await expect.element($linkInput).toBeVisible()
         } finally {
@@ -376,7 +376,7 @@ describe('Portable Text Input', () => {
         // edit popover is positioned from, so "ink" would archive differently.
         const $link = page.elementLocator($pte.element().querySelector('span[data-link]')!)
         await expect.element($link).toBeVisible()
-        await expect.element($link).toHaveTextContent(/^link$/)
+        await expect.element($link).toMatchTextContent(/^link$/)
 
         // Assertion: the annotation toolbar popover should not be visible
         await expect.element(page.getByTestId('annotation-toolbar-popover')).not.toBeInTheDocument()
@@ -480,7 +480,7 @@ describe('Portable Text Input', () => {
       const $linkInput = page.getByTestId('popover-edit-dialog').getByLabelText('Link')
       await expect.element($linkInput).toBeVisible()
       const $link = page.elementLocator($pte.element().querySelector('span[data-link]')!)
-      await expect.element($link).toHaveTextContent(/^link$/)
+      await expect.element($link).toMatchTextContent(/^link$/)
       await $linkInput.fill('https://www.sanity.io')
       await page.getByLabelText('Expand editor').click()
 
@@ -521,7 +521,7 @@ describe('Portable Text Input', () => {
 
         const $link = page.elementLocator($pte.element().querySelector('span[data-link]')!)
         await expect.element($link).toBeVisible()
-        await expect.element($link).toHaveTextContent(/^link$/)
+        await expect.element($link).toMatchTextContent(/^link$/)
 
         const $linkInput = page.getByTestId('popover-edit-dialog').getByLabelText('Link')
         await expect.element($linkInput).toBeInTheDocument()
@@ -606,7 +606,7 @@ describe('Portable Text Input', () => {
         await page.getByRole('button', {name: 'Link'}).click()
         const $linkSpan = page.elementLocator($pte.element().querySelector('span[data-link]')!)
         await expect.element($linkSpan).toBeVisible()
-        await expect.element($linkSpan).toHaveTextContent(/^annotations$/)
+        await expect.element($linkSpan).toMatchTextContent(/^annotations$/)
 
         // Close the link edit popover
         const $linkEditPopover = page.getByTestId('popover-edit-dialog')

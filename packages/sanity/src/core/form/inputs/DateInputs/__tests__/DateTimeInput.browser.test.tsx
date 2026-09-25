@@ -52,7 +52,11 @@ describe('DateTimeInput', () => {
     const {settleChromaticEndState} = testHelpers()
     void render(<DateTimeInputHarness />)
 
-    await expect.element(page.getByText('Published at')).toBeVisible()
+    // Scope to the field: the time zone button's (closed, mounted) tooltip also renders the title
+    // in an `<em>`, and Vitest 5's `getByText` resolves both, tripping the strict-mode check.
+    await expect
+      .element(page.getByTestId('field-publishedAt').getByText('Published at'))
+      .toBeVisible()
     await settleChromaticEndState()
   })
 })

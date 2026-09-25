@@ -1,33 +1,21 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, DialogProvider, Stack, Text, TextInput} from '@sanity/ui'
+import {Card, DialogProvider, Text, TextInput} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useId, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {catchError, map, type Observable, of, startWith} from 'rxjs'
 import {type Role, useClient, useProjectId, useTranslation, useZIndex} from 'sanity'
-import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Box, Flex, VStack} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {structureLocaleNamespace} from '../../i18n'
 import {AskToEditRequestSent} from './__telemetry__/RequestPermissionDialog.telemetry'
+import {dialogBody} from './RequestPermissionDialog.css'
 import {type AccessRequest} from './useRoleRequestsStatus'
 
 const MAX_NOTE_LENGTH = 150
 // Requested until the project's roles say an editor role exists.
 const ADMIN_ROLE = 'administrator' as const
-
-const DialogBody = styled(Box)`
-  box-sizing: border-box;
-`
-
-const LoadingContainer = styled(Flex).attrs({
-  alignItems: 'center',
-  flexDirection: 'column',
-  justifyContent: 'center',
-})`
-  height: 110px;
-`
 
 /** @internal */
 export interface RequestPermissionDialogProps {
@@ -147,8 +135,8 @@ export function RequestPermissionDialog({
         onClose={onClose}
         onClickOutside={onClose}
       >
-        <DialogBody>
-          <Stack gap={4}>
+        <Box className={dialogBody}>
+          <VStack gap={4}>
             <Text>{t('request-permission-dialog.description.text')}</Text>
             {hasTooManyRequests || hasBeenDenied ? (
               <Card tone={'caution'} padding={3} radius={2} shadow={1}>
@@ -162,7 +150,7 @@ export function RequestPermissionDialog({
                 </Text>
               </Card>
             ) : (
-              <Stack gap={3} paddingBottom={0}>
+              <Flex gap={3} paddingBottom={0} flexDirection="column">
                 <TextInput
                   placeholder={t('request-permission-dialog.note-input.placeholder.text')}
                   disabled={isSubmitting}
@@ -177,10 +165,10 @@ export function RequestPermissionDialog({
                 />
 
                 <Text align="right" muted size={1}>{`${note.length}/${MAX_NOTE_LENGTH}`}</Text>
-              </Stack>
+              </Flex>
             )}
-          </Stack>
-        </DialogBody>
+          </VStack>
+        </Box>
       </Dialog>
     </DialogProvider>
   )

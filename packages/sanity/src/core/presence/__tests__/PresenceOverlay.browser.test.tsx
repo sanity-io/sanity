@@ -205,7 +205,7 @@ describe('PresenceOverlay', () => {
     void render(<Harness presence={tenUsersIn(['field2'])} />)
 
     await expect.poll(() => fieldAvatars('field2')).toHaveLength(3)
-    expect(fieldCounter('field2')).toHaveTextContent('7')
+    expect(fieldCounter('field2')).toMatchTextContent('7')
     expect(visibleAvatars()).toHaveLength(3)
     expect(dockAvatars('top')).toHaveLength(0)
     expect(dockAvatars('bottom')).toHaveLength(0)
@@ -218,7 +218,7 @@ describe('PresenceOverlay', () => {
     void render(<Harness presence={tenUsersIn(['field25'])} />)
 
     await expect.poll(() => dockAvatars('bottom')).toHaveLength(2)
-    expect(dockCounter('bottom')).toHaveTextContent('8')
+    expect(dockCounter('bottom')).toMatchTextContent('8')
     await expect.poll(() => arrowsOf(dockAvatars('bottom'))).toEqual(['bottom', 'bottom'])
     expect(dockAvatars('top')).toHaveLength(0)
     expect(visibleAvatars()).toHaveLength(2)
@@ -226,7 +226,7 @@ describe('PresenceOverlay', () => {
     // Scrolled into view, the field header takes over
     scrollFieldTo('field25', 'center')
     await expect.poll(() => fieldAvatars('field25')).toHaveLength(3)
-    expect(fieldCounter('field25')).toHaveTextContent('7')
+    expect(fieldCounter('field25')).toMatchTextContent('7')
     expect(dockAvatars('bottom')).toHaveLength(0)
     expect(visibleAvatars()).toHaveLength(3)
     await settlePresenceSnapshot()
@@ -252,7 +252,7 @@ describe('PresenceOverlay', () => {
     // All of them above the viewport: the top dock stacks them like a single field would
     pane().scrollTop = pane().scrollHeight
     await expect.poll(() => dockAvatars('top')).toHaveLength(2)
-    expect(dockCounter('top')).toHaveTextContent('8')
+    expect(dockCounter('top')).toMatchTextContent('8')
     await expect.poll(() => arrowsOf(dockAvatars('top'))).toEqual(['top', 'top'])
     expect(dockAvatars('bottom')).toHaveLength(0)
     expect(visibleAvatars()).toHaveLength(2)

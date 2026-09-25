@@ -222,13 +222,16 @@ describe('collectRunMetadata', () => {
 
 function sample(
   condition: PageLoadSample['condition'],
-  timeToEditableMs: number,
+  timeToEditableMs: number | null,
   auth: Partial<PageLoadSample['auth']> = {},
   styles: PageLoadSample['styles'] = null,
+  milestones: PageLoadSample['milestones'] = [],
 ): PageLoadSample {
   return {
     condition,
     timeToEditableMs,
+    milestones,
+    loadEndMs: Math.max(timeToEditableMs ?? 0, ...milestones.map((milestone) => milestone.atMs)),
     fcpMs: 1000,
     lcpMs: 2000,
     cls: 0,
@@ -333,6 +336,53 @@ describe('collectPageLoad', () => {
       // auth first request is skipped (firstRequestMs is null in this fixture)
       'boot-cold · auth round trips',
       'boot-cold · auth in flight',
+    ])
+  })
+
+  it('emits report-only milestone rows and drops time to editable when no sample has one', () => {
+    const report = collectPageLoad(
+      'loginReady',
+      new Map([
+        [
+          'experiment',
+          [
+            sample('boot-cold', null, {}, null, [{name: 'login clickable', atMs: 900}]),
+            sample('boot-cold', null, {}, null, [{name: 'login clickable', atMs: 1100}]),
+          ],
+        ],
+        [
+          'reference',
+          [sample('boot-cold', null, {}, null, [{name: 'login clickable', atMs: 800}])],
+        ],
+      ]),
+      new Map(),
+    )
+    expect(report.metrics.map((metric) => metric.label).slice(0, 2)).toEqual([
+      'boot-cold · login clickable',
+      'boot-cold · FCP',
+    ])
+    const clickable = report.metrics[0]
+    expect(clickable.unit).toBe('ms')
+    expect(clickable.comparison).toBeUndefined()
+    expect(clickable.experiment.summary.median).toBe(1000)
+    expect(clickable.reference?.summary.median).toBe(800)
+  })
+
+  it('places milestone rows after time to editable', () => {
+    const report = collectPageLoad(
+      'syntheticLarge',
+      new Map([
+        [
+          'experiment',
+          [sample('boot-cold', 4100, {}, null, [{name: 'all fields editable', atMs: 5200}])],
+        ],
+      ]),
+      new Map(),
+    )
+    expect(report.metrics.map((metric) => metric.label).slice(0, 3)).toEqual([
+      'boot-cold · time to editable',
+      'boot-cold · all fields editable',
+      'boot-cold · FCP',
     ])
   })
 

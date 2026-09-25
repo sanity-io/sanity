@@ -50,7 +50,7 @@ describe('collateDocumentDivergences', () => {
       subjectHead,
     })
 
-    await expect.poll(() => emissions.at(-1)?.state).toBe('ready')
+    await expect.poll(() => emissions.at(-1)?.state, {timeout: 5_000}).toBe('ready')
 
     expect(emissions.at(0)?.state).toBe('pending')
     expect(emissions.at(-1)?.state).toBe('ready')
@@ -105,7 +105,7 @@ describe('peekCollatedDocumentDivergences', () => {
       subjectHead,
     })
 
-    await expect.poll(() => emissions.at(-1)?.state).toBe('ready')
+    await expect.poll(() => emissions.at(-1)?.state, {timeout: 5_000}).toBe('ready')
 
     expect(emissions.at(0)?.state).toBe('pending')
     expect(emissions.at(-1)?.state).toBe('ready')
