@@ -332,6 +332,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.shortcuts.copy-query': 'Copy the query',
   /** Shortcut description: run the query */
   'vista.shortcuts.fetch': 'Fetch the query',
+  /** Shortcut description: move the cursor to the next lint finding in the query editor */
+  'vista.shortcuts.next-finding': 'Jump to the next lint finding',
   /** Shortcut description: reformat the query */
   'vista.shortcuts.prettify': 'Prettify the query',
   /** Title of the keyboard shortcuts dialog */

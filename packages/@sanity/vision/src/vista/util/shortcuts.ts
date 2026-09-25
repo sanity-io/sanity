@@ -39,6 +39,16 @@ export const VISTA_SHORTCUTS: Record<VistaShortcutId, VistaShortcut> = {
 /** The shortcuts in the order the shortcuts dialog lists them */
 export const VISTA_SHORTCUT_LIST: VistaShortcut[] = Object.values(VISTA_SHORTCUTS)
 
+export interface EditorShortcut {
+  keys: string[]
+  labelKey: 'vista.shortcuts.next-finding'
+}
+
+/** Shortcuts CodeMirror handles inside the query editor, listed in the dialog so they can be found */
+export const EDITOR_SHORTCUTS: EditorShortcut[] = [
+  {keys: ['F8'], labelKey: 'vista.shortcuts.next-finding'},
+]
+
 export function matchVistaShortcut(event: KeyboardEvent): VistaShortcutId | null {
   const shortcut = VISTA_SHORTCUT_LIST.find(({hotkeys}) =>
     hotkeys.some((hotkey) => isHotkey(hotkey, event)),

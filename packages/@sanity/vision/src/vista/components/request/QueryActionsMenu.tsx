@@ -67,6 +67,7 @@ export function QueryActionsMenu(props: QueryActionsMenuProps) {
               text={t('vista.query.copy')}
             />
             <MenuItem
+              data-testid="vista-prettify"
               hotkeys={VISTA_SHORTCUTS.prettify.keys}
               icon={CodeBlockIcon}
               onClick={onPrettify}

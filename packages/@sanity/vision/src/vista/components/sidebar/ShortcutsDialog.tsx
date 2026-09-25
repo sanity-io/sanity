@@ -4,7 +4,7 @@ import {Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {useVistaActor} from '../../store/VistaActorContext'
-import {VISTA_SHORTCUT_LIST} from '../../util/shortcuts'
+import {EDITOR_SHORTCUTS, VISTA_SHORTCUT_LIST} from '../../util/shortcuts'
 
 export function ShortcutsDialog() {
   const {t} = useTranslation(visionLocaleNamespace)
@@ -22,8 +22,13 @@ export function ShortcutsDialog() {
     >
       <Box padding={4}>
         <Stack gap={4}>
-          {VISTA_SHORTCUT_LIST.map((shortcut) => (
-            <Flex alignItems="center" gap={3} justifyContent="space-between" key={shortcut.id}>
+          {[...VISTA_SHORTCUT_LIST, ...EDITOR_SHORTCUTS].map((shortcut) => (
+            <Flex
+              alignItems="center"
+              gap={3}
+              justifyContent="space-between"
+              key={shortcut.labelKey}
+            >
               <Text size={1}>{t(shortcut.labelKey)}</Text>
               <Hotkeys fontSize={1} keys={shortcut.keys} />
             </Flex>

@@ -21,6 +21,7 @@ import {
 import {useVistaActor, useVistaSelector} from '../../store/VistaActorContext'
 import {isPanelExpanded} from '../../store/vistaMachine'
 import {cx} from '../../util/cx'
+import {groqLintExtensions} from '../../util/groqLint'
 import {VISTA_SHORTCUTS} from '../../util/shortcuts'
 import {ActionRail} from '../ActionRail'
 import {CollapsibleSection} from '../CollapsibleSection'
@@ -37,6 +38,9 @@ import {OptionsPanel} from './OptionsPanel'
 import {ParamsPanel} from './ParamsPanel'
 import {QueryActionsMenu} from './QueryActionsMenu'
 import {useDragResize} from './useDragResize'
+
+/** The GROQ editor setup plus the `groq-lint` diagnostics */
+const queryExtensions = [...groqExtensions, ...groqLintExtensions]
 
 export interface RequestPanelProps {
   tab: VistaTab
@@ -111,7 +115,7 @@ export function RequestPanel(props: RequestPanelProps) {
             </Label>
           </Box>
           <VisionCodeMirror
-            extensions={groqExtensions}
+            extensions={queryExtensions}
             initialValue={tab.query}
             onChange={onQueryChange}
             ref={queryEditorRef}

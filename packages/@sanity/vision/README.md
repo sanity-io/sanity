@@ -104,7 +104,7 @@ What is different in the redesign:
 - **Refetch automatically**: the response's `syncTags` are matched against the Live Content API, so the result updates when the documents it depends on change. The History panel records every fetch and why it happened.
 - **Response details**: execution and end-to-end time, payload size, sync tags, the query URL and the content source map when requested.
 - **Exports**: the query as `curl`, `@sanity/client` and `next-sanity` snippets; the result as JSON or CSV, and as TypeScript types or a Zod schema inferred from the workspace schema (falling back to the fetched result).
-- **Prettify** reformats the query, and pasting a query URL from the network tab loads it into the active tab.
+- **Prettify and lint** from [sanity-labs/sanity-lint](https://github.com/sanity-labs/sanity-lint), through its `@sanity-labs/groq-wasm` build: Prettify formats the query with `groq-format`, and the editor underlines what the `groq-lint` rules find (joins in filters, comparisons that cannot use an index, deep pagination, ...). Hover a finding for its explanation, or press F8 to jump to the next one. Pasting a query URL from the network tab loads it into the active tab.
 
 The redesign is in beta: its look and feature set may still change.
 

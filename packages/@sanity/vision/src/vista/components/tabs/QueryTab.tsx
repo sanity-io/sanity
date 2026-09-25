@@ -26,7 +26,7 @@ import {
 } from '../../store/VistaActorContext'
 import {selectDatasets} from '../../store/vistaMachine'
 import {cx} from '../../util/cx'
-import {formatGroq} from '../../util/formatGroq'
+import {formatGroq, GroqSyntaxError} from '../../util/groqWasm'
 import {parsedQueryToTabInit} from '../../util/savedQueryTab'
 import {type VistaShortcutId} from '../../util/shortcuts'
 import {RequestPanel} from '../request/RequestPanel'
@@ -115,17 +115,24 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     [actorRef, tab.id],
   )
 
-  const prettify = useCallback(() => {
+  const prettify = useCallback(async () => {
+    const {query} = tab
     try {
-      const formatted = formatGroq(tab.query)
-      if (formatted !== tab.query) {
-        queryEditorRef.current?.resetEditorContent(formatted)
-        setQuery(formatted)
-      }
-    } catch {
-      toast.push({closable: true, status: 'warning', title: t('vista.query.prettify.failed')})
+      const formatted = await formatGroq(query)
+      // The formatter loads lazily; a query edited meanwhile is not overwritten
+      const latest = actorRef.getSnapshot().context.tabs.find((it) => it.id === tab.id)
+      if (latest?.query !== query || formatted === query) return
+      queryEditorRef.current?.resetEditorContent(formatted)
+      setQuery(formatted)
+    } catch (error) {
+      toast.push({
+        closable: true,
+        description: error instanceof GroqSyntaxError ? error.message : undefined,
+        status: 'warning',
+        title: t('vista.query.prettify.failed'),
+      })
     }
-  }, [setQuery, t, tab.query, toast])
+  }, [actorRef, setQuery, t, tab, toast])
 
   const copyQuery = useCallback(
     () => void copyToClipboard(tab.query, t('vista.query.copied')),
@@ -173,7 +180,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
           run({type: 'shortcut'})
           break
         case 'prettify':
-          prettify()
+          void prettify()
           break
         case 'copy-query':
           copyQuery()
@@ -215,7 +222,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
       onCopyQuery={copyQuery}
       onOptionsChange={setOptions}
       onParamsChange={setParams}
-      onPrettify={prettify}
+      onPrettify={() => void prettify()}
       onQueryChange={setQuery}
       onRun={() => run({type: 'manual'})}
       onToggleAutoRefetch={() => setAutoRefetch(!tab.autoRefetch)}

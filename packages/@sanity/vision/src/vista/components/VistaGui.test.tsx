@@ -616,6 +616,32 @@ describe('VistaGui', () => {
     expect(tabBadge()).not.toBeNull()
   })
 
+  it('prettifies the query with groq-format and reports queries that do not parse', async () => {
+    renderVista()
+    typeQuery('*[_type=="author"&&name match $q]{_id,name,"posts":*[references(^._id)]{title}}')
+
+    fireEvent.click(screen.getByTestId('vista-query-menu-button'))
+    fireEvent.click(screen.getByTestId('vista-prettify'))
+
+    const formatted = [
+      '*[_type == "author" && name match $q] {',
+      '  _id,',
+      '  name,',
+      '  "posts": *[references(^._id)] { title }',
+      '}',
+    ].join('\n')
+    await waitFor(() => expect(getQueryEditor().value).toBe(formatted))
+    await waitFor(() => expect(getStoredState().tabs[0].query).toBe(formatted))
+
+    typeQuery('*[_type == "author"')
+    fireEvent.click(screen.getByTestId('vista-query-menu-button'))
+    fireEvent.click(screen.getByTestId('vista-prettify'))
+
+    await screen.findByText('vista.query.prettify.failed', undefined, {timeout: 3000})
+    expect(screen.getByText("expected ']' following expression")).toBeTruthy()
+    expect(getQueryEditor().value).toBe('*[_type == "author"')
+  })
+
   it('fetches with params typed just before running, ahead of the debounce', async () => {
     const {fetchCalls} = renderVista()
     typeQuery('*[_id == $id]')

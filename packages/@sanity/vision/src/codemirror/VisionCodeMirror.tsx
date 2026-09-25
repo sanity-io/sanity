@@ -80,6 +80,8 @@ export function VisionCodeMirror({
       editorView.dispatch({
         changes: {from: 0, to: currentDoc.length, insert: newContent},
         selection: EditorSelection.cursor(newContent.length), // Place cursor at end
+        // Also undoes a horizontal scroll left over from longer lines in the replaced content
+        scrollIntoView: true,
       })
     }
   }, [])
