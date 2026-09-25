@@ -36,6 +36,8 @@ const sanityMocks = vi.hoisted(() => {
     getPerspective: () => perspective,
     useClient: vi.fn(),
     clearQueries: vi.fn(() => Promise.resolve()),
+    // What the mocked saved queries hook lists and reports as being moved
+    savedQueries: {queries: [] as unknown[], moving: [] as string[]},
   }
 })
 
@@ -105,7 +107,7 @@ vi.mock('sanity/router', () => ({
 
 vi.mock('../../hooks/useSavedQueries', () => ({
   useSavedQueries: () => ({
-    queries: [],
+    queries: sanityMocks.savedQueries.queries,
     saveQuery: vi.fn(),
     updateQuery: vi.fn(),
     deleteQuery: vi.fn(),
@@ -114,6 +116,7 @@ vi.mock('../../hooks/useSavedQueries', () => ({
     clearQueries: sanityMocks.clearQueries,
     saving: false,
     deleting: [],
+    moving: sanityMocks.savedQueries.moving,
     saveQueryError: undefined,
     deleteQueryError: undefined,
     error: undefined,
@@ -326,6 +329,7 @@ describe('VistaGui', () => {
   beforeEach(() => {
     localStorage.clear()
     sanityMocks.setPerspective(BASE_PERSPECTIVE)
+    sanityMocks.savedQueries = {queries: [], moving: []}
     editorMocks.visibleColumns = undefined
   })
 
@@ -1043,6 +1047,44 @@ describe('VistaGui', () => {
       expect(stored.tabs[0].query).toBe('')
     })
     expect(onSwitchToClassic).toHaveBeenCalledTimes(1)
+  })
+
+  it('leaves a saved query alone while a share or unshare is moving it', async () => {
+    const shared = {
+      _key: 'shared-1',
+      shared: true,
+      authorId: 'user-1',
+      isOwnedByCurrentUser: true,
+      title: 'Authors',
+      url: `https://${PROJECT_ID}.api.sanity.io/v2025-02-19/data/query/test?query=*`,
+      savedAt: '2026-01-01T00:00:00Z',
+    }
+    sanityMocks.savedQueries = {queries: [shared], moving: ['shared-1']}
+    renderVista()
+
+    fireEvent.click(screen.getByTestId('vista-sidebar-shared'))
+    const item = await screen.findByTestId('vista-saved-query')
+    fireEvent.click(within(item).getByRole('button', {expanded: false}))
+
+    // The menu is portaled, so its items are found from the one whose test id names the query
+    const unshare = screen.getByTestId('vista-saved-query-unshare')
+    const menu = unshare.closest<HTMLElement>('[role="menu"]')
+    if (!menu) throw new Error('The unshare item is not inside a menu')
+    const [open, load, rename, remove] = within(menu)
+      .getAllByRole('menuitem', {hidden: true})
+      .filter((menuItem) => menuItem !== unshare)
+
+    // Opening and loading stay available; the mutations wait for the query to arrive in the
+    // other list
+    expect(text(open)).toBe('vista.saved.open-in-new-tab')
+    expect(isDisabled(open)).toBe(false)
+    expect(text(load)).toBe('vista.saved.load-in-current-tab')
+    expect(isDisabled(load)).toBe(false)
+    expect(text(rename)).toBe('vista.saved.rename')
+    expect(isDisabled(rename)).toBe(true)
+    expect(isDisabled(unshare)).toBe(true)
+    expect(text(remove)).toBe('action.delete')
+    expect(isDisabled(remove)).toBe(true)
   })
 
   it('switches back to the classic tool from the sidebar and from the settings dialog', async () => {

@@ -129,6 +129,56 @@ describe('useSavedQueries', () => {
     expect(result.current.queries.every((query) => !query.shared)).toBe(true)
   })
 
+  it('moves a query once when it is unshared again while the first move is pending', async () => {
+    mocks.sharedDocs = [
+      {_id: 'shared-a', authorId: 'user-1', savedAt: '2026-01-01T00:00:00Z', url: 'https://a'},
+    ]
+    const {result} = setup()
+    await waitFor(() => expect(result.current.queries).toHaveLength(1))
+
+    let first: Promise<void>
+    let second: Promise<void>
+    act(() => {
+      first = result.current.unshareQuery('shared-a')
+      // The shared query is still listed until the move has removed it, so it can be picked again
+      second = result.current.unshareQuery('shared-a')
+    })
+    expect(result.current.moving).toEqual(['shared-a'])
+    await act(async () => {
+      await Promise.all([first, second])
+    })
+
+    expect(storedUrls()).toEqual(['https://a'])
+    expect(mocks.deleteDoc).toHaveBeenCalledTimes(1)
+    expect(result.current.queries).toHaveLength(1)
+    expect(result.current.queries[0].shared).toBe(false)
+    expect(result.current.moving).toEqual([])
+  })
+
+  it('shares a query once when it is shared again while the first move is pending', async () => {
+    mocks.store.value = {
+      queries: [{_key: 'p1', url: 'https://a', savedAt: '2026-01-01T00:00:00Z', title: 'A'}],
+    }
+    const {result} = setup()
+    await waitFor(() => expect(result.current.queries).toHaveLength(1))
+
+    let moves: Promise<void[]>
+    act(() => {
+      moves = Promise.all([result.current.shareQuery('p1'), result.current.shareQuery('p1')])
+    })
+    expect(result.current.moving).toEqual(['p1'])
+    await act(async () => {
+      await moves
+    })
+
+    expect(mocks.create).toHaveBeenCalledTimes(1)
+    expect(storedUrls()).toEqual([])
+    expect(result.current.queries.map((query) => [query._key, query.shared])).toEqual([
+      ['shared-1', true],
+    ])
+    expect(result.current.moving).toEqual([])
+  })
+
   it('takes a shared copy back when the personal one cannot be removed', async () => {
     mocks.store.value = {
       queries: [{_key: 'p1', url: 'https://a', savedAt: '2026-01-01T00:00:00Z', title: 'A'}],
