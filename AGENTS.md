@@ -385,7 +385,11 @@ Rules that follow from this:
   symbol, and remember that `@sanity/cli`, `@sanity/cli-core` and `@sanity/cli-build` load the
   studio's local `sanity` package at runtime (`resolveLocalPackage('sanity')`) and destructure
   `renderStudio`, `resolveConfig`, `createSchema`, `SchemaError`, `createDefaultIcon`,
-  `generateStudioManifest`, `uploadSchema` and `validateDocument` from the root.
+  `generateStudioManifest`, `uploadSchema` and `validateDocument` from the root. The one
+  deliberate exception is a deprecated utility that studios import from `sanity` as documented
+  (`createAuthStore`, deprecated since v3.15.0): it keeps its `@internal @deprecated` tags, stays
+  off the entry, and is listed in `PUBLIC_BY_USAGE` in the completeness test; its removal is
+  governed by the deprecation, not by the internals moving.
 - The CDN auto-update bundle (`packages/sanity/package.bundle.ts`) lists every entry explicitly;
   a new entry must be added there too, otherwise the `sanity/` import-map prefix resolves it to a
   404 on the module host. `pnpm generate:dts-exports` in `packages/@repo/test-dts-exports`
