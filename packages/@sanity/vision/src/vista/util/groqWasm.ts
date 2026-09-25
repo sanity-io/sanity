@@ -22,10 +22,11 @@ export interface GroqFinding {
 }
 
 /** The runtime shape of a `@sanity-labs/groq-wasm` finding; its declared type is not shipped */
-interface WasmFinding {
+export interface WasmFinding {
   ruleId: string
   message: string
   severity: GroqFindingSeverity
+  /** UTF-8 byte offsets into the query; absent for findings about the query as a whole */
   span?: {start: {offset: number}; end: {offset: number}}
 }
 
@@ -134,15 +135,15 @@ export async function lintGroq(query: string): Promise<GroqFinding[]> {
   } catch (error) {
     throw toSyntaxError(error, query)
   }
+  return toGroqFindings(findings, query)
+}
+
+/** Converts the wasm findings' byte spans into ranges of `query`; a finding without a span covers all of it */
+export function toGroqFindings(findings: WasmFinding[], query: string): GroqFinding[] {
   const toIndex = createByteOffsetConverter(query)
-  return findings.map((finding) => {
-    const from = toIndex(finding.span?.start.offset ?? 0)
-    return {
-      ruleId: finding.ruleId,
-      message: finding.message.trim(),
-      severity: finding.severity,
-      from,
-      to: Math.max(from, toIndex(finding.span?.end.offset ?? query.length)),
-    }
+  return findings.map(({ruleId, message, severity, span}) => {
+    const from = span ? toIndex(span.start.offset) : 0
+    const to = span ? Math.max(from, toIndex(span.end.offset)) : query.length
+    return {ruleId, message: message.trim(), severity, from, to}
   })
 }

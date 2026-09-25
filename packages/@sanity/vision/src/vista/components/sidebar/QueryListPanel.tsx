@@ -11,7 +11,7 @@ import {Code} from '@sanity/ui/code'
 import {Menu, MenuButton, MenuDivider, MenuItem} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
 import {Tooltip} from '@sanity/ui/tooltip'
-import {type KeyboardEvent, useCallback, useMemo, useState} from 'react'
+import {type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {ContextMenuButton, UserAvatar, useDateTimeFormat, useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
@@ -122,13 +122,26 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
     [actorRef, activeTab.id],
   )
 
+  // Enter and Escape unmount the rename field while it has focus; a blur delivered on the way
+  // out must not commit a draft that was just committed or discarded (same shape as the tab
+  // rename field)
+  const renameSettledRef = useRef(false)
   const startRename = useCallback((query: QueryConfig) => {
+    renameSettledRef.current = false
     setEditingKey(query._key)
     setEditingTitle(query.title || '')
   }, [])
 
+  const cancelRename = useCallback(() => {
+    if (renameSettledRef.current) return
+    renameSettledRef.current = true
+    setEditingKey(null)
+  }, [])
+
   const commitRename = useCallback(
     async (query: QueryConfig) => {
+      if (renameSettledRef.current) return
+      renameSettledRef.current = true
       setEditingKey(null)
       const title = editingTitle.trim()
       if (!title || title === query.title) return
@@ -233,7 +246,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
                             onChange={(event) => setEditingTitle(event.currentTarget.value)}
                             onKeyDown={(event: KeyboardEvent<HTMLInputElement>) => {
                               if (event.key === 'Enter') void commitRename(query)
-                              if (event.key === 'Escape') setEditingKey(null)
+                              if (event.key === 'Escape') cancelRename()
                             }}
                             padding={1}
                             value={editingTitle}

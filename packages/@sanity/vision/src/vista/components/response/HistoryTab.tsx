@@ -13,6 +13,8 @@ function describeFetchReason(reason: FetchReason, t: TFunction<'vision'>): strin
       return t('vista.history.reason.shortcut')
     case 'options':
       return t('vista.history.reason.options')
+    case 'load':
+      return t('vista.history.reason.load')
     case 'live':
       return reason.matchedTags.length > 0
         ? t('vista.history.reason.live')

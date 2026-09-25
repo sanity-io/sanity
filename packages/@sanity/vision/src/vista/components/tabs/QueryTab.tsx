@@ -212,17 +212,20 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     tabId: tab.id,
   })
 
-  // While refetching automatically, changed options are applied right away
-  const optionsKey = JSON.stringify([
+  // While refetching automatically, a request that changed outside the editors is fetched right
+  // away: changed options, or a loaded query (live refetches replay the runner's last request,
+  // which the load has just cleared)
+  const refetchKey = `${loadRevision}|${JSON.stringify([
     resolved.apiVersion,
     resolved.dataset,
     resolved.perspective,
     resolved.variant,
     tab.options.includeSourceMap,
-  ])
-  useOnValueChange(optionsKey, () => {
+  ])}`
+  useOnValueChange(refetchKey, (key, previous) => {
     if (tab.autoRefetch && request) {
-      runnerRef.send({type: 'fetch', request, reason: {type: 'options'}})
+      const loaded = key.split('|', 1)[0] !== previous.split('|', 1)[0]
+      runnerRef.send({type: 'fetch', request, reason: {type: loaded ? 'load' : 'options'}})
     }
   })
 

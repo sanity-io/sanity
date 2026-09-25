@@ -81,6 +81,8 @@ export type FetchReason =
   | {type: 'manual'}
   | {type: 'shortcut'}
   | {type: 'options'}
+  /** A query loaded into a tab that refetches automatically */
+  | {type: 'load'}
   | {type: 'live'; matchedTags: SyncTag[]}
 
 export interface FetchHistoryEntry {
