@@ -33,7 +33,7 @@ import {
   usePortal,
 } from '@sanity/ui'
 import {toString as pathToString} from '@sanity/util/paths'
-import {type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
+import {type ReactNode, Suspense, useCallback, useMemo, useRef, useState} from 'react'
 import {Box} from 'ui5'
 
 import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
@@ -46,6 +46,7 @@ import {type RenderCustomMarkers, type RenderBlockActionsCallback} from '../../t
 import {type ArrayOfObjectsInputProps, type OnPasteFn} from '../../types/inputProps'
 import {pathToAnchorIdent} from '../../utils/pathToAnchorIdent'
 import {UploadTargetCard} from '../files/common/uploadTarget/UploadTargetCard'
+import {BlockObjectFallback, TextBlockFallback} from './BlockFallback'
 import {ExpandedLayer, Root, StringDiffContainer} from './Compositor.styles'
 import {useSetPortableTextMemberItemElementRef} from './contexts/PortableTextMemberItemElementRefsProvider'
 import {usePortableTextMemberSchemaTypes} from './contexts/PortableTextMemberSchemaTypes'
@@ -276,39 +277,54 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         )
       }
 
+      // One boundary per top-level block, inside the shell that carries the editor's element
+      // attributes: a lazy block, inline object or annotation component holds up this block only,
+      // and the rest of the document keeps rendering (and streaming in) around it.
       return (
         <TextBlockShell attributes={attributes} block={block} path={blockPath}>
           <BlockDropIndicator path={blockPath} edge="start" />
-          <TextBlock
-            floatingBoundary={floatingBoundary}
-            focused={blockFocused}
-            isFullscreen={isFullscreen}
-            listItem={listSchemaType !== undefined ? block.listItem : undefined}
-            onItemClose={handleItemClose}
-            onItemOpen={handleItemOpen}
-            onItemRemove={onItemRemove}
-            onPathFocus={onPathFocus}
-            path={fullyQualifiedPath}
-            readOnly={readOnly}
-            referenceBoundary={scrollElement}
-            renderAnnotation={renderAnnotation}
-            renderField={renderField}
-            renderInlineBlock={renderInlineBlock}
-            renderInput={renderInput}
-            renderItem={renderItem}
-            renderBlockActions={_renderBlockActions}
-            renderCustomMarkers={_renderCustomMarkers}
-            renderPreview={renderPreview}
-            renderBlock={renderBlock}
-            schemaType={schemaTypes.block}
-            selected={selected}
-            setElementRef={setElementRef}
-            value={block}
-            anchorIdent={pathToAnchorIdent('input', fullyQualifiedPath)}
-            relativePath={blockPath}
+          <Suspense
+            fallback={
+              <TextBlockFallback
+                hasBlockActions={Boolean(_renderBlockActions)}
+                isFullscreen={isFullscreen}
+                listItem={block.listItem}
+                nested={blockPath.length > 1}
+                style={block.style}
+              />
+            }
           >
-            {inner}
-          </TextBlock>
+            <TextBlock
+              floatingBoundary={floatingBoundary}
+              focused={blockFocused}
+              isFullscreen={isFullscreen}
+              listItem={listSchemaType !== undefined ? block.listItem : undefined}
+              onItemClose={handleItemClose}
+              onItemOpen={handleItemOpen}
+              onItemRemove={onItemRemove}
+              onPathFocus={onPathFocus}
+              path={fullyQualifiedPath}
+              readOnly={readOnly}
+              referenceBoundary={scrollElement}
+              renderAnnotation={renderAnnotation}
+              renderField={renderField}
+              renderInlineBlock={renderInlineBlock}
+              renderInput={renderInput}
+              renderItem={renderItem}
+              renderBlockActions={_renderBlockActions}
+              renderCustomMarkers={_renderCustomMarkers}
+              renderPreview={renderPreview}
+              renderBlock={renderBlock}
+              schemaType={schemaTypes.block}
+              selected={selected}
+              setElementRef={setElementRef}
+              value={block}
+              anchorIdent={pathToAnchorIdent('input', fullyQualifiedPath)}
+              relativePath={blockPath}
+            >
+              {inner}
+            </TextBlock>
+          </Suspense>
           <BlockDropIndicator path={blockPath} edge="end" />
         </TextBlockShell>
       )
@@ -353,37 +369,49 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         // block-object type in it matches `node._type`.
         throw new Error(`Could not find Sanity schema type for block object: ${node._type}`)
       }
+      // Same per-block boundary as text blocks; the element attributes and the editor's void
+      // children stay mounted outside it.
       return (
         <div {...attributes}>
           <BlockDropIndicator path={blockPath} edge="start" />
           {blockProps.children}
           <div contentEditable={false} draggable={!readOnly}>
-            <BlockObject
-              floatingBoundary={floatingBoundary}
-              focused={blockFocused}
-              isFullscreen={isFullscreen}
-              onItemClose={handleItemClose}
-              onItemOpen={handleItemOpen}
-              onItemRemove={onItemRemove}
-              onPathFocus={onPathFocus}
-              path={path.concat(blockPath)}
-              readOnly={readOnly}
-              referenceBoundary={scrollElement}
-              relativePath={blockPath}
-              renderAnnotation={renderAnnotation}
-              renderBlock={renderBlock}
-              renderBlockActions={_renderBlockActions}
-              renderCustomMarkers={_renderCustomMarkers}
-              renderField={renderField}
-              renderInlineBlock={renderInlineBlock}
-              renderInput={renderInput}
-              renderItem={renderItem}
-              renderPreview={renderPreview}
-              schemaType={sanitySchemaType}
-              selected={selected}
-              setElementRef={setElementRef}
-              value={node}
-            />
+            <Suspense
+              fallback={
+                <BlockObjectFallback
+                  hasBlockActions={Boolean(_renderBlockActions)}
+                  isFullscreen={isFullscreen}
+                  nested={blockPath.length > 1}
+                />
+              }
+            >
+              <BlockObject
+                floatingBoundary={floatingBoundary}
+                focused={blockFocused}
+                isFullscreen={isFullscreen}
+                onItemClose={handleItemClose}
+                onItemOpen={handleItemOpen}
+                onItemRemove={onItemRemove}
+                onPathFocus={onPathFocus}
+                path={path.concat(blockPath)}
+                readOnly={readOnly}
+                referenceBoundary={scrollElement}
+                relativePath={blockPath}
+                renderAnnotation={renderAnnotation}
+                renderBlock={renderBlock}
+                renderBlockActions={_renderBlockActions}
+                renderCustomMarkers={_renderCustomMarkers}
+                renderField={renderField}
+                renderInlineBlock={renderInlineBlock}
+                renderInput={renderInput}
+                renderItem={renderItem}
+                renderPreview={renderPreview}
+                schemaType={sanitySchemaType}
+                selected={selected}
+                setElementRef={setElementRef}
+                value={node}
+              />
+            </Suspense>
           </div>
           <BlockDropIndicator path={blockPath} edge="end" />
         </div>

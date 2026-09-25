@@ -1,4 +1,4 @@
-import {LayerProvider, Stack, Text} from '@sanity/ui'
+import {LayerProvider, Text} from '@sanity/ui'
 import {memo, useCallback, useMemo, useState} from 'react'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
@@ -19,7 +19,7 @@ import {
   useSource,
   type VersionInfoDocumentStub,
 } from 'sanity'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -195,7 +195,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
       {showFirstActionButton && (
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
-            <Stack>
+            <VStack>
               <Button
                 data-testid={`action-${toLowerCaseNoSpaces(firstActionState.label)}`}
                 disabled={disabled || Boolean(firstActionState.disabled)}
@@ -205,7 +205,7 @@ const DocumentStatusBarActionsInner = memo(function DocumentStatusBarActionsInne
                 text={firstActionState.label}
                 tone={firstActionState.tone || 'primary'}
               />
-            </Stack>
+            </VStack>
           </Tooltip>
         </LayerProvider>
       )}

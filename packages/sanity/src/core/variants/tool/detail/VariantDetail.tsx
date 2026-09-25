@@ -2,10 +2,10 @@ import {DocumentsIcon} from '@sanity/icons/Documents'
 import {EditIcon} from '@sanity/icons/Edit'
 import {SortIcon} from '@sanity/icons/Sort'
 import {UserIcon} from '@sanity/icons/User'
-import {Card, Container, Skeleton, Stack, Text} from '@sanity/ui'
+import {Card, Container, Skeleton, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useRouter} from 'sanity/router'
-import {Flex, Box} from 'ui5'
+import {Flex, Box, VStack} from 'ui5'
 
 import {
   DetailBackButton,
@@ -198,14 +198,14 @@ export function VariantDetail() {
         </Card>
         <Box padding={4}>
           <Card border padding={4} radius={3}>
-            <Stack gap={3}>
+            <VStack gap={3}>
               <Text size={2} weight="semibold">
                 {t('detail.not-found.title')}
               </Text>
               <Text muted size={1}>
                 {t('detail.not-found.description')}
               </Text>
-            </Stack>
+            </VStack>
           </Card>
         </Box>
       </Flex>
@@ -228,7 +228,7 @@ export function VariantDetail() {
           {/* paddingX={2} (8px) matches the table's first-column content inset so the back button and
               actions line up with the row content below. */}
           <Box paddingX={2}>
-            <Stack gap={4}>
+            <VStack gap={4}>
               <Flex alignItems="center" gap={3}>
                 <Flex alignItems="center" flexBasis="0%" flexGrow={1}>
                   <DetailBackButton
@@ -274,7 +274,7 @@ export function VariantDetail() {
                   testId="variant-detail-documents"
                 />
               </Flex>
-            </Stack>
+            </VStack>
           </Box>
         </Container>
       </Card>

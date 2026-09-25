@@ -2,20 +2,18 @@ import {studioPath} from '@sanity/client/csm'
 import {Card, Label, Stack} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {type ErrorInfo, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
-import {type Path, useTranslation} from 'sanity'
+import {LoadingBlock, type Path, useTranslation} from 'sanity'
 import {decodeJsonParams} from 'sanity/router'
 import {
   DocumentPane as StructureDocumentPane,
   type DocumentPaneNode,
   PaneLayout,
 } from 'sanity/structure'
-import {styled} from 'styled-components'
 
 import {ErrorBoundary} from '../../ui-components/errorBoundary/ErrorBoundary'
 import {ErrorCard} from '../components/ErrorCard'
 import {presentationLocaleNamespace} from '../i18n'
 import {PresentationPaneRouterProvider} from '../paneRouter/PresentationPaneRouterProvider'
-import {PresentationSpinner} from '../PresentationSpinner'
 import {
   type PresentationNavigate,
   type PresentationSearchParams,
@@ -23,10 +21,7 @@ import {
   type StructureDocumentPaneParams,
 } from '../types'
 import {usePresentationTool} from '../usePresentationTool'
-
-const WrappedCode = styled(Code)`
-  white-space: pre-wrap;
-`
+import {wrappedCode} from './DocumentPane.css'
 
 export function DocumentPane(props: {
   documentId: string
@@ -101,7 +96,9 @@ export function DocumentPane(props: {
               <Label muted size={0}>
                 {t('presentation-error.label')}
               </Label>
-              <WrappedCode size={1}>{errorParams.error.message}</WrappedCode>
+              <Code className={wrappedCode} size={1}>
+                {errorParams.error.message}
+              </Code>
             </Stack>
           </Card>
         )}
@@ -118,7 +115,7 @@ export function DocumentPane(props: {
           onStructureParams={onStructureParams}
           structureParams={structureParams}
         >
-          <Suspense fallback={<PresentationSpinner />}>
+          <Suspense fallback={<LoadingBlock showText />}>
             <StructureDocumentPane
               // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
               paneKey="document"
