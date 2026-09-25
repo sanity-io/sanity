@@ -52,12 +52,12 @@ describe('resolveOpenPreviewUrl', () => {
       resolveOpenPreviewUrl({
         perspective: 'drafts',
         previewLocationOrigin: '',
-        previewLocationRoute: '/products/shoes?color=red',
+        previewLocationRoute: '/products/shoes?color=red#details',
         previewMode,
         previewUrlSecret,
         targetOrigin: 'https://example.com',
         variant: undefined,
       }),
-    ).toBe('/products/shoes?color=red&sanity-preview-perspective=drafts')
+    ).toBe('/products/shoes?color=red&sanity-preview-perspective=drafts#details')
   })
 })

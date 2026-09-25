@@ -42,8 +42,8 @@ export function resolveOpenPreviewUrl(options: OpenPreviewUrlOptions): string {
   }
 
   if (!previewMode || !previewUrlSecret) {
-    const {pathname, search} = previewUrl
-    return `${previewLocationOrigin}${pathname}${search}`
+    const {pathname, search, hash} = previewUrl
+    return `${previewLocationOrigin}${pathname}${search}${hash}`
   }
 
   const enableUrl = new URL(previewMode.enable, previewUrl)
