@@ -26,6 +26,7 @@ import {
 } from '../../store/VistaActorContext'
 import {selectDatasets} from '../../store/vistaMachine'
 import {cx} from '../../util/cx'
+import {type QueryLintFinding} from '../../util/groqLint'
 import {formatGroq, GroqSyntaxError} from '../../util/groqWasm'
 import {parsedQueryToTabInit} from '../../util/savedQueryTab'
 import {type VistaShortcutId} from '../../util/shortcuts'
@@ -74,6 +75,8 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
 
   const queryEditorRef = useRef<VisionCodeMirrorHandle>(null)
   const paramsEditorRef = useRef<VisionCodeMirrorHandle>(null)
+  // The query editor's diagnostics, listed in the response column's Lint panel
+  const [lintFindings, setLintFindings] = useState<QueryLintFinding[]>([])
 
   const {resolved, params, request, buildRequest} = useQueryRequestBuilder(tab)
   const isFetching = useSelector(runnerRef, selectIsFetching)
@@ -148,6 +151,15 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   const copyQuery = useCallback(
     () => void copyToClipboard(tab.query, t('vista.query.copied')),
     [copyToClipboard, t, tab.query],
+  )
+
+  const revealLintFinding = useCallback(
+    (finding: QueryLintFinding) => {
+      // On a phone the editor lives behind the other pane; bring it forward first
+      if (layout === 'mobile') setMobilePane('request')
+      queryEditorRef.current?.selectRange(finding.from, finding.to)
+    },
+    [layout],
   )
 
   // A query loaded from outside the editors (saved query, pasted URL) replaces their content
@@ -231,6 +243,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
       isFetching={isFetching}
       onCancel={cancel}
       onCopyQuery={copyQuery}
+      onLintFindings={setLintFindings}
       onOptionsChange={setOptions}
       onParamsChange={setParams}
       onPrettify={() => void prettify()}
@@ -246,7 +259,14 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     />
   )
   const responsePanel = (
-    <ResponsePanel request={request} resolved={resolved} runnerRef={runnerRef} tab={tab} />
+    <ResponsePanel
+      lintFindings={lintFindings}
+      onRevealLintFinding={revealLintFinding}
+      request={request}
+      resolved={resolved}
+      runnerRef={runnerRef}
+      tab={tab}
+    />
   )
 
   const panelProps = {

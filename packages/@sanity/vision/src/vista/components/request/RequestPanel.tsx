@@ -3,7 +3,7 @@ import {PlayIcon} from '@sanity/icons/Play'
 import {StopIcon} from '@sanity/icons/Stop'
 import {Button, Hotkeys, Label, Text} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
-import {type RefObject, useCallback, useRef} from 'react'
+import {type RefObject, useCallback, useMemo, useRef} from 'react'
 import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
@@ -21,7 +21,7 @@ import {
 import {useVistaActor, useVistaSelector} from '../../store/VistaActorContext'
 import {isPanelExpanded} from '../../store/vistaMachine'
 import {cx} from '../../util/cx'
-import {groqLintExtensions} from '../../util/groqLint'
+import {createGroqLintExtensions, type QueryLintFinding} from '../../util/groqLint'
 import {VISTA_SHORTCUTS} from '../../util/shortcuts'
 import {ActionRail} from '../ActionRail'
 import {CollapsibleSection} from '../CollapsibleSection'
@@ -39,9 +39,6 @@ import {ParamsPanel} from './ParamsPanel'
 import {QueryActionsMenu} from './QueryActionsMenu'
 import {SECTION_MIN_HEIGHT, useDragResize} from './useDragResize'
 
-/** The GROQ editor setup plus the `groq-lint` diagnostics */
-const queryExtensions = [...groqExtensions, ...groqLintExtensions]
-
 export interface RequestPanelProps {
   tab: VistaTab
   params: Params
@@ -58,6 +55,8 @@ export interface RequestPanelProps {
   onPrettify: () => void
   onCopyQuery: () => void
   onToggleAutoRefetch: () => void
+  /** The query editor's lint diagnostics, whenever they change */
+  onLintFindings: (findings: QueryLintFinding[]) => void
 }
 
 /**
@@ -82,8 +81,14 @@ export function RequestPanel(props: RequestPanelProps) {
     onPrettify,
     onCopyQuery,
     onToggleAutoRefetch,
+    onLintFindings,
   } = props
   const {t} = useTranslation(visionLocaleNamespace)
+  // The GROQ editor setup plus the `groq-lint` diagnostics, reporting to the Lint panel
+  const queryExtensions = useMemo(
+    () => [...groqExtensions, ...createGroqLintExtensions(onLintFindings)],
+    [onLintFindings],
+  )
   const actorRef = useVistaActor()
   const paramsExpanded = useVistaSelector((snapshot) => isPanelExpanded(snapshot, 'params'))
   const optionsExpanded = useVistaSelector((snapshot) => isPanelExpanded(snapshot, 'options'))

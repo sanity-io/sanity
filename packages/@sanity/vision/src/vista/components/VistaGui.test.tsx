@@ -132,6 +132,10 @@ vi.mock('../../codemirror/VisionCodeMirror', () => ({
       resetEditorContent: (content: string) => {
         if (textareaRef.current) textareaRef.current.value = content
       },
+      selectRange: (from: number, to: number) => {
+        textareaRef.current?.setSelectionRange(from, to)
+        textareaRef.current?.focus()
+      },
     }))
     return (
       <textarea

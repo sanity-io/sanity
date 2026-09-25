@@ -364,6 +364,19 @@ globalStyle(`${previewCode} pre::before, ${previewCode} pre::after`, {
   content: 'none',
 })
 
+/** A lint finding is a full-width button that reads as a list row */
+export const lintFindingButton = style({
+  display: 'block',
+  width: '100%',
+  textAlign: 'left',
+  cursor: 'pointer',
+  selectors: {
+    '&:hover': {
+      background: 'var(--card-muted-bg-color)',
+    },
+  },
+})
+
 /** A bleed button holding a stack of texts that must truncate rather than overflow the list */
 export const listItemButton = style({
   minWidth: 0,

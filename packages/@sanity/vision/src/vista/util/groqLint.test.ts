@@ -1,7 +1,15 @@
+import {setDiagnostics} from '@codemirror/lint'
 import {EditorState} from '@codemirror/state'
 import {describe, expect, it, vi} from 'vitest'
 
-import {groqLintSource, renderMessage, syntaxErrorDiagnostic, toDiagnostics} from './groqLint'
+import {
+  collectFindings,
+  groqLintSource,
+  renderMessage,
+  splitMessage,
+  syntaxErrorDiagnostic,
+  toDiagnostics,
+} from './groqLint'
 import * as groqWasm from './groqWasm'
 
 function viewOf(doc: string) {
@@ -60,6 +68,59 @@ describe('toDiagnostics', () => {
     )
     expect([first.from, first.to, first.severity]).toEqual([2, 10, 'warning'])
     expect([second.from, second.to, second.severity]).toEqual([8, 8, 'info'])
+  })
+})
+
+describe('collectFindings', () => {
+  it('lists the editor diagnostics with their line and column', () => {
+    const doc = '*[_type == "post"\n  && author->name == "x"]'
+    let state = EditorState.create({doc})
+    state = state.update(
+      setDiagnostics(state, [
+        {
+          from: doc.indexOf('author->'),
+          to: doc.indexOf('author->') + 'author->'.length,
+          severity: 'error',
+          message: 'Avoid joins',
+          source: 'groq-lint/join-in-filter',
+        },
+        {from: 0, to: 1, severity: 'info', message: 'Everything'},
+      ]),
+    ).state
+
+    expect(collectFindings(state)).toEqual([
+      {
+        from: 0,
+        to: 1,
+        line: 1,
+        column: 1,
+        severity: 'info',
+        message: 'Everything',
+        source: undefined,
+      },
+      {
+        from: 23,
+        to: 31,
+        line: 2,
+        column: 6,
+        severity: 'error',
+        message: 'Avoid joins',
+        source: 'groq-lint/join-in-filter',
+      },
+    ])
+  })
+})
+
+describe('splitMessage', () => {
+  it('marks the backtick-quoted segments as code', () => {
+    expect(splitMessage('Avoid `->` in filters; write `count(*[])`.')).toEqual([
+      {text: 'Avoid ', code: false},
+      {text: '->', code: true},
+      {text: ' in filters; write ', code: false},
+      {text: 'count(*[])', code: true},
+      {text: '.', code: false},
+    ])
+    expect(splitMessage('plain')).toEqual([{text: 'plain', code: false}])
   })
 })
 

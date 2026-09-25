@@ -207,6 +207,19 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.history.reason.options': 'Options changed',
   /** History reason: the keyboard shortcut was used */
   'vista.history.reason.shortcut': 'Keyboard shortcut',
+  /** Shown in the Lint panel while the query has no lint findings */
+  'vista.lint.empty':
+    'No lint findings. Problems the GROQ linter spots in the query are listed here as you type; pick one to select it in the editor.',
+  /** Where a lint finding sits in the query, shown under its message */
+  'vista.lint.position': 'Line {{line}}, column {{column}}',
+  /** Severity badge of a lint finding */
+  'vista.lint.severity.error': 'Error',
+  /** Severity badge of a lint finding */
+  'vista.lint.severity.hint': 'Hint',
+  /** Severity badge of a lint finding */
+  'vista.lint.severity.info': 'Info',
+  /** Severity badge of a lint finding */
+  'vista.lint.severity.warning': 'Warning',
   /** Badge shown while a tab refetches automatically */
   'vista.live.active': 'Live',
   /** Error shown when the live connection breaks */
@@ -222,6 +235,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.panel.expand': 'Expand panel',
   /** Label of the "History" tab in the response panel */
   'vista.panel.history': 'History',
+  /** Label of the "Lint" tab in the response panel, listing the query's lint findings */
+  'vista.panel.lint': 'Lint',
   /** Label of the "Options" panel in the request column */
   'vista.panel.options': 'Options',
   /** Label of the "Response" tab in the response panel */

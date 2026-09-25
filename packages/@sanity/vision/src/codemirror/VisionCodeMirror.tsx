@@ -47,6 +47,8 @@ function EditorRoot({autoHeight, children}: {autoHeight: boolean; children: Reac
 
 export interface VisionCodeMirrorHandle {
   resetEditorContent: (newContent: string) => void
+  /** Selects a range of the document, scrolls it into view and focuses the editor */
+  selectRange: (from: number, to: number) => void
 }
 
 export function VisionCodeMirror({
@@ -87,12 +89,25 @@ export function VisionCodeMirror({
     }
   }, [])
 
+  const selectRange = useCallback((from: number, to: number) => {
+    const editorView = codeMirrorRef.current?.view
+    if (!editorView) return
+
+    const length = editorView.state.doc.length
+    editorView.dispatch({
+      selection: EditorSelection.range(Math.min(from, length), Math.min(to, length)),
+      scrollIntoView: true,
+    })
+    editorView.focus()
+  }, [])
+
   useImperativeHandle(
     ref,
     () => ({
       resetEditorContent,
+      selectRange,
     }),
-    [resetEditorContent],
+    [resetEditorContent, selectRange],
   )
 
   return (

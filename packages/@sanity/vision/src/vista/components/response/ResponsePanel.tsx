@@ -14,6 +14,7 @@ import {getCsvBlobUrl, getJsonBlobUrl} from '../../../util/getBlobUrl'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {type QueryRunnerRef, selectRequestStatus} from '../../store/queryRunnerMachine'
 import {type QueryRequest, type VistaTab} from '../../store/types'
+import {type QueryLintFinding} from '../../util/groqLint'
 import {haveSameQuery} from '../../util/queryRequest'
 import {ActionRail} from '../ActionRail'
 import {type CollapsiblePanelTab} from '../CollapsiblePanel'
@@ -21,6 +22,7 @@ import {SplitWithBottomPanel} from '../SplitWithBottomPanel'
 import {resultContainer, resultLabel} from '../vista.css'
 import {DownloadButton} from './DownloadButton'
 import {HistoryTab} from './HistoryTab'
+import {LintTab} from './LintTab'
 import {ResponseMetaTab} from './ResponseMetaTab'
 import {ResultActionsMenu} from './ResultActionsMenu'
 import {SourceMapTab} from './SourceMapTab'
@@ -33,9 +35,14 @@ export interface ResponsePanelProps {
   resolved: ResolvedRequest
   /** What the tab would fetch right now; tells whether the shown result is for the current query */
   request: QueryRequest | null
+  /** The query editor's lint diagnostics, listed in the Lint panel */
+  lintFindings: QueryLintFinding[]
+  /** Shows a finding in the query editor */
+  onRevealLintFinding: (finding: QueryLintFinding) => void
 }
 
-export function ResponsePanel({tab, runnerRef, resolved, request}: ResponsePanelProps) {
+export function ResponsePanel(props: ResponsePanelProps) {
+  const {tab, runnerRef, resolved, request, lintFindings, onRevealLintFinding} = props
   const {t} = useTranslation(visionLocaleNamespace)
 
   const status = useSelector(runnerRef, selectRequestStatus)
@@ -76,6 +83,28 @@ export function ResponsePanel({tab, runnerRef, resolved, request}: ResponsePanel
         content: <ResponseMetaTab meta={meta} url={url} />,
       },
       {
+        id: 'lint',
+        label:
+          lintFindings.length > 0 ? (
+            <Flex alignItems="center" as="span" gap={2}>
+              {t('vista.panel.lint')}
+              <Badge
+                fontSize={0}
+                tone={
+                  lintFindings.some((finding) => finding.severity === 'error')
+                    ? 'critical'
+                    : 'caution'
+                }
+              >
+                {lintFindings.length}
+              </Badge>
+            </Flex>
+          ) : (
+            t('vista.panel.lint')
+          ),
+        content: <LintTab findings={lintFindings} onReveal={onRevealLintFinding} />,
+      },
+      {
         id: 'source-map',
         label: t('vista.panel.source-map'),
         content: <SourceMapTab dataset={resultDataset} meta={meta} />,
@@ -94,7 +123,7 @@ export function ResponsePanel({tab, runnerRef, resolved, request}: ResponsePanel
         content: <HistoryTab history={history} />,
       },
     ],
-    [history, meta, resultDataset, t, url],
+    [history, lintFindings, meta, onRevealLintFinding, resultDataset, t, url],
   )
 
   return (
