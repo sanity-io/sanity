@@ -1,6 +1,7 @@
 import {type ClientPerspective, type ReleaseDocument, type SanityClient} from '@sanity/client'
 import {useMemo} from 'react'
 import {
+  getDefaultVariant,
   getReleaseIdFromReleaseDocumentId,
   isCardinalityOneRelease,
   type PerspectiveStack,
@@ -41,7 +42,7 @@ export interface ResolvedRequest {
  * navbar variant locks the API version to the experimental one.
  */
 export function useResolvedRequest(options: VistaTabOptions): ResolvedRequest {
-  const {perspectiveStack, selectedVariantName} = usePerspective()
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
   const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
   const {data: releases = []} = useActiveReleases()
   const workspace = useWorkspace()
@@ -61,7 +62,8 @@ export function useResolvedRequest(options: VistaTabOptions): ResolvedRequest {
     return [...releaseIds, ...defaultPerspective] as PerspectiveStack
   }, [releases, isDraftModelEnabled, isScheduledDraftsEnabled])
 
-  const variant = getActiveVariant(options.perspective, selectedVariantName)
+  // Queries take one variant until the studio supports editing several at once
+  const variant = getActiveVariant(options.perspective, getDefaultVariant(selectedVariantNames))
   const isValidApiVersion = validateApiVersion(options.apiVersion)
   // An unfinished "Other" version still needs a client to exist; requests are refused meanwhile
   const userApiVersion = isValidApiVersion

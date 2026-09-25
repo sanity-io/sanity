@@ -81,6 +81,7 @@ vi.mock('sanity', async () => {
     isCardinalityOneRelease: () => false,
     sortReleases: <T,>(releases: T[]) => releases,
     getVariantTitle: (variant: {title?: string}) => variant.title,
+    getDefaultVariant: <T,>(selected?: readonly T[]) => selected?.[0],
     useSchema: () => undefined,
     useKeyValueStore: () => ({getKey: vi.fn(), setKey: vi.fn()}),
     useCurrentUser: () => ({id: 'user-1'}),
@@ -155,7 +156,11 @@ const BASE_PERSPECTIVE: PerspectiveContextValue = {
   selectedPerspective: 'published',
   selectedPerspectiveName: 'published',
   selectedReleaseId: undefined,
+  selectedVariantNames: [],
+  selectedVariants: [],
+  // oxlint-disable-next-line typescript/no-deprecated -- fixture fills the deprecated first-variant alias
   selectedVariantName: undefined,
+  // oxlint-disable-next-line typescript/no-deprecated -- fixture fills the deprecated first-variant alias
   selectedVariant: undefined,
   bundle: 'published',
 }
@@ -579,7 +584,7 @@ describe('VistaGui', () => {
     })
     saveVistaState(PROJECT_ID, {...initial, tabs: [tab], activeTabId: 'pinned'})
 
-    const {fetchCalls} = renderVista({...BASE_PERSPECTIVE, selectedVariantName: 'french'})
+    const {fetchCalls} = renderVista({...BASE_PERSPECTIVE, selectedVariantNames: ['french']})
 
     openOptionsTab()
     const apiVersionSelect = screen.getByTestId(
@@ -606,7 +611,7 @@ describe('VistaGui', () => {
       ...BASE_PERSPECTIVE,
       perspectiveStack: [],
       selectedPerspectiveName: undefined,
-      selectedVariantName: 'french',
+      selectedVariantNames: ['french'],
     })
     typeQuery('*')
     openOptionsTab()

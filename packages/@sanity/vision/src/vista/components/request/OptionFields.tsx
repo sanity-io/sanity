@@ -1,7 +1,13 @@
 import {Select, Stack, Text, TextInput} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {type ChangeEvent, Fragment, useCallback} from 'react'
-import {getVariantTitle, usePerspective, useScheduledDraftsEnabled, useTranslation} from 'sanity'
+import {
+  getDefaultVariant,
+  getVariantTitle,
+  usePerspective,
+  useScheduledDraftsEnabled,
+  useTranslation,
+} from 'sanity'
 import {Box} from 'ui5'
 
 import {API_VERSIONS} from '../../../apiVersions'
@@ -137,9 +143,10 @@ export function PerspectiveSelect({id, value, onChange}: PerspectiveSelectProps)
     typeof pinnedPerspective.selectedPerspective === 'object'
       ? pinnedPerspective.selectedPerspective.metadata.title
       : pinnedPerspective.selectedPerspectiveName
-  const variantTitle = pinnedPerspective.selectedVariant
-    ? getVariantTitle(pinnedPerspective.selectedVariant)
-    : pinnedPerspective.selectedVariantName
+  const selectedVariant = getDefaultVariant(pinnedPerspective.selectedVariants)
+  const variantTitle = selectedVariant
+    ? getVariantTitle(selectedVariant)
+    : getDefaultVariant(pinnedPerspective.selectedVariantNames)
   const pinnedLabel = [
     pinnedName,
     variantTitle ? `· ${variantTitle}` : undefined,
