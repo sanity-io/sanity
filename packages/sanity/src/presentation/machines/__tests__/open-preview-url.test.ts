@@ -1,7 +1,15 @@
-import {of, Subject} from 'rxjs'
+import {BehaviorSubject, isObservable, map, type Observable, of, Subject} from 'rxjs'
 import {type PermissionCheckResult, type SanityClient} from 'sanity'
 import {describe, expect, test, vi} from 'vitest'
-import {type Actor, createActor, fromObservable, fromPromise, SimulatedClock, waitFor} from 'xstate'
+import {
+  type Actor,
+  createActor,
+  fromObservable,
+  fromPromise,
+  SimulatedClock,
+  type StateValue,
+  waitFor,
+} from 'xstate'
 
 import {promiseWithResolvers} from '../../../core/util/promiseWithResolvers'
 import {defineResolvePreviewModeActor} from '../../actors/resolve-preview-mode'
@@ -35,8 +43,11 @@ const createSecrets = () => {
 
 interface MockOptions {
   previewUrlOption?: PreviewUrlOption
-  canCreatePreviewSecret?: boolean
-  canReadSharedSecret?: boolean
+  /**
+   * Pass an observable to change the permission while the machine runs
+   */
+  canCreatePreviewSecret?: boolean | Observable<boolean>
+  canReadSharedSecret?: boolean | Observable<boolean>
   sharedSecret?: string | null
   createPreviewSecret?: () => Promise<{secret: string; expiresAt: Date}>
 }
@@ -54,7 +65,12 @@ const mockActors = ({
   'check permission': fromObservable<PermissionCheckResult, CheckPermissionInput>(({input}) => {
     const granted =
       input.checkPermissionName === 'create' ? canCreatePreviewSecret : canReadSharedSecret
-    return of({granted, reason: granted ? 'Matching grant' : 'No matching grants found'})
+    return (isObservable(granted) ? granted : of(granted)).pipe(
+      map((isGranted) => ({
+        granted: isGranted,
+        reason: isGranted ? 'Matching grant' : 'No matching grants found',
+      })),
+    )
   }),
 })
 
@@ -140,6 +156,44 @@ describe('Open preview URL machine', () => {
     expect(snapshot.context.previewUrlSecret?.secret).toBe('shared-secret')
     expect(createPreviewSecret).not.toHaveBeenCalled()
   })
+
+  test.each<[string, boolean, StateValue, PreviewUrlPreviewMode | null]>([
+    [
+      'falls back to the shared secret',
+      true,
+      {success: 'sharedSecret'},
+      {enable: '/api/draft-mode/enable', shareAccess: true},
+    ],
+    ['opens the preview directly', false, 'unavailable', null],
+  ])(
+    '%s when the secret expires after the permission to create a new one is gone',
+    async (_, canReadSharedSecret, expectedState, expectedPreviewMode) => {
+      const clock = new SimulatedClock()
+      const createPreviewSecret = createSecrets()
+      const canCreatePreviewSecret = new BehaviorSubject(true)
+      const actor = createActor(
+        openPreviewUrlMachine.provide({
+          actors: mockActors({canCreatePreviewSecret, canReadSharedSecret, createPreviewSecret}),
+        }),
+        {clock, input: {targetOrigin: enabledOrigin}},
+      ).start()
+
+      let snapshot = await settled(actor)
+      expect(snapshot.context.previewUrlSecret?.secret).toBe('secret-1')
+
+      canCreatePreviewSecret.next(false)
+      clock.increment(secretTtl)
+      expect(actor.getSnapshot().context.previewUrlSecret).toBeNull()
+
+      snapshot = await settled(actor)
+      expect(snapshot.value).toEqual(expectedState)
+      expect(snapshot.context.previewMode).toEqual(expectedPreviewMode)
+      expect(snapshot.context.previewUrlSecret?.secret ?? null).toBe(
+        canReadSharedSecret ? 'shared-secret' : null,
+      )
+      expect(createPreviewSecret).toHaveBeenCalledTimes(1)
+    },
+  )
 
   test.each<[string, MockOptions & {targetOrigin?: string}]>([
     ['preview mode is off for the origin', {targetOrigin: disabledOrigin}],

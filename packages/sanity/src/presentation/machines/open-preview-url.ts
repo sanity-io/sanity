@@ -97,19 +97,13 @@ export const openPreviewUrlMachine = setup({
     'has new target origin': ({context, event}) => {
       return event.targetOrigin !== context.targetOrigin
     },
+    'has preview mode': (_, params: PreviewUrlPreviewMode | false) => {
+      return params !== false
+    },
     'can create preview secret': ({context}) => {
       return context.previewUrlSecretPermission?.granted === true
     },
-    'has preview mode with created secret': ({context}, params: PreviewUrlPreviewMode | false) => {
-      if (params === false) {
-        return false
-      }
-      return context.previewUrlSecretPermission?.granted === true
-    },
-    'has preview mode with share access': ({context}, params: PreviewUrlPreviewMode | false) => {
-      if (params === false) {
-        return false
-      }
+    'can read shared preview secret': ({context}) => {
       return context.previewAccessSharingReadPermission?.granted === true
     },
     'has shared secret': (_, params: string | null) => {
@@ -224,23 +218,13 @@ export const openPreviewUrlMachine = setup({
         onDone: [
           {
             guard: {
-              type: 'has preview mode with created secret',
+              type: 'has preview mode',
               params: ({event}) => event.output,
             },
             actions: assign({
               previewMode: ({event}) => (event.output === false ? null : event.output),
             }),
-            target: 'creatingPreviewSecret',
-          },
-          {
-            guard: {
-              type: 'has preview mode with share access',
-              params: ({event}) => event.output,
-            },
-            actions: assign({
-              previewMode: ({event}) => (event.output === false ? null : event.output),
-            }),
-            target: 'readingSharedPreviewSecret',
+            target: 'choosingPreviewSecret',
           },
           {
             target: 'unavailable',
@@ -250,8 +234,29 @@ export const openPreviewUrlMachine = setup({
       tags: ['busy'],
     },
 
+    /**
+     * Picks where the secret comes from with the permissions the user has at this point. An expired secret
+     * comes back here too, as the permission to create a new one might be gone by then.
+     */
+    choosingPreviewSecret: {
+      id: 'choosingPreviewSecret',
+      always: [
+        {
+          guard: 'can create preview secret',
+          target: 'creatingPreviewSecret',
+        },
+        {
+          guard: 'can read shared preview secret',
+          target: 'readingSharedPreviewSecret',
+        },
+        {
+          actions: assign({previewMode: null}),
+          target: 'unavailable',
+        },
+      ],
+    },
+
     creatingPreviewSecret: {
-      id: 'creatingPreviewSecret',
       invoke: {
         src: 'create preview secret',
         onError: {
@@ -310,9 +315,8 @@ export const openPreviewUrlMachine = setup({
         createdSecret: {
           after: {
             expiredSecret: {
-              guard: 'can create preview secret',
               actions: assign({previewUrlSecret: null}),
-              target: '#creatingPreviewSecret',
+              target: '#choosingPreviewSecret',
             },
           },
         },
