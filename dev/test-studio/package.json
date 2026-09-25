@@ -33,7 +33,7 @@
     "@sanity/migrate": "catalog:",
     "@sanity/preview-url-secret": "^4.1.5",
     "@sanity/react-loader": "^2.2.2",
-    "@sanity/themer": "https://pkg.pr.new/sanity-io/ui/@sanity/themer@fde1653",
+    "@sanity/themer": "^0.5.0",
     "@sanity/types": "workspace:*",
     "@sanity/ui": "catalog:",
     "@sanity/util": "workspace:*",
