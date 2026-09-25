@@ -18,6 +18,7 @@ vi.mock('sanity', () => ({
   useTranslation: () => ({t: (key: string) => key}),
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
+  VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: 'X'},
   getVariantTitle: (variant: {metadata?: {title?: string}; _id: string}) => {
     const title = variant.metadata?.title
     return typeof title === 'string' && title.trim()
