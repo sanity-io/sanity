@@ -48,7 +48,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
   const datasets = useVistaSelector(selectDatasets)
   const workspaceDataset = useVistaSelector(selectWorkspaceDataset)
   const {request} = useQueryRequestBuilder(activeTab)
-  const {queries, updateQuery, deleteQuery, deleteQueryError, shareQuery, unshareQuery} =
+  const {queries, updateQuery, deleteQuery, deleteQueryError, moving, shareQuery, unshareQuery} =
     useSavedQueriesApi()
   const {saveCurrent, canSave} = useSaveCurrentQuery(activeTab, request)
   const formatDate = useDateTimeFormat({dateStyle: 'medium', timeStyle: 'short'})
@@ -224,6 +224,8 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
             {visibleItems.map((item) => {
               const {query, parsed, preview} = item
               const canMutate = !query.shared || query.isOwnedByCurrentUser
+              // A query on its way to the other list is left alone until it has arrived there
+              const isMoving = moving.includes(query._key)
               const isEditing = editingKey === query._key
               const isOpen = isOpenInTab(parsed)
 
@@ -304,24 +306,30 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
                               <>
                                 <MenuDivider />
                                 <MenuItem
+                                  disabled={isMoving}
                                   icon={EditIcon}
                                   onClick={() => startRename(query)}
                                   text={t('vista.saved.rename')}
                                 />
                                 {query.shared ? (
                                   <MenuItem
+                                    data-testid="vista-saved-query-unshare"
+                                    disabled={isMoving}
                                     icon={UnpublishIcon}
                                     onClick={() => void handleUnshare(query)}
                                     text={t('action.unshare')}
                                   />
                                 ) : (
                                   <MenuItem
+                                    data-testid="vista-saved-query-share"
+                                    disabled={isMoving}
                                     icon={UsersIcon}
                                     onClick={() => setShareCandidate(query)}
                                     text={t('label.share')}
                                   />
                                 )}
                                 <MenuItem
+                                  disabled={isMoving}
                                   icon={TrashIcon}
                                   onClick={() => void deleteQuery(query._key)}
                                   text={t('action.delete')}
