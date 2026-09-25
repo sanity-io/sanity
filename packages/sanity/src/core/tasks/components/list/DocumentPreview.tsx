@@ -7,6 +7,7 @@ import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
 import {useSchema} from '../../../hooks/useSchema'
+import {getDefaultVariant} from '../../../perspective/getDefaultVariant'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useDocumentPreviewValues} from '../../hooks/useDocumentPreviewValues'
 
@@ -28,7 +29,8 @@ export function DocumentPreview({
 }) {
   const schema = useSchema()
   const documentSchema = schema.get(documentType)
-  const {perspectiveStack, selectedVariantName} = usePerspective()
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const {isLoading, value} = useDocumentPreviewValues({
     documentId,
     documentType,

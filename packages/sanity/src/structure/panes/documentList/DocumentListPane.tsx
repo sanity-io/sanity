@@ -7,6 +7,7 @@ import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   EMPTY_ARRAY,
   type GeneralPreviewLayoutKey,
+  getDefaultVariant,
   useActiveReleases,
   useClient,
   useI18nText,
@@ -94,7 +95,8 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const {childItemId, isActive, pane, paneKey, sortOrder: sortOrderRaw, layout} = props
   const schema = useSchema()
   const releases = useActiveReleases()
-  const {perspectiveStack, selectedVariantName} = usePerspective()
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const {displayOptions, options} = pane
   const {apiVersion, filter} = options
   const params = useShallowUnique(options.params || EMPTY_RECORD)

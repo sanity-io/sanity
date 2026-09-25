@@ -7,6 +7,8 @@ import {useWorkspace} from '../studio/workspace'
 import {EMPTY_ARRAY} from '../util/empty'
 import {getBundleIdFromPerspective} from '../variants/documents/getBundleIdFromPerspective'
 import {useAllVariants} from '../variants/store/useAllVariants'
+import {parseVariantStickyParam} from '../variants/util/variantSelection'
+import {getDefaultVariant} from './getDefaultVariant'
 import {getSelectedPerspective} from './getSelectedPerspective'
 import {getSelectedReleaseId} from './getSelectedReleaseId'
 import {getSelectedVariant} from './getSelectedVariant'
@@ -51,9 +53,19 @@ export function PerspectiveProvider({
     [releases, selectedPerspectiveName, excludedPerspectives, isDraftModelEnabled],
   )
 
-  const selectedVariant = useMemo(
-    () => getSelectedVariant({selectedVariantName, variantsById}),
-    [selectedVariantName, variantsById],
+  const selectedVariantNames = useMemo(
+    () => parseVariantStickyParam(selectedVariantName).map((selection) => selection.name),
+    [selectedVariantName],
+  )
+  const selectedVariants = useMemo(
+    () =>
+      selectedVariantNames.map((name) =>
+        getSelectedVariant({
+          selectedVariantName: name,
+          variantsById,
+        }),
+      ),
+    [selectedVariantNames, variantsById],
   )
 
   const value: PerspectiveContextValue = useMemo(() => {
@@ -64,8 +76,10 @@ export function PerspectiveProvider({
       selectedReleaseId: getSelectedReleaseId(selectedPerspectiveName, releases),
       perspectiveStack,
       excludedPerspectives,
-      selectedVariantName,
-      selectedVariant,
+      selectedVariantNames,
+      selectedVariants,
+      selectedVariantName: getDefaultVariant(selectedVariantNames),
+      selectedVariant: getDefaultVariant(selectedVariants),
       bundle: getBundleIdFromPerspective(selectedPerspective),
     }
   }, [
@@ -74,8 +88,8 @@ export function PerspectiveProvider({
     selectedPerspective,
     perspectiveStack,
     excludedPerspectives,
-    selectedVariantName,
-    selectedVariant,
+    selectedVariantNames,
+    selectedVariants,
   ])
 
   return <PerspectiveContext.Provider value={value}>{children}</PerspectiveContext.Provider>
