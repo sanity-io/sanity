@@ -32,8 +32,13 @@ export interface QueryRunnerContext {
   request: QueryRequest | undefined
   /** The request the shown `result` and `meta` belong to */
   settledRequest: QueryRequest | undefined
-  /** Sync tags of the last successful response, kept across failures so live events keep matching */
+  /**
+   * Sync tags of the last successful response, kept while later fetches of the same request
+   * fail so live events keep matching and retry it
+   */
   syncTags: SyncTag[] | undefined
+  /** URL of the request `syncTags` were computed for */
+  syncTagsUrl: string | undefined
   reason: FetchReason
   startedAt: number
   /** URL of the latest request, available as soon as a fetch starts */
@@ -117,6 +122,7 @@ export const queryRunnerMachine = setup({
       request: undefined,
       settledRequest: undefined,
       syncTags: undefined,
+      syncTagsUrl: undefined,
       url: undefined,
       result: undefined,
       error: undefined,
@@ -136,6 +142,7 @@ export const queryRunnerMachine = setup({
     request: undefined,
     settledRequest: undefined,
     syncTags: undefined,
+    syncTagsUrl: undefined,
     reason: {type: 'manual'},
     startedAt: 0,
     url: undefined,
@@ -176,6 +183,7 @@ export const queryRunnerMachine = setup({
                 return {
                   settledRequest: context.request,
                   syncTags: meta.syncTags,
+                  syncTagsUrl: context.request?.url,
                   result: response.result,
                   error: undefined,
                   meta,
@@ -195,12 +203,16 @@ export const queryRunnerMachine = setup({
               target: 'failed',
               actions: assign(({context, event}) => {
                 const error = toError(event.error)
+                // The previous response is gone from the screen. Its sync tags live on while the
+                // failed fetch was for the same request, so relevant content changes still retry
+                // it; tags of another request would only retry this one on unrelated changes
+                const sameRequest = context.request?.url === context.syncTagsUrl
                 return {
-                  // The previous response is gone from the screen; only its sync tags live on so
-                  // relevant content changes still retry the query
                   settledRequest: undefined,
                   result: undefined,
                   meta: undefined,
+                  syncTags: sameRequest ? context.syncTags : undefined,
+                  syncTagsUrl: sameRequest ? context.syncTagsUrl : undefined,
                   error,
                   history: appendHistory(context.history, {
                     id: uuid(),

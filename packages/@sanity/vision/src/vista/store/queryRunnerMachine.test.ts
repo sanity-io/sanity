@@ -223,6 +223,29 @@ describe('queryRunnerMachine', () => {
     expect(harness.snapshot().context.reason).toEqual({type: 'live', matchedTags: ['s1:a']})
   })
 
+  it('drops the sync tags when a different request fails, so its retries are not driven by another query', async () => {
+    const harness = createHarness()
+    const first = harness.request({query: '*[_type == "a"]', url: 'https://x/a'})
+    const second = harness.request({query: '*[_type == "b"]', url: 'https://x/b'})
+    harness.actor.send({type: 'fetch', request: first, reason: {type: 'manual'}})
+    harness.fetches[0].resolve({result: 1, syncTags: ['s1:a']})
+    await waitFor(harness.actor, (snapshot) => snapshot.matches({request: 'settled'}))
+
+    harness.actor.send({type: 'fetch', request: second, reason: {type: 'manual'}})
+    harness.fetches[1].reject(new Error('Syntax error'))
+    await waitFor(harness.actor, (snapshot) => snapshot.matches({request: 'failed'}))
+    expect(harness.snapshot().context.syncTags).toBeUndefined()
+
+    // A change to the first query's documents says nothing about the second query
+    harness.actor.send({type: 'live.enable', client: {} as SanityClient})
+    harness.liveEvents.next({type: 'message', id: '1', tags: ['s1:a']})
+    expect(harness.fetches).toHaveLength(2)
+    // A restart still replays the failed request, as it does for any request
+    harness.liveEvents.next({type: 'restart', id: 'r'})
+    expect(harness.fetches).toHaveLength(3)
+    expect(harness.fetches[2].request).toBe(second)
+  })
+
   it('caps the history', async () => {
     const harness = createHarness()
     for (let i = 0; i < MAX_HISTORY_ENTRIES + 3; i++) {
