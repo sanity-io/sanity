@@ -13,6 +13,12 @@ describe('deriveTabTitle', () => {
     expect(deriveTabTitle("*[_type=='post' && defined(slug)]")).toBe('post')
   })
 
+  it('truncates a long document type like every other title', () => {
+    const type = 'marketingCampaignLandingPageHeroSection'
+    expect(deriveTabTitle(`*[_type == "${type}"]`)).toBe(`${type.slice(0, 31)}…`)
+    expect(deriveTabTitle(`*[_type == "${type}"]`)).toHaveLength(32)
+  })
+
   it('uses the filtered document id', () => {
     expect(deriveTabTitle('*[_id == "vista-live-test"]{_id, name}')).toBe('vista-live-test')
   })

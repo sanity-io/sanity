@@ -15,7 +15,7 @@ export function deriveTabTitle(query: string): string | undefined {
 
   const typeMatch = trimmed.match(TYPE_FILTER)
   if (typeMatch) {
-    return typeMatch[2]
+    return truncate(typeMatch[2])
   }
 
   const idMatch = trimmed.match(ID_FILTER)
