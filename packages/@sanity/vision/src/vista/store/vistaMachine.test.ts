@@ -108,6 +108,35 @@ describe('vistaMachine', () => {
     expect(harness.snapshot().context.activeTabId).toBe(before)
   })
 
+  it('reorders tabs, keeping the active tab and its runner, and persists the order', () => {
+    const initial = createInitialState(defaults)
+    const tabs = ['a', 'b', 'c'].map((id) => createTab(initial.settings, {id}))
+    const harness = createHarness(withTabs(tabs, 'b'))
+
+    harness.actor.send({type: 'tab.reorder', ids: ['c', 'a', 'b']})
+    expect(harness.tabs().map((tab) => tab.id)).toEqual(['c', 'a', 'b'])
+    expect(harness.tabs()[1]).toBe(tabs[0])
+    expect(harness.snapshot().context.activeTabId).toBe('b')
+    expect(harness.runnerIds()).toEqual(['a', 'b', 'c'])
+    expect(selectPersistedState(harness.snapshot()).tabs.map((tab) => tab.id)).toEqual([
+      'c',
+      'a',
+      'b',
+    ])
+  })
+
+  it('refuses a reorder that does not list every open tab exactly once', () => {
+    const initial = createInitialState(defaults)
+    const tabs = ['a', 'b', 'c'].map((id) => createTab(initial.settings, {id}))
+    const harness = createHarness(withTabs(tabs))
+
+    harness.actor.send({type: 'tab.reorder', ids: ['c', 'a']})
+    harness.actor.send({type: 'tab.reorder', ids: ['c', 'a', 'a']})
+    harness.actor.send({type: 'tab.reorder', ids: ['c', 'a', 'b', 'stale']})
+    harness.actor.send({type: 'tab.reorder', ids: ['c', 'a', 'stale']})
+    expect(harness.tabs().map((tab) => tab.id)).toEqual(['a', 'b', 'c'])
+  })
+
   it('edits tab fields, treating a blank title as "derive from query"', () => {
     const harness = createHarness()
     const [tab] = harness.tabs()

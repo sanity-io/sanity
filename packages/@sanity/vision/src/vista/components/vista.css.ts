@@ -172,21 +172,63 @@ export const sidebarDrawerOverlay = style({
   zIndex: 20,
 })
 
+/**
+ * The tab strip: a tinted band whose bottom rule is an inset shadow, so the selected tab's
+ * background can cover it and merge with the panel below (a border would be clipped away by the
+ * strip's overflow instead).
+ */
 export const tabBar = style({
   overflowX: 'auto',
   overflowY: 'hidden',
   scrollbarWidth: 'thin',
   flexShrink: 0,
+  background: 'var(--card-bg2-color)',
+  boxShadow: 'inset 0 -1px 0 var(--card-border-color)',
+})
+
+// Bleed buttons paint the card background, which reads as white boxes on the tinted strip
+globalStyle(`${tabBar} [data-ui="Button"]:not(:hover)`, {
+  backgroundColor: 'transparent',
+})
+
+/** The reorderable list of tabs (a motion Reorder.Group rendered as a div) */
+export const tabList = style({
+  display: 'flex',
+  alignItems: 'stretch',
+  gap: '2px',
+})
+
+/** The draggable wrapper around each tab; motion positions it while dragging and reordering */
+export const tabItem = style({
+  position: 'relative',
+  display: 'flex',
+  flexShrink: 0,
+  selectors: {
+    '&[data-dragging="true"]': {
+      zIndex: 1,
+    },
+  },
 })
 
 export const tab = style({
   position: 'relative',
   flexShrink: 0,
   maxWidth: '240px',
-  borderBottom: '2px solid transparent',
+  marginTop: '4px',
+  border: '1px solid transparent',
+  borderBottom: 'none',
+  borderRadius: '3px 3px 0 0',
+  transition: 'background-color 100ms',
   selectors: {
+    '&:hover': {
+      background: 'var(--card-muted-bg-color)',
+    },
     '&[data-selected="true"]': {
-      borderBottomColor: 'var(--card-fg-color)',
+      background: 'var(--card-bg-color)',
+      borderColor: 'var(--card-border-color)',
+    },
+    [`${tabItem}[data-dragging="true"] &`]: {
+      boxShadow: '0 2px 6px var(--card-shadow-umbra-color)',
     },
   },
 })

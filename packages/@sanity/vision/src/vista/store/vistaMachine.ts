@@ -46,6 +46,8 @@ export type VistaEvent =
   | {type: 'tab.add'; tab?: VistaTabInit}
   | {type: 'tab.close'; id: string}
   | {type: 'tab.select'; id: string}
+  /** The complete set of open tab ids in their new order */
+  | {type: 'tab.reorder'; ids: string[]}
   | {type: 'tab.rename'; id: string; title: string | undefined}
   | {type: 'tab.setQuery'; id: string; query: string}
   | {type: 'tab.setParams'; id: string; rawParams: string}
@@ -109,6 +111,16 @@ export const vistaMachine = setup({
     queryRunner: queryRunnerMachine,
   },
   guards: {
+    // Every open tab exactly once, so a stale drag result cannot drop or duplicate tabs
+    isCompleteOrder: ({context, event}) => {
+      if (event.type !== 'tab.reorder') return false
+      const ids = new Set(event.ids)
+      return (
+        ids.size === event.ids.length &&
+        ids.size === context.tabs.length &&
+        context.tabs.every((tab) => ids.has(tab.id))
+      )
+    },
     wasSidebarExpanded: ({context}) => context.restoredSidebar.expanded,
     wasDrawerOpen: ({context}, params: {drawer: VistaDrawer}) =>
       context.restoredSidebar.drawer === params.drawer,
@@ -199,6 +211,15 @@ export const vistaMachine = setup({
     'tab.select': {
       guard: ({context, event}) => context.tabs.some((tab) => tab.id === event.id),
       actions: assign({activeTabId: ({event}) => event.id}),
+    },
+    'tab.reorder': {
+      guard: 'isCompleteOrder',
+      actions: assign({
+        tabs: ({context, event}) => {
+          const byId = new Map(context.tabs.map((tab) => [tab.id, tab]))
+          return event.ids.flatMap((id) => byId.get(id) ?? [])
+        },
+      }),
     },
     'tab.rename': {
       actions: assign({

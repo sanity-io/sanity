@@ -421,9 +421,44 @@ describe('VistaGui', () => {
     expect(tabs).toHaveLength(1)
     expect(text(tabs[0])).toContain('Authors')
 
+    // Shift with an arrow moves the focused tab, the keyboard counterpart of dragging it
+    fireEvent.click(screen.getByTestId('vista-new-tab'))
+    expect(screen.getAllByTestId('vista-tab').map(text)).toEqual([
+      expect.stringContaining('Authors'),
+      expect.stringContaining('vista.tabs.untitled'),
+    ])
+    fireEvent.keyDown(within(screen.getAllByTestId('vista-tab')[1]).getByRole('tab'), {
+      key: 'ArrowLeft',
+      shiftKey: true,
+    })
+    expect(screen.getAllByTestId('vista-tab').map(text)).toEqual([
+      expect.stringContaining('vista.tabs.untitled'),
+      expect.stringContaining('Authors'),
+    ])
+    expect(selectedTab()).toBe(0)
+    // Moving past the edge is a no-op
+    fireEvent.keyDown(within(screen.getAllByTestId('vista-tab')[0]).getByRole('tab'), {
+      key: 'ArrowLeft',
+      shiftKey: true,
+    })
+    expect(text(screen.getAllByTestId('vista-tab')[0])).toContain('vista.tabs.untitled')
+    await waitFor(() =>
+      expect(getStoredState().tabs.map((stored: {title?: string}) => stored.title)).toEqual([
+        undefined,
+        'Authors',
+      ]),
+    )
+    fireEvent.keyDown(within(screen.getAllByTestId('vista-tab')[0]).getByRole('tab'), {
+      key: 'ArrowRight',
+      shiftKey: true,
+    })
+    expect(text(screen.getAllByTestId('vista-tab')[0])).toContain('Authors')
+    expect(
+      within(screen.getByTestId('vista-tab-bar')).getByRole('tablist').getAttribute('aria-label'),
+    ).toBe('vista.tabs.label')
+
     // Delete closes the focused tab (the close button is not a tab stop); the last tab is
     // replaced by a fresh one
-    fireEvent.click(screen.getByTestId('vista-new-tab'))
     expect(screen.getAllByTestId('vista-tab')).toHaveLength(2)
     fireEvent.keyDown(within(screen.getAllByTestId('vista-tab')[1]).getByRole('tab'), {
       key: 'Delete',

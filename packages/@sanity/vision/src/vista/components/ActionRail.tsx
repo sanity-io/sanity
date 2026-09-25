@@ -6,7 +6,6 @@ export function ActionRail({children, testId}: {children: ReactNode; testId: str
   return (
     <Flex
       alignItems="center"
-      borderLeft
       data-testid={testId}
       flexDirection="column"
       flexShrink={0}

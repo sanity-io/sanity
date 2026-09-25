@@ -1,6 +1,7 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {CloseIcon} from '@sanity/icons/Close'
 import {Badge, Button, TextInput} from '@sanity/ui'
+import {Reorder} from 'motion/react'
 import {type KeyboardEvent, type MouseEvent, useCallback, useRef, useState} from 'react'
 import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
@@ -9,7 +10,15 @@ import {visionLocaleNamespace} from '../../../i18n'
 import {type VistaTab} from '../../store/types'
 import {useVistaActor, useVistaSelector} from '../../store/VistaActorContext'
 import {deriveTabTitle} from '../../util/tabTitle'
-import {tab as tabStyle, tabBar, tabCloseButton, tabTitleButton, tabTitleInput} from '../vista.css'
+import {
+  tab as tabStyle,
+  tabBar,
+  tabCloseButton,
+  tabItem,
+  tabList,
+  tabTitleButton,
+  tabTitleInput,
+} from '../vista.css'
 
 /** The element id of the active tab's content, referenced by every tab's `aria-controls` */
 export const QUERY_TAB_PANEL_ID = 'vista-query-tabpanel'
@@ -153,14 +162,22 @@ export function QueryTabBar() {
   const tabs = useVistaSelector((snapshot) => snapshot.context.tabs)
   const activeTabId = useVistaSelector((snapshot) => snapshot.context.activeTabId)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [draggingId, setDraggingId] = useState<string | null>(null)
   const listRef = useRef<HTMLDivElement | null>(null)
 
   const focusTab = useCallback((id: string) => {
     listRef.current?.querySelector<HTMLElement>(`#${getQueryTabId(id)}`)?.focus()
   }, [])
 
+  const reorder = useCallback(
+    (ordered: VistaTab[]) =>
+      actorRef.send({type: 'tab.reorder', ids: ordered.map((tab) => tab.id)}),
+    [actorRef],
+  )
+
   // The ARIA tabs keyboard pattern: arrows, Home and End move between tabs and activate them,
-  // Delete closes the focused tab (the close button itself stays out of the tab order)
+  // Delete closes the focused tab (the close button itself stays out of the tab order). Shift
+  // with an arrow moves the tab instead, the keyboard counterpart of dragging it.
   const handleTabKeyDown = useCallback(
     (event: KeyboardEvent<HTMLButtonElement>) => {
       if (tabs.length === 0) return
@@ -174,9 +191,18 @@ export function QueryTabBar() {
         return
       }
       const index = tabs.findIndex((tab) => tab.id === activeTabId)
+      const direction = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0
+      if (event.shiftKey && direction !== 0) {
+        const target = index + direction
+        if (target < 0 || target >= tabs.length) return
+        event.preventDefault()
+        const ordered = tabs.slice()
+        ;[ordered[index], ordered[target]] = [ordered[target], ordered[index]]
+        reorder(ordered)
+        return
+      }
       let nextIndex: number | undefined
-      if (event.key === 'ArrowRight') nextIndex = (index + 1) % tabs.length
-      if (event.key === 'ArrowLeft') nextIndex = (index - 1 + tabs.length) % tabs.length
+      if (direction !== 0) nextIndex = (index + direction + tabs.length) % tabs.length
       if (event.key === 'Home') nextIndex = 0
       if (event.key === 'End') nextIndex = tabs.length - 1
       if (nextIndex === undefined) return
@@ -185,37 +211,59 @@ export function QueryTabBar() {
       actorRef.send({type: 'tab.select', id: next.id})
       focusTab(next.id)
     },
-    [activeTabId, actorRef, focusTab, tabs],
+    [activeTabId, actorRef, focusTab, reorder, tabs],
   )
 
   return (
     <Flex
       alignItems="stretch"
-      borderBottom
       className={tabBar}
       data-testid="vista-tab-bar"
       flexShrink={0}
       paddingX={1}
     >
-      <Flex alignItems="stretch" aria-label={t('vista.tabs.label')} ref={listRef} role="tablist">
+      <Reorder.Group
+        aria-label={t('vista.tabs.label')}
+        as="div"
+        axis="x"
+        className={tabList}
+        onReorder={reorder}
+        ref={listRef}
+        role="tablist"
+        values={tabs}
+      >
         {tabs.map((tab) => (
-          <TabHandle
-            editing={editingId === tab.id}
+          <Reorder.Item
+            as="div"
+            className={tabItem}
+            data-dragging={draggingId === tab.id ? 'true' : undefined}
+            data-testid="vista-tab-item"
+            // Keep the dragged tab inside the strip, which clips whatever leaves it
+            dragConstraints={listRef}
+            dragElastic={0.1}
             key={tab.id}
-            onKeyDown={handleTabKeyDown}
-            onCancelRename={() => setEditingId(null)}
-            onClose={() => actorRef.send({type: 'tab.close', id: tab.id})}
-            onRename={(title) => {
-              setEditingId(null)
-              actorRef.send({type: 'tab.rename', id: tab.id, title})
-            }}
-            onSelect={() => actorRef.send({type: 'tab.select', id: tab.id})}
-            onStartRename={() => setEditingId(tab.id)}
-            selected={tab.id === activeTabId}
-            tab={tab}
-          />
+            layout="position"
+            onDragEnd={() => setDraggingId(null)}
+            onDragStart={() => setDraggingId(tab.id)}
+            value={tab}
+          >
+            <TabHandle
+              editing={editingId === tab.id}
+              onKeyDown={handleTabKeyDown}
+              onCancelRename={() => setEditingId(null)}
+              onClose={() => actorRef.send({type: 'tab.close', id: tab.id})}
+              onRename={(title) => {
+                setEditingId(null)
+                actorRef.send({type: 'tab.rename', id: tab.id, title})
+              }}
+              onSelect={() => actorRef.send({type: 'tab.select', id: tab.id})}
+              onStartRename={() => setEditingId(tab.id)}
+              selected={tab.id === activeTabId}
+              tab={tab}
+            />
+          </Reorder.Item>
         ))}
-      </Flex>
+      </Reorder.Group>
       <Flex alignItems="center" paddingX={1}>
         <Button
           aria-label={t('vista.tabs.new-tab')}
