@@ -1,5 +1,5 @@
 import {type SchemaType} from '@sanity/types'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {Suspense, use, useCallback, useMemo} from 'react'
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
 import {useClient, useDocumentPreviewStore, useSchema, useTranslation} from 'sanity'
@@ -87,7 +87,7 @@ function CrossDatasetIncomingReferenceTypeList({
   )
 
   return (
-    <Stack gap={2} marginBottom={2}>
+    <Flex gap={2} marginBottom={2} flexDirection="column">
       {shouldRenderTitle && (
         <Box paddingY={2} paddingX={0}>
           <Text size={1} weight="medium">
@@ -124,6 +124,6 @@ function CrossDatasetIncomingReferenceTypeList({
           </>
         )}
       </Card>
-    </Stack>
+    </Flex>
   )
 }

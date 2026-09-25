@@ -363,6 +363,13 @@ export {
   type SourceOptions,
   type TemplateResolver,
   type Tool,
+  type VariantConditionMap,
+  type VariantConditions,
+  type VariantConditionsContext,
+  type VariantConditionValue,
+  type VariantTypeConfig,
+  type VariantTypeContext,
+  type VariantTypesConfig,
   type Workspace,
   type WorkspaceHiddenContext,
   type WorkspaceHiddenProperty,
@@ -1023,6 +1030,7 @@ export {
 } from '../core/perspective/types'
 export {useExcludedPerspective} from '../core/perspective/useExcludedPerspective'
 export {useGetDefaultPerspective} from '../core/perspective/useGetDefaultPerspective'
+export {getDefaultVariant} from '../core/perspective/getDefaultVariant'
 export {usePerspective} from '../core/perspective/usePerspective'
 export {useSetPerspective} from '../core/perspective/useSetPerspective'
 export {useSetVariant} from '../core/perspective/useSetVariant'
@@ -1186,10 +1194,7 @@ export {
   type RequestFailureDiagnostics,
 } from '../core/store/authStore/createAuthStore'
 /**
- * Deprecated, but a documented public utility: studios import it from `sanity` to configure custom
- * auth, so it stays on this entry rather than the internals entry.
- *
- * @public
+ * @internal
  * @deprecated Use the `auth` config key with an `AuthConfig` object instead. Deprecated since Studio v3.15.0.
  */
 export const createAuthStore = _createAuthStorePublic
@@ -1775,6 +1780,10 @@ export {useThrottledCallback} from '../core/util/useThrottledCallback'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {useUnique} from '../core/util/useUnique'
 export {
+  type StructureNodeIdValidationResult,
+  validateStructureNodeId,
+} from '../core/util/validateStructureNodeId'
+export {
   isDraftVersion,
   isPublishedVersion,
   isReleaseVersion,
@@ -1790,6 +1799,7 @@ export {useCreatableVariantInitialValue} from '../core/variants/hooks/useCreatab
 export {useVariantDocumentOperations} from '../core/variants/hooks/useVariantDocumentOperations'
 export {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../core/variants/store/constants'
 export {useAllVariants} from '../core/variants/store/useAllVariants'
+export {encodeVariantLinkParam} from '../core/variants/util/variantSelection'
 export {getVariantTitle} from '../core/variants/tool/util'
 export {isVariantId, type SystemVariant} from '../core/variants/types'
 export {SANITY_VERSION} from '../core/version'

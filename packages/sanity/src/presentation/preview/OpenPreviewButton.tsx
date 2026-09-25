@@ -1,9 +1,6 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {
-  urlSearchParamPreviewPerspective,
-  urlSearchParamPreviewVariant,
-} from '@sanity/preview-url-secret/constants'
 import {Text} from '@sanity/ui'
+import {useSelector} from '@xstate/react'
 import {useCallback, useMemo} from 'react'
 import {useTranslation} from 'sanity'
 
@@ -11,12 +8,12 @@ import {Button} from '../../ui-components/button/Button'
 import {Tooltip} from '../../ui-components/tooltip/Tooltip'
 import {presentationLocaleNamespace} from '../i18n'
 import {type PresentationPerspective} from '../types'
-import {encodeStudioPerspective} from '../util/encodeStudioPerspective'
 import {type PreviewProps} from './Preview'
+import {resolveOpenPreviewUrl} from './resolveOpenPreviewUrl'
 
 /** @internal */
 export function OpenPreviewButton(
-  props: Pick<PreviewProps, 'openPopup'> & {
+  props: Pick<PreviewProps, 'openPopup' | 'openPreviewUrlRef'> & {
     previewLocationOrigin?: string
     previewLocationRoute: string
     perspective: PresentationPerspective
@@ -26,25 +23,44 @@ export function OpenPreviewButton(
 ): React.ReactNode {
   const {
     openPopup,
+    openPreviewUrlRef,
     previewLocationOrigin,
     previewLocationRoute,
     perspective,
     variant,
     targetOrigin,
   } = props
+  /**
+   * Both are `null` unless preview mode is on for the current target origin and the secret is valid,
+   * in which case the link goes through the enable route. Otherwise it opens the preview directly.
+   */
+  const previewMode = useSelector(openPreviewUrlRef, (state) => state.context.previewMode)
+  const previewUrlSecret = useSelector(
+    openPreviewUrlRef,
+    (state) => state.context.previewUrlSecret?.secret ?? null,
+  )
 
-  const openPreviewLink = useMemo(() => {
-    const url = new URL(previewLocationRoute, previewLocationOrigin || targetOrigin)
-    url.searchParams.set(urlSearchParamPreviewPerspective, encodeStudioPerspective(perspective))
-    if (variant) {
-      url.searchParams.set(urlSearchParamPreviewVariant, variant)
-    } else {
-      url.searchParams.delete(urlSearchParamPreviewVariant)
-    }
-    const {pathname, search} = url
-
-    return `${previewLocationOrigin}${pathname}${search}`
-  }, [perspective, previewLocationOrigin, previewLocationRoute, targetOrigin, variant])
+  const openPreviewLink = useMemo(
+    () =>
+      resolveOpenPreviewUrl({
+        perspective,
+        previewLocationOrigin,
+        previewLocationRoute,
+        previewMode,
+        previewUrlSecret,
+        targetOrigin,
+        variant,
+      }),
+    [
+      perspective,
+      previewLocationOrigin,
+      previewLocationRoute,
+      previewMode,
+      previewUrlSecret,
+      targetOrigin,
+      variant,
+    ],
+  )
 
   const {t} = useTranslation(presentationLocaleNamespace)
 

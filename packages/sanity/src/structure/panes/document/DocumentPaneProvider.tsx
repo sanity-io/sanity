@@ -44,6 +44,7 @@ import {
   getCreatableVariantTarget,
   useTargetDocumentState,
 } from '../../../core/hooks/useTargetDocumentState'
+import {getDefaultVariant} from '../../../core/perspective/getDefaultVariant'
 import {isPerspectiveWriteable} from '../../../core/perspective/isPerspectiveWriteable'
 import {useActiveReleases} from '../../../core/releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../../core/releases/util/getReleaseIdFromReleaseDocumentId'
@@ -249,7 +250,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   // Exception: a creatable missing draft variant (server-advertised id) is editable — typing
   // creates the document seeded from the published sibling.
   const isVariantTargetReadOnly =
-    Boolean(perspective.selectedVariantName) &&
+    Boolean(getDefaultVariant(perspective.selectedVariantNames)) &&
     targetDocumentState.status !== 'ready' &&
     !getCreatableVariantTarget(targetDocumentState)
 

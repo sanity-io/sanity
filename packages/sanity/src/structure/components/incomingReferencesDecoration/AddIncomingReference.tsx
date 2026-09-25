@@ -1,6 +1,6 @@
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {type SanityDocumentLike} from '@sanity/types'
-import {Stack, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo} from 'react'
 import {map, type Observable} from 'rxjs'
@@ -17,7 +17,7 @@ import {
   useSchema,
   useTranslation,
 } from 'sanity'
-import {Grid, Box} from 'ui5'
+import {Grid, Box, Flex} from 'ui5'
 
 import {ReferenceAutocomplete} from '../../../core/form/inputs/ReferenceInput/ReferenceAutocomplete'
 import {createSearch} from '../../../core/search/search'
@@ -157,7 +157,7 @@ export function AddIncomingReference({
   )
 
   return (
-    <Stack gap={2} padding={2}>
+    <Flex gap={2} padding={2} flexDirection="column">
       <Box paddingY={2}>
         <Text size={1} weight="medium">
           {t('incoming-references-input.reference-from', {type})}
@@ -188,6 +188,6 @@ export function AddIncomingReference({
           fieldName={fieldName}
         />
       </Grid>
-    </Stack>
+    </Flex>
   )
 }

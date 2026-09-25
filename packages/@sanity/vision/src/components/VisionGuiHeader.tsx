@@ -11,7 +11,10 @@ import {
   useRef,
 } from 'react'
 import {type PerspectiveContextValue, type TFunction, usePerspective, useTranslation} from 'sanity'
-import {getVariantTitle} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {
+  getDefaultVariant,
+  getVariantTitle,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Box, Flex, Grid} from 'ui5'
 
 import {API_VERSIONS} from '../apiVersions'
@@ -34,9 +37,9 @@ const PinnedReleasePerspectiveOption: ComponentType<{
       ? pinnedPerspective.selectedPerspective.metadata.title
       : pinnedPerspective.selectedPerspectiveName
 
-  const variantTitle = pinnedPerspective.selectedVariant
-    ? getVariantTitle(pinnedPerspective.selectedVariant)
-    : pinnedPerspective.selectedVariantName
+  const variant = getDefaultVariant(pinnedPerspective.selectedVariants)
+  const variantName = getDefaultVariant(pinnedPerspective.selectedVariantNames)
+  const variantTitle = variant ? getVariantTitle(variant) : variantName
 
   const label = hasPinnedPerspective(pinnedPerspective)
     ? `(${t('settings.perspectives.pinned-release-label')})`
@@ -90,7 +93,7 @@ export function VisionGuiHeader({
 }: VisionGuiHeaderProps) {
   const pinnedPerspective = usePerspective()
   const isApiVersionLocked = Boolean(
-    getActiveVariant(perspective, pinnedPerspective.selectedVariantName),
+    getActiveVariant(perspective, getDefaultVariant(pinnedPerspective.selectedVariantNames)),
   )
   const {t} = useTranslation(visionLocaleNamespace)
   const operationUrlElement = useRef<HTMLInputElement | null>(null)

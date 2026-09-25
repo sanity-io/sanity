@@ -20,6 +20,7 @@ import {
   useWorkspace,
 } from 'sanity'
 import {
+  getDefaultVariant,
   getReleaseIdFromReleaseDocumentId,
   isCardinalityOneRelease,
   sortReleases,
@@ -118,7 +119,8 @@ export function VisionGui(props: VisionGuiProps) {
   const {datasets, config, projectId, defaultDataset} = props
   const toast = useToast()
   const {t} = useTranslation(visionLocaleNamespace)
-  const {perspectiveStack, selectedVariantName} = usePerspective()
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
   const {data: releases = []} = useActiveReleases()
   const workspace = useWorkspace()
@@ -376,7 +378,7 @@ export function VisionGui(props: VisionGuiProps) {
 
       handleQueryExecution({perspective: newPerspective})
     },
-    [localStorage, handleQueryExecution],
+    [localStorage, handleQueryExecution, setPerspectiveState],
   )
 
   const handleChangeDataset = useCallback(
@@ -386,7 +388,7 @@ export function VisionGui(props: VisionGuiProps) {
       setDataset(newDataset)
       handleQueryExecution({dataset: newDataset})
     },
-    [localStorage, handleQueryExecution],
+    [localStorage, handleQueryExecution, setDataset],
   )
 
   const changeApiVersion = useCallback(
@@ -589,7 +591,7 @@ export function VisionGui(props: VisionGuiProps) {
       // Execute query with new values
       handleQueryExecution(parsedUrlObj)
     },
-    [localStorage, handleQueryExecution],
+    [localStorage, handleQueryExecution, setDataset, setPerspectiveState],
   )
 
   const handlePaste = useCallback(

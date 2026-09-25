@@ -1,5 +1,7 @@
 import {usePerspective} from 'sanity'
 
+import {getDefaultVariant} from '../core/perspective/getDefaultVariant'
+
 /**
  * The selected editing variant as a bare variant id (e.g. `Ab12cd34`), or `undefined` when no
  * variant is selected. This is the raw `variant` router sticky param value, available
@@ -8,6 +10,6 @@ import {usePerspective} from 'sanity'
  * @internal
  */
 export function usePresentationVariant(): string | undefined {
-  const {selectedVariantName} = usePerspective()
-  return selectedVariantName
+  const {selectedVariantNames} = usePerspective()
+  return getDefaultVariant(selectedVariantNames)
 }

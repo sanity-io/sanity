@@ -3,6 +3,7 @@ import {type ReactNode} from 'react'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
+import {getDefaultVariant} from '../../perspective/getDefaultVariant'
 import {type TargetPerspective} from '../../perspective/types'
 import {usePerspective} from '../../perspective/usePerspective'
 import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
@@ -101,7 +102,8 @@ function renderDocumentStatusIcon(
  * @internal
  */
 export function DocumentVersionsStatusIndicator({documentVersions}: DocumentStatusProps) {
-  const {bundle, selectedPerspective, selectedVariant} = usePerspective()
+  const {bundle, selectedPerspective, selectedVariants} = usePerspective()
+  const selectedVariant = getDefaultVariant(selectedVariants)
 
   const icons = resolveDocumentStatusIcons({
     bundle,

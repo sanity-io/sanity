@@ -1,4 +1,4 @@
-import {Card, Spinner, Stack} from '@sanity/ui'
+import {Card, Spinner} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {useCallback, useMemo} from 'react'
 import {Flex} from 'ui5'
@@ -76,12 +76,12 @@ function TasksStudioSidebarInner() {
       initial={{opacity: 0}}
       animate={{opacity: 1, transition: {duration: 0.2}}}
     >
-      <Stack className={headerStack} gap={3} padding={3} sizing="border">
+      <Flex className={headerStack} gap={3} padding={3} flexDirection="column">
         <TasksSidebarHeader items={filteredList} />
         {viewMode === 'list' && !isLoading && (
           <TasksListTabs activeTabId={activeTabId} onChange={setActiveTab} />
         )}
-      </Stack>
+      </Flex>
 
       <Flex
         className={contentFlex}

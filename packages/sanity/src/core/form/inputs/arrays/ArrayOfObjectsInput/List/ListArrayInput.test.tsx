@@ -31,7 +31,7 @@ vi.mock('../../../../form-components-hooks/useItemComponent', () => ({
 }))
 
 vi.mock('./useVisibilityDetection', () => ({
-  useVisibilityDetection: () => ({isVisible: true, mountKey: 0}),
+  useVisibilityDetection: () => ({mountKey: 0}),
 }))
 
 function ValidationProbe() {

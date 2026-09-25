@@ -1,5 +1,6 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
+import {VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
 import {AgentBundleMenuItem} from '../AgentBundleMenuItem'
@@ -16,7 +17,7 @@ export function AgentBundleMenuItemStory() {
   return (
     <TestWrapper schemaTypes={[]}>
       <Card padding={4} style={{maxWidth: 320}}>
-        <Stack gap={2}>
+        <VStack gap={2}>
           <Text muted size={1} weight="medium">
             unselected
           </Text>
@@ -25,7 +26,7 @@ export function AgentBundleMenuItemStory() {
               <AgentBundleMenuItem bundle={BUNDLE} />
             </Menu>
           </Card>
-        </Stack>
+        </VStack>
       </Card>
     </TestWrapper>
   )

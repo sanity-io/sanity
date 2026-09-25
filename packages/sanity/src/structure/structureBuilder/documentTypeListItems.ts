@@ -93,7 +93,7 @@ export function getDocumentTypeList(
 
   const title = type.title || startCase(typeName)
 
-  return new DocumentTypeListBuilder(context)
+  let list: DocumentListBuilder = new DocumentTypeListBuilder(context)
     .id(spec.id || typeName)
     .title(spec.title || title)
     .filter('_type == $type')
@@ -151,4 +151,16 @@ export function getDocumentTypeList(
         // Create new (from menu) will be added in serialization step of GenericList
       ],
     )
+
+  if (spec.minWidth !== undefined) {
+    list = list.minWidth(spec.minWidth)
+  }
+  if (spec.currentMaxWidth !== undefined) {
+    list = list.currentMaxWidth(spec.currentMaxWidth)
+  }
+  if (spec.maxWidth !== undefined) {
+    list = list.maxWidth(spec.maxWidth)
+  }
+
+  return list
 }

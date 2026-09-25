@@ -8,8 +8,11 @@
  * The public entries still export those symbols today, so nothing enforces this at build time:
  * this test does, so that the repo's own consumers are already off the public entries when the
  * public entries drop their internals in a future major, and so that the boundary stays visible
- * to plugin authors reading the source. Which names are `@internal` is read from the built
- * `.d.ts` of each public entry (same classification as `internals-entry-completeness.test.ts`).
+ * to plugin authors reading the source. A name counts when the built `.d.ts` of the public entry
+ * tags it `@internal` (same classification as `internals-entry-completeness.test.ts`) *and* the
+ * internals entry exports it: the deliberate exceptions that stay off the entry (deprecated
+ * utilities such as `createAuthStore`, see `PUBLIC_BY_USAGE` in that test) have no other import
+ * path and are imported from `sanity`.
  */
 import fs from 'node:fs'
 import path from 'node:path'
@@ -22,6 +25,8 @@ import {describe, expect, test} from 'vitest'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(__dirname, '../../../..')
 const sanityLibDir = path.join(repoRoot, 'packages/sanity/lib')
+
+const INTERNALS_ENTRY_DTS = '_dangerously_use_private_internals_that_do_not_follow_semver.d.ts'
 
 const PUBLIC_ENTRIES: Record<string, string> = {
   'sanity': 'index.d.ts',
@@ -51,17 +56,24 @@ function isInternal(declaration: ExportedDeclarations): boolean {
   return docs.some((doc) => doc.getTags().some((tag) => tag.getTagName() === 'internal'))
 }
 
-function internalNamesOf(dtsFile: string): Set<string> {
+function internalNamesOf(dtsFile: string, onInternalsEntry: Set<string>): Set<string> {
   const project = new Project({skipAddingFilesFromTsConfig: true})
   const sourceFile = project.addSourceFileAtPath(path.join(sanityLibDir, dtsFile))
   const names = new Set<string>()
   for (const [name, declarations] of sourceFile.getExportedDeclarations()) {
+    if (!onInternalsEntry.has(name)) continue
     const own = declarations.filter((declaration) =>
       declaration.getSourceFile().getFilePath().startsWith(sanityLibDir),
     )
     if (own.length > 0 && own.some(isInternal)) names.add(name)
   }
   return names
+}
+
+function internalsEntryNames(): Set<string> {
+  const project = new Project({skipAddingFilesFromTsConfig: true})
+  const sourceFile = project.addSourceFileAtPath(path.join(sanityLibDir, INTERNALS_ENTRY_DTS))
+  return new Set(sourceFile.getExportedDeclarations().keys())
 }
 
 function* walk(dir: string): Generator<string> {
@@ -106,8 +118,12 @@ function importedNames(
 }
 
 describe('repo code does not import @internal symbols from the public entries', () => {
+  const onInternalsEntry = internalsEntryNames()
   const entries = Object.fromEntries(
-    Object.entries(PUBLIC_ENTRIES).map(([entry, dtsFile]) => [entry, internalNamesOf(dtsFile)]),
+    Object.entries(PUBLIC_ENTRIES).map(([entry, dtsFile]) => [
+      entry,
+      internalNamesOf(dtsFile, onInternalsEntry),
+    ]),
   )
 
   for (const dir of SCANNED_DIRS) {

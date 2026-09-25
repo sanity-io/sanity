@@ -1,6 +1,7 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {Translate, useTranslation} from 'sanity'
+import {VStack} from 'ui5'
 
 import {isDev} from '../../../../core/environment'
 import {ErrorPane} from '../../error'
@@ -32,7 +33,7 @@ export function DocumentLayoutError(props: DocumentLayoutErrorProps) {
       }
       tone="caution"
     >
-      <Stack gap={4}>
+      <VStack gap={4}>
         {documentType && (
           <Text as="p">
             <Translate
@@ -60,7 +61,7 @@ export function DocumentLayoutError(props: DocumentLayoutErrorProps) {
           </>
           /* oxlint-enable i18next/no-literal-string */
         )}
-      </Stack>
+      </VStack>
     </ErrorPane>
   )
 }

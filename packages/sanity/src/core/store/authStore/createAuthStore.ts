@@ -1002,7 +1002,7 @@ export function _createAuthStore({
  * Public options for `createAuthStore`. The `getSessionId`, `consumeHashToken`,
  * `observeWorkbenchToken` and `refreshWorkbenchToken` dependencies are wired
  * automatically using the default implementations.
- * @public
+ * @internal
  */
 export type CreateAuthStoreOptions = Omit<
   AuthStoreOptions,

@@ -17,6 +17,7 @@ import {Flex} from 'ui5'
 
 import {DocumentVersionsStatus} from '../../../core/components/documentStatus/DocumentVersionsStatus'
 import {DocumentVersionsStatusIndicator} from '../../../core/components/documentStatusIndicator/DocumentVersionsStatusIndicator'
+import {getDefaultVariant} from '../../../core/perspective/getDefaultVariant'
 import {DocumentPreviewPresence} from '../../../core/presence/DocumentPreviewPresence'
 import {SanityDefaultPreview} from '../../../core/preview/components/SanityDefaultPreview'
 import {getPreviewStateObservable} from '../../../core/preview/utils/getPreviewStateObservable'
@@ -53,7 +54,8 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
   const publishedId = getPublishedId(value._id)
   const {versions} = useDocumentVersions({documentId: publishedId})
 
-  const {perspectiveStack, selectedVariantName} = usePerspective()
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const viewOptions = useMemo((): PrepareViewOptions | undefined => {
     if (!sortOrder) return undefined
     return {

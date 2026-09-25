@@ -12,6 +12,7 @@ import {combineLatest, from, of, throwError} from 'rxjs'
 import {catchError, map, mergeMap, switchMap} from 'rxjs/operators'
 
 import {useSchema} from '../../../../hooks/useSchema'
+import {getDefaultVariant} from '../../../../perspective/getDefaultVariant'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {createSearch} from '../../../../search/search'
 import {useDocumentPreviewStore} from '../../../../store/datastores'
@@ -69,7 +70,8 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const searchClient = source.getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const {perspectiveStack, selectedVariantName} = usePerspective()
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const schema = useSchema()
   const maxFieldDepth = useSearchMaxFieldDepth()
   const documentPreviewStore = useDocumentPreviewStore()

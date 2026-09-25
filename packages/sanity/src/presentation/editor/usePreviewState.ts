@@ -9,6 +9,7 @@ import {
   usePerspective,
 } from 'sanity'
 
+import {getDefaultVariant} from '../../core/perspective/getDefaultVariant'
 import {getPreviewStateObservable} from '../../core/preview/utils/getPreviewStateObservable'
 
 interface PreviewState {
@@ -20,7 +21,8 @@ const EMPTY_STATE: PreviewState = {}
 
 export default function usePreviewState(documentId: string, schemaType?: SchemaType): PreviewState {
   const documentPreviewStore = useDocumentPreviewStore()
-  const {perspectiveStack, selectedVariantName} = usePerspective()
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
 
   const preview$ = useMemo(
     () =>
