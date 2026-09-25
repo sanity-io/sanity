@@ -5,6 +5,7 @@ import {usePerspective} from 'sanity'
 import {Flex} from 'ui5'
 
 import {getCreatableVariantTarget} from '../../../../core/hooks/useTargetDocumentState'
+import {getDefaultVariant} from '../../../../core/perspective/getDefaultVariant'
 import {isReleaseDocument} from '../../../../core/releases/store/types'
 import {isPublishedPerspective} from '../../../../core/releases/util/util'
 import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
@@ -29,7 +30,8 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef} = props
   const {editState, revisionNotFound, targetDocumentState} = useDocumentPane()
   const {params = EMPTY_PARAMS} = usePaneRouter()
-  const {selectedPerspective, selectedVariantName} = usePerspective()
+  const {selectedPerspective, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
 
   const showingRevision = Boolean(params.rev)
   const [collapsed, setCollapsed] = useState<boolean | null>(null)

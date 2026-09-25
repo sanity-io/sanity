@@ -1,6 +1,6 @@
 import {SearchIcon} from '@sanity/icons/Search'
 import {SpinnerIcon} from '@sanity/icons/Spinner'
-import {Stack, TextInput} from '@sanity/ui'
+import {TextInput} from '@sanity/ui'
 import {useActorRef, useSelector} from '@xstate/react'
 import {Activity, memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {
@@ -11,10 +11,11 @@ import {
   useTranslation,
 } from 'sanity'
 import {keyframes, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, VStack} from 'ui5'
 
 import {useReconnectingToast} from '../../../core/hooks/useReconnectingToast'
 import {useI18nText} from '../../../core/i18n/hooks/useI18nText'
+import {getDefaultVariant} from '../../../core/perspective/getDefaultVariant'
 import {useActiveReleases} from '../../../core/releases/store/useActiveReleases'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../core/studioClient'
 import {EMPTY_ARRAY} from '../../../core/util/empty'
@@ -94,7 +95,8 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const {childItemId, isActive, pane, paneKey, sortOrder: sortOrderRaw, layout} = props
   const schema = useSchema()
   const releases = useActiveReleases()
-  const {perspectiveStack, selectedVariantName} = usePerspective()
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const {displayOptions, options} = pane
   const {apiVersion, filter} = options
   const params = useShallowUnique(options.params || EMPTY_RECORD)
@@ -277,7 +279,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   return (
     <Activity mode={collapsed ? 'hidden' : 'visible'}>
       <Box data-testid="document-list-search" paddingX={3} paddingBottom={3}>
-        <Stack gap={3}>
+        <VStack gap={3}>
           <TextInput
             aria-label={t('panes.document-list-pane.search-input.aria-label')}
             autoComplete="off"
@@ -307,7 +309,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
               onChange={handleOrderingChange}
             />
           )}
-        </Stack>
+        </VStack>
       </Box>
       <DocumentListPaneContent
         key={paneKey}

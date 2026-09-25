@@ -19,6 +19,7 @@ import {CapabilityGate} from '../../../components/CapabilityGate'
 import {type NavbarProps} from '../../../config/studio/types'
 import {isDev} from '../../../environment'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {getDefaultVariant} from '../../../perspective/getDefaultVariant'
 import {ReleasesNav} from '../../../perspective/navbar/ReleasesNav'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {getReleaseTone} from '../../../releases/util/getReleaseTone'
@@ -88,7 +89,8 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     searchOpen,
   } = useContext(NavbarContext)
 
-  const {selectedPerspective, perspectiveStack, selectedVariantName} = usePerspective()
+  const {selectedPerspective, perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
 
   const ToolMenu = useToolMenuComponent()
 

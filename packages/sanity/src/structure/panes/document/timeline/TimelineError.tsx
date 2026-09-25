@@ -1,7 +1,6 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Stack} from '@sanity/ui'
 import {useTranslation} from 'sanity'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 import {TextWithTone} from '../../../../core/components/textWithTone/TextWithTone'
 
@@ -13,7 +12,7 @@ export function TimelineError({versionError}: {versionError?: boolean}) {
       <TextWithTone tone="critical">
         <ErrorOutlineIcon />
       </TextWithTone>
-      <Stack gap={4}>
+      <VStack gap={4}>
         <TextWithTone size={1} tone="critical" weight="medium">
           {versionError
             ? t('timeline.error.load-document-changes-version-title')
@@ -24,7 +23,7 @@ export function TimelineError({versionError}: {versionError?: boolean}) {
             ? t('timeline.error.load-document-changes-version-description')
             : t('timeline.error.load-document-changes-description')}
         </TextWithTone>
-      </Stack>
+      </VStack>
     </Flex>
   )
 }

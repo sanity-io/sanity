@@ -5,6 +5,7 @@ import {type ErrorInfo, Suspense, useCallback, useEffect, useMemo, useState} fro
 import {type Path, useTranslation} from 'sanity'
 import {PaneLayout} from 'sanity/structure'
 
+import {LoadingBlock} from '../../core/components/loadingBlock/LoadingBlock'
 import {decodeJsonParams} from '../../router/utils/jsonParamsEncoding'
 import {DocumentPane as StructureDocumentPane} from '../../structure/panes/document/DocumentPane'
 import {type DocumentPaneNode} from '../../structure/types'
@@ -12,7 +13,6 @@ import {ErrorBoundary} from '../../ui-components/errorBoundary/ErrorBoundary'
 import {ErrorCard} from '../components/ErrorCard'
 import {presentationLocaleNamespace} from '../i18n'
 import {PresentationPaneRouterProvider} from '../paneRouter/PresentationPaneRouterProvider'
-import {PresentationSpinner} from '../PresentationSpinner'
 import {
   type PresentationNavigate,
   type PresentationSearchParams,
@@ -114,7 +114,7 @@ export function DocumentPane(props: {
           onStructureParams={onStructureParams}
           structureParams={structureParams}
         >
-          <Suspense fallback={<PresentationSpinner />}>
+          <Suspense fallback={<LoadingBlock showText />}>
             <StructureDocumentPane
               // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
               paneKey="document"

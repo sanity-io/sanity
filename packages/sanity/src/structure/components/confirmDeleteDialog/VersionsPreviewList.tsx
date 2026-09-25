@@ -1,4 +1,4 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
@@ -11,7 +11,7 @@ import {
   useSchema,
   useTranslation,
 } from 'sanity'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 import {SanityDefaultPreview} from '../../../core/preview/components/SanityDefaultPreview'
 import {getPreviewStateObservable} from '../../../core/preview/utils/getPreviewStateObservable'
@@ -146,11 +146,11 @@ export const VersionsPreviewList = ({
 
   return (
     <Card border padding={1} radius={2}>
-      <Stack>
+      <VStack>
         {documentVersions?.map((version) => (
           <VersionItemPreview key={version} versionId={version} schemaType={schemaType} />
         ))}
-      </Stack>
+      </VStack>
     </Card>
   )
 }

@@ -1328,6 +1328,86 @@ export interface MediaLibraryConfig {
 }
 
 /**
+ * A selectable value for a known variant condition key.
+ *
+ * @internal
+ */
+export interface VariantConditionValue {
+  value: string
+  title?: string
+  description?: string
+}
+
+/**
+ * A known variant condition key and the values it may take.
+ *
+ * @internal
+ */
+export interface VariantConditionMap {
+  /** Persisted condition key. */
+  name: string
+  /** Picker heading; falls back to {@link VariantConditionMap.name}. */
+  title?: string
+  description?: string
+  /** Allowed values. String entries and `{value, title}` objects may be mixed in one list. */
+  values: (string | VariantConditionValue)[]
+}
+
+/**
+ * Context passed to a `beta.variants.types` resolver.
+ *
+ * @internal
+ */
+export type VariantTypeContext = Pick<ConfigContext, 'projectId' | 'dataset' | 'getClient'>
+
+/**
+ * Context passed to a per-type `conditions` resolver. `type` is the variant type key
+ * (`variant`, `language`, …) whose conditions are being loaded.
+ *
+ * @internal
+ */
+export type VariantConditionsContext = VariantTypeContext & {type: string}
+
+/**
+ * Static or resolved list of known variant conditions for one variant type.
+ *
+ * @internal
+ */
+export type VariantConditions =
+  | VariantConditionMap[]
+  | ((context: VariantConditionsContext) => VariantConditionMap[] | Promise<VariantConditionMap[]>)
+
+/**
+ * One orthogonal variant dimension. Condition keys declared here must not appear on another type.
+ *
+ * @internal
+ */
+export interface VariantTypeConfig {
+  /** Navbar label. Falls back to the type key. */
+  label?: string
+  description?: string
+  /**
+   * Known condition keys for this type. Omit for free-text keys and values.
+   * A function receives {@link VariantConditionsContext}.
+   */
+  conditions?: VariantConditions
+}
+
+/**
+ * Variant types supplied in config.
+ *
+ * The object form only types `variant`. Other keys are rejected until `assertOnlyVariantType`
+ * is removed.
+ *
+ * @internal
+ */
+export type VariantTypesConfig =
+  | {variant?: VariantTypeConfig}
+  | ((
+      context: VariantTypeContext,
+    ) => Record<string, VariantTypeConfig> | Promise<Record<string, VariantTypeConfig>>)
+
+/**
  * @internal
  * Configuration for studio beta features.
  * */
@@ -1393,6 +1473,28 @@ export interface BetaFeatures {
    */
   variants?: {
     enabled?: boolean
+    /**
+     * Variant types and the condition keys each type owns.
+     *
+     * Omit to use a single freeform `variant` type. Only the `variant` key is accepted.
+     *
+     * A function may return a promise and is called when a variant surface first needs the
+     * types, not at studio boot. It receives {@link VariantTypeContext}.
+     *
+     * @example
+     * ```ts
+     * types: {
+     *   variant: {
+     *     label: 'Variant',
+     *     conditions: async ({getClient, type}) => {
+     *       const client = getClient({apiVersion: '2024-01-01'})
+     *       return await client.fetch(CONDITIONS_QUERY, {type})
+     *     },
+     *   },
+     * }
+     * ```
+     */
+    types?: VariantTypesConfig
   }
   /**
    * Config for the opt-in Comments API implementation.

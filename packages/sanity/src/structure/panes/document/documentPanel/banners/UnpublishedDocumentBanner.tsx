@@ -1,7 +1,8 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
-import {Stack, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {Translate, usePerspective, useTranslation} from 'sanity'
+import {VStack} from 'ui5'
 
 import {ReleaseTitle} from '../../../../../core/releases/components/ReleaseTitle'
 import {VersionInlineBadge} from '../../../../../core/releases/components/VersionInlineBadge'
@@ -46,7 +47,7 @@ export function UnpublishedDocumentBanner() {
       <Banner
         tone="critical"
         content={
-          <Stack gap={2}>
+          <VStack gap={2}>
             <Text size={1}>
               <Translate
                 t={t}
@@ -64,7 +65,7 @@ export function UnpublishedDocumentBanner() {
             <Text size={1}>
               <Translate t={t} i18nKey="banners.unpublished-release-banner.text-with-published" />
             </Text>
-          </Stack>
+          </VStack>
         }
         icon={UnpublishIcon}
       />

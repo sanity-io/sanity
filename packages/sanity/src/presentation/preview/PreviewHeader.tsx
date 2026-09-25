@@ -2,6 +2,7 @@ import {DesktopIcon} from '@sanity/icons/Desktop'
 import {MobileDeviceIcon} from '@sanity/icons/MobileDevice'
 import {PanelLeftIcon} from '@sanity/icons/PanelLeft'
 import {RefreshIcon} from '@sanity/icons/Refresh'
+import {getRedirectTo} from '@sanity/preview-url-secret/get-redirect-to'
 import {withoutSecretSearchParams} from '@sanity/preview-url-secret/without-secret-search-params'
 import {Card, Hotkeys, Switch, Text} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
@@ -36,6 +37,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
     onPathChange,
     onRefresh,
     openPopup,
+    openPreviewUrlRef,
     overlaysConnection,
     presentationRef,
     perspective,
@@ -85,7 +87,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
 
   const previewLocationRoute = useMemo(() => {
     const previewURL = new URL(previewUrl || '/', targetOrigin)
-    const {pathname, search} = withoutSecretSearchParams(previewURL)
+    const {pathname, search} = withoutSecretSearchParams(getRedirectTo(previewURL))
 
     return `${pathname}${search}`
   }, [previewUrl, targetOrigin])
@@ -207,6 +209,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
             <Box padding={1}>
               <OpenPreviewButton
                 openPopup={openPopup}
+                openPreviewUrlRef={openPreviewUrlRef}
                 previewLocationOrigin={previewLocationOrigin}
                 previewLocationRoute={previewLocationRoute}
                 perspective={perspective}

@@ -8,6 +8,7 @@ import {Flex} from 'ui5'
 
 import {useDocumentOperation} from '../../../../../core/hooks/useDocumentOperation'
 import {getTargetSiblings} from '../../../../../core/hooks/useTargetDocumentState'
+import {getDefaultVariant} from '../../../../../core/perspective/getDefaultVariant'
 import {Button} from '../../../../../ui-components/button/Button'
 import {useDiffViewRouter} from '../../../../diffView/hooks/useDiffViewRouter'
 import {
@@ -40,7 +41,8 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
   const {t} = useTranslation(structureLocaleNamespace)
   const [actionRequested, setActionRequested] = useState<'publish' | 'discard'>()
   const telemetry = useTelemetry()
-  const {selectedVariant} = usePerspective()
+  const {selectedVariants} = usePerspective()
+  const selectedVariant = getDefaultVariant(selectedVariants)
   const {targetDocumentState} = useDocumentPane()
   const siblings = getTargetSiblings(targetDocumentState)
   const publishedId = siblings?.published?._id
