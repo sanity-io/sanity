@@ -1454,6 +1454,7 @@ import type {
   StringSegmentChanged,
   StringSegmentUnchanged,
   stringToPath,
+  StructureNodeIdValidationResult,
   Studio,
   StudioAnnouncementsCard,
   StudioAnnouncementsDialog,
@@ -1791,6 +1792,7 @@ import type {
   validateDocument,
   ValidateDocumentOptions,
   validateNames,
+  validateStructureNodeId,
   ValidateWorkspaceOptions,
   validateWorkspaces,
   validation,
@@ -6222,6 +6224,9 @@ describe('sanity', () => {
   test('stringToPath', () => {
     expectTypeOf<typeof stringToPath>().toBeFunction()
   })
+  test('StructureNodeIdValidationResult', () => {
+    expectTypeOf<StructureNodeIdValidationResult>().toBeObject()
+  })
   test('Studio', () => {
     expectTypeOf<typeof Studio>().toBeFunction()
   })
@@ -7236,6 +7241,9 @@ describe('sanity', () => {
   })
   test('validateNames', () => {
     expectTypeOf<typeof validateNames>().toBeFunction()
+  })
+  test('validateStructureNodeId', () => {
+    expectTypeOf<typeof validateStructureNodeId>().toBeFunction()
   })
   test('ValidateWorkspaceOptions', () => {
     expectTypeOf<ValidateWorkspaceOptions>().toBeObject()

@@ -1770,6 +1770,10 @@ export {useThrottledCallback} from '../core/util/useThrottledCallback'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {useUnique} from '../core/util/useUnique'
 export {
+  type StructureNodeIdValidationResult,
+  validateStructureNodeId,
+} from '../core/util/validateStructureNodeId'
+export {
   isDraftVersion,
   isPublishedVersion,
   isReleaseVersion,

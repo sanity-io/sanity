@@ -759,6 +759,7 @@ exports[`exports snapshot 1`] = `
     "validateBasePaths": "function",
     "validateDocument": "function",
     "validateNames": "function",
+    "validateStructureNodeId": "function",
     "validateWorkspaces": "function",
     "validation": "function",
     "visitDiff": "function",
