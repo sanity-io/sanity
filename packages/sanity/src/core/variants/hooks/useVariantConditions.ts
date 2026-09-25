@@ -125,7 +125,7 @@ function toReadyConditions(
   value: unknown,
   type: string,
 ): Extract<UseVariantConditionsResult, {status: 'ready'}> {
-  const definitions = normalizeVariantConditions(value)
+  const definitions = normalizeVariantConditions(value, `beta.variants.types.${type}.conditions`)
 
   if (definitions.length === 0) {
     throw emptyConditionsError(type)
