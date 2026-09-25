@@ -187,7 +187,7 @@ catalogs:
       specifier: ^0.28.1
       version: 0.28.1
     '@sanity/ui':
-      specifier: ^4.2.4
+      specifier: ^4.2.6
       version: 4.2.6
     '@sanity/vanilla-extract-vite-plugin':
       specifier: ^0.2.19
