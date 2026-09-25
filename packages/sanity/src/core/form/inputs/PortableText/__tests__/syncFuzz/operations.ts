@@ -32,6 +32,7 @@ export type Operation =
   | {type: 'local.redo'}
   /** Select from the start of the first block to the end of the last one. */
   | {type: 'local.selectAll'}
+  | {type: 'local.deleteBlock'; block: number}
   /** Paste one or two blocks of text at the cursor, replacing any selection. */
   | {type: 'local.paste'; text: string; lines?: 1 | 2}
   /** Add a link to the selected text. */
@@ -146,6 +147,7 @@ const local = {
   undo: fc.constant({type: 'local.undo' as const}),
   redo: fc.constant({type: 'local.redo' as const}),
   selectAll: fc.constant({type: 'local.selectAll' as const}),
+  deleteBlock: operation({type: fc.constant('local.deleteBlock' as const), block: index}),
   paste: operation({
     type: fc.constant('local.paste' as const),
     text: shortText,
@@ -238,6 +240,7 @@ const burst = operation({
       local.insertBreak,
       local.deleteBackward,
       local.deleteForward,
+      local.deleteBlock,
       local.paste,
       local.toggleList,
       local.addLink,
@@ -267,6 +270,7 @@ const localEdits = [
   {weight: 1, arbitrary: local.undo},
   {weight: 1, arbitrary: local.redo},
   {weight: 1, arbitrary: local.selectAll},
+  {weight: 1, arbitrary: local.deleteBlock},
   {weight: 1, arbitrary: local.paste},
   {weight: 1, arbitrary: local.addLink},
   {weight: 1, arbitrary: local.removeLink},
@@ -359,6 +363,7 @@ export function isInsertOnlyOperation(op: Operation): boolean {
     case 'local.undo':
     case 'local.redo':
     case 'local.selectAll':
+    case 'local.deleteBlock':
     case 'local.paste':
     case 'local.addLink':
     case 'local.removeLink':
@@ -566,6 +571,13 @@ export async function runOperation(
           },
         },
       })
+      break
+    }
+    case 'local.deleteBlock': {
+      const blocks = ownedBy('local')(harness.editorValue()) ?? []
+      if (blocks.length === 0) return NOTHING
+      const block = blocks[op.block % blocks.length]
+      harness.editor().send({type: 'delete.block', at: [{_key: block._key}]})
       break
     }
     case 'local.paste': {
