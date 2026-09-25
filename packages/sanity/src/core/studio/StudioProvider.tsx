@@ -74,7 +74,7 @@ export function StudioProvider({
   const _children = useMemo(
     () => (
       <UserApplicationCacheProvider>
-        <PreloadStudioShell />
+        <PreloadStudioShell config={config} />
         <LiveUserApplicationProvider>
           <LiveManifestRegisterProvider />
           <WorkspaceLoader
@@ -105,7 +105,7 @@ export function StudioProvider({
         </LiveUserApplicationProvider>
       </UserApplicationCacheProvider>
     ),
-    [children],
+    [children, config],
   )
 
   return (

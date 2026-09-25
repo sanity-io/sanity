@@ -1,4 +1,13 @@
-import {type ComponentType, type RefObject, Suspense, use, useEffect, useRef} from 'react'
+import noop from 'lodash-es/noop.js'
+import {
+  type ComponentType,
+  type FulfilledReactPromise,
+  type RefObject,
+  Suspense,
+  use,
+  useEffect,
+  useRef,
+} from 'react'
 
 import {type StringInputProps} from '../../types/inputProps'
 import {StringInputBasic} from './StringInputBasic/StringInputBasic'
@@ -6,14 +15,32 @@ import {StringInputBasic} from './StringInputBasic/StringInputBasic'
 type StringInputComponent = ComponentType<StringInputProps>
 type EditorModule = {StringInputPortableText: StringInputComponent}
 
-// A thenable that carries its settled state the way React's `use` reads it, so a load that has
-// already finished renders synchronously instead of suspending for a microtask and swapping.
-type EditorLoad = Promise<EditorModule> & {
-  status?: 'fulfilled'
-  value?: EditorModule
-}
+let editorLoad: Promise<EditorModule> | undefined
 
-let editorLoad: EditorLoad | undefined
+function loadStringInputPortableText(): Promise<EditorModule> {
+  if (!editorLoad) {
+    const load: Promise<EditorModule> =
+      import('./StringInputPortableText/StringInputPortableText').then(
+        (module) => {
+          // Record the settled state on the promise the way React's `use` reads it, so a load that
+          // has already finished renders synchronously instead of suspending for a microtask and
+          // swapping the fallback for the editor.
+          const settled = load as Promise<EditorModule> &
+            Partial<Pick<FulfilledReactPromise<EditorModule>, 'status' | 'value'>>
+          settled.status = 'fulfilled'
+          settled.value = module
+          return module
+        },
+        (error: unknown) => {
+          // Let the next render retry the download instead of caching the failure.
+          editorLoad = undefined
+          throw error
+        },
+      )
+    editorLoad = load
+  }
+  return editorLoad
+}
 
 /**
  * Starts loading the Portable Text variant of the string input, the one used when
@@ -21,25 +48,13 @@ let editorLoad: EditorLoad | undefined
  * (the document pane, the diff view) call this ahead of the form so the fields render the
  * editor directly instead of the plain input followed by a swap.
  *
+ * Never rejects: a download that fails here is retried by the next `StringInput` render, where
+ * the failure reaches an error boundary instead of being an unhandled rejection.
+ *
  * @internal
  */
-export function preloadStringInputPortableText(): Promise<EditorModule> {
-  if (!editorLoad) {
-    const load: EditorLoad = import('./StringInputPortableText/StringInputPortableText').then(
-      (module) => {
-        load.status = 'fulfilled'
-        load.value = module
-        return module
-      },
-      (error: unknown) => {
-        // Let the next render retry the download instead of caching the failure.
-        editorLoad = undefined
-        throw error
-      },
-    )
-    editorLoad = load
-  }
-  return editorLoad
+export function preloadStringInputPortableText(): Promise<void> {
+  return loadStringInputPortableText().then(noop, noop)
 }
 
 // The inline-changes variant is a Portable Text editor. Importing it statically made every
@@ -47,7 +62,7 @@ export function preloadStringInputPortableText(): Promise<EditorModule> {
 // before login. It loads when a string field is first rendered with `displayInlineChanges`;
 // the plain input stands in until then, so the field is usable while the editor arrives.
 function StringInputInlineChanges(props: StringInputProps) {
-  const editorModule = use(preloadStringInputPortableText())
+  const editorModule = use(loadStringInputPortableText())
   const {focused, elementProps} = props
   const {ref: focusRef} = elementProps
 
