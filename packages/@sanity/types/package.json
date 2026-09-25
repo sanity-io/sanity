@@ -50,7 +50,7 @@
   },
   "dependencies": {
     "@sanity/client": "catalog:",
-    "@sanity/media-library-types": "^1.7.0"
+    "@sanity/media-library-types": "^1.7.1"
   },
   "devDependencies": {
     "@repo/test-config": "workspace:*",
