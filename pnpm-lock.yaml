@@ -1892,6 +1892,9 @@ importers:
       '@codemirror/language':
         specifier: ^6.12.4
         version: 6.12.4
+      '@codemirror/lint':
+        specifier: ^6.9.7
+        version: 6.9.7
       '@codemirror/search':
         specifier: ^6.7.2
         version: 6.7.2
@@ -1910,6 +1913,9 @@ importers:
       '@rexxars/react-split-pane':
         specifier: ^1.0.0
         version: 1.0.0(react-dom@19.3.0)(react@19.3.0)
+      '@sanity-labs/groq-wasm':
+        specifier: ^1.0.0
+        version: 1.0.0
       '@sanity/client':
         specifier: 'catalog:'
         version: 8.7.0(vitest@5.0.1)
@@ -1922,6 +1928,9 @@ importers:
       '@sanity/lezer-groq':
         specifier: ^1.0.4
         version: 1.0.4
+      '@sanity/schema':
+        specifier: workspace:*
+        version: link:../schema
       '@sanity/ui':
         specifier: 'catalog:'
         version: 4.2.4(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
@@ -1934,9 +1943,15 @@ importers:
       '@vanilla-extract/dynamic':
         specifier: 'catalog:'
         version: 2.1.5
+      '@xstate/react':
+        specifier: ^6.1.0
+        version: 6.1.0(@types/react@19.3.0)(react@19.3.0)(xstate@5.33.2)
       dequal:
         specifier: 'catalog:'
         version: 2.0.3
+      groq-js:
+        specifier: ^2.0.0
+        version: 2.0.0
       is-hotkey-esm:
         specifier: ^1.0.0
         version: 1.0.0
@@ -1949,6 +1964,9 @@ importers:
       lodash-es:
         specifier: ^4.18.1
         version: 4.18.1
+      motion:
+        specifier: ^13.4.2
+        version: 13.4.2(react-dom@19.3.0)(react@19.3.0)
       quick-lru:
         specifier: ^7.3.0
         version: 7.3.0
@@ -1964,6 +1982,9 @@ importers:
       use-effect-event:
         specifier: ^2.0.4
         version: 2.0.4(react@19.3.0)
+      xstate:
+        specifier: ^5.33.2
+        version: 5.33.2
     devDependencies:
       '@repo/package.bundle':
         specifier: workspace:*
@@ -7310,6 +7331,10 @@ packages:
   '@sanity-labs/design-tokens@0.0.2-alpha.5':
     resolution: {integrity: sha512-RwbH9JYJTfXm/h/pgH80CeF8B94EA7+oI4K84iNVtZFNhNAsFsjLP3OFiY3jQsmKwUZIIzJJPyuY6zYQEF7h2A==}
     engines: {node: '>=20.19 <22 || >=22.12'}
+
+  '@sanity-labs/groq-wasm@1.0.0':
+    resolution: {integrity: sha512-KLAnbyqw+z13tBeNRZ4OS6irjcfqbS/PGtrCl+MsMbAcmVHEzTJ9yP7zHfjsTajsA0NBHR3nHIOLEjWSlsJDoQ==}
+    engines: {node: '>=22.3.0'}
 
   '@sanity-labs/oclif-plugin-skills-flag@0.2.1':
     resolution: {integrity: sha512-DCuefzB+ZcI7pc68up/T0TExeS98MAA2Rcy6vEwQLv86XCku3KHm7v2NNNLQ65PYqNVOil6kPIUefi/6pxQf+w==}
@@ -19712,6 +19737,8 @@ snapshots:
       - '@types/node'
 
   '@sanity-labs/design-tokens@0.0.2-alpha.5': {}
+
+  '@sanity-labs/groq-wasm@1.0.0': {}
 
   '@sanity-labs/oclif-plugin-skills-flag@0.2.1(@oclif/core@4.14.0)':
     dependencies:
