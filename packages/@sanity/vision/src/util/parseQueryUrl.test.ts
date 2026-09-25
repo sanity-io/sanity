@@ -20,6 +20,17 @@ describe('parseQueryUrl', () => {
     })
   })
 
+  it('round-trips a $__proto__ parameter into the params text', () => {
+    const parsed = parseQueryUrl(
+      'https://abc123.api.sanity.io/v2025-02-19/data/query/production?query=*&%24__proto__=%7B%22a%22%3A1%7D',
+      datasets,
+    )
+
+    expect(parsed?.rawParams).toBe('{\n  "__proto__": {\n    "a": 1\n  }\n}')
+    // The text is what the params editor shows, and JSON.parse also reads the key as a parameter
+    expect(Object.entries(JSON.parse(parsed?.rawParams ?? ''))).toEqual([['__proto__', {a: 1}]])
+  })
+
   it('accepts listen URLs, custom domains and surrounding whitespace', () => {
     const parsed = parseQueryUrl(
       '  https://cdn.example.com/v2021-03-25/data/listen/production?query=*  ',

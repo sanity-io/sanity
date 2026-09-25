@@ -87,6 +87,20 @@ describe('savedQueryTab', () => {
     ).toBe(false)
   })
 
+  it('matches a __proto__ parameter like any other', () => {
+    const tab = createTab(settings, {query: '*[_id == $__proto__]'})
+    const parsed = parseQueryUrl(url('*[_id == $__proto__]', {$__proto__: '{"a":1}'}), datasets)
+    if (!parsed) throw new Error('expected the URL to parse')
+
+    expect(
+      tabMatchesParsedQuery({...tab, rawParams: '{"__proto__": {a: 1}}'}, parsed, workspaceDataset),
+    ).toBe(true)
+    expect(
+      tabMatchesParsedQuery({...tab, rawParams: '{"__proto__": {a: 2}}'}, parsed, workspaceDataset),
+    ).toBe(false)
+    expect(tabMatchesParsedQuery({...tab, rawParams: '{}'}, parsed, workspaceDataset)).toBe(false)
+  })
+
   it('leaves options the URL does not state to the tab', () => {
     const tab = createTab(settings, {
       query: '*',
