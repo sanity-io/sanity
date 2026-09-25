@@ -21,6 +21,23 @@ export function createPreviewModeEnableUrl(options: {
 }): URL {
   const {enable, perspective, previewUrl, previewUrlSecret, variant} = options
   const url = new URL(enable, previewUrl)
+  /**
+   * The enable route redirects to a pathname on its own origin, so when it has the pathname of the preview page
+   * it is that page: redirecting would redirect to the enable route itself, and it has to show the page instead
+   */
+  const isPreviewPage = url.pathname === previewUrl.pathname
+
+  if (isPreviewPage) {
+    const enableSearchParams = new Set(url.searchParams.keys())
+    for (const [key, value] of previewUrl.searchParams) {
+      if (!enableSearchParams.has(key)) {
+        url.searchParams.append(key, value)
+      }
+    }
+    if (!url.hash) {
+      url.hash = previewUrl.hash
+    }
+  }
 
   url.searchParams.set(urlSearchParamPreviewSecret, previewUrlSecret)
   url.searchParams.set(urlSearchParamPreviewPerspective, encodeStudioPerspective(perspective))
@@ -29,10 +46,9 @@ export function createPreviewModeEnableUrl(options: {
   } else {
     url.searchParams.delete(urlSearchParamPreviewVariant)
   }
-  /**
-   * When the enable route is also the preview page, redirecting to the preview would redirect to the enable route itself
-   */
-  if (previewUrl.pathname !== url.pathname) {
+  if (isPreviewPage) {
+    url.searchParams.delete(urlSearchParamPreviewPathname)
+  } else {
     url.searchParams.set(
       urlSearchParamPreviewPathname,
       `${previewUrl.pathname}${previewUrl.search}${previewUrl.hash}`,

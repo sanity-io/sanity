@@ -48,7 +48,7 @@ describe('resolveOpenPreviewUrl', () => {
     const url = new URL(
       resolveOpenPreviewUrl({
         perspective: 'drafts',
-        previewLocationRoute: '/api/preview',
+        previewLocationRoute: '/api/preview?product=shoe#details',
         previewMode: {enable: '/api/preview'},
         previewUrlSecret: 'session-secret',
         targetOrigin: 'https://example.com',
@@ -60,6 +60,8 @@ describe('resolveOpenPreviewUrl', () => {
     expect(url.searchParams.get('sanity-preview-secret')).toBe('session-secret')
     expect(url.searchParams.get('sanity-preview-perspective')).toBe('drafts')
     expect(url.searchParams.has('sanity-preview-pathname')).toBe(false)
+    expect(url.searchParams.get('product')).toBe('shoe')
+    expect(url.hash).toBe('#details')
   })
 
   test.each([
