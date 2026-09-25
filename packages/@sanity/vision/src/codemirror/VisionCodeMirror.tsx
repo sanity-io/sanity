@@ -9,6 +9,7 @@ import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {
   type ReactNode,
   useCallback,
+  useEffect,
   useImperativeHandle,
   useRef,
   useState,
@@ -73,13 +74,29 @@ export function VisionCodeMirror({
    */
   autoHeight?: boolean
 } & RefAttributes<VisionCodeMirrorHandle>) {
-  // The `initialValue` prop only seeds the editor; later parent updates go through
-  // `resetEditorContent`. The latest document is still mirrored into state because
-  // `@uiw/react-codemirror` destroys its `EditorView` when its effects are cleaned up and rebuilds
-  // it from `value` when they run again, which happens without a remount when the tool is hidden
-  // and shown again inside an `<Activity>` boundary (`beta.reactActivityMode`). While the
-  // view is alive `value` always equals its document, so the value sync never dispatches.
+  // While the view is alive its document is the source of truth: the `initialValue` prop only
+  // seeded it, edits reach the parent through `onChange`, and parent updates come back through
+  // `resetEditorContent`. The document is mirrored into `value` because `@uiw/react-codemirror`
+  // destroys its `EditorView` when its effects are cleaned up and creates a new one from `value`
+  // when they run again, which happens without a remount when the tool is hidden and shown again
+  // inside an `<Activity>` boundary (`beta.reactActivityMode`). While the view is alive `value`
+  // always equals its document, so the value sync never dispatches. Without a view the prop
+  // leads instead: the handle is detached along with the effects, so a query formatted while the
+  // tool is hidden only reaches this component as a new `initialValue`, and the next view must
+  // show it rather than the document from before hiding.
   const [value, setValue] = useState(initialValueProp)
+  const [hasView, setHasView] = useState(false)
+  const [seenInitialValue, setSeenInitialValue] = useState(initialValueProp)
+  if (initialValueProp !== seenInitialValue) {
+    setSeenInitialValue(initialValueProp)
+    if (!hasView) setValue(initialValueProp)
+  }
+  const handleCreateEditor = useCallback(() => setHasView(true), [])
+  useEffect(() => {
+    // The view is destroyed by the child's effect cleanups, which run along with this one
+    return () => setHasView(false)
+  }, [])
+
   const handleChange = useCallback<NonNullable<ReactCodeMirrorProps['onChange']>>(
     (nextValue, viewUpdate) => {
       setValue(nextValue)
@@ -92,6 +109,8 @@ export function VisionCodeMirror({
   const codeMirrorRef = useRef<ReactCodeMirrorRef>(null)
 
   const resetEditorContent = useCallback((newContent: string) => {
+    // Mirrored first, so a call made while there is no view still reaches the next one
+    setValue(newContent)
     const editorView = codeMirrorRef.current?.view
     if (!editorView) return
 
@@ -144,6 +163,7 @@ export function VisionCodeMirror({
         extensions={extensions}
         value={value}
         onChange={handleChange}
+        onCreateEditor={handleCreateEditor}
       />
     </EditorRoot>
   )
