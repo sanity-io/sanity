@@ -1,7 +1,7 @@
-import {Box, Button, Card, Container, Heading, Text, TextArea} from '@sanity/ui'
+import {Box, Button, Card, Heading, Text, TextArea} from '@sanity/ui'
 import {type SyntheticEvent, useCallback, useId, useRef, useState} from 'react'
 import {DiagnosticsReport, parseStudioDiagnostics, type StudioDiagnostics} from 'sanity'
-import {Flex, VStack} from 'ui5'
+import {Container, Flex, VStack} from 'ui5'
 
 /**
  * The in-studio twin of dev/studio-diagnostics-viewer: paste the JSON copied
@@ -36,7 +36,7 @@ export function DiagnosticsTool() {
 
   return (
     <Card height="fill" overflow="auto" ref={scrollRef}>
-      <Container width={2}>
+      <Container size={2}>
         <Box padding={[3, 4, 5]}>
           {diagnostics ? (
             <DiagnosticsReport

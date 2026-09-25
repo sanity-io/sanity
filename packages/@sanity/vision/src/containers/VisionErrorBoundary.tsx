@@ -1,8 +1,9 @@
 /* oxlint-disable @sanity/i18n/no-attribute-string-literals */
 /* oxlint-disable i18next/no-literal-string */
-import {Button, Card, Container, Heading, Stack} from '@sanity/ui'
+import {Button, Card, Heading, Stack} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {Component, type PropsWithChildren} from 'react'
+import {Container} from 'ui5'
 
 import {clearLocalStorage} from '../util/localStorage'
 
@@ -61,7 +62,7 @@ export class VisionErrorBoundary extends Component<
         sizing="border"
         tone="critical"
       >
-        <Container width={3}>
+        <Container size={3}>
           <Stack gap={4}>
             <div>
               <Button
