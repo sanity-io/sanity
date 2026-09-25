@@ -1734,8 +1734,8 @@ importers:
         specifier: 'catalog:'
         version: 8.7.0(vitest@5.0.1)
       '@sanity/media-library-types':
-        specifier: ^1.7.0
-        version: 1.7.0(@sanity/types@packages+@sanity+types)
+        specifier: ^1.7.1
+        version: 1.7.1(@sanity/types@packages+@sanity+types)
     devDependencies:
       '@repo/test-config':
         specifier: workspace:*
@@ -2145,8 +2145,8 @@ importers:
         specifier: ^2.2.5
         version: 2.2.5(react@19.3.0)
       '@sanity/media-library-types':
-        specifier: ^1.7.0
-        version: 1.7.0(@sanity/types@packages+@sanity+types)
+        specifier: ^1.7.1
+        version: 1.7.1(@sanity/types@packages+@sanity+types)
       '@sanity/message-protocol':
         specifier: ^0.24.0
         version: 0.24.0
@@ -7531,8 +7531,8 @@ packages:
     peerDependencies:
       react: ^18.3 || ^19.0.0-0
 
-  '@sanity/media-library-types@1.7.0':
-    resolution: {integrity: sha512-/R1YF3TkMn9N0w6ujJ3kgBw2FSHL/ddgzV8+j8LHbN3Bdn75P35EQbqYPPFiEhW0QMVQZj3DJFu4MywlSY2GJg==}
+  '@sanity/media-library-types@1.7.1':
+    resolution: {integrity: sha512-gugG7V+TIbHcmsWWIIukstDmz73ajD4pHPooGpMENVujtuMV8XZZHn/jgYBut6X0Afdxqk/BE9DsSQ7+1Xe1yA==}
     peerDependencies:
       '@sanity/types': ^4.0.0 || ^5.0.0 || ^6.0.0
 
@@ -20253,11 +20253,11 @@ snapshots:
       '@sanity/color': 3.0.8
       react: 19.3.0
 
-  '@sanity/media-library-types@1.7.0(@sanity/types@5.31.2)':
+  '@sanity/media-library-types@1.7.1(@sanity/types@5.31.2)':
     dependencies:
       '@sanity/types': 5.31.2(@types/react@19.3.0)
 
-  '@sanity/media-library-types@1.7.0(@sanity/types@packages+@sanity+types)':
+  '@sanity/media-library-types@1.7.1(@sanity/types@packages+@sanity+types)':
     dependencies:
       '@sanity/types': link:packages/@sanity/types
 
@@ -20503,7 +20503,7 @@ snapshots:
   '@sanity/types@5.31.2(@types/react@19.3.0)':
     dependencies:
       '@sanity/client': 7.27.0
-      '@sanity/media-library-types': 1.7.0(@sanity/types@5.31.2)
+      '@sanity/media-library-types': 1.7.1(@sanity/types@5.31.2)
       '@types/react': 19.3.0
 
   '@sanity/ui@4.2.4(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)':
