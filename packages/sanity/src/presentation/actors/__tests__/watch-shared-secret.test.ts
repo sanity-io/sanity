@@ -2,7 +2,7 @@ import {type LiveEvent, type RawQueryResponse} from '@sanity/client'
 import {fetchSharedAccessQuery} from '@sanity/preview-url-secret/constants'
 import {of, Subject} from 'rxjs'
 import {type SanityClient} from 'sanity'
-import {describe, expect, test, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 import {createActor} from 'xstate'
 
 import {defineWatchSharedSecretActor} from '../watch-shared-secret'
@@ -185,6 +185,38 @@ describe('watch shared preview secret actor', () => {
       expect(actor.getSnapshot().context).toBe('new-shared-secret')
     },
   )
+
+  describe('once the live events connection goes away', () => {
+    beforeEach(() => {
+      vi.useFakeTimers()
+    })
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    test('reads the shared secret right away, and then every 30 seconds', () => {
+      const {client, events, fetch} = mockClient('shared-secret', 'shared-secret', null)
+      const actor = createActor(defineWatchSharedSecretActor({client})).start()
+
+      events.next({type: 'goaway', id: 'event-1', reason: 'Too many connections'})
+      expect(events.observed).toBe(false)
+      expect(fetch).toHaveBeenCalledTimes(2)
+      expect(fetch).toHaveBeenLastCalledWith(
+        fetchSharedAccessQuery,
+        {},
+        expect.objectContaining({lastLiveEventId: undefined}),
+      )
+
+      /**
+       * Sharing is turned off in the meantime
+       */
+      vi.advanceTimersByTime(29_999)
+      expect(fetch).toHaveBeenCalledTimes(2)
+      vi.advanceTimersByTime(1)
+      expect(fetch).toHaveBeenCalledTimes(3)
+      expect(actor.getSnapshot().context).toBeNull()
+    })
+  })
 
   test('stops listening for live events when the actor stops', () => {
     const {client, events} = mockClient('shared-secret')
