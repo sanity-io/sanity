@@ -101,6 +101,24 @@ describe('vistaStorage', () => {
     expect(loadVistaState('proj', defaults)).toEqual(saved)
   })
 
+  it('keeps only the first of the tabs sharing an id', () => {
+    const state = createInitialState(defaults)
+    const first = createTab(state.settings, {id: 'dup', query: 'first'})
+    const second = createTab(state.settings, {id: 'dup', query: 'second'})
+    const other = createTab(state.settings, {id: 'other'})
+    localStorage.setItem(
+      getVistaStorageKey('proj'),
+      JSON.stringify({...state, tabs: [first, second, other], activeTabId: 'dup'}),
+    )
+
+    const loaded = loadVistaState('proj', defaults)
+    expect(loaded.tabs.map((tab) => [tab.id, tab.query])).toEqual([
+      ['dup', 'first'],
+      ['other', ''],
+    ])
+    expect(loaded.activeTabId).toBe('dup')
+  })
+
   it('reads state saved before the panels existed as having them expanded', () => {
     const {panels: _panels, ...withoutPanels} = createInitialState(defaults)
     localStorage.setItem(getVistaStorageKey('proj'), JSON.stringify(withoutPanels))

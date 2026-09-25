@@ -1,8 +1,8 @@
 import {EditorState} from '@codemirror/state'
-import {describe, expect, it} from 'vitest'
+import {describe, expect, it, vi} from 'vitest'
 
 import {groqLintSource, renderMessage, syntaxErrorDiagnostic, toDiagnostics} from './groqLint'
-import {GroqSyntaxError} from './groqWasm'
+import * as groqWasm from './groqWasm'
 
 function viewOf(doc: string) {
   return {state: EditorState.create({doc})}
@@ -36,9 +36,16 @@ describe('groqLintSource', () => {
     ])
   })
 
-  it('has nothing to say about clean or empty queries', async () => {
+  it('has nothing to say about clean queries', async () => {
     expect(await groqLintSource(viewOf('*[_type == "post"]{title}'))).toEqual([])
+  })
+
+  it('leaves the wasm alone for a blank document, which every new tab starts as', async () => {
+    const lintSpy = vi.spyOn(groqWasm, 'lintGroq')
     expect(await groqLintSource(viewOf(''))).toEqual([])
+    expect(await groqLintSource(viewOf('  \n'))).toEqual([])
+    expect(lintSpy).not.toHaveBeenCalled()
+    lintSpy.mockRestore()
   })
 })
 
@@ -70,12 +77,14 @@ describe('renderMessage', () => {
 
 describe('syntaxErrorDiagnostic', () => {
   it('keeps the parser message and clamps the range', () => {
-    expect(syntaxErrorDiagnostic(new GroqSyntaxError('unexpected end', 4, 20), 6)).toEqual({
-      from: 4,
-      to: 6,
-      severity: 'error',
-      message: 'unexpected end',
-      source: 'groq',
-    })
+    expect(syntaxErrorDiagnostic(new groqWasm.GroqSyntaxError('unexpected end', 4, 20), 6)).toEqual(
+      {
+        from: 4,
+        to: 6,
+        severity: 'error',
+        message: 'unexpected end',
+        source: 'groq',
+      },
+    )
   })
 })

@@ -272,18 +272,22 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
           </TabList>
         </Flex>
         <Box
+          aria-labelledby="vista-mobile-request-tab"
           className={cx(paneFill, mobilePane !== 'request' && hiddenPane)}
           flexBasis="0%"
           flexGrow={1}
           id="vista-mobile-request-pane"
+          role="tabpanel"
         >
           {requestPanel}
         </Box>
         <Box
+          aria-labelledby="vista-mobile-response-tab"
           className={cx(paneFill, mobilePane !== 'response' && hiddenPane)}
           flexBasis="0%"
           flexGrow={1}
           id="vista-mobile-response-pane"
+          role="tabpanel"
         >
           {responsePanel}
         </Box>

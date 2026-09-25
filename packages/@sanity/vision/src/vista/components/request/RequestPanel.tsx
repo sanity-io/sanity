@@ -37,7 +37,7 @@ import {
 import {OptionsPanel} from './OptionsPanel'
 import {ParamsPanel} from './ParamsPanel'
 import {QueryActionsMenu} from './QueryActionsMenu'
-import {useDragResize} from './useDragResize'
+import {SECTION_MIN_HEIGHT, useDragResize} from './useDragResize'
 
 /** The GROQ editor setup plus the `groq-lint` diagnostics */
 const queryExtensions = [...groqExtensions, ...groqLintExtensions]
@@ -158,16 +158,20 @@ export function RequestPanel(props: RequestPanelProps) {
         expanded={paramsExpanded}
         handle={
           paramsExpanded && (
-            // oxlint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- a pointer-only drag handle, like the split pane resizers; the panel itself is keyboard operable
+            // The focusable separator widget: drag or arrow keys resize, Enter resets
             <div
               aria-label={t('vista.params.resize')}
               aria-orientation="horizontal"
+              aria-valuemin={SECTION_MIN_HEIGHT}
+              aria-valuenow={paramsResize.height ?? undefined}
               className={sectionResizer}
               data-dragging={paramsResize.dragging}
               data-testid="vista-request-params-resizer"
               onDoubleClick={paramsResize.reset}
+              onKeyDown={paramsResize.onKeyDown}
               onPointerDown={paramsResize.onPointerDown}
               role="separator"
+              tabIndex={0}
               title={t('vista.params.resize')}
             />
           )

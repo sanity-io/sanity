@@ -1,11 +1,19 @@
-import {type PointerEvent as ReactPointerEvent, type RefObject, useCallback, useState} from 'react'
+import {
+  type KeyboardEvent as ReactKeyboardEvent,
+  type PointerEvent as ReactPointerEvent,
+  type RefObject,
+  useCallback,
+  useState,
+} from 'react'
 
 import {PANEL_HEADER_HEIGHT} from '../CollapsiblePanel'
 
 /** Matches the `min-height` of the query section: the editor keeps at least this much */
 const QUERY_MIN_HEIGHT = 120
+/** One editor line, the step of a keyboard resize */
+const LINE_HEIGHT = 21
 /** The header plus a few lines of JSON */
-const SECTION_MIN_HEIGHT = PANEL_HEADER_HEIGHT + 63
+export const SECTION_MIN_HEIGHT = PANEL_HEADER_HEIGHT + LINE_HEIGHT * 3
 
 export interface DragResizeOptions {
   /** The column the sections are stacked in */
@@ -21,14 +29,27 @@ export interface DragResize {
   height: number | null
   dragging: boolean
   onPointerDown: (event: ReactPointerEvent<HTMLElement>) => void
+  /** Arrow keys resize by a line (five with Shift), Home and End go to the bounds, Enter resets */
+  onKeyDown: (event: ReactKeyboardEvent<HTMLElement>) => void
   /** Back to the automatic height */
   reset: () => void
 }
 
+interface Bounds {
+  current: number
+  min: number
+  max: number
+}
+
+function clamp(value: number, {min, max}: Bounds): number {
+  return Math.round(Math.min(Math.max(value, min), max))
+}
+
 /**
- * Drag handling for a section that normally sizes itself to its content: dragging its top edge
- * up makes it taller, bounded so the query editor keeps its minimum height. The handle captures
- * the pointer, so the drag continues while the pointer is outside it.
+ * Resizing for a section that normally sizes itself to its content: dragging its top edge up
+ * makes it taller, bounded so the query editor keeps its minimum height and the sibling section
+ * keeps its own. The handle captures the pointer, so the drag continues while the pointer is
+ * outside it, and the same bounds apply to the keyboard.
  */
 export function useDragResize({
   containerRef,
@@ -38,25 +59,31 @@ export function useDragResize({
   const [height, setHeight] = useState<number | null>(null)
   const [dragging, setDragging] = useState(false)
 
+  const measure = useCallback((): Bounds | null => {
+    const section = sectionRef.current
+    const container = containerRef.current
+    if (!section || !container) return null
+    const siblingHeight = siblingRef.current?.getBoundingClientRect().height ?? 0
+    return {
+      current: section.getBoundingClientRect().height,
+      min: SECTION_MIN_HEIGHT,
+      max: Math.max(
+        SECTION_MIN_HEIGHT,
+        container.getBoundingClientRect().height - siblingHeight - QUERY_MIN_HEIGHT,
+      ),
+    }
+  }, [containerRef, sectionRef, siblingRef])
+
   const onPointerDown = useCallback(
     (event: ReactPointerEvent<HTMLElement>) => {
-      const section = sectionRef.current
-      const container = containerRef.current
-      if (event.button !== 0 || !section || !container) return
+      const bounds = measure()
+      if (event.button !== 0 || !bounds) return
       event.preventDefault()
 
       const handle = event.currentTarget
       const startY = event.clientY
-      const startHeight = section.getBoundingClientRect().height
-      const siblingHeight = siblingRef.current?.getBoundingClientRect().height ?? 0
-      const maxHeight = Math.max(
-        SECTION_MIN_HEIGHT,
-        container.getBoundingClientRect().height - siblingHeight - QUERY_MIN_HEIGHT,
-      )
-
       const onMove = (move: PointerEvent) => {
-        const next = startHeight - (move.clientY - startY)
-        setHeight(Math.round(Math.min(Math.max(next, SECTION_MIN_HEIGHT), maxHeight)))
+        setHeight(clamp(bounds.current - (move.clientY - startY), bounds))
       }
       const onEnd = () => {
         handle.removeEventListener('pointermove', onMove)
@@ -70,10 +97,39 @@ export function useDragResize({
       handle.addEventListener('pointercancel', onEnd)
       setDragging(true)
     },
-    [containerRef, sectionRef, siblingRef],
+    [measure],
+  )
+
+  const onKeyDown = useCallback(
+    (event: ReactKeyboardEvent<HTMLElement>) => {
+      const step = event.shiftKey ? LINE_HEIGHT * 5 : LINE_HEIGHT
+      const next = (bounds: Bounds): number | null => {
+        switch (event.key) {
+          case 'ArrowUp':
+            return bounds.current + step
+          case 'ArrowDown':
+            return bounds.current - step
+          case 'Home':
+            return bounds.min
+          case 'End':
+            return bounds.max
+          case 'Enter':
+            return null
+          default:
+            return bounds.current
+        }
+      }
+      const bounds = measure()
+      if (!bounds) return
+      const target = next(bounds)
+      if (target === bounds.current) return
+      event.preventDefault()
+      setHeight(target === null ? null : clamp(target, bounds))
+    },
+    [measure],
   )
 
   const reset = useCallback(() => setHeight(null), [])
 
-  return {height, dragging, onPointerDown, reset}
+  return {height, dragging, onPointerDown, onKeyDown, reset}
 }

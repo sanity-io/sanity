@@ -44,6 +44,24 @@ describe('savedQueryTab', () => {
     expect(tabMatchesParsedQuery({...tab, rawParams: '{"id": "b"}'}, parsed)).toBe(false)
   })
 
+  it('matches params by value, whatever their key order or formatting', () => {
+    const tab = createTab(settings, {query: '*[_id == $id && _type == $type]'})
+    const parsed = parseQueryUrl(
+      'https://abc.api.sanity.io/v2025-02-19/data/query/production?query=*%5B_id+%3D%3D+%24id+%26%26+_type+%3D%3D+%24type%5D&%24id=%22a%22&%24type=%22post%22',
+      datasets,
+    )
+    if (!parsed) throw new Error('expected the URL to parse')
+
+    expect(
+      tabMatchesParsedQuery({...tab, rawParams: '{\n  type: "post",\n  id: "a",\n}'}, parsed),
+    ).toBe(true)
+    expect(tabMatchesParsedQuery({...tab, rawParams: '{type: "post", id: "b"}'}, parsed)).toBe(
+      false,
+    )
+    // Params that do not parse only match the same text
+    expect(tabMatchesParsedQuery({...tab, rawParams: '{type: "post", id:'}, parsed)).toBe(false)
+  })
+
   it('leaves options the URL does not state to the tab', () => {
     const tab = createTab(settings, {
       query: '*',

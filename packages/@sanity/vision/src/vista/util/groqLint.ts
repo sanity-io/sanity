@@ -63,6 +63,10 @@ export function syntaxErrorDiagnostic(error: GroqSyntaxError, docLength: number)
  */
 export async function groqLintSource(view: {state: EditorState}): Promise<Diagnostic[]> {
   const query = view.state.doc.toString()
+  // CodeMirror lints the initial document too; a blank tab must not load the wasm
+  if (!query.trim()) {
+    return []
+  }
   try {
     return toDiagnostics(await lintGroq(query), query.length)
   } catch (error) {

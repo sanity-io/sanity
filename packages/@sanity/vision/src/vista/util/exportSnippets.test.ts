@@ -87,7 +87,16 @@ describe('buildExportSnippets', () => {
     expect(client.code).not.toContain('const params')
 
     expect(nextSanity.code).not.toContain('params:')
+    expect(nextSanity.code).toContain(`  perspective: ['rSummer', 'drafts'],`)
+    expect(nextSanity.code).toContain(`  variant: 'french',`)
+  })
+
+  it('leaves the unsupported raw perspective out of the next-sanity snippet and says so', () => {
+    const [, client, nextSanity] = buildExportSnippets({...base, perspective: 'raw'})
+
+    expect(client.code).toContain(`  perspective: 'raw',`)
     expect(nextSanity.code).not.toContain('perspective:')
+    expect(nextSanity.code).toContain("// sanityFetch does not support the 'raw' perspective")
   })
 
   it('derives constant names from the query', () => {

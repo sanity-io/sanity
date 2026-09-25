@@ -181,9 +181,16 @@ export function loadVistaState(
   }
 
   const settings = sanitizeSettings(stored.settings, initial.settings, defaults.datasets)
-  const tabs = (Array.isArray(stored.tabs) ? stored.tabs : [])
-    .map((tab) => sanitizeTab(tab, settings, defaults.datasets))
-    .filter((tab): tab is VistaTab => tab !== null)
+  // Tab ids key the spawned runners and the React list, so a duplicated id keeps its first tab only
+  const tabs: VistaTab[] = []
+  const seenIds = new Set<string>()
+  for (const candidate of Array.isArray(stored.tabs) ? stored.tabs : []) {
+    const tab = sanitizeTab(candidate, settings, defaults.datasets)
+    if (tab && !seenIds.has(tab.id)) {
+      seenIds.add(tab.id)
+      tabs.push(tab)
+    }
+  }
 
   const sidebar = sanitizeSidebar(stored.sidebar)
   const panels = sanitizePanels(stored.panels)

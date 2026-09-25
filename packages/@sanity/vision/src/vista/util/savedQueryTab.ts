@@ -1,3 +1,4 @@
+import {dequal} from 'dequal/lite'
 import JSON5 from 'json5'
 
 import {type QueryConfig} from '../../hooks/useSavedQueries'
@@ -46,7 +47,7 @@ export function tabMatchesSavedQuery(
 export function tabMatchesParsedQuery(tab: VistaTab, parsed: ParsedQueryUrl): boolean {
   return (
     tab.query === parsed.query &&
-    normalizeParams(tab.rawParams) === normalizeParams(parsed.rawParams) &&
+    haveSameParams(tab.rawParams, parsed.rawParams) &&
     (parsed.dataset === undefined || parsed.dataset === tab.options.dataset) &&
     (parsed.apiVersion === undefined ||
       parsed.apiVersion === prefixApiVersion(tab.options.apiVersion)) &&
@@ -54,10 +55,20 @@ export function tabMatchesParsedQuery(tab: VistaTab, parsed: ParsedQueryUrl): bo
   )
 }
 
-function normalizeParams(raw: string): string {
+/** Parsed params are compared structurally, so key order and formatting do not matter */
+function haveSameParams(a: string, b: string): boolean {
+  const parsedA = parseParamsOrNull(a)
+  const parsedB = parseParamsOrNull(b)
+  if (parsedA === null || parsedB === null) {
+    return a.trim() === b.trim()
+  }
+  return dequal(parsedA, parsedB)
+}
+
+function parseParamsOrNull(raw: string): unknown {
   try {
-    return JSON.stringify(JSON5.parse(raw))
+    return JSON5.parse(raw)
   } catch {
-    return raw.trim()
+    return null
   }
 }

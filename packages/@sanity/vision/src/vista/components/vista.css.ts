@@ -153,6 +153,11 @@ export const sectionResizer = style({
     '&:hover, &[data-dragging="true"]': {
       background: 'var(--card-shadow-ambient-color)',
     },
+    '&:focus-visible': {
+      background: 'var(--card-shadow-ambient-color)',
+      outline: '2px solid var(--card-focus-ring-color)',
+      outlineOffset: '-2px',
+    },
   },
 })
 

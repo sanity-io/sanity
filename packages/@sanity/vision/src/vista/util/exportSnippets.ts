@@ -100,18 +100,28 @@ export function buildExportSnippets(input: ExportSnippetInput): ExportSnippet[] 
     `const result = await client.fetch(${fetchArgs.join(', ')})`,
   ]
 
+  // Sanity Live takes every perspective but the legacy `raw`, which it leaves to its own default
+  const livePerspective =
+    input.perspective === undefined || input.perspective === 'raw' ? undefined : input.perspective
   const nextSanity = [
     `import {defineQuery} from 'next-sanity'`,
     `import {sanityFetch} from '@/sanity/lib/live'`,
     '',
     `const ${constantName} = defineQuery(${toTemplateLiteral(input.query)})`,
     '',
+    ...(input.perspective === 'raw'
+      ? [
+          "// sanityFetch does not support the 'raw' perspective this query was run with; it",
+          "// uses its own default ('published', or 'drafts' in draft mode)",
+        ]
+      : []),
     'const {data} = await sanityFetch({',
     `  query: ${constantName},`,
     ...(hasParams ? [`  params: ${toJsObject(input.params, '  ')},`] : []),
-    ...(input.perspective !== undefined && !Array.isArray(input.perspective)
-      ? [`  perspective: ${toSingleQuoted(input.perspective)},`]
-      : []),
+    ...(livePerspective === undefined
+      ? []
+      : [`  perspective: ${toPerspectiveLiteral(livePerspective)},`]),
+    ...(input.variant ? [`  variant: ${toSingleQuoted(input.variant)},`] : []),
     '})',
   ]
 
