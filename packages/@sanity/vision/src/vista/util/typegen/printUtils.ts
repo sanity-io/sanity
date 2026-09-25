@@ -28,7 +28,11 @@ export interface FlatObject {
 
 /** Folds a chain of object rests (`{...a, ...b}`) into one attribute map */
 export function flattenObject(node: ObjectTypeNode): FlatObject {
-  const attributes = {...node.attributes}
+  // Null prototype: assigning a "__proto__" attribute must define it, not set the prototype
+  const attributes: Record<string, ObjectAttribute> = Object.assign(
+    Object.create(null),
+    node.attributes,
+  )
   let rest = node.rest
   while (rest && rest.type === 'object') {
     Object.assign(attributes, rest.attributes)

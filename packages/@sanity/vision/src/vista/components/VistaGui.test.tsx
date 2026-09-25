@@ -573,6 +573,32 @@ describe('VistaGui', () => {
       liveEvents.next({type: 'message', id: '4', tags: ['s1:def']})
     })
     await waitFor(() => expect(fetchCalls).toHaveLength(3))
+
+    // A background tab does not keep refetching: switching away ends the subscription, and
+    // coming back restarts it
+    fireEvent.click(screen.getByTestId('vista-new-tab'))
+    await waitFor(() => expect(liveEvents.observed).toBe(false))
+    act(() => {
+      liveEvents.next({type: 'message', id: '5', tags: ['s1:def']})
+    })
+    expect(fetchCalls).toHaveLength(3)
+    fireEvent.click(within(screen.getAllByTestId('vista-tab')[0]).getByTestId('vista-tab-button'))
+    await waitFor(() => expect(liveSubscriptionCount()).toBe(2))
+  })
+
+  it('fetches with params typed just before running, ahead of the debounce', async () => {
+    const {fetchCalls} = renderVista()
+    typeQuery('*[_id == $id]')
+    await waitFor(() => expect(isDisabled(screen.getByTestId('vista-fetch-button'))).toBe(false))
+
+    const paramsEditor = within(screen.getByTestId('vista-params-editor')).getByTestId(
+      'codemirror-mock',
+    )
+    fireEvent.change(paramsEditor, {target: {value: '{"id": "fresh"}'}})
+    fireEvent.click(screen.getByTestId('vista-fetch-button'))
+
+    await waitFor(() => expect(fetchCalls).toHaveLength(1))
+    expect(fetchCalls[0].params).toEqual({id: 'fresh'})
   })
 
   it('locks the API version to vX and sends the variant for the pinned release perspective', async () => {

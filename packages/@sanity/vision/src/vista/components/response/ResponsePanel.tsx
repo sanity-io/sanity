@@ -43,7 +43,11 @@ export function ResponsePanel({tab, runnerRef, resolved, request}: ResponsePanel
   const settledRequest = useSelector(runnerRef, (snapshot) => snapshot.context.settledRequest)
   const error = useSelector(runnerRef, (snapshot) => snapshot.context.error)
   const meta = useSelector(runnerRef, (snapshot) => snapshot.context.meta)
-  const url = useSelector(runnerRef, (snapshot) => snapshot.context.url)
+  // While a newer fetch is in flight the shown response keeps its own URL, not the pending one
+  const url = useSelector(
+    runnerRef,
+    (snapshot) => snapshot.context.meta?.url ?? snapshot.context.url,
+  )
   const history = useSelector(runnerRef, (snapshot) => snapshot.context.history)
   const isLive = useSelector(runnerRef, (snapshot) => snapshot.matches({live: 'on'}))
 
@@ -53,6 +57,9 @@ export function ResponsePanel({tab, runnerRef, resolved, request}: ResponsePanel
     settledRequest !== undefined &&
     request !== null &&
     haveSameQuery(settledRequest, request)
+  // Document links in the result must point at the dataset it was fetched from, which the tab's
+  // options may already have moved away from
+  const resultDataset = settledRequest?.client.config().dataset || tab.options.dataset
   const jsonUrl = hasResult ? getJsonBlobUrl(result) : undefined
   const csvUrl = hasResult ? getCsvBlobUrl(result) : undefined
 
@@ -66,7 +73,7 @@ export function ResponsePanel({tab, runnerRef, resolved, request}: ResponsePanel
       {
         id: 'source-map',
         label: t('vista.panel.source-map'),
-        content: <SourceMapTab dataset={tab.options.dataset} meta={meta} />,
+        content: <SourceMapTab dataset={resultDataset} meta={meta} />,
       },
       {
         id: 'history',
@@ -82,7 +89,7 @@ export function ResponsePanel({tab, runnerRef, resolved, request}: ResponsePanel
         content: <HistoryTab history={history} />,
       },
     ],
-    [history, meta, t, tab.options.dataset, url],
+    [history, meta, resultDataset, t, url],
   )
 
   return (
@@ -124,7 +131,7 @@ export function ResponsePanel({tab, runnerRef, resolved, request}: ResponsePanel
             />
           )}
           {(status === 'settled' || (status === 'fetching' && meta)) && (
-            <ResultView data={result} datasetName={tab.options.dataset} />
+            <ResultView data={result} datasetName={resultDataset} />
           )}
           {status === 'idle' && (
             <Text muted size={1}>

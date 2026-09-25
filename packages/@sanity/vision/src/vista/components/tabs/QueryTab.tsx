@@ -70,20 +70,8 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   const queryEditorRef = useRef<VisionCodeMirrorHandle>(null)
   const paramsEditorRef = useRef<VisionCodeMirrorHandle>(null)
 
-  const {resolved, params, request} = useQueryRequestBuilder(tab)
+  const {resolved, params, request, buildRequest} = useQueryRequestBuilder(tab)
   const isFetching = useSelector(runnerRef, selectIsFetching)
-
-  const run = useCallback(
-    (reason: FetchReason) => {
-      if (request) {
-        runnerRef.send({type: 'fetch', request, reason})
-        // On a phone the result lives behind the other pane; bring it forward
-        if (layout === 'mobile') setMobilePane('response')
-      }
-    },
-    [layout, request, runnerRef],
-  )
-  const cancel = useCallback(() => runnerRef.send({type: 'cancel'}), [runnerRef])
 
   const setQuery = useCallback(
     (query: string) => actorRef.send({type: 'tab.setQuery', id: tab.id, query}),
@@ -95,6 +83,23 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   )
   const setParams = useMemo(() => debounce(setParamsNow, PARAMS_DEBOUNCE_MS), [setParamsNow])
   useEffect(() => () => setParams.flush(), [setParams])
+
+  const run = useCallback(
+    (reason: FetchReason) => {
+      // Params typed within the debounce window belong to this fetch, so commit them first and
+      // build the request from what the machine holds now rather than from the last render
+      setParams.flush()
+      const latest = actorRef.getSnapshot().context.tabs.find((it) => it.id === tab.id) ?? tab
+      const current = buildRequest(latest.query, latest.rawParams)
+      if (current) {
+        runnerRef.send({type: 'fetch', request: current, reason})
+        // On a phone the result lives behind the other pane; bring it forward
+        if (layout === 'mobile') setMobilePane('response')
+      }
+    },
+    [actorRef, buildRequest, layout, runnerRef, setParams, tab],
+  )
+  const cancel = useCallback(() => runnerRef.send({type: 'cancel'}), [runnerRef])
   const setOptions = useCallback(
     (options: Partial<VistaTabOptions>) =>
       actorRef.send({type: 'tab.setOptions', id: tab.id, options}),

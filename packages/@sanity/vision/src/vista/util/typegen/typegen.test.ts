@@ -153,6 +153,23 @@ describe('inferTypeFromValue', () => {
     // In an object literal even a quoted `__proto__` key sets the prototype; only a computed
     // key defines the property
     expect(printZod(node, {typeName: 'R'})).toContain('  ["__proto__"]: z.number().optional(),')
+
+    // The same key arriving through an object rest survives the merge as well
+    const withRest: TypeNode = {
+      type: 'object',
+      attributes: {a: {type: 'objectAttribute', value: {type: 'string'}}},
+      rest: {
+        type: 'object',
+        // An object literal would set the prototype; parsed JSON defines an own property
+        attributes: JSON.parse(
+          '{"__proto__": {"type": "objectAttribute", "value": {"type": "boolean"}}}',
+        ),
+      },
+    }
+    expect(printTypeScript(withRest, {typeName: 'R'})).toBe(
+      'export type R = {\n  a: string;\n  __proto__: boolean;\n};',
+    )
+    expect(printZod(withRest, {typeName: 'R'})).toContain('  ["__proto__"]: z.boolean(),')
   })
 })
 

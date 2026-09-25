@@ -4,14 +4,13 @@ import {useTranslation} from 'sanity'
 
 import {visionLocaleNamespace} from '../../i18n'
 import {type QueryRequest, type VistaTab} from '../store/types'
-import {useSavedQueriesApi, useVistaSelector} from '../store/VistaActorContext'
-import {selectDatasets} from '../store/vistaMachine'
-import {tabMatchesSavedQuery} from '../util/savedQueryTab'
+import {useSavedQueriesApi} from '../store/VistaActorContext'
 import {deriveTabTitle} from '../util/tabTitle'
 
 /**
  * Saves a tab as a personal saved query (stored by its query URL, like the classic tool does),
- * refusing duplicates. Uses the tool-wide saved queries subscription.
+ * refusing an exact duplicate of that URL, so the same GROQ against another dataset or
+ * perspective is a different saved query. Uses the tool-wide saved queries subscription.
  */
 export function useSaveCurrentQuery(
   tab: VistaTab,
@@ -19,14 +18,11 @@ export function useSaveCurrentQuery(
 ): {saveCurrent: () => Promise<void>; canSave: boolean} {
   const {t} = useTranslation(visionLocaleNamespace)
   const toast = useToast()
-  const datasets = useVistaSelector(selectDatasets)
   const {queries, saveQuery, saving} = useSavedQueriesApi()
 
   const saveCurrent = useCallback(async () => {
     if (!request) return
-    const duplicate = queries.find(
-      (query) => !query.shared && tabMatchesSavedQuery(tab, query, datasets),
-    )
+    const duplicate = queries.find((query) => !query.shared && query.url === request.url)
     if (duplicate) {
       toast.push({
         closable: true,
@@ -52,7 +48,7 @@ export function useSaveCurrentQuery(
         description: err instanceof Error ? err.message : String(err),
       })
     }
-  }, [datasets, queries, request, saveQuery, t, tab, toast])
+  }, [queries, request, saveQuery, t, tab, toast])
 
   return {saveCurrent, canSave: Boolean(request) && !saving}
 }

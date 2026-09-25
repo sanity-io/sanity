@@ -27,19 +27,18 @@ export function onLocalStorageCleared(listener: () => void): () => void {
 
 export function clearLocalStorage() {
   const storage = getStorage()
-  if (!storage) {
-    return
-  }
-
-  // Collect first: removing while iterating shifts the indices and skips every other key
-  const keys: string[] = []
-  for (let i = 0; i < storage.length; i++) {
-    const key = storage.key(i)
-    if (key?.startsWith(VISION_STORAGE_KEY_PREFIX)) {
-      keys.push(key)
+  if (storage) {
+    // Collect first: removing while iterating shifts the indices and skips every other key
+    const keys: string[] = []
+    for (let i = 0; i < storage.length; i++) {
+      const key = storage.key(i)
+      if (key?.startsWith(VISION_STORAGE_KEY_PREFIX)) {
+        keys.push(key)
+      }
     }
+    keys.forEach((key) => storage.removeItem(key))
   }
-  keys.forEach((key) => storage.removeItem(key))
+  // In-memory copies exist even without a storage backend, so they are told either way
   clearListeners.forEach((listener) => listener())
 }
 

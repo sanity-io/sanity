@@ -31,7 +31,11 @@ function notify(): void {
 
 function subscribe(listener: () => void): () => void {
   listeners.add(listener)
-  const unsubscribeClear = onLocalStorageCleared(listener)
+  // "Clear cache" must also forget in-memory choices, which is all there is without storage
+  const unsubscribeClear = onLocalStorageCleared(() => {
+    cache.clear()
+    listener()
+  })
   return () => {
     listeners.delete(listener)
     unsubscribeClear()

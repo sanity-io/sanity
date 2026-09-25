@@ -19,7 +19,8 @@ interface LiveSubscriptionOptions {
 
 /**
  * Keeps the runner's live-events subscription in sync with the tab: on while the tab refetches
- * automatically (and its API version returns sync tags), off otherwise. Reports subscription
+ * automatically (and its API version returns sync tags), off otherwise and while the tab is not
+ * the active one, so a background tab never refetches out of sight. Reports subscription
  * failures through a toast.
  */
 export function useLiveSubscription({
@@ -36,11 +37,12 @@ export function useLiveSubscription({
   const liveClient = useMemo(() => baseClient.withConfig({dataset}), [baseClient, dataset])
 
   useEffect(() => {
-    if (enabled) {
-      runnerRef.send({type: 'live.enable', client: liveClient})
-    } else {
+    if (!enabled) {
       runnerRef.send({type: 'live.disable'})
+      return undefined
     }
+    runnerRef.send({type: 'live.enable', client: liveClient})
+    return () => runnerRef.send({type: 'live.disable'})
   }, [enabled, liveClient, runnerRef])
 
   useEffect(() => {

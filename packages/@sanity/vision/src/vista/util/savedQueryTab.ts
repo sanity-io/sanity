@@ -2,6 +2,7 @@ import JSON5 from 'json5'
 
 import {type QueryConfig} from '../../hooks/useSavedQueries'
 import {type ParsedQueryUrl, parseQueryUrl} from '../../util/parseQueryUrl'
+import {prefixApiVersion} from '../../util/prefixApiVersion'
 import {type VistaTab, type VistaTabInit, type VistaTabOptions} from '../store/types'
 
 /**
@@ -28,7 +29,10 @@ export function savedQueryToTabInit(saved: QueryConfig, parsed: ParsedQueryUrl):
   return {...parsedQueryToTabInit(parsed), title: saved.title}
 }
 
-/** Whether a tab already shows the given saved query (same query text and params) */
+/**
+ * Whether a tab already shows the given saved query: same query text and params, and the same
+ * dataset, API version and perspective wherever the saved URL states them.
+ */
 export function tabMatchesSavedQuery(
   tab: VistaTab,
   saved: QueryConfig,
@@ -42,7 +46,11 @@ export function tabMatchesSavedQuery(
 export function tabMatchesParsedQuery(tab: VistaTab, parsed: ParsedQueryUrl): boolean {
   return (
     tab.query === parsed.query &&
-    normalizeParams(tab.rawParams) === normalizeParams(parsed.rawParams)
+    normalizeParams(tab.rawParams) === normalizeParams(parsed.rawParams) &&
+    (parsed.dataset === undefined || parsed.dataset === tab.options.dataset) &&
+    (parsed.apiVersion === undefined ||
+      parsed.apiVersion === prefixApiVersion(tab.options.apiVersion)) &&
+    (parsed.perspective === undefined || parsed.perspective === tab.options.perspective)
   )
 }
 
