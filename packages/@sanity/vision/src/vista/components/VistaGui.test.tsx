@@ -807,6 +807,46 @@ describe('VistaGui', () => {
     expect(fetchCalls).toHaveLength(2)
   })
 
+  it('resumes automatic refetching with a current result when a tab is shown again', async () => {
+    // A restored tab that refetches automatically has a fresh runner with nothing to replay, so
+    // it fetches when it mounts
+    const initial = createInitialState(DEFAULTS)
+    const tab = createTab(initial.settings, {
+      id: 'live',
+      query: '*[_type == "author"]',
+      autoRefetch: true,
+    })
+    saveVistaState(PROJECT_ID, {...initial, tabs: [tab], activeTabId: 'live'})
+    const {fetchCalls, liveSubscriptionCount} = renderVista()
+
+    await waitFor(() => expect(fetchCalls).toHaveLength(1))
+    expect(fetchCalls[0].config.perspective).toEqual(['published'])
+    await waitFor(() => expect(liveSubscriptionCount()).toBe(1))
+    fireEvent.click(document.getElementById('vista-response-history-tab') as HTMLElement)
+    expect(text(screen.getByTestId('vista-history-entry'))).toContain('vista.history.reason.resume')
+
+    // While another tab is active the navbar perspective changes, which reaches every tab; the
+    // live tab comes back with a request its runner has not fetched yet, so it fetches again
+    fireEvent.click(screen.getByTestId('vista-new-tab'))
+    await waitFor(() => expect(screen.getAllByTestId('vista-tab')).toHaveLength(2))
+    act(() => {
+      sanityMocks.setPerspective({
+        ...BASE_PERSPECTIVE,
+        perspectiveStack: ['drafts'],
+        selectedPerspectiveName: 'drafts',
+      })
+    })
+    fireEvent.click(within(screen.getAllByTestId('vista-tab')[0]).getByTestId('vista-tab-button'))
+    await waitFor(() => expect(fetchCalls).toHaveLength(2))
+    expect(fetchCalls[1].config.perspective).toEqual(['drafts'])
+
+    // Shown again without any change, it has nothing new to fetch
+    fireEvent.click(within(screen.getAllByTestId('vista-tab')[1]).getByTestId('vista-tab-button'))
+    fireEvent.click(within(screen.getAllByTestId('vista-tab')[0]).getByTestId('vista-tab-button'))
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(fetchCalls).toHaveLength(2)
+  })
+
   it('fetches with params typed just before running, ahead of the debounce', async () => {
     const {fetchCalls} = renderVista()
     typeQuery('*[_id == $id]')
