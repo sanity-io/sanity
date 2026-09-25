@@ -3,6 +3,7 @@ import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {type VariantConditions} from '../../../../config/types'
 import {variantAlphaAudience, variantNorwegianMarket} from '../../../__fixtures__/variants.fixture'
 import {variantsUsEnglishLocaleBundle} from '../../../i18n'
 import {VARIANTS_INTENT} from '../../../plugin'
@@ -70,7 +71,7 @@ describe('CreateVariantDialog', () => {
 
     expect(screen.getByRole('button', {name: 'Add condition'})).toBeDisabled()
 
-    await user.type(screen.getByRole('combobox', {name: 'Key'}), 'audience')
+    await user.type(await screen.findByRole('combobox', {name: 'Key'}), 'audience')
     expect(screen.getByRole('button', {name: 'Add condition'})).toBeDisabled()
 
     await user.type(screen.getByRole('combobox', {name: 'Value'}), 'loyal-customers')
@@ -551,11 +552,7 @@ describe('CreateVariantDialog mapped conditions', () => {
     variantOperationsMock.createVariant.mockResolvedValue(undefined)
   })
 
-  const renderMappedDialog = async (
-    conditions:
-      | typeof mappedConditions
-      | (() => Promise<typeof mappedConditions>) = mappedConditions,
-  ) => {
+  const renderMappedDialog = async (conditions: VariantConditions = mappedConditions) => {
     const wrapper = await createTestProvider({
       config: {
         beta: {
@@ -769,11 +766,32 @@ describe('CreateVariantDialog mapped conditions', () => {
     })
 
     expect(await screen.findByTestId('variant-form-conditions-error')).toBeInTheDocument()
+    expect(screen.getByText('Unable to load conditions')).toBeInTheDocument()
     expect(screen.queryByTestId('variant-form-condition-key')).not.toBeInTheDocument()
     expect(screen.queryByTestId('variant-form-condition-key-menu-button')).not.toBeInTheDocument()
 
     await user.click(screen.getByRole('button', {name: 'Retry'}))
 
     expect(screen.getByTestId('variant-form-conditions-loading')).toBeInTheDocument()
+  })
+
+  it('shows the conditions error when the configured list is empty', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const user = userEvent.setup()
+
+    await renderMappedDialog([])
+
+    expect(await screen.findByTestId('variant-form-conditions-error')).toBeInTheDocument()
+    expect(screen.getByText('No valid conditions are configured')).toBeInTheDocument()
+    expect(screen.queryByRole('button', {name: 'Retry'})).not.toBeInTheDocument()
+    expect(screen.queryByTestId('variant-form-condition-key-menu-button')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('variant-form-condition-value-menu-button')).not.toBeInTheDocument()
+
+    await user.type(screen.getByTestId('variant-form-title'), 'No conditions')
+    await user.click(screen.getByTestId('submit-variant-button'))
+
+    expect(variantOperationsMock.createVariant).not.toHaveBeenCalled()
+
+    consoleError.mockRestore()
   })
 })

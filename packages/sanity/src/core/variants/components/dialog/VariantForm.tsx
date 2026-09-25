@@ -443,16 +443,22 @@ export function VariantForm(props: {
         {conditionsConfig.mode === 'mapped' && conditionsConfig.status === 'error' ? (
           <VStack data-testid="variant-form-conditions-error" gap={3}>
             <TextWithTone size={1} tone="critical">
-              {t('dialog.create.conditions.error')}
+              {t(
+                conditionsConfig.retry
+                  ? 'dialog.create.conditions.error'
+                  : 'dialog.create.conditions.invalid',
+              )}
             </TextWithTone>
-            <Flex>
-              <Button
-                mode="ghost"
-                onClick={conditionsConfig.retry}
-                text={t('dialog.create.conditions.retry')}
-                type="button"
-              />
-            </Flex>
+            {conditionsConfig.retry ? (
+              <Flex>
+                <Button
+                  mode="ghost"
+                  onClick={conditionsConfig.retry}
+                  text={t('dialog.create.conditions.retry')}
+                  type="button"
+                />
+              </Flex>
+            ) : null}
           </VStack>
         ) : null}
 
