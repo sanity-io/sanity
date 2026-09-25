@@ -1,7 +1,7 @@
 import {SearchIcon} from '@sanity/icons/Search'
-import {Badge, Card, Checkbox, Container, TextInput, useMediaIndex} from '@sanity/ui'
+import {Badge, Card, Checkbox, TextInput, useMediaIndex} from '@sanity/ui'
 import {type CSSProperties, type ReactNode, useCallback, useMemo, useState} from 'react'
-import {Box, Flex} from 'ui5'
+import {Container, Box, Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Table} from './Table'
@@ -241,7 +241,7 @@ export function DocumentTable<Row extends object>({
           container[3] + paddingX={2} aligns the lane with the table's row content below. */}
       {showCommandLane && (
         <Card flex="none" borderBottom paddingY={2}>
-          <Container flex="none" width={3}>
+          <Container flexBasis="auto" flexGrow={0} flexShrink={0} size={3}>
             <Box paddingX={2}>
               <Flex alignItems="center" gap={3} style={{minHeight: commandLaneMinHeight}}>
                 {showBulkToolbar && selection ? (
