@@ -2,10 +2,18 @@
 // If deleting the exports, for example, then please use this command to regenerate the tests
 // If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports`
 
-import type {VisionLocaleResourceKeys, visionTool, VisionToolConfig} from '@sanity/vision'
+import type {
+  VisionBetaConfig,
+  VisionLocaleResourceKeys,
+  visionTool,
+  VisionToolConfig,
+} from '@sanity/vision'
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('@sanity/vision', () => {
+  test('VisionBetaConfig', () => {
+    expectTypeOf<VisionBetaConfig>().toBeObject()
+  })
   test('VisionLocaleResourceKeys', () => {
     expectTypeOf<VisionLocaleResourceKeys>().not.toBeNever()
   })
