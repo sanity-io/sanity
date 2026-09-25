@@ -1,6 +1,6 @@
 import {SearchIcon} from '@sanity/icons/Search'
 import {SpinnerIcon} from '@sanity/icons/Spinner'
-import {Stack, TextInput} from '@sanity/ui'
+import {TextInput} from '@sanity/ui'
 import {useActorRef, useSelector} from '@xstate/react'
 import {Activity, memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {
@@ -19,7 +19,7 @@ import {
   useUnique,
 } from 'sanity'
 import {keyframes, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, VStack} from 'ui5'
 
 import {usePane} from '../../components/pane/usePane'
 import {structureLocaleNamespace} from '../../i18n'
@@ -279,7 +279,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   return (
     <Activity mode={collapsed ? 'hidden' : 'visible'}>
       <Box data-testid="document-list-search" paddingX={3} paddingBottom={3}>
-        <Stack gap={3}>
+        <VStack gap={3}>
           <TextInput
             aria-label={t('panes.document-list-pane.search-input.aria-label')}
             autoComplete="off"
@@ -309,7 +309,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
               onChange={handleOrderingChange}
             />
           )}
-        </Stack>
+        </VStack>
       </Box>
       <DocumentListPaneContent
         key={paneKey}
