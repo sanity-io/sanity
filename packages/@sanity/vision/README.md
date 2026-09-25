@@ -77,6 +77,37 @@ export default defineConfig({
 })
 ```
 
+## Beta: the redesigned Vision
+
+Vision ships an opt-in redesign behind the `beta.redesign` option. It is off by default. When enabled, the classic tool shows a dismissible toast inviting users to try the redesign; users who accept get the redesigned tool, remembered per project in their browser, and can switch back at any time from its sidebar or settings (or by clearing its storage).
+
+```ts
+// `sanity.config.ts` / `sanity.config.js`:
+import {defineConfig} from 'sanity'
+import {visionTool} from '@sanity/vision'
+
+export default defineConfig({
+  // ...
+  plugins: [
+    visionTool({
+      beta: {redesign: {enabled: true}},
+    }),
+  ],
+})
+```
+
+What is different in the redesign:
+
+- **Query tabs**, each with its own query, params and options (dataset, API version, perspective, content source map). Drag a tab (or press Shift with an arrow key) to reorder them, double-click a title (or press F2) to rename it; tabs and their order are persisted per project in `localStorage`.
+- **Query, Params and Options stacked** in the request column, all visible at once: the editor takes whatever the two panels leave over, Params grow with their JSON (drag their top edge for another height, double-click it to fit the content again) and Options are as tall as their fields. Both panels collapse to a header, remembered per project.
+- **A collapsible sidebar** with your saved queries, the queries shared in the dataset, the keyboard shortcuts and the settings. Saved queries are shared with the classic tool.
+- **Refetch automatically**: the response's `syncTags` are matched against the Live Content API, so the result updates when the documents it depends on change. The History panel records every fetch and why it happened.
+- **Response details**: execution and end-to-end time, payload size, sync tags, the query URL and the content source map when requested.
+- **Exports**: the query as `curl`, `@sanity/client` and `next-sanity` snippets; the result as JSON or CSV, and as TypeScript types or a Zod schema inferred from the workspace schema (falling back to the fetched result).
+- **Prettify and lint** from [sanity-labs/sanity-lint](https://github.com/sanity-labs/sanity-lint), through its `@sanity-labs/groq-wasm` build: Prettify formats the query with `groq-format`, wrapping lines at the query editor's current width so the result needs no sideways scrolling, and the editor underlines what the `groq-lint` rules find (joins in filters, comparisons that cannot use an index, deep pagination, ...). Hover a finding for its explanation, press F8 to jump to the next one, or open the Lint panel next to the response, which lists every finding and selects one in the editor when picked. Pasting a query URL from the network tab loads it into the active tab.
+
+The redesign is in beta: its look and feature set may still change.
+
 ## License
 
 MIT-licensed. See LICENSE.
