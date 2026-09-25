@@ -37,14 +37,17 @@ export function DownloadButton({
           padding={2}
         />
       ) : (
-        <Button
-          aria-label={label}
-          data-testid={testId}
-          disabled
-          icon={icon}
-          mode="bleed"
-          padding={2}
-        />
+        // A disabled button gets no pointer events, so the wrapper is what the tooltip listens to
+        <span>
+          <Button
+            aria-label={label}
+            data-testid={testId}
+            disabled
+            icon={icon}
+            mode="bleed"
+            padding={2}
+          />
+        </span>
       )}
     </Tooltip>
   )

@@ -13,7 +13,7 @@ import {
   VistaExperienceContext,
   type VistaLayout,
 } from '../store/VistaActorContext'
-import {selectActiveTab, vistaMachine} from '../store/vistaMachine'
+import {selectActiveTab, selectOpenDrawer, vistaMachine} from '../store/vistaMachine'
 import {loadVistaState, type VistaStorageDefaults} from '../store/vistaStorage'
 import {VistaSidebar} from './sidebar/VistaSidebar'
 import {QueryTab} from './tabs/QueryTab'
@@ -65,6 +65,7 @@ export function VistaGui(props: VistaGuiProps) {
   usePersistVistaState(actorRef, projectId)
 
   const activeTab = useSelector(actorRef, selectActiveTab)
+  const openDrawer = useSelector(actorRef, selectOpenDrawer)
   const experience = useMemo(
     (): VistaExperience => ({layout, switchToClassic: onSwitchToClassic}),
     [layout, onSwitchToClassic],
@@ -84,7 +85,15 @@ export function VistaGui(props: VistaGuiProps) {
             ref={setRootElement}
           >
             <VistaSidebar />
-            <Flex flexBasis="0%" flexDirection="column" flexGrow={1} minWidth="0" overflow="hidden">
+            <Flex
+              flexBasis="0%"
+              flexDirection="column"
+              flexGrow={1}
+              // Under a phone's full-width drawer the tabs area is covered and must not take focus
+              inert={layout === 'mobile' && openDrawer !== null}
+              minWidth="0"
+              overflow="hidden"
+            >
               <QueryTabBar />
               <QueryTab key={activeTab.id} tab={activeTab} rootElement={rootElement} />
             </Flex>

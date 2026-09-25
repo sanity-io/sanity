@@ -92,6 +92,8 @@ export function VistaSidebar() {
       flexDirection="column"
       gap={1}
       height="100%"
+      // Under a phone's full-width drawer the rail is covered and must not take focus
+      inert={isMobile && drawer !== null}
       justifyContent="space-between"
       padding={2}
     >

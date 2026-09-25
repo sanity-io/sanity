@@ -110,10 +110,21 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
       actorRef.send({type: 'tab.setOptions', id: tab.id, options}),
     [actorRef, tab.id],
   )
-  const setAutoRefetch = useCallback(
-    (autoRefetch: boolean) => actorRef.send({type: 'tab.setAutoRefetch', id: tab.id, autoRefetch}),
-    [actorRef, tab.id],
-  )
+  const toggleAutoRefetch = useCallback(() => {
+    const autoRefetch = !tab.autoRefetch
+    actorRef.send({type: 'tab.setAutoRefetch', id: tab.id, autoRefetch})
+    // Live refetches replay the runner's last request, which may date from before the options
+    // (or the query) changed while refetching was off; a session starts from the current one
+    const lastRequest = runnerRef.getSnapshot().context.request
+    if (
+      autoRefetch &&
+      request &&
+      (lastRequest?.url !== request.url ||
+        lastRequest.includeSourceMap !== request.includeSourceMap)
+    ) {
+      runnerRef.send({type: 'fetch', request, reason: {type: 'manual'}})
+    }
+  }, [actorRef, request, runnerRef, tab.autoRefetch, tab.id])
 
   const prettify = useCallback(async () => {
     const {query} = tab
@@ -225,7 +236,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
       onPrettify={() => void prettify()}
       onQueryChange={setQuery}
       onRun={() => run({type: 'manual'})}
-      onToggleAutoRefetch={() => setAutoRefetch(!tab.autoRefetch)}
+      onToggleAutoRefetch={toggleAutoRefetch}
       params={params}
       paramsEditorRef={paramsEditorRef}
       queryEditorRef={queryEditorRef}

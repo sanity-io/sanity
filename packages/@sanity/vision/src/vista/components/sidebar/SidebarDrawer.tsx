@@ -1,5 +1,6 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {Button, Text} from '@sanity/ui'
+import {type KeyboardEvent, useCallback, useEffect, useRef} from 'react'
 import {useTranslation} from 'sanity'
 import {Flex} from 'ui5'
 
@@ -12,21 +13,48 @@ import {QueryListPanel} from './QueryListPanel'
 
 export interface SidebarDrawerProps {
   drawer: VistaDrawer
-  /** Float over the tabs area instead of taking a column, for phones */
+  /** Float over the whole tool instead of taking a column, for phones */
   overlay: boolean
 }
 
 export function SidebarDrawer({drawer, overlay}: SidebarDrawerProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const actorRef = useVistaActor()
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const close = useCallback(() => actorRef.send({type: 'drawer.close'}), [actorRef])
+  const title =
+    drawer === 'saved' ? t('vista.sidebar.saved-queries') : t('vista.sidebar.shared-queries')
+
+  // Floating over the tool, the drawer behaves like a dialog: the rest of the tool is inert
+  // (see VistaGui and VistaSidebar), focus moves in on open and back to the opener on close
+  useEffect(() => {
+    if (!overlay) return undefined
+    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    closeButtonRef.current?.focus()
+    return () => opener?.focus()
+  }, [overlay])
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLDivElement>) => {
+      if (overlay && event.key === 'Escape') {
+        event.preventDefault()
+        close()
+      }
+    },
+    [close, overlay],
+  )
 
   return (
     <Flex
+      aria-label={overlay ? title : undefined}
+      aria-modal={overlay || undefined}
       borderRight
       className={cx(sidebarDrawer, overlay && sidebarDrawerOverlay)}
       data-testid={`vista-drawer-${drawer}`}
       flexDirection="column"
       height="100%"
+      onKeyDown={handleKeyDown}
+      role={overlay ? 'dialog' : undefined}
     >
       <Flex
         alignItems="center"
@@ -39,16 +67,15 @@ export function SidebarDrawer({drawer, overlay}: SidebarDrawerProps) {
         paddingY={2}
       >
         <Text size={1} weight="medium">
-          {drawer === 'saved'
-            ? t('vista.sidebar.saved-queries')
-            : t('vista.sidebar.shared-queries')}
+          {title}
         </Text>
         <Button
           aria-label={t('vista.drawer.close')}
           icon={CloseIcon}
           mode="bleed"
-          onClick={() => actorRef.send({type: 'drawer.close'})}
+          onClick={close}
           padding={2}
+          ref={closeButtonRef}
         />
       </Flex>
       <QueryListPanel key={drawer} mode={drawer} />

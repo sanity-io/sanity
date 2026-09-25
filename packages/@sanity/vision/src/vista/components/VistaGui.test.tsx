@@ -654,6 +654,31 @@ describe('VistaGui', () => {
     expect(getQueryEditor().value).toBe('*[_type == "author"')
   })
 
+  it('starts automatic refetching from the current request, not the last fetched one', async () => {
+    const {fetchCalls} = renderVista()
+    typeQuery('*[_type == "author"]')
+    fireEvent.click(screen.getByTestId('vista-fetch-button'))
+    await waitFor(() => expect(fetchCalls).toHaveLength(1))
+
+    // The dataset changes while refetching is off, so the runner still holds the old request
+    fireEvent.change(screen.getByTestId('vista-option-dataset-select'), {
+      target: {value: 'staging'},
+    })
+    fireEvent.click(screen.getByTestId('vista-query-menu-button'))
+    fireEvent.click(screen.getByTestId('vista-auto-refetch'))
+
+    await waitFor(() => expect(fetchCalls).toHaveLength(2))
+    expect(fetchCalls[1].config.dataset).toBe('staging')
+
+    // Turning it off and on again without changes does not fetch again
+    fireEvent.click(screen.getByTestId('vista-query-menu-button'))
+    fireEvent.click(screen.getByTestId('vista-auto-refetch'))
+    fireEvent.click(screen.getByTestId('vista-query-menu-button'))
+    fireEvent.click(screen.getByTestId('vista-auto-refetch'))
+    await waitFor(() => expect(getStoredState().tabs[0].autoRefetch).toBe(true))
+    expect(fetchCalls).toHaveLength(2)
+  })
+
   it('fetches with params typed just before running, ahead of the debounce', async () => {
     const {fetchCalls} = renderVista()
     typeQuery('*[_id == $id]')
