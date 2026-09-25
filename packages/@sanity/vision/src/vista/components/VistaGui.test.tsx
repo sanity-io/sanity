@@ -5,7 +5,7 @@ import {ToastProvider} from '@sanity/ui/toast'
 import {act, cleanup, fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import {type ReactNode, type RefAttributes, useImperativeHandle, useRef} from 'react'
 import {Subject} from 'rxjs'
-import {type PerspectiveContextValue} from 'sanity'
+import {type PerspectiveContextValue, useScheduledDraftsEnabled} from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type VisionCodeMirrorHandle} from '../../codemirror/VisionCodeMirror'
@@ -1005,6 +1005,51 @@ describe('VistaGui', () => {
     })
 
     await waitFor(() => expect(selectValue('vista-option-perspective-select')).toBe('global'))
+  })
+
+  it('runs a stored scheduled drafts perspective as Global where the workspace has none, keeping the choice', async () => {
+    const initial = createInitialState(DEFAULTS)
+    const tab = createTab(initial.settings, {
+      id: 'scheduled',
+      query: '*',
+      options: {perspective: 'scheduledDrafts'},
+    })
+    saveVistaState(PROJECT_ID, {...initial, tabs: [tab], activeTabId: 'scheduled'})
+
+    // The project's tabs are shared by its workspaces; this one has no scheduled drafts
+    const {fetchCalls, setPerspective, unmount} = renderVista()
+    const perspectiveSelect = () =>
+      screen.getByTestId('vista-option-perspective-select') as HTMLSelectElement
+    expect(perspectiveSelect().value).toBe('global')
+    expect(within(perspectiveSelect()).queryByRole('option', {name: /scheduled/i})).toBeNull()
+
+    fireEvent.click(screen.getByTestId('vista-fetch-button'))
+    await waitFor(() => expect(fetchCalls).toHaveLength(1))
+    expect(fetchCalls[0].config.perspective).toEqual(['published'])
+
+    // The navbar changing leaves the stored choice alone too: the tab already follows it here
+    setPerspective({
+      ...BASE_PERSPECTIVE,
+      perspectiveStack: ['drafts'],
+      selectedPerspectiveName: 'drafts',
+    })
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(perspectiveSelect().value).toBe('global')
+    expect(getStoredState().tabs[0].options.perspective).toBe('scheduledDrafts')
+    unmount()
+
+    // In a workspace with scheduled drafts, the same stored tab uses them again
+    vi.mocked(useScheduledDraftsEnabled).mockReturnValue(true)
+    try {
+      const enabled = renderVista()
+      expect(perspectiveSelect().value).toBe('scheduledDrafts')
+      fireEvent.click(screen.getByTestId('vista-fetch-button'))
+      await waitFor(() => expect(enabled.fetchCalls).toHaveLength(1))
+      // No scheduled releases in this test, so the stack is the workspace's default alone
+      expect(enabled.fetchCalls[0].config.perspective).toEqual(['drafts'])
+    } finally {
+      vi.mocked(useScheduledDraftsEnabled).mockReturnValue(false)
+    }
   })
 
   it('loads a pasted query URL into the active tab', async () => {

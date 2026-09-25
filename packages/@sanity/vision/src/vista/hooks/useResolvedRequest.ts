@@ -18,15 +18,21 @@ import {getActivePerspective} from '../../perspectives'
 import {isApiVersionBelow} from '../../util/compareApiVersion'
 import {prefixApiVersion} from '../../util/prefixApiVersion'
 import {validateApiVersion} from '../../util/validateApiVersion'
-import {type VistaTabOptions} from '../store/types'
+import {type VistaPerspective, type VistaTabOptions} from '../store/types'
 import {useVistaSelector} from '../store/VistaActorContext'
 import {selectWorkspaceDataset} from '../store/vistaMachine'
 import {SYNC_TAGS_API_VERSION} from '../util/syncTags'
 import {getTabDataset} from '../util/tabDataset'
+import {getEffectivePerspective} from '../util/tabPerspective'
 
 export interface ResolvedRequest {
   /** The dataset requests go to: the workspace's while the tab follows it, else the pinned one */
   dataset: string
+  /**
+   * The tab's perspective option as it applies in this workspace: `scheduledDrafts` counts as
+   * `global` where the workspace does not offer scheduled drafts
+   */
+  tabPerspective: VistaPerspective
   /** The API version requests are sent with, `vX` while a variant is selected */
   apiVersion: string
   /** Whether the tab's API version is usable (the "Other" input may hold an unfinished one) */
@@ -79,8 +85,9 @@ export function useResolvedRequest(options: VistaTabOptions): ResolvedRequest {
   const apiVersion = variant ? VARIANTS_API_VERSION : userApiVersion
 
   // `global` is what the classic tool calls the pinned release: the navbar's perspective stack
+  const tabPerspective = getEffectivePerspective(options.perspective, isScheduledDraftsEnabled)
   const perspective = getActivePerspective({
-    visionPerspective: options.perspective === 'global' ? 'pinnedRelease' : options.perspective,
+    visionPerspective: tabPerspective === 'global' ? 'pinnedRelease' : tabPerspective,
     perspectiveStack,
     scheduledDraftsStack,
   })
@@ -100,6 +107,7 @@ export function useResolvedRequest(options: VistaTabOptions): ResolvedRequest {
 
   return {
     dataset,
+    tabPerspective,
     apiVersion,
     isValidApiVersion: Boolean(variant) || isValidApiVersion,
     isApiVersionLocked: Boolean(variant),

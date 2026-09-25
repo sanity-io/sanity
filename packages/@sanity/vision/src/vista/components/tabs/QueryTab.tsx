@@ -267,7 +267,9 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     }
   })
 
-  useFollowNavbarPerspective(tab.options.perspective, (perspective) => setOptions({perspective}))
+  // A stored scheduled drafts choice already reads as global where this workspace has no
+  // scheduled drafts, so a navbar change leaves it stored for the workspaces that do
+  useFollowNavbarPerspective(resolved.tabPerspective, (perspective) => setOptions({perspective}))
 
   useVistaDocumentEvents({
     rootElement,
