@@ -201,6 +201,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.history.reason.live': 'Live update',
   /** History reason: the live connection asked every client to refetch */
   'vista.history.reason.live-restart': 'Live connection restarted',
+  /** History reason: a saved or pasted query was loaded into a tab that refetches automatically */
+  'vista.history.reason.load': 'Query loaded',
   /** History reason: the fetch button was pressed */
   'vista.history.reason.manual': 'Fetch button',
   /** History reason: dataset, API version or perspective changed while refetching automatically */
