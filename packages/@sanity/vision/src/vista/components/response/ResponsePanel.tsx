@@ -58,7 +58,9 @@ export function ResponsePanel(props: ResponsePanelProps) {
   const history = useSelector(runnerRef, (snapshot) => snapshot.context.history)
   const isLive = useSelector(runnerRef, (snapshot) => snapshot.matches({live: 'on'}))
 
-  const hasResult = status === 'settled' && meta !== undefined
+  // A refetch keeps the previous response on screen, and only a cleared or failed one drops its
+  // `meta`, so the shown result keeps its actions while the next one is in flight
+  const hasResult = meta !== undefined
   const resultIsCurrent =
     hasResult &&
     settledRequest !== undefined &&
