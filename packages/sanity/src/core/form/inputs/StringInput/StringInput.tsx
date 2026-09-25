@@ -1,17 +1,70 @@
-import {lazy, Suspense} from 'react'
+import {type ComponentType, type RefObject, Suspense, use, useEffect, useRef} from 'react'
 
 import {type StringInputProps} from '../../types/inputProps'
 import {StringInputBasic} from './StringInputBasic/StringInputBasic'
+
+type StringInputComponent = ComponentType<StringInputProps>
+type EditorModule = {StringInputPortableText: StringInputComponent}
+
+// A thenable that carries its settled state the way React's `use` reads it, so a load that has
+// already finished renders synchronously instead of suspending for a microtask and swapping.
+type EditorLoad = Promise<EditorModule> & {
+  status?: 'fulfilled'
+  value?: EditorModule
+}
+
+let editorLoad: EditorLoad | undefined
+
+/**
+ * Starts loading the Portable Text variant of the string input, the one used when
+ * `displayInlineChanges` is set. Callers that know a form will render with inline changes
+ * (the document pane, the diff view) call this ahead of the form so the fields render the
+ * editor directly instead of the plain input followed by a swap.
+ *
+ * @internal
+ */
+export function preloadStringInputPortableText(): Promise<EditorModule> {
+  if (!editorLoad) {
+    const load: EditorLoad = import('./StringInputPortableText/StringInputPortableText').then(
+      (module) => {
+        load.status = 'fulfilled'
+        load.value = module
+        return module
+      },
+      (error: unknown) => {
+        // Let the next render retry the download instead of caching the failure.
+        editorLoad = undefined
+        throw error
+      },
+    )
+    editorLoad = load
+  }
+  return editorLoad
+}
 
 // The inline-changes variant is a Portable Text editor. Importing it statically made every
 // string input reach the editor, and through the `StringInput` export every studio download it
 // before login. It loads when a string field is first rendered with `displayInlineChanges`;
 // the plain input stands in until then, so the field is usable while the editor arrives.
-const StringInputPortableText = lazy(() =>
-  import('./StringInputPortableText/StringInputPortableText').then((module) => ({
-    default: module.StringInputPortableText,
-  })),
-)
+function StringInputInlineChanges(props: StringInputProps) {
+  const editorModule = use(preloadStringInputPortableText())
+  const {focused, elementProps} = props
+  const {ref: focusRef} = elementProps
+
+  // If the plain input had focus while the editor was loading, the editor takes it over when it
+  // mounts. `PrimitiveField` only focuses on a `focused` transition, and that already happened
+  // in the plain input. Child effects run first, so the editor's focus bridge is on the ref here.
+  const focusedAtMount = useRef(focused)
+  useEffect(() => {
+    if (focusedAtMount.current) focusEditor(focusRef)
+  }, [focusRef])
+
+  return <editorModule.StringInputPortableText {...props} />
+}
+
+function focusEditor(focusRef: RefObject<{focus: () => void} | undefined>): void {
+  focusRef.current?.focus()
+}
 
 /**
  * @hidden
@@ -21,7 +74,7 @@ export function StringInput(props: StringInputProps) {
   if (props.displayInlineChanges) {
     return (
       <Suspense fallback={<StringInputBasic {...props} />}>
-        <StringInputPortableText {...props} />
+        <StringInputInlineChanges {...props} />
       </Suspense>
     )
   }
