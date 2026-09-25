@@ -98,7 +98,7 @@ const DEFAULT_PERSPECTIVE = {
   selectedPerspective: 'drafts' as const,
   perspectiveStack: ['drafts'],
   excludedPerspectives: [],
-  selectedVariantsName: [],
+  selectedVariantNames: [],
   selectedVariants: [],
   selectedVariantName: undefined,
   selectedVariant: undefined,
@@ -216,7 +216,7 @@ describe('DocumentTargetBadges', () => {
   it('shows Published and the variant badge for a published live-edit variant', async () => {
     mockUsePerspective.mockReturnValue({
       ...DEFAULT_PERSPECTIVE,
-      selectedVariantsName: ['alpha-audience'],
+      selectedVariantNames: ['alpha-audience'],
       selectedVariants: [variantAlphaAudience],
       // oxlint-disable-next-line typescript/no-deprecated
       selectedVariantName: 'alpha-audience',
@@ -238,7 +238,7 @@ describe('DocumentTargetBadges', () => {
   it('shows Published without dimming when a live-edit variant is missing but a published sibling exists', async () => {
     mockUsePerspective.mockReturnValue({
       ...DEFAULT_PERSPECTIVE,
-      selectedVariantsName: ['alpha-audience'],
+      selectedVariantNames: ['alpha-audience'],
       selectedVariants: [variantAlphaAudience],
       // oxlint-disable-next-line typescript/no-deprecated
       selectedVariantName: 'alpha-audience',

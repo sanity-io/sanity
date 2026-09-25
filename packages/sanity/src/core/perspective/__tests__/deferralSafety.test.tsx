@@ -90,9 +90,9 @@ function SyncReleaseHarness() {
 }
 
 function VariantProbe() {
-  const {selectedVariantsName, selectedVariants} = usePerspective()
+  const {selectedVariantNames, selectedVariants} = usePerspective()
   variantFrames.push({
-    name: getDefaultVariant(selectedVariantsName),
+    name: getDefaultVariant(selectedVariantNames),
     variantId: getDefaultVariant(selectedVariants)?._id,
   })
   return null

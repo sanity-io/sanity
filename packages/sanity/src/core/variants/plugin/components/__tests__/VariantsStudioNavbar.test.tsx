@@ -57,7 +57,7 @@ describe('VariantsStudioNavbar', () => {
     routerMock.stickyParams = {}
     usePerspectiveMockReturn.selectedPerspective = 'drafts'
     usePerspectiveMockReturn.selectedVariants = []
-    usePerspectiveMockReturn.selectedVariantsName = []
+    usePerspectiveMockReturn.selectedVariantNames = []
   })
 
   const renderNavbar = async () => {

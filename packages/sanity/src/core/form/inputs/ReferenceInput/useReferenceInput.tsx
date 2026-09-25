@@ -111,13 +111,13 @@ export function useReferenceInput(options: Options) {
         id,
         schemaType,
         perspective.perspectiveStack,
-        getDefaultVariant(perspective.selectedVariantsName),
+        getDefaultVariant(perspective.selectedVariantNames),
       ),
     [
       documentPreviewStore,
       schemaType,
       perspective.perspectiveStack,
-      perspective.selectedVariantsName,
+      perspective.selectedVariantNames,
     ],
   )
 

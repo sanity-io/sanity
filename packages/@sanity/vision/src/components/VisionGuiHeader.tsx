@@ -41,7 +41,7 @@ const PinnedReleasePerspectiveOption: ComponentType<{
       : pinnedPerspective.selectedPerspectiveName
 
   const variant = getDefaultVariant(pinnedPerspective.selectedVariants)
-  const variantName = getDefaultVariant(pinnedPerspective.selectedVariantsName)
+  const variantName = getDefaultVariant(pinnedPerspective.selectedVariantNames)
   const variantTitle = variant ? getVariantTitle(variant) : variantName
 
   const label = hasPinnedPerspective(pinnedPerspective)
@@ -96,7 +96,7 @@ export function VisionGuiHeader({
 }: VisionGuiHeaderProps) {
   const pinnedPerspective = usePerspective()
   const isApiVersionLocked = Boolean(
-    getActiveVariant(perspective, getDefaultVariant(pinnedPerspective.selectedVariantsName)),
+    getActiveVariant(perspective, getDefaultVariant(pinnedPerspective.selectedVariantNames)),
   )
   const {t} = useTranslation(visionLocaleNamespace)
   const operationUrlElement = useRef<HTMLInputElement | null>(null)

@@ -13,8 +13,8 @@ vi.mock('../addonWorkspace/TasksAddOnWorkspaceProvider', async () => {
   const {getDefaultVariant} = await import('../../../../perspective/getDefaultVariant')
 
   function TasksAddonWorkspaceProvider() {
-    const {selectedVariantsName, selectedVariants, selectedPerspectiveName} = usePerspective()
-    const selectedVariantName = getDefaultVariant(selectedVariantsName)
+    const {selectedVariantNames, selectedVariants, selectedPerspectiveName} = usePerspective()
+    const selectedVariantName = getDefaultVariant(selectedVariantNames)
     const selectedVariant = getDefaultVariant(selectedVariants)
     return (
       <div
@@ -83,7 +83,7 @@ function createOuterPerspective(
     selectedPerspective: 'drafts',
     perspectiveStack: ['drafts'],
     excludedPerspectives: [],
-    selectedVariantsName: [],
+    selectedVariantNames: [],
     selectedVariants: [],
     // oxlint-disable-next-line typescript/no-deprecated -- context fixture fills the deprecated alias
     selectedVariantName: undefined,
@@ -106,7 +106,7 @@ describe('TasksFormBuilder', () => {
   it('does not let the task form inherit the selected variant', () => {
     renderWithPerspective(
       createOuterPerspective({
-        selectedVariantsName: ['alpha-audience'],
+        selectedVariantNames: ['alpha-audience'],
         selectedVariants: [variant],
       }),
     )
@@ -125,7 +125,7 @@ describe('TasksFormBuilder', () => {
         selectedReleaseId: 'rSomeRelease',
         selectedPerspective: 'rSomeRelease',
         perspectiveStack: ['rSomeRelease', 'drafts'],
-        selectedVariantsName: ['alpha-audience'],
+        selectedVariantNames: ['alpha-audience'],
         selectedVariants: [variant],
       }),
     )

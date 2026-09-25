@@ -34,7 +34,7 @@ describe('VariantsMenu', () => {
     variantsMock.data = [variantAlphaAudience]
     variantsMock.byId = new Map([[variantAlphaAudience._id, variantAlphaAudience]])
     perspectiveContextValueMock.selectedVariants = []
-    perspectiveContextValueMock.selectedVariantsName = []
+    perspectiveContextValueMock.selectedVariantNames = []
   })
 
   const renderMenu = async (config?: Partial<SingleWorkspace>) => {
@@ -52,7 +52,7 @@ describe('VariantsMenu', () => {
 
   it('marks the variant selected by the perspective provider', async () => {
     perspectiveContextValueMock.selectedVariants = [variantAlphaAudience]
-    perspectiveContextValueMock.selectedVariantsName = [getVariantId(variantAlphaAudience._id)]
+    perspectiveContextValueMock.selectedVariantNames = [getVariantId(variantAlphaAudience._id)]
 
     await renderMenu()
 

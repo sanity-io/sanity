@@ -8,6 +8,6 @@ import {getDefaultVariant, usePerspective} from 'sanity'
  * @internal
  */
 export function usePresentationVariant(): string | undefined {
-  const {selectedVariantsName} = usePerspective()
-  return getDefaultVariant(selectedVariantsName)
+  const {selectedVariantNames} = usePerspective()
+  return getDefaultVariant(selectedVariantNames)
 }

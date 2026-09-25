@@ -19,9 +19,9 @@ vi.mock('../../store/datastores', () => ({
 // Stable across renders, like the real context value.
 const DEFAULT_PERSPECTIVE = {
   perspectiveStack: ['drafts'] as PerspectiveStack,
-  selectedVariantsName: [],
+  selectedVariantNames: [],
 }
-let currentPerspective: {perspectiveStack: PerspectiveStack; selectedVariantsName: string[]} =
+let currentPerspective: {perspectiveStack: PerspectiveStack; selectedVariantNames: string[]} =
   DEFAULT_PERSPECTIVE
 vi.mock('../../perspective/usePerspective', () => ({
   usePerspective: () => currentPerspective,
@@ -240,7 +240,7 @@ describe('useValuePreview', () => {
     expect(requested(frames.at(-1))).toEqual({id: 'a', keys: ['_id'], perspective: ['drafts']})
     const settled = frames.length
 
-    currentPerspective = {perspectiveStack: ['rRelease', 'drafts'], selectedVariantsName: ['nb']}
+    currentPerspective = {perspectiveStack: ['rRelease', 'drafts'], selectedVariantNames: ['nb']}
     rerender(<Harness schemaType={bookType} value={{_id: 'a'}} frames={frames} />)
 
     expect(requested(frames.at(-1))).toEqual({
@@ -256,7 +256,7 @@ describe('useValuePreview', () => {
 
   it('previews through the given perspective stack and variant only', () => {
     observeForPreview.mockImplementation(previewRequest())
-    currentPerspective = {perspectiveStack: ['drafts'], selectedVariantsName: ['nb']}
+    currentPerspective = {perspectiveStack: ['drafts'], selectedVariantNames: ['nb']}
     const frames: Frame[] = []
     const {rerender} = render(
       <Harness
@@ -302,7 +302,7 @@ describe('useValuePreview', () => {
     )
     const settled = frames.length
 
-    currentPerspective = {perspectiveStack: ['rOther', 'drafts'], selectedVariantsName: ['nb']}
+    currentPerspective = {perspectiveStack: ['rOther', 'drafts'], selectedVariantNames: ['nb']}
     rerender(
       <Harness
         schemaType={bookType}
@@ -360,7 +360,7 @@ describe('useValuePreview', () => {
 
   it('previews a version slated for unpublishing as its published document', () => {
     observeForPreview.mockImplementation(previewRequest())
-    currentPerspective = {perspectiveStack: ['rRelease', 'drafts'], selectedVariantsName: ['nb']}
+    currentPerspective = {perspectiveStack: ['rRelease', 'drafts'], selectedVariantNames: ['nb']}
     const frames: Frame[] = []
     render(
       <Harness

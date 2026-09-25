@@ -53,19 +53,19 @@ export function PerspectiveProvider({
     [releases, selectedPerspectiveName, excludedPerspectives, isDraftModelEnabled],
   )
 
-  const selectedVariantsName = useMemo(
+  const selectedVariantNames = useMemo(
     () => parseVariantStickyParam(selectedVariantName).map((selection) => selection.name),
     [selectedVariantName],
   )
   const selectedVariants = useMemo(
     () =>
-      selectedVariantsName.map((name) =>
+      selectedVariantNames.map((name) =>
         getSelectedVariant({
           selectedVariantName: name,
           variantsById,
         }),
       ),
-    [selectedVariantsName, variantsById],
+    [selectedVariantNames, variantsById],
   )
 
   const value: PerspectiveContextValue = useMemo(() => {
@@ -76,9 +76,9 @@ export function PerspectiveProvider({
       selectedReleaseId: getSelectedReleaseId(selectedPerspectiveName, releases),
       perspectiveStack,
       excludedPerspectives,
-      selectedVariantsName,
+      selectedVariantNames,
       selectedVariants,
-      selectedVariantName: getDefaultVariant(selectedVariantsName),
+      selectedVariantName: getDefaultVariant(selectedVariantNames),
       selectedVariant: getDefaultVariant(selectedVariants),
       bundle: getBundleIdFromPerspective(selectedPerspective),
     }
@@ -88,7 +88,7 @@ export function PerspectiveProvider({
     selectedPerspective,
     perspectiveStack,
     excludedPerspectives,
-    selectedVariantsName,
+    selectedVariantNames,
     selectedVariants,
   ])
 

@@ -46,7 +46,7 @@ const DRAFTS_PERSPECTIVE: ReturnType<typeof usePerspective> = {
   selectedPerspective: 'drafts',
   perspectiveStack: ['drafts'],
   excludedPerspectives: [],
-  selectedVariantsName: [],
+  selectedVariantNames: [],
   selectedVariants: [],
   // oxlint-disable-next-line typescript/no-deprecated
   selectedVariantName: undefined,

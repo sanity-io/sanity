@@ -61,9 +61,9 @@ export interface PerspectiveContextValue {
    * @beta
    * @internal
    */
-  selectedVariantsName: string[]
+  selectedVariantNames: string[]
   /**
-   * Resolved definitions aligned with {@link PerspectiveContextValue.selectedVariantsName}.
+   * Resolved definitions aligned with {@link PerspectiveContextValue.selectedVariantNames}.
    * An entry is undefined while definitions are loading (see `useAllVariants().loading`) or
    * when that id matches no definition.
    * Document editing uses the first entry only until multi variants are supported.
@@ -72,10 +72,10 @@ export interface PerspectiveContextValue {
    */
   selectedVariants: (SystemVariant | undefined)[]
   /**
-   * The first `selectedVariantsName` entry.
+   * The first `selectedVariantNames` entry.
    * Undefined when no variant is requested.
    *
-   * @deprecated Use `selectedVariantsName`. This is the first selected id.
+   * @deprecated Use `selectedVariantNames`. This is the first selected id.
    * @beta
    * @internal
    */

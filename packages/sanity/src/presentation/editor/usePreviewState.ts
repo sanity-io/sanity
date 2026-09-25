@@ -20,8 +20,8 @@ const EMPTY_STATE: PreviewState = {}
 
 export default function usePreviewState(documentId: string, schemaType?: SchemaType): PreviewState {
   const documentPreviewStore = useDocumentPreviewStore()
-  const {perspectiveStack, selectedVariantsName} = usePerspective()
-  const selectedVariantName = getDefaultVariant(selectedVariantsName)
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
 
   const preview$ = useMemo(
     () =>

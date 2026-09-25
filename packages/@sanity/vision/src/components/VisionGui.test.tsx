@@ -96,7 +96,7 @@ const BASE_PERSPECTIVE: PerspectiveContextValue = {
   selectedPerspective: 'published',
   selectedPerspectiveName: 'published',
   selectedReleaseId: undefined,
-  selectedVariantsName: [],
+  selectedVariantNames: [],
   selectedVariants: [],
   // oxlint-disable-next-line typescript/no-deprecated -- fixture fills the deprecated first-variant alias
   selectedVariantName: undefined,
@@ -200,7 +200,7 @@ describe('VisionGui pinned release and variant', () => {
 
     const {fetchConfigs} = renderVision({
       ...BASE_PERSPECTIVE,
-      selectedVariantsName: ['french'],
+      selectedVariantNames: ['french'],
     })
 
     await waitFor(() => {
@@ -232,7 +232,7 @@ describe('VisionGui pinned release and variant', () => {
 
     const {fetchConfigs} = renderVision({
       ...BASE_PERSPECTIVE,
-      selectedVariantsName: ['french'],
+      selectedVariantNames: ['french'],
     })
 
     expect(getApiVersionSelector().value).toBe('vX')
@@ -258,7 +258,7 @@ describe('VisionGui pinned release and variant', () => {
       perspectiveStack: [],
       selectedPerspectiveName: undefined,
       selectedPerspective: 'drafts',
-      selectedVariantsName: ['french'],
+      selectedVariantNames: ['french'],
     })
 
     expect(getPerspectiveSelector().value).toBe('raw')
@@ -287,7 +287,7 @@ describe('VisionGui pinned release and variant', () => {
 
     const {fetchConfigs} = renderVision({
       ...BASE_PERSPECTIVE,
-      selectedVariantsName: ['french'],
+      selectedVariantNames: ['french'],
     })
 
     await waitFor(() => {

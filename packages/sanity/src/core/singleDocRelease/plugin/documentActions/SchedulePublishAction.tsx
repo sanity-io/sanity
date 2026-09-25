@@ -56,7 +56,7 @@ export const useSchedulePublishAction: DocumentActionComponent = (
 
   // Scheduling operates on the base draft, so it is not available while a variant is selected —
   // it would silently schedule the base document instead of the variant (SAPP-3986).
-  const isVariantSelected = Boolean(getDefaultVariant(perspective.selectedVariantsName))
+  const isVariantSelected = Boolean(getDefaultVariant(perspective.selectedVariantNames))
 
   const currentRelease = useMemo(
     () =>

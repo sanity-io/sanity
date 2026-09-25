@@ -98,8 +98,8 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     mentionsDisabled,
   } = props
   const commentsEnabled = useCommentsEnabled()
-  const {selectedReleaseId, selectedVariantsName} = usePerspective()
-  const selectedVariantName = getDefaultVariant(selectedVariantsName)
+  const {selectedReleaseId, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const [status, setStatus] = useState<CommentStatus>('open')
   const publishedId = getPublishedId(groupId)
   const scopeId = isVersionId(versionId) ? getVersionFromId(versionId) : undefined

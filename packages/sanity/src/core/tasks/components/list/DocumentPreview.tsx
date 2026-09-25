@@ -29,8 +29,8 @@ export function DocumentPreview({
 }) {
   const schema = useSchema()
   const documentSchema = schema.get(documentType)
-  const {perspectiveStack, selectedVariantsName} = usePerspective()
-  const selectedVariantName = getDefaultVariant(selectedVariantsName)
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const {isLoading, value} = useDocumentPreviewValues({
     documentId,
     documentType,
