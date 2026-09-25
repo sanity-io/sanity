@@ -176,8 +176,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const {versions: documentVersionStubs, loading: documentVersionsLoading} = useDocumentVersions({
     documentId,
   })
-  const {selectedVariantsName, bundle} = usePerspective()
-  const selectedVariantName = getDefaultVariant(selectedVariantsName)
+  const {selectedVariantNames, bundle} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const targetDocumentState = useTargetDocumentState(documentId)
   const creatableVariantTarget = getCreatableVariantTarget(targetDocumentState)
   const canCreateVariantDraft = Boolean(creatableVariantTarget && initialValue?.value)

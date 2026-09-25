@@ -30,7 +30,7 @@ vi.mock('sanity', async (importOriginal) => ({
     selectedPerspective: 'drafts',
     selectedPerspectiveName: undefined,
     selectedReleaseId: undefined,
-    selectedVariantsName: [],
+    selectedVariantNames: [],
     selectedVariants: [],
     // oxlint-disable-next-line typescript/no-deprecated -- context fixture fills the deprecated alias
     selectedVariantName: undefined,
@@ -50,7 +50,7 @@ const BASE_PERSPECTIVE: PerspectiveContextValue = {
   selectedPerspective: 'drafts',
   selectedPerspectiveName: undefined,
   selectedReleaseId: undefined,
-  selectedVariantsName: [],
+  selectedVariantNames: [],
   selectedVariants: [],
   // oxlint-disable-next-line typescript/no-deprecated -- context fixture fills the deprecated alias
   selectedVariantName: undefined,
@@ -245,7 +245,7 @@ describe('DocumentListPane perspective and variant', () => {
   it('queries with the selected variant alongside the perspective stack', async () => {
     mockUsePerspective.mockReturnValue({
       ...BASE_PERSPECTIVE,
-      selectedVariantsName: ['alpha-audience'],
+      selectedVariantNames: ['alpha-audience'],
       // oxlint-disable-next-line typescript/no-deprecated -- context fixture fills the deprecated alias
       selectedVariantName: 'alpha-audience',
     })

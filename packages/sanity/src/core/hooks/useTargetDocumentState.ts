@@ -356,9 +356,9 @@ export function getTargetDocumentState(options: {
  */
 export function useTargetDocumentState(documentGroupId: string): TargetDocumentState {
   const {versions, loading: versionsLoading} = useDocumentVersions({documentId: documentGroupId})
-  const {bundle, selectedVariants, selectedVariantsName} = usePerspective()
+  const {bundle, selectedVariants, selectedVariantNames} = usePerspective()
   const selectedVariant = getDefaultVariant(selectedVariants)
-  const selectedVariantName = getDefaultVariant(selectedVariantsName)
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const {loading: variantsLoading} = useAllVariants()
   const schema = useSchema()
   const liveEdit = useMemo(

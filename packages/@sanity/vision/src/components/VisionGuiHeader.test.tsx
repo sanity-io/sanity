@@ -51,7 +51,7 @@ const BASE_PERSPECTIVE: PerspectiveContextValue = {
   selectedPerspective: 'published',
   selectedPerspectiveName: 'published',
   selectedReleaseId: undefined,
-  selectedVariantsName: [],
+  selectedVariantNames: [],
   selectedVariants: [],
   // oxlint-disable-next-line typescript/no-deprecated -- fixture fills the deprecated first-variant alias
   selectedVariantName: undefined,
@@ -111,7 +111,7 @@ describe('VisionGuiHeader variant lock', () => {
   it('locks the API version selector to vX when pinned release has a variant', () => {
     renderHeader('pinnedRelease', {
       ...BASE_PERSPECTIVE,
-      selectedVariantsName: ['french'],
+      selectedVariantNames: ['french'],
     })
 
     const selector = getApiVersionSelector()
@@ -122,7 +122,7 @@ describe('VisionGuiHeader variant lock', () => {
   it('does not lock the API version for a variant when Vision is on a local perspective', () => {
     renderHeader('raw', {
       ...BASE_PERSPECTIVE,
-      selectedVariantsName: ['french'],
+      selectedVariantNames: ['french'],
     })
 
     expect(getApiVersionSelector().disabled).toBe(false)
@@ -133,7 +133,7 @@ describe('VisionGuiHeader variant lock', () => {
       'pinnedRelease',
       {
         ...BASE_PERSPECTIVE,
-        selectedVariantsName: ['french'],
+        selectedVariantNames: ['french'],
       },
       {customApiVersion: 'v2022-08-08', apiVersion: 'v2022-08-08'},
     )
@@ -145,7 +145,7 @@ describe('VisionGuiHeader variant lock', () => {
   it('shows the variant title on the pinned release option', () => {
     renderHeader('pinnedRelease', {
       ...BASE_PERSPECTIVE,
-      selectedVariantsName: ['french'],
+      selectedVariantNames: ['french'],
       selectedVariants: [
         {
           _id: '_.variants.french',
@@ -168,7 +168,7 @@ describe('VisionGuiHeader variant lock', () => {
   it('exposes the variant lock tooltip copy', () => {
     renderHeader('pinnedRelease', {
       ...BASE_PERSPECTIVE,
-      selectedVariantsName: ['french'],
+      selectedVariantNames: ['french'],
     })
 
     expect(screen.getByTestId('api-version-selector-wrap')).toBeTruthy()
@@ -178,7 +178,7 @@ describe('VisionGuiHeader variant lock', () => {
   it('renders the copyable query URL with vX and the variant', () => {
     renderHeader('pinnedRelease', {
       ...BASE_PERSPECTIVE,
-      selectedVariantsName: ['french'],
+      selectedVariantNames: ['french'],
     })
 
     const url = getQueryUrl()

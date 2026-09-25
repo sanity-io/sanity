@@ -41,8 +41,8 @@ export function useTargetScopeId(options: TargetScopeIdOptions): string | undefi
   const {documentId, selectedPerspectiveName} = options
 
   const {data: documentVersions} = useDocumentVersions({documentId})
-  const {selectedVariantsName} = usePerspective()
-  const selectedVariantName = getDefaultVariant(selectedVariantsName)
+  const {selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const targetDocumentState = useTargetDocumentState(documentId)
   const onlyHasVersions = useOnlyHasVersions({documentId})
 

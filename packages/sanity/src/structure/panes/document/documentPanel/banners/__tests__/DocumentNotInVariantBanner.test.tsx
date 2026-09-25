@@ -170,7 +170,7 @@ describe('DocumentNotInVariantBanner', () => {
       selectedReleaseId: undefined,
       perspectiveStack: ['drafts'],
       excludedPerspectives: [],
-      selectedVariantsName: ['alpha-audience'],
+      selectedVariantNames: ['alpha-audience'],
       selectedVariants: [variantAlphaAudience],
       // oxlint-disable-next-line typescript/no-deprecated
       selectedVariantName: 'alpha-audience',
@@ -194,7 +194,7 @@ describe('DocumentNotInVariantBanner', () => {
         selectedReleaseId: undefined,
         perspectiveStack: ['published'],
         excludedPerspectives: [],
-        selectedVariantsName: ['alpha-audience'],
+        selectedVariantNames: ['alpha-audience'],
         selectedVariants: [variantAlphaAudience],
         // oxlint-disable-next-line typescript/no-deprecated
         selectedVariantName: 'alpha-audience',
@@ -215,7 +215,7 @@ describe('DocumentNotInVariantBanner', () => {
         selectedReleaseId: 'rSummer',
         perspectiveStack: ['rSummer', 'drafts'],
         excludedPerspectives: [],
-        selectedVariantsName: ['alpha-audience'],
+        selectedVariantNames: ['alpha-audience'],
         selectedVariants: [variantAlphaAudience],
         // oxlint-disable-next-line typescript/no-deprecated
         selectedVariantName: 'alpha-audience',
@@ -236,7 +236,7 @@ describe('DocumentNotInVariantBanner', () => {
         selectedReleaseId: 'rUntitled',
         perspectiveStack: ['rUntitled', 'drafts'],
         excludedPerspectives: [],
-        selectedVariantsName: ['alpha-audience'],
+        selectedVariantNames: ['alpha-audience'],
         selectedVariants: [variantAlphaAudience],
         // oxlint-disable-next-line typescript/no-deprecated
         selectedVariantName: 'alpha-audience',
@@ -257,7 +257,7 @@ describe('DocumentNotInVariantBanner', () => {
         selectedReleaseId: 'rAnonymous',
         perspectiveStack: ['rAnonymous', 'drafts'],
         excludedPerspectives: [],
-        selectedVariantsName: ['alpha-audience'],
+        selectedVariantNames: ['alpha-audience'],
         selectedVariants: [variantAlphaAudience],
         // oxlint-disable-next-line typescript/no-deprecated
         selectedVariantName: 'alpha-audience',
@@ -283,7 +283,7 @@ describe('DocumentNotInVariantBanner', () => {
         selectedReleaseId: undefined,
         perspectiveStack: ['drafts'],
         excludedPerspectives: [],
-        selectedVariantsName: ['alpha-audience'],
+        selectedVariantNames: ['alpha-audience'],
         selectedVariants: [untitledVariant],
         // oxlint-disable-next-line typescript/no-deprecated
         selectedVariantName: 'alpha-audience',
@@ -317,7 +317,7 @@ describe('DocumentNotInVariantBanner', () => {
         selectedReleaseId: 'rSummer',
         perspectiveStack: ['rSummer', 'drafts'],
         excludedPerspectives: [],
-        selectedVariantsName: ['alpha-audience'],
+        selectedVariantNames: ['alpha-audience'],
         selectedVariants: [variantAlphaAudience],
         // oxlint-disable-next-line typescript/no-deprecated
         selectedVariantName: 'alpha-audience',
@@ -340,7 +340,7 @@ describe('DocumentNotInVariantBanner', () => {
         selectedReleaseId: undefined,
         perspectiveStack: ['published'],
         excludedPerspectives: [],
-        selectedVariantsName: ['alpha-audience'],
+        selectedVariantNames: ['alpha-audience'],
         selectedVariants: [variantAlphaAudience],
         // oxlint-disable-next-line typescript/no-deprecated
         selectedVariantName: 'alpha-audience',
@@ -466,7 +466,7 @@ describe('DocumentNotInVariantBanner', () => {
         selectedReleaseId: 'rSummer',
         perspectiveStack: ['rSummer', 'drafts'],
         excludedPerspectives: [],
-        selectedVariantsName: ['alpha-audience'],
+        selectedVariantNames: ['alpha-audience'],
         selectedVariants: [variantAlphaAudience],
         // oxlint-disable-next-line typescript/no-deprecated
         selectedVariantName: 'alpha-audience',
@@ -505,7 +505,7 @@ describe('DocumentNotInVariantBanner', () => {
         selectedReleaseId: 'rSummer',
         perspectiveStack: ['rSummer', 'drafts'],
         excludedPerspectives: [],
-        selectedVariantsName: ['alpha-audience'],
+        selectedVariantNames: ['alpha-audience'],
         selectedVariants: [variantAlphaAudience],
         // oxlint-disable-next-line typescript/no-deprecated
         selectedVariantName: 'alpha-audience',

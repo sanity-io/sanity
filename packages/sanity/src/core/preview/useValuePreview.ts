@@ -184,8 +184,8 @@ export function useValuePreview(props: {
     variant: chosenVariant,
   } = props || {}
   const {observeForPreview} = useDocumentPreviewStore()
-  const {perspectiveStack, selectedVariantsName} = usePerspective()
-  const selectedVariantName = getDefaultVariant(selectedVariantsName)
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
 
   const perspective = chosenPerspectiveStack ?? perspectiveStack
   // The variant follows the perspective: only inherited from the context when the perspective is too.
