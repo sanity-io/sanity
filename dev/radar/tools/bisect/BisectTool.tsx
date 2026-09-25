@@ -1,12 +1,12 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {EnterRightIcon} from '@sanity/icons/EnterRight'
-import {Badge, Box, Button, Card, Container, Stack, Text} from '@sanity/ui'
+import {Badge, Box, Button, Card, Container, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {type SVGProps, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useClient, useCurrentUser, useDocumentStore} from 'sanity'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 import {compareTagsSemverDesc, regressionsByTag, withoutEolLines} from '../releases/releaseInfo'
 import {RELEASE_LINES_QUERY, type ReleaseLineSlice} from '../releases/releaseLines'
@@ -246,10 +246,10 @@ export function BisectTool() {
   return (
     <Box padding={4} style={{overflowY: 'auto', height: '100%'}}>
       <Container width={2}>
-        <Stack gap={4}>
+        <VStack gap={4}>
           <Flex alignItems="center" gap={3}>
             <Box flex={1}>
-              <Stack gap={3}>
+              <VStack gap={3}>
                 <Text size={3} weight="semibold">
                   Bisect
                 </Text>
@@ -258,7 +258,7 @@ export function BisectTool() {
                   commit, then test the preview build the tool proposes at each step. Every run is
                   stored as a session, so a bisect can be shared or picked up later.
                 </Text>
-              </Stack>
+              </VStack>
             </Box>
             <Button
               icon={AddIcon}
@@ -297,7 +297,7 @@ export function BisectTool() {
               onOpen={(id) => setSessionId(id, 'push')}
             />
           ))}
-        </Stack>
+        </VStack>
       </Container>
 
       {creating && (
@@ -343,7 +343,7 @@ function SessionTree(props: {
   const children = (childrenOf.get(session._id) ?? []).filter((child) => !visited.has(child._id))
   const nextVisited = new Set(visited).add(session._id)
   const body = (
-    <Stack gap={1}>
+    <VStack gap={1}>
       <SessionRow
         session={session}
         // The status line (affected releases, outcome, severity) is the
@@ -358,7 +358,7 @@ function SessionTree(props: {
       />
       {children.length > 0 && (
         <Box paddingLeft={3}>
-          <Stack gap={1}>
+          <VStack gap={1}>
             {children.map((child) => (
               // A "down and right" arrow in the gutter, level with the child's
               // heading, says "narrows down the one above" without words
@@ -381,10 +381,10 @@ function SessionTree(props: {
                 </Box>
               </Flex>
             ))}
-          </Stack>
+          </VStack>
         </Box>
       )}
-    </Stack>
+    </VStack>
   )
   return depth === 0 ? (
     <Card padding={1} radius={3} border>
@@ -448,7 +448,7 @@ function SessionRow(props: {
     <Card padding={3} radius={2} onClick={onOpen} style={{cursor: 'pointer'}}>
       <Flex alignItems="center" gap={3} flexWrap="wrap">
         <Box flex={1} style={{minWidth: 0}}>
-          <Stack gap={2}>
+          <VStack gap={2}>
             {/* The heading (see above), then the verdict note: what and why */}
             <Flex alignItems="center" gap={2}>
               <Box flex={1} style={{minWidth: 0}}>
@@ -524,14 +524,14 @@ function SessionRow(props: {
                 </Text>
               )}
             </Flex>
-          </Stack>
+          </VStack>
         </Box>
         {concluded && firstBadSha ? (
           // The verdict as a commit line: label above, then merge glyph,
           // sha, subject (both to the commit) and the PR — the same pieces
           // CommitCard shows, folded onto one line
           <Box style={{maxWidth: '50%', minWidth: 0}}>
-            <Stack gap={2}>
+            <VStack gap={2}>
               <Text size={0} muted>
                 Identified
               </Text>
@@ -581,7 +581,7 @@ function SessionRow(props: {
                   )}
                 </Flex>
               </Card>
-            </Stack>
+            </VStack>
           </Box>
         ) : (
           <Badge tone="caution" fontSize={0}>

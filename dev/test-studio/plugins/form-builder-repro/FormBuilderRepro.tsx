@@ -1,4 +1,4 @@
-import {Card, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Heading, Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {FormBuilder} from 'sanity'
 import {
@@ -6,6 +6,7 @@ import {
   createPatchChannel,
   useDocumentForm,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {VStack} from 'ui5'
 
 export const FORM_BUILDER_REPRO_TYPE = 'formBuilderReproDoc'
 
@@ -72,7 +73,7 @@ export function FormBuilderRepro() {
 
   return (
     <Card padding={5}>
-      <Stack gap={4}>
+      <VStack gap={4}>
         <Heading>FormBuilder repro</Heading>
         <Text muted size={1}>
           Renders `&lt;FormBuilder&gt;` outside `DocumentPaneProvider`. Without the FormBuilder
@@ -106,7 +107,7 @@ export function FormBuilderRepro() {
             />
           </ChangeIndicatorsTracker>
         </Card>
-      </Stack>
+      </VStack>
     </Card>
   )
 }

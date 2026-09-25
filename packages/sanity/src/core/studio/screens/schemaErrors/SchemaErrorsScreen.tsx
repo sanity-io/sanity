@@ -1,8 +1,8 @@
 import {type Schema} from '@sanity/types'
-import {Card, Container, Heading} from '@sanity/ui'
+import {Card, Heading} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useEffect} from 'react'
-import {VStack, Flex} from 'ui5'
+import {Container, VStack, Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -70,7 +70,7 @@ export function SchemaErrorsScreen({schema}: SchemaErrorsScreenProps) {
       paddingX={4}
       sizing="border"
     >
-      <Container width={1}>
+      <Container size={1}>
         <VStack gap={5}>
           <Flex justifyContent="space-between" alignItems="center" gap={2}>
             <Heading as="h1">{t('schema-errors.title', 'Schema errors')}</Heading>

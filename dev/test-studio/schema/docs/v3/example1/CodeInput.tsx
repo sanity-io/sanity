@@ -1,6 +1,6 @@
-import {Stack} from '@sanity/ui'
 import {type FieldMember, type ObjectInputProps} from 'sanity'
 import {MemberField} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {VStack} from 'ui5'
 
 export function CodeInput(props: ObjectInputProps) {
   const {members, renderField, renderItem} = props
@@ -8,7 +8,7 @@ export function CodeInput(props: ObjectInputProps) {
   const codeMember = members.find((member) => member.kind === 'field' && member.name === 'code')
 
   return (
-    <Stack>
+    <VStack>
       {codeMember && (
         // @ts-expect-error -- pre-existing, fix later
         <MemberField
@@ -18,6 +18,6 @@ export function CodeInput(props: ObjectInputProps) {
           renderItem={renderItem}
         />
       )}
-    </Stack>
+    </VStack>
   )
 }

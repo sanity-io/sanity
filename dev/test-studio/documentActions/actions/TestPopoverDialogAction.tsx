@@ -1,8 +1,9 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Button, Stack, Text} from '@sanity/ui'
+import {Button, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useState} from 'react'
 import {type DocumentActionComponent, type DocumentActionDescription} from 'sanity'
+import {Flex} from 'ui5'
 
 export const useTestPopoverDialogAction: DocumentActionComponent = () => {
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -24,12 +25,12 @@ export const useTestPopoverDialogAction: DocumentActionComponent = () => {
       ({
         type: 'popover',
         content: (
-          <Stack padding={4} gap={4}>
+          <Flex padding={4} gap={4} flexDirection="column">
             <Text>
               This is the <code>popover</code> dialog
             </Text>
             <Button onClick={handleClose} text="Close" />
-          </Stack>
+          </Flex>
         ),
         onClose: handleClose,
       } satisfies DocumentActionDescription['dialog']),

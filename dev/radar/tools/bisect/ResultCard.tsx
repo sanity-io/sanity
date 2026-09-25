@@ -1,7 +1,7 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {UndoIcon} from '@sanity/icons/Undo'
-import {Badge, Box, Button, Card, Stack, Text, TextArea} from '@sanity/ui'
-import {Flex} from 'ui5'
+import {Badge, Box, Button, Card, Text, TextArea} from '@sanity/ui'
+import {Flex, VStack} from 'ui5'
 
 import {commitUrl, compareUrl} from '../trends/links'
 import {type deriveBisectState} from './bisect'
@@ -158,7 +158,7 @@ export function ResultCard(props: {
       )}
       {state.suspects.length > 0 && (
         <Card padding={3} radius={2} tone="caution">
-          <Stack gap={3}>
+          <VStack gap={3}>
             <Text size={1} weight="semibold">
               {/* Two different reasons the range stays untested: a releases-only
                   session never proposes non-release commits (most have builds —
@@ -187,7 +187,7 @@ export function ResultCard(props: {
                 />
               </Flex>
             )}
-          </Stack>
+          </VStack>
         </Card>
       )}
     </CommitCard>
