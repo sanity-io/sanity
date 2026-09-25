@@ -1,7 +1,7 @@
 import {CalendarIcon} from '@sanity/icons/Calendar'
 import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
-import {Card, Stack, Text} from '@sanity/ui'
-import {Flex} from 'ui5'
+import {Card, Text} from '@sanity/ui'
+import {Flex, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
 import {DetailIdentity} from '../DetailIdentity'
@@ -27,8 +27,8 @@ export function DetailLayoutStory() {
   return (
     <TestWrapper schemaTypes={[]}>
       <Card padding={4} style={{maxWidth: 720}}>
-        <Stack gap={5}>
-          <Stack gap={2}>
+        <VStack gap={5}>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               titled with description
             </Text>
@@ -55,14 +55,14 @@ export function DetailLayoutStory() {
                 ]}
               />
             </Flex>
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               placeholder title
             </Text>
             <DetailIdentity title={undefined} titlePlaceholder="Untitled release" />
-          </Stack>
-        </Stack>
+          </VStack>
+        </VStack>
       </Card>
     </TestWrapper>
   )

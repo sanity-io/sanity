@@ -1,9 +1,9 @@
-import {Card, Container, Text, useTheme} from '@sanity/ui'
+import {Card, Text, useTheme} from '@sanity/ui'
 import {parse} from 'date-fns/parse'
 import {useEffect, useMemo, useRef} from 'react'
 import {Link, type RouterContextValue, useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
-import {Box, Flex} from 'ui5'
+import {Container, Box, Flex} from 'ui5'
 
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
 import {TimeZoneButton} from '../../components/timeZone/timeZoneButton/TimeZoneButton'
@@ -111,7 +111,7 @@ export default function Tool() {
   if (!enabled) {
     if (scheduledPublishing.__internal__workspaceEnabled) {
       return (
-        <Container width={1} paddingTop={4}>
+        <Container size={1} paddingTop={4}>
           <Box paddingTop={4} paddingX={4}>
             <ErrorCallout
               description="Something went wrong loading permissions, please try again."
@@ -123,7 +123,7 @@ export default function Tool() {
     }
     // This is for the case users lands in the tool rout without having the feature enabled.
     return (
-      <Container width={1} paddingTop={4}>
+      <Container size={1} paddingTop={4}>
         <Box paddingTop={4} paddingX={4}>
           {hasUsedScheduledPublishing.loading ? <LoadingBlock /> : <InfoCallout />}
         </Box>

@@ -1,10 +1,10 @@
 import {type PortableTextBlock} from '@portabletext/editor'
 import {CommentIcon} from '@sanity/icons/Comment'
-import {Button, Stack, Text, TextArea} from '@sanity/ui'
+import {Button, Text, TextArea} from '@sanity/ui'
 import {Popover} from '@sanity/ui/popover'
 import {type ChangeEvent, useCallback, useState} from 'react'
 import {type RenderBlockActionsCallback} from 'sanity'
-import {Box} from 'ui5'
+import {Box, VStack} from 'ui5'
 
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export const renderBlockActions: RenderBlockActionsCallback = (props) => {
@@ -35,7 +35,7 @@ function CommentButton(props: {set: (block: PortableTextBlock) => void; value: P
 
   const content = open && (
     <Box padding={3}>
-      <Stack gap={2}>
+      <VStack gap={2}>
         <Text size={1} weight="semibold">
           Comment
         </Text>
@@ -47,7 +47,7 @@ function CommentButton(props: {set: (block: PortableTextBlock) => void; value: P
           text="Post comment"
           tone="primary"
         />
-      </Stack>
+      </VStack>
     </Box>
   )
 
