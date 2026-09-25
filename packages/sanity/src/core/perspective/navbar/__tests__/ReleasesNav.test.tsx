@@ -343,7 +343,7 @@ describe('ReleasesNav', () => {
           .closest('button')!
 
         const indicatorIcon = within(activeReleaseMenuItem).getByTestId('release-indicator-icon')
-        expect(indicatorIcon).toHaveStyle({opacity: 0})
+        expect(indicatorIcon).toHaveStyle({opacity: '0'})
       })
 
       describe('when releases are disabled', () => {

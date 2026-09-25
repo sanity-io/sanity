@@ -19,7 +19,6 @@ import {PresentationDocumentProvider} from './document/PresentationDocumentProvi
 import {openInStructure} from './fieldActions/openInStructure'
 import {getIntentState} from './getIntentState'
 import {presentationUsEnglishLocaleBundle} from './i18n'
-import {PresentationSpinner} from './PresentationSpinner'
 import {router} from './router'
 import {
   type DocumentLocationResolverObject,
@@ -79,7 +78,7 @@ export const presentationTool = definePlugin<PresentationPluginOptions>((options
               schemaType={props.schemaType}
             />
           )}
-          <Suspense fallback={<PresentationSpinner />}>{props.renderDefault(props)}</Suspense>
+          {props.renderDefault(props)}
           <Suspense key="broadcast-displayed-document">
             <BroadcastDisplayedDocument key={documentId} value={value} />
           </Suspense>

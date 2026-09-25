@@ -178,10 +178,13 @@ export const PaneContainer = memo(function PaneContainer(
   const {name: parentSourceName} = useSource()
 
   const {
+    currentMaxWidth = 350,
     defaultLayout = 'default',
     initialValueTemplates = EMPTY_ARRAY,
+    maxWidth = 640,
     menuItemGroups,
     menuItems,
+    minWidth = 320,
     options,
     suppressRestoreDefaultMenuItems,
   } = pane
@@ -308,9 +311,9 @@ export const PaneContainer = memo(function PaneContainer(
       <Pane
         data-ui="DocumentListPane"
         id={paneKey}
-        minWidth={320}
-        currentMaxWidth={350}
-        maxWidth={640}
+        minWidth={minWidth}
+        currentMaxWidth={currentMaxWidth}
+        maxWidth={maxWidth}
         selected={isSelected}
       >
         {_DEBUG && (

@@ -1,0 +1,38 @@
+import {type VariantTypeConfig} from '../../config/types'
+
+/**
+ * Type key used when config omits `types`, when a definition has no `metadata.type`,
+ * and when a sticky variant id has no type prefix.
+ *
+ * @internal
+ */
+export const DEFAULT_VARIANT_TYPE_KEY = 'variant'
+
+const VARIANT_TYPE_KEY_PATTERN = /^[a-z][a-z0-9_-]{0,63}$/
+
+/**
+ * @internal
+ */
+export function defaultVariantTypesRecord(): Record<string, VariantTypeConfig> {
+  return {[DEFAULT_VARIANT_TYPE_KEY]: {label: 'Variant'}}
+}
+
+/**
+ * @internal
+ */
+export function isVariantTypeKey(key: string): boolean {
+  return VARIANT_TYPE_KEY_PATTERN.test(key)
+}
+
+/**
+ * Phase 1 only accepts the `variant` type. Delete this function to allow other type keys.
+ *
+ * @internal
+ */
+export function assertOnlyVariantType(key: string): void {
+  if (key !== DEFAULT_VARIANT_TYPE_KEY) {
+    throw new Error(
+      `Expected \`beta.variants.types\` to only include "${DEFAULT_VARIANT_TYPE_KEY}", but received ${JSON.stringify(key)}`,
+    )
+  }
+}

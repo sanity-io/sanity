@@ -1,5 +1,6 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
+import {VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
 import {
@@ -17,8 +18,8 @@ export function DocumentListPaneSearchOrderingStory() {
   return (
     <TestWrapper schemaTypes={[]}>
       <Card padding={4} style={{maxWidth: 360}}>
-        <Stack gap={5}>
-          <Stack gap={2}>
+        <VStack gap={5}>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               no configured orderings
             </Text>
@@ -27,8 +28,8 @@ export function DocumentListPaneSearchOrderingStory() {
               orderings={[]}
               value={RELEVANCE_ORDERING_ID}
             />
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               relevance selected
             </Text>
@@ -37,8 +38,8 @@ export function DocumentListPaneSearchOrderingStory() {
               orderings={ORDERINGS}
               value={RELEVANCE_ORDERING_ID}
             />
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               configured ordering selected
             </Text>
@@ -47,8 +48,8 @@ export function DocumentListPaneSearchOrderingStory() {
               orderings={ORDERINGS}
               value="updated-desc"
             />
-          </Stack>
-        </Stack>
+          </VStack>
+        </VStack>
       </Card>
     </TestWrapper>
   )

@@ -3,9 +3,9 @@ import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {CloseIcon} from '@sanity/icons/Close'
 import {FilterIcon} from '@sanity/icons/Filter'
 import {SearchIcon} from '@sanity/icons/Search'
-import {Card, Stack, Text, TextInput, useClickOutsideEvent} from '@sanity/ui'
+import {Card, Text, TextInput, useClickOutsideEvent} from '@sanity/ui'
 import {type ComponentType, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {Flex, Box} from 'ui5'
+import {Flex, Box, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Popover} from '../../../../ui-components/popover/Popover'
@@ -61,7 +61,7 @@ function AddFilterMenu({
   // Master-detail: dimensions on the left, the selected dimension's values on the right — both panes
   // visible at once, so choosing a dimension and toggling its values needs no back-and-forth.
   const content = (
-    <Stack gap={0} style={{width: 520}}>
+    <VStack gap={0} style={{width: 520}}>
       <Box padding={2} style={{borderBottom: '1px solid var(--card-border-color)'}}>
         <TextInput
           fontSize={1}
@@ -76,7 +76,7 @@ function AddFilterMenu({
         {/* Left: dimensions — icon + label grouped left (flex-start); the highlighted row and the
             live value pane convey the drill, so no trailing chevron is needed. */}
         <Box style={{width: 240, borderRight: '1px solid var(--card-border-color)'}}>
-          <Stack padding={2} gap={1}>
+          <Flex padding={2} gap={1} flexDirection="column">
             {matchingFacets.length === 0 ? (
               <Box padding={3}>
                 <Text muted size={1}>
@@ -100,13 +100,13 @@ function AddFilterMenu({
                 )
               })
             )}
-          </Stack>
+          </Flex>
         </Box>
         {/* Right: values of the selected dimension — a muted header names the dimension, then the
             values (text left, selected checkmark pinned right via space-between). */}
         <Box style={{flex: 1}}>
           {activeFacet ? (
-            <Stack padding={2} gap={1}>
+            <Flex padding={2} gap={1} flexDirection="column">
               <Box paddingBottom={1} paddingTop={1} paddingX={2}>
                 <Text muted size={0} weight="medium">
                   {facetLabel(activeFacet.key)}
@@ -127,7 +127,7 @@ function AddFilterMenu({
                   />
                 )
               })}
-            </Stack>
+            </Flex>
           ) : (
             <Flex alignItems="center" height="100%" justifyContent="center" padding={4}>
               <Text align="center" muted size={1}>
@@ -137,7 +137,7 @@ function AddFilterMenu({
           )}
         </Box>
       </Flex>
-    </Stack>
+    </VStack>
   )
 
   return (

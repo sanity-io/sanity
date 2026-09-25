@@ -1,7 +1,7 @@
 import {type ReleaseDocument, type ReleaseType} from '@sanity/client'
-import {Card, Label, Stack} from '@sanity/ui'
+import {Card, Label} from '@sanity/ui'
 import {useCallback} from 'react'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {usePerspective} from '../../perspective/usePerspective'
@@ -52,7 +52,7 @@ export function ReleaseTypeMenuSection({
 
   return (
     <Card padding={1} borderBottom>
-      <Stack gap={1}>
+      <VStack gap={1}>
         <GlobalPerspectiveMenuLabelIndicator
           $withinRange={releaseTypeOffset > 0 && lastIndex >= releaseTypeOffset}
           paddingLeft={2}
@@ -74,7 +74,7 @@ export function ReleaseTypeMenuSection({
             />
           ))}
         </Flex>
-      </Stack>
+      </VStack>
     </Card>
   )
 }

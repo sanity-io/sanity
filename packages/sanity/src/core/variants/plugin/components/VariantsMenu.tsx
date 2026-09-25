@@ -1,24 +1,24 @@
+import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Text, TextInput} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useMemo, useState, type JSX} from 'react'
-import {useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
+import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
 import {RhombusOutlinedIcon} from '../../../components/temporary-icons/RhombusOutlined'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {getDefaultVariant} from '../../../perspective/getDefaultVariant'
+import {usePerspective} from '../../../perspective/usePerspective'
 import {useSetVariant} from '../../../perspective/useSetVariant'
+import {getConditionMismatchMessage} from '../../components/ConditionMismatchIndicator'
+import {useVariantConditionMismatches} from '../../hooks/useVariantConditions'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
-import {
-  decodeVariantIdFromRoute,
-  filterVariantsForSearch,
-  getVariantId,
-  getVariantTitle,
-} from '../../tool/util'
+import {filterVariantsForSearch, getVariantId, getVariantTitle} from '../../tool/util'
 import {type SystemVariant} from '../../types'
 import {menuIconSpacer, suggestIconColor} from './VariantsNav.css'
 
@@ -36,26 +36,61 @@ const SectionHeader = styled(Text)`
   letter-spacing: 0.04em;
 `
 
+function VariantMenuItem(props: {
+  isSelected: boolean
+  onSelect: (variant: SystemVariant) => void
+  variant: SystemVariant
+}) {
+  const {isSelected, onSelect, variant} = props
+  const {t} = useTranslation(variantsLocaleNamespace)
+  const mismatches = useVariantConditionMismatches(variant.conditions)
+  const mismatchMessage =
+    mismatches.length > 0 ? getConditionMismatchMessage(t, mismatches) : undefined
+
+  return (
+    <MenuItem
+      data-testid={`variant-${getVariantId(variant._id)}`}
+      icon={
+        <Text size={2} className={suggestIconColor}>
+          <RhombusIcon />
+        </Text>
+      }
+      iconRight={
+        mismatches.length > 0 ? (
+          <span data-testid="variant-condition-mismatch">
+            <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
+          </span>
+        ) : undefined
+      }
+      onClick={() => onSelect(variant)}
+      pressed={isSelected}
+      selected={isSelected}
+      text={getVariantTitle(variant)}
+      tooltipProps={
+        mismatchMessage
+          ? {
+              content: (
+                <Text muted size={1}>
+                  {mismatchMessage}
+                </Text>
+              ),
+            }
+          : undefined
+      }
+    />
+  )
+}
+
 /**
  * @internal
  */
 export function VariantsMenu({trigger}: {trigger: JSX.Element}): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
-  const router = useRouter()
   const setVariant = useSetVariant()
   const {data: variants} = useAllVariants()
   const [filterQuery, setFilterQuery] = useState('')
-
-  const selectedVariantDocumentId = decodeVariantIdFromRoute(
-    router.stickyParams.variant ?? undefined,
-  )
-  const selectedVariant = useMemo(
-    () =>
-      selectedVariantDocumentId
-        ? variants.find((variant) => variant._id === selectedVariantDocumentId)
-        : undefined,
-    [selectedVariantDocumentId, variants],
-  )
+  const {selectedVariants} = usePerspective()
+  const selectedVariant = getDefaultVariant(selectedVariants)
 
   const filteredVariants = useMemo(
     () => filterVariantsForSearch(variants, filterQuery),
@@ -132,25 +167,14 @@ export function VariantsMenu({trigger}: {trigger: JSX.Element}): React.JSX.Eleme
                 </Flex>
               </Box>
               <Box paddingX={2}>
-                {filteredVariants.map((variant) => {
-                  const isSelected = selectedVariant?._id === variant._id
-
-                  return (
-                    <MenuItem
-                      key={variant._id}
-                      data-testid={`variant-${getVariantId(variant._id)}`}
-                      icon={
-                        <Text size={2} className={suggestIconColor}>
-                          <RhombusIcon />
-                        </Text>
-                      }
-                      onClick={() => handleSelectVariant(variant)}
-                      pressed={isSelected}
-                      selected={isSelected}
-                      text={getVariantTitle(variant)}
-                    />
-                  )
-                })}
+                {filteredVariants.map((variant) => (
+                  <VariantMenuItem
+                    key={variant._id}
+                    isSelected={selectedVariant?._id === variant._id}
+                    onSelect={handleSelectVariant}
+                    variant={variant}
+                  />
+                ))}
               </Box>
             </>
           )}

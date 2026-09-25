@@ -22,6 +22,7 @@ import {
   type EditStateFor,
   EMPTY_ARRAY,
   getCreatableVariantTarget,
+  getDefaultVariant,
   getDocumentVersionType,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
@@ -243,7 +244,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   // Exception: a creatable missing draft variant (server-advertised id) is editable — typing
   // creates the document seeded from the published sibling.
   const isVariantTargetReadOnly =
-    Boolean(perspective.selectedVariantName) &&
+    Boolean(getDefaultVariant(perspective.selectedVariantNames)) &&
     targetDocumentState.status !== 'ready' &&
     !getCreatableVariantTarget(targetDocumentState)
 

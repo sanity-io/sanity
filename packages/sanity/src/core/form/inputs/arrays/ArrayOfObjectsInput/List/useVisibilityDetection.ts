@@ -1,13 +1,14 @@
 import {type RefObject, useEffect, useRef, useState} from 'react'
 
 /**
- * Detects when a component transitions from hidden to visible.
+ * Returns a key that changes each time the element goes from hidden (zero width) back to visible,
+ * so the caller can remount a virtualizer that measured itself while hidden, e.g. inside a hidden
+ * `TabPanel`. The list stays mounted while hidden: a Suspense fallback hides it the same way, and
+ * unmounting it there would drop the pending item and suspend again in a loop.
  */
 export function useVisibilityDetection(parentRef: RefObject<HTMLElement | null>): {
-  isVisible: boolean
   mountKey: number
 } {
-  const [isVisible, setIsVisible] = useState(true)
   const [mountKey, setMountKey] = useState(0)
   const prevVisible = useRef(true)
 
@@ -16,18 +17,11 @@ export function useVisibilityDetection(parentRef: RefObject<HTMLElement | null>)
       const entry = entries[0]
       if (!entry) return
 
-      const {width} = entry.contentRect
-      const isNowVisible = width > 0
-      const wasVisible = prevVisible.current
-
-      if (wasVisible === isNowVisible) return
-
-      const becameVisible = !wasVisible && isNowVisible
+      const isNowVisible = entry.contentRect.width > 0
+      if (prevVisible.current === isNowVisible) return
 
       prevVisible.current = isNowVisible
-      setIsVisible(isNowVisible)
-
-      if (becameVisible) {
+      if (isNowVisible) {
         setMountKey((prev) => prev + 1)
       }
     })
@@ -39,5 +33,5 @@ export function useVisibilityDetection(parentRef: RefObject<HTMLElement | null>)
     return () => resizeObserver.disconnect()
   }, [parentRef])
 
-  return {isVisible, mountKey}
+  return {mountKey}
 }

@@ -55,7 +55,8 @@ describe('VariantsStudioNavbar', () => {
     vi.clearAllMocks()
     routerMock.stickyParams = {}
     usePerspectiveMockReturn.selectedPerspective = 'drafts'
-    usePerspectiveMockReturn.selectedVariant = undefined
+    usePerspectiveMockReturn.selectedVariants = []
+    usePerspectiveMockReturn.selectedVariantNames = []
   })
 
   const renderNavbar = async () => {

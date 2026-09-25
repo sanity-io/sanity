@@ -4,6 +4,7 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {Text} from '@sanity/ui'
 import {type ComponentType, useCallback, useState} from 'react'
 import {
+  getDefaultVariant,
   getTargetSiblings,
   type ObjectSchemaType,
   Translate,
@@ -45,7 +46,8 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
   const {t} = useTranslation(structureLocaleNamespace)
   const [actionRequested, setActionRequested] = useState<'publish' | 'discard'>()
   const telemetry = useTelemetry()
-  const {selectedVariant} = usePerspective()
+  const {selectedVariants} = usePerspective()
+  const selectedVariant = getDefaultVariant(selectedVariants)
   const {targetDocumentState} = useDocumentPane()
   const siblings = getTargetSiblings(targetDocumentState)
   const publishedId = siblings?.published?._id

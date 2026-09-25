@@ -10,6 +10,7 @@ import {
   type DocumentActionDialogProps,
   type DocumentActionProps,
 } from '../../../../config/document/actions'
+import {getDefaultVariant} from '../../../../perspective/getDefaultVariant'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {useScheduledPublishingEnabled} from '../../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
 import {useDocumentPairPermissions} from '../../../../store/grants/documentPairPermissions'
@@ -66,8 +67,8 @@ export const useScheduleAction: DocumentActionComponent = (props: DocumentAction
   const {handleOpenDialog} = useSchedulePublishingUpsell()
   // Scheduling operates on the base draft, so it is not available while a variant is selected —
   // it would silently schedule the base document instead of the variant (SAPP-3986).
-  const {selectedVariantName} = usePerspective()
-  const isVariantSelected = Boolean(selectedVariantName)
+  const {selectedVariantNames} = usePerspective()
+  const isVariantSelected = Boolean(getDefaultVariant(selectedVariantNames))
   // Check if the current project supports Scheduled Publishing
 
   const [dialogOpen, setDialogOpen] = useState(false)
