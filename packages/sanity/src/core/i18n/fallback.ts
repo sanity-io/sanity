@@ -2,6 +2,7 @@
 import {createInstance, type Resource} from 'i18next'
 import memoize from 'lodash-es/memoize.js'
 
+import studioLocaleStrings from './bundles/studio/resources'
 import {isStaticResourceBundle} from './helpers'
 import {studioLocaleNamespace} from './localeNamespaces'
 import {defaultLocale, usEnglishLocale} from './locales'
@@ -36,10 +37,16 @@ export const getFallbackLocaleSource: () => LocaleSource = memoize(
 )
 
 function getFallbackI18nInstance() {
-  // Find all core locale resource bundles we can load synchronously
-  const staticResources: Resource = {[defaultLocale.id]: {}}
+  // The studio bundle is lazy loaded, but this source is synchronous, so its strings are imported
+  // statically here. Nothing on the studio startup path imports this module, so they still stay
+  // out of the `sanity` entry graph.
+  const staticResources: Resource = {
+    [defaultLocale.id]: {[studioLocaleNamespace]: studioLocaleStrings},
+  }
+  const namespaces = new Set<string>([studioLocaleNamespace])
+
+  // Find all other core locale resource bundles we can load synchronously
   const staticBundles = usEnglishLocale.bundles?.filter(isStaticResourceBundle) || []
-  const namespaces = new Set<string>()
   for (const bundle of staticBundles) {
     staticResources[defaultLocale.id][bundle.namespace] = bundle.resources
     namespaces.add(bundle.namespace)
