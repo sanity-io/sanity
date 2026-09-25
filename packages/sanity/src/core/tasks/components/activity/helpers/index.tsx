@@ -85,8 +85,8 @@ function TargetContentChange({target}: {target: TaskTarget}) {
   const documentId = target.document._ref
   const documentType = target.documentType
   const documentSchema = schema.get(documentType)
-  const {perspectiveStack, selectedVariantsName} = usePerspective()
-  const selectedVariantName = getDefaultVariant(selectedVariantsName)
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const {isLoading, value} = useDocumentPreviewValues({
     documentId,
     documentType,

@@ -35,8 +35,8 @@ export function StructureToolProvider({
   const configContext = useConfigContextFromSource(source)
   const documentStore = useDocumentStore()
 
-  const {perspectiveStack, selectedVariantsName} = usePerspective()
-  const selectedVariantName = getDefaultVariant(selectedVariantsName)
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
 
   const S = useMemo(() => {
     return createStructureBuilder({

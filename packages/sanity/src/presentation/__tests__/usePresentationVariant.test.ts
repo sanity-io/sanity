@@ -18,7 +18,7 @@ describe('usePresentationVariant', () => {
 
   it('should return the selected variant name as-is (bare variant id)', () => {
     mockUsePerspective.mockReturnValue({
-      selectedVariantsName: ['Ab12cd34'],
+      selectedVariantNames: ['Ab12cd34'],
     } satisfies Partial<PerspectiveContextValue>)
 
     const {result} = renderHook(() => usePresentationVariant())
@@ -28,7 +28,7 @@ describe('usePresentationVariant', () => {
 
   it('should return undefined when no variant is selected', () => {
     mockUsePerspective.mockReturnValue({
-      selectedVariantsName: [],
+      selectedVariantNames: [],
     } satisfies Partial<PerspectiveContextValue>)
 
     const {result} = renderHook(() => usePresentationVariant())

@@ -24,8 +24,8 @@ export function DocumentHeaderBreadcrumbItem({
   const telemetry = useTelemetry()
   const routerPanes = useMemo(() => (routerState?.panes || []) as RouterPanes, [routerState?.panes])
 
-  const {perspectiveStack, selectedVariantsName} = usePerspective()
-  const selectedVariantName = getDefaultVariant(selectedVariantsName)
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   // In case if it's a pane with a title, use the title
   const staticTitle = pane !== LOADING_PANE && 'title' in pane ? pane.title : null
 
