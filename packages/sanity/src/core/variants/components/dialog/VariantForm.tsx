@@ -4,7 +4,7 @@ import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type Path} from '@sanity/mutate'
 import {type PortableTextBlock} from '@sanity/types'
-import {Inline, Stack, Text, TextArea, TextInput} from '@sanity/ui'
+import {Inline, Text, TextArea, TextInput} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
 import {
   type ChangeEvent,
@@ -16,7 +16,7 @@ import {
   useState,
 } from 'react'
 import {IntentLink} from 'sanity/router'
-import {Flex, Box} from 'ui5'
+import {Flex, Box, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -395,8 +395,8 @@ export function VariantForm(props: {
   )
 
   return (
-    <Stack gap={5}>
-      <Stack gap={3}>
+    <VStack gap={5}>
+      <VStack gap={3}>
         <Text as="label" htmlFor={titleId} size={1} weight="medium">
           {t('dialog.create.variant-title.label')}
         </Text>
@@ -426,9 +426,9 @@ export function VariantForm(props: {
             )}
           </TextWithTone>
         )}
-      </Stack>
+      </VStack>
 
-      <Stack gap={3}>
+      <VStack gap={3}>
         <Text as="label" htmlFor={descriptionId} size={1} weight="medium">
           {t('dialog.create.description.label')}
         </Text>
@@ -441,9 +441,9 @@ export function VariantForm(props: {
           rows={3}
           value={getPortableTextDescriptionValue(value.metadata?.description)}
         />
-      </Stack>
+      </VStack>
 
-      <Stack gap={3}>
+      <VStack gap={3}>
         <Inline gap={1}>
           <Text as="label" htmlFor={priorityId} size={1} weight="medium">
             {t('dialog.create.priority.label')}
@@ -472,10 +472,10 @@ export function VariantForm(props: {
             {t(`dialog.create.priority.${priorityValidationError}`)}
           </TextWithTone>
         )}
-      </Stack>
+      </VStack>
 
       {showTypePicker ? (
-        <Stack gap={3}>
+        <VStack gap={3}>
           <Text size={1} weight="medium">
             {t('dialog.create.type.label')}
           </Text>
@@ -488,16 +488,16 @@ export function VariantForm(props: {
             selected={selectedTypeOption}
             testId="variant-form-type"
           />
-        </Stack>
+        </VStack>
       ) : null}
 
-      <Stack gap={3}>
+      <VStack gap={3}>
         <Text size={1} weight="medium">
           {t('dialog.create.conditions.title')}
         </Text>
 
         {conditionsConfig.mode === 'mapped' && conditionsConfig.status === 'error' ? (
-          <Stack data-testid="variant-form-conditions-error" gap={3}>
+          <VStack data-testid="variant-form-conditions-error" gap={3}>
             <TextWithTone size={1} tone="critical">
               {t(
                 conditionsConfig.retry
@@ -515,13 +515,13 @@ export function VariantForm(props: {
                 />
               </Flex>
             ) : null}
-          </Stack>
+          </VStack>
         ) : null}
 
         {mappedDefinitions || mappedLoading ? (
           // While the list loads, the rows already render (disabled) so the form does not jump
           // once the definitions arrive.
-          <Stack
+          <VStack
             data-testid={mappedLoading ? 'variant-form-conditions-loading' : undefined}
             gap={3}
           >
@@ -559,18 +559,18 @@ export function VariantForm(props: {
                 />
               )
             })}
-          </Stack>
+          </VStack>
         ) : null}
 
         {conditionsConfig.mode === 'freeform' ? (
-          <Stack gap={2}>
+          <VStack gap={2}>
             {conditionRows.map((row, index) => {
               const validation = conditionsValidation.get(index) ?? getEmptyConditionRowValidation()
               const valueValidation = showValidation ? validation.value : null
               const conditionValidationError = validation.key || valueValidation
 
               return (
-                <Stack key={row.id} gap={2}>
+                <VStack key={row.id} gap={2}>
                   <Flex alignItems="center" gap={2}>
                     <Box flexBasis="0%" flexGrow={1}>
                       <ConditionAutocompleteInput
@@ -621,10 +621,10 @@ export function VariantForm(props: {
                       {t(conditionValidationError)}
                     </TextWithTone>
                   ) : null}
-                </Stack>
+                </VStack>
               )
             })}
-          </Stack>
+          </VStack>
         ) : null}
 
         {duplicateConditionsVariant && (
@@ -654,7 +654,7 @@ export function VariantForm(props: {
             type="button"
           />
         </Flex>
-      </Stack>
-    </Stack>
+      </VStack>
+    </VStack>
   )
 }

@@ -1,5 +1,6 @@
 import {type SanityDocument} from '@sanity/types'
-import {Container, Heading, Stack, Text} from '@sanity/ui'
+import {Container, Heading, Text} from '@sanity/ui'
+import {clsx} from 'clsx'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   CommandList,
@@ -15,7 +16,6 @@ import {
   useSchema,
   useTranslation,
 } from 'sanity'
-import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
 import {PaneContent} from '../../components/pane/PaneContent'
@@ -24,21 +24,8 @@ import {usePaneLayout} from '../../components/pane/usePaneLayout'
 import {PaneItem} from '../../components/paneItem/PaneItem'
 import {structureLocaleNamespace} from '../../i18n'
 import {FULL_LIST_LIMIT} from './constants'
+import {commandListBox, rootBox, rootBoxMuted} from './DocumentListPaneContent.css'
 import {type DocumentListPaneItem, type LoadingVariant, type SortOrder} from './types'
-
-const RootBox = styled(Box)<{$opacity?: number}>`
-  position: relative;
-  opacity: ${(props) => props.$opacity || 1};
-  transition: opacity 0.4s;
-`
-
-const CommandListBox = styled(Box)`
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-`
 
 interface DocumentListPaneContentProps {
   childItemId?: string
@@ -72,11 +59,11 @@ function LoadingView(props: {layout?: GeneralPreviewLayoutKey}) {
   const {layout} = props
 
   return (
-    <Stack paddingX={3} paddingY={2} paddingTop={0} gap={1}>
+    <Flex paddingX={3} paddingY={2} paddingTop={0} gap={1} flexDirection="column">
       {SKELETON_ITEMS.map((num) => (
         <SanityDefaultPreview key={num} isPlaceholder layout={layout} />
       ))}
-    </Stack>
+    </Flex>
   )
 }
 
@@ -223,7 +210,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
       return (
         <Flex alignItems="center" flexDirection="column" height="100%" justifyContent="center">
           <Container width={1}>
-            <Stack paddingX={4} paddingY={5} gap={4}>
+            <Flex paddingX={4} paddingY={5} gap={4} flexDirection="column">
               <Heading as="h3">{t('panes.document-list-pane.error.title')}</Heading>
               <Text as="p">
                 {isDev ? (
@@ -258,7 +245,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
                         })}
                 </Text>
               ) : null}
-            </Stack>
+            </Flex>
           </Container>
         </Flex>
       )
@@ -284,8 +271,8 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     const key = `${index}-${collapsed}`
 
     return (
-      <RootBox overflow="hidden" height="100%" $opacity={muted ? 0.8 : 1}>
-        <CommandListBox>
+      <Box overflow="hidden" height="100%" className={clsx(rootBox, muted && rootBoxMuted)}>
+        <Box className={commandListBox}>
           <CommandList
             key={key}
             activeItemDataAttr="data-hovered"
@@ -302,8 +289,8 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
             renderItem={renderItem}
             wrapAround={false}
           />
-        </CommandListBox>
-      </RootBox>
+        </Box>
+      </Box>
     )
   }, [
     autoRetry,

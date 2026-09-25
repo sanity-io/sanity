@@ -139,10 +139,10 @@ hold — the last two are not on that page and were verified against `@chromatic
    `preview-stats*.json`) at the start of each non-merge run. Two shards run back to back in one
    checkout leave only the second shard's archives. One runner per shard (a matrix job) is fine;
    locally, point each shard at its own `outputDirectory` or checkout.
-2. **Ship the hidden directories.** Upload `packages/sanity/.vitest` (archives plus
-   `preview-stats-<i>-<n>.json`) and `packages/sanity/.vitest-reports` (the blob reports, see 3)
-   with `include-hidden-files: true`, one artifact per shard; download them all into the same
-   paths with `merge-multiple: true`.
+2. **Ship the hidden directory.** Upload `packages/sanity/.vitest` (the archives and
+   `preview-stats-<i>-<n>.json` under `.vitest/chromatic/`, plus the blob reports under
+   `.vitest/blob/`, see 3) with `include-hidden-files: true`, one artifact per shard; download
+   them all into the same path with `merge-multiple: true`.
 3. **Merge the stats before uploading, or TurboSnap traces nothing.** Shards write
    `preview-stats-<i>-<n>.json`, but the archive Storybook the CLI builds only reads
    `preview-stats.json`; with `--only-changed` and no merged file the build has no module graph,
@@ -151,11 +151,12 @@ hold — the last two are not on that page and were verified against `@chromatic
 vitest.browser.config.mts --merge-reports`, run in the upload job after the download: the
    plugin's merge-reports branch combines the shard stats into `preview-stats.json` and skips the
    wipe, so the archives survive. It needs the shards to have run with `--reporter=default
---reporter=blob` (blob reports land in `.vitest-reports/`), and `CHROMATIC=1` so the plugin is
-   loaded at all. Verified locally: shards 1/2 + 2/2 produced 60 + 58 archives, and the merge
-   produced the same 118 archives and a `preview-stats.json` with the same 4545 modules / 32 test
-   files as an unsharded run. The merged console summary under-counts tests; only the stats and
-   archives matter here.
+--reporter=blob` (blob reports land in `.vitest/blob/`, where `--merge-reports` reads them
+   by default since Vitest 5), and `CHROMATIC=1` so the plugin is loaded at all. Verified
+   locally: shards 1/2 + 2/2 produced 60 + 58 archives, and the merge produced the same 118
+   archives and a `preview-stats.json` with the same 4545 modules / 32 test files as an
+   unsharded run. The merged console summary under-counts tests; only the stats and archives
+   matter here.
 4. **Upload once**, from `packages/sanity`, with `chromatic --vitest --only-changed`. The
    `Check TurboSnap stats file` step in `chromatic.yml` fails the job when `preview-stats.json`
    is missing, which catches both a forgotten merge and a dropped `turboSnap: true`.

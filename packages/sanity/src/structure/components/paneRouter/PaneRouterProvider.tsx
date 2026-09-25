@@ -33,7 +33,8 @@ export function PaneRouterProvider(props: {
     () => (routerState?.panes || emptyArray) as RouterPanes,
     [routerState?.panes],
   )
-  const lastPane = useMemo(() => panes?.[panes.length - 2], [panes])
+  // Pane data is recreated on every resize move, while its element stays the same
+  const lastPaneElement = panes?.[panes.length - 2]?.element
 
   const groupIndex = index - 1
 
@@ -188,8 +189,8 @@ export function PaneRouterProvider(props: {
 
       // Removes all panes to the right including current
       closeCurrentAndAfter: (expandLast = true): void => {
-        if (expandLast && lastPane) {
-          expand(lastPane.element)
+        if (expandLast && lastPaneElement) {
+          expand(lastPaneElement)
         }
         navigate({
           panes: routerPaneGroups.slice(0, groupIndex),
@@ -244,7 +245,7 @@ export function PaneRouterProvider(props: {
       createPathWithParams,
       navigateIntent,
       modifyCurrentGroup,
-      lastPane,
+      lastPaneElement,
       navigate,
       expand,
     ],

@@ -1,6 +1,6 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {useTranslation} from 'sanity'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 import {structureLocaleNamespace} from '../../i18n'
 import {useDocumentPane} from '../../panes/document/useDocumentPane'
@@ -33,7 +33,7 @@ export function IncomingReferencesList({
   }
 
   return (
-    <Stack gap={3}>
+    <VStack gap={3}>
       {types.map((type) => {
         if (isCrossDatasetIncomingReference(type)) {
           return (
@@ -60,6 +60,6 @@ export function IncomingReferencesList({
           />
         )
       })}
-    </Stack>
+    </VStack>
   )
 }

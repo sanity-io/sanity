@@ -4,7 +4,12 @@ import {type StyleCensus} from '@repo/utils/style-systems'
 import {type Browser, type Locator, type Page} from 'playwright'
 
 import {type BenchEntries} from '../../instrumentation/types'
-import {type BenchScenario, type InteractionTarget} from '../../scenarios/types'
+import {
+  type BenchScenario,
+  type InteractionTarget,
+  scenarioDocument,
+  scenarioFixture,
+} from '../../scenarios/types'
 import {median} from '../../stats/quantiles'
 import {createSessionContext, type SessionContext} from '../browser'
 import {type RunningSide} from '../servers'
@@ -191,7 +196,7 @@ function toLatencies(
   }
 }
 
-function fieldInput(page: Page, target: InteractionTarget): Locator {
+export function fieldInput(page: Page, target: InteractionTarget): Locator {
   if (target.kind === 'pte') {
     return page
       .locator(`[data-testid="field-${target.fieldPath}"] [contenteditable="true"]`)
@@ -278,7 +283,10 @@ const isFormReadOnly = () =>
  * keystrokes while it lasts (see ReadOnlyInterruptions). Pause rather than
  * type into the void — the wait is not keystroke latency.
  */
-async function waitUntilEditable(page: Page, interruptions: ReadOnlyInterruptions): Promise<void> {
+export async function waitUntilEditable(
+  page: Page,
+  interruptions: ReadOnlyInterruptions,
+): Promise<void> {
   if (!(await page.evaluate(isFormReadOnly))) return
   const waitStart = Date.now()
   await page.waitForFunction(
@@ -377,13 +385,14 @@ export async function runInteractionSession(options: {
       burstKeystrokes: scenario.keystrokes.burst,
     }),
   }
-  const draftId = `drafts.${scenario.documentId}`
+  const {documentId, documentType} = scenarioDocument(scenario)
+  const draftId = `drafts.${documentId}`
 
   // Fresh state, in-process — no HTTP round-trips to our own mock
   running.mock.hub.closeAll()
   running.mock.store.reset()
   running.mock.ledger.reset()
-  running.mock.store.seed(scenario.fixture())
+  running.mock.store.seed(scenarioFixture(scenario))
 
   // Pre-typing field text, needed by the Portable Text readback (typed
   // characters are validated as a delta over the seeded content)
@@ -393,7 +402,7 @@ export async function runInteractionSession(options: {
     if (target.kind === 'pte') {
       baselineTexts.set(
         target.fieldPath,
-        target.readbackText?.(seededDocument ?? {_id: draftId, _type: scenario.documentType}) ??
+        target.readbackText?.(seededDocument ?? {_id: draftId, _type: documentType}) ??
           String(getAtPath(seededDocument, target.fieldPath) ?? ''),
       )
     }
@@ -583,7 +592,7 @@ export async function runInteractionSession(options: {
       for (const target of scenario.interactions) {
         const typed = typedPerField.get(target.fieldPath) ?? ''
         const text =
-          target.readbackText?.(document ?? {_id: draftId, _type: scenario.documentType}) ??
+          target.readbackText?.(document ?? {_id: draftId, _type: documentType}) ??
           String(getAtPath(document, target.fieldPath) ?? '')
         if (target.kind === 'pte') {
           const missing = countMissingCharacters(
@@ -716,7 +725,7 @@ export async function runSoakSession(options: {
   running.mock.hub.closeAll()
   running.mock.store.reset()
   running.mock.ledger.reset()
-  running.mock.store.seed(scenario.fixture())
+  running.mock.store.seed(scenarioFixture(scenario))
 
   const session = await createSessionContext(browser, running.side, running.studioUrl, {
     cpuThrottleRate: config.cpuThrottleRate,
