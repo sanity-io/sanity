@@ -30,10 +30,12 @@ const PUBLIC_ENTRIES = {
 }
 
 /**
- * `@internal` exports of a public entry that deliberately stay off the internals entry: deprecated
- * utilities that studios import from `sanity` as documented, so their removal is governed by the
- * deprecation, not by the internals moving. `createAuthStore` (deprecated since v3.15.0, tagged
- * on its re-export in `index.ts` by #14842) and its options type are the only ones today.
+ * `@internal` exports of a public entry that deliberately stay off the internals entry:
+ * deprecated utilities that studios should stop using. The `@internal @deprecated` tags on the
+ * `sanity` export are the message to customers (see #14842), and not re-exporting them here keeps
+ * the deprecated import the only one; their removal is governed by the deprecation, not by the
+ * internals moving. `createAuthStore` (deprecated since v3.15.0) and its options type are the only
+ * ones today.
  */
 const PUBLIC_BY_USAGE: Record<string, readonly string[]> = {
   sanity: ['createAuthStore', 'CreateAuthStoreOptions'],
