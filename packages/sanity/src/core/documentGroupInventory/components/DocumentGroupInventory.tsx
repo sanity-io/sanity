@@ -70,6 +70,7 @@ import {DocumentGroupFilter} from './DocumentGroupFilter'
 import {DocumentGroupSet} from './DocumentGroupSet'
 import {Footer} from './Footer'
 import {Header} from './Header'
+import {resolveManageVersionsCreateBase} from './resolveManageVersionsCreateBase'
 import {TextButton} from './TextButton'
 import {useVariantPendingReleases} from './useVariantPendingReleases'
 import {VariantCheckbox} from './VariantSet/VariantCheckbox'
@@ -273,14 +274,28 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                         ? 'published'
                         : input.bundle
 
-                    const targetPair = await firstValueFrom(readTargetPair)
-                    const baseVariant =
+                    const [targetPair, {versions}] = await Promise.all([
+                      firstValueFrom(readTargetPair),
+                      firstValueFrom(
+                        versionState.pipe(
+                          filter(({loading}) => !loading),
+                          timeout({first: 30_000}),
+                        ),
+                      ),
+                    ])
+                    const fallback =
                       editStateSlot === 'draft'
                         ? // in drafts fallback to published, the ui shows the published when seeing a "non existent" draft
                           targetPair[editStateSlot] || targetPair.published
                         : targetPair[editStateSlot]
-                    // If there is no base variant, create an empty variant.
-                    if (baseVariant === null) {
+                    // Published variant of the selected variant wins over the base document.
+                    const baseDocument = resolveManageVersionsCreateBase({
+                      variantId: input.variantDefinition._id,
+                      documentVersions: versions,
+                      fallback,
+                    })
+                    // If there is no base document, create an empty variant.
+                    if (baseDocument === null) {
                       await createVariantDocument({
                         documentGroupId: getPublishedId(documentId),
                         document: {
@@ -292,11 +307,11 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                       })
                     }
 
-                    // If there is a base variant, create a variant based on it.
-                    if (baseVariant !== null) {
+                    // If there is a base document, create a variant based on it.
+                    if (baseDocument !== null) {
                       await createVariantDocument({
                         documentGroupId: getPublishedId(documentId),
-                        baseId: baseVariant._id,
+                        baseId: baseDocument._id,
                         variant: input.variantDefinition,
                         selectedPerspective: createPerspective,
                         signal,
@@ -324,6 +339,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
           documentId,
           documentStore.pair,
           schema,
+          versionState,
         ],
       ),
     },
