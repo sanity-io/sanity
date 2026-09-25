@@ -46,6 +46,7 @@ catalog:
   playwright: 1.63.0
   react: ^19.3.0
   react-dom: ^19.3.0
+  react-focus-lock: ^2.13.7
   react-is: ^19.3.0
   react-rx: ^7.0.1
   rimraf: ^6.1.3
