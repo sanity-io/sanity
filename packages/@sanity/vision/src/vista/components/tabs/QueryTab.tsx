@@ -153,14 +153,30 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     [copyToClipboard, t, tab.query],
   )
 
+  // A finding picked while the editor's pane is hidden, waiting for that pane to be shown
+  const pendingLintFinding = useRef<QueryLintFinding | null>(null)
+
   const revealLintFinding = useCallback(
     (finding: QueryLintFinding) => {
-      // On a phone the editor lives behind the other pane; bring it forward first
-      if (layout === 'mobile') setMobilePane('request')
+      // On a phone the editor lives behind the other pane, where it can neither take focus nor
+      // scroll; bring the pane forward first and reveal the finding once it is on screen
+      if (layout === 'mobile' && mobilePane !== 'request') {
+        pendingLintFinding.current = finding
+        setMobilePane('request')
+        return
+      }
       queryEditorRef.current?.selectRange(finding.from, finding.to)
     },
-    [layout],
+    [layout, mobilePane],
   )
+
+  useOnValueChange(mobilePane, (pane) => {
+    const finding = pendingLintFinding.current
+    pendingLintFinding.current = null
+    if (pane === 'request' && finding) {
+      queryEditorRef.current?.selectRange(finding.from, finding.to)
+    }
+  })
 
   // A query loaded from outside the editors (saved query, pasted URL) replaces their content
   // and drops the previous response; an edit still waiting in the debounce belongs to the
