@@ -58,7 +58,9 @@ export function ResponsePanel(props: ResponsePanelProps) {
   const history = useSelector(runnerRef, (snapshot) => snapshot.context.history)
   const isLive = useSelector(runnerRef, (snapshot) => snapshot.matches({live: 'on'}))
 
-  const hasResult = status === 'settled' && meta !== undefined
+  // A response stays on screen while a newer fetch is in flight, and its actions stay with it;
+  // a failed fetch or a cleared tab drops `meta` together with the result
+  const hasResult = meta !== undefined
   const resultIsCurrent =
     hasResult &&
     settledRequest !== undefined &&
@@ -164,9 +166,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
               variant={resolved.variant}
             />
           )}
-          {(status === 'settled' || (status === 'fetching' && meta)) && (
-            <ResultView data={result} datasetName={resultDataset} />
-          )}
+          {hasResult && <ResultView data={result} datasetName={resultDataset} />}
           {status === 'idle' && (
             <Text muted size={1}>
               {t('vista.result.empty')}

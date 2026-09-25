@@ -156,14 +156,26 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     [copyToClipboard, t, tab.query],
   )
 
+  // A finding picked while the phone shows the response pane: the editor is still `display: none`
+  // in this render, so it cannot take focus until the request pane has been shown
+  const pendingRevealRef = useRef<QueryLintFinding | null>(null)
   const revealLintFinding = useCallback(
     (finding: QueryLintFinding) => {
-      // On a phone the editor lives behind the other pane; bring it forward first
-      if (layout === 'mobile') setMobilePane('request')
+      if (layout === 'mobile' && mobilePane !== 'request') {
+        pendingRevealRef.current = finding
+        setMobilePane('request')
+        return
+      }
       queryEditorRef.current?.selectRange(finding.from, finding.to)
     },
-    [layout],
+    [layout, mobilePane],
   )
+  useEffect(() => {
+    const pending = pendingRevealRef.current
+    if (mobilePane !== 'request' || !pending) return
+    pendingRevealRef.current = null
+    queryEditorRef.current?.selectRange(pending.from, pending.to)
+  }, [mobilePane])
 
   // A query loaded from outside the editors (saved query, pasted URL) replaces their content
   // and drops the previous response; an edit still waiting in the debounce belongs to the

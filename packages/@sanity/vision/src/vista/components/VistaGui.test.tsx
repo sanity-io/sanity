@@ -200,6 +200,8 @@ function createMockClient(initial: ClientConfig = {apiVersion: 'v2025-02-19', da
     syncTags: ['s1:abc'],
   }
   let nextError: Error | undefined
+  // While set, fetches wait for it before responding, so a test can look at the in-flight state
+  let hold: Promise<void> | undefined
 
   const create = (config: ClientConfig): SanityClient =>
     ({
@@ -210,7 +212,9 @@ function createMockClient(initial: ClientConfig = {apiVersion: 'v2025-02-19', da
       getUrl: (path: string) => `https://test.api.sanity.io${path}`,
       fetch: (query: string, params: Record<string, unknown>, options: Record<string, unknown>) => {
         fetchCalls.push({config, query, params, options})
-        return nextError ? Promise.reject(nextError) : Promise.resolve({query, ...nextResponse})
+        const respond = () =>
+          nextError ? Promise.reject(nextError) : Promise.resolve({query, ...nextResponse})
+        return hold ? hold.then(respond) : respond()
       },
       live: {
         events: () => {
@@ -231,6 +235,17 @@ function createMockClient(initial: ClientConfig = {apiVersion: 'v2025-02-19', da
     },
     failWith: (error: Error) => {
       nextError = error
+    },
+    /** Keeps the following fetches pending until the returned function is called */
+    holdFetches: () => {
+      let release = () => {}
+      hold = new Promise<void>((resolve) => {
+        release = resolve
+      })
+      return () => {
+        hold = undefined
+        release()
+      }
     },
   }
 }
@@ -375,6 +390,33 @@ describe('VistaGui', () => {
     const entries = screen.getAllByTestId('vista-history-entry')
     expect(entries).toHaveLength(1)
     expect(text(entries[0])).toContain('vista.history.reason.manual')
+  })
+
+  it('keeps the shown result and its actions while a refetch is in flight', async () => {
+    const {fetchCalls, holdFetches, respondWith} = renderVista()
+    typeQuery('*[_type == "author"]')
+    // Nothing to download yet: the export controls are disabled buttons
+    expect(isDisabled(screen.getByTestId('vista-export-json'))).toBe(true)
+    fireEvent.click(screen.getByTestId('vista-fetch-button'))
+    await waitFor(() => expect(screen.getByTestId('result-json')).toBeTruthy())
+    // With a result they are download links
+    expect(screen.getByTestId('vista-export-json').getAttribute('href')).toBeTruthy()
+
+    const release = holdFetches()
+    respondWith({result: [{title: 'Newer'}], ms: 34, syncTags: ['s1:abc']})
+    fireEvent.click(screen.getByTestId('vista-fetch-button'))
+    await waitFor(() => expect(fetchCalls).toHaveLength(2))
+
+    // The previous result stays on screen until the new one arrives, and so does everything
+    // that works on it
+    expect(text(screen.getByTestId('result-json'))).toContain('Variant title')
+    expect(screen.getByTestId('vista-export-json').getAttribute('href')).toBeTruthy()
+    expect(screen.getByTestId('vista-export-csv').getAttribute('href')).toBeTruthy()
+
+    release()
+    await waitFor(() => expect(text(screen.getByTestId('result-json'))).toContain('Newer'))
+    expect(text(screen.getByTestId('vista-meta-execution'))).toContain('34ms')
+    expect(screen.getByTestId('vista-export-json').getAttribute('href')).toBeTruthy()
   })
 
   it('runs the query with the keyboard shortcut and marks the reason', async () => {
@@ -889,5 +931,31 @@ describe('VistaGui', () => {
     expect(onSwitchToClassic).toHaveBeenCalledTimes(2)
     // Switching back keeps the stored tabs for the next visit
     await waitFor(() => expect(getStoredState().tabs).toHaveLength(1))
+  })
+
+  it('opens the phone drawer as a modal dialog: focus moves in, and back to the opener on Escape', async () => {
+    // Without a measured root the layout follows the viewport; a phone one floats the drawer
+    const {innerWidth} = window
+    Object.defineProperty(window, 'innerWidth', {configurable: true, value: 500})
+    try {
+      renderVista()
+      const opener = screen.getByTestId('vista-sidebar-saved')
+      opener.focus()
+      fireEvent.click(opener)
+
+      const drawer = await screen.findByTestId('vista-drawer-saved')
+      expect(drawer.getAttribute('role')).toBe('dialog')
+      expect(drawer.getAttribute('aria-modal')).toBe('true')
+      // The rail behind the drawer is inert; the drawer's close button takes focus
+      expect(screen.getByTestId('vista-sidebar').hasAttribute('inert')).toBe(true)
+      const closeButton = within(drawer).getByRole('button', {name: 'vista.drawer.close'})
+      await waitFor(() => expect(document.activeElement).toBe(closeButton))
+
+      fireEvent.keyDown(drawer, {key: 'Escape'})
+      await waitFor(() => expect(screen.queryByTestId('vista-drawer-saved')).toBeNull())
+      await waitFor(() => expect(document.activeElement).toBe(opener))
+    } finally {
+      Object.defineProperty(window, 'innerWidth', {configurable: true, value: innerWidth})
+    }
   })
 })

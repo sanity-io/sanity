@@ -237,6 +237,9 @@ catalogs:
     react-dom:
       specifier: ^19.3.0
       version: 19.3.0
+    react-focus-lock:
+      specifier: ^2.13.7
+      version: 2.13.7
     react-is:
       specifier: ^19.3.0
       version: 19.3.0
@@ -1970,6 +1973,9 @@ importers:
       quick-lru:
         specifier: ^7.3.0
         version: 7.3.0
+      react-focus-lock:
+        specifier: 'catalog:'
+        version: 2.13.7(@types/react@19.3.0)(react@19.3.0)
       react-rx:
         specifier: 'catalog:'
         version: 7.0.1(react@19.3.0)(rxjs@7.8.2)
