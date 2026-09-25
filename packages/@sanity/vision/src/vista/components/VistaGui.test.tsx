@@ -845,6 +845,16 @@ describe('VistaGui', () => {
     fireEvent.click(within(screen.getAllByTestId('vista-tab')[0]).getByTestId('vista-tab-button'))
     await new Promise((resolve) => setTimeout(resolve, 50))
     expect(fetchCalls).toHaveLength(2)
+
+    // A query typed but never run is not a reason to fetch either: automatic refetching never
+    // runs unsent edits, and coming back to the tab must not run them behind the user's back
+    typeQuery('*[_type == "book"]')
+    await waitFor(() => expect(getStoredState().tabs[0].query).toBe('*[_type == "book"]'))
+    fireEvent.click(within(screen.getAllByTestId('vista-tab')[1]).getByTestId('vista-tab-button'))
+    fireEvent.click(within(screen.getAllByTestId('vista-tab')[0]).getByTestId('vista-tab-button'))
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(fetchCalls).toHaveLength(2)
+    expect(getQueryEditor().value).toBe('*[_type == "book"]')
   })
 
   it('fetches with params typed just before running, ahead of the debounce', async () => {
