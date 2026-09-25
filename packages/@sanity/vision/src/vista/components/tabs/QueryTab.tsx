@@ -218,17 +218,25 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     tabId: tab.id,
   })
 
-  // A tab that refetches automatically resumes with a current result when it mounts: after a
-  // reload its runner has nothing to replay, and while the tab was in the background its request
-  // may have changed under it (a navbar perspective change reaches every tab)
+  // A tab that refetches automatically resumes with a current result when it mounts. After a
+  // reload its runner has nothing to replay, so the tab's query runs. Otherwise only what
+  // automatic refetching applies anyway is caught up on: the options may have changed while the
+  // tab was in the background (a navbar perspective change reaches every tab), so the last
+  // request is fetched again under the current ones. Query and params typed in the editors but
+  // never run stay unsent, as they do while the tab is shown
   const resumeAutoRefetch = useEffectEvent(() => {
-    if (!tab.autoRefetch || !request) return
+    if (!tab.autoRefetch) return
     const lastRequest = runnerRef.getSnapshot().context.request
+    if (!lastRequest) {
+      if (request) runnerRef.send({type: 'fetch', request, reason: {type: 'resume'}})
+      return
+    }
+    const current = buildRequest(lastRequest.query, JSON.stringify(lastRequest.params))
     if (
-      lastRequest?.url !== request.url ||
-      lastRequest.includeSourceMap !== request.includeSourceMap
+      current &&
+      (current.url !== lastRequest.url || current.includeSourceMap !== lastRequest.includeSourceMap)
     ) {
-      runnerRef.send({type: 'fetch', request, reason: {type: 'resume'}})
+      runnerRef.send({type: 'fetch', request: current, reason: {type: 'resume'}})
     }
   })
   useEffect(() => {
