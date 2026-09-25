@@ -1,6 +1,6 @@
-import {Card, Container, Heading, Text} from '@sanity/ui'
+import {Card, Heading, Text} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
-import {VStack} from 'ui5'
+import {Container, VStack} from 'ui5'
 import {type ViteHotContext} from 'vite/types/hot.js'
 
 const ERROR_TITLE = 'Dev server stopped'
@@ -56,7 +56,7 @@ export const DevServerStoppedErrorScreen = (): ReactNode => (
     sizing="border"
     tone="critical"
   >
-    <Container width={3}>
+    <Container size={3}>
       <VStack gap={4}>
         <Heading>{ERROR_TITLE}</Heading>
 

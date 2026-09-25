@@ -6,13 +6,12 @@ import {
   Checkbox,
   Dialog,
   Select,
-  Stack,
   Text,
   TextArea,
   TextInput,
 } from '@sanity/ui'
 import {useMemo, useState} from 'react'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 import {compareUrl} from '../trends/links'
 import {AuthorAvatar} from './AuthorAvatar'
@@ -76,8 +75,8 @@ export function NewSessionDialog(props: {
   return (
     <Dialog id="bisect-new-session" header="Start bisect" width={1} onClose={onClose}>
       <Box padding={4}>
-        <Stack gap={5}>
-          <Stack gap={3}>
+        <VStack gap={5}>
+          <VStack gap={3}>
             <Text size={1} weight="medium">
               Describe the issue
             </Text>
@@ -92,7 +91,7 @@ export function NewSessionDialog(props: {
               Shown on the session and on the regression it pins on a release; a follow-up bisect
               that narrows this one down inherits it.
             </Text>
-          </Stack>
+          </VStack>
 
           <EndpointPicker
             badge="Bad"
@@ -186,7 +185,7 @@ export function NewSessionDialog(props: {
               }}
             />
           </Flex>
-        </Stack>
+        </VStack>
       </Box>
     </Dialog>
   )
@@ -207,7 +206,7 @@ function EndpointPicker(props: {
   const selected = value ? commits.find((commit) => commit.sha === value.sha) : undefined
 
   return (
-    <Stack gap={3}>
+    <VStack gap={3}>
       <Flex alignItems="center" gap={2}>
         <Badge tone={tone} fontSize={0}>
           {badge}
@@ -221,7 +220,7 @@ function EndpointPicker(props: {
         <Card padding={3} radius={2} tone={tone} border>
           <Flex alignItems="center" gap={3}>
             <Box flex={1} style={{minWidth: 0}}>
-              <Stack gap={2}>
+              <VStack gap={2}>
                 <Text size={1}>
                   <code>{value.sha.slice(0, 10)}</code>
                   {value.label && value.label !== value.sha.slice(0, 7) ? ` (${value.label})` : ''}
@@ -257,13 +256,13 @@ function EndpointPicker(props: {
                     not on the synced mainline
                   </Text>
                 )}
-              </Stack>
+              </VStack>
             </Box>
             <Button mode="bleed" fontSize={1} text="Change" onClick={() => onChange(null)} />
           </Flex>
         </Card>
       ) : (
-        <Stack gap={3}>
+        <VStack gap={3}>
           <Select
             fontSize={1}
             value=""
@@ -285,7 +284,7 @@ function EndpointPicker(props: {
             value={query}
             onChange={(event) => setQuery(event.currentTarget.value)}
           />
-          <Stack gap={1}>
+          <VStack gap={1}>
             {results.length === 0 && (
               <Text size={1} muted>
                 No commits match “{query.trim()}”.
@@ -324,9 +323,9 @@ function EndpointPicker(props: {
                 </Flex>
               </Card>
             ))}
-          </Stack>
-        </Stack>
+          </VStack>
+        </VStack>
       )}
-    </Stack>
+    </VStack>
   )
 }

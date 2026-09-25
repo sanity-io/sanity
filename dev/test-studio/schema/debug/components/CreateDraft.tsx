@@ -1,4 +1,4 @@
-import {Button, Stack, Text} from '@sanity/ui'
+import {Button, Text} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 import {getDraftId, useClient, usePerspective} from 'sanity'
 import {
@@ -7,6 +7,7 @@ import {
   useVariantDocumentOperations,
   useDocumentPane,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {VStack} from 'ui5'
 
 export function CreateDraft() {
   const {documentId, documentType, value, targetDocumentState} = useDocumentPane()
@@ -50,7 +51,7 @@ export function CreateDraft() {
   }, [client, documentId, documentType, value, selectedVariant, createVariantDocument])
 
   return (
-    <Stack gap={2}>
+    <VStack gap={2}>
       <Button
         loading={creatingDraft}
         onClick={createDraft}
@@ -59,6 +60,6 @@ export function CreateDraft() {
         disabled={Boolean(draftId) || creatingDraft}
       />
       {error && <Text size={0}>{error.message}</Text>}
-    </Stack>
+    </VStack>
   )
 }

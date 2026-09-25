@@ -1,11 +1,11 @@
-import {Box, Button, Card, Dialog, Spinner, Stack, Text} from '@sanity/ui'
+import {Box, Button, Card, Dialog, Spinner, Text} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {UserAvatar, useCurrentUser, usePresenceStore, useUserListWithPermissions} from 'sanity'
 import {
   pathToString,
   type PresenceLocation,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 import {type PresenceDebugTarget} from './context'
 
@@ -68,7 +68,7 @@ export function PresenceDebugDialog(props: PresenceDebugDialogProps) {
         </Flex>
       }
     >
-      <Stack padding={3} gap={3}>
+      <Flex padding={3} gap={3} flexDirection="column">
         <Card padding={2} radius={2} tone="transparent" border>
           <Text size={1} muted>
             Present at{' '}
@@ -86,7 +86,7 @@ export function PresenceDebugDialog(props: PresenceDebugDialogProps) {
 
         {/* Keep the dialog short; the list scrolls when the project has many members */}
         <Box style={{maxHeight: 280, overflow: 'auto'}}>
-          <Stack gap={1}>
+          <VStack gap={1}>
             {(users ?? []).map((user) => {
               const isMe = user.id === currentUser?.id
               const isPlaced = placed.includes(user.id)
@@ -115,9 +115,9 @@ export function PresenceDebugDialog(props: PresenceDebugDialogProps) {
                 </Button>
               )
             })}
-          </Stack>
+          </VStack>
         </Box>
-      </Stack>
+      </Flex>
     </Dialog>
   )
 }

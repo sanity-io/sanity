@@ -1,10 +1,10 @@
-import {Badge, Box, Card, Stack, Text} from '@sanity/ui'
+import {Badge, Box, Card, Text} from '@sanity/ui'
 import {startTransition, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {combineLatest} from 'rxjs'
 import {useDocumentPreviewStore} from 'sanity'
 import {useDocumentValues} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 /**
  * Reproduces a document-pane stall caused by list previews creating a new
@@ -40,14 +40,14 @@ function PreviewRow({id}: {id: string}) {
   const {value, isLoading} = useDocumentValues<{title?: string}>(id, ['title'])
   return (
     <Card border padding={3} radius={2}>
-      <Stack gap={2}>
+      <VStack gap={2}>
         <Text size={1} weight="medium">
           {isLoading ? 'Loading…' : value?.title || '(untitled)'}
         </Text>
         <Text size={0} muted>
           {id}
         </Text>
-      </Stack>
+      </VStack>
     </Card>
   )
 }
@@ -140,9 +140,9 @@ export function RenderLoopRepro() {
   return (
     <Box padding={4}>
       <CacheWarmer />
-      <Stack gap={4}>
+      <VStack gap={4}>
         <Card padding={3} radius={2} tone="caution">
-          <Stack gap={3}>
+          <VStack gap={3}>
             <Text size={1} weight="medium">
               useDocumentValues render loop → stalled document open
             </Text>
@@ -154,7 +154,7 @@ export function RenderLoopRepro() {
               as the loop. With the hardened hook (memo keyed on path contents) the rows settle
               immediately and the mount lands right away.
             </Text>
-          </Stack>
+          </VStack>
         </Card>
         <DocumentOpenSimulation />
         <Flex alignItems="center" justifyContent="space-between">
@@ -164,7 +164,7 @@ export function RenderLoopRepro() {
           <RateBadge running={loopRunning} />
         </Flex>
         {loopRunning && DOC_IDS.map((id) => <PreviewRow key={id} id={id} />)}
-      </Stack>
+      </VStack>
     </Box>
   )
 }

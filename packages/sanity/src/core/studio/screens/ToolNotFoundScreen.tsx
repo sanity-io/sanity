@@ -1,7 +1,7 @@
 /* oxlint-disable i18next/no-literal-string */
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Container, Text} from '@sanity/ui'
-import {Flex, Box} from 'ui5'
+import {Card, Text} from '@sanity/ui'
+import {Container, Flex, Box} from 'ui5'
 
 export function ToolNotFoundScreen(props: {toolName: string}) {
   const {toolName} = props
@@ -9,7 +9,7 @@ export function ToolNotFoundScreen(props: {toolName: string}) {
   return (
     <Card height="fill">
       <Flex alignItems="center" height="100%" justifyContent="center" padding={4}>
-        <Container width={0}>
+        <Container size={0}>
           <Card padding={4} radius={2} shadow={1} tone="caution">
             <Flex>
               <Box>

@@ -2,10 +2,10 @@ import {DocumentsIcon} from '@sanity/icons/Documents'
 import {EditIcon} from '@sanity/icons/Edit'
 import {SortIcon} from '@sanity/icons/Sort'
 import {UserIcon} from '@sanity/icons/User'
-import {Card, Container, Skeleton, Text} from '@sanity/ui'
+import {Card, Skeleton, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useRouter} from 'sanity/router'
-import {Flex, Box, VStack} from 'ui5'
+import {Container, Flex, Box, VStack} from 'ui5'
 
 import {
   DetailBackButton,
@@ -224,7 +224,7 @@ export function VariantDetail() {
       <Card flex="none" paddingY={3}>
         {/* container[3] so the header aligns with the table's row content below (the shared Table
             centers rows at container[3]) instead of spreading edge-to-edge on wide screens. */}
-        <Container flex="none" width={3}>
+        <Container flexBasis="auto" flexGrow={0} flexShrink={0} size={3}>
           {/* paddingX={2} (8px) matches the table's first-column content inset so the back button and
               actions line up with the row content below. */}
           <Box paddingX={2}>

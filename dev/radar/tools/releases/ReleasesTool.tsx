@@ -8,7 +8,7 @@ import {DocumentTextIcon} from '@sanity/icons/DocumentText'
 import {PackageIcon} from '@sanity/icons/Package'
 import {RestoreIcon} from '@sanity/icons/Restore'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Badge, Box, Button, Card, Container, Stack, Text} from '@sanity/ui'
+import {Badge, Box, Button, Card, Container, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {
@@ -23,7 +23,7 @@ import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useClient, useCurrentUser, useDocumentStore} from 'sanity'
 import {useIntentLink} from 'sanity/router'
-import {Flex} from 'ui5'
+import {Flex, VStack} from 'ui5'
 
 import {
   BISECT_COMMITS_QUERY,
@@ -362,10 +362,10 @@ export function ReleasesTool() {
   return (
     <Box padding={4} style={{overflowY: 'auto', height: '100%'}}>
       <Container width={2}>
-        <Stack gap={4}>
+        <VStack gap={4}>
           <Flex alignItems="center" gap={3}>
             <Box flex={1}>
-              <Stack gap={3}>
+              <VStack gap={3}>
                 <Text size={3} weight="semibold">
                   Studio releases
                 </Text>
@@ -374,7 +374,7 @@ export function ReleasesTool() {
                   have pinned on it: introduced (blamed on the release that first shipped the
                   offending commit), inherited from an earlier release and not fixed yet, or fixed.
                 </Text>
-              </Stack>
+              </VStack>
             </Box>
             <Button
               icon={AddIcon}
@@ -386,7 +386,7 @@ export function ReleasesTool() {
           </Flex>
 
           <Card padding={3} radius={2} tone="transparent" border>
-            <Stack gap={3}>
+            <VStack gap={3}>
               <Flex alignItems="center" gap={3}>
                 <Box style={{flexShrink: 0}}>
                   <Flex as={Text} size={1} weight="medium" alignItems="center" gap={2}>
@@ -414,7 +414,7 @@ export function ReleasesTool() {
                 Every release's Test Studio link opens its preview build at this path — paste a
                 test-studio URL and only its path is kept.
               </Text>
-            </Stack>
+            </VStack>
           </Card>
 
           {error && (
@@ -440,7 +440,7 @@ export function ReleasesTool() {
             const eol = major === undefined ? undefined : eolByMajor.get(major)
             const expanded = major !== undefined && expandedLines.has(major)
             return (
-              <Stack key={major ?? 'unversioned'} gap={3}>
+              <VStack key={major ?? 'unversioned'} gap={3}>
                 <ReleaseLineHeader
                   major={major}
                   releaseCount={line.tags.length}
@@ -502,10 +502,10 @@ export function ReleasesTool() {
                       </DeprecatedRunRow>
                     )
                   })}
-              </Stack>
+              </VStack>
             )
           })}
-        </Stack>
+        </VStack>
       </Container>
 
       {viewingRegressions !== null && (
@@ -671,7 +671,7 @@ function DeprecatedRunRow(props: {
   const range = `${oldest} – ${newest}`
   return (
     <Card padding={2} radius={2} border tone="transparent">
-      <Stack gap={2}>
+      <VStack gap={2}>
         <Flex alignItems="center" gap={3} flexWrap="wrap">
           <Flex alignItems="center" gap={2}>
             <Text size={2} weight="medium" muted>
@@ -704,8 +704,8 @@ function DeprecatedRunRow(props: {
             onClick={onToggle}
           />
         </Flex>
-        {expanded && <Stack gap={2}>{children}</Stack>}
-      </Stack>
+        {expanded && <VStack gap={2}>{children}</VStack>}
+      </VStack>
     </Card>
   )
 }
@@ -838,7 +838,7 @@ function ReleaseRow(props: {
           the links out on the left and everything about regressions — the
           span counts and the report action — together on the right. A
           deprecated release keeps only the first line until expanded. */}
-      <Stack gap={3}>
+      <VStack gap={3}>
         <Flex alignItems="center" gap={3} flexWrap="wrap">
           {/* The version and what npm calls it read as one label */}
           <Flex alignItems="center" gap={2}>
@@ -1045,7 +1045,7 @@ function ReleaseRow(props: {
             </Flex>
           </Flex>
         )}
-      </Stack>
+      </VStack>
     </Card>
   )
 }
