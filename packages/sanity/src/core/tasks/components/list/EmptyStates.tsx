@@ -1,7 +1,7 @@
 import {AddIcon} from '@sanity/icons/Add'
-import {Stack, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {useCallback} from 'react'
-import {Flex, Box} from 'ui5'
+import {Flex, Box, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -54,12 +54,12 @@ export function EmptyStatusListState({status}: {status: TaskStatus}) {
   const {t} = useTranslation(tasksLocaleNamespace)
   const {heading, text} = HEADING_BY_STATUS[status][activeTabId]
   return (
-    <Stack gap={3}>
+    <VStack gap={3}>
       <Text size={1} weight="semibold">
         {t(heading)}
       </Text>
       <Text size={1}>{t(text)}</Text>
-    </Stack>
+    </VStack>
   )
 }
 

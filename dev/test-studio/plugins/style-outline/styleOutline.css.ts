@@ -19,10 +19,12 @@ const glass = style({
   boxShadow: '0 8px 24px rgba(0, 0, 0, 0.35)',
 })
 
+// The corner it is docked in lives in a transform written by Motion (see
+// `corners.ts`), so the widget itself only ever sits at the viewport origin.
 export const root = style({
   position: 'fixed',
-  bottom: 12,
-  left: 12,
+  top: 0,
+  left: 0,
   zIndex: 10000,
   fontSize: 13,
   fontWeight: 500,
@@ -30,8 +32,34 @@ export const root = style({
   colorScheme: 'dark',
 })
 
+export const rootDragging = style({
+  userSelect: 'none',
+})
+
+// Worn by the panel or the trigger rather than by the wrapper around them, so the
+// shadow of a widget being carried keeps the shape it belongs to — the panel's
+// rounded corners, the collapsed trigger's circle.
+export const lifted = style({
+  boxShadow: '0 16px 36px rgba(0, 0, 0, 0.5)',
+})
+
+// Worn by whichever element starts a drag: the panel header when open, the trigger
+// when collapsed. `touch-action: none` so a touch drag moves the widget instead of
+// scrolling the studio behind it, and no text selection to swallow a quick drag.
+const handle = style({
+  cursor: 'grab',
+  touchAction: 'none',
+  userSelect: 'none',
+})
+
+// Declared after `handle` so its cursor wins while a drag is live.
+export const handleDragging = style({
+  cursor: 'grabbing',
+})
+
 export const trigger = style([
   glass,
+  handle,
   {
     display: 'flex',
     alignItems: 'center',
@@ -41,7 +69,6 @@ export const trigger = style([
     height: 36,
     padding: 0,
     borderRadius: '50%',
-    cursor: 'pointer',
   },
 ])
 
@@ -56,21 +83,23 @@ export const panel = style([
   },
 ])
 
-export const header = style({
-  'display': 'block',
-  'width': '100%',
-  'font': 'inherit',
-  'fontWeight': 600,
-  'textAlign': 'left',
-  'padding': '2px 0 8px',
-  'border': 0,
-  'background': 'transparent',
-  'color': 'inherit',
-  'cursor': 'pointer',
-  ':hover': {
-    color: '#ffffff',
+export const header = style([
+  handle,
+  {
+    'display': 'block',
+    'width': '100%',
+    'font': 'inherit',
+    'fontWeight': 600,
+    'textAlign': 'left',
+    'padding': '2px 0 8px',
+    'border': 0,
+    'background': 'transparent',
+    'color': 'inherit',
+    ':hover': {
+      color: '#ffffff',
+    },
   },
-})
+])
 
 export const group = style({
   padding: '4px 0',

@@ -2,7 +2,7 @@ import {type ListenEvent, type ListenOptions, type SanityClient} from '@sanity/c
 import {useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'react'
 import {catchError, of} from 'rxjs'
 
-import {type CommentDocument, type Loadable} from '../types'
+import {type CommentDocument, type CommentsType, type Loadable} from '../types'
 import {buildCommentsQuery} from './buildCommentsQuery'
 import {commentsReducer, type CommentsReducerAction, type CommentsReducerState} from './reducer'
 
@@ -22,6 +22,10 @@ export interface CommentsStoreOptions {
    * Exact document in the editor. Drives which comments are listed.
    */
   versionId: string
+  /**
+   * Field comments require a path; task comments are document-level.
+   */
+  type: CommentsType
   onLatestTransactionIdReceived: (documentId: DocumentId) => void
   transactionsIdMap: Map<DocumentId, TransactionId>
   /**
@@ -52,6 +56,7 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
     client,
     groupId,
     versionId,
+    type,
     onLatestTransactionIdReceived,
     transactionsIdMap,
     ready = true,
@@ -68,7 +73,10 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
     [client, groupId],
   )
 
-  const {query, params} = useMemo(() => buildCommentsQuery({gdr, versionId}), [gdr, versionId])
+  const {query, params} = useMemo(
+    () => buildCommentsQuery({gdr, versionId, type}),
+    [gdr, versionId, type],
+  )
 
   // When the query scope changes (e.g. draft+published → version), drop stale
   // results during render. The listen effect below resets fetch tracking when

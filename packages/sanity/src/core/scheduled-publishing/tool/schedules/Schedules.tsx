@@ -1,7 +1,7 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Container, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Container, Flex, Box} from 'ui5'
 
 import {useScheduledPublishingEnabled} from '../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
@@ -22,7 +22,7 @@ export const Schedules = () => {
   return (
     <Box style={{height: '100%'}}>
       {mode === 'upsell' && upsellData && (
-        <Panel width={1} padding={4} paddingBottom={1}>
+        <Panel size={1} padding={4} paddingBottom={1}>
           <UpsellPanel
             layout="horizontal"
             data={upsellData}
@@ -32,7 +32,7 @@ export const Schedules = () => {
         </Panel>
       )}
       {activeSchedules.length === 0 ? (
-        <Panel width={1} padding={4} paddingTop={4}>
+        <Panel size={1} padding={4} paddingTop={4}>
           <EmptySchedules scheduleState={scheduleState} selectedDate={selectedDate} />
         </Panel>
       ) : (

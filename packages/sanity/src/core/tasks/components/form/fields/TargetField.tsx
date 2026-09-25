@@ -1,11 +1,11 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {DocumentIcon} from '@sanity/icons/Document'
-import {Card, LayerProvider, Stack, Text} from '@sanity/ui'
+import {Card, LayerProvider, Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useMemo, useState, type RefAttributes} from 'react'
 import {IntentLink} from 'sanity/router'
 import {css, styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Flex, Box, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {FormFieldHeaderText} from '../../../../form/components/formField/FormFieldHeaderText'
@@ -203,7 +203,7 @@ export function TargetField(
         <LayerProvider zOffset={100}>
           <CurrentWorkspaceProvider>
             <SearchProvider>
-              <Stack gap={2}>
+              <VStack gap={2}>
                 {mode === 'create' && (
                   <Box data-ui="fieldHeaderContentBox">
                     <FormFieldHeaderText
@@ -240,7 +240,7 @@ export function TargetField(
                     </Flex>
                   </EmptyReferenceRoot>
                 )}
-              </Stack>
+              </VStack>
               <SearchPopover
                 open={open}
                 onClose={handleCloseSearch}

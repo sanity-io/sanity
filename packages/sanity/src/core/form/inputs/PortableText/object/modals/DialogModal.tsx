@@ -1,8 +1,9 @@
 import {BoundaryElementProvider} from '@sanity/ui'
-import {type ReactNode, useId, useRef, useState} from 'react'
+import {type ReactNode, Suspense, useId, useRef, useState} from 'react'
 import {Box} from 'ui5'
 
 import {Dialog} from '../../../../../../ui-components/dialog/Dialog'
+import {LoadingBlock} from '../../../../../components/loadingBlock/LoadingBlock'
 import {PresenceOverlay} from '../../../../../presence/overlay/PresenceOverlay'
 import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {type ModalWidth} from './types'
@@ -40,7 +41,11 @@ export function DefaultEditDialog(props: DefaultEditDialogProps) {
           containerElement={containerElement}
         >
           <BoundaryElementProvider element={contentElement}>
-            <Box ref={containerElement}>{children}</Box>
+            <Box ref={containerElement}>
+              {/* The dialog owns the boundary for the form nodes it shows: a lazy input loads
+                  behind its loading block instead of hiding the block that opened it. */}
+              <Suspense fallback={<LoadingBlock showText />}>{children}</Suspense>
+            </Box>
           </BoundaryElementProvider>
         </VirtualizerScrollInstanceProvider>
       </PresenceOverlay>

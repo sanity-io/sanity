@@ -1,11 +1,11 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {SyncIcon} from '@sanity/icons/Sync'
-import {Card, Container, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Container, Heading, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useCallback} from 'react'
 import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../i18n'
@@ -65,7 +65,7 @@ export function StructureError({error}: StructureErrorProps) {
 
         <Card marginTop={4} padding={4} radius={2} overflow="auto" shadow={1} tone="inherit">
           {path.length > 0 && (
-            <Stack gap={2}>
+            <VStack gap={2}>
               <Text size={1} weight="medium">
                 {t('structure-error.structure-path.label')}
               </Text>
@@ -76,15 +76,15 @@ export function StructureError({error}: StructureErrorProps) {
                   <PathSegment key={`${segment}-${i}`}>{segment}</PathSegment>
                 ))}
               </Code>
-            </Stack>
+            </VStack>
           )}
 
-          <Stack marginTop={4} gap={2}>
+          <Flex marginTop={4} gap={2} flexDirection="column">
             <Text size={1} weight="medium">
               {t('structure-error.error.label')}
             </Text>
             <Code>{showStack ? formatStack(stack) : error.message}</Code>
-          </Stack>
+          </Flex>
 
           {helpId && (
             <Box marginTop={4}>

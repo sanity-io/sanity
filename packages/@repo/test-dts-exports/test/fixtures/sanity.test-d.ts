@@ -548,6 +548,7 @@ import type {
   EmptyProps,
   emptyValuesByType,
   encodePath,
+  encodeVariantLinkParam,
   EnhancedObjectDialog,
   EnumListProps,
   ErrorActions,
@@ -699,6 +700,7 @@ import type {
   getCalendarLabels,
   getConfigContextFromSource,
   getCreatableVariantTarget,
+  getDefaultVariant,
   getDiffAtPath,
   getDocumentIdForCanvasLink,
   getDocumentIsInPerspective,
@@ -1454,6 +1456,7 @@ import type {
   StringSegmentChanged,
   StringSegmentUnchanged,
   stringToPath,
+  StructureNodeIdValidationResult,
   Studio,
   StudioAnnouncementsCard,
   StudioAnnouncementsDialog,
@@ -1791,6 +1794,7 @@ import type {
   validateDocument,
   ValidateDocumentOptions,
   validateNames,
+  validateStructureNodeId,
   ValidateWorkspaceOptions,
   validateWorkspaces,
   validation,
@@ -1806,7 +1810,14 @@ import type {
   ValueError,
   ValuelessSearchOperatorBuilder,
   ValuelessSearchOperatorParams,
+  VariantConditionMap,
+  VariantConditions,
+  VariantConditionsContext,
+  VariantConditionValue,
   VARIANTS_STUDIO_CLIENT_OPTIONS,
+  VariantTypeConfig,
+  VariantTypeContext,
+  VariantTypesConfig,
   VERSION_FOLDER,
   VersionChip,
   VersionInfoDocumentStub,
@@ -3493,6 +3504,9 @@ describe('sanity', () => {
   test('encodePath', () => {
     expectTypeOf<typeof encodePath>().toBeFunction()
   })
+  test('encodeVariantLinkParam', () => {
+    expectTypeOf<typeof encodeVariantLinkParam>().toBeFunction()
+  })
   test('EnhancedObjectDialog', () => {
     expectTypeOf<typeof EnhancedObjectDialog>().toBeFunction()
   })
@@ -3948,6 +3962,10 @@ describe('sanity', () => {
   })
   test('getCreatableVariantTarget', () => {
     expectTypeOf<typeof getCreatableVariantTarget>().toBeFunction()
+  })
+  test('getDefaultVariant', () => {
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
+    expectTypeOf<typeof getDefaultVariant>().toBeFunction()
   })
   test('getDiffAtPath', () => {
     expectTypeOf<typeof getDiffAtPath>().toBeFunction()
@@ -6222,6 +6240,9 @@ describe('sanity', () => {
   test('stringToPath', () => {
     expectTypeOf<typeof stringToPath>().toBeFunction()
   })
+  test('StructureNodeIdValidationResult', () => {
+    expectTypeOf<StructureNodeIdValidationResult>().toBeObject()
+  })
   test('Studio', () => {
     expectTypeOf<typeof Studio>().toBeFunction()
   })
@@ -7237,6 +7258,9 @@ describe('sanity', () => {
   test('validateNames', () => {
     expectTypeOf<typeof validateNames>().toBeFunction()
   })
+  test('validateStructureNodeId', () => {
+    expectTypeOf<typeof validateStructureNodeId>().toBeFunction()
+  })
   test('ValidateWorkspaceOptions', () => {
     expectTypeOf<ValidateWorkspaceOptions>().toBeObject()
   })
@@ -7283,8 +7307,29 @@ describe('sanity', () => {
   test('ValuelessSearchOperatorParams', () => {
     expectTypeOf<ValuelessSearchOperatorParams>().not.toBeNever()
   })
+  test('VariantConditionMap', () => {
+    expectTypeOf<VariantConditionMap>().toBeObject()
+  })
+  test('VariantConditions', () => {
+    expectTypeOf<VariantConditions>().not.toBeNever()
+  })
+  test('VariantConditionsContext', () => {
+    expectTypeOf<VariantConditionsContext>().not.toBeNever()
+  })
+  test('VariantConditionValue', () => {
+    expectTypeOf<VariantConditionValue>().toBeObject()
+  })
   test('VARIANTS_STUDIO_CLIENT_OPTIONS', () => {
     expectTypeOf<typeof VARIANTS_STUDIO_CLIENT_OPTIONS>().not.toBeNever()
+  })
+  test('VariantTypeConfig', () => {
+    expectTypeOf<VariantTypeConfig>().toBeObject()
+  })
+  test('VariantTypeContext', () => {
+    expectTypeOf<VariantTypeContext>().not.toBeNever()
+  })
+  test('VariantTypesConfig', () => {
+    expectTypeOf<VariantTypesConfig>().not.toBeNever()
   })
   test('VERSION_FOLDER', () => {
     expectTypeOf<typeof VERSION_FOLDER>().not.toBeNever()
@@ -7296,7 +7341,7 @@ describe('sanity', () => {
     expectTypeOf<VersionInfoDocumentStub>().toBeObject()
   })
   test('VersionInlineBadge', () => {
-    expectTypeOf<typeof VersionInlineBadge>().not.toBeNever()
+    expectTypeOf<typeof VersionInlineBadge>().toBeFunction()
   })
   test('VersionType', () => {
     expectTypeOf<VersionType>().not.toBeNever()

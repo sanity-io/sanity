@@ -451,6 +451,10 @@ describe('createSourceFromConfig', () => {
   })
 })
 
+const rootTypes = (context: {dataset: string}) => ({
+  variant: {conditions: [{name: 'audience', values: [context.dataset]}]},
+})
+
 describe('beta variants config', () => {
   const projectId = 'ppsg7ml5'
   const dataset = 'production'
@@ -528,6 +532,117 @@ describe('beta variants config', () => {
         },
       }),
     ).rejects.toThrow('Expected `beta.variants.enabled` to be a boolean, but received string')
+  })
+
+  it('defaults types to undefined', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      beta: {variants: {enabled: true}},
+    })
+
+    expect(source.beta?.variants?.types).toBeUndefined()
+  })
+
+  it('resolves types from root config', async () => {
+    const types = {variant: {label: 'Variant', conditions: [{name: 'audience', values: ['loyal']}]}}
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      beta: {variants: {enabled: true, types}},
+    })
+
+    expect(source.beta?.variants?.types).toEqual(types)
+  })
+
+  it('rejects a type other than variant', async () => {
+    await expect(
+      createSourceFromConfig({
+        projectId,
+        dataset,
+        beta: {
+          variants: {
+            enabled: true,
+            types: {
+              variant: {conditions: [{name: 'audience', values: ['loyal']}]},
+              // @ts-expect-error language is not in the public types map yet
+              language: {label: 'Language', conditions: [{name: 'locale', values: ['en']}]},
+            },
+          },
+        },
+      }),
+    ).rejects.toThrow('Expected `beta.variants.types` to only include "variant"')
+  })
+
+  it('resolves types from plugin config', async () => {
+    const types = {variant: {conditions: [{name: 'locale', values: ['en-US']}]}}
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        definePlugin({
+          name: 'sanity/beta-variants-conditions',
+          beta: {variants: {types}},
+        })(),
+      ],
+    })
+
+    expect(source.beta?.variants?.types).toEqual(types)
+  })
+
+  it('lets root config override plugin types', async () => {
+    const pluginTypes = {variant: {conditions: [{name: 'audience', values: ['plugin']}]}}
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        definePlugin({
+          name: 'sanity/beta-variants-conditions',
+          beta: {variants: {types: pluginTypes}},
+        })(),
+      ],
+      beta: {variants: {types: rootTypes}},
+    })
+
+    expect(source.beta?.variants?.types).toBe(rootTypes)
+  })
+
+  it('throws when a type key is invalid', async () => {
+    await expect(
+      createSourceFromConfig({
+        projectId,
+        dataset,
+        beta: {
+          variants: {
+            types: {
+              // @ts-expect-error invalid type key
+              'Not a key': {label: 'Nope'},
+            },
+          },
+        },
+      }),
+    ).rejects.toThrow('Expected `beta.variants.types` keys to match')
+  })
+
+  it('throws when type conditions are not an array or a function', async () => {
+    await expect(
+      createSourceFromConfig({
+        projectId,
+        dataset,
+        beta: {
+          variants: {
+            types: {
+              variant: {
+                // @ts-expect-error should be an array or a function
+                conditions: 'audience',
+              },
+            },
+          },
+        },
+      }),
+    ).rejects.toThrow(
+      'Expected `beta.variants.types.variant.conditions` to be an array or a function, but received string',
+    )
   })
 })
 

@@ -5,6 +5,8 @@ import {
   CommentsEnabledProviderV2,
   CommentsProvider,
   CommentsProviderV2,
+  encodeVariantLinkParam,
+  getDefaultVariant,
   getDraftId,
   getPublishedId,
   getTargetScopeId,
@@ -66,7 +68,8 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
   const {enabled} = commentsV2 ? enabledV2 : enabledV1
   const {connectionState, onPathOpen, inspector, openInspector, targetDocumentState, value} =
     useDocumentPane()
-  const {selectedPerspectiveName, selectedReleaseId, selectedVariantName} = usePerspective()
+  const {selectedPerspectiveName, selectedReleaseId, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const {params, setParams} = usePaneRouter()
   const {resolveIntentLink} = useRouter()
 
@@ -89,7 +92,7 @@ function CommentsProviderWrapper(props: CommentsWrapperProps) {
         selectedReleaseId && !scheduledDraft ? [['perspective', selectedReleaseId]] : []
 
       if (selectedVariantName) {
-        searchParams.push(['variant', selectedVariantName])
+        searchParams.push(['variant', encodeVariantLinkParam(selectedVariantName)])
       }
 
       const intentLink = resolveIntentLink(

@@ -2,13 +2,12 @@ import {
   // oxlint-disable-next-line no-restricted-imports
   Button as UIButton,
   Card,
-  Stack,
   Text,
 } from '@sanity/ui'
 import {isThisISOWeek} from 'date-fns/isThisISOWeek'
 import {isToday} from 'date-fns/isToday'
 import {useMemo} from 'react'
-import {Flex, Box} from 'ui5'
+import {Box, Flex, VStack} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../../../hooks/useDateTimeFormat'
@@ -84,7 +83,7 @@ export function TasksListItem(props: TasksListItemProps) {
   const targetDocument = useMemo(() => getTargetDocumentMeta(target), [target])
 
   return (
-    <Stack gap={3} data-testid="tasks-list-item">
+    <VStack gap={3} data-testid="tasks-list-item">
       <Flex alignItems="center" gap={1}>
         <Box>
           <TasksStatus documentId={documentId} status={status} />
@@ -115,6 +114,6 @@ export function TasksListItem(props: TasksListItemProps) {
           )}
         </Flex>
       )}
-    </Stack>
+    </VStack>
   )
 }

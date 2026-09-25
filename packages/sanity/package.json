@@ -43,6 +43,10 @@
       "monorepo": "./src/_exports/_createContext.ts",
       "default": "./lib/_createContext.js"
     },
+    "./_dangerously_use_private_internals_that_do_not_follow_semver": {
+      "monorepo": "./src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver.ts",
+      "default": "./lib/_dangerously_use_private_internals_that_do_not_follow_semver.js"
+    },
     "./_internal": {
       "monorepo": "./src/_exports/_internal.ts",
       "default": "./lib/_internal.js"
@@ -100,6 +104,7 @@
     "exports": {
       ".": "./lib/index.js",
       "./_createContext": "./lib/_createContext.js",
+      "./_dangerously_use_private_internals_that_do_not_follow_semver": "./lib/_dangerously_use_private_internals_that_do_not_follow_semver.js",
       "./_internal": "./lib/_internal.js",
       "./_singletons": "./lib/_singletons.js",
       "./_unstable-embedded": "./lib/_unstable-embedded.js",
@@ -187,7 +192,7 @@
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.3",
     "@sanity/validation": "workspace:*",
-    "@sentry/react": "^10.75.0",
+    "@sentry/react": "^10.75.3",
     "@tanstack/react-virtual": "^3.14.13",
     "@vanilla-extract/dynamic": "catalog:",
     "@xstate/react": "^6.1.0",
@@ -218,7 +223,7 @@
     "raf": "^3.4.1",
     "react-fast-compare": "^3.2.2",
     "react-focus-lock": "^2.13.7",
-    "react-i18next": "^17.0.14",
+    "react-i18next": "^17.0.15",
     "react-is": "catalog:",
     "react-refractor": "^4.0.0",
     "react-rx": "catalog:",
@@ -266,7 +271,6 @@
     "@vanilla-extract/css": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "@vitest/browser-playwright": "catalog:",
-    "@vitest/expect": "^4.1.11",
     "blob-polyfill": "^9.0.20240710",
     "chromatic": "^18.9.4",
     "jsdom": "catalog:",

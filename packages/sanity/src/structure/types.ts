@@ -366,6 +366,9 @@ export interface DocumentListPaneNode extends BaseResolvedPaneNode<'documentList
   suppressRestoreDefaultMenuItems?: boolean
   schemaTypeName: string
   source?: string
+  minWidth?: number
+  currentMaxWidth?: number
+  maxWidth?: number
 }
 
 /** @internal */
@@ -405,6 +408,9 @@ export interface ListPaneNode extends BaseResolvedPaneNode<'list'> {
   items?: Array<PaneListItem | PaneListItemDivider>
   // TODO: mark as unstable or remove
   source?: string
+  minWidth?: number
+  currentMaxWidth?: number
+  maxWidth?: number
 }
 
 /** @internal */

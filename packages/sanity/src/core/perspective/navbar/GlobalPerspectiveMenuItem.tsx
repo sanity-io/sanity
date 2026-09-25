@@ -4,7 +4,7 @@ import {EyeClosedIcon} from '@sanity/icons/EyeClosed'
 import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {LockIcon} from '@sanity/icons/Lock'
 // oxlint-disable-next-line no-restricted-imports -- custom use for Button not supported by ui-components
-import {Button, Stack, Text} from '@sanity/ui'
+import {Button, Text} from '@sanity/ui'
 // oxlint-disable-next-line no-restricted-imports -- custom use for MenuItem not supported by ui-components
 import {MenuItem} from '@sanity/ui/menu'
 import {type MouseEvent, useCallback, useMemo, type RefAttributes} from 'react'
@@ -168,16 +168,17 @@ export function GlobalPerspectiveMenuItem(
               <ReleaseAvatarIcon size="small" release={release} />
             </Text>
           </IconWrapperBox>
-          <Stack
-            flex={1}
+          <Flex
+            flexBasis="0%"
+            flexGrow={1}
             paddingY={2}
             paddingRight={2}
             gap={2}
             style={{
               opacity: isReleasePerspectiveExcluded ? 0.5 : undefined,
               maxWidth: '200px',
-              minWidth: 0,
             }}
+            flexDirection="column"
           >
             <Flex gap={3} alignItems="center">
               {isReleaseDocument(release) ? (
@@ -208,7 +209,7 @@ export function GlobalPerspectiveMenuItem(
                   {formatPublishDate(release)}
                 </Text>
               )}
-          </Stack>
+          </Flex>
           <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
             {canReleaseBeExcluded && (
               <Tooltip portal content={t('release.layer.hide')} placement="bottom">
