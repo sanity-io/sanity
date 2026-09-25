@@ -83,6 +83,8 @@ export type FetchReason =
   | {type: 'options'}
   /** A query loaded into a tab that refetches automatically */
   | {type: 'load'}
+  /** A tab that refetches automatically was shown again, with nothing current to replay */
+  | {type: 'resume'}
   | {type: 'live'; matchedTags: SyncTag[]}
 
 export interface FetchHistoryEntry {
