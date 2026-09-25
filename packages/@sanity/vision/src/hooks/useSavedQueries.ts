@@ -49,6 +49,15 @@ interface SharedQueryDocument {
   url: string
 }
 
+/** The error for a failed move whose rollback failed too: the query is now in both lists */
+function moveLeftBothCopies(error: unknown, keptCopy: 'shared' | 'personal'): Error {
+  const message = error instanceof Error ? error.message : String(error)
+  return new Error(
+    `${message} Removing the ${keptCopy} copy made for the move failed as well, so the query is now in both lists; delete the one you do not want.`,
+    {cause: error},
+  )
+}
+
 export function useSavedQueries(): {
   queries: QueryConfig[]
   /** Resolves with the key of the saved query (the document id of a shared one) */
@@ -336,10 +345,11 @@ export function useSavedQueries(): {
     [deletePersonalQuery, deleteSharedQuery, sharedQueries],
   )
 
-  // Moving a query between the personal store and the shared documents takes two writes. When
-  // the second one fails, the first is taken back so the query is never in both places and a
-  // retry cannot pile up copies; the move then rejects with the original error. Should taking it
-  // back fail as well, the lists keep showing both copies, as the stores do, so nothing is hidden.
+  // Moving a query between the personal store and the shared documents takes two writes to two
+  // stores, so it cannot be atomic. When the second write fails, the first is taken back so the
+  // query does not end up in both places and a retry cannot pile up copies; the move then rejects
+  // with the original error. Should taking it back fail as well, both copies stay in the lists,
+  // as they do in the stores, and the error says so.
   const shareQuery = useCallback(
     async (key: string) => {
       const query = value.queries.find((q) => q._key === key)
@@ -359,7 +369,7 @@ export function useSavedQueries(): {
           await workspaceClient.delete(sharedKey)
           setSharedQueries((prev) => prev.filter((q) => q._key !== sharedKey))
         } catch {
-          // The shared copy stays, in the dataset and in the list
+          throw moveLeftBothCopies(err, 'shared')
         }
         throw err
       }
@@ -389,7 +399,7 @@ export function useSavedQueries(): {
           } as unknown as KeyValueStoreValue)
           setValue({queries: personalQueriesBefore})
         } catch {
-          // The personal copy stays, in the store and in the list
+          throw moveLeftBothCopies(err, 'personal')
         }
         throw err
       }
