@@ -356,6 +356,47 @@ File-wide `/* oxlint-disable <rule> */` is reserved for files that are an except
 
 `options.reportUnusedDisableDirectives` is `error`, so a suppression that stops being necessary fails CI — drop suppressions when the code underneath them changes.
 
+### `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`
+
+Every declaration that `sanity`, `sanity/structure` or `sanity/router` exports under the
+`@internal` TSDoc release tag is also exported from
+`sanity/_dangerously_use_private_internals_that_do_not_follow_semver`
+(`packages/sanity/src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver.ts`),
+an entry whose name spells out its contract: anything on it can change or disappear in any
+release. The public entries still export those symbols today; the entry is the migration target
+for consumers that depend on them, ahead of the public entries dropping them in a future major.
+`packages/@repo/test-dts-exports/test/internals-entry-completeness.test.ts` (part of
+`pnpm test:exports`) fails when an `@internal` export of a public entry is missing from the entry,
+when the two entries export different declarations under one name, or when the entry exports
+something that is not tagged `@internal`.
+
+Rules that follow from this:
+
+- A new `@internal` export on a public barrel needs a matching line in the internals barrel
+  (grouped by source module, `type` specifiers kept). Consumers outside `packages/sanity`
+  (`@sanity/vision`, the dev studios, plugins) import internals from the entry, never from
+  `sanity`. Inside the package, `src/core`, `src/structure` and `src/router` keep importing
+  relatively: the entry re-exports modules from all three areas, so importing it from any of them
+  is an import cycle, and a lazily loaded module that imports the entry drags the whole barrel in
+  with it. The boundaries rules in `.oxlintrc.json` only allow the entry itself to import from the
+  three areas.
+- The entry is generated from the tags, not curated: whether a symbol belongs there is decided by
+  its `@internal` tag. Retagging a symbol (`@internal` → `@beta`/`@public`, or the other way) is
+  the API decision; check sanity.io/docs and the published first-party plugins before demoting a
+  symbol, and remember that `@sanity/cli`, `@sanity/cli-core` and `@sanity/cli-build` load the
+  studio's local `sanity` package at runtime (`resolveLocalPackage('sanity')`) and destructure
+  `renderStudio`, `resolveConfig`, `createSchema`, `SchemaError`, `createDefaultIcon`,
+  `generateStudioManifest`, `uploadSchema` and `validateDocument` from the root. The one
+  deliberate exception is `createAuthStore` (deprecated since v3.15.0): it keeps its
+  `@internal @deprecated` tags because those tell customers to stop using it, it stays off the
+  entry so the deprecated `sanity` import remains the only one, and it is listed in
+  `PUBLIC_BY_USAGE` in the completeness test; its removal is governed by the deprecation, not by
+  the internals moving. Do not retag it.
+- The CDN auto-update bundle (`packages/sanity/package.bundle.ts`) lists every entry explicitly;
+  a new entry must be added there too, otherwise the `sanity/` import-map prefix resolves it to a
+  404 on the module host. `pnpm generate:dts-exports` in `packages/@repo/test-dts-exports`
+  regenerates the d.ts fixture for the entry after its export list changes.
+
 ### Effect events: use `use-effect-event`, not React's native hook
 
 Import `useEffectEvent` from `use-effect-event`, never from `react`. On React 19.2 the native hook
