@@ -125,18 +125,23 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   const toggleAutoRefetch = useCallback(() => {
     const autoRefetch = !tab.autoRefetch
     actorRef.send({type: 'tab.setAutoRefetch', id: tab.id, autoRefetch})
+    if (!autoRefetch) return
     // Live refetches replay the runner's last request, which may date from before the options
-    // (or the query) changed while refetching was off; a session starts from the current one
+    // (or the query) changed while refetching was off; a session starts from the current one.
+    // Params typed within the debounce window belong to that session, so commit them first and
+    // build the request from what the machine holds now, as `run` does
+    setParams.flush()
+    const latest = actorRef.getSnapshot().context.tabs.find((it) => it.id === tab.id) ?? tab
+    const current = buildRequest(latest.query, latest.rawParams)
     const lastRequest = runnerRef.getSnapshot().context.request
     if (
-      autoRefetch &&
-      request &&
-      (lastRequest?.url !== request.url ||
-        lastRequest.includeSourceMap !== request.includeSourceMap)
+      current &&
+      (lastRequest?.url !== current.url ||
+        lastRequest.includeSourceMap !== current.includeSourceMap)
     ) {
-      runnerRef.send({type: 'fetch', request, reason: {type: 'manual'}})
+      runnerRef.send({type: 'fetch', request: current, reason: {type: 'manual'}})
     }
-  }, [actorRef, request, runnerRef, tab.autoRefetch, tab.id])
+  }, [actorRef, buildRequest, runnerRef, setParams, tab])
 
   const prettify = useCallback(async () => {
     const {query} = tab
