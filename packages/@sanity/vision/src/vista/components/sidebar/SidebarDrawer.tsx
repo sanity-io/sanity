@@ -1,6 +1,6 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {Button, Text} from '@sanity/ui'
-import {type KeyboardEvent, useCallback, useEffect, useRef} from 'react'
+import {type KeyboardEvent, useCallback, useEffect, useRef, useState} from 'react'
 import {useTranslation} from 'sanity'
 import {Flex} from 'ui5'
 
@@ -25,14 +25,20 @@ export function SidebarDrawer({drawer, overlay}: SidebarDrawerProps) {
   const title =
     drawer === 'saved' ? t('vista.sidebar.saved-queries') : t('vista.sidebar.shared-queries')
 
+  // The opener has to be read while rendering: the commit that mounts the drawer also makes the
+  // rail and the tabs area inert, and that blurs the control that opened the drawer before any
+  // effect runs
+  const [opener] = useState(() =>
+    document.activeElement instanceof HTMLElement ? document.activeElement : null,
+  )
+
   // Floating over the tool, the drawer behaves like a dialog: the rest of the tool is inert
   // (see VistaGui and VistaSidebar), focus moves in on open and back to the opener on close
   useEffect(() => {
     if (!overlay) return undefined
-    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null
     closeButtonRef.current?.focus()
     return () => opener?.focus()
-  }, [overlay])
+  }, [opener, overlay])
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
