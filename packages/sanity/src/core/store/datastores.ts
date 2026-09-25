@@ -2,7 +2,6 @@ import {type SanityClient} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useMemo} from 'react'
-import {useSyncObservable} from 'react-rx'
 
 import {useClient} from '../hooks/useClient'
 import {useSchema} from '../hooks/useSchema'
@@ -448,35 +447,27 @@ export function useRenderingContextStore(): RenderingContextStore {
 export function useComlinkStore(): ComlinkStore {
   const resourceCache = useResourceCache()
   const renderingContext = useRenderingContextStore()
-  // Kept synchronous: the comlink node is created when `capabilities.comlink`
-  // is true, so a deferred snapshot would delay comlink initialization.
-  // The store has already resolved them, so the comlink store is created
-  // for the actual capabilities right away instead of once for `{}` and again
-  // after the first emission.
-  const capabilities = useSyncObservable(
-    renderingContext.capabilities,
-    () => renderingContext.getCapabilities() ?? EMPTY_CAPABILITIES,
-  )
 
   const comlinkStore = useMemo(() => {
     const store =
       resourceCache.get<ComlinkStore>({
-        dependencies: [capabilities],
+        dependencies: [renderingContext],
         namespace: 'ComlinkStore',
-      }) || createComlinkStore({capabilities})
+      }) ||
+      // Comlink only comes from the URL, which doesn't change, so the capabilities are read once.
+      createComlinkStore({capabilities: renderingContext.getCapabilities() ?? EMPTY_CAPABILITIES})
 
     resourceCache.set({
-      dependencies: [capabilities],
+      dependencies: [renderingContext],
       namespace: 'ComlinkStore',
       value: store,
     })
 
     return store
-  }, [capabilities, resourceCache])
+  }, [renderingContext, resourceCache])
 
-  // The store is created during render, which React may abandon; the node is
-  // only started once a consumer commits. Starting is idempotent, so every
-  // consumer may ask for it.
+  // `start()` holds the node through a subscription, so it belongs in an effect rather than in
+  // render. It is idempotent, so every consumer may call it.
   useEffect(() => {
     comlinkStore.start()
   }, [comlinkStore])
