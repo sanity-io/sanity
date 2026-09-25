@@ -44,11 +44,17 @@ const incomingReferenceSearch = (
   client: SanityClient,
   schemaType: SchemaType,
   searchStrategy: SearchStrategy | undefined,
+  filter?: string,
+  filterParams?: Record<string, unknown>,
 ): ((textTerm: string) => Observable<ReferenceSearchHit[]>) => {
   const search = createSearch([schemaType], client, {
     maxDepth: DEFAULT_MAX_FIELD_DEPTH,
     strategy: searchStrategy,
     tag: 'search.incoming-reference',
+    // Apply the same custom filter used for the rendered list, so the "link existing"
+    // search cannot surface documents the filter excludes.
+    filter,
+    params: filterParams,
   })
   return (textTerm: string) =>
     search(textTerm, {perspective: 'raw'}).pipe(
@@ -96,6 +102,8 @@ export function AddIncomingReference({
   onLinkDocument,
   fieldName,
   creationAllowed,
+  filter,
+  filterParams,
 }: {
   type: string
   referenced: {id: string; type: string}
@@ -103,6 +111,9 @@ export function AddIncomingReference({
   onLinkDocument: (documentId: string) => void
   fieldName: string
   creationAllowed: IncomingReferencesOptions['creationAllowed']
+  /** Resolved GROQ filter applied to the link-existing search (matches the rendered list). */
+  filter?: string
+  filterParams?: Record<string, unknown>
 }) {
   const {t} = useTranslation(structureLocaleNamespace)
   const {push} = useToast()
@@ -114,8 +125,8 @@ export function AddIncomingReference({
   const {strategy: searchStrategy} = source.search
   const documentPreviewStore = useDocumentPreviewStore()
   const handleSearch = useMemo(
-    () => incomingReferenceSearch(client, schemaType!, searchStrategy),
-    [client, schemaType, searchStrategy],
+    () => incomingReferenceSearch(client, schemaType!, searchStrategy, filter, filterParams),
+    [client, schemaType, searchStrategy, filter, filterParams],
   )
 
   const {searchState, handleQueryChange} = useSearchMachine<ReferenceSearchHit>({
