@@ -1,17 +1,14 @@
-import {type LiveEventMessage, type SyncTag} from '@sanity/client'
+import {type LiveEvent, type LiveEventMessage, type SyncTag} from '@sanity/client'
 import {fetchSharedAccessQuery} from '@sanity/preview-url-secret/constants'
 import {
   BehaviorSubject,
   combineLatest,
   defer,
   distinctUntilChanged,
-  filter,
   map,
-  merge,
   mergeMap,
   of,
   scan,
-  share,
   startWith,
   switchMap,
   tap,
@@ -24,6 +21,35 @@ import {fromObservable, type ObservableActorLogic} from 'xstate'
  */
 const MAX_BUFFERED_MESSAGES = 100
 
+interface LiveEventsState {
+  messages: LiveEventMessage[]
+  /**
+   * Counts restarts and reconnects, after which changes might have been missed
+   */
+  resets: number
+}
+
+const initialLiveEventsState: LiveEventsState = {messages: [], resets: 0}
+
+function reduceLiveEvents(state: LiveEventsState, event: LiveEvent): LiveEventsState {
+  switch (event.type) {
+    case 'message':
+      return {...state, messages: [...state.messages, event].slice(-MAX_BUFFERED_MESSAGES)}
+    case 'restart':
+    case 'reconnect':
+      /**
+       * The ids of earlier events don't apply to the stream that follows, so they're dropped with it
+       */
+      return {messages: [], resets: state.resets + 1}
+    case 'welcome':
+    case 'goaway':
+      return state
+    default:
+      event satisfies never
+      return state
+  }
+}
+
 /**
  * Emits the shared preview secret, or `null` while sharing is off, and again whenever that changes
  * @internal
@@ -35,39 +61,31 @@ export function defineWatchSharedSecretActor({
 }): ObservableActorLogic<string | null, void> {
   return fromObservable(() =>
     defer(() => {
-      const events$ = client.live.events().pipe(share())
       /**
        * `undefined` until the first read, so live events that arrive while it's in flight are matched once it's done
        */
       const syncTags$ = new BehaviorSubject<SyncTag[] | undefined>(undefined)
 
-      const lastMessageId$ = combineLatest([
-        events$.pipe(
-          filter((event): event is LiveEventMessage => event.type === 'message'),
-          scan<LiveEventMessage, LiveEventMessage[]>(
-            (messages, message) => [...messages, message].slice(-MAX_BUFFERED_MESSAGES),
-            [],
-          ),
-          startWith([]),
-        ),
+      return combineLatest([
+        client.live
+          .events()
+          .pipe(scan(reduceLiveEvents, initialLiveEventsState), startWith(initialLiveEventsState)),
         syncTags$,
       ]).pipe(
-        map(
-          ([messages, syncTags]) =>
-            messages.findLast((message) => message.tags.some((tag) => syncTags?.includes(tag)))?.id,
+        map(([{messages, resets}, syncTags]) => ({
+          resets,
+          lastLiveEventId: messages.findLast((message) =>
+            message.tags.some((tag) => syncTags?.includes(tag)),
+          )?.id,
+        })),
+        /**
+         * Reads it once for every reset, from scratch, and once for every live event about it
+         */
+        distinctUntilChanged(
+          (previous, next) =>
+            previous.resets === next.resets && previous.lastLiveEventId === next.lastLiveEventId,
         ),
-        distinctUntilChanged(),
-      )
-      /**
-       * Changes might have been missed, so read it again from scratch
-       */
-      const resets$ = events$.pipe(
-        filter((event) => event.type === 'restart' || event.type === 'reconnect'),
-        map(() => undefined),
-      )
-
-      return merge(lastMessageId$, resets$).pipe(
-        switchMap((lastLiveEventId) =>
+        switchMap(({lastLiveEventId}) =>
           client.observable.fetch<string | null>(
             fetchSharedAccessQuery,
             {},

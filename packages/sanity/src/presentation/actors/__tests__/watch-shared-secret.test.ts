@@ -128,6 +128,42 @@ describe('watch shared preview secret actor', () => {
     expect(actor.getSnapshot().context).toBeNull()
   })
 
+  test('forgets the live events from before a restart, and reads from scratch once for each reset', () => {
+    const {client, events, fetch, respond} = mockClientWithPendingReads()
+    const actor = createActor(defineWatchSharedSecretActor({client})).start()
+
+    /**
+     * A live event arrives during the first read, and then the stream restarts, so its id no longer applies
+     */
+    events.next({type: 'message', id: 'event-1', tags: [shareAccessSyncTag]})
+    events.next({type: 'restart', id: 'restart-1'})
+    expect(fetch).toHaveBeenCalledTimes(2)
+    expect(fetch).toHaveBeenLastCalledWith(
+      fetchSharedAccessQuery,
+      {},
+      expect.objectContaining({lastLiveEventId: undefined}),
+    )
+    respond(1, 'shared-secret')
+    expect(fetch).toHaveBeenCalledTimes(2)
+    expect(actor.getSnapshot().context).toBe('shared-secret')
+
+    events.next({type: 'reconnect'})
+    expect(fetch).toHaveBeenCalledTimes(3)
+    respond(2, 'shared-secret')
+    expect(fetch).toHaveBeenCalledTimes(3)
+
+    /**
+     * Live events on the new stream are matched as before
+     */
+    events.next({type: 'message', id: 'event-2', tags: [shareAccessSyncTag]})
+    expect(fetch).toHaveBeenCalledTimes(4)
+    expect(fetch).toHaveBeenLastCalledWith(
+      fetchSharedAccessQuery,
+      {},
+      expect.objectContaining({lastLiveEventId: 'event-2'}),
+    )
+  })
+
   test('ignores live events about other documents', () => {
     const {client, events, fetch} = mockClient('shared-secret')
     const actor = createActor(defineWatchSharedSecretActor({client})).start()
