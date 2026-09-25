@@ -1,6 +1,6 @@
 import {createNode} from '@sanity/comlink'
 import {render} from '@testing-library/react'
-import {beforeEach, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, expect, it, vi} from 'vitest'
 
 import {useComlinkStore} from '../datastores'
 import type * as RenderingContextStoreModule from '../renderingContext/createRenderingContextStore'
@@ -29,7 +29,13 @@ beforeEach(() => {
   nodeStart.mockClear()
 })
 
+afterEach(() => {
+  vi.restoreAllMocks()
+})
+
 it('creates the comlink node for the mounting render but starts it only on commit', () => {
+  // Comlink needs Studio to be rendered in a frame.
+  vi.spyOn(window, 'top', 'get').mockReturnValue(null)
   const startsSeenWhileRendering: number[] = []
   function Consumer() {
     const {node} = useComlinkStore()
