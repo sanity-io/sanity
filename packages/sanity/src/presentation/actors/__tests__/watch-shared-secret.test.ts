@@ -1,4 +1,4 @@
-import {type LiveEvent} from '@sanity/client'
+import {type LiveEvent, type RawQueryResponse} from '@sanity/client'
 import {fetchSharedAccessQuery} from '@sanity/preview-url-secret/constants'
 import {of, Subject} from 'rxjs'
 import {type SanityClient} from 'sanity'
@@ -24,6 +24,30 @@ const mockClient = (...results: (string | null)[]) => {
   )
   const client = {live: {events: () => events}, observable: {fetch}} as unknown as SanityClient
   return {client, events, fetch}
+}
+
+/**
+ * Each read of the shared secret stays in flight until `respond` is called for it
+ */
+const mockClientWithPendingReads = () => {
+  const events = new Subject<LiveEvent>()
+  const reads: Subject<RawQueryResponse<string | null>>[] = []
+  const fetch = vi.fn(() => {
+    const read = new Subject<RawQueryResponse<string | null>>()
+    reads.push(read)
+    return read
+  })
+  const respond = (index: number, result: string | null) => {
+    reads[index].next({
+      query: fetchSharedAccessQuery,
+      ms: 0,
+      result,
+      syncTags: [shareAccessSyncTag],
+    })
+    reads[index].complete()
+  }
+  const client = {live: {events: () => events}, observable: {fetch}} as unknown as SanityClient
+  return {client, events, fetch, respond}
 }
 
 describe('watch shared preview secret actor', () => {
@@ -54,6 +78,54 @@ describe('watch shared preview secret actor', () => {
      */
     events.next({type: 'message', id: 'event-2', tags: [shareAccessSyncTag]})
     expect(actor.getSnapshot().context).toBe('new-shared-secret')
+  })
+
+  test('reads the shared secret again for a live event that arrived during the first read', () => {
+    const {client, events, fetch, respond} = mockClientWithPendingReads()
+    const actor = createActor(defineWatchSharedSecretActor({client})).start()
+    expect(fetch).toHaveBeenCalledTimes(1)
+
+    /**
+     * Sharing is turned off while the first read is in flight, and that read still has the secret.
+     * Its sync tags aren't known yet, so the event can only be matched once it's done.
+     */
+    events.next({type: 'message', id: 'event-1', tags: [shareAccessSyncTag]})
+    expect(fetch).toHaveBeenCalledTimes(1)
+    respond(0, 'shared-secret')
+    expect(fetch).toHaveBeenCalledTimes(2)
+    expect(fetch).toHaveBeenLastCalledWith(
+      fetchSharedAccessQuery,
+      {},
+      expect.objectContaining({lastLiveEventId: 'event-1'}),
+    )
+
+    respond(1, null)
+    expect(actor.getSnapshot().context).toBeNull()
+    expect(fetch).toHaveBeenCalledTimes(2)
+  })
+
+  test('does not let the result of a read overtake the result of the read it starts', () => {
+    const events = new Subject<LiveEvent>()
+    const firstRead = new Subject<RawQueryResponse<string | null>>()
+    const fetch = vi
+      .fn()
+      .mockReturnValueOnce(firstRead)
+      .mockReturnValue(
+        of({query: fetchSharedAccessQuery, ms: 0, result: null, syncTags: [shareAccessSyncTag]}),
+      )
+    const client = {live: {events: () => events}, observable: {fetch}} as unknown as SanityClient
+    const actor = createActor(defineWatchSharedSecretActor({client})).start()
+
+    events.next({type: 'message', id: 'event-1', tags: [shareAccessSyncTag]})
+    firstRead.next({
+      query: fetchSharedAccessQuery,
+      ms: 0,
+      result: 'shared-secret',
+      syncTags: [shareAccessSyncTag],
+    })
+
+    expect(fetch).toHaveBeenCalledTimes(2)
+    expect(actor.getSnapshot().context).toBeNull()
   })
 
   test('ignores live events about other documents', () => {
