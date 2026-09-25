@@ -64,7 +64,8 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
                   if (collapsed) onToggle()
                 }}
                 padding={2}
-                selected={!collapsed && tab.id === activeTab.id}
+                // A tablist always has a selected tab; collapsing hides its panel, no more
+                selected={tab.id === activeTab.id}
               />
             ))}
           </TabList>

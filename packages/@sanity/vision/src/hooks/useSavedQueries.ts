@@ -1,7 +1,6 @@
 import {type ListenOptions} from '@sanity/client'
 import {uuid} from '@sanity/uuid' // Import the UUID library
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {map, startWith} from 'rxjs/operators'
 import {type KeyValueStoreValue, useClient, useCurrentUser, useKeyValueStore} from 'sanity'
 
 import {DEFAULT_API_VERSION} from '../apiVersions'
@@ -93,6 +92,13 @@ export function useSavedQueries(): {
   // render's snapshot: overlapping saves, deletes and moves cannot lose each other's changes
   const latestQueriesRef = useRef<QueryConfig[]>(defaultValue.queries)
   const personalWritesRef = useRef<Promise<unknown>>(Promise.resolve())
+  // The store's emissions stop being that base while a write is pending, and for good once one
+  // has landed: from then on they are echoes of this hook's own writes, or the initial server
+  // read resolving late with the list from before them (the store only forwards its events
+  // once that read is done, so a write made meanwhile is never echoed)
+  const pendingPersonalWritesRef = useRef(0)
+  const wrotePersonalQueriesRef = useRef(false)
+  const loadedPersonalQueriesRef = useRef(false)
 
   const personalQueries = useMemo(() => {
     return keyValueStore.getKey(keyValueStoreKey)
@@ -116,25 +122,29 @@ export function useSavedQueries(): {
   )
 
   useEffect(() => {
-    const sub = personalQueries
-      .pipe(
-        startWith(defaultValue as any),
-        map((data: StoredQueries) => {
-          if (!data) {
-            return defaultValue
-          }
-          return data
-        }),
-      )
-      .subscribe({
-        next: (data: StoredQueries) => {
-          latestQueriesRef.current = data.queries
-          setValue(data)
-        },
-        error: (err) => setError(err as Error),
-      })
+    // The store emits its localStorage copy synchronously (`null` without one), the server's
+    // list once read, and then every write. Nothing is prepended: this effect runs again when a
+    // hidden `<Activity>` shows the tool again, and an initial value would reset the list, and
+    // with it the base the next write starts from, to empty
+    const sub = personalQueries.subscribe({
+      next: (data) => {
+        if (pendingPersonalWritesRef.current > 0 || wrotePersonalQueriesRef.current) return
+        if (!data) {
+          // No localStorage copy; the server's answer follows, and a list already shown stays
+          if (loadedPersonalQueriesRef.current) return
+          latestQueriesRef.current = defaultValue.queries
+          setValue(defaultValue)
+          return
+        }
+        const stored = data as unknown as StoredQueries
+        loadedPersonalQueriesRef.current = true
+        latestQueriesRef.current = stored.queries
+        setValue(stored)
+      },
+      error: (err) => setError(err as Error),
+    })
 
-    return () => sub?.unsubscribe()
+    return () => sub.unsubscribe()
   }, [personalQueries])
 
   useEffect(() => {
@@ -187,7 +197,17 @@ export function useSavedQueries(): {
 
   /** Runs `task` after every personal write queued so far, whatever their outcome */
   const enqueuePersonalWrite = useCallback(<T>(task: () => Promise<T>): Promise<T> => {
-    const result = personalWritesRef.current.then(task, task)
+    pendingPersonalWritesRef.current += 1
+    const run = () =>
+      task()
+        .then((written) => {
+          wrotePersonalQueriesRef.current = true
+          return written
+        })
+        .finally(() => {
+          pendingPersonalWritesRef.current -= 1
+        })
+    const result = personalWritesRef.current.then(run, run)
     personalWritesRef.current = result.catch(() => undefined)
     return result
   }, [])
