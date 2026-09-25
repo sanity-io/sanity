@@ -58,7 +58,9 @@ function createTheme(theme: Theme) {
         border: `1px solid ${card.border}`,
         borderRadius: '3px',
       },
-      '.cm-tooltip.cm-tooltip-lint': {fontFamily: fonts.text.family},
+      // Rule messages quote whole rewrites of the query; wrap them rather than span the screen
+      // (in a hover tooltip the lint content is a section of the shared tooltip element)
+      '.cm-tooltip-lint': {fontFamily: fonts.text.family, maxWidth: '520px'},
       '.cm-panel.cm-panel-lint ul [aria-selected]': {backgroundColor: selection},
       '.cm-panel.cm-panel-lint ul [aria-selected] .cm-diagnostic': {color: card.fg},
     },
