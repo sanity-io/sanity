@@ -1192,7 +1192,10 @@ export {
   type RequestFailureDiagnostics,
 } from '../core/store/authStore/createAuthStore'
 /**
- * @internal
+ * Deprecated, but a documented public utility: studios import it from `sanity` to configure custom
+ * auth, so it stays on this entry rather than the internals entry.
+ *
+ * @public
  * @deprecated Use the `auth` config key with an `AuthConfig` object instead. Deprecated since Studio v3.15.0.
  */
 export const createAuthStore = _createAuthStorePublic
