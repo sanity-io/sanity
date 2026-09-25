@@ -13,7 +13,7 @@ const variantsLocaleStrings = {
   /** Label for the variant selector in the variants navigation row. */
   'navbar.variant': 'Variant',
   /** Default option label when no variant is selected. */
-  'navbar.variant.default': 'Default',
+  'navbar.variant.default': 'All users (Default)',
   /** Placeholder for the variant filter input in the dropdown. */
   'navbar.variant.filter-placeholder': 'Filter variants…',
   /** Section header for non-default variants in the dropdown. */

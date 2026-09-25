@@ -27,6 +27,7 @@ import {
   DEFAULT_VARIANT_TYPE_KEY,
   defaultVariantTypesRecord,
   isVariantTypeKey,
+  variantTypeLabel,
 } from '../util/variantType'
 
 /**
@@ -321,7 +322,7 @@ function resolveTypeEntries$(
     getVariantConditions$(config.conditions, {...context, type: key}, workspaceName).pipe(
       map((conditions): ResolvedVariantType => ({
         key,
-        label: config.label?.trim() || key,
+        label: variantTypeLabel(key, config.label),
         description: config.description,
         conditions,
       })),

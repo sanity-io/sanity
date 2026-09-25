@@ -10,11 +10,33 @@ export const DEFAULT_VARIANT_TYPE_KEY = 'variant'
 
 const VARIANT_TYPE_KEY_PATTERN = /^[a-z][a-z0-9_-]{0,63}$/
 
+const DEFAULT_VARIANT_TYPE_LABEL = 'Variant'
+
 /**
  * @internal
  */
 export function defaultVariantTypesRecord(): Record<string, VariantTypeConfig> {
-  return {[DEFAULT_VARIANT_TYPE_KEY]: {label: 'Variant'}}
+  return {[DEFAULT_VARIANT_TYPE_KEY]: {label: DEFAULT_VARIANT_TYPE_LABEL}}
+}
+
+/**
+ * Navbar label for a type. A configured label wins. The built-in `variant` type
+ * falls back to "Variant"; every other type falls back to its key.
+ *
+ * @internal
+ */
+export function variantTypeLabel(key: string, label: string | undefined): string {
+  const trimmed = label?.trim()
+
+  if (trimmed) {
+    return trimmed
+  }
+
+  if (key === DEFAULT_VARIANT_TYPE_KEY) {
+    return DEFAULT_VARIANT_TYPE_LABEL
+  }
+
+  return key
 }
 
 /**

@@ -492,6 +492,28 @@ describe('useVariantConditions', () => {
     expect(result.current).toEqual([])
   })
 
+  it('labels the built-in variant type when config omits a label', async () => {
+    const wrapper = await createTestProvider({
+      config: {
+        beta: {
+          variants: {
+            enabled: true,
+            types: {variant: {conditions: []}},
+          },
+        },
+      },
+    })
+
+    const {result} = renderHook(() => useVariantTypes(), {wrapper})
+
+    await waitFor(() => {
+      expect(result.current).toMatchObject({
+        status: 'ready',
+        types: [expect.objectContaining({key: 'variant', label: 'Variant'})],
+      })
+    })
+  })
+
   it('reports a types resolver that returns a non-object as an error that can be retried', async () => {
     let resolved: unknown = null
     const wrapper = await createTestProvider({

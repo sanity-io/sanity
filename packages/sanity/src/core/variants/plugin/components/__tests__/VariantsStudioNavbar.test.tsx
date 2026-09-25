@@ -74,6 +74,9 @@ describe('VariantsStudioNavbar', () => {
     await renderNavbar()
 
     expect(screen.queryByTestId('perspective-filter-remove')).not.toBeInTheDocument()
+    expect(
+      within(getFilter('Variant')).getByRole('button', {name: 'All users (Default)'}),
+    ).toBeInTheDocument()
   })
 
   it('shows version remove when a non-default perspective is selected', async () => {
