@@ -70,6 +70,7 @@ import {
   type DocumentPaneProviderProps as DocumentPaneProviderWrapperProps,
   type HistoryStoreProps,
 } from './types'
+import {useDocumentApplicationContext} from './useDocumentApplicationContext'
 import {useDocumentHistory} from './useDocumentHistory'
 import {useDocumentInitialLoadTelemetry} from './useDocumentInitialLoadTelemetry'
 import {useDocumentPaneInitialValue} from './useDocumentPaneInitialValue'
@@ -546,14 +547,12 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     return displayed
   }, [editState.version, editState.published, displayed])
 
-  useDocumentHistory({
-    documentId,
-    documentType,
-    displayedId:
-      editState.ready && (editState.version ?? editState.draft ?? editState.published)
-        ? currentDisplayed?._id
-        : undefined,
-  })
+  const displayedId =
+    editState.ready && (editState.version ?? editState.draft ?? editState.published)
+      ? currentDisplayed?._id
+      : undefined
+  useDocumentHistory({documentId, documentType, displayedId})
+  useDocumentApplicationContext(displayedId)
 
   const documentPane: DocumentPaneContextValue = useMemo(
     () =>
