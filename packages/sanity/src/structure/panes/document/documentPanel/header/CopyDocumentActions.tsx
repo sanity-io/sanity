@@ -7,6 +7,7 @@ import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo} from 'react'
 import {
   encodeVariantLinkParam,
+  getDefaultVariant,
   getDraftId,
   getDocumentVersionVariantId,
   getTargetSiblings,
@@ -36,7 +37,8 @@ export function CopyDocumentActions() {
   const {documentId, documentType, schemaType} = useDocumentPaneInfo()
   const targetDocumentState = useTargetDocumentState(documentId)
   const siblings = getTargetSiblings(targetDocumentState)
-  const {selectedReleaseId, selectedPerspectiveName, selectedVariantName} = usePerspective()
+  const {selectedReleaseId, selectedPerspectiveName, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const {params} = usePaneRouter()
   const {resolveIntentLink} = useRouter()
   const {buildIntentUrl} = useStudioUrl()

@@ -5,6 +5,7 @@ import {useCallback, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, combineLatest, map, of, type Observable} from 'rxjs'
 import {
+  getDefaultVariant,
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
   getTargetDocument,
@@ -90,7 +91,8 @@ function observeSnapshot(
 function useVariantVersionSnapshots(documentId: string) {
   const publishedId = getPublishedId(documentId)
   const {versions, loading: versionsLoading} = useDocumentVersions({documentId: publishedId})
-  const {selectedVariant, selectedReleaseId} = usePerspective()
+  const {selectedVariants, selectedReleaseId} = usePerspective()
+  const selectedVariant = getDefaultVariant(selectedVariants)
   const {data: releases = []} = useActiveReleases()
   const documentPreviewStore = useDocumentPreviewStore()
 

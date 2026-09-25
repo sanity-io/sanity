@@ -29,7 +29,7 @@ vi.mock('sanity', async (importOriginal) => ({
   usePerspective: vi.fn(() => ({
     selectedPerspectiveName: undefined,
     selectedReleaseId: undefined,
-    selectedVariantName: undefined,
+    selectedVariantNames: [],
     selectedPerspective: 'drafts',
     perspectiveStack: ['drafts'],
     excludedPerspectives: [],
@@ -99,7 +99,7 @@ function draftsPerspective(overrides: Record<string, unknown> = {}) {
   return {
     selectedPerspectiveName: undefined,
     selectedReleaseId: undefined,
-    selectedVariantName: undefined,
+    selectedVariantNames: [],
     selectedPerspective: 'drafts',
     perspectiveStack: ['drafts'],
     excludedPerspectives: [],
@@ -158,7 +158,7 @@ describe('CommentsWrapper', () => {
       mockUsePerspective.mockReturnValue({
         selectedPerspectiveName: 'rSomeRelease',
         selectedReleaseId: 'rSomeRelease',
-        selectedVariantName: undefined,
+        selectedVariantNames: [],
         selectedPerspective: 'rSomeRelease',
         perspectiveStack: ['rSomeRelease', 'drafts'],
         excludedPerspectives: [],
@@ -193,7 +193,7 @@ describe('CommentsWrapper', () => {
       mockUsePerspective.mockReturnValue({
         selectedPerspectiveName: undefined,
         selectedReleaseId: undefined,
-        selectedVariantName: 'alpha-audience',
+        selectedVariantNames: ['alpha-audience'],
         selectedPerspective: 'drafts',
         perspectiveStack: ['drafts'],
         excludedPerspectives: [],
@@ -228,7 +228,7 @@ describe('CommentsWrapper', () => {
       mockUsePerspective.mockReturnValue({
         selectedPerspectiveName: 'rSomeRelease',
         selectedReleaseId: 'rSomeRelease',
-        selectedVariantName: 'alpha-audience',
+        selectedVariantNames: ['alpha-audience'],
         selectedPerspective: 'rSomeRelease',
         perspectiveStack: ['rSomeRelease', 'drafts'],
         excludedPerspectives: [],
@@ -257,7 +257,7 @@ describe('CommentsWrapper', () => {
       mockUsePerspective.mockReturnValue({
         selectedPerspectiveName: 'rScheduledDraft',
         selectedReleaseId: 'rScheduledDraft',
-        selectedVariantName: undefined,
+        selectedVariantNames: [],
         selectedPerspective: 'rScheduledDraft',
         perspectiveStack: ['rScheduledDraft', 'drafts'],
         excludedPerspectives: [],
@@ -357,7 +357,7 @@ describe('CommentsWrapper', () => {
         draftsPerspective({
           selectedPerspectiveName: 'rSomeRelease',
           selectedReleaseId: 'rSomeRelease',
-          selectedVariantName: 'alpha-audience',
+          selectedVariantNames: ['alpha-audience'],
           selectedPerspective: 'rSomeRelease',
           perspectiveStack: ['rSomeRelease', 'drafts'],
         }),
@@ -381,7 +381,7 @@ describe('CommentsWrapper', () => {
         draftsPerspective({
           selectedPerspectiveName: 'rSomeRelease',
           selectedReleaseId: 'rSomeRelease',
-          selectedVariantName: 'alpha-audience',
+          selectedVariantNames: ['alpha-audience'],
           selectedPerspective: 'rSomeRelease',
           perspectiveStack: ['rSomeRelease', 'drafts'],
         }),
@@ -524,7 +524,9 @@ describe('CommentsWrapper', () => {
     it('uses the resolved document id for a variant, rather than deriving a draft', () => {
       // Variant scopes are opaque and server-assigned; deriving `drafts.doc-1` here would file the
       // comment against the base pair instead of the variant document on screen.
-      mockUsePerspective.mockReturnValue(draftsPerspective({selectedVariantName: 'alpha-audience'}))
+      mockUsePerspective.mockReturnValue(
+        draftsPerspective({selectedVariantNames: ['alpha-audience']}),
+      )
       mockUseDocumentPane.mockReturnValue(documentPane({value: {_id: 'versions.varscope.doc-1'}}))
 
       expect(renderWrapper()).toBe('versions.varscope.doc-1')
@@ -535,7 +537,7 @@ describe('CommentsWrapper', () => {
         draftsPerspective({
           selectedPerspectiveName: 'rSomeRelease',
           selectedReleaseId: 'rSomeRelease',
-          selectedVariantName: 'alpha-audience',
+          selectedVariantNames: ['alpha-audience'],
           selectedPerspective: 'rSomeRelease',
           perspectiveStack: ['rSomeRelease', 'drafts'],
         }),

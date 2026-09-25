@@ -50,19 +50,40 @@ describe('PerspectiveProvider variant sticky param', () => {
   it('reads variant:<id> as the short id', async () => {
     const {result} = await renderPerspective('variant:alpha-audience')
 
+    expect(result.current.selectedVariantNames).toEqual(['alpha-audience'])
+    // oxlint-disable-next-line typescript/no-deprecated -- asserts the deprecated first-variant alias
     expect(result.current.selectedVariantName).toBe('alpha-audience')
     await waitFor(() => {
+      expect(result.current.selectedVariants[0]).toBe(variantAlphaAudience)
+      // oxlint-disable-next-line typescript/no-deprecated -- asserts the deprecated first-variant alias
       expect(result.current.selectedVariant).toBe(variantAlphaAudience)
     })
   })
 
   it('reads a bare id as the variant type', async () => {
-    // Asserts existing consumers of the provider are not affected by this change
     const {result} = await renderPerspective('alpha-audience')
 
+    expect(result.current.selectedVariantNames).toEqual(['alpha-audience'])
+    // oxlint-disable-next-line typescript/no-deprecated -- asserts the deprecated first-variant alias
     expect(result.current.selectedVariantName).toBe('alpha-audience')
     await waitFor(() => {
+      expect(result.current.selectedVariants[0]).toBe(variantAlphaAudience)
+      // oxlint-disable-next-line typescript/no-deprecated -- asserts the deprecated first-variant alias
       expect(result.current.selectedVariant).toBe(variantAlphaAudience)
     })
+  })
+
+  it('reads every pair in the sticky param', async () => {
+    const {result} = await renderPerspective('language:Fr12,variant:alpha-audience')
+
+    expect(result.current.selectedVariantNames).toEqual(['Fr12', 'alpha-audience'])
+    // oxlint-disable-next-line typescript/no-deprecated -- asserts the deprecated first-variant alias
+    expect(result.current.selectedVariantName).toBe('Fr12')
+    await waitFor(() => {
+      expect(result.current.selectedVariants[1]).toBe(variantAlphaAudience)
+    })
+    expect(result.current.selectedVariants[0]).toBeUndefined()
+    // oxlint-disable-next-line typescript/no-deprecated -- asserts the deprecated first-variant alias
+    expect(result.current.selectedVariant).toBeUndefined()
   })
 })

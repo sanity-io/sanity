@@ -6,6 +6,7 @@ import {CommentsContextV2} from 'sanity/_singletons'
 import {useEditState} from '../../../hooks/useEditState'
 import {useSchema} from '../../../hooks/useSchema'
 import {useUserListWithPermissions} from '../../../hooks/useUserListWithPermissions'
+import {getDefaultVariant} from '../../../perspective/getDefaultVariant'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {useCurrentUser} from '../../../store/user/hooks'
 import {useAddonDataset} from '../../../studio/addonDataset/useAddonDataset'
@@ -97,7 +98,8 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     mentionsDisabled,
   } = props
   const commentsEnabled = useCommentsEnabled()
-  const {selectedReleaseId, selectedVariantName} = usePerspective()
+  const {selectedReleaseId, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const [status, setStatus] = useState<CommentStatus>('open')
   const publishedId = getPublishedId(groupId)
   const scopeId = isVersionId(versionId) ? getVersionFromId(versionId) : undefined

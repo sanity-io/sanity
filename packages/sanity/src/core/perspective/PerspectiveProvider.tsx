@@ -8,7 +8,7 @@ import {EMPTY_ARRAY} from '../util/empty'
 import {getBundleIdFromPerspective} from '../variants/documents/getBundleIdFromPerspective'
 import {useAllVariants} from '../variants/store/useAllVariants'
 import {parseVariantStickyParam} from '../variants/util/variantSelection'
-import {DEFAULT_VARIANT_TYPE_KEY} from '../variants/util/variantType'
+import {getDefaultVariant} from './getDefaultVariant'
 import {getSelectedPerspective} from './getSelectedPerspective'
 import {getSelectedReleaseId} from './getSelectedReleaseId'
 import {getSelectedVariant} from './getSelectedVariant'
@@ -53,21 +53,19 @@ export function PerspectiveProvider({
     [releases, selectedPerspectiveName, excludedPerspectives, isDraftModelEnabled],
   )
 
-  const selectedVariantId = useMemo(() => {
-    // `variant:<id>` is the current param. A bare `<id>` is a previous consumer and means type `variant`.
-    const selections = parseVariantStickyParam(selectedVariantName)
-    return (
-      selections.find((selection) => selection.type === DEFAULT_VARIANT_TYPE_KEY)?.name ??
-      (selections.length === 1 ? selections[0]?.name : undefined)
-    )
-  }, [selectedVariantName])
-  const selectedVariant = useMemo(
+  const selectedVariantNames = useMemo(
+    () => parseVariantStickyParam(selectedVariantName).map((selection) => selection.name),
+    [selectedVariantName],
+  )
+  const selectedVariants = useMemo(
     () =>
-      getSelectedVariant({
-        selectedVariantName: selectedVariantId,
-        variantsById,
-      }),
-    [selectedVariantId, variantsById],
+      selectedVariantNames.map((name) =>
+        getSelectedVariant({
+          selectedVariantName: name,
+          variantsById,
+        }),
+      ),
+    [selectedVariantNames, variantsById],
   )
 
   const value: PerspectiveContextValue = useMemo(() => {
@@ -78,8 +76,10 @@ export function PerspectiveProvider({
       selectedReleaseId: getSelectedReleaseId(selectedPerspectiveName, releases),
       perspectiveStack,
       excludedPerspectives,
-      selectedVariantName: selectedVariantId,
-      selectedVariant,
+      selectedVariantNames,
+      selectedVariants,
+      selectedVariantName: getDefaultVariant(selectedVariantNames),
+      selectedVariant: getDefaultVariant(selectedVariants),
       bundle: getBundleIdFromPerspective(selectedPerspective),
     }
   }, [
@@ -88,8 +88,8 @@ export function PerspectiveProvider({
     selectedPerspective,
     perspectiveStack,
     excludedPerspectives,
-    selectedVariantId,
-    selectedVariant,
+    selectedVariantNames,
+    selectedVariants,
   ])
 
   return <PerspectiveContext.Provider value={value}>{children}</PerspectiveContext.Provider>
