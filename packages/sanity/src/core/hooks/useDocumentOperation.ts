@@ -5,7 +5,6 @@ import {useDocumentStore} from '../store/datastores'
 import {GUARDED} from '../store/document/document-pair/operations/helpers'
 import {type OperationsAPI} from '../store/document/document-pair/operations/types'
 import {type DocumentPairTarget} from '../store/document/types'
-import {useDocumentOperationWithComlinkHistory} from './useDocumentOperationWithComlinkHistory'
 import {useMemoizedDocumentPairTarget} from './useMemoizedDocumentPairTarget'
 
 /**
@@ -35,11 +34,5 @@ export function useDocumentOperation(
   // document id/type they were created for, so a deferred (stale) API could
   // execute an action against the previously viewed document after navigation.
   // `GUARDED` is also what the pair emits first, so nothing can execute before it is ready.
-  const api = useSyncObservable(observable, GUARDED)
-
-  return useDocumentOperationWithComlinkHistory({
-    api,
-    docTypeName,
-    publishedDocId,
-  })
+  return useSyncObservable(observable, GUARDED)
 }
