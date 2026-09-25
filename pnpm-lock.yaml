@@ -272,6 +272,10 @@ overrides:
   tsdown>rolldown: ~1.2.9
   vite>rolldown: 1.2.8
   vitest: ^5.0.1
+  '@sanity/themer>@sanity/color': ^3.0.8
+  '@sanity/themer>@sanity/icons': ^5.2.2
+  '@sanity/themer>@sanity/themer-legacy': ^0.2.0
+  '@sanity/themer>@sanity/ui': ^4.2.4
 
 importers:
 
@@ -981,8 +985,8 @@ importers:
         specifier: ^2.2.2
         version: 2.2.2(@sanity/types@packages+@sanity+types)(react@19.3.0)(typescript@7.0.2)
       '@sanity/themer':
-        specifier: ^0.5.0
-        version: 0.5.0(@types/react@19.3.0)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
+        specifier: https://pkg.pr.new/sanity-io/ui/@sanity/themer@fde1653
+        version: https://pkg.pr.new/sanity-io/ui/@sanity/themer@fde1653(@types/react@19.3.0)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
       '@sanity/types':
         specifier: workspace:*
         version: link:../../packages/@sanity/types
@@ -7635,11 +7639,12 @@ packages:
       styled-components:
         optional: true
 
-  '@sanity/themer@0.5.0':
-    resolution: {integrity: sha512-ywGAvG7voWPRuG24lKTLtgkNP3tSAC0mCcmiiw31zcu3JZqs2Op8TOT1EZ6V40b0cq905xuh8bj86Vq3yPYi7Q==}
+  '@sanity/themer@https://pkg.pr.new/sanity-io/ui/@sanity/themer@fde1653':
+    resolution: {integrity: sha512-Uf+gqvLpLR8h0+x3kZ1F/nzyq4sdTHxNzroezuyp/NgpqByWraH8SF3IOUdu/ZMG2StJvB4dIu9g9dl+Bz9GfQ==, tarball: https://pkg.pr.new/sanity-io/ui/@sanity/themer@fde1653}
+    version: 0.5.0
     engines: {node: '>=20.19 <22 || >=22.12'}
     peerDependencies:
-      react: ^18 || ^19
+      react: ^19.3.0
       sanity: ^3 || ^4 || ^5 || ^6
       styled-components: ^5.2 || ^6
     peerDependenciesMeta:
@@ -20472,7 +20477,7 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@sanity/themer@0.5.0(@types/react@19.3.0)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)':
+  '@sanity/themer@https://pkg.pr.new/sanity-io/ui/@sanity/themer@fde1653(@types/react@19.3.0)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)':
     dependencies:
       '@sanity/color': 3.0.8
       '@sanity/icons': 5.2.2(react@19.3.0)
@@ -20480,7 +20485,6 @@ snapshots:
       '@sanity/ui': 4.2.4(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
       '@xstate/react': 6.1.0(@types/react@19.3.0)(react@19.3.0)(xstate@5.33.2)
       react: 19.3.0
-      react-compiler-runtime: 1.0.0(react@19.3.0)
       react-refractor: 4.0.0(react@19.3.0)
       refractor: 5.0.0
       xstate: 5.33.2

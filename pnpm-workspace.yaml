@@ -149,6 +149,14 @@ overrides:
   'tsdown>rolldown': '~1.2.9'
   'vite>rolldown': '1.2.8'
   vitest: 'catalog:'
+  # dev/test-studio previews @sanity/themer from pkg.pr.new (the unreleased 0.6.0 that
+  # sanity-io/ui#2985 will publish). That build pins its sibling packages to pkg.pr.new URLs,
+  # which blockExoticSubdeps rejects; the release changes themer alone, so the siblings come from
+  # the registry and the tool shares the studio's @sanity/ui instance. Drop with the preview.
+  '@sanity/themer>@sanity/color': '^3.0.8'
+  '@sanity/themer>@sanity/icons': '^5.2.2'
+  '@sanity/themer>@sanity/themer-legacy': '^0.2.0'
+  '@sanity/themer>@sanity/ui': 'catalog:'
 
 preferWorkspacePackages: true
 
