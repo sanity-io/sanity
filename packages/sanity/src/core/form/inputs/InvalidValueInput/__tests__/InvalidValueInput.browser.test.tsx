@@ -1,6 +1,7 @@
 import {defineField, defineType} from '@sanity/types'
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
+import {VStack} from 'ui5'
 import {describe, expect, test} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
@@ -23,8 +24,8 @@ function InvalidValueInputHarness() {
   return (
     <TestWrapper schemaTypes={SCHEMA}>
       <Card padding={4} style={{maxWidth: 560}}>
-        <Stack gap={5}>
-          <Stack gap={2}>
+        <VStack gap={5}>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               invalid primitive value
             </Text>
@@ -34,8 +35,8 @@ function InvalidValueInputHarness() {
               validTypes={['string']}
               value={42}
             />
-          </Stack>
-          <Stack gap={2}>
+          </VStack>
+          <VStack gap={2}>
             <Text muted size={1} weight="medium">
               object without a type
             </Text>
@@ -44,8 +45,8 @@ function InvalidValueInputHarness() {
               validTypes={['article']}
               value={{title: 'Untyped article'}}
             />
-          </Stack>
-        </Stack>
+          </VStack>
+        </VStack>
       </Card>
     </TestWrapper>
   )

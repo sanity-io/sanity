@@ -1,4 +1,4 @@
-import {rem, Stack} from '@sanity/ui'
+import {rem} from '@sanity/ui'
 import {
   measureElement,
   type ScrollToOptions,
@@ -21,7 +21,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {css, styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Box, VStack} from 'ui5'
 
 import {type FIXME} from '../../FIXME'
 import {focusRingStyle} from '../../form/components/formField/styles'
@@ -712,7 +712,7 @@ function CommandListItemComponent(
   )
 
   return (
-    <Stack
+    <VStack
       as="li"
       data-index={virtualIndex}
       ref={forwardedRef}
@@ -722,7 +722,7 @@ function CommandListItemComponent(
       onMouseEnter={onMouseEnter}
     >
       {children}
-    </Stack>
+    </VStack>
   )
 }
 
