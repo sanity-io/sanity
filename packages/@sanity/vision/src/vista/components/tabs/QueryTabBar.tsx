@@ -50,6 +50,20 @@ interface TabTitleInputProps {
 function TabTitleInput({title, onCommit, onCancel}: TabTitleInputProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const [draft, setDraft] = useState(title)
+  // Enter and Escape unmount the field while it has focus, and Chromium then fires `blur` on
+  // it; that blur must not commit a draft that was just committed or, worse, just discarded
+  const settledRef = useRef(false)
+
+  const commit = () => {
+    if (settledRef.current) return
+    settledRef.current = true
+    onCommit(draft)
+  }
+  const cancel = () => {
+    if (settledRef.current) return
+    settledRef.current = true
+    onCancel()
+  }
 
   return (
     <Box className={tabTitleInput} paddingY={1}>
@@ -57,12 +71,12 @@ function TabTitleInput({title, onCommit, onCancel}: TabTitleInputProps) {
         autoFocus
         data-testid="vista-tab-title-input"
         fontSize={1}
-        onBlur={() => onCommit(draft)}
+        onBlur={commit}
         onChange={(event) => setDraft(event.currentTarget.value)}
         onFocus={(event) => event.currentTarget.select()}
         onKeyDown={(event: KeyboardEvent<HTMLInputElement>) => {
-          if (event.key === 'Enter') onCommit(draft)
-          if (event.key === 'Escape') onCancel()
+          if (event.key === 'Enter') commit()
+          if (event.key === 'Escape') cancel()
         }}
         padding={2}
         placeholder={t('vista.tabs.title-placeholder')}
