@@ -154,6 +154,35 @@ describe('useSavedQueries', () => {
     expect(mocks.store.value?.queries).toHaveLength(1)
   })
 
+  it('treats a store write that resolves null as failed, since that is how the store reports one', async () => {
+    mocks.store.value = {
+      queries: [{_key: 'p1', url: 'https://a', savedAt: '2026-01-01T00:00:00Z'}],
+    }
+    const {result} = setup()
+    await waitFor(() => expect(result.current.queries).toHaveLength(1))
+
+    // The key-value store logs a failed server write and resolves null instead of rejecting
+    mocks.setKey.mockResolvedValueOnce(null)
+    let save: Promise<string>
+    act(() => {
+      save = result.current.saveQuery({url: 'https://b', savedAt: '2026-01-02T00:00:00Z'})
+    })
+    await act(async () => {
+      await expect(save).rejects.toThrow('could not be stored')
+    })
+    expect(result.current.queries.map((query) => query.url)).toEqual(['https://a'])
+
+    mocks.setKey.mockResolvedValueOnce(null)
+    let clear: Promise<void>
+    act(() => {
+      clear = result.current.clearQueries()
+    })
+    await act(async () => {
+      await expect(clear).rejects.toThrow('could not be stored')
+    })
+    expect(result.current.queries.map((query) => query.url)).toEqual(['https://a'])
+  })
+
   it('keeps a saved query when the server read from before the save resolves after it', async () => {
     const {result} = setup()
 
