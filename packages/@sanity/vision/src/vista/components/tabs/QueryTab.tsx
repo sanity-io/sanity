@@ -194,15 +194,18 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     tabId: tab.id,
   })
 
-  // While refetching automatically, changed options are applied right away
-  const optionsKey = JSON.stringify([
+  // While refetching automatically, changed options are applied right away, and so is a loaded
+  // query: the clear above drops the request that live events replay, which would leave the tab
+  // silent until the next manual fetch. One key for both, so a load with new options fetches once.
+  const refetchKey = JSON.stringify([
+    loadRevision,
     resolved.apiVersion,
     resolved.dataset,
     resolved.perspective,
     resolved.variant,
     tab.options.includeSourceMap,
   ])
-  useOnValueChange(optionsKey, () => {
+  useOnValueChange(refetchKey, () => {
     if (tab.autoRefetch && request) {
       runnerRef.send({type: 'fetch', request, reason: {type: 'options'}})
     }

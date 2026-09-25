@@ -899,6 +899,26 @@ describe('VistaGui', () => {
     )
   })
 
+  it('fetches a loaded query in a tab that refetches automatically', async () => {
+    const initial = createInitialState(DEFAULTS)
+    const tab = createTab(initial.settings, {
+      id: 'auto',
+      query: '*[_type == "author"]',
+      autoRefetch: true,
+      options: {perspective: 'published'},
+    })
+    saveVistaState(PROJECT_ID, {...initial, tabs: [tab], activeTabId: 'auto'})
+    const {fetchCalls} = renderVista()
+
+    // The pasted URL resolves to the options the tab already had, so only the query is new
+    const url =
+      'https://abc.api.sanity.io/v2025-02-19/data/query/test?query=*%5B_type+%3D%3D+%22book%22%5D&perspective=published'
+    fireEvent.paste(document.body, {clipboardData: {getData: () => url}})
+
+    await waitFor(() => expect(fetchCalls).toHaveLength(1))
+    expect(fetchCalls[0].query).toBe('*[_type == "book"]')
+  })
+
   it('clears the storage from the settings dialog', {timeout: 15_000}, async () => {
     const {onSwitchToClassic} = renderVista()
     typeQuery('*[_type == "author"]')

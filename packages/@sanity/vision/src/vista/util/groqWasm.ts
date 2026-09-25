@@ -137,12 +137,14 @@ export async function lintGroq(query: string): Promise<GroqFinding[]> {
   const toIndex = createByteOffsetConverter(query)
   return findings.map((finding) => {
     const from = toIndex(finding.span?.start.offset ?? 0)
+    // A finding without a span covers the whole query; its length is a string index already
+    const to = finding.span ? toIndex(finding.span.end.offset) : query.length
     return {
       ruleId: finding.ruleId,
       message: finding.message.trim(),
       severity: finding.severity,
       from,
-      to: Math.max(from, toIndex(finding.span?.end.offset ?? query.length)),
+      to: Math.max(from, to),
     }
   })
 }
