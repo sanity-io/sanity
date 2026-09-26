@@ -1,7 +1,7 @@
-import {Card, type CardProps, Container, Inline, Stack, Text} from '@sanity/ui'
+import {Card, type CardProps, Inline, Stack, Text} from '@sanity/ui'
 import {type ReactNode} from 'react'
 import {useTranslation} from 'sanity'
-import {Flex, Box} from 'ui5'
+import {Container, Flex, Box} from 'ui5'
 
 import {Button} from '../../ui-components/button/Button'
 import {presentationLocaleNamespace} from '../i18n'
@@ -33,7 +33,7 @@ export function ErrorCard(
   return (
     <Card height="fill" {...restProps}>
       <Flex alignItems="center" height="100%" justifyContent="center">
-        <Container padding={4} sizing="border" width={0}>
+        <Container padding={4} size={0}>
           <Stack gap={4}>
             <Stack gap={3}>
               <Text size={1} weight="semibold">

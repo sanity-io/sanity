@@ -1,7 +1,7 @@
-import {Card, Container, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {useObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
-import {Flex} from 'ui5'
+import {Box, Container, Flex} from 'ui5'
 
 interface Document {
   string?: string
@@ -23,20 +23,20 @@ export const PerspectiveExample = (props: {options: {doc$: Observable<Document>}
         "number" (number) based on the perspective stack from the structure file.
       </Card>
       <Flex marginTop={4}>
-        <Container width={1 / 2}>
+        <Box width="50%">
           <Text size={3} weight="bold">
             Title and Number
           </Text>
           <pre>title: {JSON.stringify(doc?.string, null, 2)}</pre>
 
           <pre>number: {JSON.stringify(doc?.number, null, 2)}</pre>
-        </Container>
-        <Container width={1 / 2}>
+        </Box>
+        <Box width="50%">
           <Text size={3} weight="bold">
             Full JSON
           </Text>
           <pre>{JSON.stringify(doc, null, 2)}</pre>
-        </Container>
+        </Box>
       </Flex>
     </Container>
   )

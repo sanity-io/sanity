@@ -19,7 +19,6 @@ import {
   Badge,
   Button,
   Card,
-  Container,
   Dialog,
   PortalProvider,
   Select,
@@ -37,7 +36,7 @@ import {type ComponentType, type ReactNode, useEffect, useMemo, useRef, useState
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useDocumentStore} from 'sanity'
-import {Box, Flex, Grid, VStack} from 'ui5'
+import {Container, Box, Flex, Grid, VStack} from 'ui5'
 
 import {idSlug} from './acks'
 import {ChartLegend} from './ChartLegend'
@@ -1473,7 +1472,7 @@ export function TrendsTool() {
     <PortalProvider element={portalElement}>
       <style dangerouslySetInnerHTML={{__html: FOCUS_PULSE_CSS}} />
       <Card ref={setPortalElement} height="fill" overflow="auto">
-        <Container width={3} padding={4}>
+        <Container size={3} padding={4}>
           <VStack gap={4}>
             <Flex alignItems="flex-start" justifyContent="space-between" gap={3}>
               <Flex alignItems="center" gap={2}>

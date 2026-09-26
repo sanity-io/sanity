@@ -1,12 +1,12 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Badge, type BadgeTone, Button, Card, Container, Text} from '@sanity/ui'
+import {Badge, type BadgeTone, Button, Card, Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useDocumentStore} from 'sanity'
-import {Flex, Box, VStack} from 'ui5'
+import {Container, Flex, Box, VStack} from 'ui5'
 
 import {formatValue} from '../trends/data'
 import {ciRunUrl, commitUrl, dispatchRunsUrl} from '../trends/links'
@@ -71,7 +71,7 @@ export function ComparisonsTool() {
 
   return (
     <Box padding={4} style={{overflowY: 'auto', height: '100%'}}>
-      <Container width={2}>
+      <Container size={2}>
         <VStack gap={4}>
           <VStack gap={3}>
             <Text size={3} weight="semibold">
