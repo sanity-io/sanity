@@ -4,17 +4,16 @@ import {useCallback, useMemo, useState} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
 import {
   type DuplicateDocumentActionComponent,
-  getPairTarget,
-  getTargetScopeId,
-  InsufficientPermissionsMessage,
   useCurrentUser,
-  useDocumentOperation,
-  useDocumentPairPermissions,
   useDocumentStore,
   useTranslation,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
 
+import {InsufficientPermissionsMessage} from '../../core/components/InsufficientPermissionsMessage'
+import {useDocumentOperation} from '../../core/hooks/useDocumentOperation'
+import {getPairTarget, getTargetScopeId} from '../../core/hooks/useTargetDocumentState'
+import {useDocumentPairPermissions} from '../../core/store/grants/documentPairPermissions'
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 

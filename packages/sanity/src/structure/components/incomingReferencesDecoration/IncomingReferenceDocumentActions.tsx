@@ -1,14 +1,12 @@
 import {Menu} from '@sanity/ui/menu'
 import {type Dispatch, type SetStateAction, useCallback, useState} from 'react'
-import {
-  ContextMenuButton,
-  GetHookCollectionState,
-  LegacyLayerProvider,
-  type SanityDocument,
-  useSource,
-} from 'sanity'
+import {type SanityDocument} from 'sanity'
 import {Box} from 'ui5'
 
+import {ContextMenuButton} from '../../../core/components/contextMenuButton/ContextMenuButton'
+import {GetHookCollectionState} from '../../../core/components/hookCollection/GetHookCollectionState'
+import {LegacyLayerProvider} from '../../../core/components/transitional/LegacyLayerProvider'
+import {useSource} from '../../../core/studio/source'
 import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {ActionStateDialog} from '../../panes/document/statusBar/ActionStateDialog'

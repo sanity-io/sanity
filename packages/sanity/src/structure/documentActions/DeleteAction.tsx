@@ -4,19 +4,18 @@ import {useCallback, useMemo, useState} from 'react'
 import {catchError, filter, firstValueFrom, map, of, timeout} from 'rxjs'
 import {
   type DocumentActionComponent,
-  getPairTarget,
-  getTargetScopeId,
-  InsufficientPermissionsMessage,
-  isAgentBundleName,
-  isReleaseScheduledOrScheduling,
   useCurrentUser,
-  useDocumentOperation,
-  useDocumentPairPermissions,
   useDocumentStore,
   useDocumentVersionTypeSortedList,
   useTranslation,
 } from 'sanity'
 
+import {InsufficientPermissionsMessage} from '../../core/components/InsufficientPermissionsMessage'
+import {useDocumentOperation} from '../../core/hooks/useDocumentOperation'
+import {getPairTarget, getTargetScopeId} from '../../core/hooks/useTargetDocumentState'
+import {isReleaseScheduledOrScheduling} from '../../core/releases/util/util'
+import {isAgentBundleName} from '../../core/store/agent/createAgentBundlesStore'
+import {useDocumentPairPermissions} from '../../core/store/grants/documentPairPermissions'
 import {ConfirmDeleteDialog} from '../components/confirmDeleteDialog'
 import {type DeleteReferenceCounts} from '../components/confirmDeleteDialog/ConfirmDeleteDialog'
 import {structureLocaleNamespace} from '../i18n'

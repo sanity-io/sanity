@@ -1,16 +1,13 @@
 import {type SanityDocument} from '@sanity/types'
 import {renderHook, waitFor} from '@testing-library/react'
 import deepCompare from 'react-fast-compare'
-import {
-  type DocumentActionProps,
-  type TargetDocumentState,
-  useDocumentOperation,
-  useDocumentPairPermissions,
-  usePerspective,
-} from 'sanity'
+import {type DocumentActionProps, usePerspective} from 'sanity'
 import {beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
+import {useDocumentOperation} from '../../../core/hooks/useDocumentOperation'
+import {type TargetDocumentState} from '../../../core/hooks/useTargetDocumentState'
+import {useDocumentPairPermissions} from '../../../core/store/grants/documentPairPermissions'
 import {perspectiveContextValueMock} from '../../__mocks__/usePerspective.mock'
 import {structureUsEnglishLocaleBundle} from '../../i18n'
 import {useDocumentPane} from '../../panes/document/useDocumentPane'
@@ -18,9 +15,11 @@ import {useUnpublishAction} from '../UnpublishAction'
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
-  useDocumentOperation: vi.fn(),
-  useDocumentPairPermissions: vi.fn(),
   usePerspective: vi.fn(),
+}))
+vi.mock('../../../core/hooks/useDocumentOperation', () => ({useDocumentOperation: vi.fn()}))
+vi.mock('../../../core/store/grants/documentPairPermissions', () => ({
+  useDocumentPairPermissions: vi.fn(),
 }))
 
 vi.mock('../../panes/document/useDocumentPane')

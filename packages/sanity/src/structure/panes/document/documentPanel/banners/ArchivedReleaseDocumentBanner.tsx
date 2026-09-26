@@ -1,18 +1,14 @@
 import {Text} from '@sanity/ui'
 import {useMemo} from 'react'
-import {
-  getReleaseIdFromReleaseDocumentId,
-  getReleaseTone,
-  isCardinalityOneRelease,
-  LATEST,
-  ReleaseTitle,
-  type TargetPerspective,
-  Translate,
-  useArchivedReleases,
-  useTranslation,
-  VersionInlineBadge,
-} from 'sanity'
+import {type TargetPerspective, Translate, useTranslation} from 'sanity'
 
+import {ReleaseTitle} from '../../../../../core/releases/components/ReleaseTitle'
+import {VersionInlineBadge} from '../../../../../core/releases/components/VersionInlineBadge'
+import {useArchivedReleases} from '../../../../../core/releases/store/useArchivedReleases'
+import {LATEST} from '../../../../../core/releases/util/const'
+import {getReleaseIdFromReleaseDocumentId} from '../../../../../core/releases/util/getReleaseIdFromReleaseDocumentId'
+import {getReleaseTone} from '../../../../../core/releases/util/getReleaseTone'
+import {isCardinalityOneRelease} from '../../../../../core/util/releaseUtils'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'

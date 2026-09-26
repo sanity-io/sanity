@@ -1,19 +1,12 @@
 import {Card, Skeleton, Text} from '@sanity/ui'
 import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
 import {type MouseEvent, useCallback, useMemo} from 'react'
-import {
-  AvatarSkeleton,
-  type ChunkType,
-  type RelativeTimeOptions,
-  useDateTimeFormat,
-  UserAvatar,
-  useRelativeTime,
-  useTranslation,
-  useUser,
-} from 'sanity'
+import {AvatarSkeleton, type ChunkType, useDateTimeFormat, UserAvatar, useTranslation} from 'sanity'
 import {css, styled} from 'styled-components'
 import {Flex, Box, VStack} from 'ui5'
 
+import {type RelativeTimeOptions, useRelativeTime} from '../../../../core/hooks/useRelativeTime'
+import {useUser} from '../../../../core/store/user/hooks'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {getTimelineEventIconComponent} from './helpers'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'

@@ -2,13 +2,9 @@ import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {EarthAmericasIcon} from '@sanity/icons/EarthAmericas'
 import {JsonIcon} from '@sanity/icons/Json'
 import {TransferIcon} from '@sanity/icons/Transfer'
-import {
-  type DocumentIdStack,
-  type DocumentInspector,
-  type DocumentInspectorMenuItem,
-  type TFunction,
-} from 'sanity'
+import {type DocumentInspector, type DocumentInspectorMenuItem, type TFunction} from 'sanity'
 
+import {type DocumentIdStack} from '../../../core/hooks/useDocumentIdStack'
 import {type PaneMenuItem, type StructureToolFeatures} from '../../types'
 import {HiddenCheckmarkIcon} from './components/HiddenCheckmarkIcon'
 import {INSPECT_ACTION_PREFIX} from './constants'

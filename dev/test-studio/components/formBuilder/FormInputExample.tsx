@@ -2,13 +2,11 @@ import {CloseIcon} from '@sanity/icons/Close'
 import {EyeOpenIcon} from '@sanity/icons/EyeOpen'
 import {Button, Card, Checkbox, Inline, Text} from '@sanity/ui'
 import {useState} from 'react'
+import {type ObjectInputProps, type Path, type RenderInputCallback} from 'sanity'
 import {
   FormInput,
-  type ObjectInputProps,
-  type Path,
   pathToString,
-  type RenderInputCallback,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex, Box, VStack} from 'ui5'
 
 export function FormInputExample(props: ObjectInputProps) {

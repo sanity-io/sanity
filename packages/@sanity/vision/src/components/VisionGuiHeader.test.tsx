@@ -17,6 +17,8 @@ vi.mock('sanity', () => ({
   usePerspective: sanityMocks.usePerspective,
   useTranslation: () => ({t: (key: string) => key}),
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
+}))
+vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => ({
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
   getVariantTitle: (variant: {metadata?: {title?: string}; _id: string}) => {
     const title = variant.metadata?.title

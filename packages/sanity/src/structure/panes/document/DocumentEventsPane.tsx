@@ -1,23 +1,23 @@
 import {type ObjectSchemaType} from '@sanity/types'
 import {useMemo} from 'react'
 import {
-  EMPTY_ARRAY,
-  EventsProvider,
-  getDefaultVariant,
   getDraftId,
   getPublishedId,
-  getReleaseIdFromReleaseDocumentId,
   getVersionId,
-  PerspectiveProvider,
-  useArchivedReleases,
-  getTargetDocument,
-  useEventsStore,
   usePerspective,
   useSchema,
-  useTargetDocumentState,
   useDocumentVersions,
 } from 'sanity'
 
+import {useTargetDocumentState} from '../../../core/hooks/useTargetDocumentState'
+import {getDefaultVariant} from '../../../core/perspective/getDefaultVariant'
+import {PerspectiveProvider} from '../../../core/perspective/PerspectiveProvider'
+import {useArchivedReleases} from '../../../core/releases/store/useArchivedReleases'
+import {getReleaseIdFromReleaseDocumentId} from '../../../core/releases/util/getReleaseIdFromReleaseDocumentId'
+import {EventsProvider} from '../../../core/store/events/EventsProvider'
+import {useEventsStore} from '../../../core/store/events/useEventsStore'
+import {EMPTY_ARRAY} from '../../../core/util/empty'
+import {getTargetDocument} from '../../../core/util/getTargetDocument'
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {EMPTY_PARAMS} from './constants'
 import {DocumentPaneProvider} from './DocumentPaneProvider'

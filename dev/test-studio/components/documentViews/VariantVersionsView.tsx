@@ -5,19 +5,21 @@ import {useCallback, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, combineLatest, map, of, type Observable} from 'rxjs'
 import {
-  getDefaultVariant,
   getPublishedId,
-  getReleaseIdFromReleaseDocumentId,
-  getTargetDocument,
-  getVariantTitle,
-  isRecord,
-  useActiveReleases,
   useClient,
   useDateTimeFormat,
   useDocumentPreviewStore,
   useDocumentVersions,
   usePerspective,
 } from 'sanity'
+import {
+  getDefaultVariant,
+  getReleaseIdFromReleaseDocumentId,
+  getTargetDocument,
+  getVariantTitle,
+  isRecord,
+  useActiveReleases,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Box, Grid, VStack} from 'ui5'
 
 const DOCUMENT_QUERY = '*[_id == $id][0]'

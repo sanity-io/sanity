@@ -19,27 +19,27 @@ import {
   type RefAttributes,
 } from 'react'
 import {
-  ChangeIndicatorsTracker,
-  createPatchChannel,
   FormBuilder,
   getPublishedId,
   getVersionFromId,
   isDraftId,
   isPublishedId,
   isVersionId,
-  LoadingBlock,
-  PerspectiveProvider,
-  PortalBoundaryProvider,
   type TargetPerspective,
-  useActiveReleases,
-  useDocumentForm,
-  useEditState,
-  useMiddlewareComponents,
-  VirtualizerScrollInstanceProvider,
 } from 'sanity'
 import {CommentsEnabledContext, ReviewChangesContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
+import {ChangeIndicatorsTracker} from '../../../core/changeIndicators/tracker'
+import {LoadingBlock} from '../../../core/components/loadingBlock/LoadingBlock'
+import {PortalBoundaryProvider} from '../../../core/components/portalBoundary/PortalBoundaryProvider'
+import {useMiddlewareComponents} from '../../../core/config/components/useMiddlewareComponents'
+import {VirtualizerScrollInstanceProvider} from '../../../core/form/inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
+import {createPatchChannel} from '../../../core/form/patch/PatchChannel'
+import {useDocumentForm} from '../../../core/form/useDocumentForm'
+import {useEditState} from '../../../core/hooks/useEditState'
+import {PerspectiveProvider} from '../../../core/perspective/PerspectiveProvider'
+import {useActiveReleases} from '../../../core/releases/store/useActiveReleases'
 import {pickDocumentLayoutComponent} from '../../panes/document/document-layout/pickDocumentLayoutComponent'
 import {usePathSyncChannel} from '../hooks/usePathSyncChannel'
 import {type PathSyncChannel} from '../types/pathSyncChannel'

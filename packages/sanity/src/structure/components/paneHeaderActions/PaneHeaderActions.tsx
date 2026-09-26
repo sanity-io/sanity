@@ -1,8 +1,9 @@
 import uniqBy from 'lodash-es/uniqBy.js'
 import {memo, useCallback, useMemo} from 'react'
-import {EMPTY_ARRAY, EMPTY_OBJECT, type InitialValueTemplateItem, useTemplates} from 'sanity'
+import {type InitialValueTemplateItem, useTemplates} from 'sanity'
 import {Flex} from 'ui5'
 
+import {EMPTY_ARRAY, EMPTY_OBJECT} from '../../../core/util/empty'
 import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../menuNodes'
 import {
   type PaneMenuItem,

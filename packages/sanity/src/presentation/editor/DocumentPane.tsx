@@ -2,14 +2,13 @@ import {studioPath} from '@sanity/client/csm'
 import {Card, Label, Stack} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {type ErrorInfo, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
-import {LoadingBlock, type Path, useTranslation} from 'sanity'
-import {decodeJsonParams} from 'sanity/router'
-import {
-  DocumentPane as StructureDocumentPane,
-  type DocumentPaneNode,
-  PaneLayout,
-} from 'sanity/structure'
+import {type Path, useTranslation} from 'sanity'
+import {PaneLayout} from 'sanity/structure'
 
+import {LoadingBlock} from '../../core/components/loadingBlock/LoadingBlock'
+import {decodeJsonParams} from '../../router/utils/jsonParamsEncoding'
+import {DocumentPane as StructureDocumentPane} from '../../structure/panes/document/DocumentPane'
+import {type DocumentPaneNode} from '../../structure/types'
 import {ErrorBoundary} from '../../ui-components/errorBoundary/ErrorBoundary'
 import {ErrorCard} from '../components/ErrorCard'
 import {presentationLocaleNamespace} from '../i18n'

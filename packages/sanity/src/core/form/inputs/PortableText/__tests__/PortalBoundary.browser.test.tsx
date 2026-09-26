@@ -8,7 +8,7 @@
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
 import {BoundaryElementProvider, PortalProvider} from '@sanity/ui'
 import {type ReactNode, useLayoutEffect, useMemo, useState} from 'react'
-import {PortalBoundaryProvider, type StringInputProps} from 'sanity'
+import {type StringInputProps} from 'sanity'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
@@ -16,6 +16,7 @@ import {page, userEvent} from 'vitest/browser'
 import {TestForm} from '../../../../../../test/browser/TestForm'
 import {testHelpers} from '../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
+import {PortalBoundaryProvider} from '../../../../components/portalBoundary/PortalBoundaryProvider'
 import {useReferenceAutocompletePopoverBoundary} from '../../../hooks/useReferenceAutocompletePopoverBoundary'
 
 const captured: {boundary: HTMLElement | null | undefined} = {boundary: undefined}

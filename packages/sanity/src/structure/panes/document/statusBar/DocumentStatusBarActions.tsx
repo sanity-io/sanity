@@ -1,26 +1,26 @@
 import {LayerProvider, Text} from '@sanity/ui'
 import {memo, useCallback, useMemo, useState} from 'react'
 import {
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
-  DocumentGroupInventory,
   DocumentGroupInventoryAction,
-  type DocumentGroupInventoryComponents,
-  getReleaseIdFromReleaseDocumentId,
   Hotkeys,
-  isGoingToUnpublish,
   isSanityDefinedAction,
-  getDocumentVersionVariantId,
   readVersionType,
   useClient,
   useDocumentStore,
-  usePausedScheduledDraft,
   usePerspective,
-  useSetVariant,
-  useSource,
-  type VersionInfoDocumentStub,
 } from 'sanity'
 import {Flex, VStack} from 'ui5'
 
+import {DocumentGroupInventory} from '../../../../core/documentGroupInventory/components/DocumentGroupInventory'
+import {type DocumentGroupInventoryComponents} from '../../../../core/documentGroupInventory/types'
+import {useSetVariant} from '../../../../core/perspective/useSetVariant'
+import {type VersionInfoDocumentStub} from '../../../../core/releases/store/types'
+import {getReleaseIdFromReleaseDocumentId} from '../../../../core/releases/util/getReleaseIdFromReleaseDocumentId'
+import {isGoingToUnpublish} from '../../../../core/releases/util/isGoingToUnpublish'
+import {usePausedScheduledDraft} from '../../../../core/singleDocRelease/hooks/usePausedScheduledDraft'
+import {useSource} from '../../../../core/studio/source'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../core/studioClient'
+import {getDocumentVersionVariantId} from '../../../../core/util/getDocumentVersionVariant'
 import {Button} from '../../../../ui-components/button/Button'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {ReferencePreviewLink} from '../../../components/confirmDeleteDialog/ReferencePreviewLink'

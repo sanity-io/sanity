@@ -1,6 +1,6 @@
 import {AddDocumentIcon} from '@sanity/icons/AddDocument'
 import {Button, Card, Text} from '@sanity/ui'
-import {useActiveWorkspace} from 'sanity'
+import {useActiveWorkspace} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {usePresentationNavigate, usePresentationParams} from 'sanity/presentation'
 import {useIntentLink} from 'sanity/router'
 import {Flex, VStack} from 'ui5'

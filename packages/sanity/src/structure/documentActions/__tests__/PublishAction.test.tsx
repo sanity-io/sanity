@@ -1,31 +1,27 @@
 import {type SanityDocument, type ValidationMarker} from '@sanity/types'
 import {act, renderHook, waitFor} from '@testing-library/react'
 import deepCompare from 'react-fast-compare'
-import {
-  type DocumentActionProps,
-  type EditStateFor,
-  type TargetDocumentState,
-  useDocumentOperation,
-  useDocumentPairPermissions,
-  useEditState,
-  useSyncState,
-  useValidationStatus,
-} from 'sanity'
+import {type DocumentActionProps, type EditStateFor} from 'sanity'
 import {beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
+import {useDocumentOperation} from '../../../core/hooks/useDocumentOperation'
+import {useEditState} from '../../../core/hooks/useEditState'
+import {useSyncState} from '../../../core/hooks/useSyncState'
+import {type TargetDocumentState} from '../../../core/hooks/useTargetDocumentState'
+import {useValidationStatus} from '../../../core/hooks/useValidationStatus'
+import {useDocumentPairPermissions} from '../../../core/store/grants/documentPairPermissions'
 import {structureUsEnglishLocaleBundle} from '../../i18n'
 import {useDocumentPane} from '../../panes/document/useDocumentPane'
 import {usePublishAction} from '../PublishAction'
 
-vi.mock('sanity', async (importOriginal) => ({
-  ...(await importOriginal()),
-  useDocumentOperation: vi.fn(),
+vi.mock('../../../core/hooks/useDocumentOperation', () => ({useDocumentOperation: vi.fn()}))
+vi.mock('../../../core/store/grants/documentPairPermissions', () => ({
   useDocumentPairPermissions: vi.fn(),
-  useEditState: vi.fn(),
-  useSyncState: vi.fn(),
-  useValidationStatus: vi.fn(),
 }))
+vi.mock('../../../core/hooks/useEditState', () => ({useEditState: vi.fn()}))
+vi.mock('../../../core/hooks/useSyncState', () => ({useSyncState: vi.fn()}))
+vi.mock('../../../core/hooks/useValidationStatus', () => ({useValidationStatus: vi.fn()}))
 
 vi.mock('../../panes/document/useDocumentPane')
 

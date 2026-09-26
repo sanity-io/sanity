@@ -1,8 +1,8 @@
 import {type AssetSourceComponentProps} from '@sanity/types'
 import {PortalProvider} from '@sanity/ui'
 import {memo, useCallback, useEffect, useMemo, useState, type RefAttributes} from 'react'
-import {encodeJsonParams} from 'sanity/router'
 
+import {encodeJsonParams} from '../../../../../router/utils/jsonParamsEncoding'
 import {useClient} from '../../../../hooks/useClient'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useWorkspace} from '../../../../studio/workspace'

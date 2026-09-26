@@ -19,31 +19,30 @@ import {
 import {type TFunction} from 'i18next'
 import {type ComponentType, useMemo} from 'react'
 import {
-  type DocumentLayoutProps,
   getDraftId,
   getPublishedId,
-  getReleaseIdFromReleaseDocumentId,
-  getReleaseTone,
   getVersionFromId,
   getVersionId,
-  isReleaseDocument,
-  isReleaseScheduledOrScheduling,
-  isSystemBundleName,
-  LATEST,
-  PUBLISHED,
   ReleaseAvatar,
   type ReleaseDocument,
-  ReleaseTitle,
   type TargetPerspective,
-  useActiveReleases,
   useDocumentVersions,
-  useEditState,
-  useFormatRelativeLocalePublishDate,
   useTranslation,
   useWorkspace,
 } from 'sanity'
 import {Box, Flex} from 'ui5'
 
+import {type DocumentLayoutProps} from '../../../../core/config/types'
+import {useEditState} from '../../../../core/hooks/useEditState'
+import {ReleaseTitle} from '../../../../core/releases/components/ReleaseTitle'
+import {useFormatRelativeLocalePublishDate} from '../../../../core/releases/hooks/useFormatRelativeLocalePublishDate'
+import {isReleaseDocument} from '../../../../core/releases/store/types'
+import {useActiveReleases} from '../../../../core/releases/store/useActiveReleases'
+import {LATEST, PUBLISHED} from '../../../../core/releases/util/const'
+import {getReleaseIdFromReleaseDocumentId} from '../../../../core/releases/util/getReleaseIdFromReleaseDocumentId'
+import {getReleaseTone} from '../../../../core/releases/util/getReleaseTone'
+import {isReleaseScheduledOrScheduling} from '../../../../core/releases/util/util'
+import {isSystemBundleName} from '../../../../core/util/draftUtils'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useDiffViewRouter} from '../../hooks/useDiffViewRouter'

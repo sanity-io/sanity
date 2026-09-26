@@ -1,5 +1,6 @@
-import {type Router, type RouterState, STICKY_PARAMS} from 'sanity/router'
+import {type Router, type RouterState} from 'sanity/router'
 
+import {STICKY_PARAMS} from '../../../router/stickyParams'
 import {isDefaultRouteTool} from '../../config/isDefaultRouteTool'
 import {type Tool} from '../../config/types'
 import {isRecord} from '../../util/isRecord'

@@ -1,6 +1,6 @@
 import {Card, Text} from '@sanity/ui'
 import {type DocumentInspectorProps} from 'sanity'
-import {DocumentInspectorHeader} from 'sanity/structure'
+import {DocumentInspectorHeader} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex, Box} from 'ui5'
 
 export function CustomInspector(props: DocumentInspectorProps) {

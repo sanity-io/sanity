@@ -8,23 +8,23 @@ import {
 } from '@sanity/ui'
 import {type ComponentType, type RefAttributes, useMemo, useRef, useState} from 'react'
 import {
-  DocumentGroupInventory,
-  DocumentVersionIcons,
   getPublishedId,
-  getReleaseTone,
   getVersionFromId,
-  isAgentBundleName,
-  isReleaseScheduledOrScheduling,
   type ReleaseDocument,
-  useActiveReleases,
-  useAllVariants,
   useDocumentVersions,
   useDocumentVersionTitle,
   useTranslation,
-  type VersionInfoDocumentStub,
 } from 'sanity'
 import {Flex} from 'ui5'
 
+import {DocumentVersionIcons} from '../../../../core/components/documentStatus/DocumentVersionIcons'
+import {DocumentGroupInventory} from '../../../../core/documentGroupInventory/components/DocumentGroupInventory'
+import {type VersionInfoDocumentStub} from '../../../../core/releases/store/types'
+import {useActiveReleases} from '../../../../core/releases/store/useActiveReleases'
+import {getReleaseTone} from '../../../../core/releases/util/getReleaseTone'
+import {isReleaseScheduledOrScheduling} from '../../../../core/releases/util/util'
+import {isAgentBundleName} from '../../../../core/store/agent/createAgentBundlesStore'
+import {useAllVariants} from '../../../../core/variants/store/useAllVariants'
 import {Popover} from '../../../../ui-components/popover/Popover'
 import {structureLocaleNamespace} from '../../../i18n'
 

@@ -5,11 +5,13 @@ import {
   useClient,
   type DocumentActionComponent,
   type DocumentActionDescription,
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
   getPublishedId,
-  useSetPerspective,
 } from 'sanity'
-import {useDocumentPane} from 'sanity/structure'
+import {
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
+  useSetPerspective,
+  useDocumentPane,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Flex, VStack} from 'ui5'
 
 export const useCreateAnonymousVersion: DocumentActionComponent = (props) => {

@@ -2,7 +2,11 @@ import {type ListenOptions} from '@sanity/client'
 import {uuid} from '@sanity/uuid' // Import the UUID library
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {map, startWith} from 'rxjs/operators'
-import {type KeyValueStoreValue, useClient, useCurrentUser, useKeyValueStore} from 'sanity'
+import {useClient, useCurrentUser} from 'sanity'
+import {
+  type KeyValueStoreValue,
+  useKeyValueStore,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {DEFAULT_API_VERSION} from '../apiVersions'
 
