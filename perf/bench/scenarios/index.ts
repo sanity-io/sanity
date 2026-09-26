@@ -1,5 +1,6 @@
 import {arrayI18n} from './arrayI18n'
 import {article} from './article'
+import {commentsField} from './commentsField'
 import {
   customInputs,
   debugLoop,
@@ -22,6 +23,7 @@ export const SCENARIOS: BenchScenario[] = [
   recipe,
   synthetic,
   syntheticLarge,
+  commentsField,
   // Load scenarios — pageload mode only
   loginReady,
   loginToTool,

@@ -9,6 +9,7 @@ import {Subscription} from 'rxjs'
 
 import {handleAuth} from './auth'
 import {handleActions, handleDoc, handleDocRevision, handleMutate, handleQuery} from './data'
+import {resolveFeatureFlags} from './features'
 import {RequestLedger} from './ledger'
 import {DATASET_ACL, DATASETS, projectData} from './project'
 import {corsHeaders, handlePreflight, json, readBody} from './respond'
@@ -39,6 +40,8 @@ export interface MockApiServer {
    * the page loads; `/_bench/reset` turns it off.
    */
   setRequireToken: (requireToken: boolean) => void
+  /** Activate the named feature modules for the next session (see mock-api/features). */
+  setActiveFeatures: (names: string[]) => void
 }
 
 /** Strip the `/vX.Y` API-version prefix @sanity/client puts on every path. */
@@ -63,6 +66,7 @@ export function createMockApi(config: MockApiConfig): MockApiServer {
   let requireToken = false
   // See mock-api/auth.ts `hasSession`; reset with requireToken
   let hasSession = false
+  let activeFeatureFlags: string[] = []
 
   async function handle(req: ProxyRequest, res: ProxyResponse): Promise<void> {
     const url = new URL(req.url ?? '/', 'http://localhost')
@@ -93,6 +97,7 @@ export function createMockApi(config: MockApiConfig): MockApiServer {
       ledger.reset()
       requireToken = false
       hasSession = false
+      activeFeatureFlags = []
       json(req, res, 200, {ok: true})
       return
     }
@@ -183,7 +188,7 @@ export function createMockApi(config: MockApiConfig): MockApiServer {
       return
     }
     if (path === '/features' || path.startsWith('/features/')) {
-      record('features', json(req, res, 200, []))
+      record('features', json(req, res, 200, activeFeatureFlags))
       return
     }
     if (path.startsWith('/journey')) {
@@ -323,6 +328,9 @@ export function createMockApi(config: MockApiConfig): MockApiServer {
     setRequireToken: (next) => {
       requireToken = next
       hasSession = false
+    },
+    setActiveFeatures: (names: string[]) => {
+      activeFeatureFlags = resolveFeatureFlags(names)
     },
   }
 }

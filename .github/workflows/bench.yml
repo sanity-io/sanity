@@ -363,7 +363,7 @@ jobs:
       fail-fast: false
       matrix:
         # One shard per scenario: wall-clock = slowest single scenario
-        scenario: [singleString, arrayI18n, article, recipe, synthetic]
+        scenario: [singleString, arrayI18n, article, recipe, synthetic, commentsField]
     steps:
       - uses: actions/checkout@v7
         with:
@@ -594,7 +594,7 @@ jobs:
           # instead of rendering a clean table with a scenario silently
           # missing. Keep in sync with the bench-interaction matrix and the
           # bench-pageload --scenario flags above.
-          BENCH_EXPECTED_INTERACTION_SCENARIOS: singleString,arrayI18n,article,recipe,synthetic
+          BENCH_EXPECTED_INTERACTION_SCENARIOS: singleString,arrayI18n,article,recipe,synthetic,commentsField
           BENCH_EXPECTED_PAGELOAD_SCENARIOS: singleString,syntheticLarge,loginReady,loginToTool,toolReady,emptyToolReady,loginToEmptyTool,synthetic
         run: pnpm bench report
 
@@ -670,7 +670,7 @@ jobs:
       - name: Write merged report
         env:
           # Keep in sync with the report job / shard matrices above
-          BENCH_EXPECTED_INTERACTION_SCENARIOS: singleString,arrayI18n,article,recipe,synthetic
+          BENCH_EXPECTED_INTERACTION_SCENARIOS: singleString,arrayI18n,article,recipe,synthetic,commentsField
           BENCH_EXPECTED_PAGELOAD_SCENARIOS: singleString,syntheticLarge,loginReady,loginToTool,toolReady,emptyToolReady,loginToEmptyTool,synthetic
         run: pnpm bench report
 
@@ -820,15 +820,15 @@ jobs:
       - name: Build reference-config studio from the same source
         run: pnpm --filter bench build:reference-config
 
-      # Same five scenarios as the bench-interaction matrix, named explicitly:
-      # `bench run` otherwise defaults to every registered scenario, which adds
+      # Five of the bench-interaction scenarios, named explicitly: `bench run`
+      # otherwise defaults to every registered scenario, which adds
       # syntheticLarge. That one needs ~55s per sample just to become editable,
       # on both sides — and unlike bench-interaction, which shards one scenario
       # per job, this job runs them serially, so it overran the timeout mid-
       # syntheticLarge having already produced clean neutral results for the
       # other five. Calibration cares that the instrument reads zero on
-      # identical builds, which five scenarios establish; the heaviest scenario
-      # is not worth doubling this job's wall-clock for.
+      # identical builds, which five scenarios establish; neither the heaviest
+      # scenario nor commentsField is worth more wall-clock here.
       - name: Compare the build against itself
         run: |
           pnpm bench run --mode interaction \

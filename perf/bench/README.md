@@ -127,8 +127,19 @@ Useful `bench run` flags: `--headed`, `--throttle 1` (disable CPU throttle), `--
 
 1. Schema: `studio/schemas/<name>.ts` exporting a workspace partial; register in `sanity.config.ts`.
 2. Scenario: `scenarios/<name>.ts` via `defineScenario` — deterministic fixture (use `scenarios/fixtures/prng.ts`, never `Math.random`), `interactions` (fields to type into; `kind: 'pte'` for Portable Text; `readbackText` if the value isn't a plain string at the field path), seeded image assets if needed (`cdn.sanity.io/images/*` is served a constant PNG by the route guard). For INP mode a scenario may declare `steps` (`runner/session/steps.ts`): a choreography of `type` / `click` / `hover` / `awaitVisible` / `scroll` / `press` steps over `{field}` / `{testId}` / `{label}` / `{css}` selectors, run to completion each pass, with `raw` as the escape hatch and an optional `readback` per step checked against the mock store. Without `steps`, INP mode types into each interaction target in turn. For pageload mode a scenario may declare `load: {steps}`, run once per load from navigation start: `awaitVisible` and `click` steps can carry a `milestone` name, recorded as a report-only `<condition> · <milestone>` row (a `click` milestone marks when the target became clickable, via a trial click), and `awaitEditable` is the keystroke probe behind the gated `time to editable` row. Without `load`, pageload waits for the readiness selector and then probes `interactions[0]`. JS chunks and auth trips are counted up to the later of editable and the last milestone. `load.auth: 'logged-out'` boots with no stored token against a mock that signs in only requests carrying the bench token (`setRequireToken`, answered by `mock-api/auth.ts`; `/users/me` returns 200 `{}` like the e2e auth helpers), so the studio shows its login screen. A click on the provider link hits the route guard's fake provider, which redirects back with `#sid=`; the mock's `/auth/fetch` exchanges it for the token. `load.conditions` limits which load conditions are sampled, e.g. cold only when a login would leave a token for the warm page to inherit. Authenticated scenarios are unaffected: the mock signs in every request unless a scenario asks for a token. Pageload also fails a session on unexpected mock endpoints, as interaction mode does.
+
+   Mind what INP can report about a step choreography: `computeInp` returns the `floor(driven / 50)`-th worst interaction, so a scenario driving just over 50 discards its single most expensive one. A choreography whose point is one costly click wants the gated `interaction` matrix for its regression series, and `steps` for local before/after work.
+
 3. Register in `scenarios/index.ts`; add the scenario to the `bench-interaction` matrix in `.github/workflows/bench.yml`.
 4. Verify: one absolute session passes with no failures — readback, console errors, hermeticity and endpoint drift are all hard session failures.
+
+## Feature modules
+
+The mock answers `/features` with an empty flag list, so a studio feature gated on one takes its upsell path. That path is slow to recognise - comments still renders and still clicks the field button, it just never opens the composer, and the session dies on a visibility timeout a step or two later. A scenario measuring such a feature opts in with `features: ['<name>']`, and every session mode activates it through `runner/session/seed.ts`, which is the only reason a new mode cannot quietly reintroduce the problem.
+
+Modules live in `mock-api/features.ts`: one name, its flags. Comments needs nothing else - it rides the generic `/data/*` plane, and the mock's single dataset answers the addon-dataset handshake (`project.ts`), so `/comments/<dataset>/setup` is never reached.
+
+Check one interactively with `pnpm bench dev --scenario <name>`.
 
 ## CI (`.github/workflows/bench.yml`)
 
