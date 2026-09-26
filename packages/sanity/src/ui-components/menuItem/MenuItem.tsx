@@ -1,5 +1,5 @@
 /* oxlint-disable no-restricted-imports */
-import {Badge, Stack, Text} from '@sanity/ui'
+import {Badge, Text} from '@sanity/ui'
 import {MenuItem as UIMenuItem, type MenuItemProps as UIMenuItemProps} from '@sanity/ui/menu'
 import {type ElementType, isValidElement, type ReactNode, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
@@ -97,7 +97,12 @@ export function MenuItem<E extends ElementType = 'button'>({
           </Box>
         )}
         {text && (
-          <Stack flex={1} gap={__unstable_subtitle ? 1 : 2}>
+          <Flex
+            flexBasis="0%"
+            flexGrow={1}
+            gap={__unstable_subtitle ? 1 : 2}
+            flexDirection="column"
+          >
             <Text size={FONT_SIZE} textOverflow="ellipsis" weight="medium">
               {text}
             </Text>
@@ -112,7 +117,7 @@ export function MenuItem<E extends ElementType = 'button'>({
                 {__unstable_subtitle}
               </Text>
             )}
-          </Stack>
+          </Flex>
         )}
         {(badgeText || hotkeys || IconRight) && (
           <Flex alignItems="center" gap={3} marginLeft={3}>

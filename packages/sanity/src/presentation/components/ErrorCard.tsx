@@ -1,7 +1,7 @@
-import {Card, type CardProps, Container, Inline, Stack, Text} from '@sanity/ui'
+import {Card, type CardProps, Container, Inline, Text} from '@sanity/ui'
 import {type ReactNode} from 'react'
 import {useTranslation} from 'sanity'
-import {Flex, Box} from 'ui5'
+import {Flex, Box, VStack} from 'ui5'
 
 import {Button} from '../../ui-components/button/Button'
 import {presentationLocaleNamespace} from '../i18n'
@@ -34,15 +34,15 @@ export function ErrorCard(
     <Card height="fill" {...restProps}>
       <Flex alignItems="center" height="100%" justifyContent="center">
         <Container padding={4} sizing="border" width={0}>
-          <Stack gap={4}>
-            <Stack gap={3}>
+          <VStack gap={4}>
+            <VStack gap={3}>
               <Text size={1} weight="semibold">
                 {t('error-card.title')}
               </Text>
               <Text muted size={1}>
                 {message}
               </Text>
-            </Stack>
+            </VStack>
 
             {children}
 
@@ -56,7 +56,7 @@ export function ErrorCard(
             ) : onContinueAnyway ? (
               <Box>{continueAnywayButton}</Box>
             ) : null}
-          </Stack>
+          </VStack>
         </Container>
       </Flex>
     </Card>

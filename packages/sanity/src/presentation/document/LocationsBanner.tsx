@@ -3,7 +3,7 @@ import {DesktopIcon} from '@sanity/icons/Desktop'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Spinner, Stack, Text} from '@sanity/ui'
+import {Card, Spinner, Text} from '@sanity/ui'
 import {type ComponentType, type ReactNode, useCallback, useContext, useState} from 'react'
 import {type ObjectSchemaType, useTranslation} from 'sanity'
 import {PresentationContext} from 'sanity/_singletons'
@@ -122,7 +122,7 @@ export function LocationsBanner(props: {
                 </Box>
               </Flex>
             </Card>
-            <Stack hidden={!expanded} marginTop={1} gap={1}>
+            <Flex hidden={!expanded} marginTop={1} gap={1} flexDirection="column">
               {locations.map((l) => {
                 let active = false
                 if (
@@ -143,7 +143,7 @@ export function LocationsBanner(props: {
                   />
                 )
               })}
-            </Stack>
+            </Flex>
           </>
         )}
       </div>
@@ -201,7 +201,7 @@ function LocationItem(props: {
             <Icon />
           </Text>
         </Box>
-        <Stack flex={1} gap={2}>
+        <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
           <Text size={1} weight="medium">
             {node.title}
           </Text>
@@ -210,7 +210,7 @@ function LocationItem(props: {
               {node.href}
             </Text>
           )}
-        </Stack>
+        </Flex>
       </Flex>
     </Card>
   )
