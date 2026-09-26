@@ -1,7 +1,7 @@
 import {type ComponentType} from 'react'
 
 import {useMiddlewareComponents} from '../../config/components/useMiddlewareComponents'
-import {StudioLayoutComponent} from '../StudioLayoutComponent'
+import {StudioLayoutComponent} from '../lazy'
 import {pickLayoutComponent} from './picks'
 
 /**

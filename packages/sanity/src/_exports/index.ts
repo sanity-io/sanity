@@ -27,12 +27,12 @@ export {
 } from '../core/changeIndicators/types'
 export {CommentDeleteDialog} from '../core/comments/components/CommentDeleteDialog'
 export {CommentDisabledIcon} from '../core/comments/components/icons/CommentDisabledIcon'
-export {CommentsList} from '../core/comments/components/list/CommentsList'
+export {CommentsList} from '../core/comments/lazy'
 export {
-  CommentInput,
   type CommentInputHandle,
   type CommentInputProps,
 } from '../core/comments/components/pte/comment-input/CommentInput'
+export {CommentInput} from '../core/comments/lazy'
 export {CommentInlineHighlightSpan} from '../core/comments/components/pte/CommentInlineHighlightSpan'
 export {COMMENTS_INSPECTOR_NAME} from '../core/comments/constants'
 export {CommentsAuthoringPathProvider} from '../core/comments/context/authoring-path/CommentsAuthoringPathProvider'
@@ -597,12 +597,14 @@ export {EmailInput, type EmailInputProps} from '../core/form/inputs/EmailInput'
 export {type AssetAccessPolicy} from '../core/form/inputs/files/types'
 export {NumberInput} from '../core/form/inputs/NumberInput/NumberInput'
 export {ObjectInput} from '../core/form/inputs/ObjectInput/ObjectInput'
+export {type PortableTextMemberItem} from '../core/form/inputs/PortableText/PortableTextInput'
 export {
   PortableTextInput as BlockEditor,
+  FormBuilder,
+  FormProvider,
   PortableTextInput,
-  type PortableTextMemberItem,
   UpdateReadOnlyPlugin,
-} from '../core/form/inputs/PortableText/PortableTextInput'
+} from '../core/form/lazy'
 export {CreateButton as CreateReferenceButton} from '../core/form/inputs/ReferenceInput/CreateButton'
 export {ReferenceAutocomplete} from '../core/form/inputs/ReferenceInput/ReferenceAutocomplete'
 export {type CreateReferenceOption} from '../core/form/inputs/ReferenceInput/types'
@@ -769,8 +771,8 @@ export {
   defaultRenderItem,
   defaultRenderPreview,
 } from '../core/form/studio/defaults'
-export {FormBuilder, type FormBuilderProps} from '../core/form/studio/FormBuilder'
-export {FormProvider, type FormProviderProps} from '../core/form/studio/FormProvider'
+export {type FormBuilderProps} from '../core/form/studio/FormBuilder'
+export {type FormProviderProps} from '../core/form/studio/FormProvider'
 export {
   StudioCrossDatasetReferenceInput as CrossDatasetReferenceInput,
   type StudioCrossDatasetReferenceInputProps as CrossDatasetReferenceInputProps,
@@ -1534,7 +1536,7 @@ export {
 export {SearchButton} from '../core/studio/components/navbar/search/SearchButton'
 export {SearchDialog} from '../core/studio/components/navbar/search/SearchDialog'
 export {StudioLogo} from '../core/studio/components/navbar/StudioLogo'
-export {StudioNavbar} from '../core/studio/components/navbar/StudioNavbar'
+export {StudioNavbar} from '../core/studio/lazy'
 export {StudioToolMenu} from '../core/studio/components/navbar/tools/StudioToolMenu'
 export {ToolLink, type ToolLinkProps} from '../core/studio/components/navbar/tools/ToolLink'
 export {CopyPasteProvider, useCopyPaste} from '../core/studio/copyPaste/CopyPasteProvider'
@@ -1601,7 +1603,7 @@ export {
   isValidAnnouncementRole,
 } from '../core/studio/studioAnnouncements/utils'
 export {type NavbarContextValue, StudioLayout} from '../core/studio/StudioLayout'
-export {StudioLayoutComponent} from '../core/studio/StudioLayoutComponent'
+export {StudioLayoutComponent} from '../core/studio/lazy'
 export {StudioProvider, type StudioProviderProps} from '../core/studio/StudioProvider'
 export {useTelemetryConsent} from '../core/studio/telemetry/useTelemetryConsent'
 export {

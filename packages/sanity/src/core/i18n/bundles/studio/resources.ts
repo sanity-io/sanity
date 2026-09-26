@@ -1,7 +1,5 @@
 /* eslint sort-keys: "error" */
-import {defineLocalesResources} from '../helpers'
-import {studioLocaleNamespace} from '../localeNamespaces'
-import {type LocaleResourceBundle} from '../types'
+import {defineLocalesResources} from '../../helpers'
 
 /**
  * The string resources for the studio core.
@@ -10,7 +8,7 @@ import {type LocaleResourceBundle} from '../types'
  * @hidden
  */
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-export const studioLocaleStrings = defineLocalesResources('studio', {
+const studioLocaleStrings = defineLocalesResources('studio', {
   /** "Configuration issue" header */
   'about-dialog.configuration-issue.header': 'Configuration issue detected',
   /** Message shown if sanity.cli.ts is missing deployment.appId */
@@ -2517,14 +2515,4 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
  */
 export type StudioLocaleResourceKeys = keyof typeof studioLocaleStrings
 
-/**
- * Locale resources for the core studio namespace, eg US English locale resources.
- *
- * @beta
- * @hidden
- */
-export const studioDefaultLocaleResources: LocaleResourceBundle = {
-  locale: 'en-US',
-  namespace: studioLocaleNamespace,
-  resources: studioLocaleStrings,
-}
+export default studioLocaleStrings

@@ -411,6 +411,65 @@ Rules that follow from this:
   404 on the module host. `pnpm generate:dts-exports` in `packages/@repo/test-dts-exports`
   regenerates the d.ts fixture for the entry after its export list changes.
 
+### The `sanity` entry's static import graph is the login page
+
+With `autoUpdates: true` the studio's import map points `sanity` and `sanity/*` at the module
+host, so the browser downloads `index.mjs` plus every chunk it statically imports before the
+login screen renders, and nothing in that graph is tree-shaken. Only dynamic `import()` keeps
+code off that path. Measure it on the CDN build, not on `sanity build` output:
+
+```bash
+pnpm --filter sanity build:bundle
+pnpm --filter sanity measure:entry-closure                   # `sanity` alone (the login page)
+pnpm --filter sanity measure:entry-closure index structure   # what a studio with the structure tool loads
+pnpm --filter sanity measure:entry-closure --top=20 index    # largest files in the closure
+```
+
+`packages/sanity/scripts/measure-entry-closure.mjs` follows the static imports of the given
+`dist/*.mjs` entries (relative specifiers and `sanity/<x>`) and sums raw and gzip bytes; the
+`.map` files next to the chunks attribute bytes back to source modules when you need to know what
+a chunk contains. Rules that keep the graph small:
+
+- UI that only renders after a click or after login (dialogs, menu contents, the default layout
+  and navbar, filter inputs referenced from search operator definitions) is a `lazy()` component
+  with a `Suspense` at its render site. `prepareConfig` runs before login and statically reaches
+  every default plugin module, so a plugin's document actions, asset sources and schema
+  `components` must reference lazy components for anything heavier than the hook itself
+  (`createLazyComponent` in `packages/sanity/src/core/components/lazy/createLazyComponent.tsx`
+  wraps a component together with its own `Suspense` for config slots like these).
+- A heavy component that is exported from `sanity` is exported as a facade: the same name and
+  props, a `Suspense` of its own, and the implementation loaded on first render. The existing
+  groups are `src/core/studio/lazy.tsx` (`StudioLayoutComponent`, `StudioNavbar`),
+  `src/core/form/lazy.tsx` (`FormBuilder`, `FormProvider`, `PortableTextInput`/`BlockEditor`,
+  `UpdateReadOnlyPlugin`) and `src/core/comments/lazy.tsx` (`CommentsList`, `CommentInput`);
+  the exported `defaultRender*` callbacks in `src/core/form/studio/defaults.tsx` import the
+  input/field/item resolvers on first use the same way (nothing in the studio calls them; a test
+  that needs synchronous rendering builds its own callback from the resolver, see
+  `PrimitiveField.test.tsx`). Only the barrels (`index.ts` and the internals entry, which must
+  point at the same declaration) import the facades; internal code keeps importing the
+  implementations directly, so the default rendering path is unchanged. A facade group only pays
+  off when every export reaching the same modules is covered; check with the closure, not with a
+  single export. knip runs in full mode in CI: an implementation that only the barrel used to
+  export becomes an unused export once the barrel points at the facade.
+- Code that must be fetched right after login (layout, navbar) is preloaded from
+  `PreloadStudioShell` (same file as the shell facades), mounted inside `AuthBoundary`, so the
+  fetch overlaps with workspace loading.
+- Locale bundles for the studio's own namespaces use `resources: () => import('./resources')`
+  (`src/core/i18n/bundles/studio/`, like structure, presentation and releases). The fetch starts
+  with `prepareI18n`, before login, but the login screen (`WorkspaceAuth`, `LoggedOutToast`) and
+  the config, CORS and schema error screens translate before `LocaleProvider` and its `Suspense`
+  mount, so `StudioProvider` wraps the whole tree in a `Suspense` with the loading block as
+  fallback: a `useTranslation` that suspends before login shows that instead of suspending the
+  root (`StudioProvider.test.tsx` covers the logged-out case). Tests that build an i18n instance
+  themselves and assert synchronously must wait for the namespaces (`createTestProvider` does
+  `await i18next.loadNamespaces(…)` after `init()`: `prepareI18n` already started an `init()`,
+  and a second `init()` resolves as soon as the first is in flight, before lazy bundles have
+  arrived).
+- Exporting a `memo()`-wrapped component through a facade changes `typeof` from `object` to
+  `function` in `test/__snapshots__/exports.test.ts.snap`, and the generated d.ts fixtures in
+  `@repo/test-dts-exports` switch from `not.toBeNever()` to `toBeFunction()`; regenerate both.
+  Tests that open a code-split dialog await it (`await screen.findByRole('dialog')`).
+
 ### Effect events: use `use-effect-event`, not React's native hook
 
 Import `useEffectEvent` from `use-effect-event`, never from `react`. On React 19.2 the native hook
@@ -1059,6 +1118,7 @@ No Docker, databases, or other local services are required for unit tests, lint,
 - **Do not run oxlint type checking (`pnpm check:oxlint`) while the dev studio is running.** Both are memory-hungry and running them concurrently has exhausted the VM's memory and frozen it for hours (unkillable thrashing). Stop `sanity dev` first (Ctrl-C in its tmux session), run the checks, then restart the studio.
   - This has bitten agents more than once. The freeze is unrecoverable in practice: the shell stops spawning processes and even file reads time out, and the VM is eventually rebuilt, **losing every uncommitted change**. Sequence the work so linting happens before the studio starts, and commit and push before starting any manual verification.
 - **`sanity dev` in bundledDev mode (`unstable_bundledDev: true`, on by default in `dev/test-studio`, `dev/design-studio`, `dev/radar`, `dev/auth-test-studio`) grows by roughly 300 MB of RSS per distinct lazy chunk (`/@vite/lazy?id=...`) it compiles, on top of a ~2 GB baseline.** Page reloads, fresh client ids and re-requests of an already compiled chunk cost nothing, but a studio session that touches every plugin's lazy entry points can push the server past 10 GB (13.6 GB observed on vite 8.2.2, freezing the 16 GB VM). Classic mode sits at ~1 GB for the same actions. When you need a long-running studio or plan to exercise many tools, either flip `unstable_bundledDev` off locally or run the server with a PID watchdog (`while sleep 5; do r=$(ps -o rss= -p $PID) || break; [ "${r:-0}" -gt 5000000 ] && kill $PID; done`) and restart it when it trips. Note that opening a single `/test` page already compiles enough chunks to pass that 5 GB threshold (6.1 GB observed on vite 8.3.0), so a watchdog set that low kills the server mid-load and the browser only reports `ViteDevServerStoppedError`; for a short scripted verification, flipping `unstable_bundledDev: false` in `dev/test-studio/sanity.cli.ts` is the cheaper option (1.3 GB for the same session). This is upstream vite/rolldown behavior, not something the studio config can tune.
+- **`sanity dev` in bundledDev mode can fail in the VM with `TypeError: __rolldown_runtime__.requestLazy is not a function` at the studio's first dynamic `import()` (`ensureRefractorLanguages` in `StudioProvider`), leaving the error dialog instead of the login screen.** It reproduces on a clean `main` with the image's `vite@8.3.0`, so it is the lockfile-drift kind of environment artifact, not your change. For manual testing set `unstable_bundledDev: false` in `dev/test-studio/sanity.cli.ts` locally (do not commit it); classic mode works, at the cost of a couple of "optimized dependencies changed. reloading" page reloads on first load.
 - **Simulating Presentation preview failure states.** The `/test` workspace's presentation tool allows any localhost origin (`allowOrigins: ['https://*.sanity.dev', 'http://localhost:*']`), so failure UIs can be triggered deterministically by pointing the preview at a throwaway local server via the `?preview=` search param, e.g. `http://localhost:3333/test/presentation?preview=http%3A%2F%2Flocalhost%3A3398%2F`. A plain HTML page that never runs `@sanity/visual-editing` exercises the overlays connection timeout path (loading overlay → "connecting" status card after 5s → caution card with "Continue anyway" after 3s more); a server that accepts connections but never responds (`createServer(() => {})`) keeps the iframe `load` event from firing and exercises the 15s load timeout → error card → "Retry" path. Note the demo screen recordings are time-compressed, so verify real timings from the `sanity dev` terminal log — the studio pipes browser `console.error` output there with timestamps.
 - **Verifying a production studio build (`sanity build`) must happen on an allow-listed origin.** `sanity build` for `dev/test-studio` bundles the _built_ `sanity` package (run `pnpm build` first — only `sanity dev` resolves monorepo sources via the `monorepo` export condition). Serve `dev/test-studio/dist` statically on **port 3333** (e.g. `python3 -m http.server 3333`, after stopping the dev server): project `ppsg7ml5` only allow-lists `http://localhost:3333`, so from any other port API requests fail CORS and the bifur `/socket/` WebSocket is rejected during its handshake (close code 1006 + retry loop). The static server has no SPA fallback, so load `http://localhost:3333/#token=…` (root path) and let the client-side router redirect, rather than deep-linking to a workspace path.
 - **Recording demo videos: drive the browser with Playwright rather than the screen recorder.** The screen recorder auto-zooms toward cursor activity and has truncated clips mid-interaction, producing unusable artifacts. Playwright records a fixed viewport, so the framing cannot drift:

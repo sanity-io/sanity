@@ -3,8 +3,14 @@ import {DocumentsIcon} from '@sanity/icons/Documents'
 import {ImageIcon} from '@sanity/icons/Image'
 import {type AssetSource} from '@sanity/types'
 
-import {DatasetAssetSource} from './shared/DatasetAssetSource'
+import {createLazyComponent} from '../../../components/lazy/createLazyComponent'
 import {createDatasetUploader} from './uploader'
+
+// The asset sources are created while the workspace config is prepared; the browse dialog they
+// render only loads once a user opens it from a file or image input.
+const DatasetAssetSource = createLazyComponent(() =>
+  import('./shared/DatasetAssetSource').then((module) => module.DatasetAssetSource),
+)
 
 // Note: Ideally this should be changed to 'sanity-dataset,
 // but of legacy reasons (studio configs) we are probably stuck with it.

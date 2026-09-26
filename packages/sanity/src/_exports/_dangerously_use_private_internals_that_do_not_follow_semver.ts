@@ -40,10 +40,10 @@ export {
 } from '../core/changeIndicators/types'
 export {CommentDisabledIcon} from '../core/comments/components/icons/CommentDisabledIcon'
 export {
-  CommentInput,
   type CommentInputHandle,
   type CommentInputProps,
 } from '../core/comments/components/pte/comment-input/CommentInput'
+export {CommentInput} from '../core/comments/lazy'
 export {CommentInlineHighlightSpan} from '../core/comments/components/pte/CommentInlineHighlightSpan'
 export {COMMENTS_INSPECTOR_NAME} from '../core/comments/constants'
 export {CommentsSelectedPathProvider} from '../core/comments/context/selected-path/CommentsSelectedPathProvider'
@@ -363,10 +363,8 @@ export {
 export {VirtualizerScrollInstanceProvider} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 export {CrossDatasetReferencePreview} from '../core/form/inputs/CrossDatasetReferenceInput/CrossDatasetReferencePreview'
 export {getCalendarLabels} from '../core/form/inputs/DateInputs/utils'
-export {
-  type PortableTextMemberItem,
-  UpdateReadOnlyPlugin,
-} from '../core/form/inputs/PortableText/PortableTextInput'
+export {type PortableTextMemberItem} from '../core/form/inputs/PortableText/PortableTextInput'
+export {UpdateReadOnlyPlugin} from '../core/form/lazy'
 export {CreateButton as CreateReferenceButton} from '../core/form/inputs/ReferenceInput/CreateButton'
 export {ReferenceAutocomplete} from '../core/form/inputs/ReferenceInput/ReferenceAutocomplete'
 export {type CreateReferenceOption} from '../core/form/inputs/ReferenceInput/types'
@@ -905,7 +903,7 @@ export {
   isValidAnnouncementRole,
 } from '../core/studio/studioAnnouncements/utils'
 export {type NavbarContextValue} from '../core/studio/StudioLayout'
-export {StudioLayoutComponent} from '../core/studio/StudioLayoutComponent'
+export {StudioLayoutComponent} from '../core/studio/lazy'
 export {useTelemetryConsent} from '../core/studio/telemetry/useTelemetryConsent'
 export {
   UpsellDialogDismissed,

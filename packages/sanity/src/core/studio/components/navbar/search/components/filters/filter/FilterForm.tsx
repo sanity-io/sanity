@@ -1,11 +1,12 @@
 import {TrashIcon} from '@sanity/icons/Trash'
 import {Card, Text} from '@sanity/ui'
-import {type ErrorInfo, useCallback, useState} from 'react'
-import FocusLock from 'react-focus-lock'
+import {type ErrorInfo, Suspense, useCallback, useState} from 'react'
+import FocusLock, {MoveFocusInside} from 'react-focus-lock'
 import {Box, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../../../../ui-components/button/Button'
 import {ErrorBoundary} from '../../../../../../../../ui-components/errorBoundary/ErrorBoundary'
+import {LoadingBlock} from '../../../../../../../components/loadingBlock/LoadingBlock'
 import {supportsTouch} from '../../../../../../../util/supportsTouch'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getFilterDefinition} from '../../../definitions/filters'
@@ -73,13 +74,21 @@ export function FilterForm({filter}: FilterFormProps) {
           {/* Value */}
           {Component && (
             <Card borderTop padding={3}>
-              <Component
-                // re-render on new operators
-                key={filter.operatorType}
-                fieldDefinition={fieldDefinition}
-                onChange={handleValueChange}
-                value={filter.value}
-              />
+              {/* Operator input components are code-split (see definitions/operators/lazyInputComponents).
+                  FocusLock autofocuses when it mounts, before the input has loaded, so once the input
+                  is in the DOM focus is moved into it; the wrapper sits outside the operator-keyed input
+                  and therefore only does this once, not on every operator change. */}
+              <Suspense fallback={<LoadingBlock />}>
+                <MoveFocusInside disabled={supportsTouch}>
+                  <Component
+                    // re-render on new operators
+                    key={filter.operatorType}
+                    fieldDefinition={fieldDefinition}
+                    onChange={handleValueChange}
+                    value={filter.value}
+                  />
+                </MoveFocusInside>
+              </Suspense>
             </Card>
           )}
 

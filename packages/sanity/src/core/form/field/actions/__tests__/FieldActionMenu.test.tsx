@@ -5,7 +5,8 @@ import {beforeAll, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {type DocumentFieldActionNode} from '../../../../config/document/fieldActions/types'
-import {studioDefaultLocaleResources, studioLocaleStrings} from '../../../../i18n/bundles/studio'
+import {studioDefaultLocaleResources} from '../../../../i18n/bundles/studio'
+import studioLocaleStrings from '../../../../i18n/bundles/studio/resources'
 import {FieldActionMenu} from '../FieldActionMenu'
 
 const mockNodes: DocumentFieldActionNode[] = [

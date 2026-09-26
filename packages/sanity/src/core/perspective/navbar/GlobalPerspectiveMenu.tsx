@@ -2,16 +2,23 @@ import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 // oxlint-disable-next-line no-restricted-imports -- Button requires props, only supported by @sanity/ui
 import {Button} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
-import {useCallback, useRef, useState} from 'react'
+import {lazy, Suspense, useCallback, useRef, useState} from 'react'
 import {styled} from 'styled-components'
 
 import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
-import {CreateReleaseDialog} from '../../releases/components/dialog/CreateReleaseDialog'
 import {useReleasesUpsell} from '../../releases/contexts/upsell/useReleasesUpsell'
 import {oversizedButtonStyle} from '../styles'
 import {type ReleasesNavMenuItemPropsGetter} from '../types'
 import {ReleasesList} from './ReleasesList'
 import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
+
+// Opened from the menu, so the dialog (form, date handling) is fetched on first use rather
+// than with the navbar.
+const CreateReleaseDialog = lazy(() =>
+  import('../../releases/components/dialog/CreateReleaseDialog').then((module) => ({
+    default: module.CreateReleaseDialog,
+  })),
+)
 
 const StyledMenu = styled(Menu)`
   min-width: 200px;
@@ -101,7 +108,9 @@ export function GlobalPerspectiveMenu({
         }}
       />
       {createBundleDialogOpen && (
-        <CreateReleaseDialog onCancel={handleClose} onSubmit={handleClose} origin="structure" />
+        <Suspense fallback={null}>
+          <CreateReleaseDialog onCancel={handleClose} onSubmit={handleClose} origin="structure" />
+        </Suspense>
       )}
     </>
   )

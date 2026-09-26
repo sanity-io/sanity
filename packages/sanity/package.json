@@ -130,6 +130,7 @@
     "build": "tsdown",
     "build:bundle": "vite build --configLoader runner --config package.bundle.ts",
     "coverage": "vitest --coverage",
+    "measure:entry-closure": "node scripts/measure-entry-closure.mjs",
     "prepublishOnly": "turbo run build",
     "test": "vitest run",
     "test:browser": "vitest run -c vitest.browser.config.mts",

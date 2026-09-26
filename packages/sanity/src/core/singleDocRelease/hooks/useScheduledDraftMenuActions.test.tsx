@@ -225,7 +225,8 @@ describe('useScheduledDraftMenuActions', () => {
 
       // Click menu item to open dialog
       await userEvent.click(screen.getByTestId('publish-now-menu-item'))
-      expect(screen.getByTestId('publish-scheduled-draft-dialog')).toBeInTheDocument()
+      // The dialog is code-split and mounts once its chunk has loaded
+      expect(await screen.findByTestId('publish-scheduled-draft-dialog')).toBeInTheDocument()
 
       // Confirm action
       await userEvent.click(screen.getByTestId('confirm-publish'))
@@ -310,7 +311,8 @@ describe('useScheduledDraftMenuActions', () => {
 
       // Click menu item to open dialog
       await userEvent.click(screen.getByTestId('delete-schedule-menu-item'))
-      expect(screen.getByTestId('delete-scheduled-draft-dialog')).toBeInTheDocument()
+      // The dialog is code-split and mounts once its chunk has loaded
+      expect(await screen.findByTestId('delete-scheduled-draft-dialog')).toBeInTheDocument()
 
       // Confirm action
       await userEvent.click(screen.getByTestId('confirm-delete'))
