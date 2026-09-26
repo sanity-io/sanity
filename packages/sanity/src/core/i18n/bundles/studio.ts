@@ -1508,6 +1508,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'login.logged-out.session-expired': 'Your session expired. Please sign in again.',
   /** Title of the banner shown above the login form after the studio logs the user out */
   'login.logged-out.title': "You've been logged out",
+  /** Button on the login screen of a Studio that signs in with OAuth */
+  'login.oauth.sign-in': 'Sign in with Sanity',
+  /** Heading on the login screen of a Studio that signs in with OAuth */
+  'login.oauth.title': 'Sign in to continue',
 
   /** Unexpected error: `{{error}}` */
   'member-field-error.unexpected-error': 'Unexpected error: {{error}}',

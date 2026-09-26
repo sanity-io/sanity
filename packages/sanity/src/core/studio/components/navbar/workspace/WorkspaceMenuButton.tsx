@@ -51,6 +51,7 @@ export function WorkspaceMenuButton() {
         projectId: workspace.projectId,
         dataset: workspace.dataset,
         apiHost: workspace.apiHost,
+        oauthClientId: workspace.oauthClientId,
       })
         .pipe(take(1))
         .subscribe()

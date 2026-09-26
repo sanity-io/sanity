@@ -20,6 +20,10 @@ export const AuthBoundaryResolved = defineEvent<{
  * across releases — hence no version bump. The settle wait is reported
  * separately in the additive `stateSettleDurationMs` / `stateSettleTimedOut`
  * fields.
+ *
+ * `authMethod: 'oauth'` marks an OAuth code exchange (`auth.unstable_oauth`).
+ * Additive as well: OAuth workspaces report `loginMethod: 'token'`, and the
+ * meaning of the existing values is unchanged.
  */
 export const SessionTokenExchangeCompleted = defineEvent<{
   loginMethod: 'dual' | 'cookie' | 'token'
@@ -28,7 +32,7 @@ export const SessionTokenExchangeCompleted = defineEvent<{
   durationMs: number
   exchangeDurationMs?: number
   probeDurationMs?: number
-  authMethod?: 'cookie' | 'token'
+  authMethod?: 'cookie' | 'token' | 'oauth'
   failureReason?: string
   stateSettleDurationMs?: number
   stateSettleTimedOut?: boolean
