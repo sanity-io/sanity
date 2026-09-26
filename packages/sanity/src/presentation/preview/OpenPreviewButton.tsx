@@ -31,8 +31,8 @@ export function OpenPreviewButton(
     targetOrigin,
   } = props
   /**
-   * Both are `null` unless preview mode is on for the current target origin and the secret is valid,
-   * in which case the link goes through the enable route. Otherwise it opens the preview directly.
+   * The link goes through the enable route while preview mode is on for the current target origin and
+   * there is a valid secret for it, and opens the preview directly otherwise
    */
   const previewMode = useSelector(openPreviewUrlRef, (state) => state.context.previewMode)
   const previewUrlSecret = useSelector(

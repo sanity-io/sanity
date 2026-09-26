@@ -31,7 +31,8 @@ type Input = Omit<SetTargetOriginEvent, 'type'>
 
 /**
  * Owns what the "Open preview" link needs for the origin currently shown in the iframe: the preview mode
- * resolved for that origin, and a preview URL secret that is created again when it expires.
+ * resolved for that origin, and a preview URL secret that is created again when it expires, or the shared
+ * secret, which is followed as sharing is turned off and on.
  *
  * The iframe itself is driven by `previewUrlMachine`. Once it has loaded through the enable route its
  * preview mode cookie is set, so it has no use for a fresh secret. The link is different: it can be clicked
@@ -80,11 +81,12 @@ export const openPreviewUrlMachine = setup({
         ),
       ),
     ),
-    'read shared preview secret': fromPromise<string | null>(async () =>
-      Promise.reject(
-        new Error(
-          `The 'read shared preview secret' actor is not implemented. Add it to openPreviewUrlMachine.provide({actors: {'read shared preview secret': fromPromise(...)}})`,
-        ),
+    'watch shared preview secret': fromObservable<string | null, void>(() =>
+      throwError(
+        () =>
+          new Error(
+            `The 'watch shared preview secret' actor is not implemented. Add it to openPreviewUrlMachine.provide({actors: {'watch shared preview secret': fromObservable(...)}})`,
+          ),
       ),
     ),
   },
@@ -97,23 +99,20 @@ export const openPreviewUrlMachine = setup({
     'has new target origin': ({context, event}) => {
       return event.targetOrigin !== context.targetOrigin
     },
+    'has preview mode': (_, params: PreviewUrlPreviewMode | false) => {
+      return params !== false
+    },
     'can create preview secret': ({context}) => {
       return context.previewUrlSecretPermission?.granted === true
     },
-    'has preview mode with created secret': ({context}, params: PreviewUrlPreviewMode | false) => {
-      if (params === false) {
-        return false
-      }
-      return context.previewUrlSecretPermission?.granted === true
-    },
-    'has preview mode with share access': ({context}, params: PreviewUrlPreviewMode | false) => {
-      if (params === false) {
-        return false
-      }
+    'can read shared preview secret': ({context}) => {
       return context.previewAccessSharingReadPermission?.granted === true
     },
-    'has shared secret': (_, params: string | null) => {
+    'has shared secret': (_, params: string | null | undefined) => {
       return typeof params === 'string' && params !== ''
+    },
+    'is sharing off': (_, params: string | null | undefined) => {
+      return params === null || params === ''
     },
   },
   delays: {
@@ -224,23 +223,13 @@ export const openPreviewUrlMachine = setup({
         onDone: [
           {
             guard: {
-              type: 'has preview mode with created secret',
+              type: 'has preview mode',
               params: ({event}) => event.output,
             },
             actions: assign({
               previewMode: ({event}) => (event.output === false ? null : event.output),
             }),
-            target: 'creatingPreviewSecret',
-          },
-          {
-            guard: {
-              type: 'has preview mode with share access',
-              params: ({event}) => event.output,
-            },
-            actions: assign({
-              previewMode: ({event}) => (event.output === false ? null : event.output),
-            }),
-            target: 'readingSharedPreviewSecret',
+            target: 'choosingPreviewSecret',
           },
           {
             target: 'unavailable',
@@ -250,8 +239,28 @@ export const openPreviewUrlMachine = setup({
       tags: ['busy'],
     },
 
+    /**
+     * Picks where the secret comes from with the permissions the user has at this point. An expired secret
+     * comes back here too, as the permission to create a new one might be gone by then.
+     */
+    choosingPreviewSecret: {
+      always: [
+        {
+          guard: 'can create preview secret',
+          target: 'creatingPreviewSecret',
+        },
+        {
+          guard: 'can read shared preview secret',
+          target: 'sharedSecret',
+        },
+        {
+          actions: assign({previewMode: null}),
+          target: 'unavailable',
+        },
+      ],
+    },
+
     creatingPreviewSecret: {
-      id: 'creatingPreviewSecret',
       invoke: {
         src: 'create preview secret',
         onError: {
@@ -265,61 +274,74 @@ export const openPreviewUrlMachine = setup({
           },
         },
         onDone: {
-          target: 'success.createdSecret',
+          target: 'createdSecret',
           actions: assign({previewUrlSecret: ({event}) => event.output}),
         },
       },
       tags: ['busy'],
     },
 
-    readingSharedPreviewSecret: {
-      invoke: {
-        src: 'read shared preview secret',
-        onError: {
-          target: 'error',
-          actions: {
-            type: 'assign error',
-            params: ({event}) => ({
-              message: 'Failed to read shared preview secret',
-              error: event.error,
-            }),
-          },
+    createdSecret: {
+      after: {
+        expiredSecret: {
+          actions: assign({previewUrlSecret: null}),
+          target: 'choosingPreviewSecret',
         },
-        onDone: [
+      },
+    },
+
+    /**
+     * The shared secret is not ours to rotate, but sharing can be turned off, or back on with a new secret,
+     * at any time, so it's followed for as long as the link uses it
+     */
+    sharedSecret: {
+      invoke: {
+        src: 'watch shared preview secret',
+        onSnapshot: [
           {
             guard: {
               type: 'has shared secret',
-              params: ({event}) => event.output,
+              params: ({event}) => event.snapshot.context,
             },
             actions: assign({
-              previewUrlSecret: ({event}) => ({secret: event.output!, expiresAt: null}),
+              previewUrlSecret: ({event}) =>
+                event.snapshot.context ? {secret: event.snapshot.context, expiresAt: null} : null,
             }),
-            target: 'success.sharedSecret',
+            target: '.on',
           },
           {
-            target: 'unavailable',
+            guard: {
+              type: 'is sharing off',
+              params: ({event}) => event.snapshot.context,
+            },
+            actions: assign({previewUrlSecret: null}),
+            target: '.off',
           },
         ],
-      },
-      tags: ['busy'],
-    },
-
-    success: {
-      initial: 'createdSecret',
-      states: {
-        createdSecret: {
-          after: {
-            expiredSecret: {
-              guard: 'can create preview secret',
-              actions: assign({previewUrlSecret: null}),
-              target: '#creatingPreviewSecret',
+        onError: {
+          target: 'error',
+          actions: [
+            assign({previewUrlSecret: null}),
+            {
+              type: 'assign error',
+              params: ({event}) => ({
+                message: 'Failed to read shared preview secret',
+                error: event.error,
+              }),
             },
-          },
+          ],
         },
+      },
+      initial: 'reading',
+      states: {
+        reading: {
+          tags: ['busy'],
+        },
+        on: {},
         /**
-         * The shared secret is not ours to rotate, so nothing is scheduled here
+         * The link opens the preview directly until sharing is turned on again
          */
-        sharedSecret: {},
+        off: {},
       },
     },
 

@@ -1,11 +1,19 @@
-import {of, Subject} from 'rxjs'
+import {BehaviorSubject, isObservable, map, type Observable, of, Subject} from 'rxjs'
 import {type PermissionCheckResult, type SanityClient} from 'sanity'
 import {describe, expect, test, vi} from 'vitest'
-import {type Actor, createActor, fromObservable, fromPromise, SimulatedClock, waitFor} from 'xstate'
+import {
+  type Actor,
+  createActor,
+  fromObservable,
+  fromPromise,
+  SimulatedClock,
+  type StateValue,
+  waitFor,
+} from 'xstate'
 
 import {promiseWithResolvers} from '../../../core/util/promiseWithResolvers'
 import {defineResolvePreviewModeActor} from '../../actors/resolve-preview-mode'
-import {type PreviewUrlOption} from '../../types'
+import {type PreviewUrlOption, type PreviewUrlPreviewMode} from '../../types'
 import {openPreviewUrlMachine} from '../open-preview-url'
 import {type CheckPermissionInput} from '../preview-url'
 
@@ -22,6 +30,8 @@ const previewModePerOrigin: PreviewUrlOption = {
   previewMode: ({targetOrigin}) =>
     targetOrigin === enabledOrigin ? {enable: '/api/draft-mode/enable'} : false,
 }
+const resolvedPreviewModeFor = (targetOrigin: string): PreviewUrlPreviewMode | false =>
+  targetOrigin === enabledOrigin ? {enable: '/api/draft-mode/enable', shareAccess: true} : false
 
 const createSecrets = () => {
   let count = 0
@@ -33,9 +43,15 @@ const createSecrets = () => {
 
 interface MockOptions {
   previewUrlOption?: PreviewUrlOption
-  canCreatePreviewSecret?: boolean
-  canReadSharedSecret?: boolean
-  sharedSecret?: string | null
+  /**
+   * Pass an observable to change the permission while the machine runs
+   */
+  canCreatePreviewSecret?: boolean | Observable<boolean>
+  canReadSharedSecret?: boolean | Observable<boolean>
+  /**
+   * Pass an observable to turn sharing off and on while the machine runs
+   */
+  sharedSecret?: string | null | Observable<string | null>
   createPreviewSecret?: () => Promise<{secret: string; expiresAt: Date}>
 }
 
@@ -47,12 +63,19 @@ const mockActors = ({
   createPreviewSecret = createSecrets(),
 }: MockOptions = {}) => ({
   'create preview secret': fromPromise(createPreviewSecret),
-  'read shared preview secret': fromPromise<string | null>(async () => sharedSecret),
+  'watch shared preview secret': fromObservable<string | null, void>(() =>
+    isObservable(sharedSecret) ? sharedSecret : of(sharedSecret),
+  ),
   'resolve preview mode': defineResolvePreviewModeActor({client, previewUrlOption}),
   'check permission': fromObservable<PermissionCheckResult, CheckPermissionInput>(({input}) => {
     const granted =
       input.checkPermissionName === 'create' ? canCreatePreviewSecret : canReadSharedSecret
-    return of({granted, reason: granted ? 'Matching grant' : 'No matching grants found'})
+    return (isObservable(granted) ? granted : of(granted)).pipe(
+      map((isGranted) => ({
+        granted: isGranted,
+        reason: isGranted ? 'Matching grant' : 'No matching grants found',
+      })),
+    )
   }),
 })
 
@@ -70,7 +93,7 @@ describe('Open preview URL machine', () => {
     ).start()
 
     const snapshot = await settled(actor)
-    expect(snapshot.matches({success: 'createdSecret'})).toBe(true)
+    expect(snapshot.matches('createdSecret')).toBe(true)
     expect(previewMode).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({targetOrigin: enabledOrigin}),
     )
@@ -105,7 +128,7 @@ describe('Open preview URL machine', () => {
     expect(snapshot.context.previewUrlSecret).toBeNull()
 
     snapshot = await settled(actor)
-    expect(snapshot.matches({success: 'createdSecret'})).toBe(true)
+    expect(snapshot.matches('createdSecret')).toBe(true)
     expect(snapshot.context.previewUrlSecret?.secret).toBe('secret-2')
     expect(createPreviewSecret).toHaveBeenCalledTimes(2)
 
@@ -125,7 +148,7 @@ describe('Open preview URL machine', () => {
     ).start()
 
     let snapshot = await settled(actor)
-    expect(snapshot.matches({success: 'sharedSecret'})).toBe(true)
+    expect(snapshot.matches({sharedSecret: 'on'})).toBe(true)
     expect(snapshot.context.previewMode).toEqual({
       enable: '/api/draft-mode/enable',
       shareAccess: true,
@@ -134,10 +157,115 @@ describe('Open preview URL machine', () => {
 
     clock.increment(secretTtl * 24 * 365)
     snapshot = actor.getSnapshot()
-    expect(snapshot.matches({success: 'sharedSecret'})).toBe(true)
+    expect(snapshot.matches({sharedSecret: 'on'})).toBe(true)
     expect(snapshot.context.previewUrlSecret?.secret).toBe('shared-secret')
     expect(createPreviewSecret).not.toHaveBeenCalled()
   })
+
+  test('follows the shared secret as sharing is turned off and on again', async () => {
+    const sharedSecret = new Subject<string | null>()
+    const actor = createActor(
+      openPreviewUrlMachine.provide({
+        actors: mockActors({canCreatePreviewSecret: false, sharedSecret}),
+      }),
+      {input: {targetOrigin: enabledOrigin}},
+    ).start()
+
+    let snapshot = await waitFor(actor, (state) => state.matches('sharedSecret'))
+    expect(snapshot.matches({sharedSecret: 'reading'})).toBe(true)
+    expect(snapshot.hasTag('busy')).toBe(true)
+
+    /**
+     * Sharing is off, so the link opens the preview directly
+     */
+    sharedSecret.next(null)
+    snapshot = actor.getSnapshot()
+    expect(snapshot.matches({sharedSecret: 'off'})).toBe(true)
+    expect(snapshot.hasTag('busy')).toBe(false)
+    expect(snapshot.context.previewUrlSecret).toBeNull()
+
+    sharedSecret.next('shared-secret')
+    snapshot = actor.getSnapshot()
+    expect(snapshot.matches({sharedSecret: 'on'})).toBe(true)
+    expect(snapshot.context.previewUrlSecret).toEqual({secret: 'shared-secret', expiresAt: null})
+
+    /**
+     * Turning sharing off revokes the secret, and turning it back on creates a new one
+     */
+    sharedSecret.next(null)
+    expect(actor.getSnapshot().context.previewUrlSecret).toBeNull()
+    sharedSecret.next('new-shared-secret')
+    snapshot = actor.getSnapshot()
+    expect(snapshot.matches({sharedSecret: 'on'})).toBe(true)
+    expect(snapshot.context.previewUrlSecret).toEqual({
+      secret: 'new-shared-secret',
+      expiresAt: null,
+    })
+
+    /**
+     * It's only followed while the link uses it
+     */
+    actor.send({type: 'set target origin', targetOrigin: disabledOrigin})
+    expect(sharedSecret.observed).toBe(false)
+  })
+
+  test('opens the preview directly once the shared secret can no longer be followed', async () => {
+    const sharedSecret = new Subject<string | null>()
+    const actor = createActor(
+      openPreviewUrlMachine.provide({
+        actors: mockActors({canCreatePreviewSecret: false, sharedSecret}),
+      }),
+      {input: {targetOrigin: enabledOrigin}},
+    ).start()
+
+    await waitFor(actor, (state) => state.matches('sharedSecret'))
+    sharedSecret.next('shared-secret')
+    expect(actor.getSnapshot().context.previewUrlSecret?.secret).toBe('shared-secret')
+
+    sharedSecret.error(new Error('Lost the connection to live events'))
+    const snapshot = actor.getSnapshot()
+    expect(snapshot.hasTag('error')).toBe(true)
+    expect(snapshot.context.error).toEqual(new Error('Lost the connection to live events'))
+    expect(snapshot.context.previewUrlSecret).toBeNull()
+  })
+
+  test.each<[string, boolean, StateValue, PreviewUrlPreviewMode | null]>([
+    [
+      'falls back to the shared secret',
+      true,
+      {sharedSecret: 'on'},
+      {enable: '/api/draft-mode/enable', shareAccess: true},
+    ],
+    ['opens the preview directly', false, 'unavailable', null],
+  ])(
+    '%s when the secret expires after the permission to create a new one is gone',
+    async (_, canReadSharedSecret, expectedState, expectedPreviewMode) => {
+      const clock = new SimulatedClock()
+      const createPreviewSecret = createSecrets()
+      const canCreatePreviewSecret = new BehaviorSubject(true)
+      const actor = createActor(
+        openPreviewUrlMachine.provide({
+          actors: mockActors({canCreatePreviewSecret, canReadSharedSecret, createPreviewSecret}),
+        }),
+        {clock, input: {targetOrigin: enabledOrigin}},
+      ).start()
+
+      let snapshot = await settled(actor)
+      expect(snapshot.context.previewUrlSecret?.secret).toBe('secret-1')
+
+      canCreatePreviewSecret.next(false)
+      clock.increment(secretTtl)
+      expect(actor.getSnapshot().context.previewUrlSecret?.secret).not.toBe('secret-1')
+
+      snapshot = await settled(actor)
+      expect(snapshot.value).toEqual(expectedState)
+      expect(snapshot.context.previewMode).toEqual(expectedPreviewMode)
+      expect(snapshot.context.previewUrlSecret?.secret ?? null).toBe(
+        canReadSharedSecret ? 'shared-secret' : null,
+      )
+      expect(createPreviewSecret).toHaveBeenCalledTimes(1)
+    },
+  )
 
   test.each<[string, MockOptions & {targetOrigin?: string}]>([
     ['preview mode is off for the origin', {targetOrigin: disabledOrigin}],
@@ -146,7 +274,6 @@ describe('Open preview URL machine', () => {
       'the secret can neither be created nor shared',
       {canCreatePreviewSecret: false, canReadSharedSecret: false},
     ],
-    ['sharing is off', {canCreatePreviewSecret: false, sharedSecret: null}],
   ])(
     'opens the preview directly when %s',
     async (_, {targetOrigin = enabledOrigin, ...options}) => {
@@ -172,7 +299,7 @@ describe('Open preview URL machine', () => {
     ).start()
 
     let snapshot = await settled(actor)
-    expect(snapshot.matches({success: 'createdSecret'})).toBe(true)
+    expect(snapshot.matches('createdSecret')).toBe(true)
     expect(snapshot.context.previewUrlSecret?.secret).toBe('secret-1')
 
     /**
@@ -199,7 +326,7 @@ describe('Open preview URL machine', () => {
      */
     actor.send({type: 'set target origin', targetOrigin: enabledOrigin})
     snapshot = await settled(actor)
-    expect(snapshot.matches({success: 'createdSecret'})).toBe(true)
+    expect(snapshot.matches('createdSecret')).toBe(true)
     expect(snapshot.context.previewMode).toEqual({
       enable: '/api/draft-mode/enable',
       shareAccess: true,
@@ -224,7 +351,7 @@ describe('Open preview URL machine', () => {
     actor.send({type: 'set target origin', targetOrigin: enabledOrigin})
     const snapshot = await settled(actor)
 
-    expect(snapshot.matches({success: 'createdSecret'})).toBe(true)
+    expect(snapshot.matches('createdSecret')).toBe(true)
     expect(snapshot.context.previewUrlSecret?.secret).toBe('secret-1')
     expect(previewMode).toHaveBeenCalledTimes(1)
     expect(createPreviewSecret).toHaveBeenCalledTimes(1)
@@ -251,6 +378,43 @@ describe('Open preview URL machine', () => {
     expect(snapshot.context.previewUrlSecret).toBeNull()
   })
 
+  test.each([
+    ['without', enabledOrigin, disabledOrigin],
+    ['with', disabledOrigin, enabledOrigin],
+  ])(
+    'discards the preview mode still being resolved for the previous origin when moving to an origin %s preview mode',
+    async (_, previousOrigin, targetOrigin) => {
+      const previous = promiseWithResolvers<PreviewUrlPreviewMode | false>()
+      const actor = createActor(
+        openPreviewUrlMachine.provide({
+          actors: {
+            ...mockActors(),
+            'resolve preview mode': fromPromise<
+              PreviewUrlPreviewMode | false,
+              {targetOrigin: string}
+            >(({input}) =>
+              input.targetOrigin === previousOrigin
+                ? previous.promise
+                : Promise.resolve(resolvedPreviewModeFor(input.targetOrigin)),
+            ),
+          },
+        }),
+        {input: {targetOrigin: previousOrigin}},
+      ).start()
+
+      await waitFor(actor, (state) => state.matches('resolvingPreviewMode'))
+      actor.send({type: 'set target origin', targetOrigin})
+      const resolved = await settled(actor)
+      expect(resolved.context.previewMode).toEqual(resolvedPreviewModeFor(targetOrigin) || null)
+
+      previous.resolve(resolvedPreviewModeFor(previousOrigin))
+      await previous.promise
+      const snapshot = actor.getSnapshot()
+      expect(snapshot.value).toEqual(resolved.value)
+      expect(snapshot.context).toEqual(resolved.context)
+    },
+  )
+
   test('applies a target origin that changes while permissions are still loading', async () => {
     const permissions = new Subject<PermissionCheckResult>()
     const previewMode = vi.fn(() => ({enable: '/api/draft-mode/enable'}))
@@ -272,7 +436,7 @@ describe('Open preview URL machine', () => {
 
     permissions.next({granted: true, reason: 'Matching grant'})
     const snapshot = await settled(actor)
-    expect(snapshot.matches({success: 'createdSecret'})).toBe(true)
+    expect(snapshot.matches('createdSecret')).toBe(true)
     expect(previewMode).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({targetOrigin: enabledOrigin}),
     )
@@ -303,7 +467,7 @@ describe('Open preview URL machine', () => {
 
     actor.send({type: 'set target origin', targetOrigin: enabledOrigin})
     snapshot = await settled(actor)
-    expect(snapshot.matches({success: 'createdSecret'})).toBe(true)
+    expect(snapshot.matches('createdSecret')).toBe(true)
     expect(snapshot.context.error).toBeNull()
   })
 
@@ -311,7 +475,7 @@ describe('Open preview URL machine', () => {
     ['check permission', {}],
     ['resolve preview mode', {}],
     ['create preview secret', {}],
-    ['read shared preview secret', {canCreatePreviewSecret: false}],
+    ['watch shared preview secret', {canCreatePreviewSecret: false}],
   ])('the %s actor is required', async (name, options) => {
     const {[name]: _, ...actors} = mockActors(options)
     const actor = createActor(openPreviewUrlMachine.provide({actors}), {
