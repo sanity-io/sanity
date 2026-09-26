@@ -12,8 +12,8 @@ import {Filters} from './components/filters/Filters'
 import {RecentSearches} from './components/recentSearches/RecentSearches'
 import {SearchHeader} from './components/SearchHeader'
 import {SearchResults} from './components/searchResults/SearchResults'
-import {useSearchState} from './contexts/search/useSearchState'
-import {hasSearchableTerms} from './utils/hasSearchableTerms'
+import {selectHasSearchableTerms} from './contexts/search/searchSelectors'
+import {useSearchFiltersVisible, useSearchSelector} from './contexts/search/useSearchState'
 
 interface SearchDialogProps {
   onClose: () => void
@@ -59,14 +59,11 @@ export function SearchDialog({
   const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
   const scheme = useColorSchemeValue()
 
-  const {
-    state: {filtersVisible, terms},
-  } = useSearchState()
-
-  const hasValidTerms = hasSearchableTerms({terms})
+  const filtersVisible = useSearchFiltersVisible()
+  const hasValidTerms = useSearchSelector(selectHasSearchableTerms)
 
   return (
-    <SearchWrapper hasValidTerms={hasValidTerms} onClose={onClose} onOpen={onOpen} open={open}>
+    <SearchWrapper onClose={onClose} onOpen={onOpen} open={open}>
       {open && (
         <Portal>
           <FocusLock autoFocus={!supportsTouch} returnFocus>

@@ -1,6 +1,7 @@
 import {UnknownIcon} from '@sanity/icons/Unknown'
 
-import {useSearchState} from '../../../contexts/search/useSearchState'
+import {selectDefinitions} from '../../../contexts/search/searchSelectors'
+import {useSearchSelector} from '../../../contexts/search/useSearchState'
 import {getFilterDefinition} from '../../../definitions/filters'
 import {type SearchFilter} from '../../../types'
 
@@ -9,9 +10,7 @@ interface FilterIconProps {
 }
 
 export function FilterIcon({filter}: FilterIconProps) {
-  const {
-    state: {definitions},
-  } = useSearchState()
+  const definitions = useSearchSelector(selectDefinitions)
 
   const Icon = getFilterDefinition(definitions.filters, filter.filterName)?.icon
   if (Icon) {

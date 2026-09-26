@@ -10,7 +10,7 @@ import {useTranslation} from '../../../../../../../../i18n/hooks/useTranslation'
 import {EMPTY_ARRAY} from '../../../../../../../../util/empty'
 import {isNonNullable} from '../../../../../../../../util/isNonNullable'
 import {truncateString} from '../../../../../../../../util/unicodeString'
-import {useSearchState} from '../../../../contexts/search/useSearchState'
+import {useSearchSelector} from '../../../../contexts/search/useSearchState'
 import {type SearchFieldDefinition} from '../../../../definitions/fields'
 import {type SearchFilterDefinition} from '../../../../definitions/filters'
 import {getSchemaField} from '../../../../utils/getSchemaField'
@@ -31,9 +31,9 @@ export function FilterTooltip({
   filterDefinition,
   visible,
 }: FilterTooltipProps) {
-  const {
-    state: {documentTypesNarrowed},
-  } = useSearchState()
+  const hasNarrowedDocumentTypes = useSearchSelector(
+    (snapshot) => snapshot.context.documentTypesNarrowed.length > 0,
+  )
   const {t} = useTranslation()
 
   const schema = useSchema()
@@ -116,7 +116,7 @@ export function FilterTooltip({
             )}
 
             {/* Field document titles */}
-            {!documentTypesNarrowed.length && fieldDefinitionDocumentTypeTitles.length > 0 && (
+            {!hasNarrowedDocumentTypes && fieldDefinitionDocumentTypeTitles.length > 0 && (
               <VStack gap={2}>
                 <Flex alignItems="center" gap={1}>
                   <Text muted size={1} weight="medium">

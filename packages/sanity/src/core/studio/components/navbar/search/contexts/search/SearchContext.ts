@@ -1,16 +1,22 @@
-import {type Dispatch, type SetStateAction} from 'react'
+import {type RefObject} from 'react'
 
 import {type CommandListHandle} from '../../../../../../components/commandList/types'
-import {type SearchAction, type SearchReducerState} from './reducer'
+import {type GlobalSearchActorRef} from './globalSearchMachine'
 
 /**
  * @internal
  */
 export interface SearchContextValue {
-  dispatch: Dispatch<SearchAction>
+  /**
+   * Holds all search state for the lifetime of the provider. Read it with `useSearchSelector`,
+   * which only re-renders when the selected slice changes, and send it events to change it.
+   */
+  searchActorRef: GlobalSearchActorRef
+  /** The search results list, read when the search closes to restore its scroll position. */
+  searchCommandListRef: RefObject<CommandListHandle | null>
+  /** Closes the search. Only set inside `SearchPopover` and `SearchDialog`. */
   onClose: (() => void) | null
-  searchCommandList: CommandListHandle | null
-  setSearchCommandList: Dispatch<SetStateAction<CommandListHandle | null>>
-  setOnClose: (onClose: () => void) => void
-  state: SearchReducerState
+  fullscreen?: boolean
+  disabledDocumentIds?: string[]
+  canDisableAction?: boolean
 }

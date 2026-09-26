@@ -9,7 +9,7 @@ import {
   type CommandListRenderItemCallback,
 } from '../../../../../../components/commandList/types'
 import {useTranslation} from '../../../../../../i18n/hooks/useTranslation'
-import {useSearchState} from '../../contexts/search/useSearchState'
+import {useSearchFiltersVisible, useSearchState} from '../../contexts/search/useSearchState'
 import {type RecentSearch, useRecentSearchesStore} from '../../datastores/recentSearches'
 import {Instructions} from '../Instructions'
 import {RecentSearchItem} from './item/RecentSearchItem'
@@ -26,10 +26,8 @@ interface RecentSearchesProps {
 }
 
 export function RecentSearches({inputElement}: RecentSearchesProps) {
-  const {
-    dispatch,
-    state: {filtersVisible, fullscreen},
-  } = useSearchState()
+  const {fullscreen} = useSearchState()
+  const filtersVisible = useSearchFiltersVisible()
   const recentSearchesStore = useRecentSearchesStore()
   const recentSearches = useMemo(
     () => recentSearchesStore?.getRecentSearches(),

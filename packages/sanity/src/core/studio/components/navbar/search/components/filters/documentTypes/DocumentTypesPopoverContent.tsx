@@ -14,7 +14,8 @@ import {
 } from '../../../../../../../components/commandList/types'
 import {useSchema} from '../../../../../../../hooks/useSchema'
 import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
-import {useSearchState} from '../../../contexts/search/useSearchState'
+import {selectSelectedTypes} from '../../../contexts/search/searchSelectors'
+import {useSearchSelector, useSearchState} from '../../../contexts/search/useSearchState'
 import {type DocumentTypeMenuItem} from '../../../types'
 import {getSelectableOmnisearchTypes} from '../../../utils/selectors'
 import {FilterPopoverContentHeader} from '../common/FilterPopoverContentHeader'
@@ -30,12 +31,8 @@ export function DocumentTypesPopoverContent() {
 
   const schema = useSchema()
 
-  const {
-    dispatch,
-    state: {
-      terms: {types: selectedTypes},
-    },
-  } = useSearchState()
+  const {searchActorRef} = useSearchState()
+  const selectedTypes = useSearchSelector(selectSelectedTypes)
 
   // Get a snapshot of initial selected types
   const [selectedTypesSnapshot, setSelectedTypesSnapshot] = useState(selectedTypes)
@@ -55,12 +52,12 @@ export function DocumentTypesPopoverContent() {
 
   const handleTypesClear = useCallback(() => {
     setSelectedTypesSnapshot([])
-    dispatch({type: 'TERMS_TYPES_CLEAR'})
+    searchActorRef.send({type: 'TERMS_TYPES_CLEAR'})
 
     // Re-focus the command list input element
     commandListRef?.current?.focusInputElement()
     commandListRef?.current?.scrollToIndex(0)
-  }, [dispatch])
+  }, [searchActorRef])
 
   const getItemKey = useCallback(
     (index: number) => {

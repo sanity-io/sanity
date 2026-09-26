@@ -60,7 +60,7 @@ export function RecentSearchItem({
   value,
   ...rest
 }: RecentSearchesProps) {
-  const {dispatch} = useSearchState()
+  const {searchActorRef} = useSearchState()
   const recentSearchesStore = useRecentSearchesStore()
   const telemetry = useTelemetry()
 
@@ -68,7 +68,7 @@ export function RecentSearchItem({
   const availableCharacters = maxVisibleTypePillChars - value.query.length
 
   const handleClick = useCallback(() => {
-    dispatch({type: 'TERMS_SET', filters: value?.filters, terms: value})
+    searchActorRef.send({type: 'TERMS_SET', filters: value?.filters, terms: value})
 
     // Add to Local Storage
     if (recentSearchesStore) {
@@ -76,7 +76,7 @@ export function RecentSearchItem({
     }
 
     telemetry.log(RecentSearchClicked)
-  }, [dispatch, recentSearchesStore, telemetry, value])
+  }, [recentSearchesStore, searchActorRef, telemetry, value])
 
   const handleDelete = useCallback(
     (event: MouseEvent) => {

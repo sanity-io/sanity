@@ -28,9 +28,7 @@ export function SearchFilterDateLastInput({
   const dateValue = useRef<OperatorDateLastValue['unitValue']>(value?.unitValue || null)
   const {t} = useTranslation()
 
-  const {
-    state: {fullscreen},
-  } = useSearchState()
+  const {fullscreen} = useSearchState()
 
   const handleChange = useCallback(() => {
     onChange({

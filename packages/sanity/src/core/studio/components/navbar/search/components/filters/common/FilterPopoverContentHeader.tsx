@@ -21,9 +21,7 @@ export function FilterPopoverContentHeader({
   onClear,
   typeFilter,
 }: FilterPopoverContentHeaderProps & RefAttributes<HTMLInputElement>) {
-  const {
-    state: {fullscreen},
-  } = useSearchState()
+  const {fullscreen} = useSearchState()
   const {t} = useTranslation()
 
   return (

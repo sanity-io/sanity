@@ -1,224 +1,216 @@
-/**
- * Focused tests for `Global Search Latency Measured` telemetry wired through
- * `SearchProvider`. The strategy is to mock `useSearch` so we can capture the
- * `onStart`/`onComplete`/`onError` callbacks that `SearchProvider` passes in,
- * then invoke them in controlled sequences. Everything else that
- * `SearchProvider` depends on is mocked with minimal stubs.
- */
-import {render} from '@testing-library/react'
-import {type ReactNode} from 'react'
+import {type SanityClient} from '@sanity/client'
+import {Schema as SchemaBuilder} from '@sanity/schema'
+import {type Schema} from '@sanity/types'
+import {act, render} from '@testing-library/react'
+import {Subject} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {type GlobalSearchLatencyMeasured as GlobalSearchLatencyMeasuredType} from '../../../__telemetry__/search.telemetry'
-import {type SearchProvider as SearchProviderType} from '../SearchProvider'
+import {createMockSanityClient} from '../../../../../../../../../test/mocks/mockSanityClient'
+import {createTestProvider} from '../../../../../../../../../test/testUtils/TestProvider'
+import {GlobalSearchLatencyMeasured} from '../../../__telemetry__/search.telemetry'
+import {SearchWrapper} from '../../../components/common/SearchWrapper'
+import {type GlobalSearchResults, SEARCH_DEBOUNCE_MS} from '../globalSearchMachine'
+import {type SearchContextValue} from '../SearchContext'
+import {SearchProvider} from '../SearchProvider'
+import {useSearchSelector, useSearchState} from '../useSearchState'
 
-vi.mock('@sanity/telemetry/react', () => ({
-  useTelemetry: vi.fn(),
+const {schemaOverride, searchMock, telemetryLog} = vi.hoisted(() => ({
+  schemaOverride: {current: null as Schema | null},
+  searchMock: vi.fn(),
+  telemetryLog: vi.fn(),
 }))
 
-// Capture the last props passed to `useSearch`, so tests can invoke the
-// `onStart`/`onComplete`/`onError` callbacks synchronously.
-const useSearchMock = vi.fn()
-vi.mock('../../../hooks/useSearch', () => ({
-  useSearch: (props: unknown) => useSearchMock(props),
+vi.mock('@sanity/telemetry/react', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
+  useTelemetry: () => ({log: telemetryLog}),
 }))
 
-vi.mock('../../../../../../../hooks/useSchema', () => ({useSchema: () => ({get: () => undefined})}))
-
-vi.mock('../../../../../../../releases/store/useActiveReleases', () => ({
-  useActiveReleases: () => ({data: []}),
+vi.mock('../../../hooks/useGlobalSearchFunction', () => ({
+  useGlobalSearchFunction: () => searchMock,
 }))
 
-vi.mock('../../../../../../../store/user/hooks', () => ({useCurrentUser: () => ({id: 'user-1'})}))
-
-vi.mock('../../../../../../source', () => ({
-  useSource: () => ({
-    search: {
-      operators: [],
-      filters: [],
-      strategy: 'groq2024',
+vi.mock('../../../../../../../hooks/useSchema', async (importOriginal) => {
+  const {useSchema} = await importOriginal<{useSchema: () => Schema}>()
+  return {
+    useSchema: () => {
+      const schema = useSchema()
+      return schemaOverride.current ?? schema
     },
-  }),
-}))
+  }
+})
 
-vi.mock('sanity/_singletons', () => ({
-  SearchContext: {
-    Provider: ({children}: {children: ReactNode}) => children,
-  },
-}))
+const onSearchContext = vi.fn<(context: SearchContextValue) => void>()
+const onQueryRender = vi.fn<(query: string) => void>()
+const onFiltersRender = vi.fn()
 
-vi.mock('../../../definitions/fields', () => ({
-  createFieldDefinitions: () => [],
-  createFieldDefinitionDictionary: () => ({}),
-}))
-
-vi.mock('../../../definitions/filters', () => ({
-  createFilterDefinitionDictionary: () => ({}),
-}))
-
-vi.mock('../../../definitions/operators', () => ({
-  createOperatorDefinitionDictionary: () => ({}),
-}))
-
-// Default to "searchable" — tests can override if needed.
-const hasSearchableTermsMock = vi.fn().mockReturnValue(true)
-vi.mock('../../../utils/hasSearchableTerms', () => ({
-  hasSearchableTerms: (args: unknown) => hasSearchableTermsMock(args),
-}))
-
-vi.mock('../../../utils/filterUtils', () => ({
-  validateFilter: () => true,
-}))
-
-vi.mock('../../../utils/isRecentSearchTerms', () => ({
-  isRecentSearchTerms: () => false,
-}))
-
-// Initial reducer state — just enough for SearchProvider to initialise.
-vi.mock('../reducer', () => ({
-  initialSearchState: () => ({
-    currentUser: {id: 'user-1'},
-    cursor: null,
-    definitions: {fields: {}, filters: {}, operators: {}},
-    documentTypesNarrowed: [],
-    filters: [],
-    fullscreen: false,
-    hits: [],
-    lastAddedFilter: null,
-    lastActiveIndex: 0,
-    ordering: {sort: null, customMeasurementLabel: null, ignoreScore: false},
-    pagination: {cursor: null, nextCursor: null},
-    perspective: null,
-    pageIndex: 0,
-    result: {hits: [], loading: false, loaded: false, error: null},
-    recentSearches: [],
-    strategy: 'groq2024',
-    terms: {query: 'hello', types: []},
-  }),
-  searchReducer: (state: unknown) => state,
-}))
-
-interface SearchCallbacks {
-  onStart?: () => void
-  onComplete?: (r: {hits: unknown[]; nextCursor: string | undefined}) => void
-  onError?: (e: Error) => void
+function SearchContextConsumer() {
+  onSearchContext(useSearchState())
+  return null
 }
 
-describe('SearchProvider — Global Search Latency Measured', () => {
-  let telemetryLog: ReturnType<typeof vi.fn>
-  let capturedCallbacks: SearchCallbacks | null
-  let SearchProvider: typeof SearchProviderType
-  let GlobalSearchLatencyMeasured: typeof GlobalSearchLatencyMeasuredType
+function QueryConsumer() {
+  onQueryRender(useSearchSelector((snapshot) => snapshot.context.terms.query))
+  return null
+}
 
-  beforeEach(async () => {
-    vi.resetModules()
-    telemetryLog = vi.fn()
-    capturedCallbacks = null
-    hasSearchableTermsMock.mockReturnValue(true)
+function FiltersConsumer() {
+  onFiltersRender(useSearchSelector((snapshot) => snapshot.context.filters))
+  return null
+}
 
-    const {useTelemetry} = await import('@sanity/telemetry/react')
-    ;(useTelemetry as ReturnType<typeof vi.fn>).mockReturnValue({log: telemetryLog})
+function getSearchContext(): SearchContextValue {
+  const context = onSearchContext.mock.lastCall?.[0]
+  if (!context) throw new Error('SearchContextConsumer has not rendered')
+  return context
+}
 
-    useSearchMock.mockImplementation((props: SearchCallbacks) => {
-      capturedCallbacks = props
-      return {handleSearch: vi.fn(), searchState: {terms: {query: '', types: []}}}
+function createProvider() {
+  return createTestProvider({
+    client: createMockSanityClient() as unknown as SanityClient,
+    config: {
+      name: 'default',
+      projectId: 'test',
+      dataset: 'test',
+      schema: {
+        types: [
+          {
+            name: 'book',
+            title: 'Book',
+            type: 'document',
+            fields: [{name: 'title', type: 'string'}],
+          },
+        ],
+      },
+    },
+  })
+}
+
+describe('SearchProvider', () => {
+  let searches: Subject<GlobalSearchResults>[]
+
+  beforeEach(() => {
+    searches = []
+    searchMock.mockImplementation(() => {
+      const search = new Subject<GlobalSearchResults>()
+      searches.push(search)
+      return search
     })
-    ;({SearchProvider} = await import('../SearchProvider'))
-    ;({GlobalSearchLatencyMeasured} = await import('../../../__telemetry__/search.telemetry'))
   })
 
   afterEach(() => {
+    schemaOverride.current = null
+    vi.useRealTimers()
     vi.clearAllMocks()
-    hasSearchableTermsMock.mockReset()
-    hasSearchableTermsMock.mockReturnValue(true)
   })
 
-  it('logs Global Search Latency Measured after a successful search', () => {
+  it('searches with the global search function and logs the latency with telemetry', async () => {
+    const TestProvider = await createProvider()
+    vi.useFakeTimers()
     render(
-      <SearchProvider>
-        <div />
-      </SearchProvider>,
+      <TestProvider>
+        <SearchProvider>
+          <SearchContextConsumer />
+        </SearchProvider>
+      </TestProvider>,
+    )
+    const {searchActorRef} = getSearchContext()
+
+    act(() => searchActorRef.send({type: 'TERMS_QUERY_SET', query: 'hello'}))
+    act(() => {
+      vi.advanceTimersByTime(SEARCH_DEBOUNCE_MS)
+    })
+
+    expect(searchMock).toHaveBeenCalledTimes(1)
+    expect(searchMock).toHaveBeenCalledWith(
+      expect.objectContaining({query: 'hello'}),
+      expect.objectContaining({perspective: 'raw'}),
     )
 
-    expect(capturedCallbacks).not.toBeNull()
-    capturedCallbacks!.onStart!()
-    capturedCallbacks!.onComplete!({
-      hits: [{hit: {_id: 'a', _type: 'post'}}, {hit: {_id: 'b', _type: 'post'}}],
-      nextCursor: undefined,
+    act(() => {
+      searches[0].next({type: 'groq2024', hits: [{hit: {_id: 'a', _type: 'book'}}]})
+      searches[0].complete()
     })
 
     expect(telemetryLog).toHaveBeenCalledTimes(1)
     expect(telemetryLog).toHaveBeenCalledWith(
       GlobalSearchLatencyMeasured,
-      expect.objectContaining({
-        errored: false,
-        resultCount: 2,
-        queryLength: 'hello'.length,
-        typeFilterCount: 0,
-        strategy: 'groq2024',
-        durationMs: expect.any(Number),
-      }),
-    )
-    expect(telemetryLog.mock.calls[0][1].durationMs).toBeGreaterThanOrEqual(0)
-  })
-
-  it('logs Global Search Latency Measured with errored=true after a failure', () => {
-    render(
-      <SearchProvider>
-        <div />
-      </SearchProvider>,
-    )
-
-    capturedCallbacks!.onStart!()
-    capturedCallbacks!.onError!(new Error('boom'))
-
-    expect(telemetryLog).toHaveBeenCalledTimes(1)
-    expect(telemetryLog).toHaveBeenCalledWith(
-      GlobalSearchLatencyMeasured,
-      expect.objectContaining({errored: true, resultCount: 0}),
+      expect.objectContaining({errored: false, queryLength: 'hello'.length, resultCount: 1}),
     )
   })
 
-  it('does not log when terms are not searchable (empty-term short-circuit)', () => {
-    hasSearchableTermsMock.mockReturnValue(false)
-
+  it('re-renders consumers only when the state they select changes', async () => {
+    const TestProvider = await createProvider()
     render(
-      <SearchProvider>
-        <div />
-      </SearchProvider>,
+      <TestProvider>
+        <SearchProvider>
+          <SearchContextConsumer />
+          <QueryConsumer />
+          <FiltersConsumer />
+        </SearchProvider>
+      </TestProvider>,
     )
+    const {searchActorRef} = getSearchContext()
+    vi.clearAllMocks()
 
-    capturedCallbacks!.onStart!()
-    capturedCallbacks!.onComplete!({hits: [], nextCursor: undefined})
+    act(() => searchActorRef.send({type: 'TERMS_QUERY_SET', query: 'h'}))
+    act(() => searchActorRef.send({type: 'TERMS_QUERY_SET', query: 'he'}))
 
-    expect(telemetryLog).not.toHaveBeenCalled()
+    expect(onQueryRender.mock.calls).toEqual([['h'], ['he']])
+    expect(onFiltersRender).not.toHaveBeenCalled()
+    expect(onSearchContext).not.toHaveBeenCalled()
   })
 
-  it('does not log onComplete if there was no matching onStart (e.g. stale complete after reset)', () => {
-    render(
-      <SearchProvider>
-        <div />
-      </SearchProvider>,
+  it('starts a new search when the schema changes', async () => {
+    const TestProvider = await createProvider()
+    const renderSearch = () => (
+      <TestProvider>
+        <SearchProvider>
+          <SearchContextConsumer />
+        </SearchProvider>
+      </TestProvider>
     )
 
-    // onComplete without a preceding onStart → timing ref is null → no log.
-    capturedCallbacks!.onComplete!({hits: [], nextCursor: undefined})
+    const {rerender} = render(renderSearch())
+    const {searchActorRef: firstActorRef} = getSearchContext()
+    act(() => firstActorRef.send({type: 'TERMS_QUERY_SET', query: 'foo'}))
 
-    expect(telemetryLog).not.toHaveBeenCalled()
+    const nextSchema = SchemaBuilder.compile({
+      name: 'default',
+      types: [{name: 'author', type: 'document', fields: [{name: 'name', type: 'string'}]}],
+    })
+    schemaOverride.current = nextSchema
+    rerender(renderSearch())
+
+    const {searchActorRef} = getSearchContext()
+    expect(searchActorRef).not.toBe(firstActorRef)
+    expect(searchActorRef.getSnapshot().context.schema).toBe(nextSchema)
+    expect(searchActorRef.getSnapshot().context.terms.query).toBe('')
   })
 
-  it('produces one event per onStart/onComplete pair (no double-fires)', () => {
-    render(
-      <SearchProvider>
-        <div />
-      </SearchProvider>,
+  it('follows the open state of the search and gives its contents a close handler', async () => {
+    const TestProvider = await createProvider()
+    const onClose = vi.fn()
+    const renderSearch = (open: boolean) => (
+      <TestProvider>
+        <SearchProvider>
+          <SearchWrapper onClose={onClose} open={open}>
+            <SearchContextConsumer />
+          </SearchWrapper>
+        </SearchProvider>
+      </TestProvider>
     )
 
-    capturedCallbacks!.onStart!()
-    capturedCallbacks!.onComplete!({hits: [], nextCursor: undefined})
-    // A second onComplete without onStart must not log again.
-    capturedCallbacks!.onComplete!({hits: [], nextCursor: undefined})
+    const {rerender} = render(renderSearch(true))
+    const {onClose: closeSearch, searchActorRef} = getSearchContext()
+    expect(searchActorRef.getSnapshot().matches({visibility: 'open'})).toBe(true)
 
-    expect(telemetryLog).toHaveBeenCalledTimes(1)
+    // Without a results list to read the position from, closing forgets the previous one
+    act(() => searchActorRef.send({type: 'LAST_ACTIVE_INDEX_SET', index: 5}))
+    act(() => closeSearch?.())
+    expect(onClose).toHaveBeenCalledTimes(1)
+    expect(searchActorRef.getSnapshot().context.lastActiveIndex).toBe(-1)
+
+    rerender(renderSearch(false))
+    expect(searchActorRef.getSnapshot().matches({visibility: 'closed'})).toBe(true)
   })
 })

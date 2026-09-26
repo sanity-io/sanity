@@ -6,9 +6,7 @@ import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {type OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
 
 export function SearchFilterBooleanInput({onChange, value}: OperatorInputComponentProps<boolean>) {
-  const {
-    state: {fullscreen},
-  } = useSearchState()
+  const {fullscreen} = useSearchState()
   const {t} = useTranslation()
 
   const handleChange = useCallback(
