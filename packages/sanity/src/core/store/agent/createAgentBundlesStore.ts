@@ -13,7 +13,8 @@ import {
   switchMap,
 } from 'rxjs'
 
-const AGENT_BUNDLE_PREFIX = 'agent-'
+/** @internal */
+export const AGENT_BUNDLE_PREFIX = 'agent-'
 
 /**
  * A single active agent bundle as reported by the SSE endpoint.
