@@ -182,6 +182,23 @@ chromium-only, so it is unaffected by any of this.
 - Only snapshot deterministic states: chrome (navbar, panes) without live data, and never
   anything showing relative timestamps ("2 minutes ago"), presence from other CI runs, or
   dataset-dependent lists.
+- **Wait for everything the archive shows, region by region.** The navbar reaches its end state
+  long before the tool below it does, so a spec that only asserts on the navbar archives whatever
+  the tool happens to be rendering — the structure tool's root pane starts as a `LOADING_PANE` and
+  `StructureToolPane` lazy-loads the pane component, which is how `studio navbar` archived a
+  centered spinner over an empty studio (Chromatic build 2148). Locally, 7 of 8 runs were still on
+  that spinner at the moment the spec called for the archive and only escaped because serializing
+  the DOM took long enough. Assert the settled tool too (`structure-tool-list-pane` for the
+  structure root). As a backstop, `takeChromaticSnapshot` waits out every visible
+  `[data-testid="loading-block"]` before it serializes; the `:visible` filter matters, because
+  closed `@sanity/ui` overlays stay mounted with their own loading blocks inside.
+- **Content that cannot settle under the fixture goes in `ignoreSelectors`, not in a wait.** The
+  CDP instrumentation that breaks streaming connections also breaks document previews: the
+  `validation` `documentListItem` at the top of the root structure list resolved in 2 of 13 local
+  runs and kept its media and text skeletons indefinitely in the rest, so neither state can be
+  waited for. `test.use({ignoreSelectors: [...]})` (a `ChromaticConfig` option, forwarded as the
+  `chromatic.ignoreSelectors` parameter of the generated archive story) drops that one region from
+  the comparison and keeps the rest of the pane covered.
 - The e2e studio (`dev/studio-e2e-testing`) must set a workspace `icon`. The default
   letter-mark hashes `projectId` + `dataset` into a color, and e2e datasets change per PR.
 - Archives are written into the Playwright output dir during the run; the `e2e.yml` workflow
