@@ -11,7 +11,7 @@ import {
   shallowIntentChecker,
 } from './GenericList'
 import {type IntentChecker} from './Intent'
-import {type ListItem, type ListItemBuilder} from './ListItem'
+import {type ListItem, type ListItemBuilder, resolveListItemCount} from './ListItem'
 import {HELP_URL, SerializeError} from './SerializeError'
 import {
   type Divider,
@@ -89,7 +89,14 @@ function maybeSerializeListItem(
     ).withHelpUrl(HELP_URL.INVALID_LIST_ITEM)
   }
 
-  return listItem
+  // A raw list item skips `ListItemBuilder.serialize`, so its `count` is re-derived here rather
+  // than trusted - an authored one would render a badge the item's child cannot back.
+  return {
+    ...listItem,
+    count: listItem.displayOptions?.showCount
+      ? resolveListItemCount(listItem.child, listItem.schemaType, listItem.id)
+      : undefined,
+  }
 }
 
 function isPromise<T>(thing: unknown): thing is PromiseLike<T> {
