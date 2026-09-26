@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.17.0](https://github.com/sanity-io/sanity/compare/v6.16.0...v6.17.0) (2026-09-26)
+
+### Features
+
+* **core:** add sanity/_dangerously_use_private_internals_that_do_not_follow_semver entry (additive) ([#14837](https://github.com/sanity-io/sanity/issues/14837)) ([d0e8253](https://github.com/sanity-io/sanity/commit/d0e825323c09bfe2904fc97ed42f9c803c93fd7f))
+* **core:** configure variant conditions under types ([#14883](https://github.com/sanity-io/sanity/issues/14883)) ([b3e7efd](https://github.com/sanity-io/sanity/commit/b3e7efd092b81840ed4c53208c0a01264c2237f2))
+* **core:** read every selected variant from perspective ([#14918](https://github.com/sanity-io/sanity/issues/14918)) ([b15b556](https://github.com/sanity-io/sanity/commit/b15b556a3eff6fabd2414c1a71147ba70fd84335))
+* **core:** render one variant menu per type and update variant creation form ([#14884](https://github.com/sanity-io/sanity/issues/14884)) ([45e733c](https://github.com/sanity-io/sanity/commit/45e733cb606ff597f54c1ac9aa1ebbfe2a287824))
+* **form:** collapse long arrays behind a show all items toggle ([#13870](https://github.com/sanity-io/sanity/issues/13870)) ([83a9f83](https://github.com/sanity-io/sanity/commit/83a9f8389271ede7e4930afb6e94123a7e0749e6))
+* **structure:** support list pane widths ([#14967](https://github.com/sanity-io/sanity/issues/14967)) ([b12fb38](https://github.com/sanity-io/sanity/commit/b12fb38ad8d726df56995a7498d914e5fe408040))
+* **telemetry:** report portable text editor and app sdk versions ([#14922](https://github.com/sanity-io/sanity/issues/14922)) ([b699078](https://github.com/sanity-io/sanity/commit/b69907858b7f19de10865aea8f58a95703eff7df))
+
+### Bug Fixes
+
+* **comments-v2:** exclude pathless comments from field queries ([#14860](https://github.com/sanity-io/sanity/issues/14860)) ([9f36804](https://github.com/sanity-io/sanity/commit/9f3680475cea5d8c345d87f9ee89d6a4cd48a16d))
+* **core:** let a container block config add portable text toolbar actions ([#14961](https://github.com/sanity-io/sanity/issues/14961)) ([4cebde0](https://github.com/sanity-io/sanity/commit/4cebde08327d39eae16dd704425ffc5055ca2a7a))
+* **core:** move middleware Suspense fallbacks to the render sites ([#14687](https://github.com/sanity-io/sanity/issues/14687)) ([8737940](https://github.com/sanity-io/sanity/commit/8737940a4082dd606065daa951e0e80391d75c43))
+* **core:** treat empty variant conditions as an error ([#14586](https://github.com/sanity-io/sanity/issues/14586)) ([0c10e61](https://github.com/sanity-io/sanity/commit/0c10e61c3146ef893b07a5df1e341f8c29a12abf))
+* **deps:** update portabletext ([#14890](https://github.com/sanity-io/sanity/issues/14890)) ([b2f1c73](https://github.com/sanity-io/sanity/commit/b2f1c7394493274cdf1d51f2bfdf9a820e77f1eb))
+* **form:** keep a grown portable text editor from scrolling to top on focus ([#14954](https://github.com/sanity-io/sanity/issues/14954)) ([56113a4](https://github.com/sanity-io/sanity/commit/56113a4bed3a90b6b7dd4bb5d46c18eee6407745))
+* **presentation:** enable preview mode when opening preview ([#14936](https://github.com/sanity-io/sanity/issues/14936)) ([8ef1e7c](https://github.com/sanity-io/sanity/commit/8ef1e7c4ce4634f74062ec0b8ad8638c036464bd))
+* **releases:** detect scheduled draft edits when deleting a schedule ([#14787](https://github.com/sanity-io/sanity/issues/14787)) ([a28d84a](https://github.com/sanity-io/sanity/commit/a28d84a4b4ccf33027ebebb06d5fd5b8dfd1ace7))
+* **search:** close vstack tags in SearchChromeStory ([#14927](https://github.com/sanity-io/sanity/issues/14927)) ([4e3733d](https://github.com/sanity-io/sanity/commit/4e3733de195401920b34b811cb6f3999ed5c0e12))
+* **structure:** forward pane widths from the document type list input ([#14968](https://github.com/sanity-io/sanity/issues/14968)) ([632128d](https://github.com/sanity-io/sanity/commit/632128d57b469f18ef41bdc317116579861bcaa0))
+* **structure:** keep pane widths when releasing a resize divider ([#14964](https://github.com/sanity-io/sanity/issues/14964)) ([c97d0e3](https://github.com/sanity-io/sanity/commit/c97d0e3ff2ba28909ec06c73939ac79d5ca3757d))
+* **structure:** remove the pane layout observer on unsubscribe ([#14980](https://github.com/sanity-io/sanity/issues/14980)) ([455bd45](https://github.com/sanity-io/sanity/commit/455bd4524aee1500a2a569cbe84b3f0a7f818650))
+* **studio:** show draft indicator for draft-only documents ([#14859](https://github.com/sanity-io/sanity/issues/14859)) ([5813869](https://github.com/sanity-io/sanity/commit/581386984247c55547c5c3ca1beb85be063928da))
+* **ui:** prevent resizable layout props leaking to DOM ([#14937](https://github.com/sanity-io/sanity/issues/14937)) ([907d651](https://github.com/sanity-io/sanity/commit/907d651375137bb72c77af94734f4998903f5e41))
+
+### Performance Improvements
+
+* **structure:** keep pane router context stable while resizing panes ([#14966](https://github.com/sanity-io/sanity/issues/14966)) ([3b92c51](https://github.com/sanity-io/sanity/commit/3b92c51b57194aafe85db80bc3f94fd2435cd202))
 ## [6.16.0](https://github.com/sanity-io/sanity/compare/v6.15.0...v6.16.0) (2026-09-22)
 
 ### Features

@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.17.0](https://github.com/sanity-io/sanity/compare/v6.16.0...v6.17.0) (2026-09-26)
+
+### Features
+
+* **core:** read every selected variant from perspective ([#14918](https://github.com/sanity-io/sanity/issues/14918)) ([b15b556](https://github.com/sanity-io/sanity/commit/b15b556a3eff6fabd2414c1a71147ba70fd84335))
+
+### Bug Fixes
+
+* **deps:** update codemirror ([#14976](https://github.com/sanity-io/sanity/issues/14976)) ([abe61ba](https://github.com/sanity-io/sanity/commit/abe61ba08396a88f1f0f80703c913b3d0c7530bc))
 ## [6.16.0](https://github.com/sanity-io/sanity/compare/v6.15.0...v6.16.0) (2026-09-22)
 
 ### Bug Fixes

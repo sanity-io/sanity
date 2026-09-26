@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.17.0](https://github.com/sanity-io/sanity/compare/v6.16.0...v6.17.0) (2026-09-26)
+
+### Features
+
+* **form:** collapse long arrays behind a show all items toggle ([#13870](https://github.com/sanity-io/sanity/issues/13870)) ([83a9f83](https://github.com/sanity-io/sanity/commit/83a9f8389271ede7e4930afb6e94123a7e0749e6))
+
+### Bug Fixes
+
+* **deps:** update dependency get-it to ^9.5.7 ([#14921](https://github.com/sanity-io/sanity/issues/14921)) ([455717e](https://github.com/sanity-io/sanity/commit/455717e7ba18a5abc126c46542f7a9b992708dc1))
+* **deps:** update dependency get-it to ^9.5.8 ([#14951](https://github.com/sanity-io/sanity/issues/14951)) ([37abe77](https://github.com/sanity-io/sanity/commit/37abe7764fe3d6ed539826f1422845dc54808e38))
+* **schema:** inline object-inspect parts ([#14902](https://github.com/sanity-io/sanity/issues/14902)) ([3efc395](https://github.com/sanity-io/sanity/commit/3efc3950ca4e7d11ac974bc0801153b5f0f818fb))
 ## [6.16.0](https://github.com/sanity-io/sanity/compare/v6.15.0...v6.16.0) (2026-09-22)
 
 ### Bug Fixes
