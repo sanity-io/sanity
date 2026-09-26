@@ -10,7 +10,14 @@ export function parseApiQueryString(qs: URLSearchParams): ParsedApiQueryString {
 
   for (const [key, value] of qs.entries()) {
     if (key[0] === '$') {
-      params[key.slice(1)] = JSON.parse(value)
+      // Defined rather than assigned: `$__proto__` is a valid GROQ parameter, and assigning that
+      // key would set the object's prototype instead of adding the parameter
+      Object.defineProperty(params, key.slice(1), {
+        value: JSON.parse(value),
+        enumerable: true,
+        configurable: true,
+        writable: true,
+      })
       continue
     }
 

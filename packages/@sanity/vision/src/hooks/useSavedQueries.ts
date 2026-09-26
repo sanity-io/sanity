@@ -1,7 +1,6 @@
 import {type ListenOptions} from '@sanity/client'
 import {uuid} from '@sanity/uuid' // Import the UUID library
-import {useCallback, useEffect, useMemo, useState} from 'react'
-import {map, startWith} from 'rxjs/operators'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type KeyValueStoreValue, useClient, useCurrentUser, useKeyValueStore} from 'sanity'
 
 import {DEFAULT_API_VERSION} from '../apiVersions'
@@ -49,13 +48,31 @@ interface SharedQueryDocument {
   url: string
 }
 
+/** The error for a failed move whose rollback failed too: the query is now in both lists */
+function moveLeftBothCopies(error: unknown, keptCopy: 'shared' | 'personal'): Error {
+  const message = error instanceof Error ? error.message : String(error)
+  return new Error(
+    `${message} Removing the ${keptCopy} copy made for the move failed as well, so the query is now in both lists; delete the one you do not want.`,
+    {cause: error},
+  )
+}
+
 export function useSavedQueries(): {
   queries: QueryConfig[]
-  saveQuery: (query: Omit<QueryConfig, '_key'>) => Promise<void>
+  /** Resolves with the key of the saved query (the document id of a shared one) */
+  saveQuery: (query: Omit<QueryConfig, '_key'>) => Promise<string>
   updateQuery: (query: QueryConfig) => Promise<void>
   deleteQuery: (key: string) => Promise<void>
+  /** Moves a personal query to the shared list, keeping its title */
+  shareQuery: (key: string) => Promise<void>
+  /** Moves a shared query the current user owns back to their personal list */
+  unshareQuery: (key: string) => Promise<void>
+  /** Removes every personal query; shared ones are left alone */
+  clearQueries: () => Promise<void>
   saving: boolean
   deleting: string[]
+  /** Keys of the queries a share or unshare is moving right now */
+  moving: string[]
   saveQueryError: Error | undefined
   deleteQueryError: Error | undefined
   error: Error | undefined
@@ -68,9 +85,27 @@ export function useSavedQueries(): {
   const [sharedQueries, setSharedQueries] = useState<QueryConfig[]>([])
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState<string[]>([])
+  const [moving, setMoving] = useState<string[]>([])
   const [saveQueryError, setSaveQueryError] = useState<Error | undefined>()
   const [deleteQueryError, setDeleteQueryError] = useState<Error | undefined>()
   const [error, setError] = useState<Error | undefined>()
+
+  // The personal list is one key-value entry that every mutation rewrites whole, so the writes
+  // are queued and each one starts from the list the previous write produced rather than from a
+  // render's snapshot: overlapping saves, deletes and moves cannot lose each other's changes
+  const latestQueriesRef = useRef<QueryConfig[]>(defaultValue.queries)
+  const personalWritesRef = useRef<Promise<unknown>>(Promise.resolve())
+  // The store's emissions stop being that base while a write is pending, and for good once one
+  // has landed: from then on they are echoes of this hook's own writes, or the initial server
+  // read resolving late with the list from before them (the store only forwards its events
+  // once that read is done, so a write made meanwhile is never echoed)
+  const pendingPersonalWritesRef = useRef(0)
+  const wrotePersonalQueriesRef = useRef(false)
+  const loadedPersonalQueriesRef = useRef(false)
+  // The moves in progress, by the key of the query being moved. A move copies the query first
+  // and removes the original last, so until it settles the original is still there to be moved
+  // again; a second share or unshare of it joins the pending move instead of making another copy
+  const movesRef = useRef(new Map<string, Promise<void>>())
 
   const personalQueries = useMemo(() => {
     return keyValueStore.getKey(keyValueStoreKey)
@@ -94,22 +129,29 @@ export function useSavedQueries(): {
   )
 
   useEffect(() => {
-    const sub = personalQueries
-      .pipe(
-        startWith(defaultValue as any),
-        map((data: StoredQueries) => {
-          if (!data) {
-            return defaultValue
-          }
-          return data
-        }),
-      )
-      .subscribe({
-        next: setValue,
-        error: (err) => setError(err as Error),
-      })
+    // The store emits its localStorage copy synchronously (`null` without one), the server's
+    // list once read, and then every write. Nothing is prepended: this effect runs again when a
+    // hidden `<Activity>` shows the tool again, and an initial value would reset the list, and
+    // with it the base the next write starts from, to empty
+    const sub = personalQueries.subscribe({
+      next: (data) => {
+        if (pendingPersonalWritesRef.current > 0 || wrotePersonalQueriesRef.current) return
+        if (!data) {
+          // No localStorage copy; the server's answer follows, and a list already shown stays
+          if (loadedPersonalQueriesRef.current) return
+          latestQueriesRef.current = defaultValue.queries
+          setValue(defaultValue)
+          return
+        }
+        const stored = data as unknown as StoredQueries
+        loadedPersonalQueriesRef.current = true
+        latestQueriesRef.current = stored.queries
+        setValue(stored)
+      },
+      error: (err) => setError(err as Error),
+    })
 
-    return () => sub?.unsubscribe()
+    return () => sub.unsubscribe()
   }, [personalQueries])
 
   useEffect(() => {
@@ -160,14 +202,73 @@ export function useSavedQueries(): {
     }
   }, [workspaceClient, mapSharedQueries])
 
+  /** Runs `task` after every personal write queued so far, whatever their outcome */
+  const enqueuePersonalWrite = useCallback(<T>(task: () => Promise<T>): Promise<T> => {
+    pendingPersonalWritesRef.current += 1
+    const run = () =>
+      task()
+        .then((written) => {
+          wrotePersonalQueriesRef.current = true
+          return written
+        })
+        .finally(() => {
+          pendingPersonalWritesRef.current -= 1
+        })
+    const result = personalWritesRef.current.then(run, run)
+    personalWritesRef.current = result.catch(() => undefined)
+    return result
+  }, [])
+
+  /**
+   * Writes the personal list to the store. A failed server write does not reject there: the
+   * store logs it and resolves `null`, which is turned back into an error here so callers can
+   * roll back and report it.
+   */
+  const storePersonalQueries = useCallback(
+    async (queries: QueryConfig[]) => {
+      const stored = await keyValueStore.setKey(keyValueStoreKey, {
+        queries,
+      } as unknown as KeyValueStoreValue)
+      if (stored === null) {
+        throw new Error('The saved queries could not be stored.')
+      }
+    },
+    [keyValueStore],
+  )
+
+  /**
+   * Replaces the personal list with `update(latest)`, optimistically in the UI and then in the
+   * store; a failed store write puts the previous list back. Resolves with the written list.
+   */
+  const writePersonalQueries = useCallback(
+    (update: (queries: QueryConfig[]) => QueryConfig[]): Promise<QueryConfig[]> =>
+      enqueuePersonalWrite(async () => {
+        const before = latestQueriesRef.current
+        const next = update(before)
+        latestQueriesRef.current = next
+        setValue({queries: next})
+        try {
+          await storePersonalQueries(next)
+        } catch (err) {
+          // The store kept the previous list, so the UI shows it again
+          latestQueriesRef.current = before
+          setValue({queries: before})
+          throw err
+        }
+        return next
+      }),
+    [enqueuePersonalWrite, storePersonalQueries],
+  )
+
   const queries = useMemo(() => {
     return [...sharedQueries, ...value.queries].sort((a, b) => {
       return new Date(b.savedAt || 0).getTime() - new Date(a.savedAt || 0).getTime()
     })
   }, [sharedQueries, value.queries])
 
+  // Resolves with the key of the saved query (the document id of a shared one)
   const saveQuery = useCallback(
-    async (query: Omit<QueryConfig, '_key'>) => {
+    async (query: Omit<QueryConfig, '_key'>): Promise<string> => {
       setSaving(true)
       setSaveQueryError(undefined)
 
@@ -189,7 +290,7 @@ export function useSavedQueries(): {
           })) as SharedQueryDocument
           setSharedQueries((prev) => [...mapSharedQueries([createdDoc]), ...prev])
           setSaving(false)
-          return
+          return createdDoc._id
         } catch (err) {
           const saveError = err instanceof Error ? err : new Error(String(err))
           setSaveQueryError(saveError)
@@ -198,13 +299,9 @@ export function useSavedQueries(): {
         }
       }
 
+      const newQuery = {...query, _key: uuid()} // Add a unique _key to the query
       try {
-        const newQuery = {...query, _key: uuid()} // Add a unique _key to the query
-        const newQueries = [newQuery, ...value.queries]
-        setValue({queries: newQueries})
-        await keyValueStore.setKey(keyValueStoreKey, {
-          queries: newQueries,
-        } as unknown as KeyValueStoreValue)
+        await writePersonalQueries((queries) => [newQuery, ...queries])
       } catch (err) {
         const saveError = err instanceof Error ? err : new Error(String(err))
         setSaveQueryError(saveError)
@@ -212,8 +309,9 @@ export function useSavedQueries(): {
         throw saveError
       }
       setSaving(false)
+      return newQuery._key
     },
-    [currentUser, workspaceClient, keyValueStore, mapSharedQueries, value.queries],
+    [currentUser, workspaceClient, mapSharedQueries, writePersonalQueries],
   )
 
   const updateQuery = useCallback(
@@ -256,13 +354,9 @@ export function useSavedQueries(): {
       }
 
       try {
-        const updatedQueries = value.queries.map((q) =>
-          q._key === query._key ? {...q, ...query} : q,
+        await writePersonalQueries((queries) =>
+          queries.map((q) => (q._key === query._key ? {...q, ...query} : q)),
         )
-        setValue({queries: updatedQueries})
-        await keyValueStore.setKey(keyValueStoreKey, {
-          queries: updatedQueries,
-        } as unknown as KeyValueStoreValue)
       } catch (err) {
         const updateError = err instanceof Error ? err : new Error(String(err))
         setSaveQueryError(updateError)
@@ -271,45 +365,135 @@ export function useSavedQueries(): {
       }
       setSaving(false)
     },
-    [workspaceClient, currentUser, keyValueStore, mapSharedQueries, value.queries],
+    [workspaceClient, currentUser, mapSharedQueries, writePersonalQueries],
+  )
+
+  // Rejects when the document could not be deleted; `deleteQuery` turns that into state
+  const deleteSharedQuery = useCallback(
+    async (key: string) => {
+      const sharedQuery = sharedQueries.find((query) => query._key === key && query.shared)
+      if (!sharedQuery) {
+        throw new Error(`No shared query with key "${key}"`)
+      }
+      if (!currentUser?.id || sharedQuery.authorId !== currentUser.id) {
+        throw new Error('Only the author can delete a shared query.')
+      }
+      await workspaceClient.delete(key)
+      setSharedQueries((prev) => prev.filter((query) => query._key !== key))
+    },
+    [currentUser, sharedQueries, workspaceClient],
+  )
+
+  // Optimistic like the other personal mutations; rejects when the store write fails
+  const deletePersonalQuery = useCallback(
+    async (key: string) => {
+      await writePersonalQueries((queries) => queries.filter((q) => q._key !== key))
+    },
+    [writePersonalQueries],
   )
 
   const deleteQuery = useCallback(
     async (key: string) => {
       setDeleting((prev) => [...prev, key])
       setDeleteQueryError(undefined)
-      const clearDeleting = () => setDeleting((prev) => prev.filter((k) => k !== key))
-
-      const sharedQuery = sharedQueries.find((query) => query._key === key && query.shared)
-      if (sharedQuery) {
-        if (!currentUser?.id || sharedQuery.authorId !== currentUser.id) {
-          setDeleteQueryError(new Error('Only the author can delete a shared query.'))
-          clearDeleting()
-          return
-        }
-
-        try {
-          await workspaceClient.delete(key)
-          setSharedQueries((prev) => prev.filter((query) => query._key !== key))
-        } catch (err) {
-          setDeleteQueryError(err as Error)
-        }
-        clearDeleting()
-        return
-      }
-
       try {
-        const filteredQueries = value.queries.filter((q) => q._key !== key)
-        setValue({queries: filteredQueries})
-        await keyValueStore.setKey(keyValueStoreKey, {
-          queries: filteredQueries,
-        } as unknown as KeyValueStoreValue)
+        if (sharedQueries.some((query) => query._key === key && query.shared)) {
+          await deleteSharedQuery(key)
+        } else {
+          await deletePersonalQuery(key)
+        }
       } catch (err) {
-        setDeleteQueryError(err as Error)
+        setDeleteQueryError(err instanceof Error ? err : new Error(String(err)))
       }
-      clearDeleting()
+      setDeleting((prev) => prev.filter((k) => k !== key))
     },
-    [workspaceClient, currentUser, keyValueStore, sharedQueries, value.queries],
+    [deletePersonalQuery, deleteSharedQuery, sharedQueries],
+  )
+
+  /** Runs `move` for `key` unless one is pending already, in which case that one is returned */
+  const runMove = useCallback((key: string, move: () => Promise<void>): Promise<void> => {
+    const pending = movesRef.current.get(key)
+    if (pending) {
+      return pending
+    }
+    setMoving((prev) => [...prev, key])
+    const result = move().finally(() => {
+      movesRef.current.delete(key)
+      setMoving((prev) => prev.filter((k) => k !== key))
+    })
+    movesRef.current.set(key, result)
+    return result
+  }, [])
+
+  // Moving a query between the personal store and the shared documents takes two writes to two
+  // stores, so it cannot be atomic. When the second write fails, the first is taken back so the
+  // query does not end up in both places and a retry cannot pile up copies; the move then rejects
+  // with the original error. Should taking it back fail as well, both copies stay in the lists,
+  // as they do in the stores, and the error says so.
+  const shareQuery = useCallback(
+    (key: string) =>
+      runMove(key, async () => {
+        const query = latestQueriesRef.current.find((q) => q._key === key)
+        if (!query) {
+          throw new Error(`No personal saved query with key "${key}"`)
+        }
+        const sharedKey = await saveQuery({
+          shared: true,
+          title: query.title,
+          url: query.url,
+          savedAt: new Date().toISOString(),
+        })
+        try {
+          await deletePersonalQuery(key)
+        } catch (err) {
+          try {
+            await workspaceClient.delete(sharedKey)
+            setSharedQueries((prev) => prev.filter((q) => q._key !== sharedKey))
+          } catch {
+            throw moveLeftBothCopies(err, 'shared')
+          }
+          throw err
+        }
+      }),
+    [deletePersonalQuery, runMove, saveQuery, workspaceClient],
+  )
+
+  const unshareQuery = useCallback(
+    (key: string) =>
+      runMove(key, async () => {
+        const query = sharedQueries.find((q) => q._key === key)
+        if (!query) {
+          throw new Error(`No shared query with key "${key}"`)
+        }
+        const personalKey = await saveQuery({
+          shared: false,
+          title: query.title,
+          url: query.url,
+          savedAt: new Date().toISOString(),
+        })
+        try {
+          await deleteSharedQuery(key)
+        } catch (err) {
+          try {
+            await deletePersonalQuery(personalKey)
+          } catch {
+            throw moveLeftBothCopies(err, 'personal')
+          }
+          throw err
+        }
+      }),
+    [deletePersonalQuery, deleteSharedQuery, runMove, saveQuery, sharedQueries],
+  )
+
+  const clearQueries = useCallback(
+    () =>
+      enqueuePersonalWrite(async () => {
+        // Nothing disappears from the list until the store confirms the write
+        await storePersonalQueries(defaultValue.queries)
+        latestQueriesRef.current = defaultValue.queries
+        setValue(defaultValue)
+      }),
+    [enqueuePersonalWrite, storePersonalQueries],
   )
 
   return {
@@ -317,8 +501,12 @@ export function useSavedQueries(): {
     saveQuery,
     updateQuery,
     deleteQuery,
+    shareQuery,
+    unshareQuery,
+    clearQueries,
     saving,
     deleting,
+    moving,
     saveQueryError,
     deleteQueryError,
     error,

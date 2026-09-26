@@ -261,6 +261,7 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       visionTool({
         // uncomment to test
         //defaultApiVersion: '2025-02-05',
+        beta: {redesign: {enabled: true}},
       }),
       themerTool(),
       routerDebugTool(),
@@ -788,7 +789,7 @@ export default defineConfig([
           unstable_navigator: {minWidth: 120, maxWidth: 240, component: CustomNavigator},
         },
       }),
-      visionTool(),
+      visionTool({beta: {redesign: {enabled: true}}}),
     ],
     mediaLibrary: {
       enabled: true,
@@ -815,7 +816,7 @@ export default defineConfig([
           previewMode: {enable: '/api/draft-mode/enable'},
         },
       }),
-      visionTool(),
+      visionTool({beta: {redesign: {enabled: true}}}),
     ],
     mediaLibrary: {
       enabled: true,
