@@ -100,6 +100,11 @@ export interface DocumentFieldActionsResolverContext extends ConfigContext {
   documentId: string
   documentType: string
   schemaType: SchemaType
+
+  /**
+   * The singleton definition id.
+   */
+  singleton?: string
 }
 
 /**
