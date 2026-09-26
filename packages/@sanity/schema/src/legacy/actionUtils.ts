@@ -1,6 +1,5 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {type SchemaType} from '@sanity/types'
-import difference from 'lodash-es/difference.js'
 
 const ACTIONS_FLAG = '__experimental_actions'
 
@@ -32,7 +31,7 @@ const validateActions = (typeName: string, actions: string[]) => {
     )
   }
 
-  const invalid = difference(actions, VALID_ACTIONS)
+  const invalid = Array.from(actions).filter((action) => !VALID_ACTIONS.includes(action))
 
   if (invalid.length > 0) {
     throw new Error(

@@ -1,5 +1,4 @@
 import {SquareIcon} from '@sanity/icons/Square'
-import flatten from 'lodash-es/flatten.js'
 import {describe, expect, test} from 'vitest'
 
 import {validateSchema} from '../../src/sanity/validateSchema'
@@ -253,9 +252,9 @@ describe('Validation test', () => {
     expect(validObjectResult._problems).toHaveLength(0)
 
     const invalidObjectResult = validation.get('invalidObject')
-    const problems = flatten(
-      invalidObjectResult.fields[0].of[0].of.map((item: {_problems: unknown[]}) => item._problems),
-    ).filter(Boolean)
+    const problems = invalidObjectResult.fields[0].of[0].of
+      .flatMap((item: {_problems: unknown[]}) => item._problems)
+      .filter(Boolean)
     expect(problems).toHaveLength(7)
     expect(problems[0]).toMatchObject({
       severity: 'error',
