@@ -284,7 +284,11 @@ describe('Presentation machine', () => {
       expect(actor.getSnapshot().context.overlaysDismissed).toBe(false)
       actor.send(overlaysStatus('disconnected', 'visual-editing-2'))
       actor.send(overlaysStatus('handshaking', 'visual-editing-3'))
-      expect(actor.getSnapshot().hasTag('show loading overlay')).toBe(true)
+      // The overlays had connected on this page, so the new handshake is a reconnect: quiet at
+      // first, but no longer suppressed once it drags on
+      expect(actor.getSnapshot().matches({loaded: {idle: 'reconnecting'}})).toBe(true)
+      clock.increment(TIME_TO_SHOW_OVERLAYS_CONNECTION_STATUS)
+      expect(actor.getSnapshot().hasTag('show overlays connection status')).toBe(true)
     })
 
     test('an overlays failure dismissal survives reloads until the overlays connect', () => {
@@ -405,6 +409,63 @@ describe('Presentation machine', () => {
 
       actor.send(overlaysStatus('disconnected', 'connection-b'))
       expect(actor.getSnapshot().context.overlaysConnection).toBe('idle')
+    })
+
+    test('a new connection on a page whose overlays had connected is a reconnect, not a first connection', () => {
+      const {actor, clock} = createTestActor()
+      actor.send({type: 'iframe loaded'})
+      actor.send(overlaysStatus('handshaking', 'connection-a'))
+      actor.send(overlaysStatus('connected', 'connection-a'))
+
+      // The channel is torn down and recreated (e.g. the tool was hidden in an <Activity> boundary
+      // and shown again): the old connection goes away and a brand new one starts handshaking
+      actor.send(overlaysStatus('disconnected', 'connection-a'))
+      actor.send(overlaysStatus('handshaking', 'connection-b'))
+
+      let snapshot = actor.getSnapshot()
+      expect(snapshot.context.overlaysConnection).toBe('connecting')
+      expect(snapshot.matches({loaded: {idle: 'reconnecting'}})).toBe(true)
+      // The preview is already interactive: no loading overlay, no click prevention
+      expect(snapshot.hasTag('show loading overlay')).toBe(false)
+      expect(snapshot.hasTag('prevent iframe interaction')).toBe(false)
+
+      // A quick handshake stays quiet altogether
+      clock.increment(TIME_TO_SHOW_OVERLAYS_CONNECTION_STATUS - 1)
+      expect(actor.getSnapshot().hasTag('show overlays connection status')).toBe(false)
+      actor.send(overlaysStatus('connected', 'connection-b'))
+      snapshot = actor.getSnapshot()
+      expect(snapshot.matches({loaded: {idle: 'ok'}})).toBe(true)
+      expect(snapshot.hasTag('show overlays connection status')).toBe(false)
+    })
+
+    test('a slow reconnect over a recreated channel escalates like any other reconnect', () => {
+      const {actor, clock} = createTestActor()
+      actor.send({type: 'iframe loaded'})
+      actor.send(overlaysStatus('connected', 'connection-a'))
+      actor.send(overlaysStatus('disconnected', 'connection-a'))
+      actor.send(overlaysStatus('handshaking', 'connection-b'))
+
+      clock.increment(TIME_TO_SHOW_OVERLAYS_CONNECTION_STATUS)
+      expect(actor.getSnapshot().hasTag('show overlays connection status')).toBe(true)
+
+      clock.increment(MAX_TIME_TO_OVERLAYS_CONNECTION)
+      expect(actor.getSnapshot().hasTag('show error card')).toBe(true)
+    })
+
+    test('a reload forgets that the overlays had connected, so the next page connects for the first time', () => {
+      const {actor} = createTestActor()
+      actor.send({type: 'iframe loaded'})
+      actor.send(overlaysStatus('connected', 'connection-a'))
+
+      actor.send({type: 'iframe reload'})
+      actor.send(overlaysStatus('disconnected', 'connection-a'))
+      actor.send({type: 'iframe loaded'})
+      actor.send(overlaysStatus('handshaking', 'connection-b'))
+
+      const snapshot = actor.getSnapshot()
+      expect(snapshot.matches({loaded: {idle: 'connecting'}})).toBe(true)
+      expect(snapshot.hasTag('show loading overlay')).toBe(true)
+      expect(snapshot.hasTag('prevent iframe interaction')).toBe(true)
     })
   })
 
