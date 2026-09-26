@@ -3,6 +3,7 @@ import {afterEach, describe, expect, test} from 'vitest'
 import {
   LIGHTNINGCSS_DARK_VARIABLE,
   LIGHTNINGCSS_LIGHT_VARIABLE,
+  applyStoredDocumentColorScheme,
   setDocumentColorScheme,
 } from '../documentColorScheme'
 
@@ -47,6 +48,26 @@ describe('setDocumentColorScheme', () => {
     expect(document.documentElement.style.colorScheme).toBe('light')
 
     disposeFirst()
+    expect(document.documentElement.style.colorScheme).toBe('')
+  })
+})
+
+describe('applyStoredDocumentColorScheme', () => {
+  afterEach(() => {
+    document.documentElement.style.colorScheme = ''
+    localStorage.removeItem('sanityStudio:ui:colorScheme')
+  })
+
+  test('applies a stored light or dark scheme', () => {
+    localStorage.setItem('sanityStudio:ui:colorScheme', 'dark')
+    applyStoredDocumentColorScheme()
+    expect(document.documentElement.style.colorScheme).toBe('dark')
+  })
+
+  test('leaves system unset so the OS can win', () => {
+    document.documentElement.style.colorScheme = ''
+    localStorage.setItem('sanityStudio:ui:colorScheme', 'system')
+    applyStoredDocumentColorScheme()
     expect(document.documentElement.style.colorScheme).toBe('')
   })
 })
