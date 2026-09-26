@@ -7,10 +7,11 @@ import {createContainer, style} from '@vanilla-extract/css'
  * page with whatever hosts it. A navbar that is half the window wide lays out like the navbar of
  * a window half as wide.
  *
- * The container is the navbar's `Card`, whose content box is what the queries measure.
- * `container-type: inline-size` also applies layout containment, which is why the overlays the
- * navbar opens (search, menus, popovers) render through portals rather than as positioned
- * descendants; the `NavDrawer` is a sibling of the container for the same reason.
+ * The container is the navbar's `Card`, whose content box is what the queries measure. The Card is
+ * a block that takes its width from its parent, so the inline-size containment this adds changes
+ * nothing about its layout, and in current browsers `container-type` does not make the Card a
+ * containing block for fixed or absolutely positioned descendants (only `contain: layout` does).
+ * The overlays the navbar opens (search, menus, popovers) are portaled anyway.
  */
 const navbarContainer = createContainer()
 
