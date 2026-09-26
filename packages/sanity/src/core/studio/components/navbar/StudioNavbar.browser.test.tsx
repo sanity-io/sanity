@@ -6,7 +6,7 @@ import {UsersIcon} from '@sanity/icons/Users'
 import noop from 'lodash-es/noop.js'
 import {RouterProvider} from 'sanity/router'
 import {Flex, Grid} from 'ui5'
-import {describe, expect, it} from 'vitest'
+import {beforeEach, describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
 
@@ -15,16 +15,23 @@ import {TestWrapper} from '../../../../../test/browser/TestWrapper'
 import {Button} from '../../../../ui-components/button/Button'
 import {type Tool} from '../../../config/types'
 import {createRouter} from '../../router/router'
-import {navGrid, navTools} from './StudioNavbar.css'
+import {navbar, navGrid, navTools} from './StudioNavbar.css'
 import {ToolCollapseMenu} from './tools/ToolCollapseMenu'
 
 function NoopTool() {
   return null
 }
 
-// The dev test studio's tool menu: roughly 900px of tabs, so any navbar narrower
-// than that plus the side clusters must move tools into the overflow menu.
-const TOOLS: Tool[] = [
+function makeTools(titles: string[]): Tool[] {
+  return titles.map((title) => ({
+    name: title.toLowerCase().replace(/\s+/g, '-'),
+    title,
+    component: NoopTool,
+  }))
+}
+
+// The dev test studio's tool menu: roughly 900px of tabs.
+const TOOLS = makeTools([
   'Structure',
   'Presentation',
   'Vision',
@@ -35,9 +42,12 @@ const TOOLS: Tool[] = [
   'Variants',
   'Schedules',
   'Releases',
-].map((title) => ({name: title.toLowerCase().replace(/\s+/g, '-'), title, component: NoopTool}))
+])
 
-const router = createRouter({tools: TOOLS})
+// Enough tabs (about 2100px) to outgrow even a navbar wide enough for the centered layout.
+const MANY_TOOLS = makeTools(Array.from({length: 20}, (_, index) => `Debug tool ${index + 1}`))
+
+const router = createRouter({tools: [...TOOLS, ...MANY_TOOLS]})
 
 // The side clusters have different natural widths on purpose: only equal
 // flexible columns can make them the same width.
@@ -45,17 +55,18 @@ const WORKSPACE_BUTTON_STYLE = {width: 160} as const
 const RELEASE_BUTTON_STYLE = {width: 80} as const
 
 /**
- * `StudioNavbar`'s frame: its grid and tools column classes around the real
- * `ToolCollapseMenu`, with stand-ins for the side clusters (home / workspace /
- * new document / search on the left; presence / help / releases on the right)
- * that are ui5 `Flex` rows like the real ones — and so carry ui5's
- * `min-width: 0`, which is what let the columns collapse.
+ * `StudioNavbar`'s frame: its container, grid and tools column classes around
+ * the real `ToolCollapseMenu`, with stand-ins for the side clusters (home /
+ * workspace / new document / search on the left; presence / help / releases
+ * on the right) that are ui5 `Flex` rows like the real ones — and so carry
+ * ui5's `min-width: 0`, which is what let the columns collapse.
  */
-function NavbarFrame(props: {width: number}) {
+function NavbarFrame(props: {tools?: Tool[]; width: number}) {
+  const {tools = TOOLS, width} = props
   return (
     <TestWrapper schemaTypes={[]}>
       <RouterProvider router={router} state={{tool: 'structure'}} onNavigate={noop}>
-        <div style={{width: props.width}}>
+        <div className={navbar} style={{width}}>
           <Grid className={navGrid} data-testid="nav-grid" gap={1}>
             <Flex alignItems="center" data-testid="nav-left" gap={2} justifyContent="flex-start">
               <Button
@@ -68,7 +79,7 @@ function NavbarFrame(props: {width: number}) {
               <Button icon={SearchIcon} mode="bleed" tooltipProps={null} />
             </Flex>
             <Flex alignItems="center" className={navTools} justifyContent="center">
-              <ToolCollapseMenu activeToolName="structure" tools={TOOLS} />
+              <ToolCollapseMenu activeToolName="structure" tools={tools} />
             </Flex>
             <Flex alignItems="center" data-testid="nav-right" gap={1} justifyContent="flex-end">
               <Button icon={UsersIcon} mode="bleed" tooltipProps={null} />
@@ -90,6 +101,10 @@ function grid() {
 
 function column(index: 0 | 1 | 2) {
   return grid().children[index] as HTMLElement
+}
+
+function columnWidths() {
+  return Array.from(grid().children, (child) => child.getBoundingClientRect().width)
 }
 
 // The interactive overflow button; the measurement row's clone carries no id.
@@ -118,76 +133,88 @@ function expectNoHorizontalOverlap(a: DOMRect, b: DOMRect) {
   expect(a.right <= b.left + 0.5 || b.right <= a.left + 0.5).toBe(true)
 }
 
+function expectOverflowButtonClearOfClusters() {
+  const button = overflowButton()
+  if (!button) throw new Error('overflow button not rendered')
+  const rect = button.getBoundingClientRect()
+  expectNoHorizontalOverlap(rect, column(0).getBoundingClientRect())
+  expectNoHorizontalOverlap(rect, column(2).getBoundingClientRect())
+  expect(grid().scrollWidth).toBeLessThanOrEqual(grid().clientWidth)
+}
+
 // Wait for CollapseTabList's IntersectionObserver-driven collapse to settle:
 // the column widths and the overflow button's position must hold still.
 function layoutSignature() {
-  const widths = Array.from(grid().children, (child) =>
-    Math.round(child.getBoundingClientRect().width),
-  )
+  const widths = columnWidths().map((width) => Math.round(width))
   const button = overflowButton()?.getBoundingClientRect()
   return `${widths.join(',')}|${button ? `${Math.round(button.left)},${Math.round(button.right)}` : 'none'}`
 }
 
 describe('StudioNavbar grid', () => {
-  describe('on a wide viewport (tools centered between flexible side columns)', () => {
-    it('shrinks the tools column, not the side columns, when the navbar is narrower than its tools', async () => {
-      // The Themer split preview at a 2000px window: the studio (and its navbar)
-      // is 900px wide while the wide-viewport grid still applies.
-      await page.viewport(2000, 800)
-      await render(<NavbarFrame width={900} />)
+  beforeEach(async () => {
+    // Wide enough for the old viewport breakpoint (1800px); the grid must not care.
+    await page.viewport(2000, 800)
+  })
 
-      await expect.poll(overflowButton).not.toBeNull()
-      await expect.element(page.getByRole('link', {name: 'Releases'})).not.toBeInTheDocument()
-      await expect.element(page.getByRole('link', {name: 'Structure'})).toBeVisible()
-      await expectStable(layoutSignature)
+  it('lays out by the width of the navbar, not the viewport', async () => {
+    // Room to spare, yet narrower than the centered layout's threshold: the side
+    // columns hug their content instead of stretching to equal widths.
+    await render(<NavbarFrame width={1500} />)
 
-      // The side clusters keep their natural width instead of collapsing to 0px.
-      expectColumnToHugItsContent(0)
-      expectColumnToHugItsContent(2)
+    await expect.element(page.getByRole('link', {name: 'Releases'})).toBeVisible()
+    await expectStable(layoutSignature)
 
-      // The overflow button sits inside the tools column, clear of both clusters,
-      // and nothing spills out of the navbar.
-      const button = overflowButton()!.getBoundingClientRect()
-      expectNoHorizontalOverlap(button, column(0).getBoundingClientRect())
-      expectNoHorizontalOverlap(button, column(2).getBoundingClientRect())
-      expect(grid().scrollWidth).toBeLessThanOrEqual(grid().clientWidth)
-    })
+    expect(overflowButton()).toBeNull()
+    expectColumnToHugItsContent(0)
+    expectColumnToHugItsContent(2)
+  })
 
+  it('collapses the tools into the overflow menu when the navbar is narrower than its tools', async () => {
+    // The Themer split preview at a 2000px window: each studio, and its navbar,
+    // is 900px wide.
+    await render(<NavbarFrame width={900} />)
+
+    await expect.poll(overflowButton).not.toBeNull()
+    await expect.element(page.getByRole('link', {name: 'Releases'})).not.toBeInTheDocument()
+    await expect.element(page.getByRole('link', {name: 'Structure'})).toBeVisible()
+    await expectStable(layoutSignature)
+
+    // The side clusters keep their natural width instead of collapsing to 0px,
+    // and the overflow button sits inside the tools column, clear of both.
+    expectColumnToHugItsContent(0)
+    expectColumnToHugItsContent(2)
+    expectOverflowButtonClearOfClusters()
+  })
+
+  describe('in a wide navbar (tools centered between flexible side columns)', () => {
     it('gives the side columns equal widths when every tool fits', async () => {
-      await page.viewport(2000, 800)
-      await render(<NavbarFrame width={1800} />)
+      await render(<NavbarFrame width={1900} />)
 
       await expect.element(page.getByRole('link', {name: 'Releases'})).toBeVisible()
       await expectStable(layoutSignature)
 
       expect(overflowButton()).toBeNull()
-      const [left, , right] = Array.from(
-        grid().children,
-        (child) => child.getBoundingClientRect().width,
-      )
+      const [left, , right] = columnWidths()
       expect(left).toBeCloseTo(right, 0)
       // Both columns are wider than their content: the leftover space, not the
       // content, decides their width, which is what centers the tools.
       const leftSpan = contentSpan(column(0))
       expect(left).toBeGreaterThan(leftSpan.right - leftSpan.left + 50)
     })
-  })
 
-  describe('on a narrow viewport (content-sized side columns)', () => {
-    it('keeps the side columns at their content width and collapses the tools', async () => {
-      // The default 1280px viewport is below the wide-viewport breakpoint.
-      await render(<NavbarFrame width={900} />)
+    it('shrinks the tools column, not the side columns, when the tools outgrow the navbar', async () => {
+      await render(<NavbarFrame tools={MANY_TOOLS} width={1900} />)
 
       await expect.poll(overflowButton).not.toBeNull()
-      await expect.element(page.getByRole('link', {name: 'Releases'})).not.toBeInTheDocument()
+      await expect.element(page.getByRole('link', {name: 'Debug tool 20'})).not.toBeInTheDocument()
+      await expect
+        .element(page.getByRole('link', {name: 'Debug tool 1', exact: true}))
+        .toBeVisible()
       await expectStable(layoutSignature)
 
       expectColumnToHugItsContent(0)
       expectColumnToHugItsContent(2)
-      const button = overflowButton()!.getBoundingClientRect()
-      expectNoHorizontalOverlap(button, column(0).getBoundingClientRect())
-      expectNoHorizontalOverlap(button, column(2).getBoundingClientRect())
-      expect(grid().scrollWidth).toBeLessThanOrEqual(grid().clientWidth)
+      expectOverflowButtonClearOfClusters()
     })
   })
 })

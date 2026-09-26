@@ -38,7 +38,7 @@ import {SearchPopover} from './search/components/SearchPopover'
 import {SearchProvider} from './search/contexts/search/SearchProvider'
 import {SearchButton} from './search/SearchButton'
 import {SearchDialog} from './search/SearchDialog'
-import {navGrid, navTools} from './StudioNavbar.css'
+import {navbar, navGrid, navTools} from './StudioNavbar.css'
 import {UserMenu} from './userMenu/UserMenu'
 import {WorkspaceMenuButton} from './workspace/WorkspaceMenuButton'
 
@@ -185,6 +185,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     <FreeTrialProvider>
       <RootLayer zOffset={100} data-search-open={searchFullscreenOpen}>
         <RootCard
+          className={navbar}
           tone={getReleaseTone(selectedPerspective)}
           borderBottom
           data-testid="studio-navbar"
