@@ -27,9 +27,7 @@ const SUPPORTED_PATCH_TYPES = Object.keys(OPERATIONS)
 export function _stringApply(value: unknown, patch: FormPatch) {
   if (!SUPPORTED_PATCH_TYPES.includes(patch.type)) {
     throw new Error(
-      `Received patch of unsupported type: "${JSON.stringify(
-        patch.type,
-      )}" for string. This is most likely a bug.`,
+      `Received patch of unsupported type: "${patch.type}" for string. This is most likely a bug.`,
     )
   }
 
