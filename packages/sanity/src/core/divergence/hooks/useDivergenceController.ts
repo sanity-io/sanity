@@ -49,6 +49,8 @@ type HydratedSnapshot =
       }
     }
 
+const LOADING_SNAPSHOT: HydratedSnapshot = {isLoading: true}
+
 /**
  * @internal
  */
@@ -100,6 +102,12 @@ export function useDivergenceController(
 
   const [upstreamId, upstreamRevisionId] = sinceRevisionId.split('@')
 
+  // Both observables are memoized so their identity is stable across renders. `getDocumentAtRevision`
+  // and `editState` replay synchronously from shared caches; from react-rx v7 an observable rebuilt
+  // on every render is torn down and re-subscribed each render, and a synchronous replay that differs
+  // from the `initialValue` would force a re-render on every commit — looping until React aborts.
+  // (The React Compiler usually memoizes these expressions already; the explicit `useMemo` keeps the
+  // guarantee even where the compiler bails.)
   const readUpstreamBase: Observable<HydratedSnapshot> = useMemo(
     () =>
       getDocumentAtRevision({
@@ -170,8 +178,8 @@ export function useDivergenceController(
   // Kept synchronous: `markResolved` / `takeUpstreamValue` build and execute
   // patches from `upstreamHead.value.document` (and gate on `isLoading`), so a
   // deferred snapshot could act against a stale upstream document head.
-  const upstreamBase = useSyncObservable(readUpstreamBase, {isLoading: true})
-  const upstreamHead = useSyncObservable(readUpstreamHead, {isLoading: true})
+  const upstreamBase = useSyncObservable(readUpstreamBase, LOADING_SNAPSHOT)
+  const upstreamHead = useSyncObservable(readUpstreamHead, LOADING_SNAPSHOT)
 
   const isLoading = upstreamBase.isLoading || upstreamHead.isLoading
   const isReadOnly = contextReadOnly || isLoading || isActionPending
