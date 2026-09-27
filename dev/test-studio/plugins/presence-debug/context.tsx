@@ -1,6 +1,6 @@
 import {type Path} from '@sanity/types'
 import {createContext, type ReactNode, useCallback, useContext, useMemo, useState} from 'react'
-import {type PresenceLocation} from 'sanity'
+import {type PresenceLocation} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {PresenceDebugDialog} from './PresenceDebugDialog'
 

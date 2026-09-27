@@ -6,9 +6,10 @@ import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Card, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback} from 'react'
-import {SanityDefaultPreview, Translate, useSchema, useTranslation} from 'sanity'
+import {Translate, useSchema, useTranslation} from 'sanity'
 import {Flex, Box, VStack} from 'ui5'
 
+import {SanityDefaultPreview} from '../../../core/preview/components/SanityDefaultPreview'
 import {Button} from '../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../i18n'
 import {

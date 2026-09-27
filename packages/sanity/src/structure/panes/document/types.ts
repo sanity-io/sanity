@@ -1,6 +1,6 @@
 import {type Path, type SanityDocument} from '@sanity/types'
-import {type TimelineStore} from 'sanity'
 
+import {type TimelineStore} from '../../../core/store/history/useTimelineStore'
 import {type BaseStructureToolPaneProps} from '../types'
 
 /** @internal */

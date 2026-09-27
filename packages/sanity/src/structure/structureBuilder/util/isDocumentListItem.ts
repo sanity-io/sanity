@@ -1,5 +1,4 @@
-import {isRecord} from 'sanity'
-
+import {isRecord} from '../../../core/util/isRecord'
 import {type DocumentListItem} from '../DocumentListItem'
 
 /** @internal */

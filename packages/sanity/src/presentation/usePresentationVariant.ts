@@ -1,4 +1,6 @@
-import {getDefaultVariant, usePerspective} from 'sanity'
+import {usePerspective} from 'sanity'
+
+import {getDefaultVariant} from '../core/perspective/getDefaultVariant'
 
 /**
  * The selected editing variant as a bare variant id (e.g. `Ab12cd34`), or `undefined` when no

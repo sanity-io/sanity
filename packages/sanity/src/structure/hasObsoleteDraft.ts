@@ -1,6 +1,7 @@
 import {type SchemaType} from '@sanity/types'
-import {type Workspace, type TargetDocumentState} from 'sanity'
+import {type Workspace} from 'sanity'
 
+import {type TargetDocumentState} from '../core/hooks/useTargetDocumentState'
 import {isLiveEditEnabled} from './components/paneItem/helpers'
 
 export interface Context {

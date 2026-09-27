@@ -5,6 +5,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
+import * as USE_VALUE_PREVIEW from '../../../core/preview/useValuePreview'
 import {structureUsEnglishLocaleBundle} from '../../i18n'
 import {type StructureContext} from '../../structureBuilder/types'
 import {type Panes} from '../../structureResolvers/useResolvedPanes'
@@ -15,8 +16,10 @@ vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
   useEditState: vi.fn(),
   useSchema: vi.fn(),
-  useValuePreview: vi.fn(),
   usePerspective: vi.fn(() => ({perspective: undefined})),
+}))
+vi.mock('../../../core/preview/useValuePreview', () => ({
+  useValuePreview: vi.fn(),
 }))
 
 function createWrapperComponent(client: SANITY.SanityClient) {
@@ -190,7 +193,7 @@ describe('StructureTitle', () => {
       vi.spyOn(SANITY, 'useSchema').mockImplementation(useSchemaMock)
       // @ts-expect-error -- pre-existing, fix later
       vi.spyOn(SANITY, 'useEditState').mockImplementation(useEditStateMock)
-      vi.spyOn(SANITY, 'useValuePreview').mockImplementation(useValuePreviewMock)
+      vi.spyOn(USE_VALUE_PREVIEW, 'useValuePreview').mockImplementation(useValuePreviewMock)
 
       const client = createMockSanityClient()
       const wrapper = await createWrapperComponent(client as any)
@@ -224,7 +227,7 @@ describe('StructureTitle', () => {
       vi.spyOn(SANITY, 'useSchema').mockImplementation(useSchemaMock)
       // @ts-expect-error -- pre-existing, fix later
       vi.spyOn(SANITY, 'useEditState').mockImplementation(useEditStateMock)
-      vi.spyOn(SANITY, 'useValuePreview').mockImplementation(useValuePreviewMock)
+      vi.spyOn(USE_VALUE_PREVIEW, 'useValuePreview').mockImplementation(useValuePreviewMock)
 
       const client = createMockSanityClient()
       const wrapper = await createWrapperComponent(client as any)
@@ -249,7 +252,7 @@ describe('StructureTitle', () => {
     it('renders the correct title when the document is new', async () => {
       const useValuePreviewMock = () => valuePreview
       vi.spyOn(SANITY, 'useSchema').mockImplementation(useSchemaMock)
-      vi.spyOn(SANITY, 'useValuePreview').mockImplementation(useValuePreviewMock)
+      vi.spyOn(USE_VALUE_PREVIEW, 'useValuePreview').mockImplementation(useValuePreviewMock)
 
       const client = createMockSanityClient()
       const wrapper = await createWrapperComponent(client as any)
@@ -280,7 +283,7 @@ describe('StructureTitle', () => {
         value: {title: ''},
       })
       vi.spyOn(SANITY, 'useSchema').mockImplementation(useSchemaMock)
-      vi.spyOn(SANITY, 'useValuePreview').mockImplementation(useValuePreviewMock)
+      vi.spyOn(USE_VALUE_PREVIEW, 'useValuePreview').mockImplementation(useValuePreviewMock)
 
       const client = createMockSanityClient()
       const wrapper = await createWrapperComponent(client as any)
@@ -305,7 +308,7 @@ describe('StructureTitle', () => {
     it('renders the correct title when the document is deleted', async () => {
       const useValuePreviewMock = () => valuePreview
       vi.spyOn(SANITY, 'useSchema').mockImplementation(useSchemaMock)
-      vi.spyOn(SANITY, 'useValuePreview').mockImplementation(useValuePreviewMock)
+      vi.spyOn(USE_VALUE_PREVIEW, 'useValuePreview').mockImplementation(useValuePreviewMock)
 
       const client = createMockSanityClient()
       const wrapper = await createWrapperComponent(client as any)

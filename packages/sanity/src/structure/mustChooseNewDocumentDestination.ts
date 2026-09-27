@@ -1,4 +1,7 @@
-import {type EditStateFor, isNewDocument, type isPerspectiveWriteable} from 'sanity'
+import {type EditStateFor} from 'sanity'
+
+import {type isPerspectiveWriteable} from '../core/perspective/isPerspectiveWriteable'
+import {isNewDocument} from '../core/store/document/isNewDocument'
 
 /**
  * Determine whether the user must choose a new perspective in order to create a document.

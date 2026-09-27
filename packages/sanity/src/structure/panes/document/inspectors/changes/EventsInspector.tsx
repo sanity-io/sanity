@@ -4,27 +4,27 @@ import {motion} from 'motion/react'
 import {type ReactElement, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {
-  ChangeFieldWrapper,
-  ChangeList,
-  ChangesError,
-  type DocumentChangeContextInstance,
   type DocumentGroupEvent,
-  getTargetSiblings,
-  isReleaseDocument,
-  LoadingBlock,
-  NoChanges,
-  type ObjectDiff,
   type ObjectSchemaType,
-  ScrollContainer,
   Translate,
-  useEditState,
-  useEvents,
   usePerspective,
   useTranslation,
 } from 'sanity'
 import {DocumentChangeContext} from 'sanity/_singletons'
 import {Flex, Box, Grid} from 'ui5'
 
+import {ChangeFieldWrapper} from '../../../../../core/changeIndicators/ChangeFieldWrapper'
+import {LoadingBlock} from '../../../../../core/components/loadingBlock/LoadingBlock'
+import {ScrollContainer} from '../../../../../core/components/scroll/scrollContainer'
+import {ChangeList} from '../../../../../core/field/diff/components/ChangeList'
+import {ChangesError} from '../../../../../core/field/diff/components/ChangesError'
+import {NoChanges} from '../../../../../core/field/diff/components/NoChanges'
+import {type DocumentChangeContextInstance} from '../../../../../core/field/diff/contexts/DocumentChangeContext'
+import {type ObjectDiff} from '../../../../../core/field/types'
+import {useEditState} from '../../../../../core/hooks/useEditState'
+import {getTargetSiblings} from '../../../../../core/hooks/useTargetDocumentState'
+import {isReleaseDocument} from '../../../../../core/releases/store/types'
+import {useEvents} from '../../../../../core/store/events/EventsProvider'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {EventsTimelineMenu} from '../../timeline/events/EventsTimelineMenu'
 import {useDocumentPane} from '../../useDocumentPane'

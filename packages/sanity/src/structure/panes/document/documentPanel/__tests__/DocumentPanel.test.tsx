@@ -44,7 +44,8 @@ vi.mock('../documentViews/FormView', async () => {
   const {useState} = await import('react')
   const {createPortal} = await import('react-dom')
   const {usePortal} = await import('@sanity/ui')
-  const {usePortalBoundary} = await import('sanity')
+  const {usePortalBoundary} =
+    await import('../../../../../core/components/portalBoundary/usePortalBoundary')
 
   return {
     FormView: function MockFormView() {

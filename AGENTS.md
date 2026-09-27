@@ -374,12 +374,26 @@ Rules that follow from this:
 
 - A new `@internal` export on a public barrel needs a matching line in the internals barrel
   (grouped by source module, `type` specifiers kept). Consumers outside `packages/sanity`
-  (`@sanity/vision`, the dev studios, plugins) import internals from the entry, never from
-  `sanity`. Inside the package, `src/core`, `src/structure` and `src/router` keep importing
-  relatively: the entry re-exports modules from all three areas, so importing it from any of them
-  is an import cycle, and a lazily loaded module that imports the entry drags the whole barrel in
-  with it. The boundaries rules in `.oxlintrc.json` only allow the entry itself to import from the
-  three areas.
+  (`@sanity/vision`, the dev/example/perf studios, the e2e suite, the browser test harnesses in
+  `packages/sanity/test`, plugins) import internals from the entry, never from `sanity`. Inside
+  the package, `src/structure`, `src/presentation`, `src/_internal` and `src/core` import
+  `@internal` symbols relatively from the module that declares them and keep importing public API
+  through the `sanity` / `sanity/router` entries; none of them may import the internals entry
+  (it re-exports modules from all of those areas, so that would be an import cycle, and a lazily
+  loaded module that imports the entry drags the whole barrel in with it). The boundaries rules
+  in `.oxlintrc.json` encode this (structure and `_internal` may import `src/core`; the two
+  router leaf modules `src/router/stickyParams.ts` and `src/router/utils/jsonParamsEncoding.ts`
+  form the `sanity/router__shared` file category so core and structure can import them without
+  going through the public `sanity/router` entry), and
+  `packages/@repo/test-dts-exports/test/no-internal-imports-from-public-entries.test.ts` fails on
+  any `import {…} from 'sanity' | 'sanity/structure' | 'sanity/router'` in the repo that names an
+  `@internal` symbol.
+- A test that stubs an `@internal` hook mocks the module that declares it
+  (`vi.mock('../../core/hooks/useEditState', …)`), not `'sanity'`: the component under test
+  imports the hook relatively, so a mock of the barrel never reaches it. Public hooks
+  (`usePerspective`, `useDocumentVersions`, …) are still mocked through `vi.mock('sanity', …)`.
+  In `@sanity/vision` tests the same split applies between `vi.mock('sanity', …)` and
+  `vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', …)`.
 - The entry is generated from the tags, not curated: whether a symbol belongs there is decided by
   its `@internal` tag. Retagging a symbol (`@internal` → `@beta`/`@public`, or the other way) is
   the API decision; check sanity.io/docs and the published first-party plugins before demoting a

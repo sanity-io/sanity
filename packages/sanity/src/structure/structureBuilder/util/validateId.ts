@@ -1,5 +1,7 @@
-import {type StructureNodeIdValidationResult, validateStructureNodeId} from 'sanity'
-
+import {
+  type StructureNodeIdValidationResult,
+  validateStructureNodeId,
+} from '../../../core/util/validateStructureNodeId'
 import {SerializeError} from '../SerializeError'
 import {type SerializePath} from '../StructureNodes'
 

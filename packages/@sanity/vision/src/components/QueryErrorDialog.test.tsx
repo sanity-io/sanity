@@ -20,6 +20,8 @@ vi.mock('sanity', () => ({
       values?.apiVersion ? `${key}:${values.apiVersion}` : key,
   }),
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
+}))
+vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => ({
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
   RELEASES_STUDIO_CLIENT_OPTIONS: {apiVersion: sanityMocks.releasesApiVersion},
   VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: sanityMocks.variantsApiVersion},

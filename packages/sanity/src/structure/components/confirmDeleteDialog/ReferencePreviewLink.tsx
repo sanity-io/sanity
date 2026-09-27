@@ -1,13 +1,9 @@
 import {type SchemaType} from '@sanity/types'
 import {type ReactNode, useCallback} from 'react'
-import {
-  getPublishedId,
-  PreviewCard,
-  type SanityDocument,
-  useDocumentPresence,
-  useDocumentPreviewStore,
-} from 'sanity'
+import {getPublishedId, type SanityDocument, useDocumentPreviewStore} from 'sanity'
 
+import {PreviewCard} from '../../../core/components/previewCard/PreviewCard'
+import {useDocumentPresence} from '../../../core/store/presence/useDocumentPresence'
 import {PaneItemPreview} from '../paneItem/PaneItemPreview'
 import {usePaneRouter} from '../paneRouter/usePaneRouter'
 

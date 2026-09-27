@@ -3,13 +3,14 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
 import {
-  getDefaultVariant,
-  getPreviewStateObservable,
   type PreviewValue,
   type SanityDocument,
   useDocumentPreviewStore,
   usePerspective,
 } from 'sanity'
+
+import {getDefaultVariant} from '../../core/perspective/getDefaultVariant'
+import {getPreviewStateObservable} from '../../core/preview/utils/getPreviewStateObservable'
 
 interface PreviewState {
   isLoading?: boolean
