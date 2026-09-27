@@ -21,6 +21,7 @@ import {useVistaDocumentEvents} from '../../hooks/useVistaDocumentEvents'
 import {selectIsFetching} from '../../store/queryRunnerMachine'
 import {type FetchReason, type VistaTab, type VistaTabOptions} from '../../store/types'
 import {
+  usePendingEdits,
   useVistaActor,
   useVistaExperience,
   useVistaSelector,
@@ -101,6 +102,10 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   )
   const setParams = useMemo(() => debounce(setParamsNow, PARAMS_DEBOUNCE_MS), [setParamsNow])
   useEffect(() => () => setParams.flush(), [setParams])
+  // Save and Export (in the menu and in the sidebar) commit a params edit still waiting in the
+  // debounce before they read the tab, as Run does
+  const pendingEdits = usePendingEdits()
+  useEffect(() => pendingEdits.register(() => setParams.flush()), [pendingEdits, setParams])
   // Collapsing the Params panel unmounts its editor, and expanding it seeds a new one from the
   // tab; an edit still waiting in the debounce is committed first so the new editor shows it
   const paramsExpanded = useVistaSelector((snapshot) => isPanelExpanded(snapshot, 'params'))
@@ -316,6 +321,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
 
   const requestPanel = (
     <RequestPanel
+      buildRequest={buildRequest}
       isFetching={isFetching}
       onCancel={cancel}
       onCopyQuery={copyQuery}

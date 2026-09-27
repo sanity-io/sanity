@@ -8,19 +8,22 @@ import {SyncIcon} from '@sanity/icons/Sync'
 import {Button, Text} from '@sanity/ui'
 import {Menu, MenuButton, MenuDivider, MenuItem} from '@sanity/ui/menu'
 import {Tooltip} from '@sanity/ui/tooltip'
-import {useState} from 'react'
+import {useCallback, useState} from 'react'
 import {useTranslation} from 'sanity'
 
 import {visionLocaleNamespace} from '../../../i18n'
+import {type QueryRequestBuilder} from '../../hooks/useQueryRequestBuilder'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {useSaveCurrentQuery} from '../../hooks/useSaveCurrentQuery'
 import {type QueryRequest, type VistaTab} from '../../store/types'
+import {usePendingEdits} from '../../store/VistaActorContext'
 import {VISTA_SHORTCUTS} from '../../util/shortcuts'
 import {ExportQueryDialog} from './ExportQueryDialog'
 
 export interface QueryActionsMenuProps {
   tab: VistaTab
   request: QueryRequest | null
+  buildRequest: QueryRequestBuilder['buildRequest']
   resolved: ResolvedRequest
   onCopyQuery: () => void
   onPrettify: () => void
@@ -28,10 +31,18 @@ export interface QueryActionsMenuProps {
 }
 
 export function QueryActionsMenu(props: QueryActionsMenuProps) {
-  const {tab, request, resolved, onCopyQuery, onPrettify, onToggleAutoRefetch} = props
+  const {tab, request, buildRequest, resolved, onCopyQuery, onPrettify, onToggleAutoRefetch} = props
   const {t} = useTranslation(visionLocaleNamespace)
+  const pendingEdits = usePendingEdits()
   const [exportOpen, setExportOpen] = useState(false)
-  const {saveCurrent, canSave} = useSaveCurrentQuery(tab, request)
+  const {saveCurrent, canSave} = useSaveCurrentQuery(tab, {request, buildRequest})
+
+  const openExport = useCallback(() => {
+    // Params typed within the debounce window belong to the exported request; committing them
+    // re-renders the dialog with the request built from them
+    pendingEdits.commit()
+    setExportOpen(true)
+  }, [pendingEdits])
 
   const autoRefetchItem = (
     <MenuItem
@@ -90,7 +101,7 @@ export function QueryActionsMenu(props: QueryActionsMenuProps) {
               data-testid="vista-export-query"
               disabled={!request}
               icon={CodeIcon}
-              onClick={() => setExportOpen(true)}
+              onClick={openExport}
               text={t('vista.query.export')}
             />
             <MenuItem
