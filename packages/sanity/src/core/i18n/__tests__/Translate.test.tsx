@@ -29,6 +29,7 @@ async function getWrapper(bundles: LocaleResourceBundle[]) {
   })
 
   await i18next.init()
+  await i18next.loadNamespaces(i18next.options.ns as string[])
 
   return function wrapper({children}: {children: ReactNode}) {
     return (

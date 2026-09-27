@@ -1,7 +1,7 @@
 import {CalendarIcon} from '@sanity/icons/Calendar'
 import {isValidationErrorMarker} from '@sanity/types'
 import {useToast} from '@sanity/ui/toast'
-import {useCallback, useMemo, useState} from 'react'
+import {lazy, Suspense, useCallback, useMemo, useState} from 'react'
 
 import {
   type DocumentActionComponent,
@@ -16,13 +16,20 @@ import {useActiveReleases} from '../../../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {getDraftId} from '../../../util/draftUtils'
 import {isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
-import {ScheduleDraftDialog} from '../../components/ScheduleDraftDialog'
 import {useSingleDocReleaseEnabled} from '../../context/SingleDocReleaseEnabledProvider'
 import {useSingleDocRelease} from '../../context/SingleDocReleaseProvider'
 import {useSingleDocReleaseUpsell} from '../../context/SingleDocReleaseUpsellProvider'
 import {useHasCardinalityOneReleaseVersions} from '../../hooks/useHasCardinalityOneReleaseVersions'
 import {useScheduleDraftOperations} from '../../hooks/useScheduleDraftOperations'
 import {singleDocReleaseNamespace} from '../../i18n'
+
+// The action is registered for every document while the workspace config is prepared; the
+// dialog (date picker, calendar) is only needed once it is invoked.
+const ScheduleDraftDialog = lazy(() =>
+  import('../../components/ScheduleDraftDialog').then((module) => ({
+    default: module.ScheduleDraftDialog,
+  })),
+)
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
@@ -170,12 +177,14 @@ export const useSchedulePublishAction: DocumentActionComponent = (
     dialog: dialogOpen && {
       type: 'custom',
       component: (
-        <ScheduleDraftDialog
-          onClose={handleCloseDialog}
-          onSchedule={handleSchedule}
-          loading={isScheduling}
-          initialDate={initialDate}
-        />
+        <Suspense fallback={null}>
+          <ScheduleDraftDialog
+            onClose={handleCloseDialog}
+            onSchedule={handleSchedule}
+            loading={isScheduling}
+            initialDate={initialDate}
+          />
+        </Suspense>
       ),
     },
   }

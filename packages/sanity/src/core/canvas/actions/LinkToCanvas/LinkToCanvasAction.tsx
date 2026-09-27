@@ -1,6 +1,6 @@
 import {type SanityDocument} from '@sanity/client'
 import {ComposeSparklesIcon} from '@sanity/icons/ComposeSparkles'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {lazy, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 
 import {
   type DocumentActionComponent,
@@ -18,7 +18,12 @@ import {canvasLocaleNamespace} from '../../i18n'
 import {useCanvasTelemetry} from '../../useCanvasTelemetry'
 import {getDocumentIdForCanvasLink} from '../../utils/getDocumentIdForCanvasLink'
 import {useCanvasCompanionDoc} from '../useCanvasCompanionDoc'
-import {LinkToCanvasDialog} from './LinkToCanvasDialog'
+
+// The action hook itself must be in the bundle so the document actions menu can render it, but
+// the dialog (diff view, animations) is only needed once the action is invoked.
+const LinkToCanvasDialog = lazy(() =>
+  import('./LinkToCanvasDialog').then((module) => ({default: module.LinkToCanvasDialog})),
+)
 
 const useIsExcludedType = (type: string) => {
   const schema = useSchema()
@@ -98,7 +103,11 @@ export const useLinkToCanvasAction: DocumentActionComponent = (props: DocumentAc
       isDialogOpen && formValue
         ? {
             type: 'custom',
-            component: <LinkToCanvasDialog onClose={handleCloseDialog} document={formValue} />,
+            component: (
+              <Suspense fallback={null}>
+                <LinkToCanvasDialog onClose={handleCloseDialog} document={formValue} />
+              </Suspense>
+            ),
           }
         : undefined,
     label: t('action.link-document'),

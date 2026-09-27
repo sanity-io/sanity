@@ -1,6 +1,6 @@
 import {DeferredTelemetryProvider} from '@sanity/telemetry/react'
 import {ToastProvider} from '@sanity/ui/toast'
-import {type ReactNode, useEffect, useMemo} from 'react'
+import {type ReactNode, Suspense, useEffect, useMemo} from 'react'
 
 import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
 import {errorReporter} from '../error/errorReporter'
@@ -17,6 +17,7 @@ import {AuthBoundary} from './AuthBoundary'
 import {ColorSchemeProvider} from './colorScheme'
 import {ComlinkRouteHandler} from './components/ComlinkRouteHandler'
 import {Z_OFFSET} from './constants'
+import {PreloadStudioShell} from './lazy'
 import {LiveUserApplicationProvider} from './liveUserApplication/LiveUserApplicationProvider'
 import {LiveManifestRegisterProvider} from './manifest'
 import {PackageVersionStatusProvider} from './packageVersionStatus/PackageVersionStatusProvider'
@@ -73,6 +74,7 @@ export function StudioProvider({
   const _children = useMemo(
     () => (
       <UserApplicationCacheProvider>
+        <PreloadStudioShell config={config} />
         <LiveUserApplicationProvider>
           <LiveManifestRegisterProvider />
           <WorkspaceLoader
@@ -103,49 +105,56 @@ export function StudioProvider({
         </LiveUserApplicationProvider>
       </UserApplicationCacheProvider>
     ),
-    [children],
+    [children, config],
   )
 
   return (
     <DeferredTelemetryProvider>
       <ColorSchemeProvider onSchemeChange={onSchemeChange} scheme={scheme}>
         <ToastProvider paddingY={7} zOffset={Z_OFFSET.toast}>
-          <StudioErrorBoundary>
-            <StudioRootErrorHandler>
-              <WorkspacesProvider
-                config={config}
-                basePath={basePath}
-                LoadingComponent={LoadingBlock}
-                primaryProjectId={primaryProjectId}
-              >
-                <VisibleWorkspacesProvider>
-                  <ActiveWorkspaceMatcher
-                    unstable_history={history}
-                    NotFoundComponent={NotFoundScreen}
-                    LoadingComponent={LoadingBlock}
-                  >
-                    <StudioThemeProvider>
-                      <UserColorManagerProvider>
-                        <ConfigErrorGate>
-                          {noAuthBoundary ? (
-                            _children
-                          ) : (
-                            <AuthBoundary
-                              LoadingComponent={LoadingBlock}
-                              AuthenticateComponent={AuthenticateScreen}
-                              NotAuthenticatedComponent={NotAuthenticatedScreen}
-                            >
-                              {_children}
-                            </AuthBoundary>
-                          )}
-                        </ConfigErrorGate>
-                      </UserColorManagerProvider>
-                    </StudioThemeProvider>
-                  </ActiveWorkspaceMatcher>
-                </VisibleWorkspacesProvider>
-              </WorkspacesProvider>
-            </StudioRootErrorHandler>
-          </StudioErrorBoundary>
+          {/* The studio's own locale bundle loads on demand, and `useTranslation` suspends until
+              its namespace has arrived. `LocaleProvider` (mounted after authentication) has a
+              boundary for everything below it; this one covers what renders before that — the
+              login screen, the config, CORS and schema error screens — so a slow chunk shows
+              the loading block instead of suspending the root. */}
+          <Suspense fallback={<LoadingBlock />}>
+            <StudioErrorBoundary>
+              <StudioRootErrorHandler>
+                <WorkspacesProvider
+                  config={config}
+                  basePath={basePath}
+                  LoadingComponent={LoadingBlock}
+                  primaryProjectId={primaryProjectId}
+                >
+                  <VisibleWorkspacesProvider>
+                    <ActiveWorkspaceMatcher
+                      unstable_history={history}
+                      NotFoundComponent={NotFoundScreen}
+                      LoadingComponent={LoadingBlock}
+                    >
+                      <StudioThemeProvider>
+                        <UserColorManagerProvider>
+                          <ConfigErrorGate>
+                            {noAuthBoundary ? (
+                              _children
+                            ) : (
+                              <AuthBoundary
+                                LoadingComponent={LoadingBlock}
+                                AuthenticateComponent={AuthenticateScreen}
+                                NotAuthenticatedComponent={NotAuthenticatedScreen}
+                              >
+                                {_children}
+                              </AuthBoundary>
+                            )}
+                          </ConfigErrorGate>
+                        </UserColorManagerProvider>
+                      </StudioThemeProvider>
+                    </ActiveWorkspaceMatcher>
+                  </VisibleWorkspacesProvider>
+                </WorkspacesProvider>
+              </StudioRootErrorHandler>
+            </StudioErrorBoundary>
+          </Suspense>
         </ToastProvider>
       </ColorSchemeProvider>
     </DeferredTelemetryProvider>
