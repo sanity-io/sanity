@@ -107,6 +107,10 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   useOnValueChange(paramsExpanded, (expanded) => {
     if (!expanded) setParams.flush()
   })
+  // Saving and exporting read the rendered tab and request, which an edit still waiting in the
+  // debounce has not reached yet; opening the menu holding them commits it, so the render it
+  // causes has both actions working from the params that are on screen
+  const commitParams = useCallback(() => setParams.flush(), [setParams])
 
   const run = useCallback(
     (reason: FetchReason) => {
@@ -318,6 +322,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     <RequestPanel
       isFetching={isFetching}
       onCancel={cancel}
+      onCommitParams={commitParams}
       onCopyQuery={copyQuery}
       onLintFindings={setLintFindings}
       onOptionsChange={setOptions}

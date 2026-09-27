@@ -3,6 +3,7 @@ import {
   type PointerEvent as ReactPointerEvent,
   type RefObject,
   useCallback,
+  useEffect,
   useState,
 } from 'react'
 
@@ -82,6 +83,22 @@ export function useDragResize({
       ),
     }
   }, [containerRef, sectionRef, siblingRef])
+
+  // A dragged height only ever fitted the column it was dragged in. Anything that shortens that
+  // column afterwards (a window resize, the stacked layout, the sibling section expanding) would
+  // leave the height crowding the query editor below its minimum, so the bounds are applied
+  // again whenever the column or the sibling is resized
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return undefined
+    const observer = new ResizeObserver(() => {
+      const bounds = measure()
+      if (bounds) setHeight((current) => (current === null ? null : clamp(current, bounds)))
+    })
+    observer.observe(container)
+    if (siblingRef.current) observer.observe(siblingRef.current)
+    return () => observer.disconnect()
+  }, [containerRef, measure, siblingRef])
 
   const onFocus = useCallback(() => setMeasured(measure()), [measure])
   // A resize changes the layout only once React has rendered it

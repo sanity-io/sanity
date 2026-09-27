@@ -36,6 +36,7 @@ const sanityMocks = vi.hoisted(() => {
     getPerspective: () => perspective,
     useClient: vi.fn(),
     clearQueries: vi.fn(() => Promise.resolve()),
+    saveQuery: vi.fn((_query: Record<string, unknown>) => Promise.resolve()),
     // What the mocked saved queries hook lists and reports as being moved
     savedQueries: {queries: [] as unknown[], moving: [] as string[]},
   }
@@ -108,7 +109,7 @@ vi.mock('sanity/router', () => ({
 vi.mock('../../hooks/useSavedQueries', () => ({
   useSavedQueries: () => ({
     queries: sanityMocks.savedQueries.queries,
-    saveQuery: vi.fn(),
+    saveQuery: sanityMocks.saveQuery,
     updateQuery: vi.fn(),
     deleteQuery: vi.fn(),
     shareQuery: vi.fn(),
@@ -895,6 +896,24 @@ describe('VistaGui', () => {
     fireEvent.click(screen.getByTestId('vista-auto-refetch'))
     await waitFor(() => expect(fetchCalls).toHaveLength(2))
     expect(fetchCalls[1].params).toEqual({id: 'fresher'})
+  })
+
+  it('saves the params typed just before opening the actions menu, ahead of the debounce', async () => {
+    renderVista()
+    typeQuery('*[_id == $id]')
+    await waitFor(() => expect(isDisabled(screen.getByTestId('vista-fetch-button'))).toBe(false))
+
+    const paramsEditor = within(screen.getByTestId('vista-params-editor')).getByTestId(
+      'codemirror-mock',
+    )
+    fireEvent.change(paramsEditor, {target: {value: '{"id": "fresh"}'}})
+    fireEvent.click(screen.getByTestId('vista-query-menu-button'))
+    fireEvent.click(screen.getByTestId('vista-save-query'))
+
+    await waitFor(() => expect(sanityMocks.saveQuery).toHaveBeenCalledTimes(1))
+    expect(sanityMocks.saveQuery.mock.calls[0][0]).toMatchObject({
+      url: expect.stringContaining('fresh'),
+    })
   })
 
   it('locks the API version to vX and sends the navbar variant with the global perspective', async () => {

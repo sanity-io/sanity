@@ -49,6 +49,8 @@ export interface RequestPanelProps {
   paramsEditorRef: RefObject<VisionCodeMirrorHandle | null>
   onQueryChange: (query: string) => void
   onParamsChange: (rawParams: string) => void
+  /** Commits a debounced params edit, for the actions that read the rendered tab and request */
+  onCommitParams: () => void
   onOptionsChange: (options: Partial<VistaTabOptions>) => void
   onRun: () => void
   onCancel: () => void
@@ -75,6 +77,7 @@ export function RequestPanel(props: RequestPanelProps) {
     paramsEditorRef,
     onQueryChange,
     onParamsChange,
+    onCommitParams,
     onOptionsChange,
     onRun,
     onCancel,
@@ -150,6 +153,7 @@ export function RequestPanel(props: RequestPanelProps) {
             />
           </Tooltip>
           <QueryActionsMenu
+            onCommitParams={onCommitParams}
             onCopyQuery={onCopyQuery}
             onPrettify={onPrettify}
             onToggleAutoRefetch={onToggleAutoRefetch}

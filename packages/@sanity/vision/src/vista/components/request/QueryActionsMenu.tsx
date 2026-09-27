@@ -22,13 +22,16 @@ export interface QueryActionsMenuProps {
   tab: VistaTab
   request: QueryRequest | null
   resolved: ResolvedRequest
+  /** Commits a debounced params edit, so Save and Export see the params that are on screen */
+  onCommitParams: () => void
   onCopyQuery: () => void
   onPrettify: () => void
   onToggleAutoRefetch: () => void
 }
 
 export function QueryActionsMenu(props: QueryActionsMenuProps) {
-  const {tab, request, resolved, onCopyQuery, onPrettify, onToggleAutoRefetch} = props
+  const {tab, request, resolved, onCommitParams, onCopyQuery, onPrettify, onToggleAutoRefetch} =
+    props
   const {t} = useTranslation(visionLocaleNamespace)
   const [exportOpen, setExportOpen] = useState(false)
   const {saveCurrent, canSave} = useSaveCurrentQuery(tab, request)
@@ -102,6 +105,9 @@ export function QueryActionsMenu(props: QueryActionsMenuProps) {
             />
           </Menu>
         }
+        // Save and Export both go by the tab and the request of the last render, so a params
+        // edit still in the debounce is committed as the menu opens, ahead of either being used
+        onOpen={onCommitParams}
         popover={{portal: true, placement: 'left-start'}}
       />
       {exportOpen && request && (
