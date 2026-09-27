@@ -11,6 +11,7 @@ import {groqExtensions} from '../../../codemirror/extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
 import {type Params} from '../../../components/VisionGui'
 import {visionLocaleNamespace} from '../../../i18n'
+import {type QueryRequestBuilder} from '../../hooks/useQueryRequestBuilder'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {
   type QueryRequest,
@@ -43,6 +44,7 @@ export interface RequestPanelProps {
   tab: VistaTab
   params: Params
   request: QueryRequest | null
+  buildRequest: QueryRequestBuilder['buildRequest']
   resolved: ResolvedRequest
   isFetching: boolean
   queryEditorRef: RefObject<VisionCodeMirrorHandle | null>
@@ -69,6 +71,7 @@ export function RequestPanel(props: RequestPanelProps) {
     tab,
     params,
     request,
+    buildRequest,
     resolved,
     isFetching,
     queryEditorRef,
@@ -150,6 +153,7 @@ export function RequestPanel(props: RequestPanelProps) {
             />
           </Tooltip>
           <QueryActionsMenu
+            buildRequest={buildRequest}
             onCopyQuery={onCopyQuery}
             onPrettify={onPrettify}
             onToggleAutoRefetch={onToggleAutoRefetch}

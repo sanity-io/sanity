@@ -36,6 +36,7 @@ const sanityMocks = vi.hoisted(() => {
     getPerspective: () => perspective,
     useClient: vi.fn(),
     clearQueries: vi.fn(() => Promise.resolve()),
+    saveQuery: vi.fn((_query: {url: string}) => Promise.resolve('saved-key')),
     // What the mocked saved queries hook lists and reports as being moved
     savedQueries: {queries: [] as unknown[], moving: [] as string[]},
   }
@@ -108,7 +109,7 @@ vi.mock('sanity/router', () => ({
 vi.mock('../../hooks/useSavedQueries', () => ({
   useSavedQueries: () => ({
     queries: sanityMocks.savedQueries.queries,
-    saveQuery: vi.fn(),
+    saveQuery: sanityMocks.saveQuery,
     updateQuery: vi.fn(),
     deleteQuery: vi.fn(),
     shareQuery: vi.fn(),
@@ -895,6 +896,42 @@ describe('VistaGui', () => {
     fireEvent.click(screen.getByTestId('vista-auto-refetch'))
     await waitFor(() => expect(fetchCalls).toHaveLength(2))
     expect(fetchCalls[1].params).toEqual({id: 'fresher'})
+  })
+
+  it('saves and exports params typed just before, ahead of the debounce', async () => {
+    renderVista()
+    typeQuery('*[_id == $id]')
+    await waitFor(() => expect(isDisabled(screen.getByTestId('vista-fetch-button'))).toBe(false))
+    const paramsEditor = within(screen.getByTestId('vista-params-editor')).getByTestId(
+      'codemirror-mock',
+    )
+    const savedUrls = () => sanityMocks.saveQuery.mock.calls.map(([query]) => query.url)
+
+    // Save from the query menu
+    fireEvent.change(paramsEditor, {target: {value: '{"id": "saved"}'}})
+    fireEvent.click(screen.getByTestId('vista-query-menu-button'))
+    fireEvent.click(screen.getByTestId('vista-save-query'))
+    await waitFor(() => expect(savedUrls()).toHaveLength(1))
+    expect(savedUrls()[0]).toContain(
+      `${encodeURIComponent('$id')}=${encodeURIComponent('"saved"')}`,
+    )
+
+    // Export shows the request built from the params just typed
+    fireEvent.change(paramsEditor, {target: {value: '{"id": "exported"}'}})
+    fireEvent.click(screen.getByTestId('vista-query-menu-button'))
+    fireEvent.click(screen.getByTestId('vista-export-query'))
+    const dialog = await screen.findByTestId('vista-export-query-dialog')
+    expect(text(dialog)).toContain('"exported"')
+    expect(text(dialog)).not.toContain('"saved"')
+
+    // Save from the sidebar, which has no access to the tab's debounce of its own
+    fireEvent.change(paramsEditor, {target: {value: '{"id": "sidebar"}'}})
+    fireEvent.click(screen.getByTestId('vista-sidebar-saved'))
+    fireEvent.click(await screen.findByTestId('vista-save-current-query'))
+    await waitFor(() => expect(savedUrls()).toHaveLength(2))
+    expect(savedUrls()[1]).toContain(
+      `${encodeURIComponent('$id')}=${encodeURIComponent('"sidebar"')}`,
+    )
   })
 
   it('locks the API version to vX and sends the navbar variant with the global perspective', async () => {

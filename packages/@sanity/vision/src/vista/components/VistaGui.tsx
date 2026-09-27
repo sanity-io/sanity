@@ -6,6 +6,8 @@ import {useSavedQueries} from '../../hooks/useSavedQueries'
 import {type VisionConfig} from '../../types'
 import {useContentSize} from '../hooks/useContentSize'
 import {
+  createPendingEdits,
+  PendingEditsContext,
   SavedQueriesContext,
   usePersistVistaState,
   VistaActorContext,
@@ -70,34 +72,37 @@ export function VistaGui(props: VistaGuiProps) {
     [layout, onSwitchToClassic],
   )
   const savedQueries = useSavedQueries()
+  const [pendingEdits] = useState(createPendingEdits)
 
   return (
     <VistaActorContext.Provider value={actorRef}>
       <VistaExperienceContext.Provider value={experience}>
         <SavedQueriesContext.Provider value={savedQueries}>
-          <Flex
-            className={root}
-            data-testid="vista-root"
-            data-vista-layout={layout}
-            height="100%"
-            overflow="hidden"
-            ref={setRootElement}
-          >
-            <VistaSidebar />
+          <PendingEditsContext.Provider value={pendingEdits}>
             <Flex
-              flexBasis="0%"
-              flexDirection="column"
-              flexGrow={1}
-              // Under a phone's full-width drawer the tabs area is covered and must not take focus
-              inert={layout === 'mobile' && openDrawer !== null}
-              minWidth="0"
+              className={root}
+              data-testid="vista-root"
+              data-vista-layout={layout}
+              height="100%"
               overflow="hidden"
+              ref={setRootElement}
             >
-              <QueryTabBar />
-              <QueryTab key={activeTab.id} tab={activeTab} rootElement={rootElement} />
+              <VistaSidebar />
+              <Flex
+                flexBasis="0%"
+                flexDirection="column"
+                flexGrow={1}
+                // Under a phone's full-width drawer the tabs area is covered and must not take focus
+                inert={layout === 'mobile' && openDrawer !== null}
+                minWidth="0"
+                overflow="hidden"
+              >
+                <QueryTabBar />
+                <QueryTab key={activeTab.id} tab={activeTab} rootElement={rootElement} />
+              </Flex>
             </Flex>
-          </Flex>
-          <VistaDialogs />
+            <VistaDialogs />
+          </PendingEditsContext.Provider>
         </SavedQueriesContext.Provider>
       </VistaExperienceContext.Provider>
     </VistaActorContext.Provider>
