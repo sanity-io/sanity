@@ -297,6 +297,34 @@ describe('useSavedQueries', () => {
     expect(result.current.queries.map((query) => query.url)).toEqual(['https://b', 'https://a'])
   })
 
+  it('takes another instance’s writes as its base once the store’s events reach it', async () => {
+    const {result} = setup()
+    await act(async () => {
+      await result.current.saveQuery({url: 'https://a', savedAt: '2026-01-01T00:00:00Z'})
+    })
+    const [saved] = result.current.queries
+
+    // Another Vision instance in this tab (kept mounted under Activity) saves a query of its own
+    // on top of this one; that write reflects the save above, so it is no stale read
+    const peer = {_key: 'peer', url: 'https://peer', savedAt: '2026-01-02T00:00:00Z'}
+    act(() => {
+      storeEvents.next({queries: [peer, saved]})
+    })
+    expect(result.current.queries.map((query) => query.url)).toEqual(['https://peer', 'https://a'])
+
+    // The next write starts from that list, so the other instance’s query survives it
+    await act(async () => {
+      await result.current.saveQuery({url: 'https://b', savedAt: '2026-01-03T00:00:00Z'})
+    })
+    expect(storedUrls()).toEqual(['https://b', 'https://peer', 'https://a'])
+
+    // With the events known to be live, even a write removing this hook’s own query counts
+    act(() => {
+      storeEvents.next({queries: [peer]})
+    })
+    expect(result.current.queries.map((query) => query.url)).toEqual(['https://peer'])
+  })
+
   it('keeps the queries when clearing them fails, whatever the store emits meanwhile', async () => {
     mocks.store.value = {
       queries: [{_key: 'p1', url: 'https://a', savedAt: '2026-01-01T00:00:00Z'}],
