@@ -14,8 +14,11 @@ import {validateApiVersion} from './validateApiVersion'
  */
 export const SANITY_QUERY_URL = /\/(vX|v1|v\d{4}-\d\d-\d\d)\/.*?(?:query|listen)\/(.*?)\?(.*)/
 
-/** The path of a query or listen URL: the API version, whatever lies between, the dataset */
-const QUERY_URL_PATHNAME = /^\/(vX|v1|v\d{4}-\d\d-\d\d)\/.*?(?:query|listen)\/([^/]+)\/?$/
+/**
+ * The path of a query or listen URL: the API version, whole segments in between (`data`), the
+ * `query` or `listen` segment and the dataset
+ */
+const QUERY_URL_PATHNAME = /^\/(vX|v1|v\d{4}-\d\d-\d\d)\/(?:[^/]+\/)*(?:query|listen)\/([^/]+)\/?$/
 
 export interface ParsedQueryUrl {
   query: string
