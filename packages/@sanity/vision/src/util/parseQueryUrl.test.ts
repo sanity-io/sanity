@@ -53,6 +53,31 @@ describe('parseQueryUrl', () => {
     expect(parsed?.hasUnsupportedPerspective).toBe(true)
   })
 
+  it('takes the whole text to be the URL, not a fragment of it', () => {
+    const url = 'https://abc123.api.sanity.io/v2025-02-19/data/query/production?query=*'
+    expect(parseQueryUrl(url, datasets)?.query).toBe('*')
+    // A query URL quoted inside other text is not a paste of that URL
+    expect(parseQueryUrl(`see ${url}`, datasets)).toBeNull()
+    expect(parseQueryUrl(`curl '${url}'`, datasets)).toBeNull()
+    expect(
+      parseQueryUrl('notes /v2025-02-19/data/query/production?query=* trailing', datasets),
+    ).toBeNull()
+    // Nor is a path without its origin, or a URL of another scheme
+    expect(parseQueryUrl('/v2025-02-19/data/query/production?query=*', datasets)).toBeNull()
+    expect(
+      parseQueryUrl(
+        'ftp://abc123.api.sanity.io/v2025-02-19/data/query/production?query=*',
+        datasets,
+      ),
+    ).toBeNull()
+    expect(
+      parseQueryUrl(
+        'https://abc123.api.sanity.io/v2025-02-19/data/query/production/extra?query=*',
+        datasets,
+      ),
+    ).toBeNull()
+  })
+
   it('returns null for anything that is not a query URL', () => {
     expect(parseQueryUrl('*[_type == "author"]', datasets)).toBeNull()
     expect(parseQueryUrl('https://www.sanity.io/docs', datasets)).toBeNull()
