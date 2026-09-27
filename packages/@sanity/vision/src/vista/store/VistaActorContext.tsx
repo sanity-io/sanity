@@ -46,6 +46,44 @@ export function useVistaExperience(): VistaExperience {
   return experience
 }
 
+/**
+ * Edits still waiting in an editor debounce (params edits reach the machine debounced). The
+ * mounted tab registers how to commit them, and an action that reads the tab from the machine
+ * commits first, so it sees what the editors show: Run, Save and Export in the tab's menu, and
+ * Save in the sidebar, which has no other way to reach the tab's debounce.
+ */
+export interface PendingEdits {
+  /** Registers a commit for the mounted tab's pending edits; returns the unregister */
+  register: (commit: () => void) => () => void
+  /** Commits every pending edit registered right now */
+  commit: () => void
+}
+
+export function createPendingEdits(): PendingEdits {
+  const commits = new Set<() => void>()
+  return {
+    register: (commit) => {
+      commits.add(commit)
+      return () => {
+        commits.delete(commit)
+      }
+    },
+    commit: () => {
+      for (const commit of commits) commit()
+    },
+  }
+}
+
+export const PendingEditsContext = createContext<PendingEdits | null>(null)
+
+export function usePendingEdits(): PendingEdits {
+  const pendingEdits = useContext(PendingEditsContext)
+  if (!pendingEdits) {
+    throw new Error('usePendingEdits must be used within a PendingEditsContext provider')
+  }
+  return pendingEdits
+}
+
 export type SavedQueriesApi = ReturnType<typeof useSavedQueries>
 
 /** One saved queries subscription for the whole tool, shared by the menu and the drawer */

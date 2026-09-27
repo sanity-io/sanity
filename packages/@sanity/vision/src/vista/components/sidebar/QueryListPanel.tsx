@@ -47,10 +47,10 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
   const tabs = useVistaSelector((snapshot) => snapshot.context.tabs)
   const datasets = useVistaSelector(selectDatasets)
   const workspaceDataset = useVistaSelector(selectWorkspaceDataset)
-  const {request} = useQueryRequestBuilder(activeTab)
+  const requestBuilder = useQueryRequestBuilder(activeTab)
   const {queries, updateQuery, deleteQuery, deleteQueryError, moving, shareQuery, unshareQuery} =
     useSavedQueriesApi()
-  const {saveCurrent, canSave} = useSaveCurrentQuery(activeTab, request)
+  const {saveCurrent, canSave} = useSaveCurrentQuery(activeTab, requestBuilder)
   const formatDate = useDateTimeFormat({dateStyle: 'medium', timeStyle: 'short'})
 
   const [search, setSearch] = useState('')
