@@ -410,20 +410,35 @@ export function useSavedQueries(): {
     [deletePersonalQuery, deleteSharedQuery, sharedQueries],
   )
 
-  /** Runs `move` for `key` unless one is pending already, in which case that one is returned */
-  const runMove = useCallback((key: string, move: () => Promise<void>): Promise<void> => {
-    const pending = movesRef.current.get(key)
-    if (pending) {
-      return pending
-    }
-    setMoving((prev) => [...prev, key])
-    const result = move().finally(() => {
-      movesRef.current.delete(key)
-      setMoving((prev) => prev.filter((k) => k !== key))
-    })
-    movesRef.current.set(key, result)
-    return result
-  }, [])
+  /**
+   * Runs `move` for `key` unless one is pending already, in which case that one is returned. The
+   * move reports the copy it makes in the other list through `alsoMoving`: that copy shows up
+   * before the original is removed, and is moving (a second move of it joins this one, and the
+   * lists offer it no actions) until the move settles, since a failure takes it back.
+   */
+  const runMove = useCallback(
+    (key: string, move: (alsoMoving: (copyKey: string) => void) => Promise<void>) => {
+      const pending = movesRef.current.get(key)
+      if (pending) {
+        return pending
+      }
+      const keys = new Set([key])
+      const alsoMoving = (copyKey: string) => {
+        const thisMove = movesRef.current.get(key)
+        if (thisMove) movesRef.current.set(copyKey, thisMove)
+        keys.add(copyKey)
+        setMoving((prev) => [...prev, copyKey])
+      }
+      setMoving((prev) => [...prev, key])
+      const result = move(alsoMoving).finally(() => {
+        for (const moved of keys) movesRef.current.delete(moved)
+        setMoving((prev) => prev.filter((moved) => !keys.has(moved)))
+      })
+      movesRef.current.set(key, result)
+      return result
+    },
+    [],
+  )
 
   // Moving a query between the personal store and the shared documents takes two writes to two
   // stores, so it cannot be atomic. When the second write fails, the first is taken back so the
@@ -432,7 +447,7 @@ export function useSavedQueries(): {
   // as they do in the stores, and the error says so.
   const shareQuery = useCallback(
     (key: string) =>
-      runMove(key, async () => {
+      runMove(key, async (alsoMoving) => {
         const query = latestQueriesRef.current.find((q) => q._key === key)
         if (!query) {
           throw new Error(`No personal saved query with key "${key}"`)
@@ -443,6 +458,7 @@ export function useSavedQueries(): {
           url: query.url,
           savedAt: new Date().toISOString(),
         })
+        alsoMoving(sharedKey)
         try {
           await deletePersonalQuery(key)
         } catch (err) {
@@ -460,7 +476,7 @@ export function useSavedQueries(): {
 
   const unshareQuery = useCallback(
     (key: string) =>
-      runMove(key, async () => {
+      runMove(key, async (alsoMoving) => {
         const query = sharedQueries.find((q) => q._key === key)
         if (!query) {
           throw new Error(`No shared query with key "${key}"`)
@@ -471,6 +487,7 @@ export function useSavedQueries(): {
           url: query.url,
           savedAt: new Date().toISOString(),
         })
+        alsoMoving(personalKey)
         try {
           await deleteSharedQuery(key)
         } catch (err) {
