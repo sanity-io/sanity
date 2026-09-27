@@ -76,6 +76,16 @@ describe('parseQueryUrl', () => {
         datasets,
       ),
     ).toBeNull()
+    // `query` and `listen` are whole path segments, not the tail of another one
+    expect(
+      parseQueryUrl(
+        'https://abc123.api.sanity.io/v2025-02-19/data/notquery/production?query=*',
+        datasets,
+      ),
+    ).toBeNull()
+    expect(
+      parseQueryUrl('https://abc123.api.sanity.io/vX/query/production?query=*', datasets)?.query,
+    ).toBe('*')
   })
 
   it('returns null for anything that is not a query URL', () => {
