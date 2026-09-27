@@ -179,6 +179,50 @@ describe('useSavedQueries', () => {
     expect(result.current.moving).toEqual([])
   })
 
+  it('keeps the copy a move makes moving too, so a move of it joins the pending one', async () => {
+    mocks.sharedDocs = [
+      {_id: 'shared-a', authorId: 'user-1', savedAt: '2026-01-01T00:00:00Z', url: 'https://a'},
+    ]
+    const {result} = setup()
+    await waitFor(() => expect(result.current.queries).toHaveLength(1))
+    // The move stays pending at its last step until released
+    let releaseDelete = () => {}
+    mocks.deleteDoc.mockImplementation(
+      () =>
+        new Promise<void>((resolve) => {
+          releaseDelete = resolve
+        }),
+    )
+
+    let unshare: Promise<void>
+    act(() => {
+      unshare = result.current.unshareQuery('shared-a')
+    })
+    // The personal copy is in the list, and moving, while the shared original is still there
+    await waitFor(() => expect(result.current.moving).toHaveLength(2))
+    const copy = result.current.queries.find((query) => !query.shared)
+    if (!copy) throw new Error('expected the personal copy')
+    expect(result.current.queries).toHaveLength(2)
+    expect(result.current.moving).toEqual(['shared-a', copy._key])
+
+    // Sharing that copy right away is the pending unshare, not a new move
+    let share: Promise<void>
+    act(() => {
+      share = result.current.shareQuery(copy._key)
+    })
+    releaseDelete()
+    await act(async () => {
+      await Promise.all([unshare, share])
+    })
+
+    expect(mocks.create).not.toHaveBeenCalled()
+    expect(mocks.deleteDoc).toHaveBeenCalledTimes(1)
+    expect(result.current.queries.map((query) => [query._key, query.shared])).toEqual([
+      [copy._key, false],
+    ])
+    expect(result.current.moving).toEqual([])
+  })
+
   it('takes a shared copy back when the personal one cannot be removed', async () => {
     mocks.store.value = {
       queries: [{_key: 'p1', url: 'https://a', savedAt: '2026-01-01T00:00:00Z', title: 'A'}],
