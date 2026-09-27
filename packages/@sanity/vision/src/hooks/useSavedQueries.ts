@@ -1,5 +1,6 @@
 import {type ListenOptions} from '@sanity/client'
 import {uuid} from '@sanity/uuid' // Import the UUID library
+import {dequal as isEqual} from 'dequal/lite'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type KeyValueStoreValue, useClient, useCurrentUser, useKeyValueStore} from 'sanity'
 
@@ -46,6 +47,32 @@ interface SharedQueryDocument {
   savedAt: string
   title?: string
   url: string
+}
+
+/** What one hook instance has written to the personal list since its store subscription started */
+interface OwnWrites {
+  /** The list its first write started from */
+  base: QueryConfig[]
+  /** The list it wrote last */
+  latest: QueryConfig[]
+}
+
+/**
+ * Whether `queries` shows every change the hook made: each entry that differs between the base
+ * of its first write and its last write is present, or absent, as written last. The store's
+ * initial read predates the writes and never does; an own echo, or another instance's write
+ * built on them, does.
+ */
+function reflectsOwnWrites(queries: QueryConfig[], {base, latest}: OwnWrites): boolean {
+  const shown = new Map(queries.map((query) => [query._key, query]))
+  const before = new Map(base.map((query) => [query._key, query]))
+  const written = new Map(latest.map((query) => [query._key, query]))
+  for (const key of new Set([...before.keys(), ...written.keys()])) {
+    const wanted = written.get(key)
+    if (isEqual(before.get(key), wanted)) continue
+    if (!isEqual(shown.get(key), wanted)) return false
+  }
+  return true
 }
 
 /** The error for a failed move whose rollback failed too: the query is now in both lists */
@@ -95,12 +122,17 @@ export function useSavedQueries(): {
   // render's snapshot: overlapping saves, deletes and moves cannot lose each other's changes
   const latestQueriesRef = useRef<QueryConfig[]>(defaultValue.queries)
   const personalWritesRef = useRef<Promise<unknown>>(Promise.resolve())
-  // The store's emissions stop being that base while a write is pending, and for good once one
-  // has landed: from then on they are echoes of this hook's own writes, or the initial server
-  // read resolving late with the list from before them (the store only forwards its events
-  // once that read is done, so a write made meanwhile is never echoed)
+  // The store's emissions are not that base while a write is pending: the write's outcome is.
+  // Nor is the subscription's initial server read once this hook has written: the store forwards
+  // writes (this hook's, and those of another Vision instance kept mounted under `<Activity>`,
+  // which shares it) only after that read is done, so a write made before has its events dropped
+  // for this subscriber and the read arrives afterwards with the list from before the write.
+  // That read is the one emission that does not reflect the writes made since subscribing; an
+  // emission that does (an own echo, another instance's write built on them) proves the read is
+  // done, and from then on every emission is a live write and the base the next one starts from
   const pendingPersonalWritesRef = useRef(0)
-  const wrotePersonalQueriesRef = useRef(false)
+  const ownWritesRef = useRef<OwnWrites | null>(null)
+  const storeEventsLiveRef = useRef(false)
   const loadedPersonalQueriesRef = useRef(false)
   // The moves in progress, by the key of the query being moved. A move copies the query first
   // and removes the original last, so until it settles the original is still there to be moved
@@ -132,18 +164,26 @@ export function useSavedQueries(): {
     // The store emits its localStorage copy synchronously (`null` without one), the server's
     // list once read, and then every write. Nothing is prepended: this effect runs again when a
     // hidden `<Activity>` shows the tool again, and an initial value would reset the list, and
-    // with it the base the next write starts from, to empty
+    // with it the base the next write starts from, to empty. Each subscription starts a new
+    // server read; what was written before it is on the server already
+    ownWritesRef.current = null
+    storeEventsLiveRef.current = false
     const sub = personalQueries.subscribe({
       next: (data) => {
-        if (pendingPersonalWritesRef.current > 0 || wrotePersonalQueriesRef.current) return
-        if (!data) {
+        const stored = data ? (data as unknown as StoredQueries) : null
+        const ownWrites = ownWritesRef.current
+        if (ownWrites && !storeEventsLiveRef.current) {
+          if (!reflectsOwnWrites(stored?.queries ?? defaultValue.queries, ownWrites)) return
+          storeEventsLiveRef.current = true
+        }
+        if (pendingPersonalWritesRef.current > 0) return
+        if (!stored) {
           // No localStorage copy; the server's answer follows, and a list already shown stays
           if (loadedPersonalQueriesRef.current) return
           latestQueriesRef.current = defaultValue.queries
           setValue(defaultValue)
           return
         }
-        const stored = data as unknown as StoredQueries
         loadedPersonalQueriesRef.current = true
         latestQueriesRef.current = stored.queries
         setValue(stored)
@@ -206,17 +246,17 @@ export function useSavedQueries(): {
   const enqueuePersonalWrite = useCallback(<T>(task: () => Promise<T>): Promise<T> => {
     pendingPersonalWritesRef.current += 1
     const run = () =>
-      task()
-        .then((written) => {
-          wrotePersonalQueriesRef.current = true
-          return written
-        })
-        .finally(() => {
-          pendingPersonalWritesRef.current -= 1
-        })
+      task().finally(() => {
+        pendingPersonalWritesRef.current -= 1
+      })
     const result = personalWritesRef.current.then(run, run)
     personalWritesRef.current = result.catch(() => undefined)
     return result
+  }, [])
+
+  /** Records a list this hook is writing, or, when the write failed, the one the store kept */
+  const recordOwnWrite = useCallback((before: QueryConfig[], latest: QueryConfig[]) => {
+    ownWritesRef.current = {base: ownWritesRef.current?.base ?? before, latest}
   }, [])
 
   /**
@@ -245,19 +285,21 @@ export function useSavedQueries(): {
       enqueuePersonalWrite(async () => {
         const before = latestQueriesRef.current
         const next = update(before)
+        recordOwnWrite(before, next)
         latestQueriesRef.current = next
         setValue({queries: next})
         try {
           await storePersonalQueries(next)
         } catch (err) {
           // The store kept the previous list, so the UI shows it again
+          recordOwnWrite(before, before)
           latestQueriesRef.current = before
           setValue({queries: before})
           throw err
         }
         return next
       }),
-    [enqueuePersonalWrite, storePersonalQueries],
+    [enqueuePersonalWrite, recordOwnWrite, storePersonalQueries],
   )
 
   const queries = useMemo(() => {
@@ -506,11 +548,18 @@ export function useSavedQueries(): {
     () =>
       enqueuePersonalWrite(async () => {
         // Nothing disappears from the list until the store confirms the write
-        await storePersonalQueries(defaultValue.queries)
+        const before = latestQueriesRef.current
+        recordOwnWrite(before, defaultValue.queries)
+        try {
+          await storePersonalQueries(defaultValue.queries)
+        } catch (err) {
+          recordOwnWrite(before, before)
+          throw err
+        }
         latestQueriesRef.current = defaultValue.queries
         setValue(defaultValue)
       }),
-    [enqueuePersonalWrite, storePersonalQueries],
+    [enqueuePersonalWrite, recordOwnWrite, storePersonalQueries],
   )
 
   return {
