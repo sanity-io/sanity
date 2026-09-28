@@ -1838,6 +1838,19 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for a scheduled draft release */
   'scheduled-drafts.release.title': 'Scheduled publish',
 
+  /** Label for the dataset of the workspace whose schema failed to compile */
+  'schema-errors.location.dataset': 'Dataset',
+  /** Label for the project ID of the workspace whose schema failed to compile */
+  'schema-errors.location.project-id': 'Project ID',
+  /** Label for the source within the workspace whose schema failed to compile */
+  'schema-errors.location.source': 'Source',
+  /** Title for the section naming the workspace whose schema failed to compile */
+  'schema-errors.location.title': 'Where the error came from',
+  /** Label for the workspace whose schema failed to compile */
+  'schema-errors.location.workspace': 'Workspace',
+  /** Title for the schema errors screen */
+  'schema-errors.title': 'Schema errors',
+
   /** Accessibility label to open search action when the search would go fullscreen (eg on narrower screens) */
   'search.action-open-aria-label': 'Open search',
   /** Action label for adding a search filter */

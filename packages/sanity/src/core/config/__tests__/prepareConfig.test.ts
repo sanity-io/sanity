@@ -3,6 +3,7 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {getCollectedConfigWarnings} from '../configWarnings'
 import {prepareConfig} from '../prepareConfig'
+import {SchemaError} from '../SchemaError'
 import {type WorkspaceOptions} from '../types'
 
 // Minimum viable workspace for prepareConfig — avoids pulling in real
@@ -206,5 +207,77 @@ describe('prepareConfig — studio request handler', () => {
     for (const [config] of clientFactory.mock.calls) {
       expect(config.requestHandler).toBe(requestHandler)
     }
+  })
+})
+
+describe('prepareConfig — schema error context', () => {
+  // Mirrors the reported failure: a field pointing at a type that only exists
+  // in a sibling workspace, which crashes the studio at runtime.
+  const brokenSchemaTypes = [
+    {
+      type: 'document',
+      name: 'mediaGalleryItem',
+      fields: [{name: 'article', type: 'reference', to: [{type: 'article'}]}],
+    },
+  ]
+
+  function captureSchemaError(workspaces: WorkspaceOptions[]) {
+    try {
+      prepareConfig(workspaces)
+    } catch (err) {
+      return err as SchemaError
+    }
+    throw new Error('expected prepareConfig to throw a SchemaError')
+  }
+
+  it('names the workspace, project and dataset that failed to compile', () => {
+    const error = captureSchemaError([
+      createWorkspace({
+        name: 'healthy',
+        basePath: '/healthy',
+        schema: {types: []},
+      }),
+      createWorkspace({
+        name: 'broken',
+        basePath: '/broken',
+        projectId: 'riot',
+        dataset: 'live',
+        schema: {types: brokenSchemaTypes},
+      }),
+    ])
+
+    expect(error).toBeInstanceOf(SchemaError)
+    expect(error.context).toEqual({
+      workspaceName: 'broken',
+      sourceName: 'broken',
+      projectId: 'riot',
+      dataset: 'live',
+    })
+  })
+
+  it('distinguishes a nested source from its workspace', () => {
+    const error = captureSchemaError([
+      createWorkspace({
+        name: 'broken',
+        basePath: '/broken',
+        projectId: 'riot',
+        dataset: 'live',
+        unstable_sources: [
+          {
+            name: 'secondary',
+            projectId: 'riot',
+            dataset: 'archive',
+            schema: {types: brokenSchemaTypes},
+          },
+        ],
+      }),
+    ])
+
+    expect(error.context).toEqual({
+      workspaceName: 'broken',
+      sourceName: 'secondary',
+      projectId: 'riot',
+      dataset: 'archive',
+    })
   })
 })

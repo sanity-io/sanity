@@ -368,7 +368,12 @@ export function prepareConfig(
 
       if (schemaValidationProblemGroups && schemaErrors?.length) {
         // TODO: consider using the `ConfigResolutionError`
-        throw new SchemaError(schema)
+        throw new SchemaError(schema, {
+          workspaceName: rawWorkspace.name || 'default',
+          sourceName: source.name || 'default',
+          projectId,
+          dataset,
+        })
       }
 
       const auth = getAuthStore(source, {

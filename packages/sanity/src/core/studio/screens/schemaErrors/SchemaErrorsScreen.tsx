@@ -1,10 +1,12 @@
 import {type Schema} from '@sanity/types'
-import {Card, Heading} from '@sanity/ui'
+import {Card, Heading, Text} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {useToast} from '@sanity/ui/toast'
 import {useEffect} from 'react'
-import {Container, VStack, Flex} from 'ui5'
+import {Container, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
+import {type SchemaErrorContext} from '../../../config/SchemaError'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
 import {formatSchemaErrorsToMarkdown} from './formatSchemaErrorsToMarkdown'
@@ -13,9 +15,22 @@ import {SchemaProblemGroups} from './SchemaProblemGroups'
 
 interface SchemaErrorsScreenProps {
   schema: Schema
+  /** Which workspace and source the schema belongs to, when the thrower knew it */
+  context?: SchemaErrorContext
 }
 
-export function SchemaErrorsScreen({schema}: SchemaErrorsScreenProps) {
+function ContextRow(props: {label: string; value: string}) {
+  return (
+    <Flex gap={2} alignItems="center">
+      <Text size={1} weight="medium">
+        {props.label}
+      </Text>
+      <Code size={1}>{props.value}</Code>
+    </Flex>
+  )
+}
+
+export function SchemaErrorsScreen({schema, context}: SchemaErrorsScreenProps) {
   const groupsWithErrors =
     schema._validation?.filter((group) =>
       group.problems.some((problem) => problem.severity === 'error'),
@@ -28,7 +43,7 @@ export function SchemaErrorsScreen({schema}: SchemaErrorsScreenProps) {
   const {t: tCopyPaste} = useTranslation('copy-paste')
   const [, copy] = useCopyToClipboard()
   const handleCopyToClipboard = async () => {
-    const errorsText = formatSchemaErrorsToMarkdown(groupsWithErrors)
+    const errorsText = formatSchemaErrorsToMarkdown(groupsWithErrors, context)
 
     try {
       const ok = await copy(errorsText)
@@ -73,7 +88,7 @@ export function SchemaErrorsScreen({schema}: SchemaErrorsScreenProps) {
       <Container size={1}>
         <VStack gap={5}>
           <Flex justifyContent="space-between" alignItems="center" gap={2}>
-            <Heading as="h1">{t('schema-errors.title', 'Schema errors')}</Heading>
+            <Heading as="h1">{t('schema-errors.title')}</Heading>
             <Button
               text={t(
                 'about-dialog.version-info.copy-to-clipboard-button.text',
@@ -82,6 +97,32 @@ export function SchemaErrorsScreen({schema}: SchemaErrorsScreenProps) {
               onClick={handleCopyToClipboard}
             />
           </Flex>
+          {context && (
+            <Card border padding={4} radius={2} tone="caution" data-testid="schema-error-location">
+              <VStack gap={3}>
+                <Text size={1} weight="medium">
+                  {t('schema-errors.location.title')}
+                </Text>
+                <VStack gap={2}>
+                  <ContextRow
+                    label={t('schema-errors.location.workspace')}
+                    value={context.workspaceName}
+                  />
+                  {context.sourceName !== context.workspaceName && (
+                    <ContextRow
+                      label={t('schema-errors.location.source')}
+                      value={context.sourceName}
+                    />
+                  )}
+                  <ContextRow
+                    label={t('schema-errors.location.project-id')}
+                    value={context.projectId}
+                  />
+                  <ContextRow label={t('schema-errors.location.dataset')} value={context.dataset} />
+                </VStack>
+              </VStack>
+            </Card>
+          )}
           <SchemaProblemGroups problemGroups={groupsWithErrors} />
         </VStack>
       </Container>
