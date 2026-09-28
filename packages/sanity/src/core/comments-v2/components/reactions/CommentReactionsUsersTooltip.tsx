@@ -92,11 +92,7 @@ function FormattedUserList({
 
     if (item.type === 'literal') {
       // Add literals as-is - the next case will rewrite literals to exclude leading non-whitespace
-      elements.push(
-        <InlineText key={`literal-${i}`} as="div" trim={true}>
-          {item.value}
-        </InlineText>,
-      )
+      elements.push(<InlineText key={`literal-${i}`}>{item.value}</InlineText>)
       continue
     }
 
@@ -111,12 +107,10 @@ function FormattedUserList({
       elements.push(
         // Key (value) is user ID, thus unique
         <div className={textGroup} key={item.value}>
-          <InlineText weight="medium" as="div" trim={true}>
+          <InlineText weight="medium">
             <UserDisplayName currentUserId={currentUserId} isFirst={i === 0} userId={item.value} />
           </InlineText>
-          <InlineText as="div" trim={true}>
-            {nonWhitespace}
-          </InlineText>
+          <InlineText>{nonWhitespace}</InlineText>
         </div>,
       )
 
@@ -129,7 +123,7 @@ function FormattedUserList({
     // in an element that does _not_ have a leading non-whitespace literal following it.
     elements.push(
       // Key (value) is user ID, thus unique
-      <InlineText key={item.value} weight="medium" as="div" trim={true}>
+      <InlineText key={item.value} weight="medium">
         <UserDisplayName currentUserId={currentUserId} isFirst={i === 0} userId={item.value} />
       </InlineText>,
     )
@@ -150,20 +144,13 @@ function UserList({currentUserId, userIds}: ReactionTooltipComponentProps) {
 }
 
 function ReactionName({reactionName}: ReactionTooltipComponentProps) {
-  return (
-    <InlineText muted as="div" trim={true}>
-      {reactionName}
-    </InlineText>
-  )
+  return <InlineText muted>{reactionName}</InlineText>
 }
 
 function ReactionText({children}: ReactionTooltipComponentProps) {
   return (
     <>
-      <InlineText muted as="div" trim={true}>
-        {children}
-      </InlineText>{' '}
-      <wbr />{' '}
+      <InlineText muted>{children}</InlineText> <wbr />{' '}
     </>
   )
 }
@@ -177,9 +164,7 @@ function CommentReactionsUsersTooltipContent(
   return (
     <Flex className={contentStack} padding={1} flexDirection="column">
       <Flex justifyContent="center" paddingBottom={2} paddingTop={1}>
-        <EmojiText size={4} as="div" trim={true}>
-          {COMMENT_REACTION_EMOJIS[reactionName]}
-        </EmojiText>
+        <EmojiText size={4}>{COMMENT_REACTION_EMOJIS[reactionName]}</EmojiText>
       </Flex>
 
       <Box className={textBox}>
