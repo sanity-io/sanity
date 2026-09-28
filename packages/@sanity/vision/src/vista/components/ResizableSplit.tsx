@@ -81,12 +81,13 @@ export function ResizableSplit(props: ResizableSplitProps) {
   const contentSize = useContentSize(root)
   const [dragging, setDragging] = useState(false)
 
-  // The bounds follow the observed container size; until it is measured the size is shown as
+  // The bounds follow the observed container size; until it is measured, and while it has no
+  // box to measure (a split kept mounted under `display: none` reports 0), the size is shown as
   // given and the divider waits
   const extent = split === 'vertical' ? contentSize?.width : contentSize?.height
   const bounds = useMemo(
     (): Bounds | null =>
-      extent === undefined
+      !extent
         ? null
         : {min: minSize, max: Math.max(minSize, extent - minSecondarySize - SPLIT_HANDLE_SIZE)},
     [extent, minSecondarySize, minSize],

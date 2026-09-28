@@ -166,6 +166,17 @@ describe('ResizableSplit', () => {
     expect(primaryPane().style.flex).toBe('0 0 600px')
   })
 
+  it('keeps the size a hidden container cannot hold', () => {
+    render(<Harness defaultSize={600} />)
+    measure(801, 400)
+    expect(primaryPane().style.flex).toBe('0 0 600px')
+    // A split kept mounted under `display: none` has nothing to measure, so the size it is shown
+    // again with is the one it was given rather than the minimum
+    measure(0, 0)
+    expect(primaryPane().style.flex).toBe('0 0 600px')
+    expect(screen.getByTestId('split-handle').getAttribute('aria-valuemax')).toBeNull()
+  })
+
   it('takes the divider out of the way while resizing is not allowed', () => {
     const onChange = vi.fn()
     render(<Harness allowResize={false} onChange={onChange} />)
