@@ -5,6 +5,7 @@ import {catchError, distinctUntilChanged, map, scan, startWith, switchMap} from 
 import {
   type DocumentPreviewStore,
   type PerspectiveStack,
+  getDefaultVariant,
   useDocumentPreviewStore,
   usePerspective,
 } from 'sanity'
@@ -127,7 +128,8 @@ export function useListPaneCounts(
   enabled = true,
 ): ListPaneCounts {
   const documentPreviewStore = useDocumentPreviewStore()
-  const {perspectiveStack, selectedVariantName} = usePerspective()
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
 
   // Defer the initial fetch off first paint (product decision): the list must paint
   // immediately, badges fill in afterwards.

@@ -7,6 +7,7 @@ import {type PaneListItem} from '../../types'
 import {useListPaneCounts} from './useListPaneCounts'
 
 vi.mock('sanity', () => ({
+  getDefaultVariant: vi.fn((selected: unknown[]) => selected[0]),
   useDocumentPreviewStore: vi.fn(),
   usePerspective: vi.fn(),
 }))
@@ -45,7 +46,7 @@ beforeEach(() => {
   mockUseDocumentPreviewStore.mockReturnValue({
     unstable_observeDocumentCount: observeDocumentCount,
   })
-  mockUsePerspective.mockReturnValue({perspectiveStack: ['drafts']})
+  mockUsePerspective.mockReturnValue({perspectiveStack: ['drafts'], selectedVariantNames: []})
 })
 
 afterEach(() => {
@@ -67,7 +68,7 @@ describe('useListPaneCounts', () => {
   it('passes the selected variant through to unstable_observeDocumentCount', async () => {
     mockUsePerspective.mockReturnValue({
       perspectiveStack: ['drafts'],
-      selectedVariantName: 'variant-a',
+      selectedVariantNames: ['variant-a'],
     })
     const items = [listItem('featured-authors', 'author')]
     renderHook(() => useListPaneCounts(items, true))
