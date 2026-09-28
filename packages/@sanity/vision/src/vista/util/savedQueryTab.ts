@@ -7,11 +7,13 @@ import {type ParsedQueryUrl} from '../../util/parseQueryUrl'
 import {type VistaTab, type VistaTabInit, type VistaTabOptions} from '../store/types'
 
 /**
- * The fields of a tab for a parsed query URL (a saved query or a paste). Options the URL does not
- * carry (or carries in an unsupported form, or a dataset the tool does not know) are left to the
- * receiving tab; the content source map is the exception, since a request either asked for one
- * or did not. A variant cannot be pinned by a tab (the option follows the navbar or sends none),
- * so it is left to the tab as well.
+ * The fields of a tab for a parsed query URL (a saved query or a paste). A URL is the request
+ * that was sent, so the tab gets the perspective it states, including none: a URL without one
+ * ran on the API default, which is not what a tab on `global` would send. What the tab cannot
+ * represent is left to it: a dataset the tool does not know, a perspective it cannot pick (a
+ * release stack), and the variant, which a tab cannot pin (the option follows the navbar or
+ * sends none). The content source map follows the URL, since a request either asked for one or
+ * did not.
  */
 export function parsedQueryToTabInit(parsed: ParsedQueryUrl): VistaTabInit {
   const options: Partial<VistaTabOptions> = {includeSourceMap: parsed.includeSourceMap}
@@ -23,7 +25,10 @@ export function parsedQueryToTabInit(parsed: ParsedQueryUrl): VistaTabInit {
   if (parsed.apiVersion) {
     options.apiVersion = parsed.apiVersion
   }
-  if (parsed.perspective) {
+  if (parsed.urlPerspective === undefined) {
+    // No perspective in the URL means the request ran on the API default
+    options.perspective = undefined
+  } else if (parsed.perspective) {
     options.perspective = parsed.perspective === 'pinnedRelease' ? 'global' : parsed.perspective
   }
 

@@ -195,6 +195,16 @@ describe('vistaMachine', () => {
 
     harness.actor.send({type: 'tab.load', id: tab.id, tab: {query: '*[]'}})
     expect(harness.snapshot().context.loadRevisions[tab.id]).toBe(2)
+
+    // An option given as `undefined` is set, not unspecified: this is how a URL without a
+    // perspective puts the tab on the API default
+    harness.actor.send({
+      type: 'tab.load',
+      id: tab.id,
+      tab: {query: '*', options: {perspective: undefined}},
+    })
+    expect(harness.tabs()[0].options).toMatchObject({dataset: 'production'})
+    expect(harness.tabs()[0].options.perspective).toBeUndefined()
   })
 
   it('restores and toggles the sidebar, drawer and dialogs', () => {

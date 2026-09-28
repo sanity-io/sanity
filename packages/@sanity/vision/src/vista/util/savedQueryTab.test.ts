@@ -145,6 +145,13 @@ describe('savedQueryTab', () => {
     expect(parsedQueryToTabInit(withSourceMap).options).toMatchObject({includeSourceMap: true})
   })
 
+  it('loads a URL without a perspective as the API default, not as the tab had it', () => {
+    const options = parsedQueryToTabInit(parse(url('*'))).options ?? {}
+    // Set to `undefined` rather than left out, so it replaces the receiving tab's perspective
+    expect('perspective' in options).toBe(true)
+    expect(options.perspective).toBeUndefined()
+  })
+
   it('matches the variant and the content source map the request was sent with', () => {
     const tab = createTab(settings, {query: '*'})
     const withVariant = {...environment, selectedVariantNames: ['french']}
