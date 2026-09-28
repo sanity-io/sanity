@@ -253,6 +253,30 @@ describe('mergeWebAppManifest', () => {
     expect(merged).toMatchObject({display: 'minimal-ui', name: 'Acme CMS'})
   })
 
+  test('keeps the studio start url, scope and id when the host declared its own', () => {
+    const embedded = createWebAppManifest({
+      icons,
+      name: 'Sanity Studio',
+      origin: 'https://site.example',
+      scopePath: '/studio/',
+      startPath: '/studio/',
+    })
+
+    const merged = mergeWebAppManifest(embedded, {
+      id: 'https://site.example/',
+      name: 'Acme Site',
+      start_url: 'https://site.example/',
+    })
+
+    expect(merged).toMatchObject({
+      id: 'https://site.example/studio/',
+      name: 'Acme Site',
+      scope: 'https://site.example/studio/',
+      start_url: 'https://site.example/studio/',
+    })
+    expect(isInstallableWebAppManifest(merged)).toBe(true)
+  })
+
   test('treats an absent or empty member as not declared', () => {
     const merged = mergeWebAppManifest(studioManifest, {icons: [], name: undefined})
 

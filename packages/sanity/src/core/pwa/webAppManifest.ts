@@ -219,9 +219,18 @@ export function createWebAppManifest(options: CreateWebAppManifestOptions): WebA
 }
 
 /**
- * Merges the studio's manifest with the one the host document declared. Members the host set win,
- * so a studio that authored its own `static/manifest.webmanifest` keeps its name, icons and
- * colours while still gaining the members it was missing.
+ * Members that place the installed app on the origin. They only make sense together — a host
+ * `start_url` of `/` against the `/studio/` scope of an embedded studio resolves outside that
+ * scope, which Chromium rejects as `start-url-not-valid` — so the studio keeps the set it derived
+ * from the workspaces it serves. A host that declared them in an installable manifest of its own
+ * never reaches this merge.
+ */
+const STUDIO_OWNED_MEMBERS = new Set(['id', 'scope', 'start_url'])
+
+/**
+ * Merges the studio's manifest with the one the host document declared. Members the host set win
+ * unless the studio owns them, so a studio that authored its own `static/manifest.webmanifest`
+ * keeps its name, icons and colours while still gaining the members it was missing.
  *
  * @internal
  */
@@ -232,7 +241,8 @@ export function mergeWebAppManifest(
   if (!hostManifest) return studioManifest
 
   const defined = Object.fromEntries(
-    Object.entries(hostManifest).filter(([, value]) => {
+    Object.entries(hostManifest).filter(([member, value]) => {
+      if (STUDIO_OWNED_MEMBERS.has(member)) return false
       if (value === undefined || value === null) return false
       return !Array.isArray(value) || value.length > 0
     }),
