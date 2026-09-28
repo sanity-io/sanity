@@ -84,7 +84,8 @@ describe('ResizableSplit', () => {
     expect(primaryPane().style.flex).toBe('0 0 300px')
     expect(handle.getAttribute('aria-valuemax')).toBeNull()
 
-    measure(801, 400)
+    // A fractional container size gives whole-pixel bounds
+    measure(801.6, 400)
     expect(handle.getAttribute('role')).toBe('separator')
     expect(handle.getAttribute('aria-orientation')).toBe('vertical')
     expect(handle.getAttribute('aria-label')).toBe('Resize')
