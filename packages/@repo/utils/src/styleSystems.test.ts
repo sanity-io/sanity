@@ -80,6 +80,54 @@ describe('takeStyleCensus', () => {
     expect(census.stylesheets.inaccessible).toBe(0)
   })
 
+  test('weighs every readable sheet, counting rules inside grouping rules', () => {
+    renderPage({
+      stylesheet:
+        '.static { color: red } @media (min-width: 1px) { .a { margin: 0 } .b { padding: 0 } }',
+    })
+    const census = takeStyleCensus(document)
+    // Static sheet: .static plus the two rules inside @media (the @media
+    // block itself is a container, not a rule); the styled sheet adds three
+    expect(census.css.rules).toBe(6)
+    // Both sheets are <style> elements
+    expect(census.css.styleTags.rules).toBe(6)
+    expect(census.css.styleTags.bytes).toBe(census.css.bytes)
+    // The styled-components sheet is part of the total, measured the same way
+    expect(census.css.bytes).toBeGreaterThan(census.styledComponents.cssBytes)
+    // Top-level count unchanged: .static, @media and the three inserted rules
+    expect(census.stylesheets.totalRules).toBe(5)
+  })
+
+  test('sheets outside <style> tags count towards the total but not the style tags', () => {
+    renderPage({styled: false})
+    // A constructed sheet stands in for a <link> one: jsdom does not load
+    // linked stylesheets, and both reach the census the same way (no <style> owner)
+    const linked = new CSSStyleSheet()
+    linked.replaceSync('.linked { color: blue } .other { color: green }')
+    document.adoptedStyleSheets = [linked]
+    const census = takeStyleCensus(document)
+    expect(census.css.rules).toBe(4)
+    expect(census.css.styleTags.rules).toBe(2)
+    expect(census.css.bytes).toBeGreaterThan(census.css.styleTags.bytes)
+    document.adoptedStyleSheets = []
+  })
+
+  test('an empty but readable sheet reports zero CSS, not absence', () => {
+    document.head.innerHTML = '<style></style>'
+    const census = takeStyleCensus(document)
+    expect(census.css.sheets).toBe(1)
+    expect(styleMetricFor('CSS bytes')!.read(census)).toBe(0)
+    expect(styleMetricFor('CSS rules')!.read(census)).toBe(0)
+  })
+
+  test('the CSS weight rows are absent when no stylesheet was readable', () => {
+    const census = takeStyleCensus(document)
+    const read = (label: string) => styleMetricFor(label)!.read(census)
+    expect(read('CSS bytes')).toBeNull()
+    expect(read('CSS rules')).toBeNull()
+    expect(read('style tag CSS bytes')).toBe(0)
+  })
+
   test('a page without styled-components reports zeros, not absence', () => {
     renderPage({styled: false})
     const census = takeStyleCensus(document)

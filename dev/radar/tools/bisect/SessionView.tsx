@@ -1,12 +1,12 @@
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Badge, Box, Button, Card, Container, Dialog, Text} from '@sanity/ui'
+import {Badge, Box, Button, Card, Dialog, Text} from '@sanity/ui'
 import {type ToastContextValue, useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {type SanityClient, useDocumentStore} from 'sanity'
-import {Flex, VStack} from 'ui5'
+import {Container, Flex, VStack} from 'ui5'
 
 import {commitUrl, compareUrl} from '../trends/links'
 import {
@@ -262,7 +262,7 @@ export function SessionView(props: {
 
   return (
     <Box padding={4} style={{overflowY: 'auto', height: '100%'}}>
-      <Container width={2}>
+      <Container size={2}>
         <VStack gap={4}>
           <Flex alignItems="center" gap={3}>
             <Button mode="bleed" icon={ArrowLeftIcon} text="Sessions" onClick={onBack} />

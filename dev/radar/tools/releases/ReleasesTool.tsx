@@ -8,7 +8,7 @@ import {DocumentTextIcon} from '@sanity/icons/DocumentText'
 import {PackageIcon} from '@sanity/icons/Package'
 import {RestoreIcon} from '@sanity/icons/Restore'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Badge, Box, Button, Card, Container, Text} from '@sanity/ui'
+import {Badge, Box, Button, Card, Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {
@@ -23,7 +23,7 @@ import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useClient, useCurrentUser, useDocumentStore} from 'sanity'
 import {useIntentLink} from 'sanity/router'
-import {Flex, VStack} from 'ui5'
+import {Container, Flex, VStack} from 'ui5'
 
 import {
   BISECT_COMMITS_QUERY,
@@ -361,7 +361,7 @@ export function ReleasesTool() {
 
   return (
     <Box padding={4} style={{overflowY: 'auto', height: '100%'}}>
-      <Container width={2}>
+      <Container size={2}>
         <VStack gap={4}>
           <Flex alignItems="center" gap={3}>
             <Box flex={1}>

@@ -6241,7 +6241,7 @@ describe('sanity', () => {
     expectTypeOf<typeof stringToPath>().toBeFunction()
   })
   test('StructureNodeIdValidationResult', () => {
-    expectTypeOf<StructureNodeIdValidationResult>().toBeObject()
+    expectTypeOf<StructureNodeIdValidationResult>().not.toBeNever()
   })
   test('Studio', () => {
     expectTypeOf<typeof Studio>().toBeFunction()
