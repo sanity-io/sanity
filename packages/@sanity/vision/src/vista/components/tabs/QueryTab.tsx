@@ -266,10 +266,15 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     tab.options.includeSourceMap,
   ])}`
   useOnValueChange(refetchKey, (key, previous) => {
-    if (tab.autoRefetch && request) {
-      const loaded = key.split('|', 1)[0] !== previous.split('|', 1)[0]
-      runnerRef.send({type: 'fetch', request, reason: {type: loaded ? 'load' : 'options'}})
-    }
+    if (!tab.autoRefetch) return
+    // Params typed within the debounce window belong to this fetch, so commit them first and
+    // build the request from what the machine holds now, as `run` does
+    setParams.flush()
+    const latest = actorRef.getSnapshot().context.tabs.find((it) => it.id === tab.id) ?? tab
+    const current = buildRequest(latest.query, latest.rawParams)
+    if (!current) return
+    const loaded = key.split('|', 1)[0] !== previous.split('|', 1)[0]
+    runnerRef.send({type: 'fetch', request: current, reason: {type: loaded ? 'load' : 'options'}})
   })
 
   // A stored scheduled drafts choice already reads as global where this workspace has no

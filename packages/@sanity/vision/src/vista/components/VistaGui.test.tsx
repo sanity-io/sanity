@@ -1008,6 +1008,16 @@ describe('VistaGui', () => {
     fireEvent.click(screen.getByTestId('vista-auto-refetch'))
     await waitFor(() => expect(fetchCalls).toHaveLength(2))
     expect(fetchCalls[1].params).toEqual({id: 'fresher'})
+
+    // And for the fetch a changed option starts while refetching automatically: it runs the
+    // params typed just before, not the ones the last render was built from
+    fireEvent.change(paramsEditor, {target: {value: '{"id": "freshest"}'}})
+    fireEvent.click(screen.getByTestId('vista-option-dataset-pin'))
+    fireEvent.change(screen.getByTestId('vista-option-dataset-select'), {
+      target: {value: 'staging'},
+    })
+    await waitFor(() => expect(fetchCalls).toHaveLength(3))
+    expect(fetchCalls[2]).toMatchObject({config: {dataset: 'staging'}, params: {id: 'freshest'}})
   })
 
   it('saves and exports params typed just before, ahead of the debounce', async () => {
