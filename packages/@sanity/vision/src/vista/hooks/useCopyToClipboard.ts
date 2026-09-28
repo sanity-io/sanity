@@ -30,6 +30,9 @@ export function useCopyToClipboard(): (text: string, successTitle: string) => Pr
 }
 
 function copyWithTextarea(text: string): void {
+  // `select()` focuses the textarea, and removing the focused element drops focus on the
+  // document, so the control that triggered the copy gets it back afterwards
+  const previouslyFocused = document.activeElement
   const textarea = document.createElement('textarea')
   textarea.value = text
   textarea.setAttribute('readonly', '')
@@ -43,6 +46,13 @@ function copyWithTextarea(text: string): void {
     copied = document.execCommand('copy')
   } finally {
     textarea.remove()
+    if (
+      previouslyFocused instanceof HTMLElement &&
+      previouslyFocused !== document.body &&
+      previouslyFocused.isConnected
+    ) {
+      previouslyFocused.focus({preventScroll: true})
+    }
   }
   if (!copied) {
     throw new Error('Copying to the clipboard is not allowed here')
