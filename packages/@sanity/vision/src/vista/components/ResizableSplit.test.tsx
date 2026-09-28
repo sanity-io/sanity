@@ -167,6 +167,19 @@ describe('ResizableSplit', () => {
     expect(primaryPane().style.flex).toBe('0 0 600px')
   })
 
+  it('leaves the size alone while the container is not laid out', () => {
+    // A pane kept mounted under `display: none` (the phone layout's other column, a tool hidden
+    // in an <Activity>) measures 0×0; that is not a container to clamp against
+    render(<Harness defaultSize={600} />)
+    measure(801, 400)
+    expect(primaryPane().style.flex).toBe('0 0 600px')
+    measure(0, 0)
+    expect(primaryPane().style.flex).toBe('0 0 600px')
+    expect(screen.getByTestId('split-handle').getAttribute('aria-valuemax')).toBeNull()
+    measure(801, 400)
+    expect(primaryPane().style.flex).toBe('0 0 600px')
+  })
+
   it('takes the divider out of the way while resizing is not allowed', () => {
     const onChange = vi.fn()
     render(<Harness allowResize={false} onChange={onChange} />)

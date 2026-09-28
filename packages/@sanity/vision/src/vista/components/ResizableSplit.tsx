@@ -82,11 +82,14 @@ export function ResizableSplit(props: ResizableSplitProps) {
   const [dragging, setDragging] = useState(false)
 
   // The bounds follow the observed container size (whole pixels, as the ARIA values are read
-  // out); until it is measured the size is shown as given and the divider waits
+  // out). Until it is measured, and while it is not laid out at all (a pane kept mounted under
+  // `display: none`, the tool hidden in an `<Activity>`), the size is shown as given and the
+  // divider waits: a 0×0 container would otherwise clamp the pane to its minimum and paint that
+  // for a frame when the container shows again
   const extent = split === 'vertical' ? contentSize?.width : contentSize?.height
   const bounds = useMemo(
     (): Bounds | null =>
-      extent === undefined
+      extent === undefined || extent <= 0
         ? null
         : {
             min: minSize,
