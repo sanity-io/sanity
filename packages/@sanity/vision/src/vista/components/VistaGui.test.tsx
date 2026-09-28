@@ -1008,6 +1008,19 @@ describe('VistaGui', () => {
     fireEvent.click(screen.getByTestId('vista-auto-refetch'))
     await waitFor(() => expect(fetchCalls).toHaveLength(2))
     expect(fetchCalls[1].params).toEqual({id: 'fresher'})
+
+    // And for the fetch an option change starts while refetching automatically: it carries the
+    // params typed just before the change, not the ones the previous fetch went out with
+    fireEvent.change(paramsEditor, {target: {value: '{"id": "freshest"}'}})
+    fireEvent.change(screen.getByTestId('vista-option-perspective-select'), {
+      target: {value: 'published'},
+    })
+    await waitFor(() => expect(fetchCalls).toHaveLength(3))
+    expect(fetchCalls[2].params).toEqual({id: 'freshest'})
+    expect(fetchCalls[2].config.perspective).toBe('published')
+    // The debounce settling afterwards has nothing left to fetch
+    await new Promise((resolve) => setTimeout(resolve, 400))
+    expect(fetchCalls).toHaveLength(3)
   })
 
   it('saves and exports params typed just before, ahead of the debounce', async () => {

@@ -113,20 +113,27 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     if (!expanded) setParams.flush()
   })
 
+  // The request a fetch of the tab's own query should carry right now: params typed within the
+  // debounce window belong to it, so they are committed first and the request is built from what
+  // the machine holds now rather than from the last render. Every such fetch (a run, an options
+  // change, a load, resuming after a reload) goes through this; live refetches replay the
+  // runner's last request instead
+  const buildCurrentRequest = useCallback(() => {
+    setParams.flush()
+    const latest = actorRef.getSnapshot().context.tabs.find((it) => it.id === tab.id) ?? tab
+    return buildRequest(latest.query, latest.rawParams)
+  }, [actorRef, buildRequest, setParams, tab])
+
   const run = useCallback(
     (reason: FetchReason) => {
-      // Params typed within the debounce window belong to this fetch, so commit them first and
-      // build the request from what the machine holds now rather than from the last render
-      setParams.flush()
-      const latest = actorRef.getSnapshot().context.tabs.find((it) => it.id === tab.id) ?? tab
-      const current = buildRequest(latest.query, latest.rawParams)
+      const current = buildCurrentRequest()
       if (current) {
         runnerRef.send({type: 'fetch', request: current, reason})
         // On a phone the result lives behind the other pane; bring it forward
         if (layout === 'mobile') setMobilePane('response')
       }
     },
-    [actorRef, buildRequest, layout, runnerRef, setParams, tab],
+    [buildCurrentRequest, layout, runnerRef],
   )
   const cancel = useCallback(() => runnerRef.send({type: 'cancel'}), [runnerRef])
   const setOptions = useCallback(
@@ -139,12 +146,8 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     actorRef.send({type: 'tab.setAutoRefetch', id: tab.id, autoRefetch})
     if (!autoRefetch) return
     // Live refetches replay the runner's last request, which may date from before the options
-    // (or the query) changed while refetching was off; a session starts from the current one.
-    // Params typed within the debounce window belong to that session, so commit them first and
-    // build the request from what the machine holds now, as `run` does
-    setParams.flush()
-    const latest = actorRef.getSnapshot().context.tabs.find((it) => it.id === tab.id) ?? tab
-    const current = buildRequest(latest.query, latest.rawParams)
+    // (or the query) changed while refetching was off; a session starts from the current one
+    const current = buildCurrentRequest()
     const lastRequest = runnerRef.getSnapshot().context.request
     if (
       current &&
@@ -153,7 +156,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     ) {
       runnerRef.send({type: 'fetch', request: current, reason: {type: 'manual'}})
     }
-  }, [actorRef, buildRequest, runnerRef, setParams, tab])
+  }, [actorRef, buildCurrentRequest, runnerRef, tab])
 
   const prettify = useCallback(async () => {
     const {query} = tab
@@ -239,7 +242,8 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     if (!tab.autoRefetch) return
     const lastRequest = runnerRef.getSnapshot().context.request
     if (!lastRequest) {
-      if (request) runnerRef.send({type: 'fetch', request, reason: {type: 'resume'}})
+      const current = buildCurrentRequest()
+      if (current) runnerRef.send({type: 'fetch', request: current, reason: {type: 'resume'}})
       return
     }
     const current = buildRequest(lastRequest.query, JSON.stringify(lastRequest.params))
@@ -266,9 +270,13 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     tab.options.includeSourceMap,
   ])}`
   useOnValueChange(refetchKey, (key, previous) => {
-    if (tab.autoRefetch && request) {
-      const loaded = key.split('|', 1)[0] !== previous.split('|', 1)[0]
-      runnerRef.send({type: 'fetch', request, reason: {type: loaded ? 'load' : 'options'}})
+    if (!tab.autoRefetch) return
+    const loaded = key.split('|', 1)[0] !== previous.split('|', 1)[0]
+    // Built like a manual run, so params typed just before an option changed come along (after
+    // a load there is nothing waiting: the edit that belonged to the replaced params was cancelled)
+    const current = buildCurrentRequest()
+    if (current) {
+      runnerRef.send({type: 'fetch', request: current, reason: {type: loaded ? 'load' : 'options'}})
     }
   })
 
