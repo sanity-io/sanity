@@ -1,6 +1,6 @@
 import {type SchemaType} from '@sanity/types'
 import {type Observable} from 'rxjs'
-import {type I18nTextRecord} from 'sanity'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS, type I18nTextRecord, isRecord} from 'sanity'
 
 import {type ChildResolver, type ItemChild} from './ChildResolver'
 import {HELP_URL, SerializeError} from './SerializeError'
@@ -11,6 +11,10 @@ import {
   type SerializeOptions,
 } from './StructureNodes'
 import {type StructureContext} from './types'
+import {
+  copyDefaultDocumentTypeChildMark,
+  getDefaultDocumentTypeChildType,
+} from './util/defaultDocumentTypeChild'
 import {getStructureNodeId} from './util/getStructureNodeId'
 import {isSerializable, serializableMarker} from './util/isSerializable'
 import {validateId} from './util/validateId'
@@ -51,6 +55,8 @@ export interface ListItemSerializeOptions extends SerializeOptions {
 export interface ListItemDisplayOptions {
   /** Check if list item display should show icon */
   showIcon?: boolean
+  /** Check if list item display should show a live document count */
+  showCount?: boolean
 }
 
 /**
@@ -70,6 +76,16 @@ export interface ListItemInput {
   displayOptions?: ListItemDisplayOptions
   /** List item schema type. See {@link SchemaType} */
   schemaType?: SchemaType | string
+}
+
+/**
+ * Names the document schema type a live count covers. The count query itself is authored by the
+ * Studio, so an item can only ever ask for the number of documents of one schema type.
+ *
+ * @public */
+export interface ListItemCount {
+  /** Name of the document schema type to count */
+  type: string
 }
 
 /**
@@ -96,6 +112,12 @@ export interface ListItem {
   displayOptions?: ListItemDisplayOptions
   /** List item schema type. See {@link SchemaType} */
   schemaType?: SchemaType
+  /**
+   * Document schema type to show a live count for. Derived during serialization from
+   * `displayOptions.showCount` and the item's schema type and child; authoring it directly has no
+   * effect. See {@link ListItemCount}
+   */
+  count?: ListItemCount
 }
 
 /**
@@ -226,6 +248,30 @@ export class ListItemBuilder implements Serializable<ListItem> {
   }
 
   /**
+   * Set if list item should show a live document count.
+   *
+   * The badge counts every document of the item's schema type. It is withheld, with a development
+   * warning, unless the item resolves a document schema type and its child is proven to list every
+   * document of that type: the built-in document type child, or a document list carrying the
+   * default whole-type query at the default api version.
+   *
+   * @returns list item builder based on showCount provided. See {@link ListItemBuilder}
+   */
+  showCount(enabled = true): ListItemBuilder {
+    return this.clone({
+      displayOptions: {...this.spec.displayOptions, showCount: enabled},
+    })
+  }
+
+  /**
+   * Check if list item should show a live document count
+   * @returns true if it should show the count, false if not, undefined if not set
+   */
+  getShowCount(): boolean | undefined {
+    return this.spec.displayOptions ? this.spec.displayOptions.showCount : undefined
+  }
+
+  /**
    *Get list item icon
    * @returns list item icon. See {@link PartialListItem}
    */
@@ -314,10 +360,14 @@ export class ListItemBuilder implements Serializable<ListItem> {
     // context, so we may lazily resolve it at some point in the future without losing context
     if (typeof listChild === 'function') {
       const originalChild = listChild
-      listChild = (itemId, childOptions) => {
+      listChild = copyDefaultDocumentTypeChildMark(originalChild, (itemId, childOptions) => {
         return originalChild(itemId, {...childOptions, serializeOptions})
-      }
+      })
     }
+
+    const count = this.spec.displayOptions?.showCount
+      ? resolveListItemCount(child, schemaType, id)
+      : undefined
 
     return {
       ...this.spec,
@@ -326,6 +376,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
       child: listChild,
       title,
       type: 'listItem',
+      count,
     }
   }
 
@@ -338,4 +389,139 @@ export class ListItemBuilder implements Serializable<ListItem> {
     builder.spec = {...this.spec, ...withSpec}
     return builder
   }
+}
+
+const DEFAULT_DOCUMENT_TYPE_FILTER = '_type == $type'
+const COUNT_COVERS_WHOLE_TYPE = 'a count only ever covers a whole document type'
+
+function warnCountWithheld(id: string, reason: string): void {
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn(`[structure] showCount() ignored for list item "${id}": ${reason}`)
+  }
+}
+
+interface DocumentListQuery {
+  filter: string | undefined
+  params: Record<string, unknown> | undefined
+  apiVersion: string | undefined
+}
+
+interface DocumentListShapedChild {
+  getFilter(): string | undefined
+  getParams(): Record<string, unknown> | undefined
+  getApiVersion?(): string | undefined
+}
+
+function isDocumentListShapedChild(child: unknown): child is DocumentListShapedChild {
+  if (isSerializable(child)) {
+    const candidate = child as Partial<DocumentListShapedChild>
+    return typeof candidate.getFilter === 'function' && typeof candidate.getParams === 'function'
+  }
+
+  return false
+}
+
+function isSerializedDocumentList(child: unknown): child is {options?: Partial<DocumentListQuery>} {
+  return isRecord(child) && child.type === 'documentList'
+}
+
+/** A re-inserted item carries the serialized form, which would otherwise look uninspectable. */
+function getDocumentListQuery(child: unknown): DocumentListQuery | undefined {
+  if (isDocumentListShapedChild(child)) {
+    return {
+      filter: child.getFilter(),
+      params: child.getParams(),
+      apiVersion: child.getApiVersion?.(),
+    }
+  }
+
+  if (isSerializedDocumentList(child)) {
+    return {
+      filter: child.options?.filter,
+      params: child.options?.params,
+      apiVersion: child.options?.apiVersion,
+    }
+  }
+
+  return undefined
+}
+
+function pinsNonDefaultApiVersion(query: DocumentListQuery): boolean {
+  return (
+    query.apiVersion !== undefined && query.apiVersion !== DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion
+  )
+}
+
+function hasDefaultDocumentTypeQuery(query: DocumentListQuery, typeName: string): boolean {
+  const params = query.params ?? {}
+
+  return (
+    query.filter === DEFAULT_DOCUMENT_TYPE_FILTER &&
+    Object.keys(params).length === 1 &&
+    params.type === typeName
+  )
+}
+
+/**
+ * Emits a count descriptor only for a child proven to list every document of the item's schema type:
+ * no child, the built-in document type child for that same type, or a document list carrying the
+ * default whole-type query. Any other child withholds the count, so a badge never contradicts the
+ * list it sits on.
+ *
+ * @internal
+ */
+export function resolveListItemCount(
+  child: PartialListItem['child'],
+  schemaType: SchemaType | undefined,
+  id: string,
+): ListItemCount | undefined {
+  if (schemaType === undefined || schemaType.type?.name !== 'document') {
+    warnCountWithheld(id, 'it resolves no document type to count')
+    return undefined
+  }
+
+  const count: ListItemCount = {type: schemaType.name}
+  const brandedChildType = getDefaultDocumentTypeChildType(child)
+
+  if (child === undefined) {
+    warnCountWithheld(id, 'it has no child list to agree with')
+    return undefined
+  }
+
+  if (brandedChildType === schemaType.name) {
+    return count
+  }
+
+  if (brandedChildType !== undefined) {
+    warnCountWithheld(
+      id,
+      `its child lists "${brandedChildType}" while the item counts "${schemaType.name}", and ${COUNT_COVERS_WHOLE_TYPE}`,
+    )
+    return undefined
+  }
+
+  const documentListQuery = getDocumentListQuery(child)
+
+  if (documentListQuery) {
+    if (pinsNonDefaultApiVersion(documentListQuery)) {
+      warnCountWithheld(
+        id,
+        `its child list pins api version "${documentListQuery.apiVersion}" while the count queries "${DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion}"`,
+      )
+      return undefined
+    }
+
+    if (hasDefaultDocumentTypeQuery(documentListQuery, schemaType.name)) {
+      return count
+    }
+
+    warnCountWithheld(id, `its child document list is filtered, and ${COUNT_COVERS_WHOLE_TYPE}`)
+    return undefined
+  }
+
+  warnCountWithheld(
+    id,
+    `its child cannot be inspected at serialize time, and ${COUNT_COVERS_WHOLE_TYPE}`,
+  )
+  return undefined
 }

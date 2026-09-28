@@ -42,7 +42,8 @@ export async function takePageStyleCensus(page: Page, probe: string): Promise<St
 
 /**
  * One line of the census for the run log, in the widget's own words: the UI
- * v5 adoption share and the styled-components escape count.
+ * v5 adoption share, the styled-components escape count and the page's CSS
+ * weight.
  */
 export function describeStyleCensus(census: StyleCensus): string {
   const {nodes} = census
@@ -61,5 +62,7 @@ export function describeStyleCensus(census: StyleCensus): string {
     census.styledComponents.versions.length > 0
       ? ` (v${census.styledComponents.versions.join(', v')})`
       : ''
-  return `${adoption}; styled-components ${nodes.styled} instances, ${census.styledComponents.components} components${ruleShare}${version}`
+  const {css} = census
+  const weight = `CSS ${(css.bytes / 1024).toFixed(0)} KB in ${css.rules} rules (<style> tags ${(css.styleTags.bytes / 1024).toFixed(0)} KB, ${css.styleTags.rules} rules)`
+  return `${adoption}; styled-components ${nodes.styled} instances, ${census.styledComponents.components} components${ruleShare}${version}; ${weight}`
 }
