@@ -19,6 +19,7 @@
  */
 
 // From `sanity`
+export {useCanvasNavigate} from '../core/canvas/useCanvasNavigate'
 export {useNavigateToCanvasDoc} from '../core/canvas/useNavigateToCanvasDoc'
 export {getDocumentIdForCanvasLink} from '../core/canvas/utils/getDocumentIdForCanvasLink'
 export {ChangeFieldWrapper} from '../core/changeIndicators/ChangeFieldWrapper'

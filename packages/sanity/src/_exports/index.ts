@@ -6,6 +6,7 @@ import '../core/form/types/definitionExtensions'
 import {createAuthStore as _createAuthStorePublic} from '../core/store/authStore/createAuthStore'
 
 export {useCanvasCompanionDoc} from '../core/canvas/actions/useCanvasCompanionDoc'
+export {useCanvasNavigate} from '../core/canvas/useCanvasNavigate'
 export {useNavigateToCanvasDoc} from '../core/canvas/useNavigateToCanvasDoc'
 export {getDocumentIdForCanvasLink} from '../core/canvas/utils/getDocumentIdForCanvasLink'
 export {ChangeFieldWrapper} from '../core/changeIndicators/ChangeFieldWrapper'
