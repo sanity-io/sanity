@@ -44,6 +44,26 @@ describe('resolveOpenPreviewUrl', () => {
     expect(url.searchParams.get('sanity-preview-variant')).toBeNull()
   })
 
+  test('does not redirect back to the enable route when it is also the preview page', () => {
+    const url = new URL(
+      resolveOpenPreviewUrl({
+        perspective: 'drafts',
+        previewLocationRoute: '/api/preview?product=shoe#details',
+        previewMode: {enable: '/api/preview'},
+        previewUrlSecret: 'session-secret',
+        targetOrigin: 'https://example.com',
+        variant: undefined,
+      }),
+    )
+
+    expect(url.pathname).toBe('/api/preview')
+    expect(url.searchParams.get('sanity-preview-secret')).toBe('session-secret')
+    expect(url.searchParams.get('sanity-preview-perspective')).toBe('drafts')
+    expect(url.searchParams.has('sanity-preview-pathname')).toBe(false)
+    expect(url.searchParams.get('product')).toBe('shoe')
+    expect(url.hash).toBe('#details')
+  })
+
   test.each([
     ['preview mode is unavailable', null, 'session-secret'],
     ['the preview secret is unavailable', {enable: '/api/draft-mode/enable'}, null],
@@ -52,12 +72,12 @@ describe('resolveOpenPreviewUrl', () => {
       resolveOpenPreviewUrl({
         perspective: 'drafts',
         previewLocationOrigin: '',
-        previewLocationRoute: '/products/shoes?color=red',
+        previewLocationRoute: '/products/shoes?color=red#details',
         previewMode,
         previewUrlSecret,
         targetOrigin: 'https://example.com',
         variant: undefined,
       }),
-    ).toBe('/products/shoes?color=red&sanity-preview-perspective=drafts')
+    ).toBe('/products/shoes?color=red&sanity-preview-perspective=drafts#details')
   })
 })

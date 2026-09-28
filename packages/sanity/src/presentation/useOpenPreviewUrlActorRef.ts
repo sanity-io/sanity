@@ -4,8 +4,8 @@ import {useClient, useCurrentUser, useGrantsStore} from 'sanity'
 import {fromObservable} from 'xstate'
 
 import {defineCreatePreviewSecretActor} from './actors/create-preview-secret'
-import {defineReadSharedSecretActor} from './actors/read-shared-secret'
 import {defineResolvePreviewModeActor} from './actors/resolve-preview-mode'
+import {defineWatchSharedSecretActor} from './actors/watch-shared-secret'
 import {API_VERSION} from './constants'
 import {openPreviewUrlMachine, type OpenPreviewUrlRef} from './machines/open-preview-url'
 import {type PreviewUrlOption} from './types'
@@ -23,8 +23,8 @@ export function useOpenPreviewUrlActorRef(
     openPreviewUrlMachine.provide({
       actors: {
         'create preview secret': defineCreatePreviewSecretActor({client, currentUserId}),
-        'read shared preview secret': defineReadSharedSecretActor({client}),
         'resolve preview mode': defineResolvePreviewModeActor({client, previewUrlOption}),
+        'watch shared preview secret': defineWatchSharedSecretActor({client}),
         'check permission': fromObservable(({input}) =>
           grantsStore.checkDocumentPermission(input.checkPermissionName, input.document),
         ),

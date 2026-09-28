@@ -163,6 +163,7 @@ pnpm dev  # Starts test-studio at http://localhost:3333 and preview-iframe at ht
 - `pnpm dev` / `pnpm dev:test-studio` also starts `dev/preview-iframe` (vanilla Vite on port 3334) so Presentation can load its cross-origin iframe. Studio-only: `pnpm dev:test-studio:studio`. Preview-only: `pnpm dev:preview-iframe`.
 - Deployed preview iframe: Sanity Sandbox Vercel project `test-studio-preview-iframe` (`https://test-studio-preview-iframe.sanity.dev`)
 - **Edits to a `.css.ts` (vanilla-extract) file do not reach a running dev server.** With `unstable_bundledDev: true` (the default in `dev/test-studio`), the generated CSS of a changed `.css.ts` module keeps being served as it was at startup — a full page reload does not help, and nothing in the terminal says so. Restart `sanity dev` after changing one, then confirm with `getComputedStyle` rather than by eye.
+- **Swapping a source file back under a running dev server can leave the swapped version served.** For a before/after check with `unstable_bundledDev: false`, a `git checkout origin/main -- <file>` was hot-reloaded, but the `git checkout HEAD -- <file>` that restored it was not: no `hmr update` line appeared in the terminal and new page loads kept running the `main` version. Before trusting the "after" run, check what the server serves with `curl -s http://localhost:3333/@fs/<absolute path> | grep <symbol only the new version has>`, and restart `sanity dev` if it's stale.
 
 Use the dev studio when you need to:
 
