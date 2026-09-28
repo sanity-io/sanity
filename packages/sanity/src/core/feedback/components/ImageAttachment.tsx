@@ -1,7 +1,7 @@
 import {BinaryDocumentIcon} from '@sanity/icons/BinaryDocument'
 import {UploadIcon} from '@sanity/icons/Upload'
-import {Card, Text} from '@sanity/ui'
-import {VStack, Flex} from 'ui5'
+import {Card} from '@sanity/ui'
+import {Text, VStack, Flex} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {FileInputButton} from '../../form/inputs/files/common/FileInputButton/FileInputButton'
@@ -56,12 +56,12 @@ export function ImageAttachment(props: ImageAttachmentProps) {
   if (imageFile) {
     return (
       <VStack gap={3}>
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" as="div" trim={true}>
           {t('feedback.attachment.label')}
         </Text>
         <Card padding={3} radius={2} border>
           <Flex alignItems="center" justifyContent="space-between">
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true}>
               {imageFile.name}
             </Text>
             <Button
@@ -78,7 +78,7 @@ export function ImageAttachment(props: ImageAttachmentProps) {
 
   return (
     <VStack gap={3}>
-      <Text size={1} weight="medium">
+      <Text size={1} weight="medium" as="div" trim={true}>
         {t('feedback.attachment.label')}
       </Text>
       <FileTargetCard
@@ -92,10 +92,10 @@ export function ImageAttachment(props: ImageAttachmentProps) {
       >
         <Flex alignItems="center" justifyContent="space-between">
           <Flex alignItems="center" gap={2}>
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true}>
               <BinaryDocumentIcon />
             </Text>
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true}>
               {t('feedback.attachment.drop-zone')}
             </Text>
           </Flex>
@@ -108,7 +108,7 @@ export function ImageAttachment(props: ImageAttachmentProps) {
         </Flex>
       </FileTargetCard>
       {error && (
-        <Text size={1} style={{color: 'var(--card-badge-critical-fg-color)'}}>
+        <Text size={1} style={{color: 'var(--card-badge-critical-fg-color)'}} as="div" trim={true}>
           {error}
         </Text>
       )}
