@@ -18,6 +18,12 @@ sources, one Chromatic project each:
 All checks are non-gating during burn-in (`exitZeroOnChanges`); merges to `main` auto-accept
 baselines. Review diffs on the Chromatic build linked from the PR check.
 
+The two `chromatic.yml` sources only run on a pull request that carries the `trigger:chromatic`
+label — a PR without it shows both jobs as skipped and produces no Chromatic build to review. The
+label persists, so every later push re-runs them until it is removed. Pushes to `main` always run,
+which is what keeps the baselines current. The Playwright source rides along with the e2e suite in
+`e2e.yml` and is not gated by the label.
+
 ## Which source owns a state
 
 Each source owns a disjoint set of states. Decide by how the state is reached, and never move a
