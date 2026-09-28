@@ -1,8 +1,9 @@
 import {DocumentSheetIcon} from '@sanity/icons/DocumentSheet'
 import {JsonIcon} from '@sanity/icons/Json'
 import {Badge, Card, Label, Text} from '@sanity/ui'
+import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
-import {useMemo} from 'react'
+import {useCallback, useMemo} from 'react'
 import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
@@ -10,7 +11,7 @@ import {DelayedSpinner} from '../../../components/DelayedSpinner'
 import {QueryErrorDialog} from '../../../components/QueryErrorDialog'
 import {ResultView} from '../../../components/ResultView'
 import {visionLocaleNamespace} from '../../../i18n'
-import {getCsvBlobUrl, getJsonBlobUrl} from '../../../util/getBlobUrl'
+import {canEncodeCsv, getCsvBlobUrl, getJsonBlobUrl} from '../../../util/getBlobUrl'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {type QueryRunnerRef, selectRequestStatus} from '../../store/queryRunnerMachine'
 import {type QueryRequest, type VistaTab} from '../../store/types'
@@ -44,6 +45,7 @@ export interface ResponsePanelProps {
 export function ResponsePanel(props: ResponsePanelProps) {
   const {tab, runnerRef, resolved, request, lintFindings, onRevealLintFinding} = props
   const {t} = useTranslation(visionLocaleNamespace)
+  const toast = useToast()
 
   const status = useSelector(runnerRef, selectRequestStatus)
   const result = useSelector(runnerRef, (snapshot) => snapshot.context.result)
@@ -76,13 +78,21 @@ export function ResponsePanel(props: ResponsePanelProps) {
   // Document links in the result must point at the dataset it was fetched from, which the tab's
   // options may already have moved away from
   const resultDataset = settledRequest?.client.config().dataset || resolved.dataset
-  // Serializing a large result is not free even when the helpers then reuse their blob, and this
-  // panel re-renders with every keystroke in the editors
-  const jsonUrl = useMemo(
-    () => (hasResult ? getJsonBlobUrl(result) : undefined),
-    [hasResult, result],
+  // Serializing a large result is not free, and automatic refetching brings a new one with every
+  // live event, so the files are built when a download is asked for rather than for every
+  // response; the CSV button reads the result's shape to know whether there is a file to build
+  const getJsonUrl = useCallback(() => getJsonBlobUrl(result), [result])
+  const getCsvUrl = useCallback(() => getCsvBlobUrl(result), [result])
+  const canExportCsv = hasResult && canEncodeCsv(result)
+  const reportCsvUnavailable = useCallback(
+    () =>
+      toast.push({
+        closable: true,
+        status: 'warning',
+        title: t('result.save-result-as-csv.not-csv-encodable'),
+      }),
+    [t, toast],
   )
-  const csvUrl = useMemo(() => (hasResult ? getCsvBlobUrl(result) : undefined), [hasResult, result])
 
   const panelTabs = useMemo(
     (): CollapsiblePanelTab[] => [
@@ -190,19 +200,22 @@ export function ResponsePanel(props: ResponsePanelProps) {
       <ActionRail testId="vista-result-actions">
         <DownloadButton
           download="query-result.json"
-          href={jsonUrl}
+          getBlobUrl={hasResult ? getJsonUrl : undefined}
           icon={JsonIcon}
           label={t('vista.result.export-json')}
           testId="vista-export-json"
         />
         <DownloadButton
           download="query-result.csv"
-          href={csvUrl}
+          getBlobUrl={canExportCsv ? getCsvUrl : undefined}
           icon={DocumentSheetIcon}
           label={t('vista.result.export-csv')}
+          onUnavailable={reportCsvUnavailable}
           testId="vista-export-csv"
           tooltip={
-            hasResult && !csvUrl ? t('result.save-result-as-csv.not-csv-encodable') : undefined
+            hasResult && !canExportCsv
+              ? t('result.save-result-as-csv.not-csv-encodable')
+              : undefined
           }
         />
         <ResultActionsMenu

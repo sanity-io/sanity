@@ -489,12 +489,12 @@ describe('VistaGui', () => {
   it('keeps the shown result and its actions while a refetch is in flight', async () => {
     const {fetchCalls, holdFetches, respondWith} = renderVista()
     typeQuery('*[_type == "author"]')
-    // Nothing to download yet: the export controls are disabled buttons
+    // Nothing to download yet: the export controls are disabled
     expect(isDisabled(screen.getByTestId('vista-export-json'))).toBe(true)
     fireEvent.click(screen.getByTestId('vista-fetch-button'))
     await waitFor(() => expect(screen.getByTestId('result-json')).toBeTruthy())
-    // With a result they are download links
-    expect(screen.getByTestId('vista-export-json').getAttribute('href')).toBeTruthy()
+    // With a result they download it
+    expect(isDisabled(screen.getByTestId('vista-export-json'))).toBe(false)
 
     const release = holdFetches()
     respondWith({result: [{title: 'Newer'}], ms: 34, syncTags: ['s1:abc']})
@@ -504,13 +504,72 @@ describe('VistaGui', () => {
     // The previous result stays on screen until the new one arrives, and so does everything
     // that works on it
     expect(text(screen.getByTestId('result-json'))).toContain('Variant title')
-    expect(screen.getByTestId('vista-export-json').getAttribute('href')).toBeTruthy()
-    expect(screen.getByTestId('vista-export-csv').getAttribute('href')).toBeTruthy()
+    expect(isDisabled(screen.getByTestId('vista-export-json'))).toBe(false)
+    expect(isDisabled(screen.getByTestId('vista-export-csv'))).toBe(false)
 
     release()
     await waitFor(() => expect(text(screen.getByTestId('result-json'))).toContain('Newer'))
     expect(text(screen.getByTestId('vista-meta-execution'))).toContain('34ms')
-    expect(screen.getByTestId('vista-export-json').getAttribute('href')).toBeTruthy()
+    expect(isDisabled(screen.getByTestId('vista-export-json'))).toBe(false)
+  })
+
+  it('serializes the result for a download only when one is asked for', async () => {
+    // Object URLs are stubbed so the files built can be counted, and the download link's click
+    // is intercepted since jsdom cannot navigate
+    const objectUrl = Object.getOwnPropertyDescriptor(URL, 'createObjectURL')
+    const revokeUrl = Object.getOwnPropertyDescriptor(URL, 'revokeObjectURL')
+    const createObjectURL = vi.fn((blob: Blob) => `blob:${blob.type}`)
+    Object.defineProperty(URL, 'createObjectURL', {value: createObjectURL, configurable: true})
+    Object.defineProperty(URL, 'revokeObjectURL', {value: vi.fn(), configurable: true})
+    const anchorClick = vi
+      .spyOn(HTMLAnchorElement.prototype, 'click')
+      .mockImplementation(function click() {})
+    try {
+      const {respondWith} = renderVista()
+      typeQuery('*[_type == "lazy"]')
+      respondWith({result: [{title: 'Lazy download'}], ms: 12, syncTags: []})
+      fireEvent.click(screen.getByTestId('vista-fetch-button'))
+      await waitFor(() =>
+        expect(text(screen.getByTestId('result-json'))).toContain('Lazy download'),
+      )
+
+      // The response is on screen and both downloads are offered, but no file has been built
+      expect(isDisabled(screen.getByTestId('vista-export-json'))).toBe(false)
+      expect(isDisabled(screen.getByTestId('vista-export-csv'))).toBe(false)
+      expect(createObjectURL).not.toHaveBeenCalled()
+
+      fireEvent.click(screen.getByTestId('vista-export-json'))
+      expect(createObjectURL).toHaveBeenCalledTimes(1)
+      expect(createObjectURL.mock.calls[0][0].type).toBe('application/json')
+      expect(anchorClick).toHaveBeenCalledTimes(1)
+      const [anchor] = anchorClick.mock.contexts as HTMLAnchorElement[]
+      expect(anchor.download).toBe('query-result.json')
+      expect(anchor.href).toBe('blob:application/json')
+      // Asking for the same result again reuses the file
+      fireEvent.click(screen.getByTestId('vista-export-json'))
+      expect(createObjectURL).toHaveBeenCalledTimes(1)
+
+      fireEvent.click(screen.getByTestId('vista-export-csv'))
+      expect(createObjectURL).toHaveBeenCalledTimes(2)
+      expect(createObjectURL.mock.calls[1][0].type).toBe('text/csv')
+      expect((anchorClick.mock.contexts.at(-1) as HTMLAnchorElement).download).toBe(
+        'query-result.csv',
+      )
+
+      // A result without objects has no CSV to offer, while the JSON stays available
+      respondWith({result: [1, 2, 3], ms: 12, syncTags: []})
+      fireEvent.click(screen.getByTestId('vista-fetch-button'))
+      await waitFor(() => expect(text(screen.getByTestId('result-json'))).toBe('[1,2,3]'))
+      expect(isDisabled(screen.getByTestId('vista-export-json'))).toBe(false)
+      expect(isDisabled(screen.getByTestId('vista-export-csv'))).toBe(true)
+      expect(createObjectURL).toHaveBeenCalledTimes(2)
+    } finally {
+      anchorClick.mockRestore()
+      if (objectUrl) Object.defineProperty(URL, 'createObjectURL', objectUrl)
+      else Reflect.deleteProperty(URL, 'createObjectURL')
+      if (revokeUrl) Object.defineProperty(URL, 'revokeObjectURL', revokeUrl)
+      else Reflect.deleteProperty(URL, 'revokeObjectURL')
+    }
   })
 
   it('runs the query with the keyboard shortcut and marks the reason', async () => {
