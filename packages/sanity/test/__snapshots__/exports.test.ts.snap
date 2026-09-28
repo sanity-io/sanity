@@ -1375,6 +1375,7 @@ exports[`exports snapshot 1`] = `
     "LoggedOutReasonContext": "object",
     "MediaLibraryIdsContext": "object",
     "MentionUserContext": "object",
+    "MountedToolsContext": "object",
     "NavbarContext": "object",
     "PackageVersionInfoContext": "object",
     "PaneContext": "object",

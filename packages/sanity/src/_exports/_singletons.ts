@@ -94,6 +94,7 @@ export {
 } from '../_singletons/context/LoggedOutReasonContext'
 export {MediaLibraryIdsContext} from '../_singletons/context/MediaLibraryIdsContext'
 export {MentionUserContext} from '../_singletons/context/MentionUserContext'
+export {MountedToolsContext} from '../_singletons/context/MountedToolsContext'
 export {NavbarContext} from '../_singletons/context/NavbarContext'
 export {
   PackageVersionInfoContext,

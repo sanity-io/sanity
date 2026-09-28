@@ -216,7 +216,13 @@ export const Preview = memo(function PreviewComponent(
   const preventIframeInteraction = useSelector(presentationRef, (state) =>
     state.hasTag('prevent iframe interaction'),
   )
-  const iframeIsBusy = isLoading || isRefreshing || overlaysConnection === 'connecting'
+  // Read the machine's classification rather than the raw `overlaysConnection` aggregate: a new
+  // connection on a page whose overlays already connected (a recreated channel) reports
+  // `connecting` but is modelled as a reconnect, and the preview is interactive meanwhile.
+  const overlaysConnectingForTheFirstTime = useSelector(presentationRef, (state) =>
+    state.matches({loaded: {idle: 'connecting'}}),
+  )
+  const iframeIsBusy = isLoading || isRefreshing || overlaysConnectingForTheFirstTime
 
   const handleContinueAnyway = useCallback(() => {
     presentationRef.send({type: 'continue anyway'})

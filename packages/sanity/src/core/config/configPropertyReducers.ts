@@ -717,6 +717,48 @@ export const documentGroupInventoryEnabledReducer = ({
   }, initialValue)
 }
 
+export const reactActivityModeEnabledReducer = ({
+  config,
+  initialValue,
+}: {
+  config: PluginOptions
+  initialValue: boolean
+}): boolean => {
+  const flattenedConfig = flattenConfig(config, [])
+
+  return flattenedConfig.reduce<boolean>((value, {config: innerConfig}) => {
+    const reactActivityMode: unknown = innerConfig.beta?.reactActivityMode
+
+    if (typeof reactActivityMode === 'undefined') {
+      return value
+    }
+
+    if (!isRecord(reactActivityMode)) {
+      throw new Error(
+        `Expected \`beta.reactActivityMode\` to be an object, but received ${getPrintableType(
+          reactActivityMode,
+        )}`,
+      )
+    }
+
+    const enabled = reactActivityMode.enabled
+
+    if (typeof enabled === 'undefined') {
+      return value
+    }
+
+    if (typeof enabled === 'boolean') {
+      return enabled
+    }
+
+    throw new Error(
+      `Expected \`beta.reactActivityMode.enabled\` to be a boolean, but received ${getPrintableType(
+        enabled,
+      )}`,
+    )
+  }, initialValue)
+}
+
 export const mediaLibraryEnabledReducer = (opts: {
   config: PluginOptions
   initialValue: boolean

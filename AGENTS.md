@@ -163,6 +163,7 @@ pnpm dev  # Starts test-studio at http://localhost:3333 and preview-iframe at ht
 - `pnpm dev` / `pnpm dev:test-studio` also starts `dev/preview-iframe` (vanilla Vite on port 3334) so Presentation can load its cross-origin iframe. Studio-only: `pnpm dev:test-studio:studio`. Preview-only: `pnpm dev:preview-iframe`.
 - Deployed preview iframe: Sanity Sandbox Vercel project `test-studio-preview-iframe` (`https://test-studio-preview-iframe.sanity.dev`)
 - **Edits to a `.css.ts` (vanilla-extract) file do not reach a running dev server.** With `unstable_bundledDev: true` (the default in `dev/test-studio`), the generated CSS of a changed `.css.ts` module keeps being served as it was at startup — a full page reload does not help, and nothing in the terminal says so. Restart `sanity dev` after changing one, then confirm with `getComputedStyle` rather than by eye.
+- **Swapping a source file back under a running dev server can leave the swapped version served.** For a before/after check with `unstable_bundledDev: false`, a `git checkout origin/main -- <file>` was hot-reloaded, but the `git checkout HEAD -- <file>` that restored it was not: no `hmr update` line appeared in the terminal and new page loads kept running the `main` version. Before trusting the "after" run, check what the server serves with `curl -s http://localhost:3333/@fs/<absolute path> | grep <symbol only the new version has>`, and restart `sanity dev` if it's stale.
 
 Use the dev studio when you need to:
 
@@ -434,6 +435,29 @@ HTML wrappers as strings (eg `{Code: 'code'}`). The in-repo oxlint rule
 this for object literals in the JSX attribute; maps built during render via `useMemo` or factory
 functions are equally wrong even though the rule cannot see them. See the `sanity-i18n-translate`
 skill (`.agents/skills/sanity-i18n-translate/SKILL.md`) for the full conversion patterns.
+
+### `<Activity mode="hidden">`: effects are torn down, DOM and state stay
+
+React's `<Activity>` is used for closed `@sanity/ui` overlays, collapsed document lists, and the
+top-level tools when `beta.reactActivityMode` is on (`StudioLayoutComponent`). Hiding runs
+every effect cleanup in the subtree and showing runs the effects again, without a remount, so:
+
+- Anything that lives only in an effect-created object is lost on reveal unless the effect can
+  rebuild it from render-time data. `@uiw/react-codemirror` destroys its `EditorView` on cleanup
+  and re-creates it from `value`; `VisionCodeMirror` mirrors the latest document into state for
+  that reason. Mount-only effects (`useEffect(..., [])`) run again on every reveal.
+- Loading states come back on reveal unless the code remembers it already loaded. A comlink
+  channel recreated by an effect handshakes as a brand new connection (the presentation machine
+  tracks `overlaysHaveConnected` so that reads as a reconnect, not a first connect); a
+  `startWith(loading)` observable re-emits its initial value when `useObservable` re-subscribes
+  it (`useDocumentLocations` skips the `startWith` once the resolver has emitted); and a context
+  populated by registering in an effect empties out while hidden, unmounting whatever renders
+  from it (`PresentationDocumentProvider` lists its own options at render time).
+- Never reorder keyed siblings that hold an `<iframe>`. React moves the DOM node when the key
+  order changes, and a re-inserted iframe reloads. `useMountedTools` renders tools in workspace
+  order for this reason even though eviction is least-recently-used.
+- Hidden content keeps `display: none` on its topmost host nodes only, and portals under the
+  boundary are hidden too (`hideOrUnhideNearestPortals`); descendants report their own `display`.
 
 ### Refs: use `props.ref`, not `forwardRef`
 
@@ -1022,8 +1046,9 @@ No Docker, databases, or other local services are required for unit tests, lint,
   - Most changes should still be verified with `pnpm build && pnpm test` (no auth needed); only use the studio for visual/manual verification.
 - **Seeding test documents for the `/test` workspace via API.** In local dev (non-staging), the `/test` workspace talks to the production API host, so `STUDIO_AUTH_TOKEN` works as a Bearer token against `https://ppsg7ml5.api.sanity.io/v2024-01-01/data/mutate/test` (it returns 401 "Session not found" on `api.sanity.work`). Caveat when testing history/review-changes features: documents created by raw API mutations (e.g. `createOrReplace` of a published id) do not produce publish events, so the Review changes inspector shows "There are no changes" / "Same revision selected". Instead, create only the draft (`drafts.<id>`) via the API, click Publish in the studio UI to create a real publish event, then edit fields in the form to create draft changes.
 - **Seeding releases for the `/test` workspace via API.** Releases and document versions are created through the actions endpoint (`POST https://ppsg7ml5.api.sanity.io/v2025-02-19/data/actions/test` with `{"actions": [...]}`, same Bearer token). Useful action types: `sanity.action.release.create`, `sanity.action.document.version.create` (pass `publishedId` plus a `document` with `_id: versions.<releaseId>.<publishedId>`), `sanity.action.document.version.unpublish`, `sanity.action.document.version.discard`, `sanity.action.release.archive`, `sanity.action.release.delete`. Note that a version created by the unpublish action alone is an empty tombstone carrying only `_system.delete: true` — to get a version with content, create the version first and then unpublish it. `/test` is a shared dataset, so archive and delete any release you seed once you are done.
-- **Vitest browser mode (`*.browser.test.tsx`) needs a Playwright browser install first.** The VM has no browsers preinstalled: run `pnpm --filter sanity exec playwright install chromium`, then run a single file with `SANITY_VITEST_BROWSER=chromium pnpm --filter sanity exec vitest run -c vitest.browser.config.mts <path>`. Without `SANITY_VITEST_BROWSER` the config tries chromium, firefox, and webkit. No package build is required for these tests (they resolve monorepo sources). Firefox and WebKit additionally need system libraries the image lacks, so `playwright install firefox webkit` refuses to run until they are there: `sudo -E env PATH="$PATH" pnpm --filter sanity exec playwright install-deps` (a few minutes of apt) followed by `pnpm --filter sanity exec playwright install firefox webkit`. Worth doing for a change whose behavior depends on layout or scrolling, since CI runs all three browsers.
+- **Vitest browser mode (`*.browser.test.tsx`) needs a Playwright browser install first.** The VM has no browsers preinstalled: run `pnpm --filter sanity exec playwright install chromium`, then run a single file with `SANITY_VITEST_BROWSER=chromium pnpm --filter sanity exec vitest run -c vitest.browser.config.mts <path>`. Without `SANITY_VITEST_BROWSER` the config tries chromium, firefox, and webkit. No package build is required for these tests (they resolve monorepo sources).
   - **Use the suite's failure screenshots for before/after walkthrough artifacts** when the change is only observable in browser mode. Vitest writes a full-viewport PNG of the failing state to the gitignored `src/**/__tests__/__screenshots__/<test file>/` and prints the paths, so running the new (red) test on a stashed fix and again on the applied fix yields a matched pair with no extra tooling. Delete the directory afterwards.
+  - **Firefox and WebKit (the other two CI shards) need host libraries the image lacks.** Worth setting up for a change whose behavior depends on layout or scrolling, since CI runs all three browsers. Install the libraries with `sudo env "PATH=$PATH" node_modules/.bin/playwright install-deps` (passwordless `sudo` is available; a few minutes of apt), then download the browsers with `pnpm --filter sanity exec playwright install firefox webkit`, and run each engine with `SANITY_VITEST_BROWSER=firefox` / `SANITY_VITEST_BROWSER=webkit`. Call the CLI shim directly as shown: `pnpm … exec` under `sudo` re-runs the workspace install as root and leaves hundreds of root-owned files behind in `node_modules` (`sudo chown -R ubuntu:ubuntu node_modules` if that already happened). Firefox launches without the libraries; WebKit does not.
 - **The Storybook addon-vitest suite (`pnpm --filter sanity-storybook test`) dies mid-run in the VM.** After roughly 45 story files the headless chromium page goes away and vitest reports `Browser connection was closed while running tests` as an unhandled error (reproducible on a clean `main`, so it is not your change). Run the suite in chunks of about 20 story files instead: `cd dev/storybook && pnpm exec vitest run <absolute paths...>`. Same Playwright chromium install as above; `pnpm --filter sanity-storybook exec storybook build` (about 20s, no package build needed) is the quick check that every remaining story still compiles into the index.
 - **Install agent skills with `pnpm dlx skills`, not `npx skills`.** This repo is pnpm-only, and the Cloud VM's `npx` wrapper often fails with `sh: 1: skills: not found`. Use the pnpm equivalent and skip prompts:
 

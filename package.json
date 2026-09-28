@@ -133,7 +133,7 @@
     "only-allow": "^1.2.2",
     "oxfmt": "^0.70.0",
     "oxlint": "^1.85.0",
-    "oxlint-tsgolint": "^7.0.2002",
+    "oxlint-tsgolint": "^7.0.2003",
     "pkg-pr-new": "^0.0.88",
     "playwright": "catalog:",
     "sanity": "workspace:*",
