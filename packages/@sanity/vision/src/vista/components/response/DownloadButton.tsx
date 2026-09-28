@@ -1,6 +1,7 @@
 import {Button, Text} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
-import {type ComponentType, useCallback} from 'react'
+import {type ComponentType, useCallback, useId} from 'react'
+import {VisuallyHidden} from 'ui5'
 
 export interface DownloadButtonProps {
   /**
@@ -45,19 +46,35 @@ export function DownloadButton({
     anchor.remove()
   }, [download, getBlobUrl, onUnavailable])
 
+  const unavailable = getBlobUrl === undefined
+  const hintId = useId()
+
   return (
     <Tooltip content={<Text size={1}>{tooltip || label}</Text>} placement="left" portal>
-      {/* A disabled button gets no pointer events, so the wrapper is what the tooltip listens to */}
-      <span>
+      {/*
+        A disabled button gets neither pointer events nor focus, so while the download is
+        unavailable the wrapper stands in for it: the tooltip listens to the wrapper, and the
+        wrapper takes the button's place in the tab order as a disabled button described by the
+        tooltip's explanation, so a keyboard user can reach it too
+      */}
+      <span
+        aria-describedby={unavailable && tooltip ? hintId : undefined}
+        aria-disabled={unavailable || undefined}
+        aria-label={unavailable ? label : undefined}
+        role={unavailable ? 'button' : undefined}
+        tabIndex={unavailable ? 0 : undefined}
+      >
         <Button
+          aria-hidden={unavailable || undefined}
           aria-label={label}
           data-testid={testId}
-          disabled={getBlobUrl === undefined}
+          disabled={unavailable}
           icon={icon}
           mode="bleed"
           onClick={handleClick}
           padding={2}
         />
+        {unavailable && tooltip && <VisuallyHidden id={hintId}>{tooltip}</VisuallyHidden>}
       </span>
     </Tooltip>
   )

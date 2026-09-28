@@ -345,6 +345,12 @@ function isDisabled(element: HTMLElement): boolean {
   return (element as HTMLButtonElement).disabled
 }
 
+/** The text of the element `aria-describedby` points at, or `null` without one */
+function describedBy(element: HTMLElement): string | null {
+  const id = element.getAttribute('aria-describedby')
+  return id === null ? null : document.getElementById(id)?.textContent || ''
+}
+
 function selectValue(testId: string): string {
   return (screen.getByTestId(testId) as HTMLSelectElement).value
 }
@@ -497,6 +503,10 @@ describe('VistaGui', () => {
       expect(isDisabled(screen.getByTestId('vista-export-json'))).toBe(false)
       expect(isDisabled(screen.getByTestId('vista-export-csv'))).toBe(false)
       expect(createObjectURL).not.toHaveBeenCalled()
+      // The buttons themselves are what a keyboard user reaches
+      expect(screen.getByTestId('vista-export-csv').parentElement?.hasAttribute('tabindex')).toBe(
+        false,
+      )
 
       fireEvent.click(screen.getByTestId('vista-export-json'))
       expect(createObjectURL).toHaveBeenCalledTimes(1)
@@ -521,8 +531,18 @@ describe('VistaGui', () => {
       fireEvent.click(screen.getByTestId('vista-fetch-button'))
       await waitFor(() => expect(text(screen.getByTestId('result-json'))).toBe('[1,2,3]'))
       expect(isDisabled(screen.getByTestId('vista-export-json'))).toBe(false)
-      expect(isDisabled(screen.getByTestId('vista-export-csv'))).toBe(true)
+      const csvButton = screen.getByTestId('vista-export-csv')
+      expect(isDisabled(csvButton)).toBe(true)
       expect(createObjectURL).toHaveBeenCalledTimes(2)
+      // The disabled button is out of the tab order, so its wrapper takes its place there, as a
+      // disabled button described by the reason, for a keyboard user to reach the explanation
+      const csvWrapper = csvButton.parentElement as HTMLElement
+      expect(csvWrapper.getAttribute('tabindex')).toBe('0')
+      expect(csvWrapper.getAttribute('role')).toBe('button')
+      expect(csvWrapper.getAttribute('aria-disabled')).toBe('true')
+      expect(csvWrapper.getAttribute('aria-label')).toBe('vista.result.export-csv')
+      expect(describedBy(csvWrapper)).toBe('result.save-result-as-csv.not-csv-encodable')
+      expect(csvButton.getAttribute('aria-hidden')).toBe('true')
     } finally {
       anchorClick.mockRestore()
       if (objectUrl) Object.defineProperty(URL, 'createObjectURL', objectUrl)
@@ -1092,6 +1112,13 @@ describe('VistaGui', () => {
     ) as HTMLSelectElement
     expect(apiVersionSelect.value).toBe('vX')
     expect(apiVersionSelect.disabled).toBe(true)
+    // The disabled select is out of the tab order, so its wrapper takes its place there, as a
+    // group described by the reason for the lock, for a keyboard user to reach the explanation
+    const apiVersionWrap = screen.getByTestId('vista-option-api-version-wrap')
+    expect(apiVersionWrap.getAttribute('tabindex')).toBe('0')
+    expect(apiVersionWrap.getAttribute('role')).toBe('group')
+    expect(apiVersionWrap.getAttribute('aria-label')).toBe('settings.api-version-label')
+    expect(describedBy(apiVersionWrap)).toBe('settings.api-version-locked-for-variant')
 
     fireEvent.click(screen.getByTestId('vista-fetch-button'))
     await waitFor(() => expect(fetchCalls).toHaveLength(1))
@@ -1118,6 +1145,10 @@ describe('VistaGui', () => {
     expect(selectValue('vista-option-perspective-select')).toBe('raw')
     expect(selectValue('vista-option-variant-select')).toBe('none')
     expect(isDisabled(screen.getByTestId('vista-option-api-version-select'))).toBe(false)
+    // The select itself is what a keyboard user reaches while it is not locked
+    const apiVersionWrap = screen.getByTestId('vista-option-api-version-wrap')
+    expect(apiVersionWrap.hasAttribute('tabindex')).toBe(false)
+    expect(apiVersionWrap.hasAttribute('role')).toBe(false)
 
     fireEvent.click(screen.getByTestId('vista-fetch-button'))
     await waitFor(() => expect(fetchCalls).toHaveLength(1))
@@ -1253,6 +1284,23 @@ describe('VistaGui', () => {
       }),
     )
     expect(screen.queryByText('vista.paste.unknown-dataset')).toBeNull()
+  })
+
+  it('puts the tab on the API default when the pasted URL has no perspective', async () => {
+    const {fetchCalls} = renderVista()
+    expect(selectValue('vista-option-perspective-select')).toBe('global')
+
+    fireEvent.paste(document.body, {
+      clipboardData: {
+        getData: () => `https://abc.api.sanity.io/v2021-10-21/data/query/test?query=*`,
+      },
+    })
+    await waitFor(() => expect(getQueryEditor().value).toBe('*'))
+    // The request ran without a perspective, so that is what the tab sends now, not the navbar's
+    expect(selectValue('vista-option-perspective-select')).toBe('default')
+    fireEvent.click(screen.getByTestId('vista-fetch-button'))
+    await waitFor(() => expect(fetchCalls).toHaveLength(1))
+    expect(fetchCalls[0].config.perspective).toBeUndefined()
   })
 
   it('says so when a pasted URL used a variant the navbar does not have selected', async () => {

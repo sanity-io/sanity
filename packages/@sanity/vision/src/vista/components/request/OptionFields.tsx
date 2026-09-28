@@ -2,7 +2,7 @@ import {PinIcon} from '@sanity/icons/Pin'
 import {PinRemovedIcon} from '@sanity/icons/PinRemoved'
 import {Button, Select, Stack, Text, TextInput} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
-import {type ChangeEvent, useCallback} from 'react'
+import {type ChangeEvent, useCallback, useId} from 'react'
 import {
   getDefaultVariant,
   getVariantTitle,
@@ -11,7 +11,7 @@ import {
   useTranslation,
   useWorkspace,
 } from 'sanity'
-import {Box, Flex} from 'ui5'
+import {Box, Flex, VisuallyHidden} from 'ui5'
 
 import {API_VERSIONS} from '../../../apiVersions'
 import {visionLocaleNamespace} from '../../../i18n'
@@ -126,6 +126,7 @@ export function ApiVersionField({id, value, locked, onChange}: ApiVersionFieldPr
   const {t} = useTranslation(visionLocaleNamespace)
   const isCustom = !API_VERSIONS.includes(value)
   const isValid = validateApiVersion(value)
+  const lockedHintId = useId()
 
   const handleSelect = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
@@ -145,7 +146,24 @@ export function ApiVersionField({id, value, locked, onChange}: ApiVersionFieldPr
         placement="bottom"
         portal
       >
-        <Box data-testid={`${id}-wrap`}>
+        {/*
+          A disabled select gets neither pointer events nor focus, so while the field is locked
+          the wrapper stands in for it: the tooltip listens to the wrapper, and the wrapper takes
+          the select's place in the tab order as a group described by the reason for the lock,
+          so a keyboard user can reach it too
+        */}
+        <Box
+          aria-describedby={locked ? lockedHintId : undefined}
+          aria-label={locked ? t('settings.api-version-label') : undefined}
+          data-testid={`${id}-wrap`}
+          role={locked ? 'group' : undefined}
+          tabIndex={locked ? 0 : undefined}
+        >
+          {locked && (
+            <VisuallyHidden id={lockedHintId}>
+              {t('settings.api-version-locked-for-variant')}
+            </VisuallyHidden>
+          )}
           <Select
             data-testid={`${id}-select`}
             disabled={locked}
