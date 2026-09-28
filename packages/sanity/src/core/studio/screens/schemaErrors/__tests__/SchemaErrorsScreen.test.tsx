@@ -53,8 +53,8 @@ describe('SchemaErrorsScreen', () => {
     Object.defineProperty(navigator, 'clipboard', {value: {writeText}, configurable: true})
   })
 
-  // The screen renders from an error boundary above LocaleProvider, so it can
-  // never reach a translator — every string has to be literal.
+  // prepareConfig throws above LocaleProvider, so on that path every label falls
+  // back to its inline default rather than rendering a bare key.
   it('renders readable copy without a locale provider', async () => {
     await renderScreen(CONTEXT)
 

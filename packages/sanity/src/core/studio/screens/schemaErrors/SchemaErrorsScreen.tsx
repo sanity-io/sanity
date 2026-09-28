@@ -1,4 +1,3 @@
-/* oxlint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {type Schema} from '@sanity/types'
 import {Card, Heading, Text} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
@@ -8,6 +7,7 @@ import {Container, Flex, Grid, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {type SchemaErrorContext} from '../../../config/SchemaError'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
 import {formatSchemaErrorsToMarkdown} from './formatSchemaErrorsToMarkdown'
 import {reportWarnings} from './reportWarnings'
@@ -39,6 +39,10 @@ export function SchemaErrorsScreen({schema, context}: SchemaErrorsScreenProps) {
   useEffect(() => reportWarnings(schema), [schema])
 
   const toast = useToast()
+  // Every call carries an inline default: prepareConfig throws above LocaleProvider,
+  // so on that path there is no translator and a bare key would reach the screen.
+  const {t} = useTranslation('studio')
+  const {t: tCopyPaste} = useTranslation('copy-paste')
   const [, copy] = useCopyToClipboard()
   const handleCopyToClipboard = async () => {
     const errorsText = formatSchemaErrorsToMarkdown(groupsWithErrors, context)
@@ -46,12 +50,30 @@ export function SchemaErrorsScreen({schema, context}: SchemaErrorsScreenProps) {
     try {
       const ok = await copy(errorsText)
       if (ok) {
-        toast.push({status: 'success', title: 'Copied to clipboard'})
+        toast.push({
+          status: 'success',
+          title: t(
+            'about-dialog.version-info.copy-to-clipboard-button.copied-text',
+            'Copied to clipboard',
+          ),
+        })
       } else {
-        toast.push({status: 'error', title: 'Clipboard not supported'})
+        toast.push({
+          status: 'error',
+          title: tCopyPaste(
+            'copy-paste.on-copy.validation.clipboard-not-supported.title',
+            'Clipboard not supported',
+          ),
+        })
       }
     } catch {
-      toast.push({status: 'error', title: 'Clipboard not supported'})
+      toast.push({
+        status: 'error',
+        title: tCopyPaste(
+          'copy-paste.on-copy.validation.clipboard-not-supported.title',
+          'Clipboard not supported',
+        ),
+      })
     }
   }
 
@@ -68,8 +90,14 @@ export function SchemaErrorsScreen({schema, context}: SchemaErrorsScreenProps) {
       <Container size={1}>
         <VStack gap={5}>
           <Flex justifyContent="space-between" alignItems="center" gap={2}>
-            <Heading as="h1">Schema errors</Heading>
-            <Button text="Copy to clipboard" onClick={handleCopyToClipboard} />
+            <Heading as="h1">{t('schema-errors.title', 'Schema errors')}</Heading>
+            <Button
+              text={t(
+                'about-dialog.version-info.copy-to-clipboard-button.text',
+                'Copy to clipboard',
+              )}
+              onClick={handleCopyToClipboard}
+            />
           </Flex>
           {context && (
             <Card
@@ -81,13 +109,27 @@ export function SchemaErrorsScreen({schema, context}: SchemaErrorsScreenProps) {
             >
               <VStack gap={3}>
                 <Text size={1} weight="medium">
-                  Error location
+                  {t('schema-errors.location.title', 'Error location')}
                 </Text>
                 <Grid gap={2} gridTemplateColumns="max-content auto">
-                  <ContextRow label="Workspace" value={context.workspaceName} />
-                  {context.sourceName && <ContextRow label="Source" value={context.sourceName} />}
-                  <ContextRow label="Project ID" value={context.projectId} />
-                  <ContextRow label="Dataset" value={context.dataset} />
+                  <ContextRow
+                    label={t('schema-errors.location.workspace', 'Workspace')}
+                    value={context.workspaceName}
+                  />
+                  {context.sourceName && (
+                    <ContextRow
+                      label={t('schema-errors.location.source', 'Source')}
+                      value={context.sourceName}
+                    />
+                  )}
+                  <ContextRow
+                    label={t('schema-errors.location.project-id', 'Project ID')}
+                    value={context.projectId}
+                  />
+                  <ContextRow
+                    label={t('schema-errors.location.dataset', 'Dataset')}
+                    value={context.dataset}
+                  />
                 </Grid>
               </VStack>
             </Card>
