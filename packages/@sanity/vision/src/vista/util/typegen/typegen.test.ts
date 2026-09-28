@@ -306,6 +306,47 @@ describe('printTypeScript', () => {
     expect(zod).toContain('  c: Result2Schema,')
     expect(zod).toContain('export const ResultSchema = z.object({')
   })
+
+  it('leaves the built-in Array to the arrays it prints when a schema type is named array', () => {
+    // `export type Array = …` would shadow the global inside the module, and being non-generic,
+    // break every `Array<T>` printed next to it (a type alias, unlike a schema constant, has no
+    // suffix that keeps it apart from the built-in)
+    const named: SchemaType = [
+      {
+        name: 'array',
+        type: 'type',
+        value: {
+          type: 'object',
+          attributes: {
+            items: {
+              type: 'objectAttribute',
+              value: {type: 'array', of: {type: 'inline', name: 'array'}},
+              optional: true,
+            },
+          },
+        },
+      },
+    ]
+    const node: TypeNode = {type: 'array', of: {type: 'inline', name: 'array'}}
+
+    expect(printTypeScript(node, {typeName: 'Result', schema: named})).toBe(
+      [
+        'export type Result = Array<Array2>;',
+        '',
+        'export type Array2 = {',
+        '  items?: Array<Array2>;',
+        '};',
+      ].join('\n'),
+    )
+
+    // The recursive type makes the Zod output declare the TypeScript types as well
+    const zod = printZod(node, {typeName: 'Result', schema: named})
+    expect(zod).toContain('export type Array2 = {\n  items?: Array<Array2>;\n};')
+    expect(zod).toContain('export const Array2Schema: z.ZodType<Array2> = z.object({')
+    expect(zod).toContain('  items: z.array(z.lazy(() => Array2Schema)).optional(),')
+    expect(zod).toContain('export const ResultSchema = z.array(Array2Schema)')
+    expect(zod).not.toContain('export type Array =')
+  })
 })
 
 describe('printZod', () => {

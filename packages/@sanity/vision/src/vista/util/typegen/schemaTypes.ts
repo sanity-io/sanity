@@ -14,15 +14,23 @@ export function toTypeName(name: string): string {
 }
 
 /**
+ * Identifiers the printed declarations take from the global scope. A schema type named `array`
+ * must not become `export type Array = …`: inside that module the alias would shadow the
+ * built-in for every `Array<T>` the printers emit, and being non-generic, fail them all.
+ */
+const GLOBAL_IDENTIFIERS = ['Array']
+
+/**
  * One identifier per schema type name. Different names can normalise to the same identifier
  * (`foo-bar` and `foo.bar` both want `FooBar`), so later ones get a numeric suffix; `reserved`
- * identifiers (the result type's own name) are never handed out.
+ * identifiers (the result type's own name) and the globals the output refers to are never
+ * handed out.
  */
 export function createTypeNames(
   names: readonly string[],
   reserved: readonly string[] = [],
 ): Map<string, string> {
-  const taken = new Set(reserved)
+  const taken = new Set([...GLOBAL_IDENTIFIERS, ...reserved])
   const identifiers = new Map<string, string>()
   for (const name of names) {
     const base = toTypeName(name)
