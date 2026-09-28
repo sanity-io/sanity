@@ -394,4 +394,47 @@ describe('useSavedQueries', () => {
     expect(storedUrls()).toEqual(['https://b', 'https://a'])
     expect(latest.current?.queries.map((query) => query.url)).toEqual(['https://b', 'https://a'])
   })
+
+  it('keeps a query saved before a hidden Activity showed the tool again when the store’s read predates it', async () => {
+    mocks.setKey.mockImplementation(async (_key: string, next: StoredQueries) => {
+      mocks.store.value = next
+      return next
+    })
+    const latest = slot<ReturnType<typeof useSavedQueries>>()
+    function Probe({onRender}: {onRender: (result: ReturnType<typeof useSavedQueries>) => void}) {
+      const result = useSavedQueries()
+      useEffect(() => {
+        onRender(result)
+      })
+      return null
+    }
+    const harness = (mode: 'visible' | 'hidden') => (
+      <Activity mode={mode}>
+        <Probe
+          onRender={(result) => {
+            latest.current = result
+          }}
+        />
+      </Activity>
+    )
+    const {rerender} = render(harness('visible'))
+    await waitFor(() => expect(latest.current).not.toBeNull())
+
+    await act(async () => {
+      await latest.current?.saveQuery({url: 'https://a', savedAt: '2026-01-01T00:00:00Z'})
+    })
+
+    // A new subscription does not read the server afresh: the store answers from its cache, and
+    // its localStorage copy can hold a read made before the save
+    mocks.store.value = {queries: []}
+    rerender(harness('hidden'))
+    rerender(harness('visible'))
+    expect(latest.current?.queries.map((query) => query.url)).toEqual(['https://a'])
+
+    // The next write starts from the list with the query in it, so the store keeps it
+    await act(async () => {
+      await latest.current?.saveQuery({url: 'https://b', savedAt: '2026-01-02T00:00:00Z'})
+    })
+    expect(storedUrls()).toEqual(['https://b', 'https://a'])
+  })
 })

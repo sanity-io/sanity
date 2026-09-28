@@ -127,7 +127,7 @@ export function useSavedQueries(): {
   // writes (this hook's, and those of another Vision instance kept mounted under `<Activity>`,
   // which shares it) only after that read is done, so a write made before has its events dropped
   // for this subscriber and the read arrives afterwards with the list from before the write.
-  // That read is the one emission that does not reflect the writes made since subscribing; an
+  // That read is the one emission that does not reflect the writes made before it; an
   // emission that does (an own echo, another instance's write built on them) proves the read is
   // done, and from then on every emission is a live write and the base the next one starts from
   const pendingPersonalWritesRef = useRef(0)
@@ -164,9 +164,9 @@ export function useSavedQueries(): {
     // The store emits its localStorage copy synchronously (`null` without one), the server's
     // list once read, and then every write. Nothing is prepended: this effect runs again when a
     // hidden `<Activity>` shows the tool again, and an initial value would reset the list, and
-    // with it the base the next write starts from, to empty. Each subscription starts a new
-    // server read; what was written before it is on the server already
-    ownWritesRef.current = null
+    // with it the base the next write starts from, to empty. Nor does a new subscription read
+    // the server afresh: the store answers from its cache, and its localStorage copy can hold
+    // a read that landed after a write, so writes it has not shown back stay on record
     storeEventsLiveRef.current = false
     const sub = personalQueries.subscribe({
       next: (data) => {
@@ -175,6 +175,9 @@ export function useSavedQueries(): {
         if (ownWrites && !storeEventsLiveRef.current) {
           if (!reflectsOwnWrites(stored?.queries ?? defaultValue.queries, ownWrites)) return
           storeEventsLiveRef.current = true
+          // Shown back once is accounted for, so a later subscription starts without a filter
+          // and a write made elsewhere on top of these is free to take them away again
+          ownWritesRef.current = null
         }
         if (pendingPersonalWritesRef.current > 0) return
         if (!stored) {
