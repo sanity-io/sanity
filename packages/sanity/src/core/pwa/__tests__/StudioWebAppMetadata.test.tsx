@@ -56,7 +56,7 @@ function renderMetadata(workspaces: WorkspaceSummary[]) {
 }
 
 /** React hoists the metadata into `<head>`; read the manifest back out of the rendered link. */
-async function readRenderedManifest(): Promise<WebAppManifest> {
+async function readStudioManifest(): Promise<WebAppManifest> {
   const link = await waitFor(() => {
     const found = document.head.querySelector<HTMLLinkElement>(
       'link[rel~="manifest"][href^="data:"]',
@@ -85,7 +85,7 @@ describe('StudioWebAppMetadata', () => {
     mockManifestResponse(GENERATED_MANIFEST)
     renderMetadata([workspace({})])
 
-    const manifest = await readRenderedManifest()
+    const manifest = await readStudioManifest()
 
     expect(manifest).toMatchObject({
       display: 'standalone',
@@ -102,7 +102,7 @@ describe('StudioWebAppMetadata', () => {
     mockManifestResponse(GENERATED_MANIFEST)
     renderMetadata([workspace({})])
 
-    expect((await readRenderedManifest()).icons).toEqual([
+    expect((await readStudioManifest()).icons).toEqual([
       {sizes: '96x96', src: `${location.origin}/static/favicon-96.png`, type: 'image/png'},
       {sizes: '192x192', src: `${location.origin}/static/favicon-192.png`, type: 'image/png'},
       {sizes: '512x512', src: `${location.origin}/static/favicon-512.png`, type: 'image/png'},
@@ -113,7 +113,7 @@ describe('StudioWebAppMetadata', () => {
     mockManifestResponse(GENERATED_MANIFEST)
     renderMetadata([workspace({})])
 
-    await readRenderedManifest()
+    await readStudioManifest()
 
     const links = document.head.querySelectorAll('link[rel~="manifest"]')
     expect(links).toHaveLength(1)
@@ -124,7 +124,7 @@ describe('StudioWebAppMetadata', () => {
     mockManifestResponse(GENERATED_MANIFEST)
     const {unmount} = renderMetadata([workspace({})])
 
-    await readRenderedManifest()
+    await readStudioManifest()
     unmount()
 
     await waitFor(() => {
@@ -141,7 +141,7 @@ describe('StudioWebAppMetadata', () => {
       workspace({basePath: '/studio/production', name: 'production', title: 'Production'}),
     ])
 
-    expect(await readRenderedManifest()).toMatchObject({
+    expect(await readStudioManifest()).toMatchObject({
       name: 'Staging',
       scope: `${location.origin}/studio/`,
       start_url: `${location.origin}/studio/staging/`,
@@ -152,7 +152,7 @@ describe('StudioWebAppMetadata', () => {
     mockManifestResponse(GENERATED_MANIFEST)
     renderMetadata([workspace({title: 'Acme CMS'})])
 
-    await readRenderedManifest()
+    await readStudioManifest()
 
     const content = (name: string) =>
       document.head.querySelector(`meta[name="${name}"]`)?.getAttribute('content')
@@ -209,7 +209,7 @@ describe('StudioWebAppMetadata', () => {
     const fetchMock = mockManifestResponse(GENERATED_MANIFEST)
     renderMetadata([workspace({title: 'Acme CMS'})])
 
-    const manifest = await readRenderedManifest()
+    const manifest = await readStudioManifest()
 
     expect(fetchMock).not.toHaveBeenCalled()
     expect(manifest).toMatchObject({

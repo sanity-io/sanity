@@ -1,36 +1,31 @@
 import {type WebAppManifestIcon} from './types'
 
-/**
- * `favicon.ico` files are declared with `sizes="any"` but are not scalable, so treating them as a
- * high resolution icon would install the studio with a blurry icon.
- */
-function isIcoUrl(url: string): boolean {
-  return new URL(url).pathname.toLowerCase().endsWith('.ico')
-}
-
-function isSvgIcon(link: HTMLLinkElement): boolean {
-  return link.type === 'image/svg+xml' || new URL(link.href).pathname.toLowerCase().endsWith('.svg')
+function hasExtension(url: URL, extension: string): boolean {
+  return url.pathname.toLowerCase().endsWith(extension)
 }
 
 function toManifestIcon(link: HTMLLinkElement): WebAppManifestIcon | undefined {
   if (!link.href) return undefined
 
-  let src: string
+  let url: URL
   try {
-    src = new URL(link.href, link.baseURI).href
-    if (isIcoUrl(src)) return undefined
+    url = new URL(link.href, link.baseURI)
   } catch {
     return undefined
   }
 
+  // `favicon.ico` files are declared with `sizes="any"` but are not scalable, so treating one as a
+  // high resolution icon would install the studio with a blurry icon.
+  if (hasExtension(url, '.ico')) return undefined
+
   // Only advertise a size the document actually declared. A scalable icon is `any` by definition;
   // for everything else an absent `sizes` attribute tells us nothing, and guessing would either
   // hide a usable icon or claim a resolution the file does not have.
-  const declaredSizes = link.getAttribute('sizes')
-  const sizes = isSvgIcon(link) ? 'any' : declaredSizes
+  const scalable = link.type === 'image/svg+xml' || hasExtension(url, '.svg')
+  const sizes = scalable ? 'any' : link.getAttribute('sizes')
   if (!sizes) return undefined
 
-  return {src, sizes, ...(link.type ? {type: link.type} : {})}
+  return {src: url.href, sizes, ...(link.type ? {type: link.type} : {})}
 }
 
 /**
