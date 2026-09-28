@@ -1,7 +1,7 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {Component, type ReactNode} from 'react'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {isDev} from '../../../environment'
 import {type TFunction} from '../../../i18n/types'
@@ -41,18 +41,18 @@ export class DiffErrorBoundary extends Component<DiffErrorBoundaryProps, DiffErr
     return (
       <Card padding={3} radius={2} tone="critical">
         <Flex>
-          <Text size={1}>
+          <Text size={1} as="div" trim={true}>
             <ErrorOutlineIcon />
           </Text>
 
           <Box paddingLeft={3}>
-            <Text as="h3" size={1} weight="medium">
+            <Text as="h3" size={1} weight="medium" trim={true}>
               {t('changes.error-boundary.title')}
             </Text>
 
             {isDev && (
               <Box marginTop={2}>
-                <Text as="p" size={1}>
+                <Text as="p" size={1} trim={true}>
                   {t('changes.error-boundary.developer-info')}
                 </Text>
               </Box>

@@ -1,8 +1,8 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 import {type ExecutionProps, styled} from 'styled-components'
-import {VStack, Box, type BoxProps} from 'ui5'
+import {Text, VStack, Box, type BoxProps} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {pathToString} from '../../paths/helpers'
@@ -60,7 +60,7 @@ export function DiffInspectWrapper(
 
 const MetaLabel = ({title}: {title: string}) => (
   <Box padding={3} display="inline-block" as={Meta}>
-    <Text muted size={1} weight="medium">
+    <Text muted size={1} weight="medium" as="div" trim={true}>
       {title}
     </Text>
   </Box>

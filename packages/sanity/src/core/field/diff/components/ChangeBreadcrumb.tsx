@@ -1,6 +1,6 @@
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
-import {Text} from '@sanity/ui'
 import {Breadcrumbs} from '@sanity/ui/breadcrumbs'
+import {Text} from 'ui5'
 
 import {type ChangeTitlePath, type FieldChangeNode} from '../../types'
 import {ChangeTitleSegment} from './ChangeTitleSegment'
@@ -13,7 +13,7 @@ export function ChangeBreadcrumb(props: {change?: FieldChangeNode; titlePath: Ch
     <Breadcrumbs
       maxLength={4}
       separator={
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           <ChevronRightIcon />
         </Text>
       }

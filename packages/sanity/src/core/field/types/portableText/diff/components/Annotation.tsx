@@ -1,6 +1,6 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {isKeySegment, type ObjectSchemaType, type Path, type PortableTextChild} from '@sanity/types'
-import {Text, useClickOutsideEvent} from '@sanity/ui'
+import {useClickOutsideEvent} from '@sanity/ui'
 import {toString} from '@sanity/util/paths'
 import {
   type MouseEvent,
@@ -14,7 +14,7 @@ import {
 } from 'react'
 import {DiffContext, ReviewChangesContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {Popover} from '../../../../../../ui-components/popover/Popover'
 import {useChangeIndicatorsReportedValues} from '../../../../../changeIndicators/tracker'
@@ -173,7 +173,7 @@ function AnnnotationWithDiff({
       <PopoverContainer padding={3}>
         <div>
           {emptyObject && (
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               {t('changes.portable-text.empty-object-annotation', {
                 annotationType: schemaType.title || schemaType.name,
               })}
@@ -202,7 +202,7 @@ function AnnnotationWithDiff({
             <InlineBox style={{display: 'inline-flex'}}>
               <span>{children}</span>
               <Flex alignItems="center" paddingX={1}>
-                <InlineText size={0}>
+                <InlineText size={0} as="div" trim={true}>
                   <ChevronDownIcon />
                 </InlineText>
               </Flex>

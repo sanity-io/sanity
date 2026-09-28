@@ -1,5 +1,6 @@
-import {Card, rem, Text} from '@sanity/ui'
+import {Card, rem} from '@sanity/ui'
 import {styled} from 'styled-components'
+import {Text} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type StringDiff, type StringDiffSegment} from '../../types'
@@ -47,7 +48,7 @@ export function DiffStringSegment(props: {segment: StringDiffSegment}): React.JS
         tooltip={{description: t('changes.added-label')}}
         as={RoundedCard}
       >
-        <ChangeSegment as="ins" style={{textDecoration: 'none'}}>
+        <ChangeSegment forwardedAs="ins" style={{textDecoration: 'none'}} trim={true}>
           {text}
         </ChangeSegment>
       </DiffCard>
@@ -62,7 +63,9 @@ export function DiffStringSegment(props: {segment: StringDiffSegment}): React.JS
         disableHoverEffect
         tooltip={{description: t('changes.removed-label')}}
       >
-        <ChangeSegment as="del">{text}</ChangeSegment>
+        <ChangeSegment forwardedAs="del" trim={true}>
+          {text}
+        </ChangeSegment>
       </DiffCard>
     )
   }

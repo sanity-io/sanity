@@ -1,7 +1,7 @@
 import {ArrowDownIcon} from '@sanity/icons/ArrowDown'
 import {ArrowRightIcon} from '@sanity/icons/ArrowRight'
-import {Text, type TextProps} from '@sanity/ui'
 import {type HTMLProps} from 'react'
+import {Text, type TextProps} from 'ui5'
 
 /** @internal */
 export type FromToArrowDirection = 'down' | 'right'
@@ -20,7 +20,7 @@ export function FromToArrow(
   const ArrowComponent = arrowComponents[direction]
 
   return (
-    <Text muted size={1} {...restProps}>
+    <Text muted size={1} {...restProps} as="div" trim={true}>
       <ArrowComponent />
     </Text>
   )

@@ -1,7 +1,7 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {type CSSProperties} from 'react'
-import {Flex, VStack} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type DiffComponent} from '../../types'
@@ -72,7 +72,9 @@ export const JsonFieldDiff: DiffComponent = ({diff}) => {
   return (
     <Flex gap={4} paddingY={1} flexDirection="column" flexShrink={0}>
       <Card border padding={3} radius={2} tone="caution">
-        <Text size={1}>{t('changes.unknown-schema-field.description')}</Text>
+        <Text size={1} as="div" trim={true}>
+          {t('changes.unknown-schema-field.description')}
+        </Text>
       </Card>
       {content}
     </Flex>

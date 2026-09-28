@@ -1,6 +1,5 @@
-import {Text} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Text, Box} from 'ui5'
 
 export const InlineBox = styled(Box)`
   &:not([hidden]) {

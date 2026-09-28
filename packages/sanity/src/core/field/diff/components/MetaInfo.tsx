@@ -1,7 +1,6 @@
-import {Text} from '@sanity/ui'
 import {type ComponentType, type ReactNode} from 'react'
 import {styled} from 'styled-components'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 /** @internal */
 export interface MetaInfoProps {
@@ -24,7 +23,7 @@ export function MetaInfo(props: MetaInfoProps) {
     <Flex padding={2} alignItems="center">
       {Icon && (
         <Box padding={2}>
-          <MetaText size={4} forwardedAs={markRemoved ? 'del' : 'div'}>
+          <MetaText size={4} forwardedAs={markRemoved ? 'del' : 'div'} trim={true}>
             <Icon />
           </MetaText>
         </Box>
@@ -35,14 +34,15 @@ export function MetaInfo(props: MetaInfoProps) {
           size={1}
           weight="medium"
           forwardedAs={markRemoved ? 'del' : 'h3'}
-          textOverflow="ellipsis"
+          truncate={1}
+          trim={true}
         >
           {title}
         </MetaText>
 
         {action && <div>{action}</div>}
 
-        <MetaText size={0} textOverflow="ellipsis">
+        <MetaText size={0} truncate={1} forwardedAs="div" trim={true}>
           {children}
         </MetaText>
       </Flex>
