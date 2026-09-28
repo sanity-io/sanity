@@ -68,7 +68,9 @@ export function mergeTypeNodes(nodes: TypeNode[]): TypeNode {
   for (const node of flattened) {
     if (node.type === 'object') {
       const key = objectDiscriminator(node)
-      objects.set(key, [...(objects.get(key) || []), node])
+      const group = objects.get(key)
+      if (group) group.push(node)
+      else objects.set(key, [node])
       continue
     }
     if (node.type === 'array') {
