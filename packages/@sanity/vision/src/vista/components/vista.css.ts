@@ -4,51 +4,86 @@ export const root = style({
   position: 'relative',
 })
 
-// Resizer styles for @rexxars/react-split-pane, mirroring the ones in ../../components/VisionGui.css.ts
-globalStyle(`${root} .Resizer`, {
-  background: 'var(--card-border-color)',
-  opacity: 1,
-  zIndex: 1,
-  boxSizing: 'border-box',
-  backgroundClip: 'padding-box',
-  border: 'solid transparent',
-})
-
-globalStyle(`${root} .Resizer:hover`, {
-  borderColor: 'var(--card-shadow-ambient-color)',
-})
-
-globalStyle(`${root} .Resizer.horizontal`, {
-  height: '11px',
-  margin: '-5px 0',
-  borderWidth: '5px 0',
-  cursor: 'row-resize',
+/** `ResizableSplit`: two panes and the divider between them */
+export const splitRoot = style({
+  display: 'flex',
   width: '100%',
-  zIndex: 4,
-})
-
-globalStyle(`${root} .Resizer.vertical`, {
-  width: '11px',
-  margin: '0 -5px',
-  borderWidth: '0 5px',
-  cursor: 'col-resize',
-  zIndex: 2,
-})
-
-globalStyle(`${root} .Resizer.disabled`, {
-  cursor: 'default',
-})
-
-globalStyle(`${root} .Resizer.disabled:hover`, {
-  borderColor: 'transparent',
-})
-
-globalStyle(`${root} .Pane`, {
+  height: '100%',
   minWidth: 0,
   minHeight: 0,
 })
 
-/** Fills the pane it is rendered into; SplitPane positions panes absolutely */
+export const splitRootRow = style({flexDirection: 'row'})
+
+export const splitRootColumn = style({flexDirection: 'column'})
+
+/** A pane of the split; the primary one gets its size inline, the other takes what is left */
+export const splitPane = style({
+  position: 'relative',
+  flex: '1 1 0%',
+  minWidth: 0,
+  minHeight: 0,
+})
+
+/**
+ * The divider: the visible border line, with a hit area straddling it (the same 11px as the
+ * params handle) that shows while hovered, focused or dragged. Above the panes so the whole hit
+ * area can be grabbed, below the sidebar (20).
+ */
+export const splitHandle = style({
+  position: 'relative',
+  flex: '0 0 1px',
+  background: 'var(--card-border-color)',
+  zIndex: 11,
+  touchAction: 'none',
+  outline: 'none',
+  selectors: {
+    '&::after': {
+      content: '""',
+      position: 'absolute',
+      inset: '-5px',
+    },
+    '&:hover::after, &[data-dragging="true"]::after': {
+      background: 'var(--card-shadow-ambient-color)',
+    },
+    '&:focus-visible::after': {
+      background: 'var(--card-shadow-ambient-color)',
+      outline: '2px solid var(--card-focus-ring-color)',
+      outlineOffset: '-2px',
+    },
+  },
+})
+
+export const splitHandleVertical = style({
+  cursor: 'col-resize',
+  selectors: {
+    '&::after': {
+      top: 0,
+      bottom: 0,
+    },
+  },
+})
+
+export const splitHandleHorizontal = style({
+  cursor: 'row-resize',
+  selectors: {
+    '&::after': {
+      left: 0,
+      right: 0,
+    },
+  },
+})
+
+export const splitHandleDisabled = style({
+  cursor: 'default',
+  selectors: {
+    '&:hover::after': {
+      background: 'transparent',
+    },
+  },
+})
+
+/** Fills the pane it is rendered into */
 export const paneFill = style({
   position: 'relative',
   width: '100%',

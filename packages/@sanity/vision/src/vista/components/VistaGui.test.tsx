@@ -192,46 +192,6 @@ vi.mock('../../codemirror/VisionCodeMirror', () => ({
   },
 }))
 
-/** The latest `onChange` of each mocked `SplitPane`, by split direction, standing in for a drag */
-const splitPaneMocks = vi.hoisted(() => ({
-  onChange: {} as Record<string, ((size: number) => void) | undefined>,
-}))
-
-vi.mock('@rexxars/react-split-pane', async () => {
-  const {useEffect} = await import('react')
-  return {
-    SplitPane: function SplitPaneMock({
-      children,
-      maxSize,
-      minSize,
-      onChange,
-      size,
-      split,
-    }: {
-      children: ReactNode
-      maxSize?: number
-      minSize?: number
-      onChange?: (size: number) => void
-      size?: number | string
-      split?: string
-    }) {
-      useEffect(() => {
-        splitPaneMocks.onChange[split ?? 'vertical'] = onChange
-      }, [onChange, split])
-      return (
-        <div
-          data-max-size={maxSize}
-          data-min-size={minSize}
-          data-size={size}
-          data-testid={`split-pane-${split}`}
-        >
-          {children}
-        </div>
-      )
-    },
-  }
-})
-
 const BASE_PERSPECTIVE: PerspectiveContextValue = {
   perspectiveStack: ['published'],
   excludedPerspectives: [],
@@ -1456,26 +1416,51 @@ describe('VistaGui', () => {
     }
   })
 
-  it('keeps both panes of the main split at their minimum size', async () => {
+  it('keeps both panes of the main split at their minimum size, from the keyboard as well', async () => {
     renderVista()
-    const container = await screen.findByTestId('vista-query-tab')
-    resizeElement(container, {width: 1200, height: 700})
+    const split = await screen.findByTestId('vista-split')
+    // The tab container's size gives the default share, the split's own its bounds
+    resizeElement(screen.getByTestId('vista-query-tab'), {width: 1200, height: 700})
+    resizeElement(split, {width: 1200, height: 700})
+    const handle = screen.getByTestId('vista-split-handle')
+    const requestPane = split.firstElementChild as HTMLElement
 
-    // The request pane starts with half the width; a drag can take neither pane below 280px
-    // (a `maxSize` at or below zero is measured from the far edge)
-    const splitPane = screen.getByTestId('split-pane-vertical')
-    expect(splitPane.getAttribute('data-size')).toBe('600')
-    expect(splitPane.getAttribute('data-min-size')).toBe('280')
-    expect(splitPane.getAttribute('data-max-size')).toBe('-280')
+    // The request pane starts with half the width; the divider is a separator that says so and
+    // can take neither pane below 280px
+    expect(requestPane.style.flex).toBe('0 0 600px')
+    expect(handle.getAttribute('role')).toBe('separator')
+    expect(handle.getAttribute('aria-orientation')).toBe('vertical')
+    expect(handle.getAttribute('aria-label')).toBe('vista.split.request-response')
+    expect(handle.getAttribute('aria-valuenow')).toBe('600')
+    expect(handle.getAttribute('aria-valuemin')).toBe('280')
+    expect(handle.getAttribute('aria-valuemax')).toBe('919')
+    expect(handle.getAttribute('tabindex')).toBe('0')
 
-    // Dragged to 900px and the container then shrinks to 1000px: the response pane keeps its
-    // 280px rather than the 100px the dragged size would leave it...
-    act(() => splitPaneMocks.onChange.vertical?.(900))
-    expect(splitPane.getAttribute('data-size')).toBe('900')
-    resizeElement(container, {width: 1000, height: 700})
-    expect(splitPane.getAttribute('data-size')).toBe('720')
-    // ...and the dragged size comes back once there is room for it again
-    resizeElement(container, {width: 1200, height: 700})
-    expect(splitPane.getAttribute('data-size')).toBe('900')
+    // Arrow keys move the divider by a step, five with Shift; Home and End go to the bounds
+    fireEvent.keyDown(handle, {key: 'ArrowRight'})
+    expect(requestPane.style.flex).toBe('0 0 616px')
+    fireEvent.keyDown(handle, {key: 'ArrowLeft', shiftKey: true})
+    expect(requestPane.style.flex).toBe('0 0 536px')
+    fireEvent.keyDown(handle, {key: 'End'})
+    expect(requestPane.style.flex).toBe('0 0 919px')
+    fireEvent.keyDown(handle, {key: 'Home'})
+    expect(requestPane.style.flex).toBe('0 0 280px')
+    expect(handle.getAttribute('aria-valuenow')).toBe('280')
+
+    // Sized to 900px, then the container shrinks to 1000px: the response pane keeps its 280px
+    // rather than the 100px the size would leave it...
+    fireEvent.keyDown(handle, {key: 'End'})
+    resizeElement(split, {width: 1200, height: 700})
+    fireEvent.keyDown(handle, {key: 'ArrowLeft', shiftKey: true})
+    expect(requestPane.style.flex).toBe('0 0 839px')
+    resizeElement(split, {width: 1000, height: 700})
+    expect(requestPane.style.flex).toBe('0 0 719px')
+    expect(handle.getAttribute('aria-valuemax')).toBe('719')
+    // ...and the chosen size comes back once there is room for it again
+    resizeElement(split, {width: 1200, height: 700})
+    expect(requestPane.style.flex).toBe('0 0 839px')
+    // Enter goes back to the default share
+    fireEvent.keyDown(handle, {key: 'Enter'})
+    expect(requestPane.style.flex).toBe('0 0 600px')
   })
 })

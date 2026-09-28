@@ -1,9 +1,11 @@
-import {SplitPane} from '@rexxars/react-split-pane'
 import {type ReactNode, useState} from 'react'
+import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
+import {visionLocaleNamespace} from '../../i18n'
 import {useVistaExperience, type VistaLayout} from '../store/VistaActorContext'
 import {CollapsiblePanel, type CollapsiblePanelTab, PANEL_HEADER_HEIGHT} from './CollapsiblePanel'
+import {ResizableSplit} from './ResizableSplit'
 import {paneFill, splitPaneContainer} from './vista.css'
 
 /** The main area may never be dragged smaller than this */
@@ -28,6 +30,7 @@ export interface SplitWithBottomPanelProps {
  */
 export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
   const {id, testId, children, tabs, defaultBottomSize} = props
+  const {t} = useTranslation(visionLocaleNamespace)
   const {layout} = useVistaExperience()
   const [activeTabId, setActiveTabId] = useState(() => tabs[0].id)
   const [collapsed, setCollapsed] = useState(false)
@@ -37,14 +40,17 @@ export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
   return (
     <Flex data-testid={testId} flexDirection="column" height="100%">
       <Box className={splitPaneContainer}>
-        <SplitPane
+        <ResizableSplit
           allowResize={!collapsed}
-          maxSize={-MIN_MAIN_HEIGHT}
+          label={t('vista.split.bottom-panel')}
+          minSecondarySize={MIN_MAIN_HEIGHT}
           minSize={PANEL_HEADER_HEIGHT}
-          onChange={(size: number) => setBottomSizes((sizes) => ({...sizes, [layout]: size}))}
+          onChange={(size) => setBottomSizes((sizes) => ({...sizes, [layout]: size}))}
+          onReset={() => setBottomSizes((sizes) => ({...sizes, [layout]: undefined}))}
           primary="second"
           size={collapsed ? PANEL_HEADER_HEIGHT : bottomSize}
           split="horizontal"
+          testId={`${testId}-split`}
         >
           <Flex className={paneFill}>{children}</Flex>
           <Box className={paneFill}>
@@ -57,7 +63,7 @@ export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
               tabs={tabs}
             />
           </Box>
-        </SplitPane>
+        </ResizableSplit>
       </Box>
     </Flex>
   )

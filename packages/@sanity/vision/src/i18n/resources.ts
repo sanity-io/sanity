@@ -401,6 +401,12 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Empty state of the content source map panel */
   'vista.source-map.empty':
     'No content source map in the response. Turn on "Include content source map" under Options and fetch again.',
+  /** Accessible label of the divider between the result and the response details panel */
+  'vista.split.bottom-panel':
+    'Resize the response details panel: drag or use the arrow keys; Home and End go to the bounds, Enter resets',
+  /** Accessible label of the divider between the request and response panes */
+  'vista.split.request-response':
+    'Resize the request and response panes: drag or use the arrow keys; Home and End go to the bounds, Enter resets',
   /** Accessible label for the button closing a query tab */
   'vista.tabs.close-tab': 'Close tab',
   /** Accessible label for the list of query tabs */

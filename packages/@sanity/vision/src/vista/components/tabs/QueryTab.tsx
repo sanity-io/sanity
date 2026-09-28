@@ -1,4 +1,3 @@
-import {SplitPane} from '@rexxars/react-split-pane'
 import {Tab, TabList} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
@@ -34,6 +33,7 @@ import {formatGroq, GroqSyntaxError} from '../../util/groqWasm'
 import {parsedQueryToTabInit} from '../../util/savedQueryTab'
 import {type VistaShortcutId} from '../../util/shortcuts'
 import {RequestPanel} from '../request/RequestPanel'
+import {ResizableSplit} from '../ResizableSplit'
 import {ResponsePanel} from '../response/ResponsePanel'
 import {hiddenPane, paneFill, splitPaneContainer} from '../vista.css'
 import {getQueryTabId, QUERY_TAB_PANEL_ID} from './QueryTabBar'
@@ -433,29 +433,27 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     minSize,
     Math.floor((containerExtent || 0) * DEFAULT_REQUEST_SHARE[layout]),
   )
-  // Both panes keep the minimum: `maxSize` at or below zero is measured from the far edge, so a
-  // drag stops short of collapsing the response pane, and a size dragged in a wider container is
-  // clamped for as long as the container has shrunk around it (the request pane, with its three
-  // panels, wins when there is no room for both)
-  const requestedSplitSize = splitSizes[layout] ?? defaultSplitSize
-  const splitSize = containerExtent
-    ? Math.max(minSize, Math.min(requestedSplitSize, containerExtent - minSize))
-    : requestedSplitSize
 
+  // Both panes keep the minimum: the divider stops short of either, and a size dragged in a
+  // wider window is clamped by the split for as long as the window is narrower (the request
+  // pane, with its three panels, wins when there is no room for both)
   return (
     <Box {...panelProps} className={splitPaneContainer} ref={setSplitContainer}>
-      <SplitPane
+      <ResizableSplit
         key={layout}
-        maxSize={-minSize}
+        label={t('vista.split.request-response')}
+        minSecondarySize={minSize}
         minSize={minSize}
-        onChange={(size: number) => setSplitSizes((sizes) => ({...sizes, [layout]: size}))}
-        size={splitSize}
+        onChange={(size) => setSplitSizes((sizes) => ({...sizes, [layout]: size}))}
+        onReset={() => setSplitSizes((sizes) => ({...sizes, [layout]: undefined}))}
+        size={splitSizes[layout] ?? defaultSplitSize}
         // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals -- layout mode, not user-facing text
         split={layout === 'stacked' ? 'horizontal' : 'vertical'}
+        testId="vista-split"
       >
         <Box className={paneFill}>{requestPanel}</Box>
         <Box className={paneFill}>{responsePanel}</Box>
-      </SplitPane>
+      </ResizableSplit>
     </Box>
   )
 }
