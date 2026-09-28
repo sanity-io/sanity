@@ -272,6 +272,9 @@ const visionLocaleStrings = defineLocalesResources('vision', {
     'Resize params: drag or use the arrow keys; double-click or press Enter to fit the content again',
   /** Toast shown after a query URL was pasted and loaded into the tab */
   'vista.paste.parsed': 'Loaded query from pasted URL',
+  /** Toast shown when a pasted URL used a content variant the tab does not send */
+  'vista.paste.unavailable-variant':
+    'The pasted URL used the "{{variant}}" variant; select it in the navbar to run the query with it.',
   /** Toast shown when the dataset of a pasted URL is not available here */
   'vista.paste.unknown-dataset':
     'The dataset "{{dataset}}" in the pasted URL is not available here, keeping the current one.',
@@ -351,6 +354,9 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.saved.rename': 'Rename',
   /** Accessible label for the button saving the current query */
   'vista.saved.save-current': 'Save current query',
+  /** Toast shown when an opened saved query used a content variant the tab does not send */
+  'vista.saved.unavailable-variant':
+    'This saved query used the "{{variant}}" variant; select it in the navbar to run the query with it.',
   /** Toast shown when an opened saved query names a dataset that is not available here */
   'vista.saved.unknown-dataset':
     'The dataset "{{dataset}}" of this saved query is not available here, keeping the current one.',

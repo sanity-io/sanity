@@ -110,19 +110,33 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
     if (error) reportError(error)
   })
 
-  // A saved query naming a dataset the tool does not know (another project's URL, or a dataset
-  // the user cannot see) opens on the receiving tab's dataset, which is worth saying
-  const warnAboutUnknownDataset = useCallback(
+  // What the tab a saved query was loaded into cannot reproduce is worth saying: a dataset the
+  // tool does not know (another project's URL, or a dataset the user cannot see) leaves the tab
+  // on its own dataset, and a variant the navbar does not have selected is not sent, since a tab
+  // cannot pin one (its option follows the navbar or sends none)
+  const warnAboutUnrepresentable = useCallback(
     (parsed: ParsedQueryUrl) => {
-      if (parsed.isKnownDataset) return
-      toast.push({
-        closable: true,
-        id: 'vista-saved-query-dataset',
-        status: 'warning',
-        title: t('vista.saved.unknown-dataset', {dataset: parsed.dataset}),
-      })
+      if (!parsed.isKnownDataset) {
+        toast.push({
+          closable: true,
+          id: 'vista-saved-query-dataset',
+          status: 'warning',
+          title: t('vista.saved.unknown-dataset', {dataset: parsed.dataset}),
+        })
+      }
+      const {tabs: currentTabs, activeTabId} = actorRef.getSnapshot().context
+      const target = currentTabs.find((tab) => tab.id === activeTabId)
+      const sent = target && resolveRequestOptions(target.options, environment).variant
+      if (parsed.variant !== undefined && parsed.variant !== sent) {
+        toast.push({
+          closable: true,
+          id: 'vista-saved-query-variant',
+          status: 'warning',
+          title: t('vista.saved.unavailable-variant', {variant: parsed.variant}),
+        })
+      }
     },
-    [t, toast],
+    [actorRef, environment, t, toast],
   )
 
   const openInNewTab = useCallback(
@@ -133,19 +147,19 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
         actorRef.send({type: 'tab.select', id: existing.id})
       } else {
         actorRef.send({type: 'tab.add', tab: savedQueryToTabInit(query, parsed)})
-        warnAboutUnknownDataset(parsed)
+        warnAboutUnrepresentable(parsed)
       }
     },
-    [actorRef, findTabShowing, warnAboutUnknownDataset],
+    [actorRef, findTabShowing, warnAboutUnrepresentable],
   )
 
   const loadIntoCurrentTab = useCallback(
     ({query, parsed}: QueryListItem) => {
       if (!parsed) return
       actorRef.send({type: 'tab.load', id: activeTab.id, tab: savedQueryToTabInit(query, parsed)})
-      warnAboutUnknownDataset(parsed)
+      warnAboutUnrepresentable(parsed)
     },
-    [actorRef, activeTab.id, warnAboutUnknownDataset],
+    [actorRef, activeTab.id, warnAboutUnrepresentable],
   )
 
   // Enter and Escape unmount the rename field while it has focus; a blur delivered on the way

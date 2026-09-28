@@ -333,6 +333,16 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
           title: t('vista.paste.unknown-dataset', {dataset: parsed.dataset}),
         })
       }
+      // A tab cannot pin a variant (its option follows the navbar or sends none), so a request
+      // made with one the navbar does not have selected cannot be reproduced as pasted
+      if (parsed.variant !== undefined && parsed.variant !== resolved.variant) {
+        toast.push({
+          closable: true,
+          id: 'vista-paste-variant',
+          status: 'warning',
+          title: t('vista.paste.unavailable-variant', {variant: parsed.variant}),
+        })
+      }
       return true
     },
   })

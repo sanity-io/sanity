@@ -1255,6 +1255,50 @@ describe('VistaGui', () => {
     expect(screen.queryByText('vista.paste.unknown-dataset')).toBeNull()
   })
 
+  it('says so when a pasted URL used a variant the navbar does not have selected', async () => {
+    const url = `https://${PROJECT_ID}.api.sanity.io/vX/data/query/test?query=*&variant=french`
+    renderVista()
+    fireEvent.paste(document.body, {clipboardData: {getData: () => url}})
+    await waitFor(() => expect(getQueryEditor().value).toBe('*'))
+    // A tab cannot pin a variant, so the request runs without the saved one
+    await screen.findByText('vista.paste.unavailable-variant')
+    cleanup()
+
+    // With that variant selected in the navbar the tab sends it, and there is nothing to say
+    renderVista({...BASE_PERSPECTIVE, selectedVariantNames: ['french']})
+    fireEvent.paste(document.body, {clipboardData: {getData: () => url}})
+    await waitFor(() => expect(getQueryEditor().value).toBe('*'))
+    await screen.findByText('vista.paste.parsed')
+    expect(screen.queryByText('vista.paste.unavailable-variant')).toBeNull()
+  })
+
+  it(
+    'says so when an opened saved query used a variant the navbar does not have selected',
+    {timeout: 15_000},
+    async () => {
+      sanityMocks.savedQueries = {
+        queries: [
+          {
+            _key: 'saved-french',
+            shared: false,
+            title: 'French',
+            url: `https://${PROJECT_ID}.api.sanity.io/vX/data/query/test?query=*&variant=french`,
+            savedAt: '2026-01-01T00:00:00Z',
+          },
+        ],
+        moving: [],
+      }
+      renderVista()
+      fireEvent.click(screen.getByTestId('vista-sidebar-saved'))
+      const open = await screen.findByTestId('vista-saved-query-open')
+      // Not open anywhere: no tab sends the french variant
+      expect(open.hasAttribute('data-selected')).toBe(false)
+      fireEvent.click(open)
+      await waitFor(() => expect(getQueryEditor().value).toBe('*'))
+      await screen.findByText('vista.saved.unavailable-variant')
+    },
+  )
+
   it('says so when a pasted URL names a dataset that is not available here', async () => {
     renderVista()
     // Another project's URL, or a dataset this user cannot see: the query is loaded, but it runs
