@@ -1,6 +1,6 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {CircleSmallIcon} from '../../../components/temporary-icons/CircleSmall'
 import {RingIcon} from '../../../components/temporary-icons/Ring'
@@ -48,10 +48,12 @@ export function CommentOriginBadge({origin}: {origin: CommentOrigin}) {
       <Card border padding={1} radius={3}>
         <Flex alignItems="center" gap={1} paddingRight={1}>
           <IconSlotRoot data-status={origin}>
-            <Text size={2}>{origin === 'draft' ? <RingIcon /> : <CircleSmallIcon />}</Text>
+            <Text size={2} as="div" trim={true}>
+              {origin === 'draft' ? <RingIcon /> : <CircleSmallIcon />}
+            </Text>
           </IconSlotRoot>
 
-          <Text size={0} muted weight="medium">
+          <Text size={0} muted weight="medium" as="div" trim={true}>
             {t(getOriginI18nKey(origin))}
           </Text>
         </Flex>

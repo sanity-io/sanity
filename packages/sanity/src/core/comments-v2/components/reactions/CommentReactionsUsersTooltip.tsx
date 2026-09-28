@@ -21,7 +21,9 @@ type InlineTextProps = TextProps<'div'> & Omit<ComponentPropsWithRef<'div'>, key
 function InlineText(props: InlineTextProps) {
   const {className, ...rest} = props
 
-  return <Text {...rest} size={TEXT_SIZE} className={clsx(inlineText, className)} />
+  return (
+    <Text {...rest} size={TEXT_SIZE} className={clsx(inlineText, className)} as="div" trim={true} />
+  )
 }
 
 const LEADING_NON_WHITESPACE_RE = /^\S+/
