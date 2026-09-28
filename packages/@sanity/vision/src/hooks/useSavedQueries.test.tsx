@@ -49,6 +49,33 @@ function slot<T>(): {current: T | null} {
   return {current: null}
 }
 
+/** Renders the hook inside an Activity boundary, reporting its latest result from an effect */
+function renderInActivity() {
+  const latest = slot<ReturnType<typeof useSavedQueries>>()
+  function Probe({onRender}: {onRender: (result: ReturnType<typeof useSavedQueries>) => void}) {
+    const result = useSavedQueries()
+    useEffect(() => {
+      onRender(result)
+    })
+    return null
+  }
+  const harness = (mode: 'visible' | 'hidden') => (
+    <Activity mode={mode}>
+      <Probe
+        onRender={(result) => {
+          latest.current = result
+        }}
+      />
+    </Activity>
+  )
+  const {rerender} = render(harness('visible'))
+  return {
+    latest,
+    hide: () => rerender(harness('hidden')),
+    show: () => rerender(harness('visible')),
+  }
+}
+
 describe('useSavedQueries', () => {
   afterEach(() => {
     cleanup()
@@ -360,31 +387,14 @@ describe('useSavedQueries', () => {
       mocks.store.value = next
       return next
     })
-    const latest = slot<ReturnType<typeof useSavedQueries>>()
-    function Probe({onRender}: {onRender: (result: ReturnType<typeof useSavedQueries>) => void}) {
-      const result = useSavedQueries()
-      useEffect(() => {
-        onRender(result)
-      })
-      return null
-    }
-    const harness = (mode: 'visible' | 'hidden') => (
-      <Activity mode={mode}>
-        <Probe
-          onRender={(result) => {
-            latest.current = result
-          }}
-        />
-      </Activity>
-    )
-    const {rerender} = render(harness('visible'))
+    const {latest, hide, show} = renderInActivity()
     await waitFor(() => expect(latest.current?.queries).toHaveLength(1))
 
     // Hiding tears the subscription down; showing subscribes again, and this time the store has
     // no localStorage copy to start from, so it emits nothing useful until the server answers
     mocks.store.value = null
-    rerender(harness('hidden'))
-    rerender(harness('visible'))
+    hide()
+    show()
     expect(latest.current?.queries.map((query) => query.url)).toEqual(['https://a'])
 
     // A write in that window starts from the list, not from empty
@@ -393,5 +403,44 @@ describe('useSavedQueries', () => {
     })
     expect(storedUrls()).toEqual(['https://b', 'https://a'])
     expect(latest.current?.queries.map((query) => query.url)).toEqual(['https://b', 'https://a'])
+  })
+
+  it('keeps a saved query when the tool is shown again while the read from before the save is on its way', async () => {
+    mocks.store.value = {
+      queries: [{_key: 'p1', url: 'https://a', savedAt: '2026-01-01T00:00:00Z'}],
+    }
+    const {latest, hide, show} = renderInActivity()
+    await waitFor(() => expect(latest.current?.queries).toHaveLength(1))
+    await act(async () => {
+      await latest.current?.saveQuery({url: 'https://b', savedAt: '2026-01-02T00:00:00Z'})
+    })
+
+    // Shown again, the tool subscribes anew: the localStorage copy already holds the save, but
+    // the store's read is the request the save raced, and it answers with the list from before
+    hide()
+    show()
+    expect(latest.current?.queries.map((query) => query.url)).toEqual(['https://b', 'https://a'])
+    act(() => {
+      storeEvents.next({queries: [{_key: 'p1', url: 'https://a', savedAt: '2026-01-01T00:00:00Z'}]})
+    })
+    expect(latest.current?.queries.map((query) => query.url)).toEqual(['https://b', 'https://a'])
+
+    // The next write starts from the saved list, and a write from elsewhere built on it counts
+    await act(async () => {
+      await latest.current?.saveQuery({url: 'https://c', savedAt: '2026-01-03T00:00:00Z'})
+    })
+    expect(storedUrls()).toEqual(['https://c', 'https://b', 'https://a'])
+    const written = mocks.store.value?.queries ?? []
+    act(() => {
+      storeEvents.next({
+        queries: [{_key: 'peer', url: 'https://peer', savedAt: '2026-01-04T00:00:00Z'}, ...written],
+      })
+    })
+    expect(latest.current?.queries.map((query) => query.url)).toEqual([
+      'https://peer',
+      'https://c',
+      'https://b',
+      'https://a',
+    ])
   })
 })
