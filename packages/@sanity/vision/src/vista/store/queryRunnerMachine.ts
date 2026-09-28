@@ -252,9 +252,15 @@ export const queryRunnerMachine = setup({
             src: 'liveEvents',
             input: ({context}) => ({client: context.liveClient as SanityClient}),
             onSnapshot: {
-              guard: ({context, event}) =>
-                context.request !== undefined &&
-                getLiveRefetchTags(event.snapshot.context, context.syncTags) !== null,
+              guard: ({context, event}) => {
+                if (context.request === undefined) return false
+                const matched = getLiveRefetchTags(event.snapshot.context, context.syncTags)
+                if (matched === null) return false
+                // The tags belong to the response shown; a message matching them says nothing
+                // about a different request in flight, which would only be restarted by it. A
+                // restart (no tags) replays whatever the current request is
+                return matched.length === 0 || context.request.url === context.syncTagsUrl
+              },
               actions: raise(({context, event}) => ({
                 type: 'fetch' as const,
                 request: context.request as QueryRequest,

@@ -289,6 +289,38 @@ describe('queryRunnerMachine', () => {
     expect(harness.fetches).toHaveLength(3)
   })
 
+  it('leaves a different request in flight alone when the shown response’s tags match', async () => {
+    const harness = createHarness()
+    harness.actor.send({type: 'fetch', request: harness.request(), reason: {type: 'manual'}})
+    harness.fetches[0].resolve({result: 1, syncTags: ['s1:a']})
+    await waitFor(harness.actor, (snapshot) => snapshot.matches({request: 'settled'}))
+    harness.actor.send({type: 'live.enable', client: {} as SanityClient})
+
+    // Another query is fetched while the first response is still the one shown
+    const other = harness.request({query: '*[_type == "book"]', url: 'https://other'})
+    harness.actor.send({type: 'fetch', request: other, reason: {type: 'manual'}})
+    expect(harness.fetches).toHaveLength(2)
+
+    // A change to the shown response's documents must not restart that unrelated fetch
+    harness.liveEvents.next({type: 'message', id: '1', tags: ['s1:a']})
+    expect(harness.fetches).toHaveLength(2)
+    expect(harness.fetches[1].signal.aborted).toBe(false)
+
+    // A restart, which carries no tags, does replay the current request
+    harness.liveEvents.next({type: 'restart', id: 'r'})
+    expect(harness.fetches).toHaveLength(3)
+    expect(harness.fetches[1].signal.aborted).toBe(true)
+    expect(harness.fetches[2].request.url).toBe('https://other')
+
+    // Once the other response is shown, its own tags drive the refetches
+    harness.fetches[2].resolve({result: 2, syncTags: ['s1:b']})
+    await waitFor(harness.actor, (snapshot) => snapshot.context.result === 2)
+    harness.liveEvents.next({type: 'message', id: '2', tags: ['s1:a']})
+    expect(harness.fetches).toHaveLength(3)
+    harness.liveEvents.next({type: 'message', id: '3', tags: ['s1:b']})
+    expect(harness.fetches).toHaveLength(4)
+  })
+
   it('refetches on a restart event and ignores events without a prior fetch', () => {
     const harness = createHarness()
     harness.actor.send({type: 'live.enable', client: {} as SanityClient})
