@@ -1,4 +1,4 @@
-import {type LiveEvent, type SanityClient} from '@sanity/client'
+import {ClientError, type LiveEvent, type SanityClient} from '@sanity/client'
 import {LayerProvider, ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {ToastProvider} from '@sanity/ui/toast'
@@ -478,6 +478,50 @@ describe('VistaGui', () => {
     )
     fireEvent.click(document.getElementById('vista-response-history-tab') as HTMLElement)
     expect(text(screen.getByTestId('vista-history-entry'))).toContain('vista.history.failed')
+  })
+
+  it('explains a failure with the options the request went out with, not the tab’s current ones', async () => {
+    const initial = createInitialState(DEFAULTS)
+    // A release stack on an API version from before releases: the failure gets a capability hint
+    const tab = createTab(initial.settings, {
+      id: 'old',
+      query: '*',
+      options: {apiVersion: 'v2021-10-21', perspective: 'global'},
+    })
+    saveVistaState(PROJECT_ID, {...initial, tabs: [tab], activeTabId: 'old'})
+    const {failWith, holdFetches, fetchCalls} = renderVista({
+      ...BASE_PERSPECTIVE,
+      perspectiveStack: ['rSummer', 'drafts'],
+      selectedPerspectiveName: 'rSummer',
+      selectedReleaseId: 'rSummer',
+    })
+    failWith(
+      new ClientError({
+        statusCode: 400,
+        statusMessage: 'Bad Request',
+        headers: {},
+        body: {message: 'Complex perspectives are not supported for this version'},
+        url: 'https://test.api.sanity.io/v2021-10-21/data/query/test?query=*',
+        method: 'GET',
+      }),
+    )
+    const release = holdFetches()
+    fireEvent.click(screen.getByTestId('vista-fetch-button'))
+    await waitFor(() => expect(fetchCalls).toHaveLength(1))
+    expect(fetchCalls[0].config.perspective).toEqual(['rSummer', 'drafts'])
+
+    // The tab moves to a plain perspective while the request is still in flight
+    fireEvent.change(screen.getByTestId('vista-option-perspective-select'), {
+      target: {value: 'published'},
+    })
+    release()
+
+    await waitFor(() =>
+      expect(text(screen.getByTestId('vista-result'))).toContain('Complex perspectives'),
+    )
+    expect(text(screen.getByTestId('query-error-api-version-capability-hint'))).toContain(
+      'query.error.unsupported-release-perspective',
+    )
   })
 
   it('opens, switches, renames and closes tabs, and persists them', async () => {

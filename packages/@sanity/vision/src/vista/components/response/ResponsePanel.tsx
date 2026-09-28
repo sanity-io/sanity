@@ -49,6 +49,13 @@ export function ResponsePanel(props: ResponsePanelProps) {
   const result = useSelector(runnerRef, (snapshot) => snapshot.context.result)
   const settledRequest = useSelector(runnerRef, (snapshot) => snapshot.context.settledRequest)
   const error = useSelector(runnerRef, (snapshot) => snapshot.context.error)
+  // The request whose failure is shown: the runner keeps it, while the tab's options (and with
+  // them `resolved`) may have moved on while it was in flight, so its error is explained with
+  // the API version, perspective and variant it went out with
+  const failedRequest = useSelector(runnerRef, (snapshot) =>
+    snapshot.matches({request: 'failed'}) ? snapshot.context.request : undefined,
+  )
+  const failedConfig = failedRequest?.client.config()
   const meta = useSelector(runnerRef, (snapshot) => snapshot.context.meta)
   // While a newer fetch is in flight the shown response keeps its own URL, not the pending one
   const url = useSelector(
@@ -160,10 +167,16 @@ export function ResponsePanel(props: ResponsePanelProps) {
           )}
           {status === 'failed' && error && (
             <QueryErrorDialog
-              apiVersion={resolved.apiVersion}
+              apiVersion={failedConfig?.apiVersion ?? resolved.apiVersion}
               error={error}
-              perspective={resolved.perspective}
-              variant={resolved.variant}
+              perspective={failedConfig ? failedConfig.perspective : resolved.perspective}
+              variant={
+                failedConfig
+                  ? typeof failedConfig.variant === 'string'
+                    ? failedConfig.variant
+                    : undefined
+                  : resolved.variant
+              }
             />
           )}
           {hasResult && <ResultView data={result} datasetName={resultDataset} />}
