@@ -14,7 +14,12 @@ export function PresentationDocumentProvider(props: {
   const parent = useContext(PresentationDocumentContext)
   const parentRegister = parent?.register
 
-  const [optionsArray, setOptionsArray] = useState<PresentationPluginOptions[]>(() => [])
+  // Options registered by nested providers (further presentation plugin instances wrapping the
+  // same form). This provider's own options are part of the context from the first render: the
+  // document header should not wait for a layout effect to mount its locations banner, and it must
+  // not lose the banner while the tool is hidden inside an `<Activity>` boundary, whose effects
+  // are torn down, only to remount it in a resolving state on reveal.
+  const [nestedOptions, setNestedOptions] = useState<PresentationPluginOptions[]>(() => [])
 
   const register = useCallback(
     (options: PresentationPluginOptions) => {
@@ -22,10 +27,10 @@ export function PresentationDocumentProvider(props: {
         return parentRegister(options)
       }
 
-      setOptionsArray((prev) => [options].concat(prev))
+      setNestedOptions((prev) => [options].concat(prev))
 
       return () => {
-        setOptionsArray((prev) => prev.filter((o) => o !== options))
+        setNestedOptions((prev) => prev.filter((o) => o !== options))
       }
     },
     [parentRegister],
@@ -33,17 +38,21 @@ export function PresentationDocumentProvider(props: {
 
   const context: PresentationDocumentContextValue = useMemo(
     () => ({
-      options: parent?.options || optionsArray,
+      options: parent?.options || [options, ...nestedOptions],
       register,
     }),
-    [optionsArray, parent, register],
+    [nestedOptions, options, parent, register],
   )
 
   const registerEffectEvent = useEffectEvent((options: PresentationPluginOptions) =>
     register(options),
   )
-  // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
-  useLayoutEffect(() => registerEffectEvent(options), [options])
+  // Only a nested provider registers with the root; the root lists its own options directly
+  useLayoutEffect(
+    () => (parentRegister ? registerEffectEvent(options) : undefined),
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- `registerEffectEvent` is an effect event, which `react-hooks/exhaustive-deps` forbids in the dependency array
+    [options, parentRegister],
+  )
 
   return (
     <PresentationDocumentContext.Provider value={context}>
