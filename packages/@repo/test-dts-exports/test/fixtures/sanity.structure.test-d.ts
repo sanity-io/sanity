@@ -90,6 +90,7 @@ import type {
   ListItem,
   ListItemBuilder,
   ListItemChild,
+  ListItemCount,
   ListItemDisplayOptions,
   ListItemInput,
   ListItemSerializeOptions,
@@ -429,6 +430,9 @@ describe('sanity/structure', () => {
   })
   test('ListItemChild', () => {
     expectTypeOf<ListItemChild>().not.toBeNever()
+  })
+  test('ListItemCount', () => {
+    expectTypeOf<ListItemCount>().toBeObject()
   })
   test('ListItemDisplayOptions', () => {
     expectTypeOf<ListItemDisplayOptions>().toBeObject()
