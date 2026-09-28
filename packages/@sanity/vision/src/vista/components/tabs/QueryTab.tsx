@@ -415,14 +415,23 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     minSize,
     Math.floor((containerExtent || 0) * DEFAULT_REQUEST_SHARE[layout]),
   )
+  // Both panes keep the minimum: `maxSize` at or below zero is measured from the far edge, so a
+  // drag stops short of collapsing the response pane, and a size dragged in a wider container is
+  // clamped for as long as the container has shrunk around it (the request pane, with its three
+  // panels, wins when there is no room for both)
+  const requestedSplitSize = splitSizes[layout] ?? defaultSplitSize
+  const splitSize = containerExtent
+    ? Math.max(minSize, Math.min(requestedSplitSize, containerExtent - minSize))
+    : requestedSplitSize
 
   return (
     <Box {...panelProps} className={splitPaneContainer} ref={setSplitContainer}>
       <SplitPane
         key={layout}
+        maxSize={-minSize}
         minSize={minSize}
         onChange={(size: number) => setSplitSizes((sizes) => ({...sizes, [layout]: size}))}
-        size={splitSizes[layout] ?? defaultSplitSize}
+        size={splitSize}
         // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals -- layout mode, not user-facing text
         split={layout === 'stacked' ? 'horizontal' : 'vertical'}
       >

@@ -50,10 +50,38 @@ const editorMocks = vi.hoisted(() => ({
   visibleColumns: undefined as number | ((lines: number | undefined) => number) | undefined,
 }))
 
+/** The elements each mocked `ResizeObserver` watches, so a test can hand one a measurement */
+const resizeObservers = new Set<{callback: ResizeObserverCallback; elements: Set<Element>}>()
+
 class ResizeObserverMock {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
+  private entry: {callback: ResizeObserverCallback; elements: Set<Element>}
+  constructor(callback: ResizeObserverCallback) {
+    this.entry = {callback, elements: new Set()}
+    resizeObservers.add(this.entry)
+  }
+  observe(element: Element) {
+    this.entry.elements.add(element)
+  }
+  unobserve(element: Element) {
+    this.entry.elements.delete(element)
+  }
+  disconnect() {
+    resizeObservers.delete(this.entry)
+  }
+}
+
+/** Reports `element` as measuring `width` × `height` to every observer watching it */
+function resizeElement(element: Element, {width, height}: {width: number; height: number}) {
+  act(() => {
+    for (const {callback, elements} of resizeObservers) {
+      if (!elements.has(element)) continue
+      const contentRect = {width, height, x: 0, y: 0, top: 0, left: 0, right: width, bottom: height}
+      callback(
+        [{target: element, contentRect} as unknown as ResizeObserverEntry],
+        {} as ResizeObserver,
+      )
+    }
+  })
 }
 
 vi.stubGlobal('ResizeObserver', ResizeObserverMock)
@@ -164,11 +192,45 @@ vi.mock('../../codemirror/VisionCodeMirror', () => ({
   },
 }))
 
-vi.mock('@rexxars/react-split-pane', () => ({
-  SplitPane: function SplitPaneMock({children}: {children: ReactNode}) {
-    return <div>{children}</div>
-  },
+/** The latest `onChange` of each mocked `SplitPane`, by split direction, standing in for a drag */
+const splitPaneMocks = vi.hoisted(() => ({
+  onChange: {} as Record<string, ((size: number) => void) | undefined>,
 }))
+
+vi.mock('@rexxars/react-split-pane', async () => {
+  const {useEffect} = await import('react')
+  return {
+    SplitPane: function SplitPaneMock({
+      children,
+      maxSize,
+      minSize,
+      onChange,
+      size,
+      split,
+    }: {
+      children: ReactNode
+      maxSize?: number
+      minSize?: number
+      onChange?: (size: number) => void
+      size?: number | string
+      split?: string
+    }) {
+      useEffect(() => {
+        splitPaneMocks.onChange[split ?? 'vertical'] = onChange
+      }, [onChange, split])
+      return (
+        <div
+          data-max-size={maxSize}
+          data-min-size={minSize}
+          data-size={size}
+          data-testid={`split-pane-${split}`}
+        >
+          {children}
+        </div>
+      )
+    },
+  }
+})
 
 const BASE_PERSPECTIVE: PerspectiveContextValue = {
   perspectiveStack: ['published'],
@@ -1263,5 +1325,28 @@ describe('VistaGui', () => {
     } finally {
       Object.defineProperty(window, 'innerWidth', {configurable: true, value: innerWidth})
     }
+  })
+
+  it('keeps both panes of the main split at their minimum size', async () => {
+    renderVista()
+    const container = await screen.findByTestId('vista-query-tab')
+    resizeElement(container, {width: 1200, height: 700})
+
+    // The request pane starts with half the width; a drag can take neither pane below 280px
+    // (a `maxSize` at or below zero is measured from the far edge)
+    const splitPane = screen.getByTestId('split-pane-vertical')
+    expect(splitPane.getAttribute('data-size')).toBe('600')
+    expect(splitPane.getAttribute('data-min-size')).toBe('280')
+    expect(splitPane.getAttribute('data-max-size')).toBe('-280')
+
+    // Dragged to 900px and the container then shrinks to 1000px: the response pane keeps its
+    // 280px rather than the 100px the dragged size would leave it...
+    act(() => splitPaneMocks.onChange.vertical?.(900))
+    expect(splitPane.getAttribute('data-size')).toBe('900')
+    resizeElement(container, {width: 1000, height: 700})
+    expect(splitPane.getAttribute('data-size')).toBe('720')
+    // ...and the dragged size comes back once there is room for it again
+    resizeElement(container, {width: 1200, height: 700})
+    expect(splitPane.getAttribute('data-size')).toBe('900')
   })
 })
