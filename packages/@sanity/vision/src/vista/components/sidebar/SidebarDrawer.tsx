@@ -1,6 +1,6 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {Button, Text} from '@sanity/ui'
-import {type KeyboardEvent, useCallback, useEffect, useRef} from 'react'
+import {type KeyboardEvent, useCallback} from 'react'
 import TrapFocus from 'react-focus-lock'
 import {useTranslation} from 'sanity'
 import {Flex} from 'ui5'
@@ -28,20 +28,6 @@ export function SidebarDrawer({drawer, overlay}: SidebarDrawerProps) {
   const title =
     drawer === 'saved' ? t('vista.sidebar.saved-queries') : t('vista.sidebar.shared-queries')
 
-  // The control that opened the drawer, read when the lock activates, which is before it moves
-  // focus inside. Focus goes back to it from a passive effect cleanup rather than through the
-  // lock's own `returnFocus`: that resolves its target while the drawer unmounts, when the rail
-  // still carries `inert` from the same commit and focus-lock sees nothing focusable there.
-  const openerRef = useRef<HTMLElement | null>(null)
-  const rememberOpener = useCallback(() => {
-    openerRef.current =
-      document.activeElement instanceof HTMLElement ? document.activeElement : null
-  }, [])
-  useEffect(() => {
-    if (!overlay) return undefined
-    return () => openerRef.current?.focus()
-  }, [overlay])
-
   const handleKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
       if (overlay && event.key === 'Escape') {
@@ -54,14 +40,9 @@ export function SidebarDrawer({drawer, overlay}: SidebarDrawerProps) {
 
   // Floating over the tool, the drawer is a modal dialog: the rest of the tool is inert (see
   // VistaGui and VistaSidebar), focus moves to its close button on open, Tab stays inside it (the
-  // studio chrome above is not inert), and focus returns to the opener on close
+  // studio chrome above is not inert), and focus returns to the opener on close (VistaSidebar)
   return (
-    <TrapFocus
-      autoFocus
-      disabled={!overlay}
-      lockProps={TRAP_FOCUS_PROPS}
-      onActivation={rememberOpener}
-    >
+    <TrapFocus autoFocus disabled={!overlay} lockProps={TRAP_FOCUS_PROPS}>
       <Flex
         aria-label={overlay ? title : undefined}
         aria-modal={overlay || undefined}

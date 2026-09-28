@@ -3,7 +3,7 @@ import {LayerProvider, ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {ToastProvider} from '@sanity/ui/toast'
 import {act, cleanup, fireEvent, render, screen, waitFor, within} from '@testing-library/react'
-import {type ReactNode, type RefAttributes, useImperativeHandle, useRef} from 'react'
+import {Activity, type ReactNode, type RefAttributes, useImperativeHandle, useRef} from 'react'
 import {Subject} from 'rxjs'
 import {type PerspectiveContextValue, useScheduledDraftsEnabled} from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
@@ -268,22 +268,25 @@ function renderVista(perspective: PerspectiveContextValue = BASE_PERSPECTIVE) {
   sanityMocks.useClient.mockReturnValue(mockClient.client)
   const onSwitchToClassic = vi.fn()
 
-  const ui = () => (
+  // Inside an Activity boundary, as the studio keeps recent tools mounted (`beta.reactActivityMode`)
+  const ui = (mode: 'visible' | 'hidden') => (
     <ThemeProvider theme={theme}>
       <ToastProvider>
         <LayerProvider>
-          <VistaGui
-            config={{defaultApiVersion: '2025-02-19'}}
-            datasets={DEFAULTS.datasets}
-            projectId={PROJECT_ID}
-            defaultDataset="test"
-            onSwitchToClassic={onSwitchToClassic}
-          />
+          <Activity mode={mode}>
+            <VistaGui
+              config={{defaultApiVersion: '2025-02-19'}}
+              datasets={DEFAULTS.datasets}
+              projectId={PROJECT_ID}
+              defaultDataset="test"
+              onSwitchToClassic={onSwitchToClassic}
+            />
+          </Activity>
         </LayerProvider>
       </ToastProvider>
     </ThemeProvider>
   )
-  const view = render(ui())
+  const view = render(ui('visible'))
 
   return {
     ...view,
@@ -292,6 +295,9 @@ function renderVista(perspective: PerspectiveContextValue = BASE_PERSPECTIVE) {
     setPerspective: (next: PerspectiveContextValue) => {
       act(() => sanityMocks.setPerspective(next))
     },
+    /** Hides the tool as leaving it for another tool does, keeping it mounted */
+    hide: () => view.rerender(ui('hidden')),
+    show: () => view.rerender(ui('visible')),
   }
 }
 
@@ -1187,7 +1193,7 @@ describe('VistaGui', () => {
     const {innerWidth} = window
     Object.defineProperty(window, 'innerWidth', {configurable: true, value: 500})
     try {
-      renderVista()
+      const {hide, show} = renderVista()
       const opener = screen.getByTestId('vista-sidebar-saved')
       opener.focus()
       fireEvent.click(opener)
@@ -1198,6 +1204,13 @@ describe('VistaGui', () => {
       // The rail behind the drawer is inert; the drawer's close button takes focus
       expect(screen.getByTestId('vista-sidebar').hasAttribute('inert')).toBe(true)
       const closeButton = within(drawer).getByRole('button', {name: 'vista.drawer.close'})
+      await waitFor(() => expect(document.activeElement).toBe(closeButton))
+
+      // Leaving for another tool hides the drawer along with the tool but does not close it:
+      // focus must not jump back to the rail, and coming back keeps the opener for later
+      hide()
+      expect(document.activeElement).not.toBe(opener)
+      show()
       await waitFor(() => expect(document.activeElement).toBe(closeButton))
 
       fireEvent.keyDown(drawer, {key: 'Escape'})

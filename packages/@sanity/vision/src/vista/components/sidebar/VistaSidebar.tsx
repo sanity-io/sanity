@@ -7,11 +7,12 @@ import {RestoreIcon} from '@sanity/icons/Restore'
 import {UsersIcon} from '@sanity/icons/Users'
 import {Button, Text} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
-import {type ComponentType, useCallback} from 'react'
+import {type ComponentType, type MouseEvent, useCallback, useRef} from 'react'
 import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
+import {useOnValueChange} from '../../hooks/useOnValueChange'
 import {type VistaDrawer} from '../../store/types'
 import {useVistaActor, useVistaExperience, useVistaSelector} from '../../store/VistaActorContext'
 import {selectOpenDrawer} from '../../store/vistaMachine'
@@ -31,7 +32,7 @@ interface SidebarItemProps {
   expanded: boolean
   selected?: boolean
   testId: string
-  onClick: () => void
+  onClick: (event: MouseEvent<HTMLElement>) => void
 }
 
 function SidebarItem({icon, label, expanded, selected, testId, onClick}: SidebarItemProps) {
@@ -73,10 +74,26 @@ export function VistaSidebar() {
   const drawer = useVistaSelector(selectOpenDrawer)
   const isMobile = layout === 'mobile'
 
+  // The rail button that opened the drawer, remembered from its click: the drawer is a modal
+  // dialog on phones, and focus goes back there once it has closed. Not read when the drawer's
+  // focus lock activates, which happens again when a hidden `<Activity>` shows the tool with the
+  // drawer still open (focus is elsewhere by then), and not restored from an effect cleanup, which
+  // also runs when the tool is hidden. The lock's own `returnFocus` is no use either: it resolves
+  // its target while the drawer unmounts, when the rail still carries `inert` from the same
+  // commit and focus-lock sees nothing focusable there
+  const openerRef = useRef<HTMLElement | null>(null)
   const toggleDrawer = useCallback(
-    (target: VistaDrawer) => actorRef.send({type: 'drawer.toggle', drawer: target}),
-    [actorRef],
+    (target: VistaDrawer, event: MouseEvent<HTMLElement>) => {
+      if (drawer === null) openerRef.current = event.currentTarget
+      actorRef.send({type: 'drawer.toggle', drawer: target})
+    },
+    [actorRef, drawer],
   )
+  useOnValueChange(drawer, (next, previous) => {
+    if (previous === null || next !== null) return
+    openerRef.current?.focus()
+    openerRef.current = null
+  })
 
   const rail = (
     <Flex
@@ -102,7 +119,7 @@ export function VistaSidebar() {
           expanded={expanded}
           icon={UsersIcon}
           label={t('vista.sidebar.shared-queries')}
-          onClick={() => toggleDrawer('shared')}
+          onClick={(event) => toggleDrawer('shared', event)}
           selected={drawer === 'shared'}
           testId="vista-sidebar-shared"
         />
@@ -110,7 +127,7 @@ export function VistaSidebar() {
           expanded={expanded}
           icon={BookmarkIcon}
           label={t('vista.sidebar.saved-queries')}
-          onClick={() => toggleDrawer('saved')}
+          onClick={(event) => toggleDrawer('saved', event)}
           selected={drawer === 'saved'}
           testId="vista-sidebar-saved"
         />
