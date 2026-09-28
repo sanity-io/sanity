@@ -171,6 +171,40 @@ describe('inferTypeFromValue', () => {
     )
     expect(printZod(withRest, {typeName: 'R'})).toContain('  ["__proto__"]: z.boolean(),')
   })
+
+  it('merges items that mostly carry distinct keys in one pass over their attributes', () => {
+    // A keyed map per item: every key is optional, in the order it first appears, and the shared
+    // one merges. Scanning every item again per distinct key would take this many items into
+    // the test timeout
+    const count = 30_000
+    const items = Array.from({length: count}, (_, index) => ({
+      id: index % 2 === 0 ? String(index) : index,
+      [`key${index}`]: index,
+    }))
+    const node = inferTypeFromValue(items)
+    expect(node.type).toBe('array')
+    const item = node.type === 'array' ? node.of : undefined
+    expect(item?.type).toBe('object')
+    if (item?.type !== 'object') return
+
+    const keys = Object.keys(item.attributes)
+    expect(keys).toHaveLength(count + 1)
+    expect(keys.slice(0, 3)).toEqual(['id', 'key0', 'key1'])
+    expect(item.attributes.id).toEqual({
+      type: 'objectAttribute',
+      value: {type: 'union', of: [{type: 'string'}, {type: 'number'}]},
+    })
+    expect(item.attributes.key0).toEqual({
+      type: 'objectAttribute',
+      value: {type: 'number'},
+      optional: true,
+    })
+    expect(item.attributes[`key${count - 1}`]).toEqual({
+      type: 'objectAttribute',
+      value: {type: 'number'},
+      optional: true,
+    })
+  })
 })
 
 describe('schemaTypes', () => {

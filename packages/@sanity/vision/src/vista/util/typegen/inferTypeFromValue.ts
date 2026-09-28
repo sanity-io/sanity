@@ -110,16 +110,29 @@ function mergeObjectNodes(nodes: ObjectTypeNode[]): ObjectTypeNode {
   if (nodes.length === 1) {
     return nodes[0]
   }
+  // One pass over every attribute of every item, so items that mostly carry distinct keys
+  // (keyed maps, per-locale dictionaries) cost their size and not size × keys; the keys keep the
+  // order of their first appearance
+  const collected = new Map<string, {values: TypeNode[]; optional: boolean}>()
+  for (const node of nodes) {
+    for (const key of Object.keys(node.attributes)) {
+      const attribute = node.attributes[key]
+      const entry = collected.get(key)
+      if (entry) {
+        entry.values.push(attribute.value)
+        if (attribute.optional) entry.optional = true
+      } else {
+        collected.set(key, {values: [attribute.value], optional: attribute.optional === true})
+      }
+    }
+  }
   const attributes = createAttributeMap()
-  const keys = new Set(nodes.flatMap((node) => Object.keys(node.attributes)))
-  for (const key of keys) {
-    const present = nodes.filter((node) => key in node.attributes)
-    const value = mergeTypeNodes(present.map((node) => node.attributes[key].value))
-    const optional =
-      present.length < nodes.length || present.some((node) => node.attributes[key].optional)
-    attributes[key] = optional
-      ? {type: 'objectAttribute', value, optional: true}
-      : {type: 'objectAttribute', value}
+  for (const [key, {values, optional}] of collected) {
+    const value = mergeTypeNodes(values)
+    attributes[key] =
+      optional || values.length < nodes.length
+        ? {type: 'objectAttribute', value, optional: true}
+        : {type: 'objectAttribute', value}
   }
   return {type: 'object', attributes}
 }
