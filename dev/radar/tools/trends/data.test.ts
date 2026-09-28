@@ -935,10 +935,10 @@ test('paired lines are named by label, and by branch too when branches are compa
   expect(lineName(keystroke, keystroke.lines[0])).toBe('main')
 })
 
-test('style views: two paired UI sections, one styled-components section per metric', () => {
+test('style views: two paired UI sections, one section per styled-components and CSS weight metric', () => {
   const styles = buildSeries(generateDebugRuns('demo')).filter((entry) => entry.group === 'styles')
   const views = styleViews(styles)
-  expect(views.map((view) => view.id)).toEqual(['ui5', 'styled'])
+  expect(views.map((view) => view.id)).toEqual(['ui5', 'styled', 'css'])
   const sectionsOf = (id: string) =>
     views.find((view) => view.id === id)?.sections.map((section) => [section.id, section.goal])
   // One section: the hidden instances pair gets none (the panel puts the
@@ -951,6 +951,12 @@ test('style views: two paired UI sections, one styled-components section per met
     ['styled-components CSS rules', 'lower'],
     ['styled-components CSS bytes', 'lower'],
     ['styled-components CSS rule share', 'lower'],
+  ])
+  expect(sectionsOf('css')).toEqual([
+    ['CSS bytes', 'lower'],
+    ['CSS rules', 'lower'],
+    ['style tag CSS bytes', 'lower'],
+    ['style tag CSS rules', 'lower'],
   ])
   // Every visible style series lands in exactly one section; none are lost
   expect(views.flatMap((view) => view.sections.flatMap((section) => section.series)).length).toBe(
