@@ -38,6 +38,10 @@ export interface ParsedQueryUrl {
   perspective: SupportedPerspective | undefined
   /** The URL carried a perspective that could not be mapped (for instance a release stack) */
   hasUnsupportedPerspective: boolean
+  /** The content variant the request was sent with, if any */
+  variant: string | undefined
+  /** Whether the request asked for a content source map (`resultSourceMap=true`) */
+  includeSourceMap: boolean
   url: string
 }
 
@@ -85,6 +89,8 @@ export function parseQueryUrl(data: string, datasets: readonly string[]): Parsed
     urlPerspective: urlPerspective || undefined,
     perspective,
     hasUnsupportedPerspective: Boolean(urlPerspective) && perspective === undefined,
+    variant: parts.options.variant || undefined,
+    includeSourceMap: parts.options.resultSourceMap === 'true',
     url: trimmed,
   }
 }

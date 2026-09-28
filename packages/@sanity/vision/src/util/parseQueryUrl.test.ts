@@ -18,8 +18,20 @@ describe('parseQueryUrl', () => {
       urlPerspective: 'drafts',
       perspective: 'drafts',
       hasUnsupportedPerspective: false,
+      variant: undefined,
+      includeSourceMap: false,
       url,
     })
+  })
+
+  it('keeps the variant and the content source map flag the request was sent with', () => {
+    const parsed = parseQueryUrl(
+      'https://abc123.api.sanity.io/vX/data/query/production?query=*&variant=french&resultSourceMap=true',
+      datasets,
+    )
+    expect(parsed?.variant).toBe('french')
+    expect(parsed?.includeSourceMap).toBe(true)
+    expect(parsed?.urlPerspective).toBeUndefined()
   })
 
   it('round-trips a $__proto__ parameter into the params text', () => {

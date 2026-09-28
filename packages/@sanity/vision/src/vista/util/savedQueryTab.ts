@@ -9,10 +9,12 @@ import {type VistaTab, type VistaTabInit, type VistaTabOptions} from '../store/t
 /**
  * The fields of a tab for a parsed query URL (a saved query or a paste). Options the URL does not
  * carry (or carries in an unsupported form, or a dataset the tool does not know) are left to the
- * receiving tab.
+ * receiving tab; the content source map is the exception, since a request either asked for one
+ * or did not. A variant cannot be pinned by a tab (the option follows the navbar or sends none),
+ * so it is left to the tab as well.
  */
 export function parsedQueryToTabInit(parsed: ParsedQueryUrl): VistaTabInit {
-  const options: Partial<VistaTabOptions> = {}
+  const options: Partial<VistaTabOptions> = {includeSourceMap: parsed.includeSourceMap}
   if (parsed.isKnownDataset) {
     // A URL names its dataset, so the tab stops following the workspace's
     options.datasetMode = 'pinned'
@@ -38,14 +40,16 @@ export interface EffectiveRequestOptions {
   dataset: string
   apiVersion: string
   perspective: ClientPerspective | undefined
+  variant: string | undefined
 }
 
 /**
  * Whether a tab already shows the given saved query: the same query text and params, sent to the
- * dataset, API version and perspective the saved URL states. A saved URL is the request the tab
- * sent, so the tab is compared through the request it would send now, not through its options:
- * a tab on the `global` perspective saved `perspective=drafts` while the navbar was on drafts,
- * and a tab with a navbar variant selected saved `vX` whatever its own API version.
+ * dataset, API version, perspective and variant the saved URL states, with or without a content
+ * source map as it did. A saved URL is the request the tab sent, so the tab is compared through
+ * the request it would send now, not through its options: a tab on the `global` perspective
+ * saved `perspective=drafts` while the navbar was on drafts, and a tab with a navbar variant
+ * selected saved `vX` and `variant=…` whatever its own API version.
  */
 export function tabMatchesParsedQuery(
   tab: VistaTab,
@@ -57,7 +61,9 @@ export function tabMatchesParsedQuery(
     haveSameParams(tab.rawParams, parsed.rawParams) &&
     parsed.dataset === effective.dataset &&
     (parsed.apiVersion === undefined || parsed.apiVersion === effective.apiVersion) &&
-    parsed.urlPerspective === toUrlPerspective(effective.perspective)
+    parsed.urlPerspective === toUrlPerspective(effective.perspective) &&
+    parsed.variant === effective.variant &&
+    parsed.includeSourceMap === tab.options.includeSourceMap
   )
 }
 

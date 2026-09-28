@@ -77,13 +77,19 @@ describe('savedQueryTab', () => {
     expect(matches(global, url('*', {perspective: 'drafts'}), pinnedRelease)).toBe(false)
     expect(matches(global, url('*', {perspective: 'rXYZ,drafts'}))).toBe(false)
 
-    // A selected navbar variant sends `vX` whatever the tab's own API version says
+    // A selected navbar variant sends `vX` and the variant, whatever the tab's own API version says
     const withVariant = {...environment, selectedVariantNames: ['french']}
     expect(global.options.apiVersion).toBe('v2025-02-19')
     expect(
-      matches(global, url('*', {perspective: 'drafts'}, 'vX/data/query/production'), withVariant),
+      matches(
+        global,
+        url('*', {perspective: 'drafts', variant: 'french'}, 'vX/data/query/production'),
+        withVariant,
+      ),
     ).toBe(true)
-    expect(matches(global, url('*', {perspective: 'drafts'}), withVariant)).toBe(false)
+    expect(matches(global, url('*', {perspective: 'drafts', variant: 'french'}), withVariant)).toBe(
+      false,
+    )
 
     // The API default perspective is the absence of one, on both sides
     const apiDefault = {...global, options: {...global.options, perspective: undefined}}
@@ -127,12 +133,46 @@ describe('savedQueryTab', () => {
       query: '*[_type == "author"]',
       rawParams: '{}',
       options: {
+        includeSourceMap: false,
         datasetMode: 'pinned',
         dataset: 'production',
         apiVersion: 'v2025-02-19',
         perspective: 'drafts',
       },
     })
+    // A request that asked for a content source map turns the option on
+    const withSourceMap = parse(url('*', {resultSourceMap: 'true'}))
+    expect(parsedQueryToTabInit(withSourceMap).options).toMatchObject({includeSourceMap: true})
+  })
+
+  it('matches the variant and the content source map the request was sent with', () => {
+    const tab = createTab(settings, {query: '*'})
+    const withVariant = {...environment, selectedVariantNames: ['french']}
+    const variantUrl = url(
+      '*',
+      {perspective: 'drafts', variant: 'french'},
+      'vX/data/query/production',
+    )
+    // The tab sends the navbar's variant, so the saved request carries it too
+    expect(matches(tab, variantUrl, withVariant)).toBe(true)
+    // Without the variant selected the tab sends another request
+    expect(matches(tab, variantUrl)).toBe(false)
+    // ...and a saved request without a variant is not what a tab with one sends
+    expect(
+      matches(tab, url('*', {perspective: 'drafts'}, 'vX/data/query/production'), withVariant),
+    ).toBe(false)
+
+    const sourceMapUrl = url('*', {perspective: 'drafts', resultSourceMap: 'true'})
+    expect(matches(tab, sourceMapUrl)).toBe(false)
+    expect(matches({...tab, options: {...tab.options, includeSourceMap: true}}, sourceMapUrl)).toBe(
+      true,
+    )
+    expect(
+      matches(
+        {...tab, options: {...tab.options, includeSourceMap: true}},
+        url('*', {perspective: 'drafts'}),
+      ),
+    ).toBe(false)
   })
 
   it('leaves a dataset the tool does not know, and an unrepresentable perspective, to the tab', () => {
@@ -142,7 +182,7 @@ describe('savedQueryTab', () => {
     expect(parsedQueryToTabInit(parsed)).toEqual({
       query: '*',
       rawParams: '{}',
-      options: {apiVersion: 'v2025-02-19'},
+      options: {includeSourceMap: false, apiVersion: 'v2025-02-19'},
     })
     // The saved request went to another dataset, so no tab here is showing it
     const tab = createTab(settings, {query: '*'})

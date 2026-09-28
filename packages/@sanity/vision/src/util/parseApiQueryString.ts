@@ -21,7 +21,7 @@ export function parseApiQueryString(qs: URLSearchParams): ParsedApiQueryString {
       continue
     }
 
-    if (key === 'perspective') {
+    if (key === 'perspective' || key === 'variant' || key === 'resultSourceMap') {
       options[key] = value
       continue
     }
