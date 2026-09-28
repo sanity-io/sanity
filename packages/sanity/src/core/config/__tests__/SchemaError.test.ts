@@ -13,7 +13,6 @@ describe('SchemaError', () => {
   test('names the workspace, project and dataset in the message', () => {
     const error = new SchemaError(SCHEMA, {
       workspaceName: 'staging',
-      sourceName: 'staging',
       projectId: 'abc123',
       dataset: 'staging-dataset',
     })
@@ -39,7 +38,6 @@ describe('SchemaError', () => {
   test('exposes the schema and context for the error screen', () => {
     const context = {
       workspaceName: 'staging',
-      sourceName: 'staging',
       projectId: 'abc123',
       dataset: 'staging-dataset',
     }

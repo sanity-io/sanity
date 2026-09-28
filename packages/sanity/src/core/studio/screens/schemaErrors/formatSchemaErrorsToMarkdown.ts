@@ -16,7 +16,7 @@ export function formatSchemaErrorsToMarkdown(
 
   if (context) {
     text += `- Workspace: ${context.workspaceName}\n`
-    if (context.sourceName !== context.workspaceName) {
+    if (context.sourceName) {
       text += `- Source: ${context.sourceName}\n`
     }
     text += `- Project ID: ${context.projectId}\n`

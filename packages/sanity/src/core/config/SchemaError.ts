@@ -9,8 +9,8 @@ import {type Schema} from '@sanity/types'
 export interface SchemaErrorContext {
   /** The name of the workspace the source belongs to */
   workspaceName: string
-  /** The name of the source within the workspace */
-  sourceName: string
+  /** The name of the source, set only when the failing source is a nested one */
+  sourceName?: string
   /** The Sanity project ID */
   projectId: string
   /** The dataset name */
@@ -18,10 +18,9 @@ export interface SchemaErrorContext {
 }
 
 function describeContext(context: SchemaErrorContext): string {
-  const location =
-    context.sourceName === context.workspaceName
-      ? `workspace "${context.workspaceName}"`
-      : `source "${context.sourceName}" in workspace "${context.workspaceName}"`
+  const location = context.sourceName
+    ? `source "${context.sourceName}" in workspace "${context.workspaceName}"`
+    : `workspace "${context.workspaceName}"`
 
   return ` in ${location} (project: ${context.projectId}, dataset: ${context.dataset})`
 }

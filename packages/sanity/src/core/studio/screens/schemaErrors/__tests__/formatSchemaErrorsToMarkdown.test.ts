@@ -13,7 +13,6 @@ const PROBLEM_GROUPS: SchemaValidationProblemGroup[] = [
 
 const CONTEXT: SchemaErrorContext = {
   workspaceName: 'staging',
-  sourceName: 'staging',
   projectId: 'abc123',
   dataset: 'staging-dataset',
 }
@@ -36,7 +35,7 @@ describe('formatSchemaErrorsToMarkdown', () => {
     expect(markdown.indexOf('- Dataset:')).toBeLessThan(markdown.indexOf('## Document type'))
   })
 
-  test('omits the source when it is the workspace itself', () => {
+  test('omits the source when the workspace root source failed', () => {
     expect(formatSchemaErrorsToMarkdown(PROBLEM_GROUPS, CONTEXT)).not.toContain('- Source:')
   })
 
@@ -49,10 +48,10 @@ describe('formatSchemaErrorsToMarkdown', () => {
     expect(markdown).toContain('- Source: nested\n')
   })
 
-  test('keeps the heading hierarchy valid', () => {
-    const markdown = formatSchemaErrorsToMarkdown(PROBLEM_GROUPS, CONTEXT)
-    const [firstHeading] = markdown.match(/^#+ .*/gm) || []
+  test('adds no heading of its own', () => {
+    const withContext = formatSchemaErrorsToMarkdown(PROBLEM_GROUPS, CONTEXT)
+    const withoutContext = formatSchemaErrorsToMarkdown(PROBLEM_GROUPS)
 
-    expect(firstHeading).toBe('# Schema errors')
+    expect(withContext.match(/^#+ /gm)).toEqual(withoutContext.match(/^#+ /gm))
   })
 })

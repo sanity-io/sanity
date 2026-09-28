@@ -221,10 +221,11 @@ describe('prepareConfig — schema error context', () => {
     },
   ]
 
-  function captureSchemaError(workspaces: WorkspaceOptions[]) {
+  function captureSchemaError(workspaces: WorkspaceOptions[]): SchemaError {
     try {
       prepareConfig(workspaces)
     } catch (err) {
+      expect(err).toBeInstanceOf(SchemaError)
       return err as SchemaError
     }
     throw new Error('expected prepareConfig to throw a SchemaError')
@@ -246,10 +247,9 @@ describe('prepareConfig — schema error context', () => {
       }),
     ])
 
-    expect(error).toBeInstanceOf(SchemaError)
     expect(error.context).toEqual({
       workspaceName: 'broken',
-      sourceName: 'broken',
+      sourceName: undefined,
       projectId: 'riot',
       dataset: 'live',
     })
@@ -278,6 +278,24 @@ describe('prepareConfig — schema error context', () => {
       sourceName: 'secondary',
       projectId: 'riot',
       dataset: 'archive',
+    })
+  })
+
+  it('falls back to "default" for an unnamed workspace', () => {
+    const error = captureSchemaError([
+      {
+        basePath: '/',
+        projectId: 'riot',
+        dataset: 'live',
+        schema: {types: brokenSchemaTypes},
+      } as WorkspaceOptions,
+    ])
+
+    expect(error.context).toEqual({
+      workspaceName: 'default',
+      sourceName: undefined,
+      projectId: 'riot',
+      dataset: 'live',
     })
   })
 })

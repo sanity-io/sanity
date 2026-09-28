@@ -339,7 +339,7 @@ export function prepareConfig(
       }
     })
 
-    const resolvedSources = sources.map((source): InternalSource => {
+    const resolvedSources = sources.map((source, sourceIndex): InternalSource => {
       const {projectId, dataset} = source
 
       let schemaTypes
@@ -370,7 +370,7 @@ export function prepareConfig(
         // TODO: consider using the `ConfigResolutionError`
         throw new SchemaError(schema, {
           workspaceName: rawWorkspace.name || 'default',
-          sourceName: source.name || 'default',
+          sourceName: sourceIndex === 0 ? undefined : source.name || 'default',
           projectId,
           dataset,
         })

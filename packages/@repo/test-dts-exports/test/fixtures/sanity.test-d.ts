@@ -1342,6 +1342,7 @@ import type {
   SchedulesContext,
   Schema,
   SchemaError,
+  SchemaErrorContext,
   SchemaPluginOptions,
   SchemaType,
   SchemaTypeDefinition,
@@ -5895,6 +5896,9 @@ describe('sanity', () => {
   })
   test('SchemaError', () => {
     expectTypeOf<SchemaError>().not.toBeNever()
+  })
+  test('SchemaErrorContext', () => {
+    expectTypeOf<SchemaErrorContext>().toBeObject()
   })
   test('SchemaPluginOptions', () => {
     expectTypeOf<SchemaPluginOptions>().toBeObject()
