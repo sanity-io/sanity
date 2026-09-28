@@ -60,7 +60,8 @@ export function QueryRecall({
 }): ReactElement {
   type QueryFilter = 'all' | 'personal' | 'shared'
   const toast = useToast()
-  const {saveQuery, updateQuery, queries, deleteQuery, saving, deleting} = useSavedQueries()
+  const {saveQuery, updateQuery, queries, deleteQuery, shareQuery, unshareQuery, saving, deleting} =
+    useSavedQueries()
   const {t} = useTranslation(visionLocaleNamespace)
   const formatDate = useDateTimeFormat({
     month: 'short',
@@ -155,19 +156,10 @@ export function QueryRecall({
   const handleConfirmShareQuery = useCallback(async () => {
     if (!shareDialogQuery) return
 
-    const sharedQueryKey = shareDialogQuery._key
-    const sharedQueryUrl = shareDialogQuery.url
-    const sharedQueryTitle = shareDialogQuery.title || t('label.untitled-query')
-
     try {
-      await saveQuery({
-        shared: true,
-        title: sharedQueryTitle,
-        url: sharedQueryUrl,
-        savedAt: new Date().toISOString(),
-      })
-
-      await deleteQuery(sharedQueryKey)
+      // One move: when removing the personal copy fails, the shared one is taken back and the
+      // move rejects, rather than the query staying in both lists behind a success toast
+      await shareQuery(shareDialogQuery._key)
       toast.push({
         closable: true,
         status: 'success',
@@ -182,7 +174,7 @@ export function QueryRecall({
       })
     }
     setShareDialogQuery(null)
-  }, [deleteQuery, saveQuery, shareDialogQuery, t, toast])
+  }, [shareDialogQuery, shareQuery, t, toast])
 
   const handleUnshareQuery = useCallback(
     async (query: QueryConfig) => {
@@ -201,8 +193,6 @@ export function QueryRecall({
           isEqual(existingQueryObj.params, nextQueryObj.params)
         )
       })
-      const unsharedQueryTitle = query.title || t('label.untitled-query')
-
       if (duplicatePersonalQuery) {
         toast.push({
           closable: true,
@@ -217,20 +207,13 @@ export function QueryRecall({
       }
 
       try {
-        await saveQuery({
-          shared: false,
-          title: unsharedQueryTitle,
-          url: query.url,
-          savedAt: new Date().toISOString(),
-        })
-
-        await deleteQuery(query._key)
+        // One move, like sharing: a personal copy that cannot replace the shared one is taken back
+        await unshareQuery(query._key)
         toast.push({
           closable: true,
           status: 'success',
           title: t('save-query.unshared-success'),
         })
-        clearPending()
       } catch (err) {
         toast.push({
           closable: true,
@@ -238,10 +221,10 @@ export function QueryRecall({
           title: t('save-query.error'),
           description: err instanceof Error ? err.message : String(err),
         })
-        clearPending()
       }
+      clearPending()
     },
-    [deleteQuery, formatDate, getStateFromUrl, queries, saveQuery, t, toast],
+    [formatDate, getStateFromUrl, queries, t, toast, unshareQuery],
   )
 
   const handleTitleSave = useCallback(
