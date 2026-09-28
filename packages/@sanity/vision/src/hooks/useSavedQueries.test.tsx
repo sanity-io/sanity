@@ -379,6 +379,44 @@ describe('useSavedQueries', () => {
     expect(mocks.store.value?.queries.map((query) => query.url)).toEqual(['https://b', 'https://a'])
   })
 
+  it('keeps the queries when the list a failed write announced reaches it after the failure', async () => {
+    mocks.store.value = {
+      queries: [{_key: 'p1', url: 'https://a', savedAt: '2026-01-01T00:00:00Z'}],
+    }
+    const {result} = setup()
+    await waitFor(() => expect(result.current.queries).toHaveLength(1))
+    mocks.store.failWrite = () => true
+
+    let save: Promise<string>
+    act(() => {
+      save = result.current.saveQuery({url: 'https://b', savedAt: '2026-01-02T00:00:00Z'})
+    })
+    await act(async () => {
+      await expect(save).rejects.toThrow('store is read-only')
+    })
+
+    // The store announces the list a write holds before knowing whether it went through, and that
+    // event can reach the hook once the write has failed and the list it kept is shown again
+    const [, attempted] = mocks.setKey.mock.calls.at(-1) as [string, StoredQueries]
+    act(() => {
+      storeEvents.next(attempted)
+    })
+    expect(result.current.queries.map((query) => query.url)).toEqual(['https://a'])
+
+    // The same for a failed clear: the empty list it announced must not empty the shown one
+    let clear: Promise<void>
+    act(() => {
+      clear = result.current.clearQueries()
+    })
+    await act(async () => {
+      await expect(clear).rejects.toThrow('store is read-only')
+    })
+    act(() => {
+      storeEvents.next({queries: []})
+    })
+    expect(result.current.queries.map((query) => query.url)).toEqual(['https://a'])
+  })
+
   it('keeps its list when a hidden Activity shows the tool again without a localStorage copy', async () => {
     mocks.store.value = {
       queries: [{_key: 'p1', url: 'https://a', savedAt: '2026-01-01T00:00:00Z'}],

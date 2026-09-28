@@ -51,26 +51,33 @@ interface SharedQueryDocument {
 
 /** What one hook instance has written to the personal list since its store subscription started */
 interface OwnWrites {
-  /** The list its first write started from */
-  base: QueryConfig[]
+  /** The keys its writes changed, including those a write the store rejected took back */
+  changed: Set<string>
   /** The list it wrote last */
   latest: QueryConfig[]
 }
 
+/** The keys whose entry differs between two lists */
+function changedKeys(before: QueryConfig[], after: QueryConfig[]): string[] {
+  const from = new Map(before.map((query) => [query._key, query]))
+  const to = new Map(after.map((query) => [query._key, query]))
+  return [...new Set([...from.keys(), ...to.keys()])].filter(
+    (key) => !isEqual(from.get(key), to.get(key)),
+  )
+}
+
 /**
- * Whether `queries` shows every change the hook made: each entry that differs between the base
- * of its first write and its last write is present, or absent, as written last. The store's
- * initial read predates the writes and never does; an own echo, or another instance's write
- * built on them, does.
+ * Whether `queries` shows every change the hook made: each entry one of its writes changed is
+ * present, or absent, as written last. The store's initial read predates the writes and never
+ * does; an own echo, or another instance's write built on them, does. The keys of a write the
+ * store rejected count too, so that the list it announced before rejecting it is told apart from
+ * the list it kept.
  */
-function reflectsOwnWrites(queries: QueryConfig[], {base, latest}: OwnWrites): boolean {
+function reflectsOwnWrites(queries: QueryConfig[], {changed, latest}: OwnWrites): boolean {
   const shown = new Map(queries.map((query) => [query._key, query]))
-  const before = new Map(base.map((query) => [query._key, query]))
   const written = new Map(latest.map((query) => [query._key, query]))
-  for (const key of new Set([...before.keys(), ...written.keys()])) {
-    const wanted = written.get(key)
-    if (isEqual(before.get(key), wanted)) continue
-    if (!isEqual(shown.get(key), wanted)) return false
+  for (const key of changed) {
+    if (!isEqual(shown.get(key), written.get(key))) return false
   }
   return true
 }
@@ -265,7 +272,12 @@ export function useSavedQueries(): {
 
   /** Records a list this hook is writing, or, when the write failed, the one the store kept */
   const recordOwnWrite = useCallback((before: QueryConfig[], latest: QueryConfig[]) => {
-    ownWritesRef.current = {base: ownWritesRef.current?.base ?? before, latest}
+    // Taking a failed write back changes nothing in the end, but the list it attempted is one the
+    // store can still announce, so the keys it touched stay recorded and are matched against the
+    // list the store kept rather than being dropped from the comparison
+    const changed = new Set(ownWritesRef.current?.changed)
+    for (const key of changedKeys(before, latest)) changed.add(key)
+    ownWritesRef.current = {changed, latest}
   }, [])
 
   /**
