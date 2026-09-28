@@ -78,6 +78,10 @@ export function parseQueryUrl(data: string, datasets: readonly string[]): Parsed
     !isVirtualPerspective(urlPerspective)
       ? urlPerspective
       : undefined
+  // `@sanity/client` writes the option only when it asked for a source map, as `true` or as the
+  // `withKeyArraySelector` mode its stega encoding and Presentation's loaders use
+  const {resultSourceMap} = parts.options
+  const includeSourceMap = resultSourceMap === 'true' || resultSourceMap === 'withKeyArraySelector'
 
   return {
     query: parts.query,
@@ -90,7 +94,7 @@ export function parseQueryUrl(data: string, datasets: readonly string[]): Parsed
     perspective,
     hasUnsupportedPerspective: Boolean(urlPerspective) && perspective === undefined,
     variant: parts.options.variant || undefined,
-    includeSourceMap: parts.options.resultSourceMap === 'true',
+    includeSourceMap,
     url: trimmed,
   }
 }

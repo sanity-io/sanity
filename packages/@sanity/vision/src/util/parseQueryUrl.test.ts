@@ -32,6 +32,17 @@ describe('parseQueryUrl', () => {
     expect(parsed?.variant).toBe('french')
     expect(parsed?.includeSourceMap).toBe(true)
     expect(parsed?.urlPerspective).toBeUndefined()
+
+    // The client's other spelling of a source map request (its stega encoding, Presentation's loaders)
+    const sourceMapFor = (mode: string) =>
+      parseQueryUrl(
+        `https://abc123.api.sanity.io/vX/data/query/production?query=*&resultSourceMap=${mode}`,
+        datasets,
+      )?.includeSourceMap
+    expect(sourceMapFor('withKeyArraySelector')).toBe(true)
+    // Not any value: the client leaves the option out rather than writing `false`
+    expect(sourceMapFor('false')).toBe(false)
+    expect(sourceMapFor('yes')).toBe(false)
   })
 
   it('round-trips a $__proto__ parameter into the params text', () => {

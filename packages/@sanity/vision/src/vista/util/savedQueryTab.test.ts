@@ -170,16 +170,15 @@ describe('savedQueryTab', () => {
     ).toBe(false)
 
     const sourceMapUrl = url('*', {perspective: 'drafts', resultSourceMap: 'true'})
+    const sourceMapTab = {...tab, options: {...tab.options, includeSourceMap: true}}
     expect(matches(tab, sourceMapUrl)).toBe(false)
-    expect(matches({...tab, options: {...tab.options, includeSourceMap: true}}, sourceMapUrl)).toBe(
-      true,
-    )
-    expect(
-      matches(
-        {...tab, options: {...tab.options, includeSourceMap: true}},
-        url('*', {perspective: 'drafts'}),
-      ),
-    ).toBe(false)
+    expect(matches(sourceMapTab, sourceMapUrl)).toBe(true)
+    expect(matches(sourceMapTab, url('*', {perspective: 'drafts'}))).toBe(false)
+    // A request made with the key array selector mode asked for a source map all the same
+    const selectorUrl = url('*', {perspective: 'drafts', resultSourceMap: 'withKeyArraySelector'})
+    expect(matches(sourceMapTab, selectorUrl)).toBe(true)
+    expect(matches(tab, selectorUrl)).toBe(false)
+    expect(parsedQueryToTabInit(parse(selectorUrl)).options).toMatchObject({includeSourceMap: true})
   })
 
   it('leaves a dataset the tool does not know, and an unrepresentable perspective, to the tab', () => {
