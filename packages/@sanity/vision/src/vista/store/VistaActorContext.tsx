@@ -2,6 +2,7 @@ import {useSelector} from '@xstate/react'
 import {createContext, useContext, useEffect} from 'react'
 
 import {type useSavedQueries} from '../../hooks/useSavedQueries'
+import {onLocalStorageCleared} from '../../util/localStorage'
 import {selectPersistedState, type VistaActorRef, type VistaSnapshot} from './vistaMachine'
 import {saveVistaState} from './vistaStorage'
 
@@ -97,19 +98,29 @@ export function useSavedQueriesApi(): SavedQueriesApi {
   return api
 }
 
-/** Writes the persisted slice of the root actor to `localStorage`, debounced, flushing on unmount */
+/**
+ * Writes the persisted slice of the root actor to `localStorage`, debounced, flushing on unmount.
+ * A write still pending when the storage is cleared is dropped instead, since flushing it would
+ * put the state that was just cleared straight back.
+ */
 export function usePersistVistaState(actorRef: VistaActorRef, projectId: string): void {
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | undefined
-    const subscription = actorRef.subscribe((snapshot) => {
+    const dropPendingWrite = () => {
       clearTimeout(timer)
+      timer = undefined
+    }
+    const subscription = actorRef.subscribe((snapshot) => {
+      dropPendingWrite()
       timer = setTimeout(() => {
         timer = undefined
         saveVistaState(projectId, selectPersistedState(snapshot))
       }, PERSIST_DEBOUNCE_MS)
     })
+    const unsubscribeClear = onLocalStorageCleared(dropPendingWrite)
     return () => {
       subscription.unsubscribe()
+      unsubscribeClear()
       if (timer !== undefined) {
         // Leaving the tool within the debounce window must not lose the last edit
         clearTimeout(timer)
