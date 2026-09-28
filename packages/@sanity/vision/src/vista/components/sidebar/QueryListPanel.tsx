@@ -20,10 +20,11 @@ import {visionLocaleNamespace} from '../../../i18n'
 import {type ParsedQueryUrl, parseQueryUrl} from '../../../util/parseQueryUrl'
 import {useOnValueChange} from '../../hooks/useOnValueChange'
 import {useQueryRequestBuilder} from '../../hooks/useQueryRequestBuilder'
+import {resolveRequestOptions, useRequestEnvironment} from '../../hooks/useResolvedRequest'
 import {useSaveCurrentQuery} from '../../hooks/useSaveCurrentQuery'
-import {type VistaDrawer} from '../../store/types'
+import {type VistaDrawer, type VistaTab} from '../../store/types'
 import {useSavedQueriesApi, useVistaActor, useVistaSelector} from '../../store/VistaActorContext'
-import {selectActiveTab, selectDatasets, selectWorkspaceDataset} from '../../store/vistaMachine'
+import {selectActiveTab, selectDatasets} from '../../store/vistaMachine'
 import {savedQueryToTabInit, tabMatchesParsedQuery} from '../../util/savedQueryTab'
 import {listItemButton, previewCode, scrollArea} from '../vista.css'
 
@@ -46,7 +47,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
   const activeTab = useVistaSelector(selectActiveTab)
   const tabs = useVistaSelector((snapshot) => snapshot.context.tabs)
   const datasets = useVistaSelector(selectDatasets)
-  const workspaceDataset = useVistaSelector(selectWorkspaceDataset)
+  const environment = useRequestEnvironment()
   const requestBuilder = useQueryRequestBuilder(activeTab)
   const {queries, updateQuery, deleteQuery, deleteQueryError, moving, shareQuery, unshareQuery} =
     useSavedQueriesApi()
@@ -78,10 +79,18 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
     )
   }, [items, search])
 
+  // A saved URL is the request its tab sent, so tabs are matched through the request they would
+  // send now (the navbar's perspective for `global`, `vX` while a variant is selected)
+  const findTabShowing = useCallback(
+    (parsed: ParsedQueryUrl) =>
+      tabs.find((tab: VistaTab) =>
+        tabMatchesParsedQuery(tab, parsed, resolveRequestOptions(tab.options, environment)),
+      ),
+    [environment, tabs],
+  )
   const isOpenInTab = useCallback(
-    (parsed: ParsedQueryUrl | null) =>
-      parsed !== null && tabs.some((tab) => tabMatchesParsedQuery(tab, parsed, workspaceDataset)),
-    [tabs, workspaceDataset],
+    (parsed: ParsedQueryUrl | null) => parsed !== null && findTabShowing(parsed) !== undefined,
+    [findTabShowing],
   )
 
   const reportError = useCallback(
@@ -104,14 +113,14 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
   const openInNewTab = useCallback(
     ({query, parsed}: QueryListItem) => {
       if (!parsed) return
-      const existing = tabs.find((tab) => tabMatchesParsedQuery(tab, parsed, workspaceDataset))
+      const existing = findTabShowing(parsed)
       if (existing) {
         actorRef.send({type: 'tab.select', id: existing.id})
       } else {
         actorRef.send({type: 'tab.add', tab: savedQueryToTabInit(query, parsed)})
       }
     },
-    [actorRef, tabs, workspaceDataset],
+    [actorRef, findTabShowing],
   )
 
   const loadIntoCurrentTab = useCallback(

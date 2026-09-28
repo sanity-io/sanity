@@ -1,19 +1,19 @@
+import {type ClientPerspective} from '@sanity/client'
 import {dequal} from 'dequal/lite'
 import JSON5 from 'json5'
 
 import {type QueryConfig} from '../../hooks/useSavedQueries'
-import {type ParsedQueryUrl, parseQueryUrl} from '../../util/parseQueryUrl'
-import {prefixApiVersion} from '../../util/prefixApiVersion'
+import {type ParsedQueryUrl} from '../../util/parseQueryUrl'
 import {type VistaTab, type VistaTabInit, type VistaTabOptions} from '../store/types'
-import {getTabDataset} from './tabDataset'
 
 /**
  * The fields of a tab for a parsed query URL (a saved query or a paste). Options the URL does not
- * carry (or carries in an unsupported form) are left to the receiving tab.
+ * carry (or carries in an unsupported form, or a dataset the tool does not know) are left to the
+ * receiving tab.
  */
 export function parsedQueryToTabInit(parsed: ParsedQueryUrl): VistaTabInit {
   const options: Partial<VistaTabOptions> = {}
-  if (parsed.dataset) {
+  if (parsed.isKnownDataset) {
     // A URL names its dataset, so the tab stops following the workspace's
     options.datasetMode = 'pinned'
     options.dataset = parsed.dataset
@@ -33,36 +33,37 @@ export function savedQueryToTabInit(saved: QueryConfig, parsed: ParsedQueryUrl):
   return {...parsedQueryToTabInit(parsed), title: saved.title}
 }
 
-/**
- * Whether a tab already shows the given saved query: same query text and params, and the same
- * dataset, API version and perspective wherever the saved URL states them. `workspaceDataset` is
- * what a tab following the workspace queries.
- */
-export function tabMatchesSavedQuery(
-  tab: VistaTab,
-  saved: QueryConfig,
-  datasets: readonly string[],
-  workspaceDataset: string,
-): boolean {
-  const parsed = parseQueryUrl(saved.url, datasets)
-  return parsed !== null && tabMatchesParsedQuery(tab, parsed, workspaceDataset)
+/** The request a tab would send right now, as far as a saved URL states it (`resolveRequestOptions`) */
+export interface EffectiveRequestOptions {
+  dataset: string
+  apiVersion: string
+  perspective: ClientPerspective | undefined
 }
 
-/** Same as `tabMatchesSavedQuery`, for callers that already parsed the saved query's URL */
+/**
+ * Whether a tab already shows the given saved query: the same query text and params, sent to the
+ * dataset, API version and perspective the saved URL states. A saved URL is the request the tab
+ * sent, so the tab is compared through the request it would send now, not through its options:
+ * a tab on the `global` perspective saved `perspective=drafts` while the navbar was on drafts,
+ * and a tab with a navbar variant selected saved `vX` whatever its own API version.
+ */
 export function tabMatchesParsedQuery(
   tab: VistaTab,
   parsed: ParsedQueryUrl,
-  workspaceDataset: string,
+  effective: EffectiveRequestOptions,
 ): boolean {
   return (
     tab.query === parsed.query &&
     haveSameParams(tab.rawParams, parsed.rawParams) &&
-    (parsed.dataset === undefined ||
-      parsed.dataset === getTabDataset(tab.options, workspaceDataset)) &&
-    (parsed.apiVersion === undefined ||
-      parsed.apiVersion === prefixApiVersion(tab.options.apiVersion)) &&
-    (parsed.perspective === undefined || parsed.perspective === tab.options.perspective)
+    parsed.dataset === effective.dataset &&
+    (parsed.apiVersion === undefined || parsed.apiVersion === effective.apiVersion) &&
+    parsed.urlPerspective === toUrlPerspective(effective.perspective)
   )
+}
+
+/** A perspective as `encodeQueryString` writes it into a URL: a stack becomes comma separated */
+function toUrlPerspective(perspective: ClientPerspective | undefined): string | undefined {
+  return perspective === undefined ? undefined : String(perspective) || undefined
 }
 
 /** Parsed params are compared structurally, so key order and formatting do not matter */

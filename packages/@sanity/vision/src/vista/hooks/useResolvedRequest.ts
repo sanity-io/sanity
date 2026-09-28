@@ -4,6 +4,7 @@ import {
   getDefaultVariant,
   getReleaseIdFromReleaseDocumentId,
   isCardinalityOneRelease,
+  type PerspectiveContextValue,
   type PerspectiveStack,
   sortReleases,
   useActiveReleases,
@@ -47,15 +48,23 @@ export interface ResolvedRequest {
   client: SanityClient
 }
 
-/**
- * Resolves the effective request configuration for a tab's options against studio state: a
- * followed workspace dataset, the `global` and `scheduledDrafts` perspectives becoming real
- * perspective stacks, and the navbar variant, which locks the API version to the experimental one.
- */
-export function useResolvedRequest(options: VistaTabOptions): ResolvedRequest {
+/** The studio state a tab's options are resolved against; the same for every tab */
+export interface RequestEnvironment {
+  workspaceDataset: string
+  perspectiveStack: PerspectiveContextValue['perspectiveStack']
+  selectedVariantNames: PerspectiveContextValue['selectedVariantNames']
+  /** The stack the `scheduledDrafts` perspective stands for, where the workspace offers it */
+  scheduledDraftsStack: PerspectiveStack | undefined
+  isScheduledDraftsEnabled: boolean
+}
+
+/** The part of a resolved request that follows from the options alone, without a client */
+export type ResolvedRequestOptions = Omit<ResolvedRequest, 'supportsSyncTags' | 'client'>
+
+/** Reads the studio state every tab's options are resolved against */
+export function useRequestEnvironment(): RequestEnvironment {
   const {perspectiveStack, selectedVariantNames} = usePerspective()
   const workspaceDataset = useVistaSelector(selectWorkspaceDataset)
-  const dataset = getTabDataset(options, workspaceDataset)
   const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
   const {data: releases = []} = useActiveReleases()
   const workspace = useWorkspace()
@@ -75,6 +84,37 @@ export function useResolvedRequest(options: VistaTabOptions): ResolvedRequest {
     return [...releaseIds, ...defaultPerspective] as PerspectiveStack
   }, [releases, isDraftModelEnabled, isScheduledDraftsEnabled])
 
+  return useMemo(
+    () => ({
+      workspaceDataset,
+      perspectiveStack,
+      selectedVariantNames,
+      scheduledDraftsStack,
+      isScheduledDraftsEnabled,
+    }),
+    [
+      isScheduledDraftsEnabled,
+      perspectiveStack,
+      scheduledDraftsStack,
+      selectedVariantNames,
+      workspaceDataset,
+    ],
+  )
+}
+
+/**
+ * Resolves a tab's options against the studio state: a followed workspace dataset, the `global`
+ * and `scheduledDrafts` perspectives becoming real perspective stacks, and the navbar variant,
+ * which locks the API version to the experimental one.
+ */
+export function resolveRequestOptions(
+  options: VistaTabOptions,
+  environment: RequestEnvironment,
+): ResolvedRequestOptions {
+  const {workspaceDataset, perspectiveStack, selectedVariantNames, scheduledDraftsStack} =
+    environment
+  const dataset = getTabDataset(options, workspaceDataset)
+
   // Queries take one variant until the studio supports editing several at once
   const variant = options.variant === 'global' ? getDefaultVariant(selectedVariantNames) : undefined
   const isValidApiVersion = validateApiVersion(options.apiVersion)
@@ -85,12 +125,38 @@ export function useResolvedRequest(options: VistaTabOptions): ResolvedRequest {
   const apiVersion = variant ? VARIANTS_API_VERSION : userApiVersion
 
   // `global` is what the classic tool calls the pinned release: the navbar's perspective stack
-  const tabPerspective = getEffectivePerspective(options.perspective, isScheduledDraftsEnabled)
+  const tabPerspective = getEffectivePerspective(
+    options.perspective,
+    environment.isScheduledDraftsEnabled,
+  )
   const perspective = getActivePerspective({
     visionPerspective: tabPerspective === 'global' ? 'pinnedRelease' : tabPerspective,
     perspectiveStack,
     scheduledDraftsStack,
   })
+
+  return {
+    dataset,
+    tabPerspective,
+    apiVersion,
+    isValidApiVersion: Boolean(variant) || isValidApiVersion,
+    isApiVersionLocked: Boolean(variant),
+    perspective,
+    variant,
+  }
+}
+
+/**
+ * Resolves the effective request configuration for a tab's options against studio state (see
+ * `resolveRequestOptions`), with a client configured for it.
+ */
+export function useResolvedRequest(options: VistaTabOptions): ResolvedRequest {
+  const environment = useRequestEnvironment()
+  const resolved = useMemo(
+    () => resolveRequestOptions(options, environment),
+    [environment, options],
+  )
+  const {apiVersion, dataset, perspective, variant} = resolved
 
   const baseClient = useClient({apiVersion})
   const client = useMemo(
@@ -105,15 +171,12 @@ export function useResolvedRequest(options: VistaTabOptions): ResolvedRequest {
     [baseClient, apiVersion, dataset, perspective, variant],
   )
 
-  return {
-    dataset,
-    tabPerspective,
-    apiVersion,
-    isValidApiVersion: Boolean(variant) || isValidApiVersion,
-    isApiVersionLocked: Boolean(variant),
-    perspective,
-    variant,
-    supportsSyncTags: !isApiVersionBelow(apiVersion, SYNC_TAGS_API_VERSION),
-    client,
-  }
+  return useMemo(
+    () => ({
+      ...resolved,
+      supportsSyncTags: !isApiVersionBelow(apiVersion, SYNC_TAGS_API_VERSION),
+      client,
+    }),
+    [apiVersion, client, resolved],
+  )
 }

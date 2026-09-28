@@ -24,9 +24,16 @@ export interface ParsedQueryUrl {
   query: string
   params: Record<string, unknown>
   rawParams: string
-  /** Only set when the URL's dataset is one the tool knows about */
-  dataset: string | undefined
+  /** The dataset the URL names */
+  dataset: string
+  /**
+   * Whether that dataset is one the tool knows about; a tab only pins a known one (the URL may
+   * come from another project, or name a dataset the user cannot see)
+   */
+  isKnownDataset: boolean
   apiVersion: string | undefined
+  /** The perspective exactly as the URL states it (a release stack included), if any */
+  urlPerspective: string | undefined
   /** Only set for perspectives the tool can represent (`raw`, `published`, `drafts`) */
   perspective: SupportedPerspective | undefined
   /** The URL carried a perspective that could not be mapped (for instance a release stack) */
@@ -72,8 +79,10 @@ export function parseQueryUrl(data: string, datasets: readonly string[]): Parsed
     query: parts.query,
     params: parts.params,
     rawParams: JSON.stringify(parts.params, null, 2),
-    dataset: datasets.includes(usedDataset) ? usedDataset : undefined,
+    dataset: usedDataset,
+    isKnownDataset: datasets.includes(usedDataset),
     apiVersion: validateApiVersion(usedApiVersion) ? usedApiVersion : undefined,
+    urlPerspective: urlPerspective || undefined,
     perspective,
     hasUnsupportedPerspective: Boolean(urlPerspective) && perspective === undefined,
     url: trimmed,

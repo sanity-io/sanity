@@ -1235,6 +1235,44 @@ describe('VistaGui', () => {
     )
   })
 
+  it(
+    'recognizes the tab showing a saved query through the request it sends',
+    {timeout: 15_000},
+    async () => {
+      sanityMocks.savedQueries = {
+        queries: [
+          {
+            _key: 'saved-1',
+            shared: false,
+            title: 'Everything',
+            // Saved from a tab on the `global` perspective while the navbar was on `published`
+            url: `https://${PROJECT_ID}.api.sanity.io/v2025-02-19/data/query/test?query=*&perspective=published`,
+            savedAt: '2026-01-01T00:00:00Z',
+          },
+        ],
+        moving: [],
+      }
+      renderVista()
+      typeQuery('*')
+      expect(selectValue('vista-option-perspective-select')).toBe('global')
+
+      fireEvent.click(screen.getByTestId('vista-sidebar-saved'))
+      const open = await screen.findByTestId('vista-saved-query-open')
+      // The tab's options say `global`, but the request it sends is the saved one, so the query
+      // shows as open and opening it selects the tab rather than adding one
+      expect(open.hasAttribute('data-selected')).toBe(true)
+      fireEvent.click(open)
+      expect(screen.getAllByTestId('vista-tab')).toHaveLength(1)
+
+      // Once the navbar moves to drafts the tab would send another request, so the saved query
+      // is no longer open and opening it adds a tab of its own
+      act(() => sanityMocks.setPerspective({...BASE_PERSPECTIVE, perspectiveStack: ['drafts']}))
+      await waitFor(() => expect(open.hasAttribute('data-selected')).toBe(false))
+      fireEvent.click(open)
+      await waitFor(() => expect(screen.getAllByTestId('vista-tab')).toHaveLength(2))
+    },
+  )
+
   it('clears the storage from the settings dialog', {timeout: 15_000}, async () => {
     const {onSwitchToClassic} = renderVista()
     typeQuery('*[_type == "author"]')

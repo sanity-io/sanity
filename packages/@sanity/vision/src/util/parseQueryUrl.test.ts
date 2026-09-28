@@ -13,7 +13,9 @@ describe('parseQueryUrl', () => {
       params: {id: 'a'},
       rawParams: '{\n  "id": "a"\n}',
       dataset: 'staging',
+      isKnownDataset: true,
       apiVersion: 'v2025-02-19',
+      urlPerspective: 'drafts',
       perspective: 'drafts',
       hasUnsupportedPerspective: false,
       url,
@@ -38,17 +40,23 @@ describe('parseQueryUrl', () => {
     )
     expect(parsed?.query).toBe('*')
     expect(parsed?.dataset).toBe('production')
+    expect(parsed?.isKnownDataset).toBe(true)
     expect(parsed?.apiVersion).toBe('v2021-03-25')
+    expect(parsed?.urlPerspective).toBeUndefined()
     expect(parsed?.perspective).toBeUndefined()
   })
 
-  it('drops unknown datasets and unsupported perspectives', () => {
+  it('reports an unknown dataset and keeps an unsupported perspective as the URL states it', () => {
     const parsed = parseQueryUrl(
       'https://abc123.api.sanity.io/vX/data/query/other?query=*&perspective=rXyz%2Cdrafts',
       datasets,
     )
-    expect(parsed?.dataset).toBeUndefined()
+    // The dataset stays known by name, so the caller can say which one it could not use
+    expect(parsed?.dataset).toBe('other')
+    expect(parsed?.isKnownDataset).toBe(false)
     expect(parsed?.apiVersion).toBe('vX')
+    // A release stack cannot become a tab option, but it still identifies the request
+    expect(parsed?.urlPerspective).toBe('rXyz,drafts')
     expect(parsed?.perspective).toBeUndefined()
     expect(parsed?.hasUnsupportedPerspective).toBe(true)
   })
