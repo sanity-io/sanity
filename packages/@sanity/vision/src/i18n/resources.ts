@@ -272,6 +272,9 @@ const visionLocaleStrings = defineLocalesResources('vision', {
     'Resize params: drag or use the arrow keys; double-click or press Enter to fit the content again',
   /** Toast shown after a query URL was pasted and loaded into the tab */
   'vista.paste.parsed': 'Loaded query from pasted URL',
+  /** Toast shown when the dataset of a pasted URL is not available here */
+  'vista.paste.unknown-dataset':
+    'The dataset "{{dataset}}" in the pasted URL is not available here, keeping the current one.',
   /** Toast shown when the perspective of a pasted URL cannot be used */
   'vista.paste.unsupported-perspective':
     'The perspective in the pasted URL is not supported here, keeping the current one.',
@@ -348,6 +351,9 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vista.saved.rename': 'Rename',
   /** Accessible label for the button saving the current query */
   'vista.saved.save-current': 'Save current query',
+  /** Toast shown when an opened saved query names a dataset that is not available here */
+  'vista.saved.unknown-dataset':
+    'The dataset "{{dataset}}" of this saved query is not available here, keeping the current one.',
   /** Button in the settings dialog that clears the stored state */
   'vista.settings.clear-storage': 'Clear storage',
   /** Confirmation button for clearing the storage */

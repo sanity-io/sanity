@@ -1233,6 +1233,25 @@ describe('VistaGui', () => {
         dataset: 'staging',
       }),
     )
+    expect(screen.queryByText('vista.paste.unknown-dataset')).toBeNull()
+  })
+
+  it('says so when a pasted URL names a dataset that is not available here', async () => {
+    renderVista()
+    // Another project's URL, or a dataset this user cannot see: the query is loaded, but it runs
+    // against the tab's own dataset, so the tab keeps following the workspace
+    fireEvent.paste(document.body, {
+      clipboardData: {
+        getData: () => 'https://other.api.sanity.io/v2025-02-19/data/query/elsewhere?query=*',
+      },
+    })
+
+    await waitFor(() => expect(getQueryEditor().value).toBe('*'))
+    await screen.findByText('vista.paste.unknown-dataset')
+    expect(selectValue('vista-option-dataset-select')).toBe('test')
+    await waitFor(() =>
+      expect(getStoredState().tabs[0].options).toMatchObject({datasetMode: 'workspace'}),
+    )
   })
 
   it(

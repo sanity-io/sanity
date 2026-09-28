@@ -110,6 +110,21 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
     if (error) reportError(error)
   })
 
+  // A saved query naming a dataset the tool does not know (another project's URL, or a dataset
+  // the user cannot see) opens on the receiving tab's dataset, which is worth saying
+  const warnAboutUnknownDataset = useCallback(
+    (parsed: ParsedQueryUrl) => {
+      if (parsed.isKnownDataset) return
+      toast.push({
+        closable: true,
+        id: 'vista-saved-query-dataset',
+        status: 'warning',
+        title: t('vista.saved.unknown-dataset', {dataset: parsed.dataset}),
+      })
+    },
+    [t, toast],
+  )
+
   const openInNewTab = useCallback(
     ({query, parsed}: QueryListItem) => {
       if (!parsed) return
@@ -118,17 +133,19 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
         actorRef.send({type: 'tab.select', id: existing.id})
       } else {
         actorRef.send({type: 'tab.add', tab: savedQueryToTabInit(query, parsed)})
+        warnAboutUnknownDataset(parsed)
       }
     },
-    [actorRef, findTabShowing],
+    [actorRef, findTabShowing, warnAboutUnknownDataset],
   )
 
   const loadIntoCurrentTab = useCallback(
     ({query, parsed}: QueryListItem) => {
       if (!parsed) return
       actorRef.send({type: 'tab.load', id: activeTab.id, tab: savedQueryToTabInit(query, parsed)})
+      warnAboutUnknownDataset(parsed)
     },
-    [actorRef, activeTab.id],
+    [actorRef, activeTab.id, warnAboutUnknownDataset],
   )
 
   // Enter and Escape unmount the rename field while it has focus; a blur delivered on the way

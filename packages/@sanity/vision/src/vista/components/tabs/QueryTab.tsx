@@ -323,6 +323,16 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
           title: t('vista.paste.unsupported-perspective'),
         })
       }
+      // The URL may come from another project or name a dataset the user cannot see; the query
+      // then runs against the tab's own dataset, which is worth saying
+      if (!parsed.isKnownDataset) {
+        toast.push({
+          closable: true,
+          id: 'vista-paste-dataset',
+          status: 'warning',
+          title: t('vista.paste.unknown-dataset', {dataset: parsed.dataset}),
+        })
+      }
       return true
     },
   })
