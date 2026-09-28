@@ -1,7 +1,7 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
-import {Inline, rem, Text} from '@sanity/ui'
+import {Inline, rem} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
@@ -63,7 +63,7 @@ export const OtherReferenceCount = (props: {totalCount: number; references: unkn
   return (
     <Box padding={2}>
       <Inline gap={2}>
-        <Text size={1} muted>
+        <Text size={1} muted as="div" trim={true}>
           {t('document-group.delete.other-reference-count.title', {count: difference})}
         </Text>
         <Tooltip
@@ -71,7 +71,7 @@ export const OtherReferenceCount = (props: {totalCount: number; references: unkn
           placement="top"
           content={t('document-group.delete.other-reference-count.tooltip')}
         >
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             <InfoOutlineIcon />
           </Text>
         </Tooltip>

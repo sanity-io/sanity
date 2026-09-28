@@ -1,7 +1,7 @@
 import CloseIcon from '@sanity/icons/Close'
 import {FeedbackIcon} from '@sanity/icons/Feedback'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {PortalProvider, Text} from '@sanity/ui'
+import {PortalProvider} from '@sanity/ui'
 import {useActorRef, useSelector} from '@xstate/react'
 import {
   type ChangeEvent,
@@ -23,7 +23,7 @@ import {
   Subject,
   timeout,
 } from 'rxjs'
-import {VStack, Flex} from 'ui5'
+import {Text, VStack, Flex} from 'ui5'
 import {type ActorRefFromLogic, fromObservable, fromPromise} from 'xstate'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -387,7 +387,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                       title={feedbackT('feedback.menu-item')}
                       aria-label={feedbackT('feedback.menu-item')}
                     >
-                      <Text size={1}>
+                      <Text size={1} as="div" trim={true}>
                         <FeedbackIcon />
                       </Text>
                     </TextButton>
@@ -396,7 +396,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                       title={t('document-group-inventory.action.cancel')}
                       aria-label={t('document-group-inventory.action.cancel')}
                     >
-                      <Text size={1}>
+                      <Text size={1} as="div" trim={true}>
                         <CloseIcon />
                       </Text>
                     </TextButton>
@@ -531,7 +531,7 @@ const Select: ComponentType<{
                 }}
               >
                 {/* These strings will be removed in the next iteration, so we've skipped internationalisation. */}
-                <Text size={1}>{`Select all ${set.variants.length}`}</Text>
+                <Text size={1} as="div" trim={true}>{`Select all ${set.variants.length}`}</Text>
               </TextButton>
             ) : undefined
           }
