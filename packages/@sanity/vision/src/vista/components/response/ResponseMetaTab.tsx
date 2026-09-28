@@ -85,6 +85,7 @@ export function ResponseMetaTab({meta, url}: ResponseMetaTabProps) {
             <Flex gap={1}>
               <Box flexBasis="0%" flexGrow={1}>
                 <TextInput
+                  aria-label={t('query.url')}
                   data-testid="vista-query-url"
                   fontSize={1}
                   padding={2}
