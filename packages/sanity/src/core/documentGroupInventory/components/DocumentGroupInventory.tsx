@@ -274,7 +274,7 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                         ? 'published'
                         : input.bundle
 
-                    const [targetPair, {versions}] = await Promise.all([
+                    const [targetPair, versionSnapshot] = await Promise.all([
                       firstValueFrom(readTargetPair),
                       firstValueFrom(
                         versionState.pipe(
@@ -283,6 +283,14 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                         ),
                       ),
                     ])
+                    // An error snapshot is `{loading: false, versions: []}`. Treating that as
+                    // "no published variant" would copy the base document.
+                    if (versionSnapshot.error) {
+                      throw versionSnapshot.error instanceof Error
+                        ? versionSnapshot.error
+                        : new Error('Failed to load document versions')
+                    }
+                    const {versions} = versionSnapshot
                     const fallback =
                       editStateSlot === 'draft'
                         ? // in drafts fallback to published, the ui shows the published when seeing a "non existent" draft
