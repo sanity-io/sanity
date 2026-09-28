@@ -17,12 +17,15 @@ export interface SchemaErrorContext {
   dataset: string
 }
 
+/**
+ * Names only the workspace and source. The message is captured verbatim as the
+ * Sentry exception value, so the project ID and dataset stay on `context`, which
+ * error reporting does not serialise.
+ */
 function describeContext(context: SchemaErrorContext): string {
-  const location = context.sourceName
-    ? `source "${context.sourceName}" in workspace "${context.workspaceName}"`
-    : `workspace "${context.workspaceName}"`
-
-  return ` in ${location} (project: ${context.projectId}, dataset: ${context.dataset})`
+  return context.sourceName
+    ? ` in source "${context.sourceName}" in workspace "${context.workspaceName}"`
+    : ` in workspace "${context.workspaceName}"`
 }
 
 /** @internal */
