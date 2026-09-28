@@ -352,6 +352,44 @@ describe('useSavedQueries', () => {
     expect(result.current.queries.map((query) => query.url)).toEqual(['https://peer'])
   })
 
+  it('keeps a failed save out when the store echoes the attempted list afterwards', async () => {
+    mocks.store.value = {
+      queries: [{_key: 'p1', url: 'https://a', savedAt: '2026-01-01T00:00:00Z'}],
+    }
+    const {result} = setup()
+    await waitFor(() => expect(result.current.queries).toHaveLength(1))
+    mocks.store.failWrite = (next) => next.queries.length === 2
+
+    let save: Promise<string>
+    act(() => {
+      save = result.current.saveQuery({url: 'https://b', savedAt: '2026-01-02T00:00:00Z'})
+    })
+    await act(async () => {
+      await expect(save).rejects.toThrow('store is read-only')
+    })
+    expect(result.current.queries.map((query) => query.url)).toEqual(['https://a'])
+
+    // The list the save tried to write comes back from the store (its localStorage copy is
+    // written before the server answers); it is not the store's list
+    const [, attempted] = mocks.setKey.mock.calls[0] as [string, StoredQueries]
+    expect(attempted.queries.map((query) => query.url)).toEqual(['https://b', 'https://a'])
+    act(() => {
+      storeEvents.next(attempted)
+    })
+    expect(result.current.queries.map((query) => query.url)).toEqual(['https://a'])
+
+    // The list the store kept, and a write from elsewhere built on it, are
+    act(() => {
+      storeEvents.next({
+        queries: [
+          {_key: 'peer', url: 'https://peer', savedAt: '2026-01-03T00:00:00Z'},
+          ...(mocks.store.value?.queries ?? []),
+        ],
+      })
+    })
+    expect(result.current.queries.map((query) => query.url)).toEqual(['https://peer', 'https://a'])
+  })
+
   it('keeps the queries when clearing them fails, whatever the store emits meanwhile', async () => {
     mocks.store.value = {
       queries: [{_key: 'p1', url: 'https://a', savedAt: '2026-01-01T00:00:00Z'}],
@@ -368,6 +406,12 @@ describe('useSavedQueries', () => {
     })
     await act(async () => {
       await expect(clear).rejects.toThrow('store is read-only')
+    })
+    expect(result.current.queries.map((query) => query.url)).toEqual(['https://a'])
+    // Nor is the empty list taken for the store's when it turns up afterwards (its localStorage
+    // copy is written before the server answers, and is what a new subscription starts from)
+    act(() => {
+      storeEvents.next({queries: []})
     })
     expect(result.current.queries.map((query) => query.url)).toEqual(['https://a'])
 

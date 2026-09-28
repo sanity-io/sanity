@@ -49,28 +49,34 @@ interface SharedQueryDocument {
   url: string
 }
 
-/** What one hook instance has written to the personal list since its store subscription started */
+/** What one hook instance has written to the personal list since the list it last took from the store */
 interface OwnWrites {
-  /** The list its first write started from */
-  base: QueryConfig[]
-  /** The list it wrote last */
+  /** The list the store holds as far as the hook knows: its last write that went through */
   latest: QueryConfig[]
+  /** The keys its writes changed, or tried to; an emission has to show them as in `latest` */
+  keys: Set<string>
+}
+
+/** The keys whose entry differs between two lists */
+function changedKeys(before: QueryConfig[], after: QueryConfig[]): string[] {
+  const was = new Map(before.map((query) => [query._key, query]))
+  const is = new Map(after.map((query) => [query._key, query]))
+  return [...new Set([...was.keys(), ...is.keys()])].filter(
+    (key) => !isEqual(was.get(key), is.get(key)),
+  )
 }
 
 /**
- * Whether `queries` shows every change the hook made: each entry that differs between the base
- * of its first write and its last write is present, or absent, as written last. The store's
- * initial read predates the writes and never does; an own echo, or another instance's write
- * built on them, does.
+ * Whether `queries` shows every entry the hook's writes touched as the hook last wrote it, or
+ * as the store kept it when a write failed. The store's initial read predates the writes and
+ * never does, and neither does an echo of a write that failed; an own echo of a write that went
+ * through, or another instance's write built on it, does.
  */
-function reflectsOwnWrites(queries: QueryConfig[], {base, latest}: OwnWrites): boolean {
+function reflectsOwnWrites(queries: QueryConfig[], {latest, keys}: OwnWrites): boolean {
   const shown = new Map(queries.map((query) => [query._key, query]))
-  const before = new Map(base.map((query) => [query._key, query]))
-  const written = new Map(latest.map((query) => [query._key, query]))
-  for (const key of new Set([...before.keys(), ...written.keys()])) {
-    const wanted = written.get(key)
-    if (isEqual(before.get(key), wanted)) continue
-    if (!isEqual(shown.get(key), wanted)) return false
+  const wanted = new Map(latest.map((query) => [query._key, query]))
+  for (const key of keys) {
+    if (!isEqual(shown.get(key), wanted.get(key))) return false
   }
   return true
 }
@@ -263,10 +269,18 @@ export function useSavedQueries(): {
     return result
   }, [])
 
-  /** Records a list this hook is writing, or, when the write failed, the one the store kept */
-  const recordOwnWrite = useCallback((before: QueryConfig[], latest: QueryConfig[]) => {
-    ownWritesRef.current = {base: ownWritesRef.current?.base ?? before, latest}
-  }, [])
+  /**
+   * Records a write of `attempted` over `before`, and `kept` as the list the store holds as a
+   * result: `attempted` itself, or `before` again once the write has failed
+   */
+  const recordOwnWrite = useCallback(
+    (before: QueryConfig[], attempted: QueryConfig[], kept: QueryConfig[]) => {
+      const keys = new Set(ownWritesRef.current?.keys)
+      for (const key of changedKeys(before, attempted)) keys.add(key)
+      ownWritesRef.current = {latest: kept, keys}
+    },
+    [],
+  )
 
   /**
    * Writes the personal list to the store. A failed server write does not reject there: the
@@ -294,14 +308,14 @@ export function useSavedQueries(): {
       enqueuePersonalWrite(async () => {
         const before = latestQueriesRef.current
         const next = update(before)
-        recordOwnWrite(before, next)
+        recordOwnWrite(before, next, next)
         latestQueriesRef.current = next
         setValue({queries: next})
         try {
           await storePersonalQueries(next)
         } catch (err) {
           // The store kept the previous list, so the UI shows it again
-          recordOwnWrite(before, before)
+          recordOwnWrite(before, next, before)
           latestQueriesRef.current = before
           setValue({queries: before})
           throw err
@@ -558,11 +572,11 @@ export function useSavedQueries(): {
       enqueuePersonalWrite(async () => {
         // Nothing disappears from the list until the store confirms the write
         const before = latestQueriesRef.current
-        recordOwnWrite(before, defaultValue.queries)
+        recordOwnWrite(before, defaultValue.queries, defaultValue.queries)
         try {
           await storePersonalQueries(defaultValue.queries)
         } catch (err) {
-          recordOwnWrite(before, before)
+          recordOwnWrite(before, defaultValue.queries, before)
           throw err
         }
         latestQueriesRef.current = defaultValue.queries
