@@ -29,6 +29,7 @@ export interface StructureToolFeatures {
    * @beta
    */
   backButton: boolean
+  documentChrome: boolean
   resizablePanes: boolean
   reviewChanges: boolean
   splitPanes: boolean
@@ -162,6 +163,12 @@ export interface StructureToolOptions {
    * A resolver function used to return the default document node used when editing documents. See {@link DefaultDocumentNodeResolver}
    */
   defaultDocumentNode?: DefaultDocumentNodeResolver
+  /**
+   * Whether to render the chrome around a document form: the pane header carrying version chips,
+   * presence and the pane buttons, and the bar carrying the document title and its view tabs.
+   * The status bar with the document actions is always rendered. Defaults to `true`.
+   */
+  documentChrome?: boolean
   /**
    * The title that will be displayed for the tool. Defaults to Structure
    */

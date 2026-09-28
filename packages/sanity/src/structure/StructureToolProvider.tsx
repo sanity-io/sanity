@@ -20,12 +20,14 @@ import {
 export interface StructureToolProviderProps {
   structure?: StructureResolver
   defaultDocumentNode?: DefaultDocumentNodeResolver
+  documentChrome?: boolean
   children: ReactNode
 }
 
 /** @internal */
 export function StructureToolProvider({
   defaultDocumentNode,
+  documentChrome,
   structure: resolveStructure,
   children,
 }: StructureToolProviderProps): React.JSX.Element {
@@ -63,12 +65,13 @@ export function StructureToolProvider({
   const features: StructureToolContextValue['features'] = useMemo(
     () => ({
       backButton: layoutCollapsed,
+      documentChrome: documentChrome ?? true,
       resizablePanes: !layoutCollapsed,
       reviewChanges: !layoutCollapsed,
       splitPanes: !layoutCollapsed,
       splitViews: !layoutCollapsed,
     }),
-    [layoutCollapsed],
+    [documentChrome, layoutCollapsed],
   )
 
   const structureTool: StructureToolContextValue = useMemo(() => {

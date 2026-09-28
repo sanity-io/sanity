@@ -41,6 +41,7 @@ import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
 import {testStudioLocaleBundles} from './locales'
+import {chromeFreeEditor} from './plugins/chrome-free-editor'
 import {errorReportingTestPlugin} from './plugins/error-reporting-test/plugin'
 import {formBuilderReproTool} from './plugins/form-builder-repro/plugin'
 import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
@@ -391,6 +392,59 @@ export default defineConfig([
     hidden: true,
   },
   defaultWorkspace,
+  {
+    ...defaultWorkspace,
+    name: 'chrome-free',
+    title: 'Chrome-free editing surface',
+    subtitle: 'Everything the config can already switch off, without the new option',
+    basePath: '/chrome-free',
+    plugins: [
+      sharedSettings({projectId: 'ppsg7ml5'}),
+      structureTool({
+        name: 'editor',
+        title: 'Editor',
+        structure,
+        defaultDocumentNode,
+        documentChrome: false,
+      }),
+    ],
+    beta: {variants: {enabled: false}},
+    releases: {enabled: false},
+    scheduledDrafts: {enabled: false},
+    scheduledPublishing: {enabled: false},
+    tasks: {enabled: false},
+    document: {
+      ...defaultWorkspace.document,
+      comments: {enabled: false},
+      badges: () => [],
+      inspectors: (prev) =>
+        prev.filter((inspector) => inspector.name === 'sanity/structure/history'),
+      actions: (prev) => prev.filter((action) => action.action === 'publish'),
+    },
+    studio: {components: {navbar: () => null}},
+  },
+  {
+    name: 'new-eden',
+    title: 'New Eden',
+    subtitle: 'Search bar instead of a navbar, form-only editor, no structure tool',
+    projectId: 'ppsg7ml5',
+    dataset: 'test',
+    ...envConfig.production,
+    basePath: '/new-eden',
+    auth: sanitySandboxAuth,
+    plugins: [sharedSettings({projectId: 'ppsg7ml5'}), chromeFreeEditor()],
+    tools: (prev) => prev.filter((tool) => tool.name === 'editor'),
+    mediaLibrary: {enabled: true},
+    releases: {enabled: false},
+    scheduledDrafts: {enabled: false},
+    scheduledPublishing: {enabled: false},
+    tasks: {enabled: false},
+    document: {
+      comments: {enabled: false},
+      badges: () => [],
+      inspectors: () => [],
+    },
+  },
   {
     ...defaultWorkspace,
     title: 'Test Studio (variants disabled)',

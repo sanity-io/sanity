@@ -11,6 +11,11 @@ export interface ChangeConnectorRootProps {
   children: ReactNode
   className?: string
   isReviewChangesOpen: boolean
+  /**
+   * Whether review changes can be opened. When false, change bars render as
+   * non-interactive markers rather than buttons.
+   */
+  isInteractive?: boolean
   onOpenReviewChanges: () => void
   onSetFocus: (path: Path) => void
 }
@@ -19,6 +24,7 @@ export interface ChangeConnectorRootProps {
 export function ChangeConnectorRoot({
   children,
   className,
+  isInteractive = true,
   isReviewChangesOpen,
   onOpenReviewChanges,
   onSetFocus,
@@ -28,11 +34,12 @@ export function ChangeConnectorRoot({
 
   const contextValue = useMemo(
     () => ({
+      isInteractive,
       isReviewChangesOpen,
       onOpenReviewChanges,
       onSetFocus,
     }),
-    [isReviewChangesOpen, onOpenReviewChanges, onSetFocus],
+    [isInteractive, isReviewChangesOpen, onOpenReviewChanges, onSetFocus],
   )
 
   return (

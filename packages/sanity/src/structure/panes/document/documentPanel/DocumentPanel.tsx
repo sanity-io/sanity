@@ -413,7 +413,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
           <Flex height="100%" flexDirection="column" flexBasis="0%" flexGrow={2}>
             <LegacyLayerProvider zOffset="paneHeader">
               {banners}
-              <DocumentPanelSubHeader />
+              {features.documentChrome && <DocumentPanelSubHeader />}
             </LegacyLayerProvider>
             <Box className={documentBox} flexBasis="0%" flexGrow={2}>
               {/* The scroll container is the visible region for everything portaled into the pane

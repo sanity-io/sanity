@@ -16,7 +16,7 @@ interface StructureToolBoundaryProps {
 export function StructureToolBoundary({tool: {options}}: StructureToolBoundaryProps) {
   const {unstable_sources: sources} = useWorkspace()
   const [firstSource] = sources
-  const {source, defaultDocumentNode, structure} = options || {}
+  const {source, defaultDocumentNode, documentChrome, structure} = options || {}
 
   // Set active panes to blank on mount and unmount
   useEffect(() => {
@@ -32,7 +32,11 @@ export function StructureToolBoundary({tool: {options}}: StructureToolBoundaryPr
   return (
     <ErrorBoundary onCatch={setError}>
       <SourceProvider name={source || firstSource.name}>
-        <StructureToolProvider defaultDocumentNode={defaultDocumentNode} structure={structure}>
+        <StructureToolProvider
+          defaultDocumentNode={defaultDocumentNode}
+          documentChrome={documentChrome}
+          structure={structure}
+        >
           <StructureTool onPaneChange={setActivePanes} />
           <IntentResolver />
         </StructureToolProvider>

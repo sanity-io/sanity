@@ -33,12 +33,15 @@ export function ElementWithChangeBar(props: {
   const {zIndex} = useLayer()
   const {t} = useTranslation()
 
-  const changeBar = useMemo(
-    () =>
-      disabled || !isChanged ? null : (
-        <ChangeBar data-testid="change-bar" zIndex={zIndex}>
-          <ChangeBarMarker data-testid="change-bar__marker" />
-          <Tooltip content={t('changes.change-bar.aria-label')} portal disabled={!isInteractive}>
+  const changeBar = useMemo(() => {
+    if (disabled || !isChanged) return null
+
+    return (
+      <ChangeBar data-testid="change-bar" zIndex={zIndex}>
+        <ChangeBarMarker data-testid="change-bar__marker" />
+        {/* Without a way to open review changes, the bar is a marker rather than a control. */}
+        {isInteractive && (
+          <Tooltip content={t('changes.change-bar.aria-label')} portal>
             <ChangeBarButton
               aria-label={t('changes.change-bar.aria-label')}
               data-testid="change-bar__button"
@@ -49,19 +52,19 @@ export function ElementWithChangeBar(props: {
               isInteractive={isInteractive}
             />
           </Tooltip>
-        </ChangeBar>
-      ),
-    [
-      disabled,
-      isChanged,
-      isInteractive,
-      isReviewChangesOpen,
-      onOpenReviewChanges,
-      t,
-      withHoverEffect,
-      zIndex,
-    ],
-  )
+        )}
+      </ChangeBar>
+    )
+  }, [
+    disabled,
+    isChanged,
+    isInteractive,
+    isReviewChangesOpen,
+    onOpenReviewChanges,
+    t,
+    withHoverEffect,
+    zIndex,
+  ])
 
   return (
     <ChangeBarWrapper

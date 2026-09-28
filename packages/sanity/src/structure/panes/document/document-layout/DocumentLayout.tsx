@@ -28,6 +28,7 @@ import {
   DOCUMENT_INSPECTOR_MIN_WIDTH,
   DOCUMENT_PANEL_INITIAL_MIN_WIDTH,
   DOCUMENT_PANEL_MIN_WIDTH,
+  HISTORY_INSPECTOR_NAME,
 } from '../constants'
 import {DocumentInspectorMenuItemsResolver} from '../DocumentInspectorMenuItemsResolver'
 import {DocumentOperationResults} from '../DocumentOperationResults'
@@ -117,6 +118,10 @@ export function DocumentLayout() {
     () => inspectors?.find((i) => i.name === inspector?.name),
     [inspectors, inspector?.name],
   )
+
+  // Without the pane header's inspector menu, change bars are the only way to open review changes.
+  const reviewChangesAvailable =
+    features.reviewChanges && inspectors.some(({name}) => name === HISTORY_INSPECTOR_NAME)
 
   const documentIdStack = useDocumentIdStack({displayed, documentId, editState})
 
@@ -219,7 +224,9 @@ export function DocumentLayout() {
             onKeyUp={handleKeyUp}
             rootRef={setRootElement}
           >
-            <DocumentPanelHeader ref={setHeaderElement} menuItems={menuItems} />
+            {features.documentChrome && (
+              <DocumentPanelHeader ref={setHeaderElement} menuItems={menuItems} />
+            )}
             <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.paneDialog}>
               <Flex
                 flexDirection="column"
@@ -229,6 +236,7 @@ export function DocumentLayout() {
               >
                 <StyledChangeConnectorRoot
                   data-testid="change-connector-root"
+                  isInteractive={reviewChangesAvailable}
                   isReviewChangesOpen={changesOpen && paneParams?.changesInspectorTab === 'review'}
                   onOpenReviewChanges={onHistoryOpen}
                   onSetFocus={onConnectorSetFocus}
