@@ -115,10 +115,17 @@ export function FederatedSelectAssetsDialog(props: {
         setValidation([])
         return
       }
-      void validateSelection(selection[0]).then((validationResult) => {
-        const hasErrors = validationResult.some((marker) => marker.level === 'error')
-        setValidation(hasErrors ? validationResult : [])
-      })
+      validateSelection(selection[0])
+        .then((validationResult) => {
+          const hasErrors = validationResult.some((marker) => marker.level === 'error')
+          setValidation(hasErrors ? validationResult : [])
+        })
+        .catch((error: unknown) => {
+          // Fail open (selection stays allowed), matching the iframe dialog,
+          // but never silently: a failed `media` validator (e.g. the asset
+          // fetch threw) would otherwise be indistinguishable from a pass.
+          console.error('Media Library selection validation failed', error)
+        })
     },
     [validateSelection],
   )
