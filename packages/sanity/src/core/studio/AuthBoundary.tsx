@@ -1,3 +1,4 @@
+import {type MessageBusConnection} from '@sanity/sdk/dashboard'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type ComponentType, type ReactNode, useEffect, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
@@ -6,6 +7,7 @@ import {catchError, map, of} from 'rxjs'
 import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
 import {isDashboardAuthStore} from '../store/authStore/createAuthStore'
 import {type AuthStore} from '../store/authStore/types'
+import {getMessageBusConnection} from '../store/messageBus/getMessageBusConnection'
 import {
   AuthBoundaryResolved,
   SessionTokenExchangeCompleted,
@@ -158,6 +160,19 @@ export function AuthBoundary({
     // If using unverified `sanity` login provider, send them
     // to basic NotAuthorized component.
     if (!loginProvider || loginProvider === 'sanity') return <NotAuthenticatedComponent />
+    const connection = isDashboardAuthStore(activeWorkspace.auth)
+      ? getMessageBusConnection()
+      : undefined
+    if (connection) {
+      return (
+        <HostAccessRequest
+          key={activeWorkspace.projectId}
+          connection={connection}
+          projectId={activeWorkspace.projectId}
+          LoadingComponent={LoadingComponent}
+        />
+      )
+    }
     // Otherwise, send user to request access screen
     return <RequestAccessScreen />
   }
@@ -176,4 +191,29 @@ export function AuthBoundary({
   if (loggedIn === 'logged-out') return <AuthenticateComponent />
 
   return <>{children}</>
+}
+
+// Waits behind the host's access prompt, and falls back to Studio's screen when the host can't.
+function HostAccessRequest({
+  connection,
+  projectId,
+  LoadingComponent,
+}: {
+  connection: MessageBusConnection
+  projectId: string
+  LoadingComponent: ComponentType
+}) {
+  const [hostPrompts, setHostPrompts] = useState<boolean | undefined>(undefined)
+
+  useEffect(() => {
+    void connection
+      .emit('access.request', {resourceType: 'project', resourceId: projectId})
+      .then(
+        (reply) => reply.ok,
+        () => false,
+      )
+      .then(setHostPrompts)
+  }, [connection, projectId])
+
+  return hostPrompts === false ? <RequestAccessScreen /> : <LoadingComponent />
 }
