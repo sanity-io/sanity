@@ -5,7 +5,7 @@ import {Button, Label, Spinner} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
 import {type ComponentType} from 'react'
 import {styled} from 'styled-components'
-import {Text, VStack, Flex} from 'ui5'
+import {Text, VStack, Flex, Icon} from 'ui5'
 import {type ActorRefFromLogic} from 'xstate'
 
 import {Delay} from '../../../components/Delay'
@@ -89,7 +89,7 @@ export const SelectBundle: ComponentType<Props> = ({variantCreationRef, selectio
         >
           <Text size={1} weight="medium" as="div" trim={true}>
             <Flex gap={2} alignItems="center">
-              <ChevronLeftIcon />
+              <Icon icon={ChevronLeftIcon} size={1} />
               <TruncatedText>{headerTitle}</TruncatedText>
             </Flex>
           </Text>

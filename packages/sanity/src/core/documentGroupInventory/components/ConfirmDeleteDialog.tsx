@@ -8,7 +8,7 @@ import {Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
 import {type ComponentType, type ReactNode, useCallback, useMemo} from 'react'
-import {Text, VStack, Box, Flex} from 'ui5'
+import {Text, VStack, Box, Flex, Icon} from 'ui5'
 import {type ActorRefFromLogic} from 'xstate'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -142,11 +142,15 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
           <>
             <Card padding={3} radius={2} tone="caution" flex="none">
               <Flex>
-                <Text aria-hidden="true" size={1} as="div" trim={true}>
-                  <WarningOutlineIcon />
-                </Text>
+                <Icon
+                  icon={WarningOutlineIcon}
+                  aria-hidden="true"
+                  size={1}
+                  style={{margin: '-0.375rem'}}
+                  tone="caution"
+                />
                 <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
-                  <Text size={1} as="div" trim={true}>
+                  <Text size={1} as="div" trim={true} tone="caution">
                     <Translate
                       i18nKey="document-group.delete.referring-document-count.text"
                       components={{DocumentTitle}}
@@ -288,9 +292,7 @@ const References: ComponentType<ReferencesProps> = ({
                   paddingY={1}
                 >
                   <Flex alignItems="center" gap={3} paddingX={3} paddingY={1}>
-                    <Text size={1} as="div" trim={true}>
-                      <DocumentsIcon />
-                    </Text>
+                    <Icon icon={DocumentsIcon} size={1} />
                     <VStack gap={2}>
                       <Text truncate={1} size={1} as="div" trim={true}>
                         {t('document-group.delete.cdr-summary.title', {
@@ -312,9 +314,7 @@ const References: ComponentType<ReferencesProps> = ({
                       </Text>
                     </VStack>
                     <ChevronWrapper>
-                      <Text muted size={1} as="div" trim={true}>
-                        <ChevronDownIcon />
-                      </Text>
+                      <Icon icon={ChevronDownIcon} size={1} muted />
                     </ChevronWrapper>
                   </Flex>
                 </Card>

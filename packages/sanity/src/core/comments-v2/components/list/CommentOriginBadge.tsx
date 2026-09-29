@@ -1,6 +1,6 @@
 import {Card} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Text, Flex} from 'ui5'
+import {Text, Flex, Icon} from 'ui5'
 
 import {CircleSmallIcon} from '../../../components/temporary-icons/CircleSmall'
 import {RingIcon} from '../../../components/temporary-icons/Ring'
@@ -10,9 +10,10 @@ import {commentsLocaleNamespace} from '../../i18n'
 export type CommentOrigin = 'draft' | 'published'
 
 /**
- * Same slot as `DocumentVersionsStatusIndicator`: `@sanity/ui` Text sizes the
- * 1em glyphs and applies `--card-icon-color`. ui5 `Icon` paints
- * `--foreground-high` and drops the draft orange / published green.
+ * Centers draft/published status glyphs beside the origin label. Draft and
+ * published slots set `--card-icon-color` on the root from card badge dot
+ * tokens (same as `DocumentVersionsStatusIndicator`). Glyphs use ui5
+ * `Icon size={2}`, not v4 `Text` descendant icon sizing.
  */
 const IconSlotRoot = styled.div`
   display: flex;
@@ -48,9 +49,7 @@ export function CommentOriginBadge({origin}: {origin: CommentOrigin}) {
       <Card border padding={1} radius={3}>
         <Flex alignItems="center" gap={1} paddingRight={1}>
           <IconSlotRoot data-status={origin}>
-            <Text size={2} as="div" trim={true}>
-              {origin === 'draft' ? <RingIcon /> : <CircleSmallIcon />}
-            </Text>
+            <Icon icon={origin === 'draft' ? RingIcon : CircleSmallIcon} size={2} />
           </IconSlotRoot>
 
           <Text size={0} muted weight="medium" as="div" trim={true}>

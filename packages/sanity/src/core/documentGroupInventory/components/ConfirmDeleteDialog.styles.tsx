@@ -1,7 +1,7 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {Inline, rem} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Text, Box, Flex} from 'ui5'
+import {Text, Box, Flex, Icon} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
@@ -71,9 +71,7 @@ export const OtherReferenceCount = (props: {totalCount: number; references: unkn
           placement="top"
           content={t('document-group.delete.other-reference-count.tooltip')}
         >
-          <Text size={1} muted as="div" trim={true}>
-            <InfoOutlineIcon />
-          </Text>
+          <Icon icon={InfoOutlineIcon} size={1} style={{margin: '-0.375rem'}} />
         </Tooltip>
       </Inline>
     </Box>

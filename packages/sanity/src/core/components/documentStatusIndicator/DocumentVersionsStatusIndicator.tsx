@@ -1,7 +1,6 @@
-import {Text} from '@sanity/ui'
 import {type ReactNode} from 'react'
 import {styled} from 'styled-components'
-import {Flex} from 'ui5'
+import {Flex, Icon} from 'ui5'
 
 import {getDefaultVariant} from '../../perspective/getDefaultVariant'
 import {type TargetPerspective} from '../../perspective/types'
@@ -26,20 +25,24 @@ const IconSlotRoot = styled.div`
 
   &[data-status='published'] {
     --card-icon-color: var(--card-badge-positive-dot-color);
+    --icon-color: var(--card-badge-positive-dot-color);
   }
   &[data-status='draft'] {
     --card-icon-color: var(--card-badge-caution-dot-color);
+    --icon-color: var(--card-badge-caution-dot-color);
   }
   &[data-status='variant'] {
     --card-icon-color: var(--card-badge-suggest-dot-color);
+    --icon-color: var(--card-badge-suggest-dot-color);
   }
 `
 
 /**
- * The icons are `1em` boxes in a 25-unit viewBox, like everything in `@sanity/icons`, so a `Text` is
- * what sizes them: it resolves the em to the text size's icon size — 17px at size 0 — and applies
- * the negative margin that centres the glyph on the cap height. It is also what makes them honour
- * `--card-icon-color`, which is how each icon gets its tone.
+ * Centers a status glyph in a fixed 15px column. Draft, published, and variant slots set
+ * `--card-icon-color` and `--icon-color` on the root so ui5 `Icon` picks up badge dot colors;
+ * release uses `ReleaseAvatarIcon`, which sets `--icon-color` on its own `Icon`. Glyphs are sized
+ * with ui5 `Icon size={2}` (or `ReleaseAvatarIcon` with `fontSize={2}`), not v4 `Text` descendant
+ * rules.
  */
 function IconSlot({
   status,
@@ -48,17 +51,13 @@ function IconSlot({
   status?: 'published' | 'draft' | 'variant'
   children: ReactNode
 }) {
-  return (
-    <IconSlotRoot data-status={status}>
-      <Text size={2}>{children}</Text>
-    </IconSlotRoot>
-  )
+  return <IconSlotRoot data-status={status}>{children}</IconSlotRoot>
 }
 
 function VariantIcon() {
   return (
     <IconSlot status="variant">
-      <RhombusIcon />
+      <Icon icon={RhombusIcon} size={2} />
     </IconSlot>
   )
 }
@@ -73,19 +72,19 @@ function renderDocumentStatusIcon(
     case 'release':
       return (
         <IconSlot key="release">
-          <ReleaseAvatarIcon release={selectedPerspective} size="small" />
+          <ReleaseAvatarIcon release={selectedPerspective} size="small" fontSize={2} />
         </IconSlot>
       )
     case 'draft':
       return (
         <IconSlot key="draft" status="draft">
-          <RingIcon />
+          <Icon icon={RingIcon} size={2} />
         </IconSlot>
       )
     case 'published':
       return (
         <IconSlot key="published" status="published">
-          <CircleSmallIcon />
+          <Icon icon={CircleSmallIcon} size={2} />
         </IconSlot>
       )
   }

@@ -67,19 +67,17 @@ export function DocumentGroupEntry({
             <EyeOpenIcon /> {t('document-group-inventory.viewing-item-label')}
           </StatusBadge>
         )}
-        <Text size={1} as="div" trim={true}>
-          {agentBundleName ? (
-            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-            <ReleaseAvatarIcon tone="suggest" />
-          ) : (
-            <ReleaseAvatarIcon
-              release={
-                // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals -- this string is not shown to users
-                (isDraftVersion ? 'drafts' : isPublishedVersion ? 'published' : release) ?? ''
-              }
-            />
-          )}
-        </Text>
+        {agentBundleName ? (
+          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+          <ReleaseAvatarIcon tone="suggest" />
+        ) : (
+          <ReleaseAvatarIcon
+            release={
+              // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals -- this string is not shown to users
+              (isDraftVersion ? 'drafts' : isPublishedVersion ? 'published' : release) ?? ''
+            }
+          />
+        )}
       </div>
     </VariantSetEntry>
   )

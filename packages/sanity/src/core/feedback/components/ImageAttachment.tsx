@@ -1,7 +1,7 @@
 import {BinaryDocumentIcon} from '@sanity/icons/BinaryDocument'
 import {UploadIcon} from '@sanity/icons/Upload'
 import {Card} from '@sanity/ui'
-import {Text, VStack, Flex} from 'ui5'
+import {Text, VStack, Flex, Icon} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {FileInputButton} from '../../form/inputs/files/common/FileInputButton/FileInputButton'
@@ -92,9 +92,7 @@ export function ImageAttachment(props: ImageAttachmentProps) {
       >
         <Flex alignItems="center" justifyContent="space-between">
           <Flex alignItems="center" gap={2}>
-            <Text size={1} muted as="div" trim={true}>
-              <BinaryDocumentIcon />
-            </Text>
+            <Icon icon={BinaryDocumentIcon} size={1} />
             <Text size={1} muted as="div" trim={true}>
               {t('feedback.attachment.drop-zone')}
             </Text>

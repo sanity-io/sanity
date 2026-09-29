@@ -3,7 +3,7 @@ import ChevronLeftIcon from '@sanity/icons/ChevronLeft'
 import {Button} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
 import {type ComponentType} from 'react'
-import {Text, VStack, Flex} from 'ui5'
+import {Text, VStack, Flex, Icon} from 'ui5'
 import {type ActorRefFromLogic} from 'xstate'
 
 import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
@@ -37,7 +37,7 @@ export const SelectVariantDefinition: ComponentType<Props> = ({variantCreationRe
         >
           <Text size={1} weight="medium" as="div" trim={true}>
             <Flex gap={2} alignItems="center">
-              <ChevronLeftIcon />
+              <Icon icon={ChevronLeftIcon} size={1} />
               {t('document-group.create-variant')}
             </Flex>
           </Text>

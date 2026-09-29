@@ -23,7 +23,7 @@ import {
   Subject,
   timeout,
 } from 'rxjs'
-import {Text, VStack, Flex} from 'ui5'
+import {Text, VStack, Flex, Icon} from 'ui5'
 import {type ActorRefFromLogic, fromObservable, fromPromise} from 'xstate'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -387,18 +387,14 @@ export const DocumentGroupInventory: ComponentType<DocumentGroupInventoryProps> 
                       title={feedbackT('feedback.menu-item')}
                       aria-label={feedbackT('feedback.menu-item')}
                     >
-                      <Text size={1} as="div" trim={true}>
-                        <FeedbackIcon />
-                      </Text>
+                      <Icon icon={FeedbackIcon} size={1} />
                     </TextButton>
                     <TextButton
                       onClick={requestClose}
                       title={t('document-group-inventory.action.cancel')}
                       aria-label={t('document-group-inventory.action.cancel')}
                     >
-                      <Text size={1} as="div" trim={true}>
-                        <CloseIcon />
-                      </Text>
+                      <Icon icon={CloseIcon} size={1} />
                     </TextButton>
                   </Flex>
                 )}

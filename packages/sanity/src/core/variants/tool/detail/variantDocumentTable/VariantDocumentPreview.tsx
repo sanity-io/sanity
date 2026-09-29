@@ -38,20 +38,18 @@ function PrimaryBundleIcon({
 
   return (
     <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
-      <Text size={1}>
-        {primary.kind === 'published' ? (
-          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-          <ReleaseAvatarIcon tone="positive" />
-        ) : primary.kind === 'drafts' ? (
-          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-          <ReleaseAvatarIcon tone="caution" />
-        ) : primary.release ? (
-          <ReleaseAvatarIcon release={primary.release} />
-        ) : (
-          // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-          <ReleaseAvatarIcon tone="default" />
-        )}
-      </Text>
+      {primary.kind === 'published' ? (
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+        <ReleaseAvatarIcon tone="positive" />
+      ) : primary.kind === 'drafts' ? (
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+        <ReleaseAvatarIcon tone="caution" />
+      ) : primary.release ? (
+        <ReleaseAvatarIcon release={primary.release} />
+      ) : (
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+        <ReleaseAvatarIcon tone="default" />
+      )}
     </Box>
   )
 }
