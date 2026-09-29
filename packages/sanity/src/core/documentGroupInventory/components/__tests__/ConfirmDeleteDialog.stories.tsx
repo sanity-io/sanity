@@ -96,7 +96,6 @@ function ConfirmDeleteDialogHarness(
  */
 const meta = {
   title: 'Document Group Inventory/Confirm Delete Dialog',
-  component: ConfirmDeleteDialog,
   decorators: [
     (Story) => (
       <TestWrapper schemaTypes={[AUTHOR_TYPE]}>
@@ -104,7 +103,7 @@ const meta = {
       </TestWrapper>
     ),
   ],
-} satisfies Meta<typeof ConfirmDeleteDialog>
+} satisfies Meta
 
 export default meta
 type Story = StoryObj<typeof meta>

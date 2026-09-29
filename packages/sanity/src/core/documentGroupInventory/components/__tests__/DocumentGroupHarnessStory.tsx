@@ -240,7 +240,12 @@ export function useDocumentGroupHarness(options: DocumentGroupHarnessOptions) {
     return harness
   })
 
-  useEffect(() => () => actor.stop(), [actor])
+  useEffect(
+    () => () => {
+      actor.stop()
+    },
+    [actor],
+  )
 
   return actor.getSnapshot().context
 }
