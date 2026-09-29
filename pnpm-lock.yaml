@@ -272,6 +272,9 @@ overrides:
   vite@8.3.1>rolldown: 1.2.9
   vitest: ^5.0.1
 
+patchedDependencies:
+  motion-dom@13.4.4: b3af74dd518c871c16d25e662aa1d0983d4edd0f38973b7edce50b28b2bcd8a9
+
 importers:
 
   .:
@@ -24247,7 +24250,7 @@ snapshots:
 
   framer-motion@13.4.4(react-dom@19.3.0)(react@19.3.0):
     dependencies:
-      motion-dom: 13.4.4
+      motion-dom: 13.4.4(patch_hash=b3af74dd518c871c16d25e662aa1d0983d4edd0f38973b7edce50b28b2bcd8a9)
       motion-utils: 13.3.0
       tslib: 2.8.1
     optionalDependencies:
@@ -25648,7 +25651,7 @@ snapshots:
       - socks
     optional: true
 
-  motion-dom@13.4.4:
+  motion-dom@13.4.4(patch_hash=b3af74dd518c871c16d25e662aa1d0983d4edd0f38973b7edce50b28b2bcd8a9):
     dependencies:
       motion-utils: 13.3.0
 
