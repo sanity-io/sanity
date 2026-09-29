@@ -28,13 +28,13 @@ catalog:
   '@sanity/client': ^8.7.0
   '@sanity/migrate': ^8.0.5
   '@sanity/telemetry': ^1.1.0
-  '@sanity/tsdown-config': ^0.28.1
+  '@sanity/tsdown-config': ^0.28.2
   '@sanity/ui': ^4.2.7
   '@types/node': ^24.13.3
   '@types/react': ^19.3.0
   '@types/react-dom': ^19.3.0
   '@types/react-is': ^19.3.0
-  '@sanity/vanilla-extract-vite-plugin': ^0.2.19
+  '@sanity/vanilla-extract-vite-plugin': ^0.2.20
   '@vanilla-extract/css': ^1.21.2
   '@vanilla-extract/dynamic': ^2.1.5
   '@vitejs/plugin-react': ^6.1.1
@@ -157,8 +157,6 @@ trustPolicy: no-downgrade
 trustPolicyExcludePrune: true
 trustPolicyExclude:
   - '@sanity/cli'
-  - '@sanity/sdk@3.5.0'
-  - '@sanity/sdk-react@3.5.0'
   - rxjs@7.8.2
   - semver@5.7.2 || 6.3.1
   - undici@5.29.0
