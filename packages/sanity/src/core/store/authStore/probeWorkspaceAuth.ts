@@ -9,6 +9,7 @@ import {
   fromEvent,
   merge,
   type Observable,
+  of,
   ReplaySubject,
   share,
   timer,
@@ -26,6 +27,7 @@ import {
   UNAUTHENTICATED,
 } from './constants'
 import {createBroadcastState} from './createBroadcastState'
+import {observeDashboardToken} from './dashboardToken'
 
 /** @internal */
 export interface WorkspaceAuthProbeInput {
@@ -112,10 +114,10 @@ interface CreateProbeOptions {
 
 function buildProbe(
   input: WorkspaceAuthProbeInput,
-  options: CreateProbeOptions = {},
+  options: CreateProbeOptions,
+  token: string | undefined,
 ): Observable<WorkspaceAuthProbeResult> {
   const apiHost = resolveApiHost(input.apiHost)
-  const token = getStoredToken(input.projectId)
   const factory = options.clientFactory ?? createSanityClient
 
   const key = cacheKey({apiHost, projectId: input.projectId, token})
@@ -218,7 +220,20 @@ function buildProbe(
 export function probeWorkspaceAuth(
   input: WorkspaceAuthProbeInput,
 ): Observable<WorkspaceAuthProbeResult> {
-  return buildProbe(input)
+  return probe(input, {})
+}
+
+function probe(
+  input: WorkspaceAuthProbeInput,
+  options: CreateProbeOptions,
+): Observable<WorkspaceAuthProbeResult> {
+  const dashboardToken$ = observeDashboardToken()
+  if (dashboardToken$) {
+    return dashboardToken$.pipe(
+      switchMap((token) => (token ? buildProbe(input, options, token) : of(UNAUTHENTICATED))),
+    )
+  }
+  return buildProbe(input, options, getStoredToken(input.projectId))
 }
 
 /**
@@ -237,5 +252,5 @@ export function _probeWorkspaceAuthForTest(
   input: WorkspaceAuthProbeInput,
   options: CreateProbeOptions,
 ): Observable<WorkspaceAuthProbeResult> {
-  return buildProbe(input, options)
+  return probe(input, options)
 }
