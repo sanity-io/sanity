@@ -4,6 +4,7 @@ import {
   type HTMLProps,
   type ReactNode,
   useCallback,
+  useId,
   useImperativeHandle,
   useLayoutEffect,
   useMemo,
@@ -182,13 +183,15 @@ export function Pane(
     [collapsed, isLast, layoutCollapsed, nextCollapsed, rootElement],
   )
 
+  const viewTransitionName = useId()
   const style = useMemo(
     () => ({
       flex,
       minWidth,
       maxWidth: maxWidth === Infinity ? undefined : maxWidth,
+      viewTransitionName,
     }),
-    [flex, minWidth, maxWidth],
+    [flex, minWidth, maxWidth, viewTransitionName],
   )
 
   return (
