@@ -132,7 +132,7 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
       <VStack gap={4}>
         {error ? (
           <Card tone="critical" padding={3}>
-            <Text size={1} as="div" trim={true}>
+            <Text size={1} as="div" trim={true} tone="critical">
               {t('document-group.delete.error.message')}
             </Text>
           </Card>

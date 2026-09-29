@@ -80,7 +80,7 @@ export const LinkToCanvasDialog = ({
             transition={{duration: 0.3}}
           >
             <Card border tone="critical" padding={4} radius={3}>
-              <Text size={1} weight="medium" as="div" trim={true}>
+              <Text size={1} weight="medium" as="div" trim={true} tone="critical">
                 {error || t('dialog.link-to-canvas.error')}
               </Text>
             </Card>

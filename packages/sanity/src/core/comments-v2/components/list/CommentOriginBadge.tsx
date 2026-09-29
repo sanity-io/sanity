@@ -11,7 +11,7 @@ export type CommentOrigin = 'draft' | 'published'
 
 /**
  * Centers draft/published status glyphs beside the origin label. Draft and
- * published slots set `--card-icon-color` on the root from card badge dot
+ * published slots set `--icon-color` on the root from card badge dot
  * tokens (same as `DocumentVersionsStatusIndicator`). Glyphs use ui5
  * `Icon size={2}`, not v4 `Text` descendant icon sizing.
  */
@@ -23,9 +23,11 @@ const IconSlotRoot = styled.div`
 
   &[data-status='published'] {
     --card-icon-color: var(--card-badge-positive-dot-color);
+    --icon-color: var(--card-badge-positive-dot-color);
   }
   &[data-status='draft'] {
     --card-icon-color: var(--card-badge-caution-dot-color);
+    --icon-color: var(--card-badge-caution-dot-color);
   }
 `
 

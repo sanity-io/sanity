@@ -87,7 +87,7 @@ export const UnlinkFromCanvasDialog = ({
               animate={{opacity: 1, scale: 1}}
             >
               <Card tone="critical" padding={2} radius={3}>
-                <Text size={1} weight="medium" as="div" trim={true}>
+                <Text size={1} weight="medium" as="div" trim={true} tone="critical">
                   {error || t('dialog.unlink-from-canvas.error')}
                 </Text>
               </Card>
