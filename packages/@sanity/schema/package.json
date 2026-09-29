@@ -75,7 +75,7 @@
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@repo/tsdown.config": "workspace:*",
-    "@sanity/icons": "^5.2.2",
+    "@sanity/icons": "^5.2.3",
     "@types/lodash-es": "^4.17.12",
     "@types/react": "catalog:",
     "tsdown": "catalog:",
