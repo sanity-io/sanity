@@ -34,7 +34,14 @@ const VersionChip = ({id, showSparkles}: {id: string; showSparkles?: boolean}) =
         <Text size={1} weight="medium" as="div" trim={true} tone={badgeTone}>
           {badgeTitle}
         </Text>
-        {showSparkles && <Icon icon={ComposeSparklesIcon} size={1} tone={badgeTone} />}
+        {showSparkles && (
+          <Icon
+            icon={ComposeSparklesIcon}
+            size={1}
+            tone={badgeTone}
+            style={{margin: '-0.375rem'}}
+          />
+        )}
       </Flex>
     </ChipCard>
   )
@@ -84,7 +91,7 @@ export function LinkToCanvasDiff({
         <Box padding={3}>
           <Flex gap={2} alignItems="center">
             <VersionChip id={originalDocument?._id || ''} />
-            <Icon icon={ArrowRightIcon} size={2} />
+            <Icon icon={ArrowRightIcon} size={2} style={{margin: '-0.4375rem'}} />
             <VersionChip id={mappedDocument?._id || ''} showSparkles />
           </Flex>
         </Box>

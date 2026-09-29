@@ -22,7 +22,7 @@ import {isDraftPerspective} from '../util/util'
 
 interface IconProps {
   'data-testid': string
-  'style': CSSProperties & {'--icon-color': string}
+  'style': CSSProperties & {'--card-icon-color': string; '--icon-color': string}
   'size': UIIconProps['size']
 }
 type IconSize = 'default' | 'small'
@@ -108,6 +108,7 @@ export const ReleaseAvatarIcon = ({
   const iconProps: IconProps = {
     'data-testid': `release-avatar-${resolvedTone}`,
     'style': {
+      '--card-icon-color': `var(--card-badge-${resolvedTone}-icon-color)`,
       '--icon-color': `var(--card-badge-${resolvedTone}-icon-color)`,
       'margin': fontSize === 2 ? '-0.4375rem' : '-0.375rem',
       'display': 'block',

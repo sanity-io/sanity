@@ -10,10 +10,10 @@ import {commentsLocaleNamespace} from '../../i18n'
 export type CommentOrigin = 'draft' | 'published'
 
 /**
- * Centers draft/published status glyphs beside the origin label. Draft and
- * published slots set `--icon-color` on the root from card badge dot
- * tokens (same as `DocumentVersionsStatusIndicator`). Glyphs use ui5
- * `Icon size={2}`, not v4 `Text` descendant icon sizing.
+ * Centers draft/published status glyphs beside the origin label. Draft and published slots set
+ * `--icon-color` on the svg (ui5 `Icon` shadows an ancestor value) and `--card-icon-color` on the
+ * root, same tokens as `DocumentVersionsStatusIndicator`. Glyphs use ui5 `Icon size={2}`, not v4
+ * `Text` descendant icon sizing.
  */
 const IconSlotRoot = styled.div`
   display: flex;
@@ -23,10 +23,14 @@ const IconSlotRoot = styled.div`
 
   &[data-status='published'] {
     --card-icon-color: var(--card-badge-positive-dot-color);
+  }
+  &[data-status='published'] svg {
     --icon-color: var(--card-badge-positive-dot-color);
   }
   &[data-status='draft'] {
     --card-icon-color: var(--card-badge-caution-dot-color);
+  }
+  &[data-status='draft'] svg {
     --icon-color: var(--card-badge-caution-dot-color);
   }
 `

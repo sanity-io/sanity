@@ -25,24 +25,34 @@ const IconSlotRoot = styled.div`
 
   &[data-status='published'] {
     --card-icon-color: var(--card-badge-positive-dot-color);
+  }
+  &[data-status='published'] svg {
     --icon-color: var(--card-badge-positive-dot-color);
   }
   &[data-status='draft'] {
     --card-icon-color: var(--card-badge-caution-dot-color);
+  }
+  &[data-status='draft'] svg {
     --icon-color: var(--card-badge-caution-dot-color);
   }
   &[data-status='variant'] {
     --card-icon-color: var(--card-badge-suggest-dot-color);
+  }
+  &[data-status='variant'] svg {
     --icon-color: var(--card-badge-suggest-dot-color);
+  }
+
+  & svg {
+    flex-shrink: 0;
   }
 `
 
 /**
  * Centers a status glyph in a fixed 15px column. Draft, published, and variant slots set
- * `--card-icon-color` and `--icon-color` on the root so ui5 `Icon` picks up badge dot colors;
- * release uses `ReleaseAvatarIcon`, which sets `--icon-color` on its own `Icon`. Glyphs are sized
- * with ui5 `Icon size={2}` (or `ReleaseAvatarIcon` with `fontSize={2}`), not v4 `Text` descendant
- * rules.
+ * `--icon-color` on the svg (ui5 `Icon` re-declares that variable on the element, shadowing an
+ * ancestor) and `--card-icon-color` on the root for v4 call sites. Release uses
+ * `ReleaseAvatarIcon`, which sets both variables inline on its `Icon`. Glyphs use ui5
+ * `Icon size={2}` (or `ReleaseAvatarIcon` with `fontSize={2}`), not v4 `Text` descendant rules.
  */
 function IconSlot({
   status,

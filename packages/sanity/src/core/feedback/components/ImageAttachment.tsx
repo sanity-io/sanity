@@ -92,7 +92,7 @@ export function ImageAttachment(props: ImageAttachmentProps) {
       >
         <Flex alignItems="center" justifyContent="space-between">
           <Flex alignItems="center" gap={2}>
-            <Icon icon={BinaryDocumentIcon} size={1} />
+            <Icon icon={BinaryDocumentIcon} size={1} muted />
             <Text size={1} muted as="div" trim={true}>
               {t('feedback.attachment.drop-zone')}
             </Text>

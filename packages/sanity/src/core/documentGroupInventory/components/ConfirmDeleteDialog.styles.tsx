@@ -71,7 +71,7 @@ export const OtherReferenceCount = (props: {totalCount: number; references: unkn
           placement="top"
           content={t('document-group.delete.other-reference-count.tooltip')}
         >
-          <Icon icon={InfoOutlineIcon} size={1} style={{margin: '-0.375rem'}} />
+          <Icon icon={InfoOutlineIcon} size={1} muted style={{margin: '-0.375rem'}} />
         </Tooltip>
       </Inline>
     </Box>
