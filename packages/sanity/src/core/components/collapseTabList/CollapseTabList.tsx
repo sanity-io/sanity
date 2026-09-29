@@ -10,6 +10,9 @@ import {
   type RefAttributes,
   createContext,
   ViewTransition,
+  startTransition,
+  useDeferredValue,
+  Activity,
 } from 'react'
 import {Flex, type GapProps} from 'ui5'
 
@@ -48,10 +51,10 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
   // current `children` array.
   const [intersections, setIntersections] = useState<Record<string, boolean | undefined>>({})
 
-  const children = useMemo(
+  const children = (useMemo(
     () => Children.toArray(childrenProp).filter(_isReactElement),
     [childrenProp],
-  )
+  ))
 
   // Nothing is shown until a measurement arrives for the current children, to
   // avoid flashing children that may not fit. Derived from the current children
@@ -59,7 +62,6 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
   const hasMeasured = children.some(
     (child) => child.key !== null && intersections[child.key] !== undefined,
   )
-
 
   /**
    * Partition of the current children: those measured as not fitting belong in
@@ -93,7 +95,6 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
     () => menuButtonProps?.button || <ContextMenuButton />,
     [menuButtonProps],
   )
-  
 
   const handleIntersection = useCallback(
     (entry: IntersectionObserverEntry, child: React.JSX.Element) => {
@@ -105,6 +106,7 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
     },
     [],
   )
+  const viewTransitionName = useId()
 
   return (
     <Flex
@@ -117,33 +119,37 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
       }}
     >
       <Flex justifyContent="center" gap={gap} flexBasis="0%" flexGrow={1}>
-        {hasMeasured ? displayChildren.map(child => <ViewTransition key={child.key}>{child}</ViewTransition>) : null}
+        {hasMeasured
+          ? children.map((child) => <Activity key={child.key} mode={(child.key !== null && intersections[child.key] === false) ? 'hidden' : 'visible'}> {cloneElement(child, {
+            'style': {viewTransitionName: viewTransitionName+child.key},
+          })}</Activity>)
+          : null}
         <ViewTransition key="collapse-overflow-menu">
-        {hiddenChildren.length > 0 ? (
-          <CollapseOverflowMenu
-            menuButton={menuButton}
-            menuButtonProps={menuButtonProps}
-            menuOptions={hiddenChildren}
-          />
-        ) : (
-          // The hidden row below prepends a menu button clone before the child
-          // clones, so children only measure as fitting when the container is at
-          // least a menu button wider than the children themselves. Reserving
-          // that footprint here keeps a content-sized container (the navbar's
-          // wide-regime `auto` grid track) wide enough on its own, and makes the
-          // swap with the real menu button layout-stable.
-          <div
-            className={menuButtonPlaceholder}
-            aria-hidden="true"
-            data-testid="collapse-tab-list-placeholder"
-          >
-            {cloneElement(menuButton, {
-              'disabled': true,
-              'aria-hidden': true,
-              'tabIndex': -1,
-            })}
-          </div>
-        )}
+          {hiddenChildren.length > 0 ? (
+            <CollapseOverflowMenu
+              menuButton={menuButton}
+              menuButtonProps={menuButtonProps}
+              menuOptions={hiddenChildren}
+            />
+          ) : (
+            // The hidden row below prepends a menu button clone before the child
+            // clones, so children only measure as fitting when the container is at
+            // least a menu button wider than the children themselves. Reserving
+            // that footprint here keeps a content-sized container (the navbar's
+            // wide-regime `auto` grid track) wide enough on its own, and makes the
+            // swap with the real menu button layout-stable.
+            <div
+              className={menuButtonPlaceholder}
+              aria-hidden="true"
+              data-testid="collapse-tab-list-placeholder"
+            >
+              {cloneElement(menuButton, {
+                'disabled': true,
+                'aria-hidden': true,
+                'tabIndex': -1,
+              })}
+            </div>
+          )}
         </ViewTransition>
       </Flex>
 
