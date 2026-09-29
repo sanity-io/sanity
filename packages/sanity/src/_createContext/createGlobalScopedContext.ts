@@ -5,6 +5,27 @@ import {SANITY_VERSION} from '../core/version'
 const MISSING_CONTEXT_HELP_URL = 'https://www.sanity.io/help/missing-context-error'
 
 /**
+ * Whether this copy of `sanity` should keep its React contexts module-local
+ * instead of registering them in the `globalThis` singleton registry below.
+ *
+ * The global registry exists to rescue a single application that accidentally
+ * bundles two copies of the same `sanity` version (provider from one copy,
+ * consumer from the other still match). An intentionally *embedded* copy —
+ * e.g. an application built on `sanity/_unstable-embedded` that is mounted as
+ * a federated island inside a host studio's window, with its own React root —
+ * never shares a React tree with the host, so global sharing buys it nothing
+ * and the exact-version guard would crash module evaluation whenever the host
+ * studio runs any other `sanity` version. Such embedders opt out at build
+ * time by defining `process.env.SANITY_ISOLATED_CONTEXTS` as `'true'`.
+ */
+let isolatedContexts = false
+try {
+  isolatedContexts = process.env.SANITY_ISOLATED_CONTEXTS === 'true'
+} catch {
+  // ignore, assume process.env is not defined by the runtime
+}
+
+/**
  * @internal
  * @hidden
  */
@@ -16,6 +37,15 @@ export function createGlobalScopedContext<ContextType, const T extends ContextTy
   defaultValue: T,
 ): Context<ContextType> {
   const symbol = Symbol.for(key)
+
+  /**
+   * Embedded copies keep contexts local: they own their whole React tree, so
+   * cross-copy context sharing is unnecessary and the version guard below
+   * must not be able to fail a host studio with a different `sanity` version.
+   */
+  if (isolatedContexts) {
+    return createContext<ContextType>(defaultValue)
+  }
 
   /**
    * Prevent errors about re-renders on React SSR on Next.js App Router, as well as JSDOM-based
