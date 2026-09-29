@@ -1810,6 +1810,9 @@ import type {
   ValidationErrorOptions,
   ValidationLocaleResourceKeys,
   ValidationMarker,
+  ValidationSetFix,
+  ValidationSuggestedFix,
+  ValidationUnsetFix,
   Validator,
   Validators,
   ValueError,
@@ -7311,6 +7314,15 @@ describe('sanity', () => {
   })
   test('ValidationMarker', () => {
     expectTypeOf<ValidationMarker>().toBeObject()
+  })
+  test('ValidationSetFix', () => {
+    expectTypeOf<ValidationSetFix>().toBeObject()
+  })
+  test('ValidationSuggestedFix', () => {
+    expectTypeOf<ValidationSuggestedFix>().not.toBeNever()
+  })
+  test('ValidationUnsetFix', () => {
+    expectTypeOf<ValidationUnsetFix>().toBeObject()
   })
   test('Validator', () => {
     expectTypeOf<Validator<any, any>>().not.toBeNever()

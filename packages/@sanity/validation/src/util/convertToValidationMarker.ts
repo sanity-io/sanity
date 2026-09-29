@@ -1,5 +1,10 @@
 /* oxlint-disable typescript/no-deprecated -- marker compatibility requires legacy fields */
-import {type Path, type ValidationError, type ValidationMarker} from '@sanity/types'
+import {
+  type Path,
+  type ValidationError,
+  type ValidationMarker,
+  type ValidationSuggestedFix,
+} from '@sanity/types'
 
 import {type ValidationMarkerCode, validationMarkerCodes} from '../codes'
 import {type ValidationContext} from '../types'
@@ -42,6 +47,10 @@ export function convertToValidationMarker(
   const {message, __internal_metadata} = validatorResult
   const code = validatorResult.code || fallback.code
   const details = validatorResult.details || fallback.details
+  const suggestedFixes = validatorResult.suggestedFixes?.filter(isSuggestedFix)
+  // A fix at the document root would replace the whole document, so fixes need a field path
+  const fixesFor = (path: Path) =>
+    suggestedFixes?.length && path.length > 0 ? {suggestedFixes} : undefined
 
   const normalizedPaths: Path[] = []
   if (validatorResult.path) {
@@ -56,14 +65,16 @@ export function convertToValidationMarker(
   // the validator result does not include any item-level relative paths,
   // then just return the top-level path with the validation result
   if (!normalizedPaths.length) {
+    const path = context.path || []
     return [
       {
         code,
         ...(details && {details}),
+        ...fixesFor(path),
         level: level || 'error',
         item: {message},
         message,
-        path: context.path || [],
+        path,
         __internal_metadata,
       },
     ]
@@ -72,13 +83,24 @@ export function convertToValidationMarker(
   // if the validator result did include item-level relative paths, then for
   // each item-level relative path, create a validation marker that concatenates
   // the relative path with the path from the validation context
-  return normalizedPaths.map((path) => ({
-    code,
-    ...(details && {details}),
-    path: (context.path || []).concat(path),
-    level: level || 'error',
-    item: {message},
-    message,
-    __internal_metadata,
-  }))
+  return normalizedPaths.map((relativePath) => {
+    const path = (context.path || []).concat(relativePath)
+    return {
+      code,
+      ...(details && {details}),
+      ...fixesFor(path),
+      path,
+      level: level || 'error',
+      item: {message},
+      message,
+      __internal_metadata,
+    }
+  })
+}
+
+function isSuggestedFix(fix: unknown): fix is ValidationSuggestedFix {
+  if (typeof fix !== 'object' || fix === null) return false
+  const {type, title} = fix as Record<string, unknown>
+  if (typeof title !== 'string') return false
+  return type === 'unset' || (type === 'set' && 'value' in fix)
 }
