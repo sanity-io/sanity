@@ -1,5 +1,5 @@
 import startCase from 'lodash-es/startCase.js'
-import {useMemo, useState, type RefAttributes, useId, use, ViewTransition} from 'react'
+import {useMemo, useState, type RefAttributes, useId} from 'react'
 import {Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
@@ -19,6 +19,7 @@ interface ToolCollapseMenuProps {
 
 function ToolLinkButton({tool, selected}: {tool: Tool; selected: boolean}) {
   const title = tool?.title || startCase(tool.name)
+  const viewTransitionName = useId()
 
   return (
     <Button
@@ -28,6 +29,7 @@ function ToolLinkButton({tool, selected}: {tool: Tool; selected: boolean}) {
       name={tool.name}
       selected={selected}
       text={title}
+      style={{viewTransitionName}}
     />
   )
 }
