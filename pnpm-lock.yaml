@@ -2144,7 +2144,7 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       '@sanity/logos':
-        specifier: ^2.2.5
+        specifier: ^2.2.6
         version: 2.2.6(react@19.3.0)
       '@sanity/media-library-types':
         specifier: ^1.7.1
