@@ -51,10 +51,10 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
   // current `children` array.
   const [intersections, setIntersections] = useState<Record<string, boolean | undefined>>({})
 
-  const children = (useMemo(
+  const children = useMemo(
     () => Children.toArray(childrenProp).filter(_isReactElement),
     [childrenProp],
-  ))
+  )
 
   // Nothing is shown until a measurement arrives for the current children, to
   // avoid flashing children that may not fit. Derived from the current children
@@ -120,9 +120,25 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
     >
       <Flex justifyContent="center" gap={gap} flexBasis="0%" flexGrow={1}>
         {hasMeasured
-          ? children.map((child) => <Activity key={child.key} mode={(child.key !== null && intersections[child.key] === false) ? 'hidden' : 'visible'}> {cloneElement(child, {
-            'style': {viewTransitionName: viewTransitionName+child.key},
-          })}</Activity>)
+          ? children.map((child, index) => {
+              const collapsed = child.key !== null && intersections[child.key] === false
+              return (
+                <Activity key={child.key} mode={collapsed ? 'hidden' : 'visible'}>
+                  {cloneElement(child, {
+                    // `Activity` only hides with `display: none`, so a collapsed child stays in
+                    // the accessibility tree and in the roving focus set unless it is marked here.
+                    'aria-hidden': collapsed ? true : undefined,
+                    'style': {
+                      ...child.props.style,
+                      // Suffixed with the index rather than `child.key`, which is not a valid
+                      // CSS identifier.
+                      viewTransitionName: `${viewTransitionName}${index}`,
+                    },
+                    'tabIndex': collapsed ? -1 : undefined,
+                  })}
+                </Activity>
+              )
+            })
           : null}
         <ViewTransition key="collapse-overflow-menu">
           {hiddenChildren.length > 0 ? (

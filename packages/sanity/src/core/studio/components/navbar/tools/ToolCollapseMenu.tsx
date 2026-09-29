@@ -1,5 +1,13 @@
 import startCase from 'lodash-es/startCase.js'
-import {useMemo, useState, type RefAttributes, useId, use, ViewTransition} from 'react'
+import {
+  useMemo,
+  useState,
+  type RefAttributes,
+  useId,
+  use,
+  ViewTransition,
+  type HTMLProps,
+} from 'react'
 import {Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
@@ -17,11 +25,20 @@ interface ToolCollapseMenuProps {
   tools: Tool[]
 }
 
-function ToolLinkButton({tool, selected}: {tool: Tool; selected: boolean}) {
+// `CollapseTabList` clones its children to name them for view transitions, and to hide the
+// clones it measures with, so those props have to reach the rendered button.
+function ToolLinkButton(
+  props: {tool: Tool; selected: boolean} & Pick<
+    HTMLProps<HTMLButtonElement>,
+    'aria-hidden' | 'disabled' | 'style' | 'tabIndex'
+  >,
+) {
+  const {tool, selected, ...rest} = props
   const title = tool?.title || startCase(tool.name)
 
   return (
     <Button
+      {...rest}
       as={ToolLink}
       data-as="a"
       mode="bleed"
