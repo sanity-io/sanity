@@ -41,16 +41,16 @@ export class DiffErrorBoundary extends Component<DiffErrorBoundaryProps, DiffErr
     return (
       <Card padding={3} radius={2} tone="critical">
         <Flex>
-          <Icon icon={ErrorOutlineIcon} size={1} />
+          <Icon icon={ErrorOutlineIcon} size={1} tone="critical" />
 
           <Box paddingLeft={3}>
-            <Text as="h3" size={1} weight="medium" trim={true}>
+            <Text as="h3" size={1} weight="medium" trim={true} tone="critical">
               {t('changes.error-boundary.title')}
             </Text>
 
             {isDev && (
               <Box marginTop={2}>
-                <Text as="p" size={1} trim={true}>
+                <Text as="p" size={1} trim={true} tone="critical">
                   {t('changes.error-boundary.developer-info')}
                 </Text>
               </Box>

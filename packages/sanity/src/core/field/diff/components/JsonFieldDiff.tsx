@@ -72,7 +72,7 @@ export const JsonFieldDiff: DiffComponent = ({diff}) => {
   return (
     <Flex gap={4} paddingY={1} flexDirection="column" flexShrink={0}>
       <Card border padding={3} radius={2} tone="caution">
-        <Text size={1} as="div" trim={true}>
+        <Text size={1} as="div" trim={true} tone="caution">
           {t('changes.unknown-schema-field.description')}
         </Text>
       </Card>

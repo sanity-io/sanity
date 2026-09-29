@@ -14,15 +14,15 @@ export function ChangesError({error}: {error?: Error | null}) {
   return (
     <Card tone="caution" padding={3}>
       <VStack gap={3}>
-        <Text size={1} weight="medium" as="h3" trim={true}>
+        <Text size={1} weight="medium" as="h3" trim={true} tone="caution">
           {t('changes.error-title')}
         </Text>
-        <Text as="p" size={1} muted trim={true}>
+        <Text as="p" size={1} muted trim={true} tone="caution">
           {t('changes.error-description')}
         </Text>
         {revisionNotFoundError && (
           <Box paddingTop={2}>
-            <Text as="p" size={1} muted trim={true}>
+            <Text as="p" size={1} muted trim={true} tone="caution">
               <Translate
                 i18nKey="changes.missing-since-document-error"
                 t={t}
