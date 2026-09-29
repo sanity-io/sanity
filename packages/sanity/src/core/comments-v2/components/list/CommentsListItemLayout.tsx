@@ -247,7 +247,8 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
   const hasReactions = Boolean(reactions?.length)
 
-  const createdDate = _createdAt ? new Date(_createdAt) : new Date()
+  const [now] = useState(() => new Date())
+  const createdDate = _createdAt ? new Date(_createdAt) : now
   const editedDate = lastEditedAt ? new Date(lastEditedAt) : null
   const createdTimeAgo = useRelativeTime(createdDate, RELATIVE_TIME_OPTIONS)
   const dateTimeFormat = useDateTimeFormat({

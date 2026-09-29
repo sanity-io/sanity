@@ -95,6 +95,7 @@ export function CommonDateTimeInput(props: Props & RefAttributes<HTMLInputElemen
     [serialize, onChange],
   )
 
+  const [now] = useState(() => new Date())
   const inputRef = useRef<HTMLInputElement | null>(null)
 
   useImperativeHandle<HTMLInputElement | null, HTMLInputElement | null>(
@@ -150,7 +151,7 @@ export function CommonDateTimeInput(props: Props & RefAttributes<HTMLInputElemen
           id={id}
           selectTime={selectTime}
           timeStep={timeStep}
-          placeholder={placeholder || `e.g. ${formatInputValue(new Date())}`}
+          placeholder={placeholder || `e.g. ${formatInputValue(now)}`}
           ref={inputRef}
           value={parseResult?.date}
           inputValue={inputValue || ''}

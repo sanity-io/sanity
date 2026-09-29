@@ -34,6 +34,7 @@ export function PresenceDebugDialog(props: PresenceDebugDialogProps) {
         type: 'document',
         documentId: target.documentId,
         path: target.path,
+        // oxlint-disable-next-line react/purity -- this timestamp is captured when the location is created
         lastActiveAt: new Date().toISOString(),
       },
     [target],

@@ -33,8 +33,9 @@ export function DatePicker(
 
   const value = useMemo(() => {
     if (_value) return _value
-    const now = new Date()
     // If no value is provided initialize the date with seconds and milliseconds set to 0
+    // oxlint-disable-next-line react/purity -- refresh the default when a controlled value is cleared
+    const now = new Date()
     now.setSeconds(0, 0)
     return now
   }, [_value])

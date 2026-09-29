@@ -71,7 +71,7 @@ export default function Tool() {
 
   const scheduleState: ScheduleState = router.state.state as ScheduleState
   const selectedDate = router.state.date
-    ? parse(router.state.date as string, DATE_SLUG_FORMAT, new Date())
+    ? parse(router.state.date as string, DATE_SLUG_FORMAT, new Date(0))
     : undefined
 
   //Store last active schedule state

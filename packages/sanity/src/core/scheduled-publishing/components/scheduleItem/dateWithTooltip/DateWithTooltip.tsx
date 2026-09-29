@@ -20,6 +20,7 @@ const DateWithTooltip = (props: Props) => {
   const {formatDateTz} = useTimeZone({type: 'scheduledPublishing'})
 
   // Get distance between both dates
+  // oxlint-disable-next-line react/purity -- relative time is intentionally based on the current render time
   const distance = formatDistance(date, new Date(), {
     addSuffix: true,
   })

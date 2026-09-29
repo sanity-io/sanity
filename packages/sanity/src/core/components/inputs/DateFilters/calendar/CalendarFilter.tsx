@@ -61,7 +61,7 @@ export function CalendarFilter(props: CalendarProps & RefAttributes<HTMLDivEleme
     timeZoneScope,
     ...restProps
   } = props
-  const [_focusedDate, _setFocusedDate] = useState<Date>(new Date())
+  const [_focusedDate, _setFocusedDate] = useState<Date>(() => new Date())
   const {t: tCore} = useTranslation()
   const {zoneDateToUtc} = useTimeZone(timeZoneScope)
 

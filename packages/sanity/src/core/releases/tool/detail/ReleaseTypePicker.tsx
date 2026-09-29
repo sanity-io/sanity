@@ -70,11 +70,12 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
   const getReleaseTime = useReleaseTime()
 
   const [open, setOpen] = useState(false)
+  const [now] = useState(() => new Date())
   const [releaseType, setReleaseType] = useState<ReleaseType>(release.metadata.releaseType)
   const publishDate = useMemo(() => getPublishDateFromRelease(release), [release])
   const [isUpdating, setIsUpdating] = useState(false)
   const [isIntendedScheduleDateInPast, setIsIntendedScheduleDateInPast] = useState(
-    publishDate && isBefore(new Date(publishDate), new Date()),
+    publishDate && isBefore(new Date(publishDate), now),
   )
 
   const [intendedPublishAt, setIntendedPublishAt] = useState<Date | undefined>(
@@ -140,6 +141,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
     datePickerRef.current,
   ])
 
+  // oxlint-disable-next-line react/purity -- current time determines whether the release date has passed
   const isPublishDateInPast = !!publishDate && isBefore(new Date(publishDate), new Date())
   const isReleaseScheduled = isReleaseScheduledOrScheduling(release)
 

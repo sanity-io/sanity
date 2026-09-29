@@ -72,14 +72,15 @@ export function ParsedDateTextInput({
     const inputValueDate = new Date(value)
     return format(inputValueDate, dateFormat)
   })
+  const [now] = useState(() => new Date())
 
   /**
    * Conditionally create placeholder text
    */
   const formattedPlaceholder = useMemo(() => {
-    const date = placeholderDate || new Date()
+    const date = placeholderDate || now
     return format(date, dateFormat)
-  }, [dateFormat, placeholderDate])
+  }, [dateFormat, now, placeholderDate])
 
   /**
    * Process current input value:

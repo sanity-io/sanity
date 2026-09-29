@@ -283,8 +283,7 @@ export function Calendar(props: CalendarProps & RefAttributes<HTMLDivElement>) {
           <Flex alignItems="center" flexBasis="0%" flexGrow={1} justifyContent="space-between">
             <Flex alignItems="center" flexBasis="0%" flexGrow={1}>
               <Text weight="medium" size={1}>
-                {labels.monthNames[(focusedDate || new Date())?.getMonth()]}{' '}
-                {(focusedDate || new Date())?.getFullYear()}
+                {labels.monthNames[focusedDate.getMonth()]} {focusedDate.getFullYear()}
               </Text>
             </Flex>
 
