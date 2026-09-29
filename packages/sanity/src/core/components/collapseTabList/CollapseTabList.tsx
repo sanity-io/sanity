@@ -4,6 +4,7 @@ import {
   type CSSProperties,
   type ReactNode,
   useCallback,
+  useId,
   useMemo,
   useState,
   type RefAttributes,
@@ -55,6 +56,12 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
     (child) => child.key !== null && intersections[child.key] !== undefined,
   )
 
+  // The rendered tabs and the real menu button are named, not `children` or `menuButton`: the
+  // measuring row renders clones of both, hidden but still laid out, and a duplicate name makes
+  // the browser skip the whole transition.
+  const viewTransitionName = useId()
+  const menuButtonViewTransitionName = useId()
+
   /**
    * Partition of the current children: those measured as not fitting belong in
    * the overflow menu, the rest render inline. `hiddenChildren` is the single
@@ -64,15 +71,19 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
   const {displayChildren, hiddenChildren} = useMemo(() => {
     const display: React.JSX.Element[] = []
     const hidden: React.JSX.Element[] = []
-    for (const child of children) {
+    for (const [index, child] of children.entries()) {
       if (child.key !== null && intersections[child.key] === false) {
         hidden.push(child)
       } else {
-        display.push(child)
+        display.push(
+          cloneElement(child, {
+            style: {...child.props.style, viewTransitionName: `${viewTransitionName}${index}`},
+          }),
+        )
       }
     }
     return {displayChildren: display, hiddenChildren: hidden}
-  }, [children, intersections])
+  }, [children, intersections, viewTransitionName])
 
   const intersectionOptions = useMemo(
     () => ({
@@ -86,6 +97,13 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
   const menuButton = useMemo(
     () => menuButtonProps?.button || <ContextMenuButton />,
     [menuButtonProps],
+  )
+  const overflowMenuButton = useMemo(
+    () =>
+      cloneElement(menuButton, {
+        style: {...menuButton.props.style, viewTransitionName: menuButtonViewTransitionName},
+      }),
+    [menuButton, menuButtonViewTransitionName],
   )
 
   const handleIntersection = useCallback(
@@ -113,7 +131,7 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
         {hasMeasured ? displayChildren : null}
         {hiddenChildren.length > 0 ? (
           <CollapseOverflowMenu
-            menuButton={menuButton}
+            menuButton={overflowMenuButton}
             menuButtonProps={menuButtonProps}
             menuOptions={hiddenChildren}
           />
