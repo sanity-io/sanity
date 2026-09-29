@@ -75,22 +75,22 @@ function BlockHarness() {
         <VStack gap={4}>
           <div data-testid="block-paragraph">
             <Block diff={CHANGED_PARAGRAPH} block={CHANGED_PARAGRAPH.displayValue}>
-              <Text>A paragraph, after</Text>
+              <span>A paragraph, after</span>
             </Block>
           </div>
           <div data-testid="block-header">
             <Block diff={ADDED_HEADER} block={ADDED_HEADER.displayValue}>
-              <Text>A new heading</Text>
+              <span>A new heading</span>
             </Block>
           </div>
           <div data-testid="block-blockquote">
             <Block diff={REMOVED_QUOTE} block={REMOVED_QUOTE.displayValue}>
-              <Text>A removed quote</Text>
+              <span>A removed quote</span>
             </Block>
           </div>
           <div data-testid="block-restyled">
             <Block diff={RESTYLED} block={RESTYLED.displayValue}>
-              <Text>Now a heading</Text>
+              <span>Now a heading</span>
             </Block>
           </div>
           <Text data-testid="focus-count" size={1}>
