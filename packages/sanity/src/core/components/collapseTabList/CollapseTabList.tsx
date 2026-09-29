@@ -8,6 +8,8 @@ import {
   useMemo,
   useState,
   type RefAttributes,
+  createContext,
+  ViewTransition,
 } from 'react'
 import {Flex, type GapProps} from 'ui5'
 
@@ -30,6 +32,8 @@ interface CollapseTabListProps {
   }
   style?: CSSProperties
 }
+
+export const CollapseTabListVisibilityContext = createContext<boolean>(false)
 
 /**
  * Similar to `<CollapseMenu />` but instead of collapsing the inner items by removing the text
@@ -56,10 +60,6 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
     (child) => child.key !== null && intersections[child.key] !== undefined,
   )
 
-  // The real menu button is named, not `menuButton`: the measuring row and the placeholder render
-  // clones of it, hidden but still laid out, and a duplicate name makes the browser skip the whole
-  // transition.
-  const menuButtonViewTransitionName = useId()
 
   /**
    * Partition of the current children: those measured as not fitting belong in
@@ -93,13 +93,7 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
     () => menuButtonProps?.button || <ContextMenuButton />,
     [menuButtonProps],
   )
-  const overflowMenuButton = useMemo(
-    () =>
-      cloneElement(menuButton, {
-        style: {...menuButton.props.style, viewTransitionName: menuButtonViewTransitionName},
-      }),
-    [menuButton, menuButtonViewTransitionName],
-  )
+  
 
   const handleIntersection = useCallback(
     (entry: IntersectionObserverEntry, child: React.JSX.Element) => {
@@ -123,10 +117,11 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
       }}
     >
       <Flex justifyContent="center" gap={gap} flexBasis="0%" flexGrow={1}>
-        {hasMeasured ? displayChildren : null}
+        {hasMeasured ? displayChildren.map(child => <ViewTransition key={child.key}>{child}</ViewTransition>) : null}
+        <ViewTransition key="collapse-overflow-menu">
         {hiddenChildren.length > 0 ? (
           <CollapseOverflowMenu
-            menuButton={overflowMenuButton}
+            menuButton={menuButton}
             menuButtonProps={menuButtonProps}
             menuOptions={hiddenChildren}
           />
@@ -149,6 +144,7 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
             })}
           </div>
         )}
+        </ViewTransition>
       </Flex>
 
       {/* Element that always render all the children to keep track of their position and if the available space to render them */}
