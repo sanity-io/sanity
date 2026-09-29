@@ -56,10 +56,9 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
     (child) => child.key !== null && intersections[child.key] !== undefined,
   )
 
-  // The rendered tabs and the real menu button are named, not `children` or `menuButton`: the
-  // measuring row renders clones of both, hidden but still laid out, and a duplicate name makes
-  // the browser skip the whole transition.
-  const viewTransitionName = useId()
+  // The real menu button is named, not `menuButton`: the measuring row and the placeholder render
+  // clones of it, hidden but still laid out, and a duplicate name makes the browser skip the whole
+  // transition.
   const menuButtonViewTransitionName = useId()
 
   /**
@@ -71,17 +70,15 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
   const {displayChildren, hiddenChildren} = useMemo(() => {
     const display: React.JSX.Element[] = []
     const hidden: React.JSX.Element[] = []
-    for (const [index, child] of children.entries()) {
+    for (const child of children) {
       if (child.key !== null && intersections[child.key] === false) {
         hidden.push(child)
       } else {
-        display.push(
-          child,
-        )
+        display.push(child)
       }
     }
     return {displayChildren: display, hiddenChildren: hidden}
-  }, [children, intersections, viewTransitionName])
+  }, [children, intersections])
 
   const intersectionOptions = useMemo(
     () => ({

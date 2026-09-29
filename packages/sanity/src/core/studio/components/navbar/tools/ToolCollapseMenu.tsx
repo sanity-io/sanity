@@ -17,7 +17,7 @@ interface ToolCollapseMenuProps {
   tools: Tool[]
 }
 
-function ToolLinkButton({tool, selected}: {tool: Tool<any>;selected: boolean}) {
+function ToolLinkButton({tool, selected}: {tool: Tool; selected: boolean}) {
   const title = tool?.title || startCase(tool.name)
   const viewTransitionName = useId()
 
