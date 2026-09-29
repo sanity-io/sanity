@@ -76,9 +76,7 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
         hidden.push(child)
       } else {
         display.push(
-          cloneElement(child, {
-            style: {...child.props.style, viewTransitionName: `${viewTransitionName}${index}`},
-          }),
+          child,
         )
       }
     }
