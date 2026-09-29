@@ -1,7 +1,6 @@
 import {ArrowDownIcon} from '@sanity/icons/ArrowDown'
 import {ArrowRightIcon} from '@sanity/icons/ArrowRight'
-import {type HTMLProps} from 'react'
-import {Text, type TextProps} from 'ui5'
+import {Box, Icon, type TextAlign} from 'ui5'
 
 /** @internal */
 export type FromToArrowDirection = 'down' | 'right'
@@ -12,16 +11,20 @@ const arrowComponents = {
 }
 
 /** @internal */
-export function FromToArrow(
-  props: {direction?: FromToArrowDirection} & TextProps &
-    Omit<HTMLProps<HTMLDivElement>, 'children' | 'ref'>,
-) {
-  const {direction = 'right', ...restProps} = props
-  const ArrowComponent = arrowComponents[direction]
+export interface FromToArrowProps {
+  direction?: FromToArrowDirection
+  align?: TextAlign
+}
 
-  return (
-    <Text muted size={1} {...restProps} as="div" trim={true}>
-      <ArrowComponent />
-    </Text>
-  )
+/** @internal */
+export function FromToArrow(props: FromToArrowProps) {
+  const {direction = 'right', align} = props
+  const ArrowComponent = arrowComponents[direction]
+  const icon = <Icon icon={ArrowComponent} size={1} muted />
+
+  if (!align) {
+    return icon
+  }
+
+  return <Box style={{textAlign: align}}>{icon}</Box>
 }

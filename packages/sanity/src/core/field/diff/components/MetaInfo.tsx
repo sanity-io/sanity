@@ -1,6 +1,6 @@
 import {type ComponentType, type ReactNode} from 'react'
 import {styled} from 'styled-components'
-import {Text, Box, Flex} from 'ui5'
+import {Text, Box, Flex, Icon, type IconProps} from 'ui5'
 
 /** @internal */
 export interface MetaInfoProps {
@@ -17,15 +17,13 @@ const MetaText = styled(Text)`
 
 /** @internal */
 export function MetaInfo(props: MetaInfoProps) {
-  const {title, action, icon: Icon, children, markRemoved} = props
+  const {title, action, icon: IconComponent, children, markRemoved} = props
 
   return (
     <Flex padding={2} alignItems="center">
-      {Icon && (
-        <Box padding={2}>
-          <MetaText size={4} forwardedAs={markRemoved ? 'del' : 'div'} trim={true}>
-            <Icon />
-          </MetaText>
+      {IconComponent && (
+        <Box padding={2} as={markRemoved ? 'del' : 'div'}>
+          <Icon icon={IconComponent as IconProps['icon']} size={4} />
         </Box>
       )}
 

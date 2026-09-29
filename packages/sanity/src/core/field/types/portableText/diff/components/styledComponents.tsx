@@ -24,7 +24,8 @@ export const PreviewContainer = styled(Box)`
     display: inline-flex;
     align-items: center;
 
-    ${InlineBox} [data-ui="Text"] {
+    ${InlineBox} [data-ui='Text'],
+    ${InlineBox} [data-ui="Icon"] {
       opacity: 0.5;
     }
   }

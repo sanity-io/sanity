@@ -1,6 +1,6 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {Card} from '@sanity/ui'
-import {Text, Box, Flex} from 'ui5'
+import {Text, Box, Flex, Icon} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type FieldValueError} from '../../validation'
@@ -12,9 +12,7 @@ export function ValueError({error}: {error: FieldValueError}) {
     <Card tone="critical" padding={3}>
       <Flex alignItems="flex-start">
         <Box>
-          <Text as="div" trim={true}>
-            <ErrorOutlineIcon />
-          </Text>
+          <Icon icon={ErrorOutlineIcon} />
         </Box>
         <Box flexBasis="0%" flexGrow={1} paddingLeft={3}>
           <Text size={1} as="p" trim={true}>

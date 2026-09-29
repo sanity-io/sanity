@@ -14,7 +14,7 @@ import {
 } from 'react'
 import {DiffContext, ReviewChangesContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
-import {Text, Flex} from 'ui5'
+import {Text, Flex, Icon} from 'ui5'
 
 import {Popover} from '../../../../../../ui-components/popover/Popover'
 import {useChangeIndicatorsReportedValues} from '../../../../../changeIndicators/tracker'
@@ -24,7 +24,7 @@ import {ChangeList} from '../../../../diff/components/ChangeList'
 import {DiffTooltip} from '../../../../diff/components/DiffTooltip'
 import {type ObjectDiff} from '../../../../types'
 import {isEmptyObject} from '../helpers'
-import {InlineBox, InlineText, PopoverContainer, PreviewContainer} from './styledComponents'
+import {InlineBox, PopoverContainer, PreviewContainer} from './styledComponents'
 
 interface AnnotationProps {
   diff?: ObjectDiff
@@ -202,9 +202,7 @@ function AnnnotationWithDiff({
             <InlineBox style={{display: 'inline-flex'}}>
               <span>{children}</span>
               <Flex alignItems="center" paddingX={1}>
-                <InlineText size={0} as="div" trim={true}>
-                  <ChevronDownIcon />
-                </InlineText>
+                <Icon icon={ChevronDownIcon} size={0} style={{color: 'inherit'}} />
               </Flex>
             </InlineBox>
           </DiffTooltip>
