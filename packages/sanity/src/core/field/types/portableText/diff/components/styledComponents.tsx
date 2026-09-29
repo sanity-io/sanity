@@ -1,5 +1,5 @@
 import {styled} from 'styled-components'
-import {Text, Box} from 'ui5'
+import {Box} from 'ui5'
 
 export const InlineBox = styled(Box)`
   &:not([hidden]) {
@@ -9,13 +9,6 @@ export const InlineBox = styled(Box)`
     &[data-changed] {
       cursor: pointer;
     }
-  }
-`
-
-export const InlineText = styled(Text)`
-  &:not([hidden]) {
-    display: inline;
-    color: inherit;
   }
 `
 
