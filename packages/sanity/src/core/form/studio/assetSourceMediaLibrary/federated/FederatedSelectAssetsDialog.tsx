@@ -16,6 +16,7 @@ import {Button} from '../../../../../ui-components/button/Button'
 import {useClient} from '../../../../hooks/useClient'
 import {useSchema} from '../../../../hooks/useSchema'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useColorSchemeValue} from '../../../../studio/colorScheme'
 import {useWorkspace} from '../../../../studio/workspace'
 import {FormFieldValidationStatus} from '../../../components/formField/FormFieldValidationStatus'
 import {useFormValue} from '../../../contexts/FormValue'
@@ -65,6 +66,7 @@ export function FederatedSelectAssetsDialog(props: {
   const workspace = useWorkspace()
   const schema = useSchema()
   const document = useFormValue([])
+  const scheme = useColorSchemeValue()
 
   const [assetSelection, setAssetSelection] = useState<AssetSelectionItem[]>([])
   const [didSelect, setDidSelect] = useState(false)
@@ -159,8 +161,9 @@ export function FederatedSelectAssetsDialog(props: {
       libraryId: mediaLibraryIds?.libraryId ?? null,
       onSelectionChange: handleSelectionChange,
       pluginFilters,
+      scheme,
     }),
-    [sourceProps, mediaLibraryIds?.libraryId, handleSelectionChange, pluginFilters],
+    [sourceProps, mediaLibraryIds?.libraryId, handleSelectionChange, pluginFilters, scheme],
   )
 
   return (
@@ -172,7 +175,10 @@ export function FederatedSelectAssetsDialog(props: {
       open
       ref={ref ?? null}
       data-testid="media-library-federated-dialog-select-assets"
-      width={3}
+      // Wider than the iframe select dialog (width 3): the federated view
+      // mounts the full Media Library app (folder nav, grid, detail sidebar),
+      // which needs the room. Capped by the viewport below 1920px.
+      width={5}
       footer={
         <Card
           height="fill"
