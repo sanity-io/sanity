@@ -1,5 +1,5 @@
 import startCase from 'lodash-es/startCase.js'
-import {useMemo, useState, type RefAttributes, useId} from 'react'
+import {type ComponentProps, useMemo, useState, useId} from 'react'
 import {Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
@@ -8,7 +8,7 @@ import {CollapseTabList} from '../../../../components/collapseTabList/CollapseTa
 import {useRovingFocus} from '../../../../components/rovingFocus/useRovingFocus'
 import {type Tool} from '../../../../config/types'
 import {useColorSchemeValue} from '../../../colorScheme'
-import {ToolLink, type ToolLinkProps} from './ToolLink'
+import {ToolLink} from './ToolLink'
 
 const TOOL_COLLAPSE_MENU_STYLE = {minWidth: 0} as const
 
@@ -17,21 +17,12 @@ interface ToolCollapseMenuProps {
   tools: Tool[]
 }
 
-function ToolLinkButton({tool, selected}: {tool: Tool; selected: boolean}) {
-  const title = tool?.title || startCase(tool.name)
+// An overflowed tab is never rendered: `CollapseTabList` reads the props off the element to build
+// a menu item from them, so they are passed through here rather than derived from the tool.
+function ToolLinkButton(props: ComponentProps<typeof Button>) {
   const viewTransitionName = useId()
 
-  return (
-    <Button
-      as={ToolLink}
-      data-as="a"
-      mode="bleed"
-      name={tool.name}
-      selected={selected}
-      text={title}
-      style={{viewTransitionName}}
-    />
-  )
+  return <Button {...props} style={{viewTransitionName}} />
 }
 
 export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
@@ -57,14 +48,18 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
   )
   const children = useMemo(
     () =>
-      tools.map((tool, index) => {
+      tools.map((tool) => {
         const title = tool?.title || startCase(tool.name)
 
         return (
           <ToolLinkButton
             key={`${tool.name}-${title}`}
-            tool={tool}
+            as={ToolLink}
+            data-as="a"
+            mode="bleed"
+            name={tool.name}
             selected={activeToolName === tool.name}
+            text={title}
           />
         )
       }),
