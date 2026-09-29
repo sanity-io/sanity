@@ -954,7 +954,7 @@ importers:
         version: 8.7.0(vitest@5.0.1)
       '@sanity/color':
         specifier: ^3.0.8
-        version: 3.0.8
+        version: 3.0.9
       '@sanity/debug-preview-url-secret-plugin':
         specifier: ^2.0.21
         version: 2.0.21(@sanity/client@8.7.0)(react@19.3.0)(sanity@packages+sanity)
@@ -1913,8 +1913,8 @@ importers:
         specifier: 'catalog:'
         version: 8.7.0(vitest@5.0.1)
       '@sanity/color':
-        specifier: ^3.0.8
-        version: 3.0.8
+        specifier: ^3.0.9
+        version: 3.0.9
       '@sanity/icons':
         specifier: ^5.2.2
         version: 5.2.2(react@19.3.0)
@@ -2114,8 +2114,8 @@ importers:
         specifier: 'catalog:'
         version: 8.7.0(vitest@5.0.1)
       '@sanity/color':
-        specifier: ^3.0.8
-        version: 3.0.8
+        specifier: ^3.0.9
+        version: 3.0.9
       '@sanity/comlink':
         specifier: ^4.0.3
         version: 4.0.3
@@ -7326,8 +7326,8 @@ packages:
       oxfmt:
         optional: true
 
-  '@sanity/color@3.0.8':
-    resolution: {integrity: sha512-MBQ082q7GRvzSH7Xzx4ul1Kxm/AEKDgwTz5cd13oXIlenl3VAM0Un0QpeTjkC5IZTC7SHbnhwkgoVHTZDz9WKQ==}
+  '@sanity/color@3.0.9':
+    resolution: {integrity: sha512-cvoxvd7ZPs5/TK30yoX6F82GNmIPVg9sVy06PUTWkVnY4m1NpCiTUj+zCQpf8JQdn7c2J9FHytrmnEHNWXDDZw==}
     engines: {node: '>=18.0.0'}
 
   '@sanity/comlink@4.0.3':
@@ -19680,7 +19680,7 @@ snapshots:
     dependencies:
       '@portabletext/types': 4.0.2
       '@sanity/client': 8.7.0(vitest@5.0.1)
-      '@sanity/color': 3.0.8
+      '@sanity/color': 3.0.9
       '@sanity/icons': 5.2.2(react@19.3.0)
       '@sanity/mutator': link:packages/@sanity/mutator
       '@sanity/ui': 4.2.7(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
@@ -19983,7 +19983,7 @@ snapshots:
       - supports-color
       - typescript
 
-  '@sanity/color@3.0.8': {}
+  '@sanity/color@3.0.9': {}
 
   '@sanity/comlink@4.0.3':
     dependencies:
@@ -20132,7 +20132,7 @@ snapshots:
 
   '@sanity/logos@2.2.5(react@19.3.0)':
     dependencies:
-      '@sanity/color': 3.0.8
+      '@sanity/color': 3.0.9
       react: 19.3.0
 
   '@sanity/media-library-types@1.7.1(@sanity/types@5.31.2)':
@@ -20328,7 +20328,7 @@ snapshots:
 
   '@sanity/themer-legacy@0.2.1(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)':
     dependencies:
-      '@sanity/color': 3.0.8
+      '@sanity/color': 3.0.9
       '@sanity/icons': 5.2.2(react@19.3.0)
       '@sanity/ui': 4.2.7(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
       react: 19.3.0
@@ -20341,7 +20341,7 @@ snapshots:
 
   '@sanity/themer@0.8.0(@types/react@19.3.0)(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)':
     dependencies:
-      '@sanity/color': 3.0.8
+      '@sanity/color': 3.0.9
       '@sanity/icons': 5.2.2(react@19.3.0)
       '@sanity/themer-legacy': 0.2.1(react-dom@19.3.0)(react@19.3.0)(sanity@packages+sanity)(styled-components@6.5.3)
       '@sanity/ui': 4.2.7(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
@@ -20393,7 +20393,7 @@ snapshots:
   '@sanity/ui@4.2.7(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)':
     dependencies:
       '@floating-ui/react-dom': 2.1.9(react-dom@19.3.0)(react@19.3.0)
-      '@sanity/color': 3.0.8
+      '@sanity/color': 3.0.9
       '@sanity/icons': 5.2.2(react@19.3.0)
       '@vanilla-extract/dynamic': 2.1.5
       clsx: 2.1.1
@@ -27146,7 +27146,7 @@ snapshots:
       '@hookform/resolvers': 4.1.3(react-hook-form@7.88.0)
       '@reduxjs/toolkit': 2.12.0(react-redux@9.3.0)(react@19.3.0)
       '@sanity/client': 8.7.0(vitest@5.0.1)
-      '@sanity/color': 3.0.8
+      '@sanity/color': 3.0.9
       '@sanity/icons': 5.2.2(react@19.3.0)
       '@sanity/ui': 4.2.7(react-dom@19.3.0)(react@19.3.0)(styled-components@6.5.3)
       '@sanity/uuid': 3.0.3
