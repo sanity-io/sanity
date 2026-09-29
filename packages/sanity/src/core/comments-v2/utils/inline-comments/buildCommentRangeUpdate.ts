@@ -1,4 +1,4 @@
-import {type CollaborationCommentFieldValue, type CollaborationCommentRange} from '@sanity/client'
+import {type CollaborationCommentAnchor, type CollaborationCommentFieldValue} from '@sanity/client'
 import {type Path} from '@sanity/types'
 
 import {type CommentDocument, type CommentsTextSelectionItem} from '../../types'
@@ -13,7 +13,7 @@ interface BuildCommentRangeUpdateProps {
 }
 
 interface CommentRangeUpdate {
-  range: CollaborationCommentRange | null
+  anchor: CollaborationCommentAnchor | null
   selection: {
     type: 'text'
     value: CommentsTextSelectionItem[]
@@ -41,7 +41,7 @@ export function buildCommentRangeUpdate(props: BuildCommentRangeUpdateProps): Co
   const anchoredDecorations = updatedDecorations.filter((decoration) => decoration.range.text)
 
   return {
-    range: selectionsToRange(
+    anchor: selectionsToRange(
       anchoredDecorations.map((decoration) => decoration.selection),
       value,
     ),

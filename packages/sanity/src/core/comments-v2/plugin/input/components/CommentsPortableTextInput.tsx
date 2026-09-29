@@ -218,11 +218,11 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
 
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       const editorValue = PortableTextEditor.getValue(editorRef.current) || EMPTY_ARRAY
-      const range = selectionToRange(normalizedSelection, editorValue) ?? undefined
+      const textAnchor = selectionToRange(normalizedSelection, editorValue) ?? undefined
 
       const threadId = uuid()
 
-      const payload: Omit<CommentFieldCreatePayload, 'range' | 'fieldValue'> = {
+      const payload: Omit<CommentFieldCreatePayload, 'anchor'> = {
         type: 'field',
         contentSnapshot: fragment,
         fieldPath,
@@ -234,7 +234,9 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
         threadId,
       }
 
-      void operation.create(range ? {...payload, range, fieldValue: editorValue} : payload)
+      void operation.create(
+        textAnchor ? {...payload, anchor: {...textAnchor, fieldValue: editorValue}} : payload,
+      )
 
       // Open the inspector when a new comment is added
       onCommentsOpen?.()
@@ -400,7 +402,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
     if (commentIdsToUpdate.length === 0) return
 
     // Offsets must be computed against the editor's live value, which is also
-    // what is sent as `fieldValue`. Without an editor there is nothing to
+    // what is sent as `anchor.fieldValue`. Without an editor there is nothing to
     // rematch against, so leave the comments dirty for the next edit.
     if (!editorRef.current) return
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -427,7 +429,7 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
       const commentFieldPath = parseCommentFieldPath(comment.target.path?.field)
       if (!commentFieldPath || !PathUtils.isEqual(commentFieldPath, props.path)) return
 
-      const {range, selection} = buildCommentRangeUpdate({
+      const {anchor: textAnchor, selection} = buildCommentRangeUpdate({
         comment,
         value: editorValue,
         documentValue: documentValueRef.current,
@@ -448,13 +450,16 @@ const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputIn
       const hasChanged = !isEqual(comment.target, nextComment.target)
 
       if (hasChanged) {
-        // API gets range + fieldValue (or null to clear); optimisticUpdate patches the
+        // API gets an anchor (or null to detach); optimisticUpdate patches the
         // local comment immediately while that request is in flight.
         void operation.updateRange(
           comment._id,
-          range
-            ? {range, fieldValue: editorValue, optimisticUpdate: nextComment}
-            : {range: null, optimisticUpdate: nextComment},
+          textAnchor
+            ? {
+                anchor: {...textAnchor, fieldValue: editorValue},
+                optimisticUpdate: nextComment,
+              }
+            : {anchor: null, optimisticUpdate: nextComment},
         )
       }
     })
