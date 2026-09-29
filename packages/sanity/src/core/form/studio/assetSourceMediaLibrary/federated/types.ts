@@ -20,6 +20,8 @@ export interface FederatedAssetSourceViewProps extends AssetSourceComponentProps
   onSelectionChange?: (selection: AssetSelectionItem[]) => void
   /** Read-only GROQ filters from the schema (`options.mediaLibrary.filters`). */
   pluginFilters?: PluginFilter[]
+  /** The Studio's resolved color scheme, so the view matches the host theme. */
+  scheme?: 'light' | 'dark'
 }
 
 /**

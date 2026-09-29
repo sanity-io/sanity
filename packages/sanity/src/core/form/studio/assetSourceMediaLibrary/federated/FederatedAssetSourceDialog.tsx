@@ -1,11 +1,12 @@
 import {type AssetSourceComponentProps} from '@sanity/types'
-import {type ReactNode, type Ref, useCallback, useState} from 'react'
+import {type ReactNode, type Ref, useCallback, useMemo, useState} from 'react'
 import {Box, Text} from 'ui5'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useColorSchemeValue} from '../../../../studio/colorScheme'
 import {AppDialog} from '../shared/Dialog'
 import {FederatedViewMount} from './FederatedViewMount'
-import {type FederatedAssetSourceView} from './types'
+import {type FederatedAssetSourceView, type FederatedAssetSourceViewProps} from './types'
 
 /**
  * Mounts a brokered federated `asset_source` view inside the standard dialog
@@ -29,8 +30,14 @@ export function FederatedAssetSourceDialog(props: {
 }): ReactNode {
   const {dialogHeaderTitle, onUnavailable, ref, sourceProps, view} = props
   const {t} = useTranslation()
+  const scheme = useColorSchemeValue()
 
   const [failed, setFailed] = useState(false)
+
+  const viewProps = useMemo<FederatedAssetSourceViewProps>(
+    () => ({...sourceProps, scheme}),
+    [sourceProps, scheme],
+  )
 
   const handleUnavailable = useCallback(
     (reason: unknown) => {
@@ -71,11 +78,7 @@ export function FederatedAssetSourceDialog(props: {
             </Text>
           </Box>
         ) : (
-          <FederatedViewMount
-            onUnavailable={handleUnavailable}
-            view={view}
-            viewProps={sourceProps}
-          />
+          <FederatedViewMount onUnavailable={handleUnavailable} view={view} viewProps={viewProps} />
         )}
       </Box>
     </AppDialog>
