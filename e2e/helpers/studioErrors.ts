@@ -1,4 +1,13 @@
-import {type BrowserContext, type Locator, type Page} from '@playwright/test'
+import {
+  type BrowserContext,
+  type Locator,
+  type Page,
+  type PlaywrightTestArgs,
+  type PlaywrightTestOptions,
+  type PlaywrightWorkerArgs,
+  type PlaywrightWorkerOptions,
+  type TestType,
+} from '@playwright/test'
 
 /**
  * Selector that matches any Studio error screen — both the React error
@@ -6,6 +15,8 @@ import {type BrowserContext, type Locator, type Page} from '@playwright/test'
  * `window.onerror` overlay (`#__sanityError`).
  */
 export const STUDIO_ERROR_SELECTOR = '[data-testid="studio-error-screen"], #__sanityError'
+
+const ERROR_SCREEN_MARKER = '__STUDIO_ERROR__'
 
 /**
  * Source of a detected studio error.
@@ -46,7 +57,7 @@ export interface StudioErrorInfo {
 }
 
 /**
- * Predicate used by {@link expectError} to decide whether an observed error
+ * Predicate used by {@link StudioErrorWatcher.expectError} to decide whether an observed error
  * is the one the caller expected. Strings and regexps are matched against
  * `message`; functions receive the full {@link StudioErrorInfo}.
  */
@@ -69,74 +80,94 @@ export function studioErrorLocator(page: Page): Locator {
   return page.locator(STUDIO_ERROR_SELECTOR)
 }
 
-interface WatcherState {
-  expected: StudioErrorMatcher | null
+export interface StudioErrorWatcher {
+  /**
+   * Expect one error matching `matcher`: it does not fail the test. Only errors matching that
+   * matcher are suppressed — any other error still fails the test, so unrelated regressions
+   * are not accidentally hidden. The matcher is cleared once consumed. If the expected error
+   * never arrives, the caller's own assertion (e.g.
+   * `expect(studioErrorLocator(page)).toBeVisible()`) is what surfaces the failure.
+   */
+  expectError: (matcher: StudioErrorMatcher) => void
 }
 
-function handleError(state: WatcherState, info: StudioErrorInfo): void {
-  if (state.expected && matches(state.expected, info)) {
-    state.expected = null
-    return
+function describeError(error: unknown): string {
+  return error instanceof Error ? error.message : String(error)
+}
+
+async function attach(context: BrowserContext): Promise<StudioErrorWatcher> {
+  let expected: StudioErrorMatcher | null = null
+
+  // Throwing from an event handler fails the running test (Playwright attributes unhandled
+  // errors to it), which stops a test on the first error instead of letting it time out.
+  function handleError(info: StudioErrorInfo): void {
+    if (expected && matches(expected, info)) {
+      expected = null
+      return
+    }
+    throw new Error(`Studio threw an unexpected ${info.source}: ${info.message}`)
   }
-  throw new Error(`Studio threw an unexpected ${info.source}: ${info.message}`)
-}
 
-function attachErrorDetection(page: Page, state: WatcherState): void {
-  page.on('pageerror', (error) => {
-    if (error.message.includes('ResizeObserver')) return
-    handleError(state, {source: 'pageerror', message: error.message})
+  context.on('weberror', (webError) => {
+    const message = describeError(webError.error())
+    if (message.includes('ResizeObserver')) return
+    handleError({source: 'pageerror', message})
   })
 
-  page.on('console', (msg) => {
+  context.on('console', (msg) => {
     const type = msg.type()
+    if (type !== 'warning' && type !== 'error') return
     const text = msg.text()
     if (type === 'warning') {
       if (STYLED_COMPONENTS_UNKNOWN_PROP_WARNING.test(text)) {
-        handleError(state, {source: 'styled-components-unknown-prop', message: text})
+        handleError({source: 'styled-components-unknown-prop', message: text})
       }
       return
     }
-    if (type !== 'error') return
-    if (text.startsWith('__STUDIO_ERROR__')) {
-      handleError(state, {
-        source: 'error-screen',
-        message: text.slice('__STUDIO_ERROR__'.length),
-      })
+    if (text.startsWith(ERROR_SCREEN_MARKER)) {
+      handleError({source: 'error-screen', message: text.slice(ERROR_SCREEN_MARKER.length)})
       return
     }
     if (REACT_DOM_PROP_WARNING.test(text)) {
-      handleError(state, {source: 'react-dom-prop-warning', message: text})
+      handleError({source: 'react-dom-prop-warning', message: text})
     }
   })
 
-  void page.addInitScript((selector) => {
-    let fired = false
-    new MutationObserver(() => {
-      if (fired) return
-      const el = document.querySelector(selector)
-      if (el) {
-        fired = true
-        const detail =
-          el.getAttribute('data-error') || el.textContent?.trim().slice(0, 200) || 'Unknown error'
-        console.error(`__STUDIO_ERROR__${detail}`)
-      }
-    }).observe(document, {childList: true, subtree: true})
-  }, STUDIO_ERROR_SELECTOR)
+  await context.addInitScript(
+    ({selector, marker}) => {
+      let fired = false
+      new MutationObserver(() => {
+        if (fired) return
+        const el = document.querySelector(selector)
+        if (el) {
+          fired = true
+          const detail =
+            el.getAttribute('data-error') || el.textContent?.trim().slice(0, 200) || 'Unknown error'
+          console.error(`${marker}${detail}`)
+        }
+      }).observe(document, {childList: true, subtree: true})
+    },
+    {selector: STUDIO_ERROR_SELECTOR, marker: ERROR_SCREEN_MARKER},
+  )
+
+  return {
+    expectError(matcher) {
+      expected = matcher
+    },
+  }
 }
 
+const watchers = new WeakMap<BrowserContext, Promise<StudioErrorWatcher>>()
+
 /**
- * Attach Studio error detection to a browser context. Every page created
- * in the context will auto-fail on Studio error screens, uncaught
- * exceptions, and DOM prop leak warnings ({@link REACT_DOM_PROP_WARNING},
- * {@link STYLED_COMPONENTS_UNKNOWN_PROP_WARNING}; development build only, see their docs).
- *
- * To assert that a specific error is expected, pass a matcher to
- * `expectError`. Only errors matching that matcher are suppressed — any
- * other error still fails the test, so unrelated regressions are not
- * accidentally hidden.
+ * Attach Studio error detection to a browser context, once per context: every call for the same
+ * context returns the same watcher. Every page of the context, including ones created before the
+ * call, fails the running test on Studio error screens, uncaught exceptions, and DOM prop leak
+ * warnings ({@link REACT_DOM_PROP_WARNING}, {@link STYLED_COMPONENTS_UNKNOWN_PROP_WARNING};
+ * development build only, see their docs).
  *
  * ```ts
- * const {expectError} = watchForStudioErrors(context)
+ * const {expectError} = await watchForStudioErrors(context)
  * expectError(/Session not found/)
  * await expect(studioErrorLocator(page)).toBeVisible()
  * ```
@@ -147,22 +178,28 @@ function attachErrorDetection(page: Page, state: WatcherState): void {
  * ```ts
  * expectError(({source, message}) => source === 'error-screen' && message.includes('CORS'))
  * ```
- *
- * Each call expects a single matching error; the matcher is cleared once
- * consumed. If the expected error never arrives, the caller's own
- * assertion (e.g. `expect(studioErrorLocator(page)).toBeVisible()`) is
- * what surfaces the failure.
  */
-export function watchForStudioErrors(context: BrowserContext): {
-  expectError: (matcher: StudioErrorMatcher) => void
-} {
-  const state: WatcherState = {expected: null}
-  context.on('page', (page) => {
-    attachErrorDetection(page, state)
-  })
-  return {
-    expectError(matcher) {
-      state.expected = matcher
-    },
+export function watchForStudioErrors(context: BrowserContext): Promise<StudioErrorWatcher> {
+  let watcher = watchers.get(context)
+  if (!watcher) {
+    watcher = attach(context)
+    watchers.set(context, watcher)
   }
+  return watcher
+}
+
+/**
+ * Run each test of a spec that uses `@playwright/test` directly under
+ * {@link watchForStudioErrors}, as the `test` fixture of `studio-test.ts` does for the others.
+ * Registers a `beforeEach` hook in the calling scope.
+ */
+export function watchEachTestForStudioErrors(
+  test: TestType<
+    PlaywrightTestArgs & PlaywrightTestOptions,
+    PlaywrightWorkerArgs & PlaywrightWorkerOptions
+  >,
+): void {
+  test.beforeEach(async ({context}) => {
+    await watchForStudioErrors(context)
+  })
 }
