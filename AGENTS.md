@@ -517,6 +517,16 @@ On macOS, use `TMPDIR=/private/tmp pnpm test` if the E2E summary reporter test f
 `/var` versus `/private/var` path mismatch. The test changes its working directory, which resolves
 the symlink; using a canonical temporary path keeps its expected and actual paths consistent.
 
+#### Types in tests
+
+Applies to every package's `*.test.ts` / `*.test.tsx` (and `*.browser.test.tsx`) files only.
+Do not use `as unknown as T` to force a value into a narrower public type. If a helper's
+return type is not in the union the function accepts, cover that behaviour through a surface
+that already accepts the value, or drop that case from the typed call. Do not widen a public
+union solely so a test type-checks. A single `as T` on a deliberately incomplete object is
+fine when the test is the error path for a missing field. This rule does not apply to
+production source.
+
 #### Vitest 5 specifics
 
 - Every Vitest artifact lives under `.vitest/` (gitignored): sharded blob reports in
@@ -829,7 +839,7 @@ Notes:
 2. Use existing test patterns from similar files
 3. Run `pnpm vitest run --project=<project> <path>` to verify (not `pnpm test -- <path>`, which runs every project)
 
-For `packages/sanity`, see [packages/sanity/AGENTS.md](./packages/sanity/AGENTS.md) — it inventories the test helpers (`createTestProvider`, the `test/form` input harnesses, the client and router mocks), the determinism rules, and how to type fixtures without `as unknown as`.
+For `packages/sanity`, see [packages/sanity/AGENTS.md](./packages/sanity/AGENTS.md) — it inventories the test helpers (`createTestProvider`, the `test/form` input harnesses, the client and router mocks) and the determinism rules for that package.
 
 ### Updating Snapshots
 
