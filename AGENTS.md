@@ -531,6 +531,11 @@ the symlink; using a canonical temporary path keeps its expected and actual path
   Vitest 4 substring, case-insensitive matching (`browser.locators.exact: false` in
   `vitest.browser.config.mts`); pass `{exact: true}` per call when a full match matters. Custom
   matcher typings augment `Matchers<R, T>` from `vitest`, not `Assertion`.
+- In browser mode, `cdp()` from `vitest/browser` is a Chrome DevTools Protocol session for the
+  page (chromium only — guard with `describe.skipIf(server.browser !== 'chromium')`). It is how a
+  test reproduces what the DevTools UI does, e.g. `Animation.setPlaybackRate` for the Animations
+  panel's playback speed. Such settings apply to the whole page, which the parallel test files
+  share, so reset them in `afterEach`.
 
 #### Test Timeouts
 
@@ -822,6 +827,12 @@ Notes:
 - Key the patch by exact version (`<pkg>@<version>`) so other locked versions of the same package stay untouched
 - Record the upstream commit sha in the commit/PR so the patch is reproducible
 - The patch is an experiment vehicle: before merging, land + release the upstream fix, bump the catalog, drop the patch
+
+#### Maintained patches (upstream declined the fix)
+
+The one exception to "drop the patch" is a fix upstream has closed as wontfix. Those stay in `patches/` and are listed here so nobody deletes them as leftovers:
+
+- **`motion-dom` (`patches/motion-dom@<version>.patch`)** — the `AnimateActivity` exit/enter animations of `@sanity/ui` Tooltip and Popover run `opacity` through WAAPI, and `motion-dom`'s `NativeAnimationExtended` assigns a `performance.now()`-based start time straight to `animation.startTime`, which the browser resolves against `document.timeline`. With Chrome DevTools' Animations panel slowed to 25%/10% the two clocks drift apart, the WAAPI animation waits at a negative `currentTime` for as long as the page has been slowed, and the overlay never hides (or never fades in). The patch is [motion#3830](https://github.com/motiondivision/motion/pull/3830) (issue [motion#3820](https://github.com/motiondivision/motion/issues/3820), closed wontfix): express the start time as an offset from `animation.timeline.currentTime`. It touches `dist/es`, `dist/cjs`, `dist/motion-dom.dev.js` and the minified `dist/motion-dom.js`. The CDN auto-update bundle (`packages/sanity/package.bundle.ts`) inlines `motion-dom`, so hosted studios get it; studios that install `sanity` from npm resolve their own `motion-dom` and do not. When Renovate bumps `motion`, re-run `pnpm patch motion-dom@<new version>`, re-apply the hunk (check upstream first — drop the patch if they shipped a fix) and update the key in `pnpm-workspace.yaml`. `Popover.browser.test.tsx` and `Tooltip.browser.test.tsx` in `packages/sanity/src/ui-components` fail without it (negative `currentTime` on the exit animation).
 
 ### Creating a New Test
 
